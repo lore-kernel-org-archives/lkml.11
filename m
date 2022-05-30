@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85F17C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:59:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4829CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:03:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237113AbiE3N7p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:59:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34776 "EHLO
+        id S238596AbiE3N7y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:59:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239029AbiE3NvB (ORCPT
+        with ESMTP id S239305AbiE3Nv0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:51:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 750E78217E;
-        Mon, 30 May 2022 06:35:19 -0700 (PDT)
+        Mon, 30 May 2022 09:51:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DBF78199D;
+        Mon, 30 May 2022 06:36:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D6478B80DB6;
-        Mon, 30 May 2022 13:35:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19738C341C7;
-        Mon, 30 May 2022 13:35:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C98F060D2C;
+        Mon, 30 May 2022 13:36:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 245EEC385B8;
+        Mon, 30 May 2022 13:36:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917706;
-        bh=cB/zmou4JNBatz0EsRvy0e6Im6lxkG/oKJCnqFwoMfc=;
+        s=k20201202; t=1653917765;
+        bh=r/dBWgTFOJ7LNQfKaxvKd/CJUkl0jSQjIUTPtjmE1js=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GZUlB9s5JH+JNsIlBG6NEr5Bi6dlYEbiDJdxlsd9nD7LFJuyGz6uWocQRYNPe13Mx
-         q7EVfdlrnfdzpJ9j9a+WpRXf7t9Nb+gNG9bQGIY02Ez4Y+ATzlYFAcmGxGZX+1TEK2
-         /42gvU8ci2U5DXHukHpTK4dR4+IXzfyZNbIQJBXUb72ng5u6eS5qqR7JoIYw2SBjTm
-         uZU5fT3tWXfRW48cN4qIBZSagerussar3tEl5jrvSHCDQswn2KJTERdEexEt75YQFH
-         1R/KK3WCAqeERfS2nPtAoqAlGZqL1GZgTUVCNai3CzCuQeOU1796YH8w+STqhMnPDj
-         YFA/ikA3vy4bg==
+        b=kYM+drjM80ucn6citCXb+5xNTaUoC6h8917GwH5NPnhAxHpe+NWiCq49ETCoMKjxh
+         fqUsbwCa4OfwPNoX8Xi9yc3Zb6HrkzJmqb7KP+VnBDS4+zQyiR2Ok+j+aMrzf12wUQ
+         mgmF+RLqwdrbIrtTjIw49Eg4ZAQj43Wwp+moiMl0h7B19svaOlGXyA9CP6jhlLhqpp
+         cpab+4TTw28xic+1ffXgLwUs8Bjw1E3MyG75kr2oe+7/a1NduIZT3dqrNyl2+9vQP8
+         NbXBL/eEOd5Nj59Yx9UyEVGS9RMK9FHWLcm3yqpV3izkDLxaxKndrWKrjcmlq14fyE
+         9h2b70+uQW97Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
-        <nfraprado@collabora.com>, Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        matthias.bgg@gmail.com, hsin-hsiung.wang@mediatek.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+Cc:     Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>,
+        lorenzo@kernel.org, ryder.lee@mediatek.com, kvalo@kernel.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, matthias.bgg@gmail.com, sean.wang@mediatek.com,
+        deren.wu@mediatek.com, xing.song@mediatek.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.17 070/135] regulator: mt6315: Enforce regulator-compatible, not name
-Date:   Mon, 30 May 2022 09:30:28 -0400
-Message-Id: <20220530133133.1931716-70-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.17 091/135] mt76: mt7921: accept rx frames with non-standard VHT MCS10-11
+Date:   Mon, 30 May 2022 09:30:49 -0400
+Message-Id: <20220530133133.1931716-91-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -56,39 +56,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+From: Felix Fietkau <nbd@nbd.name>
 
-[ Upstream commit 6d435a94ba5bb4f2ad381c0828fbae89c66b50fe ]
+[ Upstream commit 3128ea016965ce9f91ddf4e1dd944724462d1698 ]
 
-The MT6315 PMIC dt-binding should enforce that one of the valid
-regulator-compatible is set in each regulator node. However it was
-mistakenly matching against regulator-name instead.
+The hardware receives them properly, they should not be dropped
 
-Fix the typo. This not only fixes the compatible verification, but also
-lifts the regulator-name restriction, so that more meaningful names can
-be set for each platform.
-
-Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Link: https://lore.kernel.org/r/20220429201325.2205799-1-nfraprado@collabora.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../devicetree/bindings/regulator/mt6315-regulator.yaml         | 2 +-
+ drivers/net/wireless/mediatek/mt76/mt7921/mac.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml b/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml
-index 61dd5af80db6..5d2d989de893 100644
---- a/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml
-+++ b/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml
-@@ -31,7 +31,7 @@ properties:
-         $ref: "regulator.yaml#"
- 
-         properties:
--          regulator-name:
-+          regulator-compatible:
-             pattern: "^vbuck[1-4]$"
- 
-     additionalProperties: false
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
+index 84f72dd1bf93..e07707f518a2 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
+@@ -698,7 +698,7 @@ mt7921_mac_fill_rx(struct mt7921_dev *dev, struct sk_buff *skb)
+ 			status->nss =
+ 				FIELD_GET(MT_PRXV_NSTS, v0) + 1;
+ 			status->encoding = RX_ENC_VHT;
+-			if (i > 9)
++			if (i > 11)
+ 				return -EINVAL;
+ 			break;
+ 		case MT_PHY_TYPE_HE_MU:
 -- 
 2.35.1
 
