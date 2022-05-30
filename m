@@ -2,112 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA961C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 11:27:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86112C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 11:28:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235786AbiE3L1k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 07:27:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56086 "EHLO
+        id S235781AbiE3L2a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 07:28:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235787AbiE3L1O (ORCPT
+        with ESMTP id S235813AbiE3L20 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 07:27:14 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6C094C7B6
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 04:27:09 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id l13so16185341lfp.11
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 04:27:09 -0700 (PDT)
+        Mon, 30 May 2022 07:28:26 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04A234D249
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 04:28:04 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id rq11so20246467ejc.4
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 04:28:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=openvz-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:from:subject:to:cc
-         :references:content-language:in-reply-to:content-transfer-encoding;
-        bh=ZH9yvId2NMAw4oN1iqMKqU61/DZ/rIDZexlE6dKv8SU=;
-        b=qSiaNr2ftUqSRvmOy75IJeNCKAVgq/jO6yIuIwj9lTeotjFVJ4+oMFaIk5uft9Qvbs
-         l+4EitDawXs9/hDAY1ZW4DMfHukqi6UArXkOO1Fsh++NpRhYgntK5BVNeajvyod0xNbd
-         /yEKhndXFUITINHf3AsuCHklX308rL2W0TxU0lyGgS31a7Um1/qC8RkNmyIWqmdjEZqv
-         sBD3tvK7pX9DrDUQh/vJKdquM5bFHwtxZMMOdowmUVGdozFLqM96xAnlkIXWMx6XY71P
-         q0W2yFeBw4MsVyY5vKggC//seES0ntiWnGoRO7EkwhlnsldeBMzNk5fW75QX3HKgwNYo
-         7OeQ==
+        d=amarulasolutions.com; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=tAj71uhfpd7zy3DcY1wrWpNC2HSiY+lz9KoYoOBAv+g=;
+        b=MAul1gaNGk3a5noHPlwKMT4U8N4QwNwOCCMG11QXRNZUuagQK60TVoSFAZ3gH3YGD/
+         0e2xLVoicFMNpUt9IeL9Ro7lBLsEoSvb1uiX/sjCaElFGmaiXOAuyKRKdn3wv/zUOjOT
+         e/8xWo9A8MVK/X6819bIx9HLUpfs/YzFqNgxM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
-         :subject:to:cc:references:content-language:in-reply-to
-         :content-transfer-encoding;
-        bh=ZH9yvId2NMAw4oN1iqMKqU61/DZ/rIDZexlE6dKv8SU=;
-        b=QpqNlYHmJP9+AUptGqkMk9Yr2tbs1Lu5Hbzn7GKewDKIGq5xU9FZIoCaMlhn5RZw8h
-         ihTushcYMp9+T/hUAZ2Wu73FJjMNoQSFsL0kWjc2CEVX0C3hsM42/k/NAQvFFbSXjKAt
-         anc3NKAR7e46i2FAe4GdlqanRux3ipYkwdEZeskUhqS0eH0nnW1pzzHL3zWIS+bttACk
-         EYGv6nMZfG3lV8AhJQEN6V3blk3mFsKNQTzVDru2k35lx2Ey13Cp4PLGzOT/f2yJ7vdu
-         sBFMQ7mN67mopcdRNu0Yc5VVc2c7fq+Qi7RmxZYq+nFlJavG04OECrMD2mBx4yUdpEt1
-         Q81g==
-X-Gm-Message-State: AOAM533W/mlB6BkWNLxGElAmzSugTSYWy1hZhTRRz0/yVzh1jcUmxpEl
-        K95dBsm1YebjX0KuvBWlYY3IJg==
-X-Google-Smtp-Source: ABdhPJxWZqPdDmaExmQ+szJPGiMjUbrO/s6wpfxiy7JGg6o16TpJ95IhHVKm74g0zXeSMO1rmg/5jg==
-X-Received: by 2002:a05:6512:22cb:b0:478:d66d:f750 with SMTP id g11-20020a05651222cb00b00478d66df750mr5768811lfu.291.1653910028823;
-        Mon, 30 May 2022 04:27:08 -0700 (PDT)
-Received: from [192.168.1.65] ([46.188.121.129])
-        by smtp.gmail.com with ESMTPSA id a2-20020a19e302000000b0047255d211bfsm2253577lfh.238.2022.05.30.04.27.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 30 May 2022 04:27:08 -0700 (PDT)
-Message-ID: <a1fcdab2-a208-0fad-3f4e-233317ab828f@openvz.org>
-Date:   Mon, 30 May 2022 14:27:07 +0300
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=tAj71uhfpd7zy3DcY1wrWpNC2HSiY+lz9KoYoOBAv+g=;
+        b=0c5Br3R6J66cAUxK6lwJYJkgqTsS3zmtkIWO0HfgI1JnxfxIsZ+tXiHynIAz6XZDNn
+         EZOa9NrYcVKKk8EARAY0KYhEQdPjXkYZiwDU/SKM0A9SRvhPZj7DRVfD9kXM+pVCCBff
+         BWojVG525z00d5sVF4epAC71VhkTYT22yKPyKuj6n+Kcq1e9Pga0qlJCSzJb5XZovwLh
+         HFHhfRmyirapdKscDpBaWtox0K59RbJOZ6VS1yOlNcNaxUmU8AlSRZaONsZhQ+nhgzgf
+         aUL6ef6Re4QLUZW2fNQAS1yd6w4WMUAI2v5jQHrrZfCTvYYeDt+iOBcBm1vRU+pb8u3K
+         +JtQ==
+X-Gm-Message-State: AOAM5313l9KSTgd0HUOaCCeFkpyTD0UAUuvS0QMcG8bb7MgDKNkH6OJb
+        tjgSlYB/KZd0TRw2IhJbi1bdMw==
+X-Google-Smtp-Source: ABdhPJySR3Qh0UAwwf+pSKv/+yvslrXpUVHM3TvCzEy8domQUYmGU1UJ53eOkvuWwZq3vxTFjpq3KA==
+X-Received: by 2002:a17:906:6a02:b0:6ff:1dfb:1e2a with SMTP id qw2-20020a1709066a0200b006ff1dfb1e2amr18649571ejc.477.1653910082573;
+        Mon, 30 May 2022 04:28:02 -0700 (PDT)
+Received: from tom-ThinkPad-T14s-Gen-2i (net-2-39-143-183.cust.vodafonedsl.it. [2.39.143.183])
+        by smtp.gmail.com with ESMTPSA id e23-20020a1709062c1700b006f3ef214dd2sm3905507ejh.56.2022.05.30.04.28.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 May 2022 04:28:02 -0700 (PDT)
+Date:   Mon, 30 May 2022 13:27:59 +0200
+From:   Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Ming Qian <ming.qian@nxp.com>, Shijie Qin <shijie.qin@nxp.com>,
+        Zhou Peng <eagle.zhou@nxp.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        "Gustavo A . R . Silva" <gustavoars@kernel.org>,
+        linux-media@vger.kernel.org,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Nicolas Dufresne <nicolas.dufresne@collabora.com>,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH] media: amphion: Replace zero-length array with
+ flexible-array member
+Message-ID: <20220530112759.GC99280@tom-ThinkPad-T14s-Gen-2i>
+References: <20220527212953.797574-1-keescook@chromium.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-From:   Vasily Averin <vvs@openvz.org>
-Subject: [PATCH mm v3 9/9] memcg: enable accounting for perpu allocation of
- struct rt_rq
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     kernel@openvz.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, Shakeel Butt <shakeelb@google.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Michal Hocko <mhocko@suse.com>,
-        Muchun Song <songmuchun@bytedance.com>, cgroups@vger.kernel.org
-References: <06505918-3b8a-0ad5-5951-89ecb510138e@openvz.org>
- <cover.1653899364.git.vvs@openvz.org>
-Content-Language: en-US
-In-Reply-To: <cover.1653899364.git.vvs@openvz.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220527212953.797574-1-keescook@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If enabled in config, alloc_rt_sched_group() is called for each new
-cpu cgroup and allocates a huge (~1700 bytes) percpu struct rt_rq.
-This significantly exceeds the size of the percpu allocation in the
-common part of cgroup creation.
+On Fri, May 27, 2022 at 02:29:53PM -0700, Kees Cook wrote:
+> There is a regular need in the kernel to provide a way to declare
+> having a dynamically sized set of trailing elements in a structure.
+> Kernel code should always use “flexible array members”[1] for these
+> cases. The older style of one-element or zero-length arrays should no
+> longer be used[2][3].
+> 
+> [1] https://en.wikipedia.org/wiki/Flexible_array_member
+> [2] https://www.kernel.org/doc/html/latest/process/deprecated.html#zero-length-and-one-element-arrays
+> [3] https://github.com/KSPP/linux/issues/78
+> 
+> Fixes: 9f599f351e86 ("media: amphion: add vpu core driver")
+> Cc: Ming Qian <ming.qian@nxp.com>
+> Cc: Shijie Qin <shijie.qin@nxp.com>
+> Cc: Zhou Peng <eagle.zhou@nxp.com>
+> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+> Cc: Gustavo A. R. Silva <gustavoars@kernel.org>
+> Cc: linux-media@vger.kernel.org
+> Signed-off-by: Kees Cook <keescook@chromium.org>
+> ---
+>  drivers/media/platform/amphion/vpu_dbg.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/media/platform/amphion/vpu_dbg.c b/drivers/media/platform/amphion/vpu_dbg.c
+> index da62bd718fb8..f72c8a506b22 100644
+> --- a/drivers/media/platform/amphion/vpu_dbg.c
+> +++ b/drivers/media/platform/amphion/vpu_dbg.c
+> @@ -27,7 +27,7 @@ struct print_buf_desc {
+>  	u32 bytes;
+>  	u32 read;
+>  	u32 write;
+> -	char buffer[0];
+> +	char buffer[];
+>  };
+>  
+>  static char *vb2_stat_name[] = {
+> -- 
+> 2.32.0
+> 
 
-Memory allocated during new cpu cgroup creation
-(with enabled RT_GROUP_SCHED):
-common part:    ~11Kb   +   318 bytes percpu
-cpu cgroup:     ~2.5Kb  + ~2800 bytes percpu
+Hi,
+Looks good to me, thanks.
 
-Accounting for this memory helps to avoid misuse inside memcg-limited
-containers.
+Reviewed-by: Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
 
-Signed-off-by: Vasily Averin <vvs@openvz.org>
-Acked-by: Shakeel Butt <shakeelb@google.com>
-Acked-by: Roman Gushchin <roman.gushchin@linux.dev>
----
- kernel/sched/rt.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
-index 8c9ed9664840..44a8fc096e33 100644
---- a/kernel/sched/rt.c
-+++ b/kernel/sched/rt.c
-@@ -256,7 +256,7 @@ int alloc_rt_sched_group(struct task_group *tg, struct task_group *parent)
- 
- 	for_each_possible_cpu(i) {
- 		rt_rq = kzalloc_node(sizeof(struct rt_rq),
--				     GFP_KERNEL, cpu_to_node(i));
-+				     GFP_KERNEL_ACCOUNT, cpu_to_node(i));
- 		if (!rt_rq)
- 			goto err;
- 
 -- 
-2.36.1
+Tommaso Merciai
+Embedded Linux Engineer
+tommaso.merciai@amarulasolutions.com
+__________________________________
 
+Amarula Solutions SRL
+Via Le Canevare 30, 31100 Treviso, Veneto, IT
+T. +39 042 243 5310
+info@amarulasolutions.com
+www.amarulasolutions.com
