@@ -2,140 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F42AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 08:07:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A69FEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 08:08:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231709AbiE3IHF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 04:07:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52852 "EHLO
+        id S232012AbiE3IIy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 04:08:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230147AbiE3IHD (ORCPT
+        with ESMTP id S229839AbiE3IIx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 04:07:03 -0400
-Received: from mail-qv1-f48.google.com (mail-qv1-f48.google.com [209.85.219.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A8A13ED14;
-        Mon, 30 May 2022 01:07:01 -0700 (PDT)
-Received: by mail-qv1-f48.google.com with SMTP id c12so201699qvr.3;
-        Mon, 30 May 2022 01:07:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8KDfY4dQwlNAmncMm2pCzSPhY1XaCkL0xC+jiRDhr8M=;
-        b=LTq8DnzHn6yKSWk8PoN1MwJeeQ3Vmev33gp39evw9XWNo/AEAm4BmbDSDZNDfuLjzt
-         JdGIN8IPeoap11URDNeHrLj2dc43j6Ymi/FPKXizrIsDs5ry3gl2oKTVtTU4mGidV/iB
-         zyiaXfzFVfeu6KzfGXduVm1vAbDSGxK5jd+yTQM5Wh/y6XDQPhJoHo03nk0C37/TBpwE
-         mzOwDrLvas/YqOBROfucF2enGiuJvGPw/5E1xvpGam/Y/iOIy0CK1aukqdJpAO/CKpGh
-         Hbc1TA4esyO4zZa5ZLjPkHpdZxulm9A53Gz+IK/Mg3+idEX/XX5pFZTq0As6TymRxEKC
-         rtDQ==
-X-Gm-Message-State: AOAM533SnqwQ9VFtij2zOf/AwaftrFMGL86/mBtc/RLcyCBETTGbt7mz
-        caS14UijSmlY3L9c7M2Zco5mJnGwPza7XA==
-X-Google-Smtp-Source: ABdhPJwOokFmvwRP4f/heywtDP1NBeu1tI/Qgnw40bnTUuzIZIVwhcBJkLKZFcVqMFlqkVNsr1Wigw==
-X-Received: by 2002:a05:6214:f02:b0:462:2876:2938 with SMTP id gw2-20020a0562140f0200b0046228762938mr34846494qvb.116.1653898020068;
-        Mon, 30 May 2022 01:07:00 -0700 (PDT)
-Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com. [209.85.219.179])
-        by smtp.gmail.com with ESMTPSA id c17-20020a05620a269100b006a37eb728cfsm7307904qkp.1.2022.05.30.01.06.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 30 May 2022 01:06:59 -0700 (PDT)
-Received: by mail-yb1-f179.google.com with SMTP id x137so17758365ybg.5;
-        Mon, 30 May 2022 01:06:58 -0700 (PDT)
-X-Received: by 2002:a25:7307:0:b0:65c:b98a:f592 with SMTP id
- o7-20020a257307000000b0065cb98af592mr6483502ybc.380.1653898018583; Mon, 30
- May 2022 01:06:58 -0700 (PDT)
+        Mon, 30 May 2022 04:08:53 -0400
+Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9EF0644F7
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 01:08:48 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R801e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=hsiangkao@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VEkLGFr_1653898123;
+Received: from B-P7TQMD6M-0146.local(mailfrom:hsiangkao@linux.alibaba.com fp:SMTPD_---0VEkLGFr_1653898123)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Mon, 30 May 2022 16:08:45 +0800
+Date:   Mon, 30 May 2022 16:08:43 +0800
+From:   Gao Xiang <hsiangkao@linux.alibaba.com>
+To:     Weizhao Ouyang <o451686892@gmail.com>
+Cc:     Gao Xiang <xiang@kernel.org>, Chao Yu <chao@kernel.org>,
+        Yue Hu <huyue2@coolpad.com>, linux-erofs@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] erofs: fix 'backmost' member of
+ z_erofs_decompress_frontend
+Message-ID: <YpR7izQ0H0DWaHzA@B-P7TQMD6M-0146.local>
+References: <20220530075114.918874-1-o451686892@gmail.com>
 MIME-Version: 1.0
-References: <164978679251.2361020.5856734256126725993.stgit@djiang5-desk3.ch.intel.com>
-In-Reply-To: <164978679251.2361020.5856734256126725993.stgit@djiang5-desk3.ch.intel.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 30 May 2022 10:06:39 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdVjDTAW-84c9Fh21f_GWOhnD4+VW2nqSTQ6EK-m+KG=vQ@mail.gmail.com>
-Message-ID: <CAMuHMdVjDTAW-84c9Fh21f_GWOhnD4+VW2nqSTQ6EK-m+KG=vQ@mail.gmail.com>
-Subject: Re: [PATCH] dmaengine: add verification of DMA_INTERRUPT capability
- for dmatest
-To:     Dave Jiang <dave.jiang@intel.com>, Vinod <vkoul@kernel.org>
-Cc:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        dmaengine <dmaengine@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220530075114.918874-1-o451686892@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Dave, Vinod,
+On Mon, May 30, 2022 at 03:51:14PM +0800, Weizhao Ouyang wrote:
+> Initialize 'backmost' to true in DECOMPRESS_FRONTEND_INIT.
+> 
+> Fixes: 5c6dcc57e2e5 ("erofs: get rid of `struct z_erofs_collector'")
+> Signed-off-by: Weizhao Ouyang <o451686892@gmail.com>
 
-On Wed, Apr 13, 2022 at 12:58 AM Dave Jiang <dave.jiang@intel.com> wrote:
-> Looks like I forgot to add DMA_INTERRUPT cap setting to the idxd driver and
-> dmatest is still working regardless of this mistake. Add an explicit check
-> of DMA_INTERRUPT capability for dmatest to make sure the DMA device being used
-> actually supports interrupt before the test is launched and also that the
-> driver is programmed correctly.
->
-> Signed-off-by: Dave Jiang <dave.jiang@intel.com>
 
-Thanks for your patch, which is now commit a8facc7b988599f8
-("dmaengine: add verification of DMA_INTERRUPT capability for
-dmatest") upstream.
+Many thanks for the in-time catching! ;)
 
-> --- a/drivers/dma/dmatest.c
-> +++ b/drivers/dma/dmatest.c
-> @@ -675,10 +675,16 @@ static int dmatest_func(void *data)
->         /*
->          * src and dst buffers are freed by ourselves below
->          */
-> -       if (params->polled)
-> +       if (params->polled) {
->                 flags = DMA_CTRL_ACK;
-> -       else
-> -               flags = DMA_CTRL_ACK | DMA_PREP_INTERRUPT;
-> +       } else {
-> +               if (dma_has_cap(DMA_INTERRUPT, dev->cap_mask)) {
-> +                       flags = DMA_CTRL_ACK | DMA_PREP_INTERRUPT;
-> +               } else {
-> +                       pr_err("Channel does not support interrupt!\n");
-> +                       goto err_pq_array;
-> +               }
-> +       }
->
->         ktime = ktime_get();
->         while (!(kthread_should_stop() ||
-> @@ -906,6 +912,7 @@ static int dmatest_func(void *data)
+Reviewed-by: Gao Xiang <hsiangkao@linux.alibaba.com>
 
-Shimoda-san reports that this commit breaks dmatest on rcar-dmac.
-Like most DMA engine drivers, rcar-dmac does not set the DMA_INTERRUPT
-capability flag, hence dmatest now fails to start:
+Thanks,
+Gao Xiang
 
-    dmatest: Channel does not support interrupt!
-
-To me, it looks like the new check is bogus, as I believe it confuses
-two different concepts:
-
-  1. Documentation/driver-api/dmaengine/provider.rst says:
-
-       - DMA_INTERRUPT
-
-         - The device is able to trigger a dummy transfer that will
-           generate periodic interrupts
-
-  2. In non-polled mode, dmatest sets DMA_PREP_INTERRUPT.
-     include/linux/dmaengine.h says:
-
-       * @DMA_PREP_INTERRUPT - trigger an interrupt (callback) upon
-completion of
-       *  this transaction
-
-As dmatest uses real transfers, I think it does not depend on
-the ability to use interrupts from dummy transfers.
-
-Do you agree?
-Thanks!
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+> ---
+>  fs/erofs/zdata.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/fs/erofs/zdata.c b/fs/erofs/zdata.c
+> index 95efc127b2ba..94d2cb970644 100644
+> --- a/fs/erofs/zdata.c
+> +++ b/fs/erofs/zdata.c
+> @@ -214,7 +214,7 @@ struct z_erofs_decompress_frontend {
+>  
+>  #define DECOMPRESS_FRONTEND_INIT(__i) { \
+>  	.inode = __i, .owned_head = Z_EROFS_PCLUSTER_TAIL, \
+> -	.mode = COLLECT_PRIMARY_FOLLOWED }
+> +	.mode = COLLECT_PRIMARY_FOLLOWED, .backmost = true }
+>  
+>  static struct page *z_pagemap_global[Z_EROFS_VMAP_GLOBAL_PAGES];
+>  static DEFINE_MUTEX(z_pagemap_global_lock);
+> -- 
+> 2.34.1
