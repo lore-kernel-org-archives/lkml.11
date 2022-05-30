@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C590C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:42:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20301C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:42:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237892AbiE3Nmf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:42:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47476 "EHLO
+        id S232665AbiE3Nmj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:42:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238095AbiE3NgF (ORCPT
+        with ESMTP id S237554AbiE3Nf2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:36:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FC4598096;
-        Mon, 30 May 2022 06:29:46 -0700 (PDT)
+        Mon, 30 May 2022 09:35:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38334939A3;
+        Mon, 30 May 2022 06:28:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9B2E2B80DAC;
-        Mon, 30 May 2022 13:29:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67F3CC36AE3;
-        Mon, 30 May 2022 13:29:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C6D7460DD4;
+        Mon, 30 May 2022 13:28:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC635C385B8;
+        Mon, 30 May 2022 13:28:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917383;
-        bh=o882i/Fwuefe4ZEUm5K6yWjxmkM/x190IqhzUQdH+N8=;
+        s=k20201202; t=1653917308;
+        bh=HQF46pET341uvIM6dclJ+MRdmoa7RzWaMYRR/mwcVOs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g0z3KTw+6psPj+DiSG7w/aKm8RJuRTxg8cVa2lxtxB4OrnwrcnS6WrJkj+4YVFPcN
-         tlTvtZIS3eJpPC/zh45m5iXPG6syjdvMI6YVkZ5x6rLGcPrmyh+AK2/Uee6j6q52Md
-         cI6ECjc0tixLhcOQJ4wFboWqhljr356UN739j+aHcMyLsX/v3LQWMtDcC0CfZPRXOe
-         POzrcvFH5ik0mJ8oW1Mou8kraeOOi0Zce0ATiN6Dp+72PH3ctz4lQ4p1fp84DACg7h
-         KA5zn6JMUapNxJRtuZmnooykPxp6K7ucgaRg6lTLRfZ2bzrAqZbUeXSmNLqLYLTr0g
-         oVJd9RR9d2i6A==
+        b=IqxGvW94lUrmk6erj8b1q6sR1tTKbhMxJitgLvVPUfkfiQg2dS2vwVsJEGtQCXmwQ
+         1C8txWGl1Ff9T+fFyqK9EW6BPCcGCNN0/0YQO2AYxC/R8sJAWIHO243m+O0xtFnmA8
+         xGM41Nk716ythmzVsMM7AzufIMSVrAPoU6B0JkXeBzpCjTeh8icwj0t9SGq0iTjWBL
+         xXNRVSA5xgl2vJAF4k/h6SJKM++xCGR/gUj6ghJbAcx1atpRm4uFZbtX4xBOFHnSeE
+         IMIgoZGwR+wl3Gn4mVZ4kcfV7KqmY2evr3lKMmORTUz87cN+IJ8R3ug5/nhc+W1Ffc
+         SnSWB1ifT68GA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        syzbot <syzbot+c558267ad910fc494497@syzkaller.appspotmail.com>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Sean Young <sean@mess.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 116/159] media: imon: reorganize serialization
-Date:   Mon, 30 May 2022 09:23:41 -0400
-Message-Id: <20220530132425.1929512-116-sashal@kernel.org>
+Cc:     Gavin Li <gavinl@nvidia.com>, Moshe Shemesh <moshe@nvidia.com>,
+        Shay Drory <shayd@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        amirtz@nvidia.com, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 090/159] net/mlx5: Increase FW pre-init timeout for health recovery
+Date:   Mon, 30 May 2022 09:23:15 -0400
+Message-Id: <20220530132425.1929512-90-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
@@ -54,341 +55,196 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+From: Gavin Li <gavinl@nvidia.com>
 
-[ Upstream commit db264d4c66c0fe007b5d19fd007707cd0697603d ]
+[ Upstream commit 37ca95e62ee23fa6d2c2c64e3dc40b4a0c0146dc ]
 
-Since usb_register_dev() from imon_init_display() from imon_probe() holds
-minor_rwsem while display_open() which holds driver_lock and ictx->lock is
-called with minor_rwsem held from usb_open(), holding driver_lock or
-ictx->lock when calling usb_register_dev() causes circular locking
-dependency problem.
+Currently, health recovery will reload driver to recover it from fatal
+errors. During the driver's load process, it would wait for FW to set the
+pre-init bit for up to 120 seconds, beyond this threshold it would abort
+the load process. In some cases, such as a FW upgrade on the DPU, this
+timeout period is insufficient, and the user has no way to recover the
+host device.
 
-Since usb_deregister_dev() from imon_disconnect() holds minor_rwsem while
-display_open() which holds driver_lock is called with minor_rwsem held,
-holding driver_lock when calling usb_deregister_dev() also causes circular
-locking dependency problem.
+To solve this issue, introduce a new FW pre-init timeout for health
+recovery, which is set to 2 hours.
 
-Sean Young explained that the problem is there are imon devices which have
-two usb interfaces, even though it is one device. The probe and disconnect
-function of both usb interfaces can run concurrently.
+The timeout for devlink reload and probe will use the original one because
+they are user triggered flows, and therefore should not have a
+significantly long timeout, during which the user command would hang.
 
-Alan Stern responded that the driver and USB cores guarantee that when an
-interface is probed, both the interface and its USB device are locked.
-Ditto for when the disconnect callback gets run. So concurrent probing/
-disconnection of multiple interfaces on the same device is not possible.
-
-Therefore, we don't need locks for handling race between imon_probe() and
-imon_disconnect(). But we still need to handle race between display_open()
-/vfd_write()/lcd_write()/display_close() and imon_disconnect(), for
-disconnect event can happen while file descriptors are in use.
-
-Since "struct file"->private_data is set by display_open(), vfd_write()/
-lcd_write()/display_close() can assume that "struct file"->private_data
-is not NULL even after usb_set_intfdata(interface, NULL) was called.
-
-Replace insufficiently held driver_lock with refcount_t based management.
-Add a boolean flag for recording whether imon_disconnect() was already
-called. Use RCU for accessing this boolean flag and refcount_t.
-
-Since the boolean flag for imon_disconnect() is shared, disconnect event
-on either intf0 or intf1 affects both interfaces. But I assume that this
-change does not matter, for usually disconnect event would not happen
-while interfaces are in use.
-
-Link: https://syzkaller.appspot.com/bug?extid=c558267ad910fc494497
-
-Reported-by: syzbot <syzbot+c558267ad910fc494497@syzkaller.appspotmail.com>
-Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Tested-by: syzbot <syzbot+c558267ad910fc494497@syzkaller.appspotmail.com>
-Cc: Alan Stern <stern@rowland.harvard.edu>
-Signed-off-by: Sean Young <sean@mess.org>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Gavin Li <gavinl@nvidia.com>
+Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
+Reviewed-by: Shay Drory <shayd@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/rc/imon.c | 99 +++++++++++++++++++----------------------
- 1 file changed, 47 insertions(+), 52 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/devlink.c |  4 ++--
+ .../ethernet/mellanox/mlx5/core/fw_reset.c    |  2 +-
+ .../ethernet/mellanox/mlx5/core/lib/tout.c    |  1 +
+ .../ethernet/mellanox/mlx5/core/lib/tout.h    |  1 +
+ .../net/ethernet/mellanox/mlx5/core/main.c    | 23 +++++++++++--------
+ .../ethernet/mellanox/mlx5/core/mlx5_core.h   |  2 +-
+ 6 files changed, 20 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/media/rc/imon.c b/drivers/media/rc/imon.c
-index 54da6f60079b..ab090663f975 100644
---- a/drivers/media/rc/imon.c
-+++ b/drivers/media/rc/imon.c
-@@ -153,6 +153,24 @@ struct imon_context {
- 	const struct imon_usb_dev_descr *dev_descr;
- 					/* device description with key */
- 					/* table for front panels */
-+	/*
-+	 * Fields for deferring free_imon_context().
-+	 *
-+	 * Since reference to "struct imon_context" is stored into
-+	 * "struct file"->private_data, we need to remember
-+	 * how many file descriptors might access this "struct imon_context".
-+	 */
-+	refcount_t users;
-+	/*
-+	 * Use a flag for telling display_open()/vfd_write()/lcd_write() that
-+	 * imon_disconnect() was already called.
-+	 */
-+	bool disconnected;
-+	/*
-+	 * We need to wait for RCU grace period in order to allow
-+	 * display_open() to safely check ->disconnected and increment ->users.
-+	 */
-+	struct rcu_head rcu;
- };
- 
- #define TOUCH_TIMEOUT	(HZ/30)
-@@ -160,18 +178,18 @@ struct imon_context {
- /* vfd character device file operations */
- static const struct file_operations vfd_fops = {
- 	.owner		= THIS_MODULE,
--	.open		= &display_open,
--	.write		= &vfd_write,
--	.release	= &display_close,
-+	.open		= display_open,
-+	.write		= vfd_write,
-+	.release	= display_close,
- 	.llseek		= noop_llseek,
- };
- 
- /* lcd character device file operations */
- static const struct file_operations lcd_fops = {
- 	.owner		= THIS_MODULE,
--	.open		= &display_open,
--	.write		= &lcd_write,
--	.release	= &display_close,
-+	.open		= display_open,
-+	.write		= lcd_write,
-+	.release	= display_close,
- 	.llseek		= noop_llseek,
- };
- 
-@@ -439,9 +457,6 @@ static struct usb_driver imon_driver = {
- 	.id_table	= imon_usb_id_table,
- };
- 
--/* to prevent races between open() and disconnect(), probing, etc */
--static DEFINE_MUTEX(driver_lock);
--
- /* Module bookkeeping bits */
- MODULE_AUTHOR(MOD_AUTHOR);
- MODULE_DESCRIPTION(MOD_DESC);
-@@ -481,9 +496,11 @@ static void free_imon_context(struct imon_context *ictx)
- 	struct device *dev = ictx->dev;
- 
- 	usb_free_urb(ictx->tx_urb);
-+	WARN_ON(ictx->dev_present_intf0);
- 	usb_free_urb(ictx->rx_urb_intf0);
-+	WARN_ON(ictx->dev_present_intf1);
- 	usb_free_urb(ictx->rx_urb_intf1);
--	kfree(ictx);
-+	kfree_rcu(ictx, rcu);
- 
- 	dev_dbg(dev, "%s: iMON context freed\n", __func__);
- }
-@@ -499,9 +516,6 @@ static int display_open(struct inode *inode, struct file *file)
- 	int subminor;
- 	int retval = 0;
- 
--	/* prevent races with disconnect */
--	mutex_lock(&driver_lock);
--
- 	subminor = iminor(inode);
- 	interface = usb_find_interface(&imon_driver, subminor);
- 	if (!interface) {
-@@ -509,13 +523,16 @@ static int display_open(struct inode *inode, struct file *file)
- 		retval = -ENODEV;
- 		goto exit;
- 	}
--	ictx = usb_get_intfdata(interface);
- 
--	if (!ictx) {
-+	rcu_read_lock();
-+	ictx = usb_get_intfdata(interface);
-+	if (!ictx || ictx->disconnected || !refcount_inc_not_zero(&ictx->users)) {
-+		rcu_read_unlock();
- 		pr_err("no context found for minor %d\n", subminor);
- 		retval = -ENODEV;
- 		goto exit;
- 	}
-+	rcu_read_unlock();
- 
- 	mutex_lock(&ictx->lock);
- 
-@@ -533,8 +550,10 @@ static int display_open(struct inode *inode, struct file *file)
- 
- 	mutex_unlock(&ictx->lock);
- 
-+	if (retval && refcount_dec_and_test(&ictx->users))
-+		free_imon_context(ictx);
-+
- exit:
--	mutex_unlock(&driver_lock);
- 	return retval;
- }
- 
-@@ -544,16 +563,9 @@ static int display_open(struct inode *inode, struct file *file)
-  */
- static int display_close(struct inode *inode, struct file *file)
- {
--	struct imon_context *ictx = NULL;
-+	struct imon_context *ictx = file->private_data;
- 	int retval = 0;
- 
--	ictx = file->private_data;
--
--	if (!ictx) {
--		pr_err("no context for device\n");
--		return -ENODEV;
--	}
--
- 	mutex_lock(&ictx->lock);
- 
- 	if (!ictx->display_supported) {
-@@ -568,6 +580,8 @@ static int display_close(struct inode *inode, struct file *file)
- 	}
- 
- 	mutex_unlock(&ictx->lock);
-+	if (refcount_dec_and_test(&ictx->users))
-+		free_imon_context(ictx);
- 	return retval;
- }
- 
-@@ -934,15 +948,12 @@ static ssize_t vfd_write(struct file *file, const char __user *buf,
- 	int offset;
- 	int seq;
- 	int retval = 0;
--	struct imon_context *ictx;
-+	struct imon_context *ictx = file->private_data;
- 	static const unsigned char vfd_packet6[] = {
- 		0x01, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF };
- 
--	ictx = file->private_data;
--	if (!ictx) {
--		pr_err_ratelimited("no context for device\n");
-+	if (ictx->disconnected)
- 		return -ENODEV;
--	}
- 
- 	mutex_lock(&ictx->lock);
- 
-@@ -1018,13 +1029,10 @@ static ssize_t lcd_write(struct file *file, const char __user *buf,
- 			 size_t n_bytes, loff_t *pos)
- {
- 	int retval = 0;
--	struct imon_context *ictx;
-+	struct imon_context *ictx = file->private_data;
- 
--	ictx = file->private_data;
--	if (!ictx) {
--		pr_err_ratelimited("no context for device\n");
-+	if (ictx->disconnected)
- 		return -ENODEV;
--	}
- 
- 	mutex_lock(&ictx->lock);
- 
-@@ -2404,7 +2412,6 @@ static int imon_probe(struct usb_interface *interface,
- 	int ifnum, sysfs_err;
- 	int ret = 0;
- 	struct imon_context *ictx = NULL;
--	struct imon_context *first_if_ctx = NULL;
- 	u16 vendor, product;
- 
- 	usbdev     = usb_get_dev(interface_to_usbdev(interface));
-@@ -2416,17 +2423,12 @@ static int imon_probe(struct usb_interface *interface,
- 	dev_dbg(dev, "%s: found iMON device (%04x:%04x, intf%d)\n",
- 		__func__, vendor, product, ifnum);
- 
--	/* prevent races probing devices w/multiple interfaces */
--	mutex_lock(&driver_lock);
--
- 	first_if = usb_ifnum_to_if(usbdev, 0);
- 	if (!first_if) {
- 		ret = -ENODEV;
- 		goto fail;
- 	}
- 
--	first_if_ctx = usb_get_intfdata(first_if);
--
- 	if (ifnum == 0) {
- 		ictx = imon_init_intf0(interface, id);
- 		if (!ictx) {
-@@ -2434,9 +2436,11 @@ static int imon_probe(struct usb_interface *interface,
- 			ret = -ENODEV;
- 			goto fail;
- 		}
-+		refcount_set(&ictx->users, 1);
- 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+index 057dde6f4417..9401127fb0ec 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+@@ -178,13 +178,13 @@ static int mlx5_devlink_reload_up(struct devlink *devlink, enum devlink_reload_a
+ 	*actions_performed = BIT(action);
+ 	switch (action) {
+ 	case DEVLINK_RELOAD_ACTION_DRIVER_REINIT:
+-		return mlx5_load_one(dev);
++		return mlx5_load_one(dev, false);
+ 	case DEVLINK_RELOAD_ACTION_FW_ACTIVATE:
+ 		if (limit == DEVLINK_RELOAD_LIMIT_NO_RESET)
+ 			break;
+ 		/* On fw_activate action, also driver is reloaded and reinit performed */
+ 		*actions_performed |= BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT);
+-		return mlx5_load_one(dev);
++		return mlx5_load_one(dev, false);
+ 	default:
+ 		/* Unsupported action should not get to this function */
+ 		WARN_ON(1);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
+index 81eb67fb95b0..052af4901c0b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
+@@ -149,7 +149,7 @@ static void mlx5_fw_reset_complete_reload(struct mlx5_core_dev *dev)
+ 	if (test_bit(MLX5_FW_RESET_FLAGS_PENDING_COMP, &fw_reset->reset_flags)) {
+ 		complete(&fw_reset->done);
  	} else {
- 		/* this is the secondary interface on the device */
-+		struct imon_context *first_if_ctx = usb_get_intfdata(first_if);
+-		mlx5_load_one(dev);
++		mlx5_load_one(dev, false);
+ 		devlink_remote_reload_actions_performed(priv_to_devlink(dev), 0,
+ 							BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT) |
+ 							BIT(DEVLINK_RELOAD_ACTION_FW_ACTIVATE));
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c
+index c1df0d3595d8..d758848d34d0 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c
+@@ -10,6 +10,7 @@ struct mlx5_timeouts {
  
- 		/* fail early if first intf failed to register */
- 		if (!first_if_ctx) {
-@@ -2450,14 +2454,13 @@ static int imon_probe(struct usb_interface *interface,
- 			ret = -ENODEV;
- 			goto fail;
- 		}
-+		refcount_inc(&ictx->users);
+ static const u32 tout_def_sw_val[MAX_TIMEOUT_TYPES] = {
+ 	[MLX5_TO_FW_PRE_INIT_TIMEOUT_MS] = 120000,
++	[MLX5_TO_FW_PRE_INIT_ON_RECOVERY_TIMEOUT_MS] = 7200000,
+ 	[MLX5_TO_FW_PRE_INIT_WARN_MESSAGE_INTERVAL_MS] = 20000,
+ 	[MLX5_TO_FW_PRE_INIT_WAIT_MS] = 2,
+ 	[MLX5_TO_FW_INIT_MS] = 2000,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h b/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h
+index 1c42ead782fa..257c03eeab36 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h
+@@ -7,6 +7,7 @@
+ enum mlx5_timeouts_types {
+ 	/* pre init timeouts (not read from FW) */
+ 	MLX5_TO_FW_PRE_INIT_TIMEOUT_MS,
++	MLX5_TO_FW_PRE_INIT_ON_RECOVERY_TIMEOUT_MS,
+ 	MLX5_TO_FW_PRE_INIT_WARN_MESSAGE_INTERVAL_MS,
+ 	MLX5_TO_FW_PRE_INIT_WAIT_MS,
  
- 	}
- 
- 	usb_set_intfdata(interface, ictx);
- 
- 	if (ifnum == 0) {
--		mutex_lock(&ictx->lock);
--
- 		if (product == 0xffdc && ictx->rf_device) {
- 			sysfs_err = sysfs_create_group(&interface->dev.kobj,
- 						       &imon_rf_attr_group);
-@@ -2468,21 +2471,17 @@ static int imon_probe(struct usb_interface *interface,
- 
- 		if (ictx->display_supported)
- 			imon_init_display(ictx, interface);
--
--		mutex_unlock(&ictx->lock);
- 	}
- 
- 	dev_info(dev, "iMON device (%04x:%04x, intf%d) on usb<%d:%d> initialized\n",
- 		 vendor, product, ifnum,
- 		 usbdev->bus->busnum, usbdev->devnum);
- 
--	mutex_unlock(&driver_lock);
- 	usb_put_dev(usbdev);
- 
- 	return 0;
- 
- fail:
--	mutex_unlock(&driver_lock);
- 	usb_put_dev(usbdev);
- 	dev_err(dev, "unable to register, err %d\n", ret);
- 
-@@ -2498,10 +2497,8 @@ static void imon_disconnect(struct usb_interface *interface)
- 	struct device *dev;
- 	int ifnum;
- 
--	/* prevent races with multi-interface device probing and display_open */
--	mutex_lock(&driver_lock);
--
- 	ictx = usb_get_intfdata(interface);
-+	ictx->disconnected = true;
- 	dev = ictx->dev;
- 	ifnum = interface->cur_altsetting->desc.bInterfaceNumber;
- 
-@@ -2542,11 +2539,9 @@ static void imon_disconnect(struct usb_interface *interface)
- 		}
- 	}
- 
--	if (!ictx->dev_present_intf0 && !ictx->dev_present_intf1)
-+	if (refcount_dec_and_test(&ictx->users))
- 		free_imon_context(ictx);
- 
--	mutex_unlock(&driver_lock);
--
- 	dev_dbg(dev, "%s: iMON device (intf%d) disconnected\n",
- 		__func__, ifnum);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+index ef196cb764e2..8b5263699994 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+@@ -1014,7 +1014,7 @@ static void mlx5_cleanup_once(struct mlx5_core_dev *dev)
+ 	mlx5_devcom_unregister_device(dev->priv.devcom);
  }
+ 
+-static int mlx5_function_setup(struct mlx5_core_dev *dev, bool boot)
++static int mlx5_function_setup(struct mlx5_core_dev *dev, u64 timeout)
+ {
+ 	int err;
+ 
+@@ -1029,11 +1029,11 @@ static int mlx5_function_setup(struct mlx5_core_dev *dev, bool boot)
+ 
+ 	/* wait for firmware to accept initialization segments configurations
+ 	 */
+-	err = wait_fw_init(dev, mlx5_tout_ms(dev, FW_PRE_INIT_TIMEOUT),
++	err = wait_fw_init(dev, timeout,
+ 			   mlx5_tout_ms(dev, FW_PRE_INIT_WARN_MESSAGE_INTERVAL));
+ 	if (err) {
+ 		mlx5_core_err(dev, "Firmware over %llu MS in pre-initializing state, aborting\n",
+-			      mlx5_tout_ms(dev, FW_PRE_INIT_TIMEOUT));
++			      timeout);
+ 		return err;
+ 	}
+ 
+@@ -1296,7 +1296,7 @@ int mlx5_init_one(struct mlx5_core_dev *dev)
+ 	mutex_lock(&dev->intf_state_mutex);
+ 	dev->state = MLX5_DEVICE_STATE_UP;
+ 
+-	err = mlx5_function_setup(dev, true);
++	err = mlx5_function_setup(dev, mlx5_tout_ms(dev, FW_PRE_INIT_TIMEOUT));
+ 	if (err)
+ 		goto err_function;
+ 
+@@ -1360,9 +1360,10 @@ void mlx5_uninit_one(struct mlx5_core_dev *dev)
+ 	mutex_unlock(&dev->intf_state_mutex);
+ }
+ 
+-int mlx5_load_one(struct mlx5_core_dev *dev)
++int mlx5_load_one(struct mlx5_core_dev *dev, bool recovery)
+ {
+ 	int err = 0;
++	u64 timeout;
+ 
+ 	mutex_lock(&dev->intf_state_mutex);
+ 	if (test_bit(MLX5_INTERFACE_STATE_UP, &dev->intf_state)) {
+@@ -1372,7 +1373,11 @@ int mlx5_load_one(struct mlx5_core_dev *dev)
+ 	/* remove any previous indication of internal error */
+ 	dev->state = MLX5_DEVICE_STATE_UP;
+ 
+-	err = mlx5_function_setup(dev, false);
++	if (recovery)
++		timeout = mlx5_tout_ms(dev, FW_PRE_INIT_ON_RECOVERY_TIMEOUT);
++	else
++		timeout = mlx5_tout_ms(dev, FW_PRE_INIT_TIMEOUT);
++	err = mlx5_function_setup(dev, timeout);
+ 	if (err)
+ 		goto err_function;
+ 
+@@ -1746,7 +1751,7 @@ static void mlx5_pci_resume(struct pci_dev *pdev)
+ 
+ 	mlx5_pci_trace(dev, "Enter, loading driver..\n");
+ 
+-	err = mlx5_load_one(dev);
++	err = mlx5_load_one(dev, false);
+ 
+ 	mlx5_pci_trace(dev, "Done, err = %d, device %s\n", err,
+ 		       !err ? "recovered" : "Failed");
+@@ -1833,7 +1838,7 @@ static int mlx5_resume(struct pci_dev *pdev)
+ {
+ 	struct mlx5_core_dev *dev = pci_get_drvdata(pdev);
+ 
+-	return mlx5_load_one(dev);
++	return mlx5_load_one(dev, false);
+ }
+ 
+ static const struct pci_device_id mlx5_core_pci_table[] = {
+@@ -1878,7 +1883,7 @@ int mlx5_recover_device(struct mlx5_core_dev *dev)
+ 			return -EIO;
+ 	}
+ 
+-	return mlx5_load_one(dev);
++	return mlx5_load_one(dev, true);
+ }
+ 
+ static struct pci_driver mlx5_core_driver = {
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
+index a9b2d6ead542..9026be1d6223 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
+@@ -290,7 +290,7 @@ void mlx5_mdev_uninit(struct mlx5_core_dev *dev);
+ int mlx5_init_one(struct mlx5_core_dev *dev);
+ void mlx5_uninit_one(struct mlx5_core_dev *dev);
+ void mlx5_unload_one(struct mlx5_core_dev *dev);
+-int mlx5_load_one(struct mlx5_core_dev *dev);
++int mlx5_load_one(struct mlx5_core_dev *dev, bool recovery);
+ 
+ int mlx5_vport_get_other_func_cap(struct mlx5_core_dev *dev, u16 function_id, void *out);
+ 
 -- 
 2.35.1
 
