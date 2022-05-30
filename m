@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D52AC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA063C4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:38:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242599AbiE3Ohg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:37:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44476 "EHLO
+        id S242798AbiE3Ohx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:37:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237117AbiE3OSs (ORCPT
+        with ESMTP id S239573AbiE3OSu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:18:48 -0400
+        Mon, 30 May 2022 10:18:50 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA6DC1216D4;
-        Mon, 30 May 2022 06:49:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D6C8122B4C;
+        Mon, 30 May 2022 06:49:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5870860F78;
-        Mon, 30 May 2022 13:49:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88BC2C3411A;
-        Mon, 30 May 2022 13:49:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BC90660FD6;
+        Mon, 30 May 2022 13:49:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4428C3411E;
+        Mon, 30 May 2022 13:49:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918575;
-        bh=b/eYfqDfghSAlPhMkLttJb74GphkTYqZRKExQsySGw4=;
+        s=k20201202; t=1653918553;
+        bh=AF0zBlv4K65o/Q7PnxvPyyw9KqF09vTd9402ZLCM7ks=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ggm3aMiryBoVI3OiLeZvp1u0WxNJCq0EqMEG8HWpn50wcjMMSbTZlbOE7kgdkFCpx
-         hl8V65XAtKio6RwL4iMchCWfsaPU9IaPPcIcFPFUXm8k3MO272xg3nx17n3GdkuF2X
-         rgxJQQiifOvg+bZSTpA646YPBHiUaydpVILQSeqMIc53WBjJXRfU/Ad2hlGhjybDgi
-         ag4yIa6qv3j4LdteHJ4aAMnez/i3yD/FhhU3jzVM4IFiaue7ZxYs/4jILM7A68bJK+
-         VvNbx0ryJQI2X6hGPj1AYqe5BEs4VA/BwWg5G+2fjRxbl8GHgHgN98oYG0NJnjhRLa
-         TwrezGOtNUA/Q==
+        b=eciy1RJIoi8Rzhj1pFLNm3sScKuYWf4qm0XfD4rrJBlkMYfbNFgKZbI//OagzcN8q
+         p56sWESviAHhfDJRrBoZNCzNd31sI201Yz4vQBtXaVMN5muK647S04X4uxIskkZ3vn
+         JOxkK/ApvLPDiOCPWmpClm+hX4xHxIY/lWTU85wej436EEhomGFK7FVRBbWhiYfkWE
+         8Fi421BZ2RghG83qvMdUVzF/MZ+Pk64JIJH1rGhsEUHaNdBJACQy68TPhchngZ7E07
+         qPQAncJXt6K4skfCZmxr2cwWdXinBerSFXb1AifKKUmMLbSgiZszmXQcxdDJZEGGca
+         XRO0Vds3PdiIg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Haowen Bai <baihaowen@meizu.com>, Kalle Valo <kvalo@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        thunder.leizhen@huawei.com, linux-wireless@vger.kernel.org,
-        b43-dev@lists.infradead.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 04/38] b43: Fix assigning negative value to unsigned variable
-Date:   Mon, 30 May 2022 09:48:50 -0400
-Message-Id: <20220530134924.1936816-4-sashal@kernel.org>
+Cc:     Ard Biesheuvel <ardb@kernel.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
+        linus.walleij@linaro.org, nico@fluxnic.net, keithpac@amazon.com,
+        arnd@arndb.de, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.4 51/55] ARM: 9201/1: spectre-bhb: rely on linker to emit cross-section literal loads
+Date:   Mon, 30 May 2022 09:46:57 -0400
+Message-Id: <20220530134701.1935933-51-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220530134924.1936816-1-sashal@kernel.org>
-References: <20220530134924.1936816-1-sashal@kernel.org>
+In-Reply-To: <20220530134701.1935933-1-sashal@kernel.org>
+References: <20220530134701.1935933-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,35 +53,106 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haowen Bai <baihaowen@meizu.com>
+From: Ard Biesheuvel <ardb@kernel.org>
 
-[ Upstream commit 11800d893b38e0e12d636c170c1abc19c43c730c ]
+[ Upstream commit ad12c2f1587c6ec9b52ff226f438955bfae6ad89 ]
 
-fix warning reported by smatch:
-drivers/net/wireless/broadcom/b43/phy_n.c:585 b43_nphy_adjust_lna_gain_table()
-warn: assigning (-2) to unsigned variable '*(lna_gain[0])'
+The assembler does not permit 'LDR PC, <sym>' when the symbol lives in a
+different section, which is why we have been relying on rather fragile
+open-coded arithmetic to load the address of the vector_swi routine into
+the program counter using a single LDR instruction in the SWI slot in
+the vector table. The literal was moved to a different section to in
+commit 19accfd373847 ("ARM: move vector stubs") to ensure that the
+vector stubs page does not need to be mapped readable for user space,
+which is the case for the vector page itself, as it carries the kuser
+helpers as well.
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/1648203315-28093-1-git-send-email-baihaowen@meizu.com
+So the cross-section literal load is open-coded, and this relies on the
+address of vector_swi to be at the very start of the vector stubs page,
+and we won't notice if we got it wrong until booting the kernel and see
+it break. Fortunately, it was guaranteed to break, so this was fragile
+but not problematic.
+
+Now that we have added two other variants of the vector table, we have 3
+occurrences of the same trick, and so the size of our ISA/compiler/CPU
+validation space has tripled, in a way that may cause regressions to only
+be observed once booting the image in question on a CPU that exercises a
+particular vector table.
+
+So let's switch to true cross section references, and let the linker fix
+them up like it fixes up all the other cross section references in the
+vector page.
+
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/broadcom/b43/phy_n.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/kernel/entry-armv.S | 22 +++++++++++++++-------
+ 1 file changed, 15 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/wireless/broadcom/b43/phy_n.c b/drivers/net/wireless/broadcom/b43/phy_n.c
-index 88446258e775..3508a7822619 100644
---- a/drivers/net/wireless/broadcom/b43/phy_n.c
-+++ b/drivers/net/wireless/broadcom/b43/phy_n.c
-@@ -594,7 +594,7 @@ static void b43_nphy_adjust_lna_gain_table(struct b43_wldev *dev)
- 	u16 data[4];
- 	s16 gain[2];
- 	u16 minmax[2];
--	static const u16 lna_gain[4] = { -2, 10, 19, 25 };
-+	static const s16 lna_gain[4] = { -2, 10, 19, 25 };
+diff --git a/arch/arm/kernel/entry-armv.S b/arch/arm/kernel/entry-armv.S
+index 8e8efe28d799..4d900c61a0f7 100644
+--- a/arch/arm/kernel/entry-armv.S
++++ b/arch/arm/kernel/entry-armv.S
+@@ -1074,10 +1074,15 @@ ENDPROC(vector_bhb_bpiall_\name)
+ 	.endm
  
- 	if (nphy->hang_avoid)
- 		b43_nphy_stay_in_carrier_search(dev, 1);
+ 	.section .stubs, "ax", %progbits
+-	@ This must be the first word
++	@ These need to remain at the start of the section so that
++	@ they are in range of the 'SWI' entries in the vector tables
++	@ located 4k down.
++.L__vector_swi:
+ 	.word	vector_swi
+ #ifdef CONFIG_HARDEN_BRANCH_HISTORY
++.L__vector_bhb_loop8_swi:
+ 	.word	vector_bhb_loop8_swi
++.L__vector_bhb_bpiall_swi:
+ 	.word	vector_bhb_bpiall_swi
+ #endif
+ 
+@@ -1220,10 +1225,11 @@ vector_addrexcptn:
+ 	.globl	vector_fiq
+ 
+ 	.section .vectors, "ax", %progbits
+-.L__vectors_start:
+ 	W(b)	vector_rst
+ 	W(b)	vector_und
+-	W(ldr)	pc, .L__vectors_start + 0x1000
++ARM(	.reloc	., R_ARM_LDR_PC_G0, .L__vector_swi		)
++THUMB(	.reloc	., R_ARM_THM_PC12, .L__vector_swi		)
++	W(ldr)	pc, .
+ 	W(b)	vector_pabt
+ 	W(b)	vector_dabt
+ 	W(b)	vector_addrexcptn
+@@ -1232,10 +1238,11 @@ vector_addrexcptn:
+ 
+ #ifdef CONFIG_HARDEN_BRANCH_HISTORY
+ 	.section .vectors.bhb.loop8, "ax", %progbits
+-.L__vectors_bhb_loop8_start:
+ 	W(b)	vector_rst
+ 	W(b)	vector_bhb_loop8_und
+-	W(ldr)	pc, .L__vectors_bhb_loop8_start + 0x1004
++ARM(	.reloc	., R_ARM_LDR_PC_G0, .L__vector_bhb_loop8_swi	)
++THUMB(	.reloc	., R_ARM_THM_PC12, .L__vector_bhb_loop8_swi	)
++	W(ldr)	pc, .
+ 	W(b)	vector_bhb_loop8_pabt
+ 	W(b)	vector_bhb_loop8_dabt
+ 	W(b)	vector_addrexcptn
+@@ -1243,10 +1250,11 @@ vector_addrexcptn:
+ 	W(b)	vector_bhb_loop8_fiq
+ 
+ 	.section .vectors.bhb.bpiall, "ax", %progbits
+-.L__vectors_bhb_bpiall_start:
+ 	W(b)	vector_rst
+ 	W(b)	vector_bhb_bpiall_und
+-	W(ldr)	pc, .L__vectors_bhb_bpiall_start + 0x1008
++ARM(	.reloc	., R_ARM_LDR_PC_G0, .L__vector_bhb_bpiall_swi	)
++THUMB(	.reloc	., R_ARM_THM_PC12, .L__vector_bhb_bpiall_swi	)
++	W(ldr)	pc, .
+ 	W(b)	vector_bhb_bpiall_pabt
+ 	W(b)	vector_bhb_bpiall_dabt
+ 	W(b)	vector_addrexcptn
 -- 
 2.35.1
 
