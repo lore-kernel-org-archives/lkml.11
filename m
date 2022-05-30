@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39A3FC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:25:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23B10C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:25:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236663AbiE3NZU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:25:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57696 "EHLO
+        id S236749AbiE3NZ2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:25:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236631AbiE3NY4 (ORCPT
+        with ESMTP id S236636AbiE3NY4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 30 May 2022 09:24:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CC9A82171;
-        Mon, 30 May 2022 06:24:52 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57B8A82157;
+        Mon, 30 May 2022 06:24:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BC64760EC6;
-        Mon, 30 May 2022 13:24:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AA4EC3411C;
-        Mon, 30 May 2022 13:24:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ED04CB80DAF;
+        Mon, 30 May 2022 13:24:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1885C3411C;
+        Mon, 30 May 2022 13:24:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917091;
-        bh=wB+eyMgg/Fjs26R7DtFWaZpsqYjiQcyeIh3vo3CFVwU=;
+        s=k20201202; t=1653917087;
+        bh=7R34usxBQu7eJg2cIGwm/1IcqRrI7YppV2uXmYDwZpw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EU/1bkdF6+fjt53Lv5NjlBrEhrlGsEPneExzen77BbTImVfta5hutNk4yCtBTeMLn
-         zht3a/rGXJRPsbhtsdyMxA+iha5A1VEC6g/oqg1I4u6PZL6gYZSnsO9CveFkJ9GOwU
-         3YCQ9/7/YJ1j8XuDKtlWhQTZFeP6cyoPPhp7VZppRiW7iJetKa2d6DpvXGGFNYItBL
-         XRe0NOz+HpycBxgIktNnZU59hFcvF/7rakB8NmLWlv3rwl6Ff/d4Vv8TxOmAEma5RC
-         LQK8L3TrpLS1bN28YQZaLIPmwyUxW93m57cvNJfeVliz0IGTWRggxaqaSjlhrgpPRG
-         cmZQREfa//vUg==
+        b=tijY0XGkYwOuYSSbIVHvWiq5kamQCHYeHieepIoc4zq0dplJdbqvEHjR6R1s/M4uW
+         Grjk0jikPfN2Cza53LJXGW2FDUsLQUSb4j0Ft/6PCr4ZDV5n4ku6wy9A51+sJbAjKt
+         ZwZXkmTpx3lKC8GQOye78htDcVlSrHbkiAeIut969HY79XCZhd4yPvqBVuElVCqWQj
+         eLqlpEviAGMRQ6LnC4NaNZ7/7pdSuUyKxVoDWhFyLh98sA4ONrJhT8W5P8vBTOWqef
+         lZF/yFVpaeqUN9LDavcUbW9uPu7pjg6igZYaKZKZvaebxCTeXFW19BeHfHTusLMpuq
+         +yM3pNUn0SNrg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Po Hao Huang <phhuang@realtek.com>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 011/159] rtw89: fix misconfiguration on hw_scan channel time
-Date:   Mon, 30 May 2022 09:21:56 -0400
-Message-Id: <20220530132425.1929512-11-sashal@kernel.org>
+Cc:     Yuntao Wang <ytcoode@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 009/159] selftests/bpf: Fix file descriptor leak in load_kallsyms()
+Date:   Mon, 30 May 2022 09:21:54 -0400
+Message-Id: <20220530132425.1929512-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
@@ -54,35 +54,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Po Hao Huang <phhuang@realtek.com>
+From: Yuntao Wang <ytcoode@gmail.com>
 
-[ Upstream commit 65ee4971a262a024e239e5d2b7f4dee1b3dff40e ]
+[ Upstream commit 2d0df01974ce2b59b6f7d5bd3ea58d74f12ddf85 ]
 
-Without this patch, hw scan won't stay long enough on DFS/passive
-channels. Found previous logic error and fix it.
+Currently, if sym_cnt > 0, it just returns and does not close file, fix it.
 
-Signed-off-by: Po Hao Huang <phhuang@realtek.com>
-Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220401055043.12512-5-pkshih@realtek.com
+Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Link: https://lore.kernel.org/bpf/20220405145711.49543-1-ytcoode@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/realtek/rtw89/fw.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/testing/selftests/bpf/trace_helpers.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/realtek/rtw89/fw.c b/drivers/net/wireless/realtek/rtw89/fw.c
-index 6deaf8eec6b4..a9b5315a517e 100644
---- a/drivers/net/wireless/realtek/rtw89/fw.c
-+++ b/drivers/net/wireless/realtek/rtw89/fw.c
-@@ -2065,7 +2065,7 @@ static void rtw89_hw_scan_add_chan(struct rtw89_dev *rtwdev, int chan_type,
- 		ch_info->num_pkt = 0;
- 		break;
- 	case RTW89_CHAN_DFS:
--		ch_info->period = min_t(u8, ch_info->period,
-+		ch_info->period = max_t(u8, ch_info->period,
- 					RTW89_DFS_CHAN_TIME);
- 		ch_info->dwell_time = RTW89_DWELL_TIME;
- 		break;
+diff --git a/tools/testing/selftests/bpf/trace_helpers.c b/tools/testing/selftests/bpf/trace_helpers.c
+index 3d6217e3aff7..9c4be2cdb21a 100644
+--- a/tools/testing/selftests/bpf/trace_helpers.c
++++ b/tools/testing/selftests/bpf/trace_helpers.c
+@@ -25,15 +25,12 @@ static int ksym_cmp(const void *p1, const void *p2)
+ 
+ int load_kallsyms(void)
+ {
+-	FILE *f = fopen("/proc/kallsyms", "r");
++	FILE *f;
+ 	char func[256], buf[256];
+ 	char symbol;
+ 	void *addr;
+ 	int i = 0;
+ 
+-	if (!f)
+-		return -ENOENT;
+-
+ 	/*
+ 	 * This is called/used from multiplace places,
+ 	 * load symbols just once.
+@@ -41,6 +38,10 @@ int load_kallsyms(void)
+ 	if (sym_cnt)
+ 		return 0;
+ 
++	f = fopen("/proc/kallsyms", "r");
++	if (!f)
++		return -ENOENT;
++
+ 	while (fgets(buf, sizeof(buf), f)) {
+ 		if (sscanf(buf, "%p %c %s", &addr, &symbol, func) != 3)
+ 			break;
 -- 
 2.35.1
 
