@@ -2,151 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58135C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 15:36:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED24DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 15:36:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241831AbiE3PgE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 11:36:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40770 "EHLO
+        id S241840AbiE3PgJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 11:36:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242712AbiE3PfX (ORCPT
+        with ESMTP id S240809AbiE3Pey (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 11:35:23 -0400
-Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69C9614916D;
-        Mon, 30 May 2022 07:42:04 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.west.internal (Postfix) with ESMTP id 903513200645;
-        Mon, 30 May 2022 10:42:02 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute2.internal (MEProxy); Mon, 30 May 2022 10:42:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
-        cc:cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm2; t=1653921722; x=
-        1654008122; bh=I5n0iZMhvRYtVlqNaE5gXodeWKpPzOtBBF09/N8SYdo=; b=u
-        nCiFpukoiLLGljwmlJqGAHNyALbBXAsnzoSGPWQlTQ1fB+Glsl54gEspnxjnffNm
-        76aH6MNrNn1KPUtIyVwdUlsWXByhi041izCSeA3m34cGnsYOTF+jaYOx8Pl+0YZt
-        WkIOEkjK5IP+ui3p0arns2qGz0tKXyGjbdwDJ2PTu/i6KpQbsLJwpmcT+ln4oGKD
-        PNMKdfOJq1py85vL8rUaMbsc1CoO5jlgdnZhdd1mLELn/iMaGctEwdmsMpH5yS0v
-        acUh4v49x0WL4q/1H6GG1fqKVxH/AkpFowg3HlXKgp1tM9mK3CArwWUh8KIcM3yD
-        MAiuipejo7nGrc4fX1Ssg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:feedback-id:feedback-id:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1653921722; x=
-        1654008122; bh=I5n0iZMhvRYtVlqNaE5gXodeWKpPzOtBBF09/N8SYdo=; b=S
-        h/4vnGUiQadEwLFHt+V4mM8ql7zAOxHwJZOyk0d4Wa1PtM/lYQYN3XbvF2ScpM4N
-        0ko1X02PK9LbKwqAAugDY3Iwp0nR8iFn3NxJWN20VkfhJJGNLDjdTV/orSmysjeL
-        ECodXYQwAKfAk/x8SFQsnhwEORtLDdJ8ZFIZWkcu1XceYMbk4ekqoTKKDhwAWbjt
-        ZeGIeG+1stwpm3QPQeJT/gRN7153pbfZ1oSxIQhDw8DS1643CfiltPR5OjMWMEap
-        b97iw5VF8zWOAIogcfT1nMJEfwOrLyOeyumC55aDj7HTYctHH8tsfBk0Q+KtDp1D
-        Ro6/uPKdu1Yn0VeLV7xng==
-X-ME-Sender: <xms:udeUYollbMzrIHtLnAUvc5LBky07XH1VNo-4-3xb0hciP04jf_reVg>
-    <xme:udeUYn1toh2_-fbCxqgYD_nQGIOTfpDCWRyJQcxYgUMzoQ6cULMh7_lQ6keoNeFQC
-    aqpbS5ku922f2PLUQ>
-X-ME-Received: <xmr:udeUYmpEI9nXImBOVz1j26DT8Quxeb9y9Yz2bQYek4wEEL_i7DGvW64nUh9Mvzx3-WGCtZGk3Pylt7e7Bk7B5V2gEbhViuew9KR6HBbbAcjasQUt0KLG0Tg33A>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrkeeigdejiecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefuvfevfhfhkffffgggjggtgfesthejredttdefjeenucfhrhhomhepufgrmhhu
-    vghlucfjohhllhgrnhguuceoshgrmhhuvghlsehshhholhhlrghnugdrohhrgheqnecugg
-    ftrfgrthhtvghrnhepkeeiteejuedttdehgfelveevjedtkeehuedtteeiiefggffffefh
-    ueegudekkeffnecuffhomhgrihhnpehfrhgvvgguvghskhhtohhprdhorhhgnecuvehluh
-    hsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepshgrmhhuvghlsehs
-    hhholhhlrghnugdrohhrgh
-X-ME-Proxy: <xmx:udeUYknJFmbBs5-2XgJHL_PjLU_QvUeT9aowu62Em_GW_PrqT5WHmQ>
-    <xmx:udeUYm0OGwq0Pc4vbfUJZKYiQXby3BptIr62O3UjADtDrBR8bolV2g>
-    <xmx:udeUYruu3e9BvxDfjBO0QbWfjXUmwAyeLIbgJ_qa6z2U-qym0E7BOw>
-    <xmx:uteUYvsVxsDDmQ5WyR-Mus3vOsM482qZhWDWeQNBHAqORY0cAz4EsA>
-Feedback-ID: i0ad843c9:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 30 May 2022 10:42:00 -0400 (EDT)
-Subject: Re: [PATCH AUTOSEL 4.19 16/38] drm/sun4i: Add support for D1 TCONs
-To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Cc:     Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Maxime Ripard <maxime@cerno.tech>, mripard@kernel.org,
-        wens@csie.org, airlied@linux.ie, daniel@ffwll.ch,
-        dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
-References: <20220530134924.1936816-1-sashal@kernel.org>
- <20220530134924.1936816-16-sashal@kernel.org>
-From:   Samuel Holland <samuel@sholland.org>
-Message-ID: <0f81cfb5-de3c-02eb-8d6d-e5aa1b69c439@sholland.org>
-Date:   Mon, 30 May 2022 09:41:59 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        Mon, 30 May 2022 11:34:54 -0400
+Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA57D1F62D0;
+        Mon, 30 May 2022 07:39:48 -0700 (PDT)
+Received: by mail-yb1-xb2c.google.com with SMTP id z186so15087336ybz.3;
+        Mon, 30 May 2022 07:39:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PwYudAlsrV6L0E/1oct3kLnDMatMHOnVQrUxmfQHNp0=;
+        b=nJb/D6o7T7a8Mb297LS5itZxyr9hhXOWE4cI1CS2gGTaAQcWmDs6sgxITAckTcsbqO
+         aVjCnMiZTw+b4RHeeUOfs7ZZ8uhJu+9H3vrDwR8kDUeIJPmAAz+dNjR8nEL4TV+1QxDF
+         u49vwV3izHOZZjnCA/h3xEh2LMtiihGNrkHxPVvfRH9pZsq1jJB+cD3l2YcOrZE/FHV3
+         oO0LniQOktfpUCJyeRfpEKg9DDa8WBNFOctawAeqAkazISl11g4V/X/KrhW3BSqcXDpM
+         rHmuPxyGLKaHOFGx+URNH8GUTtkCZhF8UINV8Pv9mO9GCiQtRvv2jNcgvDl1QzaFiII6
+         59oQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PwYudAlsrV6L0E/1oct3kLnDMatMHOnVQrUxmfQHNp0=;
+        b=aoPXoIOYdhP8cLmwgoLQBRKqKz87uOKGoGp2WRT8WCelpPCiyjAqqm/N/1Fyaqqj7i
+         9EpRd4LnnfG24ufFc0WoLojpisWHGN5149fJqESDyTwNiG2uwu0eQ55j3mn+s0vacKHh
+         eigz2zr5Yh8gEd1LwGqWYjOvMYznSQaoEXObuJsvU3G33SBEuRsEDun2bJWXjZFjL131
+         hIJRv0sz+Yij7YJggW9sTQp/ilq/QkJjE6BMnnmeDHUBVV74KO6hwbnRUMs+N4HpgDoG
+         98KW9XWstKZleeBhmwQz/E87cIcBmRfevhNteJjJZ+lPpJnys9C2zD5ls7ugGZlOY8hb
+         5rSw==
+X-Gm-Message-State: AOAM533KDGkmo1GnxSNfa5ZeMNdzyV3mJ/ced2T/4aotX++ACxFArTVa
+        d/zufvtSTrCnNvvCZYWlZwAvgApjqI6jyDTYe7o=
+X-Google-Smtp-Source: ABdhPJwrsgLQtAtWqwcrdq2e1TjIgoIDbrErxGbmJH2wa0Fkm6oxdLbvdkS+K4BYIuwE3er69f8iVYy5UEogxMtnFeI=
+X-Received: by 2002:a25:21c3:0:b0:64a:b29a:9b0d with SMTP id
+ h186-20020a2521c3000000b0064ab29a9b0dmr54184246ybh.59.1653921585005; Mon, 30
+ May 2022 07:39:45 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20220530134924.1936816-16-sashal@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20220522155046.260146-1-tmaimon77@gmail.com> <20220522155046.260146-8-tmaimon77@gmail.com>
+ <20220526192412.8ECAAC385A9@smtp.kernel.org>
+In-Reply-To: <20220526192412.8ECAAC385A9@smtp.kernel.org>
+From:   Tomer Maimon <tmaimon77@gmail.com>
+Date:   Mon, 30 May 2022 17:39:34 +0300
+Message-ID: <CAP6Zq1gtB_kiEutV=uE30nev_S0rAjs=9BdMnqQbAbi-M1W6iQ@mail.gmail.com>
+Subject: Re: [PATCH v1 07/19] dt-binding: clk: npcm845: Add binding for
+ Nuvoton NPCM8XX Clock
+To:     Stephen Boyd <sboyd@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Avi Fishman <avifishman70@gmail.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Lubomir Rintel <lkundrak@v3.sk>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        Olof Johansson <olof@lixom.net>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Robert Hancock <robert.hancock@calian.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Patrick Venture <venture@google.com>,
+        Vinod Koul <vkoul@kernel.org>, Will Deacon <will@kernel.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Nancy Yuen <yuenn@google.com>, SoC Team <soc@kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Sasha,
+Hi Stephen,
 
-On 5/30/22 8:49 AM, Sasha Levin wrote:
-> From: Samuel Holland <samuel@sholland.org>
-> 
-> [ Upstream commit b9b52d2f4aafa2bd637ace0f24615bdad8e49f01 ]
-> 
-> D1 has a TCON TOP, so its quirks are similar to those for the R40 TCONs.
-> While there are some register changes, the part of the TCON TV supported
-> by the driver matches the R40 quirks, so that quirks structure can be
-> reused. D1 has the first supported TCON LCD with a TCON TOP, so the TCON
-> LCD needs a new quirks structure.
-> 
-> D1's TCON LCD hardware supports LVDS; in fact it provides dual-link LVDS
-> from a single TCON. However, it comes with a brand new LVDS PHY. Since
-> this PHY has not been tested, leave out LVDS driver support for now.
-> 
-> Signed-off-by: Samuel Holland <samuel@sholland.org>
-> Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-> Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-> Link: https://patchwork.freedesktop.org/patch/msgid/20220424162633.12369-14-samuel@sholland.org
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
+Thanks for your comments.
 
-This patch adds support for hardware in a SoC that will not boot on earlier
-kernel releases, so there is no benefit to backporting the patch (to any
-previous release).
+The patch will modify according to your comments and will be sent in
+the next kernel revision 5.19.rc1
 
-Regards,
-Samuel
+On Thu, 26 May 2022 at 22:24, Stephen Boyd <sboyd@kernel.org> wrote:
+>
+> Quoting Tomer Maimon (2022-05-22 08:50:34)
+> > diff --git a/Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml b/Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml
+> > new file mode 100644
+> > index 000000000000..f305c7c7eaf0
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml
+> > @@ -0,0 +1,68 @@
+> [...]
+> > +
+> > +required:
+> > +  - compatible
+> > +  - reg
+> > +  - "#clock-cells"
+>
+> Are clocks not required because sometimes the reference clk isn't
+> connected?
+require, will be fixed
+>
+> > +
+> > +additionalProperties: false
+> > +
+> > +examples:
+> > +  # Clock Control Module node:
+> > +  - |
+> > +
+> > +    ahb {
+>
+> drop ahb node please.
+>
+> > +        #address-cells = <2>;
+> > +        #size-cells = <2>;
+> > +
+> > +        clk: clock-controller@f0801000 {
+>
+> Drop label 'clk' as well please.
+>
+> > +            compatible = "nuvoton,npcm845-clk";
+> > +            reg = <0x0 0xf0801000 0x0 0x1000>;
+> > +            #clock-cells = <1>;
+> > +        };
+> > +    };
+> > +
+> > +...
 
-> ---
->  drivers/gpu/drm/sun4i/sun4i_tcon.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
-> 
-> diff --git a/drivers/gpu/drm/sun4i/sun4i_tcon.c b/drivers/gpu/drm/sun4i/sun4i_tcon.c
-> index 113c032a2720..0ebb7c1dfee6 100644
-> --- a/drivers/gpu/drm/sun4i/sun4i_tcon.c
-> +++ b/drivers/gpu/drm/sun4i/sun4i_tcon.c
-> @@ -1316,6 +1316,12 @@ static const struct sun4i_tcon_quirks sun9i_a80_tcon_tv_quirks = {
->  	.needs_edp_reset = true,
->  };
->  
-> +static const struct sun4i_tcon_quirks sun20i_d1_lcd_quirks = {
-> +	.has_channel_0		= true,
-> +	.dclk_min_div		= 1,
-> +	.set_mux		= sun8i_r40_tcon_tv_set_mux,
-> +};
-> +
->  /* sun4i_drv uses this list to check if a device node is a TCON */
->  const struct of_device_id sun4i_tcon_of_table[] = {
->  	{ .compatible = "allwinner,sun4i-a10-tcon", .data = &sun4i_a10_quirks },
-> @@ -1329,6 +1335,8 @@ const struct of_device_id sun4i_tcon_of_table[] = {
->  	{ .compatible = "allwinner,sun8i-v3s-tcon", .data = &sun8i_v3s_quirks },
->  	{ .compatible = "allwinner,sun9i-a80-tcon-lcd", .data = &sun9i_a80_tcon_lcd_quirks },
->  	{ .compatible = "allwinner,sun9i-a80-tcon-tv", .data = &sun9i_a80_tcon_tv_quirks },
-> +	{ .compatible = "allwinner,sun20i-d1-tcon-lcd", .data = &sun20i_d1_lcd_quirks },
-> +	{ .compatible = "allwinner,sun20i-d1-tcon-tv", .data = &sun8i_r40_tv_quirks },
->  	{ }
->  };
->  MODULE_DEVICE_TABLE(of, sun4i_tcon_of_table);
-> 
+Best regards,
 
+Tomer
