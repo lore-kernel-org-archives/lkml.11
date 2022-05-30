@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3FF4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:31:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93B98C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:31:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237082AbiE3NbZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:31:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58842 "EHLO
+        id S237102AbiE3Nbe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:31:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237279AbiE3NaR (ORCPT
+        with ESMTP id S237392AbiE3NaZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:30:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2583387209;
-        Mon, 30 May 2022 06:27:05 -0700 (PDT)
+        Mon, 30 May 2022 09:30:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 805F58CB26;
+        Mon, 30 May 2022 06:27:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A43060EFD;
-        Mon, 30 May 2022 13:27:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4DB7C3411E;
-        Mon, 30 May 2022 13:27:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 22E8A60EA5;
+        Mon, 30 May 2022 13:27:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A931C3411A;
+        Mon, 30 May 2022 13:27:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917224;
-        bh=SrGB3I3yImzAPCnjAlFIOW+PK3rwCwo9unqbwzwEX88=;
+        s=k20201202; t=1653917238;
+        bh=4Ka0zqH5BPXKlynHTbbm9h1V2CMI319SCy/R6j+8HWI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ttgk2oVQgUiuFtbDRV6AV+mEsGDL5nm6CQgcSG0sIi065FFxuSCuSQSoR+vl9r7ss
-         QiWOeNWCnwwB5JyCwMaKxfFqFe8B0StxE9B3ADiGntcLLyrc9ri7dJ48YC2M+MBTPj
-         ZJ/4Cgh/ppXpcD4fxKHOglMy5YlNmvNB7VjWyLLZCnf+05CgwaoX8qG3pIk5GgnBYP
-         bUP96fzB7GLbZOX5Fe2286lupA8l9f5OuK8MON2owp+tD/buzUG+E1z64PoSjkOGBs
-         P30nAlcIKtepgKr3ZpXx6aLqCc0B24nnT9MnjuSrnlF5oTd6L5nEdGXM8fhA06hEFl
-         t//Zwv8WVC7gQ==
+        b=DgcAgxtTBWnpSoDE7hm0GapGsQK6NbsnaYK6bN11VSZ51bm3iE+upRjbnoXiW53uR
+         DXl5IHxznec3sDO+wmC354UbVZGQsceaJaqsIJAnTtXpSV9UXjiR0izTuKUOQvY+S4
+         +Drp5ZufUmeelPWVjEPTlUZk7slR7C1L76LirOnTkyghmVtvfKIQmbsfspBr8vux04
+         vlBrKAYIVOtXweRrR9rO+4A+1CBNKT55oHiZ4vMVn4H/NNH0sRGZwFg2qPfsrpibmz
+         3Gq7zo0hJJzqLxoGj/5IPqTTTg+bh6vcRvj7nIAJr3+9SUFirtEFIJQXWU59AWEFUl
+         l3sAeKF9UdeSQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hari Chandrakanthan <quic_haric@quicinc.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, ath11k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 062/159] ath11k: disable spectral scan during spectral deinit
-Date:   Mon, 30 May 2022 09:22:47 -0400
-Message-Id: <20220530132425.1929512-62-sashal@kernel.org>
+Cc:     Evan Quan <evan.quan@amd.com>, kernel test robot <lkp@intel.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        lijo.lazar@amd.com, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.18 067/159] drm/amd/pm: fix the compile warning
+Date:   Mon, 30 May 2022 09:22:52 -0400
+Message-Id: <20220530132425.1929512-67-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
@@ -54,102 +54,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hari Chandrakanthan <quic_haric@quicinc.com>
+From: Evan Quan <evan.quan@amd.com>
 
-[ Upstream commit 161c64de239c7018e0295e7e0520a19f00aa32dc ]
+[ Upstream commit 555238d92ac32dbad2d77ad2bafc48d17391990c ]
 
-When ath11k modules are removed using rmmod with spectral scan enabled,
-crash is observed. Different crash trace is observed for each crash.
+Fix the compile warning below:
+drivers/gpu/drm/amd/amdgpu/../pm/legacy-dpm/kv_dpm.c:1641
+kv_get_acp_boot_level() warn: always true condition '(table->entries[i]->clk >= 0) => (0-u32max >= 0)'
 
-Send spectral scan disable WMI command to firmware before cleaning
-the spectral dbring in the spectral_deinit API to avoid this crash.
-
-call trace from one of the crash observed:
-[ 1252.880802] Unable to handle kernel NULL pointer dereference at virtual address 00000008
-[ 1252.882722] pgd = 0f42e886
-[ 1252.890955] [00000008] *pgd=00000000
-[ 1252.893478] Internal error: Oops: 5 [#1] PREEMPT SMP ARM
-[ 1253.093035] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.4.89 #0
-[ 1253.115261] Hardware name: Generic DT based system
-[ 1253.121149] PC is at ath11k_spectral_process_data+0x434/0x574 [ath11k]
-[ 1253.125940] LR is at 0x88e31017
-[ 1253.132448] pc : [<7f9387b8>]    lr : [<88e31017>]    psr: a0000193
-[ 1253.135488] sp : 80d01bc8  ip : 00000001  fp : 970e0000
-[ 1253.141737] r10: 88e31000  r9 : 970ec000  r8 : 00000080
-[ 1253.146946] r7 : 94734040  r6 : a0000113  r5 : 00000057  r4 : 00000000
-[ 1253.152159] r3 : e18cb694  r2 : 00000217  r1 : 1df1f000  r0 : 00000001
-[ 1253.158755] Flags: NzCv  IRQs off  FIQs on  Mode SVC_32  ISA ARM  Segment user
-[ 1253.165266] Control: 10c0383d  Table: 5e71006a  DAC: 00000055
-[ 1253.172472] Process swapper/0 (pid: 0, stack limit = 0x60870141)
-[ 1253.458055] [<7f9387b8>] (ath11k_spectral_process_data [ath11k]) from [<7f917fdc>] (ath11k_dbring_buffer_release_event+0x214/0x2e4 [ath11k])
-[ 1253.466139] [<7f917fdc>] (ath11k_dbring_buffer_release_event [ath11k]) from [<7f8ea3c4>] (ath11k_wmi_tlv_op_rx+0x1840/0x29cc [ath11k])
-[ 1253.478807] [<7f8ea3c4>] (ath11k_wmi_tlv_op_rx [ath11k]) from [<7f8fe868>] (ath11k_htc_rx_completion_handler+0x180/0x4e0 [ath11k])
-[ 1253.490699] [<7f8fe868>] (ath11k_htc_rx_completion_handler [ath11k]) from [<7f91308c>] (ath11k_ce_per_engine_service+0x2c4/0x3b4 [ath11k])
-[ 1253.502386] [<7f91308c>] (ath11k_ce_per_engine_service [ath11k]) from [<7f9a4198>] (ath11k_pci_ce_tasklet+0x28/0x80 [ath11k_pci])
-[ 1253.514811] [<7f9a4198>] (ath11k_pci_ce_tasklet [ath11k_pci]) from [<8032227c>] (tasklet_action_common.constprop.2+0x64/0xe8)
-[ 1253.526476] [<8032227c>] (tasklet_action_common.constprop.2) from [<803021e8>] (__do_softirq+0x130/0x2d0)
-[ 1253.537756] [<803021e8>] (__do_softirq) from [<80322610>] (irq_exit+0xcc/0xe8)
-[ 1253.547304] [<80322610>] (irq_exit) from [<8036a4a4>] (__handle_domain_irq+0x60/0xb4)
-[ 1253.554428] [<8036a4a4>] (__handle_domain_irq) from [<805eb348>] (gic_handle_irq+0x4c/0x90)
-[ 1253.562321] [<805eb348>] (gic_handle_irq) from [<80301a78>] (__irq_svc+0x58/0x8c)
-
-Tested-on: QCN6122 hw1.0 AHB WLAN.HK.2.6.0.1-00851-QCAHKSWPL_SILICONZ-1
-
-Signed-off-by: Hari Chandrakanthan <quic_haric@quicinc.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/1649396345-349-1-git-send-email-quic_haric@quicinc.com
+Reported-by: kernel test robot <lkp@intel.com>
+CC: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Evan Quan <evan.quan@amd.com>
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/spectral.c | 17 +++++++++--------
- 1 file changed, 9 insertions(+), 8 deletions(-)
+ drivers/gpu/drm/amd/pm/legacy-dpm/kv_dpm.c | 14 +-------------
+ 1 file changed, 1 insertion(+), 13 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/spectral.c b/drivers/net/wireless/ath/ath11k/spectral.c
-index 2b18871d5f7c..516a7b4cd180 100644
---- a/drivers/net/wireless/ath/ath11k/spectral.c
-+++ b/drivers/net/wireless/ath/ath11k/spectral.c
-@@ -212,7 +212,10 @@ static int ath11k_spectral_scan_config(struct ath11k *ar,
- 		return -ENODEV;
+diff --git a/drivers/gpu/drm/amd/pm/legacy-dpm/kv_dpm.c b/drivers/gpu/drm/amd/pm/legacy-dpm/kv_dpm.c
+index 8b23cc9f098a..8fd0782a2b20 100644
+--- a/drivers/gpu/drm/amd/pm/legacy-dpm/kv_dpm.c
++++ b/drivers/gpu/drm/amd/pm/legacy-dpm/kv_dpm.c
+@@ -1623,19 +1623,7 @@ static int kv_update_samu_dpm(struct amdgpu_device *adev, bool gate)
  
- 	arvif->spectral_enabled = (mode != ATH11K_SPECTRAL_DISABLED);
-+
-+	spin_lock_bh(&ar->spectral.lock);
- 	ar->spectral.mode = mode;
-+	spin_unlock_bh(&ar->spectral.lock);
- 
- 	ret = ath11k_wmi_vdev_spectral_enable(ar, arvif->vdev_id,
- 					      ATH11K_WMI_SPECTRAL_TRIGGER_CMD_CLEAR,
-@@ -843,9 +846,6 @@ static inline void ath11k_spectral_ring_free(struct ath11k *ar)
+ static u8 kv_get_acp_boot_level(struct amdgpu_device *adev)
  {
- 	struct ath11k_spectral *sp = &ar->spectral;
- 
--	if (!sp->enabled)
--		return;
+-	u8 i;
+-	struct amdgpu_clock_voltage_dependency_table *table =
+-		&adev->pm.dpm.dyn_state.acp_clock_voltage_dependency_table;
 -
- 	ath11k_dbring_srng_cleanup(ar, &sp->rx_ring);
- 	ath11k_dbring_buf_cleanup(ar, &sp->rx_ring);
- }
-@@ -897,15 +897,16 @@ void ath11k_spectral_deinit(struct ath11k_base *ab)
- 		if (!sp->enabled)
- 			continue;
- 
--		ath11k_spectral_debug_unregister(ar);
--		ath11k_spectral_ring_free(ar);
-+		mutex_lock(&ar->conf_mutex);
-+		ath11k_spectral_scan_config(ar, ATH11K_SPECTRAL_DISABLED);
-+		mutex_unlock(&ar->conf_mutex);
- 
- 		spin_lock_bh(&sp->lock);
+-	for (i = 0; i < table->count; i++) {
+-		if (table->entries[i].clk >= 0) /* XXX */
+-			break;
+-	}
 -
--		sp->mode = ATH11K_SPECTRAL_DISABLED;
- 		sp->enabled = false;
+-	if (i >= table->count)
+-		i = table->count - 1;
 -
- 		spin_unlock_bh(&sp->lock);
-+
-+		ath11k_spectral_debug_unregister(ar);
-+		ath11k_spectral_ring_free(ar);
- 	}
+-	return i;
++	return 0;
  }
  
+ static void kv_update_acp_boot_level(struct amdgpu_device *adev)
 -- 
 2.35.1
 
