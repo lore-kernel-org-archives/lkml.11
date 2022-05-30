@@ -2,118 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6053C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:59:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F35EBC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:59:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236702AbiE3N7E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:59:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34630 "EHLO
+        id S236897AbiE3N7K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:59:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239278AbiE3NvZ (ORCPT
+        with ESMTP id S239254AbiE3NvY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:51:25 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5416184A27
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 06:35:48 -0700 (PDT)
-Received: from mail-yw1-f178.google.com ([209.85.128.178]) by
- mrelayeu.kundenserver.de (mreue107 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MfZDK-1nK8wk15ZI-00g16a for <linux-kernel@vger.kernel.org>; Mon, 30 May
- 2022 15:35:46 +0200
-Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-2fee010f509so109981217b3.11
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 06:35:46 -0700 (PDT)
-X-Gm-Message-State: AOAM530hDCIMXA2LTXs8jCJlLJAMpT/BAumIE6ARmkF3mgOZ1NZHH2lY
-        3CY5HmMC1Q92ZDFrF15EL0XPtM10UmvUh2ZDNxc=
-X-Google-Smtp-Source: ABdhPJxqcrHm9DJ9xalPcS1XKzKpoD6pOtVW3V1SFSsljiXnSICipI3F6JSFJRR63xqJBfk3V3It/sMFGGDe8RlARWQ=
-X-Received: by 2002:a81:ad7:0:b0:2e6:84de:3223 with SMTP id
- 206-20020a810ad7000000b002e684de3223mr59829800ywk.209.1653917745100; Mon, 30
- May 2022 06:35:45 -0700 (PDT)
+        Mon, 30 May 2022 09:51:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8900B92D0F;
+        Mon, 30 May 2022 06:35:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C86C2B80DB7;
+        Mon, 30 May 2022 13:35:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11129C341C4;
+        Mon, 30 May 2022 13:35:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653917732;
+        bh=+DRNotNOdlynsftO2MlivAufm6vmg4x5Is++M6rcBXU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=fygxk0+jpzFK+H1VcHHKURtlcEJuHt95NC0c2gkUoSvodgjHLfpqJzyNU/rHJouxL
+         16BJc40E/D2MzibH4ZaKM+rKluco83gkLWdEA2EQ4I+4nDvLuyAXSjqeb/WNxAU8Lj
+         usN7zkhFrTitzaUt9Ay2mjIG/Z3mg8EFkOLiFOmil6eyc9urvOA9hcJMki5GhP6zz8
+         AS1Jbsr0KJWYBbnINKvCnVOB664J+IDZbCK6VIWLeKm8ciy52cUOXrgm/82qZuFe6m
+         riboUADpmV6usFQj/MfNkoam44+3kKyS++2liSvRoubZCGWzILyjN9MieC1e9UzEse
+         6WqCczIEBD6wA==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
+        pabeni@redhat.com, bigeasy@linutronix.de, imagedong@tencent.com,
+        petrm@nvidia.com, memxor@gmail.com, arnd@arndb.de,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 078/135] net: remove two BUG() from skb_checksum_help()
+Date:   Mon, 30 May 2022 09:30:36 -0400
+Message-Id: <20220530133133.1931716-78-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
+References: <20220530133133.1931716-1-sashal@kernel.org>
 MIME-Version: 1.0
-References: <YpCUzStDnSgQLNFN@debian> <CAHk-=wg0uGAX5DYZq+tY2KeUAR8DtR91YE1y9CkPMKkKOyE4jg@mail.gmail.com>
- <CADVatmNGPbSdRNQuwJEWAaPtqb3vBYRjvsuBpoRUnhEHj=X5GQ@mail.gmail.com>
- <CAHk-=wisQd8yiPX=SsK3eFiakKo713hq4SyqPWsJ-oyAmLFefQ@mail.gmail.com>
- <YpIR67FMtTGCwARZ@debian> <CAHk-=wjuyHE=1wLgHncub8FfgeyYqfWYsy4-YrhAvq9991h_Aw@mail.gmail.com>
- <CAHk-=wi_hJV0V=Ecg2dzbe2P_H1XKTu6VP_AtCH6u=tis31ayg@mail.gmail.com>
- <CAK8P3a0-QyOQiieEvM0yQb43XbCtPmeao8UvoAsdFnjCxYPz7Q@mail.gmail.com>
- <CAHk-=whfmwzjF4eBPYS6pHFqHVzJF3m=2h=gRWSRyHks8V=ABA@mail.gmail.com>
- <87a6aztli2.fsf@intel.com> <877d63tleq.fsf@intel.com> <CAK8P3a0-S77QLR1dK3NT6ot7JTAD5AdojAZJr-Xi112-v5EOdw@mail.gmail.com>
- <87czfvrwsv.fsf@intel.com>
-In-Reply-To: <87czfvrwsv.fsf@intel.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Mon, 30 May 2022 15:35:28 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a0HNOCOSx9UONw6gf1UUU8J4iAOmMFP8-DtJ3O7XAACsQ@mail.gmail.com>
-Message-ID: <CAK8P3a0HNOCOSx9UONw6gf1UUU8J4iAOmMFP8-DtJ3O7XAACsQ@mail.gmail.com>
-Subject: Re: mainline build failure due to f1e4c916f97f ("drm/edid: add EDID
- block count and size helpers")
-To:     Jani Nikula <jani.nikula@intel.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Viresh Kumar <vireshk@kernel.org>,
-        Shiraz Hashim <shiraz.linux.kernel@gmail.com>,
-        =?UTF-8?B?VmlsbGUgU3lyasOkbMOk?= <ville.syrjala@linux.intel.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        SoC Team <soc@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:rzsa03eeqIQ8apQAiT85cbcZDekwnj75JYrCwH/bTgWY4EtRZZd
- QnZet8BsjNcEXzS6LvwNytFO9wCsF3+QkNHS8TG0KJOsdGheUWFgLXNdrS8n3P0ph0tSF/d
- JIt7vvZITIH/tZ5+YKtH4z6NIlEzzhdnlS13C/+TfTmLS07qzyD1I/VoBiqN5cHOsm63myU
- Jbr23fWS0yWignE+XUP5Q==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:h6cTD7p23yU=:DEyHDjNBFwqbW/1LsGKpfs
- EFFD9OOc/9tUAwS8yS/2Ome7csgZWNM4MA1aeOJbeplnDOvlcQv13vyviYdqJdeZ5qzhdpFMJ
- XOQ424P+MrItrmZRNCjeeuShG3akBpuRE8ubROsrfdSxdhSWsOqjVmMB2GMicp+azm8WBxoMK
- keNhpRkL9X+q2W5j5Ax0h1ykhaWU8oBSSuUCWOn6mB1l+SkQBKqvmEwMnwJJSS2s9AWE6T6WY
- h7krffX7M1/PIFnrmqWL8ynFHzWVk8dPLKnCd1qKaBsCk1JmvhmEuMN9vC+D1dulgDmSagQw0
- fprzmoq0hdpnWB0g3aXL4Ua6sRE2Gp0kBAeEaXAoIfmkMw01BsEYzQN1T3YXWsVyWA2H04a7t
- SG1a12u3inP6v9Iu7l7AMyPmdpbdVUD4+XgTIS6fiJHJopPZNyYrMrQdy2OMmUWDd/oPuxUFv
- J2r+JhfdOIInJj4n0s9wRGeAVtKMd0IMA6Bt/iQTp+wVfvFAaVhTxePFvkGtlJ4knR03OFY4X
- thUDH4tOX4udPpmW6QaojbncmaDlWyqBoLNLObLoNmTWD6PzHaXCNxVySfwpRicB9k9FD+O1m
- s3C8gA9BjZG8bF8DbH00xHjAQ1skef0Xq48HHAHsuBMQGAuHXEpZhidX+iI3Rk+zhUI13Awoh
- oUCGX4egpkRgt0pKrrlST9jhCKOpULbZ92T3k8zQ2E/HwR5c7frcvIZLVKu42vRN40Xk0jh5e
- acSwI3BgU6P3noLDOLi2VFbTPE5tgjlRXI2robRAvCDEhG8KOdVrmtZuCEOGyfhwQpqhoDQth
- MqAIZU3GtbeHayav0opkJiVcIgzjCeNZicWo5SZ44v7+/1qvtqqBOdqSHMRd6h4JqGySvmajh
- bAbONdkfU5wFds0ZNdOQ==
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 30, 2022 at 3:10 PM Jani Nikula <jani.nikula@intel.com> wrote:
-> >
-> > I think in general, most __packed annotations we have in the kernel are
-> > completely pointless because they do not change the structure layout on
-> > any architecture but instead just make member access slower on
->
-> Please explain.
->
-> They are used quite a bit for parsing blob data, or
-> serialization/deserialization, like in the EDID case at hand. Try
-> removing __attribute__((packed)) from include/drm/drm_edid.h and see the
-> sizeof(struct edid) on any architecture.
+From: Eric Dumazet <edumazet@google.com>
 
-The annotations for edid are completely correct and necessary. However
-other driver authors just slap __packed annotations on any structure
-even if the layout is not fixed at all like:
+[ Upstream commit d7ea0d9df2a6265b2b180d17ebc64b38105968fc ]
 
-struct my_driver_priv {
-       struct device dev;
-       u8 causes_misalignment;
-       spinlock_t lock;
-       atomic_t counter;
-} __packed; /* this annotation is harmful because it breaks the atomics */
+I have a syzbot report that managed to get a crash in skb_checksum_help()
 
-or if the annotation does not change the layout like
+If syzbot can trigger these BUG(), it makes sense to replace
+them with more friendly WARN_ON_ONCE() since skb_checksum_help()
+can instead return an error code.
 
-struct my_dma_descriptor {
-     __le64 address;
-     __le64 length;
-} __packed; /* does not change layout but makes access slow on some
-architectures */
+Note that syzbot will still crash there, until real bug is fixed.
 
-       Arnd
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/core/dev.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 80dbbd5f6a73..178400e4d13e 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -3156,11 +3156,15 @@ int skb_checksum_help(struct sk_buff *skb)
+ 	}
+ 
+ 	offset = skb_checksum_start_offset(skb);
+-	BUG_ON(offset >= skb_headlen(skb));
++	ret = -EINVAL;
++	if (WARN_ON_ONCE(offset >= skb_headlen(skb)))
++		goto out;
++
+ 	csum = skb_checksum(skb, offset, skb->len - offset, 0);
+ 
+ 	offset += skb->csum_offset;
+-	BUG_ON(offset + sizeof(__sum16) > skb_headlen(skb));
++	if (WARN_ON_ONCE(offset + sizeof(__sum16) > skb_headlen(skb)))
++		goto out;
+ 
+ 	ret = skb_ensure_writable(skb, offset + sizeof(__sum16));
+ 	if (ret)
+-- 
+2.35.1
+
