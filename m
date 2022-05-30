@@ -2,85 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDF4DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 11:49:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7343C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 11:50:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235724AbiE3LtB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 07:49:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39030 "EHLO
+        id S235765AbiE3Luh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 07:50:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233512AbiE3Ls4 (ORCPT
+        with ESMTP id S234546AbiE3Lue (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 07:48:56 -0400
-Received: from mail1.perex.cz (mail1.perex.cz [77.48.224.245])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B27B692BD
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 04:48:54 -0700 (PDT)
-Received: from mail1.perex.cz (localhost [127.0.0.1])
-        by smtp1.perex.cz (Perex's E-mail Delivery System) with ESMTP id 3ABDBA0047;
-        Mon, 30 May 2022 13:32:06 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.perex.cz 3ABDBA0047
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=perex.cz; s=default;
-        t=1653910326; bh=zjOHNt523dbFOX2xDzHhluv4/0kMV+wexiBuakxIphQ=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=ZJHLT1qARbd3f64k2TMFvhtn40n0feo6CMHuh2hvI+YggpDXWOsuPKN2+X79dbEt2
-         xheVPxLuXhBZj8PQfCENcoXrDVozMqKt6dYFncRRVDZGt94BglqOqAQnl+Pp5/9rCJ
-         7xc4sC62joPZ/9Pb00HUqKy9kaQR1HpGdSklKrZU=
-Received: from [192.168.100.98] (unknown [192.168.100.98])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: perex)
-        by mail1.perex.cz (Perex's E-mail Delivery System) with ESMTPSA;
-        Mon, 30 May 2022 13:31:59 +0200 (CEST)
-Message-ID: <dd0817a9-16f9-a08f-fcde-97788de445d3@perex.cz>
-Date:   Mon, 30 May 2022 13:31:58 +0200
+        Mon, 30 May 2022 07:50:34 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2428B69CF6
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 04:50:33 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D72CC113E;
+        Mon, 30 May 2022 04:50:32 -0700 (PDT)
+Received: from a077893.arm.com (unknown [10.163.36.153])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id B0F893F766;
+        Mon, 30 May 2022 04:50:30 -0700 (PDT)
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+To:     linux-mm@kvack.org
+Cc:     Anshuman Khandual <anshuman.khandual@arm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Zi Yan <ziy@nvidia.com>, linux-kernel@vger.kernel.org
+Subject: [RFC] mm/page_isolation: Fix an infinite loop in isolate_single_pageblock()
+Date:   Mon, 30 May 2022 17:20:27 +0530
+Message-Id: <20220530115027.123341-1-anshuman.khandual@arm.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v4 16/17] ALSA: hda: cs35l41: Support Firmware switching
- and reloading
-Content-Language: en-US
-To:     Vitaly Rodionov <vitalyr@opensource.cirrus.com>,
-        Takashi Iwai <tiwai@suse.com>, Mark Brown <broonie@kernel.org>
-Cc:     alsa-devel@alsa-project.org, patches@opensource.cirrus.com,
-        linux-kernel@vger.kernel.org,
-        Stefan Binding <sbinding@opensource.cirrus.com>
-References: <20220525131638.5512-1-vitalyr@opensource.cirrus.com>
- <20220525131638.5512-17-vitalyr@opensource.cirrus.com>
-From:   Jaroslav Kysela <perex@perex.cz>
-In-Reply-To: <20220525131638.5512-17-vitalyr@opensource.cirrus.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 25. 05. 22 15:16, Vitaly Rodionov wrote:
+HugeTLB allocation (32MB pages on 4K base page) via sysfs on arm64 platform
+is getting stuck in isolate_single_pageblock(), because of an infinite loop
+Because head_pfn always evaluate the same, so does pfn, and the outer loop
+never exits. Dropping the relevant code block, which seems redundant, makes
+the problem go away.
 
-> This patch adds 2 ALSA Controls for each amp:
-> "DSP1 Firmware Load"
-> "DSP1 Firmware Type"
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Zi Yan <ziy@nvidia.com>
+Cc: linux-mm@kvack.org
+Cc: linux-kernel@vger.kernel.org
+Fixes: b2c9e2fbba32 ("mm: make alloc_contig_range work at pageblock granularity")
+Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+---
+I am not sure about this fix, and also did not find much time today to
+debug any further. There are much code changes around this function in
+recent days. This problem is present on latest mainline kernel.
 
-...
+- Anshuman
 
-> +	struct snd_kcontrol_new fw_type_ctl = {
-> +		.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
-> +		.info = cs35l41_fw_type_ctl_info,
-> +		.get = cs35l41_fw_type_ctl_get,
-> +		.put = cs35l41_fw_type_ctl_put,
-> +	};
-> +	struct snd_kcontrol_new fw_load_ctl = {
-> +		.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
-> +		.info = snd_ctl_boolean_mono_info,
-> +		.get = cs35l41_fw_load_ctl_get,
-> +		.put = cs35l41_fw_load_ctl_put,
-> +	};
+ mm/page_isolation.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-I don't think that those controls should be SNDRV_CTL_ELEM_IFACE_MIXER type. 
-The SNDRV_CTL_ELEM_IFACE_CARD seems more appropriate (service controls for the 
-sound card).
-
-						Jaroslav
-
+diff --git a/mm/page_isolation.c b/mm/page_isolation.c
+index 6021f8444b5a..b0922fee75c1 100644
+--- a/mm/page_isolation.c
++++ b/mm/page_isolation.c
+@@ -389,10 +389,6 @@ static int isolate_single_pageblock(unsigned long boundary_pfn, int flags,
+ 			struct page *head = compound_head(page);
+ 			unsigned long head_pfn = page_to_pfn(head);
+ 
+-			if (head_pfn + nr_pages <= boundary_pfn) {
+-				pfn = head_pfn + nr_pages;
+-				continue;
+-			}
+ #if defined CONFIG_COMPACTION || defined CONFIG_CMA
+ 			/*
+ 			 * hugetlb, lru compound (THP), and movable compound pages
 -- 
-Jaroslav Kysela <perex@perex.cz>
-Linux Sound Maintainer; ALSA Project; Red Hat, Inc.
+2.20.1
+
