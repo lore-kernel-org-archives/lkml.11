@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 571D3C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:32:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E23DBC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:32:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240259AbiE3OcK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:32:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40278 "EHLO
+        id S240006AbiE3Ocf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:32:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240787AbiE3OQ2 (ORCPT
+        with ESMTP id S240932AbiE3OQh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:16:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79019F74AC;
-        Mon, 30 May 2022 06:43:57 -0700 (PDT)
+        Mon, 30 May 2022 10:16:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E0F31078A9;
+        Mon, 30 May 2022 06:44:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 41055B80DB3;
-        Mon, 30 May 2022 13:43:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2A88C385B8;
-        Mon, 30 May 2022 13:43:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7BEFEB80D6B;
+        Mon, 30 May 2022 13:43:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03F34C341C0;
+        Mon, 30 May 2022 13:43:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918226;
-        bh=y268Ia38mDcy8oVClEGS/uTeQtbK8P1DKzIAcwjQsRk=;
+        s=k20201202; t=1653918217;
+        bh=Do59Zxbar/R53/RRVCDrJBRmogE79B0Y/2QF3y0rC8U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qnH4krE4P409q9CVZ0tRU/Kl07n7SrP8/jkBvkqiMzOlzEWDXKj8UYnBxxeoIGxi7
-         JZM2WEz4BnOe+5VybMAn4TYFE+9V1QErsRRVb7lmHXGzEw61xgV2tDEZKFWjLX+1tl
-         Awp2kST1izfR9rwL90Zu89ex3uWad54KXVSpUfPvSAHsPN2EMv+Eg3Ifz1phV2jooa
-         3ADOAHvCLehtgmotLee6tEmhjGHNdlzzOO7OisMmhOckfWU44SsGxJ1tK9m4kpXWAY
-         HxKnRX2dNZ8CRp0A/H+VKxy2gjqIr/Nap5gfl6MO/X+lDeOagUbabGo4pr0QnZbt6v
-         ebu9MgFKvY/IA==
+        b=BvLqm74VD2BjT0UC/UqZ0PSfzjnmL2d9vE1soRWzHXc+3JcjZhGCVd4tVjiK32A4/
+         OpA8n1Kaaa/XTTC+hOykRv/EICIGGefVo8i37DlCQAaxLcJQd/zV2tJMhgzeXkl2Uu
+         N3DuFaTfQV+/ZKHeXO7g1VuRsdvf7h8bKOV92R8uMZdFzQJsorTiSk4z9DUStPIgmL
+         0U2QfORyn5UQNVKyz5UWb1d1VDDriMlbK4fBQHLZAa6fgvdIr0ZgozUvjBvufeKlO3
+         Lsnv8mDyjnIjDG3CofOIhFnsVVi4uSyTGvossu9ey1dqFz90DiNlc8mXwBiHZruyrp
+         fnFBToOiSamVw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        kernel test robot <lkp@intel.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Michael Schmitz <schmitzmic@gmail.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-m68k@lists.linux-m68k.org
-Subject: [PATCH AUTOSEL 5.15 101/109] m68k: atari: Make Atari ROM port I/O write macros return void
-Date:   Mon, 30 May 2022 09:38:17 -0400
-Message-Id: <20220530133825.1933431-101-sashal@kernel.org>
+Cc:     Borislav Petkov <bp@suse.de>, Randy Dunlap <rdunlap@infradead.org>,
+        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org
+Subject: [PATCH AUTOSEL 5.15 098/109] x86/microcode: Add explicit CPU vendor dependency
+Date:   Mon, 30 May 2022 09:38:14 -0400
+Message-Id: <20220530133825.1933431-98-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
 References: <20220530133825.1933431-1-sashal@kernel.org>
@@ -54,54 +52,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Geert Uytterhoeven <geert@linux-m68k.org>
+From: Borislav Petkov <bp@suse.de>
 
-[ Upstream commit 30b5e6ef4a32ea4985b99200e06d6660a69f9246 ]
+[ Upstream commit 9c55d99e099bd7aa6b91fce8718505c35d5dfc65 ]
 
-The macros implementing Atari ROM port I/O writes do not cast away their
-output, unlike similar implementations for other I/O buses.
-When they are combined using conditional expressions in the definitions of
-outb() and friends, this triggers sparse warnings like:
+Add an explicit dependency to the respective CPU vendor so that the
+respective microcode support for it gets built only when that support is
+enabled.
 
-    drivers/net/appletalk/cops.c:382:17: error: incompatible types in conditional expression (different base types):
-    drivers/net/appletalk/cops.c:382:17:    unsigned char
-    drivers/net/appletalk/cops.c:382:17:    void
-
-Fix this by adding casts to "void".
-
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-Reviewed-by: Michael Schmitz <schmitzmic@gmail.com>
-Link: https://lore.kernel.org/r/c15bedc83d90a14fffcd5b1b6bfb32b8a80282c5.1653057096.git.geert@linux-m68k.org
+Reported-by: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/8ead0da9-9545-b10d-e3db-7df1a1f219e4@infradead.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/m68k/include/asm/raw_io.h | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/x86/Kconfig | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/m68k/include/asm/raw_io.h b/arch/m68k/include/asm/raw_io.h
-index 80eb2396d01e..3ba40bc1dfaa 100644
---- a/arch/m68k/include/asm/raw_io.h
-+++ b/arch/m68k/include/asm/raw_io.h
-@@ -80,14 +80,14 @@
- 	({ u16 __v = le16_to_cpu(*(__force volatile u16 *) (addr)); __v; })
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index d02b04d30096..1d0f16b53393 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -1323,7 +1323,7 @@ config MICROCODE
  
- #define rom_out_8(addr, b)	\
--	({u8 __maybe_unused __w, __v = (b);  u32 _addr = ((u32) (addr)); \
-+	(void)({u8 __maybe_unused __w, __v = (b);  u32 _addr = ((u32) (addr)); \
- 	__w = ((*(__force volatile u8 *)  ((_addr | 0x10000) + (__v<<1)))); })
- #define rom_out_be16(addr, w)	\
--	({u16 __maybe_unused __w, __v = (w); u32 _addr = ((u32) (addr)); \
-+	(void)({u16 __maybe_unused __w, __v = (w); u32 _addr = ((u32) (addr)); \
- 	__w = ((*(__force volatile u16 *) ((_addr & 0xFFFF0000UL) + ((__v & 0xFF)<<1)))); \
- 	__w = ((*(__force volatile u16 *) ((_addr | 0x10000) + ((__v >> 8)<<1)))); })
- #define rom_out_le16(addr, w)	\
--	({u16 __maybe_unused __w, __v = (w); u32 _addr = ((u32) (addr)); \
-+	(void)({u16 __maybe_unused __w, __v = (w); u32 _addr = ((u32) (addr)); \
- 	__w = ((*(__force volatile u16 *) ((_addr & 0xFFFF0000UL) + ((__v >> 8)<<1)))); \
- 	__w = ((*(__force volatile u16 *) ((_addr | 0x10000) + ((__v & 0xFF)<<1)))); })
+ config MICROCODE_INTEL
+ 	bool "Intel microcode loading support"
+-	depends on MICROCODE
++	depends on CPU_SUP_INTEL && MICROCODE
+ 	default MICROCODE
+ 	help
+ 	  This options enables microcode patch loading support for Intel
+@@ -1335,7 +1335,7 @@ config MICROCODE_INTEL
  
+ config MICROCODE_AMD
+ 	bool "AMD microcode loading support"
+-	depends on MICROCODE
++	depends on CPU_SUP_AMD && MICROCODE
+ 	help
+ 	  If you select this option, microcode patch loading support for AMD
+ 	  processors will be enabled.
 -- 
 2.35.1
 
