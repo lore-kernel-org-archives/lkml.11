@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 130F9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:43:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0301DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:43:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237436AbiE3NnS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:43:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56306 "EHLO
+        id S238002AbiE3Nnb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:43:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237646AbiE3Ngy (ORCPT
+        with ESMTP id S237673AbiE3Ngz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:36:54 -0400
+        Mon, 30 May 2022 09:36:55 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9AC060DB6;
-        Mon, 30 May 2022 06:30:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59FFE62CCE;
+        Mon, 30 May 2022 06:30:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 29D4660EE0;
-        Mon, 30 May 2022 13:30:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97E1CC385B8;
-        Mon, 30 May 2022 13:30:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ECC7C60DD4;
+        Mon, 30 May 2022 13:30:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35CAEC3411C;
+        Mon, 30 May 2022 13:30:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917433;
-        bh=xRzVVb9dp3AfJuQgs6IuBJGSwSqg0aexqaH6UBZReSc=;
+        s=k20201202; t=1653917440;
+        bh=+o/sFHWDGEWMaxy4QsdwsNn9L7s09ctGvgv72soVAO8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EChGrhftWYhvDU+MG1c6B62esrZ9vMbXnCY5xCQ8mllztiCTksMoj8ypMVUEaDKHK
-         HCFHCF0vREkIH6LlOLoMC329tJn94EyxOH2hSqNey8RM/uQvAuXpwa8Ksw4EeuxgLf
-         iD1Je94SEP7G6LWSPu3dSP71dwxzLJuf16UeWcRW34IuVHX3CF3cjXD+XthSd3vkae
-         GpX1aHiZ6X+5PODhahq80UWXhE6O9IiiUjXQ1rZLSDoTs0XoiZRTfxI/7GkspJsAtA
-         3yJnq2KDtN3FQCuMBft6J4IQ7+JBYSOD/uJOcJZyGQk18o9cWHTKC1+ne1EiIiudN0
-         Uc4T0JA3aiQxQ==
+        b=lmRFvWoQ+iyuY+kb46BAjSsRL5836fzpzMlTgWQzZ5hoPJrBHe/o597kYaqPKOmzQ
+         AfsDT57mZx3dRpCmnz8dyxBiGcHwjb+yTnQKluhHH+eZkV+3PISBulGgozhtvCHNWB
+         XWIbf55hhVszwPCwVVq6e4mFlf6UJhYsMqEoDpUWKL54B5B2MqvMrbw6ii+Y5eMBr1
+         uUy7zNarJD+HFr2c39nITdwRrfY7Hrc+9SfYZKV95+Np++yf11OaPccZ3LbGxq7nC/
+         0gAmRKtlGzeLgvNtMHCfPYCij5WfX/a58t5Us2B1mjPPU3ZnJrhf/V5drkz2oHgpCU
+         RmDuMwlGdwI+Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Daniel Latypov <dlatypov@google.com>,
-        David Gow <davidgow@google.com>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-kselftest@vger.kernel.org, kunit-dev@googlegroups.com
-Subject: [PATCH AUTOSEL 5.18 133/159] kunit: tool: make parser stop overwriting status of suites w/ no_tests
-Date:   Mon, 30 May 2022 09:23:58 -0400
-Message-Id: <20220530132425.1929512-133-sashal@kernel.org>
+Cc:     Ping-Ke Shih <pkshih@realtek.com>, Kalle Valo <kvalo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 137/159] rtw89: cfo: check mac_id to avoid out-of-bounds
+Date:   Mon, 30 May 2022 09:24:02 -0400
+Message-Id: <20220530132425.1929512-137-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
@@ -54,82 +52,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Latypov <dlatypov@google.com>
+From: Ping-Ke Shih <pkshih@realtek.com>
 
-[ Upstream commit dbf0b0d53a2b5afa6ef7372dcedf52302669fc2c ]
+[ Upstream commit 97df85871a5b187609d30fca6d85b912d9e02f29 ]
 
-Consider this invocation
-$ ./tools/testing/kunit/kunit.py parse <<EOF
-  TAP version 14
-  1..2
-  ok 1 - suite
-    # Subtest: no_tests_suite
-    # catastrophic error!
-  not ok 1 - no_tests_suite
-EOF
+Somehow, hardware reports incorrect mac_id and pollute memory. Check index
+before we access the array.
 
-It will have a 0 exit code even though there's a "not ok".
+  UBSAN: array-index-out-of-bounds in rtw89/phy.c:2517:23
+  index 188 is out of range for type 's32 [64]'
+  CPU: 1 PID: 51550 Comm: irq/35-rtw89_pc Tainted: G           OE
+  Call Trace:
+   <IRQ>
+   show_stack+0x52/0x58
+   dump_stack_lvl+0x4c/0x63
+   dump_stack+0x10/0x12
+   ubsan_epilogue+0x9/0x45
+   __ubsan_handle_out_of_bounds.cold+0x44/0x49
+   ? __alloc_skb+0x92/0x1d0
+   rtw89_phy_cfo_parse+0x44/0x7f [rtw89_core]
+   rtw89_core_rx+0x261/0x871 [rtw89_core]
+   ? __alloc_skb+0xee/0x1d0
+   rtw89_pci_napi_poll+0x3fa/0x4ea [rtw89_pci]
+   __napi_poll+0x33/0x1a0
+   net_rx_action+0x126/0x260
+   ? __queue_work+0x217/0x4c0
+   __do_softirq+0xd9/0x315
+   ? disable_irq_nosync+0x10/0x10
+   do_softirq.part.0+0x6d/0x90
+   </IRQ>
+   <TASK>
+   __local_bh_enable_ip+0x62/0x70
+   rtw89_pci_interrupt_threadfn+0x182/0x1a6 [rtw89_pci]
+   irq_thread_fn+0x28/0x60
+   irq_thread+0xc8/0x190
+   ? irq_thread_fn+0x60/0x60
+   kthread+0x16b/0x190
+   ? irq_thread_check_affinity+0xe0/0xe0
+   ? set_kthread_struct+0x50/0x50
+   ret_from_fork+0x22/0x30
+   </TASK>
 
-Consider this one:
-$ ./tools/testing/kunit/kunit.py parse <<EOF
-  TAP version 14
-  1..2
-  ok 1 - suite
-  not ok 1 - no_tests_suite
-EOF
-
-It will a non-zero exit code.
-
-Why?
-We have this line in the kunit_parser.py
-> parent_test = parse_test_header(lines, test)
-where we have special handling when we see "# Subtest" and we ignore the
-explicit reported "not ok 1" status!
-
-Also, NO_TESTS at a suite-level only results in a non-zero status code
-where then there's only one suite atm.
-
-This change is the minimal one to make sure we don't overwrite it.
-
-Signed-off-by: Daniel Latypov <dlatypov@google.com>
-Reviewed-by: David Gow <davidgow@google.com>
-Reviewed-by: Brendan Higgins <brendanhiggins@google.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220516005215.5878-4-pkshih@realtek.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/kunit/kunit_parser.py                        | 7 +++++--
- .../test_data/test_is_test_passed-no_tests_no_plan.log     | 2 +-
- 2 files changed, 6 insertions(+), 3 deletions(-)
+ drivers/net/wireless/realtek/rtw89/phy.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/tools/testing/kunit/kunit_parser.py b/tools/testing/kunit/kunit_parser.py
-index 05ff334761dd..2f93ed1d7f99 100644
---- a/tools/testing/kunit/kunit_parser.py
-+++ b/tools/testing/kunit/kunit_parser.py
-@@ -789,8 +789,11 @@ def parse_test(lines: LineStream, expected_num: int, log: List[str]) -> Test:
+diff --git a/drivers/net/wireless/realtek/rtw89/phy.c b/drivers/net/wireless/realtek/rtw89/phy.c
+index ac211d897311..8414f30184b9 100644
+--- a/drivers/net/wireless/realtek/rtw89/phy.c
++++ b/drivers/net/wireless/realtek/rtw89/phy.c
+@@ -2213,6 +2213,11 @@ void rtw89_phy_cfo_parse(struct rtw89_dev *rtwdev, s16 cfo_val,
+ 	struct rtw89_cfo_tracking_info *cfo = &rtwdev->cfo_tracking;
+ 	u8 macid = phy_ppdu->mac_id;
  
- 	# Check for there being no tests
- 	if parent_test and len(subtests) == 0:
--		test.status = TestStatus.NO_TESTS
--		test.add_error('0 tests run!')
-+		# Don't override a bad status if this test had one reported.
-+		# Assumption: no subtests means CRASHED is from Test.__init__()
-+		if test.status in (TestStatus.TEST_CRASHED, TestStatus.SUCCESS):
-+			test.status = TestStatus.NO_TESTS
-+			test.add_error('0 tests run!')
- 
- 	# Add statuses to TestCounts attribute in Test object
- 	bubble_up_test_results(test)
-diff --git a/tools/testing/kunit/test_data/test_is_test_passed-no_tests_no_plan.log b/tools/testing/kunit/test_data/test_is_test_passed-no_tests_no_plan.log
-index dd873c981108..4f81876ee6f1 100644
---- a/tools/testing/kunit/test_data/test_is_test_passed-no_tests_no_plan.log
-+++ b/tools/testing/kunit/test_data/test_is_test_passed-no_tests_no_plan.log
-@@ -3,5 +3,5 @@ TAP version 14
-   # Subtest: suite
-   1..1
-     # Subtest: case
--  ok 1 - case # SKIP
-+  ok 1 - case
- ok 1 - suite
++	if (macid >= CFO_TRACK_MAX_USER) {
++		rtw89_warn(rtwdev, "mac_id %d is out of range\n", macid);
++		return;
++	}
++
+ 	cfo->cfo_tail[macid] += cfo_val;
+ 	cfo->cfo_cnt[macid]++;
+ 	cfo->packet_count++;
 -- 
 2.35.1
 
