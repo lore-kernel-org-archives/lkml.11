@@ -2,148 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8698C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 15:40:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1824DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 15:42:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239965AbiE3Pkt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 11:40:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51202 "EHLO
+        id S239837AbiE3PmI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 11:42:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239425AbiE3Pkf (ORCPT
+        with ESMTP id S237891AbiE3Pl7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 11:40:35 -0400
-Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81BEE20904A
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 07:47:42 -0700 (PDT)
-Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 202205301446269420c907b95aae74bb
-        for <linux-kernel@vger.kernel.org>;
-        Mon, 30 May 2022 16:46:26 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=daniel.starke@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
- bh=mYFMvHighpxQrW24VN/XpSSXp0gG09M4cv3mXdwNlWQ=;
- b=Z6LdcI+xXgD/tbhjrxtMIUR6Ua1gv0H/B801UgQ3msHPBKRepKGffn4ZAjjzbk6JG8iwIu
- ZpXhi83LiN+cRC4lXmF0+tVev/wEE+U9tDFb2wGkkuA0QQ0aXnsEW4lSEydQSy91ZLA5rXWe
- 2D1dfkCZitV2JTHyxIshFcl16vMkY=;
-From:   "D. Starke" <daniel.starke@siemens.com>
-To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH v3 1/9] tty: n_gsm: fix user open not possible at responder until initiator open
-Date:   Mon, 30 May 2022 16:45:04 +0200
-Message-Id: <20220530144512.2731-1-daniel.starke@siemens.com>
+        Mon, 30 May 2022 11:41:59 -0400
+Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D68ED20ED75
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 07:49:09 -0700 (PDT)
+Received: by mail-ot1-x32c.google.com with SMTP id r14-20020a056830418e00b0060b8da9ff75so1675804otu.11
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 07:49:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ffwll.ch; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=iv6q3LidYytSwCN/ALHOtkUt2FKmJyYR93IrSjotVpM=;
+        b=dCZPGrN3RWg/tJ6hicikuXELwaN5c205mDvYffKYrM6W55QJA7U1Y68tsL/sNKjSTy
+         73WwWmwAuAPW1KXjRW96BKWFW6lQr65A01WLJAAnH5ISRWiIvvcD2oVLsKS584UxrH10
+         wkqaXYdsRWvrLVtkDlJLw5tVi1Uzwn9oK3fX8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=iv6q3LidYytSwCN/ALHOtkUt2FKmJyYR93IrSjotVpM=;
+        b=VjjEnEj5Wr6bsOT86xIB3ojkMEAR+Ll6rqm6LPBkrBHnNw9XrvqhlxkhZClOSkhIAG
+         H1MivH8HJUfdDPg0Ee7BcwwxvAm0AwYt5gdC3ma2DIb5KTuD2itNjMSwzTgMBtKrSWt3
+         0cWWXy4T63U8rXlOBUYGZZdVF4fV6oaqpLcwSDKx/oLPYE6zHqCGhFVviJS8jZ4+EPnz
+         qVyFwp+HsUcqnHeu9ChYRyZuvhYkR73AE8DC8ufBSBRpNyfV5Aikx4iB0nZz+oKpTjEu
+         unoEA3BuTJKWL7Xi8DIw4B5+6xH4YJlThBo+JowG6FK2qLjT1RE9C4kgsmdbD7y3fkpE
+         eFJw==
+X-Gm-Message-State: AOAM532RLTKHu12P0O+mFfMB3EbmkL4deVz9RNyvE1ln/GulCcmDnQd5
+        iJCo3S8iTnw7qKq8zS+YEeBf9G8f28PTJuOWe4U9Sw==
+X-Google-Smtp-Source: ABdhPJxH/w0/fEIyo4iSAvCJP5G9SzBVn29Gs7W4gFY9Llz4Puz+PT0eo0OTLjxlDZJKSTiFvE6j1Qjj7oKIkoxTRaU=
+X-Received: by 2002:a05:6830:1e72:b0:60b:3707:c374 with SMTP id
+ m18-20020a0568301e7200b0060b3707c374mr9307405otr.321.1653922147338; Mon, 30
+ May 2022 07:49:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-314044:519-21489:flowmailer
+References: <20220529162936.2539901-1-robdclark@gmail.com> <0bf230f4-c888-b9c9-f061-7450406baa4a@suse.de>
+ <CAF6AEGthAfWyAvbuE4EP+u52LEKS2Fs6X=gG8qUjc7gci6oh-A@mail.gmail.com>
+In-Reply-To: <CAF6AEGthAfWyAvbuE4EP+u52LEKS2Fs6X=gG8qUjc7gci6oh-A@mail.gmail.com>
+From:   Daniel Vetter <daniel@ffwll.ch>
+Date:   Mon, 30 May 2022 16:48:56 +0200
+Message-ID: <CAKMK7uG9=EcmD4hPqm4zYsDHiS9Mr=y_5tUa_R1veDxSSK-P-Q@mail.gmail.com>
+Subject: Re: [PATCH] drm/prime: Ensure mmap offset is initialized
+To:     Rob Clark <robdclark@gmail.com>
+Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
+        Rob Clark <robdclark@chromium.org>,
+        David Airlie <airlied@linux.ie>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        freedreno <freedreno@lists.freedesktop.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+On Mon, 30 May 2022 at 15:54, Rob Clark <robdclark@gmail.com> wrote:
+>
+> On Mon, May 30, 2022 at 12:26 AM Thomas Zimmermann <tzimmermann@suse.de> =
+wrote:
+> >
+> > Hi
+> >
+> > Am 29.05.22 um 18:29 schrieb Rob Clark:
+> > > From: Rob Clark <robdclark@chromium.org>
+> > >
+> > > If a GEM object is allocated, and then exported as a dma-buf fd which=
+ is
+> > > mmap'd before or without the GEM buffer being directly mmap'd, the
+> > > vma_node could be unitialized.  This leads to a situation where the C=
+PU
+> > > mapping is not correctly torn down in drm_vma_node_unmap().
+> >
+> > Which drivers are affected by this problem?
+> >
+> > I checked several drivers and most appear to be initializing the offset
+> > during object construction, such as GEM SHMEM. [1] TTM-based drivers
+> > also seem unaffected. [2]
+> >
+> >  From a quick grep, only etnaviv, msm and omapdrm appear to be affected=
+?
+> > They only seem to run drm_gem_create_mmap_offset() from their
+> > ioctl-handling code.
+> >
+> > If so, I'd say it's preferable to fix these drivers and put a
+> > drm_WARN_ONCE() into drm_gem_prime_mmap().
+>
+> That is good if fewer drivers are affected, however I disagree with
+> your proposal.  At least for freedreno userspace, a lot of bo's never
+> get mmap'd (either directly of via dmabuf), so we should not be
+> allocating a mmap offset unnecessarily.
 
-After setting up the control channel on both sides the responder side may
-want to open a virtual tty to listen on until the initiator starts an
-application on a user channel. The current implementation allows the
-open() but no other operation, like termios. These fail with EINVAL.
-The responder sided application has no means to detect an open by the
-initiator sided application this way. And the initiator sided applications
-usually expect the responder sided application to listen on the user
-channel upon open.
-Set the user channel into half-open state on responder side once a user
-application opens the virtual tty to allow IO operations on it.
-Furthermore, keep the user channel constipated until the initiator side
-opens it to give the responder sided application the chance to detect the
-new connection and to avoid data loss if the responder sided application
-starts sending before the user channel is open.
+Does this actually matter in the grand scheme of things? We originally
+allocated mmap offset only on demand because userspace only had 32bit
+loff_t support and so simply couldn't mmap anything if the offset
+ended up above 32bit (even if there was still va space available).
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
----
- drivers/tty/n_gsm.c | 31 +++++++++++++++++++++++++++++--
- 1 file changed, 29 insertions(+), 2 deletions(-)
+But those days are long gone (about 10 years or so) and the allocation
+overhead for an mmap offset is tiny. So I think unless you can
+benchmark an impact allocating it at bo alloc seems like the simplest
+design overall, and hence what we should be doing. And if the vma
+offset allocation every gets too slow due to fragmentation we can lift
+the hole tree from i915 into drm_mm and the job should be done. At
+that point we could also allocate the offset unconditionally in the
+gem_init function and be done with it.
 
-Renamed gsm_dlci_wait_open() to gsm_dlci_set_opening() and reworded its
-documentation accordingly to reflect its function. This was done due to the
-review comment on v2.
+Iow I concur with Thomas here, unless there's hard data contrary
+simplicity imo trumps here.
+-Daniel
 
-Link: https://lore.kernel.org/all/YoZtlq3RkNU56xFx@kroah.com/
-Link: https://lore.kernel.org/all/20220519070757.2096-1-daniel.starke@siemens.com/
+>
+> BR,
+> -R
+>
+> > Best regards
+> > Thomas
+> >
+> > [1]
+> > https://elixir.bootlin.com/linux/v5.18/source/drivers/gpu/drm/drm_gem_s=
+hmem_helper.c#L85
+> > [2]
+> > https://elixir.bootlin.com/linux/v5.18/source/drivers/gpu/drm/ttm/ttm_b=
+o.c#L1002
+> >
+> > >
+> > > Fixes: e5516553999f ("drm: call drm_gem_object_funcs.mmap with fake o=
+ffset")
+> > > Signed-off-by: Rob Clark <robdclark@chromium.org>
+> > > ---
+> > > Note, it's possible the issue existed in some related form prior to t=
+he
+> > > commit tagged with Fixes.
+> > >
+> > >   drivers/gpu/drm/drm_prime.c | 5 +++++
+> > >   1 file changed, 5 insertions(+)
+> > >
+> > > diff --git a/drivers/gpu/drm/drm_prime.c b/drivers/gpu/drm/drm_prime.=
+c
+> > > index e3f09f18110c..849eea154dfc 100644
+> > > --- a/drivers/gpu/drm/drm_prime.c
+> > > +++ b/drivers/gpu/drm/drm_prime.c
+> > > @@ -716,6 +716,11 @@ int drm_gem_prime_mmap(struct drm_gem_object *ob=
+j, struct vm_area_struct *vma)
+> > >       struct file *fil;
+> > >       int ret;
+> > >
+> > > +     /* Ensure that the vma_node is initialized: */
+> > > +     ret =3D drm_gem_create_mmap_offset(obj);
+> > > +     if (ret)
+> > > +             return ret;
+> > > +
+> > >       /* Add the fake offset */
+> > >       vma->vm_pgoff +=3D drm_vma_node_start(&obj->vma_node);
+> > >
+> >
+> > --
+> > Thomas Zimmermann
+> > Graphics Driver Developer
+> > SUSE Software Solutions Germany GmbH
+> > Maxfeldstr. 5, 90409 N=C3=BCrnberg, Germany
+> > (HRB 36809, AG N=C3=BCrnberg)
+> > Gesch=C3=A4ftsf=C3=BChrer: Ivo Totev
 
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index fd8b86dde525..63314fe5e43b 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -1493,6 +1493,8 @@ static void gsm_dlci_close(struct gsm_dlci *dlci)
- 	if (debug & 8)
- 		pr_debug("DLCI %d goes closed.\n", dlci->addr);
- 	dlci->state = DLCI_CLOSED;
-+	/* Prevent us from sending data before the link is up again */
-+	dlci->constipated = true;
- 	if (dlci->addr != 0) {
- 		tty_port_tty_hangup(&dlci->port, false);
- 		spin_lock_irqsave(&dlci->lock, flags);
-@@ -1522,6 +1524,7 @@ static void gsm_dlci_open(struct gsm_dlci *dlci)
- 	del_timer(&dlci->t1);
- 	/* This will let a tty open continue */
- 	dlci->state = DLCI_OPEN;
-+	dlci->constipated = false;
- 	if (debug & 8)
- 		pr_debug("DLCI %d goes open.\n", dlci->addr);
- 	/* Send current modem state */
-@@ -1602,6 +1605,25 @@ static void gsm_dlci_begin_open(struct gsm_dlci *dlci)
- 	mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
- }
- 
-+/**
-+ *	gsm_dlci_set_opening	-	change state to opening
-+ *	@dlci: DLCI to open
-+ *
-+ *	Change internal state to wait for DLCI open from initiator side.
-+ *	We set off timers and responses upon reception of an SABM.
-+ */
-+static void gsm_dlci_set_opening(struct gsm_dlci *dlci)
-+{
-+	switch (dlci->state) {
-+	case DLCI_CLOSED:
-+	case DLCI_CLOSING:
-+		dlci->state = DLCI_OPENING;
-+		break;
-+	default:
-+		break;
-+	}
-+}
-+
- /**
-  *	gsm_dlci_begin_close	-	start channel open procedure
-  *	@dlci: DLCI to open
-@@ -1745,10 +1767,13 @@ static struct gsm_dlci *gsm_dlci_alloc(struct gsm_mux *gsm, int addr)
- 	dlci->addr = addr;
- 	dlci->adaption = gsm->adaption;
- 	dlci->state = DLCI_CLOSED;
--	if (addr)
-+	if (addr) {
- 		dlci->data = gsm_dlci_data;
--	else
-+		/* Prevent us from sending data before the link is up */
-+		dlci->constipated = true;
-+	} else {
- 		dlci->data = gsm_dlci_command;
-+	}
- 	gsm->dlci[addr] = dlci;
- 	return dlci;
- }
-@@ -3163,6 +3188,8 @@ static int gsmtty_open(struct tty_struct *tty, struct file *filp)
- 	/* Start sending off SABM messages */
- 	if (gsm->initiator)
- 		gsm_dlci_begin_open(dlci);
-+	else
-+		gsm_dlci_set_opening(dlci);
- 	/* And wait for virtual carrier */
- 	return tty_port_block_til_ready(port, tty, filp);
- }
--- 
-2.34.1
 
+
+--=20
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
