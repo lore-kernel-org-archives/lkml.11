@@ -2,52 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FC4AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:23:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47FF9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:23:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239645AbiE3OSg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:18:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39788 "EHLO
+        id S237689AbiE3OX3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:23:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240584AbiE3OMX (ORCPT
+        with ESMTP id S241176AbiE3ORU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:12:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E0A0E5287;
-        Mon, 30 May 2022 06:43:04 -0700 (PDT)
+        Mon, 30 May 2022 10:17:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24E3B1157E5;
+        Mon, 30 May 2022 06:44:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 919AB60FA6;
-        Mon, 30 May 2022 13:43:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 082CDC385B8;
-        Mon, 30 May 2022 13:43:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BC947B80D6B;
+        Mon, 30 May 2022 13:44:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C586AC3411C;
+        Mon, 30 May 2022 13:44:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918183;
-        bh=BrmU2q/cxigeabEKhzsjzIcdbxKZm27SnJIADA1gcgo=;
+        s=k20201202; t=1653918285;
+        bh=u+z48SM47mESXsWhumFb6ZKzLhZAopSDcM0JtCRIbDQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m1m/j+yuON3RBIq+33ajHmhBE64fEPkKP3ATqNCXVlEOX3qp0CLRIRUIsHS8IiBU7
-         emmkARxEwOdTK9HzpMG2RYTtKhm08i75g1HQigdwiEgjti6gLp5jmslDcKB1rykMPA
-         RnbZfKIf30B0n3syqdyF0u192AjmxBGn3hc+HloWn0Cn1nqUjAw0PINz0V1aDE9IkO
-         pMKueeSmyV5ktgXQ3EaB9WUQMap4+XUIjhCkpjs0rhOsG3V9lwg2+/T35xzMknxb2C
-         PWpbvpzqZSp6qtwegtzLPiP+e2aV+d4mCX/JvTd6ORCmms/YJeIpzJJ+tSeXPuxKAq
-         KS6aXlLYrkDmg==
+        b=hSjMS/OCX8GoUaDuybE0m1Voq/QxQOL56Lyk87DqGGUSu9Q0RrItkj39vv50tSHSX
+         PrQd/NqbhrKYpcOxuSE2j07X+VIbd8NQtUZ8lzALOuM3m0Z0IJzymO2h9Y9c7beE4+
+         UJtf42B/aF5LwJYU20WwLmJuFy1zR6bG03xTLDaqQkAIkKjksBufnGzmkqnT2OtB9E
+         fZIMvmMfQH8PmRT0ua9wseCH2A9BXzQDSPACwi511zFj+GpmPlGDSolkvzBP4JQFM3
+         Vso4G7HRLYKSXsXw73I1ORr9uCgzVc+cRj19X/NRt2xprskpnSeCsJlU+HF6DZ7ouy
+         uPrQz0+5G0/gA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sathishkumar S <sathishkumar.sundararaju@amd.com>,
-        Lijo Lazar <lijo.lazar@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, evan.quan@amd.com,
-        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
-        daniel@ffwll.ch, lang.yu@amd.com, darren.powell@amd.com,
-        Graham.Sider@amd.com, Prike.Liang@amd.com,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.15 088/109] drm/amd/pm: update smartshift powerboost calc for smu12
-Date:   Mon, 30 May 2022 09:38:04 -0400
-Message-Id: <20220530133825.1933431-88-sashal@kernel.org>
+Cc:     Len Brown <len.brown@intel.com>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        Sasha Levin <sashal@kernel.org>, lenb@kernel.org,
+        linux-pm@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 18/76] tools/power turbostat: fix ICX DRAM power numbers
+Date:   Mon, 30 May 2022 09:43:08 -0400
+Message-Id: <20220530134406.1934928-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
-References: <20220530133825.1933431-1-sashal@kernel.org>
+In-Reply-To: <20220530134406.1934928-1-sashal@kernel.org>
+References: <20220530134406.1934928-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -56,111 +52,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sathishkumar S <sathishkumar.sundararaju@amd.com>
+From: Len Brown <len.brown@intel.com>
 
-[ Upstream commit 138292f1dc00e7e0724f44769f9da39cf2f3bf0b ]
+[ Upstream commit 6397b6418935773a34b533b3348b03f4ce3d7050 ]
 
-smartshift apu and dgpu power boost are reported as percentage with
-respect to their power limits. This value[0-100] reflects the boost
-for the respective device.
+ICX (and its duplicates) require special hard-coded DRAM RAPL units,
+rather than using the generic RAPL energy units.
 
-Signed-off-by: Sathishkumar S <sathishkumar.sundararaju@amd.com>
-Reviewed-by: Lijo Lazar <lijo.lazar@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Reported-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Signed-off-by: Len Brown <len.brown@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../gpu/drm/amd/pm/swsmu/smu12/renoir_ppt.c   | 60 ++++++++++++++-----
- 1 file changed, 44 insertions(+), 16 deletions(-)
+ tools/power/x86/turbostat/turbostat.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu12/renoir_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu12/renoir_ppt.c
-index 145f13b8c977..138466081875 100644
---- a/drivers/gpu/drm/amd/pm/swsmu/smu12/renoir_ppt.c
-+++ b/drivers/gpu/drm/amd/pm/swsmu/smu12/renoir_ppt.c
-@@ -1127,6 +1127,39 @@ static int renoir_get_power_profile_mode(struct smu_context *smu,
- 	return size;
- }
- 
-+static void renoir_get_ss_power_percent(SmuMetrics_t *metrics,
-+					uint32_t *apu_percent, uint32_t *dgpu_percent)
-+{
-+	uint32_t apu_boost = 0;
-+	uint32_t dgpu_boost = 0;
-+	uint16_t apu_limit = 0;
-+	uint16_t dgpu_limit = 0;
-+	uint16_t apu_power = 0;
-+	uint16_t dgpu_power = 0;
-+
-+	apu_power = metrics->ApuPower;
-+	apu_limit = metrics->StapmOriginalLimit;
-+	if (apu_power > apu_limit && apu_limit != 0)
-+		apu_boost =  ((apu_power - apu_limit) * 100) / apu_limit;
-+	apu_boost = (apu_boost > 100) ? 100 : apu_boost;
-+
-+	dgpu_power = metrics->dGpuPower;
-+	if (metrics->StapmCurrentLimit > metrics->StapmOriginalLimit)
-+		dgpu_limit = metrics->StapmCurrentLimit - metrics->StapmOriginalLimit;
-+	if (dgpu_power > dgpu_limit && dgpu_limit != 0)
-+		dgpu_boost = ((dgpu_power - dgpu_limit) * 100) / dgpu_limit;
-+	dgpu_boost = (dgpu_boost > 100) ? 100 : dgpu_boost;
-+
-+	if (dgpu_boost >= apu_boost)
-+		apu_boost = 0;
-+	else
-+		dgpu_boost = 0;
-+
-+	*apu_percent = apu_boost;
-+	*dgpu_percent = dgpu_boost;
-+}
-+
-+
- static int renoir_get_smu_metrics_data(struct smu_context *smu,
- 				       MetricsMember_t member,
- 				       uint32_t *value)
-@@ -1135,6 +1168,9 @@ static int renoir_get_smu_metrics_data(struct smu_context *smu,
- 
- 	SmuMetrics_t *metrics = (SmuMetrics_t *)smu_table->metrics_table;
- 	int ret = 0;
-+	uint32_t apu_percent = 0;
-+	uint32_t dgpu_percent = 0;
-+
- 
- 	mutex_lock(&smu->metrics_lock);
- 
-@@ -1183,26 +1219,18 @@ static int renoir_get_smu_metrics_data(struct smu_context *smu,
- 		*value = metrics->Voltage[1];
- 		break;
- 	case METRICS_SS_APU_SHARE:
--		/* return the percentage of APU power with respect to APU's power limit.
--		 * percentage is reported, this isn't boost value. Smartshift power
--		 * boost/shift is only when the percentage is more than 100.
-+		/* return the percentage of APU power boost
-+		 * with respect to APU's power limit.
- 		 */
--		if (metrics->StapmOriginalLimit > 0)
--			*value =  (metrics->ApuPower * 100) / metrics->StapmOriginalLimit;
--		else
--			*value = 0;
-+		renoir_get_ss_power_percent(metrics, &apu_percent, &dgpu_percent);
-+		*value = apu_percent;
- 		break;
- 	case METRICS_SS_DGPU_SHARE:
--		/* return the percentage of dGPU power with respect to dGPU's power limit.
--		 * percentage is reported, this isn't boost value. Smartshift power
--		 * boost/shift is only when the percentage is more than 100.
-+		/* return the percentage of dGPU power boost
-+		 * with respect to dGPU's power limit.
- 		 */
--		if ((metrics->dGpuPower > 0) &&
--		    (metrics->StapmCurrentLimit > metrics->StapmOriginalLimit))
--			*value = (metrics->dGpuPower * 100) /
--				  (metrics->StapmCurrentLimit - metrics->StapmOriginalLimit);
--		else
--			*value = 0;
-+		renoir_get_ss_power_percent(metrics, &apu_percent, &dgpu_percent);
-+		*value = dgpu_percent;
- 		break;
+diff --git a/tools/power/x86/turbostat/turbostat.c b/tools/power/x86/turbostat/turbostat.c
+index 424ed19a9d54..ef65f7eed1ec 100644
+--- a/tools/power/x86/turbostat/turbostat.c
++++ b/tools/power/x86/turbostat/turbostat.c
+@@ -4189,6 +4189,7 @@ rapl_dram_energy_units_probe(int  model, double rapl_energy_units)
+ 	case INTEL_FAM6_HASWELL_X:	/* HSX */
+ 	case INTEL_FAM6_BROADWELL_X:	/* BDX */
+ 	case INTEL_FAM6_XEON_PHI_KNL:	/* KNL */
++	case INTEL_FAM6_ICELAKE_X:	/* ICX */
+ 		return (rapl_dram_energy_units = 15.3 / 1000000);
  	default:
- 		*value = UINT_MAX;
+ 		return (rapl_energy_units);
 -- 
 2.35.1
 
