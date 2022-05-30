@@ -2,103 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B188FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 08:37:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B919BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 08:39:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234007AbiE3IhQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 04:37:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45066 "EHLO
+        id S233626AbiE3IjW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 04:39:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233448AbiE3IhK (ORCPT
+        with ESMTP id S231968AbiE3IjR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 04:37:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58F3412AFB;
-        Mon, 30 May 2022 01:37:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0AE2D60F2D;
-        Mon, 30 May 2022 08:37:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68E2AC341C8;
-        Mon, 30 May 2022 08:37:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653899824;
-        bh=joaNwl2fglJBNL3HOsZi03uJqqPgjSPdmOy8fc9Csbs=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=iI4m4dIr/FEIkPPpu9FdnrrNSbIBYVhvxduTEeSlAV9jqA9sz2TH+uqGybCOrT1fu
-         u2PrMAL6/d/JHj6Km6epM6iSoAun5OL9b/H2VsbcvXSS3VkhV/ETiyA5i3QtLQGNr0
-         3Jtc3FOygZDxkY4p6IFkBaCIGNqwUEeZk5+Cp458X070B/Lk180yRxPf3+52q1k39j
-         dYpCE5+YrtMY4gcCSbEb/YTgPi30ewDdQ//lcP2Rvo7OujYcIl2IMO4Wn3DkLs4qTL
-         nvy0A5O2MHDjwIS45FXemOYJe97196JcxPnZ4rwGfDA9UbGce6f4c4itJw7QbS9GaE
-         ewIn3D1qpGd6g==
-Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-2ff90e0937aso102036907b3.4;
-        Mon, 30 May 2022 01:37:04 -0700 (PDT)
-X-Gm-Message-State: AOAM532IIyWjZZp7xByQRKFvEh9ex9pB5MAS/on/b3A8NJlTRiy/M1Ou
-        Nl1P6UII6j1F6zKJBQMHbnqbvrcDw5Wm5eXTLr4=
-X-Google-Smtp-Source: ABdhPJw8WweVAyA25Gq4dNf35mk0GYgpbsvXPpTIBf1QNFJB7VQoktGvUZiRkWA77LZQ+jp6sCFNhFuRdf+fx5DDzq0=
-X-Received: by 2002:a0d:efc2:0:b0:2fe:d2b7:da8 with SMTP id
- y185-20020a0defc2000000b002fed2b70da8mr54769437ywe.42.1653899823455; Mon, 30
- May 2022 01:37:03 -0700 (PDT)
-MIME-Version: 1.0
-References: <CAK8P3a2_52JPnBWNvTTkFVwLxPAa7=NaQ4whwC1UeH_NYHeUKQ@mail.gmail.com>
- <CAK8P3a0SpU1n+29KQxzKnPRvzmDE=L0V9RUpKxhemv=74kevcQ@mail.gmail.com>
- <875ylomq3m.wl-maz@kernel.org> <CAAhV-H4icDqABQiT4ckKdsmfVzqBKjxncDt9649c2ijOD093gw@mail.gmail.com>
-In-Reply-To: <CAAhV-H4icDqABQiT4ckKdsmfVzqBKjxncDt9649c2ijOD093gw@mail.gmail.com>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Mon, 30 May 2022 10:36:46 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a0aQO2rOVD0F6w811z6ooeGcmLd4UkpPK7dX_SGGy7WDw@mail.gmail.com>
-Message-ID: <CAK8P3a0aQO2rOVD0F6w811z6ooeGcmLd4UkpPK7dX_SGGy7WDw@mail.gmail.com>
-Subject: Re: [musl] Re: [GIT PULL] asm-generic changes for 5.19
-To:     musl@lists.openwall.com
-Cc:     Marc Zyngier <maz@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Huacai Chen <chenhuacai@loongson.cn>,
-        WANG Xuerui <kernel@xen0n.name>, libc-alpha@sourceware.org,
-        Ard Biesheuvel <ardb@kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>
+        Mon, 30 May 2022 04:39:17 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2965A6443;
+        Mon, 30 May 2022 01:39:10 -0700 (PDT)
+X-UUID: a589dd4724db487f977625090a759ee3-20220530
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:7d2e6138-7406-4dbd-982e-d9435960be05,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:2a19b09,CLOUDID:7f9efe47-4fb1-496b-8f1d-39e733fed1ea,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+        ,QS:0,BEC:nil
+X-UUID: a589dd4724db487f977625090a759ee3-20220530
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
+        (envelope-from <ck.hu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1855203391; Mon, 30 May 2022 16:39:05 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Mon, 30 May 2022 16:39:04 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 30 May 2022 16:39:03 +0800
+Message-ID: <76ddd49bb2bb46923900b085056ce22d7bfa0b0a.camel@mediatek.com>
+Subject: Re: [PATCH v10 11/21] drm/mediatek: dpi: move swap_shift to SoC
+ config
+From:   CK Hu <ck.hu@mediatek.com>
+To:     Guillaume Ranquet <granquet@baylibre.com>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        "David Airlie" <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        "Kishon Vijay Abraham I" <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>, "Helge Deller" <deller@gmx.de>,
+        Jitao shi <jitao.shi@mediatek.com>
+CC:     Rex-BC Chen <rex-bc.chen@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-phy@lists.infradead.org>, <linux-fbdev@vger.kernel.org>
+Date:   Mon, 30 May 2022 16:38:59 +0800
+In-Reply-To: <20220523104758.29531-12-granquet@baylibre.com>
+References: <20220523104758.29531-1-granquet@baylibre.com>
+         <20220523104758.29531-12-granquet@baylibre.com>
 Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 30, 2022 at 8:28 AM Huacai Chen <chenhuacai@kernel.org> wrote:
-> On Sun, May 29, 2022 at 9:21 PM Marc Zyngier <maz@kernel.org> wrote:
-> > On Sun, 29 May 2022 12:24:29 +0100, Arnd Bergmann <arnd@kernel.org> wrote:
-> >
-> > I'd tend to agree. But if on the other hand the userspace ABI is
-> > clearly defined, I think it could make sense to go for it (if I
-> > remember well, we merged arm64 without any support irqchip support,
-> > and the arm64 GIC support appeared later in the game).
-> (adding linux-pci and linux-acpi maintainers to Cc)
->
-> I'd like to confirm the review status of the respective LoongArch
-> patchsets ([1], [2]), to see if we can make it into this merge window.
+Hi, Guillaume:
 
-In the meantime, can you rebase the tree once more to split out the
-driver patches and make sure the architecture port without the drivers
-still builds cleanly (at least defconfig and allmodconfig) using the compiler
-from [1]? If this requires additional patches, please add them on top.
+On Mon, 2022-05-23 at 12:47 +0200, Guillaume Ranquet wrote:
+> Add flexibility by moving the swap shift value to SoC specific config
+> 
+> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+> Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+> Reviewed-by: AngeloGioacchino Del Regno <
+> angelogioacchino.delregno@collabora.com>
+> ---
+>  drivers/gpu/drm/mediatek/mtk_dpi.c | 8 +++++++-
+>  1 file changed, 7 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c
+> b/drivers/gpu/drm/mediatek/mtk_dpi.c
+> index 6eeda222a973..6d4d8c6ec47d 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_dpi.c
+> +++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
+> @@ -131,6 +131,7 @@ struct mtk_dpi_conf {
+>  	u32 dimension_mask;
+>  	/* HSIZE and VSIZE mask (no shift) */
+>  	u32 hvsize_mask;
+> +	u32 channel_swap_shift;
+>  	const struct mtk_dpi_yc_limit *limit;
+>  };
+>  
+> @@ -349,7 +350,8 @@ static void mtk_dpi_config_channel_swap(struct
+> mtk_dpi *dpi,
+>  		break;
+>  	}
+>  
+> -	mtk_dpi_mask(dpi, DPI_OUTPUT_SETTING, val << CH_SWAP,
+> CH_SWAP_MASK);
+> +	mtk_dpi_mask(dpi, DPI_OUTPUT_SETTING, val << dpi->conf-
+> >channel_swap_shift,
+> +		     CH_SWAP_MASK);
 
-Once that is done, we can ask Linus to consider merging the branch
-for the architecture port, while you keep working with the pci and irqchip
-maintainers to merge the drivers either for 5.19 or a future release.
+From the definiton:
 
-While this means merging a branch that does not actually work on any
-hardware by itself, it should be sufficient for the libc patches to
-consider the ABI stable, and it is consistent with how we keep
-CPU architecture support separate from platform driver support
-elsewhere.
+ #define CH_SWAP				0
++#define DPINTF_CH_SWAP			BIT(1)
+ #define CH_SWAP_MASK			(0x7 << 0)
++#define DPINTF_CH_SWAP_MASK		(0x7 << 1)
 
-       Arnd
+This statement should be:
 
-[1] https://mirrors.edge.kernel.org/pub/tools/crosstool/files/bin/x86_64/12.1.0/x86_64-gcc-12.1.0-nolibc-loongarch64-linux.tar.xz
+mtk_dpi_mask(dpi, DPI_OUTPUT_SETTING, val << dpi->conf-
+>channel_swap_shift, CH_SWAP_MASK << dpi->conf->channel_swap_shift);
+
+dpi->conf->channel_swap_shift is 1 for MT8195-DP_INTF and 0 for others.
+And drop the definition of DPINTF_CH_SWAP and DPINTF_CH_SWAP_MASK,
+
+Regards,
+CK
+
+
+>  }
+>  
+>  static void mtk_dpi_config_yuv422_enable(struct mtk_dpi *dpi, bool
+> enable)
+> @@ -821,6 +823,7 @@ static const struct mtk_dpi_conf mt8173_conf = {
+>  	.swap_input_support = true,
+>  	.dimension_mask = HPW_MASK,
+>  	.hvsize_mask = HSIZE_MASK,
+> +	.channel_swap_shift = CH_SWAP,
+>  	.limit = &mtk_dpi_limit,
+>  };
+>  
+> @@ -835,6 +838,7 @@ static const struct mtk_dpi_conf mt2701_conf = {
+>  	.swap_input_support = true,
+>  	.dimension_mask = HPW_MASK,
+>  	.hvsize_mask = HSIZE_MASK,
+> +	.channel_swap_shift = CH_SWAP,
+>  	.limit = &mtk_dpi_limit,
+>  };
+>  
+> @@ -848,6 +852,7 @@ static const struct mtk_dpi_conf mt8183_conf = {
+>  	.swap_input_support = true,
+>  	.dimension_mask = HPW_MASK,
+>  	.hvsize_mask = HSIZE_MASK,
+> +	.channel_swap_shift = CH_SWAP,
+>  	.limit = &mtk_dpi_limit,
+>  };
+>  
+> @@ -861,6 +866,7 @@ static const struct mtk_dpi_conf mt8192_conf = {
+>  	.swap_input_support = true,
+>  	.dimension_mask = HPW_MASK,
+>  	.hvsize_mask = HSIZE_MASK,
+> +	.channel_swap_shift = CH_SWAP,
+>  	.limit = &mtk_dpi_limit,
+>  };
+>  
+
