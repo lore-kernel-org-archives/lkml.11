@@ -2,101 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B011BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 15:42:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FED8C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 15:42:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239924AbiE3PmR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 11:42:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53278 "EHLO
+        id S240613AbiE3Pmc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 11:42:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240606AbiE3PmA (ORCPT
+        with ESMTP id S239999AbiE3PmK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 11:42:00 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27C0320FC52;
-        Mon, 30 May 2022 07:49:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653922155; x=1685458155;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=xcOydMoGrTfPeiG4u/paPT/YoYgwMhUeig4F7gxUuY8=;
-  b=FaeC9TU5m0T/THcYrKB83tAtu4e4BsAoVcupO0N7oA99fEh0eSEpkmhu
-   hXv7XYAwsusuL2uvzaLWWpr7qajI+XLzR0TuHb6Ofe/ax8jQtYthpSQWN
-   3AOYMcFEKxqVYobTOkayQYJpPxugCyHQ4krQZa5353Cuyg1aHGEGXyD46
-   xOKql8LzQHZqR1t8b/33kQcJgD0NWa8b29sBDhr5+vCDFrEfQBQbSvhAH
-   JHZoRzxiepALimJZz5N2VnWIDrUZtE0dgDa+J+gipx3EamxjLr8Mstcnf
-   0hyo2GQPr4uug2NAO9fBnUsOPQ83VoEQ6WGw2JlLmU65WcYAwsI7WwLbE
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10363"; a="361394724"
-X-IronPort-AV: E=Sophos;i="5.91,263,1647327600"; 
-   d="scan'208";a="361394724"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2022 07:49:01 -0700
-X-IronPort-AV: E=Sophos;i="5.91,263,1647327600"; 
-   d="scan'208";a="903585639"
-Received: from embargo.jf.intel.com ([10.165.9.183])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2022 07:49:01 -0700
-From:   Yang Weijiang <weijiang.yang@intel.com>
-To:     pbonzini@redhat.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     like.xu.linux@gmail.com, Yang Weijiang <weijiang.yang@intel.com>
-Subject: [PATCH] KVM: x86: Bypass cpuid check for empty arch-lbr leaf
-Date:   Mon, 30 May 2022 10:48:29 -0400
-Message-Id: <20220530144829.39714-1-weijiang.yang@intel.com>
-X-Mailer: git-send-email 2.27.0
+        Mon, 30 May 2022 11:42:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3DAB60D92;
+        Mon, 30 May 2022 07:49:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A5ABA60FB6;
+        Mon, 30 May 2022 14:49:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0431DC3411A;
+        Mon, 30 May 2022 14:49:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653922163;
+        bh=P5JWUzEVw4owKrA2NgsS0ui84/Nc0qx354IFutwuBHU=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=QqLKY3ZoZyv7mso5XtjQ4iknbfc7HECtfJq823BOrzgI7RMq5sLr4AulTa0jY5wVq
+         mn3TtWVuolsZNb+Kz0PgTHAAzWCmxrZKDZO6qE+BhrgzyrbBR9peasBTfAlr5Ve9V0
+         JXb5nFbqs7V/jvu0GgnI40snw9EgteoG2lyHZ69udNVNhqCjkAaM/Fn/CDpW5zyUTZ
+         jA+irbfev3ty6ti6sEbKX8ge4DbrgqILhSnIom0QqLaVfKAWSqxp1PZeQGqRSN9hh3
+         HOP5LLpoLb3ISkGiHaYn9xaHrUfEU/bHBVF4aq4VhsxL47+8tKRTK4D8uQpCUPvv4D
+         fC+PciD8nevMQ==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 995485C034D; Mon, 30 May 2022 07:49:22 -0700 (PDT)
+Date:   Mon, 30 May 2022 07:49:22 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     nicolas saenz julienne <nsaenz@kernel.org>
+Cc:     Frederic Weisbecker <frederic@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>, Tejun Heo <tj@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Paul Gortmaker <paul.gortmaker@windriver.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        Phil Auld <pauld@redhat.com>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Daniel Bristot de Oliveira <bristot@kernel.org>,
+        rcu@vger.kernel.org
+Subject: Re: [RFC PATCH 4/4] cpuset: Support RCU-NOCB toggle on v2 root
+ partitions
+Message-ID: <20220530144922.GA1790663@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220525221055.1152307-5-frederic@kernel.org>
+ <Yo/FGcG+uiBh88sT@slm.duckdns.org>
+ <20220526225141.GA1214445@lothringen>
+ <YpAHEt0j30vBw9au@slm.duckdns.org>
+ <9e44bb00-955a-dbc6-a863-be649e0c701f@redhat.com>
+ <YpAdSW8JXVPOoNJl@slm.duckdns.org>
+ <20220527083018.n43nc73vuuzm5ixo@localhost.localdomain>
+ <YpIwsiaY2IPK96WO@hirez.programming.kicks-ass.net>
+ <20220530004049.GA1251147@lothringen>
+ <e3010471ee43e7e134f882f320fc4643fe4e4810.camel@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e3010471ee43e7e134f882f320fc4643fe4e4810.camel@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On arch-lbr capable platforms, cpuid(0x1c,0) returns meaningful
-arch-lbr supported values, in this case, eax[7:0] = lbr depth mask.
-Whereas on legacy platforms(non-arch-lbr), cpuid(0x1c,0) returns
-with eax/ebx/ecx/edx zeroed out.
+On Mon, May 30, 2022 at 04:29:56PM +0200, nicolas saenz julienne wrote:
+> On Mon, 2022-05-30 at 02:40 +0200, Frederic Weisbecker wrote:
+> > On Sat, May 28, 2022 at 04:24:50PM +0200, Peter Zijlstra wrote:
+> > > On Fri, May 27, 2022 at 10:30:18AM +0200, Juri Lelli wrote:
+> > > > Hi,
+> > > > 
+> > > > On 26/05/22 14:37, Tejun Heo wrote:
+> > > > > On Thu, May 26, 2022 at 08:28:43PM -0400, Waiman Long wrote:
+> > > > > > I am thinking along the line that it will not be hierarchical. However,
+> > > > > > cpuset can be useful if we want to have multiple isolated partitions
+> > > > > > underneath the top cpuset with different isolation attributes, but no more
+> > > > > > sub-isolated partition with sub-attributes underneath them. IOW, we can only
+> > > > > > set them at the first level under top_cpuset. Will that be useful?
+> > > > > 
+> > > > > At that point, I'd just prefer to have it under /proc or /sys.
+> > > > 
+> > > > FWIW, I was under the impression that this would nicely fit along the
+> > > > side of other feaures towards implenting dynamic isolation of CPUs (say
+> > > > https://lore.kernel.org/lkml/20220510153413.400020-1-longman@redhat.com/
+> > > > for example). Wouldn't be awkward to have to poke different places to
+> > > > achieve isolation at runtime?
+> > > 
+> > > This, that's what I was thinking.
+> > > 
+> > > My main objection to the whole thing is that it's an RCU_NOCB specific
+> > > interface. *That* I think is daft.
+> > > 
+> > > I was thinking a partition would be able to designate a house-keeping
+> > > sub-partition/mask, but who cares about all the various different
+> > > housekeeping parties.
+> > 
+> > It's time for the isolation users to step up here! I very rarely hear from them
+> > and I just can't figure out by myself all the variants of uses for each of the
+> > isolation features. May be some people are only interested in nocb for some
+> > specific uses, or may be it never makes sense without nohz full and all the rest
+> > of the isolation features. So for now I take the very cautious path to split the
+> > interface.
+> 
+> OK, my 2 cents. I personally deal with virtualisation setups that involve RT
+> and CPU isolation on both host and guests.
+> 
+> The main use-case ATM is running DPDK-like workloads. We want to achieve
+> latencies in the order of tens of microseconds, so it's essential to avoid
+> entering the kernel at all cost. So, no HW interrupts, sched tick, RCU
+> callbacks, clocksource watchdogs, softlockup, intel_pstate, timers, etc...
+> Everything is deferred onto housekeeping CPUs or disabled.
+> 
+> Then we have setups that need to deal with HW on the host, exposed to the guest
+> through emulation or VirtIO. The same rules apply really, except for some IRQ
+> affinity tweaks and sched priority magic.
+> 
+> I find it hard to see how running RCU callback locally could be useful to any
+> latency sensitive workload.
+> 
+> Frederic, out of curiosity, do you have a use-case in mind that might benefit
+> from nohz_full but not rcu_nocb? Maybe HPC?
 
-On legacy platforms, during selftests app startup, it first gets
-supported cpuids by KVM_GET_SUPPORTED_CPUID then sets the returned
-data with KVM_SET_CPUID2, this leads to empty cpuid leaf(0x1c,0)
-written to KVM and makes the check fail, app finally ends up with
-below error message when run selftest:
+Would users looking for millisecond-scale latencies want rcu_nocbs but
+not nohz_full, that is, the other way around?
 
- KVM_SET_CPUID2 failed, rc: -1 errno: 22
-
-So check the validity of the leaf(0x1c,0) before validate lbr
-depth value.
-
-QEMU filters out empty CPUID leaves before calls KVM_SET_CPUID2,
-so this is not a problem.
-
-Fixes: 4b73207592: ("KVM: x86/cpuid: Advertise Arch LBR feature in CPUID")
-Signed-off-by: Yang Weijiang <weijiang.yang@intel.com>
----
- arch/x86/kvm/cpuid.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
-index 9c107b5cc88f..c2eab1a73aab 100644
---- a/arch/x86/kvm/cpuid.c
-+++ b/arch/x86/kvm/cpuid.c
-@@ -103,13 +103,14 @@ static int kvm_check_cpuid(struct kvm_vcpu *vcpu,
- 			return -EINVAL;
- 	}
- 	best = cpuid_entry2_find(entries, nent, 0x1c, 0);
--	if (best) {
-+	if (best && best->eax) {
- 		unsigned int eax, ebx, ecx, edx;
- 
- 		/* Reject user-space CPUID if depth is different from host's.*/
- 		cpuid_count(0x1c, 0, &eax, &ebx, &ecx, &edx);
- 
--		if ((best->eax & 0xff) != BIT(fls(eax & 0xff) - 1))
-+		if ((eax & 0xff) &&
-+		    (best->eax & 0xff) != BIT(fls(eax & 0xff) - 1))
- 			return -EINVAL;
- 	}
- 
--- 
-2.27.0
-
+							Thanx, Paul
