@@ -2,146 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A71D2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 07:41:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BA6CC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 07:42:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233686AbiE3Hlf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 03:41:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48474 "EHLO
+        id S233703AbiE3HmV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 03:42:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232453AbiE3Hla (ORCPT
+        with ESMTP id S232453AbiE3HmT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 03:41:30 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 33CDB12ABF
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 00:41:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653896488;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Ioljxq6PuUu4lxQDlH2MK2dNxIoWh+YwDSpERyNHcYc=;
-        b=XvvzWp4Bbvuec6SPEujVI3QqJPEREweV2vgK9bMN7ZdrA/6fg0c0ScUCSZ/UJ66eM1qfe0
-        oEuRc3xxI5fz59GitkUNXgL1VptzUcrZJF6ra3reUqGGTSvQLeTS4gmLV1TkOLNL2o9xjv
-        WeZZLpCR/JOyxrjO9KkWV/i7bIPo5fc=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-637-lLl-GGQbPY2Mcr6iJ0B-TA-1; Mon, 30 May 2022 03:41:25 -0400
-X-MC-Unique: lLl-GGQbPY2Mcr6iJ0B-TA-1
-Received: by mail-wm1-f69.google.com with SMTP id j40-20020a05600c1c2800b003972dbb1066so9286045wms.4
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 00:41:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:organization:subject
-         :in-reply-to:content-transfer-encoding;
-        bh=Ioljxq6PuUu4lxQDlH2MK2dNxIoWh+YwDSpERyNHcYc=;
-        b=vONZ4LKHwLYZIVy8TnHcCu47rvkVLXtui2mZ+HCqxmZRys23WLWLIXg8HPlar1OsRz
-         l1B1EpyvMFuqrgSjrcNEA/S84FLVkq6hcJitCtqmuZ7QN48av9bryeGQ3qjeb08q39CU
-         Izxwpaxhp/fYt2sRw2d9PjajChe1RgoKih0SzvBrbWKCA4HAlURZ5b+PDb43M9N9Tyaq
-         QBXRb3J1ne8P55Ev5XnNNGxi9RYB404E5C5vgLL9r27tenW8iqX5ldtuj3nVdYduh764
-         l+KTOvehq3WkySYlKz8c6pqOg6DyDl1kdqkFSgr7lE3SL47K+PxBts719tWCrtIbwXqA
-         JD/A==
-X-Gm-Message-State: AOAM5312sxGIKrAGvA/Ye/wzytWhNy4CMrZQLaUo6lC1hd3S9zAU1eOy
-        KDqXsrKl9SYGfjJk/LzCJZ5E2a+TYMAZuRhn+PK5ciXKMDLR9U90gc0HiT/OX78qYVKBjl0jAVW
-        Z2aURjkW5SAua/l5hcikZt5hP
-X-Received: by 2002:a05:6000:144f:b0:20f:d6e8:a54 with SMTP id v15-20020a056000144f00b0020fd6e80a54mr30927446wrx.482.1653896483860;
-        Mon, 30 May 2022 00:41:23 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJygmIHMNmIMibGNEd206s8mAH/2ItntHqoVW3Fp9CPDeipNv0CP+C+hoSkZ/LeN5Ih++u+6aA==
-X-Received: by 2002:a05:6000:144f:b0:20f:d6e8:a54 with SMTP id v15-20020a056000144f00b0020fd6e80a54mr30927434wrx.482.1653896483573;
-        Mon, 30 May 2022 00:41:23 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c704:7c00:aaa9:2ce5:5aa0:f736? (p200300cbc7047c00aaa92ce55aa0f736.dip0.t-ipconnect.de. [2003:cb:c704:7c00:aaa9:2ce5:5aa0:f736])
-        by smtp.gmail.com with ESMTPSA id h9-20020a7bc929000000b003974a3af623sm9688836wml.17.2022.05.30.00.41.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 30 May 2022 00:41:23 -0700 (PDT)
-Message-ID: <0d266c61-605d-ce0c-4274-b0c7e10f845a@redhat.com>
-Date:   Mon, 30 May 2022 09:41:22 +0200
+        Mon, 30 May 2022 03:42:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 896C118B3E;
+        Mon, 30 May 2022 00:42:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3A7D1B80C0A;
+        Mon, 30 May 2022 07:42:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8279FC385B8;
+        Mon, 30 May 2022 07:42:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1653896535;
+        bh=+TAeonrN9Usmgvcy5y9tduDfWQ1l4vjy0PzYQpsTPuw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=hhV+TSxke5PFpoowmalTT79tl+muOCGNJ/hr25nQ7IfLrbyLNsEo5qz74bmy+HRRr
+         Teiywatp1DjR5ydAzNRNqjpBVDvoKE8iGDK9X1M1Mws5IEo2b32TSG2QUq2x30Jr8B
+         1qFk1mJ4oYJd/nmlF/8plTFeYZyWBy9/lnAdCdls=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
+        torvalds@linux-foundation.org, stable@vger.kernel.org
+Cc:     lwn@lwn.net, jslaby@suse.cz,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Linux 5.18.1
+Date:   Mon, 30 May 2022 09:42:11 +0200
+Message-Id: <1653896512197141@kroah.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Content-Language: en-US
-To:     zhenwei pi <pizhenwei@bytedance.com>, Peter Xu <peterx@redhat.com>,
-        Jue Wang <juew@google.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>, jasowang@redhat.com,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux MM <linux-mm@kvack.org>, mst@redhat.com,
-        =?UTF-8?B?SE9SSUdVQ0hJIE5BT1lBKOWggOWPoyDnm7TkuZ8p?= 
-        <naoya.horiguchi@nec.com>, Paolo Bonzini <pbonzini@redhat.com>,
-        qemu-devel@nongnu.org, virtualization@lists.linux-foundation.org
-References: <CAPcxDJ5pduUyMA0rf+-aTjK_2eBvig05UTiTptX1nVkWE-_g8w@mail.gmail.com>
- <Yo/I3oLkd9OU0ice@xz-m1.local>
- <24a95dea-9ea6-a904-7c0b-197961afa1d1@bytedance.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-Subject: Re: [PATCH 0/3] recover hardware corrupted page by virtio balloon
-In-Reply-To: <24a95dea-9ea6-a904-7c0b-197961afa1d1@bytedance.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 27.05.22 08:32, zhenwei pi wrote:
-> On 5/27/22 02:37, Peter Xu wrote:
->> On Wed, May 25, 2022 at 01:16:34PM -0700, Jue Wang wrote:
->>> The hypervisor _must_ emulate poisons identified in guest physical
->>> address space (could be transported from the source VM), this is to
->>> prevent silent data corruption in the guest. With a paravirtual
->>> approach like this patch series, the hypervisor can clear some of the
->>> poisoned HVAs knowing for certain that the guest OS has isolated the
->>> poisoned page. I wonder how much value it provides to the guest if the
->>> guest and workload are _not_ in a pressing need for the extra KB/MB
->>> worth of memory.
->>
->> I'm curious the same on how unpoisoning could help here.  The reasoning
->> behind would be great material to be mentioned in the next cover letter.
->>
->> Shouldn't we consider migrating serious workloads off the host already
->> where there's a sign of more severe hardware issues, instead?
->>
->> Thanks,
->>
-> 
-> I'm maintaining 1000,000+ virtual machines, from my experience:
-> UE is quite unusual and occurs randomly, and I did not hit UE storm case 
-> in the past years. The memory also has no obvious performance drop after 
-> hitting UE.
-> 
-> I hit several CE storm case, the performance memory drops a lot. But I 
-> can't find obvious relationship between UE and CE.
-> 
-> So from the point of my view, to fix the corrupted page for VM seems 
-> good enough. And yes, unpoisoning several pages does not help 
-> significantly, but it is still a chance to make the virtualization better.
-> 
+I'm announcing the release of the 5.18.1 kernel.
 
-I'm curious why we should care about resurrecting a handful of poisoned
-pages in a VM. The cover letter doesn't touch on that.
+All users of the 5.18 kernel series must upgrade.
 
-IOW, I'm missing the motivation why we should add additional
-code+complexity to unpoison pages at all.
+The updated 5.18.y git tree can be found at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-5.18.y
+and can be browsed at the normal kernel.org git web browser:
+	https://git.kernel.org/?p=linux/kernel/git/stable/linux-stable.git;a=summary
 
-If we're talking about individual 4k pages, it's certainly sub-optimal,
-but does it matter in practice? I could understand if we're losing
-megabytes of memory. But then, I assume the workload might be seriously
-harmed either way already?
+thanks,
 
+greg k-h
 
-I assume when talking about "the performance memory drops a lot", you
-imply that this patch set can mitigate that performance drop?
+------------
 
-But why do you see a performance drop? Because we might lose some
-possible THP candidates (in the host or the guest) and you want to plug
-does holes? I assume you'll see a performance drop simply because
-poisoning memory is expensive, including migrating pages around on CE.
+ Documentation/admin-guide/sysctl/kernel.rst |    8 
+ Makefile                                    |    2 
+ arch/alpha/include/asm/timex.h              |    1 
+ arch/arm/include/asm/timex.h                |    1 
+ arch/ia64/include/asm/timex.h               |    1 
+ arch/m68k/include/asm/timex.h               |    2 
+ arch/mips/include/asm/timex.h               |   17 
+ arch/nios2/include/asm/timex.h              |    3 
+ arch/parisc/include/asm/timex.h             |    3 
+ arch/powerpc/include/asm/timex.h            |    1 
+ arch/riscv/include/asm/timex.h              |    2 
+ arch/s390/include/asm/timex.h               |    1 
+ arch/sparc/include/asm/timex_32.h           |    4 
+ arch/um/include/asm/timex.h                 |    9 
+ arch/x86/include/asm/timex.h                |    9 
+ arch/x86/include/asm/tsc.h                  |    7 
+ arch/xtensa/include/asm/timex.h             |    6 
+ drivers/acpi/sysfs.c                        |   25 
+ drivers/char/random.c                       | 1213 +++++++++++-----------------
+ drivers/hid/amd-sfh-hid/amd_sfh_client.c    |   11 
+ drivers/hid/amd-sfh-hid/amd_sfh_pcie.c      |    7 
+ drivers/hid/amd-sfh-hid/amd_sfh_pcie.h      |    4 
+ include/linux/mm.h                          |    1 
+ include/linux/prandom.h                     |   23 
+ include/linux/random.h                      |   92 --
+ include/linux/security.h                    |    2 
+ include/linux/siphash.h                     |   28 
+ include/linux/timex.h                       |    8 
+ init/main.c                                 |   13 
+ kernel/debug/debug_core.c                   |   24 
+ kernel/debug/kdb/kdb_main.c                 |   62 +
+ kernel/time/timekeeping.c                   |   15 
+ lib/Kconfig.debug                           |    3 
+ lib/siphash.c                               |   32 
+ mm/util.c                                   |   32 
+ security/security.c                         |    2 
+ sound/pci/ctxfi/ctatc.c                     |    2 
+ sound/pci/ctxfi/cthardware.h                |    3 
+ 38 files changed, 820 insertions(+), 859 deletions(-)
 
-If you have some numbers to share, especially before/after this change,
-that would be great.
+Basavaraj Natikar (1):
+      HID: amd_sfh: Add support for sensor discovery
 
--- 
-Thanks,
+Daniel Thompson (1):
+      lockdown: also lock down previous kgdb use
 
-David / dhildenb
+Edward Matijevic (1):
+      ALSA: ctxfi: Add SB046x PCI ID
+
+Greg Kroah-Hartman (1):
+      Linux 5.18.1
+
+Jason A. Donenfeld (40):
+      random: fix sysctl documentation nits
+      init: call time_init() before rand_initialize()
+      ia64: define get_cycles macro for arch-override
+      s390: define get_cycles macro for arch-override
+      parisc: define get_cycles macro for arch-override
+      alpha: define get_cycles macro for arch-override
+      powerpc: define get_cycles macro for arch-override
+      timekeeping: Add raw clock fallback for random_get_entropy()
+      m68k: use fallback for random_get_entropy() instead of zero
+      riscv: use fallback for random_get_entropy() instead of zero
+      mips: use fallback for random_get_entropy() instead of just c0 random
+      arm: use fallback for random_get_entropy() instead of zero
+      nios2: use fallback for random_get_entropy() instead of zero
+      x86/tsc: Use fallback for random_get_entropy() instead of zero
+      um: use fallback for random_get_entropy() instead of zero
+      sparc: use fallback for random_get_entropy() instead of zero
+      xtensa: use fallback for random_get_entropy() instead of zero
+      random: insist on random_get_entropy() existing in order to simplify
+      random: do not use batches when !crng_ready()
+      random: use first 128 bits of input as fast init
+      random: do not pretend to handle premature next security model
+      random: order timer entropy functions below interrupt functions
+      random: do not use input pool from hard IRQs
+      random: help compiler out with fast_mix() by using simpler arguments
+      siphash: use one source of truth for siphash permutations
+      random: use symbolic constants for crng_init states
+      random: avoid initializing twice in credit race
+      random: move initialization out of reseeding hot path
+      random: remove ratelimiting for in-kernel unseeded randomness
+      random: use proper jiffies comparison macro
+      random: handle latent entropy and command line from random_init()
+      random: credit architectural init the exact amount
+      random: use static branch for crng_ready()
+      random: remove extern from functions in header
+      random: use proper return types on get_random_{int,long}_wait()
+      random: make consistent use of buf and len
+      random: move initialization functions out of hot pages
+      random: move randomize_page() into mm where it belongs
+      random: unify batched entropy implementations
+      random: check for signals after page of pool writes
+
+Jens Axboe (3):
+      random: convert to using fops->read_iter()
+      random: convert to using fops->write_iter()
+      random: wire up fops->splice_{read,write}_iter()
+
+Lorenzo Pieralisi (1):
+      ACPI: sysfs: Fix BERT error region memory mapping
 
