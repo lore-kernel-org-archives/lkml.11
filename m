@@ -2,52 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD432C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:29:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FF67C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:31:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240636AbiE3O3l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:29:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40138 "EHLO
+        id S240665AbiE3O3w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:29:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241486AbiE3ORh (ORCPT
+        with ESMTP id S241500AbiE3ORi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:17:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB925532F0;
-        Mon, 30 May 2022 06:47:30 -0700 (PDT)
+        Mon, 30 May 2022 10:17:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A39753707;
+        Mon, 30 May 2022 06:47:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 294CD60F14;
-        Mon, 30 May 2022 13:47:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65694C3411C;
-        Mon, 30 May 2022 13:47:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BF49960EC3;
+        Mon, 30 May 2022 13:47:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3BFFC3411A;
+        Mon, 30 May 2022 13:47:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918449;
-        bh=yYvAGK+jRj/Zget7GkGjcBBHehLh7eTbDAzE1XmmZrc=;
+        s=k20201202; t=1653918456;
+        bh=cVaZcLGwbKC5d/IW4BBGSpZFFZmjg+VtkO7FpKZARkI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cFURGLVab6uFck4Sijs1Xf1kfl5YBpTU9ZzTyV8F7fW3PHdrFwkEUZ0qZsck/WsDA
-         OecNNQ8rkAQrztL7NizcF1mijiR0XOWqWdglIws8UkUBarrUwslJi+Ppc+WQTTvScm
-         AGIHyC2ac0/CBCAt+f65VXQQiL7gZFYkfyi2dXD0VrTswS9WmIdfgOJJE7MFgK6DQF
-         9+1REB+dPsGscZGhW53C/i2auV/kJwU6L15YLFTtpNtYWU+i6S8xrZeeO+iHsIXMwj
-         m3tC0r53zWO60H2rHBtYqrp2CpO7NeT8dDpLNMw0FDnhws0Agio8zHlmdztaRkn8Mu
-         M+CEh5Fg5sKqg==
+        b=hynRXW6ycF1tWWP6d5LhkQysjKnh1yVYn0s+2BKQaFt7mnvrzPJ7B7mQcHSmfSlt0
+         DjmnP4Qu6Q3S8/nMC1m3h2tWMWvgtlkvvZ89fPdGNZU3/aTKeCQDxl6u1RV4nowaoS
+         aZDeMLP4kX0boVe+6KJ0Bh5g6RT6T6AtD2l+QQWt3/ji+57EP+1esjn2fzNpl9NOLa
+         yQrjx6GJSigRArMvxd7Lu1MdDvnD6PO1fXHS8f8+aeSixw92FRRjEA+oO9W0qRasQA
+         4hstBLRAOVATNvxpRKX4Lq5iMxcv+clBbfFTgHDOVeaOyy2bF5RPb0gsrqNtRyn22W
+         PT7684msF0FMw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= 
-        <amadeuszx.slawinski@linux.intel.com>,
-        Cezary Rojewski <cezary.rojewski@intel.com>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>,
-        perex@perex.cz, tiwai@suse.com, xkernel.wang@foxmail.com,
-        alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.4 10/55] ALSA: jack: Access input_dev under mutex
-Date:   Mon, 30 May 2022 09:46:16 -0400
-Message-Id: <20220530134701.1935933-10-sashal@kernel.org>
+Cc:     Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.4 13/55] drm/amd/pm: fix double free in si_parse_power_table()
+Date:   Mon, 30 May 2022 09:46:19 -0400
+Message-Id: <20220530134701.1935933-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530134701.1935933-1-sashal@kernel.org>
 References: <20220530134701.1935933-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -55,152 +53,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
+From: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
 
-[ Upstream commit 1b6a6fc5280e97559287b61eade2d4b363e836f2 ]
+[ Upstream commit f3fa2becf2fc25b6ac7cf8d8b1a2e4a86b3b72bd ]
 
-It is possible when using ASoC that input_dev is unregistered while
-calling snd_jack_report, which causes NULL pointer dereference.
-In order to prevent this serialize access to input_dev using mutex lock.
+In function si_parse_power_table(), array adev->pm.dpm.ps and its member
+is allocated. If the allocation of each member fails, the array itself
+is freed and returned with an error code. However, the array is later
+freed again in si_dpm_fini() function which is called when the function
+returns an error.
 
-Signed-off-by: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
-Reviewed-by: Cezary Rojewski <cezary.rojewski@intel.com>
-Link: https://lore.kernel.org/r/20220412091628.3056922-1-amadeuszx.slawinski@linux.intel.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+This leads to potential double free of the array adev->pm.dpm.ps, as
+well as leak of its array members, since the members are not freed in
+the allocation function and the array is not nulled when freed.
+In addition adev->pm.dpm.num_ps, which keeps track of the allocated
+array member, is not updated until the member allocation is
+successfully finished, this could also lead to either use after free,
+or uninitialized variable access in si_dpm_fini().
+
+Fix this by postponing the free of the array until si_dpm_fini() and
+increment adev->pm.dpm.num_ps everytime the array member is allocated.
+
+Signed-off-by: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/sound/jack.h |  1 +
- sound/core/jack.c    | 34 +++++++++++++++++++++++++++-------
- 2 files changed, 28 insertions(+), 7 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/si_dpm.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/include/sound/jack.h b/include/sound/jack.h
-index 9eb2b5ec1ec4..78f3619f3de9 100644
---- a/include/sound/jack.h
-+++ b/include/sound/jack.h
-@@ -62,6 +62,7 @@ struct snd_jack {
- 	const char *id;
- #ifdef CONFIG_SND_JACK_INPUT_DEV
- 	struct input_dev *input_dev;
-+	struct mutex input_dev_lock;
- 	int registered;
- 	int type;
- 	char name[100];
-diff --git a/sound/core/jack.c b/sound/core/jack.c
-index b00ae6f39f05..e7ac82d46821 100644
---- a/sound/core/jack.c
-+++ b/sound/core/jack.c
-@@ -34,8 +34,11 @@ static int snd_jack_dev_disconnect(struct snd_device *device)
- #ifdef CONFIG_SND_JACK_INPUT_DEV
- 	struct snd_jack *jack = device->device_data;
- 
--	if (!jack->input_dev)
-+	mutex_lock(&jack->input_dev_lock);
-+	if (!jack->input_dev) {
-+		mutex_unlock(&jack->input_dev_lock);
- 		return 0;
-+	}
- 
- 	/* If the input device is registered with the input subsystem
- 	 * then we need to use a different deallocator. */
-@@ -44,6 +47,7 @@ static int snd_jack_dev_disconnect(struct snd_device *device)
- 	else
- 		input_free_device(jack->input_dev);
- 	jack->input_dev = NULL;
-+	mutex_unlock(&jack->input_dev_lock);
- #endif /* CONFIG_SND_JACK_INPUT_DEV */
- 	return 0;
- }
-@@ -82,8 +86,11 @@ static int snd_jack_dev_register(struct snd_device *device)
- 	snprintf(jack->name, sizeof(jack->name), "%s %s",
- 		 card->shortname, jack->id);
- 
--	if (!jack->input_dev)
-+	mutex_lock(&jack->input_dev_lock);
-+	if (!jack->input_dev) {
-+		mutex_unlock(&jack->input_dev_lock);
- 		return 0;
-+	}
- 
- 	jack->input_dev->name = jack->name;
- 
-@@ -108,6 +115,7 @@ static int snd_jack_dev_register(struct snd_device *device)
- 	if (err == 0)
- 		jack->registered = 1;
- 
-+	mutex_unlock(&jack->input_dev_lock);
- 	return err;
- }
- #endif /* CONFIG_SND_JACK_INPUT_DEV */
-@@ -228,9 +236,11 @@ int snd_jack_new(struct snd_card *card, const char *id, int type,
+diff --git a/drivers/gpu/drm/amd/amdgpu/si_dpm.c b/drivers/gpu/drm/amd/amdgpu/si_dpm.c
+index 4cb4c891120b..9931d5c17cfb 100644
+--- a/drivers/gpu/drm/amd/amdgpu/si_dpm.c
++++ b/drivers/gpu/drm/amd/amdgpu/si_dpm.c
+@@ -7250,17 +7250,15 @@ static int si_parse_power_table(struct amdgpu_device *adev)
+ 	if (!adev->pm.dpm.ps)
  		return -ENOMEM;
+ 	power_state_offset = (u8 *)state_array->states;
+-	for (i = 0; i < state_array->ucNumEntries; i++) {
++	for (adev->pm.dpm.num_ps = 0, i = 0; i < state_array->ucNumEntries; i++) {
+ 		u8 *idx;
+ 		power_state = (union pplib_power_state *)power_state_offset;
+ 		non_clock_array_index = power_state->v2.nonClockInfoIndex;
+ 		non_clock_info = (struct _ATOM_PPLIB_NONCLOCK_INFO *)
+ 			&non_clock_info_array->nonClockInfo[non_clock_array_index];
+ 		ps = kzalloc(sizeof(struct  si_ps), GFP_KERNEL);
+-		if (ps == NULL) {
+-			kfree(adev->pm.dpm.ps);
++		if (ps == NULL)
+ 			return -ENOMEM;
+-		}
+ 		adev->pm.dpm.ps[i].ps_priv = ps;
+ 		si_parse_pplib_non_clock_info(adev, &adev->pm.dpm.ps[i],
+ 					      non_clock_info,
+@@ -7282,8 +7280,8 @@ static int si_parse_power_table(struct amdgpu_device *adev)
+ 			k++;
+ 		}
+ 		power_state_offset += 2 + power_state->v2.ucNumDPMLevels;
++		adev->pm.dpm.num_ps++;
  	}
+-	adev->pm.dpm.num_ps = state_array->ucNumEntries;
  
--	/* don't creat input device for phantom jack */
--	if (!phantom_jack) {
- #ifdef CONFIG_SND_JACK_INPUT_DEV
-+	mutex_init(&jack->input_dev_lock);
-+
-+	/* don't create input device for phantom jack */
-+	if (!phantom_jack) {
- 		int i;
- 
- 		jack->input_dev = input_allocate_device();
-@@ -248,8 +258,8 @@ int snd_jack_new(struct snd_card *card, const char *id, int type,
- 				input_set_capability(jack->input_dev, EV_SW,
- 						     jack_switch_types[i]);
- 
--#endif /* CONFIG_SND_JACK_INPUT_DEV */
- 	}
-+#endif /* CONFIG_SND_JACK_INPUT_DEV */
- 
- 	err = snd_device_new(card, SNDRV_DEV_JACK, jack, &ops);
- 	if (err < 0)
-@@ -289,10 +299,14 @@ EXPORT_SYMBOL(snd_jack_new);
- void snd_jack_set_parent(struct snd_jack *jack, struct device *parent)
- {
- 	WARN_ON(jack->registered);
--	if (!jack->input_dev)
-+	mutex_lock(&jack->input_dev_lock);
-+	if (!jack->input_dev) {
-+		mutex_unlock(&jack->input_dev_lock);
- 		return;
-+	}
- 
- 	jack->input_dev->dev.parent = parent;
-+	mutex_unlock(&jack->input_dev_lock);
- }
- EXPORT_SYMBOL(snd_jack_set_parent);
- 
-@@ -340,6 +354,8 @@ EXPORT_SYMBOL(snd_jack_set_key);
- 
- /**
-  * snd_jack_report - Report the current status of a jack
-+ * Note: This function uses mutexes and should be called from a
-+ * context which can sleep (such as a workqueue).
-  *
-  * @jack:   The jack to report status for
-  * @status: The current status of the jack
-@@ -359,8 +375,11 @@ void snd_jack_report(struct snd_jack *jack, int status)
- 					    status & jack_kctl->mask_bits);
- 
- #ifdef CONFIG_SND_JACK_INPUT_DEV
--	if (!jack->input_dev)
-+	mutex_lock(&jack->input_dev_lock);
-+	if (!jack->input_dev) {
-+		mutex_unlock(&jack->input_dev_lock);
- 		return;
-+	}
- 
- 	for (i = 0; i < ARRAY_SIZE(jack->key); i++) {
- 		int testbit = SND_JACK_BTN_0 >> i;
-@@ -379,6 +398,7 @@ void snd_jack_report(struct snd_jack *jack, int status)
- 	}
- 
- 	input_sync(jack->input_dev);
-+	mutex_unlock(&jack->input_dev_lock);
- #endif /* CONFIG_SND_JACK_INPUT_DEV */
- }
- EXPORT_SYMBOL(snd_jack_report);
+ 	/* fill in the vce power states */
+ 	for (i = 0; i < adev->pm.dpm.num_of_vce_states; i++) {
 -- 
 2.35.1
 
