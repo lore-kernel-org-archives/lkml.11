@@ -2,148 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A005DC38A05
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2E82C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:37:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242302AbiE3Ogx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:36:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40288 "EHLO
+        id S242470AbiE3OhL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:37:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241699AbiE3OR6 (ORCPT
+        with ESMTP id S242120AbiE3OSY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:17:58 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A4FF793B0;
-        Mon, 30 May 2022 06:47:58 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id p5-20020a1c2905000000b003970dd5404dso6479243wmp.0;
-        Mon, 30 May 2022 06:47:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=1pogo+Rv5tv/SQVuIFRfnUxU3Jbc6+ErgEhXQlEuH7Q=;
-        b=EgKmyAppjZbMOVnfQCO9MvfkDvMr+4bRewuD6ZUn/bdV7ecI0uWF5Wck1N/xzVzGBP
-         q1aP+cC6TzWU0T7V406WfklMmWpdBDC2YcH0XIULHHAw/CG9lgeFrjbJCQcmWgTFVXFE
-         ShI/kvcxCFcDEPze5rWor+yDkJ/nOqiI5MNP6mK6yW0bW/uvzOHoKL6RTkOdeROje5O7
-         CtBl+wvl+mi6mUuSpQoJsZPcLNyrZZQHM7XFSWten5gD91Mzm8Ki6pMPBgX8hlzPrDWx
-         kW/ASef/d62eot597BBs1qtCQsRLwhsjVWWR9SGads+97s4WmlryGoKH9rAke9OyIoH1
-         3u9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=1pogo+Rv5tv/SQVuIFRfnUxU3Jbc6+ErgEhXQlEuH7Q=;
-        b=ZukBFx+fi3ih2Zin6IfRWhxgCgotJ3Jv9gVw+vm9Rp0wCYc0hL1D5X69qXJE+jUWs/
-         kwj6nvSdG3S4og85P59Tz0sFeU4Sq/7SsQya5fK8jcTynKD86sWn2wqQABQfuXUBVbuG
-         8nuF+0JZmHrhj1U1KL5DJPHT4M2Psx8++MhA3V+kG73yHEVrHgjY72UZhx0f+SojaLpq
-         7jwBM9MEsnAnPuL410A+g1jibq3JMIjnBjkK9b4O6MCo1MsPIiwtc6vrJYetGzpOChJU
-         T8i4pBFK9QOdG/yCHrj/HiHLpBqSxXSX0VHWyh4mhntEQCyluNz8jekF+Zk6aWpuV/3P
-         ROsg==
-X-Gm-Message-State: AOAM533GYr7P01bSBiFjaRUeepk1OvzVobS8AFekWvuIbSNxrmUoR6Jm
-        ku3ayXL3MKGGoGIF4eSYj6n9fTLQD6zgn320qiIV97tz
-X-Google-Smtp-Source: ABdhPJxKwfq4ycqFXAM+C8AheHuI+NB1Jymb9X57td3iSrPCizEAfyrJbVEDX+hf+1fVrrb5pR/iFCEG7v/503K0ua8=
-X-Received: by 2002:a05:600c:6011:b0:398:fa3:c02d with SMTP id
- az17-20020a05600c601100b003980fa3c02dmr12803839wmb.183.1653918476657; Mon, 30
- May 2022 06:47:56 -0700 (PDT)
+        Mon, 30 May 2022 10:18:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 873A5A3098;
+        Mon, 30 May 2022 06:49:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3AD6160EDF;
+        Mon, 30 May 2022 13:49:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A520FC385B8;
+        Mon, 30 May 2022 13:49:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653918549;
+        bh=KBx7M6GVVtSJjrkKmfF0jiF6x0MeYg2p7U09nMlZ5Cw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=XhElT0+c9/O+OGxuHklu+c5vbPvD1PbJyjCma7zQKvDPuYqjBtPutjWb1N/zIiaBu
+         Buvh0YzLzSqzQNfDbSqxikLBcQrLurX7Pk5FMTXW7eIgsgzv5N1/RFs6eWL9l9ae0U
+         eNB09BxemH34kQbwMBX7hTSp7h6sBlvaWdttY8uPNt53s6WTfHZkbwXcDke1VUa7Kf
+         r5lBUOZdxq7WFUNJYYipntFl8GbHDp3A5UHUV6nVRdvmDdVB5u24xxqKeYunkS/5kh
+         EjsA+ubiCN/QUfoJFJennUXOhHYi6xVAjJPww0HgpnlavZUB6IhrimenMNYfSKB4Jo
+         6yNpHIQBARTIg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        kernel test robot <yujie.liu@intel.com>,
+        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
+        perex@perex.cz, tiwai@suse.com, ckeepax@opensource.cirrus.com,
+        srinivas.kandagatla@linaro.org, tanureal@opensource.cirrus.com,
+        james.schulman@cirrus.com, cy_huang@richtek.com,
+        pbrobinson@gmail.com, hdegoede@redhat.com,
+        alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.4 50/55] ASoC: max98357a: remove dependency on GPIOLIB
+Date:   Mon, 30 May 2022 09:46:56 -0400
+Message-Id: <20220530134701.1935933-50-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220530134701.1935933-1-sashal@kernel.org>
+References: <20220530134701.1935933-1-sashal@kernel.org>
 MIME-Version: 1.0
-References: <20220529162936.2539901-1-robdclark@gmail.com> <0bf230f4-c888-b9c9-f061-7450406baa4a@suse.de>
-In-Reply-To: <0bf230f4-c888-b9c9-f061-7450406baa4a@suse.de>
-From:   Rob Clark <robdclark@gmail.com>
-Date:   Mon, 30 May 2022 06:47:55 -0700
-Message-ID: <CAF6AEGthAfWyAvbuE4EP+u52LEKS2Fs6X=gG8qUjc7gci6oh-A@mail.gmail.com>
-Subject: Re: [PATCH] drm/prime: Ensure mmap offset is initialized
-To:     Thomas Zimmermann <tzimmermann@suse.de>
-Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
-        Rob Clark <robdclark@chromium.org>,
-        David Airlie <airlied@linux.ie>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        freedreno <freedreno@lists.freedesktop.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 30, 2022 at 12:26 AM Thomas Zimmermann <tzimmermann@suse.de> wr=
-ote:
->
-> Hi
->
-> Am 29.05.22 um 18:29 schrieb Rob Clark:
-> > From: Rob Clark <robdclark@chromium.org>
-> >
-> > If a GEM object is allocated, and then exported as a dma-buf fd which i=
-s
-> > mmap'd before or without the GEM buffer being directly mmap'd, the
-> > vma_node could be unitialized.  This leads to a situation where the CPU
-> > mapping is not correctly torn down in drm_vma_node_unmap().
->
-> Which drivers are affected by this problem?
->
-> I checked several drivers and most appear to be initializing the offset
-> during object construction, such as GEM SHMEM. [1] TTM-based drivers
-> also seem unaffected. [2]
->
->  From a quick grep, only etnaviv, msm and omapdrm appear to be affected?
-> They only seem to run drm_gem_create_mmap_offset() from their
-> ioctl-handling code.
->
-> If so, I'd say it's preferable to fix these drivers and put a
-> drm_WARN_ONCE() into drm_gem_prime_mmap().
+From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 
-That is good if fewer drivers are affected, however I disagree with
-your proposal.  At least for freedreno userspace, a lot of bo's never
-get mmap'd (either directly of via dmabuf), so we should not be
-allocating a mmap offset unnecessarily.
+[ Upstream commit 21ca3274333f5c1cbbf9d91e5b33f4f2463859b2 ]
 
-BR,
--R
+commit dcc2c012c7691 ("ASoC: Fix gpiolib dependencies") removed a
+series of unnecessary dependencies on GPIOLIB when the gpio was
+optional.
 
-> Best regards
-> Thomas
->
-> [1]
-> https://elixir.bootlin.com/linux/v5.18/source/drivers/gpu/drm/drm_gem_shm=
-em_helper.c#L85
-> [2]
-> https://elixir.bootlin.com/linux/v5.18/source/drivers/gpu/drm/ttm/ttm_bo.=
-c#L1002
->
-> >
-> > Fixes: e5516553999f ("drm: call drm_gem_object_funcs.mmap with fake off=
-set")
-> > Signed-off-by: Rob Clark <robdclark@chromium.org>
-> > ---
-> > Note, it's possible the issue existed in some related form prior to the
-> > commit tagged with Fixes.
-> >
-> >   drivers/gpu/drm/drm_prime.c | 5 +++++
-> >   1 file changed, 5 insertions(+)
-> >
-> > diff --git a/drivers/gpu/drm/drm_prime.c b/drivers/gpu/drm/drm_prime.c
-> > index e3f09f18110c..849eea154dfc 100644
-> > --- a/drivers/gpu/drm/drm_prime.c
-> > +++ b/drivers/gpu/drm/drm_prime.c
-> > @@ -716,6 +716,11 @@ int drm_gem_prime_mmap(struct drm_gem_object *obj,=
- struct vm_area_struct *vma)
-> >       struct file *fil;
-> >       int ret;
-> >
-> > +     /* Ensure that the vma_node is initialized: */
-> > +     ret =3D drm_gem_create_mmap_offset(obj);
-> > +     if (ret)
-> > +             return ret;
-> > +
-> >       /* Add the fake offset */
-> >       vma->vm_pgoff +=3D drm_vma_node_start(&obj->vma_node);
-> >
->
-> --
-> Thomas Zimmermann
-> Graphics Driver Developer
-> SUSE Software Solutions Germany GmbH
-> Maxfeldstr. 5, 90409 N=C3=BCrnberg, Germany
-> (HRB 36809, AG N=C3=BCrnberg)
-> Gesch=C3=A4ftsf=C3=BChrer: Ivo Totev
+A similar simplification seems valid for max98357a, so remove the
+dependency as well. This will avoid the following warning
+
+   WARNING: unmet direct dependencies detected for SND_SOC_MAX98357A
+     Depends on [n]: SOUND [=y] && !UML && SND [=y] && SND_SOC [=y] && GPIOLIB [=n]
+     Selected by [y]:
+     - SND_SOC_INTEL_SOF_CS42L42_MACH [=y] && SOUND [=y] && !UML &&
+       SND [=y] && SND_SOC [=y] && SND_SOC_INTEL_MACH [=y] &&
+       (SND_SOC_SOF_HDA_LINK [=y] || SND_SOC_SOF_BAYTRAIL [=n]) && I2C
+       [=y] && ACPI [=y] && SND_HDA_CODEC_HDMI [=y] &&
+       SND_SOC_SOF_HDA_AUDIO_CODEC [=y] && (MFD_INTEL_LPSS [=y] ||
+       COMPILE_TEST [=n])
+
+Reported-by: kernel test robot <yujie.liu@intel.com>
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Link: https://lore.kernel.org/r/20220517172647.468244-2-pierre-louis.bossart@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ sound/soc/codecs/Kconfig | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/sound/soc/codecs/Kconfig b/sound/soc/codecs/Kconfig
+index 466dc67799f4..dfc536cd9d2f 100644
+--- a/sound/soc/codecs/Kconfig
++++ b/sound/soc/codecs/Kconfig
+@@ -759,7 +759,6 @@ config SND_SOC_MAX98095
+ 
+ config SND_SOC_MAX98357A
+ 	tristate "Maxim MAX98357A CODEC"
+-	depends on GPIOLIB
+ 
+ config SND_SOC_MAX98371
+        tristate
+-- 
+2.35.1
+
