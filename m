@@ -2,93 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3232BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 20:58:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF3BFC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 21:00:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242496AbiE3U6V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 16:58:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34568 "EHLO
+        id S242566AbiE3VAW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 17:00:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231630AbiE3U6T (ORCPT
+        with ESMTP id S231630AbiE3VAU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 16:58:19 -0400
-Received: from mail.z3ntu.xyz (mail.z3ntu.xyz [128.199.32.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB5F7644DA;
-        Mon, 30 May 2022 13:58:17 -0700 (PDT)
-Received: from g550jk.localnet (31-151-115-246.dynamic.upc.nl [31.151.115.246])
-        by mail.z3ntu.xyz (Postfix) with ESMTPSA id 3B79ECAB3A;
-        Mon, 30 May 2022 20:57:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=z3ntu.xyz; s=z3ntu;
-        t=1653944264; bh=wRrTILtAk1T0hSn3pjrXFhh9i/czq48W4ByfPx0RpNE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=ppV8WJmRqczGs4V/2Vgsq8lSolM9hcLiWo/YzVVlVbLTbgNZBY1i/jry7fdHePKLe
-         As/L3piw+zHzYmGEAunIUocSlDIRHtnGLj1e1t10FvTQd5H5Dlcdv6E49bvfaec6E0
-         msei1QJv2n69S1kUKgV+hRIRJCRxmNEPMy1plh40=
-From:   Luca Weiss <luca@z3ntu.xyz>
-To:     Pavel Machek <pavel@ucw.cz>
-Cc:     linux-arm-msm@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Andr?? Almeida <andrealmeid@collabora.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ARM: dts: qcom: msm8974-hammerhead: Add notification LED
-Date:   Mon, 30 May 2022 22:57:43 +0200
-Message-ID: <2844866.mvXUDI8C0e@g550jk>
-In-Reply-To: <20220530070618.GC1363@bug>
-References: <20220505164336.13210-1-luca@z3ntu.xyz> <20220530070618.GC1363@bug>
+        Mon, 30 May 2022 17:00:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 449C691552;
+        Mon, 30 May 2022 14:00:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5E328B80F6F;
+        Mon, 30 May 2022 21:00:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0FEEDC34119;
+        Mon, 30 May 2022 21:00:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653944413;
+        bh=KnLcGa8uT4mDL9pauNRzvEuxlMfsU4gFkddnssg+gyk=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=cqpMULpacTG0sPd1SAx2v9AZ8/kpViOVtVxdO6Mu1HcuHNEhmAmvesPhRcTuQc2uP
+         qD1Bdaz1HaoTqvSy0WxpqBvQlz6SYg9csQxo4eqx1oXdv1VQowvluEBHYUkl7yskYs
+         bVo2W8XbtBBYA0IAycRVB1G95R9b800X1KPxGNWfJvP1F90mUgjghOQEGHJdCtYarc
+         YfOS0b/ePUcKafAOty3pSRvly18GLs3AD06NIKlVsooJiLro6WRM6n1M1kxigVYgrq
+         Qmtis2W1UgkPsxf7OGjEdMWJ8Dz7gvf4hyou8hxH+LT7c4NXiKzHNlacvXCJ0r7Nj8
+         BLeQ2z9WGrc1g==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E148AF03944;
+        Mon, 30 May 2022 21:00:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf-next v3 0/6] Support riscv jit to provide
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165394441291.12813.18139846661607728867.git-patchwork-notify@kernel.org>
+Date:   Mon, 30 May 2022 21:00:12 +0000
+References: <20220530092815.1112406-1-pulehui@huawei.com>
+In-Reply-To: <20220530092815.1112406-1-pulehui@huawei.com>
+To:     Pu Lehui <pulehui@huawei.com>
+Cc:     bpf@vger.kernel.org, linux-riscv@lists.infradead.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        bjorn@kernel.org, luke.r.nels@gmail.com, xi.wang@gmail.com,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        paul.walmsley@sifive.com, palmer@dabbelt.com, aou@eecs.berkeley.edu
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Pavel,
+Hello:
 
-On Montag, 30. Mai 2022 09:06:19 CEST Pavel Machek wrote:
-> Hi!
+This series was applied to bpf/bpf-next.git (master)
+by Daniel Borkmann <daniel@iogearbox.net>:
+
+On Mon, 30 May 2022 17:28:09 +0800 you wrote:
+> patch 1 fix an issue that could not print bpf line info due
+> to data inconsistency in 32-bit environment.
 > 
-> > From: Andr?? Almeida <andrealmeid@collabora.com>
-> > 
-> > Nexus 5 has a RGB LED connected to the TRILED and hence channels 7, 6 and
-> > 5 of the LPG. Add a node describing this.
-> > 
-> > Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
-> > Signed-off-by: Andr?? Almeida <andrealmeid@collabora.com>
-> > 
-> > --- This patch depends on the PM8941 LPG patch:
-> > https://lore.kernel.org/linux-arm-msm/20220504205411.1510667-1-bjorn.ander
-> > sson@linaro.org/
-> How does this LED end up looking in userland? We want to make sure all the
-> phone RGB status LEDs end up using same path in /sys/..
-
-Like this, on both hammerhead and FP2 (in a separate patch):
-
-$ ls -al /sys/class/leds/rgb:status/
-total 0
-drwxr-xr-x 3 root root         0 Jan  5  1970 .
-drwxr-xr-x 3 root root         0 Jan  5  1970 ..
--rw-rw-r-- 1 root feedbackd 4096 Jan  5  1970 brightness
-lrwxrwxrwx 1 root root         0 May 30 13:59 device -> ../../../fc4cf000.spmi:pm8941@1:lpg
--r--r--r-- 1 root root      4096 Jan  5  1970 max_brightness
--r--r--r-- 1 root root      4096 Jan  5  1970 multi_index
--rw-rw-r-- 1 root feedbackd 4096 Jan  5  1970 multi_intensity
-drwxr-xr-x 2 root root         0 May 30 13:59 power
-lrwxrwxrwx 1 root root         0 Jan  5  1970 subsystem -> ../../../../../../../../../class/leds
--rw-r--r-- 1 root root         0 Jan  5  1970 trigger
--rw-r--r-- 1 root root      4096 Jan  5  1970 uevent
-
-Regards
-Luca
-
+> patch 2 add support for riscv jit to provide bpf_line_info.
+> "test_progs -a btf" and "test_bpf.ko" all test pass, as well
+> as "test_verifier" and "test_progs" with no new failure ceses.
 > 
-> Best regards,
-> 
-> 									Pavel
+> [...]
 
+Here is the summary with links:
+  - [bpf-next,v3,1/6] bpf: Unify data extension operation of jited_ksyms and jited_linfo
+    (no matching commit)
+  - [bpf-next,v3,2/6] riscv, bpf: Support riscv jit to provide bpf_line_info
+    https://git.kernel.org/bpf/bpf-next/c/b863b163aa8a
+  - [bpf-next,v3,3/6] bpf: Correct the comment about insn_to_jit_off
+    https://git.kernel.org/bpf/bpf-next/c/4b4b4f94a4f6
+  - [bpf-next,v3,4/6] libbpf: Unify memory address casting operation style
+    (no matching commit)
+  - [bpf-next,v3,5/6] selftests/bpf: Unify memory address casting operation style
+    (no matching commit)
+  - [bpf-next,v3,6/6] selftests/bpf: Remove the casting about jited_ksyms and jited_linfo
+    (no matching commit)
 
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
