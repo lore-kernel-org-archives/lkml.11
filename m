@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5566C41535
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:28:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 023C0C3526F
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:28:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241152AbiE3O0B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:26:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40152 "EHLO
+        id S241580AbiE3O0Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:26:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241380AbiE3ORc (ORCPT
+        with ESMTP id S241391AbiE3ORd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:17:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AA748FF83;
-        Mon, 30 May 2022 06:45:58 -0700 (PDT)
+        Mon, 30 May 2022 10:17:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 964088FFAF;
+        Mon, 30 May 2022 06:46:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EB402B80D6B;
-        Mon, 30 May 2022 13:45:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83010C3411A;
-        Mon, 30 May 2022 13:45:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 302A560EC3;
+        Mon, 30 May 2022 13:46:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57C81C3411F;
+        Mon, 30 May 2022 13:46:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918355;
-        bh=lnFWTkPmB85aDeslaT/hBp9DroN6KQakjVzon6SCK3g=;
+        s=k20201202; t=1653918365;
+        bh=ZRBlCTHt0pyFWYQr3Ew2t9lLWa2U4S35aOox2RxugS8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RLY/2DvMhX/GePOLKe+z6eJk/Gn1W1EJQF/TA0hlLLsemAqHexwAS9a/ax1UzEOxW
-         Jo8QY1K3doMGFsrfhJsIGMKKGRfwt4YQOPCSksN046y0BFotVSWEdvtoUfU4Z1ub2x
-         +eZEa5K+a0DK3wvvbCBYhEqv0FxyGaXOJLwqtZpebSIaQqliTqlBRxluum0mmkG4Y+
-         LmBfTxmQk+kxCYNKPa9Os5hPBhCK+ugDXQiJoRNfypUqSOrYDJqWQLWrMCeXL6CoFI
-         lFdDqLc+siNfgvXjNQBYXPrzsbXpxcyoLkaRUG6mg9708DgseLBxGQYlejNo2NzXfN
-         3cq+TrFJCxH8w==
+        b=l+LglB8FlitDGTYZYnf0Mj4AmwVFoWvtfRPe2SlUpJAzRNvzSE5B/N5KnRu7iVM4O
+         nTf4+4O3fD0DbO3q0KzeuK8HIEAsM9lA4rWR/OS66+cG/XsMiN+yGnw83joLkXx8nj
+         lKGLd4hOcA7uPq33jdaCEsTZ+C7MP7BgkO5cAXbw9x2NiI2lMCHfh3SHADnPiTksqb
+         VSL6KiQLvT99UT5NzEZlx7QTfRZAIdzisVMVX80cBjniGB/0wMtu/RBB34i+jnXCau
+         zRM8N3FcShQKTW/1rSuWZ1/mxP3O8zCe0ugzrmVBC8NlN5g/HFQggzDRLVJpd14Vwo
+         WD1aAGK+TQ0UQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ravi Bangoria <ravi.bangoria@amd.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Sasha Levin <sashal@kernel.org>, mingo@redhat.com,
-        acme@kernel.org, tglx@linutronix.de, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org,
-        linux-perf-users@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 48/76] perf/amd/ibs: Cascade pmu init functions' return value
-Date:   Mon, 30 May 2022 09:43:38 -0400
-Message-Id: <20220530134406.1934928-48-sashal@kernel.org>
+Cc:     Hangyu Hua <hbh25y@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, jacob-chen@iotwrt.com,
+        ezequiel@vanguardiasur.com.ar, heiko@sntech.de,
+        linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.10 55/76] media: rga: fix possible memory leak in rga_probe
+Date:   Mon, 30 May 2022 09:43:45 -0400
+Message-Id: <20220530134406.1934928-55-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530134406.1934928-1-sashal@kernel.org>
 References: <20220530134406.1934928-1-sashal@kernel.org>
@@ -54,98 +55,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ravi Bangoria <ravi.bangoria@amd.com>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-[ Upstream commit 39b2ca75eec8a33e2ffdb8aa0c4840ec3e3b472c ]
+[ Upstream commit a71eb6025305192e646040cd76ccacb5bd48a1b5 ]
 
-IBS pmu initialization code ignores return value provided by
-callee functions. Fix it.
+rga->m2m_dev needs to be freed when rga_probe fails.
 
-Signed-off-by: Ravi Bangoria <ravi.bangoria@amd.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lore.kernel.org/r/20220509044914.1473-2-ravi.bangoria@amd.com
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/events/amd/ibs.c | 37 +++++++++++++++++++++++++++++--------
- 1 file changed, 29 insertions(+), 8 deletions(-)
+ drivers/media/platform/rockchip/rga/rga.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/events/amd/ibs.c b/arch/x86/events/amd/ibs.c
-index ccc9ee1971e8..780d89d2ae32 100644
---- a/arch/x86/events/amd/ibs.c
-+++ b/arch/x86/events/amd/ibs.c
-@@ -764,9 +764,10 @@ static __init int perf_ibs_pmu_init(struct perf_ibs *perf_ibs, char *name)
- 	return ret;
- }
+diff --git a/drivers/media/platform/rockchip/rga/rga.c b/drivers/media/platform/rockchip/rga/rga.c
+index d99ea8973b67..e3246344fb72 100644
+--- a/drivers/media/platform/rockchip/rga/rga.c
++++ b/drivers/media/platform/rockchip/rga/rga.c
+@@ -868,7 +868,7 @@ static int rga_probe(struct platform_device *pdev)
  
--static __init void perf_event_ibs_init(void)
-+static __init int perf_event_ibs_init(void)
- {
- 	struct attribute **attr = ibs_op_format_attrs;
-+	int ret;
+ 	ret = pm_runtime_resume_and_get(rga->dev);
+ 	if (ret < 0)
+-		goto rel_vdev;
++		goto rel_m2m;
  
- 	/*
- 	 * Some chips fail to reset the fetch count when it is written; instead
-@@ -778,7 +779,9 @@ static __init void perf_event_ibs_init(void)
- 	if (boot_cpu_data.x86 == 0x19 && boot_cpu_data.x86_model < 0x10)
- 		perf_ibs_fetch.fetch_ignore_if_zero_rip = 1;
- 
--	perf_ibs_pmu_init(&perf_ibs_fetch, "ibs_fetch");
-+	ret = perf_ibs_pmu_init(&perf_ibs_fetch, "ibs_fetch");
-+	if (ret)
-+		return ret;
- 
- 	if (ibs_caps & IBS_CAPS_OPCNT) {
- 		perf_ibs_op.config_mask |= IBS_OP_CNT_CTL;
-@@ -791,15 +794,35 @@ static __init void perf_event_ibs_init(void)
- 		perf_ibs_op.cnt_mask    |= IBS_OP_MAX_CNT_EXT_MASK;
+ 	rga->version.major = (rga_read(rga, RGA_VERSION_INFO) >> 24) & 0xFF;
+ 	rga->version.minor = (rga_read(rga, RGA_VERSION_INFO) >> 20) & 0x0F;
+@@ -884,7 +884,7 @@ static int rga_probe(struct platform_device *pdev)
+ 					   DMA_ATTR_WRITE_COMBINE);
+ 	if (!rga->cmdbuf_virt) {
+ 		ret = -ENOMEM;
+-		goto rel_vdev;
++		goto rel_m2m;
  	}
  
--	perf_ibs_pmu_init(&perf_ibs_op, "ibs_op");
-+	ret = perf_ibs_pmu_init(&perf_ibs_op, "ibs_op");
-+	if (ret)
-+		goto err_op;
-+
-+	ret = register_nmi_handler(NMI_LOCAL, perf_ibs_nmi_handler, 0, "perf_ibs");
-+	if (ret)
-+		goto err_nmi;
- 
--	register_nmi_handler(NMI_LOCAL, perf_ibs_nmi_handler, 0, "perf_ibs");
- 	pr_info("perf: AMD IBS detected (0x%08x)\n", ibs_caps);
-+	return 0;
-+
-+err_nmi:
-+	perf_pmu_unregister(&perf_ibs_op.pmu);
-+	free_percpu(perf_ibs_op.pcpu);
-+	perf_ibs_op.pcpu = NULL;
-+err_op:
-+	perf_pmu_unregister(&perf_ibs_fetch.pmu);
-+	free_percpu(perf_ibs_fetch.pcpu);
-+	perf_ibs_fetch.pcpu = NULL;
-+
-+	return ret;
- }
- 
- #else /* defined(CONFIG_PERF_EVENTS) && defined(CONFIG_CPU_SUP_AMD) */
- 
--static __init void perf_event_ibs_init(void) { }
-+static __init int perf_event_ibs_init(void)
-+{
-+	return 0;
-+}
- 
- #endif
- 
-@@ -1069,9 +1092,7 @@ static __init int amd_ibs_init(void)
- 			  x86_pmu_amd_ibs_starting_cpu,
- 			  x86_pmu_amd_ibs_dying_cpu);
- 
--	perf_event_ibs_init();
--
--	return 0;
-+	return perf_event_ibs_init();
- }
- 
- /* Since we need the pci subsystem to init ibs we can't do this earlier: */
+ 	rga->src_mmu_pages =
+@@ -921,6 +921,8 @@ static int rga_probe(struct platform_device *pdev)
+ free_dma:
+ 	dma_free_attrs(rga->dev, RGA_CMDBUF_SIZE, rga->cmdbuf_virt,
+ 		       rga->cmdbuf_phy, DMA_ATTR_WRITE_COMBINE);
++rel_m2m:
++	v4l2_m2m_release(rga->m2m_dev);
+ rel_vdev:
+ 	video_device_release(vfd);
+ unreg_v4l2_dev:
 -- 
 2.35.1
 
