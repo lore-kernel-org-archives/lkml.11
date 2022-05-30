@@ -2,191 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 597D1C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 11:41:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CCECC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 11:41:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235931AbiE3LlQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 07:41:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41786 "EHLO
+        id S235939AbiE3LlU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 07:41:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235806AbiE3LlG (ORCPT
+        with ESMTP id S235831AbiE3LlH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 07:41:06 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D6E4419A3
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 04:41:05 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id d22so10085646plr.9
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 04:41:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=jjmrioi65tdvpnatZVOByjLto3yXdnCU74U03aRx/ek=;
-        b=dbovKyStqncZhviVmQ4s01Kz4FWR7dngHlpCcH+X9FLPjv/wnbG94Ns4SYZB8YCW1r
-         dU16yO4rVV/AAV/zVo9MtcFm/zmkItHUiqgbfAecAc6vLKDa7r+YXq0Fs+eF0P3QDvuB
-         lhjIdpJZK9zEL4cQCTrFRJ65n+NdLrx5xN0zFAzVZqZgU8ov04EZh0dYaKO6BJ3+X5hA
-         XUhKYk3QN/g7FKLze2o8VxViadQaYKmQyxbB0eulrQb8U3oBv2k9FrJWJ26JdOrJa0c3
-         lfkiZaJ8rcnhBcOMue1KIeNIAiWjCMTRSbaDQRknQrPWkYtE+l/KOuIfJeCjC9QdE21Q
-         9viQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=jjmrioi65tdvpnatZVOByjLto3yXdnCU74U03aRx/ek=;
-        b=PnTNoWVMHu938W4GwpVYoh9a/0QZgQgjECeRYSldRFes4qYotDy7oQhZumr1f4k3RW
-         KtWvtxImQEOPG6EYV21ge62eBtDZ1hLaIZoQOxleU/3zHHBnP2RulTvbwHLmyok/EAmz
-         douji26z5XYFOTboS4xwKn+EZNIlSo37sR8i6fYaRQZsFj0yD9E30ERJTN7+8VOsITAF
-         IReaYw0xw1wzk2Xm8+plkhM72qLioLXJKIKRSJuVpHW39hIWgxmGhBJY3EudLz/xk4nF
-         zXzZ0FwISlQDdvgaqQNeRInfIKorBDc6BdAtOIDyEgkk9kABQMWlv9kdNAb6Ad75wml5
-         qdUQ==
-X-Gm-Message-State: AOAM532z6hyRfyRl6l981953iZTO4NN9EU/bEg4tvch9Qa8GFEyOq9IF
-        +yKykWZ2xBbOO04V66Y5yoWwUw==
-X-Google-Smtp-Source: ABdhPJzcu2PXhaLkP/I7hnZpbOEuiIqD4SEi5tXzqvqWMLMUzV3tk7gJxBQRR3kWPrSNQJX+wi1oPQ==
-X-Received: by 2002:a17:902:ec85:b0:161:cff5:17c8 with SMTP id x5-20020a170902ec8500b00161cff517c8mr56097594plg.62.1653910864468;
-        Mon, 30 May 2022 04:41:04 -0700 (PDT)
-Received: from leo-build-box.lan (n058152077182.netvigator.com. [58.152.77.182])
-        by smtp.gmail.com with ESMTPSA id c7-20020a170902724700b00161a9df4de8sm8846194pll.145.2022.05.30.04.40.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 May 2022 04:41:04 -0700 (PDT)
-From:   Leo Yan <leo.yan@linaro.org>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>, Alyssa Ross <hi@alyssa.is>,
-        Ian Rogers <irogers@google.com>, Like Xu <likexu@tencent.com>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        Li Huafei <lihuafei1@huawei.com>,
-        Joe Mario <jmario@redhat.com>,
-        Adam Li <adam.li@amperecomputing.com>,
-        German Gomez <german.gomez@arm.com>,
-        James Clark <james.clark@arm.com>,
-        Ali Saidi <alisaidi@amazon.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Leo Yan <leo.yan@linaro.org>
-Subject: [PATCH v4 01/12] perf mem: Add statistics for peer snooping
-Date:   Mon, 30 May 2022 19:40:25 +0800
-Message-Id: <20220530114036.3225544-2-leo.yan@linaro.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220530114036.3225544-1-leo.yan@linaro.org>
-References: <20220530114036.3225544-1-leo.yan@linaro.org>
+        Mon, 30 May 2022 07:41:07 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A856B813D1;
+        Mon, 30 May 2022 04:41:06 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 59BD82199D;
+        Mon, 30 May 2022 11:41:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1653910865; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=i4LKt8LZNv7O3Wwu1DiLKI3Zd8LxtAGWiwhpXlwpTRU=;
+        b=uSiaXqJKBGwScZ32qFf6c8Gr0kfZ5zQ7IMWOMLz8yYZlkjP6w7ux8Ebr/jpu5M3k/m7nX9
+        yQkTTaWffg4F9bOlmht+H+K9W4NJ5QNWKiDRpQdAkqYDJoF57sL4Eu1COtrTyxLFAOCwFj
+        DUEwooU54jdHpvSXYHRTmHKg5+d1eRA=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 0795913A84;
+        Mon, 30 May 2022 11:41:05 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 1vmPAFGtlGITeQAAMHmgww
+        (envelope-from <jgross@suse.com>); Mon, 30 May 2022 11:41:05 +0000
+From:   Juergen Gross <jgross@suse.com>
+To:     xen-devel@lists.xenproject.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Juergen Gross <jgross@suse.com>, Wei Liu <wei.liu@kernel.org>,
+        Paul Durrant <paul@xen.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH] xen/netback: do some code cleanup
+Date:   Mon, 30 May 2022 13:41:03 +0200
+Message-Id: <20220530114103.20657-1-jgross@suse.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since the flag PERF_MEM_SNOOPX_PEER is added to support cache snooping
-from peer cache line, it can come from a peer core, a peer cluster, or
-a remote NUMA node.
+Remove some unused macros and functions, make local functions static.
 
-This patch adds statistics for the flag PERF_MEM_SNOOPX_PEER.  Note, we
-take PERF_MEM_SNOOPX_PEER as an affiliated info, it needs to cooperate
-with cache level statistics.  Therefore, we account the load operations
-for both the cache level's metrics (e.g. ld_l2hit, ld_llchit, etc.) and
-peer related metrics when flag PERF_MEM_SNOOPX_PEER is set.
-
-So three new metrics are introduced: 'lcl_peer' is for local cache
-access, the metric 'rmt_peer' is for remote access (includes remote DRAM
-and any caches in remote node), and the metric 'tot_peer' is accounting
-the sum value of 'lcl_peer' and 'rmt_peer'.
-
-Signed-off-by: Leo Yan <leo.yan@linaro.org>
+Signed-off-by: Juergen Gross <jgross@suse.com>
 ---
- tools/perf/util/mem-events.c | 28 +++++++++++++++++++++++++---
- tools/perf/util/mem-events.h |  3 +++
- 2 files changed, 28 insertions(+), 3 deletions(-)
+ drivers/net/xen-netback/common.h    | 12 ------------
+ drivers/net/xen-netback/interface.c | 16 +---------------
+ drivers/net/xen-netback/netback.c   |  4 +++-
+ drivers/net/xen-netback/rx.c        |  2 +-
+ 4 files changed, 5 insertions(+), 29 deletions(-)
 
-diff --git a/tools/perf/util/mem-events.c b/tools/perf/util/mem-events.c
-index 5dca1882c284..764883183519 100644
---- a/tools/perf/util/mem-events.c
-+++ b/tools/perf/util/mem-events.c
-@@ -525,6 +525,7 @@ int c2c_decode_stats(struct c2c_stats *stats, struct mem_info *mi)
- 	u64 op     = data_src->mem_op;
- 	u64 lvl    = data_src->mem_lvl;
- 	u64 snoop  = data_src->mem_snoop;
-+	u64 snoopx = data_src->mem_snoopx;
- 	u64 lock   = data_src->mem_lock;
- 	u64 blk    = data_src->mem_blk;
- 	/*
-@@ -544,6 +545,12 @@ do {				\
- 	stats->tot_hitm++;	\
- } while (0)
+diff --git a/drivers/net/xen-netback/common.h b/drivers/net/xen-netback/common.h
+index d9dea4829c86..8174d7b2966c 100644
+--- a/drivers/net/xen-netback/common.h
++++ b/drivers/net/xen-netback/common.h
+@@ -48,7 +48,6 @@
+ #include <linux/debugfs.h>
  
-+#define PEER_INC(__f)		\
-+do {				\
-+	stats->__f++;		\
-+	stats->tot_peer++;	\
-+} while (0)
+ typedef unsigned int pending_ring_idx_t;
+-#define INVALID_PENDING_RING_IDX (~0U)
+ 
+ struct pending_tx_info {
+ 	struct xen_netif_tx_request req; /* tx request */
+@@ -82,8 +81,6 @@ struct xenvif_rx_meta {
+ /* Discriminate from any valid pending_idx value. */
+ #define INVALID_PENDING_IDX 0xFFFF
+ 
+-#define MAX_BUFFER_OFFSET XEN_PAGE_SIZE
+-
+ #define MAX_PENDING_REQS XEN_NETIF_TX_RING_SIZE
+ 
+ /* The maximum number of frags is derived from the size of a grant (same
+@@ -367,11 +364,6 @@ void xenvif_free(struct xenvif *vif);
+ int xenvif_xenbus_init(void);
+ void xenvif_xenbus_fini(void);
+ 
+-int xenvif_schedulable(struct xenvif *vif);
+-
+-int xenvif_queue_stopped(struct xenvif_queue *queue);
+-void xenvif_wake_queue(struct xenvif_queue *queue);
+-
+ /* (Un)Map communication rings. */
+ void xenvif_unmap_frontend_data_rings(struct xenvif_queue *queue);
+ int xenvif_map_frontend_data_rings(struct xenvif_queue *queue,
+@@ -394,7 +386,6 @@ int xenvif_dealloc_kthread(void *data);
+ irqreturn_t xenvif_ctrl_irq_fn(int irq, void *data);
+ 
+ bool xenvif_have_rx_work(struct xenvif_queue *queue, bool test_kthread);
+-void xenvif_rx_action(struct xenvif_queue *queue);
+ void xenvif_rx_queue_tail(struct xenvif_queue *queue, struct sk_buff *skb);
+ 
+ void xenvif_carrier_on(struct xenvif *vif);
+@@ -403,9 +394,6 @@ void xenvif_carrier_on(struct xenvif *vif);
+ void xenvif_zerocopy_callback(struct sk_buff *skb, struct ubuf_info *ubuf,
+ 			      bool zerocopy_success);
+ 
+-/* Unmap a pending page and release it back to the guest */
+-void xenvif_idx_unmap(struct xenvif_queue *queue, u16 pending_idx);
+-
+ static inline pending_ring_idx_t nr_pending_reqs(struct xenvif_queue *queue)
+ {
+ 	return MAX_PENDING_REQS -
+diff --git a/drivers/net/xen-netback/interface.c b/drivers/net/xen-netback/interface.c
+index 8e035374a370..fb32ae82d9b0 100644
+--- a/drivers/net/xen-netback/interface.c
++++ b/drivers/net/xen-netback/interface.c
+@@ -69,7 +69,7 @@ void xenvif_skb_zerocopy_complete(struct xenvif_queue *queue)
+ 	wake_up(&queue->dealloc_wq);
+ }
+ 
+-int xenvif_schedulable(struct xenvif *vif)
++static int xenvif_schedulable(struct xenvif *vif)
+ {
+ 	return netif_running(vif->dev) &&
+ 		test_bit(VIF_STATUS_CONNECTED, &vif->status) &&
+@@ -177,20 +177,6 @@ irqreturn_t xenvif_interrupt(int irq, void *dev_id)
+ 	return IRQ_HANDLED;
+ }
+ 
+-int xenvif_queue_stopped(struct xenvif_queue *queue)
+-{
+-	struct net_device *dev = queue->vif->dev;
+-	unsigned int id = queue->id;
+-	return netif_tx_queue_stopped(netdev_get_tx_queue(dev, id));
+-}
+-
+-void xenvif_wake_queue(struct xenvif_queue *queue)
+-{
+-	struct net_device *dev = queue->vif->dev;
+-	unsigned int id = queue->id;
+-	netif_tx_wake_queue(netdev_get_tx_queue(dev, id));
+-}
+-
+ static u16 xenvif_select_queue(struct net_device *dev, struct sk_buff *skb,
+ 			       struct net_device *sb_dev)
+ {
+diff --git a/drivers/net/xen-netback/netback.c b/drivers/net/xen-netback/netback.c
+index d93814c14a23..fc61a4418737 100644
+--- a/drivers/net/xen-netback/netback.c
++++ b/drivers/net/xen-netback/netback.c
+@@ -112,6 +112,8 @@ static void make_tx_response(struct xenvif_queue *queue,
+ 			     s8       st);
+ static void push_tx_responses(struct xenvif_queue *queue);
+ 
++static void xenvif_idx_unmap(struct xenvif_queue *queue, u16 pending_idx);
 +
- #define P(a, b) PERF_MEM_##a##_##b
+ static inline int tx_work_todo(struct xenvif_queue *queue);
  
- 	stats->nr_entries++;
-@@ -567,12 +574,20 @@ do {				\
- 			if (lvl & P(LVL, IO))  stats->ld_io++;
- 			if (lvl & P(LVL, LFB)) stats->ld_fbhit++;
- 			if (lvl & P(LVL, L1 )) stats->ld_l1hit++;
--			if (lvl & P(LVL, L2 )) stats->ld_l2hit++;
-+			if (lvl & P(LVL, L2)) {
-+				stats->ld_l2hit++;
-+
-+				if (snoopx & P(SNOOPX, PEER))
-+					PEER_INC(lcl_peer);
-+			}
- 			if (lvl & P(LVL, L3 )) {
- 				if (snoop & P(SNOOP, HITM))
- 					HITM_INC(lcl_hitm);
- 				else
- 					stats->ld_llchit++;
-+
-+				if (snoopx & P(SNOOPX, PEER))
-+					PEER_INC(lcl_peer);
- 			}
+ static inline unsigned long idx_to_pfn(struct xenvif_queue *queue,
+@@ -1418,7 +1420,7 @@ static void push_tx_responses(struct xenvif_queue *queue)
+ 		notify_remote_via_irq(queue->tx_irq);
+ }
  
- 			if (lvl & P(LVL, LOC_RAM)) {
-@@ -597,10 +612,14 @@ do {				\
- 		if ((lvl & P(LVL, REM_CCE1)) ||
- 		    (lvl & P(LVL, REM_CCE2)) ||
- 		     mrem) {
--			if (snoop & P(SNOOP, HIT))
-+			if (snoop & P(SNOOP, HIT)) {
- 				stats->rmt_hit++;
--			else if (snoop & P(SNOOP, HITM))
-+			} else if (snoop & P(SNOOP, HITM)) {
- 				HITM_INC(rmt_hitm);
-+			} else if (snoopx & P(SNOOPX, PEER)) {
-+				stats->rmt_hit++;
-+				PEER_INC(rmt_peer);
-+			}
- 		}
+-void xenvif_idx_unmap(struct xenvif_queue *queue, u16 pending_idx)
++static void xenvif_idx_unmap(struct xenvif_queue *queue, u16 pending_idx)
+ {
+ 	int ret;
+ 	struct gnttab_unmap_grant_ref tx_unmap_op;
+diff --git a/drivers/net/xen-netback/rx.c b/drivers/net/xen-netback/rx.c
+index dbac4c03d21a..8df2c736fd23 100644
+--- a/drivers/net/xen-netback/rx.c
++++ b/drivers/net/xen-netback/rx.c
+@@ -486,7 +486,7 @@ static void xenvif_rx_skb(struct xenvif_queue *queue)
  
- 		if ((lvl & P(LVL, MISS)))
-@@ -664,6 +683,9 @@ void c2c_add_stats(struct c2c_stats *stats, struct c2c_stats *add)
- 	stats->lcl_hitm		+= add->lcl_hitm;
- 	stats->rmt_hitm		+= add->rmt_hitm;
- 	stats->tot_hitm		+= add->tot_hitm;
-+	stats->lcl_peer		+= add->lcl_peer;
-+	stats->rmt_peer		+= add->rmt_peer;
-+	stats->tot_peer		+= add->tot_peer;
- 	stats->rmt_hit		+= add->rmt_hit;
- 	stats->lcl_dram		+= add->lcl_dram;
- 	stats->rmt_dram		+= add->rmt_dram;
-diff --git a/tools/perf/util/mem-events.h b/tools/perf/util/mem-events.h
-index 8a8b568baeee..12372309d60e 100644
---- a/tools/perf/util/mem-events.h
-+++ b/tools/perf/util/mem-events.h
-@@ -78,6 +78,9 @@ struct c2c_stats {
- 	u32	lcl_hitm;            /* count of loads with local HITM  */
- 	u32	rmt_hitm;            /* count of loads with remote HITM */
- 	u32	tot_hitm;            /* count of loads with local and remote HITM */
-+	u32	lcl_peer;            /* count of loads with local peer cache */
-+	u32	rmt_peer;            /* count of loads with remote peer cache */
-+	u32	tot_peer;            /* count of loads with local and remote peer cache */
- 	u32	rmt_hit;             /* count of loads with remote hit clean; */
- 	u32	lcl_dram;            /* count of loads miss to local DRAM */
- 	u32	rmt_dram;            /* count of loads miss to remote DRAM */
+ #define RX_BATCH_SIZE 64
+ 
+-void xenvif_rx_action(struct xenvif_queue *queue)
++static void xenvif_rx_action(struct xenvif_queue *queue)
+ {
+ 	struct sk_buff_head completed_skbs;
+ 	unsigned int work_done = 0;
 -- 
-2.25.1
+2.35.3
 
