@@ -2,50 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51CCFC47087
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:21:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9B4FC38A2B
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:22:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237568AbiE3OVh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:21:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40320 "EHLO
+        id S237684AbiE3OVx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:21:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241030AbiE3ORH (ORCPT
+        with ESMTP id S241048AbiE3ORJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:17:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAD0211047B;
-        Mon, 30 May 2022 06:44:31 -0700 (PDT)
+        Mon, 30 May 2022 10:17:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A48010F350;
+        Mon, 30 May 2022 06:44:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5A3EDB80AE8;
-        Mon, 30 May 2022 13:44:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 243F9C385B8;
-        Mon, 30 May 2022 13:44:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C312260F24;
+        Mon, 30 May 2022 13:44:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49C3AC3411A;
+        Mon, 30 May 2022 13:43:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918251;
-        bh=BUrobp50XpHRgeWbcvPtI16jIKSjBaUWOdFH+Q30HRU=;
+        s=k20201202; t=1653918240;
+        bh=rYEu55Ty2B3c2tcs9cM3GQF/Ak5ZmrxzY55Tk02GvNk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o45chMRPTBn7fHvzTld7kvjGZdJXbpVwvFzDolMoTOAySIcZNd4mz0Hp0JeCjBjlq
-         YH8DyN6cMhNjtER9etr3OBxgZOvIM4AvRP7viE9XV0aFc887DnpWflIIg/CnAptiRn
-         9lDp3+O0YZX9mmeScKGL/qdUIYXS4zyunQ8cWDX9hcymGNUGmhD0z/+kw/uQicP7f+
-         ymV2Nfhei496d0BR3lidYX7BtbJw2VC/Oi5WWoRhxuW8qSirXxac7cTef+ob6ExTzk
-         ncncdBYZtRa+KKLuKe7dIUhrkHwH8eNFxYXLEwwJmoYeIkfhP6ykH/1pDYEvrI6o8Y
-         9HyMQj/29GCsA==
+        b=Id9RTnmrR3wIlNvP9f1e9H6URLFa8h8FOt7vGXbEMCI+iI55Z7MH2162zHRpAPd/p
+         L0q4M4Zw1wFj5wUFs+dZCqEhMM+aHlg/QhBw4ZtFflgUSueS177BT2TYNmcuDeeVUY
+         cO4CozKBrJOV7+v679PNgdgKjUjySjxASGoVXnaJUbN3QDzIiGYeq7RvduY5bgIkJ4
+         UcMcWQTe9eZFeFhZhe7SBH4UqLyAXdpa1vdj9S80q+PL83/vUbdZxqt9dyN+uIL33x
+         uf2GTGD13GLekBQkv0NbM38pJ2uwdDRQv1ICxbYKc7uCFaVdmyEzDpHiWdX6M9cnz+
+         X634QihkbV3Gg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Liu Zixian <liuzixian4@huawei.com>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, airlied@linux.ie,
-        daniel@ffwll.ch, dri-devel@lists.freedesktop.org,
-        virtualization@lists.linux-foundation.org
-Subject: [PATCH AUTOSEL 5.10 02/76] drm/virtio: fix NULL pointer dereference in virtio_gpu_conn_get_modes
-Date:   Mon, 30 May 2022 09:42:52 -0400
-Message-Id: <20220530134406.1934928-2-sashal@kernel.org>
+Cc:     =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, peterhuewe@gmx.de,
+        linux-integrity@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 107/109] char: tpm: cr50_i2c: Suppress duplicated error message in .remove()
+Date:   Mon, 30 May 2022 09:38:23 -0400
+Message-Id: <20220530133825.1933431-107-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220530134406.1934928-1-sashal@kernel.org>
-References: <20220530134406.1934928-1-sashal@kernel.org>
+In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
+References: <20220530133825.1933431-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -53,86 +54,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liu Zixian <liuzixian4@huawei.com>
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-[ Upstream commit 194d250cdc4a40ccbd179afd522a9e9846957402 ]
+[ Upstream commit e0687fe958f763f1790f22ed5483025b7624e744 ]
 
-drm_cvt_mode may return NULL and we should check it.
+Returning an error value in an i2c remove callback results in an error
+message being emitted by the i2c core, but otherwise it doesn't make a
+difference. The device goes away anyhow and the devm cleanups are
+called.
 
-This bug is found by syzkaller:
+As tpm_cr50_i2c_remove() emits an error message already and the
+additional error message by the i2c core doesn't add any useful
+information, change the return value to zero to suppress this error
+message.
 
-FAULT_INJECTION stacktrace:
-[  168.567394] FAULT_INJECTION: forcing a failure.
-name failslab, interval 1, probability 0, space 0, times 1
-[  168.567403] CPU: 1 PID: 6425 Comm: syz Kdump: loaded Not tainted 4.19.90-vhulk2201.1.0.h1035.kasan.eulerosv2r10.aarch64 #1
-[  168.567406] Hardware name: QEMU KVM Virtual Machine, BIOS 0.0.0 02/06/2015
-[  168.567408] Call trace:
-[  168.567414]  dump_backtrace+0x0/0x310
-[  168.567418]  show_stack+0x28/0x38
-[  168.567423]  dump_stack+0xec/0x15c
-[  168.567427]  should_fail+0x3ac/0x3d0
-[  168.567437]  __should_failslab+0xb8/0x120
-[  168.567441]  should_failslab+0x28/0xc0
-[  168.567445]  kmem_cache_alloc_trace+0x50/0x640
-[  168.567454]  drm_mode_create+0x40/0x90
-[  168.567458]  drm_cvt_mode+0x48/0xc78
-[  168.567477]  virtio_gpu_conn_get_modes+0xa8/0x140 [virtio_gpu]
-[  168.567485]  drm_helper_probe_single_connector_modes+0x3a4/0xd80
-[  168.567492]  drm_mode_getconnector+0x2e0/0xa70
-[  168.567496]  drm_ioctl_kernel+0x11c/0x1d8
-[  168.567514]  drm_ioctl+0x558/0x6d0
-[  168.567522]  do_vfs_ioctl+0x160/0xf30
-[  168.567525]  ksys_ioctl+0x98/0xd8
-[  168.567530]  __arm64_sys_ioctl+0x50/0xc8
-[  168.567536]  el0_svc_common+0xc8/0x320
-[  168.567540]  el0_svc_handler+0xf8/0x160
-[  168.567544]  el0_svc+0x10/0x218
+Note that if i2c_clientdata is NULL, there is something really fishy.
+Assuming no memory corruption happened (then all bets are lost anyhow),
+tpm_cr50_i2c_remove() is only called after tpm_cr50_i2c_probe() returned
+successfully. So there was a tpm chip registered before and after
+tpm_cr50_i2c_remove() its privdata is freed but the associated character
+device isn't removed. If after that happened userspace accesses the
+character device it's likely that the freed memory is accessed. For that
+reason the warning message is made a bit more frightening.
 
-KASAN stacktrace:
-[  168.567561] BUG: KASAN: null-ptr-deref in virtio_gpu_conn_get_modes+0xb4/0x140 [virtio_gpu]
-[  168.567565] Read of size 4 at addr 0000000000000054 by task syz/6425
-[  168.567566]
-[  168.567571] CPU: 1 PID: 6425 Comm: syz Kdump: loaded Not tainted 4.19.90-vhulk2201.1.0.h1035.kasan.eulerosv2r10.aarch64 #1
-[  168.567573] Hardware name: QEMU KVM Virtual Machine, BIOS 0.0.0 02/06/2015
-[  168.567575] Call trace:
-[  168.567578]  dump_backtrace+0x0/0x310
-[  168.567582]  show_stack+0x28/0x38
-[  168.567586]  dump_stack+0xec/0x15c
-[  168.567591]  kasan_report+0x244/0x2f0
-[  168.567594]  __asan_load4+0x58/0xb0
-[  168.567607]  virtio_gpu_conn_get_modes+0xb4/0x140 [virtio_gpu]
-[  168.567612]  drm_helper_probe_single_connector_modes+0x3a4/0xd80
-[  168.567617]  drm_mode_getconnector+0x2e0/0xa70
-[  168.567621]  drm_ioctl_kernel+0x11c/0x1d8
-[  168.567624]  drm_ioctl+0x558/0x6d0
-[  168.567628]  do_vfs_ioctl+0x160/0xf30
-[  168.567632]  ksys_ioctl+0x98/0xd8
-[  168.567636]  __arm64_sys_ioctl+0x50/0xc8
-[  168.567641]  el0_svc_common+0xc8/0x320
-[  168.567645]  el0_svc_handler+0xf8/0x160
-[  168.567649]  el0_svc+0x10/0x218
-
-Signed-off-by: Liu Zixian <liuzixian4@huawei.com>
-Link: http://patchwork.freedesktop.org/patch/msgid/20220322091730.1653-1-liuzixian4@huawei.com
-Signed-off-by: Gerd Hoffmann <kraxel@redhat.com>
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/virtio/virtgpu_display.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/char/tpm/tpm_tis_i2c_cr50.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/virtio/virtgpu_display.c b/drivers/gpu/drm/virtio/virtgpu_display.c
-index f84b7e61311b..9b2b99e85342 100644
---- a/drivers/gpu/drm/virtio/virtgpu_display.c
-+++ b/drivers/gpu/drm/virtio/virtgpu_display.c
-@@ -177,6 +177,8 @@ static int virtio_gpu_conn_get_modes(struct drm_connector *connector)
- 		DRM_DEBUG("add mode: %dx%d\n", width, height);
- 		mode = drm_cvt_mode(connector->dev, width, height, 60,
- 				    false, false, false);
-+		if (!mode)
-+			return count;
- 		mode->type |= DRM_MODE_TYPE_PREFERRED;
- 		drm_mode_probed_add(connector, mode);
- 		count++;
+diff --git a/drivers/char/tpm/tpm_tis_i2c_cr50.c b/drivers/char/tpm/tpm_tis_i2c_cr50.c
+index c89278103703..e2ab6a329732 100644
+--- a/drivers/char/tpm/tpm_tis_i2c_cr50.c
++++ b/drivers/char/tpm/tpm_tis_i2c_cr50.c
+@@ -754,8 +754,8 @@ static int tpm_cr50_i2c_remove(struct i2c_client *client)
+ 	struct device *dev = &client->dev;
+ 
+ 	if (!chip) {
+-		dev_err(dev, "Could not get client data at remove\n");
+-		return -ENODEV;
++		dev_crit(dev, "Could not get client data at remove, memory corruption ahead\n");
++		return 0;
+ 	}
+ 
+ 	tpm_chip_unregister(chip);
 -- 
 2.35.1
 
