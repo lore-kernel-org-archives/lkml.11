@@ -2,49 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02710C41535
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:38:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DD7FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:38:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236988AbiE3Oh4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:37:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44868 "EHLO
+        id S239668AbiE3OiL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:38:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239668AbiE3OSy (ORCPT
+        with ESMTP id S240351AbiE3OTf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:18:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30C8E122B7A;
-        Mon, 30 May 2022 06:49:56 -0700 (PDT)
+        Mon, 30 May 2022 10:19:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1A811248D2;
+        Mon, 30 May 2022 06:50:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E0B2261013;
-        Mon, 30 May 2022 13:49:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0B0AC3411F;
-        Mon, 30 May 2022 13:49:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ED4BDB80DB8;
+        Mon, 30 May 2022 13:49:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A534AC3411A;
+        Mon, 30 May 2022 13:49:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918595;
-        bh=6GPI7gYf07+zFN1Ol/tp6iH7PZSLrK3qLnRFMdReihY=;
+        s=k20201202; t=1653918589;
+        bh=GW6Rai2JHISGwv2IDVZcZd0gCeYcGf6TVrFi5Es5IRM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PEl7ajDelcP/heH6+IbIHd0nPhCCRsnGxvv4jkaQFTT9++nB5ALiQF8OuXrBERtup
-         8Ffn0CcZiD5neOwQ1eIiyDwZey3ORnMkADkV7OGFC8e0s3BVAbKsqfGhI7mazdbR2x
-         HELluNHZnspeWUo/FfGboPP5Sq/+EnRzWApvSdIcgIE6TV1Xea2kYXfuOqt8g/RnbG
-         kAydEBFQadtfGwz46POdtVl360EHwBZ37OIAoeApQ2Q1ILYZp2zkqXAb81GS1tW1IU
-         04i2yuB4uGzYWgiPVwH+uV3Rj5FyMz7uopMeJ+Yj4LDWpC0PazIQ0pm3rbexjJllmU
-         fC5M5lHJPDagQ==
+        b=OkKPwwanN2AUbmr2L8/9ofFfnqpflFr9IQncbGv8ZMcYrBhwTq8TElPodi4hWmpBt
+         T1YpTFfDYZuFDj/GCSSUG3Kc9QWTkLkvEsNf5shuLfeB9vye4lHMjETj0LA316FBIz
+         o2e6ReMAYHGVrEx/mMqEOk49qIsvrzIg58Om46oYpNNGFMadLdpnO6zoBmYDOWSUu4
+         yX1jW/UomxNKKUn9wERjp7ZOM+8xcRnVKunl8djn2zwhkt2raR3R+3WZeCxPFmYyl8
+         U9MYK/Peur+wIll3GL7tqmdgDrFFi1HfoPpb/84dVk+IJiwBVp/QGLS2N41y2AM/X7
+         m+luJGIUTRTJQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Thibaut=20VAR=C3=88NE?= <hacks+kernel@slashdirt.org>,
-        Felix Fietkau <nbd@nbd.name>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 11/38] ath9k: fix QCA9561 PA bias level
-Date:   Mon, 30 May 2022 09:48:57 -0400
-Message-Id: <20220530134924.1936816-11-sashal@kernel.org>
+Cc:     =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= 
+        <amadeuszx.slawinski@linux.intel.com>,
+        Cezary Rojewski <cezary.rojewski@intel.com>,
+        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>,
+        perex@perex.cz, tiwai@suse.com, xkernel.wang@foxmail.com,
+        alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 4.19 09/38] ALSA: jack: Access input_dev under mutex
+Date:   Mon, 30 May 2022 09:48:55 -0400
+Message-Id: <20220530134924.1936816-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530134924.1936816-1-sashal@kernel.org>
 References: <20220530134924.1936816-1-sashal@kernel.org>
@@ -57,49 +55,152 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thibaut VARÈNE <hacks+kernel@slashdirt.org>
+From: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
 
-[ Upstream commit e999a5da28a0e0f7de242d841ef7d5e48f4646ae ]
+[ Upstream commit 1b6a6fc5280e97559287b61eade2d4b363e836f2 ]
 
-This patch fixes an invalid TX PA DC bias level on QCA9561, which
-results in a very low output power and very low throughput as devices
-are further away from the AP (compared to other 2.4GHz APs).
+It is possible when using ASoC that input_dev is unregistered while
+calling snd_jack_report, which causes NULL pointer dereference.
+In order to prevent this serialize access to input_dev using mutex lock.
 
-This patch was suggested by Felix Fietkau, who noted[1]:
-"The value written to that register is wrong, because while the mask
-definition AR_CH0_TOP2_XPABIASLVL uses a different value for 9561, the
-shift definition AR_CH0_TOP2_XPABIASLVL_S is hardcoded to 12, which is
-wrong for 9561."
-
-In real life testing, without this patch the 2.4GHz throughput on
-Yuncore XD3200 is around 10Mbps sitting next to the AP, and closer to
-practical maximum with the patch applied.
-
-[1] https://lore.kernel.org/all/91c58969-c60e-2f41-00ac-737786d435ae@nbd.name
-
-Signed-off-by: Thibaut VARÈNE <hacks+kernel@slashdirt.org>
-Acked-by: Felix Fietkau <nbd@nbd.name>
-Acked-by: Toke Høiland-Jørgensen <toke@toke.dk>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220417145145.1847-1-hacks+kernel@slashdirt.org
+Signed-off-by: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
+Reviewed-by: Cezary Rojewski <cezary.rojewski@intel.com>
+Link: https://lore.kernel.org/r/20220412091628.3056922-1-amadeuszx.slawinski@linux.intel.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath9k/ar9003_phy.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/sound/jack.h |  1 +
+ sound/core/jack.c    | 34 +++++++++++++++++++++++++++-------
+ 2 files changed, 28 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath9k/ar9003_phy.h b/drivers/net/wireless/ath/ath9k/ar9003_phy.h
-index a171dbb29fbb..ad949eb02f3d 100644
---- a/drivers/net/wireless/ath/ath9k/ar9003_phy.h
-+++ b/drivers/net/wireless/ath/ath9k/ar9003_phy.h
-@@ -720,7 +720,7 @@
- #define AR_CH0_TOP2		(AR_SREV_9300(ah) ? 0x1628c : \
- 					(AR_SREV_9462(ah) ? 0x16290 : 0x16284))
- #define AR_CH0_TOP2_XPABIASLVL		(AR_SREV_9561(ah) ? 0x1e00 : 0xf000)
--#define AR_CH0_TOP2_XPABIASLVL_S	12
-+#define AR_CH0_TOP2_XPABIASLVL_S	(AR_SREV_9561(ah) ? 9 : 12)
+diff --git a/include/sound/jack.h b/include/sound/jack.h
+index 1e84bfb553cf..4742f842b457 100644
+--- a/include/sound/jack.h
++++ b/include/sound/jack.h
+@@ -77,6 +77,7 @@ struct snd_jack {
+ 	const char *id;
+ #ifdef CONFIG_SND_JACK_INPUT_DEV
+ 	struct input_dev *input_dev;
++	struct mutex input_dev_lock;
+ 	int registered;
+ 	int type;
+ 	char name[100];
+diff --git a/sound/core/jack.c b/sound/core/jack.c
+index acb531749efb..074b15fcb0ac 100644
+--- a/sound/core/jack.c
++++ b/sound/core/jack.c
+@@ -48,8 +48,11 @@ static int snd_jack_dev_disconnect(struct snd_device *device)
+ #ifdef CONFIG_SND_JACK_INPUT_DEV
+ 	struct snd_jack *jack = device->device_data;
  
- #define AR_CH0_XTAL		(AR_SREV_9300(ah) ? 0x16294 : \
- 				 ((AR_SREV_9462(ah) || AR_SREV_9565(ah)) ? 0x16298 : \
+-	if (!jack->input_dev)
++	mutex_lock(&jack->input_dev_lock);
++	if (!jack->input_dev) {
++		mutex_unlock(&jack->input_dev_lock);
+ 		return 0;
++	}
+ 
+ 	/* If the input device is registered with the input subsystem
+ 	 * then we need to use a different deallocator. */
+@@ -58,6 +61,7 @@ static int snd_jack_dev_disconnect(struct snd_device *device)
+ 	else
+ 		input_free_device(jack->input_dev);
+ 	jack->input_dev = NULL;
++	mutex_unlock(&jack->input_dev_lock);
+ #endif /* CONFIG_SND_JACK_INPUT_DEV */
+ 	return 0;
+ }
+@@ -96,8 +100,11 @@ static int snd_jack_dev_register(struct snd_device *device)
+ 	snprintf(jack->name, sizeof(jack->name), "%s %s",
+ 		 card->shortname, jack->id);
+ 
+-	if (!jack->input_dev)
++	mutex_lock(&jack->input_dev_lock);
++	if (!jack->input_dev) {
++		mutex_unlock(&jack->input_dev_lock);
+ 		return 0;
++	}
+ 
+ 	jack->input_dev->name = jack->name;
+ 
+@@ -122,6 +129,7 @@ static int snd_jack_dev_register(struct snd_device *device)
+ 	if (err == 0)
+ 		jack->registered = 1;
+ 
++	mutex_unlock(&jack->input_dev_lock);
+ 	return err;
+ }
+ #endif /* CONFIG_SND_JACK_INPUT_DEV */
+@@ -242,9 +250,11 @@ int snd_jack_new(struct snd_card *card, const char *id, int type,
+ 		return -ENOMEM;
+ 	}
+ 
+-	/* don't creat input device for phantom jack */
+-	if (!phantom_jack) {
+ #ifdef CONFIG_SND_JACK_INPUT_DEV
++	mutex_init(&jack->input_dev_lock);
++
++	/* don't create input device for phantom jack */
++	if (!phantom_jack) {
+ 		int i;
+ 
+ 		jack->input_dev = input_allocate_device();
+@@ -262,8 +272,8 @@ int snd_jack_new(struct snd_card *card, const char *id, int type,
+ 				input_set_capability(jack->input_dev, EV_SW,
+ 						     jack_switch_types[i]);
+ 
+-#endif /* CONFIG_SND_JACK_INPUT_DEV */
+ 	}
++#endif /* CONFIG_SND_JACK_INPUT_DEV */
+ 
+ 	err = snd_device_new(card, SNDRV_DEV_JACK, jack, &ops);
+ 	if (err < 0)
+@@ -303,10 +313,14 @@ EXPORT_SYMBOL(snd_jack_new);
+ void snd_jack_set_parent(struct snd_jack *jack, struct device *parent)
+ {
+ 	WARN_ON(jack->registered);
+-	if (!jack->input_dev)
++	mutex_lock(&jack->input_dev_lock);
++	if (!jack->input_dev) {
++		mutex_unlock(&jack->input_dev_lock);
+ 		return;
++	}
+ 
+ 	jack->input_dev->dev.parent = parent;
++	mutex_unlock(&jack->input_dev_lock);
+ }
+ EXPORT_SYMBOL(snd_jack_set_parent);
+ 
+@@ -354,6 +368,8 @@ EXPORT_SYMBOL(snd_jack_set_key);
+ 
+ /**
+  * snd_jack_report - Report the current status of a jack
++ * Note: This function uses mutexes and should be called from a
++ * context which can sleep (such as a workqueue).
+  *
+  * @jack:   The jack to report status for
+  * @status: The current status of the jack
+@@ -373,8 +389,11 @@ void snd_jack_report(struct snd_jack *jack, int status)
+ 					    status & jack_kctl->mask_bits);
+ 
+ #ifdef CONFIG_SND_JACK_INPUT_DEV
+-	if (!jack->input_dev)
++	mutex_lock(&jack->input_dev_lock);
++	if (!jack->input_dev) {
++		mutex_unlock(&jack->input_dev_lock);
+ 		return;
++	}
+ 
+ 	for (i = 0; i < ARRAY_SIZE(jack->key); i++) {
+ 		int testbit = SND_JACK_BTN_0 >> i;
+@@ -393,6 +412,7 @@ void snd_jack_report(struct snd_jack *jack, int status)
+ 	}
+ 
+ 	input_sync(jack->input_dev);
++	mutex_unlock(&jack->input_dev_lock);
+ #endif /* CONFIG_SND_JACK_INPUT_DEV */
+ }
+ EXPORT_SYMBOL(snd_jack_report);
 -- 
 2.35.1
 
