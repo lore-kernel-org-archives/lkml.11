@@ -2,133 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E234C3A589
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:57:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91FDEC38A2B
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:57:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239578AbiE3N5H convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:57:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44304 "EHLO
+        id S239434AbiE3N4i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:56:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239320AbiE3Nv1 (ORCPT
+        with ESMTP id S239085AbiE3NvD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:51:27 -0400
-Received: from mail-yb1-f177.google.com (mail-yb1-f177.google.com [209.85.219.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FAFA880CA;
-        Mon, 30 May 2022 06:36:28 -0700 (PDT)
-Received: by mail-yb1-f177.google.com with SMTP id t31so6154031ybi.2;
-        Mon, 30 May 2022 06:36:28 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Ctyj8jhtqDdweE4lavI3quEUZCKV+EHuOOErPIUdLrc=;
-        b=H9rITRT741X/2k2LFXhTwgphnhEvHMag2VmmuRNDeJ3EGuNxsuwPB1FrLE678kfZG4
-         5B7Di18sAXd2XzC96N8teBImSosgPDx657bEGfu//rYcFYGJVzxaV+f7qVLOH/HbMoHP
-         +D9jcR/zAz4mQa4M2MbSY3zGoyx5EBCGXHzMrF80MvKHAPB/W1umx9MB79EH+pI/v+4q
-         dIzStMAfpSUctl4YZ3GbZcBMse4NtIxktnUh5d4NWdyB4PAVuTtyzAc/6bD3BZW2eReK
-         vJUrYQ2s1FvOXL96J3pqE7Vg7JLDNPQEpXfEpz/Nkv46PZdXtlDyPJ0JMB69na19J7IS
-         IrEg==
-X-Gm-Message-State: AOAM532QZmk+KSVONaUm6STryhR+Cula2hOUa7ytJYF8NgGKqtnPPMxS
-        PNsa+glkPPmZn/7U9zukTqSDXsLf3pUe3kVX0+g=
-X-Google-Smtp-Source: ABdhPJyb0iZxfAaRN/OL5PW28EO/JOfURGcI7tX4+kyohamIRvWbmypvoyTbRkJ+jLQBQNzIZcV9m5XrxzQC8NRT1RU=
-X-Received: by 2002:a25:d98b:0:b0:65c:9dc9:7a8f with SMTP id
- q133-20020a25d98b000000b0065c9dc97a8fmr10646856ybg.622.1653917787866; Mon, 30
- May 2022 06:36:27 -0700 (PDT)
+        Mon, 30 May 2022 09:51:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30A2DB0A45;
+        Mon, 30 May 2022 06:35:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 40638B80DBF;
+        Mon, 30 May 2022 13:35:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE8D6C341C4;
+        Mon, 30 May 2022 13:35:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653917714;
+        bh=Xrh9+IX1jDtfZYsCVm1bWZVVFlKh6NLJ2whgIr5FrpM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=tu+06D5hLbeaiWnNOcCMrBaPndxlPS0Ugh+ydUl5VawQ0djH6U8yOefM5YgGoIRo2
+         1Slc77zLEudO2EVoBrV1l2P7lxD04owmPtUX7FPRgIpfhyQfLThTZipoBWS6Y2sY28
+         5B5Yh/7tF8iafNoXK3SrKxnXyqAmkJPBbWQYbx3xC6pF67GvDFaHVRxpP3vYR+vmI0
+         ZdSmE3DZJZQ5WKFauLHzOdEeQ1SwRlVHZnSAeId0NJddthDS8WoNegvOzlNAn6dVCs
+         yCJotjmsVUc70C/HuEZE8fqQlXYTLhaB8BQhrBRvOdbPG5URT8g8F8kmx4jvzMnRmf
+         pIRDJ3JDcU7aw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>,
+        steven.eckhoff.opensource@gmail.com, lgirdwood@gmail.com,
+        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.17 074/135] ASoC: tscs454: Add endianness flag in snd_soc_component_driver
+Date:   Mon, 30 May 2022 09:30:32 -0400
+Message-Id: <20220530133133.1931716-74-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
+References: <20220530133133.1931716-1-sashal@kernel.org>
 MIME-Version: 1.0
-References: <20220530100424.103301-1-pierre.gondois@arm.com>
- <20220530100424.103301-2-pierre.gondois@arm.com> <f2b9386a-16dd-bd03-4972-aaa026f72c03@hisilicon.com>
-In-Reply-To: <f2b9386a-16dd-bd03-4972-aaa026f72c03@hisilicon.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Mon, 30 May 2022 15:36:16 +0200
-Message-ID: <CAJZ5v0h7UEhXUUW5u=1PhvRWGURUF-KNJMPwL_MQPU-cAaYYDA@mail.gmail.com>
-Subject: Re: [PATCH -next v2 1/1] cpufreq: CPPC: Fix unused-function warning
-To:     Shaokun Zhang <zhangshaokun@hisilicon.com>,
-        Pierre Gondois <pierre.gondois@arm.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Ionela Voinescu <Ionela.Voinescu@arm.com>,
-        Dietmar Eggemann <Dietmar.Eggemann@arm.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Linux PM <linux-pm@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 30, 2022 at 1:56 PM Shaokun Zhang
-<zhangshaokun@hisilicon.com> wrote:
->
-> Hi,
->
-> It works for me on compile when CONFIG_ENERGY_MODEL=n, please feel free to add:
-> Tested-by: Shaokun Zhang <zhangshaokun@hisilicon.com>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-Applied, thanks!
+[ Upstream commit ff69ec96b87dccb3a29edef8cec5d4fefbbc2055 ]
 
-> On 2022/5/30 18:04, Pierre Gondois wrote:
-> > Building the cppc_cpufreq driver with for arm64 with
-> > CONFIG_ENERGY_MODEL=n triggers the following warnings:
-> >  drivers/cpufreq/cppc_cpufreq.c:550:12: error: ‘cppc_get_cpu_cost’ defined but not used
-> > [-Werror=unused-function]
-> >    550 | static int cppc_get_cpu_cost(struct device *cpu_dev, unsigned long KHz,
-> >        |            ^~~~~~~~~~~~~~~~~
-> >  drivers/cpufreq/cppc_cpufreq.c:481:12: error: ‘cppc_get_cpu_power’ defined but not used
-> > [-Werror=unused-function]
-> >    481 | static int cppc_get_cpu_power(struct device *cpu_dev,
-> >        |            ^~~~~~~~~~~~~~~~~~
-> >
-> > Move the Energy Model related functions into specific guards.
-> > This allows to fix the warning and prevent doing extra work
-> > when the Energy Model is not present.
-> >
-> > Fixes: 740fcdc2c20e ("cpufreq: CPPC: Register EM based on efficiency class information")
-> > Reported-by: Shaokun Zhang <zhangshaokun@hisilicon.com>
-> > Signed-off-by: Pierre Gondois <pierre.gondois@arm.com>
-> > ---
-> >  drivers/cpufreq/cppc_cpufreq.c | 17 ++++++++---------
-> >  1 file changed, 8 insertions(+), 9 deletions(-)
-> >
-> > diff --git a/drivers/cpufreq/cppc_cpufreq.c b/drivers/cpufreq/cppc_cpufreq.c
-> > index f0a8bb2c59e5..24eaf0ec344d 100644
-> > --- a/drivers/cpufreq/cppc_cpufreq.c
-> > +++ b/drivers/cpufreq/cppc_cpufreq.c
-> > @@ -441,6 +441,14 @@ static unsigned int cppc_cpufreq_get_transition_delay_us(unsigned int cpu)
-> >       }
-> >       return cppc_get_transition_latency(cpu) / NSEC_PER_USEC;
-> >  }
-> > +#else
-> > +static unsigned int cppc_cpufreq_get_transition_delay_us(unsigned int cpu)
-> > +{
-> > +     return cppc_get_transition_latency(cpu) / NSEC_PER_USEC;
-> > +}
-> > +#endif
-> > +
-> > +#if defined(CONFIG_ARM64) && defined(CONFIG_ENERGY_MODEL)
-> >
-> >  static DEFINE_PER_CPU(unsigned int, efficiency_class);
-> >  static void cppc_cpufreq_register_em(struct cpufreq_policy *policy);
-> > @@ -621,21 +629,12 @@ static void cppc_cpufreq_register_em(struct cpufreq_policy *policy)
-> >  }
-> >
-> >  #else
-> > -
-> > -static unsigned int cppc_cpufreq_get_transition_delay_us(unsigned int cpu)
-> > -{
-> > -     return cppc_get_transition_latency(cpu) / NSEC_PER_USEC;
-> > -}
-> >  static int populate_efficiency_class(void)
-> >  {
-> >       return 0;
-> >  }
-> > -static void cppc_cpufreq_register_em(struct cpufreq_policy *policy)
-> > -{
-> > -}
-> >  #endif
-> >
-> > -
-> >  static struct cppc_cpudata *cppc_cpufreq_get_cpu_data(unsigned int cpu)
-> >  {
-> >       struct cppc_cpudata *cpu_data;
-> >
+The endianness flag is used on the CODEC side to specify an
+ambivalence to endian, typically because it is lost over the hardware
+link. This device receives audio over an I2S DAI and as such should
+have endianness applied.
+
+A fixup is also required to use the width directly rather than relying
+on the format in hw_params, now both little and big endian would be
+supported. It is worth noting this changes the behaviour of S24_LE to
+use a word length of 24 rather than 32. This would appear to be a
+correction since the fact S24_LE is stored as 32 bits should not be
+presented over the bus.
+
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220504170905.332415-26-ckeepax@opensource.cirrus.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ sound/soc/codecs/tscs454.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/sound/soc/codecs/tscs454.c b/sound/soc/codecs/tscs454.c
+index 43220bb36701..c27ca9a273e1 100644
+--- a/sound/soc/codecs/tscs454.c
++++ b/sound/soc/codecs/tscs454.c
+@@ -3120,18 +3120,17 @@ static int set_aif_sample_format(struct snd_soc_component *component,
+ 	unsigned int width;
+ 	int ret;
+ 
+-	switch (format) {
+-	case SNDRV_PCM_FORMAT_S16_LE:
++	switch (snd_pcm_format_width(format)) {
++	case 16:
+ 		width = FV_WL_16;
+ 		break;
+-	case SNDRV_PCM_FORMAT_S20_3LE:
++	case 20:
+ 		width = FV_WL_20;
+ 		break;
+-	case SNDRV_PCM_FORMAT_S24_3LE:
++	case 24:
+ 		width = FV_WL_24;
+ 		break;
+-	case SNDRV_PCM_FORMAT_S24_LE:
+-	case SNDRV_PCM_FORMAT_S32_LE:
++	case 32:
+ 		width = FV_WL_32;
+ 		break;
+ 	default:
+@@ -3326,6 +3325,7 @@ static const struct snd_soc_component_driver soc_component_dev_tscs454 = {
+ 	.num_dapm_routes = ARRAY_SIZE(tscs454_intercon),
+ 	.controls =	tscs454_snd_controls,
+ 	.num_controls = ARRAY_SIZE(tscs454_snd_controls),
++	.endianness = 1,
+ };
+ 
+ #define TSCS454_RATES SNDRV_PCM_RATE_8000_96000
+-- 
+2.35.1
+
