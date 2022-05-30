@@ -2,93 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BB69C4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:12:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D84B4C47092
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:12:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240454AbiE3OMC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:12:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56010 "EHLO
+        id S240397AbiE3OLo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:11:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239871AbiE3OGX (ORCPT
+        with ESMTP id S238667AbiE3OEp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:06:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 953AE2C10C;
-        Mon, 30 May 2022 06:41:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 46681B80D86;
-        Mon, 30 May 2022 13:41:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B2AFC36AE3;
-        Mon, 30 May 2022 13:41:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918099;
-        bh=cB/zmou4JNBatz0EsRvy0e6Im6lxkG/oKJCnqFwoMfc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Gzph6k2CTeXWjfu58Tnbu7q17T2LEsWtxLiZpQEgvyjA2r1fVc8eyQ/dTQ1ckmopP
-         cKn+NYoa5UbiSbmgn5XzpzhUwfwJ5q+65RvOfhnsE2sWYYHG5LG3iiPFcfNCATDDJg
-         OxiqpGWd6yWPQ0c57nuj6pTJvRt+57zeeybwQoyvPkQfyG3jDKy0Xl/2nyRcIlBiD+
-         RRw+a5kV7KYRz03z5yfBlHFZpVXzP1xFbVtlDw/5nCWdXWy9oxMbg4e2PdSL4l1Qyw
-         WXfgxkPIekusv7Chb9dtD0Nj0U0ntRRCR5iDoTghuvNz3CYZmw+KG4aAQ0aKvZsUnE
-         cjBmGhbVg7+Hg==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
-        <nfraprado@collabora.com>, Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        matthias.bgg@gmail.com, hsin-hsiung.wang@mediatek.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 059/109] regulator: mt6315: Enforce regulator-compatible, not name
-Date:   Mon, 30 May 2022 09:37:35 -0400
-Message-Id: <20220530133825.1933431-59-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
-References: <20220530133825.1933431-1-sashal@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+        Mon, 30 May 2022 10:04:45 -0400
+Received: from m12-12.163.com (m12-12.163.com [220.181.12.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 79082994E0;
+        Mon, 30 May 2022 06:40:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id; bh=pAaMY+j2sYlcGXBo+T
+        l/106hE5vn1j7rLU/jBsZmyb0=; b=jTMZTqW7LoEoQlhvQyd+EhF8McmtnCP7w9
+        FEBRaWpGwgkM/mraPsZgTw/48dhPhu80hZv+J36QnN3SOKZR//uIuM70Z4O5ag0y
+        kHH5Oy3Jm+oFFCucyh6kjT/WyJ5wNV1hXPSTMxVxrDWtQuH0JxKyC+0PXc2y2ak2
+        0ZcYMAm+4=
+Received: from localhost.localdomain (unknown [171.221.150.250])
+        by smtp8 (Coremail) with SMTP id DMCowADXdaYMyZRiQha+FA--.22801S2;
+        Mon, 30 May 2022 21:39:32 +0800 (CST)
+From:   Chen Lin <chen45464546@163.com>
+To:     akpm@linux-foundation.org
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        alexander.h.duyck@linux.intel.com, netdev@vger.kernel.org,
+        Chen Lin <chen45464546@163.com>
+Subject: [PATCH v2] mm: page_frag: Warn_on when frag_alloc size is bigger than PAGE_SIZE
+Date:   Mon, 30 May 2022 21:39:02 +0800
+Message-Id: <1653917942-5982-1-git-send-email-chen45464546@163.com>
+X-Mailer: git-send-email 1.7.9.5
+In-Reply-To: <20220529163029.12425c1e5286d7c7e3fe3708@linux-foundation.org>
+References: <20220529163029.12425c1e5286d7c7e3fe3708@linux-foundation.org>
+X-CM-TRANSID: DMCowADXdaYMyZRiQha+FA--.22801S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7tr17tw1fGFWkur17WF4rXwb_yoW8KrW7pF
+        W7Cr15ZFs0qwnxCw4kAw4vyr45A398WFWUKrWFv34Y9w13Gr109w1DKr4jvFyrAr10kFW7
+        tF4Yyr13C3WjvaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pE66wsUUUUU=
+X-Originating-IP: [171.221.150.250]
+X-CM-SenderInfo: hfkh0kqvuwkkiuw6il2tof0z/xtbCqRsRnl0DfvPs0gAAsQ
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+netdev_alloc_frag->page_frag_alloc may cause memory corruption in 
+the following process:
 
-[ Upstream commit 6d435a94ba5bb4f2ad381c0828fbae89c66b50fe ]
+1. A netdev_alloc_frag function call need alloc 200 Bytes to build a skb.
 
-The MT6315 PMIC dt-binding should enforce that one of the valid
-regulator-compatible is set in each regulator node. However it was
-mistakenly matching against regulator-name instead.
+2. Insufficient memory to alloc PAGE_FRAG_CACHE_MAX_ORDER(32K) in 
+__page_frag_cache_refill to fill frag cache, then one page(eg:4K) 
+is allocated, now current frag cache is 4K, alloc is success, 
+nc->pagecnt_bias--.
 
-Fix the typo. This not only fixes the compatible verification, but also
-lifts the regulator-name restriction, so that more meaningful names can
-be set for each platform.
+3. Then this 200 bytes skb in step 1 is freed, page->_refcount--.
 
-Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Link: https://lore.kernel.org/r/20220429201325.2205799-1-nfraprado@collabora.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+4. Another netdev_alloc_frag function call need alloc 5k, page->_refcount 
+is equal to nc->pagecnt_bias, reset page count bias and offset to 
+start of new frag. page_frag_alloc will return the 4K memory for a 
+5K memory request.
+
+5. The caller write on the extra 1k memory which is not actual allocated 
+will cause memory corruption.
+
+page_frag_alloc is for fragmented allocation. We should warn the caller 
+to avoid memory corruption.
+
+When fragsz is larger than one page, we report the failure and return.
+I don't think it is a good idea to make efforts to support the
+allocation of more than one page in this function because the total
+frag cache size(PAGE_FRAG_CACHE_MAX_SIZE 32768) is relatively small.
+When the request is larger than one page, the caller should switch to
+use other kernel interfaces, such as kmalloc and alloc_Pages.
+
+This bug is mainly caused by the reuse of the previously allocated
+frag cache memory by the following LARGER allocations. This bug existed
+before page_frag_alloc was ported from __netdev_alloc_frag in 
+net/core/skbuff.c, so most Linux versions have this problem.
+
+Signed-off-by: Chen Lin <chen45464546@163.com>
 ---
- .../devicetree/bindings/regulator/mt6315-regulator.yaml         | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ mm/page_alloc.c |   10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml b/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml
-index 61dd5af80db6..5d2d989de893 100644
---- a/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml
-+++ b/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml
-@@ -31,7 +31,7 @@ properties:
-         $ref: "regulator.yaml#"
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index e008a3d..1e9e2c4 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -5574,6 +5574,16 @@ void *page_frag_alloc_align(struct page_frag_cache *nc,
+ 	struct page *page;
+ 	int offset;
  
-         properties:
--          regulator-name:
-+          regulator-compatible:
-             pattern: "^vbuck[1-4]$"
- 
-     additionalProperties: false
++	/* frag_alloc is not suitable for memory alloc which fragsz
++	 * is bigger than PAGE_SIZE, use kmalloc or alloc_pages instead.
++	 */
++	if (unlikely(fragsz > PAGE_SIZE)) {
++		WARN(1, "alloc fragsz(%d) > PAGE_SIZE(%ld) not supported,
++			alloc fail\n", fragsz, PAGE_SIZE);
++
++		return NULL;
++	}
++
+ 	if (unlikely(!nc->va)) {
+ refill:
+ 		page = __page_frag_cache_refill(nc, gfp_mask);
 -- 
-2.35.1
+1.7.9.5
 
