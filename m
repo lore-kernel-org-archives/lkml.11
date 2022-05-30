@@ -2,176 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35FECC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:53:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29396C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:53:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238038AbiE3Nvb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:51:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41274 "EHLO
+        id S232598AbiE3Nvr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:51:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238412AbiE3NpW (ORCPT
+        with ESMTP id S238494AbiE3Npg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:45:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E5399CF07;
-        Mon, 30 May 2022 06:33:02 -0700 (PDT)
+        Mon, 30 May 2022 09:45:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF9589CF50;
+        Mon, 30 May 2022 06:33:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EB5EDB80D89;
-        Mon, 30 May 2022 13:33:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEBCEC36AE5;
-        Mon, 30 May 2022 13:32:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5994E60F2A;
+        Mon, 30 May 2022 13:33:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28666C385B8;
+        Mon, 30 May 2022 13:33:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917579;
-        bh=l02XFBHB/VVQvp0Ko1aJcIobXQWciTwHKxK0m/xR3kU=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=BCKgayuiNbeBIXB9tpWuziil+oHeKp1Ykdup3LYL1wVuJu+RN86VPZpNsBXMElU1A
-         /x3m18fquaQ8PdwCstBlYhewBN/H2YUSwY7Koiiv9kHnSjhilPC94UbhOO38i0IDDa
-         AEPIZ7XOj9rPPKswW+ASeqJ29j55kphOqvm+3qfYLj1QBQ+Y1MjP9D8sgLkvq/If3l
-         J2Q6NWyfSVjDiwht2+3kTP1r+pWqU/hueD5vS/vbY4eK8EccAaSbjP/OR7LU8Z37mq
-         CjQTu1u2oGlbG+Y2BhA9w3qF5Na55xTW/PkdjSRrwtHqZdSvxsM8jUsRmdYZdDrBZk
-         cHWEukUZYdWgw==
-Received: by mail-oi1-f169.google.com with SMTP id v9so13972561oie.5;
-        Mon, 30 May 2022 06:32:59 -0700 (PDT)
-X-Gm-Message-State: AOAM53230Z13uCPa2f0BtA3acxNLx4Mis0v4w6Revf3zMwK+cFm2ajrX
-        OGe8AoJqB179Vz/JCmJzBHJhcRVRcF/fDy2k9+A=
-X-Google-Smtp-Source: ABdhPJyJ0vjpS3id/i7S22kD2M+IhpMtX8RxPW/B77l6nQm8jcnzgzbTHmzhXNmqnheC3oMFUoin2H+DZF9FMfsjzrg=
-X-Received: by 2002:a05:6808:f88:b0:32b:d10f:cc6b with SMTP id
- o8-20020a0568080f8800b0032bd10fcc6bmr8025066oiw.228.1653917578857; Mon, 30
- May 2022 06:32:58 -0700 (PDT)
+        s=k20201202; t=1653917587;
+        bh=w+Mx4L1UD8ofc/ecEwIzqvOnTw6oXAnw/UDczpyP7ds=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=tINqDDl20Xdk4Yc+J5AOl+JRFGUMtXlVlC+LW8bymu2ZKYrVBg7fnziVpyX3GyF/P
+         +eoPP8bfLpCDlUS8IN+Px+ntqy2wsqKoJWDoClTUb/RjMmX3MspGop+ZAZZ+S9r5Hz
+         dOq/yXKnFXcfAEKZIohmIdTf1BB55lnKTQpphXMgeTC73dEr21JphbgeRDJ7Y1upo+
+         mNjHgM03LWdVI7zQfPqx/LCoXmX/+oz+IKRZ7wGCIt8Im4KBUhxt6dOD6FO6terKS2
+         OWamTVmJYuUwAtb78qFeNxBciVqe81FMkhzVUZBpOM4cWfrKRTNKLND1etQQLRvbhJ
+         oM8o4DGQ5Ejig==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, evan.quan@amd.com,
+        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
+        daniel@ffwll.ch, lijo.lazar@amd.com, Hawking.Zhang@amd.com,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.17 035/135] drm/amd/pm: fix double free in si_parse_power_table()
+Date:   Mon, 30 May 2022 09:29:53 -0400
+Message-Id: <20220530133133.1931716-35-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
+References: <20220530133133.1931716-1-sashal@kernel.org>
 MIME-Version: 1.0
-References: <20220530132425.1929512-1-sashal@kernel.org> <20220530132425.1929512-147-sashal@kernel.org>
-In-Reply-To: <20220530132425.1929512-147-sashal@kernel.org>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Mon, 30 May 2022 15:32:47 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXGAuKTqV0S4jxticZJp7ChtqqeXjn7SV1E83p5yVE1pkw@mail.gmail.com>
-Message-ID: <CAMj1kXGAuKTqV0S4jxticZJp7ChtqqeXjn7SV1E83p5yVE1pkw@mail.gmail.com>
-Subject: Re: [PATCH AUTOSEL 5.18 147/159] ARM: 9201/1: spectre-bhb: rely on
- linker to emit cross-section literal loads
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "# 3.4.x" <stable@vger.kernel.org>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Russell King <linux@armlinux.org.uk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Nicolas Pitre <nico@fluxnic.net>,
-        Keith Packard <keithpac@amazon.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-AUTONAK
+From: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
 
-As discussed before, please disregard all patches authored by me when
-running the bot.
+[ Upstream commit f3fa2becf2fc25b6ac7cf8d8b1a2e4a86b3b72bd ]
 
+In function si_parse_power_table(), array adev->pm.dpm.ps and its member
+is allocated. If the allocation of each member fails, the array itself
+is freed and returned with an error code. However, the array is later
+freed again in si_dpm_fini() function which is called when the function
+returns an error.
 
-On Mon, 30 May 2022 at 15:31, Sasha Levin <sashal@kernel.org> wrote:
->
-> From: Ard Biesheuvel <ardb@kernel.org>
->
-> [ Upstream commit ad12c2f1587c6ec9b52ff226f438955bfae6ad89 ]
->
-> The assembler does not permit 'LDR PC, <sym>' when the symbol lives in a
-> different section, which is why we have been relying on rather fragile
-> open-coded arithmetic to load the address of the vector_swi routine into
-> the program counter using a single LDR instruction in the SWI slot in
-> the vector table. The literal was moved to a different section to in
-> commit 19accfd373847 ("ARM: move vector stubs") to ensure that the
-> vector stubs page does not need to be mapped readable for user space,
-> which is the case for the vector page itself, as it carries the kuser
-> helpers as well.
->
-> So the cross-section literal load is open-coded, and this relies on the
-> address of vector_swi to be at the very start of the vector stubs page,
-> and we won't notice if we got it wrong until booting the kernel and see
-> it break. Fortunately, it was guaranteed to break, so this was fragile
-> but not problematic.
->
-> Now that we have added two other variants of the vector table, we have 3
-> occurrences of the same trick, and so the size of our ISA/compiler/CPU
-> validation space has tripled, in a way that may cause regressions to only
-> be observed once booting the image in question on a CPU that exercises a
-> particular vector table.
->
-> So let's switch to true cross section references, and let the linker fix
-> them up like it fixes up all the other cross section references in the
-> vector page.
->
-> Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
-> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
-> ---
->  arch/arm/kernel/entry-armv.S | 22 +++++++++++++++-------
->  1 file changed, 15 insertions(+), 7 deletions(-)
->
-> diff --git a/arch/arm/kernel/entry-armv.S b/arch/arm/kernel/entry-armv.S
-> index 7a8682468a84..f181af18a904 100644
-> --- a/arch/arm/kernel/entry-armv.S
-> +++ b/arch/arm/kernel/entry-armv.S
-> @@ -1176,10 +1176,15 @@ ENDPROC(vector_bhb_bpiall_\name)
->         .endm
->
->         .section .stubs, "ax", %progbits
-> -       @ This must be the first word
-> +       @ These need to remain at the start of the section so that
-> +       @ they are in range of the 'SWI' entries in the vector tables
-> +       @ located 4k down.
-> +.L__vector_swi:
->         .word   vector_swi
->  #ifdef CONFIG_HARDEN_BRANCH_HISTORY
-> +.L__vector_bhb_loop8_swi:
->         .word   vector_bhb_loop8_swi
-> +.L__vector_bhb_bpiall_swi:
->         .word   vector_bhb_bpiall_swi
->  #endif
->
-> @@ -1322,10 +1327,11 @@ vector_addrexcptn:
->         .globl  vector_fiq
->
->         .section .vectors, "ax", %progbits
-> -.L__vectors_start:
->         W(b)    vector_rst
->         W(b)    vector_und
-> -       W(ldr)  pc, .L__vectors_start + 0x1000
-> +ARM(   .reloc  ., R_ARM_LDR_PC_G0, .L__vector_swi              )
-> +THUMB( .reloc  ., R_ARM_THM_PC12, .L__vector_swi               )
-> +       W(ldr)  pc, .
->         W(b)    vector_pabt
->         W(b)    vector_dabt
->         W(b)    vector_addrexcptn
-> @@ -1334,10 +1340,11 @@ vector_addrexcptn:
->
->  #ifdef CONFIG_HARDEN_BRANCH_HISTORY
->         .section .vectors.bhb.loop8, "ax", %progbits
-> -.L__vectors_bhb_loop8_start:
->         W(b)    vector_rst
->         W(b)    vector_bhb_loop8_und
-> -       W(ldr)  pc, .L__vectors_bhb_loop8_start + 0x1004
-> +ARM(   .reloc  ., R_ARM_LDR_PC_G0, .L__vector_bhb_loop8_swi    )
-> +THUMB( .reloc  ., R_ARM_THM_PC12, .L__vector_bhb_loop8_swi     )
-> +       W(ldr)  pc, .
->         W(b)    vector_bhb_loop8_pabt
->         W(b)    vector_bhb_loop8_dabt
->         W(b)    vector_addrexcptn
-> @@ -1345,10 +1352,11 @@ vector_addrexcptn:
->         W(b)    vector_bhb_loop8_fiq
->
->         .section .vectors.bhb.bpiall, "ax", %progbits
-> -.L__vectors_bhb_bpiall_start:
->         W(b)    vector_rst
->         W(b)    vector_bhb_bpiall_und
-> -       W(ldr)  pc, .L__vectors_bhb_bpiall_start + 0x1008
-> +ARM(   .reloc  ., R_ARM_LDR_PC_G0, .L__vector_bhb_bpiall_swi   )
-> +THUMB( .reloc  ., R_ARM_THM_PC12, .L__vector_bhb_bpiall_swi    )
-> +       W(ldr)  pc, .
->         W(b)    vector_bhb_bpiall_pabt
->         W(b)    vector_bhb_bpiall_dabt
->         W(b)    vector_addrexcptn
-> --
-> 2.35.1
->
+This leads to potential double free of the array adev->pm.dpm.ps, as
+well as leak of its array members, since the members are not freed in
+the allocation function and the array is not nulled when freed.
+In addition adev->pm.dpm.num_ps, which keeps track of the allocated
+array member, is not updated until the member allocation is
+successfully finished, this could also lead to either use after free,
+or uninitialized variable access in si_dpm_fini().
+
+Fix this by postponing the free of the array until si_dpm_fini() and
+increment adev->pm.dpm.num_ps everytime the array member is allocated.
+
+Signed-off-by: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/gpu/drm/amd/pm/powerplay/si_dpm.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/gpu/drm/amd/pm/powerplay/si_dpm.c b/drivers/gpu/drm/amd/pm/powerplay/si_dpm.c
+index 81f82aa05ec2..66fc63f1f1c1 100644
+--- a/drivers/gpu/drm/amd/pm/powerplay/si_dpm.c
++++ b/drivers/gpu/drm/amd/pm/powerplay/si_dpm.c
+@@ -7247,17 +7247,15 @@ static int si_parse_power_table(struct amdgpu_device *adev)
+ 	if (!adev->pm.dpm.ps)
+ 		return -ENOMEM;
+ 	power_state_offset = (u8 *)state_array->states;
+-	for (i = 0; i < state_array->ucNumEntries; i++) {
++	for (adev->pm.dpm.num_ps = 0, i = 0; i < state_array->ucNumEntries; i++) {
+ 		u8 *idx;
+ 		power_state = (union pplib_power_state *)power_state_offset;
+ 		non_clock_array_index = power_state->v2.nonClockInfoIndex;
+ 		non_clock_info = (struct _ATOM_PPLIB_NONCLOCK_INFO *)
+ 			&non_clock_info_array->nonClockInfo[non_clock_array_index];
+ 		ps = kzalloc(sizeof(struct  si_ps), GFP_KERNEL);
+-		if (ps == NULL) {
+-			kfree(adev->pm.dpm.ps);
++		if (ps == NULL)
+ 			return -ENOMEM;
+-		}
+ 		adev->pm.dpm.ps[i].ps_priv = ps;
+ 		si_parse_pplib_non_clock_info(adev, &adev->pm.dpm.ps[i],
+ 					      non_clock_info,
+@@ -7279,8 +7277,8 @@ static int si_parse_power_table(struct amdgpu_device *adev)
+ 			k++;
+ 		}
+ 		power_state_offset += 2 + power_state->v2.ucNumDPMLevels;
++		adev->pm.dpm.num_ps++;
+ 	}
+-	adev->pm.dpm.num_ps = state_array->ucNumEntries;
+ 
+ 	/* fill in the vce power states */
+ 	for (i = 0; i < adev->pm.dpm.num_of_vce_states; i++) {
+-- 
+2.35.1
+
