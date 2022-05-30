@@ -2,98 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9738EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 21:30:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9181C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 21:36:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241186AbiE3VaQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 17:30:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47314 "EHLO
+        id S239624AbiE3VgG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 17:36:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234333AbiE3VaO (ORCPT
+        with ESMTP id S234333AbiE3VgE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 17:30:14 -0400
-X-Greylist: delayed 3001 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 30 May 2022 14:30:13 PDT
-Received: from blue.oak.relay.mailchannels.net (blue.oak.relay.mailchannels.net [23.83.215.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FA2A986D2
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 14:30:13 -0700 (PDT)
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id 93010122314;
-        Mon, 30 May 2022 20:40:11 +0000 (UTC)
-Received: from pdx1-sub0-mail-a312.dreamhost.com (unknown [127.0.0.6])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id 2AD21121A0F;
-        Mon, 30 May 2022 20:40:01 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1653943201; a=rsa-sha256;
-        cv=none;
-        b=o3eK0jyGSyhfP+gjp7e2bU0+JbjZS7rcl1wPj/CsEIOjgDjGUl2N1tgum7ZF0mPDUsa6/X
-        MR7bmxs45y3bmdXH3w3SKt4SAbgqi6dF/8P/Z6EZQ4EEtpMEooZLq2Tqoo/7EJilrOOX4k
-        TDN91FVXtRWW2vA6O6j6wXxwcCrBfjRkJs8hke/9dwonpJfq4k+vabMHBqSwFDnfnEu4c5
-        YYzJJ0gQoeVyEaSn/vwyMO7mt89QkrspbiyJxokilEpAzBiyC8VeFssmIH3+xiPkjEhVDI
-        CJkIwT18Q92JrWEWqmxD70oVAF9WjqEO1X58dRy1Xl79tfD7zEmpMPB3KbpzUg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-        s=arc-2022; t=1653943201;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references:dkim-signature;
-        bh=+6cSYBpZDS32mSj8yS3fuze9FxP3KWL3wu/pxgIPKE8=;
-        b=qwM5dLSsQbuz69Y4CcVodndU0j8MdqsW+XEX/HW27FekzWTw4q8wnh/XzafdhSCxzuZwhH
-        gVHYJI6Oj3mgajw+Uv2NuZPxa68WEmWCJz/l4PKEH9c236JNMN1tZVD+L18HLfMdrVM/IX
-        Dx/4qeYv6HxRFYmE9IwdP67upeZgMhUPyeCWsA6OOOLoLDu2z8TtMHt+6n59/bvrmghx3y
-        OeD/iyP6ub0qsYLRf4cj4o7BbvuxWEJ0IewZ+RE1reJv2Q1Xe66eZWQ9m3FDFhMrQDSNKo
-        2TZIFyZF7P/KFKGKPWoWq8Sb/FRApgwEJuOD/qnb2xWVFabUDeXHri5EyyO2Kg==
-ARC-Authentication-Results: i=1;
-        rspamd-77f9f854d9-l2v42;
-        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
-Received: from pdx1-sub0-mail-a312.dreamhost.com (pop.dreamhost.com
- [64.90.62.162])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-        by 100.120.38.156 (trex/6.7.1);
-        Mon, 30 May 2022 20:40:01 +0000
-Received: from offworld (unknown [104.36.31.105])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Mon, 30 May 2022 17:36:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3090999825;
+        Mon, 30 May 2022 14:36:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: dave@stgolabs.net)
-        by pdx1-sub0-mail-a312.dreamhost.com (Postfix) with ESMTPSA id 4LBnN02tGHz1n;
-        Mon, 30 May 2022 13:40:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
-        s=dreamhost; t=1653943200;
-        bh=+6cSYBpZDS32mSj8yS3fuze9FxP3KWL3wu/pxgIPKE8=;
-        h=Date:From:To:Cc:Subject:Content-Type;
-        b=KNChsDYpRVcsbfTO0Y35UGaUwSE9QTDxa9HMfv/58Miiqc0uYPivRfNjfTZ3omdOT
-         vbAWKTCLAxOewmgZM3HUa4hiMahh/OgKSHxEMG3x02kMGCwM35RFe6tyiYJ6/1d4jr
-         M7rFsNxqv+eSI62+RfvCLf2VtizMJzcfXkxVflnq+FNxfkegpqBckFAVJEU+80ffCb
-         zi2H/Ja/DDLPJ4dyf1u3gyjN3XkVsHbfGRgT1b3DDpQKH4mOaEZiq3BeTnTEXzxJU6
-         zuDYNiRkgAVoAbtl8wjE0hOrq6NqNL5N26g114Juv3Yyt2qXM5l6B+VC8zzOAAbudr
-         3ukU9OPays4gA==
-Date:   Mon, 30 May 2022 13:26:42 -0700
-From:   Davidlohr Bueso <dave@stgolabs.net>
-To:     Junwen Wu <wudaemon@163.com>
-Cc:     rostedt@goodmis.org, mingo@redhat.com, will@kernel.org,
-        peterz@infradead.org, tglx@linutronix.de,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] softirq: Add tracepoint for tasklet_entry/exit
-Message-ID: <20220530202642.q22urp5yl6pzdyqq@offworld>
-References: <20220528144228.46867-1-wudaemon@163.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id BCD5BB80EFB;
+        Mon, 30 May 2022 21:36:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFB8EC385B8;
+        Mon, 30 May 2022 21:35:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653946560;
+        bh=7YNcmkRLolF/kp8AznAQ6pw37uC1DOd0oAfeaiw3X8A=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=vD8A1irvFLWQWd0Xei8uTuSGLDsSYQpPYzOVw2207sej/d/+q9qG2XUdVZskucLjw
+         OD0DvHktTSm+HoCicUQAlubMVp6uAPtFdcEkI2JknWEnVwggVJ6V45/1SE8NKUhrbv
+         4aQ8NqFzXWptLb3/Q8SgsAUYLO//8NcMycXcO9ZdpFD9KH8Zwtm98VSyYrM/MVMD1d
+         sb4Am06ug9S+OA4GWiPCna/HKjT5M9fFn5WWWhvK4zXkWOGMfhF3mNQBEsZzPeEtzG
+         EcWdEkRs/sRp+OJAGLzTgcP/J2f5J2QA5NRrtdWLjexPBWzr183j6oCGhrFE1HGqa6
+         R6o7JSf0K4TXw==
+Date:   Mon, 30 May 2022 23:35:56 +0200
+From:   Frederic Weisbecker <frederic@kernel.org>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Juri Lelli <juri.lelli@redhat.com>, Tejun Heo <tj@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Paul Gortmaker <paul.gortmaker@windriver.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        Phil Auld <pauld@redhat.com>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Daniel Bristot de Oliveira <bristot@kernel.org>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        rcu@vger.kernel.org
+Subject: Re: [RFC PATCH 4/4] cpuset: Support RCU-NOCB toggle on v2 root
+ partitions
+Message-ID: <20220530213556.GD1257179@lothringen>
+References: <20220526225141.GA1214445@lothringen>
+ <YpAHEt0j30vBw9au@slm.duckdns.org>
+ <9e44bb00-955a-dbc6-a863-be649e0c701f@redhat.com>
+ <YpAdSW8JXVPOoNJl@slm.duckdns.org>
+ <20220527083018.n43nc73vuuzm5ixo@localhost.localdomain>
+ <YpIwsiaY2IPK96WO@hirez.programming.kicks-ass.net>
+ <20220530004049.GA1251147@lothringen>
+ <YpR8PUlIraYE2+5L@worktop.programming.kicks-ass.net>
+ <20220530105650.GA1257179@lothringen>
+ <YpTDq6Z/+hp+CHwf@worktop.programming.kicks-ass.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220528144228.46867-1-wudaemon@163.com>
-User-Agent: NeoMutt/20220408
+In-Reply-To: <YpTDq6Z/+hp+CHwf@worktop.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 28 May 2022, Junwen Wu wrote:
+On Mon, May 30, 2022 at 03:16:27PM +0200, Peter Zijlstra wrote:
+> On Mon, May 30, 2022 at 12:56:50PM +0200, Frederic Weisbecker wrote:
+> 
+> > > This is ABI, you can't walk back on it. I would suggest starting with an
+> > > 'all feature' isolation. Only if there's real demand for something more
+> > > fine-grained add that on top. Simple first etc.
+> > 
+> > That's actually my worry. If we start with an all in one ABI, how do we later
+> > mix that up with more finegrained features? Like what will be the behaviour of:
+> > 
+> > cpuset.isolation.rcu_nocb = 0
+> > cpuset.isolation.all = 1
+> 
+> Well clearly that doesn't make sense. I was more thinking along the
+> lines of cgroup.subtree_control, where instead all features are enabled
+> by default.
+> 
+> But only if there's a real usecase, otherwise there's no point in
+> providing such knobs.
 
->Usually softirq handler is pre-defined,only tasklet can be register by
->driver.We expand tracepoint for tasklet_entry/exit to trace
->tasklet handler.
+That makes sense. So there would be a simple cpuset.isolation that can
+be either 1 or 0 where 1 has all possible isolation stuff on. Then
+if the need arises we can provide more tuning through a new specific
+cgroup controller, right?
 
-Tasklets are artifacts of the past, and deprecated years ago. Lets not
-add to moot interfaces. Everything should be converted to run in task
-context.
-
-Thanks,
-Davidlohr
+If so that sounds good to me.
