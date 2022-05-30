@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2FBCC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:57:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E29CC4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:57:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238926AbiE3NzT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:55:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33804 "EHLO
+        id S238973AbiE3Nz1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:55:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238355AbiE3Nt1 (ORCPT
+        with ESMTP id S232809AbiE3Ntm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:49:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E910EA7E17;
-        Mon, 30 May 2022 06:34:47 -0700 (PDT)
+        Mon, 30 May 2022 09:49:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84F0EA888F;
+        Mon, 30 May 2022 06:34:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 42F1460F24;
-        Mon, 30 May 2022 13:34:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3B89C3411A;
-        Mon, 30 May 2022 13:34:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 30C1C60E9B;
+        Mon, 30 May 2022 13:34:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CD73C385B8;
+        Mon, 30 May 2022 13:34:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917685;
-        bh=tgODfi+gRHj0Fd3l9puJo3xP/s51i+HPf2rAmZCL/Kc=;
+        s=k20201202; t=1653917689;
+        bh=T9ddK/VDvhMSsfvf3k5nl4oJXUGGQQ7iH45F3BjDN2A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=isYJbEXO21/NStSDfypiqUuyTTPFO8fLUXDsSwMKVqRffePNLe+AqRPcL0rMgHijG
-         3PKOOXr1DPlE7T0NcUPCEDJ6jh4OLgS3/nk1y7QfMZcvNhBW/yjOz2fwsb0Aa1EYAa
-         IPSjgGRxOoY1wPnWx+kh/u8vqnqj+HQio51BolXKiid2Ur7p5LBWXqzfG6JuVVGe9N
-         STgCKwMWWwBSxhnwbgy77gfc/W7kcYfYZf5yJU16hLWQN7j8lMYBciEvihVliORszq
-         TDa64I+kQSGdPV57Yk0qceHufmBS/ReUULN6EHi9ck9FQgh8IuO66in4NhgU+Ix8up
-         hiks2lwUI+Hrg==
+        b=R7Z65Woo7QHHdbYvoyH6Lx6izwDVA1fvG7b2nb5F1VALqcmdRgwSlp6hXiWXBZ21V
+         fuuHHRM1YNi6RSsmrra8ouRPj8R0QPG8tD+8UzJ1aITzvzSO6r+8Af2XxNAGUWK94+
+         IfKNXe336dvlYvoU2QMULiTz8Gwdf0c7Tsik99pf44pgOBsgZMvZmbkRhei4sn/k5W
+         6lTIlsS77pvTvbxEJwR7WsO75oB9aCSLB1sL9mWl8AXbyMqZJ1AT3PIGie4qOX5rHz
+         5rTFfppctFEMXb8EtNTaK41c/LHruvAi39c13ArcffnGDOO7I/f2c3zLJ9fUuQWhpP
+         RrWgYBaSX9xTA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>,
-        Bodo Stroesser <bostroesser@gmail.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, linux-scsi@vger.kernel.org,
-        target-devel@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 062/135] scsi: target: tcmu: Fix possible data corruption
-Date:   Mon, 30 May 2022 09:30:20 -0400
-Message-Id: <20220530133133.1931716-62-sashal@kernel.org>
+Cc:     Mark Bloch <mbloch@nvidia.com>, Maor Gottlieb <maorg@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 064/135] net/mlx5: fs, delete the FTE when there are no rules attached to it
+Date:   Mon, 30 May 2022 09:30:22 -0400
+Message-Id: <20220530133133.1931716-64-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
@@ -53,144 +53,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>
+From: Mark Bloch <mbloch@nvidia.com>
 
-[ Upstream commit bb9b9eb0ae2e9d3f6036f0ad907c3a83dcd43485 ]
+[ Upstream commit 7b0c6338597613f465d131bd939a51844a00455a ]
 
-When tcmu_vma_fault() gets a page successfully, before the current context
-completes page fault procedure, find_free_blocks() may run and call
-unmap_mapping_range() to unmap the page. Assume that when
-find_free_blocks() initially completes and the previous page fault
-procedure starts to run again and completes, then one truncated page has
-been mapped to userspace. But note that tcmu_vma_fault() has gotten a
-refcount for the page so any other subsystem won't be able to use the page
-unless the userspace address is unmapped later.
+When an FTE has no children is means all the rules where removed
+and the FTE can be deleted regardless of the dests_size value.
+While dests_size should be 0 when there are no children
+be extra careful not to leak memory or get firmware syndrome
+if the proper bookkeeping of dests_size wasn't done.
 
-If another command subsequently runs and needs to extend dbi_thresh it may
-reuse the corresponding slot for the previous page in data_bitmap. Then
-though we'll allocate new page for this slot in data_area, no page fault
-will happen because we have a valid map and the real request's data will be
-lost.
-
-Filesystem implementations will also run into this issue but they usually
-lock the page when vm_operations_struct->fault gets a page and unlock the
-page after finish_fault() completes. For truncate filesystems lock pages in
-truncate_inode_pages() to protect against racing wrt. page faults.
-
-To fix this possible data corruption scenario we can apply a method similar
-to the filesystems.  For pages that are to be freed, tcmu_blocks_release()
-locks and unlocks. Make tcmu_vma_fault() also lock found page under
-cmdr_lock. At the same time, since tcmu_vma_fault() gets an extra page
-refcount, tcmu_blocks_release() won't free pages if pages are in page fault
-procedure, which means it is safe to call tcmu_blocks_release() before
-unmap_mapping_range().
-
-With these changes tcmu_blocks_release() will wait for all page faults to
-be completed before calling unmap_mapping_range(). And later, if
-unmap_mapping_range() is called, it will ensure stale mappings are removed.
-
-Link: https://lore.kernel.org/r/20220421023735.9018-1-xiaoguang.wang@linux.alibaba.com
-Reviewed-by: Bodo Stroesser <bostroesser@gmail.com>
-Signed-off-by: Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Mark Bloch <mbloch@nvidia.com>
+Reviewed-by: Maor Gottlieb <maorg@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/target/target_core_user.c | 40 ++++++++++++++++++++++++++++---
- 1 file changed, 37 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/target/target_core_user.c b/drivers/target/target_core_user.c
-index 06a5c4086551..f26767a55d38 100644
---- a/drivers/target/target_core_user.c
-+++ b/drivers/target/target_core_user.c
-@@ -20,6 +20,7 @@
- #include <linux/configfs.h>
- #include <linux/mutex.h>
- #include <linux/workqueue.h>
-+#include <linux/pagemap.h>
- #include <net/genetlink.h>
- #include <scsi/scsi_common.h>
- #include <scsi/scsi_proto.h>
-@@ -1666,6 +1667,26 @@ static u32 tcmu_blocks_release(struct tcmu_dev *udev, unsigned long first,
- 	xas_lock(&xas);
- 	xas_for_each(&xas, page, (last + 1) * udev->data_pages_per_blk - 1) {
- 		xas_store(&xas, NULL);
-+		/*
-+		 * While reaching here there may be page faults occurring on
-+		 * the to-be-released pages. A race condition may occur if
-+		 * unmap_mapping_range() is called before page faults on these
-+		 * pages have completed; a valid but stale map is created.
-+		 *
-+		 * If another command subsequently runs and needs to extend
-+		 * dbi_thresh, it may reuse the slot corresponding to the
-+		 * previous page in data_bitmap. Though we will allocate a new
-+		 * page for the slot in data_area, no page fault will happen
-+		 * because we have a valid map. Therefore the command's data
-+		 * will be lost.
-+		 *
-+		 * We lock and unlock pages that are to be released to ensure
-+		 * all page faults have completed. This way
-+		 * unmap_mapping_range() can ensure stale maps are cleanly
-+		 * removed.
-+		 */
-+		lock_page(page);
-+		unlock_page(page);
- 		__free_page(page);
- 		pages_freed++;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
+index b6f58d16d145..298c614c631b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
+@@ -2064,16 +2064,16 @@ void mlx5_del_flow_rules(struct mlx5_flow_handle *handle)
+ 	down_write_ref_node(&fte->node, false);
+ 	for (i = handle->num_rules - 1; i >= 0; i--)
+ 		tree_remove_node(&handle->rule[i]->node, true);
+-	if (fte->dests_size) {
+-		if (fte->modify_mask)
+-			modify_fte(fte);
+-		up_write_ref_node(&fte->node, false);
+-	} else if (list_empty(&fte->node.children)) {
++	if (list_empty(&fte->node.children)) {
+ 		del_hw_fte(&fte->node);
+ 		/* Avoid double call to del_hw_fte */
+ 		fte->node.del_hw_func = NULL;
+ 		up_write_ref_node(&fte->node, false);
+ 		tree_put_node(&fte->node, false);
++	} else if (fte->dests_size) {
++		if (fte->modify_mask)
++			modify_fte(fte);
++		up_write_ref_node(&fte->node, false);
+ 	} else {
+ 		up_write_ref_node(&fte->node, false);
  	}
-@@ -1821,6 +1842,7 @@ static struct page *tcmu_try_get_data_page(struct tcmu_dev *udev, uint32_t dpi)
- 	page = xa_load(&udev->data_pages, dpi);
- 	if (likely(page)) {
- 		get_page(page);
-+		lock_page(page);
- 		mutex_unlock(&udev->cmdr_lock);
- 		return page;
- 	}
-@@ -1862,6 +1884,7 @@ static vm_fault_t tcmu_vma_fault(struct vm_fault *vmf)
- 	struct page *page;
- 	unsigned long offset;
- 	void *addr;
-+	vm_fault_t ret = 0;
- 
- 	int mi = tcmu_find_mem_index(vmf->vma);
- 	if (mi < 0)
-@@ -1886,10 +1909,11 @@ static vm_fault_t tcmu_vma_fault(struct vm_fault *vmf)
- 		page = tcmu_try_get_data_page(udev, dpi);
- 		if (!page)
- 			return VM_FAULT_SIGBUS;
-+		ret = VM_FAULT_LOCKED;
- 	}
- 
- 	vmf->page = page;
--	return 0;
-+	return ret;
- }
- 
- static const struct vm_operations_struct tcmu_vm_ops = {
-@@ -3152,12 +3176,22 @@ static void find_free_blocks(void)
- 			udev->dbi_max = block;
- 		}
- 
-+		/*
-+		 * Release the block pages.
-+		 *
-+		 * Also note that since tcmu_vma_fault() gets an extra page
-+		 * refcount, tcmu_blocks_release() won't free pages if pages
-+		 * are mapped. This means it is safe to call
-+		 * tcmu_blocks_release() before unmap_mapping_range() which
-+		 * drops the refcount of any pages it unmaps and thus releases
-+		 * them.
-+		 */
-+		pages_freed = tcmu_blocks_release(udev, start, end - 1);
-+
- 		/* Here will truncate the data area from off */
- 		off = udev->data_off + (loff_t)start * udev->data_blk_size;
- 		unmap_mapping_range(udev->inode->i_mapping, off, 0, 1);
- 
--		/* Release the block pages */
--		pages_freed = tcmu_blocks_release(udev, start, end - 1);
- 		mutex_unlock(&udev->cmdr_lock);
- 
- 		total_pages_freed += pages_freed;
 -- 
 2.35.1
 
