@@ -2,52 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DD7FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:38:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D4A3C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:38:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239668AbiE3OiL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:38:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53378 "EHLO
+        id S240233AbiE3OiW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:38:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240351AbiE3OTf (ORCPT
+        with ESMTP id S240668AbiE3OUJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:19:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1A811248D2;
-        Mon, 30 May 2022 06:50:00 -0700 (PDT)
+        Mon, 30 May 2022 10:20:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2812E1248ED;
+        Mon, 30 May 2022 06:50:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ED4BDB80DB8;
-        Mon, 30 May 2022 13:49:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A534AC3411A;
-        Mon, 30 May 2022 13:49:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0436A60FE7;
+        Mon, 30 May 2022 13:48:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D3E1C3411A;
+        Mon, 30 May 2022 13:48:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918589;
-        bh=GW6Rai2JHISGwv2IDVZcZd0gCeYcGf6TVrFi5Es5IRM=;
+        s=k20201202; t=1653918521;
+        bh=qhBdDSP/FzA3KPGOb2WnzGbQS+zoac+5ULvYh7qmlTU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OkKPwwanN2AUbmr2L8/9ofFfnqpflFr9IQncbGv8ZMcYrBhwTq8TElPodi4hWmpBt
-         T1YpTFfDYZuFDj/GCSSUG3Kc9QWTkLkvEsNf5shuLfeB9vye4lHMjETj0LA316FBIz
-         o2e6ReMAYHGVrEx/mMqEOk49qIsvrzIg58Om46oYpNNGFMadLdpnO6zoBmYDOWSUu4
-         yX1jW/UomxNKKUn9wERjp7ZOM+8xcRnVKunl8djn2zwhkt2raR3R+3WZeCxPFmYyl8
-         U9MYK/Peur+wIll3GL7tqmdgDrFFi1HfoPpb/84dVk+IJiwBVp/QGLS2N41y2AM/X7
-         m+luJGIUTRTJQ==
+        b=sTLEwbbRHQ119KlmGDyPzjtt9FKOwy4lSiS5xs6YuWl2R1F9SClgXdl30o/4xealT
+         zLHYx4Ov8JZi+pk0gylFzv140Uc+/VakUa//ttR3ZR4/Fb7XawNN4nomtlPRUqjpzw
+         VG8J+oFFvh0ZfQgT3XRfmD+kNNixAE9YBCzwEKis5JHYtSXCbL1whk/IRqWT9tnake
+         rid0fmYw3GEOhsrqhQvYytk/kL1lHJZkft18qP24X2jbJlSxWAnW2YnMWZ25jP/kYG
+         Xxu+29Ts8bPCSHwZxu4aypkmnqUm5oOSnrR3GnXZAiAc7qQyNcb/TJxvpQ//v1OWAq
+         I/hKoiylQ6y7A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= 
-        <amadeuszx.slawinski@linux.intel.com>,
-        Cezary Rojewski <cezary.rojewski@intel.com>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>,
-        perex@perex.cz, tiwai@suse.com, xkernel.wang@foxmail.com,
-        alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 4.19 09/38] ALSA: jack: Access input_dev under mutex
-Date:   Mon, 30 May 2022 09:48:55 -0400
-Message-Id: <20220530134924.1936816-9-sashal@kernel.org>
+Cc:     Corey Minyard <cminyard@mvista.com>,
+        Haowen Bai <baihaowen@meizu.com>,
+        Sasha Levin <sashal@kernel.org>,
+        openipmi-developer@lists.sourceforge.net
+Subject: [PATCH AUTOSEL 5.4 39/55] ipmi:ssif: Check for NULL msg when handling events and messages
+Date:   Mon, 30 May 2022 09:46:45 -0400
+Message-Id: <20220530134701.1935933-39-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220530134924.1936816-1-sashal@kernel.org>
-References: <20220530134924.1936816-1-sashal@kernel.org>
+In-Reply-To: <20220530134701.1935933-1-sashal@kernel.org>
+References: <20220530134701.1935933-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -55,152 +52,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
+From: Corey Minyard <cminyard@mvista.com>
 
-[ Upstream commit 1b6a6fc5280e97559287b61eade2d4b363e836f2 ]
+[ Upstream commit 7602b957e2404e5f98d9a40b68f1fd27f0028712 ]
 
-It is possible when using ASoC that input_dev is unregistered while
-calling snd_jack_report, which causes NULL pointer dereference.
-In order to prevent this serialize access to input_dev using mutex lock.
+Even though it's not possible to get into the SSIF_GETTING_MESSAGES and
+SSIF_GETTING_EVENTS states without a valid message in the msg field,
+it's probably best to be defensive here and check and print a log, since
+that means something else went wrong.
 
-Signed-off-by: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
-Reviewed-by: Cezary Rojewski <cezary.rojewski@intel.com>
-Link: https://lore.kernel.org/r/20220412091628.3056922-1-amadeuszx.slawinski@linux.intel.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Also add a default clause to that switch statement to release the lock
+and print a log, in case the state variable gets messed up somehow.
+
+Reported-by: Haowen Bai <baihaowen@meizu.com>
+Signed-off-by: Corey Minyard <cminyard@mvista.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/sound/jack.h |  1 +
- sound/core/jack.c    | 34 +++++++++++++++++++++++++++-------
- 2 files changed, 28 insertions(+), 7 deletions(-)
+ drivers/char/ipmi/ipmi_ssif.c | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
 
-diff --git a/include/sound/jack.h b/include/sound/jack.h
-index 1e84bfb553cf..4742f842b457 100644
---- a/include/sound/jack.h
-+++ b/include/sound/jack.h
-@@ -77,6 +77,7 @@ struct snd_jack {
- 	const char *id;
- #ifdef CONFIG_SND_JACK_INPUT_DEV
- 	struct input_dev *input_dev;
-+	struct mutex input_dev_lock;
- 	int registered;
- 	int type;
- 	char name[100];
-diff --git a/sound/core/jack.c b/sound/core/jack.c
-index acb531749efb..074b15fcb0ac 100644
---- a/sound/core/jack.c
-+++ b/sound/core/jack.c
-@@ -48,8 +48,11 @@ static int snd_jack_dev_disconnect(struct snd_device *device)
- #ifdef CONFIG_SND_JACK_INPUT_DEV
- 	struct snd_jack *jack = device->device_data;
+diff --git a/drivers/char/ipmi/ipmi_ssif.c b/drivers/char/ipmi/ipmi_ssif.c
+index bb42a1c92cae..60fb6c62f224 100644
+--- a/drivers/char/ipmi/ipmi_ssif.c
++++ b/drivers/char/ipmi/ipmi_ssif.c
+@@ -845,6 +845,14 @@ static void msg_done_handler(struct ssif_info *ssif_info, int result,
+ 		break;
  
--	if (!jack->input_dev)
-+	mutex_lock(&jack->input_dev_lock);
-+	if (!jack->input_dev) {
-+		mutex_unlock(&jack->input_dev_lock);
- 		return 0;
-+	}
- 
- 	/* If the input device is registered with the input subsystem
- 	 * then we need to use a different deallocator. */
-@@ -58,6 +61,7 @@ static int snd_jack_dev_disconnect(struct snd_device *device)
- 	else
- 		input_free_device(jack->input_dev);
- 	jack->input_dev = NULL;
-+	mutex_unlock(&jack->input_dev_lock);
- #endif /* CONFIG_SND_JACK_INPUT_DEV */
- 	return 0;
- }
-@@ -96,8 +100,11 @@ static int snd_jack_dev_register(struct snd_device *device)
- 	snprintf(jack->name, sizeof(jack->name), "%s %s",
- 		 card->shortname, jack->id);
- 
--	if (!jack->input_dev)
-+	mutex_lock(&jack->input_dev_lock);
-+	if (!jack->input_dev) {
-+		mutex_unlock(&jack->input_dev_lock);
- 		return 0;
-+	}
- 
- 	jack->input_dev->name = jack->name;
- 
-@@ -122,6 +129,7 @@ static int snd_jack_dev_register(struct snd_device *device)
- 	if (err == 0)
- 		jack->registered = 1;
- 
-+	mutex_unlock(&jack->input_dev_lock);
- 	return err;
- }
- #endif /* CONFIG_SND_JACK_INPUT_DEV */
-@@ -242,9 +250,11 @@ int snd_jack_new(struct snd_card *card, const char *id, int type,
- 		return -ENOMEM;
- 	}
- 
--	/* don't creat input device for phantom jack */
--	if (!phantom_jack) {
- #ifdef CONFIG_SND_JACK_INPUT_DEV
-+	mutex_init(&jack->input_dev_lock);
+ 	case SSIF_GETTING_EVENTS:
++		if (!msg) {
++			/* Should never happen, but just in case. */
++			dev_warn(&ssif_info->client->dev,
++				 "No message set while getting events\n");
++			ipmi_ssif_unlock_cond(ssif_info, flags);
++			break;
++		}
 +
-+	/* don't create input device for phantom jack */
-+	if (!phantom_jack) {
- 		int i;
+ 		if ((result < 0) || (len < 3) || (msg->rsp[2] != 0)) {
+ 			/* Error getting event, probably done. */
+ 			msg->done(msg);
+@@ -869,6 +877,14 @@ static void msg_done_handler(struct ssif_info *ssif_info, int result,
+ 		break;
  
- 		jack->input_dev = input_allocate_device();
-@@ -262,8 +272,8 @@ int snd_jack_new(struct snd_card *card, const char *id, int type,
- 				input_set_capability(jack->input_dev, EV_SW,
- 						     jack_switch_types[i]);
- 
--#endif /* CONFIG_SND_JACK_INPUT_DEV */
- 	}
-+#endif /* CONFIG_SND_JACK_INPUT_DEV */
- 
- 	err = snd_device_new(card, SNDRV_DEV_JACK, jack, &ops);
- 	if (err < 0)
-@@ -303,10 +313,14 @@ EXPORT_SYMBOL(snd_jack_new);
- void snd_jack_set_parent(struct snd_jack *jack, struct device *parent)
- {
- 	WARN_ON(jack->registered);
--	if (!jack->input_dev)
-+	mutex_lock(&jack->input_dev_lock);
-+	if (!jack->input_dev) {
-+		mutex_unlock(&jack->input_dev_lock);
- 		return;
-+	}
- 
- 	jack->input_dev->dev.parent = parent;
-+	mutex_unlock(&jack->input_dev_lock);
- }
- EXPORT_SYMBOL(snd_jack_set_parent);
- 
-@@ -354,6 +368,8 @@ EXPORT_SYMBOL(snd_jack_set_key);
- 
- /**
-  * snd_jack_report - Report the current status of a jack
-+ * Note: This function uses mutexes and should be called from a
-+ * context which can sleep (such as a workqueue).
-  *
-  * @jack:   The jack to report status for
-  * @status: The current status of the jack
-@@ -373,8 +389,11 @@ void snd_jack_report(struct snd_jack *jack, int status)
- 					    status & jack_kctl->mask_bits);
- 
- #ifdef CONFIG_SND_JACK_INPUT_DEV
--	if (!jack->input_dev)
-+	mutex_lock(&jack->input_dev_lock);
-+	if (!jack->input_dev) {
-+		mutex_unlock(&jack->input_dev_lock);
- 		return;
-+	}
- 
- 	for (i = 0; i < ARRAY_SIZE(jack->key); i++) {
- 		int testbit = SND_JACK_BTN_0 >> i;
-@@ -393,6 +412,7 @@ void snd_jack_report(struct snd_jack *jack, int status)
+ 	case SSIF_GETTING_MESSAGES:
++		if (!msg) {
++			/* Should never happen, but just in case. */
++			dev_warn(&ssif_info->client->dev,
++				 "No message set while getting messages\n");
++			ipmi_ssif_unlock_cond(ssif_info, flags);
++			break;
++		}
++
+ 		if ((result < 0) || (len < 3) || (msg->rsp[2] != 0)) {
+ 			/* Error getting event, probably done. */
+ 			msg->done(msg);
+@@ -892,6 +908,13 @@ static void msg_done_handler(struct ssif_info *ssif_info, int result,
+ 			deliver_recv_msg(ssif_info, msg);
+ 		}
+ 		break;
++
++	default:
++		/* Should never happen, but just in case. */
++		dev_warn(&ssif_info->client->dev,
++			 "Invalid state in message done handling: %d\n",
++			 ssif_info->ssif_state);
++		ipmi_ssif_unlock_cond(ssif_info, flags);
  	}
  
- 	input_sync(jack->input_dev);
-+	mutex_unlock(&jack->input_dev_lock);
- #endif /* CONFIG_SND_JACK_INPUT_DEV */
- }
- EXPORT_SYMBOL(snd_jack_report);
+ 	flags = ipmi_ssif_lock_cond(ssif_info, &oflags);
 -- 
 2.35.1
 
