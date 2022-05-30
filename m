@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74580C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:29:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2829CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:29:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236823AbiE3N27 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:28:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58544 "EHLO
+        id S237026AbiE3N3B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:29:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236905AbiE3N12 (ORCPT
+        with ESMTP id S236959AbiE3N2F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:27:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41A8584A1D;
-        Mon, 30 May 2022 06:26:01 -0700 (PDT)
+        Mon, 30 May 2022 09:28:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A5F68A055;
+        Mon, 30 May 2022 06:26:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 376CFB80DA9;
-        Mon, 30 May 2022 13:25:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DECEC36AE7;
-        Mon, 30 May 2022 13:25:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7085960ED7;
+        Mon, 30 May 2022 13:25:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C67D3C385B8;
+        Mon, 30 May 2022 13:25:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917144;
-        bh=MryhVYwL20qdpycWJZzLIYovOEL+Bs5lNHa/2TnV0EA=;
+        s=k20201202; t=1653917151;
+        bh=NQr4DnHVulh4RbREC1iNFCv8RKjtbaKcjTm0ZM5tSvU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dKxLbBOKfSBeA9wLI0UOft+82dBc1ayyO7LgZdz71KbG1qs18NiR6knTbgmTgecmI
-         13lWI6cA2zeW+ak7PEtMFhx9rfr4v1/fY0H2ItaRjNNQBbfdFgL9s+2T6dMONR0eGi
-         e0mhK8PE2zHSAs3XGfdJ8FaFgCqGuT2RjoJSMSLJOjqXCNeCgOE8G90p+YwrKceTUJ
-         /e6Y4IpY22a1U4VlHWck5aU1yo1Ja8/XsTAiKIwBbM2UX0XkcOQ4iWU/puPXpi0gPH
-         se/c5pGHgtqikof0W70prot0ZOVKhLoU5TuDmSz+wBAz5YKz+mvwIWikMqXVhr/l85
-         POTCLDH8N8ZgA==
+        b=nw+2E8UMYNOOogM7+uLYuW1TurdH3v55iPI5rp0tV4AAMpbB2NLTUHM/Tie9B3QNk
+         hyg8qjNrfNyDljFAYswwkbx7k1XxKB3005VPeB68zkZ07JlfTHgONyKyBQg0WYtLP1
+         KqWNDQQmlICcfRA5PldUpy63aaeRSodYZUBfidXbsqnBiVGeITeR33Lz7oozFEwovx
+         iwjrR+FU5U3Lnf006YF/jignqzbNZ6iB7f4rpcyQy3a5WpI9X86Iaa1dtJQoWhHqYN
+         MXZzdBxdUQTirZya7NaQtBwj0FnzKsaQLH38f3jNLFCzvV0vzDzPujoMHK7LsfBLVY
+         7ybNk3/mx9OXg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Christoph Hellwig <hch@lst.de>, Jan Kara <jack@suse.cz>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>,
-        linux-block@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 034/159] loop: implement ->free_disk
-Date:   Mon, 30 May 2022 09:22:19 -0400
-Message-Id: <20220530132425.1929512-34-sashal@kernel.org>
+Cc:     James Smart <jsmart2021@gmail.com>,
+        Justin Tee <justin.tee@broadcom.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, james.smart@broadcom.com,
+        dick.kennedy@broadcom.com, jejb@linux.ibm.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 039/159] scsi: lpfc: Fix call trace observed during I/O with CMF enabled
+Date:   Mon, 30 May 2022 09:22:24 -0400
+Message-Id: <20220530132425.1929512-39-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
@@ -51,71 +54,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+From: James Smart <jsmart2021@gmail.com>
 
-[ Upstream commit d2c7f56f8b5256d57f9e3fc7794c31361d43bdd9 ]
+[ Upstream commit d6d45f67a11136cb88a70a29ab22ea6db8ae6bd5 ]
 
-Ensure that the lo_device which is stored in the gendisk private
-data is valid until the gendisk is freed.  Currently the loop driver
-uses a lot of effort to make sure a device is not freed when it is
-still in use, but to to fix a potential deadlock this will be relaxed
-a bit soon.
+The following was seen with CMF enabled:
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220330052917.2566582-12-hch@lst.de
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+BUG: using smp_processor_id() in preemptible
+code: systemd-udevd/31711
+kernel: caller is lpfc_update_cmf_cmd+0x214/0x420  [lpfc]
+kernel: CPU: 12 PID: 31711 Comm: systemd-udevd
+kernel: Call Trace:
+kernel: <TASK>
+kernel: dump_stack_lvl+0x44/0x57
+kernel: check_preemption_disabled+0xbf/0xe0
+kernel: lpfc_update_cmf_cmd+0x214/0x420 [lpfc]
+kernel: lpfc_nvme_fcp_io_submit+0x23b4/0x4df0 [lpfc]
+
+this_cpu_ptr() calls smp_processor_id() in a preemptible context.
+
+Fix by using per_cpu_ptr() with raw_smp_processor_id() instead.
+
+Link: https://lore.kernel.org/r/20220412222008.126521-16-jsmart2021@gmail.com
+Co-developed-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/loop.c | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+ drivers/scsi/lpfc/lpfc_scsi.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/block/loop.c b/drivers/block/loop.c
-index a58595f5ee2c..ed7bec11948c 100644
---- a/drivers/block/loop.c
-+++ b/drivers/block/loop.c
-@@ -1768,6 +1768,14 @@ static void lo_release(struct gendisk *disk, fmode_t mode)
- 	mutex_unlock(&lo->lo_mutex);
+diff --git a/drivers/scsi/lpfc/lpfc_scsi.c b/drivers/scsi/lpfc/lpfc_scsi.c
+index c4fa7d68fe03..f617a2ef6b0f 100644
+--- a/drivers/scsi/lpfc/lpfc_scsi.c
++++ b/drivers/scsi/lpfc/lpfc_scsi.c
+@@ -3835,7 +3835,7 @@ lpfc_update_cmf_cmpl(struct lpfc_hba *phba,
+ 		else
+ 			time = div_u64(time + 500, 1000); /* round it */
+ 
+-		cgs = this_cpu_ptr(phba->cmf_stat);
++		cgs = per_cpu_ptr(phba->cmf_stat, raw_smp_processor_id());
+ 		atomic64_add(size, &cgs->rcv_bytes);
+ 		atomic64_add(time, &cgs->rx_latency);
+ 		atomic_inc(&cgs->rx_io_cnt);
+@@ -3879,7 +3879,7 @@ lpfc_update_cmf_cmd(struct lpfc_hba *phba, uint32_t size)
+ 			atomic_set(&phba->rx_max_read_cnt, size);
+ 	}
+ 
+-	cgs = this_cpu_ptr(phba->cmf_stat);
++	cgs = per_cpu_ptr(phba->cmf_stat, raw_smp_processor_id());
+ 	atomic64_add(size, &cgs->total_bytes);
+ 	return 0;
  }
- 
-+static void lo_free_disk(struct gendisk *disk)
-+{
-+	struct loop_device *lo = disk->private_data;
-+
-+	mutex_destroy(&lo->lo_mutex);
-+	kfree(lo);
-+}
-+
- static const struct block_device_operations lo_fops = {
- 	.owner =	THIS_MODULE,
- 	.open =		lo_open,
-@@ -1776,6 +1784,7 @@ static const struct block_device_operations lo_fops = {
- #ifdef CONFIG_COMPAT
- 	.compat_ioctl =	lo_compat_ioctl,
- #endif
-+	.free_disk =	lo_free_disk,
- };
- 
- /*
-@@ -2090,15 +2099,14 @@ static void loop_remove(struct loop_device *lo)
- {
- 	/* Make this loop device unreachable from pathname. */
- 	del_gendisk(lo->lo_disk);
--	blk_cleanup_disk(lo->lo_disk);
-+	blk_cleanup_queue(lo->lo_disk->queue);
- 	blk_mq_free_tag_set(&lo->tag_set);
- 
- 	mutex_lock(&loop_ctl_mutex);
- 	idr_remove(&loop_index_idr, lo->lo_number);
- 	mutex_unlock(&loop_ctl_mutex);
--	/* There is no route which can find this loop device. */
--	mutex_destroy(&lo->lo_mutex);
--	kfree(lo);
-+
-+	put_disk(lo->lo_disk);
- }
- 
- static void loop_probe(dev_t dev)
 -- 
 2.35.1
 
