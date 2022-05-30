@@ -2,123 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A490FC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 16:01:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91B71C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 16:01:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240440AbiE3QBH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 12:01:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55010 "EHLO
+        id S239999AbiE3QBN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 12:01:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243122AbiE3QAl (ORCPT
+        with ESMTP id S243044AbiE3QAf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 12:00:41 -0400
+        Mon, 30 May 2022 12:00:35 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9959748E59;
-        Mon, 30 May 2022 08:56:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA2C526AD4;
+        Mon, 30 May 2022 08:56:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4DDFCB80E2E;
-        Mon, 30 May 2022 15:56:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19569C36AE7;
-        Mon, 30 May 2022 15:56:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7E407B80E2E;
+        Mon, 30 May 2022 15:56:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40FBDC341C5;
+        Mon, 30 May 2022 15:56:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653926182;
-        bh=oY2To6Dq8E4ZlSNzE9OvSOJ4Ec6SlQMPkQKRYIbD1j4=;
+        s=k20201202; t=1653926162;
+        bh=vZNOahuquc61LYGJE+zDOh1Tfc1eF8K3ftYrqLR3Jlg=;
         h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=LAYG1a7rWuqBm9UiZAAn/vKEnZDJg/f4xBpHZZKdElqCHN070n/QJ3w70BKDdGFdZ
-         7szxQd3rnBJmIkjXnkTXxNchF3dQ1Nw+4Kyz2poAZrfu/OKNjCwqzNFU9xcie1Un57
-         PVnF99w8tArh1pbxOxGwtr1pkrlwAZ/VZ04ZLoeAlHejvJrwPp1leTzDt5TsRVOw8T
-         /uj8NtafELR0Sn/4EYy8GGZ6V9h+ahcR5JpRKeal1l1xLYXCahBr1wenBnx7Rx+nA1
-         VuIaJqM03bUvtOMIR7hUcGf5NSpvPLsIwkpbmKj/rD/LvTGGZgVCbol6f/mOEJRo3V
-         1IwW85crae4fw==
-Received: by mail-oi1-f178.google.com with SMTP id y131so6972376oia.6;
-        Mon, 30 May 2022 08:56:22 -0700 (PDT)
-X-Gm-Message-State: AOAM530cJFhvS+f2WprL+8x3daK6PiB6sFZp4Q8o+J7AhrU/dzp4qJKf
-        u8DiE7hoWUF5EPznEDjufxHMadPtwPR+HzLnwFo=
-X-Google-Smtp-Source: ABdhPJx1z4xy7gzvzyGPxKXo7f7InAUbUfc1mL0H8QmD86R83QH82XT9ytmiExoj5XZx70/VX0uvCQ6dvxRVUKn4xkw=
-X-Received: by 2002:a05:6808:f88:b0:32b:d10f:cc6b with SMTP id
- o8-20020a0568080f8800b0032bd10fcc6bmr8351264oiw.228.1653926181276; Mon, 30
- May 2022 08:56:21 -0700 (PDT)
+        b=dgYj/Yzu6xQgvbDr+aTMPj3JC11vuXrprxRvhYSLFKVR2F8er+ja/ylKcZNMSUjkT
+         WGMwvpDTgm8oxIMmajdhHZfNdq8Wm9Bi7f9UP9icxcb6p6BvkjZZIwu+kLGCiKbXZd
+         39HUgv2IbaKQ1xEbQG9jYq0t18S9YjJKZGMtS7q80RHTpBZ1ZIm5oGDK7FiufTCUr/
+         U3+enbtWDaCLOR8mx60jcCGOXkqTnSOfG0Po2CrZysqy1vXk7emgiIsopVywnfNwnl
+         fDEDzpuI4HVb4MMGALQW4bQRnPTk1+1hSmuGQ5xhW1ulVyCcy9FnGjXTY7D+7fXsPc
+         IuUCHkGo1VgWw==
+Received: by mail-yb1-f181.google.com with SMTP id p13so8111378ybm.1;
+        Mon, 30 May 2022 08:56:02 -0700 (PDT)
+X-Gm-Message-State: AOAM530imDYHVcD/QI/7M9b+VMF2w1U3ti959Q5LTQVXhWPhavEKL2As
+        tzyfJEKXKVj4El0JsgLEgXIuN1M7jxrdQJpso0U=
+X-Google-Smtp-Source: ABdhPJw8YN2D7OioGQU3VBmoUMbh0gioLp3yRY1XdaTroJXM/gLDD3ji8AXoRaouQ2fK2WQ4/43SP4bwYsUoMcacvmc=
+X-Received: by 2002:a25:4f0a:0:b0:64f:6a76:3d8f with SMTP id
+ d10-20020a254f0a000000b0064f6a763d8fmr43939287ybb.134.1653926161185; Mon, 30
+ May 2022 08:56:01 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220530132425.1929512-1-sashal@kernel.org> <20220530132425.1929512-147-sashal@kernel.org>
- <CAMj1kXGAuKTqV0S4jxticZJp7ChtqqeXjn7SV1E83p5yVE1pkw@mail.gmail.com> <YpTh9dan5lJgH2aL@kroah.com>
-In-Reply-To: <YpTh9dan5lJgH2aL@kroah.com>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Mon, 30 May 2022 17:56:09 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXGO-1ccxaK_GnE+d2yc0XkF5y9ZawXXC3ypeGAanv9VtA@mail.gmail.com>
-Message-ID: <CAMj1kXGO-1ccxaK_GnE+d2yc0XkF5y9ZawXXC3ypeGAanv9VtA@mail.gmail.com>
-Subject: Re: [PATCH AUTOSEL 5.18 147/159] ARM: 9201/1: spectre-bhb: rely on
- linker to emit cross-section literal loads
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        Russell King <rmk+kernel@armlinux.org.uk>
-Cc:     Sasha Levin <sashal@kernel.org>,
+References: <CAK8P3a2_52JPnBWNvTTkFVwLxPAa7=NaQ4whwC1UeH_NYHeUKQ@mail.gmail.com>
+ <CAK8P3a0SpU1n+29KQxzKnPRvzmDE=L0V9RUpKxhemv=74kevcQ@mail.gmail.com>
+ <df5c406c-eec6-c340-2847-49670b7fe8bf@xen0n.name> <CAK8P3a3awFdB1-G65DC38NBuSTvo6SvFTaS0m9YBxunHjHjQvQ@mail.gmail.com>
+ <CAAhV-H6sNr-yo8brBFtzziH6k9Tby0dFp7yehK55SfH5HjZ8hQ@mail.gmail.com> <358025d1-28e6-708b-d23d-3f22ae12a800@xen0n.name>
+In-Reply-To: <358025d1-28e6-708b-d23d-3f22ae12a800@xen0n.name>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Mon, 30 May 2022 17:55:43 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a1ge2bZS13ahm_LdO3jEcbtR4w3do-gLjggKvppqnBDkw@mail.gmail.com>
+Message-ID: <CAK8P3a1ge2bZS13ahm_LdO3jEcbtR4w3do-gLjggKvppqnBDkw@mail.gmail.com>
+Subject: Re: [musl] Re: [GIT PULL] asm-generic changes for 5.19
+To:     musl@lists.openwall.com
+Cc:     Huacai Chen <chenhuacai@kernel.org>,
+        WANG Xuerui <kernel@xen0n.name>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        GNU C Library <libc-alpha@sourceware.org>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Marc Zyngier <maz@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "# 3.4.x" <stable@vger.kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Nicolas Pitre <nico@fluxnic.net>,
-        Keith Packard <keithpac@amazon.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Jianmin Lv <lvjianmin@loongson.cn>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Huacai Chen <chenhuacai@loongson.cn>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 30 May 2022 at 17:25, Greg KH <gregkh@linuxfoundation.org> wrote:
+On Mon, May 30, 2022 at 5:00 PM WANG Xuerui <kernel@xen0n.name> wrote:
+> On 5/30/22 21:01, Huacai Chen wrote:
 >
-> On Mon, May 30, 2022 at 03:32:47PM +0200, Ard Biesheuvel wrote:
-> > AUTONAK
-> >
-> > As discussed before, please disregard all patches authored by me when
-> > running the bot.
+> Thanks for the recognition from both of you; it is my honor and pleasure
+> to contribute to the LoongArch port and to Linux in general.
 >
-> Ok, but why wasn't this spectre-bhb commit asked to be backported to
-> stable in the first place?
+> As I'm still not entirely satisfied with my kernel development skills,
+> plus my day job is not kernel-related nor Loongson/LoongArch-related at
+> all, listing me as reviewer should be enough for now. I will take care
+> of the arch as long as I have the hardware.
 
-Because it doesn't belong in -stable. Hence the lack of cc:stable or
-fixes: tags.
+Thanks, sounds good to me.
 
-> Do older kernels not need these types of
-> fixes?
->
+> BTW, there were already several breakages when rebasing the previous
+> revision (I believe it's commit 215da6d2dac0 ("MAINTAINERS: Add
+> maintainer information for LoongArch")) on top of linus' tree.
 
-This commit was part of a series of six, two of which were bug fixes
-and had fixes: tags. They do not have cc:stable tags because the
-'fixed' patches had not been backported yet when they were sent out.
+Right, at least most of these should be fairly easy to address by disabling
+the corresponding features. For the allmodconfig build, I see some
+warnings that are introduced in gcc-12.1 across all architectures, and
+those can be ignored for now.
 
-So those are clear candidates for -stable, and as far as I can tell,
-they have already been backported.
+Some of the errors already have fixes on top of the 215da6d2dac0
+commit, but some of the other commits look like we should leave
+them out here.
 
-This patch does not fix a bug. It makes the asm code more resilient to
-potential bugs introduced inadvertently by future changes, which will
-be harder to detect now that we have three different versions of the
-exception vector table. (Any given system will only exercise one of
-the three, depending on whether and which Spectre-BHB workaround it
-requires)
+I also see some conflicts between local symbol definitions and device
+drivers such as
 
-I build and boot test my patches carefully, and so I consciously
-decided that the regression risk of backporting this patch outweighs
-the benefits. This is why I did not add a cc:stable or fixes: tag. If
-a tag existed that said 'do not backport this unless explicitly
-requested', I would have added it.
+arch/loongarch/include/asm/loongarch.h:240:29: note: previous
+definition of 'csr_writel' with type 'void(u32,  u32)' {aka
+'void(unsigned int,  unsigned int)'}
+  240 | static __always_inline void csr_writel(u32 val, u32 reg)
+      |                             ^~~~~~~~~~
+drivers/media/platform/amphion/vpu_core.h:10:5: error: conflicting
+types for 'csr_readl'; have 'u32(struct vpu_core *, u32)' {aka
+'unsigned int(struct vpu_core *, unsigned int)'}
 
-I would expect anyone that proposes this patch for -stable to be as
-diligent in ensuring that the patch is safe for backporting, which
-includes building the code with older GCC versions that those stable
-kernels still support, and boot testing the result on actual hardware.
+and
 
-If this is part of the AUTOSEL workflow, then I stand corrected. But
-even then, this does not mean that the patch *belongs* in -stable. As
-you know, I enjoy throwing stable-kernel-rules.rst in your face, and I
-am pretty sure that using a bot to find patches that apply cleanly and
-happen not to cause build breakage is not covered by the criteria
-defined by that document by any stretch of the imagination.
+drivers/usb/cdns3/cdns3-imx.c:85: error: "PS_MASK" redefined [-Werror]
 
-On top of that, I feel that 'saving' precious stable maintainer's time
-by using a bot to offload this burden to the community uninvited is
-really not ok. We work very hard to keep highly heterogeneous
-architectures such as ARM working across all supported platforms, and
-this is work enough as it is without all the bogus patches that
-AUTOSEL digs up without *any* justification beyond 'hey, it applies!'
+I would suggest renaming the loongarch specific symbols here, though we
+may want to also change those drivers to use less generic identifiers.
+
+> Now I see
+> the loongarch-next HEAD is already rebased on top of what I believe to
+> be the current main branch, however I vaguely remember that it's not
+> good to base one's patches on top of "some random commit", so I wonder
+> whether the current branch state is appropriate for a PR?
+
+You are correct, a pull request should always be based on an -rc, orat least
+have the minimum set of dependencies. The branch was previously
+based on top of the spinlock implementation, which is still the best
+place to start here.
+
+       Arnd
