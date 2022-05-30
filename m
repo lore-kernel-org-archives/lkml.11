@@ -2,49 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8568EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:44:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B727DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:44:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241022AbiE3OoY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:44:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56792 "EHLO
+        id S241187AbiE3Oo3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:44:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241457AbiE3OXC (ORCPT
+        with ESMTP id S242006AbiE3OSS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:23:02 -0400
+        Mon, 30 May 2022 10:18:18 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C0D0A7E2E;
-        Mon, 30 May 2022 06:50:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD6E19D07A;
+        Mon, 30 May 2022 06:48:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0117060FEE;
-        Mon, 30 May 2022 13:49:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F8E0C385B8;
-        Mon, 30 May 2022 13:49:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A8FD60EC3;
+        Mon, 30 May 2022 13:48:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBECFC36AE5;
+        Mon, 30 May 2022 13:48:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918593;
-        bh=aLylDdqT0NTqM4D2n1JKqFVOODdcHs+kgtWOg5yMgK4=;
+        s=k20201202; t=1653918529;
+        bh=LwQYWt8RcYawY9dcDrj6e1/FgVm0e/k1MIM239Db11s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Tva/PpC+kOrXkJzgFbpo1HvW37ZFUyZgRZdD6kmnrPs8E2ccmPCaSIqakK1fjKir9
-         hUmAmgFDBGXOX6+RGG3upGUZ70oawOunIG7VwJ4sjU3qE1NR4OZiQeykQfLRXmyx3t
-         K2Xir4MjUqKEgEU4NzoWPcBHGWS3Zi8bualXqVL//HwPZVMIKmjaV4/KHXVZR/7eWY
-         QlNo/OTbC5xjbPXm+S0PSWDbXpHg0RUNM76uYt9xYvQkHFtyIDcm0Gzv3yZV/Bh3Fb
-         YyQ9I4eh4CXH0QgzcFHnLV78LU9kE1R3tCu5ieZzHVCi270GcFk80CZT/IVV3CueaK
-         UuLtjv70iOr3A==
+        b=FWXn7kJW6G+TW3X6dhuLrPkJGcWjm+W/x8ULVRhzuPnAPzHRTTNHHR72hYt20M8TE
+         84C30Ms1HyZlrjCTLrfRseOe+6O1vUVwYOJnGcAEpfn/NqvLwPnWZGjnCqsG2vI3S3
+         wMgQOacex0VRNP/c/MB5+3OI2PsdQrjsDALtxU81yQzamsif7Qsu4o3sCj2LXvtdkI
+         68/ZMmUEvO0VIRCmQmKdaDQeJvb1zSotSBc4MLCqpvw/e5Tov4kWqr5qMkUj/vHvCn
+         0drEMEcadg2w9DPuUsnLH3ETbKdk/DnZNfhW6FhJ+SMy0U/NQiILYl/yfzYo4I4bCm
+         F5o8eNQnRLusA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 4.19 10/38] drm/amd/pm: fix double free in si_parse_power_table()
-Date:   Mon, 30 May 2022 09:48:56 -0400
-Message-Id: <20220530134924.1936816-10-sashal@kernel.org>
+Cc:     Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 43/55] media: cec-adap.c: fix is_configuring state
+Date:   Mon, 30 May 2022 09:46:49 -0400
+Message-Id: <20220530134701.1935933-43-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220530134924.1936816-1-sashal@kernel.org>
-References: <20220530134924.1936816-1-sashal@kernel.org>
+In-Reply-To: <20220530134701.1935933-1-sashal@kernel.org>
+References: <20220530134701.1935933-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,68 +51,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
+From: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 
-[ Upstream commit f3fa2becf2fc25b6ac7cf8d8b1a2e4a86b3b72bd ]
+[ Upstream commit 59267fc34f4900dcd2ec3295f6be04b79aee2186 ]
 
-In function si_parse_power_table(), array adev->pm.dpm.ps and its member
-is allocated. If the allocation of each member fails, the array itself
-is freed and returned with an error code. However, the array is later
-freed again in si_dpm_fini() function which is called when the function
-returns an error.
+If an adapter is trying to claim a free logical address then it is
+in the 'is_configuring' state. If during that process the cable is
+disconnected (HPD goes low, which in turn invalidates the physical
+address), then cec_adap_unconfigure() is called, and that set the
+is_configuring boolean to false, even though the thread that's
+trying to claim an LA is still running.
 
-This leads to potential double free of the array adev->pm.dpm.ps, as
-well as leak of its array members, since the members are not freed in
-the allocation function and the array is not nulled when freed.
-In addition adev->pm.dpm.num_ps, which keeps track of the allocated
-array member, is not updated until the member allocation is
-successfully finished, this could also lead to either use after free,
-or uninitialized variable access in si_dpm_fini().
+Don't touch the is_configuring bool in cec_adap_unconfigure(), it
+will eventually be cleared by the thread. By making that change
+the cec_config_log_addr() function also had to change: it was
+aborting if is_configuring became false (since that is what
+cec_adap_unconfigure() did), but that no longer works. Instead
+check if the physical address is invalid. That is a much
+more appropriate check anyway.
 
-Fix this by postponing the free of the array until si_dpm_fini() and
-increment adev->pm.dpm.num_ps everytime the array member is allocated.
+This fixes a bug where the the adapter could be disabled even
+though the device was still configuring. This could cause POLL
+transmits to time out.
 
-Signed-off-by: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/si_dpm.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ drivers/media/cec/cec-adap.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/si_dpm.c b/drivers/gpu/drm/amd/amdgpu/si_dpm.c
-index 1de96995e690..9f811051ceb0 100644
---- a/drivers/gpu/drm/amd/amdgpu/si_dpm.c
-+++ b/drivers/gpu/drm/amd/amdgpu/si_dpm.c
-@@ -7247,17 +7247,15 @@ static int si_parse_power_table(struct amdgpu_device *adev)
- 	if (!adev->pm.dpm.ps)
- 		return -ENOMEM;
- 	power_state_offset = (u8 *)state_array->states;
--	for (i = 0; i < state_array->ucNumEntries; i++) {
-+	for (adev->pm.dpm.num_ps = 0, i = 0; i < state_array->ucNumEntries; i++) {
- 		u8 *idx;
- 		power_state = (union pplib_power_state *)power_state_offset;
- 		non_clock_array_index = power_state->v2.nonClockInfoIndex;
- 		non_clock_info = (struct _ATOM_PPLIB_NONCLOCK_INFO *)
- 			&non_clock_info_array->nonClockInfo[non_clock_array_index];
- 		ps = kzalloc(sizeof(struct  si_ps), GFP_KERNEL);
--		if (ps == NULL) {
--			kfree(adev->pm.dpm.ps);
-+		if (ps == NULL)
- 			return -ENOMEM;
--		}
- 		adev->pm.dpm.ps[i].ps_priv = ps;
- 		si_parse_pplib_non_clock_info(adev, &adev->pm.dpm.ps[i],
- 					      non_clock_info,
-@@ -7279,8 +7277,8 @@ static int si_parse_power_table(struct amdgpu_device *adev)
- 			k++;
- 		}
- 		power_state_offset += 2 + power_state->v2.ucNumDPMLevels;
-+		adev->pm.dpm.num_ps++;
- 	}
--	adev->pm.dpm.num_ps = state_array->ucNumEntries;
+diff --git a/drivers/media/cec/cec-adap.c b/drivers/media/cec/cec-adap.c
+index 56857ac0a0be..c665f7d20c44 100644
+--- a/drivers/media/cec/cec-adap.c
++++ b/drivers/media/cec/cec-adap.c
+@@ -1263,7 +1263,7 @@ static int cec_config_log_addr(struct cec_adapter *adap,
+ 		 * While trying to poll the physical address was reset
+ 		 * and the adapter was unconfigured, so bail out.
+ 		 */
+-		if (!adap->is_configuring)
++		if (adap->phys_addr == CEC_PHYS_ADDR_INVALID)
+ 			return -EINTR;
  
- 	/* fill in the vce power states */
- 	for (i = 0; i < adev->pm.dpm.num_of_vce_states; i++) {
+ 		if (err)
+@@ -1321,7 +1321,6 @@ static void cec_adap_unconfigure(struct cec_adapter *adap)
+ 	    adap->phys_addr != CEC_PHYS_ADDR_INVALID)
+ 		WARN_ON(adap->ops->adap_log_addr(adap, CEC_LOG_ADDR_INVALID));
+ 	adap->log_addrs.log_addr_mask = 0;
+-	adap->is_configuring = false;
+ 	adap->is_configured = false;
+ 	memset(adap->phys_addrs, 0xff, sizeof(adap->phys_addrs));
+ 	cec_flush(adap);
+@@ -1514,9 +1513,10 @@ static int cec_config_thread_func(void *arg)
+ 	for (i = 0; i < las->num_log_addrs; i++)
+ 		las->log_addr[i] = CEC_LOG_ADDR_INVALID;
+ 	cec_adap_unconfigure(adap);
++	adap->is_configuring = false;
+ 	adap->kthread_config = NULL;
+-	mutex_unlock(&adap->lock);
+ 	complete(&adap->config_completion);
++	mutex_unlock(&adap->lock);
+ 	return 0;
+ }
+ 
 -- 
 2.35.1
 
