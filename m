@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25FEBC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:03:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82874C3A5A1
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:03:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239769AbiE3OCa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:02:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49664 "EHLO
+        id S239929AbiE3OCx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:02:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238811AbiE3Nxq (ORCPT
+        with ESMTP id S239045AbiE3Nzi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:53:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E70583D491;
-        Mon, 30 May 2022 06:37:47 -0700 (PDT)
+        Mon, 30 May 2022 09:55:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 285D18A33B;
+        Mon, 30 May 2022 06:38:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4C799B80DA9;
-        Mon, 30 May 2022 13:37:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5157C36AE5;
-        Mon, 30 May 2022 13:37:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 787A360E01;
+        Mon, 30 May 2022 13:38:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91501C3411C;
+        Mon, 30 May 2022 13:38:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917865;
-        bh=TLR9qUvj/0sLCsIOv3xfnFG3iF0rfWWP61ap7+Ebwaw=;
+        s=k20201202; t=1653917887;
+        bh=s4KO1UgUY/B996K+l2DBDtuWNiu3YWMyS23OqCyZMqk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GrBMNO3dJaWLBo2/Mj+8HoRK1+BCTB6KNHdTT2jJXxSsIWVlpCxbwsQfNUXPAk/t4
-         pL3bIXIJ3ICWQLc2/bpZ4LbByGUjaEhFscFqj98X0OTwRBV7DQLuUkZJL7Pe1XnWVJ
-         Tm75o7jo2Wgibf0daiW13eK2qjiNK7epjd/X0jhdBmGc2T+160wMDpTq7sG3szM/qf
-         VXNcE8/8Lzg8vfTZSoSnCJGBpV0jeaMbD8XOmt1rZhwx6Pu66V81c0eKBRuNtKdZX0
-         ASEH3NmKSgR79IM+jjDUfxHuo9Aeb0TrLox1RgazF4Gt0xbr7EJ9SOvOfPawtnhf+y
-         i8NzsDvPAnSdQ==
+        b=Lcj7Vsk6LgXZ31+idbpxLKlQH4Szytlb+Pa7cAeaJZybGAH16CByUEbpX2lkR44vO
+         lsGcUqlBoVVm+60sBC5QlYRAV13+pz3cUbG3lhL/B89ZwuG+Jh06uS57hmZngHzLeA
+         Qpf0DhQqVIGr7xnUMtnhLwqxbwpW4nKmfmDTMK35yrVQwwXq2tq1KU+qBnH0rLelID
+         L1HO0Q3QUk5T6i2BjJ4TjrhjvWEWTbmXQeJIwjXse5Ztl+A/fvoRJFsRnFXpMsu8PF
+         S+fuD317V98HThgpokFevqD3IwmdFT2Il8oYrBEzzwIAYQKfDsrNeuIln9dvT9+WkY
+         dBsClfMVjXRBg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Chaitanya Kulkarni <kch@nvidia.com>,
-        Keith Busch <kbusch@kernel.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Sasha Levin <sashal@kernel.org>, axboe@fb.com,
-        sagi@grimberg.me, linux-nvme@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.17 121/135] nvme: set non-mdts limits in nvme_scan_work
-Date:   Mon, 30 May 2022 09:31:19 -0400
-Message-Id: <20220530133133.1931716-121-sashal@kernel.org>
+Cc:     David Howells <dhowells@redhat.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 129/135] rxrpc: Return an error to sendmsg if call failed
+Date:   Mon, 30 May 2022 09:31:27 -0400
+Message-Id: <20220530133133.1931716-129-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
@@ -53,132 +54,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chaitanya Kulkarni <kch@nvidia.com>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit 78288665b5d0154978fed431985310cb4f166836 ]
+[ Upstream commit 4ba68c5192554876bd8c3afd904e3064d2915341 ]
 
-In current implementation we set the non-mdts limits by calling
-nvme_init_non_mdts_limits() from nvme_init_ctrl_finish().
-This also tries to set the limits for the discovery controller which
-has no I/O queues resulting in the warning message reported by the
-nvme_log_error() when running blktest nvme/002: -
+If at the end of rxrpc sendmsg() or rxrpc_kernel_send_data() the call that
+was being given data was aborted remotely or otherwise failed, return an
+error rather than returning the amount of data buffered for transmission.
 
-[ 2005.155946] run blktests nvme/002 at 2022-04-09 16:57:47
-[ 2005.192223] loop: module loaded
-[ 2005.196429] nvmet: adding nsid 1 to subsystem blktests-subsystem-0
-[ 2005.200334] nvmet: adding nsid 1 to subsystem blktests-subsystem-1
+The call (presumably) did not complete, so there's not much point
+continuing with it.  AF_RXRPC considers it "complete" and so will be
+unwilling to do anything else with it - and won't send a notification for
+it, deeming the return from sendmsg sufficient.
 
-<------------------------------SNIP---------------------------------->
+Not returning an error causes afs to incorrectly handle a StoreData
+operation that gets interrupted by a change of address due to NAT
+reconfiguration.
 
-[ 2008.958108] nvmet: adding nsid 1 to subsystem blktests-subsystem-997
-[ 2008.962082] nvmet: adding nsid 1 to subsystem blktests-subsystem-998
-[ 2008.966102] nvmet: adding nsid 1 to subsystem blktests-subsystem-999
-[ 2008.973132] nvmet: creating discovery controller 1 for subsystem nqn.2014-08.org.nvmexpress.discovery for NQN testhostnqn.
-*[ 2008.973196] nvme1: Identify(0x6), Invalid Field in Command (sct 0x0 / sc 0x2) MORE DNR*
-[ 2008.974595] nvme nvme1: new ctrl: "nqn.2014-08.org.nvmexpress.discovery"
-[ 2009.103248] nvme nvme1: Removing ctrl: NQN "nqn.2014-08.org.nvmexpress.discovery"
+This doesn't normally affect most operations since their request parameters
+tend to fit into a single UDP packet and afs_make_call() returns before the
+server responds; StoreData is different as it involves transmission of a
+lot of data.
 
-Move the call of nvme_init_non_mdts_limits() to nvme_scan_work() after
-we verify that I/O queues are created since that is a converging point
-for each transport where these limits are actually used.
+This can be triggered on a client by doing something like:
 
-1. FC :
-nvme_fc_create_association()
- ...
- nvme_fc_create_io_queues(ctrl);
- ...
- nvme_start_ctrl()
-  nvme_scan_queue()
-   nvme_scan_work()
+	dd if=/dev/zero of=/afs/example.com/foo bs=1M count=512
 
-2. PCIe:-
-nvme_reset_work()
- ...
- nvme_setup_io_queues()
-  nvme_create_io_queues()
-   nvme_alloc_queue()
- ...
- nvme_start_ctrl()
-  nvme_scan_queue()
-   nvme_scan_work()
+at one prompt, and then changing the network address at another prompt,
+e.g.:
 
-3. RDMA :-
-nvme_rdma_setup_ctrl
- ...
-  nvme_rdma_configure_io_queues
-  ...
-  nvme_start_ctrl()
-   nvme_scan_queue()
-    nvme_scan_work()
+	ifconfig enp6s0 inet 192.168.6.2 && route add 192.168.6.1 dev enp6s0
 
-4. TCP :-
-nvme_tcp_setup_ctrl
- ...
-  nvme_tcp_configure_io_queues
-  ...
-  nvme_start_ctrl()
-   nvme_scan_queue()
-    nvme_scan_work()
+Tracing packets on an Auristor fileserver looks something like:
 
-* nvme_scan_work()
-...
-nvme_validate_or_alloc_ns()
-  nvme_alloc_ns()
-   nvme_update_ns_info()
-    nvme_update_disk_info()
-     nvme_config_discard() <---
-     blk_queue_max_write_zeroes_sectors() <---
+192.168.6.1 -> 192.168.6.3  RX 107 ACK Idle  Seq: 0  Call: 4  Source Port: 7000  Destination Port: 7001
+192.168.6.3 -> 192.168.6.1  AFS (RX) 1482 FS Request: Unknown(64538) (64538)
+192.168.6.3 -> 192.168.6.1  AFS (RX) 1482 FS Request: Unknown(64538) (64538)
+192.168.6.1 -> 192.168.6.3  RX 107 ACK Idle  Seq: 0  Call: 4  Source Port: 7000  Destination Port: 7001
+<ARP exchange for 192.168.6.2>
+192.168.6.2 -> 192.168.6.1  AFS (RX) 1482 FS Request: Unknown(0) (0)
+192.168.6.2 -> 192.168.6.1  AFS (RX) 1482 FS Request: Unknown(0) (0)
+192.168.6.1 -> 192.168.6.2  RX 107 ACK Exceeds Window  Seq: 0  Call: 4  Source Port: 7000  Destination Port: 7001
+192.168.6.1 -> 192.168.6.2  RX 74 ABORT  Seq: 0  Call: 4  Source Port: 7000  Destination Port: 7001
+192.168.6.1 -> 192.168.6.2  RX 74 ABORT  Seq: 29321  Call: 4  Source Port: 7000  Destination Port: 7001
 
-Signed-off-by: Chaitanya Kulkarni <kch@nvidia.com>
-Reviewed-by: Keith Busch <kbusch@kernel.org>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+The Auristor fileserver logs code -453 (RXGEN_SS_UNMARSHAL), but the abort
+code received by kafs is -5 (RX_PROTOCOL_ERROR) as the rx layer sees the
+condition and generates an abort first and the unmarshal error is a
+consequence of that at the application layer.
+
+Reported-by: Marc Dionne <marc.dionne@auristor.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: linux-afs@lists.infradead.org
+Link: http://lists.infradead.org/pipermail/linux-afs/2021-December/004810.html # v1
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/core.c | 19 +++++++++++++++----
- 1 file changed, 15 insertions(+), 4 deletions(-)
+ net/rxrpc/sendmsg.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 0abd772c57f0..79ef46356d40 100644
---- a/drivers/nvme/host/core.c
-+++ b/drivers/nvme/host/core.c
-@@ -3096,10 +3096,6 @@ int nvme_init_ctrl_finish(struct nvme_ctrl *ctrl)
- 	if (ret)
- 		return ret;
+diff --git a/net/rxrpc/sendmsg.c b/net/rxrpc/sendmsg.c
+index af8ad6c30b9f..1d38e279e2ef 100644
+--- a/net/rxrpc/sendmsg.c
++++ b/net/rxrpc/sendmsg.c
+@@ -444,6 +444,12 @@ static int rxrpc_send_data(struct rxrpc_sock *rx,
  
--	ret = nvme_init_non_mdts_limits(ctrl);
--	if (ret < 0)
--		return ret;
--
- 	ret = nvme_configure_apst(ctrl);
- 	if (ret < 0)
- 		return ret;
-@@ -4160,11 +4156,26 @@ static void nvme_scan_work(struct work_struct *work)
- {
- 	struct nvme_ctrl *ctrl =
- 		container_of(work, struct nvme_ctrl, scan_work);
-+	int ret;
- 
- 	/* No tagset on a live ctrl means IO queues could not created */
- 	if (ctrl->state != NVME_CTRL_LIVE || !ctrl->tagset)
- 		return;
- 
-+	/*
-+	 * Identify controller limits can change at controller reset due to
-+	 * new firmware download, even though it is not common we cannot ignore
-+	 * such scenario. Controller's non-mdts limits are reported in the unit
-+	 * of logical blocks that is dependent on the format of attached
-+	 * namespace. Hence re-read the limits at the time of ns allocation.
-+	 */
-+	ret = nvme_init_non_mdts_limits(ctrl);
-+	if (ret < 0) {
-+		dev_warn(ctrl->device,
-+			"reading non-mdts-limits failed: %d\n", ret);
-+		return;
+ success:
+ 	ret = copied;
++	if (READ_ONCE(call->state) == RXRPC_CALL_COMPLETE) {
++		read_lock_bh(&call->state_lock);
++		if (call->error < 0)
++			ret = call->error;
++		read_unlock_bh(&call->state_lock);
 +	}
-+
- 	if (test_and_clear_bit(NVME_AER_NOTICE_NS_CHANGED, &ctrl->events)) {
- 		dev_info(ctrl->device, "rescanning namespaces.\n");
- 		nvme_clear_changed_ns_log(ctrl);
+ out:
+ 	call->tx_pending = skb;
+ 	_leave(" = %d", ret);
 -- 
 2.35.1
 
