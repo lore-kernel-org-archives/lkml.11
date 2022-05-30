@@ -2,93 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ECE0C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:22:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0550C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:23:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237820AbiE3OWW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:22:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40134 "EHLO
+        id S241330AbiE3OWb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:22:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241079AbiE3ORM (ORCPT
+        with ESMTP id S241082AbiE3ORM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 30 May 2022 10:17:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91478110470;
-        Mon, 30 May 2022 06:44:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 69167B80DC4;
-        Mon, 30 May 2022 13:44:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AE19C385B8;
-        Mon, 30 May 2022 13:44:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918254;
-        bh=EI6kyMEv2r+oMfMB12oZQKomnwfH3xTNuKb7+f/Swr4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AeutlHaByfHlZEzwH5aurbO+18DCiz5avlVv568IS/fu1T06ZhwPd19HM8AZDTD71
-         We29Kitj6z+J9r3NImbQsSUT+80aoaBIQBPCcdQMcPS8TdWxCxYx8iYZoF0WOl4a2s
-         LFzJMSwNX9N1b6o+ndTIeuEYuaoQ09H5fo9Izv3IcysLvyVhtcTKbxzQDOFycAYpnZ
-         trj8yIYoZnfvWWHVV4t0V6K7PtKiUTaJ0KU62cOykC9vHkWyVotcJ8IdNaIzyeiwWV
-         iPmzSkn9uk/dl2w87ml1yTsd4sxQyeGzn5UHqZxa8rleg3iwel5AiY15oGYbUDbpvT
-         49PIysjHI9W2Q==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Nikolay Borisov <nborisov@suse.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 03/76] selftests/bpf: Fix vfs_link kprobe definition
-Date:   Mon, 30 May 2022 09:42:53 -0400
-Message-Id: <20220530134406.1934928-3-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220530134406.1934928-1-sashal@kernel.org>
-References: <20220530134406.1934928-1-sashal@kernel.org>
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A2431105C8
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 06:44:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653918272; x=1685454272;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=nbH+BT+jNCzIIO5uzvmvgYlB3KrG8atxoCtN2hrlcLg=;
+  b=hxhkFZHdOpHM0wdQX62rQ4EYQIStIn3Oy08zTfKILkcVtgs99d94AtoT
+   MUcjRXfMi8POLj9oY4Ab61Bjzc1rwhiZ0ca7wGjJ8Da9O+hR5Jm+xR75t
+   B4xMkriWUfwA7r934UHPnZO86TC/Cp1FDfqBb+gc+NfZWBZLvj3qf0OQr
+   cIykBKpU0reCYOvXNhBZ9ZSoYHGQuWpIb1Bcg9oJFN0ZdOrujHcVWnWyd
+   CuYLL35NVoRhXVrbEbjCenJ11YtKLcgMBLB6NBHOI/Jqga5spViLKRtN4
+   Se/i/+GJvaMtpxT0edMottCs7LkkkXeX0r3w0upM4aOtRBcqvcLgJ3EIv
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10362"; a="275006047"
+X-IronPort-AV: E=Sophos;i="5.91,263,1647327600"; 
+   d="scan'208";a="275006047"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2022 06:44:09 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,263,1647327600"; 
+   d="scan'208";a="719903618"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 30 May 2022 06:44:07 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nvfgl-0001kY-4N;
+        Mon, 30 May 2022 13:44:07 +0000
+Date:   Mon, 30 May 2022 21:43:54 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Watson Chow <watson.chow@avnet.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Mark Brown <broonie@kernel.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: drivers/regulator/max20086-regulator.c:288:34: warning:
+ 'max20086_dt_ids' defined but not used
+Message-ID: <202205302156.U6VFwn3R-lkp@intel.com>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nikolay Borisov <nborisov@suse.com>
+Hi Watson,
 
-[ Upstream commit e299bcd4d16ff86f46c48df1062c8aae0eca1ed8 ]
+FYI, the error/warning still remains.
 
-Since commit 6521f8917082 ("namei: prepare for idmapped mounts")
-vfs_link's prototype was changed, the kprobe definition in
-profiler selftest in turn wasn't updated. The result is that all
-argument after the first are now stored in different registers. This
-means that self-test has been broken ever since. Fix it by updating the
-kprobe definition accordingly.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   b00ed48bb0a7c295facf9036135a573a5cdbe7de
+commit: bfff546aae50ae68ed395bf0e0848188d27b0ba3 regulator: Add MAX20086-MAX20089 driver
+date:   5 months ago
+config: x86_64-buildonly-randconfig-r002-20220530 (https://download.01.org/0day-ci/archive/20220530/202205302156.U6VFwn3R-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-1) 11.3.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=bfff546aae50ae68ed395bf0e0848188d27b0ba3
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout bfff546aae50ae68ed395bf0e0848188d27b0ba3
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/regulator/ kernel/bpf/
 
-Signed-off-by: Nikolay Borisov <nborisov@suse.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Link: https://lore.kernel.org/bpf/20220331140949.1410056-1-nborisov@suse.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- tools/testing/selftests/bpf/progs/profiler.inc.h | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-diff --git a/tools/testing/selftests/bpf/progs/profiler.inc.h b/tools/testing/selftests/bpf/progs/profiler.inc.h
-index 4896fdf816f7..92331053dba3 100644
---- a/tools/testing/selftests/bpf/progs/profiler.inc.h
-+++ b/tools/testing/selftests/bpf/progs/profiler.inc.h
-@@ -826,8 +826,9 @@ int kprobe_ret__do_filp_open(struct pt_regs* ctx)
- 
- SEC("kprobe/vfs_link")
- int BPF_KPROBE(kprobe__vfs_link,
--	       struct dentry* old_dentry, struct inode* dir,
--	       struct dentry* new_dentry, struct inode** delegated_inode)
-+	       struct dentry* old_dentry, struct user_namespace *mnt_userns,
-+	       struct inode* dir, struct dentry* new_dentry,
-+	       struct inode** delegated_inode)
- {
- 	struct bpf_func_stats_ctx stats_ctx;
- 	bpf_stats_enter(&stats_ctx, profiler_bpf_vfs_link);
+All warnings (new ones prefixed by >>):
+
+>> drivers/regulator/max20086-regulator.c:288:34: warning: 'max20086_dt_ids' defined but not used [-Wunused-const-variable=]
+     288 | static const struct of_device_id max20086_dt_ids[] = {
+         |                                  ^~~~~~~~~~~~~~~
+
+
+vim +/max20086_dt_ids +288 drivers/regulator/max20086-regulator.c
+
+   287	
+ > 288	static const struct of_device_id max20086_dt_ids[] = {
+   289		{
+   290			.compatible = "maxim,max20086",
+   291			.data = &(const struct max20086_chip_info) {
+   292				.id = MAX20086_DEVICE_ID_MAX20086,
+   293				.num_outputs = 4,
+   294			}
+   295		}, {
+   296			.compatible = "maxim,max20087",
+   297			.data = &(const struct max20086_chip_info) {
+   298				.id = MAX20086_DEVICE_ID_MAX20087,
+   299				.num_outputs = 4,
+   300			}
+   301		}, {
+   302			.compatible = "maxim,max20088",
+   303			.data = &(const struct max20086_chip_info) {
+   304				.id = MAX20086_DEVICE_ID_MAX20088,
+   305				.num_outputs = 2,
+   306			}
+   307		}, {
+   308			.compatible = "maxim,max20089",
+   309			.data = &(const struct max20086_chip_info) {
+   310				.id = MAX20086_DEVICE_ID_MAX20089,
+   311				.num_outputs = 2,
+   312			}
+   313		},
+   314		{ /* Sentinel */ },
+   315	};
+   316	
+
 -- 
-2.35.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
