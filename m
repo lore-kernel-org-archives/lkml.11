@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97B69C38A05
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 649B2C38A02
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:47:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242869AbiE3Oq5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:46:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56878 "EHLO
+        id S242822AbiE3Oql (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:46:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241315AbiE3O0L (ORCPT
+        with ESMTP id S240661AbiE3OZU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:26:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E034284A03;
-        Mon, 30 May 2022 06:51:05 -0700 (PDT)
+        Mon, 30 May 2022 10:25:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A7E4ABF58;
+        Mon, 30 May 2022 06:50:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 790A0B80DE8;
-        Mon, 30 May 2022 13:50:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 327B5C36AE9;
-        Mon, 30 May 2022 13:50:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C15E60FCC;
+        Mon, 30 May 2022 13:50:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEBB5C3411C;
+        Mon, 30 May 2022 13:50:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918620;
-        bh=QeQg3hA5x9OrSaQpUJVXP7E9MxhSc4xird1zk6F7M0k=;
+        s=k20201202; t=1653918628;
+        bh=HK2bUnN9u8Hcgp6SbPKH4JTNsovTrTAGTlyslCynbNI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BpI/862ZwQOLrjKUCdYWOU5X9XKFtZrI5Ik/9/E5v+e3isiVGFtMQxcq3K21+L/hj
-         4g+OWiQZB+adQBc0ekdBF71sKetI07vXcJXd5CfgOHuuN6ExKdC94J5zN4stxvEvq7
-         LeoFsxn8WZhOqXX3gCYukylyKlfi/kC6vwDoRcF3k8IhsKUK3P3XyX3KhuFV0QNluL
-         +hYwb+aJwXOPkr9ka3dHqBxymFnhv6PBVwpSOM57hY5Jrv0EMNL8HfonxASuyAcWCZ
-         pqbSFO7R16DNHq9MYqrjzWsXPMMFBulMlo8VZQSdUGvQGcp7MwwYEOwzqUOKhXzVv/
-         yqeVz6tvVaVKA==
+        b=dw6sOchjboFN4Y4ExjU/2+yD+7Ehpf8mX0/GMNXm6tMVX9A3TwpZ+TZgLWtsXbSoQ
+         eGFB70NACQzYpygtWSisNcprHSIeUh/+PNUJ8DzX7mIHPnqXDr1AwcnJ3OYAXG0G/E
+         LFpw0ZhOA39Y36DhgiQzeAUzs9GiCLOAVaP+mz5oXnU3jYDbXXnlDGKhfnauBwy4r4
+         CzOmAp8ZEQ16pX1UFffMO4h23IG/HDocEgV+l3IqG1DOvmDmPVA/h1ftwCgRsAZ4LT
+         ic6F3FawAH3Htl2WGCswH2yWBrsq4FA+FEBpSEz44JYo+8KLG3S/HLb2d8GAtskr8N
+         Cs58mSri3iSGw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>,
-        steven.eckhoff.opensource@gmail.com, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 4.19 23/38] ASoC: tscs454: Add endianness flag in snd_soc_component_driver
-Date:   Mon, 30 May 2022 09:49:09 -0400
-Message-Id: <20220530134924.1936816-23-sashal@kernel.org>
+Cc:     Mikulas Patocka <mpatocka@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Sasha Levin <sashal@kernel.org>, m.szyprowski@samsung.com,
+        iommu@lists.linux-foundation.org
+Subject: [PATCH AUTOSEL 4.19 26/38] dma-debug: change allocation mode from GFP_NOWAIT to GFP_ATIOMIC
+Date:   Mon, 30 May 2022 09:49:12 -0400
+Message-Id: <20220530134924.1936816-26-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530134924.1936816-1-sashal@kernel.org>
 References: <20220530134924.1936816-1-sashal@kernel.org>
@@ -53,66 +52,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: Mikulas Patocka <mpatocka@redhat.com>
 
-[ Upstream commit ff69ec96b87dccb3a29edef8cec5d4fefbbc2055 ]
+[ Upstream commit 84bc4f1dbbbb5f8aa68706a96711dccb28b518e5 ]
 
-The endianness flag is used on the CODEC side to specify an
-ambivalence to endian, typically because it is lost over the hardware
-link. This device receives audio over an I2S DAI and as such should
-have endianness applied.
+We observed the error "cacheline tracking ENOMEM, dma-debug disabled"
+during a light system load (copying some files). The reason for this error
+is that the dma_active_cacheline radix tree uses GFP_NOWAIT allocation -
+so it can't access the emergency memory reserves and it fails as soon as
+anybody reaches the watermark.
 
-A fixup is also required to use the width directly rather than relying
-on the format in hw_params, now both little and big endian would be
-supported. It is worth noting this changes the behaviour of S24_LE to
-use a word length of 24 rather than 32. This would appear to be a
-correction since the fact S24_LE is stored as 32 bits should not be
-presented over the bus.
+This patch changes GFP_NOWAIT to GFP_ATOMIC, so that it can access the
+emergency memory reserves.
 
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220504170905.332415-26-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/tscs454.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ kernel/dma/debug.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/tscs454.c b/sound/soc/codecs/tscs454.c
-index ff85a0bf6170..00a90ccd6566 100644
---- a/sound/soc/codecs/tscs454.c
-+++ b/sound/soc/codecs/tscs454.c
-@@ -3129,18 +3129,17 @@ static int set_aif_sample_format(struct snd_soc_component *component,
- 	unsigned int width;
- 	int ret;
- 
--	switch (format) {
--	case SNDRV_PCM_FORMAT_S16_LE:
-+	switch (snd_pcm_format_width(format)) {
-+	case 16:
- 		width = FV_WL_16;
- 		break;
--	case SNDRV_PCM_FORMAT_S20_3LE:
-+	case 20:
- 		width = FV_WL_20;
- 		break;
--	case SNDRV_PCM_FORMAT_S24_3LE:
-+	case 24:
- 		width = FV_WL_24;
- 		break;
--	case SNDRV_PCM_FORMAT_S24_LE:
--	case SNDRV_PCM_FORMAT_S32_LE:
-+	case 32:
- 		width = FV_WL_32;
- 		break;
- 	default:
-@@ -3338,6 +3337,7 @@ static const struct snd_soc_component_driver soc_component_dev_tscs454 = {
- 	.num_dapm_routes = ARRAY_SIZE(tscs454_intercon),
- 	.controls =	tscs454_snd_controls,
- 	.num_controls = ARRAY_SIZE(tscs454_snd_controls),
-+	.endianness = 1,
- };
- 
- #define TSCS454_RATES SNDRV_PCM_RATE_8000_96000
+diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
+index 9c9a5b12f92f..7c6cd00d0fca 100644
+--- a/kernel/dma/debug.c
++++ b/kernel/dma/debug.c
+@@ -469,7 +469,7 @@ void debug_dma_dump_mappings(struct device *dev)
+  * At any time debug_dma_assert_idle() can be called to trigger a
+  * warning if any cachelines in the given page are in the active set.
+  */
+-static RADIX_TREE(dma_active_cacheline, GFP_NOWAIT);
++static RADIX_TREE(dma_active_cacheline, GFP_ATOMIC);
+ static DEFINE_SPINLOCK(radix_lock);
+ #define ACTIVE_CACHELINE_MAX_OVERLAP ((1 << RADIX_TREE_MAX_TAGS) - 1)
+ #define CACHELINE_PER_PAGE_SHIFT (PAGE_SHIFT - L1_CACHE_SHIFT)
 -- 
 2.35.1
 
