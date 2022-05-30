@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F08F7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 07:48:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6F4CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 07:48:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233911AbiE3HsZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 03:48:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58592 "EHLO
+        id S233935AbiE3Hsr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 03:48:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233904AbiE3HsV (ORCPT
+        with ESMTP id S233921AbiE3Hsh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 03:48:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBA3A71D8B;
-        Mon, 30 May 2022 00:48:19 -0700 (PDT)
+        Mon, 30 May 2022 03:48:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 882227223C;
+        Mon, 30 May 2022 00:48:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A0E060DF6;
-        Mon, 30 May 2022 07:48:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 721C8C385B8;
-        Mon, 30 May 2022 07:48:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1D069B80B96;
+        Mon, 30 May 2022 07:48:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67CE2C385B8;
+        Mon, 30 May 2022 07:48:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653896898;
-        bh=ot8RSXY3LkZoLuZYtf8fmVq4D1Hc+uwtOXvjNEh/DhQ=;
+        s=korg; t=1653896907;
+        bh=ONiLe9ux/aTgfs4owj3CLyzVaxyUeQvZH/K0A9iHg58=;
         h=From:To:Cc:Subject:Date:From;
-        b=Wnj2llm7uuWhzgymdtTS14NE591yhQJNEGaC0rLfGdaHBbRp0TJRMbr8MilOfCRRI
-         vVaFyI2zzYblxdLMTQ49MKCLhFRxhPVPfBPjs5l7Wz652Vyz9WQPhXcBpS5QzOjMOH
-         Lp5l8gH5Hhm7MNWDDuxkup04JAK9MhZWVuxvCq3U=
+        b=vXbJtk4al3apeSkvvZyFHUFGnx1rF6GMEWWn9BuYDZLm1cNghViCzwboC04yl48aE
+         mNkFvg+tAiKg2VxvhMEOtMg4R0Kdgfwohwvy5Ghtq9Furf3Kd/ShgQ2IDAIryO5HD1
+         FvpwkaXIfQvnzH04pQ+AQqhH0IldMixCAwlEWkaE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
         torvalds@linux-foundation.org, stable@vger.kernel.org
 Cc:     lwn@lwn.net, jslaby@suse.cz,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Linux 5.10.119
-Date:   Mon, 30 May 2022 09:48:14 +0200
-Message-Id: <165389689496142@kroah.com>
+Subject: Linux 5.15.44
+Date:   Mon, 30 May 2022 09:48:19 +0200
+Message-Id: <165389690033139@kroah.com>
 X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -44,12 +44,12 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I'm announcing the release of the 5.10.119 kernel.
+I'm announcing the release of the 5.15.44 kernel.
 
-All users of the 5.10 kernel series must upgrade.
+All users of the 5.15 kernel series must upgrade.
 
-The updated 5.10.y git tree can be found at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-5.10.y
+The updated 5.15.y git tree can be found at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-5.15.y
 and can be browsed at the normal kernel.org git web browser:
 	https://git.kernel.org/?p=linux/kernel/git/stable/linux-stable.git;a=summary
 
@@ -64,6 +64,10 @@ greg k-h
  MAINTAINERS                                     |    2 
  Makefile                                        |    2 
  arch/alpha/include/asm/timex.h                  |    1 
+ arch/arm/crypto/Makefile                        |    4 
+ arch/arm/crypto/blake2s-core.S                  |    8 
+ arch/arm/crypto/blake2s-glue.c                  |   73 
+ arch/arm/crypto/blake2s-shash.c                 |   75 
  arch/arm/include/asm/timex.h                    |    1 
  arch/ia64/include/asm/timex.h                   |    1 
  arch/m68k/include/asm/timex.h                   |    2 
@@ -76,78 +80,60 @@ greg k-h
  arch/sparc/include/asm/timex_32.h               |    4 
  arch/um/include/asm/timex.h                     |    9 
  arch/x86/crypto/Makefile                        |    4 
- arch/x86/crypto/blake2s-glue.c                  |  166 -
+ arch/x86/crypto/blake2s-glue.c                  |   68 
  arch/x86/crypto/blake2s-shash.c                 |   77 
  arch/x86/include/asm/timex.h                    |    9 
  arch/x86/include/asm/tsc.h                      |    7 
  arch/x86/kernel/cpu/mshyperv.c                  |    2 
- arch/x86/kvm/lapic.c                            |    6 
  arch/x86/kvm/mmu/mmu.c                          |    6 
- arch/x86/kvm/x86.c                              |    2 
  arch/xtensa/include/asm/timex.h                 |    6 
  crypto/Kconfig                                  |    3 
- crypto/blake2s_generic.c                        |  158 -
+ crypto/blake2s_generic.c                        |    4 
  crypto/drbg.c                                   |   17 
- drivers/acpi/sysfs.c                            |   23 
+ drivers/acpi/sysfs.c                            |   25 
  drivers/char/Kconfig                            |    3 
  drivers/char/hw_random/core.c                   |    1 
- drivers/char/random.c                           | 3035 ++++++++----------------
+ drivers/char/random.c                           | 3011 ++++++++----------------
+ drivers/hid/amd-sfh-hid/amd_sfh_client.c        |   11 
+ drivers/hid/amd-sfh-hid/amd_sfh_pcie.c          |    7 
+ drivers/hid/amd-sfh-hid/amd_sfh_pcie.h          |    4 
  drivers/hv/vmbus_drv.c                          |    2 
- drivers/media/test-drivers/vim2m.c              |   22 
  drivers/net/Kconfig                             |    1 
+ drivers/net/ethernet/intel/ice/ice_xsk.c        |    2 
  drivers/net/wireguard/noise.c                   |   45 
- drivers/staging/rtl8723bs/os_dep/ioctl_linux.c  |    6 
- include/crypto/blake2s.h                        |   66 
+ include/crypto/blake2s.h                        |    3 
  include/crypto/chacha.h                         |   15 
  include/crypto/drbg.h                           |    2 
- include/crypto/internal/blake2s.h               |  123 
+ include/crypto/internal/blake2s.h               |   46 
  include/linux/cpuhotplug.h                      |    2 
  include/linux/hw_random.h                       |    2 
  include/linux/mm.h                              |    1 
  include/linux/prandom.h                         |   23 
  include/linux/random.h                          |  100 
- include/linux/security.h                        |    2 
  include/linux/siphash.h                         |   28 
  include/linux/timex.h                           |   10 
- include/net/inet_hashtables.h                   |    2 
- include/net/secure_seq.h                        |    4 
- include/trace/events/random.h                   |  330 --
+ include/trace/events/random.h                   |  247 -
  init/main.c                                     |   13 
  kernel/cpu.c                                    |   11 
- kernel/debug/debug_core.c                       |   24 
- kernel/debug/kdb/kdb_main.c                     |   62 
  kernel/irq/handle.c                             |    2 
  kernel/time/timekeeping.c                       |   15 
  lib/Kconfig.debug                               |    3 
  lib/crypto/Kconfig                              |   23 
  lib/crypto/Makefile                             |    9 
  lib/crypto/blake2s-generic.c                    |    6 
- lib/crypto/blake2s-selftest.c                   |   33 
- lib/crypto/blake2s.c                            |   81 
+ lib/crypto/blake2s-selftest.c                   |   31 
+ lib/crypto/blake2s.c                            |   47 
  lib/random32.c                                  |   16 
  lib/sha1.c                                      |   95 
  lib/siphash.c                                   |   32 
  lib/vsprintf.c                                  |   10 
  mm/util.c                                       |   32 
- net/core/secure_seq.c                           |    4 
- net/ipv4/inet_hashtables.c                      |   28 
- net/ipv6/inet6_hashtables.c                     |    4 
- security/security.c                             |    2 
  sound/pci/ctxfi/ctatc.c                         |    2 
  sound/pci/ctxfi/cthardware.h                    |    3 
- 76 files changed, 1864 insertions(+), 3034 deletions(-)
+ 71 files changed, 1682 insertions(+), 2699 deletions(-)
 
-Andy Shevchenko (1):
-      ACPI: sysfs: Make sparse happy about address space in use
-
-Ard Biesheuvel (1):
-      random: avoid arch_get_random_seed_long() when collecting IRQ randomness
-
-Daniel Thompson (1):
-      lockdown: also lock down previous kgdb use
-
-Denis Efremov (Oracle) (1):
-      staging: rtl8723bs: prevent ->Ssid overflow in rtw_wx_set_scan()
+Basavaraj Natikar (1):
+      HID: amd_sfh: Add support for sensor discovery
 
 Dominik Brodowski (7):
       random: harmonize "crng init done" messages
@@ -161,30 +147,11 @@ Dominik Brodowski (7):
 Edward Matijevic (1):
       ALSA: ctxfi: Add SB046x PCI ID
 
-Eric Biggers (11):
-      random: remove dead code left over from blocking pool
-      crypto: blake2s - define shash_alg structs using macros
-      crypto: x86/blake2s - define shash_alg structs using macros
-      crypto: blake2s - remove unneeded includes
-      crypto: blake2s - move update and final logic to internal/blake2s.h
-      crypto: blake2s - share the "shash" API boilerplate code
-      crypto: blake2s - optimize blake2s initialization
-      crypto: blake2s - add comment for blake2s_state fields
-      crypto: blake2s - adjust include guard naming
-      crypto: blake2s - include <linux/bug.h> instead of <asm/bug.h>
+Eric Biggers (1):
       random: remove use_input_pool parameter from crng_reseed()
 
-Eric Dumazet (1):
-      tcp: change source port randomizarion at connect() time
-
 Greg Kroah-Hartman (1):
-      Linux 5.10.119
-
-Hans Verkuil (1):
-      media: vim2m: initialize the media device earlier
-
-Herbert Xu (1):
-      crypto: lib/blake2s - Move selftest prototype into header file
+      Linux 5.15.44
 
 Jan Varho (1):
       random: do not split fast init input in add_hwgenerator_randomness()
@@ -326,24 +293,18 @@ Jens Axboe (3):
 Lorenzo Pieralisi (1):
       ACPI: sysfs: Fix BERT error region memory mapping
 
+Magnus Karlsson (1):
+      ice: fix crash at allocation failure
+
 Mark Brown (1):
       random: document add_hwgenerator_randomness() with other input functions
 
 Paolo Bonzini (1):
       KVM: x86/mmu: fix NULL pointer dereference on guest INVPCID
 
-Sakari Ailus (1):
-      media: vim2m: Register video device after setting up internals
-
 Schspa Shi (1):
       random: fix typo in comments
 
 Sebastian Andrzej Siewior (1):
       random: remove unused irq_flags argument from add_interrupt_randomness()
-
-Vitaly Kuznetsov (1):
-      KVM: x86: Properly handle APF vs disabled LAPIC situation
-
-Willy Tarreau (1):
-      secure_seq: use the 64 bits of the siphash for port offset calculation
 
