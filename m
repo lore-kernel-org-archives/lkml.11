@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C86F7C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72884C43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:37:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241590AbiE3OgA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:36:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40302 "EHLO
+        id S241211AbiE3Ofd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:35:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241399AbiE3ORe (ORCPT
+        with ESMTP id S241403AbiE3ORe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 30 May 2022 10:17:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFED690CCD;
-        Mon, 30 May 2022 06:46:11 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8AB69C2D4;
+        Mon, 30 May 2022 06:46:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 71235B80D6B;
-        Mon, 30 May 2022 13:46:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A2E5C3411C;
-        Mon, 30 May 2022 13:46:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7977DB80DA8;
+        Mon, 30 May 2022 13:46:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BBE2C3411E;
+        Mon, 30 May 2022 13:46:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918369;
-        bh=B5GNaQpb3YP1aqvByEDzMbFq8eopAP8XA9OqX5EGz9A=;
+        s=k20201202; t=1653918382;
+        bh=5Lmd3+eZdEPNSsCtjnsLeMRcjHWJoPdqLRlFKh33qHw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BqtmBHzN2GXcL63Bakr/cXoudkiC1/NNtfIV7LL7Bxh772A3GvpmGxP3hWlhWYCSU
-         em0uU5w/BHluTPrU/XD3W9Ipb5GgjIfa8AYfHYrXHuM91p8GJm/xPJlCOR1e5xtKQ4
-         pPc2COGCfnyG82IVXc2/mxggxz0nTGPV/tGoDitHgHp0i662chGiutZm2CE8XXn0Oi
-         tfBiThSIW8fmsRbvBgf9b0Qag7+rXNNAtmlhqPKkxxKOka6tF1mVuC0Nne8MuQ+euH
-         ITvStH1+lQbYsJDaSTMehKjyfhRX0Ui1Vb5V94LNwtndL763Ruf8FWb03zz+cVPEyv
-         +ExJ5UiXFhF1A==
+        b=DaBe99U67mbQGJWVyTAWHEndwYiPqe+DlZbkEo3tltsvesg+xPOQXZK4naIOQrQXa
+         B0PrvLdChj1YBOriBT1NL6n4ioowWMadkwBLJMSLLkj6Fb4P8bhVh64YLAZeja5YdU
+         ZV+6E7AWGtirn8jf3U5BIRPRdXFrSaRyQe6VB1AEbSVUdd9w44VeTrDAtn5u45ijBG
+         tkjLO0cyAeOgcN5cj28JznAv3T3etnBNK/uxjhvx2yoSebOs3msnGQWuihcDL5HP+a
+         dXp/4MIZT2hNtwI5cLUclt1aRnV4+DcHap2UL3jt9RGuLRpRx/R/ncGwVvjHVi4y4n
+         6honkFNzeIQ6A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Philipp Zabel <p.zabel@pengutronix.de>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, linmq006@gmail.com,
-        martin.weber@br-automation.com, wsa+renesas@sang-engineering.com,
-        linux-media@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 56/76] media: coda: limit frame interval enumeration to supported encoder frame sizes
-Date:   Mon, 30 May 2022 09:43:46 -0400
-Message-Id: <20220530134406.1934928-56-sashal@kernel.org>
+Cc:     Lin Ma <linma@zju.edu.cn>, Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, oder_chiou@realtek.com,
+        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
+        alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.10 61/76] ASoC: rt5645: Fix errorenous cleanup order
+Date:   Mon, 30 May 2022 09:43:51 -0400
+Message-Id: <20220530134406.1934928-61-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530134406.1934928-1-sashal@kernel.org>
 References: <20220530134406.1934928-1-sashal@kernel.org>
@@ -54,67 +52,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Philipp Zabel <p.zabel@pengutronix.de>
+From: Lin Ma <linma@zju.edu.cn>
 
-[ Upstream commit 67e33dd957880879e785cfea83a3aa24bd5c5577 ]
+[ Upstream commit 2def44d3aec59e38d2701c568d65540783f90f2f ]
 
-Let VIDIOC_ENUM_FRAMEINTERVALS return -EINVAL if userspace queries
-frame intervals for frame sizes unsupported by the encoder. Fixes the
-following v4l2-compliance failure:
+There is a logic error when removing rt5645 device as the function
+rt5645_i2c_remove() first cancel the &rt5645->jack_detect_work and
+delete the &rt5645->btn_check_timer latter. However, since the timer
+handler rt5645_btn_check_callback() will re-queue the jack_detect_work,
+this cleanup order is buggy.
 
-		fail: v4l2-test-formats.cpp(123): found frame intervals for invalid size 47x16
-		fail: v4l2-test-formats.cpp(282): node->codec_mask & STATEFUL_ENCODER
-	test VIDIOC_ENUM_FMT/FRAMESIZES/FRAMEINTERVALS: FAIL
+That is, once the del_timer_sync in rt5645_i2c_remove is concurrently
+run with the rt5645_btn_check_callback, the canceled jack_detect_work
+will be rescheduled again, leading to possible use-after-free.
 
-[hverkuil: drop incorrect 'For decoder devices, return -ENOTTY.' in the commit log]
+This patch fix the issue by placing the del_timer_sync function before
+the cancel_delayed_work_sync.
 
-Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Lin Ma <linma@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220516092035.28283-1-linma@zju.edu.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/coda/coda-common.c | 20 ++++++++++++++------
- 1 file changed, 14 insertions(+), 6 deletions(-)
+ sound/soc/codecs/rt5645.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/media/platform/coda/coda-common.c b/drivers/media/platform/coda/coda-common.c
-index 2333079a83c7..99f6d22e0c3c 100644
---- a/drivers/media/platform/coda/coda-common.c
-+++ b/drivers/media/platform/coda/coda-common.c
-@@ -1318,7 +1318,8 @@ static int coda_enum_frameintervals(struct file *file, void *fh,
- 				    struct v4l2_frmivalenum *f)
- {
- 	struct coda_ctx *ctx = fh_to_ctx(fh);
--	int i;
-+	struct coda_q_data *q_data;
-+	const struct coda_codec *codec;
+diff --git a/sound/soc/codecs/rt5645.c b/sound/soc/codecs/rt5645.c
+index 420003d062c7..d1533e95a74f 100644
+--- a/sound/soc/codecs/rt5645.c
++++ b/sound/soc/codecs/rt5645.c
+@@ -4095,9 +4095,14 @@ static int rt5645_i2c_remove(struct i2c_client *i2c)
+ 	if (i2c->irq)
+ 		free_irq(i2c->irq, rt5645);
  
- 	if (f->index)
- 		return -EINVAL;
-@@ -1327,12 +1328,19 @@ static int coda_enum_frameintervals(struct file *file, void *fh,
- 	if (!ctx->vdoa && f->pixel_format == V4L2_PIX_FMT_YUYV)
- 		return -EINVAL;
- 
--	for (i = 0; i < CODA_MAX_FORMATS; i++) {
--		if (f->pixel_format == ctx->cvd->src_formats[i] ||
--		    f->pixel_format == ctx->cvd->dst_formats[i])
--			break;
-+	if (coda_format_normalize_yuv(f->pixel_format) == V4L2_PIX_FMT_YUV420) {
-+		q_data = get_q_data(ctx, V4L2_BUF_TYPE_VIDEO_CAPTURE);
-+		codec = coda_find_codec(ctx->dev, f->pixel_format,
-+					q_data->fourcc);
-+	} else {
-+		codec = coda_find_codec(ctx->dev, V4L2_PIX_FMT_YUV420,
-+					f->pixel_format);
- 	}
--	if (i == CODA_MAX_FORMATS)
-+	if (!codec)
-+		return -EINVAL;
++	/*
++	 * Since the rt5645_btn_check_callback() can queue jack_detect_work,
++	 * the timer need to be delted first
++	 */
++	del_timer_sync(&rt5645->btn_check_timer);
 +
-+	if (f->width < MIN_W || f->width > codec->max_w ||
-+	    f->height < MIN_H || f->height > codec->max_h)
- 		return -EINVAL;
+ 	cancel_delayed_work_sync(&rt5645->jack_detect_work);
+ 	cancel_delayed_work_sync(&rt5645->rcclock_work);
+-	del_timer_sync(&rt5645->btn_check_timer);
  
- 	f->type = V4L2_FRMIVAL_TYPE_CONTINUOUS;
+ 	regulator_bulk_disable(ARRAY_SIZE(rt5645->supplies), rt5645->supplies);
+ 
 -- 
 2.35.1
 
