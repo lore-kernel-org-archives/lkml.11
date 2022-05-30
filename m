@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1D24C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:18:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0AC6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:18:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239832AbiE3OPL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:15:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54688 "EHLO
+        id S238874AbiE3OSs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:18:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239645AbiE3OJF (ORCPT
+        with ESMTP id S240587AbiE3OMX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:09:05 -0400
+        Mon, 30 May 2022 10:12:23 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5165CD412C;
-        Mon, 30 May 2022 06:42:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEE35E52AE;
+        Mon, 30 May 2022 06:43:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1127960FCE;
-        Mon, 30 May 2022 13:42:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B093C341C7;
-        Mon, 30 May 2022 13:42:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CD4E560F47;
+        Mon, 30 May 2022 13:42:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C76CBC385B8;
+        Mon, 30 May 2022 13:42:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918151;
-        bh=oaBZL2hyxhd+UZS2DfdlG+V550ec/cUrVqckFsJQhfk=;
+        s=k20201202; t=1653918166;
+        bh=w5dg/U5vb/hD2+0q3mHAmMkfKnRvK4Av+DJhCi5973c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LxG/UiuPB4HmXiu8d65JcPcgoC9d045mRkHNYY+JByW8wO+YzRxJgJBoIlC5X6tuT
-         mkzoOoDBL/uC1WlAwrgzEspi5HcXEmJ7Tc3pTal5sTGzcb9vmdN2Iz4SLhoKX8n+Q7
-         7pCCs8G+O+ovcvGFh2TXqolyCddAAZBKmKPH2tOPbD9kE2FpzZ6mtVdPH7Dm5sVFwH
-         sikIYOcZkxM/zuPbpECp6sv0gX93GHs5jpjYhjl7uHV3f+OcAVTV6Suvu+miyVfxuF
-         mZ7IfLsb4Fpifcc27QmkSm/iYtHRFC8vZkzjQ7QfJnkstxzTUZx0ygy4dn/IIXGVTi
-         snGxgOwUIGMlg==
+        b=PKzxA7ZVQhX1OAQdA2jzgqPD7FSX3ZiaO4oNGrH2V66mUdTClPn0JnG/yYwJtUQ0A
+         PtGYX6/h//OoMNHAtXAjlj81mceR4lNrvee2NjM5GL7yUpc96MAzphv5Iv7Zbde4C4
+         3xZrGlE65lU2QR25QsFFfbZR2s33s2AftB29s0yvVBrzR2jmjqQx03OkVhK6iKhaib
+         A+323eiLdx9O2fDwlAuiHM4SdpQ2IcH8vj/e1sOK5IZl9EkYX+1okoKg0ILps/0IwR
+         3cxr+Mc3iwIhLAKWrXZF0M9/legZuIfSrPlN9A6O0v5ZuWIVdKTAT2i17ZbBBc7gLh
+         DojGTa+fYngAQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 079/109] media: ccs-core.c: fix failure to call clk_disable_unprepare
-Date:   Mon, 30 May 2022 09:37:55 -0400
-Message-Id: <20220530133825.1933431-79-sashal@kernel.org>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Stafford Horne <shorne@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, rostedt@goodmis.org,
+        mhiramat@kernel.org, vbabka@suse.cz, ahalaney@redhat.com,
+        mark-pk.tsai@mediatek.com, peterz@infradead.org
+Subject: [PATCH AUTOSEL 5.15 083/109] init: call time_init() before rand_initialize()
+Date:   Mon, 30 May 2022 09:37:59 -0400
+Message-Id: <20220530133825.1933431-83-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
 References: <20220530133825.1933431-1-sashal@kernel.org>
@@ -52,40 +54,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-[ Upstream commit eca89cf60b040ee2cae693ea72a0364284f3084c ]
+[ Upstream commit fe222a6ca2d53c38433cba5d3be62a39099e708e ]
 
-Fixes smatch warning:
+Currently time_init() is called after rand_initialize(), but
+rand_initialize() makes use of the timer on various platforms, and
+sometimes this timer needs to be initialized by time_init() first. In
+order for random_get_entropy() to not return zero during early boot when
+it's potentially used as an entropy source, reverse the order of these
+two calls. The block doing random initialization was right before
+time_init() before, so changing the order shouldn't have any complicated
+effects.
 
-drivers/media/i2c/ccs/ccs-core.c:1676 ccs_power_on() warn: 'sensor->ext_clk' from clk_prepare_enable() not released on lines: 1606.
-
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Acked-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Reviewed-by: Stafford Horne <shorne@gmail.com>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/i2c/ccs/ccs-core.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ init/main.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/media/i2c/ccs/ccs-core.c b/drivers/media/i2c/ccs/ccs-core.c
-index 5363f3bcafe3..67bb770ed63f 100644
---- a/drivers/media/i2c/ccs/ccs-core.c
-+++ b/drivers/media/i2c/ccs/ccs-core.c
-@@ -1603,8 +1603,11 @@ static int ccs_power_on(struct device *dev)
- 			usleep_range(1000, 2000);
- 		} while (--retry);
+diff --git a/init/main.c b/init/main.c
+index 06b98350ebd2..2b9ba7ea42ec 100644
+--- a/init/main.c
++++ b/init/main.c
+@@ -1041,11 +1041,13 @@ asmlinkage __visible void __init __no_sanitize_address start_kernel(void)
+ 	softirq_init();
+ 	timekeeping_init();
+ 	kfence_init();
++	time_init();
  
--		if (!reset)
--			return -EIO;
-+		if (!reset) {
-+			dev_err(dev, "software reset failed\n");
-+			rval = -EIO;
-+			goto out_cci_addr_fail;
-+		}
- 	}
+ 	/*
+ 	 * For best initial stack canary entropy, prepare it after:
+ 	 * - setup_arch() for any UEFI RNG entropy and boot cmdline access
+ 	 * - timekeeping_init() for ktime entropy used in rand_initialize()
++	 * - time_init() for making random_get_entropy() work on some platforms
+ 	 * - rand_initialize() to get any arch-specific entropy like RDRAND
+ 	 * - add_latent_entropy() to get any latent entropy
+ 	 * - adding command line entropy
+@@ -1055,7 +1057,6 @@ asmlinkage __visible void __init __no_sanitize_address start_kernel(void)
+ 	add_device_randomness(command_line, strlen(command_line));
+ 	boot_init_stack_canary();
  
- 	if (sensor->hwcfg.i2c_addr_alt) {
+-	time_init();
+ 	perf_event_init();
+ 	profile_init();
+ 	call_function_init();
 -- 
 2.35.1
 
