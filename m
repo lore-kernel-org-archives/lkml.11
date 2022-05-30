@@ -2,51 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8CA5C4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:06:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E901C3526F
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:06:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239605AbiE3OGI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:06:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57938 "EHLO
+        id S240108AbiE3OGb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:06:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238444AbiE3N5q (ORCPT
+        with ESMTP id S239048AbiE3OAM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:57:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0688980AA;
-        Mon, 30 May 2022 06:38:56 -0700 (PDT)
+        Mon, 30 May 2022 10:00:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A425BDA0E;
+        Mon, 30 May 2022 06:39:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 51AEF60F1F;
-        Mon, 30 May 2022 13:38:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07BBAC385B8;
-        Mon, 30 May 2022 13:38:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 83C7660F3B;
+        Mon, 30 May 2022 13:39:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1D1EC385B8;
+        Mon, 30 May 2022 13:39:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917935;
-        bh=kXk5idwqqGXJnobfgxdJypUu7MCif1hdLyOtzzSVYqA=;
+        s=k20201202; t=1653917957;
+        bh=+e7jOA+nZdM0ztWhPDDfDZIxRWdZM8KO7MGg41thVdg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L42ywWTt84r0E1uJDxGJxLNEZUV78uNVi/8+JAxNs3Q3d0p5ObH8i12a8S+r57fuC
-         vOvDOhhnK/Wp6Uc0vB7jaMdZ3R4Q2KUzXjeJCHTmRFQ6wVEMFJ8RVU3B6FyIaNnIoZ
-         uYh5oJPoCU4MihwyJV59gkcZXNA692dk14YY2qSQCBFB76D7L2fXeQcAoGl2aDfH7w
-         I9jdpAetz8i9cjrm5z5pKFec7Ydbfk491R48jgNbuw2uEOvAf/fjh//5JjOijrBQyo
-         3pxukKn9twCjqZ+nVe6jXkrhmBfee7t8Sf5bPc/RSlQl7zGC72ALVNjOHN+DYQVfPj
-         gljsfecFC3XBw==
+        b=pOQW2RnYARIlisr0UCiosBKDUvkNUMrfB9JkImCXFCFxLkDYERYrebUSk0E263SAE
+         GyWv1qUIFlKBNtY2DUyFkzGbJUXhV3eh6Esz5BJWgzrczNUcyi8c3xkewMGqHE5gx4
+         qe7OzfXnRem3eV7pN0RN5T1qWLtz0vemm1nH7BY/qsK6bCqCZLHYFBjkB81vvM0rm4
+         7pkUyoqUaI2FXHGyP+mz2SNCwN1dblQ9OItIrDnMvIfzi5cHp4lYr0HQCyXkwjqc9g
+         /3Ww0JNGSLWBOcI2cXe6vXPKcMgvOZbNx6iTuxGkp5graHQI2rMbb36/tLqF+1hNW3
+         6as95bHPCNOvQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>, Du Cheng <ducheng2@gmail.com>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        Claudio Suarez <cssk@net-c.es>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Sasha Levin <sashal@kernel.org>, deller@gmx.de,
-        javierm@redhat.com, linux-fbdev@vger.kernel.org,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.15 011/109] fbcon: Consistently protect deferred_takeover with console_lock()
-Date:   Mon, 30 May 2022 09:36:47 -0400
-Message-Id: <20220530133825.1933431-11-sashal@kernel.org>
+Cc:     Saaem Rizvi <syerizvi@amd.com>, Eric Yang <Eric.Yang2@amd.com>,
+        Pavle Kotarac <Pavle.Kotarac@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, harry.wentland@amd.com,
+        sunpeng.li@amd.com, Rodrigo.Siqueira@amd.com,
+        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
+        daniel@ffwll.ch, nicholas.kazlauskas@amd.com,
+        michael.strauss@amd.com, Jerry.Zuo@amd.com, nikola.cornij@amd.com,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.15 016/109] drm/amd/display: Disabling Z10 on DCN31
+Date:   Mon, 30 May 2022 09:36:52 -0400
+Message-Id: <20220530133825.1933431-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
 References: <20220530133825.1933431-1-sashal@kernel.org>
@@ -58,52 +57,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Vetter <daniel.vetter@ffwll.ch>
+From: Saaem Rizvi <syerizvi@amd.com>
 
-[ Upstream commit 43553559121ca90965b572cf8a1d6d0fd618b449 ]
+[ Upstream commit 5d5af34072c8b11f60960c3bea57ff9de5877791 ]
 
-This shouldn't be a problem in practice since until we've actually
-taken over the console there's nothing we've registered with the
-console/vt subsystem, so the exit/unbind path that check this can't
-do the wrong thing. But it's confusing, so fix it by moving it a tad
-later.
+[WHY]
+Z10 is should not be enabled by default on DCN31.
 
-Acked-by: Sam Ravnborg <sam@ravnborg.org>
-Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: Du Cheng <ducheng2@gmail.com>
-Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Cc: Claudio Suarez <cssk@net-c.es>
-Cc: Thomas Zimmermann <tzimmermann@suse.de>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220405210335.3434130-14-daniel.vetter@ffwll.ch
+[HOW]
+Using DC debug flags to disable Z10 by default on DCN31.
+
+Reviewed-by: Eric Yang <Eric.Yang2@amd.com>
+Acked-by: Pavle Kotarac <Pavle.Kotarac@amd.com>
+Signed-off-by: Saaem Rizvi <syerizvi@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/core/fbcon.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
-index a53c1f6906f0..a25b63b56223 100644
---- a/drivers/video/fbdev/core/fbcon.c
-+++ b/drivers/video/fbdev/core/fbcon.c
-@@ -3265,6 +3265,9 @@ static void fbcon_register_existing_fbs(struct work_struct *work)
- 
- 	console_lock();
- 
-+	deferred_takeover = false;
-+	logo_shown = FBCON_LOGO_DONTSHOW;
-+
- 	for_each_registered_fb(i)
- 		fbcon_fb_registered(registered_fb[i]);
- 
-@@ -3282,8 +3285,6 @@ static int fbcon_output_notifier(struct notifier_block *nb,
- 	pr_info("fbcon: Taking over console\n");
- 
- 	dummycon_unregister_output_notifier(&fbcon_output_nb);
--	deferred_takeover = false;
--	logo_shown = FBCON_LOGO_DONTSHOW;
- 
- 	/* We may get called in atomic context */
- 	schedule_work(&fbcon_deferred_takeover_work);
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c
+index a5ef9d5e7685..310ced5058c4 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c
+@@ -957,6 +957,7 @@ static const struct dc_debug_options debug_defaults_drv = {
+ 			.optc = false,
+ 		}
+ 	},
++	.disable_z10 = true,
+ 	.optimize_edp_link_rate = true,
+ 	.enable_sw_cntl_psr = true,
+ };
 -- 
 2.35.1
 
