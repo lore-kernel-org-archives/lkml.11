@@ -2,56 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 701EDC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B20AFC43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:47:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238121AbiE3Nob (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:44:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56372 "EHLO
+        id S238259AbiE3NpK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:45:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237415AbiE3Ng6 (ORCPT
+        with ESMTP id S237654AbiE3Ngy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:36:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A9F725C46;
-        Mon, 30 May 2022 06:30:52 -0700 (PDT)
+        Mon, 30 May 2022 09:36:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0198B6CF42;
+        Mon, 30 May 2022 06:30:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D95AE60F17;
-        Mon, 30 May 2022 13:30:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77381C385B8;
-        Mon, 30 May 2022 13:30:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9231CB80DAF;
+        Mon, 30 May 2022 13:30:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FE8CC3411E;
+        Mon, 30 May 2022 13:30:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917451;
-        bh=YUT/g2jwaEbyBeENevqDwxAfPQZzcjDa+B0CACpQ21Q=;
+        s=k20201202; t=1653917435;
+        bh=Z9yF7wXK7FyIDA4sdjwhkOzBIa9BHIXOUCAnORgpRiU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QMJeH91/jMb1UKyxHCItMlohChQVqr3BzJZez6U3mcyNQeGKh2ooapKhZVW17r1vg
-         uJaRqXLzZXMCzCT4ET/7i5UIGAx9toeDLW35GnBeA5AnkRmNRo4xJ3j17hpbpQGgsL
-         UuS9r9M3hn09Wb+o5pPFWXSaTPI5wyCN84cV4lY6UufiNFd4jDeeuFkq5b7vD+73sC
-         v2I+yXf2cbj2mlEsc9JRjC8lmE847/+gUPjtSWiUcgrkc+zBt39DVIWNp1iGnyhUII
-         xlXxzJy3Sg+9uMMnqEVD2B3Q36405r0hlkD9cyRsFGnfGynU09Y+DmwEtpAQrHuqOt
-         NVuLHlcA/VuXA==
+        b=fM9Z23YSlFfAHqoGTwa12GDaQjRibhcrbyc3iZanICNuzCj8cokrUmPbRj0GvCK8p
+         LIDZDfyQNJhPpYNdmp/iHbRHJE2DQOgr3B6e9icLBz+hJbPOyAoPgKBKeYVdT+Cp28
+         FT1cglNbXuZJFnPQxcMKVzcV5P//KBbfL6IlB6X5kvkXJjh3Gc1F7oeLHnCuwp9mvI
+         fPCHWAR96xTLtvR5M0t8XGQvoUnU6SZps04zGeBKp6OrV7orSx4DDT58kiSfp/IDtQ
+         Omb2XlcwQIS1O/DxeYhAcMM8i9hNHpQpJFroWAbXOV4LlNDKvy35J2U5a7pxxlR3EL
+         7pNdM7l3kmcUQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        kernel test robot <yujie.liu@intel.com>,
-        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, srinivas.kandagatla@linaro.org,
-        ckeepax@opensource.cirrus.com, tanureal@opensource.cirrus.com,
-        james.schulman@cirrus.com, cy_huang@richtek.com,
-        pbrobinson@gmail.com, hdegoede@redhat.com,
-        alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.18 141/159] ASoC: rt1015p: remove dependency on GPIOLIB
-Date:   Mon, 30 May 2022 09:24:06 -0400
-Message-Id: <20220530132425.1929512-141-sashal@kernel.org>
+Cc:     Fabio Estevam <festevam@denx.de>, Andrew Lunn <andrew@lunn.ch>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, hkallweit1@gmail.com,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 134/159] net: phy: micrel: Allow probing without .driver_data
+Date:   Mon, 30 May 2022 09:23:59 -0400
+Message-Id: <20220530132425.1929512-134-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -59,54 +53,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+From: Fabio Estevam <festevam@denx.de>
 
-[ Upstream commit b390c25c6757b9d56cecdfbf6d55f15fc89a6386 ]
+[ Upstream commit f2ef6f7539c68c6bd6c32323d8845ee102b7c450 ]
 
-commit dcc2c012c7691 ("ASoC: Fix gpiolib dependencies") removed a
-series of unnecessary dependencies on GPIOLIB when the gpio was
-optional.
+Currently, if the .probe element is present in the phy_driver structure
+and the .driver_data is not, a NULL pointer dereference happens.
 
-A similar simplification seems valid for rt1015p, so remove the
-dependency as well. This will avoid the following warning
+Allow passing .probe without .driver_data by inserting NULL checks
+for priv->type.
 
-  WARNING: unmet direct dependencies detected for SND_SOC_RT1015P
-
-     Depends on [n]: SOUND [=y] && !UML && SND [=y] && SND_SOC [=y] &&
-     GPIOLIB [=n]
-
-     Selected by [y]:
-
-     - SND_SOC_INTEL_SOF_RT5682_MACH [=y] && SOUND [=y] && !UML && SND
-       [=y] && SND_SOC [=y] && SND_SOC_INTEL_MACH [=y] &&
-       (SND_SOC_SOF_HDA_LINK [=y] || SND_SOC_SOF_BAYTRAIL [=n]) && I2C
-       [=y] && ACPI [=y] && (SND_HDA_CODEC_HDMI [=y] &&
-       SND_SOC_SOF_HDA_AUDIO_CODEC [=y] && (MFD_INTEL_LPSS [=y] ||
-       COMPILE_TEST [=y]) || SND_SOC_SOF_BAYTRAIL [=n] &&
-       (X86_INTEL_LPSS [=n] || COMPILE_TEST [=y]))
-
-Reported-by: kernel test robot <yujie.liu@intel.com>
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Link: https://lore.kernel.org/r/20220517172647.468244-3-pierre-louis.bossart@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Fabio Estevam <festevam@denx.de>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Link: https://lore.kernel.org/r/20220513114613.762810-1-festevam@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/Kconfig | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/net/phy/micrel.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/sound/soc/codecs/Kconfig b/sound/soc/codecs/Kconfig
-index 156f2519459d..3dea20b2c405 100644
---- a/sound/soc/codecs/Kconfig
-+++ b/sound/soc/codecs/Kconfig
-@@ -1212,7 +1212,6 @@ config SND_SOC_RT1015
+diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+index cd9aa353b653..48c7d715a9e3 100644
+--- a/drivers/net/phy/micrel.c
++++ b/drivers/net/phy/micrel.c
+@@ -497,7 +497,7 @@ static int kszphy_config_reset(struct phy_device *phydev)
+ 		}
+ 	}
  
- config SND_SOC_RT1015P
- 	tristate
--	depends on GPIOLIB
+-	if (priv->led_mode >= 0)
++	if (priv->type && priv->led_mode >= 0)
+ 		kszphy_setup_led(phydev, priv->type->led_mode_reg, priv->led_mode);
  
- config SND_SOC_RT1019
- 	tristate
+ 	return 0;
+@@ -513,10 +513,10 @@ static int kszphy_config_init(struct phy_device *phydev)
+ 
+ 	type = priv->type;
+ 
+-	if (type->has_broadcast_disable)
++	if (type && type->has_broadcast_disable)
+ 		kszphy_broadcast_disable(phydev);
+ 
+-	if (type->has_nand_tree_disable)
++	if (type && type->has_nand_tree_disable)
+ 		kszphy_nand_tree_disable(phydev);
+ 
+ 	return kszphy_config_reset(phydev);
+@@ -1514,7 +1514,7 @@ static int kszphy_probe(struct phy_device *phydev)
+ 
+ 	priv->type = type;
+ 
+-	if (type->led_mode_reg) {
++	if (type && type->led_mode_reg) {
+ 		ret = of_property_read_u32(np, "micrel,led-mode",
+ 				&priv->led_mode);
+ 		if (ret)
+@@ -1535,7 +1535,8 @@ static int kszphy_probe(struct phy_device *phydev)
+ 		unsigned long rate = clk_get_rate(clk);
+ 		bool rmii_ref_clk_sel_25_mhz;
+ 
+-		priv->rmii_ref_clk_sel = type->has_rmii_ref_clk_sel;
++		if (type)
++			priv->rmii_ref_clk_sel = type->has_rmii_ref_clk_sel;
+ 		rmii_ref_clk_sel_25_mhz = of_property_read_bool(np,
+ 				"micrel,rmii-reference-clock-select-25-mhz");
+ 
 -- 
 2.35.1
 
