@@ -2,162 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BA6CC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 07:42:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 199BAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 07:42:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233703AbiE3HmV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 03:42:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50832 "EHLO
+        id S233713AbiE3HmZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 03:42:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232453AbiE3HmT (ORCPT
+        with ESMTP id S233693AbiE3HmU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 03:42:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 896C118B3E;
-        Mon, 30 May 2022 00:42:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3A7D1B80C0A;
-        Mon, 30 May 2022 07:42:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8279FC385B8;
-        Mon, 30 May 2022 07:42:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653896535;
-        bh=+TAeonrN9Usmgvcy5y9tduDfWQ1l4vjy0PzYQpsTPuw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=hhV+TSxke5PFpoowmalTT79tl+muOCGNJ/hr25nQ7IfLrbyLNsEo5qz74bmy+HRRr
-         Teiywatp1DjR5ydAzNRNqjpBVDvoKE8iGDK9X1M1Mws5IEo2b32TSG2QUq2x30Jr8B
-         1qFk1mJ4oYJd/nmlF/8plTFeYZyWBy9/lnAdCdls=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
-        torvalds@linux-foundation.org, stable@vger.kernel.org
-Cc:     lwn@lwn.net, jslaby@suse.cz,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Linux 5.18.1
-Date:   Mon, 30 May 2022 09:42:11 +0200
-Message-Id: <1653896512197141@kroah.com>
+        Mon, 30 May 2022 03:42:20 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72C15186D7
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 00:42:19 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id n28so3556580edb.9
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 00:42:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=hfKG4YWK0/wF8JKckFHhogrN1Uspikw4VVSzOBOiZQs=;
+        b=nPGSDOs/5FdLND1ypnker0BsT+k7E7bv6TdT4ZdNBPkH7MsnjruPykKv0SZXIF/jNv
+         kx6YmAJDmpO4Nh8wbwsc1jKjSqisZYjKdSX3bL1TBqct6ziFgzEP1NfGPNcRtNKl5Lts
+         xcLeui3Jl2Iq+mLKp+WbGt2Y6Iriz/NbdrJrANZzv4fX41uAnP0hvZadOrgZSJBNt2WN
+         qqC3dmAy4vuC24MQDq5hZ+SyS9d9enWpyVX1iQkd31v4QaBTXGrz9y8x0hbrT8O9RwQG
+         yxC3uj+ytcd1VVQBVVlAmL81HnYbjEI/qg4Gng4MchGjaxHOhkXi6312xBJGWoRGGbHN
+         GYSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=hfKG4YWK0/wF8JKckFHhogrN1Uspikw4VVSzOBOiZQs=;
+        b=nhS2tKDb9PGOb5KncFYfSHEgtW83We2kzxO+MRCzyaod9H0V824kiqAWdAnEB6FmdL
+         k9ALun97FsZ6mw00xH6fntjuqZsVY2HjCY2FrBFPp+pFczTbsPwt7PmBOmG8G35Tgkbg
+         OvzwIx9Q54eXR8P3tcf41E0Kt7nc6zG0sLmZ1322JCPWdkynnXSj9O9C5KE2pln4QZpQ
+         f1z3bJK8DHHJYVtkxb/rOkpPLubPDYio6rhGn6ZD1niCQgvToZ9gr7qtDssSVC5DKjTy
+         5ZnAvoXc32MF85BuboLpBsvnaWgZhUcUyb1NRcV8Ut8WK82a62ri3+sPHOAn/m7AVevR
+         KqVw==
+X-Gm-Message-State: AOAM531BfKGfkf94yvaSFKCVlUuyg5+F+fd0L/WJOrqEM4cJYS/GLtNZ
+        MEZsZSUusW5wumM7sIScl4c=
+X-Google-Smtp-Source: ABdhPJwqovQExkbkxPWrSxPyXA9KL9bw91tu3ooAFG/n8Qxt/g9ubvu7yewtRPUTtwTrPfTjoLX2mQ==
+X-Received: by 2002:aa7:dc09:0:b0:42a:aadd:8e71 with SMTP id b9-20020aa7dc09000000b0042aaadd8e71mr57204773edu.41.1653896537958;
+        Mon, 30 May 2022 00:42:17 -0700 (PDT)
+Received: from marios-pc.home.mlevogiannis.gr (194.219.107.43.dsl.dyn.forthnet.gr. [194.219.107.43])
+        by smtp.gmail.com with ESMTPSA id z1-20020a1709060ac100b006f3ef214de1sm3709693ejf.71.2022.05.30.00.42.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 May 2022 00:42:17 -0700 (PDT)
+From:   Marios Levogiannis <marios.levogiannis@gmail.com>
+To:     Takashi Iwai <tiwai@suse.com>
+Cc:     Jaroslav Kysela <perex@perex.cz>, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org,
+        Marios Levogiannis <marios.levogiannis@gmail.com>
+Subject: [PATCH] ALSA: hda/realtek - Fix microphone noise on ASUS TUF B550M-PLUS
+Date:   Mon, 30 May 2022 10:41:31 +0300
+Message-Id: <20220530074131.12258-1-marios.levogiannis@gmail.com>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <87r14by1xi.wl-tiwai@suse.de>
+References: <87r14by1xi.wl-tiwai@suse.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I'm announcing the release of the 5.18.1 kernel.
+Set microphone pins 0x18 (rear) and 0x19 (front) to VREF_50 to fix the
+microphone noise on ASUS TUF B550M-PLUS which uses the ALCS1200A codec.
+The initial value was VREF_80.
 
-All users of the 5.18 kernel series must upgrade.
+The same issue is also present on Windows using both the default Windows
+driver and all tested Realtek drivers before version 6.0.9049.1. Comparing
+Realtek driver 6.0.9049.1 (the first one without the microphone noise) to
+Realtek driver 6.0.9047.1 (the last one with the microphone noise)
+revealed that the fix is the result of setting pins 0x18 and 0x19 to
+VREF_50.
 
-The updated 5.18.y git tree can be found at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-5.18.y
-and can be browsed at the normal kernel.org git web browser:
-	https://git.kernel.org/?p=linux/kernel/git/stable/linux-stable.git;a=summary
+This fix may also work for other boards that have been reported to have
+the same microphone issue and use the ALC1150 and ALCS1200A codecs, since
+these codecs are similar and the fix in the Realtek driver on Windows is
+common for both. However, it is currently enabled only for ASUS TUF
+B550M-PLUS as this is the only board that could be tested.
 
-thanks,
+Signed-off-by: Marios Levogiannis <marios.levogiannis@gmail.com>
+---
+ sound/pci/hda/patch_realtek.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-greg k-h
-
-------------
-
- Documentation/admin-guide/sysctl/kernel.rst |    8 
- Makefile                                    |    2 
- arch/alpha/include/asm/timex.h              |    1 
- arch/arm/include/asm/timex.h                |    1 
- arch/ia64/include/asm/timex.h               |    1 
- arch/m68k/include/asm/timex.h               |    2 
- arch/mips/include/asm/timex.h               |   17 
- arch/nios2/include/asm/timex.h              |    3 
- arch/parisc/include/asm/timex.h             |    3 
- arch/powerpc/include/asm/timex.h            |    1 
- arch/riscv/include/asm/timex.h              |    2 
- arch/s390/include/asm/timex.h               |    1 
- arch/sparc/include/asm/timex_32.h           |    4 
- arch/um/include/asm/timex.h                 |    9 
- arch/x86/include/asm/timex.h                |    9 
- arch/x86/include/asm/tsc.h                  |    7 
- arch/xtensa/include/asm/timex.h             |    6 
- drivers/acpi/sysfs.c                        |   25 
- drivers/char/random.c                       | 1213 +++++++++++-----------------
- drivers/hid/amd-sfh-hid/amd_sfh_client.c    |   11 
- drivers/hid/amd-sfh-hid/amd_sfh_pcie.c      |    7 
- drivers/hid/amd-sfh-hid/amd_sfh_pcie.h      |    4 
- include/linux/mm.h                          |    1 
- include/linux/prandom.h                     |   23 
- include/linux/random.h                      |   92 --
- include/linux/security.h                    |    2 
- include/linux/siphash.h                     |   28 
- include/linux/timex.h                       |    8 
- init/main.c                                 |   13 
- kernel/debug/debug_core.c                   |   24 
- kernel/debug/kdb/kdb_main.c                 |   62 +
- kernel/time/timekeeping.c                   |   15 
- lib/Kconfig.debug                           |    3 
- lib/siphash.c                               |   32 
- mm/util.c                                   |   32 
- security/security.c                         |    2 
- sound/pci/ctxfi/ctatc.c                     |    2 
- sound/pci/ctxfi/cthardware.h                |    3 
- 38 files changed, 820 insertions(+), 859 deletions(-)
-
-Basavaraj Natikar (1):
-      HID: amd_sfh: Add support for sensor discovery
-
-Daniel Thompson (1):
-      lockdown: also lock down previous kgdb use
-
-Edward Matijevic (1):
-      ALSA: ctxfi: Add SB046x PCI ID
-
-Greg Kroah-Hartman (1):
-      Linux 5.18.1
-
-Jason A. Donenfeld (40):
-      random: fix sysctl documentation nits
-      init: call time_init() before rand_initialize()
-      ia64: define get_cycles macro for arch-override
-      s390: define get_cycles macro for arch-override
-      parisc: define get_cycles macro for arch-override
-      alpha: define get_cycles macro for arch-override
-      powerpc: define get_cycles macro for arch-override
-      timekeeping: Add raw clock fallback for random_get_entropy()
-      m68k: use fallback for random_get_entropy() instead of zero
-      riscv: use fallback for random_get_entropy() instead of zero
-      mips: use fallback for random_get_entropy() instead of just c0 random
-      arm: use fallback for random_get_entropy() instead of zero
-      nios2: use fallback for random_get_entropy() instead of zero
-      x86/tsc: Use fallback for random_get_entropy() instead of zero
-      um: use fallback for random_get_entropy() instead of zero
-      sparc: use fallback for random_get_entropy() instead of zero
-      xtensa: use fallback for random_get_entropy() instead of zero
-      random: insist on random_get_entropy() existing in order to simplify
-      random: do not use batches when !crng_ready()
-      random: use first 128 bits of input as fast init
-      random: do not pretend to handle premature next security model
-      random: order timer entropy functions below interrupt functions
-      random: do not use input pool from hard IRQs
-      random: help compiler out with fast_mix() by using simpler arguments
-      siphash: use one source of truth for siphash permutations
-      random: use symbolic constants for crng_init states
-      random: avoid initializing twice in credit race
-      random: move initialization out of reseeding hot path
-      random: remove ratelimiting for in-kernel unseeded randomness
-      random: use proper jiffies comparison macro
-      random: handle latent entropy and command line from random_init()
-      random: credit architectural init the exact amount
-      random: use static branch for crng_ready()
-      random: remove extern from functions in header
-      random: use proper return types on get_random_{int,long}_wait()
-      random: make consistent use of buf and len
-      random: move initialization functions out of hot pages
-      random: move randomize_page() into mm where it belongs
-      random: unify batched entropy implementations
-      random: check for signals after page of pool writes
-
-Jens Axboe (3):
-      random: convert to using fops->read_iter()
-      random: convert to using fops->write_iter()
-      random: wire up fops->splice_{read,write}_iter()
-
-Lorenzo Pieralisi (1):
-      ACPI: sysfs: Fix BERT error region memory mapping
+diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
+index 89d610afa..f3ad454b3 100644
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -1981,6 +1981,7 @@ enum {
+ 	ALC1220_FIXUP_CLEVO_PB51ED_PINS,
+ 	ALC887_FIXUP_ASUS_AUDIO,
+ 	ALC887_FIXUP_ASUS_HMIC,
++	ALCS1200A_FIXUP_MIC_VREF,
+ };
+ 
+ static void alc889_fixup_coef(struct hda_codec *codec,
+@@ -2526,6 +2527,14 @@ static const struct hda_fixup alc882_fixups[] = {
+ 		.chained = true,
+ 		.chain_id = ALC887_FIXUP_ASUS_AUDIO,
+ 	},
++	[ALCS1200A_FIXUP_MIC_VREF] = {
++		.type = HDA_FIXUP_PINCTLS,
++		.v.pins = (const struct hda_pintbl[]) {
++			{ 0x18, PIN_VREF50 }, /* rear mic */
++			{ 0x19, PIN_VREF50 }, /* front mic */
++			{}
++		}
++	},
+ };
+ 
+ static const struct snd_pci_quirk alc882_fixup_tbl[] = {
+@@ -2563,6 +2572,7 @@ static const struct snd_pci_quirk alc882_fixup_tbl[] = {
+ 	SND_PCI_QUIRK(0x1043, 0x835f, "Asus Eee 1601", ALC888_FIXUP_EEE1601),
+ 	SND_PCI_QUIRK(0x1043, 0x84bc, "ASUS ET2700", ALC887_FIXUP_ASUS_BASS),
+ 	SND_PCI_QUIRK(0x1043, 0x8691, "ASUS ROG Ranger VIII", ALC882_FIXUP_GPIO3),
++	SND_PCI_QUIRK(0x1043, 0x8797, "ASUS TUF B550M-PLUS", ALCS1200A_FIXUP_MIC_VREF),
+ 	SND_PCI_QUIRK(0x104d, 0x9043, "Sony Vaio VGC-LN51JGB", ALC882_FIXUP_NO_PRIMARY_HP),
+ 	SND_PCI_QUIRK(0x104d, 0x9044, "Sony VAIO AiO", ALC882_FIXUP_NO_PRIMARY_HP),
+ 	SND_PCI_QUIRK(0x104d, 0x9047, "Sony Vaio TT", ALC889_FIXUP_VAIO_TT),
+-- 
+2.36.1
 
