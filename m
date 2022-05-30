@@ -2,52 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0DF0C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C02F3C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:28:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241788AbiE3O0q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:26:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42870 "EHLO
+        id S241754AbiE3O0j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:26:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241366AbiE3ORc (ORCPT
+        with ESMTP id S241409AbiE3ORe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:17:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6C8D8FD44;
-        Mon, 30 May 2022 06:45:46 -0700 (PDT)
+        Mon, 30 May 2022 10:17:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D59DCEF;
+        Mon, 30 May 2022 06:46:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 61227B80D6B;
-        Mon, 30 May 2022 13:45:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89EF0C3411A;
-        Mon, 30 May 2022 13:45:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 38A1C60F22;
+        Mon, 30 May 2022 13:46:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3D85C385B8;
+        Mon, 30 May 2022 13:46:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918344;
-        bh=D2NjhwYfanFFKXWps4PbKEm6kniN+s25Jjw4sQ6pLPA=;
+        s=k20201202; t=1653918396;
+        bh=7XsYRlWM8qmHI/XkqixZ5LiDMS9nt6vg5uZEvzT5rvc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cHvTupQhLe+W3RlcqYqT1xdQ/GEhy5IQaFTdNFhwhMufD6qYmZeP87uj6CssnwZEa
-         1et/0Gkf8dev5e4teCclm1Rh7FOcMLMLCGSOZ/C7y/fXgnsC7BGPDJ27GDSkmt6bZK
-         xsx/wlUCHi1fFli6UZyt7GDjxiOLaTdChmwQB5uyfTchTp2ZyhK3aJpW9a1vMs/WEh
-         XI9nXXdB1mbyZY+FESkRdA2Q2CTtrOm3RtSDBzUO+wEcFeJ+axVQTQgUcCi+79YWai
-         ruWdKcHpXDiIaoYsliLgr4vBNgUBDVCDy9Xizcway8TDc1Atm4HjhThHPG7Q7bah8P
-         JLbZFVisv9hZQ==
+        b=m++qONB0A/AEQB+Kf9jv0crPtZJHsXbwmvfEK3ViaSzrubNP1mDzECqNc0VbLVcuQ
+         +e63QmtOkW56Mcdtnb1u/TU0dUkLivk5IkDH4I2Q+OvW/fP3Z51HP1jU6q1UMjR62E
+         jbn6JllqdfiftYFiy2IIo9bX7ivBzouiax3N4auSNZRAdpntSnS90gkAxQ2Z0B5n5N
+         DAZ1WO7ilz1Xv8mO0V5WkLD0eGsOfDMABN87nk7cT6PzLAV5DBhDtxSP19hR7jx5gs
+         N9BlK310nAQtsjn1zpoQEAyhJECe9W1R+ua4dIr3uxQ3mUpjmqzloJdW5rs26k36GK
+         yGWqTbNIOWVEg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alice Wong <shiwei.wong@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        Hawking.Zhang@amd.com, Likun.Gao@amd.com, john.clements@amd.com,
-        candice.li@amd.com, lang.yu@amd.com, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.10 43/76] drm/amdgpu/ucode: Remove firmware load type check in amdgpu_ucode_free_bo
-Date:   Mon, 30 May 2022 09:43:33 -0400
-Message-Id: <20220530134406.1934928-43-sashal@kernel.org>
+Cc:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        kernel test robot <yujie.liu@intel.com>,
+        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
+        perex@perex.cz, tiwai@suse.com, srinivas.kandagatla@linaro.org,
+        ckeepax@opensource.cirrus.com, tanureal@opensource.cirrus.com,
+        james.schulman@cirrus.com, cy_huang@richtek.com,
+        pbrobinson@gmail.com, hdegoede@redhat.com,
+        alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.10 66/76] ASoC: rt1015p: remove dependency on GPIOLIB
+Date:   Mon, 30 May 2022 09:43:56 -0400
+Message-Id: <20220530134406.1934928-66-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530134406.1934928-1-sashal@kernel.org>
 References: <20220530134406.1934928-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -55,37 +59,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alice Wong <shiwei.wong@amd.com>
+From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 
-[ Upstream commit ab0cd4a9ae5b4679b714d8dbfedc0901fecdce9f ]
+[ Upstream commit b390c25c6757b9d56cecdfbf6d55f15fc89a6386 ]
 
-When psp_hw_init failed, it will set the load_type to AMDGPU_FW_LOAD_DIRECT.
-During amdgpu_device_ip_fini, amdgpu_ucode_free_bo checks that load_type is
-AMDGPU_FW_LOAD_DIRECT and skips deallocating fw_buf causing memory leak.
-Remove load_type check in amdgpu_ucode_free_bo.
+commit dcc2c012c7691 ("ASoC: Fix gpiolib dependencies") removed a
+series of unnecessary dependencies on GPIOLIB when the gpio was
+optional.
 
-Signed-off-by: Alice Wong <shiwei.wong@amd.com>
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+A similar simplification seems valid for rt1015p, so remove the
+dependency as well. This will avoid the following warning
+
+  WARNING: unmet direct dependencies detected for SND_SOC_RT1015P
+
+     Depends on [n]: SOUND [=y] && !UML && SND [=y] && SND_SOC [=y] &&
+     GPIOLIB [=n]
+
+     Selected by [y]:
+
+     - SND_SOC_INTEL_SOF_RT5682_MACH [=y] && SOUND [=y] && !UML && SND
+       [=y] && SND_SOC [=y] && SND_SOC_INTEL_MACH [=y] &&
+       (SND_SOC_SOF_HDA_LINK [=y] || SND_SOC_SOF_BAYTRAIL [=n]) && I2C
+       [=y] && ACPI [=y] && (SND_HDA_CODEC_HDMI [=y] &&
+       SND_SOC_SOF_HDA_AUDIO_CODEC [=y] && (MFD_INTEL_LPSS [=y] ||
+       COMPILE_TEST [=y]) || SND_SOC_SOF_BAYTRAIL [=n] &&
+       (X86_INTEL_LPSS [=n] || COMPILE_TEST [=y]))
+
+Reported-by: kernel test robot <yujie.liu@intel.com>
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Link: https://lore.kernel.org/r/20220517172647.468244-3-pierre-louis.bossart@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_ucode.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ sound/soc/codecs/Kconfig | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_ucode.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_ucode.c
-index b313ce4c3e97..30005ed8156f 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_ucode.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_ucode.c
-@@ -625,8 +625,7 @@ int amdgpu_ucode_create_bo(struct amdgpu_device *adev)
+diff --git a/sound/soc/codecs/Kconfig b/sound/soc/codecs/Kconfig
+index 612fd7516666..25f331551f68 100644
+--- a/sound/soc/codecs/Kconfig
++++ b/sound/soc/codecs/Kconfig
+@@ -1098,7 +1098,6 @@ config SND_SOC_RT1015
  
- void amdgpu_ucode_free_bo(struct amdgpu_device *adev)
- {
--	if (adev->firmware.load_type != AMDGPU_FW_LOAD_DIRECT)
--		amdgpu_bo_free_kernel(&adev->firmware.fw_buf,
-+	amdgpu_bo_free_kernel(&adev->firmware.fw_buf,
- 		&adev->firmware.fw_buf_mc,
- 		&adev->firmware.fw_buf_ptr);
- }
+ config SND_SOC_RT1015P
+ 	tristate
+-	depends on GPIOLIB
+ 
+ config SND_SOC_RT1305
+ 	tristate
 -- 
 2.35.1
 
