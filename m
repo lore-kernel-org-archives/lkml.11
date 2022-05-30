@@ -2,80 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1167C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 19:20:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C330C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 19:25:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243065AbiE3TUU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 15:20:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39560 "EHLO
+        id S237243AbiE3TZK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 15:25:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243028AbiE3TUP (ORCPT
+        with ESMTP id S230525AbiE3TZH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 15:20:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98F3B87237;
-        Mon, 30 May 2022 12:20:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0BF1960EAE;
-        Mon, 30 May 2022 19:20:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5C56CC34119;
-        Mon, 30 May 2022 19:20:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653938412;
-        bh=2lVaGIxVR4kXXdSgKh4r5LLuYR0AG9tw1iwnnfurZC4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=f3OedaXy3uFSq+n2w8LVwbDnJYgO/JHLnsWPRdZPJ4arxFWnmszyjaf2cc4zO+TNA
-         FPa57/D9XB6CYIBQmTHAcBBPOPqvxLHyUCu70x+e76EZagVCzLV8P0T/7jBCwy0SXP
-         BOnWI1UTjTxqjB9oPl0gCQ9C1kSbajGYE9bvqKBZoy9Y5ACTAh4YsQM37H0xRH7BlR
-         c0iJVladtiBXcso6REVXIBscrVn7tJ4S2PD2kV85MKrjL4W89tTJN2mrT8KLFQPlC+
-         c/KbPJWU9nknm1bQv3Cj19pIuOeCcrt9PtGqufpHoER74g5vuMxysRUE5+gJfSr/cU
-         1nXgrFmjoHs0g==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3BE15F0394C;
-        Mon, 30 May 2022 19:20:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Mon, 30 May 2022 15:25:07 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 726F62AF0
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 12:25:05 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nvl0h-0002B3-KC; Mon, 30 May 2022 21:25:03 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nvl0h-005Vcg-R8; Mon, 30 May 2022 21:25:02 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nvl0f-00D9rr-R5; Mon, 30 May 2022 21:25:01 +0200
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, kernel@pengutronix.de
+Subject: [PATCH 1/4] mfd: asic3: Make asic3_gpio_remove() return void
+Date:   Mon, 30 May 2022 21:24:27 +0200
+Message-Id: <20220530192430.2108217-2-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220530192430.2108217-1-u.kleine-koenig@pengutronix.de>
+References: <20220530192430.2108217-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1674; h=from:subject; bh=2vih2xfjYYCBqWvzNoDgwxq/6pFitQWwOd7o14Q+mkA=; b=owGbwMvMwMV48I9IxdpTbzgZT6slMSRNlTxn983uV3lqGHtgWaEn+9YV5amHHs8p11eZbrxQKerW geUdnYzGLAyMXAyyYoosdUVaYhMk1vy3K1nCDTOIlQlkCgMXpwBMJDuT/X9+2a6NmVee9ntee8Dxwe EItwavjp5uSttr8/n+ksLtOecdtJ24RbRkXWawh+6V//zleIBjZ0BghIXXc0kJCZstBkf1ZD/9tvgm E6+4J/2f74m8v6Itnz23sDPo+j/q2Z5blcr9NbS2Sf3hjR7tdoYrt28FsvGdlHaZ4aO3Webz7M1ltc unZ1blJoZKLdvHccZR0ien6nCfYhI753vHI2ZsB6adNmvYzM99bfHF5JlH02Q9V287Y6zC8kzbING7 445N3Kpb2lejIsyMUw/OeZ04UTm0XE8x8Ovzo+KJktqzH+67IPklhm1JcxP7Est1ff+PpBnPXXGX9W D5vR/qrlwVnZO1yoSd58ma3m0HAA==
+X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: xdp: Directly use ida_alloc()/free()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165393841223.30061.14830701198740912669.git-patchwork-notify@kernel.org>
-Date:   Mon, 30 May 2022 19:20:12 +0000
-References: <20220527064609.2358482-1-liuke94@huawei.com>
-In-Reply-To: <20220527064609.2358482-1-liuke94@huawei.com>
-To:     Ke Liu <liuke94@huawei.com>
-Cc:     bjorn@kernel.org, magnus.karlsson@intel.com,
-        maciej.fijalkowski@intel.com, jonathan.lemon@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, ast@kernel.org, daniel@iogearbox.net,
-        hawk@kernel.org, john.fastabend@gmail.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+Up to now asic3_gpio_remove() returns zero unconditionally. This makes it
+easier to see in the caller that there is no error to handle.
 
-This patch was applied to bpf/bpf-next.git (master)
-by Daniel Borkmann <daniel@iogearbox.net>:
+This is a preparation for making platform remove callbacks return void.
 
-On Fri, 27 May 2022 06:46:09 +0000 you wrote:
-> Use ida_alloc()/ida_free() instead of deprecated
-> ida_simple_get()/ida_simple_remove() .
-> 
-> Signed-off-by: keliu <liuke94@huawei.com>
-> ---
->  net/xdp/xdp_umem.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+Side note: asic3_mfd_probe() which is called by asic3_probe() could
+return an error, but this isn't handled.
+---
+ drivers/mfd/asic3.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
 
-Here is the summary with links:
-  - net: xdp: Directly use ida_alloc()/free()
-    https://git.kernel.org/bpf/bpf-next/c/1626f57f061c
-
-You are awesome, thank you!
+diff --git a/drivers/mfd/asic3.c b/drivers/mfd/asic3.c
+index 56338f9dbd0b..4fb7e35eb5ed 100644
+--- a/drivers/mfd/asic3.c
++++ b/drivers/mfd/asic3.c
+@@ -596,12 +596,11 @@ static __init int asic3_gpio_probe(struct platform_device *pdev,
+ 	return gpiochip_add_data(&asic->gpio, asic);
+ }
+ 
+-static int asic3_gpio_remove(struct platform_device *pdev)
++static void asic3_gpio_remove(struct platform_device *pdev)
+ {
+ 	struct asic3 *asic = platform_get_drvdata(pdev);
+ 
+ 	gpiochip_remove(&asic->gpio);
+-	return 0;
+ }
+ 
+ static void asic3_clk_enable(struct asic3 *asic, struct asic3_clk *clk)
+@@ -1030,7 +1029,6 @@ static int __init asic3_probe(struct platform_device *pdev)
+ 
+ static int asic3_remove(struct platform_device *pdev)
+ {
+-	int ret;
+ 	struct asic3 *asic = platform_get_drvdata(pdev);
+ 
+ 	asic3_set_register(asic, ASIC3_OFFSET(EXTCF, SELECT),
+@@ -1038,9 +1036,8 @@ static int asic3_remove(struct platform_device *pdev)
+ 
+ 	asic3_mfd_remove(pdev);
+ 
+-	ret = asic3_gpio_remove(pdev);
+-	if (ret < 0)
+-		return ret;
++	asic3_gpio_remove(pdev);
++
+ 	asic3_irq_remove(pdev);
+ 
+ 	asic3_write_register(asic, ASIC3_OFFSET(CLOCK, SEL), 0);
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.36.1
 
