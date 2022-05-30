@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C5CDC63697
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:21:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2353C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:21:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241273AbiE3OV1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:21:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50278 "EHLO
+        id S241297AbiE3OVb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:21:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240963AbiE3OQj (ORCPT
+        with ESMTP id S241002AbiE3OQw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:16:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0502010EA6C;
+        Mon, 30 May 2022 10:16:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 055E610EA75;
         Mon, 30 May 2022 06:44:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A430660F47;
-        Mon, 30 May 2022 13:44:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEFA9C3411E;
-        Mon, 30 May 2022 13:44:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BEBDFB80DC0;
+        Mon, 30 May 2022 13:43:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 154A0C3411C;
+        Mon, 30 May 2022 13:43:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918265;
-        bh=2hZ+UBmaZIUYgVLs6TaQfaLPCWMpHIrqHmiIiUpDzrg=;
+        s=k20201202; t=1653918229;
+        bh=s4KO1UgUY/B996K+l2DBDtuWNiu3YWMyS23OqCyZMqk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N81IZ9r8SlOGIHW7ZzVG7CxGPnkLIZMbADCacMaBurNVS3pF0a3LyINVe0kCGuvX3
-         uhheZscL0WSAZKyQqKyY9YAghv1Rj5kZzsinLdU2fSgEE6Ly0wUgBc3nEeK3a1uDSp
-         dlqdSIyL6lx75ND248AFk77MTHAXbV+drUq9+xy1LIJHfQMV8KJFA9CVxF/aqxtIAQ
-         zGfm1Abc5BraxePX7CBeCuvKoRhuSblDECdkbvmY+iBzZw6OtIRQKbrV/duLmb70q2
-         TjQ5uaB5tRcXnGjo2urwj028w6pBAXwBp2rmpA0WwTysZlS+wboUaXnr//pgW6w3Y7
-         LSj1tTghrVflA==
+        b=nVLPPuHC6by1sqKeeCu0gVAt1mE5a4ARlGbBTONt6V7u0hCqlD325Ef+/S5/wCohc
+         wCuGeNS8wQls20Nrd9mRj7EUzyn5j5srkKSqLgpShdz6pGyA6td285aonXSIJFET1h
+         eFKJXyFCYlgYCg3ESq0U3bXC/9GWTYO2PuCo1Ns6iOy/M/WFL6JZ4RBrNOSEj82ERc
+         e5NBEPs7oU4CtdRmfduCeGlG/tckLNVzE9szy6TETP9YWBU3jJXxnZb/OrKiTxHeMa
+         jOOfzAnAuuckJ1CokShmjTm6hKeamCA35U8KmZdDXzmmO/mJLyGLOd+EeQXT8PoNGU
+         yrW1TR74rBptw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Niels Dossche <dossche.niels@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 08/76] ipv6: fix locking issues with loops over idev->addr_list
-Date:   Mon, 30 May 2022 09:42:58 -0400
-Message-Id: <20220530134406.1934928-8-sashal@kernel.org>
+Cc:     David Howells <dhowells@redhat.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 103/109] rxrpc: Return an error to sendmsg if call failed
+Date:   Mon, 30 May 2022 09:38:19 -0400
+Message-Id: <20220530133825.1933431-103-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220530134406.1934928-1-sashal@kernel.org>
-References: <20220530134406.1934928-1-sashal@kernel.org>
+In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
+References: <20220530133825.1933431-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,147 +54,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niels Dossche <dossche.niels@gmail.com>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit 51454ea42c1ab4e0c2828bb0d4d53957976980de ]
+[ Upstream commit 4ba68c5192554876bd8c3afd904e3064d2915341 ]
 
-idev->addr_list needs to be protected by idev->lock. However, it is not
-always possible to do so while iterating and performing actions on
-inet6_ifaddr instances. For example, multiple functions (like
-addrconf_{join,leave}_anycast) eventually call down to other functions
-that acquire the idev->lock. The current code temporarily unlocked the
-idev->lock during the loops, which can cause race conditions. Moving the
-locks up is also not an appropriate solution as the ordering of lock
-acquisition will be inconsistent with for example mc_lock.
+If at the end of rxrpc sendmsg() or rxrpc_kernel_send_data() the call that
+was being given data was aborted remotely or otherwise failed, return an
+error rather than returning the amount of data buffered for transmission.
 
-This solution adds an additional field to inet6_ifaddr that is used
-to temporarily add the instances to a temporary list while holding
-idev->lock. The temporary list can then be traversed without holding
-idev->lock. This change was done in two places. In addrconf_ifdown, the
-list_for_each_entry_safe variant of the list loop is also no longer
-necessary as there is no deletion within that specific loop.
+The call (presumably) did not complete, so there's not much point
+continuing with it.  AF_RXRPC considers it "complete" and so will be
+unwilling to do anything else with it - and won't send a notification for
+it, deeming the return from sendmsg sufficient.
 
-Suggested-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-Acked-by: Paolo Abeni <pabeni@redhat.com>
-Link: https://lore.kernel.org/r/20220403231523.45843-1-dossche.niels@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Not returning an error causes afs to incorrectly handle a StoreData
+operation that gets interrupted by a change of address due to NAT
+reconfiguration.
+
+This doesn't normally affect most operations since their request parameters
+tend to fit into a single UDP packet and afs_make_call() returns before the
+server responds; StoreData is different as it involves transmission of a
+lot of data.
+
+This can be triggered on a client by doing something like:
+
+	dd if=/dev/zero of=/afs/example.com/foo bs=1M count=512
+
+at one prompt, and then changing the network address at another prompt,
+e.g.:
+
+	ifconfig enp6s0 inet 192.168.6.2 && route add 192.168.6.1 dev enp6s0
+
+Tracing packets on an Auristor fileserver looks something like:
+
+192.168.6.1 -> 192.168.6.3  RX 107 ACK Idle  Seq: 0  Call: 4  Source Port: 7000  Destination Port: 7001
+192.168.6.3 -> 192.168.6.1  AFS (RX) 1482 FS Request: Unknown(64538) (64538)
+192.168.6.3 -> 192.168.6.1  AFS (RX) 1482 FS Request: Unknown(64538) (64538)
+192.168.6.1 -> 192.168.6.3  RX 107 ACK Idle  Seq: 0  Call: 4  Source Port: 7000  Destination Port: 7001
+<ARP exchange for 192.168.6.2>
+192.168.6.2 -> 192.168.6.1  AFS (RX) 1482 FS Request: Unknown(0) (0)
+192.168.6.2 -> 192.168.6.1  AFS (RX) 1482 FS Request: Unknown(0) (0)
+192.168.6.1 -> 192.168.6.2  RX 107 ACK Exceeds Window  Seq: 0  Call: 4  Source Port: 7000  Destination Port: 7001
+192.168.6.1 -> 192.168.6.2  RX 74 ABORT  Seq: 0  Call: 4  Source Port: 7000  Destination Port: 7001
+192.168.6.1 -> 192.168.6.2  RX 74 ABORT  Seq: 29321  Call: 4  Source Port: 7000  Destination Port: 7001
+
+The Auristor fileserver logs code -453 (RXGEN_SS_UNMARSHAL), but the abort
+code received by kafs is -5 (RX_PROTOCOL_ERROR) as the rx layer sees the
+condition and generates an abort first and the unmarshal error is a
+consequence of that at the application layer.
+
+Reported-by: Marc Dionne <marc.dionne@auristor.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: linux-afs@lists.infradead.org
+Link: http://lists.infradead.org/pipermail/linux-afs/2021-December/004810.html # v1
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/if_inet6.h |  8 ++++++++
- net/ipv6/addrconf.c    | 30 ++++++++++++++++++++++++------
- 2 files changed, 32 insertions(+), 6 deletions(-)
+ net/rxrpc/sendmsg.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/include/net/if_inet6.h b/include/net/if_inet6.h
-index 8bf5906073bc..e03ba8e80781 100644
---- a/include/net/if_inet6.h
-+++ b/include/net/if_inet6.h
-@@ -64,6 +64,14 @@ struct inet6_ifaddr {
+diff --git a/net/rxrpc/sendmsg.c b/net/rxrpc/sendmsg.c
+index af8ad6c30b9f..1d38e279e2ef 100644
+--- a/net/rxrpc/sendmsg.c
++++ b/net/rxrpc/sendmsg.c
+@@ -444,6 +444,12 @@ static int rxrpc_send_data(struct rxrpc_sock *rx,
  
- 	struct hlist_node	addr_lst;
- 	struct list_head	if_list;
-+	/*
-+	 * Used to safely traverse idev->addr_list in process context
-+	 * if the idev->lock needed to protect idev->addr_list cannot be held.
-+	 * In that case, add the items to this list temporarily and iterate
-+	 * without holding idev->lock.
-+	 * See addrconf_ifdown and dev_forward_change.
-+	 */
-+	struct list_head	if_list_aux;
- 
- 	struct list_head	tmp_list;
- 	struct inet6_ifaddr	*ifpub;
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 86bcb1825698..4584bb50960b 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -789,6 +789,7 @@ static void dev_forward_change(struct inet6_dev *idev)
- {
- 	struct net_device *dev;
- 	struct inet6_ifaddr *ifa;
-+	LIST_HEAD(tmp_addr_list);
- 
- 	if (!idev)
- 		return;
-@@ -807,14 +808,24 @@ static void dev_forward_change(struct inet6_dev *idev)
- 		}
- 	}
- 
-+	read_lock_bh(&idev->lock);
- 	list_for_each_entry(ifa, &idev->addr_list, if_list) {
- 		if (ifa->flags&IFA_F_TENTATIVE)
- 			continue;
-+		list_add_tail(&ifa->if_list_aux, &tmp_addr_list);
+ success:
+ 	ret = copied;
++	if (READ_ONCE(call->state) == RXRPC_CALL_COMPLETE) {
++		read_lock_bh(&call->state_lock);
++		if (call->error < 0)
++			ret = call->error;
++		read_unlock_bh(&call->state_lock);
 +	}
-+	read_unlock_bh(&idev->lock);
-+
-+	while (!list_empty(&tmp_addr_list)) {
-+		ifa = list_first_entry(&tmp_addr_list,
-+				       struct inet6_ifaddr, if_list_aux);
-+		list_del(&ifa->if_list_aux);
- 		if (idev->cnf.forwarding)
- 			addrconf_join_anycast(ifa);
- 		else
- 			addrconf_leave_anycast(ifa);
- 	}
-+
- 	inet6_netconf_notify_devconf(dev_net(dev), RTM_NEWNETCONF,
- 				     NETCONFA_FORWARDING,
- 				     dev->ifindex, &idev->cnf);
-@@ -3710,7 +3721,8 @@ static int addrconf_ifdown(struct net_device *dev, bool unregister)
- 	unsigned long event = unregister ? NETDEV_UNREGISTER : NETDEV_DOWN;
- 	struct net *net = dev_net(dev);
- 	struct inet6_dev *idev;
--	struct inet6_ifaddr *ifa, *tmp;
-+	struct inet6_ifaddr *ifa;
-+	LIST_HEAD(tmp_addr_list);
- 	bool keep_addr = false;
- 	bool was_ready;
- 	int state, i;
-@@ -3802,16 +3814,23 @@ static int addrconf_ifdown(struct net_device *dev, bool unregister)
- 		write_lock_bh(&idev->lock);
- 	}
- 
--	list_for_each_entry_safe(ifa, tmp, &idev->addr_list, if_list) {
-+	list_for_each_entry(ifa, &idev->addr_list, if_list)
-+		list_add_tail(&ifa->if_list_aux, &tmp_addr_list);
-+	write_unlock_bh(&idev->lock);
-+
-+	while (!list_empty(&tmp_addr_list)) {
- 		struct fib6_info *rt = NULL;
- 		bool keep;
- 
-+		ifa = list_first_entry(&tmp_addr_list,
-+				       struct inet6_ifaddr, if_list_aux);
-+		list_del(&ifa->if_list_aux);
-+
- 		addrconf_del_dad_work(ifa);
- 
- 		keep = keep_addr && (ifa->flags & IFA_F_PERMANENT) &&
- 			!addr_is_local(&ifa->addr);
- 
--		write_unlock_bh(&idev->lock);
- 		spin_lock_bh(&ifa->lock);
- 
- 		if (keep) {
-@@ -3842,15 +3861,14 @@ static int addrconf_ifdown(struct net_device *dev, bool unregister)
- 			addrconf_leave_solict(ifa->idev, &ifa->addr);
- 		}
- 
--		write_lock_bh(&idev->lock);
- 		if (!keep) {
-+			write_lock_bh(&idev->lock);
- 			list_del_rcu(&ifa->if_list);
-+			write_unlock_bh(&idev->lock);
- 			in6_ifa_put(ifa);
- 		}
- 	}
- 
--	write_unlock_bh(&idev->lock);
--
- 	/* Step 5: Discard anycast and multicast list */
- 	if (unregister) {
- 		ipv6_ac_destroy_dev(idev);
+ out:
+ 	call->tx_pending = skb;
+ 	_leave(" = %d", ret);
 -- 
 2.35.1
 
