@@ -2,150 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C6FFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 09:47:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B271C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 09:47:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234913AbiE3JrP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 05:47:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57994 "EHLO
+        id S234923AbiE3Jr3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 05:47:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234892AbiE3JrL (ORCPT
+        with ESMTP id S234922AbiE3JrZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 05:47:11 -0400
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5C6638B4
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 02:47:09 -0700 (PDT)
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com [209.85.221.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id CE6633FBF5
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 09:47:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1653904027;
-        bh=0UZymv9RVAChspHI58gTmQkqQr5ViPWxsQqyFUaGwGI=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=BQynBlSIrLEmYQRf+w2HXFMDTvf97rwyOncqlhH1ugNqF9+QZk+anHNnipANfsbA2
-         R7F2tEkTgJyT7wKz50y8fDXRGcSyFZY7dP8zZjkelZcDXGLIofQmHAoT7aznr0J/N7
-         +1Y3oHVlC/zyrNd+M8Tsgl2ULJD5c9LUyg3RpcQwrNQw8NeCxvnEQZFBCIxQNqXgMk
-         ct8in+v1Ip8YVeldJ5xd72J+30fn/NOS9NBObnaLznL9b7HXPjTM5VWqSqAKimsTzz
-         jquSd7jb2oVBcQVkLYrnKCuVwZDsSRQTG7avBXvXEM1si/tOJ4ZSUSZYiHWb9rjZrJ
-         GLNWya8RFamww==
-Received: by mail-wr1-f70.google.com with SMTP id p10-20020adfaa0a000000b0020c4829af5fso1524276wrd.16
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 02:47:07 -0700 (PDT)
+        Mon, 30 May 2022 05:47:25 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9A2EA19F;
+        Mon, 30 May 2022 02:47:20 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id wh22so19758116ejb.7;
+        Mon, 30 May 2022 02:47:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/k2m83LaODmcLsyS0dbBoJk+VKnEiUhqE8c6BRPwNpA=;
+        b=HEdtIu9h1Ee4llxxfLUHdT6WXTT7YVh7HuJ1UWwgpaAZEzYcK8Kt18Rc0y6hhxh/pk
+         gNEh0cjdDf/DymaC3VMDJfzt8hACMMSArRNFzvgV2rASP/QOIxu5SVhVDBmuBaF6jSqH
+         pE7Z+UNUl0L+YpcyxdWHlt+wnBHwJZV6FpL32JVe2MnfNBn8UF1zu7hi0PqUJB5JrUta
+         PzgzVuMmyO9cQBNDseiGyFnSevNpMoE0l5EdZjqKzsaGAyssfHObZ+KUH6ErxYptI92w
+         d+o7sRvi1EM4ocHQV9T1yTo01whLdcagvrS5NvenSKkHgxAUoXpqgSIjqaOGUKnRw74d
+         T+gA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0UZymv9RVAChspHI58gTmQkqQr5ViPWxsQqyFUaGwGI=;
-        b=sDpJSicet2fhB1V6HtIGLm+SS5vlf2T47Hgmf6otKkIcwFrHnIRgo/UcSgtLSiKCMK
-         yqeg3Odk8+8jWdQFNPtXErCtGLNbV/M51Eu6k89bO+dHtgjc9GP9B8072oqybXab+TFW
-         0bz9/5P0cUJ8Jd4/FtNzbnkYdK+0I6a2NPRXVXxNkoWUNbB+hP4S/eXSDLkTpqBSCqtS
-         a7EmpOJ/osH4TT5LdPUt5NatdEpWtykLigrE60/yc/DnWjnaAAX8JAioF9jPjhbG78t4
-         uy0bzaYdjAW8cPMOAV+xRiq8SiKHr8dnXXTyjyNRP/uZZckwpxSxpDVK3qZrqEL602BF
-         mrfA==
-X-Gm-Message-State: AOAM530OwDsUXCPr6rN/MCC6XdKN7kWhzIXfHK3blsEk7mp9dvFd4mR6
-        SEjk4ib/d7wUDcJM7JM7fJQcdBH6NzEcW6K3G/VQSRymDrYh2Pe3pfh11deggA06jslm/PIyN5O
-        HoADQWc95n5TPSG9miqWARdIEOOWcyrU8Qw3hVcTu6Q==
-X-Received: by 2002:a05:600c:501f:b0:397:74e2:caa1 with SMTP id n31-20020a05600c501f00b0039774e2caa1mr18326906wmr.89.1653904023986;
-        Mon, 30 May 2022 02:47:03 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxcIRFrZmFoHMctcwJfjIoXZM+fuLzFmiVCBZ3hBYIMDRUovPi+iGVmBjDvXX5Wh2a1poEgFA==
-X-Received: by 2002:a05:600c:501f:b0:397:74e2:caa1 with SMTP id n31-20020a05600c501f00b0039774e2caa1mr18326883wmr.89.1653904023811;
-        Mon, 30 May 2022 02:47:03 -0700 (PDT)
-Received: from alex.home (lfbn-gre-1-146-29.w90-112.abo.wanadoo.fr. [90.112.113.29])
-        by smtp.gmail.com with ESMTPSA id f12-20020a05600c154c00b003942a244f30sm13897640wmg.9.2022.05.30.02.47.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 May 2022 02:47:03 -0700 (PDT)
-From:   Alexandre Ghiti <alexandre.ghiti@canonical.com>
-To:     =?UTF-8?q?Heiko=20St=C3=BCbner?= <heiko@sntech.de>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Anup Patel <anup@brainfault.org>,
-        Atish Patra <atishp@atishpatra.org>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, kvm-riscv@lists.infradead.org
-Cc:     Alexandre Ghiti <alexandre.ghiti@canonical.com>
-Subject: [PATCH -for-next] riscv: Fix missing PAGE_PFN_MASK
-Date:   Mon, 30 May 2022 11:47:01 +0200
-Message-Id: <20220530094701.2891404-1-alexandre.ghiti@canonical.com>
-X-Mailer: git-send-email 2.34.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/k2m83LaODmcLsyS0dbBoJk+VKnEiUhqE8c6BRPwNpA=;
+        b=XIrlJyRmWz55gyGgE2tHLcI3n1KCn3c0QQ4hM8elz+uMq7DZLj8SVGg7SjPePkUrNK
+         r4voehXaHfnMIi4k9R7MHYk8P6hUkma9KiUXJ2CcdAAIMfTUNkc4W7O8AjWXLqwiwADi
+         xClUWCGk7ai8jeyhGmxF3Q7/E4Tyci7rQsHXql1ewvXhvVXuAN7QyD72prej/TRDBgg7
+         AtZwYQbjBi1hPaMT0pvI7oAdvKk9816J90m/2lHgMYfTJ8R18XmS0vRCyOl8Wy8U9puT
+         +UAJ7H6lSqmJILbwPHC8aa3AIYmV5tFXro0meFeE7HIRE+dCdqDNtXMfZfUQQdMsDbM+
+         /gRg==
+X-Gm-Message-State: AOAM533BXqkPbcSKmfTVv+5p287lnPZ/DiMfDzh/8cUPXy0OIAmfmvjH
+        X9MFVBJqNPNeWV7/TCB5jR9fGi/HEkNLF8OpVj8=
+X-Google-Smtp-Source: ABdhPJz2Y4PPvobMreDaaaGYBcFdlzgaDp1D8UrIIx2/xRRkK7/L2BM9dOFFBRp5uNmzREpsNBcvOr4GVqLWfEZBHGw=
+X-Received: by 2002:a17:907:6e04:b0:6f4:d6f3:c72a with SMTP id
+ sd4-20020a1709076e0400b006f4d6f3c72amr47585054ejc.636.1653904039317; Mon, 30
+ May 2022 02:47:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220526081550.1089805-1-saravanak@google.com> <20220526081550.1089805-8-saravanak@google.com>
+In-Reply-To: <20220526081550.1089805-8-saravanak@google.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 30 May 2022 11:46:43 +0200
+Message-ID: <CAHp75VcJRfQO6oJpVUoGK4JQpr3Wbff9vgkm8+q8fn8cxohQug@mail.gmail.com>
+Subject: Re: [RFC PATCH v1 7/9] driver core: Add fw_devlink_unblock_may_probe()
+ helper function
+To:     Saravana Kannan <saravanak@google.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Kevin Hilman <khilman@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>, Len Brown <lenb@kernel.org>,
+        Mark Brown <broonie@kernel.org>, Rob Herring <robh@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        John Stultz <jstultz@google.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Android Kernel Team <kernel-team@android.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are a bunch of functions that use the PFN from a page table entry
-that end up with the svpbmt upper-bits because they are missing the newly
-introduced PAGE_PFN_MASK which leads to wrong addresses conversions and
-then crash: fix this by adding this mask.
+On Thu, May 26, 2022 at 1:22 PM Saravana Kannan <saravanak@google.com> wrote:
+>
+> This function can be used during the kernel boot sequence to forcefully
+> override fw_devlink=on and unblock the probing of all devices that have
+> a driver.
+>
+> It's mainly meant to be called from late_initcall() or
+> late_initcall_sync() where a device needs to probe before the kernel can
+> mount rootfs.
 
-Fixes: 100631b48ded ("riscv: Fix accessing pfn bits in PTEs for non-32bit variants")
-Signed-off-by: Alexandre Ghiti <alexandre.ghiti@canonical.com>
----
- arch/riscv/include/asm/pgtable-64.h | 4 ++--
- arch/riscv/include/asm/pgtable.h    | 4 ++--
- arch/riscv/kvm/mmu.c                | 2 +-
- 3 files changed, 5 insertions(+), 5 deletions(-)
+...
 
-diff --git a/arch/riscv/include/asm/pgtable-64.h b/arch/riscv/include/asm/pgtable-64.h
-index 6d59e4695200..0e57bf1e25e9 100644
---- a/arch/riscv/include/asm/pgtable-64.h
-+++ b/arch/riscv/include/asm/pgtable-64.h
-@@ -153,7 +153,7 @@ static inline pud_t pfn_pud(unsigned long pfn, pgprot_t prot)
- 
- static inline unsigned long _pud_pfn(pud_t pud)
- {
--	return pud_val(pud) >> _PAGE_PFN_SHIFT;
-+	return (pud_val(pud) & _PAGE_PFN_MASK) >> _PAGE_PFN_SHIFT;
- }
- 
- static inline pmd_t *pud_pgtable(pud_t pud)
-@@ -240,7 +240,7 @@ static inline void p4d_clear(p4d_t *p4d)
- static inline pud_t *p4d_pgtable(p4d_t p4d)
- {
- 	if (pgtable_l4_enabled)
--		return (pud_t *)pfn_to_virt(p4d_val(p4d) >> _PAGE_PFN_SHIFT);
-+		return (pud_t *)pfn_to_virt((p4d_val(p4d) & _PAGE_PFN_MASK) >> _PAGE_PFN_SHIFT);
- 
- 	return (pud_t *)pud_pgtable((pud_t) { p4d_val(p4d) });
- }
-diff --git a/arch/riscv/include/asm/pgtable.h b/arch/riscv/include/asm/pgtable.h
-index e2658a25f06d..43064025f4b0 100644
---- a/arch/riscv/include/asm/pgtable.h
-+++ b/arch/riscv/include/asm/pgtable.h
-@@ -255,7 +255,7 @@ static inline pgd_t pfn_pgd(unsigned long pfn, pgprot_t prot)
- 
- static inline unsigned long _pgd_pfn(pgd_t pgd)
- {
--	return pgd_val(pgd) >> _PAGE_PFN_SHIFT;
-+	return (pgd_val(pgd) & _PAGE_PFN_MASK) >> _PAGE_PFN_SHIFT;
- }
- 
- static inline struct page *pmd_page(pmd_t pmd)
-@@ -568,7 +568,7 @@ static inline pmd_t pmd_mkinvalid(pmd_t pmd)
- 	return __pmd(pmd_val(pmd) & ~(_PAGE_PRESENT|_PAGE_PROT_NONE));
- }
- 
--#define __pmd_to_phys(pmd)  (pmd_val(pmd) >> _PAGE_PFN_SHIFT << PAGE_SHIFT)
-+#define __pmd_to_phys(pmd)  ((pmd_val(pmd) & _PAGE_PFN_MASK) >> _PAGE_PFN_SHIFT << PAGE_SHIFT)
- 
- static inline unsigned long pmd_pfn(pmd_t pmd)
- {
-diff --git a/arch/riscv/kvm/mmu.c b/arch/riscv/kvm/mmu.c
-index f80a34fbf102..db03c5a29d4c 100644
---- a/arch/riscv/kvm/mmu.c
-+++ b/arch/riscv/kvm/mmu.c
-@@ -55,7 +55,7 @@ static inline unsigned long stage2_pte_index(gpa_t addr, u32 level)
- 
- static inline unsigned long stage2_pte_page_vaddr(pte_t pte)
- {
--	return (unsigned long)pfn_to_virt(pte_val(pte) >> _PAGE_PFN_SHIFT);
-+	return (unsigned long)pfn_to_virt((pte_val(pte) & _PAGE_PFN_MASK) >> _PAGE_PFN_SHIFT);
- }
- 
- static int stage2_page_size_to_level(unsigned long page_size, u32 *out_level)
+> diff --git a/include/linux/fwnode.h b/include/linux/fwnode.h
+> index 9a81c4410b9f..0770edda7068 100644
+> --- a/include/linux/fwnode.h
+> +++ b/include/linux/fwnode.h
+> @@ -13,6 +13,7 @@
+>  #include <linux/list.h>
+>  #include <linux/bits.h>
+>  #include <linux/err.h>
+> +#include <linux/init.h>
+>
+>  struct fwnode_operations;
+>  struct device;
+> @@ -199,5 +200,6 @@ extern bool fw_devlink_is_strict(void);
+>  int fwnode_link_add(struct fwnode_handle *con, struct fwnode_handle *sup);
+>  void fwnode_links_purge(struct fwnode_handle *fwnode);
+>  void fw_devlink_purge_absent_suppliers(struct fwnode_handle *fwnode);
+> +void __init fw_devlink_unblock_may_probe(void);
+
+I don't think you need init.h and __init here. Important is that you
+have it in the C-file. Am I wrong?
+
 -- 
-2.34.1
-
+With Best Regards,
+Andy Shevchenko
