@@ -2,168 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A248C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 16:00:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A490FC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 16:01:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238912AbiE3P75 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 11:59:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54964 "EHLO
+        id S240440AbiE3QBH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 12:01:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241127AbiE3P7g (ORCPT
+        with ESMTP id S243122AbiE3QAl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 11:59:36 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7122C22BDB
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 08:53:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653925982;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=bDYue/Afd3VGZHzU7tYF7qy5xBeBUpqe85rLuoAiRcE=;
-        b=AkXHNJKvAQRHb5OqI+OhXnw4AlFTHU7SQ25I25r8DrkTB9nwXx2U3S7uy3yWEhfxPKMgZ0
-        MCHoCCU4ElbTk7DKNd2mXmRpWE6tOdwsDRWpn7scMraYzymGuve2EYFM1vMWpJYkKpJQS0
-        OjtcJUf23O2R/uhMV8v3cei4In0oe2Y=
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com
- [209.85.166.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-439-JXIUKUVtNoSifQX8E4lzFQ-1; Mon, 30 May 2022 11:53:01 -0400
-X-MC-Unique: JXIUKUVtNoSifQX8E4lzFQ-1
-Received: by mail-io1-f72.google.com with SMTP id n19-20020a056602341300b0066850b49e09so3662090ioz.12
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 08:53:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=bDYue/Afd3VGZHzU7tYF7qy5xBeBUpqe85rLuoAiRcE=;
-        b=GYBoQ4BLZwgavD0YrQ3fP6ENDrjnpkDGTKp1DEcYFgM2A1F5FhYh6xA+zi9xV2YRfm
-         MCuAyBxe3x2oJC4mTaqCEfudUDQLw8aZ94nWUIu9WcKZbhXZqMMHGPU1lIbMOOFvORQT
-         q0KKM2mBrXbWMEtz4vC685JR3X+krm+zG6BT1F80tIbk/2cu1MXGY5tAm80MwCfeAdCi
-         hDOVkVc95KuNoiSbYn7l7k/tvGycJvo/ZrBfH8aeF7Z3NEVyEMfkcKFKTQxcpXyisY6F
-         nGkM321zzNcTb6Pu6LdPNPBIkPUmQyY9zwW+mCkmEC7zu8qWJAhnI5fuMnPXTNZdj5Cd
-         Ydng==
-X-Gm-Message-State: AOAM532dWIcSH0lzGwdFw8QgJpnyQct6y4Nbsgiqi5uovvrchTgAhLEJ
-        Uhhe7N5CP67Z2wkXhD0eH6BiftjtaYVhrHx60OVmPpU4d3pkJBaI7CKp1Q38gIA7t6M0be1L53i
-        ZXFs5cPc6yjaDVc145ilqygYJ
-X-Received: by 2002:a5d:9cc8:0:b0:663:2899:4b8 with SMTP id w8-20020a5d9cc8000000b00663289904b8mr16857364iow.192.1653925980593;
-        Mon, 30 May 2022 08:53:00 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyKQIoyyqGc41UCjMUnObS0GZ5Lh8IPSVLY8KDGIOa5YRMfMwdzANPXLWIG/1E7oUnwvcvO1w==
-X-Received: by 2002:a5d:9cc8:0:b0:663:2899:4b8 with SMTP id w8-20020a5d9cc8000000b00663289904b8mr16857337iow.192.1653925980357;
-        Mon, 30 May 2022 08:53:00 -0700 (PDT)
-Received: from xz-m1.local (cpec09435e3e0ee-cmc09435e3e0ec.cpe.net.cable.rogers.com. [99.241.198.116])
-        by smtp.gmail.com with ESMTPSA id 66-20020a021d45000000b0032e75bfe344sm2781109jaj.171.2022.05.30.08.52.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 May 2022 08:52:59 -0700 (PDT)
-Date:   Mon, 30 May 2022 11:52:54 -0400
-From:   Peter Xu <peterx@redhat.com>
-To:     Christian Borntraeger <borntraeger@linux.ibm.com>
-Cc:     Heiko Carstens <hca@linux.ibm.com>, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, Will Deacon <will@kernel.org>,
-        Matt Turner <mattst88@gmail.com>, linux-s390@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Brian Cain <bcain@quicinc.com>, Borislav Petkov <bp@alien8.de>,
-        linux-alpha@vger.kernel.org, Alistair Popple <apopple@nvidia.com>,
-        Jonas Bonn <jonas@southpole.se>,
-        linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
-        linux-snps-arc@lists.infradead.org,
-        Vineet Gupta <vgupta@kernel.org>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Rich Felker <dalias@libc.org>, sparclinux@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>,
-        David Hildenbrand <david@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        "James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>,
-        linux-xtensa@linux-xtensa.org, linux-sh@vger.kernel.org,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        linux-m68k@lists.linux-m68k.org, linuxppc-dev@lists.ozlabs.org,
-        Richard Henderson <rth@twiddle.net>,
-        Guo Ren <guoren@kernel.org>, linux-parisc@vger.kernel.org,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Helge Deller <deller@gmx.de>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        linux-um@lists.infradead.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        openrisc@lists.librecores.org,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-hexagon@vger.kernel.org, Andy Lutomirski <luto@kernel.org>,
-        Stafford Horne <shorne@gmail.com>, linux-csky@vger.kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-mips@vger.kernel.org, Paul Mackerras <paulus@samba.org>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Hugh Dickins <hughd@google.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        linux-riscv@lists.infradead.org, Max Filippov <jcmvbkbc@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Chris Zankel <chris@zankel.net>,
-        Michal Simek <monstr@monstr.eu>, x86@kernel.org,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Richard Weinberger <richard@nod.at>,
-        Ingo Molnar <mingo@kernel.org>
-Subject: Re: [PATCH v4] mm: Avoid unnecessary page fault retires on shared
- memory types
-Message-ID: <YpToVpjXmdFqGOpY@xz-m1.local>
-References: <20220527193936.30678-1-peterx@redhat.com>
- <YpPYkzbrQmy4FjrI@osiris>
- <33fd4731-9765-d78b-bdc3-f8243c98e81f@linux.ibm.com>
+        Mon, 30 May 2022 12:00:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9959748E59;
+        Mon, 30 May 2022 08:56:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4DDFCB80E2E;
+        Mon, 30 May 2022 15:56:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19569C36AE7;
+        Mon, 30 May 2022 15:56:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653926182;
+        bh=oY2To6Dq8E4ZlSNzE9OvSOJ4Ec6SlQMPkQKRYIbD1j4=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=LAYG1a7rWuqBm9UiZAAn/vKEnZDJg/f4xBpHZZKdElqCHN070n/QJ3w70BKDdGFdZ
+         7szxQd3rnBJmIkjXnkTXxNchF3dQ1Nw+4Kyz2poAZrfu/OKNjCwqzNFU9xcie1Un57
+         PVnF99w8tArh1pbxOxGwtr1pkrlwAZ/VZ04ZLoeAlHejvJrwPp1leTzDt5TsRVOw8T
+         /uj8NtafELR0Sn/4EYy8GGZ6V9h+ahcR5JpRKeal1l1xLYXCahBr1wenBnx7Rx+nA1
+         VuIaJqM03bUvtOMIR7hUcGf5NSpvPLsIwkpbmKj/rD/LvTGGZgVCbol6f/mOEJRo3V
+         1IwW85crae4fw==
+Received: by mail-oi1-f178.google.com with SMTP id y131so6972376oia.6;
+        Mon, 30 May 2022 08:56:22 -0700 (PDT)
+X-Gm-Message-State: AOAM530cJFhvS+f2WprL+8x3daK6PiB6sFZp4Q8o+J7AhrU/dzp4qJKf
+        u8DiE7hoWUF5EPznEDjufxHMadPtwPR+HzLnwFo=
+X-Google-Smtp-Source: ABdhPJx1z4xy7gzvzyGPxKXo7f7InAUbUfc1mL0H8QmD86R83QH82XT9ytmiExoj5XZx70/VX0uvCQ6dvxRVUKn4xkw=
+X-Received: by 2002:a05:6808:f88:b0:32b:d10f:cc6b with SMTP id
+ o8-20020a0568080f8800b0032bd10fcc6bmr8351264oiw.228.1653926181276; Mon, 30
+ May 2022 08:56:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <33fd4731-9765-d78b-bdc3-f8243c98e81f@linux.ibm.com>
+References: <20220530132425.1929512-1-sashal@kernel.org> <20220530132425.1929512-147-sashal@kernel.org>
+ <CAMj1kXGAuKTqV0S4jxticZJp7ChtqqeXjn7SV1E83p5yVE1pkw@mail.gmail.com> <YpTh9dan5lJgH2aL@kroah.com>
+In-Reply-To: <YpTh9dan5lJgH2aL@kroah.com>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Mon, 30 May 2022 17:56:09 +0200
+X-Gmail-Original-Message-ID: <CAMj1kXGO-1ccxaK_GnE+d2yc0XkF5y9ZawXXC3ypeGAanv9VtA@mail.gmail.com>
+Message-ID: <CAMj1kXGO-1ccxaK_GnE+d2yc0XkF5y9ZawXXC3ypeGAanv9VtA@mail.gmail.com>
+Subject: Re: [PATCH AUTOSEL 5.18 147/159] ARM: 9201/1: spectre-bhb: rely on
+ linker to emit cross-section literal loads
+To:     Greg KH <gregkh@linuxfoundation.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>
+Cc:     Sasha Levin <sashal@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "# 3.4.x" <stable@vger.kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Nicolas Pitre <nico@fluxnic.net>,
+        Keith Packard <keithpac@amazon.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 30, 2022 at 11:35:10AM +0200, Christian Borntraeger wrote:
-> 
-> 
-> Am 29.05.22 um 22:33 schrieb Heiko Carstens:
-> [...]
-> > 
-> > Guess the patch below on top of your patch is what we want.
-> > Just for clarification: if gmap is not NULL then the process is a kvm
-> > process. So, depending on the workload, this optimization makes sense.
-> > 
-> > diff --git a/arch/s390/mm/fault.c b/arch/s390/mm/fault.c
-> > index 4608cc962ecf..e1d40ca341b7 100644
-> > --- a/arch/s390/mm/fault.c
-> > +++ b/arch/s390/mm/fault.c
-> > @@ -436,12 +436,11 @@ static inline vm_fault_t do_exception(struct pt_regs *regs, int access)
-> >   	/* The fault is fully completed (including releasing mmap lock) */
-> >   	if (fault & VM_FAULT_COMPLETED) {
-> > -		/*
-> > -		 * Gmap will need the mmap lock again, so retake it.  TODO:
-> > -		 * only conditionally take the lock when CONFIG_PGSTE set.
-> > -		 */
-> > -		mmap_read_lock(mm);
-> > -		goto out_gmap;
-> > +		if (gmap) {
-> > +			mmap_read_lock(mm);
-> > +			goto out_gmap;
-> > +		}
-> > +		goto out;
-> 
-> Yes, that makes sense. With that
-> 
-> Acked-by: Christian Borntraeger <borntraeger@linux.ibm.com>
+On Mon, 30 May 2022 at 17:25, Greg KH <gregkh@linuxfoundation.org> wrote:
+>
+> On Mon, May 30, 2022 at 03:32:47PM +0200, Ard Biesheuvel wrote:
+> > AUTONAK
+> >
+> > As discussed before, please disregard all patches authored by me when
+> > running the bot.
+>
+> Ok, but why wasn't this spectre-bhb commit asked to be backported to
+> stable in the first place?
 
-Looks sane, thanks Heiko, Christian.  I'll cook another one.
+Because it doesn't belong in -stable. Hence the lack of cc:stable or
+fixes: tags.
 
--- 
-Peter Xu
+> Do older kernels not need these types of
+> fixes?
+>
 
+This commit was part of a series of six, two of which were bug fixes
+and had fixes: tags. They do not have cc:stable tags because the
+'fixed' patches had not been backported yet when they were sent out.
+
+So those are clear candidates for -stable, and as far as I can tell,
+they have already been backported.
+
+This patch does not fix a bug. It makes the asm code more resilient to
+potential bugs introduced inadvertently by future changes, which will
+be harder to detect now that we have three different versions of the
+exception vector table. (Any given system will only exercise one of
+the three, depending on whether and which Spectre-BHB workaround it
+requires)
+
+I build and boot test my patches carefully, and so I consciously
+decided that the regression risk of backporting this patch outweighs
+the benefits. This is why I did not add a cc:stable or fixes: tag. If
+a tag existed that said 'do not backport this unless explicitly
+requested', I would have added it.
+
+I would expect anyone that proposes this patch for -stable to be as
+diligent in ensuring that the patch is safe for backporting, which
+includes building the code with older GCC versions that those stable
+kernels still support, and boot testing the result on actual hardware.
+
+If this is part of the AUTOSEL workflow, then I stand corrected. But
+even then, this does not mean that the patch *belongs* in -stable. As
+you know, I enjoy throwing stable-kernel-rules.rst in your face, and I
+am pretty sure that using a bot to find patches that apply cleanly and
+happen not to cause build breakage is not covered by the criteria
+defined by that document by any stretch of the imagination.
+
+On top of that, I feel that 'saving' precious stable maintainer's time
+by using a bot to offload this burden to the community uninvited is
+really not ok. We work very hard to keep highly heterogeneous
+architectures such as ARM working across all supported platforms, and
+this is work enough as it is without all the bogus patches that
+AUTOSEL digs up without *any* justification beyond 'hey, it applies!'
