@@ -2,47 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4191BC4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5748AC352AA
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:28:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241625AbiE3O0U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:26:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40158 "EHLO
+        id S241672AbiE3O0Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:26:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241390AbiE3ORd (ORCPT
+        with ESMTP id S241413AbiE3ORe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:17:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 593A58FFAE;
-        Mon, 30 May 2022 06:46:06 -0700 (PDT)
+        Mon, 30 May 2022 10:17:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF6CD559B;
+        Mon, 30 May 2022 06:46:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1B3C5B80D89;
-        Mon, 30 May 2022 13:46:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82C0CC3411A;
-        Mon, 30 May 2022 13:46:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4ABC960FD4;
+        Mon, 30 May 2022 13:46:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FEB7C3411F;
+        Mon, 30 May 2022 13:46:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918363;
-        bh=YjcHEhCxy8AQgAgWf5d6Py/JLOr5IKgh0bz0IGQIrzc=;
+        s=k20201202; t=1653918398;
+        bh=4FSrYTcjJKXPVdDoyaJUWxXh5uWevkD+L6Qli9rjWgU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bF4YDI83Mi95WcUNiuxvx8CpC4lkVaQm28dwC2KGozZ9BHnir5Joz/DGNIIjCeaKt
-         aSxFN2+r0SyI3nzGd+XQLVgDTNptEPOrCqoomQEBKoH2X4w8QzgVXq4VWtHMrj2G2r
-         +KGfFmByibTxeL/M/L4LVEfgKFE8lg2R+FUCJQWLAIPlV6M+JGLltvlO0sYPTlYpLl
-         JyeXf2lns/ySps2PWg3ZQSVd+UO3fZ/KUXmaeo/FGUs9EHgUFamvAUWv2lmINqswzd
-         cXRJzFvcTLP+HzGI5knkpuAu4Lzj/qhWkzMMVlByE6BOxcOwSnOHu/RKZTtPm8usgr
-         TmjT2o/fSZPag==
+        b=UrjrfzxjFNl5zwZbxgg/sUuemVB7evbnl9GRKOUxpibKtfXeWq8xKjOZJmPKW2N+k
+         1PzALp4KErEHkw0e0Z4glyboJMsoZnP/H5AHPYwB8wOknbFH+snxHs1vQiBSPl2juB
+         uOM8ASIcRk5UKoYaqQV8+taP/PLumT/MrK9Ezzn0YpEUW9TnR0KS0hSm710Rncf3Ub
+         Bd2ZOUyKVUP4I31dRAmXxp5ylfbdUxZBbHQyfpKXSJDL9d085j0MzRPJElT+xx2zrS
+         Id/QlIb4vtc5SGP8mepuNJgLnIdFU2Ge90DKBp8tfQdsZk+YCKsYZRaLtiGfhXwpEg
+         LuzamxuTxnbWg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
-        syzkaller <syzkaller@googlegroups.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        pkshih@realtek.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 54/76] rtlwifi: Use pr_warn instead of WARN_ONCE
-Date:   Mon, 30 May 2022 09:43:44 -0400
-Message-Id: <20220530134406.1934928-54-sashal@kernel.org>
+Cc:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        kernel test robot <lkp@intel.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Sasha Levin <sashal@kernel.org>, wg@grandegger.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, ndesaulniers@google.com,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: [PATCH AUTOSEL 5.10 67/76] can: mcp251xfd: silence clang's -Wunaligned-access warning
+Date:   Mon, 30 May 2022 09:43:57 -0400
+Message-Id: <20220530134406.1934928-67-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530134406.1934928-1-sashal@kernel.org>
 References: <20220530134406.1934928-1-sashal@kernel.org>
@@ -54,37 +57,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongliang Mu <mudongliangabcd@gmail.com>
+From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 
-[ Upstream commit ad732da434a2936128769216eddaece3b1af4588 ]
+[ Upstream commit 1a6dd9996699889313327be03981716a8337656b ]
 
-This memory allocation failure can be triggered by fault injection or
-high pressure testing, resulting a WARN.
+clang emits a -Wunaligned-access warning on union
+mcp251xfd_tx_ojb_load_buf.
 
-Fix this by replacing WARN with pr_warn.
+The reason is that field hw_tx_obj (not declared as packed) is being
+packed right after a 16 bits field inside a packed struct:
 
-Reported-by: syzkaller <syzkaller@googlegroups.com>
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220511014453.1621366-1-dzm91@hust.edu.cn
+| union mcp251xfd_tx_obj_load_buf {
+| 	struct __packed {
+| 		struct mcp251xfd_buf_cmd cmd;
+| 		  /* ^ 16 bits fields */
+| 		struct mcp251xfd_hw_tx_obj_raw hw_tx_obj;
+| 		  /* ^ not declared as packed */
+| 	} nocrc;
+| 	struct __packed {
+| 		struct mcp251xfd_buf_cmd_crc cmd;
+| 		struct mcp251xfd_hw_tx_obj_raw hw_tx_obj;
+| 		__be16 crc;
+| 	} crc;
+| } ____cacheline_aligned;
+
+Starting from LLVM 14, having an unpacked struct nested in a packed
+struct triggers a warning. c.f. [1].
+
+This is a false positive because the field is always being accessed
+with the relevant put_unaligned_*() function. Adding __packed to the
+structure declaration silences the warning.
+
+[1] https://github.com/llvm/llvm-project/issues/55520
+
+Link: https://lore.kernel.org/all/20220518114357.55452-1-mailhol.vincent@wanadoo.fr
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Reported-by: kernel test robot <lkp@intel.com>
+Tested-by: Nathan Chancellor <nathan@kernel.org> # build
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/realtek/rtlwifi/usb.c | 2 +-
+ drivers/net/can/spi/mcp251xfd/mcp251xfd.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/realtek/rtlwifi/usb.c b/drivers/net/wireless/realtek/rtlwifi/usb.c
-index 06e073defad6..c6e4fda7e431 100644
---- a/drivers/net/wireless/realtek/rtlwifi/usb.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/usb.c
-@@ -1015,7 +1015,7 @@ int rtl_usb_probe(struct usb_interface *intf,
- 	hw = ieee80211_alloc_hw(sizeof(struct rtl_priv) +
- 				sizeof(struct rtl_usb_priv), &rtl_ops);
- 	if (!hw) {
--		WARN_ONCE(true, "rtl_usb: ieee80211 alloc failed\n");
-+		pr_warn("rtl_usb: ieee80211 alloc failed\n");
- 		return -ENOMEM;
- 	}
- 	rtlpriv = hw->priv;
+diff --git a/drivers/net/can/spi/mcp251xfd/mcp251xfd.h b/drivers/net/can/spi/mcp251xfd/mcp251xfd.h
+index fa1246e39980..766dbd19bba6 100644
+--- a/drivers/net/can/spi/mcp251xfd/mcp251xfd.h
++++ b/drivers/net/can/spi/mcp251xfd/mcp251xfd.h
+@@ -426,7 +426,7 @@ struct mcp251xfd_hw_tef_obj {
+ /* The tx_obj_raw version is used in spi async, i.e. without
+  * regmap. We have to take care of endianness ourselves.
+  */
+-struct mcp251xfd_hw_tx_obj_raw {
++struct __packed mcp251xfd_hw_tx_obj_raw {
+ 	__le32 id;
+ 	__le32 flags;
+ 	u8 data[sizeof_field(struct canfd_frame, data)];
 -- 
 2.35.1
 
