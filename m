@@ -2,269 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32D59C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 15:58:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A248C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 16:00:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237605AbiE3P65 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 11:58:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51286 "EHLO
+        id S238912AbiE3P75 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 11:59:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242133AbiE3P6k (ORCPT
+        with ESMTP id S241127AbiE3P7g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 11:58:40 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0CC7DB85C
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 08:50:12 -0700 (PDT)
+        Mon, 30 May 2022 11:59:36 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7122C22BDB
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 08:53:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653925812;
+        s=mimecast20190719; t=1653925982;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=LHfTPjbR/ocaEKI2euekEd9CUNVAA+DZiRkvQmDrTN0=;
-        b=cWj2qW6em3UkLnL8lLF3h+s109+cTNhCSf29FcUozL2YwjAgEnMugiBl9yCd+MBLKBOFJv
-        hkdUqdhFFDmTzdek+9+P9VKllpYNLiE++BGH/XKbQIuSVZZUdWaCLsssGqIWxE3+lpodsz
-        lLvDDirTVxvPR5oqnuxjiBcv8r36ChU=
-Received: from mail-pg1-f198.google.com (mail-pg1-f198.google.com
- [209.85.215.198]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=bDYue/Afd3VGZHzU7tYF7qy5xBeBUpqe85rLuoAiRcE=;
+        b=AkXHNJKvAQRHb5OqI+OhXnw4AlFTHU7SQ25I25r8DrkTB9nwXx2U3S7uy3yWEhfxPKMgZ0
+        MCHoCCU4ElbTk7DKNd2mXmRpWE6tOdwsDRWpn7scMraYzymGuve2EYFM1vMWpJYkKpJQS0
+        OjtcJUf23O2R/uhMV8v3cei4In0oe2Y=
+Received: from mail-io1-f72.google.com (mail-io1-f72.google.com
+ [209.85.166.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-568-9_vtsOcnMhqPFkET_wzSnA-1; Mon, 30 May 2022 11:50:10 -0400
-X-MC-Unique: 9_vtsOcnMhqPFkET_wzSnA-1
-Received: by mail-pg1-f198.google.com with SMTP id 1-20020a630d41000000b003fbeb988042so1205801pgn.1
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 08:50:10 -0700 (PDT)
+ us-mta-439-JXIUKUVtNoSifQX8E4lzFQ-1; Mon, 30 May 2022 11:53:01 -0400
+X-MC-Unique: JXIUKUVtNoSifQX8E4lzFQ-1
+Received: by mail-io1-f72.google.com with SMTP id n19-20020a056602341300b0066850b49e09so3662090ioz.12
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 08:53:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LHfTPjbR/ocaEKI2euekEd9CUNVAA+DZiRkvQmDrTN0=;
-        b=0sS9kstRB9SIkM8VkqEuhL1d+LPzsj/DdNBJbKiOTdoQLIge2xn4Ve0sVe8a1y9/A1
-         XuRcS/v2qIT2FDFqjuFvGufarqLEL7Yz82YYSPKkuq/iubA1Vh4BtzzLOoaQBY/yLifr
-         kMkmRI+Pw9qf/zf1H3ZECCXM3zDpiBIRLRN2M0F9RnjF/AcyAzRFcIodbs3E86NbSxlh
-         7z/k93PyRBs/C8ycnP3sUfYNKMc8GNYSmX9SyBAjgVlkpV6kYDphqkFqdi20/zntYE6O
-         DDODn7APTXL7uK4oBBkwvXPZe5poQxd5ut3qRBRO+kniWQ9+dlBmr+qsrKvnJcmsjSAL
-         Hnwg==
-X-Gm-Message-State: AOAM530Ek/098Qj4ZuDzDSr/NHfXiml6eekvnMu47i9bOFaXvUai/BzT
-        H3Kej95/Q3D/yUN6l4U1H5/LIr2RE5NoZVDpAYYqVonNb1jhCxSjf7K+nGl2nZVMopbMWeqo2Vu
-        DRwT6wi7UsXhsZdlt7qC4U5oJz/ksKfnD8ak/93u8
-X-Received: by 2002:a17:902:c412:b0:161:af8b:f478 with SMTP id k18-20020a170902c41200b00161af8bf478mr57106608plk.67.1653925809329;
-        Mon, 30 May 2022 08:50:09 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwt/D2VuCWPTO7sVCA8hoMuQ8Fn3PJTSQG33YbBFyxoNdQnbLzbKX3nn4EZ/Unmr7KcDDyuk40Jn4yLRKcdgdY=
-X-Received: by 2002:a17:902:c412:b0:161:af8b:f478 with SMTP id
- k18-20020a170902c41200b00161af8bf478mr57106583plk.67.1653925809012; Mon, 30
- May 2022 08:50:09 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=bDYue/Afd3VGZHzU7tYF7qy5xBeBUpqe85rLuoAiRcE=;
+        b=GYBoQ4BLZwgavD0YrQ3fP6ENDrjnpkDGTKp1DEcYFgM2A1F5FhYh6xA+zi9xV2YRfm
+         MCuAyBxe3x2oJC4mTaqCEfudUDQLw8aZ94nWUIu9WcKZbhXZqMMHGPU1lIbMOOFvORQT
+         q0KKM2mBrXbWMEtz4vC685JR3X+krm+zG6BT1F80tIbk/2cu1MXGY5tAm80MwCfeAdCi
+         hDOVkVc95KuNoiSbYn7l7k/tvGycJvo/ZrBfH8aeF7Z3NEVyEMfkcKFKTQxcpXyisY6F
+         nGkM321zzNcTb6Pu6LdPNPBIkPUmQyY9zwW+mCkmEC7zu8qWJAhnI5fuMnPXTNZdj5Cd
+         Ydng==
+X-Gm-Message-State: AOAM532dWIcSH0lzGwdFw8QgJpnyQct6y4Nbsgiqi5uovvrchTgAhLEJ
+        Uhhe7N5CP67Z2wkXhD0eH6BiftjtaYVhrHx60OVmPpU4d3pkJBaI7CKp1Q38gIA7t6M0be1L53i
+        ZXFs5cPc6yjaDVc145ilqygYJ
+X-Received: by 2002:a5d:9cc8:0:b0:663:2899:4b8 with SMTP id w8-20020a5d9cc8000000b00663289904b8mr16857364iow.192.1653925980593;
+        Mon, 30 May 2022 08:53:00 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyKQIoyyqGc41UCjMUnObS0GZ5Lh8IPSVLY8KDGIOa5YRMfMwdzANPXLWIG/1E7oUnwvcvO1w==
+X-Received: by 2002:a5d:9cc8:0:b0:663:2899:4b8 with SMTP id w8-20020a5d9cc8000000b00663289904b8mr16857337iow.192.1653925980357;
+        Mon, 30 May 2022 08:53:00 -0700 (PDT)
+Received: from xz-m1.local (cpec09435e3e0ee-cmc09435e3e0ec.cpe.net.cable.rogers.com. [99.241.198.116])
+        by smtp.gmail.com with ESMTPSA id 66-20020a021d45000000b0032e75bfe344sm2781109jaj.171.2022.05.30.08.52.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 May 2022 08:52:59 -0700 (PDT)
+Date:   Mon, 30 May 2022 11:52:54 -0400
+From:   Peter Xu <peterx@redhat.com>
+To:     Christian Borntraeger <borntraeger@linux.ibm.com>
+Cc:     Heiko Carstens <hca@linux.ibm.com>, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, Will Deacon <will@kernel.org>,
+        Matt Turner <mattst88@gmail.com>, linux-s390@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Brian Cain <bcain@quicinc.com>, Borislav Petkov <bp@alien8.de>,
+        linux-alpha@vger.kernel.org, Alistair Popple <apopple@nvidia.com>,
+        Jonas Bonn <jonas@southpole.se>,
+        linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
+        linux-snps-arc@lists.infradead.org,
+        Vineet Gupta <vgupta@kernel.org>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Rich Felker <dalias@libc.org>, sparclinux@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        David Hildenbrand <david@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        "James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>,
+        linux-xtensa@linux-xtensa.org, linux-sh@vger.kernel.org,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        linux-m68k@lists.linux-m68k.org, linuxppc-dev@lists.ozlabs.org,
+        Richard Henderson <rth@twiddle.net>,
+        Guo Ren <guoren@kernel.org>, linux-parisc@vger.kernel.org,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Helge Deller <deller@gmx.de>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        linux-um@lists.infradead.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        openrisc@lists.librecores.org,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        linux-hexagon@vger.kernel.org, Andy Lutomirski <luto@kernel.org>,
+        Stafford Horne <shorne@gmail.com>, linux-csky@vger.kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-mips@vger.kernel.org, Paul Mackerras <paulus@samba.org>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Hugh Dickins <hughd@google.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        linux-riscv@lists.infradead.org, Max Filippov <jcmvbkbc@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Chris Zankel <chris@zankel.net>,
+        Michal Simek <monstr@monstr.eu>, x86@kernel.org,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Richard Weinberger <richard@nod.at>,
+        Ingo Molnar <mingo@kernel.org>
+Subject: Re: [PATCH v4] mm: Avoid unnecessary page fault retires on shared
+ memory types
+Message-ID: <YpToVpjXmdFqGOpY@xz-m1.local>
+References: <20220527193936.30678-1-peterx@redhat.com>
+ <YpPYkzbrQmy4FjrI@osiris>
+ <33fd4731-9765-d78b-bdc3-f8243c98e81f@linux.ibm.com>
 MIME-Version: 1.0
-References: <20220518205924.399291-1-benjamin.tissoires@redhat.com> <799ae406-ce12-f0d4-d213-4dd455236e49@linux.intel.com>
-In-Reply-To: <799ae406-ce12-f0d4-d213-4dd455236e49@linux.intel.com>
-From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Date:   Mon, 30 May 2022 17:49:57 +0200
-Message-ID: <CAO-hwJJwznZqLgeULJ+fksH0VfJ4Jjszut_+zZgi2KEUyPCdbw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 00/17] Introduce eBPF support for HID devices
-To:     Tero Kristo <tero.kristo@linux.intel.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
-        lkml <linux-kernel@vger.kernel.org>,
-        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <33fd4731-9765-d78b-bdc3-f8243c98e81f@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Tero,
+On Mon, May 30, 2022 at 11:35:10AM +0200, Christian Borntraeger wrote:
+> 
+> 
+> Am 29.05.22 um 22:33 schrieb Heiko Carstens:
+> [...]
+> > 
+> > Guess the patch below on top of your patch is what we want.
+> > Just for clarification: if gmap is not NULL then the process is a kvm
+> > process. So, depending on the workload, this optimization makes sense.
+> > 
+> > diff --git a/arch/s390/mm/fault.c b/arch/s390/mm/fault.c
+> > index 4608cc962ecf..e1d40ca341b7 100644
+> > --- a/arch/s390/mm/fault.c
+> > +++ b/arch/s390/mm/fault.c
+> > @@ -436,12 +436,11 @@ static inline vm_fault_t do_exception(struct pt_regs *regs, int access)
+> >   	/* The fault is fully completed (including releasing mmap lock) */
+> >   	if (fault & VM_FAULT_COMPLETED) {
+> > -		/*
+> > -		 * Gmap will need the mmap lock again, so retake it.  TODO:
+> > -		 * only conditionally take the lock when CONFIG_PGSTE set.
+> > -		 */
+> > -		mmap_read_lock(mm);
+> > -		goto out_gmap;
+> > +		if (gmap) {
+> > +			mmap_read_lock(mm);
+> > +			goto out_gmap;
+> > +		}
+> > +		goto out;
+> 
+> Yes, that makes sense. With that
+> 
+> Acked-by: Christian Borntraeger <borntraeger@linux.ibm.com>
 
-On Fri, May 27, 2022 at 9:26 AM Tero Kristo <tero.kristo@linux.intel.com> wrote:
->
-> Hi Benjamin,
->
-> I noticed a couple of issues with this series, but was able to
-> fix/workaround them locally and got my USI program working with it.
->
-> 1) You seem to be missing tools/include/uapi/linux/hid_bpf.h from index,
-> I wasn't able to compile the selftests (or my own program) without
-> adding this. It is included from
-> tools/testing/selftests/bpf/prog_tests/hid.c: #include <linux/hid_bpf.h>
+Looks sane, thanks Heiko, Christian.  I'll cook another one.
 
-Hmm... I initially thought that this would be "fixed" when the kernel
-headers are properly installed, so I don't need to manually keep a
-duplicate in the tools tree. But now that you mention it, I probably
-need to do it the way you mention it.
-
->
-> 2) The limitation of needing to hardcode the size for hid_bpf_get_data()
-> seems somewhat worrying, especially as the kernel side limits this to
-> the ctx->allocated_size. I used a sufficiently large number for my
-> purposes for now (256) which seems to work, but how should I handle my
-> case where I basically need to read the whole input report and parse
-> certain portions of it? How does the HID subsystem select the size of
-> the ctx->allocated_size?
-
-The allocated size is based on the maximum size of the reports allowed
-in the device. It is dynamically computed based on the report
-descriptor.
-
-I also had the exact same issue you mentioned (dynamically retrieve
-the whole report), and that's why I added a couple of things:
-- struct hid_bpf_ctx->allocated_size which gives the allocated size,
-so you can use this as an upper bound in a for loop
-- the allocated size is guaranteed to be a multiple of 64 bytes.
-
-Which means you can have the following for loop:
-
-for (i = 0; i * 64 < hid_ctx->allocated_size && i < 64; i++) {
-  data = hid_bpf_get_data(hid_ctx, i * 64, 64);
-  /* some more processing */
-}
-
-("i < 64" makes an upper bound of 4KB of data, which should be enough
-in most cases).
-
-Cheers,
-Benjamin
-
->
-> -Tero
->
-> On 18/05/2022 23:59, Benjamin Tissoires wrote:
-> > Hi,
-> >
-> > And here comes the v5 of the HID-BPF series.
-> >
-> > I managed to achive the same functionalities than v3 this time.
-> > Handling per-device BPF program was "interesting" to say the least,
-> > but I don't know if we can have a generic BPF way of handling such
-> > situation.
-> >
-> > The interesting bits is that now the BPF core changes are rather small,
-> > and I am mostly using existing facilities.
-> > I didn't managed to write selftests for the RET_PTR_TO_MEM kfunc,
-> > because I can not call kmalloc while in a SEC("tc") program to match
-> > what the other kfunc tests are doing.
-> > And AFAICT, the most interesting bits would be to implement verifier
-> > selftests, which are way out of my league, given that they are
-> > implemented as plain bytecode.
-> >
-> > The logic is the following (see also the last patch for some more
-> > documentation):
-> > - hid-bpf first preloads a BPF program in the kernel that does a few
-> >    things:
-> >     * find out which attach_btf_id are associated with our trace points
-> >     * adds a bpf_tail_call() BPF program that I can use to "call" any
-> >       other BPF program stored into a jump table
-> >     * monitors the releases of struct bpf_prog, and when there are no
-> >       other users than us, detach the bpf progs from the HID devices
-> > - users then declare their tracepoints and then call
-> >    hid_bpf_attach_prog() in a SEC("syscall") program
-> > - hid-bpf then calls multiple time the bpf_tail_call() program with a
-> >    different index in the jump table whenever there is an event coming
-> >    from a matching HID device
-> >
-> > Note that I am tempted to pin an "attach_hid_program" in the bpffs so
-> > that users don't need to declare one, but I am afraid this will be one
-> > more API to handle, so maybe not.
-> >
-> > I am also wondering if I should not strip out hid_bpf_jmp_table of most
-> > of its features and implement everything as a BPF program. This might
-> > remove the need to add the kernel light skeleton implementations of map
-> > modifications, and might also possibly be more re-usable for other
-> > subsystems. But every plan I do in my head involves a lot of back and
-> > forth between the kernel and BPF to achieve the same, which doesn't feel
-> > right. The tricky part is the RCU list of programs that is stored in each
-> > device and also the global state of the jump table.
-> > Anyway, something to look for in a next version if there is a push for it.
-> >
-> > FWIW, patch 1 is something I'd like to get merged sooner. With 2
-> > colleagues, we are also working on supporting the "revoke" functionality
-> > of a fd for USB and for hidraw. While hidraw can be emulated with the
-> > current features, we need the syscall kfuncs for USB, because when we
-> > revoke a USB access, we also need to kick out the user, and for that, we
-> > need to actually execute code in the kernel from a userspace event.
-> >
-> > Anyway, happy reviewing.
-> >
-> > Cheers,
-> > Benjamin
-> >
-> > [Patch series based on commit 68084a136420 ("selftests/bpf: Fix building bpf selftests statically")
-> > in the bpf-next tree]
-> >
-> > Benjamin Tissoires (17):
-> >    bpf/btf: also allow kfunc in tracing and syscall programs
-> >    bpf/verifier: allow kfunc to return an allocated mem
-> >    bpf: prepare for more bpf syscall to be used from kernel and user
-> >      space.
-> >    libbpf: add map_get_fd_by_id and map_delete_elem in light skeleton
-> >    HID: core: store the unique system identifier in hid_device
-> >    HID: export hid_report_type to uapi
-> >    HID: initial BPF implementation
-> >    selftests/bpf: add tests for the HID-bpf initial implementation
-> >    HID: bpf: allocate data memory for device_event BPF programs
-> >    selftests/bpf/hid: add test to change the report size
-> >    HID: bpf: introduce hid_hw_request()
-> >    selftests/bpf: add tests for bpf_hid_hw_request
-> >    HID: bpf: allow to change the report descriptor
-> >    selftests/bpf: add report descriptor fixup tests
-> >    samples/bpf: add new hid_mouse example
-> >    selftests/bpf: Add a test for BPF_F_INSERT_HEAD
-> >    Documentation: add HID-BPF docs
-> >
-> >   Documentation/hid/hid-bpf.rst                 | 528 ++++++++++
-> >   Documentation/hid/index.rst                   |   1 +
-> >   drivers/hid/Kconfig                           |   2 +
-> >   drivers/hid/Makefile                          |   2 +
-> >   drivers/hid/bpf/Kconfig                       |  19 +
-> >   drivers/hid/bpf/Makefile                      |  11 +
-> >   drivers/hid/bpf/entrypoints/Makefile          |  88 ++
-> >   drivers/hid/bpf/entrypoints/README            |   4 +
-> >   drivers/hid/bpf/entrypoints/entrypoints.bpf.c |  78 ++
-> >   .../hid/bpf/entrypoints/entrypoints.lskel.h   | 782 ++++++++++++++
-> >   drivers/hid/bpf/hid_bpf_dispatch.c            | 565 ++++++++++
-> >   drivers/hid/bpf/hid_bpf_dispatch.h            |  28 +
-> >   drivers/hid/bpf/hid_bpf_jmp_table.c           | 587 +++++++++++
-> >   drivers/hid/hid-core.c                        |  43 +-
-> >   include/linux/btf.h                           |   7 +
-> >   include/linux/hid.h                           |  29 +-
-> >   include/linux/hid_bpf.h                       | 144 +++
-> >   include/uapi/linux/hid.h                      |  12 +
-> >   include/uapi/linux/hid_bpf.h                  |  25 +
-> >   kernel/bpf/btf.c                              |  47 +-
-> >   kernel/bpf/syscall.c                          |  10 +-
-> >   kernel/bpf/verifier.c                         |  72 +-
-> >   samples/bpf/.gitignore                        |   1 +
-> >   samples/bpf/Makefile                          |  23 +
-> >   samples/bpf/hid_mouse.bpf.c                   | 134 +++
-> >   samples/bpf/hid_mouse.c                       | 157 +++
-> >   tools/lib/bpf/skel_internal.h                 |  23 +
-> >   tools/testing/selftests/bpf/config            |   3 +
-> >   tools/testing/selftests/bpf/prog_tests/hid.c  | 990 ++++++++++++++++++
-> >   tools/testing/selftests/bpf/progs/hid.c       | 222 ++++
-> >   30 files changed, 4593 insertions(+), 44 deletions(-)
-> >   create mode 100644 Documentation/hid/hid-bpf.rst
-> >   create mode 100644 drivers/hid/bpf/Kconfig
-> >   create mode 100644 drivers/hid/bpf/Makefile
-> >   create mode 100644 drivers/hid/bpf/entrypoints/Makefile
-> >   create mode 100644 drivers/hid/bpf/entrypoints/README
-> >   create mode 100644 drivers/hid/bpf/entrypoints/entrypoints.bpf.c
-> >   create mode 100644 drivers/hid/bpf/entrypoints/entrypoints.lskel.h
-> >   create mode 100644 drivers/hid/bpf/hid_bpf_dispatch.c
-> >   create mode 100644 drivers/hid/bpf/hid_bpf_dispatch.h
-> >   create mode 100644 drivers/hid/bpf/hid_bpf_jmp_table.c
-> >   create mode 100644 include/linux/hid_bpf.h
-> >   create mode 100644 include/uapi/linux/hid_bpf.h
-> >   create mode 100644 samples/bpf/hid_mouse.bpf.c
-> >   create mode 100644 samples/bpf/hid_mouse.c
-> >   create mode 100644 tools/testing/selftests/bpf/prog_tests/hid.c
-> >   create mode 100644 tools/testing/selftests/bpf/progs/hid.c
-> >
->
+-- 
+Peter Xu
 
