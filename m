@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CF83C3526F
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:28:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42F99C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:28:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237849AbiE3O23 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:28:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42818 "EHLO
+        id S239566AbiE3O2i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:28:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241363AbiE3ORc (ORCPT
+        with ESMTP id S241365AbiE3ORc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 30 May 2022 10:17:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC6748E1B3;
-        Mon, 30 May 2022 06:45:40 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05E658FD54;
+        Mon, 30 May 2022 06:45:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A00E8B80DA8;
-        Mon, 30 May 2022 13:45:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46E87C3411C;
-        Mon, 30 May 2022 13:45:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 95E8160EC3;
+        Mon, 30 May 2022 13:45:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 037DFC36AE7;
+        Mon, 30 May 2022 13:45:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918338;
-        bh=4XChG8Mn9Ckp+o5xpIAJPICimju0Ixs9wovnr8tIqy0=;
+        s=k20201202; t=1653918347;
+        bh=eSwQJ4MdzEqPLyRF0dMCA29MT+ipw7FAuQyfMB7EKTo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gtZ8RF2EEAp+MKLhzMWlkl+JX60tXZBr8fbihFazYwa1akByQht41quIe7U9Ym+N0
-         Dpz9lBSrjGr4vlKEKX1m/7NAnZAme3H5fpcalyqYBZ0Dq/1mOjFtmtsRI8DJ5dufz+
-         +cMi3jxJLa7P0RgaxrtuXr3/qEtLSdXiUAuXYK0v8NUDjgQv/i8QtOF0DOTo0ksd38
-         JOHNQl+4HtyWRekqHVqFfQxhv4aYsATW1E8K650HBYT02UeztPWVnA4Xjrhcl9V5Sa
-         3LW4fx2E14jEwcNGeai7X7FlLfa/yAC7csEOWCp3xBQ0PTrW0MIsbFsm6CYE96vqBh
-         epYaJL/OSIIgA==
+        b=iIs6a9U5Px7psAqlMuQ6B6Bei6l/CVkwsGhWhXcTEBluLTtXqwCAgwbufHu7OaFlD
+         L6Cb/u5f9TRpIGp/szp9XFxV6LfPeDhiD5OBd859p8iYjs0gz0nWq45jeruvXMrgXc
+         DiRqBSmeux/y+K5SYODJ2wEY6bBu/W6HAnwl44pRkVxNT6VGXe4ziSVvFKwMATRsgX
+         vVrcJSbrhY7uhLOtkO3opK3w32GzSfAExKwyI7LP0hVj2y3fooq7IXGWmaKozjVn5H
+         5fzB58Ij7j0rsUJiq50j15XVWwqoyK75c23qG2SPYE8v5He6c1JEkmLlgcpEZZdZV+
+         aOpy344KjSzIw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Petr Machata <petrm@nvidia.com>,
-        Maksym Yaremchuk <maksymy@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 41/76] mlxsw: spectrum_dcb: Do not warn about priority changes
-Date:   Mon, 30 May 2022 09:43:31 -0400
-Message-Id: <20220530134406.1934928-41-sashal@kernel.org>
+Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>,
+        steven.eckhoff.opensource@gmail.com, lgirdwood@gmail.com,
+        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.10 45/76] ASoC: tscs454: Add endianness flag in snd_soc_component_driver
+Date:   Mon, 30 May 2022 09:43:35 -0400
+Message-Id: <20220530134406.1934928-45-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530134406.1934928-1-sashal@kernel.org>
 References: <20220530134406.1934928-1-sashal@kernel.org>
@@ -54,82 +53,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Petr Machata <petrm@nvidia.com>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-[ Upstream commit b6b584562cbe7dc357083459d6dd5b171e12cadb ]
+[ Upstream commit ff69ec96b87dccb3a29edef8cec5d4fefbbc2055 ]
 
-The idea behind the warnings is that the user would get warned in case when
-more than one priority is configured for a given DSCP value on a netdevice.
+The endianness flag is used on the CODEC side to specify an
+ambivalence to endian, typically because it is lost over the hardware
+link. This device receives audio over an I2S DAI and as such should
+have endianness applied.
 
-The warning is currently wrong, because dcb_ieee_getapp_mask() returns
-the first matching entry, not all of them, and the warning will then claim
-that some priority is "current", when in fact it is not.
+A fixup is also required to use the width directly rather than relying
+on the format in hw_params, now both little and big endian would be
+supported. It is worth noting this changes the behaviour of S24_LE to
+use a word length of 24 rather than 32. This would appear to be a
+correction since the fact S24_LE is stored as 32 bits should not be
+presented over the bus.
 
-But more importantly, the warning is misleading in general. Consider the
-following commands:
-
- # dcb app flush dev swp19 dscp-prio
- # dcb app add dev swp19 dscp-prio 24:3
- # dcb app replace dev swp19 dscp-prio 24:2
-
-The last command will issue the following warning:
-
- mlxsw_spectrum3 0000:07:00.0 swp19: Ignoring new priority 2 for DSCP 24 in favor of current value of 3
-
-The reason is that the "replace" command works by first adding the new
-value, and then removing all old values. This is the only way to make the
-replacement without causing the traffic to be prioritized to whatever the
-chip defaults to. The warning is issued in response to adding the new
-priority, and then no warning is shown when the old priority is removed.
-The upshot is that the canonical way to change traffic prioritization
-always produces a warning about ignoring the new priority, but what gets
-configured is in fact what the user intended.
-
-An option to just emit warning every time that the prioritization changes
-just to make it clear that it happened is obviously unsatisfactory.
-
-Therefore, in this patch, remove the warnings.
-
-Reported-by: Maksym Yaremchuk <maksymy@nvidia.com>
-Signed-off-by: Petr Machata <petrm@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220504170905.332415-26-ckeepax@opensource.cirrus.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c | 13 -------------
- 1 file changed, 13 deletions(-)
+ sound/soc/codecs/tscs454.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c
-index 5f92b1691360..aff6d4f35cd2 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c
-@@ -168,8 +168,6 @@ static int mlxsw_sp_dcbnl_ieee_setets(struct net_device *dev,
- static int mlxsw_sp_dcbnl_app_validate(struct net_device *dev,
- 				       struct dcb_app *app)
- {
--	int prio;
--
- 	if (app->priority >= IEEE_8021QAZ_MAX_TCS) {
- 		netdev_err(dev, "APP entry with priority value %u is invalid\n",
- 			   app->priority);
-@@ -183,17 +181,6 @@ static int mlxsw_sp_dcbnl_app_validate(struct net_device *dev,
- 				   app->protocol);
- 			return -EINVAL;
- 		}
--
--		/* Warn about any DSCP APP entries with the same PID. */
--		prio = fls(dcb_ieee_getapp_mask(dev, app));
--		if (prio--) {
--			if (prio < app->priority)
--				netdev_warn(dev, "Choosing priority %d for DSCP %d in favor of previously-active value of %d\n",
--					    app->priority, app->protocol, prio);
--			else if (prio > app->priority)
--				netdev_warn(dev, "Ignoring new priority %d for DSCP %d in favor of current value of %d\n",
--					    app->priority, app->protocol, prio);
--		}
- 		break;
+diff --git a/sound/soc/codecs/tscs454.c b/sound/soc/codecs/tscs454.c
+index d0af16b4db2f..a6f339bb4771 100644
+--- a/sound/soc/codecs/tscs454.c
++++ b/sound/soc/codecs/tscs454.c
+@@ -3115,18 +3115,17 @@ static int set_aif_sample_format(struct snd_soc_component *component,
+ 	unsigned int width;
+ 	int ret;
  
- 	case IEEE_8021QAZ_APP_SEL_ETHERTYPE:
+-	switch (format) {
+-	case SNDRV_PCM_FORMAT_S16_LE:
++	switch (snd_pcm_format_width(format)) {
++	case 16:
+ 		width = FV_WL_16;
+ 		break;
+-	case SNDRV_PCM_FORMAT_S20_3LE:
++	case 20:
+ 		width = FV_WL_20;
+ 		break;
+-	case SNDRV_PCM_FORMAT_S24_3LE:
++	case 24:
+ 		width = FV_WL_24;
+ 		break;
+-	case SNDRV_PCM_FORMAT_S24_LE:
+-	case SNDRV_PCM_FORMAT_S32_LE:
++	case 32:
+ 		width = FV_WL_32;
+ 		break;
+ 	default:
+@@ -3321,6 +3320,7 @@ static const struct snd_soc_component_driver soc_component_dev_tscs454 = {
+ 	.num_dapm_routes = ARRAY_SIZE(tscs454_intercon),
+ 	.controls =	tscs454_snd_controls,
+ 	.num_controls = ARRAY_SIZE(tscs454_snd_controls),
++	.endianness = 1,
+ };
+ 
+ #define TSCS454_RATES SNDRV_PCM_RATE_8000_96000
 -- 
 2.35.1
 
