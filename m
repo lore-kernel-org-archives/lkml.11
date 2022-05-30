@@ -2,106 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B32BEC3A59D
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:03:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCE70C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:03:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239967AbiE3OC7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:02:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55126 "EHLO
+        id S231803AbiE3ODh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:03:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239026AbiE3Nzh (ORCPT
+        with ESMTP id S239424AbiE3N4h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:55:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E96B3954B1;
-        Mon, 30 May 2022 06:38:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A054AB80DB3;
-        Mon, 30 May 2022 13:38:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DBC5C385B8;
-        Mon, 30 May 2022 13:38:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917884;
-        bh=y268Ia38mDcy8oVClEGS/uTeQtbK8P1DKzIAcwjQsRk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rUbQNiCS0R9tu2kAhdpQIrTorVEGQftcLIbw/MwRJ1UY35SXRbOnJhNzTdbsBRGsF
-         8v4+x6Dbyd1aolZRus3wWH49b4W8wRSYeiEIARRBuqeuP0PkIcoiCj28vbh/7zpvGY
-         YFOTatkfbyX76OGVBYnoNMBi0Y4QYTWPW79XYiRTW4FdpnQt5ODHI6spoBXJlcVBqB
-         obheVm2/F0RZq9JEtpnBMqgfD7OL9o2EG9xvclNh87H0T8XBPYmyfDVovnEPSz/7nw
-         wVfgvbagBnjEpuV8K8yEMAH9Pq6PHT5wmkqIQrDb3ZCc1giHMFF1W7AnAE10aKMvaD
-         6ODS0OfblqZQw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        kernel test robot <lkp@intel.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Michael Schmitz <schmitzmic@gmail.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-m68k@lists.linux-m68k.org
-Subject: [PATCH AUTOSEL 5.17 127/135] m68k: atari: Make Atari ROM port I/O write macros return void
-Date:   Mon, 30 May 2022 09:31:25 -0400
-Message-Id: <20220530133133.1931716-127-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
-References: <20220530133133.1931716-1-sashal@kernel.org>
+        Mon, 30 May 2022 09:56:37 -0400
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C44E295A0E;
+        Mon, 30 May 2022 06:38:23 -0700 (PDT)
+Received: by mail-wm1-f43.google.com with SMTP id 129-20020a1c0287000000b003974edd7c56so5032821wmc.2;
+        Mon, 30 May 2022 06:38:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=KsAtagss1zN3OoHQ7StI415A2RqFxEh/FfqiDwV3lwg=;
+        b=7lyU2De1X9ZXN/Hr9PSFbeqMSGGk5VUpXoWpUWNqicJOhkowYwVTgrFCAH69cxDxze
+         X6Y+0xysgCcAF5PSY72jLW0SVLYtcK9vJExKiyU04x3hciYgUX8y5SWAvqAHG43g3g8L
+         EeCsQ4N5qM0XDiG9C8y89pyoiuZ4EXx9rNac8wR5VB15Z2Ur6y1G50hIAWzcmHgOe+eH
+         X8uiwOdyelie4EmmKRYtuTJGmUEVtea+8/4dT8bhP3mxP9bhuhv+JlHYqz4AmT9ndlXe
+         +HY08mhXjnpRdKcKmjg/i2Gmw2OD14fn5VFallHzNFM1PNsrVOExcCxFdOPbKpIGSeOx
+         Pc9A==
+X-Gm-Message-State: AOAM530ftFmF2fgyGTR83L0/XkdCwFVmo6pxXxqWcivdRUeXKJ/vlHqR
+        dVKk33ahROERZeGppNGMOMOmR/XNUiQ=
+X-Google-Smtp-Source: ABdhPJyLAdckxSBuBL1xhlfS9GVoNCXS4Kx15kZbX2/pn3pGdm0f8N7kwpIgiWG6jbtRdSs4v7MPfw==
+X-Received: by 2002:a7b:c1d8:0:b0:397:337a:b593 with SMTP id a24-20020a7bc1d8000000b00397337ab593mr18979837wmj.96.1653917902170;
+        Mon, 30 May 2022 06:38:22 -0700 (PDT)
+Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
+        by smtp.gmail.com with ESMTPSA id u2-20020adfdb82000000b002102e6b757csm5331680wri.90.2022.05.30.06.38.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 May 2022 06:38:21 -0700 (PDT)
+Date:   Mon, 30 May 2022 13:38:20 +0000
+From:   Wei Liu <wei.liu@kernel.org>
+To:     Juergen Gross <jgross@suse.com>
+Cc:     xen-devel@lists.xenproject.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Wei Liu <wei.liu@kernel.org>,
+        Paul Durrant <paul@xen.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jan Beulich <jbeulich@suse.com>
+Subject: Re: [PATCH] xen/netback: fix incorrect usage of
+ RING_HAS_UNCONSUMED_REQUESTS()
+Message-ID: <20220530133820.5mbjaavusxdhv25c@liuwe-devbox-debian-v2>
+References: <20220530113459.20124-1-jgross@suse.com>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220530113459.20124-1-jgross@suse.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Geert Uytterhoeven <geert@linux-m68k.org>
+On Mon, May 30, 2022 at 01:34:59PM +0200, Juergen Gross wrote:
+> Commit 6fac592cca60 ("xen: update ring.h") missed to fix one use case
+> of RING_HAS_UNCONSUMED_REQUESTS().
+> 
+> Reported-by: Jan Beulich <jbeulich@suse.com>
+> Fixes: 6fac592cca60 ("xen: update ring.h")
+> Signed-off-by: Juergen Gross <jgross@suse.com>
 
-[ Upstream commit 30b5e6ef4a32ea4985b99200e06d6660a69f9246 ]
-
-The macros implementing Atari ROM port I/O writes do not cast away their
-output, unlike similar implementations for other I/O buses.
-When they are combined using conditional expressions in the definitions of
-outb() and friends, this triggers sparse warnings like:
-
-    drivers/net/appletalk/cops.c:382:17: error: incompatible types in conditional expression (different base types):
-    drivers/net/appletalk/cops.c:382:17:    unsigned char
-    drivers/net/appletalk/cops.c:382:17:    void
-
-Fix this by adding casts to "void".
-
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-Reviewed-by: Michael Schmitz <schmitzmic@gmail.com>
-Link: https://lore.kernel.org/r/c15bedc83d90a14fffcd5b1b6bfb32b8a80282c5.1653057096.git.geert@linux-m68k.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/m68k/include/asm/raw_io.h | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/arch/m68k/include/asm/raw_io.h b/arch/m68k/include/asm/raw_io.h
-index 80eb2396d01e..3ba40bc1dfaa 100644
---- a/arch/m68k/include/asm/raw_io.h
-+++ b/arch/m68k/include/asm/raw_io.h
-@@ -80,14 +80,14 @@
- 	({ u16 __v = le16_to_cpu(*(__force volatile u16 *) (addr)); __v; })
- 
- #define rom_out_8(addr, b)	\
--	({u8 __maybe_unused __w, __v = (b);  u32 _addr = ((u32) (addr)); \
-+	(void)({u8 __maybe_unused __w, __v = (b);  u32 _addr = ((u32) (addr)); \
- 	__w = ((*(__force volatile u8 *)  ((_addr | 0x10000) + (__v<<1)))); })
- #define rom_out_be16(addr, w)	\
--	({u16 __maybe_unused __w, __v = (w); u32 _addr = ((u32) (addr)); \
-+	(void)({u16 __maybe_unused __w, __v = (w); u32 _addr = ((u32) (addr)); \
- 	__w = ((*(__force volatile u16 *) ((_addr & 0xFFFF0000UL) + ((__v & 0xFF)<<1)))); \
- 	__w = ((*(__force volatile u16 *) ((_addr | 0x10000) + ((__v >> 8)<<1)))); })
- #define rom_out_le16(addr, w)	\
--	({u16 __maybe_unused __w, __v = (w); u32 _addr = ((u32) (addr)); \
-+	(void)({u16 __maybe_unused __w, __v = (w); u32 _addr = ((u32) (addr)); \
- 	__w = ((*(__force volatile u16 *) ((_addr & 0xFFFF0000UL) + ((__v >> 8)<<1)))); \
- 	__w = ((*(__force volatile u16 *) ((_addr | 0x10000) + ((__v & 0xFF)<<1)))); })
- 
--- 
-2.35.1
-
+Acked-by: Wei Liu <wei.liu@kernel.org>
