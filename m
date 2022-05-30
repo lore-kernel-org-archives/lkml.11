@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A67A8C4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97B69C38A05
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:47:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242885AbiE3Oq7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:46:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34536 "EHLO
+        id S242869AbiE3Oq5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:46:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241447AbiE3O0M (ORCPT
+        with ESMTP id S241315AbiE3O0L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:26:12 -0400
+        Mon, 30 May 2022 10:26:11 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34F0AAE275;
-        Mon, 30 May 2022 06:51:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E034284A03;
+        Mon, 30 May 2022 06:51:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D12DBB80DE6;
-        Mon, 30 May 2022 13:50:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DF08C3411A;
-        Mon, 30 May 2022 13:50:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 790A0B80DE8;
+        Mon, 30 May 2022 13:50:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 327B5C36AE9;
+        Mon, 30 May 2022 13:50:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918639;
-        bh=Lb86gbWhs67kFs4GNtIrQ2Ttz7LliZiZmer+S4h4N0E=;
+        s=k20201202; t=1653918620;
+        bh=QeQg3hA5x9OrSaQpUJVXP7E9MxhSc4xird1zk6F7M0k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RvBn1voBxSUk3AGnhCN0ihqv2vTEeckSs5ahmNXivwcqdjDVFEBExaWzs5OzlMAgD
-         0tFDTeWno68ODto2PPS796PRrDdeTy8+eHox/mQH4Rs2PeN66ZVj8dQ661Efc4isGQ
-         iNAsc1eYh4aHxI0hBKhhqeQIEhSARFqfjLiBcJC6GM4crtfxkfYY9qNCTalHyJscu2
-         Z5EXgvGc0qeV2MBHdS0MVWOGDX6M2dQyLugBd02KFJW+uiXPfx2qhTwZap0HFrPmz4
-         fq6Km+DZUZY0lwB16P/P/g4e8Hb5jiI9hEicHmBe+MAkyU+wwpO//uMIVkrVr1cP78
-         s6ue27Wg8AmWg==
+        b=BpI/862ZwQOLrjKUCdYWOU5X9XKFtZrI5Ik/9/E5v+e3isiVGFtMQxcq3K21+L/hj
+         4g+OWiQZB+adQBc0ekdBF71sKetI07vXcJXd5CfgOHuuN6ExKdC94J5zN4stxvEvq7
+         LeoFsxn8WZhOqXX3gCYukylyKlfi/kC6vwDoRcF3k8IhsKUK3P3XyX3KhuFV0QNluL
+         +hYwb+aJwXOPkr9ka3dHqBxymFnhv6PBVwpSOM57hY5Jrv0EMNL8HfonxASuyAcWCZ
+         pqbSFO7R16DNHq9MYqrjzWsXPMMFBulMlo8VZQSdUGvQGcp7MwwYEOwzqUOKhXzVv/
+         yqeVz6tvVaVKA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Smith, Kyle Miller (Nimble Kernel)" <kyles@hpe.com>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Hannes Reinecke <hare@suse.de>, Christoph Hellwig <hch@lst.de>,
-        Sasha Levin <sashal@kernel.org>, kbusch@kernel.org,
-        axboe@fb.com, sagi@grimberg.me, linux-nvme@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.19 31/38] nvme-pci: fix a NULL pointer dereference in nvme_alloc_admin_tags
-Date:   Mon, 30 May 2022 09:49:17 -0400
-Message-Id: <20220530134924.1936816-31-sashal@kernel.org>
+Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>,
+        steven.eckhoff.opensource@gmail.com, lgirdwood@gmail.com,
+        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 4.19 23/38] ASoC: tscs454: Add endianness flag in snd_soc_component_driver
+Date:   Mon, 30 May 2022 09:49:09 -0400
+Message-Id: <20220530134924.1936816-23-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530134924.1936816-1-sashal@kernel.org>
 References: <20220530134924.1936816-1-sashal@kernel.org>
@@ -53,43 +53,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Smith, Kyle Miller (Nimble Kernel)" <kyles@hpe.com>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-[ Upstream commit da42761181627e9bdc37d18368b827948a583929 ]
+[ Upstream commit ff69ec96b87dccb3a29edef8cec5d4fefbbc2055 ]
 
-In nvme_alloc_admin_tags, the admin_q can be set to an error (typically
--ENOMEM) if the blk_mq_init_queue call fails to set up the queue, which
-is checked immediately after the call. However, when we return the error
-message up the stack, to nvme_reset_work the error takes us to
-nvme_remove_dead_ctrl()
-  nvme_dev_disable()
-   nvme_suspend_queue(&dev->queues[0]).
+The endianness flag is used on the CODEC side to specify an
+ambivalence to endian, typically because it is lost over the hardware
+link. This device receives audio over an I2S DAI and as such should
+have endianness applied.
 
-Here, we only check that the admin_q is non-NULL, rather than not
-an error or NULL, and begin quiescing a queue that never existed, leading
-to bad / NULL pointer dereference.
+A fixup is also required to use the width directly rather than relying
+on the format in hw_params, now both little and big endian would be
+supported. It is worth noting this changes the behaviour of S24_LE to
+use a word length of 24 rather than 32. This would appear to be a
+correction since the fact S24_LE is stored as 32 bits should not be
+presented over the bus.
 
-Signed-off-by: Kyle Smith <kyles@hpe.com>
-Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
-Reviewed-by: Hannes Reinecke <hare@suse.de>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220504170905.332415-26-ckeepax@opensource.cirrus.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/pci.c | 1 +
- 1 file changed, 1 insertion(+)
+ sound/soc/codecs/tscs454.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index d7cf3202cdd3..b06d2b6bd3fe 100644
---- a/drivers/nvme/host/pci.c
-+++ b/drivers/nvme/host/pci.c
-@@ -1522,6 +1522,7 @@ static int nvme_alloc_admin_tags(struct nvme_dev *dev)
- 		dev->ctrl.admin_q = blk_mq_init_queue(&dev->admin_tagset);
- 		if (IS_ERR(dev->ctrl.admin_q)) {
- 			blk_mq_free_tag_set(&dev->admin_tagset);
-+			dev->ctrl.admin_q = NULL;
- 			return -ENOMEM;
- 		}
- 		if (!blk_get_queue(dev->ctrl.admin_q)) {
+diff --git a/sound/soc/codecs/tscs454.c b/sound/soc/codecs/tscs454.c
+index ff85a0bf6170..00a90ccd6566 100644
+--- a/sound/soc/codecs/tscs454.c
++++ b/sound/soc/codecs/tscs454.c
+@@ -3129,18 +3129,17 @@ static int set_aif_sample_format(struct snd_soc_component *component,
+ 	unsigned int width;
+ 	int ret;
+ 
+-	switch (format) {
+-	case SNDRV_PCM_FORMAT_S16_LE:
++	switch (snd_pcm_format_width(format)) {
++	case 16:
+ 		width = FV_WL_16;
+ 		break;
+-	case SNDRV_PCM_FORMAT_S20_3LE:
++	case 20:
+ 		width = FV_WL_20;
+ 		break;
+-	case SNDRV_PCM_FORMAT_S24_3LE:
++	case 24:
+ 		width = FV_WL_24;
+ 		break;
+-	case SNDRV_PCM_FORMAT_S24_LE:
+-	case SNDRV_PCM_FORMAT_S32_LE:
++	case 32:
+ 		width = FV_WL_32;
+ 		break;
+ 	default:
+@@ -3338,6 +3337,7 @@ static const struct snd_soc_component_driver soc_component_dev_tscs454 = {
+ 	.num_dapm_routes = ARRAY_SIZE(tscs454_intercon),
+ 	.controls =	tscs454_snd_controls,
+ 	.num_controls = ARRAY_SIZE(tscs454_snd_controls),
++	.endianness = 1,
+ };
+ 
+ #define TSCS454_RATES SNDRV_PCM_RATE_8000_96000
 -- 
 2.35.1
 
