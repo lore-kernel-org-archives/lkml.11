@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC034C352AA
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:28:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DFFEC38A02
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:28:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242206AbiE3O1z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:27:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34850 "EHLO
+        id S242278AbiE3O2E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:28:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241431AbiE3ORf (ORCPT
+        with ESMTP id S241347AbiE3ORc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:17:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 963884DF66;
-        Mon, 30 May 2022 06:47:05 -0700 (PDT)
+        Mon, 30 May 2022 10:17:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54BAC8FD53;
+        Mon, 30 May 2022 06:45:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 24B0460FB4;
-        Mon, 30 May 2022 13:47:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69210C385B8;
-        Mon, 30 May 2022 13:47:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F0259B80DAE;
+        Mon, 30 May 2022 13:45:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A09AC385B8;
+        Mon, 30 May 2022 13:45:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918424;
-        bh=TwVHwNN/o9XLM+Y5O2G/KwViT1tktgTbWNFKIcVo8PU=;
-        h=From:To:Cc:Subject:Date:From;
-        b=kU2SVSpdxP+nYkb0vOukbkMlwDeoXgv4tteomo5JlXPbvbKZNBUZfhFDivrPmAmP0
-         xBh4PzP/xn2BwvrUq+YQQm4Dy7e5o/d2P4Yea3VCgILsqCSlMmnkz2eeMMFaBdqj2V
-         /Sjy7oxUY/dLjutOV1tyfPf201JJabcFOnJaOW4KUZHYld4g/36q6QRdpxdQFz9bx0
-         sktv+C+gpiP7Zm4GCOrJWEXpbEeRRiMrNvnRNMHhd66TSw+GwxABbw+8lU5w0P+VPp
-         70PRfqDZV90A3IjS+JFObi73ZmAQVuv07THxWep5RCWW7a0hGtbZ9yoaAvVEbat0op
-         b/z/pfhiOVhQw==
+        s=k20201202; t=1653918333;
+        bh=Bkhb4rW4Fm9ts+xqlLpF0mtthv9kANdaPO//zit9f0E=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ZuD1qTuxleWrE45YyFMSqpr86oBe6nNhgaoE+5Y+uCNxH5hIWWVR4FyGmbGXSTVVU
+         tPNJpkNEa3zhKsobmG6yX3fxK9A2MDbRypsFsuRVUpLNjkY7clwT2BvbwK0AkNtfh2
+         1B5Oth/J+EZbuG0MFXC+YJAJfUUuDtIzcP4i7Arx53hii+ByXWqCxLNn7a846zUPtA
+         C45b3HlXjPGdtpwEpTGphqZlXmIufnVUvFbnfhkrMtV7+oS+YVEfdAo7rWL0yiVCD+
+         zxxr1E8QjPet2COsE6lFX3UpuNN+5j/yi42w74ABCWggX9zVPkmY7JTbBN6nGeod4A
+         PNhKGr8k2XTvg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Liu Zixian <liuzixian4@huawei.com>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, airlied@linux.ie,
-        daniel@ffwll.ch, dri-devel@lists.freedesktop.org,
-        virtualization@lists.linux-foundation.org
-Subject: [PATCH AUTOSEL 5.4 01/55] drm/virtio: fix NULL pointer dereference in virtio_gpu_conn_get_modes
-Date:   Mon, 30 May 2022 09:46:07 -0400
-Message-Id: <20220530134701.1935933-1-sashal@kernel.org>
+Cc:     jianghaoran <jianghaoran@kylinos.cn>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, edumazet@google.com,
+        pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 38/76] ipv6: Don't send rs packets to the interface of ARPHRD_TUNNEL
+Date:   Mon, 30 May 2022 09:43:28 -0400
+Message-Id: <20220530134406.1934928-38-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220530134406.1934928-1-sashal@kernel.org>
+References: <20220530134406.1934928-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -51,86 +53,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liu Zixian <liuzixian4@huawei.com>
+From: jianghaoran <jianghaoran@kylinos.cn>
 
-[ Upstream commit 194d250cdc4a40ccbd179afd522a9e9846957402 ]
+[ Upstream commit b52e1cce31ca721e937d517411179f9196ee6135 ]
 
-drm_cvt_mode may return NULL and we should check it.
+ARPHRD_TUNNEL interface can't process rs packets
+and will generate TX errors
 
-This bug is found by syzkaller:
+ex:
+ip tunnel add ethn mode ipip local 192.168.1.1 remote 192.168.1.2
+ifconfig ethn x.x.x.x
 
-FAULT_INJECTION stacktrace:
-[  168.567394] FAULT_INJECTION: forcing a failure.
-name failslab, interval 1, probability 0, space 0, times 1
-[  168.567403] CPU: 1 PID: 6425 Comm: syz Kdump: loaded Not tainted 4.19.90-vhulk2201.1.0.h1035.kasan.eulerosv2r10.aarch64 #1
-[  168.567406] Hardware name: QEMU KVM Virtual Machine, BIOS 0.0.0 02/06/2015
-[  168.567408] Call trace:
-[  168.567414]  dump_backtrace+0x0/0x310
-[  168.567418]  show_stack+0x28/0x38
-[  168.567423]  dump_stack+0xec/0x15c
-[  168.567427]  should_fail+0x3ac/0x3d0
-[  168.567437]  __should_failslab+0xb8/0x120
-[  168.567441]  should_failslab+0x28/0xc0
-[  168.567445]  kmem_cache_alloc_trace+0x50/0x640
-[  168.567454]  drm_mode_create+0x40/0x90
-[  168.567458]  drm_cvt_mode+0x48/0xc78
-[  168.567477]  virtio_gpu_conn_get_modes+0xa8/0x140 [virtio_gpu]
-[  168.567485]  drm_helper_probe_single_connector_modes+0x3a4/0xd80
-[  168.567492]  drm_mode_getconnector+0x2e0/0xa70
-[  168.567496]  drm_ioctl_kernel+0x11c/0x1d8
-[  168.567514]  drm_ioctl+0x558/0x6d0
-[  168.567522]  do_vfs_ioctl+0x160/0xf30
-[  168.567525]  ksys_ioctl+0x98/0xd8
-[  168.567530]  __arm64_sys_ioctl+0x50/0xc8
-[  168.567536]  el0_svc_common+0xc8/0x320
-[  168.567540]  el0_svc_handler+0xf8/0x160
-[  168.567544]  el0_svc+0x10/0x218
+ethn: flags=209<UP,POINTOPOINT,RUNNING,NOARP>  mtu 1480
+	inet x.x.x.x  netmask 255.255.255.255  destination x.x.x.x
+	inet6 fe80::5efe:ac1e:3cdb  prefixlen 64  scopeid 0x20<link>
+	tunnel   txqueuelen 1000  (IPIP Tunnel)
+	RX packets 0  bytes 0 (0.0 B)
+	RX errors 0  dropped 0  overruns 0  frame 0
+	TX packets 0  bytes 0 (0.0 B)
+	TX errors 3  dropped 0 overruns 0  carrier 0  collisions 0
 
-KASAN stacktrace:
-[  168.567561] BUG: KASAN: null-ptr-deref in virtio_gpu_conn_get_modes+0xb4/0x140 [virtio_gpu]
-[  168.567565] Read of size 4 at addr 0000000000000054 by task syz/6425
-[  168.567566]
-[  168.567571] CPU: 1 PID: 6425 Comm: syz Kdump: loaded Not tainted 4.19.90-vhulk2201.1.0.h1035.kasan.eulerosv2r10.aarch64 #1
-[  168.567573] Hardware name: QEMU KVM Virtual Machine, BIOS 0.0.0 02/06/2015
-[  168.567575] Call trace:
-[  168.567578]  dump_backtrace+0x0/0x310
-[  168.567582]  show_stack+0x28/0x38
-[  168.567586]  dump_stack+0xec/0x15c
-[  168.567591]  kasan_report+0x244/0x2f0
-[  168.567594]  __asan_load4+0x58/0xb0
-[  168.567607]  virtio_gpu_conn_get_modes+0xb4/0x140 [virtio_gpu]
-[  168.567612]  drm_helper_probe_single_connector_modes+0x3a4/0xd80
-[  168.567617]  drm_mode_getconnector+0x2e0/0xa70
-[  168.567621]  drm_ioctl_kernel+0x11c/0x1d8
-[  168.567624]  drm_ioctl+0x558/0x6d0
-[  168.567628]  do_vfs_ioctl+0x160/0xf30
-[  168.567632]  ksys_ioctl+0x98/0xd8
-[  168.567636]  __arm64_sys_ioctl+0x50/0xc8
-[  168.567641]  el0_svc_common+0xc8/0x320
-[  168.567645]  el0_svc_handler+0xf8/0x160
-[  168.567649]  el0_svc+0x10/0x218
-
-Signed-off-by: Liu Zixian <liuzixian4@huawei.com>
-Link: http://patchwork.freedesktop.org/patch/msgid/20220322091730.1653-1-liuzixian4@huawei.com
-Signed-off-by: Gerd Hoffmann <kraxel@redhat.com>
+Signed-off-by: jianghaoran <jianghaoran@kylinos.cn>
+Link: https://lore.kernel.org/r/20220429053802.246681-1-jianghaoran@kylinos.cn
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/virtio/virtgpu_display.c | 2 ++
- 1 file changed, 2 insertions(+)
+ net/ipv6/addrconf.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/virtio/virtgpu_display.c b/drivers/gpu/drm/virtio/virtgpu_display.c
-index e622485ae826..7e34307eb075 100644
---- a/drivers/gpu/drm/virtio/virtgpu_display.c
-+++ b/drivers/gpu/drm/virtio/virtgpu_display.c
-@@ -174,6 +174,8 @@ static int virtio_gpu_conn_get_modes(struct drm_connector *connector)
- 		DRM_DEBUG("add mode: %dx%d\n", width, height);
- 		mode = drm_cvt_mode(connector->dev, width, height, 60,
- 				    false, false, false);
-+		if (!mode)
-+			return count;
- 		mode->type |= DRM_MODE_TYPE_PREFERRED;
- 		drm_mode_probed_add(connector, mode);
- 		count++;
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index 4584bb50960b..0562fb321959 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -4200,7 +4200,8 @@ static void addrconf_dad_completed(struct inet6_ifaddr *ifp, bool bump_id,
+ 	send_rs = send_mld &&
+ 		  ipv6_accept_ra(ifp->idev) &&
+ 		  ifp->idev->cnf.rtr_solicits != 0 &&
+-		  (dev->flags&IFF_LOOPBACK) == 0;
++		  (dev->flags & IFF_LOOPBACK) == 0 &&
++		  (dev->type != ARPHRD_TUNNEL);
+ 	read_unlock_bh(&ifp->idev->lock);
+ 
+ 	/* While dad is in progress mld report's source address is in6_addrany.
 -- 
 2.35.1
 
