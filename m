@@ -2,221 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F332EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 08:58:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34546C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 08:58:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234457AbiE3I56 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 04:57:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52158 "EHLO
+        id S234522AbiE3I6h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 04:58:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234068AbiE3I5z (ORCPT
+        with ESMTP id S234068AbiE3I6e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 04:57:55 -0400
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 413A47220E
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 01:57:54 -0700 (PDT)
-Received: by mail-lj1-x235.google.com with SMTP id t13so8511987ljd.6
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 01:57:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=openvz-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:from:subject
-         :content-language:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=lAZ+j4i7HJwXaSuMT5P/9OWwy3X9DfOqr/MHBEG4KHI=;
-        b=aDnPkj6r5ZzjADGCBpBF0k2//QShcfRFpuzPbuPgGZvD1xyq81kSN27OswexYp7b4Y
-         +sZn/ScrbzAoL29odFLAPT/8ckwv6U08kqj4rQhfGnq+w/Ci3V3z9WDQQSuOlz2fdTGu
-         +Xq9fkeacpiSJPniUbxXbjMJSA//GNTsaKoS3JfWa1O2rtOa7HtZJ3wnbZi/a3S82gDW
-         rd2RMVXROO10vULaokSHE2OCkAc3nm9DLdIfU9vG8x7/1sPPvKqqqrzFpLLDbZ2DDT+C
-         pEYB3X5lXUGsvCUc3usc7dqIROPrdOvOX8YXV8zE2MbysPBjl/kzIhyBm3cCRN03/5ot
-         yfJQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
-         :subject:content-language:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=lAZ+j4i7HJwXaSuMT5P/9OWwy3X9DfOqr/MHBEG4KHI=;
-        b=zgEL1kKw+TevH9CJmn50+T/JyLpVcpbvCXeemWxZQzSXOrFoWo1xvoCAkdY5d1AkZx
-         yKgvHgYVOFeqWepEgFfuQgvzFHvD+qA4yTrFXUFt8Utyxbv4jIWD7WwSdGNo4FVqTpR/
-         dclYt26gSaoeDGMaYhBEr3QZYvyI20XX0G4bVMs+Gfd5iyopSdXjLBCIC1X8F6Q2kupR
-         2mDEh3fqQBh71TxnR7zTzXgBMt2r/3T9AySKC5r3tb8adRqRz9/mGEgvjxC4p85umeN9
-         YpTByEEILJ8A/QhUj7vBROql5iV9d2wAXAFg57aZoB00FiLh5rw2auZ6vmnGy5LtWkkp
-         BsLg==
-X-Gm-Message-State: AOAM5338esAWIg89aOg7vORSGns1dpMzHjnROlMNqiMYsUZqTQomp3tr
-        IHUFQdQSv1Jo05soLLIien7gWQ==
-X-Google-Smtp-Source: ABdhPJwRnA1vjBQ/lHk4ny41879c4r+co+vuchDOUFjscAu4AhPvLAaz+2PEIyemFIqMm0E91oVE0w==
-X-Received: by 2002:a05:651c:893:b0:249:4023:3818 with SMTP id d19-20020a05651c089300b0024940233818mr33595563ljq.44.1653901072467;
-        Mon, 30 May 2022 01:57:52 -0700 (PDT)
-Received: from [192.168.1.65] ([46.188.121.129])
-        by smtp.gmail.com with ESMTPSA id f3-20020a05651201c300b0047408564c31sm2177490lfp.286.2022.05.30.01.57.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 30 May 2022 01:57:52 -0700 (PDT)
-Message-ID: <6b362c6e-9c80-4344-9430-b831f9871a3c@openvz.org>
-Date:   Mon, 30 May 2022 11:57:48 +0300
+        Mon, 30 May 2022 04:58:34 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63ACC762AA;
+        Mon, 30 May 2022 01:58:33 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LBTpQ1zKHzDqZ2;
+        Mon, 30 May 2022 16:58:22 +0800 (CST)
+Received: from dggpemm500019.china.huawei.com (7.185.36.180) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 30 May 2022 16:58:31 +0800
+Received: from k04.huawei.com (10.67.174.115) by
+ dggpemm500019.china.huawei.com (7.185.36.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 30 May 2022 16:58:31 +0800
+From:   Pu Lehui <pulehui@huawei.com>
+To:     <bpf@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
+        Luke Nelson <luke.r.nels@gmail.com>,
+        Xi Wang <xi.wang@gmail.com>, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Pu Lehui <pulehui@huawei.com>
+Subject: [PATCH bpf-next v3 0/6] Support riscv jit to provide
+Date:   Mon, 30 May 2022 17:28:09 +0800
+Message-ID: <20220530092815.1112406-1-pulehui@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-From:   Vasily Averin <vvs@openvz.org>
-Subject: Re: [PATCH memcg v5] net: set proper memcg for net_init hooks
- allocations
-Content-Language: en-US
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     kernel@openvz.org, Florian Westphal <fw@strlen.de>,
-        linux-kernel@vger.kernel.org, Vlastimil Babka <vbabka@suse.cz>,
-        Michal Hocko <mhocko@suse.com>, cgroups@vger.kernel.org,
-        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Shakeel Butt <shakeelb@google.com>
-References: <CALvZod5HugCO2G3+Av3pXC6s2sy0zKW_HRaRyhOO9GOOWV1SsQ@mail.gmail.com>
- <0ccfe7a4-c178-0b66-d481-2326c85a8ffb@openvz.org>
-In-Reply-To: <0ccfe7a4-c178-0b66-d481-2326c85a8ffb@openvz.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.174.115]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500019.china.huawei.com (7.185.36.180)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dear Andrew,
-could you please pick up this patch?
+patch 1 fix an issue that could not print bpf line info due
+to data inconsistency in 32-bit environment.
 
-Thank you,
-	Vasily Averin
+patch 2 add support for riscv jit to provide bpf_line_info.
+"test_progs -a btf" and "test_bpf.ko" all test pass, as well
+as "test_verifier" and "test_progs" with no new failure ceses.
 
-On 5/2/22 03:10, Vasily Averin wrote:
-> __register_pernet_operations() executes init hook of registered
-> pernet_operation structure in all existing net namespaces.
-> 
-> Typically, these hooks are called by a process associated with
-> the specified net namespace, and all __GFP_ACCOUNT marked
-> allocation are accounted for corresponding container/memcg.
-> 
-> However __register_pernet_operations() calls the hooks in the same
-> context, and as a result all marked allocations are accounted
-> to one memcg for all processed net namespaces.
-> 
-> This patch adjusts active memcg for each net namespace and helps
-> to account memory allocated inside ops_init() into the proper memcg.
-> 
-> Signed-off-by: Vasily Averin <vvs@openvz.org>
-> Acked-by: Roman Gushchin <roman.gushchin@linux.dev>
-> Acked-by: Shakeel Butt <shakeelb@google.com>
-> 
-> ---
-> v5: documented get_mem_cgroup_from_obj() and for mem_cgroup_or_root()
->     functions, asked by Shakeel.
-> 
-> v4: get_mem_cgroup_from_kmem() renamed to get_mem_cgroup_from_obj(),
->     get_net_memcg() renamed to mem_cgroup_or_root(), suggested by Roman.
-> 
-> v3: put_net_memcg() replaced by an alreay existing mem_cgroup_put()
->     It checks memcg before accessing it, this is required for
->     __register_pernet_operations() called before memcg initialization.
->     Additionally fixed leading whitespaces in non-memcg_kmem version
->     of mem_cgroup_from_obj().
-> 
-> v2: introduced get/put_net_memcg(),
->     new functions are moved under CONFIG_MEMCG_KMEM
->     to fix compilation issues reported by Intel's kernel test robot
-> 
-> v1: introduced get_mem_cgroup_from_kmem(), which takes the refcount
->     for the found memcg, suggested by Shakeel
-> ---
->  include/linux/memcontrol.h | 47 +++++++++++++++++++++++++++++++++++++-
->  net/core/net_namespace.c   |  7 ++++++
->  2 files changed, 53 insertions(+), 1 deletion(-)
-> 
-> diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
-> index 0abbd685703b..6405f9b8f5a8 100644
-> --- a/include/linux/memcontrol.h
-> +++ b/include/linux/memcontrol.h
-> @@ -1714,6 +1714,42 @@ static inline int memcg_cache_id(struct mem_cgroup *memcg)
->  
->  struct mem_cgroup *mem_cgroup_from_obj(void *p);
->  
-> +/**
-> + * get_mem_cgroup_from_obj - get a memcg associated with passed kernel object.
-> + * @p: pointer to object from which memcg should be extracted. It can be NULL.
-> + *
-> + * Retrieves the memory group into which the memory of the pointed kernel
-> + * object is accounted. If memcg is found, its reference is taken.
-> + * If a passed kernel object is uncharged, or if proper memcg cannot be found,
-> + * as well as if mem_cgroup is disabled, NULL is returned.
-> + *
-> + * Return: valid memcg pointer with taken reference or NULL.
-> + */
-> +static inline struct mem_cgroup *get_mem_cgroup_from_obj(void *p)
-> +{
-> +	struct mem_cgroup *memcg;
-> +
-> +	rcu_read_lock();
-> +	do {
-> +		memcg = mem_cgroup_from_obj(p);
-> +	} while (memcg && !css_tryget(&memcg->css));
-> +	rcu_read_unlock();
-> +	return memcg;
-> +}
-> +
-> +/**
-> + * mem_cgroup_or_root - always returns a pointer to a valid memory cgroup.
-> + * @memcg: pointer to a valid memory cgroup or NULL.
-> + *
-> + * If passed argument is not NULL, returns it without any additional checks
-> + * and changes. Otherwise, root_mem_cgroup is returned.
-> + *
-> + * NOTE: root_mem_cgroup can be NULL during early boot.
-> + */
-> +static inline struct mem_cgroup *mem_cgroup_or_root(struct mem_cgroup *memcg)
-> +{
-> +	return memcg ? memcg : root_mem_cgroup;
-> +}
->  #else
->  static inline bool mem_cgroup_kmem_disabled(void)
->  {
-> @@ -1763,9 +1799,18 @@ static inline void memcg_put_cache_ids(void)
->  
->  static inline struct mem_cgroup *mem_cgroup_from_obj(void *p)
->  {
-> -       return NULL;
-> +	return NULL;
->  }
->  
-> +static inline struct mem_cgroup *get_mem_cgroup_from_obj(void *p)
-> +{
-> +	return NULL;
-> +}
-> +
-> +static inline struct mem_cgroup *mem_cgroup_or_root(struct mem_cgroup *memcg)
-> +{
-> +	return NULL;
-> +}
->  #endif /* CONFIG_MEMCG_KMEM */
->  
->  #endif /* _LINUX_MEMCONTROL_H */
-> diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
-> index a5b5bb99c644..240f3db77dec 100644
-> --- a/net/core/net_namespace.c
-> +++ b/net/core/net_namespace.c
-> @@ -26,6 +26,7 @@
->  #include <net/net_namespace.h>
->  #include <net/netns/generic.h>
->  
-> +#include <linux/sched/mm.h>
->  /*
->   *	Our network namespace constructor/destructor lists
->   */
-> @@ -1147,7 +1148,13 @@ static int __register_pernet_operations(struct list_head *list,
->  		 * setup_net() and cleanup_net() are not possible.
->  		 */
->  		for_each_net(net) {
-> +			struct mem_cgroup *old, *memcg;
-> +
-> +			memcg = mem_cgroup_or_root(get_mem_cgroup_from_obj(net));
-> +			old = set_active_memcg(memcg);
->  			error = ops_init(ops, net);
-> +			set_active_memcg(old);
-> +			mem_cgroup_put(memcg);
->  			if (error)
->  				goto out_undo;
->  			list_add_tail(&net->exit_list, &net_exit_list);
+patch 3-6 make some trival cleanup.
+
+v3:
+- split kernel changes, libbpf changes, and selftests/bpf changes
+into separate patches. (Andrii)
+- shorten the name of jited_linfo_addr to avoid line break. (John)
+- rename prologue_offset to body_len to make it more sense. (Luke)
+
+v2: https://lore.kernel.org/bpf/20220429014240.3434866-1-pulehui@huawei.com
+- Remove some trivial code
+
+v1: https://lore.kernel.org/bpf/20220426140924.3308472-1-pulehui@huawei.com
+
+Pu Lehui (6):
+  bpf: Unify data extension operation of jited_ksyms and jited_linfo
+  riscv, bpf: Support riscv jit to provide bpf_line_info
+  bpf: Correct the comment about insn_to_jit_off
+  libbpf: Unify memory address casting operation style
+  selftests/bpf: Unify memory address casting operation style
+  selftests/bpf: Remove the casting about jited_ksyms and jited_linfo
+
+ arch/riscv/net/bpf_jit.h                     |  1 +
+ arch/riscv/net/bpf_jit_core.c                |  8 +++++++-
+ kernel/bpf/core.c                            |  2 +-
+ kernel/bpf/syscall.c                         |  5 +++--
+ tools/lib/bpf/bpf_prog_linfo.c               |  9 +++++----
+ tools/testing/selftests/bpf/prog_tests/btf.c | 18 +++++++++---------
+ 6 files changed, 26 insertions(+), 17 deletions(-)
+
+-- 
+2.25.1
 
