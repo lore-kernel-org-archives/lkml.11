@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80CE3C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B54E5C4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:28:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240830AbiE3OZa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:25:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42814 "EHLO
+        id S241055AbiE3OZz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:25:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241359AbiE3ORc (ORCPT
+        with ESMTP id S241381AbiE3ORc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 30 May 2022 10:17:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 874138E1B2;
-        Mon, 30 May 2022 06:45:42 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C8128FF8C;
+        Mon, 30 May 2022 06:46:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 46731B80AE8;
-        Mon, 30 May 2022 13:45:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D96EFC36AE5;
-        Mon, 30 May 2022 13:45:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C690DB80DA7;
+        Mon, 30 May 2022 13:45:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B07A8C3411F;
+        Mon, 30 May 2022 13:45:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918340;
-        bh=UAo6LCwq6BdnSWAM2NkTDxIo7p5zcc9lLplkkTTl0vo=;
+        s=k20201202; t=1653918358;
+        bh=3FPA6W0YX8gMmTOgnl0wXduDgQyNdTuUPQL0t4gvEnk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oGgJqaOGe6qLqcSZGk8QviJfQ75PJfXg4NjcWCcKQC0u+Gt+Jxl/Jxpv18rXuCb/m
-         xAuzgC1DeYjeOBlz5sKQhQGy1IG1tQehBHZmmRf3cvYGDebw9LrE2q5zwtx3GjEn+2
-         VyfbtXDTzjt0fTDVJBiEGpqjcfuHQtgz1WbyaOkQ8WtrVl5chbARoNxWDu6XPaHp7n
-         3ioq5TNZW0lV14H09Txly3wltAykXsXEWccEcqHwPOv+9Cw4wwx8VBvAYZLzHbuBSd
-         IEdIDpgFr1y30Xwd3aW4a4cOGVofoZB+sBwlHMSuDzyBCcFVpqphZenG+u8JE/6qDp
-         WU5iNdGiHSgBg==
+        b=arwobd77UIK09GLy4qo699o1MHc2UKVU4mUK0E/tZp0esArOpZ0AulIuZVMc5MYe5
+         Siv/NamtO3YC5Ow/jZFWkX6xTYyp65L7as/OGJ1Lic+V9GZvc1NI4i1/obhYIq07Vx
+         3rMyN9UkgbxzVJK0qdxNN7kRiulWcOBPPlAE/00z/Yc+5Y2xaEsXFmmhmKqSzRA76D
+         5DetupNbzrGkXqorZweIn0kJ/NM0A8Ku6MtWRc0/SsBdQUIBEfizamkEKXCwLYbAGk
+         sRftRYtFqjtOcHHVeWC2CMN9jIflUuGN3+SM5ZWScakg7786Hn7f6hVLvckm7eTCvh
+         MkjkMjFe3fIxg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Petr Machata <petrm@nvidia.com>,
-        Maksym Yaremchuk <maksymy@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 42/76] mlxsw: Treat LLDP packets as control
-Date:   Mon, 30 May 2022 09:43:32 -0400
-Message-Id: <20220530134406.1934928-42-sashal@kernel.org>
+Cc:     Mikulas Patocka <mpatocka@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Sasha Levin <sashal@kernel.org>, m.szyprowski@samsung.com,
+        iommu@lists.linux-foundation.org
+Subject: [PATCH AUTOSEL 5.10 50/76] dma-debug: change allocation mode from GFP_NOWAIT to GFP_ATIOMIC
+Date:   Mon, 30 May 2022 09:43:40 -0400
+Message-Id: <20220530134406.1934928-50-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530134406.1934928-1-sashal@kernel.org>
 References: <20220530134406.1934928-1-sashal@kernel.org>
@@ -54,57 +52,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Petr Machata <petrm@nvidia.com>
+From: Mikulas Patocka <mpatocka@redhat.com>
 
-[ Upstream commit 0106668cd2f91bf913fb78972840dedfba80a3c3 ]
+[ Upstream commit 84bc4f1dbbbb5f8aa68706a96711dccb28b518e5 ]
 
-When trapping packets for on-CPU processing, Spectrum machines
-differentiate between control and non-control traps. Traffic trapped
-through non-control traps is treated as data and kept in shared buffer in
-pools 0-4. Traffic trapped through control traps is kept in the dedicated
-control buffer 9. The advantage of marking traps as control is that
-pressure in the data plane does not prevent the control traffic to be
-processed.
+We observed the error "cacheline tracking ENOMEM, dma-debug disabled"
+during a light system load (copying some files). The reason for this error
+is that the dma_active_cacheline radix tree uses GFP_NOWAIT allocation -
+so it can't access the emergency memory reserves and it fails as soon as
+anybody reaches the watermark.
 
-When the LLDP trap was introduced, it was marked as a control trap. But
-then in commit aed4b5721143 ("mlxsw: spectrum: PTP: Hook into packet
-receive path"), PTP traps were introduced. Because Ethernet-encapsulated
-PTP packets look to the Spectrum-1 ASIC as LLDP traffic and are trapped
-under the LLDP trap, this trap was reconfigured as non-control, in sync
-with the PTP traps.
+This patch changes GFP_NOWAIT to GFP_ATOMIC, so that it can access the
+emergency memory reserves.
 
-There is however no requirement that PTP traffic be handled as data.
-Besides, the usual encapsulation for PTP traffic is UDP, not bare Ethernet,
-and that is in deployments that even need PTP, which is far less common
-than LLDP. This is reflected by the default policer, which was not bumped
-up to the 19Kpps / 24Kpps that is the expected load of a PTP-enabled
-Spectrum-1 switch.
-
-Marking of LLDP trap as non-control was therefore probably misguided. In
-this patch, change it back to control.
-
-Reported-by: Maksym Yaremchuk <maksymy@nvidia.com>
-Signed-off-by: Petr Machata <petrm@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c | 2 +-
+ kernel/dma/debug.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-index 433f14ade464..02ba6aa01105 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-@@ -709,7 +709,7 @@ static const struct mlxsw_sp_trap_item mlxsw_sp_trap_items_arr[] = {
- 		.trap = MLXSW_SP_TRAP_CONTROL(LLDP, LLDP, TRAP),
- 		.listeners_arr = {
- 			MLXSW_RXL(mlxsw_sp_rx_ptp_listener, LLDP, TRAP_TO_CPU,
--				  false, SP_LLDP, DISCARD),
-+				  true, SP_LLDP, DISCARD),
- 		},
- 	},
- 	{
+diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
+index f8ae54679865..ee7da1f2462f 100644
+--- a/kernel/dma/debug.c
++++ b/kernel/dma/debug.c
+@@ -448,7 +448,7 @@ void debug_dma_dump_mappings(struct device *dev)
+  * other hand, consumes a single dma_debug_entry, but inserts 'nents'
+  * entries into the tree.
+  */
+-static RADIX_TREE(dma_active_cacheline, GFP_NOWAIT);
++static RADIX_TREE(dma_active_cacheline, GFP_ATOMIC);
+ static DEFINE_SPINLOCK(radix_lock);
+ #define ACTIVE_CACHELINE_MAX_OVERLAP ((1 << RADIX_TREE_MAX_TAGS) - 1)
+ #define CACHELINE_PER_PAGE_SHIFT (PAGE_SHIFT - L1_CACHE_SHIFT)
 -- 
 2.35.1
 
