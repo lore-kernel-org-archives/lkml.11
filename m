@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42F99C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:28:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87575C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:28:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239566AbiE3O2i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:28:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42798 "EHLO
+        id S239619AbiE3O2Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:28:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241365AbiE3ORc (ORCPT
+        with ESMTP id S241426AbiE3ORf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:17:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05E658FD54;
-        Mon, 30 May 2022 06:45:48 -0700 (PDT)
+        Mon, 30 May 2022 10:17:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3606646B39;
+        Mon, 30 May 2022 06:46:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 95E8160EC3;
-        Mon, 30 May 2022 13:45:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 037DFC36AE7;
-        Mon, 30 May 2022 13:45:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C6D3B60FD6;
+        Mon, 30 May 2022 13:46:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF0A7C385B8;
+        Mon, 30 May 2022 13:46:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918347;
-        bh=eSwQJ4MdzEqPLyRF0dMCA29MT+ipw7FAuQyfMB7EKTo=;
+        s=k20201202; t=1653918411;
+        bh=q3FO7MlqX4yOW38jHvst9iqmjOErdiMvJMatUfrN1P0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iIs6a9U5Px7psAqlMuQ6B6Bei6l/CVkwsGhWhXcTEBluLTtXqwCAgwbufHu7OaFlD
-         L6Cb/u5f9TRpIGp/szp9XFxV6LfPeDhiD5OBd859p8iYjs0gz0nWq45jeruvXMrgXc
-         DiRqBSmeux/y+K5SYODJ2wEY6bBu/W6HAnwl44pRkVxNT6VGXe4ziSVvFKwMATRsgX
-         vVrcJSbrhY7uhLOtkO3opK3w32GzSfAExKwyI7LP0hVj2y3fooq7IXGWmaKozjVn5H
-         5fzB58Ij7j0rsUJiq50j15XVWwqoyK75c23qG2SPYE8v5He6c1JEkmLlgcpEZZdZV+
-         aOpy344KjSzIw==
+        b=lg929v5lehlpZ8/oigQANnXTpcuhZLLAORdpcSRDLRl/T8WAi3C0Ql8kuLUblqFHY
+         3KDS6xX/Znwza6UaJqcG5KVjXijpmPRdmIPd3uTrqWdF7v4uwNMWunsGjat4HX1ffR
+         Q4OW227rH4LkOQ8Gy+1mFzrh/uiGMkb824VAr/PZrkVeIRwai2m0CrQXHVDyKDtCUP
+         zNyoJtWJYtsBDwwVZOJMTDgHHB0HfEW4fs88FJWtmkryPtjImvzwLQD2UWMKOqNHlZ
+         uiHaibkLLBqe0RKppuGlfGBybSKeTdKxiyV+FWOk3Fsy6TxDgUwXZwYBBw09d7igrC
+         KfjUz6f+a686A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>,
-        steven.eckhoff.opensource@gmail.com, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.10 45/76] ASoC: tscs454: Add endianness flag in snd_soc_component_driver
-Date:   Mon, 30 May 2022 09:43:35 -0400
-Message-Id: <20220530134406.1934928-45-sashal@kernel.org>
+Cc:     David Howells <dhowells@redhat.com>,
+        Jeffrey Altman <jaltman@auristor.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 73/76] rxrpc, afs: Fix selection of abort codes
+Date:   Mon, 30 May 2022 09:44:03 -0400
+Message-Id: <20220530134406.1934928-73-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530134406.1934928-1-sashal@kernel.org>
 References: <20220530134406.1934928-1-sashal@kernel.org>
@@ -53,66 +55,112 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit ff69ec96b87dccb3a29edef8cec5d4fefbbc2055 ]
+[ Upstream commit de696c4784f0706884458893c5a6c39b3a3ff65c ]
 
-The endianness flag is used on the CODEC side to specify an
-ambivalence to endian, typically because it is lost over the hardware
-link. This device receives audio over an I2S DAI and as such should
-have endianness applied.
+The RX_USER_ABORT code should really only be used to indicate that the user
+of the rxrpc service (ie. userspace) implicitly caused a call to be aborted
+- for instance if the AF_RXRPC socket is closed whilst the call was in
+progress.  (The user may also explicitly abort a call and specify the abort
+code to use).
 
-A fixup is also required to use the width directly rather than relying
-on the format in hw_params, now both little and big endian would be
-supported. It is worth noting this changes the behaviour of S24_LE to
-use a word length of 24 rather than 32. This would appear to be a
-correction since the fact S24_LE is stored as 32 bits should not be
-presented over the bus.
+Change some of the points of generation to use other abort codes instead:
 
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220504170905.332415-26-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+ (1) Abort the call with RXGEN_SS_UNMARSHAL or RXGEN_CC_UNMARSHAL if we see
+     ENOMEM and EFAULT during received data delivery and abort with
+     RX_CALL_DEAD in the default case.
+
+ (2) Abort with RXGEN_SS_MARSHAL if we get ENOMEM whilst trying to send a
+     reply.
+
+ (3) Abort with RX_CALL_DEAD if we stop hearing from the peer if we had
+     heard from the peer and abort with RX_CALL_TIMEOUT if we hadn't.
+
+ (4) Abort with RX_CALL_DEAD if we try to disconnect a call that's not
+     completed successfully or been aborted.
+
+Reported-by: Jeffrey Altman <jaltman@auristor.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Marc Dionne <marc.dionne@auristor.com>
+cc: linux-afs@lists.infradead.org
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/tscs454.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ fs/afs/rxrpc.c          | 8 +++++---
+ net/rxrpc/call_event.c  | 4 ++--
+ net/rxrpc/conn_object.c | 2 +-
+ 3 files changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/sound/soc/codecs/tscs454.c b/sound/soc/codecs/tscs454.c
-index d0af16b4db2f..a6f339bb4771 100644
---- a/sound/soc/codecs/tscs454.c
-+++ b/sound/soc/codecs/tscs454.c
-@@ -3115,18 +3115,17 @@ static int set_aif_sample_format(struct snd_soc_component *component,
- 	unsigned int width;
- 	int ret;
- 
--	switch (format) {
--	case SNDRV_PCM_FORMAT_S16_LE:
-+	switch (snd_pcm_format_width(format)) {
-+	case 16:
- 		width = FV_WL_16;
- 		break;
--	case SNDRV_PCM_FORMAT_S20_3LE:
-+	case 20:
- 		width = FV_WL_20;
- 		break;
--	case SNDRV_PCM_FORMAT_S24_3LE:
-+	case 24:
- 		width = FV_WL_24;
- 		break;
--	case SNDRV_PCM_FORMAT_S24_LE:
--	case SNDRV_PCM_FORMAT_S32_LE:
-+	case 32:
- 		width = FV_WL_32;
- 		break;
+diff --git a/fs/afs/rxrpc.c b/fs/afs/rxrpc.c
+index 8be709cb8542..efe0fb3ad8bd 100644
+--- a/fs/afs/rxrpc.c
++++ b/fs/afs/rxrpc.c
+@@ -572,6 +572,8 @@ static void afs_deliver_to_call(struct afs_call *call)
+ 		case -ENODATA:
+ 		case -EBADMSG:
+ 		case -EMSGSIZE:
++		case -ENOMEM:
++		case -EFAULT:
+ 			abort_code = RXGEN_CC_UNMARSHAL;
+ 			if (state != AFS_CALL_CL_AWAIT_REPLY)
+ 				abort_code = RXGEN_SS_UNMARSHAL;
+@@ -579,7 +581,7 @@ static void afs_deliver_to_call(struct afs_call *call)
+ 						abort_code, ret, "KUM");
+ 			goto local_abort;
+ 		default:
+-			abort_code = RX_USER_ABORT;
++			abort_code = RX_CALL_DEAD;
+ 			rxrpc_kernel_abort_call(call->net->socket, call->rxcall,
+ 						abort_code, ret, "KER");
+ 			goto local_abort;
+@@ -871,7 +873,7 @@ void afs_send_empty_reply(struct afs_call *call)
+ 	case -ENOMEM:
+ 		_debug("oom");
+ 		rxrpc_kernel_abort_call(net->socket, call->rxcall,
+-					RX_USER_ABORT, -ENOMEM, "KOO");
++					RXGEN_SS_MARSHAL, -ENOMEM, "KOO");
+ 		fallthrough;
  	default:
-@@ -3321,6 +3320,7 @@ static const struct snd_soc_component_driver soc_component_dev_tscs454 = {
- 	.num_dapm_routes = ARRAY_SIZE(tscs454_intercon),
- 	.controls =	tscs454_snd_controls,
- 	.num_controls = ARRAY_SIZE(tscs454_snd_controls),
-+	.endianness = 1,
- };
- 
- #define TSCS454_RATES SNDRV_PCM_RATE_8000_96000
+ 		_leave(" [error]");
+@@ -913,7 +915,7 @@ void afs_send_simple_reply(struct afs_call *call, const void *buf, size_t len)
+ 	if (n == -ENOMEM) {
+ 		_debug("oom");
+ 		rxrpc_kernel_abort_call(net->socket, call->rxcall,
+-					RX_USER_ABORT, -ENOMEM, "KOO");
++					RXGEN_SS_MARSHAL, -ENOMEM, "KOO");
+ 	}
+ 	_leave(" [error]");
+ }
+diff --git a/net/rxrpc/call_event.c b/net/rxrpc/call_event.c
+index 22e05de5d1ca..e426f6831aab 100644
+--- a/net/rxrpc/call_event.c
++++ b/net/rxrpc/call_event.c
+@@ -377,9 +377,9 @@ void rxrpc_process_call(struct work_struct *work)
+ 		if (test_bit(RXRPC_CALL_RX_HEARD, &call->flags) &&
+ 		    (int)call->conn->hi_serial - (int)call->rx_serial > 0) {
+ 			trace_rxrpc_call_reset(call);
+-			rxrpc_abort_call("EXP", call, 0, RX_USER_ABORT, -ECONNRESET);
++			rxrpc_abort_call("EXP", call, 0, RX_CALL_DEAD, -ECONNRESET);
+ 		} else {
+-			rxrpc_abort_call("EXP", call, 0, RX_USER_ABORT, -ETIME);
++			rxrpc_abort_call("EXP", call, 0, RX_CALL_TIMEOUT, -ETIME);
+ 		}
+ 		set_bit(RXRPC_CALL_EV_ABORT, &call->events);
+ 		goto recheck_state;
+diff --git a/net/rxrpc/conn_object.c b/net/rxrpc/conn_object.c
+index 3bcbe0665f91..3ef05a0e90ad 100644
+--- a/net/rxrpc/conn_object.c
++++ b/net/rxrpc/conn_object.c
+@@ -184,7 +184,7 @@ void __rxrpc_disconnect_call(struct rxrpc_connection *conn,
+ 			chan->last_type = RXRPC_PACKET_TYPE_ABORT;
+ 			break;
+ 		default:
+-			chan->last_abort = RX_USER_ABORT;
++			chan->last_abort = RX_CALL_DEAD;
+ 			chan->last_type = RXRPC_PACKET_TYPE_ABORT;
+ 			break;
+ 		}
 -- 
 2.35.1
 
