@@ -2,49 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F7D7C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:19:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B83E6C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:19:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239675AbiE3OTE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:19:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48286 "EHLO
+        id S239992AbiE3OTN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:19:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239272AbiE3ONp (ORCPT
+        with ESMTP id S239484AbiE3OOC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:13:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF771E15D8;
-        Mon, 30 May 2022 06:43:11 -0700 (PDT)
+        Mon, 30 May 2022 10:14:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E008EAB80;
+        Mon, 30 May 2022 06:43:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EC377B80AE8;
-        Mon, 30 May 2022 13:42:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1ED8AC3411A;
-        Mon, 30 May 2022 13:42:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E28EB60FC6;
+        Mon, 30 May 2022 13:42:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D3EBC3411C;
+        Mon, 30 May 2022 13:42:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918172;
-        bh=n+AaXBeWTOxHXF2nYHq4qOyEFHDvsdaw+ZoRXf+hNbc=;
+        s=k20201202; t=1653918176;
+        bh=0qLbL55MF/P0+Qou/QahJDBlhd7ow5V6cdXeBWPYJEE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JgHb71gHE1FFBuuS5loS/ZcBS3sUER/lPXVK4oLQ8EtT5qAcG4w4XQcOUN91m62Co
-         9Cmss5jNQG1h+xoPIcMr4sIDKtmOJi0QFiBRrEb4LOWJXFoCKuRtC8a3lDZ0iqqp//
-         Z3pmR9Vo0aV1TUf3yf9zVlSf92asptvNFUP9fLwH8j+26lb2p0yyJqPEyHqlM8NXsP
-         E6LnTaRZF3cAVBoN6vEyX2jn94C09yPL+yxPyMvLMwJ4sCCTkRWlqwmKJbkOWS1epl
-         rELF5wkFL+vN0w67ul1GAm4ABADLSbRPqIg02O3GocHVEnR4vNZS341c+H1WmwTdBJ
-         uqFFELF2f7czg==
+        b=aOPOW8kW7GypBG7cHOIO3/Tj/1bd7nTL5IqoYcOPMsOZGxpXnsTNie6lniI9Sv7PW
+         4Q1eVoQ5FyP+KpTUdrkzlpK0h9vWmcpDnJKUk/dpRbrtpGi4uFULlPxVHknYjmndov
+         Wr5A1Ls6pZvtIjgWboDDkJASciRQck5veMa2lXroJwb8DS60k/DAq6vfeue+eliIIw
+         PymS6neyaiVi4bCjkfidaw2NqTfFw7S536L4eWZxg9TI2lSVnfVJoXKutM7AP8/80s
+         hF2wS98VaQrfg8L0zpz3EiG4KI0i17PVmudL18OlgXaT2QkzViK+8d/wQWHqgycqzU
+         zRH7+AeXa8frg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergmann <arnd@arndb.de>, Jonas Bonn <jonas@southpole.se>,
-        Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
-        Stafford Horne <shorne@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Sasha Levin <sashal@kernel.org>, rdunlap@infradead.org,
-        linux@dominikbrodowski.net, openrisc@lists.librecores.org
-Subject: [PATCH AUTOSEL 5.15 084/109] openrisc: start CPU timer early in boot
-Date:   Mon, 30 May 2022 09:38:00 -0400
-Message-Id: <20220530133825.1933431-84-sashal@kernel.org>
+Cc:     Lin Ma <linma@zju.edu.cn>, Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, oder_chiou@realtek.com,
+        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
+        alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.15 086/109] ASoC: rt5645: Fix errorenous cleanup order
+Date:   Mon, 30 May 2022 09:38:02 -0400
+Message-Id: <20220530133825.1933431-86-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
 References: <20220530133825.1933431-1-sashal@kernel.org>
@@ -56,60 +52,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Lin Ma <linma@zju.edu.cn>
 
-[ Upstream commit 516dd4aacd67a0f27da94f3fe63fe0f4dbab6e2b ]
+[ Upstream commit 2def44d3aec59e38d2701c568d65540783f90f2f ]
 
-In order to measure the boot process, the timer should be switched on as
-early in boot as possible. As well, the commit defines the get_cycles
-macro, like the previous patches in this series, so that generic code is
-aware that it's implemented by the platform, as is done on other archs.
+There is a logic error when removing rt5645 device as the function
+rt5645_i2c_remove() first cancel the &rt5645->jack_detect_work and
+delete the &rt5645->btn_check_timer latter. However, since the timer
+handler rt5645_btn_check_callback() will re-queue the jack_detect_work,
+this cleanup order is buggy.
 
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Jonas Bonn <jonas@southpole.se>
-Cc: Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>
-Acked-by: Stafford Horne <shorne@gmail.com>
-Reported-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+That is, once the del_timer_sync in rt5645_i2c_remove is concurrently
+run with the rt5645_btn_check_callback, the canceled jack_detect_work
+will be rescheduled again, leading to possible use-after-free.
+
+This patch fix the issue by placing the del_timer_sync function before
+the cancel_delayed_work_sync.
+
+Signed-off-by: Lin Ma <linma@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220516092035.28283-1-linma@zju.edu.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/openrisc/include/asm/timex.h | 1 +
- arch/openrisc/kernel/head.S       | 9 +++++++++
- 2 files changed, 10 insertions(+)
+ sound/soc/codecs/rt5645.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/arch/openrisc/include/asm/timex.h b/arch/openrisc/include/asm/timex.h
-index d52b4e536e3f..5487fa93dd9b 100644
---- a/arch/openrisc/include/asm/timex.h
-+++ b/arch/openrisc/include/asm/timex.h
-@@ -23,6 +23,7 @@ static inline cycles_t get_cycles(void)
- {
- 	return mfspr(SPR_TTCR);
- }
-+#define get_cycles get_cycles
- 
- /* This isn't really used any more */
- #define CLOCK_TICK_RATE 1000
-diff --git a/arch/openrisc/kernel/head.S b/arch/openrisc/kernel/head.S
-index 15f1b38dfe03..871f4c858859 100644
---- a/arch/openrisc/kernel/head.S
-+++ b/arch/openrisc/kernel/head.S
-@@ -521,6 +521,15 @@ _start:
- 	l.ori	r3,r0,0x1
- 	l.mtspr	r0,r3,SPR_SR
+diff --git a/sound/soc/codecs/rt5645.c b/sound/soc/codecs/rt5645.c
+index 9408ee63cb26..8ea6d4333562 100644
+--- a/sound/soc/codecs/rt5645.c
++++ b/sound/soc/codecs/rt5645.c
+@@ -4154,9 +4154,14 @@ static int rt5645_i2c_remove(struct i2c_client *i2c)
+ 	if (i2c->irq)
+ 		free_irq(i2c->irq, rt5645);
  
 +	/*
-+	 * Start the TTCR as early as possible, so that the RNG can make use of
-+	 * measurements of boot time from the earliest opportunity. Especially
-+	 * important is that the TTCR does not return zero by the time we reach
-+	 * rand_initialize().
++	 * Since the rt5645_btn_check_callback() can queue jack_detect_work,
++	 * the timer need to be delted first
 +	 */
-+	l.movhi r3,hi(SPR_TTMR_CR)
-+	l.mtspr r0,r3,SPR_TTMR
++	del_timer_sync(&rt5645->btn_check_timer);
 +
- 	CLEAR_GPR(r1)
- 	CLEAR_GPR(r2)
- 	CLEAR_GPR(r3)
+ 	cancel_delayed_work_sync(&rt5645->jack_detect_work);
+ 	cancel_delayed_work_sync(&rt5645->rcclock_work);
+-	del_timer_sync(&rt5645->btn_check_timer);
+ 
+ 	regulator_bulk_disable(ARRAY_SIZE(rt5645->supplies), rt5645->supplies);
+ 
 -- 
 2.35.1
 
