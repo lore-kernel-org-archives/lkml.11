@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56C1BC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:24:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB57CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:24:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236527AbiE3NYf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:24:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57112 "EHLO
+        id S236558AbiE3NYn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:24:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230415AbiE3NYb (ORCPT
+        with ESMTP id S236535AbiE3NYi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:24:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C85C162F6;
-        Mon, 30 May 2022 06:24:30 -0700 (PDT)
+        Mon, 30 May 2022 09:24:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C9B6AE6E;
+        Mon, 30 May 2022 06:24:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8262FB80D84;
-        Mon, 30 May 2022 13:24:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17BABC385B8;
-        Mon, 30 May 2022 13:24:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B67B960DD4;
+        Mon, 30 May 2022 13:24:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45D14C3411C;
+        Mon, 30 May 2022 13:24:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917068;
-        bh=v6STE/M7umHmQhXZl5W6Am/3Zz1pQY0LUnmLP5HuXO8=;
-        h=From:To:Cc:Subject:Date:From;
-        b=PSH1Y5HK/smNoPMvz4Yg5A+BFRA46DwGlSgwBfM3AVYTZulg5alVgvdbLn03ROotT
-         hDZrojGNubPP8GSMntc1dji17j4hszFJ/ctOsRpD022Gn29DTLkuxyNMAExaWXvQW8
-         6W7XYfYWklKlXoK/So3Xubh5/LA+xxjO43TxBMoFLHePf42+2CtTity04YMG3+Lkp8
-         GseBofE6XQWSSYQDpjXlRVfTvL7dgyRKUSpS4tEO0heFlH6LJ8t5wNckMoJO3T7b+c
-         HlH31PfRdhiNp03k89eJWrH5IyuBkwP7jK3NPK52WVdFllnCmat01RrzUgWAaK/NUG
-         A/eLeVeCA20Ww==
+        s=k20201202; t=1653917076;
+        bh=s3qNkoIYVWMpejiHT67UNIh/odgE/06E//y1wED6l1c=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=oEi3QpzvTN0D3kbvTJCtNVR5N/xh+pJrO9HVq0Dxr4lfkiNEj8MF8dw2KfZbifTnB
+         1dRyYoWzL0cTDQew6wtgd/kfYUfeomvVC4rp7p6rfhdQ/yHq7+ePB3GRO4vU8c6SlH
+         KkqYPVp4Psumwb4J7C9nKVdtiGFE3jmotgOxB2RAq9rjxnDCI3w+g9SG5m+gsceZKJ
+         c8h2MBW3q/kC6JMdn+RdyuxJ1CMFWhFusZCitJ4iqoDotTEGmbc4shpYRJBFPnP/8Q
+         2PLRYxiAmMTh7LSgrDMaP6UpxRuHKodiTMbHBoViehXOJbQ7XnAEygbApSqbU8yG5g
+         gcyOCTl+/e4Zg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tejas Upadhyay <tejaskumarx.surendrakumar.upadhyay@intel.com>,
-        Raviteja Goud Talla <ravitejax.goud.talla@intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Sasha Levin <sashal@kernel.org>, dwmw2@infradead.org,
-        joro@8bytes.org, will@kernel.org, iommu@lists.linux-foundation.org
-Subject: [PATCH AUTOSEL 5.18 001/159] iommu/vt-d: Add RPLS to quirk list to skip TE disabling
-Date:   Mon, 30 May 2022 09:21:46 -0400
-Message-Id: <20220530132425.1929512-1-sashal@kernel.org>
+Cc:     Zack Rusin <zackr@vmware.com>,
+        Martin Krastev <krastevm@vmware.com>,
+        Sasha Levin <sashal@kernel.org>, airlied@linux.ie,
+        daniel@ffwll.ch, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.18 003/159] drm/vmwgfx: validate the screen formats
+Date:   Mon, 30 May 2022 09:21:48 -0400
+Message-Id: <20220530132425.1929512-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
+References: <20220530132425.1929512-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,53 +52,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tejas Upadhyay <tejaskumarx.surendrakumar.upadhyay@intel.com>
+From: Zack Rusin <zackr@vmware.com>
 
-[ Upstream commit 0a967f5bfd9134b89681cae58deb222e20840e76 ]
+[ Upstream commit 8bb75aeb58bd688d70827ae179bd3da57b6d975b ]
 
-The VT-d spec requires (10.4.4 Global Command Register, TE
-field) that:
+The kms code wasn't validating the modifiers and was letting through
+unsupported formats. rgb8 was never properly supported and has no
+matching svga screen target format so remove it.
+This fixes format/modifier failures in kms_addfb_basic from IGT.
 
-Hardware implementations supporting DMA draining must drain
-any in-flight DMA read/write requests queued within the
-Root-Complex before completing the translation enable
-command and reflecting the status of the command through
-the TES field in the Global Status register.
-
-Unfortunately, some integrated graphic devices fail to do
-so after some kind of power state transition. As the
-result, the system might stuck in iommu_disable_translati
-on(), waiting for the completion of TE transition.
-
-This adds RPLS to a quirk list for those devices and skips
-TE disabling if the qurik hits.
-
-Link: https://gitlab.freedesktop.org/drm/intel/-/issues/4898
-Tested-by: Raviteja Goud Talla <ravitejax.goud.talla@intel.com>
-Cc: Rodrigo Vivi <rodrigo.vivi@intel.com>
-Acked-by: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Tejas Upadhyay <tejaskumarx.surendrakumar.upadhyay@intel.com>
-Reviewed-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
-Signed-off-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220302043256.191529-1-tejaskumarx.surendrakumar.upadhyay@intel.com
+Signed-off-by: Zack Rusin <zackr@vmware.com>
+Reviewed-by: Martin Krastev <krastevm@vmware.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220318174332.440068-4-zack@kde.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/intel/iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/vmwgfx/vmwgfx_kms.c | 30 +++++++++++++++--------------
+ drivers/gpu/drm/vmwgfx/vmwgfx_kms.h |  1 -
+ 2 files changed, 16 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 0ea47e17b379..ba9a63cac47c 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -5031,7 +5031,7 @@ static void quirk_igfx_skip_te_disable(struct pci_dev *dev)
- 	ver = (dev->device >> 8) & 0xff;
- 	if (ver != 0x45 && ver != 0x46 && ver != 0x4c &&
- 	    ver != 0x4e && ver != 0x8a && ver != 0x98 &&
--	    ver != 0x9a)
-+	    ver != 0x9a && ver != 0xa7)
- 		return;
+diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_kms.c b/drivers/gpu/drm/vmwgfx/vmwgfx_kms.c
+index 93431e8f6606..9410152f9d6f 100644
+--- a/drivers/gpu/drm/vmwgfx/vmwgfx_kms.c
++++ b/drivers/gpu/drm/vmwgfx/vmwgfx_kms.c
+@@ -914,6 +914,15 @@ static int vmw_kms_new_framebuffer_surface(struct vmw_private *dev_priv,
+ 	 * Sanity checks.
+ 	 */
  
- 	if (risky_device(dev))
++	if (!drm_any_plane_has_format(&dev_priv->drm,
++				      mode_cmd->pixel_format,
++				      mode_cmd->modifier[0])) {
++		drm_dbg(&dev_priv->drm,
++			"unsupported pixel format %p4cc / modifier 0x%llx\n",
++			&mode_cmd->pixel_format, mode_cmd->modifier[0]);
++		return -EINVAL;
++	}
++
+ 	/* Surface must be marked as a scanout. */
+ 	if (unlikely(!surface->metadata.scanout))
+ 		return -EINVAL;
+@@ -1236,20 +1245,13 @@ static int vmw_kms_new_framebuffer_bo(struct vmw_private *dev_priv,
+ 		return -EINVAL;
+ 	}
+ 
+-	/* Limited framebuffer color depth support for screen objects */
+-	if (dev_priv->active_display_unit == vmw_du_screen_object) {
+-		switch (mode_cmd->pixel_format) {
+-		case DRM_FORMAT_XRGB8888:
+-		case DRM_FORMAT_ARGB8888:
+-			break;
+-		case DRM_FORMAT_XRGB1555:
+-		case DRM_FORMAT_RGB565:
+-			break;
+-		default:
+-			DRM_ERROR("Invalid pixel format: %p4cc\n",
+-				  &mode_cmd->pixel_format);
+-			return -EINVAL;
+-		}
++	if (!drm_any_plane_has_format(&dev_priv->drm,
++				      mode_cmd->pixel_format,
++				      mode_cmd->modifier[0])) {
++		drm_dbg(&dev_priv->drm,
++			"unsupported pixel format %p4cc / modifier 0x%llx\n",
++			&mode_cmd->pixel_format, mode_cmd->modifier[0]);
++		return -EINVAL;
+ 	}
+ 
+ 	vfbd = kzalloc(sizeof(*vfbd), GFP_KERNEL);
+diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_kms.h b/drivers/gpu/drm/vmwgfx/vmwgfx_kms.h
+index 4d36e8507380..d9ebd02099a6 100644
+--- a/drivers/gpu/drm/vmwgfx/vmwgfx_kms.h
++++ b/drivers/gpu/drm/vmwgfx/vmwgfx_kms.h
+@@ -247,7 +247,6 @@ struct vmw_framebuffer_bo {
+ static const uint32_t __maybe_unused vmw_primary_plane_formats[] = {
+ 	DRM_FORMAT_XRGB1555,
+ 	DRM_FORMAT_RGB565,
+-	DRM_FORMAT_RGB888,
+ 	DRM_FORMAT_XRGB8888,
+ 	DRM_FORMAT_ARGB8888,
+ };
 -- 
 2.35.1
 
