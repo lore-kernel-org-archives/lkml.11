@@ -2,51 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AD44C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:59:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85F17C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:59:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236640AbiE3N7j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:59:39 -0400
+        id S237113AbiE3N7p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:59:45 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239203AbiE3NvU (ORCPT
+        with ESMTP id S239029AbiE3NvB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:51:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDA1D915BC;
-        Mon, 30 May 2022 06:35:27 -0700 (PDT)
+        Mon, 30 May 2022 09:51:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 750E78217E;
+        Mon, 30 May 2022 06:35:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BA9E360F27;
-        Mon, 30 May 2022 13:35:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 099AFC341C6;
-        Mon, 30 May 2022 13:35:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D6478B80DB6;
+        Mon, 30 May 2022 13:35:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19738C341C7;
+        Mon, 30 May 2022 13:35:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917726;
-        bh=N03/B74u7sn+A4NVcosFTHskafhEW/CGOihApCtGW9Y=;
+        s=k20201202; t=1653917706;
+        bh=cB/zmou4JNBatz0EsRvy0e6Im6lxkG/oKJCnqFwoMfc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Rj5jfc+9doM4HPXS4Hxl2oLB2wFMDRxQGYt5i4nHb7kREAf0NIsgKqItV9c2hNP12
-         7fvk8cMZmbVfp+dWRh+TMK1nB5GHnYrt9L+gINeEjCxvxdXryPAHsaQJgEDA6tmEQ8
-         93L9whc8ahvj6sj7n4hmdwY6q9RrI2mWOdvk4XDKc5QZOJwIpEA48xG8IQOIBtfCQ1
-         JWRcHM51IIQe5q0IwE+ZzY5c75RgNpCFavCSd4Z69Eo5AT6+70d/1lu5YjfsKS8UJe
-         gG6Xh/P4BRRgf7VAFFU4REoFlHnuZgLpB2aWbULYfw8aG/uGZik4zbU7C7zc2RfrbL
-         rjq3cBn6YZ+FQ==
+        b=GZUlB9s5JH+JNsIlBG6NEr5Bi6dlYEbiDJdxlsd9nD7LFJuyGz6uWocQRYNPe13Mx
+         q7EVfdlrnfdzpJ9j9a+WpRXf7t9Nb+gNG9bQGIY02Ez4Y+ATzlYFAcmGxGZX+1TEK2
+         /42gvU8ci2U5DXHukHpTK4dR4+IXzfyZNbIQJBXUb72ng5u6eS5qqR7JoIYw2SBjTm
+         uZU5fT3tWXfRW48cN4qIBZSagerussar3tEl5jrvSHCDQswn2KJTERdEexEt75YQFH
+         1R/KK3WCAqeERfS2nPtAoqAlGZqL1GZgTUVCNai3CzCuQeOU1796YH8w+STqhMnPDj
+         YFA/ikA3vy4bg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xiang Chen <chenxiang66@hisilicon.com>,
-        Yihang Li <liyihang6@hisilicon.com>,
-        John Garry <john.garry@huawei.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 076/135] scsi: hisi_sas: Undo RPM resume for failed notify phy event for v3 HW
-Date:   Mon, 30 May 2022 09:30:34 -0400
-Message-Id: <20220530133133.1931716-76-sashal@kernel.org>
+Cc:     =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
+        <nfraprado@collabora.com>, Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        matthias.bgg@gmail.com, hsin-hsiung.wang@mediatek.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.17 070/135] regulator: mt6315: Enforce regulator-compatible, not name
+Date:   Mon, 30 May 2022 09:30:28 -0400
+Message-Id: <20220530133133.1931716-70-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -54,46 +56,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiang Chen <chenxiang66@hisilicon.com>
+From: Nícolas F. R. A. Prado <nfraprado@collabora.com>
 
-[ Upstream commit 9b5387fe5af38116b452259d87cd66594b6277c1 ]
+[ Upstream commit 6d435a94ba5bb4f2ad381c0828fbae89c66b50fe ]
 
-If we fail to notify the phy up event then undo the RPM resume, as the phy
-up notify event handling pairs with that RPM resume.
+The MT6315 PMIC dt-binding should enforce that one of the valid
+regulator-compatible is set in each regulator node. However it was
+mistakenly matching against regulator-name instead.
 
-Link: https://lore.kernel.org/r/1651839939-101188-1-git-send-email-john.garry@huawei.com
-Reported-by: Yihang Li <liyihang6@hisilicon.com>
-Tested-by: Yihang Li <liyihang6@hisilicon.com>
-Signed-off-by: Xiang Chen <chenxiang66@hisilicon.com>
-Signed-off-by: John Garry <john.garry@huawei.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fix the typo. This not only fixes the compatible verification, but also
+lifts the regulator-name restriction, so that more meaningful names can
+be set for each platform.
+
+Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Link: https://lore.kernel.org/r/20220429201325.2205799-1-nfraprado@collabora.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/hisi_sas/hisi_sas_v3_hw.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ .../devicetree/bindings/regulator/mt6315-regulator.yaml         | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-index 52089538e9de..b309a9d0f5b7 100644
---- a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-+++ b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-@@ -1561,9 +1561,15 @@ static irqreturn_t phy_up_v3_hw(int phy_no, struct hisi_hba *hisi_hba)
+diff --git a/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml b/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml
+index 61dd5af80db6..5d2d989de893 100644
+--- a/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml
++++ b/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml
+@@ -31,7 +31,7 @@ properties:
+         $ref: "regulator.yaml#"
  
- 	phy->port_id = port_id;
+         properties:
+-          regulator-name:
++          regulator-compatible:
+             pattern: "^vbuck[1-4]$"
  
--	/* Call pm_runtime_put_sync() with pairs in hisi_sas_phyup_pm_work() */
-+	/*
-+	 * Call pm_runtime_get_noresume() which pairs with
-+	 * hisi_sas_phyup_pm_work() -> pm_runtime_put_sync().
-+	 * For failure call pm_runtime_put() as we are in a hardirq context.
-+	 */
- 	pm_runtime_get_noresume(dev);
--	hisi_sas_notify_phy_event(phy, HISI_PHYE_PHY_UP_PM);
-+	res = hisi_sas_notify_phy_event(phy, HISI_PHYE_PHY_UP_PM);
-+	if (!res)
-+		pm_runtime_put(dev);
- 
- 	res = IRQ_HANDLED;
- 
+     additionalProperties: false
 -- 
 2.35.1
 
