@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76718C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:32:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51B32C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:32:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237220AbiE3NcK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:32:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59318 "EHLO
+        id S237223AbiE3NcQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:32:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237277AbiE3NaR (ORCPT
+        with ESMTP id S237115AbiE3NaG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:30:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1296287208;
-        Mon, 30 May 2022 06:27:04 -0700 (PDT)
+        Mon, 30 May 2022 09:30:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70EFDBC86;
+        Mon, 30 May 2022 06:26:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 67CD9B80D84;
-        Mon, 30 May 2022 13:27:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23EDDC385B8;
-        Mon, 30 May 2022 13:27:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3CE6060E2D;
+        Mon, 30 May 2022 13:26:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1F57C3411C;
+        Mon, 30 May 2022 13:26:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917222;
-        bh=uBJsSL0dyV/euH9wSsRXymgQdHcQOPUzRb7f6NJVMeA=;
+        s=k20201202; t=1653917190;
+        bh=cnzevXgz+waa72ojOU4KwgyU+p6nulyrqLCnlw984fs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y0ZjrlJBr+3Ob+hWgA86CeCLU0bjPZtBqrbz7T1tNZi4+CkvlqvJzfri+cCfZOQKt
-         fmeRmV0srv0e5VULollSnxKqkF/JRayHjzmoDkmDKhHdxZsUIehof+2Urke+41JX80
-         SsO6A2LgFpoZToA8nwSyzXgePybCZLbmYltVk28bNmmGjReUoolGjPiXxK1D5Xi09n
-         3w44quNhCDDzdq4CBkQdghGzXKhnn5Bd84Z3GcEjcWLOodbzgxOme83x7aU68krp3q
-         g3sdh0jsdzqWnDqHRRs4ydSy36B+u45m6qnBlVDtP18RQwKqlMT1MloMTxMwoiNt/r
-         MRL9KjxWQ6jEw==
+        b=ng+ResfkkVGLko3kl/PtGZZJnpfidk2LUwDcTry9/UDJjg+XMMB4fdgqSTVk677Tu
+         cvaDeinZWgmQTY1ZAzy2j+umP59ifcaILkM6LcD/UbKkOxgKPCRIu0BbivgIQ+H+k5
+         /GG+Vxh/+e1ezq0z3VckZMu7XToOW/2cGXsig2glvc6d1m0wURMfI0R0ZqrY8TeG3B
+         gVx3hP9yo/sT9+X2mWLE/OIs7KHHzPUDVaz0RtkxezM65DjE/QWXemZcYw9dz4ITWy
+         kFEVVcgTCBzauSZetGpHid/t4H1zQByM6Q/U2DvNzJMa9q1LZtOuSYnt/NvQCJ+Ato
+         2fo8PO2L523qQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     James Smart <jsmart2021@gmail.com>,
-        Justin Tee <justin.tee@broadcom.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, james.smart@broadcom.com,
-        dick.kennedy@broadcom.com, jejb@linux.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 061/159] scsi: lpfc: Fix resource leak in lpfc_sli4_send_seq_to_ulp()
-Date:   Mon, 30 May 2022 09:22:46 -0400
-Message-Id: <20220530132425.1929512-61-sashal@kernel.org>
+Cc:     Zheyu Ma <zheyuma97@gmail.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 049/159] media: i2c: dw9714: Disable the regulator when the driver fails to probe
+Date:   Mon, 30 May 2022 09:22:34 -0400
+Message-Id: <20220530132425.1929512-49-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
@@ -54,62 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit 646db1a560f44236b7278b822ca99a1d3b6ea72c ]
+[ Upstream commit 02276e18defa2fccf16413b44440277d98c2b1ea ]
 
-If no handler is found in lpfc_complete_unsol_iocb() to match the rctl of a
-received frame, the frame is dropped and resources are leaked.
+When the driver fails to probe, we will get the following splat:
 
-Fix by returning resources when discarding an unhandled frame type.  Update
-lpfc_fc_frame_check() handling of NOP basic link service.
+[   59.305988] ------------[ cut here ]------------
+[   59.306417] WARNING: CPU: 2 PID: 395 at drivers/regulator/core.c:2257 _regulator_put+0x3ec/0x4e0
+[   59.310345] RIP: 0010:_regulator_put+0x3ec/0x4e0
+[   59.318362] Call Trace:
+[   59.318582]  <TASK>
+[   59.318765]  regulator_put+0x1f/0x30
+[   59.319058]  devres_release_group+0x319/0x3d0
+[   59.319420]  i2c_device_probe+0x766/0x940
 
-Link: https://lore.kernel.org/r/20220426181419.9154-1-jsmart2021@gmail.com
-Co-developed-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fix this by disabling the regulator in error handling.
+
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/lpfc/lpfc_sli.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/media/i2c/dw9714.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/scsi/lpfc/lpfc_sli.c b/drivers/scsi/lpfc/lpfc_sli.c
-index 09a45f8ecf3f..a174e06bd96e 100644
---- a/drivers/scsi/lpfc/lpfc_sli.c
-+++ b/drivers/scsi/lpfc/lpfc_sli.c
-@@ -18124,7 +18124,6 @@ lpfc_fc_frame_check(struct lpfc_hba *phba, struct fc_frame_header *fc_hdr)
- 	case FC_RCTL_ELS_REP:	/* extended link services reply */
- 	case FC_RCTL_ELS4_REQ:	/* FC-4 ELS request */
- 	case FC_RCTL_ELS4_REP:	/* FC-4 ELS reply */
--	case FC_RCTL_BA_NOP:  	/* basic link service NOP */
- 	case FC_RCTL_BA_ABTS: 	/* basic link service abort */
- 	case FC_RCTL_BA_RMC: 	/* remove connection */
- 	case FC_RCTL_BA_ACC:	/* basic accept */
-@@ -18145,6 +18144,7 @@ lpfc_fc_frame_check(struct lpfc_hba *phba, struct fc_frame_header *fc_hdr)
- 		fc_vft_hdr = (struct fc_vft_header *)fc_hdr;
- 		fc_hdr = &((struct fc_frame_header *)fc_vft_hdr)[1];
- 		return lpfc_fc_frame_check(phba, fc_hdr);
-+	case FC_RCTL_BA_NOP:	/* basic link service NOP */
- 	default:
- 		goto drop;
- 	}
-@@ -18959,12 +18959,14 @@ lpfc_sli4_send_seq_to_ulp(struct lpfc_vport *vport,
- 	if (!lpfc_complete_unsol_iocb(phba,
- 				      phba->sli4_hba.els_wq->pring,
- 				      iocbq, fc_hdr->fh_r_ctl,
--				      fc_hdr->fh_type))
-+				      fc_hdr->fh_type)) {
- 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
- 				"2540 Ring %d handler: unexpected Rctl "
- 				"x%x Type x%x received\n",
- 				LPFC_ELS_RING,
- 				fc_hdr->fh_r_ctl, fc_hdr->fh_type);
-+		lpfc_in_buf_free(phba, &seq_dmabuf->dbuf);
-+	}
+diff --git a/drivers/media/i2c/dw9714.c b/drivers/media/i2c/dw9714.c
+index cd7008ad8f2f..8c5797ba57d4 100644
+--- a/drivers/media/i2c/dw9714.c
++++ b/drivers/media/i2c/dw9714.c
+@@ -183,6 +183,7 @@ static int dw9714_probe(struct i2c_client *client)
+ 	return 0;
  
- 	/* Free iocb created in lpfc_prep_seq */
- 	list_for_each_entry_safe(curr_iocb, next_iocb,
+ err_cleanup:
++	regulator_disable(dw9714_dev->vcc);
+ 	v4l2_ctrl_handler_free(&dw9714_dev->ctrls_vcm);
+ 	media_entity_cleanup(&dw9714_dev->sd.entity);
+ 
 -- 
 2.35.1
 
