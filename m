@@ -2,102 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E06AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 09:55:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE2B4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 09:58:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232181AbiE3JzV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 05:55:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43774 "EHLO
+        id S234990AbiE3J6P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 05:58:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235019AbiE3JzL (ORCPT
+        with ESMTP id S234521AbiE3J6N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 05:55:11 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 813AC4C7A2;
-        Mon, 30 May 2022 02:55:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653904510; x=1685440510;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=2+hk4ostrY+MgPjlK3LLl5aBonfXPFHwp7H2wGkBm0A=;
-  b=l2WflFQLF2yT+A3ZswKmNutlIVWnZhi2sEpaVzFBgVyXDo3+XenWIerB
-   rTQR8vXy+/PbZaotYbDl9xtNG3UnZd/+QPruXQStiSEnvTaYXet8GHArs
-   QZO0qPn5HYRTSnX39HfvYlszt7MfPyFM63Wxur7iInHfbi9tbF+Ed3b+y
-   /J7Ifg52diiw4OpS9D1P7tokENsrr5wrdyoeQ4pIorAJod4/G22BIYZLm
-   eBj+/mYklUcEB8qOkidQIXl0ccJz9vCj6QHCjrPDGtWZDUzR+CMOHgUZt
-   P5x6S4sp4sbG/wPoiKXsDUdzITCikkxS/y/CX5h92M2Wi+NU2JXh39pkj
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10362"; a="272527404"
-X-IronPort-AV: E=Sophos;i="5.91,262,1647327600"; 
-   d="scan'208";a="272527404"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2022 02:55:10 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,262,1647327600"; 
-   d="scan'208";a="666452045"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by FMSMGA003.fm.intel.com with ESMTP; 30 May 2022 02:55:07 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 24U9t6o1022718;
-        Mon, 30 May 2022 10:55:06 +0100
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Mark Bloch <mbloch@nvidia.com>,
-        Maor Gottlieb <maorg@nvidia.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] net/mlx5: fix invalid structure access
-Date:   Mon, 30 May 2022 11:53:53 +0200
-Message-Id: <20220530095353.1237458-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220527222905.chagmk4wfresegfg@sx1>
-References: <20220527110132.102192-1-alexandr.lobakin@intel.com> <20220527222905.chagmk4wfresegfg@sx1>
+        Mon, 30 May 2022 05:58:13 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C669171D8D;
+        Mon, 30 May 2022 02:58:12 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8F34F113E;
+        Mon, 30 May 2022 02:58:12 -0700 (PDT)
+Received: from [10.57.82.204] (unknown [10.57.82.204])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7FBD43F73D;
+        Mon, 30 May 2022 02:58:10 -0700 (PDT)
+Message-ID: <49eb2888-712e-7c81-313b-aec58e906778@foss.arm.com>
+Date:   Mon, 30 May 2022 10:58:13 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; format=flowed
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+To:     ardb@kernel.org
+Cc:     andre.przywara@arm.com, davem@davemloft.net,
+        giovanni.cabiddu@intel.com, herbert@gondor.apana.org.au,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        qat-linux@intel.com, yoan.picchi@arm.com
+References: <CAMj1kXEF6KV=3CXhaRKygBs9hvun7=bKRua5NbWOrksaZBgtCQ@mail.gmail.com>
+Subject: Re: [RFC PATCH 2/2] Removes the x86 dependency on the QAT drivers
+Reply-To: yoan.picchi@arm.com
+Content-Language: en-CA
+From:   Yoan Picchi <yoan.picchi@foss.arm.com>
+In-Reply-To: <CAMj1kXEF6KV=3CXhaRKygBs9hvun7=bKRua5NbWOrksaZBgtCQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Saeed Mahameed <saeed@kernel.org>
-Date: Fri, 27 May 2022 15:29:05 -0700
+ > On Wed, 18 May 2022 at 17:55, Andre Przywara <andre.przywara@arm.com> 
+wrote:
+ > >
+ > > On Tue, 17 May 2022 10:11:09 +0200
+ > > Ard Biesheuvel <ardb@kernel.org> wrote:
+ > >
+ > > Hi,
+ > >
+ > > > On Mon, 16 May 2022 at 12:16, <yoan.picchi@arm.com> wrote:
+ > > > >
+ > > > > From: Yoan Picchi <yoan.picchi@arm.com>
+ > > > >
+ > > > > This dependency looks outdated. After the previous patch, we 
+have been able
+ > > > > to use this driver to encrypt some data and to create working 
+VF on arm64.
+ > > > >
+ > > > > Signed-off-by: Yoan Picchi <yoan.picchi@arm.com>
+ > > >
+ > > > Are you sure the driver is safe for non-coherent DMA as well?
+ > >
+ > > That depends on your definition of "sure".
+ > > We indeed tested this only on a server with coherent PCIe.
+ > >
+ > > I skimmed through the driver, and it looks like to use the DMA API
+ > > correctly:
+ > > - I see dma_alloc_coherent() calls for DMA ring buffers.
+ > > - There are dma_map_single()/dma_unmap_single() pairs in other parts.
+ > > - Accesses to the BARs are capsuled via macros, using readl/writel.
+ > > - Access the the SRAM BAR is also only done via those macros.
+ > >
+ > > I didn't go through the driver systematically, and of course the
+ > > interesting parts are the ones you don't see easily, so I am eager 
+to hear
+ > > any other opinions on this topic.
+ > >
+ > > Ard, do you have anything special in mind? Is there something to 
+look out
+ > > for, specifically?
+ > >
+ >
+ > If it uses the DMA api consistently and correctly, and works as
+ > expected when running under a SMMU, things are probably fine
+ >
+ > > The few cards we have access to are in some server in the data 
+centre, so
+ > > I can't easily walk in with, say a RockPro64, and test this there.
+ > >
+ >
+ > I suppose this implies that you have tested with SMMUs enabled.
 
-> On 27 May 13:01, Alexander Lobakin wrote:
-> >After pulling latest bpf-next, I started catching the following:
-
-[...]
-
-> We have a similar patch that is being reviewed internally.
-> I don't like comparing strings to match devices. Also this could cause mlx5
-> unwanted aux devices to be matched, e.g mlx5e, mlx5_ib, mlx5v, etc .., since
-> they all share the same prefix ? yes, no ? 
-> 
-> We also have another patch/approach that is comparing drivers:
-> 
-> 	if (dev->driver != curr->device->driver)
-> 		return NULL;
-> 
-> But also this is under discussion.
-
-Ok, I spotted that implementation in your repo at korg, hope it will
-hit mainline trees soon.
-
-> 
-> I think the whole design of this function is wrong, it's being used to match
-> devices of type mlx5_core_dev which are pci devices, but it is using aux class
-> to lookup! It works since we always have some aux devices hanging on top of
-> mlx5_core pci devs and since all of them share the same wrapper structure
-> "mlx5_adev" we find the corresponding mdev "mlx5_core_dev" sort of correctly.
-
-[...]
-
-> >-- 
-> >2.36.1
-
-Thanks,
-Al
+Sorry for the delay, I was away for a few days.
+Actually, our previous attempts were with the iommu set to passthrough, 
+but I
+just tested without the passthrough and it works the same way.
+ >
+ > > >
+ > > > > ---
+ > > > >  drivers/crypto/qat/Kconfig | 14 +++++++-------
+ > > > >  1 file changed, 7 insertions(+), 7 deletions(-)
+ > > > >
+ > > > > diff --git a/drivers/crypto/qat/Kconfig 
+b/drivers/crypto/qat/Kconfig
+ > > > > index 4b90c0f22b03..88df2cf4cac9 100644
+ > > > > --- a/drivers/crypto/qat/Kconfig
+ > > > > +++ b/drivers/crypto/qat/Kconfig
+ > > > > @@ -17,7 +17,7 @@ config CRYPTO_DEV_QAT
+ > > > >
+ > > > >  config CRYPTO_DEV_QAT_DH895xCC
+ > > > >         tristate "Support for Intel(R) DH895xCC"
+ > > > > -       depends on X86 && PCI
+ > > > > +       depends on PCI
+ > > > >         select CRYPTO_DEV_QAT
+ > > > >         help
+ > > > >           Support for Intel(R) DH895xcc with Intel(R) 
+QuickAssist Technology
+ > > > > @@ -28,7 +28,7 @@ config CRYPTO_DEV_QAT_DH895xCC
+ > > > >
+ > > > >  config CRYPTO_DEV_QAT_C3XXX
+ > > > >         tristate "Support for Intel(R) C3XXX"
+ > > > > -       depends on X86 && PCI
+ > > > > +       depends on PCI
+ > > > >         select CRYPTO_DEV_QAT
+ > > > >         help
+ > > > >           Support for Intel(R) C3xxx with Intel(R) QuickAssist 
+Technology
+ > > > > @@ -39,7 +39,7 @@ config CRYPTO_DEV_QAT_C3XXX
+ > > > >
+ > > > >  config CRYPTO_DEV_QAT_C62X
+ > > > >         tristate "Support for Intel(R) C62X"
+ > > > > -       depends on X86 && PCI
+ > > > > +       depends on PCI
+ > > > >         select CRYPTO_DEV_QAT
+ > > > >         help
+ > > > >           Support for Intel(R) C62x with Intel(R) QuickAssist 
+Technology
+ > > > > @@ -50,7 +50,7 @@ config CRYPTO_DEV_QAT_C62X
+ > > > >
+ > > > >  config CRYPTO_DEV_QAT_4XXX
+ > > > >         tristate "Support for Intel(R) QAT_4XXX"
+ > > > > -       depends on X86 && PCI
+ > > > > +       depends on PCI
+ > > > >         select CRYPTO_DEV_QAT
+ > > > >         help
+ > > > >           Support for Intel(R) QuickAssist Technology QAT_4xxx
+ > > > > @@ -61,7 +61,7 @@ config CRYPTO_DEV_QAT_4XXX
+ > > > >
+ > > > >  config CRYPTO_DEV_QAT_DH895xCCVF
+ > > > >         tristate "Support for Intel(R) DH895xCC Virtual Function"
+ > > > > -       depends on X86 && PCI
+ > > > > +       depends on PCI
+ > > > >         select PCI_IOV
+ > > > >         select CRYPTO_DEV_QAT
+ > > > >
+ > > > > @@ -74,7 +74,7 @@ config CRYPTO_DEV_QAT_DH895xCCVF
+ > > > >
+ > > > >  config CRYPTO_DEV_QAT_C3XXXVF
+ > > > >         tristate "Support for Intel(R) C3XXX Virtual Function"
+ > > > > -       depends on X86 && PCI
+ > > > > +       depends on PCI
+ > > > >         select PCI_IOV
+ > > > >         select CRYPTO_DEV_QAT
+ > > > >         help
+ > > > > @@ -86,7 +86,7 @@ config CRYPTO_DEV_QAT_C3XXXVF
+ > > > >
+ > > > >  config CRYPTO_DEV_QAT_C62XVF
+ > > > >         tristate "Support for Intel(R) C62X Virtual Function"
+ > > > > -       depends on X86 && PCI
+ > > > > +       depends on PCI
+ > > > >         select PCI_IOV
+ > > > >         select CRYPTO_DEV_QAT
+ > > > >         help
+ > > > > --
+ > > > > 2.25.1
+ > > > >
+ > >
