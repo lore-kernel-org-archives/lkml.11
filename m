@@ -2,75 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36F3AC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 08:26:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9209C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 08:26:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233849AbiE3I0s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 04:26:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58720 "EHLO
+        id S233875AbiE3I0v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 04:26:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233518AbiE3I0o (ORCPT
+        with ESMTP id S233842AbiE3I0q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 04:26:44 -0400
-Received: from mail.meizu.com (edge07.meizu.com [112.91.151.210])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A208DFC0;
-        Mon, 30 May 2022 01:26:42 -0700 (PDT)
-Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail11.meizu.com
- (172.16.1.15) with Microsoft SMTP Server (TLS) id 14.3.487.0; Mon, 30 May
- 2022 16:26:29 +0800
-Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
- (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Mon, 30 May
- 2022 16:26:28 +0800
-From:   Haowen Bai <baihaowen@meizu.com>
-To:     Don Brace <don.brace@microchip.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-CC:     Haowen Bai <baihaowen@meizu.com>, <storagedev@microchip.com>,
-        <linux-scsi@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH] scsi: hpsa: Fix pointer dereferenced before checking
-Date:   Mon, 30 May 2022 16:26:27 +0800
-Message-ID: <1653899188-26544-1-git-send-email-baihaowen@meizu.com>
-X-Mailer: git-send-email 2.7.4
+        Mon, 30 May 2022 04:26:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAC9E12AA5
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 01:26:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 442C360F19
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 08:26:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52135C34119;
+        Mon, 30 May 2022 08:26:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1653899203;
+        bh=bjVbSPvihSxYjvHQHgA3hXBC3TXCMdD3HcCbn6qypOs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=v6FECxfH8o4lG/G7O2M8Bt0N92wdycrEuwXxOx04CiUlBS5wty/PSXabxvhonnzUk
+         UO7eFv9T13oCZ1F8TsjHJnfHuqgx1Is0xVZ5CsZB9hAkJiqNsGBR+UVdfI9UUQhzhg
+         oe2yq8Z90VS+tGdiS8L6oCvgRly6cy169xmDrtoU=
+Date:   Mon, 30 May 2022 10:26:40 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     baihaowen <baihaowen@meizu.com>
+Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Florian Schilhabel <florian.c.schilhabel@googlemail.com>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging: rtl8712: Fix pointer dereferenced before
+ checking
+Message-ID: <YpR/wHwWRbJ9cWbo@kroah.com>
+References: <1653897933-25931-1-git-send-email-baihaowen@meizu.com>
+ <YpR85JgzGsTzYm3W@kroah.com>
+ <61130a41-a626-c860-e321-9295f9c9d0dd@meizu.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.16.137.70]
-X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
- IT-EXMB-1-125.meizu.com (172.16.1.125)
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <61130a41-a626-c860-e321-9295f9c9d0dd@meizu.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The dev->raid_map is dereferencing before null checking, so move
- it after checking.
+On Mon, May 30, 2022 at 04:22:11PM +0800, baihaowen wrote:
+> 在 2022/5/30 下午4:14, Greg Kroah-Hartman 写道:
+> > On Mon, May 30, 2022 at 04:05:32PM +0800, Haowen Bai wrote:
+> >> The padapter->recvpriv.signal_qual_data is dereferencing before null
+> >> checking, so move it after checking.
+> >>
+> >> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+> >> ---
+> >>  drivers/staging/rtl8712/rtl8712_recv.c | 4 +++-
+> >>  1 file changed, 3 insertions(+), 1 deletion(-)
+> >>
+> >> diff --git a/drivers/staging/rtl8712/rtl8712_recv.c b/drivers/staging/rtl8712/rtl8712_recv.c
+> >> index 7f1fdd058551..8ed94b259dbe 100644
+> >> --- a/drivers/staging/rtl8712/rtl8712_recv.c
+> >> +++ b/drivers/staging/rtl8712/rtl8712_recv.c
+> >> @@ -863,10 +863,12 @@ static void process_link_qual(struct _adapter *padapter,
+> >>  {
+> >>  	u32	last_evm = 0, tmpVal;
+> >>  	struct rx_pkt_attrib *pattrib;
+> >> -	struct smooth_rssi_data *sqd = &padapter->recvpriv.signal_qual_data;
+> >> +	struct smooth_rssi_data *sqd;
+> >>  
+> >>  	if (!prframe || !padapter)
+> >>  		return;
+> >> +
+> >> +	sqd = &padapter->recvpriv.signal_qual_data;
+> > How can padapter ever be NULL in this codepath?
+> >
+> > thanks,
+> >
+> > greg k-h
+> Just the original  code, show me
+> 
+> if (!prframe || !padapter)
+> 
+> It would be null, and then return.
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
----
- drivers/scsi/hpsa.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/scsi/hpsa.c b/drivers/scsi/hpsa.c
-index a47bcce3c9c7..fa785f60b1e6 100644
---- a/drivers/scsi/hpsa.c
-+++ b/drivers/scsi/hpsa.c
-@@ -5104,7 +5104,7 @@ static int hpsa_scsi_ioaccel_raid_map(struct ctlr_info *h,
- {
- 	struct scsi_cmnd *cmd = c->scsi_cmd;
- 	struct hpsa_scsi_dev_t *dev = cmd->device->hostdata;
--	struct raid_map_data *map = &dev->raid_map;
-+	struct raid_map_data *map;
- 	struct raid_map_disk_data *dd = &map->data[0];
- 	int is_write = 0;
- 	u32 map_index;
-@@ -5137,6 +5137,8 @@ static int hpsa_scsi_ioaccel_raid_map(struct ctlr_info *h,
- 	if (!dev)
- 		return -1;
- 
-+	map = &dev->raid_map;
-+
- 	if (dev->in_reset)
- 		return -1;
- 
--- 
-2.7.4
-
+Again, trace things backwards, how can padapter ever be NULL?
