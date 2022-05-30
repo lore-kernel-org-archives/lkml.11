@@ -2,49 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DB35C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:44:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4463C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:44:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238078AbiE3NoQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:44:16 -0400
+        id S238143AbiE3Noo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:44:44 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237598AbiE3Ngz (ORCPT
+        with ESMTP id S237583AbiE3Nhy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:36:55 -0400
+        Mon, 30 May 2022 09:37:54 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 798B86D396;
-        Mon, 30 May 2022 06:30:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AD6B8AE7E;
+        Mon, 30 May 2022 06:31:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 26B60B80DAD;
-        Mon, 30 May 2022 13:30:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8099C3411C;
-        Mon, 30 May 2022 13:30:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5FF6FB80DAE;
+        Mon, 30 May 2022 13:31:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B659CC3411A;
+        Mon, 30 May 2022 13:31:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917436;
-        bh=p85B30dk9OhAgqXpoKQRxZZSIMPJk0LPPpMeE1vocXM=;
+        s=k20201202; t=1653917468;
+        bh=ogyjMyihZQAL3OGvTEq7dTUDoOlDFa9mgae1624z+fw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YYixhiyn7uUOfBnaD3GRTlG6rt2pFXg4bRsH7NwVNKU1nzYZsFWuXOvZuca2aJWeT
-         SF22lyEIbf5UbVbfMijNXUiixEA7Etlzki9GFAE0zqBuuUmliaKw+ue7OZzPezWAWS
-         ea7uiteyJ+VH2ZmVEIZZONdzB2y/MT3PLR23wmnyIXOOfOx4tNUUEaVzPFs4HkAtwa
-         gI9fuhdud/he47zDCz48Lx08VCBoFMvCpYzbo7iPKtOL24EkOyXcyMf0werX947Y2P
-         Q3NtDU3pL2gw0HcpBjGER0/lxMeyepmqmuCbaLTHeYmHyJIz6gxAjHwkXDUCWDSi9V
-         wRy7QQjG/qjUA==
+        b=j2L1kTWAyPjhPKHO7z/G5szrbt8QI/lUAPhqQJeUe8ujfM3WElT1FPN1WLAN4LTwG
+         qLCugSuI9FbAOqtx/kqpmtuP7JYlzipLW5T8jgM8dmhbfVMQBKeEbn/RYYV1Nm7Mfp
+         /m+gT1aqJIeoFKCu1BsFIKsN6VmPLenz2TZkOSwgPUgV14gHqbbRo9oGKB4mPk6GKS
+         lQv98BUU/DSuxhPRFcRhFA69vAyjPgvqXqyByj5cVb9LjxuvN0myasNyOxCeZ/7D14
+         nRkUsjA89Cu9cJkdM+MSVHTBjaMkw+XQmIcMptli20fD5+tLzhkZoazSbhAJshMO5R
+         KEcK9MkX7nJ+w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kwanghoon Son <k.son@samsung.com>,
-        kernel test robot <lkp@intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, s.nawrocki@samsung.com,
-        krzysztof.kozlowski@linaro.org, linux-media@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 135/159] media: exynos4-is: Fix compile warning
-Date:   Mon, 30 May 2022 09:24:00 -0400
-Message-Id: <20220530132425.1929512-135-sashal@kernel.org>
+Cc:     Yuntao Wang <ytcoode@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Yonghong Song <yhs@fb.com>, Sasha Levin <sashal@kernel.org>,
+        ast@kernel.org, daniel@iogearbox.net, shuah@kernel.org,
+        sunyucong@gmail.com, kuifeng@fb.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 148/159] selftests/bpf: Add missing trampoline program type to trampoline_count test
+Date:   Mon, 30 May 2022 09:24:13 -0400
+Message-Id: <20220530132425.1929512-148-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
@@ -56,36 +54,260 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kwanghoon Son <k.son@samsung.com>
+From: Yuntao Wang <ytcoode@gmail.com>
 
-[ Upstream commit e080f5c1f2b6d02c02ee5d674e0e392ccf63bbaf ]
+[ Upstream commit b23316aabffa835ecc516cb81daeef5b9155e8a5 ]
 
-Declare static on function 'fimc_isp_video_device_unregister'.
+Currently the trampoline_count test doesn't include any fmod_ret bpf
+programs, fix it to make the test cover all possible trampoline program
+types.
 
-When VIDEO_EXYNOS4_ISP_DMA_CAPTURE=n, compiler warns about
-warning: no previous prototype for function [-Wmissing-prototypes]
+Since fmod_ret bpf programs can't be attached to __set_task_comm function,
+as it's neither whitelisted for error injection nor a security hook, change
+it to bpf_modify_return_test.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Kwanghoon Son <k.son@samsung.com>
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+This patch also does some other cleanups such as removing duplicate code,
+dropping inconsistent comments, etc.
+
+Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Acked-by: Yonghong Song <yhs@fb.com>
+Link: https://lore.kernel.org/bpf/20220519150610.601313-1-ytcoode@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/samsung/exynos4-is/fimc-isp-video.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/bpf.h                           |   2 +-
+ .../bpf/prog_tests/trampoline_count.c         | 134 +++++++-----------
+ .../bpf/progs/test_trampoline_count.c         |  16 ++-
+ 3 files changed, 61 insertions(+), 91 deletions(-)
 
-diff --git a/drivers/media/platform/samsung/exynos4-is/fimc-isp-video.h b/drivers/media/platform/samsung/exynos4-is/fimc-isp-video.h
-index edcb3a5e3cb9..2dd4ddbc748a 100644
---- a/drivers/media/platform/samsung/exynos4-is/fimc-isp-video.h
-+++ b/drivers/media/platform/samsung/exynos4-is/fimc-isp-video.h
-@@ -32,7 +32,7 @@ static inline int fimc_isp_video_device_register(struct fimc_isp *isp,
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index bdb5298735ce..f084b251fce7 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -672,7 +672,7 @@ struct btf_func_model {
+ #define BPF_TRAMP_F_RET_FENTRY_RET	BIT(4)
+ 
+ /* Each call __bpf_prog_enter + call bpf_func + call __bpf_prog_exit is ~50
+- * bytes on x86.  Pick a number to fit into BPF_IMAGE_SIZE / 2
++ * bytes on x86.
+  */
+ #define BPF_MAX_TRAMP_PROGS 38
+ 
+diff --git a/tools/testing/selftests/bpf/prog_tests/trampoline_count.c b/tools/testing/selftests/bpf/prog_tests/trampoline_count.c
+index 9c795ee52b7b..b0acbda6dbf5 100644
+--- a/tools/testing/selftests/bpf/prog_tests/trampoline_count.c
++++ b/tools/testing/selftests/bpf/prog_tests/trampoline_count.c
+@@ -1,126 +1,94 @@
+ // SPDX-License-Identifier: GPL-2.0-only
+ #define _GNU_SOURCE
+-#include <sched.h>
+-#include <sys/prctl.h>
+ #include <test_progs.h>
+ 
+ #define MAX_TRAMP_PROGS 38
+ 
+ struct inst {
+ 	struct bpf_object *obj;
+-	struct bpf_link   *link_fentry;
+-	struct bpf_link   *link_fexit;
++	struct bpf_link   *link;
+ };
+ 
+-static int test_task_rename(void)
+-{
+-	int fd, duration = 0, err;
+-	char buf[] = "test_overhead";
+-
+-	fd = open("/proc/self/comm", O_WRONLY|O_TRUNC);
+-	if (CHECK(fd < 0, "open /proc", "err %d", errno))
+-		return -1;
+-	err = write(fd, buf, sizeof(buf));
+-	if (err < 0) {
+-		CHECK(err < 0, "task rename", "err %d", errno);
+-		close(fd);
+-		return -1;
+-	}
+-	close(fd);
+-	return 0;
+-}
+-
+-static struct bpf_link *load(struct bpf_object *obj, const char *name)
++static struct bpf_program *load_prog(char *file, char *name, struct inst *inst)
+ {
++	struct bpf_object *obj;
+ 	struct bpf_program *prog;
+-	int duration = 0;
++	int err;
++
++	obj = bpf_object__open_file(file, NULL);
++	if (!ASSERT_OK_PTR(obj, "obj_open_file"))
++		return NULL;
++
++	inst->obj = obj;
++
++	err = bpf_object__load(obj);
++	if (!ASSERT_OK(err, "obj_load"))
++		return NULL;
+ 
+ 	prog = bpf_object__find_program_by_name(obj, name);
+-	if (CHECK(!prog, "find_probe", "prog '%s' not found\n", name))
+-		return ERR_PTR(-EINVAL);
+-	return bpf_program__attach_trace(prog);
++	if (!ASSERT_OK_PTR(prog, "obj_find_prog"))
++		return NULL;
++
++	return prog;
+ }
+ 
+ /* TODO: use different target function to run in concurrent mode */
+ void serial_test_trampoline_count(void)
+ {
+-	const char *fentry_name = "prog1";
+-	const char *fexit_name = "prog2";
+-	const char *object = "test_trampoline_count.o";
+-	struct inst inst[MAX_TRAMP_PROGS] = {};
+-	int err, i = 0, duration = 0;
+-	struct bpf_object *obj;
++	char *file = "test_trampoline_count.o";
++	char *const progs[] = { "fentry_test", "fmod_ret_test", "fexit_test" };
++	struct inst inst[MAX_TRAMP_PROGS + 1] = {};
++	struct bpf_program *prog;
+ 	struct bpf_link *link;
+-	char comm[16] = {};
++	int prog_fd, err, i;
++	LIBBPF_OPTS(bpf_test_run_opts, opts);
+ 
+ 	/* attach 'allowed' trampoline programs */
+ 	for (i = 0; i < MAX_TRAMP_PROGS; i++) {
+-		obj = bpf_object__open_file(object, NULL);
+-		if (!ASSERT_OK_PTR(obj, "obj_open_file")) {
+-			obj = NULL;
++		prog = load_prog(file, progs[i % ARRAY_SIZE(progs)], &inst[i]);
++		if (!prog)
+ 			goto cleanup;
+-		}
+ 
+-		err = bpf_object__load(obj);
+-		if (CHECK(err, "obj_load", "err %d\n", err))
++		link = bpf_program__attach(prog);
++		if (!ASSERT_OK_PTR(link, "attach_prog"))
+ 			goto cleanup;
+-		inst[i].obj = obj;
+-		obj = NULL;
+-
+-		if (rand() % 2) {
+-			link = load(inst[i].obj, fentry_name);
+-			if (!ASSERT_OK_PTR(link, "attach_prog")) {
+-				link = NULL;
+-				goto cleanup;
+-			}
+-			inst[i].link_fentry = link;
+-		} else {
+-			link = load(inst[i].obj, fexit_name);
+-			if (!ASSERT_OK_PTR(link, "attach_prog")) {
+-				link = NULL;
+-				goto cleanup;
+-			}
+-			inst[i].link_fexit = link;
+-		}
++
++		inst[i].link = link;
+ 	}
+ 
+ 	/* and try 1 extra.. */
+-	obj = bpf_object__open_file(object, NULL);
+-	if (!ASSERT_OK_PTR(obj, "obj_open_file")) {
+-		obj = NULL;
++	prog = load_prog(file, "fmod_ret_test", &inst[i]);
++	if (!prog)
+ 		goto cleanup;
+-	}
+-
+-	err = bpf_object__load(obj);
+-	if (CHECK(err, "obj_load", "err %d\n", err))
+-		goto cleanup_extra;
+ 
+ 	/* ..that needs to fail */
+-	link = load(obj, fentry_name);
+-	err = libbpf_get_error(link);
+-	if (!ASSERT_ERR_PTR(link, "cannot attach over the limit")) {
+-		bpf_link__destroy(link);
+-		goto cleanup_extra;
++	link = bpf_program__attach(prog);
++	if (!ASSERT_ERR_PTR(link, "attach_prog")) {
++		inst[i].link = link;
++		goto cleanup;
+ 	}
+ 
+ 	/* with E2BIG error */
+-	ASSERT_EQ(err, -E2BIG, "proper error check");
+-	ASSERT_EQ(link, NULL, "ptr_is_null");
++	if (!ASSERT_EQ(libbpf_get_error(link), -E2BIG, "E2BIG"))
++		goto cleanup;
++	if (!ASSERT_EQ(link, NULL, "ptr_is_null"))
++		goto cleanup;
+ 
+ 	/* and finaly execute the probe */
+-	if (CHECK_FAIL(prctl(PR_GET_NAME, comm, 0L, 0L, 0L)))
+-		goto cleanup_extra;
+-	CHECK_FAIL(test_task_rename());
+-	CHECK_FAIL(prctl(PR_SET_NAME, comm, 0L, 0L, 0L));
++	prog_fd = bpf_program__fd(prog);
++	if (!ASSERT_GE(prog_fd, 0, "bpf_program__fd"))
++		goto cleanup;
++
++	err = bpf_prog_test_run_opts(prog_fd, &opts);
++	if (!ASSERT_OK(err, "bpf_prog_test_run_opts"))
++		goto cleanup;
++
++	ASSERT_EQ(opts.retval & 0xffff, 4, "bpf_modify_return_test.result");
++	ASSERT_EQ(opts.retval >> 16, 1, "bpf_modify_return_test.side_effect");
+ 
+-cleanup_extra:
+-	bpf_object__close(obj);
+ cleanup:
+-	if (i >= MAX_TRAMP_PROGS)
+-		i = MAX_TRAMP_PROGS - 1;
+ 	for (; i >= 0; i--) {
+-		bpf_link__destroy(inst[i].link_fentry);
+-		bpf_link__destroy(inst[i].link_fexit);
++		bpf_link__destroy(inst[i].link);
+ 		bpf_object__close(inst[i].obj);
+ 	}
+ }
+diff --git a/tools/testing/selftests/bpf/progs/test_trampoline_count.c b/tools/testing/selftests/bpf/progs/test_trampoline_count.c
+index f030e469d05b..7765720da7d5 100644
+--- a/tools/testing/selftests/bpf/progs/test_trampoline_count.c
++++ b/tools/testing/selftests/bpf/progs/test_trampoline_count.c
+@@ -1,20 +1,22 @@
+ // SPDX-License-Identifier: GPL-2.0
+-#include <stdbool.h>
+-#include <stddef.h>
+ #include <linux/bpf.h>
+ #include <bpf/bpf_helpers.h>
+ #include <bpf/bpf_tracing.h>
+ 
+-struct task_struct;
++SEC("fentry/bpf_modify_return_test")
++int BPF_PROG(fentry_test, int a, int *b)
++{
++	return 0;
++}
+ 
+-SEC("fentry/__set_task_comm")
+-int BPF_PROG(prog1, struct task_struct *tsk, const char *buf, bool exec)
++SEC("fmod_ret/bpf_modify_return_test")
++int BPF_PROG(fmod_ret_test, int a, int *b, int ret)
+ {
  	return 0;
  }
  
--void fimc_isp_video_device_unregister(struct fimc_isp *isp,
-+static inline void fimc_isp_video_device_unregister(struct fimc_isp *isp,
- 				enum v4l2_buf_type type)
+-SEC("fexit/__set_task_comm")
+-int BPF_PROG(prog2, struct task_struct *tsk, const char *buf, bool exec)
++SEC("fexit/bpf_modify_return_test")
++int BPF_PROG(fexit_test, int a, int *b, int ret)
  {
+ 	return 0;
  }
 -- 
 2.35.1
