@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA1C0C46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6B43C3526F
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:31:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237818AbiE3Obq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:31:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40482 "EHLO
+        id S242770AbiE3Obi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:31:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242067AbiE3OSW (ORCPT
+        with ESMTP id S242042AbiE3OSV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:18:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C83FAA0D19;
-        Mon, 30 May 2022 06:49:04 -0700 (PDT)
+        Mon, 30 May 2022 10:18:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F0699EB6C;
+        Mon, 30 May 2022 06:48:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 495C060FEE;
-        Mon, 30 May 2022 13:49:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 639FEC3411A;
-        Mon, 30 May 2022 13:49:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 01D4EB80DC0;
+        Mon, 30 May 2022 13:48:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61435C3411F;
+        Mon, 30 May 2022 13:48:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918541;
-        bh=Ecj1LCmySlw3UXUM/IrotAjv0vdchoIgerpHEdcPD6k=;
+        s=k20201202; t=1653918536;
+        bh=pvcl/mwBsIppyXCwLajOYJgmCgXIpTzwu7dKr+15G/E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qc8NCHhFTGq+L791/aIi7LvbA3kXa4iwlB3MJd14VdhSufAPakoT97dFv9rhXJYHr
-         C9NH6/4NnV+8nYV/IgW/o87pjWTGUYzTywd7Eczcf6PeNrPP/ZVFFUlOGD0oq14oSc
-         AaX5z71WfDLSaxAPox7fnie6cLwnGoAV/gBM9Is5DjKJANa7FXs96lYiCs6zdmJlb+
-         rAdaZNIQFmQrLd0wCiowaz74ojpcFD5VHlMHa75NKgCnhlcwbxrvsmy4/k90RCbD9S
-         LC02h+Af2EXqkGD2EyUxTA5FXOioxVrnvhocEQyFFQS3p+auhRSv79H8VU6VvDmbPv
-         LJ+1SUHgBslGA==
+        b=iTzOXGQaqhQk4k1GRWW7k92YaQQrq6kifqNSFozym/fSnFTt2rQYVlsjwq3Ps+kQp
+         UBZQLKVHxJdnhNEJ4D3dsnJDBMRApFYglL+WDbI4SST7tdgcHo8fp9gFKDlEzCCaQ2
+         qOsXRE1yJmP0hYiwICSo7FhZgoEuo3gourUVr0vx/S/16sVIcsaqGi+i18I9RA3Xrw
+         aszZheAc3SXp2d0oPUXyKO494QT7iJdFfz0/IsB3zoffjJtsdUGb5Ir4f3fUuNJdea
+         cax7agkugSwR6gdK5E5z75l0etk3JsJ75TMCqo5/p9gKLYGw9Ez4dbIavKRPiLd+iZ
+         rpi0gaFlBV+Pg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Fabio Estevam <festevam@denx.de>, Andrew Lunn <andrew@lunn.ch>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, hkallweit1@gmail.com,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 48/55] net: phy: micrel: Allow probing without .driver_data
-Date:   Mon, 30 May 2022 09:46:54 -0400
-Message-Id: <20220530134701.1935933-48-sashal@kernel.org>
+Cc:     "Smith, Kyle Miller (Nimble Kernel)" <kyles@hpe.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Hannes Reinecke <hare@suse.de>, Christoph Hellwig <hch@lst.de>,
+        Sasha Levin <sashal@kernel.org>, kbusch@kernel.org,
+        axboe@fb.com, sagi@grimberg.me, linux-nvme@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.4 45/55] nvme-pci: fix a NULL pointer dereference in nvme_alloc_admin_tags
+Date:   Mon, 30 May 2022 09:46:51 -0400
+Message-Id: <20220530134701.1935933-45-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530134701.1935933-1-sashal@kernel.org>
 References: <20220530134701.1935933-1-sashal@kernel.org>
@@ -53,70 +53,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabio Estevam <festevam@denx.de>
+From: "Smith, Kyle Miller (Nimble Kernel)" <kyles@hpe.com>
 
-[ Upstream commit f2ef6f7539c68c6bd6c32323d8845ee102b7c450 ]
+[ Upstream commit da42761181627e9bdc37d18368b827948a583929 ]
 
-Currently, if the .probe element is present in the phy_driver structure
-and the .driver_data is not, a NULL pointer dereference happens.
+In nvme_alloc_admin_tags, the admin_q can be set to an error (typically
+-ENOMEM) if the blk_mq_init_queue call fails to set up the queue, which
+is checked immediately after the call. However, when we return the error
+message up the stack, to nvme_reset_work the error takes us to
+nvme_remove_dead_ctrl()
+  nvme_dev_disable()
+   nvme_suspend_queue(&dev->queues[0]).
 
-Allow passing .probe without .driver_data by inserting NULL checks
-for priv->type.
+Here, we only check that the admin_q is non-NULL, rather than not
+an error or NULL, and begin quiescing a queue that never existed, leading
+to bad / NULL pointer dereference.
 
-Signed-off-by: Fabio Estevam <festevam@denx.de>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Link: https://lore.kernel.org/r/20220513114613.762810-1-festevam@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Kyle Smith <kyles@hpe.com>
+Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
+Reviewed-by: Hannes Reinecke <hare@suse.de>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/micrel.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ drivers/nvme/host/pci.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index 18cc5e4280e8..721153dcfd15 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -282,7 +282,7 @@ static int kszphy_config_reset(struct phy_device *phydev)
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index af516c35afe6..10fe7a7a2163 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -1674,6 +1674,7 @@ static int nvme_alloc_admin_tags(struct nvme_dev *dev)
+ 		dev->ctrl.admin_q = blk_mq_init_queue(&dev->admin_tagset);
+ 		if (IS_ERR(dev->ctrl.admin_q)) {
+ 			blk_mq_free_tag_set(&dev->admin_tagset);
++			dev->ctrl.admin_q = NULL;
+ 			return -ENOMEM;
  		}
- 	}
- 
--	if (priv->led_mode >= 0)
-+	if (priv->type && priv->led_mode >= 0)
- 		kszphy_setup_led(phydev, priv->type->led_mode_reg, priv->led_mode);
- 
- 	return 0;
-@@ -298,10 +298,10 @@ static int kszphy_config_init(struct phy_device *phydev)
- 
- 	type = priv->type;
- 
--	if (type->has_broadcast_disable)
-+	if (type && type->has_broadcast_disable)
- 		kszphy_broadcast_disable(phydev);
- 
--	if (type->has_nand_tree_disable)
-+	if (type && type->has_nand_tree_disable)
- 		kszphy_nand_tree_disable(phydev);
- 
- 	return kszphy_config_reset(phydev);
-@@ -939,7 +939,7 @@ static int kszphy_probe(struct phy_device *phydev)
- 
- 	priv->type = type;
- 
--	if (type->led_mode_reg) {
-+	if (type && type->led_mode_reg) {
- 		ret = of_property_read_u32(np, "micrel,led-mode",
- 				&priv->led_mode);
- 		if (ret)
-@@ -960,7 +960,8 @@ static int kszphy_probe(struct phy_device *phydev)
- 		unsigned long rate = clk_get_rate(clk);
- 		bool rmii_ref_clk_sel_25_mhz;
- 
--		priv->rmii_ref_clk_sel = type->has_rmii_ref_clk_sel;
-+		if (type)
-+			priv->rmii_ref_clk_sel = type->has_rmii_ref_clk_sel;
- 		rmii_ref_clk_sel_25_mhz = of_property_read_bool(np,
- 				"micrel,rmii-reference-clock-select-25-mhz");
- 
+ 		if (!blk_get_queue(dev->ctrl.admin_q)) {
 -- 
 2.35.1
 
