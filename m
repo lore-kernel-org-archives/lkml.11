@@ -2,49 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B48EBC38162
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:57:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32831C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:57:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238323AbiE3N5Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:57:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38188 "EHLO
+        id S233685AbiE3N5d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:57:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239178AbiE3Nva (ORCPT
+        with ESMTP id S238619AbiE3Nua (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:51:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FBE3CE24;
-        Mon, 30 May 2022 06:36:54 -0700 (PDT)
+        Mon, 30 May 2022 09:50:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94A43AEE26;
+        Mon, 30 May 2022 06:35:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 742B0B80D89;
-        Mon, 30 May 2022 13:36:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A82EFC385B8;
-        Mon, 30 May 2022 13:36:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0E465B80DAE;
+        Mon, 30 May 2022 13:35:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 154A2C3411A;
+        Mon, 30 May 2022 13:34:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917812;
-        bh=n+AaXBeWTOxHXF2nYHq4qOyEFHDvsdaw+ZoRXf+hNbc=;
+        s=k20201202; t=1653917699;
+        bh=6Z3XCzEXjQtAZfG+nCO+8RY/1jNooV9Q2m+ygrcTIRs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KryPp5jV70oIQyo94ClUlXl/MzGqkYa/I9pMBr4j7LF+/MMOY80EmM+b3OXsUvw51
-         Qk4AvO8G5ERngi2QPQXdM9SHZZXr6q7KDyG2PfjxSIg82pnL4RgzIMrV/tJFW8gxap
-         FHKhPBLEinDH+2Bchhr/2lv3Qnapd9M4r3gLL3WJi+9vP0CYYv+BuFJRBjSEDoqK0p
-         3BijunGBmI/fuXXr28pb9mgbNxcUYriER6MDBFb87xxldiZpYI0Wt69B37+I1sCXmI
-         VJVD79UcESED8usYKfbnMlJ06jLs0xQ3vWicdVNzvW4A3J2oEr0sPPdwVOPodGI4Lg
-         v5tymBlBpxN0w==
+        b=aJhOZ+uPLV4KsZqx9yj7FpbA6Ll/Huv8RvLkU1yb3ua37gnFB+/Oq/i49w0jeXasa
+         swcSgTCjnBBilty90ECKP0TEvOH+UQuBW0OmdUCkpOKxszlgU+mVP6Vlf2SNGHlzNC
+         DWzE3quRlYIYDJnylxHp1Oc0aSxb4bV/eRWrZstn8UCV5/uI1hfgY+ScYuEzskX/kZ
+         YifIPcshREpFebRVc/6ZeP9fkEghBtjqGK67Fmh5YBZosDBFUdS9wsJCap1ELH2+6A
+         P6Kfg5Uk/qckSW0Sh95+7ltsViqYhx50JIPjcreXx/3GhuCZ8QgVh1bn3Tv2nyh2hE
+         5Bed1PCExU4jw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergmann <arnd@arndb.de>, Jonas Bonn <jonas@southpole.se>,
-        Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
-        Stafford Horne <shorne@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Sasha Levin <sashal@kernel.org>, linux@dominikbrodowski.net,
-        rdunlap@infradead.org, openrisc@lists.librecores.org
-Subject: [PATCH AUTOSEL 5.17 104/135] openrisc: start CPU timer early in boot
-Date:   Mon, 30 May 2022 09:31:02 -0400
-Message-Id: <20220530133133.1931716-104-sashal@kernel.org>
+Cc:     Alex Deucher <alexander.deucher@amd.com>,
+        Hawking Zhang <Hawking.Zhang@amd.com>,
+        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        john.clements@amd.com, candice.li@amd.com, Likun.Gao@amd.com,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.17 068/135] drm/amdgpu/psp: move PSP memory alloc from hw_init to sw_init
+Date:   Mon, 30 May 2022 09:30:26 -0400
+Message-Id: <20220530133133.1931716-68-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
@@ -56,60 +54,156 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Alex Deucher <alexander.deucher@amd.com>
 
-[ Upstream commit 516dd4aacd67a0f27da94f3fe63fe0f4dbab6e2b ]
+[ Upstream commit b95b5391684b39695887afb4a13cccee7820f5d6 ]
 
-In order to measure the boot process, the timer should be switched on as
-early in boot as possible. As well, the commit defines the get_cycles
-macro, like the previous patches in this series, so that generic code is
-aware that it's implemented by the platform, as is done on other archs.
+Memory allocations should be done in sw_init.  hw_init should
+just be hardware programming needed to initialize the IP block.
+This is how most other IP blocks work.  Move the GPU memory
+allocations from psp hw_init to psp sw_init and move the memory
+free to sw_fini.  This also fixes a potential GPU memory leak
+if psp hw_init fails.
 
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Jonas Bonn <jonas@southpole.se>
-Cc: Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>
-Acked-by: Stafford Horne <shorne@gmail.com>
-Reported-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Reviewed-by: Hawking Zhang <Hawking.Zhang@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/openrisc/include/asm/timex.h | 1 +
- arch/openrisc/kernel/head.S       | 9 +++++++++
- 2 files changed, 10 insertions(+)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c | 95 ++++++++++++-------------
+ 1 file changed, 47 insertions(+), 48 deletions(-)
 
-diff --git a/arch/openrisc/include/asm/timex.h b/arch/openrisc/include/asm/timex.h
-index d52b4e536e3f..5487fa93dd9b 100644
---- a/arch/openrisc/include/asm/timex.h
-+++ b/arch/openrisc/include/asm/timex.h
-@@ -23,6 +23,7 @@ static inline cycles_t get_cycles(void)
- {
- 	return mfspr(SPR_TTCR);
- }
-+#define get_cycles get_cycles
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c
+index dee17a0e1187..786518f7e37b 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c
+@@ -331,7 +331,39 @@ static int psp_sw_init(void *handle)
+ 		}
+ 	}
  
- /* This isn't really used any more */
- #define CLOCK_TICK_RATE 1000
-diff --git a/arch/openrisc/kernel/head.S b/arch/openrisc/kernel/head.S
-index 15f1b38dfe03..871f4c858859 100644
---- a/arch/openrisc/kernel/head.S
-+++ b/arch/openrisc/kernel/head.S
-@@ -521,6 +521,15 @@ _start:
- 	l.ori	r3,r0,0x1
- 	l.mtspr	r0,r3,SPR_SR
- 
-+	/*
-+	 * Start the TTCR as early as possible, so that the RNG can make use of
-+	 * measurements of boot time from the earliest opportunity. Especially
-+	 * important is that the TTCR does not return zero by the time we reach
-+	 * rand_initialize().
-+	 */
-+	l.movhi r3,hi(SPR_TTMR_CR)
-+	l.mtspr r0,r3,SPR_TTMR
++	ret = amdgpu_bo_create_kernel(adev, PSP_1_MEG, PSP_1_MEG,
++				      amdgpu_sriov_vf(adev) ?
++				      AMDGPU_GEM_DOMAIN_VRAM : AMDGPU_GEM_DOMAIN_GTT,
++				      &psp->fw_pri_bo,
++				      &psp->fw_pri_mc_addr,
++				      &psp->fw_pri_buf);
++	if (ret)
++		return ret;
 +
- 	CLEAR_GPR(r1)
- 	CLEAR_GPR(r2)
- 	CLEAR_GPR(r3)
++	ret = amdgpu_bo_create_kernel(adev, PSP_FENCE_BUFFER_SIZE, PAGE_SIZE,
++				      AMDGPU_GEM_DOMAIN_VRAM,
++				      &psp->fence_buf_bo,
++				      &psp->fence_buf_mc_addr,
++				      &psp->fence_buf);
++	if (ret)
++		goto failed1;
++
++	ret = amdgpu_bo_create_kernel(adev, PSP_CMD_BUFFER_SIZE, PAGE_SIZE,
++				      AMDGPU_GEM_DOMAIN_VRAM,
++				      &psp->cmd_buf_bo, &psp->cmd_buf_mc_addr,
++				      (void **)&psp->cmd_buf_mem);
++	if (ret)
++		goto failed2;
++
+ 	return 0;
++
++failed2:
++	amdgpu_bo_free_kernel(&psp->fw_pri_bo,
++			      &psp->fw_pri_mc_addr, &psp->fw_pri_buf);
++failed1:
++	amdgpu_bo_free_kernel(&psp->fence_buf_bo,
++			      &psp->fence_buf_mc_addr, &psp->fence_buf);
++	return ret;
+ }
+ 
+ static int psp_sw_fini(void *handle)
+@@ -361,6 +393,13 @@ static int psp_sw_fini(void *handle)
+ 	kfree(cmd);
+ 	cmd = NULL;
+ 
++	amdgpu_bo_free_kernel(&psp->fw_pri_bo,
++			      &psp->fw_pri_mc_addr, &psp->fw_pri_buf);
++	amdgpu_bo_free_kernel(&psp->fence_buf_bo,
++			      &psp->fence_buf_mc_addr, &psp->fence_buf);
++	amdgpu_bo_free_kernel(&psp->cmd_buf_bo, &psp->cmd_buf_mc_addr,
++			      (void **)&psp->cmd_buf_mem);
++
+ 	return 0;
+ }
+ 
+@@ -2391,51 +2430,18 @@ static int psp_load_fw(struct amdgpu_device *adev)
+ 	struct psp_context *psp = &adev->psp;
+ 
+ 	if (amdgpu_sriov_vf(adev) && amdgpu_in_reset(adev)) {
+-		psp_ring_stop(psp, PSP_RING_TYPE__KM); /* should not destroy ring, only stop */
+-		goto skip_memalloc;
+-	}
+-
+-	if (amdgpu_sriov_vf(adev)) {
+-		ret = amdgpu_bo_create_kernel(adev, PSP_1_MEG, PSP_1_MEG,
+-						AMDGPU_GEM_DOMAIN_VRAM,
+-						&psp->fw_pri_bo,
+-						&psp->fw_pri_mc_addr,
+-						&psp->fw_pri_buf);
++		/* should not destroy ring, only stop */
++		psp_ring_stop(psp, PSP_RING_TYPE__KM);
+ 	} else {
+-		ret = amdgpu_bo_create_kernel(adev, PSP_1_MEG, PSP_1_MEG,
+-						AMDGPU_GEM_DOMAIN_GTT,
+-						&psp->fw_pri_bo,
+-						&psp->fw_pri_mc_addr,
+-						&psp->fw_pri_buf);
+-	}
+-
+-	if (ret)
+-		goto failed;
+-
+-	ret = amdgpu_bo_create_kernel(adev, PSP_FENCE_BUFFER_SIZE, PAGE_SIZE,
+-					AMDGPU_GEM_DOMAIN_VRAM,
+-					&psp->fence_buf_bo,
+-					&psp->fence_buf_mc_addr,
+-					&psp->fence_buf);
+-	if (ret)
+-		goto failed;
+-
+-	ret = amdgpu_bo_create_kernel(adev, PSP_CMD_BUFFER_SIZE, PAGE_SIZE,
+-				      AMDGPU_GEM_DOMAIN_VRAM,
+-				      &psp->cmd_buf_bo, &psp->cmd_buf_mc_addr,
+-				      (void **)&psp->cmd_buf_mem);
+-	if (ret)
+-		goto failed;
++		memset(psp->fence_buf, 0, PSP_FENCE_BUFFER_SIZE);
+ 
+-	memset(psp->fence_buf, 0, PSP_FENCE_BUFFER_SIZE);
+-
+-	ret = psp_ring_init(psp, PSP_RING_TYPE__KM);
+-	if (ret) {
+-		DRM_ERROR("PSP ring init failed!\n");
+-		goto failed;
++		ret = psp_ring_init(psp, PSP_RING_TYPE__KM);
++		if (ret) {
++			DRM_ERROR("PSP ring init failed!\n");
++			goto failed;
++		}
+ 	}
+ 
+-skip_memalloc:
+ 	ret = psp_hw_start(psp);
+ 	if (ret)
+ 		goto failed;
+@@ -2553,13 +2559,6 @@ static int psp_hw_fini(void *handle)
+ 	psp_tmr_terminate(psp);
+ 	psp_ring_destroy(psp, PSP_RING_TYPE__KM);
+ 
+-	amdgpu_bo_free_kernel(&psp->fw_pri_bo,
+-			      &psp->fw_pri_mc_addr, &psp->fw_pri_buf);
+-	amdgpu_bo_free_kernel(&psp->fence_buf_bo,
+-			      &psp->fence_buf_mc_addr, &psp->fence_buf);
+-	amdgpu_bo_free_kernel(&psp->cmd_buf_bo, &psp->cmd_buf_mc_addr,
+-			      (void **)&psp->cmd_buf_mem);
+-
+ 	return 0;
+ }
+ 
 -- 
 2.35.1
 
