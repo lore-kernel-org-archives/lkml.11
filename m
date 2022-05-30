@@ -2,48 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A44ACC47091
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FEC9C4708D
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:12:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240359AbiE3OLa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:11:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36830 "EHLO
+        id S240318AbiE3OLQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:11:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238835AbiE3OEx (ORCPT
+        with ESMTP id S238908AbiE3OEy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:04:53 -0400
+        Mon, 30 May 2022 10:04:54 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5DE3CE5D8;
-        Mon, 30 May 2022 06:40:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE2C5994EC;
+        Mon, 30 May 2022 06:40:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 50F2960FA3;
-        Mon, 30 May 2022 13:40:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38E03C3411C;
-        Mon, 30 May 2022 13:40:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C61960F1F;
+        Mon, 30 May 2022 13:40:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34BC5C385B8;
+        Mon, 30 May 2022 13:40:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918028;
-        bh=I7LxCGqGRJzIqYh0gYUNNAZ2n4cqGO4jUUu8TCEeoIw=;
+        s=k20201202; t=1653918058;
+        bh=nIeNS3nPNX4XFLAZBfUHpdLm/8M/6eMTyEZRt0zosCE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NMePOAabdFN6DnmCSCiKVO1ThFP5kF6STCD/v9dDk8W9fyAfESiVoQ3UKH82gY6cg
-         0jLgqt8tzpNMRL9BTxzi7ArD2SxYFBjy9Ma8m93eujIbZnQ37ilcKcik2OYJNao2WV
-         9Nn6SUWz8U79A09mMao+Y2oC9VXRm2Kr3UZg5AIUHhsh+PeymJTHltJENlKwtMbqUk
-         Rg+Q/0DlfPjgR3L5IT2FxK1X8hxg8Og0aEth8c2X6hlqj7tM1JoYNN1NnKgJge8Y/r
-         u3Fm3iCpWp73naLixRZvK3DoBHIPikhDyflYZoU7Vev7PgZEM+r1Hi+rx6Lq+s/Egu
-         9+tq7W03MnI0w==
+        b=I06o5gHOIPXfaZSVhI1xWMa1i0c11sKwK1W4TpZIiEuZ1Ko6I2/spMXRCWx5obbAj
+         Kz96V6aNNlJyMzFHhRSs2JRql6k1PvJEFVjVjTWpaUi+LIfpZdi8n0pMnq+M86tmAq
+         ijgeW9Aw4mrjjbL4XgcsxCh2nZRbveXXKwVDW9n8Z99LUOEv6ZckX5aaunqAjl8WbO
+         xmP/kgrIOBxL/4XunLAzvNQ6bmV1D/MDB05vJBNqmcc8YpqKVs94QbRIrzaqVc0Jbt
+         y4aGA41x2Srd5u26nxgivP5oy57gRTs+1af97VUr1pu64bEyVHQdBrOl7JE96MpMXm
+         hK6Zw9cGJQ8VQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Samuel Holland <samuel@sholland.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Sasha Levin <sashal@kernel.org>, mripard@kernel.org,
-        wens@csie.org, airlied@linux.ie, daniel@ffwll.ch,
-        dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.15 038/109] drm/sun4i: Add support for D1 TCONs
-Date:   Mon, 30 May 2022 09:37:14 -0400
-Message-Id: <20220530133825.1933431-38-sashal@kernel.org>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, cezary.rojewski@intel.com,
+        liam.r.girdwood@linux.intel.com, yang.jie@linux.intel.com,
+        perex@perex.cz, tiwai@suse.com, andriy.shevchenko@linux.intel.com,
+        peter.ujfalusi@linux.intel.com, akihiko.odaki@gmail.com,
+        alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.15 045/109] ASoC: Intel: bytcr_rt5640: Add quirk for the HP Pro Tablet 408
+Date:   Mon, 30 May 2022 09:37:21 -0400
+Message-Id: <20220530133825.1933431-45-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
 References: <20220530133825.1933431-1-sashal@kernel.org>
@@ -55,55 +56,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Samuel Holland <samuel@sholland.org>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit b9b52d2f4aafa2bd637ace0f24615bdad8e49f01 ]
+[ Upstream commit ce216cfa84a4e1c23b105e652c550bdeaac9e922 ]
 
-D1 has a TCON TOP, so its quirks are similar to those for the R40 TCONs.
-While there are some register changes, the part of the TCON TV supported
-by the driver matches the R40 quirks, so that quirks structure can be
-reused. D1 has the first supported TCON LCD with a TCON TOP, so the TCON
-LCD needs a new quirks structure.
+Add a quirk for the HP Pro Tablet 408, this BYTCR tablet has no CHAN
+package in its ACPI tables and uses SSP0-AIF1 rather then SSP0-AIF2 which
+is the default for BYTCR devices.
 
-D1's TCON LCD hardware supports LVDS; in fact it provides dual-link LVDS
-from a single TCON. However, it comes with a brand new LVDS PHY. Since
-this PHY has not been tested, leave out LVDS driver support for now.
+It also uses DMIC1 for the internal mic rather then the default IN3
+and it uses JD2 rather then the default JD1 for jack-detect.
 
-Signed-off-by: Samuel Holland <samuel@sholland.org>
-Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220424162633.12369-14-samuel@sholland.org
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=211485
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Acked-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Link: https://lore.kernel.org/r/20220427134918.527381-1-hdegoede@redhat.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/sun4i/sun4i_tcon.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ sound/soc/intel/boards/bytcr_rt5640.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/drivers/gpu/drm/sun4i/sun4i_tcon.c b/drivers/gpu/drm/sun4i/sun4i_tcon.c
-index 9f06dec0fc61..e27103f5a075 100644
---- a/drivers/gpu/drm/sun4i/sun4i_tcon.c
-+++ b/drivers/gpu/drm/sun4i/sun4i_tcon.c
-@@ -1544,6 +1544,12 @@ static const struct sun4i_tcon_quirks sun9i_a80_tcon_tv_quirks = {
- 	.needs_edp_reset = true,
- };
- 
-+static const struct sun4i_tcon_quirks sun20i_d1_lcd_quirks = {
-+	.has_channel_0		= true,
-+	.dclk_min_div		= 1,
-+	.set_mux		= sun8i_r40_tcon_tv_set_mux,
-+};
-+
- /* sun4i_drv uses this list to check if a device node is a TCON */
- const struct of_device_id sun4i_tcon_of_table[] = {
- 	{ .compatible = "allwinner,sun4i-a10-tcon", .data = &sun4i_a10_quirks },
-@@ -1561,6 +1567,8 @@ const struct of_device_id sun4i_tcon_of_table[] = {
- 	{ .compatible = "allwinner,sun8i-v3s-tcon", .data = &sun8i_v3s_quirks },
- 	{ .compatible = "allwinner,sun9i-a80-tcon-lcd", .data = &sun9i_a80_tcon_lcd_quirks },
- 	{ .compatible = "allwinner,sun9i-a80-tcon-tv", .data = &sun9i_a80_tcon_tv_quirks },
-+	{ .compatible = "allwinner,sun20i-d1-tcon-lcd", .data = &sun20i_d1_lcd_quirks },
-+	{ .compatible = "allwinner,sun20i-d1-tcon-tv", .data = &sun8i_r40_tv_quirks },
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, sun4i_tcon_of_table);
+diff --git a/sound/soc/intel/boards/bytcr_rt5640.c b/sound/soc/intel/boards/bytcr_rt5640.c
+index a6e837290c7d..f9c82ebc552c 100644
+--- a/sound/soc/intel/boards/bytcr_rt5640.c
++++ b/sound/soc/intel/boards/bytcr_rt5640.c
+@@ -759,6 +759,18 @@ static const struct dmi_system_id byt_rt5640_quirk_table[] = {
+ 					BYT_RT5640_OVCD_SF_0P75 |
+ 					BYT_RT5640_MCLK_EN),
+ 	},
++	{	/* HP Pro Tablet 408 */
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "Hewlett-Packard"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "HP Pro Tablet 408"),
++		},
++		.driver_data = (void *)(BYT_RT5640_DMIC1_MAP |
++					BYT_RT5640_JD_SRC_JD2_IN4N |
++					BYT_RT5640_OVCD_TH_1500UA |
++					BYT_RT5640_OVCD_SF_0P75 |
++					BYT_RT5640_SSP0_AIF1 |
++					BYT_RT5640_MCLK_EN),
++	},
+ 	{	/* HP Stream 7 */
+ 		.matches = {
+ 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Hewlett-Packard"),
 -- 
 2.35.1
 
