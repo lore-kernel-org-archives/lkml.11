@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4884BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 20:15:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE683C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 20:15:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243162AbiE3UPP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 16:15:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43484 "EHLO
+        id S234974AbiE3UPT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 16:15:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243141AbiE3UPE (ORCPT
+        with ESMTP id S243150AbiE3UPG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 16:15:04 -0400
+        Mon, 30 May 2022 16:15:06 -0400
 Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 821E981486
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 13:15:02 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id d26so10410068wrb.13
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 13:15:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B91481486
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 13:15:05 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id q7so5052454wrg.5
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 13:15:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=baylibre-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=68IUzThINQHS9c64e/2mypyGj3LqFegF7aUXUpeQSII=;
-        b=u2d8p4QAEi3ctSajLm45PHcAdGNb4dc77i74TOisR6B9VoH4w4onMoONsDGc3+PD+H
-         +CrhEa4dqWqz9Ox/kXTWVRT8E7CQbbf7aihiXS2nwKfsF7QdmyITkvGLWshI6CBe8T3o
-         w+MZ3qyL9qilLXMp73nAWWB+Wf7+LKB0j1tLpB4aiA6DfeiwUpupRWzLyf2NdaFVwFhp
-         06XaOJrlzigu+lK98u0RqdZ4636R+6b0oGqiR/Rv9Wpdw2nS8VyJTiojxul5B+VTONR3
-         8g+oeqgqR/+0BrG0MjTMrWqf6A0PMwEMqEuRVaqq+3TNoBTalrcrKHPHGw0XGUawcdLW
-         kgig==
+        bh=tSb7UJsPw6fMK+gU6mTIYkwhoB6cAnQoeEgSTcX6/b8=;
+        b=ueLCtT8HrcGEyzdRDJmnkTKVUsCJvfppcoiRujOdqjJ6m+mcEENWGPW1E1dQV8M9Q9
+         zA5C8YoLjTwZpAqaCXYpf75KEZLoxBV7kxjlL28SQBbWmWJrG8TnBXzL+Dk7FTuzNpF3
+         Kn09zUv7N9xWjsLZQhUMXjxLZ2dGpq87apiiLcA/g7EsoCS/sYD7ajo1O1/1vqdUugqr
+         9sO1ZPXTBwxSuv6CarfFQS8tFJ1G1m+0+RwDZdIIF0TRG+Kd8pEjXiqdKdza6zdtn4TG
+         A5BXQY0WEPEjOre5d8ebOqo4QUISRsDGzzevA5fR9SXe5ai2Oo9w4RLguoDgyDujQ8cP
+         Qhcw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=68IUzThINQHS9c64e/2mypyGj3LqFegF7aUXUpeQSII=;
-        b=NeBTrDzDVNt0dk8DImCKPXAKK2MEFc4eYRH4Su2TOk/Sp3FOaFswYBad/xHE8J9/xu
-         zyLvGYDAs3hNZCgHkvV240gkZH6wBky/xtL5HQm1KBzGvVJ5MGBkL598eR+oNgmb3odz
-         VQFOSQAcxhXanOwulLqb3ZJ2TvYwwNdBTUKqHhX9uISUkb5YsK0XtbO9LREfYBPTN1MT
-         FZH5/3cJw0CcxP2PecQeOWoiXQQGAgLAgD/rZpntCldstMveQ2xF3S+S9jofsX4LcZTj
-         iEwZWDSlTiMOg9GXi2Hwzlyhs1bCHbBjVDDUqgMk6i7m5CnP8dVRfjKLyzgw2NoXS8Qv
-         NJcw==
-X-Gm-Message-State: AOAM530go/Yp5hvjPO+ZoBm9TNTQNvU7lYiQt39GX5KQpFwJ+1CJuUrO
-        FfXrb6Qtd2+hGowpOufu3eL6kg==
-X-Google-Smtp-Source: ABdhPJyV//TAUQKJXHBmXItC+7NmI594G8rIKaBMVmslTUXdIAFnw+TnofqHost0A6YrIMpMLuB/pw==
-X-Received: by 2002:a05:6000:2ab:b0:210:12ab:76e6 with SMTP id l11-20020a05600002ab00b0021012ab76e6mr17162232wry.120.1653941700978;
-        Mon, 30 May 2022 13:15:00 -0700 (PDT)
+        bh=tSb7UJsPw6fMK+gU6mTIYkwhoB6cAnQoeEgSTcX6/b8=;
+        b=nH3+RTWhdPYa0AxQdz6kH/oKKvoYXurVxovJ6U26GpovA+uAUL6EDx6NtfdkV+IQHf
+         1H530ZjNiEl0E47aJlx7JDFv/Xvm8LxbGE3qjuWBt323AJi+ekWFlpOBeM1HdvH1Q/mQ
+         zdONyyhxc9L11zLhVz93Wzfttszq/XxnxIrXiPJ9+ob+9/dAP3yH8z67qe82oYX3Sdfx
+         Rd9I+HMczaJNGWbCMx2nMKYGUClf8Bo1AaniNaASzKB3TxMPfCI+VF9jstndy+CE0VCH
+         5gaGLXcOVHJQNNe8u5OVkOWWjvQgYXQhoCtcuR318xWwTLh04xMMkv9jRssmi+vD6CS5
+         We6A==
+X-Gm-Message-State: AOAM531IKTFSXGJgcLcZF75M7w1RAtY4LTROBd7M4BOWSe3W8Xu64Pdf
+        MUtZ4eNCVM6mTGKjJRCkX4Dedg==
+X-Google-Smtp-Source: ABdhPJwiSzKSg4qkJcPG/0zZ8t9Q6QeHPF/daPy2MXTaCiYXpMfO/YtIWydybS5kvNowbkqSfI9riA==
+X-Received: by 2002:a5d:648e:0:b0:210:18f6:f954 with SMTP id o14-20020a5d648e000000b0021018f6f954mr11230877wri.323.1653941703895;
+        Mon, 30 May 2022 13:15:03 -0700 (PDT)
 Received: from localhost.localdomain ([88.160.162.107])
-        by smtp.gmail.com with ESMTPSA id t1-20020adfe101000000b0020d110bc39esm9770401wrz.64.2022.05.30.13.14.59
+        by smtp.gmail.com with ESMTPSA id t1-20020adfe101000000b0020d110bc39esm9770401wrz.64.2022.05.30.13.15.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 May 2022 13:15:00 -0700 (PDT)
+        Mon, 30 May 2022 13:15:03 -0700 (PDT)
 From:   Fabien Parent <fparent@baylibre.com>
 To:     matthias.bgg@gmail.com, ck.hu@mediatek.com, jitao.shi@mediatek.com,
         krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org
@@ -56,9 +56,9 @@ Cc:     chunkuang.hu@kernel.org, p.zabel@pengutronix.de, airlied@linux.ie,
         linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         Fabien Parent <fparent@baylibre.com>
-Subject: [PATCH 2/7] dt-bindings: display: mediatek: dpi: add binding for MT8365
-Date:   Mon, 30 May 2022 22:14:31 +0200
-Message-Id: <20220530201436.902505-2-fparent@baylibre.com>
+Subject: [PATCH 4/7] soc: mediatek: mutex: add MT8365 support
+Date:   Mon, 30 May 2022 22:14:33 +0200
+Message-Id: <20220530201436.902505-4-fparent@baylibre.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220530201436.902505-1-fparent@baylibre.com>
 References: <20220530201436.902505-1-fparent@baylibre.com>
@@ -68,93 +68,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DPI for MT8365 is compatible with MT8192 but requires an additional
-clock. Modify the documentation to requires this clock only on MT8365 SoCs.
+Add mutex support for MT8365 SoC.
 
 Signed-off-by: Fabien Parent <fparent@baylibre.com>
 ---
- .../display/mediatek/mediatek,dpi.yaml        | 44 ++++++++++++++++---
- 1 file changed, 37 insertions(+), 7 deletions(-)
+ drivers/soc/mediatek/mtk-mutex.c | 40 ++++++++++++++++++++++++++++++++
+ 1 file changed, 40 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml
-index caf4c88708f4..c9c9f4d5ebe7 100644
---- a/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml
-+++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml
-@@ -17,13 +17,18 @@ description: |
+diff --git a/drivers/soc/mediatek/mtk-mutex.c b/drivers/soc/mediatek/mtk-mutex.c
+index 981d56967e7a..b8d5c4a62542 100644
+--- a/drivers/soc/mediatek/mtk-mutex.c
++++ b/drivers/soc/mediatek/mtk-mutex.c
+@@ -110,6 +110,20 @@
+ #define MT8195_MUTEX_MOD_DISP_DP_INTF0		21
+ #define MT8195_MUTEX_MOD_DISP_PWM0		27
  
- properties:
-   compatible:
--    enum:
--      - mediatek,mt2701-dpi
--      - mediatek,mt7623-dpi
--      - mediatek,mt8173-dpi
--      - mediatek,mt8183-dpi
--      - mediatek,mt8186-dpi
--      - mediatek,mt8192-dpi
-+    oneOf:
-+      - enum:
-+          - mediatek,mt2701-dpi
-+          - mediatek,mt7623-dpi
-+          - mediatek,mt8173-dpi
-+          - mediatek,mt8183-dpi
-+          - mediatek,mt8186-dpi
-+          - mediatek,mt8192-dpi
-+      - items:
-+          - enum:
-+              - mediatek,mt8365-dpi
-+          - const: mediatek,mt8192-dpi
- 
-   reg:
-     maxItems: 1
-@@ -32,16 +37,20 @@ properties:
-     maxItems: 1
- 
-   clocks:
-+    minItems: 3
-     items:
-       - description: Pixel Clock
-       - description: Engine Clock
-       - description: DPI PLL
-+      - description: DPI Clock
- 
-   clock-names:
-+    minItems: 3
-     items:
-       - const: pixel
-       - const: engine
-       - const: pll
-+      - const: dpi
- 
-   pinctrl-0: true
-   pinctrl-1: true
-@@ -71,6 +80,27 @@ required:
- 
- additionalProperties: false
- 
-+allOf:
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: mediatek,mt8365-dpi
++#define MT8365_MUTEX_MOD_DISP_OVL0		7
++#define MT8365_MUTEX_MOD_DISP_OVL0_2L		8
++#define MT8365_MUTEX_MOD_DISP_RDMA0		9
++#define MT8365_MUTEX_MOD_DISP_RDMA1		10
++#define MT8365_MUTEX_MOD_DISP_WDMA0		11
++#define MT8365_MUTEX_MOD_DISP_COLOR0		12
++#define MT8365_MUTEX_MOD_DISP_CCORR		13
++#define MT8365_MUTEX_MOD_DISP_AAL		14
++#define MT8365_MUTEX_MOD_DISP_GAMMA		15
++#define MT8365_MUTEX_MOD_DISP_DITHER		16
++#define MT8365_MUTEX_MOD_DISP_DSI0		17
++#define MT8365_MUTEX_MOD_DISP_PWM0		20
++#define MT8365_MUTEX_MOD_DISP_DPI0		22
 +
-+    then:
-+      properties:
-+        clocks:
-+          maxItems: 4
-+        clock-names:
-+          maxItems: 4
+ #define MT2712_MUTEX_MOD_DISP_PWM2		10
+ #define MT2712_MUTEX_MOD_DISP_OVL0		11
+ #define MT2712_MUTEX_MOD_DISP_OVL1		12
+@@ -315,6 +329,22 @@ static const unsigned int mt8195_mutex_mod[DDP_COMPONENT_ID_MAX] = {
+ 	[DDP_COMPONENT_DP_INTF0] = MT8195_MUTEX_MOD_DISP_DP_INTF0,
+ };
+ 
++static const unsigned int mt8365_mutex_mod[DDP_COMPONENT_ID_MAX] = {
++	[DDP_COMPONENT_AAL0] = MT8365_MUTEX_MOD_DISP_AAL,
++	[DDP_COMPONENT_CCORR] = MT8365_MUTEX_MOD_DISP_CCORR,
++	[DDP_COMPONENT_COLOR0] = MT8365_MUTEX_MOD_DISP_COLOR0,
++	[DDP_COMPONENT_DITHER] = MT8365_MUTEX_MOD_DISP_DITHER,
++	[DDP_COMPONENT_DPI0] = MT8365_MUTEX_MOD_DISP_DPI0,
++	[DDP_COMPONENT_DSI0] = MT8365_MUTEX_MOD_DISP_DSI0,
++	[DDP_COMPONENT_GAMMA] = MT8365_MUTEX_MOD_DISP_GAMMA,
++	[DDP_COMPONENT_OVL0] = MT8365_MUTEX_MOD_DISP_OVL0,
++	[DDP_COMPONENT_OVL_2L0] = MT8365_MUTEX_MOD_DISP_OVL0_2L,
++	[DDP_COMPONENT_PWM0] = MT8365_MUTEX_MOD_DISP_PWM0,
++	[DDP_COMPONENT_RDMA0] = MT8365_MUTEX_MOD_DISP_RDMA0,
++	[DDP_COMPONENT_RDMA1] = MT8365_MUTEX_MOD_DISP_RDMA1,
++	[DDP_COMPONENT_WDMA0] = MT8365_MUTEX_MOD_DISP_WDMA0,
++};
 +
-+    else:
-+      properties:
-+        clocks:
-+          maxItems: 3
-+        clock-names:
-+          maxItems: 3
+ static const unsigned int mt2712_mutex_sof[DDP_MUTEX_SOF_MAX] = {
+ 	[MUTEX_SOF_SINGLE_MODE] = MUTEX_SOF_SINGLE_MODE,
+ 	[MUTEX_SOF_DSI0] = MUTEX_SOF_DSI0,
+@@ -423,6 +453,14 @@ static const struct mtk_mutex_data mt8195_mutex_driver_data = {
+ 	.mutex_sof_reg = MT8183_MUTEX0_SOF0,
+ };
+ 
++static const struct mtk_mutex_data mt8365_mutex_driver_data = {
++	.mutex_mod = mt8365_mutex_mod,
++	.mutex_sof = mt8183_mutex_sof,
++	.mutex_mod_reg = MT8183_MUTEX0_MOD0,
++	.mutex_sof_reg = MT8183_MUTEX0_SOF0,
++	.no_clk = true,
++};
 +
- examples:
-   - |
-     #include <dt-bindings/interrupt-controller/arm-gic.h>
+ struct mtk_mutex *mtk_mutex_get(struct device *dev)
+ {
+ 	struct mtk_mutex_ctx *mtx = dev_get_drvdata(dev);
+@@ -665,6 +703,8 @@ static const struct of_device_id mutex_driver_dt_match[] = {
+ 	  .data = &mt8192_mutex_driver_data},
+ 	{ .compatible = "mediatek,mt8195-disp-mutex",
+ 	  .data = &mt8195_mutex_driver_data},
++	{ .compatible = "mediatek,mt8365-disp-mutex",
++	  .data = &mt8365_mutex_driver_data},
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, mutex_driver_dt_match);
 -- 
 2.36.1
 
