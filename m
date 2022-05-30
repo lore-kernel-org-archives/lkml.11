@@ -2,128 +2,196 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65CFBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 18:03:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2069C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 18:04:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239608AbiE3SDL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 14:03:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34530 "EHLO
+        id S240565AbiE3SEE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 14:04:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232840AbiE3SDI (ORCPT
+        with ESMTP id S237939AbiE3SEA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 14:03:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44112A205F
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 11:03:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EC28BB80E90
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 18:03:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2BD8C385B8;
-        Mon, 30 May 2022 18:03:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653933784;
-        bh=LBBitGgiAKVXLtDxeCl3tGKXqWxtw4q3wByIYW0Mkvg=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=raccM0ofMwCi3iDKadgiI+WugX5BbjhDG4RfRngJG04/coxgm5HTWCELUM7uJo71H
-         Ybc0u2JPew1LQ+GAu/wiAoutyCl9gGOokABCkqGTJ8bgVmWPPsk259nXzxXqCbL9Ib
-         jRdcWlIMB1+XQfMLvfBidvhhveAe2Is9ESguJAHjedzmzQGjebhkjYEdUrKeEY729L
-         f8ucfIFO4LTSPdbspXzPONoAFT57dC8HX+HSPPMABTciNWA0Tl0T/dmDghex5mU8ep
-         /1vZtvuvA3rES1SY1oNSf+7FrejM37hYSTR93m31aDASR0UtLo3LDyyQsiGoqqqJoP
-         b+5BB3DwgU/uA==
-Message-ID: <315b0b80f7f541b99a49a9fecb743874f31d95ba.camel@kernel.org>
-Subject: Re: [PATCH 20/21] rcu/context_tracking: Merge dynticks counter and
- context tracking states
-From:   nicolas saenz julienne <nsaenz@kernel.org>
-To:     Frederic Weisbecker <frederic@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Phil Auld <pauld@redhat.com>,
-        Alex Belits <abelits@marvell.com>,
-        Xiongfeng Wang <wangxiongfeng2@huawei.com>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Yu Liao <liaoyu15@huawei.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Uladzislau Rezki <uladzislau.rezki@sony.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Mark Rutland <mark.rutland@arm.com>
-Date:   Mon, 30 May 2022 20:02:57 +0200
-In-Reply-To: <20220519145823.618983-21-frederic@kernel.org>
-References: <20220519145823.618983-1-frederic@kernel.org>
-         <20220519145823.618983-21-frederic@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.1 (3.44.1-1.fc36) 
+        Mon, 30 May 2022 14:04:00 -0400
+Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACE6EA206A
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 11:03:58 -0700 (PDT)
+Received: by mail-il1-x134.google.com with SMTP id f7so1565701ilr.5
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 11:03:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1ZeR0nN/1eFyuWwXvp0L7EiUsdKyoUpqzB7kyH/D/WM=;
+        b=GTWyyPNRACEttMtFjSJ8gUXIGRBmUXZBKEwGpHWqYbIHSfqlUiXqSzBt+r5ZE3DmjF
+         AUV2Em9x+IZRGz4QfdnIc1mS7RwLGT8ZMTYS5JBM1oDAZx1BKBCSekGFONRhU+w/qUOo
+         DWyUbkGNTcx8E/ASF0dmHm9B1CbjYIW99zv/TFXbZzv5LkCdfaaCIiTmT/Zo0fb5QDXw
+         /FU7HR0av4bMFFJ5xR1yA2v91frTUAxaS2pWVoWv7SE1BKdxx5jQ32HzihvT6ZI4I1qi
+         v2m0PzCHg12pUVrR5/Qh92oO7Ck/kW+eUVU0ZbgbVA0XIzsNXQzCl1Tg5SVAPuLaMG09
+         nUpw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1ZeR0nN/1eFyuWwXvp0L7EiUsdKyoUpqzB7kyH/D/WM=;
+        b=pab4aliOXWFW6kWLnYLaxllXLPtiUm/nxDPyaEImrNCazJGZFwi5O7BqmXNiF2nxbL
+         7jtK2XY+Prlz47vTKDroEiznlg2VmLOifDoUXO8HC//KQOqlU/lQgDv8oqcdJxUN05jg
+         mFcsQWNspuFfEUduJKOqbWVbWB+KSmtwPIGBbDyZ1C0Tm70za5u3KuL7j0QDEUjcA0Wp
+         QPx9+DrMBCJu6Cs1WLiQ5Bvohn95EVfpi5DyN+4tlpkR6rfG5cJPIOlb4NgTXdxg8fPu
+         6ndJzp5JbKc+l9EHzSSa/tLDsRYxDUiqqdnJg0ngO2C/vX5N+Ni9hoBggLE44FS1+aVN
+         6MRw==
+X-Gm-Message-State: AOAM530Tdo9sM3AgxxKvn8FApoBpfHPxyn+RjiHQ4YeiBXdrQfEeljQy
+        KeDrGyoWmoTXeCJWgQ2QQK09b1r3GIGeia6Fwf4=
+X-Google-Smtp-Source: ABdhPJxiqxPqwJuqTiFuZDkGTIRpFwwWIWMOfo3koX/mS67/Z2NFSGsiwTDAU3oePhaHTSWXzOV+eDNnRpinoTkJYk8=
+X-Received: by 2002:a92:3609:0:b0:2c6:3595:2a25 with SMTP id
+ d9-20020a923609000000b002c635952a25mr29189046ila.233.1653933838071; Mon, 30
+ May 2022 11:03:58 -0700 (PDT)
 MIME-Version: 1.0
+References: <20220527185600.1236769-1-davidgow@google.com> <20220527185600.1236769-2-davidgow@google.com>
+In-Reply-To: <20220527185600.1236769-2-davidgow@google.com>
+From:   Andrey Konovalov <andreyknvl@gmail.com>
+Date:   Mon, 30 May 2022 20:03:47 +0200
+Message-ID: <CA+fCnZe63vugPRbD3fVNGnTWbSvjd08g8coG3D71-=NtqpjOvQ@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] UML: add support for KASAN under x86_64
+To:     David Gow <davidgow@google.com>
+Cc:     Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Patricia Alfonso <trishalfonso@google.com>,
+        Jeff Dike <jdike@addtoit.com>,
+        Richard Weinberger <richard@nod.at>,
+        anton.ivanov@cambridgegreys.com,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        kasan-dev <kasan-dev@googlegroups.com>,
+        linux-um@lists.infradead.org, LKML <linux-kernel@vger.kernel.org>,
+        Daniel Latypov <dlatypov@google.com>,
+        Linux Memory Management List <linux-mm@kvack.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Frederic,
+On Fri, May 27, 2022 at 8:56 PM David Gow <davidgow@google.com> wrote:
+>
+> From: Patricia Alfonso <trishalfonso@google.com>
+>
+> Make KASAN run on User Mode Linux on x86_64.
+>
+> The UML-specific KASAN initializer uses mmap to map the roughly 2.25TB
+> of shadow memory to the location defined by KASAN_SHADOW_OFFSET.
+> kasan_init() utilizes constructors to initialize KASAN before main().
+>
+> The location of the KASAN shadow memory, starting at
+> KASAN_SHADOW_OFFSET, can be configured using the KASAN_SHADOW_OFFSET
+> option. UML uses roughly 18TB of address space, and KASAN requires 1/8th
+> of this. The default location of this offset is 0x100000000000, which
+> keeps it out-of-the-way even on UML setups with more "physical" memory.
+>
+> For low-memory setups, 0x7fff8000 can be used instead, which fits in an
+> immediate and is therefore faster, as suggested by Dmitry Vyukov. There
+> is usually enough free space at this location; however, it is a config
+> option so that it can be easily changed if needed.
+>
+> Note that, unlike KASAN on other architectures, vmalloc allocations
+> still use the shadow memory allocated upfront, rather than allocating
+> and free-ing it per-vmalloc allocation.
+>
+> Also note that, while UML supports both KASAN in inline mode
+> (CONFIG_KASAN_INLINE) and static linking (CONFIG_STATIC_LINK), it does
+> not support both at the same time.
+>
+> Signed-off-by: Patricia Alfonso <trishalfonso@google.com>
+> Co-developed-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
+> Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
+> Signed-off-by: David Gow <davidgow@google.com>
 
-On Thu, 2022-05-19 at 16:58 +0200, Frederic Weisbecker wrote:
-> Updating the context tracking state and the RCU dynticks counter
-> atomically in a single operation is a first step towards improving CPU
-> isolation. This makes the context tracking state updates fully ordered
-> and therefore allow for later enhancements such as postponing some work
-> while a task is running isolated in userspace until it ever comes back
-> to the kernel.
->=20
-> The state field becomes divided in two parts:
->=20
-> 1) Two Lower bits for context tracking state:
->=20
-> 	CONTEXT_KERNEL =3D 0
->    	CONTEXT_IDLE =3D 1,
-> 	CONTEXT_USER =3D 2,
-> 	CONTEXT_GUEST =3D 3,
->=20
-> 2) Higher bits for RCU eqs dynticks counting:
->=20
->     RCU_DYNTICKS_IDX =3D 4
->=20
->    The dynticks counting is always incremented by this value.
->    (state & RCU_DYNTICKS_IDX) means we are NOT in an extended quiescent
->    state. This makes the chance for a collision more likely between two
->    RCU dynticks snapshots but wrapping up 28 bits of eqs dynticks
->    increments still takes some bad luck (also rdp.dynticks_snap could be
->    converted from int to long?)
->=20
-> Some RCU eqs functions have been renamed to better reflect their broader
-> scope that now include context tracking state.
->=20
-> Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
-> Cc: Paul E. McKenney <paulmck@kernel.org>
-> Cc: Peter Zijlstra <peterz@infradead.org>
-> Cc: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Neeraj Upadhyay <quic_neeraju@quicinc.com>
-> Cc: Uladzislau Rezki <uladzislau.rezki@sony.com>
-> Cc: Joel Fernandes <joel@joelfernandes.org>
-> Cc: Boqun Feng <boqun.feng@gmail.com>
-> Cc: Nicolas Saenz Julienne <nsaenz@kernel.org>
-> Cc: Marcelo Tosatti <mtosatti@redhat.com>
-> Cc: Xiongfeng Wang <wangxiongfeng2@huawei.com>
-> Cc: Yu Liao<liaoyu15@huawei.com>
-> Cc: Phil Auld <pauld@redhat.com>
-> Cc: Paul Gortmaker<paul.gortmaker@windriver.com>
-> Cc: Alex Belits <abelits@marvell.com>
-> ---
+Hi David,
 
-While working on a feature on top of this series (IPI deferral stuff) I bel=
-ieve
-I've found a discrepancy on how context state is being updated:
+Thanks for working on this!
 
- - When servicing an IRQ from user-space, we increment dynticks, and clear =
-the
-   ct state to show we're in-kernel.
+> diff --git a/mm/kasan/shadow.c b/mm/kasan/shadow.c
+> index a4f07de21771..c993d99116f2 100644
+> --- a/mm/kasan/shadow.c
+> +++ b/mm/kasan/shadow.c
+> @@ -295,9 +295,29 @@ int kasan_populate_vmalloc(unsigned long addr, unsigned long size)
+>                 return 0;
+>
+>         shadow_start = (unsigned long)kasan_mem_to_shadow((void *)addr);
+> -       shadow_start = ALIGN_DOWN(shadow_start, PAGE_SIZE);
+>         shadow_end = (unsigned long)kasan_mem_to_shadow((void *)addr + size);
+> -       shadow_end = ALIGN(shadow_end, PAGE_SIZE);
+> +
+> +       /*
+> +        * User Mode Linux maps enough shadow memory for all of physical memory
+> +        * at boot, so doesn't need to allocate more on vmalloc, just clear it.
 
- - When servicing an IRQ from idle/guest or an NMI from any context we only
-   increment the dynticks counter. The ct state remains unchanged.
+Should this say "for all of _virtual_ memory"?
 
-Regards,
-Nicolas
+Otherwise, this is confusing. All KASAN-enabled architectures map
+shadow for physical memory. And they still need map shadow for
+vmalloc() separately. This is what kasan_populate_vmalloc() is for.
+
+> +        *
+> +        * If another architecture chooses to go down the same path, we should
+> +        * replace this check for CONFIG_UML with something more generic, such
+> +        * as:
+> +        * - A CONFIG_KASAN_NO_SHADOW_ALLOC option, which architectures could set
+> +        * - or, a way of having architecture-specific versions of these vmalloc
+> +        *   and module shadow memory allocation options.
+
+I think this part above and the first sentence below belong to the
+commit changelog, not to a comment.
+
+> +        *
+> +        * For the time being, though, this check works. The remaining CONFIG_UML
+> +        * checks in this file exist for the same reason.
+> +        */
+> +       if (IS_ENABLED(CONFIG_UML)) {
+> +               __memset((void *)shadow_start, KASAN_VMALLOC_INVALID, shadow_end - shadow_start);
+> +               return 0;
+> +       }
+> +
+> +       shadow_start = PAGE_ALIGN_DOWN(shadow_start);
+> +       shadow_end = PAGE_ALIGN(shadow_end);
+>
+>         ret = apply_to_page_range(&init_mm, shadow_start,
+>                                   shadow_end - shadow_start,
+> @@ -466,6 +486,10 @@ void kasan_release_vmalloc(unsigned long start, unsigned long end,
+>
+>         if (shadow_end > shadow_start) {
+>                 size = shadow_end - shadow_start;
+> +               if (IS_ENABLED(CONFIG_UML)) {
+> +                       __memset(shadow_start, KASAN_SHADOW_INIT, shadow_end - shadow_start);
+> +                       return;
+> +               }
+>                 apply_to_existing_page_range(&init_mm,
+>                                              (unsigned long)shadow_start,
+>                                              size, kasan_depopulate_vmalloc_pte,
+> @@ -531,6 +555,11 @@ int kasan_alloc_module_shadow(void *addr, size_t size, gfp_t gfp_mask)
+>         if (WARN_ON(!PAGE_ALIGNED(shadow_start)))
+>                 return -EINVAL;
+>
+> +       if (IS_ENABLED(CONFIG_UML)) {
+> +               __memset((void *)shadow_start, KASAN_SHADOW_INIT, shadow_size);
+> +               return 0;
+> +       }
+> +
+>         ret = __vmalloc_node_range(shadow_size, 1, shadow_start,
+>                         shadow_start + shadow_size,
+>                         GFP_KERNEL,
+> @@ -554,6 +583,9 @@ int kasan_alloc_module_shadow(void *addr, size_t size, gfp_t gfp_mask)
+>
+>  void kasan_free_module_shadow(const struct vm_struct *vm)
+>  {
+> +       if (IS_ENABLED(CONFIG_UML))
+> +               return;
+> +
+>         if (vm->flags & VM_KASAN)
+>                 vfree(kasan_mem_to_shadow(vm->addr));
+>  }
+> --
+> 2.36.1.124.g0e6072fb45-goog
+>
+
+Thanks!
