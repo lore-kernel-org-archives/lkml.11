@@ -2,49 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26F91C38162
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:41:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14F0FC38A2B
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:41:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237984AbiE3Nkp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:40:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46848 "EHLO
+        id S237191AbiE3Nl0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:41:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237090AbiE3Ndv (ORCPT
+        with ESMTP id S238223AbiE3Nge (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:33:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22377880CB;
-        Mon, 30 May 2022 06:28:05 -0700 (PDT)
+        Mon, 30 May 2022 09:36:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCD4C986F4;
+        Mon, 30 May 2022 06:29:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A5D95B80DAD;
-        Mon, 30 May 2022 13:27:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECEE7C3411A;
-        Mon, 30 May 2022 13:27:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C93CD60DD5;
+        Mon, 30 May 2022 13:29:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5668DC385B8;
+        Mon, 30 May 2022 13:29:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917276;
-        bh=4jTvK2lpoiEdeQm+qpzHyCZoxAUPXJcXPmcaCJ93CzI=;
+        s=k20201202; t=1653917396;
+        bh=ZY+9bOivnNwE6I+fPAkFM/4luhtBKoOnJATkvk/5Qi4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cqW93jEsrqqXY0AzoRFlkys8p7tt9Kus03VSkStKcYOM+bNmQBfTGNWx7304tShiZ
-         sk63qLxMQjiEzRv2YTHReHQffJltg1myUxxRUqkoIjSvHrhH9NyoqZ71BtOXOgiDAv
-         Rj7W5dDlnztnevCakoQ4eVjR8fmrpQffS0wzs5pF6HOTtH6U+krMQ8qcjQrsiRjkq/
-         tyWDRneOfRcnKfRKxmLv+kDKYTjk//LBGPTWO6alTMgFTDFrhSSYdzIm7XKqfc8Aro
-         3iEIOku+Hy6VvGvkN2IRBV8NxBw7TdOn5uHWq3xH0/xr7sINqXARx2IbstmLra+L0b
-         HX08WTgM4kZ7g==
+        b=LKWDdkmAmuXEdbYEdtWJ7BjE2gNyK3EfmK93fRYvCWgjp4djLMJxvw1LEnoqNqC9C
+         PfiYXvYMRzYZ7KVmQC45GgpwT5uCzAUbQuoXK/RQgV2O9ugyptLSxzMXQpK62JJfwc
+         50jgguIRnERIkYzV4D4DiCqgkqnE984cOWI/J59t+m1mVAg1fGGds3wIUnl10m4NcB
+         UqvMO3UgynGKtmjqEPKuvKB+q1RlX1w+SO4B/I6u4FqGtiNLE2pcScSIHlwVUM5CH7
+         QQmo5pS5koX3XForG1U3GNjITbkOGOT+anmMOyYSJbo8m0qi0Hme1M7Qn3v8zL441A
+         aqFsZCgDgCaVg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>,
-        pierre-louis.bossart@linux.intel.com, lgirdwood@gmail.com,
-        ranjani.sridharan@linux.intel.com, kai.vehmanen@linux.intel.com,
-        daniel.baluta@nxp.com, perex@perex.cz, tiwai@suse.com,
-        sound-open-firmware@alsa-project.org, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.18 079/159] ASoC: SOF: ipc3-topology: Correct get_control_data for non bytes payload
-Date:   Mon, 30 May 2022 09:23:04 -0400
-Message-Id: <20220530132425.1929512-79-sashal@kernel.org>
+Cc:     Zijun Hu <quic_zijuhu@quicinc.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>, johan.hedberg@gmail.com,
+        luiz.dentz@gmail.com, linux-bluetooth@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 121/159] Bluetooth: btusb: Set HCI_QUIRK_BROKEN_ERR_DATA_REPORTING for QCA
+Date:   Mon, 30 May 2022 09:23:46 -0400
+Message-Id: <20220530132425.1929512-121-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
@@ -56,106 +52,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+From: Zijun Hu <quic_zijuhu@quicinc.com>
 
-[ Upstream commit a962890a5a3cce903ff7c7a19fadee63ed9efdc7 ]
+[ Upstream commit 247f226adadfb7be09dd537f177429f4415aef8e ]
 
-It is possible to craft a topology where sof_get_control_data() would do
-out of bounds access because it expects that it is only called when the
-payload is bytes type.
-Confusingly it also handles other types of controls, but the payload
-parsing implementation is only valid for bytes.
+Set HCI_QUIRK_BROKEN_ERR_DATA_REPORTING for QCA controllers since
+they answer HCI_OP_READ_DEF_ERR_DATA_REPORTING with error code
+"UNKNOWN HCI COMMAND" as shown below:
 
-Fix the code to count the non bytes controls and instead of storing a
-pointer to sof_abi_hdr in sof_widget_data (which is only valid for bytes),
-store the pointer to the data itself and add a new member to save the size
-of the data.
+[  580.517552] Bluetooth: hci0: unexpected cc 0x0c5a length: 1 < 2
+[  580.517660] Bluetooth: hci0: Opcode 0x c5a failed: -38
 
-In case of non bytes controls we store the pointer to the chanv itself,
-which is just an array of values at the end.
+hcitool -i hci0 cmd 0x03 0x5a
+< HCI Command: ogf 0x03, ocf 0x005a, plen 0
+> HCI Event: 0x0e plen 4
+  01 5A 0C 01
 
-In case of bytes control, drop the wrong cdata->data (wdata[i].pdata) check
-against NULL since it is incorrect and invalid in this context.
-The data is pointing to the end of cdata struct, so it should never be
-null.
+btmon log:
+< HCI Command: Read Default Erroneous Data Reporting (0x03|0x005a) plen 0
+> HCI Event: Command Complete (0x0e) plen 4
+      Read Default Erroneous Data Reporting (0x03|0x005a) ncmd 1
+        Status: Unknown HCI Command (0x01)
 
-Reported-by: Sergey Senozhatsky <senozhatsky@chromium.org>
-Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Reviewed-by: Sergey Senozhatsky <senozhatsky@chromium.org>
-Tested-by: Sergey Senozhatsky <senozhatsky@chromium.org>
-Link: https://lore.kernel.org/r/20220427185221.28928-1-peter.ujfalusi@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/sof/ipc3-topology.c | 39 +++++++++++++++++++++++------------
- 1 file changed, 26 insertions(+), 13 deletions(-)
+ drivers/bluetooth/btusb.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/sound/soc/sof/ipc3-topology.c b/sound/soc/sof/ipc3-topology.c
-index 2f8450a8c0a1..af1bbd34213c 100644
---- a/sound/soc/sof/ipc3-topology.c
-+++ b/sound/soc/sof/ipc3-topology.c
-@@ -20,7 +20,8 @@
- struct sof_widget_data {
- 	int ctrl_type;
- 	int ipc_cmd;
--	struct sof_abi_hdr *pdata;
-+	void *pdata;
-+	size_t pdata_size;
- 	struct snd_sof_control *control;
- };
- 
-@@ -784,16 +785,26 @@ static int sof_get_control_data(struct snd_soc_component *scomp,
- 		}
- 
- 		cdata = wdata[i].control->ipc_control_data;
--		wdata[i].pdata = cdata->data;
--		if (!wdata[i].pdata)
--			return -EINVAL;
- 
--		/* make sure data is valid - data can be updated at runtime */
--		if (widget->dobj.widget.kcontrol_type[i] == SND_SOC_TPLG_TYPE_BYTES &&
--		    wdata[i].pdata->magic != SOF_ABI_MAGIC)
--			return -EINVAL;
-+		if (widget->dobj.widget.kcontrol_type[i] == SND_SOC_TPLG_TYPE_BYTES) {
-+			/* make sure data is valid - data can be updated at runtime */
-+			if (cdata->data->magic != SOF_ABI_MAGIC)
-+				return -EINVAL;
-+
-+			wdata[i].pdata = cdata->data->data;
-+			wdata[i].pdata_size = cdata->data->size;
-+		} else {
-+			/* points to the control data union */
-+			wdata[i].pdata = cdata->chanv;
-+			/*
-+			 * wdata[i].control->size is calculated with struct_size
-+			 * and includes the size of struct sof_ipc_ctrl_data
-+			 */
-+			wdata[i].pdata_size = wdata[i].control->size -
-+					      sizeof(struct sof_ipc_ctrl_data);
-+		}
- 
--		*size += wdata[i].pdata->size;
-+		*size += wdata[i].pdata_size;
- 
- 		/* get data type */
- 		switch (cdata->cmd) {
-@@ -876,10 +887,12 @@ static int sof_process_load(struct snd_soc_component *scomp,
+diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
+index 06a854a2507e..e48c3ad069bb 100644
+--- a/drivers/bluetooth/btusb.c
++++ b/drivers/bluetooth/btusb.c
+@@ -3339,6 +3339,7 @@ static int btusb_setup_qca(struct hci_dev *hdev)
+ 	 * work with the likes of HSP/HFP mSBC.
  	 */
- 	if (ipc_data_size) {
- 		for (i = 0; i < widget->num_kcontrols; i++) {
--			memcpy(&process->data[offset],
--			       wdata[i].pdata->data,
--			       wdata[i].pdata->size);
--			offset += wdata[i].pdata->size;
-+			if (!wdata[i].pdata_size)
-+				continue;
-+
-+			memcpy(&process->data[offset], wdata[i].pdata,
-+			       wdata[i].pdata_size);
-+			offset += wdata[i].pdata_size;
- 		}
- 	}
+ 	set_bit(HCI_QUIRK_BROKEN_ENHANCED_SETUP_SYNC_CONN, &hdev->quirks);
++	set_bit(HCI_QUIRK_BROKEN_ERR_DATA_REPORTING, &hdev->quirks);
  
+ 	return 0;
+ }
 -- 
 2.35.1
 
