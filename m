@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7351DC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:37:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFA55C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:37:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237695AbiE3NhZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:37:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56420 "EHLO
+        id S237735AbiE3Nhg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:37:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237964AbiE3Nf5 (ORCPT
+        with ESMTP id S237826AbiE3Nfr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:35:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB755972A6;
-        Mon, 30 May 2022 06:29:27 -0700 (PDT)
+        Mon, 30 May 2022 09:35:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1FCA954BE;
+        Mon, 30 May 2022 06:29:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7F73BB80DB2;
-        Mon, 30 May 2022 13:29:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77616C341C0;
-        Mon, 30 May 2022 13:29:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2FF3160F14;
+        Mon, 30 May 2022 13:29:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D88F5C36AE3;
+        Mon, 30 May 2022 13:29:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917365;
-        bh=T278upJVbk/em8SEvypNZ1SQJbk0LgQu1PtRWWC3Fk8=;
+        s=k20201202; t=1653917343;
+        bh=+u2Yt/xw2sPo6EAVrtuFDGeht+dJf7/yaSqLvJi8jeA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hmrflu6BB6qYtMwexXN4gE7m1evmgZ0KM+ezA/iXPC4KMWj6qwWieK3sm67Xz4zK/
-         Gr7stbfbNE+/dY1eeHA17hragCy13WK8KNtSflXj7DEl4tRY8ZY8FeYMySQ/9WKjVH
-         SqXFaMKdbmI3UDR9FAZtr5a7OzomvRXPU+yBxN/u4forfqhkUWuzBEsTNuKNUo0XLE
-         9S78RxnN6WMwM4BU164N6ehSqxjCBz1sZbiuTCDo5KnG9futEd03XAoE1JUZt9MNg5
-         Dg0K0ZGh5Ckv5ye9sXKb9kuKaErzTfnKau55gPYwCVgLEHSrgeYBGbI9C8u797molq
-         2PEOUaGrTEjtw==
+        b=AO/wEyi808gEYCmqtnYNeOxSK8//WZeOSquzCiZaj7ETF/F++sTlLvn179hVTWOyS
+         4kkq1SDPgJmiM9tluIm/D2pBUb3Y7jWUTA2zGIRzl2MllKjNyoy2NsLwx4cjzAl440
+         BTkg8yPJscoIadM18/+BbBUCsszONxZy81Z0M5lEkRKv4z3/OE22rgTmGCQ/zF1bpi
+         zW/ctjLlf+VnnHpryutVBA5XWtW3m9y8rF9omBXU3PSUD2YmI5bOxMXggh2f/FI43p
+         APpeLAqPMBWw+ZRAeH+hhTkxNAB0ehLWE0/+yttebx4JEe8O7NAahOgFGY4Yv9ZyCc
+         bq9jvwUdWISNA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>,
-        lorenzo@kernel.org, ryder.lee@mediatek.com, kvalo@kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, matthias.bgg@gmail.com, sean.wang@mediatek.com,
-        deren.wu@mediatek.com, xing.song@mediatek.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.18 110/159] mt76: mt7921: accept rx frames with non-standard VHT MCS10-11
-Date:   Mon, 30 May 2022 09:23:35 -0400
-Message-Id: <20220530132425.1929512-110-sashal@kernel.org>
+Cc:     Zheng Bin <zhengbin13@huawei.com>, Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>,
+        pierre-louis.bossart@linux.intel.com, lgirdwood@gmail.com,
+        ranjani.sridharan@linux.intel.com, kai.vehmanen@linux.intel.com,
+        daniel.baluta@nxp.com, perex@perex.cz, tiwai@suse.com,
+        yung-chuan.liao@linux.intel.com, peter.ujfalusi@linux.intel.com,
+        rander.wang@intel.com, AjitKumar.Pandey@amd.com,
+        sound-open-firmware@alsa-project.org, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.18 102/159] ASoC: SOF: amd: add missing platform_device_unregister in acp_pci_rn_probe
+Date:   Mon, 30 May 2022 09:23:27 -0400
+Message-Id: <20220530132425.1929512-102-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
@@ -56,31 +56,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Felix Fietkau <nbd@nbd.name>
+From: Zheng Bin <zhengbin13@huawei.com>
 
-[ Upstream commit 3128ea016965ce9f91ddf4e1dd944724462d1698 ]
+[ Upstream commit cbcab8cd737c74c20195c31d647e19f7cb49c9b8 ]
 
-The hardware receives them properly, they should not be dropped
+acp_pci_rn_probe misses a call platform_device_unregister in error path,
+this patch fixes that.
 
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
+Link: https://lore.kernel.org/r/20220512013728.4128903-1-zhengbin13@huawei.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7921/mac.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/sof/amd/pci-rn.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-index 233998ca4857..f34070ca7bbe 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-@@ -696,7 +696,7 @@ mt7921_mac_fill_rx(struct mt7921_dev *dev, struct sk_buff *skb)
- 			status->nss =
- 				FIELD_GET(MT_PRXV_NSTS, v0) + 1;
- 			status->encoding = RX_ENC_VHT;
--			if (i > 9)
-+			if (i > 11)
- 				return -EINVAL;
- 			break;
- 		case MT_PHY_TYPE_HE_MU:
+diff --git a/sound/soc/sof/amd/pci-rn.c b/sound/soc/sof/amd/pci-rn.c
+index 392ffbdf6417..d809d151a38c 100644
+--- a/sound/soc/sof/amd/pci-rn.c
++++ b/sound/soc/sof/amd/pci-rn.c
+@@ -93,6 +93,7 @@ static int acp_pci_rn_probe(struct pci_dev *pci, const struct pci_device_id *pci
+ 	res = devm_kzalloc(&pci->dev, sizeof(struct resource) * ARRAY_SIZE(renoir_res), GFP_KERNEL);
+ 	if (!res) {
+ 		sof_pci_remove(pci);
++		platform_device_unregister(dmic_dev);
+ 		return -ENOMEM;
+ 	}
+ 
 -- 
 2.35.1
 
