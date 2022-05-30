@@ -2,206 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6D01C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 15:31:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 305FDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 15:33:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238600AbiE3Pbb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 11:31:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40690 "EHLO
+        id S240169AbiE3Pdr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 11:33:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237141AbiE3PZs (ORCPT
+        with ESMTP id S241531AbiE3Pdj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 11:25:48 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2EA3147834;
-        Mon, 30 May 2022 07:28:25 -0700 (PDT)
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24UBbrif003335;
-        Mon, 30 May 2022 14:27:59 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type : in-reply-to :
- mime-version; s=corp-2021-07-09;
- bh=Eh3hGqTPE9V1zQbdUok+0KSvn0gc1dE2U1PNkR2Qn+8=;
- b=TMJUrwRXftidZszM2xqW/WeGNELv7yNZNNPm5sGVbbuQNCax/Ux50DnmnnpVR5sI2uK7
- UFg3Mggd8XnTYCxtDlIC51GTD4wJjRef7ULnMwMQlZxtmeK3BfRle4VW2DZwbEvm1OrK
- ngMfrVW4E5Co50YRhIu1fRzC9dsZI/dmgVBiQsT1MGV40KDO5ZJj1Zj7lRRiB2p0udAA
- v+MJsovUrNvv1JTve7S/MFtjYuMapEqQedX3/VwlcQ12eizLLYNNWxqDusvuSdSYIfKl
- SxVUa2WUui/L0MkRFbHNw64o7wxaWRkCiYZrpkipVN+yqb1ZHDHWIbYvibU6E2D3uBKW SQ== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3gbc6x35g5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 30 May 2022 14:27:59 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 24UEFN25006668;
-        Mon, 30 May 2022 14:27:58 GMT
-Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2042.outbound.protection.outlook.com [104.47.66.42])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3gc8jw7x3y-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 30 May 2022 14:27:58 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=i9cVizEbGI95XmzCG3GY1SwAGSfUrtEiWjCJKZhB2ppVMQJpZLZe9BMMAGVkTnejaz7PAHO2ugnp0rnb69oxputlzfpVXRdP1bApkRAC01V013LQ/L6U71q63y2A3swo9lXijiBQkteudXzP2h6bDffwDGzDWCKcZt7S7DSYS0A9KHQkfkDmlvpqsm/FF8pwtLA3FpHB7pMhGtdruFbDNR2lO18xSFXmmPEUszegOxCOcq0DwPguOPvqnzX3Umk3FAochSXdpH898+qxqCtTXVkaQeaNhFa0wLxJIgmX5i2TjPShVGOq9Kyi1gxuVyCoS2CHHolIfx4l6DBnRvBIeg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Eh3hGqTPE9V1zQbdUok+0KSvn0gc1dE2U1PNkR2Qn+8=;
- b=d+TZw+Zn6C52vMtfQe+ISebfYcth00Ove6xuS5ooLxVM5WjismpHFtBb1ZcxwsJnOLZQQsrG3Q8xwOFPw3oIW0pn/EVYczzUnK+43eN8YQUw2gO6FFLPlRs0c4g7MC2d3P7NMQlp8w9fkhEl0HL+xKWtY8c+qDRQhFTq8Si66+Ha+yNMeFA7YxYEBqxdJn8oKRw3J3EmwYCGfO8pcaL2Q3jLis8r7ebjyirK2hpLsNdI0Lz0I3g8iMwBsN8I2Y/Y1OvuFNRxKK38zYWIqQ1sxb3EXoLuxPdjbC8vHEciN5IsR8V/3sIdOiL0KHR/CB/WUL6UbsrA7zYbG2c7a2CkJg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        Mon, 30 May 2022 11:33:39 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C0AD151FDB
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 07:38:29 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id jx22so21130261ejb.12
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 07:38:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Eh3hGqTPE9V1zQbdUok+0KSvn0gc1dE2U1PNkR2Qn+8=;
- b=SPt3bsY8HGwyTRPd2ZlxoP4+qBf3/zWSC8njWCdBq9sRENJYQuewJV03PR/kezcSv2Ihb1PQoOyPLnuszIVs+szRKMUe7auHwHKHGtDNLo6EvPbeSCJSiNiQU46unqU9Z0MQDej1q+25aPbzqdTe6t4cJga4/d4UNlc4N/sYoAw=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by BN0PR10MB5272.namprd10.prod.outlook.com
- (2603:10b6:408:124::24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.15; Mon, 30 May
- 2022 14:27:55 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::86f:81ba:9951:5a7e]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::86f:81ba:9951:5a7e%2]) with mapi id 15.20.5293.019; Mon, 30 May 2022
- 14:27:55 +0000
-Date:   Mon, 30 May 2022 17:27:25 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Eugenio Perez Martin <eperezma@redhat.com>
-Cc:     Stefano Garzarella <sgarzare@redhat.com>,
-        "Dawar, Gautam" <gautam.dawar@amd.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        Jason Wang <jasowang@redhat.com>,
-        Zhu Lingshan <lingshan.zhu@intel.com>,
-        "martinh@xilinx.com" <martinh@xilinx.com>,
-        "ecree.xilinx@gmail.com" <ecree.xilinx@gmail.com>,
-        Eli Cohen <elic@nvidia.com>, Parav Pandit <parav@nvidia.com>,
-        Wu Zongyong <wuzongyong@linux.alibaba.com>,
-        "dinang@xilinx.com" <dinang@xilinx.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Xie Yongji <xieyongji@bytedance.com>,
-        "lulu@redhat.com" <lulu@redhat.com>,
-        "martinpo@xilinx.com" <martinpo@xilinx.com>,
-        "pabloc@xilinx.com" <pabloc@xilinx.com>,
-        Longpeng <longpeng2@huawei.com>,
-        "Piotr.Uminski@intel.com" <Piotr.Uminski@intel.com>,
-        "Kamde, Tanuj" <tanuj.kamde@amd.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>,
-        "habetsm.xilinx@gmail.com" <habetsm.xilinx@gmail.com>,
-        "lvivier@redhat.com" <lvivier@redhat.com>,
-        Zhang Min <zhang.min9@zte.com.cn>,
-        "hanand@xilinx.com" <hanand@xilinx.com>
-Subject: Re: [PATCH v3 2/4] vhost-vdpa: introduce STOP backend feature bit
-Message-ID: <20220530142725.GU2168@kadam>
-References: <20220525105922.2413991-3-eperezma@redhat.com>
- <BL1PR12MB582520CC9CE024149141327499D69@BL1PR12MB5825.namprd12.prod.outlook.com>
- <CAJaqyWc9_ErCg4whLKrjNyP5z2DZno-LJm7PN=-9uk7PUT4fJw@mail.gmail.com>
- <20220526090706.maf645wayelb7mcp@sgarzare-redhat>
- <CAJaqyWf7PumZXy1g3PbbTNCdn3u1XH3XQF73tw2w8Py5yLkSAg@mail.gmail.com>
- <20220526132038.GF2168@kadam>
- <CAJaqyWe4311B6SK997eijEJyhwnAxkBUGJ_0iuDNd=wZSt0DmQ@mail.gmail.com>
- <20220526190630.GJ2168@kadam>
- <CAJaqyWdfWgC-uthR0aCjitCrBf=ca=Ee1oAB=JumffK=eSLgng@mail.gmail.com>
- <20220527073654.GM2168@kadam>
+        d=szeredi.hu; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=9XVHS3rlr74kwDPS9cPLZWGBf1IHIjmcfJWC5iwwI2Q=;
+        b=MbARoEMNQrQQ5S51pge6GPzZS8oHKf3IaF+XiDUy8Ks5VCzzDxfw2dNHfzHZpEiWQC
+         Lir4csByQgi8syophTh9lcO08dPkZ5b+pcyLI4xvARvyOpGO5Dz1suPagZKcrX5giq++
+         tWsVlviaPGUMTu82QwfnMk/+msafi9JIPmz0I=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=9XVHS3rlr74kwDPS9cPLZWGBf1IHIjmcfJWC5iwwI2Q=;
+        b=n+r8eYO+WQb5XWC/XqRK6S4rnHoX2N8RWUBLAmTOzQUR7rUhLtQJCwp5V7GcdY5vxo
+         O9dFDBJnVCrlj6p3O19w4SZhFebwwNpsSlDKbeQUkyjfS37V/jWZ5hmeNqqqwp7Iqp52
+         EBcLn5Cu+Q1htBwPLNY9i04TjRP0E5236spyDkjinVwrtRYGaJZGFE+TbOEBbqyJkHtv
+         +9LWtEo8PXCgl2PGt4Gi/j7CrEd4OeM82AvXuPvkM6/Axd0XF8mbA+Am7xjzL3xLFVdP
+         3kbrAkygtzBTq5Bkw+n6kOKtE1BDaMFcblriwmI5DLVu31xTIUifCc6gSHMFpuS4289I
+         Oi8w==
+X-Gm-Message-State: AOAM532jPwSUYDwXjb62rNkLQ91cijzlP9H3yMdnqX3jhojHyQ6Y9O6C
+        OIAxpyc7u5EHjyslXZmbuQF1OQ==
+X-Google-Smtp-Source: ABdhPJzCJc9LIiLBdHANCcQcfp+8G5VZEaFRDSMPja3qGm5Y6mFm1R/ni7P5lpa3+cR3SNJNCX9l9A==
+X-Received: by 2002:a17:906:90c9:b0:6fe:9e40:5cc with SMTP id v9-20020a17090690c900b006fe9e4005ccmr46125940ejw.367.1653921508038;
+        Mon, 30 May 2022 07:38:28 -0700 (PDT)
+Received: from miu.piliscsaba.redhat.com (catv-178-48-189-3.catv.fixed.vodafone.hu. [178.48.189.3])
+        by smtp.gmail.com with ESMTPSA id bh19-20020a170906a0d300b006ff802baf5dsm910684ejb.54.2022.05.30.07.38.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 May 2022 07:38:27 -0700 (PDT)
+Date:   Mon, 30 May 2022 16:38:24 +0200
+From:   Miklos Szeredi <miklos@szeredi.hu>
+To:     Jeff Layton <jlayton@kernel.org>
+Cc:     Al Viro <viro@zeniv.linux.org.uk>,
+        ChenXiaoSong <chenxiaosong2@huawei.com>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        liuyongqiang13@huawei.com, "zhangyi (F)" <yi.zhang@huawei.com>,
+        zhangxiaoxu5@huawei.com, Steve French <smfrench@gmail.com>,
+        NeilBrown <neilb@suse.de>
+Subject: Re: [PATCH -next,v2] fuse: return the more nuanced writeback error
+ on close()
+Message-ID: <YpTW4LNGGzuXu/bq@miu.piliscsaba.redhat.com>
+References: <20220523014838.1647498-1-chenxiaosong2@huawei.com>
+ <CAJfpegt-+6oSCxx1-LHet4qm4s7p0jSoP9Vg8PJka3=1dqBXng@mail.gmail.com>
+ <9915b7b556106d2a525941141755adcca9e50163.camel@kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220527073654.GM2168@kadam>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: JNXP275CA0002.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:19::14)
- To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 37d887e0-721e-4e7c-ccb7-08da4248962c
-X-MS-TrafficTypeDiagnostic: BN0PR10MB5272:EE_
-X-Microsoft-Antispam-PRVS: <BN0PR10MB52720419460C20BEFA6F7FD98EDD9@BN0PR10MB5272.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 4RZouvnY2sUyuwmW12sTcBuUrkRtxnR1I9bEXO6dSySKmBytYC5H/jAtT5sL8Gv8bjkT4oZOAxPDvHLQvijO38WrMekS0uyqulYvhfaJsZNZvD68+H67+furGn8e8FTdqWbVYYecBlzIJL1zV5S2W9qYm0eRsjY9N2liWBuzju5qaDSUq2vFZtD14GNIrS6SLsBnZwngMLjHqyCGEGRQx157FD3Q4b5pugnTZ0xyP2ac2KXkt/FFlR8Ji0xAtF/RdYavIymRH0t+C41CyjzvwWxTBK3tbdIR7OW4vDXoRoehyVcKEYPQJIzrY9uoU3woC7sl6VkIetCJ9AdKYxAwzY+KKBKiC6+RslXVB78Knxh3UCzNXFj6dEY1qb8HlJv0UcfIwmDxFl1FR9vnE52ZJSnyWi2Nnwj+VDz3cYoJSeg4Asp2x/z9qpL84SYV2WBJecEvymR00LsFoCopWfSgNbZjLk370zuNZNY3IDCe7ZGHc4qqJTwQi2eMgpJX2FKvNbf5gGJePsGnRhUy0yQGbm8BdNHXuOdlLmrMgsoRhtXVVKtXg9x4hyqDJ2/boE3Rs4+7K2mbloALsDUffi9ETp3CDyYpOqOBTW1BN4C6KbFnw75WZJKJCgJyIMyt0sri0W4FjdJFJsDGe6pft+OQM331IGALJh7gTqQ0jVPMbDHTvGpsG9AWPhRLZ/mRGCoH9T4Kn+ouhCMtyTKOiivh+Q==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(2906002)(6666004)(8676002)(6486002)(44832011)(66556008)(4326008)(66476007)(7416002)(33716001)(66946007)(54906003)(316002)(5660300002)(52116002)(508600001)(6916009)(26005)(6506007)(6512007)(9686003)(33656002)(38350700002)(1076003)(38100700002)(86362001)(83380400001)(8936002)(186003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ZJvOYFFyqFnRaQ+Hc4n3Da1Wnp3N/M2dtCl6l6RRV0tRjIV4ccL6i+PlC8Gs?=
- =?us-ascii?Q?IwzVCVfHlphrpglDd+5UPOmLrUxmBh5jqyfsoR53spCWMLLtYYFmjLg4j4gE?=
- =?us-ascii?Q?6dxNS8qpf6ftvPcpwtVRc/DgNU/t+79dAuNzuyb+bYQDiA+th+ToU/D77jRd?=
- =?us-ascii?Q?tLjm4h3HDVbnzfbw2zN6tFr8rzClPzIakCG/o2o1LTW0E01KPQztnAhr1ZD5?=
- =?us-ascii?Q?uO6FqgYPBXoZFL9XQkegQVGix9AHuFERhNXKFp6lbQB0ciGv+nmSlj4s6a3A?=
- =?us-ascii?Q?hhD1u4rWYo+aIKD2NizwvS+haqtsP9UZZJiyjwmGpgjiRTmoNBkUfQoCHF0T?=
- =?us-ascii?Q?a94DKhy9t0FO0wNS10jQ5R3cZQ9VkgE/kiL98PRjeeA3ECAB4w4QokyYcll0?=
- =?us-ascii?Q?VcHvq6+uLPfCkc47qHJY+Yldiv4Uut4yGYjzrAk04UoUUk111STWdVHsYeB/?=
- =?us-ascii?Q?dH1vD7TDy/+vZ2Es4PlQeMxrptohCPFlERbOOU/+0uTQ9HDxslbwIdgfK+Wg?=
- =?us-ascii?Q?7vnavyNwSnwu/SG+XFjF0HS5a7KlXtSxgIQ69SHEoRdmsR6zXzfLIo83Xuqe?=
- =?us-ascii?Q?OlXnGkLBFB4z3D9U0oD+Gl72jisc5Jzf9gZ2jCmXalp+BzsUTzg9pY3zmSCf?=
- =?us-ascii?Q?gMT0hrFLIWTRSYrvxXWMa+J7LpEDLA2F5j4YKpC/NIKIT06PEBU0OF9ZcYSL?=
- =?us-ascii?Q?ac0a1yabMUqYIlfdKOe7sif2VpPmwacHpU5B7V2sZnBeW6oIO9L0hEKivRu3?=
- =?us-ascii?Q?/VXPfQWGNsyZL/qYLcWW7E4Ed1DlGSI/LoqZqQ5egQTBMQ13+b5CrXh5iUtV?=
- =?us-ascii?Q?YnTYNxTugn4VqNaS12gxmQvunZ3C35HtJBA8KNINJ6SxJnl5DykxqJLaH7WW?=
- =?us-ascii?Q?nP6vaUxAm9zuLZMMUwdjsmO8gS/Sn2Zw48UO9RWEYFqg+iy3xhgL/YHuTk9X?=
- =?us-ascii?Q?P7D1kvW3Jw6UMeRDTMsuKle6/QcIdWKExxad9KowSxuN+cbs0lA9PiDA+Tzd?=
- =?us-ascii?Q?+EjJ7VNl6ERpLJ9DQmxgKcxjunq4APznaVpCSfvYBWDKz4egsrLGJ27Q1J4w?=
- =?us-ascii?Q?OhHg6h6YuSd5TfW/xhYANbMYHWfgMjoKLhYHY0YXFiG3p/obyMPoA8nMHYJ5?=
- =?us-ascii?Q?zE3DSR0ytMW3rzwOm50/2dW1exaa68/25Blqq7cIWaCts7vuu6aBOHW/dUdM?=
- =?us-ascii?Q?YZMlSaDR6TzEjfpb2na7HOraWPjUZ/omAn7jhGSC/jAJpZTFapsUbi65O6jd?=
- =?us-ascii?Q?3Oyr5JmvbXe7rrCJjpw6ZlIo9u/xsKDVdA2ebuZC06THJ+RSnIm5LN7jof+d?=
- =?us-ascii?Q?VKuw4dABsFkUkTICqh+l3Vm1X7jnSbEkhk12waY3moLI7xhalkEDypOLtL/D?=
- =?us-ascii?Q?nwkCm8TLjJJ6Sw6GOj9Z72r03WcF04fmqc6WNBFl1VKoCuN8ukpec1p22FVe?=
- =?us-ascii?Q?pTrETf68HVfohJH4nNMdZDsOaV+fa793gb+CwPd9LYrqdAL7+f1mg4AMW7v9?=
- =?us-ascii?Q?4kAIMQWWXRnxda+sAmngN22xUE9yvvgaHBxxpC51BRvMBrHPN33xvQ8bPxWT?=
- =?us-ascii?Q?mmeLikw25i9SIb8eaFuqYpy2RvzQCtK5ooVuTRNZOzyBgSio85+JRE4hv8lc?=
- =?us-ascii?Q?vFO+e2n4D8rjmMUE73+zvfSPi0+/OO1KD293kpiX2ynGR50+wz+vKqKXL9/K?=
- =?us-ascii?Q?c/fTqocZt/ZXSxn3HOL+OtEAS+vGir9CmrA0kqg5l8EDh2QRXrrgFC42vNnx?=
- =?us-ascii?Q?VwW4XgJkZ4Rmd67tMKkf3rd7IVCtCXo=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 37d887e0-721e-4e7c-ccb7-08da4248962c
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 May 2022 14:27:55.3911
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: IOODWtycYq4ULsympuCZ38MSIsYG20ThJidYWJKaRy2yRbbX1lWXJM9/lhdq4jQCAzUVy5RCZps5/oSTQAh6UWxwWpM4GDuaakkZwZwVvdo=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN0PR10MB5272
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486,18.0.874
- definitions=2022-05-30_05:2022-05-30,2022-05-30 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 mlxscore=0
- suspectscore=0 spamscore=0 phishscore=0 malwarescore=0 bulkscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2205300075
-X-Proofpoint-GUID: daDRscZ9FCioRZekyb3L16boc0TI3vrc
-X-Proofpoint-ORIG-GUID: daDRscZ9FCioRZekyb3L16boc0TI3vrc
+In-Reply-To: <9915b7b556106d2a525941141755adcca9e50163.camel@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 27, 2022 at 10:36:55AM +0300, Dan Carpenter wrote:
-> static void match_pointer(struct expression *ret_value)
-> {
->         struct symbol *type;
->         char *name;
+On Mon, May 30, 2022 at 10:02:06AM -0400, Jeff Layton wrote:
+
+> The main difference is that ->flush is called from filp_close, so it's
+> called when a file descriptor (or equivalent) is being torn down out,
+> whereas ->fsync is (obviously) called from the fsync codepath.
 > 
->         type = cur_func_return_type();
->         if (!type || sval_type_max(type).value != 1)
->                 return;
+> We _must_ report writeback errors on fsync, but reporting them on the
+> close() syscall is less clear. The thing about close() is that it's
+> going be successful no matter what is returned. The file descriptor will
+> no longer work afterward regardless.
 > 
->         if (!is_pointer(ret_value))
->                 return;
+> fsync also must also initiate writeback of all the buffered data, but
+> it's not required for filesystems to do that on close() (and in fact,
+> there are good reasons not to if you can). A successful close() tells
+> you nothing about whether your data made it to the backing store. It
+> might just not have been synced out yet.
 > 
->         name = expr_to_str(ret_value);
->         sm_msg("'%s' return pointer cast to bool", name);
->         free_string(name);
-> }
+> Personally, I think it's probably best to _not_ return writeback errors
+> on close at all. The only "legitimate" error on close is -EBADF.
+> Arguably, we should make ->flush be void return. Note that most
+> filp_close callers ignore the error anyway, so it's not much of a
+> stretch.
+> 
+> In any case, if you do decide to return errors in fuse_flush, then
+> advancing the cursor would also have the effect of masking writeback
+> errors on dup()'ed file descriptors, and I don't think you want to do
+> that.
 
-I found a bug in Smatch with this check.  With the Smatch bug fixed then
-there is only only place which does a legitimate implied pointer to bool
-cast.  A different function returns NULL on error instead of false.
+Thanks for clarifying.
 
-drivers/gpu/drm/i915/display/intel_dmc.c:249 intel_dmc_has_payload() 'i915->dmc.dmc_info[0]->payload' return pointer cast to bool
-drivers/net/wireless/rndis_wlan.c:1980 rndis_bss_info_update() '(0)' return pointer cast to bool
-drivers/net/wireless/rndis_wlan.c:1989 rndis_bss_info_update() '(0)' return pointer cast to bool
-drivers/net/wireless/rndis_wlan.c:1995 rndis_bss_info_update() '(0)' return pointer cast to bool
+Chen, would the following patch make sense for your case?
 
-regards,
-dan carpenter
+Thanks,
+Miklos
 
+---
+ fs/fuse/file.c |    5 -----
+ 1 file changed, 5 deletions(-)
+
+--- a/fs/fuse/file.c
++++ b/fs/fuse/file.c
+@@ -487,11 +487,6 @@ static int fuse_flush(struct file *file,
+ 	fuse_sync_writes(inode);
+ 	inode_unlock(inode);
+ 
+-	err = filemap_check_errors(file->f_mapping);
+-	if (err)
+-		return err;
+-
+-	err = 0;
+ 	if (fm->fc->no_flush)
+ 		goto inval_attr_out;
+ 
