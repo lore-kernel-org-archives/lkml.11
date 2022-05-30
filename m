@@ -2,87 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09178C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:32:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C7B2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:32:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237236AbiE3NcY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:32:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58996 "EHLO
+        id S236858AbiE3Nca (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:32:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237394AbiE3NaZ (ORCPT
+        with ESMTP id S237355AbiE3NaX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:30:25 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C80E58BD29
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 06:27:18 -0700 (PDT)
-Received: from mail-yw1-f178.google.com ([209.85.128.178]) by
- mrelayeu.kundenserver.de (mreue009 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MyK9U-1naaIi2FFE-00yhLN for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022
- 15:27:16 +0200
-Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-2ef5380669cso109805747b3.9
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 06:27:16 -0700 (PDT)
-X-Gm-Message-State: AOAM532o2BqlmayrBWevv5ebubrc/INTyBNge2Y1jc8ECYBj+FRG+tdT
-        ljeX6yfFZEkBQ4aImRjy1F0h58oLIfHWqJ8AKoE=
-X-Google-Smtp-Source: ABdhPJzhFSGg2w/8ZGCTnRd3eo/K+0TESAOoljCU1poY/jQ3ltF9m1UCs/H2BhLsNUV4//0jprJWNAAdam+fS4ulT30=
-X-Received: by 2002:a81:488c:0:b0:302:549f:ffbc with SMTP id
- v134-20020a81488c000000b00302549fffbcmr22682224ywa.495.1653917235399; Mon, 30
- May 2022 06:27:15 -0700 (PDT)
+        Mon, 30 May 2022 09:30:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D95C8BD3B;
+        Mon, 30 May 2022 06:27:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4CC8060EE0;
+        Mon, 30 May 2022 13:27:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E812C385B8;
+        Mon, 30 May 2022 13:27:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653917232;
+        bh=2u3HzTx97D8KukJGqGjYi4/l3+1TkIRnHr/uNhU+Aow=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=An07GC5zuYpqavJCDPhpEQnvg4rXj3wWMKFtv4YZfbIe+k0iWyZfRzlxGElMa0x/p
+         MjwkOiW82/h4xpjQW4zPsQ3jDPCsQl/FinSL3wPgqHkJy6aUhz25UXx4s/BqoZNl0o
+         MRbAFhQqlFqkA3ywW7AYNztObXCkp8sjONmsLQRsn3HhUnx79QcFMXWs+tsLD/qFY7
+         xTpxcXC+f+TekjSygLF7JRGsCLqmDc+oies1QdOdP4x+79ygpqwEX5yL3eKsYNU7G5
+         aQC5sqqttXr1r26Obg0vWO+Ws7jKmS3Hh84akJeu8JFdfTwI2+GnpfUTleSKFSOvaD
+         M1HNMldDFPhDw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Steven Price <steven.price@arm.com>,
+        Liviu Dudau <liviu.dudau@arm.com>,
+        Sasha Levin <sashal@kernel.org>,
+        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+        tzimmermann@suse.de, airlied@linux.ie, daniel@ffwll.ch,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.18 065/159] drm/plane: Move range check for format_count earlier
+Date:   Mon, 30 May 2022 09:22:50 -0400
+Message-Id: <20220530132425.1929512-65-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
+References: <20220530132425.1929512-1-sashal@kernel.org>
 MIME-Version: 1.0
-References: <YpRiZpZU3kH2xprC@linux-8mug> <CAK8P3a2A_KHKWN3O2Wcy66yCC+T0eBsK8pNcGuLHN-BVeQ1ymw@mail.gmail.com>
- <YpS/jhQf6zLXZSvy@linux-8mug>
-In-Reply-To: <YpS/jhQf6zLXZSvy@linux-8mug>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Mon, 30 May 2022 15:26:58 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a3CuFOAPkk89i+tPgGa3xzPhB=bftQw6QW=hMaqK3-2AQ@mail.gmail.com>
-Message-ID: <CAK8P3a3CuFOAPkk89i+tPgGa3xzPhB=bftQw6QW=hMaqK3-2AQ@mail.gmail.com>
-Subject: Re: [GIT PULL] arm64: s32g changes for v5.19
-To:     Chester Lin <clin@suse.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        arm-soc <arm@kernel.org>, SoC Team <soc@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>,
-        Matthias Brugger <mbrugger@suse.com>, s32@nxp.com,
-        Fabio Estevam <festevam@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:D7ZTkbN1Ba8GZsXWHfm1tMDEI6IGYrrbz40Iv8MLkIs0rdoQ4h9
- Z9fQwZciD/w6DOdTSFmtWn+IMKtXaHtlQROdOl+KNt141HXhjVUMnt1HoMBrm2aRYXCGuoZ
- CE0vRsMJdHG/a44ab9sCDmurWKYKAh5h2KNeTSEjfAamO3ONxsejV9DtB/IPZuLokksOt0R
- mqzLK8D0WhMBuGaT3lCmA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:qqi0UzDKH/0=:u4cEDF8+U+FtV70rxli2hj
- /XBa1ikGM+zgZPHVlE46zWjvXl4j8vG/OS+eS7nDZ6BY4FmocOPN6/ElQlW2g19ZOLjvi1NU7
- XL/TpIXTX/I2QDKreryW2RaQGLi5tkjZOUagmPr2O0tCn0eWh06t7Ul+MBpPyqgeRm1hDMPDj
- JAwGNjtbG9EE9aIYXMQmb+IBc78FoEAF3xB1hdtFI51KimaZNmLkybVHZH4aptM2Ul5SnaITq
- ch3U08n6WvfKKXJSUtFFK62MpRsTmi/tCvg7a61MZiy8Cc+fVFWe8HrZRzza1uNbC63riQUC0
- ItX6V4hUBLukFm+DGQtBN4uwy1ILaQmlotsLaGtOHZ2IaHMvQqUC7eknWGiVNhTsfYYJTsaOP
- 3l/7i6MaRLNP9a3URXxT6pQ4bDcWTm3GqNEQHTEuPMe32EmeesPkL4L1YAXzIENSuI/ozx79x
- QhqBuUhuPH3wJrOWuW5/RdnMLdtuAv0sraKLApnOixkiwCE6In9gawI1PRqSL4woqOUwtzX2O
- KQsn+05ftc5OjvFd4pgZGi0WL5qawoOjBbL/p3NH1R485xaUQyZWSXCHxqL7eucPBLV/UpdjR
- /hL/xqKNgjJhkGx0lKWdEQQLuCDm7EZYcQQzND3UGZ79rT9KG91um7ecrCja9f7TF25LNhfta
- 55ygkViKlyKaPIv9kIUUY1dBlac5G+hwWewNVu8Yfbi7mOv36F1MS+8bclFWhG6s5NciPM9sL
- 7Rro/iUmkuYgyZxuDIVKbwUxJJjBJDgpRXIVJZYbb/3gXK4YiXuwl49nkSUbEsnlUsjEtqqrQ
- WNOtN+bEWYH9UnSWH4CsO7IqKxUYwRtEnw+UlmBDGtUqhngRAi+1GKYtr/wa8dflQwFqIY+M0
- FtUEBrDRPDzhcuci0fQw==
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 30, 2022 at 2:58 PM Chester Lin <clin@suse.com> wrote:
->  On Mon, May 30, 2022 at 08:58:47AM +0200, Arnd Bergmann wrote:
-> > - The branch is based on top of a random commit from the mainline repository,
-> >   you should instead always base this on top of an -rc tag in order to not
-> >   clutter up the git history or make bisection unnecessarily hard. My 'arm/late'
-> >   branch is currently based on a random commit 16477cdfefdb ("Merge tag
-> >   'asm-generic-5.19' of
-> > git://git.kernel.org/pub/scm/linux/kernel/git/arnd/asm-generic")
-> >   as well, but this is an exception and I will explain it when I send the pull
-> >   request ;-)
-> >
->
-> Thanks for your guidance and sorry for any inconvenience this causes. I will
-> wait for the next cycle.
+From: Steven Price <steven.price@arm.com>
 
-Just to clarify: both of the patches you sent are good, and I want to apply
-them for 5.19, so please send them as a bugfix pull request.
+[ Upstream commit 4b674dd69701c2e22e8e7770c1706a69f3b17269 ]
 
-      Arnd
+While the check for format_count > 64 in __drm_universal_plane_init()
+shouldn't be hit (it's a WARN_ON), in its current position it will then
+leak the plane->format_types array and fail to call
+drm_mode_object_unregister() leaking the modeset identifier. Move it to
+the start of the function to avoid allocating those resources in the
+first place.
+
+Signed-off-by: Steven Price <steven.price@arm.com>
+Signed-off-by: Liviu Dudau <liviu.dudau@arm.com>
+Link: https://lore.kernel.org/dri-devel/20211203102815.38624-1-steven.price@arm.com/
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/gpu/drm/drm_plane.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/gpu/drm/drm_plane.c b/drivers/gpu/drm/drm_plane.c
+index bf0daa8d9bbd..726f2f163c26 100644
+--- a/drivers/gpu/drm/drm_plane.c
++++ b/drivers/gpu/drm/drm_plane.c
+@@ -247,6 +247,13 @@ static int __drm_universal_plane_init(struct drm_device *dev,
+ 	if (WARN_ON(config->num_total_plane >= 32))
+ 		return -EINVAL;
+ 
++	/*
++	 * First driver to need more than 64 formats needs to fix this. Each
++	 * format is encoded as a bit and the current code only supports a u64.
++	 */
++	if (WARN_ON(format_count > 64))
++		return -EINVAL;
++
+ 	WARN_ON(drm_drv_uses_atomic_modeset(dev) &&
+ 		(!funcs->atomic_destroy_state ||
+ 		 !funcs->atomic_duplicate_state));
+@@ -268,13 +275,6 @@ static int __drm_universal_plane_init(struct drm_device *dev,
+ 		return -ENOMEM;
+ 	}
+ 
+-	/*
+-	 * First driver to need more than 64 formats needs to fix this. Each
+-	 * format is encoded as a bit and the current code only supports a u64.
+-	 */
+-	if (WARN_ON(format_count > 64))
+-		return -EINVAL;
+-
+ 	if (format_modifiers) {
+ 		const uint64_t *temp_modifiers = format_modifiers;
+ 
+-- 
+2.35.1
+
