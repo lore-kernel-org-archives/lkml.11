@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88ED1C47096
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:21:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 657C3C48BCD
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:21:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241073AbiE3OUy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:20:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33910 "EHLO
+        id S241131AbiE3OU7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:20:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240898AbiE3OQf (ORCPT
+        with ESMTP id S240927AbiE3OQh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:16:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FA0A1053FE;
-        Mon, 30 May 2022 06:44:15 -0700 (PDT)
+        Mon, 30 May 2022 10:16:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E0541078A8;
+        Mon, 30 May 2022 06:44:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 60BC2B80DA7;
-        Mon, 30 May 2022 13:44:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F054C385B8;
-        Mon, 30 May 2022 13:44:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7605860F14;
+        Mon, 30 May 2022 13:43:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC410C385B8;
+        Mon, 30 May 2022 13:43:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918244;
-        bh=Y3ci4aj1bWHDsYuaG5QQrbA8DGau5DUCSDNwP7ULckA=;
+        s=k20201202; t=1653918218;
+        bh=VH0lnEDL+ySeSCJhfAcOBhCdDPlruk92FAA23rKWlWs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lE2klOa+CQTZqzonW+57iFJqYhdVQVJvR91kW+SeOWXsTEOyXTu5n9B0YoMJlkXCA
-         56vDus6PNbg7wywlbuVV7f/XjAB7RKPhrMOCN47e+pkuVbQutb3BbiGzTyNSBKE6Ep
-         Ot5kBjKIGpajfAeHTg+H5V7fo1FBfVlP/jxxg7/sgFWtA5QnkUrvJCcHCG+VFRiVAB
-         QBR4WkHVV3pAHFY/0MJ6hbwDK3EgxNXNLPdGbyi5J2nqi5on3hlXd7cF7+dB6LK/h2
-         7SY0n/WLYUU9WeCt2Kqxnmug5nIuZLPs59Qov0BaaPQHhGYa9tiflqzJLKk0v16t+r
-         z5BEcB09nlL1A==
+        b=CAb6vuUrDP0fIZFfyGLVbiiSuzp0xWf0OM5D/ymRB78s01GvYaX6lMJvPyYZ7zi8I
+         7O4VehmMoba5XGLKn3one14XHduHT9LqQmN4z3JM1r6ZC3XtKIpWC3/hVy1xubXAO/
+         S0MsgQpxZjVfOJt/i/zDMvEWlzEJM713fdn3axXSubApx+7hoj4mKn0t8ueG0O5eTC
+         jsXHqc5WWqvNcSWqyOCUgEi+eSBJBklzNF2F8t74vJ9hyU48d5o5tFvMY1wns1cUx6
+         gztLnE46t0Hqfz1q8pQlP5+9/o1v+dBUWw+Frf6rSK/HD3uEF67qbv8wsnh5sAZTNi
+         Y9S1ZkmdTf9kA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yonghong Song <yhs@fb.com>, Mykola Lysenko <mykolal@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, nathan@kernel.org,
-        ndesaulniers@google.com, sunyucong@gmail.com,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, llvm@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.15 108/109] selftests/bpf: fix btf_dump/btf_dump due to recent clang change
-Date:   Mon, 30 May 2022 09:38:24 -0400
-Message-Id: <20220530133825.1933431-108-sashal@kernel.org>
+Cc:     Alex Elder <elder@linaro.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, elder@kernel.org,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 099/109] net: ipa: ignore endianness if there is no header
+Date:   Mon, 30 May 2022 09:38:15 -0400
+Message-Id: <20220530133825.1933431-99-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
 References: <20220530133825.1933431-1-sashal@kernel.org>
@@ -55,87 +53,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yonghong Song <yhs@fb.com>
+From: Alex Elder <elder@linaro.org>
 
-[ Upstream commit 4050764cbaa25760aab40857f723393c07898474 ]
+[ Upstream commit 332ef7c814bdd60f08d0d9013d0e1104798b2d23 ]
 
-Latest llvm-project upstream had a change of behavior
-related to qualifiers on function return type ([1]).
-This caused selftests btf_dump/btf_dump failure.
-The following example shows what changed.
+If we program an RX endpoint to have no header (header length is 0),
+header-related endpoint configuration values are meaningless and are
+ignored.
 
-  $ cat t.c
-  typedef const char * const (* const (* const fn_ptr_arr2_t[5])())(char * (*)(int));
-  struct t {
-    int a;
-    fn_ptr_arr2_t l;
-  };
-  int foo(struct t *arg) {
-    return arg->a;
-  }
+The only case we support that defines a header is QMAP endpoints.
+In ipa_endpoint_init_hdr_ext() we set the endianness mask value
+unconditionally, but it should not be done if there is no header
+(meaning it is not configured for QMAP).
 
-Compiled with latest upstream llvm15,
-  $ clang -O2 -g -target bpf -S -emit-llvm t.c
-The related generated debuginfo IR looks like:
-  !16 = !DIDerivedType(tag: DW_TAG_typedef, name: "fn_ptr_arr2_t", file: !1, line: 1, baseType: !17)
-  !17 = !DICompositeType(tag: DW_TAG_array_type, baseType: !18, size: 320, elements: !32)
-  !18 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !19)
-  !19 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !20, size: 64)
-  !20 = !DISubroutineType(types: !21)
-  !21 = !{!22, null}
-  !22 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !23, size: 64)
-  !23 = !DISubroutineType(types: !24)
-  !24 = !{!25, !28}
-  !25 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !26, size: 64)
-  !26 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !27)
-  !27 = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
-You can see two intermediate const qualifier to pointer are dropped in debuginfo IR.
+Set the endianness conditionally, and rearrange the logic in that
+function slightly to avoid testing the qmap flag twice.
 
-With llvm14, we have following debuginfo IR:
-  !16 = !DIDerivedType(tag: DW_TAG_typedef, name: "fn_ptr_arr2_t", file: !1, line: 1, baseType: !17)
-  !17 = !DICompositeType(tag: DW_TAG_array_type, baseType: !18, size: 320, elements: !34)
-  !18 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !19)
-  !19 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !20, size: 64)
-  !20 = !DISubroutineType(types: !21)
-  !21 = !{!22, null}
-  !22 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !23)
-  !23 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !24, size: 64)
-  !24 = !DISubroutineType(types: !25)
-  !25 = !{!26, !30}
-  !26 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !27)
-  !27 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !28, size: 64)
-  !28 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !29)
-  !29 = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
-All const qualifiers are preserved.
+Delete an incorrect comment in ipa_endpoint_init_aggr().
 
-To adapt the selftest to both old and new llvm, this patch removed
-the intermediate const qualifier in const-to-ptr types, to make the
-test succeed again.
-
-  [1] https://reviews.llvm.org/D125919
-
-Reported-by: Mykola Lysenko <mykolal@fb.com>
-Signed-off-by: Yonghong Song <yhs@fb.com>
-Link: https://lore.kernel.org/r/20220523152044.3905809-1-yhs@fb.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Alex Elder <elder@linaro.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ipa/ipa_endpoint.c | 32 +++++++++++++++++---------------
+ 1 file changed, 17 insertions(+), 15 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c b/tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c
-index 8aaa24a00322..970598dda732 100644
---- a/tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c
-+++ b/tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c
-@@ -94,7 +94,7 @@ typedef void (* (*signal_t)(int, void (*)(int)))(int);
+diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
+index 87e42db1b61e..8e31c2ba5057 100644
+--- a/drivers/net/ipa/ipa_endpoint.c
++++ b/drivers/net/ipa/ipa_endpoint.c
+@@ -570,19 +570,23 @@ static void ipa_endpoint_init_hdr_ext(struct ipa_endpoint *endpoint)
+ 	struct ipa *ipa = endpoint->ipa;
+ 	u32 val = 0;
  
- typedef char * (*fn_ptr_arr1_t[10])(int **);
+-	val |= HDR_ENDIANNESS_FMASK;		/* big endian */
+-
+-	/* A QMAP header contains a 6 bit pad field at offset 0.  The RMNet
+-	 * driver assumes this field is meaningful in packets it receives,
+-	 * and assumes the header's payload length includes that padding.
+-	 * The RMNet driver does *not* pad packets it sends, however, so
+-	 * the pad field (although 0) should be ignored.
+-	 */
+-	if (endpoint->data->qmap && !endpoint->toward_ipa) {
+-		val |= HDR_TOTAL_LEN_OR_PAD_VALID_FMASK;
+-		/* HDR_TOTAL_LEN_OR_PAD is 0 (pad, not total_len) */
+-		val |= HDR_PAYLOAD_LEN_INC_PADDING_FMASK;
+-		/* HDR_TOTAL_LEN_OR_PAD_OFFSET is 0 */
++	if (endpoint->data->qmap) {
++		/* We have a header, so we must specify its endianness */
++		val |= HDR_ENDIANNESS_FMASK;	/* big endian */
++
++		/* A QMAP header contains a 6 bit pad field at offset 0.
++		 * The RMNet driver assumes this field is meaningful in
++		 * packets it receives, and assumes the header's payload
++		 * length includes that padding.  The RMNet driver does
++		 * *not* pad packets it sends, however, so the pad field
++		 * (although 0) should be ignored.
++		 */
++		if (!endpoint->toward_ipa) {
++			val |= HDR_TOTAL_LEN_OR_PAD_VALID_FMASK;
++			/* HDR_TOTAL_LEN_OR_PAD is 0 (pad, not total_len) */
++			val |= HDR_PAYLOAD_LEN_INC_PADDING_FMASK;
++			/* HDR_TOTAL_LEN_OR_PAD_OFFSET is 0 */
++		}
+ 	}
  
--typedef char * (* const (* const fn_ptr_arr2_t[5])())(char * (*)(int));
-+typedef char * (* (* const fn_ptr_arr2_t[5])())(char * (*)(int));
+ 	/* HDR_PAYLOAD_LEN_INC_PADDING is 0 */
+@@ -738,8 +742,6 @@ static void ipa_endpoint_init_aggr(struct ipa_endpoint *endpoint)
  
- struct struct_w_typedefs {
- 	int_t a;
+ 			close_eof = endpoint->data->rx.aggr_close_eof;
+ 			val |= aggr_sw_eof_active_encoded(version, close_eof);
+-
+-			/* AGGR_HARD_BYTE_LIMIT_ENABLE is 0 */
+ 		} else {
+ 			val |= u32_encode_bits(IPA_ENABLE_DEAGGR,
+ 					       AGGR_EN_FMASK);
 -- 
 2.35.1
 
