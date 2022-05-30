@@ -2,61 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EF60C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 08:55:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B93A3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 08:55:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234329AbiE3IzM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 04:55:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38154 "EHLO
+        id S234448AbiE3IzR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 04:55:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234590AbiE3Iyg (ORCPT
+        with ESMTP id S234726AbiE3IzH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 04:54:36 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E62978EE6;
-        Mon, 30 May 2022 01:54:25 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id b135so10008828pfb.12;
-        Mon, 30 May 2022 01:54:25 -0700 (PDT)
+        Mon, 30 May 2022 04:55:07 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69C6213EA9
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 01:55:06 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id h1so550903plf.11
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 01:55:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=iYBYMOHWPwPYs/2nNps1d9NnldHCf0XNTNqDfqRqx2I=;
-        b=ZEYtSyxDW1QgJcM2jxTgM19Mb918TJlGvkTWlT744P2ti3gTPT7OgJdOJSI9+rllaN
-         Ocr0A70a5RIFnehQ4QfkHmJwn7sFOujJeI9qoyf10Jue/jUVoqyuJ79+RzxRdQSjQmI2
-         G5uFckb/9Lgx118cqYAlazrh15VO3oQ0qrcpwzrtOgQh1DjfW8SIEJkOc+1vnH+XZC3S
-         WOBcqV9WkeggrPswvkCBL//88qivumVSseTHEFm0nbCkn+XjI4Qhm2O3zorH5qeA2YQO
-         cJfJLsBlpwGK1vSODGXrqVlDK/scbsz7DmMEWzNXMats2lfWilgUs7IcnluqVKqW3zIc
-         Fg8Q==
+        bh=0H0zQuhfwBWace/gM3VoJC+BnbGdiHLKJagjl3jEq3M=;
+        b=EF62q7Q3oMoO+z+5RDfg5gzwDGy+5Mgc/CpZLLiKi1NmzSAIj9SUkUvNAi21n+ZC9S
+         wWWwckJXijLwzTsX8uhvvVGKmJh35ObrgG7uVpZS1dh5ICCLGZx2b3juck9uVa/WyUv+
+         r2FENoYuRXuzLnhZTGF2X1Dqhdoq2/YbhZJPMf0p0gWI4mf06Wjia6n1PPtFuvRGW1ZJ
+         jK+EfuDmO7YrxPj1zk4iP+4qu6UAMLJ8OUR4AIWH6u7FTPZvc6RTH00cCF9cqZ83p3UZ
+         JAZSlmOQ3JOkaxjHgdS1lF/E5ja19txVvaJI0JOYr/OYpxDzuZClmCfe/soEsca1mqqo
+         3Now==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=iYBYMOHWPwPYs/2nNps1d9NnldHCf0XNTNqDfqRqx2I=;
-        b=WNgcK6uNPo0dNSJrORxN79jCJFgy/crgDj01cwwkl/rZEg92/Jw4a9cY5att6E0It+
-         9iqxfdTMrhDuOcsF35UZUrIOJ6W8RzLVB6Ksmtla/z22tBw6Na3LLeHN3areCMkYs12o
-         lfql3BSXPXO6GbNsUbk/Y8vCaTOCQT8pe5J1ky0Wabqc4kz1Ba7UZ/w8odLHQKlSdI2T
-         Uf8nvNoG5qPOqIhg5MmdlFbqdci/DAeLCoAUGSe5iujJAgWhLoYz8KOZccul5cO1IOqw
-         N+S5IMuU8Ayioo4nQUmVeM16r35Bpwq0Q5acW1rrQk+7abhi9SGN9DsP1m72GrupDTE2
-         KlRA==
-X-Gm-Message-State: AOAM5315rLb94LFmWyPOXzAr88neQmJlODwTS1Blf4sL6ZIG7WUGIfCs
-        tG0UAc8RdsYIYx93vkI8fsY=
-X-Google-Smtp-Source: ABdhPJxuQM96citbVhxAsdnyrLhmfEYcT6KHwgM3rh8JSyzhanYLe/b1aQnK8wJPTwImXkdZWk9G6w==
-X-Received: by 2002:a63:eb45:0:b0:3db:b166:c518 with SMTP id b5-20020a63eb45000000b003dbb166c518mr47580692pgk.316.1653900861339;
-        Mon, 30 May 2022 01:54:21 -0700 (PDT)
+        bh=0H0zQuhfwBWace/gM3VoJC+BnbGdiHLKJagjl3jEq3M=;
+        b=CaWtyW+Vjk07y5Dy1qHi0tYtHPxHppLZJE7Pm8vZOsm9swerYYuX8UFEkXsliPnKwG
+         xadX04TaX7PjcNICCWKcr3T6C273KOa1ZrDxeboF03Hwuv/wVNe0uPRQ4YHLSnRAWF1h
+         REJ/ExRDhzp7O9UbH6QNkGH2zHj5rkKs+W3W9w6J41EPlq5slkxT2PFl4g94JtwECtRH
+         GATXlsVsWIvTxnbFbJgzuaZB7GMUMN/yhCFAFjjf6NYlvxaiUhHwDZk+3ujjHV/qE3uO
+         jqEbDHvP7JwxGJjnNidLov4XS90dgk0m4Pt2TbEIVeFpKG3M5ZjM15cEr4TSEAm6WwA3
+         F8DQ==
+X-Gm-Message-State: AOAM533YCt+/k78ENUEkvcVi7ddIsV/hUSeeqrpxmXV1zzG/0iiXtpsg
+        qbkKb/eoezqV2k/iUZ7eJYM=
+X-Google-Smtp-Source: ABdhPJxrSACZi1MuyKXlNpU+Vh3dNJjQEQRDTaVFDuE5Gs9VXiolOOXmJWa12DeQhlyIbREinPT43Q==
+X-Received: by 2002:a17:90b:2782:b0:1e2:97d4:53d7 with SMTP id pw2-20020a17090b278200b001e297d453d7mr13009781pjb.53.1653900905911;
+        Mon, 30 May 2022 01:55:05 -0700 (PDT)
 Received: from localhost.localdomain ([202.120.234.246])
-        by smtp.googlemail.com with ESMTPSA id o10-20020a17090a5b0a00b001df6173700dsm6249833pji.49.2022.05.30.01.54.18
+        by smtp.googlemail.com with ESMTPSA id 71-20020a17090a09cd00b001e25e3ba05csm9977319pjo.2.2022.05.30.01.55.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 May 2022 01:54:20 -0700 (PDT)
+        Mon, 30 May 2022 01:55:05 -0700 (PDT)
 From:   Miaoqian Lin <linmq006@gmail.com>
-To:     Minas Harutyunyan <hminas@synopsys.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+To:     Alexey Brodkin <abrodkin@synopsys.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
 Cc:     linmq006@gmail.com
-Subject: [PATCH] usb: dwc2: Fix memory leak in dwc2_hcd_init
-Date:   Mon, 30 May 2022 12:54:12 +0400
-Message-Id: <20220530085413.44068-1-linmq006@gmail.com>
+Subject: [PATCH] drm/arc: Fix refcount leak in arcpgu_load
+Date:   Mon, 30 May 2022 12:54:57 +0400
+Message-Id: <20220530085458.44265-1-linmq006@gmail.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -64,31 +65,28 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-usb_create_hcd will alloc memory for hcd, and we should
-call usb_put_hcd to free it when platform_get_resource()
-fails to prevent memory leak.
-goto error2 label instead error1 to fix this.
+of_graph_get_remote_port_parent() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when done.
+Add missing of_node_put() to avoid refcount leak.
 
-Fixes: 856e6e8e0f93 ("usb: dwc2: check return value after calling
-platform_get_resource()")
+Fixes: 3ea66a794fdc ("drm/arc: Inline arcpgu_drm_hdmi_init")
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 ---
- drivers/usb/dwc2/hcd.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/tiny/arcpgu.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/usb/dwc2/hcd.c b/drivers/usb/dwc2/hcd.c
-index f63a27d11fac..3f107a06817d 100644
---- a/drivers/usb/dwc2/hcd.c
-+++ b/drivers/usb/dwc2/hcd.c
-@@ -5190,7 +5190,7 @@ int dwc2_hcd_init(struct dwc2_hsotg *hsotg)
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	if (!res) {
- 		retval = -EINVAL;
--		goto error1;
-+		goto error2;
- 	}
- 	hcd->rsrc_start = res->start;
- 	hcd->rsrc_len = resource_size(res);
+diff --git a/drivers/gpu/drm/tiny/arcpgu.c b/drivers/gpu/drm/tiny/arcpgu.c
+index f0fa3b15c341..6cbc4e9d382e 100644
+--- a/drivers/gpu/drm/tiny/arcpgu.c
++++ b/drivers/gpu/drm/tiny/arcpgu.c
+@@ -310,6 +310,7 @@ static int arcpgu_load(struct arcpgu_drm_private *arcpgu)
+ 
+ 		/* Locate drm bridge from the hdmi encoder DT node */
+ 		bridge = of_drm_find_bridge(encoder_node);
++		of_node_put(encoder_node);
+ 		if (!bridge)
+ 			return -EPROBE_DEFER;
+ 
 -- 
 2.25.1
 
