@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3CA1C41535
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:41:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0759BC46467
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:41:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237931AbiE3Nkf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:40:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47616 "EHLO
+        id S237967AbiE3Nkl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:40:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238109AbiE3NgG (ORCPT
+        with ESMTP id S237421AbiE3Nep (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:36:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4AA59858A;
-        Mon, 30 May 2022 06:29:47 -0700 (PDT)
+        Mon, 30 May 2022 09:34:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 539CB92D23;
+        Mon, 30 May 2022 06:28:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 669D460DD4;
-        Mon, 30 May 2022 13:29:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F766C385B8;
-        Mon, 30 May 2022 13:29:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C9D460EEE;
+        Mon, 30 May 2022 13:28:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3657C36AEA;
+        Mon, 30 May 2022 13:28:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917386;
-        bh=1QCkvUVKkSssoNrecKUlG97xKfGrKuMFunKfeuff/Ao=;
+        s=k20201202; t=1653917295;
+        bh=2aro4hsaizbmehGAHGgs444aSUzly18lMFz3EQEQqnA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DfyRzyjP1IJoMV4xzEcEUB1yQnZD5FaL5qjX7jaqcxhNO+B6B4NqAhEGuNqo82sRK
-         doVR+q0lP03Ck8YnkOR2wM3ia0qmIAIHBBQVh/Tg2i3ITZwsAKfD7Kw3sQo9x02Jb1
-         vNZN///9fFK8L1Nj57ush/SZQih5/ZCsPRKaVE9GIdgmsna4eGL2xISNum6pxNo+V+
-         0BbQvmbsJE2hsorXP69CLmHcIBI95PwWl34CNAwiJUj22G6SAZ5+vznISs6WNyP7iy
-         X+DNAzCl6uE4EcArX6f/njThKL0OrpJFm0LsIcrafUOtY7yc9jw2us9RXbAnXcKB/u
-         mKItZMJKKWaCw==
+        b=TJvbwf6ZhSFVpeipBBkBmFGdl1oDAdYJ3nJCKnXPNb1g0jDMTde7+m/aE8QURIKBg
+         bg0UN2IFgttjZS3bTMHHi9QE7R8WSy3xcRz8Pn79EQjUVV5wkB3IVz3+lnnazN9AqN
+         ezshLbGdKnYnVZkH7MkQ2V1kusvW8fgeFteepK3Qr8nzMkuzbSfysSe5tBo+qwmtzS
+         c0K4arulhA+KCWrGpqxCMidF4pV6gUeaLe2huzXLS5clADuIseWZBu6njDeEYbN/p8
+         6W7F/BZ1mwVmt3fTP2KxqeKu+YYdqy76aY6YZB+RGJB3ttnME6X380zL2SpdxV5Tza
+         zd/sROxlr4apw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 117/159] media: cec-adap.c: fix is_configuring state
-Date:   Mon, 30 May 2022 09:23:42 -0400
-Message-Id: <20220530132425.1929512-117-sashal@kernel.org>
+Cc:     Thierry Reding <treding@nvidia.com>,
+        kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, thierry.reding@gmail.com,
+        airlied@linux.ie, daniel@ffwll.ch, jonathanh@nvidia.com,
+        dri-devel@lists.freedesktop.org, linux-tegra@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 087/159] drm/tegra: gem: Do not try to dereference ERR_PTR()
+Date:   Mon, 30 May 2022 09:23:12 -0400
+Message-Id: <20220530132425.1929512-87-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
@@ -51,68 +54,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+From: Thierry Reding <treding@nvidia.com>
 
-[ Upstream commit 59267fc34f4900dcd2ec3295f6be04b79aee2186 ]
+[ Upstream commit cb7e1abc2c73633e1eefa168ab2dad6e838899c9 ]
 
-If an adapter is trying to claim a free logical address then it is
-in the 'is_configuring' state. If during that process the cable is
-disconnected (HPD goes low, which in turn invalidates the physical
-address), then cec_adap_unconfigure() is called, and that set the
-is_configuring boolean to false, even though the thread that's
-trying to claim an LA is still running.
+When mapping the DMA-BUF attachment fails, map->sgt will be an ERR_PTR-
+encoded error code and the cleanup code would try to free that memory,
+which obviously would fail.
 
-Don't touch the is_configuring bool in cec_adap_unconfigure(), it
-will eventually be cleared by the thread. By making that change
-the cec_config_log_addr() function also had to change: it was
-aborting if is_configuring became false (since that is what
-cec_adap_unconfigure() did), but that no longer works. Instead
-check if the physical address is invalid. That is a much
-more appropriate check anyway.
+Zero out that pointer after extracting the error code when this happens
+so that kfree() can do the right thing.
 
-This fixes a bug where the the adapter could be disabled even
-though the device was still configuring. This could cause POLL
-transmits to time out.
-
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Thierry Reding <treding@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/cec/core/cec-adap.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/tegra/gem.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/media/cec/core/cec-adap.c b/drivers/media/cec/core/cec-adap.c
-index 2e12331c12a9..01766e744772 100644
---- a/drivers/media/cec/core/cec-adap.c
-+++ b/drivers/media/cec/core/cec-adap.c
-@@ -1278,7 +1278,7 @@ static int cec_config_log_addr(struct cec_adapter *adap,
- 		 * While trying to poll the physical address was reset
- 		 * and the adapter was unconfigured, so bail out.
- 		 */
--		if (!adap->is_configuring)
-+		if (adap->phys_addr == CEC_PHYS_ADDR_INVALID)
- 			return -EINTR;
- 
- 		if (err)
-@@ -1335,7 +1335,6 @@ static void cec_adap_unconfigure(struct cec_adapter *adap)
- 	    adap->phys_addr != CEC_PHYS_ADDR_INVALID)
- 		WARN_ON(adap->ops->adap_log_addr(adap, CEC_LOG_ADDR_INVALID));
- 	adap->log_addrs.log_addr_mask = 0;
--	adap->is_configuring = false;
- 	adap->is_configured = false;
- 	cec_flush(adap);
- 	wake_up_interruptible(&adap->kthread_waitq);
-@@ -1527,9 +1526,10 @@ static int cec_config_thread_func(void *arg)
- 	for (i = 0; i < las->num_log_addrs; i++)
- 		las->log_addr[i] = CEC_LOG_ADDR_INVALID;
- 	cec_adap_unconfigure(adap);
-+	adap->is_configuring = false;
- 	adap->kthread_config = NULL;
--	mutex_unlock(&adap->lock);
- 	complete(&adap->config_completion);
-+	mutex_unlock(&adap->lock);
- 	return 0;
- }
+diff --git a/drivers/gpu/drm/tegra/gem.c b/drivers/gpu/drm/tegra/gem.c
+index 0063403ab5e1..7c7dd84e6db8 100644
+--- a/drivers/gpu/drm/tegra/gem.c
++++ b/drivers/gpu/drm/tegra/gem.c
+@@ -88,6 +88,7 @@ static struct host1x_bo_mapping *tegra_bo_pin(struct device *dev, struct host1x_
+ 		if (IS_ERR(map->sgt)) {
+ 			dma_buf_detach(buf, map->attach);
+ 			err = PTR_ERR(map->sgt);
++			map->sgt = NULL;
+ 			goto free;
+ 		}
  
 -- 
 2.35.1
