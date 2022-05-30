@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44186C47094
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4C99C47096
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:12:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240482AbiE3OMH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:12:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56020 "EHLO
+        id S240073AbiE3OKb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:10:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239893AbiE3OGY (ORCPT
+        with ESMTP id S239129AbiE3OFW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:06:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 274532FFFD;
-        Mon, 30 May 2022 06:41:45 -0700 (PDT)
+        Mon, 30 May 2022 10:05:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 379F7CEB91;
+        Mon, 30 May 2022 06:41:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1853D60FA3;
-        Mon, 30 May 2022 13:41:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C76EC3411E;
-        Mon, 30 May 2022 13:41:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 874ACB80DB4;
+        Mon, 30 May 2022 13:41:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56219C341C4;
+        Mon, 30 May 2022 13:41:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918102;
-        bh=K2Ct8v612oBd7AGh9aMx4iuQ2nz0lA2eVt8p+V/mDAU=;
+        s=k20201202; t=1653918083;
+        bh=c3PkuE0AKnCUA4fB6z9kDjjcsgWKAsoBYIL5AnpbnLk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lDdjHn6PcRun6xfMWZudlq8w8WhkRT+7UF1cKGZ2Hdo1n+csDznfJ0SYSeahXWKqC
-         Ndb8xe4AwODrsDCVcr6KBd9OhUrgE8oV0uEZIAiR4Q0HjEBF0XvoepMxt9Y+XpL35Q
-         5Xd7Umbpl9hwIdTnvkGE5/3WuNffrKh91QTlbBSeuY9dYlD387/8YGlH0K0WICOFWR
-         /RGw7azO2HNBt1o7A4TtWVL3ehmEtrk0dqxjPcaWOhgvMjWVkA7J64cDnR94NQCgxN
-         sSOP800u+6SGjdZbREcBi/+mmN5sb68ASm+PVDTsAsgHZzo0KQ53bYW+NLnTsdLTa0
-         z4FlDI0RgDoxg==
+        b=e8BL2O3UnJq8x//BQmn8VLnHaDgfrx8w5E/Fd4jnfiVwrQen7W6WyPni6XFwKE80K
+         AR7AJyK2Bklahs6Y1z/qYnIp9PGolocRwiMonVHyg6st1Smlx2ZTYcxqdOtpo1MIGP
+         II4WQ8xUrRHjeHrT+v4nOhI6nZa7h4vwtFLxdC1NTWV2z43j6ipsiDlIKZ1RSMgGI3
+         iFGjmwM8C/wNvdvagBYaKaB3uQS/1dpqS54jr4+n8NBFG9XIfxYjBwFCgB01MyCXm7
+         isVDZZgIBBc/m3OGwkx/PyU6cN4chnX6SxwZW2+PCUJCN9iJ0uL7CnR9xHE0hbFYX5
+         d/JAg+h0OSw7w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zhen Lei <thunder.leizhen@huawei.com>,
-        Rob Herring <robh@kernel.org>, Baoquan He <bhe@redhat.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
-        frowand.list@gmail.com, devicetree@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 061/109] of: Support more than one crash kernel regions for kexec -s
-Date:   Mon, 30 May 2022 09:37:37 -0400
-Message-Id: <20220530133825.1933431-61-sashal@kernel.org>
+Cc:     Mark Brown <broonie@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
+        alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.15 054/109] ASoC: dapm: Don't fold register value changes into notifications
+Date:   Mon, 30 May 2022 09:37:30 -0400
+Message-Id: <20220530133825.1933431-54-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
 References: <20220530133825.1933431-1-sashal@kernel.org>
@@ -53,48 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhen Lei <thunder.leizhen@huawei.com>
+From: Mark Brown <broonie@kernel.org>
 
-[ Upstream commit 8af6b91f58341325bf74ecb0389ddc0039091d84 ]
+[ Upstream commit ad685980469b9f9b99d4d6ea05f4cb8f57cb2234 ]
 
-When "crashkernel=X,high" is used, there may be two crash regions:
-high=crashk_res and low=crashk_low_res. But now the syscall
-kexec_file_load() only add crashk_res into "linux,usable-memory-range",
-this may cause the second kernel to have no available dma memory.
+DAPM tracks and reports the value presented to the user from DAPM controls
+separately to the register value, these may diverge during initialisation
+or when an autodisable control is in use.
 
-Fix it like kexec-tools does for option -c, add both 'high' and 'low'
-regions into the dtb.
+When writing DAPM controls we currently report that a change has occurred
+if either the DAPM value or the value stored in the register has changed,
+meaning that if the two are out of sync we may appear to report a spurious
+event to userspace. Since we use this folded in value for nothing other
+than the value reported to userspace simply drop the folding in of the
+register change.
 
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-Acked-by: Rob Herring <robh@kernel.org>
-Acked-by: Baoquan He <bhe@redhat.com>
-Link: https://lore.kernel.org/r/20220506114402.365-6-thunder.leizhen@huawei.com
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/20220428161833.3690050-1-broonie@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/of/kexec.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ sound/soc/soc-dapm.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/of/kexec.c b/drivers/of/kexec.c
-index 761fd870d1db..72c790a3c910 100644
---- a/drivers/of/kexec.c
-+++ b/drivers/of/kexec.c
-@@ -386,6 +386,15 @@ void *of_kexec_alloc_and_setup_fdt(const struct kimage *image,
- 				crashk_res.end - crashk_res.start + 1);
- 		if (ret)
- 			goto out;
-+
-+		if (crashk_low_res.end) {
-+			ret = fdt_appendprop_addrrange(fdt, 0, chosen_node,
-+					"linux,usable-memory-range",
-+					crashk_low_res.start,
-+					crashk_low_res.end - crashk_low_res.start + 1);
-+			if (ret)
-+				goto out;
-+		}
- 	}
+diff --git a/sound/soc/soc-dapm.c b/sound/soc/soc-dapm.c
+index 0b166e074457..47b85ba5b7d6 100644
+--- a/sound/soc/soc-dapm.c
++++ b/sound/soc/soc-dapm.c
+@@ -3428,7 +3428,6 @@ int snd_soc_dapm_put_volsw(struct snd_kcontrol *kcontrol,
+ 			update.val = val;
+ 			card->update = &update;
+ 		}
+-		change |= reg_change;
  
- 	/* add bootargs */
+ 		ret = soc_dapm_mixer_update_power(card, kcontrol, connect,
+ 						  rconnect);
+@@ -3530,7 +3529,6 @@ int snd_soc_dapm_put_enum_double(struct snd_kcontrol *kcontrol,
+ 			update.val = val;
+ 			card->update = &update;
+ 		}
+-		change |= reg_change;
+ 
+ 		ret = soc_dapm_mux_update_power(card, kcontrol, item[0], e);
+ 
 -- 
 2.35.1
 
