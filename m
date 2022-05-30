@@ -2,48 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 649B2C38A02
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A020C4707E
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:47:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242822AbiE3Oql (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:46:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57536 "EHLO
+        id S242840AbiE3Oqx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:46:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240661AbiE3OZU (ORCPT
+        with ESMTP id S241116AbiE3OZ6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:25:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A7E4ABF58;
-        Mon, 30 May 2022 06:50:58 -0700 (PDT)
+        Mon, 30 May 2022 10:25:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93CE6880D8;
+        Mon, 30 May 2022 06:51:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C15E60FCC;
-        Mon, 30 May 2022 13:50:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEBB5C3411C;
-        Mon, 30 May 2022 13:50:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DA687B80DE5;
+        Mon, 30 May 2022 13:51:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5228BC3411E;
+        Mon, 30 May 2022 13:51:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918628;
-        bh=HK2bUnN9u8Hcgp6SbPKH4JTNsovTrTAGTlyslCynbNI=;
+        s=k20201202; t=1653918663;
+        bh=gEvp05trtCahzfWE7DwLeU08NiFJsEmHDyAXVpflLBk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dw6sOchjboFN4Y4ExjU/2+yD+7Ehpf8mX0/GMNXm6tMVX9A3TwpZ+TZgLWtsXbSoQ
-         eGFB70NACQzYpygtWSisNcprHSIeUh/+PNUJ8DzX7mIHPnqXDr1AwcnJ3OYAXG0G/E
-         LFpw0ZhOA39Y36DhgiQzeAUzs9GiCLOAVaP+mz5oXnU3jYDbXXnlDGKhfnauBwy4r4
-         CzOmAp8ZEQ16pX1UFffMO4h23IG/HDocEgV+l3IqG1DOvmDmPVA/h1ftwCgRsAZ4LT
-         ic6F3FawAH3Htl2WGCswH2yWBrsq4FA+FEBpSEz44JYo+8KLG3S/HLb2d8GAtskr8N
-         Cs58mSri3iSGw==
+        b=Z7Y8Y4e1gvtd/EvVwB+GIAnYc19zQQwPD05TrJmmxfey+Qy+LXaxioW4ZrbNEV9kx
+         ww01FrTKvvpw0X9CU1WxUWzjd6oDN5M3aEeitLzuHrLn4vrW6e3vi6DAclSp/Vjlkp
+         q8WUB+AwiCCwsZO2DkQKyRKbIvnhbI5CvP7xX4jGeAbaNMtXJjdTWXRZD+NrvJcY8r
+         8RqKXX6sGMLHJNgdX3MllqCSKqL6KJEGBY4qOY0ZjwMHSjbMAcL7XFlpq9w7W1kbvH
+         NQ87to5iGV8TEcVk7WQ4Hm6sRPs4ZxA4yGrbMd60xAnFoqLwYjyuZ7ZCdKaUsaNM+p
+         rUpVAZ4/r3AhQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mikulas Patocka <mpatocka@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Sasha Levin <sashal@kernel.org>, m.szyprowski@samsung.com,
-        iommu@lists.linux-foundation.org
-Subject: [PATCH AUTOSEL 4.19 26/38] dma-debug: change allocation mode from GFP_NOWAIT to GFP_ATIOMIC
-Date:   Mon, 30 May 2022 09:49:12 -0400
-Message-Id: <20220530134924.1936816-26-sashal@kernel.org>
+Cc:     Haowen Bai <baihaowen@meizu.com>, Kalle Valo <kvalo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, Larry.Finger@lwfinger.net,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        b43-dev@lists.infradead.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 03/29] b43legacy: Fix assigning negative value to unsigned variable
+Date:   Mon, 30 May 2022 09:50:30 -0400
+Message-Id: <20220530135057.1937286-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220530134924.1936816-1-sashal@kernel.org>
-References: <20220530134924.1936816-1-sashal@kernel.org>
+In-Reply-To: <20220530135057.1937286-1-sashal@kernel.org>
+References: <20220530135057.1937286-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,39 +53,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Haowen Bai <baihaowen@meizu.com>
 
-[ Upstream commit 84bc4f1dbbbb5f8aa68706a96711dccb28b518e5 ]
+[ Upstream commit 3f6b867559b3d43a7ce1b4799b755e812fc0d503 ]
 
-We observed the error "cacheline tracking ENOMEM, dma-debug disabled"
-during a light system load (copying some files). The reason for this error
-is that the dma_active_cacheline radix tree uses GFP_NOWAIT allocation -
-so it can't access the emergency memory reserves and it fails as soon as
-anybody reaches the watermark.
+fix warning reported by smatch:
+drivers/net/wireless/broadcom/b43legacy/phy.c:1181 b43legacy_phy_lo_b_measure()
+warn: assigning (-772) to unsigned variable 'fval'
 
-This patch changes GFP_NOWAIT to GFP_ATOMIC, so that it can access the
-emergency memory reserves.
-
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/1648203433-8736-1-git-send-email-baihaowen@meizu.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/dma/debug.c | 2 +-
+ drivers/net/wireless/broadcom/b43legacy/phy.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-index 9c9a5b12f92f..7c6cd00d0fca 100644
---- a/kernel/dma/debug.c
-+++ b/kernel/dma/debug.c
-@@ -469,7 +469,7 @@ void debug_dma_dump_mappings(struct device *dev)
-  * At any time debug_dma_assert_idle() can be called to trigger a
-  * warning if any cachelines in the given page are in the active set.
-  */
--static RADIX_TREE(dma_active_cacheline, GFP_NOWAIT);
-+static RADIX_TREE(dma_active_cacheline, GFP_ATOMIC);
- static DEFINE_SPINLOCK(radix_lock);
- #define ACTIVE_CACHELINE_MAX_OVERLAP ((1 << RADIX_TREE_MAX_TAGS) - 1)
- #define CACHELINE_PER_PAGE_SHIFT (PAGE_SHIFT - L1_CACHE_SHIFT)
+diff --git a/drivers/net/wireless/broadcom/b43legacy/phy.c b/drivers/net/wireless/broadcom/b43legacy/phy.c
+index 995c7d0c212a..11ee5ee48976 100644
+--- a/drivers/net/wireless/broadcom/b43legacy/phy.c
++++ b/drivers/net/wireless/broadcom/b43legacy/phy.c
+@@ -1148,7 +1148,7 @@ void b43legacy_phy_lo_b_measure(struct b43legacy_wldev *dev)
+ 	struct b43legacy_phy *phy = &dev->phy;
+ 	u16 regstack[12] = { 0 };
+ 	u16 mls;
+-	u16 fval;
++	s16 fval;
+ 	int i;
+ 	int j;
+ 
 -- 
 2.35.1
 
