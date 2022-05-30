@@ -2,150 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA9E6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 08:54:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C7EDC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 08:54:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234731AbiE3IyX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 04:54:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38282 "EHLO
+        id S234583AbiE3Iyg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 04:54:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234614AbiE3IyB (ORCPT
+        with ESMTP id S234574AbiE3Ixx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 04:54:01 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 652A717E32
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 01:53:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653900796;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=RhvgJCFXfv5RG+0oVTAct7gmCCzDguggkQSBJ+VAo/A=;
-        b=jUyl4v1DIWAxH3aJqAMDe2eFcp+t5N+xnWazHJK9G1SJ6M8wapKhb4q4FdgAQ0PviY4tkj
-        WnE+rhJtp8eg828swerCQeZw0nvX2gZf5/nkLk155V5kMHGm6wU7wBibSYFWU/E+rFnjw2
-        rWQ8Q2z93dAej3YQ5T55T3HFtgWP5Qk=
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
- [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-166-E0UPC6KvP5OcBrk5WPgHhw-1; Mon, 30 May 2022 04:53:14 -0400
-X-MC-Unique: E0UPC6KvP5OcBrk5WPgHhw-1
-Received: by mail-ej1-f72.google.com with SMTP id lf18-20020a170906ae5200b006fec8de9f0cso3836105ejb.4
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 01:53:14 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=RhvgJCFXfv5RG+0oVTAct7gmCCzDguggkQSBJ+VAo/A=;
-        b=Lv2WFTOs6H/YCLHAQWCfO1xQP+VaB8bstaWqzeyeOJgGhgFbOTH6zprZM7ye8JThiO
-         YL8kl0bU0bc0f9a5Y9qhIaB0BijMbPSS4M6SmkzKaRhWTbqc1tt/RoN9bBeIq2tRu9XD
-         nwnj57dizzU2EgSGVmD3gP8LLckAQPVu9StIdqP2o4xyCGBAmyMrd5ym1EnyUS8lVum2
-         yHATUpZ7+vHlyI0dMIxF9p6XxEVao3FHCgIqCuYIyF1Ti7HHR7VqY1GAEU3Z6ul/UVaH
-         zXWWbVZgk29tWBjSJM1JkTjHQBGfLjDsmpRkMxavbj0+sNmhNGkUmNu4RvZ7EKPUZtuZ
-         lQEg==
-X-Gm-Message-State: AOAM532pDolVJN3nqHEk9P2/p1Wac9CbpMXWxjg/FmBvf5v0uvZrPNj9
-        rEGTzHIQg9cMpsB4hXmkR/0tS3QXkI3f5H7GlxAnBmaG0qV5zukOKoHfRs2Syix+5mK/AtSxslO
-        QoCAbFZeRQMVY/GiVa3FDp7Mi
-X-Received: by 2002:a17:907:6e20:b0:6ff:1541:8d34 with SMTP id sd32-20020a1709076e2000b006ff15418d34mr20498818ejc.447.1653900793067;
-        Mon, 30 May 2022 01:53:13 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzLS9X1+J2YlCZd50xUKza5F2TAaKjqsoBWgZZta9P6P5hLJgXAWFm13+BAHE9yuTPrdLSHXw==
-X-Received: by 2002:a17:907:6e20:b0:6ff:1541:8d34 with SMTP id sd32-20020a1709076e2000b006ff15418d34mr20498786ejc.447.1653900792873;
-        Mon, 30 May 2022 01:53:12 -0700 (PDT)
-Received: from ?IPV6:2001:1c00:c1e:bf00:d69d:5353:dba5:ee81? (2001-1c00-0c1e-bf00-d69d-5353-dba5-ee81.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:d69d:5353:dba5:ee81])
-        by smtp.gmail.com with ESMTPSA id v16-20020a1709062f1000b006fea2705d18sm3807438eji.210.2022.05.30.01.53.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 30 May 2022 01:53:12 -0700 (PDT)
-Message-ID: <a8d1fe13-e747-016a-2d45-bfb50f23f2d9@redhat.com>
-Date:   Mon, 30 May 2022 10:53:11 +0200
+        Mon, 30 May 2022 04:53:53 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F5AF7CB70
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 01:53:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653900783; x=1685436783;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=F1zZaD9pmXbd3mYt25x7qc88DmH1k0luONBgEixrLZE=;
+  b=YXHtE15hM8nfbhy+kzqeAaGZKTMpmEj15ghxNZNLLPCZUo1RiF7StQkh
+   KQGAsTdi6ffBOws/1cKAsIveUigb8Yr5KZDnvEG1EI/TyeOCbV2q/Juo6
+   fy9Dh/jOrVVgnLec5ZLGfMEf6zsCiy+gDuNkWtREHj9NiH/+da2oAHOwz
+   wKIPv++OOnZlzTvQv+lLmJ58k29G2oqPSrVFefBeVsno3t2B3+SMDuIeb
+   mAKO3igQ0cXIqL5WA63YnFxZV5lXcjuS8oRBAHU19LVP1lR2+xUP46/60
+   taWiaU0FC5aTDjqyfMGzCBbftY+uLXqQwy+I+wNeYl+9lc+DVl7ktM0+b
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10362"; a="273756845"
+X-IronPort-AV: E=Sophos;i="5.91,262,1647327600"; 
+   d="scan'208";a="273756845"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2022 01:52:24 -0700
+X-IronPort-AV: E=Sophos;i="5.91,262,1647327600"; 
+   d="scan'208";a="605086342"
+Received: from rongch2-mobl.ccr.corp.intel.com (HELO [10.255.31.170]) ([10.255.31.170])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2022 01:52:22 -0700
+Subject: Re: [kbuild-all] Re: llvm-objcopy: error: invalid output format:
+ 'elf64-s390'
+To:     Nathan Chancellor <nathan@kernel.org>,
+        kernel test robot <lkp@intel.com>
+Cc:     Heiko Carstens <hca@linux.ibm.com>, llvm@lists.linux.dev,
+        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+References: <202205290045.gOvUOkt3-lkp@intel.com>
+ <YpJMIz/QjDW5IQGr@dev-arch.thelio-3990X>
+From:   "Chen, Rong A" <rong.a.chen@intel.com>
+Message-ID: <fd819888-844f-1a76-fee2-02e89faee090@intel.com>
+Date:   Mon, 30 May 2022 16:52:20 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.12.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v10 0/4] Separate panel orientation property creating and
- value setting
+In-Reply-To: <YpJMIz/QjDW5IQGr@dev-arch.thelio-3990X>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-To:     Hsin-Yi Wang <hsinyi@chromium.org>,
-        dri-devel@lists.freedesktop.org, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org
-Cc:     Rob Clark <robdclark@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Sean Paul <sean@poorly.run>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Simon Ser <contact@emersion.fr>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Emil Velikov <emil.l.velikov@gmail.com>
-References: <20220530081910.3947168-1-hsinyi@chromium.org>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <20220530081910.3947168-1-hsinyi@chromium.org>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-On 5/30/22 10:19, Hsin-Yi Wang wrote:
-> Some drivers, eg. mtk_drm and msm_drm, rely on the panel to set the
-> orientation. Panel calls drm_connector_set_panel_orientation() to create
-> orientation property and sets the value. However, connector properties
-> can't be created after drm_dev_register() is called. The goal is to
-> separate the orientation property creation, so drm drivers can create it
-> earlier before drm_dev_register().
-
-Sorry for jumping in pretty late in the discussion (based on the v10
-I seem to have missed this before).
-
-This sounds to me like the real issue here is that drm_dev_register()
-is getting called too early?
-
-To me it seems sensible to delay calling drm_dev_register() and
-thus allowing userspace to start detecting available displays +
-features until after the panel has been probed.
-
-I see a devicetree patch in this series, so I guess that the panel
-is described in devicetree. Especially in the case of devicetree
-I would expect the kernel to have enough info to do the right
-thing and make sure the panel is probed before calling
-drm_dev_register() ?
-
-Regards,
-
-Hans
 
 
+On 5/29/2022 12:21 AM, Nathan Chancellor wrote:
+> On Sun, May 29, 2022 at 12:04:48AM +0800, kernel test robot wrote:
+>> Hi Heiko,
+>>
+>> FYI, the error/warning still remains.
+>>
+>> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+>> head:   9d004b2f4fea97cde123e7f1939b80e77bf2e695
+>> commit: adda746629b4a3950f313bc645fa0e54daee871c s390/purgatory: workaround llvm's IAS limitations
+>> date:   11 days ago
+>> config: s390-randconfig-c005-20220527 (https://download.01.org/0day-ci/archive/20220529/202205290045.gOvUOkt3-lkp@intel.com/config)
+>> compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0fbe3f3f486e01448121f7931a4ca29fac1504ab)
+>> reproduce (this is a W=1 build):
+>>          wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>>          chmod +x ~/bin/make.cross
+>>          # install s390 cross compiling tool for clang build
+>>          # apt-get install binutils-s390x-linux-gnu
+>>          # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=adda746629b4a3950f313bc645fa0e54daee871c
+>>          git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+>>          git fetch --no-tags linus master
+>>          git checkout adda746629b4a3950f313bc645fa0e54daee871c
+>>          # save the config file
+>>          mkdir build_dir && cp config build_dir/.config
+>>          COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash
+>>
+>> If you fix the issue, kindly add following tag where applicable
+>> Reported-by: kernel test robot <lkp@intel.com>
+>>
+>> All errors (new ones prefixed by >>):
+>>
+>>>> llvm-objcopy: error: invalid output format: 'elf64-s390'
+> 
+> This is expected, as llvm-objcopy needs support for s390:
+> https://github.com/ClangBuiltLinux/linux/issues/1530
+> 
+> Please use GNU objcopy for the time being by explicitly providing
+> OBJCOPY=${CROSS_COMPILE}objcopy to make.
 
+Hi Nathan,
+
+Thanks for your reminding, will update it.
+
+Best Regards,
+Rong Chen
 
 > 
-> After this series, drm_connector_set_panel_orientation() works like
-> before. It won't affect existing callers of
-> drm_connector_set_panel_orientation(). The only difference is that
-> some drm drivers can call drm_connector_init_panel_orientation_property()
-> earlier.
+> Cheers,
+> Nathan
+> _______________________________________________
+> kbuild-all mailing list -- kbuild-all@lists.01.org
+> To unsubscribe send an email to kbuild-all-leave@lists.01.org
 > 
-> Hsin-Yi Wang (4):
->   gpu: drm: separate panel orientation property creating and value
->     setting
->   drm/mediatek: init panel orientation property
->   drm/msm: init panel orientation property
->   arm64: dts: mt8183: Add panel rotation
-> 
->  .../arm64/boot/dts/mediatek/mt8183-kukui.dtsi |  1 +
->  drivers/gpu/drm/drm_connector.c               | 58 ++++++++++++++-----
->  drivers/gpu/drm/mediatek/mtk_dsi.c            |  7 +++
->  drivers/gpu/drm/msm/dsi/dsi_manager.c         |  4 ++
->  include/drm/drm_connector.h                   |  2 +
->  5 files changed, 59 insertions(+), 13 deletions(-)
-> 
-
