@@ -2,118 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 006F7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 08:22:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 975A9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 08:22:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233704AbiE3IWV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 04:22:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41810 "EHLO
+        id S233695AbiE3IW1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 04:22:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233732AbiE3IWR (ORCPT
+        with ESMTP id S233724AbiE3IWQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 04:22:17 -0400
-X-Greylist: delayed 910 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 30 May 2022 01:22:14 PDT
-Received: from mail-m972.mail.163.com (mail-m972.mail.163.com [123.126.97.2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9B9A7B0E
+        Mon, 30 May 2022 04:22:16 -0400
+Received: from mail.meizu.com (unknown [14.29.68.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 016B21148
         for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 01:22:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=Tj+2x
-        aAcY6dalUpOJzC6dld8hSXl1LyIhtvLrJnzwZg=; b=G2nvkRL8UJQWrrTBpV3WZ
-        5YFO1arfhl1hIgRxGmzdR1lx5RDQUfUGDMEf4dKLIuCs/e2zVNU9yt4Zo1DC5NC8
-        kaZFOUHIEWfvn+ctFmTsdztfZM7YvbvauTEks6ER/dkBuNVm2Ot6rB4b5iNWSOrv
-        z5xEGHBmplGj7cUBFLr9a4=
-Received: from localhost.localdomain (unknown [123.112.69.106])
-        by smtp2 (Coremail) with SMTP id GtxpCgBXFQj0epRilgL9FQ--.40673S4;
-        Mon, 30 May 2022 16:06:33 +0800 (CST)
-From:   Jianglei Nie <niejianglei2021@163.com>
-To:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com
-Cc:     ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jianglei Nie <niejianglei2021@163.com>
-Subject: [PATCH v2] ath11k: mhi: fix potential memory leak in ath11k_mhi_register()
-Date:   Mon, 30 May 2022 16:06:10 +0800
-Message-Id: <20220530080610.143925-1-niejianglei2021@163.com>
-X-Mailer: git-send-email 2.25.1
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail04.meizu.com
+ (172.16.1.16) with Microsoft SMTP Server (TLS) id 14.3.487.0; Mon, 30 May
+ 2022 16:22:15 +0800
+Received: from [172.16.137.70] (172.16.137.70) by IT-EXMB-1-125.meizu.com
+ (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Mon, 30 May
+ 2022 16:22:12 +0800
+Message-ID: <61130a41-a626-c860-e321-9295f9c9d0dd@meizu.com>
+Date:   Mon, 30 May 2022 16:22:11 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] staging: rtl8712: Fix pointer dereferenced before
+ checking
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Florian Schilhabel <florian.c.schilhabel@googlemail.com>,
+        <linux-staging@lists.linux.dev>, <linux-kernel@vger.kernel.org>
+References: <1653897933-25931-1-git-send-email-baihaowen@meizu.com>
+ <YpR85JgzGsTzYm3W@kroah.com>
+From:   baihaowen <baihaowen@meizu.com>
+In-Reply-To: <YpR85JgzGsTzYm3W@kroah.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: GtxpCgBXFQj0epRilgL9FQ--.40673S4
-X-Coremail-Antispam: 1Uf129KBjvJXoW7CF1Dtw1fGF4UZryxuFy8Xwb_yoW8KrW5pF
-        4fWw47AFyrAF4fWFWrtF1kJFy3Wa93Ar1DK39rG34rCrnavF90q345JFyrXFyakw4xGFyU
-        ZF4Ut3W3Gas8AF7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pibo7AUUUUU=
-X-Originating-IP: [123.112.69.106]
-X-CM-SenderInfo: xqlhyxxdqjzvrlsqjii6rwjhhfrp/1tbiFQkRjF5mK76qWwAAsd
+X-Originating-IP: [172.16.137.70]
+X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
+ IT-EXMB-1-125.meizu.com (172.16.1.125)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-mhi_alloc_controller() allocates a memory space for mhi_ctrl. When some
-errors occur, mhi_ctrl should be freed by mhi_free_controller() and set
-ab_pci->mhi_ctrl = NULL because ab_pci->mhi_ctrl has a dangling pointer
-to the freed memory. But when ath11k_mhi_read_addr_from_dt() fails, the
-function returns without calling mhi_free_controller(), which will lead
-to a memory leak.
+在 2022/5/30 下午4:14, Greg Kroah-Hartman 写道:
+> On Mon, May 30, 2022 at 04:05:32PM +0800, Haowen Bai wrote:
+>> The padapter->recvpriv.signal_qual_data is dereferencing before null
+>> checking, so move it after checking.
+>>
+>> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+>> ---
+>>  drivers/staging/rtl8712/rtl8712_recv.c | 4 +++-
+>>  1 file changed, 3 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/staging/rtl8712/rtl8712_recv.c b/drivers/staging/rtl8712/rtl8712_recv.c
+>> index 7f1fdd058551..8ed94b259dbe 100644
+>> --- a/drivers/staging/rtl8712/rtl8712_recv.c
+>> +++ b/drivers/staging/rtl8712/rtl8712_recv.c
+>> @@ -863,10 +863,12 @@ static void process_link_qual(struct _adapter *padapter,
+>>  {
+>>  	u32	last_evm = 0, tmpVal;
+>>  	struct rx_pkt_attrib *pattrib;
+>> -	struct smooth_rssi_data *sqd = &padapter->recvpriv.signal_qual_data;
+>> +	struct smooth_rssi_data *sqd;
+>>  
+>>  	if (!prframe || !padapter)
+>>  		return;
+>> +
+>> +	sqd = &padapter->recvpriv.signal_qual_data;
+> How can padapter ever be NULL in this codepath?
+>
+> thanks,
+>
+> greg k-h
+Just the original  code, show me
 
-We can fix it by calling mhi_free_controller() when
-ath11k_mhi_read_addr_from_dt() fails and set ab_pci->mhi_ctrl = NULL in
-all of the places where we call mhi_free_controller().
+if (!prframe || !padapter)
 
-Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
----
- drivers/net/wireless/ath/ath11k/mhi.c | 17 ++++++++++-------
- 1 file changed, 10 insertions(+), 7 deletions(-)
+It would be null, and then return.
 
-diff --git a/drivers/net/wireless/ath/ath11k/mhi.c b/drivers/net/wireless/ath/ath11k/mhi.c
-index fc3524e83e52..fc1bbf91c58e 100644
---- a/drivers/net/wireless/ath/ath11k/mhi.c
-+++ b/drivers/net/wireless/ath/ath11k/mhi.c
-@@ -367,8 +367,7 @@ int ath11k_mhi_register(struct ath11k_pci *ab_pci)
- 	ret = ath11k_mhi_get_msi(ab_pci);
- 	if (ret) {
- 		ath11k_err(ab, "failed to get msi for mhi\n");
--		mhi_free_controller(mhi_ctrl);
--		return ret;
-+		goto free_controller;
- 	}
- 
- 	if (!test_bit(ATH11K_PCI_FLAG_MULTI_MSI_VECTORS, &ab_pci->flags))
-@@ -377,7 +376,7 @@ int ath11k_mhi_register(struct ath11k_pci *ab_pci)
- 	if (test_bit(ATH11K_FLAG_FIXED_MEM_RGN, &ab->dev_flags)) {
- 		ret = ath11k_mhi_read_addr_from_dt(mhi_ctrl);
- 		if (ret < 0)
--			return ret;
-+			goto free_controller;
- 	} else {
- 		mhi_ctrl->iova_start = 0;
- 		mhi_ctrl->iova_stop = 0xFFFFFFFF;
-@@ -405,18 +404,22 @@ int ath11k_mhi_register(struct ath11k_pci *ab_pci)
- 	default:
- 		ath11k_err(ab, "failed assign mhi_config for unknown hw rev %d\n",
- 			   ab->hw_rev);
--		mhi_free_controller(mhi_ctrl);
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto free_controller;
- 	}
- 
- 	ret = mhi_register_controller(mhi_ctrl, ath11k_mhi_config);
- 	if (ret) {
- 		ath11k_err(ab, "failed to register to mhi bus, err = %d\n", ret);
--		mhi_free_controller(mhi_ctrl);
--		return ret;
-+		goto free_controller;
- 	}
- 
- 	return 0;
-+
-+free_controller:
-+	mhi_free_controller(mhi_ctrl);
-+	ab_pci->mhi_ctrl = NULL;
-+	return ret;
- }
- 
- void ath11k_mhi_unregister(struct ath11k_pci *ab_pci)
 -- 
-2.25.1
+Haowen Bai
 
