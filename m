@@ -2,114 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DE89C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 12:29:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B558FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 12:35:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236157AbiE3M3j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 08:29:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44684 "EHLO
+        id S236197AbiE3MfS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 08:35:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231952AbiE3M3i (ORCPT
+        with ESMTP id S233983AbiE3MfF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 08:29:38 -0400
-Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D974F7CB6D;
-        Mon, 30 May 2022 05:29:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-        d=metrotek.ru; s=mail;
-        h=from:subject:date:message-id:to:cc:mime-version:content-type:in-reply-to:
-         references;
-        bh=JDKi/xJT1Mjieigmk3yCi+36SvkfibHsJeRVOyaZZwY=;
-        b=LCXDiTp34x63byV6GKPAe4R7U39FSVzFfEQYjYcXE6X6yNJx2kydBZJJpwvyxl5WoLSd8e4M/4cHs
-         xL7YAsIufpn/6wdHtK/olpvf6zxD+/CNpJ5E6v7gihDyBSZlP/GYaUvNmnUoJz4ViJvv4fKO929+vm
-         lcWvrj5MF/Ah+SX4vh2fZKJ2F/GmW8CAwC5innPeLWOVp6EmfO0sl1K468JKtsgH9wQil5qD0OG3+u
-         8mC/M8TZ/xQYdF/9phBK9eWM4K3oH1qdntcIT4JYZLMfyMwC+XJODu+rRXHkg+7IFp4MfBxggsKY7j
-         u1/3wFztAHKRWlJc/A5dxBl3VHrfA1g==
-X-Kerio-Anti-Spam:  Build: [Engines: 2.16.3.1424, Stamp: 3], Multi: [Enabled, t: (0.000010,0.009374)], BW: [Enabled, t: (0.000021,0.000001)], RTDA: [Enabled, t: (0.140348), Hit: No, Details: v2.39.0; Id: 15.52k38i.1g4af248r.a270; mclb], total: 0(700)
-X-Footer: bWV0cm90ZWsucnU=
-Received: from x260 ([178.70.36.174])
-        (authenticated user i.bornyakov@metrotek.ru)
-        by mail.pr-group.ru with ESMTPSA
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
-        Mon, 30 May 2022 15:29:09 +0300
-Date:   Mon, 30 May 2022 15:07:01 +0300
-From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
-To:     Conor.Dooley@microchip.com
-Cc:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
-        trix@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-fpga@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        system@metrotek.ru
-Subject: Re: [PATCH v13 2/3] fpga: microchip-spi: add Microchip MPF FPGA
- manager
-Message-ID: <20220530120701.sedwn3qeohlnj52e@x260>
-References: <20220526181344.2088-1-i.bornyakov@metrotek.ru>
- <20220526181344.2088-3-i.bornyakov@metrotek.ru>
- <f655cf2f-555c-6480-a461-bcddb9e510f3@microchip.com>
+        Mon, 30 May 2022 08:35:05 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2BB57CB04
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 05:35:03 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id u3so14453200wrg.3
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 05:35:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4ZpnujIPcolEhKbIJZUfooL6oIUs8mzgT5bxqd2OLwk=;
+        b=civVMl7MXBedL2Fy/RdMR2hvoMq61sw/bSOuRyUnGfnpbQlu1B1vaETDk2eoLtMg61
+         xxvEM0CcGiuHnAv6EMTxHCVekfHJ443IW5HAHw1nPPodMQDAgQb/Z8wkdyR2n2oVdc02
+         rEchF77XObT5skBCADYM/9HeAkGoea+j9J1auHdrH25hfsrcuBh06zz0PQOUIkBpRAHo
+         9mlga4VSDuJ7sjz7UYdmr50MV3YV9+ezDISlXifrMQirUadM1ssMASjkx+97cXDUuyeb
+         JhphSXc6/ervgN2b3jAzZSnPdDVaaUjM91vEkyX+Un5qEiD2lJPkDNrYMhf/x2hF+OXy
+         7cRQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4ZpnujIPcolEhKbIJZUfooL6oIUs8mzgT5bxqd2OLwk=;
+        b=OLRzLVqF7uR3c9IzdNVGiU7ZVfcIevapHGRbUs8ikQvfsbONV0jHtouTf/X/St3s5V
+         77gFQkvx3ZuCvg9KCJyDn28aBlv7h0COb7P7SMIlMCqX8SyrRAXsnB3qkKBY51nJBfQr
+         O3bc66WyrOtFa8rlYj+rZcCDVafMSDBSSvH94Azgk+UMqS3xaC7oI85zq/710dOBZPih
+         mlMCNA2xNE9mAJFYZ3VqwRv8ttLZlZeG8SuaCPBzb8rC+tQP/dJGczA9e2rplk3094n0
+         0KC0YRu7yZTNsvOE77CfNQDuXixzRblrLKnLlxUPc4t/ws+0Vyr5MPPkppVJy/iPWqqB
+         3QDw==
+X-Gm-Message-State: AOAM53121+t7jGLGtOO7W5QFzAXYOBCb6Hs9bDPBywxGEicypmF7E/tk
+        lGY81g69Zdivj1nLZGD5OI/k/w==
+X-Google-Smtp-Source: ABdhPJxvnP7l8SO28NpVJS5NOclYzbNoRLMyWaTv8lhRa6I5+hFmHhKsWwpdaDK81i85ecqujt0hRA==
+X-Received: by 2002:a05:6000:1611:b0:210:28cc:65dd with SMTP id u17-20020a056000161100b0021028cc65ddmr8793920wrb.700.1653914102514;
+        Mon, 30 May 2022 05:35:02 -0700 (PDT)
+Received: from helium.lan ([88.160.162.107])
+        by smtp.gmail.com with ESMTPSA id o3-20020a5d47c3000000b0020d0cdbf7eesm9380895wrc.111.2022.05.30.05.35.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 May 2022 05:35:01 -0700 (PDT)
+From:   Fabien Parent <fparent@baylibre.com>
+To:     Sean Wang <sean.wang@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     Fabien Parent <fparent@baylibre.com>,
+        linux-mediatek@lists.infradead.org, linux-gpio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] pinctrl: mediatek: common: add quirk for broken set/clr modes
+Date:   Mon, 30 May 2022 14:34:24 +0200
+Message-Id: <20220530123425.689459-1-fparent@baylibre.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f655cf2f-555c-6480-a461-bcddb9e510f3@microchip.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 30, 2022 at 11:22:26AM +0000, Conor.Dooley@microchip.com wrote:
-> On 26/05/2022 19:13, Ivan Bornyakov wrote:
-> > +static int mpf_read_status(struct spi_device *spi)
-> > +{
-> > +       u8 status = 0, status_command = MPF_SPI_READ_STATUS;
-> > +       /*
-> > +        * Two identical SPI transfers are used for status reading.
-> > +        * The reason is that the first one can be inadequate.
-> > +        * We ignore it completely and use the second one.
-> > +        */
-> > +       struct spi_transfer xfers[] = {
-> > +               [0 ... 1] = {
-> > +                       .tx_buf = &status_command,
-> > +                       .rx_buf = &status,
-> > +                       .len = 1,
-> > +                       .cs_change = 1,
-> > +               }
-> > +       };
-> 
-> Hmm, I don't think that this is correct, or at least it is not
-> correct from the polarfire /soc/ perspective. I was told that
-> there was nothing different other than the envm between the
-> programming for both devices - but this is another situation
-> where I start to question that.
-> 
-> When I run this code, ISC enable /never/ passes - failing due
-> to timing out. I see something like this picture here:
-> https://i.imgur.com/EKhd1S3.png
-> You can see the 0x0B ISC enable coming through & then a status
-> check after it.
-> 
-> With the current code, the value of the "status" variable will
-> be 0x0, given you are overwriting the first MISO value with the
-> second. According to the hw guys, the spi hw status *should*
-> only be returned on MISO in the first byte after SS goes low.
-> 
-> If this is not the case for a non -soc part, which, as I said
-> before, I don't have a board with the SPI programmer exposed
-> for & I have been told is not the case then my comments can
-> just be ignored entirely & I'll have some head scratching to
-> do...
-> 
-> Thanks,
-> Conor.
-> 
+On MT8365, the SET/CLR of the mode is broken and some pin modes won't
+be set correctly. Add a quirk for such SoCs, so that instead of using
+the SET/CLR register use the main R/W register
+to read/update/write the modes.
 
-If I understood correctly, SS doesn't alter between two status reading
-transactions despite .cs_change = 1. May be adding some .cs_change_delay
-to spi_transfer struct can help with that?
+Signed-off-by: Fabien Parent <fparent@baylibre.com>
+---
+ drivers/pinctrl/mediatek/pinctrl-mtk-common.c | 46 ++++++++++++-------
+ drivers/pinctrl/mediatek/pinctrl-mtk-common.h |  3 ++
+ 2 files changed, 33 insertions(+), 16 deletions(-)
 
-> > +       int ret = spi_sync_transfer(spi, xfers, 2);
-> > +
-> > +       if ((status & MPF_STATUS_SPI_VIOLATION) ||
-> > +           (status & MPF_STATUS_SPI_ERROR))
-> > +               ret = -EIO;
-> > +
-> > +       return ret ? : status;
-> > +}
+diff --git a/drivers/pinctrl/mediatek/pinctrl-mtk-common.c b/drivers/pinctrl/mediatek/pinctrl-mtk-common.c
+index f25b3e09386b..156627d9c552 100644
+--- a/drivers/pinctrl/mediatek/pinctrl-mtk-common.c
++++ b/drivers/pinctrl/mediatek/pinctrl-mtk-common.c
+@@ -330,23 +330,37 @@ static int mtk_pconf_set_pull_select(struct mtk_pinctrl *pctl,
+ 		return -EINVAL;
+ 	}
+ 
+-	bit = BIT(pin & pctl->devdata->mode_mask);
+-	if (enable)
+-		reg_pullen = SET_ADDR(mtk_get_port(pctl, pin) +
+-			pctl->devdata->pullen_offset, pctl);
+-	else
+-		reg_pullen = CLR_ADDR(mtk_get_port(pctl, pin) +
+-			pctl->devdata->pullen_offset, pctl);
+-
+-	if (isup)
+-		reg_pullsel = SET_ADDR(mtk_get_port(pctl, pin) +
+-			pctl->devdata->pullsel_offset, pctl);
+-	else
+-		reg_pullsel = CLR_ADDR(mtk_get_port(pctl, pin) +
+-			pctl->devdata->pullsel_offset, pctl);
++	if (pctl->devdata->quirks & MTK_PINCTRL_MODE_SET_CLR_BROKEN) {
++		bit = pin & pctl->devdata->mode_mask;
++		reg_pullen = mtk_get_port(pctl, pin) +
++				pctl->devdata->pullen_offset;
++		reg_pullsel = mtk_get_port(pctl, pin) +
++				pctl->devdata->pullsel_offset;
++
++		regmap_update_bits(mtk_get_regmap(pctl, pin), reg_pullen,
++			BIT(bit), enable << bit);
++		regmap_update_bits(mtk_get_regmap(pctl, pin), reg_pullsel,
++			BIT(bit), isup << bit);
++	} else {
++		bit = BIT(pin & pctl->devdata->mode_mask);
++		if (enable)
++			reg_pullen = SET_ADDR(mtk_get_port(pctl, pin) +
++				pctl->devdata->pullen_offset, pctl);
++		else
++			reg_pullen = CLR_ADDR(mtk_get_port(pctl, pin) +
++				pctl->devdata->pullen_offset, pctl);
++
++		if (isup)
++			reg_pullsel = SET_ADDR(mtk_get_port(pctl, pin) +
++				pctl->devdata->pullsel_offset, pctl);
++		else
++			reg_pullsel = CLR_ADDR(mtk_get_port(pctl, pin) +
++				pctl->devdata->pullsel_offset, pctl);
++
++		regmap_write(mtk_get_regmap(pctl, pin), reg_pullen, bit);
++		regmap_write(mtk_get_regmap(pctl, pin), reg_pullsel, bit);
++	}
+ 
+-	regmap_write(mtk_get_regmap(pctl, pin), reg_pullen, bit);
+-	regmap_write(mtk_get_regmap(pctl, pin), reg_pullsel, bit);
+ 	return 0;
+ }
+ 
+diff --git a/drivers/pinctrl/mediatek/pinctrl-mtk-common.h b/drivers/pinctrl/mediatek/pinctrl-mtk-common.h
+index 6fe8564334c9..cc0dce8818c6 100644
+--- a/drivers/pinctrl/mediatek/pinctrl-mtk-common.h
++++ b/drivers/pinctrl/mediatek/pinctrl-mtk-common.h
+@@ -22,6 +22,8 @@
+ 
+ #define MTK_PINCTRL_NOT_SUPPORT	(0xffff)
+ 
++#define MTK_PINCTRL_MODE_SET_CLR_BROKEN   BIT(0)
++
+ struct mtk_desc_function {
+ 	const char *name;
+ 	unsigned char muxval;
+@@ -271,6 +273,7 @@ struct mtk_pinctrl_devdata {
+ 	unsigned int mode_mask;
+ 	unsigned int mode_per_reg;
+ 	unsigned int mode_shf;
++	unsigned long quirks;
+ };
+ 
+ struct mtk_pinctrl {
+-- 
+2.36.1
 
