@@ -2,92 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D3B8C46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A005DC38A05
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:37:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241785AbiE3OgU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:36:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42814 "EHLO
+        id S242302AbiE3Ogx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:36:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241465AbiE3ORh (ORCPT
+        with ESMTP id S241699AbiE3OR6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:17:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CDC252B35;
-        Mon, 30 May 2022 06:47:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A034B60F47;
-        Mon, 30 May 2022 13:47:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB56DC341C0;
-        Mon, 30 May 2022 13:47:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918446;
-        bh=2LFwGuCsKCuYENEjOsRcLSDeb9bv9mIq1XjW2w4MUhI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EYMvK4EDMMxf23l2zSA1Zf1xrgqnd8EN/G7c8WRZuTPLus9dA4pMtDFbsx6zsKS+K
-         038LCmXes4nxSQIoOuls9WsSiq0WMeNLANEioeUmI9sEsYUE7sA8MBV5eXhbn6/jOX
-         nb0p+aqdEJPd87I79FEZgxVPjgy0h740STqwZqulV8ZkM6ePOnRneXI/M71WNc+PbI
-         WpMGcZ4dsxTijiCjGX40/g706/Ol9kP63YGKp379VvsnxDdBrLVRYdrVpVT2lllkJX
-         WhBR7KZSpHZTgWKNvTYfXN32E26jS41u0p4SC1j0KwBO7AUJgC9gmXPgUQC/phN9Qx
-         yZTIXXUISdc3A==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Liviu Dudau <liviu.dudau@arm.com>,
-        Steven Price <steven.price@arm.com>,
-        Sasha Levin <sashal@kernel.org>, james.qian.wang@arm.com,
-        mihail.atanassov@arm.com, brian.starkey@arm.com, airlied@linux.ie,
-        daniel@ffwll.ch, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.4 09/55] drm/komeda: return early if drm_universal_plane_init() fails.
-Date:   Mon, 30 May 2022 09:46:15 -0400
-Message-Id: <20220530134701.1935933-9-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220530134701.1935933-1-sashal@kernel.org>
-References: <20220530134701.1935933-1-sashal@kernel.org>
+        Mon, 30 May 2022 10:17:58 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A4FF793B0;
+        Mon, 30 May 2022 06:47:58 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id p5-20020a1c2905000000b003970dd5404dso6479243wmp.0;
+        Mon, 30 May 2022 06:47:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=1pogo+Rv5tv/SQVuIFRfnUxU3Jbc6+ErgEhXQlEuH7Q=;
+        b=EgKmyAppjZbMOVnfQCO9MvfkDvMr+4bRewuD6ZUn/bdV7ecI0uWF5Wck1N/xzVzGBP
+         q1aP+cC6TzWU0T7V406WfklMmWpdBDC2YcH0XIULHHAw/CG9lgeFrjbJCQcmWgTFVXFE
+         ShI/kvcxCFcDEPze5rWor+yDkJ/nOqiI5MNP6mK6yW0bW/uvzOHoKL6RTkOdeROje5O7
+         CtBl+wvl+mi6mUuSpQoJsZPcLNyrZZQHM7XFSWten5gD91Mzm8Ki6pMPBgX8hlzPrDWx
+         kW/ASef/d62eot597BBs1qtCQsRLwhsjVWWR9SGads+97s4WmlryGoKH9rAke9OyIoH1
+         3u9g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=1pogo+Rv5tv/SQVuIFRfnUxU3Jbc6+ErgEhXQlEuH7Q=;
+        b=ZukBFx+fi3ih2Zin6IfRWhxgCgotJ3Jv9gVw+vm9Rp0wCYc0hL1D5X69qXJE+jUWs/
+         kwj6nvSdG3S4og85P59Tz0sFeU4Sq/7SsQya5fK8jcTynKD86sWn2wqQABQfuXUBVbuG
+         8nuF+0JZmHrhj1U1KL5DJPHT4M2Psx8++MhA3V+kG73yHEVrHgjY72UZhx0f+SojaLpq
+         7jwBM9MEsnAnPuL410A+g1jibq3JMIjnBjkK9b4O6MCo1MsPIiwtc6vrJYetGzpOChJU
+         T8i4pBFK9QOdG/yCHrj/HiHLpBqSxXSX0VHWyh4mhntEQCyluNz8jekF+Zk6aWpuV/3P
+         ROsg==
+X-Gm-Message-State: AOAM533GYr7P01bSBiFjaRUeepk1OvzVobS8AFekWvuIbSNxrmUoR6Jm
+        ku3ayXL3MKGGoGIF4eSYj6n9fTLQD6zgn320qiIV97tz
+X-Google-Smtp-Source: ABdhPJxKwfq4ycqFXAM+C8AheHuI+NB1Jymb9X57td3iSrPCizEAfyrJbVEDX+hf+1fVrrb5pR/iFCEG7v/503K0ua8=
+X-Received: by 2002:a05:600c:6011:b0:398:fa3:c02d with SMTP id
+ az17-20020a05600c601100b003980fa3c02dmr12803839wmb.183.1653918476657; Mon, 30
+ May 2022 06:47:56 -0700 (PDT)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+References: <20220529162936.2539901-1-robdclark@gmail.com> <0bf230f4-c888-b9c9-f061-7450406baa4a@suse.de>
+In-Reply-To: <0bf230f4-c888-b9c9-f061-7450406baa4a@suse.de>
+From:   Rob Clark <robdclark@gmail.com>
+Date:   Mon, 30 May 2022 06:47:55 -0700
+Message-ID: <CAF6AEGthAfWyAvbuE4EP+u52LEKS2Fs6X=gG8qUjc7gci6oh-A@mail.gmail.com>
+Subject: Re: [PATCH] drm/prime: Ensure mmap offset is initialized
+To:     Thomas Zimmermann <tzimmermann@suse.de>
+Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
+        Rob Clark <robdclark@chromium.org>,
+        David Airlie <airlied@linux.ie>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        freedreno <freedreno@lists.freedesktop.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liviu Dudau <liviu.dudau@arm.com>
+On Mon, May 30, 2022 at 12:26 AM Thomas Zimmermann <tzimmermann@suse.de> wr=
+ote:
+>
+> Hi
+>
+> Am 29.05.22 um 18:29 schrieb Rob Clark:
+> > From: Rob Clark <robdclark@chromium.org>
+> >
+> > If a GEM object is allocated, and then exported as a dma-buf fd which i=
+s
+> > mmap'd before or without the GEM buffer being directly mmap'd, the
+> > vma_node could be unitialized.  This leads to a situation where the CPU
+> > mapping is not correctly torn down in drm_vma_node_unmap().
+>
+> Which drivers are affected by this problem?
+>
+> I checked several drivers and most appear to be initializing the offset
+> during object construction, such as GEM SHMEM. [1] TTM-based drivers
+> also seem unaffected. [2]
+>
+>  From a quick grep, only etnaviv, msm and omapdrm appear to be affected?
+> They only seem to run drm_gem_create_mmap_offset() from their
+> ioctl-handling code.
+>
+> If so, I'd say it's preferable to fix these drivers and put a
+> drm_WARN_ONCE() into drm_gem_prime_mmap().
 
-[ Upstream commit c8f76c37cc3668ee45e081e76a15f24a352ebbdd ]
+That is good if fewer drivers are affected, however I disagree with
+your proposal.  At least for freedreno userspace, a lot of bo's never
+get mmap'd (either directly of via dmabuf), so we should not be
+allocating a mmap offset unnecessarily.
 
-If drm_universal_plane_init() fails early we jump to the common cleanup code
-that calls komeda_plane_destroy() which in turn could access the uninitalised
-drm_plane and crash. Return early if an error is detected without going through
-the common code.
+BR,
+-R
 
-Reported-by: Steven Price <steven.price@arm.com>
-Reviewed-by: Steven Price <steven.price@arm.com>
-Signed-off-by: Liviu Dudau <liviu.dudau@arm.com>
-Link: https://lore.kernel.org/dri-devel/20211203100946.2706922-1-liviu.dudau@arm.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/gpu/drm/arm/display/komeda/komeda_plane.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/gpu/drm/arm/display/komeda/komeda_plane.c b/drivers/gpu/drm/arm/display/komeda/komeda_plane.c
-index 98e915e325dd..a5f57b38d193 100644
---- a/drivers/gpu/drm/arm/display/komeda/komeda_plane.c
-+++ b/drivers/gpu/drm/arm/display/komeda/komeda_plane.c
-@@ -274,8 +274,10 @@ static int komeda_plane_add(struct komeda_kms_dev *kms,
- 
- 	komeda_put_fourcc_list(formats);
- 
--	if (err)
--		goto cleanup;
-+	if (err) {
-+		kfree(kplane);
-+		return err;
-+	}
- 
- 	drm_plane_helper_add(plane, &komeda_plane_helper_funcs);
- 
--- 
-2.35.1
-
+> Best regards
+> Thomas
+>
+> [1]
+> https://elixir.bootlin.com/linux/v5.18/source/drivers/gpu/drm/drm_gem_shm=
+em_helper.c#L85
+> [2]
+> https://elixir.bootlin.com/linux/v5.18/source/drivers/gpu/drm/ttm/ttm_bo.=
+c#L1002
+>
+> >
+> > Fixes: e5516553999f ("drm: call drm_gem_object_funcs.mmap with fake off=
+set")
+> > Signed-off-by: Rob Clark <robdclark@chromium.org>
+> > ---
+> > Note, it's possible the issue existed in some related form prior to the
+> > commit tagged with Fixes.
+> >
+> >   drivers/gpu/drm/drm_prime.c | 5 +++++
+> >   1 file changed, 5 insertions(+)
+> >
+> > diff --git a/drivers/gpu/drm/drm_prime.c b/drivers/gpu/drm/drm_prime.c
+> > index e3f09f18110c..849eea154dfc 100644
+> > --- a/drivers/gpu/drm/drm_prime.c
+> > +++ b/drivers/gpu/drm/drm_prime.c
+> > @@ -716,6 +716,11 @@ int drm_gem_prime_mmap(struct drm_gem_object *obj,=
+ struct vm_area_struct *vma)
+> >       struct file *fil;
+> >       int ret;
+> >
+> > +     /* Ensure that the vma_node is initialized: */
+> > +     ret =3D drm_gem_create_mmap_offset(obj);
+> > +     if (ret)
+> > +             return ret;
+> > +
+> >       /* Add the fake offset */
+> >       vma->vm_pgoff +=3D drm_vma_node_start(&obj->vma_node);
+> >
+>
+> --
+> Thomas Zimmermann
+> Graphics Driver Developer
+> SUSE Software Solutions Germany GmbH
+> Maxfeldstr. 5, 90409 N=C3=BCrnberg, Germany
+> (HRB 36809, AG N=C3=BCrnberg)
+> Gesch=C3=A4ftsf=C3=BChrer: Ivo Totev
