@@ -2,106 +2,335 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA9C4C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 10:46:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1852BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 10:47:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235474AbiE3Kqg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 06:46:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45604 "EHLO
+        id S235354AbiE3KrB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 06:47:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235354AbiE3Kpx (ORCPT
+        with ESMTP id S235470AbiE3Ko1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 06:45:53 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF5057CB25;
-        Mon, 30 May 2022 03:45:51 -0700 (PDT)
-Date:   Mon, 30 May 2022 10:45:49 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1653907550;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=oN0BchjI0S/uiKLm500Vkkr8chqe+DNI+Hp7hPtlPf8=;
-        b=Py4QG6U/wsFwBrArb8Lod/82iJCJnpOnVvAxgwZc67w8C2W+bGx1NyWetexdvNMa7nTvLz
-        UVF1KfbR5l8+xVBfY9qSi11QacB6nY2iKwLQqgLHP9V9ZO19fKJpYlx00RqesD/BtAf+LZ
-        iBO/x7NsMFei2kjh26xtu9H1R6kfdQAO3hhXZkYwWM1BJfRVacjh7wyikjC8qS+DNZVEkE
-        OJ48NijzKAwh2geGGcpgEQg4QW0Q/PxqT77W/9AQdmkQCqR0gJCyE2CA319CvD1BVIQwu3
-        OTJlQH8G9iC5vYKY38Zu8/rumXJxMF/HTLpddgZvJMvxA0xwL0J3WayvpM3TOQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1653907550;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=oN0BchjI0S/uiKLm500Vkkr8chqe+DNI+Hp7hPtlPf8=;
-        b=bhdLHd+hi6E7ioq31ntS7fvfx8GSdxqIpUdHwpzL5sF+Pb1DwCNPJ4sa9sa1aX9YRXgtxU
-        tTQEeg5rz/RmrtCA==
-From:   "tip-bot2 for Peter Zijlstra" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: sched/urgent] sched/autogroup: Fix sysctl move
-Cc:     Ivan Kozik <ivan@ludios.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <YpR2IqndgsyMzN00@worktop.programming.kicks-ass.net>
-References: <YpR2IqndgsyMzN00@worktop.programming.kicks-ass.net>
+        Mon, 30 May 2022 06:44:27 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04DC67DE2F;
+        Mon, 30 May 2022 03:44:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1653907457; x=1685443457;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=nfFN56cdL96YlVC1q3zRELQT8mXoBH4DJqgVjuk2bKc=;
+  b=y14Fso+fBkLRuA+pMTK2aEAltWZVS4GLFPt8hCZu732agMEoCTW/ufkZ
+   ZWDXze+nI0sGWDlGNBQYP2VLU59lXys6vj6c22tPO9jiLGxbkrQ5jSK3d
+   Ey15uJMjNWpWHpAfEmce/YlGtZWzSFwt2+e/h7WmD53RJl0AYj3kivgci
+   lV9T198dYxJwozPWXU77db+yQoRnaHp/Ogz7NVQXdTVb1DRMrkKLCn9Hs
+   JyKutQokhqJeTsEUoHCxHSgpMoSW6xrMSj3Y7hAGgqEunx8EN8nTqaLQB
+   to+zL2xsp+zs3PVTtCmeHkEFb4gX51k+4aV448kI57MpV8h5IEKkmUoIr
+   A==;
+X-IronPort-AV: E=Sophos;i="5.91,262,1647327600"; 
+   d="scan'208";a="165913210"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 May 2022 03:44:16 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 30 May 2022 03:44:14 -0700
+Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Mon, 30 May 2022 03:44:10 -0700
+From:   Arun Ramadoss <arun.ramadoss@microchip.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     Woojung Huh <woojung.huh@microchip.com>,
+        <UNGLinuxDriver@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "Russell King" <linux@armlinux.org.uk>
+Subject: [RFC Patch net-next v2 08/15] net: dsa: microchip: update the ksz_port_mdb_add/del
+Date:   Mon, 30 May 2022 16:12:50 +0530
+Message-ID: <20220530104257.21485-9-arun.ramadoss@microchip.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220530104257.21485-1-arun.ramadoss@microchip.com>
+References: <20220530104257.21485-1-arun.ramadoss@microchip.com>
 MIME-Version: 1.0
-Message-ID: <165390754900.4207.11439782656946256684.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the sched/urgent branch of tip:
+ksz_mdb_add/del in ksz_common.c is specific for the ksz8795.c file. The
+ksz9477 has its separate ksz9477_port_mdb_add/del functions.  This patch
+moves the ksz8795 specific mdb functionality from ksz_common to ksz8795.
+And this dsa_switch_ops hooks for ksz8795/ksz9477 are invoked through
+the ksz_port_mdb_add/del.
 
-Commit-ID:     82f586f923e3ac6062bc7867717a7f8afc09e0ff
-Gitweb:        https://git.kernel.org/tip/82f586f923e3ac6062bc7867717a7f8afc09e0ff
-Author:        Peter Zijlstra <peterz@infradead.org>
-AuthorDate:    Mon, 30 May 2022 09:45:38 +02:00
-Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Mon, 30 May 2022 12:36:36 +02:00
-
-sched/autogroup: Fix sysctl move
-
-Ivan reported /proc/sys/kernel/sched_autogroup_enabled went walk-about
-and using the noautogroup command line parameter would result in a
-boot error message.
-
-Turns out the sysctl move placed the init function wrong.
-
-Fixes: c8eaf6ac76f4 ("sched: move autogroup sysctls into its own file")
-Reported-by: Ivan Kozik <ivan@ludios.org>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Tested-by: Ivan Kozik <ivan@ludios.org>
-Link: https://lkml.kernel.org/r/YpR2IqndgsyMzN00@worktop.programming.kicks-ass.net
+Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
 ---
- kernel/sched/autogroup.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/dsa/microchip/ksz8795.c    | 76 ++++++++++++++++++++++++++
+ drivers/net/dsa/microchip/ksz9477.c    | 20 +++----
+ drivers/net/dsa/microchip/ksz_common.c | 66 +++-------------------
+ drivers/net/dsa/microchip/ksz_common.h |  6 ++
+ 4 files changed, 100 insertions(+), 68 deletions(-)
 
-diff --git a/kernel/sched/autogroup.c b/kernel/sched/autogroup.c
-index 16092b4..4ebaf97 100644
---- a/kernel/sched/autogroup.c
-+++ b/kernel/sched/autogroup.c
-@@ -36,6 +36,7 @@ void __init autogroup_init(struct task_struct *init_task)
- 	kref_init(&autogroup_default.kref);
- 	init_rwsem(&autogroup_default.lock);
- 	init_task->signal->autogroup = &autogroup_default;
-+	sched_autogroup_sysctl_init();
+diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
+index 25763d89c67a..abd28dc44eb5 100644
+--- a/drivers/net/dsa/microchip/ksz8795.c
++++ b/drivers/net/dsa/microchip/ksz8795.c
+@@ -958,6 +958,80 @@ static void ksz8_flush_dyn_mac_table(struct ksz_device *dev, int port)
+ 	}
  }
  
- void autogroup_free(struct task_group *tg)
-@@ -219,7 +220,6 @@ void sched_autogroup_exit(struct signal_struct *sig)
- static int __init setup_autogroup(char *str)
++static int ksz8_mdb_add(struct ksz_device *dev, int port,
++			const struct switchdev_obj_port_mdb *mdb,
++			struct dsa_db db)
++{
++	struct alu_struct alu;
++	int index;
++	int empty = 0;
++
++	alu.port_forward = 0;
++	for (index = 0; index < dev->info->num_statics; index++) {
++		if (!dev->dev_ops->r_sta_mac_table(dev, index, &alu)) {
++			/* Found one already in static MAC table. */
++			if (!memcmp(alu.mac, mdb->addr, ETH_ALEN) &&
++			    alu.fid == mdb->vid)
++				break;
++		/* Remember the first empty entry. */
++		} else if (!empty) {
++			empty = index + 1;
++		}
++	}
++
++	/* no available entry */
++	if (index == dev->info->num_statics && !empty)
++		return -ENOSPC;
++
++	/* add entry */
++	if (index == dev->info->num_statics) {
++		index = empty - 1;
++		memset(&alu, 0, sizeof(alu));
++		memcpy(alu.mac, mdb->addr, ETH_ALEN);
++		alu.is_static = true;
++	}
++	alu.port_forward |= BIT(port);
++	if (mdb->vid) {
++		alu.is_use_fid = true;
++
++		/* Need a way to map VID to FID. */
++		alu.fid = mdb->vid;
++	}
++	dev->dev_ops->w_sta_mac_table(dev, index, &alu);
++
++	return 0;
++}
++
++static int ksz8_mdb_del(struct ksz_device *dev, int port,
++			const struct switchdev_obj_port_mdb *mdb,
++			struct dsa_db db)
++{
++	struct alu_struct alu;
++	int index;
++
++	for (index = 0; index < dev->info->num_statics; index++) {
++		if (!dev->dev_ops->r_sta_mac_table(dev, index, &alu)) {
++			/* Found one already in static MAC table. */
++			if (!memcmp(alu.mac, mdb->addr, ETH_ALEN) &&
++			    alu.fid == mdb->vid)
++				break;
++		}
++	}
++
++	/* no available entry */
++	if (index == dev->info->num_statics)
++		goto exit;
++
++	/* clear port */
++	alu.port_forward &= ~BIT(port);
++	if (!alu.port_forward)
++		alu.is_static = false;
++	dev->dev_ops->w_sta_mac_table(dev, index, &alu);
++
++exit:
++	return 0;
++}
++
+ static int ksz8_port_vlan_filtering(struct ksz_device *dev, int port, bool flag,
+ 				    struct netlink_ext_ack *extack)
  {
- 	sysctl_sched_autogroup_enabled = 0;
--	sched_autogroup_sysctl_init();
- 
- 	return 1;
+@@ -1454,6 +1528,8 @@ static const struct ksz_dev_ops ksz8_dev_ops = {
+ 	.r_mib_pkt = ksz8_r_mib_pkt,
+ 	.freeze_mib = ksz8_freeze_mib,
+ 	.port_init_cnt = ksz8_port_init_cnt,
++	.mdb_add = ksz8_mdb_add,
++	.mdb_del = ksz8_mdb_del,
+ 	.vlan_filtering = ksz8_port_vlan_filtering,
+ 	.vlan_add = ksz8_port_vlan_add,
+ 	.vlan_del = ksz8_port_vlan_del,
+diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
+index 494f93e4c7f8..045856656466 100644
+--- a/drivers/net/dsa/microchip/ksz9477.c
++++ b/drivers/net/dsa/microchip/ksz9477.c
+@@ -658,11 +658,10 @@ static int ksz9477_port_fdb_dump(struct dsa_switch *ds, int port,
+ 	return ret;
  }
+ 
+-static int ksz9477_port_mdb_add(struct dsa_switch *ds, int port,
+-				const struct switchdev_obj_port_mdb *mdb,
+-				struct dsa_db db)
++static int ksz9477_mdb_add(struct ksz_device *dev, int port,
++			   const struct switchdev_obj_port_mdb *mdb,
++			   struct dsa_db db)
+ {
+-	struct ksz_device *dev = ds->priv;
+ 	u32 static_table[4];
+ 	u32 data;
+ 	int index;
+@@ -734,11 +733,10 @@ static int ksz9477_port_mdb_add(struct dsa_switch *ds, int port,
+ 	return err;
+ }
+ 
+-static int ksz9477_port_mdb_del(struct dsa_switch *ds, int port,
+-				const struct switchdev_obj_port_mdb *mdb,
+-				struct dsa_db db)
++static int ksz9477_mdb_del(struct ksz_device *dev, int port,
++			   const struct switchdev_obj_port_mdb *mdb,
++			   struct dsa_db db)
+ {
+-	struct ksz_device *dev = ds->priv;
+ 	u32 static_table[4];
+ 	u32 data;
+ 	int index;
+@@ -1320,8 +1318,8 @@ static const struct dsa_switch_ops ksz9477_switch_ops = {
+ 	.port_fdb_dump		= ksz9477_port_fdb_dump,
+ 	.port_fdb_add		= ksz9477_port_fdb_add,
+ 	.port_fdb_del		= ksz9477_port_fdb_del,
+-	.port_mdb_add           = ksz9477_port_mdb_add,
+-	.port_mdb_del           = ksz9477_port_mdb_del,
++	.port_mdb_add           = ksz_port_mdb_add,
++	.port_mdb_del           = ksz_port_mdb_del,
+ 	.port_mirror_add	= ksz_port_mirror_add,
+ 	.port_mirror_del	= ksz_port_mirror_del,
+ 	.get_stats64		= ksz_get_stats64,
+@@ -1405,6 +1403,8 @@ static const struct ksz_dev_ops ksz9477_dev_ops = {
+ 	.mirror_del = ksz9477_port_mirror_del,
+ 	.get_stp_reg = ksz9477_get_stp_reg,
+ 	.get_caps = ksz9477_get_caps,
++	.mdb_add = ksz9477_mdb_add,
++	.mdb_del = ksz9477_mdb_del,
+ 	.shutdown = ksz9477_reset_switch,
+ 	.init = ksz9477_switch_init,
+ 	.exit = ksz9477_switch_exit,
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index c1303a46a9b7..b9082952db0f 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -801,44 +801,12 @@ int ksz_port_mdb_add(struct dsa_switch *ds, int port,
+ 		     struct dsa_db db)
+ {
+ 	struct ksz_device *dev = ds->priv;
+-	struct alu_struct alu;
+-	int index;
+-	int empty = 0;
+-
+-	alu.port_forward = 0;
+-	for (index = 0; index < dev->info->num_statics; index++) {
+-		if (!dev->dev_ops->r_sta_mac_table(dev, index, &alu)) {
+-			/* Found one already in static MAC table. */
+-			if (!memcmp(alu.mac, mdb->addr, ETH_ALEN) &&
+-			    alu.fid == mdb->vid)
+-				break;
+-		/* Remember the first empty entry. */
+-		} else if (!empty) {
+-			empty = index + 1;
+-		}
+-	}
+-
+-	/* no available entry */
+-	if (index == dev->info->num_statics && !empty)
+-		return -ENOSPC;
+-
+-	/* add entry */
+-	if (index == dev->info->num_statics) {
+-		index = empty - 1;
+-		memset(&alu, 0, sizeof(alu));
+-		memcpy(alu.mac, mdb->addr, ETH_ALEN);
+-		alu.is_static = true;
+-	}
+-	alu.port_forward |= BIT(port);
+-	if (mdb->vid) {
+-		alu.is_use_fid = true;
++	int ret = -EOPNOTSUPP;
+ 
+-		/* Need a way to map VID to FID. */
+-		alu.fid = mdb->vid;
+-	}
+-	dev->dev_ops->w_sta_mac_table(dev, index, &alu);
++	if (dev->dev_ops->mdb_add)
++		ret = dev->dev_ops->mdb_add(dev, port, mdb, db);
+ 
+-	return 0;
++	return ret;
+ }
+ EXPORT_SYMBOL_GPL(ksz_port_mdb_add);
+ 
+@@ -847,30 +815,12 @@ int ksz_port_mdb_del(struct dsa_switch *ds, int port,
+ 		     struct dsa_db db)
+ {
+ 	struct ksz_device *dev = ds->priv;
+-	struct alu_struct alu;
+-	int index;
+-
+-	for (index = 0; index < dev->info->num_statics; index++) {
+-		if (!dev->dev_ops->r_sta_mac_table(dev, index, &alu)) {
+-			/* Found one already in static MAC table. */
+-			if (!memcmp(alu.mac, mdb->addr, ETH_ALEN) &&
+-			    alu.fid == mdb->vid)
+-				break;
+-		}
+-	}
+-
+-	/* no available entry */
+-	if (index == dev->info->num_statics)
+-		goto exit;
++	int ret = -EOPNOTSUPP;
+ 
+-	/* clear port */
+-	alu.port_forward &= ~BIT(port);
+-	if (!alu.port_forward)
+-		alu.is_static = false;
+-	dev->dev_ops->w_sta_mac_table(dev, index, &alu);
++	if (dev->dev_ops->mdb_del)
++		ret = dev->dev_ops->mdb_del(dev, port, mdb, db);
+ 
+-exit:
+-	return 0;
++	return ret;
+ }
+ EXPORT_SYMBOL_GPL(ksz_port_mdb_del);
+ 
+diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
+index 8124737a1170..816581dd7f8e 100644
+--- a/drivers/net/dsa/microchip/ksz_common.h
++++ b/drivers/net/dsa/microchip/ksz_common.h
+@@ -192,6 +192,12 @@ struct ksz_dev_ops {
+ 			  bool ingress, struct netlink_ext_ack *extack);
+ 	void (*mirror_del)(struct ksz_device *dev, int port,
+ 			   struct dsa_mall_mirror_tc_entry *mirror);
++	int (*mdb_add)(struct ksz_device *dev, int port,
++		       const struct switchdev_obj_port_mdb *mdb,
++		       struct dsa_db db);
++	int (*mdb_del)(struct ksz_device *dev, int port,
++		       const struct switchdev_obj_port_mdb *mdb,
++		       struct dsa_db db);
+ 	int (*get_stp_reg)(void);
+ 	void (*get_caps)(struct ksz_device *dev, int port,
+ 			 struct phylink_config *config);
+-- 
+2.36.1
+
