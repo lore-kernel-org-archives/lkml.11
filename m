@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B505C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 11:42:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FDF1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 11:42:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234102AbiE3Lmr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 07:42:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43440 "EHLO
+        id S235976AbiE3LmV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 07:42:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236021AbiE3Lly (ORCPT
+        with ESMTP id S236030AbiE3LmA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 07:41:54 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B686B10C9
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 04:41:43 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id p8so10357857pfh.8
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 04:41:43 -0700 (PDT)
+        Mon, 30 May 2022 07:42:00 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64BD86341
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 04:41:53 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id 129so5655751pgc.2
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 04:41:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=THH8wa7TnqV/qE1Ao1QWNDBQ+CCTll+o2go/NvMpMcM=;
-        b=IOuudsk7MsQjj6yf2WuomJioY7leWfVDpGdP+k9EDowGz+IOYCT98fRZbCOo0fSZa6
-         OwXav1eeZO/2xqMD2B4kHGqx+hXeqXMS80as+AYnzGl1uSXDLIp9Uuw7F+qG/Oazzlye
-         tRoiubYQ3jullshw8qbKH/L2jwjT/IBTKJfl/smvhRNkMM4QxAt0qNez/vFF68bWGRJo
-         3ou/gYV+BSDT9NG10i598gv8yOCLvk8Ajsnye/+7Ns2WEnf/EctMFUjDMazcEklgvoAe
-         wMdm6oc1CksDdOE4KCOuvJqWNTs7Tzp9M5sn9xG9pLdRzLWd1mq7xV7l72sxrLxdg+Xw
-         PM3w==
+        bh=lAvFNka/m3Pr7HXS/bNaYQopT2wZ3BtRM1nGnYwWgUI=;
+        b=J35JDHdYfL3z47b3U5zMVTOC/j930PY8ubRHzosSBNYhYnetLWQGy+FrMMc42JfKQu
+         xsVGdUt8Kmdi6+FM8KoCUxbaC2nTtU5nKNr5hl6ERK3/PFFj/BM3E5bJBpnamfodL+jW
+         K84Q0wZrkxDo4iZUlFVBBUu5KQMkw1c0q4TyeQEvVABgb7gk/X/zELEzfKPTUzBnK4ai
+         eV7fFCFQhvZd5qAmQti5dQm5vgrGqLzp3bei6g29pRH+dKF7WN316A9bczx4YLvWmFnq
+         ro5syfmQVPx43kcYs4HWr2fP+duGwu71YV0wrFhSBe4Hagtz/bY3p+5tGxfWHXvWvkYg
+         oy0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=THH8wa7TnqV/qE1Ao1QWNDBQ+CCTll+o2go/NvMpMcM=;
-        b=XAdVjH9YgIPHrmblLF9VMDXlEHJUih2UOu7Cq7WPFgmya0vp1AqNQGbf8ZN5HdMLkw
-         9Yk8UxHkWDFWzb2nBqpYTOkRAy+rz2ZN3+3tSdHrrHfUjOpRhcqIZf7DVng9sQP/20te
-         9zFmQ+lpalPUiCKX6/0zROId3aa/LQejfDCDdb1OnDerA9plllKVtNjj30Z5rCYwGQzq
-         7W/p0wa4W4H6MYGi1O5Dxb9cX6IOQHpNXb0amffV6vtKuyzXYp0xDQbgYdJYa0oZx6TJ
-         dyHg7N8q4NXpgtmwmsAAyjpNtjkhAQFChFcLFMot7nYN6hnlNLZb8sirfC7IUfzz5lL9
-         sWaA==
-X-Gm-Message-State: AOAM533v0hfPgsBDwFOBVDPQdkr4SgalcxgMCHdaNT4vCk/V07laEZM2
-        pwwQ8DMaFB51RTvDLeDX7W1xcg==
-X-Google-Smtp-Source: ABdhPJw9aP6CuPXiYhnsc021cGhUxiDsPVFpXzRlww3p0MkLdWVDKG8KZtY2KeZh69tpohnFpmRqyQ==
-X-Received: by 2002:a63:6c44:0:b0:3fa:ec6b:33e7 with SMTP id h65-20020a636c44000000b003faec6b33e7mr20976033pgc.435.1653910903028;
-        Mon, 30 May 2022 04:41:43 -0700 (PDT)
+        bh=lAvFNka/m3Pr7HXS/bNaYQopT2wZ3BtRM1nGnYwWgUI=;
+        b=F/GR6PwjmT6eUaKsb0JTDUiG87wQniyBpVm+mD8gG4saA1GpWURY+581n9GvqJN9mQ
+         bceEJ1+jC4ytwzxhHD+hCrpSZUBVcOWfGbffsTFVlBPOBXoSIjDXl68AiH6RDSDArSvP
+         i0U4v6rOqYHhXm2iCYGKZWRwGYvuu3M4iRQREbR/OqKyi0wRwL9flH3q66ueiFVNDKjM
+         AgupjWEylTDW/FgrRVkWCnqv/YhSKDIEqiMXw6kd/H6CywqiFRZuCnxK+1Xha7NrNFBQ
+         +2lAHXCu9jrpa3SLFN4vLbDVwGUOJsgRCudWa85MOKAwx3CudGtf5l0J4oN6DPhDBOZ7
+         LvqQ==
+X-Gm-Message-State: AOAM533xJ5hFjN35x8/r17iq+2l8jSLesEXeSKvFxjlWRddjk0KH3G4E
+        rkFiEFx8qSNuXvCSVLTgSKdxXNT9G7lTNpFxrFU=
+X-Google-Smtp-Source: ABdhPJyICzqM2HpkXHFV0U936Hh64o0w7SC8tQexIpAlh7exp3xGA3kC8nJtJBTHfClC7Y/SrryZkA==
+X-Received: by 2002:a63:85c3:0:b0:3f9:dd67:8ddd with SMTP id u186-20020a6385c3000000b003f9dd678dddmr39306452pgd.258.1653910912632;
+        Mon, 30 May 2022 04:41:52 -0700 (PDT)
 Received: from leo-build-box.lan (n058152077182.netvigator.com. [58.152.77.182])
-        by smtp.gmail.com with ESMTPSA id c7-20020a170902724700b00161a9df4de8sm8846194pll.145.2022.05.30.04.41.38
+        by smtp.gmail.com with ESMTPSA id c7-20020a170902724700b00161a9df4de8sm8846194pll.145.2022.05.30.04.41.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 May 2022 04:41:42 -0700 (PDT)
+        Mon, 30 May 2022 04:41:52 -0700 (PDT)
 From:   Leo Yan <leo.yan@linaro.org>
 To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
         Peter Zijlstra <peterz@infradead.org>,
@@ -66,9 +66,9 @@ To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
         Ali Saidi <alisaidi@amazon.com>,
         linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Leo Yan <leo.yan@linaro.org>
-Subject: [PATCH v4 09/12] perf c2c: Refactor display string
-Date:   Mon, 30 May 2022 19:40:33 +0800
-Message-Id: <20220530114036.3225544-10-leo.yan@linaro.org>
+Subject: [PATCH v4 11/12] perf c2c: Use 'peer' as default display for Arm64
+Date:   Mon, 30 May 2022 19:40:35 +0800
+Message-Id: <20220530114036.3225544-12-leo.yan@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220530114036.3225544-1-leo.yan@linaro.org>
 References: <20220530114036.3225544-1-leo.yan@linaro.org>
@@ -78,54 +78,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The display type is shown by combination the display string array and a
-suffix string "HITMs", which is not friendly to extend display for other
-sorting type (e.g. extension for peer operations).
+Since Arm64 arch doesn't support HITMs flags, this patch changes to use
+'peer' as default display if user doesn't specify any type; for other
+arches, it still uses 'tot' as default display type if user doesn't
+specify it.
 
-This patch moves the suffix string "HITMs" into display string array for
-HITM types, so it can allow us to not necessarily to output string
-"HITMs" for new incoming display type.
+This patch changes to call perf_session__new() in an earlier place, so
+session environment can be initialized ahead and arch info can be used
+for setting display type.
 
+Suggested-by: Ali Saidi <alisaidi@amazon.com>
 Signed-off-by: Leo Yan <leo.yan@linaro.org>
 ---
- tools/perf/builtin-c2c.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ tools/perf/builtin-c2c.c | 36 ++++++++++++++++++++++++------------
+ 1 file changed, 24 insertions(+), 12 deletions(-)
 
 diff --git a/tools/perf/builtin-c2c.c b/tools/perf/builtin-c2c.c
-index e76219034588..725b23d9104b 100644
+index 1076bf8684d3..ccfd23103b96 100644
 --- a/tools/perf/builtin-c2c.c
 +++ b/tools/perf/builtin-c2c.c
-@@ -122,9 +122,9 @@ enum {
- };
+@@ -2878,7 +2878,7 @@ static int setup_callchain(struct evlist *evlist)
  
- static const char *display_str[DISPLAY_MAX] = {
--	[DISPLAY_LCL_HITM] = "Local",
--	[DISPLAY_RMT_HITM] = "Remote",
--	[DISPLAY_TOT_HITM] = "Total",
-+	[DISPLAY_LCL_HITM] = "Local HITMs",
-+	[DISPLAY_RMT_HITM] = "Remote HITMs",
-+	[DISPLAY_TOT_HITM] = "Total HITMs",
- };
- 
- static const struct option c2c_options[] = {
-@@ -2489,7 +2489,7 @@ static void print_c2c_info(FILE *out, struct perf_session *session)
- 		fprintf(out, "%-36s: %s\n", first ? "  Events" : "", evsel__name(evsel));
- 		first = false;
- 	}
--	fprintf(out, "  Cachelines sort on                : %s HITMs\n",
-+	fprintf(out, "  Cachelines sort on                : %s\n",
- 		display_str[c2c.display]);
- 	fprintf(out, "  Cacheline data grouping           : %s\n", c2c.cl_sort);
- }
-@@ -2646,7 +2646,7 @@ static int perf_c2c_browser__title(struct hist_browser *browser,
+ static int setup_display(const char *str)
  {
- 	scnprintf(bf, size,
- 		  "Shared Data Cache Line Table     "
--		  "(%lu entries, sorted on %s HITMs)",
-+		  "(%lu entries, sorted on %s)",
- 		  browser->nr_non_filtered_entries,
- 		  display_str[c2c.display]);
- 	return 0;
+-	const char *display = str ?: "tot";
++	const char *display = str;
+ 
+ 	if (!strcmp(display, "tot"))
+ 		c2c.display = DISPLAY_TOT_HITM;
+@@ -3066,27 +3066,39 @@ static int perf_c2c__report(int argc, const char **argv)
+ 	data.path  = input_name;
+ 	data.force = symbol_conf.force;
+ 
++	session = perf_session__new(&data, &c2c.tool);
++	if (IS_ERR(session)) {
++		err = PTR_ERR(session);
++		pr_debug("Error creating perf session\n");
++		goto out;
++	}
++
++	/*
++	 * Use the 'tot' as default display type if user doesn't specify it;
++	 * since Arm64 platform doesn't support HITMs flag, use 'peer' as the
++	 * default display type.
++	 */
++	if (!display) {
++		if (!strcmp(perf_env__arch(&session->header.env), "arm64"))
++			display = "peer";
++		else
++			display = "tot";
++	}
++
+ 	err = setup_display(display);
+ 	if (err)
+-		goto out;
++		goto out_session;
+ 
+ 	err = setup_coalesce(coalesce, no_source);
+ 	if (err) {
+ 		pr_debug("Failed to initialize hists\n");
+-		goto out;
++		goto out_session;
+ 	}
+ 
+ 	err = c2c_hists__init(&c2c.hists, "dcacheline", 2);
+ 	if (err) {
+ 		pr_debug("Failed to initialize hists\n");
+-		goto out;
+-	}
+-
+-	session = perf_session__new(&data, &c2c.tool);
+-	if (IS_ERR(session)) {
+-		err = PTR_ERR(session);
+-		pr_debug("Error creating perf session\n");
+-		goto out;
++		goto out_session;
+ 	}
+ 
+ 	session->itrace_synth_opts = &itrace_synth_opts;
+@@ -3094,7 +3106,7 @@ static int perf_c2c__report(int argc, const char **argv)
+ 	err = setup_nodes(session);
+ 	if (err) {
+ 		pr_err("Failed setup nodes\n");
+-		goto out;
++		goto out_session;
+ 	}
+ 
+ 	err = mem2node__init(&c2c.mem2node, &session->header.env);
 -- 
 2.25.1
 
