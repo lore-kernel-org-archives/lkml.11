@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05834C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:42:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 004BEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:42:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237401AbiE3NmS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:42:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56372 "EHLO
+        id S237855AbiE3NmZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:42:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238058AbiE3NgD (ORCPT
+        with ESMTP id S237669AbiE3Nfj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:36:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55418980AA;
-        Mon, 30 May 2022 06:29:43 -0700 (PDT)
+        Mon, 30 May 2022 09:35:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 498E194196;
+        Mon, 30 May 2022 06:28:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 700C360ECB;
-        Mon, 30 May 2022 13:29:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10916C36AE7;
-        Mon, 30 May 2022 13:29:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C6E9FB80DBA;
+        Mon, 30 May 2022 13:28:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75C26C3411A;
+        Mon, 30 May 2022 13:28:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917381;
-        bh=iKlBYoUEHHSKLj/FQ6yF2o4GA7+S+LJ6Nw0AmRb3NAI=;
+        s=k20201202; t=1653917296;
+        bh=31HpYQaWeWqtZN+AGWXO2osKlfGZ7/fW6vbdG5g5fus=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a8p6XTvXh0WXJ9f/PefAaPKPMalSQ32+OQHURaqQXzabTmorEL5qVsZ/TpMHMg2aH
-         vFPhm4jDpK90Dktytu+br8lIfAGtz/LlQbVdZtMRIzZEm+moh4xEc/bagEIcjqEDuC
-         oPTs+CpgOhrf9WzkF3+aoiXU95PQneYTPPcjUuXTpM7RPSRcBh3AufHbkL4FdQwtaC
-         dM/wV84cqYFOd05d4wu+I7jgYQWSsb8AeQ7p1dmgbIKKqgHKYk+aOXQ/Fe2NyLbng5
-         WhHEoUhJWLkO3JPjxqUKNf3epN5VMubc1ng1iv8xuZvoHD61R7oOe9NyL1CBKNIyHB
-         UGc73kGsarlng==
+        b=rBGvoK2vRXbBGgAEFEmsfiJzzRmGoPiW4R76IQrIikTH7QTUpWBcr2n+nuTw3KLAE
+         lq2B+1+Ult5g9cqoB1uwO49CQX2jMSVmXhq1vpasgOmVkuXLQhdvhuWBsG0v+O6oGm
+         blsN6wUGEsyQnKsPQq043tZC+NkJ8Gn0tSSP4q8MzdBBXOvO2uB+yZBdM37gwTQXNz
+         OOSNAPPqbKungFxPq7XFatTadJ7oiAFr4m+kfOFBJ5KpRuGaSW1MQcyN/cg2LM0KDW
+         1kVC+uPRzDN8fuMw585LMWi/JsTX9Y2B8EQ3j5mhBembG3GuSDsYeTLEOHJrazXaih
+         1Gq+hdddgLHjQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 115/159] media: ccs-core.c: fix failure to call clk_disable_unprepare
-Date:   Mon, 30 May 2022 09:23:40 -0400
-Message-Id: <20220530132425.1929512-115-sashal@kernel.org>
+Cc:     Zhen Lei <thunder.leizhen@huawei.com>,
+        Rob Herring <robh@kernel.org>, Baoquan He <bhe@redhat.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
+        frowand.list@gmail.com, devicetree@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 088/159] of: Support more than one crash kernel regions for kexec -s
+Date:   Mon, 30 May 2022 09:23:13 -0400
+Message-Id: <20220530132425.1929512-88-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
@@ -52,40 +53,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+From: Zhen Lei <thunder.leizhen@huawei.com>
 
-[ Upstream commit eca89cf60b040ee2cae693ea72a0364284f3084c ]
+[ Upstream commit 8af6b91f58341325bf74ecb0389ddc0039091d84 ]
 
-Fixes smatch warning:
+When "crashkernel=X,high" is used, there may be two crash regions:
+high=crashk_res and low=crashk_low_res. But now the syscall
+kexec_file_load() only add crashk_res into "linux,usable-memory-range",
+this may cause the second kernel to have no available dma memory.
 
-drivers/media/i2c/ccs/ccs-core.c:1676 ccs_power_on() warn: 'sensor->ext_clk' from clk_prepare_enable() not released on lines: 1606.
+Fix it like kexec-tools does for option -c, add both 'high' and 'low'
+regions into the dtb.
 
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Acked-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+Acked-by: Rob Herring <robh@kernel.org>
+Acked-by: Baoquan He <bhe@redhat.com>
+Link: https://lore.kernel.org/r/20220506114402.365-6-thunder.leizhen@huawei.com
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/i2c/ccs/ccs-core.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/of/kexec.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/drivers/media/i2c/ccs/ccs-core.c b/drivers/media/i2c/ccs/ccs-core.c
-index 03e841b8443f..7ae469caf990 100644
---- a/drivers/media/i2c/ccs/ccs-core.c
-+++ b/drivers/media/i2c/ccs/ccs-core.c
-@@ -1602,8 +1602,11 @@ static int ccs_power_on(struct device *dev)
- 			usleep_range(1000, 2000);
- 		} while (--retry);
- 
--		if (!reset)
--			return -EIO;
-+		if (!reset) {
-+			dev_err(dev, "software reset failed\n");
-+			rval = -EIO;
-+			goto out_cci_addr_fail;
+diff --git a/drivers/of/kexec.c b/drivers/of/kexec.c
+index b9bd1cff1793..8d374cc552be 100644
+--- a/drivers/of/kexec.c
++++ b/drivers/of/kexec.c
+@@ -386,6 +386,15 @@ void *of_kexec_alloc_and_setup_fdt(const struct kimage *image,
+ 				crashk_res.end - crashk_res.start + 1);
+ 		if (ret)
+ 			goto out;
++
++		if (crashk_low_res.end) {
++			ret = fdt_appendprop_addrrange(fdt, 0, chosen_node,
++					"linux,usable-memory-range",
++					crashk_low_res.start,
++					crashk_low_res.end - crashk_low_res.start + 1);
++			if (ret)
++				goto out;
 +		}
  	}
  
- 	if (sensor->hwcfg.i2c_addr_alt) {
+ 	/* add bootargs */
 -- 
 2.35.1
 
