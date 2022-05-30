@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EF85C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 08:52:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F9B6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 08:53:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234355AbiE3Iwv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 04:52:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37600 "EHLO
+        id S234391AbiE3IxD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 04:53:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234413AbiE3IvP (ORCPT
+        with ESMTP id S234451AbiE3IvT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 04:51:15 -0400
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::223])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F9D078EEE;
-        Mon, 30 May 2022 01:51:06 -0700 (PDT)
+        Mon, 30 May 2022 04:51:19 -0400
+Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37F1977F14;
+        Mon, 30 May 2022 01:51:13 -0700 (PDT)
 Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 8DB9760003;
-        Mon, 30 May 2022 08:51:02 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 3CC9460019;
+        Mon, 30 May 2022 08:51:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1653900664;
+        t=1653900672;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=lXstqqz+Xby8JeAI7qprE4cNXJC1kJcm6sto5epKI/4=;
-        b=Rj+Lidxn27JI8j5Ews82leg7B3ZjhqPGBJUll6v6yBWpztZA1kdfzb89TNaG8SJC6z63XF
-        LUjoFEq5f0s1gTjapUll5UMDG19lBwU4rCyiog1VbL89aoweW3ZSCumceSJ91+6XuAzdJQ
-        M3OCpZx2Yp1onJsK7QcPURHwiC4EVDgyaHLwo+itu6xzR/bQDnxgmeH9PU5GQkAUrou0/3
-        xlTDUCNZ08ec2hWTtDMSzuYgX7lwRcm5FnyiQvcQtshIahDoZA64ro2v7pRyGUkKFy35Y2
-        btMdT+3Vdyz5Ck83iDyG890vMj0Vv/XojLzYI65KAM1YB1qwzZbv+up5T46oqQ==
+        bh=cjX+N1acayz+fJjzmcVmZm8hA8x1rmhyfrg3v53CCqE=;
+        b=kpupoF7WyC7o1l7tZ+4imtRzZq4yPjqfX+C0oWygpEUalVQ5iARn0bo9SqicMjU+J8Lh4I
+        n1is9kePsE9azHuzOxlYw67vvJTsKBlq4jxeXCHtfEbESZn1PlyVFZN3rbnNsCePNuby1K
+        49nBGT2F2niONtqmUHyAgeHDW/LTxu1ffzba6/ffn7pzUZv2ojjdbI6knM5druqqehbIvR
+        Knr+pDDr3tZRvq0xJkb3hCUGL2ZGME+3rCEpdVhNOH9YQy6sD6+mT7eM0X/sFNL83vpwDD
+        +hMcmR7YM22g09qjbh4ga813igSC634MlXaLBe1V6qOAcGVFr5TPyzVutD00/w==
 From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -57,9 +57,9 @@ Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
         Pascal Eberhard <pascal.eberhard@se.com>,
         linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
         linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v6 13/16] ARM: dts: r9a06g032: describe GMAC2
-Date:   Mon, 30 May 2022 10:49:14 +0200
-Message-Id: <20220530084917.91130-14-clement.leger@bootlin.com>
+Subject: [PATCH net-next v6 16/16] MAINTAINERS: add Renesas RZ/N1 switch related driver entry
+Date:   Mon, 30 May 2022 10:49:17 +0200
+Message-Id: <20220530084917.91130-17-clement.leger@bootlin.com>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220530084917.91130-1-clement.leger@bootlin.com>
 References: <20220530084917.91130-1-clement.leger@bootlin.com>
@@ -70,47 +70,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-RZ/N1 SoC includes two MAC named GMACx that are compatible with the
-"snps,dwmac" driver. GMAC1 is connected directly to the MII converter
-port 1. GMAC2 however can be used as the MAC for the switch CPU
-management port or can be muxed to be connected directly to the MII
-converter port 2. This commit add description for the GMAC2 which will
-be used by the switch description.
+After contributing the drivers, volunteer for maintenance and add
+myself as the maintainer for Renesas RZ/N1 switch related drivers.
 
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Clément Léger <clement.leger@bootlin.com>
 ---
- arch/arm/boot/dts/r9a06g032.dtsi | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ MAINTAINERS | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/arch/arm/boot/dts/r9a06g032.dtsi b/arch/arm/boot/dts/r9a06g032.dtsi
-index 981407f4c463..d9fc378013d7 100644
---- a/arch/arm/boot/dts/r9a06g032.dtsi
-+++ b/arch/arm/boot/dts/r9a06g032.dtsi
-@@ -200,6 +200,24 @@ nand_controller: nand-controller@40102000 {
- 			status = "disabled";
- 		};
+diff --git a/MAINTAINERS b/MAINTAINERS
+index d3f656dc0f7b..ea07477bdb16 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -16956,6 +16956,17 @@ S:	Supported
+ F:	Documentation/devicetree/bindings/iio/adc/renesas,rzg2l-adc.yaml
+ F:	drivers/iio/adc/rzg2l_adc.c
  
-+		gmac2: ethernet@44002000 {
-+			compatible = "renesas,r9a06g032-gmac", "renesas,rzn1-gmac", "snps,dwmac";
-+			reg = <0x44002000 0x2000>;
-+			interrupt-parent = <&gic>;
-+			interrupts = <GIC_SPI 37 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 39 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 38 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupt-names = "macirq", "eth_wake_irq", "eth_lpi";
-+			clocks = <&sysctrl R9A06G032_HCLK_GMAC1>;
-+			clock-names = "stmmaceth";
-+			power-domains = <&sysctrl>;
-+			snps,multicast-filter-bins = <256>;
-+			snps,perfect-filter-entries = <128>;
-+			tx-fifo-depth = <2048>;
-+			rx-fifo-depth = <4096>;
-+			status = "disabled";
-+		};
++RENESAS RZ/N1 A5PSW SWITCH DRIVER
++M:	Clément Léger <clement.leger@bootlin.com>
++S:	Maintained
++F:	Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
++F:	Documentation/devicetree/bindings/net/pcs/renesas,rzn1-miic.yaml
++F:	drivers/net/dsa/rzn1_a5psw*
++F:	drivers/net/pcs/pcs-rzn1-miic.c
++F:	include/dt-bindings/net/pcs-rzn1-miic.h
++F:	include/linux/pcs-rzn1-miic.h
++F:	net/dsa/tag_rzn1_a5psw.c
 +
- 		eth_miic: eth-miic@44030000 {
- 			compatible = "renesas,r9a06g032-miic", "renesas,rzn1-miic";
- 			#address-cells = <1>;
+ RENESAS R-CAR GEN3 & RZ/N1 NAND CONTROLLER DRIVER
+ M:	Miquel Raynal <miquel.raynal@bootlin.com>
+ L:	linux-mtd@lists.infradead.org
 -- 
 2.36.0
 
