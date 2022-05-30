@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45C81C4707E
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:53:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B680C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:53:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238490AbiE3NwM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:52:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43014 "EHLO
+        id S238519AbiE3NxH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:53:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238824AbiE3Np6 (ORCPT
+        with ESMTP id S238471AbiE3NpZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:45:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99A6DA0D1F;
-        Mon, 30 May 2022 06:33:38 -0700 (PDT)
+        Mon, 30 May 2022 09:45:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ADC79CF44;
+        Mon, 30 May 2022 06:33:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9B9FCB80DB8;
-        Mon, 30 May 2022 13:33:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03ADFC341C4;
-        Mon, 30 May 2022 13:33:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5CFCEB80DB0;
+        Mon, 30 May 2022 13:33:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3EA1C341C0;
+        Mon, 30 May 2022 13:33:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917613;
-        bh=MoPv6OhQx7EiRN060osT8VM3jcVMoppKxNbkWMOY8cI=;
+        s=k20201202; t=1653917583;
+        bh=NZOjF323UZNafxUxjZt3FD7HpP5qouR5J6a9gRbV+4w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K0p0HOdqXcdzadHtyQSd3uCfR3zWBCVckt25h8dTCFIqeocblhCorsnzP2yCOcW28
-         esxoYGsuJ9MzYKGt7Nt6p8J8QoyfDMiVO8vS7IoobvAipVtYMlc4pLxUTwwuQXA4P8
-         36Z8iTDMJU6Tfl0YbqhrbDkucwGAJIBcE4yVQd1pBzv7p1n7DzfuKgVv7yg3yc3zCm
-         j6fxxGDMqodBldQYqOw/tUSN99aSwXi61fn9+jeOmWtIzLv5Or60hWjHP7n1B6we2p
-         boYfOM+HxFSpu3UTTnsh/DPVlxnuDfg9gX7z5ThouYQJBX1fw6FACoXzC8dcC5Lt2V
-         JNUu0t/FKp30A==
+        b=AEjI5M8xn6s/DolEP7+rhfN83KRjQVJUc/2eYIlh5Y8qpLCqUI4hOLpIPa5NDgyIN
+         ru/qcdSD0DcXctyhwPBXNeEdKOvCj4OOfB/ThXQGohPwHesgLIWNDDJoRv4X4YSeoJ
+         N/7OIKyI0Hy4AO/LtnoAXTHSJd9RxqMdK7j8JnDm6VtEIg6Lj9QDRmsmysd8j/8Bpy
+         wzAPztgRf5uGdm6ruyCEz6XnV9YyiAwzkM/4vHqTZtkUw3rD/wfdD+4Ic7iM/HrPxU
+         1JEjJ8NHBl2+StiQcoEQmzX5BFbjIn4ixabYPFYaxKYCgyo4fks//m7Y5NaXW2qBqE
+         HkLqdqqSpEd6Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vikash Garodia <quic_vgarodia@quicinc.com>,
-        Fritz Koenig <frkoenig@chromium.org>,
-        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, agross@kernel.org,
-        bjorn.andersson@linaro.org, linux-media@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 041/135] media: venus: do not queue internal buffers from previous sequence
-Date:   Mon, 30 May 2022 09:29:59 -0400
-Message-Id: <20220530133133.1931716-41-sashal@kernel.org>
+Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
+        Maulik Shah <quic_mkshah@quicinc.com>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>, lorenzo.pieralisi@arm.com,
+        sudeep.holla@arm.com, rafael@kernel.org, daniel.lezcano@linaro.org,
+        linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.17 034/135] cpuidle: PSCI: Improve support for suspend-to-RAM for PSCI OSI mode
+Date:   Mon, 30 May 2022 09:29:52 -0400
+Message-Id: <20220530133133.1931716-34-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
@@ -55,89 +54,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vikash Garodia <quic_vgarodia@quicinc.com>
+From: Ulf Hansson <ulf.hansson@linaro.org>
 
-[ Upstream commit 73664f107c0fafb59cd91e576b81c986adb74610 ]
+[ Upstream commit 171b66e2e2e9d80b93c8cff799e6175074b22297 ]
 
-During reconfig (DRC) event from firmware, it is not guaranteed that
-all the DPB(internal) buffers would be released by the firmware. Some
-buffers might be released gradually while processing frames from the
-new sequence. These buffers now stay idle in the dpblist.
-In subsequent call to queue the DPBs to firmware, these idle buffers
-should not be queued. The fix identifies those buffers and free them.
+When PSCI OSI mode is supported the syscore flag is set for the CPU devices
+that becomes attached to their PM domains (genpds). In the suspend-to-idle
+case, we call dev_pm_genpd_suspend|resume() to allow genpd to properly
+manage the power-off/on operations (pick an idlestate and manage the on/off
+notifications).
 
-Signed-off-by: Vikash Garodia <quic_vgarodia@quicinc.com>
-Tested-by: Fritz Koenig <frkoenig@chromium.org>
-Signed-off-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+For suspend-to-ram, dev_pm_genpd_suspend|resume() is currently not being
+called, which causes a problem that the genpd on/off notifiers do not get
+sent as expected. This prevents the platform-specific operations from being
+executed, typically needed just before/after the boot CPU is being turned
+off/on.
+
+To deal with this problem, let's register a syscore ops for cpuidle-psci
+when PSCI OSI mode is being used and call dev_pm_genpd_suspend|resume()
+from them. In this way, genpd regains control of the PM domain topology and
+then sends the on/off notifications when it's appropriate.
+
+Reported-by: Maulik Shah <quic_mkshah@quicinc.com>
+Suggested-by: Maulik Shah <quic_mkshah@quicinc.com>
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Tested-by: Maulik Shah <quic_mkshah@quicinc.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/qcom/venus/helpers.c | 34 +++++++++++++++------
- 1 file changed, 25 insertions(+), 9 deletions(-)
+ drivers/cpuidle/cpuidle-psci.c | 46 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 46 insertions(+)
 
-diff --git a/drivers/media/platform/qcom/venus/helpers.c b/drivers/media/platform/qcom/venus/helpers.c
-index 0bca95d01650..fa01edd54c03 100644
---- a/drivers/media/platform/qcom/venus/helpers.c
-+++ b/drivers/media/platform/qcom/venus/helpers.c
-@@ -90,12 +90,28 @@ bool venus_helper_check_codec(struct venus_inst *inst, u32 v4l2_pixfmt)
- }
- EXPORT_SYMBOL_GPL(venus_helper_check_codec);
+diff --git a/drivers/cpuidle/cpuidle-psci.c b/drivers/cpuidle/cpuidle-psci.c
+index b51b5df08450..540105ca0781 100644
+--- a/drivers/cpuidle/cpuidle-psci.c
++++ b/drivers/cpuidle/cpuidle-psci.c
+@@ -23,6 +23,7 @@
+ #include <linux/pm_runtime.h>
+ #include <linux/slab.h>
+ #include <linux/string.h>
++#include <linux/syscore_ops.h>
  
-+static void free_dpb_buf(struct venus_inst *inst, struct intbuf *buf)
+ #include <asm/cpuidle.h>
+ 
+@@ -131,6 +132,49 @@ static int psci_idle_cpuhp_down(unsigned int cpu)
+ 	return 0;
+ }
+ 
++static void psci_idle_syscore_switch(bool suspend)
 +{
-+	ida_free(&inst->dpb_ids, buf->dpb_out_tag);
++	bool cleared = false;
++	struct device *dev;
++	int cpu;
 +
-+	list_del_init(&buf->list);
-+	dma_free_attrs(inst->core->dev, buf->size, buf->va, buf->da,
-+		       buf->attrs);
-+	kfree(buf);
++	for_each_possible_cpu(cpu) {
++		dev = per_cpu_ptr(&psci_cpuidle_data, cpu)->dev;
++
++		if (dev && suspend) {
++			dev_pm_genpd_suspend(dev);
++		} else if (dev) {
++			dev_pm_genpd_resume(dev);
++
++			/* Account for userspace having offlined a CPU. */
++			if (pm_runtime_status_suspended(dev))
++				pm_runtime_set_active(dev);
++
++			/* Clear domain state to re-start fresh. */
++			if (!cleared) {
++				psci_set_domain_state(0);
++				cleared = true;
++			}
++		}
++	}
 +}
 +
- int venus_helper_queue_dpb_bufs(struct venus_inst *inst)
++static int psci_idle_syscore_suspend(void)
++{
++	psci_idle_syscore_switch(true);
++	return 0;
++}
++
++static void psci_idle_syscore_resume(void)
++{
++	psci_idle_syscore_switch(false);
++}
++
++static struct syscore_ops psci_idle_syscore_ops = {
++	.suspend = psci_idle_syscore_suspend,
++	.resume = psci_idle_syscore_resume,
++};
++
+ static void psci_idle_init_cpuhp(void)
  {
--	struct intbuf *buf;
-+	struct intbuf *buf, *next;
-+	unsigned int dpb_size = 0;
- 	int ret = 0;
+ 	int err;
+@@ -138,6 +182,8 @@ static void psci_idle_init_cpuhp(void)
+ 	if (!psci_cpuidle_use_cpuhp)
+ 		return;
  
--	list_for_each_entry(buf, &inst->dpbbufs, list) {
-+	if (inst->dpb_buftype == HFI_BUFFER_OUTPUT)
-+		dpb_size = inst->output_buf_size;
-+	else if (inst->dpb_buftype == HFI_BUFFER_OUTPUT2)
-+		dpb_size = inst->output2_buf_size;
++	register_syscore_ops(&psci_idle_syscore_ops);
 +
-+	list_for_each_entry_safe(buf, next, &inst->dpbbufs, list) {
- 		struct hfi_frame_data fdata;
- 
- 		memset(&fdata, 0, sizeof(fdata));
-@@ -106,6 +122,12 @@ int venus_helper_queue_dpb_bufs(struct venus_inst *inst)
- 		if (buf->owned_by == FIRMWARE)
- 			continue;
- 
-+		/* free buffer from previous sequence which was released later */
-+		if (dpb_size > buf->size) {
-+			free_dpb_buf(inst, buf);
-+			continue;
-+		}
-+
- 		fdata.clnt_data = buf->dpb_out_tag;
- 
- 		ret = hfi_session_process_buf(inst, &fdata);
-@@ -127,13 +149,7 @@ int venus_helper_free_dpb_bufs(struct venus_inst *inst)
- 	list_for_each_entry_safe(buf, n, &inst->dpbbufs, list) {
- 		if (buf->owned_by == FIRMWARE)
- 			continue;
--
--		ida_free(&inst->dpb_ids, buf->dpb_out_tag);
--
--		list_del_init(&buf->list);
--		dma_free_attrs(inst->core->dev, buf->size, buf->va, buf->da,
--			       buf->attrs);
--		kfree(buf);
-+		free_dpb_buf(inst, buf);
- 	}
- 
- 	if (list_empty(&inst->dpbbufs))
+ 	err = cpuhp_setup_state_nocalls(CPUHP_AP_CPU_PM_STARTING,
+ 					"cpuidle/psci:online",
+ 					psci_idle_cpuhp_up,
 -- 
 2.35.1
 
