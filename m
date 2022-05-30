@@ -2,171 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A016C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:53:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6D3BC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:53:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239847AbiE3Owo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:52:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44858 "EHLO
+        id S241548AbiE3Ow1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:52:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242707AbiE3Ob3 (ORCPT
+        with ESMTP id S242733AbiE3Obc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:31:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD5DB85ECA;
-        Mon, 30 May 2022 06:53:18 -0700 (PDT)
+        Mon, 30 May 2022 10:31:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57B6712FEF0;
+        Mon, 30 May 2022 06:53:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A180A61036;
-        Mon, 30 May 2022 13:53:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 148EEC36AEB;
-        Mon, 30 May 2022 13:53:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E852B61024;
+        Mon, 30 May 2022 13:53:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B5DFC3411C;
+        Mon, 30 May 2022 13:53:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918790;
-        bh=Y95uwozMiasRFvhxXf2nNnDa5yGqC+rlAQxH7OwKqN8=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=G/I1BvxjIJNL5l5XSD1i06sB0VTZ4hiDWnlDz2QT88os6ckOPH+K+B/GLzR4nQBVi
-         O1RaV5gl/qoivUgTBS2RBghDeCpeLq/ejfTiLwd6Exm8YAWjTHGs0hrGZ7kvOQeziA
-         nudFe4LqcpvPbMVQVfWxjePpG0MpDYtImrl5FymQhRcI/ZL/pcDLsDSDgJnbAXea1I
-         aHYwr52uj42oTqQ0ZrA1U/VjhD4Hvup3idBhwxFC+Ak4v6ySqJdj7+FvaygNc046YE
-         Ql6FX/lAkauFVAC2SzLOQ1UK4CfgMm+v8iEUpOWNdf/7d99zQ5/Qafe5zC3dRa7XbO
-         AzV1hadzN/dRA==
-Received: by mail-ot1-f42.google.com with SMTP id c15-20020a9d684f000000b0060b097c71ecso7686291oto.10;
-        Mon, 30 May 2022 06:53:10 -0700 (PDT)
-X-Gm-Message-State: AOAM533n+Mn7XNokRhi+MzXq3V7E2qmI83j5ZnUZ5WEuIkCU7LnIIi4Y
-        EaPXwKJXSVNSrkp8VzWBOvljympAKHFldhA6kBU=
-X-Google-Smtp-Source: ABdhPJxPLLr1XoxeuO67R+Z55CuEL035Z/P4lQH8hSWDB5SwljRju1yg2WNI/wdi+r9DZDAx+qZm+isA15gpogCxYxI=
-X-Received: by 2002:a05:6830:9c2:b0:606:1e0a:cc8d with SMTP id
- y2-20020a05683009c200b006061e0acc8dmr20945598ott.265.1653918789233; Mon, 30
- May 2022 06:53:09 -0700 (PDT)
+        s=k20201202; t=1653918781;
+        bh=BJubilEJWC04HBLlh+H4l4DtxiVXurshrA27j4U8eo0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=lt0CCEmuGGDGAPbwrMUHFcnAYvnnS/P2ShH9mKOAl+TQ3E89I5LdhyCD7QRBrBUzA
+         c5KYbZE0HtmcfyfjZ0UpwHmPVp3OSesuaKmPcW1LaAwsB63BDMS+3vITOGOy1J8xYF
+         UOtv9jrnCcoDwATvAPdEcETCWGKSQcmR0tgqoAt6lRrE8RA9nm0xy6SBsA7Ii8lPsE
+         i2knz6Fkdv8mQZQnSUcGpl9L7Yt/SQWGkH27PHHDZGQFa/HTEzINcaJtslXpBEbSSQ
+         Yvgyb0b98N6CKowsKE7W569xJhaI+DSFUADDvMtidO7bl4o3Wt+PekER54keZqEnpS
+         JKei2mRbKDO1w==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     "Smith, Kyle Miller (Nimble Kernel)" <kyles@hpe.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Hannes Reinecke <hare@suse.de>, Christoph Hellwig <hch@lst.de>,
+        Sasha Levin <sashal@kernel.org>, kbusch@kernel.org,
+        axboe@fb.com, sagi@grimberg.me, linux-nvme@lists.infradead.org
+Subject: [PATCH AUTOSEL 4.9 19/24] nvme-pci: fix a NULL pointer dereference in nvme_alloc_admin_tags
+Date:   Mon, 30 May 2022 09:52:06 -0400
+Message-Id: <20220530135211.1937674-19-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220530135211.1937674-1-sashal@kernel.org>
+References: <20220530135211.1937674-1-sashal@kernel.org>
 MIME-Version: 1.0
-References: <20220530134406.1934928-1-sashal@kernel.org> <20220530134406.1934928-69-sashal@kernel.org>
-In-Reply-To: <20220530134406.1934928-69-sashal@kernel.org>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Mon, 30 May 2022 15:52:58 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXECnbiLi1=L7PNhG1XC09izObq0QHXn=qK4ku1AbuEKug@mail.gmail.com>
-Message-ID: <CAMj1kXECnbiLi1=L7PNhG1XC09izObq0QHXn=qK4ku1AbuEKug@mail.gmail.com>
-Subject: Re: [PATCH AUTOSEL 5.10 69/76] ARM: 9201/1: spectre-bhb: rely on
- linker to emit cross-section literal loads
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "# 3.4.x" <stable@vger.kernel.org>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Russell King <linux@armlinux.org.uk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Nicolas Pitre <nico@fluxnic.net>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-AUTONAK
+From: "Smith, Kyle Miller (Nimble Kernel)" <kyles@hpe.com>
 
-On Mon, 30 May 2022 at 15:46, Sasha Levin <sashal@kernel.org> wrote:
->
-> From: Ard Biesheuvel <ardb@kernel.org>
->
-> [ Upstream commit ad12c2f1587c6ec9b52ff226f438955bfae6ad89 ]
->
-> The assembler does not permit 'LDR PC, <sym>' when the symbol lives in a
-> different section, which is why we have been relying on rather fragile
-> open-coded arithmetic to load the address of the vector_swi routine into
-> the program counter using a single LDR instruction in the SWI slot in
-> the vector table. The literal was moved to a different section to in
-> commit 19accfd373847 ("ARM: move vector stubs") to ensure that the
-> vector stubs page does not need to be mapped readable for user space,
-> which is the case for the vector page itself, as it carries the kuser
-> helpers as well.
->
-> So the cross-section literal load is open-coded, and this relies on the
-> address of vector_swi to be at the very start of the vector stubs page,
-> and we won't notice if we got it wrong until booting the kernel and see
-> it break. Fortunately, it was guaranteed to break, so this was fragile
-> but not problematic.
->
-> Now that we have added two other variants of the vector table, we have 3
-> occurrences of the same trick, and so the size of our ISA/compiler/CPU
-> validation space has tripled, in a way that may cause regressions to only
-> be observed once booting the image in question on a CPU that exercises a
-> particular vector table.
->
-> So let's switch to true cross section references, and let the linker fix
-> them up like it fixes up all the other cross section references in the
-> vector page.
->
-> Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
-> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
-> ---
->  arch/arm/kernel/entry-armv.S | 22 +++++++++++++++-------
->  1 file changed, 15 insertions(+), 7 deletions(-)
->
-> diff --git a/arch/arm/kernel/entry-armv.S b/arch/arm/kernel/entry-armv.S
-> index 030351d169aa..aad77ad97d5f 100644
-> --- a/arch/arm/kernel/entry-armv.S
-> +++ b/arch/arm/kernel/entry-armv.S
-> @@ -1074,10 +1074,15 @@ ENDPROC(vector_bhb_bpiall_\name)
->         .endm
->
->         .section .stubs, "ax", %progbits
-> -       @ This must be the first word
-> +       @ These need to remain at the start of the section so that
-> +       @ they are in range of the 'SWI' entries in the vector tables
-> +       @ located 4k down.
-> +.L__vector_swi:
->         .word   vector_swi
->  #ifdef CONFIG_HARDEN_BRANCH_HISTORY
-> +.L__vector_bhb_loop8_swi:
->         .word   vector_bhb_loop8_swi
-> +.L__vector_bhb_bpiall_swi:
->         .word   vector_bhb_bpiall_swi
->  #endif
->
-> @@ -1220,10 +1225,11 @@ vector_addrexcptn:
->         .globl  vector_fiq
->
->         .section .vectors, "ax", %progbits
-> -.L__vectors_start:
->         W(b)    vector_rst
->         W(b)    vector_und
-> -       W(ldr)  pc, .L__vectors_start + 0x1000
-> +ARM(   .reloc  ., R_ARM_LDR_PC_G0, .L__vector_swi              )
-> +THUMB( .reloc  ., R_ARM_THM_PC12, .L__vector_swi               )
-> +       W(ldr)  pc, .
->         W(b)    vector_pabt
->         W(b)    vector_dabt
->         W(b)    vector_addrexcptn
-> @@ -1232,10 +1238,11 @@ vector_addrexcptn:
->
->  #ifdef CONFIG_HARDEN_BRANCH_HISTORY
->         .section .vectors.bhb.loop8, "ax", %progbits
-> -.L__vectors_bhb_loop8_start:
->         W(b)    vector_rst
->         W(b)    vector_bhb_loop8_und
-> -       W(ldr)  pc, .L__vectors_bhb_loop8_start + 0x1004
-> +ARM(   .reloc  ., R_ARM_LDR_PC_G0, .L__vector_bhb_loop8_swi    )
-> +THUMB( .reloc  ., R_ARM_THM_PC12, .L__vector_bhb_loop8_swi     )
-> +       W(ldr)  pc, .
->         W(b)    vector_bhb_loop8_pabt
->         W(b)    vector_bhb_loop8_dabt
->         W(b)    vector_addrexcptn
-> @@ -1243,10 +1250,11 @@ vector_addrexcptn:
->         W(b)    vector_bhb_loop8_fiq
->
->         .section .vectors.bhb.bpiall, "ax", %progbits
-> -.L__vectors_bhb_bpiall_start:
->         W(b)    vector_rst
->         W(b)    vector_bhb_bpiall_und
-> -       W(ldr)  pc, .L__vectors_bhb_bpiall_start + 0x1008
-> +ARM(   .reloc  ., R_ARM_LDR_PC_G0, .L__vector_bhb_bpiall_swi   )
-> +THUMB( .reloc  ., R_ARM_THM_PC12, .L__vector_bhb_bpiall_swi    )
-> +       W(ldr)  pc, .
->         W(b)    vector_bhb_bpiall_pabt
->         W(b)    vector_bhb_bpiall_dabt
->         W(b)    vector_addrexcptn
-> --
-> 2.35.1
->
+[ Upstream commit da42761181627e9bdc37d18368b827948a583929 ]
+
+In nvme_alloc_admin_tags, the admin_q can be set to an error (typically
+-ENOMEM) if the blk_mq_init_queue call fails to set up the queue, which
+is checked immediately after the call. However, when we return the error
+message up the stack, to nvme_reset_work the error takes us to
+nvme_remove_dead_ctrl()
+  nvme_dev_disable()
+   nvme_suspend_queue(&dev->queues[0]).
+
+Here, we only check that the admin_q is non-NULL, rather than not
+an error or NULL, and begin quiescing a queue that never existed, leading
+to bad / NULL pointer dereference.
+
+Signed-off-by: Kyle Smith <kyles@hpe.com>
+Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
+Reviewed-by: Hannes Reinecke <hare@suse.de>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/nvme/host/pci.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index c87f27d3ee31..e7b872592f36 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -1203,6 +1203,7 @@ static int nvme_alloc_admin_tags(struct nvme_dev *dev)
+ 		dev->ctrl.admin_q = blk_mq_init_queue(&dev->admin_tagset);
+ 		if (IS_ERR(dev->ctrl.admin_q)) {
+ 			blk_mq_free_tag_set(&dev->admin_tagset);
++			dev->ctrl.admin_q = NULL;
+ 			return -ENOMEM;
+ 		}
+ 		if (!blk_get_queue(dev->ctrl.admin_q)) {
+-- 
+2.35.1
+
