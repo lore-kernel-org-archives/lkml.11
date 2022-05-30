@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBD26C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED12AC4167E
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:47:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242250AbiE3OqC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:46:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56836 "EHLO
+        id S242309AbiE3OqM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:46:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240056AbiE3OZE (ORCPT
+        with ESMTP id S240018AbiE3OZE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 30 May 2022 10:25:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E959AA889E;
-        Mon, 30 May 2022 06:50:50 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C768CAB0D9;
+        Mon, 30 May 2022 06:50:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1843960FEE;
-        Mon, 30 May 2022 13:50:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58ADEC385B8;
-        Mon, 30 May 2022 13:50:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3EB3B60F24;
+        Mon, 30 May 2022 13:50:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A99EC3411F;
+        Mon, 30 May 2022 13:50:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918649;
-        bh=bjVyL6N7V9EzQz6K+dn/PD/fgZA4GWtmmi8GBVEcjic=;
+        s=k20201202; t=1653918608;
+        bh=JUhpAXL06sgB4JTy+uyMZtOKfZrkSCEtaYLkJICQFXg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RRmQiisrmI9x/unu0x3Ra9AJC9l6y4B+TMhvfTBQhHN3O6DgOYru1B2YZUm7vHCsB
-         leUg4k2CwQicHn5uZ5w3cUBc80wf6k59GEzeNtVVpIFAgDn3FHsP92iqBVyIG6jZ6G
-         n7DnKoho0GlfEfmQ1Uns1VD00aBHcS9qH3bqTMTVNpRfzirKW28FwdCDyCl27j4h+v
-         6mJEQNFRqoHkd+LMiChubyEAM596E6JcnBY353FYvWKxzwKoPyW0cucF14H+3437jd
-         6mki7L2uuxQWUQZcKC1TFDwKD5/jL7UqlY1XN5mTxKAXNNE2u5XrSwaVFrL79X8b5j
-         MV3EIyYEAMwgA==
+        b=J8nT09s7WcSz6xsTjrZeRQC++mXkEl7UPGE6BWEfdL6bKx49VDMzFxOFvijOTETX2
+         3CIfGllQzSyYCYev/7ZVWQNOwjXpIcfuKFZ2YDoMkqFh/BdQwtECUUQmXQ7AWrHwE8
+         yJHE3jNEoDnhyFhDNy9K5uoTQHyrQ71Jy4X2fHJGVCNrBkm5Ho+88ivZAF6UTzQrxm
+         HlGF5Q85aLjuvFoTBv5M47vgspzCml5QxM3AcT/2lQ3u4xThBBkg0HrMMrr2NSrGZQ
+         Os87WWwg0j8FPtFfZ//WNsrPhu7NMqO2HVx7jy42reHEzAUYORZKkDf6QYwDzb1PXe
+         zOytB67jFFECA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ard Biesheuvel <ardb@kernel.org>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
-        linus.walleij@linaro.org, nico@fluxnic.net, keithpac@amazon.com,
-        arnd@arndb.de, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.19 35/38] ARM: 9201/1: spectre-bhb: rely on linker to emit cross-section literal loads
-Date:   Mon, 30 May 2022 09:49:21 -0400
-Message-Id: <20220530134924.1936816-35-sashal@kernel.org>
+Cc:     Lv Ruyi <lv.ruyi@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, kashyap.desai@broadcom.com,
+        sumit.saxena@broadcom.com, shivasharan.srikanteshwara@broadcom.com,
+        jejb@linux.ibm.com, megaraidlinux.pdl@broadcom.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 17/38] scsi: megaraid: Fix error check return value of register_chrdev()
+Date:   Mon, 30 May 2022 09:49:03 -0400
+Message-Id: <20220530134924.1936816-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530134924.1936816-1-sashal@kernel.org>
 References: <20220530134924.1936816-1-sashal@kernel.org>
@@ -53,106 +54,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ard Biesheuvel <ardb@kernel.org>
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-[ Upstream commit ad12c2f1587c6ec9b52ff226f438955bfae6ad89 ]
+[ Upstream commit c5acd61dbb32b6bda0f3a354108f2b8dcb788985 ]
 
-The assembler does not permit 'LDR PC, <sym>' when the symbol lives in a
-different section, which is why we have been relying on rather fragile
-open-coded arithmetic to load the address of the vector_swi routine into
-the program counter using a single LDR instruction in the SWI slot in
-the vector table. The literal was moved to a different section to in
-commit 19accfd373847 ("ARM: move vector stubs") to ensure that the
-vector stubs page does not need to be mapped readable for user space,
-which is the case for the vector page itself, as it carries the kuser
-helpers as well.
+If major equals 0, register_chrdev() returns an error code when it fails.
+This function dynamically allocates a major and returns its number on
+success, so we should use "< 0" to check it instead of "!".
 
-So the cross-section literal load is open-coded, and this relies on the
-address of vector_swi to be at the very start of the vector stubs page,
-and we won't notice if we got it wrong until booting the kernel and see
-it break. Fortunately, it was guaranteed to break, so this was fragile
-but not problematic.
-
-Now that we have added two other variants of the vector table, we have 3
-occurrences of the same trick, and so the size of our ISA/compiler/CPU
-validation space has tripled, in a way that may cause regressions to only
-be observed once booting the image in question on a CPU that exercises a
-particular vector table.
-
-So let's switch to true cross section references, and let the linker fix
-them up like it fixes up all the other cross section references in the
-vector page.
-
-Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Link: https://lore.kernel.org/r/20220418105755.2558828-1-lv.ruyi@zte.com.cn
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/kernel/entry-armv.S | 22 +++++++++++++++-------
- 1 file changed, 15 insertions(+), 7 deletions(-)
+ drivers/scsi/megaraid.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/kernel/entry-armv.S b/arch/arm/kernel/entry-armv.S
-index d779cd1a3b0c..f8296e7a365c 100644
---- a/arch/arm/kernel/entry-armv.S
-+++ b/arch/arm/kernel/entry-armv.S
-@@ -1098,10 +1098,15 @@ ENDPROC(vector_bhb_bpiall_\name)
- 	.endm
- 
- 	.section .stubs, "ax", %progbits
--	@ This must be the first word
-+	@ These need to remain at the start of the section so that
-+	@ they are in range of the 'SWI' entries in the vector tables
-+	@ located 4k down.
-+.L__vector_swi:
- 	.word	vector_swi
- #ifdef CONFIG_HARDEN_BRANCH_HISTORY
-+.L__vector_bhb_loop8_swi:
- 	.word	vector_bhb_loop8_swi
-+.L__vector_bhb_bpiall_swi:
- 	.word	vector_bhb_bpiall_swi
- #endif
- 
-@@ -1244,10 +1249,11 @@ vector_addrexcptn:
- 	.globl	vector_fiq
- 
- 	.section .vectors, "ax", %progbits
--.L__vectors_start:
- 	W(b)	vector_rst
- 	W(b)	vector_und
--	W(ldr)	pc, .L__vectors_start + 0x1000
-+ARM(	.reloc	., R_ARM_LDR_PC_G0, .L__vector_swi		)
-+THUMB(	.reloc	., R_ARM_THM_PC12, .L__vector_swi		)
-+	W(ldr)	pc, .
- 	W(b)	vector_pabt
- 	W(b)	vector_dabt
- 	W(b)	vector_addrexcptn
-@@ -1256,10 +1262,11 @@ vector_addrexcptn:
- 
- #ifdef CONFIG_HARDEN_BRANCH_HISTORY
- 	.section .vectors.bhb.loop8, "ax", %progbits
--.L__vectors_bhb_loop8_start:
- 	W(b)	vector_rst
- 	W(b)	vector_bhb_loop8_und
--	W(ldr)	pc, .L__vectors_bhb_loop8_start + 0x1004
-+ARM(	.reloc	., R_ARM_LDR_PC_G0, .L__vector_bhb_loop8_swi	)
-+THUMB(	.reloc	., R_ARM_THM_PC12, .L__vector_bhb_loop8_swi	)
-+	W(ldr)	pc, .
- 	W(b)	vector_bhb_loop8_pabt
- 	W(b)	vector_bhb_loop8_dabt
- 	W(b)	vector_addrexcptn
-@@ -1267,10 +1274,11 @@ vector_addrexcptn:
- 	W(b)	vector_bhb_loop8_fiq
- 
- 	.section .vectors.bhb.bpiall, "ax", %progbits
--.L__vectors_bhb_bpiall_start:
- 	W(b)	vector_rst
- 	W(b)	vector_bhb_bpiall_und
--	W(ldr)	pc, .L__vectors_bhb_bpiall_start + 0x1008
-+ARM(	.reloc	., R_ARM_LDR_PC_G0, .L__vector_bhb_bpiall_swi	)
-+THUMB(	.reloc	., R_ARM_THM_PC12, .L__vector_bhb_bpiall_swi	)
-+	W(ldr)	pc, .
- 	W(b)	vector_bhb_bpiall_pabt
- 	W(b)	vector_bhb_bpiall_dabt
- 	W(b)	vector_addrexcptn
+diff --git a/drivers/scsi/megaraid.c b/drivers/scsi/megaraid.c
+index a84878fbf45d..7352d46ebb09 100644
+--- a/drivers/scsi/megaraid.c
++++ b/drivers/scsi/megaraid.c
+@@ -4641,7 +4641,7 @@ static int __init megaraid_init(void)
+ 	 * major number allocation.
+ 	 */
+ 	major = register_chrdev(0, "megadev_legacy", &megadev_fops);
+-	if (!major) {
++	if (major < 0) {
+ 		printk(KERN_WARNING
+ 				"megaraid: failed to register char device\n");
+ 	}
 -- 
 2.35.1
 
