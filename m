@@ -2,493 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5673AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 08:14:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C08E2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 08:14:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231502AbiE3IOX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 04:14:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49708 "EHLO
+        id S233242AbiE3IOa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 04:14:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233389AbiE3IOF (ORCPT
+        with ESMTP id S233341AbiE3IOI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 04:14:05 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81C79762B1;
-        Mon, 30 May 2022 01:14:02 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id j191so2273790pgd.3;
-        Mon, 30 May 2022 01:14:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=zTAkmR1xt0IqweruxMy4CCG6yGPCH+Z8P4d1xg/rcYc=;
-        b=iYW9DqpIF8gaw14j/xwj3roo6jkLWMKCMomV8rrCmgD/WBNy+ja8u4RrkYfn/Er6zw
-         twhEX3nISQhNhR3nwu0E6AjRxwbm1ZFNIj/PV4RDqBHusC5/d46m4MyYF63OSAXagPy0
-         zRRQbS7PdIA+kCJTpSu6GO2c8Uz/ZRGEXiFsVJ2St0kDXUNdzY9Onsx0Xo9VJn+RM4Ww
-         tM2lGAny+KwrLE9gBhMoy4vjY/uCI7j47o+vLGkv/6s3OHthmMsvE2wFIPzX6I+03y8I
-         0psz+8dxayPREKf0+4V7zoPMPgaJb79YCDa/7l4+3PeeKNOskHxfm3VgWIThkczkwZNd
-         sy9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=zTAkmR1xt0IqweruxMy4CCG6yGPCH+Z8P4d1xg/rcYc=;
-        b=TkeOLq2T5Csv7SKE/wvdwW510eXJtoPFRvzeIIY029JxstYeDffa7lSuxK3HwN5yu/
-         IdFW7ZYvjDvTQ3w/Vtkp0BkBFWIdzEWOQYmMjUnCPOI23Y9xUlQYfpohm2H4iRQ7qVDn
-         gOuKklljgLOqmEDBxJ1TZAeBJp7Kk2ZDCvyUWiWFnIdpb5XvaKj8cK2rjMVb6MN8280I
-         4gm122sob07ZmWkZi6rUui6CDflXkixzBqerM1WLCtCGEp4vRXm4aoetQIRNhodimN4F
-         PlUU7uH7NbZR/HIBPTL2vAH04XndJkmnkWLtlKvX3Ar9sJAgqqQffeimFePm/to+2OQi
-         cNNA==
-X-Gm-Message-State: AOAM531hOt+26i7JFMH2oIFU3WglkjhXWGI1p3i1nqPUau4FFTvrwvw7
-        u8TeC8WwW3jbtb40eLQRdjk=
-X-Google-Smtp-Source: ABdhPJw0wHfe9FiHxJcW1+qk1xWT2KbPQ4fTvrvZxrNp90kmTQGyBq1M/lLDWWOy0sZM3w/zAOsDnA==
-X-Received: by 2002:a63:a06:0:b0:3c2:3345:bf99 with SMTP id 6-20020a630a06000000b003c23345bf99mr47674563pgk.477.1653898441920;
-        Mon, 30 May 2022 01:14:01 -0700 (PDT)
-Received: from localhost.localdomain ([203.205.141.10])
-        by smtp.gmail.com with ESMTPSA id i10-20020a17090332ca00b0016156e0c3cbsm8624331plr.156.2022.05.30.01.13.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 May 2022 01:14:01 -0700 (PDT)
-From:   menglong8.dong@gmail.com
-X-Google-Original-From: imagedong@tencent.com
-To:     kuba@kernel.org
-Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, nhorman@tuxdriver.com,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        imagedong@tencent.com, dsahern@kernel.org, talalahmad@google.com,
-        keescook@chromium.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH net-next v2 3/3] net: dropreason: reformat the comment fo skb drop reasons
-Date:   Mon, 30 May 2022 16:12:01 +0800
-Message-Id: <20220530081201.10151-4-imagedong@tencent.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220530081201.10151-1-imagedong@tencent.com>
-References: <20220530081201.10151-1-imagedong@tencent.com>
+        Mon, 30 May 2022 04:14:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9347338BFE;
+        Mon, 30 May 2022 01:14:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C63560EEB;
+        Mon, 30 May 2022 08:14:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB3A7C385B8;
+        Mon, 30 May 2022 08:14:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653898445;
+        bh=IiUVNys82QKu71QCm8k+glI5bp4KFPNfGLhFwPbxkn0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=PEaUS7QOfbZ9ewQuHtkHiLC41azqD02A82nuPpdE5Ndwrq8UR/p+tw9S1PM26EsEQ
+         jpybBSwJ5os1HcmCyljv1BXBWah6n0CJAW4ki28jU/wIrytmS3bbhBkM6q3F6k4H9j
+         aoVt7SJZhOgZnvqMGv+IXox7tEuaDUuvHBZu3VNB+5kh+qSTHJ5UAN4z4rPHYpLwc8
+         +XUBVJ5mQT/MEgJnVjIX/Ud5hG4ZVEIS7Cd/3AKJnSCK7mBUGsMP9Bt4uoQvfeRZLB
+         MeXKC0QBZcKOCdr5L/zqxc8+53ne5KlUZuS9ob30rEnJP8BU/CwdaCM+LWllXZZhcL
+         oCn7fTxviqyqQ==
+Date:   Mon, 30 May 2022 10:13:58 +0200
+From:   Christian Brauner <brauner@kernel.org>
+To:     Jan Kiszka <jan.kiszka@siemens.com>
+Cc:     "Serge E. Hallyn" <serge@hallyn.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Laurent Vivier <laurent@vivier.eu>,
+        linux-fsdevel@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        Kees Cook <keescook@chromium.org>,
+        Sargun Dhillon <sargun@sargun.me>,
+        Jann Horn <jannh@google.com>,
+        Henning Schild <henning.schild@siemens.com>,
+        Andrei Vagin <avagin@gmail.com>,
+        Matthew Bobrowski <repnop@google.com>,
+        linux-kernel@vger.kernel.org, linux-api@vger.kernel.org,
+        containers@lists.linux.dev,
+        Christian Brauner <christian.brauner@ubuntu.com>
+Subject: Re: [PATCH v2 2/2] binfmt_misc: enable sandboxed mounts
+Message-ID: <20220530081358.b3tvgvo63mq5o2oo@wittgenstein>
+References: <20211216112659.310979-1-brauner@kernel.org>
+ <20211216112659.310979-2-brauner@kernel.org>
+ <20211226133140.GA8064@mail.hallyn.com>
+ <0e817424-51db-fe0b-a00e-ac7933e8ac1d@siemens.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <0e817424-51db-fe0b-a00e-ac7933e8ac1d@siemens.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Menglong Dong <imagedong@tencent.com>
+On Sun, May 29, 2022 at 09:35:40PM +0200, Jan Kiszka wrote:
+> On 26.12.21 14:31, Serge E. Hallyn wrote:
+> > On Thu, Dec 16, 2021 at 12:26:59PM +0100, Christian Brauner wrote:
+> >> From: Christian Brauner <christian.brauner@ubuntu.com>
+> >>
+> >> Enable unprivileged sandboxes to create their own binfmt_misc mounts.
+> >> This is based on Laurent's work in [1] but has been significantly
+> >> reworked to fix various issues we identified in earlier versions.
+> >>
+> >> While binfmt_misc can currently only be mounted in the initial user
+> >> namespace, binary types registered in this binfmt_misc instance are
+> >> available to all sandboxes (Either by having them installed in the
+> >> sandbox or by registering the binary type with the F flag causing the
+> >> interpreter to be opened right away). So binfmt_misc binary types are
+> >> already delegated to sandboxes implicitly.
+> >>
+> >> However, while a sandbox has access to all registered binary types in
+> >> binfmt_misc a sandbox cannot currently register its own binary types
+> >> in binfmt_misc. This has prevented various use-cases some of which were
+> >> already outlined in [1] but we have a range of issues associated with
+> >> this (cf. [3]-[5] below which are just a small sample).
+> >>
+> >> Extend binfmt_misc to be mountable in non-initial user namespaces.
+> >> Similar to other filesystem such as nfsd, mqueue, and sunrpc we use
+> >> keyed superblock management. The key determines whether we need to
+> >> create a new superblock or can reuse an already existing one. We use the
+> >> user namespace of the mount as key. This means a new binfmt_misc
+> >> superblock is created once per user namespace creation. Subsequent
+> >> mounts of binfmt_misc in the same user namespace will mount the same
+> >> binfmt_misc instance. We explicitly do not create a new binfmt_misc
+> >> superblock on every binfmt_misc mount as the semantics for
+> >> load_misc_binary() line up with the keying model. This also allows us to
+> >> retrieve the relevant binfmt_misc instance based on the caller's user
+> >> namespace which can be done in a simple (bounded to 32 levels) loop.
+> >>
+> >> Similar to the current binfmt_misc semantics allowing access to the
+> >> binary types in the initial binfmt_misc instance we do allow sandboxes
+> >> access to their parent's binfmt_misc mounts if they do not have created
+> >> a separate binfmt_misc instance.
+> >>
+> >> Overall, this will unblock the use-cases mentioned below and in general
+> >> will also allow to support and harden execution of another
+> >> architecture's binaries in tight sandboxes. For instance, using the
+> >> unshare binary it possible to start a chroot of another architecture and
+> >> configure the binfmt_misc interpreter without being root to run the
+> >> binaries in this chroot and without requiring the host to modify its
+> >> binary type handlers.
+> >>
+> >> Henning had already posted a few experiments in the cover letter at [1].
+> >> But here's an additional example where an unprivileged container
+> >> registers qemu-user-static binary handlers for various binary types in
+> >> its separate binfmt_misc mount and is then seamlessly able to start
+> >> containers with a different architecture without affecting the host:
+> >>
+> >> root    [lxc monitor] /var/snap/lxd/common/lxd/containers f1
+> >> 1000000  \_ /sbin/init
+> >> 1000000      \_ /lib/systemd/systemd-journald
+> >> 1000000      \_ /lib/systemd/systemd-udevd
+> >> 1000100      \_ /lib/systemd/systemd-networkd
+> >> 1000101      \_ /lib/systemd/systemd-resolved
+> >> 1000000      \_ /usr/sbin/cron -f
+> >> 1000103      \_ /usr/bin/dbus-daemon --system --address=systemd: --nofork --nopidfile --systemd-activation --syslog-only
+> >> 1000000      \_ /usr/bin/python3 /usr/bin/networkd-dispatcher --run-startup-triggers
+> >> 1000104      \_ /usr/sbin/rsyslogd -n -iNONE
+> >> 1000000      \_ /lib/systemd/systemd-logind
+> >> 1000000      \_ /sbin/agetty -o -p -- \u --noclear --keep-baud console 115200,38400,9600 vt220
+> >> 1000107      \_ dnsmasq --conf-file=/dev/null -u lxc-dnsmasq --strict-order --bind-interfaces --pid-file=/run/lxc/dnsmasq.pid --liste
+> >> 1000000      \_ [lxc monitor] /var/lib/lxc f1-s390x
+> >> 1100000          \_ /usr/bin/qemu-s390x-static /sbin/init
+> >> 1100000              \_ /usr/bin/qemu-s390x-static /lib/systemd/systemd-journald
+> >> 1100000              \_ /usr/bin/qemu-s390x-static /usr/sbin/cron -f
+> >> 1100103              \_ /usr/bin/qemu-s390x-static /usr/bin/dbus-daemon --system --address=systemd: --nofork --nopidfile --systemd-ac
+> >> 1100000              \_ /usr/bin/qemu-s390x-static /usr/bin/python3 /usr/bin/networkd-dispatcher --run-startup-triggers
+> >> 1100104              \_ /usr/bin/qemu-s390x-static /usr/sbin/rsyslogd -n -iNONE
+> >> 1100000              \_ /usr/bin/qemu-s390x-static /lib/systemd/systemd-logind
+> >> 1100000              \_ /usr/bin/qemu-s390x-static /sbin/agetty -o -p -- \u --noclear --keep-baud console 115200,38400,9600 vt220
+> >> 1100000              \_ /usr/bin/qemu-s390x-static /sbin/agetty -o -p -- \u --noclear --keep-baud pts/0 115200,38400,9600 vt220
+> >> 1100000              \_ /usr/bin/qemu-s390x-static /sbin/agetty -o -p -- \u --noclear --keep-baud pts/1 115200,38400,9600 vt220
+> >> 1100000              \_ /usr/bin/qemu-s390x-static /sbin/agetty -o -p -- \u --noclear --keep-baud pts/2 115200,38400,9600 vt220
+> >> 1100000              \_ /usr/bin/qemu-s390x-static /sbin/agetty -o -p -- \u --noclear --keep-baud pts/3 115200,38400,9600 vt220
+> >> 1100000              \_ /usr/bin/qemu-s390x-static /lib/systemd/systemd-udevd
+> >>
+> >> [1]: https://lore.kernel.org/all/20191216091220.465626-1-laurent@vivier.eu
+> >> [2]: https://discuss.linuxcontainers.org/t/binfmt-misc-permission-denied
+> >> [3]: https://discuss.linuxcontainers.org/t/lxd-binfmt-support-for-qemu-static-interpreters
+> >> [4]: https://discuss.linuxcontainers.org/t/3-1-0-binfmt-support-service-in-unprivileged-guest-requires-write-access-on-hosts-proc-sys-fs-binfmt-misc
+> >> [5]: https://discuss.linuxcontainers.org/t/qemu-user-static-not-working-4-11
+> >>
+> >> Link: https://lore.kernel.org/r/20191216091220.465626-2-laurent@vivier.eu (origin)
+> >> Link: https://lore.kernel.org/r/20211028103114.2849140-2-brauner@kernel.org (v1)
+> >> Cc: Sargun Dhillon <sargun@sargun.me>
+> >> Cc: Serge Hallyn <serge@hallyn.com>
+> > 
+> > (one typo below)
+> > 
+> > Acked-by: Serge Hallyn <serge@hallyn.com>
+> > 
+> 
+> What happened to this afterwards? Any remaining issues?
 
-To make the code clear, reformat the comment in dropreason.h to k-doc
-style.
-
-Now, the comment can pass the check of kernel-doc without warnning:
-
-$ ./scripts/kernel-doc -v -none include/linux/dropreason.h
-include/linux/dropreason.h:7: info: Scanning doc for enum skb_drop_reason
-
-Signed-off-by: Menglong Dong <imagedong@tencent.com>
----
-v2:
-- make the comment inline (Jakub Kicinski)
----
- include/net/dropreason.h | 383 +++++++++++++++++++++++----------------
- 1 file changed, 227 insertions(+), 156 deletions(-)
-
-diff --git a/include/net/dropreason.h b/include/net/dropreason.h
-index 460de425297c..e461a03936f8 100644
---- a/include/net/dropreason.h
-+++ b/include/net/dropreason.h
-@@ -5,168 +5,239 @@
- 
- #include <linux/kernel.h>
- 
--/* The reason of skb drop, which is used in kfree_skb_reason().
-- * en...maybe they should be splited by group?
-+/**
-+ * enum skb_drop_reason - the reasons of skb drops
-  *
-- * Each item here should also be in 'TRACE_SKB_DROP_REASON', which is
-- * used to translate the reason to string.
-+ * The reason of skb drop, which is used in kfree_skb_reason().
-+ * en...maybe they should be splited by group?
-  */
- enum skb_drop_reason {
-+	/**
-+	 * @SKB_NOT_DROPPED_YET: skb is not dropped yet (used for no-drop case)
-+	 */
- 	SKB_NOT_DROPPED_YET = 0,
--	SKB_DROP_REASON_NOT_SPECIFIED,	/* drop reason is not specified */
--	SKB_DROP_REASON_NO_SOCKET,	/* socket not found */
--	SKB_DROP_REASON_PKT_TOO_SMALL,	/* packet size is too small */
--	SKB_DROP_REASON_TCP_CSUM,	/* TCP checksum error */
--	SKB_DROP_REASON_SOCKET_FILTER,	/* dropped by socket filter */
--	SKB_DROP_REASON_UDP_CSUM,	/* UDP checksum error */
--	SKB_DROP_REASON_NETFILTER_DROP,	/* dropped by netfilter */
--	SKB_DROP_REASON_OTHERHOST,	/* packet don't belong to current
--					 * host (interface is in promisc
--					 * mode)
--					 */
--	SKB_DROP_REASON_IP_CSUM,	/* IP checksum error */
--	SKB_DROP_REASON_IP_INHDR,	/* there is something wrong with
--					 * IP header (see
--					 * IPSTATS_MIB_INHDRERRORS)
--					 */
--	SKB_DROP_REASON_IP_RPFILTER,	/* IP rpfilter validate failed.
--					 * see the document for rp_filter
--					 * in ip-sysctl.rst for more
--					 * information
--					 */
--	SKB_DROP_REASON_UNICAST_IN_L2_MULTICAST, /* destination address of L2
--						  * is multicast, but L3 is
--						  * unicast.
--						  */
--	SKB_DROP_REASON_XFRM_POLICY,	/* xfrm policy check failed */
--	SKB_DROP_REASON_IP_NOPROTO,	/* no support for IP protocol */
--	SKB_DROP_REASON_SOCKET_RCVBUFF,	/* socket receive buff is full */
--	SKB_DROP_REASON_PROTO_MEM,	/* proto memory limition, such as
--					 * udp packet drop out of
--					 * udp_memory_allocated.
--					 */
--	SKB_DROP_REASON_TCP_MD5NOTFOUND,	/* no MD5 hash and one
--						 * expected, corresponding
--						 * to LINUX_MIB_TCPMD5NOTFOUND
--						 */
--	SKB_DROP_REASON_TCP_MD5UNEXPECTED,	/* MD5 hash and we're not
--						 * expecting one, corresponding
--						 * to LINUX_MIB_TCPMD5UNEXPECTED
--						 */
--	SKB_DROP_REASON_TCP_MD5FAILURE,	/* MD5 hash and its wrong,
--					 * corresponding to
--					 * LINUX_MIB_TCPMD5FAILURE
--					 */
--	SKB_DROP_REASON_SOCKET_BACKLOG,	/* failed to add skb to socket
--					 * backlog (see
--					 * LINUX_MIB_TCPBACKLOGDROP)
--					 */
--	SKB_DROP_REASON_TCP_FLAGS,	/* TCP flags invalid */
--	SKB_DROP_REASON_TCP_ZEROWINDOW,	/* TCP receive window size is zero,
--					 * see LINUX_MIB_TCPZEROWINDOWDROP
--					 */
--	SKB_DROP_REASON_TCP_OLD_DATA,	/* the TCP data reveived is already
--					 * received before (spurious retrans
--					 * may happened), see
--					 * LINUX_MIB_DELAYEDACKLOST
--					 */
--	SKB_DROP_REASON_TCP_OVERWINDOW,	/* the TCP data is out of window,
--					 * the seq of the first byte exceed
--					 * the right edges of receive
--					 * window
--					 */
--	SKB_DROP_REASON_TCP_OFOMERGE,	/* the data of skb is already in
--					 * the ofo queue, corresponding to
--					 * LINUX_MIB_TCPOFOMERGE
--					 */
--	SKB_DROP_REASON_TCP_RFC7323_PAWS, /* PAWS check, corresponding to
--					   * LINUX_MIB_PAWSESTABREJECTED
--					   */
--	SKB_DROP_REASON_TCP_INVALID_SEQUENCE, /* Not acceptable SEQ field */
--	SKB_DROP_REASON_TCP_RESET,	/* Invalid RST packet */
--	SKB_DROP_REASON_TCP_INVALID_SYN, /* Incoming packet has unexpected SYN flag */
--	SKB_DROP_REASON_TCP_CLOSE,	/* TCP socket in CLOSE state */
--	SKB_DROP_REASON_TCP_FASTOPEN,	/* dropped by FASTOPEN request socket */
--	SKB_DROP_REASON_TCP_OLD_ACK,	/* TCP ACK is old, but in window */
--	SKB_DROP_REASON_TCP_TOO_OLD_ACK, /* TCP ACK is too old */
--	SKB_DROP_REASON_TCP_ACK_UNSENT_DATA, /* TCP ACK for data we haven't sent yet */
--	SKB_DROP_REASON_TCP_OFO_QUEUE_PRUNE, /* pruned from TCP OFO queue */
--	SKB_DROP_REASON_TCP_OFO_DROP,	/* data already in receive queue */
--	SKB_DROP_REASON_IP_OUTNOROUTES,	/* route lookup failed */
--	SKB_DROP_REASON_BPF_CGROUP_EGRESS,	/* dropped by
--						 * BPF_PROG_TYPE_CGROUP_SKB
--						 * eBPF program
--						 */
--	SKB_DROP_REASON_IPV6DISABLED,	/* IPv6 is disabled on the device */
--	SKB_DROP_REASON_NEIGH_CREATEFAIL,	/* failed to create neigh
--						 * entry
--						 */
--	SKB_DROP_REASON_NEIGH_FAILED,	/* neigh entry in failed state */
--	SKB_DROP_REASON_NEIGH_QUEUEFULL,	/* arp_queue for neigh
--						 * entry is full
--						 */
--	SKB_DROP_REASON_NEIGH_DEAD,	/* neigh entry is dead */
--	SKB_DROP_REASON_TC_EGRESS,	/* dropped in TC egress HOOK */
--	SKB_DROP_REASON_QDISC_DROP,	/* dropped by qdisc when packet
--					 * outputting (failed to enqueue to
--					 * current qdisc)
--					 */
--	SKB_DROP_REASON_CPU_BACKLOG,	/* failed to enqueue the skb to
--					 * the per CPU backlog queue. This
--					 * can be caused by backlog queue
--					 * full (see netdev_max_backlog in
--					 * net.rst) or RPS flow limit
--					 */
--	SKB_DROP_REASON_XDP,		/* dropped by XDP in input path */
--	SKB_DROP_REASON_TC_INGRESS,	/* dropped in TC ingress HOOK */
--	SKB_DROP_REASON_UNHANDLED_PROTO,	/* protocol not implemented
--						 * or not supported
--						 */
--	SKB_DROP_REASON_SKB_CSUM,	/* sk_buff checksum computation
--					 * error
--					 */
--	SKB_DROP_REASON_SKB_GSO_SEG,	/* gso segmentation error */
--	SKB_DROP_REASON_SKB_UCOPY_FAULT,	/* failed to copy data from
--						 * user space, e.g., via
--						 * zerocopy_sg_from_iter()
--						 * or skb_orphan_frags_rx()
--						 */
--	SKB_DROP_REASON_DEV_HDR,	/* device driver specific
--					 * header/metadata is invalid
--					 */
--	/* the device is not ready to xmit/recv due to any of its data
--	 * structure that is not up/ready/initialized, e.g., the IFF_UP is
--	 * not set, or driver specific tun->tfiles[txq] is not initialized
-+	/** @SKB_DROP_REASON_NOT_SPECIFIED: drop reason is not specified */
-+	SKB_DROP_REASON_NOT_SPECIFIED,
-+	/** @SKB_DROP_REASON_NO_SOCKET: socket not found */
-+	SKB_DROP_REASON_NO_SOCKET,
-+	/** @SKB_DROP_REASON_PKT_TOO_SMALL: packet size is too small */
-+	SKB_DROP_REASON_PKT_TOO_SMALL,
-+	/** @SKB_DROP_REASON_TCP_CSUM: TCP checksum error */
-+	SKB_DROP_REASON_TCP_CSUM,
-+	/** @SKB_DROP_REASON_SOCKET_FILTER: dropped by socket filter */
-+	SKB_DROP_REASON_SOCKET_FILTER,
-+	/** @SKB_DROP_REASON_UDP_CSUM: UDP checksum error */
-+	SKB_DROP_REASON_UDP_CSUM,
-+	/** @SKB_DROP_REASON_NETFILTER_DROP: dropped by netfilter */
-+	SKB_DROP_REASON_NETFILTER_DROP,
-+	/**
-+	 * @SKB_DROP_REASON_OTHERHOST: packet don't belong to current host
-+	 * (interface is in promisc mode)
-+	 */
-+	SKB_DROP_REASON_OTHERHOST,
-+	/** @SKB_DROP_REASON_IP_CSUM: IP checksum error */
-+	SKB_DROP_REASON_IP_CSUM,
-+	/**
-+	 * @SKB_DROP_REASON_IP_INHDR: there is something wrong with IP header (see
-+	 * IPSTATS_MIB_INHDRERRORS)
-+	 */
-+	SKB_DROP_REASON_IP_INHDR,
-+	/**
-+	 * @SKB_DROP_REASON_IP_RPFILTER: IP rpfilter validate failed. see the
-+	 * document for rp_filter in ip-sysctl.rst for more information
-+	 */
-+	SKB_DROP_REASON_IP_RPFILTER,
-+	/**
-+	 * @SKB_DROP_REASON_UNICAST_IN_L2_MULTICAST: destination address of L2 is
-+	 * multicast, but L3 is unicast.
-+	 */
-+	SKB_DROP_REASON_UNICAST_IN_L2_MULTICAST,
-+	/** @SKB_DROP_REASON_XFRM_POLICY: xfrm policy check failed */
-+	SKB_DROP_REASON_XFRM_POLICY,
-+	/** @SKB_DROP_REASON_IP_NOPROTO: no support for IP protocol */
-+	SKB_DROP_REASON_IP_NOPROTO,
-+	/** @SKB_DROP_REASON_SOCKET_RCVBUFF: socket receive buff is full */
-+	SKB_DROP_REASON_SOCKET_RCVBUFF,
-+	/**
-+	 * @SKB_DROP_REASON_PROTO_MEM: proto memory limition, such as udp packet
-+	 * drop out of udp_memory_allocated.
-+	 */
-+	SKB_DROP_REASON_PROTO_MEM,
-+	/**
-+	 * @SKB_DROP_REASON_TCP_MD5NOTFOUND: no MD5 hash and one expected,
-+	 * corresponding to LINUX_MIB_TCPMD5NOTFOUND
-+	 */
-+	SKB_DROP_REASON_TCP_MD5NOTFOUND,
-+	/**
-+	 * @SKB_DROP_REASON_TCP_MD5UNEXPECTED: MD5 hash and we're not expecting
-+	 * one, corresponding to LINUX_MIB_TCPMD5UNEXPECTED
-+	 */
-+	SKB_DROP_REASON_TCP_MD5UNEXPECTED,
-+	/**
-+	 * @SKB_DROP_REASON_TCP_MD5FAILURE: MD5 hash and its wrong, corresponding
-+	 * to LINUX_MIB_TCPMD5FAILURE
-+	 */
-+	SKB_DROP_REASON_TCP_MD5FAILURE,
-+	/**
-+	 * @SKB_DROP_REASON_SOCKET_BACKLOG: failed to add skb to socket backlog (
-+	 * see LINUX_MIB_TCPBACKLOGDROP)
-+	 */
-+	SKB_DROP_REASON_SOCKET_BACKLOG,
-+	/** @SKB_DROP_REASON_TCP_FLAGS: TCP flags invalid */
-+	SKB_DROP_REASON_TCP_FLAGS,
-+	/**
-+	 * @SKB_DROP_REASON_TCP_ZEROWINDOW: TCP receive window size is zero,
-+	 * see LINUX_MIB_TCPZEROWINDOWDROP
-+	 */
-+	SKB_DROP_REASON_TCP_ZEROWINDOW,
-+	/**
-+	 * @SKB_DROP_REASON_TCP_OLD_DATA: the TCP data reveived is already
-+	 * received before (spurious retrans may happened), see
-+	 * LINUX_MIB_DELAYEDACKLOST
-+	 */
-+	SKB_DROP_REASON_TCP_OLD_DATA,
-+	/**
-+	 * @SKB_DROP_REASON_TCP_OVERWINDOW: the TCP data is out of window,
-+	 * the seq of the first byte exceed the right edges of receive
-+	 * window
-+	 */
-+	SKB_DROP_REASON_TCP_OVERWINDOW,
-+	/**
-+	 * @SKB_DROP_REASON_TCP_OFOMERGE: the data of skb is already in the ofo
-+	 * queue, corresponding to LINUX_MIB_TCPOFOMERGE
-+	 */
-+	SKB_DROP_REASON_TCP_OFOMERGE,
-+	/**
-+	 * @SKB_DROP_REASON_TCP_RFC7323_PAWS: PAWS check, corresponding to
-+	 * LINUX_MIB_PAWSESTABREJECTED
-+	 */
-+	SKB_DROP_REASON_TCP_RFC7323_PAWS,
-+	/** @SKB_DROP_REASON_TCP_INVALID_SEQUENCE: Not acceptable SEQ field */
-+	SKB_DROP_REASON_TCP_INVALID_SEQUENCE,
-+	/** @SKB_DROP_REASON_TCP_RESET: Invalid RST packet */
-+	SKB_DROP_REASON_TCP_RESET,
-+	/**
-+	 * @SKB_DROP_REASON_TCP_INVALID_SYN: Incoming packet has unexpected
-+	 * SYN flag
-+	 */
-+	SKB_DROP_REASON_TCP_INVALID_SYN,
-+	/** @SKB_DROP_REASON_TCP_CLOSE: TCP socket in CLOSE state */
-+	SKB_DROP_REASON_TCP_CLOSE,
-+	/** @SKB_DROP_REASON_TCP_FASTOPEN: dropped by FASTOPEN request socket */
-+	SKB_DROP_REASON_TCP_FASTOPEN,
-+	/** @SKB_DROP_REASON_TCP_OLD_ACK: TCP ACK is old, but in window */
-+	SKB_DROP_REASON_TCP_OLD_ACK,
-+	/** @SKB_DROP_REASON_TCP_TOO_OLD_ACK: TCP ACK is too old */
-+	SKB_DROP_REASON_TCP_TOO_OLD_ACK,
-+	/**
-+	 * @SKB_DROP_REASON_TCP_ACK_UNSENT_DATA: TCP ACK for data we haven't
-+	 * sent yet
-+	 */
-+	SKB_DROP_REASON_TCP_ACK_UNSENT_DATA,
-+	/** @SKB_DROP_REASON_TCP_OFO_QUEUE_PRUNE: pruned from TCP OFO queue */
-+	SKB_DROP_REASON_TCP_OFO_QUEUE_PRUNE,
-+	/** @SKB_DROP_REASON_TCP_OFO_DROP: data already in receive queue */
-+	SKB_DROP_REASON_TCP_OFO_DROP,
-+	/** @SKB_DROP_REASON_IP_OUTNOROUTES: route lookup failed */
-+	SKB_DROP_REASON_IP_OUTNOROUTES,
-+	/**
-+	 * @SKB_DROP_REASON_BPF_CGROUP_EGRESS: dropped by BPF_PROG_TYPE_CGROUP_SKB
-+	 * eBPF program
-+	 */
-+	SKB_DROP_REASON_BPF_CGROUP_EGRESS,
-+	/** @SKB_DROP_REASON_IPV6DISABLED: IPv6 is disabled on the device */
-+	SKB_DROP_REASON_IPV6DISABLED,
-+	/** @SKB_DROP_REASON_NEIGH_CREATEFAIL: failed to create neigh entry */
-+	SKB_DROP_REASON_NEIGH_CREATEFAIL,
-+	/** @SKB_DROP_REASON_NEIGH_FAILED: neigh entry in failed state */
-+	SKB_DROP_REASON_NEIGH_FAILED,
-+	/** @SKB_DROP_REASON_NEIGH_QUEUEFULL: arp_queue for neigh entry is full */
-+	SKB_DROP_REASON_NEIGH_QUEUEFULL,
-+	/** @SKB_DROP_REASON_NEIGH_DEAD: neigh entry is dead */
-+	SKB_DROP_REASON_NEIGH_DEAD,
-+	/** @SKB_DROP_REASON_TC_EGRESS: dropped in TC egress HOOK */
-+	SKB_DROP_REASON_TC_EGRESS,
-+	/**
-+	 * @SKB_DROP_REASON_QDISC_DROP: dropped by qdisc when packet outputting (
-+	 * failed to enqueue to current qdisc)
-+	 */
-+	SKB_DROP_REASON_QDISC_DROP,
-+	/**
-+	 * @SKB_DROP_REASON_CPU_BACKLOG: failed to enqueue the skb to the per CPU
-+	 * backlog queue. This can be caused by backlog queue full (see
-+	 * netdev_max_backlog in net.rst) or RPS flow limit
-+	 */
-+	SKB_DROP_REASON_CPU_BACKLOG,
-+	/** @SKB_DROP_REASON_XDP: dropped by XDP in input path */
-+	SKB_DROP_REASON_XDP,
-+	/** @SKB_DROP_REASON_TC_INGRESS: dropped in TC ingress HOOK */
-+	SKB_DROP_REASON_TC_INGRESS,
-+	/** @SKB_DROP_REASON_UNHANDLED_PROTO: protocol not implemented or not supported */
-+	SKB_DROP_REASON_UNHANDLED_PROTO,
-+	/** @SKB_DROP_REASON_SKB_CSUM: sk_buff checksum computation error */
-+	SKB_DROP_REASON_SKB_CSUM,
-+	/** @SKB_DROP_REASON_SKB_GSO_SEG: gso segmentation error */
-+	SKB_DROP_REASON_SKB_GSO_SEG,
-+	/**
-+	 * @SKB_DROP_REASON_SKB_UCOPY_FAULT: failed to copy data from user space,
-+	 * e.g., via zerocopy_sg_from_iter() or skb_orphan_frags_rx()
-+	 */
-+	SKB_DROP_REASON_SKB_UCOPY_FAULT,
-+	/** @SKB_DROP_REASON_DEV_HDR: device driver specific header/metadata is invalid */
-+	SKB_DROP_REASON_DEV_HDR,
-+	/**
-+	 * @SKB_DROP_REASON_DEV_READY: the device is not ready to xmit/recv due to
-+	 * any of its data structure that is not up/ready/initialized,
-+	 * e.g., the IFF_UP is not set, or driver specific tun->tfiles[txq]
-+	 * is not initialized
- 	 */
- 	SKB_DROP_REASON_DEV_READY,
--	SKB_DROP_REASON_FULL_RING,	/* ring buffer is full */
--	SKB_DROP_REASON_NOMEM,		/* error due to OOM */
--	SKB_DROP_REASON_HDR_TRUNC,      /* failed to trunc/extract the header
--					 * from networking data, e.g., failed
--					 * to pull the protocol header from
--					 * frags via pskb_may_pull()
--					 */
--	SKB_DROP_REASON_TAP_FILTER,     /* dropped by (ebpf) filter directly
--					 * attached to tun/tap, e.g., via
--					 * TUNSETFILTEREBPF
--					 */
--	SKB_DROP_REASON_TAP_TXFILTER,	/* dropped by tx filter implemented
--					 * at tun/tap, e.g., check_filter()
--					 */
--	SKB_DROP_REASON_ICMP_CSUM,	/* ICMP checksum error */
--	SKB_DROP_REASON_INVALID_PROTO,	/* the packet doesn't follow RFC
--					 * 2211, such as a broadcasts
--					 * ICMP_TIMESTAMP
--					 */
--	SKB_DROP_REASON_IP_INADDRERRORS,	/* host unreachable, corresponding
--						 * to IPSTATS_MIB_INADDRERRORS
--						 */
--	SKB_DROP_REASON_IP_INNOROUTES,	/* network unreachable, corresponding
--					 * to IPSTATS_MIB_INADDRERRORS
--					 */
--	SKB_DROP_REASON_PKT_TOO_BIG,	/* packet size is too big (maybe exceed
--					 * the MTU)
--					 */
-+	/** @SKB_DROP_REASON_FULL_RING: ring buffer is full */
-+	SKB_DROP_REASON_FULL_RING,
-+	/** @SKB_DROP_REASON_NOMEM: error due to OOM */
-+	SKB_DROP_REASON_NOMEM,
-+	/**
-+	 * @SKB_DROP_REASON_HDR_TRUNC: failed to trunc/extract the header from
-+	 * networking data, e.g., failed to pull the protocol header from
-+	 * frags via pskb_may_pull()
-+	 */
-+	SKB_DROP_REASON_HDR_TRUNC,
-+	/**
-+	 * @SKB_DROP_REASON_TAP_FILTER: dropped by (ebpf) filter directly attached
-+	 * to tun/tap, e.g., via TUNSETFILTEREBPF
-+	 */
-+	SKB_DROP_REASON_TAP_FILTER,
-+	/**
-+	 * @SKB_DROP_REASON_TAP_TXFILTER: dropped by tx filter implemented at
-+	 * tun/tap, e.g., check_filter()
-+	 */
-+	SKB_DROP_REASON_TAP_TXFILTER,
-+	/** @SKB_DROP_REASON_ICMP_CSUM: ICMP checksum error */
-+	SKB_DROP_REASON_ICMP_CSUM,
-+	/**
-+	 * @SKB_DROP_REASON_INVALID_PROTO: the packet doesn't follow RFC 2211,
-+	 * such as a broadcasts ICMP_TIMESTAMP
-+	 */
-+	SKB_DROP_REASON_INVALID_PROTO,
-+	/**
-+	 * @SKB_DROP_REASON_IP_INADDRERRORS: host unreachable, corresponding to
-+	 * IPSTATS_MIB_INADDRERRORS
-+	 */
-+	SKB_DROP_REASON_IP_INADDRERRORS,
-+	/**
-+	 * @SKB_DROP_REASON_IP_INNOROUTES: network unreachable, corresponding to
-+	 * IPSTATS_MIB_INADDRERRORS
-+	 */
-+	SKB_DROP_REASON_IP_INNOROUTES,
-+	/**
-+	 * @SKB_DROP_REASON_PKT_TOO_BIG: packet size is too big (maybe exceed the
-+	 * MTU)
-+	 */
-+	SKB_DROP_REASON_PKT_TOO_BIG,
-+	/**
-+	 * @SKB_DROP_REASON_MAX: the maximum of drop reason, which shouldn't be
-+	 * used as a real 'reason'
-+	 */
- 	SKB_DROP_REASON_MAX,
- };
- 
--- 
-2.36.1
-
+Not that we know. I plan to queue this up for 5.20.
