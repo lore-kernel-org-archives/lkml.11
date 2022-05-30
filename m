@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E592EC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:59:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AD44C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:59:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236456AbiE3N72 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:59:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38744 "EHLO
+        id S236640AbiE3N7j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:59:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239292AbiE3Nv0 (ORCPT
+        with ESMTP id S239203AbiE3NvU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:51:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFA1E819BE;
-        Mon, 30 May 2022 06:36:02 -0700 (PDT)
+        Mon, 30 May 2022 09:51:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDA1D915BC;
+        Mon, 30 May 2022 06:35:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 557E4B80DB3;
-        Mon, 30 May 2022 13:36:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C3CBC3411C;
-        Mon, 30 May 2022 13:35:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BA9E360F27;
+        Mon, 30 May 2022 13:35:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 099AFC341C6;
+        Mon, 30 May 2022 13:35:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917760;
-        bh=KcMfdVrPS5sBaTos33sAmjiggMA4Goon5JHj92fmjP8=;
+        s=k20201202; t=1653917726;
+        bh=N03/B74u7sn+A4NVcosFTHskafhEW/CGOihApCtGW9Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LD57BDZlE0dVjE3jVxR9E1V818g85VF4EnZ55p479/ZqGKHWCBCznnYFcIOhgVEYy
-         IDRjm2i4J96iqjxFXuBzIGdn832CTV913JdbWJK2oy25s4LFXOkRPvmvFvWF58m08J
-         pTOJ5Vm/alBsx9f2daogiaeUiG4K3PWz2MaDR1Ug8FRG4ewa9c2IA0YTZZ9Pg/FvYN
-         oQyxY7RS9FazAdD43Tu3XB/tUzwxtK74WnCpjWZHwxuzbjhdPt90808GwM+F+qnLCJ
-         rYVOZpYxWdiCkgPZs/756HNrHOTNg41vQh1AAJNYhKMar65OKGF+MK82fE9r7wg7sc
-         4BwUnc59TzL1w==
+        b=Rj5jfc+9doM4HPXS4Hxl2oLB2wFMDRxQGYt5i4nHb7kREAf0NIsgKqItV9c2hNP12
+         7fvk8cMZmbVfp+dWRh+TMK1nB5GHnYrt9L+gINeEjCxvxdXryPAHsaQJgEDA6tmEQ8
+         93L9whc8ahvj6sj7n4hmdwY6q9RrI2mWOdvk4XDKc5QZOJwIpEA48xG8IQOIBtfCQ1
+         JWRcHM51IIQe5q0IwE+ZzY5c75RgNpCFavCSd4Z69Eo5AT6+70d/1lu5YjfsKS8UJe
+         gG6Xh/P4BRRgf7VAFFU4REoFlHnuZgLpB2aWbULYfw8aG/uGZik4zbU7C7zc2RfrbL
+         rjq3cBn6YZ+FQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
-        syzkaller <syzkaller@googlegroups.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        pkshih@realtek.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 090/135] rtlwifi: Use pr_warn instead of WARN_ONCE
-Date:   Mon, 30 May 2022 09:30:48 -0400
-Message-Id: <20220530133133.1931716-90-sashal@kernel.org>
+Cc:     Xiang Chen <chenxiang66@hisilicon.com>,
+        Yihang Li <liyihang6@hisilicon.com>,
+        John Garry <john.garry@huawei.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 076/135] scsi: hisi_sas: Undo RPM resume for failed notify phy event for v3 HW
+Date:   Mon, 30 May 2022 09:30:34 -0400
+Message-Id: <20220530133133.1931716-76-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
@@ -54,37 +54,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongliang Mu <mudongliangabcd@gmail.com>
+From: Xiang Chen <chenxiang66@hisilicon.com>
 
-[ Upstream commit ad732da434a2936128769216eddaece3b1af4588 ]
+[ Upstream commit 9b5387fe5af38116b452259d87cd66594b6277c1 ]
 
-This memory allocation failure can be triggered by fault injection or
-high pressure testing, resulting a WARN.
+If we fail to notify the phy up event then undo the RPM resume, as the phy
+up notify event handling pairs with that RPM resume.
 
-Fix this by replacing WARN with pr_warn.
-
-Reported-by: syzkaller <syzkaller@googlegroups.com>
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220511014453.1621366-1-dzm91@hust.edu.cn
+Link: https://lore.kernel.org/r/1651839939-101188-1-git-send-email-john.garry@huawei.com
+Reported-by: Yihang Li <liyihang6@hisilicon.com>
+Tested-by: Yihang Li <liyihang6@hisilicon.com>
+Signed-off-by: Xiang Chen <chenxiang66@hisilicon.com>
+Signed-off-by: John Garry <john.garry@huawei.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/realtek/rtlwifi/usb.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/scsi/hisi_sas/hisi_sas_v3_hw.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/realtek/rtlwifi/usb.c b/drivers/net/wireless/realtek/rtlwifi/usb.c
-index 86a236873254..a8eebafb9a7e 100644
---- a/drivers/net/wireless/realtek/rtlwifi/usb.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/usb.c
-@@ -1014,7 +1014,7 @@ int rtl_usb_probe(struct usb_interface *intf,
- 	hw = ieee80211_alloc_hw(sizeof(struct rtl_priv) +
- 				sizeof(struct rtl_usb_priv), &rtl_ops);
- 	if (!hw) {
--		WARN_ONCE(true, "rtl_usb: ieee80211 alloc failed\n");
-+		pr_warn("rtl_usb: ieee80211 alloc failed\n");
- 		return -ENOMEM;
- 	}
- 	rtlpriv = hw->priv;
+diff --git a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
+index 52089538e9de..b309a9d0f5b7 100644
+--- a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
++++ b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
+@@ -1561,9 +1561,15 @@ static irqreturn_t phy_up_v3_hw(int phy_no, struct hisi_hba *hisi_hba)
+ 
+ 	phy->port_id = port_id;
+ 
+-	/* Call pm_runtime_put_sync() with pairs in hisi_sas_phyup_pm_work() */
++	/*
++	 * Call pm_runtime_get_noresume() which pairs with
++	 * hisi_sas_phyup_pm_work() -> pm_runtime_put_sync().
++	 * For failure call pm_runtime_put() as we are in a hardirq context.
++	 */
+ 	pm_runtime_get_noresume(dev);
+-	hisi_sas_notify_phy_event(phy, HISI_PHYE_PHY_UP_PM);
++	res = hisi_sas_notify_phy_event(phy, HISI_PHYE_PHY_UP_PM);
++	if (!res)
++		pm_runtime_put(dev);
+ 
+ 	res = IRQ_HANDLED;
+ 
 -- 
 2.35.1
 
