@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA7E1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 19:25:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CC63C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 19:25:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241206AbiE3TZO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 15:25:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43094 "EHLO
+        id S241598AbiE3TZR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 15:25:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233280AbiE3TZI (ORCPT
+        with ESMTP id S233157AbiE3TZI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 30 May 2022 15:25:08 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32DCE27CF7
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AAB623BD7
         for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 12:25:07 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1nvl0i-0002B6-1a; Mon, 30 May 2022 21:25:04 +0200
+        id 1nvl0h-0002B4-QC; Mon, 30 May 2022 21:25:04 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1nvl0i-005Vcr-MP; Mon, 30 May 2022 21:25:03 +0200
+        id 1nvl0h-005Vck-TK; Mon, 30 May 2022 21:25:02 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1nvl0g-00D9rw-0T; Mon, 30 May 2022 21:25:02 +0200
+        id 1nvl0f-00D9ro-LJ; Mon, 30 May 2022 21:25:01 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Lee Jones <lee.jones@linaro.org>, Daniel Mack <daniel@zonque.org>,
@@ -34,15 +34,13 @@ To:     Lee Jones <lee.jones@linaro.org>, Daniel Mack <daniel@zonque.org>,
         Robert Jarzmik <robert.jarzmik@free.fr>
 Cc:     linux-kernel@vger.kernel.org, kernel@pengutronix.de,
         linux-arm-kernel@lists.infradead.org
-Subject: [PATCH 2/4] mfd: t7l66xb: Drop platform disable callback
-Date:   Mon, 30 May 2022 21:24:28 +0200
-Message-Id: <20220530192430.2108217-3-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH 0/4] mfd: Some preparations for making platform remove callbacks return void
+Date:   Mon, 30 May 2022 21:24:26 +0200
+Message-Id: <20220530192430.2108217-1-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220530192430.2108217-1-u.kleine-koenig@pengutronix.de>
-References: <20220530192430.2108217-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1967; h=from:subject; bh=KLS92mnV4uioYj/VXMUTsR46ZBmBliG9+/eL2gP9ruw=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBilRnXL6djC0HTLnCmADRIVxAOSHSiiZ6SBlf3VJfo CiWeBBOJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCYpUZ1wAKCRDB/BR4rcrsCfDsB/ wLoUOUI8uudFz8mpFN+y9dH9kL85D3x7wUOkeky3+K8KTiTJwNHoLA1nNDxYXG89rJgLEoWguFDTY2 yQglOdlnrvK3StcEEBHEDlV7K53macBN73DyFCMGpaw+lnmxnMNqazQJNFbl7L+0ekAAFFwPcpmyrH An3CdQZVd8RedcFYi897xtwhD1sS6ZhcciNAwyAt4cAWMV6xOdyTFVC47nGyviJm/hSytgRTxSxVtD /rLSKuvsNT/KWctVvj5kDYwpyrVf7xJBUdOkXWhzfK+4tx1ljZwxqZvcdo//g4NWKVHTZk1td4kxfu Xfcd3oSP68pNo5tHQXMVzJuFxWOz6W
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1063; h=from:subject; bh=U/QRthux9LF8jDKLKaltbPOEZv+B1U5dPVIJlXbqa2Q=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBilRnLpBkEQiTxsbbdoM3kAM3kPTAuGR1Xk+U9RaXn r38B9tSJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCYpUZywAKCRDB/BR4rcrsCQ7MB/ 4s8QrIlDVI7ZTLgOcvdZ3EQ50IyGNgtBxtgMRAoPYpiHjeqmjrFYJATs5DuGC75xJBGmGl0uFSCtyj 8elT+y8cZyh4uvz7jw0m6rYiVruVk8nWtdT/4xcc9ry7u2VxisO+scjL6ZkWKqvBmRuJlDqBAZQ/pP rZJdiDLbezyxeOBLGAnw6LLWUpiYtUqPMFG8+3nZZg0oLjdIMhnFPR73Usa7/jYDtvsTrLFN22Vj6D 9gjPiC3LwXuKbQYQCIXkrLbgTXvWwHNAYrBw+Jo7Vcpi3GV1mjoiEhaC47/c0a4dAqNXgciSTwb3WW dhi2NvHTCgrzuh4HYVmr4nTqJT0Y/q
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -53,61 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-None of the in-tree instantiations of struct t7l66xb_platform_data
-provides a disable callback. So better don't dereference this function
-pointer unconditionally. As there is no user, drop it completely instead
-of calling it conditional.
+Hello,
 
-This is a preparation for making platform remove callbacks return void.
+this is a collection of cleanups that prepare making platform device
+remove callback return void.
 
-Fixes: 1f192015ca5b ("mfd: driver for the T7L66XB TMIO SoC")
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
-Technically this fixes the first commit introducing a struct
-t7l66xb_platform_data without a disable callback, but ...
----
- drivers/mfd/t7l66xb.c       | 6 +-----
- include/linux/mfd/t7l66xb.h | 1 -
- 2 files changed, 1 insertion(+), 6 deletions(-)
+Note there is an interdependency between patches #2 and #3 as
+arch/arm/mach-pxa/eseries.c uses a single function as disable callback
+for both tc6387xb and tc6393xb. (That might be a bug, I didn't check.)
 
-diff --git a/drivers/mfd/t7l66xb.c b/drivers/mfd/t7l66xb.c
-index 5369c67e3280..663ffd4b8570 100644
---- a/drivers/mfd/t7l66xb.c
-+++ b/drivers/mfd/t7l66xb.c
-@@ -397,11 +397,8 @@ static int t7l66xb_probe(struct platform_device *dev)
- 
- static int t7l66xb_remove(struct platform_device *dev)
- {
--	struct t7l66xb_platform_data *pdata = dev_get_platdata(&dev->dev);
- 	struct t7l66xb *t7l66xb = platform_get_drvdata(dev);
--	int ret;
- 
--	ret = pdata->disable(dev);
- 	clk_disable_unprepare(t7l66xb->clk48m);
- 	clk_put(t7l66xb->clk48m);
- 	clk_disable_unprepare(t7l66xb->clk32k);
-@@ -412,8 +409,7 @@ static int t7l66xb_remove(struct platform_device *dev)
- 	mfd_remove_devices(&dev->dev);
- 	kfree(t7l66xb);
- 
--	return ret;
--
-+	return 0;
- }
- 
- static struct platform_driver t7l66xb_platform_driver = {
-diff --git a/include/linux/mfd/t7l66xb.h b/include/linux/mfd/t7l66xb.h
-index 69632c1b07bd..ae3e7a5c5219 100644
---- a/include/linux/mfd/t7l66xb.h
-+++ b/include/linux/mfd/t7l66xb.h
-@@ -12,7 +12,6 @@
- 
- struct t7l66xb_platform_data {
- 	int (*enable)(struct platform_device *dev);
--	int (*disable)(struct platform_device *dev);
- 	int (*suspend)(struct platform_device *dev);
- 	int (*resume)(struct platform_device *dev);
- 
+Patch #2 might be stable material.
+
+Best regards
+Uwe
+
+Uwe Kleine-König (4):
+  mfd: asic3: Make asic3_gpio_remove() return void
+  mfd: t7l66xb: Drop platform disable callback
+  mfd: tc6387xb: Drop disable callback that is never called
+  mfd: tc6393xb: Make disable callback return void
+
+ arch/arm/mach-pxa/eseries.c  | 4 +---
+ arch/arm/mach-pxa/tosa.c     | 4 +---
+ drivers/mfd/asic3.c          | 9 +++------
+ drivers/mfd/t7l66xb.c        | 6 +-----
+ drivers/mfd/tc6393xb.c       | 5 ++---
+ include/linux/mfd/t7l66xb.h  | 1 -
+ include/linux/mfd/tc6387xb.h | 1 -
+ include/linux/mfd/tc6393xb.h | 2 +-
+ 8 files changed, 9 insertions(+), 23 deletions(-)
+
+
+base-commit: 4b0986a3613c92f4ec1bdc7f60ec66fea135991f
 -- 
 2.36.1
 
