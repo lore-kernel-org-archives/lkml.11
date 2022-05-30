@@ -2,179 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9A13C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 06:50:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC52EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 06:51:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232992AbiE3Gun (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 02:50:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46694 "EHLO
+        id S232993AbiE3GvQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 02:51:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232901AbiE3GuH (ORCPT
+        with ESMTP id S232901AbiE3GvK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 02:50:07 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8848D56C3C
-        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 23:50:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653893405;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=OA2EU1n3m5GYJZ5id1x49ev2OO8TYlhuVqKxXwmud78=;
-        b=jNN37wvfN8rQ3Vy3dCnCQ1QwJWJwmrN1qHZffJK8Pi4zGUIFS5CzSM/oBnl8XGYNBH/U77
-        v1d47IfTAoHYE0he8iOVoYTIF9Kxxhh0Q8J0mPpiVZH6EFHZ1C7pB2QBsjvD37TxeLl0zJ
-        aoTQEw1fbYR+hBIShMGIWz5+A3jyhgE=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-75-QAp0YBhdM4OQq60PdAV32Q-1; Mon, 30 May 2022 02:50:04 -0400
-X-MC-Unique: QAp0YBhdM4OQq60PdAV32Q-1
-Received: by mail-wm1-f70.google.com with SMTP id j40-20020a05600c1c2800b003972dbb1066so9227139wms.4
-        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 23:50:04 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:organization:subject
-         :in-reply-to:content-transfer-encoding;
-        bh=OA2EU1n3m5GYJZ5id1x49ev2OO8TYlhuVqKxXwmud78=;
-        b=wbTzVo3QWnP1vOtcHkgFFeIqoJi4rClj1BWRKPIJ0beboUm8MIq0BELQuJ+YObmYEY
-         QABR6N2FvXwmfpCFLXs7Gu0p7R/wO6EYoF+7vwgm3FaYHzWFXJPq/BwfkZ9z8uF13IH+
-         5cexM/sh2AGf80Z/8R+qi4fADtvg7o7znU+t2MxGoGLG5RHI4QJJlQwgjc7cINrk/Qcb
-         mOZJRBmo0Mfjo66dsMQpzCvMp9ctZJL2Scju7xA3XHraKlNo7Sp1zltC8KhveEG2G4wP
-         Ops472sFFDoIBS6IwsPyTYNSken8DZo4oce7YlNtBvNmWhnalUglypCoxOs5DvV9ffSH
-         sWkg==
-X-Gm-Message-State: AOAM532c5NHmUgBEt26OTfDznz2z0Ki7HfrpRRdF0j+sSn+t3ghM7D+w
-        hKqqAajKp2yhqcVauAS+RQmiG4C7sKmeNxf8fT799hrSydwgM/uJi83z37KM12B9pEXhdnbGkqJ
-        mT6PaHsL/jC7t29CV7vLo4HrT
-X-Received: by 2002:adf:9cca:0:b0:210:2f76:93fe with SMTP id h10-20020adf9cca000000b002102f7693femr4575104wre.12.1653893403106;
-        Sun, 29 May 2022 23:50:03 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxZ4OTL2ca2wmWyNO4crgHpqC/B3lDmwhG91OltBGji82xyGj9aMMNAtDCPwYTN03OTbIPtxw==
-X-Received: by 2002:adf:9cca:0:b0:210:2f76:93fe with SMTP id h10-20020adf9cca000000b002102f7693femr4575084wre.12.1653893402877;
-        Sun, 29 May 2022 23:50:02 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c704:7c00:aaa9:2ce5:5aa0:f736? (p200300cbc7047c00aaa92ce55aa0f736.dip0.t-ipconnect.de. [2003:cb:c704:7c00:aaa9:2ce5:5aa0:f736])
-        by smtp.gmail.com with ESMTPSA id m5-20020a5d64a5000000b0020c5253d8casm9032773wrp.22.2022.05.29.23.50.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 29 May 2022 23:50:02 -0700 (PDT)
-Message-ID: <2d742b58-efd2-9a74-0af6-68948a06bfe8@redhat.com>
-Date:   Mon, 30 May 2022 08:50:01 +0200
+        Mon, 30 May 2022 02:51:10 -0400
+Received: from sonic315-11.consmr.mail.gq1.yahoo.com (sonic315-11.consmr.mail.gq1.yahoo.com [98.137.65.35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 036BD56C3D
+        for <linux-kernel@vger.kernel.org>; Sun, 29 May 2022 23:51:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=att.net; s=s1024; t=1653893468; bh=W+smbFnqaB0SBTUnvGQ0HubD+ouh5UYnhC7rmJVGP4o=; h=Date:Subject:To:References:From:In-Reply-To:From:Subject:Reply-To; b=4BakdD8tPvH/CkDiVrID6jPKupFAuL3VNOXppgXrgOon6uhNpJeZJynvwRRwMI1S/Ewa6gA1ULwMXvDDvAYFj5X4eORN61BjX2fUmGx14tsCRd2su1Ii8whCU+0Se6e0Ejd0eMD/eRaLLRVnuBtZ4N5M8IkIcDOtatsulGS3kwA=
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1653893468; bh=cxBjFleibOVFx/zgW1wg9gvp+NoW2zyZ1+am/B7cfUR=; h=X-Sonic-MF:Date:Subject:To:From:From:Subject; b=bIXNfpqtLK1rbUD6/+fTTc9/9GCqG1Dfx2px52Vnj6y5cBND6QgnE+iDzkffUF6/7Vt6spVZHUFY2vfLQeJX/2FgR62lCjsCn8UnHLA4PNYya0XpPWwLTHQwXP9BFWYav1xbYxCVYByAsByJmon3fqHAHhv6TvkpdKedt4XQZgQZOUM0RTTtconcAs34LVyDUZTrGy9oaAiWNFQdLvbBNfLvD9NI1l2ZIGlXKQQoLfLUU3I8DiiHbxeAzMc7DPPajs7VCRV6LPh3RJTE3c53WkyaPCr694sBX3rQZMz5BTsfLV+soIvs1hhm78L9UHNkAxfvLW9a68pJZiT+QajIaw==
+X-YMail-OSG: 1SxjT5cVM1lJjA25MHdBJ6g_ymZL_js0XxQ14lEwy8v7uHE4DOw83gFMTKxb1sR
+ VRm5bViephXe9CcDWIcDqtkbPX7zBJDKIeTOQpct2PbfAxupElKco90Q8.O_Y21v7hcfYUzAHPzc
+ 1KaJamA97OxamgVL8IIWynmbOCLByil2Nr347_wsES9vkMHFa5cvn7eD0ilSX9yFZKj0mT01CjRK
+ H5d0v5EflolMyZXS46d6kYUuwlnE4EA.GhF3ek23zgvKNS6UWbxcYG6XiUBKByJL_Tv4V3BrxqJO
+ k_VAXLHLUubS0gmRLsYv1Xvw5WX2vFQLfA7IJ2_JmnJ7RKBdhXAAFt3.Cg9UsaKBmgtJmS4YFud3
+ bGzsHgyLx.cftAvJsNWmtqN8hCzHkFKjJk9VhRNQ1agh7U.twPl.6h3mAD__YKAKU4aXw7q65uEv
+ 7.IgWF.ZlSHhotBvVARpGLpnpF5rzfXTbWU.3tbNR3lCPOoNlcKv1vMjrUiSor7Bwg4Vkl_o83DF
+ o0m5e46wXwJvtg1DHPEgz48rZIKE2TPUE2iablnSNGCuyPn92a4yEYwOSurQZid88fmXzuS4iPfm
+ 3khj2b0GAJVfA5ketbxl2Mvo2Ai6bvZN3qqHPiCKkcMZ_DDNpfCCDPwPUmnpo2bPAe.c2LIDqQ2V
+ BvMoxaF9PPsC9ZuARmkgc4KZDhgk2QDcleZcthTk0RNAEeUJnPkGHjKXkk1BByfxK39AVYdZRGlm
+ BmLih3AIULU8JZ98ffdRgkHU.S1O4rVC9Bb0YMUUkUVJuoGkrgnvivX6arT.cNTtM57MuiRfu9xP
+ btMR10CJQvO_jBxOMRVN9Dnaw.PygscZI6ZSTVWWDpLZpcEtkrFHHGZK3mI0qtNC6RD_eju32zA1
+ 8s6_h528SocBcviAAYiS4uB_Rl0UEhOPh.VYlkF.wsE5rIPeteyR7eIvk_ElvOjrIDhLvUE80TXd
+ dqEPbpK6lZqbwsdWKPJ9YWSd8d_Ow2ho0xQVCaBL913ymLegRYmBF6BF6Cm5VNKsOf.iefFTQd2L
+ iFUW9lU4St8u3t_G7HY0OL1ME.VSzlfibcNsHhMohDnIaEncFhsUlad59vGt6WZj0s1Ii45nX4ic
+ 6UtB5TPZi27CqiDi0TCjEy1a_ICGOB3mgA1lqdIqLDiDjpLCX7baf_kDzGpm0Lz.pRF8zwJaXysf
+ 5VaI4d.V5Lw3EF3vZ6w0YnvzqnxZvfWTMWBtZvTS2fkMvqdyalk6i1QqE0DishX4afUrR9a2tnLF
+ yXE7K0C4jInuRbiosKg3konuKSrHFFJe_Ktd.v71mvgM8Blk15P4nqZLY9DFuovjK5kTwumPuOKX
+ jPFUm_3hid2lCoXoJNTDlmEhGcuG2trU8dvZc5doNgWrF9vc0ECPVcDO0c8fnAGl5L0TFQksj9I1
+ txjatdV4FfMy1eu390AKO8nVdjmoRPE1HDWD2X3EI84xMaY95Ewl91vk4PtcTwRWAoZeTMLiC28H
+ 91p3vnaouYUb38uFvs7Du.CtSddgUZHYHCYS_2YO.MuauhVEufpgAU_6TxcTDb.QHW0io0CCt_Ot
+ ZqVmJCJfe2ZlFcS2NrfyCAivfm0hs7WCvLfRJWrVU3kuwHaIcQdGn72xh_TvZ.aI73cPIvVzLFUv
+ BRk_unMUcuBd7YD2118SekkyGQFFkk_9ShYoxm_xr_ik.cxmqqiQo7jjW23_J9gXhlGRoX9pPLRx
+ 02hC_ffB1s39WWUel34mLxYLS5t5JonT6rrRLadvUMziv0x._NyExw76ihefJqUde.od9ABRW.uw
+ QOdhBDQF8tMmcM0uq0raBeTiDP3LF3j2yzn8MCEupDftK6iYJ3M.WSx.vuAhuJf6y9GaNWEG3ede
+ J7vOMO2siJP2sbr8JinbDrjm9OxzqCub8B.wRf3pFve9h6QHfHrqtN3clWEDE1rau6A6nyeLfEct
+ YO8VrlcGHdvGu2BpNnzXGhrD150kbQTE567O.CTHITRZXekudNi.ToLQlGTIaocqVIifPG9q3G0Y
+ sbpSClblbM2FK05ogpsCUHXmIebodMIlyu3Vt_rCMjalNqQTJDwaAGaAZUxDBSodO8MXIzZr7D8T
+ VkvzOGP08sPZxhF2iZzmEJiumVlqwKY34o9ieubCM3oR_uEtuobbO0q9ysurVu0cCWnAWgEJIjJG
+ sX1hHLff42nrT8ChBP_DykK7K09c79VyPVjaj.5iGqhFY8ZomlxsSej3t11sj0nHF5LmhJ6Ib8IC
+ keDNSJg73DOkt0UbHkkokCRcxHSjWZ4lX.e4SduLHU5Ggwd1oAIuR0iMDyMHVY60DHdGP.B3OqW4
+ UvyZQ04k0roYHoVXSPE_UAw4-
+X-Sonic-MF: <lesrhorer@att.net>
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic315.consmr.mail.gq1.yahoo.com with HTTP; Mon, 30 May 2022 06:51:08 +0000
+Received: by hermes--canary-production-ne1-799d7bd497-rcgtf (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 38368ed578283a18e64a511e8c6fd2f4;
+          Mon, 30 May 2022 06:51:05 +0000 (UTC)
+Message-ID: <486038c1-bac9-c66c-826f-32fa41aa85e4@att.net>
+Date:   Mon, 30 May 2022 01:50:49 -0500
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
+User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: Module failure on new install of Debian Bullseye
 Content-Language: en-US
-To:     zhenwei pi <pizhenwei@bytedance.com>, akpm@linux-foundation.org,
-        naoya.horiguchi@nec.com, mst@redhat.com
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        jasowang@redhat.com, virtualization@lists.linux-foundation.org,
-        pbonzini@redhat.com, peterx@redhat.com, qemu-devel@nongnu.org
-References: <20220520070648.1794132-1-pizhenwei@bytedance.com>
- <20220520070648.1794132-3-pizhenwei@bytedance.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-Subject: Re: [PATCH 2/3] mm/memory-failure.c: support reset PTE during
- unpoison
-In-Reply-To: <20220520070648.1794132-3-pizhenwei@bytedance.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-modules@vger.kernel.org" <linux-modules@vger.kernel.org>
+References: <dd7e69ce-41a4-cc5e-5a15-0ae9fc52aad0.ref@att.net>
+ <dd7e69ce-41a4-cc5e-5a15-0ae9fc52aad0@att.net>
+ <7999b7b4-3b58-a9c4-4756-445e54404f0f@csgroup.eu>
+ <ba2fb3ff-22dd-d68e-fa99-02de39240f20@infradead.org>
+ <3b8f2ed6-11fd-b5a7-5442-7cac90348514@att.net>
+ <22c909ae-1bd5-731e-53e7-ff6e0b47c7bb@csgroup.eu>
+From:   Leslie Rhorer <lesrhorer@att.net>
+In-Reply-To: <22c909ae-1bd5-731e-53e7-ff6e0b47c7bb@csgroup.eu>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Mailer: WebService/1.1.20225 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 20.05.22 09:06, zhenwei pi wrote:
-> Origianlly, unpoison_memory() is only used by hwpoison-inject, and
-> unpoisons a page which is poisoned by hwpoison-inject too. The kernel PTE
-> entry has no change during software poison/unpoison.
+
+
+On 5/30/2022 1:11 AM, Christophe Leroy wrote:
 > 
-> On a virtualization platform, it's possible to fix hardware corrupted page
-> by hypervisor, typically the hypervisor remaps the error HVA(host virtual
-> address). So add a new parameter 'const char *reason' to show the reason
-> called by.
 > 
-> Once the corrupted page gets fixed, the guest kernel needs put page to
-> buddy. Reuse the page and hit the following issue(Intel Platinum 8260):
->  BUG: unable to handle page fault for address: ffff888061646000
->  #PF: supervisor write access in kernel mode
->  #PF: error_code(0x0002) - not-present page
->  PGD 2c01067 P4D 2c01067 PUD 61aaa063 PMD 10089b063 PTE 800fffff9e9b9062
->  Oops: 0002 [#1] PREEMPT SMP NOPTI
->  CPU: 2 PID: 31106 Comm: stress Kdump: loaded Tainted: G   M       OE     5.18.0-rc6.bm.1-amd64 #6
->  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.16.0-0-gd239552ce722-prebuilt.qemu.org 04/01/2014
->  RIP: 0010:clear_page_erms+0x7/0x10
+> Le 30/05/2022 à 01:45, Leslie Rhorer a écrit :
+>>       If this is the wrong list, please let me know the correct one so I
+>> can subscribe and post there.
+>>
+>>       Two of my servers are having bizarre problems after upgrading to
+>> Debian Bullseye.  After attempting numerous fixes, I decided to wipe the
+>> systems and do a fresh install.  I did a fresh install of he first from
+>> a netinst thumb drive, but the .iso does not contain the bnx2c drivers
+>> needed for the ASUS PEB-10G/57811-1S 10GbE SFP+ Network Adapters used by
+>> both systems.  I tried adding what I thought to be the correct non-free
+>> drivers, but I still got errors about the bnx2x drivers and the
+>> interface shows no carrier.  Since no carrier is detected on the
+>> interface, no LAN or internet access is possible.  The system is
+>> effectively dead, although it boots up and of course I have local
+>> console access.
+>>
+>>       After several different approaches, I changed from the netinst
+>> image to a full non-free image.  It still would not properly load the
+>> bnx2x drivers.  I tried downloading all six bnx2x e1, e1h, and e2
+>> release 7.13.15.0 and 7.13.21.0 firmware files and adding them to the
+>> initram image.  It no longer complains about missing files, but it
+>> doesn't activate the NIC, either.  These servers are both essentially
+>> dead in the water until I can get this fixed.
+>>
+>>       The only thing I spot from dmesg that seems possibly related is:
+>>
+>> ...
+>> [   12.976323] r8169 0000:0b:00.0: firmware: failed to load
+>> rtl_nic/rtl8168f-1.fw (-2)
+>> [   12.976478] firmware_class: See https://wiki.debian.org/Firmware for
+>> information about missing firmware
+>> [   12.976632] r8169 0000:0b:00.0: Direct firmware load for
+>> rtl_nic/rtl8168f-1.fw failed with error -2
+>> [   12.976636] r8169 0000:0b:00.0: Unable to load firmware
+>> rtl_nic/rtl8168f-1.fw (-2)
 > 
-> The kernel PTE entry of the fixed page is still uncorrected, kernel hits
-> page fault during prep_new_page. So add 'bool reset_kpte' to get a change
-> to fix the PTE entry if the page is fixed by hypervisor.
+> Do you have that file rtl8168f-1.fw in your setup ? Is it at the correct
+> place ?
 
-Why don't we want to do that for the hwpoison case?
-
+	I will check.  Without remote LAN support, it isn't very easy.
 > 
-> Signed-off-by: zhenwei pi <pizhenwei@bytedance.com>
-> ---
->  include/linux/mm.h   |  2 +-
->  mm/hwpoison-inject.c |  2 +-
->  mm/memory-failure.c  | 26 +++++++++++++++++++-------
->  3 files changed, 21 insertions(+), 9 deletions(-)
-> 
-> diff --git a/include/linux/mm.h b/include/linux/mm.h
-> index 665873c2788c..7ba210e86401 100644
-> --- a/include/linux/mm.h
-> +++ b/include/linux/mm.h
-> @@ -3191,7 +3191,7 @@ enum mf_flags {
->  extern int memory_failure(unsigned long pfn, int flags);
->  extern void memory_failure_queue(unsigned long pfn, int flags);
->  extern void memory_failure_queue_kick(int cpu);
-> -extern int unpoison_memory(unsigned long pfn);
-> +extern int unpoison_memory(unsigned long pfn, bool reset_kpte, const char *reason);
->  extern int sysctl_memory_failure_early_kill;
->  extern int sysctl_memory_failure_recovery;
->  extern void shake_page(struct page *p);
-> diff --git a/mm/hwpoison-inject.c b/mm/hwpoison-inject.c
-> index 5c0cddd81505..0dd17ba98ade 100644
-> --- a/mm/hwpoison-inject.c
-> +++ b/mm/hwpoison-inject.c
-> @@ -57,7 +57,7 @@ static int hwpoison_unpoison(void *data, u64 val)
->  	if (!capable(CAP_SYS_ADMIN))
->  		return -EPERM;
->  
-> -	return unpoison_memory(val);
-> +	return unpoison_memory(val, false, "hwpoison-inject");
+> By the way, this seems to be more a Debian problem than a kernel
+> problem. Have you asked your question to Debian support ?
 
-s/hwpoison-inject/hwpoison/
+	They and I do not get along.  More importantly, while at first glance 
+this might seem to be the case, I don't think it is. The github 
+repository at
 
-or maybe
+git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/tree/bnx2x/
 
-s/hwpoison-inject/debugfs/
-
->  }
->  
->  DEFINE_DEBUGFS_ATTRIBUTE(hwpoison_fops, NULL, hwpoison_inject, "%lli\n");
-> diff --git a/mm/memory-failure.c b/mm/memory-failure.c
-> index 95c218bb0a37..a46de3be1dd7 100644
-> --- a/mm/memory-failure.c
-> +++ b/mm/memory-failure.c
-> @@ -2132,21 +2132,26 @@ core_initcall(memory_failure_init);
->  /**
->   * unpoison_memory - Unpoison a previously poisoned page
->   * @pfn: Page number of the to be unpoisoned page
-> + * @reset_kpte: Reset the PTE entry for kmap
-> + * @reason: The callers tells why unpoisoning the page
->   *
-> - * Software-unpoison a page that has been poisoned by
-> - * memory_failure() earlier.
-> + * Unpoison a page that has been poisoned by memory_failure() earlier.
->   *
-> - * This is only done on the software-level, so it only works
-> - * for linux injected failures, not real hardware failures
-> + * For linux injected failures, there is no need to reset PTE entry.
-> + * It's possible to fix hardware memory failure on a virtualization platform,
-> + * once hypervisor fixes the failure, guest needs put page back to buddy and
-> + * reset the PTE entry in kernel.
-
-Why can't we do this unconditionally? Just check if the PTE is poisoned,
-and if so, reset it.
-
--- 
-Thanks,
-
-David / dhildenb
-
+	Is not a Debian thing.  It is a kernel module thing for all distros. 
+It is from there I downloaded the firmware (after it failed to load 
+during install), and it is that which is failing.  As I said, it could 
+possibly be the realtek drivers also need to be loaded, and they are 
+not, but I really would not expect it to be the case.
