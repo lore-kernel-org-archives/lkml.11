@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91FDEC38A2B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E76D8C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:57:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239434AbiE3N4i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:56:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35018 "EHLO
+        id S239558AbiE3N46 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:56:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239085AbiE3NvD (ORCPT
+        with ESMTP id S239346AbiE3Nv2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:51:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30A2DB0A45;
-        Mon, 30 May 2022 06:35:23 -0700 (PDT)
+        Mon, 30 May 2022 09:51:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CA073D48C;
+        Mon, 30 May 2022 06:36:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 40638B80DBF;
-        Mon, 30 May 2022 13:35:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE8D6C341C4;
-        Mon, 30 May 2022 13:35:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DBF1AB80DAA;
+        Mon, 30 May 2022 13:36:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92E9DC3411A;
+        Mon, 30 May 2022 13:36:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917714;
-        bh=Xrh9+IX1jDtfZYsCVm1bWZVVFlKh6NLJ2whgIr5FrpM=;
+        s=k20201202; t=1653917799;
+        bh=M0zhwaQCp82msv5xxOtfvTQZBbX1HfR6ZwhxZERc+B0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tu+06D5hLbeaiWnNOcCMrBaPndxlPS0Ugh+ydUl5VawQ0djH6U8yOefM5YgGoIRo2
-         1Slc77zLEudO2EVoBrV1l2P7lxD04owmPtUX7FPRgIpfhyQfLThTZipoBWS6Y2sY28
-         5B5Yh/7tF8iafNoXK3SrKxnXyqAmkJPBbWQYbx3xC6pF67GvDFaHVRxpP3vYR+vmI0
-         ZdSmE3DZJZQ5WKFauLHzOdEeQ1SwRlVHZnSAeId0NJddthDS8WoNegvOzlNAn6dVCs
-         yCJotjmsVUc70C/HuEZE8fqQlXYTLhaB8BQhrBRvOdbPG5URT8g8F8kmx4jvzMnRmf
-         pIRDJ3JDcU7aw==
+        b=rufokiReO75msqeakWJsipzVHp3B+/RAjfSNBKjF+3BlXDAJ3gwcIJzjMA9fvNT78
+         8/YkjVOhMSuxRUgPg3DINw4uJ2Bb7VCjAWFPosQR2EIplI0y8ZYQusykR4A8i/z2dD
+         muKuiVmh6ivpj40FIapBeeEGlvGmHP3BgEz2Q44wbC6QzA+MfTEO5ulJl/B8eYKP56
+         y1P5WOi+xa/+WWeVAGa0sMUpa9eQOBMSGY718TX1XHmC6W1fSVy1o3XVKFiTLM+J37
+         KcomYzrXKCB5uTKXvEvqQ3/BGotFyLr3aq6QElUsPav1XA+rKLAV825T+TB2yMEBT0
+         Uu51okkScR6gQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>,
-        steven.eckhoff.opensource@gmail.com, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.17 074/135] ASoC: tscs454: Add endianness flag in snd_soc_component_driver
-Date:   Mon, 30 May 2022 09:30:32 -0400
-Message-Id: <20220530133133.1931716-74-sashal@kernel.org>
+Cc:     Zijun Hu <quic_zijuhu@quicinc.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>, johan.hedberg@gmail.com,
+        luiz.dentz@gmail.com, linux-bluetooth@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 102/135] Bluetooth: btusb: Set HCI_QUIRK_BROKEN_ERR_DATA_REPORTING for QCA
+Date:   Mon, 30 May 2022 09:31:00 -0400
+Message-Id: <20220530133133.1931716-102-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
@@ -53,66 +52,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: Zijun Hu <quic_zijuhu@quicinc.com>
 
-[ Upstream commit ff69ec96b87dccb3a29edef8cec5d4fefbbc2055 ]
+[ Upstream commit 247f226adadfb7be09dd537f177429f4415aef8e ]
 
-The endianness flag is used on the CODEC side to specify an
-ambivalence to endian, typically because it is lost over the hardware
-link. This device receives audio over an I2S DAI and as such should
-have endianness applied.
+Set HCI_QUIRK_BROKEN_ERR_DATA_REPORTING for QCA controllers since
+they answer HCI_OP_READ_DEF_ERR_DATA_REPORTING with error code
+"UNKNOWN HCI COMMAND" as shown below:
 
-A fixup is also required to use the width directly rather than relying
-on the format in hw_params, now both little and big endian would be
-supported. It is worth noting this changes the behaviour of S24_LE to
-use a word length of 24 rather than 32. This would appear to be a
-correction since the fact S24_LE is stored as 32 bits should not be
-presented over the bus.
+[  580.517552] Bluetooth: hci0: unexpected cc 0x0c5a length: 1 < 2
+[  580.517660] Bluetooth: hci0: Opcode 0x c5a failed: -38
 
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220504170905.332415-26-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+hcitool -i hci0 cmd 0x03 0x5a
+< HCI Command: ogf 0x03, ocf 0x005a, plen 0
+> HCI Event: 0x0e plen 4
+  01 5A 0C 01
+
+btmon log:
+< HCI Command: Read Default Erroneous Data Reporting (0x03|0x005a) plen 0
+> HCI Event: Command Complete (0x0e) plen 4
+      Read Default Erroneous Data Reporting (0x03|0x005a) ncmd 1
+        Status: Unknown HCI Command (0x01)
+
+Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/tscs454.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/bluetooth/btusb.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/sound/soc/codecs/tscs454.c b/sound/soc/codecs/tscs454.c
-index 43220bb36701..c27ca9a273e1 100644
---- a/sound/soc/codecs/tscs454.c
-+++ b/sound/soc/codecs/tscs454.c
-@@ -3120,18 +3120,17 @@ static int set_aif_sample_format(struct snd_soc_component *component,
- 	unsigned int width;
- 	int ret;
+diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
+index 34215dc5e684..304351d2cfdf 100644
+--- a/drivers/bluetooth/btusb.c
++++ b/drivers/bluetooth/btusb.c
+@@ -3321,6 +3321,7 @@ static int btusb_setup_qca(struct hci_dev *hdev)
+ 	 * work with the likes of HSP/HFP mSBC.
+ 	 */
+ 	set_bit(HCI_QUIRK_BROKEN_ENHANCED_SETUP_SYNC_CONN, &hdev->quirks);
++	set_bit(HCI_QUIRK_BROKEN_ERR_DATA_REPORTING, &hdev->quirks);
  
--	switch (format) {
--	case SNDRV_PCM_FORMAT_S16_LE:
-+	switch (snd_pcm_format_width(format)) {
-+	case 16:
- 		width = FV_WL_16;
- 		break;
--	case SNDRV_PCM_FORMAT_S20_3LE:
-+	case 20:
- 		width = FV_WL_20;
- 		break;
--	case SNDRV_PCM_FORMAT_S24_3LE:
-+	case 24:
- 		width = FV_WL_24;
- 		break;
--	case SNDRV_PCM_FORMAT_S24_LE:
--	case SNDRV_PCM_FORMAT_S32_LE:
-+	case 32:
- 		width = FV_WL_32;
- 		break;
- 	default:
-@@ -3326,6 +3325,7 @@ static const struct snd_soc_component_driver soc_component_dev_tscs454 = {
- 	.num_dapm_routes = ARRAY_SIZE(tscs454_intercon),
- 	.controls =	tscs454_snd_controls,
- 	.num_controls = ARRAY_SIZE(tscs454_snd_controls),
-+	.endianness = 1,
- };
- 
- #define TSCS454_RATES SNDRV_PCM_RATE_8000_96000
+ 	return 0;
+ }
 -- 
 2.35.1
 
