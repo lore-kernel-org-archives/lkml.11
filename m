@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A827C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:48:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF589C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:48:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241423AbiE3Osd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:48:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42382 "EHLO
+        id S230492AbiE3Osl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:48:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242128AbiE3O1n (ORCPT
+        with ESMTP id S242267AbiE3O2C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:27:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A3DA82152;
-        Mon, 30 May 2022 06:51:28 -0700 (PDT)
+        Mon, 30 May 2022 10:28:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9844124;
+        Mon, 30 May 2022 06:51:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CD00DB80DE6;
-        Mon, 30 May 2022 13:51:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C069DC385B8;
-        Mon, 30 May 2022 13:51:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1EBD660F24;
+        Mon, 30 May 2022 13:51:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 465A9C3411F;
+        Mon, 30 May 2022 13:51:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918685;
-        bh=eMPpJKwA8BTKycbUU9Cu8i3R9Q5hXb8qPpxRbTtLBFI=;
+        s=k20201202; t=1653918690;
+        bh=l+X116IPdIcDhimPMpbxyK/QJ3o3fL8KICaWCEnn5fo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SO9c9GE2uKdfebymyF6G0fKvpyIT6d7PkNeR3JzDS/gVZ6mM+RfStMbqPkJ/2nRdJ
-         AiiBZv5CXZL4WhCFAsBRebypA1XVhJ+Qs30r1r4BEHfPidTTHU//6vQX4wxHlw7lS2
-         r380ve1Bl5gMTXMoTDmjRpFYWC79hcxFO2aLf66ubDgbZKlhWGv7+HLYq/RdLKDvw9
-         JgAB9//j8PT1PW2F5/ypcfgoM2y5rLRr3EGYTEEmZfZ0/VcrEv/HCzW0JBzHsMT31F
-         I9dMNUTpfTSnaAx66GKDp/99QRctRRW6NYG0MoaCDWn/Dgi9nXrmaeWEpuVKZXfuUg
-         bSoeu12ZwxB7Q==
+        b=ebJrRcBo9isWFFD8iz0kETrgRHlxPvkNZx5NerQ1oAAxh3c4tV4syJtBywq/rO/FY
+         M1wjZC8V/zX4vskdpV7ATBRWu0nhUcAEo/ehieLnuKqriaHDwy3uEvk4TRaMks/tFr
+         RUz09mmJpwtuI4mSusC/ZkfVT78AImLlPq2DDS+qR/IX+5RPW/8FNNnj0ztSDVy8qK
+         w9YODCAJ/m0lFfExkJV93mQ26iiqPbNJi/2+/N2y73LzXTv3VaioFk8OFQT0TWqisW
+         Ll1F8QxPl4l1qYH0y7ugATpTAmQX3qkO550rRbjcaa8Sk137RgpJv8x9WwaxmjYH8X
+         zLnMbvzt42RwQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zheyu Ma <zheyuma97@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 11/29] media: pci: cx23885: Fix the error handling in cx23885_initdev()
-Date:   Mon, 30 May 2022 09:50:38 -0400
-Message-Id: <20220530135057.1937286-11-sashal@kernel.org>
+Cc:     Lv Ruyi <lv.ruyi@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, kashyap.desai@broadcom.com,
+        sumit.saxena@broadcom.com, shivasharan.srikanteshwara@broadcom.com,
+        jejb@linux.ibm.com, megaraidlinux.pdl@broadcom.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 13/29] scsi: megaraid: Fix error check return value of register_chrdev()
+Date:   Mon, 30 May 2022 09:50:40 -0400
+Message-Id: <20220530135057.1937286-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530135057.1937286-1-sashal@kernel.org>
 References: <20220530135057.1937286-1-sashal@kernel.org>
@@ -52,64 +54,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-[ Upstream commit e8123311cf06d7dae71e8c5fe78e0510d20cd30b ]
+[ Upstream commit c5acd61dbb32b6bda0f3a354108f2b8dcb788985 ]
 
-When the driver fails to call the dma_set_mask(), the driver will get
-the following splat:
+If major equals 0, register_chrdev() returns an error code when it fails.
+This function dynamically allocates a major and returns its number on
+success, so we should use "< 0" to check it instead of "!".
 
-[   55.853884] BUG: KASAN: use-after-free in __process_removed_driver+0x3c/0x240
-[   55.854486] Read of size 8 at addr ffff88810de60408 by task modprobe/590
-[   55.856822] Call Trace:
-[   55.860327]  __process_removed_driver+0x3c/0x240
-[   55.861347]  bus_for_each_dev+0x102/0x160
-[   55.861681]  i2c_del_driver+0x2f/0x50
-
-This is because the driver has initialized the i2c related resources
-in cx23885_dev_setup() but not released them in error handling, fix this
-bug by modifying the error path that jumps after failing to call the
-dma_set_mask().
-
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Link: https://lore.kernel.org/r/20220418105755.2558828-1-lv.ruyi@zte.com.cn
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/pci/cx23885/cx23885-core.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/scsi/megaraid.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/pci/cx23885/cx23885-core.c b/drivers/media/pci/cx23885/cx23885-core.c
-index 4612f26fcd6d..6f297caf5540 100644
---- a/drivers/media/pci/cx23885/cx23885-core.c
-+++ b/drivers/media/pci/cx23885/cx23885-core.c
-@@ -2005,7 +2005,7 @@ static int cx23885_initdev(struct pci_dev *pci_dev,
- 	err = pci_set_dma_mask(pci_dev, 0xffffffff);
- 	if (err) {
- 		pr_err("%s/0: Oops: no 32bit PCI DMA ???\n", dev->name);
--		goto fail_ctrl;
-+		goto fail_dma_set_mask;
+diff --git a/drivers/scsi/megaraid.c b/drivers/scsi/megaraid.c
+index f5c09bbf9374..eed6d45b8025 100644
+--- a/drivers/scsi/megaraid.c
++++ b/drivers/scsi/megaraid.c
+@@ -4707,7 +4707,7 @@ static int __init megaraid_init(void)
+ 	 * major number allocation.
+ 	 */
+ 	major = register_chrdev(0, "megadev_legacy", &megadev_fops);
+-	if (!major) {
++	if (major < 0) {
+ 		printk(KERN_WARNING
+ 				"megaraid: failed to register char device\n");
  	}
- 
- 	err = request_irq(pci_dev->irq, cx23885_irq,
-@@ -2013,7 +2013,7 @@ static int cx23885_initdev(struct pci_dev *pci_dev,
- 	if (err < 0) {
- 		pr_err("%s: can't get IRQ %d\n",
- 		       dev->name, pci_dev->irq);
--		goto fail_irq;
-+		goto fail_dma_set_mask;
- 	}
- 
- 	switch (dev->board) {
-@@ -2035,7 +2035,7 @@ static int cx23885_initdev(struct pci_dev *pci_dev,
- 
- 	return 0;
- 
--fail_irq:
-+fail_dma_set_mask:
- 	cx23885_dev_unregister(dev);
- fail_ctrl:
- 	v4l2_ctrl_handler_free(hdl);
 -- 
 2.35.1
 
