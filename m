@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 412A1C38A2E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A391BC3A589
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:03:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239796AbiE3OCh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:02:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60684 "EHLO
+        id S239950AbiE3OC4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:02:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238833AbiE3Nxr (ORCPT
+        with ESMTP id S239035AbiE3Nzh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:53:47 -0400
+        Mon, 30 May 2022 09:55:37 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A710939D1;
-        Mon, 30 May 2022 06:37:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12A8E85EEF;
+        Mon, 30 May 2022 06:38:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C516B60FA2;
-        Mon, 30 May 2022 13:37:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1603AC36AEA;
-        Mon, 30 May 2022 13:37:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F77E60FB3;
+        Mon, 30 May 2022 13:38:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03318C3411A;
+        Mon, 30 May 2022 13:38:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917869;
-        bh=yshcQHCPfHZtHbEvkMQsCzGrimfL7sMR4F4SAhXpLKo=;
+        s=k20201202; t=1653917886;
+        bh=4Gt0SvDQfwFpBg8BFJVfvbk/5CSre1QFPezjWPc6LBw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p8c/g5FdphfmUKEt0PlaGkhTP98Hqj07CdCzQN1o3eNleTyYRINbCxKmfPPkVFdB2
-         gZqi9dUuNiCXBUlwfpSemtSq+Svx2ecYMNBhbCdETDpbCfCRDxze9mAzs3BDbwv1uZ
-         jwDnKJUFH5o7XYOXXxIeShCKnQhfeNxutArQJ9nfCWfHTF4iaIMZxsQGRcITDuleY2
-         9uC2b32oVHg0B9YMkR6MvK2nptMoqeB6C/aKdJm2lYhLaxDpyfxM0Zbp7noGyEz0kg
-         ZigG6F3cTLRDNPu1QUehu60FHn5lIjhArb26QIRhFsSF2EURp0udLft+u/DYF+ZUe1
-         LnYz4tF34Ngdg==
+        b=m39l4yXrr3Oqngd1S9ZXOSSf5A2m5UBmWST4Wj12OTakV0zIOrmml22x6qbkAPWy/
+         xRg1K62bqPlapTzvwXzGQ/1Iz1cpkNGPy0LMIbr+5pyuarYWqK8Co1rY9TbMewe6XU
+         QX9mFXXmtxWEuv4lMryXvhXrfog3wvrw+CdBZDDrp4q3imU9uCwKcB+NG2WSckwxhC
+         GUlRBdKqkBvlSbCDFVys2ydBsGhWIcNPqW8ZJ1ZT2KDpaKzhc646WnzjlIBaBLd/TU
+         J8af/iOX65JTB8bFKG21FCHDODBPMaH8fM4cSIEUuZxdUMbgHipvrjKWtD2/yKYMV8
+         XL0pHFMdnv+kA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Borislav Petkov <bp@suse.de>, Randy Dunlap <rdunlap@infradead.org>,
-        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org
-Subject: [PATCH AUTOSEL 5.17 123/135] x86/microcode: Add explicit CPU vendor dependency
-Date:   Mon, 30 May 2022 09:31:21 -0400
-Message-Id: <20220530133133.1931716-123-sashal@kernel.org>
+Cc:     Guenter Roeck <linux@roeck-us.net>,
+        Sasha Levin <sashal@kernel.org>, jdelvare@suse.com,
+        corbet@lwn.net, linux-hwmon@vger.kernel.org,
+        linux-doc@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 128/135] hwmon: Make chip parameter for with_info API mandatory
+Date:   Mon, 30 May 2022 09:31:26 -0400
+Message-Id: <20220530133133.1931716-128-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
@@ -52,44 +52,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+From: Guenter Roeck <linux@roeck-us.net>
 
-[ Upstream commit 9c55d99e099bd7aa6b91fce8718505c35d5dfc65 ]
+[ Upstream commit ddaefa209c4ac791c1262e97c9b2d0440c8ef1d5 ]
 
-Add an explicit dependency to the respective CPU vendor so that the
-respective microcode support for it gets built only when that support is
-enabled.
+Various attempts were made recently to "convert" the old
+hwmon_device_register() API to devm_hwmon_device_register_with_info()
+by just changing the function name without actually converting the
+driver. Prevent this from happening by making the 'chip' parameter of
+devm_hwmon_device_register_with_info() mandatory.
 
-Reported-by: Randy Dunlap <rdunlap@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/8ead0da9-9545-b10d-e3db-7df1a1f219e4@infradead.org
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/Kconfig | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ Documentation/hwmon/hwmon-kernel-api.rst |  2 +-
+ drivers/hwmon/hwmon.c                    | 16 +++++++---------
+ 2 files changed, 8 insertions(+), 10 deletions(-)
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index d0ecc4005df3..380c16ff5078 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -1332,7 +1332,7 @@ config MICROCODE
+diff --git a/Documentation/hwmon/hwmon-kernel-api.rst b/Documentation/hwmon/hwmon-kernel-api.rst
+index c41eb6108103..23f27fe78e37 100644
+--- a/Documentation/hwmon/hwmon-kernel-api.rst
++++ b/Documentation/hwmon/hwmon-kernel-api.rst
+@@ -72,7 +72,7 @@ hwmon_device_register_with_info is the most comprehensive and preferred means
+ to register a hardware monitoring device. It creates the standard sysfs
+ attributes in the hardware monitoring core, letting the driver focus on reading
+ from and writing to the chip instead of having to bother with sysfs attributes.
+-The parent device parameter cannot be NULL with non-NULL chip info. Its
++The parent device parameter as well as the chip parameter must not be NULL. Its
+ parameters are described in more detail below.
  
- config MICROCODE_INTEL
- 	bool "Intel microcode loading support"
--	depends on MICROCODE
-+	depends on CPU_SUP_INTEL && MICROCODE
- 	default MICROCODE
- 	help
- 	  This options enables microcode patch loading support for Intel
-@@ -1344,7 +1344,7 @@ config MICROCODE_INTEL
+ devm_hwmon_device_register_with_info is similar to
+diff --git a/drivers/hwmon/hwmon.c b/drivers/hwmon/hwmon.c
+index 3ae961986fc3..55237a5fc49a 100644
+--- a/drivers/hwmon/hwmon.c
++++ b/drivers/hwmon/hwmon.c
+@@ -854,11 +854,12 @@ EXPORT_SYMBOL_GPL(hwmon_device_register_with_groups);
  
- config MICROCODE_AMD
- 	bool "AMD microcode loading support"
--	depends on MICROCODE
-+	depends on CPU_SUP_AMD && MICROCODE
- 	help
- 	  If you select this option, microcode patch loading support for AMD
- 	  processors will be enabled.
+ /**
+  * hwmon_device_register_with_info - register w/ hwmon
+- * @dev: the parent device
+- * @name: hwmon name attribute
+- * @drvdata: driver data to attach to created device
+- * @chip: pointer to hwmon chip information
++ * @dev: the parent device (mandatory)
++ * @name: hwmon name attribute (mandatory)
++ * @drvdata: driver data to attach to created device (optional)
++ * @chip: pointer to hwmon chip information (mandatory)
+  * @extra_groups: pointer to list of additional non-standard attribute groups
++ *	(optional)
+  *
+  * hwmon_device_unregister() must be called when the device is no
+  * longer needed.
+@@ -871,13 +872,10 @@ hwmon_device_register_with_info(struct device *dev, const char *name,
+ 				const struct hwmon_chip_info *chip,
+ 				const struct attribute_group **extra_groups)
+ {
+-	if (!name)
+-		return ERR_PTR(-EINVAL);
+-
+-	if (chip && (!chip->ops || !chip->ops->is_visible || !chip->info))
++	if (!dev || !name || !chip)
+ 		return ERR_PTR(-EINVAL);
+ 
+-	if (chip && !dev)
++	if (!chip->ops || !chip->ops->is_visible || !chip->info)
+ 		return ERR_PTR(-EINVAL);
+ 
+ 	return __hwmon_device_register(dev, name, drvdata, chip, extra_groups);
 -- 
 2.35.1
 
