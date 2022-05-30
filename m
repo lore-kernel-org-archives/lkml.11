@@ -2,49 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6251CC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84A0AC4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:37:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241128AbiE3Of1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:35:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34854 "EHLO
+        id S241347AbiE3Ofk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:35:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241344AbiE3ORb (ORCPT
+        with ESMTP id S241402AbiE3ORe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:17:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A15518FD57;
-        Mon, 30 May 2022 06:45:34 -0700 (PDT)
+        Mon, 30 May 2022 10:17:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8719E9C2CD;
+        Mon, 30 May 2022 06:46:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5DBBBB80D6B;
-        Mon, 30 May 2022 13:45:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A508C3411C;
-        Mon, 30 May 2022 13:45:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 23EFB60F14;
+        Mon, 30 May 2022 13:46:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22551C3411C;
+        Mon, 30 May 2022 13:46:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918332;
-        bh=jxgzeRVlGIsHZ8OH4MRJO1jMySOYdjsQ6g1qIZCAgEI=;
+        s=k20201202; t=1653918380;
+        bh=4+g9D5xTre7t5UvhEJEZqO+KyPzsgxnaoiiOJSFfVww=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z/k6oU6ldQjrTttYjVIvuWU8ZY3wHUFjAKiXUVwhnxHoM88MtgCZgX6vcQh4EM/+g
-         E+HyD4uDMSAB1lre1lVwvV6Tv58/lQrnyrbvoUnyEKuPfFRVpKZOAYPbZXw7mwjg6L
-         OEUWa7RT/2MmbakrqfwM03XIjmnMY/l5ZhDR9TKlWaEozIDd8jA0TygeOLy+bXROnT
-         P3uH8QS4z/4FZckncr7Pfrq/krgMf0+ViMYUwAF41IRBcy+cdakf+3sfWM9duwu6VN
-         oMjTiTYYwu4Hpaudm2SbDfXFQ1H47vd2B1vWdcjn/3ua6paLuQewCOrzcbtG3zAEXg
-         TskCDF9uqa/ig==
+        b=t3Fi8dzw8SVAqcbb9fzSWJrF1iQIJt6mHKuXYkQPjqS57OFLw5TkZmhPfkgqNvnEp
+         f/fY4RCCLbJCJtNgW6wDfJDPqS3PxxClkV3PYAQnTrBmkXaLWYMymMSuXcOd3vuj1T
+         402h1/Yrzg3LVMz4gz6/0MmmGjRrMRGCwPttfpzfUv391I0E6fnMUOT4fNuD2EKTgQ
+         WmTWn9vkfYYCyNPJTnrhbMb/reUWrdN9X5/J1MAxtLfL2MQL8uT8UvXndcBgeT+neo
+         di4RZ4DkslX5k6qZZfiVx4DKDUlsTPtvcKXRMzvugioFNaIokgbchE2fOMgwD8YD03
+         mxwR8ZXsxJzZw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lv Ruyi <lv.ruyi@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Sasha Levin <sashal@kernel.org>, robdclark@gmail.com,
-        quic_abhinavk@quicinc.com, airlied@linux.ie, daniel@ffwll.ch,
-        swboyd@chromium.org, dianders@chromium.org, vulab@iscas.ac.cn,
-        quic_mkrishn@quicinc.com, angelogioacchino.delregno@collabora.com,
-        linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.10 37/76] drm: msm: fix error check return value of irq_of_parse_and_map()
-Date:   Mon, 30 May 2022 09:43:27 -0400
-Message-Id: <20220530134406.1934928-37-sashal@kernel.org>
+Cc:     "Smith, Kyle Miller (Nimble Kernel)" <kyles@hpe.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Hannes Reinecke <hare@suse.de>, Christoph Hellwig <hch@lst.de>,
+        Sasha Levin <sashal@kernel.org>, kbusch@kernel.org,
+        axboe@fb.com, sagi@grimberg.me, linux-nvme@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.10 60/76] nvme-pci: fix a NULL pointer dereference in nvme_alloc_admin_tags
+Date:   Mon, 30 May 2022 09:43:50 -0400
+Message-Id: <20220530134406.1934928-60-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530134406.1934928-1-sashal@kernel.org>
 References: <20220530134406.1934928-1-sashal@kernel.org>
@@ -56,41 +53,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+From: "Smith, Kyle Miller (Nimble Kernel)" <kyles@hpe.com>
 
-[ Upstream commit b9e4f1d2b505df8e2439b63e67afaa287c1c43e2 ]
+[ Upstream commit da42761181627e9bdc37d18368b827948a583929 ]
 
-The irq_of_parse_and_map() function returns 0 on failure, and does not
-return an negative value.
+In nvme_alloc_admin_tags, the admin_q can be set to an error (typically
+-ENOMEM) if the blk_mq_init_queue call fails to set up the queue, which
+is checked immediately after the call. However, when we return the error
+message up the stack, to nvme_reset_work the error takes us to
+nvme_remove_dead_ctrl()
+  nvme_dev_disable()
+   nvme_suspend_queue(&dev->queues[0]).
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Patchwork: https://patchwork.freedesktop.org/patch/483175/
-Link: https://lore.kernel.org/r/20220424031959.3172406-1-lv.ruyi@zte.com.cn
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Here, we only check that the admin_q is non-NULL, rather than not
+an error or NULL, and begin quiescing a queue that never existed, leading
+to bad / NULL pointer dereference.
+
+Signed-off-by: Kyle Smith <kyles@hpe.com>
+Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
+Reviewed-by: Hannes Reinecke <hare@suse.de>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/nvme/host/pci.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c
-index e193865ce9a2..9baaaef706ab 100644
---- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c
-+++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c
-@@ -598,9 +598,9 @@ struct msm_kms *mdp5_kms_init(struct drm_device *dev)
- 	pdev = mdp5_kms->pdev;
- 
- 	irq = irq_of_parse_and_map(pdev->dev.of_node, 0);
--	if (irq < 0) {
--		ret = irq;
--		DRM_DEV_ERROR(&pdev->dev, "failed to get irq: %d\n", ret);
-+	if (!irq) {
-+		ret = -EINVAL;
-+		DRM_DEV_ERROR(&pdev->dev, "failed to get irq\n");
- 		goto fail;
- 	}
- 
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index a36db0701d17..7de24a10dd92 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -1666,6 +1666,7 @@ static int nvme_alloc_admin_tags(struct nvme_dev *dev)
+ 		dev->ctrl.admin_q = blk_mq_init_queue(&dev->admin_tagset);
+ 		if (IS_ERR(dev->ctrl.admin_q)) {
+ 			blk_mq_free_tag_set(&dev->admin_tagset);
++			dev->ctrl.admin_q = NULL;
+ 			return -ENOMEM;
+ 		}
+ 		if (!blk_get_queue(dev->ctrl.admin_q)) {
 -- 
 2.35.1
 
