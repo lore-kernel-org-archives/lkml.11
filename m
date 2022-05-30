@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E76D8C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:57:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B0BFC4707E
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:57:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239558AbiE3N46 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:56:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34962 "EHLO
+        id S239595AbiE3N5L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:57:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239346AbiE3Nv2 (ORCPT
+        with ESMTP id S236790AbiE3Nvz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:51:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CA073D48C;
-        Mon, 30 May 2022 06:36:42 -0700 (PDT)
+        Mon, 30 May 2022 09:51:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66B00DFF5;
+        Mon, 30 May 2022 06:36:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DBF1AB80DAA;
-        Mon, 30 May 2022 13:36:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92E9DC3411A;
-        Mon, 30 May 2022 13:36:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 78AE560F92;
+        Mon, 30 May 2022 13:36:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B077DC3411E;
+        Mon, 30 May 2022 13:36:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917799;
-        bh=M0zhwaQCp82msv5xxOtfvTQZBbX1HfR6ZwhxZERc+B0=;
+        s=k20201202; t=1653917815;
+        bh=exPGkkNvsUk+zn+DuPTfeI/LZZeoAt13rijdsRPZbco=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rufokiReO75msqeakWJsipzVHp3B+/RAjfSNBKjF+3BlXDAJ3gwcIJzjMA9fvNT78
-         8/YkjVOhMSuxRUgPg3DINw4uJ2Bb7VCjAWFPosQR2EIplI0y8ZYQusykR4A8i/z2dD
-         muKuiVmh6ivpj40FIapBeeEGlvGmHP3BgEz2Q44wbC6QzA+MfTEO5ulJl/B8eYKP56
-         y1P5WOi+xa/+WWeVAGa0sMUpa9eQOBMSGY718TX1XHmC6W1fSVy1o3XVKFiTLM+J37
-         KcomYzrXKCB5uTKXvEvqQ3/BGotFyLr3aq6QElUsPav1XA+rKLAV825T+TB2yMEBT0
-         Uu51okkScR6gQ==
+        b=Vw5OSNKQxK5Lozju0JC2OGis+ZUD+uPkhUz5Zb0OZiP7EALAE3HnJ4D5fbVKRDR6H
+         AYDIeDwkphPaDKEzsNdTJrnvif8bv65mLBIz02FVauiBsM1LjsrBdydJ1uJCA0mLIZ
+         gsd+4wzrwzoQkHcBe696ZMi3aL0H9dPssHc01Mhl+VjjGbDdSb1MgC3WyNnStqdhV8
+         W6jETucGQIsh2rLIPdjVVBtJaVgboW4hQ5VeeZ5CTKQZPhvp7X5WdRKHgq6bdtNHec
+         93T3FRHoNrpyFTfylEWugdKXxjfxTd1kctKWAoQ18fjw10UZcgm+XYvXBYe2Vkqi+v
+         segUQfM0wvJaw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zijun Hu <quic_zijuhu@quicinc.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>, johan.hedberg@gmail.com,
-        luiz.dentz@gmail.com, linux-bluetooth@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 102/135] Bluetooth: btusb: Set HCI_QUIRK_BROKEN_ERR_DATA_REPORTING for QCA
-Date:   Mon, 30 May 2022 09:31:00 -0400
-Message-Id: <20220530133133.1931716-102-sashal@kernel.org>
+Cc:     Lin Ma <linma@zju.edu.cn>, Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, oder_chiou@realtek.com,
+        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
+        alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.17 106/135] ASoC: rt5645: Fix errorenous cleanup order
+Date:   Mon, 30 May 2022 09:31:04 -0400
+Message-Id: <20220530133133.1931716-106-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
@@ -52,47 +52,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zijun Hu <quic_zijuhu@quicinc.com>
+From: Lin Ma <linma@zju.edu.cn>
 
-[ Upstream commit 247f226adadfb7be09dd537f177429f4415aef8e ]
+[ Upstream commit 2def44d3aec59e38d2701c568d65540783f90f2f ]
 
-Set HCI_QUIRK_BROKEN_ERR_DATA_REPORTING for QCA controllers since
-they answer HCI_OP_READ_DEF_ERR_DATA_REPORTING with error code
-"UNKNOWN HCI COMMAND" as shown below:
+There is a logic error when removing rt5645 device as the function
+rt5645_i2c_remove() first cancel the &rt5645->jack_detect_work and
+delete the &rt5645->btn_check_timer latter. However, since the timer
+handler rt5645_btn_check_callback() will re-queue the jack_detect_work,
+this cleanup order is buggy.
 
-[  580.517552] Bluetooth: hci0: unexpected cc 0x0c5a length: 1 < 2
-[  580.517660] Bluetooth: hci0: Opcode 0x c5a failed: -38
+That is, once the del_timer_sync in rt5645_i2c_remove is concurrently
+run with the rt5645_btn_check_callback, the canceled jack_detect_work
+will be rescheduled again, leading to possible use-after-free.
 
-hcitool -i hci0 cmd 0x03 0x5a
-< HCI Command: ogf 0x03, ocf 0x005a, plen 0
-> HCI Event: 0x0e plen 4
-  01 5A 0C 01
+This patch fix the issue by placing the del_timer_sync function before
+the cancel_delayed_work_sync.
 
-btmon log:
-< HCI Command: Read Default Erroneous Data Reporting (0x03|0x005a) plen 0
-> HCI Event: Command Complete (0x0e) plen 4
-      Read Default Erroneous Data Reporting (0x03|0x005a) ncmd 1
-        Status: Unknown HCI Command (0x01)
-
-Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: Lin Ma <linma@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220516092035.28283-1-linma@zju.edu.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bluetooth/btusb.c | 1 +
- 1 file changed, 1 insertion(+)
+ sound/soc/codecs/rt5645.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
-index 34215dc5e684..304351d2cfdf 100644
---- a/drivers/bluetooth/btusb.c
-+++ b/drivers/bluetooth/btusb.c
-@@ -3321,6 +3321,7 @@ static int btusb_setup_qca(struct hci_dev *hdev)
- 	 * work with the likes of HSP/HFP mSBC.
- 	 */
- 	set_bit(HCI_QUIRK_BROKEN_ENHANCED_SETUP_SYNC_CONN, &hdev->quirks);
-+	set_bit(HCI_QUIRK_BROKEN_ERR_DATA_REPORTING, &hdev->quirks);
+diff --git a/sound/soc/codecs/rt5645.c b/sound/soc/codecs/rt5645.c
+index 197c56047947..4b2e027c1033 100644
+--- a/sound/soc/codecs/rt5645.c
++++ b/sound/soc/codecs/rt5645.c
+@@ -4154,9 +4154,14 @@ static int rt5645_i2c_remove(struct i2c_client *i2c)
+ 	if (i2c->irq)
+ 		free_irq(i2c->irq, rt5645);
  
- 	return 0;
- }
++	/*
++	 * Since the rt5645_btn_check_callback() can queue jack_detect_work,
++	 * the timer need to be delted first
++	 */
++	del_timer_sync(&rt5645->btn_check_timer);
++
+ 	cancel_delayed_work_sync(&rt5645->jack_detect_work);
+ 	cancel_delayed_work_sync(&rt5645->rcclock_work);
+-	del_timer_sync(&rt5645->btn_check_timer);
+ 
+ 	regulator_bulk_disable(ARRAY_SIZE(rt5645->supplies), rt5645->supplies);
+ 
 -- 
 2.35.1
 
