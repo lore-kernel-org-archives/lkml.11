@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5264C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 956A7C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:03:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239097AbiE3OAQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:00:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34720 "EHLO
+        id S238962AbiE3OAF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:00:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239309AbiE3Nv1 (ORCPT
+        with ESMTP id S239311AbiE3Nv1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 30 May 2022 09:51:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A12E84A20;
-        Mon, 30 May 2022 06:36:22 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAC1984A36;
+        Mon, 30 May 2022 06:36:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2F7F0B80D89;
-        Mon, 30 May 2022 13:36:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9695C3411A;
-        Mon, 30 May 2022 13:36:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 96DDCB80AE8;
+        Mon, 30 May 2022 13:36:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DEEAC3411A;
+        Mon, 30 May 2022 13:36:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917780;
-        bh=AdGGf4zFhyOXTVqJk1xXgDVuwRXFdUoO2QbCYMJZo1A=;
+        s=k20201202; t=1653917783;
+        bh=G45LbsVsKGm/veOUJ8V2dv8LiU/3OcCdVZgGMgEciHw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g00uq4GSE6FVGrzRiNCAd89597V7T4KpHqEsWnhg0NM7ioQ8ufXkEeyVuqZ8WRtFL
-         OCUx1vicqEPEnAciCgyFSsZo+mzIz3u/nPKzlSlArj/s+WN60lzvWX9jCD5OSYBHfF
-         o+I3N9zItZjoaBvkxE5VFQ0dQZh+tD9na9Nmg3gPL5JF2X83KEAkNwq6BAZ1qqDTdN
-         Pg5ZUMqA6EviEo3LYye2CFYhF3r1JWa7IWIGGMVEFAf8TJCK0J8U2VqNYC2+FlorQq
-         XgZxUmARocEH2gyoakCIcmrVRlQB4KevTDXHfFQ6E07eZc5/tj6jPOgFYZ6xEYejb2
-         dAfF8tm5MKVXQ==
+        b=VWY+/g8qzzej0RxXDDca/y/7PL+ggwbLNLG0su+M10LAAqDrBgoL1HHnKe4PDAOnR
+         Z8o9kuA2VqWjdNS+P4F3+bvSLhD2DFRqbycquuwI1U9FCdnijucY0kNm4aCJrVYg4s
+         ghD1r6H4lnent3tOUiH53JQdDyxt+OjbWhU21fpBK8hRFIviVdhgNta7CeXeFZwsDj
+         gswYb9Cv6EeGa4hnAAmgQA32gtiG2d1y8ivADDWgNUYg3Hz591Sdku4aHeXfW3OXwJ
+         qgq0zDbvjmNiu58I2SLoSmFeh/BO46PtPbEXW6kI+nM/f/HhaZYmLKt/NMh+S86rIV
+         QUnsXFn0omEHw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Philipp Zabel <p.zabel@pengutronix.de>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+Cc:     Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, linmq006@gmail.com,
-        wsa+renesas@sang-engineering.com, martin.weber@br-automation.com,
-        linux-media@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 094/135] media: coda: limit frame interval enumeration to supported encoder frame sizes
-Date:   Mon, 30 May 2022 09:30:52 -0400
-Message-Id: <20220530133133.1931716-94-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 096/135] media: ccs-core.c: fix failure to call clk_disable_unprepare
+Date:   Mon, 30 May 2022 09:30:54 -0400
+Message-Id: <20220530133133.1931716-96-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
@@ -54,67 +52,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Philipp Zabel <p.zabel@pengutronix.de>
+From: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 
-[ Upstream commit 67e33dd957880879e785cfea83a3aa24bd5c5577 ]
+[ Upstream commit eca89cf60b040ee2cae693ea72a0364284f3084c ]
 
-Let VIDIOC_ENUM_FRAMEINTERVALS return -EINVAL if userspace queries
-frame intervals for frame sizes unsupported by the encoder. Fixes the
-following v4l2-compliance failure:
+Fixes smatch warning:
 
-		fail: v4l2-test-formats.cpp(123): found frame intervals for invalid size 47x16
-		fail: v4l2-test-formats.cpp(282): node->codec_mask & STATEFUL_ENCODER
-	test VIDIOC_ENUM_FMT/FRAMESIZES/FRAMEINTERVALS: FAIL
+drivers/media/i2c/ccs/ccs-core.c:1676 ccs_power_on() warn: 'sensor->ext_clk' from clk_prepare_enable() not released on lines: 1606.
 
-[hverkuil: drop incorrect 'For decoder devices, return -ENOTTY.' in the commit log]
-
-Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
 Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Acked-by: Sakari Ailus <sakari.ailus@linux.intel.com>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/coda/coda-common.c | 20 ++++++++++++++------
- 1 file changed, 14 insertions(+), 6 deletions(-)
+ drivers/media/i2c/ccs/ccs-core.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/media/platform/coda/coda-common.c b/drivers/media/platform/coda/coda-common.c
-index a57822b05070..a2cad1830318 100644
---- a/drivers/media/platform/coda/coda-common.c
-+++ b/drivers/media/platform/coda/coda-common.c
-@@ -1324,7 +1324,8 @@ static int coda_enum_frameintervals(struct file *file, void *fh,
- 				    struct v4l2_frmivalenum *f)
- {
- 	struct coda_ctx *ctx = fh_to_ctx(fh);
--	int i;
-+	struct coda_q_data *q_data;
-+	const struct coda_codec *codec;
+diff --git a/drivers/media/i2c/ccs/ccs-core.c b/drivers/media/i2c/ccs/ccs-core.c
+index 9158d3ce45c0..1649b7a9ff72 100644
+--- a/drivers/media/i2c/ccs/ccs-core.c
++++ b/drivers/media/i2c/ccs/ccs-core.c
+@@ -1603,8 +1603,11 @@ static int ccs_power_on(struct device *dev)
+ 			usleep_range(1000, 2000);
+ 		} while (--retry);
  
- 	if (f->index)
- 		return -EINVAL;
-@@ -1333,12 +1334,19 @@ static int coda_enum_frameintervals(struct file *file, void *fh,
- 	if (!ctx->vdoa && f->pixel_format == V4L2_PIX_FMT_YUYV)
- 		return -EINVAL;
- 
--	for (i = 0; i < CODA_MAX_FORMATS; i++) {
--		if (f->pixel_format == ctx->cvd->src_formats[i] ||
--		    f->pixel_format == ctx->cvd->dst_formats[i])
--			break;
-+	if (coda_format_normalize_yuv(f->pixel_format) == V4L2_PIX_FMT_YUV420) {
-+		q_data = get_q_data(ctx, V4L2_BUF_TYPE_VIDEO_CAPTURE);
-+		codec = coda_find_codec(ctx->dev, f->pixel_format,
-+					q_data->fourcc);
-+	} else {
-+		codec = coda_find_codec(ctx->dev, V4L2_PIX_FMT_YUV420,
-+					f->pixel_format);
+-		if (!reset)
+-			return -EIO;
++		if (!reset) {
++			dev_err(dev, "software reset failed\n");
++			rval = -EIO;
++			goto out_cci_addr_fail;
++		}
  	}
--	if (i == CODA_MAX_FORMATS)
-+	if (!codec)
-+		return -EINVAL;
-+
-+	if (f->width < MIN_W || f->width > codec->max_w ||
-+	    f->height < MIN_H || f->height > codec->max_h)
- 		return -EINVAL;
  
- 	f->type = V4L2_FRMIVAL_TYPE_CONTINUOUS;
+ 	if (sensor->hwcfg.i2c_addr_alt) {
 -- 
 2.35.1
 
