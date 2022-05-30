@@ -2,136 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAF5BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 11:37:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B578C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 11:41:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235803AbiE3Lh6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 07:37:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60134 "EHLO
+        id S235681AbiE3LlE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 07:41:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235640AbiE3Lh4 (ORCPT
+        with ESMTP id S235496AbiE3LlB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 07:37:56 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E06B4EF6F
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 04:37:55 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id wh22so20287659ejb.7
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 04:37:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=/LkbtPQcvwsRsFCT5B2kafAu6Wm//Jx4TksDG+egz0c=;
-        b=qj5/Flbj+znEbYrCKN88/BLH1DQQSNRbO1JdpNo36o4slyOTzw8AGeygowAM4/6woR
-         l81CdycuLucbenbuxFf4zJAIQ00vD2NIvMG45LP+4H3+jumcWpH6EVpzhsP+dIY/DCk2
-         cic8Du6ej5Y1v+OKZuTbzmic5vp0jr8aGdRVY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=/LkbtPQcvwsRsFCT5B2kafAu6Wm//Jx4TksDG+egz0c=;
-        b=Dzg8ZNptin9LzFnV2AbB4HsyKU1fcevwLTU2KivTk7zobfGuAf3DSqbTU3ZMqGWuw1
-         Qbp4oS5W1RZm6MorrppmI4Y4sNYKlWQJnK6LISUxsjyUdy6/aOf+x2SmvmoQvxwDOCOe
-         yEMb1wZQYtAO5OLGcz8DsTx4npGfbXnyhdontc9hm+OnDsqp6G40Hu27LLUnfb9XWpN0
-         F3uhqm6t5QhiFOFcHgx+4vOwXkmGtYRiFgqy02ivD3G26d1aZIgV/fy7bly+dCBOzTL3
-         q5JP9W3boNeIi0adYbba0ZXhlXH6+f1cJ8W+AWje/cdZ587U9ljfqS+T/76FkxdOSR7g
-         Vn3A==
-X-Gm-Message-State: AOAM5332kLbqaFYiQQpiNWCrAFHeZVh65FHgKQ/8fhNylQLfbVopkAxF
-        9oWM9nhdT1b136P3qOyDscHgpQ==
-X-Google-Smtp-Source: ABdhPJz/AQ/g9cFWSF/kO0IUjFAcw7PU+/bypjmMqBnz8vJn84FyVYW3yTumja8Cn3A5+anbddCwXA==
-X-Received: by 2002:a17:907:3f89:b0:6fe:e7a7:c038 with SMTP id hr9-20020a1709073f8900b006fee7a7c038mr32987693ejc.730.1653910673717;
-        Mon, 30 May 2022 04:37:53 -0700 (PDT)
-Received: from tom-ThinkPad-T14s-Gen-2i (net-2-39-143-183.cust.vodafonedsl.it. [2.39.143.183])
-        by smtp.gmail.com with ESMTPSA id z1-20020a1709060ac100b006f3ef214de1sm3900692ejf.71.2022.05.30.04.37.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 May 2022 04:37:53 -0700 (PDT)
-Date:   Mon, 30 May 2022 13:37:50 +0200
-From:   Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
-To:     Haowen Bai <baihaowen@meizu.com>
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-media@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] media: atomisp-mt9m114: Fix pointer dereferenced before
- checking
-Message-ID: <20220530113750.GD99280@tom-ThinkPad-T14s-Gen-2i>
-References: <1653897481-25681-1-git-send-email-baihaowen@meizu.com>
- <20220530112232.GB99280@tom-ThinkPad-T14s-Gen-2i>
+        Mon, 30 May 2022 07:41:01 -0400
+X-Greylist: delayed 121 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 30 May 2022 04:40:57 PDT
+Received: from mail1.perex.cz (mail1.perex.cz [77.48.224.245])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 184EF419A3
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 04:40:57 -0700 (PDT)
+Received: from mail1.perex.cz (localhost [127.0.0.1])
+        by smtp1.perex.cz (Perex's E-mail Delivery System) with ESMTP id 981BBA0046;
+        Mon, 30 May 2022 13:40:55 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.perex.cz 981BBA0046
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=perex.cz; s=default;
+        t=1653910855; bh=A94usJLEIZvHxs0NLWIgXXMYLwbbDmxswIagNBme1fA=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=aqO3x3TZZmEChRN+9pBFGi42ZbmxIRT6l6Fv3SLOfOaU5XUHs41fyYweMmKlfB+DD
+         3CJVPNlYi7SWJa9Y+sr46OsbSYUvH35X6fLHGKqDwAV5QJ67Jusl4Q5iubQlwTJWSt
+         zAHbudEDy7ZCqBnOxh8lzjWkK2QAsOcavsjm84dE=
+Received: from [192.168.100.98] (unknown [192.168.100.98])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: perex)
+        by mail1.perex.cz (Perex's E-mail Delivery System) with ESMTPSA;
+        Mon, 30 May 2022 13:40:47 +0200 (CEST)
+Message-ID: <7ca20354-1a91-8f18-2de8-8571987fa519@perex.cz>
+Date:   Mon, 30 May 2022 13:40:47 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220530112232.GB99280@tom-ThinkPad-T14s-Gen-2i>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v4 00/17] ALSA: hda: cirrus: Add initial DSP support and
+ firmware loading
+Content-Language: en-US
+To:     Takashi Iwai <tiwai@suse.de>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>
+Cc:     Vitaly Rodionov <vitalyr@opensource.cirrus.com>,
+        Takashi Iwai <tiwai@suse.com>, Mark Brown <broonie@kernel.org>,
+        alsa-devel@alsa-project.org, patches@opensource.cirrus.com,
+        linux-kernel@vger.kernel.org
+References: <20220525131638.5512-1-vitalyr@opensource.cirrus.com>
+ <871qwf0x8t.wl-tiwai@suse.de>
+ <20220530090846.GS38351@ediswmail.ad.cirrus.com>
+ <87czfvxtsc.wl-tiwai@suse.de>
+ <20220530093639.GT38351@ediswmail.ad.cirrus.com>
+ <87a6azxr7h.wl-tiwai@suse.de>
+ <20220530103415.GU38351@ediswmail.ad.cirrus.com>
+ <871qwbxpsb.wl-tiwai@suse.de>
+ <20220530105329.GV38351@ediswmail.ad.cirrus.com>
+ <87wne3wa5w.wl-tiwai@suse.de>
+From:   Jaroslav Kysela <perex@perex.cz>
+In-Reply-To: <87wne3wa5w.wl-tiwai@suse.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 30, 2022 at 01:22:32PM +0200, Tommaso Merciai wrote:
-> On Mon, May 30, 2022 at 03:58:01PM +0800, Haowen Bai wrote:
-> > The info->data is dereferencing before null checking, so move
-> > it after checking.
-> > 
-> > Signed-off-by: Haowen Bai <baihaowen@meizu.com>
-> > ---
-> >  drivers/staging/media/atomisp/i2c/atomisp-mt9m114.c | 4 +++-
-> >  1 file changed, 3 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/staging/media/atomisp/i2c/atomisp-mt9m114.c b/drivers/staging/media/atomisp/i2c/atomisp-mt9m114.c
-> > index 00d6842c07d6..3c81ab73cdae 100644
-> > --- a/drivers/staging/media/atomisp/i2c/atomisp-mt9m114.c
-> > +++ b/drivers/staging/media/atomisp/i2c/atomisp-mt9m114.c
-> > @@ -616,13 +616,15 @@ static int mt9m114_get_intg_factor(struct i2c_client *client,
-> >  				   struct camera_mipi_info *info,
-> >  				   const struct mt9m114_res_struct *res)
-> >  {
-> > -	struct atomisp_sensor_mode_data *buf = &info->data;
-> > +	struct atomisp_sensor_mode_data *buf;
-> >  	u32 reg_val;
-> >  	int ret;
-> >  
-> >  	if (!info)
-> >  		return -EINVAL;
-> >  
-> > +	buf = &info->data;
-> > +
-> >  	ret =  mt9m114_read_reg(client, MISENSOR_32BIT,
-> >  				REG_PIXEL_CLK, &reg_val);
-> >  	if (ret)
-> > -- 
-> > 2.7.4
-> > 
-> 
-> Hi Haowen,
-> Looks good to me, thanks.
-> 
-> Reviewed-by: Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
+On 30. 05. 22 13:07, Takashi Iwai wrote:
 
-Hi,
-My bad, Dan is right. Nothing to fix here.
-Sorry for previous review.
+> And yet moreover, we'll need to consider some way for protecting
+> against DoS-like behavior by frequent kctl changes.
 
-Regards,
-Tommaso
-> -- 
-> Tommaso Merciai
-> Embedded Linux Engineer
-> tommaso.merciai@amarulasolutions.com
-> __________________________________
-> 
-> Amarula Solutions SRL
-> Via Le Canevare 30, 31100 Treviso, Veneto, IT
-> T. +39 042 243 5310
-> info@amarulasolutions.com
-> www.amarulasolutions.com
+I agree, but only the driver knows details about the kctl operation time and 
+resource constraints. So the driver should implement a rate or i/o limit for 
+those controls. We may offer helper functions in the ALSA core for this job 
+(if required).
+
+						Jaroslav
 
 -- 
-Tommaso Merciai
-Embedded Linux Engineer
-tommaso.merciai@amarulasolutions.com
-__________________________________
-
-Amarula Solutions SRL
-Via Le Canevare 30, 31100 Treviso, Veneto, IT
-T. +39 042 243 5310
-info@amarulasolutions.com
-www.amarulasolutions.com
+Jaroslav Kysela <perex@perex.cz>
+Linux Sound Maintainer; ALSA Project; Red Hat, Inc.
