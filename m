@@ -2,199 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8961BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 08:57:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0493C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 08:57:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234123AbiE3I5d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 04:57:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51856 "EHLO
+        id S234409AbiE3I5i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 04:57:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233054AbiE3I51 (ORCPT
+        with ESMTP id S234068AbiE3I51 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 30 May 2022 04:57:27 -0400
-Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 258567220E;
-        Mon, 30 May 2022 01:57:24 -0700 (PDT)
-Received: from uucp (helo=alpha)
-        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1nvbDG-0006tr-00; Mon, 30 May 2022 10:57:22 +0200
-Received: by alpha.franken.de (Postfix, from userid 1000)
-        id 20EE0C0327; Mon, 30 May 2022 10:57:13 +0200 (CEST)
-Date:   Mon, 30 May 2022 10:57:13 +0200
-From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     torvalds@linux-foundation.org
-Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [GIT PULL] MIPS changes for v5.19
-Message-ID: <20220530085713.GA4761@alpha.franken.de>
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99EFB2019A;
+        Mon, 30 May 2022 01:57:26 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id n10so19506710ejk.5;
+        Mon, 30 May 2022 01:57:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=TD1gul0/mySriBMlbavF8TDIj7HBySCjFvjhT5CkpAI=;
+        b=E4NeLIXUzy/oYrWhje+yckD5m3Cvg9Nutcnye2lGtVE9fDESiEvsbjMVwEoAkiWm63
+         X9/JI0qcEdwlkQE49PF8gVLKtHAFlcxhXgYmQ2RUH8axqc+IdbxaphuzPOAfdUd6sj+W
+         CgzqWuuhjkjrrqxplc3f2zznaLwnr5no7wLIBByQpy4x1lRaILtH4WmpPUmNxRzd2oSM
+         rjfRICjLZiOSJFvJPvH4hPe7xdWta+3tcEdvHXan0wXHV40QHv/48O6imEYHNM73+P8n
+         ca9jEuxcDMY086umYZDarQrxOSs3qjd50TGNQ5xGrmzMoKhZqRk8IpxlCfKDci1uez1V
+         6tLA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=TD1gul0/mySriBMlbavF8TDIj7HBySCjFvjhT5CkpAI=;
+        b=b9tKsKDxg8VS3avdoZjej+/24on/PPV/bWJ6mkAOXWFeh9VrDXUHMX5B3uoyp9/b6+
+         fQ3XFsRxs/CrjHOJtUdy5evjQOMcDbkA8UnZjVGYV2FroGbNSbWpGtbouirbQb3iDkGJ
+         GsqpHWgLJZ0mN2NlbCSfbKankA7aohQ82TydgIgHHGWdGR8bT8sfyu2I0yi5sHB7ROfs
+         Na9A6Q82SP1tdR/fNayT5LksAdk5kYXbnRnH+yHKpFYeqt3kcObI0kMMsGYqnJlOzZnf
+         EfTMuzpEq/AigNJpUVf/tsDZb5WCwzwAPZgOAhh/c5W3P6xqHw9u7mFhHZaPBLJBOj4Q
+         skcw==
+X-Gm-Message-State: AOAM533Uny47/VWc9nrUEqwSz9WcwZO8NodaLGMcjT+1UQkHMYav3B4I
+        vVLO/B9QBdoZvQE1PM25Ztsc7xl7z9Pp6huUTt0=
+X-Google-Smtp-Source: ABdhPJwQx+9GGbBOUTraP1TZInSQTT/do9kz9ihJyqmWvUimq77+tfG07h1tioYrxE3aesFHRGXJd1jbjh6Yh42Lofw=
+X-Received: by 2002:a17:907:a088:b0:6f4:f661:f77a with SMTP id
+ hu8-20020a170907a08800b006f4f661f77amr48081294ejc.77.1653901045047; Mon, 30
+ May 2022 01:57:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220529040153.4878-1-jagathjog1996@gmail.com> <20220529040153.4878-3-jagathjog1996@gmail.com>
+In-Reply-To: <20220529040153.4878-3-jagathjog1996@gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 30 May 2022 10:56:48 +0200
+Message-ID: <CAHp75Vf0v_zgV4QymQMDiAYJ7-48iY0BdE9ACBgr2kV52yy3mA@mail.gmail.com>
+Subject: Re: [RFC 2/2] iio: accel: bma400: Add support for single and double
+ tap events
+To:     Jagath Jog J <jagathjog1996@gmail.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following changes since commit b2d229d4ddb17db541098b83524d901257e93845:
+On Sun, May 29, 2022 at 6:02 AM Jagath Jog J <jagathjog1996@gmail.com> wrote:
+>
+> Add support for single and double tap events based on the tap threshold
+> value and minimum quite time value between the taps. INT1 pin is used to
 
-  Linux 5.18-rc3 (2022-04-17 13:57:31 -0700)
+quiet (see below as well)
 
-are available in the Git repository at:
+The INT1
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/mips/linux.git/ tags/mips_5.19
+> interrupt and event is pushed to userspace.
 
-for you to fetch changes up to 7e4fd16b38923028b01d3dbadf4ca973d885c53e:
+an event
 
-  MIPS: RALINK: Define pci_remap_iospace under CONFIG_PCI_DRIVERS_GENERIC (2022-05-26 10:12:11 +0200)
+...
 
-----------------------------------------------------------------
-Cleanups and fixes
+> +#define BMA400_TAP_QUITE_MSK        GENMASK(3, 2)
 
-----------------------------------------------------------------
-Aidan MacDonald (1):
-      mips: dts: ingenic: x1000: Add PWM device tree node
+QUIET ?
 
-Arınç ÜNAL (3):
-      mips: dts: ralink: mt7621: add mdio label to mdio-bus
-      mips: dts: ralink: mt7621: mux phy4 to gmac1 for GB-PC1
-      mips: dts: ralink: mt7621: remove defining gpio function for pin groups
+...
 
-Christophe JAILLET (2):
-      MIPS: SGI-IP27: Free some unused memory
-      MIPS: SGI-IP30: Free some unused memory
+> +       /*
+> +        * No need to change ODR when tap event is enabled because
+> +        * tap interrupt is operating with the data rate of 200Hz.
+> +        * See datasheet page 124.
 
-Gong Yuanjun (1):
-      mips: cpc: Fix refcount leak in mips_cpc_default_phys_base
+When referring to the datasheet, please be more specific, i.e. table /
+chart / section number and name, No page needed as it may  be changed
+from version to version, also date of the document or revision would
+be nice to add.
 
-Guenter Roeck (1):
-      MIPS: Loongson: Use hwmon_device_register_with_groups() to register hwmon
-
-Guilherme G. Piccoli (1):
-      mips: ip22: Reword PANICED to PANICKED and remove useless header
-
-Guo Zhengkui (1):
-      MIPS: Sibyte: remove unnecessary return variable
-
-Haowen Bai (1):
-      MIPS: VR41xx: Drop redundant spinlock initialization
-
-Jason Wang (1):
-      MIPS: tools: no need to initialise statics to 0
-
-Jim Quinlan (1):
-      MIPS: bmips: Fix compiler warning observed on W=1 build
-
-Juerg Haefliger (2):
-      MIPS: loongson32: Kconfig: Remove extra space
-      MIPS: Kconfig: Fix indentation and add endif comment
-
-Julia Lawall (2):
-      MIPS: fix typos in comments
-      MIPS: Octeon: fix typo in comment
-
-Krzysztof Kozlowski (1):
-      MIPS: dts: align SPI NOR node name with dtschema
-
-Maciej W. Rozycki (3):
-      MIPS: IP27: Remove incorrect `cpu_has_fpu' override
-      MIPS: IP30: Remove incorrect `cpu_has_fpu' override
-      MIPS: Rewrite `csum_tcpudp_nofold' in plain C
-
-Mao Bibo (1):
-      MIPS: smp: optimization for flush_tlb_mm when exiting
-
-Michael Walle (3):
-      MIPS: mscc: jaguar2: rename pinctrl nodes
-      MIPS: mscc: ocelot: rename pinctrl nodes
-      MIPS: mscc: serval: rename pinctrl nodes
-
-Shida Zhang (1):
-      MIPS: adding a safety check for cpu_has_fpu
-
-Stijn Tintel (3):
-      MIPS: Octeon: fix CN6640 hang on XAUI init
-      MIPS: Octeon: support all interfaces on CN66XX
-      MIPS: Octeon: add SNIC10E board
-
-Tiezhu Yang (5):
-      selftests/ftrace: Save kprobe_events to test log
-      MIPS: Use NOKPROBE_SYMBOL() instead of __kprobes annotation
-      MIPS: Return -EINVAL if mem parameter is empty in early_parse_mem()
-      MIPS: Use memblock_add_node() in early_parse_mem() under CONFIG_NUMA
-      MIPS: RALINK: Define pci_remap_iospace under CONFIG_PCI_DRIVERS_GENERIC
-
-周琰杰 (Zhou Yanjie) (3):
-      MIPS: Ingenic: Add PWM nodes for X1830.
-      MIPS: Ingenic: Refresh device tree for Ingenic SoCs and boards.
-      MIPS: Ingenic: Refresh defconfig for CU1000-Neo and CU1830-Neo.
-
-陈学兵 (1):
-      mips: setup: use strscpy to replace strlcpy
-
- arch/mips/Kconfig                                  |  12 +-
- arch/mips/alchemy/common/dbdma.c                   |   2 +-
- arch/mips/bmips/dma.c                              |   1 +
- arch/mips/boot/dts/brcm/bcm97358svmb.dts           |   2 +-
- arch/mips/boot/dts/brcm/bcm97360svmb.dts           |   2 +-
- arch/mips/boot/dts/brcm/bcm97425svmb.dts           |   2 +-
- arch/mips/boot/dts/ingenic/cu1000-neo.dts          |  77 +++++++------
- arch/mips/boot/dts/ingenic/cu1830-neo.dts          |  76 ++++++------
- arch/mips/boot/dts/ingenic/x1000.dtsi              |  32 ++++++
- arch/mips/boot/dts/ingenic/x1830.dtsi              |  53 +++++++++
- arch/mips/boot/dts/mscc/jaguar2_pcb110.dts         |  10 +-
- arch/mips/boot/dts/mscc/jaguar2_pcb111.dts         |  10 +-
- arch/mips/boot/dts/mscc/jaguar2_pcb118.dts         |   6 +-
- arch/mips/boot/dts/mscc/ocelot.dtsi                |   4 +-
- arch/mips/boot/dts/mscc/ocelot_pcb120.dts          |   6 +-
- arch/mips/boot/dts/mscc/serval_common.dtsi         |  14 +--
- .../dts/ralink/gardena_smart_gateway_mt7688.dts    |   2 +-
- arch/mips/boot/dts/ralink/mt7621-gnubee-gb-pc1.dts |  26 ++---
- arch/mips/boot/dts/ralink/mt7621-gnubee-gb-pc2.dts |  30 ++---
- arch/mips/boot/dts/ralink/mt7621.dtsi              |   2 +-
- arch/mips/boot/tools/relocs.c                      |   2 +-
- arch/mips/cavium-octeon/executive/cvmx-bootmem.c   |   2 +-
- .../cavium-octeon/executive/cvmx-helper-xaui.c     |   5 +-
- arch/mips/cavium-octeon/executive/cvmx-helper.c    |   6 +
- arch/mips/cavium-octeon/executive/cvmx-pko.c       |   2 +-
- arch/mips/cavium-octeon/octeon-irq.c               |   2 +-
- arch/mips/cavium-octeon/octeon-usb.c               |   2 +-
- arch/mips/configs/cu1000-neo_defconfig             |   2 +-
- arch/mips/configs/cu1830-neo_defconfig             |   2 +-
- arch/mips/dec/ioasic-irq.c                         |   4 +-
- arch/mips/dec/setup.c                              |   2 +-
- arch/mips/fw/arc/memory.c                          |   2 +-
- arch/mips/include/asm/checksum.h                   |  79 ++++++-------
- arch/mips/include/asm/cpu-features.h               |   3 +
- .../include/asm/mach-ip27/cpu-feature-overrides.h  |   1 -
- .../include/asm/mach-ip30/cpu-feature-overrides.h  |   1 -
- arch/mips/include/asm/mach-ralink/spaces.h         |   2 +
- arch/mips/include/asm/octeon/cvmx-bootinfo.h       |   2 +
- arch/mips/jazz/irq.c                               |   2 +-
- arch/mips/kernel/cmpxchg.c                         |   2 +-
- arch/mips/kernel/cpu-probe.c                       |   2 +-
- arch/mips/kernel/idle.c                            |   2 +-
- arch/mips/kernel/kprobes.c                         |  36 ++++--
- arch/mips/kernel/mips-cpc.c                        |   1 +
- arch/mips/kernel/perf_event_mipsxx.c               |   2 +-
- arch/mips/kernel/setup.c                           |  17 ++-
- arch/mips/kernel/smp.c                             |   6 +
- arch/mips/kvm/tlb.c                                |   2 +-
- arch/mips/loongson32/Kconfig                       |   2 +-
- arch/mips/mm/fault.c                               |   6 +-
- arch/mips/net/bpf_jit_comp32.c                     |   2 +-
- arch/mips/pci/pcie-octeon.c                        |   4 +-
- arch/mips/pic32/pic32mzda/config.c                 |   2 +-
- arch/mips/sgi-ip22/ip22-reset.c                    |  11 +-
- arch/mips/sgi-ip27/ip27-xtalk.c                    |   4 +
- arch/mips/sgi-ip30/ip30-xtalk.c                    |   4 +
- arch/mips/sibyte/bcm1480/setup.c                   |   4 +-
- arch/mips/tools/loongson3-llsc-check.c             |   2 +-
- arch/mips/txx9/generic/pci.c                       |   2 +-
- arch/mips/vr41xx/common/cmu.c                      |   2 -
- drivers/platform/mips/cpu_hwmon.c                  | 127 +++++++--------------
- .../ftrace/test.d/kprobe/multiple_kprobes.tc       |   2 +
- 62 files changed, 401 insertions(+), 335 deletions(-)
+> +        */
 
 -- 
-Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
-good idea.                                                [ RFC1925, 2.3 ]
+With Best Regards,
+Andy Shevchenko
