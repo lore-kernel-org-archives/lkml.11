@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91511C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:47:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEA31C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:47:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240987AbiE3Orf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:47:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34558 "EHLO
+        id S241011AbiE3Orr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:47:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241760AbiE3O0j (ORCPT
+        with ESMTP id S241637AbiE3O0U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:26:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D504F8020A;
-        Mon, 30 May 2022 06:51:19 -0700 (PDT)
+        Mon, 30 May 2022 10:26:20 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45B04AF1ED;
+        Mon, 30 May 2022 06:51:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B05360EC3;
-        Mon, 30 May 2022 13:51:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCE45C3411A;
-        Mon, 30 May 2022 13:51:17 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id AF4EFCE106D;
+        Mon, 30 May 2022 13:50:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE358C385B8;
+        Mon, 30 May 2022 13:50:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918678;
-        bh=GrWLWaSLHF51KZIi2EHXFUL6XhRTYx1kmBuSqh2OfRM=;
+        s=k20201202; t=1653918614;
+        bh=7hOF5LIIgA8H9rcX73Ms/bkqSJE6g5sOxsMKbPqpvmE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D54V+1eDgIw2vy1bMuMbppTonm8/rw62wAlxx3l6HcB2cIIlkOflWI/rx08iVkTRv
-         SDGQYGyKUkmDLOtWtu0M66i17CuS/CH8bEdMFkH3dcwq8eGdAjTVrkY6BruG18Y3Xi
-         Mf3sg2EJJkG4j5qvnvSAeNZk48IYOYdpsjKtH6VpZwOKzVObRkoJrsz5S+jJOmrgNc
-         0uM5W496dfcI+sDbTch5Ibzi4+7fXCk+QQ4NcuhlDdWJ6VQRWPbarGndVa8RaSMzbx
-         zH1aqNRVqLbop5zzs5EQKc23qmdaotQLBwAai8cAEQd09akD5qpWpM+AdIc7NaPt8u
-         bwmtek6PkPBsw==
+        b=gvIWJHg0i+0RoLzcQYu/uXbkz/Q587It8ttCFeM2/IEF3B1SzXZjtJ78h6/0Dhz+/
+         XFI6DC1IWwAzT2YVRhyB7yjdzSj/cr9svA5Ihfw0Ad2xsdWTF8ElmjWMdCe8cbO4x3
+         HOL7fy0lO+1QED8tq+ep+0IrJK2O2gdg2LnV2UY7NpUr6MEVOiMWTKpgsN1w/fbvGk
+         XowLqcT0+KgLmC7hIBgTuu0cCnqQCB8cQApa1JR+Anv8sIk+V7xveIm9duqDco6wUv
+         P+7DXaHss8tCohOVP6JVGYtsCeKOppBhW3x3KzsRIupgVlY3cNOMhl4s6s/NXhmJ26
+         sjL40KdyGvapg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>,
+Cc:     Evan Quan <evan.quan@amd.com>, kernel test robot <lkp@intel.com>,
         Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
         Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
         amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 4.14 08/29] drm/amd/pm: fix double free in si_parse_power_table()
-Date:   Mon, 30 May 2022 09:50:35 -0400
-Message-Id: <20220530135057.1937286-8-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 19/38] drm/amd/pm: fix the compile warning
+Date:   Mon, 30 May 2022 09:49:05 -0400
+Message-Id: <20220530134924.1936816-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220530135057.1937286-1-sashal@kernel.org>
-References: <20220530135057.1937286-1-sashal@kernel.org>
+In-Reply-To: <20220530134924.1936816-1-sashal@kernel.org>
+References: <20220530134924.1936816-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,68 +53,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
+From: Evan Quan <evan.quan@amd.com>
 
-[ Upstream commit f3fa2becf2fc25b6ac7cf8d8b1a2e4a86b3b72bd ]
+[ Upstream commit 555238d92ac32dbad2d77ad2bafc48d17391990c ]
 
-In function si_parse_power_table(), array adev->pm.dpm.ps and its member
-is allocated. If the allocation of each member fails, the array itself
-is freed and returned with an error code. However, the array is later
-freed again in si_dpm_fini() function which is called when the function
-returns an error.
+Fix the compile warning below:
+drivers/gpu/drm/amd/amdgpu/../pm/legacy-dpm/kv_dpm.c:1641
+kv_get_acp_boot_level() warn: always true condition '(table->entries[i]->clk >= 0) => (0-u32max >= 0)'
 
-This leads to potential double free of the array adev->pm.dpm.ps, as
-well as leak of its array members, since the members are not freed in
-the allocation function and the array is not nulled when freed.
-In addition adev->pm.dpm.num_ps, which keeps track of the allocated
-array member, is not updated until the member allocation is
-successfully finished, this could also lead to either use after free,
-or uninitialized variable access in si_dpm_fini().
-
-Fix this by postponing the free of the array until si_dpm_fini() and
-increment adev->pm.dpm.num_ps everytime the array member is allocated.
-
-Signed-off-by: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
+Reported-by: kernel test robot <lkp@intel.com>
+CC: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Evan Quan <evan.quan@amd.com>
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/si_dpm.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/kv_dpm.c | 14 +-------------
+ 1 file changed, 1 insertion(+), 13 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/si_dpm.c b/drivers/gpu/drm/amd/amdgpu/si_dpm.c
-index 55613f425931..288ac692f536 100644
---- a/drivers/gpu/drm/amd/amdgpu/si_dpm.c
-+++ b/drivers/gpu/drm/amd/amdgpu/si_dpm.c
-@@ -7238,17 +7238,15 @@ static int si_parse_power_table(struct amdgpu_device *adev)
- 	if (!adev->pm.dpm.ps)
- 		return -ENOMEM;
- 	power_state_offset = (u8 *)state_array->states;
--	for (i = 0; i < state_array->ucNumEntries; i++) {
-+	for (adev->pm.dpm.num_ps = 0, i = 0; i < state_array->ucNumEntries; i++) {
- 		u8 *idx;
- 		power_state = (union pplib_power_state *)power_state_offset;
- 		non_clock_array_index = power_state->v2.nonClockInfoIndex;
- 		non_clock_info = (struct _ATOM_PPLIB_NONCLOCK_INFO *)
- 			&non_clock_info_array->nonClockInfo[non_clock_array_index];
- 		ps = kzalloc(sizeof(struct  si_ps), GFP_KERNEL);
--		if (ps == NULL) {
--			kfree(adev->pm.dpm.ps);
-+		if (ps == NULL)
- 			return -ENOMEM;
--		}
- 		adev->pm.dpm.ps[i].ps_priv = ps;
- 		si_parse_pplib_non_clock_info(adev, &adev->pm.dpm.ps[i],
- 					      non_clock_info,
-@@ -7270,8 +7268,8 @@ static int si_parse_power_table(struct amdgpu_device *adev)
- 			k++;
- 		}
- 		power_state_offset += 2 + power_state->v2.ucNumDPMLevels;
-+		adev->pm.dpm.num_ps++;
- 	}
--	adev->pm.dpm.num_ps = state_array->ucNumEntries;
+diff --git a/drivers/gpu/drm/amd/amdgpu/kv_dpm.c b/drivers/gpu/drm/amd/amdgpu/kv_dpm.c
+index cb79a93c2eb7..91504eccc60c 100644
+--- a/drivers/gpu/drm/amd/amdgpu/kv_dpm.c
++++ b/drivers/gpu/drm/amd/amdgpu/kv_dpm.c
+@@ -1610,19 +1610,7 @@ static int kv_update_samu_dpm(struct amdgpu_device *adev, bool gate)
  
- 	/* fill in the vce power states */
- 	for (i = 0; i < adev->pm.dpm.num_of_vce_states; i++) {
+ static u8 kv_get_acp_boot_level(struct amdgpu_device *adev)
+ {
+-	u8 i;
+-	struct amdgpu_clock_voltage_dependency_table *table =
+-		&adev->pm.dpm.dyn_state.acp_clock_voltage_dependency_table;
+-
+-	for (i = 0; i < table->count; i++) {
+-		if (table->entries[i].clk >= 0) /* XXX */
+-			break;
+-	}
+-
+-	if (i >= table->count)
+-		i = table->count - 1;
+-
+-	return i;
++	return 0;
+ }
+ 
+ static void kv_update_acp_boot_level(struct amdgpu_device *adev)
 -- 
 2.35.1
 
