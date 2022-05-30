@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13BB7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 10:45:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEA2EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 10:45:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235341AbiE3Kpa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 06:45:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40570 "EHLO
+        id S235394AbiE3Kph (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 06:45:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235448AbiE3KoZ (ORCPT
+        with ESMTP id S235529AbiE3KpK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 06:44:25 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02BE97DE03;
-        Mon, 30 May 2022 03:44:09 -0700 (PDT)
+        Mon, 30 May 2022 06:45:10 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B522F7CB5F;
+        Mon, 30 May 2022 03:44:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1653907452; x=1685443452;
+  t=1653907489; x=1685443489;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=E5BLy6gRUx5QYynXA0m1su3odBaUXpMPYruvosrgoeU=;
-  b=2FQTRPt28pgcIjgt2/UENK8hnjHlGSAsuCiV8xAfHYIbUD0DyuYdD77+
-   Ko2AtXmu9SSu5kOC4tBtWWQD+FvVp8mSV0O/Gtwn3hdKS/zjp/WrEKvmC
-   B8DTQErWRlvokzH/e3dpL8zDaWn0IJhp7xBoCYLvT1jySKTSJHxqWmrbn
-   A/Z9iE9TsiBsk7NvUe6C2k7lX/vx0ntOUZu4HjDQjyC+erUTrWDheG2R6
-   w61aUdXzLJoMlPpUPSpz1KPF4c5vO5vyUTUE4SWjgOQNC9LnBgR+N0+P9
-   o2BaFlm6OrLhzXGagJUM+2nAYfVkz2YMh5BA7RlHNoIvb+OOPOLo1y/w6
+  bh=2Otoz5YtUY5UHAOLNEZxCRuGxLKPnn/UlxdImZmJO1I=;
+  b=XPDf/ci9TxW16DAF0iQ1VR029DKRoxw9N3beVl07QZZiuDu1GmeqLpxl
+   b8rBBoyknQBQFd52fTNUZ+TphFUPC7j8LU+dlSCmLQqdxRBGGBpkGTT5c
+   6uEjasDOGx4NrUQ+ELSppmDXLY5Z4nf3ZqtEB0tXp51D4kvnVFCIbybU8
+   jDJRonWP3TlqdrRMu/qPppBdCIVwLaUwIxw1cAgD6aRhdvniIkZTYuxvA
+   SXB33e3LxRYMFHk6TV+tgUX+nsIDvL/bjFy78JckEBY/+5nH+FK1Fmh/4
+   nyUT/xBZbQZUnMB9f6y8aUJWmc9unP49cvRlooXt/1CVdvusnI80XfCf9
    A==;
 X-IronPort-AV: E=Sophos;i="5.91,262,1647327600"; 
-   d="scan'208";a="165913165"
+   d="scan'208";a="161124788"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 May 2022 03:44:10 -0700
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 May 2022 03:44:48 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 30 May 2022 03:44:08 -0700
+ 15.1.2375.17; Mon, 30 May 2022 03:44:48 -0700
 Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 30 May 2022 03:44:03 -0700
+ 15.1.2375.17 via Frontend Transport; Mon, 30 May 2022 03:44:44 -0700
 From:   Arun Ramadoss <arun.ramadoss@microchip.com>
 To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
 CC:     Woojung Huh <woojung.huh@microchip.com>,
@@ -51,9 +51,9 @@ CC:     Woojung Huh <woojung.huh@microchip.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         "Russell King" <linux@armlinux.org.uk>
-Subject: [RFC Patch net-next v2 07/15] net: dsa: microchip: update the ksz_phylink_get_caps
-Date:   Mon, 30 May 2022 16:12:49 +0530
-Message-ID: <20220530104257.21485-8-arun.ramadoss@microchip.com>
+Subject: [RFC Patch net-next v2 13/15] net: dsa: microchip: common menuconfig for ksz series switch
+Date:   Mon, 30 May 2022 16:12:55 +0530
+Message-ID: <20220530104257.21485-14-arun.ramadoss@microchip.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220530104257.21485-1-arun.ramadoss@microchip.com>
 References: <20220530104257.21485-1-arun.ramadoss@microchip.com>
@@ -64,115 +64,124 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch assigns the phylink_get_caps in ksz8795 and ksz9477 to
-ksz_phylink_get_caps. And update their mac_capabilities in the
-respective ksz_dev_ops.
+This patch replaces the two different menuconfig for ksz9477 and ksz8795
+to single ksz_common. so that it can be extended for the other switch
+like lan937x. And removes the export_symbols for the extern functions in
+the ksz_common.h.
 
 Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
 ---
- drivers/net/dsa/microchip/ksz8795.c    | 9 +++------
- drivers/net/dsa/microchip/ksz9477.c    | 7 +++----
- drivers/net/dsa/microchip/ksz_common.c | 3 +++
- drivers/net/dsa/microchip/ksz_common.h | 2 ++
- 4 files changed, 11 insertions(+), 10 deletions(-)
+ drivers/net/dsa/microchip/Kconfig      | 28 +++++++++-----------------
+ drivers/net/dsa/microchip/Makefile     |  7 ++++---
+ drivers/net/dsa/microchip/ksz_common.c |  3 ---
+ 3 files changed, 13 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index e6982fa9d382..25763d89c67a 100644
---- a/drivers/net/dsa/microchip/ksz8795.c
-+++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -1353,13 +1353,9 @@ static int ksz8_setup(struct dsa_switch *ds)
- 	return ksz8_handle_global_errata(ds);
- }
- 
--static void ksz8_get_caps(struct dsa_switch *ds, int port,
-+static void ksz8_get_caps(struct ksz_device *dev, int port,
- 			  struct phylink_config *config)
- {
--	struct ksz_device *dev = ds->priv;
+diff --git a/drivers/net/dsa/microchip/Kconfig b/drivers/net/dsa/microchip/Kconfig
+index c9e2a8989556..d21ff069e5aa 100644
+--- a/drivers/net/dsa/microchip/Kconfig
++++ b/drivers/net/dsa/microchip/Kconfig
+@@ -1,39 +1,29 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+-config NET_DSA_MICROCHIP_KSZ_COMMON
+-	select NET_DSA_TAG_KSZ
+-	tristate
 -
--	ksz_phylink_get_caps(ds, port, config);
--
- 	config->mac_capabilities = MAC_10 | MAC_100;
+-menuconfig NET_DSA_MICROCHIP_KSZ9477
+-	tristate "Microchip KSZ9477 series switch support"
++menuconfig NET_DSA_MICROCHIP_KSZ_COMMON
++	tristate "Microchip KSZ8795/KSZ9477 series switch support"
+ 	depends on NET_DSA
+-	select NET_DSA_MICROCHIP_KSZ_COMMON
++	select NET_DSA_TAG_KSZ
+ 	help
+-	  This driver adds support for Microchip KSZ9477 switch chips.
++	  This driver adds support for Microchip KSZ9477 series switch and
++	  KSZ8795/KSZ88x3 switch chips.
  
- 	/* Silicon Errata Sheet (DS80000830A):
-@@ -1381,7 +1377,7 @@ static const struct dsa_switch_ops ksz8_switch_ops = {
- 	.setup			= ksz8_setup,
- 	.phy_read		= ksz_phy_read16,
- 	.phy_write		= ksz_phy_write16,
--	.phylink_get_caps	= ksz8_get_caps,
-+	.phylink_get_caps	= ksz_phylink_get_caps,
- 	.phylink_mac_link_down	= ksz_mac_link_down,
- 	.port_enable		= ksz_enable_port,
- 	.get_strings		= ksz_get_strings,
-@@ -1464,6 +1460,7 @@ static const struct ksz_dev_ops ksz8_dev_ops = {
- 	.mirror_add = ksz8_port_mirror_add,
- 	.mirror_del = ksz8_port_mirror_del,
- 	.get_stp_reg = ksz8_get_stp_reg,
-+	.get_caps = ksz8_get_caps,
- 	.shutdown = ksz8_reset_switch,
- 	.init = ksz8_switch_init,
- 	.exit = ksz8_switch_exit,
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index f08694aba6bb..494f93e4c7f8 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -1073,11 +1073,9 @@ static void ksz9477_phy_errata_setup(struct ksz_device *dev, int port)
- 	ksz9477_port_mmd_write(dev, port, 0x1c, 0x20, 0xeeee);
- }
+ config NET_DSA_MICROCHIP_KSZ9477_I2C
+ 	tristate "KSZ9477 series I2C connected switch driver"
+-	depends on NET_DSA_MICROCHIP_KSZ9477 && I2C
++	depends on NET_DSA_MICROCHIP_KSZ_COMMON && I2C
+ 	select REGMAP_I2C
+ 	help
+ 	  Select to enable support for registering switches configured through I2C.
  
--static void ksz9477_get_caps(struct dsa_switch *ds, int port,
-+static void ksz9477_get_caps(struct ksz_device *dev, int port,
- 			     struct phylink_config *config)
- {
--	ksz_phylink_get_caps(ds, port, config);
+ config NET_DSA_MICROCHIP_KSZ9477_SPI
+ 	tristate "KSZ9477 series SPI connected switch driver"
+-	depends on NET_DSA_MICROCHIP_KSZ9477 && SPI
++	depends on NET_DSA_MICROCHIP_KSZ_COMMON && SPI
+ 	select REGMAP_SPI
+ 	help
+ 	  Select to enable support for registering switches configured through SPI.
+ 
+-menuconfig NET_DSA_MICROCHIP_KSZ8795
+-	tristate "Microchip KSZ8795 series switch support"
+-	depends on NET_DSA
+-	select NET_DSA_MICROCHIP_KSZ_COMMON
+-	help
+-	  This driver adds support for Microchip KSZ8795/KSZ88X3 switch chips.
 -
- 	config->mac_capabilities = MAC_10 | MAC_100 | MAC_1000FD |
- 				   MAC_ASYM_PAUSE | MAC_SYM_PAUSE;
- }
-@@ -1307,7 +1305,7 @@ static const struct dsa_switch_ops ksz9477_switch_ops = {
- 	.phy_read		= ksz_phy_read16,
- 	.phy_write		= ksz_phy_write16,
- 	.phylink_mac_link_down	= ksz_mac_link_down,
--	.phylink_get_caps	= ksz9477_get_caps,
-+	.phylink_get_caps	= ksz_phylink_get_caps,
- 	.port_enable		= ksz_enable_port,
- 	.get_strings		= ksz_get_strings,
- 	.get_ethtool_stats	= ksz_get_ethtool_stats,
-@@ -1406,6 +1404,7 @@ static const struct ksz_dev_ops ksz9477_dev_ops = {
- 	.mirror_add = ksz9477_port_mirror_add,
- 	.mirror_del = ksz9477_port_mirror_del,
- 	.get_stp_reg = ksz9477_get_stp_reg,
-+	.get_caps = ksz9477_get_caps,
- 	.shutdown = ksz9477_reset_switch,
- 	.init = ksz9477_switch_init,
- 	.exit = ksz9477_switch_exit,
+ config NET_DSA_MICROCHIP_KSZ8795_SPI
+ 	tristate "KSZ8795 series SPI connected switch driver"
+-	depends on NET_DSA_MICROCHIP_KSZ8795 && SPI
++	depends on NET_DSA_MICROCHIP_KSZ_COMMON && SPI
+ 	select REGMAP_SPI
+ 	help
+ 	  This driver accesses KSZ8795 chip through SPI.
+@@ -43,7 +33,7 @@ config NET_DSA_MICROCHIP_KSZ8795_SPI
+ 
+ config NET_DSA_MICROCHIP_KSZ8863_SMI
+ 	tristate "KSZ series SMI connected switch driver"
+-	depends on NET_DSA_MICROCHIP_KSZ8795
++	depends on NET_DSA_MICROCHIP_KSZ_COMMON
+ 	select MDIO_BITBANG
+ 	help
+ 	  Select to enable support for registering switches configured through
+diff --git a/drivers/net/dsa/microchip/Makefile b/drivers/net/dsa/microchip/Makefile
+index 2a03b21a3386..4cf4755e6426 100644
+--- a/drivers/net/dsa/microchip/Makefile
++++ b/drivers/net/dsa/microchip/Makefile
+@@ -1,8 +1,9 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+-obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ_COMMON)	+= ksz_common.o
+-obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ9477)		+= ksz9477.o
++obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ_COMMON)	+= ksz_switch.o
++ksz_switch-objs := ksz_common.o
++ksz_switch-objs += ksz9477.o
++ksz_switch-objs += ksz8795.o
+ obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ9477_I2C)	+= ksz9477_i2c.o
+ obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ9477_SPI)	+= ksz9477_spi.o
+-obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ8795)		+= ksz8795.o
+ obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ8795_SPI)	+= ksz8795_spi.o
+ obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ8863_SMI)	+= ksz8863_smi.o
 diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 5cf183f753d9..c1303a46a9b7 100644
+index f40d64858d35..8f852649c217 100644
 --- a/drivers/net/dsa/microchip/ksz_common.c
 +++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -456,6 +456,9 @@ void ksz_phylink_get_caps(struct dsa_switch *ds, int port,
- 	if (dev->info->internal_phy[port])
- 		__set_bit(PHY_INTERFACE_MODE_INTERNAL,
- 			  config->supported_interfaces);
-+
-+	if (dev->dev_ops->get_caps)
-+		dev->dev_ops->get_caps(dev, port, config);
- }
- EXPORT_SYMBOL_GPL(ksz_phylink_get_caps);
+@@ -503,7 +503,6 @@ void ksz_r_mib_stats64(struct ksz_device *dev, int port)
  
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 2727934b7171..8124737a1170 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -193,6 +193,8 @@ struct ksz_dev_ops {
- 	void (*mirror_del)(struct ksz_device *dev, int port,
- 			   struct dsa_mall_mirror_tc_entry *mirror);
- 	int (*get_stp_reg)(void);
-+	void (*get_caps)(struct ksz_device *dev, int port,
-+			 struct phylink_config *config);
- 	void (*freeze_mib)(struct ksz_device *dev, int port, bool freeze);
- 	void (*port_init_cnt)(struct ksz_device *dev, int port);
- 	int (*shutdown)(struct ksz_device *dev);
+ 	spin_unlock(&mib->stats64_lock);
+ }
+-EXPORT_SYMBOL_GPL(ksz_r_mib_stats64);
+ 
+ static void ksz_get_stats64(struct dsa_switch *ds, int port,
+ 			    struct rtnl_link_stats64 *s)
+@@ -674,7 +673,6 @@ void ksz_init_mib_timer(struct ksz_device *dev)
+ 		memset(mib->counters, 0, dev->info->mib_cnt * sizeof(u64));
+ 	}
+ }
+-EXPORT_SYMBOL_GPL(ksz_init_mib_timer);
+ 
+ static int ksz_phy_read16(struct dsa_switch *ds, int addr, int reg)
+ {
+@@ -901,7 +899,6 @@ void ksz_port_stp_state_set(struct dsa_switch *ds, int port, u8 state)
+ 
+ 	ksz_update_port_member(dev, port);
+ }
+-EXPORT_SYMBOL_GPL(ksz_port_stp_state_set);
+ 
+ static enum dsa_tag_protocol ksz_get_tag_protocol(struct dsa_switch *ds,
+ 						  int port,
 -- 
 2.36.1
 
