@@ -2,46 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77856C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66DA3C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:51:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238605AbiE3Nua (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:50:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49230 "EHLO
+        id S238561AbiE3NuZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:50:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238230AbiE3NpE (ORCPT
+        with ESMTP id S238206AbiE3NpB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:45:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 532389CC8A;
-        Mon, 30 May 2022 06:32:36 -0700 (PDT)
+        Mon, 30 May 2022 09:45:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AEDE9C2ED;
+        Mon, 30 May 2022 06:32:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7248E60F25;
-        Mon, 30 May 2022 13:32:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1452C3411A;
-        Mon, 30 May 2022 13:32:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D2B2760DD5;
+        Mon, 30 May 2022 13:32:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3F9BC385B8;
+        Mon, 30 May 2022 13:32:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917554;
-        bh=bTy7eSiSqDvutHsXgMZcx2/dEoVMvfG7QbEGLxajA5Y=;
+        s=k20201202; t=1653917550;
+        bh=R1qM/hdbD0ASwISBTYTiHaNYfMmA/cNaemQOuDw6WE4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eoGZGOE+/sZ6FUtSV/J8R+zG05b+4P9vwgJzkueLux2NzW7zaByJ0KHKYIl8m+lRN
-         37Pb29KPi0MdDc8tQQilm4ZJ39sPh+X5m2Xh5z5t5zOW1x61kJHNYIoBVcJMkp4z7L
-         IqjUSf8RryVpJx57eoDiQ71PH6QBI9YIYCYV29VnJZV+GeisJtMpNjvGWdqaUtISpn
-         33k0b5YluTZMx8caP/BSnsdA0wzMeXJ0isJqN9DzxMAvFwJfq74uFHb6dwLEz3xKrB
-         09ZfUjf4Ov1MzsteSj4Mbx+6CskVERPPBrfZmKJ+u4OriTnU/emtemMs0cBilKfoya
-         TE4z3IoRFvQWw==
+        b=XNbkwx6T3C6P6F73G9SbJQHriDpqibbKfSZ9GIalcaokfNcAqMPGWHPV26fEmUUkT
+         QnZXinaR8NHWijWe8ClgfCDxds+j2Aw8NlAaSh+1XBHbNTkORvEm7qUu/QwIW0H7Wx
+         wdpbp/ejwxPP6S9Ijj+38OH4u9Nm8OW4jRLOycLj2VxOe5hwiVORtGqFeWO6xFQxk7
+         o/+F99saAwo8jwAemUIDxcVv8c4GbohJSMkIZhWPZbmkDYZava+dv53F3UdoE49DvB
+         eXJz99GIPL6F1GiC1GwgFRz5706EBOwJBYBMTQh2bflj3PIqxrk5d1MMWVHRqe/1gS
+         1k4ET9eDFziCA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Paul E. McKenney" <paulmck@kernel.org>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, frederic@kernel.org,
-        quic_neeraju@quicinc.com, josh@joshtriplett.org,
-        rcu@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 022/135] rcu: Make TASKS_RUDE_RCU select IRQ_WORK
-Date:   Mon, 30 May 2022 09:29:40 -0400
-Message-Id: <20220530133133.1931716-22-sashal@kernel.org>
+Cc:     Saaem Rizvi <syerizvi@amd.com>, Eric Yang <Eric.Yang2@amd.com>,
+        Pavle Kotarac <Pavle.Kotarac@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, harry.wentland@amd.com,
+        sunpeng.li@amd.com, Rodrigo.Siqueira@amd.com,
+        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
+        daniel@ffwll.ch, nicholas.kazlauskas@amd.com,
+        michael.strauss@amd.com, Jerry.Zuo@amd.com, nikola.cornij@amd.com,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.17 019/135] drm/amd/display: Disabling Z10 on DCN31
+Date:   Mon, 30 May 2022 09:29:37 -0400
+Message-Id: <20220530133133.1931716-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
@@ -53,33 +57,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Paul E. McKenney" <paulmck@kernel.org>
+From: Saaem Rizvi <syerizvi@amd.com>
 
-[ Upstream commit 46e861be589881e0905b9ade3d8439883858721c ]
+[ Upstream commit 5d5af34072c8b11f60960c3bea57ff9de5877791 ]
 
-The TASKS_RUDE_RCU does not select IRQ_WORK, which can result in build
-failures for kernels that do not otherwise select IRQ_WORK.  This commit
-therefore causes the TASKS_RUDE_RCU Kconfig option to select IRQ_WORK.
+[WHY]
+Z10 is should not be enabled by default on DCN31.
 
-Reported-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+[HOW]
+Using DC debug flags to disable Z10 by default on DCN31.
+
+Reviewed-by: Eric Yang <Eric.Yang2@amd.com>
+Acked-by: Pavle Kotarac <Pavle.Kotarac@amd.com>
+Signed-off-by: Saaem Rizvi <syerizvi@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/rcu/Kconfig | 1 +
+ drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/kernel/rcu/Kconfig b/kernel/rcu/Kconfig
-index bf8e341e75b4..f559870fbf8b 100644
---- a/kernel/rcu/Kconfig
-+++ b/kernel/rcu/Kconfig
-@@ -86,6 +86,7 @@ config TASKS_RCU
- 
- config TASKS_RUDE_RCU
- 	def_bool 0
-+	select IRQ_WORK
- 	help
- 	  This option enables a task-based RCU implementation that uses
- 	  only context switch (including preemption) and user-mode
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c
+index f3933c9f5746..6966b72eefc6 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c
+@@ -1030,6 +1030,7 @@ static const struct dc_debug_options debug_defaults_drv = {
+ 			.afmt = true,
+ 		}
+ 	},
++	.disable_z10 = true,
+ 	.optimize_edp_link_rate = true,
+ 	.enable_sw_cntl_psr = true,
+ 	.apply_vendor_specific_lttpr_wa = true,
 -- 
 2.35.1
 
