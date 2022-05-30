@@ -2,69 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68213C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 11:53:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C98A5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 11:54:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235958AbiE3LxX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 07:53:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47828 "EHLO
+        id S235963AbiE3LyF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 07:54:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235841AbiE3LxQ (ORCPT
+        with ESMTP id S235841AbiE3Lx5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 07:53:16 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 491E02F38B
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 04:53:15 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id F1775153B;
-        Mon, 30 May 2022 04:53:14 -0700 (PDT)
-Received: from e120937-lin.home (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4E8363F766;
-        Mon, 30 May 2022 04:53:14 -0700 (PDT)
-From:   Cristian Marussi <cristian.marussi@arm.com>
-To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc:     Cristian Marussi <cristian.marussi@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>
-Subject: [PATCH 2/2] firmware: arm_scmi: Fix pointers arithmetic in Base protocol
-Date:   Mon, 30 May 2022 12:52:37 +0100
-Message-Id: <20220530115237.277077-2-cristian.marussi@arm.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220530115237.277077-1-cristian.marussi@arm.com>
-References: <20220530115237.277077-1-cristian.marussi@arm.com>
+        Mon, 30 May 2022 07:53:57 -0400
+X-Greylist: delayed 169 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 30 May 2022 04:53:55 PDT
+Received: from smtp.domeneshop.no (smtp.domeneshop.no [IPv6:2a01:5b40:0:3005::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 395B26FA2E
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 04:53:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=tronnes.org
+        ; s=ds202112; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=8VyoAg5ZFlu79SSDc3rfKS4ICjJpwoRquD3CfBZ6TtM=; b=iUk611ByWZqTdPUMZrYWfZb8Va
+        yCKWmjQPiSoGFX/9hdU0bf2t4fclJClpBzs5B9Ar3AwQni7XpfViyY3BoITnQq6c66X03i2eRI/Ss
+        04tSiTsXxTZfwee4HRl5qS7jlUml452YTtqrXEzAEcep0vvcuqTu0q+b/ZqdMhUN8ChIi+ohMldXj
+        Cunxlfh1x0hb2nrZtNHjUyftWq70pm8ZCYGt79dhqK2lJupLbzYwFvOm6UqgHGfE8FDxaIfEkEsBN
+        +IZR5hjoM0ID3Ie5SdHBdAW5LqByQfPKiaTswkG07rUNAC4NF0tFp8ea9D3e9pKrlY6mk/9BYbi9r
+        PVaQBYlg==;
+Received: from [2a01:799:961:d200:140a:b605:56ea:1c6d] (port=50308)
+        by smtp.domeneshop.no with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <noralf@tronnes.org>)
+        id 1nvdvM-0005i1-2S; Mon, 30 May 2022 13:51:04 +0200
+Message-ID: <4fca264e-6c07-a68d-f8a1-52db555a2b2c@tronnes.org>
+Date:   Mon, 30 May 2022 13:51:01 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v2] drm/mipi-dbi: align max_chunk to 2 in spi_transfer
+To:     Yunhao Tian <t123yh.xyz@gmail.com>
+Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, Sam Ravnborg <sam@ravnborg.org>,
+        David Lechner <david@lechnology.com>
+References: <20220510030219.2486687-1-t123yh.xyz@gmail.com>
+From:   =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>
+In-Reply-To: <20220510030219.2486687-1-t123yh.xyz@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix a possible undefined behaviour involving pointer arithmetic in Base
-protocol scmi_base_implementation_list_get().
 
-cppcheck complains with:
 
-drivers/firmware/arm_scmi/base.c:190:19: warning: 't->rx.buf' is of type 'void *'. When using void pointers in calculations, the behaviour is undefined. [arithOperationsOnVoidPointer]
- list = t->rx.buf + sizeof(*num_ret);
+Den 10.05.2022 05.02, skrev Yunhao Tian:
+> In __spi_validate, there's a validation that no partial transfers
+> are accepted (xfer->len % w_size must be zero). When
+> max_chunk is not a multiple of bpw (e.g. max_chunk = 65535,
+> bpw = 16), the transfer will be rejected.
+> 
+> This patch aligns max_chunk to 2 bytes (the maximum value of bpw is 16),
+> so that no partial transfer will occur.
+> 
+> Fixes: d23d4d4dac01 ("drm/tinydrm: Move tinydrm_spi_transfer()")
+> 
+> Signed-off-by: Yunhao Tian <t123yh.xyz@gmail.com>
+> ---
 
-Fixes: b6f20ff8bd94 ("firmware: arm_scmi: add common infrastructure and support for base protocol")
-Cc: Sudeep Holla <sudeep.holla@arm.com>
-Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
----
- drivers/firmware/arm_scmi/base.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thanks, applied to drm-misc-next.
 
-diff --git a/drivers/firmware/arm_scmi/base.c b/drivers/firmware/arm_scmi/base.c
-index 20fba7370f4e..6d6214d9e68c 100644
---- a/drivers/firmware/arm_scmi/base.c
-+++ b/drivers/firmware/arm_scmi/base.c
-@@ -187,7 +187,7 @@ scmi_base_implementation_list_get(const struct scmi_protocol_handle *ph,
- 
- 	num_skip = t->tx.buf;
- 	num_ret = t->rx.buf;
--	list = t->rx.buf + sizeof(*num_ret);
-+	list = ((u8 *)t->rx.buf) + sizeof(*num_ret);
- 
- 	do {
- 		size_t real_list_sz;
--- 
-2.32.0
+Noralf.
 
+>  drivers/gpu/drm/drm_mipi_dbi.c | 7 +++++++
+>  1 file changed, 7 insertions(+)
+> 
+> diff --git a/drivers/gpu/drm/drm_mipi_dbi.c b/drivers/gpu/drm/drm_mipi_dbi.c
+> index 71b646c4131f..00d470ff071d 100644
+> --- a/drivers/gpu/drm/drm_mipi_dbi.c
+> +++ b/drivers/gpu/drm/drm_mipi_dbi.c
+> @@ -1183,6 +1183,13 @@ int mipi_dbi_spi_transfer(struct spi_device *spi, u32 speed_hz,
+>  	size_t chunk;
+>  	int ret;
+>  
+> +	/* In __spi_validate, there's a validation that no partial transfers
+> +	 * are accepted (xfer->len % w_size must be zero).
+> +	 * Here we align max_chunk to multiple of 2 (16bits),
+> +	 * to prevent transfers from being rejected.
+> +	 */
+> +	max_chunk = ALIGN_DOWN(max_chunk, 2);
+> +
+>  	spi_message_init_with_transfers(&m, &tr, 1);
+>  
+>  	while (len) {
