@@ -2,49 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B30DC41535
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:09:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D672C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:09:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239261AbiE3OIx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:08:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59904 "EHLO
+        id S233604AbiE3OJN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:09:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237214AbiE3OD0 (ORCPT
+        with ESMTP id S238660AbiE3OEo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:03:26 -0400
+        Mon, 30 May 2022 10:04:44 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8CD78BD19;
-        Mon, 30 May 2022 06:40:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9139F994DC;
+        Mon, 30 May 2022 06:40:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4487D60F78;
-        Mon, 30 May 2022 13:40:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 171C4C3411A;
-        Mon, 30 May 2022 13:40:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 01D2760F3B;
+        Mon, 30 May 2022 13:40:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82F5DC3411A;
+        Mon, 30 May 2022 13:40:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918009;
-        bh=z4wDMbAV2RS1G7aP/5ULZccvzCp/6WBnP3rMRzqLcME=;
+        s=k20201202; t=1653918021;
+        bh=uk1qdW7JoKuQum18G3aYe+yII2qPfO4rIYEGwtqwbTk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NNV2g7UOgjFjDTTdmjeqoktnyl2WfHIL2NjxdHS5xJKfFfRXvy98ijkK7ajooK52T
-         CMe/xS2yvZ5zqy4nK9kv2xBXQNK8y9aVV8ZJAr4ewuuu6cepM3YQPFR3fs9NMsSbN6
-         xWWjYGAGOlQEGJ8c8AN3dJ4Gg0obcZj/D2UlvB/C/+Rw/eJTZHlpdwM4/USdiiDr9D
-         7rH7xTMcRDbodDnfDqAQV59POEcZveHtc8BxWO4kKqOne6f6GdxHHmT1rj475TvF06
-         xBVyGjSgYfoRg4ZHvOqnhBw3hehXkL4sYSxqI9CFnL8LLaGM21Vx0GgzWq6rhoL13x
-         iymwVS/9RR0BQ==
+        b=HjUnPGLGBTsbfPALSsqY5wzTQmxZKghvrnTIlEGP2kSSpQtHu5YoluyQ5HlPP16ZH
+         HYdoNnJVbVAaYr+JqAwEarkFUewTH1QpfJyu3zk9Bl1o7oJbZCXJz88SE5cNe3+SDV
+         C0GqEEMVCJAs957r+7Dsfh40JhbTqogfv8w6+ZfCdY9FRAbb/E5tsVUczm7A7j92vr
+         oZv5MFdS3mdlYrZZmhTaw3B86tT20ewqMA43cWD5A1j1hnVpwgfLx8Na+/I9WhsGRq
+         uh0wPqQ1ZRx+GYcnvZV2kPIibt074iqHYwJJIUTKAy1hH45RVRNNsxAJ0uKZItZm/p
+         w+3Gh2rWHDV3A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>,
-        kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, christophe.jaillet@wanadoo.fr,
-        wsa+renesas@sang-engineering.com, colin.king@intel.com,
-        alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.15 030/109] ASoC: rsnd: care return value from rsnd_node_fixed_index()
-Date:   Mon, 30 May 2022 09:37:06 -0400
-Message-Id: <20220530133825.1933431-30-sashal@kernel.org>
+Cc:     Zheyu Ma <zheyuma97@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 034/109] media: cx25821: Fix the warning when removing the module
+Date:   Mon, 30 May 2022 09:37:10 -0400
+Message-Id: <20220530133825.1933431-34-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
 References: <20220530133825.1933431-1-sashal@kernel.org>
@@ -56,209 +52,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit d09a7db431c65aaa8303eb456439d1831ca2e6b4 ]
+[ Upstream commit 2203436a4d24302871617373a7eb21bc17e38762 ]
 
-Renesas Sound is very complex, and thus it needs to use
-rsnd_node_fixed_index() to know enabled pin index.
+When removing the module, we will get the following warning:
 
-It returns error if strange pin was selected,
-but some codes didn't check it.
+[   14.746697] remove_proc_entry: removing non-empty directory 'irq/21', leaking at least 'cx25821[1]'
+[   14.747449] WARNING: CPU: 4 PID: 368 at fs/proc/generic.c:717 remove_proc_entry+0x389/0x3f0
+[   14.751611] RIP: 0010:remove_proc_entry+0x389/0x3f0
+[   14.759589] Call Trace:
+[   14.759792]  <TASK>
+[   14.759975]  unregister_irq_proc+0x14c/0x170
+[   14.760340]  irq_free_descs+0x94/0xe0
+[   14.760640]  mp_unmap_irq+0xb6/0x100
+[   14.760937]  acpi_unregister_gsi_ioapic+0x27/0x40
+[   14.761334]  acpi_pci_irq_disable+0x1d3/0x320
+[   14.761688]  pci_disable_device+0x1ad/0x380
+[   14.762027]  ? _raw_spin_unlock_irqrestore+0x2d/0x60
+[   14.762442]  ? cx25821_shutdown+0x20/0x9f0 [cx25821]
+[   14.762848]  cx25821_finidev+0x48/0xc0 [cx25821]
+[   14.763242]  pci_device_remove+0x92/0x240
 
-This patch 1) indicates error message, 2) check return
-value.
+Fix this by freeing the irq before call pci_disable_device().
 
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
-Link: https://lore.kernel.org/r/87pmlbgn5t.wl-kuninori.morimoto.gx@renesas.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/sh/rcar/core.c | 15 ++++++++++-----
- sound/soc/sh/rcar/dma.c  |  9 ++++++++-
- sound/soc/sh/rcar/rsnd.h |  2 +-
- sound/soc/sh/rcar/src.c  |  7 ++++++-
- sound/soc/sh/rcar/ssi.c  | 14 ++++++++++++--
- sound/soc/sh/rcar/ssiu.c |  7 ++++++-
- 6 files changed, 43 insertions(+), 11 deletions(-)
+ drivers/media/pci/cx25821/cx25821-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/sh/rcar/core.c b/sound/soc/sh/rcar/core.c
-index 6a8fe0da7670..af8ef2a27d34 100644
---- a/sound/soc/sh/rcar/core.c
-+++ b/sound/soc/sh/rcar/core.c
-@@ -1159,6 +1159,7 @@ void rsnd_parse_connect_common(struct rsnd_dai *rdai, char *name,
- 		struct device_node *capture)
- {
- 	struct rsnd_priv *priv = rsnd_rdai_to_priv(rdai);
-+	struct device *dev = rsnd_priv_to_dev(priv);
- 	struct device_node *np;
- 	int i;
+diff --git a/drivers/media/pci/cx25821/cx25821-core.c b/drivers/media/pci/cx25821/cx25821-core.c
+index 40c10ca94def..a4192e80e9a0 100644
+--- a/drivers/media/pci/cx25821/cx25821-core.c
++++ b/drivers/media/pci/cx25821/cx25821-core.c
+@@ -1339,11 +1339,11 @@ static void cx25821_finidev(struct pci_dev *pci_dev)
+ 	struct cx25821_dev *dev = get_cx25821(v4l2_dev);
  
-@@ -1169,7 +1170,11 @@ void rsnd_parse_connect_common(struct rsnd_dai *rdai, char *name,
- 	for_each_child_of_node(node, np) {
- 		struct rsnd_mod *mod;
+ 	cx25821_shutdown(dev);
+-	pci_disable_device(pci_dev);
  
--		i = rsnd_node_fixed_index(np, name, i);
-+		i = rsnd_node_fixed_index(dev, np, name, i);
-+		if (i < 0) {
-+			of_node_put(np);
-+			break;
-+		}
+ 	/* unregister stuff */
+ 	if (pci_dev->irq)
+ 		free_irq(pci_dev->irq, dev);
++	pci_disable_device(pci_dev);
  
- 		mod = mod_get(priv, i);
- 
-@@ -1183,7 +1188,7 @@ void rsnd_parse_connect_common(struct rsnd_dai *rdai, char *name,
- 	of_node_put(node);
- }
- 
--int rsnd_node_fixed_index(struct device_node *node, char *name, int idx)
-+int rsnd_node_fixed_index(struct device *dev, struct device_node *node, char *name, int idx)
- {
- 	char node_name[16];
- 
-@@ -1210,6 +1215,8 @@ int rsnd_node_fixed_index(struct device_node *node, char *name, int idx)
- 			return idx;
- 	}
- 
-+	dev_err(dev, "strange node numbering (%s)",
-+		of_node_full_name(node));
- 	return -EINVAL;
- }
- 
-@@ -1221,10 +1228,8 @@ int rsnd_node_count(struct rsnd_priv *priv, struct device_node *node, char *name
- 
- 	i = 0;
- 	for_each_child_of_node(node, np) {
--		i = rsnd_node_fixed_index(np, name, i);
-+		i = rsnd_node_fixed_index(dev, np, name, i);
- 		if (i < 0) {
--			dev_err(dev, "strange node numbering (%s)",
--				of_node_full_name(node));
- 			of_node_put(np);
- 			return 0;
- 		}
-diff --git a/sound/soc/sh/rcar/dma.c b/sound/soc/sh/rcar/dma.c
-index 03e0d4eca781..463ab237d7bd 100644
---- a/sound/soc/sh/rcar/dma.c
-+++ b/sound/soc/sh/rcar/dma.c
-@@ -240,12 +240,19 @@ static int rsnd_dmaen_start(struct rsnd_mod *mod,
- struct dma_chan *rsnd_dma_request_channel(struct device_node *of_node, char *name,
- 					  struct rsnd_mod *mod, char *x)
- {
-+	struct rsnd_priv *priv = rsnd_mod_to_priv(mod);
-+	struct device *dev = rsnd_priv_to_dev(priv);
- 	struct dma_chan *chan = NULL;
- 	struct device_node *np;
- 	int i = 0;
- 
- 	for_each_child_of_node(of_node, np) {
--		i = rsnd_node_fixed_index(np, name, i);
-+		i = rsnd_node_fixed_index(dev, np, name, i);
-+		if (i < 0) {
-+			chan = NULL;
-+			of_node_put(np);
-+			break;
-+		}
- 
- 		if (i == rsnd_mod_id_raw(mod) && (!chan))
- 			chan = of_dma_request_slave_channel(np, x);
-diff --git a/sound/soc/sh/rcar/rsnd.h b/sound/soc/sh/rcar/rsnd.h
-index 6580bab0e229..d9cd190d7e19 100644
---- a/sound/soc/sh/rcar/rsnd.h
-+++ b/sound/soc/sh/rcar/rsnd.h
-@@ -460,7 +460,7 @@ void rsnd_parse_connect_common(struct rsnd_dai *rdai, char *name,
- 		struct device_node *playback,
- 		struct device_node *capture);
- int rsnd_node_count(struct rsnd_priv *priv, struct device_node *node, char *name);
--int rsnd_node_fixed_index(struct device_node *node, char *name, int idx);
-+int rsnd_node_fixed_index(struct device *dev, struct device_node *node, char *name, int idx);
- 
- int rsnd_channel_normalization(int chan);
- #define rsnd_runtime_channel_original(io) \
-diff --git a/sound/soc/sh/rcar/src.c b/sound/soc/sh/rcar/src.c
-index 42a100c6303d..0ea84ae57c6a 100644
---- a/sound/soc/sh/rcar/src.c
-+++ b/sound/soc/sh/rcar/src.c
-@@ -676,7 +676,12 @@ int rsnd_src_probe(struct rsnd_priv *priv)
- 		if (!of_device_is_available(np))
- 			goto skip;
- 
--		i = rsnd_node_fixed_index(np, SRC_NAME, i);
-+		i = rsnd_node_fixed_index(dev, np, SRC_NAME, i);
-+		if (i < 0) {
-+			ret = -EINVAL;
-+			of_node_put(np);
-+			goto rsnd_src_probe_done;
-+		}
- 
- 		src = rsnd_src_get(priv, i);
- 
-diff --git a/sound/soc/sh/rcar/ssi.c b/sound/soc/sh/rcar/ssi.c
-index 87e606f688d3..43c5e27dc5c8 100644
---- a/sound/soc/sh/rcar/ssi.c
-+++ b/sound/soc/sh/rcar/ssi.c
-@@ -1105,6 +1105,7 @@ void rsnd_parse_connect_ssi(struct rsnd_dai *rdai,
- 			    struct device_node *capture)
- {
- 	struct rsnd_priv *priv = rsnd_rdai_to_priv(rdai);
-+	struct device *dev = rsnd_priv_to_dev(priv);
- 	struct device_node *node;
- 	struct device_node *np;
- 	int i;
-@@ -1117,7 +1118,11 @@ void rsnd_parse_connect_ssi(struct rsnd_dai *rdai,
- 	for_each_child_of_node(node, np) {
- 		struct rsnd_mod *mod;
- 
--		i = rsnd_node_fixed_index(np, SSI_NAME, i);
-+		i = rsnd_node_fixed_index(dev, np, SSI_NAME, i);
-+		if (i < 0) {
-+			of_node_put(np);
-+			break;
-+		}
- 
- 		mod = rsnd_ssi_mod_get(priv, i);
- 
-@@ -1182,7 +1187,12 @@ int rsnd_ssi_probe(struct rsnd_priv *priv)
- 		if (!of_device_is_available(np))
- 			goto skip;
- 
--		i = rsnd_node_fixed_index(np, SSI_NAME, i);
-+		i = rsnd_node_fixed_index(dev, np, SSI_NAME, i);
-+		if (i < 0) {
-+			ret = -EINVAL;
-+			of_node_put(np);
-+			goto rsnd_ssi_probe_done;
-+		}
- 
- 		ssi = rsnd_ssi_get(priv, i);
- 
-diff --git a/sound/soc/sh/rcar/ssiu.c b/sound/soc/sh/rcar/ssiu.c
-index 138f95dd9f4a..4b8a63e336c7 100644
---- a/sound/soc/sh/rcar/ssiu.c
-+++ b/sound/soc/sh/rcar/ssiu.c
-@@ -462,6 +462,7 @@ void rsnd_parse_connect_ssiu(struct rsnd_dai *rdai,
- 			     struct device_node *capture)
- {
- 	struct rsnd_priv *priv = rsnd_rdai_to_priv(rdai);
-+	struct device *dev = rsnd_priv_to_dev(priv);
- 	struct device_node *node = rsnd_ssiu_of_node(priv);
- 	struct rsnd_dai_stream *io_p = &rdai->playback;
- 	struct rsnd_dai_stream *io_c = &rdai->capture;
-@@ -474,7 +475,11 @@ void rsnd_parse_connect_ssiu(struct rsnd_dai *rdai,
- 		for_each_child_of_node(node, np) {
- 			struct rsnd_mod *mod;
- 
--			i = rsnd_node_fixed_index(np, SSIU_NAME, i);
-+			i = rsnd_node_fixed_index(dev, np, SSIU_NAME, i);
-+			if (i < 0) {
-+				of_node_put(np);
-+				break;
-+			}
- 
- 			mod = rsnd_ssiu_mod_get(priv, i);
- 
+ 	cx25821_dev_unregister(dev);
+ 	v4l2_device_unregister(v4l2_dev);
 -- 
 2.35.1
 
