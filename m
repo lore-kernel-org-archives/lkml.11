@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EA35C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:33:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78F92C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:33:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241267AbiE3Ocz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:32:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40304 "EHLO
+        id S241339AbiE3OdD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:33:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241019AbiE3ORC (ORCPT
+        with ESMTP id S241009AbiE3OQ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:17:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A8F310F352;
-        Mon, 30 May 2022 06:44:27 -0700 (PDT)
+        Mon, 30 May 2022 10:16:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0492310EA66;
+        Mon, 30 May 2022 06:44:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A97360F32;
-        Mon, 30 May 2022 13:43:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0505C385B8;
-        Mon, 30 May 2022 13:43:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A7050B80DC3;
+        Mon, 30 May 2022 13:44:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29DEDC3411A;
+        Mon, 30 May 2022 13:44:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918238;
-        bh=sm8MbBlNG5K6X9hLCmzFjLBYl5czMKscsEUm5HoPOMk=;
+        s=k20201202; t=1653918263;
+        bh=0jYq7SrEBjoFSLyblsX/VqNdX518v94WFZHXPitwbSk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NLUxv0cvt9xqEY5NDdtf04KYXCDj4yFehBXCveD5t44geDpsLKlAJiynARW59l41O
-         6Z0o9A8t6GaxcbVyEWcjviKQ6fM+LoqoAGjjW9spdm0fXutM8n4NbOWh12ZaKhVt+k
-         LvHVZ7pvKir/cewfOiyCIP1qs0iHnNbcmKqT/3i0gXrw7TUH/HhQM7DZ8TYt+sQNC+
-         zufARMY8r/nvpza+fS+gIaOMf0BQGm0H2dw2/dqqWO2E3kQDztM/id7/bRtCWr/dq8
-         6H7FnzGa12ts3UA7JqEPCJb/TFv01aQ6mCoCw5Oqad3rV3a9iUUYLhBsPLDYEoWYBa
-         CDmmLhLhqyzZg==
+        b=nxZj4qF52KQbdZn9vJ62fqPwksjQ3hLLn0GLJ7k4iC0ceqfoKG5B9aCqOMOVWLG3G
+         JBEj4OBTizIik8ecUP4/KqlY09zMg3xz1yMOZYAhkmLLN+fEULfysXXqpWUx5yi5sc
+         GYEzylkJpHt4cWLZdWww2iEvRZLAsISIOc+8+RniYfmGJ+g34aCQVZs7S/EnZqIVq8
+         WsfOv0Jq+MfdM4LljREPr3DmT4rvFIf+q+AGxVzVMMYVJ+JNUw1s8QWAYTTOXSGRlo
+         S16ZUEt/zByV2Tor7xwIS1h9QTv28tcBA63NUpjsJ+OtspGJmIoTmm9tsU4Jv7k5Bz
+         HTH8GHWGwlXmA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
-        pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 106/109] eth: tg3: silence the GCC 12 array-bounds warning
-Date:   Mon, 30 May 2022 09:38:22 -0400
-Message-Id: <20220530133825.1933431-106-sashal@kernel.org>
+Cc:     Haowen Bai <baihaowen@meizu.com>, Kalle Valo <kvalo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, stas.yakovlev@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 07/76] ipw2x00: Fix potential NULL dereference in libipw_xmit()
+Date:   Mon, 30 May 2022 09:42:57 -0400
+Message-Id: <20220530134406.1934928-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
-References: <20220530133825.1933431-1-sashal@kernel.org>
+In-Reply-To: <20220530134406.1934928-1-sashal@kernel.org>
+References: <20220530134406.1934928-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -53,42 +53,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
+From: Haowen Bai <baihaowen@meizu.com>
 
-[ Upstream commit 9dec850fd7c210a04b4707df8e6c95bfafdd6a4b ]
+[ Upstream commit e8366bbabe1d207cf7c5b11ae50e223ae6fc278b ]
 
-GCC 12 currently generates a rather inconsistent warning:
+crypt and crypt->ops could be null, so we need to checking null
+before dereference
 
-drivers/net/ethernet/broadcom/tg3.c:17795:51: warning: array subscript 5 is above array bounds of ‘struct tg3_napi[5]’ [-Warray-bounds]
-17795 |                 struct tg3_napi *tnapi = &tp->napi[i];
-      |                                           ~~~~~~~~^~~
-
-i is guaranteed < tp->irq_max which in turn is either 1 or 5.
-There are more loops like this one in the driver, but strangely
-GCC 12 dislikes only this single one.
-
-Silence this silliness for now.
-
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/1648797055-25730-1-git-send-email-baihaowen@meizu.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/Makefile | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/net/wireless/intel/ipw2x00/libipw_tx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/broadcom/Makefile b/drivers/net/ethernet/broadcom/Makefile
-index 0ddfb5b5d53c..2e6c5f258a1f 100644
---- a/drivers/net/ethernet/broadcom/Makefile
-+++ b/drivers/net/ethernet/broadcom/Makefile
-@@ -17,3 +17,8 @@ obj-$(CONFIG_BGMAC_BCMA) += bgmac-bcma.o bgmac-bcma-mdio.o
- obj-$(CONFIG_BGMAC_PLATFORM) += bgmac-platform.o
- obj-$(CONFIG_SYSTEMPORT) += bcmsysport.o
- obj-$(CONFIG_BNXT) += bnxt/
-+
-+# FIXME: temporarily silence -Warray-bounds on non W=1+ builds
-+ifndef KBUILD_EXTRA_WARN
-+CFLAGS_tg3.o += -Wno-array-bounds
-+endif
+diff --git a/drivers/net/wireless/intel/ipw2x00/libipw_tx.c b/drivers/net/wireless/intel/ipw2x00/libipw_tx.c
+index d9baa2fa603b..e4c60caa6543 100644
+--- a/drivers/net/wireless/intel/ipw2x00/libipw_tx.c
++++ b/drivers/net/wireless/intel/ipw2x00/libipw_tx.c
+@@ -383,7 +383,7 @@ netdev_tx_t libipw_xmit(struct sk_buff *skb, struct net_device *dev)
+ 
+ 		/* Each fragment may need to have room for encryption
+ 		 * pre/postfix */
+-		if (host_encrypt)
++		if (host_encrypt && crypt && crypt->ops)
+ 			bytes_per_frag -= crypt->ops->extra_mpdu_prefix_len +
+ 			    crypt->ops->extra_mpdu_postfix_len;
+ 
 -- 
 2.35.1
 
