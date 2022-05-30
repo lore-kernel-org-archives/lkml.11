@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF6D7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:13:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79B76C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:14:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239429AbiE3ON5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:13:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55990 "EHLO
+        id S239497AbiE3OOF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:14:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240214AbiE3OGj (ORCPT
+        with ESMTP id S240231AbiE3OGk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:06:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78F4240A12;
-        Mon, 30 May 2022 06:42:06 -0700 (PDT)
+        Mon, 30 May 2022 10:06:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 605D540A3C;
+        Mon, 30 May 2022 06:42:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4F6FBB80D86;
-        Mon, 30 May 2022 13:42:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F598C3411A;
-        Mon, 30 May 2022 13:42:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E2AF60FC6;
+        Mon, 30 May 2022 13:42:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 204A9C3411A;
+        Mon, 30 May 2022 13:42:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918123;
-        bh=7rf3wff4WcrLDRT3DeHISJlEfMduB3IFzlJexm4+A7w=;
+        s=k20201202; t=1653918125;
+        bh=91YafTY4rpyJMzqIXxTsoWBBfWiA6zSqMttXHOP6uKo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uKcD2UXVfCp4h/aGKqSwPa4jGbkprrAPOuWJ/eLrqiVukbsXfggATOY2kLrSIppHi
-         VN9Y+DB/A+kqrKcKzd9vLQlgkh0JG9+GmiYuISgnzZMvV4r5EXlZcztAhK4Un9ED2g
-         5UOd4ViosFctE2Olcmebs6QA+OgQfgcRZf3rzia2UPDc9+A8LGlSbJGuw+e4k0jAZb
-         apP0qFRE+0iybMLaBt2aVL0vIaXestkQj2wsP/ksSsq5+7nTQ7f0Ooi9UrkB2URENP
-         7H6CzW3/guq2Kl5fIA7q6C6PJCu9WZFLpl8StswGoM8GO1H46tYDWpeveBNT+9KZry
-         Ze2oljiiIPk/g==
+        b=uvuXn8E7Tz7ykH116+HzfWWOg2vAUyb3zFnUQu+jY0h35fsxcfVWoUTZKa5gMF1ef
+         VLeaADMQUxzOoDUF2CxXsrkID7CPtOMbUl/EMjso5cR9oBBB6zhP8BTuxMtACP6w7J
+         QNynQsgUJtciFAmshKkPZigpd/hxPalfur2xMQjoc5UEiRfCQ1XfEqlwR1BfCRSIY/
+         3KfUmzLrNZyA9BuFpre7cfSZAU2SCIBQDgzPm2W1Q2b6DUeNEyyFb6foNB4JBrCFKG
+         qBkr1v8nMiRk2I2Nb5rbzIOkN/QB/6fuyDPz02/bTcJ1bIuFz/o7l3aMkV1bfYcyP7
+         DF4410cF9sEvg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mario Limonciello <mario.limonciello@amd.com>,
-        Jian-Hong Pan <jhp@endlessos.org>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
-        linux-acpi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 070/109] ACPI: PM: Block ASUS B1400CEAE from suspend to idle by default
-Date:   Mon, 30 May 2022 09:37:46 -0400
-Message-Id: <20220530133825.1933431-70-sashal@kernel.org>
+Cc:     Corey Minyard <cminyard@mvista.com>,
+        kernel test robot <lkp@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        openipmi-developer@lists.sourceforge.net
+Subject: [PATCH AUTOSEL 5.15 072/109] ipmi: Fix pr_fmt to avoid compilation issues
+Date:   Mon, 30 May 2022 09:37:48 -0400
+Message-Id: <20220530133825.1933431-72-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
 References: <20220530133825.1933431-1-sashal@kernel.org>
@@ -53,55 +52,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mario Limonciello <mario.limonciello@amd.com>
+From: Corey Minyard <cminyard@mvista.com>
 
-[ Upstream commit d52848620de00cde4a3a5df908e231b8c8868250 ]
+[ Upstream commit 2ebaf18a0b7fb764bba6c806af99fe868cee93de ]
 
-ASUS B1400CEAE fails to resume from suspend to idle by default.  This was
-bisected back to commit df4f9bc4fb9c ("nvme-pci: add support for ACPI
-StorageD3Enable property") but this is a red herring to the problem.
+The was it was wouldn't work in some situations, simplify it.  What was
+there was unnecessary complexity.
 
-Before this commit the system wasn't getting into deepest sleep state.
-Presumably this commit is allowing entry into deepest sleep state as
-advertised by firmware, but there are some other problems related to
-the wakeup.
-
-As it is confirmed the system works properly with S3, set the default for
-this system to S3.
-
-Reported-by: Jian-Hong Pan <jhp@endlessos.org>
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215742
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-Tested-by: Jian-Hong Pan <jhp@endlessos.org>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Corey Minyard <cminyard@mvista.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/sleep.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ drivers/char/ipmi/ipmi_msghandler.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/acpi/sleep.c b/drivers/acpi/sleep.c
-index 7ae09e4b4592..07515139141e 100644
---- a/drivers/acpi/sleep.c
-+++ b/drivers/acpi/sleep.c
-@@ -374,6 +374,18 @@ static const struct dmi_system_id acpisleep_dmi_table[] __initconst = {
- 		DMI_MATCH(DMI_PRODUCT_NAME, "20GGA00L00"),
- 		},
- 	},
-+	/*
-+	 * ASUS B1400CEAE hangs on resume from suspend (see
-+	 * https://bugzilla.kernel.org/show_bug.cgi?id=215742).
-+	 */
-+	{
-+	.callback = init_default_s3,
-+	.ident = "ASUS B1400CEAE",
-+	.matches = {
-+		DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
-+		DMI_MATCH(DMI_PRODUCT_NAME, "ASUS EXPERTBOOK B1400CEAE"),
-+		},
-+	},
- 	{},
- };
+diff --git a/drivers/char/ipmi/ipmi_msghandler.c b/drivers/char/ipmi/ipmi_msghandler.c
+index fe91090e04a4..2badf36d4816 100644
+--- a/drivers/char/ipmi/ipmi_msghandler.c
++++ b/drivers/char/ipmi/ipmi_msghandler.c
+@@ -11,8 +11,8 @@
+  * Copyright 2002 MontaVista Software Inc.
+  */
  
+-#define pr_fmt(fmt) "%s" fmt, "IPMI message handler: "
+-#define dev_fmt pr_fmt
++#define pr_fmt(fmt) "IPMI message handler: " fmt
++#define dev_fmt(fmt) pr_fmt(fmt)
+ 
+ #include <linux/module.h>
+ #include <linux/errno.h>
 -- 
 2.35.1
 
