@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 229A2C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:09:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9C2DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:09:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239239AbiE3OJ2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:09:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54690 "EHLO
+        id S239419AbiE3OJf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:09:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238821AbiE3OEw (ORCPT
+        with ESMTP id S238873AbiE3OEx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:04:52 -0400
+        Mon, 30 May 2022 10:04:53 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3DB1CE5D4;
-        Mon, 30 May 2022 06:40:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C54B0CE5E8;
+        Mon, 30 May 2022 06:40:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 33B4A60F2A;
-        Mon, 30 May 2022 13:40:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CA96C3411E;
-        Mon, 30 May 2022 13:40:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6084960F74;
+        Mon, 30 May 2022 13:40:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9333CC3411F;
+        Mon, 30 May 2022 13:40:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918026;
-        bh=3os4nm//VWdtnukH4DMduEp3AKayG5T+pbN7X5F8Egs=;
+        s=k20201202; t=1653918048;
+        bh=cmZKyuLkuhoQx8U8SjA9Ah7lmHkMh8mv8BlTxKgphtc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Bps66xW/rNe9sDWn74JYcDwwCvBYakaNWubJvFv4LTT79u2u4t4bqYZEEo/v3qJK6
-         T7eblw4o+cTDV2yxYOurHnyqnxJUbveJaOcLnMuV/zUOf+Pw3d69aIABXGiGboSmGf
-         E7V57cJ92Bes0sqCdBhqA/6X3MbQtkSeHn7Uu40J0K3ONaYqUfyv7d8/lECvcovbPS
-         h/OiusErAS29LvxPcCgi0huM1k+U1oMEZxD//1O7mULjWOaQbyvBXZetF1zSUd1RKk
-         ss4m6OQHnIh8V/d4iXKPYW5nI9335JdsekjYbNrwVTo+j95j113V+NA+gheME0N7xV
-         lAtBHmBtZ4B6g==
+        b=TvjUuXrjt6o7mW7hG4Sf0AM96Wyw9C6Sl1m/rKxPIhvL80zOKmQvwBUZGvpKc1t43
+         mlY4wXExamFD3EVg7iQfk0GSQKsWMPmZmDbNKjEBsprqvEms/8Uy6CdjuxgZFO22yN
+         cf/+Uz2fm1R3gc/QT8PCLaG3fIKZM0k6BFqLATFyDfb6PZeqfqGPwgfme4Hs1oJpTj
+         sbDappHUo4Pzhymfmf8Fx674aM66Yesg/fsqIuohdp4U72CXIkdeMQXDGK9f9RkRSS
+         FdGNPguuKQ1On/CgxiqzFWS3EqCQgKMkBeOfquvBtay+1Dby95XzRutIL2L8vwjcd1
+         b+kexyFQFjq/Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vignesh Raghavendra <vigneshr@ti.com>,
-        Aswath Govindraju <a-govindraju@ti.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>, adrian.hunter@intel.com,
-        linux-mmc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 037/109] drivers: mmc: sdhci_am654: Add the quirk to set TESTCD bit
-Date:   Mon, 30 May 2022 09:37:13 -0400
-Message-Id: <20220530133825.1933431-37-sashal@kernel.org>
+Cc:     James Smart <jsmart2021@gmail.com>,
+        Justin Tee <justin.tee@broadcom.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, james.smart@broadcom.com,
+        dick.kennedy@broadcom.com, jejb@linux.ibm.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 042/109] scsi: lpfc: Fix resource leak in lpfc_sli4_send_seq_to_ulp()
+Date:   Mon, 30 May 2022 09:37:18 -0400
+Message-Id: <20220530133825.1933431-42-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
 References: <20220530133825.1933431-1-sashal@kernel.org>
@@ -53,83 +54,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vignesh Raghavendra <vigneshr@ti.com>
+From: James Smart <jsmart2021@gmail.com>
 
-[ Upstream commit c7666240ec76422cb7546bd07cc8ae80dc0ccdd2 ]
+[ Upstream commit 646db1a560f44236b7278b822ca99a1d3b6ea72c ]
 
-The ARASAN MMC controller on Keystone 3 class of devices need the SDCD
-line to be connected for proper functioning. Similar to the issue pointed
-out in sdhci-of-arasan.c driver, commit 3794c542641f ("mmc:
-sdhci-of-arasan: Set controller to test mode when no CD bit").
+If no handler is found in lpfc_complete_unsol_iocb() to match the rctl of a
+received frame, the frame is dropped and resources are leaked.
 
-In cases where this can't be connected, add a quirk to force the
-controller into test mode and set the TESTCD bit. Use the flag
-"ti,fails-without-test-cd", to implement this above quirk when required.
+Fix by returning resources when discarding an unhandled frame type.  Update
+lpfc_fc_frame_check() handling of NOP basic link service.
 
-Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
-Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
-Link: https://lore.kernel.org/r/20220425063120.10135-3-a-govindraju@ti.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Link: https://lore.kernel.org/r/20220426181419.9154-1-jsmart2021@gmail.com
+Co-developed-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/host/sdhci_am654.c | 23 ++++++++++++++++++++++-
- 1 file changed, 22 insertions(+), 1 deletion(-)
+ drivers/scsi/lpfc/lpfc_sli.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/mmc/host/sdhci_am654.c b/drivers/mmc/host/sdhci_am654.c
-index b4891bb26648..a3e62e212631 100644
---- a/drivers/mmc/host/sdhci_am654.c
-+++ b/drivers/mmc/host/sdhci_am654.c
-@@ -147,6 +147,9 @@ struct sdhci_am654_data {
- 	int drv_strength;
- 	int strb_sel;
- 	u32 flags;
-+	u32 quirks;
-+
-+#define SDHCI_AM654_QUIRK_FORCE_CDTEST BIT(0)
- };
- 
- struct sdhci_am654_driver_data {
-@@ -369,6 +372,21 @@ static void sdhci_am654_write_b(struct sdhci_host *host, u8 val, int reg)
+diff --git a/drivers/scsi/lpfc/lpfc_sli.c b/drivers/scsi/lpfc/lpfc_sli.c
+index 68d8e55c1205..d8d26cde70b6 100644
+--- a/drivers/scsi/lpfc/lpfc_sli.c
++++ b/drivers/scsi/lpfc/lpfc_sli.c
+@@ -18455,7 +18455,6 @@ lpfc_fc_frame_check(struct lpfc_hba *phba, struct fc_frame_header *fc_hdr)
+ 	case FC_RCTL_ELS_REP:	/* extended link services reply */
+ 	case FC_RCTL_ELS4_REQ:	/* FC-4 ELS request */
+ 	case FC_RCTL_ELS4_REP:	/* FC-4 ELS reply */
+-	case FC_RCTL_BA_NOP:  	/* basic link service NOP */
+ 	case FC_RCTL_BA_ABTS: 	/* basic link service abort */
+ 	case FC_RCTL_BA_RMC: 	/* remove connection */
+ 	case FC_RCTL_BA_ACC:	/* basic accept */
+@@ -18476,6 +18475,7 @@ lpfc_fc_frame_check(struct lpfc_hba *phba, struct fc_frame_header *fc_hdr)
+ 		fc_vft_hdr = (struct fc_vft_header *)fc_hdr;
+ 		fc_hdr = &((struct fc_frame_header *)fc_vft_hdr)[1];
+ 		return lpfc_fc_frame_check(phba, fc_hdr);
++	case FC_RCTL_BA_NOP:	/* basic link service NOP */
+ 	default:
+ 		goto drop;
  	}
- }
- 
-+static void sdhci_am654_reset(struct sdhci_host *host, u8 mask)
-+{
-+	u8 ctrl;
-+	struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
-+	struct sdhci_am654_data *sdhci_am654 = sdhci_pltfm_priv(pltfm_host);
-+
-+	sdhci_reset(host, mask);
-+
-+	if (sdhci_am654->quirks & SDHCI_AM654_QUIRK_FORCE_CDTEST) {
-+		ctrl = sdhci_readb(host, SDHCI_HOST_CONTROL);
-+		ctrl |= SDHCI_CTRL_CDTEST_INS | SDHCI_CTRL_CDTEST_EN;
-+		sdhci_writeb(host, ctrl, SDHCI_HOST_CONTROL);
+@@ -19288,12 +19288,14 @@ lpfc_sli4_send_seq_to_ulp(struct lpfc_vport *vport,
+ 	if (!lpfc_complete_unsol_iocb(phba,
+ 				      phba->sli4_hba.els_wq->pring,
+ 				      iocbq, fc_hdr->fh_r_ctl,
+-				      fc_hdr->fh_type))
++				      fc_hdr->fh_type)) {
+ 		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
+ 				"2540 Ring %d handler: unexpected Rctl "
+ 				"x%x Type x%x received\n",
+ 				LPFC_ELS_RING,
+ 				fc_hdr->fh_r_ctl, fc_hdr->fh_type);
++		lpfc_in_buf_free(phba, &seq_dmabuf->dbuf);
 +	}
-+}
-+
- static int sdhci_am654_execute_tuning(struct mmc_host *mmc, u32 opcode)
- {
- 	struct sdhci_host *host = mmc_priv(mmc);
-@@ -500,7 +518,7 @@ static struct sdhci_ops sdhci_j721e_4bit_ops = {
- 	.set_clock = sdhci_j721e_4bit_set_clock,
- 	.write_b = sdhci_am654_write_b,
- 	.irq = sdhci_am654_cqhci_irq,
--	.reset = sdhci_reset,
-+	.reset = sdhci_am654_reset,
- };
  
- static const struct sdhci_pltfm_data sdhci_j721e_4bit_pdata = {
-@@ -719,6 +737,9 @@ static int sdhci_am654_get_of_property(struct platform_device *pdev,
- 	device_property_read_u32(dev, "ti,clkbuf-sel",
- 				 &sdhci_am654->clkbuf_sel);
- 
-+	if (device_property_read_bool(dev, "ti,fails-without-test-cd"))
-+		sdhci_am654->quirks |= SDHCI_AM654_QUIRK_FORCE_CDTEST;
-+
- 	sdhci_get_of_property(pdev);
- 
- 	return 0;
+ 	/* Free iocb created in lpfc_prep_seq */
+ 	list_for_each_entry_safe(curr_iocb, next_iocb,
 -- 
 2.35.1
 
