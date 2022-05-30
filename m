@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79E4EC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E83E7C3526F
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:53:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236650AbiE3Nvz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:51:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49232 "EHLO
+        id S238412AbiE3NwA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:52:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238518AbiE3Npi (ORCPT
+        with ESMTP id S238825AbiE3Np6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:45:38 -0400
+        Mon, 30 May 2022 09:45:58 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F7849CF70;
-        Mon, 30 May 2022 06:33:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03EA7A0D26;
+        Mon, 30 May 2022 06:33:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DB94960F78;
-        Mon, 30 May 2022 13:33:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAD8CC36AE3;
-        Mon, 30 May 2022 13:33:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A5D6E60F37;
+        Mon, 30 May 2022 13:33:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28D92C3411A;
+        Mon, 30 May 2022 13:33:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917591;
-        bh=e4rQjDbcX7pYuLi/MagzF5WQm9G9+qVy7DrNZMANN00=;
+        s=k20201202; t=1653917617;
+        bh=dnVq8A+QaRcFBuWkdXsDnNqK0ZQ2F6cv/bJXs+evh2Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oRh/fMSrchS7dnBG73vbAqG6hOOBSVgSaeOjQIqJPSC5mwcxtGUaQHs1usNvWDmHE
-         VPPAkRIJd3sDy6tHzB2vCqaNPBS5HploltdQ793BmaCbtBMzbWtIclrUtvbnRiI57O
-         +vSjDmVd9ihXoqTp3m/q7fr0TI+MWb7ouCTjb0eyboxAJhwAcyG7+KGXqKWlpxvZVs
-         +ij9y+qmk1mqNgYzBgttxwtYF9J1kN7su6IS4JdPtmwwdU3yj61hrI4UcGcPuJiUQl
-         pRQA2skljixfcjEBfBcI2z2i860KWYb0PJ+GCEKH04Mmk85w+hjeMHhOBvcWfTKsci
-         dvz8t03cmHYcw==
+        b=Q9aSRzWzfyfMX2k018OrisoMfJtXEyFDeWGkOd24xMy3DBztPk1A68LNzpNC17cmO
+         3R2EA6K/sTs8nc1T1fRMUSyOeTmMwWjTC8f/jJFbW/7Nxq6MawPDE5sqKH1l8KCjS3
+         /8edRW3TZjFvd+xBvZGD42uzItLSXfWvnJ4QDBo/g8wtiMth9J4jXDod3aGyBfIuFx
+         jKQF6Kg+HuX6Qg4EMCEDE9vGEoDT50A5XpKF6DQh0+YPS0SUODJktfSVF+V0AF1p/v
+         WnsKrINXbXXdSDwKgN57NNMWk0aFtEq0HMGrdCLDgVFE2NYMovwSYP08gWSjWkpOMo
+         nvhgmpydtJJ3Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>,
-        kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, colin.king@intel.com,
-        alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.17 036/135] ASoC: rsnd: care default case on rsnd_ssiu_busif_err_status_clear()
-Date:   Mon, 30 May 2022 09:29:54 -0400
-Message-Id: <20220530133133.1931716-36-sashal@kernel.org>
+Cc:     Zheyu Ma <zheyuma97@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 042/135] media: pci: cx23885: Fix the error handling in cx23885_initdev()
+Date:   Mon, 30 May 2022 09:30:00 -0400
+Message-Id: <20220530133133.1931716-42-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
@@ -55,54 +52,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit b1384d4c95088d01f4266237faabf165d3d605fc ]
+[ Upstream commit e8123311cf06d7dae71e8c5fe78e0510d20cd30b ]
 
-commit cfb7b8bf1e2d66 ("ASoC: rsnd: tidyup
-rsnd_ssiu_busif_err_status_clear()") merged duplicate code, but it didn't
-care about default case, and causes smatch warnings.
+When the driver fails to call the dma_set_mask(), the driver will get
+the following splat:
 
-smatch warnings:
-sound/soc/sh/rcar/ssiu.c:112 rsnd_ssiu_busif_err_status_clear() \
-	error: uninitialized symbol 'offset'.
-sound/soc/sh/rcar/ssiu.c:114 rsnd_ssiu_busif_err_status_clear() \
-	error: uninitialized symbol 'shift'.
+[   55.853884] BUG: KASAN: use-after-free in __process_removed_driver+0x3c/0x240
+[   55.854486] Read of size 8 at addr ffff88810de60408 by task modprobe/590
+[   55.856822] Call Trace:
+[   55.860327]  __process_removed_driver+0x3c/0x240
+[   55.861347]  bus_for_each_dev+0x102/0x160
+[   55.861681]  i2c_del_driver+0x2f/0x50
 
-This patch cares it.
+This is because the driver has initialized the i2c related resources
+in cx23885_dev_setup() but not released them in error handling, fix this
+bug by modifying the error path that jumps after failing to call the
+dma_set_mask().
 
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
-Link: https://lore.kernel.org/r/87r15rgn6p.wl-kuninori.morimoto.gx@renesas.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/sh/rcar/ssiu.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/media/pci/cx23885/cx23885-core.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/sound/soc/sh/rcar/ssiu.c b/sound/soc/sh/rcar/ssiu.c
-index 0d8f97633dd2..138f95dd9f4a 100644
---- a/sound/soc/sh/rcar/ssiu.c
-+++ b/sound/soc/sh/rcar/ssiu.c
-@@ -102,6 +102,8 @@ bool rsnd_ssiu_busif_err_status_clear(struct rsnd_mod *mod)
- 		shift  = 1;
- 		offset = 1;
- 		break;
-+	default:
-+		goto out;
+diff --git a/drivers/media/pci/cx23885/cx23885-core.c b/drivers/media/pci/cx23885/cx23885-core.c
+index f8f2ff3b00c3..a07b18f2034e 100644
+--- a/drivers/media/pci/cx23885/cx23885-core.c
++++ b/drivers/media/pci/cx23885/cx23885-core.c
+@@ -2165,7 +2165,7 @@ static int cx23885_initdev(struct pci_dev *pci_dev,
+ 	err = dma_set_mask(&pci_dev->dev, 0xffffffff);
+ 	if (err) {
+ 		pr_err("%s/0: Oops: no 32bit PCI DMA ???\n", dev->name);
+-		goto fail_ctrl;
++		goto fail_dma_set_mask;
  	}
  
- 	for (i = 0; i < 4; i++) {
-@@ -120,7 +122,7 @@ bool rsnd_ssiu_busif_err_status_clear(struct rsnd_mod *mod)
- 		}
- 		rsnd_mod_write(mod, reg, val);
+ 	err = request_irq(pci_dev->irq, cx23885_irq,
+@@ -2173,7 +2173,7 @@ static int cx23885_initdev(struct pci_dev *pci_dev,
+ 	if (err < 0) {
+ 		pr_err("%s: can't get IRQ %d\n",
+ 		       dev->name, pci_dev->irq);
+-		goto fail_irq;
++		goto fail_dma_set_mask;
  	}
--
-+out:
- 	return error;
- }
  
+ 	switch (dev->board) {
+@@ -2195,7 +2195,7 @@ static int cx23885_initdev(struct pci_dev *pci_dev,
+ 
+ 	return 0;
+ 
+-fail_irq:
++fail_dma_set_mask:
+ 	cx23885_dev_unregister(dev);
+ fail_ctrl:
+ 	v4l2_ctrl_handler_free(hdl);
 -- 
 2.35.1
 
