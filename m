@@ -2,49 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49E2BC4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:47:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFD55C47080
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:47:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240661AbiE3OrM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:47:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56868 "EHLO
+        id S242388AbiE3OqZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:46:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241439AbiE3O0M (ORCPT
+        with ESMTP id S240062AbiE3OZE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:26:12 -0400
+        Mon, 30 May 2022 10:25:04 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34E78AE270;
-        Mon, 30 May 2022 06:51:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE661AB0C9;
+        Mon, 30 May 2022 06:50:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B290EB80D86;
-        Mon, 30 May 2022 13:51:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EB61C3411E;
-        Mon, 30 May 2022 13:51:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 73220B80DC3;
+        Mon, 30 May 2022 13:50:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23642C385B8;
+        Mon, 30 May 2022 13:50:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918667;
-        bh=hxKkS62U9ALvBp+JqKwQV60CfqU/ls8qBQP0BkI0t/s=;
+        s=k20201202; t=1653918646;
+        bh=RuUJURyxugcuc59iK03LZ8W2uZus1jLgTQH7goDPaHQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gr2+eF2vcC/innIOB1CbkkW7DPBLoQs6bQXqgfyi8AhUEbCWuPBWd4/cc+K0QHhh2
-         Z+QzPmIw5lM6yYUwr2p7YqY3NfEk4YyKYoQOOdpzs2vg7lq06fTd48Q3AULmX9EOPa
-         J1Y9+hR7mE5j7XeIKukxfnKqSqe7eh2SUp1F+98pla2PdP9AVm00hnnk8Y23PQVl3A
-         nY+FRA8vjVBl4+B1FzSMMN1mx6FvWupxbgJY2S3xUYj6ncOjva0jFNd0R79bjpjUK5
-         7FYiYAF9KzOYmhzQQYIutsAMXfQhTPwfzYGZ7it4IqAVNSre0Gof50Cl5Hn1GYA4x8
-         F4MVTUifQIOUA==
+        b=r4X9OHHhbtdEaAU9CmVIet5O/doK5EepMJ+LzwQZuSR1FjY23IAaCEEpctH2NxIpN
+         gGwH/tP2WzgwamlRiCG9118d2kzhuNb3NejexkiIfWRVOjijMMU8a3GHL9+AF7qVQu
+         uv1AzqCyC5HAxtaSKQfRHxnLaSdxP0ZlVs9R+WltaImbwcla9aqTOCxHkTXxYrRqAK
+         0eyBF+yHqvzNkxVP61BTCR/NEbEfE3g1yY5Jv9VmE6Qo1ig6REt3K+x7XcK7XmfrNp
+         JTQYScpDUsm9vvN0j/n2Yqh8xGMZZHzgfk2bk0R2i9TDssVh90lGtG2dbHt8U/7nZ9
+         1U7LIMWNcO3Vw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Haowen Bai <baihaowen@meizu.com>, Kalle Valo <kvalo@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        thunder.leizhen@huawei.com, linux-wireless@vger.kernel.org,
-        b43-dev@lists.infradead.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 04/29] b43: Fix assigning negative value to unsigned variable
-Date:   Mon, 30 May 2022 09:50:31 -0400
-Message-Id: <20220530135057.1937286-4-sashal@kernel.org>
+Cc:     Kwanghoon Son <k.son@samsung.com>,
+        kernel test robot <lkp@intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>,
+        krzysztof.kozlowski@linaro.org, linux-media@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 34/38] media: exynos4-is: Fix compile warning
+Date:   Mon, 30 May 2022 09:49:20 -0400
+Message-Id: <20220530134924.1936816-34-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220530135057.1937286-1-sashal@kernel.org>
-References: <20220530135057.1937286-1-sashal@kernel.org>
+In-Reply-To: <20220530134924.1936816-1-sashal@kernel.org>
+References: <20220530134924.1936816-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,35 +56,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haowen Bai <baihaowen@meizu.com>
+From: Kwanghoon Son <k.son@samsung.com>
 
-[ Upstream commit 11800d893b38e0e12d636c170c1abc19c43c730c ]
+[ Upstream commit e080f5c1f2b6d02c02ee5d674e0e392ccf63bbaf ]
 
-fix warning reported by smatch:
-drivers/net/wireless/broadcom/b43/phy_n.c:585 b43_nphy_adjust_lna_gain_table()
-warn: assigning (-2) to unsigned variable '*(lna_gain[0])'
+Declare static on function 'fimc_isp_video_device_unregister'.
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/1648203315-28093-1-git-send-email-baihaowen@meizu.com
+When VIDEO_EXYNOS4_ISP_DMA_CAPTURE=n, compiler warns about
+warning: no previous prototype for function [-Wmissing-prototypes]
+
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Kwanghoon Son <k.son@samsung.com>
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/broadcom/b43/phy_n.c | 2 +-
+ drivers/media/platform/exynos4-is/fimc-isp-video.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/broadcom/b43/phy_n.c b/drivers/net/wireless/broadcom/b43/phy_n.c
-index d1afa74aa144..9cbc17c2751c 100644
---- a/drivers/net/wireless/broadcom/b43/phy_n.c
-+++ b/drivers/net/wireless/broadcom/b43/phy_n.c
-@@ -594,7 +594,7 @@ static void b43_nphy_adjust_lna_gain_table(struct b43_wldev *dev)
- 	u16 data[4];
- 	s16 gain[2];
- 	u16 minmax[2];
--	static const u16 lna_gain[4] = { -2, 10, 19, 25 };
-+	static const s16 lna_gain[4] = { -2, 10, 19, 25 };
+diff --git a/drivers/media/platform/exynos4-is/fimc-isp-video.h b/drivers/media/platform/exynos4-is/fimc-isp-video.h
+index f79a1b348aa6..67ef85249912 100644
+--- a/drivers/media/platform/exynos4-is/fimc-isp-video.h
++++ b/drivers/media/platform/exynos4-is/fimc-isp-video.h
+@@ -35,7 +35,7 @@ static inline int fimc_isp_video_device_register(struct fimc_isp *isp,
+ 	return 0;
+ }
  
- 	if (nphy->hang_avoid)
- 		b43_nphy_stay_in_carrier_search(dev, 1);
+-void fimc_isp_video_device_unregister(struct fimc_isp *isp,
++static inline void fimc_isp_video_device_unregister(struct fimc_isp *isp,
+ 				enum v4l2_buf_type type)
+ {
+ }
 -- 
 2.35.1
 
