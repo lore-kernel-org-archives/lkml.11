@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B680C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:53:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E927C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:53:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238519AbiE3NxH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:53:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39486 "EHLO
+        id S238678AbiE3NxO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:53:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238471AbiE3NpZ (ORCPT
+        with ESMTP id S238989AbiE3NqK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:45:25 -0400
+        Mon, 30 May 2022 09:46:10 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ADC79CF44;
-        Mon, 30 May 2022 06:33:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A215EA204D;
+        Mon, 30 May 2022 06:33:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5CFCEB80DB0;
-        Mon, 30 May 2022 13:33:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3EA1C341C0;
-        Mon, 30 May 2022 13:33:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 123A0B80DAF;
+        Mon, 30 May 2022 13:33:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD842C3411C;
+        Mon, 30 May 2022 13:33:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917583;
-        bh=NZOjF323UZNafxUxjZt3FD7HpP5qouR5J6a9gRbV+4w=;
+        s=k20201202; t=1653917620;
+        bh=pzKUd4jQDp6QbQLB8zB3/ApUbmtrmJ5ypu5nhg1Sbac=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AEjI5M8xn6s/DolEP7+rhfN83KRjQVJUc/2eYIlh5Y8qpLCqUI4hOLpIPa5NDgyIN
-         ru/qcdSD0DcXctyhwPBXNeEdKOvCj4OOfB/ThXQGohPwHesgLIWNDDJoRv4X4YSeoJ
-         N/7OIKyI0Hy4AO/LtnoAXTHSJd9RxqMdK7j8JnDm6VtEIg6Lj9QDRmsmysd8j/8Bpy
-         wzAPztgRf5uGdm6ruyCEz6XnV9YyiAwzkM/4vHqTZtkUw3rD/wfdD+4Ic7iM/HrPxU
-         1JEjJ8NHBl2+StiQcoEQmzX5BFbjIn4ixabYPFYaxKYCgyo4fks//m7Y5NaXW2qBqE
-         HkLqdqqSpEd6Q==
+        b=I/Nlv/KpfYN5CkbC7bPcSkJIZRZi6Pqxz62AWzX18LqhNfYO0h4tY9e3Z/9vzqay3
+         9vgfuQB8zw34rdIZ+jOJQq7QEREVNeTEMUiBTPfCLjV5HDimDj7wDHsezXNRjWjTXB
+         3z0Iqeq7nP1sj4CZdL+yk8ZIG2P/sJj3YsZub7O6iZqw7xyGksVzXjpwoqQdNdrVMv
+         HLVvBHYcks9pFy+fJBUGXPl4rWU1+hgGGAO/Dim+oTNlfs7wPwxdtljoDaH7lXYrw7
+         NCg5DSTwB7QBTnhmpT2KT+Dq9CQN5sDV7s+aq6rULp0dJkTmhtbG4JZncfFUnJoFSx
+         p9Sy+a4WtpUew==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Maulik Shah <quic_mkshah@quicinc.com>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>, lorenzo.pieralisi@arm.com,
-        sudeep.holla@arm.com, rafael@kernel.org, daniel.lezcano@linaro.org,
-        linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.17 034/135] cpuidle: PSCI: Improve support for suspend-to-RAM for PSCI OSI mode
-Date:   Mon, 30 May 2022 09:29:52 -0400
-Message-Id: <20220530133133.1931716-34-sashal@kernel.org>
+Cc:     Zheyu Ma <zheyuma97@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 043/135] media: cx25821: Fix the warning when removing the module
+Date:   Mon, 30 May 2022 09:30:01 -0400
+Message-Id: <20220530133133.1931716-43-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
@@ -54,108 +52,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ulf Hansson <ulf.hansson@linaro.org>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit 171b66e2e2e9d80b93c8cff799e6175074b22297 ]
+[ Upstream commit 2203436a4d24302871617373a7eb21bc17e38762 ]
 
-When PSCI OSI mode is supported the syscore flag is set for the CPU devices
-that becomes attached to their PM domains (genpds). In the suspend-to-idle
-case, we call dev_pm_genpd_suspend|resume() to allow genpd to properly
-manage the power-off/on operations (pick an idlestate and manage the on/off
-notifications).
+When removing the module, we will get the following warning:
 
-For suspend-to-ram, dev_pm_genpd_suspend|resume() is currently not being
-called, which causes a problem that the genpd on/off notifiers do not get
-sent as expected. This prevents the platform-specific operations from being
-executed, typically needed just before/after the boot CPU is being turned
-off/on.
+[   14.746697] remove_proc_entry: removing non-empty directory 'irq/21', leaking at least 'cx25821[1]'
+[   14.747449] WARNING: CPU: 4 PID: 368 at fs/proc/generic.c:717 remove_proc_entry+0x389/0x3f0
+[   14.751611] RIP: 0010:remove_proc_entry+0x389/0x3f0
+[   14.759589] Call Trace:
+[   14.759792]  <TASK>
+[   14.759975]  unregister_irq_proc+0x14c/0x170
+[   14.760340]  irq_free_descs+0x94/0xe0
+[   14.760640]  mp_unmap_irq+0xb6/0x100
+[   14.760937]  acpi_unregister_gsi_ioapic+0x27/0x40
+[   14.761334]  acpi_pci_irq_disable+0x1d3/0x320
+[   14.761688]  pci_disable_device+0x1ad/0x380
+[   14.762027]  ? _raw_spin_unlock_irqrestore+0x2d/0x60
+[   14.762442]  ? cx25821_shutdown+0x20/0x9f0 [cx25821]
+[   14.762848]  cx25821_finidev+0x48/0xc0 [cx25821]
+[   14.763242]  pci_device_remove+0x92/0x240
 
-To deal with this problem, let's register a syscore ops for cpuidle-psci
-when PSCI OSI mode is being used and call dev_pm_genpd_suspend|resume()
-from them. In this way, genpd regains control of the PM domain topology and
-then sends the on/off notifications when it's appropriate.
+Fix this by freeing the irq before call pci_disable_device().
 
-Reported-by: Maulik Shah <quic_mkshah@quicinc.com>
-Suggested-by: Maulik Shah <quic_mkshah@quicinc.com>
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Tested-by: Maulik Shah <quic_mkshah@quicinc.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/cpuidle/cpuidle-psci.c | 46 ++++++++++++++++++++++++++++++++++
- 1 file changed, 46 insertions(+)
+ drivers/media/pci/cx25821/cx25821-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/cpuidle/cpuidle-psci.c b/drivers/cpuidle/cpuidle-psci.c
-index b51b5df08450..540105ca0781 100644
---- a/drivers/cpuidle/cpuidle-psci.c
-+++ b/drivers/cpuidle/cpuidle-psci.c
-@@ -23,6 +23,7 @@
- #include <linux/pm_runtime.h>
- #include <linux/slab.h>
- #include <linux/string.h>
-+#include <linux/syscore_ops.h>
+diff --git a/drivers/media/pci/cx25821/cx25821-core.c b/drivers/media/pci/cx25821/cx25821-core.c
+index 3078a39f0b95..6627fa9166d3 100644
+--- a/drivers/media/pci/cx25821/cx25821-core.c
++++ b/drivers/media/pci/cx25821/cx25821-core.c
+@@ -1332,11 +1332,11 @@ static void cx25821_finidev(struct pci_dev *pci_dev)
+ 	struct cx25821_dev *dev = get_cx25821(v4l2_dev);
  
- #include <asm/cpuidle.h>
+ 	cx25821_shutdown(dev);
+-	pci_disable_device(pci_dev);
  
-@@ -131,6 +132,49 @@ static int psci_idle_cpuhp_down(unsigned int cpu)
- 	return 0;
- }
+ 	/* unregister stuff */
+ 	if (pci_dev->irq)
+ 		free_irq(pci_dev->irq, dev);
++	pci_disable_device(pci_dev);
  
-+static void psci_idle_syscore_switch(bool suspend)
-+{
-+	bool cleared = false;
-+	struct device *dev;
-+	int cpu;
-+
-+	for_each_possible_cpu(cpu) {
-+		dev = per_cpu_ptr(&psci_cpuidle_data, cpu)->dev;
-+
-+		if (dev && suspend) {
-+			dev_pm_genpd_suspend(dev);
-+		} else if (dev) {
-+			dev_pm_genpd_resume(dev);
-+
-+			/* Account for userspace having offlined a CPU. */
-+			if (pm_runtime_status_suspended(dev))
-+				pm_runtime_set_active(dev);
-+
-+			/* Clear domain state to re-start fresh. */
-+			if (!cleared) {
-+				psci_set_domain_state(0);
-+				cleared = true;
-+			}
-+		}
-+	}
-+}
-+
-+static int psci_idle_syscore_suspend(void)
-+{
-+	psci_idle_syscore_switch(true);
-+	return 0;
-+}
-+
-+static void psci_idle_syscore_resume(void)
-+{
-+	psci_idle_syscore_switch(false);
-+}
-+
-+static struct syscore_ops psci_idle_syscore_ops = {
-+	.suspend = psci_idle_syscore_suspend,
-+	.resume = psci_idle_syscore_resume,
-+};
-+
- static void psci_idle_init_cpuhp(void)
- {
- 	int err;
-@@ -138,6 +182,8 @@ static void psci_idle_init_cpuhp(void)
- 	if (!psci_cpuidle_use_cpuhp)
- 		return;
- 
-+	register_syscore_ops(&psci_idle_syscore_ops);
-+
- 	err = cpuhp_setup_state_nocalls(CPUHP_AP_CPU_PM_STARTING,
- 					"cpuidle/psci:online",
- 					psci_idle_cpuhp_up,
+ 	cx25821_dev_unregister(dev);
+ 	v4l2_device_unregister(v4l2_dev);
 -- 
 2.35.1
 
