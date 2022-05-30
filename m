@@ -2,161 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C6D5C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 18:58:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DC05C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 18:58:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239690AbiE3S6W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 14:58:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41338 "EHLO
+        id S241878AbiE3S63 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 14:58:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239684AbiE3S6S (ORCPT
+        with ESMTP id S240443AbiE3S6X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 14:58:18 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 558E14F46D
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 11:58:17 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id p8so11212153pfh.8
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 11:58:17 -0700 (PDT)
+        Mon, 30 May 2022 14:58:23 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEE076623D
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 11:58:21 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id gh17so22507439ejc.6
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 11:58:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
-        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FFd5J9hlrCh2QSfJ0U9Wq/vsfh13pMH0ZkFo1eZIXtA=;
-        b=G2A0nuMRKJztXPtT1GUrPx85rUqGPGHpsq6URvVAWa2fAqIkqlfU4RngPrGYBoa1Ni
-         M6NJlw8gvJTBgkCc39LSTpamjbz9roIDkZlQnC9RO7k8Rc/xTX31a3GgYujadTBpfIga
-         JQwSMuZ1HKoUjn6bSrBPFJvBaAnJAoYYH3EqEdZ9ex71cFuQ884I0tNEZG45hvUsKFSe
-         SdW5ZEoZd6rbSNFsE45uC0UD8kqMIeKOTMqVLl/EmGGsbxPQhZqogmDjAeWQ19R+ngDM
-         5BxwPho/sCen5YkWBuTX+8h/WXJiDTTq1gmrRwjtIax6oHnLs3pgInlqG/tnWA3am8JP
-         E8ow==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=aZ4hSZLty16XZtYDyN1iI3FQFX0xiK9Qd3Z5M2gZKCw=;
+        b=wM7WyZVXegXf3sHYj6hVYcw/P4aAaMlv3drBS/wJer6tcwr8R1qIAg3jY7R56/uLJg
+         AkL4lRXKVL+atJXRI1RwFtm5scfXzyPz4HyY8sQsjVcPPuE+gbnmz9tbOijbaY0wsPat
+         VVzNGtmHf0lgbCz1TkCONCrCNpok5C64WaRx+ieOXzsugLNAWuTh8WPpQqGOxqj3Pwc+
+         lrGiLArhPWW0Lo5gt/uJUyJVtgKc7QeaFUgTRk0WMiNzSz++hob/ExUe9G6w/1OufoFX
+         cgRJwS3fGl7Q3zjhcQWOWsN65HPQzv2gYTMMafViqZY+pSexHwyZce8rTbnesrdKWTm4
+         olaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
-         :mime-version:content-transfer-encoding;
-        bh=FFd5J9hlrCh2QSfJ0U9Wq/vsfh13pMH0ZkFo1eZIXtA=;
-        b=vjeH4g3XP1IEvaqYMDBw0DwRxgQoZNUebja9rnkREcPsDdxAfDgrjhZfJMKHrEDlZE
-         GZKmbJRqy88sPQKjxWbsdp9p8aSFuS0EcNcBuh4PPomZWT0J4jZvT3UHLjOE/MsAIdN4
-         rta2lp0u9pHCJWIEW8LVPfyDkSTffK9c1laP1W6e2pBiw//5woWpfdZkT7vZjzyrfrXR
-         az3SDixCk8OjalUSt9GoKf36R/Urmy0x1j/gjsVF4Pq/YkGRaC0tPTgwx3ATUP7hZXkE
-         zS+Zwvrq7sg5i3mX8QJnSI5ZHGUI2+8/ovUIj0vgXK8E4rlzhZA0n12uYbUh+KYccUNR
-         08sw==
-X-Gm-Message-State: AOAM530kiiQB47LQ/LfLsQnVcXTV5+jd03xmz5gwtw0jnu106AWssiH+
-        at5xCRyPOUqP4L6MbO2Lsa0jKg==
-X-Google-Smtp-Source: ABdhPJxxJ8lgOI/t/BS91nMmuF/AA3XEFbCsJdbzVlMXQCjM93kfvxRGwUywbXar5ejrleDbO2A5Hg==
-X-Received: by 2002:a63:2026:0:b0:3fa:cefb:e408 with SMTP id g38-20020a632026000000b003facefbe408mr25103264pgg.57.1653937096823;
-        Mon, 30 May 2022 11:58:16 -0700 (PDT)
-Received: from localhost (76-210-143-223.lightspeed.sntcca.sbcglobal.net. [76.210.143.223])
-        by smtp.gmail.com with ESMTPSA id n16-20020aa79050000000b00518c6887217sm9107889pfo.58.2022.05.30.11.58.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 May 2022 11:58:16 -0700 (PDT)
-Date:   Mon, 30 May 2022 11:58:16 -0700 (PDT)
-X-Google-Original-Date: Mon, 30 May 2022 11:58:13 PDT (-0700)
-Subject:     Re: [PATCH] RISC-V: Prepare dropping week attribute from arch_kexec_apply_relocations[_add]
-In-Reply-To: <20220530074202.pydmbbgvbtaugw5j@pengutronix.de>
-CC:     lizhengyu3@huawei.com, alex@ghiti.fr, aou@eecs.berkeley.edu,
-        Bjorn Topel <bjorn.topel@gmail.com>, guoren@linux.alibaba.com,
-        jszhang@kernel.org, kexec@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
-        mick@ics.forth.gr, Paul Walmsley <paul.walmsley@sifive.com>,
-        penberg@kernel.org, sunnanyong@huawei.com,
-        wangkefeng.wang@huawei.com, christophe.leroy@csgroup.eu,
-        liaochang1@huawei.com, Stephen Rothwell <sfr@canb.auug.org.au>,
-        akpm@linux-foundation.org, ebiederm@xmission.com,
-        kernel@pengutronix.de, naveen.n.rao@linux.vnet.ibm.com,
-        linuxppc-dev@lists.ozlabs.org, lizhengyu3@huawei.com
-From:   Palmer Dabbelt <palmer@rivosinc.com>
-To:     u.kleine-koenig@pengutronix.de
-Message-ID: <mhng-5872aea0-6f64-4685-8f8d-fdeb42e4c972@palmer-mbp2014>
-Mime-Version: 1.0 (MHng)
-Content-Type: text/plain; charset=utf-8; format=flowed
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=aZ4hSZLty16XZtYDyN1iI3FQFX0xiK9Qd3Z5M2gZKCw=;
+        b=R0j7owjFbJkT8x9CBau1bmMxDWlmmqYZCexAtoCFd4rGamkRa8Te+NZ2Wlm/0lb/6r
+         9geOIJOsdxjuJb1V8WiYraTFzTWqAs4YQK70B4Ic+zl9tEqQWoaxbVaIh8cWcGxw+Yyg
+         L4roPaeEDZX4AUQVEQn5QJw6TPJXiQPT5v+ioQIoltpiT7rW4OrTydZ5QQPgayND0zh7
+         /3aox5ToHSCExD0ZwEtbw+QI7rtR1aZq6jUmFnl4MI1eTOIMcAviO3eOtUsuDrUKB1rR
+         8TOJku0nAhB12OdQ3xk+4ZHb+5cbyzqscGU96zxSUDlk+zTGeWXFi/89zCSc0dj8IgpC
+         BAjQ==
+X-Gm-Message-State: AOAM532SZoU9IWkEcmkqlUA3mN11qfSJ4F1il3BKpvNIlAef6zVJXQib
+        HA8cG1GMVo3U13D3lQCqEZHHoQ==
+X-Google-Smtp-Source: ABdhPJz6VqYPIb7dFTIdH5KP/w/rMk6xgXoHqfYCoOM6vHY7XEp3TXC9rduj5i3qN1TaEaiRI1+kGQ==
+X-Received: by 2002:a17:906:fc20:b0:6fe:a5f6:379d with SMTP id ov32-20020a170906fc2000b006fea5f6379dmr44922645ejb.503.1653937100528;
+        Mon, 30 May 2022 11:58:20 -0700 (PDT)
+Received: from [192.168.0.179] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id v15-20020a17090606cf00b006feaa22e367sm4365712ejb.165.2022.05.30.11.58.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 30 May 2022 11:58:20 -0700 (PDT)
+Message-ID: <615ac44b-fd9b-332c-5ea0-8775cda8cb00@linaro.org>
+Date:   Mon, 30 May 2022 20:58:19 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 3/3] dt-bindings: altera: Update Arria 10 boards
+Content-Language: en-US
+To:     =?UTF-8?Q?Pawe=c5=82_Anikiel?= <pan@semihalf.com>, soc@kernel.org,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     arnd@arndb.de, olof@lixom.net, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, dinguyen@kernel.org
+References: <20220530130839.120710-1-pan@semihalf.com>
+ <20220530130839.120710-4-pan@semihalf.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220530130839.120710-4-pan@semihalf.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 30 May 2022 00:42:02 PDT (-0700), u.kleine-koenig@pengutronix.de wrote:
-> Without this change arch/riscv/kernel/elf_kexec.c fails to compile once
-> commit 233c1e6c319c ("kexec_file: drop weak attribute from
-> arch_kexec_apply_relocations[_add]") is also contained in the tree.
-> This currently happens in next-20220527.
->
-> Prepare the RISC-V similar to the s390 adaption done in 233c1e6c319c.
-> This is safe to do on top of the riscv change even without the change to
-> arch_kexec_apply_relocations.
->
-> Fixes: 838b3e28488f ("RISC-V: Load purgatory in kexec_file")
-> Looks-good-to: liaochang (A) <liaochang1@huawei.com>
-> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Subject is too generic, please describe what are you doing. Anything
+could be an "update".
+
+
+On 30/05/2022 15:08, Paweł Anikiel wrote:
+> The Mercury+ AA1 is not a standalone board, rather it's a module with
+> an Arria 10 SoC and some peripherals on it.
+> 
+> The Google Chameleon v3 is a base board for the Mercury+ AA1.
+> 
+> Signed-off-by: Paweł Anikiel <pan@semihalf.com>
 > ---
->
-> On Mon, May 30, 2022 at 09:43:26AM +0800, liaochang (A) wrote:
->> > I can confirm that doing
->> > 
->> > diff --git a/arch/riscv/include/asm/kexec.h b/arch/riscv/include/asm/kexec.h
->> > index 206217b23301..eee260e8ab30 100644
->> > --- a/arch/riscv/include/asm/kexec.h
->> > +++ b/arch/riscv/include/asm/kexec.h
->> > @@ -55,6 +55,13 @@ extern riscv_kexec_method riscv_kexec_norelocate;
->> >  
->> >  #ifdef CONFIG_KEXEC_FILE
->> >  extern const struct kexec_file_ops elf_kexec_ops;
->> > +
->> > +struct purgatory_info;
->> > +int arch_kexec_apply_relocations_add(struct purgatory_info *pi,
->> > +				     Elf_Shdr *section,
->> > +				     const Elf_Shdr *relsec,
->> > +				     const Elf_Shdr *symtab);
->> > +#define arch_kexec_apply_relocations_add arch_kexec_apply_relocations_add
->> >  #endif
->> >  
->> >  #endif
->> 
->> LGTM, you could send a fixup patch to riscv, thanks.
->> 
->> > 
->> > on top of 838b3e28488f results in a compilable tree. And when merging
->> > 233c1e6c319c into this, it is still building.
->> > 
->> > I'm not enough into kexec (and riscv) to judge if this is sensible, or
->> > create a useful commit log but the obvious way forward is to apply the
->> > above patch to the riscv tree before it hits Linus' tree.
->
-> Ok, here comes a patch with a generic commit log. 
->
-> @riscv people: If you prefer, squash it into 838b3e28488f.
+>  Documentation/devicetree/bindings/arm/altera.yaml | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/arm/altera.yaml b/Documentation/devicetree/bindings/arm/altera.yaml
+> index 5e2017c0a051..c6e198bb5b29 100644
+> --- a/Documentation/devicetree/bindings/arm/altera.yaml
+> +++ b/Documentation/devicetree/bindings/arm/altera.yaml
+> @@ -25,7 +25,7 @@ properties:
+>          items:
+>            - enum:
+>                - altr,socfpga-arria10-socdk
+> -              - enclustra,mercury-aa1
+> +              - google,chameleon-v3
 
-Sorry, just saw this after I sent my version of the fix.  They're the 
-same, but do you mind sending a full-on patch so I can merge it?
+As mentioned in patch 2, I would expect to have still enclustra
+compatible. It's a SoM, so as usual it goes with its own binding, even
+if not used standalone.
 
->
-> Best regards
-> Uwe
->
->  arch/riscv/include/asm/kexec.h | 7 +++++++
->  1 file changed, 7 insertions(+)
->
-> diff --git a/arch/riscv/include/asm/kexec.h b/arch/riscv/include/asm/kexec.h
-> index 206217b23301..eee260e8ab30 100644
-> --- a/arch/riscv/include/asm/kexec.h
-> +++ b/arch/riscv/include/asm/kexec.h
-> @@ -55,6 +55,13 @@ extern riscv_kexec_method riscv_kexec_norelocate;
->  
->  #ifdef CONFIG_KEXEC_FILE
->  extern const struct kexec_file_ops elf_kexec_ops;
-> +
-> +struct purgatory_info;
-> +int arch_kexec_apply_relocations_add(struct purgatory_info *pi,
-> +				     Elf_Shdr *section,
-> +				     const Elf_Shdr *relsec,
-> +				     const Elf_Shdr *symtab);
-> +#define arch_kexec_apply_relocations_add arch_kexec_apply_relocations_add
->  #endif
->  
->  #endif
->
-> base-commit: 838b3e28488f702e2b5477b393f009b2639d2b1a
-> -- 
-> 2.36.1
->
-> -- 
-> Pengutronix e.K.                           | Uwe Kleine-König            |
-> Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+Best regards,
+Krzysztof
