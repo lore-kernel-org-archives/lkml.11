@@ -2,47 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6860BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:54:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97242C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:57:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238779AbiE3Nyq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:54:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34848 "EHLO
+        id S238798AbiE3Nyy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:54:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239302AbiE3NrW (ORCPT
+        with ESMTP id S237801AbiE3Nrt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:47:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 984A291554;
-        Mon, 30 May 2022 06:34:33 -0700 (PDT)
+        Mon, 30 May 2022 09:47:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E70CA774A;
+        Mon, 30 May 2022 06:34:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DA09AB80DB7;
-        Mon, 30 May 2022 13:34:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BEF0C3411A;
-        Mon, 30 May 2022 13:34:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2510960DD5;
+        Mon, 30 May 2022 13:34:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75561C3411A;
+        Mon, 30 May 2022 13:34:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917653;
-        bh=Nk3kL6bonCgW2p1suaJIp+npmeYoouMji55NiDP4wXM=;
+        s=k20201202; t=1653917676;
+        bh=4gfnBQ3XOz9VePixJCdNt32X4yT6vHAJVKBKYUU2f0w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SazBpbz1mbQHuZYEeiYR7ywQEPMFKqcOxMjs5KKZ8pySmRkF9J4bZLEDosV24XaU5
-         IROTsfJ+2Lr4S/BstpAf+rUgW162vD7vbKcK6QSOsPAtL+Lwu/cf0Bfl5jWgcs2nDI
-         LKEsAbFbBFmLnUnlHZslNCSzRLrW3v1TWlcEUVDKOgdHn9wbl75qGvAdeHopKmaQ1w
-         Pytz/8vxDB+xuChrE88VgqKftUVuhEYbJgCLRYmvl48DeGfN0FgFabrkRH6BdGXveD
-         U/ufIsSKxhOq+R7UuKjukG5jqOI/bHjhVyssqbBpHExRr6WpHZQeCPiUhDR+qu6mt0
-         kjabt/w8U5FUA==
+        b=kmI3H31UTplcV2iWzP92w+JqEqnojGRWNrzL07Fh8g7zQzjW2tLEjVmoS+95LrXb4
+         vZJ3aCJiaWkzT/pIxIYc94UzP3HEBCSiKHenr7x03O8oRJpbK+oU3XLkGAv63U6scC
+         iKwZMY2EkbTn7hdZOOBt5Yv3XPPiqiwbmvlxu8Rv0nFpDWHaq9ts99m6kKLHFo7QGY
+         Qp7SXMOvavAdso9ryYB3RiaDviiA1W+MENreStdMj+GO540y5LpRIBPn81+SBpN6A8
+         5rOzwAxC5opkROXQP8UP1KAyUgN0m/801Vi1taDMxPBNLbU/bAF9bGXMZ8pIKyzgpW
+         QfOQp3q7UDumw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Steven Price <steven.price@arm.com>,
-        Liviu Dudau <liviu.dudau@arm.com>,
-        Sasha Levin <sashal@kernel.org>,
-        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
-        tzimmermann@suse.de, airlied@linux.ie, daniel@ffwll.ch,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.17 054/135] drm/plane: Move range check for format_count earlier
-Date:   Mon, 30 May 2022 09:30:12 -0400
-Message-Id: <20220530133133.1931716-54-sashal@kernel.org>
+Cc:     Jessica Zhang <quic_jesszhan@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Rob Clark <robdclark@chromium.org>,
+        Sasha Levin <sashal@kernel.org>, robdclark@gmail.com,
+        quic_abhinavk@quicinc.com, airlied@linux.ie, daniel@ffwll.ch,
+        swboyd@chromium.org, nathan@kernel.org, yang.lee@linux.alibaba.com,
+        seanpaul@chromium.org, markyacoub@google.com,
+        linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.17 059/135] drm/msm/dpu: Clean up CRC debug logs
+Date:   Mon, 30 May 2022 09:30:17 -0400
+Message-Id: <20220530133133.1931716-59-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
@@ -54,57 +57,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Price <steven.price@arm.com>
+From: Jessica Zhang <quic_jesszhan@quicinc.com>
 
-[ Upstream commit 4b674dd69701c2e22e8e7770c1706a69f3b17269 ]
+[ Upstream commit 3ce8bdca394fc606b55e7c5ed779d171aaae5d09 ]
 
-While the check for format_count > 64 in __drm_universal_plane_init()
-shouldn't be hit (it's a WARN_ON), in its current position it will then
-leak the plane->format_types array and fail to call
-drm_mode_object_unregister() leaking the modeset identifier. Move it to
-the start of the function to avoid allocating those resources in the
-first place.
+Currently, dpu_hw_lm_collect_misr returns EINVAL if CRC is disabled.
+This causes a lot of spam in the DRM debug logs as it's called for every
+vblank.
 
-Signed-off-by: Steven Price <steven.price@arm.com>
-Signed-off-by: Liviu Dudau <liviu.dudau@arm.com>
-Link: https://lore.kernel.org/dri-devel/20211203102815.38624-1-steven.price@arm.com/
+Instead of returning EINVAL when CRC is disabled in
+dpu_hw_lm_collect_misr, let's return ENODATA and add an extra ENODATA check
+before the debug log in dpu_crtc_get_crc.
+
+Changes since V1:
+- Added reported-by and suggested-by tags
+
+Reported-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Suggested-by: Rob Clark <robdclark@chromium.org>
+Signed-off-by: Jessica Zhang <quic_jesszhan@quicinc.com>
+Tested-by: Jessica Zhang <quic_jesszhan@quicinc.com> # RB5  (qrb5165)
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Patchwork: https://patchwork.freedesktop.org/patch/484274/
+Link: https://lore.kernel.org/r/20220430005210.339-1-quic_jesszhan@quicinc.com
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/drm_plane.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c  | 3 ++-
+ drivers/gpu/drm/msm/disp/dpu1/dpu_hw_lm.c | 2 +-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/drm_plane.c b/drivers/gpu/drm/drm_plane.c
-index 82afb854141b..fd0bf90fb4c2 100644
---- a/drivers/gpu/drm/drm_plane.c
-+++ b/drivers/gpu/drm/drm_plane.c
-@@ -249,6 +249,13 @@ static int __drm_universal_plane_init(struct drm_device *dev,
- 	if (WARN_ON(config->num_total_plane >= 32))
- 		return -EINVAL;
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
+index e7c9fe1a250f..0a857f222982 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
+@@ -204,7 +204,8 @@ static int dpu_crtc_get_crc(struct drm_crtc *crtc)
+ 		rc = m->hw_lm->ops.collect_misr(m->hw_lm, &crcs[i]);
  
-+	/*
-+	 * First driver to need more than 64 formats needs to fix this. Each
-+	 * format is encoded as a bit and the current code only supports a u64.
-+	 */
-+	if (WARN_ON(format_count > 64))
-+		return -EINVAL;
-+
- 	WARN_ON(drm_drv_uses_atomic_modeset(dev) &&
- 		(!funcs->atomic_destroy_state ||
- 		 !funcs->atomic_duplicate_state));
-@@ -270,13 +277,6 @@ static int __drm_universal_plane_init(struct drm_device *dev,
- 		return -ENOMEM;
+ 		if (rc) {
+-			DRM_DEBUG_DRIVER("MISR read failed\n");
++			if (rc != -ENODATA)
++				DRM_DEBUG_DRIVER("MISR read failed\n");
+ 			return rc;
+ 		}
  	}
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_lm.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_lm.c
+index 86363c0ec834..462f5082099e 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_lm.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_lm.c
+@@ -138,7 +138,7 @@ static int dpu_hw_lm_collect_misr(struct dpu_hw_mixer *ctx, u32 *misr_value)
+ 	ctrl = DPU_REG_READ(c, LM_MISR_CTRL);
  
--	/*
--	 * First driver to need more than 64 formats needs to fix this. Each
--	 * format is encoded as a bit and the current code only supports a u64.
--	 */
--	if (WARN_ON(format_count > 64))
+ 	if (!(ctrl & LM_MISR_CTRL_ENABLE))
 -		return -EINVAL;
--
- 	if (format_modifiers) {
- 		const uint64_t *temp_modifiers = format_modifiers;
++		return -ENODATA;
  
+ 	if (!(ctrl & LM_MISR_CTRL_STATUS))
+ 		return -EINVAL;
 -- 
 2.35.1
 
