@@ -2,53 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C121FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:18:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F7D7C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:19:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242262AbiE3OSp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:18:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39576 "EHLO
+        id S239675AbiE3OTE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:19:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240581AbiE3OMX (ORCPT
+        with ESMTP id S239272AbiE3ONp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:12:23 -0400
+        Mon, 30 May 2022 10:13:45 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B88C9E52A5;
-        Mon, 30 May 2022 06:43:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF771E15D8;
+        Mon, 30 May 2022 06:43:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9C6E9B80D83;
-        Mon, 30 May 2022 13:42:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22821C3411E;
-        Mon, 30 May 2022 13:42:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EC377B80AE8;
+        Mon, 30 May 2022 13:42:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1ED8AC3411A;
+        Mon, 30 May 2022 13:42:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918162;
-        bh=x4B8zV580+azv9vAE3GUqPaunN3G/DT9gCW5iU7BFrQ=;
+        s=k20201202; t=1653918172;
+        bh=n+AaXBeWTOxHXF2nYHq4qOyEFHDvsdaw+ZoRXf+hNbc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oM4olH1TiNqqzik2850SNFLatZbXcFlqLgbnCsxmwmLvC5zTezvC4hQH870yyGi+7
-         FFNifitfw78O0YZk4CnrWF4cwleRmDH9MT/yfy+bveoGDxz8VYsrnb90HODVAeyVig
-         4wMpr6iGobcHARW3lhYG03s1AeotWEgjYieRdNFpPzsNn1uZVOkupQE8baW0NgO4SI
-         m7BZaNUo29QnuPeV+uHbVmDkJ33XWNfiLkGZy0SXbJPLe9YhyL4vULxSvlxghk8BQx
-         SXpFVKvObAqUy0o7fLP224RgIKhrDjPgL7OIHLy7bEEPOwXN5w9a9rzlhTsfS4vtey
-         AZB6a29WRNb1A==
+        b=JgHb71gHE1FFBuuS5loS/ZcBS3sUER/lPXVK4oLQ8EtT5qAcG4w4XQcOUN91m62Co
+         9Cmss5jNQG1h+xoPIcMr4sIDKtmOJi0QFiBRrEb4LOWJXFoCKuRtC8a3lDZ0iqqp//
+         Z3pmR9Vo0aV1TUf3yf9zVlSf92asptvNFUP9fLwH8j+26lb2p0yyJqPEyHqlM8NXsP
+         E6LnTaRZF3cAVBoN6vEyX2jn94C09yPL+yxPyMvLMwJ4sCCTkRWlqwmKJbkOWS1epl
+         rELF5wkFL+vN0w67ul1GAm4ABADLSbRPqIg02O3GocHVEnR4vNZS341c+H1WmwTdBJ
+         uqFFELF2f7czg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lukas Wunner <lukas@wunner.de>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Ferry Toth <fntoth@gmail.com>,
-        Oliver Neukum <oneukum@suse.com>,
-        Martyn Welch <martyn.welch@collabora.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, steve.glendinning@shawell.net,
-        UNGLinuxDriver@microchip.com, linux@rempel-privat.de,
-        colin.king@intel.com, paskripkin@gmail.com,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 082/109] usbnet: Run unregister_netdev() before unbind() again
-Date:   Mon, 30 May 2022 09:37:58 -0400
-Message-Id: <20220530133825.1933431-82-sashal@kernel.org>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>, Jonas Bonn <jonas@southpole.se>,
+        Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
+        Stafford Horne <shorne@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Sasha Levin <sashal@kernel.org>, rdunlap@infradead.org,
+        linux@dominikbrodowski.net, openrisc@lists.librecores.org
+Subject: [PATCH AUTOSEL 5.15 084/109] openrisc: start CPU timer early in boot
+Date:   Mon, 30 May 2022 09:38:00 -0400
+Message-Id: <20220530133825.1933431-84-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
 References: <20220530133825.1933431-1-sashal@kernel.org>
@@ -60,104 +56,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Wunner <lukas@wunner.de>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-[ Upstream commit d1408f6b4dd78fb1b9e26bcf64477984e5f85409 ]
+[ Upstream commit 516dd4aacd67a0f27da94f3fe63fe0f4dbab6e2b ]
 
-Commit 2c9d6c2b871d ("usbnet: run unbind() before unregister_netdev()")
-sought to fix a use-after-free on disconnect of USB Ethernet adapters.
+In order to measure the boot process, the timer should be switched on as
+early in boot as possible. As well, the commit defines the get_cycles
+macro, like the previous patches in this series, so that generic code is
+aware that it's implemented by the platform, as is done on other archs.
 
-It turns out that a different fix is necessary to address the issue:
-https://lore.kernel.org/netdev/18b3541e5372bc9b9fc733d422f4e698c089077c.1650177997.git.lukas@wunner.de/
-
-So the commit was not necessary.
-
-The commit made binding and unbinding of USB Ethernet asymmetrical:
-Before, usbnet_probe() first invoked the ->bind() callback and then
-register_netdev().  usbnet_disconnect() mirrored that by first invoking
-unregister_netdev() and then ->unbind().
-
-Since the commit, the order in usbnet_disconnect() is reversed and no
-longer mirrors usbnet_probe().
-
-One consequence is that a PHY disconnected (and stopped) in ->unbind()
-is afterwards stopped once more by unregister_netdev() as it closes the
-netdev before unregistering.  That necessitates a contortion in ->stop()
-because the PHY may only be stopped if it hasn't already been
-disconnected.
-
-Reverting the commit allows making the call to phy_stop() unconditional
-in ->stop().
-
-Tested-by: Oleksij Rempel <o.rempel@pengutronix.de> # LAN9514/9512/9500
-Tested-by: Ferry Toth <fntoth@gmail.com> # LAN9514
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Acked-by: Oliver Neukum <oneukum@suse.com>
-Cc: Martyn Welch <martyn.welch@collabora.com>
-Cc: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Jonas Bonn <jonas@southpole.se>
+Cc: Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>
+Acked-by: Stafford Horne <shorne@gmail.com>
+Reported-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/asix_devices.c | 6 +-----
- drivers/net/usb/smsc95xx.c     | 3 +--
- drivers/net/usb/usbnet.c       | 6 +++---
- 3 files changed, 5 insertions(+), 10 deletions(-)
+ arch/openrisc/include/asm/timex.h | 1 +
+ arch/openrisc/kernel/head.S       | 9 +++++++++
+ 2 files changed, 10 insertions(+)
 
-diff --git a/drivers/net/usb/asix_devices.c b/drivers/net/usb/asix_devices.c
-index bd8f8619ad6f..396505396a2e 100644
---- a/drivers/net/usb/asix_devices.c
-+++ b/drivers/net/usb/asix_devices.c
-@@ -799,11 +799,7 @@ static int ax88772_stop(struct usbnet *dev)
+diff --git a/arch/openrisc/include/asm/timex.h b/arch/openrisc/include/asm/timex.h
+index d52b4e536e3f..5487fa93dd9b 100644
+--- a/arch/openrisc/include/asm/timex.h
++++ b/arch/openrisc/include/asm/timex.h
+@@ -23,6 +23,7 @@ static inline cycles_t get_cycles(void)
  {
- 	struct asix_common_private *priv = dev->driver_priv;
- 
--	/* On unplugged USB, we will get MDIO communication errors and the
--	 * PHY will be set in to PHY_HALTED state.
--	 */
--	if (priv->phydev->state != PHY_HALTED)
--		phy_stop(priv->phydev);
-+	phy_stop(priv->phydev);
- 
- 	return 0;
+ 	return mfspr(SPR_TTCR);
  }
-diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
-index eb0d325e92b7..4e39e4345084 100644
---- a/drivers/net/usb/smsc95xx.c
-+++ b/drivers/net/usb/smsc95xx.c
-@@ -1217,8 +1217,7 @@ static int smsc95xx_start_phy(struct usbnet *dev)
++#define get_cycles get_cycles
  
- static int smsc95xx_stop(struct usbnet *dev)
- {
--	if (dev->net->phydev)
--		phy_stop(dev->net->phydev);
-+	phy_stop(dev->net->phydev);
+ /* This isn't really used any more */
+ #define CLOCK_TICK_RATE 1000
+diff --git a/arch/openrisc/kernel/head.S b/arch/openrisc/kernel/head.S
+index 15f1b38dfe03..871f4c858859 100644
+--- a/arch/openrisc/kernel/head.S
++++ b/arch/openrisc/kernel/head.S
+@@ -521,6 +521,15 @@ _start:
+ 	l.ori	r3,r0,0x1
+ 	l.mtspr	r0,r3,SPR_SR
  
- 	return 0;
- }
-diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
-index a33d7fb82a00..af2bbaff2478 100644
---- a/drivers/net/usb/usbnet.c
-+++ b/drivers/net/usb/usbnet.c
-@@ -1614,9 +1614,6 @@ void usbnet_disconnect (struct usb_interface *intf)
- 		   xdev->bus->bus_name, xdev->devpath,
- 		   dev->driver_info->description);
- 
--	if (dev->driver_info->unbind)
--		dev->driver_info->unbind(dev, intf);
--
- 	net = dev->net;
- 	unregister_netdev (net);
- 
-@@ -1624,6 +1621,9 @@ void usbnet_disconnect (struct usb_interface *intf)
- 
- 	usb_scuttle_anchored_urbs(&dev->deferred);
- 
-+	if (dev->driver_info->unbind)
-+		dev->driver_info->unbind(dev, intf);
++	/*
++	 * Start the TTCR as early as possible, so that the RNG can make use of
++	 * measurements of boot time from the earliest opportunity. Especially
++	 * important is that the TTCR does not return zero by the time we reach
++	 * rand_initialize().
++	 */
++	l.movhi r3,hi(SPR_TTMR_CR)
++	l.mtspr r0,r3,SPR_TTMR
 +
- 	usb_kill_urb(dev->interrupt);
- 	usb_free_urb(dev->interrupt);
- 	kfree(dev->padding_pkt);
+ 	CLEAR_GPR(r1)
+ 	CLEAR_GPR(r2)
+ 	CLEAR_GPR(r3)
 -- 
 2.35.1
 
