@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89B4DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:48:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 084BCC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:49:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238812AbiE3OsN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:48:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34634 "EHLO
+        id S240562AbiE3Os7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:48:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241624AbiE3O0U (ORCPT
+        with ESMTP id S240139AbiE3O2V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:26:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0BA3AF1E5;
-        Mon, 30 May 2022 06:51:12 -0700 (PDT)
+        Mon, 30 May 2022 10:28:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00AEC22534;
+        Mon, 30 May 2022 06:51:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B1B7B60F22;
-        Mon, 30 May 2022 13:51:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 136CAC385B8;
-        Mon, 30 May 2022 13:51:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 05EB960EC3;
+        Mon, 30 May 2022 13:51:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30FFFC3411C;
+        Mon, 30 May 2022 13:51:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918672;
-        bh=L4wMv7eVCEcb+Dh8ypbivhOGsg3GXEYdwwoPqDs6iew=;
+        s=k20201202; t=1653918694;
+        bh=OtZwQqjMLMDpXEyiQeZWI1ClYUMVsDpjKCfDYqgZlO0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M0sfjiro7hWkYkV/KY1qKm/by3EchkrAwTdEU7iyJ1LPi/ZRqW1onH/1Aru7jX5jc
-         cVq5rDqoS7JGUEaUz7oYivSJK9H0kH4sIVkA2y+xgjzP/M2R5Sc0PQgcvJOzUCr1tl
-         W9bbHf4PqNJw35FpiB0t9vd+lLl48Ijxbmz/Den0U4S7R9JIJhNux+c0FEN1dxZlV/
-         YGHdeJHKI9/mC5NYGuiO9dhkIr/oTNKGhIqxn7koOxADpnOyCwGo+cLDrRQn6IGZ+D
-         v8LoXsrqqsP94Xx9hKF3CCG0AFZLE5lR09YmRa5uw8b3T1zx5yQiFXdtKIhw7lkBwr
-         9+BcuygNY/ctQ==
+        b=Q5ShPZ7eM8e5a6/SRTLGt1f7hD4e2WJIXcVhUFtOaZPUUc/ahZU5oZoUI7Fhkc9UU
+         FmwsX9/QnFfXpXFoygh0YeNMNM7st/83KbJg5GQusWeVKJ9OamXEuW6I2KKW7GRrNY
+         5bmDsB9RIcqOqcYOoiUyQqDmgFS7T5XHbOxj66OeKEP98e64/ZGnA/Tmn8F0BDLOhY
+         w/HTg1kBVsLR1iKdXcQQ3E+ViladikzL/65TcS8Jaw57Odlek1wnay54uxtbXbV7ka
+         eU8P9BuP3rKTKs3r3o4MTgfFA+5SqJ0opm2fCU3BEXhJKaS7bTgPXPWF6zxJcZuCyW
+         YpBxqoCe3w/1g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Sasha Levin <sashal@kernel.org>, mingo@redhat.com,
-        bp@alien8.de, x86@kernel.org
-Subject: [PATCH AUTOSEL 4.14 06/29] ACPICA: Avoid cache flush inside virtual machines
-Date:   Mon, 30 May 2022 09:50:33 -0400
-Message-Id: <20220530135057.1937286-6-sashal@kernel.org>
+Cc:     Evan Quan <evan.quan@amd.com>, kernel test robot <lkp@intel.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 4.14 14/29] drm/amd/pm: fix the compile warning
+Date:   Mon, 30 May 2022 09:50:41 -0400
+Message-Id: <20220530135057.1937286-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530135057.1937286-1-sashal@kernel.org>
 References: <20220530135057.1937286-1-sashal@kernel.org>
@@ -54,69 +53,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+From: Evan Quan <evan.quan@amd.com>
 
-[ Upstream commit e2efb6359e620521d1e13f69b2257de8ceaa9475 ]
+[ Upstream commit 555238d92ac32dbad2d77ad2bafc48d17391990c ]
 
-While running inside virtual machine, the kernel can bypass cache
-flushing. Changing sleep state in a virtual machine doesn't affect the
-host system sleep state and cannot lead to data loss.
+Fix the compile warning below:
+drivers/gpu/drm/amd/amdgpu/../pm/legacy-dpm/kv_dpm.c:1641
+kv_get_acp_boot_level() warn: always true condition '(table->entries[i]->clk >= 0) => (0-u32max >= 0)'
 
-Before entering sleep states, the ACPI code flushes caches to prevent
-data loss using the WBINVD instruction.  This mechanism is required on
-bare metal.
-
-But, any use WBINVD inside of a guest is worthless.  Changing sleep
-state in a virtual machine doesn't affect the host system sleep state
-and cannot lead to data loss, so most hypervisors simply ignore it.
-Despite this, the ACPI code calls WBINVD unconditionally anyway.
-It's useless, but also normally harmless.
-
-In TDX guests, though, WBINVD stops being harmless; it triggers a
-virtualization exception (#VE).  If the ACPI cache-flushing WBINVD
-were left in place, TDX guests would need handling to recover from
-the exception.
-
-Avoid using WBINVD whenever running under a hypervisor.  This both
-removes the useless WBINVDs and saves TDX from implementing WBINVD
-handling.
-
-Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
-Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
-Reviewed-by: Dan Williams <dan.j.williams@intel.com>
-Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
-Link: https://lkml.kernel.org/r/20220405232939.73860-30-kirill.shutemov@linux.intel.com
+Reported-by: kernel test robot <lkp@intel.com>
+CC: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Evan Quan <evan.quan@amd.com>
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/include/asm/acenv.h | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/amd/amdgpu/kv_dpm.c | 14 +-------------
+ 1 file changed, 1 insertion(+), 13 deletions(-)
 
-diff --git a/arch/x86/include/asm/acenv.h b/arch/x86/include/asm/acenv.h
-index 1b010a859b8b..6de59a4f723c 100644
---- a/arch/x86/include/asm/acenv.h
-+++ b/arch/x86/include/asm/acenv.h
-@@ -16,7 +16,19 @@
+diff --git a/drivers/gpu/drm/amd/amdgpu/kv_dpm.c b/drivers/gpu/drm/amd/amdgpu/kv_dpm.c
+index c76073b422d6..d99fb88341f4 100644
+--- a/drivers/gpu/drm/amd/amdgpu/kv_dpm.c
++++ b/drivers/gpu/drm/amd/amdgpu/kv_dpm.c
+@@ -1608,19 +1608,7 @@ static int kv_update_samu_dpm(struct amdgpu_device *adev, bool gate)
  
- /* Asm macros */
+ static u8 kv_get_acp_boot_level(struct amdgpu_device *adev)
+ {
+-	u8 i;
+-	struct amdgpu_clock_voltage_dependency_table *table =
+-		&adev->pm.dpm.dyn_state.acp_clock_voltage_dependency_table;
+-
+-	for (i = 0; i < table->count; i++) {
+-		if (table->entries[i].clk >= 0) /* XXX */
+-			break;
+-	}
+-
+-	if (i >= table->count)
+-		i = table->count - 1;
+-
+-	return i;
++	return 0;
+ }
  
--#define ACPI_FLUSH_CPU_CACHE()	wbinvd()
-+/*
-+ * ACPI_FLUSH_CPU_CACHE() flushes caches on entering sleep states.
-+ * It is required to prevent data loss.
-+ *
-+ * While running inside virtual machine, the kernel can bypass cache flushing.
-+ * Changing sleep state in a virtual machine doesn't affect the host system
-+ * sleep state and cannot lead to data loss.
-+ */
-+#define ACPI_FLUSH_CPU_CACHE()					\
-+do {								\
-+	if (!cpu_feature_enabled(X86_FEATURE_HYPERVISOR))	\
-+		wbinvd();					\
-+} while (0)
- 
- int __acpi_acquire_global_lock(unsigned int *lock);
- int __acpi_release_global_lock(unsigned int *lock);
+ static void kv_update_acp_boot_level(struct amdgpu_device *adev)
 -- 
 2.35.1
 
