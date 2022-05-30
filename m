@@ -2,119 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 283ADC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 11:27:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4992C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 11:27:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235762AbiE3L1b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 07:27:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54322 "EHLO
+        id S235759AbiE3L1g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 07:27:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235773AbiE3L1K (ORCPT
+        with ESMTP id S235827AbiE3L1W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 07:27:10 -0400
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87C5120183
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 04:27:02 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id q1so11309143ljb.5
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 04:27:02 -0700 (PDT)
+        Mon, 30 May 2022 07:27:22 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB1D94D27C
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 04:27:21 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id fd25so13107515edb.3
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 04:27:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=openvz-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:from:subject:to:cc
-         :references:content-language:in-reply-to:content-transfer-encoding;
-        bh=1bz2HF6EsnuVkI8ZLNySbZ6/e4i0Dqd56vDd6/MtYsM=;
-        b=MJH7jgZ0nByKKabpLoAPA5HN9v21BI0dbjoYKv7JTJsZIG9t7CYmKL10/W6A4CAJjz
-         YjoRkjjkc7rnBG4iIl52t8YBffLXDTaOk0FPU+R/iUFJxypPSriGxh9W/Yp0Xb2YBS3n
-         u8rGfnyQ69D7OdxyAxhEqBpRbcEOZtgatuzFi1ROaPTtGWFVuQ8Ynlz3uO4xDFqo8r4l
-         WK/pDR4j7nZ8vJmIiytexPw++UZNwa2TUENNay2Qdqs1hgi/d47tM/IS92zI/+yxh40n
-         /qegCkoMk0oOX1fRJCG8CUX8qr6p2SS7H4vuyz1TCOxloqJz6bEygG1OkLqHyZ3QIEiK
-         J+yA==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=E6z4YAlgEJxy9dgZZXDWgK7C1bAepcnt8dDi/KruTk4=;
+        b=ewMbJkTHaxj6KMfZwATaPp2mCXul+xqk6q8YtHxkkF5wqw37LUquBYIUQa8LQt4RSS
+         1EUHm9WJjf1AIwd4n7jNVJfZGPo5UyRGC0PE8RlYLvMJeRa9Ko9khtgtZ0zKjKWJZIfR
+         3dAnve8CP7SdE50l1njcD3AOYY2STh1lTDnV9JFiWe7/j8Tw0dfH8crrTt+zPjJYTVZZ
+         qdUadgqb9rrVXpnTo/YgzkBBshksOZC5kx02IRffZpoAUnmliZFWKAF8Ds6f/63X6895
+         kpgHw/7KYb/M887go/Uau/acEKyUypx/HVOuUjQzbftcRIhAESYtepcsmbluE6koTBH6
+         +/tQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
-         :subject:to:cc:references:content-language:in-reply-to
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=1bz2HF6EsnuVkI8ZLNySbZ6/e4i0Dqd56vDd6/MtYsM=;
-        b=hiT+g41iwsCo/Ts97MPfcAzISrvOoREy1q7jjXWvzw7ldp/k2N+i7SyGSL+eXdDLZ3
-         gOY6dSe2kn7XbBXyFIfWeSK9DfmKZYUhQTutCKuNermyzeAJKBv9+NJt+81VCNoQC6rH
-         7piU3maw8493F8tbfaXgXPAYBkR2eSUW9viNIN/kfJAMHaIGW8u8pwEwts89/hUxl/Rq
-         xXYkxg1Vr7lVTmbWCrS/550iEQZsm8m+JYcUcbdNAHrblUD7mQ44u6nWp4YI0xqYvmDW
-         kmzY9udiCY4O5tf+haa0JM19+3shfTisfOIpmM0bMxxvOJwEgkW+lMht813uCXTsDqjh
-         wS/w==
-X-Gm-Message-State: AOAM530ZYY6mklKe47G6dJLqVRKHZqeQbZRvjd+8oN9iad2P3RU0Ta4m
-        rOhQD6quUPD81YOVUZVljAKAKg==
-X-Google-Smtp-Source: ABdhPJxchjq+vPEv7BDN5f83/B73zaDF6zRhHb+aUExV2DDt1M6CIZoAIgyJaA82Tud2AlFiPpMv+A==
-X-Received: by 2002:a2e:a448:0:b0:24c:8fe8:f3c6 with SMTP id v8-20020a2ea448000000b0024c8fe8f3c6mr32212835ljn.115.1653910021164;
-        Mon, 30 May 2022 04:27:01 -0700 (PDT)
-Received: from [192.168.1.65] ([46.188.121.129])
-        by smtp.gmail.com with ESMTPSA id x37-20020a056512132500b0047255d2115csm2254247lfu.139.2022.05.30.04.27.00
+        bh=E6z4YAlgEJxy9dgZZXDWgK7C1bAepcnt8dDi/KruTk4=;
+        b=ghrQdF673ZoCyaCL4w+mrqY608P0jpwCUQ9dq9fqcewom8aPXQCO1rv/1T/XIWg1+W
+         VANlYew9ZqdUOyEzBmGjDWyrME0X9Y84c/Ok3R6d9+qYRn6akb9p+1wrvKJG/QdtLApt
+         GmKLL9jTwtXDkk8EgF+w3X2jsT1tcMml0O8Ebc8HmXDY1AsVQktwfk27BI5bmn5/5LSo
+         6Eh8aq0M7+Q7TAMisaybhBaEMfVzq7kzWNAx88ewzayAUVSme1IWWSMm5ACx9KzrKdoZ
+         vg4Ub7pHCxXbxc5G4TvZW01N7lH77UraVe/w/PIc40pAURSP6efxxmF+wi1P/rTMts6k
+         6ODA==
+X-Gm-Message-State: AOAM532qO0iipQ3yFSe6ah70iqZ3/qVnyaYXCKsPJ8CaTyy0KpcjslAE
+        aEqP3vH96++78Z2zPFl/z4RkmA==
+X-Google-Smtp-Source: ABdhPJx2LtAW7VoNu8xUutiHAdywZpmhpB+XyQsVgc+F2AkPxL015R1BZlRBCEtAnv0heBZeOlIDPw==
+X-Received: by 2002:a05:6402:3514:b0:42d:d4ec:4a35 with SMTP id b20-20020a056402351400b0042dd4ec4a35mr2848302edd.62.1653910040266;
+        Mon, 30 May 2022 04:27:20 -0700 (PDT)
+Received: from [192.168.0.179] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id i15-20020a1709061ccf00b006fec5cef701sm3895631ejh.197.2022.05.30.04.27.19
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 30 May 2022 04:27:00 -0700 (PDT)
-Message-ID: <ea77f3ea-3832-83e8-b33d-6df40b01ee67@openvz.org>
-Date:   Mon, 30 May 2022 14:26:59 +0300
+        Mon, 30 May 2022 04:27:19 -0700 (PDT)
+Message-ID: <d88afea3-de4b-aab5-b90b-e21b8bf003e5@linaro.org>
+Date:   Mon, 30 May 2022 13:27:18 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-From:   Vasily Averin <vvs@openvz.org>
-Subject: [PATCH mm v3 8/9] memcg: enable accounting for allocations in
- alloc_fair_sched_group
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     kernel@openvz.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, Shakeel Butt <shakeelb@google.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Michal Hocko <mhocko@suse.com>,
-        Muchun Song <songmuchun@bytedance.com>, cgroups@vger.kernel.org
-References: <06505918-3b8a-0ad5-5951-89ecb510138e@openvz.org>
- <cover.1653899364.git.vvs@openvz.org>
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v4 1/3] dt-bindings: mfd: ti,j721e-system-controller: Add
+ clock property
 Content-Language: en-US
-In-Reply-To: <cover.1653899364.git.vvs@openvz.org>
+To:     Rahul T R <r-ravikumar@ti.com>, robh+dt@kernel.org, nm@ti.com,
+        vigneshr@ti.com, kishon@ti.com, krzysztof.kozlowski+dt@linaro.org
+Cc:     lee.jones@linaro.org, rogerq@kernel.org,
+        devicetree@vger.kernel.org, kristo@kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        s-anna@ti.com
+References: <20220530101031.11357-1-r-ravikumar@ti.com>
+ <20220530101031.11357-2-r-ravikumar@ti.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220530101031.11357-2-r-ravikumar@ti.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Creating of each new cpu cgroup allocates two 512-bytes kernel objects
-per CPU. This is especially important for cgroups shared parent memory
-cgroup. In this scenario, on nodes with multiple processors, these
-allocations become one of the main memory consumers.
+On 30/05/2022 12:10, Rahul T R wrote:
+> Add a pattern property for clock-controller, also update the example
+> with a clock-controller node
+> 
+> Signed-off-by: Rahul T R <r-ravikumar@ti.com>
+> ---
+>  .../bindings/mfd/ti,j721e-system-controller.yaml     | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
 
-Memory allocated during new cpu cgroup creation:
-common part: 	~11Kb	+  318 bytes percpu
-cpu cgroup:	~2.5Kb	+ 1036 bytes percpu
 
-Accounting for this memory helps to avoid misuse inside memcg-limited
-contianers.
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Signed-off-by: Vasily Averin <vvs@openvz.org>
-Reviewed-by: Roman Gushchin <roman.gushchin@linux.dev>
-Reviewed-by: Michal Koutný <mkoutny@suse.com>
-Acked-by: Shakeel Butt <shakeelb@google.com>
-Reviewed-by: Muchun Song <songmuchun@bytedance.com>
----
- kernel/sched/fair.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 8c5b74f66bd3..f4fc39d5aa4b 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -11499,12 +11499,12 @@ int alloc_fair_sched_group(struct task_group *tg, struct task_group *parent)
- 
- 	for_each_possible_cpu(i) {
- 		cfs_rq = kzalloc_node(sizeof(struct cfs_rq),
--				      GFP_KERNEL, cpu_to_node(i));
-+				      GFP_KERNEL_ACCOUNT, cpu_to_node(i));
- 		if (!cfs_rq)
- 			goto err;
- 
- 		se = kzalloc_node(sizeof(struct sched_entity_stats),
--				  GFP_KERNEL, cpu_to_node(i));
-+				  GFP_KERNEL_ACCOUNT, cpu_to_node(i));
- 		if (!se)
- 			goto err_free_rq;
- 
--- 
-2.36.1
-
+Best regards,
+Krzysztof
