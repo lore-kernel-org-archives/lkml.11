@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44D5FC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73711C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:09:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233376AbiE3OHN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:07:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51130 "EHLO
+        id S239034AbiE3OHi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:07:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239602AbiE3OBn (ORCPT
+        with ESMTP id S239747AbiE3OCY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:01:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D110C5D83;
-        Mon, 30 May 2022 06:39:32 -0700 (PDT)
+        Mon, 30 May 2022 10:02:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BCCAC5E47;
+        Mon, 30 May 2022 06:39:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D024760F9B;
-        Mon, 30 May 2022 13:39:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B304C3411E;
-        Mon, 30 May 2022 13:39:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A6D5CB80AE8;
+        Mon, 30 May 2022 13:39:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20E75C3411C;
+        Mon, 30 May 2022 13:39:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917971;
-        bh=CPnkfdhDvvK18QY0iB6KzCYkpZ8e2EraQNOJJmpAkcY=;
+        s=k20201202; t=1653917976;
+        bh=RHpCTzyzz8eWUMxNiKw0aynnmUj7KVbGdwmiQai9v/Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S4GEdMpDXfaRk0My1QTs6yO8nr58dvngS1Kesyc1WsV2Dojdd97L9s+7v3yA3a3GD
-         muFFkdLMeFnTkrCjNP3DE7D225JcBU4Qn0zFcrZ61r/2S/TIuNa5dOryQ4bG1wpN1s
-         I3fSN6wbrS8lxNSAVsd1xD7wu8vlSOyLksSJmfgl/Mvn2VA+7VZ0Vs8lAcjbQVPy97
-         rPkMm2eYvaxepV/K6ktPlsNWy+JfNksbeIU5h33m6Ds/MrCiBX9v2bCy4mnq6qG3b7
-         t+rNz+isISpXkbcwdM0Ln6KXRxv//XuVjb+uTPF5JZgC3WDppsRfKMc6Ll8xL5TZIN
-         WgzWCzfT1OzaQ==
+        b=agTW1g60wna4nF/jcVhog3xLLyU/Kf0Z7zPigv+tbgeiDX51JF2D4PBXaSYf5NM2h
+         m2c8QGCSs6qql3oJSr4IBcToEEGF6FhYKQxcXmDH7+VsqYNS+Kp1tuAoXfexrifTYZ
+         0vJW1JEuMiJSPlK9mIrWW6PWSFquVsKQLBzyYPe/CxHAXCNAC3QWrZ9PS1VoERE3Cz
+         CY+XqXLHjPYVUi0OtJqyg0ElOFjPjGmbftL+b7ACSFiZzYAPevV22923zE7HCvpN8C
+         YmtYX/zfIi+lvXdRqpDSxwD4+JS/5fSPuWIvJMzYOsCrX/iPsjnLTblkgKd2wBpmmo
+         SQmgQgRjhwrEQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, linux-spi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 022/109] spi: spi-rspi: Remove setting {src,dst}_{addr,addr_width} based on DMA direction
-Date:   Mon, 30 May 2022 09:36:58 -0400
-Message-Id: <20220530133825.1933431-22-sashal@kernel.org>
+Cc:     James Smart <jsmart2021@gmail.com>,
+        Justin Tee <justin.tee@broadcom.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, james.smart@broadcom.com,
+        dick.kennedy@broadcom.com, jejb@linux.ibm.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 025/109] scsi: lpfc: Fix SCSI I/O completion and abort handler deadlock
+Date:   Mon, 30 May 2022 09:37:01 -0400
+Message-Id: <20220530133825.1933431-25-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
 References: <20220530133825.1933431-1-sashal@kernel.org>
@@ -53,68 +54,149 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Biju Das <biju.das.jz@bp.renesas.com>
+From: James Smart <jsmart2021@gmail.com>
 
-[ Upstream commit 6f381481a5b236cb53d6de2c49c6ef83a4d0f432 ]
+[ Upstream commit 03cbbd7c2f5ee288f648f4aeedc765a181188553 ]
 
-The direction field in the DMA config is deprecated. The rspi driver
-sets {src,dst}_{addr,addr_width} based on the DMA direction and
-it results in dmaengine_slave_config() failure as RZ DMAC driver
-validates {src,dst}_addr_width values independent of DMA direction.
+During stress I/O tests with 500+ vports, hard LOCKUP call traces are
+observed.
 
-This patch fixes the issue by passing both {src,dst}_{addr,addr_width}
-values independent of DMA direction.
+CPU A:
+ native_queued_spin_lock_slowpath+0x192
+ _raw_spin_lock_irqsave+0x32
+ lpfc_handle_fcp_err+0x4c6
+ lpfc_fcp_io_cmd_wqe_cmpl+0x964
+ lpfc_sli4_fp_handle_cqe+0x266
+ __lpfc_sli4_process_cq+0x105
+ __lpfc_sli4_hba_process_cq+0x3c
+ lpfc_cq_poll_hdler+0x16
+ irq_poll_softirq+0x76
+ __softirqentry_text_start+0xe4
+ irq_exit+0xf7
+ do_IRQ+0x7f
 
-Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-Suggested-by: Vinod Koul <vkoul@kernel.org>
-Reviewed-by: Vinod Koul <vkoul@kernel.org>
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Link: https://lore.kernel.org/r/20220411173115.6619-1-biju.das.jz@bp.renesas.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+CPU B:
+ native_queued_spin_lock_slowpath+0x5b
+ _raw_spin_lock+0x1c
+ lpfc_abort_handler+0x13e
+ scmd_eh_abort_handler+0x85
+ process_one_work+0x1a7
+ worker_thread+0x30
+ kthread+0x112
+ ret_from_fork+0x1f
+
+Diagram of lockup:
+
+CPUA                            CPUB
+----                            ----
+lpfc_cmd->buf_lock
+                            phba->hbalock
+                            lpfc_cmd->buf_lock
+phba->hbalock
+
+Fix by reordering the taking of the lpfc_cmd->buf_lock and phba->hbalock in
+lpfc_abort_handler routine so that it tries to take the lpfc_cmd->buf_lock
+first before phba->hbalock.
+
+Link: https://lore.kernel.org/r/20220412222008.126521-7-jsmart2021@gmail.com
+Co-developed-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-rspi.c | 15 ++++++---------
- 1 file changed, 6 insertions(+), 9 deletions(-)
+ drivers/scsi/lpfc/lpfc_scsi.c | 33 +++++++++++++++------------------
+ 1 file changed, 15 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/spi/spi-rspi.c b/drivers/spi/spi-rspi.c
-index d16ed88802d3..d575c935e9f0 100644
---- a/drivers/spi/spi-rspi.c
-+++ b/drivers/spi/spi-rspi.c
-@@ -1107,14 +1107,11 @@ static struct dma_chan *rspi_request_dma_chan(struct device *dev,
+diff --git a/drivers/scsi/lpfc/lpfc_scsi.c b/drivers/scsi/lpfc/lpfc_scsi.c
+index 3d9175f1b678..8c79264a935b 100644
+--- a/drivers/scsi/lpfc/lpfc_scsi.c
++++ b/drivers/scsi/lpfc/lpfc_scsi.c
+@@ -5885,25 +5885,25 @@ lpfc_abort_handler(struct scsi_cmnd *cmnd)
+ 	if (!lpfc_cmd)
+ 		return ret;
+ 
+-	spin_lock_irqsave(&phba->hbalock, flags);
++	/* Guard against IO completion being called at same time */
++	spin_lock_irqsave(&lpfc_cmd->buf_lock, flags);
++
++	spin_lock(&phba->hbalock);
+ 	/* driver queued commands are in process of being flushed */
+ 	if (phba->hba_flag & HBA_IOQ_FLUSH) {
+ 		lpfc_printf_vlog(vport, KERN_WARNING, LOG_FCP,
+ 			"3168 SCSI Layer abort requested I/O has been "
+ 			"flushed by LLD.\n");
+ 		ret = FAILED;
+-		goto out_unlock;
++		goto out_unlock_hba;
  	}
  
- 	memset(&cfg, 0, sizeof(cfg));
-+	cfg.dst_addr = port_addr + RSPI_SPDR;
-+	cfg.src_addr = port_addr + RSPI_SPDR;
-+	cfg.dst_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
-+	cfg.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
- 	cfg.direction = dir;
--	if (dir == DMA_MEM_TO_DEV) {
--		cfg.dst_addr = port_addr;
--		cfg.dst_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
--	} else {
--		cfg.src_addr = port_addr;
--		cfg.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
--	}
- 
- 	ret = dmaengine_slave_config(chan, &cfg);
- 	if (ret) {
-@@ -1145,12 +1142,12 @@ static int rspi_request_dma(struct device *dev, struct spi_controller *ctlr,
+-	/* Guard against IO completion being called at same time */
+-	spin_lock(&lpfc_cmd->buf_lock);
+-
+ 	if (!lpfc_cmd->pCmd) {
+ 		lpfc_printf_vlog(vport, KERN_WARNING, LOG_FCP,
+ 			 "2873 SCSI Layer I/O Abort Request IO CMPL Status "
+ 			 "x%x ID %d LUN %llu\n",
+ 			 SUCCESS, cmnd->device->id, cmnd->device->lun);
+-		goto out_unlock_buf;
++		goto out_unlock_hba;
  	}
  
- 	ctlr->dma_tx = rspi_request_dma_chan(dev, DMA_MEM_TO_DEV, dma_tx_id,
--					     res->start + RSPI_SPDR);
-+					     res->start);
- 	if (!ctlr->dma_tx)
- 		return -ENODEV;
+ 	iocb = &lpfc_cmd->cur_iocbq;
+@@ -5911,7 +5911,7 @@ lpfc_abort_handler(struct scsi_cmnd *cmnd)
+ 		pring_s4 = phba->sli4_hba.hdwq[iocb->hba_wqidx].io_wq->pring;
+ 		if (!pring_s4) {
+ 			ret = FAILED;
+-			goto out_unlock_buf;
++			goto out_unlock_hba;
+ 		}
+ 		spin_lock(&pring_s4->ring_lock);
+ 	}
+@@ -5944,8 +5944,8 @@ lpfc_abort_handler(struct scsi_cmnd *cmnd)
+ 			 "3389 SCSI Layer I/O Abort Request is pending\n");
+ 		if (phba->sli_rev == LPFC_SLI_REV4)
+ 			spin_unlock(&pring_s4->ring_lock);
+-		spin_unlock(&lpfc_cmd->buf_lock);
+-		spin_unlock_irqrestore(&phba->hbalock, flags);
++		spin_unlock(&phba->hbalock);
++		spin_unlock_irqrestore(&lpfc_cmd->buf_lock, flags);
+ 		goto wait_for_cmpl;
+ 	}
  
- 	ctlr->dma_rx = rspi_request_dma_chan(dev, DMA_DEV_TO_MEM, dma_rx_id,
--					     res->start + RSPI_SPDR);
-+					     res->start);
- 	if (!ctlr->dma_rx) {
- 		dma_release_channel(ctlr->dma_tx);
- 		ctlr->dma_tx = NULL;
+@@ -5966,15 +5966,13 @@ lpfc_abort_handler(struct scsi_cmnd *cmnd)
+ 	if (ret_val != IOCB_SUCCESS) {
+ 		/* Indicate the IO is not being aborted by the driver. */
+ 		lpfc_cmd->waitq = NULL;
+-		spin_unlock(&lpfc_cmd->buf_lock);
+-		spin_unlock_irqrestore(&phba->hbalock, flags);
+ 		ret = FAILED;
+-		goto out;
++		goto out_unlock_hba;
+ 	}
+ 
+ 	/* no longer need the lock after this point */
+-	spin_unlock(&lpfc_cmd->buf_lock);
+-	spin_unlock_irqrestore(&phba->hbalock, flags);
++	spin_unlock(&phba->hbalock);
++	spin_unlock_irqrestore(&lpfc_cmd->buf_lock, flags);
+ 
+ 	if (phba->cfg_poll & DISABLE_FCP_RING_INT)
+ 		lpfc_sli_handle_fast_ring_event(phba,
+@@ -6009,10 +6007,9 @@ lpfc_abort_handler(struct scsi_cmnd *cmnd)
+ out_unlock_ring:
+ 	if (phba->sli_rev == LPFC_SLI_REV4)
+ 		spin_unlock(&pring_s4->ring_lock);
+-out_unlock_buf:
+-	spin_unlock(&lpfc_cmd->buf_lock);
+-out_unlock:
+-	spin_unlock_irqrestore(&phba->hbalock, flags);
++out_unlock_hba:
++	spin_unlock(&phba->hbalock);
++	spin_unlock_irqrestore(&lpfc_cmd->buf_lock, flags);
+ out:
+ 	lpfc_printf_vlog(vport, KERN_WARNING, LOG_FCP,
+ 			 "0749 SCSI Layer I/O Abort Request Status x%x ID %d "
 -- 
 2.35.1
 
