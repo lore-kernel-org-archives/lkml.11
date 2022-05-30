@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9268FC4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B42B4C4707A
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:47:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239017AbiE3NqO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:46:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55756 "EHLO
+        id S239058AbiE3Nqf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:46:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237808AbiE3Niv (ORCPT
+        with ESMTP id S237722AbiE3NiN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:38:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5293994E7;
-        Mon, 30 May 2022 06:31:24 -0700 (PDT)
+        Mon, 30 May 2022 09:38:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DAA88CB0A;
+        Mon, 30 May 2022 06:31:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 53DEA60F34;
-        Mon, 30 May 2022 13:31:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECFC6C3411A;
-        Mon, 30 May 2022 13:31:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AB9A6B80DAD;
+        Mon, 30 May 2022 13:31:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 375D0C36AE5;
+        Mon, 30 May 2022 13:31:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917483;
-        bh=iNHK4FsWAeAmGLGVXN+d7gkN/OJ8GAY1t4eehMHASVA=;
+        s=k20201202; t=1653917475;
+        bh=s4KO1UgUY/B996K+l2DBDtuWNiu3YWMyS23OqCyZMqk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mFIPwpP7takKwWsmiuSDQB7SImqnB7sW5lVHvFYtLQPgMddQC9HWeuMbKNqtHK3JR
-         VMWl/GI59r8Jkyujb2qX69X+4vy9tY3mLKCk4qmUHvLoHTy3h7Omq4u5CxZ9u7hZJr
-         kVWUfaXn3dEy7lbaQkHuMHJcCIXejdMUvz+AQxjHSMLEsNsUd46bcWMwYr6X89vI62
-         WcbrY0iNyuWZ2vCRB39qZ3hv21E9oepAHOUu0SrhDaBj7sdBsKuvfKp2EKBqtysOZC
-         q97312L5PJvAkaSzh3qYolq1O7Y2Hj2SMIvf1sJ0voamwuqayhB/JsngqU4qP+myaz
-         vOyt3q4ohxX/g==
+        b=IvEdjAR4UjdaezzLSDDao/DnMU/DiVzHgQbxnkGp+YhUYR27jJfsXmADN7CB9+HdS
+         +7uaND819Pci+mibhiFDvcCOxzhrT/DBLiZku+9Mn8MgM8KTMLbRE2kjzuRyFmcB/p
+         UDmhyxOFWGn6F7O8V2rYaZTQcKiFg67VyZtHstGDatLaTkTHIijccn4l74WJjr66fH
+         KNNEPgvM/owjeHc2eKWucfDCId9BDMzOc6t/zbuqFFErx8D52pPFoumclRXo7kor1q
+         Z8TmTq0zBb4TtXwuavpToprlkQfZVFmkJX6G/SrlQxU3cnrh+ysvNaQmK8QCOkfvlI
+         BZLqcB4bDdRZg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, peterhuewe@gmx.de,
-        linux-integrity@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 156/159] char: tpm: cr50_i2c: Suppress duplicated error message in .remove()
-Date:   Mon, 30 May 2022 09:24:21 -0400
-Message-Id: <20220530132425.1929512-156-sashal@kernel.org>
+Cc:     David Howells <dhowells@redhat.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 152/159] rxrpc: Return an error to sendmsg if call failed
+Date:   Mon, 30 May 2022 09:24:17 -0400
+Message-Id: <20220530132425.1929512-152-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -54,51 +54,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit e0687fe958f763f1790f22ed5483025b7624e744 ]
+[ Upstream commit 4ba68c5192554876bd8c3afd904e3064d2915341 ]
 
-Returning an error value in an i2c remove callback results in an error
-message being emitted by the i2c core, but otherwise it doesn't make a
-difference. The device goes away anyhow and the devm cleanups are
-called.
+If at the end of rxrpc sendmsg() or rxrpc_kernel_send_data() the call that
+was being given data was aborted remotely or otherwise failed, return an
+error rather than returning the amount of data buffered for transmission.
 
-As tpm_cr50_i2c_remove() emits an error message already and the
-additional error message by the i2c core doesn't add any useful
-information, change the return value to zero to suppress this error
-message.
+The call (presumably) did not complete, so there's not much point
+continuing with it.  AF_RXRPC considers it "complete" and so will be
+unwilling to do anything else with it - and won't send a notification for
+it, deeming the return from sendmsg sufficient.
 
-Note that if i2c_clientdata is NULL, there is something really fishy.
-Assuming no memory corruption happened (then all bets are lost anyhow),
-tpm_cr50_i2c_remove() is only called after tpm_cr50_i2c_probe() returned
-successfully. So there was a tpm chip registered before and after
-tpm_cr50_i2c_remove() its privdata is freed but the associated character
-device isn't removed. If after that happened userspace accesses the
-character device it's likely that the freed memory is accessed. For that
-reason the warning message is made a bit more frightening.
+Not returning an error causes afs to incorrectly handle a StoreData
+operation that gets interrupted by a change of address due to NAT
+reconfiguration.
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+This doesn't normally affect most operations since their request parameters
+tend to fit into a single UDP packet and afs_make_call() returns before the
+server responds; StoreData is different as it involves transmission of a
+lot of data.
+
+This can be triggered on a client by doing something like:
+
+	dd if=/dev/zero of=/afs/example.com/foo bs=1M count=512
+
+at one prompt, and then changing the network address at another prompt,
+e.g.:
+
+	ifconfig enp6s0 inet 192.168.6.2 && route add 192.168.6.1 dev enp6s0
+
+Tracing packets on an Auristor fileserver looks something like:
+
+192.168.6.1 -> 192.168.6.3  RX 107 ACK Idle  Seq: 0  Call: 4  Source Port: 7000  Destination Port: 7001
+192.168.6.3 -> 192.168.6.1  AFS (RX) 1482 FS Request: Unknown(64538) (64538)
+192.168.6.3 -> 192.168.6.1  AFS (RX) 1482 FS Request: Unknown(64538) (64538)
+192.168.6.1 -> 192.168.6.3  RX 107 ACK Idle  Seq: 0  Call: 4  Source Port: 7000  Destination Port: 7001
+<ARP exchange for 192.168.6.2>
+192.168.6.2 -> 192.168.6.1  AFS (RX) 1482 FS Request: Unknown(0) (0)
+192.168.6.2 -> 192.168.6.1  AFS (RX) 1482 FS Request: Unknown(0) (0)
+192.168.6.1 -> 192.168.6.2  RX 107 ACK Exceeds Window  Seq: 0  Call: 4  Source Port: 7000  Destination Port: 7001
+192.168.6.1 -> 192.168.6.2  RX 74 ABORT  Seq: 0  Call: 4  Source Port: 7000  Destination Port: 7001
+192.168.6.1 -> 192.168.6.2  RX 74 ABORT  Seq: 29321  Call: 4  Source Port: 7000  Destination Port: 7001
+
+The Auristor fileserver logs code -453 (RXGEN_SS_UNMARSHAL), but the abort
+code received by kafs is -5 (RX_PROTOCOL_ERROR) as the rx layer sees the
+condition and generates an abort first and the unmarshal error is a
+consequence of that at the application layer.
+
+Reported-by: Marc Dionne <marc.dionne@auristor.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: linux-afs@lists.infradead.org
+Link: http://lists.infradead.org/pipermail/linux-afs/2021-December/004810.html # v1
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/tpm/tpm_tis_i2c_cr50.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/rxrpc/sendmsg.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/char/tpm/tpm_tis_i2c_cr50.c b/drivers/char/tpm/tpm_tis_i2c_cr50.c
-index f6c0affbb456..bf608b6af339 100644
---- a/drivers/char/tpm/tpm_tis_i2c_cr50.c
-+++ b/drivers/char/tpm/tpm_tis_i2c_cr50.c
-@@ -768,8 +768,8 @@ static int tpm_cr50_i2c_remove(struct i2c_client *client)
- 	struct device *dev = &client->dev;
+diff --git a/net/rxrpc/sendmsg.c b/net/rxrpc/sendmsg.c
+index af8ad6c30b9f..1d38e279e2ef 100644
+--- a/net/rxrpc/sendmsg.c
++++ b/net/rxrpc/sendmsg.c
+@@ -444,6 +444,12 @@ static int rxrpc_send_data(struct rxrpc_sock *rx,
  
- 	if (!chip) {
--		dev_err(dev, "Could not get client data at remove\n");
--		return -ENODEV;
-+		dev_crit(dev, "Could not get client data at remove, memory corruption ahead\n");
-+		return 0;
- 	}
- 
- 	tpm_chip_unregister(chip);
+ success:
+ 	ret = copied;
++	if (READ_ONCE(call->state) == RXRPC_CALL_COMPLETE) {
++		read_lock_bh(&call->state_lock);
++		if (call->error < 0)
++			ret = call->error;
++		read_unlock_bh(&call->state_lock);
++	}
+ out:
+ 	call->tx_pending = skb;
+ 	_leave(" = %d", ret);
 -- 
 2.35.1
 
