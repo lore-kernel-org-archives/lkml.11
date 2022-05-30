@@ -2,45 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2F01C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:58:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F4F0C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:58:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239000AbiE3N6k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:58:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49670 "EHLO
+        id S236270AbiE3N6x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:58:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239281AbiE3NvZ (ORCPT
+        with ESMTP id S239279AbiE3NvZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 30 May 2022 09:51:25 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F3B282166;
-        Mon, 30 May 2022 06:35:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADB2182160;
+        Mon, 30 May 2022 06:35:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 510C1B80DAD;
-        Mon, 30 May 2022 13:35:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43DD2C3411E;
-        Mon, 30 May 2022 13:35:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6A3C9B80DB4;
+        Mon, 30 May 2022 13:35:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F6AFC3411A;
+        Mon, 30 May 2022 13:35:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917753;
-        bh=N8UbqJnFB6zL7Fltg5vHOaYoZGdWHnypTXLxuzrfcyo=;
+        s=k20201202; t=1653917750;
+        bh=+u2Yt/xw2sPo6EAVrtuFDGeht+dJf7/yaSqLvJi8jeA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m5yRiTMzVKG4UcGAohkhsG26wg7qdlGHHX3Krqxv5IyfYTcEYB0BvGyLGKSHOc7yu
-         /irTLxsuLEZXELq63Apdm9exM2SdIZPhMG8e8UdfXLRpAdZ9RQ4gmACYbTDITGARDf
-         lslfFp0IQs9lICirc7Esw101EnLhmjZ67ZS7iCRaMysbPN4hR/JqHugd3wMbvKSSIv
-         cfaRQkIESJEk5cWkCTBpbD3NzQ83rQyZPyHqhLzsLUQ482UiPxwI7qon7QPO5H9N3j
-         fGHFospO57/x88tBqTz70HXoKar4fuThUkD/l3zLm9CKra/cSrwVoRZBeDTe9lmRxF
-         DBgxWOKOxo1YQ==
+        b=paH+0t5OzOr9kuvXRaVwxHBvvA5XtZ8r2RuAwTD8Z4jMcJi1ql/jtZhaKAzVXXtfA
+         gtlFFp9SooEIYwZeIo+6WMeR4T4hLD/9sbMN3frbTwjYXw4vJMWjbFmU1gOcBajt4+
+         dQZrAaQjsajE9F2IhwHldE24WtLuWCbt5pq3J57UGw60zLNFzNdybJgQjworbOI/mu
+         7aeaMkk8lnuNfh/m/JikQ9X19oWqk100vvNRwkUEIohWNX7cdR1NA5I7EGMa24Huqy
+         Y3qI7gckBrCv1r7e3ve/jnTs93+d3YHoDSfOfYBeKqM4pNB7JCZ1SnvotmvuE9DLo/
+         afTKsaI4EU7KA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Corey Minyard <cminyard@mvista.com>,
-        Haowen Bai <baihaowen@meizu.com>,
+Cc:     Zheng Bin <zhengbin13@huawei.com>, Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>,
-        openipmi-developer@lists.sourceforge.net
-Subject: [PATCH AUTOSEL 5.17 086/135] ipmi:ssif: Check for NULL msg when handling events and messages
-Date:   Mon, 30 May 2022 09:30:44 -0400
-Message-Id: <20220530133133.1931716-86-sashal@kernel.org>
+        pierre-louis.bossart@linux.intel.com, lgirdwood@gmail.com,
+        ranjani.sridharan@linux.intel.com, kai.vehmanen@linux.intel.com,
+        daniel.baluta@nxp.com, perex@perex.cz, tiwai@suse.com,
+        yung-chuan.liao@linux.intel.com, rander.wang@intel.com,
+        peter.ujfalusi@linux.intel.com, AjitKumar.Pandey@amd.com,
+        sound-open-firmware@alsa-project.org, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.17 084/135] ASoC: SOF: amd: add missing platform_device_unregister in acp_pci_rn_probe
+Date:   Mon, 30 May 2022 09:30:42 -0400
+Message-Id: <20220530133133.1931716-84-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
@@ -52,73 +56,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Corey Minyard <cminyard@mvista.com>
+From: Zheng Bin <zhengbin13@huawei.com>
 
-[ Upstream commit 7602b957e2404e5f98d9a40b68f1fd27f0028712 ]
+[ Upstream commit cbcab8cd737c74c20195c31d647e19f7cb49c9b8 ]
 
-Even though it's not possible to get into the SSIF_GETTING_MESSAGES and
-SSIF_GETTING_EVENTS states without a valid message in the msg field,
-it's probably best to be defensive here and check and print a log, since
-that means something else went wrong.
+acp_pci_rn_probe misses a call platform_device_unregister in error path,
+this patch fixes that.
 
-Also add a default clause to that switch statement to release the lock
-and print a log, in case the state variable gets messed up somehow.
-
-Reported-by: Haowen Bai <baihaowen@meizu.com>
-Signed-off-by: Corey Minyard <cminyard@mvista.com>
+Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
+Link: https://lore.kernel.org/r/20220512013728.4128903-1-zhengbin13@huawei.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/ipmi/ipmi_ssif.c | 23 +++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
+ sound/soc/sof/amd/pci-rn.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/char/ipmi/ipmi_ssif.c b/drivers/char/ipmi/ipmi_ssif.c
-index 48aab77abebf..588610236de1 100644
---- a/drivers/char/ipmi/ipmi_ssif.c
-+++ b/drivers/char/ipmi/ipmi_ssif.c
-@@ -814,6 +814,14 @@ static void msg_done_handler(struct ssif_info *ssif_info, int result,
- 		break;
- 
- 	case SSIF_GETTING_EVENTS:
-+		if (!msg) {
-+			/* Should never happen, but just in case. */
-+			dev_warn(&ssif_info->client->dev,
-+				 "No message set while getting events\n");
-+			ipmi_ssif_unlock_cond(ssif_info, flags);
-+			break;
-+		}
-+
- 		if ((result < 0) || (len < 3) || (msg->rsp[2] != 0)) {
- 			/* Error getting event, probably done. */
- 			msg->done(msg);
-@@ -838,6 +846,14 @@ static void msg_done_handler(struct ssif_info *ssif_info, int result,
- 		break;
- 
- 	case SSIF_GETTING_MESSAGES:
-+		if (!msg) {
-+			/* Should never happen, but just in case. */
-+			dev_warn(&ssif_info->client->dev,
-+				 "No message set while getting messages\n");
-+			ipmi_ssif_unlock_cond(ssif_info, flags);
-+			break;
-+		}
-+
- 		if ((result < 0) || (len < 3) || (msg->rsp[2] != 0)) {
- 			/* Error getting event, probably done. */
- 			msg->done(msg);
-@@ -861,6 +877,13 @@ static void msg_done_handler(struct ssif_info *ssif_info, int result,
- 			deliver_recv_msg(ssif_info, msg);
- 		}
- 		break;
-+
-+	default:
-+		/* Should never happen, but just in case. */
-+		dev_warn(&ssif_info->client->dev,
-+			 "Invalid state in message done handling: %d\n",
-+			 ssif_info->ssif_state);
-+		ipmi_ssif_unlock_cond(ssif_info, flags);
+diff --git a/sound/soc/sof/amd/pci-rn.c b/sound/soc/sof/amd/pci-rn.c
+index 392ffbdf6417..d809d151a38c 100644
+--- a/sound/soc/sof/amd/pci-rn.c
++++ b/sound/soc/sof/amd/pci-rn.c
+@@ -93,6 +93,7 @@ static int acp_pci_rn_probe(struct pci_dev *pci, const struct pci_device_id *pci
+ 	res = devm_kzalloc(&pci->dev, sizeof(struct resource) * ARRAY_SIZE(renoir_res), GFP_KERNEL);
+ 	if (!res) {
+ 		sof_pci_remove(pci);
++		platform_device_unregister(dmic_dev);
+ 		return -ENOMEM;
  	}
  
- 	flags = ipmi_ssif_lock_cond(ssif_info, &oflags);
 -- 
 2.35.1
 
