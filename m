@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DBE4C38A05
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58514C47080
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:28:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242294AbiE3O2H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:28:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42698 "EHLO
+        id S237374AbiE3O2L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:28:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241357AbiE3ORc (ORCPT
+        with ESMTP id S241441AbiE3ORg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:17:32 -0400
+        Mon, 30 May 2022 10:17:36 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2A118FD61;
-        Mon, 30 May 2022 06:45:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B54D952509;
+        Mon, 30 May 2022 06:47:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F3F060F24;
-        Mon, 30 May 2022 13:45:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E89F3C3411F;
-        Mon, 30 May 2022 13:45:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 51CA460EC3;
+        Mon, 30 May 2022 13:47:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 775CBC36AE9;
+        Mon, 30 May 2022 13:47:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918336;
-        bh=r0fIl1paJppCtESdUdyUAQ98xxiKIcSO5MMEPsCXkb4=;
+        s=k20201202; t=1653918434;
+        bh=0jYq7SrEBjoFSLyblsX/VqNdX518v94WFZHXPitwbSk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kZOvhyi3tcmCeh4Eyo2M93ZAXZswYDx21A1weOcgby0iPYyH6CPRh7yOxd7mWne31
-         7jB6BUas77oCmBHwtPCFlhaAZmmec7RsImY1XevrFiJlkwD71t9QzYMBDcWMw3tkqc
-         4pnMaYRyg97bgTHfFxZM4B8fwdQCnGwxYFO41iGnUhvQR0cC13FBQbobP0Q4DIcI6J
-         1+kj0nkmB4J8ImWhUqtq9tnkgB4/r/Xy3al5jjJJ1tnqhI1j68IuyozvyEiqK1Vn1V
-         VASe0KUu4o5++k1dgrT41HyVfVj/oKZhzXazdl1rzKyxouObrN0AMmhSY/b3vQ2dK9
-         TTBdgZ3jYz2zw==
+        b=CJR6TBNYvpKHjxlY4XljV7QautpfUujY1kmQkkJPwDuNDEtMQqCPOQLSBCpZhJpsh
+         5Xx6JjaAy2m98teCivqkwZGEtA4DXbnFdhcR/4iWkxJToRBzD5EUZywTpOi+q3B887
+         H0Kl1CxaKhehYLPwYZwoR20RZG5Pw16CRD+qtgJKAs6V1GfojzZhSh5Hw3i7VbkjUZ
+         WtTdkiDyUdMgWg6jVd4FbYew8DAxMyaROwlzw9FFpp+Wmbf89CUHf/bw7he+4VjZJz
+         VewfmTc9NWy9rlf/QfyOXCJeTUp0IurXMNHTWEpren/uJXEzdJ3ZsomVrHFv6lSV65
+         MNwH0QOUZY2WQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mark Brown <broonie@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
-        alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.10 40/76] ASoC: dapm: Don't fold register value changes into notifications
-Date:   Mon, 30 May 2022 09:43:30 -0400
-Message-Id: <20220530134406.1934928-40-sashal@kernel.org>
+Cc:     Haowen Bai <baihaowen@meizu.com>, Kalle Valo <kvalo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, stas.yakovlev@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 05/55] ipw2x00: Fix potential NULL dereference in libipw_xmit()
+Date:   Mon, 30 May 2022 09:46:11 -0400
+Message-Id: <20220530134701.1935933-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220530134406.1934928-1-sashal@kernel.org>
-References: <20220530134406.1934928-1-sashal@kernel.org>
+In-Reply-To: <20220530134701.1935933-1-sashal@kernel.org>
+References: <20220530134701.1935933-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -51,48 +53,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Haowen Bai <baihaowen@meizu.com>
 
-[ Upstream commit ad685980469b9f9b99d4d6ea05f4cb8f57cb2234 ]
+[ Upstream commit e8366bbabe1d207cf7c5b11ae50e223ae6fc278b ]
 
-DAPM tracks and reports the value presented to the user from DAPM controls
-separately to the register value, these may diverge during initialisation
-or when an autodisable control is in use.
+crypt and crypt->ops could be null, so we need to checking null
+before dereference
 
-When writing DAPM controls we currently report that a change has occurred
-if either the DAPM value or the value stored in the register has changed,
-meaning that if the two are out of sync we may appear to report a spurious
-event to userspace. Since we use this folded in value for nothing other
-than the value reported to userspace simply drop the folding in of the
-register change.
-
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Link: https://lore.kernel.org/r/20220428161833.3690050-1-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/1648797055-25730-1-git-send-email-baihaowen@meizu.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/soc-dapm.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/net/wireless/intel/ipw2x00/libipw_tx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/soc-dapm.c b/sound/soc/soc-dapm.c
-index 417732bdf286..f2f7f2dde93c 100644
---- a/sound/soc/soc-dapm.c
-+++ b/sound/soc/soc-dapm.c
-@@ -3427,7 +3427,6 @@ int snd_soc_dapm_put_volsw(struct snd_kcontrol *kcontrol,
- 			update.val = val;
- 			card->update = &update;
- 		}
--		change |= reg_change;
+diff --git a/drivers/net/wireless/intel/ipw2x00/libipw_tx.c b/drivers/net/wireless/intel/ipw2x00/libipw_tx.c
+index d9baa2fa603b..e4c60caa6543 100644
+--- a/drivers/net/wireless/intel/ipw2x00/libipw_tx.c
++++ b/drivers/net/wireless/intel/ipw2x00/libipw_tx.c
+@@ -383,7 +383,7 @@ netdev_tx_t libipw_xmit(struct sk_buff *skb, struct net_device *dev)
  
- 		ret = soc_dapm_mixer_update_power(card, kcontrol, connect,
- 						  rconnect);
-@@ -3529,7 +3528,6 @@ int snd_soc_dapm_put_enum_double(struct snd_kcontrol *kcontrol,
- 			update.val = val;
- 			card->update = &update;
- 		}
--		change |= reg_change;
- 
- 		ret = soc_dapm_mux_update_power(card, kcontrol, item[0], e);
+ 		/* Each fragment may need to have room for encryption
+ 		 * pre/postfix */
+-		if (host_encrypt)
++		if (host_encrypt && crypt && crypt->ops)
+ 			bytes_per_frag -= crypt->ops->extra_mpdu_prefix_len +
+ 			    crypt->ops->extra_mpdu_postfix_len;
  
 -- 
 2.35.1
