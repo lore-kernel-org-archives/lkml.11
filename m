@@ -2,50 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 257FEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:31:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7D12C4167B
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:32:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241962AbiE3Oas (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:30:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44476 "EHLO
+        id S239229AbiE3OcA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:32:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241721AbiE3OSA (ORCPT
+        with ESMTP id S229676AbiE3OOc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:18:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0298E7B9E0;
-        Mon, 30 May 2022 06:48:00 -0700 (PDT)
+        Mon, 30 May 2022 10:14:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E440EAB9B;
+        Mon, 30 May 2022 06:43:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DBC7460F24;
-        Mon, 30 May 2022 13:47:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0241EC3411A;
-        Mon, 30 May 2022 13:47:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DC17060F32;
+        Mon, 30 May 2022 13:43:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53650C3411A;
+        Mon, 30 May 2022 13:43:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918479;
-        bh=4tvL/uObB8oELHOKTh9in7xifhIumfAmb8eA+LaNlpc=;
+        s=k20201202; t=1653918192;
+        bh=dRHnLty4MtAIw+i5ImmnnIcgHxwQeHJnYQbo8DkdFr4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F50vHFjVCwUXDCoJK2FgPIkyhMJK9dX9mj0DK+VpRO/KOlUhbrNDv8fGq7Sr0qWCy
-         R6q6UCKWec9Cx3uS/g2aQT6ftbhwOXwZW4kc0bGp5aCjqsMR2vlaIkKyybfThn4EKX
-         I94Sv+k1CiquoTCJi5UKUGFQ+k6s1kvB7CtRYiw3PThxkcEARNCGLEbRvJAmLlXH3h
-         mdd/NAFzypk1wGSsf+ocCCgdXcpgO99cqZRjIOJdMsrniSNPkNAgtwYgeKuP4Cf1MQ
-         8U3cfMMHHLrCGJiELFfJkT8Bystvwbf8a+jN1x6EQWe9bE6Av7T2MrPbumFXidy/HS
-         4KLj0x4k+L8og==
+        b=WbFrmUR+3EK2OMt0V4X7S7/lAHtqOEWNx5YJ/IX+h9CWteQI4HfbolCred7s8P9fD
+         +vhncctS0zQ8CNOGBS4WYEBDaAFWd0vfAlCnKIgSiKBtDQIlksHIKEQwq8KJLWkVlv
+         qEHxAyF87KDLSyYAk+E74t6W8IMkQCvRH4ywMZP5rrX/APe5bBSxG5+oRhzchq+rmz
+         p75X0gClg9yJKKB3FeDthjEuytKxvF4Dd1i5gf4Hx2RXpTuNcZcutgwJKybIXSSSFC
+         61F4/l3UmkUjwV61a4gPBWI6sbjMLpUgzAgPb/FMojYi/jSViXOrOoLgtpQ3+FLrD6
+         pngahsbDfLrdQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Steven Price <steven.price@arm.com>,
-        Liviu Dudau <liviu.dudau@arm.com>,
-        Sasha Levin <sashal@kernel.org>,
-        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
-        tzimmermann@suse.de, airlied@linux.ie, daniel@ffwll.ch,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.4 23/55] drm/plane: Move range check for format_count earlier
-Date:   Mon, 30 May 2022 09:46:29 -0400
-Message-Id: <20220530134701.1935933-23-sashal@kernel.org>
+Cc:     Sathishkumar S <sathishkumar.sundararaju@amd.com>,
+        Lijo Lazar <lijo.lazar@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, evan.quan@amd.com,
+        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
+        daniel@ffwll.ch, ray.huang@amd.com, Xiaomeng.Hou@amd.com,
+        aaron.liu@amd.com, kevin1.wang@amd.com, mario.limonciello@amd.com,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.15 089/109] drm/amd/pm: update smartshift powerboost calc for smu13
+Date:   Mon, 30 May 2022 09:38:05 -0400
+Message-Id: <20220530133825.1933431-89-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220530134701.1935933-1-sashal@kernel.org>
-References: <20220530134701.1935933-1-sashal@kernel.org>
+In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
+References: <20220530133825.1933431-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,57 +56,113 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Price <steven.price@arm.com>
+From: Sathishkumar S <sathishkumar.sundararaju@amd.com>
 
-[ Upstream commit 4b674dd69701c2e22e8e7770c1706a69f3b17269 ]
+[ Upstream commit cdf4c8ec39872a61a58d62f19b4db80f0f7bc586 ]
 
-While the check for format_count > 64 in __drm_universal_plane_init()
-shouldn't be hit (it's a WARN_ON), in its current position it will then
-leak the plane->format_types array and fail to call
-drm_mode_object_unregister() leaking the modeset identifier. Move it to
-the start of the function to avoid allocating those resources in the
-first place.
+smartshift apu and dgpu power boost are reported as percentage
+with respect to their power limits. adjust the units of power before
+calculating the percentage of boost.
 
-Signed-off-by: Steven Price <steven.price@arm.com>
-Signed-off-by: Liviu Dudau <liviu.dudau@arm.com>
-Link: https://lore.kernel.org/dri-devel/20211203102815.38624-1-steven.price@arm.com/
+Signed-off-by: Sathishkumar S <sathishkumar.sundararaju@amd.com>
+Reviewed-by: Lijo Lazar <lijo.lazar@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/drm_plane.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ .../drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c  | 62 ++++++++++++++-----
+ 1 file changed, 46 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/gpu/drm/drm_plane.c b/drivers/gpu/drm/drm_plane.c
-index d6ad60ab0d38..6bdebcca5690 100644
---- a/drivers/gpu/drm/drm_plane.c
-+++ b/drivers/gpu/drm/drm_plane.c
-@@ -186,6 +186,13 @@ int drm_universal_plane_init(struct drm_device *dev, struct drm_plane *plane,
- 	if (WARN_ON(config->num_total_plane >= 32))
- 		return -EINVAL;
+diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c
+index 0e1a843608e4..33bd5430c6de 100644
+--- a/drivers/gpu/drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c
++++ b/drivers/gpu/drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c
+@@ -305,6 +305,42 @@ static int yellow_carp_mode2_reset(struct smu_context *smu)
+ 	return yellow_carp_mode_reset(smu, SMU_RESET_MODE_2);
+ }
  
-+	/*
-+	 * First driver to need more than 64 formats needs to fix this. Each
-+	 * format is encoded as a bit and the current code only supports a u64.
-+	 */
-+	if (WARN_ON(format_count > 64))
-+		return -EINVAL;
 +
- 	WARN_ON(drm_drv_uses_atomic_modeset(dev) &&
- 		(!funcs->atomic_destroy_state ||
- 		 !funcs->atomic_duplicate_state));
-@@ -207,13 +214,6 @@ int drm_universal_plane_init(struct drm_device *dev, struct drm_plane *plane,
- 		return -ENOMEM;
- 	}
++static void yellow_carp_get_ss_power_percent(SmuMetrics_t *metrics,
++					uint32_t *apu_percent, uint32_t *dgpu_percent)
++{
++	uint32_t apu_boost = 0;
++	uint32_t dgpu_boost = 0;
++	uint16_t apu_limit = 0;
++	uint16_t dgpu_limit = 0;
++	uint16_t apu_power = 0;
++	uint16_t dgpu_power = 0;
++
++	/* APU and dGPU power values are reported in milli Watts
++	 * and STAPM power limits are in Watts */
++	apu_power = metrics->ApuPower/1000;
++	apu_limit = metrics->StapmOpnLimit;
++	if (apu_power > apu_limit && apu_limit != 0)
++		apu_boost =  ((apu_power - apu_limit) * 100) / apu_limit;
++	apu_boost = (apu_boost > 100) ? 100 : apu_boost;
++
++	dgpu_power = metrics->dGpuPower/1000;
++	if (metrics->StapmCurrentLimit > metrics->StapmOpnLimit)
++		dgpu_limit = metrics->StapmCurrentLimit - metrics->StapmOpnLimit;
++	if (dgpu_power > dgpu_limit && dgpu_limit != 0)
++		dgpu_boost = ((dgpu_power - dgpu_limit) * 100) / dgpu_limit;
++	dgpu_boost = (dgpu_boost > 100) ? 100 : dgpu_boost;
++
++	if (dgpu_boost >= apu_boost)
++		apu_boost = 0;
++	else
++		dgpu_boost = 0;
++
++	*apu_percent = apu_boost;
++	*dgpu_percent = dgpu_boost;
++
++}
++
+ static int yellow_carp_get_smu_metrics_data(struct smu_context *smu,
+ 							MetricsMember_t member,
+ 							uint32_t *value)
+@@ -313,6 +349,8 @@ static int yellow_carp_get_smu_metrics_data(struct smu_context *smu,
  
--	/*
--	 * First driver to need more than 64 formats needs to fix this. Each
--	 * format is encoded as a bit and the current code only supports a u64.
--	 */
--	if (WARN_ON(format_count > 64))
--		return -EINVAL;
--
- 	if (format_modifiers) {
- 		const uint64_t *temp_modifiers = format_modifiers;
- 		while (*temp_modifiers++ != DRM_FORMAT_MOD_INVALID)
+ 	SmuMetrics_t *metrics = (SmuMetrics_t *)smu_table->metrics_table;
+ 	int ret = 0;
++	uint32_t apu_percent = 0;
++	uint32_t dgpu_percent = 0;
+ 
+ 	mutex_lock(&smu->metrics_lock);
+ 
+@@ -365,26 +403,18 @@ static int yellow_carp_get_smu_metrics_data(struct smu_context *smu,
+ 		*value = metrics->Voltage[1];
+ 		break;
+ 	case METRICS_SS_APU_SHARE:
+-		/* return the percentage of APU power with respect to APU's power limit.
+-		 * percentage is reported, this isn't boost value. Smartshift power
+-		 * boost/shift is only when the percentage is more than 100.
++		/* return the percentage of APU power boost
++		 * with respect to APU's power limit.
+ 		 */
+-		if (metrics->StapmOpnLimit > 0)
+-			*value =  (metrics->ApuPower * 100) / metrics->StapmOpnLimit;
+-		else
+-			*value = 0;
++		yellow_carp_get_ss_power_percent(metrics, &apu_percent, &dgpu_percent);
++		*value = apu_percent;
+ 		break;
+ 	case METRICS_SS_DGPU_SHARE:
+-		/* return the percentage of dGPU power with respect to dGPU's power limit.
+-		 * percentage is reported, this isn't boost value. Smartshift power
+-		 * boost/shift is only when the percentage is more than 100.
++		/* return the percentage of dGPU power boost
++		 * with respect to dGPU's power limit.
+ 		 */
+-		if ((metrics->dGpuPower > 0) &&
+-		    (metrics->StapmCurrentLimit > metrics->StapmOpnLimit))
+-			*value = (metrics->dGpuPower * 100) /
+-				  (metrics->StapmCurrentLimit - metrics->StapmOpnLimit);
+-		else
+-			*value = 0;
++		yellow_carp_get_ss_power_percent(metrics, &apu_percent, &dgpu_percent);
++		*value = dgpu_percent;
+ 		break;
+ 	default:
+ 		*value = UINT_MAX;
 -- 
 2.35.1
 
