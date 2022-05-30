@@ -2,49 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AB24C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:42:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB170C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:42:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237767AbiE3NmD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:42:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47626 "EHLO
+        id S237828AbiE3NmJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:42:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237921AbiE3Nfz (ORCPT
+        with ESMTP id S238034AbiE3NgC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:35:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D03E695DDA;
-        Mon, 30 May 2022 06:29:19 -0700 (PDT)
+        Mon, 30 May 2022 09:36:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DE9985EC6;
+        Mon, 30 May 2022 06:29:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8067DB80DB1;
-        Mon, 30 May 2022 13:29:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 753B1C36AE3;
-        Mon, 30 May 2022 13:29:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2D56AB80DA8;
+        Mon, 30 May 2022 13:29:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 062D0C3411F;
+        Mon, 30 May 2022 13:29:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917357;
-        bh=VePB9HYfx5w6HP34ukuWlxDdJC0cAZBd+ZDzUXQyhfQ=;
+        s=k20201202; t=1653917378;
+        bh=XCIo5oBjPhUPMtJO6VtGpo5T64/wBIlRjbYu4ZudoSw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u1K2sU4KTLIzppIMW9gb2i6kKWCD29pKfzRv2QLA9SHg+jhXUJfgyN36onWzvCKvx
-         cCnAzgjGLzHW2Yrfcvj/ohgjSIWIU3EpsCJzu+IfcfIXKBAjln0ehvVs+3eRYXP3Jt
-         E06L8WdBiJvFvU73QzJTtlewRHGh1jofOk9VFzsQ/CWnrjts19Ojwdbrn30NYcvhq8
-         4eFiJDSvbJM3RF+dSkEyjgHgPzCd844vDLetttkaPdpzWicUXoNq1embdHG5baKCqq
-         HTvYKrZ8vFAtdZ6um5nZdjeVAW6sDZUlWlUgTiJrS8+I4s7F0+JzM5arsYl4uUZCBB
-         W411Q3u8i3vzg==
+        b=Ibqdi2V+5gsRbUlNzL7nU51jooMtJcvXKoeg6mVwjjjWg5P4cRMpWPcOaU8Gb6Dyc
+         94kInndnTjJFzc0atIaApDZeCe9jAh4aQMWmcwVWuNmFE8vhNr8zbUDyAr8W7tJUWS
+         beOZngTOI7dRQ8TA6hcAsSyEwwggi9WzqLGYOOUc73q/qlqiCcJP1bcBvX6ktqZ5Ze
+         RNftJqh+7SLM5wYw0RmNAUxJxemutwcQuRX3UubaSbhwcNOEw/iF+55A5ZMnDRvsfe
+         S/XiCplGYlcydEzl8XpUIvEgASJK9xMyxY7djY6WZGxuyw3o+8l6Bu6j+0p21J8kaU
+         lBC7/ku8JSe6Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>,
-        lorenzo@kernel.org, ryder.lee@mediatek.com, kvalo@kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, matthias.bgg@gmail.com, Bo.Jiao@mediatek.com,
-        sujuan.chen@mediatek.com, shayne.chen@mediatek.com,
-        greearb@candelatech.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.18 109/159] mt76: mt7915: accept rx frames with non-standard VHT MCS10-11
-Date:   Mon, 30 May 2022 09:23:34 -0400
-Message-Id: <20220530132425.1929512-109-sashal@kernel.org>
+Cc:     Philipp Zabel <p.zabel@pengutronix.de>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 113/159] media: coda: limit frame interval enumeration to supported encoder frame sizes
+Date:   Mon, 30 May 2022 09:23:38 -0400
+Message-Id: <20220530132425.1929512-113-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
@@ -56,31 +52,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Felix Fietkau <nbd@nbd.name>
+From: Philipp Zabel <p.zabel@pengutronix.de>
 
-[ Upstream commit 77045a3740fa3d2325293cf8623899532b39303e ]
+[ Upstream commit 67e33dd957880879e785cfea83a3aa24bd5c5577 ]
 
-The hardware receives them properly, they should not be dropped
+Let VIDIOC_ENUM_FRAMEINTERVALS return -EINVAL if userspace queries
+frame intervals for frame sizes unsupported by the encoder. Fixes the
+following v4l2-compliance failure:
 
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+		fail: v4l2-test-formats.cpp(123): found frame intervals for invalid size 47x16
+		fail: v4l2-test-formats.cpp(282): node->codec_mask & STATEFUL_ENCODER
+	test VIDIOC_ENUM_FMT/FRAMESIZES/FRAMEINTERVALS: FAIL
+
+[hverkuil: drop incorrect 'For decoder devices, return -ENOTTY.' in the commit log]
+
+Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7915/mac.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../media/platform/chips-media/coda-common.c  | 20 +++++++++++++------
+ 1 file changed, 14 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
-index e9e7efbf350d..a8df65cc115f 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
-@@ -521,7 +521,7 @@ mt7915_mac_fill_rx_rate(struct mt7915_dev *dev,
- 		status->encoding = RX_ENC_VHT;
- 		if (gi)
- 			status->enc_flags |= RX_ENC_FLAG_SHORT_GI;
--		if (i > 9)
-+		if (i > 11)
- 			return -EINVAL;
- 		break;
- 	case MT_PHY_TYPE_HE_MU:
+diff --git a/drivers/media/platform/chips-media/coda-common.c b/drivers/media/platform/chips-media/coda-common.c
+index a57822b05070..a2cad1830318 100644
+--- a/drivers/media/platform/chips-media/coda-common.c
++++ b/drivers/media/platform/chips-media/coda-common.c
+@@ -1324,7 +1324,8 @@ static int coda_enum_frameintervals(struct file *file, void *fh,
+ 				    struct v4l2_frmivalenum *f)
+ {
+ 	struct coda_ctx *ctx = fh_to_ctx(fh);
+-	int i;
++	struct coda_q_data *q_data;
++	const struct coda_codec *codec;
+ 
+ 	if (f->index)
+ 		return -EINVAL;
+@@ -1333,12 +1334,19 @@ static int coda_enum_frameintervals(struct file *file, void *fh,
+ 	if (!ctx->vdoa && f->pixel_format == V4L2_PIX_FMT_YUYV)
+ 		return -EINVAL;
+ 
+-	for (i = 0; i < CODA_MAX_FORMATS; i++) {
+-		if (f->pixel_format == ctx->cvd->src_formats[i] ||
+-		    f->pixel_format == ctx->cvd->dst_formats[i])
+-			break;
++	if (coda_format_normalize_yuv(f->pixel_format) == V4L2_PIX_FMT_YUV420) {
++		q_data = get_q_data(ctx, V4L2_BUF_TYPE_VIDEO_CAPTURE);
++		codec = coda_find_codec(ctx->dev, f->pixel_format,
++					q_data->fourcc);
++	} else {
++		codec = coda_find_codec(ctx->dev, V4L2_PIX_FMT_YUV420,
++					f->pixel_format);
+ 	}
+-	if (i == CODA_MAX_FORMATS)
++	if (!codec)
++		return -EINVAL;
++
++	if (f->width < MIN_W || f->width > codec->max_w ||
++	    f->height < MIN_H || f->height > codec->max_h)
+ 		return -EINVAL;
+ 
+ 	f->type = V4L2_FRMIVAL_TYPE_CONTINUOUS;
 -- 
 2.35.1
 
