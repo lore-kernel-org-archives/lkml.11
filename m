@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1253C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:31:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72EE4C4167D
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:31:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241901AbiE3Oak (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:30:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42948 "EHLO
+        id S242517AbiE3ObP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:31:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241684AbiE3OR5 (ORCPT
+        with ESMTP id S241906AbiE3OSK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:17:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BAEC77F0B;
-        Mon, 30 May 2022 06:47:55 -0700 (PDT)
+        Mon, 30 May 2022 10:18:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 038179CCB4;
+        Mon, 30 May 2022 06:48:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 556B5B80DE2;
-        Mon, 30 May 2022 13:47:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95B34C385B8;
-        Mon, 30 May 2022 13:47:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1E173B80DAA;
+        Mon, 30 May 2022 13:48:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA643C3411C;
+        Mon, 30 May 2022 13:48:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918472;
-        bh=Lk+qwOUG5tyMc0NNzqaOUNC1fExdrzPaXeYudF92OEc=;
+        s=k20201202; t=1653918504;
+        bh=D52O2FRzILz9zMg8zYdxD18w6tiNZOOjolfGlqsqKWE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ca1qr/xKn7MIWo1KCiSvRe1UTFFo37YNFCFhvLX2xIY5zsYT2X0xlI1FqoqeO6+dd
-         SNjUMFfFeecWc750W1LLFb6ecvHH1OBf7sauQdKjKQvSzgkEb67MeW6xeiFU1wchzo
-         CmpnK8LS6GpWBvOx26Ig7Xt9TnHFfvqB6IOV8hd6Zn5t4Ef4rdZVxuC0Lozw9n55gF
-         pXxQWWxV30Cf1feELlO71kGBoYD9ETNkKFnudYa78/2c+sfR5ErW7IqCQnpgZnHhQL
-         2B22MbbVwBUtFjUdihUsMjS57cdq2/tNmtox+isUlgYdUkLMoZamheLe+1b274CPL2
-         ZrLUr6eN12E5g==
+        b=apPL99rlBMcvTIYP9yrHyjGDYRgwpGyRbp+O92sdRWKP5JKRr69DuBfzPwkhtEutQ
+         ruOWeE2HDvmcsxOJUiVAaPpTpK0UPLcJXlMRaFcxIWuxOEwuk4Em+TmHn+MXqe2hmu
+         8OLnjXnSIzZp3yJm9W6Lt0BwUj5yMwEO3P+RdHwoI3ZqZQt9ZOJWgrXJtFY6nklkdT
+         IrszjMpuquS8/pRhhvjwaiD7xvrTQNYHAY7Rh5nmSH/7XP4rAeBv93vNYIKrvahiXg
+         LYQx138qVxBm2iT9uCvGuerw852G6SyLpCjMatpNjq4Weh1YXHbpNfKUqfieIGAich
+         22zFcS5Eyj2PQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Samuel Holland <samuel@sholland.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Sasha Levin <sashal@kernel.org>, mripard@kernel.org,
-        wens@csie.org, airlied@linux.ie, daniel@ffwll.ch,
-        dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.4 20/55] drm/sun4i: Add support for D1 TCONs
-Date:   Mon, 30 May 2022 09:46:26 -0400
-Message-Id: <20220530134701.1935933-20-sashal@kernel.org>
+Cc:     Alice Wong <shiwei.wong@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        Hawking.Zhang@amd.com, Likun.Gao@amd.com, john.clements@amd.com,
+        candice.li@amd.com, lang.yu@amd.com, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.4 31/55] drm/amdgpu/ucode: Remove firmware load type check in amdgpu_ucode_free_bo
+Date:   Mon, 30 May 2022 09:46:37 -0400
+Message-Id: <20220530134701.1935933-31-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530134701.1935933-1-sashal@kernel.org>
 References: <20220530134701.1935933-1-sashal@kernel.org>
@@ -55,55 +55,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Samuel Holland <samuel@sholland.org>
+From: Alice Wong <shiwei.wong@amd.com>
 
-[ Upstream commit b9b52d2f4aafa2bd637ace0f24615bdad8e49f01 ]
+[ Upstream commit ab0cd4a9ae5b4679b714d8dbfedc0901fecdce9f ]
 
-D1 has a TCON TOP, so its quirks are similar to those for the R40 TCONs.
-While there are some register changes, the part of the TCON TV supported
-by the driver matches the R40 quirks, so that quirks structure can be
-reused. D1 has the first supported TCON LCD with a TCON TOP, so the TCON
-LCD needs a new quirks structure.
+When psp_hw_init failed, it will set the load_type to AMDGPU_FW_LOAD_DIRECT.
+During amdgpu_device_ip_fini, amdgpu_ucode_free_bo checks that load_type is
+AMDGPU_FW_LOAD_DIRECT and skips deallocating fw_buf causing memory leak.
+Remove load_type check in amdgpu_ucode_free_bo.
 
-D1's TCON LCD hardware supports LVDS; in fact it provides dual-link LVDS
-from a single TCON. However, it comes with a brand new LVDS PHY. Since
-this PHY has not been tested, leave out LVDS driver support for now.
-
-Signed-off-by: Samuel Holland <samuel@sholland.org>
-Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220424162633.12369-14-samuel@sholland.org
+Signed-off-by: Alice Wong <shiwei.wong@amd.com>
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/sun4i/sun4i_tcon.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_ucode.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/sun4i/sun4i_tcon.c b/drivers/gpu/drm/sun4i/sun4i_tcon.c
-index eb3b2350687f..9687f2b9652d 100644
---- a/drivers/gpu/drm/sun4i/sun4i_tcon.c
-+++ b/drivers/gpu/drm/sun4i/sun4i_tcon.c
-@@ -1509,6 +1509,12 @@ static const struct sun4i_tcon_quirks sun9i_a80_tcon_tv_quirks = {
- 	.needs_edp_reset = true,
- };
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_ucode.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_ucode.c
+index 3a6115ad0196..f3250db7f9c2 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_ucode.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_ucode.c
+@@ -568,8 +568,7 @@ int amdgpu_ucode_create_bo(struct amdgpu_device *adev)
  
-+static const struct sun4i_tcon_quirks sun20i_d1_lcd_quirks = {
-+	.has_channel_0		= true,
-+	.dclk_min_div		= 1,
-+	.set_mux		= sun8i_r40_tcon_tv_set_mux,
-+};
-+
- /* sun4i_drv uses this list to check if a device node is a TCON */
- const struct of_device_id sun4i_tcon_of_table[] = {
- 	{ .compatible = "allwinner,sun4i-a10-tcon", .data = &sun4i_a10_quirks },
-@@ -1526,6 +1532,8 @@ const struct of_device_id sun4i_tcon_of_table[] = {
- 	{ .compatible = "allwinner,sun8i-v3s-tcon", .data = &sun8i_v3s_quirks },
- 	{ .compatible = "allwinner,sun9i-a80-tcon-lcd", .data = &sun9i_a80_tcon_lcd_quirks },
- 	{ .compatible = "allwinner,sun9i-a80-tcon-tv", .data = &sun9i_a80_tcon_tv_quirks },
-+	{ .compatible = "allwinner,sun20i-d1-tcon-lcd", .data = &sun20i_d1_lcd_quirks },
-+	{ .compatible = "allwinner,sun20i-d1-tcon-tv", .data = &sun8i_r40_tv_quirks },
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, sun4i_tcon_of_table);
+ void amdgpu_ucode_free_bo(struct amdgpu_device *adev)
+ {
+-	if (adev->firmware.load_type != AMDGPU_FW_LOAD_DIRECT)
+-		amdgpu_bo_free_kernel(&adev->firmware.fw_buf,
++	amdgpu_bo_free_kernel(&adev->firmware.fw_buf,
+ 		&adev->firmware.fw_buf_mc,
+ 		&adev->firmware.fw_buf_ptr);
+ }
 -- 
 2.35.1
 
