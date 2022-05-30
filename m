@@ -2,71 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A69FEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 08:08:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FC99C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 08:09:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232012AbiE3IIy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 04:08:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60530 "EHLO
+        id S232527AbiE3IJB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 04:09:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229839AbiE3IIx (ORCPT
+        with ESMTP id S232230AbiE3II7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 04:08:53 -0400
-Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9EF0644F7
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 01:08:48 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R801e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=hsiangkao@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VEkLGFr_1653898123;
-Received: from B-P7TQMD6M-0146.local(mailfrom:hsiangkao@linux.alibaba.com fp:SMTPD_---0VEkLGFr_1653898123)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Mon, 30 May 2022 16:08:45 +0800
-Date:   Mon, 30 May 2022 16:08:43 +0800
-From:   Gao Xiang <hsiangkao@linux.alibaba.com>
-To:     Weizhao Ouyang <o451686892@gmail.com>
-Cc:     Gao Xiang <xiang@kernel.org>, Chao Yu <chao@kernel.org>,
-        Yue Hu <huyue2@coolpad.com>, linux-erofs@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] erofs: fix 'backmost' member of
- z_erofs_decompress_frontend
-Message-ID: <YpR7izQ0H0DWaHzA@B-P7TQMD6M-0146.local>
-References: <20220530075114.918874-1-o451686892@gmail.com>
+        Mon, 30 May 2022 04:08:59 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DEB2644F7
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 01:08:54 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id q12-20020a17090a304c00b001e2d4fb0eb4so3215147pjl.4
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 01:08:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ktUZ7Jayji8WcqStkjl0qUGO7i4FHkmNzMUAUMXluTg=;
+        b=KuTdqisqGYSWAu9SpxFOYy6qtFuiRMNGCggpOV+CbFXI4ZSeUon0O8i81XddsFFMJU
+         F/nhFSVsFdL6K6S5zZDT2gWQiyi2uQfS4h7PGa2eyEbK46NkZ2eRVKw5vGz+TOIi7Fde
+         I7N3j6JrIzC03AKojxk+3NXLtx0hMP4kIsAJwvSsF69vwDC1gx7jZEkTDoFqR6AsWJID
+         wyXYMeqB/ZlYcce12VPnEu/TV61dqeQj+bEwmGEiREeznbKsp7JEx5otKBToddC/Jdz1
+         keQ0DMZzMJDvefRKjIhL+UwV07DWFn/06fmGfLTactx2RV2muBxrIsfTqQi5WsiH0i7n
+         2O/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ktUZ7Jayji8WcqStkjl0qUGO7i4FHkmNzMUAUMXluTg=;
+        b=K3dLqK+6SBciJ/juxsFOOZwnwN1z9bbMO7g74eLmqileOWHanhoYwivREjUsnf5nco
+         cv8rxvGE+8clecLR7FtrwbuP2PUo1WFa/+iFofEovOjsghTVMCHGS8GSsWmliFSxMgmV
+         psw/v0TiZo7YVC5F4Zu6RS7DFk3hUHTnVimeLWJYU6QO35G9hJaMOJHhEIlLPNQCcqKP
+         leMHXSqe7+I9rw/sYHhMrTFIX1x2H74t55HubF38cFzzhwFnlYfPHcRvpOcpa1SU1bkJ
+         CMRoPmZuSy2PhrgxJm61WccdK7I6jOy+hbLvLgh+krImRdGjqQfBiiAfvTE3qsnohnpb
+         BP1Q==
+X-Gm-Message-State: AOAM531Uln4TaVn1S7U/n/AhkYcjs84cO6CXywB2C+QQKS9PMiuq9E3v
+        uxUG3COkEkh3uIk8gDnEsEeAt1FF/K71
+X-Google-Smtp-Source: ABdhPJzpye3BIRyeRcfZKMgh/enut/RYAKyDccJEWHc1q3Au19MJ6OtkkdKME793c6nbw7YIkrGV7g==
+X-Received: by 2002:a17:902:f543:b0:161:9f00:7b2c with SMTP id h3-20020a170902f54300b001619f007b2cmr55193063plf.1.1653898133768;
+        Mon, 30 May 2022 01:08:53 -0700 (PDT)
+Received: from localhost.localdomain ([220.158.159.114])
+        by smtp.gmail.com with ESMTPSA id io17-20020a17090312d100b0015e8d4eb285sm8450345plb.207.2022.05.30.01.08.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 May 2022 01:08:53 -0700 (PDT)
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     tglx@linutronix.de, maz@kernel.org, bjorn.andersson@linaro.org
+Cc:     linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Subject: [PATCH 0/3] Check for IRQ trigger type mismatch in __setup_irq()
+Date:   Mon, 30 May 2022 13:38:39 +0530
+Message-Id: <20220530080842.37024-1-manivannan.sadhasivam@linaro.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220530075114.918874-1-o451686892@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 30, 2022 at 03:51:14PM +0800, Weizhao Ouyang wrote:
-> Initialize 'backmost' to true in DECOMPRESS_FRONTEND_INIT.
-> 
-> Fixes: 5c6dcc57e2e5 ("erofs: get rid of `struct z_erofs_collector'")
-> Signed-off-by: Weizhao Ouyang <o451686892@gmail.com>
+Hi,
 
+This series adds a check for detecting the IRQ trigger type mismatch between the
+platform (DT) and a device driver. Currently, if there is a mismatch, there
+is no error thrown but the driver requested trigger gets set silently. Then
+during the second time probe of a driver (due to probe defer or rmmod/insmod),
+platform_get_irq() throws a warning similar to below and fails.
 
-Many thanks for the in-time catching! ;)
+irq: type mismatch, failed to map hwirq-9 for interrupt-controller@b220000!
 
-Reviewed-by: Gao Xiang <hsiangkao@linux.alibaba.com>
+But ideally, during the first time itself, request_irq() should've failed as
+the flag mismatch is a hard error. So let's add a check in __setup_irq(), such
+that the request_irq() would fail if a mismatch has been detected.
+
+NOTE: This might break platforms those has the flag set incorrectly in DT. One
+of such case is SDX55, where the UART node has the trigger set incorrectly.
+I fixed it in a couple of places I happen to know. But there could be many...
 
 Thanks,
-Gao Xiang
+Mani
 
-> ---
->  fs/erofs/zdata.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/fs/erofs/zdata.c b/fs/erofs/zdata.c
-> index 95efc127b2ba..94d2cb970644 100644
-> --- a/fs/erofs/zdata.c
-> +++ b/fs/erofs/zdata.c
-> @@ -214,7 +214,7 @@ struct z_erofs_decompress_frontend {
->  
->  #define DECOMPRESS_FRONTEND_INIT(__i) { \
->  	.inode = __i, .owned_head = Z_EROFS_PCLUSTER_TAIL, \
-> -	.mode = COLLECT_PRIMARY_FOLLOWED }
-> +	.mode = COLLECT_PRIMARY_FOLLOWED, .backmost = true }
->  
->  static struct page *z_pagemap_global[Z_EROFS_VMAP_GLOBAL_PAGES];
->  static DEFINE_MUTEX(z_pagemap_global_lock);
-> -- 
-> 2.34.1
+Manivannan Sadhasivam (3):
+  ARM: dts: qcom: sdx55: Fix the IRQ trigger type for UART
+  arm64: dts: qcom: sm8450: Fix the IRQ trigger type for remoteproc
+    nodes
+  genirq: Check for trigger type mismatch in __setup_irq()
+
+ arch/arm/boot/dts/qcom-sdx55.dtsi    |  2 +-
+ arch/arm64/boot/dts/qcom/sm8450.dtsi |  8 ++++----
+ kernel/irq/manage.c                  | 14 ++++++++++++--
+ 3 files changed, 17 insertions(+), 7 deletions(-)
+
+-- 
+2.25.1
+
