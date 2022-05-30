@@ -2,49 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7D12C4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:32:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBC83C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:32:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239229AbiE3OcA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:32:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34748 "EHLO
+        id S241049AbiE3OcD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:32:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229676AbiE3OOc (ORCPT
+        with ESMTP id S240829AbiE3OQa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:14:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E440EAB9B;
-        Mon, 30 May 2022 06:43:15 -0700 (PDT)
+        Mon, 30 May 2022 10:16:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 048319A981;
+        Mon, 30 May 2022 06:44:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DC17060F32;
-        Mon, 30 May 2022 13:43:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53650C3411A;
-        Mon, 30 May 2022 13:43:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C0EDBB80DC2;
+        Mon, 30 May 2022 13:43:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CFEBC3411A;
+        Mon, 30 May 2022 13:43:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918192;
-        bh=dRHnLty4MtAIw+i5ImmnnIcgHxwQeHJnYQbo8DkdFr4=;
+        s=k20201202; t=1653918233;
+        bh=wVJOIouwpjt0F5qJWzZespttPe32/0Khj9xgQVTw0xc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WbFrmUR+3EK2OMt0V4X7S7/lAHtqOEWNx5YJ/IX+h9CWteQI4HfbolCred7s8P9fD
-         +vhncctS0zQ8CNOGBS4WYEBDaAFWd0vfAlCnKIgSiKBtDQIlksHIKEQwq8KJLWkVlv
-         qEHxAyF87KDLSyYAk+E74t6W8IMkQCvRH4ywMZP5rrX/APe5bBSxG5+oRhzchq+rmz
-         p75X0gClg9yJKKB3FeDthjEuytKxvF4Dd1i5gf4Hx2RXpTuNcZcutgwJKybIXSSSFC
-         61F4/l3UmkUjwV61a4gPBWI6sbjMLpUgzAgPb/FMojYi/jSViXOrOoLgtpQ3+FLrD6
-         pngahsbDfLrdQ==
+        b=BS3DiaP3r391FBs8+r977u+1GHGVHBrKAWTHa/GMZjIY8hN4AQ5an3mBHuokpQ+Fm
+         F7NNtQLcI+L+CrC4peLtO+y+/HTUDKA+1OYo76ffJ9SzdxKmVg1PFfUl/UwRrrGhNV
+         XS127yuQc7h7OlOluBzuITZ8YTIxc5JY0dYWQSGMBs47lYH56q/oJ1VWlooNMzXfqx
+         gtb91UWdJjIiD7YBdz1scSomzJMuFAqJb3Fy299PqpvYuIYvUJFgyLk6XFrqKappTc
+         e/BgfyQtLgzYFqcnzCq9tSPiraKrD/SoFbcfPSG7RnduFANoVxwjlmV8Pm+TrCY0ML
+         VTzNMur9muy6w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sathishkumar S <sathishkumar.sundararaju@amd.com>,
-        Lijo Lazar <lijo.lazar@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, evan.quan@amd.com,
-        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
-        daniel@ffwll.ch, ray.huang@amd.com, Xiaomeng.Hou@amd.com,
-        aaron.liu@amd.com, kevin1.wang@amd.com, mario.limonciello@amd.com,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.15 089/109] drm/amd/pm: update smartshift powerboost calc for smu13
-Date:   Mon, 30 May 2022 09:38:05 -0400
-Message-Id: <20220530133825.1933431-89-sashal@kernel.org>
+Cc:     David Howells <dhowells@redhat.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 105/109] afs: Adjust ACK interpretation to try and cope with NAT
+Date:   Mon, 30 May 2022 09:38:21 -0400
+Message-Id: <20220530133825.1933431-105-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
 References: <20220530133825.1933431-1-sashal@kernel.org>
@@ -56,113 +54,153 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sathishkumar S <sathishkumar.sundararaju@amd.com>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit cdf4c8ec39872a61a58d62f19b4db80f0f7bc586 ]
+[ Upstream commit adc9613ff66c26ebaff9814973181ac178beb90b ]
 
-smartshift apu and dgpu power boost are reported as percentage
-with respect to their power limits. adjust the units of power before
-calculating the percentage of boost.
+If a client's address changes, say if it is NAT'd, this can disrupt an in
+progress operation.  For most operations, this is not much of a problem,
+but StoreData can be different as some servers modify the target file as
+the data comes in, so if a store request is disrupted, the file can get
+corrupted on the server.
 
-Signed-off-by: Sathishkumar S <sathishkumar.sundararaju@amd.com>
-Reviewed-by: Lijo Lazar <lijo.lazar@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+The problem is that the server doesn't recognise packets that come after
+the change of address as belonging to the original client and will bounce
+them, either by sending an OUT_OF_SEQUENCE ACK to the apparent new call if
+the packet number falls within the initial sequence number window of a call
+or by sending an EXCEEDS_WINDOW ACK if it falls outside and then aborting
+it.  In both cases, firstPacket will be 1 and previousPacket will be 0 in
+the ACK information.
+
+Fix this by the following means:
+
+ (1) If a client call receives an EXCEEDS_WINDOW ACK with firstPacket as 1
+     and previousPacket as 0, assume this indicates that the server saw the
+     incoming packets from a different peer and thus as a different call.
+     Fail the call with error -ENETRESET.
+
+ (2) Also fail the call if a similar OUT_OF_SEQUENCE ACK occurs if the
+     first packet has been hard-ACK'd.  If it hasn't been hard-ACK'd, the
+     ACK packet will cause it to get retransmitted, so the call will just
+     be repeated.
+
+ (3) Make afs_select_fileserver() treat -ENETRESET as a straight fail of
+     the operation.
+
+ (4) Prioritise the error code over things like -ECONNRESET as the server
+     did actually respond.
+
+ (5) Make writeback treat -ENETRESET as a retryable error and make it
+     redirty all the pages involved in a write so that the VM will retry.
+
+Note that there is still a circumstance that I can't easily deal with: if
+the operation is fully received and processed by the server, but the reply
+is lost due to address change.  There's no way to know if the op happened.
+We can examine the server, but a conflicting change could have been made by
+a third party - and we can't tell the difference.  In such a case, a
+message like:
+
+    kAFS: vnode modified {100058:146266} b7->b8 YFS.StoreData64 (op=2646a)
+
+will be logged to dmesg on the next op to touch the file and the client
+will reset the inode state, including invalidating clean parts of the
+pagecache.
+
+Reported-by: Marc Dionne <marc.dionne@auristor.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: linux-afs@lists.infradead.org
+Link: http://lists.infradead.org/pipermail/linux-afs/2021-December/004811.html # v1
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c  | 62 ++++++++++++++-----
- 1 file changed, 46 insertions(+), 16 deletions(-)
+ fs/afs/misc.c     |  5 ++++-
+ fs/afs/rotate.c   |  4 ++++
+ fs/afs/write.c    |  1 +
+ net/rxrpc/input.c | 27 +++++++++++++++++++++++++++
+ 4 files changed, 36 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c
-index 0e1a843608e4..33bd5430c6de 100644
---- a/drivers/gpu/drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c
-+++ b/drivers/gpu/drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c
-@@ -305,6 +305,42 @@ static int yellow_carp_mode2_reset(struct smu_context *smu)
- 	return yellow_carp_mode_reset(smu, SMU_RESET_MODE_2);
+diff --git a/fs/afs/misc.c b/fs/afs/misc.c
+index 1d1a8debe472..933e67fcdab1 100644
+--- a/fs/afs/misc.c
++++ b/fs/afs/misc.c
+@@ -163,8 +163,11 @@ void afs_prioritise_error(struct afs_error *e, int error, u32 abort_code)
+ 		return;
+ 
+ 	case -ECONNABORTED:
++		error = afs_abort_to_error(abort_code);
++		fallthrough;
++	case -ENETRESET: /* Responded, but we seem to have changed address */
+ 		e->responded = true;
+-		e->error = afs_abort_to_error(abort_code);
++		e->error = error;
+ 		return;
+ 	}
  }
+diff --git a/fs/afs/rotate.c b/fs/afs/rotate.c
+index 79e1a5f6701b..a840c3588ebb 100644
+--- a/fs/afs/rotate.c
++++ b/fs/afs/rotate.c
+@@ -292,6 +292,10 @@ bool afs_select_fileserver(struct afs_operation *op)
+ 		op->error = error;
+ 		goto iterate_address;
  
-+
-+static void yellow_carp_get_ss_power_percent(SmuMetrics_t *metrics,
-+					uint32_t *apu_percent, uint32_t *dgpu_percent)
-+{
-+	uint32_t apu_boost = 0;
-+	uint32_t dgpu_boost = 0;
-+	uint16_t apu_limit = 0;
-+	uint16_t dgpu_limit = 0;
-+	uint16_t apu_power = 0;
-+	uint16_t dgpu_power = 0;
-+
-+	/* APU and dGPU power values are reported in milli Watts
-+	 * and STAPM power limits are in Watts */
-+	apu_power = metrics->ApuPower/1000;
-+	apu_limit = metrics->StapmOpnLimit;
-+	if (apu_power > apu_limit && apu_limit != 0)
-+		apu_boost =  ((apu_power - apu_limit) * 100) / apu_limit;
-+	apu_boost = (apu_boost > 100) ? 100 : apu_boost;
-+
-+	dgpu_power = metrics->dGpuPower/1000;
-+	if (metrics->StapmCurrentLimit > metrics->StapmOpnLimit)
-+		dgpu_limit = metrics->StapmCurrentLimit - metrics->StapmOpnLimit;
-+	if (dgpu_power > dgpu_limit && dgpu_limit != 0)
-+		dgpu_boost = ((dgpu_power - dgpu_limit) * 100) / dgpu_limit;
-+	dgpu_boost = (dgpu_boost > 100) ? 100 : dgpu_boost;
-+
-+	if (dgpu_boost >= apu_boost)
-+		apu_boost = 0;
-+	else
-+		dgpu_boost = 0;
-+
-+	*apu_percent = apu_boost;
-+	*dgpu_percent = dgpu_boost;
-+
-+}
-+
- static int yellow_carp_get_smu_metrics_data(struct smu_context *smu,
- 							MetricsMember_t member,
- 							uint32_t *value)
-@@ -313,6 +349,8 @@ static int yellow_carp_get_smu_metrics_data(struct smu_context *smu,
- 
- 	SmuMetrics_t *metrics = (SmuMetrics_t *)smu_table->metrics_table;
- 	int ret = 0;
-+	uint32_t apu_percent = 0;
-+	uint32_t dgpu_percent = 0;
- 
- 	mutex_lock(&smu->metrics_lock);
- 
-@@ -365,26 +403,18 @@ static int yellow_carp_get_smu_metrics_data(struct smu_context *smu,
- 		*value = metrics->Voltage[1];
++	case -ENETRESET:
++		pr_warn("kAFS: Peer reset %s (op=%x)\n",
++			op->type ? op->type->name : "???", op->debug_id);
++		fallthrough;
+ 	case -ECONNRESET:
+ 		_debug("call reset");
+ 		op->error = error;
+diff --git a/fs/afs/write.c b/fs/afs/write.c
+index f24370f5c774..a75c4742062a 100644
+--- a/fs/afs/write.c
++++ b/fs/afs/write.c
+@@ -626,6 +626,7 @@ static ssize_t afs_write_back_from_locked_page(struct address_space *mapping,
+ 	case -EKEYEXPIRED:
+ 	case -EKEYREJECTED:
+ 	case -EKEYREVOKED:
++	case -ENETRESET:
+ 		afs_redirty_pages(wbc, mapping, start, len);
+ 		mapping_set_error(mapping, ret);
  		break;
- 	case METRICS_SS_APU_SHARE:
--		/* return the percentage of APU power with respect to APU's power limit.
--		 * percentage is reported, this isn't boost value. Smartshift power
--		 * boost/shift is only when the percentage is more than 100.
-+		/* return the percentage of APU power boost
-+		 * with respect to APU's power limit.
- 		 */
--		if (metrics->StapmOpnLimit > 0)
--			*value =  (metrics->ApuPower * 100) / metrics->StapmOpnLimit;
--		else
--			*value = 0;
-+		yellow_carp_get_ss_power_percent(metrics, &apu_percent, &dgpu_percent);
-+		*value = apu_percent;
- 		break;
- 	case METRICS_SS_DGPU_SHARE:
--		/* return the percentage of dGPU power with respect to dGPU's power limit.
--		 * percentage is reported, this isn't boost value. Smartshift power
--		 * boost/shift is only when the percentage is more than 100.
-+		/* return the percentage of dGPU power boost
-+		 * with respect to dGPU's power limit.
- 		 */
--		if ((metrics->dGpuPower > 0) &&
--		    (metrics->StapmCurrentLimit > metrics->StapmOpnLimit))
--			*value = (metrics->dGpuPower * 100) /
--				  (metrics->StapmCurrentLimit - metrics->StapmOpnLimit);
--		else
--			*value = 0;
-+		yellow_carp_get_ss_power_percent(metrics, &apu_percent, &dgpu_percent);
-+		*value = dgpu_percent;
- 		break;
- 	default:
- 		*value = UINT_MAX;
+diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
+index dc201363f2c4..67d3eba60dc7 100644
+--- a/net/rxrpc/input.c
++++ b/net/rxrpc/input.c
+@@ -903,6 +903,33 @@ static void rxrpc_input_ack(struct rxrpc_call *call, struct sk_buff *skb)
+ 				  rxrpc_propose_ack_respond_to_ack);
+ 	}
+ 
++	/* If we get an EXCEEDS_WINDOW ACK from the server, it probably
++	 * indicates that the client address changed due to NAT.  The server
++	 * lost the call because it switched to a different peer.
++	 */
++	if (unlikely(buf.ack.reason == RXRPC_ACK_EXCEEDS_WINDOW) &&
++	    first_soft_ack == 1 &&
++	    prev_pkt == 0 &&
++	    rxrpc_is_client_call(call)) {
++		rxrpc_set_call_completion(call, RXRPC_CALL_REMOTELY_ABORTED,
++					  0, -ENETRESET);
++		return;
++	}
++
++	/* If we get an OUT_OF_SEQUENCE ACK from the server, that can also
++	 * indicate a change of address.  However, we can retransmit the call
++	 * if we still have it buffered to the beginning.
++	 */
++	if (unlikely(buf.ack.reason == RXRPC_ACK_OUT_OF_SEQUENCE) &&
++	    first_soft_ack == 1 &&
++	    prev_pkt == 0 &&
++	    call->tx_hard_ack == 0 &&
++	    rxrpc_is_client_call(call)) {
++		rxrpc_set_call_completion(call, RXRPC_CALL_REMOTELY_ABORTED,
++					  0, -ENETRESET);
++		return;
++	}
++
+ 	/* Discard any out-of-order or duplicate ACKs (outside lock). */
+ 	if (!rxrpc_is_ack_valid(call, first_soft_ack, prev_pkt)) {
+ 		trace_rxrpc_rx_discard_ack(call->debug_id, ack_serial,
 -- 
 2.35.1
 
