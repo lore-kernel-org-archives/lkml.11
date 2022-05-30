@@ -2,48 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27BA0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:53:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 345A5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:53:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237929AbiE3Oxa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:53:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42906 "EHLO
+        id S240463AbiE3Oxj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:53:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238504AbiE3O2d (ORCPT
+        with ESMTP id S242771AbiE3Obi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:28:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1096337BEE;
-        Mon, 30 May 2022 06:51:40 -0700 (PDT)
+        Mon, 30 May 2022 10:31:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F9E8131F27;
+        Mon, 30 May 2022 06:53:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9BD87B80ABD;
-        Mon, 30 May 2022 13:51:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83BFCC36AE5;
-        Mon, 30 May 2022 13:51:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5748B6102C;
+        Mon, 30 May 2022 13:53:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC737C385B8;
+        Mon, 30 May 2022 13:53:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918697;
-        bh=4aS/8hYxzSt4H7hZdqXY+bmP+Vk22zeCBsIQIb3iUIU=;
+        s=k20201202; t=1653918794;
+        bh=nenEibBJQkf8B+U53841xOeYfUma/aYeU1WO7LivkSI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dCnTyf2m6jk76Nlam3JE8NmdbdnVN7yEphiV+YhoMiB5ie9WgYIAaYA5J98ZoaZVv
-         WAp8uEcMUO1aOkdeHkOzvItWUhr8w3Wm6amnoNnsRYpsG3rIuR7Sw3qmCviyEMw9TS
-         M4krruhiuQpiwoK3Gz5vwqxltjhmwEnWjUqK0AUNCclFZnqA5xxlWSt3hRSLrz4E4i
-         S1gDM/2hhVtGXuJNpjSW/CLQyiB75ALiqTJJNJDjr1dTKxaabSxuDj0YsdfgYM85ZT
-         vORXYbxEoiw777LW9x6HA26CbKO1Ns2czFlR5hqXEB3CVPBaRLl2ChPVcw+92iDkPT
-         1TI+Bl24BssEg==
+        b=jxGBEE296v4VVyNLLPcr4MiotoS4X4i9oQnMIuDvs/zpL8WreOQZGqapXovmbVkrr
+         rhRL7va1NUpAxWnj5YbLeftppS8BWuolD8Duk6chojVckfJMmJcUlnso0kLVvKTTGm
+         wzUUSdrldRwv4+46xeUPNOtWt3o5aG7g7Vkx6nWGiumyNtur24suBnoMlX8c1JYXj8
+         +5Fijch7CGcYD1iIueOhj/qQFUYI63WR2uFkhoDtwo3RBT7QbqjKOPKpjpTSxoxsMy
+         FmWcznR5mbFg9Kg2Hpw8wnpCW7E7/0W6rAq7mKJg/UomQa8THyhBaPcSs00LfkOje2
+         e3eTJvMbmNunw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mark Brown <broonie@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
-        alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 4.14 16/29] ASoC: dapm: Don't fold register value changes into notifications
-Date:   Mon, 30 May 2022 09:50:43 -0400
-Message-Id: <20220530135057.1937286-16-sashal@kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
+        pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 24/24] eth: tg3: silence the GCC 12 array-bounds warning
+Date:   Mon, 30 May 2022 09:52:11 -0400
+Message-Id: <20220530135211.1937674-24-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220530135057.1937286-1-sashal@kernel.org>
-References: <20220530135057.1937286-1-sashal@kernel.org>
+In-Reply-To: <20220530135211.1937674-1-sashal@kernel.org>
+References: <20220530135211.1937674-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -51,49 +53,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Jakub Kicinski <kuba@kernel.org>
 
-[ Upstream commit ad685980469b9f9b99d4d6ea05f4cb8f57cb2234 ]
+[ Upstream commit 9dec850fd7c210a04b4707df8e6c95bfafdd6a4b ]
 
-DAPM tracks and reports the value presented to the user from DAPM controls
-separately to the register value, these may diverge during initialisation
-or when an autodisable control is in use.
+GCC 12 currently generates a rather inconsistent warning:
 
-When writing DAPM controls we currently report that a change has occurred
-if either the DAPM value or the value stored in the register has changed,
-meaning that if the two are out of sync we may appear to report a spurious
-event to userspace. Since we use this folded in value for nothing other
-than the value reported to userspace simply drop the folding in of the
-register change.
+drivers/net/ethernet/broadcom/tg3.c:17795:51: warning: array subscript 5 is above array bounds of ‘struct tg3_napi[5]’ [-Warray-bounds]
+17795 |                 struct tg3_napi *tnapi = &tp->napi[i];
+      |                                           ~~~~~~~~^~~
 
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Link: https://lore.kernel.org/r/20220428161833.3690050-1-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+i is guaranteed < tp->irq_max which in turn is either 1 or 5.
+There are more loops like this one in the driver, but strangely
+GCC 12 dislikes only this single one.
+
+Silence this silliness for now.
+
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/soc-dapm.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/net/ethernet/broadcom/Makefile | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/sound/soc/soc-dapm.c b/sound/soc/soc-dapm.c
-index dd3053c243c1..320d262c16c9 100644
---- a/sound/soc/soc-dapm.c
-+++ b/sound/soc/soc-dapm.c
-@@ -3282,7 +3282,6 @@ int snd_soc_dapm_put_volsw(struct snd_kcontrol *kcontrol,
- 			update.val = val;
- 			card->update = &update;
- 		}
--		change |= reg_change;
- 
- 		ret = soc_dapm_mixer_update_power(card, kcontrol, connect,
- 						  rconnect);
-@@ -3388,7 +3387,6 @@ int snd_soc_dapm_put_enum_double(struct snd_kcontrol *kcontrol,
- 			update.val = val;
- 			card->update = &update;
- 		}
--		change |= reg_change;
- 
- 		ret = soc_dapm_mux_update_power(card, kcontrol, item[0], e);
- 
+diff --git a/drivers/net/ethernet/broadcom/Makefile b/drivers/net/ethernet/broadcom/Makefile
+index 79f2372c66ec..4211c6cd6b35 100644
+--- a/drivers/net/ethernet/broadcom/Makefile
++++ b/drivers/net/ethernet/broadcom/Makefile
+@@ -15,3 +15,8 @@ obj-$(CONFIG_BGMAC_BCMA) += bgmac-bcma.o bgmac-bcma-mdio.o
+ obj-$(CONFIG_BGMAC_PLATFORM) += bgmac-platform.o
+ obj-$(CONFIG_SYSTEMPORT) += bcmsysport.o
+ obj-$(CONFIG_BNXT) += bnxt/
++
++# FIXME: temporarily silence -Warray-bounds on non W=1+ builds
++ifndef KBUILD_EXTRA_WARN
++CFLAGS_tg3.o += -Wno-array-bounds
++endif
 -- 
 2.35.1
 
