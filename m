@@ -2,93 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54213C3A59F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C73EC3A59E
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:03:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240027AbiE3ODQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:03:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44386 "EHLO
+        id S240001AbiE3ODJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:03:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239244AbiE3N4J (ORCPT
+        with ESMTP id S238992AbiE3Nzb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:56:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF581954BE;
-        Mon, 30 May 2022 06:38:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7138BB80D84;
-        Mon, 30 May 2022 13:38:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2ECC1C3411A;
-        Mon, 30 May 2022 13:38:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917896;
-        bh=sm8MbBlNG5K6X9hLCmzFjLBYl5czMKscsEUm5HoPOMk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iegigauerrH4Nsqv9CwW1gI1rY2ABaj8Ke2+BY1y96b5xt0JqCOLQSeIj4zXxS3Nx
-         G2GAueQQ5Ytj/ey99CFqbRoIvcQvkDClGn0sKe2D7y1FW0ueUpagyB+uzKq2wQorEC
-         bag0u6b3fCB5EkhsnYLRyjZW10LyAjfBGbKLzB+ZI7W54SzU2TB5o9sj/gc3Ngijj5
-         6OczrtPfrB1PMql4tuU/AtiVsWBPpNFQuWRgkiV1PEFQu3XmR8pPwWrnVVwNFwPR+s
-         bz8+S0HBC4t/2GhMA/PdkUm1nmKwOZf9C3XIiS4l6+gxRDqKeRLjljPbnVe+N5lbWe
-         yKALT03mhXhVg==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
-        pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 132/135] eth: tg3: silence the GCC 12 array-bounds warning
-Date:   Mon, 30 May 2022 09:31:30 -0400
-Message-Id: <20220530133133.1931716-132-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
-References: <20220530133133.1931716-1-sashal@kernel.org>
+        Mon, 30 May 2022 09:55:31 -0400
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 759B0954A4;
+        Mon, 30 May 2022 06:38:03 -0700 (PDT)
+Received: by mail-wm1-f54.google.com with SMTP id z17so6393374wmf.1;
+        Mon, 30 May 2022 06:38:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ytl48+gf/9+wU974bliYN68rRr9GC5CbXhv9Mqbfs9Y=;
+        b=7xDOwNr7xvdjI0Dmws9lD6EJBin+IlsgKVOFb/eeKlvlrAEem/DC489NQv3O1eN5IY
+         YrkTkPVoiFDdG1yrEMRzbwhisC7OLn3D6vHP+chtIDK1DdsV2sRIcTpwhT/yzr1v9Wt0
+         3hcLOaH62FARz/TWyecrSfnSvqPC9zSyNnnCLP6ePNchVc34flzCBUPnLSmQIw2R8fla
+         9nil4FKSMoUTUwX8fI1c34j8s7jKSM5cfwW3r3wqi/Ae2lznuYcpHMim6EbPDneVPkSC
+         fpem+yz9XO/p/tVfxMdiwyleCUNU4BcdDmkI6KD4m/5dpjbI0VYNM6+0TSqZHrkIn9+a
+         qfqQ==
+X-Gm-Message-State: AOAM532+VTZgxuMy+Kju2ixwKx4i55jH5Dg2eVW/1Qh0/7/4NY8UITO9
+        D25rzo5ySS251OCmy2sgGzw=
+X-Google-Smtp-Source: ABdhPJyoFBGlSKlV74jeFHZeQEIiKD71BnJBLmLRXZanLlnEJT/DxNOlAxTa51VmVdIsBUKX2lv0Kg==
+X-Received: by 2002:a1c:4e19:0:b0:397:7b13:1bc7 with SMTP id g25-20020a1c4e19000000b003977b131bc7mr18980855wmh.114.1653917881735;
+        Mon, 30 May 2022 06:38:01 -0700 (PDT)
+Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
+        by smtp.gmail.com with ESMTPSA id o15-20020a5d58cf000000b0020d02ddf4d0sm8911403wrf.69.2022.05.30.06.38.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 May 2022 06:38:01 -0700 (PDT)
+Date:   Mon, 30 May 2022 13:37:59 +0000
+From:   Wei Liu <wei.liu@kernel.org>
+To:     Juergen Gross <jgross@suse.com>
+Cc:     xen-devel@lists.xenproject.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Wei Liu <wei.liu@kernel.org>,
+        Paul Durrant <paul@xen.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH] xen/netback: do some code cleanup
+Message-ID: <20220530133759.mpwhh744l7miszbp@liuwe-devbox-debian-v2>
+References: <20220530114103.20657-1-jgross@suse.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220530114103.20657-1-jgross@suse.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
+On Mon, May 30, 2022 at 01:41:03PM +0200, Juergen Gross wrote:
+> Remove some unused macros and functions, make local functions static.
+> 
+> Signed-off-by: Juergen Gross <jgross@suse.com>
 
-[ Upstream commit 9dec850fd7c210a04b4707df8e6c95bfafdd6a4b ]
-
-GCC 12 currently generates a rather inconsistent warning:
-
-drivers/net/ethernet/broadcom/tg3.c:17795:51: warning: array subscript 5 is above array bounds of ‘struct tg3_napi[5]’ [-Warray-bounds]
-17795 |                 struct tg3_napi *tnapi = &tp->napi[i];
-      |                                           ~~~~~~~~^~~
-
-i is guaranteed < tp->irq_max which in turn is either 1 or 5.
-There are more loops like this one in the driver, but strangely
-GCC 12 dislikes only this single one.
-
-Silence this silliness for now.
-
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/broadcom/Makefile | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/drivers/net/ethernet/broadcom/Makefile b/drivers/net/ethernet/broadcom/Makefile
-index 0ddfb5b5d53c..2e6c5f258a1f 100644
---- a/drivers/net/ethernet/broadcom/Makefile
-+++ b/drivers/net/ethernet/broadcom/Makefile
-@@ -17,3 +17,8 @@ obj-$(CONFIG_BGMAC_BCMA) += bgmac-bcma.o bgmac-bcma-mdio.o
- obj-$(CONFIG_BGMAC_PLATFORM) += bgmac-platform.o
- obj-$(CONFIG_SYSTEMPORT) += bcmsysport.o
- obj-$(CONFIG_BNXT) += bnxt/
-+
-+# FIXME: temporarily silence -Warray-bounds on non W=1+ builds
-+ifndef KBUILD_EXTRA_WARN
-+CFLAGS_tg3.o += -Wno-array-bounds
-+endif
--- 
-2.35.1
-
+Acked-by: Wei Liu <wei.liu@kernel.org>
