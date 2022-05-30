@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9E36C41535
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:12:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADC08C38A2B
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:12:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239602AbiE3OKB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:10:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54732 "EHLO
+        id S239856AbiE3OKJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:10:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238887AbiE3OEx (ORCPT
+        with ESMTP id S239107AbiE3OFW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:04:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00E07CE5E0;
-        Mon, 30 May 2022 06:40:47 -0700 (PDT)
+        Mon, 30 May 2022 10:05:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB88899685;
+        Mon, 30 May 2022 06:41:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9291D60F1F;
-        Mon, 30 May 2022 13:40:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 003D1C385B8;
-        Mon, 30 May 2022 13:40:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 532BE60F1F;
+        Mon, 30 May 2022 13:41:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A3FAC3411C;
+        Mon, 30 May 2022 13:41:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918047;
-        bh=8fyaHLfs66JSD8DWARG4Vmw9VaXoP4pQwZnrSrmzxME=;
+        s=k20201202; t=1653918081;
+        bh=zqKkk3ngvML06SimDRXhnKVNzO0XNOGW/eElEV6oaXU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DZbHdGMerHHxFQoZyo/oTOZxhyLmfEvBSYe3hKzNLjLlWpc89izrnA/AucNRKGzKK
-         BTkk5W8LpGolAA6QZ+ptdQ3tNN4h6BJqTIqoGkIZpxa32c2msCEHyAV7hPa7k20ht7
-         1cS11m7Y/gzoBlIR/lPcUeRA6gHle6/FfnfbcorrIkOwRYOn4FYfNjQaYD/8kDesQP
-         ly0GnzNOGKvOd8vnWPhel3/TPt+PUWJJs+GeVifbAjC4ueTRGAjNsyJh5UlRB5Jhel
-         e9PjQiuy+Uwg+z8cdffhMQHZ6DEsuWYx4yjFmyjV6o4zrOaF3PhtzY1523cbIrgI+A
-         aG020obpTNNHQ==
+        b=C3Y1N90ozFgdJEmkIQUooQmQjSHydD948ptI0UXjzOkvsIw/Smiuuodx4dpP2sZes
+         JSsMbkhUqXi5+txwblmvLFcs4eD2YR5Vy1xasHqszzoIOFcvz7gwCUGR3dw5o5FUcb
+         6cZ7IzLj3SDEAGGPOwJyE3n3gjmflEiKpCFqVXI6b51++pvaMIRYgCPeEboVcCJth2
+         JxCMHY4iQfmSSEZ9VNKEeRv7bw7v4FTNeavjQ1ZMlqmwj93uEQAQ/bj5EyVYcgCYSD
+         IAbpL0todhTU15kgDrU1jf9EDBzKOo5uoyRZmJ8cKgyj/+1C078CLYHK1t4dgVvmYK
+         IQQsGvGyEkJ4A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 041/109] scsi: ufs: Use pm_runtime_resume_and_get() instead of pm_runtime_get_sync()
-Date:   Mon, 30 May 2022 09:37:17 -0400
-Message-Id: <20220530133825.1933431-41-sashal@kernel.org>
+Cc:     Mark Bloch <mbloch@nvidia.com>, Maor Gottlieb <maorg@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 053/109] net/mlx5: fs, delete the FTE when there are no rules attached to it
+Date:   Mon, 30 May 2022 09:37:29 -0400
+Message-Id: <20220530133825.1933431-53-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
 References: <20220530133825.1933431-1-sashal@kernel.org>
@@ -53,41 +53,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Minghao Chi <chi.minghao@zte.com.cn>
+From: Mark Bloch <mbloch@nvidia.com>
 
-[ Upstream commit 75b8715e20a20bc7b4844835e4035543a2674200 ]
+[ Upstream commit 7b0c6338597613f465d131bd939a51844a00455a ]
 
-Using pm_runtime_resume_and_get() to replace pm_runtime_get_sync() and
-pm_runtime_put_noidle(). This change is just to simplify the code, no
-actual functional changes.
+When an FTE has no children is means all the rules where removed
+and the FTE can be deleted regardless of the dests_size value.
+While dests_size should be 0 when there are no children
+be extra careful not to leak memory or get firmware syndrome
+if the proper bookkeeping of dests_size wasn't done.
 
-Link: https://lore.kernel.org/r/20220420090353.2588804-1-chi.minghao@zte.com.cn
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Mark Bloch <mbloch@nvidia.com>
+Reviewed-by: Maor Gottlieb <maorg@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/ufs/ti-j721e-ufs.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/scsi/ufs/ti-j721e-ufs.c b/drivers/scsi/ufs/ti-j721e-ufs.c
-index eafe0db98d54..122d650d0810 100644
---- a/drivers/scsi/ufs/ti-j721e-ufs.c
-+++ b/drivers/scsi/ufs/ti-j721e-ufs.c
-@@ -29,11 +29,9 @@ static int ti_j721e_ufs_probe(struct platform_device *pdev)
- 		return PTR_ERR(regbase);
- 
- 	pm_runtime_enable(dev);
--	ret = pm_runtime_get_sync(dev);
--	if (ret < 0) {
--		pm_runtime_put_noidle(dev);
-+	ret = pm_runtime_resume_and_get(dev);
-+	if (ret < 0)
- 		goto disable_pm;
--	}
- 
- 	/* Select MPHY refclk frequency */
- 	clk = devm_clk_get(dev, NULL);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
+index 00834c914dc6..a197dd7ca73b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
+@@ -2031,16 +2031,16 @@ void mlx5_del_flow_rules(struct mlx5_flow_handle *handle)
+ 	down_write_ref_node(&fte->node, false);
+ 	for (i = handle->num_rules - 1; i >= 0; i--)
+ 		tree_remove_node(&handle->rule[i]->node, true);
+-	if (fte->dests_size) {
+-		if (fte->modify_mask)
+-			modify_fte(fte);
+-		up_write_ref_node(&fte->node, false);
+-	} else if (list_empty(&fte->node.children)) {
++	if (list_empty(&fte->node.children)) {
+ 		del_hw_fte(&fte->node);
+ 		/* Avoid double call to del_hw_fte */
+ 		fte->node.del_hw_func = NULL;
+ 		up_write_ref_node(&fte->node, false);
+ 		tree_put_node(&fte->node, false);
++	} else if (fte->dests_size) {
++		if (fte->modify_mask)
++			modify_fte(fte);
++		up_write_ref_node(&fte->node, false);
+ 	} else {
+ 		up_write_ref_node(&fte->node, false);
+ 	}
 -- 
 2.35.1
 
