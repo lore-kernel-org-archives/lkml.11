@@ -2,120 +2,221 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8F6BC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD83EC43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:09:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239809AbiE3OI3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:08:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60386 "EHLO
+        id S232265AbiE3OIn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:08:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239862AbiE3OCs (ORCPT
+        with ESMTP id S240022AbiE3ODP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:02:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 086FEC8BE9;
-        Mon, 30 May 2022 06:39:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8350860DD5;
-        Mon, 30 May 2022 13:39:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46B89C3411A;
-        Mon, 30 May 2022 13:39:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917984;
-        bh=w+Mx4L1UD8ofc/ecEwIzqvOnTw6oXAnw/UDczpyP7ds=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rRStDMJ42bIpbzumTtH06hFxk0VyHgFhw/Hs057yjX6Zv8xdbiT/2fdQqqaQCBbFP
-         oXZga/AMLpYH+YsmMDVu4ms0HoaoQI4jWJQAtGsZSKKK14T1YV9cySudlitXANryj0
-         CKBiRXzAljGon13E6QZgt6C+Oj4df5xPfeKzK7A185hOCf0FfPLL5wlQmnwzYfhGLs
-         gGrpY+jLr9v4oiMcK5pDRHdntA/hNsZvEwaRHT/N0zHrlr/REIqeA9yXNsGLC5GeTT
-         cNUJZMlTpDGOzETyXapvv0elEWc5D9n0nBW4FNl8JAZp3w5OIKBEgZRAlJLWzFptZt
-         tjgfgFqzmAzgQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, evan.quan@amd.com,
-        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
-        daniel@ffwll.ch, lijo.lazar@amd.com, Hawking.Zhang@amd.com,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.15 028/109] drm/amd/pm: fix double free in si_parse_power_table()
-Date:   Mon, 30 May 2022 09:37:04 -0400
-Message-Id: <20220530133825.1933431-28-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
-References: <20220530133825.1933431-1-sashal@kernel.org>
+        Mon, 30 May 2022 10:03:15 -0400
+Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EDE38AE42;
+        Mon, 30 May 2022 06:40:03 -0700 (PDT)
+Received: by mail-io1-xd2f.google.com with SMTP id a10so11336654ioe.9;
+        Mon, 30 May 2022 06:40:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gIwe3AKRbCHeJRE3dPTatS7K/6ILlXUNL6T/HNDhAhU=;
+        b=cSzwr5INM0XMJMTjfBIFqC6i5S58eV8gcJa/64rR0gDugFmRTU5nQgL16eOHpgeMFI
+         7AfIC/ykpu26A1o3tWj6uRAXJg8F8QVvcvAIxqOgTwk//2oTGuNDuWVqcGupsqpPcM6T
+         ZRAJqMTcOk2f0Pg5Sqy8051E3rZJH3I33bcAioIyj1QEd+htYi69FlxTGKOOn4GcVjjE
+         pEirF1LZJZUjhxfS+0GnGmUhc97QLgfasJMGHXk9cu2E+2pU6QcPUuPNv5BRpstZpwXX
+         9NoZsAOpE0EVU3IryTlU5mkC2xM3qI4IbFyk9WdwRkwSVZe45lL2Nx+m0vwWNHCFkswg
+         kaCg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gIwe3AKRbCHeJRE3dPTatS7K/6ILlXUNL6T/HNDhAhU=;
+        b=WYIg8OMmIYkzVHmC+9kzLY0xjObj+mPLMJOyPZo7f6F2D+rSiF26LroGFrj0aHIDRM
+         3xqEUoAn2mZwwVIb+OsePeFu6juFTmIqZ5cGYYYDThvISPG9kMq/8kt/XOTdu/drFDEt
+         WUc7jE3K7vZnz5318hodlrm/21zXVNsVSI2Xgihpa2KfyG7fpPIqpzTI6e0lH/uZwgzn
+         N2zeYyq23YkmpiUCYbKBrNhTo3s8i2EsaqZMQUPQCpTWvUIYy5p0I54k8zJQ/KksqUdJ
+         Q/FhXlPzfXtHXrOBbFilWeQGmlhrgd7bJj4bGOZoUvXiCyUnBpzzNxqAu+MDJpTAEv+2
+         vbbg==
+X-Gm-Message-State: AOAM532ZeyYkIg9otTEM8kG6LCrIzWL0+5bqv8lEB9/9DIYcCOkgnPWB
+        /cArgZe4U9pLQ4YqomFuml3pC+F88nM6PCB+No0=
+X-Google-Smtp-Source: ABdhPJynB3luYlUIXTTDca8c2gxMygZVtlz0csg40D16eodRT8Q+xqzjGbylbRXxbzD+mvxPI5WGRexbTj0PrTzr1DM=
+X-Received: by 2002:a05:6638:f89:b0:32e:89f4:e150 with SMTP id
+ h9-20020a0566380f8900b0032e89f4e150mr27799661jal.308.1653918002647; Mon, 30
+ May 2022 06:40:02 -0700 (PDT)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+References: <20220523020209.11810-1-ojeda@kernel.org> <20220523020209.11810-22-ojeda@kernel.org>
+ <CAKwvOdn+9qORm8UpDGnPXxiK7B7P_TW5CtXv1+8qkv7UvQr3hQ@mail.gmail.com>
+In-Reply-To: <CAKwvOdn+9qORm8UpDGnPXxiK7B7P_TW5CtXv1+8qkv7UvQr3hQ@mail.gmail.com>
+From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date:   Mon, 30 May 2022 15:39:51 +0200
+Message-ID: <CANiq72n2bU3LSGu-4v66nif_95EVq--z2X_F2V7JBPU8v=h8EA@mail.gmail.com>
+Subject: Re: [PATCH v7 21/25] Kbuild: add Rust support
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Miguel Ojeda <ojeda@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        rust-for-linux <rust-for-linux@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Alex Gaynor <alex.gaynor@gmail.com>,
+        Finn Behrens <me@kloenk.de>,
+        Adam Bratschi-Kaye <ark.email@gmail.com>,
+        Wedson Almeida Filho <wedsonaf@google.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sven Van Asbroeck <thesven73@gmail.com>,
+        Gary Guo <gary@garyguo.net>,
+        Boris-Chengbiao Zhou <bobo1239@web.de>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Douglas Su <d0u9.su@outlook.com>,
+        Dariusz Sosnowski <dsosnowski@dsosnowski.pl>,
+        Antonio Terceiro <antonio.terceiro@linaro.org>,
+        Daniel Xu <dxu@dxuuu.xyz>, Miguel Cano <macanroj@gmail.com>,
+        David Gow <davidgow@google.com>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        linux-um@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
+On Thu, May 26, 2022 at 12:25 AM Nick Desaulniers
+<ndesaulniers@google.com> wrote:
+>
+> Is there a reason to not just turn clippy on always? Might be nicer to
+> start off with good practices by default. :^)
 
-[ Upstream commit f3fa2becf2fc25b6ac7cf8d8b1a2e4a86b3b72bd ]
+The idea crossed my mind too [1], but sadly Clippy disables some
+optimizations and in general is not intended to be used for normal
+compilation [2].
 
-In function si_parse_power_table(), array adev->pm.dpm.ps and its member
-is allocated. If the allocation of each member fails, the array itself
-is freed and returned with an error code. However, the array is later
-freed again in si_dpm_fini() function which is called when the function
-returns an error.
+[1] https://github.com/rust-lang/rust-clippy/issues/8035
+[2] https://github.com/rust-lang/rust-clippy/pull/8037
 
-This leads to potential double free of the array adev->pm.dpm.ps, as
-well as leak of its array members, since the members are not freed in
-the allocation function and the array is not nulled when freed.
-In addition adev->pm.dpm.num_ps, which keeps track of the allocated
-array member, is not updated until the member allocation is
-successfully finished, this could also lead to either use after free,
-or uninitialized variable access in si_dpm_fini().
+> Are there *.rmeta directories that we _don't_ want to remove via `make
+> mrproper`? I'm curious why *.rmeta isn't just part of MRPROPER_FILES?
 
-Fix this by postponing the free of the array until si_dpm_fini() and
-increment adev->pm.dpm.num_ps everytime the array member is allocated.
+Putting them in `MRPROPER_FILES` would mean only those in a given
+directory are removed (e.g. the root one), but the idea here is to
+find them anywhere in the tree, since in the future we may have
+library crates in different parts of the tree.
 
-Signed-off-by: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/gpu/drm/amd/pm/powerplay/si_dpm.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+However, I am not sure I understand your first question in relation
+with the second one -- if we put them in `MRPROPER_FILES`, that would
+remove less, not more.
 
-diff --git a/drivers/gpu/drm/amd/pm/powerplay/si_dpm.c b/drivers/gpu/drm/amd/pm/powerplay/si_dpm.c
-index 81f82aa05ec2..66fc63f1f1c1 100644
---- a/drivers/gpu/drm/amd/pm/powerplay/si_dpm.c
-+++ b/drivers/gpu/drm/amd/pm/powerplay/si_dpm.c
-@@ -7247,17 +7247,15 @@ static int si_parse_power_table(struct amdgpu_device *adev)
- 	if (!adev->pm.dpm.ps)
- 		return -ENOMEM;
- 	power_state_offset = (u8 *)state_array->states;
--	for (i = 0; i < state_array->ucNumEntries; i++) {
-+	for (adev->pm.dpm.num_ps = 0, i = 0; i < state_array->ucNumEntries; i++) {
- 		u8 *idx;
- 		power_state = (union pplib_power_state *)power_state_offset;
- 		non_clock_array_index = power_state->v2.nonClockInfoIndex;
- 		non_clock_info = (struct _ATOM_PPLIB_NONCLOCK_INFO *)
- 			&non_clock_info_array->nonClockInfo[non_clock_array_index];
- 		ps = kzalloc(sizeof(struct  si_ps), GFP_KERNEL);
--		if (ps == NULL) {
--			kfree(adev->pm.dpm.ps);
-+		if (ps == NULL)
- 			return -ENOMEM;
--		}
- 		adev->pm.dpm.ps[i].ps_priv = ps;
- 		si_parse_pplib_non_clock_info(adev, &adev->pm.dpm.ps[i],
- 					      non_clock_info,
-@@ -7279,8 +7277,8 @@ static int si_parse_power_table(struct amdgpu_device *adev)
- 			k++;
- 		}
- 		power_state_offset += 2 + power_state->v2.ucNumDPMLevels;
-+		adev->pm.dpm.num_ps++;
- 	}
--	adev->pm.dpm.num_ps = state_array->ucNumEntries;
- 
- 	/* fill in the vce power states */
- 	for (i = 0; i < adev->pm.dpm.num_of_vce_states; i++) {
--- 
-2.35.1
+> I don't think we need to repeat dir/* here again for rust. The
+> existing targets listed above (outside this hunk) make sense in both
+> contexts.
 
+The idea here is to document the differences (e.g. `RUSTFMT`) and that
+we may have other targets in the future that do not apply to C (e.g.
+MIR dump, if that happens to be useful).
+
+But maybe I can fit that in the normal place and make it still look
+good... I will give it a try.
+
+> Does rustc really use .i as a conventional suffix for macro expanded
+> sources? (The C compiler might use the -x flag to override the guess
+
+It is not a conventional suffix at all as far as I am aware.
+
+Maybe we should use a different one to aid editors and users anyway,
+e.g. `.rsi`, similar to `.mi` for Objective-C `.m` files.
+
+> it would make based on the file extension; I'm curious if rustc can
+> ingest .i files or will it warn?)
+
+The macro expanded output is not intended to be used as a compilable
+input, but as a debugging aid only. I can note this there.
+
+Having said that, `rustc` accepts the "preprocessed" output in the
+sense that it will just treat them as normal source files (no flag
+needed, and e.g. both `.i` and `.rsi` work); however, it may give new
+diagnostics or may require extra flags to enable some compiler
+features.
+
+From a quick test, I managed to compile a "preprocessed" Rust kernel
+module with only command-line changes. But if we really wanted to
+support this, we would need to ask upstream Rust to actually support
+it.
+
+> Are these two kconfigs used anywhere?
+
+Not for the moment, but it could still be useful when getting
+`.config` reports (and we could add it to `LINUX_COMPILER` etc. in the
+future).
+
+> How does enabling or disabling debug info work for rustc? I may have
+> missed it, but I was surprised to see no additional flags getting
+> passed to rustc based on CONFIG_DEBUG info.
+
+`-Cdebuginfo=` is the one; by default there is no debug info and that
+option enables it (i.e. it is not just the level but the enablement
+too).
+
+(Note that in userspace, when compiling a common program, you will get
+some debug info coming from the standard library and other
+dependencies).
+
+> Ah, that explains the host rust build infra.  Bravo! Hard coding the
+> target files was my major concern last I looked at the series. I'm
+> very happy to see it be generated properly from .config!
+>
+> I haven't actually reviewed this yet, but it makes me significantly
+> more confident in the series to see this approach added. Good job
+> whoever wrote this.
+
+Thanks! I thought Rust would be a nice option for writing hostprogs,
+though of course for the moment only programs that can assume Rust is
+there may use it.
+
+Note that non-x86 specific options need to be handled properly still
+(e.g. move things between the arch Makefiles and the hostprog as
+needed).
+
+I would still want to see compilers come to some kind of common format
+for this as we discussed other times, but... :)
+
+> Does `$(READELF) -p .comment foo.o` print anything about which
+> compiler was used? That seems less brittle IMO.
+
+Currently, `rustc` does not add a `.comment` section; but we could
+ask, I sent [3].
+
+If debug info is enabled, another way is using the `DW_AT_language`
+attribute, like `pahole` will be doing for a new option we need [4].
+However, we would still need a way for the other case.
+
+In any case, I am not sure something like `.comment` is less or more
+brittle -- compilers could in theory change it (e.g. not emitting it),
+while adding a symbol is something we control. So different kinds of
+brittleness.
+
+[3] https://github.com/rust-lang/rust/pull/97550
+[4] https://git.kernel.org/pub/scm/devel/pahole/pahole.git/commit/?id=8ee363790b7437283c53090a85a9fec2f0b0fbc4
+
+Cheers,
+Miguel
