@@ -2,98 +2,292 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7A78C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 06:42:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0C37C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 06:42:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233026AbiE3GmA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 02:42:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50392 "EHLO
+        id S233039AbiE3Gmu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 02:42:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231516AbiE3Gl6 (ORCPT
+        with ESMTP id S231516AbiE3Gms (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 02:41:58 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D53A92E6B1;
-        Sun, 29 May 2022 23:41:56 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id e66so9325955pgc.8;
-        Sun, 29 May 2022 23:41:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=gHi7sfDkWSGQyFcI8BoQxzCXchHKCpyPbiqXNicxgx0=;
-        b=NlMYSwV0KMtZs43xH1LoNZ7eAhM1aR7OXBiZZe9Rl5ZSoUI1YHvBlnSZkpSv084jq+
-         rzwXZKf++77ANXoArZm/N9Fzp/AgmvWx6lYgA03OUEVmVM5qaHRAWX3bOPpVLmrrvh6B
-         iz0VVYEXKgzBp2oVOlWt1ntwJP2SB97nTfu21gVgNRoHpEj1zmUU5XJbiNz6wbUJCu4+
-         mpaDq3mG5M5e4wf8bbrnBCA1C3hsyn2lHtHf9qu8MFYQA+WAN/ktFnpgFboj2H2raDuG
-         wWiWvD3RrQ0iKqqROlyNJ5LILa9fqTZK59GlcGy39hs1o5IPaphDpntK8zU4WAEyAfpy
-         Kz8Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=gHi7sfDkWSGQyFcI8BoQxzCXchHKCpyPbiqXNicxgx0=;
-        b=PHwYRagFZ9mRPyhXr/4Bw9pVIlOY5/tvhgCgFPkYzCwLz6aEjRlx4x+VNN7FfTB6ve
-         xw9bw+dnCihY59qDjV7w1jT0ugZd/7gS2dqs6b9Jo6uXo9nBDN6RQ5S0ms2M2WfgRIBH
-         V5J0CiFrnXIVuYqaIgWYmuZE4xWuF6UTdcC6rqtvupX+QdzMxuYbIpDQ7fy4KGr2+U1d
-         oeqxk8H1fns+V+pGHjX6n2ysh8I9QKbde9+mhFFneKw3Vjej6aGcLzwg3mThDb9nJm4U
-         9onWN8ZqDO3CtCqUdgGIJ77eYa/9FTdqSiEJ6n9nXvHY30xLLdNAmAkxpEK6vJ4TxWeF
-         1GSg==
-X-Gm-Message-State: AOAM533glIClplPPoXY8sn1K4bfszh5DldEUXRiae/SIpYMi62gHus08
-        DxzlVWKOijI+v+uDvUBXSxlH91S0HZ0n3OaLvyw=
-X-Google-Smtp-Source: ABdhPJyadpwvJ7jgcamhg2q6er/pQIzVTSfVslfbaApzXRkF7vvYeE4LW9LBeT7ePXNjyX0RkLWNsQ==
-X-Received: by 2002:a63:de01:0:b0:3fa:1a35:36e0 with SMTP id f1-20020a63de01000000b003fa1a3536e0mr34132357pgg.92.1653892916390;
-        Sun, 29 May 2022 23:41:56 -0700 (PDT)
-Received: from localhost.localdomain ([43.132.141.3])
-        by smtp.gmail.com with ESMTPSA id bb4-20020a170902bc8400b0015e8d4eb2d8sm8168569plb.290.2022.05.29.23.41.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 29 May 2022 23:41:56 -0700 (PDT)
-From:   iamhswang@gmail.com
-X-Google-Original-From: haisuwang@tencent.com
-To:     axboe@kernel.dk
-Cc:     zhangwensheng5@huawei.com, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Haisu Wang <haisuwang@tencent.com>,
-        samuelliao <samuelliao@tencent.com>
-Subject: [PATCH] blk-mq: do not update io_ticks with passthrough requests
-Date:   Mon, 30 May 2022 14:40:59 +0800
-Message-Id: <20220530064059.1120058-1-haisuwang@tencent.com>
-X-Mailer: git-send-email 2.27.0
+        Mon, 30 May 2022 02:42:48 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 478333B574;
+        Sun, 29 May 2022 23:42:47 -0700 (PDT)
+Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LBQnm1RFxzDqXl;
+        Mon, 30 May 2022 14:42:36 +0800 (CST)
+Received: from [10.67.77.175] (10.67.77.175) by dggpeml500023.china.huawei.com
+ (7.185.36.114) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 30 May
+ 2022 14:42:44 +0800
+From:   Shaokun Zhang <zhangshaokun@hisilicon.com>
+Subject: Re: [PATCH v3 2/2] cpufreq: CPPC: Register EM based on efficiency
+ class information
+To:     Pierre Gondois <pierre.gondois@arm.com>,
+        <linux-kernel@vger.kernel.org>
+CC:     <Ionela.Voinescu@arm.com>, <Lukasz.Luba@arm.com>,
+        <Morten.Rasmussen@arm.com>, <Dietmar.Eggemann@arm.com>,
+        <maz@kernel.org>, <daniel.lezcano@linaro.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Fuad Tabba <tabba@google.com>, Phil Auld <pauld@redhat.com>,
+        Rob Herring <robh@kernel.org>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-pm@vger.kernel.org>
+References: <20220425123819.137735-1-pierre.gondois@arm.com>
+ <20220425123819.137735-3-pierre.gondois@arm.com>
+Message-ID: <626c99d3-edaf-4544-7e64-5b3653591086@hisilicon.com>
+Date:   Mon, 30 May 2022 14:42:44 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
+In-Reply-To: <20220425123819.137735-3-pierre.gondois@arm.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.77.175]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpeml500023.china.huawei.com (7.185.36.114)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haisu Wang <haisuwang@tencent.com>
+Hi,
 
-Flush or passthrough requests are not accounted as normal IO in completion.
-To reflect iostat for slow IO, io_ticks is updated when stat show called
-based on inflight numbers.
-It may cause inconsistent io_ticks calculation result.
+There is a warning on arm64 platform when CONFIG_ENERGY_MODEL is not set:
+ drivers/cpufreq/cppc_cpufreq.c:550:12: error: ‘cppc_get_cpu_cost’ defined but not used
+[-Werror=unused-function]
+   550 | static int cppc_get_cpu_cost(struct device *cpu_dev, unsigned long KHz,
+       |            ^~~~~~~~~~~~~~~~~
+ drivers/cpufreq/cppc_cpufreq.c:481:12: error: ‘cppc_get_cpu_power’ defined but not used
+[-Werror=unused-function]
+   481 | static int cppc_get_cpu_power(struct device *cpu_dev,
+       |            ^~~~~~~~~~~~~~~~~~
 
-So do not account non-passthrough request when check inflight.
+Thanks,
+Shaokun
 
-Fixes: 86d7331299fd ("block: update io_ticks when io hang")
-Signed-off-by: Haisu Wang <haisuwang@tencent.com>
-Reviewed-by: samuelliao <samuelliao@tencent.com>
----
- block/blk-mq.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/block/blk-mq.c b/block/blk-mq.c
-index ae116b755648..3912cae42da3 100644
---- a/block/blk-mq.c
-+++ b/block/blk-mq.c
-@@ -133,7 +133,8 @@ static bool blk_mq_check_inflight(struct request *rq, void *priv,
- {
- 	struct mq_inflight *mi = priv;
- 
--	if ((!mi->part->bd_partno || rq->part == mi->part) &&
-+	if (rq->part && blk_do_io_stat(rq) &&
-+	    (!mi->part->bd_partno || rq->part == mi->part) &&
- 	    blk_mq_rq_state(rq) == MQ_RQ_IN_FLIGHT)
- 		mi->inflight[rq_data_dir(rq)]++;
- 
--- 
-2.27.0
-
+On 2022/4/25 20:38, Pierre Gondois wrote:
+> From: Pierre Gondois <Pierre.Gondois@arm.com>
+> 
+> Performance states and energy consumption values are not advertised
+> in ACPI. In the GicC structure of the MADT table, the "Processor
+> Power Efficiency Class field" (called efficiency class from now)
+> allows to describe the relative energy efficiency of CPUs.
+> 
+> To leverage the EM and EAS, the CPPC driver creates a set of
+> artificial performance states and registers them in the Energy Model
+> (EM), such as:
+> - Every 20 capacity unit, a performance state is created.
+> - The energy cost of each performance state gradually increases.
+> No power value is generated as only the cost is used in the EM.
+> 
+> During task placement, a task can raise the frequency of its whole
+> pd. This can make EAS place a task on a pd with CPUs that are
+> individually less energy efficient.
+> As cost values are artificial, and to place tasks on CPUs with the
+> lower efficiency class, a gap in cost values is generated for adjacent
+> efficiency classes.
+> E.g.:
+> - efficiency class = 0, capacity is in [0-1024], so cost values
+>   are in [0: 51] (one performance state every 20 capacity unit)
+> - efficiency class = 1, capacity is in [0-1024], cost values
+>   are in [1*gap+0: 1*gap+51].
+> 
+> The value of the cost gap is chosen to absorb a the energy of 4 CPUs
+> at their maximum capacity. This means that between:
+> 1- a pd of 4 CPUs, each of them being used at almost their full
+>    capacity. Their efficiency class is N.
+> 2- a CPU using almost none of its capacity. Its efficiency class is
+>    N+1
+> EAS will choose the first option.
+> 
+> This patch also populates the (struct cpufreq_driver).register_em
+> callback if the valid efficiency_class ACPI values are provided.
+> 
+> Signed-off-by: Pierre Gondois <Pierre.Gondois@arm.com>
+> ---
+>  drivers/cpufreq/cppc_cpufreq.c | 144 +++++++++++++++++++++++++++++++++
+>  1 file changed, 144 insertions(+)
+> 
+> diff --git a/drivers/cpufreq/cppc_cpufreq.c b/drivers/cpufreq/cppc_cpufreq.c
+> index 3cd05651707d..3eaa23d1aaf5 100644
+> --- a/drivers/cpufreq/cppc_cpufreq.c
+> +++ b/drivers/cpufreq/cppc_cpufreq.c
+> @@ -421,6 +421,134 @@ static unsigned int cppc_cpufreq_get_transition_delay_us(unsigned int cpu)
+>  }
+>  
+>  static DEFINE_PER_CPU(unsigned int, efficiency_class);
+> +static void cppc_cpufreq_register_em(struct cpufreq_policy *policy);
+> +
+> +/* Create an artificial performance state every CPPC_EM_CAP_STEP capacity unit. */
+> +#define CPPC_EM_CAP_STEP	(20)
+> +/* Increase the cost value by CPPC_EM_COST_STEP every performance state. */
+> +#define CPPC_EM_COST_STEP	(1)
+> +/* Add a cost gap correspnding to the energy of 4 CPUs. */
+> +#define CPPC_EM_COST_GAP	(4 * SCHED_CAPACITY_SCALE * CPPC_EM_COST_STEP \
+> +				/ CPPC_EM_CAP_STEP)
+> +
+> +static unsigned int get_perf_level_count(struct cpufreq_policy *policy)
+> +{
+> +	struct cppc_perf_caps *perf_caps;
+> +	unsigned int min_cap, max_cap;
+> +	struct cppc_cpudata *cpu_data;
+> +	int cpu = policy->cpu;
+> +
+> +	cpu_data = policy->driver_data;
+> +	perf_caps = &cpu_data->perf_caps;
+> +	max_cap = arch_scale_cpu_capacity(cpu);
+> +	min_cap = div_u64(max_cap * perf_caps->lowest_perf, perf_caps->highest_perf);
+> +	if ((min_cap == 0) || (max_cap < min_cap))
+> +		return 0;
+> +	return 1 + max_cap / CPPC_EM_CAP_STEP - min_cap / CPPC_EM_CAP_STEP;
+> +}
+> +
+> +/*
+> + * The cost is defined as:
+> + *   cost = power * max_frequency / frequency
+> + */
+> +static inline unsigned long compute_cost(int cpu, int step)
+> +{
+> +	return CPPC_EM_COST_GAP * per_cpu(efficiency_class, cpu) +
+> +			step * CPPC_EM_COST_STEP;
+> +}
+> +
+> +static int cppc_get_cpu_power(struct device *cpu_dev,
+> +		unsigned long *power, unsigned long *KHz)
+> +{
+> +	unsigned long perf_step, perf_prev, perf, perf_check;
+> +	unsigned int min_step, max_step, step, step_check;
+> +	unsigned long prev_freq = *KHz;
+> +	unsigned int min_cap, max_cap;
+> +	struct cpufreq_policy *policy;
+> +
+> +	struct cppc_perf_caps *perf_caps;
+> +	struct cppc_cpudata *cpu_data;
+> +
+> +	policy = cpufreq_cpu_get_raw(cpu_dev->id);
+> +	cpu_data = policy->driver_data;
+> +	perf_caps = &cpu_data->perf_caps;
+> +	max_cap = arch_scale_cpu_capacity(cpu_dev->id);
+> +	min_cap = div_u64(max_cap * perf_caps->lowest_perf,
+> +			perf_caps->highest_perf);
+> +
+> +	perf_step = CPPC_EM_CAP_STEP * perf_caps->highest_perf / max_cap;
+> +	min_step = min_cap / CPPC_EM_CAP_STEP;
+> +	max_step = max_cap / CPPC_EM_CAP_STEP;
+> +
+> +	perf_prev = cppc_cpufreq_khz_to_perf(cpu_data, *KHz);
+> +	step = perf_prev / perf_step;
+> +
+> +	if (step > max_step)
+> +		return -EINVAL;
+> +
+> +	if (min_step == max_step) {
+> +		step = max_step;
+> +		perf = perf_caps->highest_perf;
+> +	} else if (step < min_step) {
+> +		step = min_step;
+> +		perf = perf_caps->lowest_perf;
+> +	} else {
+> +		step++;
+> +		if (step == max_step)
+> +			perf = perf_caps->highest_perf;
+> +		else
+> +			perf = step * perf_step;
+> +	}
+> +
+> +	*KHz = cppc_cpufreq_perf_to_khz(cpu_data, perf);
+> +	perf_check = cppc_cpufreq_khz_to_perf(cpu_data, *KHz);
+> +	step_check = perf_check / perf_step;
+> +
+> +	/*
+> +	 * To avoid bad integer approximation, check that new frequency value
+> +	 * increased and that the new frequency will be converted to the
+> +	 * desired step value.
+> +	 */
+> +	while ((*KHz == prev_freq) || (step_check != step)) {
+> +		perf++;
+> +		*KHz = cppc_cpufreq_perf_to_khz(cpu_data, perf);
+> +		perf_check = cppc_cpufreq_khz_to_perf(cpu_data, *KHz);
+> +		step_check = perf_check / perf_step;
+> +	}
+> +
+> +	/*
+> +	 * With an artificial EM, only the cost value is used. Still the power
+> +	 * is populated such as 0 < power < EM_MAX_POWER. This allows to add
+> +	 * more sense to the artificial performance states.
+> +	 */
+> +	*power = compute_cost(cpu_dev->id, step);
+> +
+> +	return 0;
+> +}
+> +
+> +static int cppc_get_cpu_cost(struct device *cpu_dev, unsigned long KHz,
+> +		unsigned long *cost)
+> +{
+> +	unsigned long perf_step, perf_prev;
+> +	struct cppc_perf_caps *perf_caps;
+> +	struct cpufreq_policy *policy;
+> +	struct cppc_cpudata *cpu_data;
+> +	unsigned int max_cap;
+> +	int step;
+> +
+> +	policy = cpufreq_cpu_get_raw(cpu_dev->id);
+> +	cpu_data = policy->driver_data;
+> +	perf_caps = &cpu_data->perf_caps;
+> +	max_cap = arch_scale_cpu_capacity(cpu_dev->id);
+> +
+> +	perf_prev = cppc_cpufreq_khz_to_perf(cpu_data, KHz);
+> +	perf_step = CPPC_EM_CAP_STEP * perf_caps->highest_perf / max_cap;
+> +	step = perf_prev / perf_step;
+> +
+> +	*cost = compute_cost(cpu_dev->id, step);
+> +
+> +	return 0;
+> +}
+>  
+>  static int populate_efficiency_class(void)
+>  {
+> @@ -453,10 +581,23 @@ static int populate_efficiency_class(void)
+>  		}
+>  		index++;
+>  	}
+> +	cppc_cpufreq_driver.register_em = cppc_cpufreq_register_em;
+>  
+>  	return 0;
+>  }
+>  
+> +static void cppc_cpufreq_register_em(struct cpufreq_policy *policy)
+> +{
+> +	struct cppc_cpudata *cpu_data;
+> +	struct em_data_callback em_cb =
+> +		EM_ADV_DATA_CB(cppc_get_cpu_power, cppc_get_cpu_cost);
+> +
+> +	cpu_data = policy->driver_data;
+> +	em_dev_register_perf_domain(get_cpu_device(policy->cpu),
+> +			get_perf_level_count(policy), &em_cb,
+> +			cpu_data->shared_cpu_map, 0);
+> +}
+> +
+>  #else
+>  
+>  static unsigned int cppc_cpufreq_get_transition_delay_us(unsigned int cpu)
+> @@ -467,6 +608,9 @@ static int populate_efficiency_class(void)
+>  {
+>  	return 0;
+>  }
+> +static void cppc_cpufreq_register_em(struct cpufreq_policy *policy)
+> +{
+> +}
+>  #endif
+>  
+>  
+> 
