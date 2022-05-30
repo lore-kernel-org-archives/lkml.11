@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D141C4707A
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:57:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E295FC38162
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:57:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239402AbiE3N4f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:56:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49936 "EHLO
+        id S239247AbiE3N4K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:56:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239269AbiE3NvZ (ORCPT
+        with ESMTP id S238869AbiE3Nuz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:51:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C50B59344C;
-        Mon, 30 May 2022 06:35:42 -0700 (PDT)
+        Mon, 30 May 2022 09:50:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 766F6B0438;
+        Mon, 30 May 2022 06:35:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 60CD160F93;
-        Mon, 30 May 2022 13:35:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EB3CC341C4;
-        Mon, 30 May 2022 13:35:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 53863B80DB4;
+        Mon, 30 May 2022 13:34:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6D60C385B8;
+        Mon, 30 May 2022 13:34:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917741;
-        bh=63KEk9VLTggDHYa7uCWhw1ThCahBRf68liu0x9+Y4Q8=;
+        s=k20201202; t=1653917693;
+        bh=4XChG8Mn9Ckp+o5xpIAJPICimju0Ixs9wovnr8tIqy0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sJZxUDSd/zCGqgBknaxliHzfAFhP1qrylxXnllVJj7qYMbBo2MR1z5hfzZ0a6e+We
-         ge5dGcXTvAsj47KrU9cgt80chhv9xvxj+PgvRMVzi+42x32Y0SMMaFT0n8YRis4sEL
-         DTBL6wJxxe9bsu7A0+cjZnDg9UHHhqyQIe/X3mbMOj+38auHmI7cIvCzaIb4ZDFMaP
-         0aiumuPkhHnjasbuFj22T//dXo/gczg2kOtGOqe+KjopAy9qVyNeas92IeWSkBHnwr
-         3oODxdwlbhfDHU0vtT/MbC1QyhFeOpEObHJh17bevZYIVxC/0REVGT0hU8WXk0jwzz
-         g0583iFiUcjyg==
+        b=Gie1yuoUrC9ipZ7FXI9My+8HEV/PIoFUSJzOKeZOR4ibhpyI7lh4VrIukF8TRnZaF
+         EvUCl+gmP6aVPNWj08HRQdmlyxqzLAJQUPyH/kGvS2rMe9Bo5uwlpxPTscQ1jMlimx
+         DoD+VAp5JtvYt+1NXm8zZZE3aQgc/LROAZpAT2OFljgtTy5JsmjitWeSJLG/jbKOUO
+         b8iB1ildrBi3NbE6QQGWIPi79JtQjhn3Honf0NGmYnW9EwuchAY9Aaswvt0QIn31XB
+         96YK+WMhKF+L2PjZeHZs3OMqhza7dLRNFaYWFnCI6WwPKUMJdMpVIW8oxFoXNXVJbT
+         XZSSkOtrPNT2A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Patrice Chotard <patrice.chotard@foss.st.com>,
-        eberhard.stoll@kontron.de, Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, mcoquelin.stm32@gmail.com,
-        alexandre.torgue@foss.st.com, linux-spi@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.17 082/135] spi: stm32-qspi: Fix wait_cmd timeout in APM mode
-Date:   Mon, 30 May 2022 09:30:40 -0400
-Message-Id: <20220530133133.1931716-82-sashal@kernel.org>
+Cc:     Petr Machata <petrm@nvidia.com>,
+        Maksym Yaremchuk <maksymy@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 066/135] mlxsw: spectrum_dcb: Do not warn about priority changes
+Date:   Mon, 30 May 2022 09:30:24 -0400
+Message-Id: <20220530133133.1931716-66-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
@@ -54,36 +54,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Patrice Chotard <patrice.chotard@foss.st.com>
+From: Petr Machata <petrm@nvidia.com>
 
-[ Upstream commit d83d89ea68b4726700fa87b22db075e4217e691c ]
+[ Upstream commit b6b584562cbe7dc357083459d6dd5b171e12cadb ]
 
-In APM mode, TCF and TEF flags are not set. To avoid timeout in
-stm32_qspi_wait_cmd(), don't check if TCF/TEF are set.
+The idea behind the warnings is that the user would get warned in case when
+more than one priority is configured for a given DSCP value on a netdevice.
 
-Signed-off-by: Patrice Chotard <patrice.chotard@foss.st.com>
-Reported-by: eberhard.stoll@kontron.de
-Link: https://lore.kernel.org/r/20220511074644.558874-2-patrice.chotard@foss.st.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+The warning is currently wrong, because dcb_ieee_getapp_mask() returns
+the first matching entry, not all of them, and the warning will then claim
+that some priority is "current", when in fact it is not.
+
+But more importantly, the warning is misleading in general. Consider the
+following commands:
+
+ # dcb app flush dev swp19 dscp-prio
+ # dcb app add dev swp19 dscp-prio 24:3
+ # dcb app replace dev swp19 dscp-prio 24:2
+
+The last command will issue the following warning:
+
+ mlxsw_spectrum3 0000:07:00.0 swp19: Ignoring new priority 2 for DSCP 24 in favor of current value of 3
+
+The reason is that the "replace" command works by first adding the new
+value, and then removing all old values. This is the only way to make the
+replacement without causing the traffic to be prioritized to whatever the
+chip defaults to. The warning is issued in response to adding the new
+priority, and then no warning is shown when the old priority is removed.
+The upshot is that the canonical way to change traffic prioritization
+always produces a warning about ignoring the new priority, but what gets
+configured is in fact what the user intended.
+
+An option to just emit warning every time that the prioritization changes
+just to make it clear that it happened is obviously unsatisfactory.
+
+Therefore, in this patch, remove the warnings.
+
+Reported-by: Maksym Yaremchuk <maksymy@nvidia.com>
+Signed-off-by: Petr Machata <petrm@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-stm32-qspi.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c | 13 -------------
+ 1 file changed, 13 deletions(-)
 
-diff --git a/drivers/spi/spi-stm32-qspi.c b/drivers/spi/spi-stm32-qspi.c
-index ffdc55f87e82..dd38cb8ffbc2 100644
---- a/drivers/spi/spi-stm32-qspi.c
-+++ b/drivers/spi/spi-stm32-qspi.c
-@@ -308,7 +308,8 @@ static int stm32_qspi_wait_cmd(struct stm32_qspi *qspi,
- 	if (!op->data.nbytes)
- 		goto wait_nobusy;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c
+index 5f92b1691360..aff6d4f35cd2 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c
+@@ -168,8 +168,6 @@ static int mlxsw_sp_dcbnl_ieee_setets(struct net_device *dev,
+ static int mlxsw_sp_dcbnl_app_validate(struct net_device *dev,
+ 				       struct dcb_app *app)
+ {
+-	int prio;
+-
+ 	if (app->priority >= IEEE_8021QAZ_MAX_TCS) {
+ 		netdev_err(dev, "APP entry with priority value %u is invalid\n",
+ 			   app->priority);
+@@ -183,17 +181,6 @@ static int mlxsw_sp_dcbnl_app_validate(struct net_device *dev,
+ 				   app->protocol);
+ 			return -EINVAL;
+ 		}
+-
+-		/* Warn about any DSCP APP entries with the same PID. */
+-		prio = fls(dcb_ieee_getapp_mask(dev, app));
+-		if (prio--) {
+-			if (prio < app->priority)
+-				netdev_warn(dev, "Choosing priority %d for DSCP %d in favor of previously-active value of %d\n",
+-					    app->priority, app->protocol, prio);
+-			else if (prio > app->priority)
+-				netdev_warn(dev, "Ignoring new priority %d for DSCP %d in favor of current value of %d\n",
+-					    app->priority, app->protocol, prio);
+-		}
+ 		break;
  
--	if (readl_relaxed(qspi->io_base + QSPI_SR) & SR_TCF)
-+	if ((readl_relaxed(qspi->io_base + QSPI_SR) & SR_TCF) ||
-+	    qspi->fmode == CCR_FMODE_APM)
- 		goto out;
- 
- 	reinit_completion(&qspi->data_completion);
+ 	case IEEE_8021QAZ_APP_SEL_ETHERTYPE:
 -- 
 2.35.1
 
