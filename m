@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B2EDC4707A
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:06:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5E07C4167E
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:06:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240263AbiE3OGl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:06:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57430 "EHLO
+        id S239914AbiE3OG0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:06:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239268AbiE3OAs (ORCPT
+        with ESMTP id S238867AbiE3N6f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:00:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FFB7C0E18;
-        Mon, 30 May 2022 06:39:22 -0700 (PDT)
+        Mon, 30 May 2022 09:58:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1061985B3;
+        Mon, 30 May 2022 06:39:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E642860F3B;
-        Mon, 30 May 2022 13:39:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D18AC385B8;
-        Mon, 30 May 2022 13:39:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8EC80B80DB3;
+        Mon, 30 May 2022 13:39:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF612C3411C;
+        Mon, 30 May 2022 13:39:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917961;
-        bh=Es8gs4AferonvUyU7vO7rV3pF3BZ22ZnnU8qmdPDgWg=;
+        s=k20201202; t=1653917945;
+        bh=Aoq/ZnXVcKk+p7VdfH7dk2D2Y56VczJQo9MgI9eHjA8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rNoTYDqWeu9diTzu222B7lMq5CiQe2GkpN9rzlOrjBJRy2vOU+/pERZXRMfphmbag
-         rEx/u0KzZ4exwqVhB5LAgfvn94UZt6/q3FczaDhKxbA13fd9yqAQHFekzOHLx9F6WL
-         n1E81ye7ELy5FdGurJqdjp9NF5mQNRzCUE6n9+DWAYANr35zL0Pq0UtokOmAyFb+/j
-         C8qT3rQz4rIPi/kbgODdx1xBwql+3YHONOqDXSsUfFvTwg4Ug58BgblVnYbWYZbWSR
-         P5digIhvu4mKVeXCUZdj9dDbCekKrlXKZKAScvjLocBBNEX4vkILr5heCnzQH2iH9P
-         ycW9xqehft3xA==
+        b=kL90sDKsRdEk6exB4rEWW9hpLuYC8psz18ipkYFEjTbVSuFFgugrCSy3b4lZfJG1Q
+         HbrdRCloJfUq3gU/xMLatQE7DOogzQqzVWpiPo4Ga8p1E/Eo0zCYf+T+x9POenryxY
+         q26eVvXtACGbJJ6bPGWFSuwGbgzyO4r8pnKuuCdIkaLVgutOB9kN0/dpnyabyscw2U
+         NY3YunDy/ym2BEnZqkoIjmKxdk80EXuwtaGdUEBeK0Ps6GQTkIhxadiV3CPC1TpXGs
+         nnTtyrRlPsQqQLtKm3Cj21emkXl0Bo5PY/j2qWke+ex+aV/F1gL3L2/YPFYdgNdoTx
+         NhfU+n113SNeg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Paul E. McKenney" <paulmck@kernel.org>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, frederic@kernel.org,
-        quic_neeraju@quicinc.com, josh@joshtriplett.org,
-        rcu@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 018/109] rcu: Make TASKS_RUDE_RCU select IRQ_WORK
-Date:   Mon, 30 May 2022 09:36:54 -0400
-Message-Id: <20220530133825.1933431-18-sashal@kernel.org>
+Cc:     Liviu Dudau <liviu.dudau@arm.com>,
+        Steven Price <steven.price@arm.com>,
+        Sasha Levin <sashal@kernel.org>, james.qian.wang@arm.com,
+        mihail.atanassov@arm.com, brian.starkey@arm.com, airlied@linux.ie,
+        daniel@ffwll.ch, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.15 015/109] drm/komeda: return early if drm_universal_plane_init() fails.
+Date:   Mon, 30 May 2022 09:36:51 -0400
+Message-Id: <20220530133825.1933431-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
 References: <20220530133825.1933431-1-sashal@kernel.org>
@@ -53,33 +53,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Paul E. McKenney" <paulmck@kernel.org>
+From: Liviu Dudau <liviu.dudau@arm.com>
 
-[ Upstream commit 46e861be589881e0905b9ade3d8439883858721c ]
+[ Upstream commit c8f76c37cc3668ee45e081e76a15f24a352ebbdd ]
 
-The TASKS_RUDE_RCU does not select IRQ_WORK, which can result in build
-failures for kernels that do not otherwise select IRQ_WORK.  This commit
-therefore causes the TASKS_RUDE_RCU Kconfig option to select IRQ_WORK.
+If drm_universal_plane_init() fails early we jump to the common cleanup code
+that calls komeda_plane_destroy() which in turn could access the uninitalised
+drm_plane and crash. Return early if an error is detected without going through
+the common code.
 
-Reported-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+Reported-by: Steven Price <steven.price@arm.com>
+Reviewed-by: Steven Price <steven.price@arm.com>
+Signed-off-by: Liviu Dudau <liviu.dudau@arm.com>
+Link: https://lore.kernel.org/dri-devel/20211203100946.2706922-1-liviu.dudau@arm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/rcu/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/arm/display/komeda/komeda_plane.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/rcu/Kconfig b/kernel/rcu/Kconfig
-index 3128b7cf8e1f..f73cf17fcee9 100644
---- a/kernel/rcu/Kconfig
-+++ b/kernel/rcu/Kconfig
-@@ -86,6 +86,7 @@ config TASKS_RCU
+diff --git a/drivers/gpu/drm/arm/display/komeda/komeda_plane.c b/drivers/gpu/drm/arm/display/komeda/komeda_plane.c
+index d63d83800a8a..d646e3ae1a23 100644
+--- a/drivers/gpu/drm/arm/display/komeda/komeda_plane.c
++++ b/drivers/gpu/drm/arm/display/komeda/komeda_plane.c
+@@ -275,8 +275,10 @@ static int komeda_plane_add(struct komeda_kms_dev *kms,
  
- config TASKS_RUDE_RCU
- 	def_bool 0
-+	select IRQ_WORK
- 	help
- 	  This option enables a task-based RCU implementation that uses
- 	  only context switch (including preemption) and user-mode
+ 	komeda_put_fourcc_list(formats);
+ 
+-	if (err)
+-		goto cleanup;
++	if (err) {
++		kfree(kplane);
++		return err;
++	}
+ 
+ 	drm_plane_helper_add(plane, &komeda_plane_helper_funcs);
+ 
 -- 
 2.35.1
 
