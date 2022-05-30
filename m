@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4526BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:29:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40D37C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:29:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240428AbiE3O3O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:29:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42950 "EHLO
+        id S240162AbiE3O3X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:29:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241460AbiE3ORh (ORCPT
+        with ESMTP id S241484AbiE3ORh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 30 May 2022 10:17:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81A5C52B38;
-        Mon, 30 May 2022 06:47:25 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA2E653A41;
+        Mon, 30 May 2022 06:47:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 080BF60F24;
-        Mon, 30 May 2022 13:47:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DBD9C385B8;
-        Mon, 30 May 2022 13:47:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DAD0560FDA;
+        Mon, 30 May 2022 13:47:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A891C3411C;
+        Mon, 30 May 2022 13:47:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918444;
-        bh=x8Opey4gPhl/T9ZY27fZLs+uA+C7ZsiJ2XZJphbacJQ=;
+        s=k20201202; t=1653918452;
+        bh=X0JSBJCMl164uPRpCFAKDoP0BwSaR6OSa+/yCCXETJM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RUKIqiTiDwP/yX3NA60WoXfRI0pPRb9FosUUtEyUFDqOSfgjUp5CWWeYOz3JYGIFn
-         44EXVwKPoTqetnDxoNHJwxocuDh9Tr5gYqOk961pi0LZuA0WfdW04ezY/MX9sRN73I
-         /7nqvJY7txN3N1spLnFgeuSV8X1/uewvyQoijbiQPSw/bUQHYF0WuNt9L4PDn0WE76
-         i4xNFDf3fbyQpNJnMiVc7lKE3rFeVUIheawPpE0r1MlyjExfXJaeX1uqj6wmPAlQvg
-         0rXcHDh9EYRGYBzJ4Z7/CSENmEnzfFKKZcKp9J/TW6CKbkIQ7sO6dNjhxJ3+2FMjnF
-         BTSMs7JnNBesQ==
+        b=bcx0teN8odUVYtDV1l0h5MQUPom/dGLsjgNlQZQAOafDoRAsXQSu6OauRlce7Mrek
+         bW7h2eMJP63FDXcXtlYSbjv2aIontMKT87g4wAE4IkjgghcXycL0BaHIcW+L90Ou8x
+         dAEw0Tf/VX3mU1+VRvJCx6Slp4d5bnKg1LVvyeqgA/i2Pckg1L6F8u5F0wpx66rswb
+         +zoQTXYqfJqCUdoQ5h8wSy6n5n1XKCSVm2QDirQf9fKiij3C72vWjoF64aNIUB2sf+
+         qXLfHQjfkA5RgyM+QLV5gQ/DfFDGkgrBvTgE48lKUN8Y5x1dVqlIPZ3Ap+TMrcsfkO
+         wpo1QaCXU4+KQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Sasha Levin <sashal@kernel.org>, mingo@redhat.com,
-        bp@alien8.de, x86@kernel.org
-Subject: [PATCH AUTOSEL 5.4 08/55] ACPICA: Avoid cache flush inside virtual machines
-Date:   Mon, 30 May 2022 09:46:14 -0400
-Message-Id: <20220530134701.1935933-8-sashal@kernel.org>
+Cc:     Len Brown <len.brown@intel.com>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        Sasha Levin <sashal@kernel.org>, lenb@kernel.org,
+        linux-pm@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 12/55] tools/power turbostat: fix ICX DRAM power numbers
+Date:   Mon, 30 May 2022 09:46:18 -0400
+Message-Id: <20220530134701.1935933-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530134701.1935933-1-sashal@kernel.org>
 References: <20220530134701.1935933-1-sashal@kernel.org>
@@ -54,69 +52,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+From: Len Brown <len.brown@intel.com>
 
-[ Upstream commit e2efb6359e620521d1e13f69b2257de8ceaa9475 ]
+[ Upstream commit 6397b6418935773a34b533b3348b03f4ce3d7050 ]
 
-While running inside virtual machine, the kernel can bypass cache
-flushing. Changing sleep state in a virtual machine doesn't affect the
-host system sleep state and cannot lead to data loss.
+ICX (and its duplicates) require special hard-coded DRAM RAPL units,
+rather than using the generic RAPL energy units.
 
-Before entering sleep states, the ACPI code flushes caches to prevent
-data loss using the WBINVD instruction.  This mechanism is required on
-bare metal.
-
-But, any use WBINVD inside of a guest is worthless.  Changing sleep
-state in a virtual machine doesn't affect the host system sleep state
-and cannot lead to data loss, so most hypervisors simply ignore it.
-Despite this, the ACPI code calls WBINVD unconditionally anyway.
-It's useless, but also normally harmless.
-
-In TDX guests, though, WBINVD stops being harmless; it triggers a
-virtualization exception (#VE).  If the ACPI cache-flushing WBINVD
-were left in place, TDX guests would need handling to recover from
-the exception.
-
-Avoid using WBINVD whenever running under a hypervisor.  This both
-removes the useless WBINVDs and saves TDX from implementing WBINVD
-handling.
-
-Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
-Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
-Reviewed-by: Dan Williams <dan.j.williams@intel.com>
-Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
-Link: https://lkml.kernel.org/r/20220405232939.73860-30-kirill.shutemov@linux.intel.com
+Reported-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Signed-off-by: Len Brown <len.brown@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/include/asm/acenv.h | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+ tools/power/x86/turbostat/turbostat.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/x86/include/asm/acenv.h b/arch/x86/include/asm/acenv.h
-index 9aff97f0de7f..d937c55e717e 100644
---- a/arch/x86/include/asm/acenv.h
-+++ b/arch/x86/include/asm/acenv.h
-@@ -13,7 +13,19 @@
- 
- /* Asm macros */
- 
--#define ACPI_FLUSH_CPU_CACHE()	wbinvd()
-+/*
-+ * ACPI_FLUSH_CPU_CACHE() flushes caches on entering sleep states.
-+ * It is required to prevent data loss.
-+ *
-+ * While running inside virtual machine, the kernel can bypass cache flushing.
-+ * Changing sleep state in a virtual machine doesn't affect the host system
-+ * sleep state and cannot lead to data loss.
-+ */
-+#define ACPI_FLUSH_CPU_CACHE()					\
-+do {								\
-+	if (!cpu_feature_enabled(X86_FEATURE_HYPERVISOR))	\
-+		wbinvd();					\
-+} while (0)
- 
- int __acpi_acquire_global_lock(unsigned int *lock);
- int __acpi_release_global_lock(unsigned int *lock);
+diff --git a/tools/power/x86/turbostat/turbostat.c b/tools/power/x86/turbostat/turbostat.c
+index 988326b67a91..8bf6b01b3560 100644
+--- a/tools/power/x86/turbostat/turbostat.c
++++ b/tools/power/x86/turbostat/turbostat.c
+@@ -3865,6 +3865,7 @@ rapl_dram_energy_units_probe(int  model, double rapl_energy_units)
+ 	case INTEL_FAM6_HASWELL_X:	/* HSX */
+ 	case INTEL_FAM6_BROADWELL_X:	/* BDX */
+ 	case INTEL_FAM6_XEON_PHI_KNL:	/* KNL */
++	case INTEL_FAM6_ICELAKE_X:	/* ICX */
+ 		return (rapl_dram_energy_units = 15.3 / 1000000);
+ 	default:
+ 		return (rapl_energy_units);
 -- 
 2.35.1
 
