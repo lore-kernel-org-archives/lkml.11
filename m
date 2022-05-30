@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 416BBC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5936EC433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:56:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242141AbiE3Oy5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:54:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35676 "EHLO
+        id S242374AbiE3OzC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:55:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240867AbiE3OnL (ORCPT
+        with ESMTP id S241064AbiE3OnL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 30 May 2022 10:43:11 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAC7414B2C3
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 06:55:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB59394188
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 06:55:32 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <sha@pengutronix.de>)
-        id 1nvfrO-0007Um-PY; Mon, 30 May 2022 15:55:06 +0200
+        id 1nvfrO-0007Uo-PV; Mon, 30 May 2022 15:55:06 +0200
 Received: from [2a0a:edc0:0:1101:1d::28] (helo=dude02.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <sha@pengutronix.de>)
-        id 1nvfrO-005SmP-Ss; Mon, 30 May 2022 15:55:05 +0200
+        id 1nvfrP-005SmU-0H; Mon, 30 May 2022 15:55:05 +0200
 Received: from sha by dude02.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <sha@pengutronix.de>)
-        id 1nvfrL-004dIN-El; Mon, 30 May 2022 15:55:03 +0200
+        id 1nvfrL-004dIW-H0; Mon, 30 May 2022 15:55:03 +0200
 From:   Sascha Hauer <s.hauer@pengutronix.de>
 To:     linux-wireless@vger.kernel.org
 Cc:     Neo Jou <neojou@gmail.com>, Hans Ulli Kroll <linux@ulli-kroll.de>,
@@ -37,9 +37,9 @@ Cc:     Neo Jou <neojou@gmail.com>, Hans Ulli Kroll <linux@ulli-kroll.de>,
         Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
         kernel@pengutronix.de, Johannes Berg <johannes@sipsolutions.net>,
         Sascha Hauer <s.hauer@pengutronix.de>
-Subject: [PATCH v2 01/10] rtw88: Call rtw_fw_beacon_filter_config() with rtwdev->mutex held
-Date:   Mon, 30 May 2022 15:54:48 +0200
-Message-Id: <20220530135457.1104091-2-s.hauer@pengutronix.de>
+Subject: [PATCH v2 04/10] rtw88: Drop coex mutex
+Date:   Mon, 30 May 2022 15:54:51 +0200
+Message-Id: <20220530135457.1104091-5-s.hauer@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220530135457.1104091-1-s.hauer@pengutronix.de>
 References: <20220530135457.1104091-1-s.hauer@pengutronix.de>
@@ -53,28 +53,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-rtw_fw_beacon_filter_config() is called once with rtwdev->mutex held
-and once without the mutex held. Call it consistently with rtwdev->mutex
-held.
+coex->mutex is used in rtw_coex_info_request() only. Most callers of this
+function hold rtwdev->mutex already, except for one callsite in the
+debugfs code. The debugfs code alone doesn't justify the extra lock, so
+acquire rtwdev->mutex there as well and drop the now unnecessary
+spinlock.
 
 Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
 ---
- drivers/net/wireless/realtek/rtw88/mac80211.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/realtek/rtw88/coex.c  | 3 +--
+ drivers/net/wireless/realtek/rtw88/debug.c | 2 ++
+ drivers/net/wireless/realtek/rtw88/main.c  | 2 --
+ drivers/net/wireless/realtek/rtw88/main.h  | 2 --
+ 4 files changed, 3 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/wireless/realtek/rtw88/mac80211.c b/drivers/net/wireless/realtek/rtw88/mac80211.c
-index 5cdc54c9a9aae..3c07485d6ba47 100644
---- a/drivers/net/wireless/realtek/rtw88/mac80211.c
-+++ b/drivers/net/wireless/realtek/rtw88/mac80211.c
-@@ -466,8 +466,8 @@ static int rtw_ops_sta_remove(struct ieee80211_hw *hw,
- {
- 	struct rtw_dev *rtwdev = hw->priv;
+diff --git a/drivers/net/wireless/realtek/rtw88/coex.c b/drivers/net/wireless/realtek/rtw88/coex.c
+index cac053f485c3b..b156f8c48ffbb 100644
+--- a/drivers/net/wireless/realtek/rtw88/coex.c
++++ b/drivers/net/wireless/realtek/rtw88/coex.c
+@@ -633,7 +633,7 @@ static struct sk_buff *rtw_coex_info_request(struct rtw_dev *rtwdev,
+ 	struct rtw_coex *coex = &rtwdev->coex;
+ 	struct sk_buff *skb_resp = NULL;
  
--	rtw_fw_beacon_filter_config(rtwdev, false, vif);
- 	mutex_lock(&rtwdev->mutex);
-+	rtw_fw_beacon_filter_config(rtwdev, false, vif);
- 	rtw_sta_remove(rtwdev, sta, true);
- 	mutex_unlock(&rtwdev->mutex);
+-	mutex_lock(&coex->mutex);
++	lockdep_assert_held(&rtwdev->mutex);
+ 
+ 	rtw_fw_query_bt_mp_info(rtwdev, req);
+ 
+@@ -650,7 +650,6 @@ static struct sk_buff *rtw_coex_info_request(struct rtw_dev *rtwdev,
+ 	}
+ 
+ out:
+-	mutex_unlock(&coex->mutex);
+ 	return skb_resp;
+ }
+ 
+diff --git a/drivers/net/wireless/realtek/rtw88/debug.c b/drivers/net/wireless/realtek/rtw88/debug.c
+index 79939aa6b752c..1453a32ea3ef0 100644
+--- a/drivers/net/wireless/realtek/rtw88/debug.c
++++ b/drivers/net/wireless/realtek/rtw88/debug.c
+@@ -842,7 +842,9 @@ static int rtw_debugfs_get_coex_info(struct seq_file *m, void *v)
+ 	struct rtw_debugfs_priv *debugfs_priv = m->private;
+ 	struct rtw_dev *rtwdev = debugfs_priv->rtwdev;
+ 
++	mutex_lock(&rtwdev->mutex);
+ 	rtw_coex_display_coex_info(rtwdev, m);
++	mutex_unlock(&rtwdev->mutex);
+ 
+ 	return 0;
+ }
+diff --git a/drivers/net/wireless/realtek/rtw88/main.c b/drivers/net/wireless/realtek/rtw88/main.c
+index baf4d29fde678..5afb8bef9696a 100644
+--- a/drivers/net/wireless/realtek/rtw88/main.c
++++ b/drivers/net/wireless/realtek/rtw88/main.c
+@@ -1998,7 +1998,6 @@ int rtw_core_init(struct rtw_dev *rtwdev)
+ 	spin_lock_init(&rtwdev->tx_report.q_lock);
+ 
+ 	mutex_init(&rtwdev->mutex);
+-	mutex_init(&rtwdev->coex.mutex);
+ 	mutex_init(&rtwdev->hal.tx_power_mutex);
+ 
+ 	init_waitqueue_head(&rtwdev->coex.wait);
+@@ -2066,7 +2065,6 @@ void rtw_core_deinit(struct rtw_dev *rtwdev)
+ 	}
+ 
+ 	mutex_destroy(&rtwdev->mutex);
+-	mutex_destroy(&rtwdev->coex.mutex);
+ 	mutex_destroy(&rtwdev->hal.tx_power_mutex);
+ }
+ EXPORT_SYMBOL(rtw_core_deinit);
+diff --git a/drivers/net/wireless/realtek/rtw88/main.h b/drivers/net/wireless/realtek/rtw88/main.h
+index 619ee6e8d2807..fc27066a67a72 100644
+--- a/drivers/net/wireless/realtek/rtw88/main.h
++++ b/drivers/net/wireless/realtek/rtw88/main.h
+@@ -1507,8 +1507,6 @@ struct rtw_coex_stat {
+ };
+ 
+ struct rtw_coex {
+-	/* protects coex info request section */
+-	struct mutex mutex;
+ 	struct sk_buff_head queue;
+ 	wait_queue_head_t wait;
  
 -- 
 2.30.2
