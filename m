@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F52DC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:24:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B23EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:24:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237328AbiE3OX5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:23:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40142 "EHLO
+        id S237295AbiE3OYD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:24:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241178AbiE3ORU (ORCPT
+        with ESMTP id S241227AbiE3ORX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:17:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 043761146BC;
-        Mon, 30 May 2022 06:44:46 -0700 (PDT)
+        Mon, 30 May 2022 10:17:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B53C119076;
+        Mon, 30 May 2022 06:44:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9C871B80D83;
-        Mon, 30 May 2022 13:44:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 782DDC36AE5;
-        Mon, 30 May 2022 13:44:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 21F0460FA3;
+        Mon, 30 May 2022 13:44:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7113C385B8;
+        Mon, 30 May 2022 13:44:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918284;
-        bh=irNiHLPnjDX5xM02HqZO7BlPyD+MMDTayUwBSi+oCtk=;
+        s=k20201202; t=1653918296;
+        bh=YRtEwHD08cb4Y7oVvPxN160oBBescAXbtKKzdrhTbSs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kmiEZ/UL2yfwSm8616iKA5kxgnBTYKyCnk7QT+hgvotaV3QKdPWauGIZl3z++D6Br
-         RM+UD/P0G0RF763r+yULFmdz9j3PAZf9KxJ9Ilpjb9XeSIExJ/4JFvo97GCTrE9/IU
-         rl4ssvaF7b/mtpvjR0lmqz5qtM6u+q0vM20UEqiBD2BDxy9acuPdvAMbZ5UM/wiiPo
-         ceGJL6gdRrKoiBjxvQB/1xozCqpeW5jJJCJL6FctjEYfy9Ap8geByeJ/AslLNuSHCc
-         sJ4XUx/mFW5ALkMZ0jTMB+GjHlUs1z5MqyGvqdHa90d0Q7knig126p4LCS0iBMGDYq
-         BzRyaVGSG6VXQ==
+        b=B0B4+YPAhT7bCrTYAjwGRCZGyWk9mIm2Pe51Ske5542yxR8OxZu8wbFzoBQB+zEqa
+         r+shnXzrkyEbJC9wwqkJ3HKC3fHGBT4vxqy6+69MPjVj+gFAWeAi4lrYLEaj1WnjGh
+         mA23NuUEJ4lHVBPJNGey1pTn68eTfrUqhQpWBhIYCs3a85JcV29yGSHs+zUrvhegke
+         rKyD9UXjuw0XzxPEXIDO+NqA4xSr/wQlaISxWaxXY9TytQVhUYdaTBgXpoKUrtTuWm
+         az+uQ6d9sHgNYu1xr8mHfzZDetE5Mw0gZxsMFY1idIfH0r58ocZq4L+bt7M8D3u+Vt
+         48sTBY3GBnwwg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, linux-spi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 17/76] spi: spi-rspi: Remove setting {src,dst}_{addr,addr_width} based on DMA direction
-Date:   Mon, 30 May 2022 09:43:07 -0400
-Message-Id: <20220530134406.1934928-17-sashal@kernel.org>
+Cc:     Zheyu Ma <zheyuma97@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 22/76] media: pci: cx23885: Fix the error handling in cx23885_initdev()
+Date:   Mon, 30 May 2022 09:43:12 -0400
+Message-Id: <20220530134406.1934928-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530134406.1934928-1-sashal@kernel.org>
 References: <20220530134406.1934928-1-sashal@kernel.org>
@@ -53,68 +52,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Biju Das <biju.das.jz@bp.renesas.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit 6f381481a5b236cb53d6de2c49c6ef83a4d0f432 ]
+[ Upstream commit e8123311cf06d7dae71e8c5fe78e0510d20cd30b ]
 
-The direction field in the DMA config is deprecated. The rspi driver
-sets {src,dst}_{addr,addr_width} based on the DMA direction and
-it results in dmaengine_slave_config() failure as RZ DMAC driver
-validates {src,dst}_addr_width values independent of DMA direction.
+When the driver fails to call the dma_set_mask(), the driver will get
+the following splat:
 
-This patch fixes the issue by passing both {src,dst}_{addr,addr_width}
-values independent of DMA direction.
+[   55.853884] BUG: KASAN: use-after-free in __process_removed_driver+0x3c/0x240
+[   55.854486] Read of size 8 at addr ffff88810de60408 by task modprobe/590
+[   55.856822] Call Trace:
+[   55.860327]  __process_removed_driver+0x3c/0x240
+[   55.861347]  bus_for_each_dev+0x102/0x160
+[   55.861681]  i2c_del_driver+0x2f/0x50
 
-Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-Suggested-by: Vinod Koul <vkoul@kernel.org>
-Reviewed-by: Vinod Koul <vkoul@kernel.org>
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Link: https://lore.kernel.org/r/20220411173115.6619-1-biju.das.jz@bp.renesas.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+This is because the driver has initialized the i2c related resources
+in cx23885_dev_setup() but not released them in error handling, fix this
+bug by modifying the error path that jumps after failing to call the
+dma_set_mask().
+
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-rspi.c | 15 ++++++---------
- 1 file changed, 6 insertions(+), 9 deletions(-)
+ drivers/media/pci/cx23885/cx23885-core.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/spi/spi-rspi.c b/drivers/spi/spi-rspi.c
-index e39fd38f5180..ea03cc589e61 100644
---- a/drivers/spi/spi-rspi.c
-+++ b/drivers/spi/spi-rspi.c
-@@ -1107,14 +1107,11 @@ static struct dma_chan *rspi_request_dma_chan(struct device *dev,
+diff --git a/drivers/media/pci/cx23885/cx23885-core.c b/drivers/media/pci/cx23885/cx23885-core.c
+index 4e8132d4b2df..a23c025595a0 100644
+--- a/drivers/media/pci/cx23885/cx23885-core.c
++++ b/drivers/media/pci/cx23885/cx23885-core.c
+@@ -2154,7 +2154,7 @@ static int cx23885_initdev(struct pci_dev *pci_dev,
+ 	err = pci_set_dma_mask(pci_dev, 0xffffffff);
+ 	if (err) {
+ 		pr_err("%s/0: Oops: no 32bit PCI DMA ???\n", dev->name);
+-		goto fail_ctrl;
++		goto fail_dma_set_mask;
  	}
  
- 	memset(&cfg, 0, sizeof(cfg));
-+	cfg.dst_addr = port_addr + RSPI_SPDR;
-+	cfg.src_addr = port_addr + RSPI_SPDR;
-+	cfg.dst_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
-+	cfg.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
- 	cfg.direction = dir;
--	if (dir == DMA_MEM_TO_DEV) {
--		cfg.dst_addr = port_addr;
--		cfg.dst_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
--	} else {
--		cfg.src_addr = port_addr;
--		cfg.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
--	}
- 
- 	ret = dmaengine_slave_config(chan, &cfg);
- 	if (ret) {
-@@ -1145,12 +1142,12 @@ static int rspi_request_dma(struct device *dev, struct spi_controller *ctlr,
+ 	err = request_irq(pci_dev->irq, cx23885_irq,
+@@ -2162,7 +2162,7 @@ static int cx23885_initdev(struct pci_dev *pci_dev,
+ 	if (err < 0) {
+ 		pr_err("%s: can't get IRQ %d\n",
+ 		       dev->name, pci_dev->irq);
+-		goto fail_irq;
++		goto fail_dma_set_mask;
  	}
  
- 	ctlr->dma_tx = rspi_request_dma_chan(dev, DMA_MEM_TO_DEV, dma_tx_id,
--					     res->start + RSPI_SPDR);
-+					     res->start);
- 	if (!ctlr->dma_tx)
- 		return -ENODEV;
+ 	switch (dev->board) {
+@@ -2184,7 +2184,7 @@ static int cx23885_initdev(struct pci_dev *pci_dev,
  
- 	ctlr->dma_rx = rspi_request_dma_chan(dev, DMA_DEV_TO_MEM, dma_rx_id,
--					     res->start + RSPI_SPDR);
-+					     res->start);
- 	if (!ctlr->dma_rx) {
- 		dma_release_channel(ctlr->dma_tx);
- 		ctlr->dma_tx = NULL;
+ 	return 0;
+ 
+-fail_irq:
++fail_dma_set_mask:
+ 	cx23885_dev_unregister(dev);
+ fail_ctrl:
+ 	v4l2_ctrl_handler_free(hdl);
 -- 
 2.35.1
 
