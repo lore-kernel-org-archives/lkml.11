@@ -2,93 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE18DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 08:25:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA6B6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 08:26:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233823AbiE3IZw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 04:25:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57582 "EHLO
+        id S233827AbiE3I0l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 04:26:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229503AbiE3IZu (ORCPT
+        with ESMTP id S233518AbiE3I0j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 04:25:50 -0400
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9742170366
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 01:25:49 -0700 (PDT)
-Received: by mail-pf1-x430.google.com with SMTP id b135so9953673pfb.12
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 01:25:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=jZI6WVqWeYgtBaY+QfPTn8jMgzc1eYPXPJ030wAMSgY=;
-        b=tu7dZq2fa+/+cBLFAnJ9WpUxgjW8BRP2wCO8KDg6zJ1sVpv8ObnsyOCZomVzCE51WC
-         /YN0WtyzjKOn0odpnTxPx3Y1g3wSZjCQgjqH1Q7vKyRydmS+yt4x5g+wwUkM0oMnf9be
-         Tq/ffy+Girj1TD5MBIFw0jF5vPqCt5Ik7S5lZ3TDrMxbxXWkT8iHUq8yMg3/fNASr7yk
-         cJql96YDFQv3N7/rMm1ljSrsArm8BFpK3LJ193qpGoUmqP4I1PgnaQW53/yf+jimyTcg
-         Bcrpdd3nbjgbn5KqW/GDNthbWmTNZyxnL13r9IsbId0h+N5qq0gMnqpVP3fdTbiO3q5o
-         +uiw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=jZI6WVqWeYgtBaY+QfPTn8jMgzc1eYPXPJ030wAMSgY=;
-        b=N1Fvs/AMCj+W6bTxpXe/xqToZFUInUkPpurk41JkGVvwC+25KSFiEkcUAA8sOyyP4P
-         6Zh1rQP5S8eAECSOBQ2gQxuyb/wq6wsLjgc4Sl41/RgQ6wHjRazJgCjA4+Rbs+qytooo
-         1SprQanOhHj2sGfXIQKLDRxF+F84d4sYGspo3+AAclvr5QjNQdJCZg8iB1B124l8vM6K
-         n4XdH65y/dCCtqcjFPEZ6y2WrSiVKb77sBICdl7PkiVyhG7d1RI66nMtbcN8jGnJA4O7
-         zFVelwbmyEW0a3r4y0IilUt4Lcp/zKJZJrDFO6gxtO51eixkdZ7VoiHNWc2tWA2/hMR5
-         Pb5w==
-X-Gm-Message-State: AOAM533auDIEIbRgIRykFTfEGCKlpDzV7Uz3neScZBUBrFZRfzBZTXcI
-        JF6Vv4pk2AO+2N5c8qAxGsxfgg==
-X-Google-Smtp-Source: ABdhPJyRh6+exQcNpjgCh/yNzciF9P0YOK/KwR2+UV9+M85WLLazzyvmZ5Z2lQA7LawDRMZ1tQbW+g==
-X-Received: by 2002:a63:7781:0:b0:3f6:2c8f:5c75 with SMTP id s123-20020a637781000000b003f62c8f5c75mr47260605pgc.358.1653899149165;
-        Mon, 30 May 2022 01:25:49 -0700 (PDT)
-Received: from localhost ([2408:8207:18da:2310:2071:e13a:8aa:cacf])
-        by smtp.gmail.com with ESMTPSA id f66-20020a636a45000000b003c14af50603sm7927993pgc.27.2022.05.30.01.25.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 May 2022 01:25:48 -0700 (PDT)
-Date:   Mon, 30 May 2022 16:25:42 +0800
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     Vasily Averin <vvs@openvz.org>
-Cc:     Vlastimil Babka <vbabka@suse.cz>, kernel@openvz.org,
-        linux-kernel@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        Shakeel Butt <shakeelb@google.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Matthew Wilcox <willy@infradead.org>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        David Rientjes <rientjes@google.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Christoph Lameter <cl@linux.com>,
-        Michal Hocko <mhocko@suse.com>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Subject: Re: [PATCH v5] tracing: add 'accounted' entry into output of
- allocation tracepoints
-Message-ID: <YpR/hl6/Fk/vOVKa@FVFYT0MHHV2J>
-References: <c7f687a8-637c-b119-6e3a-7dacc885b851@suse.cz>
- <80bcb043-3782-1d81-d8a2-4bdcb213cf30@openvz.org>
+        Mon, 30 May 2022 04:26:39 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1755C63E3
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 01:26:38 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id C9C0E1F9D1;
+        Mon, 30 May 2022 08:26:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1653899196; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=yB78K+idfIOhoquiDkc12+zxCwXF1N7eE1XHWyLJ5vM=;
+        b=YJcm463Y7/cO9dzFQpkc+gUhjQ/W8Al+YEIl7aM4VSGo+yG7ynyRFwsOQogzGAAmZVrcW0
+        fQlKwqd3mHwiL7MEmM2Qb5vC9q7etJjOCqT7fkUqy+r0ApyqxeRqszQCUChv2Sc+OA1vOg
+        +OOdEVeHx0NVPIvbcjLE8cqsPm1ToRI=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 6B59313AFD;
+        Mon, 30 May 2022 08:26:36 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 41fwGLx/lGLgEgAAMHmgww
+        (envelope-from <jgross@suse.com>); Mon, 30 May 2022 08:26:36 +0000
+From:   Juergen Gross <jgross@suse.com>
+To:     xen-devel@lists.xenproject.org, x86@kernel.org,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Cc:     Juergen Gross <jgross@suse.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH] xen: replace xen_remap() with memremap()
+Date:   Mon, 30 May 2022 10:26:34 +0200
+Message-Id: <20220530082634.6339-1-jgross@suse.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <80bcb043-3782-1d81-d8a2-4bdcb213cf30@openvz.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 30, 2022 at 10:47:26AM +0300, Vasily Averin wrote:
-> Slab caches marked with SLAB_ACCOUNT force accounting for every
-> allocation from this cache even if __GFP_ACCOUNT flag is not passed.
-> Unfortunately, at the moment this flag is not visible in ftrace output,
-> and this makes it difficult to analyze the accounted allocations.
-> 
-> This patch adds boolean "accounted" entry into trace output,
-> and set it to 'true' for calls used __GFP_ACCOUNT flag and
-> for allocations from caches marked with SLAB_ACCOUNT.
-> 
-> Signed-off-by: Vasily Averin <vvs@openvz.org>
+xen_remap() is used to establish mappings for frames not under direct
+control of the kernel: for Xenstore and console ring pages, and for
+grant pages of non-PV guests.
 
-Acked-by: Muchun Song <songmuchun@bytedance.com>
+Today xen_remap() is defined to use ioremap() on x86 (doing uncached
+mappings), and ioremap_cache() on Arm (doing cached mappings).
 
-Thanks.
+Uncached mappings for those use cases are bad for performance, so they
+should be avoided if possible. As all use cases of xen_remap() don't
+require uncached mappings (the mapped area is always physical RAM),
+a mapping using the standard WB cache mode is fine.
+
+As sparse is flagging some of the xen_remap() use cases to be not
+appropriate for iomem(), as the result is not annotated with the
+__iomem modifier, eliminate xen_remap() completely and replace all
+use cases with memremap() specifying the MEMREMAP_WB caching mode.
+
+xen_unmap() can be replaced with memunmap().
+
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Juergen Gross <jgross@suse.com>
+---
+ arch/x86/include/asm/xen/page.h   | 3 ---
+ drivers/tty/hvc/hvc_xen.c         | 2 +-
+ drivers/xen/grant-table.c         | 6 +++---
+ drivers/xen/xenbus/xenbus_probe.c | 8 ++++----
+ include/xen/arm/page.h            | 3 ---
+ 5 files changed, 8 insertions(+), 14 deletions(-)
+
+diff --git a/arch/x86/include/asm/xen/page.h b/arch/x86/include/asm/xen/page.h
+index 1fc67df50014..fa9ec20783fa 100644
+--- a/arch/x86/include/asm/xen/page.h
++++ b/arch/x86/include/asm/xen/page.h
+@@ -347,9 +347,6 @@ unsigned long arbitrary_virt_to_mfn(void *vaddr);
+ void make_lowmem_page_readonly(void *vaddr);
+ void make_lowmem_page_readwrite(void *vaddr);
+ 
+-#define xen_remap(cookie, size) ioremap((cookie), (size))
+-#define xen_unmap(cookie) iounmap((cookie))
+-
+ static inline bool xen_arch_need_swiotlb(struct device *dev,
+ 					 phys_addr_t phys,
+ 					 dma_addr_t dev_addr)
+diff --git a/drivers/tty/hvc/hvc_xen.c b/drivers/tty/hvc/hvc_xen.c
+index ebaf7500f48f..7c23112dc923 100644
+--- a/drivers/tty/hvc/hvc_xen.c
++++ b/drivers/tty/hvc/hvc_xen.c
+@@ -253,7 +253,7 @@ static int xen_hvm_console_init(void)
+ 	if (r < 0 || v == 0)
+ 		goto err;
+ 	gfn = v;
+-	info->intf = xen_remap(gfn << XEN_PAGE_SHIFT, XEN_PAGE_SIZE);
++	info->intf = memremap(gfn << XEN_PAGE_SHIFT, XEN_PAGE_SIZE, MEMREMAP_WB);
+ 	if (info->intf == NULL)
+ 		goto err;
+ 	info->vtermno = HVC_COOKIE;
+diff --git a/drivers/xen/grant-table.c b/drivers/xen/grant-table.c
+index 1a1aec0a88a1..2f4f0ed5d8f8 100644
+--- a/drivers/xen/grant-table.c
++++ b/drivers/xen/grant-table.c
+@@ -632,7 +632,7 @@ int gnttab_setup_auto_xlat_frames(phys_addr_t addr)
+ 	if (xen_auto_xlat_grant_frames.count)
+ 		return -EINVAL;
+ 
+-	vaddr = xen_remap(addr, XEN_PAGE_SIZE * max_nr_gframes);
++	vaddr = memremap(addr, XEN_PAGE_SIZE * max_nr_gframes, MEMREMAP_WB);
+ 	if (vaddr == NULL) {
+ 		pr_warn("Failed to ioremap gnttab share frames (addr=%pa)!\n",
+ 			&addr);
+@@ -640,7 +640,7 @@ int gnttab_setup_auto_xlat_frames(phys_addr_t addr)
+ 	}
+ 	pfn = kcalloc(max_nr_gframes, sizeof(pfn[0]), GFP_KERNEL);
+ 	if (!pfn) {
+-		xen_unmap(vaddr);
++		memunmap(vaddr);
+ 		return -ENOMEM;
+ 	}
+ 	for (i = 0; i < max_nr_gframes; i++)
+@@ -659,7 +659,7 @@ void gnttab_free_auto_xlat_frames(void)
+ 	if (!xen_auto_xlat_grant_frames.count)
+ 		return;
+ 	kfree(xen_auto_xlat_grant_frames.pfn);
+-	xen_unmap(xen_auto_xlat_grant_frames.vaddr);
++	memunmap(xen_auto_xlat_grant_frames.vaddr);
+ 
+ 	xen_auto_xlat_grant_frames.pfn = NULL;
+ 	xen_auto_xlat_grant_frames.count = 0;
+diff --git a/drivers/xen/xenbus/xenbus_probe.c b/drivers/xen/xenbus/xenbus_probe.c
+index d367f2bd2b93..58b732dcbfb8 100644
+--- a/drivers/xen/xenbus/xenbus_probe.c
++++ b/drivers/xen/xenbus/xenbus_probe.c
+@@ -752,8 +752,8 @@ static void xenbus_probe(void)
+ 	xenstored_ready = 1;
+ 
+ 	if (!xen_store_interface) {
+-		xen_store_interface = xen_remap(xen_store_gfn << XEN_PAGE_SHIFT,
+-						XEN_PAGE_SIZE);
++		xen_store_interface = memremap(xen_store_gfn << XEN_PAGE_SHIFT,
++					       XEN_PAGE_SIZE, MEMREMAP_WB);
+ 		/*
+ 		 * Now it is safe to free the IRQ used for xenstore late
+ 		 * initialization. No need to unbind: it is about to be
+@@ -1009,8 +1009,8 @@ static int __init xenbus_init(void)
+ #endif
+ 			xen_store_gfn = (unsigned long)v;
+ 			xen_store_interface =
+-				xen_remap(xen_store_gfn << XEN_PAGE_SHIFT,
+-					  XEN_PAGE_SIZE);
++				memremap(xen_store_gfn << XEN_PAGE_SHIFT,
++					 XEN_PAGE_SIZE, MEMREMAP_WB);
+ 			if (xen_store_interface->connection != XENSTORE_CONNECTED)
+ 				wait = true;
+ 		}
+diff --git a/include/xen/arm/page.h b/include/xen/arm/page.h
+index 7e199c6656b9..e5c84ff28c8b 100644
+--- a/include/xen/arm/page.h
++++ b/include/xen/arm/page.h
+@@ -109,9 +109,6 @@ static inline bool set_phys_to_machine(unsigned long pfn, unsigned long mfn)
+ 	return __set_phys_to_machine(pfn, mfn);
+ }
+ 
+-#define xen_remap(cookie, size) ioremap_cache((cookie), (size))
+-#define xen_unmap(cookie) iounmap((cookie))
+-
+ bool xen_arch_need_swiotlb(struct device *dev,
+ 			   phys_addr_t phys,
+ 			   dma_addr_t dev_addr);
+-- 
+2.35.3
+
