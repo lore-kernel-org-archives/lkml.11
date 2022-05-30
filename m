@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAAD5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:31:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C2E0C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:31:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237121AbiE3Nbl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:31:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58316 "EHLO
+        id S237145AbiE3Nbq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:31:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237222AbiE3NaO (ORCPT
+        with ESMTP id S237309AbiE3NaU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:30:14 -0400
+        Mon, 30 May 2022 09:30:20 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 284B44D616;
-        Mon, 30 May 2022 06:26:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64DE88B0BC;
+        Mon, 30 May 2022 06:27:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 49975B80C9C;
-        Mon, 30 May 2022 13:26:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6C63C385B8;
-        Mon, 30 May 2022 13:26:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A6F9BB80D84;
+        Mon, 30 May 2022 13:27:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26A9FC3411A;
+        Mon, 30 May 2022 13:27:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917208;
-        bh=0um7h6J74b9iCwQNa3KP+UZfrgaiwOgLoUiCqYjh1tU=;
+        s=k20201202; t=1653917227;
+        bh=8RMiVVctj3sV0L6ZoUUur3BAGcCQ+VEqyIgyBivg9YM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pZLed3WyktGT6a5om6DOJBvHmOLuFDBHoMqlQOsT38ajdXZFsUdyUntLu8aPnhQ1p
-         QKtZea/IMa3/hAhkU16mckaUvZWIaIJGxRWwgD12Qb/BFMunl4AShzKWWPlFQbUcjM
-         6QylHU1NdxxlbFHMss2VLgHutoX0XYcSwHxaLauCMJPAHpan3VBmKQfBfydGeq3Esn
-         iAm9jDBHK13PXcYWmPVMXJJd2KSGmr/ZppvMKsC53jGZChEfF4Xqb3IW/yxwZMWeOQ
-         ixslyzrqrhy/rOpajJXEk5dMEOIe51PmR4ozS24Ry+uQcm9Ag14mAnmWNnuqosznY4
-         cpW78NMJPjL0g==
+        b=J/DG/UZgDYlYks7dEwKqDo91ZK/dr2ImlOqmtFiwDe0Q/bBksZzTgcJXhWCdq0os5
+         m4iACe6lC8T4B2NKNFVcszbVz42WLAf60dQ8jl0G0XTnHx+B9EWEG9v7dLcg1zaRNM
+         eLWfI1SaupRdG09wW24E/XfYtk4MCYn5lGixO7TRCCnRldfa4JbCy8Y8WWQrEA825m
+         ay8qrQHNAMbfWtd5QkDOEiM2ZrRwk2sZMxpHSgFgVPxUHfSaRYmWcqW1C1bD+9Otys
+         MyFoC1DoC2/6lkdN2XlBlFuhZR9zmZf/AvAmrmEBY0cZ96kyauLaIPHRnIwbgDZNfQ
+         ep1wM/QTcoELw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lv Ruyi <lv.ruyi@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, kashyap.desai@broadcom.com,
-        sumit.saxena@broadcom.com, shivasharan.srikanteshwara@broadcom.com,
-        jejb@linux.ibm.com, megaraidlinux.pdl@broadcom.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 058/159] scsi: megaraid: Fix error check return value of register_chrdev()
-Date:   Mon, 30 May 2022 09:22:43 -0400
-Message-Id: <20220530132425.1929512-58-sashal@kernel.org>
+Cc:     Mark Brown <broonie@kernel.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Sasha Levin <sashal@kernel.org>, will@kernel.org,
+        maz@kernel.org, mark.rutland@arm.com, vladimir.murzin@arm.com,
+        joey.gouly@arm.com, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.18 063/159] arm64/sme: Add ID_AA64SMFR0_EL1 to __read_sysreg_by_encoding()
+Date:   Mon, 30 May 2022 09:22:48 -0400
+Message-Id: <20220530132425.1929512-63-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
@@ -54,36 +54,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+From: Mark Brown <broonie@kernel.org>
 
-[ Upstream commit c5acd61dbb32b6bda0f3a354108f2b8dcb788985 ]
+[ Upstream commit 8a58bcd00e2e8d46afce468adc09fcd7968f514c ]
 
-If major equals 0, register_chrdev() returns an error code when it fails.
-This function dynamically allocates a major and returns its number on
-success, so we should use "< 0" to check it instead of "!".
+We need to explicitly enumerate all the ID registers which we rely on
+for CPU capabilities in __read_sysreg_by_encoding(), ID_AA64SMFR0_EL1 was
+missed from this list so we trip a BUG() in paths which rely on that
+function such as CPU hotplug. Add the register.
 
-Link: https://lore.kernel.org/r/20220418105755.2558828-1-lv.ruyi@zte.com.cn
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Link: https://lore.kernel.org/r/20220427130828.162615-1-broonie@kernel.org
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/megaraid.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/kernel/cpufeature.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/scsi/megaraid.c b/drivers/scsi/megaraid.c
-index a5d8cee2d510..bf491af9f0d6 100644
---- a/drivers/scsi/megaraid.c
-+++ b/drivers/scsi/megaraid.c
-@@ -4607,7 +4607,7 @@ static int __init megaraid_init(void)
- 	 * major number allocation.
- 	 */
- 	major = register_chrdev(0, "megadev_legacy", &megadev_fops);
--	if (!major) {
-+	if (major < 0) {
- 		printk(KERN_WARNING
- 				"megaraid: failed to register char device\n");
- 	}
+diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
+index 2cb9cc9e0eff..0182da409ec9 100644
+--- a/arch/arm64/kernel/cpufeature.c
++++ b/arch/arm64/kernel/cpufeature.c
+@@ -1287,6 +1287,7 @@ u64 __read_sysreg_by_encoding(u32 sys_id)
+ 	read_sysreg_case(SYS_ID_AA64PFR0_EL1);
+ 	read_sysreg_case(SYS_ID_AA64PFR1_EL1);
+ 	read_sysreg_case(SYS_ID_AA64ZFR0_EL1);
++	read_sysreg_case(SYS_ID_AA64SMFR0_EL1);
+ 	read_sysreg_case(SYS_ID_AA64DFR0_EL1);
+ 	read_sysreg_case(SYS_ID_AA64DFR1_EL1);
+ 	read_sysreg_case(SYS_ID_AA64MMFR0_EL1);
 -- 
 2.35.1
 
