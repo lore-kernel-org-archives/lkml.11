@@ -2,50 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60974C47080
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:03:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 291A3C47082
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:03:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239812AbiE3OCk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:02:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60768 "EHLO
+        id S239985AbiE3ODC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:03:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238832AbiE3Nxr (ORCPT
+        with ESMTP id S239118AbiE3Nzt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:53:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBC4B941A5;
-        Mon, 30 May 2022 06:37:50 -0700 (PDT)
+        Mon, 30 May 2022 09:55:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2348D954B5;
+        Mon, 30 May 2022 06:38:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C3C71B80DB7;
-        Mon, 30 May 2022 13:37:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1D36C36AE9;
-        Mon, 30 May 2022 13:37:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A35E560FA2;
+        Mon, 30 May 2022 13:38:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6430C3411A;
+        Mon, 30 May 2022 13:38:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917867;
-        bh=CEB7zLhOIcLwSOQl4CUWTYbGqt5Qvom65s0Ym0hUi8w=;
+        s=k20201202; t=1653917892;
+        bh=jZEgMm0KNJeI+GnzujA/0rjwS4NentbhatM0X+GZL3I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iXWV4B2W3zkXEdSKhPQyb63ZNdvU+panq4YymTnXXmZ5b7ZwMdaxfWArslA+ELbKS
-         qlXndvr5HgVS7GiWeWnRkQUgQ0ZEso895SXZYTNnXvPA0ToseB9PdGCXzvJBnY+TxU
-         u82p3W/FC0xtOjD7zSiZk9N5BZLuYB2rALAUg/XulT8D9KBNuKizCb+iRyLpTkRTf5
-         WGYU+1neUjatMZTSVBWTGOcg5KvvPVL5F6QkMJ4itcDrR924zqBKSxiDCAHsDSoxMI
-         l11dG5/h3cjpi2bdlxgWGdQDtMJ8vhWqruvxJldKC9az301Ej8orVoACO8j48JcZwE
-         /Jh+5BMiNk42w==
+        b=Rkdlx8htNtAoR2l5TauDVQGTsHBg74X3u6CYpCceFrbl57WeFLHHzqvyuhVX7ZhXe
+         iylrWjI46tuvMitUtoCEUdy9x+JGPPoh+ZrOfUETyX4zptzoNWrev+DHVxNvYJ6zOE
+         GNoLMoXLgG80s4psKlz7yp4BDjpZoGQ9td93z5C9D1nhHKgI8a1qI5b+QGnWdw2GEY
+         W/RN7ZyIdFx47KzNB02YwW3o9d2tFWJoO8PcIjRlyQ3hCVMxdQYNoJojGmmzw4Mz15
+         sgF0xxt5lE8/cK/jV2pSD85LHSJsUpnWa/y0j1Tu/3cqs5jbH5pJvwa+q91rg9U7Io
+         LAMTDQZIVXoJA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        kernel test robot <lkp@intel.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Sasha Levin <sashal@kernel.org>, wg@grandegger.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, ndesaulniers@google.com,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        llvm@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.17 122/135] can: mcp251xfd: silence clang's -Wunaligned-access warning
-Date:   Mon, 30 May 2022 09:31:20 -0400
-Message-Id: <20220530133133.1931716-122-sashal@kernel.org>
+Cc:     David Howells <dhowells@redhat.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 131/135] afs: Adjust ACK interpretation to try and cope with NAT
+Date:   Mon, 30 May 2022 09:31:29 -0400
+Message-Id: <20220530133133.1931716-131-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
@@ -57,62 +54,153 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit 1a6dd9996699889313327be03981716a8337656b ]
+[ Upstream commit adc9613ff66c26ebaff9814973181ac178beb90b ]
 
-clang emits a -Wunaligned-access warning on union
-mcp251xfd_tx_ojb_load_buf.
+If a client's address changes, say if it is NAT'd, this can disrupt an in
+progress operation.  For most operations, this is not much of a problem,
+but StoreData can be different as some servers modify the target file as
+the data comes in, so if a store request is disrupted, the file can get
+corrupted on the server.
 
-The reason is that field hw_tx_obj (not declared as packed) is being
-packed right after a 16 bits field inside a packed struct:
+The problem is that the server doesn't recognise packets that come after
+the change of address as belonging to the original client and will bounce
+them, either by sending an OUT_OF_SEQUENCE ACK to the apparent new call if
+the packet number falls within the initial sequence number window of a call
+or by sending an EXCEEDS_WINDOW ACK if it falls outside and then aborting
+it.  In both cases, firstPacket will be 1 and previousPacket will be 0 in
+the ACK information.
 
-| union mcp251xfd_tx_obj_load_buf {
-| 	struct __packed {
-| 		struct mcp251xfd_buf_cmd cmd;
-| 		  /* ^ 16 bits fields */
-| 		struct mcp251xfd_hw_tx_obj_raw hw_tx_obj;
-| 		  /* ^ not declared as packed */
-| 	} nocrc;
-| 	struct __packed {
-| 		struct mcp251xfd_buf_cmd_crc cmd;
-| 		struct mcp251xfd_hw_tx_obj_raw hw_tx_obj;
-| 		__be16 crc;
-| 	} crc;
-| } ____cacheline_aligned;
+Fix this by the following means:
 
-Starting from LLVM 14, having an unpacked struct nested in a packed
-struct triggers a warning. c.f. [1].
+ (1) If a client call receives an EXCEEDS_WINDOW ACK with firstPacket as 1
+     and previousPacket as 0, assume this indicates that the server saw the
+     incoming packets from a different peer and thus as a different call.
+     Fail the call with error -ENETRESET.
 
-This is a false positive because the field is always being accessed
-with the relevant put_unaligned_*() function. Adding __packed to the
-structure declaration silences the warning.
+ (2) Also fail the call if a similar OUT_OF_SEQUENCE ACK occurs if the
+     first packet has been hard-ACK'd.  If it hasn't been hard-ACK'd, the
+     ACK packet will cause it to get retransmitted, so the call will just
+     be repeated.
 
-[1] https://github.com/llvm/llvm-project/issues/55520
+ (3) Make afs_select_fileserver() treat -ENETRESET as a straight fail of
+     the operation.
 
-Link: https://lore.kernel.org/all/20220518114357.55452-1-mailhol.vincent@wanadoo.fr
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Reported-by: kernel test robot <lkp@intel.com>
-Tested-by: Nathan Chancellor <nathan@kernel.org> # build
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+ (4) Prioritise the error code over things like -ECONNRESET as the server
+     did actually respond.
+
+ (5) Make writeback treat -ENETRESET as a retryable error and make it
+     redirty all the pages involved in a write so that the VM will retry.
+
+Note that there is still a circumstance that I can't easily deal with: if
+the operation is fully received and processed by the server, but the reply
+is lost due to address change.  There's no way to know if the op happened.
+We can examine the server, but a conflicting change could have been made by
+a third party - and we can't tell the difference.  In such a case, a
+message like:
+
+    kAFS: vnode modified {100058:146266} b7->b8 YFS.StoreData64 (op=2646a)
+
+will be logged to dmesg on the next op to touch the file and the client
+will reset the inode state, including invalidating clean parts of the
+pagecache.
+
+Reported-by: Marc Dionne <marc.dionne@auristor.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: linux-afs@lists.infradead.org
+Link: http://lists.infradead.org/pipermail/linux-afs/2021-December/004811.html # v1
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/spi/mcp251xfd/mcp251xfd.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/afs/misc.c     |  5 ++++-
+ fs/afs/rotate.c   |  4 ++++
+ fs/afs/write.c    |  1 +
+ net/rxrpc/input.c | 27 +++++++++++++++++++++++++++
+ 4 files changed, 36 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/can/spi/mcp251xfd/mcp251xfd.h b/drivers/net/can/spi/mcp251xfd/mcp251xfd.h
-index f551c900803e..aed6e9d47517 100644
---- a/drivers/net/can/spi/mcp251xfd/mcp251xfd.h
-+++ b/drivers/net/can/spi/mcp251xfd/mcp251xfd.h
-@@ -434,7 +434,7 @@ struct mcp251xfd_hw_tef_obj {
- /* The tx_obj_raw version is used in spi async, i.e. without
-  * regmap. We have to take care of endianness ourselves.
-  */
--struct mcp251xfd_hw_tx_obj_raw {
-+struct __packed mcp251xfd_hw_tx_obj_raw {
- 	__le32 id;
- 	__le32 flags;
- 	u8 data[sizeof_field(struct canfd_frame, data)];
+diff --git a/fs/afs/misc.c b/fs/afs/misc.c
+index 1d1a8debe472..933e67fcdab1 100644
+--- a/fs/afs/misc.c
++++ b/fs/afs/misc.c
+@@ -163,8 +163,11 @@ void afs_prioritise_error(struct afs_error *e, int error, u32 abort_code)
+ 		return;
+ 
+ 	case -ECONNABORTED:
++		error = afs_abort_to_error(abort_code);
++		fallthrough;
++	case -ENETRESET: /* Responded, but we seem to have changed address */
+ 		e->responded = true;
+-		e->error = afs_abort_to_error(abort_code);
++		e->error = error;
+ 		return;
+ 	}
+ }
+diff --git a/fs/afs/rotate.c b/fs/afs/rotate.c
+index 79e1a5f6701b..a840c3588ebb 100644
+--- a/fs/afs/rotate.c
++++ b/fs/afs/rotate.c
+@@ -292,6 +292,10 @@ bool afs_select_fileserver(struct afs_operation *op)
+ 		op->error = error;
+ 		goto iterate_address;
+ 
++	case -ENETRESET:
++		pr_warn("kAFS: Peer reset %s (op=%x)\n",
++			op->type ? op->type->name : "???", op->debug_id);
++		fallthrough;
+ 	case -ECONNRESET:
+ 		_debug("call reset");
+ 		op->error = error;
+diff --git a/fs/afs/write.c b/fs/afs/write.c
+index f447c902318d..07454b1ed240 100644
+--- a/fs/afs/write.c
++++ b/fs/afs/write.c
+@@ -638,6 +638,7 @@ static ssize_t afs_write_back_from_locked_folio(struct address_space *mapping,
+ 	case -EKEYEXPIRED:
+ 	case -EKEYREJECTED:
+ 	case -EKEYREVOKED:
++	case -ENETRESET:
+ 		afs_redirty_pages(wbc, mapping, start, len);
+ 		mapping_set_error(mapping, ret);
+ 		break;
+diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
+index dc201363f2c4..67d3eba60dc7 100644
+--- a/net/rxrpc/input.c
++++ b/net/rxrpc/input.c
+@@ -903,6 +903,33 @@ static void rxrpc_input_ack(struct rxrpc_call *call, struct sk_buff *skb)
+ 				  rxrpc_propose_ack_respond_to_ack);
+ 	}
+ 
++	/* If we get an EXCEEDS_WINDOW ACK from the server, it probably
++	 * indicates that the client address changed due to NAT.  The server
++	 * lost the call because it switched to a different peer.
++	 */
++	if (unlikely(buf.ack.reason == RXRPC_ACK_EXCEEDS_WINDOW) &&
++	    first_soft_ack == 1 &&
++	    prev_pkt == 0 &&
++	    rxrpc_is_client_call(call)) {
++		rxrpc_set_call_completion(call, RXRPC_CALL_REMOTELY_ABORTED,
++					  0, -ENETRESET);
++		return;
++	}
++
++	/* If we get an OUT_OF_SEQUENCE ACK from the server, that can also
++	 * indicate a change of address.  However, we can retransmit the call
++	 * if we still have it buffered to the beginning.
++	 */
++	if (unlikely(buf.ack.reason == RXRPC_ACK_OUT_OF_SEQUENCE) &&
++	    first_soft_ack == 1 &&
++	    prev_pkt == 0 &&
++	    call->tx_hard_ack == 0 &&
++	    rxrpc_is_client_call(call)) {
++		rxrpc_set_call_completion(call, RXRPC_CALL_REMOTELY_ABORTED,
++					  0, -ENETRESET);
++		return;
++	}
++
+ 	/* Discard any out-of-order or duplicate ACKs (outside lock). */
+ 	if (!rxrpc_is_ack_valid(call, first_soft_ack, prev_pkt)) {
+ 		trace_rxrpc_rx_discard_ack(call->debug_id, ack_serial,
 -- 
 2.35.1
 
