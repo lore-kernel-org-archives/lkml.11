@@ -2,87 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C16DDC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 06:28:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80452C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 06:28:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232693AbiE3G2Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 02:28:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37476 "EHLO
+        id S232832AbiE3G2d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 02:28:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232388AbiE3G2Y (ORCPT
+        with ESMTP id S232694AbiE3G2Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 02:28:24 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C027B25EAF;
-        Sun, 29 May 2022 23:28:18 -0700 (PDT)
-X-UUID: beb414e58d2c4899bcc7c4da52594413-20220530
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:a195ec36-b888-41bb-b4a1-9208f132fbd3,OB:0,LO
-        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:105
-X-CID-INFO: VERSION:1.1.5,REQID:a195ec36-b888-41bb-b4a1-9208f132fbd3,OB:0,LOB:
-        0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3D,AC
-        TION:quarantine,TS:105
-X-CID-META: VersionHash:2a19b09,CLOUDID:f2cff847-4fb1-496b-8f1d-39e733fed1ea,C
-        OID:4c6178cddb7c,Recheck:0,SF:28|16|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:1,File:nil,QS:0,BEC:nil
-X-UUID: beb414e58d2c4899bcc7c4da52594413-20220530
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
-        (envelope-from <lina.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1226521694; Mon, 30 May 2022 14:28:10 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Mon, 30 May 2022 14:28:09 +0800
-Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by
- mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Mon, 30 May 2022 14:28:08 +0800
-From:   Lina Wang <lina.wang@mediatek.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        "Maciej enczykowski" <maze@google.com>, <netdev@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <lkp@intel.com>,
-        <rong.a.chen@intel.com>, kernel test robot <oliver.sang@intel.com>,
-        Lina Wang <lina.wang@mediatek.com>
-Subject: [PATCH] selftests net: fix bpf build error
-Date:   Mon, 30 May 2022 14:21:26 +0800
-Message-ID: <20220530062126.27808-1-lina.wang@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+        Mon, 30 May 2022 02:28:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8096E12630;
+        Sun, 29 May 2022 23:28:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 35AC5B80B9D;
+        Mon, 30 May 2022 06:28:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C580FC341CB;
+        Mon, 30 May 2022 06:28:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653892101;
+        bh=XDzSIoHWePkmP+hpw6NVJQ2xptrOcdraIZACeo0G99g=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=QcJjk/Inplt4PZq9fjYRnwhB9hUn6LTrjwBSL6gpDtXYnyadjF+DGlGse6l1zTloW
+         kCzkvEfOizdurZrM9A3+xqlPnxZGHVDNaALT9IibCphP/bN8mh4XcHTZUQ2nWmx4bD
+         1uz7rNyx+o3r2XV6XgdtWTYR4CZEfuiK88ZUe88mo6yQfPG4celZl9OzmJV7tS42x6
+         DVGxWyiPH/hFI1lb47pKaDa5uERPNS9UwYMpCGW8r8BKc/NrjtN64PHXd2yG/ClUT6
+         RXTuGOgZRcbaSrUCqPgbzl0iSTuWMvID1Jvsbye0r/0uXIO5EWmwRECloRm0gD+Yjr
+         4KsgaK3Uk6QNw==
+Received: by mail-vs1-f51.google.com with SMTP id b7so9931572vsq.1;
+        Sun, 29 May 2022 23:28:21 -0700 (PDT)
+X-Gm-Message-State: AOAM533M0XK43njrW1enHlotiZ/tElsQYuOWj0M/HJ7oTJEPR2hYY4uM
+        JKmARiT8Ewy0oHVlAIPpuzoMHHhpY8+PBRw3CAc=
+X-Google-Smtp-Source: ABdhPJxEAsyCh28072V1AnS6ZttgQlEUduuZqZSfbFoSlejtUq2u+WNsxkkpfH04f8xnjxHcuhayk+gBn3uuHKqnFdg=
+X-Received: by 2002:a67:e899:0:b0:337:932a:2fc5 with SMTP id
+ x25-20020a67e899000000b00337932a2fc5mr18547320vsn.40.1653892100644; Sun, 29
+ May 2022 23:28:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <CAK8P3a2_52JPnBWNvTTkFVwLxPAa7=NaQ4whwC1UeH_NYHeUKQ@mail.gmail.com>
+ <CAK8P3a0SpU1n+29KQxzKnPRvzmDE=L0V9RUpKxhemv=74kevcQ@mail.gmail.com> <875ylomq3m.wl-maz@kernel.org>
+In-Reply-To: <875ylomq3m.wl-maz@kernel.org>
+From:   Huacai Chen <chenhuacai@kernel.org>
+Date:   Mon, 30 May 2022 14:28:09 +0800
+X-Gmail-Original-Message-ID: <CAAhV-H4icDqABQiT4ckKdsmfVzqBKjxncDt9649c2ijOD093gw@mail.gmail.com>
+Message-ID: <CAAhV-H4icDqABQiT4ckKdsmfVzqBKjxncDt9649c2ijOD093gw@mail.gmail.com>
+Subject: Re: [GIT PULL] asm-generic changes for 5.19
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     Arnd Bergmann <arnd@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Huacai Chen <chenhuacai@loongson.cn>,
+        WANG Xuerui <kernel@xen0n.name>, libc-alpha@sourceware.org,
+        musl@lists.openwall.com, Ard Biesheuvel <ardb@kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-bpf_helpers.h has been moved to tools/lib/bpf since 5.10, so add more
-incliding path.
+On Sun, May 29, 2022 at 9:21 PM Marc Zyngier <maz@kernel.org> wrote:
+>
+> On Sun, 29 May 2022 12:24:29 +0100,
+> Arnd Bergmann <arnd@kernel.org> wrote:
+> >
+> > On Thu, May 26, 2022 at 5:00 PM Arnd Bergmann <arnd@kernel.org> wrote:
+> > > - A series to add a generic ticket spinlock that can be shared by most
+> > >   architectures with a working cmpxchg or ll/sc type atomic, including
+> > >   the conversion of riscv, csky and openrisc. This series is also a
+> > >   prerequisite for the loongarch64 architecture port that will come as
+> > >   a separate pull request.
+> >
+> > An update on Loongarch: I was originally planning to  send Linus a
+> > pull request with
+> > the branch with the contents from
+> >
+> > https://git.kernel.org/pub/scm/linux/kernel/git/chenhuacai/linux-loongson.git/log/?h=loongarch-next
+> >
+> > but I saw that this includes both the architecture code and some
+> > device drivers (irqchip, pci, acpi) that are essential for the
+> > kernel to actually boot. At least the irqchip driver has not passed
+> > review because it uses a nonstandard way to integrate into ACPI, and
+> > the PCI stuff may or may not be ready but has no Reviewed-by or
+> > Acked-by tags from the maintainers. I clearly don't want to bypass
+> > the subsystem maintainers on those drivers by sending a pull request
+> > for the current branch.
+>
+> It seems that there is now a new contributor on the irqchip front, and
+> the current approach *should* be better than the "copy MIPS and run"
+> approach that was previously taken. I'm still to find time to review
+> the new series (I just came back from a week off), but hopefully next
+> week.
+>
+> > My feeling is that there is also no point in merging a port without
+> > the drivers as it cannot work on any hardware. On the other hand,
+> > the libc submissions (glibc and musl) are currently blocked while
+> > they are waiting for the kernel port to get merged.
+>
+> I'd tend to agree. But if on the other hand the userspace ABI is
+> clearly defined, I think it could make sense to go for it (if I
+> remember well, we merged arm64 without any support irqchip support,
+> and the arm64 GIC support appeared later in the game).
+(adding linux-pci and linux-acpi maintainers to Cc)
 
-Fixes: edae34a3ed92 ("selftests net: add UDP GRO fraglist + bpf self-tests")
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Signed-off-by: Lina Wang <lina.wang@mediatek.com>
----
- tools/testing/selftests/net/bpf/Makefile | 1 +
- 1 file changed, 1 insertion(+)
+Hi Bjorn and Rafael,
 
-diff --git a/tools/testing/selftests/net/bpf/Makefile b/tools/testing/selftests/net/bpf/Makefile
-index f91bf14bbee7..070251986dbe 100644
---- a/tools/testing/selftests/net/bpf/Makefile
-+++ b/tools/testing/selftests/net/bpf/Makefile
-@@ -2,6 +2,7 @@
- 
- CLANG ?= clang
- CCINCLUDE += -I../../bpf
-+CCINCLUDE += -I../../../../lib
- CCINCLUDE += -I../../../../../usr/include/
- 
- TEST_CUSTOM_PROGS = $(OUTPUT)/bpf/nat6to4.o
--- 
-2.18.0
+I'd like to confirm the review status of the respective LoongArch
+patchsets ([1], [2]), to see if we can make it into this merge window.
 
+Specifically:
+
+I'd like to confirm with Bjorn, if the PCI patches are in a reasonable
+shape and can get an Acked-by.
+
+And Rafael: would you sync with the ACPICA repos to bring in the
+LoongArch changes upstreamed there?
+
+[1]: https://lore.kernel.org/linux-pci/20220430084846.3127041-1-chenhuacai@loongson.cn/T/#t
+[2]: https://lore.kernel.org/linux-acpi/20220306111838.810959-1-chenhuacai@loongson.cn/T/#t
+
+Thanks,
+Huacai
+
+>
+> Thanks,
+>
+>         M.
+>
+> --
+> Without deviation from the norm, progress is not possible.
