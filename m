@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14F0FC38A2B
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:41:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4854EC38A2E
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 13:41:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237191AbiE3Nl0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 09:41:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55770 "EHLO
+        id S237556AbiE3Nlb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 09:41:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238223AbiE3Nge (ORCPT
+        with ESMTP id S237805AbiE3Nfq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 09:36:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCD4C986F4;
-        Mon, 30 May 2022 06:29:57 -0700 (PDT)
+        Mon, 30 May 2022 09:35:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FE07954A4;
+        Mon, 30 May 2022 06:28:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C93CD60DD5;
-        Mon, 30 May 2022 13:29:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5668DC385B8;
-        Mon, 30 May 2022 13:29:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 397DFB80DB2;
+        Mon, 30 May 2022 13:28:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5283AC3411F;
+        Mon, 30 May 2022 13:28:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917396;
-        bh=ZY+9bOivnNwE6I+fPAkFM/4luhtBKoOnJATkvk/5Qi4=;
+        s=k20201202; t=1653917336;
+        bh=7Cf6JB2q1A9OGemJDYVSx1pjXiSzVu0Yuw1kwfazgNM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LKWDdkmAmuXEdbYEdtWJ7BjE2gNyK3EfmK93fRYvCWgjp4djLMJxvw1LEnoqNqC9C
-         PfiYXvYMRzYZ7KVmQC45GgpwT5uCzAUbQuoXK/RQgV2O9ugyptLSxzMXQpK62JJfwc
-         50jgguIRnERIkYzV4D4DiCqgkqnE984cOWI/J59t+m1mVAg1fGGds3wIUnl10m4NcB
-         UqvMO3UgynGKtmjqEPKuvKB+q1RlX1w+SO4B/I6u4FqGtiNLE2pcScSIHlwVUM5CH7
-         QQmo5pS5koX3XForG1U3GNjITbkOGOT+anmMOyYSJbo8m0qi0Hme1M7Qn3v8zL441A
-         aqFsZCgDgCaVg==
+        b=N+pmp3iBfoJA77WpsPr8E2WVtbJgfxpkdj6HUxxfIMYdNOLT3RtVI1jdxIvg8oXC6
+         e34YJ4buwHM4PxsAqN/TWd/w/JtRHKY4CN0oFzK6CwQvkfdoAFxeWxyE0wkodNxZz8
+         qjHsFn36JoHqNsiyW7q7N5/0BoLwNJXGOgBwRTcjtVfHnzaLCv4l76cPhsRMdreTYC
+         s1SPZRxAk4KICazhfwPI2JdbWRXIP0fdfxSEg0mQhDxgy5Hle5s1vPmMJJifRI96EK
+         TtCjh2kwEKidl+kXc0ny8EC4Nxi1Efvk0OUGZlNB2SvicjdXDAC1778Ur+8TbUFTs1
+         1yFq/PGPOJH5w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zijun Hu <quic_zijuhu@quicinc.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>, johan.hedberg@gmail.com,
-        luiz.dentz@gmail.com, linux-bluetooth@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 121/159] Bluetooth: btusb: Set HCI_QUIRK_BROKEN_ERR_DATA_REPORTING for QCA
-Date:   Mon, 30 May 2022 09:23:46 -0400
-Message-Id: <20220530132425.1929512-121-sashal@kernel.org>
+Cc:     Mikulas Patocka <mpatocka@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Sasha Levin <sashal@kernel.org>, m.szyprowski@samsung.com,
+        iommu@lists.linux-foundation.org
+Subject: [PATCH AUTOSEL 5.18 100/159] dma-debug: change allocation mode from GFP_NOWAIT to GFP_ATIOMIC
+Date:   Mon, 30 May 2022 09:23:25 -0400
+Message-Id: <20220530132425.1929512-100-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
@@ -52,47 +52,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zijun Hu <quic_zijuhu@quicinc.com>
+From: Mikulas Patocka <mpatocka@redhat.com>
 
-[ Upstream commit 247f226adadfb7be09dd537f177429f4415aef8e ]
+[ Upstream commit 84bc4f1dbbbb5f8aa68706a96711dccb28b518e5 ]
 
-Set HCI_QUIRK_BROKEN_ERR_DATA_REPORTING for QCA controllers since
-they answer HCI_OP_READ_DEF_ERR_DATA_REPORTING with error code
-"UNKNOWN HCI COMMAND" as shown below:
+We observed the error "cacheline tracking ENOMEM, dma-debug disabled"
+during a light system load (copying some files). The reason for this error
+is that the dma_active_cacheline radix tree uses GFP_NOWAIT allocation -
+so it can't access the emergency memory reserves and it fails as soon as
+anybody reaches the watermark.
 
-[  580.517552] Bluetooth: hci0: unexpected cc 0x0c5a length: 1 < 2
-[  580.517660] Bluetooth: hci0: Opcode 0x c5a failed: -38
+This patch changes GFP_NOWAIT to GFP_ATOMIC, so that it can access the
+emergency memory reserves.
 
-hcitool -i hci0 cmd 0x03 0x5a
-< HCI Command: ogf 0x03, ocf 0x005a, plen 0
-> HCI Event: 0x0e plen 4
-  01 5A 0C 01
-
-btmon log:
-< HCI Command: Read Default Erroneous Data Reporting (0x03|0x005a) plen 0
-> HCI Event: Command Complete (0x0e) plen 4
-      Read Default Erroneous Data Reporting (0x03|0x005a) ncmd 1
-        Status: Unknown HCI Command (0x01)
-
-Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bluetooth/btusb.c | 1 +
- 1 file changed, 1 insertion(+)
+ kernel/dma/debug.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
-index 06a854a2507e..e48c3ad069bb 100644
---- a/drivers/bluetooth/btusb.c
-+++ b/drivers/bluetooth/btusb.c
-@@ -3339,6 +3339,7 @@ static int btusb_setup_qca(struct hci_dev *hdev)
- 	 * work with the likes of HSP/HFP mSBC.
- 	 */
- 	set_bit(HCI_QUIRK_BROKEN_ENHANCED_SETUP_SYNC_CONN, &hdev->quirks);
-+	set_bit(HCI_QUIRK_BROKEN_ERR_DATA_REPORTING, &hdev->quirks);
- 
- 	return 0;
- }
+diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
+index f8ff598596b8..ac740630c79c 100644
+--- a/kernel/dma/debug.c
++++ b/kernel/dma/debug.c
+@@ -448,7 +448,7 @@ void debug_dma_dump_mappings(struct device *dev)
+  * other hand, consumes a single dma_debug_entry, but inserts 'nents'
+  * entries into the tree.
+  */
+-static RADIX_TREE(dma_active_cacheline, GFP_NOWAIT);
++static RADIX_TREE(dma_active_cacheline, GFP_ATOMIC);
+ static DEFINE_SPINLOCK(radix_lock);
+ #define ACTIVE_CACHELINE_MAX_OVERLAP ((1 << RADIX_TREE_MAX_TAGS) - 1)
+ #define CACHELINE_PER_PAGE_SHIFT (PAGE_SHIFT - L1_CACHE_SHIFT)
 -- 
 2.35.1
 
