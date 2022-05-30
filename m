@@ -2,131 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED668C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 15:10:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A1ADC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 15:10:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239446AbiE3PKm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 11:10:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55878 "EHLO
+        id S240140AbiE3PKw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 11:10:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242029AbiE3PKO (ORCPT
+        with ESMTP id S242520AbiE3PKX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 11:10:14 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84C0F5F24E
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 07:08:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653919700; x=1685455700;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version;
-  bh=4UKqK9LTE8r/QhEwT/GHcr6rLTi06cgfbkbko9SrhVU=;
-  b=a02bX00PkLEw1zZo8rJ44HnsmPMSlgxEqFZA66rNstSySsZ3NMDdy2EE
-   uKf2xGofMe8KL1+QYa0lJLkFcIJXKXdEoFmIDVL7R6K6zUjnjjXaHCxYN
-   qRTHy9n464cRhnnJX4iUw6kk5myDzQ44rmOtyMcfIVYIjuyn4VWD8qq/2
-   Nv41L25/Msqf9hL9+Xj8e6MCCdW/D8qD3dBrsVDBkJoi/Zx/Ez9nSMzku
-   0bcMY7/XghUU2YFByYBELGJOztDj5Ta9w7o6RgHwKn0ROp2KSzmTzNEQm
-   5bUEA23Sj45qXQnufsmPBY9yuxwhDP6xjnBu9XqgWdlJoHSVMVvLf5PZD
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10363"; a="255497083"
-X-IronPort-AV: E=Sophos;i="5.91,263,1647327600"; 
-   d="scan'208";a="255497083"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2022 07:08:20 -0700
-X-IronPort-AV: E=Sophos;i="5.91,263,1647327600"; 
-   d="scan'208";a="605206585"
-Received: from jkuna-mobl.ger.corp.intel.com (HELO localhost) ([10.249.150.228])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2022 07:08:14 -0700
-From:   Jani Nikula <jani.nikula@intel.com>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Viresh Kumar <vireshk@kernel.org>,
-        Shiraz Hashim <shiraz.linux.kernel@gmail.com>,
-        Ville =?utf-8?B?U3lyasOkbMOk?= <ville.syrjala@linux.intel.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        SoC Team <soc@kernel.org>, Julia Lawall <Julia.Lawall@inria.fr>
-Subject: Re: mainline build failure due to f1e4c916f97f ("drm/edid: add EDID
- block count and size helpers")
-In-Reply-To: <CAK8P3a0HNOCOSx9UONw6gf1UUU8J4iAOmMFP8-DtJ3O7XAACsQ@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-References: <YpCUzStDnSgQLNFN@debian>
- <CAHk-=wg0uGAX5DYZq+tY2KeUAR8DtR91YE1y9CkPMKkKOyE4jg@mail.gmail.com>
- <CADVatmNGPbSdRNQuwJEWAaPtqb3vBYRjvsuBpoRUnhEHj=X5GQ@mail.gmail.com>
- <CAHk-=wisQd8yiPX=SsK3eFiakKo713hq4SyqPWsJ-oyAmLFefQ@mail.gmail.com>
- <YpIR67FMtTGCwARZ@debian>
- <CAHk-=wjuyHE=1wLgHncub8FfgeyYqfWYsy4-YrhAvq9991h_Aw@mail.gmail.com>
- <CAHk-=wi_hJV0V=Ecg2dzbe2P_H1XKTu6VP_AtCH6u=tis31ayg@mail.gmail.com>
- <CAK8P3a0-QyOQiieEvM0yQb43XbCtPmeao8UvoAsdFnjCxYPz7Q@mail.gmail.com>
- <CAHk-=whfmwzjF4eBPYS6pHFqHVzJF3m=2h=gRWSRyHks8V=ABA@mail.gmail.com>
- <87a6aztli2.fsf@intel.com> <877d63tleq.fsf@intel.com>
- <CAK8P3a0-S77QLR1dK3NT6ot7JTAD5AdojAZJr-Xi112-v5EOdw@mail.gmail.com>
- <87czfvrwsv.fsf@intel.com>
- <CAK8P3a0HNOCOSx9UONw6gf1UUU8J4iAOmMFP8-DtJ3O7XAACsQ@mail.gmail.com>
-Date:   Mon, 30 May 2022 17:08:11 +0300
-Message-ID: <874k17ru44.fsf@intel.com>
+        Mon, 30 May 2022 11:10:23 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2BF3268FBB
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 07:08:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653919738;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=B2gLpclaR1OD0ds87WG+CHvKTXHfN/d11Umv3JQ16uk=;
+        b=i4eVQY8/OuyGo/HSRvQLvvO4/TipVOqarRFyD0VwnbUJE3xJF5xLpG04/eunrZaWAlZgDV
+        d4fHqT4fmqC7c9sobrXvlIznG4rfLpEP4TXBzH/D5BMZ5xMMbrQgD627J4QlA5tEBscmpV
+        o0qanxIyBhz8E6jKkMBBUsliEhqDJtg=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-649-UzopWHUSOW202Wxlj5ukTw-1; Mon, 30 May 2022 10:08:56 -0400
+X-MC-Unique: UzopWHUSOW202Wxlj5ukTw-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 60F6180013E;
+        Mon, 30 May 2022 14:08:56 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.8])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id AA74EC15E72;
+        Mon, 30 May 2022 14:08:55 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH] afs: Fix infinite loop found by xfstest generic/676
+From:   David Howells <dhowells@redhat.com>
+To:     marc.dionne@auristor.com
+Cc:     linux-afs@lists.infradead.org, dhowells@redhat.com,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Mon, 30 May 2022 15:08:54 +0100
+Message-ID: <165391973497.110268.2939296942213894166.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/1.4
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 30 May 2022, Arnd Bergmann <arnd@arndb.de> wrote:
-> On Mon, May 30, 2022 at 3:10 PM Jani Nikula <jani.nikula@intel.com> wrote:
->> >
->> > I think in general, most __packed annotations we have in the kernel are
->> > completely pointless because they do not change the structure layout on
->> > any architecture but instead just make member access slower on
->>
->> Please explain.
->>
->> They are used quite a bit for parsing blob data, or
->> serialization/deserialization, like in the EDID case at hand. Try
->> removing __attribute__((packed)) from include/drm/drm_edid.h and see the
->> sizeof(struct edid) on any architecture.
->
-> The annotations for edid are completely correct and necessary. However
-> other driver authors just slap __packed annotations on any structure
-> even if the layout is not fixed at all like:
+In AFS, a directory is handled as a file that the client downloads and
+parses locally for the purposes of performing lookup and getdents
+operations.  The in-kernel afs filesystem has a number of functions that do
+this.  A directory file is arranged as a series of 2K blocks divided into
+32-byte slots, where a directory entry occupies one or more slots, plus
+each block starts with one or more metadata blocks.
 
-Right. Thanks for the examples.
+When parsing a block, if the last slots are occupied by a dirent that
+occupies more than a single slot and the file position points at a slot
+that's not the initial one, the logic in afs_dir_iterate_block() that skips
+over it won't advance the file pointer to the end of it.  This will cause
+an infinite loop in getdents() as it will keep retrying that block and
+failing to advance beyond the final entry.
 
-> struct my_driver_priv {
->        struct device dev;
->        u8 causes_misalignment;
->        spinlock_t lock;
->        atomic_t counter;
-> } __packed; /* this annotation is harmful because it breaks the atomics */
+Fix this by advancing the file pointer if the next entry will be beyond it
+when we skip a block.
 
-I wonder if this is something that could be caught with coccinelle. Or
-sparse. Are there any cases where this combo is necessary? (I can't
-think of any, but it's a low bar. ;)
+This was found by the generic/676 xfstest but can also be triggered with
+something like:
 
-Cc: Julia.
+	~/xfstests-dev/src/t_readdir_3 /xfstest.test/z 4000 1
 
-> or if the annotation does not change the layout like
->
-> struct my_dma_descriptor {
->      __le64 address;
->      __le64 length;
-> } __packed; /* does not change layout but makes access slow on some
-> architectures */
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Marc Dionne <marc.dionne@auristor.com>
+cc: linux-afs@lists.infradead.org
+---
 
-Why is this the case, though? I'd imagine the compiler could figure this
-out.
+ fs/afs/dir.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/fs/afs/dir.c b/fs/afs/dir.c
+index 932e61e28e5d..bdac73554e6e 100644
+--- a/fs/afs/dir.c
++++ b/fs/afs/dir.c
+@@ -463,8 +463,11 @@ static int afs_dir_iterate_block(struct afs_vnode *dvnode,
+ 		}
+ 
+ 		/* skip if starts before the current position */
+-		if (offset < curr)
++		if (offset < curr) {
++			if (next > curr)
++				ctx->pos = blkoff + next * sizeof(union afs_xdr_dirent);
+ 			continue;
++		}
+ 
+ 		/* found the next entry */
+ 		if (!dir_emit(ctx, dire->u.name, nlen,
 
 
-BR,
-Jani.
-
--- 
-Jani Nikula, Intel Open Source Graphics Center
