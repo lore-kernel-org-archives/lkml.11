@@ -2,129 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88003C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 15:04:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0506C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 15:10:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240290AbiE3PD6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 11:03:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38932 "EHLO
+        id S238325AbiE3PKf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 11:10:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243235AbiE3PBs (ORCPT
+        with ESMTP id S242067AbiE3PKP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 11:01:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71BAC74DEB;
-        Mon, 30 May 2022 07:02:09 -0700 (PDT)
+        Mon, 30 May 2022 11:10:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBF3243386
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 07:08:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E02261138;
-        Mon, 30 May 2022 14:02:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 872F7C385B8;
-        Mon, 30 May 2022 14:02:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 964C0B80D83
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 14:08:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9A30C385B8;
+        Mon, 30 May 2022 14:08:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653919328;
-        bh=C2X5kSVfJKWy7iJa8rZT/0Escr5C771N57orGsEtS1E=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=m2VzrdOoPJY4ZJttjh9yFNKKEJwm9RcAA9PY+8FsNzXxT6aAEq1JV9+owT9gl/EQZ
-         7hl+yP33+Pjd9g3H+G0JFCraxieuBqqgJNgzUqdOvdTI+7yzcq1bmfYgOAXPixaseQ
-         Y6P7yZALek06IX16wvn3SYbrThPO2siGOkGD8q5tOK2hlUaenKjEks7cv7U/f2iBDV
-         SqDFpxhRToU4Kxh8qRPlgKDUSNKoP1jPaWRYcs2eIWwey90Ay9P7Vhx9KAgrMT/xM6
-         jtEVfKJwQL/lafRqwqvyUUGIufPMicAKUEZUGsWPlVWFUUXBjGVQuHctK1XrVjv7ch
-         oHSFGfaKkprZQ==
-Message-ID: <9915b7b556106d2a525941141755adcca9e50163.camel@kernel.org>
-Subject: Re: [PATCH -next,v2] fuse: return the more nuanced writeback error
- on close()
-From:   Jeff Layton <jlayton@kernel.org>
-To:     Miklos Szeredi <miklos@szeredi.hu>,
-        Al Viro <viro@zeniv.linux.org.uk>
-Cc:     ChenXiaoSong <chenxiaosong2@huawei.com>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        liuyongqiang13@huawei.com, "zhangyi (F)" <yi.zhang@huawei.com>,
-        zhangxiaoxu5@huawei.com, Steve French <smfrench@gmail.com>,
-        NeilBrown <neilb@suse.de>
-Date:   Mon, 30 May 2022 10:02:06 -0400
-In-Reply-To: <CAJfpegt-+6oSCxx1-LHet4qm4s7p0jSoP9Vg8PJka3=1dqBXng@mail.gmail.com>
-References: <20220523014838.1647498-1-chenxiaosong2@huawei.com>
-         <CAJfpegt-+6oSCxx1-LHet4qm4s7p0jSoP9Vg8PJka3=1dqBXng@mail.gmail.com>
-Content-Type: text/plain; charset="ISO-8859-15"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.1 (3.44.1-1.fc36) 
+        s=k20201202; t=1653919708;
+        bh=6yJwH0Qtege0fuuWHs7JPfABW5rmIkEq/jLLe+CmRzo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=r1f3GrY9+U+HeLvwqqAKYP47U7iTcvJBrSMMllVaow2UUZ+KwaXx7nfmbYfSOY8Gm
+         bYI+O9PH8zJG8ZpiPx8D+0f7PHTVLcZy8f1MvJSE69hEUj/DDwJNQJ220qZLXcc0TC
+         4KI9PuOvrXZ+IFgYpITnyUsz5jPtJuOt+l3pYwijdU3Q4rU9D4DrkycjQY3I+SL482
+         m9LWu9tnV0kW/K3g1hAwbwTvDJTA0Qu2LTE/Nm0XHhAWtjyFbhhAIY2evZMApO5XJp
+         8oevlYAcegECpNW4jF3AuBUgIY1g2aoR0DCLR6B3nXsDQjrofMhc/Ob2AnpETV2/ym
+         +I1MolQBkhjVg==
+Date:   Mon, 30 May 2022 16:08:24 +0200
+From:   Mark Brown <broonie@kernel.org>
+To:     Raghu Bankapur <quic_rbankapu@quicinc.com>
+Cc:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        Krishna Jha <quic_kkishorj@quicinc.com>
+Subject: Re: [PATCH V0 0/1] asoc: msm: use hashtable to check kcontrol
+Message-ID: <YpTP2JOlCiYb3lBf@sirena.org.uk>
+References: <cover.1653813866.git.quic_rbankapu@quicinc.com>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="aIU0NN+cmsmUm//m"
+Content-Disposition: inline
+In-Reply-To: <cover.1653813866.git.quic_rbankapu@quicinc.com>
+X-Cookie: May your camel be as swift as the wind.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-05-30 at 14:13 +0200, Miklos Szeredi wrote:
-> On Mon, 23 May 2022 at 03:35, ChenXiaoSong <chenxiaosong2@huawei.com> wro=
-te:
-> >=20
-> > As filemap_check_errors() only report -EIO or -ENOSPC, we return more n=
-uanced
-> > writeback error -(file->f_mapping->wb_err & MAX_ERRNO).
-> >=20
-> >   filemap_write_and_wait
-> >     filemap_write_and_wait_range
-> >       filemap_check_errors
-> >         -ENOSPC or -EIO
-> >   filemap_check_wb_err
-> >     errseq_check
-> >       return -(file->f_mapping->wb_err & MAX_ERRNO)
-> >=20
-> > Signed-off-by: ChenXiaoSong <chenxiaosong2@huawei.com>
-> > ---
-> >  fs/fuse/file.c | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)
-> >=20
-> > diff --git a/fs/fuse/file.c b/fs/fuse/file.c
-> > index f18d14d5fea1..9917bc2795e6 100644
-> > --- a/fs/fuse/file.c
-> > +++ b/fs/fuse/file.c
-> > @@ -488,10 +488,10 @@ static int fuse_flush(struct file *file, fl_owner=
-_t id)
-> >         inode_unlock(inode);
-> >=20
-> >         err =3D filemap_check_errors(file->f_mapping);
-> > +       /* return more nuanced writeback errors */
-> >         if (err)
-> > -               return err;
-> > +               return filemap_check_wb_err(file->f_mapping, 0);
->=20
-> I'm wondering if this should be file_check_and_advance_wb_err() instead.
->=20
 
-I think that it probably shouldn't be, actually. Reason below...
+--aIU0NN+cmsmUm//m
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> Is there a difference between ->flush() and ->fsync()?
->=20
-> Jeff, can you please help?
->=20
->=20
+On Sun, May 29, 2022 at 02:20:08PM +0530, Raghu Bankapur wrote:
+> use hashtabe instead of linear list to check kcontrol before
+> adding them for improving early audio KPI.
 
-The main difference is that ->flush is called from filp_close, so it's
-called when a file descriptor (or equivalent) is being torn down out,
-whereas ->fsync is (obviously) called from the fsync codepath.
+Please don't send cover letters for single patches, if there is anything
+that needs saying put it in the changelog of the patch or after the ---
+if it's administrative stuff.  This reduces mail volume and ensures that=20
+any important information is recorded in the changelog rather than being
+lost.=20
 
-We _must_ report writeback errors on fsync, but reporting them on the
-close() syscall is less clear. The thing about close() is that it's
-going be successful no matter what is returned. The file descriptor will
-no longer work afterward regardless.
+--aIU0NN+cmsmUm//m
+Content-Type: application/pgp-signature; name="signature.asc"
 
-fsync also must also initiate writeback of all the buffered data, but
-it's not required for filesystems to do that on close() (and in fact,
-there are good reasons not to if you can). A successful close() tells
-you nothing about whether your data made it to the backing store. It
-might just not have been synced out yet.
+-----BEGIN PGP SIGNATURE-----
 
-Personally, I think it's probably best to _not_ return writeback errors
-on close at all. The only "legitimate" error on close is -EBADF.
-Arguably, we should make ->flush be void return. Note that most
-filp_close callers ignore the error anyway, so it's not much of a
-stretch.
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKUz9IACgkQJNaLcl1U
+h9ChTQf/duQmG7wg4bgtA5ruZ3mBY8YxW6zE2kB6eqkK00oVcl8BC5+DLbJMf3JT
+cRJrInl97+FLPrAe5+IsILEucvqReiz/Vh90tjpFYD4MP70CCyufAP5eSuyvWaw0
+737IcMy/8iopHT07ME/Q4phDk016xu0G4Iz7AJOiW9ksELBo7RRvvE/HgtB1ePRM
+EpWJzYamz2MYdWgWudkfEoEkHKIN+Lh/i7h+EmqoW1+cKqqzejVIBxkxi7C8ZAZT
+CPKhmiamN/+xb9UlTTz1vOaswdNcr6/SJFVKNNCvubKzcMh1KTiYNuoHJVu9EWy/
+b5Lx/nYA6OgE8CCdZ97av2i4n+CEng==
+=ggfw
+-----END PGP SIGNATURE-----
 
-In any case, if you do decide to return errors in fuse_flush, then
-advancing the cursor would also have the effect of masking writeback
-errors on dup()'ed file descriptors, and I don't think you want to do
-that.
---=20
-Jeff Layton <jlayton@kernel.org>
+--aIU0NN+cmsmUm//m--
