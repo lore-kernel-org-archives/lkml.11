@@ -2,51 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B95F0C4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:21:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 391FCC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 30 May 2022 14:21:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240623AbiE3OT7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 10:19:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40156 "EHLO
+        id S240672AbiE3OUK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 10:20:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240471AbiE3OPy (ORCPT
+        with ESMTP id S240211AbiE3OPu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 10:15:54 -0400
+        Mon, 30 May 2022 10:15:50 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 566CAEC3FC;
-        Mon, 30 May 2022 06:43:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5DE7EBEAC;
+        Mon, 30 May 2022 06:43:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E952B60F38;
-        Mon, 30 May 2022 13:43:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40142C3411F;
-        Mon, 30 May 2022 13:43:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F1FD60FA3;
+        Mon, 30 May 2022 13:43:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11F49C385B8;
+        Mon, 30 May 2022 13:43:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918211;
-        bh=k0V0CGh24QZpI6yNSYhiwQtHgkrRzv0OACgWzWYIktE=;
+        s=k20201202; t=1653918205;
+        bh=N1l8lCNJGWmwdoM3egaNG/XblC4sYN2MH6gwREaDxqI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q157JKIWkKUZ3guDLN8oex1goi7YbW9bR5O6xphACwgCgkjH6ZAg8SwyOpyRsWJ3p
-         YK0crmvHGwsWTZfuKkDpFIrzXbtTonvRzM8KPB7XYdpmIq0zxlx0slTfWhydbaPmPY
-         NkSGEAQRJFn7VzeugLUNRKc3Pp5J2QejbvY93gZ7L7EciipQ9vLOKb1VtYJjENEnr8
-         rS1FTgRCnrQ1vQiaqQyIhzQcJdoWOmyWoRKi6cGaU+QGXiB/C4u0kjbhPoy2jXt9KW
-         qcP2NTE3O4M5ewxg6WBnVVDOZU82uB4OhWlWcVtkt9XBJzzj/B9+Ueoz6sdb4oYe+U
-         +5T67uyJsANiw==
+        b=V4wE3ipTctb95vlObHZTm1BPR73Ft577uhIG89wwyU9IWJYID2fURDjlgDJARtnJL
+         eCIdp7uzwf7iTnHC2aIDs3oxZ6Rf5ApQ8fjbEfi0DsWozvXJEk/ped0m16bYkreRdc
+         nf72YDGPvnT5V35F9+DTryU+rDfjbimcHIrKbxFZH3T7Y+BOAnrlMCis88fZ6pOKcB
+         xVNXdtx3w9UenlweKmXGb4didTBrCTD1wbn8aZkcdS3GI9kOjMUWSz43OwypNqfMqP
+         63KgrQ9dbt1vwZvTgCiahsdT4N+7zolDt5QzXiOha/4hbKM0k1zVyQIlR9+UFctgqQ
+         JJYs5W1wIGy3Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Pierre Gondois <Pierre.Gondois@arm.com>,
-        Pierre Gondois <pierre.gondois@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
-        linux-acpi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 095/109] ACPI: CPPC: Assume no transition latency if no PCCT
-Date:   Mon, 30 May 2022 09:38:11 -0400
-Message-Id: <20220530133825.1933431-95-sashal@kernel.org>
+Cc:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        kernel test robot <yujie.liu@intel.com>,
+        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
+        perex@perex.cz, tiwai@suse.com, ckeepax@opensource.cirrus.com,
+        srinivas.kandagatla@linaro.org, tanureal@opensource.cirrus.com,
+        james.schulman@cirrus.com, cy_huang@richtek.com,
+        hdegoede@redhat.com, pbrobinson@gmail.com,
+        alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.15 093/109] ASoC: max98357a: remove dependency on GPIOLIB
+Date:   Mon, 30 May 2022 09:38:09 -0400
+Message-Id: <20220530133825.1933431-93-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
 References: <20220530133825.1933431-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -54,94 +59,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre Gondois <Pierre.Gondois@arm.com>
+From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 
-[ Upstream commit 6380b7b2b29da9d9c5ab2d4a265901cd93ba3696 ]
+[ Upstream commit 21ca3274333f5c1cbbf9d91e5b33f4f2463859b2 ]
 
-The transition_delay_us (struct cpufreq_policy) is currently defined
-as:
-  Preferred average time interval between consecutive invocations of
-  the driver to set the frequency for this policy.  To be set by the
-  scaling driver (0, which is the default, means no preference).
-The transition_latency represents the amount of time necessary for a
-CPU to change its frequency.
+commit dcc2c012c7691 ("ASoC: Fix gpiolib dependencies") removed a
+series of unnecessary dependencies on GPIOLIB when the gpio was
+optional.
 
-A PCCT table advertises mutliple values:
-- pcc_nominal: Expected latency to process a command, in microseconds
-- pcc_mpar: The maximum number of periodic requests that the subspace
-  channel can support, reported in commands per minute. 0 indicates no
-  limitation.
-- pcc_mrtt: The minimum amount of time that OSPM must wait after the
-  completion of a command before issuing the next command,
-  in microseconds.
-cppc_get_transition_latency() allows to get the max of them.
+A similar simplification seems valid for max98357a, so remove the
+dependency as well. This will avoid the following warning
 
-commit d4f3388afd48 ("cpufreq / CPPC: Set platform specific
-transition_delay_us") allows to select transition_delay_us based on
-the platform, and fallbacks to cppc_get_transition_latency()
-otherwise.
+   WARNING: unmet direct dependencies detected for SND_SOC_MAX98357A
+     Depends on [n]: SOUND [=y] && !UML && SND [=y] && SND_SOC [=y] && GPIOLIB [=n]
+     Selected by [y]:
+     - SND_SOC_INTEL_SOF_CS42L42_MACH [=y] && SOUND [=y] && !UML &&
+       SND [=y] && SND_SOC [=y] && SND_SOC_INTEL_MACH [=y] &&
+       (SND_SOC_SOF_HDA_LINK [=y] || SND_SOC_SOF_BAYTRAIL [=n]) && I2C
+       [=y] && ACPI [=y] && SND_HDA_CODEC_HDMI [=y] &&
+       SND_SOC_SOF_HDA_AUDIO_CODEC [=y] && (MFD_INTEL_LPSS [=y] ||
+       COMPILE_TEST [=n])
 
-If _CPC objects are not using PCC channels (no PPCT table), the
-transition_delay_us is set to CPUFREQ_ETERNAL, leading to really long
-periods between frequency updates (~4s).
-
-If the desired_reg, where performance requests are written, is in
-SystemMemory or SystemIo ACPI address space, there is no delay
-in requests. So return 0 instead of CPUFREQ_ETERNAL, leading to
-transition_delay_us being set to LATENCY_MULTIPLIER us (1000 us).
-
-This patch also adds two macros to check the address spaces.
-
-Signed-off-by: Pierre Gondois <pierre.gondois@arm.com>
-Reviewed-by: Sudeep Holla <sudeep.holla@arm.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Reported-by: kernel test robot <yujie.liu@intel.com>
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Link: https://lore.kernel.org/r/20220517172647.468244-2-pierre-louis.bossart@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/cppc_acpi.c | 17 ++++++++++++++++-
- 1 file changed, 16 insertions(+), 1 deletion(-)
+ sound/soc/codecs/Kconfig | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/acpi/cppc_acpi.c b/drivers/acpi/cppc_acpi.c
-index 71b87c16f92d..ed1341030684 100644
---- a/drivers/acpi/cppc_acpi.c
-+++ b/drivers/acpi/cppc_acpi.c
-@@ -100,6 +100,16 @@ static DEFINE_PER_CPU(struct cpc_desc *, cpc_desc_ptr);
- 				(cpc)->cpc_entry.reg.space_id ==	\
- 				ACPI_ADR_SPACE_PLATFORM_COMM)
+diff --git a/sound/soc/codecs/Kconfig b/sound/soc/codecs/Kconfig
+index 47e675e8bd00..2cbf4fc0f675 100644
+--- a/sound/soc/codecs/Kconfig
++++ b/sound/soc/codecs/Kconfig
+@@ -900,7 +900,6 @@ config SND_SOC_MAX98095
  
-+/* Check if a CPC register is in SystemMemory */
-+#define CPC_IN_SYSTEM_MEMORY(cpc) ((cpc)->type == ACPI_TYPE_BUFFER &&	\
-+				(cpc)->cpc_entry.reg.space_id ==	\
-+				ACPI_ADR_SPACE_SYSTEM_MEMORY)
-+
-+/* Check if a CPC register is in SystemIo */
-+#define CPC_IN_SYSTEM_IO(cpc) ((cpc)->type == ACPI_TYPE_BUFFER &&	\
-+				(cpc)->cpc_entry.reg.space_id ==	\
-+				ACPI_ADR_SPACE_SYSTEM_IO)
-+
- /* Evaluates to True if reg is a NULL register descriptor */
- #define IS_NULL_REG(reg) ((reg)->space_id ==  ACPI_ADR_SPACE_SYSTEM_MEMORY && \
- 				(reg)->address == 0 &&			\
-@@ -1378,6 +1388,9 @@ EXPORT_SYMBOL_GPL(cppc_set_perf);
-  * transition latency for performance change requests. The closest we have
-  * is the timing information from the PCCT tables which provides the info
-  * on the number and frequency of PCC commands the platform can handle.
-+ *
-+ * If desired_reg is in the SystemMemory or SystemIo ACPI address space,
-+ * then assume there is no latency.
-  */
- unsigned int cppc_get_transition_latency(int cpu_num)
- {
-@@ -1403,7 +1416,9 @@ unsigned int cppc_get_transition_latency(int cpu_num)
- 		return CPUFREQ_ETERNAL;
+ config SND_SOC_MAX98357A
+ 	tristate "Maxim MAX98357A CODEC"
+-	depends on GPIOLIB
  
- 	desired_reg = &cpc_desc->cpc_regs[DESIRED_PERF];
--	if (!CPC_IN_PCC(desired_reg))
-+	if (CPC_IN_SYSTEM_MEMORY(desired_reg) || CPC_IN_SYSTEM_IO(desired_reg))
-+		return 0;
-+	else if (!CPC_IN_PCC(desired_reg))
- 		return CPUFREQ_ETERNAL;
- 
- 	if (pcc_ss_id < 0)
+ config SND_SOC_MAX98371
+ 	tristate
 -- 
 2.35.1
 
