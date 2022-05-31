@@ -2,467 +2,274 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F0C4C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 11:21:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29A16C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 11:21:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343862AbiEaLU4 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 07:20:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48640 "EHLO
+        id S243022AbiEaLVG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 31 May 2022 07:21:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237509AbiEaLUp (ORCPT
+        with ESMTP id S1343870AbiEaLUx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 07:20:45 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 519D29C2CB;
-        Tue, 31 May 2022 04:20:32 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id j21so12518224pga.13;
-        Tue, 31 May 2022 04:20:31 -0700 (PDT)
+        Tue, 31 May 2022 07:20:53 -0400
+Received: from smtp-fw-80006.amazon.com (smtp-fw-80006.amazon.com [99.78.197.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49EDE9CC80;
+        Tue, 31 May 2022 04:20:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=gSHJ8cU7Tk4Hdo/isRqfWUjlGNskb5R2AVQxrPbbCvI=;
-        b=BAwE+FQYcm+QAHZOVYkrf1nJgkUejNVR41Y0KW3Z9RYjFyVS44A5/iQucDrf6PObF+
-         Dj2Bn7e7NSSXExIVfJPqPKOyb3QFSqleH97sXuhEEMXdOoako0WiPecFNlqdu2fcuLEb
-         vbylEsHv+QpXjytqQ41XjANm1w34AID2kHRhIsM/LGh01dDw223buOMMLMNZvfgdPuRn
-         9yT0uTRtSzOoJ+3RJjvqlIk6HUeYxt/sSfVIG1CuoO536TPUZem+tBqzKS1kD45jQ2sn
-         YsHio3ALB3X3a3Rrr5Lnu9fJtsdjlTwxQqtMVuuIae3rE+X+9j/sEN8NQy4cqSTYcLz4
-         28Dw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=gSHJ8cU7Tk4Hdo/isRqfWUjlGNskb5R2AVQxrPbbCvI=;
-        b=2bYg2GC6r8GccO1XXt+8GX/EZaRkPJZh+jjzi+CT8upV5rByusTCB+R4qjGwIMchJR
-         NSBKGKqNZE2kO6vxT6rn2xli30D257285Nj9Y9fR8pS52yfYfrPedQK5jqy07zBAgN97
-         YmwbP4+ymZ3oeDOWAWoUAJli0RJNnEkDIqJkit4Qjat6eMLrWldHG5NsmaM057F5Phdm
-         hn9xvHkm+ugfE2C/qbMPsjv/YD303J2b2lz081RKGxlM7hAuQMFTtGSpGOOI/2+KbpZb
-         pGWUKJIUQjaGd6DHwl+dgT0XCCyf0GjDGTsl1HeUNIT1FSiRjLYDSXUHpkqca6Shoyoh
-         hBnQ==
-X-Gm-Message-State: AOAM533ReLcrOD7QApGdjeGhtXO2UdeY1rA47tbvYMN+ChxWszuVTNYR
-        /HermnAC3cEKiz/q3SSRn9Y=
-X-Google-Smtp-Source: ABdhPJxq4e3rx0PBYsn6k0kwujhUVNgwq1gpO37ByimBz2DIkgl7BDjHmSLvQJwi+DoDr7CHhAPbvA==
-X-Received: by 2002:a05:6a00:2287:b0:518:85ee:9992 with SMTP id f7-20020a056a00228700b0051885ee9992mr47584234pfe.62.1653996031463;
-        Tue, 31 May 2022 04:20:31 -0700 (PDT)
-Received: from RD-3580-24288.rt.l (42-72-220-172.emome-ip.hinet.net. [42.72.220.172])
-        by smtp.gmail.com with ESMTPSA id cm24-20020a056a00339800b00518142f8c37sm10751608pfb.171.2022.05.31.04.20.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 May 2022 04:20:31 -0700 (PDT)
-From:   ChiaEn Wu <peterwu.pub@gmail.com>
-To:     lee.jones@linaro.org, daniel.thompson@linaro.org,
-        jingoohan1@gmail.com, pavel@ucw.cz, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
-        sre@kernel.org, chunfeng.yun@mediatek.com,
-        gregkh@linuxfoundation.org, jic23@kernel.org, lars@metafoo.de,
-        lgirdwood@gmail.com, broonie@kernel.org, linux@roeck-us.net,
-        heikki.krogerus@linux.intel.com, deller@gmx.de
-Cc:     cy_huang@richtek.com, alice_chen@richtek.com,
-        chiaen_wu@richtek.com, peterwu.pub@gmail.com,
-        dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-fbdev@vger.kernel.org
-Subject: [RESEND 14/14] video: backlight: mt6370: Add Mediatek MT6370 support
-Date:   Tue, 31 May 2022 19:19:00 +0800
-Message-Id: <20220531111900.19422-15-peterwu.pub@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220531111900.19422-1-peterwu.pub@gmail.com>
-References: <20220531111900.19422-1-peterwu.pub@gmail.com>
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1653996039; x=1685532039;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=1AvcBprIOSQItFD8cn3+FAqAk16pR3Q+CjOoSzkn5lI=;
+  b=Bdoj1DaD51xFWm0sFBO6RbLLXj37THLg9PRqc+TIX467m8YkoaOuTXuE
+   pWM9mUdV9SnYEdjHZJ6ftup+w3RrOAjcyO6WxsMNrL+yAzjRwVaHDCOCX
+   f7+ZEozYlxwWEFBuaWkmFESS7FVIvN4jF6Lz3V/Y+gL8bkPcYyVw9c24O
+   c=;
+X-IronPort-AV: E=Sophos;i="5.91,265,1647302400"; 
+   d="scan'208";a="93329158"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1d-ca048aa0.us-east-1.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP; 31 May 2022 10:59:36 +0000
+Received: from EX13D33EUC002.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+        by email-inbound-relay-iad-1d-ca048aa0.us-east-1.amazon.com (Postfix) with ESMTPS id CF7D38121F;
+        Tue, 31 May 2022 10:59:30 +0000 (UTC)
+Received: from EX13MTAUEE002.ant.amazon.com (10.43.62.24) by
+ EX13D33EUC002.ant.amazon.com (10.43.164.234) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.36; Tue, 31 May 2022 10:59:29 +0000
+Received: from dev-dsk-jalliste-1c-387c3ddf.eu-west-1.amazon.com
+ (10.13.250.64) by mail-relay.amazon.com (10.43.62.224) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.36 via Frontend Transport; Tue, 31 May 2022
+ 10:59:27 +0000
+From:   Jack Allister <jalliste@amazon.com>
+CC:     <jalliste@amazon.com>, <diapop@amazon.co.uk>,
+        <metikaya@amazon.co.uk>, Paolo Bonzini <pbonzini@redhat.com>,
+        =?UTF-8?q?Radim=20Kr=C4=8Dm=C3=A1=C5=99?= <rkrcmar@redhat.com>,
+        "Sean Christopherson" <sean.j.christopherson@intel.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>, <x86@kernel.org>,
+        <kvm@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH] KVM: VMX: CPU frequency scaling for intel x86_64 KVM guests
+Date:   Tue, 31 May 2022 10:59:25 +0000
+Message-ID: <20220531105925.27676-1-jalliste@amazon.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: ChiaEn Wu <chiaen_wu@richtek.com>
+A VMM can control a vCPU's CPU frequency by interfacing with KVM via
+the vCPU file descriptor to enable/set CPU frequency scaling for a
+guest. Instead of creating a separate IOCTL to this this, KVM capabil-
+ities are extended to include a capability called
+KVM_CAP_CPU_FREQ_SCALING.
 
-Add Mediatek MT6370 Backlight support.
+A generic set_cpu_freq interface is added to kvm_x86_ops
+to allow for architecture (AMD/Intel) independent CPU frequency
+scaling setting.
 
-Signed-off-by: ChiaEn Wu <chiaen_wu@richtek.com>
+For Intel platforms, Hardware-Controlled Performance States (HWP) are
+used to implement CPU scaling within the guest. Further information on
+this mechanism can be seen in Intel SDM Vol 3B (section 14.4). The CPU
+frequency is set as soon as this function is called and is kept running
+until explicitly reset or set again.
+
+Currently the AMD frequency setting interface is left unimplemented.
+
+Please note that CPU frequency scaling will have an effect on host
+processing in it's current form. To change back to full performance
+when running in host context an IOCTL with a frequency value of 0
+is needed to run back at uncapped speed.
+
+Signed-off-by: Jack Allister <jalliste@amazon.com>
 ---
- drivers/video/backlight/Kconfig            |   8 +
- drivers/video/backlight/Makefile           |   1 +
- drivers/video/backlight/mt6370-backlight.c | 338 +++++++++++++++++++++
- 3 files changed, 347 insertions(+)
- create mode 100644 drivers/video/backlight/mt6370-backlight.c
+ arch/x86/include/asm/kvm_host.h |  2 +
+ arch/x86/kvm/vmx/vmx.c          | 91 +++++++++++++++++++++++++++++++++
+ arch/x86/kvm/x86.c              | 16 ++++++
+ include/uapi/linux/kvm.h        |  1 +
+ 4 files changed, 110 insertions(+)
 
-diff --git a/drivers/video/backlight/Kconfig b/drivers/video/backlight/Kconfig
-index a003e02e13ce..d9868fbe7488 100644
---- a/drivers/video/backlight/Kconfig
-+++ b/drivers/video/backlight/Kconfig
-@@ -268,6 +268,14 @@ config BACKLIGHT_MAX8925
- 	  If you have a LCD backlight connected to the WLED output of MAX8925
- 	  WLED output, say Y here to enable this driver.
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index ae220f88f00d..d2efc2ce624f 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -1169,6 +1169,8 @@ struct kvm_x86_ops {
+ 	bool (*rdtscp_supported)(void);
+ 	bool (*invpcid_supported)(void);
  
-+config BACKLIGHT_MT6370
-+	tristate "Mediatek MT6370 Backlight Driver"
-+	depends on MFD_MT6370
-+	help
-+	  Say Y here to enable MT6370 Backlight support.
-+	  It's commonly used to drive the display WLED. There're 4 channels
-+	  inisde, and each channel can provide up to 30mA current.
++	int (*set_cpu_freq_scaling)(struct kvm_vcpu *vcpu, u8 freq_100mhz);
 +
- config BACKLIGHT_APPLE
- 	tristate "Apple Backlight Driver"
- 	depends on X86 && ACPI
-diff --git a/drivers/video/backlight/Makefile b/drivers/video/backlight/Makefile
-index cae2c83422ae..e815f3f1deff 100644
---- a/drivers/video/backlight/Makefile
-+++ b/drivers/video/backlight/Makefile
-@@ -44,6 +44,7 @@ obj-$(CONFIG_BACKLIGHT_LP855X)		+= lp855x_bl.o
- obj-$(CONFIG_BACKLIGHT_LP8788)		+= lp8788_bl.o
- obj-$(CONFIG_BACKLIGHT_LV5207LP)	+= lv5207lp.o
- obj-$(CONFIG_BACKLIGHT_MAX8925)		+= max8925_bl.o
-+obj-$(CONFIG_BACKLIGHT_MT6370)		+= mt6370-backlight.o
- obj-$(CONFIG_BACKLIGHT_OMAP1)		+= omap1_bl.o
- obj-$(CONFIG_BACKLIGHT_PANDORA)		+= pandora_bl.o
- obj-$(CONFIG_BACKLIGHT_PCF50633)	+= pcf50633-backlight.o
-diff --git a/drivers/video/backlight/mt6370-backlight.c b/drivers/video/backlight/mt6370-backlight.c
-new file mode 100644
-index 000000000000..f8a8d33203ed
---- /dev/null
-+++ b/drivers/video/backlight/mt6370-backlight.c
-@@ -0,0 +1,338 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <linux/backlight.h>
-+#include <linux/bitfield.h>
-+#include <linux/bits.h>
-+#include <linux/gpio/consumer.h>
-+#include <linux/gpio/driver.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/platform_device.h>
-+#include <linux/regmap.h>
-+
-+#define MT6370_REG_DEV_INFO		0x100
-+#define MT6370_REG_BL_EN		0x1A0
-+#define MT6370_REG_BL_BSTCTRL		0x1A1
-+#define MT6370_REG_BL_PWM		0x1A2
-+#define MT6370_REG_BL_DIM2		0x1A4
-+
-+#define MT6370_VENID_MASK		GENMASK(7, 4)
-+#define MT6370_BL_EXT_EN_MASK		BIT(7)
-+#define MT6370_BL_EN_MASK		BIT(6)
-+#define MT6370_BL_CONFIG_MASK		BIT(0)
-+#define MT6370_BL_CH_MASK		GENMASK(5, 2)
-+#define MT6370_BL_DIM2_MASK		GENMASK(2, 0)
-+#define MT6370_BL_DUMMY_6372_MASK	GENMASK(2, 0)
-+#define MT6370_BL_DIM2_6372_SHIFT	3
-+#define MT6370_BL_PWM_EN_MASK		BIT(7)
-+#define MT6370_BL_PWM_HYS_EN_MASK	BIT(2)
-+#define MT6370_BL_PWM_HYS_SEL_MASK	GENMASK(1, 0)
-+#define MT6370_BL_OVP_EN_MASK		BIT(7)
-+#define MT6370_BL_OVP_SEL_MASK		GENMASK(6, 5)
-+#define MT6370_BL_OC_EN_MASK		BIT(3)
-+#define MT6370_BL_OC_SEL_MASK		GENMASK(2, 1)
-+
-+#define MT6370_BL_MAX_BRIGHTNESS	2048
-+
-+enum {
-+	MT6370_VID_COMMON = 0,
-+	MT6370_VID_6372,
-+	MT6370_VID_MAX,
-+};
-+
-+enum mt6370_prop_type {
-+	MT6370_PARSE_TYPE_BOOL = 0,
-+	MT6370_PARSE_TYPE_U8,
-+	MT6370_PARSE_TYPE_MAX,
-+};
-+
-+struct mt6370_priv {
-+	int vid_type;
-+	struct backlight_device *bl;
-+	struct device *dev;
-+	struct gpio_desc *enable_gpio;
-+	struct regmap *regmap;
-+};
-+
-+static int mt6370_bl_update_status(struct backlight_device *bl_dev)
+ 	void (*set_tdp_cr3)(struct kvm_vcpu *vcpu, unsigned long cr3);
+ 
+ 	void (*set_supported_cpuid)(u32 func, struct kvm_cpuid_entry2 *entry);
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index 6499f371de58..beee39b57b13 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -1699,6 +1699,95 @@ static bool vmx_invpcid_supported(void)
+ 	return cpu_has_vmx_invpcid();
+ }
+ 
++static int vmx_query_cpu_freq_valid_freq(u8 freq)
 +{
-+	struct mt6370_priv *priv = bl_get_data(bl_dev);
-+	int brightness = backlight_get_brightness(bl_dev);
-+	unsigned int enable_val;
-+	u8 brightness_val[2];
-+	int ret;
++#define MASK_PERF 0xFF
++#define CAP_HIGHEST_SHIFT 0
++#define CAP_LOWEST_SHIFT 24
++#define CAP_HIGHEST_MASK (MASK_PERF << CAP_HIGHEST_SHIFT)
++#define CAP_LOWEST_MASK (MASK_PERF << CAP_LOWEST_SHIFT)
++	u64 cap_msr;
++	u8 highest, lowest;
 +
-+	if (brightness) {
-+		brightness_val[0] = (brightness - 1) & MT6370_BL_DIM2_MASK;
-+		brightness_val[1] = (brightness - 1)
-+					>> fls(MT6370_BL_DIM2_MASK);
++	/* Query highest and lowest supported scaling. */
++	rdmsrl(MSR_HWP_CAPABILITIES, cap_msr);
++	highest = (u8)(cap_msr & CAP_HIGHEST_MASK);
++	lowest = (u8)((cap_msr & CAP_LOWEST_MASK) >> CAP_LOWEST_SHIFT);
 +
-+		if (priv->vid_type == MT6370_VID_6372) {
-+			brightness_val[0] <<= MT6370_BL_DIM2_6372_SHIFT;
-+			brightness_val[0] |= MT6370_BL_DUMMY_6372_MASK;
-+		}
-+
-+		ret = regmap_raw_write(priv->regmap, MT6370_REG_BL_DIM2,
-+				       brightness_val, sizeof(brightness_val));
-+		if (ret)
-+			return ret;
-+	}
-+
-+	if (priv->enable_gpio)
-+		gpiod_set_value(priv->enable_gpio, brightness ? 1 : 0);
-+
-+	enable_val = brightness ? MT6370_BL_EN_MASK : 0;
-+	return regmap_update_bits(priv->regmap, MT6370_REG_BL_EN,
-+				  MT6370_BL_EN_MASK, enable_val);
-+}
-+
-+static int mt6370_bl_get_brightness(struct backlight_device *bl_dev)
-+{
-+	struct mt6370_priv *priv = bl_get_data(bl_dev);
-+	unsigned int enable;
-+	u8 brightness_val[2];
-+	int brightness, ret;
-+
-+	ret = regmap_read(priv->regmap, MT6370_REG_BL_EN, &enable);
-+	if (ret)
-+		return ret;
-+
-+	if (!(enable & MT6370_BL_EN_MASK))
-+		return 0;
-+
-+	ret = regmap_raw_read(priv->regmap, MT6370_REG_BL_DIM2,
-+			      brightness_val, sizeof(brightness_val));
-+	if (ret)
-+		return ret;
-+
-+	if (priv->vid_type == MT6370_VID_6372)
-+		brightness_val[0] >>= MT6370_BL_DIM2_6372_SHIFT;
-+
-+	brightness = brightness_val[1] << fls(MT6370_BL_DIM2_MASK);
-+	brightness += (brightness_val[0] & MT6370_BL_DIM2_MASK);
-+
-+	return brightness + 1;
-+}
-+
-+static const struct backlight_ops mt6370_bl_ops = {
-+	.options = BL_CORE_SUSPENDRESUME,
-+	.update_status = mt6370_bl_update_status,
-+	.get_brightness = mt6370_bl_get_brightness,
-+};
-+
-+#define MT6370_DT_PROP_DECL(_name, _type, _reg, _mask, _max, _inv)	\
-+{									\
-+	.name = "mediatek,bled-" #_name,				\
-+	.type = MT6370_PARSE_TYPE_##_type,				\
-+	.reg = _reg,							\
-+	.mask = _mask,							\
-+	.max_val = _max,						\
-+	.invert = _inv,							\
-+}
-+
-+static int mt6370_init_backlight_properties(struct mt6370_priv *priv,
-+					    struct backlight_properties *props)
-+{
-+	struct device *dev = priv->dev;
-+	u8 prop_val;
-+	u32 brightness;
-+	unsigned int mask, val;
-+	static const struct {
-+		char *name;
-+		enum mt6370_prop_type type;
-+		unsigned int reg;
-+		unsigned int mask;
-+		u8 max_val;
-+		bool invert;
-+	} vendor_opt_props[] = {
-+		MT6370_DT_PROP_DECL(pwm-enable, BOOL, MT6370_REG_BL_PWM,
-+				    MT6370_BL_PWM_EN_MASK, 1, false),
-+		MT6370_DT_PROP_DECL(pwm-hys-enable, BOOL, MT6370_REG_BL_PWM,
-+				    MT6370_BL_PWM_HYS_EN_MASK, 1, false),
-+		MT6370_DT_PROP_DECL(pwm-hys-sel, U8, MT6370_REG_BL_PWM,
-+				    MT6370_BL_PWM_HYS_SEL_MASK, 3, false),
-+		MT6370_DT_PROP_DECL(ovp-level-sel, U8, MT6370_REG_BL_BSTCTRL,
-+				    MT6370_BL_OVP_SEL_MASK, 3, false),
-+		MT6370_DT_PROP_DECL(ovp-shutdown, BOOL, MT6370_REG_BL_BSTCTRL,
-+				    MT6370_BL_OVP_EN_MASK, 1, true),
-+		MT6370_DT_PROP_DECL(ocp-level-sel, U8, MT6370_REG_BL_BSTCTRL,
-+				    MT6370_BL_OC_SEL_MASK, 3, false),
-+		MT6370_DT_PROP_DECL(ocp-shutdown, BOOL, MT6370_REG_BL_BSTCTRL,
-+				    MT6370_BL_OC_EN_MASK, 1, true),
-+	}, *prop_now;
-+	int i, ret;
-+
-+	/* vendor optional properties */
-+	for (i = 0; i < ARRAY_SIZE(vendor_opt_props); i++) {
-+		prop_now = vendor_opt_props + i;
-+
-+		switch (prop_now->type) {
-+		case MT6370_PARSE_TYPE_BOOL:
-+			if (device_property_read_bool(dev, prop_now->name))
-+				val = 1;
-+			else
-+				val = 0;
-+			break;
-+		case MT6370_PARSE_TYPE_U8:
-+			ret = device_property_read_u8(dev, prop_now->name,
-+						      &prop_val);
-+			/* Property not exist, keep value in default */
-+			if (ret)
-+				continue;
-+
-+			val = min_t(u8, prop_val, prop_now->max_val);
-+			break;
-+		default:
-+			return -EINVAL;
-+		}
-+
-+		if (prop_now->invert)
-+			val = prop_now->max_val - val;
-+
-+		val <<= ffs(prop_now->mask) - 1;
-+
-+		ret = regmap_update_bits(priv->regmap, prop_now->reg,
-+					 prop_now->mask, val);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	/* common properties */
-+	ret = device_property_read_u32(dev, "max-brightness", &brightness);
-+	if (ret)
-+		brightness = MT6370_BL_MAX_BRIGHTNESS;
-+
-+	props->max_brightness = min_t(u32, brightness,
-+				      MT6370_BL_MAX_BRIGHTNESS);
-+
-+	ret = device_property_read_u32(dev, "default-brightness", &brightness);
-+	if (ret)
-+		brightness = props->max_brightness;
-+
-+	props->brightness = min_t(u32, brightness, props->max_brightness);
-+
-+
-+	ret = device_property_read_u8(dev, "mediatek,bled-channel-use",
-+				      &prop_val);
-+	if (ret) {
-+		dev_err(dev, "mediatek,bled-channel-use DT property missing\n");
-+		return ret;
-+	}
-+
-+	if (!prop_val) {
-+		dev_err(dev, "No channel specified\n");
++	if (freq < lowest || freq > highest)
 +		return -EINVAL;
-+	}
-+
-+	mask = MT6370_BL_EXT_EN_MASK | MT6370_BL_CH_MASK;
-+	val = prop_val << (ffs(MT6370_BL_CH_MASK) - 1);
-+
-+	if (priv->enable_gpio)
-+		val |= MT6370_BL_EXT_EN_MASK;
-+
-+	return regmap_update_bits(priv->regmap, MT6370_REG_BL_EN, mask, val);
-+}
-+
-+static int mt6370_check_vendor_info(struct mt6370_priv *priv)
-+{
-+	unsigned int dev_info, vid;
-+	int ret;
-+
-+	ret = regmap_read(priv->regmap, MT6370_REG_DEV_INFO, &dev_info);
-+	if (ret)
-+		return ret;
-+
-+	vid = FIELD_GET(MT6370_VENID_MASK, dev_info);
-+	if (vid == 0x9 || vid == 0xb)
-+		priv->vid_type = MT6370_VID_6372;
-+	else
-+		priv->vid_type = MT6370_VID_COMMON;
 +
 +	return 0;
 +}
 +
-+static int mt6370_bl_probe(struct platform_device *pdev)
++static void vmx_set_cpu_freq_uncapped(void)
 +{
-+	struct mt6370_priv *priv;
-+	struct backlight_properties props = {
-+		.type = BACKLIGHT_RAW,
-+		.scale = BACKLIGHT_SCALE_LINEAR,
-+	};
-+	int ret;
++#define SHIFT_DESIRED_PERF 16
++#define SHIFT_MAX_PERF 8
++#define SHIFT_MIN_PERF 0
 +
-+	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
++	u64 cap_msr, req_msr;
++	u8 highest, lowest;
 +
-+	priv->dev = &pdev->dev;
++	/* Query the capabilities. */
++	rdmsrl(MSR_HWP_CAPABILITIES, cap_msr);
++	highest = (u8)(cap_msr & CAP_HIGHEST_MASK);
++	lowest = (u8)((cap_msr & CAP_LOWEST_MASK) >> CAP_LOWEST_SHIFT);
 +
-+	priv->regmap = dev_get_regmap(pdev->dev.parent, NULL);
-+	if (!priv->regmap) {
-+		dev_err(&pdev->dev, "Failed to get regmap\n");
++	/* Set the desired to highest performance. */
++	req_msr = ((highest & MASK_PERF) << SHIFT_DESIRED_PERF) |
++		((highest & MASK_PERF) << SHIFT_MAX_PERF) |
++		((lowest & MASK_PERF) << SHIFT_MIN_PERF);
++	wrmsrl(MSR_HWP_REQUEST, req_msr);
++}
++
++static void vmx_set_cpu_freq_capped(u8 freq_100mhz)
++{
++	u64 req_msr;
++
++	/* Populate the variable used for setting the HWP request. */
++	req_msr = ((freq_100mhz & MASK_PERF) << SHIFT_DESIRED_PERF) |
++		((freq_100mhz & MASK_PERF) << SHIFT_MAX_PERF) |
++		((freq_100mhz & MASK_PERF) << SHIFT_MIN_PERF);
++
++	wrmsrl(MSR_HWP_REQUEST, req_msr);
++}
++
++static int vmx_set_cpu_freq_scaling(struct kvm_vcpu *vcpu, u8 freq_100mhz)
++{
++	struct kvm *kvm = vcpu->kvm;
++	u64 pm_before, req_msr;
++	int rc;
++
++	/* Is HWP scaling supported? */
++	if (!this_cpu_has(X86_FEATURE_HWP))
 +		return -ENODEV;
-+	}
 +
-+	ret = mt6370_check_vendor_info(priv);
-+	if (ret) {
-+		dev_err(&pdev->dev, "Failed to check vendor info (%d)\n", ret);
-+		return ret;
-+	}
++	/*
++	 * HWP needs to be enabled to query & use capabilities.
++	 * This bit is W1Once so cannot be cleared after.
++	 */
++	rdmsrl(MSR_PM_ENABLE, pm_before);
++	if ((pm_before & 1) == 0)
++		wrmsrl(MSR_PM_ENABLE, pm_before | 1);
 +
-+	priv->enable_gpio = devm_gpiod_get_optional(&pdev->dev, "enable",
-+						    GPIOD_OUT_HIGH);
-+	if (IS_ERR(priv->enable_gpio)) {
-+		dev_err(&pdev->dev, "Failed to get 'enable' gpio\n");
-+		return PTR_ERR(priv->enable_gpio);
-+	}
++	/*
++	 * Check if setting to a specific value, if being set
++	 * to zero this means return to uncapped frequency.
++	 */
++	if (freq_100mhz) {
++		rc = vmx_query_cpu_freq_valid_freq(freq_100mhz);
 +
-+	ret = mt6370_init_backlight_properties(priv, &props);
-+	if (ret) {
-+		dev_err(&pdev->dev, "Failed to init backlight properties\n");
-+		return ret;
-+	}
++		if (rc)
++			return rc;
 +
-+	priv->bl = devm_backlight_device_register(&pdev->dev, pdev->name,
-+						  &pdev->dev, priv,
-+						  &mt6370_bl_ops, &props);
-+	if (IS_ERR(priv->bl)) {
-+		dev_err(&pdev->dev, "Failed to register backlight\n");
-+		return PTR_ERR(priv->bl);
-+	}
-+
-+	backlight_update_status(priv->bl);
-+	platform_set_drvdata(pdev, priv);
++		vmx_set_cpu_freq_capped(freq_100mhz);
++	} else
++		vmx_set_cpu_freq_uncapped();
 +
 +	return 0;
 +}
 +
-+static int mt6370_bl_remove(struct platform_device *pdev)
+ /*
+  * Swap MSR entry in host/guest MSR entry array.
+  */
+@@ -8124,6 +8213,8 @@ static struct kvm_x86_ops vmx_x86_ops __ro_after_init = {
+ 	.rdtscp_supported = vmx_rdtscp_supported,
+ 	.invpcid_supported = vmx_invpcid_supported,
+ 
++	.set_cpu_freq_scaling = vmx_set_cpu_freq_scaling,
++
+ 	.set_supported_cpuid = vmx_set_supported_cpuid,
+ 
+ 	.has_wbinvd_exit = cpu_has_vmx_wbinvd_exit,
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index c33423a1a13d..9ae2ab102e01 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -3669,6 +3669,7 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
+ 	case KVM_CAP_SET_VAR_MTRR_COUNT:
+ 	case KVM_CAP_X86_USER_SPACE_MSR:
+ 	case KVM_CAP_X86_MSR_FILTER:
++	case KVM_CAP_CPU_FREQ_SCALING:
+ 		r = 1;
+ 		break;
+ #ifdef CONFIG_KVM_XEN
+@@ -4499,6 +4500,19 @@ static int kvm_vcpu_ioctl_x86_set_xcrs(struct kvm_vcpu *vcpu,
+ 	return r;
+ }
+ 
++static int kvm_cap_set_cpu_freq(struct kvm_vcpu *vcpu,
++				       struct kvm_enable_cap *cap)
 +{
-+	struct mt6370_priv *priv = platform_get_drvdata(pdev);
-+	struct backlight_device *bl_dev = priv->bl;
++	u8 freq = (u8)cap->args[0];
 +
-+	bl_dev->props.brightness = 0;
-+	backlight_update_status(priv->bl);
++	/* Query whether this platform (Intel or AMD) support setting. */
++	if (!kvm_x86_ops.set_cpu_freq_scaling)
++		return -ENODEV;
 +
-+	return 0;
++	/* Attempt to set to the frequency specified. */
++	return kvm_x86_ops.set_cpu_freq_scaling(vcpu, freq);
 +}
 +
-+static const struct of_device_id __maybe_unused mt6370_bl_of_match[] = {
-+	{ .compatible = "mediatek,mt6370-backlight", },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(of, mt6370_bl_of_match);
-+
-+static struct platform_driver mt6370_bl_driver = {
-+	.driver = {
-+		.name = "mt6370-backlight",
-+		.of_match_table = mt6370_bl_of_match,
-+	},
-+	.probe = mt6370_bl_probe,
-+	.remove = mt6370_bl_remove,
-+};
-+module_platform_driver(mt6370_bl_driver);
-+
-+MODULE_AUTHOR("ChiaEn Wu <chiaen_wu@richtek.com>");
-+MODULE_DESCRIPTION("Mediatek MT6370 Backlight Driver");
-+MODULE_LICENSE("GPL v2");
+ /*
+  * kvm_set_guest_paused() indicates to the guest kernel that it has been
+  * stopped by the hypervisor.  This function will be called from the host only.
+@@ -4553,6 +4567,8 @@ static int kvm_vcpu_ioctl_enable_cap(struct kvm_vcpu *vcpu,
+ 		return kvm_x86_ops.enable_direct_tlbflush(vcpu);
+ 	case KVM_CAP_SET_VAR_MTRR_COUNT:
+ 		return kvm_mtrr_set_var_mtrr_count(vcpu, cap->args[0]);
++	case KVM_CAP_CPU_FREQ_SCALING:
++		return kvm_cap_set_cpu_freq(vcpu, cap);
+ 
+ 	default:
+ 		return -EINVAL;
+diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
+index 831be0d2d5e4..273a3ab5590e 100644
+--- a/include/uapi/linux/kvm.h
++++ b/include/uapi/linux/kvm.h
+@@ -874,6 +874,7 @@ struct kvm_ppc_resize_hpt {
+ #define KVM_CAP_NO_POLL_ON_HLT 100003
+ #define KVM_CAP_MMU_USE_VMA_CAPMEM 100004
+ #define KVM_CAP_MMU_SUPPORT_DYNAMIC_CAPMEM 100005
++#define KVM_CAP_CPU_FREQ_SCALING 100006
+ 
+ #define KVM_CAP_IRQCHIP	  0
+ #define KVM_CAP_HLT	  1
 -- 
-2.25.1
+2.32.0
 
