@@ -2,185 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9574C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 17:58:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 479A9C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 17:59:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346756AbiEaR6t (ORCPT
+        id S1346760AbiEaR7T (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 13:58:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45436 "EHLO
+        Tue, 31 May 2022 13:59:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346751AbiEaR6r (ORCPT
+        with ESMTP id S245246AbiEaR7R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 13:58:47 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 133B27A468
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 10:58:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654019926;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=0yvmTc+va7v0gJ9E75BePB+PuwLz7P/ysZIrz/OtMrE=;
-        b=TN3J+KpCFzfBwMzqIpXgvL00e+up2rw974HqLM/FC4f1ibDMTq414eDokC6NCCoOqaEHzJ
-        N6xxlGfQhRtqTe0I/QrBx1t6SkQUEJOOeVnrS6Jxi/THEAq7tNo0UDPFnT74OoyxIRNvDS
-        I2m7xrqX4qxqkYBoAv+XZSBCsJSqV10=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-456-5WHS6iSOPR2ZC3znAz-5_A-1; Tue, 31 May 2022 13:58:43 -0400
-X-MC-Unique: 5WHS6iSOPR2ZC3znAz-5_A-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 986E2101AA45;
-        Tue, 31 May 2022 17:58:37 +0000 (UTC)
-Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7582E492C3B;
-        Tue, 31 May 2022 17:58:37 +0000 (UTC)
-From:   Paolo Bonzini <pbonzini@redhat.com>
-To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>
-Subject: [PATCH] KVM: x86: SVM: fix nested PAUSE filtering when L0 intercepts PAUSE
-Date:   Tue, 31 May 2022 13:58:37 -0400
-Message-Id: <20220531175837.295988-1-pbonzini@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+        Tue, 31 May 2022 13:59:17 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50CDF8A33B
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 10:59:16 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2f8398e99dcso121200197b3.9
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 10:59:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=43It4tY6rrOkbTtcYBE6N6l07cvQ+0q2w708BzUCfdQ=;
+        b=cXZh0iB2YUeKYWSq/DnFCdl8EfWrduss4aKiLDcCamYQxpSehyBOr4Mc2Id9+hCYIK
+         pk3kI/d2LS9MbBzExeYMvn/w+d4BmVB0YXSZ+skDu8gCDQ3DefzaGupJW4tsBoH/0Tg+
+         itlbwwf2hGrxNFki2bplHtgCS3/hLVA8ID0F6auJlQRpeiZQCF8S7rUif4r9upjflXJL
+         tta6rNIuKi3PgSzLcLV7gdpXYPxvnG4I6+k00Zk93DDHs0fuyQHXktG7wVbOX3zpHbqC
+         rMlQDftQ/vo1M9BEP+YAucYerbdaEQaRjqsL2EpO/thbKjx2KFc7UlCDU1haZRZ2U9Vu
+         luaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=43It4tY6rrOkbTtcYBE6N6l07cvQ+0q2w708BzUCfdQ=;
+        b=Fv36H2E+0b8D9gWVCH8OwHfkF43WNC6ZGVokbwo8rvC2TVgQ+5p654Ozs4QGHWHyWK
+         8Z9i09su24v+es5whinPXYamhOnJV8N9uAfDvZwy6XAWgcx7T2qWwZcgPVY7KXiyL0Gc
+         6MVqSeLm4bdL9P+TcP7a8PDmTkh4yUOFwtAlPMT+62RgqnR3ZhD7+q9Jphd/3Iipu7Az
+         L8PY8r9qA7LDPAU41+m5VFaLsYMOcIEma/mWU/tCklzYS2B6xbMoJYDlOqN/vR1gl/D3
+         S0shJrTl8MJtuMmPVB9VPWyUzHNhXIKAe0NNZ67aXcsXRu7IOuArV8Cs9RV35QsOga4D
+         c+XQ==
+X-Gm-Message-State: AOAM532cGAuvc60jFxg2HB1F5choYGLECwqRJnQ/KSdwRCc+P+NqKls6
+        SB0+lzt+QGe19jEoIi3VvF7aAmTFXBC+fF8bhoI=
+X-Google-Smtp-Source: ABdhPJzYg2PfrP7VAcOIhffi51zcFsynl9sjjnou+I9ggql8TYO0BMoIPH151gDfL/0kxSkXR0y1Lgi6goCkxQD9zNE=
+X-Received: from samitolvanen1.mtv.corp.google.com ([2620:15c:201:2:1067:12fc:51e8:95dc])
+ (user=samitolvanen job=sendgmr) by 2002:a05:6902:13c2:b0:641:b6d:a151 with
+ SMTP id y2-20020a05690213c200b006410b6da151mr59039298ybu.348.1654019955516;
+ Tue, 31 May 2022 10:59:15 -0700 (PDT)
+Date:   Tue, 31 May 2022 10:59:10 -0700
+Message-Id: <20220531175910.890307-1-samitolvanen@google.com>
+Mime-Version: 1.0
+X-Developer-Key: i=samitolvanen@google.com; a=openpgp; fpr=35CCFB63B283D6D3AEB783944CB5F6848BBC56EE
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1904; h=from:subject;
+ bh=3APPK7JF94JGhsLYsP/k0BDbTWmcKvSdC5cUDwc7HEc=; b=owEB7QES/pANAwAKAUy19oSLvFbuAcsmYgBilldu8L6b8RrGC/uxYEv0Gt9ac9FJ70jAIdFrFvYx
+ EHOOhWyJAbMEAAEKAB0WIQQ1zPtjsoPW0663g5RMtfaEi7xW7gUCYpZXbgAKCRBMtfaEi7xW7kl4C/
+ sGCz2eKwsUVqQBfjgycK9T1O2Q00Tu+HFofNAQbx4mkHJHNeWBFRwG6hwpCmtJsW1AQhMexHawitij
+ pRuOxuW5Ao3CKRsq7h1iSypEEHTZS/6XWLZ4UxwcSb92I77OqdviGLpbXPcLemLi/A9xHEY8qGF59K
+ 1I/dRgW2S2WNN/JKkJAmD2dGFd5o5rQ7VNSzkyE1DKve/bllIIPEenvR5Wep0d8UsmTmIlGzgIeceM
+ e/ChPrDIOk5qG+Wu+IU8w7j3qutB0PEBfQ4q87dg2S1ig0AuZM+26vIplp3oRylAQXIVPDgFkRntua
+ HCXqLh35oofnfgIshwTLivkIn6qKnQLkl0QTxTR0yaCSodf/LxrbqP2rMFFHKW4/Ez8KfYrbyTYKIi
+ oYTzkdFvZILF1O7dNfDPlCfOWVDM8lu6KcdQjRJxGi88gu/WOymYVreOEvQCadOf161KxVBiPmrsba
+ XlOq1MdW5ZjjeDMHq020MIhgpTiSklSjuh41GqNOyeM/w=
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+Subject: [PATCH] cfi: Fix __cfi_slowpath_diag RCU usage with cpuidle
+From:   Sami Tolvanen <samitolvanen@google.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     "Paul E. McKenney" <paulmck@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        llvm@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Sami Tolvanen <samitolvanen@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit 74fd41ed16fd ("KVM: x86: nSVM: support PAUSE filtering when L0
-doesn't intercept PAUSE") introduced passthrough support for nested pause
-filtering, (when the host doesn't intercept PAUSE) (either disabled with
-kvm module param, or disabled with '-overcommit cpu-pm=on')
+RCU_NONIDLE usage during __cfi_slowpath_diag can result in an invalid
+RCU state in the cpuidle code path:
 
-Before this commit, L1 KVM didn't intercept PAUSE at all; afterwards,
-the feature was exposed as supported by KVM cpuid unconditionally, thus
-if L1 could try to use it even when the L0 KVM can't really support it.
+  WARNING: CPU: 1 PID: 0 at kernel/rcu/tree.c:613 rcu_eqs_enter+0xe4/0x138
+  ...
+  Call trace:
+    rcu_eqs_enter+0xe4/0x138
+    rcu_idle_enter+0xa8/0x100
+    cpuidle_enter_state+0x154/0x3a8
+    cpuidle_enter+0x3c/0x58
+    do_idle.llvm.6590768638138871020+0x1f4/0x2ec
+    cpu_startup_entry+0x28/0x2c
+    secondary_start_kernel+0x1b8/0x220
+    __secondary_switched+0x94/0x98
 
-In this case the fallback caused KVM to intercept each PAUSE instruction;
-in some cases, such intercept can slow down the nested guest so much
-that it can fail to boot.  Instead, before the problematic commit KVM
-was already setting both thresholds to 0 in vmcb02, but after the first
-userspace VM exit shrink_ple_window was called and would reset the
-pause_filter_count to the default value.
+Instead, call rcu_irq_enter/exit to wake up RCU only when needed and
+disable interrupts for the entire CFI shadow/module check when we do.
 
-To fix this, change the fallback strategy - ignore the guest threshold
-values, but use/update the host threshold values unless the guest
-specifically requests disabling PAUSE filtering (either simple or
-advanced).
-
-Also fix a minor bug: on nested VM exit, when PAUSE filter counter
-were copied back to vmcb01, a dirty bit was not set.
-
-Thanks a lot to Suravee Suthikulpanit for debugging this!
-
-Fixes: 74fd41ed16fd ("KVM: x86: nSVM: support PAUSE filtering when L0 doesn't intercept PAUSE")
-Reported-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Tested-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Co-developed-by: Maxim Levitsky <mlevitsk@redhat.com>
-Message-Id: <20220518072709.730031-1-mlevitsk@redhat.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sami Tolvanen <samitolvanen@google.com>
 ---
- arch/x86/kvm/svm/nested.c | 39 +++++++++++++++++++++------------------
- arch/x86/kvm/svm/svm.c    |  4 ++--
- 2 files changed, 23 insertions(+), 20 deletions(-)
+ kernel/cfi.c | 22 ++++++++++++++++------
+ 1 file changed, 16 insertions(+), 6 deletions(-)
 
-diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
-index 6d0233a2469e..88da8edbe1e1 100644
---- a/arch/x86/kvm/svm/nested.c
-+++ b/arch/x86/kvm/svm/nested.c
-@@ -642,6 +642,8 @@ static void nested_vmcb02_prepare_control(struct vcpu_svm *svm,
- 	struct kvm_vcpu *vcpu = &svm->vcpu;
- 	struct vmcb *vmcb01 = svm->vmcb01.ptr;
- 	struct vmcb *vmcb02 = svm->nested.vmcb02.ptr;
-+	u32 pause_count12;
-+	u32 pause_thresh12;
+diff --git a/kernel/cfi.c b/kernel/cfi.c
+index 9594cfd1cf2c..08102d19ec15 100644
+--- a/kernel/cfi.c
++++ b/kernel/cfi.c
+@@ -281,6 +281,8 @@ static inline cfi_check_fn find_module_check_fn(unsigned long ptr)
+ static inline cfi_check_fn find_check_fn(unsigned long ptr)
+ {
+ 	cfi_check_fn fn = NULL;
++	unsigned long flags;
++	bool rcu_idle;
  
- 	/*
- 	 * Filled at exit: exit_code, exit_code_hi, exit_info_1, exit_info_2,
-@@ -721,27 +723,25 @@ static void nested_vmcb02_prepare_control(struct vcpu_svm *svm,
- 	if (!nested_vmcb_needs_vls_intercept(svm))
- 		vmcb02->control.virt_ext |= VIRTUAL_VMLOAD_VMSAVE_ENABLE_MASK;
- 
-+	pause_count12 = svm->pause_filter_enabled ? svm->nested.ctl.pause_filter_count : 0;
-+	pause_thresh12 = svm->pause_threshold_enabled ? svm->nested.ctl.pause_filter_thresh : 0;
- 	if (kvm_pause_in_guest(svm->vcpu.kvm)) {
--		/* use guest values since host doesn't use them */
--		vmcb02->control.pause_filter_count =
--				svm->pause_filter_enabled ?
--				svm->nested.ctl.pause_filter_count : 0;
-+		/* use guest values since host doesn't intercept PAUSE */
-+		vmcb02->control.pause_filter_count = pause_count12;
-+		vmcb02->control.pause_filter_thresh = pause_thresh12;
- 
--		vmcb02->control.pause_filter_thresh =
--				svm->pause_threshold_enabled ?
--				svm->nested.ctl.pause_filter_thresh : 0;
--
--	} else if (!vmcb12_is_intercept(&svm->nested.ctl, INTERCEPT_PAUSE)) {
--		/* use host values when guest doesn't use them */
-+	} else {
-+		/* start from host values otherwise */
- 		vmcb02->control.pause_filter_count = vmcb01->control.pause_filter_count;
- 		vmcb02->control.pause_filter_thresh = vmcb01->control.pause_filter_thresh;
--	} else {
--		/*
--		 * Intercept every PAUSE otherwise and
--		 * ignore both host and guest values
--		 */
--		vmcb02->control.pause_filter_count = 0;
--		vmcb02->control.pause_filter_thresh = 0;
+ 	if (is_kernel_text(ptr))
+ 		return __cfi_check;
+@@ -290,13 +292,21 @@ static inline cfi_check_fn find_check_fn(unsigned long ptr)
+ 	 * the shadow and __module_address use RCU, so we need to wake it
+ 	 * up if necessary.
+ 	 */
+-	RCU_NONIDLE({
+-		if (IS_ENABLED(CONFIG_CFI_CLANG_SHADOW))
+-			fn = find_shadow_check_fn(ptr);
++	rcu_idle = !rcu_is_watching();
++	if (rcu_idle) {
++		local_irq_save(flags);
++		rcu_irq_enter();
++	}
 +
-+		/* ... but ensure filtering is disabled if so requested.  */
-+		if (vmcb12_is_intercept(&svm->nested.ctl, INTERCEPT_PAUSE)) {
-+			if (!pause_count12)
-+				vmcb02->control.pause_filter_count = 0;
-+			if (!pause_thresh12)
-+				vmcb02->control.pause_filter_thresh = 0;
-+		}
- 	}
++	if (IS_ENABLED(CONFIG_CFI_CLANG_SHADOW))
++		fn = find_shadow_check_fn(ptr);
++	if (!fn)
++		fn = find_module_check_fn(ptr);
  
- 	nested_svm_transition_tlb_flush(vcpu);
-@@ -1003,8 +1003,11 @@ int nested_svm_vmexit(struct vcpu_svm *svm)
- 	vmcb12->control.event_inj         = svm->nested.ctl.event_inj;
- 	vmcb12->control.event_inj_err     = svm->nested.ctl.event_inj_err;
- 
--	if (!kvm_pause_in_guest(vcpu->kvm) && vmcb02->control.pause_filter_count)
-+	if (!kvm_pause_in_guest(vcpu->kvm)) {
- 		vmcb01->control.pause_filter_count = vmcb02->control.pause_filter_count;
-+		vmcb_mark_dirty(vmcb01, VMCB_INTERCEPTS);
-+
+-		if (!fn)
+-			fn = find_module_check_fn(ptr);
+-	});
++	if (rcu_idle) {
++		rcu_irq_exit();
++		local_irq_restore(flags);
 +	}
  
- 	nested_svm_copy_common_state(svm->nested.vmcb02.ptr, svm->vmcb01.ptr);
- 
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index 1bd42e7dfa36..4aea82f668fb 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -956,7 +956,7 @@ static void grow_ple_window(struct kvm_vcpu *vcpu)
- 	struct vmcb_control_area *control = &svm->vmcb->control;
- 	int old = control->pause_filter_count;
- 
--	if (kvm_pause_in_guest(vcpu->kvm) || !old)
-+	if (kvm_pause_in_guest(vcpu->kvm))
- 		return;
- 
- 	control->pause_filter_count = __grow_ple_window(old,
-@@ -977,7 +977,7 @@ static void shrink_ple_window(struct kvm_vcpu *vcpu)
- 	struct vmcb_control_area *control = &svm->vmcb->control;
- 	int old = control->pause_filter_count;
- 
--	if (kvm_pause_in_guest(vcpu->kvm) || !old)
-+	if (kvm_pause_in_guest(vcpu->kvm))
- 		return;
- 
- 	control->pause_filter_count =
+ 	return fn;
+ }
 -- 
-2.31.1
+2.36.1.255.ge46751e96f-goog
 
