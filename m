@@ -2,80 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A872C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 18:06:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22120C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 18:07:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346841AbiEaSGW (ORCPT
+        id S1346779AbiEaSHr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 14:06:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36442 "EHLO
+        Tue, 31 May 2022 14:07:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346820AbiEaSGS (ORCPT
+        with ESMTP id S232292AbiEaSHo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 14:06:18 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C7CE9BAF5
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 11:06:17 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id q12-20020a17090a304c00b001e2d4fb0eb4so3578815pjl.4
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 11:06:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=U8KygP5HX4ANbWdbvL1PVBHCmW/9zwhKWrTofJUHJ8g=;
-        b=KpPTUTlHGzyq7z5TXtGgnCLsz3TsaVTwnC4R9n6g0KBCtTdRfC2tR5xORvaoaLa8zh
-         09JbbaBhFlQfDHE5Fj8AzFo66zQtsoCo92UplQ4sBBRovj11j68IW/cDcnFkkALLfQkI
-         pvNwSTgedSrgMdoDINic6e3UhJLDzHxkj4xno=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=U8KygP5HX4ANbWdbvL1PVBHCmW/9zwhKWrTofJUHJ8g=;
-        b=0rDdgHxAqXJQt/3BNYH/jv9jFwdbfzx0OxzBrNLKp/Ygk+PxkYuft6WHMseFt/WFsd
-         TQ37RalPt8CYqAgXtLsM1LqObAT1XLDzE6WBD78rYcgKvScRZzVOvoGIwXvPqTT7Pste
-         M/bBEfE/Zf4pqPxAIUBIRSmaW3Utm1s2YZcp995ZivuvgDLmCjXS8BpVe7+JKiiGL1XZ
-         vlUpx8/Ajszc5MiND0LKmyFUfbOdBPiR9s7DeeDe3OqVq/nCuQbi49+y883yy3/qdpo1
-         zuUR9V6lKm84Ld0TkDOVObXRklJ83ITL0FobqC9TXAYD/LB/AENoh+79PbOOYOJhWAVE
-         ZwJA==
-X-Gm-Message-State: AOAM530w//DLds3j0KnKN8qN0wFpcRQkuhgHSrQY78w+VYjjiIDeBr6j
-        sp/yn4fE2G8MEJylAto+4PedZA==
-X-Google-Smtp-Source: ABdhPJxk0k0IE5MQ41zL5Wf8a/XJyLVLt7RJkuxqWxrzaxR2uwDa6Fx1or0jb5xUH07KYscnYdZ2Rw==
-X-Received: by 2002:a17:90a:2e83:b0:1da:3273:53ab with SMTP id r3-20020a17090a2e8300b001da327353abmr30031100pjd.14.1654020376713;
-        Tue, 31 May 2022 11:06:16 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id h6-20020a170902f54600b0016170bb6528sm11559540plf.113.2022.05.31.11.06.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 May 2022 11:06:16 -0700 (PDT)
-Date:   Tue, 31 May 2022 11:06:15 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Robert Dinse <nanook@eskimo.com>
-Subject: Re: [PATCH v2 8/8] KVM: x86: Bug the VM on an out-of-bounds data read
-Message-ID: <202205311106.76479DB1E6@keescook>
-References: <20220526210817.3428868-1-seanjc@google.com>
- <20220526210817.3428868-9-seanjc@google.com>
+        Tue, 31 May 2022 14:07:44 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1FCCC33351
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 11:07:40 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 77CB023A;
+        Tue, 31 May 2022 11:07:40 -0700 (PDT)
+Received: from [10.57.81.38] (unknown [10.57.81.38])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2EA0B3F766;
+        Tue, 31 May 2022 11:07:38 -0700 (PDT)
+Message-ID: <10f16c13-c50d-892c-a20d-979b2135c953@arm.com>
+Date:   Tue, 31 May 2022 19:07:32 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220526210817.3428868-9-seanjc@google.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 01/12] iommu/vt-d: Use iommu_get_domain_for_dev() in
+ debugfs
+Content-Language: en-GB
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Baolu Lu <baolu.lu@linux.intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Will Deacon <will@kernel.org>, Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+References: <20220527145910.GQ1343366@nvidia.com>
+ <eda4d688-257b-d12a-56c0-0f9d3a10ef8c@linux.intel.com>
+ <20220530121412.GX1343366@nvidia.com>
+ <42623a73-c288-1c0d-7021-93caff4ffb6f@linux.intel.com>
+ <20220531131052.GD1343366@nvidia.com>
+ <60318d83-e22f-f922-436f-6c31bce24d59@linux.intel.com>
+ <20220531145301.GE1343366@nvidia.com>
+ <a7d6d830-cb06-e0d7-0688-028f9af900e5@arm.com>
+ <20220531151332.GF1343366@nvidia.com>
+ <b66a2e3b-9adc-5150-fe00-d68b141b1c28@arm.com>
+ <20220531162152.GH1343366@nvidia.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220531162152.GH1343366@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 26, 2022 at 09:08:17PM +0000, Sean Christopherson wrote:
-> Bug the VM and terminate emulation if an out-of-bounds read into the
-> emulator's data cache occurs.  Knowingly contuining on all but guarantees
-> that KVM will overwrite random kernel data, which is far, far worse than
-> killing the VM.
+On 2022-05-31 17:21, Jason Gunthorpe wrote:
+> On Tue, May 31, 2022 at 05:01:46PM +0100, Robin Murphy wrote:
 > 
-> Signed-off-by: Sean Christopherson <seanjc@google.com>
+>> The DMA API doesn't need locking, partly since it can trust itself not to do
+>> stupid things, and mostly because it's DMA API performance that's
+>> fundamentally incompatible with serialisation anyway. Why do you think we
+>> have a complicated per-CPU IOVA caching mechanism, if not to support big
+>> multi-queue devices with multiple CPU threads mapping/unmapping in different
+>> parts of the same DMA domain concurrently?
+> 
+> Well, per-CPU is a form of locking.
 
-Reviewed-by: Kees Cook <keescook@chromium.org>
+Right, but that only applies for alloc_iova_fast() itself - once the 
+CPUs have each got their distinct IOVA region, they can then pile into 
+iommu_map() completely unhindered (and the inverse for the unmap path).
 
--- 
-Kees Cook
+> So what are the actual locking rules here? We can call map/unmap
+> concurrently but not if ... ?
+> 
+> IOVA overlaps?
+
+Well, I think the de-facto rule is that you technically *can* make 
+overlapping requests, but one or both may fail, and the final outcome in 
+terms of what ends up mapped in the domain is undefined (especially if 
+they both succeed). The only real benefit of enforcing serialisation 
+would be better failure behaviour in such cases, but it remains 
+fundamentally nonsensical for callers to make contradictory requests 
+anyway, whether concurrently or sequentially, so there doesn't seem much 
+point in spending effort on improving support for nonsense.
+
+> And we expect the iommu driver to be unable to free page table levels
+> that have IOVA boundaries in them?
+
+I'm not entirely sure what you mean there, but in general an unmap 
+request is expected to match some previous map request - there isn't a 
+defined API-level behaviour for partial unmaps. They might either unmap 
+the entire region originally mapped, or just the requested part, or 
+might fail entirely (IIRC there was some nasty code in VFIO for 
+detecting a particular behaviour). Similarly for unmapping anything 
+that's already not mapped, some drivers treat that as a no-op, others as 
+an error. But again, this is even further unrelated to concurrency.
+
+>> The simpler drivers already serialise on a per-domain lock internally, while
+>> the more performance-focused ones implement lock-free atomic pagetable
+>> management in a similar style to CPU arch code; either way it should work
+>> fine as-is.
+> 
+> The mm has page table locks at every level and generally expects them
+> to be held for a lot of manipulations. There are some lockless cases,
+> but it is not as aggressive as this sounds.
+
+Oh, I've spent the last couple of weeks hacking up horrible things 
+manipulating entries in init_mm, and never realised that that was 
+actually the special case. Oh well, live and learn.
+
+Robin.
