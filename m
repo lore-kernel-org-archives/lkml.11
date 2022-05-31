@@ -2,95 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA8E8C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 09:34:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A35AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 09:34:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245295AbiEaJeW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 05:34:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58924 "EHLO
+        id S245265AbiEaJek (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 31 May 2022 05:34:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245265AbiEaJeN (ORCPT
+        with ESMTP id S245306AbiEaJe1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 05:34:13 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 639833B005
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 02:34:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=SosMEuQLJHa6yl3EWnL8tq525aHQk8nZEUVLjVgkZk4=; b=lVTGJD7uqZ0iJW0C4sgpzQY15G
-        eJDpMDXrgdEt1IotKyOMLCvIKmVToA5OFbb9ADLxXJEBIge2udhyJrqSSSnVDdWKr+C4V1TNzXIAD
-        y2UAxrnqyud99kVgxE77305MIVPpq+qrPJdncl+MzDTzT6vyXOHlucSh9KMkizcnwnLhT5qxSPVks
-        AtzedNOX8VgD9BPViqY01Y61hACsCeOUVEd2/kxjZ0crYLO1ap1S61rXsaW7/4aI7RhD+Wl+c0H48
-        h1Ndr+LAllvmTxtn0KYB4w768eTdc7WcvBxH5VnOnqL3X2Nn/cH0rdi/tB0Xhz2K7dHgd4HFKejvW
-        Ef9KvfTA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nvyGH-003LT1-Jg; Tue, 31 May 2022 09:34:02 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 6D9333002AE;
-        Tue, 31 May 2022 11:33:59 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 3D21220775F47; Tue, 31 May 2022 11:33:59 +0200 (CEST)
-Date:   Tue, 31 May 2022 11:33:59 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     "Gautham R. Shenoy" <gautham.shenoy@amd.com>
-Cc:     frederic@kernel.org, paulmck@kernel.org, rjw@rjwysocki.net,
-        x86@kernel.org, linux-kernel@vger.kernel.org, jpoimboe@kernel.org
-Subject: Re: [RFC][PATCH 4/9] idle: Fix rcu_idle_*() usage
-Message-ID: <YpXhB4yjdNKOe6Np@hirez.programming.kicks-ass.net>
-References: <20220519212750.656413111@infradead.org>
- <20220519213421.808983977@infradead.org>
- <YotX4ywdUPJt0lNW@BLR-5CG11610CF.amd.com>
+        Tue, 31 May 2022 05:34:27 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9504490CCA;
+        Tue, 31 May 2022 02:34:25 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id i10so1114269lfj.0;
+        Tue, 31 May 2022 02:34:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=gw2op1nbtK3mVTVBPWekT+bSJAQAjZ1vIS0T45KFcIQ=;
+        b=iXzsl86GOZS+imC0ArAHsoDuo4IhbRivbe1549gE+1CLhRDLVbYVAAnQEHbcFq81oV
+         x2a/pQ779e0xE79rsATIaTBWiEqi3l6fmQhBoHqaXerolirKxgx181e2vUrm6zNeKDd8
+         FByKn1yB4UJGpvD6/6WesdI7RvOmE7xR299sKuHbQr/mIc6lSaVxuq8lf7CKYpKt+Whi
+         IcAoU1G0kUR+IDBlnXPcUEmhXQ2p6IdPHJw2YhBaICZ5/tewHdA7QasPcMPvn5GEIQxC
+         CBAn0nAyc2OHRZfk/YBCtXJRqaQ4fABslZ7cFsN5C/0S94I9Mo6HAQ4hFlva1tif02BQ
+         yMQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=gw2op1nbtK3mVTVBPWekT+bSJAQAjZ1vIS0T45KFcIQ=;
+        b=jw5nA424eM4wUB6fh8rH5u4nFaHHa2TPLhhTHrtSkQnrKvrLX0c9/sX94QHfq0mCB0
+         Vb3lRzN8gESUKjK8RlWdBfEITk8ao+j97F2V814+50xSrYAGdTgOwTo1w8FCBwJ4zrqN
+         iMykMaZ3YJKyVah3SMxiVMchUA9RfYMVD8VKW/geBHw2h2NK7LGMwZISdzadKetGWQqV
+         HMLpNWtVNXjDDo3Sqmn5N/qK6WU3QWoDse4cejT0uYVxy4blsoGJq79aCL2aKxmRKDtP
+         tcsyF6bmh6RPEPFZsmV1BbeTb8PzTZn+snjVyqZVgVucMm9ZWADkd2Jr1Xh1gKBB7Z/T
+         gOXQ==
+X-Gm-Message-State: AOAM530W1xZEusfD0ABJDOBCrP2M+ZKtux0ffMCZncZQ+92z8y3vjFUo
+        6cBqGq/wN1cOLTXWljUyEzB9C4Ldvho=
+X-Google-Smtp-Source: ABdhPJzJ/ak3w0z3FhjqS0lhkcplqcwKg+JYRuQYWd3Ojks/86koCzhsb75WL8GDmEHfwS+cJix4/A==
+X-Received: by 2002:a05:6512:33cb:b0:477:aa55:5f3e with SMTP id d11-20020a05651233cb00b00477aa555f3emr44429766lfg.488.1653989663734;
+        Tue, 31 May 2022 02:34:23 -0700 (PDT)
+Received: from wse-c0127 (2-104-116-184-cable.dk.customer.tdc.net. [2.104.116.184])
+        by smtp.gmail.com with ESMTPSA id w25-20020a197b19000000b00477c1172063sm2855486lfc.165.2022.05.31.02.34.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 May 2022 02:34:23 -0700 (PDT)
+From:   Hans Schultz <schultz.hans@gmail.com>
+X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
+To:     Ido Schimmel <idosch@idosch.org>,
+        Hans Schultz <schultz.hans@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH V3 net-next 1/4] net: bridge: add fdb flag to extent
+ locked port feature
+In-Reply-To: <YpCgxtJf9Qe7fTFd@shredder>
+References: <20220524152144.40527-1-schultz.hans+netdev@gmail.com>
+ <20220524152144.40527-2-schultz.hans+netdev@gmail.com>
+ <Yo+LAj1vnjq0p36q@shredder> <86sfov2w8k.fsf@gmail.com>
+ <YpCgxtJf9Qe7fTFd@shredder>
+Date:   Tue, 31 May 2022 11:34:21 +0200
+Message-ID: <86sfoqgi5e.fsf@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YotX4ywdUPJt0lNW@BLR-5CG11610CF.amd.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 23, 2022 at 03:16:11PM +0530, Gautham R. Shenoy wrote:
-> On Thu, May 19, 2022 at 11:27:54PM +0200, Peter Zijlstra wrote:
-> > The whole disable-RCU, enable-IRQS dance is very intricate since
-> > changing IRQ state is traced, which depends on RCU.
-> > 
-> > Add two helpers for the cpuidle case that mirror the entry code.
-> > 
-> > Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-> > ---
-> 
-> [...]
-> >  
-> > --- a/drivers/cpuidle/cpuidle.c
-> > +++ b/drivers/cpuidle/cpuidle.c
-> > @@ -13,6 +13,7 @@
-> >  #include <linux/mutex.h>
-> >  #include <linux/sched.h>
-> >  #include <linux/sched/clock.h>
-> > +#include <linux/sched/idle.h>
-> >  #include <linux/notifier.h>
-> >  #include <linux/pm_qos.h>
-> >  #include <linux/cpu.h>
-> > @@ -150,12 +151,12 @@ static void enter_s2idle_proper(struct c
-> >  	 */
-> >  	stop_critical_timings();
-> >  	if (!(target_state->flags & CPUIDLE_FLAG_RCU_IDLE))
-> > -		rcu_idle_enter();
-> > +		cpuidle_rcu_enter();
-> >  	target_state->enter_s2idle(dev, drv, index);
-> >  	if (WARN_ON_ONCE(!irqs_disabled()))
-> > -		local_irq_disable();
-> > +		raw_local_irq_disable();
-> >  	if (!(target_state->flags & CPUIDLE_FLAG_RCU_IDLE))
-> > -		rcu_idle_exit();
-> > +		cpuidle_rcu_enter();
-> 
-> Shouldn't this be cpuidle_rcu_exit() ?
+> Just to give you another data point about how this works in other
+> devices, I can say that at least in Spectrum this works a bit
+> differently. Packets that ingress via a locked port and incur an FDB
+> miss are trapped to the CPU where they should be injected into the Rx
+> path so that the bridge will create the 'locked' FDB entry and notify it
+> to user space. The packets are obviously rated limited as the CPU cannot
+> handle billions of packets per second, unlike the ASIC. The limit is not
+> per bridge port (or even per bridge), but instead global to the entire
+> device.
 
-Yes, very much so... soon I should buy a new supply of brown paper bags
-:-)
+Btw, will the bridge not create a SWITCHDEV_FDB_ADD_TO_DEVICE event
+towards the switchcore in the scheme you mention and thus add an entry
+that opens up for the specified mac address?
