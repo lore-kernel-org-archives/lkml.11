@@ -2,109 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE14CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 22:19:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C200CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 22:20:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348354AbiEaWTu (ORCPT
+        id S1348372AbiEaWUR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 18:19:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40282 "EHLO
+        Tue, 31 May 2022 18:20:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237879AbiEaWTr (ORCPT
+        with ESMTP id S1348389AbiEaWUF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 18:19:47 -0400
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A8579CF58;
-        Tue, 31 May 2022 15:19:46 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id c5-20020a1c3505000000b0038e37907b5bso2021550wma.0;
-        Tue, 31 May 2022 15:19:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hg0Ilti18FAQE7cSSj65kaiJUUDYw0qPslbA3HQQNKk=;
-        b=pk+7v8jwxc9qnUvijU0Bs2W142w7XcrD6mmGUUoIB2zJqfw/FLDe0qCku2APYiQsBh
-         rHZS7M3SLTqcI74mnTo0pnYyPbyceYuIwYIpXM2KKE63i+ElxZrKSGZt0HAgb3LG2Sfl
-         VEaTTKgdCrqF/AE7/RjdOauoCGLA2h+nvQnYAnlQMUomBB12RUT5SnAZ36uXx4DPpBb0
-         9zvZ5npnBKue8wa2GiJn2WEq+ZcH1M7MaWs53s0hR6RsY9xKy05n9SMuFIH5iO42RsIJ
-         Mw02aOJ8jd/IA/gBLGx8U3hOk9sjdQz95ookzg+NT+l4Qh+CiJmyLjIHJZdAUDuSvhhp
-         42Kw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hg0Ilti18FAQE7cSSj65kaiJUUDYw0qPslbA3HQQNKk=;
-        b=4iFTZmn8hlRzz3tYja1WzkLnXAYOlTqm2pBCjVkh7sNXR75tN9m/wuaLPHSD1bD76A
-         SmiWFXMyNArNx1qaegf/Yuk72ni5mpH5AxKKsm8wmMz6m5m9+9zxmkwJN+R+aaFpB/Xh
-         OyheW0WShn9VRYPfCDRfVwlrnoBsHbg9uxf//iK9ikcIDjupqNrAZvFmzQN+eTS86Mw1
-         r2bgI6A6eaxDWQXDlBn6fI1Pn86+bWT1mE3+ghRLMo0G5M9qMTk4DDTn9sQkSOh3l1Gr
-         qe/Lr31Gu+04ohKbDVWYO0v2SI0/A8mOXo3iMfQv5840LC+E+JmRci92hfYIHRhjAMji
-         fo3Q==
-X-Gm-Message-State: AOAM533NAaFow51lcIhvxbhU32nDh+CF7t/Q87aYhsmY3t0Xr9a0EDdP
-        c9obO0jOOvU2k0mGUNAcooFkb89j2gYZkw1Ov4o=
-X-Google-Smtp-Source: ABdhPJw+pyjdZqhWopEnK7PgvgXcc+sdJo0v04GaqsNX69HfALfqNi2CQOn3upMxMB+y4fWzvrpat4zC3W3e7STVlkk=
-X-Received: by 2002:a05:600c:6011:b0:398:fa3:c02d with SMTP id
- az17-20020a05600c601100b003980fa3c02dmr19146556wmb.183.1654035584709; Tue, 31
- May 2022 15:19:44 -0700 (PDT)
+        Tue, 31 May 2022 18:20:05 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36D4D9E9C3;
+        Tue, 31 May 2022 15:20:02 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: nfraprado)
+        with ESMTPSA id 90A671F43F1E
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1654035601;
+        bh=dqvPbD0+LyE8BrCyvcj4tkNdD3HuNjmZ6QAi2jlf4lY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=KUux18MMXlb51shdebtxX+3nedmXE19+HQ65ny3FB5b7mvKStmQbMrQrhnRE6giNC
+         /EMiebD2qDDTbz1uEfP9PCMOJXrSyMrTSIAEJT7i/paBPNcZRTtQxKlPl8G8FjsNAb
+         ytuWmbomZTbqlPaqDBdFow89+M6nIrqE1cRPhnftfQ6jWYO7Ch9jue4Gu1P57Y9091
+         8TLKZ6Ph4C3kZw/UDE2Sc/StNoAY+0oCu/YiiqK4BFgWZyvAX1ETJ8+YV9OBkksNFz
+         kZx8duSUqP7ZGjSPdSrocuIGABHGsAwWktMdgZG7Pxyl+ElW8UKdsASUU6scbTxBxF
+         gXyofvy9WtO6g==
+From:   =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
+        <nfraprado@collabora.com>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>, kernel@collabora.com,
+        =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
+        <nfraprado@collabora.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sean Wang <sean.wang@mediatek.com>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org
+Subject: [PATCH v2 1/2] dt-bindings: pinctrl: mt8192: Switch drive-strength-adv for -microamp
+Date:   Tue, 31 May 2022 18:19:53 -0400
+Message-Id: <20220531221954.160036-2-nfraprado@collabora.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220531221954.160036-1-nfraprado@collabora.com>
+References: <20220531221954.160036-1-nfraprado@collabora.com>
 MIME-Version: 1.0
-References: <20220531215106.192271-1-robdclark@gmail.com> <39d1fa65-8e82-721c-171e-ef36bda1c561@arm.com>
-In-Reply-To: <39d1fa65-8e82-721c-171e-ef36bda1c561@arm.com>
-From:   Rob Clark <robdclark@gmail.com>
-Date:   Tue, 31 May 2022 15:19:45 -0700
-Message-ID: <CAF6AEGuMN23hxe1+PES-F0rgXDnxi48OfbdHKasPGVnbFvQ8rw@mail.gmail.com>
-Subject: Re: [PATCH] dma-debug: Make things less spammy under memory pressure
-To:     Robin Murphy <robin.murphy@arm.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Rob Clark <robdclark@chromium.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        "open list:DMA MAPPING HELPERS" <iommu@lists.linux-foundation.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 31, 2022 at 3:00 PM Robin Murphy <robin.murphy@arm.com> wrote:
->
-> On 2022-05-31 22:51, Rob Clark wrote:
-> > From: Rob Clark <robdclark@chromium.org>
-> >
-> > Ratelimit the error msg to avoid flooding the console.
-> >
-> > Signed-off-by: Rob Clark <robdclark@chromium.org>
-> > ---
-> >   kernel/dma/debug.c | 2 +-
-> >   1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-> > index f8ff598596b8..683966f0247b 100644
-> > --- a/kernel/dma/debug.c
-> > +++ b/kernel/dma/debug.c
-> > @@ -564,7 +564,7 @@ static void add_dma_entry(struct dma_debug_entry *entry, unsigned long attrs)
-> >
-> >       rc = active_cacheline_insert(entry);
-> >       if (rc == -ENOMEM) {
-> > -             pr_err("cacheline tracking ENOMEM, dma-debug disabled\n");
-> > +             pr_err_ratelimited("cacheline tracking ENOMEM, dma-debug disabled\n");
-> >               global_disable = true;
->
-> Given that it's supposed to disable itself entirely if it ever gets
-> here, just how spammy is it exactly?
+Commit e5fabbe43f3f ("pinctrl: mediatek: paris: Support generic
+PIN_CONFIG_DRIVE_STRENGTH_UA") added support for using
+drive-strength-microamp instead of mediatek,drive-strength-adv.
 
-um, quite..  tbf that was in the context of a WIP igt test for
-shrinker which was trying to cycle thru ~2x RAM size worth of GEM
-buffers on something like 72 threads.  So it could just be threads
-that had gotten past the dma_debug_disabled() check already before
-global_disable was set to true?
+Since there aren't any users of mediatek,drive-strength-adv on mt8192
+yet, remove this property and add drive-strength-microamp in its place,
+which has a clearer meaning.
 
-I guess this could be pr_err_once() instead, then?
+While at it, add a new 'if' block to validate that drive-strength and
+drive-strength-microamp aren't used together, since they're mutually
+exclusive.
 
-BR,
--R
+Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Reviewed-by: AngeloGioacchino Del Regno <angelogiocchino.delregno@collabora.com>
 
-> Thanks,
-> Robin.
->
-> >       } else if (rc == -EEXIST && !(attrs & DMA_ATTR_SKIP_CPU_SYNC)) {
-> >               err_printk(entry->dev, entry,
+---
+
+Changes in v2:
+- Added 'if' block to make drive-strength and drive-strength-microamp
+  mutually exclusive
+- Changed commit title to be more precise
+- Dropped Fixes tag
+
+ .../bindings/pinctrl/pinctrl-mt8192.yaml      | 35 ++++++-------------
+ 1 file changed, 10 insertions(+), 25 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8192.yaml b/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8192.yaml
+index c90a132fbc79..c8092b218f2f 100644
+--- a/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8192.yaml
++++ b/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8192.yaml
+@@ -80,31 +80,8 @@ patternProperties:
+               dt-bindings/pinctrl/mt65xx.h. It can only support 2/4/6/8/10/12/14/16mA in mt8192.
+             enum: [2, 4, 6, 8, 10, 12, 14, 16]
+ 
+-          mediatek,drive-strength-adv:
+-            description: |
+-              Describe the specific driving setup property.
+-              For I2C pins, the existing generic driving setup can only support
+-              2/4/6/8/10/12/14/16mA driving. But in specific driving setup, they
+-              can support 0.125/0.25/0.5/1mA adjustment. If we enable specific
+-              driving setup, the existing generic setup will be disabled.
+-              The specific driving setup is controlled by E1E0EN.
+-              When E1=0/E0=0, the strength is 0.125mA.
+-              When E1=0/E0=1, the strength is 0.25mA.
+-              When E1=1/E0=0, the strength is 0.5mA.
+-              When E1=1/E0=1, the strength is 1mA.
+-              EN is used to enable or disable the specific driving setup.
+-              Valid arguments are described as below:
+-              0: (E1, E0, EN) = (0, 0, 0)
+-              1: (E1, E0, EN) = (0, 0, 1)
+-              2: (E1, E0, EN) = (0, 1, 0)
+-              3: (E1, E0, EN) = (0, 1, 1)
+-              4: (E1, E0, EN) = (1, 0, 0)
+-              5: (E1, E0, EN) = (1, 0, 1)
+-              6: (E1, E0, EN) = (1, 1, 0)
+-              7: (E1, E0, EN) = (1, 1, 1)
+-              So the valid arguments are from 0 to 7.
+-            $ref: /schemas/types.yaml#/definitions/uint32
+-            enum: [0, 1, 2, 3, 4, 5, 6, 7]
++          drive-strength-microamp:
++            enum: [125, 250, 500, 1000]
+ 
+           mediatek,pull-up-adv:
+             description: |
+@@ -138,6 +115,14 @@ patternProperties:
+         required:
+           - pinmux
+ 
++        allOf:
++          - if:
++              required:
++                - drive-strength-microamp
++            then:
++              properties:
++                drive-strength: false
++
+         additionalProperties: false
+ 
+ allOf:
+-- 
+2.36.1
+
