@@ -2,136 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5870CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 14:24:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03611C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 14:24:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345239AbiEaOX7 (ORCPT
+        id S1345250AbiEaOYP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 10:23:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50648 "EHLO
+        Tue, 31 May 2022 10:24:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345218AbiEaOX5 (ORCPT
+        with ESMTP id S1345218AbiEaOYM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 10:23:57 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28A3B8020A;
-        Tue, 31 May 2022 07:23:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654007036; x=1685543036;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=rpF3VW7+9wXB4kzDnn1TnjadNGs2Y37n9bSd1jF1TNE=;
-  b=Dsj9+W0ylzTcGVXOT33GQviQkc7fjTezEj7uVpuTbxvBZGS/gEgly2pk
-   K02HZJYMgWXxU7lXf5IcoV0FrRRP/rr/b88jILvj0kZcHlKP3Ms6yAtVJ
-   nOy+lZEIO+jpyk06POw/MshcwJMMMr3lbPzg5ebuTSep06EPkQfI6wZZM
-   F6r+0UDZf9ZlK+QTqUAOZTRJ4na0HNKPB1lOzXcKWz960x8QfLJpWc4FQ
-   VSunqlgtbC8WGy8QgNqcrnOj6efr5bkqsbEIOLAg3hOl4z4znpNeB/XN6
-   YKt0snyGJh5xMiZXhEUacFlj3u0SPU4fvLg7yD/B5yDoT1bVXr7sdA9UP
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10364"; a="272835147"
-X-IronPort-AV: E=Sophos;i="5.91,265,1647327600"; 
-   d="scan'208";a="272835147"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 07:23:54 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,265,1647327600"; 
-   d="scan'208";a="823293222"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga006.fm.intel.com with ESMTP; 31 May 2022 07:23:52 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 820F814F; Tue, 31 May 2022 17:23:54 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-imx@nxp.com
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Haibo Chen <haibo.chen@nxp.com>
-Subject: [PATCH v1 1/1] iio: adc: vf610_adc: Make use of device properties
-Date:   Tue, 31 May 2022 17:23:53 +0300
-Message-Id: <20220531142353.64925-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 31 May 2022 10:24:12 -0400
+Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 157978020A;
+        Tue, 31 May 2022 07:24:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+        d=metrotek.ru; s=mail;
+        h=from:subject:date:message-id:to:cc:mime-version:content-type:
+         content-transfer-encoding:in-reply-to:references;
+        bh=J8M8YGaMefHW0AkjWLNXVgXcmOvL6c5NpOJNy13U8SQ=;
+        b=TwsKZAcMfsw0dFg/O/U99HLXqXQq9VkRXI37vXdvrKA98ORvu9PInhGuyZk+cIZVygLWjLAHM3N3l
+         MnJer1wvhJUhvi4fBv6KsDsJFHNXsDr98h8tqnWNwraMkSJcNRkJhY0L8WzoZN/2QRuhpzTp3S+0iU
+         IRV+WBugKbquFlXtDcTzvtTraxtlbk1m7psgFDrfXzOI4GfzlMwfJB2Vnv6k7icIpZuakhZ3LVudhd
+         M8UmHn6KvD200jKTHWNFRhKAFeg258ZEXRsD/YzfJf2liWdGI2G4XB+lRgMJup+N/VqrA0DLWR230m
+         JPBRN2a2+VW1JQZ03G6k3mS2MS3p0dA==
+X-Kerio-Anti-Spam:  Build: [Engines: 2.16.3.1424, Stamp: 3], Multi: [Enabled, t: (0.000009,0.030747)], BW: [Enabled, t: (0.000013,0.000001)], RTDA: [Enabled, t: (0.077851), Hit: No, Details: v2.39.0; Id: 15.52kerb.1g4d80gac.6c0f; mclb], total: 0(700)
+X-Footer: bWV0cm90ZWsucnU=
+Received: from x260 ([178.70.36.174])
+        (authenticated user i.bornyakov@metrotek.ru)
+        by mail.pr-group.ru with ESMTPSA
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
+        Tue, 31 May 2022 17:23:38 +0300
+Date:   Tue, 31 May 2022 17:01:22 +0300
+From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
+To:     Conor.Dooley@microchip.com
+Cc:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
+        trix@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-fpga@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        system@metrotek.ru
+Subject: Re: [PATCH v13 2/3] fpga: microchip-spi: add Microchip MPF FPGA
+ manager
+Message-ID: <20220531140122.teiuoqwo2zmly6kh@x260>
+References: <20220526181344.2088-1-i.bornyakov@metrotek.ru>
+ <20220526181344.2088-3-i.bornyakov@metrotek.ru>
+ <f655cf2f-555c-6480-a461-bcddb9e510f3@microchip.com>
+ <20220530120701.sedwn3qeohlnj52e@x260>
+ <95c44458-aeff-e356-1e32-c8f735570c3a@microchip.com>
+ <3b6867a8-d4ce-c5f3-71d4-bd9c3c88c389@microchip.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <3b6867a8-d4ce-c5f3-71d4-bd9c3c88c389@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the module to be property provider agnostic and allow
-it to be used on non-OF platforms.
+On Tue, May 31, 2022 at 10:53:07AM +0000, Conor.Dooley@microchip.com wrote:
+> One last item, sorry!
+> 
+> On 30/05/2022 15:24, Conor Dooley wrote:
+> > On 30/05/2022 13:07, Ivan Bornyakov wrote:
+> >> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> >>
+> >> On Mon, May 30, 2022 at 11:22:26AM +0000, Conor.Dooley@microchip.com wrote:
+> >>> On 26/05/2022 19:13, Ivan Bornyakov wrote:
+> >>>> +static int mpf_read_status(struct spi_device *spi)
+> >>>> +{
+> >>>> +       u8 status = 0, status_command = MPF_SPI_READ_STATUS;
+> >>>> +       /*
+> >>>> +        * Two identical SPI transfers are used for status reading.
+> >>>> +        * The reason is that the first one can be inadequate.
+> >>>> +        * We ignore it completely and use the second one.
+> >>>> +        */
+> >>>> +       struct spi_transfer xfers[] = {
+> >>>> +               [0 ... 1] = {
+> >>>> +                       .tx_buf = &status_command,
+> >>>> +                       .rx_buf = &status,
+> >>>> +                       .len = 1,
+> >>>> +                       .cs_change = 1,
+> 
+> Should cs_change be set for both messages or just the first?
+>  From reading the documentation, it looks like we only want it
+> for the first one.
+> 
+> https://elixir.bootlin.com/linux/latest/source/include/linux/spi/spi.h#L895
+> 
+> Thanks,
+> Conor.
+> 
 
-Add mod_devicetable.h include.
+You're right, I've overlooked that moment.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/iio/adc/Kconfig     |  1 -
- drivers/iio/adc/vf610_adc.c | 15 ++++++---------
- 2 files changed, 6 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index 3b6a80786b51..448ae243cd31 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -1257,7 +1257,6 @@ config TWL6030_GPADC
- 
- config VF610_ADC
- 	tristate "Freescale vf610 ADC driver"
--	depends on OF
- 	depends on HAS_IOMEM
- 	select IIO_BUFFER
- 	select IIO_TRIGGERED_BUFFER
-diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
-index c84293efc129..c6b16cf6e367 100644
---- a/drivers/iio/adc/vf610_adc.c
-+++ b/drivers/iio/adc/vf610_adc.c
-@@ -5,7 +5,9 @@
-  * Copyright 2013 Freescale Semiconductor, Inc.
-  */
- 
-+#include <linux/mod_devicetable.h>
- #include <linux/module.h>
-+#include <linux/property.h>
- #include <linux/platform_device.h>
- #include <linux/interrupt.h>
- #include <linux/delay.h>
-@@ -14,10 +16,7 @@
- #include <linux/io.h>
- #include <linux/clk.h>
- #include <linux/completion.h>
--#include <linux/of.h>
--#include <linux/of_irq.h>
- #include <linux/regulator/consumer.h>
--#include <linux/of_platform.h>
- #include <linux/err.h>
- 
- #include <linux/iio/iio.h>
-@@ -799,6 +798,7 @@ MODULE_DEVICE_TABLE(of, vf610_adc_match);
- 
- static int vf610_adc_probe(struct platform_device *pdev)
- {
-+	struct device *dev = &pdev->dev;
- 	struct vf610_adc *info;
- 	struct iio_dev *indio_dev;
- 	int irq;
-@@ -846,13 +846,10 @@ static int vf610_adc_probe(struct platform_device *pdev)
- 
- 	info->vref_uv = regulator_get_voltage(info->vref);
- 
--	of_property_read_u32_array(pdev->dev.of_node, "fsl,adck-max-frequency",
--			info->max_adck_rate, 3);
-+	device_property_read_u32_array(dev, "fsl,adck-max-frequency", info->max_adck_rate, 3);
- 
--	ret = of_property_read_u32(pdev->dev.of_node, "min-sample-time",
--			&info->adc_feature.default_sample_time);
--	if (ret)
--		info->adc_feature.default_sample_time = DEFAULT_SAMPLE_TIME;
-+	info->adc_feature.default_sample_time = DEFAULT_SAMPLE_TIME;
-+	device_property_read_u32(dev, "min-sample-time", &info->adc_feature.default_sample_time);
- 
- 	platform_set_drvdata(pdev, indio_dev);
- 
--- 
-2.35.1
+> >>>> +               }
+> >>>> +       };
+> >>>
+> >>> Hmm, I don't think that this is correct, or at least it is not
+> >>> correct from the polarfire /soc/ perspective. I was told that
+> >>> there was nothing different other than the envm between the
+> >>> programming for both devices - but this is another situation
+> >>> where I start to question that.
+> >>>
+> >>> When I run this code, ISC enable /never/ passes - failing due
+> >>> to timing out. I see something like this picture here:
+> >>> https://i.imgur.com/EKhd1S3.png
+> >>> You can see the 0x0B ISC enable coming through & then a status
+> >>> check after it.
+> >>>
+> >>> With the current code, the value of the "status" variable will
+> >>> be 0x0, given you are overwriting the first MISO value with the
+> >>> second. According to the hw guys, the spi hw status *should*
+> >>> only be returned on MISO in the first byte after SS goes low.
+> >>>
+> >>> If this is not the case for a non -soc part, which, as I said
+> >>> before, I don't have a board with the SPI programmer exposed
+> >>> for & I have been told is not the case then my comments can
+> >>> just be ignored entirely & I'll have some head scratching to
+> >>> do...
+> >>>
+> >>> Thanks,
+> >>> Conor.
+> >>>
+> >>
+> >> If I understood correctly, SS doesn't alter between two status reading
+> >> transactions despite .cs_change = 1. May be adding some .cs_change_delay
+> >> to spi_transfer struct can help with that?
+> > 
+> > D-oh - bug in the spi controller driver :)
+> > LGTM now, successfully programmed my PolarFire SoC with v12.
+> > I'd almost suggest adding a compatible for it too - but since
+> > the envm programming doesn't work I don't think that would be
+> > correct.
+> > 
+> > Tested-by: Conor Dooley <conor.dooley@microchip.com>
+> > 
+> > With a small comment about why it's using spi_sync_transfer():
+> > Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
+> > 
+> >>
+> >>>> +       int ret = spi_sync_transfer(spi, xfers, 2);
+> >>>> +
+> >>>> +       if ((status & MPF_STATUS_SPI_VIOLATION) ||
+> >>>> +           (status & MPF_STATUS_SPI_ERROR))
+> >>>> +               ret = -EIO;
+> >>>> +
+> >>>> +       return ret ? : status;
+> >>>> +}
+> >>
+> > 
+> 
 
