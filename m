@@ -2,111 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41582C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 15:54:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B5DCC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 15:56:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345938AbiEaPyG (ORCPT
+        id S1345937AbiEaP4L (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 11:54:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57696 "EHLO
+        Tue, 31 May 2022 11:56:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243830AbiEaPx7 (ORCPT
+        with ESMTP id S243830AbiEaP4K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 11:53:59 -0400
-Received: from mail-ua1-x92b.google.com (mail-ua1-x92b.google.com [IPv6:2607:f8b0:4864:20::92b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77F3E8DDF5
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 08:53:58 -0700 (PDT)
-Received: by mail-ua1-x92b.google.com with SMTP id x11so4943834uao.2
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 08:53:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BOXJpZ0+BUAE//wNjHDEkwjUXPD0snUpl09DbEzmQhE=;
-        b=RsBYSrMCSxK918LuTyxNjJc7E/HnxGnKuFo5NpHNQj8246AEq5DarJ/c8T9BzuNxGf
-         nCE0rxsBMIplRG6nsFE3gHIRTTuUH9iIjG7BMMPmqyyT0vwgN1yDLDoEDer19lYBGTmi
-         Z+x+pxs+QbgRzZJPppHXsqeg7/JSZHQDQ9psTsCn29mpd5BscViKpxkcVN5ZAWi2qVQG
-         OZOmd31h74Nr+7/G7yQ1qJrc9tGIxESxHEH9YoLEBVeOgdnjEvJZylDhWXKqu0Lw08fQ
-         g0aQAphtgQ+euM86Sx77ukH5UjuS8O9UhPdRhxXROwpnTO3rPBM/7TZhI3zqcZvvI0u5
-         xs6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BOXJpZ0+BUAE//wNjHDEkwjUXPD0snUpl09DbEzmQhE=;
-        b=x/tZPzgfy/3Lu1btk74Cw9h8GNO7bGnlMoic5+sAkwc7JZfAIY2J1tkapVUPMJTGPd
-         mgAjxVHHgNluYMGGFgxraMruVhzCvbGx9wTyka0iCM3Ynt2GwLAjvKX+R+/SBXQFzxzH
-         pvMeZlNsImdxjbteUACqgXZzgv1XLZPSteSa2YeFadEa58Np6ya7LQh86v/R4YIbDbqM
-         bkudAIWPP2m35oJxz5JSlISyvUzmqzW1UtRNkHbXS9NcnfGn2t+kYZ2UIk7TzG0aOV8G
-         xykZq+WxXPTZUjtUP5RZSCaTHzZKt/7j1+7hM8YPKerx/Sa+GoYWz0/g/WugScaNVmj1
-         pIow==
-X-Gm-Message-State: AOAM5310L4322jQZhtp8DFwp4zGpJboPSgEz9NEEyYg6LC7Yd/pOJKr7
-        bwydmuZx1OxuvfIY0z3PZlUY6wL1d1i7gmiVIIN6iJgRFdLkcJ6vAl4=
-X-Google-Smtp-Source: ABdhPJy/RAcdBAFAmWFQf6AWpLc9uHEKCp+uQkEH8BsIzrXYzln0GKbNcKGbF7WUtO5A1NUANhEJQQ2eiaBIaPy5iok=
-X-Received: by 2002:ab0:2bc9:0:b0:362:8750:8032 with SMTP id
- s9-20020ab02bc9000000b0036287508032mr21707440uar.118.1654012437602; Tue, 31
- May 2022 08:53:57 -0700 (PDT)
+        Tue, 31 May 2022 11:56:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B34FD527F4;
+        Tue, 31 May 2022 08:56:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A4CF613E2;
+        Tue, 31 May 2022 15:56:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02E06C385A9;
+        Tue, 31 May 2022 15:56:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654012568;
+        bh=7uGXLWpMXH5FP6g6lTa6LFc8636SvC0zhKEGjnRNQQw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=nYtB3DJFhm85N5k2gFA65iswAFxUThtvjMc4GPWr3W1OuKdQUsz5cvy4dtpq9hZAI
+         pl7Wb2d7vYHwzDdEcZxi6sc8IVkKlbCmxVqR3OkM5AQJP+5JDPcNBNy0dkoB5u3+SK
+         9Ls2FeWFT3GMgjXoZbJD1XnlLzNxvSsnUd1YUeL/Kwv+mIBkldV1xHA+5PZwQQhB2w
+         b3jWTjlA6iycPQGZmYYZ6SbyaVZ4he4sXOMACC5wHFXof86nHuUSkalvwuzEGDPSji
+         ToVddgHJweOKFr4n1epMSbiwTvwaWLuDOZbPV+8kagsaE+jBg360qYmIIF9XJh0f+J
+         6gSMUOlnNUEag==
+Date:   Tue, 31 May 2022 16:55:59 +0100
+From:   Will Deacon <will@kernel.org>
+To:     Konrad Dybcio <konrad.dybcio@somainline.org>
+Cc:     ~postmarketos/upstreaming@lists.sr.ht,
+        linux-arm-msm@vger.kernel.org, bjorn.andersson@linaro.org,
+        linux-arm-kernel@lists.infradead.org,
+        iommu@lists.linux-foundation.org, martin.botka@somainline.org,
+        angelogioacchino.delregno@somainline.org,
+        marijn.suijten@somainline.org, jamipkettunen@somainline.org,
+        Rob Clark <robdclark@gmail.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/6] iommu/qcom: Write TCR before TTBRs to fix ASID
+ access behavior
+Message-ID: <20220531155559.GB25502@willie-the-truck>
+References: <20220527212901.29268-1-konrad.dybcio@somainline.org>
+ <20220527212901.29268-3-konrad.dybcio@somainline.org>
 MIME-Version: 1.0
-References: <20220531115942.1686812-1-chenhuacai@loongson.cn> <e7cf33a170d0b4e98e53744f60dbf922@kernel.org>
-In-Reply-To: <e7cf33a170d0b4e98e53744f60dbf922@kernel.org>
-From:   Huacai Chen <chenhuacai@gmail.com>
-Date:   Tue, 31 May 2022 23:53:46 +0800
-Message-ID: <CAAhV-H6ZoqSty=yaAUPMg1QTamfwuYODB_mxf_o=HCJ1boawQg@mail.gmail.com>
-Subject: Re: [PATCH 1/2] irqchip: Adjust Kconfig for Loongson
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Huacai Chen <chenhuacai@loongson.cn>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220527212901.29268-3-konrad.dybcio@somainline.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Marc,
+On Fri, May 27, 2022 at 11:28:57PM +0200, Konrad Dybcio wrote:
+> From: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
+> 
+> As also stated in the arm-smmu driver, we must write the TCR before
+> writing the TTBRs, since the TCR determines the access behavior of
+> some fields.
 
-On Tue, May 31, 2022 at 8:52 PM Marc Zyngier <maz@kernel.org> wrote:
->
-> On 2022-05-31 12:59, Huacai Chen wrote:
-> > We are preparing to add new Loongson (based on LoongArch, not
-> > compatible
-> > with old MIPS-based Loongson) support.
->
-> Please drop this blurb from all your patches. It adds zero information.
-OK, will be removed.
+Where is this stated in the arm-smmu driver?
 
->
-> > HTVEC will be shared by both old
-> > and new Loongson processors, so we adjust its description. HTPIC is
-> > only
-> > used by MIPS-based Loongson, so we add a MIPS dependency. PCH_PIC and
-> > PCH_MSI will have some arch-specific code, so we remove the
-> > COMPILE_TEST
-> > dependency to avoid build warnings.
-> >
-> > Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
->
-> No cover letter, no indication of what this applies on, no mention
-> of how this relates to the ongoing irqchip review.
->
-> What do you want me to do with this?
-Sorry about the confusion; as suggested by you and Arnd, these two patches
-are the minimal changes required on irqchip's side to make the port build,
-without introducing any non-reviewed pieces of code. I originally wanted to
-send the patches then quickly reply you in the asm-generic thread, but
-unfortunately I lost Internet connectivity at my site until you have replied.
+> 
+> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
+> Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
+> Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+> ---
+>  drivers/iommu/arm/arm-smmu/qcom_iommu.c | 12 ++++++------
+>  1 file changed, 6 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
+> index 1728d4d7fe25..75f353866c40 100644
+> --- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
+> +++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
+> @@ -273,18 +273,18 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
+>  			ctx->secure_init = true;
+>  		}
+>  
+> -		/* TTBRs */
+> -		iommu_writeq(ctx, ARM_SMMU_CB_TTBR0,
+> -				pgtbl_cfg.arm_lpae_s1_cfg.ttbr |
+> -				FIELD_PREP(ARM_SMMU_TTBRn_ASID, ctx->asid));
+> -		iommu_writeq(ctx, ARM_SMMU_CB_TTBR1, 0);
+> -
+>  		/* TCR */
+>  		iommu_writel(ctx, ARM_SMMU_CB_TCR2,
+>  				arm_smmu_lpae_tcr2(&pgtbl_cfg));
+>  		iommu_writel(ctx, ARM_SMMU_CB_TCR,
+>  			     arm_smmu_lpae_tcr(&pgtbl_cfg) | ARM_SMMU_TCR_EAE);
+>  
+> +		/* TTBRs */
+> +		iommu_writeq(ctx, ARM_SMMU_CB_TTBR0,
+> +				pgtbl_cfg.arm_lpae_s1_cfg.ttbr |
+> +				FIELD_PREP(ARM_SMMU_TTBRn_ASID, ctx->asid));
+> +		iommu_writeq(ctx, ARM_SMMU_CB_TTBR1, 0);
 
-You are knowledgeable, and have taught me much; I owe you many thanks.
-However, as my native language is not English, I realize I may sound impolite
-or inappropriate from time to time, making some of you unhappy. (Actually I
-had to ask Xuerui to translate this reply for me, in case I get something
-wrong again.) I'll try to improve in the future and I hope you'll understand.
+I'd have thought that SCTLR.M would be clear here, so it shouldn't matter
+what order we write these in.
 
-Apologizes for the confusion again,
-
-Huacai
->
->          M.
-> --
-> Jazz is not dead. It just smells funny...
+Will
