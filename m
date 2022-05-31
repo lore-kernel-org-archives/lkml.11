@@ -2,238 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9E1DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 10:10:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35A78C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 10:10:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245469AbiEaKKB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 06:10:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44640 "EHLO
+        id S245484AbiEaKKY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 31 May 2022 06:10:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245400AbiEaKJu (ORCPT
+        with ESMTP id S245610AbiEaKKR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 06:09:50 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80E68996AD;
-        Tue, 31 May 2022 03:09:48 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id k16so13642271wrg.7;
-        Tue, 31 May 2022 03:09:48 -0700 (PDT)
+        Tue, 31 May 2022 06:10:17 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E910984A3F
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 03:10:16 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id gc3-20020a17090b310300b001e33092c737so1807735pjb.3
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 03:10:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=PSCX4PHCAROocqljRy3ZnI/Dr3u/fImtm88PpfecH+0=;
-        b=hgL7i4XhVKnDz+kV6ZUE7M1I5YWxgyeFW2IZF2mSrdg4RvA1wzUpEjpZp0UL8CTzy4
-         +6zDKiJjI/xbhMEf/hdKbj+GEz7nQr3s94DqNwb4DnmCKFcUxk0OeQ9vQCKA6ez2anWb
-         QbVooWUWhpKl2Yn7AHI9HP6ngfob1aHHe5a9xbOSfuj2OmrK4N9X477rxL8O9b1OsD+g
-         PtUvha7RK1clPNKDMorU2IBsVZJQsvxfkCMkcfShi9SxTLwHDC7bnNoB0Lxi8+/+AkuR
-         HCru7e1wLgDwrbmJYV3oA2c3aN4+ehq1Vicg0eUYQqvQ1+C0RNIh4ob3SZt4spKW/PxT
-         i8Ag==
+        bh=j57ZrMG+9VBM+p+9s2sRlhsnGkiugqPokE6M298uNQM=;
+        b=MLPtGe6XRXBV2B/mjt0vE9YplU+v/G+cS6bfJadMY3EhacRqxBu4vsvkoqM6882X7d
+         xsP0PNgam5Z5hcvh1onn2i0erXxi4kjQOQo1V5sDPM9AvJs/dl9M+qZ3I6VBQaEcmzH7
+         eMu2dZyNFQvtZJcmMP231SecB0NSGWVWgwukaQsgMnbEXIJ3IYqq8sJhDFe2bMHe1XL8
+         a8FaKe5/1OiEukzVH/63wi7BgJL260vUV21WKZ5pss+dN0ojaON1VnXsePXtKtk1yJjT
+         b7xBUGcrU3ZK/0PX7eNSuPlqEOJOAqjMBWDIDORaaZDkgJP+LHodoe0uQjzbzmedy0jT
+         2tzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=PSCX4PHCAROocqljRy3ZnI/Dr3u/fImtm88PpfecH+0=;
-        b=LZzoGtgAci/jXSpdWjGrhinc4o/sUt+cQXdag+rSLtNDMYiAuc2iQnHFJI3WEKRxO4
-         strcHSNd5+7myhZzJVg4ho7XCEWjaYMCJf7xf39NGtk4bmqn5gUlHKbpHZUEE5ezSHWg
-         3xfMb5qkAxQpAwTUOBmYZgTmv711zX+gY+xymVRKt0S4h9EBv89K/ELBKKLbCLnTmQfN
-         McXVr1ws15hSW/3g8XerGVj4KiV6aLl9rK5itdCOar+yu2ciEEMYKs1uFV7zS23123nt
-         0uovx2uwZVYCgbtf7XPP3Wso36jpM/s9/a3bT77ySqCqeC0PArWRelHEe1kbVBW25Nis
-         CChg==
-X-Gm-Message-State: AOAM533QdCfhHe4mtuCJTLst/RNiWMUnotfZgJN2Drrgn0POF/k7iglI
-        tWCtES4wkLVfvEf3afp6y4M=
-X-Google-Smtp-Source: ABdhPJzEABsFC0dAQtKAZa34WuskN0k+eNzR8nofFV3y4fHwJcykXVBdRQaxtQGc/Y72uF6IkW2opA==
-X-Received: by 2002:a05:6000:1542:b0:20f:f809:cf89 with SMTP id 2-20020a056000154200b0020ff809cf89mr27658582wry.361.1653991786933;
-        Tue, 31 May 2022 03:09:46 -0700 (PDT)
-Received: from baligh-ThinkCentre-M720q.iliad.local (freebox.vlq16.iliad.fr. [213.36.7.13])
-        by smtp.googlemail.com with ESMTPSA id n6-20020a05600c4f8600b0039b006bd6d9sm1975543wmq.6.2022.05.31.03.09.46
+        bh=j57ZrMG+9VBM+p+9s2sRlhsnGkiugqPokE6M298uNQM=;
+        b=m4iYR5RR7oKYHhOXcACr0SncpkrCTtz65zJPZ3LM0u1AAo6RMyK11UVjKrEMEaCV0K
+         RQVmyGT8+1tRpFAzACUuoAIythEhBHOHyYei9mfzig2osJEfgknvC7NvQH3/k5iBw86b
+         68ad2Qrt+UuTEtA5u1878BY+GwUDvaqMHxYSF7Qik4bM/ProgenjmDlIDV0JexIDObG/
+         Qik4ONwL+5Wd2/8NT9PWZmPtVe5lvbgE6ikWUgh0yrcuYNCkOsYQ31U09n0Wp15J6BxS
+         wVInG8EUsyhLeb831qFxtF8ni32FpBX0vG+bfpXmLsMnilaUWzU7V5aQd/3Gi/JDr0SZ
+         qDww==
+X-Gm-Message-State: AOAM532gZfO3PsJcW3XRMcMcGpihiChkT+IR6ZQeHIuxs7IL8xNE+OpJ
+        Xok5f76tL54L+3r8XXq6FEIPXQ==
+X-Google-Smtp-Source: ABdhPJxQOJa+5En5BnRKPLbV+ML0lnY/36s4UyK7xqUJmeTLwp7jzBg30gv/nDj+r2ps1UdedNAvkg==
+X-Received: by 2002:a17:903:11c9:b0:154:be2d:eb9 with SMTP id q9-20020a17090311c900b00154be2d0eb9mr59498713plh.91.1653991816482;
+        Tue, 31 May 2022 03:10:16 -0700 (PDT)
+Received: from localhost ([122.162.234.2])
+        by smtp.gmail.com with ESMTPSA id y29-20020a63495d000000b003fbc60e3358sm6861084pgk.4.2022.05.31.03.10.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 May 2022 03:09:46 -0700 (PDT)
-From:   Baligh Gasmi <gasmibal@gmail.com>
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     Baligh Gasmi <gasmibal@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-wireless@vger.kernel.org (open list:MAC80211),
-        netdev@vger.kernel.org (open list:NETWORKING [GENERAL]),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [RFC PATCH v3 1/1] mac80211: use AQL airtime for expected throughput.
-Date:   Tue, 31 May 2022 12:09:22 +0200
-Message-Id: <20220531100922.491344-1-gasmibal@gmail.com>
-X-Mailer: git-send-email 2.36.1
+        Tue, 31 May 2022 03:10:15 -0700 (PDT)
+From:   Viresh Kumar <viresh.kumar@linaro.org>
+To:     Keerthy <j-keerthy@ti.com>, Dave Gerlach <d-gerlach@ti.com>,
+        Nishanth Menon <nm@ti.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Viresh Kumar <vireshk@kernel.org>
+Cc:     Viresh Kumar <viresh.kumar@linaro.org>, linux-pm@vger.kernel.org,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 0/5] OPP: Replace custom set_opp() with config_regulators()
+Date:   Tue, 31 May 2022 15:39:59 +0530
+Message-Id: <cover.1653991004.git.viresh.kumar@linaro.org>
+X-Mailer: git-send-email 2.31.1.272.g89b43f80a514
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since the integration of AQL, packet TX airtime estimation is
-calculated and counted to be used for the dequeue limit.
+Hi,
 
-Use this estimated airtime to compute expected throughput for
-each station.
+This series is in continuation to OPP cleanups [1] posted earlier and is rebased over them.
 
-It will be a generic mac80211 implementation. If the driver has
-get_expected_throughput implementation, it will be used instead.
+Currently the custom set_opp() helper, which is implemented only for omap, is responsible to set
+both clock and regulators for the device and may end up doing tricky stuff behind the scene. This
+makes the OPP core contain special code to support it.
 
-Useful for L2 routing protocols, like B.A.T.M.A.N.
+This patch series tries to streamline the code path in _set_opp() in the OPP core and minimize the
+platform specific code within it. The platforms provide a config_regulators() callback now, from
+which they should only program the regulators in their preferred sequence. Rest of the code sequence
+to program clk, bw, required-opps, etc is common across all device and platform types and is present
+in the OPP core.
 
-Signed-off-by: Baligh Gasmi <gasmibal@gmail.com>
----
- net/mac80211/driver-ops.h |  2 ++
- net/mac80211/sta_info.c   | 39 +++++++++++++++++++++++++++++++++++++++
- net/mac80211/sta_info.h   | 11 +++++++++++
- net/mac80211/status.c     |  2 ++
- net/mac80211/tx.c         |  8 +++++++-
- 5 files changed, 61 insertions(+), 1 deletion(-)
+Keerthy/Dave: I couldn't test it on omap, can any of you do that please ? It builds just fine
+though. Also maybe you can simplify the OPP driver to drop all restoration logic on failures, as the
+OPP core doesn't do any of it as well. I can add a patch for that if you guys are fine with it.
 
-diff --git a/net/mac80211/driver-ops.h b/net/mac80211/driver-ops.h
-index 4e2fc1a08681..fa9952154795 100644
---- a/net/mac80211/driver-ops.h
-+++ b/net/mac80211/driver-ops.h
-@@ -1142,6 +1142,8 @@ static inline u32 drv_get_expected_throughput(struct ieee80211_local *local,
- 	trace_drv_get_expected_throughput(&sta->sta);
- 	if (local->ops->get_expected_throughput && sta->uploaded)
- 		ret = local->ops->get_expected_throughput(&local->hw, &sta->sta);
-+	else
-+		ret = ewma_avg_est_tp_read(&sta->deflink.status_stats.avg_est_tp);
- 	trace_drv_return_u32(local, ret);
- 
- 	return ret;
-diff --git a/net/mac80211/sta_info.c b/net/mac80211/sta_info.c
-index e04a0905e941..201aab465234 100644
---- a/net/mac80211/sta_info.c
-+++ b/net/mac80211/sta_info.c
-@@ -1993,6 +1993,45 @@ void ieee80211_sta_update_pending_airtime(struct ieee80211_local *local,
- 			       tx_pending, 0);
- }
- 
-+void ieee80211_sta_update_tp(struct ieee80211_local *local,
-+			     struct sta_info *sta,
-+			     struct sk_buff *skb,
-+			     u16 tx_time_est,
-+			     bool ack, int retry)
-+{
-+	unsigned long diff;
-+	struct rate_control_ref *ref = NULL;
-+
-+	if (!skb || !sta || !tx_time_est)
-+		return;
-+
-+	if (test_sta_flag(sta, WLAN_STA_RATE_CONTROL))
-+		ref = sta->rate_ctrl;
-+
-+	if (ref && ref->ops->get_expected_throughput)
-+		return;
-+
-+	if (local->ops->get_expected_throughput)
-+		return;
-+
-+	tx_time_est += ack ? 4 : 0;
-+	tx_time_est += retry ? retry * 2 : 2;
-+
-+	sta->deflink.tx_stats.tp_tx_size += (skb->len * 8) * 1000;
-+	sta->deflink.tx_stats.tp_tx_time_est += tx_time_est;
-+
-+	diff = jiffies - sta->deflink.status_stats.last_tp_update;
-+	if (diff > HZ / 10) {
-+		ewma_avg_est_tp_add(&sta->deflink.status_stats.avg_est_tp,
-+				    sta->deflink.tx_stats.tp_tx_size /
-+				    sta->deflink.tx_stats.tp_tx_time_est);
-+
-+		sta->deflink.tx_stats.tp_tx_size = 0;
-+		sta->deflink.tx_stats.tp_tx_time_est = 0;
-+		sta->deflink.status_stats.last_tp_update = jiffies;
-+	}
-+}
-+
- int sta_info_move_state(struct sta_info *sta,
- 			enum ieee80211_sta_state new_state)
- {
-diff --git a/net/mac80211/sta_info.h b/net/mac80211/sta_info.h
-index 35c390bedfba..4200856fefcd 100644
---- a/net/mac80211/sta_info.h
-+++ b/net/mac80211/sta_info.h
-@@ -123,6 +123,7 @@ enum ieee80211_sta_info_flags {
- #define HT_AGG_STATE_STOP_CB		7
- #define HT_AGG_STATE_SENT_ADDBA		8
- 
-+DECLARE_EWMA(avg_est_tp, 8, 16)
- DECLARE_EWMA(avg_signal, 10, 8)
- enum ieee80211_agg_stop_reason {
- 	AGG_STOP_DECLINED,
-@@ -157,6 +158,12 @@ void ieee80211_register_airtime(struct ieee80211_txq *txq,
- 
- struct sta_info;
- 
-+void ieee80211_sta_update_tp(struct ieee80211_local *local,
-+			     struct sta_info *sta,
-+			     struct sk_buff *skb,
-+			     u16 tx_time_est,
-+			     bool ack, int retry);
-+
- /**
-  * struct tid_ampdu_tx - TID aggregation information (Tx).
-  *
-@@ -549,6 +556,8 @@ struct link_sta_info {
- 		s8 last_ack_signal;
- 		bool ack_signal_filled;
- 		struct ewma_avg_signal avg_ack_signal;
-+		struct ewma_avg_est_tp avg_est_tp;
-+		unsigned long last_tp_update;
- 	} status_stats;
- 
- 	/* Updated from TX path only, no locking requirements */
-@@ -558,6 +567,8 @@ struct link_sta_info {
- 		struct ieee80211_tx_rate last_rate;
- 		struct rate_info last_rate_info;
- 		u64 msdu[IEEE80211_NUM_TIDS + 1];
-+		u64 tp_tx_size;
-+		u64 tp_tx_time_est;
- 	} tx_stats;
- 
- 	enum ieee80211_sta_rx_bandwidth cur_max_bandwidth;
-diff --git a/net/mac80211/status.c b/net/mac80211/status.c
-index e69272139437..1fb93abc1709 100644
---- a/net/mac80211/status.c
-+++ b/net/mac80211/status.c
-@@ -1152,6 +1152,8 @@ void ieee80211_tx_status_ext(struct ieee80211_hw *hw,
- 	ack_signal_valid =
- 		!!(info->status.flags & IEEE80211_TX_STATUS_ACK_SIGNAL_VALID);
- 
-+	ieee80211_sta_update_tp(local, sta, skb, tx_time_est, acked, retry_count);
-+
- 	if (pubsta) {
- 		struct ieee80211_sub_if_data *sdata = sta->sdata;
- 
-diff --git a/net/mac80211/tx.c b/net/mac80211/tx.c
-index 0e4efc08c762..e58d89c108a4 100644
---- a/net/mac80211/tx.c
-+++ b/net/mac80211/tx.c
-@@ -3632,6 +3632,7 @@ struct sk_buff *ieee80211_tx_dequeue(struct ieee80211_hw *hw,
- 	struct ieee80211_tx_data tx;
- 	ieee80211_tx_result r;
- 	struct ieee80211_vif *vif = txq->vif;
-+	struct rate_control_ref *ref = NULL;
- 
- 	WARN_ON_ONCE(softirq_count() == 0);
- 
-@@ -3790,8 +3791,13 @@ struct sk_buff *ieee80211_tx_dequeue(struct ieee80211_hw *hw,
- encap_out:
- 	IEEE80211_SKB_CB(skb)->control.vif = vif;
- 
-+	if (tx.sta && test_sta_flag(tx.sta, WLAN_STA_RATE_CONTROL))
-+		ref = tx.sta->deflink.rate_ctrl;
-+
- 	if (vif &&
--	    wiphy_ext_feature_isset(local->hw.wiphy, NL80211_EXT_FEATURE_AQL)) {
-+	    ((!local->ops->get_expected_throughput &&
-+	     (!ref || !ref->ops->get_expected_throughput)) ||
-+	    wiphy_ext_feature_isset(local->hw.wiphy, NL80211_EXT_FEATURE_AQL))) {
- 		bool ampdu = txq->ac != IEEE80211_AC_VO;
- 		u32 airtime;
- 
+This is pushed here along with other dependencies:
+
+git://git.kernel.org/pub/scm/linux/kernel/git/vireshk/pm.git opp/config-regulators
+
+Thanks.
+
+--
+Viresh
+
+[1] https://lore.kernel.org/lkml/cover.1653564321.git.viresh.kumar@linaro.org/
+
+Viresh Kumar (5):
+  OPP: Add support for config_regulators() helper
+  OPP: Make _generic_set_opp_regulator() a config_regulators() interface
+  OPP: Add dev_pm_opp_get_supplies()
+  OPP: ti: Migrate to config_regulators()
+  OPP: Remove custom OPP helper support
+
+ drivers/opp/core.c          | 204 +++++++++++++-----------------------
+ drivers/opp/opp.h           |   9 +-
+ drivers/opp/ti-opp-supply.c |  74 ++++++-------
+ include/linux/pm_opp.h      |  47 +++------
+ 4 files changed, 118 insertions(+), 216 deletions(-)
+
 -- 
-2.36.1
+2.31.1.272.g89b43f80a514
 
