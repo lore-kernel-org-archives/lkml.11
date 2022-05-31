@@ -2,294 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82332C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 18:26:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BABE7C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 18:27:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347037AbiEaS0S (ORCPT
+        id S1347040AbiEaS1E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 14:26:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56744 "EHLO
+        Tue, 31 May 2022 14:27:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347022AbiEaS0O (ORCPT
+        with ESMTP id S1347022AbiEaS1A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 14:26:14 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17F167A80B
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 11:26:13 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id 3-20020a17090a174300b001e426a02ac5so487747pjm.2
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 11:26:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Jt9UiuYKYkRDB1utdjVYxAdnl9EcYV1Ii/EQF80omk8=;
-        b=jLN7vMT7AJHzDunUJIIzv2z15hHdReTAQJuZyYY4ihN8AwLoz2IbOiYHUSVAAb3cOI
-         ZFR3bvFUviSEOclFHWwMf8GmGtO/QlXIzU1WgydtqKHFVEvxQaYfLjjpgQ0aKhys7dm8
-         Q1ay6fBzPE3kglxGKG0NAhmalVhl0e1uT1OWBTCNMKUzDOaDre0UHYzotDArGbTTTYWC
-         IaC+A3/akYFlEyB51sYkNJXwg8R14S7lHWX2IBvX4MYNd7vxBrEj1QtVGw4l5Lmovo3P
-         Dqxzqc1fsb5okJ0b9whGmuC3I7CPNJ6r/R/eNiFf+rg0xrynHWysEkIqo7Qwi9NOHsSa
-         Ms3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=Jt9UiuYKYkRDB1utdjVYxAdnl9EcYV1Ii/EQF80omk8=;
-        b=s/Ru2ASfjVCG1jDvYYLy2o+kOCySFOXZeVJIwi4u2JFfmIcNccWX0N5wsqS2TQdBfe
-         yN7Bq84JcuPpn6Rf+KKlV6aqgYn7bicanXd4JxKGT+NP4sDWD4v7YoSOX9h2bsvEVioT
-         2s0FyaHuv0lHK17jQ19kiiSO68CG41yaK31BxSl0WXxpD/U99yuT14H3RKLIpqE61NC4
-         WLm0rdrlg9GqYb/wj/6LMFISayPDfp3a/UHLETfBhlsI3ZR8LMKAWmDH7aJbgJGMxdnw
-         psR0NI8+hW8Iq/8W9nXhK16pbKTLjnChoXtWai+6+hUSG1DcKcCt5sW7O0izeOWDJxLP
-         fF5g==
-X-Gm-Message-State: AOAM5309ybFY2hnK35LJcj+1twwOcQ7NMc6EBW4rsXHcGxOTWXBAKRJZ
-        7KeEPoitnBt7TKsCofNaE7k=
-X-Google-Smtp-Source: ABdhPJw/sGlre7sIgfaTlbcCMwRpIg3AGzlJQ4fvGoBq8q71w8LqbbjAmMiNuY0v73z9zWOaLpl1+Q==
-X-Received: by 2002:a17:903:41c1:b0:163:771e:e61c with SMTP id u1-20020a17090341c100b00163771ee61cmr27996646ple.49.1654021572414;
-        Tue, 31 May 2022 11:26:12 -0700 (PDT)
-Received: from google.com ([2620:15c:211:201:1d0d:8533:84b5:d973])
-        by smtp.gmail.com with ESMTPSA id m8-20020a170902f64800b0015edfccfdb5sm11400428plg.50.2022.05.31.11.26.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 May 2022 11:26:11 -0700 (PDT)
-Sender: Minchan Kim <minchan.kim@gmail.com>
-Date:   Tue, 31 May 2022 11:26:09 -0700
-From:   Minchan Kim <minchan@kernel.org>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>, linux-mm <linux-mm@kvack.org>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Michal Hocko <mhocko@suse.com>,
-        John Dias <joaodias@google.com>,
-        Tim Murray <timmurray@google.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vladimir Davydov <vdavydov.dev@gmail.com>,
-        Martin Liu <liumartin@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>
-Subject: Re: [PATCH] mm: throttle LRU pages skipping on rmap_lock contention
-Message-ID: <YpZdwRDuX/aQoAGu@google.com>
-References: <Yo+0HMJYuhiJv+Ak@google.com>
+        Tue, 31 May 2022 14:27:00 -0400
+Received: from mail.cybernetics.com (mail.cybernetics.com [173.71.130.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 765AF10FDA
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 11:26:59 -0700 (PDT)
+X-ASG-Debug-ID: 1654020677-1cf43917f334afa0001-xx1T2L
+Received: from cybernetics.com ([10.10.4.126]) by mail.cybernetics.com with ESMTP id wbqVFrYsF9UO9ekk; Tue, 31 May 2022 14:11:17 -0400 (EDT)
+X-Barracuda-Envelope-From: tonyb@cybernetics.com
+X-ASG-Whitelist: Client
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=cybernetics.com; s=mail;
+        bh=QvvHI94cjVSZ3vyzLq0aE4IbkuwCS7vLvfKjrgG4UFU=;
+        h=Content-Transfer-Encoding:Content-Type:Cc:To:Subject:From:Content-Language:
+        MIME-Version:Date:Message-ID; b=cdHo3GAMcWDRJ0VGiCWvXlyIXhHwRhAR44nZK//A1tvRT
+        d2BjwWd9JShX2dFtLN6fSvPzVQCXgXil9PAdI8Wj2ZmL6SkzZRUPpYY3OSL3k3Ip8B7njnzSJgaZg
+        nIQyJjOiw0pjXEOVFlb1XTpA4pOl5WOwRUtj+NTaT5uO9KtoI=
+Received: from [10.157.2.224] (HELO [192.168.200.1])
+  by cybernetics.com (CommuniGate Pro SMTP 7.1.1)
+  with ESMTPS id 11829182; Tue, 31 May 2022 14:11:17 -0400
+Message-ID: <9b08ab7c-b80b-527d-9adf-7716b0868fbc@cybernetics.com>
+Date:   Tue, 31 May 2022 14:11:16 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yo+0HMJYuhiJv+Ak@google.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Content-Language: en-US
+From:   Tony Battersby <tonyb@cybernetics.com>
+Subject: [PATCH 00/10] mpt3sas and dmapool scalability
+To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
+X-ASG-Orig-Subj: [PATCH 00/10] mpt3sas and dmapool scalability
+Cc:     iommu@lists.linux-foundation.org, kernel-team@fb.com,
+        Matthew Wilcox <willy@infradead.org>,
+        Keith Busch <kbusch@kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Tony Lindgren <tony@atomide.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Barracuda-Connect: UNKNOWN[10.10.4.126]
+X-Barracuda-Start-Time: 1654020677
+X-Barracuda-URL: https://10.10.4.122:443/cgi-mod/mark.cgi
+X-Virus-Scanned: by bsmtpd at cybernetics.com
+X-Barracuda-Scan-Msg-Size: 3968
+X-Barracuda-BRTS-Status: 1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Bump up.
+This patch series improves dmapool scalability by replacing linear scans
+with red-black trees.
 
-On Thu, May 26, 2022 at 10:08:44AM -0700, Minchan Kim wrote:
-> On Thu, May 12, 2022 at 12:55:16PM -0700, Minchan Kim wrote:
-> > On Wed, May 11, 2022 at 07:05:23PM -0700, Andrew Morton wrote:
-> > > On Wed, 11 May 2022 15:57:09 -0700 Minchan Kim <minchan@kernel.org> wrote:
-> > > 
-> > > > > 
-> > > > > Could we burn much CPU time pointlessly churning though the LRU?  Could
-> > > > > it mess up aging decisions enough to be performance-affecting in any
-> > > > > workload?
-> > > > 
-> > > > Yes, correct. However, we are already churning LRUs by several
-> > > > ways. For example, isolate and putback from LRU list for page
-> > > > migration from several sources(typical example is compaction)
-> > > > and trylock_page and sc->gfp_mask not allowing page to be
-> > > > reclaimed in shrink_page_list.
-> > > 
-> > > Well.  "we're already doing a risky thing so it's OK to do more of that
-> > > thing"?
-> > 
-> > I meant the aging is not rocket science.
-> > 
-> > 
-> > > 
-> > > > > 
-> > > > > Something else?
-> > > > 
-> > > > One thing I am worry about was the granularity of the churning.
-> > > > Example above was page granuarity churning so might be execuse
-> > > > but this one is address space's churning, especically for file LRU
-> > > > (i_mmap_rwsem) which might cause too many rotating and live-lock
-> > > > in the end(keey rotating in small LRU with heavy memory pressure).
-> > > > 
-> > > > If it could be a problem, maybe we use sc->priority to stop
-> > > > the skipping on a certain level of memory pressure.
-> > > > 
-> > > > Any thought? Do we really need it?
-> > > 
-> > > Are we able to think of a test which might demonstrate any worst case? 
-> > > Whip that up and see what the numbers say?
-> > 
-> > Yeah, let me create a worst test case to see how it goes.
-> > 
-> > A thread keep reading a file-backed vma with 2xRAM file but other threads
-> > keep changing other vmas mapped at the same file so heavy i_mmap_rwsem
-> > contention in aging path.
-> 
-> Forking new thread
-> 
-> I checked what happens the worst case. I am not sure how the worst
-> case is realistic but would be great to have safety net.
-> 
-> From 5ccc8b170af5496f803243732e96b131419d7462 Mon Sep 17 00:00:00 2001
-> From: Minchan Kim <minchan@kernel.org>
-> Date: Thu, 19 May 2022 19:48:12 -0700
-> Subject: [PATCH] mm: throttle LRU pages skipping on rmap_lock contention
-> 
-> On heavy contention on rmap_lock(e.g., i_mmap_rwsem), VM can keep
-> skipping LRU pages so reclaim efficiency(steal/scanning) would drop
-> from 48% to 27% and workingset would be reclaimed faster than old
-> so workingset_refault rate increased to 240%.
-> 
-> We need a safe net to throttle the skipping LRU pages. This patch
-> throttle the skipping policy using (DEF_PRIRORITY - 2) magic value
-> VM has used for indicating non-light memory pressure.
-> IOW, let's skip rmap_lock contendeded pages only when
-> only when sc->priority >= (DEF_PRIRORITY - 2).
-> 
-> The test scenario to see the worst case:
-> 
-> 1. A thread mmap a big file(e.g., 2x times of RAM) and keep touching
->    the address space up to three times.
-> 2. B thread keeps doing mmap/munmap with the same file to cause
->    heavy lock contention in i_mmap_rwsem until the A thread finish
->    the job.
-> 3. measure vmstat and thread A's elapsed time.
-> 
-> Thread's elapsed time:
-> 
-> 1. vanilla
-> 24.64sec(5.04%)
-> 
-> 2. rmap_skip(i.e., mm-dont-be-stuck-to-rmap-lock-on-reclaim-path.patch)
-> 25.20sec(4.16%)
-> 
-> 3. priority(2 + this patch)
-> 23.62sec(6.61%)
-> 
-> Vmstat Comparison:
-> 				     vanilla    rmap_skip    priority
-> 	     allocstall_movable          582         9772       14643
-> 		     pgactivate          232        25865        4906
->       		   pgdeactivate           78        17265         651
->         	     pgmajfault           58        10639        1376
->     		 pgsteal_kswapd     15947857     15133195    15095445
->     		 pgsteal_direct       105439       583092      943195
->      	          pgscan_kswapd     24647536     52768898    28103170
->      		  pgscan_direct      8398139      3767100     7966353
-> 	workingset_refault_file     12582926     12248353    12565934
-> 
-> B test scenario
-> 
-> 1. A thread mmap a big file(e.g., 2x times of RAM) and keep touching
->    the address space up to three times.
-> 2. B thread keeps doing mmap/munmap with the same file to cause
->    heavy lock contention in i_mmap_rwsem until the A thread finish
->    the job.
-> 3. C thread keep reading other big file using read(2) syscall
-> 4. measure vmstat and thread A's elapsed time.
-> 
-> 1. vanilla
-> 27.24sec(5.29%)
-> 
-> 2. rmap_skip
-> 33.54sec(3.20%)
-> 
-> 3. priority
-> 28.68sec(1.26%)
-> 
-> Vmstat Comparison:
-> 				     vanilla    rmap_skip    priority
-> 	     allocstall_movable        15262        81258       21644
->         	     pgactivate      3042004      3086906     3502959
->       		   pgdeactivate      2307849      8959162     3605768
->         	     pgmajfault          566         1059	  557
->     		 pgsteal_kswapd     17557735     30861283    18385674
->     		 pgsteal_direct       955389      6353527     1233605
->      		  pgscan_kswapd     31622695     59670433    35372575
-> 		  pgscan_direct      4924052     13939254     4310247
-> 	workingset_refault_file     13466538     32193161    14588019
-> 
-> Signed-off-by: Minchan Kim <minchan@kernel.org>
-> ---
->  include/linux/rmap.h | 5 +++--
->  mm/rmap.c            | 6 ++++--
->  mm/vmscan.c          | 6 ++++--
->  3 files changed, 11 insertions(+), 6 deletions(-)
-> 
-> diff --git a/include/linux/rmap.h b/include/linux/rmap.h
-> index 9ec23138e410..2893da3f1cd3 100644
-> --- a/include/linux/rmap.h
-> +++ b/include/linux/rmap.h
-> @@ -296,7 +296,8 @@ static inline int page_try_share_anon_rmap(struct page *page)
->   * Called from mm/vmscan.c to handle paging out
->   */
->  int folio_referenced(struct folio *, int is_locked,
-> -			struct mem_cgroup *memcg, unsigned long *vm_flags);
-> +			struct mem_cgroup *memcg, unsigned long *vm_flags,
-> +			bool rmap_try_lock);
->  
->  void try_to_migrate(struct folio *folio, enum ttu_flags flags);
->  void try_to_unmap(struct folio *, enum ttu_flags flags);
-> @@ -418,7 +419,7 @@ void page_unlock_anon_vma_read(struct anon_vma *anon_vma);
->  
->  static inline int folio_referenced(struct folio *folio, int is_locked,
->  				  struct mem_cgroup *memcg,
-> -				  unsigned long *vm_flags)
-> +				  unsigned long *vm_flags, bool rmap_try_lock)
->  {
->  	*vm_flags = 0;
->  	return 0;
-> diff --git a/mm/rmap.c b/mm/rmap.c
-> index d4cf3ea1b616..a75c7f7a0392 100644
-> --- a/mm/rmap.c
-> +++ b/mm/rmap.c
-> @@ -888,6 +888,7 @@ static bool invalid_folio_referenced_vma(struct vm_area_struct *vma, void *arg)
->   * @is_locked: Caller holds lock on the folio.
->   * @memcg: target memory cgroup
->   * @vm_flags: A combination of all the vma->vm_flags which referenced the folio.
-> + * @rmap_try_lock: bail out if the rmap lock is contended
->   *
->   * Quick test_and_clear_referenced for all mappings of a folio,
->   *
-> @@ -895,7 +896,8 @@ static bool invalid_folio_referenced_vma(struct vm_area_struct *vma, void *arg)
->   * the function bailed out due to rmap lock contention.
->   */
->  int folio_referenced(struct folio *folio, int is_locked,
-> -		     struct mem_cgroup *memcg, unsigned long *vm_flags)
-> +		     struct mem_cgroup *memcg, unsigned long *vm_flags,
-> +		     bool rmap_try_lock)
->  {
->  	int we_locked = 0;
->  	struct folio_referenced_arg pra = {
-> @@ -906,7 +908,7 @@ int folio_referenced(struct folio *folio, int is_locked,
->  		.rmap_one = folio_referenced_one,
->  		.arg = (void *)&pra,
->  		.anon_lock = folio_lock_anon_vma_read,
-> -		.try_lock = true,
-> +		.try_lock = rmap_try_lock,
->  	};
->  
->  	*vm_flags = 0;
-> diff --git a/mm/vmscan.c b/mm/vmscan.c
-> index ac168f4b0492..f0987e027aba 100644
-> --- a/mm/vmscan.c
-> +++ b/mm/vmscan.c
-> @@ -1381,7 +1381,8 @@ static enum page_references folio_check_references(struct folio *folio,
->  	unsigned long vm_flags;
->  
->  	referenced_ptes = folio_referenced(folio, 1, sc->target_mem_cgroup,
-> -					   &vm_flags);
-> +					   &vm_flags,
-> +					   sc->priority >= DEF_PRIORITY - 2);
->  	referenced_folio = folio_test_clear_referenced(folio);
->  
->  	/*
-> @@ -2497,7 +2498,8 @@ static void shrink_active_list(unsigned long nr_to_scan,
->  
->  		/* Referenced or rmap lock contention: rotate */
->  		if (folio_referenced(folio, 0, sc->target_mem_cgroup,
-> -				     &vm_flags) != 0) {
-> +				     &vm_flags,
-> +				     sc->priority >= DEF_PRIORITY - 2) != 0) {
->  			/*
->  			 * Identify referenced, file-backed active pages and
->  			 * give them one more trip around the active list. So
-> -- 
-> 2.36.1.124.g0e6072fb45-goog
-> 
+History:
+
+In 2018 this patch series made it through 4 versions.  v1 used red-black
+trees; v2 - v4 put the dma pool info directly into struct page and used
+virt_to_page() to get at it.  v4 made a brief appearance in linux-next,
+but it caused problems on non-x86 archs where virt_to_page() doesn't
+work with dma_alloc_coherent, so it was reverted.  I was too busy at the
+time to repost the red-black tree version, and I forgot about it until
+now.  This version is based on the red-black trees of v1, but addressing
+all the review comments I got at the time and with additional cleanup
+patches.
+
+Note that Keith Busch is also working on improving dmapool scalability,
+so for now I would recommend not merging my scalability patches until
+Keith's approach can be evaluated.  In the meantime, my patches can
+serve as a benchmark comparison.  I also have a number of cleanup
+patches in my series that could be useful on their own.
+
+References:
+
+v1
+https://lore.kernel.org/linux-mm/73ec1f52-d758-05df-fb6a-41d269e910d0@cybernetics.com/
+
+v2
+https://lore.kernel.org/linux-mm/ec701153-fdc9-37f3-c267-f056159b4606@cybernetics.com/
+
+v3
+https://lore.kernel.org/linux-mm/d48854ff-995d-228e-8356-54c141c32117@cybernetics.com/
+
+v4
+https://lore.kernel.org/linux-mm/88395080-efc1-4e7b-f813-bb90c86d0745@cybernetics.com/
+
+problem caused by virt_to_page()
+https://lore.kernel.org/linux-kernel/20181206013054.GI6707@atomide.com/
+
+Keith Busch's dmapool performance enhancements
+https://lore.kernel.org/linux-mm/20220428202714.17630-1-kbusch@kernel.org/
+
+Below is my original description of the motivation for these patches.
+
+drivers/scsi/mpt3sas is running into a scalability problem with the
+kernel's DMA pool implementation.  With a LSI/Broadcom SAS 9300-8i
+12Gb/s HBA and max_sgl_entries=256, during modprobe, mpt3sas does the
+equivalent of:
+
+chain_dma_pool = dma_pool_create(size = 128);
+for (i = 0; i < 373959; i++)
+    {
+    dma_addr[i] = dma_pool_alloc(chain_dma_pool);
+    }
+
+And at rmmod, system shutdown, or system reboot, mpt3sas does the
+equivalent of:
+
+for (i = 0; i < 373959; i++)
+    {
+    dma_pool_free(chain_dma_pool, dma_addr[i]);
+    }
+dma_pool_destroy(chain_dma_pool);
+
+With this usage, both dma_pool_alloc() and dma_pool_free() exhibit
+O(n^2) complexity, although dma_pool_free() is much worse due to
+implementation details.  On my system, the dma_pool_free() loop above
+takes about 9 seconds to run.  Note that the problem was even worse
+before commit 74522a92bbf0 ("scsi: mpt3sas: Optimize I/O memory
+consumption in driver."), where the dma_pool_free() loop could take ~30
+seconds.
+
+mpt3sas also has some other DMA pools, but chain_dma_pool is the only
+one with so many allocations:
+
+cat /sys/devices/pci0000:80/0000:80:07.0/0000:85:00.0/pools
+(manually cleaned up column alignment)
+poolinfo - 0.1
+reply_post_free_array pool  1      21     192     1
+reply_free pool             1      1      41728   1
+reply pool                  1      1      1335296 1
+sense pool                  1      1      970272  1
+chain pool                  373959 386048 128     12064
+reply_post_free pool        12     12     166528  12
+
+The patches in this series improve the scalability of the DMA pool
+implementation, which significantly reduces the running time of the
+DMA alloc/free loops.  With the patches applied, "modprobe mpt3sas",
+"rmmod mpt3sas", and system shutdown/reboot with mpt3sas loaded are
+significantly faster.  Here are some benchmarks (of DMA alloc/free
+only, not the entire modprobe/rmmod):
+
+dma_pool_create() + dma_pool_alloc() loop, size = 128, count = 373959
+  original:        350 ms ( 1x)
+  dmapool patches:  18 ms (19x)
+
+dma_pool_free() loop + dma_pool_destroy(), size = 128, count = 373959
+  original:        8901 ms (   1x)
+  dmapool patches:   19 ms ( 477x)
+
+
