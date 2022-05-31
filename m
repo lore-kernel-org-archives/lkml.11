@@ -2,87 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AAD5C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 11:55:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46CC3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 11:56:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343992AbiEaLzd (ORCPT
+        id S1344002AbiEaL4J (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 07:55:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41886 "EHLO
+        Tue, 31 May 2022 07:56:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242862AbiEaLz1 (ORCPT
+        with ESMTP id S1343989AbiEaL4F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 07:55:27 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F30B3A1A4;
-        Tue, 31 May 2022 04:55:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=kUMBZgY8iX2iMdYNu+l03Qq//chFmyXyGt0+8brQTSk=; b=YNH32eHxS/BtFCzN1yaCjACuh0
-        uddqn/a6Y22J0eGRE4v6jngNh+Q+KTupeG11aTjhkcCNjB51jVLnqntXy7qbZSjLio1B1hKgHfTMY
-        L9WIBD2zhCIb+2Z2aIiLcJJrVvcULHstOdaqGOWpLLP0UWeP0BlaZBd3UGkYUAByQ+HQskb0WNTJO
-        gfSg8ExNfv9zDGoFrRIiZR8y272r9qt4dUeo2AQV9nA8618XDtEFrxlGJ4f0yUJFSumUncpEOAxET
-        CQl9OBSC9Rg71jq+QKhcuIoy/5FAeD8+U0qXjUCBBK+htLofqzlXpjGohv6om2+Xz2CMNSW6J2OPs
-        rvK5XLOw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:60902)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nw0T1-0004uB-Ks; Tue, 31 May 2022 12:55:19 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nw0T0-0002Mh-RY; Tue, 31 May 2022 12:55:18 +0100
-Date:   Tue, 31 May 2022 12:55:18 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Siddharth Vadapalli <s-vadapalli@ti.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, vladimir.oltean@nxp.com,
-        grygorii.strashko@ti.com, vigneshr@ti.com, nsekhar@ti.com,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kishon@ti.com
-Subject: Re: [PATCH 3/3] net: ethernet: ti: am65-cpsw: Move
- phy_set_mode_ext() to correct location
-Message-ID: <YpYCJv2SIExL+VHs@shell.armlinux.org.uk>
-References: <20220531113058.23708-1-s-vadapalli@ti.com>
- <20220531113058.23708-4-s-vadapalli@ti.com>
+        Tue, 31 May 2022 07:56:05 -0400
+X-Greylist: delayed 526 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 31 May 2022 04:56:03 PDT
+Received: from mailout1.rbg.tum.de (mailout1.rbg.tum.de [131.159.0.201])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64491880EE;
+        Tue, 31 May 2022 04:56:03 -0700 (PDT)
+Received: from mailrelay1.rbg.tum.de (mailrelay1.in.tum.de [IPv6:2a09:80c0:254::14])
+        by mailout1.rbg.tum.de (Postfix) with ESMTPS id 63DF0240;
+        Tue, 31 May 2022 13:47:15 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=in.tum.de;
+        s=20220209; t=1653997635;
+        bh=9J6pD/CrhjbB1zdbQ/WsFZ5sMWMLDeoTX+MCbCnhM20=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=cbtV7Ux4Fjo7XMm8Siy+aAHS0F7ijcSiKuOkoUZl1H66Y8YKUS3OfsisbgqKOcoaP
+         Rc8ueYVPuPaM0T3vWaB8tI7J2PhsbzPYyLFxbsE5yHOz0cbZRXkvuVpLAqmFe+QjVd
+         n/7BRKH7W8E/9Ih3kr8GqvdB4iBw5L1x/GvTBdzh8v/zLtIOEM+wn0LULECYQJ4V0h
+         KGuQRJir2lWVFmmwkL7bVLCWhVrTjipBgZlE75zZW3GqWrGhnXGnAfO9P0nJpv3yNk
+         RJwtOCkYp1NWhhoack46VVvitEdBldy05j1e7CgmIBzB/jF9ADwigRutNUlVSkNhkM
+         BfOjo0+XbmJ3Q==
+Received: by mailrelay1.rbg.tum.de (Postfix, from userid 112)
+        id 6036B28B; Tue, 31 May 2022 13:47:15 +0200 (CEST)
+Received: from mailrelay1.rbg.tum.de (localhost [127.0.0.1])
+        by mailrelay1.rbg.tum.de (Postfix) with ESMTP id 3220328A;
+        Tue, 31 May 2022 13:47:15 +0200 (CEST)
+Received: from mail.in.tum.de (vmrbg426.in.tum.de [131.159.0.73])
+        by mailrelay1.rbg.tum.de (Postfix) with ESMTPS id 2DE75286;
+        Tue, 31 May 2022 13:47:15 +0200 (CEST)
+Received: by mail.in.tum.de (Postfix, from userid 112)
+        id 29CBB4A038D; Tue, 31 May 2022 13:47:15 +0200 (CEST)
+Received: (Authenticated sender: heidekrp)
+        by mail.in.tum.de (Postfix) with ESMTPSA id 4ED874A0367;
+        Tue, 31 May 2022 13:47:14 +0200 (CEST)
+        (Extended-Queue-bit xtech_rq@fff.in.tum.de)
+Date:   Tue, 31 May 2022 13:47:12 +0200
+From:   Paul =?iso-8859-1?Q?Heidekr=FCger?= <paul.heidekrueger@in.tum.de>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     Alan Stern <stern@rowland.harvard.edu>,
+        Andrea Parri <parri.andrea@gmail.com>,
+        Will Deacon <will@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        David Howells <dhowells@redhat.com>,
+        Jade Alglave <j.alglave@ucl.ac.uk>,
+        Luc Maranget <luc.maranget@inria.fr>,
+        Akira Yokosawa <akiyks@gmail.com>,
+        Daniel Lustig <dlustig@nvidia.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+        llvm@lists.linux.dev, Marco Elver <elver@google.com>,
+        Charalampos Mainas <charalampos.mainas@gmail.com>,
+        Pramod Bhatotia <pramod.bhatotia@in.tum.de>,
+        Soham Shakraborty <s.s.chakraborty@tudelft.nl>,
+        Martin Fink <martin.fink@in.tum.de>
+Subject: Re: Broken Address Dependency in mm/ksm.c::cmp_and_merge_page()
+Message-ID: <YpYAQLi296UFEdTH@ethstick13.dse.in.tum.de>
+References: <YmKE/XgmRnGKrBbB@Pauls-MacBook-Pro.local>
+ <20220426203254.GJ4285@paulmck-ThinkPad-P17-Gen-1>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220531113058.23708-4-s-vadapalli@ti.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220426203254.GJ4285@paulmck-ThinkPad-P17-Gen-1>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 31, 2022 at 05:00:58PM +0530, Siddharth Vadapalli wrote:
-> In TI's J7200 SoC CPSW5G ports, each of the 4 ports can be configured
-> as a QSGMII main or QSGMII-SUB port. This configuration is performed
-> by phy-gmii-sel driver on invoking the phy_set_mode_ext() function.
+On Tue, Apr 26, 2022 at 01:32:54PM -0700, Paul E. McKenney wrote:
+> On Fri, Apr 22, 2022 at 12:35:41PM +0200, Paul Heidekrüger wrote:
+> > Hi all, 
+> > 
+> > My dependency checker is flagging yet another broken dependency. For
+> > context, see [1].
+> > 
+> > Thankfully, it is fairly straight-forward to explain this time.
+> > 
+> > > stable_node = page_stable_node(page);
+> > 
+> > Line 2032 in mm/ksm.c::cmp_and_merge_page() sees the return value of a
+> > call to "page_stable_node()", which can depend on a "READ_ONCE()", being
+> > assigned to "stable_node".
+> > 
+> > > if (stable_node) {
+> > >         if (stable_node->head != &migrate_nodes &&
+> > >             get_kpfn_nid(READ_ONCE(stable_node->kpfn)) != 
+> > >             NUMA(stable_node->nid)) {
+> > >                 stable_node_dup_del(stable_node); ‣dup: stable_node
+> > >                 stable_node->head = &migrate_nodes;
+> > >                 list_add(&stable_node->list, stable_node->head);
+> > 
+> > The dependency chain then runs into the two following if's, through an
+> > assignment of "migrate_nodes" to "stable_node->head" (line 2038) and
+> > finally reaches a call to "list_add()" (line 2039) where
+> > "stable_node->head" gets passed as the second function argument. 
 > 
-> It is necessary for the QSGMII main port to be configured before any of
-> the QSGMII-SUB interfaces are brought up. Currently, the QSGMII-SUB
-> interfaces come up before the QSGMII main port is configured.
+> Huh.
 > 
-> Fix this by moving the call to phy_set_mode_ext() from
-> am65_cpsw_nuss_ndo_slave_open() to am65_cpsw_nuss_init_slave_ports(),
-> thereby ensuring that the QSGMII main port is configured before any of
-> the QSGMII-SUB ports are brought up.
+> But migrate_nodes is nothing more or less than a list_head structure.
+> So one would expect that some other mechanism is protecting its ->prev
+> and ->next pointers.
+> 
+> > >         }
+> > > }
+> > > 
+> > > static inline void list_add(struct list_head *new, struct list_head *head)
+> > > {
+> > >         __list_add(new, head, head->next);
+> > > }
+> > > 
+> > > static inline void __list_add(struct list_head *new,
+> > >                               struct list_head *prev,
+> > >                               struct list_head *next)
+> > > {
+> > >         if (!__list_add_valid(new, prev, next))
+> > >                 return;
+> > > 
+> > >         next->prev = new;
+> > >         new->next = next;
+> > >         new->prev = prev;
+> > >         WRITE_ONCE(prev->next, new);
+> > > }
+> > 
+> > By being passed into "list_add()" via "stable_node->head", the
+> > dependency chain eventually reaches a "WRITE_ONCE()" in "__list_add()"
+> > whose destination address, "stable_node->head->next", is part of the
+> > dependency chain and therefore carries an address dependency. 
+> > 
+> > However, as a result of the assignment in line 2038, Clang knows that
+> > "stable_node->head" is "migrate_nodes" and replaces it, thereby breaking
+> > the dependency chain. 
+> > 
+> > What do you think?
+> 
+> Given that this is a non-atomic update, there had better be something
+> protecting it.  This something might be a lock, a decremented-to-zero
+> reference count, a rule about only one kthread being permitted to update
+> that list, and so on.  In all such cases, the code would not be relying
+> on the dependency, but rather on whatever was protecting that operation.
+> 
+> Or am I missing something here?
 
-This sounds like "if we're configured via port->slave.phy_if to be in
-QSGMII mode, then the serdes PHY needs to be configured before any of
-the QSGMII ports are used". Doesn't that mean that if
-port->slave.phy_if is QSGMII, then the port _only_ supports QSGMII
-mode, and conversely, the port doesn't support QSGMII unless firmware
-said it could be.
+Nope, missing nothing, that was exactly it!
 
-So, doesn't that mean am65_cpsw_nuss_init_port_ndev() should indicate
-only QSGMII, or only the RGMII modes, but never both together?
+In ksm_scan_thread(), which calls ksm_do_scan(), which calls
+cmp_and_merge_page(), there is a mutex_lock() / mutex_unlock() pair,
+surrounding the dependency. 
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Still keeping this as a trophy for our dependency checker though ;-)
+
+Many thanks,
+Paul
+
+PS Sorry for the late reply - been distracted ..
+
+> 
+> 							Thanx, Paul
+> 
+> > Many thanks,
+> > Paul
+> > 
+> > --
+> > [1]: https://lore.kernel.org/all/Yk7%2FT8BJITwz+Og1@Pauls-MacBook-Pro.local/
+> > 
