@@ -2,151 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 630AAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 12:00:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85283C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 12:00:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344029AbiEaMAM (ORCPT
+        id S1344042AbiEaMAP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 08:00:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56354 "EHLO
+        Tue, 31 May 2022 08:00:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344034AbiEaMAA (ORCPT
+        with ESMTP id S1344022AbiEaL77 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 08:00:00 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E8ABD4B876
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 04:59:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653998399;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=PGwek/6vdYkYYLHUigLW7HiiIxESVvwETc14ysV7hYY=;
-        b=IJctP2Kl2eQLkDfIEuixupKVkzZ0yf17oZ/nEYYhqAZ676NP4e1b1K/f4IgwkbixiR+cK6
-        PVACWkhiAzN+Yao8N1t5CmFKuGMW86ofOiQl9WCewg/TNgndjf73jB6So88JybKrqvk2QS
-        nQX2l27uIzpcQxql8QDtuPn0k9cVcF8=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-492-mMfpGoQwMg-Pr1XAS-xlSg-1; Tue, 31 May 2022 07:59:57 -0400
-X-MC-Unique: mMfpGoQwMg-Pr1XAS-xlSg-1
-Received: by mail-wm1-f72.google.com with SMTP id n18-20020a05600c3b9200b00397335edc7dso1335317wms.7
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 04:59:57 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=PGwek/6vdYkYYLHUigLW7HiiIxESVvwETc14ysV7hYY=;
-        b=risPLMDAxJv8CT9LUSPSOV4UOukMVLADwTvvLSuPa9pUCYCvt8nF2FBBdylQDTbn58
-         O5JMJhw5ogI5fkes2Ke0OkKsq6tRkXqiNvBsa2tPhZujrFFwxnBYHynlVkqp5a67e1OE
-         b0ZRDzTMOCksSb5yt3XJ4QbwDceVxRe1UbCS+r88aAEtwUq8plZHKqJBhJG+gciUDmkQ
-         rw4OEj2o0wxqK2GsR01LqAQhfDnz60JYe0EBvctAcoF1VApO2Bf0GfFhv5oMkInumM0b
-         AOK8CWp/+Tk3W/hru0obnnCr0tDt1SWaaG3UzsjX6c0NZA+yWtnvwVs0Rp6qA97MktUH
-         Y06A==
-X-Gm-Message-State: AOAM532G7g52hMUh62R3OYyYewUObsNyyc6Bhp/Bw7JE9hNro7obfMC2
-        2t4+SnrEe/x6LV7KX4b7htoBj1jVmATVmb2VuoZzocV8P7OYpUkhsdT1JF6CWjKrJUYwXaJXywl
-        8JxOoZIcyZ+qiEVi8WBDXcfSX
-X-Received: by 2002:a1c:6a14:0:b0:397:39c4:8ac2 with SMTP id f20-20020a1c6a14000000b0039739c48ac2mr23346013wmc.112.1653998396529;
-        Tue, 31 May 2022 04:59:56 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyMdOdk0HMKlG66DrDiEJOvRunHR/ODdsjln64gd3oH6mSJ68C7FmQc8Slv+Otr7kLBZxLG4A==
-X-Received: by 2002:a1c:6a14:0:b0:397:39c4:8ac2 with SMTP id f20-20020a1c6a14000000b0039739c48ac2mr23345999wmc.112.1653998396321;
-        Tue, 31 May 2022 04:59:56 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c708:f100:8096:9368:ba52:a341? (p200300cbc708f10080969368ba52a341.dip0.t-ipconnect.de. [2003:cb:c708:f100:8096:9368:ba52:a341])
-        by smtp.gmail.com with ESMTPSA id q12-20020a5d574c000000b002102f90870esm7373917wrw.108.2022.05.31.04.59.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 31 May 2022 04:59:55 -0700 (PDT)
-Message-ID: <0724b4c4-15f6-e429-f945-f57c619c7270@redhat.com>
-Date:   Tue, 31 May 2022 13:59:54 +0200
+        Tue, 31 May 2022 07:59:59 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56E514B876;
+        Tue, 31 May 2022 04:59:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C6DBFCE0E9F;
+        Tue, 31 May 2022 11:59:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BAAAC385A9;
+        Tue, 31 May 2022 11:59:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653998394;
+        bh=7Lbe2zyNQ0rV/hxwT06A/1O3dq6x6sIy9gX8/rG0xtw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Tmy2IrqB7ccOQs5HHqYf6TgLGfnXAIJZtPc+/nGbbCvo8aX1LEZimBe88wqFy9V+C
+         uvtv6axBqQslJIEcqCmHaJugkFIWb+Z1TGJf0qmIzfM29u5W8NMrAAmC8ktgIpl75E
+         gcrEmiqK0XFNQKuFpsGTYvYggWUWTxW87kTg+bDnnxhtC5uR2wiybPoB/pGb0zaA8x
+         i+jCSOkZjgQgg9JGDLRgGwvKGGOSuZ8dg7B5XT3N41k+vwPDtPOWUa8GUiBlAGdxy4
+         tonA882Bd2BjYe9bNLmfo/ws8UnfaLAUVImqoIdDISbcSTFxR642KkhZQ769WLFSed
+         swLqoEFb/vljQ==
+Date:   Tue, 31 May 2022 14:59:37 +0300
+From:   Mike Rapoport <rppt@kernel.org>
+To:     "H.J. Lu" <hjl.tools@gmail.com>
+Cc:     Andy Lutomirski <luto@kernel.org>,
+        "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
+        "bsingharora@gmail.com" <bsingharora@gmail.com>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "Syromiatnikov, Eugene" <esyr@redhat.com>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "rdunlap@infradead.org" <rdunlap@infradead.org>,
+        "keescook@chromium.org" <keescook@chromium.org>,
+        "0x7f454c46@gmail.com" <0x7f454c46@gmail.com>,
+        "Eranian, Stephane" <eranian@google.com>,
+        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "adrian@lisas.de" <adrian@lisas.de>,
+        "fweimer@redhat.com" <fweimer@redhat.com>,
+        "nadav.amit@gmail.com" <nadav.amit@gmail.com>,
+        "jannh@google.com" <jannh@google.com>,
+        "avagin@gmail.com" <avagin@gmail.com>,
+        "kcc@google.com" <kcc@google.com>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "pavel@ucw.cz" <pavel@ucw.cz>, "oleg@redhat.com" <oleg@redhat.com>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "Moreira, Joao" <joao.moreira@intel.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mike.kravetz@oracle.com" <mike.kravetz@oracle.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "Yang, Weijiang" <weijiang.yang@intel.com>,
+        "dave.martin@arm.com" <dave.martin@arm.com>,
+        "john.allen@amd.com" <john.allen@amd.com>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "Hansen, Dave" <dave.hansen@intel.com>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "gorcunov@gmail.com" <gorcunov@gmail.com>,
+        "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
+        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>
+Subject: Re: [PATCH 00/35] Shadow stacks for userspace
+Message-ID: <YpYDKVjMEYVlV6Ya@kernel.org>
+References: <Yh0wIMjFdDl8vaNM@kernel.org>
+ <5a792e77-0072-4ded-9f89-e7fcc7f7a1d6@www.fastmail.com>
+ <Yh0+9cFyAfnsXqxI@kernel.org>
+ <05df964f-552e-402e-981c-a8bea11c555c@www.fastmail.com>
+ <YiEZyTT/UBFZd6Am@kernel.org>
+ <CALCETrWacW8SC2tpPxQSaLtxsOXfXHueyuwLcXpNF4aG-0ZvhA@mail.gmail.com>
+ <fb7d6e4da58ae77be2c6321ee3f3487485b2886c.camel@intel.com>
+ <40a3500c-835a-60b0-15bf-40c6622ad013@kernel.org>
+ <YiZVbPwlgSFnhadv@kernel.org>
+ <CAMe9rOrSLPKdL2gL=yx84zrs-u6ch1AVvjk3oqUe3thR5ZD=dQ@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v2 2/4] mm/migration: remove unneeded lock page and
- PageMovable check
-Content-Language: en-US
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     ying.huang@intel.com, hch@lst.de, dhowells@redhat.com,
-        cl@linux.com, linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        akpm@linux-foundation.org, mike.kravetz@oracle.com,
-        naoya.horiguchi@nec.com, Minchan Kim <minchan@kernel.org>
-References: <20220425132723.34824-1-linmiaohe@huawei.com>
- <20220425132723.34824-3-linmiaohe@huawei.com>
- <525298ad-5e6a-2f8d-366d-4dcb7eebd093@redhat.com>
- <f5f933dc-450c-f3ac-34e6-d6dc1d901efd@huawei.com>
- <4cf144a9-fff5-d993-4fcb-7f2dfa6e71bb@redhat.com>
- <924de987-202b-a97e-e6d2-6bdab530f190@huawei.com>
- <c566dc2c-fc70-e410-5272-767fa28cbba4@redhat.com>
- <025d0dc8-a446-b720-14a8-97c041055f48@huawei.com>
- <143ab5dd-85a9-3338-53b7-e46c9060b20e@redhat.com>
- <6ba7e2bd-28c1-53ff-a6b7-072c79714dee@huawei.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <6ba7e2bd-28c1-53ff-a6b7-072c79714dee@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMe9rOrSLPKdL2gL=yx84zrs-u6ch1AVvjk3oqUe3thR5ZD=dQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sorry for the late reply, was on vacation.
+Hi all,
 
->>>
->>> But for isolated page, PageLRU is cleared. So when the isolated page is released, __clear_page_lru_flags
->>> won't be called. So we have to clear the PG_active and PG_unevictable here manully. So I think
->>> this code block works. Or am I miss something again?
->>
->> Let's assume the following: page as freed by the owner and we enter
->> unmap_and_move().
->>
->>
->> #1: enter unmap_and_move() // page_count is 1
->> #2: enter isolate_movable_page() // page_count is 1
->> #2: get_page_unless_zero() // page_count is now 2
->> #1: if (page_count(page) == 1) { // does not trigger
->> #2: put_page(page); // page_count is now 1
->> #1: put_page(page); // page_count is now 0 -> freed
->>
->>
->> #1 will trigger __put_page() -> __put_single_page() ->
->> __page_cache_release() will not clear the flags because it's not an LRU
->> page at that point in time, right (-> isolated)?
+On Mon, Mar 07, 2022 at 11:07:01AM -0800, H.J. Lu wrote:
+> On Mon, Mar 7, 2022 at 10:57 AM Mike Rapoport <rppt@kernel.org> wrote:
+> >
+> > On Fri, Mar 04, 2022 at 11:13:19AM -0800, Andy Lutomirski wrote:
+> > > On 3/3/22 17:30, Edgecombe, Rick P wrote:
 > 
-> Sorry, you're right. I thought the old page will be freed via putback_lru_page which will
-> set PageLRU back instead of put_page directly. So if the above race occurs, PG_active and
-> PG_unevictable will remain set while page goes to the buddy and check_free_page will complain
-> about it. But it seems this is never witnessed?
+> Here is the CET ptrace patch on CET 5.16 kernel branch:
+> 
+> https://github.com/hjl-tools/linux/commit/3a43ec29ddac56f87807161b5aeafa80f632363d
 
-Maybe
+It took me a while, but at last I have a version of CRIU that knows how to
+handle shadow stack. For the shadow stack manipulation during dump and for
+the creation of the sigframe for sigreturn I used the CET ptrace patch for
+5.16 (thanks H.J).
 
-a) we were lucky so far and didn't trigger it
-b) the whole code block is dead code because we are missing something
-c) we are missing something else :)
+For the restore I had to add two modifications to the kernel APIs on top of
+this version of the shadow stack series:
 
-> 
->>
->> We did not run that code block that would clear PG_active and
->> PG_unevictable.
->>
->> Which still leaves the questions:
->>
->> a) If PG_active and PG_unevictable was cleared, where?
-> 
-> For LRU pages, PG_active and PG_unevictable are cleared via __page_cache_release. And for isolated
-> (LRU) pages, PG_active and PG_unevictable should be cleared ourselves?
-> 
->> b) Why is that code block that conditionally clears the flags of any
->> value and why can't we simply drop it?
->>
-> 
-> To fix the issue, should we clear PG_active and PG_unevictable unconditionally here?
+* add address parameter to map_shadow_stack() so that it'll call mmap()
+with MAP_FIXED if the address is requested. This is required to restore the
+shadow stack at the same address as it was at dump time.
 
-I wonder if we should simply teach actual freeing code to simply clear
-both flags when freeing an isolated page? IOW, to detect "isolated LRU"
-is getting freed and fixup?
+* add ability to unlock shadow stack features using ptrace. This is
+required because the current glibc (or at least in the version I used for
+tests) locks shadow stack state when it loads a program. This locking means
+that a process will either have shadow stack disabled without an ability to
+enable it or it will have shadow stack enabled with WRSS disabled and
+again, there is no way to re-enable WRSS. With that, ptrace looked like the
+most sensible interface to interfere with the shadow stack locking.
+
+I've pushed the kernel modifications here:
+
+https://git.kernel.org/pub/scm/linux/kernel/git/rppt/linux.git/log/?h=cet/kvm
+
+and CRIU modifications here:
+
+https://github.com/rppt/criu/tree/cet/v0.1
 
 -- 
-Thanks,
-
-David / dhildenb
-
+Sincerely yours,
+Mike.
