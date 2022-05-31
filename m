@@ -2,86 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03683C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 07:55:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 196B5C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 07:56:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244656AbiEaHzy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 03:55:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41278 "EHLO
+        id S244663AbiEaH4Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 31 May 2022 03:56:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244649AbiEaHzt (ORCPT
+        with ESMTP id S243133AbiEaH4M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 03:55:49 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A48036B677
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 00:55:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653983747;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=tvCRh6wMybfz1jQ+oOGAFWgP9hwbhrbOUgkVnS4S7M0=;
-        b=XnMvhiJLjQhQSD+ZDtYpTo6e9kfg8h3FmL+5SnZtvt8erx0DXrlwgg6K/jPl9oSKS/rQPQ
-        ZrGidYshPIIdhlDg5YMazsZlY2fTbGrLe27AUr7ZTucf8SpdG7DFlkv27qajdLvB34OxRw
-        MC6L6u96NeHyjYmK4vlLla/bAbJtqVY=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-191-sXXc57MwP_GSPXQrM3jxFw-1; Tue, 31 May 2022 03:55:44 -0400
-X-MC-Unique: sXXc57MwP_GSPXQrM3jxFw-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C82ED101AA45;
-        Tue, 31 May 2022 07:55:43 +0000 (UTC)
-Received: from thuth.com (unknown [10.39.194.45])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C66302026D64;
-        Tue, 31 May 2022 07:55:42 +0000 (UTC)
-From:   Thomas Huth <thuth@redhat.com>
-To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [PATCH] KVM: Adjust the return type of kvm_vm_ioctl_check_extension_generic()
-Date:   Tue, 31 May 2022 09:55:40 +0200
-Message-Id: <20220531075540.14242-1-thuth@redhat.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
+        Tue, 31 May 2022 03:56:12 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 560977220A;
+        Tue, 31 May 2022 00:56:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653983771; x=1685519771;
+  h=from:to:cc:subject:date:message-id;
+  bh=lhnpqbk67ab3C0F5+yqnzu3Jp0YtzFvqnqVGOX76r5A=;
+  b=RuiEgKmkl1My0TPDHs2uJVwenmVZSbTCnwIJgaAp0K9e8kO/jLe4aPn/
+   p7A/2ENNVplRVRKkd2uJeac4L/e+qXA8LLQRFeGf+Sc7bZSegiCJ2AgE+
+   Y+h3JYweZyvZAH3vHhybjvMk2vp+bhSSO7CZn6wgfxk8S4TNG997KhORi
+   1kIIQYEBGPngBFhbt9Ywl2+NOb7eqorbxHiOGBAMvA7DYYsiQSLdAwUuA
+   GhL1m8J4DSuYNNVdEMJk3Es4PEJI4300H5vwjx2fXm2x8eL6xDXzqDxrs
+   67q8ac4KHkwAiSsCkGibX+oRmscsg3zVtHQy0MjguG/qO+Etic2GYVgqJ
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10363"; a="272745827"
+X-IronPort-AV: E=Sophos;i="5.91,264,1647327600"; 
+   d="scan'208";a="272745827"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 00:56:11 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,264,1647327600"; 
+   d="scan'208";a="903864531"
+Received: from ubuntu-700f5.iind.intel.com ([10.99.115.212])
+  by fmsmga005.fm.intel.com with ESMTP; 31 May 2022 00:56:08 -0700
+From:   subramanian.mohan@intel.com
+To:     nirmal.patel@linux.intel.com, jonathan.derrick@linux.dev,
+        lorenzo.pieralisi@arm.com, robh@kernel.org, kw@linux.com,
+        bhelgaas@google.com
+Cc:     linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+        mallikarjunappa.sangannavar@intel.com, srikanth.thokala@intel.com
+Subject: [PATCH] PCI: vmd: Use devm_kasprintf instead of simple kasprintf
+Date:   Tue, 31 May 2022 18:56:17 +0530
+Message-Id: <20220531132617.20517-1-subramanian.mohan@intel.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-kvm_vm_ioctl_check_extension_generic() either returns small constant
-numbers or the result of kvm_vm_ioctl_check_extension() which is of type
-"int". Looking at the callers of kvm_vm_ioctl_check_extension_generic(),
-one stores the result in "int r", the other one in "long r", so the
-result has to fit in the smaller "int" in any case. Thus let's adjust
-the return value to "int" here so we have one less transition from
-"int" -> "long" -> "int" in case of the kvm_vm_ioctl() ->
-kvm_vm_ioctl_check_extension_generic() -> kvm_vm_ioctl_check_extension()
-call chain.
+From: Subramanian Mohan <subramanian.mohan@intel.com>
 
-Signed-off-by: Thomas Huth <thuth@redhat.com>
+Use devm_kasprintf instead of simple kasprintf to free the allocated memory
+automatically when the device is freed.
+
+Suggested-by: Srikanth Thokala <srikanth.thokala@intel.com>
+Signed-off-by: Subramanian Mohan <subramanian.mohan@intel.com>
+Acked-by: Nirmal Patel <nirmal.patel@linux.intel.com>
 ---
- This patch is of very low importance - if you don't like it, please just
- ignore. I just came across this nit while looking through the code and
- thought that it might be somewhat nicer this way.
+ drivers/pci/controller/vmd.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
- virt/kvm/kvm_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-index 64ec2222a196..e911331fc620 100644
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -4309,7 +4309,7 @@ static int kvm_ioctl_create_device(struct kvm *kvm,
- 	return 0;
+diff --git a/drivers/pci/controller/vmd.c b/drivers/pci/controller/vmd.c
+index eb05cceab964..7a72948e001f 100644
+--- a/drivers/pci/controller/vmd.c
++++ b/drivers/pci/controller/vmd.c
+@@ -897,7 +897,8 @@ static int vmd_probe(struct pci_dev *dev, const struct pci_device_id *id)
+ 	if (vmd->instance < 0)
+ 		return vmd->instance;
+ 
+-	vmd->name = kasprintf(GFP_KERNEL, "vmd%d", vmd->instance);
++	vmd->name = devm_kasprintf(&dev->dev, GFP_KERNEL, "vmd%d",
++				   vmd->instance);
+ 	if (!vmd->name) {
+ 		err = -ENOMEM;
+ 		goto out_release_instance;
+@@ -935,7 +936,6 @@ static int vmd_probe(struct pci_dev *dev, const struct pci_device_id *id)
+ 
+  out_release_instance:
+ 	ida_simple_remove(&vmd_instance_ida, vmd->instance);
+-	kfree(vmd->name);
+ 	return err;
  }
  
--static long kvm_vm_ioctl_check_extension_generic(struct kvm *kvm, long arg)
-+static int kvm_vm_ioctl_check_extension_generic(struct kvm *kvm, long arg)
- {
- 	switch (arg) {
- 	case KVM_CAP_USER_MEMORY:
+@@ -958,7 +958,6 @@ static void vmd_remove(struct pci_dev *dev)
+ 	vmd_detach_resources(vmd);
+ 	vmd_remove_irq_domain(vmd);
+ 	ida_simple_remove(&vmd_instance_ida, vmd->instance);
+-	kfree(vmd->name);
+ }
+ 
+ #ifdef CONFIG_PM_SLEEP
 -- 
-2.31.1
+2.17.1
 
