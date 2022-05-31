@@ -2,68 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC5C2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 15:37:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEEAFC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 15:38:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345760AbiEaPhz (ORCPT
+        id S1345778AbiEaPim (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 11:37:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36988 "EHLO
+        Tue, 31 May 2022 11:38:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234153AbiEaPhu (ORCPT
+        with ESMTP id S1345758AbiEaPik (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 11:37:50 -0400
-Received: from m12-11.163.com (m12-11.163.com [220.181.12.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CA7174DF7F;
-        Tue, 31 May 2022 08:37:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id; bh=nwAslF7UTAY2p7754D
-        PU5vsb/l32RP5T/3fbTLG0DoM=; b=i2VdKbpCTnKfJjtwfOSEzUv2SoVaFgrNi1
-        wM+RTUNgXiVBh3nredQ3UGQmNgYAM6pGYAz0fZNdzAifBxi4HZAfhYGodyM0ijvw
-        4TYFH3y6riyGMCqQvSOKN1gjihB1PEh5rjWu05ZABW3bmQt4NK9lcwFd6e5kwRfv
-        8tOwbVGgM=
-Received: from localhost.localdomain (unknown [171.221.150.250])
-        by smtp7 (Coremail) with SMTP id C8CowAC325kMNpZiS1T3FQ--.58339S2;
-        Tue, 31 May 2022 23:36:56 +0800 (CST)
-From:   Chen Lin <chen45464546@163.com>
-To:     kuba@kernel.org
-Cc:     akpm@linux-foundation.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, alexander.duyck@gmail.com,
-        netdev@vger.kernel.org, Chen Lin <chen45464546@163.com>
-Subject: Re:Re: [PATCH v2] mm: page_frag: Warn_on when frag_alloc size is bigger than PAGE_SIZE
-Date:   Tue, 31 May 2022 23:36:22 +0800
-Message-Id: <1654011382-2453-1-git-send-email-chen45464546@163.com>
-X-Mailer: git-send-email 1.7.9.5
-In-Reply-To: <20220531081412.22db88cc@kernel.org>
-References: <20220531081412.22db88cc@kernel.org>
-X-CM-TRANSID: C8CowAC325kMNpZiS1T3FQ--.58339S2
-X-Coremail-Antispam: 1Uf129KBjvdXoW7Xr4xJF4DZw1xtrykCw1rWFg_yoWDJwbE9F
-        n7ZF1xArn8t3yxGa17Kr17urW2q3W09F12vrZI9a47tF98Awn8JFyDGFWfWrZ3tFZa9F9x
-        CrnrG3W0qrya9jkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRRVc_5UUUUU==
-X-Originating-IP: [171.221.150.250]
-X-CM-SenderInfo: hfkh0kqvuwkkiuw6il2tof0z/1tbiGhgSnlaEB7qq2QAAsS
+        Tue, 31 May 2022 11:38:40 -0400
+Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FCBC62A36
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 08:38:38 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=dtcccc@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VEvuo0x_1654011513;
+Received: from 192.168.0.205(mailfrom:dtcccc@linux.alibaba.com fp:SMTPD_---0VEvuo0x_1654011513)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Tue, 31 May 2022 23:38:34 +0800
+Message-ID: <d387ede1-d000-37aa-6ede-237b65b59ce5@linux.alibaba.com>
+Date:   Tue, 31 May 2022 23:38:32 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.1
+Subject: Re: [PATCH v2] sched: Queue task on wakelist in the same llc if the
+ wakee cpu is idle
+Content-Language: en-US
+To:     Mel Gorman <mgorman@suse.de>,
+        Valentin Schneider <vschneid@redhat.com>
+Cc:     Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        linux-kernel@vger.kernel.org
+References: <20220527090544.527411-1-dtcccc@linux.alibaba.com>
+ <xhsmhleuj7zve.mognet@vschneid.remote.csb>
+ <1d0eb8f4-e474-86a9-751a-7c2e1788df85@linux.alibaba.com>
+ <xhsmhilpl9azq.mognet@vschneid.remote.csb> <20220531135532.GA3332@suse.de>
+From:   Tianchen Ding <dtcccc@linux.alibaba.com>
+In-Reply-To: <20220531135532.GA3332@suse.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-At 2022-05-31 22:14:12, "Jakub Kicinski" <kuba@kernel.org> wrote:
->On Tue, 31 May 2022 22:41:12 +0800 Chen Lin wrote:
->> At 2022-05-31 02:29:18, "Jakub Kicinski" <kuba@kernel.org> wrote:
->> >Oh, well, the reuse also needs an update. We can slap a similar
->> >condition next to the pfmemalloc check.  
->> 
->> The sample code above cannot completely solve the current problem.
->> For example, when fragsz is greater than PAGE_FRAG_CACHE_MAX_SIZE(32768),
->> __page_frag_cache_refill will return a memory of only 32768 bytes, so 
->> should we continue to expand the PAGE_FRAG_CACHE_MAX_SIZE? Maybe more 
->> work needs to be done
->
->Right, but I can think of two drivers off the top of my head which will
->allocate <=32k frags but none which will allocate more.
+On 2022/5/31 21:55, Mel Gorman wrote:
+> On Tue, May 31, 2022 at 12:50:49PM +0100, Valentin Schneider wrote:
+>>>> With all that in mind, I'm curious whether your patch is functionaly close
+>>>> to the below.
+>>>>
+>>>> ---
+>>>> diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+>>>> index 66c4e5922fe1..ffd43264722a 100644
+>>>> --- a/kernel/sched/core.c
+>>>> +++ b/kernel/sched/core.c
+>>>> @@ -3836,7 +3836,7 @@ static inline bool ttwu_queue_cond(int cpu, int wake_flags)
+>>>>    	 * the soon-to-be-idle CPU as the current CPU is likely busy.
+>>>>    	 * nr_running is checked to avoid unnecessary task stacking.
+>>>>    	 */
+>>>> -	if ((wake_flags & WF_ON_CPU) && cpu_rq(cpu)->nr_running <= 1)
+>>>> +	if (cpu_rq(cpu)->nr_running <= 1)
+>>>>    		return true;
+>>>>    
+>>>>    	return false;
+>>>
+>>> It's a little different. This may bring extra IPIs when nr_running == 1
+>>> and the current task on wakee cpu is not the target wakeup task (i.e.,
+>>> rq->curr == another_task && rq->curr != p). Then this another_task may
+>>> be disturbed by IPI which is not expected. So IMO the promise by
+>>> WF_ON_CPU is necessary.
+>>
+>> You're right, actually taking a second look at that WF_ON_CPU path,
+>> shouldn't the existing condition be:
+>>
+>> 	if ((wake_flags & WF_ON_CPU) && !cpu_rq(cpu)->nr_running)
+>>
+>> ? Per the p->on_rq and p->on_cpu ordering, if we have WF_ON_CPU here then
+>> we must have !p->on_rq, so the deactivate has happened, thus the task
+>> being alone on the rq implies nr_running==0.
+>>
+>> @Mel, do you remember why you went for <=1 here? I couldn't find any clues
+>> on the original posting.
+>>
+> 
+> I don't recall exactly why I went with <= 1 there but I may not have
+> considered the memory ordering of on_rq and nr_running and the comment
+> above it is literally what I was thinking at the time. I think you're
+> right and that check can be !cpu_rq(cpu)->nr_running.
+> 
 
-In fact, it is rare to apply for more than one page, so is it necessary to 
-change it to support? 
-we can just warning and return, also it is easy to synchronize this simple 
-protective measures to lower Linux versions.
+If the check becomes !cpu_rq(cpu)->nr_running
+My patch would change, too.
+Shall we remove WF_ON_CPU completely?
 
