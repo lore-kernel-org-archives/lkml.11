@@ -2,196 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DDDAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 11:47:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42166C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 11:48:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343933AbiEaLrF (ORCPT
+        id S1343950AbiEaLsv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 07:47:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53354 "EHLO
+        Tue, 31 May 2022 07:48:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242016AbiEaLq7 (ORCPT
+        with ESMTP id S243849AbiEaLss (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 07:46:59 -0400
-Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43B1D49931
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 04:46:58 -0700 (PDT)
-Received: by mail-io1-xd29.google.com with SMTP id 2so13810158iou.5
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 04:46:58 -0700 (PDT)
+        Tue, 31 May 2022 07:48:48 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AF60980AE
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 04:48:47 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id n10so26106193ejk.5
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 04:48:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=93uhBt8Wzct8J4+CdbYjcgwsc3kwGGU4sNgYP7SDugU=;
-        b=Ok/wAPTVkx7ULmfKE4buubCQQgiOQrL+1p2aGP6w95FzI5yXyJEl3p1oat5ye85LMe
-         8MrC86gVZKkFsUoWalAUpFCHN3p2mBSk4Pl9FybWQiCWOXyXf6hEBD2OtTiSoKH7PCJ6
-         MDIXuaxzHxe+Xvn/ucv70+hs8apG5dTtueutariyx7mbE5Iy9jK08VDKtZnNK14gqREa
-         CNVDlxagBgDWqwyv/95OZFh0z5XiF/6+w1nRxd7hZhMqiz+dIA11Q/8d8kHYaXwsIsT+
-         mqjpmrt97Fu8jzSx+6khcBe7EEQwUrzTEYEvj+fCSmoX8GOS2z2bdkpkFe+EdDyroSk9
-         ORpA==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=7bhfywGiVfr9SKmJyu/pt4AMdz2eCKoqLhGa9Sh6I0M=;
+        b=gSo7aWDWhBewdtRYI6AhSZGPymEo/Hi7nqlGWSdSvP2WjCmWEIQ3dxM8zVn7wsiwBJ
+         f+utlV9IOq45T06qm0yXgSdPV6+0jHV7GxpoedmB2ryz5kWVoatw9I1bcvyhKFBLbA6N
+         Me7wv18JM2w/Dk7Q7sGIv4N9/DlnraPh0z4RFgtr9vdWsP/KlHpCQTaPyRtOdlPJJiHb
+         w+trMybFM2hrW6X5QUXniCFfJ8rld+V4gwBX7f/TGdkfXKvGnFSuvBAjV3qp4q5qeHYJ
+         4gNDfkijE5fRVqIKGGbrCICCmFtsrY537+Ra28E5TbZeITlrWordgRlbyIGzk6K3KP6q
+         MSCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=93uhBt8Wzct8J4+CdbYjcgwsc3kwGGU4sNgYP7SDugU=;
-        b=HGL74C4oFNLu5bCJmEYNJQMNxRny0WPUCz2/cykvBc5aioisB9i/XwlA5BOsVsEdgb
-         WpehEG5QJdAH0MsIf/PArTsZVCiQlP5dPZk7DK+hBRJdx4m4HSI9l4Ck6A5OFfVMZRAC
-         sa4GonatUlmkWIFYLjd53aSo6+998Rf+4catq720T4NhZWsnIH2vmda+x6jtAEO6YbiT
-         eenQrirMHTlmKXg8HgIG33lkwafqtg+7Dkks4cjipi1qizOe8vagKl4WjgOwY9Wyodx1
-         d4PmdqLbmQ85ztW1mkHEhhRWEtZkdG2ASmSPaCNKa6MPxYYtoPClYqgJZlWJ9CTsaEqi
-         k+og==
-X-Gm-Message-State: AOAM532DAnkCdGO8TGw6j7sb8mHW81sD+q1toeVMyqaJyj8at2Pb/IS7
-        O3JbkbgnFYspoVjA+cB/GLc=
-X-Google-Smtp-Source: ABdhPJxV2VhIXeWm6sXONG+DapOQ+XeGntmxg+hgJTxxViQd6k6Owy195rdwhsURjD9ZZJN4XnvmNw==
-X-Received: by 2002:a5d:9d06:0:b0:65e:5162:475b with SMTP id j6-20020a5d9d06000000b0065e5162475bmr23574835ioj.149.1653997617554;
-        Tue, 31 May 2022 04:46:57 -0700 (PDT)
-Received: from n2.us-central1-a.c.spheric-algebra-350919.internal (151.16.70.34.bc.googleusercontent.com. [34.70.16.151])
-        by smtp.gmail.com with ESMTPSA id c18-20020a5ea912000000b00665754e45c2sm4023663iod.24.2022.05.31.04.46.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 May 2022 04:46:56 -0700 (PDT)
-Date:   Tue, 31 May 2022 11:46:55 +0000
-From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
-To:     Vasily Averin <vvs@openvz.org>
-Cc:     Vlastimil Babka <vbabka@suse.cz>, kernel@openvz.org,
-        linux-kernel@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        Shakeel Butt <shakeelb@google.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Matthew Wilcox <willy@infradead.org>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        David Rientjes <rientjes@google.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Christoph Lameter <cl@linux.com>,
-        Michal Hocko <mhocko@suse.com>,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: Re: [PATCH v5] tracing: add 'accounted' entry into output of
- allocation tracepoints
-Message-ID: <YpYAL4H/L2ERQ9Fj@n2.us-central1-a.c.spheric-algebra-350919.internal>
-References: <c7f687a8-637c-b119-6e3a-7dacc885b851@suse.cz>
- <80bcb043-3782-1d81-d8a2-4bdcb213cf30@openvz.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=7bhfywGiVfr9SKmJyu/pt4AMdz2eCKoqLhGa9Sh6I0M=;
+        b=qL3sDtgj+p0Yl93nnWKQpaW7WSIxJ++qR7qDKAPkZwDIY3dzN8dBLkUw3BOJSoOa6s
+         Mn35tjo+ksmDiT1/owwDbMVIyDM5DhjJ9ymnDtZv7u23jjOUPzMGqlOUys1yhmGW8b/I
+         EH/TuEyLToYcS07S67Is2vYmzEXPlC+MCLrsiXMemunbG7ndRxdeKeaIvJbTp4j8rsox
+         jN+59+o7A5ZEQG5zw5LI8mXMZJuNzTxOYahSw/KmEKiVTsL8jpE7/pEPHl222dKR+Bpq
+         YL8mjBvP94r1e8SFfv1F67bnHr3gTLFyaWoJnCQDNS2/1jlOICnLUZxd7sNlzqBdSbxq
+         2Prw==
+X-Gm-Message-State: AOAM531ulX9jwlmSbJR7MZ5NEXGsxf/X2XVJdZbC9lBmPRiIzBulzhjc
+        NOY/lAP3WCaItQzgxtCEcQ6NLg==
+X-Google-Smtp-Source: ABdhPJwcNLd9LnCiYZOXV8MwmtT3ra4raRUTYvS0GEN/xsJdOBcdPNqdR+hvE0rsqf7imJzUMUb6HQ==
+X-Received: by 2002:a17:907:2d06:b0:6fe:af0f:2fab with SMTP id gs6-20020a1709072d0600b006feaf0f2fabmr45791538ejc.324.1653997725953;
+        Tue, 31 May 2022 04:48:45 -0700 (PDT)
+Received: from [192.168.0.179] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id e6-20020a170906844600b006fee13caaeasm4878148ejy.190.2022.05.31.04.48.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 31 May 2022 04:48:45 -0700 (PDT)
+Message-ID: <a47f5d18-9ecc-a679-b407-799e4a15c6cf@linaro.org>
+Date:   Tue, 31 May 2022 13:48:44 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <80bcb043-3782-1d81-d8a2-4bdcb213cf30@openvz.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v2 1/2] dt-bindings: net: Add ICSSG Ethernet Driver
+ bindings
+Content-Language: en-US
+To:     Puranjay Mohan <p-mohan@ti.com>, linux-kernel@vger.kernel.org
+Cc:     davem@davemloft.net, edumazet@google.com,
+        krzysztof.kozlowski+dt@linaro.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, nm@ti.com, ssantosh@kernel.org,
+        s-anna@ti.com, linux-arm-kernel@lists.infradead.org,
+        rogerq@kernel.org, grygorii.strashko@ti.com, vigneshr@ti.com,
+        kishon@ti.com, robh+dt@kernel.org, afd@ti.com, andrew@lunn.ch
+References: <20220531095108.21757-1-p-mohan@ti.com>
+ <20220531095108.21757-2-p-mohan@ti.com>
+ <4ccba38a-ccde-83cd-195b-77db7a64477c@linaro.org>
+ <faff79c9-7e1e-a69b-f314-6c00dedf1722@ti.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <faff79c9-7e1e-a69b-f314-6c00dedf1722@ti.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 30, 2022 at 10:47:26AM +0300, Vasily Averin wrote:
-> Slab caches marked with SLAB_ACCOUNT force accounting for every
-> allocation from this cache even if __GFP_ACCOUNT flag is not passed.
-> Unfortunately, at the moment this flag is not visible in ftrace output,
-> and this makes it difficult to analyze the accounted allocations.
+On 31/05/2022 13:27, Puranjay Mohan wrote:
+>>> +examples:
+>>> +  - |
+>>> +
+>>> +    /* Example k3-am654 base board SR2.0, dual-emac */
+>>> +    pruss2_eth: pruss2_eth {
+>>> +            compatible = "ti,am654-icssg-prueth";
+>>
+>> Again missed Rob's comment.
 > 
-> This patch adds boolean "accounted" entry into trace output,
-> and set it to 'true' for calls used __GFP_ACCOUNT flag and
-> for allocations from caches marked with SLAB_ACCOUNT.
-> 
-> Signed-off-by: Vasily Averin <vvs@openvz.org>
-> Acked-by: Shakeel Butt <shakeelb@google.com>
-> Acked-by: Roman Gushchin <roman.gushchin@linux.dev>
-> 
-> ---
-> v5:
->  1) re-based to current upstream (v5.18-11267-gb00ed48bb0a7)
->  2) added "Acked-by" from Roman
->  3) re-addressed to slab maintaiers
-> 
-> v4:
->  1) replaced in patch descripion: "accounted" instead of "allocated"
->  2) added "Acked-by" from Shakeel,
->  3) re-addressed to akpm@
-> 
-> v3:
->  1) rework kmem_cache_alloc* tracepoints once again,
->     added struct kmem_cache argument into existing templates,
-> 	thanks to Matthew Wilcox
->  2) updated according trace_* calls
->  3) added boolean "allocated" entry into trace output,
-> 	thanks to Roman
->  4) updated patch subject and description
-> 
-> v2:
->  1) handle kmem_cache_alloc_node(), thanks to Shakeel
->  2) rework kmem_cache_alloc* tracepoints to use cachep instead
->     of current cachep->*size parameters.
->     NB: kmem_cache_alloc_node tracepoint in SLOB cannot use cachep,
->         and therefore it was replaced by kmalloc_node.
-> ---
->  include/trace/events/kmem.h | 38 +++++++++++++++++++++++--------------
->  mm/slab.c                   | 10 +++++-----
->  mm/slab_common.c            |  9 ++++-----
->  mm/slob.c                   |  8 ++++----
->  mm/slub.c                   | 20 +++++++++----------
->  5 files changed, 47 insertions(+), 38 deletions(-)
-> 
+> One of Rob's comment was to make the indentation as 4 which I have done.
 
-Looks good to me.
-Reviewed-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+I clearly do not see indentation of 4, but there is 8 instead.
 
-a small comment:
->  
->  	TP_fast_assign(
-> @@ -33,42 +35,46 @@ DECLARE_EVENT_CLASS(kmem_alloc,
->  		__entry->bytes_req	= bytes_req;
->  		__entry->bytes_alloc	= bytes_alloc;
->  		__entry->gfp_flags	= (__force unsigned long)gfp_flags;
-> +		__entry->accounted	= (gfp_flags & __GFP_ACCOUNT) ||
-> +					  (s && s->flags & SLAB_ACCOUNT);
->  	),
->  
+Let's count:
++    pruss2_eth: pruss2_eth {
++            compatible = "ti,am654-icssg-prueth";
+     12345678^
 
-It doesn't make sense for SLOB to print accounted=true because SLOB does
-not support object accounting.
+It's 8...
 
->  DEFINE_EVENT(kmem_alloc, kmalloc,
->  
-> -	TP_PROTO(unsigned long call_site, const void *ptr,
-> +	TP_PROTO(unsigned long call_site, const void *ptr, struct kmem_cache *s,
->  		 size_t bytes_req, size_t bytes_alloc, gfp_t gfp_flags),
->  
-> -	TP_ARGS(call_site, ptr, bytes_req, bytes_alloc, gfp_flags)
-> +	TP_ARGS(call_site, ptr, s, bytes_req, bytes_alloc, gfp_flags)
->  );
->  
->  DEFINE_EVENT(kmem_alloc, kmem_cache_alloc,
->  
-> -	TP_PROTO(unsigned long call_site, const void *ptr,
-> +	TP_PROTO(unsigned long call_site, const void *ptr, struct kmem_cache *s,
->  		 size_t bytes_req, size_t bytes_alloc, gfp_t gfp_flags),
->  
-> -	TP_ARGS(call_site, ptr, bytes_req, bytes_alloc, gfp_flags)
-> +	TP_ARGS(call_site, ptr, s, bytes_req, bytes_alloc, gfp_flags)
->  );
->  
->  DECLARE_EVENT_CLASS(kmem_alloc_node,
->  
->  	TP_PROTO(unsigned long call_site,
->  		 const void *ptr,
-> +		 struct kmem_cache *s,
->  		 size_t bytes_req,
->  		 size_t bytes_alloc,
->  		 gfp_t gfp_flags,
->  		 int node),
->  
-> -	TP_ARGS(call_site, ptr, bytes_req, bytes_alloc, gfp_flags, node),
-> +	TP_ARGS(call_site, ptr, s, bytes_req, bytes_alloc, gfp_flags, node),
->  
->  	TP_STRUCT__entry(
->  		__field(	unsigned long,	call_site	)
-> @@ -77,6 +83,7 @@ DECLARE_EVENT_CLASS(kmem_alloc_node,
->  		__field(	size_t,		bytes_alloc	)
->  		__field(	unsigned long,	gfp_flags	)
->  		__field(	int,		node		)
-> +		__field(	bool,		accounted	)
->  	),
->  
->  	TP_fast_assign(
-> @@ -86,33 +93,36 @@ DECLARE_EVENT_CLASS(kmem_alloc_node,
->  		__entry->bytes_alloc	= bytes_alloc;
->  		__entry->gfp_flags	= (__force unsigned long)gfp_flags;
->  		__entry->node		= node;
-> +		__entry->accounted	= (gfp_flags & __GFP_ACCOUNT) ||
-> +					  (s && s->flags & SLAB_ACCOUNT);
->  	),
+> 
+> The second comment was about 'ti,prus'.
+> 
+> So, ti,prus , firmware-name, and ti,pruss-gp-mux-sel are a part of
+> remoteproc/ti,pru-consumer.yaml which I have included with
+> 
+> allOf:
+>   - $ref: /schemas/remoteproc/ti,pru-consumer.yaml#
+> 
+> So, I thought it is not required to add them again.
+> 
+> I will add it in next version, if that is how it should be done.
+I was referring to the indentation.
+
+Krzysztof
