@@ -2,148 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22763C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 08:20:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D38D0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 08:21:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243899AbiEaIU5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 04:20:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44124 "EHLO
+        id S244792AbiEaIVB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 31 May 2022 04:21:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244819AbiEaIUp (ORCPT
+        with ESMTP id S244797AbiEaIUr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 04:20:45 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EC1D9399D;
-        Tue, 31 May 2022 01:20:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1653985241; x=1685521241;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=r79Lv8Tpc0oVus0BBEyrwDuYWHc751ghgdapTd8vfFo=;
-  b=Y3IF1itpay+NwY86t9fSdDgCwxqk6Zn/nGpzjPy55hXeZQkECJx8luZf
-   98ucKKtMPlsepTeNDJrUoVv6gov9xE2NjuVXNfQCky3i4/VcTkctdZmUY
-   VPJFMHwPj5glheG70EbwjEvr3jqs2BS57bsMVFSSps2mkxi2F4mGF8BRA
-   E=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 31 May 2022 01:20:41 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 01:20:40 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 31 May 2022 01:20:39 -0700
-Received: from hu-harshq-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 31 May 2022 01:20:35 -0700
-From:   Harsh Agarwal <quic_harshq@quicinc.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-CC:     <linux-usb@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <quic_pkondeti@quicinc.com>,
-        <quic_ppratap@quicinc.com>, <quic_jackp@quicinc.com>,
-        Harsh Agarwal <quic_harshq@quicinc.com>
-Subject: [PATCH 2/3] usb: phy: Add devm_of_usb_get_phy_by_phandle
-Date:   Tue, 31 May 2022 13:50:16 +0530
-Message-ID: <1653985217-20953-3-git-send-email-quic_harshq@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1653985217-20953-1-git-send-email-quic_harshq@quicinc.com>
-References: <1653985217-20953-1-git-send-email-quic_harshq@quicinc.com>
+        Tue, 31 May 2022 04:20:47 -0400
+Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A3C295DDA;
+        Tue, 31 May 2022 01:20:42 -0700 (PDT)
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24UMvrnd006745;
+        Tue, 31 May 2022 01:20:39 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=pfpt0220;
+ bh=qRX5fdV7HmgTmQCqHjMmGiFsplcFMaLKiyjwfiVrcek=;
+ b=jtjcE9cgdmcHN4LSiTFrzVQuUfuMzDdNFrRiqVzWAOigbchG5bW5/sidLTYFLuA62NOZ
+ AuLP6iep1D31FP/XDmROJyMhwUr8lEOQt0YNfLnhsNVKOiU2ClMAAj4/hG8OrYwE/0Ny
+ TVymrWk49vcyxc3AAjgCWr03+eVlatrQS4poPCif+MF9+5bnI8a6G5w/R6t28P1JYyj4
+ 8WxoGRxsXGs3baORNhBKdjqXhU97YmidkLa+kdNYq2b+4PLEQGVFZ0uRQeKqNpCkowTA
+ wpHjsjoJkVNw6MeAr0kZNveM5PdvdJxqrcn46NQpjm2kWQnVXuf+POiGOYlgRwRkPL3e Rw== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3gbk8n8cbu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 31 May 2022 01:20:39 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 31 May
+ 2022 01:20:37 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Tue, 31 May 2022 01:20:37 -0700
+Received: from localhost.localdomain (unknown [10.110.150.250])
+        by maili.marvell.com (Postfix) with ESMTP id 58F183F704B;
+        Tue, 31 May 2022 01:20:37 -0700 (PDT)
+From:   Piyush Malgujar <pmalgujar@marvell.com>
+To:     <linux-i2c@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <rric@kernel.org>, <wsa@kernel.org>, <sgarapati@marvell.com>,
+        <cchavva@marvell.com>, Piyush Malgujar <pmalgujar@marvell.com>
+Subject: [PATCH v2 1/2] drivers: i2c: thunderx: octeontx2 clock divisor logic changes
+Date:   Tue, 31 May 2022 01:19:33 -0700
+Message-ID: <20220531081934.29238-2-pmalgujar@marvell.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220531081934.29238-1-pmalgujar@marvell.com>
+References: <20220531081934.29238-1-pmalgujar@marvell.com>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+X-Proofpoint-ORIG-GUID: NRqUvOgJdEhqhtScOBUWgdbOIQn_0zLb
+X-Proofpoint-GUID: NRqUvOgJdEhqhtScOBUWgdbOIQn_0zLb
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-05-31_02,2022-05-30_03,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adding support for devm_of_usb_get_phy_by_phandle which allows
-us to get PHY phandles of a device declared inside lookup_node.
+Handle changes to clock divisor logic for OcteonTX2 SoC family using
+subsystem ID and using default reference clock source as 100MHz.
 
-Signed-off-by: Harsh Agarwal <quic_harshq@quicinc.com>
+Signed-off-by: Suneel Garapati <sgarapati@marvell.com>
+Signed-off-by: Piyush Malgujar <pmalgujar@marvell.com>
 ---
- drivers/usb/phy/phy.c   | 34 ++++++++++++++++++++++++++++++++++
- include/linux/usb/phy.h |  8 ++++++++
- 2 files changed, 42 insertions(+)
+ drivers/i2c/busses/i2c-octeon-core.c     | 24 +++++++++++++++++++++---
+ drivers/i2c/busses/i2c-octeon-core.h     | 15 +++++++++++++++
+ drivers/i2c/busses/i2c-thunderx-pcidrv.c |  6 ++++++
+ 3 files changed, 42 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/usb/phy/phy.c b/drivers/usb/phy/phy.c
-index 1b24492..0843757 100644
---- a/drivers/usb/phy/phy.c
-+++ b/drivers/usb/phy/phy.c
-@@ -615,6 +615,40 @@ struct usb_phy *devm_usb_get_phy_by_phandle(struct device *dev,
- EXPORT_SYMBOL_GPL(devm_usb_get_phy_by_phandle);
+diff --git a/drivers/i2c/busses/i2c-octeon-core.c b/drivers/i2c/busses/i2c-octeon-core.c
+index 845eda70b8cab52a0453c9f4cb545010fba4305d..49d07a63a01f0b0711f4fa7a5d13d684935e5cbc 100644
+--- a/drivers/i2c/busses/i2c-octeon-core.c
++++ b/drivers/i2c/busses/i2c-octeon-core.c
+@@ -17,6 +17,7 @@
+ #include <linux/interrupt.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
++#include <linux/pci.h>
  
- /**
-+ * devm_of_usb_get_phy_by_phandle - find the USB PHY by phandle in lookup_node
-+ * @dev: device that requests this phy
-+ * @phandle: name of the property holding the phy phandle value
-+ * @index: the index of the phy
-+ * @lookup_node: The node to search for PHY phandles.
-+ *
-+ * Returns the phy driver associated with the given phandle value,
-+ * after getting a refcount to it, -ENODEV if there is no such phy or
-+ * -EPROBE_DEFER if there is a phandle to the phy, but the device is
-+ * not yet loaded. While at that, it also associates the device with
-+ * the phy using devres. On driver detach, release function is invoked
-+ * on the devres data, then, devres data is freed.
-+ *
-+ * For use by USB host and peripheral drivers.
-+ */
-+struct usb_phy *devm_of_usb_get_phy_by_phandle(struct device *dev,
-+	const char *phandle, u8 index, struct device_node *lookup_node)
-+{
-+	struct device_node *node;
-+	struct usb_phy	*phy;
+ #include "i2c-octeon-core.h"
+ 
+@@ -658,7 +659,16 @@ int octeon_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs, int num)
+ void octeon_i2c_set_clock(struct octeon_i2c *i2c)
+ {
+ 	int tclk, thp_base, inc, thp_idx, mdiv_idx, ndiv_idx, foscl, diff;
+-	int thp = 0x18, mdiv = 2, ndiv = 0, delta_hz = 1000000;
++	/* starting value on search for lowest diff */
++	const int huge_delta = 1000000;
++	/*
++	 * Find divisors to produce target frequency, start with large delta
++	 * to cover wider range of divisors, note thp = TCLK half period.
++	 */
++	int thp = 0x18, mdiv = 2, ndiv = 0, delta_hz = huge_delta;
 +
-+	node = of_parse_phandle(lookup_node, phandle, index);
-+	if (!node) {
-+		dev_dbg(dev, "failed to get %s phandle in %pOF node\n", phandle,
-+			dev->of_node);
-+		return ERR_PTR(-ENODEV);
-+	}
-+	phy = devm_usb_get_phy_by_node(dev, node, NULL);
-+	of_node_put(node);
-+	return phy;
-+}
-+EXPORT_SYMBOL_GPL(devm_of_usb_get_phy_by_phandle);
-+
-+/**
-  * devm_usb_put_phy - release the USB PHY
-  * @dev: device that wants to release this phy
-  * @phy: the phy returned by devm_usb_get_phy()
-diff --git a/include/linux/usb/phy.h b/include/linux/usb/phy.h
-index e4de6bc..2581c72 100644
---- a/include/linux/usb/phy.h
-+++ b/include/linux/usb/phy.h
-@@ -220,6 +220,8 @@ extern struct usb_phy *devm_usb_get_phy(struct device *dev,
- 	enum usb_phy_type type);
- extern struct usb_phy *devm_usb_get_phy_by_phandle(struct device *dev,
- 	const char *phandle, u8 index);
-+extern struct usb_phy *devm_of_usb_get_phy_by_phandle(struct device *dev,
-+	const char *phandle, u8 index, struct device_node *lookup_node);
- extern struct usb_phy *devm_usb_get_phy_by_node(struct device *dev,
- 	struct device_node *node, struct notifier_block *nb);
- extern void usb_put_phy(struct usb_phy *);
-@@ -249,6 +251,12 @@ static inline struct usb_phy *devm_usb_get_phy_by_phandle(struct device *dev,
- 	return ERR_PTR(-ENXIO);
++	if (octeon_i2c_is_otx2(to_pci_dev(i2c->dev)))
++		thp = 0x3;
+ 
+ 	for (ndiv_idx = 0; ndiv_idx < 8 && delta_hz != 0; ndiv_idx++) {
+ 		/*
+@@ -672,17 +682,25 @@ void octeon_i2c_set_clock(struct octeon_i2c *i2c)
+ 			 */
+ 			tclk = i2c->twsi_freq * (mdiv_idx + 1) * 10;
+ 			tclk *= (1 << ndiv_idx);
+-			thp_base = (i2c->sys_freq / (tclk * 2)) - 1;
++			if (octeon_i2c_is_otx2(to_pci_dev(i2c->dev)))
++				thp_base = (i2c->sys_freq / tclk) - 2;
++			else
++				thp_base = (i2c->sys_freq / (tclk * 2)) - 1;
+ 
+ 			for (inc = 0; inc <= 1; inc++) {
+ 				thp_idx = thp_base + inc;
+ 				if (thp_idx < 5 || thp_idx > 0xff)
+ 					continue;
+ 
+-				foscl = i2c->sys_freq / (2 * (thp_idx + 1));
++				if (octeon_i2c_is_otx2(to_pci_dev(i2c->dev)))
++					foscl = i2c->sys_freq / (thp_idx + 2);
++				else
++					foscl = i2c->sys_freq /
++						(2 * (thp_idx + 1));
+ 				foscl = foscl / (1 << ndiv_idx);
+ 				foscl = foscl / (mdiv_idx + 1) / 10;
+ 				diff = abs(foscl - i2c->twsi_freq);
++				/* Use it if smaller diff from target */
+ 				if (diff < delta_hz) {
+ 					delta_hz = diff;
+ 					thp = thp_idx;
+diff --git a/drivers/i2c/busses/i2c-octeon-core.h b/drivers/i2c/busses/i2c-octeon-core.h
+index 9bb9f64fdda0392364638ecbaafe3fab5612baf6..8a0033c94a8a291fb255b0da03858274035c46f4 100644
+--- a/drivers/i2c/busses/i2c-octeon-core.h
++++ b/drivers/i2c/busses/i2c-octeon-core.h
+@@ -7,6 +7,7 @@
+ #include <linux/i2c-smbus.h>
+ #include <linux/io.h>
+ #include <linux/kernel.h>
++#include <linux/pci.h>
+ 
+ /* Controller command patterns */
+ #define SW_TWSI_V		BIT_ULL(63)	/* Valid bit */
+@@ -211,6 +212,20 @@ static inline void octeon_i2c_write_int(struct octeon_i2c *i2c, u64 data)
+ 	octeon_i2c_writeq_flush(data, i2c->twsi_base + TWSI_INT(i2c));
  }
  
-+extern inline struct usb_phy *devm_of_usb_get_phy_by_phandle(struct device *dev,
-+	const char *phandle, u8 index, struct device_node *lookup_node)
++#define PCI_SUBSYS_DEVID_9XXX 0xB
++/**
++ * octeon_i2c_is_otx2 - check for chip ID
++ * @pdev: PCI dev structure
++ *
++ * Returns TRUE if OcteonTX2, FALSE otherwise.
++ */
++static inline bool octeon_i2c_is_otx2(struct pci_dev *pdev)
 +{
-+	return ERR_PTR(-ENXIO);
++	u32 chip_id = (pdev->subsystem_device >> 12) & 0xF;
++
++	return (chip_id == PCI_SUBSYS_DEVID_9XXX);
 +}
 +
- static inline struct usb_phy *devm_usb_get_phy_by_node(struct device *dev,
- 	struct device_node *node, struct notifier_block *nb)
- {
+ /* Prototypes */
+ irqreturn_t octeon_i2c_isr(int irq, void *dev_id);
+ int octeon_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs, int num);
+diff --git a/drivers/i2c/busses/i2c-thunderx-pcidrv.c b/drivers/i2c/busses/i2c-thunderx-pcidrv.c
+index a77cd86fe75ed7401bc041b27c651b9fedf67285..eecd27f9f1730e522dcccafc9f12ea891a3b59ef 100644
+--- a/drivers/i2c/busses/i2c-thunderx-pcidrv.c
++++ b/drivers/i2c/busses/i2c-thunderx-pcidrv.c
+@@ -205,6 +205,12 @@ static int thunder_i2c_probe_pci(struct pci_dev *pdev,
+ 	if (ret)
+ 		goto error;
+ 
++	/*
++	 * For OcteonTX2 chips, set reference frequency to 100MHz
++	 * as refclk_src in TWSI_MODE register defaults to 100MHz.
++	 */
++	if (octeon_i2c_is_otx2(pdev))
++		i2c->sys_freq = 100000000;
+ 	octeon_i2c_set_clock(i2c);
+ 
+ 	i2c->adap = thunderx_i2c_ops;
 -- 
-2.7.4
+2.17.1
 
