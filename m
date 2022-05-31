@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E137CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 19:41:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AAB0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 19:41:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347509AbiEaTln (ORCPT
+        id S1347439AbiEaTlt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 15:41:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38970 "EHLO
+        Tue, 31 May 2022 15:41:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347381AbiEaTlD (ORCPT
+        with ESMTP id S1347421AbiEaTlR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 15:41:03 -0400
+        Tue, 31 May 2022 15:41:17 -0400
 Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F03B9C2DB;
-        Tue, 31 May 2022 12:40:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54BF69CF30;
+        Tue, 31 May 2022 12:41:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654026050; x=1685562050;
+  t=1654026067; x=1685562067;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=02fJdKugq59zflAM6mtPgQ0J0cddzIaPgRlR9y5GAGQ=;
-  b=jHN52t2u27spSk1IaUR4fBKgSDjoQqp329n+5FP6H5M1iMywThPI4ZXn
-   8u/fGlFq9epAGwwpTmUlq7heNJs609ozvqZHgoYuKr6sfct8aNyy23fkB
-   CDkwwHbGh99HLlO02btuJpwjc176dU81tGFBanL9p5nhK0vkWtjG7FPi5
-   G8YBdUzow96u3NfE0tsPyghTGn0hsgP0xAm4qkPeCCNqQaOoyFAg1uvyc
-   04fXGwhNbGzxhC42esB/WQsviBPmGrNFWDk7yZvaFm6bTKHDlAmjBky94
-   KCdYnF89AB2DqJ673uz5OjOW8HcF0zSLsP7doX/VwV94vLd11SpYWD54y
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10364"; a="272935072"
+  bh=rfeaYtk7QAFdJKkF9Rcx/YVIhD7DmXRd0Ex3Ohrn9YI=;
+  b=nNvpUOaVfVksG80f1Q/Ixterc7I5ndJQV+RimwYj05yPpmc8C1Sh7KfR
+   hb8YxlcwbykohVSblJ1R+ZvPxRGz2CXMaxYOkNrvwL+xfCXopyXCoEznY
+   qb1/7yblmGLYOCLrjojdyVRAqcMh/yIiPdAjWQkat05AGIspNzOAEZ6GN
+   OG0GiLYmEif7YMQsZz+UirITDZqGRq+VpsYM693rtaLy24GZxXCmytbHA
+   LJBUA4QP14K043vGX2ZaJBB8kFkM66UeRfkYoFncPOyiV6VipXYTkOYm6
+   A9ZhXnk9HOxxQjbjpwcK7y9vv8UGwb6pjz0fFPr22rjOfzgmM6O7JpIqa
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10364"; a="272935161"
 X-IronPort-AV: E=Sophos;i="5.91,266,1647327600"; 
-   d="scan'208";a="272935072"
+   d="scan'208";a="272935161"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 12:40:23 -0700
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 12:40:43 -0700
 X-IronPort-AV: E=Sophos;i="5.91,266,1647327600"; 
-   d="scan'208";a="645164343"
+   d="scan'208";a="645164564"
 Received: from maciejwo-mobl1.ger.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.254.36.207])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 12:40:20 -0700
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 12:40:39 -0700
 From:   Kai Huang <kai.huang@intel.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     seanjc@google.com, pbonzini@redhat.com, dave.hansen@intel.com,
@@ -47,9 +47,9 @@ Cc:     seanjc@google.com, pbonzini@redhat.com, dave.hansen@intel.com,
         kirill.shutemov@linux.intel.com,
         sathyanarayanan.kuppuswamy@linux.intel.com,
         isaku.yamahata@intel.com, kai.huang@intel.com
-Subject: [PATCH v4 08/22] x86/virt/tdx: Shut down TDX module in case of error
-Date:   Wed,  1 Jun 2022 07:39:31 +1200
-Message-Id: <3681924471131164f151569334ff57a8d22df618.1654025431.git.kai.huang@intel.com>
+Subject: [PATCH v4 14/22] x86/virt/tdx: Create TDMRs to cover all memblock memory regions
+Date:   Wed,  1 Jun 2022 07:39:37 +1200
+Message-Id: <78fd4dd9f4659ae66b262864ebe58fbb0f4d5c73.1654025431.git.kai.huang@intel.com>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <cover.1654025430.git.kai.huang@intel.com>
 References: <cover.1654025430.git.kai.huang@intel.com>
@@ -59,169 +59,167 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-TDX supports shutting down the TDX module at any time during its
-lifetime.  After the module is shut down, no further TDX module SEAMCALL
-leaf functions can be made to the module on any logical cpu.
+The kernel configures TDX-usable memory regions by passing an array of
+"TD Memory Regions" (TDMRs) to the TDX module.  Each TDMR contains the
+information of the base/size of a memory region, the base/size of the
+associated Physical Address Metadata Table (PAMT) and a list of reserved
+areas in the region.
 
-Shut down the TDX module in case of any error during the initialization
-process.  It's pointless to leave the TDX module in some middle state.
+Create a number of TDMRs according to the memblock memory regions.  To
+keep it simple, always try to create one TDMR for each memory region.
+As the first step only set up the base/size for each TDMR.
 
-Shutting down the TDX module requires calling TDH.SYS.LP.SHUTDOWN on all
-BIOS-enabled CPUs, and the SEMACALL can run concurrently on different
-CPUs.  Implement a mechanism to run SEAMCALL concurrently on all online
-CPUs and use it to shut down the module.  Later logical-cpu scope module
-initialization will use it too.
+Each TDMR must be 1G aligned and the size must be in 1G granularity.
+This implies that one TDMR could cover multiple memory regions.  If a
+memory region spans the 1GB boundary and the former part is already
+covered by the previous TDMR, just create a new TDMR for the remaining
+part.
 
-Also add a wrapper of __seamcall() which additionally prints out the
-error information if SEAMCALL fails.  It will be useful during the TDX
-module initialization as it provides more error information to the user.
-
-SEAMCALL instruction causes #UD if CPU is not in VMX operation (VMXON
-has been done).  So far only KVM supports VMXON.  It guarantees all
-online CPUs are in VMX operation when there's any VM still exists.  As
-so far KVM is also the only user of TDX, choose to just let the caller
-to guarantee all CPUs are in VMX operation during tdx_init().
-
-Adding the support of VMXON/VMXOFF to the core-kernel isn't trivial.
-In the long term, more kernel components will likely need to use TDX so
-a reference-based approach to do VMXON/VMXOFF will likely be needed.
+TDX only supports a limited number of TDMRs.  Disable TDX if all TDMRs
+are consumed but there is more memory region to cover.
 
 Signed-off-by: Kai Huang <kai.huang@intel.com>
 ---
 
 - v3 -> v4:
- - Added a wrapper of __seamcall() to print error code if SEAMCALL fails.
- - Made the seamcall_on_each_cpu() void.
- - Removed 'seamcall_ret' and 'tdx_module_out' from
-   'struct seamcall_ctx', as they must be local variable.
- - Added the comments to tdx_init() and one paragraph to changelog to
-   explain the caller should handle VMXON.
- - Called out after shut down, no "TDX module" SEAMCALL can be made.
+ - Removed allocating TDMR individually.
+ - Improved changelog by using Dave's words.
+ - Made TDMR_START() and TDMR_END() as static inline function.
 
 ---
- arch/x86/virt/vmx/tdx/tdx.c | 71 ++++++++++++++++++++++++++++++++++++-
- arch/x86/virt/vmx/tdx/tdx.h |  5 +++
- 2 files changed, 75 insertions(+), 1 deletion(-)
+ arch/x86/virt/vmx/tdx/tdx.c | 104 +++++++++++++++++++++++++++++++++++-
+ 1 file changed, 103 insertions(+), 1 deletion(-)
 
 diff --git a/arch/x86/virt/vmx/tdx/tdx.c b/arch/x86/virt/vmx/tdx/tdx.c
-index 77e1ec219625..8e0fe314eb44 100644
+index 4aa02a992b59..129994c191f5 100644
 --- a/arch/x86/virt/vmx/tdx/tdx.c
 +++ b/arch/x86/virt/vmx/tdx/tdx.c
-@@ -13,6 +13,8 @@
- #include <linux/mutex.h>
- #include <linux/cpu.h>
- #include <linux/cpumask.h>
-+#include <linux/smp.h>
-+#include <linux/atomic.h>
- #include <asm/cpufeatures.h>
- #include <asm/cpufeature.h>
- #include <asm/msr-index.h>
-@@ -123,6 +125,67 @@ static int __init tdx_early_detect(void)
+@@ -433,6 +433,24 @@ static int check_memblock_tdx_convertible(void)
+ 	return 0;
  }
- early_initcall(tdx_early_detect);
  
-+/*
-+ * Data structure to make SEAMCALL on multiple CPUs concurrently.
-+ * @err is set to -EFAULT when SEAMCALL fails on any cpu.
-+ */
-+struct seamcall_ctx {
-+	u64 fn;
-+	u64 rcx;
-+	u64 rdx;
-+	u64 r8;
-+	u64 r9;
-+	atomic_t err;
-+};
++/* TDMR must be 1gb aligned */
++#define TDMR_ALIGNMENT		BIT_ULL(30)
++#define TDMR_PFN_ALIGNMENT	(TDMR_ALIGNMENT >> PAGE_SHIFT)
 +
-+/*
-+ * Wrapper of __seamcall().  It additionally prints out the error
-+ * informationi if __seamcall() fails normally.  It is useful during
-+ * the module initialization by providing more information to the user.
-+ */
-+static u64 seamcall(u64 fn, u64 rcx, u64 rdx, u64 r8, u64 r9,
-+		    struct tdx_module_output *out)
++/* Align up and down the address to TDMR boundary */
++#define TDMR_ALIGN_DOWN(_addr)	ALIGN_DOWN((_addr), TDMR_ALIGNMENT)
++#define TDMR_ALIGN_UP(_addr)	ALIGN((_addr), TDMR_ALIGNMENT)
++
++static inline u64 tdmr_start(struct tdmr_info *tdmr)
 +{
-+	u64 ret;
-+
-+	ret = __seamcall(fn, rcx, rdx, r8, r9, out);
-+	if (ret == TDX_SEAMCALL_VMFAILINVALID || !ret)
-+		return ret;
-+
-+#define MODULE_OUTPUT_FMT	\
-+	"additional output: rcx 0x%llx, rdx 0x%llx, r8 0x%llx, r9 0x%llx, r10 0x%llx, r11 0x%llx."
-+#define MODULE_OUTPUT_ARG(_out)	\
-+	(_out)->rcx, (_out)->rdx, (_out)->r8, (_out)->r9, (_out)->r10, (_out)->r11
-+
-+	if (!out)
-+		pr_err("SEAMCALL failed: leaf: 0x%llx, error: 0x%llx\n", fn, ret);
-+	else
-+		pr_err("SEAMCALL failed: leaf: 0x%llx, error: 0x%llx, " MODULE_OUTPUT_FMT "\n",
-+				fn, ret, MODULE_OUTPUT_ARG(out));
-+
-+	return ret;
++	return tdmr->base;
 +}
 +
-+static void seamcall_smp_call_function(void *data)
++static inline u64 tdmr_end(struct tdmr_info *tdmr)
 +{
-+	struct seamcall_ctx *sc = data;
-+	struct tdx_module_output out;
-+	u64 ret;
-+
-+	ret = seamcall(sc->fn, sc->rcx, sc->rdx, sc->r8, sc->r9, &out);
-+	if (ret)
-+		atomic_set(&sc->err, -EFAULT);
++	return tdmr->base + tdmr->size;
 +}
 +
-+/*
-+ * Call the SEAMCALL on all online CPUs concurrently.  Caller to check
-+ * @sc->err to determine whether any SEAMCALL failed on any cpu.
-+ */
-+static void seamcall_on_each_cpu(struct seamcall_ctx *sc)
-+{
-+	on_each_cpu(seamcall_smp_call_function, sc, true);
-+}
-+
- /*
-  * Detect and initialize the TDX module.
-  *
-@@ -138,7 +201,10 @@ static int init_tdx_module(void)
- 
- static void shutdown_tdx_module(void)
+ /* Calculate the actual TDMR_INFO size */
+ static inline int cal_tdmr_size(void)
  {
--	/* TODO: Shut down the TDX module */
-+	struct seamcall_ctx sc = { .fn = TDH_SYS_LP_SHUTDOWN };
-+
-+	seamcall_on_each_cpu(&sc);
-+
- 	tdx_module_status = TDX_MODULE_SHUTDOWN;
+@@ -470,6 +488,82 @@ static struct tdmr_info *alloc_tdmr_array(int *array_sz)
+ 	return alloc_pages_exact(*array_sz, GFP_KERNEL | __GFP_ZERO);
  }
  
-@@ -225,6 +291,9 @@ bool platform_tdx_enabled(void)
-  * CPU hotplug is temporarily disabled internally to prevent any cpu
-  * from going offline.
-  *
-+ * Caller also needs to guarantee all CPUs are in VMX operation during
-+ * this function, otherwise Oops may be triggered.
-+ *
-  * This function can be called in parallel by multiple callers.
-  *
-  * Return:
-diff --git a/arch/x86/virt/vmx/tdx/tdx.h b/arch/x86/virt/vmx/tdx/tdx.h
-index f1a2dfb978b1..95d4eb884134 100644
---- a/arch/x86/virt/vmx/tdx/tdx.h
-+++ b/arch/x86/virt/vmx/tdx/tdx.h
-@@ -46,6 +46,11 @@
- #define TDX_KEYID_NUM(_keyid_part)	((u32)((_keyid_part) >> 32))
- 
- 
++static struct tdmr_info *tdmr_array_entry(struct tdmr_info *tdmr_array,
++					  int idx)
++{
++	return (struct tdmr_info *)((unsigned long)tdmr_array +
++			cal_tdmr_size() * idx);
++}
++
 +/*
-+ * TDX module SEAMCALL leaf functions
++ * Create TDMRs to cover all memory regions in memblock.  The actual
++ * number of TDMRs is set to @tdmr_num.
 + */
-+#define TDH_SYS_LP_SHUTDOWN	44
++static int create_tdmrs(struct tdmr_info *tdmr_array, int *tdmr_num)
++{
++	unsigned long start_pfn, end_pfn;
++	int i, nid, tdmr_idx = 0;
++
++	/*
++	 * Loop over all memory regions in memblock and create TDMRs to
++	 * cover them.  To keep it simple, always try to use one TDMR to
++	 * cover memory region.
++	 */
++	memblock_for_each_tdx_mem_pfn_range(i, &start_pfn, &end_pfn, &nid) {
++		struct tdmr_info *tdmr;
++		u64 start, end;
++
++		tdmr = tdmr_array_entry(tdmr_array, tdmr_idx);
++		start = TDMR_ALIGN_DOWN(start_pfn << PAGE_SHIFT);
++		end = TDMR_ALIGN_UP(end_pfn << PAGE_SHIFT);
++
++		/*
++		 * If the current TDMR's size hasn't been initialized,
++		 * it is a new TDMR to cover the new memory region.
++		 * Otherwise, the current TDMR has already covered the
++		 * previous memory region.  In the latter case, check
++		 * whether the current memory region has been fully or
++		 * partially covered by the current TDMR, since TDMR is
++		 * 1G aligned.
++		 */
++		if (tdmr->size) {
++			/*
++			 * Loop to the next memory region if the current
++			 * region has already fully covered by the
++			 * current TDMR.
++			 */
++			if (end <= tdmr_end(tdmr))
++				continue;
++
++			/*
++			 * If part of the current memory region has
++			 * already been covered by the current TDMR,
++			 * skip the already covered part.
++			 */
++			if (start < tdmr_end(tdmr))
++				start = tdmr_end(tdmr);
++
++			/*
++			 * Create a new TDMR to cover the current memory
++			 * region, or the remaining part of it.
++			 */
++			tdmr_idx++;
++			if (tdmr_idx >= tdx_sysinfo.max_tdmrs)
++				return -E2BIG;
++
++			tdmr = tdmr_array_entry(tdmr_array, tdmr_idx);
++		}
++
++		tdmr->base = start;
++		tdmr->size = end - start;
++	}
++
++	/* @tdmr_idx is always the index of last valid TDMR. */
++	*tdmr_num = tdmr_idx + 1;
++
++	return 0;
++}
 +
  /*
-  * Do not put any hardware-defined TDX structure representations below this
-  * comment!
+  * Construct an array of TDMRs to cover all memory regions in memblock.
+  * This makes sure all pages managed by the page allocator are TDX
+@@ -478,8 +572,16 @@ static struct tdmr_info *alloc_tdmr_array(int *array_sz)
+ static int construct_tdmrs_memeblock(struct tdmr_info *tdmr_array,
+ 				     int *tdmr_num)
+ {
++	int ret;
++
++	ret = create_tdmrs(tdmr_array, tdmr_num);
++	if (ret)
++		goto err;
++
+ 	/* Return -EINVAL until constructing TDMRs is done */
+-	return -EINVAL;
++	ret = -EINVAL;
++err:
++	return ret;
+ }
+ 
+ /*
 -- 
 2.35.3
 
