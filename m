@@ -2,92 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7C30C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 17:21:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44278C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 17:22:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346501AbiEaRV5 (ORCPT
+        id S1346515AbiEaRWm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 13:21:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59658 "EHLO
+        Tue, 31 May 2022 13:22:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242921AbiEaRVy (ORCPT
+        with ESMTP id S243694AbiEaRWj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 13:21:54 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E5145BE5B;
-        Tue, 31 May 2022 10:21:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654017713; x=1685553713;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=R5JfpM7H4eup/6oG0EDoqUqrbb8Ht/9aCZoxZVszKps=;
-  b=BRW4cyutBEpFzeXbC4E65vOXGWRIdG9PGI2ybmcjQmhrRncUYAlM5CI0
-   Eb/CaMeCZvL5IveeyrRvJB3xyI88z6+/AwOfAE+4xiLWKhpLh0V7xLHj4
-   fBHOsMzFSMLgefhDdxShDKhVMLzGfy/2tEIkBVsNFvO3QK6Edeo3z4V0o
-   4m5KpZH/RJmVkQF3oe7ZUWYbMjnDzY/OQvNDYV+aNEv+vstzFbrQAwsGM
-   +YVKk9RNK2QBN4ZgxBm5K0HEMMAzJqRsA8fbn2KFbDiPBUYDz6of4Bo4A
-   jIRQZJL+haIYOzjNNjc7G34P6Wy/KJtwq9NlsITaBZgcMuz9W7DD/BLsm
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10364"; a="262961166"
-X-IronPort-AV: E=Sophos;i="5.91,265,1647327600"; 
-   d="scan'208";a="262961166"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 10:21:31 -0700
-X-IronPort-AV: E=Sophos;i="5.91,265,1647327600"; 
-   d="scan'208";a="576504827"
-Received: from alison-desk.jf.intel.com (HELO alison-desk) ([10.54.74.41])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 10:21:31 -0700
-Date:   Tue, 31 May 2022 10:21:46 -0700
-From:   Alison Schofield <alison.schofield@intel.com>
-To:     "Weiny, Ira" <ira.weiny@intel.com>
-Cc:     "Williams, Dan J" <dan.j.williams@intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        "Verma, Vishal L" <vishal.l.verma@intel.com>,
-        "Jiang, Dave" <dave.jiang@intel.com>,
-        Ben Widawsky <ben@bwidawsk.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-cxl@vger.kernel.org" <linux-cxl@vger.kernel.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>
-Subject: Re: [PATCH V9 7/9] cxl/port: Introduce cxl_cdat_valid()
-Message-ID: <20220531172146.GB1457068@alison-desk>
-References: <20220531152632.1397976-1-ira.weiny@intel.com>
- <20220531152632.1397976-8-ira.weiny@intel.com>
+        Tue, 31 May 2022 13:22:39 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D53690CDB;
+        Tue, 31 May 2022 10:22:38 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id u2so2872678pfc.2;
+        Tue, 31 May 2022 10:22:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=9PHjFs0sIqj5lWkWsEGrk3cMVyvsTEeIL+bMtOtQI8g=;
+        b=OBgz4OH07SYHRH6i23pXY3sWr1cgmBDmYWyyjFcfiUuhnPmpDeeb2eN9o2IHsnITBz
+         V9SNk8FW9410NeGJYcONzvZjmXcODw60CjZo9oJFy09hjtKcQKrrG55qdu0nXK/t3m0A
+         FITf826d/mlqQmC9tVBZzzMU9TgRmiBlzmZp8CdGUftW2jj3C7HSWBQdFOMeaX/kdbd+
+         mhK+WUW4hhuHqvysNs+J/lr01kTV5IPSMSEispnTynIofVHsFumoYmX+MUC1CFDAFEVo
+         X/gF0pBGpAAYb0CXt7NfL56W/1E890doIHdDr92hZoZKimXBIlUnxDN4C45iYSbLfpcy
+         UddA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=9PHjFs0sIqj5lWkWsEGrk3cMVyvsTEeIL+bMtOtQI8g=;
+        b=s6dLwo7QUo1JDmq+WmwKznlhl4HdBusuxetQr4vmRKVi8SUCtP/sF7vcUWlu1QMdL0
+         G59RrrdIFnpex1CeiwpgXtqeVRDQKZeuzbNIeC3h9e+d6odUE6oVCT4/WdplFhPV74JT
+         +8KIT0YVa7h7E+pJO+GeU1xjuIrDE5Pb/oaxitodVjboZnyTTSgco+aMB9IW4OPKiMPb
+         4h3mQU1/kOhbLdBPlWYAAMo5la5OBg3czkBHToZF3UIcTUtrfkkMJvJ6Em1lvdbM2Xtw
+         cD1TTeajPGo5M1lYjHV8911otPcNdGsJPBafAuHIsV9qlusKJA/vY0lxlLOx9YD4rQKS
+         Ygow==
+X-Gm-Message-State: AOAM530mHpZHhPPfwIKlULtIvhhnaFNpw8Jc9EtnHCHEXH6ZnDUNJgK8
+        6/wpw8p9B7/R9vjtbEr/DLc=
+X-Google-Smtp-Source: ABdhPJy8CTe0X5aYugHEww8yoE3jzJBjHdP7iLgM86cDqAyT1yKKnQTlJLhVA65KJUJDz4YoMQ9d5g==
+X-Received: by 2002:a63:202:0:b0:3f2:75a7:cd28 with SMTP id 2-20020a630202000000b003f275a7cd28mr53414415pgc.537.1654017757983;
+        Tue, 31 May 2022 10:22:37 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:400::4:987b])
+        by smtp.gmail.com with ESMTPSA id oj17-20020a17090b4d9100b001e2608203d4sm2400455pjb.5.2022.05.31.10.22.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 May 2022 10:22:37 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Tue, 31 May 2022 07:22:35 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Hongchen Zhang <zhanghongchen@loongson.cn>
+Cc:     Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>, cgroups@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] cgroup: wait for css offline when rmdir
+Message-ID: <YpZO26mJ3Wm0AeHo@slm.duckdns.org>
+References: <1653619158-27607-1-git-send-email-zhanghongchen@loongson.cn>
+ <YpCQZ5RRnxwh7fmK@slm.duckdns.org>
+ <e74e03f1-cb54-b158-a085-2965fd088d1d@loongson.cn>
+ <YpVo4XiIDu68w40Z@slm.duckdns.org>
+ <fbb820c5-dbcb-0f00-c365-d3c57ca27edf@loongson.cn>
+ <YpZOIz/CbQs+aWF6@slm.duckdns.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220531152632.1397976-8-ira.weiny@intel.com>
+In-Reply-To: <YpZOIz/CbQs+aWF6@slm.duckdns.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 31, 2022 at 08:26:30AM -0700, Ira Weiny wrote:
-> From: Ira Weiny <ira.weiny@intel.com>
-> 
-> The CDAT data is protected by a checksum and should be the proper
-> length.
-> 
-> Introduce cxl_cdat_valid() to validate the data.  While at it check and
-> store the sequence number.
-> 
-Store it for ?
+On Tue, May 31, 2022 at 07:19:31AM -1000, Tejun Heo wrote:
+> Maybe just keep the sequence numbers for started and completed offline
+> operations and wait for completed# to reach the started# on memcg alloc
+> failure and retry? Note that we can get live locked, so have to remember the
+> sequence number to wait for at the beginning. Or, even simpler, maybe it'd
+> be enough to just do synchronize_rcu() and then wait for the offline wait
+> once and retry.
 
->  
-> +static bool cxl_cdat_valid(struct device *dev, struct cxl_cdat *cdat)
-> +{
+Also, given that it's an memcg ID issue. It probably makes sense to
+implement it on the memcg side.
 
-snip
+Thanks.
 
-> +
-> +	seq = FIELD_GET(CDAT_HEADER_DW3_SEQUENCE, table[3]);
-> +	/* Store the sequence for now. */
-> +	if (cdat->seq != seq) {
-> +		dev_info(dev, "CDAT seq change %x -> %x\n", cdat->seq, seq);
-> +		cdat->seq = seq;
-> +	}
-> +
-
-Wondering when does/will this sequence number come into play?
-
-> 
+-- 
+tejun
