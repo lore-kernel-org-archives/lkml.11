@@ -2,92 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B34CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 02:54:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DF3FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 02:55:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243668AbiEaCyM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 22:54:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56840 "EHLO
+        id S243671AbiEaCz0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 22:55:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232746AbiEaCyK (ORCPT
+        with ESMTP id S232746AbiEaCzX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 22:54:10 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 710E88CCFB;
-        Mon, 30 May 2022 19:54:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653965649; x=1685501649;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=xShwcBv2sRwVhimzWAxcZ92MBKRwnzhim/YMvrCQgug=;
-  b=SreQLANwSkLlNrh/2gOkLtBwXmAZCdu/cVcaQdJxnMAQzoassdfMkuJ4
-   BWV/77HBX1Ymhf/unvYvKLur/ooUz7DVHcw+UzzbcO+zrPVxGtzrJhMGt
-   6KqAj4cxfMP+RNoJnWMWrv/kAhGpuEmVNosm6x7BDK+xQCz0q33eBQ21G
-   QdLpCwN6l3rNqdOxn8Ri9t6eMH232b125FaLa+Fr4RLeQlNT1LyNi8FtG
-   Xxo3xcWtyhDxWdNjBfrKbmepkcE7GWx0SwIVNy1UIz3ot27AO0WK1Li3V
-   c6tK7/H9LpopgPUi8vWEGFH7xw4TZyqDtmiwUveH6ff/F8yblZiHAmdYV
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10363"; a="335777171"
-X-IronPort-AV: E=Sophos;i="5.91,263,1647327600"; 
-   d="scan'208";a="335777171"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2022 19:54:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,263,1647327600"; 
-   d="scan'208";a="580888938"
-Received: from pglc00495.png.intel.com ([10.221.239.178])
-  by fmsmga007.fm.intel.com with ESMTP; 30 May 2022 19:54:06 -0700
-From:   "Tham, Mun Yew" <mun.yew.tham@intel.com>
-To:     Joyce Ooi <joyce.ooi@intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Tham@vger.kernel.org, Mun Yew <mun.yew.tham@intel.com>
-Subject: [PATCH] net: eth: altera: set rx and tx ring size before init_dma call
-Date:   Tue, 31 May 2022 10:51:17 +0800
-Message-Id: <20220531025117.13822-1-mun.yew.tham@intel.com>
-X-Mailer: git-send-email 2.26.2
+        Mon, 30 May 2022 22:55:23 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3D798CCFB
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 19:55:22 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LBxdW6NSLzQkNx;
+        Tue, 31 May 2022 10:52:15 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 31 May 2022 10:55:20 +0800
+Subject: Re: [PATCH 2/3] mm/swapfile: avoid confusing swap cache statistics
+To:     Andrew Morton <akpm@linux-foundation.org>
+CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>
+References: <20220527092626.31883-1-linmiaohe@huawei.com>
+ <20220527092626.31883-3-linmiaohe@huawei.com>
+ <20220530160409.c9b17085adb6112d8580f37d@linux-foundation.org>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <c7d6fec7-039d-2f54-c3b3-95deb7417a73@huawei.com>
+Date:   Tue, 31 May 2022 10:55:20 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220530160409.c9b17085adb6112d8580f37d@linux-foundation.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It is more appropriate to set the rx and tx ring size before calling
-the init function for the dma.
+On 2022/5/31 7:04, Andrew Morton wrote:
+> On Fri, 27 May 2022 17:26:25 +0800 Miaohe Lin <linmiaohe@huawei.com> wrote:
+> 
+>> At swapoff time, we're going to swap in the pages continuously. So calling
+>> lookup_swap_cache would confuse statistics. We should use find_get_page
+>> directly here.
+> 
+> Why is the existing behaviour wrong?  swapoff() has to swap stuff in to
+> be able to release the swap device.  Why do you believe that this
+> swapin activity should not be accounted?
 
-Signed-off-by: Tham, Mun Yew <mun.yew.tham@intel.com>
----
- drivers/net/ethernet/altera/altera_tse_main.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+IMHO, statistics, e.g. swap_cache_info.find_success, are used to show the effectiveness
+of the swap cache activity. So they should only reflect the memory accessing activity
+of the user. I think swapoff can't reflect the effectiveness of the swap cache activity
+because it just swaps in pages one by one. Or statistics should reflect all the activity
+of the user including swapoff?
 
-diff --git a/drivers/net/ethernet/altera/altera_tse_main.c b/drivers/net/ethernet/altera/altera_tse_main.c
-index 1c00d719e5d7..ebfddad05e7e 100644
---- a/drivers/net/ethernet/altera/altera_tse_main.c
-+++ b/drivers/net/ethernet/altera/altera_tse_main.c
-@@ -1152,6 +1152,10 @@ static int tse_open(struct net_device *dev)
- 	int i;
- 	unsigned long int flags;
- 
-+	/* set tx and rx ring size */
-+	priv->rx_ring_size = dma_rx_num;
-+	priv->tx_ring_size = dma_tx_num;
-+
- 	/* Reset and configure TSE MAC and probe associated PHY */
- 	ret = priv->dmaops->init_dma(priv);
- 	if (ret != 0) {
-@@ -1194,8 +1198,6 @@ static int tse_open(struct net_device *dev)
- 	priv->dmaops->reset_dma(priv);
- 
- 	/* Create and initialize the TX/RX descriptors chains. */
--	priv->rx_ring_size = dma_rx_num;
--	priv->tx_ring_size = dma_tx_num;
- 	ret = alloc_init_skbufs(priv);
- 	if (ret) {
- 		netdev_err(dev, "DMA descriptors initialization failed\n");
--- 
-2.26.2
+Thanks!
+
+> 
+> 
+> .
+> 
 
