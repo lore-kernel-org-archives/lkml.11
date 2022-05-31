@@ -2,184 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 619A4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 16:32:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACCFCC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 16:34:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346185AbiEaQcq (ORCPT
+        id S1346193AbiEaQeY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 12:32:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58384 "EHLO
+        Tue, 31 May 2022 12:34:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346180AbiEaQcj (ORCPT
+        with ESMTP id S1346076AbiEaQeX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 12:32:39 -0400
-Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8D072873F
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 09:32:38 -0700 (PDT)
-Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-2ff90e0937aso145884317b3.4
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 09:32:38 -0700 (PDT)
+        Tue, 31 May 2022 12:34:23 -0400
+Received: from relayaws-01.paragon-software.com (relayaws-01.paragon-software.com [35.157.23.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB902986EA
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 09:34:21 -0700 (PDT)
+Received: from dlg2.mail.paragon-software.com (vdlg-exch-02.paragon-software.com [172.30.1.105])
+        by relayaws-01.paragon-software.com (Postfix) with ESMTPS id B34351E70;
+        Tue, 31 May 2022 16:33:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=SSRdjJ4GsSYX2sanC6V1p/5JQws5rxwYFyUpiG5r7ek=;
-        b=qmiK67eVaFFgCtGDbvSmb/okOLbpaij9fPXhGHc0GhS2xwChEiWpm63Qoo/BLAIVen
-         iIaoGHY24FWM51LkTSxGiOy16cWZpeFEvqINnPIUR1BuQFPKPzaCuWDA7hQvGUQ7M34G
-         arvkAmKw5YWMjzrs7WMKgKs3/0Km1mC+2Q2iZPpUmE25JVEgJVBPfMXH35fUvMrpGuz+
-         bJ9oPd+0M165s5ByTdI75lIq879K83aaJWE8t4eayniTtZU1Ox+tza7DvbubJHSVCaqC
-         FG2TUEC//xfIUgwzDc3LOYGQXBiuKXuhWJ1YJDmUGVvqRbwsKbBBbMwM34G28Q3rzegL
-         dYLQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SSRdjJ4GsSYX2sanC6V1p/5JQws5rxwYFyUpiG5r7ek=;
-        b=U+wxkUzfXAg7ZJxUI6pTZBOPQuUqohldJ//gclu6beKhX32jmpSBI0/10CQwAlw7k1
-         bJ9eScER4EC9j0DicKItk73YIPDoZx86H2DQHHrMVcgGRDjUitcSpity2bpuRb11Mhq6
-         yqWcUfexxNgqWoyYLi+tgqjuD4yXeIwrU7djDtuepGvWDZZR+CkXaLAOXI86ZG8Nabkt
-         LZ5BPt3utp875VwzzkPrD/4aOkWBTA57ziWFpS/uwwxYMxcE4BE6h4wkfrDQb3UyvAQy
-         96y84hjOJnX6zmoVThLFccmQvCtamUf2DBgJvl87QA13XHGfj2iurerAR9i8vzuL4RuL
-         4tvw==
-X-Gm-Message-State: AOAM532aKYE962j/+istj5ijU+zX76JXSazMnPpMIuv2KXCX6l2C1PH0
-        H5V4ZmPp8hka2o7C+htSoFKxjm+rx4TiaOTGogulOQ==
-X-Google-Smtp-Source: ABdhPJyRon53Pg9ZvPtzHQ3l2W0Sjq2m9Yxrl0Sct1vuKlc2EZbjfF4SGyFduyvALB+xBTJjM6Cqxa8SzIg1AaNqzsY=
-X-Received: by 2002:a81:6189:0:b0:2eb:deb5:9f63 with SMTP id
- v131-20020a816189000000b002ebdeb59f63mr61808300ywb.319.1654014757465; Tue, 31
- May 2022 09:32:37 -0700 (PDT)
+        d=paragon-software.com; s=mail; t=1654014828;
+        bh=kS1z8ktvQI2j4Votf4ozgtuh7FSp49/EvnMv3zc10sg=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=FipMe0gXkT5KmM3JLynWLtdJFqyw/m8VpqOwqXC0dxMnE8k4XaMhzG/itZqUOhMhQ
+         pwCRjmz4qp8C0c6uilCSGVMAgINB7jiW87NXb/vv4Pa8+QKV27+Bl57yLoJHMOPHD+
+         omvKmOC7wlq3ocLhRtKEt1opLIbD0dWwHZjfTXhA=
+Received: from [172.30.8.65] (172.30.8.65) by
+ vdlg-exch-02.paragon-software.com (172.30.1.105) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Tue, 31 May 2022 19:34:19 +0300
+Message-ID: <e40981eb-8243-4bb1-44ef-5393cc464c03@paragon-software.com>
+Date:   Tue, 31 May 2022 19:34:19 +0300
 MIME-Version: 1.0
-References: <20220526103929.14976-1-zhouchengming@bytedance.com>
- <20220526103929.14976-3-zhouchengming@bytedance.com> <CAKfTPtADKqVSvUFmLRPCU_XGVvf3wme0EnnvPf1Q39HEs=VqRw@mail.gmail.com>
- <270c2315-7ba5-4bbb-ee5c-38cc8a57e628@bytedance.com>
-In-Reply-To: <270c2315-7ba5-4bbb-ee5c-38cc8a57e628@bytedance.com>
-From:   Vincent Guittot <vincent.guittot@linaro.org>
-Date:   Tue, 31 May 2022 18:32:25 +0200
-Message-ID: <CAKfTPtAL_N=grk7kaqB6bsZHh5JCvckTk9AtzFCJpanD=g_LOg@mail.gmail.com>
-Subject: Re: [External] Re: [PATCH v3 2/2] sched/fair: optimize and simplify
- rq leaf_cfs_rq_list
-To:     Chengming Zhou <zhouchengming@bytedance.com>
-Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
-        mgorman@suse.de, bristot@redhat.com, vschneid@redhat.com,
-        odin@uged.al, linux-kernel@vger.kernel.org,
-        duanxiongchun@bytedance.com, songmuchun@bytedance.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH] fs/ntfs3: fix null pointer dereference in
+ d_flags_for_inode
+Content-Language: en-US
+To:     =?UTF-8?B?57uD5Lqu5paM?= <jjm2473@gmail.com>
+CC:     <ntfs3@lists.linux.dev>, <linux-kernel@vger.kernel.org>
+References: <20220506034656.50038-1-jjm2473@gmail.com>
+ <14b2ae23-2f7b-401a-dcee-cc6114849022@paragon-software.com>
+ <CAP_9mL7O7YyW56HBorZ7727m22NjbQcfcu_J4_XOBoXigQvGCg@mail.gmail.com>
+From:   Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+In-Reply-To: <CAP_9mL7O7YyW56HBorZ7727m22NjbQcfcu_J4_XOBoXigQvGCg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [172.30.8.65]
+X-ClientProxiedBy: vdlg-exch-02.paragon-software.com (172.30.1.105) To
+ vdlg-exch-02.paragon-software.com (172.30.1.105)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 31 May 2022 at 15:55, Chengming Zhou
-<zhouchengming@bytedance.com> wrote:
->
-> Hi,
->
-> On 2022/5/30 15:52, Vincent Guittot wrote:
-> > On Thu, 26 May 2022 at 12:40, Chengming Zhou
-> > <zhouchengming@bytedance.com> wrote:
-> >>
-> [...]
-> >> @@ -11257,9 +11218,10 @@ static inline bool vruntime_normalized(struct task_struct *p)
-> >>   */
-> >>  static void propagate_entity_cfs_rq(struct sched_entity *se)
-> >>  {
-> >> -       struct cfs_rq *cfs_rq;
-> >> +       struct cfs_rq *cfs_rq = cfs_rq_of(se);
-> >>
-> >> -       list_add_leaf_cfs_rq(cfs_rq_of(se));
-> >> +       if (!throttled_hierarchy(cfs_rq))
-> >> +               list_add_leaf_cfs_rq(cfs_rq);
-> >>
-> >>         /* Start to propagate at parent */
-> >>         se = se->parent;
-> >> @@ -11268,7 +11230,8 @@ static void propagate_entity_cfs_rq(struct sched_entity *se)
-> >>                 cfs_rq = cfs_rq_of(se);
-> >>
-> >
-> >  you can break  if the cfs is throttled because it's sched_entity has
-> > been dequeued. In this case we check if the cfs is throttled not if
-> > the hierarchy is throttled
-> >
-> > +               if (cfs_rq_throttled(cfs_rq))
-> > +                       break;
-> >
->
-> This propagate part still make me confused. :-)
->
-> I wonder if you think we should change like this:
->
-> static void propagate_entity_cfs_rq(struct sched_entity *se)
-> {
->         struct cfs_rq *cfs_rq = cfs_rq_of(se);
->
->         if (cfs_rq_throttled(cfs_rq))                   --> break if cfs is throttled
->                 return;
->
->         if (!throttled_hierarchy(cfs_rq))
->                 list_add_leaf_cfs_rq(cfs_rq);
->
->         /* Start to propagate at parent */
->         se = se->parent;
->
->         for_each_sched_entity(se) {
->                 cfs_rq = cfs_rq_of(se);
->
->                 if (cfs_rq_throttled(cfs_rq))           --> break if cfs is throttled
->                         break;
->
->                 update_load_avg(cfs_rq, se, UPDATE_TG); --> throttled cfs_rq->prop not updated
->                 if (!throttled_hierarchy(cfs_rq))
->                         list_add_leaf_cfs_rq(cfs_rq);
->         }
-> }
->
->
->
-> If I understand right, we should update_load_avg() until cfs_rq_throttled(),
-> including that throttled cfs_rq? So we can go on propagating when unthrottle.
->
-> Maybe like this?
->
-> static void propagate_entity_cfs_rq(struct sched_entity *se)
-> {
->         struct cfs_rq *cfs_rq = cfs_rq_of(se);
->
->         if (cfs_rq_throttled(cfs_rq))                   --> break if cfs is throttled
->                 return;
->
->         if (!throttled_hierarchy(cfs_rq))
->                 list_add_leaf_cfs_rq(cfs_rq);
->
->         /* Start to propagate at parent */
->         se = se->parent;
->
->         for_each_sched_entity(se) {
->                 cfs_rq = cfs_rq_of(se);
->
->                 update_load_avg(cfs_rq, se, UPDATE_TG); --> update throttled cfs_rq->prop
+Hello.
 
-Yes, that looks correct.
-So we will ensure that the attach/detach is propagated down up to
-thethrottle cfs
+In the end of ntfs_read_mft function we must assign correct i_op:
+inode->i_op = &ntfs_dir_inode_operations;
+<...>
+inode->i_op = &ntfs_link_inode_operations;
+<...>
+inode->i_op = &ntfs_file_inode_operations;
+<...>
+inode->i_op = &ntfs_special_inode_operations;
 
->
->                 if (cfs_rq_throttled(cfs_rq))           --> break if cfs is throttled
->                         break;
->
->                 if (!throttled_hierarchy(cfs_rq))
->                         list_add_leaf_cfs_rq(cfs_rq);
->         }
-> }
->
->
-> Thanks!
->
->
-> >>                 update_load_avg(cfs_rq, se, UPDATE_TG);
-> >> -               list_add_leaf_cfs_rq(cfs_rq);
-> >> +               if (!throttled_hierarchy(cfs_rq))
-> >> +                       list_add_leaf_cfs_rq(cfs_rq);
-> >>         }
-> >>  }
-> >>  #else
-> >> --
-> >> 2.36.1
-> >>
+In this if .. else if .. else is an error:
+records in $Extend doesn't get correct i_op.
+This was fixed in my patch.
+
+Line in beginning of ntfs_read_mft function
+inode->i_op = NULL;
+triggered null pointer dereference because
+inode->i_op = &ntfs_file_inode_operations;
+is missing for records in $Extend.
+
+If I just remove inode->i_op = NULL,
+then in i_op will be some previous value.
+Sometimes this value is correct, sometimes it's not.
+
+I'm thankful, that you've spent time to find and debug this issue.
+This was reflected in line Reported-by: Liangbin Lian <jjm2473@gmail.com>
+I hope I've made more clear my previous message.
+
+
+On 5/28/22 16:42, 练亮斌 wrote:
+> Hello.
+> `inode->i_op` already initialized when inode alloc, this bug was
+> introduced by `inode->i_op = NULL;`, just delete this line.
+> Please check my patch, maybe it's a better one, I have tested it on my project.
+> 
+> On 5/26/22 18:23, Almaz Alexandrovich wrote:
+>>
+>> Hello.
+>>
+>> Thank you for reporting this bug.
+>> The bug happens because we don't initialize i_op for records in $Extend.
+>> We tested patch on our side, let me know if patch helps you too.
+>>
+>>       fs/ntfs3: Fix missing i_op in ntfs_read_mft
+>>
+>>       There is null pointer dereference because i_op == NULL.
+>>       The bug happens because we don't initialize i_op for records in $Extend.
+>>       Fixes: 82cae269cfa9 ("fs/ntfs3: Add initialization of super block")
+>>
+>>       Reported-by: Liangbin Lian <jjm2473@gmail.com>
+>>       Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+>>
+>> diff --git a/fs/ntfs3/inode.c b/fs/ntfs3/inode.c
+>> index 879952254071..b2cc1191be69 100644
+>> --- a/fs/ntfs3/inode.c
+>> +++ b/fs/ntfs3/inode.c
+>> @@ -430,6 +430,7 @@ static struct inode *ntfs_read_mft(struct inode *inode,
+>>           } else if (fname && fname->home.low == cpu_to_le32(MFT_REC_EXTEND) &&
+>>                      fname->home.seq == cpu_to_le16(MFT_REC_EXTEND)) {
+>>                   /* Records in $Extend are not a files or general directories. */
+>> +               inode->i_op = &ntfs_file_inode_operations;
+>>           } else {
+>>                   err = -EINVAL;
+>>                   goto out;
+>>
+>>
+>> On 5/6/22 06:46, Liangbin Lian wrote:
+>>> ntfs_read_mft may return inode with null i_op, cause null pointer dereference in d_flags_for_inode (inode->i_op->get_link).
+>>> Reproduce:
+>>>    - sudo mount -t ntfs3 -o loop ntfs.img ntfs
+>>>    - ls ntfs/'$Extend/$Quota'
+>>>
+>>> The call trace is shown below (striped):
+>>>    BUG: kernel NULL pointer dereference, address: 0000000000000008
+>>>    CPU: 0 PID: 577 Comm: ls Tainted: G           OE     5.16.0-0.bpo.4-amd64 #1  Debian 5.16.12-1~bpo11+1
+>>>    RIP: 0010:d_flags_for_inode+0x65/0x90
+>>>    Call Trace:
+>>>    ntfs_lookup
+>>>    +--- dir_search_u
+>>>    |    +--- ntfs_iget5
+>>>    |         +--- ntfs_read_mft
+>>>    +--- d_splice_alias
+>>>         +--- __d_add
+>>>              +--- d_flags_for_inode
+>>>
+>>> Signed-off-by: Liangbin Lian <jjm2473@gmail.com>
+>>> ---
+>>>    fs/ntfs3/inode.c | 1 -
+>>>    1 file changed, 1 deletion(-)
+>>>
+>>> diff --git a/fs/ntfs3/inode.c b/fs/ntfs3/inode.c
+>>> index 9eab11e3b..b68d26fa8 100644
+>>> --- a/fs/ntfs3/inode.c
+>>> +++ b/fs/ntfs3/inode.c
+>>> @@ -45,7 +45,6 @@ static struct inode *ntfs_read_mft(struct inode *inode,
+>>>        struct MFT_REC *rec;
+>>>        struct runs_tree *run;
+>>>
+>>> -     inode->i_op = NULL;
+>>>        /* Setup 'uid' and 'gid' */
+>>>        inode->i_uid = sbi->options->fs_uid;
+>>>        inode->i_gid = sbi->options->fs_gid;
