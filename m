@@ -2,77 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD2F3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 13:05:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60268C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 13:06:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343553AbiEaNFs (ORCPT
+        id S1344519AbiEaNGo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 09:05:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47216 "EHLO
+        Tue, 31 May 2022 09:06:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231451AbiEaNFq (ORCPT
+        with ESMTP id S231451AbiEaNGk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 09:05:46 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9689185EFA
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 06:05:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=2LaeE6TXNYbEbm2V2tXhLHBQx057Dlx91hkU5xAWauU=; b=NafnL0NLUqNnb1avAu6c+9ng/1
-        5oEC8BhrwdbQXoTtFrOmL2MLVaHyLtwHfmXTkELVG++FlFc9sSPWOS6nFx+laQZUh0TgANJJtw66h
-        JkhC9DcvgMpuUWe1bAwWV4H6VNDmSqGdiZz4ql25ZaTcVuTWHWUwH3MswFN0D67GWhZ2O0p8pECC/
-        apRZsAt+ksza8domwjXUD0pLNPvJUaGxtPj0IxLHWzK7jg2MMCxI4mTH8HqmIToXEya+OHZ+jCZuE
-        x1do3ZJd/8GgUeTGrGe/bqnjjdA1aHRata6VB1rQWA6OWWwLg2VnmL8yOSzAgb0+umvGrPh/kHu6/
-        p/UuxSNQ==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nw1Yl-005OL0-Eb; Tue, 31 May 2022 13:05:19 +0000
-Date:   Tue, 31 May 2022 14:05:19 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     akpm@linux-foundation.org, naoya.horiguchi@nec.com,
-        peterx@redhat.com, apopple@nvidia.com, ying.huang@intel.com,
-        osalvador@suse.de, mike.kravetz@oracle.com,
-        songmuchun@bytedance.com, hch@lst.de, dhowells@redhat.com,
-        cl@linux.com, linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 1/4] mm: reduce the rcu lock duration
-Message-ID: <YpYSjw/T8jTGr7e8@casper.infradead.org>
-References: <20220530113016.16663-1-linmiaohe@huawei.com>
- <20220530113016.16663-2-linmiaohe@huawei.com>
- <YpYQ937N8Daad6u/@casper.infradead.org>
+        Tue, 31 May 2022 09:06:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30C4E272;
+        Tue, 31 May 2022 06:06:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C139FB80FAE;
+        Tue, 31 May 2022 13:06:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5E99C385A9;
+        Tue, 31 May 2022 13:06:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654002396;
+        bh=CUlX+9z8cfAhEXvA+cWNMHHopVVQF0wsmaL19jamKuA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=SWC/CiPCADCJ6kefLyjARmREtOnWV+fbhBHIDASIWVmi8Bp27I0V1nbrW/xYBsDcw
+         99RsF9I4hOAsh3TXzFqRPSEncZ+8c0cJRb9/aEoGh1OKeT6v28TNSnWFa38di80MKx
+         IowrMNRrVQBr28ICDqepU7RuuO0ufWLJKByhwBkioBw3BgFK9lacmHLfQH3Ls30Yv0
+         ngAFa18bHmnaTCbLAcfu/bA/dVzKgvrwUzwKKT1hs1bPY+wZZbnxveRuWcNMVrvxDk
+         xSh7QKU5ToBWxP+OGHCAPAdnRPEVYjIThVnzpifUterxL5nL3VO4jYA8cyL2kG8HL4
+         H8oY6IWcQEd7Q==
+Date:   Tue, 31 May 2022 15:06:33 +0200
+From:   Mark Brown <broonie@kernel.org>
+To:     Fabien Parent <fparent@baylibre.com>
+Cc:     Liam Girdwood <lgirdwood@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH 3/7] dt-bindings: regulator: Add binding schema for
+ mt6357 regulators
+Message-ID: <YpYS2e1uGmoJGWxr@sirena.org.uk>
+References: <20220531124959.202787-1-fparent@baylibre.com>
+ <20220531124959.202787-4-fparent@baylibre.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ES4vVuyUeavLpiLg"
 Content-Disposition: inline
-In-Reply-To: <YpYQ937N8Daad6u/@casper.infradead.org>
+In-Reply-To: <20220531124959.202787-4-fparent@baylibre.com>
+X-Cookie: May your camel be as swift as the wind.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 31, 2022 at 01:58:31PM +0100, Matthew Wilcox wrote:
-> On Mon, May 30, 2022 at 07:30:13PM +0800, Miaohe Lin wrote:
-> > Commit 3268c63eded4 ("mm: fix move/migrate_pages() race on task struct")
-> > extends the period of the rcu_read_lock until after the permissions checks
-> > are done to prevent the task pointed to from changing from under us. But
-> > the task_struct refcount is also taken at that time, the reference to task
-> > is guaranteed to be stable. So it's unnecessary to extend the period of
-> > the rcu_read_lock. Release the rcu lock after task refcount is successfully
-> > grabbed to reduce the rcu holding time.
-> 
-> But why bother?  You know the RCU read lock isn't a "real" lock, right?
 
-Looking over this code some more, I think this may harm performance.
-ptrace_may_access() itself takes the rcu_read_lock().  So we currently
-have:
+--ES4vVuyUeavLpiLg
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-rcu_read_lock()
-rcu_read_lock();
-rcu_read_unlock();
-rcu_read_unlock();
+On Tue, May 31, 2022 at 02:49:55PM +0200, Fabien Parent wrote:
 
-In at least one RCU configuration, rcu_read_lock() maps to
-preempt_disable().  Nested preempt_disable() just bump a counter, while
-that counter reaching zero incurs some actual work.  So nested
-rcu_read_lock() can be better than sequential lock/unlock/lock/unlock.
+> +    properties:
+> +      regulator-name:
+> +        pattern: "^v(core|modem|pa|proc|s1)$"
 
-This needs far better justification.
+This is a standard property which you shouldn't need to describe
+and should not be imposing any constraints on, the property is
+there to provide a system relevant name to the supply provided by
+the regulator to aid diagnostics and association with schematics.
+
+--ES4vVuyUeavLpiLg
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKWEtgACgkQJNaLcl1U
+h9BPxAf+OS9V2/7UbTz61u9a3et3gJurNEsT8gJJVwGGyIHKaLsHpArDO6nNUgzZ
+jWMDBk5KAhW8aeF4+eV1A1kyAfVNakRnkKose6A7sXZT5UPCFImND6jnXfvXmWla
+x6NO+B2a+aBrP9BJ6DW8OFf1CRpf+o7HQAw8Cai4Qad+1icFQ9A3y9k/JjjQewSX
+y0g4EhuK5DiakAE4f2Wbk3qX30mFY/xaz/k9GOmLLqqjjDDD0N6f6Cj8j7eKDz/G
+A/VUC1NivcsWuHCvioNMGY7soxNBWanVtm4z9q4Y7I9rv5A5lez0rawWkFIMRpug
+t0eGypEI+DYyO4/pTt4vzBOZNgkqrQ==
+=joEQ
+-----END PGP SIGNATURE-----
+
+--ES4vVuyUeavLpiLg--
