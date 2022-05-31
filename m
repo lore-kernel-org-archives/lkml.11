@@ -2,95 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A5B6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 10:02:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E177C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 10:03:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245533AbiEaKCd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 06:02:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44178 "EHLO
+        id S245536AbiEaKD1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 31 May 2022 06:03:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245461AbiEaKA3 (ORCPT
+        with ESMTP id S245581AbiEaKDK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 06:00:29 -0400
+        Tue, 31 May 2022 06:03:10 -0400
 Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 632C0880C7;
-        Tue, 31 May 2022 03:00:27 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id er5so16782195edb.12;
-        Tue, 31 May 2022 03:00:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 104872873E
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 03:01:58 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id fd25so16802256edb.3
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 03:01:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=JruBtp3H6AJykO9OR/eL1GiHC7q7udWmPGM/sruwocU=;
-        b=gblxCfTt5pOw7A9YHZEJV+r2VG2ChUPoOQENqtkp2cD9u6jNXJgjxv2GFFFMsM/j1v
-         Q2bAWtuYoHVtOWqHe7hjKmrV3TsMB+pNFCxXxg98Hxoy145vOkyrtRBbQ1b4zZpA+A1+
-         m3vrIpLanU3qXFTpv1WHgWerwCM08gLxzMyuLrfLY2BLdTpWmtpZZCIA8VnGVxQPJSGw
-         xqv5Ii2BDXG3LKm7eR73P/dCNDyy1at1PARvuyUQJ4QUTBg+DKyDnVUw6Iop+kGwRAzR
-         hJvsA8R/+LW94eBMAMh3wccqPVIx8QKXEc5XbXbso3UNdF0HbknOCrBEyS28rXYGBpJ4
-         wTKQ==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=wuXuqEFMaOM45MAweImWEmPgcsz8M071Y/adgguAcHs=;
+        b=pE/W3vubH45QB4U57YiIZcydvn/9U9CMn92Z1D/Gq1zkOJXzGPIq7YrHLaeY3x/pRX
+         EyfXFSY8HGId2irBD0zfCjXRTj1WywrVqHOXehsKwksiuqz9bxYkIMXN0aZAzuxWMe4g
+         9YYTfiX/P+QeITomdIxZ1yBwZVslL7eoM6yu54GOqRxVQ9ZMOb1nHc+47hmah39JurXA
+         RIobPqn+/DMO8riJ1AlROJgxWncli0O8Z3UFWl3rG7k/jb+e72VkRGME1dzaNxCP6Zdy
+         MLhDdvMiKgiGOmeG2pHkoNP46EOuokyvkmePdMMqZH7z3dwIzKgS/Qwygegg37MY3EIX
+         Tqxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=JruBtp3H6AJykO9OR/eL1GiHC7q7udWmPGM/sruwocU=;
-        b=FU0CaP1yyNOiUsROoOGnE/GK2s/hqKZMFHlJhUAgsLPCB3qEYItB6R7D1Kjm6v/T+E
-         zum1YSidMEMbK6cZNH3ty8eorbktpCQgiKuW/OVLXoOMiInins7NoI7NkrYleizQ698c
-         hh5WHfAKgRvF9UoXkNb13D2Hr+9ZHmBj1iNWjIE7oy0VNYWNq5j0hbk3JjtV5iReUeLy
-         Ixfw14MhPg7Jy16I5LVvCseQ66sN69+upFxOXsfu/yNpIV0EJ0Rlo9A8labBjO9etHJL
-         thNlelDrwvI8R8RgXk7FyMFOCpFl8abmH9UpNKMSkr1lxCfbETxsaOGIP9Vfmcjecciz
-         aG1w==
-X-Gm-Message-State: AOAM532yIh4+RSgwwzUBRLyNrCcqzR3QF4foOkP/J1Jozk4tGazrYyAN
-        aWkSk1gOICm39QkHUH+Hz/Rby0HZmUrofw==
-X-Google-Smtp-Source: ABdhPJxrLNkOBCK22JKPARmcl5BjmY6TUTpFvEk9uA+1n3mHpJJ9+WrPqf1O6PJKP4JfkZxzMsKPKw==
-X-Received: by 2002:a05:6402:350b:b0:42d:d565:a62a with SMTP id b11-20020a056402350b00b0042dd565a62amr7607557edd.172.1653991225974;
-        Tue, 31 May 2022 03:00:25 -0700 (PDT)
-Received: from able.fritz.box (p5b0ea02f.dip0.t-ipconnect.de. [91.14.160.47])
-        by smtp.gmail.com with ESMTPSA id r13-20020a056402018d00b0042617ba6389sm582062edv.19.2022.05.31.03.00.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 May 2022 03:00:25 -0700 (PDT)
-From:   "=?UTF-8?q?Christian=20K=C3=B6nig?=" 
-        <ckoenig.leichtzumerken@gmail.com>
-X-Google-Original-From: =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>
-To:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        intel-gfx@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
-        nouveau@lists.freedesktop.org, linux-tegra@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org
-Cc:     christian.koenig@amd.com, alexander.deucher@amd.com,
-        daniel@ffwll.ch, viro@zeniv.linux.org.uk,
-        akpm@linux-foundation.org, hughd@google.com,
-        andrey.grodzovsky@amd.com
-Subject: [PATCH 11/13] drm/omap: use drm_oom_badness
-Date:   Tue, 31 May 2022 12:00:05 +0200
-Message-Id: <20220531100007.174649-12-christian.koenig@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220531100007.174649-1-christian.koenig@amd.com>
-References: <20220531100007.174649-1-christian.koenig@amd.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=wuXuqEFMaOM45MAweImWEmPgcsz8M071Y/adgguAcHs=;
+        b=lVvzQvncCC+QvTlRHBmZFDAJ6iBWUuRRagu0HrQwwrVKLz+CTA9yDxn7oU87841eJl
+         JhViADDJ8mWcUuWZJCwe9mRdQSxDHrr/WAbNgSEm3Lqazfp8xvZ2oUzg+9B36LsX5nfD
+         j4bPHuULKf8R57Vvp++tJIjyWgPtTCwSM8g3Hm+5e0jfeChHqIuVeWVz3uwae8XuXT8z
+         JzVQl+U7qwiH80i5fiBRkGonhyHXdVST2IPMpVvnMnsxpoCdgIUWH0VOGmDhKUJ1Q7X1
+         g4v55JQw1CH5cGPlqNu1ew6Tl0mCC2rB6+c3UwwYgTphGlOr6XIoUe1XcDjJ3Px/rVjd
+         Vc5g==
+X-Gm-Message-State: AOAM530fpUMo2SrFwq2SVR5mCiupew4IBStbywCv+fTgMHZViQHDHOBv
+        T8WmDkY/LRyrmMfkAi7WriBkjw==
+X-Google-Smtp-Source: ABdhPJwoXiymXBWrih0F32y/6OJ6LLk92Bui9PxiMJmu0glMtCsZ8SrdrCpE3Ia01wSsM1GhPQeHig==
+X-Received: by 2002:a05:6402:26d4:b0:42b:6bc4:ce4f with SMTP id x20-20020a05640226d400b0042b6bc4ce4fmr44431111edd.242.1653991316803;
+        Tue, 31 May 2022 03:01:56 -0700 (PDT)
+Received: from [192.168.0.179] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id v9-20020a50c409000000b0042bcf1e0060sm7928488edf.65.2022.05.31.03.01.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 31 May 2022 03:01:56 -0700 (PDT)
+Message-ID: <1d8ced63-a43d-08fa-8fa4-6bf521c56bea@linaro.org>
+Date:   Tue, 31 May 2022 12:01:55 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 5/6] ufs: host: ufs-exynos: add support for fsd ufs hci
+Content-Language: en-US
+To:     Alim Akhtar <alim.akhtar@samsung.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-phy@lists.infradead.org
+Cc:     devicetree@vger.kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, vkoul@kernel.org,
+        avri.altman@wdc.com, bvanassche@acm.org,
+        martin.petersen@oracle.com, chanho61.park@samsung.com,
+        pankaj.dubey@samsung.com, linux-fsd@tesla.com,
+        Bharat Uppal <bharat.uppal@samsung.com>
+References: <20220531012220.80563-1-alim.akhtar@samsung.com>
+ <CGME20220531012356epcas5p3cd6638d4d3eccb28a28d064c9f585a4f@epcas5p3.samsung.com>
+ <20220531012220.80563-6-alim.akhtar@samsung.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220531012220.80563-6-alim.akhtar@samsung.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This allows the OOM killer to make a better decision which process to reap.
+On 31/05/2022 03:22, Alim Akhtar wrote:
+> Adds support of UFS HCI which is found in Tesla
+> FSD SoC. FSD also have an addition bit for MPHY
+> APB clock which was not there (was reserved) for
+> previous exynos SoC.
 
-Signed-off-by: Christian König <christian.koenig@amd.com>
----
- drivers/gpu/drm/omapdrm/omap_drv.c | 1 +
- 1 file changed, 1 insertion(+)
+Weird wrapping.
 
-diff --git a/drivers/gpu/drm/omapdrm/omap_drv.c b/drivers/gpu/drm/omapdrm/omap_drv.c
-index eaf67b9e5f12..ca2c484f48ca 100644
---- a/drivers/gpu/drm/omapdrm/omap_drv.c
-+++ b/drivers/gpu/drm/omapdrm/omap_drv.c
-@@ -684,6 +684,7 @@ static const struct file_operations omapdriver_fops = {
- 	.poll = drm_poll,
- 	.read = drm_read,
- 	.llseek = noop_llseek,
-+	.oom_badness = drm_oom_badness,
- };
- 
- static const struct drm_driver omap_drm_driver = {
--- 
-2.25.1
+> 
+> Cc: linux-fsd@tesla.com
+> Signed-off-by: Bharat Uppal <bharat.uppal@samsung.com>
+> Signed-off-by: Alim Akhtar <alim.akhtar@samsung.com>
+> ---
+>  drivers/ufs/host/ufs-exynos.c | 143 +++++++++++++++++++++++++++++++++-
+>  1 file changed, 142 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/ufs/host/ufs-exynos.c b/drivers/ufs/host/ufs-exynos.c
+> index a81d8cbd542f..b3efdc4caca2 100644
+> --- a/drivers/ufs/host/ufs-exynos.c
+> +++ b/drivers/ufs/host/ufs-exynos.c
+> @@ -52,11 +52,12 @@
+>  #define HCI_ERR_EN_DME_LAYER	0x88
+>  #define HCI_CLKSTOP_CTRL	0xB0
+>  #define REFCLKOUT_STOP		BIT(4)
+> +#define MPHY_APBCLK_STOP        BIT(3)
 
+Inconsistent indentation.
+
+
+Best regards,
+Krzysztof
