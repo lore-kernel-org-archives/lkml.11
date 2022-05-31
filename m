@@ -2,94 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FC6DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 15:39:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 186DFC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 15:39:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345793AbiEaPjq (ORCPT
+        id S1345812AbiEaPjw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 11:39:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45546 "EHLO
+        Tue, 31 May 2022 11:39:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242627AbiEaPjm (ORCPT
+        with ESMTP id S1345794AbiEaPjq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 11:39:42 -0400
-Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F6CC8BD18;
-        Tue, 31 May 2022 08:39:41 -0700 (PDT)
-Received: from cwcc.thunk.org (pool-108-7-220-252.bstnma.fios.verizon.net [108.7.220.252])
-        (authenticated bits=0)
-        (User authenticated as tytso@ATHENA.MIT.EDU)
-        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 24VFdFJH004068
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 31 May 2022 11:39:16 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mit.edu; s=outgoing;
-        t=1654011558; bh=fTxdM4FSLoudm9qNGxkHMxJHzf43vLhFwNmW/rU7VTA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=KMkCQvG7tjlVWymzZpN13bzwSnBHf6sP9CXk0af4AXfcYb40gq0W3IadVs0L/CfZk
-         2W4S3DE2bNZHFbaRO3Kmj9txctBWNYjtjPg2RGCvsLE0CGmjZ8f8RZdRkyAFVz3nZP
-         nTFnKXlwqga67Yu6w0lk+LGYh3cVk/vD6Vdms22aJds9K0X2q64a0ONQBsgg00hwl2
-         Jfr2UIk8D8Q2V494kj3hXJZlv7sTBHTc0kJeTt7WrUiO+ORAN0S+SwROLrssrtS/so
-         anbbVYx6N5W0qTz+Pjwgf30dETyvvFJrIT/5lf5r6iUPvATZCJtAxkowqCZNFWr6fY
-         mFjYMTQYQuXyA==
-Received: by cwcc.thunk.org (Postfix, from userid 15806)
-        id 36EBF15C3E1F; Tue, 31 May 2022 11:39:15 -0400 (EDT)
-Date:   Tue, 31 May 2022 11:39:15 -0400
-From:   "Theodore Ts'o" <tytso@mit.edu>
-To:     Donald Buczek <buczek@molgen.mpg.de>
-Cc:     Jan Kara <jack@suse.cz>, linux-ext4@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, dm-devel@redhat.com,
-        it+linux@molgen.mpg.de,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: ext4_writepages: jbd2_start: 5120 pages, ino 11; err -5
-Message-ID: <YpY2o/GG8HWJHTdo@mit.edu>
-References: <4e83fb26-4d4a-d482-640c-8104973b7ebf@molgen.mpg.de>
- <20220531103834.vhscyk3yzsocorco@quack3.lan>
- <3bfd0ad9-d378-9631-310f-0a1a80d8e482@molgen.mpg.de>
+        Tue, 31 May 2022 11:39:46 -0400
+Received: from smtp-fw-9102.amazon.com (smtp-fw-9102.amazon.com [207.171.184.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AF888BD1A;
+        Tue, 31 May 2022 08:39:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.co.uk; i=@amazon.co.uk; q=dns/txt;
+  s=amazon201209; t=1654011586; x=1685547586;
+  h=from:to:cc:date:message-id:references:in-reply-to:
+   content-transfer-encoding:mime-version:subject;
+  bh=CI6iH6yoecF9cc7BOEACEO1QsTfmPhaS1od4bXaY42o=;
+  b=jmqV5VVhmobue6GPr6fJID30p/J1EhPhSWs1zmk7BdB2wfMFXI0jMR+9
+   TmFe/AZAvJRCX9wov5ywItOCMfHUuTFtu/PRKKLOJI9HXH1YmJhuNEri7
+   K10HQoATuy+7VtTw2eR6aHdmRn4X/0EaIxwcDJMpeoh6kXAnwUu1nrht8
+   g=;
+X-IronPort-AV: E=Sophos;i="5.91,265,1647302400"; 
+   d="scan'208";a="223996123"
+Subject: RE: ...\n
+Thread-Topic: ...\n
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2c-72dc3927.us-west-2.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-9102.sea19.amazon.com with ESMTP; 31 May 2022 14:52:08 +0000
+Received: from EX13D33EUC004.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-2c-72dc3927.us-west-2.amazon.com (Postfix) with ESMTPS id 97B8A40CB9;
+        Tue, 31 May 2022 14:52:06 +0000 (UTC)
+Received: from EX13D32EUC003.ant.amazon.com (10.43.164.24) by
+ EX13D33EUC004.ant.amazon.com (10.43.164.63) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.36; Tue, 31 May 2022 14:52:05 +0000
+Received: from EX13D32EUC003.ant.amazon.com ([10.43.164.24]) by
+ EX13D32EUC003.ant.amazon.com ([10.43.164.24]) with mapi id 15.00.1497.036;
+ Tue, 31 May 2022 14:52:05 +0000
+From:   "Durrant, Paul" <pdurrant@amazon.co.uk>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        "Allister, Jack" <jalliste@amazon.com>
+CC:     "bp@alien8.de" <bp@alien8.de>,
+        "diapop@amazon.co.uk" <diapop@amazon.co.uk>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "jmattson@google.com" <jmattson@google.com>,
+        "joro@8bytes.org" <joro@8bytes.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "metikaya@amazon.co.uk" <metikaya@amazon.co.uk>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "pbonzini@redhat.com" <pbonzini@redhat.com>,
+        "rkrcmar@redhat.com" <rkrcmar@redhat.com>,
+        "sean.j.christopherson@intel.com" <sean.j.christopherson@intel.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "vkuznets@redhat.com" <vkuznets@redhat.com>,
+        "wanpengli@tencent.com" <wanpengli@tencent.com>,
+        "x86@kernel.org" <x86@kernel.org>
+Thread-Index: AQHYdPhkNX+wk5QumkS6hY2ybmOpva05D+WAgAABcbA=
+Date:   Tue, 31 May 2022 14:52:04 +0000
+Message-ID: <059ab3327ac440479ecfdf49fa054347@EX13D32EUC003.ant.amazon.com>
+References: <YpYaYK7a28DFT5Ne@hirez.programming.kicks-ass.net>
+ <20220531140236.1435-1-jalliste@amazon.com>
+ <YpYpxzt4rmG+LFy9@hirez.programming.kicks-ass.net>
+In-Reply-To: <YpYpxzt4rmG+LFy9@hirez.programming.kicks-ass.net>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.43.164.66]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3bfd0ad9-d378-9631-310f-0a1a80d8e482@molgen.mpg.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hmmm..... I think this patch should fix your issues.
+> -----Original Message-----
+> From: Peter Zijlstra <peterz@infradead.org>
+> Sent: 31 May 2022 15:44
+> To: Allister, Jack <jalliste@amazon.com>
+> Cc: bp@alien8.de; diapop@amazon.co.uk; hpa@zytor.com; jmattson@google.com=
+; joro@8bytes.org;
+> kvm@vger.kernel.org; linux-kernel@vger.kernel.org; metikaya@amazon.co.uk;=
+ mingo@redhat.com;
+> pbonzini@redhat.com; rkrcmar@redhat.com; sean.j.christopherson@intel.com;=
+ tglx@linutronix.de;
+> vkuznets@redhat.com; wanpengli@tencent.com; x86@kernel.org
+> Subject: RE: [EXTERNAL]...\n
+>=20
+>=20
+> On Tue, May 31, 2022 at 02:02:36PM +0000, Jack Allister wrote:
+> > The reasoning behind this is that you may want to run a guest at a
+> > lower CPU frequency for the purposes of trying to match performance
+> > parity between a host of an older CPU type to a newer faster one.
+>=20
+> That's quite ludicrus. Also, then it should be the host enforcing the
+> cpufreq, not the guest.
 
-If the journal has been aborted (which happens as part of the
-shutdown, we will never write out the commit block --- so it should be
-fine to skip the writeback of any dirty inodes in data=ordered mode.
+I'll bite... What's ludicrous about wanting to run a guest at a lower CPU f=
+req to minimize observable change in whatever workload it is running?
 
-BTW, if you know that the file system is going to get nuked in this
-way all the time, so you never care about file system after it is shut
-down, you could mount the file system with the mount option
-data=writeback.
-
-       	      	      	    		- Ted
-
-
-diff --git a/fs/ext4/super.c b/fs/ext4/super.c
-index 8ff4c6545a49..2e18211121f6 100644
---- a/fs/ext4/super.c
-+++ b/fs/ext4/super.c
-@@ -542,7 +542,10 @@ static int ext4_journalled_submit_inode_data_buffers(struct jbd2_inode *jinode)
- static int ext4_journal_submit_inode_data_buffers(struct jbd2_inode *jinode)
- {
- 	int ret;
-+	journal_t *journal = EXT4_SB(jinode->i_vfs_inode->i_sb)->s_journal;
- 
-+	if (!journal || is_journal_aborted(journal))
-+		return 0;
- 	if (ext4_should_journal_data(jinode->i_vfs_inode))
- 		ret = ext4_journalled_submit_inode_data_buffers(jinode);
- 	else
-@@ -554,7 +557,10 @@ static int ext4_journal_submit_inode_data_buffers(struct jbd2_inode *jinode)
- static int ext4_journal_finish_inode_data_buffers(struct jbd2_inode *jinode)
- {
- 	int ret = 0;
-+	journal_t *journal = EXT4_SB(jinode->i_vfs_inode->i_sb)->s_journal;
- 
-+	if (!journal || is_journal_aborted(journal))
-+		return 0;
- 	if (!ext4_should_journal_data(jinode->i_vfs_inode))
- 		ret = jbd2_journal_finish_inode_data_buffers(jinode);
-
+  Paul
