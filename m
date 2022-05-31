@@ -2,83 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8034AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 21:52:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 592E4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 21:54:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348249AbiEaVwy (ORCPT
+        id S1348227AbiEaVyb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 17:52:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35578 "EHLO
+        Tue, 31 May 2022 17:54:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348227AbiEaVwg (ORCPT
+        with ESMTP id S237919AbiEaVy3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 17:52:36 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F0E6E70
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 14:52:35 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id w27so12613012edl.7
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 14:52:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1k15B72sSbrLXkCADeeP6AzEw+boU5xN3dX9Ygix0Ho=;
-        b=fziJdaGNRGa+ZTIWEzYDmG1x+thLhpnlrikLf06C4Otoz06i4B4WcWiGg1NPMmroY6
-         wRvoIofy1VXG9kGwfFAU97ChR0D6KvukeW+EUmYLIOVpmgTFCBZiW0JE/GpjfJHGVf75
-         jg+Vq2R40kuxG/FiSFcCGhRbQbq9GWUbtNfQc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1k15B72sSbrLXkCADeeP6AzEw+boU5xN3dX9Ygix0Ho=;
-        b=AWuWYhoPebWEPEwbltHzoRB2/cPPsj2loC9vDal8Bx00g8Auhv0HG8IP9OiaExlEZa
-         M9nMWafsoqtFa5kvlrR+FZq1YkXkOwJuiwCXHZjK+YTrxKiN3kk/D0ZKYpX8f/2UDcxz
-         20UH2llAaDiWpmwO5WIAr76bInviZcMDoWGplU3Y9c7WcNgunfwTj6Wdw1jEFvHvHMbo
-         zNAFf/hSp+2ppvOti9VPocPJ0VZ+G06veSdK8Z5YRaRPAFsNBc72BowZrYJjmAgAkewU
-         xg2N3Or6sdGKBzg1nAFom7IwV1kBg/JkYSjNj/8m32KO+kc7DyAFo28oz4gzI5i18MdY
-         809A==
-X-Gm-Message-State: AOAM531npbEasKe84JnK38CYkV13UxeI6CpGZLngyXxQ8muEkhzLOHJ1
-        GWk5GNvBXwlquClvFZ9NlFkorFNUMDg/FgYX
-X-Google-Smtp-Source: ABdhPJxsQQ0xM3DYzepj4sXmjV1ubWGBP9sR6ZfKD4zgjvx13hlb5EAIOocKmnInvB90uwchtLuNDA==
-X-Received: by 2002:a05:6402:90d:b0:428:bda9:3e6b with SMTP id g13-20020a056402090d00b00428bda93e6bmr66028826edz.132.1654033953329;
-        Tue, 31 May 2022 14:52:33 -0700 (PDT)
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com. [209.85.128.42])
-        by smtp.gmail.com with ESMTPSA id p15-20020a170906498f00b006fedcb78854sm5355840eju.164.2022.05.31.14.52.32
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 31 May 2022 14:52:32 -0700 (PDT)
-Received: by mail-wm1-f42.google.com with SMTP id r123-20020a1c2b81000000b0039c1439c33cso47085wmr.5
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 14:52:32 -0700 (PDT)
-X-Received: by 2002:a7b:cb91:0:b0:397:3225:244 with SMTP id
- m17-20020a7bcb91000000b0039732250244mr25567719wmi.68.1654033952272; Tue, 31
- May 2022 14:52:32 -0700 (PDT)
+        Tue, 31 May 2022 17:54:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AC4D22B0D
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 14:54:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EB768613EA
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 21:54:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F48FC385A9;
+        Tue, 31 May 2022 21:54:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654034067;
+        bh=p1OW3169Xm6Eo04hC32FJFeedrLyv3PKo3DiY4M7gOc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=gIb1CqARRBC6qSSdyiOWLJrKknzwu45ZhejlZUVs8aK0HhuFvWbQsRBGPsJR86/IF
+         ydAqEZDaqp0qAoApwZ31qSdQweyQnLiq7CMvgF4o2a8zxonxmUVuyiWet0x8kc+dth
+         JcrxCYsUr27twnEjiFxlzj2Myh3Yetj+mvOfsvIJz0NLoKLkRKIy3jcVkx64NXnRpY
+         aROv1sCg7zzz17tttNDeYWua5QNEII+OJN4GKM/I99E4Nh8sNmtxDgB43pV9QKLAnA
+         0Ba9+Dk451XP8orDqNcpihNf0vtbYaqn24YZvJUKTy/jtSpp2kGfqobjaAiZWtEEfi
+         /l1eOJiXn6Zog==
+Date:   Tue, 31 May 2022 15:54:23 -0600
+From:   Keith Busch <kbusch@kernel.org>
+To:     Tony Battersby <tonyb@cybernetics.com>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        iommu@lists.linux-foundation.org, kernel-team@fb.com,
+        Matthew Wilcox <willy@infradead.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Tony Lindgren <tony@atomide.com>
+Subject: Re: [PATCH 10/10] dmapool: improve scalability of dma_pool_free
+Message-ID: <YpaOj/C1SA8y1VCg@kbusch-mbp.dhcp.thefacebook.com>
+References: <9b08ab7c-b80b-527d-9adf-7716b0868fbc@cybernetics.com>
+ <801335ba-00f3-12ae-59e0-119d7d8fd8cd@cybernetics.com>
 MIME-Version: 1.0
-References: <mhng-3cfe92b5-a83a-4642-9b9e-8416ae717fd6@palmer-ri-x1c9>
-In-Reply-To: <mhng-3cfe92b5-a83a-4642-9b9e-8416ae717fd6@palmer-ri-x1c9>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Tue, 31 May 2022 14:52:16 -0700
-X-Gmail-Original-Message-ID: <CAHk-=whMTEAuBRAS7aonfVM9wgupOok4HO6gX9X0FBzE3Uv2sA@mail.gmail.com>
-Message-ID: <CAHk-=whMTEAuBRAS7aonfVM9wgupOok4HO6gX9X0FBzE3Uv2sA@mail.gmail.com>
-Subject: Re: [GIT PULL] RISC-V Patches for the 5.19 Merge Window, Part 1
-To:     Palmer Dabbelt <palmer@rivosinc.com>
-Cc:     linux-riscv <linux-riscv@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <801335ba-00f3-12ae-59e0-119d7d8fd8cd@cybernetics.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 31, 2022 at 10:13 AM Palmer Dabbelt <palmer@rivosinc.com> wrote:
->
-> I have a single manual resolution in the fe510 device tree, just the result of
-> some conflicting fixes.  It's not showing up in my merge, but a bunch of other
-> automatic resolutions are which is a bit worrisome on my end -- I don't usually
-> touch other trees, but we had a handful of big cross-tree things this time.
+On Tue, May 31, 2022 at 02:23:44PM -0400, Tony Battersby wrote:
+> dma_pool_free() scales poorly when the pool contains many pages because
+> pool_find_page() does a linear scan of all allocated pages.  Improve its
+> scalability by replacing the linear scan with a red-black tree lookup.
+> In big O notation, this improves the algorithm from O(n^2) to O(n * log n).
 
-Gaah. I'd have normally preferred for things like this to go through
-Arnd, but it looks like he at least ack'ed these things..
-
-I've obviously pulled it, as you can see from the pr-tracker-bot reply
-that already went out.
-
-               Linus
+The improvement should say O(n) to O(log n), right?
