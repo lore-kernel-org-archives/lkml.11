@@ -2,88 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22B34C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 17:55:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 339D4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 17:57:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346731AbiEaRzV (ORCPT
+        id S1346726AbiEaR5b (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 13:55:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35514 "EHLO
+        Tue, 31 May 2022 13:57:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346724AbiEaRzT (ORCPT
+        with ESMTP id S239219AbiEaR51 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 13:55:19 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3501378EF9;
-        Tue, 31 May 2022 10:55:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=5qgPWbu1LAKzbDTijZmrwRKZussN5dXdmwQD1+Wcxks=; b=nxEOpA2AYHcT+nSglra4Y8vLPT
-        /onVq/y8GBCq72oBkxzK/xgOEEOluDWdXPTkvY+novtidysHyPK/zPzadWRZKMaIzQl65JYJQwIf8
-        NcIcQy24aEbXg5KGGFSblOfn6JcayrZNHsMab3e2WSVqex9bB+L9LwmGAwb6sDl8oZYSO8rWlRtg3
-        UNTJ6W0O3Z6UjEB8o9V2N9xRfcSYu85xITfJnvUZWFf9YFvijRyiYF9vdGpTNJ7sbjlyD+7Ii2q8s
-        NtaJhB19kLwafv70zNmIr59b4lSjPhc0wmUdWPSUtNAFWjKtDKqJWzv1OraOOMW/IVerd5RoT1FcI
-        604w8mXA==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nw65K-005Zqe-Hj; Tue, 31 May 2022 17:55:14 +0000
-Message-ID: <e92a9cb8-0270-523b-d853-1ee648b20e0f@infradead.org>
-Date:   Tue, 31 May 2022 10:55:09 -0700
+        Tue, 31 May 2022 13:57:27 -0400
+X-Greylist: delayed 415 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 31 May 2022 10:57:24 PDT
+Received: from mail.bwidawsk.net (mail.bwidawsk.net [107.170.211.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7402D33A13;
+        Tue, 31 May 2022 10:57:22 -0700 (PDT)
+Received: by mail.bwidawsk.net (Postfix, from userid 5001)
+        id 1E599123291; Tue, 31 May 2022 10:57:22 -0700 (PDT)
+Received: from mail.bwidawsk.net (c-24-20-163-23.hsd1.or.comcast.net [24.20.163.23])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by mail.bwidawsk.net (Postfix) with ESMTPSA id B0F00120013;
+        Tue, 31 May 2022 10:57:17 -0700 (PDT)
+Date:   Tue, 31 May 2022 10:57:16 -0700
+From:   Ben Widawsky <ben@bwidawsk.net>
+To:     ira.weiny@intel.com
+Cc:     Dan Williams <dan.j.williams@intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alison Schofield <alison.schofield@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        linux-kernel@vger.kernel.org, linux-cxl@vger.kernel.org,
+        linux-pci@vger.kernel.org
+Subject: Re: [PATCH V9 5/9] cxl/port: Find a DOE mailbox which supports CDAT
+Message-ID: <20220531175716.jlkwu7aerxh5ucte@mail.bwidawsk.net>
+References: <20220531152632.1397976-1-ira.weiny@intel.com>
+ <20220531152632.1397976-6-ira.weiny@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] m68k: virt: Kconfig minor fixes
-Content-Language: en-US
-To:     Laurent Vivier <laurent@vivier.eu>, linux-kernel@vger.kernel.org
-Cc:     linux-m68k@lists.linux-m68k.org, Arnd Bergmann <arnd@arndb.de>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-References: <20220531174514.1586248-1-laurent@vivier.eu>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220531174514.1586248-1-laurent@vivier.eu>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220531152632.1397976-6-ira.weiny@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 5/31/22 10:45, Laurent Vivier wrote:
-> Select VIRTIO_MENU as it is needed by VIRTIO_MMIO.
+On 22-05-31 08:26:28, ira.weiny@intel.com wrote:
+> From: Ira Weiny <ira.weiny@intel.com>
 > 
-> Add an ending period at the end the virt machine help message.
+> Each CXL device may have multiple DOE mailbox capabilities and each
+> mailbox may support multiple protocols.  CXL port devices need to query
+> the CDAT information specifically.
 > 
-> Reported-by: Randy Dunlap <rdunlap@infradead.org>
-> Signed-off-by: Laurent Vivier <laurent@vivier.eu>
-
-Tested-by: Randy Dunlap <rdunlap@infradead.org>
-Acked-by: Randy Dunlap <rdunlap@infradead.org>
-
-Thanks.
-
+> Search the DOE mailboxes for one which supports the CDAT protocol.
+> Cache that mailbox to be used for future queries.
+> 
+> Only support memory devices at this time.
+> 
+> Signed-off-by: Ira Weiny <ira.weiny@intel.com>
+> 
 > ---
->  arch/m68k/Kconfig.machine | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+> Changes from V8
+> 	Incorporate feedback from Jonathan
+> 	Move all this to the cxl_port object
 > 
-> diff --git a/arch/m68k/Kconfig.machine b/arch/m68k/Kconfig.machine
-> index a1042568b9ad..4fbe57de1851 100644
-> --- a/arch/m68k/Kconfig.machine
-> +++ b/arch/m68k/Kconfig.machine
-> @@ -161,10 +161,11 @@ config VIRT
->  	select RTC_CLASS
->  	select RTC_DRV_GOLDFISH
->  	select TTY
-> +	select VIRTIO_MENU
->  	select VIRTIO_MMIO
->  	help
->  	  This options enable a pure virtual machine based on m68k,
-> -	  VIRTIO MMIO devices and GOLDFISH interfaces (TTY, RTC, PIC)
-> +	  VIRTIO MMIO devices and GOLDFISH interfaces (TTY, RTC, PIC).
+> Changes from V7
+> 	Minor code clean ups
+> 
+> Changes from V6
+> 	Adjust for aux devices being a CXL only concept
+> 	Update commit msg.
+> 	Ensure devices iterated by auxiliary_find_device() are checked
+> 		to be DOE devices prior to checking for the CDAT
+> 		protocol
+> 	From Ben
+> 		Ensure reference from auxiliary_find_device() is dropped
+> ---
+>  drivers/cxl/core/pci.c  | 28 ++++++++++++++++++++++++++++
+>  drivers/cxl/core/port.c |  2 ++
+>  drivers/cxl/cxl.h       |  2 ++
+>  drivers/cxl/cxlpci.h    |  1 +
+>  4 files changed, 33 insertions(+)
+> 
+> diff --git a/drivers/cxl/core/pci.c b/drivers/cxl/core/pci.c
+> index c4c99ff7b55e..5497a65bdcf3 100644
+> --- a/drivers/cxl/core/pci.c
+> +++ b/drivers/cxl/core/pci.c
+> @@ -4,11 +4,14 @@
+>  #include <linux/device.h>
+>  #include <linux/delay.h>
+>  #include <linux/pci.h>
+> +#include <linux/pci-doe.h>
+>  #include <cxlpci.h>
+>  #include <cxlmem.h>
+>  #include <cxl.h>
+>  #include "core.h"
 >  
->  config PILOT
->  	bool
+> +#define CXL_DOE_PROTOCOL_TABLE_ACCESS 2
+> +
+>  /**
+>   * DOC: cxl core pci
+>   *
+> @@ -458,3 +461,28 @@ int cxl_hdm_decode_init(struct cxl_dev_state *cxlds, struct cxl_hdm *cxlhdm)
+>  	return 0;
+>  }
+>  EXPORT_SYMBOL_NS_GPL(cxl_hdm_decode_init, CXL);
+> +
+> +void cxl_find_cdat_mb(struct cxl_port *port)
 
--- 
-~Randy
+kdoc would be good for exported symbols IMO. Also if you can come up with a
+better verb than "find" for something that mutates the port's state, I think
+that would be beneficial.
+
+I'm not sure why this is exported yet, but I suppose I'll see soon :-)
+
+> +{
+> +	struct device *dev = port->uport;
+> +	struct cxl_memdev *cxlmd;
+> +	struct cxl_dev_state *cxlds;
+> +	int i;
+> +
+> +	if (!is_cxl_memdev(dev))
+> +		return;
+> +
+> +	cxlmd = to_cxl_memdev(dev);
+> +	cxlds = cxlmd->cxlds;
+> +
+> +	for (i = 0; i < cxlds->num_mbs; i++) {
+> +		struct pci_doe_mb *cur = cxlds->doe_mbs[i];
+> +
+> +		if (pci_doe_supports_prot(cur, PCI_DVSEC_VENDOR_ID_CXL,
+> +					  CXL_DOE_PROTOCOL_TABLE_ACCESS)) {
+> +			port->cdat_mb = cur;
+> +			return;
+> +		}
+> +	}
+> +}
+> +EXPORT_SYMBOL_NS_GPL(cxl_find_cdat_mb, CXL);
+> diff --git a/drivers/cxl/core/port.c b/drivers/cxl/core/port.c
+> index ea60abda6500..2e2bd65c1024 100644
+> --- a/drivers/cxl/core/port.c
+> +++ b/drivers/cxl/core/port.c
+> @@ -461,6 +461,8 @@ struct cxl_port *devm_cxl_add_port(struct device *host, struct device *uport,
+>  	if (IS_ERR(port))
+>  		return port;
+>  
+> +	cxl_find_cdat_mb(port);
+> +
+>  	dev = &port->dev;
+>  	if (is_cxl_memdev(uport))
+>  		rc = dev_set_name(dev, "endpoint%d", port->id);
+> diff --git a/drivers/cxl/cxl.h b/drivers/cxl/cxl.h
+> index 140dc3278cde..0a86be589ffc 100644
+> --- a/drivers/cxl/cxl.h
+> +++ b/drivers/cxl/cxl.h
+> @@ -267,6 +267,7 @@ struct cxl_nvdimm {
+>   * @component_reg_phys: component register capability base address (optional)
+>   * @dead: last ep has been removed, force port re-creation
+>   * @depth: How deep this port is relative to the root. depth 0 is the root.
+> + * @cdat_mb: Mailbox which supports the CDAT protocol
+>   */
+>  struct cxl_port {
+>  	struct device dev;
+> @@ -278,6 +279,7 @@ struct cxl_port {
+>  	resource_size_t component_reg_phys;
+>  	bool dead;
+>  	unsigned int depth;
+> +	struct pci_doe_mb *cdat_mb;
+>  };
+>  
+>  /**
+> diff --git a/drivers/cxl/cxlpci.h b/drivers/cxl/cxlpci.h
+> index fce1c11729c2..366b21bd1a01 100644
+> --- a/drivers/cxl/cxlpci.h
+> +++ b/drivers/cxl/cxlpci.h
+> @@ -74,4 +74,5 @@ static inline resource_size_t cxl_regmap_to_base(struct pci_dev *pdev,
+>  int devm_cxl_port_enumerate_dports(struct cxl_port *port);
+>  struct cxl_dev_state;
+>  int cxl_hdm_decode_init(struct cxl_dev_state *cxlds, struct cxl_hdm *cxlhdm);
+> +void cxl_find_cdat_mb(struct cxl_port *port);
+>  #endif /* __CXL_PCI_H__ */
+> -- 
+> 2.35.1
+> 
