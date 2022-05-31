@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62588C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 18:41:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC584C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 18:41:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347111AbiEaSly (ORCPT
+        id S1347115AbiEaSl5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 14:41:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49506 "EHLO
+        Tue, 31 May 2022 14:41:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347085AbiEaSll (ORCPT
+        with ESMTP id S1347101AbiEaSlq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 14:41:41 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54AC5B4E
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 11:41:39 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id u3so19837735wrg.3
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 11:41:39 -0700 (PDT)
+        Tue, 31 May 2022 14:41:46 -0400
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B47DA451
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 11:41:41 -0700 (PDT)
+Received: by mail-wm1-x330.google.com with SMTP id f23-20020a7bcc17000000b003972dda143eso1734576wmh.3
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 11:41:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=bytedance-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=GyYrzMYdcSF2goCR70E9AdY9237cGTWSWoDyblu5Hto=;
-        b=2rvIVYNwD6PevpWnhzXXXCr8CZ+NoyLRKxabrGzLYHeSnKAdpxQ8h1HvJ6g/VglqWP
-         cnQZ+yWOhq7G+hjEoPArYgCiJfz6H8vdJ+jbZMRLrIqWEWxf3yxQpinkMffzRWFkhMMT
-         HhnVvPDrENgmNcJaGou11Tf7dEiFJF5Qmh4xuXbSbfFvurQzY+gS0T2wT2Om5TQP/yLW
-         K5pzW5C/pW/8qjRdAAlsVX82ebzqioK8G96CEIG8xCjX8eUmmY9DDxuv1yeeuBajNB2x
-         DHYKu5AqDExgpu36tsevh6g3o1Y5g4zDbBZE7f4MIYkIr6GfkyKz5pVYHpMLeIeiC4xn
-         EVZQ==
+        bh=ch0z4GLxWhSAQSUlskRiFrLr2UouERYcjJkCx5IZlDI=;
+        b=2TfKkZK+ERXCPWANm00v7HIrcLwM/59MLtjytZfFqSajfcOfZyGtYJ2YS8+qutVbbJ
+         9YJb7IhXN8weXZ8QwpcpnMT4QBpxWUJ+ybj41/t6yXmO0oGJX7DjAdAagPCei+WJaYLb
+         pI0JuigBY9emmatgiKIRsuITO+Us2gb51yfjJR/HK5Rgtd7WkacpUXovaKlObx0vAAMf
+         yZguppMJHbjIuEuakQogO0ZHLw9RhKZrowqNHIcnXRvuZLpuZkWiiczoow2QLlUmBHz4
+         k4exUWaJL+TfggIrBgHagTD9prC7/1s9C1t9nzTCyRwaW04NLOkaCCFyxyXTRecbxn7c
+         1i9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=GyYrzMYdcSF2goCR70E9AdY9237cGTWSWoDyblu5Hto=;
-        b=RC7r9AKmlXNMcd/BK3qE9ALpgGAJzbCvHMPwNw4tsj7T972Xf+s/WXDOpi9VceXkBk
-         wpxTJcdbe3NFkVhXl75JoN0A1kysYEq3rkk1RaObvOFrLjJBwOSPPyH4UkpuYH3LuI2q
-         dEkCt76tRSw7JiDQejAOPOBKr6tk0J/xBplSTiBvvNq1bK/rYsonevOB7Z7VyZoL/+Ph
-         e8NIj1Vorw25Uce8UUzIOP0CQ7QafJK6u2r5fBFQzb7w4d8NrRWAxQbv7aEEYv8jP+5J
-         xhctNp+ZaYyNYec8InPlFI5PzizR1/kEl8NalRwT5715Vq7XDPuvROdQIPOjB7oMECM4
-         krXw==
-X-Gm-Message-State: AOAM533G+qwPMk55j7nEwtBoXVttxSlZn6LKfgWOHg4GZ6O5Y9SeqgEP
-        jIXPptZN0DH1b15qIZomEhhgXw==
-X-Google-Smtp-Source: ABdhPJx9uvIPQcHnGrm7Y5H8Jcw5DOfOm5cIXrJq76TAyMmoI9XRYWN4SjYmxzRMsMlO+9lrlT6ZHA==
-X-Received: by 2002:adf:d1a8:0:b0:210:2bc3:c3b4 with SMTP id w8-20020adfd1a8000000b002102bc3c3b4mr13231172wrc.54.1654022497955;
-        Tue, 31 May 2022 11:41:37 -0700 (PDT)
+        bh=ch0z4GLxWhSAQSUlskRiFrLr2UouERYcjJkCx5IZlDI=;
+        b=wRRtbzGsFR/hxHUUuwrkVSo2OIdZ7yFYIvkRExYyapMaJ8yXDEbgU2Frgje4yyDQ6+
+         bzhQZrG86by1SSr6rWb9f2WtSyYcR0jUNASM/7oo79sOiEl+Op7GdrqkUn8Pt5MhD0bZ
+         Hwp4V7efWhQGAYRgzPrPcJqkfwamThYQJ4O/dchQr662kpjSWPu8GJuQYErMp9rxJQ1t
+         XofHGgUJJc3Fknzy+Am1Sa73L3pWgEye0rPQQwWzNAkqzIuJtnUATg7b4Vo3UfIYyOLL
+         BbLISC/XD/dzr5s1Pg5ymajye9Y5SCXfxIhvLFmENEGQjZBlWJXtGSIYgDrwXqjKE8Eb
+         O8hg==
+X-Gm-Message-State: AOAM531FrlGrZ6PAgI/exB9lZGD5AOlOG6WrEdKECU5C3/QIbQu2kLf1
+        xwfnyzGkN3JQD/YPADwmW8sKpA==
+X-Google-Smtp-Source: ABdhPJyqFWflMLghxEqXpcoI6WfIprYW+XBaC21a8WFYhSNnxeE3H2E1oWczy/6QRewvyRxJeDWD6Q==
+X-Received: by 2002:a05:600c:4f4e:b0:39c:1bbb:734f with SMTP id m14-20020a05600c4f4e00b0039c1bbb734fmr3690489wmq.116.1654022500477;
+        Tue, 31 May 2022 11:41:40 -0700 (PDT)
 Received: from usaari01.cust.communityfibre.co.uk ([2a02:6b6a:b497:0:359:2800:e38d:e04f])
-        by smtp.gmail.com with ESMTPSA id o16-20020a05600c059000b00397342bcfb7sm2831877wmd.46.2022.05.31.11.41.37
+        by smtp.gmail.com with ESMTPSA id o16-20020a05600c059000b00397342bcfb7sm2831877wmd.46.2022.05.31.11.41.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 May 2022 11:41:37 -0700 (PDT)
+        Tue, 31 May 2022 11:41:40 -0700 (PDT)
 From:   Usama Arif <usama.arif@bytedance.com>
 To:     io-uring@vger.kernel.org, axboe@kernel.dk,
         linux-kernel@vger.kernel.org
 Cc:     fam.zheng@bytedance.com, Usama Arif <usama.arif@bytedance.com>
-Subject: [PATCH 2/5] io_uring: add unlink opcode for current working directory
-Date:   Tue, 31 May 2022 19:41:22 +0100
-Message-Id: <20220531184125.2665210-3-usama.arif@bytedance.com>
+Subject: [PATCH 5/5] io_uring: add link opcode for current working directory
+Date:   Tue, 31 May 2022 19:41:25 +0100
+Message-Id: <20220531184125.2665210-6-usama.arif@bytedance.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220531184125.2665210-1-usama.arif@bytedance.com>
 References: <20220531184125.2665210-1-usama.arif@bytedance.com>
@@ -67,107 +67,118 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 This provides consistency between io_uring and the respective I/O syscall
 and avoids having the user of liburing specify the cwd in sqe for
-IORING_OP_UNLINKAT.
+IORING_OP_LINKAT.
 
 Signed-off-by: Usama Arif <usama.arif@bytedance.com>
 ---
- fs/io_uring.c                 | 22 ++++++++++++++++------
+ fs/io_uring.c                 | 29 ++++++++++++++++++++---------
  include/uapi/linux/io_uring.h |  1 +
- 2 files changed, 17 insertions(+), 6 deletions(-)
+ 2 files changed, 21 insertions(+), 9 deletions(-)
 
 diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 8bf56523ff7f..d38c5f54f6a4 100644
+index 4050377619d3..31dfad3a7312 100644
 --- a/fs/io_uring.c
 +++ b/fs/io_uring.c
-@@ -1308,6 +1308,7 @@ static const struct io_op_def io_op_defs[] = {
- 	},
- 	[IORING_OP_RENAME] = {},
- 	[IORING_OP_RENAMEAT] = {},
-+	[IORING_OP_UNLINK] = {},
- 	[IORING_OP_UNLINKAT] = {},
+@@ -1314,6 +1314,7 @@ static const struct io_op_def io_op_defs[] = {
  	[IORING_OP_MKDIRAT] = {},
+ 	[IORING_OP_SYMLINK] = {},
  	[IORING_OP_SYMLINKAT] = {},
-@@ -1454,6 +1455,8 @@ const char *io_uring_get_opcode(u8 opcode)
- 		return "RENAME";
- 	case IORING_OP_RENAMEAT:
- 		return "RENAMEAT";
-+	case IORING_OP_UNLINK:
-+		return "UNLINK";
- 	case IORING_OP_UNLINKAT:
- 		return "UNLINKAT";
- 	case IORING_OP_MKDIRAT:
-@@ -4847,8 +4850,8 @@ static int io_setxattr(struct io_kiocb *req, unsigned int issue_flags)
++	[IORING_OP_LINK] = {},
+ 	[IORING_OP_LINKAT] = {},
+ 	[IORING_OP_MSG_RING] = {
+ 		.needs_file		= 1,
+@@ -1469,6 +1470,8 @@ const char *io_uring_get_opcode(u8 opcode)
+ 		return "SYMLINK";
+ 	case IORING_OP_SYMLINKAT:
+ 		return "SYMLINKAT";
++	case IORING_OP_LINK:
++		return "LINK";
+ 	case IORING_OP_LINKAT:
+ 		return "LINKAT";
+ 	case IORING_OP_MSG_RING:
+@@ -4991,8 +4994,8 @@ static int io_symlink(struct io_kiocb *req, unsigned int issue_flags)
  	return 0;
  }
  
--static int io_unlinkat_prep(struct io_kiocb *req,
+-static int io_linkat_prep(struct io_kiocb *req,
 -			    const struct io_uring_sqe *sqe)
-+static int io_unlink_prep(struct io_kiocb *req,
++static int io_link_prep(struct io_kiocb *req,
 +			    const struct io_uring_sqe *sqe, bool is_cwd)
  {
- 	struct io_unlink *un = &req->unlink;
- 	const char __user *fname;
-@@ -4858,7 +4861,10 @@ static int io_unlinkat_prep(struct io_kiocb *req,
+ 	struct io_hardlink *lnk = &req->hardlink;
+ 	const char __user *oldf, *newf;
+@@ -5002,8 +5005,12 @@ static int io_linkat_prep(struct io_kiocb *req,
  	if (unlikely(req->flags & REQ_F_FIXED_FILE))
  		return -EBADF;
  
--	un->dfd = READ_ONCE(sqe->fd);
-+	if (is_cwd)
-+		un->dfd = AT_FDCWD;
-+	else
-+		un->dfd = READ_ONCE(sqe->fd);
- 
- 	un->flags = READ_ONCE(sqe->unlink_flags);
- 	if (un->flags & ~AT_REMOVEDIR)
-@@ -4873,7 +4879,7 @@ static int io_unlinkat_prep(struct io_kiocb *req,
+-	lnk->old_dfd = READ_ONCE(sqe->fd);
+-	lnk->new_dfd = READ_ONCE(sqe->len);
++	if (is_cwd) {
++		lnk->old_dfd = lnk->new_dfd = AT_FDCWD;
++	} else {
++		lnk->old_dfd = READ_ONCE(sqe->fd);
++		lnk->new_dfd = READ_ONCE(sqe->len);
++	}
+ 	oldf = u64_to_user_ptr(READ_ONCE(sqe->addr));
+ 	newf = u64_to_user_ptr(READ_ONCE(sqe->addr2));
+ 	lnk->flags = READ_ONCE(sqe->hardlink_flags);
+@@ -5022,7 +5029,7 @@ static int io_linkat_prep(struct io_kiocb *req,
  	return 0;
  }
  
--static int io_unlinkat(struct io_kiocb *req, unsigned int issue_flags)
-+static int io_unlink(struct io_kiocb *req, unsigned int issue_flags)
+-static int io_linkat(struct io_kiocb *req, unsigned int issue_flags)
++static int io_link(struct io_kiocb *req, unsigned int issue_flags)
  {
- 	struct io_unlink *un = &req->unlink;
+ 	struct io_hardlink *lnk = &req->hardlink;
  	int ret;
-@@ -8087,8 +8093,10 @@ static int io_req_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
- 		return io_rename_prep(req, sqe, 1);
- 	case IORING_OP_RENAMEAT:
- 		return io_rename_prep(req, sqe, 0);
-+	case IORING_OP_UNLINK:
-+		return io_unlink_prep(req, sqe, 1);
- 	case IORING_OP_UNLINKAT:
--		return io_unlinkat_prep(req, sqe);
-+		return io_unlink_prep(req, sqe, 0);
- 	case IORING_OP_MKDIRAT:
- 		return io_mkdirat_prep(req, sqe);
+@@ -8117,8 +8124,10 @@ static int io_req_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
+ 		return io_symlink_prep(req, sqe, 1);
  	case IORING_OP_SYMLINKAT:
-@@ -8243,6 +8251,7 @@ static void io_clean_op(struct io_kiocb *req)
- 			putname(req->rename.oldpath);
- 			putname(req->rename.newpath);
+ 		return io_symlink_prep(req, sqe, 0);
++	case IORING_OP_LINK:
++		return io_link_prep(req, sqe, 1);
+ 	case IORING_OP_LINKAT:
+-		return io_linkat_prep(req, sqe);
++		return io_link_prep(req, sqe, 0);
+ 	case IORING_OP_MSG_RING:
+ 		return io_msg_ring_prep(req, sqe);
+ 	case IORING_OP_FSETXATTR:
+@@ -8280,6 +8289,7 @@ static void io_clean_op(struct io_kiocb *req)
+ 			putname(req->symlink.oldpath);
+ 			putname(req->symlink.newpath);
  			break;
-+		case IORING_OP_UNLINK:
- 		case IORING_OP_UNLINKAT:
- 			putname(req->unlink.filename);
- 			break;
-@@ -8409,8 +8418,9 @@ static int io_issue_sqe(struct io_kiocb *req, unsigned int issue_flags)
- 	case IORING_OP_RENAMEAT:
- 		ret = io_rename(req, issue_flags);
++		case IORING_OP_LINK:
+ 		case IORING_OP_LINKAT:
+ 			putname(req->hardlink.oldpath);
+ 			putname(req->hardlink.newpath);
+@@ -8442,14 +8452,15 @@ static int io_issue_sqe(struct io_kiocb *req, unsigned int issue_flags)
  		break;
-+	case IORING_OP_UNLINK:
- 	case IORING_OP_UNLINKAT:
--		ret = io_unlinkat(req, issue_flags);
-+		ret = io_unlink(req, issue_flags);
- 		break;
+ 	case IORING_OP_MKDIR:
  	case IORING_OP_MKDIRAT:
- 		ret = io_mkdirat(req, issue_flags);
+-		ret = io_mkdirat(req, issue_flags);
++		ret = io_mkdir(req, issue_flags);
+ 		break;
+ 	case IORING_OP_SYMLINK:
+ 	case IORING_OP_SYMLINKAT:
+-		ret = io_symlinkat(req, issue_flags);
++		ret = io_symlink(req, issue_flags);
+ 		break;
++	case IORING_OP_LINK:
+ 	case IORING_OP_LINKAT:
+-		ret = io_linkat(req, issue_flags);
++		ret = io_link(req, issue_flags);
+ 		break;
+ 	case IORING_OP_MSG_RING:
+ 		ret = io_msg_ring(req, issue_flags);
 diff --git a/include/uapi/linux/io_uring.h b/include/uapi/linux/io_uring.h
-index 73f4e1c4133d..7828b7183d01 100644
+index 74e6b70638ee..41391a762ad1 100644
 --- a/include/uapi/linux/io_uring.h
 +++ b/include/uapi/linux/io_uring.h
-@@ -190,6 +190,7 @@ enum io_uring_op {
- 	IORING_OP_SOCKET,
- 	IORING_OP_URING_CMD,
- 	IORING_OP_RENAME,
-+	IORING_OP_UNLINK,
+@@ -193,6 +193,7 @@ enum io_uring_op {
+ 	IORING_OP_UNLINK,
+ 	IORING_OP_MKDIR,
+ 	IORING_OP_SYMLINK,
++	IORING_OP_LINK,
  
  	/* this goes last, obviously */
  	IORING_OP_LAST,
