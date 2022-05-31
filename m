@@ -2,252 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CF84C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 22:30:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE191C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 22:31:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348450AbiEaWah (ORCPT
+        id S1348458AbiEaWbJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 18:30:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37136 "EHLO
+        Tue, 31 May 2022 18:31:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348438AbiEaWaa (ORCPT
+        with ESMTP id S243601AbiEaWbG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 18:30:30 -0400
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DFC69E9F0
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 15:30:27 -0700 (PDT)
-Received: by mail-wm1-x333.google.com with SMTP id z17so9912wmf.1
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 15:30:27 -0700 (PDT)
+        Tue, 31 May 2022 18:31:06 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B05949D4F9
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 15:31:04 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-30041bd304bso126449117b3.18
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 15:31:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=SEu3gHBtY6LLTOMN3MmTdHskW6p1TLc/vNEFmAzpufM=;
-        b=Z/vr9xTfUXH4PiY9DvzHip/pwNhMr9h68esOIlIO56GV4apnXgFyOZ4UUCWBHKFYZ7
-         bSlO6x88S/K07DYuXkhEDgxkak3mbCuynYvmAvAXkkyu9RUknWNtE/ln6j2mrNyLuTc5
-         y2kXWbMYjjOt+3x4sRE1U/gdB5r5O5Tfo14sEXjhUruqZuTEWkC4yAUCH3NE/pXzFUPw
-         fcm8OZUg5G1rNEGvLnnU212WcSUCBkBl8R2z71Jf6L3TOaXmoObbqn+VpxmBdRFwyFh3
-         8+oZxQh7463u1FSg/43DMFwRTz9sD8ddsOzS8PXnl1bbUa8T5cgUAub2gGrw3E4Ub6pl
-         LfiQ==
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=h9pooLAkTxOoQOC6qwQxwi4o0N+w6yf1K9YO1/jwitQ=;
+        b=P2Kv1M4KvdGAJiBCHavF1zXIjFqInYmM2DI1iGWKnxmlqf4yDAdLi7aLh8XESxp+NV
+         kMT/InhL1fVBPxrqeqw8rv1dk5rva4csKBxy1Xak1jp0XYN4sAR106MWhGUKDz5FZ30Y
+         KUNHQ2SgPzxl43h9E5DiAs7Y8Kns67FIKC2XcKv69QyrGeZYnuJAjQXUA7M47MeQaeCT
+         Nh5+cG/ZGXBGYEYYLIjA9Q3DNULgoDr5ZLBHN5SkUOd/Sw7f8/nxJ8BoLLorLPv4d8uU
+         nR3yLwABX9I5Czy9JShk3uYFDrduecjAQoG9q3v6ZbQTn2iErZXgJB24T15SWYYSDqTp
+         J9lw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SEu3gHBtY6LLTOMN3MmTdHskW6p1TLc/vNEFmAzpufM=;
-        b=jOdDRGCanVN8O/XdPjYUNUn4F3EhWNjIShnF8XofcdrpwGdeykiqvk6xzBAaOK+lW/
-         M8lSgDo+ri9LdR894Ni7W3kEjFkWPxA2X08eW50iFqVzboEkePj4skv/eaHcgyRC3krt
-         Rd75Ah9d5rnZJBtQ+5o8/BEuBq5IilV4dtUidbySBj9P8LxkyRLSVzTUh9pYt8JyGqto
-         e27KRvMsgJnqaLe61rAkF0sKVX91ntQ8PiV62ky1CgbPxgQ+ta1AeXfkj0TZ2kvdNyED
-         1Q4qoXKPFcjxfPeu/bmfz0Pd5Qi34zH/JRao/ZYfTdna2haQNefr1MvgNroXhgALcUYI
-         d/0A==
-X-Gm-Message-State: AOAM533/IycnPSpPDdmiSUMi+kYF3k25+TeK8UipgL7uachj+1q8sJd5
-        pssrBkhwF44UPW4tukR1tTcUBjyBrCsfvEPa184qRw==
-X-Google-Smtp-Source: ABdhPJxFW3EN2npyN6sNyZol7XaWaELo+D3IYfrKRqzNhGnITUwP8Auj/XlGTdtQdX23iRAndR1ltYZz0vpFCwYSIZg=
-X-Received: by 2002:a05:600c:4f90:b0:394:970a:71bd with SMTP id
- n16-20020a05600c4f9000b00394970a71bdmr26110197wmq.158.1654036225336; Tue, 31
- May 2022 15:30:25 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220531212521.1231133-1-kaleshsingh@google.com>
- <20220531212521.1231133-3-kaleshsingh@google.com> <14f85d24-a9de-9706-32f0-30be4999c71c@oracle.com>
-In-Reply-To: <14f85d24-a9de-9706-32f0-30be4999c71c@oracle.com>
-From:   Kalesh Singh <kaleshsingh@google.com>
-Date:   Tue, 31 May 2022 15:30:14 -0700
-Message-ID: <CAC_TJveDzDaYQKmuLSkGWpnuCW+gvrqdVJqq=wbzoTRjw4OoFw@mail.gmail.com>
-Subject: Re: [PATCH 2/2] procfs: Add 'path' to /proc/<pid>/fdinfo/
-To:     Stephen Brennan <stephen.s.brennan@oracle.com>
-Cc:     Ioannis Ilkos <ilkos@google.com>,
-        "T.J. Mercier" <tjmercier@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        "Cc: Android Kernel" <kernel-team@android.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Hildenbrand <david@redhat.com>,
-        Christoph Anton Mitterer <mail@christoph.anton.mitterer.name>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Colin Cross <ccross@google.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        DRI mailing list <dri-devel@lists.freedesktop.org>,
-        "moderated list:DMA BUFFER SHARING FRAMEWORK" 
-        <linaro-mm-sig@lists.linaro.org>
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=h9pooLAkTxOoQOC6qwQxwi4o0N+w6yf1K9YO1/jwitQ=;
+        b=ekTVXCoO1daHWKXL8eWEJToceyife7yo6ePDBA4/kiWDqzIM8LaIta+AWurB8mcFyV
+         r/UPCq4gaSG2Cf/xy2Ocu4ov3fIkvo50kDrmV2LW2TpC70NFMWSlkSjrth7GZnoJkXGv
+         IjX9kLanqm4wUmF7uMx+2PHuG6JHe6VS0dZAfDWgPHMwjqLmVAUgmF/5UV91XcAvI4xw
+         y345N3FdB6jZw+ZEGix8KSv8YBujId0F8tf1QPyXxcnrpKb5uGe4RXZSColbZ7uLBP0B
+         W3AwUy7iN1WxX6qhlsIw6FvSULbAmrO34XFvibvcRkUdZGOqdGQluUMMycMHM5PrREms
+         +aLg==
+X-Gm-Message-State: AOAM533aaoCATb0/GtdinJyZqfadUiozczLSToMleEnceY6bV9yzgySW
+        RiS2KcYeLQs1QYSG9vkRTOeDT6yz0ts=
+X-Google-Smtp-Source: ABdhPJxR5+9a+rq2QPHmzHo3mWkb9YqhKufREbDYM0yvQ7VUtvm+1tFjkzSNSzzxPLibDeUvrGcZjmJb28w=
+X-Received: from surenb-desktop.mtv.corp.google.com ([2620:15c:211:200:5ba6:9c55:2664:4cc])
+ (user=surenb job=sendgmr) by 2002:a25:e68b:0:b0:65c:7aa5:f901 with SMTP id
+ d133-20020a25e68b000000b0065c7aa5f901mr19116227ybh.147.1654036263852; Tue, 31
+ May 2022 15:31:03 -0700 (PDT)
+Date:   Tue, 31 May 2022 15:30:59 -0700
+Message-Id: <20220531223100.510392-1-surenb@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+Subject: [PATCH RESEND v2 1/2] mm: drop oom code from exit_mmap
+From:   Suren Baghdasaryan <surenb@google.com>
+To:     akpm@linux-foundation.org
+Cc:     mhocko@suse.com, rientjes@google.com, willy@infradead.org,
+        hannes@cmpxchg.org, guro@fb.com, minchan@kernel.org,
+        kirill@shutemov.name, aarcange@redhat.com, brauner@kernel.org,
+        hch@infradead.org, oleg@redhat.com, david@redhat.com,
+        jannh@google.com, shakeelb@google.com, peterx@redhat.com,
+        jhubbard@nvidia.com, shuah@kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-kselftest@vger.kernel.org, kernel-team@android.com,
+        surenb@google.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 31, 2022 at 3:07 PM Stephen Brennan
-<stephen.s.brennan@oracle.com> wrote:
->
-> On 5/31/22 14:25, Kalesh Singh wrote:
-> > In order to identify the type of memory a process has pinned through
-> > its open fds, add the file path to fdinfo output. This allows
-> > identifying memory types based on common prefixes. e.g. "/memfd...",
-> > "/dmabuf...", "/dev/ashmem...".
-> >
-> > Access to /proc/<pid>/fdinfo is governed by PTRACE_MODE_READ_FSCREDS
-> > the same as /proc/<pid>/maps which also exposes the file path of
-> > mappings; so the security permissions for accessing path is consistent
-> > with that of /proc/<pid>/maps.
->
-> Hi Kalesh,
+The primary reason to invoke the oom reaper from the exit_mmap path used
+to be a prevention of an excessive oom killing if the oom victim exit
+races with the oom reaper (see [1] for more details). The invocation has
+moved around since then because of the interaction with the munlock
+logic but the underlying reason has remained the same (see [2]).
 
-Hi Stephen,
+Munlock code is no longer a problem since [3] and there shouldn't be
+any blocking operation before the memory is unmapped by exit_mmap so
+the oom reaper invocation can be dropped. The unmapping part can be done
+with the non-exclusive mmap_sem and the exclusive one is only required
+when page tables are freed.
 
-Thanks for taking a look.
+Remove the oom_reaper from exit_mmap which will make the code easier to
+read. This is really unlikely to make any observable difference although
+some microbenchmarks could benefit from one less branch that needs to be
+evaluated even though it almost never is true.
 
->
-> I think I see the value in the size field, but I'm curious about path,
-> which is available via readlink /proc/<pid>/fd/<n>, since those are
-> symlinks to the file themselves.
+[1] 212925802454 ("mm: oom: let oom_reap_task and exit_mmap run concurrently")
+[2] 27ae357fa82b ("mm, oom: fix concurrent munlock and oom reaper unmap, v3")
+[3] a213e5cf71cb ("mm/munlock: delete munlock_vma_pages_all(), allow oomreap")
 
-This could work if we are root, but the file permissions wouldn't
-allow us to do the readlink on other processes otherwise. We want to
-be able to capture the system state in production environments from
-some trusted process with ptrace read capability.
+Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+Acked-by: Michal Hocko <mhocko@suse.com>
+---
+Notes:
+- Rebased over git://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm
+mm-unstable branch per Andrew's request but applies cleany to Linus' ToT
+- Conflicts with maple-tree patchset. Resolving these was discussed in
+https://lore.kernel.org/all/20220519223438.qx35hbpfnnfnpouw@revolver/
 
->
-> File paths can contain fun characters like newlines or colons, which
-> could make parsing out filenames in this text file... fun. How would your
-> userspace parsing logic handle "/home/stephen/filename\nsize:\t4096"? The
-> readlink(2) API makes that easy already.
+ include/linux/oom.h |  2 --
+ mm/mmap.c           | 31 ++++++++++++-------------------
+ mm/oom_kill.c       |  2 +-
+ 3 files changed, 13 insertions(+), 22 deletions(-)
 
-I think since we have escaped the "\n" (seq_file_path(m, file, "\n")),
-then user space might parse this line like:
+diff --git a/include/linux/oom.h b/include/linux/oom.h
+index 02d1e7bbd8cd..6cdde62b078b 100644
+--- a/include/linux/oom.h
++++ b/include/linux/oom.h
+@@ -106,8 +106,6 @@ static inline vm_fault_t check_stable_address_space(struct mm_struct *mm)
+ 	return 0;
+ }
+ 
+-bool __oom_reap_task_mm(struct mm_struct *mm);
+-
+ long oom_badness(struct task_struct *p,
+ 		unsigned long totalpages);
+ 
+diff --git a/mm/mmap.c b/mm/mmap.c
+index 2b9305ed0dda..b7918e6bb0db 100644
+--- a/mm/mmap.c
++++ b/mm/mmap.c
+@@ -3110,30 +3110,13 @@ void exit_mmap(struct mm_struct *mm)
+ 	/* mm's last user has gone, and its about to be pulled down */
+ 	mmu_notifier_release(mm);
+ 
+-	if (unlikely(mm_is_oom_victim(mm))) {
+-		/*
+-		 * Manually reap the mm to free as much memory as possible.
+-		 * Then, as the oom reaper does, set MMF_OOM_SKIP to disregard
+-		 * this mm from further consideration.  Taking mm->mmap_lock for
+-		 * write after setting MMF_OOM_SKIP will guarantee that the oom
+-		 * reaper will not run on this mm again after mmap_lock is
+-		 * dropped.
+-		 *
+-		 * Nothing can be holding mm->mmap_lock here and the above call
+-		 * to mmu_notifier_release(mm) ensures mmu notifier callbacks in
+-		 * __oom_reap_task_mm() will not block.
+-		 */
+-		(void)__oom_reap_task_mm(mm);
+-		set_bit(MMF_OOM_SKIP, &mm->flags);
+-	}
+-
+-	mmap_write_lock(mm);
++	mmap_read_lock(mm);
+ 	arch_exit_mmap(mm);
+ 
+ 	vma = mm->mmap;
+ 	if (!vma) {
+ 		/* Can happen if dup_mmap() received an OOM */
+-		mmap_write_unlock(mm);
++		mmap_read_unlock(mm);
+ 		return;
+ 	}
+ 
+@@ -3143,6 +3126,16 @@ void exit_mmap(struct mm_struct *mm)
+ 	/* update_hiwater_rss(mm) here? but nobody should be looking */
+ 	/* Use -1 here to ensure all VMAs in the mm are unmapped */
+ 	unmap_vmas(&tlb, vma, 0, -1);
++	mmap_read_unlock(mm);
++
++	/*
++	 * Set MMF_OOM_SKIP to hide this task from the oom killer/reaper
++	 * because the memory has been already freed. Do not bother checking
++	 * mm_is_oom_victim because setting a bit unconditionally is cheaper.
++	 */
++	set_bit(MMF_OOM_SKIP, &mm->flags);
++
++	mmap_write_lock(mm);
+ 	free_pgtables(&tlb, vma, FIRST_USER_ADDRESS, USER_PGTABLES_CEILING);
+ 	tlb_finish_mmu(&tlb);
+ 
+diff --git a/mm/oom_kill.c b/mm/oom_kill.c
+index 8a70bca67c94..98dca2b42357 100644
+--- a/mm/oom_kill.c
++++ b/mm/oom_kill.c
+@@ -538,7 +538,7 @@ static DECLARE_WAIT_QUEUE_HEAD(oom_reaper_wait);
+ static struct task_struct *oom_reaper_list;
+ static DEFINE_SPINLOCK(oom_reaper_lock);
+ 
+-bool __oom_reap_task_mm(struct mm_struct *mm)
++static bool __oom_reap_task_mm(struct mm_struct *mm)
+ {
+ 	struct vm_area_struct *vma;
+ 	bool ret = true;
+-- 
+2.36.1.255.ge46751e96f-goog
 
-if (strncmp(line, "path:\t", 6) == 0)
-        char* path = line + 6;
-
-
-Thanks,
-Kalesh
-
->
-> Is the goal avoiding races (e.g. file descriptor 3 is closed and reopened
-> to a different path between reading fdinfo and stating the fd)?
->
-> Stephen
->
-> > Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
-> > ---
-> >
-> > Changes from rfc:
-> >   - Split adding 'size' and 'path' into a separate patches, per Christian
-> >   - Fix indentation (use tabs) in documentaion, per Randy
-> >
-> >  Documentation/filesystems/proc.rst | 14 ++++++++++++--
-> >  fs/proc/fd.c                       |  4 ++++
-> >  2 files changed, 16 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/Documentation/filesystems/proc.rst b/Documentation/filesystems/proc.rst
-> > index 779c05528e87..591f12d30d97 100644
-> > --- a/Documentation/filesystems/proc.rst
-> > +++ b/Documentation/filesystems/proc.rst
-> > @@ -1886,14 +1886,16 @@ if precise results are needed.
-> >  3.8  /proc/<pid>/fdinfo/<fd> - Information about opened file
-> >  ---------------------------------------------------------------
-> >  This file provides information associated with an opened file. The regular
-> > -files have at least five fields -- 'pos', 'flags', 'mnt_id', 'ino', and 'size'.
-> > +files have at least six fields -- 'pos', 'flags', 'mnt_id', 'ino', 'size',
-> > +and 'path'.
-> >
-> >  The 'pos' represents the current offset of the opened file in decimal
-> >  form [see lseek(2) for details], 'flags' denotes the octal O_xxx mask the
-> >  file has been created with [see open(2) for details] and 'mnt_id' represents
-> >  mount ID of the file system containing the opened file [see 3.5
-> >  /proc/<pid>/mountinfo for details]. 'ino' represents the inode number of
-> > -the file, and 'size' represents the size of the file in bytes.
-> > +the file, 'size' represents the size of the file in bytes, and 'path'
-> > +represents the file path.
-> >
-> >  A typical output is::
-> >
-> > @@ -1902,6 +1904,7 @@ A typical output is::
-> >       mnt_id: 19
-> >       ino:    63107
-> >       size:   0
-> > +     path:   /dev/null
-> >
-> >  All locks associated with a file descriptor are shown in its fdinfo too::
-> >
-> > @@ -1920,6 +1923,7 @@ Eventfd files
-> >       mnt_id: 9
-> >       ino:    63107
-> >       size:   0
-> > +     path:   anon_inode:[eventfd]
-> >       eventfd-count:  5a
-> >
-> >  where 'eventfd-count' is hex value of a counter.
-> > @@ -1934,6 +1938,7 @@ Signalfd files
-> >       mnt_id: 9
-> >       ino:    63107
-> >       size:   0
-> > +     path:   anon_inode:[signalfd]
-> >       sigmask:        0000000000000200
-> >
-> >  where 'sigmask' is hex value of the signal mask associated
-> > @@ -1949,6 +1954,7 @@ Epoll files
-> >       mnt_id: 9
-> >       ino:    63107
-> >       size:   0
-> > +     path:   anon_inode:[eventpoll]
-> >       tfd:        5 events:       1d data: ffffffffffffffff pos:0 ino:61af sdev:7
-> >
-> >  where 'tfd' is a target file descriptor number in decimal form,
-> > @@ -1968,6 +1974,7 @@ For inotify files the format is the following::
-> >       mnt_id: 9
-> >       ino:    63107
-> >       size:   0
-> > +     path:   anon_inode:inotify
-> >       inotify wd:3 ino:9e7e sdev:800013 mask:800afce ignored_mask:0 fhandle-bytes:8 fhandle-type:1 f_handle:7e9e0000640d1b6d
-> >
-> >  where 'wd' is a watch descriptor in decimal form, i.e. a target file
-> > @@ -1992,6 +1999,7 @@ For fanotify files the format is::
-> >       mnt_id: 9
-> >       ino:    63107
-> >       size:   0
-> > +     path:   anon_inode:[fanotify]
-> >       fanotify flags:10 event-flags:0
-> >       fanotify mnt_id:12 mflags:40 mask:38 ignored_mask:40000003
-> >       fanotify ino:4f969 sdev:800013 mflags:0 mask:3b ignored_mask:40000000 fhandle-bytes:8 fhandle-type:1 f_handle:69f90400c275b5b4
-> > @@ -2018,6 +2026,7 @@ Timerfd files
-> >       mnt_id: 9
-> >       ino:    63107
-> >       size:   0
-> > +     path:   anon_inode:[timerfd]
-> >       clockid: 0
-> >       ticks: 0
-> >       settime flags: 01
-> > @@ -2042,6 +2051,7 @@ DMA Buffer files
-> >       mnt_id: 9
-> >       ino:    63107
-> >       size:   32768
-> > +     path:   /dmabuf:
-> >       count:  2
-> >       exp_name:  system-heap
-> >
-> > diff --git a/fs/proc/fd.c b/fs/proc/fd.c
-> > index 464bc3f55759..8889a8ba09d4 100644
-> > --- a/fs/proc/fd.c
-> > +++ b/fs/proc/fd.c
-> > @@ -60,6 +60,10 @@ static int seq_show(struct seq_file *m, void *v)
-> >       seq_printf(m, "ino:\t%lu\n", file_inode(file)->i_ino);
-> >       seq_printf(m, "size:\t%lli\n", (long long)file_inode(file)->i_size);
-> >
-> > +     seq_puts(m, "path:\t");
-> > +     seq_file_path(m, file, "\n");
-> > +     seq_putc(m, '\n');
-> > +
-> >       /* show_fd_locks() never deferences files so a stale value is safe */
-> >       show_fd_locks(m, file, files);
-> >       if (seq_has_overflowed(m))
->
-> --
-> To unsubscribe from this group and stop receiving emails from it, send an email to kernel-team+unsubscribe@android.com.
->
