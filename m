@@ -2,117 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EC9EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 17:25:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46F77C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 17:26:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346534AbiEaRZ3 (ORCPT
+        id S1346539AbiEaR0C (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 13:25:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36436 "EHLO
+        Tue, 31 May 2022 13:26:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346530AbiEaRZW (ORCPT
+        with ESMTP id S229930AbiEaR0A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 13:25:22 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0A9ED91581
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 10:25:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654017920;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=GWVsgvasjKFu7z5I/eXlJvrY6N+EO7MxwgR4Sgm9+Go=;
-        b=aswjErDxYQohuGadGV6DsE6nDma/SIklv7FtHAw+NXFYh8pAUmyeERkWxkQfIYEsxo7k6u
-        2ln3zFqTsw91Z9T525uv0ZJ1sw0HA5MCa7XMBj0dzba9/zrjfQFzxUtU/RO8nJUtnM8pTs
-        lmCVx/wecwuwFgyrQeLjh3OBEO5NY7M=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-519-NvvUCaLROd-r9XE6IdJYBA-1; Tue, 31 May 2022 13:25:15 -0400
-X-MC-Unique: NvvUCaLROd-r9XE6IdJYBA-1
-Received: by mail-wm1-f70.google.com with SMTP id o2-20020a05600c510200b0039747b0216fso1862797wms.0
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 10:25:15 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=GWVsgvasjKFu7z5I/eXlJvrY6N+EO7MxwgR4Sgm9+Go=;
-        b=ZE+6HFGfE51IstTTRzjgkLWiu68Ho+dCX2VC/RHIsPgVIWBQeKKEJ/MyjIT9x0jakG
-         /7qkQ9Xw662Tz2V1NQ0qQ0QcXE7BopHSUIYfT2kAgqRBNOLUsqQb6aOyiVDlLSRPMToy
-         mTJf1jQDz0eSL63ZwpAQDbUZpHfRLGVLHi1F/5+GBcZYjSZ/obpVs+vV1qpJTvw0TtHX
-         wqgL2R7UBTCAw5HN9PkqNfU04DQePd6R0JnjkRKd7dHrBQhdpl1JPELUWmbR+1LQNaK0
-         sFzw+V+bya2KEmAIevkQ2bqV2kG2wlrtnACkucbS8EciWDQ2cNSM1xuDogCjnpWPBLUF
-         iKKA==
-X-Gm-Message-State: AOAM532L3Z8cOSpvLL/NObc2lgkc3rbFQ0/DhxsmFTCGavi+QYb7xvO3
-        kUqCn44iEMDAx7Fo1hZ8Z0SvQXvBGo5Tw1Q78usUyYeo4AqUaQzX9LWSQrX20BeVBI2NUdGUiD/
-        UfAKpM6xTT5l/CNKAHTKN1VKU
-X-Received: by 2002:a05:600c:3b96:b0:397:485a:f5c5 with SMTP id n22-20020a05600c3b9600b00397485af5c5mr23841674wms.185.1654017914732;
-        Tue, 31 May 2022 10:25:14 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwiYyMevH+pTIELsJQyjP042wwEE8MJCwzxhlq/qCMkA32w1acei2/0TVEQQMQyIzGolkgqrQ==
-X-Received: by 2002:a05:600c:3b96:b0:397:485a:f5c5 with SMTP id n22-20020a05600c3b9600b00397485af5c5mr23841652wms.185.1654017914452;
-        Tue, 31 May 2022 10:25:14 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c708:f100:8096:9368:ba52:a341? (p200300cbc708f10080969368ba52a341.dip0.t-ipconnect.de. [2003:cb:c708:f100:8096:9368:ba52:a341])
-        by smtp.gmail.com with ESMTPSA id a7-20020a5d5087000000b0020e608186a5sm11741527wrt.48.2022.05.31.10.25.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 31 May 2022 10:25:12 -0700 (PDT)
-Message-ID: <3e4635bb-7c16-151a-d8ed-27742f0ae673@redhat.com>
-Date:   Tue, 31 May 2022 19:25:11 +0200
+        Tue, 31 May 2022 13:26:00 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F112991543;
+        Tue, 31 May 2022 10:25:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654017959; x=1685553959;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=F1LP91ckbHLgWmDLUjQwFgYUu+IFdFHPe+7fW6HdfRo=;
+  b=LDABc9Azq744XljTi0h38HKy9wS3ndgWlV+Dwt42IFAW5JQDdFk9JJGW
+   K6bD+fNNXEmhvRtkTigWKephMD7ZtSuQ/9qI/xh0cVW5Ok0ahSwZDXxY4
+   pmSi2KowqG4NXXTKv8NI2kH7T+sYsbBbPgdrtk3GEA9DX2rQBRIkm+6f7
+   InmkbMVRRosvgc7yni+pQmT+oRnfZxEuE7XeqEJRgyKvnuMYC+j196N1c
+   FRohlQYFTliNaXh8O+ByHAuH624Mh+clsrigF/ABkoZhIJvpXApcseDUZ
+   wf7yL5tIpH9Z3CykQJ+lbgaSFFWlZBxQZnIDHKTqla3VFLwnQ1U+HqfVG
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10364"; a="255809548"
+X-IronPort-AV: E=Sophos;i="5.91,265,1647327600"; 
+   d="scan'208";a="255809548"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 10:25:59 -0700
+X-IronPort-AV: E=Sophos;i="5.91,265,1647327600"; 
+   d="scan'208";a="551889469"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.198.157])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 10:25:59 -0700
+Date:   Tue, 31 May 2022 10:29:55 -0700
+From:   Jacob Pan <jacob.jun.pan@linux.intel.com>
+To:     Baolu Lu <baolu.lu@linux.intel.com>
+Cc:     "Tian, Kevin" <kevin.tian@intel.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>,
+        Joerg Roedel <joro@8bytes.org>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        "vkoul@kernel.org" <vkoul@kernel.org>,
+        "robin.murphy@arm.com" <robin.murphy@arm.com>,
+        "will@kernel.org" <will@kernel.org>,
+        "Liu, Yi L" <yi.l.liu@intel.com>,
+        "Jiang, Dave" <dave.jiang@intel.com>,
+        "Raj, Ashok" <ashok.raj@intel.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH v4 1/6] iommu: Add a per domain PASID for DMA API
+Message-ID: <20220531102955.6618b540@jacob-builder>
+In-Reply-To: <628aa885-dd12-8bcd-bfc6-446345bf69ed@linux.intel.com>
+References: <20220518182120.1136715-1-jacob.jun.pan@linux.intel.com>
+        <20220518182120.1136715-2-jacob.jun.pan@linux.intel.com>
+        <20220524135034.GU1343366@nvidia.com>
+        <20220524081727.19c2dd6d@jacob-builder>
+        <20220530122247.GY1343366@nvidia.com>
+        <BN9PR11MB52768105FC4FB959298F8A188CDC9@BN9PR11MB5276.namprd11.prod.outlook.com>
+        <628aa885-dd12-8bcd-bfc6-446345bf69ed@linux.intel.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [RFC PATCH 3/3] hugetlb: Lazy page table copies in fork()
-Content-Language: en-US
-To:     Mike Kravetz <mike.kravetz@oracle.com>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Cc:     Muchun Song <songmuchun@bytedance.com>,
-        Michal Hocko <mhocko@suse.com>, Peter Xu <peterx@redhat.com>,
-        Naoya Horiguchi <naoya.horiguchi@linux.dev>,
-        James Houghton <jthoughton@google.com>,
-        Mina Almasry <almasrymina@google.com>,
-        "Aneesh Kumar K . V" <aneesh.kumar@linux.vnet.ibm.com>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-References: <20220527225849.284839-1-mike.kravetz@oracle.com>
- <20220527225849.284839-4-mike.kravetz@oracle.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <20220527225849.284839-4-mike.kravetz@oracle.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 28.05.22 00:58, Mike Kravetz wrote:
-> Lazy page table copying at fork time was introduced with commit
-> d992895ba2b2 ("Lazy page table copies in fork()").  At the time,
-> hugetlb was very new and did not support page faulting.  As a result,
-> it was excluded.  When full page fault support was added for hugetlb,
-> the exclusion was not removed.
+Hi Baolu,
+
+On Tue, 31 May 2022 20:45:28 +0800, Baolu Lu <baolu.lu@linux.intel.com>
+wrote:
+
+> On 2022/5/31 18:12, Tian, Kevin wrote:
+> >>>> +++ b/include/linux/iommu.h
+> >>>> @@ -105,6 +105,8 @@ struct iommu_domain {
+> >>>>   	enum iommu_page_response_code (*iopf_handler)(struct  
+> >> iommu_fault *fault,  
+> >>>>   						      void *data);
+> >>>>   	void *fault_data;
+> >>>> +	ioasid_t pasid;		/* Used for DMA requests
+> >>>> with PASID */
+> >>>> +	atomic_t pasid_users;  
+> >>> These are poorly named, this is really the DMA API global PASID and
+> >>> shouldn't be used for other things.
+> >>>
+> >>>
+> >>>
+> >>> Perhaps I misunderstood, do you mind explaining more?  
+> >> You still haven't really explained what this is for in this patch,
+> >> maybe it just needs a better commit message, or maybe something is
+> >> wrong.
+> >>
+> >> I keep saying the DMA API usage is not special, so why do we need to
+> >> create a new global pasid and refcount? Realistically this is only
+> >> going to be used by IDXD, why can't we just allocate a PASID and
+> >> return it to the driver every time a driver asks for DMA API on PASI
+> >> mode? Why does the core need to do anything special?
+> >>  
+The reason why I store PASID at IOMMU domain is for IOTLB flush within the
+domain. Device driver is not aware of domain level IOTLB flush. We also
+have iova_cookie for each domain which essentially is for RIDPASID.
+
+> > Agree. I guess it was a mistake caused by treating ENQCMD as the
+> > only user although the actual semantics of the invented interfaces
+> > have already evolved to be quite general.
+> > 
+> > This is very similar to what we have been discussing for iommufd.
+> > a PASID is just an additional routing info when attaching a device
+> > to an I/O address space (DMA API in this context) and by default
+> > it should be a per-device resource except when ENQCMD is
+> > explicitly opt in.
+> > 
+> > Hence it's right time for us to develop common facility working
+> > for both this DMA API usage and iommufd, i.e.:
+> > 
+> > for normal PASID attach to a domain, driver:
+> > 
+> > 	allocates a local pasid from device local space;
+> > 	attaches the local pasid to a domain;
+> > 
+> > for PASID attach in particular for ENQCMD, driver:
+> > 
+> > 	allocates a global pasid in system-wide;
+> > 	attaches the global pasid to a domain;
+> > 	set the global pasid in PASID_MSR;
+> > 
+> > In both cases the pasid is stored in the attach data instead of the
+> > domain.
+> > 
+So during IOTLB flush for the domain, do we loop through the attach data?
+
+> > DMA API pasid is no special from above except it needs to allow
+> > one device attached to the same domain twice (one with RID
+> > and the other with RID+PASID).
+> > 
+> > for iommufd those operations are initiated by userspace via
+> > iommufd uAPI.  
 > 
-> Simply remove the check that prevents lazy copying of hugetlb page
-> tables at fork.  Of course, like other mappings this only applies to
-> shared mappings.
+> My understanding is that device driver owns its PASID policy. If ENQCMD
+> is supported on the device, the PASIDs should be allocated through
+> ioasid_alloc(). Otherwise, the whole PASID pool is managed by the device
+> driver.
 > 
-> Lazy page table copying at fork will be less advantageous for hugetlb
-> mappings because:
-> - There are fewer page table entries with hugetlb
-> - hugetlb pmds can be shared instead of copied
+It seems the changes we want for this patchset are:
+1. move ioasid_alloc() from the core to device (allocation scope will be
+based on whether ENQCMD is intended or not)
+2. store pasid in the attach data
+3. use the same iommufd api to attach/set pasid on its default domain
+Am I summarizing correctly?
+
+> For kernel DMA w/ PASID, after the driver has a PASID for this purpose,
+> it can just set the default domain to the PASID on device. There's no
+> need for enable/disable() interfaces.
 > 
-> In any case, completely eliminating the copy at fork time shold speed
-> things up.
-
-+ make hugetlb less special, at least a tiny little bit
+> Best regards,
+> baolu
 
 
-Acked-by: David Hildenbrand <david@redhat.com>
-
--- 
 Thanks,
 
-David / dhildenb
-
+Jacob
