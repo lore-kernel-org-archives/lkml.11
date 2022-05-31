@@ -2,156 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A196C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 12:16:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3A0DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 12:17:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344163AbiEaMQK (ORCPT
+        id S1344112AbiEaMRJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 08:16:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42594 "EHLO
+        Tue, 31 May 2022 08:17:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243140AbiEaMQH (ORCPT
+        with ESMTP id S232906AbiEaMRG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 08:16:07 -0400
-Received: from mail-qv1-xf44.google.com (mail-qv1-xf44.google.com [IPv6:2607:f8b0:4864:20::f44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B87C994C4;
-        Tue, 31 May 2022 05:16:06 -0700 (PDT)
-Received: by mail-qv1-xf44.google.com with SMTP id h18so11765611qvj.11;
-        Tue, 31 May 2022 05:16:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=0sCP0jkvIeE07R1+RmlM9MygA92ez6zp1dtKYb5AvDE=;
-        b=DM+UlGGCjjymtrinrTEP42yV6EtngTwfbFuO4RgI9RVddp2xprIV7OuizKvg7qBR4O
-         yIiFxAwshb/oTw70/jqCpd8M2TuV0KBl489zPAW4HS5GHYOH6OuMyWh9l4U+i1CWb9wL
-         RgN8AqpCbw+KLvXMfNKTnT+/CWROCAOo6uq8OJCg0fyxV4ZUXsaZlyER99RX44wfwpjf
-         3P14iT3Ut2atvcFu3hWGrzj4/iORfBfX60nHVWae2fwDsL6zle/FSBAeoO0UdB61etJK
-         i6VtDrYTEG4JwdEnrXONYBo5IygUdxTfY31ykJ8Cb2KI+syC8Owu19/mTbYV23++OmYk
-         Ll2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=0sCP0jkvIeE07R1+RmlM9MygA92ez6zp1dtKYb5AvDE=;
-        b=gVxM2L+mFGP5wEeIJPnX49e7U+W0/6NlvBj3TH69spKkc03dGiXTFdYXfKq7npzLZu
-         bJgXczo/pk8PCVZY6k//0A/zscfPEtXWZaEYMi1Uo5gEeGbCNf2sOspc2eNSAVWyqeMn
-         8kS/pqa9xlRWLTI2HxIXkOFddGzam06EiPFLGLhlPdWmKjwpfRnRnKkcImY4A2Dl3IuO
-         mPNo1MU/JRJCJXDf0Kr4lqXW44D/eys7OFZNRtUHyAOObT15e6p9rSu2bPfhJ82fT2E2
-         3WQyIotns146XN9UbCUBcHrpbVrrYDM1iGIAOt2A+acz9JLkDYqPNG1QgxaOtzFPsZ6Z
-         mTAw==
-X-Gm-Message-State: AOAM530VQK1WxjWyF4OhlG81Bhh2kbyvRWYFEwCwn3XbwwuCYwwKqa9m
-        IC+1XxboFx1ZMAg2okp4WCP2GfrRLdE=
-X-Google-Smtp-Source: ABdhPJxfRfYt0nV+dDr20o7LwUzTYTfaMj1alulfLmGKs8iiemw4ejZEwn2KjluWB+6QCEcQ6O5kpw==
-X-Received: by 2002:a62:d045:0:b0:518:404d:9dc8 with SMTP id p66-20020a62d045000000b00518404d9dc8mr59548174pfg.60.1653993053493;
-        Tue, 31 May 2022 03:30:53 -0700 (PDT)
-Received: from RD-3580-24288.rt.l (42-72-220-172.emome-ip.hinet.net. [42.72.220.172])
-        by smtp.gmail.com with ESMTPSA id c1-20020a63d501000000b003c14af50631sm10216519pgg.73.2022.05.31.03.30.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 May 2022 03:30:53 -0700 (PDT)
-From:   ChiaEn Wu <peterwu.pub@gmail.com>
-To:     lee.jones@linaro.org, daniel.thompson@linaro.org,
-        jingoohan1@gmail.com, pavel@ucw.cz, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
-        sre@kernel.org, chunfeng.yun@mediatek.com,
-        gregkh@linuxfoundation.org, jic23@kernel.org, lars@metafoo.de,
-        lgirdwood@gmail.com, broonie@kernel.org, linux@roeck-us.net,
-        heikki.krogerus@linux.intel.com, deller@gmx.de
-Cc:     cy_huang@richtek.com, alice_chen@richtek.com,
-        chiaen_wu@richtek.com, dri-devel@lists.freedesktop.org,
-        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-fbdev@vger.kernel.org
-Subject: [PATCH 10/14] dt-bindings: power: supply: Add Mediatek MT6370 Charger binding documentation
-Date:   Tue, 31 May 2022 18:28:05 +0800
-Message-Id: <20220531102809.11976-11-peterwu.pub@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220531102809.11976-1-peterwu.pub@gmail.com>
-References: <20220531102809.11976-1-peterwu.pub@gmail.com>
+        Tue, 31 May 2022 08:17:06 -0400
+Received: from mout-xforward.gmx.net (mout-xforward.gmx.net [82.165.159.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED1091572D
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 05:17:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1653999417;
+        bh=A6zomDaMBgPhaGtT/FtuJTC9T1qzsoqX4CIG6Xm+HO0=;
+        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=Xc0fAPHFeZBkTpEqTBVGygJX4GuscjeERotPJ+BqL/56aTTPnY5R8PeGGikN3awxi
+         0cOkt6JDo+UWCpZaWttrCtNKnzJ3Kx7xNLubv7+eQy2o75goAUWyCOCnJgdp06Ur0/
+         FJdxrWmcTF5PF9eMvF1qsWT+AFUIxCdBmA7qK50s=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [100.120.147.234] ([84.17.52.175]) by mail.gmx.net (mrgmx004
+ [212.227.17.184]) with ESMTPSA (Nemesis) id 1MRTRH-1o8T0u05sj-00NO9R; Tue, 31
+ May 2022 14:16:57 +0200
+Message-ID: <cbde441f-b172-2a01-606d-0f97681a59fb@gmx.fr>
+Date:   Tue, 31 May 2022 14:16:58 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: PROBLEM: with daemon.c after y2038 on 32-bits Kernel
+Content-Language: en-US
+To:     Adhemerval Zanella <adhemerval.zanella@linaro.org>,
+        Arnd Bergmann <arnd@kernel.org>
+Cc:     y2038@lists.linaro.org, libc-alpha@sourceware.org,
+        linux-kernel@vger.kernel.org
+References: <CAK8P3a0bmE03wJ_iELrAMyFvamwd_r5aLsFBH=6=5YaueO=-kg@mail.gmail.com>
+ <CAK8P3a3m5E2-w4sewEnb4WK68T1wduChR6eSUzsaWPicYhKPHQ@mail.gmail.com>
+ <4b83ea18-e106-e7ec-d1d9-daa74aeaf990@linaro.org>
+From:   =?UTF-8?Q?Arnaud_Pana=c3=afotis?= <arnaud.panaiotis@gmx.fr>
+In-Reply-To: <4b83ea18-e106-e7ec-d1d9-daa74aeaf990@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+X-Antivirus: Avast (VPS 220531-2, 31/5/2022), Outbound message
+X-Antivirus-Status: Clean
+X-Provags-ID: V03:K1:X+WtXu9AeUhO3aQKCkObXmLknRAO5bq2KVXF4ajKfsS6doEOfbF
+ +DZMR8tUB4mjdJMotgrfyrl5/IFOd9KZ1m4acDGJmJlovhpTV58EnscdId5Fqyl6ck0tVoN
+ +AQ/Z0DIjrI1TkKxpReVejQcaO6wHWEX2MIw5s6ym5TwqAuLC+7Sj0pJkeWAqU0WrCmV2cE
+ /n/Rywdon4yl0i/g2H5Og==
+X-UI-Out-Filterresults: junk:10;V03:K0:Xq/nOuFRXew=:f2fK9u2CIkMp1G+PWEUq87VI
+ N3sbQoK85SgEd+6asLoAlLJCT6jJF7Hr/eaJ9MHmbuTOOMrQBpjf0RNVdRJiYrNxjyeWocZaE
+ iX+4oX2wDSLG4IClAfybfOdoqOYae9V7H68SckM7WDm0xkFB7aUB3yCXj5f/3X7I6wglL0MfR
+ GOuHIzCZUGUmp6/E4rWGMz11I7K8twgv5ZiQe7w22RZBja21aRtNTAgoYUKJwSkM9F51eYqOo
+ LMLftAJebsfUdi/U6tbAT61tXBf6PMfQ6XjMQNyLUXeHPymMU01xHx61SCOacGYXKnlwYw8NJ
+ kyXE2xRm3Lsd8HEEGzT+TVu4X0DFlY2Hejll6LdroCIXIJ72d7KmJda5VE6c6nzb5QKEox5Yh
+ +IISrh6k7gtToWCYOeAwg+d/dFsQayXAVXJHKxdmOp+ZSYZL4PKHrX7bCv3BYFcgFAcxeqNZ8
+ jcMDMN8sdlHdM6MQjOyh06mCf8ltlqffB0RBQdgDqtHIgtyl36b8zMjCfmtxo0Zkv0xLZMTLt
+ Js/Hm+MjYGVdjzRsaA/1FSlcEbDjx0T3j2Vx4oMxuIc1JjgsTBN/SZDKzF7OZogY/12QfyjqT
+ obzvb8gLCasjBXFNV+r4gvpvg6zmpBC+n+KqDEajhv+wKMoGkhqzgVNaVC1Hk0HDjuHifNB8E
+ O+dEbw3tDEOHTaBxb9ZIdPgzkpJfQAPor+7yf7ZM0fcRiOn8x0BQiJXF6qDQjhGr6nhN/3EDx
+ xcryvRvQbMl/ojcNoqRaXb8bWIrCRsJZhcj4TIc3twxkLWY+XVsvQ3/3UkHZ2MngReztTWsf4
+ F9vIXHbYUfqjzIzB5z5fBp9W8XBpHJP7h92OdF6enh6q5COnIvPppm2Pzex1dZnH9m+vCbZ6F
+ +3cwtYrbIxiYo+YiZ5eTm51Vhe5IVUFYQ8R1Iu1U6F9vjs9jK7DA0L1+F8Ity7Ugb9/5SAuTI
+ y73fEOflLMSzxC3smByCRmMd4ZHvV83lNoCFHMgkMldgCOrtdbDpeSfArSMhzY+n+uFAuFeI8
+ Eom5lnMIVfKyakKKT4EkFwcj8y8MHLViAV/5V1jl/mtgIcxmLdTJ0BorcN8VZbp7YQjnbk5Ie
+ P/RNDpImvVuTNRGV0RpMxNfauKl9BAa+GRihkh8oxMU3z58UKufYuUgKz5ZPbett+X+mjpFUc
+ KPq97HvDrD+v4AOnjVZASTyh
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: ChiaEn Wu <chiaen_wu@richtek.com>
+Hello,
 
-Add Mediatek MT6370 Charger binding documentation.
+On 31/05/2022 12:54, Adhemerval Zanella wrote:
+>
+> On 31/05/2022 05:33, Arnd Bergmann via Libc-alpha wrote:
+>> (cc correct libc-alpha list, sorry for the typo)
+>>
+>> On Tue, May 31, 2022 at 10:24 AM Arnd Bergmann <arnd@kernel.org> wrote:
+>>> On 17/05/2022 09:51, Arnaud Pana=C3=AFotis wrote:
+>>>> I'm working for a client to generate embedded 32-bits Linux Kernel wo=
+rking after y2038 issue.
+>>>>
+>>>> I generated a 5.15 Kernel thought Buildroot with Coreutils 9.0, GCC 1=
+1.2.0, Binutils 2.37, Glibc 2.34-9 and CFLAGS  -D_LARGEFILE_SOURCE -D_FILE=
+_OFFSET_BITS=3D64  -D_TIME_BITS=3D64.
+>>>>
+>>>> I encounter an issue while working with OpenSSH (I initially contacte=
+d them before).
+>>> To clarify: did you build just openssh with  -D_TIME_BITS=3D64, or did
+>>> you build the entire user space this way?
 
-Signed-off-by: ChiaEn Wu <chiaen_wu@richtek.com>
----
- .../power/supply/mediatek,mt6370-charger.yaml | 60 +++++++++++++++++++
- 1 file changed, 60 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/power/supply/mediatek,mt6370-charger.yaml
+I made a patch for the whole Builroot, this way all packages are built
+with it (unless it is filter-out, I had to make few patches).
 
-diff --git a/Documentation/devicetree/bindings/power/supply/mediatek,mt6370-charger.yaml b/Documentation/devicetree/bindings/power/supply/mediatek,mt6370-charger.yaml
-new file mode 100644
-index 000000000000..9d5c4487ca9c
---- /dev/null
-+++ b/Documentation/devicetree/bindings/power/supply/mediatek,mt6370-charger.yaml
-@@ -0,0 +1,60 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/power/supply/mediatek,mt6370-charger.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Mediatek MT6370 Battery Charger
-+
-+maintainers:
-+  - ChiaEn Wu <chiaen_wu@richtek.com>
-+
-+description: |
-+  This module is part of the MT6370 MFD device.
-+  Provides Battery Charger, Boost for OTG devices and BC1.2 detection.
-+
-+properties:
-+  compatible:
-+    const: mediatek,mt6370-charger
-+
-+  interrupts:
-+    description: |
-+      Specify what irqs are needed to be handled by MT6370 Charger driver. IRQ
-+      "MT6370_IRQ_CHG_MIVR", "MT6370_IRQ_ATTACH" and "MT6370_IRQ_OVPCTRL_UVP_D"
-+      are required.
-+    items:
-+      - description: BC1.2 done irq for mt6370 charger
-+      - description: usb plug in irq for mt6370 charger
-+      - description: mivr irq for mt6370 charger
-+
-+  interrupt-names:
-+    items:
-+      - const: attach_i
-+      - const: uvp_d_evt
-+      - const: mivr
-+
-+  io-channels:
-+    description: |
-+      Use ADC channel to read vbus, ibus, ibat, etc., info. Ibus ADC channel
-+      is required.
-+
-+  usb-otg-vbus:
-+    type: object
-+    description: OTG boost regulator.
-+    $ref: /schemas/regulator/regulator.yaml#
-+
-+    properties:
-+      enable-gpio:
-+        maxItems: 1
-+        description: |
-+          Specify a valid 'enable' gpio for the regulator and it's optional
-+
-+required:
-+  - compatible
-+  - interrupts
-+  - interrupt-names
-+  - io-channels
-+
-+additionalProperties: false
-+
-+...
--- 
-2.25.1
+Option is present in build log for daemon.c and sshd.c
+
+>>>
+>>>> After 2038, /usr/sbin/sshd does not create an error but it child does=
+ generate this one:
+>>>> daemon() failed: Value too large for defined data type
+>>>>
+>>>> This happend here in sshd.c:
+>>>>
+>>>> 2019         /*
+>>>> 2020          * If not in debugging mode, not started from inetd and =
+not already
+>>>> 2021          * daemonized (eg re-exec via SIGHUP), disconnect from t=
+he controlling
+>>>> 2022          * terminal, and fork.  The original process exits.
+>>>> 2023          */
+>>>> 2024         already_daemon =3D daemonized();
+>>>> 2025         if (!(debug_flag || inetd_flag || no_daemon_flag || alre=
+ady_daemon)) {
+>>>> 2026
+>>>> 2027                 if (daemon(0, 0) =3D=3D -1)
+>>>> 2028                         fatal("daemon() failed: %.200s", strerro=
+r(errno));
+>>> My guess is that there are parts of glibc that are not fully
+>>> y2038-safe at the moment, but
+>>> merely provide the interfaces for time64 applications.
+>>>
+>>>
+>>> In the glibc code, I see
+>>>
+>>> int
+>>> daemon (int nochdir, int noclose)
+>>> {
+>>> ...
+>>>                  if ((fd =3D __open_nocancel(_PATH_DEVNULL, O_RDWR, 0)=
+) !=3D -1
+>>>                      && (__builtin_expect (__fstat64 (fd, &st), 0)
+>>>                          =3D=3D 0)) {
+>>> ...
+>>>                               } else {
+>>>                          __close_nocancel_nostatus (fd);
+>>>                          return -1;
+>>>                  }
+>>>       return (0);
+>>> }
+> Thanks for catching it, I have opened a bug report for it [1] and I will=
+ fix
+> and backport to 2.34 and 2.35.
+>
+> [1] https://sourceware.org/bugzilla/show_bug.cgi?id=3D29203
+Thanks, I'll watch this.
+>
+>>> __fstatat64 (int fd, const char *file, struct stat64 *buf, int flags)
+>>> {
+>>>    struct __stat64_t64 st_t64;
+>>>    return __fstatat64_time64 (fd, file, &st_t64, flags)
+>>>           ?: __cp_stat64_t64_stat64 (&st_t64, buf);
+>>> }
+>>>
+>>> If I'm reading this correctly, daemon() internally uses the time32
+>>> version of 'stat', which fails for files with out-of-range timestamps.
+>>> Are you able to rebuild the ssh binary (or your entire distro, if that=
+'s
+>>> easier) against musl-1.2.x instead of glibc to see if the same thing
+>>> happens there?
+
+Musl did not worked previously for me, not sure for openssh only within
+Buildroot.
+
+I'll test the patch from ticket 29203, probably the easiest solution for m=
+e.
+
+>>>
+>>>         Arnd
+>>>
+>>>> To reproduce:
+>>>>
+>>>> # date -s "2040-05-12"
+>>>> # hwclock --systohc
+>>>> # reboot
+>>>> # /usr/sbin/sshd
+>>>>
+>>>> Note this error occurs only after the reboot, and setting a date befo=
+re 2038 also require a reboot to remove the error.
+>>>>
+>>>> strace and gdb trace linked.
+>>>>
+>>>> Let me know if you need additional information.
+=2D-
+
+*Arnaud PANA=C3=8FOTIS* | Lead Developer Freelance
++33 6 34 82 12 62 | arnaud.panaiotis@gmx.fr <mailto:Arnaud Pana=C3=AFotis
+<arnaud.panaiotis@gmx.fr>>
+
+18 place Jean Moulin - 38000 Grenoble
+APsudo - www.panaiotis.fr <https://www.panaiotis.fr>
+
+=2D-
+L'absence de virus dans ce courrier =C3=A9lectronique a =C3=A9t=C3=A9 v=C3=
+=A9rifi=C3=A9e par le logiciel antivirus Avast.
+https://www.avast.com/antivirus
 
