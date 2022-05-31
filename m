@@ -2,117 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15B33C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 09:08:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC616C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 09:08:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245077AbiEaJIG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 05:08:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48696 "EHLO
+        id S245093AbiEaJIY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 31 May 2022 05:08:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242735AbiEaJID (ORCPT
+        with ESMTP id S235570AbiEaJIX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 05:08:03 -0400
-Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E611655206
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 02:07:59 -0700 (PDT)
-Received: by mail-ot1-x335.google.com with SMTP id r14-20020a056830418e00b0060b8da9ff75so3053227otu.11
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 02:07:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RWsthZPxNDA39U3KIC6LMsBvLuzLbrfSrlsINFHYDcI=;
-        b=GIYO75yR6RxABAavORON5hxUzN4kdiuq7iHSEQU+CYmSKkkfZ8vjYY7xX1gDRJoG5K
-         WA75V3DNHdz/zDQXyHEiAH5srFHNeIsH2HYfdJMpQ9w1XsbSWECD8ZOulAam5RJpg6fY
-         NhnvWk26PwIEleos7OZzKK8rR2pvXqVteUll6hvklGGoXj/S6IspbIDwpd+Ift+Vybjb
-         wEeXzYj5OjZ94nZYdMK7gyTFAIti2MtbG/oejv+cr+8XhQ/mazoM4Ro7zRM68pWVz+zM
-         YKZuF6uX6UrEUrH0DkPcfa89zq0xmnpzrmr6a9G0wxvHQdCMY77aNgspIxpSuNWyDxRN
-         sSTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RWsthZPxNDA39U3KIC6LMsBvLuzLbrfSrlsINFHYDcI=;
-        b=VM24LhbceZ8wBWvfIVkFd5WkDnjzhVPynkKlQdTpCD4VQK1pXoZ1QxjcyYaGAqgDh9
-         PSt/Izviafzi4UuPbDbsaFPOvqx9u2RCQupq7A7m+JBgILsv0FzugJErdxuk2hCWXEOM
-         v7JRTy/T1CYyagYi8rVFmssifqsZDlciJ0ave7emuvniG8OvRNEKCv6Gv46oxGcBjUSU
-         W6xle2Nv6VPrvG0jin76LiDfW05PJ7DeB9XZGF5Y6gjrCKey8Ba6RbSoMgMo0KoPq4L8
-         nEVtovh++M501M8HTY0dlCkjUktShFl3zbk/ZzrYfFPVMi0tH39PqHaNpefcKEHyB84E
-         kfIw==
-X-Gm-Message-State: AOAM533Zkxk9W7ygnaVWWfwU8XwedC3E7jFcz8FoM6utDz2eEnybdX0K
-        A2BemfzOpHp8YjOR8IxApZSq7mtO5yHvlUiDlL+jAg==
-X-Google-Smtp-Source: ABdhPJxVvTrJGlPKkgE3ckW+2BAEYRKazdCH8wFipcEpTVtbBTK4iTzPHd32UxIZGi3IQCROhrDqUirCGPDwLhTbJs0=
-X-Received: by 2002:a9d:6f1a:0:b0:60b:20fd:ca75 with SMTP id
- n26-20020a9d6f1a000000b0060b20fdca75mr13961134otq.126.1653988078875; Tue, 31
- May 2022 02:07:58 -0700 (PDT)
+        Tue, 31 May 2022 05:08:23 -0400
+X-Greylist: delayed 470 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 31 May 2022 02:08:22 PDT
+Received: from pv50p00im-ztbu10011701.me.com (pv50p00im-ztbu10011701.me.com [17.58.6.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D3B655354
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 02:08:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=icloud.com;
+        s=1a1hai; t=1653987629;
+        bh=YoMvvnFy7lQ2o505i+lUJxUjQt62DbIV+yUB4JeZdsc=;
+        h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
+        b=bBHViiyom6RSqB/K6YUJJxjhK6SjoNMIFuT2eiX8vlslzbYyJlBvPfU7F5ViA7G0q
+         dBaS1rZCHnpJarDyhRz1rTVairsrbCGLwyTH31KAtCBsEqMgztT1AaEGgDxqcgsdXJ
+         Dsb+J2Qr4weejmgrCpXlWUJwyOtMjn9LIv6gr3DmlNlt09/9w4wZdtaV84tToWduWI
+         1utb1blDWhy6qm8exMQMBXCAA5aXKG8FAhUulpcevlAqJGl/IwtLCsfAG58A7I5S3y
+         iXgCUGk5AExJgJly246AZywIp/+16GGblpcOC3yNPeYBDrngasFzZXMvClw+6wwiI4
+         LmfDyPqCmAhxA==
+Received: from [10.97.63.88] (pv50p00im-dlb-asmtp-mailmevip.me.com [17.56.9.10])
+        by pv50p00im-ztbu10011701.me.com (Postfix) with ESMTPSA id 19CEBB40348;
+        Tue, 31 May 2022 09:00:26 +0000 (UTC)
+Message-ID: <e0867860-12c6-e958-07de-cfbcf644b9fe@icloud.com>
+Date:   Tue, 31 May 2022 17:00:23 +0800
 MIME-Version: 1.0
-References: <20220517094532.2729049-1-poprdi@google.com>
-In-Reply-To: <20220517094532.2729049-1-poprdi@google.com>
-From:   =?UTF-8?Q?Tam=C3=A1s_Koczka?= <poprdi@google.com>
-Date:   Tue, 31 May 2022 11:07:47 +0200
-Message-ID: <CAPUC6bKo6EdacUVAWaJp+_Z_sEztnv96Li6zLpm-UR=2rZth-w@mail.gmail.com>
-Subject: Re: [PATCH] Bluetooth: Collect kcov coverage from hci_rx_work
-To:     Marcel Holtmann <marcel@holtmann.org>
-Cc:     Andy Nguyen <theflow@google.com>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Aleksandr Nogikh <nogikh@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [syzbot] UBSAN: array-index-out-of-bounds in io_submit_sqes
+Content-Language: en-US
+To:     Jens Axboe <axboe@kernel.dk>,
+        syzbot <syzbot+b6c9b65b6753d333d833@syzkaller.appspotmail.com>,
+        asml.silence@gmail.com, io-uring@vger.kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+References: <000000000000f0b26205e04a183b@google.com>
+ <3d3c6b5f-84cd-cb25-812e-dac77e02ddbf@kernel.dk>
+From:   Hao Xu <haoxu.linux@icloud.com>
+In-Reply-To: <3d3c6b5f-84cd-cb25-812e-dac77e02ddbf@kernel.dk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.874
+ definitions=2022-05-31_03:2022-05-30,2022-05-31 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 clxscore=1011 mlxscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-2009150000 definitions=main-2205310047
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Everyone,
+On 5/31/22 16:45, Jens Axboe wrote:
+> On 5/31/22 1:55 AM, syzbot wrote:
+>> Hello,
+>>
+>> syzbot found the following issue on:
+>>
+>> HEAD commit:    3b46e4e44180 Add linux-next specific files for 20220531
+>> git tree:       linux-next
+>> console output: https://syzkaller.appspot.com/x/log.txt?x=16e151f5f00000
+>> kernel config:  https://syzkaller.appspot.com/x/.config?x=ccb8d66fc9489ef
+>> dashboard link: https://syzkaller.appspot.com/bug?extid=b6c9b65b6753d333d833
+>> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+>>
+>> Unfortunately, I don't have any reproducer for this issue yet.
+>>
+>> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+>> Reported-by: syzbot+b6c9b65b6753d333d833@syzkaller.appspotmail.com
+>>
+>> ================================================================================
+>> ================================================================================
+>> UBSAN: array-index-out-of-bounds in fs/io_uring.c:8860:19
+>> index 75 is out of range for type 'io_op_def [47]'
+> 
+> 'def' is just set here, it's not actually used after 'opcode' has been
+> verified.
+> 
 
-Thank you for reviewing the patch - I hope everything is going well.
+Maybe we can move it to be below the opcode check to comfort UBSAN.
 
-Please feel free to ask me if you need any more information regarding it!
-
-Thank you,
-Tamas
-
-On Tue, May 17, 2022 at 11:45 AM Tamas Koczka <poprdi@google.com> wrote:
->
-> Annotate hci_rx_work() with kcov_remote_start() and kcov_remote_stop()
-> calls, so remote KCOV coverage is collected while processing the rx_q
-> queue which is the main incoming Bluetooth packet queue.
->
-> Coverage is associated with the thread which created the packet skb.
->
-> Signed-off-by: Tamas Koczka <poprdi@google.com>
-> ---
->  net/bluetooth/hci_core.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
->
-> diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-> index 45c2dd2e1590..703722031b8d 100644
-> --- a/net/bluetooth/hci_core.c
-> +++ b/net/bluetooth/hci_core.c
-> @@ -29,6 +29,7 @@
->  #include <linux/rfkill.h>
->  #include <linux/debugfs.h>
->  #include <linux/crypto.h>
-> +#include <linux/kcov.h>
->  #include <linux/property.h>
->  #include <linux/suspend.h>
->  #include <linux/wait.h>
-> @@ -3780,7 +3781,9 @@ static void hci_rx_work(struct work_struct *work)
->
->         BT_DBG("%s", hdev->name);
->
-> -       while ((skb = skb_dequeue(&hdev->rx_q))) {
-> +       for (; (skb = skb_dequeue(&hdev->rx_q)); kcov_remote_stop()) {
-> +               kcov_remote_start_common(skb_get_kcov_handle(skb));
-> +
->                 /* Send copy to monitor */
->                 hci_send_to_monitor(hdev, skb);
->
-> --
-> 2.36.0.550.gb090851708-goog
->
