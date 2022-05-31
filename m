@@ -2,86 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0F5CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 21:19:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AAE0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 21:20:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347936AbiEaVTe (ORCPT
+        id S1347946AbiEaVUQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 17:19:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36502 "EHLO
+        Tue, 31 May 2022 17:20:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347946AbiEaVTc (ORCPT
+        with ESMTP id S239528AbiEaVUO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 17:19:32 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 460359D4DD;
-        Tue, 31 May 2022 14:19:27 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: nfraprado)
-        with ESMTPSA id C06CA1F43F0B
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1654031966;
-        bh=68k5y0jKYIIMSTFMtmsmSALMYTfSSep8zYGcyyvXciU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=kB8pT4aFB5cbKdOyctjFzW6Hekmjw0u2cSQOLAshFZIQ0pRIK1muB9rFlcFy+4Yoc
-         vJvJMBOOwvWF5XZXf9M0ZFg8p+6rVT2ZynREraW+MyNrqlI7HxyG/38GYV8g5S0Qpt
-         wyMyBoiiYvZAzRMqvXaPnLiYgxEKFC6KahgxPsqaQVXffQ2t2OyZxtBma4piAMcRCJ
-         pa70jEWdaBl/3kLXdVRkPZIEWg6cro/JU1n6IBaTNbQOs3aiAHXML92nrTuDF4YPoi
-         WaCUyqnMxES1EOYtUjER5uKX655zDqtNhyxw8Kyq47+Eb0RRsEV/r9jZCPJ4WJjqjb
-         06xP+NOEp36zw==
-Date:   Tue, 31 May 2022 17:19:21 -0400
-From:   =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
-        <nfraprado@collabora.com>
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Cc:     Linus Walleij <linus.walleij@linaro.org>, kernel@collabora.com,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sean Wang <sean.wang@mediatek.com>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH v1 0/2] MT8192 pinctrl properties adjustments
-Message-ID: <20220531211921.uhdd2exxv2uhic6x@notapiano>
-References: <20220525155714.1837360-1-nfraprado@collabora.com>
- <74a6159b-40d0-bbc3-5b4a-ebf6ed98bac7@collabora.com>
+        Tue, 31 May 2022 17:20:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 384617035C;
+        Tue, 31 May 2022 14:20:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C479061348;
+        Tue, 31 May 2022 21:20:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 2D3AFC3411C;
+        Tue, 31 May 2022 21:20:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654032012;
+        bh=GcfQ54dGudm7ZHirEit88epzxfWGn1nphYP+Wy62oEY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Y6kHqXkA9whpiyTh5YyQ+NHKX6etzcrVPPnxpwQRr7E41zclGyy7dr5aV1NDpfOME
+         BsyLxtKY+Y3jKd++8EJF5ao9yEuQJp18/JbxTI2MqFvU0adzBg4f7an2QHIalPRMMq
+         2Jx7YpSiH+76MoHQhs11oVx7gLpju2k+6P4fP5ey92GrriMPrPVrIuU4L8ST8hX6Ci
+         gIOnuZ9cUOmw2KC1W+13r9S2zzRIw1KfJ6FxOEZAhdwIx5CGrcJlMCgK5a71SQFtgh
+         F202sQzeSwIYEquFnMnJFd62b3IxABXBNtlv2iXtgjyU0w5Tt6CbCbPflJgMUeCjXO
+         Wp/t8ZiJM+65w==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0D2B6F0394E;
+        Tue, 31 May 2022 21:20:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <74a6159b-40d0-bbc3-5b4a-ebf6ed98bac7@collabora.com>
+Subject: Re: [RESEND v1] Bluetooth: hci_qca: Return wakeup for qca_wakeup
+From:   patchwork-bot+bluetooth@kernel.org
+Message-Id: <165403201205.25010.12372170867802214338.git-patchwork-notify@kernel.org>
+Date:   Tue, 31 May 2022 21:20:12 +0000
+References: <1653646543-349-1-git-send-email-quic_saluvala@quicinc.com>
+In-Reply-To: <1653646543-349-1-git-send-email-quic_saluvala@quicinc.com>
+To:     Sai Teja Aluvala <quic_saluvala@quicinc.com>
+Cc:     marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com,
+        mka@chromium.org, linux-kernel@vger.kernel.org,
+        linux-bluetooth@vger.kernel.org, quic_hemantg@quicinc.com,
+        quic_bgodavar@quicinc.com, quic_rjliao@quicinc.com,
+        quic_hbandi@quicinc.com, abhishekpandit@chromium.org,
+        mcchou@chromium.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 30, 2022 at 10:34:19AM +0200, AngeloGioacchino Del Regno wrote:
-> Il 25/05/22 17:57, Nícolas F. R. A. Prado ha scritto:
-> > 
-> > The two patches in this series substitute properties in the mt8192
-> > pinctrl dt-binding for ones which have a clearer meaning and are more
-> > standardized. At this point there's no DT using the mt8192 pinctrl
-> > binding, so if such changes are to be made, they need to happen now.
-> > 
-> > 
-> > Nícolas F. R. A. Prado (2):
-> >    dt-bindings: pinctrl: mt8192: Add drive-strength-microamp
-> >    dt-bindings: pinctrl: mt8192: Use generic bias instead of pull-*-adv
-> > 
-> >   .../bindings/pinctrl/pinctrl-mt8192.yaml      | 58 ++++++-------------
-> >   1 file changed, 18 insertions(+), 40 deletions(-)
-> > 
-> 
-> Hey Nic,
-> 
-> As you know, I definitely agree with these changes, but they don't deserve
-> to get any Fixes tag: backporting should be useless in this case... and you
-> anyway aren't fixing a faulty binding.
+Hello:
 
-Alright, I was on the fence on this one, but I can drop the tags for v2.
+This patch was applied to bluetooth/bluetooth-next.git (master)
+by Luiz Augusto von Dentz <luiz.von.dentz@intel.com>:
 
-Thanks,
-Nícolas
-
+On Fri, 27 May 2022 15:45:43 +0530 you wrote:
+> This fixes the return value of qca_wakeup(), since
+> .wakeup work inversely with original .prevent_wake.
 > 
-> Cheers!
-> Angelo
+> Fixes: 4539ca67fe8ed (Bluetooth: Rename driver .prevent_wake to .wakeup)
+> Signed-off-by: Sai Teja Aluvala <quic_saluvala@quicinc.com>
+> ---
+>  drivers/bluetooth/hci_qca.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+
+Here is the summary with links:
+  - [RESEND,v1] Bluetooth: hci_qca: Return wakeup for qca_wakeup
+    https://git.kernel.org/bluetooth/bluetooth-next/c/9271cf2ecc9a
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
