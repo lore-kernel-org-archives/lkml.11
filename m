@@ -2,120 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 733F4C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 02:15:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55DE4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 02:17:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243538AbiEaCO4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 22:14:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35364 "EHLO
+        id S243548AbiEaCRa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 22:17:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234705AbiEaCOx (ORCPT
+        with ESMTP id S234705AbiEaCR1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 22:14:53 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70CD592D3E
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 19:14:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653963292; x=1685499292;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=FWVmcsxA2ui4raYa9LzBDvzmY+HcdfFqPCQKmRv4j1M=;
-  b=EY5KlbJlFkH+THeF6d9BZM3ytpjgP+oOh92GQH3fOJv9ZiVjeAtH5VLl
-   Vsfc4SHahUiou1EbqEEkd3uLyIWibLBlXU12GwM+LB2w/sJXFOnIC5+P3
-   xj/P1wjlFt/+serXVl4GwNBKUSBRh2eY2fseAbE3Dguam/UzvbUOUZdaK
-   +ZWOCAQEsZ8+E2R/QA/lhtH42SJPBD2Bbrm6gJqrKYilYpMeyIHnmRbW9
-   MBXoDxn4pE22ISVLG1OBagsSdUbRo1maaJYeMGyEX2FdoVRMpa185nH+F
-   gCWrzxEN3iRRbp5fFe/8Q6fI4Rpstd+E+HAwla+ER4GJDwUKoAIlLFpN3
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10363"; a="254987977"
-X-IronPort-AV: E=Sophos;i="5.91,263,1647327600"; 
-   d="scan'208";a="254987977"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2022 19:14:52 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,263,1647327600"; 
-   d="scan'208";a="823059146"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 30 May 2022 19:14:51 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nvrPG-0002De-Fm;
-        Tue, 31 May 2022 02:14:50 +0000
-Date:   Tue, 31 May 2022 10:14:05 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [peterz-queue:perf/wip.cleanup 9/10]
- arch/x86/events/intel/core.c:2841:33: error: invalid operands to binary &
- (have 'long unsigned int *' and 'long long unsigned int')
-Message-ID: <202205311009.FeTWYwId-lkp@intel.com>
+        Mon, 30 May 2022 22:17:27 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A46163BE8;
+        Mon, 30 May 2022 19:17:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:In-Reply-To:References;
+        bh=cZUqmeJtYaU0Pqny7S69e3JuJrm04akOK2P4y4OgcwE=; b=KTJFqrY68DyuaDw7XIfCJ8VDvb
+        ZeMfOdBkH74O6PPoKFTVEJHvd7l9Mcr+F/Lrjpj7BmmXo9Ai7PHyMCtNb4zHe4coDHxX0/F4cMj6M
+        bGoR9SUNy+azShmvFGVuroQChJfMegkGXWcRl/aH7+lh4oKpVfcI96UPxfBqFGjT4GDSJxOkb5PYL
+        3YS04a4Z5M2Zcj+pS54GlyBr6A9SG9Q44016A/pWHFsex5rjaaTnboTSJv/8lAY+hhaQZAZEdwBbk
+        yqBce6yzH+2gAy3c+LGA3oRtBZgiVkHiRHrbUSNrQhBth7/bzsc5xt1LS9/QgdfX3cSRfblKwkbQ1
+        eNCdg0Lg==;
+Received: from [2601:1c0:6280:3f0::aa0b] (helo=casper.infradead.org)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nvrRe-004xy5-22; Tue, 31 May 2022 02:17:18 +0000
+From:   Randy Dunlap <rdunlap@infradead.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        Greg Ungerer <gerg@linux-m68k.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        linux-m68k@lists.linux-m68k.org, uclinux-dev@uclinux.org,
+        Angelo Dureghello <angelo@kernel-space.org>
+Subject: [PATCH] m68k: coldfire/device.c: protect FLEXCAN blocks
+Date:   Mon, 30 May 2022 19:17:12 -0700
+Message-Id: <20220531021712.6050-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git perf/wip.cleanup
-head:   d096f17be1e500e9b733118925230e46b4c3a14c
-commit: be787b9861afcf5c89dd697a71367a3b6aae6dca [9/10] perf/x86/intel: Optimize short PEBS counters
-config: x86_64-defconfig (https://download.01.org/0day-ci/archive/20220531/202205311009.FeTWYwId-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-1) 11.3.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git/commit/?id=be787b9861afcf5c89dd697a71367a3b6aae6dca
-        git remote add peterz-queue https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git
-        git fetch --no-tags peterz-queue perf/wip.cleanup
-        git checkout be787b9861afcf5c89dd697a71367a3b6aae6dca
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+When CAN_FLEXCAN=y and M5441x is not set/enabled, there are build
+errors in coldfire/device.c:
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+../arch/m68k/coldfire/device.c:595:26: error: 'MCFFLEXCAN_BASE0' undeclared here (not in a function); did you mean 'MCFDMA_BASE0'?
+  595 |                 .start = MCFFLEXCAN_BASE0,
+../arch/m68k/coldfire/device.c:596:43: error: 'MCFFLEXCAN_SIZE' undeclared here (not in a function)
+  596 |                 .end = MCFFLEXCAN_BASE0 + MCFFLEXCAN_SIZE,
+../arch/m68k/coldfire/device.c:600:26: error: 'MCF_IRQ_IFL0' undeclared here (not in a function); did you mean 'MCF_IRQ_I2C0'?
+  600 |                 .start = MCF_IRQ_IFL0,
+../arch/m68k/coldfire/device.c:605:26: error: 'MCF_IRQ_BOFF0' undeclared here (not in a function); did you mean 'MCF_IRQ_I2C0'?
+  605 |                 .start = MCF_IRQ_BOFF0,
+../arch/m68k/coldfire/device.c:610:26: error: 'MCF_IRQ_ERR0' undeclared here (not in a function); did you mean 'MCF_IRQ_I2C0'?
+  610 |                 .start = MCF_IRQ_ERR0,
 
-All errors (new ones prefixed by >>):
+Protect the FLEXCAN code blocks by checking if MCFFLEXCAN_SIZE
+is defined.
 
-   arch/x86/events/intel/core.c: In function 'intel_pmu_handle_short_pebs':
->> arch/x86/events/intel/core.c:2841:33: error: invalid operands to binary & (have 'long unsigned int *' and 'long long unsigned int')
-    2841 |         if (!(cpuc->active_mask & (1ULL << hwc->idx)))
-         |               ~~~~              ^ ~~~~~~~~~~~~~~~~~~
-         |               |                         |
-         |               long unsigned int *       long long unsigned int
+Fixes: 35a9f9363a89 ("m68k: m5441x: add flexcan support")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: Greg Ungerer <gerg@linux-m68k.org>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: linux-m68k@lists.linux-m68k.org
+Cc: uclinux-dev@uclinux.org
+Cc: Angelo Dureghello <angelo@kernel-space.org>
+---
+ arch/m68k/coldfire/device.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-
-vim +2841 arch/x86/events/intel/core.c
-
-  2834	
-  2835	static void intel_pmu_handle_short_pebs(struct perf_event *event)
-  2836	{
-  2837		struct cpu_hw_events *cpuc = this_cpu_ptr(&cpu_hw_events);
-  2838		struct hw_perf_event *hwc = &event->hw;
-  2839	
-  2840		/* if the event is not enabled; intel_pmu_pebs_enable() DTRT */
-> 2841		if (!(cpuc->active_mask & (1ULL << hwc->idx)))
-  2842			return;
-  2843	
-  2844		WARN_ON_ONCE(cpuc->enabled);
-  2845	
-  2846		if (intel_pmu_is_short_pebs(event)) {
-  2847	
-  2848			/* stripped down intel_pmu_pebs_disable() */
-  2849			cpuc->pebs_enabled &= ~(1ULL << hwc->idx);
-  2850			hwc->config |= ARCH_PERFMON_EVENTSEL_INT;
-  2851	
-  2852			intel_pmu_update_config(event);
-  2853	
-  2854		} else if (!(cpuc->pebs_enabled & (1ULL << hwc->idx))) {
-  2855	
-  2856			/* stripped down intel_pmu_pebs_enable() */
-  2857			hwc->config &= ~ARCH_PERFMON_EVENTSEL_INT;
-  2858			cpuc->pebs_enabled |= (1ULL << hwc->idx);
-  2859	
-  2860			intel_pmu_update_config(event);
-  2861		}
-  2862	}
-  2863	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+--- a/arch/m68k/coldfire/device.c
++++ b/arch/m68k/coldfire/device.c
+@@ -581,7 +581,7 @@ static struct platform_device mcf_esdhc
+ };
+ #endif /* MCFSDHC_BASE */
+ 
+-#if IS_ENABLED(CONFIG_CAN_FLEXCAN)
++#ifdef MCFFLEXCAN_SIZE
+ 
+ #include <linux/can/platform/flexcan.h>
+ 
+@@ -620,7 +620,7 @@ static struct platform_device mcf_flexca
+ 	.resource = mcf5441x_flexcan0_resource,
+ 	.dev.platform_data = &mcf5441x_flexcan_info,
+ };
+-#endif /* IS_ENABLED(CONFIG_CAN_FLEXCAN) */
++#endif /* MCFFLEXCAN_SIZE */
+ 
+ static struct platform_device *mcf_devices[] __initdata = {
+ 	&mcf_uart,
+@@ -657,7 +657,7 @@ static struct platform_device *mcf_devic
+ #ifdef MCFSDHC_BASE
+ 	&mcf_esdhc,
+ #endif
+-#if IS_ENABLED(CONFIG_CAN_FLEXCAN)
++#ifdef MCFFLEXCAN_SIZE
+ 	&mcf_flexcan0,
+ #endif
+ };
