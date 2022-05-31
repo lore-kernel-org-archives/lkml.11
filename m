@@ -2,201 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD0BCC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 13:14:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A1B0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 13:14:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344680AbiEaNOd (ORCPT
+        id S1344651AbiEaNOk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 09:14:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47186 "EHLO
+        Tue, 31 May 2022 09:14:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344646AbiEaNOW (ORCPT
+        with ESMTP id S1344674AbiEaNOa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 09:14:22 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABA7B93459
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 06:14:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654002855; x=1685538855;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=T8180kI4h+7eDKHwEjREjcScPaffRqPWo+geg994vE8=;
-  b=G4Nx3E3OCmM2y8puLsQ+B6Z+wYjIkDW3zbzz9wb2lcuNfb0XWrmnMy5O
-   hS7thZ2/a5/18+Hrc2xvYaqLwpk8W3FyStCan2MJoTkXgmH+Y1PAz9fKX
-   K2Hva7ab+6aV18M4z28dasew34GsHtVZXFMzf/208ywkIzM3LXqgHWbYN
-   TzmulOJZ3zEgxmPMPPI7ee4oTD9y7BnWMyA1QbxhDkbNUYbLFjyS0urZD
-   NcJtKiw6Brq5cgaojRjvLqmSriyNt3LTTZycYdMMHkVYBSM2VNpqgEMNO
-   q85jLUE0Qp9cQk6mVyMe6Cop1BOxpk06FCYrUG+XwSAK5zwgKeczCBddZ
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10363"; a="335907380"
-X-IronPort-AV: E=Sophos;i="5.91,265,1647327600"; 
-   d="scan'208";a="335907380"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 06:14:15 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,265,1647327600"; 
-   d="scan'208";a="666915101"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 31 May 2022 06:14:13 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nw1hM-0002k4-KM;
-        Tue, 31 May 2022 13:14:12 +0000
-Date:   Tue, 31 May 2022 21:13:56 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     KuoHsiang Chou <kuohsiang_chou@aspeedtech.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Thomas Zimmermann <tzimmermann@suse.de>
-Subject: drivers/gpu/drm/ast/ast_dp.c:37:46: sparse: sparse: cast truncates
- bits from constant value (ffffff00 becomes 0)
-Message-ID: <202205312143.Fbn8z9qP-lkp@intel.com>
+        Tue, 31 May 2022 09:14:30 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACB979728D
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 06:14:26 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 3739E21B94;
+        Tue, 31 May 2022 13:14:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1654002865; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=cV/s8ODRud3oWVglCBDUwrUrLfXeHFQRFDXz4o/zOxk=;
+        b=Yp8KtEW8fu1R6+kQT/RmNX93Av1Gab3KwaMDoDaPwI9+FoItS9/IuNxi09vczHvAkkn4fL
+        Q6RvRT2HF8Igoq+0aT+nyRauYNj4uFllo5uX5xeKSaHBlD5vI6JdY7xKeNuB9l1qi1uCfA
+        gz69UF1g1xoYPSQY9Fs6cBaBX4dwzQI=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id DD9C113AA2;
+        Tue, 31 May 2022 13:14:24 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id X/yNNLAUlmI/CAAAMHmgww
+        (envelope-from <jgross@suse.com>); Tue, 31 May 2022 13:14:24 +0000
+Message-ID: <69d69ca2-6b5e-b1bb-ed3f-3a8a8f166923@suse.com>
+Date:   Tue, 31 May 2022 15:14:24 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH] MAINTAINERS: Update Xen maintainership
+Content-Language: en-US
+To:     Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org
+Cc:     sstabellini@kernel.org, oleksandr_tyshchenko@epam.com,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com
+References: <1653674225-10447-1-git-send-email-boris.ostrovsky@oracle.com>
+From:   Juergen Gross <jgross@suse.com>
+In-Reply-To: <1653674225-10447-1-git-send-email-boris.ostrovsky@oracle.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------IGVNTe8sDM9aBfStIJFkHrSI"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   8ab2afa23bd197df47819a87f0265c0ac95c5b6a
-commit: 594e9c04b5864b4b8b151ef4ba9521c59e0f5c54 drm/ast: Create the driver for ASPEED proprietory Display-Port
-date:   4 weeks ago
-config: i386-randconfig-s002 (https://download.01.org/0day-ci/archive/20220531/202205312143.Fbn8z9qP-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-1) 11.3.0
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.4-14-g5a0004b5-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=594e9c04b5864b4b8b151ef4ba9521c59e0f5c54
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 594e9c04b5864b4b8b151ef4ba9521c59e0f5c54
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash drivers/gpu/drm/ast/
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------IGVNTe8sDM9aBfStIJFkHrSI
+Content-Type: multipart/mixed; boundary="------------yQuddWP3Gq7gYW96q7pz0TnT";
+ protected-headers="v1"
+From: Juergen Gross <jgross@suse.com>
+To: Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+ xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org
+Cc: sstabellini@kernel.org, oleksandr_tyshchenko@epam.com,
+ tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+ dave.hansen@linux.intel.com
+Message-ID: <69d69ca2-6b5e-b1bb-ed3f-3a8a8f166923@suse.com>
+Subject: Re: [PATCH] MAINTAINERS: Update Xen maintainership
+References: <1653674225-10447-1-git-send-email-boris.ostrovsky@oracle.com>
+In-Reply-To: <1653674225-10447-1-git-send-email-boris.ostrovsky@oracle.com>
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+--------------yQuddWP3Gq7gYW96q7pz0TnT
+Content-Type: multipart/mixed; boundary="------------QCx2UWGf0ljN140bQk2Zs6Cy"
 
+--------------QCx2UWGf0ljN140bQk2Zs6Cy
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-sparse warnings: (new ones prefixed by >>)
->> drivers/gpu/drm/ast/ast_dp.c:37:46: sparse: sparse: cast truncates bits from constant value (ffffff00 becomes 0)
-   drivers/gpu/drm/ast/ast_dp.c:278:66: sparse: sparse: cast truncates bits from constant value (ffffff00 becomes 0)
-   drivers/gpu/drm/ast/ast_dp.c:280:66: sparse: sparse: cast truncates bits from constant value (ffffff00 becomes 0)
-   drivers/gpu/drm/ast/ast_dp.c:281:66: sparse: sparse: cast truncates bits from constant value (ffffff00 becomes 0)
+T24gMjcuMDUuMjIgMTk6NTcsIEJvcmlzIE9zdHJvdnNreSB3cm90ZToNCj4gRHVlIHRvIHRp
+bWUgY29uc3RyYWludHMgSSBhbSBzdGVwcGluZyBkb3duIGFzIG1haW50YWludGVyLiBJIHdp
+bGwgc3RheQ0KPiBhcyByZXZpZXdlciBmb3IgeDg2IGNvZGUgKGZvciB3aGljaCBjcmVhdGUg
+YSBzZXBhcmF0ZSBjYXRlZ29yeSkuDQo+IA0KPiBTdGVmYW5vIGlzIG5vdyBtYWludGFpbmVy
+IGZvciBYZW4gaHlwZXJ2aXNvciBpbnRlcmZhY2UgYW5kIE9sZWtzYW5kciBoYXMNCj4gZ3Jh
+Y2lvdXNseSBhZ3JlZWQgdG8gYmVjb21lIGEgcmV2aWV3ZXIuDQo+IA0KPiBTaWduZWQtb2Zm
+LWJ5OiBCb3JpcyBPc3Ryb3Zza3kgPGJvcmlzLm9zdHJvdnNreUBvcmFjbGUuY29tPg0KDQpw
+dXNoZWQgdG8geGVuL3RpcC5naXQgZm9yLWxpbnVzLTUuMTkNCg0KDQpKdWVyZ2VuDQo=
+--------------QCx2UWGf0ljN140bQk2Zs6Cy
+Content-Type: application/pgp-keys; name="OpenPGP_0xB0DE9DD628BF132F.asc"
+Content-Disposition: attachment; filename="OpenPGP_0xB0DE9DD628BF132F.asc"
+Content-Description: OpenPGP public key
+Content-Transfer-Encoding: quoted-printable
 
-vim +37 drivers/gpu/drm/ast/ast_dp.c
+-----BEGIN PGP PUBLIC KEY BLOCK-----
 
-     9	
-    10	int ast_astdp_read_edid(struct drm_device *dev, u8 *ediddata)
-    11	{
-    12		struct ast_private *ast = to_ast_private(dev);
-    13		u8 i = 0, j = 0;
-    14	
-    15		/*
-    16		 * CRD1[b5]: DP MCU FW is executing
-    17		 * CRDC[b0]: DP link success
-    18		 * CRDF[b0]: DP HPD
-    19		 * CRE5[b0]: Host reading EDID process is done
-    20		 */
-    21		if (!(ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xD1, ASTDP_MCU_FW_EXECUTING) &&
-    22			ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xDC, ASTDP_LINK_SUCCESS) &&
-    23			ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xDF, ASTDP_HPD) &&
-    24			ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xE5,
-    25									ASTDP_HOST_EDID_READ_DONE_MASK))) {
-    26			goto err_astdp_edid_not_ready;
-    27		}
-    28	
-    29		ast_set_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xE5, (u8) ~ASTDP_HOST_EDID_READ_DONE_MASK,
-    30								0x00);
-    31	
-    32		for (i = 0; i < 32; i++) {
-    33			/*
-    34			 * CRE4[7:0]: Read-Pointer for EDID (Unit: 4bytes); valid range: 0~64
-    35			 */
-    36			ast_set_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xE4,
-  > 37						(u8) ~ASTDP_EDID_READ_POINTER_MASK, (u8) i);
-    38			j = 0;
-    39	
-    40			/*
-    41			 * CRD7[b0]: valid flag for EDID
-    42			 * CRD6[b0]: mirror read pointer for EDID
-    43			 */
-    44			while ((ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xD7,
-    45					ASTDP_EDID_VALID_FLAG_MASK) != 0x01) ||
-    46				(ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xD6,
-    47							ASTDP_EDID_READ_POINTER_MASK) != i)) {
-    48				/*
-    49				 * Delay are getting longer with each retry.
-    50				 * 1. The Delays are often 2 loops when users request "Display Settings"
-    51				 *	  of right-click of mouse.
-    52				 * 2. The Delays are often longer a lot when system resume from S3/S4.
-    53				 */
-    54				mdelay(j+1);
-    55	
-    56				if (!(ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xD1,
-    57								ASTDP_MCU_FW_EXECUTING) &&
-    58					ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xDC,
-    59								ASTDP_LINK_SUCCESS) &&
-    60					ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xDF, ASTDP_HPD))) {
-    61					goto err_astdp_jump_out_loop_of_edid;
-    62				}
-    63	
-    64				j++;
-    65				if (j > 200)
-    66					goto err_astdp_jump_out_loop_of_edid;
-    67			}
-    68	
-    69			*(ediddata) = ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT,
-    70								0xD8, ASTDP_EDID_READ_DATA_MASK);
-    71			*(ediddata + 1) = ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xD9,
-    72									ASTDP_EDID_READ_DATA_MASK);
-    73			*(ediddata + 2) = ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xDA,
-    74									ASTDP_EDID_READ_DATA_MASK);
-    75			*(ediddata + 3) = ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xDB,
-    76									ASTDP_EDID_READ_DATA_MASK);
-    77	
-    78			if (i == 31) {
-    79				/*
-    80				 * For 128-bytes EDID_1.3,
-    81				 * 1. Add the value of Bytes-126 to Bytes-127.
-    82				 *		The Bytes-127 is Checksum. Sum of all 128bytes should
-    83				 *		equal 0	(mod 256).
-    84				 * 2. Modify Bytes-126 to be 0.
-    85				 *		The Bytes-126 indicates the Number of extensions to
-    86				 *		follow. 0 represents noextensions.
-    87				 */
-    88				*(ediddata + 3) = *(ediddata + 3) + *(ediddata + 2);
-    89				*(ediddata + 2) = 0;
-    90			}
-    91	
-    92			ediddata += 4;
-    93		}
-    94	
-    95		ast_set_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xE5, (u8) ~ASTDP_HOST_EDID_READ_DONE_MASK,
-    96								ASTDP_HOST_EDID_READ_DONE);
-    97	
-    98		return 0;
-    99	
-   100	err_astdp_jump_out_loop_of_edid:
-   101		ast_set_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xE5,
-   102								(u8) ~ASTDP_HOST_EDID_READ_DONE_MASK,
-   103								ASTDP_HOST_EDID_READ_DONE);
-   104		return (~(j+256) + 1);
-   105	
-   106	err_astdp_edid_not_ready:
-   107		if (!(ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xD1, ASTDP_MCU_FW_EXECUTING)))
-   108			return (~0xD1 + 1);
-   109		if (!(ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xDC, ASTDP_LINK_SUCCESS)))
-   110			return (~0xDC + 1);
-   111		if (!(ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xDF, ASTDP_HPD)))
-   112			return (~0xDF + 1);
-   113		if (!(ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xE5, ASTDP_HOST_EDID_READ_DONE_MASK)))
-   114			return (~0xE5 + 1);
-   115	
-   116		return	0;
-   117	}
-   118	
+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
+jR/i1DG86lem3iBDXzXsZDn8R38=3D
+=3D2wuH
+-----END PGP PUBLIC KEY BLOCK-----
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+--------------QCx2UWGf0ljN140bQk2Zs6Cy--
+
+--------------yQuddWP3Gq7gYW96q7pz0TnT--
+
+--------------IGVNTe8sDM9aBfStIJFkHrSI
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
+
+-----BEGIN PGP SIGNATURE-----
+
+wsB5BAABCAAjFiEEhRJncuj2BJSl0Jf3sN6d1ii/Ey8FAmKWFLAFAwAAAAAACgkQsN6d1ii/Ey+I
+9AgAkbqfJcwiPxYHzKtNXhHEWQBFjpRa7KlC+K50Mbc/DVP1Xa5jLXeWKy5w5kopAUOjeGWnsN/4
+CzJD0og2mAXbwDWOccqxJjxZEGdKbo3AM5NNWoRlbv8qLnkJIEQHxvBXsYmd7W7u3hui+UJ4zXDz
+bKXspljPx9kgfidSEOOqfewPabN2FXFAYbKc/U5PXFee9FnbE7Wi/E5Bs5IGRKthB7X7Zj/z+3oe
+y2li8aY7PXUHET7MGxqdEOmcZpHrhOZhDHvZFUd7M8eNGtXNJY4LhLRkKOz5IXoKTKeJDV9o248t
+JEy6/1aAce17PSBzx2XTBwtkjvOEofDRRuEU+oG5lw==
+=lWW6
+-----END PGP SIGNATURE-----
+
+--------------IGVNTe8sDM9aBfStIJFkHrSI--
