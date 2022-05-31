@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2506DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 19:40:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F042C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 19:40:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347366AbiEaTko (ORCPT
+        id S1347383AbiEaTkw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 15:40:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37542 "EHLO
+        Tue, 31 May 2022 15:40:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347352AbiEaTk3 (ORCPT
+        with ESMTP id S1347355AbiEaTka (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 15:40:29 -0400
+        Tue, 31 May 2022 15:40:30 -0400
 Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 417A99AE54;
-        Tue, 31 May 2022 12:40:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D34D9C2F4;
+        Tue, 31 May 2022 12:40:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654026022; x=1685562022;
+  t=1654026024; x=1685562024;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=GV+VRKK1DlzSlCK/pPtCVw3nJIfF3KpkCG45l4fGnLE=;
-  b=WWCoWUdifdla7r88m4FQAHSHryaB9lcKW2ZCVFGHcFrrDsdXDKp5GV/k
-   J1tQKhdMKXGSgM4JdOp2wCSeTl/GGMnI5qrDfgyuoDTYWPqoX1RYhXfsG
-   K3QImyxd6RcVnGg0uSdpza56ULwkPQ3jQtn8sFRVPnBDItKeFKU3hB6jL
-   RjcHuSkKY067G+DWPGG3g6gjBL7D6TkcVOOIKJAq/bbiMoMbIFh67eVXr
-   /HYN/GCWX/gsm5g7lQR/ijdHuXaX882Cs6UbV0klchsLZ1ZqUfjTk62Kh
-   re9VcLatc50FOIpM57l+ql0thWcAugE50wS3QSP3Of/EJGG6c/DD4VpfR
+  bh=U4OmCP3LHKW7InpKEoF+9Woh/3DojkjoK/TNX+CJzeA=;
+  b=egUGATtdBauQFz8+/x7c1z7IhmS4VbgS99qRE6SZ1hPET3RaAJ/+EAmC
+   CVYYzu+Q7lWwYXts5dS4VA3RpIjI+g9z6jZvBkQPuAZBP5d7nZf00L7o6
+   7r9DssWSHJrpB4gSUdQVmWKSEzuXbOQpinNAIa+M2T2slIFQK+WLFqZKF
+   xQvrnJa2bRX2sac0ApFOsFYWJHxOTLEnWLaFNxW4WAtIDv2kwhBpx5i1U
+   JloivF4r2joMoopYFvxj4ByrTOGAIGR8eb/tVQNMOZuWbbQnC4xjq2ENo
+   srDInhyd45OnqWKXMLmmnoemcLahBUKfyLu6ur+6TaTNVNMIATl5LLeLt
    g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10364"; a="272935022"
+X-IronPort-AV: E=McAfee;i="6400,9594,10364"; a="272935034"
 X-IronPort-AV: E=Sophos;i="5.91,266,1647327600"; 
-   d="scan'208";a="272935022"
+   d="scan'208";a="272935034"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 12:40:07 -0700
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 12:40:13 -0700
 X-IronPort-AV: E=Sophos;i="5.91,266,1647327600"; 
-   d="scan'208";a="645164199"
+   d="scan'208";a="645164240"
 Received: from maciejwo-mobl1.ger.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.254.36.207])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 12:40:03 -0700
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 12:40:10 -0700
 From:   Kai Huang <kai.huang@intel.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     seanjc@google.com, pbonzini@redhat.com, dave.hansen@intel.com,
@@ -47,9 +47,9 @@ Cc:     seanjc@google.com, pbonzini@redhat.com, dave.hansen@intel.com,
         kirill.shutemov@linux.intel.com,
         sathyanarayanan.kuppuswamy@linux.intel.com,
         isaku.yamahata@intel.com, kai.huang@intel.com
-Subject: [PATCH v4 03/22] cc_platform: Add new attribute to prevent ACPI memory hotplug
-Date:   Wed,  1 Jun 2022 07:39:26 +1200
-Message-Id: <f2bdb5ad3b0076bf93289aa1a8d254decb8e3026.1654025431.git.kai.huang@intel.com>
+Subject: [PATCH v4 05/22] x86/virt/tdx: Prevent hot-add driver managed memory
+Date:   Wed,  1 Jun 2022 07:39:28 +1200
+Message-Id: <b19661b081d502c767fe503920ff8975f11c2012.1654025431.git.kai.huang@intel.com>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <cover.1654025430.git.kai.huang@intel.com>
 References: <cover.1654025430.git.kai.huang@intel.com>
@@ -59,99 +59,143 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Platforms with confidential computing technology may not support ACPI
-memory hotplug when such technology is enabled by the BIOS.  Examples
-include Intel platforms which support Intel Trust Domain Extensions
-(TDX).
+TDX provides increased levels of memory confidentiality and integrity.
+This requires special hardware support for features like memory
+encryption and storage of memory integrity checksums.  Not all memory
+satisfies these requirements.
 
-If the kernel ever receives ACPI memory hotplug event, it is likely a
-BIOS bug.  For ACPI memory hot-add, the kernel should speak out this is
-a BIOS bug and reject the new memory.  For hot-removal, for simplicity
-just assume the kernel cannot continue to work normally, and just BUG().
+As a result, the TDX introduced the concept of a "Convertible Memory
+Region" (CMR).  During boot, the firmware builds a list of all of the
+memory ranges which can provide the TDX security guarantees.  The list
+of these ranges is available to the kernel by querying the TDX module.
 
-Add a new attribute CC_ATTR_ACPI_MEMORY_HOTPLUG_DISABLED to indicate the
-platform doesn't support ACPI memory hotplug, so that kernel can handle
-ACPI memory hotplug events for such platform.
+However those TDX-capable memory regions are not automatically useable
+to the TDX module.  The kernel needs to choose which convertible memory
+regions to be the TDX-usable memory and pass those regions to the TDX
+module when initializing the module.  Once those ranges are passed to
+the TDX module, the TDX-usable memory regions are fixed during module's
+lifetime.
 
-In acpi_memory_device_{add|remove}(), add early check against this
-attribute and handle accordingly if it is set.
+To avoid having to modify the page allocator to distinguish TDX and
+non-TDX memory allocation, this implementation guarantees all pages
+managed by the page allocator are TDX memory.  This means any hot-added
+memory to the page allocator will break such guarantee thus should be
+prevented.
+
+There are basically two memory hot-add cases that need to be prevented:
+ACPI memory hot-add and driver managed memory hot-add.  However, adding
+new memory to ZONE_DEVICE should not be prevented as those pages are not
+managed by the page allocator.  Therefore memremap_pages() variants
+should be allowed although they internally also use memory hotplug
+functions.
+
+ACPI memory hotplug is already prevented.  To prevent driver managed
+memory and still allow memremap_pages() variants to work, add a __weak
+hook to do arch-specific check in add_memory_resource().  Implement the
+x86 version to prevent new memory region from being added when TDX is
+enabled by BIOS.
+
+The __weak arch-specific hook is used instead of a new CC_ATTR similar
+to disable software CPU hotplug.  It is because some driver managed
+memory resources may actually be TDX-capable (such as legacy PMEM, which
+is underneath indeed RAM), and the arch-specific hook can be further
+enhanced to allow those when needed.
+
+Note arch-specific hook for __remove_memory() is not required.  Both
+ACPI hot-removal and driver managed memory removal cannot reach it.
 
 Signed-off-by: Kai Huang <kai.huang@intel.com>
 ---
- drivers/acpi/acpi_memhotplug.c | 23 +++++++++++++++++++++++
- include/linux/cc_platform.h    | 11 +++++++++++
- 2 files changed, 34 insertions(+)
+ arch/x86/mm/init_64.c          | 21 +++++++++++++++++++++
+ include/linux/memory_hotplug.h |  2 ++
+ mm/memory_hotplug.c            | 15 +++++++++++++++
+ 3 files changed, 38 insertions(+)
 
-diff --git a/drivers/acpi/acpi_memhotplug.c b/drivers/acpi/acpi_memhotplug.c
-index 24f662d8bd39..94d6354ea453 100644
---- a/drivers/acpi/acpi_memhotplug.c
-+++ b/drivers/acpi/acpi_memhotplug.c
-@@ -15,6 +15,7 @@
- #include <linux/acpi.h>
- #include <linux/memory.h>
- #include <linux/memory_hotplug.h>
-+#include <linux/cc_platform.h>
+diff --git a/arch/x86/mm/init_64.c b/arch/x86/mm/init_64.c
+index 96d34ebb20a9..ce89cf88a818 100644
+--- a/arch/x86/mm/init_64.c
++++ b/arch/x86/mm/init_64.c
+@@ -55,6 +55,7 @@
+ #include <asm/uv/uv.h>
+ #include <asm/setup.h>
+ #include <asm/ftrace.h>
++#include <asm/tdx.h>
  
- #include "internal.h"
+ #include "mm_internal.h"
  
-@@ -291,6 +292,17 @@ static int acpi_memory_device_add(struct acpi_device *device,
- 	if (!device)
- 		return -EINVAL;
+@@ -972,6 +973,26 @@ int arch_add_memory(int nid, u64 start, u64 size,
+ 	return add_pages(nid, start_pfn, nr_pages, params);
+ }
  
++int arch_memory_add_precheck(int nid, u64 start, u64 size, mhp_t mhp_flags)
++{
++	if (!platform_tdx_enabled())
++		return 0;
++
 +	/*
-+	 * If the confidential computing platform doesn't support ACPI
-+	 * memory hotplug, the BIOS should never deliver such event to
-+	 * the kernel.  Report ACPI CPU hot-add as a BIOS bug and ignore
-+	 * the memory device.
++	 * TDX needs to guarantee all pages managed by the page allocator
++	 * are TDX memory in order to not have to distinguish TDX and
++	 * non-TDX memory allocation.  The kernel needs to pass the
++	 * TDX-usable memory regions to the TDX module when it gets
++	 * initialized.  After that, the TDX-usable memory regions are
++	 * fixed.  This means any memory hot-add to the page allocator
++	 * will break above guarantee thus should be prevented.
 +	 */
-+	if (cc_platform_has(CC_ATTR_ACPI_MEMORY_HOTPLUG_DISABLED)) {
-+		dev_err(&device->dev, "[BIOS bug]: Platform doesn't support ACPI memory hotplug. New memory device ignored.\n");
-+		return -EINVAL;
-+	}
++	pr_err("Unable to add memory [0x%llx, 0x%llx) on TDX enabled platform.\n",
++			start, start + size);
 +
- 	mem_device = kzalloc(sizeof(struct acpi_memory_device), GFP_KERNEL);
- 	if (!mem_device)
- 		return -ENOMEM;
-@@ -334,6 +346,17 @@ static void acpi_memory_device_remove(struct acpi_device *device)
- 	if (!device || !acpi_driver_data(device))
- 		return;
++	return -EINVAL;
++}
++
+ static void __meminit free_pagetable(struct page *page, int order)
+ {
+ 	unsigned long magic;
+diff --git a/include/linux/memory_hotplug.h b/include/linux/memory_hotplug.h
+index 1ce6f8044f1e..306ef4ceb419 100644
+--- a/include/linux/memory_hotplug.h
++++ b/include/linux/memory_hotplug.h
+@@ -325,6 +325,8 @@ extern int add_memory_resource(int nid, struct resource *resource,
+ extern int add_memory_driver_managed(int nid, u64 start, u64 size,
+ 				     const char *resource_name,
+ 				     mhp_t mhp_flags);
++extern int arch_memory_add_precheck(int nid, u64 start, u64 size,
++				    mhp_t mhp_flags);
+ extern void move_pfn_range_to_zone(struct zone *zone, unsigned long start_pfn,
+ 				   unsigned long nr_pages,
+ 				   struct vmem_altmap *altmap, int migratetype);
+diff --git a/mm/memory_hotplug.c b/mm/memory_hotplug.c
+index 416b38ca8def..2ad4b2603c7c 100644
+--- a/mm/memory_hotplug.c
++++ b/mm/memory_hotplug.c
+@@ -1296,6 +1296,17 @@ bool mhp_supports_memmap_on_memory(unsigned long size)
+ 	       IS_ALIGNED(remaining_size, (pageblock_nr_pages << PAGE_SHIFT));
+ }
  
-+	/*
-+	 * The confidential computing platform is broken if ACPI memory
-+	 * hot-removal isn't supported but it happened anyway.  Assume
-+	 * it is not guaranteed that the kernel can continue to work
-+	 * normally.  Just BUG().
-+	 */
-+	if (cc_platform_has(CC_ATTR_ACPI_CPU_HOTPLUG_DISABLED)) {
-+		dev_err(&device->dev, "Platform doesn't support ACPI memory hotplug. BUG().\n");
-+		BUG();
-+	}
++/*
++ * Pre-check whether hot-add memory is allowed before arch_add_memory().
++ *
++ * Arch to provide replacement version if required.
++ */
++int __weak arch_memory_add_precheck(int nid, u64 start, u64 size,
++				    mhp_t mhp_flags)
++{
++	return 0;
++}
 +
- 	mem_device = acpi_driver_data(device);
- 	acpi_memory_remove_memory(mem_device);
- 	acpi_memory_device_free(mem_device);
-diff --git a/include/linux/cc_platform.h b/include/linux/cc_platform.h
-index d07cba2a722c..0ee261db1104 100644
---- a/include/linux/cc_platform.h
-+++ b/include/linux/cc_platform.h
-@@ -93,6 +93,17 @@ enum cc_attr {
- 	 * Examples include TDX platform.
- 	 */
- 	CC_ATTR_ACPI_CPU_HOTPLUG_DISABLED,
-+
-+	/**
-+	 * @CC_ATTR_ACPI_MEMORY_HOTPLUG_DISABLED: ACPI memory hotplug is
-+	 *					  not supported.
-+	 *
-+	 * The platform/os is running does not support ACPI memory
-+	 * hotplug.
-+	 *
-+	 * Examples include TDX platform.
-+	 */
-+	CC_ATTR_ACPI_MEMORY_HOTPLUG_DISABLED,
- };
+ /*
+  * NOTE: The caller must call lock_device_hotplug() to serialize hotplug
+  * and online/offline operations (triggered e.g. by sysfs).
+@@ -1319,6 +1330,10 @@ int __ref add_memory_resource(int nid, struct resource *res, mhp_t mhp_flags)
+ 	if (ret)
+ 		return ret;
  
- #ifdef CONFIG_ARCH_HAS_CC_PLATFORM
++	ret = arch_memory_add_precheck(nid, start, size, mhp_flags);
++	if (ret)
++		return ret;
++
+ 	if (mhp_flags & MHP_NID_IS_MGID) {
+ 		group = memory_group_find_by_id(nid);
+ 		if (!group)
 -- 
 2.35.3
 
