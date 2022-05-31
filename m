@@ -2,96 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6AE9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 16:29:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8817CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 16:31:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346165AbiEaQ3X (ORCPT
+        id S1346164AbiEaQbA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 12:29:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52718 "EHLO
+        Tue, 31 May 2022 12:31:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244326AbiEaQ3T (ORCPT
+        with ESMTP id S244326AbiEaQa7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 12:29:19 -0400
+        Tue, 31 May 2022 12:30:59 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA33862CEE
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 09:29:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A20662BF9
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 09:30:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 85C5C60BA7
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 16:29:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEC2AC385A9;
-        Tue, 31 May 2022 16:29:16 +0000 (UTC)
-Date:   Tue, 31 May 2022 17:29:13 +0100
-From:   Catalin Marinas <catalin.marinas@arm.com>
-To:     Patrick Wang <patrick.wang.shcn@gmail.com>
-Cc:     akpm@linux-foundation.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, yee.lee@mediatek.com
-Subject: Re: [PATCH] mm: kmemleak: check boundary of objects allocated with
- physical address when scan
-Message-ID: <YpZCWbfNE32EzCnz@arm.com>
-References: <20220531150823.1004101-1-patrick.wang.shcn@gmail.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2593E60BA7
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 16:30:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91B0BC385A9;
+        Tue, 31 May 2022 16:30:55 +0000 (UTC)
+From:   Huacai Chen <chenhuacai@loongson.cn>
+To:     Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <maz@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
+        Huacai Chen <chenhuacai@gmail.com>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Huacai Chen <chenhuacai@loongson.cn>
+Subject: [PATCH V2 0/2] irqchip: Adjust to fix build for LoongArch
+Date:   Wed,  1 Jun 2022 00:32:34 +0800
+Message-Id: <20220531163236.2109556-1-chenhuacai@loongson.cn>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220531150823.1004101-1-patrick.wang.shcn@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 31, 2022 at 11:08:23PM +0800, Patrick Wang wrote:
-> @@ -1132,8 +1135,13 @@ EXPORT_SYMBOL(kmemleak_no_scan);
->  void __ref kmemleak_alloc_phys(phys_addr_t phys, size_t size, int min_count,
->  			       gfp_t gfp)
->  {
-> -	if (PHYS_PFN(phys) >= min_low_pfn && PHYS_PFN(phys) < max_low_pfn)
-> -		kmemleak_alloc(__va(phys), size, min_count, gfp);
-> +	pr_debug("%s(0x%p, %zu, %d)\n", __func__, __va(phys), size, min_count);
+As suggested by Marc and Arnd, these two patches are the minimal changes
+required on irqchip's side to make the LoongArch port build, without
+introducing any non-reviewed pieces of code.
 
-I'd print just phys here since that's the function argument.
+V1 -> V2:
+Add a cover letter and fix commit message.
 
-> +	if (kmemleak_enabled && (unsigned long)__va(phys) >= PAGE_OFFSET &&
-> +	    !IS_ERR(__va(phys)))
-> +		/* create object with OBJECT_PHYS flag */
-> +		create_object((unsigned long)__va(phys), size, min_count,
-> +			      gfp, true);
+Huacai Chen:
+ irqchip: Adjust Kconfig for Loongson.
+ irqchip/loongson-liointc: Fix build error for LoongArch。
 
-Do we still need to check for __va(phys) >= PAGE_OFFSET? Also I don't
-think IS_ERR(__va(phys)) makes sense, we can't store an error in a
-physical address. The kmemleak_alloc_phys() function is only called on
-successful allocation, so shouldn't bother with error codes.
+Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
+ drivers/irqchip/Kconfig                | 10 +++++-----
+ drivers/irqchip/irq-loongson-liointc.c |  6 +++++-
+ 2 files changed, 10 insertions(+), 6 deletions(-)
+--
+2.27.0
 
-> @@ -1436,6 +1441,13 @@ static void kmemleak_scan(void)
->  			dump_object_info(object);
->  		}
->  #endif
-> +
-> +		/* outside lowmem, make it black */
-
-Maybe a bit more verbose:
-
-		/* ignore objects outside lowmem (paint them black) */
-
-> +		if (object->flags & OBJECT_PHYS)
-> +			if (PHYS_PFN(__pa((void *)object->pointer)) < min_low_pfn ||
-> +			    PHYS_PFN(__pa((void *)object->pointer)) >= max_low_pfn)
-> +				__paint_it(object, KMEMLEAK_BLACK);
-
-I'd skip the checks if the object is OBJECT_NO_SCAN (side-effect of
-__paint_it()) so that the next scan won't have to go through the __pa()
-checks again. It's also probably more correct to check the upper object
-boundary). Something like:
-
-		if ((object->flags & OBJECT_PHYS) &&
-		    !(object->flags & OBJECT_NO_SCAN)) {
-			unsigned long phys = __pa((void *)object->pointer);
-			if (PHYS_PFN(phys) < min_low_pfn ||
-			    PHYS_PFN(phys + object->size) >= max_low_pfn)
-				__paint_it(object, KMEMLEAK_BLACK);
-		}
-
-Thanks.
-
--- 
-Catalin
