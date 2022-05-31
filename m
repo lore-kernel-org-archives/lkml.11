@@ -2,133 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5770DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 07:27:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D91DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 07:29:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244498AbiEaH1j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 03:27:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58898 "EHLO
+        id S244505AbiEaH3D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 31 May 2022 03:29:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242971AbiEaH1g (ORCPT
+        with ESMTP id S242971AbiEaH3B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 03:27:36 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7951A49F8E;
-        Tue, 31 May 2022 00:27:33 -0700 (PDT)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LC3jq1T7VzjXBy;
-        Tue, 31 May 2022 15:26:23 +0800 (CST)
-Received: from container.huawei.com (10.175.104.82) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 31 May 2022 15:27:29 +0800
-From:   Ziyang Xuan <william.xuanziyang@huawei.com>
-To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <ap420073@gmail.com>
-Subject: [PATCH net v2] macsec: fix UAF bug for real_dev
-Date:   Tue, 31 May 2022 15:45:00 +0800
-Message-ID: <20220531074500.1272846-1-william.xuanziyang@huawei.com>
+        Tue, 31 May 2022 03:29:01 -0400
+Received: from m12-11.163.com (m12-11.163.com [220.181.12.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 415EE793A9
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 00:28:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=NGUDH
+        gG8iVG5OQXyT3DJVTMbEFQi7F2v0GBzMtCTvKE=; b=J3Mp6mC4DOU8h8S0Dqecp
+        xeVldRi7P9WRfVXGRsZOZxwHLtfjN8gByg/SeujOzFfOS+TK6luQoSJT2/ZlRGHg
+        zzsKXB2PSgWtbCvzNy1iRyX62sjOW6R/KZCSJ2faYF/rgDLjCrJUJJRATELIdo0A
+        VR85OAoN+Z5mDIuDQS0pis=
+Received: from carlis (unknown [218.17.89.92])
+        by smtp7 (Coremail) with SMTP id C8CowACXyaCQw5Vi53O0FQ--.54171S2;
+        Tue, 31 May 2022 15:28:16 +0800 (CST)
+From:   Xuezhi Zhang <zhangxuezhi1@coolpad.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        dankamongmen@gmail.com, jcmvbkbc@gmail.com, siglesias@igalia.com,
+        zhangxuezhi1@coolpad.com, igormtorrente@gmail.com
+Cc:     linux-kernel@vger.kernel.org
+Subject: [PATCH] tty: vt: convert sysfs snprintf to sysfs_emit
+Date:   Tue, 31 May 2022 07:28:14 +0000
+Message-Id: <20220531072814.34999-1-zhangxuezhi1@coolpad.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: C8CowACXyaCQw5Vi53O0FQ--.54171S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrZrWxKw1DKryUWFy5Xw13Jwb_yoWkCrc_C3
+        WxZrWfKF48ta1UA3ZrAr4avr9avF4vvF1UXw4qq3yfJrWq93Z7Zr9F9r9xtry5W3ykJFyU
+        Cws7ZFyfursrWjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUnPku7UUUUU==
+X-Originating-IP: [218.17.89.92]
+Sender: llyz108@163.com
+X-CM-SenderInfo: xoo16iiqy6il2tof0z/xtbBORAShV-PNp6tOwAAsQ
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Create a new macsec device but not get reference to real_dev. That can
-not ensure that real_dev is freed after macsec. That will trigger the
-UAF bug for real_dev as following:
+Fix the following coccicheck warnings:
+drivers/tty/vt/vt.c:3942:8-16:
+WARNING: use scnprintf or sprintf
+drivers/tty/vt/vt.c:3950:8-16:
+WARNING: use scnprintf or sprintf
 
-==================================================================
-BUG: KASAN: use-after-free in macsec_get_iflink+0x5f/0x70 drivers/net/macsec.c:3662
-Call Trace:
- ...
- macsec_get_iflink+0x5f/0x70 drivers/net/macsec.c:3662
- dev_get_iflink+0x73/0xe0 net/core/dev.c:637
- default_operstate net/core/link_watch.c:42 [inline]
- rfc2863_policy+0x233/0x2d0 net/core/link_watch.c:54
- linkwatch_do_dev+0x2a/0x150 net/core/link_watch.c:161
-
-Allocated by task 22209:
- ...
- alloc_netdev_mqs+0x98/0x1100 net/core/dev.c:10549
- rtnl_create_link+0x9d7/0xc00 net/core/rtnetlink.c:3235
- veth_newlink+0x20e/0xa90 drivers/net/veth.c:1748
-
-Freed by task 8:
- ...
- kfree+0xd6/0x4d0 mm/slub.c:4552
- kvfree+0x42/0x50 mm/util.c:615
- device_release+0x9f/0x240 drivers/base/core.c:2229
- kobject_cleanup lib/kobject.c:673 [inline]
- kobject_release lib/kobject.c:704 [inline]
- kref_put include/linux/kref.h:65 [inline]
- kobject_put+0x1c8/0x540 lib/kobject.c:721
- netdev_run_todo+0x72e/0x10b0 net/core/dev.c:10327
-
-After commit faab39f63c1f ("net: allow out-of-order netdev unregistration")
-and commit e5f80fcf869a ("ipv6: give an IPv6 dev to blackhole_netdev"), we
-can add dev_hold_track() in macsec_dev_init() and dev_put_track() in
-macsec_free_netdev() to fix the problem.
-
-Fixes: 2bce1ebed17d ("macsec: fix refcnt leak in module exit routine")
-Reported-by: syzbot+d0e94b65ac259c29ce7a@syzkaller.appspotmail.com
-Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
-
+Signed-off-by: Xuezhi Zhang <zhangxuezhi1@coolpad.com>
 ---
-v2:
-  - Add kdoc for new member @dev_tracker.
+ drivers/tty/vt/vt.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
----
- drivers/net/macsec.c | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-index 832f09ac075e..817577e713d7 100644
---- a/drivers/net/macsec.c
-+++ b/drivers/net/macsec.c
-@@ -99,6 +99,7 @@ struct pcpu_secy_stats {
-  * struct macsec_dev - private data
-  * @secy: SecY config
-  * @real_dev: pointer to underlying netdevice
-+ * @dev_tracker: refcount tracker for @real_dev reference
-  * @stats: MACsec device stats
-  * @secys: linked list of SecY's on the underlying device
-  * @gro_cells: pointer to the Generic Receive Offload cell
-@@ -107,6 +108,7 @@ struct pcpu_secy_stats {
- struct macsec_dev {
- 	struct macsec_secy secy;
- 	struct net_device *real_dev;
-+	netdevice_tracker dev_tracker;
- 	struct pcpu_secy_stats __percpu *stats;
- 	struct list_head secys;
- 	struct gro_cells gro_cells;
-@@ -3459,6 +3461,9 @@ static int macsec_dev_init(struct net_device *dev)
- 	if (is_zero_ether_addr(dev->broadcast))
- 		memcpy(dev->broadcast, real_dev->broadcast, dev->addr_len);
+diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+index f8c87c4d7399..7ea7d14e9271 100644
+--- a/drivers/tty/vt/vt.c
++++ b/drivers/tty/vt/vt.c
+@@ -3939,7 +3939,7 @@ static ssize_t show_bind(struct device *dev, struct device_attribute *attr,
+ 	bind = con_is_bound(con->con);
+ 	console_unlock();
  
-+	/* Get macsec's reference to real_dev */
-+	dev_hold_track(real_dev, &macsec->dev_tracker, GFP_KERNEL);
-+
- 	return 0;
+-	return snprintf(buf, PAGE_SIZE, "%i\n", bind);
++	return sysfs_emit(buf, "%i\n", bind);
  }
  
-@@ -3704,6 +3709,8 @@ static void macsec_free_netdev(struct net_device *dev)
- 	free_percpu(macsec->stats);
- 	free_percpu(macsec->secy.tx_sc.stats);
+ static ssize_t show_name(struct device *dev, struct device_attribute *attr,
+@@ -3947,7 +3947,7 @@ static ssize_t show_name(struct device *dev, struct device_attribute *attr,
+ {
+ 	struct con_driver *con = dev_get_drvdata(dev);
  
-+	/* Get rid of the macsec's reference to real_dev */
-+	dev_put_track(macsec->real_dev, &macsec->dev_tracker);
- }
+-	return snprintf(buf, PAGE_SIZE, "%s %s\n",
++	return sysfs_emit(buf, "%s %s\n",
+ 			(con->flag & CON_DRIVER_FLAG_MODULE) ? "(M)" : "(S)",
+ 			 con->desc);
  
- static void macsec_setup(struct net_device *dev)
 -- 
 2.25.1
 
