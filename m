@@ -2,112 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0E9BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 08:30:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AC4CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 08:33:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244878AbiEaIav (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 04:30:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42542 "EHLO
+        id S244886AbiEaIdb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 31 May 2022 04:33:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244867AbiEaIas (ORCPT
+        with ESMTP id S236113AbiEaId1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 04:30:48 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1F6E762137
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 01:30:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653985846;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=dejbYOzfjKF6dMJXhvNBnCnEVYYCsLU8eaE5kLKtEMo=;
-        b=WvwJPdx/xVw36jL3nx9o9TI5Rhw5CaFC7qN1t3WAaZEPivQ3lzucDcCLOTXL8KMpwM96fc
-        r9mHRbyKgy2JL8ARh+1RCkZWCajdW5bRRhcLYzD79f2Ym0xzGUbHTq1I1xQ1nHZSS9CCP5
-        dPrj4z1VIkI6+TQTVpEyqcv7NVhZzC4=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-436-Ej6uU4mePMuU1vbZOWgMYQ-1; Tue, 31 May 2022 04:30:42 -0400
-X-MC-Unique: Ej6uU4mePMuU1vbZOWgMYQ-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Tue, 31 May 2022 04:33:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD1636EB33
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 01:33:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3BDC63C11052;
-        Tue, 31 May 2022 08:30:42 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.8])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5DFBB492C3B;
-        Tue, 31 May 2022 08:30:41 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH] afs: Fix infinite loop found by xfstest generic/676
-From:   David Howells <dhowells@redhat.com>
-To:     torvalds@linux-foundation.org
-Cc:     Marc Dionne <marc.dionne@auristor.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        linux-afs@lists.infradead.org, dhowells@redhat.com,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Tue, 31 May 2022 09:30:40 +0100
-Message-ID: <165398584061.263049.2347678478539579934.stgit@warthog.procyon.org.uk>
-User-Agent: StGit/1.4
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9D973B8104A
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 08:33:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63A2DC3411F
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 08:33:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653986003;
+        bh=m8CVB2IEzTm7IbE0aDktLQaZcFf8WZo00NmKcH+HpWM=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=AV6x2upAr1IKhUAqkgQgxvvgC5gGpwQEauAwETbVfIZAOlsvwjnulXqd0MGJ4yrXl
+         IEpiZC/Qw4WaAJut/wPx73rwcZ4Nukg9MrvXgmrO8+/Jtu4kjUDTjcKW7vxtcw/UH/
+         OqZ6kTyeYMlodpxV57Vswe7bZCJjTIm4GrTf9jEjShR8hjUhwSP43Zo/CB572dwq4J
+         9UDkN7kJoiDI3rtrP4YqPEoRbcTLdGvyquA/milLga9YVrDksrje0Ur8vck+3v1xnM
+         o7SQfNT8J4ZME0BLlNZ4EX78GIIWeLnKua8sHcxaMz5km/A4Q+QdaYfiTdqyV2iZaJ
+         Zc/KAHgShMfdw==
+Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-300628e76f3so131120877b3.12
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 01:33:23 -0700 (PDT)
+X-Gm-Message-State: AOAM5339XqBlten7WGTYL5sim3hzGMrw6yq+Z7/PuetBW0aiKtHuM4ET
+        KmB2cevuxhevNJQTYY4DA4wHDaJZQx0OzGICu8c=
+X-Google-Smtp-Source: ABdhPJwg8kcDi1WcK3gpjtOES2s/3bBp37zt9hfKTAmsG1Ha4F56qHaitCZqHTplCheDbjoctUJducA7nLUPmgYHp3U=
+X-Received: by 2002:a81:28b:0:b0:30c:5e57:fac3 with SMTP id
+ 133-20020a81028b000000b0030c5e57fac3mr8223535ywc.249.1653986002406; Tue, 31
+ May 2022 01:33:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+References: <CAK8P3a0bmE03wJ_iELrAMyFvamwd_r5aLsFBH=6=5YaueO=-kg@mail.gmail.com>
+In-Reply-To: <CAK8P3a0bmE03wJ_iELrAMyFvamwd_r5aLsFBH=6=5YaueO=-kg@mail.gmail.com>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Tue, 31 May 2022 10:33:05 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a3m5E2-w4sewEnb4WK68T1wduChR6eSUzsaWPicYhKPHQ@mail.gmail.com>
+Message-ID: <CAK8P3a3m5E2-w4sewEnb4WK68T1wduChR6eSUzsaWPicYhKPHQ@mail.gmail.com>
+Subject: Re: PROBLEM: with daemon.c after y2038 on 32-bits Kernel
+To:     =?UTF-8?Q?Arnaud_Pana=C3=AFotis?= <arnaud.panaiotis@gmx.fr>
+Cc:     linux-kernel@vger.kernel.org, y2038@lists.linaro.org,
+        libc-alpha@sourceware.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In AFS, a directory is handled as a file that the client downloads and
-parses locally for the purposes of performing lookup and getdents
-operations.  The in-kernel afs filesystem has a number of functions that do
-this.  A directory file is arranged as a series of 2K blocks divided into
-32-byte slots, where a directory entry occupies one or more slots, plus
-each block starts with one or more metadata blocks.
+(cc correct libc-alpha list, sorry for the typo)
 
-When parsing a block, if the last slots are occupied by a dirent that
-occupies more than a single slot and the file position points at a slot
-that's not the initial one, the logic in afs_dir_iterate_block() that skips
-over it won't advance the file pointer to the end of it.  This will cause
-an infinite loop in getdents() as it will keep retrying that block and
-failing to advance beyond the final entry.
-
-Fix this by advancing the file pointer if the next entry will be beyond it
-when we skip a block.
-
-This was found by the generic/676 xfstest but can also be triggered with
-something like:
-
-	~/xfstests-dev/src/t_readdir_3 /xfstest.test/z 4000 1
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: David Howells <dhowells@redhat.com>
-Reviewed-by: Marc Dionne <marc.dionne@auristor.com>
-Tested-by: Marc Dionne <marc.dionne@auristor.com>
-cc: linux-afs@lists.infradead.org
-Link: http://lore.kernel.org/r/165391973497.110268.2939296942213894166.stgit@warthog.procyon.org.uk/
----
-
- fs/afs/dir.c |    5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/fs/afs/dir.c b/fs/afs/dir.c
-index 932e61e28e5d..bdac73554e6e 100644
---- a/fs/afs/dir.c
-+++ b/fs/afs/dir.c
-@@ -463,8 +463,11 @@ static int afs_dir_iterate_block(struct afs_vnode *dvnode,
- 		}
- 
- 		/* skip if starts before the current position */
--		if (offset < curr)
-+		if (offset < curr) {
-+			if (next > curr)
-+				ctx->pos = blkoff + next * sizeof(union afs_xdr_dirent);
- 			continue;
-+		}
- 
- 		/* found the next entry */
- 		if (!dir_emit(ctx, dire->u.name, nlen,
-
-
+On Tue, May 31, 2022 at 10:24 AM Arnd Bergmann <arnd@kernel.org> wrote:
+> On 17/05/2022 09:51, Arnaud Pana=C3=AFotis wrote:
+> > I'm working for a client to generate embedded 32-bits Linux Kernel work=
+ing after y2038 issue.
+> >
+> > I generated a 5.15 Kernel thought Buildroot with Coreutils 9.0, GCC 11.=
+2.0, Binutils 2.37, Glibc 2.34-9 and CFLAGS  -D_LARGEFILE_SOURCE -D_FILE_OF=
+FSET_BITS=3D64  -D_TIME_BITS=3D64.
+> >
+> > I encounter an issue while working with OpenSSH (I initially contacted =
+them before).
+>
+> To clarify: did you build just openssh with  -D_TIME_BITS=3D64, or did
+> you build the entire user space this way?
+>
+> > After 2038, /usr/sbin/sshd does not create an error but it child does g=
+enerate this one:
+> > daemon() failed: Value too large for defined data type
+> >
+> > This happend here in sshd.c:
+> >
+> > 2019         /*
+> > 2020          * If not in debugging mode, not started from inetd and no=
+t already
+> > 2021          * daemonized (eg re-exec via SIGHUP), disconnect from the=
+ controlling
+> > 2022          * terminal, and fork.  The original process exits.
+> > 2023          */
+> > 2024         already_daemon =3D daemonized();
+> > 2025         if (!(debug_flag || inetd_flag || no_daemon_flag || alread=
+y_daemon)) {
+> > 2026
+> > 2027                 if (daemon(0, 0) =3D=3D -1)
+> > 2028                         fatal("daemon() failed: %.200s", strerror(=
+errno));
+>
+> My guess is that there are parts of glibc that are not fully
+> y2038-safe at the moment, but
+> merely provide the interfaces for time64 applications.
+>
+>
+> In the glibc code, I see
+>
+> int
+> daemon (int nochdir, int noclose)
+> {
+> ...
+>                 if ((fd =3D __open_nocancel(_PATH_DEVNULL, O_RDWR, 0)) !=
+=3D -1
+>                     && (__builtin_expect (__fstat64 (fd, &st), 0)
+>                         =3D=3D 0)) {
+> ...
+>                              } else {
+>                         __close_nocancel_nostatus (fd);
+>                         return -1;
+>                 }
+>      return (0);
+> }
+>
+> __fstatat64 (int fd, const char *file, struct stat64 *buf, int flags)
+> {
+>   struct __stat64_t64 st_t64;
+>   return __fstatat64_time64 (fd, file, &st_t64, flags)
+>          ?: __cp_stat64_t64_stat64 (&st_t64, buf);
+> }
+>
+> If I'm reading this correctly, daemon() internally uses the time32
+> version of 'stat', which fails for files with out-of-range timestamps.
+> Are you able to rebuild the ssh binary (or your entire distro, if that's
+> easier) against musl-1.2.x instead of glibc to see if the same thing
+> happens there?
+>
+>        Arnd
+>
+> > To reproduce:
+> >
+> > # date -s "2040-05-12"
+> > # hwclock --systohc
+> > # reboot
+> > # /usr/sbin/sshd
+> >
+> > Note this error occurs only after the reboot, and setting a date before=
+ 2038 also require a reboot to remove the error.
+> >
+> > strace and gdb trace linked.
+> >
+> > Let me know if you need additional information.
