@@ -2,212 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45623C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 07:45:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7409AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 07:50:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244610AbiEaHpR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 03:45:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53226 "EHLO
+        id S244609AbiEaHug (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 31 May 2022 03:50:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238239AbiEaHpO (ORCPT
+        with ESMTP id S232084AbiEaHub (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 03:45:14 -0400
-Received: from conssluserg-02.nifty.com (conssluserg-02.nifty.com [210.131.2.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81C6C8FF85
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 00:45:12 -0700 (PDT)
-Received: from mail-pj1-f43.google.com (mail-pj1-f43.google.com [209.85.216.43]) (authenticated)
-        by conssluserg-02.nifty.com with ESMTP id 24V7iwgc004452
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 16:44:59 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-02.nifty.com 24V7iwgc004452
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1653983099;
-        bh=ccBEOIm01AbJy0JezeMtwiVtryX1u0ySqjj3LLTnOb4=;
+        Tue, 31 May 2022 03:50:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96041201AD;
+        Tue, 31 May 2022 00:50:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3706AB8103F;
+        Tue, 31 May 2022 07:50:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D08ABC341C0;
+        Tue, 31 May 2022 07:50:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653983427;
+        bh=DYza2QPqADe/lZfxtchO+aNrFJm+ciR3u9LbScHZcrs=;
         h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=2E8sh4Kwe4dK5QMr+/evcmFluCuk5Jfs4NpbldhCxdDcxnD4OBvnzEmEOrkJ+erMn
-         0Dw6orgdx+ogIreBwGFsP4BITS3T2RBrRg7eYNfgY/i0KsXt9LKBVwx4UH3AedwNLa
-         RASBY5CbIDqgdKHRwbE0lm0lvmj6oSlr8PVYhUVsviELGfZ3SziMG7hjY7YVrVy9Oq
-         QEIq+GGILKPCYq0gHRM35dNH5H9VnizG+mh26BhXsylIxyQCnPD70odS9GDUbGEuIU
-         o4aUo7nupku5QI04mwNdBDGJAsIt/CAeCxOiDcBva4mNPdVoBK1zLhc/ER4e37IudE
-         y0IvBLfF1OOmQ==
-X-Nifty-SrcIP: [209.85.216.43]
-Received: by mail-pj1-f43.google.com with SMTP id j7so7098418pjn.4
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 00:44:59 -0700 (PDT)
-X-Gm-Message-State: AOAM531kHu0yUXiulZoYtpW7ciHSfSc6g/phq7oqboHR+KFTOPxTkVr0
-        cf7pTd2XtjUOxS5+D9A/XT01Y7VM3+2sHXZSWPE=
-X-Google-Smtp-Source: ABdhPJxQImR/1nqkp+CfgFMEflIhlHfFw9YsXJ2C/je8oEXgbOZmtPxWKLE2G7w65A3vWdu45fk290QBEZ9hwHWZQlg=
-X-Received: by 2002:a17:90b:1d83:b0:1e2:f63e:bc37 with SMTP id
- pf3-20020a17090b1d8300b001e2f63ebc37mr10309718pjb.119.1653983098256; Tue, 31
- May 2022 00:44:58 -0700 (PDT)
+        b=LxkrD6e40E3ifwv3q2/1gQPhh7SSjMR0z/b/tDPWcHw8GEB97gg6eQ5setYlX2nL5
+         IfIKCw8zwF4WdnM3oLmQ57pxi6lcBHJaBvk8potWrKPYhyOHo3QK3ySaz2L8KznLbZ
+         iSgpJqixltPV34GDXSChvYCm18MTkfiNL4OY7cNvFhayi8Vc6r6Rz+NcfH2Am6gxLP
+         Pe5wte0HScizHXU1A7cuEYbQMLlsMuYYybAeFly2ehQpHiZrHAKd57DbQJnZnGFBpK
+         KRkIarJKdKOJBPwF4w3uRngeYwoy/qkHwedbSoPqu1j0U2K+uKHKkEHOhhXxeINMux
+         /zLTS9YT+mWwQ==
+Received: by mail-vs1-f49.google.com with SMTP id q14so2001928vsr.12;
+        Tue, 31 May 2022 00:50:27 -0700 (PDT)
+X-Gm-Message-State: AOAM533olNXRolO5s68DsDoxab6hCs2H8BlXrLJfmTNdXMqsbJrbyNrM
+        Zpb2Oej+yxSo7BaQSxWbjJfXFcXnjCqLUfscR1o=
+X-Google-Smtp-Source: ABdhPJyya/hWo2NRabv3OOld40MCqgldoCzg8cr3aQSBneE0PTnnLJuSL+d3VBjv70lhDMQ7+aErakru/r54rqMAy3c=
+X-Received: by 2002:a05:6102:f06:b0:337:9881:5031 with SMTP id
+ v6-20020a0561020f0600b0033798815031mr20369600vss.67.1653983426782; Tue, 31
+ May 2022 00:50:26 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220427090442.2105905-1-gregkh@linuxfoundation.org>
- <CAK7LNASFK3z8Y=L1Q6uG3YZ2GBffBAASkc4tWfnPF__qeYh3SA@mail.gmail.com>
- <YmlYRMEzonSnwZ7q@kroah.com> <CAK7LNARUUOSd0-Q=bopr5q9J6xbtRAJsUKRGacf+vpuu8KJdxw@mail.gmail.com>
- <YoyTDCbELrpCZ3eC@kroah.com>
-In-Reply-To: <YoyTDCbELrpCZ3eC@kroah.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Tue, 31 May 2022 16:44:21 +0900
-X-Gmail-Original-Message-ID: <CAK7LNASMi3MHPf4aOMhWbPgDiWnNBU-MEdMs0UV1qf=1GW-i_A@mail.gmail.com>
-Message-ID: <CAK7LNASMi3MHPf4aOMhWbPgDiWnNBU-MEdMs0UV1qf=1GW-i_A@mail.gmail.com>
-Subject: Re: [PATCH v2] export: fix string handling of namespace in EXPORT_SYMBOL_NS
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Emil Velikov <emil.l.velikov@gmail.com>,
-        Jessica Yu <jeyu@kernel.org>,
-        Quentin Perret <qperret@google.com>,
-        Matthias Maennich <maennich@google.com>
+References: <CAK8P3a2_52JPnBWNvTTkFVwLxPAa7=NaQ4whwC1UeH_NYHeUKQ@mail.gmail.com>
+ <CAK8P3a0SpU1n+29KQxzKnPRvzmDE=L0V9RUpKxhemv=74kevcQ@mail.gmail.com>
+ <df5c406c-eec6-c340-2847-49670b7fe8bf@xen0n.name> <CAK8P3a3awFdB1-G65DC38NBuSTvo6SvFTaS0m9YBxunHjHjQvQ@mail.gmail.com>
+ <CAAhV-H6sNr-yo8brBFtzziH6k9Tby0dFp7yehK55SfH5HjZ8hQ@mail.gmail.com>
+ <358025d1-28e6-708b-d23d-3f22ae12a800@xen0n.name> <CAK8P3a1ge2bZS13ahm_LdO3jEcbtR4w3do-gLjggKvppqnBDkw@mail.gmail.com>
+In-Reply-To: <CAK8P3a1ge2bZS13ahm_LdO3jEcbtR4w3do-gLjggKvppqnBDkw@mail.gmail.com>
+From:   Huacai Chen <chenhuacai@kernel.org>
+Date:   Tue, 31 May 2022 15:50:16 +0800
+X-Gmail-Original-Message-ID: <CAAhV-H5NCUpR6aBtR9d7c9vW2KiHpk3iFQxj7BeTSS0boMz8PQ@mail.gmail.com>
+Message-ID: <CAAhV-H5NCUpR6aBtR9d7c9vW2KiHpk3iFQxj7BeTSS0boMz8PQ@mail.gmail.com>
+Subject: Re: [musl] Re: [GIT PULL] asm-generic changes for 5.19
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     musl@lists.openwall.com, WANG Xuerui <kernel@xen0n.name>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        GNU C Library <libc-alpha@sourceware.org>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Marc Zyngier <maz@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Jianmin Lv <lvjianmin@loongson.cn>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Huacai Chen <chenhuacai@loongson.cn>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 24, 2022 at 5:10 PM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
+Hi, Arnd,
+
+On Mon, May 30, 2022 at 11:56 PM Arnd Bergmann <arnd@kernel.org> wrote:
 >
-> On Tue, May 24, 2022 at 03:31:59AM +0900, Masahiro Yamada wrote:
-> > On Wed, Apr 27, 2022 at 11:50 PM Greg Kroah-Hartman
-> > <gregkh@linuxfoundation.org> wrote:
-> > >
-> > > On Wed, Apr 27, 2022 at 11:29:19PM +0900, Masahiro Yamada wrote:
-> > > > On Wed, Apr 27, 2022 at 6:06 PM Greg Kroah-Hartman
-> > > > <gregkh@linuxfoundation.org> wrote:
-> > > > >
-> > > > > Commit c3a6cf19e695 ("export: avoid code duplication in
-> > > > > include/linux/export.h") broke the ability for a defined string to be
-> > > > > used as a namespace value.
-> > > >
-> > > > In hindsight, this was a bad idea.
-> > > >
-> > > >
-> > > > EXPORT_SYMBOL_NS_GPL(dw_spi_resume_host, "SPI_DW_CORE")
-> > > >
-> > > >    is much much better than:
-> > > >
-> > > > EXPORT_SYMBOL_NS_GPL(dw_spi_resume_host, SPI_DW_CORE)
-> > >
-> > > I agree, but it's really not that big of a deal.  We could change it if
-> > > you want.
-> > >
-> > > > ccflags-y += -DDEFAULT_SYMBOL_NAMESPACE=USB_STORAGE
-> > > >
-> > > > is also a bad idea.
-> > >
-> > > That's not such a bad idea as it lets you set a namespace for a
-> > > directory and below easily.  What would you want to use instead?
-> > >
-> > > > When you look at EXPORT_SYMBOL_GPL() in C files, you will not be
-> > > > aware of the presence of the namespace.
-> > >
-> > > It's easy to tell when things do not link properly :)
-> > >
-> > > > Anyway, it is presumably too late to fix it.
-> > >
-> > > Not really, the number of in-kernel users are still small and can be
-> > > changed if you like.  External users can update when they hit the change
-> > > as well, not a big deal.
+> On Mon, May 30, 2022 at 5:00 PM WANG Xuerui <kernel@xen0n.name> wrote:
+> > On 5/30/22 21:01, Huacai Chen wrote:
 > >
+> > Thanks for the recognition from both of you; it is my honor and pleasure
+> > to contribute to the LoongArch port and to Linux in general.
 > >
-> > If I send a patch for global conversion,
-> > will you be happy to pick it up?
-> >
-> >
-> > I think this should be applied at the very last moment
-> > of the MW.
+> > As I'm still not entirely satisfied with my kernel development skills,
+> > plus my day job is not kernel-related nor Loongson/LoongArch-related at
+> > all, listing me as reviewer should be enough for now. I will take care
+> > of the arch as long as I have the hardware.
 >
-> Make up a patch right after -rc1 to get into -rc2 as that's usually the
-> best time for tree-wide changes like this.
+> Thanks, sounds good to me.
 >
-> > I can convert tree-wide by sed.
-> >
-> >
-> > Example of conversion:
-> >
-> > EXPORT_SYMBOL_NS_GPL(dw_spi_resume_host, SPI_DW_CORE)
-> >    -->
-> > EXPORT_SYMBOL_NS_GPL(dw_spi_resume_host, "SPI_DW_CORE")
+> > BTW, there were already several breakages when rebasing the previous
+> > revision (I believe it's commit 215da6d2dac0 ("MAINTAINERS: Add
+> > maintainer information for LoongArch")) on top of linus' tree.
 >
-> Ah, but then this breaks my use case where I did in the Android tree:
+> Right, at least most of these should be fairly easy to address by disabling
+> the corresponding features. For the allmodconfig build, I see some
+> warnings that are introduced in gcc-12.1 across all architectures, and
+> those can be ignored for now.
 >
->         EXPORT_SYMBOL_NS_GPL(symbol_name, ANDROID_GKI_VFS_EXPORT_ONLY);
+> Some of the errors already have fixes on top of the 215da6d2dac0
+> commit, but some of the other commits look like we should leave
+> them out here.
 >
-> and then in the makefile I did:
->         subdir-ccflags-y += -DANDROID_GKI_VFS_EXPORT_ONLY=VFS_internal_I_am_really_a_filesystem_and_am_NOT_a_driver
+> I also see some conflicts between local symbol definitions and device
+> drivers such as
 >
-> That saved me typing a lot of "VFS_internal_I_am..." in the .c files.
-
-
-Kbuild provides a macro "stringify"
-
-It shall be converted to:
-
-    subdir-ccflags-y += -DANDROID_GKI_VFS_EXPORT_ONLY=$(call
-stringify,VFS_internal_I_am_really_a_filesystem_and_am_NOT_a_driver)
-
+> arch/loongarch/include/asm/loongarch.h:240:29: note: previous
+> definition of 'csr_writel' with type 'void(u32,  u32)' {aka
+> 'void(unsigned int,  unsigned int)'}
+>   240 | static __always_inline void csr_writel(u32 val, u32 reg)
+>       |                             ^~~~~~~~~~
+> drivers/media/platform/amphion/vpu_core.h:10:5: error: conflicting
+> types for 'csr_readl'; have 'u32(struct vpu_core *, u32)' {aka
+> 'unsigned int(struct vpu_core *, unsigned int)'}
+>
+> and
+>
+> drivers/usb/cdns3/cdns3-imx.c:85: error: "PS_MASK" redefined [-Werror]
+>
+> I would suggest renaming the loongarch specific symbols here, though we
+> may want to also change those drivers to use less generic identifiers.
+OK, loongarch specific symbols will be renamed.
 
 >
-> I know out-of-tree stuff does not matter, but a simple way to make this
-> work would be nice.
+> > Now I see
+> > the loongarch-next HEAD is already rebased on top of what I believe to
+> > be the current main branch, however I vaguely remember that it's not
+> > good to base one's patches on top of "some random commit", so I wonder
+> > whether the current branch state is appropriate for a PR?
 >
-> I could just do:
->         #define ANDROID_GKI_VFS_EXPORT_ONLY     "VFS_internal_I_am..."
-> in a .c file which would handle this, right?
+> You are correct, a pull request should always be based on an -rc, orat least
+> have the minimum set of dependencies. The branch was previously
+> based on top of the spinlock implementation, which is still the best
+> place to start here.
+I have a difficult problem to select the base. Take swiotlb_init() as
+an example: If I select 5.18-rc1, I should use swiotlb_init(1); if I
+select Linus' latest tree, I should use swiotlb_init(true,
+SWIOTLB_VERBOSE). However, if I select 5.18-rc1, linux-next will have
+a build error because the code there expect swiotlb_init(true,
+SWIOTLB_VERBOSE).
 
-Yes, that is an alternative.
+Huacai
 
-
-> Ok, so maybe that isn't an issue, nevermind...
 >
-> But, if we have a string here, what happens if someone puts a space in
-> it:
->         EXPORT_SYMBOL_NS_GPL(symbol_name, "MY DRIVER NAMESPACE");
-> that will not break the build but will cause the tools to really
-> complain, right?  Or do the wrong thing and put them in the "MY"
-> namespace?
-
-Right, the compiler does not complain about a space in the namespace.
-We can check it in modpost if we like.
-
-
-
-
-
-
-BTW, do we need EXPORT_SYMBOL_NS() in the first place?
-
-If you think DEFAULT_SYMBOL_NAMESPACE is useful,
-you have already noticed that the per-module namespace is
-more convenient than the per-symbol namespace.
-
-
-
-
-For example, if you look at drivers/hwmon/pmbus/pmbus_core.c,
-all symbols are exported by EXPORT_SYMBOL_NS_GPL(... , PMBUS).
-I do not see any module that exports multiple namespaces.
-
-So, I think per-module namespace control is enough.
-
-
-[Deprecate]
-    EXPORT_SYMBOL_NS(<symbol>, <namespace>)
-    EXPORT_SYMBOL_NS_GPL(<symbol>, <namespace>)
-
-[Add]
-    MODULE_NAMESPACE(<namespace>)
-
-
-If MODULE_NAMESPACE(<namespace>) is added to a module,
-all symbols exported from that module belong to <namespace>.
-
-
-
-
-> thanks,
->
-> greg k-h
-
-
-
--- 
-Best Regards
-Masahiro Yamada
+>        Arnd
