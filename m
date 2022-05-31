@@ -2,169 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96AB7C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 17:49:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67746C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 17:52:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346674AbiEaRtl (ORCPT
+        id S1346679AbiEaRwD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 13:49:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49736 "EHLO
+        Tue, 31 May 2022 13:52:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243101AbiEaRtj (ORCPT
+        with ESMTP id S1343782AbiEaRwB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 13:49:39 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1AE09A9B7
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 10:49:37 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id a63so7307955pge.12
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 10:49:37 -0700 (PDT)
+        Tue, 31 May 2022 13:52:01 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 675C353B64;
+        Tue, 31 May 2022 10:52:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=up1pTeS33dg3ysfhUrkuWPpoOH7KplpGmQPpid3W8Mk=;
-        b=Z18B8MqFP+Ck/tneEl0C52IfN/HxS4s5lO8n20qYuAd1S4G/Vf2OmCpZmca1UUqOrh
-         QwMuPuU4Jsp7Mdnt6OhcTZhfz7C0eFfJ4053ttaB+cFMY8IseRTESyK/AdZx/2nYJ+EF
-         Hpng4JICoqaOApCdboSO5NIVOeoZAqy2yW2u9Jwf9ySMDxA1tE2Zwh6lXtnsX6xmHzm9
-         QetdRkNvYGcv7AsBFV9EqiK8S4LGpSYpgN8NHWxkJgV/vP4CteyJgXFOt+xeg8QROOVK
-         U3eje+iymL7gtqTOc7UsEPzlB6jYQW65VABczcItabSpV+T3t0hH4n7phq4VPv2+IEyx
-         BUzw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=up1pTeS33dg3ysfhUrkuWPpoOH7KplpGmQPpid3W8Mk=;
-        b=qrUl87eI71CJlLpSoFHsn9oNGa/hu3ebJGWmvYSQvdk/q4Jfxr2UexkWQ3rFsA7RTO
-         IZIVvd/XhcPFeGohwZCpCpqe0Al0TaokbGPM36C565wI51w9vnsdfz9y4L6QF4xcysP2
-         408gNM7lBDPofff+EVhlPvlQ2N4SaJT8zFWsRhPkU16GN7yPOhi4UXgMMUaLXD5LQYUv
-         ja7af2Rq1ZvxAt/hHxRozClw6vQC824ZXBwlJhLVVbNSIbQRElmpl26tj8j6uXe4J0m2
-         sn0m0R09IxdvuHRfbyWkXindnx6QiGnTNsNEbJS18Z/fqb5Ut27kYK18pJoDIhl8xFss
-         k5EA==
-X-Gm-Message-State: AOAM530S0YzVKHaxm4OsVYHqvjthR+xOG/0oRhVw+/Ai92R4pGYm+wI8
-        /hj+U82YGUENC/NJB48SOwZS1g==
-X-Google-Smtp-Source: ABdhPJwPT21CMLBCqelroEoxkIzSU+nUsU7b6/bESsnttsjXfdDRTNO1bxbXetVBX87qNMSYP2eo6Q==
-X-Received: by 2002:a05:6a00:1792:b0:519:80a:9598 with SMTP id s18-20020a056a00179200b00519080a9598mr29316663pfg.10.1654019377442;
-        Tue, 31 May 2022 10:49:37 -0700 (PDT)
-Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
-        by smtp.gmail.com with ESMTPSA id j16-20020a17090a7e9000b001e32824c452sm2147760pjl.40.2022.05.31.10.49.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 May 2022 10:49:36 -0700 (PDT)
-Date:   Tue, 31 May 2022 11:49:33 -0600
-From:   Mathieu Poirier <mathieu.poirier@linaro.org>
-To:     Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Rob Herring <robh@kernel.org>, Christoph Hellwig <hch@lst.de>,
-        Stefano Stabellini <stefanos@xilinx.com>,
-        Bruce Ashfield <bruce.ashfield@xilinx.com>
-Subject: Re: [RFC PATCH v5 0/4] remoteproc: restructure the remoteproc VirtIO
- device
-Message-ID: <20220531174933.GB531268@p14s>
-References: <20220406095446.1187968-1-arnaud.pouliquen@foss.st.com>
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1654019520; x=1685555520;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=z9sgpsSPs9NDoq7xVy5L9QPtqJrdgsPFZQ+CXd/DLBo=;
+  b=n1X79n9fCFQcMfaIDqzrw6l/sfoPKoqBF20195aKwGnr4KCyerq4ZVTU
+   zWbqvqkUCpLAQDWgG5oxlkvAcszIEL8vs0RG7oH303IVq1JoHCgePycEa
+   IV1hCsTENyF2HpqQvayiOk7DuQfEg0lmfI5JU74lKIHn6+AU9dUQiJGfk
+   c=;
+Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 31 May 2022 10:52:00 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 10:51:59 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 31 May 2022 10:51:59 -0700
+Received: from [10.38.242.41] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 31 May
+ 2022 10:51:57 -0700
+Message-ID: <73f2e94b-daa5-b30e-4fa9-f6725ed1a686@quicinc.com>
+Date:   Tue, 31 May 2022 10:51:55 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220406095446.1187968-1-arnaud.pouliquen@foss.st.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH] drm/msm/dpu: Fix pointer dereferenced before checking
+Content-Language: en-US
+To:     Haowen Bai <baihaowen@meizu.com>, Rob Clark <robdclark@gmail.com>,
+        "Dmitry Baryshkov" <dmitry.baryshkov@linaro.org>,
+        Sean Paul <sean@poorly.run>, "David Airlie" <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+CC:     <linux-arm-msm@vger.kernel.org>, <freedreno@lists.freedesktop.org>,
+        <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>
+References: <1653877196-23114-1-git-send-email-baihaowen@meizu.com>
+From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
+In-Reply-To: <1653877196-23114-1-git-send-email-baihaowen@meizu.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I have started looking at this set.  Comments to follow in the coming days.
 
-Thanks,
-Mathieu
 
-On Wed, Apr 06, 2022 at 11:54:42AM +0200, Arnaud Pouliquen wrote:
-> 1) Update from V4 [1]:
+On 5/29/2022 7:19 PM, Haowen Bai wrote:
+> The phys_enc->wb_idx is dereferencing before null checking, so move
+> it after checking.
 > 
-> Minor updates based on Mathieu's comments.
-> Updates are listed in the commit message of each patch.
+> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+
+Fixes: d7d0e73f7de33 ("drm/msm/dpu: introduce the dpu_encoder_phys_* for 
+writeback")
+
+Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+
+> ---
+>   drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_wb.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> [1] https://lkml.org/lkml/2022/3/14/1177
-> 
-> 2) Patchset description:
-> 
-> This series is a part of the work initiated a long time ago in 
-> the series "remoteproc: Decorelate virtio from core"[2]
-> 
-> Objective of the work:
-> - Update the remoteproc VirtIO device creation (use platform device)
-> - Allow to declare remoteproc VirtIO device in DT
->     - declare resources associated to a remote proc VirtIO
->     - declare a list of VirtIO supported by the platform.
-> - Prepare the enhancement to more VirtIO devices (e.g I2C, audio, video, ...).
->   For instance be able to declare a I2C device in a virtio-i2C node.
-> - Keep the legacy working!
-> - Try to improve the picture about concerns reported by Christoph Hellwing [3][4]
-> 
-> [2] https://lkml.org/lkml/2020/4/16/1817
-> [3] https://lkml.org/lkml/2021/6/23/607
-> [4] https://patchwork.kernel.org/project/linux-remoteproc/patch/AOKowLclCbOCKxyiJ71WeNyuAAj2q8EUtxrXbyky5E@cp7-web-042.plabs.ch/
-> 
-> In term of device tree this would result in such hierarchy (stm32mp1 example with 2 virtio RPMSG):
-> 
-> 	m4_rproc: m4@10000000 {
-> 		compatible = "st,stm32mp1-m4";
-> 		reg = <0x10000000 0x40000>,
-> 		      <0x30000000 0x40000>,
-> 		      <0x38000000 0x10000>;
->         memory-region = <&retram>, <&mcuram>,<&mcuram2>;
->         mboxes = <&ipcc 2>, <&ipcc 3>;
->         mbox-names = "shutdown", "detach";
->         status = "okay";
-> 
->         #address-cells = <1>;
->         #size-cells = <0>;
->         
->         vdev@0 {
-> 		compatible = "rproc-virtio";
-> 		reg = <0>;
-> 		virtio,id = <7>;  /* RPMSG */
-> 		memory-region = <&vdev0vring0>, <&vdev0vring1>, <&vdev0buffer>;
-> 		mboxes = <&ipcc 0>, <&ipcc 1>;
-> 		mbox-names = "vq0", "vq1";
-> 		status = "okay";
->         };
-> 
->         vdev@1 {
-> 		compatible = "rproc-virtio";
-> 		reg = <1>;
-> 		virtio,id = <7>;  /*RPMSG */
-> 		memory-region = <&vdev1vring0>, <&vdev1vring1>, <&vdev1buffer>;
-> 		mboxes = <&ipcc 4>, <&ipcc 5>;
-> 		mbox-names = "vq0", "vq1";
-> 		status = "okay";
->         };
-> };
-> 
-> I have divided the work in 4 steps to simplify the review, This series implements only
-> the step 1:
-> step 1:  redefine the remoteproc VirtIO device as a platform device
->   - migrate rvdev management in remoteproc virtio.c,
->   - create a remotproc virtio config ( can be disabled for platform that not use VirtIO IPC.
-> step 2: add possibility to declare and probe a VirtIO sub node
->   - VirtIO bindings declaration,
->   - multi DT VirtIO devices support,
->   - introduction of a remote proc virtio bind device mechanism ,
-> => https://github.com/arnopo/linux/commits/step2-virtio-in-DT
-> step 3: Add memory declaration in VirtIO subnode
-> => https://github.com/arnopo/linux/commits/step3-virtio-memories
-> step 4: Add mailbox declaration in VirtIO subnode
-> => https://github.com/arnopo/linux/commits/step4-virtio-mailboxes
-> 
-> Arnaud Pouliquen (4):
->   remoteproc: core: Introduce virtio device add/remove functions
->   remoteproc: core: Introduce rproc_register_rvdev function
->   remoteproc: Move rproc_vdev management to remoteproc_virtio.c
->   remoteproc: virtio: Create platform device for the remoteproc_virtio
-> 
->  drivers/remoteproc/remoteproc_core.c     | 154 +++---------------
->  drivers/remoteproc/remoteproc_internal.h |  23 ++-
->  drivers/remoteproc/remoteproc_virtio.c   | 193 ++++++++++++++++++++---
->  include/linux/remoteproc.h               |   6 +-
->  4 files changed, 215 insertions(+), 161 deletions(-)
-> 
-> -- 
-> 2.25.1
-> 
+> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_wb.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_wb.c
+> index 4829d1ce0cf8..59da348ff339 100644
+> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_wb.c
+> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_wb.c
+> @@ -574,11 +574,11 @@ static void dpu_encoder_phys_wb_disable(struct dpu_encoder_phys *phys_enc)
+>    */
+>   static void dpu_encoder_phys_wb_destroy(struct dpu_encoder_phys *phys_enc)
+>   {
+> -	DPU_DEBUG("[wb:%d]\n", phys_enc->wb_idx - WB_0);
+> -
+>   	if (!phys_enc)
+>   		return;
+>   
+> +	DPU_DEBUG("[wb:%d]\n", phys_enc->wb_idx - WB_0);
+> +
+>   	kfree(phys_enc);
+>   }
+>   
