@@ -2,302 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE042C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 17:58:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9574C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 17:58:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346745AbiEaR6h (ORCPT
+        id S1346756AbiEaR6t (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 13:58:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44262 "EHLO
+        Tue, 31 May 2022 13:58:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239219AbiEaR6f (ORCPT
+        with ESMTP id S1346751AbiEaR6r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 13:58:35 -0400
-Received: from mail.bwidawsk.net (mail.bwidawsk.net [107.170.211.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47E8B62CF2;
-        Tue, 31 May 2022 10:58:33 -0700 (PDT)
-Received: by mail.bwidawsk.net (Postfix, from userid 5001)
-        id A159112328F; Tue, 31 May 2022 10:50:27 -0700 (PDT)
-Received: from mail.bwidawsk.net (c-24-20-163-23.hsd1.or.comcast.net [24.20.163.23])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by mail.bwidawsk.net (Postfix) with ESMTPSA id 4D309120013;
-        Tue, 31 May 2022 10:50:22 -0700 (PDT)
-Date:   Tue, 31 May 2022 10:50:20 -0700
-From:   Ben Widawsky <ben@bwidawsk.net>
-To:     ira.weiny@intel.com
-Cc:     Dan Williams <dan.j.williams@intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alison Schofield <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        linux-kernel@vger.kernel.org, linux-cxl@vger.kernel.org,
-        linux-pci@vger.kernel.org
-Subject: Re: [PATCH V9 4/9] cxl/pci: Create PCI DOE mailbox's for memory
- devices
-Message-ID: <20220531175020.efqfth7ubbyhoubp@mail.bwidawsk.net>
-References: <20220531152632.1397976-1-ira.weiny@intel.com>
- <20220531152632.1397976-5-ira.weiny@intel.com>
+        Tue, 31 May 2022 13:58:47 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 133B27A468
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 10:58:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654019926;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=0yvmTc+va7v0gJ9E75BePB+PuwLz7P/ysZIrz/OtMrE=;
+        b=TN3J+KpCFzfBwMzqIpXgvL00e+up2rw974HqLM/FC4f1ibDMTq414eDokC6NCCoOqaEHzJ
+        N6xxlGfQhRtqTe0I/QrBx1t6SkQUEJOOeVnrS6Jxi/THEAq7tNo0UDPFnT74OoyxIRNvDS
+        I2m7xrqX4qxqkYBoAv+XZSBCsJSqV10=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-456-5WHS6iSOPR2ZC3znAz-5_A-1; Tue, 31 May 2022 13:58:43 -0400
+X-MC-Unique: 5WHS6iSOPR2ZC3znAz-5_A-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 986E2101AA45;
+        Tue, 31 May 2022 17:58:37 +0000 (UTC)
+Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7582E492C3B;
+        Tue, 31 May 2022 17:58:37 +0000 (UTC)
+From:   Paolo Bonzini <pbonzini@redhat.com>
+To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>
+Subject: [PATCH] KVM: x86: SVM: fix nested PAUSE filtering when L0 intercepts PAUSE
+Date:   Tue, 31 May 2022 13:58:37 -0400
+Message-Id: <20220531175837.295988-1-pbonzini@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220531152632.1397976-5-ira.weiny@intel.com>
+Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22-05-31 08:26:27, ira.weiny@intel.com wrote:
-> From: Ira Weiny <ira.weiny@intel.com>
-> 
-> DOE mailbox objects will be needed for various mailbox communications
-> with each memory device.
-> 
-> Iterate each DOE mailbox capability and create PCI DOE mailbox objects
-> as found.
-> 
-> It is not anticipated that this is the final resting place for the
-> iteration of the DOE devices.  The support of ports may drive this code
-> into the pcie side.  In this imagined architecture the CXL port driver
-> would then query into the PCI device for the DOE mailbox array.
+Commit 74fd41ed16fd ("KVM: x86: nSVM: support PAUSE filtering when L0
+doesn't intercept PAUSE") introduced passthrough support for nested pause
+filtering, (when the host doesn't intercept PAUSE) (either disabled with
+kvm module param, or disabled with '-overcommit cpu-pm=on')
 
-Not sure if direction has changed, but initially it would have been the cxl_pci
-driver who would query this and pass it along when the port driver probes.
-Personally, I've never had an issue with non cxl_pci drivers using PCI
-interfaces and semantics, but it is something we've taken specific care to
-avoid.
+Before this commit, L1 KVM didn't intercept PAUSE at all; afterwards,
+the feature was exposed as supported by KVM cpuid unconditionally, thus
+if L1 could try to use it even when the L0 KVM can't really support it.
 
-> 
-> For now this is good enough for the endpoints and the split is similar
-> to the envisioned architecture where getting the mailbox array is
-> separated from the various protocol needs.  For example, it is not
-> anticipated that the CDAT code will need to move because it is only
-> needed by the cxl_ports.
-> 
-> Likewise irq's are separated out in a similar design pattern to the
-> PCIe port driver.  But a much simpler irq enabling flag is used and only
-> DOE interrupts are supported.
-> 
-> Signed-off-by: Ira Weiny <ira.weiny@intel.com>
-> 
-> ---
-> Changes from V8:
-> 	Move PCI_DOE selection to CXL_BUS to support future patches
-> 	which move queries into the port code.
-> 	Remove Auxiliary device arch
-> 	Squash the functionality of the auxiliary driver into this
-> 	patch.
-> 	Split out the irq handling a bit.
-> 
-> Changes from V7:
-> 	Minor code clean ups
-> 	Rebased on cxl-pending
-> 
-> Changes from V6:
-> 	Move all the auxiliary device stuff to the CXL layer
-> 
-> Changes from V5:
-> 	Split the CXL specific stuff off from the PCI DOE create
-> 	auxiliary device code.
-> ---
->  drivers/cxl/Kconfig  |   1 +
->  drivers/cxl/cxlmem.h |   6 +++
->  drivers/cxl/pci.c    | 111 +++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 118 insertions(+)
-> 
-> diff --git a/drivers/cxl/Kconfig b/drivers/cxl/Kconfig
-> index f64e3984689f..7adaaf80b302 100644
-> --- a/drivers/cxl/Kconfig
-> +++ b/drivers/cxl/Kconfig
-> @@ -2,6 +2,7 @@
->  menuconfig CXL_BUS
->  	tristate "CXL (Compute Express Link) Devices Support"
->  	depends on PCI
-> +	select PCI_DOE
->  	help
->  	  CXL is a bus that is electrically compatible with PCI Express, but
->  	  layers three protocols on that signalling (CXL.io, CXL.cache, and
-> diff --git a/drivers/cxl/cxlmem.h b/drivers/cxl/cxlmem.h
-> index 60d10ee1e7fc..4d2764b865ab 100644
-> --- a/drivers/cxl/cxlmem.h
-> +++ b/drivers/cxl/cxlmem.h
-> @@ -191,6 +191,8 @@ struct cxl_endpoint_dvsec_info {
->   * @component_reg_phys: register base of component registers
->   * @info: Cached DVSEC information about the device.
->   * @serial: PCIe Device Serial Number
-> + * @doe_mbs: PCI DOE mailbox array
-> + * @num_mbs: Number of DOE mailboxes
->   * @mbox_send: @dev specific transport for transmitting mailbox commands
->   *
->   * See section 8.2.9.5.2 Capacity Configuration and Label Storage for
-> @@ -224,6 +226,10 @@ struct cxl_dev_state {
->  	resource_size_t component_reg_phys;
->  	u64 serial;
->  
-> +	bool doe_use_irq;
-> +	struct pci_doe_mb **doe_mbs;
-> +	int num_mbs;
-> +
->  	int (*mbox_send)(struct cxl_dev_state *cxlds, struct cxl_mbox_cmd *cmd);
->  };
->  
-> diff --git a/drivers/cxl/pci.c b/drivers/cxl/pci.c
-> index 5a0ae46d4989..131f89dec8e7 100644
-> --- a/drivers/cxl/pci.c
-> +++ b/drivers/cxl/pci.c
-> @@ -8,6 +8,7 @@
->  #include <linux/mutex.h>
->  #include <linux/list.h>
->  #include <linux/pci.h>
-> +#include <linux/pci-doe.h>
->  #include <linux/io.h>
->  #include "cxlmem.h"
->  #include "cxlpci.h"
-> @@ -386,6 +387,113 @@ static int cxl_setup_regs(struct pci_dev *pdev, enum cxl_regloc_type type,
->  	return rc;
->  }
->  
-> +static void cxl_pci_free_irq_vectors(void *data)
-> +{
-> +	pci_free_irq_vectors(data);
-> +}
-> +
-> +static void cxl_doe_destroy_mb(void *ds)
-> +{
-> +	struct cxl_dev_state *cxlds = ds;
-> +	int i;
-> +
-> +	for (i = 0; i < cxlds->num_mbs; i++) {
-> +		if (cxlds->doe_mbs[i])
-> +			pci_doe_destroy_mb(cxlds->doe_mbs[i]);
-> +	}
-> +}
-> +
-> +static void cxl_alloc_irq_vectors(struct cxl_dev_state *cxlds)
-> +{
-> +	struct device *dev = cxlds->dev;
-> +	struct pci_dev *pdev = to_pci_dev(dev);
-> +	int num_irqs = 0;
-> +	int off = 0;
-> +	int rc;
-> +
-> +	/* Account for all the DOE vectors needed */
-> +	pci_doe_for_each_off(pdev, off) {
-> +		int irq = pci_doe_get_irq_num(pdev, off);
-> +
-> +		if (irq < 0)
-> +			continue;
-> +		num_irqs = max(num_irqs, irq + 1);
+In this case the fallback caused KVM to intercept each PAUSE instruction;
+in some cases, such intercept can slow down the nested guest so much
+that it can fail to boot.  Instead, before the problematic commit KVM
+was already setting both thresholds to 0 in vmcb02, but after the first
+userspace VM exit shrink_ple_window was called and would reset the
+pause_filter_count to the default value.
 
-This seems overly complicated. Isn't it just num_irqs++?
+To fix this, change the fallback strategy - ignore the guest threshold
+values, but use/update the host threshold values unless the guest
+specifically requests disabling PAUSE filtering (either simple or
+advanced).
 
-> +	}
-> +
-> +	/*
-> +	 * Allocate enough vectors for the DOE's
-> +	 */
-> +	rc = pci_alloc_irq_vectors(pdev, num_irqs, num_irqs, PCI_IRQ_MSI |
-> +							     PCI_IRQ_MSIX);
-> +	if (rc != num_irqs) {
-> +		pci_err(pdev, "Not enough interrupts; use polling\n");
-> +		/* Some got allocated; clean them up */
-> +		if (rc > 0)
-> +			cxl_pci_free_irq_vectors(pdev);
-> +		cxlds->doe_use_irq = false;
-> +		return;
-> +	}
-> +
-> +	rc = devm_add_action_or_reset(dev, cxl_pci_free_irq_vectors, pdev);
-> +	if (rc) {
-> +		cxlds->doe_use_irq = false;
-> +		return;
-> +	}
-> +
-> +	cxlds->doe_use_irq = true;
+Also fix a minor bug: on nested VM exit, when PAUSE filter counter
+were copied back to vmcb01, a dirty bit was not set.
 
-If you named it doe_poll, you could avoid having to do anything at the end of
-the function... If you felt like it.
+Thanks a lot to Suravee Suthikulpanit for debugging this!
 
-if (failure)
-	return;
-if (other_failure)
-	return;
+Fixes: 74fd41ed16fd ("KVM: x86: nSVM: support PAUSE filtering when L0 doesn't intercept PAUSE")
+Reported-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Tested-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Co-developed-by: Maxim Levitsky <mlevitsk@redhat.com>
+Message-Id: <20220518072709.730031-1-mlevitsk@redhat.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+---
+ arch/x86/kvm/svm/nested.c | 39 +++++++++++++++++++++------------------
+ arch/x86/kvm/svm/svm.c    |  4 ++--
+ 2 files changed, 23 insertions(+), 20 deletions(-)
 
-cxld->do_use_poll = false;
+diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
+index 6d0233a2469e..88da8edbe1e1 100644
+--- a/arch/x86/kvm/svm/nested.c
++++ b/arch/x86/kvm/svm/nested.c
+@@ -642,6 +642,8 @@ static void nested_vmcb02_prepare_control(struct vcpu_svm *svm,
+ 	struct kvm_vcpu *vcpu = &svm->vcpu;
+ 	struct vmcb *vmcb01 = svm->vmcb01.ptr;
+ 	struct vmcb *vmcb02 = svm->nested.vmcb02.ptr;
++	u32 pause_count12;
++	u32 pause_thresh12;
+ 
+ 	/*
+ 	 * Filled at exit: exit_code, exit_code_hi, exit_info_1, exit_info_2,
+@@ -721,27 +723,25 @@ static void nested_vmcb02_prepare_control(struct vcpu_svm *svm,
+ 	if (!nested_vmcb_needs_vls_intercept(svm))
+ 		vmcb02->control.virt_ext |= VIRTUAL_VMLOAD_VMSAVE_ENABLE_MASK;
+ 
++	pause_count12 = svm->pause_filter_enabled ? svm->nested.ctl.pause_filter_count : 0;
++	pause_thresh12 = svm->pause_threshold_enabled ? svm->nested.ctl.pause_filter_thresh : 0;
+ 	if (kvm_pause_in_guest(svm->vcpu.kvm)) {
+-		/* use guest values since host doesn't use them */
+-		vmcb02->control.pause_filter_count =
+-				svm->pause_filter_enabled ?
+-				svm->nested.ctl.pause_filter_count : 0;
++		/* use guest values since host doesn't intercept PAUSE */
++		vmcb02->control.pause_filter_count = pause_count12;
++		vmcb02->control.pause_filter_thresh = pause_thresh12;
+ 
+-		vmcb02->control.pause_filter_thresh =
+-				svm->pause_threshold_enabled ?
+-				svm->nested.ctl.pause_filter_thresh : 0;
+-
+-	} else if (!vmcb12_is_intercept(&svm->nested.ctl, INTERCEPT_PAUSE)) {
+-		/* use host values when guest doesn't use them */
++	} else {
++		/* start from host values otherwise */
+ 		vmcb02->control.pause_filter_count = vmcb01->control.pause_filter_count;
+ 		vmcb02->control.pause_filter_thresh = vmcb01->control.pause_filter_thresh;
+-	} else {
+-		/*
+-		 * Intercept every PAUSE otherwise and
+-		 * ignore both host and guest values
+-		 */
+-		vmcb02->control.pause_filter_count = 0;
+-		vmcb02->control.pause_filter_thresh = 0;
++
++		/* ... but ensure filtering is disabled if so requested.  */
++		if (vmcb12_is_intercept(&svm->nested.ctl, INTERCEPT_PAUSE)) {
++			if (!pause_count12)
++				vmcb02->control.pause_filter_count = 0;
++			if (!pause_thresh12)
++				vmcb02->control.pause_filter_thresh = 0;
++		}
+ 	}
+ 
+ 	nested_svm_transition_tlb_flush(vcpu);
+@@ -1003,8 +1003,11 @@ int nested_svm_vmexit(struct vcpu_svm *svm)
+ 	vmcb12->control.event_inj         = svm->nested.ctl.event_inj;
+ 	vmcb12->control.event_inj_err     = svm->nested.ctl.event_inj_err;
+ 
+-	if (!kvm_pause_in_guest(vcpu->kvm) && vmcb02->control.pause_filter_count)
++	if (!kvm_pause_in_guest(vcpu->kvm)) {
+ 		vmcb01->control.pause_filter_count = vmcb02->control.pause_filter_count;
++		vmcb_mark_dirty(vmcb01, VMCB_INTERCEPTS);
++
++	}
+ 
+ 	nested_svm_copy_common_state(svm->nested.vmcb02.ptr, svm->vmcb01.ptr);
+ 
+diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+index 1bd42e7dfa36..4aea82f668fb 100644
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -956,7 +956,7 @@ static void grow_ple_window(struct kvm_vcpu *vcpu)
+ 	struct vmcb_control_area *control = &svm->vmcb->control;
+ 	int old = control->pause_filter_count;
+ 
+-	if (kvm_pause_in_guest(vcpu->kvm) || !old)
++	if (kvm_pause_in_guest(vcpu->kvm))
+ 		return;
+ 
+ 	control->pause_filter_count = __grow_ple_window(old,
+@@ -977,7 +977,7 @@ static void shrink_ple_window(struct kvm_vcpu *vcpu)
+ 	struct vmcb_control_area *control = &svm->vmcb->control;
+ 	int old = control->pause_filter_count;
+ 
+-	if (kvm_pause_in_guest(vcpu->kvm) || !old)
++	if (kvm_pause_in_guest(vcpu->kvm))
+ 		return;
+ 
+ 	control->pause_filter_count =
+-- 
+2.31.1
 
-> +}
-> +
-> +/**
-> + * devm_cxl_pci_create_doe - Scan and set up DOE mailboxes
-> + *
-> + * @cxlds: The CXL device state
-> + *
-> + * RETURNS: 0 on success -ERRNO on failure.
-> + */
-> +static int devm_cxl_pci_create_doe(struct cxl_dev_state *cxlds)
-> +{
-> +	struct device *dev = cxlds->dev;
-> +	struct pci_dev *pdev = to_pci_dev(dev);
-> +	u16 off = 0;
-> +	int num_mbs = 0;
-> +	int rc;
-> +
-> +	pci_doe_for_each_off(pdev, off)
-> +		num_mbs++;
-> +
-
-Do you want to bail here if num_mbs == 0?
-
-> +	cxlds->doe_mbs = devm_kcalloc(dev, num_mbs, sizeof(*cxlds->doe_mbs),
-> +				      GFP_KERNEL);
-> +	if (!cxlds->doe_mbs)
-> +		return -ENOMEM;
-> +
-> +	pci_doe_for_each_off(pdev, off) {
-> +		struct pci_doe_mb *doe_mb;
-> +		int irq = -1;
-> +
-> +		if (cxlds->doe_use_irq)
-> +			irq = pci_doe_get_irq_num(pdev, off);
-> +
-> +		doe_mb = pci_doe_create_mb(pdev, off, irq);
-> +		if (IS_ERR(doe_mb)) {
-> +			pci_err(pdev,
-> +				"Failed to create MB object for MB @ %x\n",
-> +				off);
-> +			doe_mb = NULL;
-> +		}
-> +
-> +		cxlds->doe_mbs[cxlds->num_mbs] = doe_mb;
-> +		cxlds->num_mbs++;
-> +	}
-> +
-> +	rc = devm_add_action_or_reset(dev, cxl_doe_destroy_mb, cxlds);
-> +	if (rc)
-> +		return rc;
-> +
-> +	pci_info(pdev, "Configured %d DOE mailbox's\n", cxlds->num_mbs);
-> +
-> +	return 0;
-> +}
-> +
->  static int cxl_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
->  {
->  	struct cxl_register_map map;
-> @@ -454,6 +562,9 @@ static int cxl_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
->  	if (IS_ERR(cxlmd))
->  		return PTR_ERR(cxlmd);
->  
-> +	cxl_alloc_irq_vectors(cxlds);
-> +	devm_cxl_pci_create_doe(cxlds);
-
-If you're not going to check the return value, just make the functions void.
-
-> +
->  	if (range_len(&cxlds->pmem_range) && IS_ENABLED(CONFIG_CXL_PMEM))
->  		rc = devm_cxl_add_nvdimm(&pdev->dev, cxlmd);
->  
-> -- 
-> 2.35.1
-> 
