@@ -2,113 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93C0FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 02:47:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99FB6C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 02:51:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243650AbiEaCrG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 22:47:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33882 "EHLO
+        id S235284AbiEaCvy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 22:51:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232746AbiEaCrE (ORCPT
+        with ESMTP id S232746AbiEaCvu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 22:47:04 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9396393D6;
-        Mon, 30 May 2022 19:47:02 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id h5so8698367wrb.0;
-        Mon, 30 May 2022 19:47:02 -0700 (PDT)
+        Mon, 30 May 2022 22:51:50 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2E0512AC8
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 19:51:48 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id hv24-20020a17090ae41800b001e33eebdb5dso175429pjb.0
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 19:51:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=chromium.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Tqeh56MwCKAQqD5lEvr2lLRAypFwZalceRE/Lz3EVyM=;
-        b=Qtx49yFTZR43x/hcfYEQGZNxgSkEJmE/c+koB8DxRQe1QC0SxDEdlr29I3gQmnSCXT
-         r7cggj+XkDXNKUAOzJVMI4vrzd87iz9uqTCvnaCqQkMasYK5DFAYvmeVp33BLV1rZ4Jl
-         /9QgwZpFtUOyv2P7NOd2m1nd9QPpNlZsWfax04RebsIqQvPwzznVyq4WtEw4aEL/HFo5
-         xcKVYvjBCYokPXLt4mT3wQZ7Z2UQF5pdVzPHTpqSvC4Emi0KXNAtO78pcsmhR4MjPlRI
-         L5p4FYdsGYQJrkbyddhJBRD9lX1y5GYbdCq/T7zy2v0o2sT9xb2hy6ACr/BJgg+akcaP
-         RlXg==
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=xcpbx9Lt9Owdlm64rePa6qexHLWiyypbRMgxN1JLv/M=;
+        b=CyYXFkxhZiXQiu14RxVExNHuXRW0mFlO3k3+vtcoaKX56jC5Ba1StMa8qKRpw1gBRQ
+         m2pdXOpOXP5yoNapy24x4BR7MDFAg/xRghRxTbuu49cw3iyj+gWoa8iNtf8UAns32Wob
+         fQmMqbHWuHhV5B4vVeGxYjmDjsojaHhPcIBeQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Tqeh56MwCKAQqD5lEvr2lLRAypFwZalceRE/Lz3EVyM=;
-        b=BE3TL5BbV+74awcBqUcpHUqCrorrwi7xiLeJAhH8j6VcxrCbznqdvuz86cKX4x6dvf
-         wsBpguhe3PfXKNU6+EY0rERN0OiBI2XhfmmjYpo9pXmW1Do7NoDQmiZvmZkc3z9lU8P7
-         86GPabeC+9Oqv4XNKdEKuAqK2/3h4150WYNHtU7Gta+gM0FbjqxxtpTo04n1d8b2oEm/
-         LUz+q4ueb+fPDm0ELZyIUyaOKGVyNfzBS+QTGRauhMacxM51B9qLeHsqY8n+51LBI50I
-         SUjgpkMWoDkHVkUhMQijiVSOyK58Oi9PZRfWi/iekZdg+MYBik3tGkw4LuFS256+3Dvc
-         VwQA==
-X-Gm-Message-State: AOAM5330chN6Yy31O/MYrMeq0Jp5kE9D9WeeJVdaLkmjRcU5yePU62lw
-        ZWIy3YOUmvI4+mBhHR3RfjA=
-X-Google-Smtp-Source: ABdhPJxtAFg2mBE/um+Dcc3JPU6/kkuL8FeifCL+a6G6/OVUsQSoYscUIeDS9bDu6uAFwjEZSJHiOQ==
-X-Received: by 2002:adf:e7ca:0:b0:210:941:3363 with SMTP id e10-20020adfe7ca000000b0021009413363mr20049801wrn.25.1653965221405;
-        Mon, 30 May 2022 19:47:01 -0700 (PDT)
-Received: from olivier-3493erg ([2a01:e34:ec42:fd70:8e84:c3a8:e5ed:7183])
-        by smtp.gmail.com with ESMTPSA id d17-20020a05600c4c1100b0039771fbffcasm779715wmp.21.2022.05.30.19.47.00
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=xcpbx9Lt9Owdlm64rePa6qexHLWiyypbRMgxN1JLv/M=;
+        b=qPzCoqNvIJLHJXD1BMBPXrQYUN5/HLRpJBFYNtSJNhnk3wAjyHRCtNAYDonKQqBcJh
+         LXJxrEUUEMcyo3XCqxJlzJbYwPJcXBMrCRRtgGjVzpdIKEWmQsJdey8tg5k4VzIBozT4
+         Rv6DWxW7OpKg/ya76pFRxI9DDhSOfMtBEtztxYBM/Y7a9ZPobGQH/R79pklqFTdna5X/
+         Z/6GLbOKpleCyff92KDl0mHdXHfXcwF8xtTpQyR+Du5Wr/lEaeQKK6jzK2Aeaihc5i6z
+         cBUB5/loMkcenxUgMpTBf/KfA+5zPJYvd3LKR83EaR8qWtGO0THNzsFBW8tIT6Ox5BAV
+         nE7A==
+X-Gm-Message-State: AOAM530C3HuC7tgMzGCJGwXf03iWERxHitKab2fUfMAo+y04CZS1G30b
+        JKJxLihd/LFHGOkCqVxgQHHJEw==
+X-Google-Smtp-Source: ABdhPJylou6Lhk/REVZIpM88w/Cw5uS6g71yGFXefOXkdi3IddUox11VUsoNOmO40/Smst1WUN/3KA==
+X-Received: by 2002:a17:90a:de01:b0:1df:cda5:8332 with SMTP id m1-20020a17090ade0100b001dfcda58332mr26157122pjv.123.1653965508382;
+        Mon, 30 May 2022 19:51:48 -0700 (PDT)
+Received: from google.com ([240f:75:7537:3187:7d2a:ad1f:afa1:7770])
+        by smtp.gmail.com with ESMTPSA id i16-20020a056a00005000b00518382bceaesm9479310pfk.57.2022.05.30.19.51.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 May 2022 19:47:00 -0700 (PDT)
-Date:   Tue, 31 May 2022 04:46:58 +0200
-From:   Olivier dautricourt <olivierdautricourt@gmail.com>
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Cc:     sr@denx.de, vkoul@kernel.org, dmaengine@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
-Subject: Re: [PATCH v2] dmaengine: altera-msgdma: Fix kernel-doc
-Message-ID: <YpWBossUokIWkDfz@olivier-3493erg>
-References: <20220527074008.8458-1-jiapeng.chong@linux.alibaba.com>
+        Mon, 30 May 2022 19:51:47 -0700 (PDT)
+Date:   Tue, 31 May 2022 11:51:42 +0900
+From:   Sergey Senozhatsky <senozhatsky@chromium.org>
+To:     Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Gustavo Padovan <gustavo@padovan.org>,
+        Tomasz Figa <tfiga@chromium.org>,
+        Ricardo Ribalda <ribalda@chromium.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dma-fence: allow dma fence to have their own lock
+Message-ID: <YpWCvniLzJfcp684@google.com>
+References: <20220530142232.2871634-1-senozhatsky@chromium.org>
+ <7eee4274-bd69-df8d-9067-771366217804@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20220527074008.8458-1-jiapeng.chong@linux.alibaba.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <7eee4274-bd69-df8d-9067-771366217804@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 27, 2022 at 03:40:08PM +0800, Jiapeng Chong wrote:
-> Fix the following W=1 kernel warnings:
+On (22/05/30 16:55), Christian König wrote:
+> Am 30.05.22 um 16:22 schrieb Sergey Senozhatsky:
+> > [SNIP]
+> > So the `lock` should have at least same lifespan as the DMA fence
+> > that borrows it, which is impossible to guarantee in our case.
 > 
-> drivers/dma/altera-msgdma.c:927: warning: expecting prototype for
-> msgdma_dma_remove(). Prototype was for msgdma_remove() instead.
-> 
-> drivers/dma/altera-msgdma.c:758: warning: expecting prototype for
-> msgdma_chan_remove(). Prototype was for msgdma_dev_remove() instead.
-> 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-> ---
-> Changes in v2:
->   -Make the commit message more clearer,replace msgdma_remove()
-> with msgdma_dma_remove() in doc.
+> Nope, that's not correct. The lock should have at least same lifespan as the
+> context of the DMA fence.
 
-Acked-by: Olivier Dautricourt <olivierdautricourt@gmail.com>
-
-Thanks !
-> 
->  drivers/dma/altera-msgdma.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/dma/altera-msgdma.c b/drivers/dma/altera-msgdma.c
-> index 6f56dfd375e3..4153c2edb049 100644
-> --- a/drivers/dma/altera-msgdma.c
-> +++ b/drivers/dma/altera-msgdma.c
-> @@ -749,7 +749,7 @@ static irqreturn_t msgdma_irq_handler(int irq, void *data)
->  }
->  
->  /**
-> - * msgdma_chan_remove - Channel remove function
-> + * msgdma_dev_remove() - Device remove function
->   * @mdev: Pointer to the Altera mSGDMA device structure
->   */
->  static void msgdma_dev_remove(struct msgdma_device *mdev)
-> @@ -918,7 +918,7 @@ static int msgdma_probe(struct platform_device *pdev)
->  }
->  
->  /**
-> - * msgdma_dma_remove - Driver remove function
-> + * msgdma_remove() - Driver remove function
->   * @pdev: Pointer to the platform_device structure
->   *
->   * Return: Always '0'
-> -- 
-> 2.20.1.7.g153144c
-> 
+How does one know when it's safe to release the context? DMA fence
+objects are still transparently refcount-ed and "live their own lives",
+how does one synchronize lifespans?
