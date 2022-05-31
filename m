@@ -2,114 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0EBAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 09:06:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02451C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 09:07:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245066AbiEaJGX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 05:06:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42424 "EHLO
+        id S237917AbiEaJHD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 31 May 2022 05:07:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244620AbiEaJGQ (ORCPT
+        with ESMTP id S245123AbiEaJFc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 05:06:16 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98D87396BA
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 02:06:15 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id c2so7087212edf.5
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 02:06:15 -0700 (PDT)
+        Tue, 31 May 2022 05:05:32 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51E00369C9
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 02:05:31 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id s6so4429395lfo.13
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 02:05:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=B2NZyh+cIzrC0yFlwkj26EY9e6xfk3X9ZOP0bB7w4RU=;
-        b=evfYu89qrruMy5yGwmxBJhM8KXCVIu/OZBaUQPkSOXRQHIJSgPxnAPck4/CEMxA2xS
-         9A7fxfcNylHRm04f+y4UMLYh/5/ugmpXz/dtkGEleESJNaRVi5nItdPU3zCXw6R/FyTk
-         pEAm6gxRh8AHpjMqWy7kfyHE+70PbcPRhs25Ua0PkuS/i6eLr4f2Yr8nPe5tFyqo7g8k
-         RFDYapRfPijF2lpkcIgRSma8knwy6R00DZgglmSmZVwx0/EoggbEtqt+ZvIHxilNQgjW
-         jMhwJHDaFGIg960qPHjNUv7zjTAy5mCruh52XrxatfsES+i/H1XvXEfg8VsinY91pwT/
-         FOlA==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=uXvtrwihxvcxSs1Fpbv4pO6ci42Kw2r2BvzhnZ4/XRo=;
+        b=Kbi70PlsR5+i802aBEmHE5kSCiTflqXipOGStTJBs7NP5am4ttQBpDKSC/hOGNlPMy
+         tPACEWG22DC0KB6dkW2WlKLfsmHkNVRPHWbE/zLJJWx5el74LNPkTotrhwwn+jf/+w/Y
+         nI9YCvELVEYgAiGlLYRs9ySgxD2TmI+gHcAUgTPLzQeFscQYoNM7/VjJWdkwzo3NIOcX
+         mzsG42+ToUxlCjQbQuf16n5Bu+kGWDNYuKQh/WS0dmuQ3Jh3mWuU72I03QvymNoF0SyD
+         qAatat4lTj2CUpcFoeDWenrT2jU39J+m2GS7CDjezZpEtxdh2AOXtZj2p6bztXsThp0y
+         swZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=B2NZyh+cIzrC0yFlwkj26EY9e6xfk3X9ZOP0bB7w4RU=;
-        b=N5kBDzLEXTU3v0Suss8wH8GyTddMh9lq9bWzvxc2cAGb2wr/Ybn00NWCoRpp1rO3VG
-         uPfVrC8rh6GNY5WQWZBS+i0Xm8obHXKUHuLiUR4zhFQRnWixaUxRLCFkiq0Vp1/Ak/ax
-         v/EFkSEphTaljdQZ+gdLn5osaWQlUbCOkAYr9eQbH3eBP2f1gVYizejhJEdnyDLxlXty
-         fODMRdotYPBsKsq+c2zLM4djS7CYABH0YtokxF0XOmQ31CnTkvkSn0be54UO8Q6OJnq7
-         Kh5RmsoTc2fWw6AnLQwPCg+GAM8FJlce0ZukUNpvMUAcupIDr+BoIS84/WM83G+CcKs3
-         HivA==
-X-Gm-Message-State: AOAM533CeQ3QYLSO7ZVNjXLq9fqgZP4f2LMgdd+gZ576P71Qhx3ayEnq
-        N2dv2WOScwDS4ePdY40mFJOqLfrSEQJ04rvt
-X-Google-Smtp-Source: ABdhPJzfU8m5rdIdp7q9S5qXsHiz9hvCjAboBg4T85QPihizQhore6X/2gC1ZgEh7FJCE7skEc8wyA==
-X-Received: by 2002:a05:6402:d0e:b0:413:3d99:f2d6 with SMTP id eb14-20020a0564020d0e00b004133d99f2d6mr63612187edb.189.1653987974122;
-        Tue, 31 May 2022 02:06:14 -0700 (PDT)
-Received: from [192.168.0.179] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id fi5-20020a1709073ac500b006fed93bf71fsm4808930ejc.18.2022.05.31.02.06.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 31 May 2022 02:06:13 -0700 (PDT)
-Message-ID: <ae36420f-847b-c53b-24ad-22e3181bff51@linaro.org>
-Date:   Tue, 31 May 2022 11:06:12 +0200
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uXvtrwihxvcxSs1Fpbv4pO6ci42Kw2r2BvzhnZ4/XRo=;
+        b=IcH8G/fwM2iXKIk7DJvu97Sx2VR7R1lCfc5o0MYX6SsH8TxiQE4vKiCP+qizkkmeZc
+         lPoDo2zjJKdTeqgrLucJSxSSQHDJkwjFrJPsrC8H0O+OzXUHjPlellewD0Aee9NMPQCP
+         b7s+O+bs4GP/qYlAX0H11P1iSJVfWyWBYu32tZTJOqafIvtVnSZLaMnr/5sUvXDRy/y1
+         eC70xolzrEAbh6C6CltI79z5VquesZrlXHKRZa4qpX1vpoXZtH3DbND/arYrTV7bILaW
+         +JVzPrWx7ViqcLpg7TPWbp0q3nrnWvDmt0gYH84VFedr3rv0wedUdaB6HaWVdA2o3FYW
+         cv4w==
+X-Gm-Message-State: AOAM5328B5f3jPz1ZS7Uspuv2rrGkwifZyNQWeV36m3DpMOKeZDZaTxb
+        kXGVxfEff00DAC9BQZ473+B6kC37V5q3hODOpxUuMQ==
+X-Google-Smtp-Source: ABdhPJyz4e5cRckDm7lj2o7+M7mpbQaJQjZ1zy5BPi7XX0n8/aXbBoNj0soqbvW3QipRoCJ+q/B25+ibJO1Blaun0Ys=
+X-Received: by 2002:a05:6512:1156:b0:478:79b1:583c with SMTP id
+ m22-20020a056512115600b0047879b1583cmr29681645lfg.206.1653987929308; Tue, 31
+ May 2022 02:05:29 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 1/2] net/ncsi: use proper "mellanox" DT vendor prefix
-Content-Language: en-US
-To:     Paolo Abeni <pabeni@redhat.com>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Samuel Mendoza-Jonas <sam@mendozajonas.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20220529111017.181766-1-krzysztof.kozlowski@linaro.org>
- <48cb78ebd38dfe4ac05e337d5fb38623b7ee0e8f.camel@redhat.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <48cb78ebd38dfe4ac05e337d5fb38623b7ee0e8f.camel@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <000000000000f0b26205e04a183b@google.com> <3d3c6b5f-84cd-cb25-812e-dac77e02ddbf@kernel.dk>
+ <e0867860-12c6-e958-07de-cfbcf644b9fe@icloud.com> <bcac089a-36e5-0d85-1ec3-b683dac68b4f@kernel.dk>
+In-Reply-To: <bcac089a-36e5-0d85-1ec3-b683dac68b4f@kernel.dk>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Tue, 31 May 2022 11:05:18 +0200
+Message-ID: <CACT4Y+aqriNp1F5CJofqaxNMM+-3cxNR2nY0tHEtb4YDqDuHtg@mail.gmail.com>
+Subject: Re: [syzbot] UBSAN: array-index-out-of-bounds in io_submit_sqes
+To:     Jens Axboe <axboe@kernel.dk>
+Cc:     Hao Xu <haoxu.linux@icloud.com>,
+        syzbot <syzbot+b6c9b65b6753d333d833@syzkaller.appspotmail.com>,
+        asml.silence@gmail.com, io-uring@vger.kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 31/05/2022 10:21, Paolo Abeni wrote:
-> Hello,
-> 
-> On Sun, 2022-05-29 at 13:10 +0200, Krzysztof Kozlowski wrote:
->> "mlx" Devicetree vendor prefix is not documented and instead "mellanox"
->> should be used.
->>
->> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->> ---
->>  net/ncsi/ncsi-manage.c | 3 ++-
->>  1 file changed, 2 insertions(+), 1 deletion(-)
->>
->> diff --git a/net/ncsi/ncsi-manage.c b/net/ncsi/ncsi-manage.c
->> index 78814417d753..80713febfac6 100644
->> --- a/net/ncsi/ncsi-manage.c
->> +++ b/net/ncsi/ncsi-manage.c
->> @@ -1803,7 +1803,8 @@ struct ncsi_dev *ncsi_register_dev(struct net_device *dev,
->>  	pdev = to_platform_device(dev->dev.parent);
->>  	if (pdev) {
->>  		np = pdev->dev.of_node;
->> -		if (np && of_get_property(np, "mlx,multi-host", NULL))
->> +		if (np && (of_get_property(np, "mellanox,multi-host", NULL) ||
->> +			   of_get_property(np, "mlx,multi-host", NULL)))
->>  			ndp->mlx_multi_host = true;
->>  	}
->>
-> 
-> I can't guess which tree are you targeting, devicetree? net-next? could
-> you please specify?
+On Tue, 31 May 2022 at 11:01, Jens Axboe <axboe@kernel.dk> wrote:
+>
+> On 5/31/22 3:00 AM, Hao Xu wrote:
+> > On 5/31/22 16:45, Jens Axboe wrote:
+> >> On 5/31/22 1:55 AM, syzbot wrote:
+> >>> Hello,
+> >>>
+> >>> syzbot found the following issue on:
+> >>>
+> >>> HEAD commit:    3b46e4e44180 Add linux-next specific files for 20220531
+> >>> git tree:       linux-next
+> >>> console output: https://syzkaller.appspot.com/x/log.txt?x=16e151f5f00000
+> >>> kernel config:  https://syzkaller.appspot.com/x/.config?x=ccb8d66fc9489ef
+> >>> dashboard link: https://syzkaller.appspot.com/bug?extid=b6c9b65b6753d333d833
+> >>> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> >>>
+> >>> Unfortunately, I don't have any reproducer for this issue yet.
+> >>>
+> >>> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> >>> Reported-by: syzbot+b6c9b65b6753d333d833@syzkaller.appspotmail.com
+> >>>
+> >>> ================================================================================
+> >>> ================================================================================
+> >>> UBSAN: array-index-out-of-bounds in fs/io_uring.c:8860:19
+> >>> index 75 is out of range for type 'io_op_def [47]'
+> >>
+> >> 'def' is just set here, it's not actually used after 'opcode' has been
+> >> verified.
+> >>
+> >
+> > Maybe we can move it to be below the opcode check to comfort UBSAN.
+>
+> Yeah that's what I did, just rebased it to get rid of it:
+>
+> https://git.kernel.dk/cgit/linux-block/commit/?h=io_uring-5.19&id=fcde59feb1affb6d56aecadc3868df4631480da5
 
-Both independently. The patch here for net-next (although it is closed
-now). The DTS patch can come later via ARM SoC maintainer tree.
+If you are rebasing it, please add the following tag so that the bug
+is closed later:
 
-
-Best regards,
-Krzysztof
+Tested-by: syzbot+b6c9b65b6753d333d833@syzkaller.appspotmail.com
