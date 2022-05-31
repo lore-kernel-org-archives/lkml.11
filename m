@@ -2,80 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1D98C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 21:49:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88E69C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 21:50:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233452AbiEaVtS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 17:49:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59504 "EHLO
+        id S1348113AbiEaVuZ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 31 May 2022 17:50:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243958AbiEaVtQ (ORCPT
+        with ESMTP id S1348125AbiEaVuP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 17:49:16 -0400
-Received: from mail-oi1-f172.google.com (mail-oi1-f172.google.com [209.85.167.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FE0F8D6A1;
-        Tue, 31 May 2022 14:49:16 -0700 (PDT)
-Received: by mail-oi1-f172.google.com with SMTP id r65so168059oia.9;
-        Tue, 31 May 2022 14:49:16 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=+YdK30offKzuTZgxr62+00M+QWbwt3uA7V7H9/gNhvY=;
-        b=FsUL1Vv7kZLtXVKa9dVRNcYv5B3jPM11Hmz3v7vtfqNmol70ozYxJVmJGahhAMFYcq
-         JsMxeR+VJqswbFctiR3XU1SA1szibeoC35fYPmZ7vZ1ovyx4BkKgygpknNJZ4fSSwZqv
-         lXBxZq7VJmfHNm3Ftzzt4ilU0c715Z6SGAokKQjlxRaJQU19kssVd+/KrINxNqn5emyD
-         3yjZvKgLiAgGGHVvQsKoZySWHTdUZwYxFpuBkDb7qT3VL9LsF7nzB7+UK4FZUxFZxq2J
-         x+Miuxl5V+yqQn7KK5q+yIn5rj8hEhUx68Uy10ntYEI9X2fUq4ly7Ri8t9S/CBBtzQFb
-         URmg==
-X-Gm-Message-State: AOAM530iqiby1cs6MPRu4LMFz+jqYd0R4Nhtan5zKh39EEpkoeOhOLlp
-        fDaj6TzMcqMg3xr40d5w/Q==
-X-Google-Smtp-Source: ABdhPJwD6RXkPuAfYUMkWIfLQdr63/fiIfROvhb2rUyYgLwVv4ReaS7o65TXF0o2cMbd5Q2Pb3LLiA==
-X-Received: by 2002:a05:6808:1315:b0:32c:3e3e:c2d7 with SMTP id y21-20020a056808131500b0032c3e3ec2d7mr4283979oiv.299.1654033755383;
-        Tue, 31 May 2022 14:49:15 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id ek29-20020a056870f61d00b000f44c6041e1sm2048257oab.50.2022.05.31.14.49.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 May 2022 14:49:15 -0700 (PDT)
-Received: (nullmailer pid 2394769 invoked by uid 1000);
-        Tue, 31 May 2022 21:49:14 -0000
-Date:   Tue, 31 May 2022 16:49:14 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Frank Rowand <frowand.list@gmail.com>
-Cc:     Qun-Wei Lin <qun-wei.lin@mediatek.com>, matthias.bgg@gmail.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, casper.li@mediatek.com,
-        chinwen.chang@mediatek.com, kuan-ying.lee@mediatek.com
-Subject: Re: [PATCH] scripts: dtc: fix a false alarm for
- node_name_chars_strict
-Message-ID: <20220531214914.GA2388344-robh@kernel.org>
-References: <20220531053358.19003-1-qun-wei.lin@mediatek.com>
- <8d4b8cc3-8433-24f9-1fc5-12d71e640952@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8d4b8cc3-8433-24f9-1fc5-12d71e640952@gmail.com>
+        Tue, 31 May 2022 17:50:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 047E58D69D;
+        Tue, 31 May 2022 14:50:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A8ACBB816D8;
+        Tue, 31 May 2022 21:50:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3C8E7C385A9;
+        Tue, 31 May 2022 21:50:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654033812;
+        bh=K6dGceNuyiZZo4IrjV7+OhlZjmG7tEZEIhuBwFQTwwI=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=HklglZCPY2lhqywK+osH448koucYrgsn3WjWFnI+0oD+kwvTshsRC6bv73adio0zf
+         zcEs/2e63i/yOAtsUAzAU0CUcF+VbK+s2AsDMiLfGSFDoeIUVkUKy8rTwY3l1pICth
+         taXNe3y2Jp0daFOCh3EdwXQnagb1ma5MyyuEm1owqTy0QlR9kHHgc1gJRUOh+22Y1A
+         ScQxo23zV+OY60vEuHYShfAkuZ4Fr6znmpaSLFDadc+YPAfx7JiSdbykyjFgxT5Spu
+         J8uhNl09oUP8gEccSKheHdbYvcQRnxGJi+sBfu8LQyDGu9+eXrLhIfcPGjUzg0y8so
+         GRmjodvICnT4g==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1BF49F03944;
+        Tue, 31 May 2022 21:50:12 +0000 (UTC)
+Subject: Re: [PULL REQUEST] i2c-for-5.19
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <YpZB/KoqwZJxvzv4@shikoro>
+References: <YpZB/KoqwZJxvzv4@shikoro>
+X-PR-Tracked-List-Id: <linux-i2c.vger.kernel.org>
+X-PR-Tracked-Message-Id: <YpZB/KoqwZJxvzv4@shikoro>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/wsa/linux.git tags/i2c-for-5.19
+X-PR-Tracked-Commit-Id: 3cd4030da3a9b54ee1ffb8397aba857397c703e4
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: f8a52af9d00d59fd887d8ad1fa0c2c88a5d775b9
+Message-Id: <165403381201.9010.78429960678591762.pr-tracker-bot@kernel.org>
+Date:   Tue, 31 May 2022 21:50:12 +0000
+To:     Wolfram Sang <wsa@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Peter Rosin <peda@axentia.se>,
+        Bartosz Golaszewski <brgl@bgdev.pl>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 31, 2022 at 04:43:18PM -0400, Frank Rowand wrote:
-> On 5/31/22 01:33, Qun-Wei Lin wrote:
-> > The function check_node_name_chars_strict issues a false alarm when
-> > compiling an overlay dts.
-> > 
-> > /fragment@0/__overlay__: Character '_' not recommended in node name
-> > 
-> > This workaround will fix it by skip checking for node named __overlay__.
-> 
-> This is not a false alarm.
-> 
-> Do not special case node name "__overlay__".  This node name should never
-> occur in a modern overlay source file.
+The pull request you sent on Tue, 31 May 2022 18:27:40 +0200:
 
-A dtbo -> dts pass will give warnings, so handling these nodes is 
-worthwhile. Though thinking a bit more about it, I think this one is off 
-by default, but W=2 turns it on.
+> git://git.kernel.org/pub/scm/linux/kernel/git/wsa/linux.git tags/i2c-for-5.19
 
-Rob
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/f8a52af9d00d59fd887d8ad1fa0c2c88a5d775b9
+
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
