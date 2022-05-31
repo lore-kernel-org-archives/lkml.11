@@ -2,136 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2302BC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 14:49:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB14AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 14:49:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345320AbiEaOtT (ORCPT
+        id S1345328AbiEaOtl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 10:49:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34366 "EHLO
+        Tue, 31 May 2022 10:49:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345299AbiEaOtQ (ORCPT
+        with ESMTP id S1345299AbiEaOtj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 10:49:16 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C60232C131;
-        Tue, 31 May 2022 07:49:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654008555; x=1685544555;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=u9Z8ZFlRwWPx3bByNpAkkztxDD23bRv+DbFZ3HtAIpM=;
-  b=Owb2g0aiTFnSGEx3VcCNj852vW9z0+1S/fRM5wfsB7LUJpp12WusHe71
-   feN5erCY79W/XJSGJmWxq26OndsrDEg0gOLqcYlowi93Ez/OSTrioclD+
-   MLXWsfJlbEXSZlqcf2RUPJEPJHaBU5zyUiVXwlipjqTWH4SYmWMrjUPMk
-   8kEQwHw3LxTrRmTRrXvSo26Wx1izivl6oYQ3OzwawM9F7YZJq7H3p+Us7
-   YPj/Vd0ZdB5FjmYshlQdz1XW1DguiJckK8xynAORfswJLHBhn+NCD7TCQ
-   ztdiTN3G+Zlx/wY/awqZCknvnmLiSuCMNaT/cu2KNPEkCsbMnZ2zQ5Og9
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10364"; a="274998817"
-X-IronPort-AV: E=Sophos;i="5.91,265,1647327600"; 
-   d="scan'208";a="274998817"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 07:49:15 -0700
-X-IronPort-AV: E=Sophos;i="5.91,265,1647327600"; 
-   d="scan'208";a="611859531"
-Received: from jahern6-mobl1.amr.corp.intel.com (HELO [10.212.125.28]) ([10.212.125.28])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 07:49:14 -0700
-Message-ID: <ba4ddd60-335b-b80a-68a2-0568c166f82d@intel.com>
-Date:   Tue, 31 May 2022 07:49:16 -0700
+        Tue, 31 May 2022 10:49:39 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 507DDF43
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 07:49:39 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id e24so5253274pjt.0
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 07:49:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NAOtSJQ0e7lMXAVSUZPZ1qHrCN9pnSWlg6iMnewBSfg=;
+        b=cV7Mz+wAIW+PUEe0iYCSMFq+uwxZ91W/LWcYZNEYSILqBIgtLaEyH4um2dlf1uimil
+         Hi01/2VYvnNhg5DSMEI7jjDXglilceVlkoiPmjoJ7T37eqTTua6KsZfxs7YJoqo9iVYF
+         ZBze3AfYyWmvNzLR0j+MK6mh8wov6wK65LrFma3m1bAzxLgSpHMraTJBX2Bx14ExdN3Q
+         p8kWMI3acpRst921i2EBqp2XK8bfYwjbpd4dNcxzRkq0pyMxVqQoxW3Et3XaRFHK9XGT
+         2OCdR5DusT0ZqUmE3AGkp7ntPwr7BoFNaUddygiHIKy4/LvF4KgYPvWivit4UnnS58j3
+         OWjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NAOtSJQ0e7lMXAVSUZPZ1qHrCN9pnSWlg6iMnewBSfg=;
+        b=8KR/Pg+gUgrS7Pykg6gdSWsin+p9Qcl4Q48e7g85xoImt6TmJxs2FduBNWzy4B0BSE
+         bIVKbf5t506HZmJsh7nK1Tb7vS7hDqeVl18iM0cs885OB5Hqh6Jou+KdWqlRWyGv7zHN
+         x0kzPNPdyUXQFBN3okDg0+yj7XoxlfqMGpKlcW2gFYNUxXMlBTrjiQes33T0+4RIkTxP
+         81UmL6C3RNvWqY4M4GJToe28oltS7j+OzZT1ogPFunmzsbdGm3vgxxK0CcBrd3uQgboh
+         xfZKYo0rmJjEKpCtaJmAfD9kPJCMNp1+ywInQNIQceD46wC5/IRe0piMU1ZXYZpAzRoG
+         OPdw==
+X-Gm-Message-State: AOAM533dViHQUaqHEhhdIVARKVe6fCLT8UPear7goUyLObXsFT4YdJ7g
+        26nowOzMP7oCmsdn4e+9ofs=
+X-Google-Smtp-Source: ABdhPJwp7L4klTmbrkke0YpYCLWkj2Vr73IGnj3X69pgKGLK4gcgENFTfpGqAgXHRx3n2vVZJlo34g==
+X-Received: by 2002:a17:902:e80c:b0:163:d222:60b7 with SMTP id u12-20020a170902e80c00b00163d22260b7mr12131714plg.54.1654008578559;
+        Tue, 31 May 2022 07:49:38 -0700 (PDT)
+Received: from localhost.localdomain ([202.120.234.246])
+        by smtp.googlemail.com with ESMTPSA id d3-20020a17090a8d8300b001e2d4ef6160sm2007215pjo.27.2022.05.31.07.49.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 May 2022 07:49:38 -0700 (PDT)
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     Neil Armstrong <narmstrong@baylibre.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        dri-devel@lists.freedesktop.org, linux-amlogic@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     linmq006@gmail.com
+Subject: [PATCH 1/2] drm/meson: encoder_cvbs: Fix refcount leak in meson_encoder_cvbs_init
+Date:   Tue, 31 May 2022 18:48:15 +0400
+Message-Id: <20220531144818.26943-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.9.1
-Subject: Re: [PATCH] dmaengine: add verification of DMA_INTERRUPT capability
- for dmatest
-Content-Language: en-US
-To:     Vinod Koul <vkoul@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        dmaengine <dmaengine@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <164978679251.2361020.5856734256126725993.stgit@djiang5-desk3.ch.intel.com>
- <CAMuHMdVjDTAW-84c9Fh21f_GWOhnD4+VW2nqSTQ6EK-m+KG=vQ@mail.gmail.com>
- <YpWmcHtGzrv4oP5L@matsya>
-From:   Dave Jiang <dave.jiang@intel.com>
-In-Reply-To: <YpWmcHtGzrv4oP5L@matsya>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+of_graph_get_remote_node() returns remote device nodepointer with
+refcount incremented, we should use of_node_put() on it when done.
+Add missing of_node_put() to avoid refcount leak.
 
-On 5/30/2022 10:24 PM, Vinod Koul wrote:
-> On 30-05-22, 10:06, Geert Uytterhoeven wrote:
->> Hi Dave, Vinod,
-> Hi Geert,
->
->> On Wed, Apr 13, 2022 at 12:58 AM Dave Jiang <dave.jiang@intel.com> wrote:
->>> Looks like I forgot to add DMA_INTERRUPT cap setting to the idxd driver and
->>> dmatest is still working regardless of this mistake. Add an explicit check
->>> of DMA_INTERRUPT capability for dmatest to make sure the DMA device being used
->>> actually supports interrupt before the test is launched and also that the
->>> driver is programmed correctly.
->>>
->>> Signed-off-by: Dave Jiang <dave.jiang@intel.com>
->> Thanks for your patch, which is now commit a8facc7b988599f8
->> ("dmaengine: add verification of DMA_INTERRUPT capability for
->> dmatest") upstream.
->>
->>> --- a/drivers/dma/dmatest.c
->>> +++ b/drivers/dma/dmatest.c
->>> @@ -675,10 +675,16 @@ static int dmatest_func(void *data)
->>>          /*
->>>           * src and dst buffers are freed by ourselves below
->>>           */
->>> -       if (params->polled)
->>> +       if (params->polled) {
->>>                  flags = DMA_CTRL_ACK;
->>> -       else
->>> -               flags = DMA_CTRL_ACK | DMA_PREP_INTERRUPT;
->>> +       } else {
->>> +               if (dma_has_cap(DMA_INTERRUPT, dev->cap_mask)) {
->>> +                       flags = DMA_CTRL_ACK | DMA_PREP_INTERRUPT;
->>> +               } else {
->>> +                       pr_err("Channel does not support interrupt!\n");
->>> +                       goto err_pq_array;
->>> +               }
->>> +       }
->>>
->>>          ktime = ktime_get();
->>>          while (!(kthread_should_stop() ||
->>> @@ -906,6 +912,7 @@ static int dmatest_func(void *data)
->> Shimoda-san reports that this commit breaks dmatest on rcar-dmac.
->> Like most DMA engine drivers, rcar-dmac does not set the DMA_INTERRUPT
->> capability flag, hence dmatest now fails to start:
->>
->>      dmatest: Channel does not support interrupt!
->>
->> To me, it looks like the new check is bogus, as I believe it confuses
->> two different concepts:
->>
->>    1. Documentation/driver-api/dmaengine/provider.rst says:
->>
->>         - DMA_INTERRUPT
->>
->>           - The device is able to trigger a dummy transfer that will
->>             generate periodic interrupts
->>
->>    2. In non-polled mode, dmatest sets DMA_PREP_INTERRUPT.
->>       include/linux/dmaengine.h says:
->>
->>         * @DMA_PREP_INTERRUPT - trigger an interrupt (callback) upon
->> completion of
->>         *  this transaction
->>
->> As dmatest uses real transfers, I think it does not depend on
->> the ability to use interrupts from dummy transfers.
-> Yes this does not look right to me. DMA_INTERRUPT is for a specific
-> capability which is linked to dma_prep_interrupt() which dmatest does
-> not use so i think it is not correct for dmatest to use this...
->
-> I can revert this patch... Dave?
-Yes we can revert it.
+Fixes: 318ba02cd8a8 ("drm/meson: encoder_cvbs: switch to bridge with ATTACH_NO_CONNECTOR")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+---
+ drivers/gpu/drm/meson/meson_encoder_cvbs.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/gpu/drm/meson/meson_encoder_cvbs.c b/drivers/gpu/drm/meson/meson_encoder_cvbs.c
+index fd8db97ba8ba..8110a6e39320 100644
+--- a/drivers/gpu/drm/meson/meson_encoder_cvbs.c
++++ b/drivers/gpu/drm/meson/meson_encoder_cvbs.c
+@@ -238,6 +238,7 @@ int meson_encoder_cvbs_init(struct meson_drm *priv)
+ 	}
+ 
+ 	meson_encoder_cvbs->next_bridge = of_drm_find_bridge(remote);
++	of_node_put(remote);
+ 	if (!meson_encoder_cvbs->next_bridge) {
+ 		dev_err(priv->dev, "Failed to find CVBS Connector bridge\n");
+ 		return -EPROBE_DEFER;
+-- 
+2.25.1
+
