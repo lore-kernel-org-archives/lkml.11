@@ -2,97 +2,215 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9F0AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 16:15:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60F03C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 16:15:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346064AbiEaQPu (ORCPT
+        id S1346080AbiEaQPy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 12:15:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35522 "EHLO
+        Tue, 31 May 2022 12:15:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346051AbiEaQP0 (ORCPT
+        with ESMTP id S239219AbiEaQPq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 12:15:26 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 796E095DDC;
-        Tue, 31 May 2022 09:15:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1654013725; x=1685549725;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=AmlzsIo/Giyjo9UdRgEqUumyCRSpNAvYLMJiSoY6K9s=;
-  b=h6ue/4JZ4XhkxqRJw5/UO5jJxwLHvqhGp3KjQB/5DkrUoSO04rsVZaD2
-   EudLcvSCzg/Uemy2esQRWmRZEAiAMXI5GYLILV+6rswZ3FnrZGcQ2N5Z5
-   fQymYXHQ/MBW5GPMLlS7NLs2N0nIXNZbJBziQHciqOlciwK0Emv0pib0o
-   c=;
-Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 31 May 2022 09:15:25 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 09:15:24 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 31 May 2022 09:15:24 -0700
-Received: from hu-kriskura-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 31 May 2022 09:15:17 -0700
-From:   Krishna Kurapati <quic_kriskura@quicinc.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        "Doug Anderson" <dianders@chromium.org>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Wesley Cheng <quic_wcheng@quicinc.com>
-CC:     <devicetree@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-usb@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-phy@lists.infradead.org>, <quic_pkondeti@quicinc.com>,
-        <quic_ppratap@quicinc.com>, <quic_vpulyala@quicinc.com>,
-        Krishna Kurapati <quic_kriskura@quicinc.com>
-Subject: [PATCH v7 3/3] arm64: dts: qcom: sc7280: Update SNPS Phy params for SC7280 IDP device
-Date:   Tue, 31 May 2022 21:44:53 +0530
-Message-ID: <1654013693-21484-4-git-send-email-quic_kriskura@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1654013693-21484-1-git-send-email-quic_kriskura@quicinc.com>
-References: <1654013693-21484-1-git-send-email-quic_kriskura@quicinc.com>
+        Tue, 31 May 2022 12:15:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 453AA95DDA
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 09:15:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EE26FB810EE
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 16:15:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61A5DC3411E;
+        Tue, 31 May 2022 16:15:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654013742;
+        bh=TVgs8pObD4Gy+he4AStVAaVMXRyS4YbTqQVgEsrHYlE=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=LRXPn6WJNIA0LBbi2jQrWj4NXRV9q6HxvsbQ3dyix5uv7hSEIFxEFFnwbNpVJdV2U
+         vuUu5wZkZlE6Q4snUrWCwROlgFkxlBvCW1en+8UIZUSyzXG8ReJ1A8ue28PnSisL1m
+         Eeijd0+CwRSahgle+DavRFuQoYJOW+5qlWqZKeh/Ts0GYujiLxN9Hh99Btv3U7zfcO
+         Z+2Jou9kDP+onyRyWl/MMxydQy4c/Q0STeuod1N/FRZAw7K20Obt+y88kERe+j+hpr
+         B57yUGgDKgEc5qeIom5F/NpdjcrHBNyX+aRxTuHlsvPcPe5fGs6f9MBw/WkkoRt3Hi
+         9xaEUgYpHR52A==
+Message-ID: <bcc4c9fa41ace6f9d98d88d24d1bd67a469cbfeb.camel@kernel.org>
+Subject: Re: [PATCH 20/21] rcu/context_tracking: Merge dynticks counter and
+ context tracking states
+From:   nicolas saenz julienne <nsaenz@kernel.org>
+To:     Frederic Weisbecker <frederic@kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Phil Auld <pauld@redhat.com>,
+        Alex Belits <abelits@marvell.com>,
+        Xiongfeng Wang <wangxiongfeng2@huawei.com>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Yu Liao <liaoyu15@huawei.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        Paul Gortmaker <paul.gortmaker@windriver.com>,
+        Uladzislau Rezki <uladzislau.rezki@sony.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Mark Rutland <mark.rutland@arm.com>
+Date:   Tue, 31 May 2022 18:15:36 +0200
+In-Reply-To: <20220531142335.GA1272449@lothringen>
+References: <20220519145823.618983-1-frederic@kernel.org>
+         <20220519145823.618983-21-frederic@kernel.org>
+         <315b0b80f7f541b99a49a9fecb743874f31d95ba.camel@kernel.org>
+         <20220531142335.GA1272449@lothringen>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.1 (3.44.1-1.fc36) 
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Overriding the SNPS Phy tuning parameters for SC7280 IDP device.
+On Tue, 2022-05-31 at 16:23 +0200, Frederic Weisbecker wrote:
+> On Mon, May 30, 2022 at 08:02:57PM +0200, nicolas saenz julienne wrote:
+> > Hi Frederic,
+> >=20
+> > On Thu, 2022-05-19 at 16:58 +0200, Frederic Weisbecker wrote:
+> > > Updating the context tracking state and the RCU dynticks counter
+> > > atomically in a single operation is a first step towards improving CP=
+U
+> > > isolation. This makes the context tracking state updates fully ordere=
+d
+> > > and therefore allow for later enhancements such as postponing some wo=
+rk
+> > > while a task is running isolated in userspace until it ever comes bac=
+k
+> > > to the kernel.
+> > >=20
+> > > The state field becomes divided in two parts:
+> > >=20
+> > > 1) Two Lower bits for context tracking state:
+> > >=20
+> > > 	CONTEXT_KERNEL =3D 0
+> > >    	CONTEXT_IDLE =3D 1,
+> > > 	CONTEXT_USER =3D 2,
+> > > 	CONTEXT_GUEST =3D 3,
+> > >=20
+> > > 2) Higher bits for RCU eqs dynticks counting:
+> > >=20
+> > >     RCU_DYNTICKS_IDX =3D 4
+> > >=20
+> > >    The dynticks counting is always incremented by this value.
+> > >    (state & RCU_DYNTICKS_IDX) means we are NOT in an extended quiesce=
+nt
+> > >    state. This makes the chance for a collision more likely between t=
+wo
+> > >    RCU dynticks snapshots but wrapping up 28 bits of eqs dynticks
+> > >    increments still takes some bad luck (also rdp.dynticks_snap could=
+ be
+> > >    converted from int to long?)
+> > >=20
+> > > Some RCU eqs functions have been renamed to better reflect their broa=
+der
+> > > scope that now include context tracking state.
+> > >=20
+> > > Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
+> > > Cc: Paul E. McKenney <paulmck@kernel.org>
+> > > Cc: Peter Zijlstra <peterz@infradead.org>
+> > > Cc: Thomas Gleixner <tglx@linutronix.de>
+> > > Cc: Neeraj Upadhyay <quic_neeraju@quicinc.com>
+> > > Cc: Uladzislau Rezki <uladzislau.rezki@sony.com>
+> > > Cc: Joel Fernandes <joel@joelfernandes.org>
+> > > Cc: Boqun Feng <boqun.feng@gmail.com>
+> > > Cc: Nicolas Saenz Julienne <nsaenz@kernel.org>
+> > > Cc: Marcelo Tosatti <mtosatti@redhat.com>
+> > > Cc: Xiongfeng Wang <wangxiongfeng2@huawei.com>
+> > > Cc: Yu Liao<liaoyu15@huawei.com>
+> > > Cc: Phil Auld <pauld@redhat.com>
+> > > Cc: Paul Gortmaker<paul.gortmaker@windriver.com>
+> > > Cc: Alex Belits <abelits@marvell.com>
+> > > ---
+> >=20
+> > While working on a feature on top of this series (IPI deferral stuff) I=
+ believe
+> > I've found a discrepancy on how context state is being updated:
+> >=20
+> >  - When servicing an IRQ from user-space, we increment dynticks, and cl=
+ear the
+> >    ct state to show we're in-kernel.
+> >=20
+> >  - When servicing an IRQ from idle/guest or an NMI from any context we =
+only
+> >    increment the dynticks counter. The ct state remains unchanged.
+>=20
+> Hmm, an IRQ from userspace does:
+>=20
+>     ct_user_enter()
+>     //run in user
+>         //-----IRQ
+>         ct_user_exit()
+>         ct_irq_enter()
+>         ct_irq_exit()
+>         ct_user_enter()
+>     //run in user
+>=20
+> An IRQ from guest does:
+>=20
+>     for (;;) {
+>          context_tracking_guest_enter()
+>         //vmrun
+> 	//IRQ pending
+>         #VMEXIT
+>         context_tracking_guest_exit()
+> 	local_irq_enable()
+>         ct_irq_enter()
+>         ct_irq_exit()
+> 	local_irq_disable()
+>     }
+>=20
+>=20
+>     (although I see there is an "sti" right before "vmrun" so it looks
+>     possible to have ct_irq_enter() after context_tracking_guest_enter()
+>     if a host IRQ fires between the sti and the vmrun though I might be
+>     missing some kvm subtelty).
+>=20
+> An IRQ from idle does just:
+>=20
+>     ct_idle_enter()
+>         //IRQ
+>         ct_irq_enter()
+>         ct_irq_exit()
+>     ct_idle_exit()
+>=20
+> So guest looks mostly ok to me (except for the little sti before vmrun fo=
+r
+> which I have a doubt).
 
-Signed-off-by: Krishna Kurapati <quic_kriskura@quicinc.com>
----
- arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 6 ++++++
- 1 file changed, 6 insertions(+)
+Yes, shouldn't have mentioned guests. I got carried away.
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-index ecbf2b8..589258a 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-@@ -317,6 +317,12 @@
- 	vdda-pll-supply = <&vreg_l10c_0p8>;
- 	vdda33-supply = <&vreg_l2b_3p0>;
- 	vdda18-supply = <&vreg_l1c_1p8>;
-+	qcom,hs-rise-fall-time-bp = <0>;
-+	qcom,squelch-detector-bp = <(-2090)>;
-+	qcom,hs-disconnect-bp = <1743>;
-+	qcom,hs-amplitude-bp = <1780>;
-+	qcom,hs-crossover-voltage-microvolt = <(-31000)>;
-+	qcom,hs-output-impedance-micro-ohms = <2600000>;
- };
- 
- &usb_1_qmpphy {
--- 
-2.7.4
+> But idle at least is an exception and CONTEXT_IDLE will remain during the
+> interrupt handling. It's not that trivial to handle the idle case because
+> ct_irq_exit() needs to know that it is called between ct_idle_enter() and
+> ct_idle_exit().
 
+Just for the record, this behaviour was already here regardless of this ser=
+ies,
+so it's not something it needs to fix.
+
+Something like this should work, right?
+
+     ct_idle_enter()
+         //IRQ or NMI
+	 if (__ct_state() =3D=3D CONTEXT_IDLE)
+	     ct_idle_exit()
+         ct_irq_enter()
+	    ...
+         ct_irq_exit()
+	 if (needs_update_state()) //using irqentry_state_t for ex.
+	     ct_idle_entry()
+     ct_idle_exit()
+
+Note that it's not a big issue as we can work around this behaviour by chec=
+king
+through dynticks whether a CPU is really idle.
+
+Do you think it's worth fixing nonetheless?
+
+Regards,
+Nicolas
