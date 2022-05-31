@@ -2,125 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D6C9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 17:28:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1475C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 17:30:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346558AbiEaR2v (ORCPT
+        id S1346564AbiEaRaW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 13:28:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41912 "EHLO
+        Tue, 31 May 2022 13:30:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346551AbiEaR2s (ORCPT
+        with ESMTP id S1346060AbiEaRaU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 13:28:48 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D09F93989
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 10:28:47 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id d129so13431458pgc.9
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 10:28:47 -0700 (PDT)
+        Tue, 31 May 2022 13:30:20 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9602993471
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 10:30:18 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id m20so27946713ejj.10
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 10:30:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Tt/gOB9r37r5U7HxtgH6i80t5jbb5qgunubyztDkge0=;
-        b=hkD/eBMGGcmdiFaBHu2BT3jb7UyDt9oVBtTZYhiizvoIp454sxeKhm8+MZKDbv5qFL
-         ZK3rClkIYrmKjrTQ3GR3zWPw7A8PwXhkSr0llGzCp4uSt/YyXgQ2B2TfMu3F2r95GZic
-         973EYm5DKFtaHEQHWfolFJc9yzYxhgHyg0dY24KEKLkZCIKUdh6seNpGH7VmmX6CQ4Fn
-         zcIpW97bdp2OTI8bY4n/SkBR+hg+Q+4o8aL4iD9m8GvM0HpFcA0xRNZ2Ix7tdb0cnl6i
-         Aosu07MgtKInzCiGImh4PiFPYbCRXVWQcIWd1l/jCL+BseXymrtdp40b1nm/K3tux1+r
-         X5fA==
+        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZJ1Dv/ORClSlD+t4yWurULyU8Rzqx47jCXHy+bRYEDE=;
+        b=s4SFXEhIZO0VXaghT5MstJ3pOKhlcr6UMVHN6702O+K4zb4HghdAQ8ECXuhr5e3cwa
+         1tn6ZRRajJe94KKFptIBpCnK3mbwFFuLTEx/3W4v7zOn6xBBXd1Pmrdu1VoTmzqhztY2
+         NrHukB0XSDydD1LWnNSwgH9eSXZJO+j4JCGIgg1eV/E7+ciDUtFLDsmQ7hEDjxV3xpL3
+         dVg4f+mifOcN7CBo9rgfLB3IdEL8+gnUWSSrAWXeVAtRh5lq7S3aiEQtDBfAefsQ87iC
+         3AMxOmxb5BhxG08XHEmQnRxN0cXK1lq9cGTHNzRsl0sZwOagACD5DfxA4Cp1WGYxLP+1
+         oQ8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Tt/gOB9r37r5U7HxtgH6i80t5jbb5qgunubyztDkge0=;
-        b=NLM6HpWVYSGa1/lpi7jW3wIGVClXMpD8W8ZcJqRL/jmKd8NCxejW5eS4zr7Lo8ofVj
-         3Q1XnPEZ9LIH2hx+/gKgLA60BPEOMRv+VGaAg5rgIwGH4grTh/1ulyso9DiRb5ip9U+9
-         87iB+N7OCOeZAARraN0Ts1vf6RqsH2PmB92+lrziaXPdbun8rtBEXaaE+PncyG1U+TWI
-         EBeKTY2yGezPD7BKdqK/U5XP7E8wtkL4XNJ98XajxUtLDyJqbbnGy7Aihm2kvAb4l5yL
-         aUH7ERJUW0zBBhpoImF3l/ZbWZlxH4aAjXGu5Py1YXjbI3qU/bVL4G1KIQA1aTuqdC+9
-         ybkQ==
-X-Gm-Message-State: AOAM531/cIEQlk9T2Thl4CPqJAyTixZBPHBWz1uYwmmLfRhZlJZDXjeY
-        X1XPgBeBqQS8+UmBbYPi24RdgW2eKCxj0w==
-X-Google-Smtp-Source: ABdhPJxJiEl0UN3htJFLD1rtPCD0VDVXM6DoSobHaUqlamwlJFqyA3DDWZsqoE+HBihfRIGzg5IRBg==
-X-Received: by 2002:a63:e5d:0:b0:3aa:3c53:537e with SMTP id 29-20020a630e5d000000b003aa3c53537emr53612711pgo.622.1654018126567;
-        Tue, 31 May 2022 10:28:46 -0700 (PDT)
-Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
-        by smtp.gmail.com with ESMTPSA id u21-20020a056a00099500b0050dc76281bcsm11202370pfg.150.2022.05.31.10.28.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 May 2022 10:28:45 -0700 (PDT)
-Date:   Tue, 31 May 2022 11:28:43 -0600
-From:   Mathieu Poirier <mathieu.poirier@linaro.org>
-To:     Shengjiu Wang <shengjiu.wang@nxp.com>
-Cc:     bjorn.andersson@linaro.org, arnaud.pouliquen@foss.st.com,
-        linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        shengjiu.wang@gmail.com
-Subject: Re: [RESEND PATCH] rpmsg: char: Add mutex protection for
- rpmsg_eptdev_open()
-Message-ID: <20220531172843.GA531268@p14s>
-References: <1653104105-16779-1-git-send-email-shengjiu.wang@nxp.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZJ1Dv/ORClSlD+t4yWurULyU8Rzqx47jCXHy+bRYEDE=;
+        b=1veRCYJh7QsuyxURi31NA/zyaRBuVifG2+1vFI6eam1hXgfwU0TgC5QKXaDbxy++tS
+         MSR7jy2sgGSahtMFpEXtGbCM+LcCIt1TddpQUKDRhiUrNYrxhpqd2Xmp7HoD8ZRk0aKq
+         sQ6k4Jy3rCloJYZO5/FD7bm9u7OlpwvWGEvSGaCtZD2wPbDAa7q0OsAoZ3hj65NGTdPT
+         UiGj59RyOjPkuIFVR3vMOH2pngRSKNdyk0K8y6ACBaMrgG3BMeiX6QdkfhH5lx8amD/F
+         EXV4BULyrIRgSVKen8jp5h3mMRH+k0zgvZpvXo7AedGLMUMQPzJ/l1SBHp1t8MZK3W3+
+         f1/A==
+X-Gm-Message-State: AOAM530wW3Avp0p1ukoBlbgYE5unfeB0nGmh3R9baipC6qLAMm6AaxU4
+        +mQuqt9r/zbO4WhzEkoXcDl++Nw2FNVQw6r2yGalUFOPTMg=
+X-Google-Smtp-Source: ABdhPJxI+z0snHnBf/Eaz2ZZc3jiRyd33cbbpdKNUYxpFQhigJqknYAUGo56NcUOO8dLH+cZ0kBsp+5vp5BwrNLulUw=
+X-Received: by 2002:a17:907:6eab:b0:6fe:b5e2:7b0e with SMTP id
+ sh43-20020a1709076eab00b006feb5e27b0emr48517985ejc.736.1654018217174; Tue, 31
+ May 2022 10:30:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1653104105-16779-1-git-send-email-shengjiu.wang@nxp.com>
+References: <20220427144620.9105-1-pmalgujar@marvell.com> <20220427144620.9105-2-pmalgujar@marvell.com>
+ <CAMRc=Mf91eMF7D6CRtA8-HQ7pdtP343WUGhLG4qti_9zJF4ELQ@mail.gmail.com> <20220525131738.GA10532@Dell2s-9>
+In-Reply-To: <20220525131738.GA10532@Dell2s-9>
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+Date:   Tue, 31 May 2022 19:30:06 +0200
+Message-ID: <CAMRc=Mds_cKkdDJUV5h7prfPg-rBms33uFad_S-zzPaws=qfLg@mail.gmail.com>
+Subject: Re: [PATCH 1/5] gpio: thunderx: avoid potential deadlock
+To:     Piyush Malgujar <pmalgujar@marvell.com>
+Cc:     "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Robert Richter <rric@kernel.org>, cchavva@marvell.com,
+        wsadowski@marvell.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, May 21, 2022 at 11:35:05AM +0800, Shengjiu Wang wrote:
-> There is no mutex protection for rpmsg_eptdev_open(),
-> especially for eptdev->ept read and write operation.
-> It may cause issues when multiple instances call
-> rpmsg_eptdev_open() in parallel,the return state
-> may be success or EBUGY.
-> 
-> Fixes: 964e8bedd5a1 ("rpmsg: char: Return an error if device already open")
-> Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+On Wed, May 25, 2022 at 3:17 PM Piyush Malgujar <pmalgujar@marvell.com> wrote:
+>
+> On Mon, May 02, 2022 at 01:18:49PM +0200, Bartosz Golaszewski wrote:
+> > On Wed, Apr 27, 2022 at 4:46 PM Piyush Malgujar <pmalgujar@marvell.com> wrote:
+> > >
+> > > Using irqsave/irqrestore locking variants to avoid any deadlock.
+> > >
+> >
+> > I see you'll be resending this anyway so would you mind providing an
+> > example of a deadlock that is possible with no-irqsave variants?
+> > Thanks.
+> >
+> > Bart
+> >
+> Hi Bartosz,
+>
+> Thanks for the review.
+>
+> Please find below the issue scenario:
+> In the case when HARDIRQ-safe -> HARDIRQ-unsafe lock order is detected
+> and interrupt occurs, deadlock could occur.
+>
+> ========================================================
+> WARNING: possible irq lock inversion dependency detected
+> 5.18.0-rc6 #4 Not tainted
+> --------------------------------------------------------
+> swapper/3/0 just changed the state of lock:
+> ffff000110904cd8 (lock_class){-...}-{2:2}, at: handle_fasteoi_ack_irq+0x2c/0x1b0
+> but this lock took another, HARDIRQ-unsafe lock in the past:
+>  (&txgpio->lock){+.+.}-{2:2}
+>
+>
+> and interrupts could create inverse lock ordering between them.
+>
+>
+> other info that might help us debug this:
+>  Possible interrupt unsafe locking scenario:
+>
+>        CPU0                    CPU1
+>        ----                    ----
+>   lock(&txgpio->lock);
+>                                local_irq_disable();
+>                                lock(lock_class);
+>                                lock(&txgpio->lock);
+>   <Interrupt>
+>     lock(lock_class);
+>
+>  *** DEADLOCK ***
+>
+> ==========================================================
+>
+> Thanks,
+> Piyush
+> > > Signed-off-by: Piyush Malgujar <pmalgujar@marvell.com>
+> > > ---
 
-This looks good.  I will fix the above typo and apply the patch when the 5.19 cycle
-starts.
+Thanks. What I meant exactly was: resend it with that info in the
+commit message.
 
-Thanks,
-Mathieu
-
-> ---
-> changes in resend:
-> - add fixes tag
-> 
->  drivers/rpmsg/rpmsg_char.c | 7 ++++++-
->  1 file changed, 6 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/rpmsg/rpmsg_char.c b/drivers/rpmsg/rpmsg_char.c
-> index b6183d4f62a2..4f2189111494 100644
-> --- a/drivers/rpmsg/rpmsg_char.c
-> +++ b/drivers/rpmsg/rpmsg_char.c
-> @@ -120,8 +120,11 @@ static int rpmsg_eptdev_open(struct inode *inode, struct file *filp)
->  	struct rpmsg_device *rpdev = eptdev->rpdev;
->  	struct device *dev = &eptdev->dev;
->  
-> -	if (eptdev->ept)
-> +	mutex_lock(&eptdev->ept_lock);
-> +	if (eptdev->ept) {
-> +		mutex_unlock(&eptdev->ept_lock);
->  		return -EBUSY;
-> +	}
->  
->  	get_device(dev);
->  
-> @@ -137,11 +140,13 @@ static int rpmsg_eptdev_open(struct inode *inode, struct file *filp)
->  	if (!ept) {
->  		dev_err(dev, "failed to open %s\n", eptdev->chinfo.name);
->  		put_device(dev);
-> +		mutex_unlock(&eptdev->ept_lock);
->  		return -EINVAL;
->  	}
->  
->  	eptdev->ept = ept;
->  	filp->private_data = eptdev;
-> +	mutex_unlock(&eptdev->ept_lock);
->  
->  	return 0;
->  }
-> -- 
-> 2.17.1
-> 
+Bart
