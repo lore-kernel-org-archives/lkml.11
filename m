@@ -2,309 +2,371 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1DA8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 23:31:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B042C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 23:43:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348684AbiEaXbb (ORCPT
+        id S1348695AbiEaXnM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 19:31:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34022 "EHLO
+        Tue, 31 May 2022 19:43:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241462AbiEaXb2 (ORCPT
+        with ESMTP id S241462AbiEaXnK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 19:31:28 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 770979A98B
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 16:31:26 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id n28so10708296edb.9
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 16:31:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=wr9xpxSibC0ctyCpjnvowaocMYx7SBWLKjpEyTnQD44=;
-        b=PvlmpA2rjw0N8/GZkXsGQSPJ+gcFfBQQagwSoQXhhsGWaWkC4/aViDXoh7vjWD2eMO
-         PoypXG4Mwckqsh5TG/Ju9Baovrq2i16PZVUv7d5Djd5yr3LFRSyoWcy11iOcaS7Hjfj2
-         b4d01OclJMNng7WSUtYzSLPHRqnPtig5Ygvs+56tpXaVeQ5NHj43hL+6qrDoh5FGOYhI
-         k97kD4qqlanzUJ5rYdQg7avhqu0ICGXWLZV1rvIbZISX6MLx8Fftp16BlLkYtqXjwlCz
-         S8D7zJUw1ef7Qa6oqcvNvnYS5L4h/DR7QPjaW+Ets1RZf5ftjXdx46Cnsu0lMe7jsV0J
-         SYtw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=wr9xpxSibC0ctyCpjnvowaocMYx7SBWLKjpEyTnQD44=;
-        b=BpZQTc1FAXoEaf0i2iXCj30XSYeO1URiCH0oWrc2rGfpkTrBhSWM9492MNGgFzqHeC
-         8LXgOV0l0SzKhagysSy9hfPR0quqXXB0NRfdQglkMRbvL94TABRL4F4/Ta2mzcZNUF/l
-         t/MYjI9rc/U1SKf1EI38QHzNTMN1hNNyWb60GoZJGhr9EFGPeP+j/3YCIfThcPZyVu7q
-         IjLpN7JY/ndKrSp3grpJOVMkCa/9p4ZcDs092FovwslIQzAM41mKFAWFtkBRG2ol3AEF
-         o3XCbJ8It/sQIDX6KEYwzSmqZxGYaoRquEGmg0MwRwg6ChscBrdqt21obJxuLWsbSL0E
-         JbJA==
-X-Gm-Message-State: AOAM530Mucx/httGXe5jUMr/GV6h7kjHiM6fIh6wMv1+ZFqvJrqL1Jzq
-        7HU1Va8MUIgz7kqltO1jR81LS//Lg0z1yWjk7uCgQQ==
-X-Google-Smtp-Source: ABdhPJwdIobYizmVKy4rwtwaMbS3U+uqxpsfRmQeYYxhL47ztI017EI3rsLbA/mlRl2fwXB2lZYMjjOS4AbhEdjaYzo=
-X-Received: by 2002:a05:6402:354c:b0:42b:4e22:203b with SMTP id
- f12-20020a056402354c00b0042b4e22203bmr52476539edd.308.1654039884720; Tue, 31
- May 2022 16:31:24 -0700 (PDT)
+        Tue, 31 May 2022 19:43:10 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A9386C0CF;
+        Tue, 31 May 2022 16:43:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654040589; x=1685576589;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=1RPTB2MbClkXo6d6NveMB2OujJGHsYe4JAnZGSgCbDw=;
+  b=K2K8JpnhNqctOPNgYYBsFJiVLT+aBFlb3C3ZKq2omZnjPUIpsEK7XR3s
+   kmxysuHX0AScJIBBTtAp1xc3nwjHjpMBQqxn2RbFjfFzeQpfU/qYt3YcB
+   wFCNvdaORefdUP03rYi2/u7dnWM8dP+uP7UT+0bf7vL2yiJwxjYACbsoW
+   XzcmRotap1WbgIuano0h4JZ9BIvmda5jDfECHNyLyHVlm099zwoEhoFBi
+   FZi/Pp967oW3F00XJbCfPU351H5Ax0zoQSSQMFxkps5IuhVhVhaRpp+Uc
+   Yz99nrZ6xTEQFHq0Rofhl/LP5+yU79OtmU7ms6pdfHVHKUZDv3lfAHYVy
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10364"; a="263054015"
+X-IronPort-AV: E=Sophos;i="5.91,266,1647327600"; 
+   d="scan'208";a="263054015"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 16:43:08 -0700
+X-IronPort-AV: E=Sophos;i="5.91,266,1647327600"; 
+   d="scan'208";a="755369377"
+Received: from mdossant-mobl1.amr.corp.intel.com (HELO localhost) ([10.212.154.135])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 16:43:06 -0700
+Date:   Tue, 31 May 2022 16:43:05 -0700
+From:   Ira Weiny <ira.weiny@intel.com>
+To:     Lukas Wunner <lukas@wunner.de>
+Cc:     Dan Williams <dan.j.williams@intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Alison Schofield <alison.schofield@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Ben Widawsky <ben.widawsky@intel.com>,
+        linux-kernel@vger.kernel.org, linux-cxl@vger.kernel.org,
+        linux-pci@vger.kernel.org
+Subject: Re: [PATCH V8 03/10] PCI: Create PCI library functions in support of
+ DOE mailboxes.
+Message-ID: <YpaoCYcnuG1jLMWe@iweiny-desk3>
+References: <20220414203237.2198665-1-ira.weiny@intel.com>
+ <20220414203237.2198665-4-ira.weiny@intel.com>
+ <20220530190657.GA14765@wunner.de>
 MIME-Version: 1.0
-References: <20220516171315.2400578-1-tjmercier@google.com>
- <175c5af3-9224-9c8e-0784-349dad9a2954@amd.com> <CABdmKX2GcgCs1xANYPBp8OEtk9qqH7AvCzpdppj9rHXvMqWSAw@mail.gmail.com>
- <0875fa95-3a25-a354-1433-201fca81ed3e@amd.com> <CABdmKX1+VYfdzyVYOS5MCsr4ptGTygmuUP9ikyh-vW6DgKk2kg@mail.gmail.com>
- <YoM9BAwybcjG7K/H@kroah.com> <Yo4/XhWQkACWaPIh@phenom.ffwll.local>
- <CABdmKX2dC0fkFrCedjhzmheYiDVP4PnKBMeGkX3_bgrLjOiYOg@mail.gmail.com> <38da6dcd-b395-f32f-5a47-6a8f2c6a4331@amd.com>
-In-Reply-To: <38da6dcd-b395-f32f-5a47-6a8f2c6a4331@amd.com>
-From:   "T.J. Mercier" <tjmercier@google.com>
-Date:   Tue, 31 May 2022 16:31:13 -0700
-Message-ID: <CABdmKX2aUTLHGkiKLhP=4k4X3j6M9zmUvFMS=ddJVTWE+wk0+g@mail.gmail.com>
-Subject: Re: [PATCH v2] dma-buf: Move sysfs work out of DMA-BUF export path
-To:     =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Kalesh Singh <kaleshsingh@google.com>,
-        Minchan Kim <minchan@google.com>,
-        Greg Kroah-Hartman <gregkh@google.com>,
-        John Stultz <jstultz@google.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Hridya Valsaraju <hridya@google.com>, kernel-team@android.com,
-        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
-        Daniel Vetter <daniel.vetter@ffwll.ch>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220530190657.GA14765@wunner.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 29, 2022 at 11:12 PM Christian K=C3=B6nig
-<christian.koenig@amd.com> wrote:
->
-> Am 25.05.22 um 23:05 schrieb T.J. Mercier:
-> > On Wed, May 25, 2022 at 7:38 AM Daniel Vetter <daniel@ffwll.ch> wrote:
-> >> On Tue, May 17, 2022 at 08:13:24AM +0200, Greg Kroah-Hartman wrote:
-> >>> On Mon, May 16, 2022 at 05:08:05PM -0700, T.J. Mercier wrote:
-> >>>> On Mon, May 16, 2022 at 12:21 PM Christian K=C3=B6nig
-> >>>> <christian.koenig@amd.com> wrote:
-> >>>>> Am 16.05.22 um 20:08 schrieb T.J. Mercier:
-> >>>>>> On Mon, May 16, 2022 at 10:20 AM Christian K=C3=B6nig
-> >>>>>> <christian.koenig@amd.com> wrote:
-> >>>>>>> Am 16.05.22 um 19:13 schrieb T.J. Mercier:
-> >>>>>>>> Recently, we noticed an issue where a process went into direct r=
-eclaim
-> >>>>>>>> while holding the kernfs rw semaphore for sysfs in write (exclus=
-ive)
-> >>>>>>>> mode. This caused processes who were doing DMA-BUF exports and r=
-eleases
-> >>>>>>>> to go into uninterruptible sleep since they needed to acquire th=
-e same
-> >>>>>>>> semaphore for the DMA-BUF sysfs entry creation/deletion. In orde=
-r to avoid
-> >>>>>>>> blocking DMA-BUF export for an indeterminate amount of time whil=
-e
-> >>>>>>>> another process is holding the sysfs rw semaphore in exclusive m=
-ode,
-> >>>>>>>> this patch moves the per-buffer sysfs file creation to the defau=
-lt work
-> >>>>>>>> queue. Note that this can lead to a short-term inaccuracy in the=
- dmabuf
-> >>>>>>>> sysfs statistics, but this is a tradeoff to prevent the hot path=
- from
-> >>>>>>>> being blocked. A work_struct is added to dma_buf to achieve this=
-, but as
-> >>>>>>>> it is unioned with the kobject in the sysfs_entry, dma_buf does =
-not
-> >>>>>>>> increase in size.
-> >>>>>>> I'm still not very keen of this approach as it strongly feels lik=
-e we
-> >>>>>>> are working around shortcoming somewhere else.
-> >>>>>>>
-> >>>>>> My read of the thread for the last version is that we're running i=
-nto
-> >>>>>> a situation where sysfs is getting used for something it wasn't
-> >>>>>> originally intended for, but we're also stuck with this sysfs
-> >>>>>> functionality for dmabufs.
-> >>>>>>
-> >>>>>>>> Fixes: bdb8d06dfefd ("dmabuf: Add the capability to expose DMA-B=
-UF stats in sysfs")
-> >>>>>>>> Originally-by: Hridya Valsaraju <hridya@google.com>
-> >>>>>>>> Signed-off-by: T.J. Mercier <tjmercier@google.com>
-> >>>>>>>>
-> >>>>>>>> ---
-> >>>>>>>> See the originally submitted patch by Hridya Valsaraju here:
-> >>>>>>>> https://nam11.safelinks.protection.outlook.com/?url=3Dhttps%3A%2=
-F%2Flkml.org%2Flkml%2F2022%2F1%2F4%2F1066&amp;data=3D05%7C01%7Cchristian.ko=
-enig%40amd.com%7C8f00afd44b9744c45f5708da3e926503%7C3dd8961fe4884e608e11a82=
-d994e183d%7C0%7C0%7C637891095771223650%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4w=
-LjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;=
-sdata=3DpubWqUyqhCWpXHhJHsoqarc3GLtB6IFB1rhgfsL4a1M%3D&amp;reserved=3D0
-> >>>>>>>>
-> >>>>>>>> v2 changes:
-> >>>>>>>> - Defer only sysfs creation instead of creation and teardown per
-> >>>>>>>> Christian K=C3=B6nig
-> >>>>>>>>
-> >>>>>>>> - Use a work queue instead of a kthread for deferred work per
-> >>>>>>>> Christian K=C3=B6nig
-> >>>>>>>> ---
-> >>>>>>>>     drivers/dma-buf/dma-buf-sysfs-stats.c | 56 +++++++++++++++++=
-+++-------
-> >>>>>>>>     include/linux/dma-buf.h               | 14 ++++++-
-> >>>>>>>>     2 files changed, 54 insertions(+), 16 deletions(-)
-> >>>>>>>>
-> >>>>>>>> diff --git a/drivers/dma-buf/dma-buf-sysfs-stats.c b/drivers/dma=
--buf/dma-buf-sysfs-stats.c
-> >>>>>>>> index 2bba0babcb62..67b0a298291c 100644
-> >>>>>>>> --- a/drivers/dma-buf/dma-buf-sysfs-stats.c
-> >>>>>>>> +++ b/drivers/dma-buf/dma-buf-sysfs-stats.c
-> >>>>>>>> @@ -11,6 +11,7 @@
-> >>>>>>>>     #include <linux/printk.h>
-> >>>>>>>>     #include <linux/slab.h>
-> >>>>>>>>     #include <linux/sysfs.h>
-> >>>>>>>> +#include <linux/workqueue.h>
-> >>>>>>>>
-> >>>>>>>>     #include "dma-buf-sysfs-stats.h"
-> >>>>>>>>
-> >>>>>>>> @@ -168,10 +169,46 @@ void dma_buf_uninit_sysfs_statistics(void)
-> >>>>>>>>         kset_unregister(dma_buf_stats_kset);
-> >>>>>>>>     }
-> >>>>>>>>
-> >>>>>>>> +static void sysfs_add_workfn(struct work_struct *work)
-> >>>>>>>> +{
-> >>>>>>>> +     struct dma_buf_sysfs_entry *sysfs_entry =3D
-> >>>>>>>> +             container_of(work, struct dma_buf_sysfs_entry, sys=
-fs_add_work);
-> >>>>>>>> +     struct dma_buf *dmabuf =3D sysfs_entry->dmabuf;
-> >>>>>>>> +
-> >>>>>>>> +     /*
-> >>>>>>>> +      * A dmabuf is ref-counted via its file member. If this ha=
-ndler holds the only
-> >>>>>>>> +      * reference to the dmabuf, there is no need for sysfs kob=
-ject creation. This is an
-> >>>>>>>> +      * optimization and a race; when the reference count drops=
- to 1 immediately after
-> >>>>>>>> +      * this check it is not harmful as the sysfs entry will st=
-ill get cleaned up in
-> >>>>>>>> +      * dma_buf_stats_teardown, which won't get called until th=
-e final dmabuf reference
-> >>>>>>>> +      * is released, and that can't happen until the end of thi=
-s function.
-> >>>>>>>> +      */
-> >>>>>>>> +     if (file_count(dmabuf->file) > 1) {
-> >>>>>>> Please completely drop that. I see absolutely no justification fo=
-r this
-> >>>>>>> additional complexity.
-> >>>>>>>
-> >>>>>> This case gets hit around 5% of the time in my testing so the else=
- is
-> >>>>>> not a completely unused branch.
-> >>>>> Well I can only repeat myself: This means that your userspace is
-> >>>>> severely broken!
-> >>>>>
-> >>>>> DMA-buf are meant to be long living objects
-> >>>> This patch addresses export *latency* regardless of how long-lived t=
-he
-> >>>> object is. Even a single, long-lived export will benefit from this
-> >>>> change if it would otherwise be blocked on adding an object to sysfs=
-.
-> >>>> I think attempting to improve this latency still has merit.
-> >>> Fixing the latency is nice, but as it's just pushing the needed work =
-off
-> >>> to another code path, it will take longer overall for the sysfs stuff=
- to
-> >>> be ready for userspace to see.
-> >>>
-> >>> Perhaps we need to step back and understand what this code is suppose=
-d
-> >>> to be doing.  As I recall, it was created because some systems do not
-> >>> allow debugfs anymore, and they wanted the debugging information that
-> >>> the dmabuf code was exposing to debugfs on a "normal" system.  Moving
-> >>> that logic to sysfs made sense, but now I am wondering why we didn't =
-see
-> >>> these issues in the debugfs code previously?
-> >>>
-> >>> Perhaps we should go just one step further and make a misc device nod=
-e
-> >>> for dmabug debugging information to be in and just have userspace
-> >>> poll/read on the device node and we spit the info that used to be in
-> >>> debugfs out through that?  That way this only affects systems when th=
-ey
-> >>> want to read the information and not normal code paths?  Yeah that's =
-a
-> >>> hack, but this whole thing feels overly complex now.
-> >> A bit late on this discussion, but just wanted to add my +1 that we sh=
-ould
-> >> either redesign the uapi, or fix the underlying latency issue in sysfs=
-, or
-> >> whatever else is deemed the proper fix.
-> >>
-> >> Making uapi interfaces async in ways that userspace can't discover is =
-a
-> >> hack that we really shouldn't consider, at least for upstream. All kin=
-ds
-> >> of hilarious things might start to happen when an object exists, but n=
-ot
-> >> consistently in all the places where it should be visible. There's a
-> >> reason sysfs has all these neat property groups so that absolutely
-> >> everything is added atomically. Doing stuff later on just because usua=
-lly
-> >> no one notices that the illusion falls apart isn't great.
-> >>
-> >> Unfortunately I don't have a clear idea here what would be the right
-> >> solution :-/ One idea perhaps: Should we dynamically enumerate the obj=
-ects
-> >> when userspace does a readdir()? That's absolutely not how sysfs works=
-,
-> >> but procfs works like that and there's discussions going around about
-> >> moving these optimizations to other kernfs implementations. At least t=
-here
-> >> was a recent lwn article on this:
-> >>
-> >> https://nam11.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2Flw=
-n.net%2FArticles%2F895111%2F&amp;data=3D05%7C01%7Cchristian.koenig%40amd.co=
-m%7C8f00afd44b9744c45f5708da3e926503%7C3dd8961fe4884e608e11a82d994e183d%7C0=
-%7C0%7C637891095771223650%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQI=
-joiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=3DQ58OZ=
-i79vmKMCZLL0pY7NniIW6hmSqyWjlEaZgqzYtM%3D&amp;reserved=3D0
-> >>
-> >> But that would be serious amounts of work I guess.
-> >> -Daniel
-> >> --
-> >> Daniel Vetter"
-> >> Software Engineer, Intel Corporation
-> >> https://nam11.safelinks.protection.outlook.com/?url=3Dhttp%3A%2F%2Fblo=
-g.ffwll.ch%2F&amp;data=3D05%7C01%7Cchristian.koenig%40amd.com%7C8f00afd44b9=
-744c45f5708da3e926503%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C63789109=
-5771223650%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJB=
-TiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=3DpOIl5yszzak4TPqjBYyL=
-0mHjj%2F1nYRfNJbNPQTXBhbA%3D&amp;reserved=3D0
-> > Hi Daniel,
-> >
-> > My team has been discussing this, and I think we're approaching a
-> > consensus on a way forward that involves deprecating the existing
-> > uapi.
-> >
-> > I actually proposed a similar (but less elegant) idea to the readdir()
-> > one. A new "dump_dmabuf_data" sysfs file that a user would write to,
-> > which would cause a one-time creation of the per-buffer files. These
-> > could be left around to become stale, or get cleaned up after first
-> > read. However to me it seems impossible to correctly deal with
-> > multiple simultaneous users with this technique. We're not currently
-> > planning to pursue this.
-> >
-> > Thanks for the link to the article. That on-demand creation sounds
-> > like it would allow us to keep the existing structure and files for
-> > DMA-buf, assuming there is not a similar lock contention issue when
-> > adding a new node to the virtual tree. :)
->
-> I think that this on demand creation is even worse than the existing
-> ideas, but if you can get Greg to accept the required sysfs changes than
-> that's at least outside of my maintenance domain any more :)
+On Mon, May 30, 2022 at 09:06:57PM +0200, Lukas Wunner wrote:
+> On Thu, Apr 14, 2022 at 01:32:30PM -0700, ira.weiny@intel.com wrote:
+> > +static int pci_doe_recv_resp(struct pci_doe_mb *doe_mb, struct pci_doe_task *task)
+> [...]
+> > +	pci_write_config_dword(pdev, offset + PCI_DOE_READ, 0);
+> > +	/* Read the second dword to get the length */
+> > +	pci_read_config_dword(pdev, offset + PCI_DOE_READ, &val);
+> > +	pci_write_config_dword(pdev, offset + PCI_DOE_READ, 0);
+> > +
+> > +	length = FIELD_GET(PCI_DOE_DATA_OBJECT_HEADER_2_LENGTH, val);
+> > +	if (length > SZ_1M || length < 2)
+> > +		return -EIO;
+> > +
+> 
+> This API requires consumers to know the size of the response in advance.
+> That's not always the case, as exemplified by SPDM VERSION responses.
+> Jonathan uses a kludge in his SPDM patch which submits a first request
+> with a fixed size of 2 versions and, if that turns out to be too small,
+> submits a second request.
+> 
+> It would be nice if consumers are allowed to set request_pl to NULL.
+> Then a payload can be allocated here in pci_doe_recv_resp() with the
+> size retrieved above.
+> 
+> A flag may be necessary to indicate that the response is heap-allocated
+> and needs to be freed upon destruction of the pci_doe_task.
 
-Hah, ok. After chatting with Steven it sounds like an attempt at on
-demand creation for sysfs is not likely to happen soon, as the focus
-is on getting it working for tracefs first and letting it stew there
-for a while to polish it. I'll check with Greg when he's available
-again next week about whether that is a direction we should even
-consider before moving forward from here.
+I'm not comfortable with PCI allocating memory.  Especially optionally
+allocating memory.  And I'm not sure this really saves the extra queries.  The
+PCI layer will have to query first to determine response length.
+
+If the community does want PCI to allocate memory then I think the interface
+should be to always allocate it.
+
+> 
+> 
+> > +	/* First 2 dwords have already been read */
+> > +	length -= 2;
+> > +	/* Read the rest of the response payload */
+> > +	for (i = 0; i < min(length, task->response_pl_sz / sizeof(u32)); i++) {
+> > +		pci_read_config_dword(pdev, offset + PCI_DOE_READ,
+> > +				      &task->response_pl[i]);
+> > +		pci_write_config_dword(pdev, offset + PCI_DOE_READ, 0);
+> > +	}
+> 
+> You need to check the Data Object Ready bit.  The device may clear the
+> bit prematurely (e.g. as a result of a concurrent FLR or Conventional
+> Reset).  You'll continue reading zero dwords from the mailbox and
+> pretend success to the caller even though the response is truncated.
+
+If an FLR happens then truncation does not seem like a problem.
+
+> 
+> If you're concerned about performance when checking the bit on every
+> loop iteration, checking it only on the last but one iteration should
+> be sufficient to detect truncation.
+
+I'll review.  I don't think this is a fast path.
+
+> 
+> 
+> > +	*vid = FIELD_GET(PCI_DOE_DATA_OBJECT_DISC_RSP_3_VID, response_pl);
+> > +	*protocol = FIELD_GET(PCI_DOE_DATA_OBJECT_DISC_RSP_3_PROTOCOL,
+> > +			      response_pl);
+> > +	*index = FIELD_GET(PCI_DOE_DATA_OBJECT_DISC_RSP_3_NEXT_INDEX,
+> > +			   response_pl);
+> 
+> The fact that you need line breaks here is an indication that the
+> macros are too long.
+> 
+> 
+> > +/* DOE Data Object - note not actually registers */
+> > +#define PCI_DOE_DATA_OBJECT_HEADER_1_VID		0x0000ffff
+> > +#define PCI_DOE_DATA_OBJECT_HEADER_1_TYPE		0x00ff0000
+> > +#define PCI_DOE_DATA_OBJECT_HEADER_2_LENGTH		0x0003ffff
+> > +
+> > +#define PCI_DOE_DATA_OBJECT_DISC_REQ_3_INDEX		0x000000ff
+> > +#define PCI_DOE_DATA_OBJECT_DISC_RSP_3_VID		0x0000ffff
+> > +#define PCI_DOE_DATA_OBJECT_DISC_RSP_3_PROTOCOL		0x00ff0000
+> > +#define PCI_DOE_DATA_OBJECT_DISC_RSP_3_NEXT_INDEX	0xff000000
+> 
+> I'd get rid of "DATA_OBJECT_" everywhere, it's redundant with the
+> "Data Object" in "DOE".
+
+I'm ok with renaming.  Jonathan chose the names and no one has complained yet.
+
+> 
+> 
+> > +#define  PCI_DOE_STATUS_INT_STATUS		0x00000002  /* DOE Interrupt Status */
+> 
+> Another redundancy, I would get rid of the second "_STATUS".
+> 
+> 
+> > +#define  PCI_DOE_STATUS_DATA_OBJECT_READY	0x80000000  /* Data Object Ready */
+> 
+> I would shorten to PCI_DOE_STATUS_READY.
+> 
+> 
+> > 		Simplify submitting work to the mailbox
+> > 			Replace pci_doe_exchange_sync() with
+> > 			pci_doe_submit_task() Consumers of the mailbox
+> > 			are now responsible for setting up callbacks
+> > 			within a task object and submitting them to the
+> > 			mailbox to be processed.
+> 
+> I honestly think that's a mistake.  All consumers both in the CDAT
+> as well as in the SPDM series just want to wait for completion of
+> the task.  They have no need for an arbitrary callback and shouldn't
+> be burdended with providing one.  It just unnecessarily complicates
+> the API.
+> 
+> So only providing pci_doe_exchange_sync() and doing away with
+> pci_doe_submit_task() would seem like a more appropriate approach.
+
+This was discussed a couple of times and it was decided to keep the
+synchronicity out of the library functions and allow users to decide how to
+handle it.
+
+> 
+> 
+> > +/**
+> > + * pci_doe_for_each_off - Iterate each DOE capability
+> > + * @pdev: struct pci_dev to iterate
+> > + * @off: u16 of config space offset of each mailbox capability found
+> > + */
+> > +#define pci_doe_for_each_off(pdev, off) \
+> > +	for (off = pci_find_next_ext_capability(pdev, off, \
+> > +					PCI_EXT_CAP_ID_DOE); \
+> > +		off > 0; \
+> > +		off = pci_find_next_ext_capability(pdev, off, \
+> > +					PCI_EXT_CAP_ID_DOE))
+> > +
+> > +struct pci_doe_mb *pci_doe_create_mb(struct pci_dev *pdev, u16 cap_offset,
+> > +				     bool use_irq);
+> > +void pci_doe_destroy_mb(struct pci_doe_mb *doe_mb);
+> > +bool pci_doe_supports_prot(struct pci_doe_mb *doe_mb, u16 vid, u8 type);
+> 
+> Drivers should not be concerned with the intricacies of DOE
+> capabilities and mailboxes.
+
+I think it depends on which driver one is considering.
+
+> 
+> Moreover, the above API doesn't allow different drivers to access
+> the same DOE mailbox concurrently, e.g. if that mailbox supports
+> multiple protocols.  There's no locking to serialize access to the
+> mailbox by the drivers.
+
+Correct it is up to the higher level code to do this.
+
+> 
+> This should be moved to the PCI core instead:  In pci_init_capabilities(),
+> add a new call pci_doe_init() which enumerates all DOE capabilities.
+> Add a list_head to struct pci_dev and add each DOE instance found
+> to that list.  Destroy the list elements in pci_destroy_dev().
+> No locking needed for the list_head, you only ever modify the list
+> on device enumeration and destruction.
+> 
+> Then provide a pci_doe_find_mailbox() library function which drivers
+> call to retrieve the pci_doe_mb for a given pci_dev/vid/type tuple.
+> That avoids the need to traverse the list time and again.
+
+All that could be done above these calls.  I've abandoned the aux bus stuff
+after discussions with Dan.  So perhaps burring this away from the CXL drivers
+is a good idea.  But I still think this can serve as a base within the PCIe
+code.
+
+> 
+> 
+> > +/**
+> > + * struct pci_doe_mb - State for a single DOE mailbox
+> 
+> We generally use the same terms as the spec to make it easier for
+> readers to connect the language in the spec to the implementation.
+> 
+> The spec uniformly refers to "DOE instance".  I guess "mailbox"
+> is slightly more concise, so keep that, but please at least mention
+> the term "instance" in the struct's kernel-doc.
+> 
+> This implementation uses the term "task" for one request/response.
+> That term is not mentioned in the spec at all.  The spec refers to
+> "exchange" and "transfer" on several occasions, so I would have chosen
+> either one of those instead of the somewhat unfortunate "task".
+
+Again this was discussed and we settled on task.  I'm not married to the term
+and s/task/exchange/ is fine with me.  But IFRC Dan was not happy with
+exchange.
+
+> 
+> 
+> > + * This state is used to manage a single DOE mailbox capability.  All fields
+> > + * should be considered opaque to the consumers and the structure passed into
+> > + * the helpers below after being created by devm_pci_doe_create()
+> 
+> If the struct is considered opaque, why is it exposed in a public
+> header file?  Just use a forward declaration in the header
+> so that consumers can pass around pointers to the struct,
+> and hide the declaration proper in doe.c.
+
+I could do that.  It just did not seem important enough to make it that strict.
+
+> 
+> 
+> > + * @pdev: PCI device this belongs to mailbox belongs to
+>                              ^^^^^^^^^^
+> Typo.
+
+oops... yea slipped by in v9 as well.
+
 >
->
-> Regards,
-> Christian.
+> 
+> > + * @prots: Array of protocols supported on this DOE
+> > + * @num_prots: Size of prots array
+> 
+> Use @prots instead of prots everywhere in the kernel-doc.
+
+Ok.
+
+> 
+> 
+> > +	/*
+> > +	 * NOTE: doe_mb_prots is freed by pci_doe_free_mb automatically on
+> > +	 * error if pci_doe_cache_protocols() fails past this point.
+> > +	 */
+> 
+> s/doe_mb_prots/doe_mb->prots/
+> s/pci_doe_free_mb/pci_doe_free_mb()/
+
+This note has changed.
+
+> 
+> 
+> > +	/* DOE requests must be a whole number of DW */
+> > +	if (task->request_pl_sz % sizeof(u32))
+> > +		return -EINVAL;
+> 
+> It would be nice if this restriction could be lifted.  SPDM uses
+> requests which are not padded to dword-length.  It can run over other
+> transports which may not impose such restrictions.  The SPDM layer
+> should not need to worry about quirks of the transport layer.
+
+Are you suggesting that this layer PAD the request?  I hear your concern but
+users of this layer will need to understand this in the request payload
+allocated anyway.
+
+> 
+> 
+> > +static irqreturn_t pci_doe_irq_handler(int irq, void *data)
+> > +{
+> > +	struct pci_doe_mb *doe_mb = data;
+> > +	struct pci_dev *pdev = doe_mb->pdev;
+> > +	int offset = doe_mb->cap_offset;
+> > +	u32 val;
+> > +
+> > +	pci_read_config_dword(pdev, offset + PCI_DOE_STATUS, &val);
+> > +
+> > +	/* Leave the error case to be handled outside IRQ */
+> > +	if (FIELD_GET(PCI_DOE_STATUS_ERROR, val)) {
+> > +		mod_delayed_work(system_wq, &doe_mb->statemachine, 0);
+> > +		return IRQ_HANDLED;
+> > +	}
+> > +
+> > +	if (FIELD_GET(PCI_DOE_STATUS_INT_STATUS, val)) {
+> > +		pci_write_config_dword(pdev, offset + PCI_DOE_STATUS,
+> > +					PCI_DOE_STATUS_INT_STATUS);
+> > +		mod_delayed_work(system_wq, &doe_mb->statemachine, 0);
+> > +		return IRQ_HANDLED;
+> > +	}
+> > +
+> > +	return IRQ_NONE;
+> > +}
+> 
+> PCIe 6.0, table 7-316 says that an interrupt is also raised when
+> "the DOE Busy bit has been Cleared", yet such an interrupt is
+> not handled here.  It is incorrectly treated as a spurious
+> interrupt by returning IRQ_NONE.  The right thing to do
+> is probably to wake the state machine in case it's polling
+> for the Busy flag to clear.
+
+I thought Jonathan and I had work through how this was correct.  I'll have to
+review those threads.
+
+> 
+> 
+> > +enum pci_doe_state {
+> > +	DOE_IDLE,
+> > +	DOE_WAIT_RESP,
+> > +	DOE_WAIT_ABORT,
+> > +	DOE_WAIT_ABORT_ON_ERR,
+> > +};
+> > +
+> > +#define PCI_DOE_FLAG_ABORT	0
+> > +#define PCI_DOE_FLAG_DEAD	1
+> 
+> That's all internal and should live in doe.c, not the header file.
+
+Sure if struct pci_doe_mb is moved.
+
+Lets see how V9 looks from other perspectives.  I've incorporated some of this
+feedback for V10.
+
+Ira
+
+> Thanks,
+> 
+> Lukas
