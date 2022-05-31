@@ -2,59 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAA43C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 12:59:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9C98C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 12:59:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344429AbiEaM7S (ORCPT
+        id S1344441AbiEaM7n (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 08:59:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33540 "EHLO
+        Tue, 31 May 2022 08:59:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245085AbiEaM7Q (ORCPT
+        with ESMTP id S239911AbiEaM7l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 08:59:16 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4969165A2
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 05:59:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=BUGBteA8JfJc0y+36tB67b05qFOjdvVc5xttIZ7wN/s=; b=pgO9wo+FHXzCz6tvx585lEwztt
-        X6GBD59PGZXI0hlG4z61Q+5Ogny9aGHZsbtPHm9jSzubwFESORwhFP4Ydh+LWGt17e5jCCP1BR5t/
-        FW477VYiIpBYv3Xh3cHlbagKul15CCZpzjjNPVlkPhIUwvMUOPyuehCLfaqWeL3Qpo3PoOrWHivrP
-        XL32olI79zvFkNvcD/e1dsrQoYzIonKuI/Lta3uTgOuM85YxMcDm7A6p3bpJifQBbh45y+Edec+gw
-        /hDZRkiEfjBeOvxbQ6g+qDg/6RgpjghKLJ6QDyXVmzfu/4xhjJT+bVfj5JP/QT/7Cji2flZeZ6DuP
-        5l97hFfg==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nw1SC-005O1Z-0G; Tue, 31 May 2022 12:58:32 +0000
-Date:   Tue, 31 May 2022 13:58:31 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     akpm@linux-foundation.org, naoya.horiguchi@nec.com,
-        peterx@redhat.com, apopple@nvidia.com, ying.huang@intel.com,
-        osalvador@suse.de, mike.kravetz@oracle.com,
-        songmuchun@bytedance.com, hch@lst.de, dhowells@redhat.com,
-        cl@linux.com, linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 1/4] mm: reduce the rcu lock duration
-Message-ID: <YpYQ937N8Daad6u/@casper.infradead.org>
-References: <20220530113016.16663-1-linmiaohe@huawei.com>
- <20220530113016.16663-2-linmiaohe@huawei.com>
+        Tue, 31 May 2022 08:59:41 -0400
+X-Greylist: delayed 321 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 31 May 2022 05:59:39 PDT
+Received: from mail.aperture-lab.de (mail.aperture-lab.de [IPv6:2a01:4f8:c2c:665b::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75E5B165A2;
+        Tue, 31 May 2022 05:59:39 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id C911F3EA15;
+        Tue, 31 May 2022 14:54:13 +0200 (CEST)
+Date:   Tue, 31 May 2022 14:54:12 +0200
+From:   Linus =?utf-8?Q?L=C3=BCssing?= <linus.luessing@c0d3.blue>
+To:     Baligh Gasmi <gasmibal@gmail.com>
+Cc:     Johannes Berg <johannes@sipsolutions.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "open list:MAC80211" <linux-wireless@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        b.a.t.m.a.n@lists.open-mesh.org
+Subject: Re: [RFC PATCH v3 1/1] mac80211: use AQL airtime for expected
+ throughput.
+Message-ID: <YpYP9NBD+Wmzup+s@sellars>
+References: <20220531100922.491344-1-gasmibal@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220530113016.16663-2-linmiaohe@huawei.com>
+In-Reply-To: <20220531100922.491344-1-gasmibal@gmail.com>
+X-Last-TLS-Session-Version: TLSv1.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 30, 2022 at 07:30:13PM +0800, Miaohe Lin wrote:
-> Commit 3268c63eded4 ("mm: fix move/migrate_pages() race on task struct")
-> extends the period of the rcu_read_lock until after the permissions checks
-> are done to prevent the task pointed to from changing from under us. But
-> the task_struct refcount is also taken at that time, the reference to task
-> is guaranteed to be stable. So it's unnecessary to extend the period of
-> the rcu_read_lock. Release the rcu lock after task refcount is successfully
-> grabbed to reduce the rcu holding time.
+On Tue, May 31, 2022 at 12:09:22PM +0200, Baligh Gasmi wrote:
+> Since the integration of AQL, packet TX airtime estimation is
+> calculated and counted to be used for the dequeue limit.
+> 
+> Use this estimated airtime to compute expected throughput for
+> each station.
+> 
+> It will be a generic mac80211 implementation. If the driver has
+> get_expected_throughput implementation, it will be used instead.
+> 
+> Useful for L2 routing protocols, like B.A.T.M.A.N.
+> 
+> Signed-off-by: Baligh Gasmi <gasmibal@gmail.com>
 
-But why bother?  You know the RCU read lock isn't a "real" lock, right?
+Hi Baligh,
+
+Thanks for your work, this indeed sounds very relevant for
+batman-adv. Do you have some test results on how this compares to
+real throughput? And maybe how it compares to other methods we
+already have in the kernel, like expected throughput via
+minstrel_ht rate control or the estimates performed in 802.11s
+HWMP [0]?
+
+Is there a certain minimum amount of traffic you'd suggest to have
+enough samples to get a meaningful result?
+
+I'm also wondering if we are starting to accumulate too many
+places to provide wifi expected throughput calculations. Do you
+see a chance that this generic mac80211 implementation could be made
+good enough to be used as the sole source for both batman-adv and
+802.11s HWMP, for instance? Or do you see some pros and cons
+between the different methods?
+
+Regards, Linus
+
+
+[0]: https://elixir.bootlin.com/linux/v5.18/source/net/mac80211/mesh_hwmp.c#L295
