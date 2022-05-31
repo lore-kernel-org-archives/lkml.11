@@ -2,62 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9900C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 12:50:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EA34C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 12:50:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344395AbiEaMun (ORCPT
+        id S1344401AbiEaMur (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 08:50:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51274 "EHLO
+        Tue, 31 May 2022 08:50:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244195AbiEaMu1 (ORCPT
+        with ESMTP id S1344383AbiEaMuc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 08:50:27 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE23E73552
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 05:50:25 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id r129so2680534wmr.3
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 05:50:25 -0700 (PDT)
+        Tue, 31 May 2022 08:50:32 -0400
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98D047355C
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 05:50:29 -0700 (PDT)
+Received: by mail-wm1-x32b.google.com with SMTP id f7-20020a1c3807000000b0039c1a10507fso1119967wma.1
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 05:50:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=baylibre-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=vH18YmztAddzvuuGm66+CYpM63IW/TSQJt/1O1NxYf8=;
-        b=mvAUlLlgWq3s1GHJmM8Ti0FVDe+xL07OqxPOiHqygKOx9iLzqVbGNbUBaMqIS75F/n
-         ZtrI0pWp+siR+HrEjQH6BEZtH4t7MN19kVaMbsXjlQ2eEHr5cXg5QiJ+89r/+1Eontwo
-         ISwF+uIYnlCrUYEzfoUzLYcZpsjIaY1mY70FWxtDMaKzFNm28MFj4DkD1JjojSIvA7bq
-         YGy+vyamBVpY4v09jx8MlCfT+EZW+abjXtr9pNa+rujp1wxUqhqin3NJazrx/+p0G6UG
-         7Ekx8GidumaYatHriMFCyKVOH5val5StsB/9oASu6zKg68B72/5DpzQzAStVI+jLoaIf
-         DjbA==
+        bh=YLlRUeN/TOrT2ebBiIFjsBEVkxm8B/bhYM4k20ZOGZg=;
+        b=4y4HAEoKzbTSyTgajffhR2aDVgvpwQKNHVxtafAMmAzhwZgy8J0N+SW//gQNXEYCHE
+         NOLtKIE4XCpn5KLcohuK1SQ41zRLV3svSj7hpHmwuYMg0vGfPCvniT2Rd1wkoKZKk0dv
+         C83w1q8MipD7OFVbXuMhCq/HhwtEIYcOsSTLEuFLOtAR97BhFb0/7gPafVrMJFy4kIAE
+         S5eJhPqZUeFsmEy0QK2cWGESre3hOUpIQI1H2v/zJOHcxtzEvX4atcMhFnYEQO6629MS
+         xoQ73MjWqKzoIdnaPFLNJTuX55lurDtcyd5BvscNsJRUFvRAza8ah3KhcMpZm3mhReVh
+         YHzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=vH18YmztAddzvuuGm66+CYpM63IW/TSQJt/1O1NxYf8=;
-        b=4UpTSTkH8K4uqWN4pi0ZPCNRHHhKz3vn8h5APPeWwwe/5FisP+k503CM5Eqn7v0Szm
-         WD0eEqui445xGVJX/m5p86KsRn75ou7ZDSEKtmVZZ6ASKvMfjMKQlNGXsgQHgblHZeUM
-         YT2PsHRtXL3iS9ZKMWSBaOGjZads/aaWlAylzU3jLAH+NEdvraqFv0tDOqXW9LFwblmM
-         oAx7rJYYYntKICfXeTuoisy4uqSUX5SE7sC/h/rW9C1/p1GkqLMcqtWfo5DccLoJIu+X
-         gQwB7oZngeugQT2a/hhbvavAl00y90PRni9VnmUzOuuQ6d7XOMW7kUOhsQUT92p6tpvM
-         K5Lg==
-X-Gm-Message-State: AOAM531WQPKuhNFG6jPi2dIFPQh4LkRdYMaN50qBc9Fqr054GKJc8d8P
-        0PZdzq1tauV4kqLPM93W2AGHdQ==
-X-Google-Smtp-Source: ABdhPJwQ38QgkJzAFctHWeekZJuWWVLy/1P/trpuL3oru//3qDkhF0gce5Krlfm/5Z6spoPXwHobJA==
-X-Received: by 2002:a05:600c:34d1:b0:397:4c0d:598a with SMTP id d17-20020a05600c34d100b003974c0d598amr23295563wmq.36.1654001424541;
-        Tue, 31 May 2022 05:50:24 -0700 (PDT)
+        bh=YLlRUeN/TOrT2ebBiIFjsBEVkxm8B/bhYM4k20ZOGZg=;
+        b=STAzxHruQ3Ivd02CV0EdYkX6RR/ceWpN9ZcykQ4Pso+AawhUFDGw3pA/nrn7S8M07G
+         Celg52+oR955wd2U/H8naTRHrddffqf8M1uQ864ej6imgEt3Lpr2VvOnb1XTZlSFw2Hm
+         /KUiH9i3V091+VZPKYdzEfI5XZ1xCrO+55q50pYIiPZv3aJXEVLFCzB8fpaU0GUmZfX4
+         4DrZcXwCttZ09JwrivSkQkC0INw3q4snZTRUKrn3K2pYmrKThmNeIiKeUotZwwnTOA+9
+         AHGaN/Xo7AT93zSXKSY5sUauViN0p11vwQRZzaOYDk1CNlPcdQv5fS5vbCwo6JlFw71T
+         MPfw==
+X-Gm-Message-State: AOAM530Y29FqJcYCE3E+8YNX1ZCkL2AfmRX1NxQrBX0OsH7WpzovVX/i
+        SFNgrybOzW6YRMe6AOF68KJyxw==
+X-Google-Smtp-Source: ABdhPJyI3B52WGxQAocPAuXIiOIrcAUAGmzuyTmzC1BOgLKoCbjxKRJR7BzukFIiGKNeJhICcrjYjQ==
+X-Received: by 2002:a05:600c:1492:b0:397:4afc:cc76 with SMTP id c18-20020a05600c149200b003974afccc76mr23694357wmh.124.1654001428114;
+        Tue, 31 May 2022 05:50:28 -0700 (PDT)
 Received: from helium.lan ([88.160.162.107])
-        by smtp.gmail.com with ESMTPSA id i13-20020adfaacd000000b0020fc40d006bsm11475019wrc.17.2022.05.31.05.50.23
+        by smtp.gmail.com with ESMTPSA id i13-20020adfaacd000000b0020fc40d006bsm11475019wrc.17.2022.05.31.05.50.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 May 2022 05:50:23 -0700 (PDT)
+        Tue, 31 May 2022 05:50:27 -0700 (PDT)
 From:   Fabien Parent <fparent@baylibre.com>
-To:     Lee Jones <lee.jones@linaro.org>,
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
         Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     Fabien Parent <fparent@baylibre.com>,
+Cc:     Fabien Parent <fparent@baylibre.com>, linux-input@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 5/7] mfd: mt6358-irq: add MT6357 PMIC support
-Date:   Tue, 31 May 2022 14:49:57 +0200
-Message-Id: <20220531124959.202787-6-fparent@baylibre.com>
+Subject: [PATCH 7/7] Input: mtk-pmic-keys: add MT6357 support
+Date:   Tue, 31 May 2022 14:49:59 +0200
+Message-Id: <20220531124959.202787-8-fparent@baylibre.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220531124959.202787-1-fparent@baylibre.com>
 References: <20220531124959.202787-1-fparent@baylibre.com>
@@ -67,82 +67,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add MT6357 PMIC IRQ support.
+Add PMIC Keys support on MT6357 SoC.
 
 Signed-off-by: Fabien Parent <fparent@baylibre.com>
 ---
- drivers/mfd/mt6358-irq.c        | 24 ++++++++++++++++++++++++
- include/linux/mfd/mt6397/core.h |  1 +
- 2 files changed, 25 insertions(+)
 
-diff --git a/drivers/mfd/mt6358-irq.c b/drivers/mfd/mt6358-irq.c
-index ea5e452510eb..389756436af6 100644
---- a/drivers/mfd/mt6358-irq.c
-+++ b/drivers/mfd/mt6358-irq.c
-@@ -3,6 +3,8 @@
- // Copyright (c) 2020 MediaTek Inc.
- 
+This commit depends on 
+https://lore.kernel.org/all/20220415153629.1817202-1-fparent@baylibre.com/
+
+ drivers/input/keyboard/mtk-pmic-keys.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/drivers/input/keyboard/mtk-pmic-keys.c b/drivers/input/keyboard/mtk-pmic-keys.c
+index 609b87afd020..3a256c885a3b 100644
+--- a/drivers/input/keyboard/mtk-pmic-keys.c
++++ b/drivers/input/keyboard/mtk-pmic-keys.c
+@@ -9,6 +9,7 @@
  #include <linux/interrupt.h>
-+#include <linux/mfd/mt6357/core.h>
+ #include <linux/kernel.h>
+ #include <linux/mfd/mt6323/registers.h>
 +#include <linux/mfd/mt6357/registers.h>
- #include <linux/mfd/mt6358/core.h>
  #include <linux/mfd/mt6358/registers.h>
- #include <linux/mfd/mt6359/core.h>
-@@ -17,6 +19,17 @@
- 
- #define MTK_PMIC_REG_WIDTH 16
- 
-+static const struct irq_top_t mt6357_ints[] = {
-+	MT6357_TOP_GEN(BUCK),
-+	MT6357_TOP_GEN(LDO),
-+	MT6357_TOP_GEN(PSC),
-+	MT6357_TOP_GEN(SCK),
-+	MT6357_TOP_GEN(BM),
-+	MT6357_TOP_GEN(HK),
-+	MT6357_TOP_GEN(AUD),
-+	MT6357_TOP_GEN(MISC),
-+};
-+
- static const struct irq_top_t mt6358_ints[] = {
- 	MT6358_TOP_GEN(BUCK),
- 	MT6358_TOP_GEN(LDO),
-@@ -39,6 +52,13 @@ static const struct irq_top_t mt6359_ints[] = {
- 	MT6359_TOP_GEN(MISC),
+ #include <linux/mfd/mt6397/core.h>
+ #include <linux/mfd/mt6397/registers.h>
+@@ -87,6 +88,17 @@ static const struct mtk_pmic_keys_pdata mt6358_pdata = {
+ 	.has_key_release_irqs = true,
  };
  
-+static struct pmic_irq_data mt6357_irqd = {
-+	.num_top = ARRAY_SIZE(mt6357_ints),
-+	.num_pmic_irqs = MT6357_IRQ_NR,
-+	.top_int_status_reg = MT6357_TOP_INT_STATUS0,
-+	.pmic_ints = mt6357_ints,
++static const struct mtk_pmic_keys_pdata mt6357_regs = {
++	.keys_regs[MTK_PMIC_PWRKEY_INDEX] =
++		MTK_PMIC_KEYS_REGS(MT6357_TOPSTATUS,
++		0x2, MT6357_PSC_TOP_INT_CON0, 0x5),
++	.keys_regs[MTK_PMIC_HOMEKEY_INDEX] =
++		MTK_PMIC_KEYS_REGS(MT6357_TOPSTATUS,
++		0x8, MT6357_PSC_TOP_INT_CON0, 0xa),
++	.pmic_rst_reg = MT6357_TOP_RST_MISC,
++	.has_key_release_irqs = true,
 +};
 +
- static struct pmic_irq_data mt6358_irqd = {
- 	.num_top = ARRAY_SIZE(mt6358_ints),
- 	.num_pmic_irqs = MT6358_IRQ_NR,
-@@ -211,6 +231,10 @@ int mt6358_irq_init(struct mt6397_chip *chip)
- 	struct pmic_irq_data *irqd;
- 
- 	switch (chip->chip_id) {
-+	case MT6357_CHIP_ID:
-+		chip->irq_data = &mt6357_irqd;
-+		break;
-+
- 	case MT6358_CHIP_ID:
- 	case MT6366_CHIP_ID:
- 		chip->irq_data = &mt6358_irqd;
-diff --git a/include/linux/mfd/mt6397/core.h b/include/linux/mfd/mt6397/core.h
-index 1cf78726503b..3fecaffe5019 100644
---- a/include/linux/mfd/mt6397/core.h
-+++ b/include/linux/mfd/mt6397/core.h
-@@ -12,6 +12,7 @@
- 
- enum chip_id {
- 	MT6323_CHIP_ID = 0x23,
-+	MT6357_CHIP_ID = 0x57,
- 	MT6358_CHIP_ID = 0x58,
- 	MT6359_CHIP_ID = 0x59,
- 	MT6366_CHIP_ID = 0x66,
+ struct mtk_pmic_keys_info {
+ 	struct mtk_pmic_keys *keys;
+ 	const struct mtk_pmic_keys_regs *regs;
+@@ -261,6 +273,9 @@ static const struct of_device_id of_mtk_pmic_keys_match_tbl[] = {
+ 	}, {
+ 		.compatible = "mediatek,mt6323-keys",
+ 		.data = &mt6323_pdata,
++	}, {
++		.compatible = "mediatek,mt6357-keys",
++		.data = &mt6357_regs,
+ 	}, {
+ 		.compatible = "mediatek,mt6358-keys",
+ 		.data = &mt6358_pdata,
 -- 
 2.36.1
 
