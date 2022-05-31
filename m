@@ -2,122 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95618C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 14:01:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6D37C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 14:10:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345086AbiEaOBn (ORCPT
+        id S1344864AbiEaOKJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 10:01:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34560 "EHLO
+        Tue, 31 May 2022 10:10:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241048AbiEaOBl (ORCPT
+        with ESMTP id S1345144AbiEaOKE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 10:01:41 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0E24B2E;
-        Tue, 31 May 2022 07:01:39 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id u12-20020a17090a1d4c00b001df78c7c209so2800757pju.1;
-        Tue, 31 May 2022 07:01:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Mrb04JIXyqFQ3QOJ4ljFjUENecQCixeg6qU8fHaKeZk=;
-        b=obmR59m0Y0vY2NPUoD6WSZci9Ko+JC2tIToDAe4VBgkSuyXRWScFXBhpc/TGFu4ZJH
-         0KqnwtrlMx0ODAJTwmUvhk0Mf3fffWaH68i6GXQhUfFygeCHcsr5dTR+RSX4O/6fGyC1
-         s7GNfZ27SlwB8Sb4JaplTUwawtiFdoQ6go/zaaKo5JZAy1Az4Wh4t6ybDfhbnysvEv5E
-         BOmLvezqVqTiu76Upwot5elJ/4u3bE2w4OYD3hV35WoSNgNCAsciv7CotPOVbHiCxkD+
-         opMEQwLjyw4R3HMJpMxGDw1rcWV1jKhHwSCvTtvidbwWZif+Es7otGe4KP/UqS6lIQFJ
-         KRhQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Mrb04JIXyqFQ3QOJ4ljFjUENecQCixeg6qU8fHaKeZk=;
-        b=m6O5Emo3Qb7kP72Cm32kqU1Utfl2YzA7FaZAGsS5R1sVbzVWc5gC/bD9ogQ+1AIw3j
-         SD1apj3Mf/3w/qH9K0/dlx2ZsVQOw+npJmBq77quZgPPDOwEOrYbK2O8o27fXOTgadZi
-         evjYBSjicjKj6Ngs05zrbQOEjwH8PGml7dBMU5IJvEkLVaUCOBiiZtF/XIeio+PiraUw
-         k7/c1OG8Pd3W3eSC4q4RJSNOUahyOoXffT79Hm7r5vB6RlEAT7hRh6j0wkqwV0r8vTLK
-         T/Ak1l8EHEsA2yu1CcEIQEkQD1izlu0DeyAPRzgwf7hb7d1gzMAGd8z7vDriZvcj2twz
-         Eetg==
-X-Gm-Message-State: AOAM532pESMoW/68nbnZ8doMqDoTnbYNHFLhslKTAV98rtz/fJuxgcbm
-        lmkXWwDZEmhBN8JI7yVZ8tY=
-X-Google-Smtp-Source: ABdhPJzFnIkAf7SzEujOh3vbwx4zBDuoIj5QBUHpQkAIlLjI2rtJTa7RIM9vMNmPLUHXlHMlt1UTug==
-X-Received: by 2002:a17:90a:9318:b0:1e0:b957:ffda with SMTP id p24-20020a17090a931800b001e0b957ffdamr29249871pjo.199.1654005699256;
-        Tue, 31 May 2022 07:01:39 -0700 (PDT)
-Received: from [172.16.4.4] ([219.142.146.208])
-        by smtp.gmail.com with ESMTPSA id d5-20020aa78685000000b0050dc76281e6sm10642401pfo.192.2022.05.31.07.01.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 31 May 2022 07:01:38 -0700 (PDT)
-Message-ID: <d6ba61ed-7a78-126a-de0d-e3e88c51bbd9@gmail.com>
-Date:   Tue, 31 May 2022 22:01:32 +0800
+        Tue, 31 May 2022 10:10:04 -0400
+Received: from outbound-smtp06.blacknight.com (outbound-smtp06.blacknight.com [81.17.249.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5DC56543C
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 07:09:59 -0700 (PDT)
+Received: from mail.blacknight.com (pemlinmail05.blacknight.ie [81.17.254.26])
+        by outbound-smtp06.blacknight.com (Postfix) with ESMTPS id A52BCE018
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 15:09:57 +0100 (IST)
+Received: (qmail 19110 invoked from network); 31 May 2022 14:09:57 -0000
+Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.198.246])
+  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 31 May 2022 14:09:57 -0000
+Date:   Tue, 31 May 2022 15:09:24 +0100
+From:   Mel Gorman <mgorman@techsingularity.net>
+To:     Vincent Guittot <vincent.guittot@linaro.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        K Prateek Nayak <kprateek.nayak@amd.com>,
+        Aubrey Li <aubrey.li@linux.intel.com>,
+        Ying Huang <ying.huang@intel.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 0/4] Mitigate inconsistent NUMA imbalance behaviour
+Message-ID: <20220531140924.GA3401@techsingularity.net>
+References: <20220520103519.1863-1-mgorman@techsingularity.net>
+ <CAKfTPtDERvGAsmasGK=xtGEawx1yK6Lf4mV7Cc7JcNFKrxUWKw@mail.gmail.com>
+ <20220525124933.GA3441@techsingularity.net>
+ <CAKfTPtDnbnNLgE40Xk1r_Hv6J3=wUkLzV15cdmijoVuf9Cy2+A@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] PCI: mediatek-gen3: Fix refcount leak in
- mtk_pcie_init_irq_domains
-Content-Language: en-US
-To:     Miles Chen <miles.chen@mediatek.com>
-Cc:     bhelgaas@google.com, jianjun.wang@mediatek.com, kw@linux.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-pci@vger.kernel.org,
-        lorenzo.pieralisi@arm.com, matthias.bgg@gmail.com, maz@kernel.org,
-        robh@kernel.org, ryder.lee@mediatek.com
-References: <6cf820cf-a2e7-c93e-3c00-08bc366f2eb2@gmail.com>
- <20220530073556.1831-1-miles.chen@mediatek.com>
-From:   Miaoqian Lin <linmq006@gmail.com>
-In-Reply-To: <20220530073556.1831-1-miles.chen@mediatek.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-15
+Content-Disposition: inline
+In-Reply-To: <CAKfTPtDnbnNLgE40Xk1r_Hv6J3=wUkLzV15cdmijoVuf9Cy2+A@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Miles
+On Tue, May 31, 2022 at 12:26:51PM +0200, Vincent Guittot wrote:
+> > # cd work/log
+> > # ../../compare-kernels.sh
+> >
+> > nas-mpich-mg NAS Time
+> >                                  test
+> >                              mgD-many
+> > Min       mg.D       95.80 (   0.00%)
+> > Amean     mg.D      110.77 (   0.00%)
+> > Stddev    mg.D       21.55 (   0.00%)
+> > CoeffVar  mg.D       19.46 (   0.00%)
+> > Max       mg.D      155.35 (   0.00%)
+> > BAmean-50 mg.D       96.05 (   0.00%)
+> > BAmean-95 mg.D      107.83 (   0.00%)
+> > BAmean-99 mg.D      109.23 (   0.00%)
+> >
+> > Note the min of 95.80 seconds, max of 155.35 and high stddev indicating
+> > the results are not stable.
+> >
+> > The generated config is for openSUSE so it may not work for you. After
+> > installing the mpich package, you'll need to adjust these lines
+> >
+> > export NAS_MPICH_PATH=/usr/$MMTESTS_LIBDIR/mpi/gcc/$NAS_MPICH_VERSION/bin
+> > export NAS_MPICH_LIBPATH=/usr/$MMTESTS_LIBDIR/mpi/gcc/$NAS_MPICH_VERSION/$MMTESTS_LIBDIR
+> >
+> > NAS_MPICH_PATH and NAS_MPICH_LIBPATH need to point to the bin and lib
+> > path for the mpich package your distribution ships.
+> 
+> I have been able to run your tests on my setup: aarch64 2 nodes * 28
+> cores * 4 threads. But I can't reproduce the problem, results stay
+> stable before and after reverting c6f886546cb8.
+> 
 
-On 2022/5/30 15:35, Miles Chen wrote:
-> Hi Miaoqian,
->
->> Hi, Miles
->>
->> On 2022/5/30 10:19, Miles Chen wrote:
->>> Hi Miaoqian,
->>>
->>>>>> 						  &intx_domain_ops, pcie);
->>>>>> 	if (!pcie->intx_domain) {
->>>>>> 		dev_err(dev, "failed to create INTx IRQ domain\n");
->>>>>> +		of_node_put(intc_node);
->>>>>> 		return -ENODEV;
->>>>>> 	}
->>>>> Thanks for doing this.
->>>>>
->>>>> I checked mtk_pcie_init_irq_domains() and there are multiple exit paths like
->>>>> err_msi_domain and err_msi_bottom_domain and the normal path which also
->>>>> need of_node_put(intc_node).
->>>> Thanks for your reply,
->>>>
->>>> I didn't add of_node_put() in other paths because I am not sure if the reference passed through irq_domain_add_linear(), since intc_node is passed to irq_domain_add_linear().
->>>>
->>>> __irq_domain_add() keeps &node->fwnode in the irq_domain structure.
->>>>
->>>> and use fwnode_handle_get() to get the reference of fwnode, but I still uncertain.
->>>>
->>>> If the reference don't needed anymore after irq_domain_add_linear(),
->>>>
->>>> your suggestion looks fine, and I will submit v2.
->>> Thanks for your reply, I think we can do similar things like
->>> rtl8365mb_irq_setup() in drivers/net/dsa/realtek/rtl8365mb.c
->> I checked rtl8365mb_irq_setup(), it calls of_node_put() by goto statement for error paths.
->>
->> and calls of_node_put() before return 0 in normal path. I didn't see the same problem.
-> Sorry for the confusing. I meant that we can do the same thing - 
-> it calls of_node_put() by goto statement for error paths
-> and calls of_node_put() before return 0 in normal path. :-)
+It's unfortunate but not surprising that it's not perfectly reproducible
+given that I expect this to be a race of some description and not all
+machines will observe the problem.
 
-I'll sent a v2 for this: https://lore.kernel.org/all/20220530064807.34534-1-linmq006@gmail.com/
+Thanks for trying.
 
-following your original suggestion.
-
-> Thanks,
-> Miles
+-- 
+Mel Gorman
+SUSE Labs
