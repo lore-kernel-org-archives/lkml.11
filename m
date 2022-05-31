@@ -2,226 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43FA1C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 19:46:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 975FCC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 19:47:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347390AbiEaTqo (ORCPT
+        id S1347486AbiEaTrM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 15:46:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50430 "EHLO
+        Tue, 31 May 2022 15:47:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242945AbiEaTqm (ORCPT
+        with ESMTP id S1347420AbiEaTrJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 15:46:42 -0400
-Received: from mail-oi1-f176.google.com (mail-oi1-f176.google.com [209.85.167.176])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49C57BDF;
-        Tue, 31 May 2022 12:46:41 -0700 (PDT)
-Received: by mail-oi1-f176.google.com with SMTP id r65so13680827oia.9;
-        Tue, 31 May 2022 12:46:41 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Oap3nD3B2RMKJZbp1rzvvdgE3lcyL1foSb5mHMQ6p08=;
-        b=b07nnY7ZuczD1JLduQqd/NxjPQYQSYGdbXE37PcoCDE+bGScyxiLH8D2i+BDJ0qUCE
-         lGc/VWP6Sho2V8mYdSUcX7yFK1GljHROztKm4vTxhVH89637Z85iJUCxorqO1dTLBwOg
-         4PrU30EK7A4YZOK26Y28Uji5hAEo9WHYvAqFuGtAG4NMKBeiHE76LLx4d6ZTbwbvTX3r
-         AHqSBXCpjkL3pufHdjYyWTaU0hP0jjDwayPQw36+hHYZtu4KiGGcIqZajf6cJ3QJmBos
-         wOgnYiIzPCV5cy2kZ1TbUHdSsnBdNzbDXU/y36ItKjhj0iPwFQiVM3fMUImQjVenEKX6
-         ldzg==
-X-Gm-Message-State: AOAM5335Kjl9JhS/6c01E6HP4JTjwG7DDk5kQkWiPFr01nUHgEUCN19N
-        A5eK/IgWjrCPOlcg4BSpwg==
-X-Google-Smtp-Source: ABdhPJx3JD85SLuE7QUjAkBXQ8a+GqhL3vvQu7XquyZqVdiwqA5/hRB0tqClL8AdBFFVfbTzj7HoAQ==
-X-Received: by 2002:a05:6808:1592:b0:32b:aa3d:39aa with SMTP id t18-20020a056808159200b0032baa3d39aamr13224226oiw.241.1654026400478;
-        Tue, 31 May 2022 12:46:40 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id y24-20020a056808061800b0032c14a97747sm3008367oih.56.2022.05.31.12.46.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 May 2022 12:46:40 -0700 (PDT)
-Received: (nullmailer pid 2166285 invoked by uid 1000);
-        Tue, 31 May 2022 19:46:39 -0000
-Date:   Tue, 31 May 2022 14:46:39 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Jim Quinlan <jim2101024@gmail.com>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        James Dutton <james.dutton@gmail.com>,
-        Cyril Brulebois <kibi@debian.org>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        Jim Quinlan <james.quinlan@broadcom.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
-        <linux-rpi-kernel@lists.infradead.org>,
-        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>, linux-pm@vger.kernel.org
-Subject: Re: [PATCH v1] PCI: brcmstb: Fix regression regarding missing PCIe
- linkup
-Message-ID: <20220531194639.GB1808817-robh@kernel.org>
-References: <20220526192512.GH54904-robh@kernel.org>
- <20220526205355.GA344519@bhelgaas>
+        Tue, 31 May 2022 15:47:09 -0400
+Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D4D8B1F8;
+        Tue, 31 May 2022 12:47:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+        d=metrotek.ru; s=mail;
+        h=from:subject:date:message-id:to:cc:mime-version:content-transfer-encoding:
+         in-reply-to:references;
+        bh=Y+q3Espln8Rodgx5Nn4tnLIErSJz4K4izMOM418Zr7I=;
+        b=lEC8kCdnsA4DxJ8w8cwM4Tvv+j6UloZEl/vusfYYoJphXIhgr7Tto5p9HIOPoCGbrV+Q2mGYaz11f
+         LjnmjmQEah0lkCi3p1/wGXxKf+lCJoDH6yzTf4BMoqi2P/RvqYfkUU+NqaGvDzVH27X0Rvx4JBdB+0
+         +Qi7gRwLoKlVHX47S9h52hl6eni0W3GsRRrOLtrQN0GTFZnRPZGdzgZY1hDDYbmCuX/I/K3tTuEMvX
+         4+px/j7HSYL3jJl+phglmZH6U+94o4plZ8FA3Z9nHs1DS8+skzLt681PNNRWb0VsuuVUnjh9IOn7Hk
+         DtO48lSgIqEQz31RVF4mcwxu5wPL/ZQ==
+X-Kerio-Anti-Spam:  Build: [Engines: 2.16.3.1424, Stamp: 3], Multi: [Enabled, t: (0.000009,0.008012)], BW: [Enabled, t: (0.000022,0.000001)], RTDA: [Enabled, t: (0.098664), Hit: No, Details: v2.39.0; Id: 15.52k335.1g4dqg6vl.4uee; mclb], total: 0(700)
+X-Footer: bWV0cm90ZWsucnU=
+Received: from localhost.localdomain ([178.70.36.174])
+        (authenticated user i.bornyakov@metrotek.ru)
+        by mail.pr-group.ru with ESMTPSA
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
+        Tue, 31 May 2022 22:46:48 +0300
+From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
+To:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
+        trix@redhat.com, Conor.Dooley@microchip.com
+Cc:     Ivan Bornyakov <i.bornyakov@metrotek.ru>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-fpga@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        system@metrotek.ru, Rob Herring <robh@kernel.org>
+Subject: [PATCH v14 3/3] dt-bindings: fpga: add binding doc for microchip-spi fpga mgr
+Date:   Tue, 31 May 2022 22:23:44 +0300
+Message-Id: <20220531192344.23038-4-i.bornyakov@metrotek.ru>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220531192344.23038-1-i.bornyakov@metrotek.ru>
+References: <20220531192344.23038-1-i.bornyakov@metrotek.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220526205355.GA344519@bhelgaas>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 26, 2022 at 03:53:55PM -0500, Bjorn Helgaas wrote:
-> On Thu, May 26, 2022 at 02:25:12PM -0500, Rob Herring wrote:
-> > On Mon, May 23, 2022 at 05:10:36PM -0500, Bjorn Helgaas wrote:
-> > > On Sat, May 21, 2022 at 02:51:42PM -0400, Jim Quinlan wrote:
-> > > > On Sat, May 21,
-> > > > 2CONFIG_INITRAMFS_SOURCE="/work3/jq921458/cpio/54-arm64-rootfs.cpio022
-> > > > at 12:43 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
-> > > > > On Wed, May 18, 2022 at 03:42:11PM -0400, Jim Quinlan wrote:
-> 
-> > > > > I added Rafael because this seems vaguely similar to runtime power
-> > > > > management, and if we can integrate with that somehow, I'd sure like
-> > > > > to avoid building a parallel infrastructure for it.
-> > > > >
-> > > > > The current path we're on is to move some of this code that's
-> > > > > currently in pcie-brcmstb.c to the PCIe portdrv [0].  I'm a little
-> > > > > hesitant about that because ACPI does just fine without it.  If we're
-> > > > > adding new DT functionality that could not be implemented via ACPI,
-> > > > > that's one thing.  But I'm not convinced this is that new.
-> > > >
-> > > > AFAICT, Broadcom STB and Cable Modem products do not have/use/want
-> > > > ACPI.  We are fine with keeping this "PCIe regulator" feature
-> > > > private to our driver and giving you speedy and full support in
-> > > > maintaining it.
-> > > 
-> > > I don't mean that you should use ACPI, only that ACPI platforms can do
-> > > this sort of power control using the existing PCI core infrastructure,
-> > > and maybe there's a way for OF/DT platforms to hook into that same
-> > > infrastructure to minimize the driver-specific work.  E.g., maybe
-> > > there's a way to extend platform_pci_set_power_state() and similar to
-> > > manage these regulators.
-> > 
-> > The big difference is ACPI abstracts how to control power for a device. 
-> > The OS just knows D0, D3, etc. states. For DT, there is no such 
-> > abstraction. You need device specific code to do device specific power 
-> > management.
-> 
-> I'm thinking about the PCI side of the host controller, which should
-> live by the PCI rules.  There are device-specific ways to control
-> power, clocks, resets, etc on the PCI side, but drivers for PCI
-> devices (as opposed to drivers for the host controllers) can't really
-> call that code directly.
+Add Device Tree Binding doc for Microchip Polarfire FPGA Manager using
+slave SPI to load .dat formatted bitstream image.
 
-Yes, there are PCI specific ways to handle some of this when it is 
-signals or power for standard PCI slots. But then it's also possible 
-that you have a soldered down device that has extra or different 
-interfaces.
+Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
+Reviewed-by: Rob Herring <robh@kernel.org>
+---
+ .../fpga/microchip,mpf-spi-fpga-mgr.yaml      | 44 +++++++++++++++++++
+ 1 file changed, 44 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
 
-When this Broadcom thread was reviewed originally, I was the one pushing 
-this towards doing this in the portdrv. That seems like the more 
-logical place at least to control the root port state even if we need 
-host controller specific routines to do the work. It's all related to 
-how do we separate out host bridge and root port operations. 
-
-> There are some exceptions, but generally speaking I don't think PCI
-> drivers that use generic power management need to use PCI_D0,
-> PCI_D3hot, etc directly.  Generic PM uses interfaces like
-> pci_pm_suspend() that keep most of the PCI details in the PCI core
-> instead of the endpoint driver, e.g., [3].
-
-Yeah, I think that's a different issue.
-
-
-> The PCI core has a bunch of interfaces:
-> 
->   platform_pci_power_manageable()
->   platform_pci_set_power_state()
->   platform_pci_get_power_state()
->   platform_pci_choose_state()
-> 
-> that currently mostly use ACPI.  So I'm wondering whether there's some
-> way to extend those platform_*() interfaces to call the native host
-> controller device-specific power control code via an ops structure.
-> 
-> Otherwise it feels like the native host controller drivers are in a
-> different world than the generic PM world, and we'll end up with every
-> host controller driver reimplementing things.
-> 
-> For example, how would we runtime suspend a Root Port and turn off
-> power for PCI devices below it?  Obviously that requires
-> device-specific code to control the power.  Do we have some common
-> interface to it, or do we have to trap config writes to PCI_PM_CTRL or
-> something?
-
-Shrug. Honestly, the PCI specific power management stuff is not 
-something I've studied. I'm a bit more fluent runtime PM.
-
-Somewhat related to all this is this thread[4] where I've suggested that 
-the right way to save power when there's no link (or child device 
-really) is using runtime PM rather than just failing probe. We also 
-don't need each host controller doing their own conformance test hacks 
-either.
+diff --git a/Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml b/Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
+new file mode 100644
+index 000000000000..aee45cb15592
+--- /dev/null
++++ b/Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
+@@ -0,0 +1,44 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/fpga/microchip,mpf-spi-fpga-mgr.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Microchip Polarfire FPGA manager.
++
++maintainers:
++  - Ivan Bornyakov <i.bornyakov@metrotek.ru>
++
++description:
++  Device Tree Bindings for Microchip Polarfire FPGA Manager using slave SPI to
++  load the bitstream in .dat format.
++
++properties:
++  compatible:
++    enum:
++      - microchip,mpf-spi-fpga-mgr
++
++  reg:
++    description: SPI chip select
++    maxItems: 1
++
++  spi-max-frequency: true
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    spi {
++            #address-cells = <1>;
++            #size-cells = <0>;
++
++            fpga_mgr@0 {
++                    compatible = "microchip,mpf-spi-fpga-mgr";
++                    spi-max-frequency = <20000000>;
++                    reg = <0>;
++            };
++    };
+-- 
+2.35.1
 
 
-> [3] https://git.kernel.org/linus/cd97b7e0d780
-> 
-> > > > > [0] https://lore.kernel.org/r/20211110221456.11977-6-jim2101024@gmail.com
-> 
-> > > > > IIUC, this path:
-> > > > >
-> > > > >   pci_alloc_child_bus
-> > > > >     brcm_pcie_add_bus                   # .add_bus method
-> > > > >       pci_subdev_regulators_add_bus     # in pcie-brcmstb.c for now
-> > > > >         alloc_subdev_regulators         # in pcie-brcmstb.c for now
-> > > > >         regulator_bulk_get
-> > > > >         regulator_bulk_enable
-> > > > >       brcm_pcie_linkup                  # bring link up
-> > > > >
-> > > > > is basically so we can leave power to downstream devices off, then
-> > > > > turn it on when we're ready to enumerate those downstream devices.
-> > > >
-> > > > Yes  -- it is the "chicken-and-egg" problem.  Ideally, we would like
-> > > > for the endpoint driver to turn on its own regulators, but even to
-> > > > know which endpoint driver to probe we must turn on the regulator to
-> > > > establish linkup.
-> > > 
-> > > I don't think having an endpoint driver turn on power to its device is
-> > > the right goal.  
-> > 
-> > DT requires device specific code to control a specific device. That 
-> > belongs in the driver for that device.
-> 
-> I must be talking about something different than you are.  I see that
-> brcmstb has device-specific code to control the brcmstb device as well
-> as power for PCI devices downstream from that device.
-> 
-> When I read "endpoint driver" I think of a PCIe Endpoint device like a
-> NIC.  That's just a random PCI device, and I read "endpoint driver to
-> turn on its own regulators" as suggesting that the NIC driver (e1000,
-> etc) would turn on power to the NIC.  Is that the intent?
-
-Yes! A NIC as an add-in card doesn't need anything because it's just a 
-standard PCI connector with standard power sequencing. But take that 
-same NIC chip and solder it down on a board. Then the board designers 
-start cost saving and remove components. For example, there's no need 
-for standard PCI supply to chip supply regulators (e.g. 12V/3.3V to 
-whatever the chip has). Who needs an EEPROM with a MAC address either.
-
-I think there's roughly 2 cases we're dealing with. The platform 
-specific ways to do power control on standard PCIe slots/connectors, and 
-then non-standard connections that need downstream device specific ways 
-to do power management (including powering on to be discovered). The 
-line is blurred a bit because the latter case needs some of the former 
-case (at least any in-band PCI power management). The problem I see all 
-the time (not just PCI) is people trying to implement something 
-generic/common rather than device specific which then makes its way into 
-bindings. The only way something generic works is if there's a spec 
-behind it. For PCI slots there is, but it is important we distinguish 
-the 2 cases.
-
-Rob
-
-[4] https://lore.kernel.org/linux-pci/YksDJfterGl9uPjs@robh.at.kernel.org/
