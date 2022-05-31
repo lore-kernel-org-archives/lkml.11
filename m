@@ -2,169 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D6A4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 12:15:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10CCCC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 12:15:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344143AbiEaMPY (ORCPT
+        id S1344136AbiEaMP0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 08:15:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41590 "EHLO
+        Tue, 31 May 2022 08:15:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344151AbiEaMPI (ORCPT
+        with ESMTP id S1344161AbiEaMPP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 08:15:08 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 98C6E986FF
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 05:15:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653999306;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=uobJn9br2pmyrlhooRHaIeohn31rEn/SyxjNYRcdyGM=;
-        b=C2AUSDezq9iKM49oGCPrPJXRU6mMj1nWc/ZLF9QLJWgx8anYPsOAt5jLK/GBKmTfjNyeid
-        kAjPy5rECV2/W2Smc2xjs7Kd5JNBUcIwz4rKG1I5TURvqMCIskS6/NnG8QBPQ6lVHsiLxT
-        iM8kbb+K4aq9AbtIBNfM9ZNIWP0M8yk=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-258-7z6m3Kc4NZCsqijZBLX3yw-1; Tue, 31 May 2022 08:15:05 -0400
-X-MC-Unique: 7z6m3Kc4NZCsqijZBLX3yw-1
-Received: by mail-wm1-f72.google.com with SMTP id o23-20020a05600c511700b0039743cd8093so1196867wms.6
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 05:15:05 -0700 (PDT)
+        Tue, 31 May 2022 08:15:15 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBED6994C0;
+        Tue, 31 May 2022 05:15:13 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id v15so12652643pgk.11;
+        Tue, 31 May 2022 05:15:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=NLlQWPmyPhz9LkYQh7iizThmB3DZjfxS2yfzbAOphFg=;
+        b=I4w6+q3mrUIL109pwzpTze5IvWiG+1Sm6Q/7ihB35G4+4nU2YnPrXRziLx+TjwQPKJ
+         27v96U4XlLTj4qvRe1P7BgC7TeHdudGmcMfT8xhVbtoceFoPSsDrFiSspzWjKMLuZBJW
+         NNPufZ9HklQcqk+CRGhV5CV3j//Lsh2GOI3ZrSJSChpHw4LFbutgxJNqUqN6lh3qf+xQ
+         3FMeYyOYJBXw4mgAWgYyBsEGP+9QcO74DD7r3ElXM/gBg5lFBlDhaRkqIxCfG86r2kGS
+         qTg9vzWnm3t4x6/LXNTmuPN2mNUySP8cPOORTBWUclVtUSbi0DxWMAHxDg2PiIXQwtc3
+         IH7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=uobJn9br2pmyrlhooRHaIeohn31rEn/SyxjNYRcdyGM=;
-        b=0yGUJgH09yPENYTS/YgzX9Tq2bfmx0VMdmrtYoD9yuoVgpomnIvD+H/p9suCkrA4CA
-         As2CsLrp4W9yeD9kUgCVHu6iY/3TVQb7/JVxUMs3LLUlo9E0R/SmbBXYJVEK9JL1Duuk
-         yfcTzz2IRo8s269bJvAtCl/qk1hDuq6H1lfuuq/r5U0TqB6qLB+p+7u6a+vsYyWRUe3D
-         SiJm+33HSPrx8WXC+qBCk++XmQ1RmDNOGugStlBEEoxTrnavAlMvM/H8x+HXFKGitYR4
-         VSRFnOzMgmd0GH3zxXek4/3FsteT6Fl9G6L/B1o1L+Hv6B7E772d0frWvhbBustg1rtp
-         wqxw==
-X-Gm-Message-State: AOAM531iPe1O1KP5XXBuGYZqaUPS92hf8ohnD1B2cNQW8P1tJzo6B1aE
-        1S6lqRzYjjidPLEdSULt7vPfuHlynOeA6EdQavzbOK4y3+8U2Bwp6i+3JF3zUh3c0DcC5yx9563
-        Sa9tuP/nEvWVBINqWmPvu0LSh
-X-Received: by 2002:a05:600c:190d:b0:394:8241:6454 with SMTP id j13-20020a05600c190d00b0039482416454mr23677381wmq.198.1653999304427;
-        Tue, 31 May 2022 05:15:04 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzPw+MnjvE4Pc+da7FNOd5kxrbnSrtH04dSueibN30pk6NTXhJZZS/2cnQ8/x+fKeocqnmGWw==
-X-Received: by 2002:a05:600c:190d:b0:394:8241:6454 with SMTP id j13-20020a05600c190d00b0039482416454mr23677357wmq.198.1653999304124;
-        Tue, 31 May 2022 05:15:04 -0700 (PDT)
-Received: from [192.168.1.129] (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id n13-20020a05600c3b8d00b0039756cdc8e1sm2113919wms.37.2022.05.31.05.15.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 31 May 2022 05:15:03 -0700 (PDT)
-Message-ID: <0ca7d264-2522-c820-d26e-19b6685d5016@redhat.com>
-Date:   Tue, 31 May 2022 14:15:02 +0200
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=NLlQWPmyPhz9LkYQh7iizThmB3DZjfxS2yfzbAOphFg=;
+        b=Gcp6iF55zQAHt+OpeUOq4xwKnxD/IUZUe426fpOuFVp1aT1G/UZMPOyN/eTD17smnk
+         7gnP8MR0fUlON8NpEd+Icu0QLAEjgm22t2e1l4OBNRgne0PlIw8wZd6CpLnwNgxr2NoA
+         vtHRKb+gRkucuC0U5oHleB+TgNtMwUUM/OMkTjGBXcVmZ6kXf1BwXx2mooo7D8+Susi6
+         nGLq1B0c+kbnFee12g3LJT8aW4ByU8nMsSSGgzjlUoqo4BBfM/Puh3hp83O1VtbOF9y6
+         yrPz8JAY6YJ0dqy06nYOAAy6phbtw++mQQ8TSyYkhjtCPzmvlqPJvFHsxGAMaxf2uD1Z
+         K8vg==
+X-Gm-Message-State: AOAM530gQrbGWNk8injCAMOlB462s8jVhhVaavH1iGMWjk1cBu9bsFPu
+        snQDhYgOmysThqOrctNFVcoeZGKhQm8=
+X-Google-Smtp-Source: ABdhPJyD1Fx7LBxTURdowjLzD5c7Yqcp9ob1xo5BIIaa0fHPSwQ8ngkBhpXhhcH/7b+MIEJs3XVqjw==
+X-Received: by 2002:a63:1009:0:b0:3fa:9996:386b with SMTP id f9-20020a631009000000b003fa9996386bmr31594847pgl.441.1653993061902;
+        Tue, 31 May 2022 03:31:01 -0700 (PDT)
+Received: from RD-3580-24288.rt.l (42-72-220-172.emome-ip.hinet.net. [42.72.220.172])
+        by smtp.gmail.com with ESMTPSA id c1-20020a63d501000000b003c14af50631sm10216519pgg.73.2022.05.31.03.30.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 May 2022 03:31:01 -0700 (PDT)
+From:   ChiaEn Wu <peterwu.pub@gmail.com>
+To:     lee.jones@linaro.org, daniel.thompson@linaro.org,
+        jingoohan1@gmail.com, pavel@ucw.cz, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
+        sre@kernel.org, chunfeng.yun@mediatek.com,
+        gregkh@linuxfoundation.org, jic23@kernel.org, lars@metafoo.de,
+        lgirdwood@gmail.com, broonie@kernel.org, linux@roeck-us.net,
+        heikki.krogerus@linux.intel.com, deller@gmx.de
+Cc:     cy_huang@richtek.com, alice_chen@richtek.com,
+        chiaen_wu@richtek.com, dri-devel@lists.freedesktop.org,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-fbdev@vger.kernel.org
+Subject: [PATCH 11/14] dt-bindings: leds: mt6370: Add Mediatek mt6370 indicator documentation
+Date:   Tue, 31 May 2022 18:28:06 +0800
+Message-Id: <20220531102809.11976-12-peterwu.pub@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220531102809.11976-1-peterwu.pub@gmail.com>
+References: <20220531102809.11976-1-peterwu.pub@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v3 2/3] fat: add renameat2 RENAME_EXCHANGE flag support
-Content-Language: en-US
-To:     OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
-Cc:     linux-kernel@vger.kernel.org,
-        Christian Kellner <ckellner@redhat.com>,
-        Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        Alexander Larsson <alexl@redhat.com>,
-        Alberto Ruiz <aruiz@redhat.com>,
-        Peter Jones <pjones@redhat.com>,
-        Lennart Poettering <lennart@poettering.net>,
-        Colin Walters <walters@verbum.org>,
-        Chung-Chiang Cheng <cccheng@synology.com>
-References: <20220526134119.242182-1-javierm@redhat.com>
- <20220526134119.242182-3-javierm@redhat.com>
- <87ilpmows4.fsf@mail.parknet.co.jp>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <87ilpmows4.fsf@mail.parknet.co.jp>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello OGAWA,
+From: ChiYuan Huang <cy_huang@richtek.com>
 
-Thanks a lot for your feedback and comments.
+Add Mediatek mt6370 indicator documentation.
 
-On 5/31/22 11:51, OGAWA Hirofumi wrote:
-> Javier Martinez Canillas <javierm@redhat.com> writes:
-> 
->> The renameat2 RENAME_EXCHANGE flag allows to atomically exchange two paths
->> but is currently not supported by the Linux vfat filesystem driver.
->>
->> Add a vfat_rename_exchange() helper function that implements this support.
->>
->> The super block lock is acquired during the operation to ensure atomicity,
->> and in the error path actions made are reversed also with the mutex held.
->>
->> It makes the operation as transactional as possible, within the limitation
->> impossed by vfat due not having a journal with logs to replay.
-> 
-> I tweaked your patch (tested only slightly), can you review and merge to
-> this patch if ok?
->
+Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
+---
+ .../leds/mediatek,mt6370-indicator.yaml       | 57 +++++++++++++++++++
+ 1 file changed, 57 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/leds/mediatek,mt6370-indicator.yaml
 
-Your changes make a lot of sense to me and from a quick glance they look OK
-to me. I'll look at them in more detail when merging the changes for a v4.
- 
-> Main purpose of me is to consolidate helpers with vfat_rename(), and
-> tweak coding style to use existent fat codes.
->
-
-Indeed. What do you think of the following plan for v4 ?
-
-1) Keep patch "fat: add a vfat_rename2() and make existing .rename callback a helper"
-   as the first patch of the series.
-2) Add a patch #2 with your authorship that adds the helper and use them in the
-   vfat_rename() function.
-3) Make this patch "fat: add renameat2 RENAME_EXCHANGE flag support" to be patch #3
-   and use the helpers introduced in patch #2.
-4) Make patch #4 to not only add a test for RENAME_EXCHANGE but also for renameat()
-   and renameat2(..., RENAME_NOREPLACE). That way it will also cover your changes in
-   patch #2.
-
->> +	if (old_dir != new_dir) {
->> +		err = vfat_get_dotdot_info(old_inode, &old_dotdot_bh, &old_dotdot_de);
->> +		if (err)
->> +			goto out;
->> +
->> +		err = vfat_get_dotdot_info(new_inode, &new_dotdot_bh, &new_dotdot_de);
->> +		if (err)
->> +			goto out;
-> 
-> This should not return -ENOENT here. I tweaked to return -EIO in my patch.
->
-
-Got it. I'm OK with that.
-
->> +	/* update inode version and timestamps */
->> +	inode_inc_iversion(old_inode);
->> +	inode_inc_iversion(new_inode);
-> 
-> Why do we need to update iversion of those inodes? I couldn't get intent
-> of this.
->
-
-To be honest, I wasn't sure about this either but I saw that the implementation
-of RENAME_EXCHANGE in other filesystems did. For example btrfs_rename_exchange().
- 
->> +error_new_dotdot:
->> +	/* data cluster is shared, serious corruption */
-> 
-> Sharing data cluster would happen here only if one inode success to sync
-> and another one failed. Then so I/O error, we would not be able to do
-> much for it.
->
-
-I see. Thanks for the clarification.
-
+diff --git a/Documentation/devicetree/bindings/leds/mediatek,mt6370-indicator.yaml b/Documentation/devicetree/bindings/leds/mediatek,mt6370-indicator.yaml
+new file mode 100644
+index 000000000000..823be3add097
+--- /dev/null
++++ b/Documentation/devicetree/bindings/leds/mediatek,mt6370-indicator.yaml
+@@ -0,0 +1,57 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/leds/mediatek,mt6370-indicator.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: LED driver for MT6370 PMIC from MediaTek Integrated.
++
++maintainers:
++  - Alice Chen <alice_chen@richtek.com>
++
++description: |
++  This module is part of the MT6370 MFD device.
++  see Documentation/devicetree/bindings/mfd/mediatek,mt6370.yaml
++  Add MT6370 LED driver include 4-channel RGB LED support Register/PWM/Breath Mode
++
++properties:
++  compatible:
++    const: mediatek,mt6370-indicator
++
++  "#address-cells":
++    const: 1
++
++  "#size-cells":
++    const: 0
++
++patternProperties:
++  "^(multi-)?led@[0-3]$":
++    description: |
++      Properties for a single LED.
++    $ref: common.yaml#
++    type: object
++
++    properties:
++      reg:
++        description: |
++          Index of the LED.
++        enum:
++          - 0 # LED output ISINK1
++          - 1 # LED output ISINK2
++          - 2 # LED output ISINK3
++          - 3 # LED output ISINK4
++
++      mediatek,soft-start:
++        description: |
++          soft start step control, support /0.5ms/1ms/1.5ms/2ms.
++        $ref: /schemas/types.yaml#/definitions/uint32
++        enum: [0, 1, 2, 3]
++
++    unevaluatedProperties: false
++
++required:
++  - compatible
++  - "#address-cells"
++  - "#size-cells"
++
++additionalProperties: false
 -- 
-Best regards,
-
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
+2.25.1
 
