@@ -2,287 +2,210 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7438CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 07:59:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13106C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 08:01:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244699AbiEaH7V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 03:59:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49910 "EHLO
+        id S244702AbiEaIBL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 31 May 2022 04:01:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244682AbiEaH7P (ORCPT
+        with ESMTP id S235885AbiEaIBJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 03:59:15 -0400
-Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6793A5A5AE
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 00:59:14 -0700 (PDT)
-Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-300312ba5e2so131262917b3.0
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 00:59:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=L4jibHfbVhRS4MGLF8e9owpZEe/Dv3TYxDedM0/wTGA=;
-        b=l+B0ZJLsj/nxv5tpwCj3EJXAkxSTWi0KPNTQoWNdrr3uOSJQSZ6betKuIT58aIF9pB
-         VtAQCLReWV7sZs5yhZF6lZ8/zWdOLjmzCg1QUpK83KLxIbqgNU6V/KDLGqUix85B9/d+
-         J60or9g4MsNxvoG+pYizgETdCrqjXGq9YU/K6DlC8tkuvdW513C+od7/y/hXYeMQcsIf
-         VWbPFnoIUYkpNXHeWJ8SU2QEPlX6PR16T4m7JM8a/nwJAXaBtAAnrrn+lI5kV2oRcEZH
-         KmksQIm7nbM38CHr8iVuXPCJJ1oNzxZpxjrd5EnAoBbqjfydfPjWCGm/x36XKLzxwxOp
-         PyVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=L4jibHfbVhRS4MGLF8e9owpZEe/Dv3TYxDedM0/wTGA=;
-        b=bvy4spyW//4H/q7ZVFdPSw1Vaxc9EZMdJYbHlMo4R37uKBnQQRxJp+B8XfBnVKr8+e
-         dQc/lbOJXBevEYlnJWAwU7UxnuEBlVJvzMwhA9jMV+Ke6Z01/s4liND3SvL55hBtGC/P
-         TZp1ewbQ7RJFUYV9OWTPxCyw4W6narauxtvOSGLJ4gOfLJveCv4B2KKgs5ZP+HIQMDp5
-         nOIZl2rwglL12y6DM6g9q7CpXUf4tSrLEnH+KxcUewLdht0O3610+nuYUWFwB10zVVjL
-         oOtzIEKgocHijCDQZZll1xiB2TcK11a1kEVKTF/anE4HT3eywhy/njAn6dSFqgN7Okcp
-         mblQ==
-X-Gm-Message-State: AOAM5332TwB/PFKzzUdG2j0dljdmRwBLFuWogVUPdoV1mBY0Jlw4dFFV
-        UPoiuif/fqABCU993MCvo94Ww2EKTEZgRVNJ/HfD1A==
-X-Google-Smtp-Source: ABdhPJx9pmyMhnizDTO9iRFwyFbGiUTlKArxdmTcNK73nUX5mYOOZ9ozCiAm08w0SnDTFvs61CeqzIpMqbHZLJ/i6+s=
-X-Received: by 2002:a81:6189:0:b0:2eb:deb5:9f63 with SMTP id
- v131-20020a816189000000b002ebdeb59f63mr59433636ywb.319.1653983953106; Tue, 31
- May 2022 00:59:13 -0700 (PDT)
+        Tue, 31 May 2022 04:01:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4529C7220A
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 01:01:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F2238B80E20
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 08:01:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14DB1C34119;
+        Tue, 31 May 2022 08:01:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653984065;
+        bh=jDuI1OezqWtRhCv5nxYOoLBrXfUkFW5cSU8f621yeiU=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=hnncicVxHW86XI1aJOefhoU8I5MQu4f342W0L31+J4wjyHdqUCm7PYgbR4SI6I0rK
+         J6ZlOAdYhe1wIVE/1+qT9gMtP0Z3yb9IBug/M+NY/Gc0q18XW+d2P1zf5XzrHeg6cs
+         mNE+hrAXSeAeVwo2Hd0xCNf+hF9mhCDLSr7YQGUAC+iyYIKF6KMdcHTAvTPdUoDfK+
+         U2MRDCoQmoJHbmr7QPzDS7hBWRH1XOJudAL/nr3qM/9FIvTqvTV1Z948JqSHtiyI4l
+         L1JC+LKawmNUq1WmeLQpy3uxugeDZItIS8CIUooyGhvO5qqLxPSBwNQNxBkykHV3dZ
+         skS+W0hmvpODg==
+Message-ID: <fa3cbe36-1738-a811-ce03-dd5aaf8ea3d4@kernel.org>
+Date:   Tue, 31 May 2022 16:01:01 +0800
 MIME-Version: 1.0
-References: <20220523155140.2878563-1-vdonnefort@google.com> <20220523155140.2878563-4-vdonnefort@google.com>
-In-Reply-To: <20220523155140.2878563-4-vdonnefort@google.com>
-From:   Vincent Guittot <vincent.guittot@linaro.org>
-Date:   Tue, 31 May 2022 09:59:01 +0200
-Message-ID: <CAKfTPtDiRWa5Gu1Xa6k=Yp+6AhNz3d-9xXhJY-JjzU0+anOHig@mail.gmail.com>
-Subject: Re: [PATCH v9 3/7] sched, drivers: Remove max param from effective_cpu_util()/sched_cpu_util()
-To:     Vincent Donnefort <vdonnefort@google.com>
-Cc:     peterz@infradead.org, mingo@redhat.com,
-        linux-kernel@vger.kernel.org, dietmar.eggemann@arm.com,
-        morten.rasmussen@arm.com, chris.redpath@arm.com,
-        qperret@google.com, tao.zhou@linux.dev, kernel-team@android.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v4] f2fs: separate NOCoW and pinfile semantics
+Content-Language: en-US
+To:     Jaegeuk Kim <jaegeuk@kernel.org>
+Cc:     linux-f2fs-devel@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, Chao Yu <chao.yu@oppo.com>
+References: <20220517032410.3564033-1-chao@kernel.org>
+ <YoPZh+vl68IH5loV@google.com>
+From:   Chao Yu <chao@kernel.org>
+In-Reply-To: <YoPZh+vl68IH5loV@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 23 May 2022 at 17:52, Vincent Donnefort <vdonnefort@google.com> wrote:
->
-> From: Dietmar Eggemann <dietmar.eggemann@arm.com>
->
-> effective_cpu_util() already has a `int cpu' parameter which allows to
-> retrieve the CPU capacity scale factor (or maximum CPU capacity) inside
-> this function via an arch_scale_cpu_capacity(cpu).
->
-> A lot of code calling effective_cpu_util() (or the shim
-> sched_cpu_util()) needs the maximum CPU capacity, i.e. it will call
-> arch_scale_cpu_capacity() already.
-> But not having to pass it into effective_cpu_util() will make the EAS
-> wake-up code easier, especially when the maximum CPU capacity reduced
-> by the thermal pressure is passed through the EAS wake-up functions.
->
-> Due to the asymmetric CPU capacity support of arm/arm64 architectures,
-> arch_scale_cpu_capacity(int cpu) is a per-CPU variable read access via
-> per_cpu(cpu_scale, cpu) on such a system.
-> On all other architectures it is a a compile-time constant
-> (SCHED_CAPACITY_SCALE).
->
-> Signed-off-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+On 2022/5/18 1:21, Jaegeuk Kim wrote:
+> On 05/17, Chao Yu wrote:
+>> Pinning a file is heavy, because skipping pinned files make GC
+>> running with heavy load or no effect.
+>>
+>> So that this patch proposes to separate nocow and pinfile semantics:
+>> - NOCoW flag can only be set on regular file.
+>> - NOCoW file will only trigger IPU at common writeback/flush.
+>> - NOCow file will do OPU during GC.
+> 
+> How about adding
+>   - NOCow file will allocate 2MB-aligned space via fallocate.
+> 
+> So, it'd be same as file pinning except allowing GCs. wdyt?
 
-Acked-by: Vincent Guittot <vincent.guittot@linaro.org>
+Well, it seems the segment-aligned allocation feature should not couple with
+pin_file or NoCow flag, what about introducing another ioctl for that? something
+like: F2FS_IOC_ALIGNMENT_PREALLOCATION w/ arg.alignment_start, arg.alignment_len,
+arg.total_len?
 
->
-> diff --git a/drivers/powercap/dtpm_cpu.c b/drivers/powercap/dtpm_cpu.c
-> index f5eced0842b3..6a88eb7e9f75 100644
-> --- a/drivers/powercap/dtpm_cpu.c
-> +++ b/drivers/powercap/dtpm_cpu.c
-> @@ -71,34 +71,19 @@ static u64 set_pd_power_limit(struct dtpm *dtpm, u64 power_limit)
->
->  static u64 scale_pd_power_uw(struct cpumask *pd_mask, u64 power)
->  {
-> -       unsigned long max = 0, sum_util = 0;
-> +       unsigned long max, sum_util = 0;
->         int cpu;
->
-> -       for_each_cpu_and(cpu, pd_mask, cpu_online_mask) {
-> -
-> -               /*
-> -                * The capacity is the same for all CPUs belonging to
-> -                * the same perf domain, so a single call to
-> -                * arch_scale_cpu_capacity() is enough. However, we
-> -                * need the CPU parameter to be initialized by the
-> -                * loop, so the call ends up in this block.
-> -                *
-> -                * We can initialize 'max' with a cpumask_first() call
-> -                * before the loop but the bits computation is not
-> -                * worth given the arch_scale_cpu_capacity() just
-> -                * returns a value where the resulting assembly code
-> -                * will be optimized by the compiler.
-> -                */
-> -               max = arch_scale_cpu_capacity(cpu);
-> -               sum_util += sched_cpu_util(cpu, max);
-> -       }
-> -
->         /*
-> -        * In the improbable case where all the CPUs of the perf
-> -        * domain are offline, 'max' will be zero and will lead to an
-> -        * illegal operation with a zero division.
-> +        * The capacity is the same for all CPUs belonging to
-> +        * the same perf domain.
->          */
-> -       return max ? (power * ((sum_util << 10) / max)) >> 10 : 0;
-> +       max = arch_scale_cpu_capacity(cpumask_first(pd_mask));
-> +
-> +       for_each_cpu_and(cpu, pd_mask, cpu_online_mask)
-> +               sum_util += sched_cpu_util(cpu);
-> +
-> +       return (power * ((sum_util << 10) / max)) >> 10;
->  }
->
->  static u64 get_pd_power_uw(struct dtpm *dtpm)
-> diff --git a/drivers/thermal/cpufreq_cooling.c b/drivers/thermal/cpufreq_cooling.c
-> index b8151d95a806..b263b0fde03c 100644
-> --- a/drivers/thermal/cpufreq_cooling.c
-> +++ b/drivers/thermal/cpufreq_cooling.c
-> @@ -137,11 +137,9 @@ static u32 cpu_power_to_freq(struct cpufreq_cooling_device *cpufreq_cdev,
->  static u32 get_load(struct cpufreq_cooling_device *cpufreq_cdev, int cpu,
->                     int cpu_idx)
->  {
-> -       unsigned long max = arch_scale_cpu_capacity(cpu);
-> -       unsigned long util;
-> +       unsigned long util = sched_cpu_util(cpu);
->
-> -       util = sched_cpu_util(cpu, max);
-> -       return (util * 100) / max;
-> +       return (util * 100) / arch_scale_cpu_capacity(cpu);
->  }
->  #else /* !CONFIG_SMP */
->  static u32 get_load(struct cpufreq_cooling_device *cpufreq_cdev, int cpu,
-> diff --git a/include/linux/sched.h b/include/linux/sched.h
-> index c46f3a63b758..88b8817b827d 100644
-> --- a/include/linux/sched.h
-> +++ b/include/linux/sched.h
-> @@ -2257,7 +2257,7 @@ static inline bool owner_on_cpu(struct task_struct *owner)
->  }
->
->  /* Returns effective CPU energy utilization, as seen by the scheduler */
-> -unsigned long sched_cpu_util(int cpu, unsigned long max);
-> +unsigned long sched_cpu_util(int cpu);
->  #endif /* CONFIG_SMP */
->
->  #ifdef CONFIG_RSEQ
-> diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-> index 53596842f0d8..c531976ee960 100644
-> --- a/kernel/sched/core.c
-> +++ b/kernel/sched/core.c
-> @@ -7107,12 +7107,14 @@ struct task_struct *idle_task(int cpu)
->   * required to meet deadlines.
->   */
->  unsigned long effective_cpu_util(int cpu, unsigned long util_cfs,
-> -                                unsigned long max, enum cpu_util_type type,
-> +                                enum cpu_util_type type,
->                                  struct task_struct *p)
->  {
-> -       unsigned long dl_util, util, irq;
-> +       unsigned long dl_util, util, irq, max;
->         struct rq *rq = cpu_rq(cpu);
->
-> +       max = arch_scale_cpu_capacity(cpu);
-> +
->         if (!uclamp_is_used() &&
->             type == FREQUENCY_UTIL && rt_rq_is_runnable(&rq->rt)) {
->                 return max;
-> @@ -7192,10 +7194,9 @@ unsigned long effective_cpu_util(int cpu, unsigned long util_cfs,
->         return min(max, util);
->  }
->
-> -unsigned long sched_cpu_util(int cpu, unsigned long max)
-> +unsigned long sched_cpu_util(int cpu)
->  {
-> -       return effective_cpu_util(cpu, cpu_util_cfs(cpu), max,
-> -                                 ENERGY_UTIL, NULL);
-> +       return effective_cpu_util(cpu, cpu_util_cfs(cpu), ENERGY_UTIL, NULL);
->  }
->  #endif /* CONFIG_SMP */
->
-> diff --git a/kernel/sched/cpufreq_schedutil.c b/kernel/sched/cpufreq_schedutil.c
-> index 3dbf351d12d5..1207c78f85c1 100644
-> --- a/kernel/sched/cpufreq_schedutil.c
-> +++ b/kernel/sched/cpufreq_schedutil.c
-> @@ -157,11 +157,10 @@ static unsigned int get_next_freq(struct sugov_policy *sg_policy,
->  static void sugov_get_util(struct sugov_cpu *sg_cpu)
->  {
->         struct rq *rq = cpu_rq(sg_cpu->cpu);
-> -       unsigned long max = arch_scale_cpu_capacity(sg_cpu->cpu);
->
-> -       sg_cpu->max = max;
-> +       sg_cpu->max = arch_scale_cpu_capacity(sg_cpu->cpu);
->         sg_cpu->bw_dl = cpu_bw_dl(rq);
-> -       sg_cpu->util = effective_cpu_util(sg_cpu->cpu, cpu_util_cfs(sg_cpu->cpu), max,
-> +       sg_cpu->util = effective_cpu_util(sg_cpu->cpu, cpu_util_cfs(sg_cpu->cpu),
->                                           FREQUENCY_UTIL, NULL);
->  }
->
-> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-> index df5e6e565b4d..73a9dc522b73 100644
-> --- a/kernel/sched/fair.c
-> +++ b/kernel/sched/fair.c
-> @@ -6703,12 +6703,11 @@ static long
->  compute_energy(struct task_struct *p, int dst_cpu, struct perf_domain *pd)
->  {
->         struct cpumask *pd_mask = perf_domain_span(pd);
-> -       unsigned long cpu_cap = arch_scale_cpu_capacity(cpumask_first(pd_mask));
-> -       unsigned long max_util = 0, sum_util = 0;
-> -       unsigned long _cpu_cap = cpu_cap;
-> +       unsigned long max_util = 0, sum_util = 0, cpu_cap;
->         int cpu;
->
-> -       _cpu_cap -= arch_scale_thermal_pressure(cpumask_first(pd_mask));
-> +       cpu_cap = arch_scale_cpu_capacity(cpumask_first(pd_mask));
-> +       cpu_cap -= arch_scale_thermal_pressure(cpumask_first(pd_mask));
->
->         /*
->          * The capacity state of CPUs of the current rd can be driven by CPUs
-> @@ -6745,10 +6744,10 @@ compute_energy(struct task_struct *p, int dst_cpu, struct perf_domain *pd)
->                  * is already enough to scale the EM reported power
->                  * consumption at the (eventually clamped) cpu_capacity.
->                  */
-> -               cpu_util = effective_cpu_util(cpu, util_running, cpu_cap,
-> -                                             ENERGY_UTIL, NULL);
-> +               cpu_util = effective_cpu_util(cpu, util_running, ENERGY_UTIL,
-> +                                             NULL);
->
-> -               sum_util += min(cpu_util, _cpu_cap);
-> +               sum_util += min(cpu_util, cpu_cap);
->
->                 /*
->                  * Performance domain frequency: utilization clamping
-> @@ -6757,12 +6756,12 @@ compute_energy(struct task_struct *p, int dst_cpu, struct perf_domain *pd)
->                  * NOTE: in case RT tasks are running, by default the
->                  * FREQUENCY_UTIL's utilization can be max OPP.
->                  */
-> -               cpu_util = effective_cpu_util(cpu, util_freq, cpu_cap,
-> -                                             FREQUENCY_UTIL, tsk);
-> -               max_util = max(max_util, min(cpu_util, _cpu_cap));
-> +               cpu_util = effective_cpu_util(cpu, util_freq, FREQUENCY_UTIL,
-> +                                             tsk);
-> +               max_util = max(max_util, min(cpu_util, cpu_cap));
->         }
->
-> -       return em_cpu_energy(pd->em_pd, max_util, sum_util, _cpu_cap);
-> +       return em_cpu_energy(pd->em_pd, max_util, sum_util, cpu_cap);
->  }
->
->  /*
-> diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-> index 97bc26e5c8af..07b7c50bd987 100644
-> --- a/kernel/sched/sched.h
-> +++ b/kernel/sched/sched.h
-> @@ -2895,7 +2895,7 @@ enum cpu_util_type {
->  };
->
->  unsigned long effective_cpu_util(int cpu, unsigned long util_cfs,
-> -                                unsigned long max, enum cpu_util_type type,
-> +                                enum cpu_util_type type,
->                                  struct task_struct *p);
->
->  static inline unsigned long cpu_bw_dl(struct rq *rq)
-> --
-> 2.36.1.124.g0e6072fb45-goog
->
+Thanks,
+
+> 
+>>
+>> This flag can satisfying the demand of:
+>> 1) avoiding fragment of file's physical block
+>> 2) userspace doesn't want to pin file's physical address
+>>
+>> After commit 5d539245cb18 ("f2fs: export FS_NOCOW_FL flag to user"),
+>> Pin_file and NOCoW flags have already been twined closely. e.g.
+>> once we set pinfile flag in file, nocow flag will be shown; and after
+>> clearing pinfile flag, nocow flag will disappear.
+>>
+>> So, in order to keep backward compatibility, let use below semantics:
+>>
+>> f2fs_ioc_set_pin_file/f2fs_fileattr_set logic:
+>> 		pinfile			nocow
+>> set		set pinfile | nocow	set nocow
+>> clear		clear pinfile | nocow	clear nocow
+>>
+>> File Behaviors:
+>> w/ pinfile, w/ nocow:		use pinfile semantics
+>> w/ pinfile, w/o nocow:		use pinfile semantics
+>> w/o pinfile, w/ nocow:		use nocow semantics
+>> w/o pinfile, w/o nocow:		no pinfile or nocow semantics
+>>
+>> NOCoW can also be set on directory, and it will have no effect on
+>> directory, however, new files created in nocow directory will have the
+>> flag set.
+>>
+>> Signed-off-by: Chao Yu <chao.yu@oppo.com>
+>> ---
+>> v4:
+>> - allow IPU only for NoCowed regular inode.
+>>   fs/f2fs/data.c |  3 +++
+>>   fs/f2fs/f2fs.h | 13 +++++++++++--
+>>   fs/f2fs/file.c | 18 +++++++++++++++++-
+>>   3 files changed, 31 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/fs/f2fs/data.c b/fs/f2fs/data.c
+>> index 54a7a8ad994d..42d95ac6b508 100644
+>> --- a/fs/f2fs/data.c
+>> +++ b/fs/f2fs/data.c
+>> @@ -2498,6 +2498,9 @@ bool f2fs_should_update_inplace(struct inode *inode, struct f2fs_io_info *fio)
+>>   	if (f2fs_is_pinned_file(inode))
+>>   		return true;
+>>   
+>> +	if (S_ISREG(inode->i_mode) && F2FS_I(inode)->i_flags & F2FS_NOCOW_FL)
+>> +		return true;
+>> +
+>>   	/* if this is cold file, we should overwrite to avoid fragmentation */
+>>   	if (file_is_cold(inode))
+>>   		return true;
+>> diff --git a/fs/f2fs/f2fs.h b/fs/f2fs/f2fs.h
+>> index 492af5b96de1..5c67736000a7 100644
+>> --- a/fs/f2fs/f2fs.h
+>> +++ b/fs/f2fs/f2fs.h
+>> @@ -2916,13 +2916,15 @@ static inline void f2fs_change_bit(unsigned int nr, char *addr)
+>>   #define F2FS_NOCOMP_FL			0x00000400 /* Don't compress */
+>>   #define F2FS_INDEX_FL			0x00001000 /* hash-indexed directory */
+>>   #define F2FS_DIRSYNC_FL			0x00010000 /* dirsync behaviour (directories only) */
+>> +#define F2FS_NOCOW_FL			0x00800000 /* Do not cow file */
+>>   #define F2FS_PROJINHERIT_FL		0x20000000 /* Create with parents projid */
+>>   #define F2FS_CASEFOLD_FL		0x40000000 /* Casefolded file */
+>>   
+>>   /* Flags that should be inherited by new inodes from their parent. */
+>>   #define F2FS_FL_INHERITED (F2FS_SYNC_FL | F2FS_NODUMP_FL | F2FS_NOATIME_FL | \
+>>   			   F2FS_DIRSYNC_FL | F2FS_PROJINHERIT_FL | \
+>> -			   F2FS_CASEFOLD_FL | F2FS_COMPR_FL | F2FS_NOCOMP_FL)
+>> +			   F2FS_CASEFOLD_FL | F2FS_COMPR_FL | F2FS_NOCOMP_FL | \
+>> +			   F2FS_NOCOW_FL)
+>>   
+>>   /* Flags that are appropriate for regular files (all but dir-specific ones). */
+>>   #define F2FS_REG_FLMASK		(~(F2FS_DIRSYNC_FL | F2FS_PROJINHERIT_FL | \
+>> @@ -2954,9 +2956,16 @@ static inline void __mark_inode_dirty_flag(struct inode *inode,
+>>   		fallthrough;
+>>   	case FI_DATA_EXIST:
+>>   	case FI_INLINE_DOTS:
+>> -	case FI_PIN_FILE:
+>>   	case FI_COMPRESS_RELEASED:
+>>   		f2fs_mark_inode_dirty_sync(inode, true);
+>> +		break;
+>> +	case FI_PIN_FILE:
+>> +		if (set)
+>> +			F2FS_I(inode)->i_flags |= F2FS_NOCOW_FL;
+>> +		else
+>> +			F2FS_I(inode)->i_flags &= ~F2FS_NOCOW_FL;
+>> +		f2fs_mark_inode_dirty_sync(inode, true);
+>> +		break;
+>>   	}
+>>   }
+>>   
+>> diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
+>> index 216081ea8c81..9e71ce8601f9 100644
+>> --- a/fs/f2fs/file.c
+>> +++ b/fs/f2fs/file.c
+>> @@ -1851,6 +1851,20 @@ static int f2fs_setflags_common(struct inode *inode, u32 iflags, u32 mask)
+>>   	if (IS_NOQUOTA(inode))
+>>   		return -EPERM;
+>>   
+>> +	if ((iflags ^ masked_flags) & F2FS_NOCOW_FL) {
+>> +		int ret;
+>> +
+>> +		if (!S_ISREG(inode->i_mode) && !S_ISDIR(inode->i_mode))
+>> +			return -EINVAL;
+>> +		if (S_ISREG(inode->i_mode)) {
+>> +			if (f2fs_should_update_outplace(inode, NULL))
+>> +				return -EINVAL;
+>> +			ret = f2fs_convert_inline_inode(inode);
+>> +			if (ret)
+>> +				return ret;
+>> +		}
+>> +	}
+>> +
+>>   	if ((iflags ^ masked_flags) & F2FS_CASEFOLD_FL) {
+>>   		if (!f2fs_sb_has_casefold(F2FS_I_SB(inode)))
+>>   			return -EOPNOTSUPP;
+>> @@ -1926,6 +1940,7 @@ static const struct {
+>>   	{ F2FS_NOCOMP_FL,	FS_NOCOMP_FL },
+>>   	{ F2FS_INDEX_FL,	FS_INDEX_FL },
+>>   	{ F2FS_DIRSYNC_FL,	FS_DIRSYNC_FL },
+>> +	{ F2FS_NOCOW_FL,	FS_NOCOW_FL },
+>>   	{ F2FS_PROJINHERIT_FL,	FS_PROJINHERIT_FL },
+>>   	{ F2FS_CASEFOLD_FL,	FS_CASEFOLD_FL },
+>>   };
+>> @@ -1957,7 +1972,8 @@ static const struct {
+>>   		FS_NOCOMP_FL |		\
+>>   		FS_DIRSYNC_FL |		\
+>>   		FS_PROJINHERIT_FL |	\
+>> -		FS_CASEFOLD_FL)
+>> +		FS_CASEFOLD_FL |	\
+>> +		FS_NOCOW_FL)
+>>   
+>>   /* Convert f2fs on-disk i_flags to FS_IOC_{GET,SET}FLAGS flags */
+>>   static inline u32 f2fs_iflags_to_fsflags(u32 iflags)
+>> -- 
+>> 2.25.1
