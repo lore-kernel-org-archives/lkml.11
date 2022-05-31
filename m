@@ -2,66 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F905C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 15:14:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2438BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 15:14:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345549AbiEaPOU (ORCPT
+        id S1345557AbiEaPOi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 11:14:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39346 "EHLO
+        Tue, 31 May 2022 11:14:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237336AbiEaPOR (ORCPT
+        with ESMTP id S237336AbiEaPOh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 11:14:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A9B125F0;
-        Tue, 31 May 2022 08:14:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 112FDB8119C;
-        Tue, 31 May 2022 15:14:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E149C385A9;
-        Tue, 31 May 2022 15:14:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654010053;
-        bh=gDp6UNdQ0PKd5CJVOD3E4KkUjLefxtxl9Ek4Nl2FAww=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=mXlSXKTpzFFbquqZzqwvtnvCZhcVvGXl02PY5LezepuGRt4lhTakVtteFtu/fd9Uq
-         tZFcfHkNDgyAnRcl5DFxYGxLIM7H1LBOFKqLq9P7sm98S4N+5UnWlFfdQxiZxz7Ucd
-         UJ+lOZhhh026r3qFAob+L+00lWT0uBs5gzXahsvg3pGIz0MFSQEcoYgbK8z9fzHlV0
-         inW42vMBYRZHhhKKqQ2j6Crh4ojGJo+BaSTHH26CkDTVfZv9GDSypjBwJhSqkY8mZj
-         5zTz40yuIzjyPwtFikCybZmKtk4bs9TcD/XjmEQOIUbmcBBVzZYCNE801MhFRULDX0
-         JeF0EOrwiek6g==
-Date:   Tue, 31 May 2022 08:14:12 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Chen Lin <chen45464546@163.com>
-Cc:     akpm@linux-foundation.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, alexander.duyck@gmail.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v2] mm: page_frag: Warn_on when frag_alloc size is
- bigger than PAGE_SIZE
-Message-ID: <20220531081412.22db88cc@kernel.org>
-In-Reply-To: <1654008072-3136-1-git-send-email-chen45464546@163.com>
-References: <20220530122918.549ef054@kernel.org>
-        <1654008072-3136-1-git-send-email-chen45464546@163.com>
+        Tue, 31 May 2022 11:14:37 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1112261616
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 08:14:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654010076; x=1685546076;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=KzVObEc7Veab/GZreg6FyOROGy7YjFcSKS2Z9DBNJis=;
+  b=YGim7AhRATWaafYe5Wl2U9pp+RJg2yS24tp1yg5GHCcT8+IXVXbTMJdM
+   VPmAAe4SW8IFvr9cJ/NUQyeWXTtE92XQurp1H8v1rrZNqcHspZU4HKxvy
+   NTRissCBWZPBs552vUNokomh1HRTuKCv37gotzZn2AxbDK3UqaEIvwoJW
+   uZwF8yxRwarOqRuKCCodTv/SM2QZ0WlgbujYyN65vR9x5cqHK19ctQMGN
+   j85eF3H5GNmKRlziTmnT8SbQVVHAIB86qpxgo35icRCZK8JRLnuyt61Li
+   /VsT3ayZhUFG9UAi2qrDIwA6UsbgiKSaIJpNAz6WpNrUvS3zZIVjrUsaZ
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10364"; a="361660467"
+X-IronPort-AV: E=Sophos;i="5.91,265,1647327600"; 
+   d="scan'208";a="361660467"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 08:11:13 -0700
+X-IronPort-AV: E=Sophos;i="5.91,265,1647327600"; 
+   d="scan'208";a="720349516"
+Received: from kmoorti-mobl.amr.corp.intel.com (HELO [10.212.153.18]) ([10.212.153.18])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 08:11:12 -0700
+Message-ID: <8a8a6bd9-aabf-6f27-0422-a47b01556276@linux.intel.com>
+Date:   Tue, 31 May 2022 09:51:36 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.5.0
+Subject: Re: [PATCH] ASoC: Intel: cirrus-common: fix incorrect channel mapping
+Content-Language: en-US
+To:     Brent Lu <brent.lu@intel.com>, alsa-devel@alsa-project.org
+Cc:     Cezary Rojewski <cezary.rojewski@intel.com>,
+        Liam Girdwood <liam.r.girdwood@linux.intel.com>,
+        Jie Yang <yang.jie@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        xliu <xiang.liu@cirrus.com>, linux-kernel@vger.kernel.org
+References: <20220530125421.885236-1-brent.lu@intel.com>
+From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+In-Reply-To: <20220530125421.885236-1-brent.lu@intel.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 31 May 2022 22:41:12 +0800 Chen Lin wrote:
-> At 2022-05-31 02:29:18, "Jakub Kicinski" <kuba@kernel.org> wrote:
-> >Oh, well, the reuse also needs an update. We can slap a similar
-> >condition next to the pfmemalloc check.  
-> 
-> The sample code above cannot completely solve the current problem.
-> For example, when fragsz is greater than PAGE_FRAG_CACHE_MAX_SIZE(32768),
-> __page_frag_cache_refill will return a memory of only 32768 bytes, so 
-> should we continue to expand the PAGE_FRAG_CACHE_MAX_SIZE? Maybe more 
-> work needs to be done
 
-Right, but I can think of two drivers off the top of my head which will
-allocate <=32k frags but none which will allocate more.
+
+On 5/30/22 07:54, Brent Lu wrote:
+> From: xliu <xiang.liu@cirrus.com>
+> 
+> The default mapping of ASPRX1 Slot is left channel. Map the slots of
+> right amplifiers (WR and TR) to right channel.
+> 
+> Signed-off-by: xliu <xiang.liu@cirrus.com>
+> Signed-off-by: Brent Lu <brent.lu@intel.com>
+> ---
+>  sound/soc/intel/boards/sof_cirrus_common.c | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
+> 
+> diff --git a/sound/soc/intel/boards/sof_cirrus_common.c b/sound/soc/intel/boards/sof_cirrus_common.c
+> index e71d74ec1b0b..64ca0e3991dc 100644
+> --- a/sound/soc/intel/boards/sof_cirrus_common.c
+> +++ b/sound/soc/intel/boards/sof_cirrus_common.c
+> @@ -107,6 +107,7 @@ static int cs35l41_hw_params(struct snd_pcm_substream *substream,
+>  	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
+>  	struct snd_soc_dai *codec_dai;
+>  	int clk_freq, i, ret;
+> +	int rx_ch[2] = {1, 0};
+
+Should this be 'const'?
+
+I am also not clear on the mapping, how does this select the right
+channel? This selects slot0 and the left channel, what am I missing?
+
+
+>  
+>  	clk_freq = sof_dai_get_bclk(rtd); /* BCLK freq */
+>  
+> @@ -134,6 +135,17 @@ static int cs35l41_hw_params(struct snd_pcm_substream *substream,
+>  				ret);
+>  			return ret;
+>  		}
+> +
+> +		/* Setup for R channel Slot: WR and TR */
+> +		if (i % 2) {
+> +			ret = snd_soc_dai_set_channel_map(codec_dai, 0, NULL,
+> +							  ARRAY_SIZE(rx_ch), rx_ch);
+> +			if (ret < 0) {
+> +				dev_err(codec_dai->dev, "fail to set channel map, ret %d\n",
+> +					ret);
+> +				return ret;
+> +			}
+> +		}
+
+Should we do this loop for the left channels as well to have an explicit
+setting?
+
+>  	}
+>  
+>  	return 0;
