@@ -2,100 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B667C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 14:53:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E12EEC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 14:53:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345353AbiEaOxP (ORCPT
+        id S1345360AbiEaOxx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 10:53:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38138 "EHLO
+        Tue, 31 May 2022 10:53:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345345AbiEaOxN (ORCPT
+        with ESMTP id S1345345AbiEaOxu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 10:53:13 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E1A6311C1F
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 07:53:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654008791;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=CosQOXhpUwW4qBTygKC8TqaJAP5LsJrbCYmmeiens3A=;
-        b=OcGd8VOmuNIV5iXbeOwzUw1D7cSOavhD7ZhzF1LrH0VWCbaR+X+7UEBZQM8JQ6j7vqYYiy
-        Rm3+IhOaT9gFvng39fwoOA33r1lbo3YBeYfr9+pH2rz7u+vyUpSwoNz8vsCB/JtAprgl7Q
-        p2ztnEwhe4F3aavCSuIY1+cQ0ylmrbQ=
-Received: from mail-pj1-f72.google.com (mail-pj1-f72.google.com
- [209.85.216.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-232--dEKEocINVOxISVNyewSjA-1; Tue, 31 May 2022 10:53:09 -0400
-X-MC-Unique: -dEKEocINVOxISVNyewSjA-1
-Received: by mail-pj1-f72.google.com with SMTP id 92-20020a17090a09e500b001d917022847so8179690pjo.1
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 07:53:09 -0700 (PDT)
+        Tue, 31 May 2022 10:53:50 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DAAD8FFBB;
+        Tue, 31 May 2022 07:53:49 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id rs12so27075507ejb.13;
+        Tue, 31 May 2022 07:53:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=beYwBzzh7tbSe8x778IfHk+2fBpa79M3lZZPBNy+pOU=;
+        b=TeNh4seNqUbLrAGFCo0kIgIcwZTvnYf8LR3z1FVKFFXZTCkDmuJdo8sadoQBP++YuR
+         J2fdHQ5fPF0KWc9sasn8RXAGHuX1oSz6i3u/R90AJB3QL8jMf5qX4VaTG4/e/uYETakK
+         7uRuBtSWTanmAGoBaMVqB2iKPM9fVOtH8cevSxhMvmlDfAXm5rMc+g9IvfqShCLR3fqa
+         neM41s7tDg8LQnKZowT1zfhFwTjMY2MVdKdPDqilfDJTpBo0LpxmkrR1d5PmmYw6ms3O
+         bIwWKS7YdZ4BZtkCM5D4cqOAEWDt/yJPPXUCjB9CTUNT1JM2usmgu3NM9D04APYjNZur
+         Gp0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CosQOXhpUwW4qBTygKC8TqaJAP5LsJrbCYmmeiens3A=;
-        b=u006oM3O4wUebQ74JAsdwFO5L31bW3hdzGPV3mSTEaCK6xebQxtqpzmMhb1DnHZrWM
-         +V/2DICcjZbWDEirnzq5kIWF5P3k5/yjLvFFnKw23m+vFgExv1uNN2xTk79vNWgECYzM
-         htIdmftqsouibiUthoKJaX3q1Fjvii9rZ+HWra9I5Orr9kunYtv9OkHdrL6vLdm4Wzm9
-         obtPXl/0a5uvDZ30Uls2KWimvBzELND+2qfUjGxsRcdo64Ujdz3ASta5CtnM8Xs33m2Q
-         OO2K2lguYuxYDwv6nldrYI/15DgmiFY1Z+TIXFVZgTlpblVXVzpvjZd2U0r74JD4gLOx
-         kDOA==
-X-Gm-Message-State: AOAM532EYeJ+tqc5vhZRIZ17OfHzXVncVKUVoqVqlkwT4mwnWMRBUf3D
-        VqairUQc09mEBG276ePRoV2cJmIAq7ge2AtD/LlW8pLRCQEmc5hDUD6TjSeU1MJoXPbLBTZVJAh
-        98zGvqKzNM+i48wWfAP0Uk6GPXasPTZ5eG8HSSJWD
-X-Received: by 2002:a17:902:ec8a:b0:161:7ca5:ece7 with SMTP id x10-20020a170902ec8a00b001617ca5ece7mr61794814plg.141.1654008788504;
-        Tue, 31 May 2022 07:53:08 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyHmcdc9Tpt0JfpNtczpvUBH8pZKWErDmglIEuDX5h0caL7y0qcpiAn9XHXZ8/Waiv9L3TrJgADoWegDE+HUy0=
-X-Received: by 2002:a17:902:ec8a:b0:161:7ca5:ece7 with SMTP id
- x10-20020a170902ec8a00b001617ca5ece7mr61794784plg.141.1654008788172; Tue, 31
- May 2022 07:53:08 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=beYwBzzh7tbSe8x778IfHk+2fBpa79M3lZZPBNy+pOU=;
+        b=P5K/UqrlepbpGfDmA2Boz1eN1GZ/tio7P+S5meLCXd9d2Lyly32i5OzUDZM9gLp9a3
+         6iA+hG1mtKXjDIUhkzWTvR7B2vg5XAJMPHP8Dd0BhZM7m5CKIjmD9ShBrcMYPg/IM3nE
+         8WBO7W5n/wQ3/n4hSWFCD0rAGCcFFK1YIO1pZsYenW9d7yPIElO3qf4Y1+rM6xH9MjYS
+         s6krmFqNI1LVaqgGH1shWH0aOcQ2CiCy0LVJYlwYOqxEF2oJBuMZWx+kdLLxQDFehxFD
+         3ZuTMJJAa7tSfusTothqgRTAGLxeDnZTh08Je83ySyvZWxBHvCIYVVjLd1SK9LKGhFrh
+         kQ4Q==
+X-Gm-Message-State: AOAM532SC/HFCuV+Q4gx98qGBlwuGzRs6uHAeJ6LS5foLme8HtvtS2hR
+        1tL8VUKeyB77CghtRUF4XLg=
+X-Google-Smtp-Source: ABdhPJwA+E3ZBpGsPXmbP/nr899y3j/YF5wi66ZvsL+S1YETpLcPyT3Fej1veNGm5BWYdPWNeVefqw==
+X-Received: by 2002:a17:907:9709:b0:6fd:c0e1:c86b with SMTP id jg9-20020a170907970900b006fdc0e1c86bmr52638668ejc.600.1654008827273;
+        Tue, 31 May 2022 07:53:47 -0700 (PDT)
+Received: from localhost.localdomain (host-79-55-12-155.retail.telecomitalia.it. [79.55.12.155])
+        by smtp.gmail.com with ESMTPSA id c2-20020a17090603c200b006fea59ef3a5sm5099779eja.32.2022.05.31.07.53.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 May 2022 07:53:46 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
+        Ira Weiny <ira.weiny@intel.com>, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+Subject: [PATCH 0/3] btrfs: Replace kmap() with kmap_local_page()
+Date:   Tue, 31 May 2022 16:53:32 +0200
+Message-Id: <20220531145335.13954-1-fmdefrancesco@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-References: <YpYaYK7a28DFT5Ne@hirez.programming.kicks-ass.net>
- <20220531140236.1435-1-jalliste@amazon.com> <YpYpxzt4rmG+LFy9@hirez.programming.kicks-ass.net>
-In-Reply-To: <YpYpxzt4rmG+LFy9@hirez.programming.kicks-ass.net>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-Date:   Tue, 31 May 2022 16:52:56 +0200
-Message-ID: <CABgObfYYUNb_pEVA2xdUm_U39Wc1=AahJKDx2=9P+aK5=z202w@mail.gmail.com>
-Subject: Re: ...\n
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Jack Allister <jalliste@amazon.com>,
-        Borislav Petkov <bp@alien8.de>, diapop@amazon.co.uk,
-        "Anvin, H. Peter" <hpa@zytor.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm <kvm@vger.kernel.org>,
-        "Kernel Mailing List, Linux" <linux-kernel@vger.kernel.org>,
-        Metin Kaya <metikaya@amazon.co.uk>,
-        Ingo Molnar <mingo@redhat.com>,
-        Radim Krcmar <rkrcmar@redhat.com>,
-        Sean Christopherson <sean.j.christopherson@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        "the arch/x86 maintainers" <x86@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 31, 2022 at 4:45 PM Peter Zijlstra <peterz@infradead.org> wrote:
-> On Tue, May 31, 2022 at 02:02:36PM +0000, Jack Allister wrote:
-> > The reasoning behind this is that you may want to run a guest at a
-> > lower CPU frequency for the purposes of trying to match performance
-> > parity between a host of an older CPU type to a newer faster one.
->
-> That's quite ludicrus. Also, then it should be the host enforcing the
-> cpufreq, not the guest.
+This is the first series of patches aimed towards the conversion of Btrfs
+filesystem from the use of kmap() to kmap_local_page().
 
-It is a weird usecase indeed, but actually it *is* enforced by the
-host in Jack's patch.
+The use of kmap() is being deprecated in favor of kmap_local_page() where
+it is feasible. With kmap_local_page() the mapping is per thread, CPU
+local and not globally visible.
 
-On the other hand doing it by writing random MSRs, with no save and
-load when the task is scheduled or migrated, will not fly outside
-Amazon datacenters. The patch also has traces of the Amazon kernel and
-doesn't apply upstream.
+Therefore, use kmap_local_page() / kunmap_local() in Btrfs wherever the
+mappings are per thread and not globally visible.
 
-Paolo
+Tested on QEMU + KVM 32 bits VM with 4GB of RAM and HIGHMEM64G enabled.
+
+tweed32:~ # uname -a
+Linux tweed32 5.18.0-torvalds-debug-x86_32+ #2 SMP PREEMPT_DYNAMIC Tue \
+May 31 15:20:07 CEST 2022 i686 athlon i386 GNU/Linux
+
+tweed32:~ # btrfs check -p ~zoek/dev/btrfs.file
+Opening filesystem to check...
+Checking filesystem on /home/zoek/dev/btrfs.file
+UUID: 897d65c5-1167-45b4-b811-2bfe74a320ca
+[1/7] checking root items                      (0:00:00 elapsed, 1774 items checked)
+[2/7] checking extents                         (0:00:00 elapsed, 135 items checked)
+[3/7] checking free space tree                 (0:00:00 elapsed, 4 items checked)
+[4/7] checking fs roots                        (0:00:00 elapsed, 104 items checked)
+[5/7] checking csums (without verifying data)  (0:00:00 elapsed, 205 items checked)
+[6/7] checking root refs                       (0:00:00 elapsed, 3 items checked)
+[7/7] checking quota groups skipped (not enabled on this FS)
+found 47394816 bytes used, no error found
+total csum bytes: 44268
+total tree bytes: 2064384
+total fs tree bytes: 1720320
+total extent tree bytes: 180224
+btree space waste bytes: 465350
+file data blocks allocated: 45330432
+ referenced 45330432
+
+Fabio M. De Francesco (3):
+  btrfs: Replace kmap() with kmap_local_page() in inode.c
+  btrfs: Replace kmap() with kmap_local_page() in lzo.c
+  btrfs: Replace kmap() with kmap_local_page() in zlib.c
+
+ fs/btrfs/inode.c |  6 +++---
+ fs/btrfs/lzo.c   | 28 ++++++++++++----------------
+ fs/btrfs/zlib.c  | 40 ++++++++++++++++++++--------------------
+ 3 files changed, 35 insertions(+), 39 deletions(-)
+
+-- 
+2.36.1
 
