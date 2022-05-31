@@ -2,124 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BB7EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 17:55:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22B34C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 17:55:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242102AbiEaRzI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 13:55:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34944 "EHLO
+        id S1346731AbiEaRzV (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 31 May 2022 13:55:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346730AbiEaRy4 (ORCPT
+        with ESMTP id S1346724AbiEaRzT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 13:54:56 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7087E9AE70
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 10:54:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654019694;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=JzZEPBs5hq9PBWM1+4wVziew8SNYys5xTSrF8ljlk6E=;
-        b=ZQn/Uc+5I6TDlrRuEcB3aQPor2GspEJcP2h9+cxuqjg+s+sUVDqYSFhIySxvPY0M0vmxci
-        NC8Bi9xIgd6mkSPlBljnNuq5WN6kBEJcMmMei3DEmM9AfDyWD70HDPi8L8e/pM7cjpXRxm
-        QNyRj6fX9GCYmPQqQp/ZY/NSfgpRZGk=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-182-VcvCgzjYPHe47bHRmnZBpg-1; Tue, 31 May 2022 13:54:51 -0400
-X-MC-Unique: VcvCgzjYPHe47bHRmnZBpg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1128080B712;
-        Tue, 31 May 2022 17:54:51 +0000 (UTC)
-Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E8B9FC23DBF;
-        Tue, 31 May 2022 17:54:50 +0000 (UTC)
-From:   Paolo Bonzini <pbonzini@redhat.com>
-To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     likexu@tencent.com
-Subject: [PATCH 1/2] KVM: vmx, pmu: accept 0 for absent MSRs when host-initiated
-Date:   Tue, 31 May 2022 13:54:49 -0400
-Message-Id: <20220531175450.295552-2-pbonzini@redhat.com>
-In-Reply-To: <20220531175450.295552-1-pbonzini@redhat.com>
-References: <20220531175450.295552-1-pbonzini@redhat.com>
+        Tue, 31 May 2022 13:55:19 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3501378EF9;
+        Tue, 31 May 2022 10:55:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=5qgPWbu1LAKzbDTijZmrwRKZussN5dXdmwQD1+Wcxks=; b=nxEOpA2AYHcT+nSglra4Y8vLPT
+        /onVq/y8GBCq72oBkxzK/xgOEEOluDWdXPTkvY+novtidysHyPK/zPzadWRZKMaIzQl65JYJQwIf8
+        NcIcQy24aEbXg5KGGFSblOfn6JcayrZNHsMab3e2WSVqex9bB+L9LwmGAwb6sDl8oZYSO8rWlRtg3
+        UNTJ6W0O3Z6UjEB8o9V2N9xRfcSYu85xITfJnvUZWFf9YFvijRyiYF9vdGpTNJ7sbjlyD+7Ii2q8s
+        NtaJhB19kLwafv70zNmIr59b4lSjPhc0wmUdWPSUtNAFWjKtDKqJWzv1OraOOMW/IVerd5RoT1FcI
+        604w8mXA==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nw65K-005Zqe-Hj; Tue, 31 May 2022 17:55:14 +0000
+Message-ID: <e92a9cb8-0270-523b-d853-1ee648b20e0f@infradead.org>
+Date:   Tue, 31 May 2022 10:55:09 -0700
 MIME-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] m68k: virt: Kconfig minor fixes
+Content-Language: en-US
+To:     Laurent Vivier <laurent@vivier.eu>, linux-kernel@vger.kernel.org
+Cc:     linux-m68k@lists.linux-m68k.org, Arnd Bergmann <arnd@arndb.de>,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+References: <20220531174514.1586248-1-laurent@vivier.eu>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20220531174514.1586248-1-laurent@vivier.eu>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Whenever an MSR is part of KVM_GET_MSR_INDEX_LIST, as is the case for
-MSR_IA32_DS_AREA, MSR_ARCH_LBR_DEPTH or MSR_ARCH_LBR_CTL, it has to be
-always settable with KVM_SET_MSR.  Accept a zero value for these MSRs
-to obey the contract.
 
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
----
- arch/x86/kvm/vmx/pmu_intel.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
-index 3e04d0407605..66496cb41494 100644
---- a/arch/x86/kvm/vmx/pmu_intel.c
-+++ b/arch/x86/kvm/vmx/pmu_intel.c
-@@ -367,8 +367,9 @@ static bool arch_lbr_depth_is_valid(struct kvm_vcpu *vcpu, u64 depth)
- {
- 	struct kvm_pmu *pmu = vcpu_to_pmu(vcpu);
- 
--	if (!kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR))
--		return false;
-+	if (!kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR) ||
-+	    !guest_cpuid_has(vcpu, X86_FEATURE_ARCH_LBR))
-+		return depth == 0;
- 
- 	return (depth == pmu->kvm_arch_lbr_depth);
- }
-@@ -378,7 +379,7 @@ static bool arch_lbr_ctl_is_valid(struct kvm_vcpu *vcpu, u64 ctl)
- 	struct kvm_cpuid_entry2 *entry;
- 
- 	if (!kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR))
--		return false;
-+		return ctl == 0;
- 
- 	if (ctl & ~KVM_ARCH_LBR_CTL_MASK)
- 		goto warn;
-@@ -510,6 +511,8 @@ static int intel_pmu_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 		}
- 		break;
- 	case MSR_IA32_DS_AREA:
-+		if (msr_info->host_initiated && data && !guest_cpuid_has(vcpu, X86_FEATURE_DS))
-+			return 1;
- 		if (is_noncanonical_address(data, vcpu))
- 			return 1;
- 		pmu->ds_area = data;
-@@ -525,7 +528,11 @@ static int intel_pmu_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 	case MSR_ARCH_LBR_DEPTH:
- 		if (!arch_lbr_depth_is_valid(vcpu, data))
- 			return 1;
-+
- 		lbr_desc->records.nr = data;
-+		if (!guest_cpuid_has(vcpu, X86_FEATURE_ARCH_LBR))
-+			return 0;
-+
- 		/*
- 		 * Writing depth MSR from guest could either setting the
- 		 * MSR or resetting the LBR records with the side-effect.
-@@ -535,6 +542,8 @@ static int intel_pmu_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 	case MSR_ARCH_LBR_CTL:
- 		if (!arch_lbr_ctl_is_valid(vcpu, data))
- 			break;
-+		if (!guest_cpuid_has(vcpu, X86_FEATURE_ARCH_LBR))
-+			return 0;
- 
- 		vmcs_write64(GUEST_IA32_LBR_CTL, data);
- 
+On 5/31/22 10:45, Laurent Vivier wrote:
+> Select VIRTIO_MENU as it is needed by VIRTIO_MMIO.
+> 
+> Add an ending period at the end the virt machine help message.
+> 
+> Reported-by: Randy Dunlap <rdunlap@infradead.org>
+> Signed-off-by: Laurent Vivier <laurent@vivier.eu>
+
+Tested-by: Randy Dunlap <rdunlap@infradead.org>
+Acked-by: Randy Dunlap <rdunlap@infradead.org>
+
+Thanks.
+
+> ---
+>  arch/m68k/Kconfig.machine | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/m68k/Kconfig.machine b/arch/m68k/Kconfig.machine
+> index a1042568b9ad..4fbe57de1851 100644
+> --- a/arch/m68k/Kconfig.machine
+> +++ b/arch/m68k/Kconfig.machine
+> @@ -161,10 +161,11 @@ config VIRT
+>  	select RTC_CLASS
+>  	select RTC_DRV_GOLDFISH
+>  	select TTY
+> +	select VIRTIO_MENU
+>  	select VIRTIO_MMIO
+>  	help
+>  	  This options enable a pure virtual machine based on m68k,
+> -	  VIRTIO MMIO devices and GOLDFISH interfaces (TTY, RTC, PIC)
+> +	  VIRTIO MMIO devices and GOLDFISH interfaces (TTY, RTC, PIC).
+>  
+>  config PILOT
+>  	bool
+
 -- 
-2.31.1
-
-
+~Randy
