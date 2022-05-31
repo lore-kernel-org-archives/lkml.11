@@ -2,81 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C081C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 08:20:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40D76C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 08:20:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244765AbiEaIU0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 04:20:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43482 "EHLO
+        id S244802AbiEaIUf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 31 May 2022 04:20:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232875AbiEaIUY (ORCPT
+        with ESMTP id S244790AbiEaIUb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 04:20:24 -0400
-Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F423691551;
-        Tue, 31 May 2022 01:20:22 -0700 (PDT)
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24V3YPPV004646;
-        Tue, 31 May 2022 01:20:20 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=pfpt0220; bh=8nxNsVGiL8Mk+63bqzVvln6mjStvrA/6MNl4uuUs9GE=;
- b=Xhx2c2XqoqoPBTQlyrJT7hDMd296SCNAHJWNPsHbCPp4bbI1+pMbcC1qpBla1tKD+ZSc
- 8MaU0RS/VD6mCD3dBX/C3Tek7jhN/0tfWocUuoGTHlMGDCQc7XxO5Y6MUo4VS4RgUX7l
- cGOKZKy2YhqyZnAiv9ElymIEcWtTAi6AQAsKCPO1vq11ia5RGBmjqOn6kO5dCOgMKlws
- p+fNF16KR54/mLPFD3UGUu/tcOirYTZbVsE3Pl2FRWp4IggWu9IZDmYoSsweFEU0wbiw
- bnoc7oJdjS/4PulT6UnXXo9lNPt5YMfXX/QQ/14c8kmLdc+IAimdvYtskbjZqSzGYgGB 4A== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3gbk8n8cav-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 31 May 2022 01:20:20 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 31 May
- 2022 01:20:18 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Tue, 31 May 2022 01:20:18 -0700
-Received: from localhost.localdomain (unknown [10.110.150.250])
-        by maili.marvell.com (Postfix) with ESMTP id D01AB3F7095;
-        Tue, 31 May 2022 01:20:16 -0700 (PDT)
-From:   Piyush Malgujar <pmalgujar@marvell.com>
-To:     <linux-i2c@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <rric@kernel.org>, <wsa@kernel.org>, <sgarapati@marvell.com>,
-        <cchavva@marvell.com>, Piyush Malgujar <pmalgujar@marvell.com>
-Subject: [PATCH v2 0/2] drivers: i2c: thunderx: Marvell thunderx i2c changes
-Date:   Tue, 31 May 2022 01:19:32 -0700
-Message-ID: <20220531081934.29238-1-pmalgujar@marvell.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 31 May 2022 04:20:31 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63DBC9399D;
+        Tue, 31 May 2022 01:20:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1653985230; x=1685521230;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=71XG4ZmwJ09OcgbOEPiZ9EnPHO86FepcH2+AFt4DG3A=;
+  b=xj0laKrzcJ5t6csilCoHHz9k3xGxS9Pm8kbg1bjj2WF4wkZXp5c6K9ds
+   Jt5rYH0lEbVsCHVsKqCWd4JEhCNZqyc/NeDpRVU+P7JWHEekqyhy7txnZ
+   pv+WW5QRQ45q1h2xvBMcBLkgq/PWmkcSI14WjKCJNtH7mx0foJTkPW7/D
+   A=;
+Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 31 May 2022 01:20:30 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 01:20:29 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 31 May 2022 01:20:28 -0700
+Received: from hu-harshq-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 31 May 2022 01:20:24 -0700
+From:   Harsh Agarwal <quic_harshq@quicinc.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+CC:     <linux-usb@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <quic_pkondeti@quicinc.com>,
+        <quic_ppratap@quicinc.com>, <quic_jackp@quicinc.com>,
+        Harsh Agarwal <quic_harshq@quicinc.com>
+Subject: [PATCH 0/3] Add support for multiport controller 
+Date:   Tue, 31 May 2022 13:50:14 +0530
+Message-ID: <1653985217-20953-1-git-send-email-quic_harshq@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: mqoAx37F0uG81wfBYwxBpJNNAz0rirNH
-X-Proofpoint-GUID: mqoAx37F0uG81wfBYwxBpJNNAz0rirNH
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
- definitions=2022-05-31_02,2022-05-30_03,2022-02-23_01
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-These patches includes the following changes:
+Currently the DWC3 driver supports only single port controller which 
+requires at most two PHYs ie HS and SS PHYs. There are SoCs that has
+DWC3 controller with multiple ports that can operate in host mode. Some of
+the port supports both SS+HS and other port supports only HS mode.
 
-- Handling clock divisor logic for Octeon SoC family using subsytem ID
-- Support for high speed mode
+This change refactors the PHY logic to support multiport controller. The 
+implementation has been tested with Generic PHYs as well.
 
-Changes since V1:
-* Fixed the build issue "incomplete definition of type 'struct pci_dev'"
-Reported-by: kernel test robot <lkp@intel.com>
+For any multiport controller we would define a new node "multiport" inside
+dwc3 and then add subsequent "mport" nodes inside it for individual ports
+that it supports. Now each individual "mport" node defines their own PHYs.
 
-Piyush Malgujar (2):
-  drivers: i2c: thunderx: octeontx2 clock divisor logic changes
-  drivers: i2c: thunderx: Add support for High speed mode
+e.g.
+Consider a Dual port controller where each port supports HS+SS 
 
- drivers/i2c/busses/i2c-octeon-core.c     | 84 +++++++++++++++++-------
- drivers/i2c/busses/i2c-octeon-core.h     | 18 +++++
- drivers/i2c/busses/i2c-thunderx-pcidrv.c |  7 ++
- 3 files changed, 85 insertions(+), 24 deletions(-)
+multiport {
+	mp_1: mport@1 {
+		usb-phy = <usb2_phy0>, <usb3_phy0>;
+        /* Can define Generic PHYs also */  
+	};	
+	mp_2: mport@2 {
+		usb-phy = <usb2_phy1>, <usb3_phy1>;
+	};	
+
+Harsh Agarwal (3):
+  dt-bindings: usb: dwc3: Add support for multiport related properties
+  usb: phy: Add devm_of_usb_get_phy_by_phandle
+  usb: dwc3: Refactor PHY logic to support Multiport Controller
+
+ .../devicetree/bindings/usb/snps,dwc3.yaml         |  55 +++
+ drivers/usb/dwc3/core.c                            | 400 +++++++++++++++------
+ drivers/usb/dwc3/core.h                            |  12 +-
+ drivers/usb/dwc3/drd.c                             |  16 +-
+ drivers/usb/dwc3/gadget.c                          |   4 +-
+ drivers/usb/phy/phy.c                              |  34 ++
+ include/linux/usb/phy.h                            |   8 +
+ 7 files changed, 402 insertions(+), 127 deletions(-)
 
 -- 
-2.17.1
+2.7.4
 
