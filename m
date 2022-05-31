@@ -2,115 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C6E9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 22:46:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 289EDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 22:47:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347982AbiEaWqy (ORCPT
+        id S1348554AbiEaWrJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 18:46:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48764 "EHLO
+        Tue, 31 May 2022 18:47:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241562AbiEaWqu (ORCPT
+        with ESMTP id S1348400AbiEaWrA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 18:46:50 -0400
-Received: from mail-oi1-f174.google.com (mail-oi1-f174.google.com [209.85.167.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92AD564E3;
-        Tue, 31 May 2022 15:46:48 -0700 (PDT)
-Received: by mail-oi1-f174.google.com with SMTP id u140so369256oie.3;
-        Tue, 31 May 2022 15:46:48 -0700 (PDT)
+        Tue, 31 May 2022 18:47:00 -0400
+Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84FFDA466;
+        Tue, 31 May 2022 15:46:58 -0700 (PDT)
+Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-f2a4c51c45so355449fac.9;
+        Tue, 31 May 2022 15:46:58 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XtfN9Ae7L2YdbBQXYfVn369SwWqSdF9XH/jlV1HuQs8=;
-        b=df+h7b7fIO5YHY1KlqN4Uydrn2YhcfnXTEQ6oz4GW/lIFB+qXM1bOfIqkzEfAsT0ob
-         EpeJyKxdUGqxYAs01QYeKpPTUsL+871CmOYX6RLKM+vcYyO2yb4C5MYnTElOj/5i9MRl
-         hY0Uj97CPFQVXQQj/wCBJjF8qmb8ge25D++b6rBxHlz2yRZ5NKvhZbJB8YpxkmvMdVp8
-         jlJTj53WyIz4uJQrLdq2CG343NBu1FtPOdDAhS8b9khOz3Q4HvEHALnpR3S1BOOaDneL
-         2mrZFeWhh25OcnqcrhGaYvjMQsYTdaiuoNtuczR/zLUyXWwmD0KGPlVqoxH8iZ37p+4A
-         nqjQ==
-X-Gm-Message-State: AOAM5309w6CIkmf/8suPZsGQ6qHrQKqGsVTDUPEcMIsRjVLgLJn4G4Vf
-        KcBuztgMD/PfeUL0nzaXL52A1SaZznW0odXWXd0=
-X-Google-Smtp-Source: ABdhPJwNLpQWKEJhhoMAFvXA0GO+YgoH9ouItjCncWsXjpIbe7s0bdp9uW6UUljnMe35rwNcYL7LjeS20uabRliwtpU=
-X-Received: by 2002:a05:6808:16ac:b0:2f9:52e5:da90 with SMTP id
- bb44-20020a05680816ac00b002f952e5da90mr13721026oib.5.1654037207957; Tue, 31
- May 2022 15:46:47 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220525053814.3265216-1-irogers@google.com> <20220525053814.3265216-3-irogers@google.com>
-In-Reply-To: <20220525053814.3265216-3-irogers@google.com>
-From:   Namhyung Kim <namhyung@kernel.org>
-Date:   Tue, 31 May 2022 15:46:37 -0700
-Message-ID: <CAM9d7cgA4fr3G7wjpaTKyEPF1JuAsQO-Ucoe9Ahd56KMz5RNBw@mail.gmail.com>
-Subject: Re: [PATCH v4 2/3] perf stat: Add JSON output option
-To:     Ian Rogers <irogers@google.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
-        Sandipan Das <sandipan.das@amd.com>,
-        Claire Jensen <cjense@google.com>, Alyssa Ross <hi@alyssa.is>,
-        Like Xu <likexu@tencent.com>,
-        James Clark <james.clark@arm.com>,
-        Florian Fischer <florian.fischer@muhq.space>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-perf-users <linux-perf-users@vger.kernel.org>,
-        Claire Jensen <clairej735@gmail.com>,
-        Stephane Eranian <eranian@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=AE9Fbrj6BPIXSH+6mmzzM5HJbPbBIVW+lbxzy622FhY=;
+        b=FC7YLCXVp+3Ey9OIsvgjO8KDG576KFeauHlGw9t9IKSPQoYy+B6Ehbg9N7Ys8Qmj2b
+         LmcAk4uBcXej5lFY3eJX00+fNT8nCYwM/FRlLQfSW+e63Gm5Ym6KP9OzTPCEBOOS4Nyb
+         9zDQIgoWggBTkFJizFd/bNEYl5SFd/MmWq8FTMjpzoQchlx9V8rP/Wn/KsfApTRhgMSS
+         LaPB5j8BSqzY4JQskTvNxp8wnrjQAM7K4YKN4W+xacuhXcIEcwiq4ZwFZ4MqP4kNam4g
+         7BvXB8v5N932AluPgFhuJUMJPCODzVK25uYIeDByuuvShMa0raQfnf/DEX1Q0e4kpZxD
+         VB+w==
+X-Gm-Message-State: AOAM531mZzff7zTh95UL62AZHhRlpQ7yBeIKsHZgTgAJaKmDydXz1SO+
+        k26Mv1kGjKXdj/z5e2B4Vg==
+X-Google-Smtp-Source: ABdhPJz9hzTJNp12uYZ4vHIk6ZhMev4DpgOt2zBvhqRIr7g1l5auyN0vlOttAqh+FCiKDf2dw2zOIw==
+X-Received: by 2002:a05:6870:b254:b0:ec:6ca4:c89f with SMTP id b20-20020a056870b25400b000ec6ca4c89fmr15083367oam.272.1654037217725;
+        Tue, 31 May 2022 15:46:57 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id u3-20020a056830248300b0060603221247sm7000503ots.23.2022.05.31.15.46.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 May 2022 15:46:57 -0700 (PDT)
+Received: (nullmailer pid 2476555 invoked by uid 1000);
+        Tue, 31 May 2022 22:46:54 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     ChiaEn Wu <peterwu.pub@gmail.com>
+Cc:     heikki.krogerus@linux.intel.com, broonie@kernel.org,
+        linux-kernel@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        matthias.bgg@gmail.com, pavel@ucw.cz, sre@kernel.org,
+        dri-devel@lists.freedesktop.org, gregkh@linuxfoundation.org,
+        jic23@kernel.org, linux-iio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        lgirdwood@gmail.com, linux-leds@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux@roeck-us.net,
+        chunfeng.yun@mediatek.com, linux-usb@vger.kernel.org,
+        alice_chen@richtek.com, lee.jones@linaro.org,
+        daniel.thompson@linaro.org, cy_huang@richtek.com,
+        robh+dt@kernel.org, chiaen_wu@richtek.com,
+        linux-fbdev@vger.kernel.org, jingoohan1@gmail.com, deller@gmx.de,
+        linux-pm@vger.kernel.org, lars@metafoo.de
+In-Reply-To: <20220531111900.19422-5-peterwu.pub@gmail.com>
+References: <20220531111900.19422-1-peterwu.pub@gmail.com> <20220531111900.19422-5-peterwu.pub@gmail.com>
+Subject: Re: [RESEND 04/14] dt-bindings: leds: Add Mediatek MT6370 flashlight binding
+Date:   Tue, 31 May 2022 17:46:54 -0500
+Message-Id: <1654037214.468113.2476554.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Ian,
+On Tue, 31 May 2022 19:18:50 +0800, ChiaEn Wu wrote:
+> From: Alice Chen <alice_chen@richtek.com>
+> 
+> Add Mediatek MT6370 flashlight binding documentation
+> 
+> Signed-off-by: Alice Chen <alice_chen@richtek.com>
+> ---
+>  .../leds/mediatek,mt6370-flashlight.yaml      | 48 +++++++++++++++++++
+>  1 file changed, 48 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/leds/mediatek,mt6370-flashlight.yaml
+> 
 
-On Tue, May 24, 2022 at 10:38 PM Ian Rogers <irogers@google.com> wrote:
->
-> From: Claire Jensen <cjense@google.com>
->
-> CSV output is tricky to format and column layout changes are susceptible
-> to breaking parsers. New JSON-formatted output has variable names to
-> identify fields that are consistent and informative, making
-> the output parseable.
->
-> CSV output example:
->
-> 1.20,msec,task-clock:u,1204272,100.00,0.697,CPUs utilized
-> 0,,context-switches:u,1204272,100.00,0.000,/sec
-> 0,,cpu-migrations:u,1204272,100.00,0.000,/sec
-> 70,,page-faults:u,1204272,100.00,58.126,K/sec
->
-> JSON output example:
->
-> {"counter-value" : "3805.723968", "unit" : "msec", "event" :
-> "cpu-clock", "event-runtime" : 3805731510100.00, "pcnt-running"
-> : 100.00, "metric-value" : 4.007571, "metric-unit" : "CPUs utilized"}
-> {"counter-value" : "6166.000000", "unit" : "", "event" :
-> "context-switches", "event-runtime" : 3805723045100.00, "pcnt-running"
-> : 100.00, "metric-value" : 1.620191, "metric-unit" : "K/sec"}
-> {"counter-value" : "466.000000", "unit" : "", "event" :
-> "cpu-migrations", "event-runtime" : 3805727613100.00, "pcnt-running"
-> : 100.00, "metric-value" : 122.447136, "metric-unit" : "/sec"}
-> {"counter-value" : "208.000000", "unit" : "", "event" :
-> "page-faults", "event-runtime" : 3805726799100.00, "pcnt-running"
-> : 100.00, "metric-value" : 54.654516, "metric-unit" : "/sec"}
->
-> Also added documentation for JSON option.
-> There is some tidy up of CSV code including a potential memory over run
-> in the os.nfields set up. To facilitate this an AGGR_MAX value is added.
->
-> Signed-off-by: Claire Jensen <cjense@google.com>
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-Your sign-off as well?
+yamllint warnings/errors:
 
-Anyway, I think there are places to clean up this part of code
-more but that's not a part of the work.  Maybe I need to find
-some time to do that later.
+dtschema/dtc warnings/errors:
+./Documentation/devicetree/bindings/leds/mediatek,mt6370-flashlight.yaml: $id: relative path/filename doesn't match actual path or filename
+	expected: http://devicetree.org/schemas/leds/mediatek,mt6370-flashlight.yaml#
 
-Acked-by: Namhyung Kim <namhyung@kernel.org>
+doc reference errors (make refcheckdocs):
+Warning: Documentation/devicetree/bindings/leds/mediatek,mt6370-flashlight.yaml references a file that doesn't exist: Documentation/devicetree/bindings/mfd/mt6370.yaml
+Documentation/devicetree/bindings/leds/mediatek,mt6370-flashlight.yaml: Documentation/devicetree/bindings/mfd/mt6370.yaml
 
-Thanks,
-Namhyung
+See https://patchwork.ozlabs.org/patch/
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
