@@ -2,141 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B630C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 13:55:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F3D7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 13:56:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242491AbiEaNzy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 09:55:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54992 "EHLO
+        id S1345028AbiEaN4B (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 31 May 2022 09:56:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245530AbiEaNzm (ORCPT
+        with ESMTP id S244883AbiEaNzn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 09:55:42 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03CF5D5C;
-        Tue, 31 May 2022 06:55:35 -0700 (PDT)
-Received: from kwepemi500016.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LCDHJ2D70zRhVj;
-        Tue, 31 May 2022 21:52:28 +0800 (CST)
-Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
- kwepemi500016.china.huawei.com (7.221.188.220) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 31 May 2022 21:55:33 +0800
-Received: from huawei.com (10.175.127.227) by kwepemm600009.china.huawei.com
- (7.193.23.164) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 31 May
- 2022 21:55:33 +0800
-From:   Yu Kuai <yukuai3@huawei.com>
-To:     <paolo.valente@linaro.org>, <jack@suse.cz>, <axboe@kernel.dk>,
-        <tj@kernel.org>
-CC:     <linux-block@vger.kernel.org>, <cgroups@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <yukuai3@huawei.com>,
-        <yi.zhang@huawei.com>
-Subject: [PATCH -next v8 1/4] block, bfq: support to track if bfqq has pending requests
-Date:   Tue, 31 May 2022 22:08:55 +0800
-Message-ID: <20220531140858.3324294-2-yukuai3@huawei.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220531140858.3324294-1-yukuai3@huawei.com>
-References: <20220531140858.3324294-1-yukuai3@huawei.com>
+        Tue, 31 May 2022 09:55:43 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09C9BF4A
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 06:55:41 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 4DF151F8DD;
+        Tue, 31 May 2022 13:55:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1654005340; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=96gdteDUzSXFaiw09TQyKSUZDnPxYQyobsN4KOocFTk=;
+        b=PMZMDaoh4qTi0nLBENfogSINZwWs9wqI9DUnKLBQvZamYwh0Gsz8oJWstflVQQkLfdGSxG
+        UXDV1cCwBCSh5Ge4OLDY4zBEpc9Gy2nOg1yLr3HhwszIZv5UOOxc8UsfgXOy6RXzgAEd56
+        +D0keGdLGQ/JbUEuUnlDD4GqqYftUKw=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1654005340;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=96gdteDUzSXFaiw09TQyKSUZDnPxYQyobsN4KOocFTk=;
+        b=38jtTiD6i28XAslPQXj7FGYto/UUW6DB9mMPmGIMiNxMO+qSaJm405kkSPgoTnwOtGFf6/
+        f/Md3FTv6QFbx1Bw==
+Received: from suse.de (unknown [10.163.43.106])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 6D9242C141;
+        Tue, 31 May 2022 13:55:39 +0000 (UTC)
+Date:   Tue, 31 May 2022 14:55:32 +0100
+From:   Mel Gorman <mgorman@suse.de>
+To:     Valentin Schneider <vschneid@redhat.com>
+Cc:     Tianchen Ding <dtcccc@linux.alibaba.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] sched: Queue task on wakelist in the same llc if the
+ wakee cpu is idle
+Message-ID: <20220531135532.GA3332@suse.de>
+References: <20220527090544.527411-1-dtcccc@linux.alibaba.com>
+ <xhsmhleuj7zve.mognet@vschneid.remote.csb>
+ <1d0eb8f4-e474-86a9-751a-7c2e1788df85@linux.alibaba.com>
+ <xhsmhilpl9azq.mognet@vschneid.remote.csb>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemm600009.china.huawei.com (7.193.23.164)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=iso-8859-15
+Content-Disposition: inline
+In-Reply-To: <xhsmhilpl9azq.mognet@vschneid.remote.csb>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If entity belongs to bfqq, then entity->in_groups_with_pending_reqs
-is not used currently. This patch use it to track if bfqq has pending
-requests through callers of weights_tree insertion and removal.
+On Tue, May 31, 2022 at 12:50:49PM +0100, Valentin Schneider wrote:
+> >> With all that in mind, I'm curious whether your patch is functionaly close
+> >> to the below.
+> >> 
+> >> ---
+> >> diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+> >> index 66c4e5922fe1..ffd43264722a 100644
+> >> --- a/kernel/sched/core.c
+> >> +++ b/kernel/sched/core.c
+> >> @@ -3836,7 +3836,7 @@ static inline bool ttwu_queue_cond(int cpu, int wake_flags)
+> >>   	 * the soon-to-be-idle CPU as the current CPU is likely busy.
+> >>   	 * nr_running is checked to avoid unnecessary task stacking.
+> >>   	 */
+> >> -	if ((wake_flags & WF_ON_CPU) && cpu_rq(cpu)->nr_running <= 1)
+> >> +	if (cpu_rq(cpu)->nr_running <= 1)
+> >>   		return true;
+> >>   
+> >>   	return false;
+> >
+> > It's a little different. This may bring extra IPIs when nr_running == 1 
+> > and the current task on wakee cpu is not the target wakeup task (i.e., 
+> > rq->curr == another_task && rq->curr != p). Then this another_task may 
+> > be disturbed by IPI which is not expected. So IMO the promise by 
+> > WF_ON_CPU is necessary.
+> 
+> You're right, actually taking a second look at that WF_ON_CPU path,
+> shouldn't the existing condition be:
+> 
+> 	if ((wake_flags & WF_ON_CPU) && !cpu_rq(cpu)->nr_running)
+> 
+> ? Per the p->on_rq and p->on_cpu ordering, if we have WF_ON_CPU here then
+> we must have !p->on_rq, so the deactivate has happened, thus the task
+> being alone on the rq implies nr_running==0.
+> 
+> @Mel, do you remember why you went for <=1 here? I couldn't find any clues
+> on the original posting.
+> 
 
-Signed-off-by: Yu Kuai <yukuai3@huawei.com>
----
- block/bfq-iosched.c |  1 +
- block/bfq-iosched.h |  1 +
- block/bfq-wf2q.c    | 24 ++++++++++++++++++++++--
- 3 files changed, 24 insertions(+), 2 deletions(-)
+I don't recall exactly why I went with <= 1 there but I may not have
+considered the memory ordering of on_rq and nr_running and the comment
+above it is literally what I was thinking at the time. I think you're
+right and that check can be !cpu_rq(cpu)->nr_running.
 
-diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
-index 0d46cb728bbf..0ec21018daba 100644
---- a/block/bfq-iosched.c
-+++ b/block/bfq-iosched.c
-@@ -6263,6 +6263,7 @@ static void bfq_completed_request(struct bfq_queue *bfqq, struct bfq_data *bfqd)
- 		 */
- 		bfqq->budget_timeout = jiffies;
- 
-+		bfq_del_bfqq_in_groups_with_pending_reqs(bfqq);
- 		bfq_weights_tree_remove(bfqd, bfqq);
- 	}
- 
-diff --git a/block/bfq-iosched.h b/block/bfq-iosched.h
-index ca8177d7bf7c..3b9b1a0e7c1c 100644
---- a/block/bfq-iosched.h
-+++ b/block/bfq-iosched.h
-@@ -1080,6 +1080,7 @@ void bfq_requeue_bfqq(struct bfq_data *bfqd, struct bfq_queue *bfqq,
- void bfq_del_bfqq_busy(struct bfq_data *bfqd, struct bfq_queue *bfqq,
- 		       bool expiration);
- void bfq_add_bfqq_busy(struct bfq_data *bfqd, struct bfq_queue *bfqq);
-+void bfq_del_bfqq_in_groups_with_pending_reqs(struct bfq_queue *bfqq);
- 
- /* --------------- end of interface of B-WF2Q+ ---------------- */
- 
-diff --git a/block/bfq-wf2q.c b/block/bfq-wf2q.c
-index f8eb340381cf..12d20f26ad69 100644
---- a/block/bfq-wf2q.c
-+++ b/block/bfq-wf2q.c
-@@ -1647,6 +1647,22 @@ void bfq_requeue_bfqq(struct bfq_data *bfqd, struct bfq_queue *bfqq,
- 				    bfqq == bfqd->in_service_queue, expiration);
- }
- 
-+static void bfq_add_bfqq_in_groups_with_pending_reqs(struct bfq_queue *bfqq)
-+{
-+	struct bfq_entity *entity = &bfqq->entity;
-+
-+	if (!entity->in_groups_with_pending_reqs)
-+		entity->in_groups_with_pending_reqs = true;
-+}
-+
-+void bfq_del_bfqq_in_groups_with_pending_reqs(struct bfq_queue *bfqq)
-+{
-+	struct bfq_entity *entity = &bfqq->entity;
-+
-+	if (entity->in_groups_with_pending_reqs)
-+		entity->in_groups_with_pending_reqs = false;
-+}
-+
- /*
-  * Called when the bfqq no longer has requests pending, remove it from
-  * the service tree. As a special case, it can be invoked during an
-@@ -1668,8 +1684,10 @@ void bfq_del_bfqq_busy(struct bfq_data *bfqd, struct bfq_queue *bfqq,
- 
- 	bfq_deactivate_bfqq(bfqd, bfqq, true, expiration);
- 
--	if (!bfqq->dispatched)
-+	if (!bfqq->dispatched) {
-+		bfq_del_bfqq_in_groups_with_pending_reqs(bfqq);
- 		bfq_weights_tree_remove(bfqd, bfqq);
-+	}
- }
- 
- /*
-@@ -1684,10 +1702,12 @@ void bfq_add_bfqq_busy(struct bfq_data *bfqd, struct bfq_queue *bfqq)
- 	bfq_mark_bfqq_busy(bfqq);
- 	bfqd->busy_queues[bfqq->ioprio_class - 1]++;
- 
--	if (!bfqq->dispatched)
-+	if (!bfqq->dispatched) {
-+		bfq_add_bfqq_in_groups_with_pending_reqs(bfqq);
- 		if (bfqq->wr_coeff == 1)
- 			bfq_weights_tree_add(bfqd, bfqq,
- 					     &bfqd->queue_weights_tree);
-+	}
- 
- 	if (bfqq->wr_coeff > 1)
- 		bfqd->wr_busy_queues++;
 -- 
-2.31.1
-
+Mel Gorman
+SUSE Labs
