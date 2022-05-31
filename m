@@ -2,119 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2438BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 15:14:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63E84C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 15:14:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345557AbiEaPOi (ORCPT
+        id S1345564AbiEaPOx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 11:14:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39692 "EHLO
+        Tue, 31 May 2022 11:14:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237336AbiEaPOh (ORCPT
+        with ESMTP id S1345560AbiEaPOv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 11:14:37 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1112261616
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 08:14:36 -0700 (PDT)
+        Tue, 31 May 2022 11:14:51 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A437996AB;
+        Tue, 31 May 2022 08:14:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654010076; x=1685546076;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=KzVObEc7Veab/GZreg6FyOROGy7YjFcSKS2Z9DBNJis=;
-  b=YGim7AhRATWaafYe5Wl2U9pp+RJg2yS24tp1yg5GHCcT8+IXVXbTMJdM
-   VPmAAe4SW8IFvr9cJ/NUQyeWXTtE92XQurp1H8v1rrZNqcHspZU4HKxvy
-   NTRissCBWZPBs552vUNokomh1HRTuKCv37gotzZn2AxbDK3UqaEIvwoJW
-   uZwF8yxRwarOqRuKCCodTv/SM2QZ0WlgbujYyN65vR9x5cqHK19ctQMGN
-   j85eF3H5GNmKRlziTmnT8SbQVVHAIB86qpxgo35icRCZK8JRLnuyt61Li
-   /VsT3ayZhUFG9UAi2qrDIwA6UsbgiKSaIJpNAz6WpNrUvS3zZIVjrUsaZ
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10364"; a="361660467"
+  t=1654010090; x=1685546090;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=9HNXnFqK1mPAYH35aD8FyV60Dy2hQJUS48IQmcwuYrM=;
+  b=VC6BnQQ41JjytGhjoICkRZ6RHAjfLXM00kSoY30XP6PKpbVbuE+fF/yX
+   RMU3r3GQ/dyv4bqk5jRCMApmjZIztm16/94fGt869GPTLc8WrthCOxJq8
+   X8OXZvKPNqV2B+SoWRfNXboV0oQDxxeJFtqAQXFzguuHW4o3nY+QqCoMK
+   SDpqRia+c5GYsAv59l2xcrAUK2oH00UTZVxkMgxTkXhIAt7Tw0T6I+ICs
+   bRCbYx6lHmSS1NxvclspAC2h8/CrOsT/fAYvo+7BS1/MZb7rKnSHF00+y
+   gh7zYyMoZF0xX+aAfjBu8zch6IiBc43KbFF/ZFMp3bURbwcPD5MES6mS6
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10364"; a="262918125"
 X-IronPort-AV: E=Sophos;i="5.91,265,1647327600"; 
-   d="scan'208";a="361660467"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 08:11:13 -0700
+   d="scan'208";a="262918125"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 08:13:17 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,265,1647327600"; 
-   d="scan'208";a="720349516"
-Received: from kmoorti-mobl.amr.corp.intel.com (HELO [10.212.153.18]) ([10.212.153.18])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 08:11:12 -0700
-Message-ID: <8a8a6bd9-aabf-6f27-0422-a47b01556276@linux.intel.com>
-Date:   Tue, 31 May 2022 09:51:36 -0500
+   d="scan'208";a="706618270"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 31 May 2022 08:13:15 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nw3YZ-0002oU-5U;
+        Tue, 31 May 2022 15:13:15 +0000
+Date:   Tue, 31 May 2022 23:12:21 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Daniel Xu <dxu@dxuuu.xyz>, bpf@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org
+Cc:     kbuild-all@lists.01.org, Daniel Xu <dxu@dxuuu.xyz>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH bpf-next 1/2] bpf, test_run: Add PROG_TEST_RUN support to
+ kprobe
+Message-ID: <202205312315.3VC5jz4T-lkp@intel.com>
+References: <b544771c7bce102f2a97a34e2f5e7ebbb9ea0a24.1653861287.git.dxu@dxuuu.xyz>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.5.0
-Subject: Re: [PATCH] ASoC: Intel: cirrus-common: fix incorrect channel mapping
-Content-Language: en-US
-To:     Brent Lu <brent.lu@intel.com>, alsa-devel@alsa-project.org
-Cc:     Cezary Rojewski <cezary.rojewski@intel.com>,
-        Liam Girdwood <liam.r.girdwood@linux.intel.com>,
-        Jie Yang <yang.jie@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        xliu <xiang.liu@cirrus.com>, linux-kernel@vger.kernel.org
-References: <20220530125421.885236-1-brent.lu@intel.com>
-From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-In-Reply-To: <20220530125421.885236-1-brent.lu@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b544771c7bce102f2a97a34e2f5e7ebbb9ea0a24.1653861287.git.dxu@dxuuu.xyz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Daniel,
 
+Thank you for the patch! Yet something to improve:
 
-On 5/30/22 07:54, Brent Lu wrote:
-> From: xliu <xiang.liu@cirrus.com>
-> 
-> The default mapping of ASPRX1 Slot is left channel. Map the slots of
-> right amplifiers (WR and TR) to right channel.
-> 
-> Signed-off-by: xliu <xiang.liu@cirrus.com>
-> Signed-off-by: Brent Lu <brent.lu@intel.com>
-> ---
->  sound/soc/intel/boards/sof_cirrus_common.c | 12 ++++++++++++
->  1 file changed, 12 insertions(+)
-> 
-> diff --git a/sound/soc/intel/boards/sof_cirrus_common.c b/sound/soc/intel/boards/sof_cirrus_common.c
-> index e71d74ec1b0b..64ca0e3991dc 100644
-> --- a/sound/soc/intel/boards/sof_cirrus_common.c
-> +++ b/sound/soc/intel/boards/sof_cirrus_common.c
-> @@ -107,6 +107,7 @@ static int cs35l41_hw_params(struct snd_pcm_substream *substream,
->  	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
->  	struct snd_soc_dai *codec_dai;
->  	int clk_freq, i, ret;
-> +	int rx_ch[2] = {1, 0};
+[auto build test ERROR on bpf-next/master]
 
-Should this be 'const'?
+url:    https://github.com/intel-lab-lkp/linux/commits/Daniel-Xu/Add-PROG_TEST_RUN-support-to-BPF_PROG_TYPE_KPROBE/20220530-060742
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
+config: s390-randconfig-r026-20220531 (https://download.01.org/0day-ci/archive/20220531/202205312315.3VC5jz4T-lkp@intel.com/config)
+compiler: s390-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/a547a4c795103fd002d3bbb5ee4d7141113716c0
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Daniel-Xu/Add-PROG_TEST_RUN-support-to-BPF_PROG_TYPE_KPROBE/20220530-060742
+        git checkout a547a4c795103fd002d3bbb5ee4d7141113716c0
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash
 
-I am also not clear on the mapping, how does this select the right
-channel? This selects slot0 and the left channel, what am I missing?
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
+All errors (new ones prefixed by >>):
 
->  
->  	clk_freq = sof_dai_get_bclk(rtd); /* BCLK freq */
->  
-> @@ -134,6 +135,17 @@ static int cs35l41_hw_params(struct snd_pcm_substream *substream,
->  				ret);
->  			return ret;
->  		}
-> +
-> +		/* Setup for R channel Slot: WR and TR */
-> +		if (i % 2) {
-> +			ret = snd_soc_dai_set_channel_map(codec_dai, 0, NULL,
-> +							  ARRAY_SIZE(rx_ch), rx_ch);
-> +			if (ret < 0) {
-> +				dev_err(codec_dai->dev, "fail to set channel map, ret %d\n",
-> +					ret);
-> +				return ret;
-> +			}
-> +		}
+>> s390-linux-ld: kernel/trace/bpf_trace.o:(.data.rel.ro+0x100): undefined reference to `bpf_prog_test_run_kprobe'
+   s390-linux-ld: drivers/dma/qcom/hidma.o: in function `hidma_probe':
+   hidma.c:(.text+0x313e): undefined reference to `devm_ioremap_resource'
+   s390-linux-ld: hidma.c:(.text+0x3192): undefined reference to `devm_ioremap_resource'
 
-Should we do this loop for the left channels as well to have an explicit
-setting?
-
->  	}
->  
->  	return 0;
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
