@@ -2,183 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 177F5C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 18:41:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40649C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 18:41:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347080AbiEaSlg (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 14:41:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49244 "EHLO
+        id S243419AbiEaSlq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 31 May 2022 14:41:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234460AbiEaSlf (ORCPT
+        with ESMTP id S234460AbiEaSli (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 14:41:35 -0400
-Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3833915A5;
-        Tue, 31 May 2022 11:41:34 -0700 (PDT)
-Received: by mail-io1-xd32.google.com with SMTP id 62so6675304iov.4;
-        Tue, 31 May 2022 11:41:34 -0700 (PDT)
+        Tue, 31 May 2022 14:41:38 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 605F5915A5
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 11:41:37 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id t6so19864534wra.4
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 11:41:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=6kqe9evV1atpm/M/tjKb2Y4GxU1Je7w96xyTQRQy2Xg=;
-        b=hFoAo92Gjz68ERtH/X4rx7PSLu0QIVkWfERaSZoghbjarCTL+k/It6KbTXOj2bufO8
-         LhPBqdr06i5aoKTbTrVHML8QqYvvwIVPK9OHhe3155O0b9F4funK96ZcOjP1zr+uXjGo
-         HTdagdDoVUj4eOxWJPMauajNPdMygGUrsqK7GAKs7eMJwnudQnew6Fzg4GilxmTrXl+m
-         ExhDv9UZFA3omqXso69vT2LXpWTxg+GvjnaprEmqSyyAzG4dOHOZhpiDPVIGkI8EpbdW
-         Y17mkDNLkHRax0IsUDo4vw+qlkdUXzRxySjj4GdMxyCM48buZLD5CaFOP7eAjkCEbCrB
-         ZHPg==
+        bh=yYizjhpptmJ3gJ2nYolv0UobnAZmjN42VSqblJmcmmM=;
+        b=61BmzmrhJzkorY5mMUVc/VhaMMSTg/F+8KYmJxWuIUAZkOMXHH3tgrkva4vRthXRoy
+         keL/YbreHHmOU2wZ7lk32CPaJh8iIF89S3ZR0/u8ZCv/i8Ma8yZpLAOfRsC55T5D680J
+         38Y8ZCQj9sOed9MeMUTp8WqcZD8jk83c2Xy3XpcbRQNjav+mn+i7lXxp1WGzo03aa80Z
+         JAPiSRv8ZCIY4l96YskqjXCsxEbCaVTkJz+3xqIh4aeGttzJvnR+S0QdnRX65cNUZbsf
+         8L0SMoO6moUlRQIJLBTKO9GOZLuY3NfN/XZz2dVUWKCSo3gXiQ4/dQzXpsv6lOL0gYeL
+         jeWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=6kqe9evV1atpm/M/tjKb2Y4GxU1Je7w96xyTQRQy2Xg=;
-        b=qOdn7BwCWoyQs3FHlsQB1Xucsq6TGx6CCI4wIV97yFcop9mWQiby8AXe+RtWtn1qO6
-         JCzmWItIwDZhALAfezoocI6dxKs6/OH8mL8V5327n5Df5Z7mPSA/e3wB2frC2WcdMG+T
-         EATmeuV0sbrX80TWCsnvStTKRGgD2urc1kn35rcC/BnR4hutDUCqA1m+/6PkJ6GfqpU/
-         RxUxiZ95p4mWENl1mdkmJpqPDArXmLLm+7lHMn+NGtM+DCtTH+jd1Alk3UYdZoKsmVK9
-         Op2ibyDxQfJEhfHLN8l67/2LUbsgUwNN0ZhPjdGP8ve01tt91ZrpdCW0ciTNUE9thQ4K
-         +0YQ==
-X-Gm-Message-State: AOAM533OnR2O4M1piVi27H0uzfdJf4xYTOp+od6i6wsxsBAlYoyMg2+S
-        cwS1caimeRbB355Wqe9NJPE=
-X-Google-Smtp-Source: ABdhPJyZjb1lBXyQ6D9K6hRhCZcRQEkKFx7c9R0PfsCATlzfztX7qhwnJy+m5O/Xolc9T/NFrIPv1Q==
-X-Received: by 2002:a02:cb11:0:b0:331:5525:adf1 with SMTP id j17-20020a02cb11000000b003315525adf1mr385064jap.157.1654022494333;
-        Tue, 31 May 2022 11:41:34 -0700 (PDT)
-Received: from localhost.localdomain (ec2-13-59-0-164.us-east-2.compute.amazonaws.com. [13.59.0.164])
-        by smtp.gmail.com with ESMTPSA id d39-20020a026067000000b0032b5316724dsm3661321jaf.22.2022.05.31.11.41.30
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 31 May 2022 11:41:33 -0700 (PDT)
-From:   Schspa Shi <schspa@gmail.com>
-To:     marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Schspa Shi <schspa@gmail.com>,
-        syzbot+63bed493aebbf6872647@syzkaller.appspotmail.com
-Subject: [PATCH] Bluetooth: When HCI work queue is drained, only queue chained work.
-Date:   Wed,  1 Jun 2022 02:41:24 +0800
-Message-Id: <20220531184124.20577-1-schspa@gmail.com>
-X-Mailer: git-send-email 2.24.3 (Apple Git-128)
+        bh=yYizjhpptmJ3gJ2nYolv0UobnAZmjN42VSqblJmcmmM=;
+        b=xKk+jzMX0Hn0V967LxbERGP/eJ1LgN5eLcH9v8y1G/e9QT8NYmQF1TV5nxOKJG8oA2
+         YHqpQwWKyXmILyxIpif1UbWLllTMHQGV6Cf4sl8cfcuMkqtQsbaskLl2zP44oWY8Lazb
+         YLNDd87HdNGWFz1rxZPI/9gluZBP+v/wGDhLWfNB0/4J1jjf9zP7YRKVTu9FyGU7YSma
+         bXYyo+HmhQhV3ha+FgIs18//Hg75+MruTcMYlHY6LowiCfHQg4ZF5R4cK5TbotwhTewR
+         Cn6W/ISyccp6Om/ItCEadw1ROQTXHbcUtf1kKsflSXu09ZKbCVRAFyns8TtCK62JOU0g
+         38xQ==
+X-Gm-Message-State: AOAM531vUdfnQp4aBcNAi2/sdIO3w5NEwG+gWHHerX/aFjPxcd/I4wIx
+        EWDWeX3PYiF/BSruBs/Lqa/2ug==
+X-Google-Smtp-Source: ABdhPJyuUBcBs0najrLb47SG8Xhyus+J+Xa0zxKEtakIQBe1mLyq/BSxvQvt28dTSZuREq/UGE4bGA==
+X-Received: by 2002:a05:6000:1887:b0:20f:de1d:9fc3 with SMTP id a7-20020a056000188700b0020fde1d9fc3mr37261401wri.111.1654022496004;
+        Tue, 31 May 2022 11:41:36 -0700 (PDT)
+Received: from usaari01.cust.communityfibre.co.uk ([2a02:6b6a:b497:0:359:2800:e38d:e04f])
+        by smtp.gmail.com with ESMTPSA id o16-20020a05600c059000b00397342bcfb7sm2831877wmd.46.2022.05.31.11.41.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 May 2022 11:41:35 -0700 (PDT)
+From:   Usama Arif <usama.arif@bytedance.com>
+To:     io-uring@vger.kernel.org, axboe@kernel.dk,
+        linux-kernel@vger.kernel.org
+Cc:     fam.zheng@bytedance.com, Usama Arif <usama.arif@bytedance.com>
+Subject: [PATCH 0/5] io_uring: add opcodes for current working directory
+Date:   Tue, 31 May 2022 19:41:20 +0100
+Message-Id: <20220531184125.2665210-1-usama.arif@bytedance.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The HCI command, event, and data packet processing workqueue is drained
-to avoid deadlock in commit
-76727c02c1e1 ("Bluetooth: Call drain_workqueue() before resetting state").
+This provides consistency between io_uring and the respective I/O syscall
+and avoids having the user of liburing specify the cwd in sqe when working
+with current working directory, for e.g. the user can directly call with
+IORING_OP_RENAME instead of IORING_OP_RENAMEAT and providing AT_FDCWD in
+sqe->fd and sqe->len, similar to syscall interface.
 
-There is another delayed work, which will queue command to this drained
-workqueue. Which results in the following error report:
+This is done for rename, unlink, mkdir, symlink and link in this
+patch-series.
 
-Bluetooth: hci2: command 0x040f tx timeout
-WARNING: CPU: 1 PID: 18374 at kernel/workqueue.c:1438 __queue_work+0xdad/0x1140
-Modules linked in:
-CPU: 1 PID: 18374 Comm: kworker/1:9 Not tainted 5.18.0-rc6-next-20220516-syzkaller #0
-Workqueue: events hci_cmd_timeout
-RIP: 0010:__queue_work+0xdad/0x1140
-RSP: 0000:ffffc90002cffc60 EFLAGS: 00010093
-RAX: 0000000000000000 RBX: ffff8880b9d3ec00 RCX: 0000000000000000
-RDX: ffff888024ba0000 RSI: ffffffff814e048d RDI: ffff8880b9d3ec08
-RBP: 0000000000000008 R08: 0000000000000000 R09: 00000000b9d39700
-R10: ffffffff814f73c6 R11: 0000000000000000 R12: ffff88807cce4c60
-R13: 0000000000000000 R14: ffff8880796d8800 R15: ffff8880796d8800
-FS:  0000000000000000(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000000c0174b4000 CR3: 000000007cae9000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- ? queue_work_on+0xcb/0x110
- ? lockdep_hardirqs_off+0x90/0xd0
- queue_work_on+0xee/0x110
- process_one_work+0x996/0x1610
- ? pwq_dec_nr_in_flight+0x2a0/0x2a0
- ? rwlock_bug.part.0+0x90/0x90
- ? _raw_spin_lock_irq+0x41/0x50
- worker_thread+0x665/0x1080
- ? process_one_work+0x1610/0x1610
- kthread+0x2e9/0x3a0
- ? kthread_complete_and_exit+0x40/0x40
- ret_from_fork+0x1f/0x30
- </TASK>
+The tests for these opcodes in liburing are present at
+https://github.com/uarif1/liburing/tree/cwd_opcodes. If the patches are
+acceptable, I am happy to create a PR in above for the tests.
 
-To fix this, we can add a new HCI_DRAIN_WQ flag, and don't queue the
-timeout workqueue while command workqueue is draining.
+Thanks!
 
-Fixes: 76727c02c1e1 ("Bluetooth: Call drain_workqueue() before resetting state")
-Reported-by: syzbot+63bed493aebbf6872647@syzkaller.appspotmail.com
-Signed-off-by: Schspa Shi <schspa@gmail.com>
----
- include/net/bluetooth/hci.h | 1 +
- net/bluetooth/hci_core.c    | 8 +++++++-
- net/bluetooth/hci_event.c   | 5 +++--
- 3 files changed, 11 insertions(+), 3 deletions(-)
+Usama Arif (5):
+  io_uring: add rename opcode for current working directory
+  io_uring: add unlink opcode for current working directory
+  io_uring: add mkdir opcode for current working directory
+  io_uring: add symlink opcode for current working directory
+  io_uring: add link opcode for current working directory
 
-diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
-index fe7935be7dc4..c2cba0a621d3 100644
---- a/include/net/bluetooth/hci.h
-+++ b/include/net/bluetooth/hci.h
-@@ -291,6 +291,7 @@ enum {
- 	HCI_RAW,
- 
- 	HCI_RESET,
-+	HCI_DRAIN_WQ,
- };
- 
- /* HCI socket flags */
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index 5abb2ca5b129..ef3bd543ce04 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -593,6 +593,10 @@ static int hci_dev_do_reset(struct hci_dev *hdev)
- 	skb_queue_purge(&hdev->rx_q);
- 	skb_queue_purge(&hdev->cmd_q);
- 
-+	hci_dev_lock(hdev);
-+	set_bit(HCI_DRAIN_WQ, &hdev->flags);
-+	hci_dev_unlock(hdev);
-+	cancel_delayed_work(&hdev->cmd_timer);
- 	/* Avoid potential lockdep warnings from the *_flush() calls by
- 	 * ensuring the workqueue is empty up front.
- 	 */
-@@ -601,6 +605,7 @@ static int hci_dev_do_reset(struct hci_dev *hdev)
- 	hci_dev_lock(hdev);
- 	hci_inquiry_cache_flush(hdev);
- 	hci_conn_hash_flush(hdev);
-+	clear_bit(HCI_DRAIN_WQ, &hdev->flags);
- 	hci_dev_unlock(hdev);
- 
- 	if (hdev->flush)
-@@ -3861,7 +3866,8 @@ static void hci_cmd_work(struct work_struct *work)
- 			if (res < 0)
- 				__hci_cmd_sync_cancel(hdev, -res);
- 
--			if (test_bit(HCI_RESET, &hdev->flags))
-+			if (test_bit(HCI_RESET, &hdev->flags) ||
-+			    test_bit(HCI_DRAIN_WQ, &hdev->flags))
- 				cancel_delayed_work(&hdev->cmd_timer);
- 			else
- 				schedule_delayed_work(&hdev->cmd_timer,
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index af17dfb20e01..700cd01df3a1 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -3768,8 +3768,9 @@ static inline void handle_cmd_cnt_and_timer(struct hci_dev *hdev, u8 ncmd)
- 			cancel_delayed_work(&hdev->ncmd_timer);
- 			atomic_set(&hdev->cmd_cnt, 1);
- 		} else {
--			schedule_delayed_work(&hdev->ncmd_timer,
--					      HCI_NCMD_TIMEOUT);
-+			if (!test_bit(HCI_DRAIN_WQ, &hdev->flags))
-+				schedule_delayed_work(&hdev->ncmd_timer,
-+						      HCI_NCMD_TIMEOUT);
- 		}
- 	}
- }
+ fs/io_uring.c                 | 116 ++++++++++++++++++++++++----------
+ include/uapi/linux/io_uring.h |   5 ++
+ 2 files changed, 89 insertions(+), 32 deletions(-)
+
 -- 
-2.24.3 (Apple Git-128)
+2.25.1
 
