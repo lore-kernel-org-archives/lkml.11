@@ -2,122 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8837CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 21:35:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBB7DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 21:39:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348028AbiEaVfw (ORCPT
+        id S1348044AbiEaVjP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 17:35:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49884 "EHLO
+        Tue, 31 May 2022 17:39:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233809AbiEaVfu (ORCPT
+        with ESMTP id S233809AbiEaVjN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 17:35:50 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 619BF50E1F
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 14:35:49 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id s24so12996775wrb.10
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 14:35:49 -0700 (PDT)
+        Tue, 31 May 2022 17:39:13 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05E3E69296
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 14:39:12 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id rs12so29069863ejb.13
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 14:39:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=q7cPNpK/kLXhrzfLG8hpxXs2i5SQM9UbFaXm5pBmiWk=;
-        b=PV1FkrmCwNgQDmI8q8xLaJ2XXBLk0bNuhuDAAdA7z4qZycq5Kcw00mLFrAIu2AIerb
-         aJ4XncmF1wRGhrUBOJwYE2sY42AwXhyxj+2MGoQf+bXIPVUkYNW77hJDONwaiqlOTO9b
-         BtiMM4rWkZaUNlXNxA+N1HVP09ugDb+rIgPHBswnSKcLTO/PNaHzvTrV2tfuBryAVzBa
-         TwPLTSz7WrYluB/KbKVt7WUxqS/gOs8qZeglcJFpA9cw2QEShrMQ0vFQywI7rrt0gmmZ
-         htLEJNTq5WnH0e/YcE/ed7oZXgJxRwpxbG78X5YFRt1oKKpR+4Rj+cIHhSE8/puDCU6P
-         kQUw==
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZSLV3GBQBnlAV5yFp3A4v28u1Gnmik85ogLelASJBlM=;
+        b=G6+2ri/VlQ8yFwFXj74MfREI3aG4EAj3Tv4RTyXriFCkuNZgqqsE6YEb+RI1MiiG6u
+         jUrvLmn+pmyEOMkFGPDQlwvGDysPypwMJAL+4flzyKzCAEFIQRRucXeADWRCWhYR2I6f
+         ciei005AA9QQiQXNIDi8ojvPdlBRv+7S4gA7I=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=q7cPNpK/kLXhrzfLG8hpxXs2i5SQM9UbFaXm5pBmiWk=;
-        b=H+IXInLLk+EkJV2pkSsjKSRDV+pgrSTU+AzWBpWxnghNXW+7nTvD4trR8unCfEfir+
-         +tfReHYp/Gyd9lJmMZ0ejLa9pIfge5gMzM9PLhwlJl+To5PQv0QRZQAJf33oOenlNRHy
-         bNQXN8JMGrOqbXUIyckCIhIg+Rubpl7gxzUpq9PAgj1pgrfqqh9wtADI+1tyRoP1yYuM
-         QCwin8092P0hGfPC7PRONY+Yi0hkpA+08JykaclyvcCCgfBO5e5RMSSMqePudmin/uz5
-         AJK2r3zqwlI+XHvshedWdMD9s+UlVh5BnlAUZ+zEe0sv5pxlFzwLnYhfNuqWkTPn7oY6
-         CGSg==
-X-Gm-Message-State: AOAM532+9PAiLRawwwJUYhj36EG/Mc2xVh+3vR2Xmkhdu77cVstU/mnN
-        XVs4q62pY0FiKzrJ/D81ed059A==
-X-Google-Smtp-Source: ABdhPJw4Mim9U84gjy0lO8KtDTbCtU1/Xmv0b6riP55K6OPLXzvaiil7aFdrqwfGiT3xnn8hZaBnYg==
-X-Received: by 2002:adf:d1ca:0:b0:210:1945:34c6 with SMTP id b10-20020adfd1ca000000b00210194534c6mr18528567wrd.334.1654032947950;
-        Tue, 31 May 2022 14:35:47 -0700 (PDT)
-Received: from ?IPV6:2a02:6b6a:b497:0:359:2800:e38d:e04f? ([2a02:6b6a:b497:0:359:2800:e38d:e04f])
-        by smtp.gmail.com with ESMTPSA id s14-20020a7bc38e000000b003942a244ee7sm3138190wmj.44.2022.05.31.14.35.47
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZSLV3GBQBnlAV5yFp3A4v28u1Gnmik85ogLelASJBlM=;
+        b=XWwLLmFrQuZRbXJAkfNK4dEIgZdwTYN/8tNJuXa63T/Ezq9JgcFPDShpbSsSQ0OMKP
+         acjbhjStyGWWirKXKD1S7n0ywtJc8gfnPJW/uAdndwT7G2tvgNq8A5mn011F6+k7fmDP
+         HPvPYZ4LxjW6PuncAYAXc5MQj7fJ7YH8//CxnBdPoXhAzqNSCukLzb8WA7PnDFXN8dkU
+         UVf5tirJVyTTIfojKMu4QZEuZofWpnSYlCyAU5Ggcpv60du8J/zleP1tQBcRE/9CyTXs
+         BGFtS71QHZvlZXaaRF1RLznzOIK5S9dDlEIiO930ZkDeHQSTKHuZhMKnd//Q5pXHy+J3
+         yGJA==
+X-Gm-Message-State: AOAM5310X7619r8fqZuNFCTTQQBBs/IRf1UxGpWaG/cSFlTLT1K8cJoo
+        sFPIIz+mfpVo2u20kPqJ3jRskQFOEbyrx+W5
+X-Google-Smtp-Source: ABdhPJzToT45oaXFTpAWw0ToIHfDLX4owLXZjKrYE3q6vvQny1PLpW5IpXkgGD1WAgZu2IoHm1IjWw==
+X-Received: by 2002:a17:906:7954:b0:6fe:d9af:feb0 with SMTP id l20-20020a170906795400b006fed9affeb0mr39867804ejo.361.1654033150385;
+        Tue, 31 May 2022 14:39:10 -0700 (PDT)
+Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com. [209.85.221.45])
+        by smtp.gmail.com with ESMTPSA id g3-20020a1709063b0300b006feb3d65330sm5318223ejf.109.2022.05.31.14.39.07
+        for <linux-kernel@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 31 May 2022 14:35:47 -0700 (PDT)
-Message-ID: <f7a4cdf2-78f2-fead-5a10-713e3dc9ea34@bytedance.com>
-Date:   Tue, 31 May 2022 22:35:46 +0100
+        Tue, 31 May 2022 14:39:08 -0700 (PDT)
+Received: by mail-wr1-f45.google.com with SMTP id q21so9137925wra.2
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 14:39:07 -0700 (PDT)
+X-Received: by 2002:a05:6000:1548:b0:20f:c4e3:637a with SMTP id
+ 8-20020a056000154800b0020fc4e3637amr41857017wry.513.1654033146812; Tue, 31
+ May 2022 14:39:06 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 0/5] io_uring: add opcodes for current working directory
-Content-Language: en-US
-To:     Jens Axboe <axboe@kernel.dk>, io-uring@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     fam.zheng@bytedance.com
-References: <20220531184125.2665210-1-usama.arif@bytedance.com>
- <da4e94f7-94ce-ad57-ad15-c9117c4fef2d@kernel.dk>
- <7a311f7e-a404-4ebe-f90b-af9068bab2fc@bytedance.com>
- <d466213e-81e0-4b0e-c1a4-824bcbe42f74@kernel.dk>
-From:   Usama Arif <usama.arif@bytedance.com>
-In-Reply-To: <d466213e-81e0-4b0e-c1a4-824bcbe42f74@kernel.dk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220531072757.1.Ie7f6d4bf8cce28131da31a43354727e417cae98d@changeid>
+ <1ce24f74-3c9e-60ed-46ad-3ba714fb7c61@quicinc.com>
+In-Reply-To: <1ce24f74-3c9e-60ed-46ad-3ba714fb7c61@quicinc.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Tue, 31 May 2022 14:38:54 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=WP9-W-_rQMNbCb6JYrz9FT3wG1J1irwMZB_0ug4-jK9Q@mail.gmail.com>
+Message-ID: <CAD=FV=WP9-W-_rQMNbCb6JYrz9FT3wG1J1irwMZB_0ug4-jK9Q@mail.gmail.com>
+Subject: Re: [PATCH] drm/msm/dpu: Move min BW request and full BW disable back
+ to mdss
+To:     Abhinav Kumar <quic_abhinavk@quicinc.com>
+Cc:     Rob Clark <robdclark@gmail.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Kalyan Thota <quic_kalyant@quicinc.com>,
+        Sean Paul <sean@poorly.run>,
+        Stephen Boyd <swboyd@chromium.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi,
 
+On Tue, May 31, 2022 at 2:29 PM Abhinav Kumar <quic_abhinavk@quicinc.com> wrote:
+>
+> > @@ -136,6 +178,13 @@ static int msm_mdss_enable(struct msm_mdss *msm_mdss)
+> >   {
+> >       int ret;
+> >
+> > +     /*
+> > +      * Several components have AXI clocks that can only be turned on if
+> > +      * the interconnect is enabled (non-zero bandwidth). Let's make sure
+> > +      * that the interconnects are at least at a minimum amount.
+> > +      */
+> > +     msm_mdss_icc_request_bw(msm_mdss, MIN_IB_BW);
+> > +
+>
+> This patch does two things :
+>
+> 1) Move the min icc vote from the dpu_runtime_resume() path to the
+> msm_mdss_enable() so that while resuming, we add the min vote to the
+> parent device. We do need a min vote before turning on the AXI clk as
+> per this comment mentioned in c33b7c0389e1 (drm/msm/dpu: add support for
+> clk and bw scaling for display)
+>
+>
+> @@ -1101,8 +1129,15 @@ static int __maybe_unused
+> dpu_runtime_resume(struct device *dev)
+>          struct drm_encoder *encoder;
+>          struct drm_device *ddev;
+>          struct dss_module_power *mp = &dpu_kms->mp;
+> +       int i;
+>
+>          ddev = dpu_kms->dev;
+> +
+> +       /* Min vote of BW is required before turning on AXI clk */
+> +       for (i = 0; i < dpu_kms->num_paths; i++)
+> +               icc_set_bw(dpu_kms->path[i], 0,
+> +                       dpu_kms->catalog->perf.min_dram_ib);
+>
+> So I understand and I am fine with this part.
+>
+> 2) Add a min vote in msm_mdss_init().
+>
+> This is the part I am not able to fully follow.
+>
+> If we only need to add the min vote before voting for the clocks, adding
+> it in mdss_mdss_enable() should be enough.
+>
+> Do we need this part of adding the min vote to the msm_mdss_init()?
+>
+> If so, why?
 
-On 31/05/2022 20:22, Jens Axboe wrote:
-> On 5/31/22 1:18 PM, Usama Arif wrote:
->>
->>
->> On 31/05/2022 19:58, Jens Axboe wrote:
->>> On 5/31/22 12:41 PM, Usama Arif wrote:
->>>> This provides consistency between io_uring and the respective I/O syscall
->>>> and avoids having the user of liburing specify the cwd in sqe when working
->>>> with current working directory, for e.g. the user can directly call with
->>>> IORING_OP_RENAME instead of IORING_OP_RENAMEAT and providing AT_FDCWD in
->>>> sqe->fd and sqe->len, similar to syscall interface.
->>>>
->>>> This is done for rename, unlink, mkdir, symlink and link in this
->>>> patch-series.
->>>>
->>>> The tests for these opcodes in liburing are present at
->>>> https://github.com/uarif1/liburing/tree/cwd_opcodes. If the patches are
->>>> acceptable, I am happy to create a PR in above for the tests.
->>>
->>> Can't we just provide prep helpers for them in liburing?
->>>
->>
->> We could add a io_uring_prep_unlink with IORING_OP_UNLINKAT and
->> AT_FDCWD in liburing. But i guess adding in kernel adds a more
->> consistent interface? and allows to make calls bypassing liburing
->> (although i guess people probably don't bypass liburing that much :))
-> 
-> I'm not really aware of much that doesn't use the library, and even
-> those would most likely use the liburing man pages as that's all we
-> have. The kernel API is raw. If you use that, I would expect you to know
-> that you can just use AT_FDCWD!
-> 
->> Making the changes in both kernel and liburing provides more of a
->> standard interface in my opinion so maybe it looks better. But happy
->> to just create a PR in liburing only with prep helpers as you
->> suggested if you think that is better?
-> 
-> I don't disagree with that, but it seems silly to waste 5 opcodes on
-> something that is a strict subset of something that is already there.
-> Hence my suggestion would be to just add io_uring_prep_link() etc
-> helpers to make it simpler to use, without having to add 5 extra
-> opcodes.
-> 
+Ah, good question. Mostly I was matching how things were done before
+commit a670ff578f1f ("drm/msm/dpu: always use mdp device to scale
+bandwidth"). Before that commit we used to put the min vote in the
+init path.
 
-Thanks, I have created a PR for it on 
-https://github.com/axboe/liburing/pull/588. We can review it there if it 
-makes sense!
+...but you're right, I don't see any good reason for it. I'll send a
+v2 removing that line from msm_mdss_init().
+
+-Doug
