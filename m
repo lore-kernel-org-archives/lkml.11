@@ -2,127 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44326C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 016C0C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 04:50:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243900AbiEaErI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 00:47:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53638 "EHLO
+        id S243904AbiEaEur (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 31 May 2022 00:50:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbiEaErB (ORCPT
+        with ESMTP id S229468AbiEaEup (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 00:47:01 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F7C1DEE9
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 21:46:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653972418; x=1685508418;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=dsljJZJpdOgC/cqu+DzOSVS7dwFiKyD01thxVC8LABc=;
-  b=GaftfBJStrhWEUpaSWSVODVxukMV+CdN2FKpvNw3RX/DiZ6U9gbamTfe
-   vEanDVjNuqz0cpXOJJ6o2JBIFC1NJ1Klaxikj2MWVXYL8mZpGnq6dBu9S
-   uDeWmrnfqUxKCqbXklL7txPL5y+Ebo7iLGhuQCRtdVa0pHi0L59nsEGzQ
-   /hDdbdzwnXRy1DWVhZOZOLFAEEoMoi5qpdaXkHSCGI3cF7aR+ygc5V7a2
-   d0fqGLa2Qs5QuCjiuxT1nO/Dwif1SF/TjTlqfQn2YhAvP6twIvtgPeAeR
-   RH/zUslxs6GFK1zPnUEbUIbCr4iYpvoFRm+oUVcTcjZkP3PqLkt42DVg1
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10363"; a="255009464"
-X-IronPort-AV: E=Sophos;i="5.91,264,1647327600"; 
-   d="scan'208";a="255009464"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2022 21:46:57 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,264,1647327600"; 
-   d="scan'208";a="551600518"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 30 May 2022 21:46:56 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nvtmR-0002KY-G5;
-        Tue, 31 May 2022 04:46:55 +0000
-Date:   Tue, 31 May 2022 12:46:38 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [arm-integrator:kernel-in-vmalloc-v5.18-rc1 20/20]
- arch/arm64/include/asm/memory.h:311:16: error: implicit declaration of
- function '__phys_to_pfn'
-Message-ID: <202205311221.dNwFCY8b-lkp@intel.com>
+        Tue, 31 May 2022 00:50:45 -0400
+Received: from wout3-smtp.messagingengine.com (wout3-smtp.messagingengine.com [64.147.123.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 437CD941A2;
+        Mon, 30 May 2022 21:50:44 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.west.internal (Postfix) with ESMTP id 1915C3200063;
+        Tue, 31 May 2022 00:50:42 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute2.internal (MEProxy); Tue, 31 May 2022 00:50:43 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
+        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
+        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
+         s=fm2; t=1653972641; x=1654059041; bh=0eU2OH/PMLLPNDGUWzR53cTyf
+        MsGV3WQ2yKPJrBQB4U=; b=gUUOKk85li+LqgICYf+hYHEAiVWAh5pkJE4n2v7FE
+        KZhn7f3WPg7jKqgrVokXU0R87AbW3QXfCZg1Rt9Fageg80KpEA8KzKXv2ssjO6VZ
+        qJsUdb3+UE95XiNU69by3WxO42RvQxZL87nwqJHopnxSL1FAeTGH050TUqHMJfaZ
+        0a7rwB8d8FonDc+Cs/ixP41QuFWjjaSWX5jzM9gxXI/At2JEoYtl53WzJhft0guE
+        By4pvZrpdoFDQm0qq8kh4RtIYaD4PigPoxO+KFgJXNWU23KIqPe1P8oJbrDByr7A
+        k3LpMi7peOEop86aWNq0OL6uu87cWodaJEnBL4seEUThg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:message-id
+        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
+        1653972641; x=1654059041; bh=0eU2OH/PMLLPNDGUWzR53cTyfMsGV3WQ2yK
+        PJrBQB4U=; b=KOoXXd99d2A0G+AHWkkNESkPODakLOBVyqD7FCBF2UMVIdXfL45
+        0ugEBJON//8UBpTEsbx7GjWt+JnoWR3w62xTjmrECrGu/8YSQro5XCzEpTS5pNdA
+        1hvs8au1zW6/ZSE6ltt+MMSZdrOHl75J85ZzJYcX1krI7V2wQHYOHdSy2HKQOzQU
+        3bpxsI4I9P9Ev80p9iqY68TN+CJgDe4jYRLMyVYPiI5sVmv4Sf7wrvj3GEHbvql1
+        +kQjiIHAMX8Bmn7Ow93sT/qkw9ZeeSk6FnFjGIjD4me0GjA3G4bWAWNE+mvZF1KJ
+        1Kx107FPg/dos1QZuaj+q6jYPNGYJLRI1Mw==
+X-ME-Sender: <xms:oJ6VYrUXNESM5lbu_QJfh6vNJhDK9ygWgKnbVgUZJZyGncc8R6Q-6g>
+    <xme:oJ6VYjnSTPBIPg1zYDfbcYHlS3IiEITVUskmME-KK9nX7d_TC_bwcJbvLZrl-fKXn
+    3ZgrzuGEbexkLgE_g>
+X-ME-Received: <xmr:oJ6VYnYQgYe9f25SG3sJl6EpkPmsE2PL5q-ZNykspvFTAVJ9WWne51KNUhrn6w6lSS64ln70UmZhLEqIgqxxijVYHf7JUU34WpbruZ7DF8UHSXqdL38-ClutjKaxO2cjy47ATg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrkeejgdeklecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefhvfevufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefurghmuhgvlhcu
+    jfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenucggtffrrg
+    htthgvrhhnpeekveelhfejueelleetvdejvdeffeetgeelheeujeffhefgffefkeehhffh
+    keekgeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    hsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
+X-ME-Proxy: <xmx:oJ6VYmVyaWylZd2qlvmw68EqTRSACPtQoiZo6TrcAtIWgycRajcy3w>
+    <xmx:oJ6VYlk3DC18Vo6oDuAUUQSnnbQw6I13-Xo6GOUL2IoXbjH7EJnWKQ>
+    <xmx:oJ6VYjcj4NwfhWa735jdl-hm75m2vrFZikFTHOswTB175A5PlNB4eA>
+    <xmx:oZ6VYgq3JwQqO9WXy1nEXAP-gBhPSi4CI1wTbjTPRdZBNzFOtsvbww>
+Feedback-ID: i0ad843c9:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 31 May 2022 00:50:39 -0400 (EDT)
+From:   Samuel Holland <samuel@sholland.org>
+To:     Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>
+Cc:     Russell King <linux@armlinux.org.uk>,
+        Samuel Holland <samuel@sholland.org>,
+        Bartosz Dudziak <bartosz.dudziak@snejp.pl>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Luca Weiss <luca@z3ntu.xyz>, Maxime Ripard <maxime@cerno.tech>,
+        Rob Herring <robh+dt@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Stephan Gerhold <stephan@gerhold.net>,
+        Thierry Reding <treding@nvidia.com>,
+        Vinod Koul <vkoul@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-sunxi@lists.linux.dev
+Subject: [PATCH 0/3] ARM: sunxi: Remove A31 and A23/A33 platform SMP code
+Date:   Mon, 30 May 2022 23:50:35 -0500
+Message-Id: <20220531045038.42230-1-samuel@sholland.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git kernel-in-vmalloc-v5.18-rc1
-head:   eae5a86aafbe4bfbcb5c21b271073b014626a472
-commit: eae5a86aafbe4bfbcb5c21b271073b014626a472 [20/20] arm64: memory: Make virt_to_pfn() a static inline
-config: arm64-allyesconfig (https://download.01.org/0day-ci/archive/20220531/202205311221.dNwFCY8b-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git/commit/?id=eae5a86aafbe4bfbcb5c21b271073b014626a472
-        git remote add arm-integrator https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git
-        git fetch --no-tags arm-integrator kernel-in-vmalloc-v5.18-rc1
-        git checkout eae5a86aafbe4bfbcb5c21b271073b014626a472
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm64 prepare
+This series is preparation for converting the PRCM MFD and legacy clock
+drivers to a CCU clock driver. The platform SMP code references the PRCM
+node to map its MMIO space, which will break when the PRCM node is
+removed/replaced.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   scripts/genksyms/parse.y: warning: 9 shift/reduce conflicts [-Wconflicts-sr]
-   scripts/genksyms/parse.y: warning: 5 reduce/reduce conflicts [-Wconflicts-rr]
-   scripts/genksyms/parse.y: note: rerun with option '-Wcounterexamples' to generate conflict counterexamples
-   In file included from arch/arm64/include/asm/thread_info.h:17,
-                    from include/linux/thread_info.h:60,
-                    from arch/arm64/include/asm/preempt.h:6,
-                    from include/linux/preempt.h:78,
-                    from include/linux/smp.h:110,
-                    from include/linux/lockdep.h:14,
-                    from include/linux/mutex.h:17,
-                    from include/linux/kernfs.h:11,
-                    from include/linux/sysfs.h:16,
-                    from include/linux/kobject.h:20,
-                    from include/linux/of.h:17,
-                    from include/linux/irqdomain.h:35,
-                    from include/linux/acpi.h:13,
-                    from include/acpi/apei.h:9,
-                    from include/acpi/ghes.h:5,
-                    from include/linux/arm_sdei.h:8,
-                    from arch/arm64/kernel/asm-offsets.c:10:
-   arch/arm64/include/asm/memory.h: In function 'virt_to_pfn':
->> arch/arm64/include/asm/memory.h:311:16: error: implicit declaration of function '__phys_to_pfn' [-Werror=implicit-function-declaration]
-     311 |         return __phys_to_pfn(__virt_to_phys((unsigned long)(x)));
-         |                ^~~~~~~~~~~~~
->> arch/arm64/include/asm/memory.h:311:61: error: 'x' undeclared (first use in this function)
-     311 |         return __phys_to_pfn(__virt_to_phys((unsigned long)(x)));
-         |                                                             ^
-   arch/arm64/include/asm/memory.h:311:61: note: each undeclared identifier is reported only once for each function it appears in
-   cc1: some warnings being treated as errors
-   make[2]: *** [scripts/Makefile.build:120: arch/arm64/kernel/asm-offsets.s] Error 1
-   make[2]: Target '__build' not remade because of errors.
-   make[1]: *** [Makefile:1194: prepare0] Error 2
-   make[1]: Target 'prepare' not remade because of errors.
-   make: *** [Makefile:219: __sub-make] Error 2
-   make: Target 'prepare' not remade because of errors.
+Since PSCI has been available for 7+ years, instead of trying to deal
+with the migration, I think it's safe to just delete this code.
 
 
-vim +/__phys_to_pfn +311 arch/arm64/include/asm/memory.h
+Samuel Holland (3):
+  ARM: sunxi: Remove A31 and A23/A33 platform SMP code
+  ARM: dts: sunxi: Remove obsolete CPU enable methods
+  dt-bindings: arm: Remove obsolete CPU enable methods
 
-   308	
-   309	static inline unsigned long virt_to_pfn(const void *p)
-   310	{
- > 311		return __phys_to_pfn(__virt_to_phys((unsigned long)(x)));
-   312	}
-   313	
+ .../devicetree/bindings/arm/cpus.yaml         |   2 -
+ arch/arm/boot/dts/sun6i-a31.dtsi              |   1 -
+ arch/arm/boot/dts/sun8i-a23-a33.dtsi          |   1 -
+ arch/arm/mach-sunxi/Makefile                  |   1 -
+ arch/arm/mach-sunxi/platsmp.c                 | 194 ------------------
+ 5 files changed, 199 deletions(-)
+ delete mode 100644 arch/arm/mach-sunxi/platsmp.c
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.35.1
+
