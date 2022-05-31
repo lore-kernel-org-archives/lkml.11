@@ -2,96 +2,243 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63E84C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 15:14:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D6F9C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 15:16:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345564AbiEaPOx (ORCPT
+        id S1345571AbiEaPQx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 11:14:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39892 "EHLO
+        Tue, 31 May 2022 11:16:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345560AbiEaPOv (ORCPT
+        with ESMTP id S1345553AbiEaPQv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 11:14:51 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A437996AB;
-        Tue, 31 May 2022 08:14:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654010090; x=1685546090;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=9HNXnFqK1mPAYH35aD8FyV60Dy2hQJUS48IQmcwuYrM=;
-  b=VC6BnQQ41JjytGhjoICkRZ6RHAjfLXM00kSoY30XP6PKpbVbuE+fF/yX
-   RMU3r3GQ/dyv4bqk5jRCMApmjZIztm16/94fGt869GPTLc8WrthCOxJq8
-   X8OXZvKPNqV2B+SoWRfNXboV0oQDxxeJFtqAQXFzguuHW4o3nY+QqCoMK
-   SDpqRia+c5GYsAv59l2xcrAUK2oH00UTZVxkMgxTkXhIAt7Tw0T6I+ICs
-   bRCbYx6lHmSS1NxvclspAC2h8/CrOsT/fAYvo+7BS1/MZb7rKnSHF00+y
-   gh7zYyMoZF0xX+aAfjBu8zch6IiBc43KbFF/ZFMp3bURbwcPD5MES6mS6
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10364"; a="262918125"
-X-IronPort-AV: E=Sophos;i="5.91,265,1647327600"; 
-   d="scan'208";a="262918125"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 08:13:17 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,265,1647327600"; 
-   d="scan'208";a="706618270"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 31 May 2022 08:13:15 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nw3YZ-0002oU-5U;
-        Tue, 31 May 2022 15:13:15 +0000
-Date:   Tue, 31 May 2022 23:12:21 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Daniel Xu <dxu@dxuuu.xyz>, bpf@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org
-Cc:     kbuild-all@lists.01.org, Daniel Xu <dxu@dxuuu.xyz>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH bpf-next 1/2] bpf, test_run: Add PROG_TEST_RUN support to
- kprobe
-Message-ID: <202205312315.3VC5jz4T-lkp@intel.com>
-References: <b544771c7bce102f2a97a34e2f5e7ebbb9ea0a24.1653861287.git.dxu@dxuuu.xyz>
+        Tue, 31 May 2022 11:16:51 -0400
+Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1805DF8
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 08:16:46 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.nyi.internal (Postfix) with ESMTP id 824375C08D3;
+        Tue, 31 May 2022 11:16:44 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Tue, 31 May 2022 11:16:44 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm3; t=1654010204; x=
+        1654096604; bh=ulNAQ1pcXqswmEceuSuobLoT1dHK6KJ4SW3DfbzzGUY=; b=B
+        H2E1JaI1iWt9XB94fqwKNbQIyCGNujQn7s3wjr+KqygI88F6Bhsq71tCuDVZiw8z
+        6agTebYezaPRkIJ3tL2LyYd6kZdvimN8B2h6hZd6PN/1YkzFvcfEbdnBM2dGGe10
+        rGxCZixgYmP5TloGmatV9mWmnULu9Z2ZN1NBd+Kb5XjfC0RuTx7bwjUshFlBnnXv
+        ppdkdvgy6pIAQi4qySCdN7pMTmYx41br5IP8661Op3GEJPb392clk5vXAl5n9hVy
+        0H4tW5O9RWtBmM8m+/ZyusnS4QRJjW+9LXVfRdk4iqlX1BIV5/skdPAfQPDyiZx/
+        c9N9yTx+4kqdQCPsjvKRA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:feedback-id:feedback-id:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1654010204; x=
+        1654096604; bh=ulNAQ1pcXqswmEceuSuobLoT1dHK6KJ4SW3DfbzzGUY=; b=R
+        v4Mq8lEWXMRg1AgCgs2ukEf1JMq/M1rAaLX3Ll68u85m8MmIVMW3z79ky8WAS8S5
+        /AniW47OaB00dgNouonWeQLGvGvDxUtqNhDodNC7foW+rh2BuLAR7wOq0gtJv6yn
+        KCIq72lwWrmMnar9/KUoqOSNP5YhxtctB2jpoZrUbunyB3VxeeZNgXwwHhJznUCV
+        4vLy6iqmS4TohTEfaVfoLrVbAiyKRT8ItXJmFUc7IcMXmQkSR7H1IUGz/ATsSkWs
+        CFborkc25htZ5pvOl/+Vuo1VAa1xmlXAdMyQrpCk235sKu4+ZVWqLBrLtm7UrYHg
+        pPbd9bWr4OoNdic0C3wKg==
+X-ME-Sender: <xms:WzGWYlB7i-PKi_iagBwL7U31m2e0qq4liLbHvqza-u6K4XcEaicf8Q>
+    <xme:WzGWYjh944iPbklfRLXQlXpugQdGA4yGTjU_fUA52s8a2wEcgU5fJoskl0XMj0rPE
+    f-0LaRcF0lp97IlouE>
+X-ME-Received: <xmr:WzGWYgn5XKJ69Z7RNUKL7-troe-LNx70PKYeNV4X-44OrMtLnYfOHr3Rug>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrkeekgdekhecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvvefukfhfgggtugfgjgesthhqredttddtvdenucfhrhhomhepofgrgihi
+    mhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrg
+    htthgvrhhnpeetgfelgefggeekkefggfeludeiudffjeffgeevveekjedukedtudeuteef
+    teefgfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    hmrgigihhmvgestggvrhhnohdrthgvtghh
+X-ME-Proxy: <xmx:WzGWYvyKg1BSSG-E0uiFRPSzlwQCRlOIhYo1XpAxU2jmUI2cdmgSLw>
+    <xmx:WzGWYqRZdFvV65tVakHGqTNCiPXA_Tkan_x-EW1k8xnQ9tIxQ7NPUg>
+    <xmx:WzGWYiYfKtX8Tbqx9793b8aKFeeBwJ01-84BTg0DoXtcoue72yThWA>
+    <xmx:XDGWYtE1UGORWGbbWPGSs4xczsNB2clPshOmEyia3a1r8NPSGDm1sQ>
+Feedback-ID: i8771445c:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 31 May 2022 11:16:42 -0400 (EDT)
+Date:   Tue, 31 May 2022 17:16:41 +0200
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Samuel Holland <samuel@sholland.org>
+Cc:     Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-sunxi@lists.linux.dev
+Subject: Re: [PATCH 3/6] drm/sun4i: sun8i-hdmi-phy: Used device-managed
+ clocks/resets
+Message-ID: <20220531151641.ua6jzr2pmnuarcfv@penduick>
+References: <20220412043512.49364-1-samuel@sholland.org>
+ <20220412043512.49364-4-samuel@sholland.org>
+ <20220412132325.bq2c3g2fskckfgpz@houat>
+ <4b3b2515-d180-fee4-6095-c2e197a3f195@sholland.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <b544771c7bce102f2a97a34e2f5e7ebbb9ea0a24.1653861287.git.dxu@dxuuu.xyz>
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <4b3b2515-d180-fee4-6095-c2e197a3f195@sholland.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Daniel,
+Hi Samuel,
 
-Thank you for the patch! Yet something to improve:
+Sorry for the (very) late answer
 
-[auto build test ERROR on bpf-next/master]
+On Tue, Apr 12, 2022 at 06:34:40PM -0500, Samuel Holland wrote:
+> On 4/12/22 8:23 AM, Maxime Ripard wrote:
+> > Hi,
+> >=20
+> > On Mon, Apr 11, 2022 at 11:35:08PM -0500, Samuel Holland wrote:
+> >> Now that the HDMI PHY is using a platform driver, it can use device-
+> >> managed resources. Use these, as well as the dev_err_probe helper, to
+> >> simplify the probe function and get rid of the remove function.
+> >>
+> >> Signed-off-by: Samuel Holland <samuel@sholland.org>
+> >> ---
+> >>
+> >>  drivers/gpu/drm/sun4i/sun8i_hdmi_phy.c | 100 ++++++++-----------------
+> >>  1 file changed, 30 insertions(+), 70 deletions(-)
+> >>
+> >> diff --git a/drivers/gpu/drm/sun4i/sun8i_hdmi_phy.c b/drivers/gpu/drm/=
+sun4i/sun8i_hdmi_phy.c
+> >> index 1effa30bfe62..1351e633d485 100644
+> >> --- a/drivers/gpu/drm/sun4i/sun8i_hdmi_phy.c
+> >> +++ b/drivers/gpu/drm/sun4i/sun8i_hdmi_phy.c
+> >> @@ -673,10 +673,8 @@ int sun8i_hdmi_phy_get(struct sun8i_dw_hdmi *hdmi=
+, struct device_node *node)
+> >>  static int sun8i_hdmi_phy_probe(struct platform_device *pdev)
+> >>  {
+> >>  	struct device *dev =3D &pdev->dev;
+> >> -	struct device_node *node =3D dev->of_node;
+> >>  	struct sun8i_hdmi_phy *phy;
+> >>  	void __iomem *regs;
+> >> -	int ret;
+> >> =20
+> >>  	phy =3D devm_kzalloc(dev, sizeof(*phy), GFP_KERNEL);
+> >>  	if (!phy)
+> >> @@ -686,88 +684,50 @@ static int sun8i_hdmi_phy_probe(struct platform_=
+device *pdev)
+> >>  	phy->dev =3D dev;
+> >> =20
+> >>  	regs =3D devm_platform_ioremap_resource(pdev, 0);
+> >> -	if (IS_ERR(regs)) {
+> >> -		dev_err(dev, "Couldn't map the HDMI PHY registers\n");
+> >> -		return PTR_ERR(regs);
+> >> -	}
+> >> +	if (IS_ERR(regs))
+> >> +		return dev_err_probe(dev, PTR_ERR(regs),
+> >> +				     "Couldn't map the HDMI PHY registers\n");
+> >> =20
+> >>  	phy->regs =3D devm_regmap_init_mmio(dev, regs,
+> >>  					  &sun8i_hdmi_phy_regmap_config);
+> >> -	if (IS_ERR(phy->regs)) {
+> >> -		dev_err(dev, "Couldn't create the HDMI PHY regmap\n");
+> >> -		return PTR_ERR(phy->regs);
+> >> -	}
+> >> +	if (IS_ERR(phy->regs))
+> >> +		return dev_err_probe(dev, PTR_ERR(phy->regs),
+> >> +				     "Couldn't create the HDMI PHY regmap\n");
+> >> =20
+> >> -	phy->clk_bus =3D of_clk_get_by_name(node, "bus");
+> >> -	if (IS_ERR(phy->clk_bus)) {
+> >> -		dev_err(dev, "Could not get bus clock\n");
+> >> -		return PTR_ERR(phy->clk_bus);
+> >> -	}
+> >> -
+> >> -	phy->clk_mod =3D of_clk_get_by_name(node, "mod");
+> >> -	if (IS_ERR(phy->clk_mod)) {
+> >> -		dev_err(dev, "Could not get mod clock\n");
+> >> -		ret =3D PTR_ERR(phy->clk_mod);
+> >> -		goto err_put_clk_bus;
+> >> -	}
+> >> +	phy->clk_bus =3D devm_clk_get(dev, "bus");
+> >> +	if (IS_ERR(phy->clk_bus))
+> >> +		return dev_err_probe(dev, PTR_ERR(phy->clk_bus),
+> >> +				     "Could not get bus clock\n");
+> >> =20
+> >> -	if (phy->variant->has_phy_clk) {
+> >> -		phy->clk_pll0 =3D of_clk_get_by_name(node, "pll-0");
+> >> -		if (IS_ERR(phy->clk_pll0)) {
+> >> -			dev_err(dev, "Could not get pll-0 clock\n");
+> >> -			ret =3D PTR_ERR(phy->clk_pll0);
+> >> -			goto err_put_clk_mod;
+> >> -		}
+> >> -
+> >> -		if (phy->variant->has_second_pll) {
+> >> -			phy->clk_pll1 =3D of_clk_get_by_name(node, "pll-1");
+> >> -			if (IS_ERR(phy->clk_pll1)) {
+> >> -				dev_err(dev, "Could not get pll-1 clock\n");
+> >> -				ret =3D PTR_ERR(phy->clk_pll1);
+> >> -				goto err_put_clk_pll0;
+> >> -			}
+> >> -		}
+> >> -	}
+> >> +	phy->clk_mod =3D devm_clk_get(dev, "mod");
+> >> +	if (IS_ERR(phy->clk_mod))
+> >> +		return dev_err_probe(dev, PTR_ERR(phy->clk_mod),
+> >> +				     "Could not get mod clock\n");
+> >> =20
+> >> -	phy->rst_phy =3D of_reset_control_get_shared(node, "phy");
+> >> -	if (IS_ERR(phy->rst_phy)) {
+> >> -		dev_err(dev, "Could not get phy reset control\n");
+> >> -		ret =3D PTR_ERR(phy->rst_phy);
+> >> -		goto err_put_clk_pll1;
+> >> -	}
+> >> +	if (phy->variant->has_phy_clk)
+> >> +		phy->clk_pll0 =3D devm_clk_get(dev, "pll-0");
+> >> +	if (IS_ERR(phy->clk_pll0))
+> >> +		return dev_err_probe(dev, PTR_ERR(phy->clk_pll0),
+> >> +				     "Could not get pll-0 clock\n");
+> >> +
+> >> +	if (phy->variant->has_second_pll)
+> >> +		phy->clk_pll1 =3D devm_clk_get(dev, "pll-1");
+> >> +	if (IS_ERR(phy->clk_pll1))
+> >> +		return dev_err_probe(dev, PTR_ERR(phy->clk_pll1),
+> >> +				     "Could not get pll-1 clock\n");
+> >> +
+> >> +	phy->rst_phy =3D devm_reset_control_get_shared(dev, "phy");
+> >> +	if (IS_ERR(phy->rst_phy))
+> >> +		return dev_err_probe(dev, PTR_ERR(phy->rst_phy),
+> >> +				     "Could not get phy reset control\n");
+> >=20
+> > I find the old construct clearer with the imbricated blocks.
+>=20
+> I'm not sure what you mean here. Are you suggesting braces around the
+> dev_err_probe statements? Or do you want me to put the error handling for
+> variant-specific resources inside the variant checks? Please clarify.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Daniel-Xu/Add-PROG_TEST_RUN-support-to-BPF_PROG_TYPE_KPROBE/20220530-060742
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
-config: s390-randconfig-r026-20220531 (https://download.01.org/0day-ci/archive/20220531/202205312315.3VC5jz4T-lkp@intel.com/config)
-compiler: s390-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/a547a4c795103fd002d3bbb5ee4d7141113716c0
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Daniel-Xu/Add-PROG_TEST_RUN-support-to-BPF_PROG_TYPE_KPROBE/20220530-060742
-        git checkout a547a4c795103fd002d3bbb5ee4d7141113716c0
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash
+I meant that we went, for example, from:
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+if (phy->variant->has_phy_clk) {
+	phy->clk_pll0 =3D devm_clk_get(dev, "pll-0");
+	if (IS_ERR(phy->clk_pll0)) {
+		...
+	}
+}
 
-All errors (new ones prefixed by >>):
+to
 
->> s390-linux-ld: kernel/trace/bpf_trace.o:(.data.rel.ro+0x100): undefined reference to `bpf_prog_test_run_kprobe'
-   s390-linux-ld: drivers/dma/qcom/hidma.o: in function `hidma_probe':
-   hidma.c:(.text+0x313e): undefined reference to `devm_ioremap_resource'
-   s390-linux-ld: hidma.c:(.text+0x3192): undefined reference to `devm_ioremap_resource'
+if (phy->variant->has_phy_clk)
+	phy->clk_pll0 =3D devm_clk_get(dev, "pll-0");
+if (IS_ERR(phy->clk_pll0)) {
+		...
+}
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Which relies on the fact that phy->clk_pll0 is initialized to !IS_ERR(...),=
+ which we never
+explicitly enforced. I find the first and original code clearer for that as=
+pect (since we only use
+that value if it was set), and less fragile.
+
+Maxime
