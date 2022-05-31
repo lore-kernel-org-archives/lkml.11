@@ -2,140 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 740C3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 14:51:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 284EBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 14:52:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345330AbiEaOvq (ORCPT
+        id S1345340AbiEaOwT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 10:51:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36112 "EHLO
+        Tue, 31 May 2022 10:52:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230302AbiEaOvo (ORCPT
+        with ESMTP id S230302AbiEaOwR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 10:51:44 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A57592C0;
-        Tue, 31 May 2022 07:51:42 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id gi33so27202962ejc.3;
-        Tue, 31 May 2022 07:51:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RyUYTxEhGVj/YIsL/hTx00frob1EwhFyyAlxk5eJqJA=;
-        b=c5jUWMojZvgZti6/EtmJ57YkLR6oDynJR2USvxGJHFWnb6HRX6qskr/MZ/exC8PpkG
-         DAMqrH6bm7rN8kHrecyf0yQ1+80KGh1OSii93TVVIWfTxJ70JSMsWtT5QTuPgqcUk0EG
-         MXV0K0uAxv64DWc6UbAdf9MS711tYfA2WXBbPoH8z0pG6JxTtKE7TLaVzH/VirVfhXN0
-         qLSTVOQG41Z5miblPbIHxV42N+/oUUfkhewl8vc56MB+26EhkHf+c8ugyR95iuHxrlQ6
-         opXKLDH9/q//+qz3Hzn33JYku9Iqvf1noOjMraprySoaxsIJ3hkqwHfn2Qkk0sO86a+i
-         NkiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RyUYTxEhGVj/YIsL/hTx00frob1EwhFyyAlxk5eJqJA=;
-        b=75chPzIq1oeAZ5oHw2NYJISPe9uCEtc9O8B/IHNf0scxs7gGyOk0HgY+HZ+alIsdvU
-         iUA1ylbF4k+GgufL8p9TBecSc0fJ4WpEUPFwOUdw20TEEs0P+ZwD7dcMGCRCAvaKJ5jo
-         t7k0SuwHYyzl4zdevonxFN5XtOmu0CprIspdlO9YG2jjHYuQBn1BHCg8RzUfirSd8lgB
-         hKGqWp1TziX8CNaAjI/SdnodDU5ieSP3cDDMn5J/Hxd7npU+ygETki/Df68xL/ZiBewo
-         xfcfEh96dhJLqvcu1r1bLD5x9Gh0BTVDnHn7rhazSxIi+5bN5qxYB2pz2efXOtVZcbd8
-         FNYQ==
-X-Gm-Message-State: AOAM531yf5zJd4rgbbykAeSDCvR42e3v0aClaz6M83esJ2bf11MjOCVl
-        ZUsk3JlW0J7GY/Qq2I3myIRjaRYqbboRhVJDAjG5QdJRjW5smQ==
-X-Google-Smtp-Source: ABdhPJyyUxrqkDU9Pdnv/wBT4Ukiky8NfAEOA6SUjdD/jhw8Z0mgIWoKCw/A1Uiiw0BwLN05D8FyNz3mtYHWbLct3XQ=
-X-Received: by 2002:a17:907:2ce3:b0:6ff:1447:d3a4 with SMTP id
- hz3-20020a1709072ce300b006ff1447d3a4mr27196777ejc.497.1654008700721; Tue, 31
- May 2022 07:51:40 -0700 (PDT)
+        Tue, 31 May 2022 10:52:17 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDDEBDED2
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 07:52:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654008736; x=1685544736;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=BtbQmZDkCquEDIfsWj73N9gWNM/A1shVRZ9gerMwOnk=;
+  b=WZvmToNf5jhaV9cDb7NZI6YRjoSf81TMr7dAcdMWapE15VibV3Cxs/Lz
+   N6oU9lx0dHqSAITxwirpcDEK+n70EAcVVbXT/vP0r7MBlvDpQqH2wOZL1
+   w7HVLLWvOdelmD0soq13ge25htVkGYrx72EgaG8AbtSXcjvcWWW0V0iz0
+   GbCRp+LLv686hG7U7ponD3ImCrP5M0KINVaymVTU0J4SiJ6MA89K+HzIp
+   j8auKQQRCuj78MdKJSfHyZIsdswOAkYUU1Y39iWQf8kMz/c+PqPZgQ/4a
+   EtUgubUsE0xuJXqlQ2vALTlhimq9+OXaOirfqk9dSMLAe18eLckXlXeus
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10364"; a="255145691"
+X-IronPort-AV: E=Sophos;i="5.91,265,1647327600"; 
+   d="scan'208";a="255145691"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 07:52:16 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,265,1647327600"; 
+   d="scan'208";a="755058955"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 31 May 2022 07:52:15 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nw3EE-0002nK-LT;
+        Tue, 31 May 2022 14:52:14 +0000
+Date:   Tue, 31 May 2022 22:51:52 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [arm-integrator:kernel-in-vmalloc-v5.18-rc1 18/18]
+ arch/arm64/include/asm/memory.h:311:16: error: implicit declaration of
+ function 'PHYS_PFN'
+Message-ID: <202205312239.YsC9Dh2Y-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220530221429.1248083-1-demonsingur@gmail.com> <20220530221429.1248083-3-demonsingur@gmail.com>
-In-Reply-To: <20220530221429.1248083-3-demonsingur@gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 31 May 2022 16:51:04 +0200
-Message-ID: <CAHp75Vdi8q1SkLz-SC9pr1Hj_tO=6d42g8OQM7zE8dMUGCG9Wg@mail.gmail.com>
-Subject: Re: [PATCH 3/4] serial: max310x: make accessing revision id interface-agnostic
-To:     Cosmin Tanislav <demonsingur@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Cosmin Tanislav <cosmin.tanislav@analog.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 31, 2022 at 3:55 PM Cosmin Tanislav <demonsingur@gmail.com> wrote:
->
-> From: Cosmin Tanislav <cosmin.tanislav@analog.com>
->
-> SPI can only use 5 address bits, since one bit is reserved for
-> specifying R/W and 2 bits are used to specify the UART port.
-> To access registers that have addresses past 0x1F, an extended
-> register space can be enabled by writing to the GlobalCommand
-> register (address 0x1F).
->
-> I2C uses 8 address bits. The R/W bit is placed in the slave
-> address, and so is the UART port. Because of this, registers
-> that have addresses higher than 0x1F can be accessed normally.
->
-> To access the RevID register, on SPI, 0xCE must be written to
-> the 0x1F address to enable the extended register space, after
-> which the RevID register is accessible at address 0x5. 0xCD
-> must be written to the 0x1F address to disable the extended
-> register space.
->
-> On I2C, the RevID register is accessible at address 0x25.
->
-> Create an interface config struct, and add a method for
-> toggling the extended register space and a member for the RevId
-> register address. Implement these for SPI.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git kernel-in-vmalloc-v5.18-rc1
+head:   a71d4962de17d9a95418e25f1f98e66ba910105a
+commit: a71d4962de17d9a95418e25f1f98e66ba910105a [18/18] arm64: memory: Make virt_to_pfn() a static inline
+config: arm64-allnoconfig (https://download.01.org/0day-ci/archive/20220531/202205312239.YsC9Dh2Y-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git/commit/?id=a71d4962de17d9a95418e25f1f98e66ba910105a
+        git remote add arm-integrator https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git
+        git fetch --no-tags arm-integrator kernel-in-vmalloc-v5.18-rc1
+        git checkout a71d4962de17d9a95418e25f1f98e66ba910105a
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm64 prepare
 
-...
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
->  struct max310x_port {
->         const struct max310x_devtype *devtype;
-> +       const struct max310x_if_cfg *if_cfg;
->         struct regmap           *regmap;
+All errors (new ones prefixed by >>):
 
-I believe the most used pointer is regmap and putting it to be a first
-member will make pointer arithmetic no-op at compile time. That said,
-adding new member is better after this one.
+   In file included from arch/arm64/include/asm/thread_info.h:17,
+                    from include/linux/thread_info.h:60,
+                    from arch/arm64/include/asm/preempt.h:6,
+                    from include/linux/preempt.h:78,
+                    from include/linux/smp.h:110,
+                    from include/linux/lockdep.h:14,
+                    from include/linux/mutex.h:17,
+                    from include/linux/kernfs.h:11,
+                    from include/linux/sysfs.h:16,
+                    from include/linux/kobject.h:20,
+                    from include/linux/of.h:17,
+                    from include/linux/irqdomain.h:35,
+                    from include/linux/acpi.h:13,
+                    from include/acpi/apei.h:9,
+                    from include/acpi/ghes.h:5,
+                    from include/linux/arm_sdei.h:8,
+                    from arch/arm64/kernel/asm-offsets.c:10:
+   arch/arm64/include/asm/memory.h: In function 'virt_to_pfn':
+>> arch/arm64/include/asm/memory.h:311:16: error: implicit declaration of function 'PHYS_PFN' [-Werror=implicit-function-declaration]
+     311 |         return PHYS_PFN(virt_to_phys(p));
+         |                ^~~~~~~~
+   cc1: some warnings being treated as errors
+   make[2]: *** [scripts/Makefile.build:120: arch/arm64/kernel/asm-offsets.s] Error 1
+   make[2]: Target '__build' not remade because of errors.
+   make[1]: *** [Makefile:1194: prepare0] Error 2
+   make[1]: Target 'prepare' not remade because of errors.
+   make: *** [Makefile:219: __sub-make] Error 2
+   make: Target 'prepare' not remade because of errors.
 
->         struct clk              *clk;
 
-...
+vim +/PHYS_PFN +311 arch/arm64/include/asm/memory.h
 
-> +       ret = s->if_cfg->set_ext_reg_en(dev, true);
-
-It sounds like a voodoo speech. Can we name the callback better?
-->extended_reg_enable() ?
-
->         if (ret)
->                 return ret;
-
-...
-
->  static int max310x_probe(struct device *dev, const struct max310x_devtype *devtype,
-> +                        const struct max310x_if_cfg *if_cfg,
->                          struct regmap **regmaps, int irq)
-
-It should be commented on the other patch, but since I can't see it in
-my mailbox (yet) I put it here. So,
-looking into usage of regmaps parameter it logically should be declared as
-
-struct regmap *regmaps[]
-
-(yes, I know that there is no difference for the compiler, but code
-human reader).
-
-...
-
-> -       return max310x_probe(&spi->dev, devtype, regmaps, spi->irq);
-> +       return max310x_probe(&spi->dev, devtype, &max310x_spi_if_cfg, regmaps,
-> +                            spi->irq);
-
-Can still be on one line, no?
+   308	
+   309	static inline unsigned long virt_to_pfn(const void *p)
+   310	{
+ > 311		return PHYS_PFN(virt_to_phys(p));
+   312	}
+   313	
 
 -- 
-With Best Regards,
-Andy Shevchenko
+0-DAY CI Kernel Test Service
+https://01.org/lkp
