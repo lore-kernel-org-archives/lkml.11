@@ -2,213 +2,495 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 058D5C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 12:32:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABFC4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 12:33:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344247AbiEaMcf (ORCPT
+        id S1344266AbiEaMdM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 08:32:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56126 "EHLO
+        Tue, 31 May 2022 08:33:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237954AbiEaMcd (ORCPT
+        with ESMTP id S237954AbiEaMdK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 08:32:33 -0400
-Received: from mail-oo1-xc33.google.com (mail-oo1-xc33.google.com [IPv6:2607:f8b0:4864:20::c33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2AE9DF5C
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 05:32:31 -0700 (PDT)
-Received: by mail-oo1-xc33.google.com with SMTP id e13-20020a4a884d000000b004154e612440so781149ooi.0
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 05:32:31 -0700 (PDT)
+        Tue, 31 May 2022 08:33:10 -0400
+Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1FA8DEF6;
+        Tue, 31 May 2022 05:33:08 -0700 (PDT)
+Received: by mail-io1-xd41.google.com with SMTP id d198so13895033iof.12;
+        Tue, 31 May 2022 05:33:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=b5n2e4xJe4nQRM9S+eJYL96ssz1qtMJPh3cecd/u2F4=;
-        b=JJ+o//A34GebRbOJoHtnLj39Zi8DsGE1hjWaF5Yleq55rZ5bJCBipkp6EPDIE8WxT7
-         YE6XSDgz7cL8BGPmpugti3iz78JnNisFF1n9+wBnkSVtJtsuRU78JcSDzHoyGKN+zROb
-         Sv3O2XUm+gJKXhEy2Uu2o0ZLGWhpeDEBJyiAk=
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=2QW6EAQHfNGL3WRo5wHoHfZuTn8wkaAQDQ0iJvuyzQA=;
+        b=pSoCECW7l7ogsdkRWbAgKx4BphhhHPUzOpdwGI0tyddfQ0JoW8pezHuF99q3cvGLYo
+         LnX5/Pt76tE2Hpa/3reEPFg1qOZGV7SrJH6jtbNGf02QZ5nbYVLah52CCcfMYnsI0epE
+         RUn8mNU3n7T9wcpwmVrrMIn5HRaeAtp0zm3lxbW0UriIV1m6vpQIc9b+INuxY9rp25qI
+         t57F5jzz+KpECz/WFU/CRiMr5TYAvmZqxcwTuNfqjmZoqUus8HohR6vvOjTIe/OrVKYi
+         QPXNmoEqZYv6x51GxdP9Ao7eo1Vcx99NV5xYS7J26v7vBmMNMvZ/i2lNpXHMD6Kt6JBD
+         3hBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=b5n2e4xJe4nQRM9S+eJYL96ssz1qtMJPh3cecd/u2F4=;
-        b=IXhhGUFlxJzu/VVlcYsowbDoRpjtS6fT7rEb7UVBsxNc9Cup5pzQEYxKlnvUs0jQPX
-         GelN/L/aC1vg30pulsiSeOmUlqvXy1j6TBbkX/4zlhk3OgBQAhdEKs7AoVPb7KWYKn6R
-         V6X+YbBFbdUiHh3wJEdkF0DJiozm2tI9c/1fNnho71e5lrKcKLDxu9EBUA5v4Yme5PmH
-         VvoMuiOHeaBL80+Q1QlZYaQ90Zapv2KGiGmC3Z4SwiD6oidAlg33qYFLmZ1dFr9Ki5mj
-         xHyE+rhJHMvXoHeFhOgnovZ/ijFQwlAZ/Gma8iosuRrCWG3yr+KUC7qN1TByGFt23fHn
-         zB6w==
-X-Gm-Message-State: AOAM531HwFuD/mTiYe0W35iP9Y3eP8ds+DCYSvwImI89uS5gHU36N0o/
-        ST67LTKoZaaOBtkNgsdAsoNM2QO1Le2KX8Srl6xNpw==
-X-Google-Smtp-Source: ABdhPJz1znTWlLdZXrBa1EEGMEdqekYP8msNxFFVPQ7Y9QZwe+Us0gduhZqingQrUbIhjjOVxoxX0MjqxnUvsbGqScU=
-X-Received: by 2002:a4a:870d:0:b0:35f:7c65:1340 with SMTP id
- z13-20020a4a870d000000b0035f7c651340mr23177842ooh.46.1654000350734; Tue, 31
- May 2022 05:32:30 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=2QW6EAQHfNGL3WRo5wHoHfZuTn8wkaAQDQ0iJvuyzQA=;
+        b=QCOLtRuaxv57QRWtYfr/hKsgU6gdJH6j8kgHVgpGTJ2vSbAqGEgjRVk6F6vjthSP4H
+         NWKg/hQrS5ifZCfuv2THSq02+nu5wrpEJbjzpzbzsrBl1fIDzU2zNVqeBkXWivXHjJS1
+         P2AD2B+55b7rGQeSbzVkU9d2ZRkkVCyze02XSdhdACKQWABPViLkodw+BJuBfHVoYnsA
+         HwA8lDT2LI6xyF3rdB+LAvQujFBV40nWu8wqCtcBH1lZ6KHdi+FMxhXn79Nn07tg21in
+         vl4lrgN3ipjluJo2wE7zSiEc/CbVu7z9MdjaQ3hhx80nokKwU1ugOT48rG/p2s7Ju6Q3
+         IH4Q==
+X-Gm-Message-State: AOAM532v1XXJp3LAzJ8B9JMeA9Rgo7YMc5UUIxk8fiIvvv6phnhs9T1L
+        PCXuxefy3ERzS3/Vd8JSHguk6M/9pXs=
+X-Google-Smtp-Source: ABdhPJyxDQ1vBVuzKpzw6DdO7fUy7QY/febE476l02rDnEsCI0JTpMac3/9JG6HvMjk6Oy0dY8tacg==
+X-Received: by 2002:a63:5b0d:0:b0:3fb:9316:88ff with SMTP id p13-20020a635b0d000000b003fb931688ffmr19509313pgb.530.1653993767246;
+        Tue, 31 May 2022 03:42:47 -0700 (PDT)
+Received: from RD-3580-24288.rt.l (42-72-220-172.emome-ip.hinet.net. [42.72.220.172])
+        by smtp.gmail.com with ESMTPSA id d19-20020a17090ac25300b001cd4989feebsm1525829pjx.55.2022.05.31.03.42.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 May 2022 03:42:46 -0700 (PDT)
+From:   ChiaEn Wu <peterwu.pub@gmail.com>
+To:     lee.jones@linaro.org, daniel.thompson@linaro.org,
+        jingoohan1@gmail.com, pavel@ucw.cz, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
+        sre@kernel.org, chunfeng.yun@mediatek.com,
+        gregkh@linuxfoundation.org, jic23@kernel.org, lars@metafoo.de,
+        lgirdwood@gmail.com, broonie@kernel.org, linux@roeck-us.net,
+        heikki.krogerus@linux.intel.com, deller@gmx.de
+Cc:     cy_huang@richtek.com, alice_chen@richtek.com,
+        chiaen_wu@richtek.com, dri-devel@lists.freedesktop.org,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-fbdev@vger.kernel.org
+Subject: [PATCH 14/14] dt-bindings: mfd: Add Mediatek MT6370 binding documentation
+Date:   Tue, 31 May 2022 18:42:11 +0800
+Message-Id: <20220531104211.17106-6-peterwu.pub@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220531104211.17106-1-peterwu.pub@gmail.com>
+References: <20220531104211.17106-1-peterwu.pub@gmail.com>
 MIME-Version: 1.0
-References: <20220529162936.2539901-1-robdclark@gmail.com> <0bf230f4-c888-b9c9-f061-7450406baa4a@suse.de>
- <CAF6AEGthAfWyAvbuE4EP+u52LEKS2Fs6X=gG8qUjc7gci6oh-A@mail.gmail.com>
- <CAKMK7uG9=EcmD4hPqm4zYsDHiS9Mr=y_5tUa_R1veDxSSK-P-Q@mail.gmail.com> <CAF6AEGuLeLmD4m+yi5csGdb0XZbnAOfYOKx6c-wEgMGt6rj7Cw@mail.gmail.com>
-In-Reply-To: <CAF6AEGuLeLmD4m+yi5csGdb0XZbnAOfYOKx6c-wEgMGt6rj7Cw@mail.gmail.com>
-From:   Daniel Vetter <daniel@ffwll.ch>
-Date:   Tue, 31 May 2022 14:32:19 +0200
-Message-ID: <CAKMK7uE2sywR9qpVqGqk4s71pini3iU47iBfYakz=V=xfm8DZg@mail.gmail.com>
-Subject: Re: [PATCH] drm/prime: Ensure mmap offset is initialized
-To:     Rob Clark <robdclark@gmail.com>
-Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
-        Rob Clark <robdclark@chromium.org>,
-        David Airlie <airlied@linux.ie>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        freedreno <freedreno@lists.freedesktop.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 30 May 2022 at 17:41, Rob Clark <robdclark@gmail.com> wrote:
->
-> On Mon, May 30, 2022 at 7:49 AM Daniel Vetter <daniel@ffwll.ch> wrote:
-> >
-> > On Mon, 30 May 2022 at 15:54, Rob Clark <robdclark@gmail.com> wrote:
-> > >
-> > > On Mon, May 30, 2022 at 12:26 AM Thomas Zimmermann <tzimmermann@suse.=
-de> wrote:
-> > > >
-> > > > Hi
-> > > >
-> > > > Am 29.05.22 um 18:29 schrieb Rob Clark:
-> > > > > From: Rob Clark <robdclark@chromium.org>
-> > > > >
-> > > > > If a GEM object is allocated, and then exported as a dma-buf fd w=
-hich is
-> > > > > mmap'd before or without the GEM buffer being directly mmap'd, th=
-e
-> > > > > vma_node could be unitialized.  This leads to a situation where t=
-he CPU
-> > > > > mapping is not correctly torn down in drm_vma_node_unmap().
-> > > >
-> > > > Which drivers are affected by this problem?
-> > > >
-> > > > I checked several drivers and most appear to be initializing the of=
-fset
-> > > > during object construction, such as GEM SHMEM. [1] TTM-based driver=
-s
-> > > > also seem unaffected. [2]
-> > > >
-> > > >  From a quick grep, only etnaviv, msm and omapdrm appear to be affe=
-cted?
-> > > > They only seem to run drm_gem_create_mmap_offset() from their
-> > > > ioctl-handling code.
-> > > >
-> > > > If so, I'd say it's preferable to fix these drivers and put a
-> > > > drm_WARN_ONCE() into drm_gem_prime_mmap().
-> > >
-> > > That is good if fewer drivers are affected, however I disagree with
-> > > your proposal.  At least for freedreno userspace, a lot of bo's never
-> > > get mmap'd (either directly of via dmabuf), so we should not be
-> > > allocating a mmap offset unnecessarily.
-> >
-> > Does this actually matter in the grand scheme of things? We originally
-> > allocated mmap offset only on demand because userspace only had 32bit
-> > loff_t support and so simply couldn't mmap anything if the offset
-> > ended up above 32bit (even if there was still va space available).
-> >
-> > But those days are long gone (about 10 years or so) and the allocation
-> > overhead for an mmap offset is tiny. So I think unless you can
-> > benchmark an impact allocating it at bo alloc seems like the simplest
-> > design overall, and hence what we should be doing. And if the vma
-> > offset allocation every gets too slow due to fragmentation we can lift
-> > the hole tree from i915 into drm_mm and the job should be done. At
-> > that point we could also allocate the offset unconditionally in the
-> > gem_init function and be done with it.
-> >
-> > Iow I concur with Thomas here, unless there's hard data contrary
-> > simplicity imo trumps here.
->
-> 32b userspace is still alive and well, at least on arm chromebooks ;-)
+From: ChiYuan Huang <cy_huang@richtek.com>
 
-There's lots of different 32b userspace. The old thing was about
-userspace which didn't use mmap64, but only mmap. Which could only
-mmap the lower 4GB of a file, and so if you ended up with mmap_offset
-above 4G then you'd blow up.
+Add Mediatek MT6370 binding documentation.
 
-But mmap64 is a thing since forever, and if you compile with the right
-glibc switch (loff_t is the magic thing iirc) it all works even with
-default mmap. So I really don't think you should have this problem
-anymore (except when cros is doing something really, really silly).
--Daniel
+Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
+---
+ .../bindings/mfd/mediatek,mt6370.yaml         | 282 ++++++++++++++++++
+ .../dt-bindings/iio/adc/mediatek,mt6370_adc.h |  18 ++
+ include/dt-bindings/mfd/mediatek,mt6370.h     |  83 ++++++
+ 3 files changed, 383 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/mfd/mediatek,mt6370.yaml
+ create mode 100644 include/dt-bindings/iio/adc/mediatek,mt6370_adc.h
+ create mode 100644 include/dt-bindings/mfd/mediatek,mt6370.h
 
->
-> BR,
-> -R
->
-> > -Daniel
-> >
-> > >
-> > > BR,
-> > > -R
-> > >
-> > > > Best regards
-> > > > Thomas
-> > > >
-> > > > [1]
-> > > > https://elixir.bootlin.com/linux/v5.18/source/drivers/gpu/drm/drm_g=
-em_shmem_helper.c#L85
-> > > > [2]
-> > > > https://elixir.bootlin.com/linux/v5.18/source/drivers/gpu/drm/ttm/t=
-tm_bo.c#L1002
-> > > >
-> > > > >
-> > > > > Fixes: e5516553999f ("drm: call drm_gem_object_funcs.mmap with fa=
-ke offset")
-> > > > > Signed-off-by: Rob Clark <robdclark@chromium.org>
-> > > > > ---
-> > > > > Note, it's possible the issue existed in some related form prior =
-to the
-> > > > > commit tagged with Fixes.
-> > > > >
-> > > > >   drivers/gpu/drm/drm_prime.c | 5 +++++
-> > > > >   1 file changed, 5 insertions(+)
-> > > > >
-> > > > > diff --git a/drivers/gpu/drm/drm_prime.c b/drivers/gpu/drm/drm_pr=
-ime.c
-> > > > > index e3f09f18110c..849eea154dfc 100644
-> > > > > --- a/drivers/gpu/drm/drm_prime.c
-> > > > > +++ b/drivers/gpu/drm/drm_prime.c
-> > > > > @@ -716,6 +716,11 @@ int drm_gem_prime_mmap(struct drm_gem_object=
- *obj, struct vm_area_struct *vma)
-> > > > >       struct file *fil;
-> > > > >       int ret;
-> > > > >
-> > > > > +     /* Ensure that the vma_node is initialized: */
-> > > > > +     ret =3D drm_gem_create_mmap_offset(obj);
-> > > > > +     if (ret)
-> > > > > +             return ret;
-> > > > > +
-> > > > >       /* Add the fake offset */
-> > > > >       vma->vm_pgoff +=3D drm_vma_node_start(&obj->vma_node);
-> > > > >
-> > > >
-> > > > --
-> > > > Thomas Zimmermann
-> > > > Graphics Driver Developer
-> > > > SUSE Software Solutions Germany GmbH
-> > > > Maxfeldstr. 5, 90409 N=C3=BCrnberg, Germany
-> > > > (HRB 36809, AG N=C3=BCrnberg)
-> > > > Gesch=C3=A4ftsf=C3=BChrer: Ivo Totev
-> >
-> >
-> >
-> > --
-> > Daniel Vetter
-> > Software Engineer, Intel Corporation
-> > http://blog.ffwll.ch
+diff --git a/Documentation/devicetree/bindings/mfd/mediatek,mt6370.yaml b/Documentation/devicetree/bindings/mfd/mediatek,mt6370.yaml
+new file mode 100644
+index 000000000000..96a12dce0108
+--- /dev/null
++++ b/Documentation/devicetree/bindings/mfd/mediatek,mt6370.yaml
+@@ -0,0 +1,282 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/mfd/mediatek,mt6370.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Mediatek MT6370 SubPMIC
++
++maintainers:
++  - ChiYuan Huang <cy_huang@richtek.com>
++
++description: |
++  MT6370 is a highly-integrated smart power management IC, which includes a
++  single cell Li-Ion/Li-Polymer switching battery charger, a USB Type-C &
++  Power Delivery (PD) controller, dual flash LED current sources, a RGB LED
++  driver, a backlight WLED driver, a display bias driver and a general LDO for
++  portable devices.
++
++properties:
++  compatible:
++    const: mediatek,mt6370
++
++  reg:
++    maxItems: 1
++
++  wakeup-source: true
++
++  interrupts:
++    maxItems: 1
++
++  interrupt-controller: true
++
++  '#interrupt-cells':
++    const: 1
++
++  adc:
++    type: object
++    description: |
++      List the compatible configurations of MT6370 ADC.
++
++    properties:
++      compatible:
++        const: mediatek,mt6370-adc
++
++      "#io-channel-cells":
++        const: 1
++
++    required:
++      - compatible
++      - '#io-channel-cells'
++
++  backlight:
++    type: object
++    $ref: /schemas/leds/backlight/mediatek,mt6370-backlight.yaml#
++
++  charger:
++    type: object
++    $ref: /schemas/power/supply/mediatek,mt6370-charger.yaml#
++
++  tcpc:
++    type: object
++    $ref: /schemas/usb/mediatek,mt6370-tcpc.yaml#
++
++  indicator:
++    type: object
++    $ref: /schemas/leds/mediatek,mt6370-indicator.yaml#
++
++  flashlight:
++    type: object
++    $ref: /schemas/leds/mediatek,mt6370-flashlight.yaml#
++
++  regulators:
++    type: object
++    description: |
++      List all supported regulators
++
++    patternProperties:
++      "^(dsvbst|vibldo)$":
++        $ref: /schemas/regulator/regulator.yaml#
++        type: object
++        unevaluatedProperties: false
++
++      "^(dsvpos|dsvneg)$":
++        $ref: /schemas/regulator/regulator.yaml#
++        type: object
++        unevaluatedProperties: false
++
++        properties:
++          enable-gpio:
++            maxItems: 1
++            description: |
++              Specify a valid 'enable' gpio for the regulator and it's optional
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - interrupt-controller
++  - '#interrupt-cells'
++  - regulators
++  - adc
++  - backlight
++  - indicator
++  - tcpc
++  - charger
++  - flashlight
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    #include <dt-bindings/leds/common.h>
++    #include <dt-bindings/mfd/mediatek,mt6370.h>
++    #include <dt-bindings/iio/adc/mediatek,mt6370_adc.h>
++    #include <dt-bindings/usb/pd.h>
++    i2c {
++      #address-cells = <1>;
++      #size-cells = <0>;
++
++      mt6370@34 {
++        compatible = "mediatek,mt6370";
++        reg = <0x34>;
++        wakeup-source;
++        interrupts-extended = <&gpio26 3 IRQ_TYPE_LEVEL_LOW>;
++        interrupt-controller;
++        #interrupt-cells = <1>;
++
++        mt6370_adc: adc {
++          compatible = "mediatek,mt6370-adc";
++          #io-channel-cells = <1>;
++        };
++
++        backlight {
++          compatible = "mediatek,mt6370-backlight";
++          mediatek,bled-channel-use = /bits/ 8 <15>;
++        };
++
++        charger {
++          compatible = "mediatek,mt6370-charger";
++          interrupts = <MT6370_IRQ_ATTACH>, <MT6370_IRQ_OVPCTRL_UVP_D>,
++                       <MT6370_IRQ_CHG_MIVR>;
++          interrupt-names = "attach_i", "uvp_d_evt", "mivr";
++          io-channels = <&mt6370_adc MT6370_CHAN_IBUS>;
++
++          mt6370_otg_vbus: usb-otg-vbus {
++            regulator-compatible = "mt6370,otg-vbus";
++            regulator-name = "usb-otg-vbus";
++            regulator-min-microvolt = <4350000>;
++            regulator-max-microvolt = <5800000>;
++            regulator-min-microamp = <500000>;
++            regulator-max-microamp = <3000000>;
++          };
++        };
++
++        indicator {
++          compatible = "mediatek,mt6370-indicator";
++          #address-cells = <1>;
++          #size-cells = <0>;
++
++          multi-led@0 {
++            reg = <0>;
++            function = LED_FUNCTION_INDICATOR;
++            color = <LED_COLOR_ID_RGB>;
++            led-max-microamp = <24000>;
++            #address-cells = <1>;
++            #size-cells = <0>;
++            mediatek,soft-start = <3>;
++              led@0 {
++                reg = <0>;
++                color = <LED_COLOR_ID_RED>;
++              };
++              led@1 {
++                reg = <1>;
++                color = <LED_COLOR_ID_GREEN>;
++              };
++              led@2 {
++                reg = <2>;
++                color = <LED_COLOR_ID_BLUE>;
++              };
++            };
++          led@3 {
++            reg = <3>;
++            function = LED_FUNCTION_INDICATOR;
++            color = <LED_COLOR_ID_WHITE>;
++            led-max-microamp = <6000>;
++          };
++        };
++
++        flashlight {
++          compatible = "mediatek,mt6370-flashlight";
++          #address-cells = <1>;
++          #size-cells = <0>;
++          led@0 {
++            reg = <0>;
++            led-sources = <0>;
++            function = LED_FUNCTION_FLASH;
++            color = <LED_COLOR_ID_WHITE>;
++            function-enumerator = <1>;
++            led-max-microamp = <200000>;
++            flash-max-microamp = <500000>;
++            flash-max-timeout-us = <1248000>;
++          };
++          led@1 {
++            reg = <1>;
++            led-sources = <1>;
++            function = LED_FUNCTION_FLASH;
++            color = <LED_COLOR_ID_WHITE>;
++            function-enumerator = <2>;
++            led-max-microamp = <200000>;
++            flash-max-microamp = <500000>;
++            flash-max-timeout-us = <1248000>;
++          };
++        };
++
++        tcpc {
++          compatible = "mediatek,mt6370-tcpc";
++          interrupts-extended = <&gpio26 4 IRQ_TYPE_LEVEL_LOW>;
++
++          connector {
++            compatible = "usb-c-connector";
++            label = "USB-C";
++            vbus-supply = <&mt6370_otg_vbus>;
++            data-role = "dual";
++            power-role = "dual";
++            try-power-role = "sink";
++            source-pdos = <PDO_FIXED(5000, 1000, PDO_FIXED_DUAL_ROLE | PDO_FIXED_DATA_SWAP)>;
++            sink-pdos = <PDO_FIXED(5000, 2000, PDO_FIXED_DUAL_ROLE | PDO_FIXED_DATA_SWAP)>;
++            op-sink-microwatt = <10000000>;
++
++            ports {
++              #address-cells = <1>;
++              #size-cells = <0>;
++
++              port@0 {
++                reg = <0>;
++                endpoint {
++                  remote-endpoint = <&usb_hs>;
++                };
++              };
++              port@1 {
++                reg = <1>;
++                endpoint {
++                  remote-endpoint = <&usb_ss>;
++                };
++              };
++              port@2 {
++                reg = <2>;
++                endpoint {
++                  remote-endpoint = <&dp_aux>;
++                };
++              };
++            };
++          };
++        };
++
++        regulators {
++          dsvbst {
++            regulator-name = "mt6370-dsv-vbst";
++            regulator-min-microvolt = <4000000>;
++            regulator-max-microvolt = <6200000>;
++          };
++          dsvpos {
++            regulator-name = "mt6370-dsv-vpos";
++            regulator-min-microvolt = <4000000>;
++            regulator-max-microvolt = <6000000>;
++            regulator-boot-on;
++          };
++          dsvneg {
++            regulator-name = "mt6370-dsv-vneg";
++            regulator-min-microvolt = <4000000>;
++            regulator-max-microvolt = <6000000>;
++            regulator-boot-on;
++          };
++          vibldo {
++            regulator-name = "mt6370-vib-ldo";
++            regulator-min-microvolt = <1600000>;
++            regulator-max-microvolt = <4000000>;
++          };
++        };
++      };
++    };
+diff --git a/include/dt-bindings/iio/adc/mediatek,mt6370_adc.h b/include/dt-bindings/iio/adc/mediatek,mt6370_adc.h
+new file mode 100644
+index 000000000000..18ce2fef8f9e
+--- /dev/null
++++ b/include/dt-bindings/iio/adc/mediatek,mt6370_adc.h
+@@ -0,0 +1,18 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++#ifndef __DT_BINDINGS_MEDIATEK_MT6370_ADC_H__
++#define __DT_BINDINGS_MEDIATEK_MT6370_ADC_H__
++
++/* ADC Channel Index */
++#define MT6370_CHAN_VBUSDIV5	0
++#define MT6370_CHAN_VBUSDIV2	1
++#define MT6370_CHAN_VSYS	2
++#define MT6370_CHAN_VBAT	3
++#define MT6370_CHAN_TS_BAT	4
++#define MT6370_CHAN_IBUS	5
++#define MT6370_CHAN_IBAT	6
++#define MT6370_CHAN_CHG_VDDP	7
++#define MT6370_CHAN_TEMP_JC	8
++#define MT6370_CHAN_MAX		9
++
++#endif
+diff --git a/include/dt-bindings/mfd/mediatek,mt6370.h b/include/dt-bindings/mfd/mediatek,mt6370.h
+new file mode 100644
+index 000000000000..df641e5d651f
+--- /dev/null
++++ b/include/dt-bindings/mfd/mediatek,mt6370.h
+@@ -0,0 +1,83 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++#ifndef __DT_BINDINGS_MEDIATEK_MT6370_H__
++#define __DT_BINDINGS_MEDIATEK_MT6370_H__
++
++/* IRQ definitions */
++#define MT6370_IRQ_DIRCHGON		0
++#define MT6370_IRQ_CHG_TREG		4
++#define MT6370_IRQ_CHG_AICR		5
++#define MT6370_IRQ_CHG_MIVR		6
++#define MT6370_IRQ_PWR_RDY		7
++#define MT6370_IRQ_FL_CHG_VINOVP	11
++#define MT6370_IRQ_CHG_VSYSUV		12
++#define MT6370_IRQ_CHG_VSYSOV		13
++#define MT6370_IRQ_CHG_VBATOV		14
++#define MT6370_IRQ_CHG_VINOVPCHG	15
++#define MT6370_IRQ_TS_BAT_COLD		20
++#define MT6370_IRQ_TS_BAT_COOL		21
++#define MT6370_IRQ_TS_BAT_WARM		22
++#define MT6370_IRQ_TS_BAT_HOT		23
++#define MT6370_IRQ_TS_STATC		24
++#define MT6370_IRQ_CHG_FAULT		25
++#define MT6370_IRQ_CHG_STATC		26
++#define MT6370_IRQ_CHG_TMR		27
++#define MT6370_IRQ_CHG_BATABS		28
++#define MT6370_IRQ_CHG_ADPBAD		29
++#define MT6370_IRQ_CHG_RVP		30
++#define MT6370_IRQ_TSHUTDOWN		31
++#define MT6370_IRQ_CHG_IINMEAS		32
++#define MT6370_IRQ_CHG_ICCMEAS		33
++#define MT6370_IRQ_CHGDET_DONE		34
++#define MT6370_IRQ_WDTMR		35
++#define MT6370_IRQ_SSFINISH		36
++#define MT6370_IRQ_CHG_RECHG		37
++#define MT6370_IRQ_CHG_TERM		38
++#define MT6370_IRQ_CHG_IEOC		39
++#define MT6370_IRQ_ADC_DONE		40
++#define MT6370_IRQ_PUMPX_DONE		41
++#define MT6370_IRQ_BST_BATUV		45
++#define MT6370_IRQ_BST_MIDOV		46
++#define MT6370_IRQ_BST_OLP		47
++#define MT6370_IRQ_ATTACH		48
++#define MT6370_IRQ_DETACH		49
++#define MT6370_IRQ_HVDCP_STPDONE	51
++#define MT6370_IRQ_HVDCP_VBUSDET_DONE	52
++#define MT6370_IRQ_HVDCP_DET		53
++#define MT6370_IRQ_CHGDET		54
++#define MT6370_IRQ_DCDT			55
++#define MT6370_IRQ_DIRCHG_VGOK		59
++#define MT6370_IRQ_DIRCHG_WDTMR		60
++#define MT6370_IRQ_DIRCHG_UC		61
++#define MT6370_IRQ_DIRCHG_OC		62
++#define MT6370_IRQ_DIRCHG_OV		63
++#define MT6370_IRQ_OVPCTRL_SWON		67
++#define MT6370_IRQ_OVPCTRL_UVP_D	68
++#define MT6370_IRQ_OVPCTRL_UVP		69
++#define MT6370_IRQ_OVPCTRL_OVP_D	70
++#define MT6370_IRQ_OVPCTRL_OVP		71
++#define MT6370_IRQ_FLED_STRBPIN		72
++#define MT6370_IRQ_FLED_TORPIN		73
++#define MT6370_IRQ_FLED_TX		74
++#define MT6370_IRQ_FLED_LVF		75
++#define MT6370_IRQ_FLED2_SHORT		78
++#define MT6370_IRQ_FLED1_SHORT		79
++#define MT6370_IRQ_FLED2_STRB		80
++#define MT6370_IRQ_FLED1_STRB		81
++#define mT6370_IRQ_FLED2_STRB_TO	82
++#define MT6370_IRQ_FLED1_STRB_TO	83
++#define MT6370_IRQ_FLED2_TOR		84
++#define MT6370_IRQ_FLED1_TOR		85
++#define MT6370_IRQ_OTP			93
++#define MT6370_IRQ_VDDA_OVP		94
++#define MT6370_IRQ_VDDA_UV		95
++#define MT6370_IRQ_LDO_OC		103
++#define MT6370_IRQ_BLED_OCP		118
++#define MT6370_IRQ_BLED_OVP		119
++#define MT6370_IRQ_DSV_VNEG_OCP		123
++#define MT6370_IRQ_DSV_VPOS_OCP		124
++#define MT6370_IRQ_DSV_BST_OCP		125
++#define MT6370_IRQ_DSV_VNEG_SCP		126
++#define MT6370_IRQ_DSV_VPOS_SCP		127
++
++#endif /* __DT_BINDINGS_MEDIATEK_MT6370_H__ */
+-- 
+2.25.1
 
-
-
---=20
-Daniel Vetter
-Software Engineer, Intel Corporation
-http://blog.ffwll.ch
