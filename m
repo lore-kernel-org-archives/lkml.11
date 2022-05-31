@@ -2,157 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0419C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 12:23:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9F16C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 12:25:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344216AbiEaMXc (ORCPT
+        id S1344204AbiEaMZ2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 08:23:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36896 "EHLO
+        Tue, 31 May 2022 08:25:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344204AbiEaMX2 (ORCPT
+        with ESMTP id S232616AbiEaMZX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 08:23:28 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10F658FFB4
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 05:23:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653999807; x=1685535807;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=nL2+Ikam+GBqRnVV+mHEQYa/V/rwiJja/RdNvaJ6QqY=;
-  b=NoVKQgkUD30A70ZvU4NHPK5Fpzow8RnNdNyB18WconhoId3Dy/45yMP+
-   0tCcV17KdKHHGmbc9+MQM7D9Vw5dGVSSSUKxcKdA9C2C5sMeMOIJSr+uB
-   vyc8shrTpTya2xNtRXiprEmdYwdqVL1ygrzN/gIJs88CAUgy+UU/LV3Tf
-   q87GUaSmnu+FNZ4d4M+y6C6yb3NulMbhzI/j7ZVkca7LJrIDkCMRJPPOg
-   kbzMvM5KcER2Np1sYDKTwV059x4ydRgEd0pjT8UFwwBV+B52fmT8kpJSC
-   OLPPI/SLC80M3yLkFKBFhxqv8VzkXBybj7P5IFQJGIynP+xYdCi9cYRt3
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10363"; a="361611400"
-X-IronPort-AV: E=Sophos;i="5.91,265,1647327600"; 
-   d="scan'208";a="361611400"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 05:23:12 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,265,1647327600"; 
-   d="scan'208";a="679553332"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga002.fm.intel.com with ESMTP; 31 May 2022 05:23:10 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nw0ty-0002h9-6Z;
-        Tue, 31 May 2022 12:23:10 +0000
-Date:   Tue, 31 May 2022 20:22:47 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Tvrtko Ursulin <tvrtko.ursulin@intel.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>
-Subject: [stable:linux-5.15.y 3230/6856]
- drivers/gpu/drm/i915/gt/intel_gt.c:966:2: error: format string is not a
- string literal (potentially insecure)
-Message-ID: <202205312043.eacilUVl-lkp@intel.com>
+        Tue, 31 May 2022 08:25:23 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F09D665406
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 05:25:22 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LCBKq2FmJzjXDN;
+        Tue, 31 May 2022 20:24:31 +0800 (CST)
+Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
+ (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 31 May
+ 2022 20:25:20 +0800
+From:   Miaohe Lin <linmiaohe@huawei.com>
+To:     <akpm@linux-foundation.org>
+CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
+        <linmiaohe@huawei.com>
+Subject: [PATCH] mm/migrate: skip unsupported ZONE_DEVICE page in migrate_vma_collect_pmd()
+Date:   Tue, 31 May 2022 20:25:30 +0800
+Message-ID: <20220531122530.17996-1-linmiaohe@huawei.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.27]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Tvrtko,
+For now we only support migrating to un-addressable device memory. Other
+types of ZONE_DEVICE pages are not supported yet. So skip those pages in
+MIGRATE_VMA_SELECT_SYSTEM case to save useless effort.
 
-FYI, the error/warning still remains.
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+---
+ mm/migrate_device.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-5.15.y
-head:   4e67be407725b1d8b829ed2075987037abec98ec
-commit: 8a17a077e7e9ecce25c95dbdb27843d2d6c2f0f7 [3230/6856] drm/i915: Flush TLBs before releasing backing store
-config: x86_64-randconfig-a014-20220530 (https://download.01.org/0day-ci/archive/20220531/202205312043.eacilUVl-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0776c48f9b7e69fa447bee57c7c0985caa856be9)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git/commit/?id=8a17a077e7e9ecce25c95dbdb27843d2d6c2f0f7
-        git remote add stable https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
-        git fetch --no-tags stable linux-5.15.y
-        git checkout 8a17a077e7e9ecce25c95dbdb27843d2d6c2f0f7
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> drivers/gpu/drm/i915/gt/intel_gt.c:966:2: error: format string is not a string literal (potentially insecure) [-Werror,-Wformat-security]
-           GEM_TRACE("\n");
-           ^~~~~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_gem.h:76:24: note: expanded from macro 'GEM_TRACE'
-   #define GEM_TRACE(...) trace_printk(__VA_ARGS__)
-                          ^~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/kernel.h:366:3: note: expanded from macro 'trace_printk'
-                   do_trace_printk(fmt, ##__VA_ARGS__);    \
-                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/kernel.h:380:30: note: expanded from macro 'do_trace_printk'
-                   __trace_bprintk(_THIS_IP_, trace_printk_fmt, ##args);   \
-                                              ^~~~~~~~~~~~~~~~
-   drivers/gpu/drm/i915/gt/intel_gt.c:966:2: note: treat the string as an argument to avoid this
-   drivers/gpu/drm/i915/i915_gem.h:76:24: note: expanded from macro 'GEM_TRACE'
-   #define GEM_TRACE(...) trace_printk(__VA_ARGS__)
-                          ^
-   include/linux/kernel.h:366:3: note: expanded from macro 'trace_printk'
-                   do_trace_printk(fmt, ##__VA_ARGS__);    \
-                   ^
-   include/linux/kernel.h:380:30: note: expanded from macro 'do_trace_printk'
-                   __trace_bprintk(_THIS_IP_, trace_printk_fmt, ##args);   \
-                                              ^
-   1 error generated.
-
-
-vim +966 drivers/gpu/drm/i915/gt/intel_gt.c
-
-   927	
-   928	void intel_gt_invalidate_tlbs(struct intel_gt *gt)
-   929	{
-   930		static const i915_reg_t gen8_regs[] = {
-   931			[RENDER_CLASS]			= GEN8_RTCR,
-   932			[VIDEO_DECODE_CLASS]		= GEN8_M1TCR, /* , GEN8_M2TCR */
-   933			[VIDEO_ENHANCEMENT_CLASS]	= GEN8_VTCR,
-   934			[COPY_ENGINE_CLASS]		= GEN8_BTCR,
-   935		};
-   936		static const i915_reg_t gen12_regs[] = {
-   937			[RENDER_CLASS]			= GEN12_GFX_TLB_INV_CR,
-   938			[VIDEO_DECODE_CLASS]		= GEN12_VD_TLB_INV_CR,
-   939			[VIDEO_ENHANCEMENT_CLASS]	= GEN12_VE_TLB_INV_CR,
-   940			[COPY_ENGINE_CLASS]		= GEN12_BLT_TLB_INV_CR,
-   941		};
-   942		struct drm_i915_private *i915 = gt->i915;
-   943		struct intel_uncore *uncore = gt->uncore;
-   944		struct intel_engine_cs *engine;
-   945		enum intel_engine_id id;
-   946		const i915_reg_t *regs;
-   947		unsigned int num = 0;
-   948	
-   949		if (I915_SELFTEST_ONLY(gt->awake == -ENODEV))
-   950			return;
-   951	
-   952		if (GRAPHICS_VER(i915) == 12) {
-   953			regs = gen12_regs;
-   954			num = ARRAY_SIZE(gen12_regs);
-   955		} else if (GRAPHICS_VER(i915) >= 8 && GRAPHICS_VER(i915) <= 11) {
-   956			regs = gen8_regs;
-   957			num = ARRAY_SIZE(gen8_regs);
-   958		} else if (GRAPHICS_VER(i915) < 8) {
-   959			return;
-   960		}
-   961	
-   962		if (drm_WARN_ONCE(&i915->drm, !num,
-   963				  "Platform does not implement TLB invalidation!"))
-   964			return;
-   965	
- > 966		GEM_TRACE("\n");
-
+diff --git a/mm/migrate_device.c b/mm/migrate_device.c
+index 5052093d0262..a0452c1d69dd 100644
+--- a/mm/migrate_device.c
++++ b/mm/migrate_device.c
+@@ -157,6 +157,11 @@ static int migrate_vma_collect_pmd(pmd_t *pmdp,
+ 				goto next;
+ 			}
+ 			page = vm_normal_page(migrate->vma, addr, pte);
++			/*
++			 * Other types of ZONE_DEVICE page are not supported.
++			 */
++			if (page && is_zone_device_page(page))
++				goto next;
+ 			mpfn = migrate_pfn(pfn) | MIGRATE_PFN_MIGRATE;
+ 			mpfn |= pte_write(pte) ? MIGRATE_PFN_WRITE : 0;
+ 		}
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.23.0
+
