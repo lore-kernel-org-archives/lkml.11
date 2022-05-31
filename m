@@ -2,90 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B069C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 01:02:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FAD9C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 01:08:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242913AbiEaBCx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 21:02:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39678 "EHLO
+        id S240598AbiEaBIK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 21:08:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238350AbiEaBCw (ORCPT
+        with ESMTP id S230005AbiEaBIC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 21:02:52 -0400
-X-Greylist: delayed 405 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 30 May 2022 18:02:51 PDT
-Received: from pv50p00im-tydg10021701.me.com (pv50p00im-tydg10021701.me.com [17.58.6.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51E089347B
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 18:02:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=me.com; s=1a1hai;
-        t=1653958566; bh=wgvlbiHXPS4b0FVNndNCUtFwoK4klCA5shEF51SF30M=;
-        h=From:To:Subject:Date:Message-Id:MIME-Version;
-        b=XL3lu02CUzmSCCbYKmJ8aoNxXziM1fazmIgSygrky9eVur94TUkxOtF+RP/o862ac
-         +2us3/rGVsGqaOBxnhiLnIsHychJ0IaU0V158GSvWEbYvGmz0SBIGZtTLcePfz3DW0
-         +dmu5hjpBg02BzepgK27/JaAyZG+XqPtItBvUtnS209pYccGS2Q4PG7CrchZSi6igI
-         4RW69mlHIQ+HtO8r3dht9GZHfV9G1ZFNqg3nhmxFQGlHuWLNzjle7Yt+ZmquHRwbc4
-         Db714Qs2Mw5eAcj/pz7lVnwy0ifabMtzIm50hmgYGteWg5CIfJkS2PCPNiewow99jh
-         h7RchOnzrcrlw==
-Received: from xiongwei.. (pv50p00im-dlb-asmtp-mailmevip.me.com [17.56.9.10])
-        by pv50p00im-tydg10021701.me.com (Postfix) with ESMTPSA id 864D33A0B00;
-        Tue, 31 May 2022 00:56:01 +0000 (UTC)
-From:   sxwjean@me.com
-To:     cl@linux.com, penberg@kernel.org, rientjes@google.com,
-        iamjoonsoo.kim@lge.com, akpm@linux-foundation.org, vbabka@suse.cz,
-        roman.gushchin@linux.dev, 42.hyeyoo@gmail.com
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Xiongwei Song <xiongwei.song@windriver.com>
-Subject: [PATCH] mm/slub: Simplify __kmem_cache_alias()
-Date:   Tue, 31 May 2022 08:55:50 +0800
-Message-Id: <20220531005550.10613-1-sxwjean@me.com>
-X-Mailer: git-send-email 2.30.2
+        Mon, 30 May 2022 21:08:02 -0400
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1FF2644DE;
+        Mon, 30 May 2022 18:08:00 -0700 (PDT)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 24V17bXV2031448, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 24V17bXV2031448
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 31 May 2022 09:07:37 +0800
+Received: from RTEXMBS05.realtek.com.tw (172.21.6.98) by
+ RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Tue, 31 May 2022 09:07:37 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS05.realtek.com.tw (172.21.6.98) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Tue, 31 May 2022 09:07:36 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::34e7:ab63:3da4:27c6]) by
+ RTEXMBS04.realtek.com.tw ([fe80::34e7:ab63:3da4:27c6%5]) with mapi id
+ 15.01.2308.021; Tue, 31 May 2022 09:07:36 +0800
+From:   Ping-Ke Shih <pkshih@realtek.com>
+To:     "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
+CC:     "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "neojou@gmail.com" <neojou@gmail.com>,
+        "kvalo@kernel.org" <kvalo@kernel.org>,
+        "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "martin.blumenstingl@googlemail.com" 
+        <martin.blumenstingl@googlemail.com>,
+        "linux@ulli-kroll.de" <linux@ulli-kroll.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v2 10/10] rtw88: disable powersave modes for USB devices
+Thread-Topic: [PATCH v2 10/10] rtw88: disable powersave modes for USB devices
+Thread-Index: AQHYdDPI/ma2VkQlBE+TWL8Uknp8la03pxKA
+Date:   Tue, 31 May 2022 01:07:36 +0000
+Message-ID: <1493412d473614dfafd4c03832e71f86831fa43b.camel@realtek.com>
+References: <20220530135457.1104091-1-s.hauer@pengutronix.de>
+         <20220530135457.1104091-11-s.hauer@pengutronix.de>
+In-Reply-To: <20220530135457.1104091-11-s.hauer@pengutronix.de>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.36.1-2 
+x-originating-ip: [172.16.20.31]
+x-kse-serverinfo: RTEXMBS05.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzUvMzAg5LiL5Y2IIDEwOjE3OjAw?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <4D2C143BB3E8C14582EEC0B09CCBD37F@realtek.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.874
- definitions=2022-05-30_10:2022-05-30,2022-05-30 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 clxscore=1011 mlxscore=0
- mlxlogscore=668 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-2009150000 definitions=main-2205310003
+X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiongwei Song <xiongwei.song@windriver.com>
-
-There is no need to do anything if sysfs_slab_alias() return nonzero
-value after getting a mergeable cache.
-
-Signed-off-by: Xiongwei Song <xiongwei.song@windriver.com>
----
- mm/slub.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
-
-diff --git a/mm/slub.c b/mm/slub.c
-index d8d5abf49f5f..9444277d669a 100644
---- a/mm/slub.c
-+++ b/mm/slub.c
-@@ -4861,6 +4861,9 @@ __kmem_cache_alias(const char *name, unsigned int size, unsigned int align,
- 
- 	s = find_mergeable(size, align, flags, name, ctor);
- 	if (s) {
-+		if (sysfs_slab_alias(s, name))
-+			return NULL;
-+
- 		s->refcount++;
- 
- 		/*
-@@ -4869,11 +4872,6 @@ __kmem_cache_alias(const char *name, unsigned int size, unsigned int align,
- 		 */
- 		s->object_size = max(s->object_size, size);
- 		s->inuse = max(s->inuse, ALIGN(size, sizeof(void *)));
--
--		if (sysfs_slab_alias(s, name)) {
--			s->refcount--;
--			s = NULL;
--		}
- 	}
- 
- 	return s;
--- 
-2.30.2
-
+T24gTW9uLCAyMDIyLTA1LTMwIGF0IDE1OjU0ICswMjAwLCBTYXNjaGEgSGF1ZXIgd3JvdGU6DQo+
+IFRoZSBwb3dlcnNhdmUgbW9kZXMgZG8gbm90IHdvcmsgd2l0aCBVU0IgZGV2aWNlcyAodGVzdGVk
+IHdpdGggYQ0KPiBSVFc4ODIyQ1UpIHByb3Blcmx5LiBXaXRoIHBvd2Vyc2F2ZSBtb2RlcyBlbmFi
+bGVkIHRoZSBkcml2ZXIgaXNzdWVzDQo+IG1lc3NhZ2VzIGxpa2U6DQo+IA0KPiBydHdfODgyMmN1
+IDEtMToxLjI6IGZpcm13YXJlIGZhaWxlZCB0byBsZWF2ZSBscHMgc3RhdGUNCj4gcnR3Xzg4MjJj
+dSAxLTE6MS4yOiB0aW1lZCBvdXQgdG8gZmx1c2ggcXVldWUgMw0KDQpDb3VsZCB5b3UgdHJ5IG1v
+ZHVsZSBwYXJhbWV0ZXIgcnR3X2Rpc2FibGVfbHBzX2RlZXBfbW9kZT0xIHRvIHNlZQ0KaWYgaXQg
+Y2FuIHdvcms/DQoNCklmIGl0IHdvcmtzLCBJIHN1Z2dlc3QgdG8gYXBwbHkgYmVsb3cgY29kZTog
+DQoNCmRpZmYgLS1naXQgYS9tYWluLmMgYi9tYWluLmMNCmluZGV4IDNmN2E1ZDU0Li4zYmIwNzg5
+OCAxMDA2NDQNCi0tLSBhL21haW4uYw0KKysrIGIvbWFpbi5jDQpAQCAtMTM0NSw2ICsxMzQ1LDkg
+QEAgc3RhdGljIGVudW0gcnR3X2xwc19kZWVwX21vZGUgcnR3X3VwZGF0ZV9scHNfZGVlcF9tb2Rl
+KHN0cnVjdCBydHdfZGV2ICpydHdkZXYsDQogew0KICAgICAgICBzdHJ1Y3QgcnR3X2NoaXBfaW5m
+byAqY2hpcCA9IHJ0d2Rldi0+Y2hpcDsNCiANCisgICAgICAgaWYgKHJ0d19oY2lfdHlwZShydHdk
+ZXYpID09IFJUV19IQ0lfVFlQRV9VU0IpDQorICAgICAgICAgICAgICAgcmV0dXJuIExQU19ERUVQ
+X01PREVfTk9ORTsNCisNCiAgICAgICAgaWYgKHJ0d19kaXNhYmxlX2xwc19kZWVwX21vZGUgfHwg
+IWNoaXAtPmxwc19kZWVwX21vZGVfc3VwcG9ydGVkIHx8DQogICAgICAgICAgICAhZnctPmZlYXR1
+cmUpDQogICAgICAgICAgICAgICAgcmV0dXJuIExQU19ERUVQX01PREVfTk9ORTsNCg0KLS0NClBp
+bmctS2UNCg0KDQo=
