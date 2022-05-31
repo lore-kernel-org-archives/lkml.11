@@ -2,141 +2,338 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7D21C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 18:20:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37861C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 18:20:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346968AbiEaSUQ (ORCPT
+        id S1346975AbiEaSUn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 14:20:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51202 "EHLO
+        Tue, 31 May 2022 14:20:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346971AbiEaSTy (ORCPT
+        with ESMTP id S237441AbiEaSUl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 14:19:54 -0400
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 228B39CC9C;
-        Tue, 31 May 2022 11:19:52 -0700 (PDT)
-Received: from smtpclient.apple (d66-183-91-182.bchsia.telus.net [66.183.91.182])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 7EECF20BE4FF;
-        Tue, 31 May 2022 11:19:50 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 7EECF20BE4FF
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1654021191;
-        bh=6tBRLXB2e8RGJAhBvRCWJggyD6cUh5gaL2NlANSFO3E=;
-        h=Subject:From:In-Reply-To:Date:Cc:References:To:From;
-        b=nnLnlFN18QpTmf2pxGdXKTd5CTRH+ISqH6g8Qx0KH4kWahuCrh9y6t6RO9R/vzWFH
-         BjQ1ay5Vb/epIQW0KeVwjWHvTPZI97oyeDCRm0TRRWiDO4qlk9MdIQZfN5f/+tzfsl
-         pScggM5IU9VolT+hDR97WnEeEPcKn+bpAt8jYoBo=
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.100.31\))
-Subject: Re: [RFC 1/1] drivers/dma/*: replace tasklets with workqueue
-From:   Allen Pais <apais@linux.microsoft.com>
-In-Reply-To: <CAK8P3a3vf_huJ5ysBvFDV=11E-=OxFGiDQ9ND04YKug8g6jV_A@mail.gmail.com>
-Date:   Tue, 31 May 2022 11:19:49 -0700
-Cc:     Vinod Koul <vkoul@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        olivier.dautricourt@orolia.com, Stefan Roese <sr@denx.de>,
-        Kees Cook <keescook@chromium.org>,
-        linux-hardening@vger.kernel.org,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Eugeniy.Paltsev@synopsys.com,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Viresh Kumar <vireshk@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Leo Li <leoyang.li@nxp.com>, zw@zh-kernel.org,
-        Zhou Wang <wangzhou1@hisilicon.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        =?utf-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Sanjay R Mehta <sanju.mehta@amd.com>,
-        Daniel Mack <daniel@zonque.org>,
-        Haojian Zhuang <haojian.zhuang@gmail.com>,
-        Robert Jarzmik <robert.jarzmik@free.fr>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        green.wan@sifive.com, Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Lyra Zhang <zhang.lyra@gmail.com>,
-        Patrice CHOTARD <patrice.chotard@foss.st.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        =?utf-8?Q?Jernej_=C5=A0krabec?= <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        dmaengine@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+        Tue, 31 May 2022 14:20:41 -0400
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B1B89CC92;
+        Tue, 31 May 2022 11:20:40 -0700 (PDT)
+Received: by mail-wm1-x333.google.com with SMTP id o29-20020a05600c511d00b00397697f172dso1552654wms.0;
+        Tue, 31 May 2022 11:20:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=5xAebr2NVeBjl9CHUGU02Xh2JLK4FCctFhmN5cMdt6I=;
+        b=gk/ovidVQQdHp8HZE/8jFAZU/0TwEC/us2MtNRmAfCBRojJ9hBaHTgmmr1sFwZw7KW
+         r56qq1OQnvV+8IzbhbdUKOULHqZtdIjcsI0Ce0ZX9AOUnphsp1LAAhu5A6PDEOzvXek1
+         Zo5S+Oc6DEfvnuNcHmJQNJi9T0kTOk8uwIt0CyamHqYYasxEGrXS5WYwbpKah8B/aljQ
+         9DN3X5DJ6zbMLwVFUgqDHza6cNZSKOqOL8v9h69xNw+BAI21olb5928JnMhPfAlT4N6F
+         xJHmbT2kNm31NdGu/49Sy2WMGwQeCIdGjpcSamEaCWe1hp59iStfOHt8D4G4WVWCDGnd
+         lb7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=5xAebr2NVeBjl9CHUGU02Xh2JLK4FCctFhmN5cMdt6I=;
+        b=CZCO6YNoxtd+TY2uLyQqfOQvA7bp7hSyglyurGi5fosW9o1XLbelFf04rKB4d2hBZZ
+         1/P2ID+QxpWbCCLVxa2HJ/UzVEvl1kcdpw8uTD4ftz8brSxK592nt4SuFX5/JTfpT/Sh
+         9GUNiATQPjJuFfjwpBVE1grl3LFy0UxHXcl/BxBZ5kfmxGgiw54FWy2tQ4Q4k4KAIjHs
+         +x2N8w/qGA9SPAZK4Bnow5QG4osvx8TziIfX9klbx7/wKg1jjDk22uDQC+koH4f6265G
+         M8DVxPXEiKkK8+ujbLhnJv3jGj4RAou9BCUKIr6zVONvQ8UtC7kN1XQV7m/RZcl7pSMi
+         X98g==
+X-Gm-Message-State: AOAM530nyAuqFOV0ivVmDWpbWB4NpU5jAiHX94gWCPCSytRx6yH8lcKT
+        QlSbSM1MbKD/FUmjN9Ww2pI=
+X-Google-Smtp-Source: ABdhPJyvbycKBrgfnKv4yFm4VwT5uI4NbXHu65pEWt5+zb8TyOf7VpEV4NxD1mfNB5Amncf9wK7U2w==
+X-Received: by 2002:a7b:c109:0:b0:397:43ef:b66f with SMTP id w9-20020a7bc109000000b0039743efb66fmr24459854wmi.44.1654021239010;
+        Tue, 31 May 2022 11:20:39 -0700 (PDT)
+Received: from kista.localnet (213-161-3-76.dynamic.telemach.net. [213.161.3.76])
+        by smtp.gmail.com with ESMTPSA id h12-20020a05600c2cac00b0039749256d74sm3130267wmc.2.2022.05.31.11.20.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 May 2022 11:20:38 -0700 (PDT)
+From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
+To:     mchehab@kernel.org, ezequiel@vanguardiasur.com.ar,
+        p.zabel@pengutronix.de, gregkh@linuxfoundation.org,
+        mripard@kernel.org, paul.kocialkowski@bootlin.com, wens@csie.org,
+        samuel@sholland.org, nicolas.dufresne@collabora.com,
+        andrzej.p@collabora.com, Hans Verkuil <hverkuil@xs4all.nl>,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        kernel@collabora.com
+Subject: Re: Re: [PATCH v6 11/17] media: uapi: Add V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS control
+Date:   Tue, 31 May 2022 20:20:37 +0200
+Message-ID: <2102878.irdbgypaU6@kista>
+In-Reply-To: <b398272b-daf8-7499-b4fd-8a6f2af30053@collabora.com>
+References: <20220527143134.3360174-1-benjamin.gaignard@collabora.com> <5824953.lOV4Wx5bFT@kista> <b398272b-daf8-7499-b4fd-8a6f2af30053@collabora.com>
+MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-Message-Id: <708F627F-0F7D-477F-BDF7-274424501DA0@linux.microsoft.com>
-References: <20220419211658.11403-1-apais@linux.microsoft.com>
- <20220419211658.11403-2-apais@linux.microsoft.com>
- <CACRpkdZ2DFZRPHS1x0=M3_8zYvU-jpCG5Tm3863dXv51EhY+BA@mail.gmail.com>
- <CAK8P3a0j_rziihsgHnG5bHMxmPbOkAhT6_+CCE4iFZy7HzQrLw@mail.gmail.com>
- <YpCGePbo9B/Z7slV@matsya>
- <CAK8P3a2wD7=hgvqyS14X5p-eP+7Ajk4dFJOXgbOo8Z0r5UNYmg@mail.gmail.com>
- <YpW8J40hKwc7jwQh@matsya>
- <0A9EDEDC-9E6C-47F8-89C0-48DCDD3F9DE3@linux.microsoft.com>
- <CAK8P3a3vf_huJ5ysBvFDV=11E-=OxFGiDQ9ND04YKug8g6jV_A@mail.gmail.com>
-To:     Arnd Bergmann <arnd@arndb.de>
-X-Mailer: Apple Mail (2.3696.100.31)
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Dne torek, 31. maj 2022 ob 08:58:46 CEST je Benjamin Gaignard napisal(a):
+>=20
+> Le 30/05/2022 =C3=A0 23:24, Jernej =C5=A0krabec a =C3=A9crit :
+> > Dne ponedeljek, 30. maj 2022 ob 15:49:57 CEST je Hans Verkuil napisal(a=
+):
+> >> On 30/05/2022 11:18, Hans Verkuil wrote:
+> >>> On 29/05/2022 08:40, Jernej =C5=A0krabec wrote:
+> >>>> Hi!
+> >>>>
+> >>>> This series looks very good and I plan to test it shortly on Cedrus,=
+=20
+but
+> > I
+> >>>> have one major concern below.
+> >>>>
+> >>>> Dne petek, 27. maj 2022 ob 16:31:28 CEST je Benjamin Gaignard=20
+napisal(a):
+> >>>>> The number of 'entry point offset' can be very variable.
+> >>>>> Instead of using a large static array define a v4l2 dynamic array
+> >>>>> of U32 (V4L2_CTRL_TYPE_U32).
+> >>>>> The number of entry point offsets is reported by the elems field
+> >>>>> and in struct v4l2_ctrl_hevc_slice_params.num_entry_point_offsets
+> >>>>> field.
+> >>>> Slice control by itself is variable length array, so you would actua=
+lly
+> > need
+> >>>> 2D variable array for entry points which is not supported. However,=
+=20
+easy
+> >>>> workaround for that is to flatten 2D array to 1D and either have ano=
+ther
+> > slice
+> >>>> control field which would tell first entry point index for convenien=
+ce or
+> > let
+> >>>> driver calculate it by adding up all num_entry_point_offsets of prev=
+ious
+> >>>> slices.
+> >>>>
+> >>>> Hans, what do you think?
+> >>> If I would support 2D variable array sizes, wouldn't that be more=20
+elegant?
+> >>>
+> >>> The current implementation doesn't support that, but as the commit lo=
+g=20
+for
+> >>> patch 1/17 says:
+> >>>
+> >>> "Currently dynamically sized arrays are limited to one dimensional=20
+arrays,
+> >>> but that might change in the future if there is a need for it."
+> >>>
+> >>> Let me know if you agree, and I'll try to implement this. It's been a
+> > while
+> >>> since I last looked at this, so I'm not sure how much work it is, but=
+ it
+> > is
+> >>> probably worth a shot.
+> >> Digging more into this made me realize that this doesn't actually help=
+=20
+for
+> > this
+> >> particular case.
+> >>
+> >> I would lean towards your second suggestion of adding up all
+> > num_entry_point_offsets
+> >> of previous slices.
+> > Just one question/clarification about dynamic arrays - does driver need=
+ to
+> > reserve maximum amount of memory for dynamic array control at=20
+initialization
+> > time? If so, this would still be problematic, since there cound be a hu=
+ge
+> > amount of entry points in theory.
+>=20
+> When adding the control the driver could set .dims field to specify
+> the max number of accepted slices.
+> I have added '#define V4L2_HEVC_SLICE_MAX_COUNT 600' that you could use
+> for this field. It is the value we have found when using slices with RKVD=
+EC
+> driver.
+
+Is this maximum value applicable only to RKVDEC or is universal? Anyway, th=
+is=20
+means maximum offset points control for Cedrus would be 600 * 1024 (max. of=
+fset=20
+points supported per slice) * 4 ~=3D 2.4 MB, which is a lot for one control=
+, but=20
+I can live with that...
+
+Best regards,
+Jernej
 
 >=20
-> [note: something is wrong with your email client, your previous reply =
-appears to
-> be in HTML]
+> Regards,
+> Benjamin
 >=20
-  Sorry, fixed it.
-
->>> That is a good idea, lot of drivers are waiting for completion which =
-can
->>> be signalled from hardirq, this would also reduce the hops we have =
-and
->>> help improve latency a bit. On the downside, some controllers =
-provide
->>> error information, which would need to be dealt with.
->>=20
->>=20
->>   I am not an expert in dma subsystem, but by using completion from
->> Hardirq context be a concern? Especially with latency.
+> >
+> > Best regards,
+> > Jernej
+> >
+> >> Regards,
+> >>
+> >> 	Hans
+> >>
+> >>> Regards,
+> >>>
+> >>> 	Hans
+> >>>
+> >>>> Note, it seems that H265 decoding on Cedrus still works without entry
+> > points,
+> >>>> so this problem can be solved later. I'm not sure what we lose with=
+=20
+that
+> > but
+> >>>> it was suggested that this could influence speed or error resilience=
+ or
+> > both.
+> >>>> However, I think we're close to solve it, so I'd like to do that now.
+> >>>>
+> >>>> Best regards,
+> >>>> Jernej
+> >>>>
+> >>>>> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+> >>>>> ---
+> >>>>>   .../userspace-api/media/v4l/ext-ctrls-codec.rst       | 11 ++++++=
++++
+++
+> >>>>>   drivers/media/v4l2-core/v4l2-ctrls-defs.c             |  5 +++++
+> >>>>>   include/media/hevc-ctrls.h                            |  5 ++++-
+> >>>>>   3 files changed, 20 insertions(+), 1 deletion(-)
+> >>>>>
+> >>>>> diff --git a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.=
+rst=20
+b/
+> >>>> Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
+> >>>>> index 0796b1563daa..05228e280f66 100644
+> >>>>> --- a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
+> >>>>> +++ b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
+> >>>>> @@ -3010,6 +3010,9 @@ enum v4l2_mpeg_video_hevc_size_of_length_fiel=
+d -
+> >>>>>       * - __u32
+> >>>>>         - ``data_bit_offset``
+> >>>>>         - Offset (in bits) to the video data in the current slice d=
+ata.
+> >>>>> +    * - __u32
+> >>>>> +      - ``num_entry_point_offsets``
+> >>>>> +      - Specifies the number of entry point offset syntax elements=
+ in=20
+the
+> >>>> slice header.
+> >>>>>       * - __u8
+> >>>>>         - ``nal_unit_type``
+> >>>>>         - Specifies the coding type of the slice (B, P or I).
+> >>>>> @@ -3150,6 +3153,14 @@ enum v4l2_mpeg_video_hevc_size_of_length_fie=
+ld -
+> >>>>>  =20
+> >>>>>       \normalsize
+> >>>>>  =20
+> >>>>> +``V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS (integer)``
+> >>>>> +    Specifies entry point offsets in bytes.
+> >>>>> +    This control is a dynamically sized array. The number of entry
+> > point
+> >>>>> +    offsets is reported by the ``elems`` field.
+> >>>>> +    This bitstream parameter is defined according to :ref:`hevc`.
+> >>>>> +    They are described in section 7.4.7.1 "General slice segment=20
+header
+> >>>>> +    semantics" of the specification.
+> >>>>> +
+> >>>>>   ``V4L2_CID_STATELESS_HEVC_SCALING_MATRIX (struct)``
+> >>>>>       Specifies the HEVC scaling matrix parameters used for the sca=
+ling
+> >>>> process
+> >>>>>       for transform coefficients.
+> >>>>> diff --git a/drivers/media/v4l2-core/v4l2-ctrls-defs.c b/drivers/me=
+dia/
+> > v4l2-
+> >>>> core/v4l2-ctrls-defs.c
+> >>>>> index d594efbcbb93..e22921e7ea61 100644
+> >>>>> --- a/drivers/media/v4l2-core/v4l2-ctrls-defs.c
+> >>>>> +++ b/drivers/media/v4l2-core/v4l2-ctrls-defs.c
+> >>>>> @@ -1188,6 +1188,7 @@ const char *v4l2_ctrl_get_name(u32 id)
+> >>>>>   	case V4L2_CID_STATELESS_HEVC_DECODE_PARAMS:		return
+> >>>> "HEVC Decode Parameters";
+> >>>>>   	case V4L2_CID_STATELESS_HEVC_DECODE_MODE:		return
+> >>>> "HEVC Decode Mode";
+> >>>>>   	case V4L2_CID_STATELESS_HEVC_START_CODE:		return
+> >>>> "HEVC Start Code";
+> >>>>> +	case V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS:	return
+> >>>> "HEVC Entry Point Offsets";
+> >>>>>  =20
+> >>>>>   	/* Colorimetry controls */
+> >>>>>   	/* Keep the order of the 'case's the same as in v4l2-controls.h!
+> >>>> */
+> >>>>> @@ -1518,6 +1519,10 @@ void v4l2_ctrl_fill(u32 id, const char **nam=
+e,
+> > enum
+> >>>> v4l2_ctrl_type *type,
+> >>>>>   	case V4L2_CID_STATELESS_HEVC_DECODE_PARAMS:
+> >>>>>   		*type =3D V4L2_CTRL_TYPE_HEVC_DECODE_PARAMS;
+> >>>>>   		break;
+> >>>>> +	case V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS:
+> >>>>> +		*type =3D V4L2_CTRL_TYPE_U32;
+> >>>>> +		*flags |=3D V4L2_CTRL_FLAG_DYNAMIC_ARRAY;
+> >>>>> +		break;
+> >>>>>   	case V4L2_CID_STATELESS_VP9_COMPRESSED_HDR:
+> >>>>>   		*type =3D V4L2_CTRL_TYPE_VP9_COMPRESSED_HDR;
+> >>>>>   		break;
+> >>>>> diff --git a/include/media/hevc-ctrls.h b/include/media/hevc-ctrls.h
+> >>>>> index a3c829ef531a..1319cb99ae3f 100644
+> >>>>> --- a/include/media/hevc-ctrls.h
+> >>>>> +++ b/include/media/hevc-ctrls.h
+> >>>>> @@ -20,6 +20,7 @@
+> >>>>>   #define V4L2_CID_STATELESS_HEVC_DECODE_PARAMS=09
+(V4L2_CID_CODEC_BASE
+> >>>> + 1012)
+> >>>>>   #define V4L2_CID_STATELESS_HEVC_DECODE_MODE=09
+(V4L2_CID_CODEC_BASE
+> > + 1015)
+> >>>>>   #define V4L2_CID_STATELESS_HEVC_START_CODE=09
+(V4L2_CID_CODEC_BASE + 1016)
+> >>>>> +#define V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS=20
+(V4L2_CID_CODEC_BASE
+> > +
+> >>>> 1017)
+> >>>>>  =20
+> >>>>>   /* enum v4l2_ctrl_type type values */
+> >>>>>   #define V4L2_CTRL_TYPE_HEVC_SPS 0x0120
+> >>>>> @@ -318,6 +319,8 @@ struct v4l2_hevc_pred_weight_table {
+> >>>>>    *
+> >>>>>    * @bit_size: size (in bits) of the current slice data
+> >>>>>    * @data_bit_offset: offset (in bits) to the video data in the cu=
+rrent
+> > slice
+> >>>> data
+> >>>>> + * @num_entry_point_offsets: specifies the number of entry point o=
+ffset
+> > syntax
+> >>>>> + *			     elements in the slice header.
+> >>>>>    * @nal_unit_type: specifies the coding type of the slice (B, P o=
+r I)
+> >>>>>    * @nuh_temporal_id_plus1: minus 1 specifies a temporal identifie=
+r for
+> > the
+> >>>> NAL unit
+> >>>>>    * @slice_type: see V4L2_HEVC_SLICE_TYPE_{}
+> >>>>> @@ -360,7 +363,7 @@ struct v4l2_hevc_pred_weight_table {
+> >>>>>   struct v4l2_ctrl_hevc_slice_params {
+> >>>>>   	__u32	bit_size;
+> >>>>>   	__u32	data_bit_offset;
+> >>>>> -
+> >>>>> +	__u32	num_entry_point_offsets;
+> >>>>>   	/* ISO/IEC 23008-2, ITU-T Rec. H.265: NAL unit header */
+> >>>>>   	__u8	nal_unit_type;
+> >>>>>   	__u8	nuh_temporal_id_plus1;
+> >>>>> --=20
+> >>>>> 2.32.0
+> >>>>>
+> >>>>>
+> >>>>
+> >>
+> >
 >=20
-> I don't see how: to the task waiting for the completion, there should
-> be no difference, and for the irq handler sending it, it just avoids
-> a few cycles going into softirq context.
 
-  Thanks for clarification.=20
-
-  If I have understood it correctly, your suggestion is to move the =
-current
-Callback mechanism out to dmaengine as a generic helper function
-And introduce completion in dma_async_tx_descriptor to handle what
-Tasklets currently do.
-
-Thanks.
-
->=20
->>> Yes that would be a very reasonable mechanism, thanks for the
->>> suggestions.
->>=20
->>  I have started working on the idea of global softirq. A RFC should =
-be ready
->> For review soon.
->=20
-> Ok, thanks!
->=20
->       Arnd
 
