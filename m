@@ -2,68 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C2BBC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 17:05:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D3EEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 17:07:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245751AbiEaRFz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 13:05:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59854 "EHLO
+        id S1346308AbiEaRHO (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 31 May 2022 13:07:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346411AbiEaRFq (ORCPT
+        with ESMTP id S1346041AbiEaRHM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 13:05:46 -0400
+        Tue, 31 May 2022 13:07:12 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DCB88DDF7
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 10:05:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C1816B025
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 10:07:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EDE7FB815F6
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 17:05:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A6811C385A9;
-        Tue, 31 May 2022 17:05:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654016742;
-        bh=BUf5DDIvZSCdDEgeyAz0R/STC5kkzGo5CDpLk20V6GU=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=KntG/fo3uUE35o/MThrpmpd2YiTauMJ9sTHshCfvPHJR/X/gN8cVLFDJr1JBafFdE
-         up9uiDXv9A+KwiRQTs0ZGHsZS4QSRrQip5UHB1r9CVm556OyfdSfQ9ntuAWnvSd+G9
-         nSQu6D2KYAD7/6nl/SUqnjwEQJ+M29UQAVawegZuj9j9T9/b7fnMAkA+0d22yhzJB6
-         R55ONEVhfB+4NtnSuyZb8i8oeCZL+9eO31CN4R49pJKiS/8IXIzVyEHOrfrprrlQYC
-         NCBrjJ4s4pBJL6CJL0pd6IR2IhILnQngnAgW/6bKObrELUOZ3euiLEygsY/0BC+X5+
-         2S3SzH38glaGA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 94621F03944;
-        Tue, 31 May 2022 17:05:42 +0000 (UTC)
-Subject: Re: [GIT PULL] arch/microblaze patches for 5.19-rc1
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <9bfbc0fb-ddd2-d65c-f9ac-2a2696581c71@monstr.eu>
-References: <9bfbc0fb-ddd2-d65c-f9ac-2a2696581c71@monstr.eu>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <9bfbc0fb-ddd2-d65c-f9ac-2a2696581c71@monstr.eu>
-X-PR-Tracked-Remote: git://git.monstr.eu/linux-2.6-microblaze.git tags/microblaze-v5.19
-X-PR-Tracked-Commit-Id: 78b5f52ab6f6074a6fe2f27122e2165f32d6a143
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 3335d5550256210c9b213f67240221633d8f7b53
-Message-Id: <165401674259.5782.2970663186207926507.pr-tracker-bot@kernel.org>
-Date:   Tue, 31 May 2022 17:05:42 +0000
-To:     Michal Simek <monstr@monstr.eu>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0F78DB815F3
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 17:07:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF5B1C3411D;
+        Tue, 31 May 2022 17:07:07 +0000 (UTC)
+Date:   Tue, 31 May 2022 18:07:04 +0100
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     kernel test robot <lkp@intel.com>
+Cc:     Mark Brown <broonie@kernel.org>, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: arch/arm64/kernel/signal.c:663:43: sparse: sparse: incorrect
+ type in argument 1 (different address spaces)
+Message-ID: <YpZLONkmubdmO8II@arm.com>
+References: <202205280710.c7k1K4sD-lkp@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202205280710.c7k1K4sD-lkp@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Tue, 31 May 2022 09:10:19 +0200:
+On Sat, May 28, 2022 at 07:40:31AM +0800, kernel test robot wrote:
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+> head:   bf272460d744112bacd4c4d562592decbf0edf64
+> commit: a1f4ccd25cc256255813f584f10e5527369d4a02 arm64/sme: Provide Kconfig for SME
+> date:   5 weeks ago
+> config: arm64-randconfig-s032-20220527 (https://download.01.org/0day-ci/archive/20220528/202205280710.c7k1K4sD-lkp@intel.com/config)
+> compiler: aarch64-linux-gcc (GCC) 11.3.0
+> reproduce:
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # apt-get install sparse
+>         # sparse version: v0.6.4-14-g5a0004b5-dirty
+>         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=a1f4ccd25cc256255813f584f10e5527369d4a02
+>         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+>         git fetch --no-tags linus master
+>         git checkout a1f4ccd25cc256255813f584f10e5527369d4a02
+>         # save the config file
+>         mkdir build_dir && cp config build_dir/.config
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/kernel/
+> 
+> If you fix the issue, kindly add following tag where applicable
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> 
+> sparse warnings: (new ones prefixed by >>)
+> >> arch/arm64/kernel/signal.c:663:43: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected struct user_ctxs [noderef] __user *user @@     got struct user_ctxs * @@
+>    arch/arm64/kernel/signal.c:663:43: sparse:     expected struct user_ctxs [noderef] __user *user
+>    arch/arm64/kernel/signal.c:663:43: sparse:     got struct user_ctxs *
+>    arch/arm64/kernel/signal.c:933:26: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected void ( [noderef] [usertype] __user *[assigned] [usertype] sigtramp )( ... ) @@     got void * @@
+>    arch/arm64/kernel/signal.c:933:26: sparse:     expected void ( [noderef] [usertype] __user *[assigned] [usertype] sigtramp )( ... )
+>    arch/arm64/kernel/signal.c:933:26: sparse:     got void *
+> >> arch/arm64/kernel/signal.c:394:35: sparse: sparse: dereference of noderef expression
+> >> arch/arm64/kernel/signal.c:394:35: sparse: sparse: dereference of noderef expression
+>    arch/arm64/kernel/signal.c:428:53: sparse: sparse: dereference of noderef expression
+>    arch/arm64/kernel/signal.c:428:53: sparse: sparse: dereference of noderef expression
+> 
+> vim +663 arch/arm64/kernel/signal.c
+> 
+> 47ccb02868cead Dave Martin      2017-06-15  620  
+> 2c020ed8d148f7 Catalin Marinas  2012-03-05  621  static int restore_sigframe(struct pt_regs *regs,
+> 2c020ed8d148f7 Catalin Marinas  2012-03-05  622  			    struct rt_sigframe __user *sf)
+> 2c020ed8d148f7 Catalin Marinas  2012-03-05  623  {
+> 2c020ed8d148f7 Catalin Marinas  2012-03-05  624  	sigset_t set;
+> 2c020ed8d148f7 Catalin Marinas  2012-03-05  625  	int i, err;
+> 47ccb02868cead Dave Martin      2017-06-15  626  	struct user_ctxs user;
+> 2c020ed8d148f7 Catalin Marinas  2012-03-05  627  
+> 2c020ed8d148f7 Catalin Marinas  2012-03-05  628  	err = __copy_from_user(&set, &sf->uc.uc_sigmask, sizeof(set));
+> 2c020ed8d148f7 Catalin Marinas  2012-03-05  629  	if (err == 0)
+> 2c020ed8d148f7 Catalin Marinas  2012-03-05  630  		set_current_blocked(&set);
+> 2c020ed8d148f7 Catalin Marinas  2012-03-05  631  
+> 2c020ed8d148f7 Catalin Marinas  2012-03-05  632  	for (i = 0; i < 31; i++)
+> 2c020ed8d148f7 Catalin Marinas  2012-03-05  633  		__get_user_error(regs->regs[i], &sf->uc.uc_mcontext.regs[i],
+> 2c020ed8d148f7 Catalin Marinas  2012-03-05  634  				 err);
+> 2c020ed8d148f7 Catalin Marinas  2012-03-05  635  	__get_user_error(regs->sp, &sf->uc.uc_mcontext.sp, err);
+> 2c020ed8d148f7 Catalin Marinas  2012-03-05  636  	__get_user_error(regs->pc, &sf->uc.uc_mcontext.pc, err);
+> 2c020ed8d148f7 Catalin Marinas  2012-03-05  637  	__get_user_error(regs->pstate, &sf->uc.uc_mcontext.pstate, err);
+> 2c020ed8d148f7 Catalin Marinas  2012-03-05  638  
+> 2c020ed8d148f7 Catalin Marinas  2012-03-05  639  	/*
+> 2c020ed8d148f7 Catalin Marinas  2012-03-05  640  	 * Avoid sys_rt_sigreturn() restarting.
+> 2c020ed8d148f7 Catalin Marinas  2012-03-05  641  	 */
+> 17c28958600928 Dave Martin      2017-08-01  642  	forget_syscall(regs);
+> 2c020ed8d148f7 Catalin Marinas  2012-03-05  643  
+> dbd4d7ca563fd0 Mark Rutland     2016-03-01  644  	err |= !valid_user_regs(&regs->user_regs, current);
+> 47ccb02868cead Dave Martin      2017-06-15  645  	if (err == 0)
+> 47ccb02868cead Dave Martin      2017-06-15  646  		err = parse_user_sigframe(&user, sf);
+> 2c020ed8d148f7 Catalin Marinas  2012-03-05  647  
+> 6d502b6ba1b267 Suzuki K Poulose 2020-01-13  648  	if (err == 0 && system_supports_fpsimd()) {
+> 8cd969d28fd284 Dave Martin      2017-10-31  649  		if (!user.fpsimd)
+> 8cd969d28fd284 Dave Martin      2017-10-31  650  			return -EINVAL;
+> 8cd969d28fd284 Dave Martin      2017-10-31  651  
+> 8cd969d28fd284 Dave Martin      2017-10-31  652  		if (user.sve) {
+> 8cd969d28fd284 Dave Martin      2017-10-31  653  			if (!system_supports_sve())
+> 8cd969d28fd284 Dave Martin      2017-10-31  654  				return -EINVAL;
+> 8cd969d28fd284 Dave Martin      2017-10-31  655  
+> 8cd969d28fd284 Dave Martin      2017-10-31  656  			err = restore_sve_fpsimd_context(&user);
+> 8cd969d28fd284 Dave Martin      2017-10-31  657  		} else {
+> 47ccb02868cead Dave Martin      2017-06-15  658  			err = restore_fpsimd_context(user.fpsimd);
+> 8cd969d28fd284 Dave Martin      2017-10-31  659  		}
+> 8cd969d28fd284 Dave Martin      2017-10-31  660  	}
+> 2c020ed8d148f7 Catalin Marinas  2012-03-05  661  
+> 39782210eb7e87 Mark Brown       2022-04-19  662  	if (err == 0 && system_supports_sme() && user.za)
+> 39782210eb7e87 Mark Brown       2022-04-19 @663  		err = restore_za_context(&user);
 
-> git://git.monstr.eu/linux-2.6-microblaze.git tags/microblaze-v5.19
+I think the restore_za_context() definition is wrong. struct user_ctxs
+__user *user shouldn't have the '__user' annotation, that's for the
+pointers inside the structure. So:
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/3335d5550256210c9b213f67240221633d8f7b53
+diff --git a/arch/arm64/kernel/signal.c b/arch/arm64/kernel/signal.c
+index edb2d9206a78..b0980fbb6bc7 100644
+--- a/arch/arm64/kernel/signal.c
++++ b/arch/arm64/kernel/signal.c
+@@ -385,7 +385,7 @@ static int preserve_za_context(struct za_context __user *ctx)
+ 	return err ? -EFAULT : 0;
+ }
+ 
+-static int restore_za_context(struct user_ctxs __user *user)
++static int restore_za_context(struct user_ctxs *user)
+ {
+ 	int err;
+ 	unsigned int vq;
 
-Thank you!
+I'll do some proper patches tomorrow and send them for -rc1.
 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Catalin
