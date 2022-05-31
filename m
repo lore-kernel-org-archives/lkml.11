@@ -2,85 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A8C5C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 21:55:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93836C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 21:56:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348266AbiEaVzF (ORCPT
+        id S1344045AbiEaV4J (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 17:55:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37140 "EHLO
+        Tue, 31 May 2022 17:56:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348365AbiEaVxk (ORCPT
+        with ESMTP id S237919AbiEaV4H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 17:53:40 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 566E322B0D;
-        Tue, 31 May 2022 14:53:39 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id c2so9775855edf.5;
-        Tue, 31 May 2022 14:53:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3jKLy2+1wJ6FvjsseDYfkSRIwq6bSkGwUcxVnEaBaHo=;
-        b=k9+rj8JVq7JLtvRHCT0gkLzsoLUqcwgI87tvWqPsUh3pgL8DstthzlcI6SWzSXXn9E
-         NoyAF1rZaD7uQPf/fFidt8v6Q0tz1zQZHVpGhsTzAcoyzu2QCTBQuJCN6ghcHA7MHG/c
-         NyBud0an2JLkmdzTZpxRg/SbQciP9LNFZ+5k0HcsB8L2/Oh02JKB0JFihba6zAqqKzLs
-         xlTqiIZQi+G61Apnx2aPPc8u2hLXtRbbi5vJtxNd0flO9/LkA3AWxmjXx3Ehoptb2WuV
-         N92wj3PeCZ7HaOagNsAi1c7e3ZdHhlqXTUhRrXQpNImp9pGf2/vIyGYaJQwLj72MoGek
-         A3xw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3jKLy2+1wJ6FvjsseDYfkSRIwq6bSkGwUcxVnEaBaHo=;
-        b=bPPpBpn99Uz30R5IfSB7dzxFH5byBc2jTMsW/Fjbrh+axvQNgvfNuAu03njg0BDQjM
-         4vlht8FqpcV21o02mhIOhD4xGLq85Gl4Mm7JeJMzn/HUitdQbRVBU6U/wC4Yuaeg4drC
-         FyyGLZdE65zIMqKlQ+Nnrnd3vPgIWgsjjwrNMkPjcneTNOsHrHfoE0c/s6uRnYiCwjS1
-         tIwGnmZJfMTlvL27YmsF/P52mKKA6yd33dg2WJ5XoZYPuogT0Q+ZiVXAqxU7NSZiJLzu
-         Hq+5OikBMK29XYFIlo6M6g51PkJyKtnEoAllmPTzrd2H5dwF02AdUtr3imqOcWQw7GZS
-         2lCA==
-X-Gm-Message-State: AOAM533vYUgSmPIZZeBBS0B8CNFV9zymsgcTwV4tASn4WnYIvlOqn1kH
-        4QpLr4aNcL+KswzaocC4XQt/NuC96UXI60NGIow=
-X-Google-Smtp-Source: ABdhPJw7V2LqbZ6gntsjtVD/ZVuc1e6nKKIT+I2uXvIrAVuxJVfdZuF08H/Htj7WTo432yGeoXe+1LvBNyhatPFpxxE=
-X-Received: by 2002:a05:6402:254a:b0:42b:6c9a:c06c with SMTP id
- l10-20020a056402254a00b0042b6c9ac06cmr47865254edb.199.1654034017881; Tue, 31
- May 2022 14:53:37 -0700 (PDT)
+        Tue, 31 May 2022 17:56:07 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 457EF5AA57
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 14:56:03 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0032C23A;
+        Tue, 31 May 2022 14:56:03 -0700 (PDT)
+Received: from [10.57.81.38] (unknown [10.57.81.38])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8C7883F66F;
+        Tue, 31 May 2022 14:56:01 -0700 (PDT)
+Message-ID: <417bd608-0eeb-b3a0-31e3-8e241ab75e59@arm.com>
+Date:   Tue, 31 May 2022 22:55:57 +0100
 MIME-Version: 1.0
-References: <20220531211842.71998-1-andriy.shevchenko@linux.intel.com>
-In-Reply-To: <20220531211842.71998-1-andriy.shevchenko@linux.intel.com>
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Tue, 31 May 2022 23:53:27 +0200
-Message-ID: <CAFBinCAXPGXmuChU9XrqbH4Di6L6rSihM3VSqfFzMrK0D4bLuw@mail.gmail.com>
-Subject: Re: [PATCH v1 1/3] iio: adc: meson_saradc: Convert to use dev_err_probe()
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 04/10] dmapool: improve accuracy of debug statistics
+Content-Language: en-GB
+To:     Tony Battersby <tonyb@cybernetics.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Cc:     Tony Lindgren <tony@atomide.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        iommu@lists.linux-foundation.org, Keith Busch <kbusch@kernel.org>,
+        kernel-team@fb.com
+References: <9b08ab7c-b80b-527d-9adf-7716b0868fbc@cybernetics.com>
+ <a922c30f-d6d7-dde2-554f-254441290331@cybernetics.com>
+ <b97645ed-b524-a505-2993-e04a37b50d35@arm.com>
+ <a57d3dde-ac45-be9c-5c16-263415060334@cybernetics.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <a57d3dde-ac45-be9c-5c16-263415060334@cybernetics.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Andy,
+On 2022-05-31 20:52, Tony Battersby wrote:
+> On 5/31/22 15:48, Robin Murphy wrote:
+>> On 2022-05-31 19:17, Tony Battersby wrote:
+>>
+>>>    				 pool->name, blocks,
+>>> -				 (size_t) pages *
+>>> -				 (pool->allocation / pool->size),
+>>> +				 (size_t) pages * pool->blks_per_alloc,
+>>>    				 pool->size, pages);
+>>>    		size -= temp;
+>>>    		next += temp;
+>>> @@ -168,6 +168,9 @@ struct dma_pool *dma_pool_create(const char *name, struct device *dev,
+>>>    	retval->size = size;
+>>>    	retval->boundary = boundary;
+>>>    	retval->allocation = allocation;
+>>> +	retval->blks_per_alloc =
+>>> +		(allocation / boundary) * (boundary / size) +
+>>> +		(allocation % boundary) / size;
+>> Do we really need to store this? Sure, 4 divisions (which could possibly
+>> be fewer given the constraints on boundary) isn't the absolute cheapest
+>> calculation, but I still can't imagine anyone would be polling sysfs
+>> stats hard enough to even notice.
+>>
+> The stored value is also used in patch #5, in more performance-critical
+> code, although only when debug is enabled.
 
-overall this is looking great - thank you for this patch!
+Ah, fair enough. On second look I think 64-bit systems could effectively 
+store this for free anyway, if patch #2 moved "size" down past "dev" in 
+struct dma_pool, such that blks_per_alloc then ends up padding out the 
+hole again.
 
-On Tue, May 31, 2022 at 11:18 PM Andy Shevchenko
-<andriy.shevchenko@linux.intel.com> wrote:
-[...]
-> +       if (IS_ERR(priv->tsc_regmap))
-> +               return dev_err_probe(dev, PTR_ERR(priv->tsc_regmap), "failed to get amlogic,hhi-sysctrl regmap\n");
-checkpatch complains:
-  WARNING: line length of 115 exceeds 100 columns
-  #44: FILE: drivers/iio/adc/meson_saradc.c:728:
+FWIW the mathematician in me also now can't help seeing the algebraic 
+reduction to at least "(allocation + (allocation % boundary)) / size", 
+but is now too tired to reason about the power-of-two constraints and 
+whether the intermediate integer truncations matter...
 
-Adding a line-break right before the error message will solve this problem
-
-
-Best regards,
-Martin
+Cheers,
+Robin.
