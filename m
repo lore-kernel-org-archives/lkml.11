@@ -2,85 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 265B9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 04:40:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55787C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 04:50:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243894AbiEaEkd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 00:40:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48346 "EHLO
+        id S243886AbiEaErE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 31 May 2022 00:47:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238541AbiEaEkP (ORCPT
+        with ESMTP id S238541AbiEaErB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 00:40:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 754A1939FD;
-        Mon, 30 May 2022 21:40:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2E639B80FAF;
-        Tue, 31 May 2022 04:40:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D1CDAC34114;
-        Tue, 31 May 2022 04:40:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653972011;
-        bh=YYGMHB1tRZgyGr3hkrF7aXliEHOxYxSinGWXm7jnZpg=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=hATqCSBioHx7P0SLQNKcXrlj/DAH/MMgdYTSrgqSIrLsoiEDASflQVIbOS12i9r8l
-         gyeuU7EePR+hDBipkNNWQ/lRow9xkQRObgnboNehmLONRWUcAt+fwwA/LGwqIlFsSG
-         u5D/tkvf8NbWOt+BnNsuX6GgTLKDzgajm0W4Yo2BuMaTMYVlZUbUn6OeAYMLDpa7//
-         DlBmqxGusX1Z0Gz2ohHBReLRGSy4zWyzXTA88RDLKgHR4qov6dlLQ+5/tK+AhfYsSM
-         dwzLUTrAo2h2Fvb4/C3IQSJLXP6kdDcj5FKnExitM4g5zrE7pdfhyMK9CldQ47r943
-         jyUibhI2Np5fA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id ACFB3F0394E;
-        Tue, 31 May 2022 04:40:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Tue, 31 May 2022 00:47:01 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E79F10FF2
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 21:46:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653972419; x=1685508419;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Qn+cuAzxBVUymorN0NpF3cWBtZUAaq3foyRv2NhaqB8=;
+  b=mYNs1FjECJ41ju4wCd5x02pFUrPfT68m5jL2DUpBR+yQQiwFm+RAupE3
+   s8nrZbA2fJo9nq2MeMiQ7uY2+HG1QGI+20/jS2abdbxDuULiGgzWDZ+EE
+   UbfjkzcOwDGyC3NXyBzbtQHc+NVVrK51NUVfpcLqixq5QCkXn6gdOEXts
+   VHc5mDJIy5BZuW86QYq6lyhfJ+qLSL/HeUnZOgagT1OPVyAWZrFuRrr9l
+   3wDcCC1qHHYg08/lWafuCjleGtoRPr2z3Tj45lWHy0AXdkjWs2WDOZ10i
+   jKhmfp/1On6MiEiGNOwBMuM3QHaLqht98jps1RPey1OMo9ggZIOi8e0jb
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10363"; a="274860511"
+X-IronPort-AV: E=Sophos;i="5.91,264,1647327600"; 
+   d="scan'208";a="274860511"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2022 21:46:58 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,264,1647327600"; 
+   d="scan'208";a="679399930"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by fmsmga002.fm.intel.com with ESMTP; 30 May 2022 21:46:56 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nvtmR-0002Kc-H9;
+        Tue, 31 May 2022 04:46:55 +0000
+Date:   Tue, 31 May 2022 12:46:39 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Raghu Bankapur <quic_rbankapu@quicinc.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Krishna Jha <quic_kkishorj@quicinc.com>
+Subject: Re: [PATCH V0 1/1] asoc: msm: use hashtable to check kcontrol
+Message-ID: <202205311233.abvVh5rg-lkp@intel.com>
+References: <ad55bbd41cc253acb9af6ac068c15dd1545ecd81.1653813866.git.quic_rbankapu@quicinc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2] net: phy: at803x: disable WOL at probe
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165397201170.21793.7926133541403141360.git-patchwork-notify@kernel.org>
-Date:   Tue, 31 May 2022 04:40:11 +0000
-References: <20220527084935.235274-1-viorel.suman@oss.nxp.com>
-In-Reply-To: <20220527084935.235274-1-viorel.suman@oss.nxp.com>
-To:     Viorel Suman (OSS) <viorel.suman@oss.nxp.com>
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, luoj@codeaurora.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-imx@nxp.com,
-        viorel.suman@nxp.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ad55bbd41cc253acb9af6ac068c15dd1545ecd81.1653813866.git.quic_rbankapu@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+Hi Raghu,
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+Thank you for the patch! Perhaps something to improve:
 
-On Fri, 27 May 2022 11:49:34 +0300 you wrote:
-> From: Viorel Suman <viorel.suman@nxp.com>
-> 
-> Before 7beecaf7d507b ("net: phy: at803x: improve the WOL feature") patch
-> "at803x_get_wol" implementation used AT803X_INTR_ENABLE_WOL value to set
-> WAKE_MAGIC flag, and now AT803X_WOL_EN value is used for the same purpose.
-> The problem here is that the values of these two bits are different after
-> hardware reset: AT803X_INTR_ENABLE_WOL=0 after hardware reset, but
-> AT803X_WOL_EN=1. So now, if called right after boot, "at803x_get_wol" will
-> set WAKE_MAGIC flag, even if WOL function is not enabled by calling
-> "at803x_set_wol" function. The patch disables WOL function on probe thus
-> the behavior is consistent.
-> 
-> [...]
+[auto build test WARNING on tiwai-sound/for-next]
+[also build test WARNING on broonie-sound/for-next v5.18 next-20220527]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Here is the summary with links:
-  - [v2] net: phy: at803x: disable WOL at probe
-    https://git.kernel.org/netdev/net/c/d7cd5e06c9dd
+url:    https://github.com/intel-lab-lkp/linux/commits/Raghu-Bankapur/asoc-msm-use-hashtable-to-check-kcontrol/20220529-165246
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/tiwai/sound.git for-next
+config: arm64-randconfig-r036-20220531 (https://download.01.org/0day-ci/archive/20220531/202205311233.abvVh5rg-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c825abd6b0198fb088d9752f556a70705bc99dfd)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://github.com/intel-lab-lkp/linux/commit/244d3a3d274761ea83000880d73cc9b0a01b2a4a
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Raghu-Bankapur/asoc-msm-use-hashtable-to-check-kcontrol/20220529-165246
+        git checkout 244d3a3d274761ea83000880d73cc9b0a01b2a4a
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/clk/mediatek/ sound/core/
 
-You are awesome, thank you!
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> sound/core/control.c:375:14: warning: no previous prototype for function 'snd_ctl_strtoint' [-Wmissing-prototypes]
+   unsigned int snd_ctl_strtoint(const char *s)
+                ^
+   sound/core/control.c:375:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   unsigned int snd_ctl_strtoint(const char *s)
+   ^
+   static 
+   1 warning generated.
+
+
+vim +/snd_ctl_strtoint +375 sound/core/control.c
+
+   373	
+   374	/* Used to convert the string into int value -- BKDRHash */
+ > 375	unsigned int snd_ctl_strtoint(const char *s)
+   376	{
+   377		unsigned int res = 0;
+   378	
+   379		while (*s)
+   380			res = (res << 5) - res + (*s++);
+   381	
+   382		return (res & 0x7FFFFFFF);
+   383	}
+   384	
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
