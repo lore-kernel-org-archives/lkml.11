@@ -2,70 +2,208 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D20FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 21:25:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5995DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 21:25:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348016AbiEaVZl (ORCPT
+        id S1348018AbiEaVZt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 17:25:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51556 "EHLO
+        Tue, 31 May 2022 17:25:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348012AbiEaVZb (ORCPT
+        with ESMTP id S1348002AbiEaVZj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 17:25:31 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEFF69E9E2;
-        Tue, 31 May 2022 14:25:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 2C5C4CE1689;
-        Tue, 31 May 2022 21:25:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64DF7C385A9;
-        Tue, 31 May 2022 21:25:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654032323;
-        bh=JUWh9GAZfGjxtaad+vcDc6URL4qo6s3Tkd4XGZQtLcs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=W48BBuzdlXEGSJYM0LKQwJLXIXj6kIR9i6gKrQ+APabTcg600neSFlie9CgvS9WNj
-         iIxuechCFZxFuxmBWtw0ZaR/ekQK4B++eLC7Y2FZoyG3n0+Lte06Wg8oRyk7gcXUUp
-         RjfA3SlC6eLPtZggV//YNyHMvfldwO3PJuX6CYHHouurWTyvq+5+bFy6AxmxeboF6+
-         mwV+gMVJ4ESZimo692LFs7bKe3mrT7vpgDMSw49FtnOgA2ju8BVamQlSIiimkOgueJ
-         gLV+xuG1wRugZAOtMKM0z4C/pCNF0xSIJBn1uirjT+CBx098p9FQWDLRPX5ZBBgg0J
-         deT2dIAkSaBbQ==
-Date:   Tue, 31 May 2022 21:25:21 +0000
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     Jaegeuk Kim <jaegeuk@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Asutosh Das <asutoshd@codeaurora.org>,
-        Avri Altman <avri.altman@wdc.com>,
-        Bean Huo <beanhuo@micron.com>,
-        Stanley Chu <stanley.chu@mediatek.com>,
-        Can Guo <cang@codeaurora.org>
-Subject: Re: [PATCH] scsi: ufs: add a quirk to disable FUA support
-Message-ID: <YpaHwds1zYRwua3+@gmail.com>
-References: <20220531201053.3300018-1-jaegeuk@kernel.org>
- <YpZ71MU7+DRedq5S@gmail.com>
- <YpaATWTiipNERoVF@google.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YpaATWTiipNERoVF@google.com>
+        Tue, 31 May 2022 17:25:39 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6EBC9E9C1
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 14:25:38 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id e5-20020a255005000000b0065cb3669fe9so6887948ybb.0
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 14:25:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:cc;
+        bh=px4+ZpXbHsure7vaViwll/H2EGv0zUZueEOXuxtocqM=;
+        b=ZaARQ8d9PxwUFkeye+orr7uFPd1EQEtmzE+s6UR1ux+FcJbmTHiZMJ7e1JzoYbWBUl
+         MmsmGGcDUWwDl++YBLF/jGBcZ9lqmCmJqOXTlaS/R3d6UBNhxWaNMjeHc5eGTbvGLUe8
+         SkmOziIw6AkAwq76+XInYclaLp6vw+FNuXhy2Jq5VMAFaIlILl3AKWGm3vccd/4/2RDZ
+         HPtlQ8x4ydXT7SRAuKi6Uou21GfFqKbCfvEpfPM4kJojTYN93ydf8Mcw6YmEpoOEzdQ3
+         p97exnTro1SyD5LgslZm6/+TUMSKAEZrVnMkRAoxLIKYgxyjsusMw/gYicG9vpaLMIkN
+         XEPQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:cc;
+        bh=px4+ZpXbHsure7vaViwll/H2EGv0zUZueEOXuxtocqM=;
+        b=dSPjWtvPgrR/cs9Yc3JtBs88ftfWdZndU4Os6YaX+xl52bW8C2qiS2YuDzhmAX3xMP
+         oTp4sZBzPdDsApa8faT+iWttlzZ6f4gvx5WCCzJEihfFHbboYLfnDy0ogLL10cyDRSjL
+         UiAD4l8vk+iax7rJpwhGkg4KuBnF56B2aXA3tWfXHDKDaiBuC1pWeVPL5GSYuV7KDLEH
+         7wLlUdDMLWWsdlHZPivphejduwtkfDzA2TzSipESGl5XhOPwa/akVxO17rLdPaSZGrQz
+         IIvjatQndZYQtFFgnO+DP+Cz/A2DFOqdLbqLg3zg76SV/uBrKuBlbBivCWhiGsqDSM+Z
+         o/7Q==
+X-Gm-Message-State: AOAM533pzJM4ioqAvpGccjE+hMhmters5URiqdSVkKvgkWVluxlVqBdZ
+        kfxyxt0CFNM8fYJXH6sz22/Gpjqz0P8Y9CInZQ==
+X-Google-Smtp-Source: ABdhPJwZ/c83nZu7U03w4uDCuA9LC5io7QSRjyjVxQZqwDEDunG479HIBUW6hUZDhFjJsLb9bhLsnieTrpx2EYlm+Q==
+X-Received: from kaleshsingh.mtv.corp.google.com ([2620:15c:211:200:a3c0:2a66:b25c:16df])
+ (user=kaleshsingh job=sendgmr) by 2002:a05:6902:1d1:b0:65c:ea47:8ea1 with
+ SMTP id u17-20020a05690201d100b0065cea478ea1mr11260576ybh.400.1654032337918;
+ Tue, 31 May 2022 14:25:37 -0700 (PDT)
+Date:   Tue, 31 May 2022 14:25:14 -0700
+In-Reply-To: <20220531212521.1231133-1-kaleshsingh@google.com>
+Message-Id: <20220531212521.1231133-2-kaleshsingh@google.com>
+Mime-Version: 1.0
+References: <20220531212521.1231133-1-kaleshsingh@google.com>
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+Subject: [PATCH 1/2] procfs: Add 'size' to /proc/<pid>/fdinfo/
+From:   Kalesh Singh <kaleshsingh@google.com>
+Cc:     ilkos@google.com, tjmercier@google.com, surenb@google.com,
+        kernel-team@android.com, Kalesh Singh <kaleshsingh@google.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        "=?UTF-8?q?Christian=20K=C3=B6nig?=" <christian.koenig@amd.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Hildenbrand <david@redhat.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Christoph Anton Mitterer <mail@christoph.anton.mitterer.name>,
+        Paul Gortmaker <paul.gortmaker@windriver.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-media@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org
+Content-Type: text/plain; charset="UTF-8"
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 31, 2022 at 01:53:33PM -0700, Jaegeuk Kim wrote:
-> > Also, this patch does nothing by itself.  Which UFS host driver(s) need this
-> > quirk bit?  Can you update them to use it?  Or do they all need this, in which
-> > case a quirk bit would be unnecessary?
-> 
-> Likewise other quick bits, using this is up to SoC or UFS vendors. I
-> think that combination is up to OEMs who is building the product.
+To be able to account the amount of memory a process is keeping pinned
+by open file descriptors add a 'size' field to fdinfo output.
 
-Of the UFS host drivers in the upstream kernel, which ones actually need this?
+dmabufs fds already expose a 'size' field for this reason, remove this
+and make it a common field for all fds. This allows tracking of
+other types of memory (e.g. memfd and ashmem in Android).
 
-- Eric
+Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
+---
+
+Changes from rfc:
+  - Split adding 'size' and 'path' into a separate patches, per Christian
+  - Split fdinfo seq_printf into separate lines, per Christian
+  - Fix indentation (use tabs) in documentaion, per Randy
+
+ Documentation/filesystems/proc.rst | 12 ++++++++++--
+ drivers/dma-buf/dma-buf.c          |  1 -
+ fs/proc/fd.c                       |  9 +++++----
+ 3 files changed, 15 insertions(+), 7 deletions(-)
+
+diff --git a/Documentation/filesystems/proc.rst b/Documentation/filesystems/proc.rst
+index 1bc91fb8c321..779c05528e87 100644
+--- a/Documentation/filesystems/proc.rst
++++ b/Documentation/filesystems/proc.rst
+@@ -1886,13 +1886,14 @@ if precise results are needed.
+ 3.8	/proc/<pid>/fdinfo/<fd> - Information about opened file
+ ---------------------------------------------------------------
+ This file provides information associated with an opened file. The regular
+-files have at least four fields -- 'pos', 'flags', 'mnt_id' and 'ino'.
++files have at least five fields -- 'pos', 'flags', 'mnt_id', 'ino', and 'size'.
++
+ The 'pos' represents the current offset of the opened file in decimal
+ form [see lseek(2) for details], 'flags' denotes the octal O_xxx mask the
+ file has been created with [see open(2) for details] and 'mnt_id' represents
+ mount ID of the file system containing the opened file [see 3.5
+ /proc/<pid>/mountinfo for details]. 'ino' represents the inode number of
+-the file.
++the file, and 'size' represents the size of the file in bytes.
+ 
+ A typical output is::
+ 
+@@ -1900,6 +1901,7 @@ A typical output is::
+ 	flags:	0100002
+ 	mnt_id:	19
+ 	ino:	63107
++	size:	0
+ 
+ All locks associated with a file descriptor are shown in its fdinfo too::
+ 
+@@ -1917,6 +1919,7 @@ Eventfd files
+ 	flags:	04002
+ 	mnt_id:	9
+ 	ino:	63107
++	size:   0
+ 	eventfd-count:	5a
+ 
+ where 'eventfd-count' is hex value of a counter.
+@@ -1930,6 +1933,7 @@ Signalfd files
+ 	flags:	04002
+ 	mnt_id:	9
+ 	ino:	63107
++	size:   0
+ 	sigmask:	0000000000000200
+ 
+ where 'sigmask' is hex value of the signal mask associated
+@@ -1944,6 +1948,7 @@ Epoll files
+ 	flags:	02
+ 	mnt_id:	9
+ 	ino:	63107
++	size:   0
+ 	tfd:        5 events:       1d data: ffffffffffffffff pos:0 ino:61af sdev:7
+ 
+ where 'tfd' is a target file descriptor number in decimal form,
+@@ -1962,6 +1967,7 @@ For inotify files the format is the following::
+ 	flags:	02000000
+ 	mnt_id:	9
+ 	ino:	63107
++	size:   0
+ 	inotify wd:3 ino:9e7e sdev:800013 mask:800afce ignored_mask:0 fhandle-bytes:8 fhandle-type:1 f_handle:7e9e0000640d1b6d
+ 
+ where 'wd' is a watch descriptor in decimal form, i.e. a target file
+@@ -1985,6 +1991,7 @@ For fanotify files the format is::
+ 	flags:	02
+ 	mnt_id:	9
+ 	ino:	63107
++	size:   0
+ 	fanotify flags:10 event-flags:0
+ 	fanotify mnt_id:12 mflags:40 mask:38 ignored_mask:40000003
+ 	fanotify ino:4f969 sdev:800013 mflags:0 mask:3b ignored_mask:40000000 fhandle-bytes:8 fhandle-type:1 f_handle:69f90400c275b5b4
+@@ -2010,6 +2017,7 @@ Timerfd files
+ 	flags:	02
+ 	mnt_id:	9
+ 	ino:	63107
++	size:   0
+ 	clockid: 0
+ 	ticks: 0
+ 	settime flags: 01
+diff --git a/drivers/dma-buf/dma-buf.c b/drivers/dma-buf/dma-buf.c
+index 32f55640890c..5f2ae38c960f 100644
+--- a/drivers/dma-buf/dma-buf.c
++++ b/drivers/dma-buf/dma-buf.c
+@@ -378,7 +378,6 @@ static void dma_buf_show_fdinfo(struct seq_file *m, struct file *file)
+ {
+ 	struct dma_buf *dmabuf = file->private_data;
+ 
+-	seq_printf(m, "size:\t%zu\n", dmabuf->size);
+ 	/* Don't count the temporary reference taken inside procfs seq_show */
+ 	seq_printf(m, "count:\t%ld\n", file_count(dmabuf->file) - 1);
+ 	seq_printf(m, "exp_name:\t%s\n", dmabuf->exp_name);
+diff --git a/fs/proc/fd.c b/fs/proc/fd.c
+index 913bef0d2a36..464bc3f55759 100644
+--- a/fs/proc/fd.c
++++ b/fs/proc/fd.c
+@@ -54,10 +54,11 @@ static int seq_show(struct seq_file *m, void *v)
+ 	if (ret)
+ 		return ret;
+ 
+-	seq_printf(m, "pos:\t%lli\nflags:\t0%o\nmnt_id:\t%i\nino:\t%lu\n",
+-		   (long long)file->f_pos, f_flags,
+-		   real_mount(file->f_path.mnt)->mnt_id,
+-		   file_inode(file)->i_ino);
++	seq_printf(m, "pos:\t%lli\n", (long long)file->f_pos);
++	seq_printf(m, "flags:\t0%o\n", f_flags);
++	seq_printf(m, "mnt_id:\t%i\n", real_mount(file->f_path.mnt)->mnt_id);
++	seq_printf(m, "ino:\t%lu\n", file_inode(file)->i_ino);
++	seq_printf(m, "size:\t%lli\n", (long long)file_inode(file)->i_size);
+ 
+ 	/* show_fd_locks() never deferences files so a stale value is safe */
+ 	show_fd_locks(m, file, files);
+-- 
+2.36.1.255.ge46751e96f-goog
+
