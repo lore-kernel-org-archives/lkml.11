@@ -2,134 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86163C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 09:07:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03BFEC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 09:07:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235557AbiEaJHT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 05:07:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44050 "EHLO
+        id S245068AbiEaJH0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 31 May 2022 05:07:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245068AbiEaJHE (ORCPT
+        with ESMTP id S245095AbiEaJHQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 05:07:04 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79C431CB01;
-        Tue, 31 May 2022 02:06:58 -0700 (PDT)
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24V6xGdr024794;
-        Tue, 31 May 2022 09:06:55 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=fAHU2rGOL5A9cKDCCU+65wK9t9lX0odo/5gNkrL7RrE=;
- b=d7T4kbhPCvKczmXNb9Oyn6xkcQco5OZB0YFf37LeYzCPb/RzH21kv0bTeB/cjGtnyMsp
- cfyjwmrjS7kDi73gBz4lbiGP0bZ5vpzB2kxV32Ac5YNBYRlJbPLClXsz9fUJPtoJXROc
- hDccOi6bz2fd8ApjR3B3V9IxymKIAaJle+/xnC5oYOiAboB/5qzj7DprGwVXV6rxlOt6
- NnjY7ndf3vv8XVCTGZien0cUg6TQ4KoR/cGMdzZ7W8Kl/kZ9i+GdOmgOdTKSBTGCYo/G
- jFqdPIoNMDgbzgQsHwOgUfC8rHzQvQ3xe6erjakWaA49c/KEYggQ9JSnBH+vXWhKdC8G Uw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gda53e9ge-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 31 May 2022 09:06:55 +0000
-Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24V8Zh5M030807;
-        Tue, 31 May 2022 09:06:55 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gda53e9fb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 31 May 2022 09:06:55 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24V8rHbh015563;
-        Tue, 31 May 2022 09:06:52 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma04ams.nl.ibm.com with ESMTP id 3gbcae3ub3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 31 May 2022 09:06:52 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24V95i3G29491500
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 31 May 2022 09:05:44 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 8274AA404D;
-        Tue, 31 May 2022 09:06:49 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E5B34A4040;
-        Tue, 31 May 2022 09:06:48 +0000 (GMT)
-Received: from [9.171.6.109] (unknown [9.171.6.109])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 31 May 2022 09:06:48 +0000 (GMT)
-Message-ID: <9b3c88f2-ca23-df23-4a5b-d86b0b38a6aa@linux.ibm.com>
-Date:   Tue, 31 May 2022 11:06:48 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v3 0/4] KVM: s390: selftests: Provide TAP output in tests
-Content-Language: en-US
-To:     Thomas Huth <thuth@redhat.com>, kvm@vger.kernel.org,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>
-Cc:     linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        David Hildenbrand <david@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
-        linux-s390@vger.kernel.org
-References: <20220429063724.480919-1-thuth@redhat.com>
- <e39149e0-e6c4-f850-cd0f-cbdb453ee0c2@redhat.com>
-From:   Christian Borntraeger <borntraeger@linux.ibm.com>
-In-Reply-To: <e39149e0-e6c4-f850-cd0f-cbdb453ee0c2@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: jao7N3FvW6AykUFcVV3MtLJT33K9lNIY
-X-Proofpoint-ORIG-GUID: OgBash_X-XnBTBGxkmjQJ6Hhj_Rwpo9A
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Tue, 31 May 2022 05:07:16 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AA2421251
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 02:07:13 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id s24so10424901wrb.10
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 02:07:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Da7CpUzfigAT4CIYpAa4S3dnkp2cNQHn7AtCXpqTizs=;
+        b=lIHzKa+jSnfytsD+Mp7xDDDZi7o4cUhwyisi0ts+8d3JRUbjVIV38DYCJHOl8pq2ib
+         UB6/+hbLc2Sy2SYynmoqY/YWspccNUcJhI3/Sr2/+C9rg4S+digPGeenGn/SlFQCtKTd
+         Gv8Jb+u/6n3HRS+vVcBKXeNKB2B40wlgPmWTbJqat3UipFJjX4oQmjTNENDYcMOvWUoT
+         Eps+CWDrirAYSy07eTbSUzozxFjnoTuWQ/RyWsrs3m2UCCUU29fSVVaiJfWmtkAL/bUq
+         Km2FcwbmPjMSMDx2wv+6XivFP7x6QJGHUYpyBcr4ouSR3yHAjaFL0T/YPnPy47UxTgIY
+         jJlw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Da7CpUzfigAT4CIYpAa4S3dnkp2cNQHn7AtCXpqTizs=;
+        b=6IoRBWsdbU9M9Tfj2p8TecASy1Xf9rY28ku4mwg9GVnu9Iefuy23bm6aLVEILwWzLg
+         KEjcxFCK9acNrLykF6afvlPDfYDFVcs3dZXOc9JXuuENrUDGBYjme1REEg4McspV8GeW
+         6ezYNeeAO45a1WTLJNoddj5LGIDRzCobgJjON+seQ1xssDFTNxngQuKerdROoSLqTTPk
+         k10aKl24dbCROJqdxMuTMGBLc8YmBkHMIevokg/SAwkd+NP3b6X39y1KyqCwGwFMDxEX
+         F3T9Qh8SbjNBsWe21aAxPlQZb6QNPUqiEIUROHXgAv0c3wVRgjABD5zJFwwglwwEhowk
+         oMEQ==
+X-Gm-Message-State: AOAM5328L39lIcapQC8atFd+AKqh7u6RhOesa8+SU5H+BOKjHJ+lOTYp
+        RtgoDJyp7fZ/f3RrEk3JnrCVPw==
+X-Google-Smtp-Source: ABdhPJynCOtAl39IHyypdJg+WREtGlQuCJn0fX9jFpVVRkxUzkTM3i4oHVsc21wrbJlrvrSbtW7hUg==
+X-Received: by 2002:a5d:4fc2:0:b0:210:940:b1fd with SMTP id h2-20020a5d4fc2000000b002100940b1fdmr21151584wrw.134.1653988031891;
+        Tue, 31 May 2022 02:07:11 -0700 (PDT)
+Received: from [10.188.163.71] (cust-east-parth2-46-193-73-98.wb.wifirst.net. [46.193.73.98])
+        by smtp.gmail.com with ESMTPSA id m10-20020a7bcb8a000000b00397243d3dbcsm1545690wmi.31.2022.05.31.02.07.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 31 May 2022 02:07:11 -0700 (PDT)
+Message-ID: <7c582099-0eef-6689-203a-606cb2f69391@kernel.dk>
+Date:   Tue, 31 May 2022 03:07:10 -0600
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
- definitions=2022-05-31_03,2022-05-30_03,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 clxscore=1011
- impostorscore=0 spamscore=0 mlxscore=0 suspectscore=0 adultscore=0
- priorityscore=1501 mlxlogscore=999 phishscore=0 malwarescore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2205310047
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [syzbot] UBSAN: array-index-out-of-bounds in io_submit_sqes
+Content-Language: en-US
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     Hao Xu <haoxu.linux@icloud.com>,
+        syzbot <syzbot+b6c9b65b6753d333d833@syzkaller.appspotmail.com>,
+        asml.silence@gmail.com, io-uring@vger.kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+References: <000000000000f0b26205e04a183b@google.com>
+ <3d3c6b5f-84cd-cb25-812e-dac77e02ddbf@kernel.dk>
+ <e0867860-12c6-e958-07de-cfbcf644b9fe@icloud.com>
+ <bcac089a-36e5-0d85-1ec3-b683dac68b4f@kernel.dk>
+ <CACT4Y+aqriNp1F5CJofqaxNMM+-3cxNR2nY0tHEtb4YDqDuHtg@mail.gmail.com>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <CACT4Y+aqriNp1F5CJofqaxNMM+-3cxNR2nY0tHEtb4YDqDuHtg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 5/31/22 3:05 AM, Dmitry Vyukov wrote:
+> On Tue, 31 May 2022 at 11:01, Jens Axboe <axboe@kernel.dk> wrote:
+>>
+>> On 5/31/22 3:00 AM, Hao Xu wrote:
+>>> On 5/31/22 16:45, Jens Axboe wrote:
+>>>> On 5/31/22 1:55 AM, syzbot wrote:
+>>>>> Hello,
+>>>>>
+>>>>> syzbot found the following issue on:
+>>>>>
+>>>>> HEAD commit:    3b46e4e44180 Add linux-next specific files for 20220531
+>>>>> git tree:       linux-next
+>>>>> console output: https://syzkaller.appspot.com/x/log.txt?x=16e151f5f00000
+>>>>> kernel config:  https://syzkaller.appspot.com/x/.config?x=ccb8d66fc9489ef
+>>>>> dashboard link: https://syzkaller.appspot.com/bug?extid=b6c9b65b6753d333d833
+>>>>> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+>>>>>
+>>>>> Unfortunately, I don't have any reproducer for this issue yet.
+>>>>>
+>>>>> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+>>>>> Reported-by: syzbot+b6c9b65b6753d333d833@syzkaller.appspotmail.com
+>>>>>
+>>>>> ================================================================================
+>>>>> ================================================================================
+>>>>> UBSAN: array-index-out-of-bounds in fs/io_uring.c:8860:19
+>>>>> index 75 is out of range for type 'io_op_def [47]'
+>>>>
+>>>> 'def' is just set here, it's not actually used after 'opcode' has been
+>>>> verified.
+>>>>
+>>>
+>>> Maybe we can move it to be below the opcode check to comfort UBSAN.
+>>
+>> Yeah that's what I did, just rebased it to get rid of it:
+>>
+>> https://git.kernel.dk/cgit/linux-block/commit/?h=io_uring-5.19&id=fcde59feb1affb6d56aecadc3868df4631480da5
+> 
+> If you are rebasing it, please add the following tag so that the bug
+> is closed later:
+> 
+> Tested-by: syzbot+b6c9b65b6753d333d833@syzkaller.appspotmail.com
 
+Sorry, missed that, would be a bit confusing? 5.20 branch is rebased
+on top of that too. Can we just do:
 
-Am 31.05.22 um 10:02 schrieb Thomas Huth:
-> On 29/04/2022 08.37, Thomas Huth wrote:
->> This patch series is motivated by Shuah's suggestion here:
->>
->>   https://lore.kernel.org/kvm/d576d8f7-980f-3bc6-87ad-5a6ae45609b8@linuxfoundation.org/
->>
->> Many s390x KVM selftests do not output any information about which
->> tests have been run, so it's hard to say whether a test binary
->> contains a certain sub-test or not. To improve this situation let's
->> add some TAP output via the kselftest.h interface to these tests,
->> so that it easier to understand what has been executed or not.
->>
->> v3:
->>   - Added comments / fixed cosmetics according to Janosch's and
->>     Janis' reviews of the v2 series
->>   - Added Reviewed-by tags from the v2 series
->>
->> v2:
->>   - Reworked the extension checking in the first patch
->>   - Make sure to always print the TAP 13 header in the second patch
->>   - Reworked the SKIP printing in the third patch
->>
->> Thomas Huth (4):
->>    KVM: s390: selftests: Use TAP interface in the memop test
->>    KVM: s390: selftests: Use TAP interface in the sync_regs test
->>    KVM: s390: selftests: Use TAP interface in the tprot test
->>    KVM: s390: selftests: Use TAP interface in the reset test
->>
->>   tools/testing/selftests/kvm/s390x/memop.c     | 90 +++++++++++++++----
->>   tools/testing/selftests/kvm/s390x/resets.c    | 38 ++++++--
->>   .../selftests/kvm/s390x/sync_regs_test.c      | 87 +++++++++++++-----
->>   tools/testing/selftests/kvm/s390x/tprot.c     | 29 ++++--
->>   4 files changed, 193 insertions(+), 51 deletions(-)
+#syz fix: io_uring: add io_op_defs 'def' pointer in req init and issue
 
-Can you refresh against latest linus master? I will apply then
+?
+
+-- 
+Jens Axboe
+
