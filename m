@@ -2,205 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA854C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 08:58:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51043C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 09:01:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245054AbiEaI6t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 04:58:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34244 "EHLO
+        id S245039AbiEaJBQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 31 May 2022 05:01:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233830AbiEaI6r (ORCPT
+        with ESMTP id S233830AbiEaJBO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 04:58:47 -0400
-Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44C02BC36;
-        Tue, 31 May 2022 01:58:44 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 163C25C0178;
-        Tue, 31 May 2022 04:58:41 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Tue, 31 May 2022 04:58:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-        :content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm3; t=1653987521; x=
-        1654073921; bh=oo43um3ROPuCPfC/KF7MzWcIrCP9C5yRfhjmYx4w5Bk=; b=N
-        hhpvJx3+mrLCx5kBTPw04hgqsM8qeNe20J/ISTHZzSyOiKLuOFtJ8JJOZWZqLw/e
-        g3BfrWbGhC+7dX0J4FszaINTCshzB56lFdN/WFLhJucJ9lZj3g01n6i+JzkHhenF
-        bk6aPcyhNwMmCa+r5DGUG+uMVhih5L0ouOJaN73VUjhNHIshT+IdAK0h30Cu2pD7
-        thubFBdmtTYAxGZUq2QpRvBsXYyJAsmjc0JTsJZxRnpoM/wGD1BEaE2S+4i5WViF
-        gDEKgP6Vawu+Q6GXH/1JQbi2/QWr4aBu09Lm22pYnHAs0WnToWko/fUXWIjZlrhe
-        X1Nb8XpYLkqoDzAUZSSrw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:content-type
-        :date:date:feedback-id:feedback-id:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender
-        :x-me-sender:x-sasl-enc; s=fm1; t=1653987521; x=1654073921; bh=o
-        o43um3ROPuCPfC/KF7MzWcIrCP9C5yRfhjmYx4w5Bk=; b=iH35DW97Ah1NSmTkb
-        tVz2iBYatAt4nAvefd9g/wzaBT3wtQ5MMi+4dFUm7NzpR6MYCHUJl6qvPS1pYLCK
-        hq0hyiLO+YeIbUv3p4113AzEMc/4UUeDuybshE6UO7lrkHDTw8EhliDO7BIt1685
-        cm8U2/f7vWlGFggl1pjvKsH3zzxwdfIn7RBhJHVpbANY4D5iBP2Rb6sYzaRTV7D8
-        rbkgdnN5Ytherw5mWfOPpLcIPAmINdEBW2CksTkcbf/K9H1GVtAo8THWZo31/Msj
-        78Pwui8jvgAVRwVFny1oG9vMLMTc9IXT4qetkgObXQEREAiMcq6Hrhlvl6Ccj9UV
-        W+CjA==
-X-ME-Sender: <xms:v9iVYm9brSS65NNHeTKa2aSAGuMhNuV_q02NqitHKIflWnyskPm93Q>
-    <xme:v9iVYmvEPzIa6t8R0DpvIt20T_x2F-CuvHUh5PhWnDzhF2bxhd3KZmVzY2jSFMPHc
-    rVf6sZAi_bHYy9zAN0>
-X-ME-Received: <xmr:v9iVYsAbo4OglaOhlIdmxiDh4TkGUQLy0JQ-DnyspWLuS2cSVjWUV6VEFA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrkeekgddutdcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggugfgjsehtqhertddttddvnecuhfhrohhmpeforgigihhm
-    vgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrth
-    htvghrnhepgfejtedtjefggfffvdetuedthedtheegheeuteekfeeghfdtteejkeeludeg
-    vddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmh
-    grgihimhgvsegtvghrnhhordhtvggthh
-X-ME-Proxy: <xmx:v9iVYue8RPFp1z-n5TDYcwmL08SVETCWBoiOkGM0Sj6DVf0ap9EGoQ>
-    <xmx:v9iVYrO8My_Z2Um84Ljo0zAf5qBuSDu7j1Yhzm_MSrHcpsLPN30f3Q>
-    <xmx:v9iVYonGekT-cC8ZcFo5elxoAmfC0a5p63TnPymE-i5SQLIN4aRP-Q>
-    <xmx:wdiVYl0RpjWOCUCQSxgWM6t29uxM_f_xUVVu5CeL80V0FPNXRfX-7A>
-Feedback-ID: i8771445c:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 31 May 2022 04:58:38 -0400 (EDT)
-Date:   Tue, 31 May 2022 10:58:35 +0200
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     Samuel Holland <samuel@sholland.org>,
-        Heiko =?utf-8?Q?St=C3=BCbner?= <heiko@sntech.de>,
-        Sandy Huang <hjc@rock-chips.com>,
-        dri-devel@lists.freedesktop.org,
-        linux-rockchip@lists.infradead.org,
-        Alistair Francis <alistair@alistair23.me>,
-        =?utf-8?Q?Ond=C5=99ej?= Jirman <x@xff.cz>,
-        Andreas Kemnade <andreas@kemnade.info>,
-        David Airlie <airlied@linux.ie>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Liang Chen <cl@rock-chips.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Michael Riesch <michael.riesch@wolfvision.net>,
-        Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH 00/16] drm/rockchip: Rockchip EBC ("E-Book
- Controller") display driver
-Message-ID: <20220531085835.grw5nt4vyofis3po@penduick>
-References: <20220413221916.50995-1-samuel@sholland.org>
- <20220414085018.ayjvscgdkoen5nw5@houat>
- <Yo5kz/9cSd6ewC5f@phenom.ffwll.local>
+        Tue, 31 May 2022 05:01:14 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D54913D1F
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 02:01:12 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LC5lc5Yl6zRhXZ;
+        Tue, 31 May 2022 16:58:04 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 31 May 2022 17:01:09 +0800
+Subject: Re: [PATCH v4 1/4] mm: reduce the rcu lock duration
+To:     Ying Huang <ying.huang@intel.com>
+CC:     <peterx@redhat.com>, <apopple@nvidia.com>, <osalvador@suse.de>,
+        <mike.kravetz@oracle.com>, <songmuchun@bytedance.com>,
+        <hch@lst.de>, <dhowells@redhat.com>, <cl@linux.com>,
+        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        <akpm@linux-foundation.org>, <naoya.horiguchi@nec.com>
+References: <20220530113016.16663-1-linmiaohe@huawei.com>
+ <20220530113016.16663-2-linmiaohe@huawei.com>
+ <bbc060ca6e967790423e0a3ca940d1e700447554.camel@intel.com>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <b2ddcd64-2779-ede9-3615-ad5bc90a3bc1@huawei.com>
+Date:   Tue, 31 May 2022 17:01:09 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <Yo5kz/9cSd6ewC5f@phenom.ffwll.local>
+In-Reply-To: <bbc060ca6e967790423e0a3ca940d1e700447554.camel@intel.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Daniel,
+On 2022/5/31 14:06, Ying Huang wrote:
+> On Mon, 2022-05-30 at 19:30 +0800, Miaohe Lin wrote:
+>> Commit 3268c63eded4 ("mm: fix move/migrate_pages() race on task struct")
+>> extends the period of the rcu_read_lock until after the permissions checks
+>> are done to prevent the task pointed to from changing from under us. But
+>> the task_struct refcount is also taken at that time, the reference to task
+>> is guaranteed to be stable. So it's unnecessary to extend the period of
+>> the rcu_read_lock. Release the rcu lock after task refcount is successfully
+>> grabbed to reduce the rcu holding time.
+> 
+> Sorry for late reply, I am busy on something else recently.
 
-Thanks for your feedback
+That's all right. Many thanks for your hard work. :)
 
-On Wed, May 25, 2022 at 07:18:07PM +0200, Daniel Vetter wrote:
-> > > VBLANK Events and Asynchronous Commits
-> > > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > > When should the VBLANK event complete? When the pixels have been blit=
-ted
-> > > to the kernel's shadow buffer? When the first frame of the waveform is
-> > > sent to the panel? When the last frame is sent to the panel?
-> > >=20
-> > > Currently, the driver is taking the first option, letting
-> > > drm_atomic_helper_fake_vblank() send the VBLANK event without waiting=
- on
-> > > the refresh thread. This is the only way I was able to get good
-> > > performance with existing userspace.
-> >=20
-> > I've been having the same kind of discussions in private lately, so I'm
-> > interested by the answer as well :)
-> >=20
-> > It would be worth looking into the SPI/I2C panels for this, since it's
-> > basically the same case.
->=20
-> So it's maybe a bit misnamed and maybe kerneldocs aren't super clear (pls
-> help improve them), but there's two modes:
->=20
-> - drivers which have vblank, which might be somewhat variable (VRR) or
->   become simulated (self-refresh panels), but otherwise is a more-or-less
->   regular clock. For this case the atomic commit event must match the
->   vblank events exactly (frame count and timestamp)
+> 
+> I have just read the whole thread of the original patch discussion. 
+> During discussion, in
+> 
+> https://lore.kernel.org/lkml/alpine.DEB.2.00.1202241131400.3726@router.home/
+> 
+> a patch that is same as your one is proposed.  Then in the following
+> message, Eric think that the rcu read lock should be released until
+> permission is checked,
+> 
+> https://lore.kernel.org/lkml/87sjhzun47.fsf@xmission.com/
+> 
+> "
+> At the moment I suspect the permissions checks are not safe unless
+> performed under both rcu_read_lock and task_lock to ensure that
+> the task<->mm association does not change on us while we are
+> working.  Even with that the cred can change under us but at least
+> we know the cred will be valid until rcu_read_unlock happens.
+> "
+> 
+> So the rcu lock duration is enlarged in the following message.
+> 
+> https://lore.kernel.org/lkml/alpine.DEB.2.00.1202271238450.32410@router.home/
+> 
+> But, after some thought, I don't think extended rcu read lock adds much
+> value.  Because after permission checking the permission may still be
+> changed.  There's no much difference.
+> 
+> So, I have no objection to the patch itself.  But you should add more
+> information in patch description about why the RCU proected region is
+> extended and why we can reduce it.
 
-Part of my interrogation there is do we have any kind of expectation
-on whether or not, when we commit, the next vblank is going to be the
-one matching that commit or we're allowed to defer it by an arbitrary
-number of frames (provided that the frame count and timestamps are
-correct) ?
+Does below patch description makes sense for you?
 
-> - drivers which don't have vblank at all, mostly these are i2c/spi panels
->   or virtual hw and stuff like that. In this case the event simply happens
->   when the driver is done with refresh/upload, and the frame count should
->   be zero (since it's meaningless).
->=20
-> Unfortuantely the helper to dtrt has fake_vblank in it's name, maybe
-> should be renamed to no_vblank or so (the various flags that control it
-> are a bit better named).
->=20
-> Again the docs should explain it all, but maybe we should clarify them or
-> perhaps rename that helper to be more meaningful.
->=20
-> > > Blitting/Blending in Software
-> > > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D
-> > > There are multiple layers to this topic (pun slightly intended):
-> > >  1) Today's userspace does not expect a grayscale framebuffer.
-> > >     Currently, the driver advertises XRGB8888 and converts to Y4
-> > >     in software. This seems to match other drivers (e.g. repaper).
-> > >
-> > >  2) Ignoring what userspace "wants", the closest existing format is
-> > >     DRM_FORMAT_R8. Geert sent a series[4] adding DRM_FORMAT_R1 through
-> > >     DRM_FORMAT_R4 (patch 9), which I believe are the "correct" formats
-> > >     to use.
-> > >=20
-> > >  3) The RK356x SoCs have an "RGA" hardware block that can do the
-> > >     RGB-to-grayscale conversion, and also RGB-to-dithered-monochrome
-> > >     which is needed for animation/video. Currently this is exposed wi=
-th
-> > >     a V4L2 platform driver. Can this be inserted into the pipeline in=
- a
-> > >     way that is transparent to userspace? Or must some userspace libr=
-ary
-> > >     be responsible for setting up the RGA =3D> EBC pipeline?
-> >=20
-> > I'm very interested in this answer as well :)
-> >=20
-> > I think the current consensus is that it's up to userspace to set this
-> > up though.
->=20
-> Yeah I think v4l mem2mem device is the answer for these, and then
-> userspace gets to set it all up.
+"
+Commit 3268c63eded4 ("mm: fix move/migrate_pages() race on task struct")
+extends the period of the rcu_read_lock until after the permissions checks
+are done because it suspects the permissions checks are not safe unless
+performed under both rcu_read_lock and task_lock to ensure the task<->mm
+association does not change on us while we are working [1]. But extended
+rcu read lock does not add much value. Because after permission checking
+the permission may still be changed. There's no much difference. So it's
+unnecessary to extend the period of the rcu_read_lock. Release the rcu
+lock after task refcount is successfully grabbed to reduce the rcu holding
+time.
 
-I think the question wasn't really about where that driver should be,
-but more about who gets to set it up, and if the kernel could have
-some component to expose the formats supported by the converter, but
-whenever a commit is being done pipe that to the v4l2 device before
-doing a page flip.
+[1] https://lore.kernel.org/lkml/87sjhzun47.fsf@xmission.com/
+"
 
-We have a similar use-case for the RaspberryPi where the hardware
-codec will produce a framebuffer format that isn't standard. That
-format is understood by the display pipeline, and it can do
-writeback.
+> 
+> Best Regards,
+> Huang, Ying
 
-However, some people are using a separate display (like a SPI display
-supported by tinydrm) and we would still like to be able to output the
-decoded frames there.
+Thanks again!
 
-Is there some way we could plumb things to "route" that buffer through
-the writeback engine to perform a format conversion before sending it
-over to the SPI display automatically?
+> 
+>> Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+>> Reviewed-by: Christoph Hellwig <hch@lst.de>
+>> Reviewed-by: Oscar Salvador <osalvador@suse.de>
+>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+>> Cc: Huang Ying <ying.huang@intel.com>
+>> Cc: David Howells <dhowells@redhat.com>
+>> Cc: Christoph Lameter <cl@linux.com>
+>> ---
+>>  mm/mempolicy.c | 3 +--
+>>  mm/migrate.c   | 3 +--
+>>  2 files changed, 2 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/mm/mempolicy.c b/mm/mempolicy.c
+>> index 0b4ba3ee810e..2dad094177bf 100644
+>> --- a/mm/mempolicy.c
+>> +++ b/mm/mempolicy.c
+>> @@ -1609,6 +1609,7 @@ static int kernel_migrate_pages(pid_t pid, unsigned long maxnode,
+>>  		goto out;
+>>  	}
+>>  	get_task_struct(task);
+>> +	rcu_read_unlock();
+>>  
+>>
+>>
+>>
+>>  	err = -EINVAL;
+>>  
+>>
+>>
+>>
+>> @@ -1617,11 +1618,9 @@ static int kernel_migrate_pages(pid_t pid, unsigned long maxnode,
+>>  	 * Use the regular "ptrace_may_access()" checks.
+>>  	 */
+>>  	if (!ptrace_may_access(task, PTRACE_MODE_READ_REALCREDS)) {
+>> -		rcu_read_unlock();
+>>  		err = -EPERM;
+>>  		goto out_put;
+>>  	}
+>> -	rcu_read_unlock();
+>>  
+>>
+>>
+>>
+>>  	task_nodes = cpuset_mems_allowed(task);
+>>  	/* Is the user allowed to access the target nodes? */
+>> diff --git a/mm/migrate.c b/mm/migrate.c
+>> index e51588e95f57..e88ebb88fa6f 100644
+>> --- a/mm/migrate.c
+>> +++ b/mm/migrate.c
+>> @@ -1902,17 +1902,16 @@ static struct mm_struct *find_mm_struct(pid_t pid, nodemask_t *mem_nodes)
+>>  		return ERR_PTR(-ESRCH);
+>>  	}
+>>  	get_task_struct(task);
+>> +	rcu_read_unlock();
+>>  
+>>
+>>
+>>
+>>  	/*
+>>  	 * Check if this process has the right to modify the specified
+>>  	 * process. Use the regular "ptrace_may_access()" checks.
+>>  	 */
+>>  	if (!ptrace_may_access(task, PTRACE_MODE_READ_REALCREDS)) {
+>> -		rcu_read_unlock();
+>>  		mm = ERR_PTR(-EPERM);
+>>  		goto out;
+>>  	}
+>> -	rcu_read_unlock();
+>>  
+>>
+>>
+>>
+>>  	mm = ERR_PTR(security_task_movememory(task));
+>>  	if (IS_ERR(mm))
+> 
+> 
+> 
+> .
+> 
 
-Maxime
