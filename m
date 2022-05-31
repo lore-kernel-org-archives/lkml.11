@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11131C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 19:41:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E765EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 19:41:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347463AbiEaTlM (ORCPT
+        id S1347423AbiEaTlS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 15:41:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38660 "EHLO
+        Tue, 31 May 2022 15:41:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347358AbiEaTkz (ORCPT
+        with ESMTP id S1347397AbiEaTlG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 15:40:55 -0400
+        Tue, 31 May 2022 15:41:06 -0400
 Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33FC19CF39;
-        Tue, 31 May 2022 12:40:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FD5F9D4C5;
+        Tue, 31 May 2022 12:40:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654026045; x=1685562045;
+  t=1654026056; x=1685562056;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=WYhTRyqDsFTmlu8f+CRnqc/BRFUfOhZt6QsWmQsAxN8=;
-  b=kCw2WuQm0breXBvgBZOwt8Vz0i5gRv/TjVDvV+LhRRC1DOXQkL1R3qhH
-   qFJzSI4ysbcHUWaLSqIAYUhrqlwlkLD2bDZl4ZmxOID9kI3J6+tjjvLb/
-   N5abqjj5JRTzor066TcCW9sczKHkrAETvnPFMUNCV7qgzMwnDHcuKy5Dh
-   paNSYnAp+FQcDvpl3asxOGUz9ZHSo1DmkPbN1ySp0htRe5CRTNt2aTvBv
-   2i5fVkGsPYlWwCSP+5EdHfAGgIBpOJwO2lOF/EsdtcsmCdEgVAC7W+D0/
-   Q1avV03mAjoqaQDDeLGRnam/NggV2h439q8yMFyInqUSpFxjLNw9tkbi2
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10364"; a="272935062"
+  bh=iS2G3zq8V+EXqa65rsnM1imgoaFK0JtVT3k8puf41SM=;
+  b=QVZCD9Of2NnueDYwxrQbp5qt4Fz8M/gCk8wDx5qo4l3f4TAF30Fc+H08
+   1JlWR5/LZjesOJvkknqmz+iVbtuSmGz+X3kPlHaDXLsHcXOSglxW+WrWG
+   g48Teu4LtqRQwHgNu+WHL4UcNig7gZUI0cx6+1K0Mw4RTegspQ45/C+Y8
+   k4OGmi7fCWzUQFH+/TqyemvN+OCYuLklk40nsxWNx9tkZcSKleh1u+IN4
+   79XQja7s/KluzJqdkxD32rMdLWViY425jRob6VP5NVAdl0ls7suhM5/Tl
+   kCLRTIUzyhGWA3Fy59TeaxaP3HEisDcWX+WhvWguECyrb0rATqEw5g/MT
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10364"; a="272935120"
 X-IronPort-AV: E=Sophos;i="5.91,266,1647327600"; 
-   d="scan'208";a="272935062"
+   d="scan'208";a="272935120"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 12:40:20 -0700
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 12:40:36 -0700
 X-IronPort-AV: E=Sophos;i="5.91,266,1647327600"; 
-   d="scan'208";a="645164316"
+   d="scan'208";a="645164484"
 Received: from maciejwo-mobl1.ger.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.254.36.207])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 12:40:16 -0700
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 12:40:33 -0700
 From:   Kai Huang <kai.huang@intel.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     seanjc@google.com, pbonzini@redhat.com, dave.hansen@intel.com,
@@ -47,9 +47,9 @@ Cc:     seanjc@google.com, pbonzini@redhat.com, dave.hansen@intel.com,
         kirill.shutemov@linux.intel.com,
         sathyanarayanan.kuppuswamy@linux.intel.com,
         isaku.yamahata@intel.com, kai.huang@intel.com
-Subject: [PATCH v4 07/22] x86/virt/tdx: Implement SEAMCALL function
-Date:   Wed,  1 Jun 2022 07:39:30 +1200
-Message-Id: <d07f189c973140cbc1b44ecf970081e6ed491675.1654025431.git.kai.huang@intel.com>
+Subject: [PATCH v4 12/22] x86/virt/tdx: Convert all memory regions in memblock to TDX memory
+Date:   Wed,  1 Jun 2022 07:39:35 +1200
+Message-Id: <2cfbf8d3e2c9befd9aac905c239ac76d2e15558e.1654025431.git.kai.huang@intel.com>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <cover.1654025430.git.kai.huang@intel.com>
 References: <cover.1654025430.git.kai.huang@intel.com>
@@ -59,136 +59,174 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-TDX introduces a new CPU mode: Secure Arbitration Mode (SEAM).  This
-mode runs only the TDX module itself or other code to load the TDX
+The TDX module reports a list of Convertible Memory Regions (CMR) to
+identify which memory regions can be used as TDX memory, but they are
+not automatically usable to the TDX module.  The kernel needs to choose
+which convertible memory regions to be TDX memory and configure those
+regions by passing an array of "TD Memory Regions" (TDMR) to the TDX
 module.
 
-The host kernel communicates with SEAM software via a new SEAMCALL
-instruction.  This is conceptually similar to a guest->host hypercall,
-except it is made from the host to SEAM software instead.
+To avoid having to modify the page allocator to distinguish TDX and
+non-TDX memory allocation, convert all memory regions in the memblock to
+TDX memory.  As the first step, sanity check all memory regions in
+memblock are fully covered by CMRs so the above conversion is guaranteed
+to work.  This works also because both ACPI memory hotplug (reported as
+BIOS bug) and kmem-hot-add are both prevented when TDX is enabled by
+BIOS, so no new non-TDX-convertible memory can end up to the page
+allocator.
 
-The TDX module defines SEAMCALL leaf functions to allow the host to
-initialize it, and to create and run protected VMs.  SEAMCALL leaf
-functions use an ABI different from the x86-64 system-v ABI.  Instead,
-they share the same ABI with the TDCALL leaf functions.
-
-Implement a function __seamcall() to allow the host to make SEAMCALL
-to SEAM software using the TDX_MODULE_CALL macro which is the common
-assembly for both SEAMCALL and TDCALL.
-
-SEAMCALL instruction causes #GP when SEAMRR isn't enabled, and #UD when
-CPU is not in VMX operation.  The TDX_MODULE_CALL macro doesn't handle
-SEAMCALL exceptions.  Leave to the caller to guarantee those conditions
-before calling __seamcall().
+Select ARCH_KEEP_MEMBLOCK when CONFIG_INTEL_TDX_HOST to keep memblock
+after boot so it can be used during the TDX module initialization.
 
 Signed-off-by: Kai Huang <kai.huang@intel.com>
 ---
 
 - v3 -> v4:
- - Explicitly tell TDX_SEAMCALL_VMFAILINVALID is returned if the
-   SEAMCALL itself fails.
- - Improve the changelog.
+ - Changed to use memblock from e820.
+ - Simplified changelog a lot.
 
 ---
- arch/x86/virt/vmx/tdx/Makefile   |  2 +-
- arch/x86/virt/vmx/tdx/seamcall.S | 52 ++++++++++++++++++++++++++++++++
- arch/x86/virt/vmx/tdx/tdx.h      | 11 +++++++
- 3 files changed, 64 insertions(+), 1 deletion(-)
- create mode 100644 arch/x86/virt/vmx/tdx/seamcall.S
+ arch/x86/Kconfig            |   1 +
+ arch/x86/virt/vmx/tdx/tdx.c | 100 ++++++++++++++++++++++++++++++++++++
+ 2 files changed, 101 insertions(+)
 
-diff --git a/arch/x86/virt/vmx/tdx/Makefile b/arch/x86/virt/vmx/tdx/Makefile
-index 1bd688684716..fd577619620e 100644
---- a/arch/x86/virt/vmx/tdx/Makefile
-+++ b/arch/x86/virt/vmx/tdx/Makefile
-@@ -1,2 +1,2 @@
- # SPDX-License-Identifier: GPL-2.0-only
--obj-$(CONFIG_INTEL_TDX_HOST)	+= tdx.o
-+obj-$(CONFIG_INTEL_TDX_HOST)	+= tdx.o seamcall.o
-diff --git a/arch/x86/virt/vmx/tdx/seamcall.S b/arch/x86/virt/vmx/tdx/seamcall.S
-new file mode 100644
-index 000000000000..f322427e48c3
---- /dev/null
-+++ b/arch/x86/virt/vmx/tdx/seamcall.S
-@@ -0,0 +1,52 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#include <linux/linkage.h>
-+#include <asm/frame.h>
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index efa830853e98..4988a91d5283 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -1974,6 +1974,7 @@ config INTEL_TDX_HOST
+ 	depends on X86_64
+ 	depends on KVM_INTEL
+ 	select ARCH_HAS_CC_PLATFORM
++	select ARCH_KEEP_MEMBLOCK
+ 	help
+ 	  Intel Trust Domain Extensions (TDX) protects guest VMs from malicious
+ 	  host and certain physical attacks.  This option enables necessary TDX
+diff --git a/arch/x86/virt/vmx/tdx/tdx.c b/arch/x86/virt/vmx/tdx/tdx.c
+index 08590a6ea6f9..b0b4841ec144 100644
+--- a/arch/x86/virt/vmx/tdx/tdx.c
++++ b/arch/x86/virt/vmx/tdx/tdx.c
+@@ -15,6 +15,8 @@
+ #include <linux/cpumask.h>
+ #include <linux/smp.h>
+ #include <linux/atomic.h>
++#include <linux/sizes.h>
++#include <linux/memblock.h>
+ #include <asm/cpufeatures.h>
+ #include <asm/cpufeature.h>
+ #include <asm/msr-index.h>
+@@ -344,6 +346,91 @@ static int tdx_get_sysinfo(struct tdsysinfo_struct *tdsysinfo,
+ 	return check_cmrs(cmr_array, actual_cmr_num);
+ }
+ 
++/*
++ * Skip the memory region below 1MB.  Return true if the entire
++ * region is skipped.  Otherwise, the updated range is returned.
++ */
++static bool pfn_range_skip_lowmem(unsigned long *p_start_pfn,
++				  unsigned long *p_end_pfn)
++{
++	u64 start, end;
 +
-+#include "tdxcall.S"
++	start = *p_start_pfn << PAGE_SHIFT;
++	end = *p_end_pfn << PAGE_SHIFT;
++
++	if (start < SZ_1M)
++		start = SZ_1M;
++
++	if (start >= end)
++		return true;
++
++	*p_start_pfn = (start >> PAGE_SHIFT);
++
++	return false;
++}
 +
 +/*
-+ * __seamcall() - Host-side interface functions to SEAM software module
-+ *		  (the P-SEAMLDR or the TDX module).
++ * Walks over all memblock memory regions that are intended to be
++ * converted to TDX memory.  Essentially, it is all memblock memory
++ * regions excluding the low memory below 1MB.
 + *
-+ * Transform function call register arguments into the SEAMCALL register
-+ * ABI.  Return TDX_SEAMCALL_VMFAILINVALID if the SEAMCALL itself fails,
-+ * or the completion status of the SEAMCALL leaf function.  Additional
-+ * output operands are saved in @out (if it is provided by caller).
-+ *
-+ *-------------------------------------------------------------------------
-+ * SEAMCALL ABI:
-+ *-------------------------------------------------------------------------
-+ * Input Registers:
-+ *
-+ * RAX                 - SEAMCALL Leaf number.
-+ * RCX,RDX,R8-R9       - SEAMCALL Leaf specific input registers.
-+ *
-+ * Output Registers:
-+ *
-+ * RAX                 - SEAMCALL completion status code.
-+ * RCX,RDX,R8-R11      - SEAMCALL Leaf specific output registers.
-+ *
-+ *-------------------------------------------------------------------------
-+ *
-+ * __seamcall() function ABI:
-+ *
-+ * @fn  (RDI)          - SEAMCALL Leaf number, moved to RAX
-+ * @rcx (RSI)          - Input parameter 1, moved to RCX
-+ * @rdx (RDX)          - Input parameter 2, moved to RDX
-+ * @r8  (RCX)          - Input parameter 3, moved to R8
-+ * @r9  (R8)           - Input parameter 4, moved to R9
-+ *
-+ * @out (R9)           - struct tdx_module_output pointer
-+ *			 stored temporarily in R12 (not
-+ *			 used by the P-SEAMLDR or the TDX
-+ *			 module). It can be NULL.
-+ *
-+ * Return (via RAX) the completion status of the SEAMCALL, or
-+ * TDX_SEAMCALL_VMFAILINVALID.
++ * This is because on some TDX platforms the low memory below 1MB is
++ * not included in CMRs.  Excluding the low 1MB can still guarantee
++ * that the pages managed by the page allocator are always TDX memory,
++ * as the low 1MB is reserved during kernel boot and won't end up to
++ * the ZONE_DMA (see reserve_real_mode()).
 + */
-+SYM_FUNC_START(__seamcall)
-+	FRAME_BEGIN
-+	TDX_MODULE_CALL host=1
-+	FRAME_END
-+	RET
-+SYM_FUNC_END(__seamcall)
-diff --git a/arch/x86/virt/vmx/tdx/tdx.h b/arch/x86/virt/vmx/tdx/tdx.h
-index f16055cc25f4..f1a2dfb978b1 100644
---- a/arch/x86/virt/vmx/tdx/tdx.h
-+++ b/arch/x86/virt/vmx/tdx/tdx.h
-@@ -2,6 +2,7 @@
- #ifndef _X86_VIRT_TDX_H
- #define _X86_VIRT_TDX_H
- 
-+#include <linux/types.h>
- #include <linux/bits.h>
- 
++#define memblock_for_each_tdx_mem_pfn_range(i, p_start, p_end, p_nid)	\
++	for_each_mem_pfn_range(i, MAX_NUMNODES, p_start, p_end, p_nid)	\
++		if (!pfn_range_skip_lowmem(p_start, p_end))
++
++/* Check whether first range is the subrange of the second */
++static bool is_subrange(u64 r1_start, u64 r1_end, u64 r2_start, u64 r2_end)
++{
++	return r1_start >= r2_start && r1_end <= r2_end;
++}
++
++/* Check whether address range is covered by any CMR or not. */
++static bool range_covered_by_cmr(struct cmr_info *cmr_array, int cmr_num,
++				 u64 start, u64 end)
++{
++	int i;
++
++	for (i = 0; i < cmr_num; i++) {
++		struct cmr_info *cmr = &cmr_array[i];
++
++		if (is_subrange(start, end, cmr->base, cmr->base + cmr->size))
++			return true;
++	}
++
++	return false;
++}
++
++/*
++ * Check whether all memory regions in memblock are TDX convertible
++ * memory.  Return 0 if all memory regions are convertible, or error.
++ */
++static int check_memblock_tdx_convertible(void)
++{
++	unsigned long start_pfn, end_pfn;
++	int i;
++
++	memblock_for_each_tdx_mem_pfn_range(i, &start_pfn, &end_pfn, NULL) {
++		u64 start, end;
++
++		start = start_pfn << PAGE_SHIFT;
++		end = end_pfn << PAGE_SHIFT;
++		if (!range_covered_by_cmr(tdx_cmr_array, tdx_cmr_num, start,
++					end)) {
++			pr_err("[0x%llx, 0x%llx) is not fully convertible memory\n",
++					start, end);
++			return -EINVAL;
++		}
++	}
++
++	return 0;
++}
++
  /*
-@@ -44,4 +45,14 @@
- 		((u32)(((_keyid_part) & 0xffffffffull) + 1))
- #define TDX_KEYID_NUM(_keyid_part)	((u32)((_keyid_part) >> 32))
+  * Detect and initialize the TDX module.
+  *
+@@ -377,6 +464,19 @@ static int init_tdx_module(void)
+ 	if (ret)
+ 		goto out;
  
++	/*
++	 * To avoid having to modify the page allocator to distinguish
++	 * TDX and non-TDX memory allocation, convert all memory regions
++	 * in memblock to TDX memory to make sure all pages managed by
++	 * the page allocator are TDX memory.
++	 *
++	 * Sanity check all memory regions are fully covered by CMRs to
++	 * make sure they are truly convertible.
++	 */
++	ret = check_memblock_tdx_convertible();
++	if (ret)
++		goto out;
 +
-+/*
-+ * Do not put any hardware-defined TDX structure representations below this
-+ * comment!
-+ */
-+
-+struct tdx_module_output;
-+u64 __seamcall(u64 fn, u64 rcx, u64 rdx, u64 r8, u64 r9,
-+	       struct tdx_module_output *out);
-+
- #endif
+ 	/*
+ 	 * Return -EINVAL until all steps of TDX module initialization
+ 	 * process are done.
 -- 
 2.35.3
 
