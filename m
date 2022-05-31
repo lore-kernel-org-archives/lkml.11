@@ -2,277 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43079C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 12:44:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7944BC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 12:45:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344304AbiEaMoD (ORCPT
+        id S1344336AbiEaMpg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 08:44:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44660 "EHLO
+        Tue, 31 May 2022 08:45:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231168AbiEaMoB (ORCPT
+        with ESMTP id S239853AbiEaMpf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 08:44:01 -0400
-Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 844866D87E
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 05:44:00 -0700 (PDT)
-Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-30c2f288f13so63210757b3.7
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 05:44:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Wv+lZyCaE5kbkLZpqQvi2xp+OoDSqLcG7HNruSmDfC8=;
-        b=XNWi1d1oeE0HDSgunP6m9EOL2loWM0Nn14vYZ7RDHJApDMHysMiN9E9GxGPeft5nSa
-         BTgo7Ek7+TpqeLvM+63oxN+U81RPwTIV96z04d7ugi/hj1bv9WfjpfefwvGxP+4Rt1DV
-         4almvcFW6ZKDRTJWC/ranIrKv9t3ENmkKE/Z2a/Vl3yPIxFDZXTT+O8JJHNedz9ZGxCI
-         K/xeYzvmmRJcY0+z5wO+eZPJ/cpNZXAXr70FT0SdPea0rDxWWoxMo3DZ3ks6lHCc7+Ty
-         dhl1y8aMn2pppa3+ZjvqABteKAeQ/1DDZZkj0VSPfqXa3uTZO6uPE0+QSLJxhdfIy5ja
-         Zf2g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Wv+lZyCaE5kbkLZpqQvi2xp+OoDSqLcG7HNruSmDfC8=;
-        b=qin38GCirZl4OayksvC34jhyXnp9cneoHg2kdfSsKsJGKc3h3VvYkStfCtNSXeVxHw
-         6kanD3TN6uDyKrStC567qz1vTMBeoXLb8nSxmdk4gpf2ZeweooB+85sIBeyhqsL3x+Ke
-         UF5hYVsWPrJ0xzUGCGdr1BNOzWVW8TYEj1ESkWlaWfdyDiszUPLrJi9Ysh0bXZLlvhdz
-         90edHnhGub96/YTOypg6RW4rV9H2JJt8gJfl0dU9eZuu1lOQRbDOvmei6GAhwY/geSBQ
-         eWTquvmqb9HP6sZKNE1PZAzqZdpYKFjuWMvXxQH6VDw9UxZs8ztMN3vznVGFMhQmOq+t
-         vwQQ==
-X-Gm-Message-State: AOAM530iP2/LNH86ydDt6TUtu9HmVUpRcJKRB3YLokDlXZG8hrnQg/Z4
-        slkzDA5TiiB0mj0WYbnLVkhyRPaKSLcrj0l2DWWlUA==
-X-Google-Smtp-Source: ABdhPJzeGNxtL8TPdvCOrBOXNjOCKP8RSjF0qzXwrWGx09HwYJPlam/R5UHa322kEdYOs0PWmQPr2S/j6AIlnevJFPY=
-X-Received: by 2002:a81:ccd:0:b0:30c:2ad6:925b with SMTP id
- 196-20020a810ccd000000b0030c2ad6925bmr15444888ywm.498.1654001039770; Tue, 31
- May 2022 05:43:59 -0700 (PDT)
+        Tue, 31 May 2022 08:45:35 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44F376EB22;
+        Tue, 31 May 2022 05:45:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654001134; x=1685537134;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=E2ntfHjCIkuUyHhmuXAzUVCFkINVleA6ROwALxGHnvM=;
+  b=CVtistdmUYgQ9RoNZ3kivk1aSK2dMRCMwsd5IccMq6lOCCTVOL2zUWhQ
+   LaFnTl+QowXxRa8+3dozV2OTxSF418Sio47Je/DtJLHNfrr3XbH6eyxGu
+   +xlXhMeuDPVICGMkq53oWxOVXuO7KSgn9AmIOEByepvP1V41mBm1+nKmn
+   2ZC4+XHqGUXlOWwPDayEC2ESyJQ3jy2nYQ2ohkgYLrLFk2S1O2DGwPtmh
+   6xuYxMNK2g+DHfr5nJyc0COPi2dqoaqMeZmtKx/k6xgc2elNm3Lk7H3og
+   Lm0Dci8Ce+CCbCUHtqeCp91MtpvreFDrdz0E0pfTckkY/Jh+Nb72zBGlu
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10363"; a="275246180"
+X-IronPort-AV: E=Sophos;i="5.91,265,1647327600"; 
+   d="scan'208";a="275246180"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 05:45:33 -0700
+X-IronPort-AV: E=Sophos;i="5.91,265,1647327600"; 
+   d="scan'208";a="706557881"
+Received: from xingzhen-mobl.ccr.corp.intel.com (HELO [10.249.170.74]) ([10.249.170.74])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 05:45:30 -0700
+Message-ID: <628aa885-dd12-8bcd-bfc6-446345bf69ed@linux.intel.com>
+Date:   Tue, 31 May 2022 20:45:28 +0800
 MIME-Version: 1.0
-References: <20220530130839.120710-1-pan@semihalf.com> <20220530130839.120710-2-pan@semihalf.com>
- <73f01056-e674-d910-1c0d-98c4001f909d@linaro.org>
-In-Reply-To: <73f01056-e674-d910-1c0d-98c4001f909d@linaro.org>
-From:   =?UTF-8?Q?Pawe=C5=82_Anikiel?= <pan@semihalf.com>
-Date:   Tue, 31 May 2022 14:43:49 +0200
-Message-ID: <CAF9_jYQTTtK-MmEc11NnW8Aez6OtmZeJB7aPhYLoEvQ9vFiuLQ@mail.gmail.com>
-Subject: Re: [PATCH 1/3] dts: socfpga: Change Mercury+ AA1 devicetree to header
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     SoC Team <soc@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        krzysztof.kozlowski+dt@linaro.org,
-        Dinh Nguyen <dinguyen@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Cc:     baolu.lu@linux.intel.com,
+        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>,
+        Joerg Roedel <joro@8bytes.org>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        "vkoul@kernel.org" <vkoul@kernel.org>,
+        "robin.murphy@arm.com" <robin.murphy@arm.com>,
+        "will@kernel.org" <will@kernel.org>,
+        "Liu, Yi L" <yi.l.liu@intel.com>,
+        "Jiang, Dave" <dave.jiang@intel.com>,
+        "Raj, Ashok" <ashok.raj@intel.com>,
+        Eric Auger <eric.auger@redhat.com>
+Subject: Re: [PATCH v4 1/6] iommu: Add a per domain PASID for DMA API
+Content-Language: en-US
+To:     "Tian, Kevin" <kevin.tian@intel.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Jacob Pan <jacob.jun.pan@linux.intel.com>
+References: <20220518182120.1136715-1-jacob.jun.pan@linux.intel.com>
+ <20220518182120.1136715-2-jacob.jun.pan@linux.intel.com>
+ <20220524135034.GU1343366@nvidia.com> <20220524081727.19c2dd6d@jacob-builder>
+ <20220530122247.GY1343366@nvidia.com>
+ <BN9PR11MB52768105FC4FB959298F8A188CDC9@BN9PR11MB5276.namprd11.prod.outlook.com>
+From:   Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB52768105FC4FB959298F8A188CDC9@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thank you for the review, I'm thinking of splitting this commit into
-several smaller ones:
-- remove all status =3D "okay" things and i2c aliases
-- remove sdmmc-ecc node (it's a part of the Arria 10 SoC, not the mercury)
-- add atsha204a node
-- add copyright header
-- style fixes (phy reg, memory)
-What do you think?
+On 2022/5/31 18:12, Tian, Kevin wrote:
+>>>> +++ b/include/linux/iommu.h
+>>>> @@ -105,6 +105,8 @@ struct iommu_domain {
+>>>>   	enum iommu_page_response_code (*iopf_handler)(struct
+>> iommu_fault *fault,
+>>>>   						      void *data);
+>>>>   	void *fault_data;
+>>>> +	ioasid_t pasid;		/* Used for DMA requests with PASID */
+>>>> +	atomic_t pasid_users;
+>>> These are poorly named, this is really the DMA API global PASID and
+>>> shouldn't be used for other things.
+>>>
+>>>
+>>>
+>>> Perhaps I misunderstood, do you mind explaining more?
+>> You still haven't really explained what this is for in this patch,
+>> maybe it just needs a better commit message, or maybe something is
+>> wrong.
+>>
+>> I keep saying the DMA API usage is not special, so why do we need to
+>> create a new global pasid and refcount? Realistically this is only
+>> going to be used by IDXD, why can't we just allocate a PASID and
+>> return it to the driver every time a driver asks for DMA API on PASI
+>> mode? Why does the core need to do anything special?
+>>
+> Agree. I guess it was a mistake caused by treating ENQCMD as the
+> only user although the actual semantics of the invented interfaces
+> have already evolved to be quite general.
+> 
+> This is very similar to what we have been discussing for iommufd.
+> a PASID is just an additional routing info when attaching a device
+> to an I/O address space (DMA API in this context) and by default
+> it should be a per-device resource except when ENQCMD is
+> explicitly opt in.
+> 
+> Hence it's right time for us to develop common facility working
+> for both this DMA API usage and iommufd, i.e.:
+> 
+> for normal PASID attach to a domain, driver:
+> 
+> 	allocates a local pasid from device local space;
+> 	attaches the local pasid to a domain;
+> 
+> for PASID attach in particular for ENQCMD, driver:
+> 
+> 	allocates a global pasid in system-wide;
+> 	attaches the global pasid to a domain;
+> 	set the global pasid in PASID_MSR;
+> 
+> In both cases the pasid is stored in the attach data instead of the
+> domain.
+> 
+> DMA API pasid is no special from above except it needs to allow
+> one device attached to the same domain twice (one with RID
+> and the other with RID+PASID).
+> 
+> for iommufd those operations are initiated by userspace via
+> iommufd uAPI.
 
-Please see my other comments below.
+My understanding is that device driver owns its PASID policy. If ENQCMD
+is supported on the device, the PASIDs should be allocated through
+ioasid_alloc(). Otherwise, the whole PASID pool is managed by the device
+driver.
 
-On Mon, May 30, 2022 at 8:55 PM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
->
-> On 30/05/2022 15:08, Pawe=C5=82 Anikiel wrote:
-> > The Mercury+ AA1 is not a standalone board, rather it's a module
-> > with an Arria 10 SoC and some peripherals on it. Remove everything that
-> > is not strictly related to the module.
->
-> Subject has several issues:
-> 1. Use prefix matching subsystem (git log --oneline)
+For kernel DMA w/ PASID, after the driver has a PASID for this purpose,
+it can just set the default domain to the PASID on device. There's no
+need for enable/disable() interfaces.
 
-Just to make sure, are you referring to the ARM: prefix?
-
-> 2. You are not changing here anything to header. Header files have
-> different format and end with .h. This is a DTSI file.
-
-Yes, I meant dtsi.
-
->
-> >
-> > Signed-off-by: Pawe=C5=82 Anikiel <pan@semihalf.com>
->
-> Thank you for your patch. There is something to discuss/improve.
->
-> > ---
-> >  arch/arm/boot/dts/Makefile                    |  1 -
-> >  ...1.dts =3D> socfpga_arria10_mercury_aa1.dtsi} | 68 ++++-------------=
---
-> >  2 files changed, 14 insertions(+), 55 deletions(-)
-> >  rename arch/arm/boot/dts/{socfpga_arria10_mercury_aa1.dts =3D> socfpga=
-_arria10_mercury_aa1.dtsi} (58%)
-> >
-> > diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-> > index edfbedaa6168..023c8b4ba45c 100644
-> > --- a/arch/arm/boot/dts/Makefile
-> > +++ b/arch/arm/boot/dts/Makefile
-> > @@ -1146,7 +1146,6 @@ dtb-$(CONFIG_ARCH_S5PV210) +=3D \
-> >       s5pv210-torbreck.dtb
-> >  dtb-$(CONFIG_ARCH_INTEL_SOCFPGA) +=3D \
-> >       socfpga_arria5_socdk.dtb \
-> > -     socfpga_arria10_mercury_aa1.dtb \
-> >       socfpga_arria10_socdk_nand.dtb \
-> >       socfpga_arria10_socdk_qspi.dtb \
-> >       socfpga_arria10_socdk_sdmmc.dtb \
-> > diff --git a/arch/arm/boot/dts/socfpga_arria10_mercury_aa1.dts b/arch/a=
-rm/boot/dts/socfpga_arria10_mercury_aa1.dtsi
-> > similarity index 58%
-> > rename from arch/arm/boot/dts/socfpga_arria10_mercury_aa1.dts
-> > rename to arch/arm/boot/dts/socfpga_arria10_mercury_aa1.dtsi
-> > index a75c059b6727..fee1fc39bb2b 100644
-> > --- a/arch/arm/boot/dts/socfpga_arria10_mercury_aa1.dts
-> > +++ b/arch/arm/boot/dts/socfpga_arria10_mercury_aa1.dtsi
-> > @@ -1,57 +1,38 @@
-> >  // SPDX-License-Identifier: GPL-2.0
-> > -/dts-v1/;
-> > -
-> > +/*
-> > + * Copyright 2022 Google LLC
-> > + */
->
-> How is this related to the patch?
-
-I'll move this change to a seperate commit.
-
->
-> >  #include "socfpga_arria10.dtsi"
-> >
-> >  / {
-> > -
-> > -     model =3D "Enclustra Mercury AA1";
-> > -     compatible =3D "enclustra,mercury-aa1", "altr,socfpga-arria10", "=
-altr,socfpga";
-> > -
-> >       aliases {
-> >               ethernet0 =3D &gmac0;
-> >               serial1 =3D &uart1;
-> > -             i2c0 =3D &i2c0;
-> > -             i2c1 =3D &i2c1;
-> > -     };
-> > -
-> > -     memory@0 {
-> > -             name =3D "memory";
-> > -             device_type =3D "memory";
-> > -             reg =3D <0x0 0x80000000>; /* 2GB */
-> >       };
-> >
-> >       chosen {
-> >               stdout-path =3D "serial1:115200n8";
-> >       };
-> > -};
-> >
-> > -&eccmgr {
-> > -     sdmmca-ecc@ff8c2c00 {
-> > -             compatible =3D "altr,socfpga-sdmmc-ecc";
-> > -             reg =3D <0xff8c2c00 0x400>;
-> > -             altr,ecc-parent =3D <&mmc>;
-> > -             interrupts =3D <15 IRQ_TYPE_LEVEL_HIGH>,
-> > -                          <47 IRQ_TYPE_LEVEL_HIGH>,
-> > -                          <16 IRQ_TYPE_LEVEL_HIGH>,
-> > -                          <48 IRQ_TYPE_LEVEL_HIGH>;
-> > +     memory@0 {
-> > +             name =3D "memory";
-> > +             device_type =3D "memory";
-> > +             reg =3D <0x0 0x80000000>; /* 2GB */
-> >       };
-> >  };
-> >
-> >  &gmac0 {
-> >       phy-mode =3D "rgmii";
-> > -     phy-addr =3D <0xffffffff>; /* probe for phy addr */
-> > +     phy-handle =3D <&phy3>;
-> >
-> >       max-frame-size =3D <3800>;
-> > -     status =3D "okay";
-> > -
-> > -     phy-handle =3D <&phy3>;
-> >
-> >       mdio {
-> >               #address-cells =3D <1>;
-> >               #size-cells =3D <0>;
-> >               compatible =3D "snps,dwmac-mdio";
-> >               phy3: ethernet-phy@3 {
-> > +                     reg =3D <3>;
-> >                       txd0-skew-ps =3D <0>; /* -420ps */
-> >                       txd1-skew-ps =3D <0>; /* -420ps */
-> >                       txd2-skew-ps =3D <0>; /* -420ps */
-> > @@ -64,35 +45,23 @@ phy3: ethernet-phy@3 {
-> >                       txc-skew-ps =3D <1860>; /* 960ps */
-> >                       rxdv-skew-ps =3D <420>; /* 0ps */
-> >                       rxc-skew-ps =3D <1680>; /* 780ps */
-> > -                     reg =3D <3>;
->
-> This and few other changes (like memory) are not related to the commit.
-> Do not mix different cleanups together.
-
-l'll put the cleanup changes into a seperate commit.
-
->
-> >               };
-> >       };
-> >  };
-> >
-> > -&gpio0 {
-> > -     status =3D "okay";
-> > -};
-> > -
-> > -&gpio1 {
-> > -     status =3D "okay";
-> > -};
-> > -
-> > -&gpio2 {
-> > -     status =3D "okay";
-> > -};
->
-> Why removing all these? Aren't they available on the SoM? The same
-> question applies to several other pieces, for example UART and USB -
-> aren't these part of SoM?
-
-I'm removing them from here, but adding them to socfpga_arria10_chameleonv3=
-.dts.
-I think that enabling them should be done in the base board's dts, as
-the connections
-go to the base board. The Chameleon v3 has a USB port, but a different
-base board might
-not have one.
-
->
-> > -
-> >  &i2c1 {
-> > -     status =3D "okay";
-> > +     atsha204a: atsha204a@64 {
->
-> How is this change related at all to what you described in commit? There
-> was no atsha204a before.
-
-As previously mentioned, I'll move this change to a seperate commit.
-
->
-> > +             compatible =3D "atmel,atsha204a";
-> > +             reg =3D <0x64>;
-> > +     };
-> > +
-> >       isl12022: isl12022@6f {
-> > -             status =3D "okay";
-> >               compatible =3D "isil,isl12022";
-> >               reg =3D <0x6f>;
-> >       };
-> >  };
-> >
->
-> Best regards,
-> Krzysztof
-
-
-Regards,
-Pawe=C5=82
+Best regards,
+baolu
