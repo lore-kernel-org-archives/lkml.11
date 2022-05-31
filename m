@@ -2,95 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2817AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 17:13:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 336FFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 17:16:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346460AbiEaRN2 (ORCPT
+        id S1346475AbiEaRQG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 13:13:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48240 "EHLO
+        Tue, 31 May 2022 13:16:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346482AbiEaRNY (ORCPT
+        with ESMTP id S242650AbiEaRQE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 13:13:24 -0400
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB1D68DDF5
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 10:13:22 -0700 (PDT)
-Received: by mail-pf1-x42a.google.com with SMTP id 187so2214072pfu.9
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 10:13:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8RLG13nKpWjsjuIbbUgrnquP8Z1EdA3+DmofowDTXK8=;
-        b=h2LApYajNKyFrQl2xlZsGJ1ICjgtRdW1rpOvkUmIAYocin3G/UCeqoDMZnF2EzSksr
-         Ulkb9pT6QMPDzYUEyda1M3SlLQ68hDa0PvUbqN6md1sBKdCiel3g4A2rS5rUix0NUxIR
-         5Y9CZg1cOY7tc7ncdZtrQz0DD8RO9DAiMuFNxaJiAoIBxKckpz4xArZRPq7cZX12PdBT
-         2KCulVe55RRwxPoMkJ46WXm8Eeafgmfca9PX5MxHvhSNV1lPzpfD9PmxvKik/LhU9hja
-         c3Qden3XuKr9qiNCRmTeDh0WQgMVzoASWqunPmwQjcLRDn2t5BXGvq+KD0x/D64sX8Eb
-         QQ0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8RLG13nKpWjsjuIbbUgrnquP8Z1EdA3+DmofowDTXK8=;
-        b=4hlWMLreFP/jw42yb4cNpF0mujgzgw3OzZ6eo6khm0zyMxJgsT4e3HgsNR3HrkaBL9
-         S5rZLMZetRc/jBYTs6iv/1JwWiGdqKrVXwUTfMSbKgEUMLFZ+rC2uM2qWJ9a3UWCk4dw
-         ULbw193OT9qljpzf4OD2Vm23IWajxkGgFBUH/fwx+IwF6fBWK5YeikgJQ2dsjTZ9LgsM
-         KwfRh+7OCkZq2Aji6/naOa7r09G1vabmoX3t4gyVqeoz2CLEfI8anCk2Q9B+xbyQ/6eq
-         72Cu686H4e+BpG2pWf/DBkpLXGo9WuhW69ESH8X2vb6zbsDKUbvdku8aI1zOY/+Axync
-         QVUQ==
-X-Gm-Message-State: AOAM530zIZI5FHnbO2vP7JJ1luoM1jcdK8w+a9dkKJAwKozXjqI2Q5Qp
-        TPrQKjbagqlH23XnRlgMBunwl0PZPF4xIA==
-X-Google-Smtp-Source: ABdhPJySrbG4tcwXaGTWngYEqrZ8L8o+mA+izcojiZpZJanb547iiZCZqdgcjweE1fSJPkk+zDgXrg==
-X-Received: by 2002:a62:ab02:0:b0:518:f6ca:3905 with SMTP id p2-20020a62ab02000000b00518f6ca3905mr32203114pff.1.1654017202391;
-        Tue, 31 May 2022 10:13:22 -0700 (PDT)
-Received: from optiplex.localdomain (174-21-45-174.tukw.qwest.net. [174.21.45.174])
-        by smtp.gmail.com with ESMTPSA id u6-20020a170902e5c600b0015e8d4eb2cdsm6728766plf.279.2022.05.31.10.13.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 May 2022 10:13:22 -0700 (PDT)
-From:   "=?UTF-8?q?Eivind=20N=C3=A6ss?=" <eivnaes@gmail.com>
-X-Google-Original-From: =?UTF-8?q?Eivind=20N=C3=A6ss?= <eivnaes@yahoo.com>
-Cc:     eivnaes@yahoo.com, linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] Adding in defines for PPP_ECP and PPP_EAP into linux/ppp_defs.h
-Date:   Tue, 31 May 2022 10:13:05 -0700
-Message-Id: <20220531171308.651960-1-eivnaes@yahoo.com>
-X-Mailer: git-send-email 2.32.0
+        Tue, 31 May 2022 13:16:04 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 236208DDC9
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 10:16:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654017362;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cyh9GNwkSeiWX8VVWJet6cmrStrv1Y1BhHYKMAKCy08=;
+        b=TNvrMTRPiXow1ZNeqLtNF3ZXNrBt1DY3DKSPGbrX6sbQMDx5MMyUGh0gTj33AjquiJQu2E
+        XCFOOwG7FVwGtDOZ815VfF8mGTsiU5Ptv/a6+SEcuNVcFbvANRLifgokWTobuAjaGrnn6p
+        5Nc9RkH+btjU/FnP88JDRBB3C9BN/Eo=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-381-8aL7cJt8MG-3qLfPzBHjog-1; Tue, 31 May 2022 13:16:01 -0400
+X-MC-Unique: 8aL7cJt8MG-3qLfPzBHjog-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 80154803D7B;
+        Tue, 31 May 2022 17:16:00 +0000 (UTC)
+Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5736740E80E0;
+        Tue, 31 May 2022 17:16:00 +0000 (UTC)
+From:   Paolo Bonzini <pbonzini@redhat.com>
+To:     Yang Weijiang <weijiang.yang@intel.com>
+Cc:     pbonzini@redhat.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, like.xu.linux@gmail.com
+Subject: Re: [PATCH] KVM: x86: Bypass cpuid check for empty arch-lbr leaf
+Date:   Tue, 31 May 2022 13:15:57 -0400
+Message-Id: <20220531171557.293520-1-pbonzini@redhat.com>
+In-Reply-To: <20220530144829.39714-1-weijiang.yang@intel.com>
+References: 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch includes additional defiles for PPP ECP and EAP protocols.
+Queued, thanks.
 
-Signed-off-by: Eivind Næss <eivnaes@yahoo.com>
----
- include/uapi/linux/ppp_defs.h | 2 ++
- 1 file changed, 2 insertions(+)
+Paolo
 
-diff --git a/include/uapi/linux/ppp_defs.h b/include/uapi/linux/ppp_defs.h
-index 20286bd90ab5..5c4c94205e33 100644
---- a/include/uapi/linux/ppp_defs.h
-+++ b/include/uapi/linux/ppp_defs.h
-@@ -50,6 +50,7 @@
- #define PPP_IPCP	0x8021	/* IP Control Protocol */
- #define PPP_ATCP	0x8029	/* AppleTalk Control Protocol */
- #define PPP_IPXCP	0x802b	/* IPX Control Protocol */
-+#define PPP_ECP		0x8053	/* Encryption Control Protocol */
- #define PPP_IPV6CP	0x8057	/* IPv6 Control Protocol */
- #define PPP_CCPFRAG	0x80fb	/* CCP at link level (below MP bundle) */
- #define PPP_CCP		0x80fd	/* Compression Control Protocol */
-@@ -58,6 +59,7 @@
- #define PPP_PAP		0xc023	/* Password Authentication Protocol */
- #define PPP_LQR		0xc025	/* Link Quality Report protocol */
- #define PPP_CHAP	0xc223	/* Cryptographic Handshake Auth. Protocol */
-+#define PPP_EAP		0xc227	/* Extensible Authentication Protocol */
- #define PPP_CBCP	0xc029	/* Callback Control Protocol */
- 
- /*
--- 
-2.32.0
 
