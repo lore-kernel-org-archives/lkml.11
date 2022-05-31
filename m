@@ -2,92 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35768C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 13:21:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C5EDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 13:21:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344712AbiEaNVl (ORCPT
+        id S1344717AbiEaNVs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 09:21:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34670 "EHLO
+        Tue, 31 May 2022 09:21:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344700AbiEaNV3 (ORCPT
+        with ESMTP id S1344691AbiEaNVb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 09:21:29 -0400
-Received: from mail-oi1-f176.google.com (mail-oi1-f176.google.com [209.85.167.176])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F7D4972A6;
-        Tue, 31 May 2022 06:21:28 -0700 (PDT)
-Received: by mail-oi1-f176.google.com with SMTP id m82so3421973oif.13;
-        Tue, 31 May 2022 06:21:28 -0700 (PDT)
+        Tue, 31 May 2022 09:21:31 -0400
+Received: from mail-oi1-f180.google.com (mail-oi1-f180.google.com [209.85.167.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A232395DCE;
+        Tue, 31 May 2022 06:21:29 -0700 (PDT)
+Received: by mail-oi1-f180.google.com with SMTP id k187so13199844oif.1;
+        Tue, 31 May 2022 06:21:29 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=e5hEwdVyk0aAkl6eSBNPLNwTk/gtSZtsZFRN5GRZ6bA=;
-        b=SLJnrAdPTX9gBHgCOIQUIvxYlWeUh/43uZIeHIbWXD6AgkZXfTsmVFN5/J1axleTgi
-         W0Cv4Udy3xf4gfrDaQJ2zz6HRNdIo4oe8Has8kF5a35m8cB6mvSeB6hLgb2wmGZ5fQ/h
-         MzL/WuStPns1a0DTMplSgAUK579dZESxCV+EFxyvFJ7Kco3zKrg3YmnHqJRJMUB2QrO7
-         1zYv9b9aqzsRFxxH06dMe8IDa/Z+qpPoVXzaBmIGqdUSVMwm86Cc0lArGHpgWeDfU6Ix
-         MUSRE+Vou+C6XSt13kYA72n4pHOWi49g/UKizwP2QyPexXgNkdJxd6X4vNc7m5Zhv1G+
-         g9Sw==
-X-Gm-Message-State: AOAM532+2SN84i6RIgO+cR5M+6d+3gCJf6AiuBP6cV46rMtmUPWGfRgB
-        xYlYGi0twYXqHrcOlpyJyQ==
-X-Google-Smtp-Source: ABdhPJwc9hEHIr4dNicEv2trxpFWfW7N9CStjs9nOb2xy+SSJhjlsZ6CBFELIq7Zjs0oQODGv2QlAg==
-X-Received: by 2002:a05:6808:f8c:b0:32a:e67f:d20e with SMTP id o12-20020a0568080f8c00b0032ae67fd20emr11509012oiw.88.1654003287818;
-        Tue, 31 May 2022 06:21:27 -0700 (PDT)
+        bh=n2YWFk0y3q/d7S62mzm/mupBj+kGA49hA3r4JP1ldJU=;
+        b=UqsmQS/PhlikB+EugfjiGGPxJwTfuBvKe2jER/nsjc57mx4xPj5HLoF1CHBopg693H
+         ac3hEBnR5zeGnGTgcjHjY/etY9fY8T2K/2rmycMu2YqC1a/QtWr1CrdrkOv/kkVrfwlT
+         Id9GMrwWI+bH5nNgbNpeuftaJKh1UjkJQmaRbe93RKpoyiwPrfVZedfCqhLO/K8mE9HY
+         PGtQLvOI0GrrG5Nb2Mc/AM1cAg9aUx8skQPhess86mtvkozKKcoKbDWmh7v11OSSsh/Q
+         uVi0vrSJzUxKzbDRO+gFzyIr2RdFSs8/i48Y4LMU1uUd2r1Q5oVFV5bwRJ+d4FMDFqkN
+         pJKw==
+X-Gm-Message-State: AOAM531R3t5D31yQh+W+kQa3tRLBHWXiMIzr6D5JeQK9/vNvxLfeiKN7
+        ab2PJ081+bzXdSfYZ9HqLw==
+X-Google-Smtp-Source: ABdhPJw/uns3WPs2X+MsfGF5nr1CcrWwKzdKVdZtYl2nRuFZii2epEbochmc6fHJTtwW1+OebjuDSA==
+X-Received: by 2002:a05:6808:10d1:b0:32b:a63b:fdda with SMTP id s17-20020a05680810d100b0032ba63bfddamr12450526ois.257.1654003288954;
+        Tue, 31 May 2022 06:21:28 -0700 (PDT)
 Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id s31-20020a056830439f00b0060613c844adsm6307651otv.10.2022.05.31.06.21.26
+        by smtp.gmail.com with ESMTPSA id w11-20020a0568080d4b00b0032b4ae1fc2csm5715934oik.21.2022.05.31.06.21.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 May 2022 06:21:27 -0700 (PDT)
-Received: (nullmailer pid 1610161 invoked by uid 1000);
+        Tue, 31 May 2022 06:21:28 -0700 (PDT)
+Received: (nullmailer pid 1610158 invoked by uid 1000);
         Tue, 31 May 2022 13:21:25 -0000
 From:   Rob Herring <robh@kernel.org>
-To:     Puranjay Mohan <p-mohan@ti.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        robh+dt@kernel.org, edumazet@google.com, vigneshr@ti.com,
-        kishon@ti.com, afd@ti.com, davem@davemloft.net,
-        ssantosh@kernel.org, andrew@lunn.ch,
-        krzysztof.kozlowski+dt@linaro.org, grygorii.strashko@ti.com,
-        devicetree@vger.kernel.org, s-anna@ti.com, nm@ti.com,
-        rogerq@kernel.org, linux-arm-kernel@lists.infradead.org
-In-Reply-To: <20220531095108.21757-2-p-mohan@ti.com>
-References: <20220531095108.21757-1-p-mohan@ti.com> <20220531095108.21757-2-p-mohan@ti.com>
-Subject: Re: [PATCH v2 1/2] dt-bindings: net: Add ICSSG Ethernet Driver bindings
+To:     Harsh Agarwal <quic_harshq@quicinc.com>
+Cc:     linux-usb@vger.kernel.org, Felipe Balbi <balbi@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, quic_pkondeti@quicinc.com,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        quic_ppratap@quicinc.com,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        quic_jackp@quicinc.com
+In-Reply-To: <1653985217-20953-2-git-send-email-quic_harshq@quicinc.com>
+References: <1653985217-20953-1-git-send-email-quic_harshq@quicinc.com> <1653985217-20953-2-git-send-email-quic_harshq@quicinc.com>
+Subject: Re: [PATCH 1/3] dt-bindings: usb: dwc3: Add support for multiport related properties
 Date:   Tue, 31 May 2022 08:21:25 -0500
-Message-Id: <1654003285.283793.1610159.nullmailer@robh.at.kernel.org>
+Message-Id: <1654003285.276061.1610157.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 31 May 2022 15:21:07 +0530, Puranjay Mohan wrote:
-> Add a YAML binding document for the ICSSG Programmable real time unit
-> based Ethernet driver. This driver uses the PRU and PRUSS consumer APIs
-> to interface the PRUs and load/run the firmware for supporting ethernet
-> functionality.
+On Tue, 31 May 2022 13:50:15 +0530, Harsh Agarwal wrote:
+> Added support for multiport, mport, num-ssphy and num-hsphy
+> properties. These properties are used to support devices having
+> a multiport controller.
 > 
-> Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
+> Signed-off-by: Harsh Agarwal <quic_harshq@quicinc.com>
 > ---
-> v1: https://lore.kernel.org/all/20220506052433.28087-2-p-mohan@ti.com/
-> v1 -> v2:
-> * Addressed Rob's Comments
-> * It includes indentation, formatting, and other minor changes.
-> ---
->  .../bindings/net/ti,icssg-prueth.yaml         | 181 ++++++++++++++++++
->  1 file changed, 181 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml
+>  .../devicetree/bindings/usb/snps,dwc3.yaml         | 55 ++++++++++++++++++++++
+>  1 file changed, 55 insertions(+)
 > 
 
 My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
 on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
 yamllint warnings/errors:
+./Documentation/devicetree/bindings/usb/snps,dwc3.yaml:366:8: [warning] wrong indentation: expected 6 but found 7 (indentation)
+./Documentation/devicetree/bindings/usb/snps,dwc3.yaml:367:10: [warning] wrong indentation: expected 11 but found 9 (indentation)
+./Documentation/devicetree/bindings/usb/snps,dwc3.yaml:369:11: [warning] wrong indentation: expected 11 but found 10 (indentation)
 
 dtschema/dtc warnings/errors:
-./Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml: Unable to find schema file matching $id: http://devicetree.org/schemas/remoteproc/ti,pru-consumer.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,icssg-prueth.example.dtb: pruss2_eth: False schema does not allow {'compatible': ['ti,am654-icssg-prueth'], 'pinctrl-names': ['default'], 'pinctrl-0': [[4294967295]], 'sram': [[4294967295]], 'ti,prus': [[4294967295, 4294967295, 4294967295, 4294967295, 4294967295, 4294967295]], 'firmware-name': ['ti-pruss/am65x-pru0-prueth-fw.elf', 'ti-pruss/am65x-rtu0-prueth-fw.elf', 'ti-pruss/am65x-txpru0-prueth-fw.elf', 'ti-pruss/am65x-pru1-prueth-fw.elf', 'ti-pruss/am65x-rtu1-prueth-fw.elf', 'ti-pruss/am65x-txpru1-prueth-fw.elf'], 'ti,pruss-gp-mux-sel': [[2, 2, 2, 2, 2, 2]], 'ti,mii-g-rt': [[4294967295]], 'dmas': [[4294967295, 49920], [4294967295, 49921], [4294967295, 49922], [4294967295, 49923], [4294967295, 49924], [4294967295, 49925], [4294967295, 49926], [4294967295, 49927], [4294967295, 17152], [4294967295, 17153]], 'dma-names': ['tx0-0', 'tx0-1', 'tx0-2', 'tx0-3', 'tx1-0', 'tx1-1', 'tx1-2', 'tx1-3', 'rx0', 'rx1'], 'i
- nterrupts': [[24, 0, 2], [25, 1, 3]], 'interrupt-names': ['tx_ts0', 'tx_ts1'], 'ethernet-ports': {'#address-cells': [[1]], '#size-cells': [[0]], 'port@0': {'reg': [[0]], 'phy-handle': [[4294967295]], 'phy-mode': ['rgmii-rxid'], 'interrupts-extended': [[4294967295, 24]], 'ti,syscon-rgmii-delay': [[4294967295, 16672]], 'local-mac-address': [[0, 0, 0, 0, 0, 0]]}, 'port@1': {'reg': [[1]], 'phy-handle': [[4294967295]], 'phy-mode': ['rgmii-rxid'], 'interrupts-extended': [[4294967295, 25]], 'ti,syscon-rgmii-delay': [[4294967295, 16676]], 'local-mac-address': [[0, 0, 0, 0, 0, 0]]}}, '$nodename': ['pruss2_eth']}
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,icssg-prueth.example.dtb: pruss2_eth: Unevaluated properties are not allowed ('firmware-name', 'ti,prus', 'ti,pruss-gp-mux-sel' were unexpected)
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml
+Documentation/devicetree/bindings/usb/snps,dwc3.example.dts:86.27-89.15: Warning (unit_address_vs_reg): /example-2/usb@4a000000/multiport/mport@1: node has a unit name, but no reg or ranges property
+Documentation/devicetree/bindings/usb/snps,dwc3.example.dts:91.27-93.15: Warning (unit_address_vs_reg): /example-2/usb@4a000000/multiport/mport@2: node has a unit name, but no reg or ranges property
+Documentation/devicetree/bindings/usb/snps,dwc3.example.dts:95.27-97.15: Warning (unit_address_vs_reg): /example-2/usb@4a000000/multiport/mport@3: node has a unit name, but no reg or ranges property
+Documentation/devicetree/bindings/usb/snps,dwc3.example.dts:99.27-101.15: Warning (unit_address_vs_reg): /example-2/usb@4a000000/multiport/mport@4: node has a unit name, but no reg or ranges property
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/usb/snps,dwc3.example.dtb: usb@4a000000: multiport: 'mport' is a required property
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/usb/snps,dwc3.yaml
 
 doc reference errors (make refcheckdocs):
 
