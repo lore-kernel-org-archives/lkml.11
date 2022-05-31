@@ -2,135 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 114B9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 17:07:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 856C3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 17:09:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346441AbiEaRHp (ORCPT
+        id S1346309AbiEaRJ0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 13:07:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37150 "EHLO
+        Tue, 31 May 2022 13:09:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346436AbiEaRHl (ORCPT
+        with ESMTP id S236090AbiEaRJY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 13:07:41 -0400
-Received: from bee.birch.relay.mailchannels.net (bee.birch.relay.mailchannels.net [23.83.209.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F149C8DDCC;
-        Tue, 31 May 2022 10:07:34 -0700 (PDT)
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id 0DFE66C1FA6;
-        Tue, 31 May 2022 17:00:17 +0000 (UTC)
-Received: from pdx1-sub0-mail-a312.dreamhost.com (unknown [127.0.0.6])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id 0A8136C2114;
-        Tue, 31 May 2022 17:00:16 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1654016416; a=rsa-sha256;
-        cv=none;
-        b=QX2ksRbCwwylwUewYYzBAn4DV+az79n5Rc9lTFVsaETiYMaq9qBuFcwTLz+ouF+jbYtBJ8
-        bPeD0CoaU7fCDvQTA6us8lRyeV3Olet+GPxfMFSzlbNHG3uRWKnqN8WZIJ+vungxJxHv3M
-        O8zn+lqyjTjHGqfwYvo8fI5UH6S6VosRbV8H9WkFp5MN8zWjSi0GeO0ZHox03hXuBQC4Qp
-        VIEXZRYkTxHROea9SJpt/dNu+du9FWJWZExzbquW/tLtuV5pG+L+LcSIaocHfDhzjEj1/W
-        kj33rWiYJSQziEt2o4XOnbTN664gVeUxamKZ1W1zzdRKuBjMyBjMw2SX5kcTGg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-        s=arc-2022; t=1654016416;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references:dkim-signature;
-        bh=xh6g3OnYgOARYnrm0HnNILhGZu8yEtDYkR54Gfjgl7k=;
-        b=4XA4G6+Het4QS/uEmG2Hffy7DMrUxMqgmUM+6bNTM7moCCJcZ1VAuwy76mqxELGjkvlCci
-        lXdYwWywsMhZv4EO6wDWlEjJ+/6um7/tUsw1VQCG1JK0hfsHe5+KWpt437SNAwRfaE3xsl
-        urS0DFGX98Fusme77gHCrHeksbzODQR33ozW9QnWq9aWHNcaKEfDjbWFEIXH7A+u9PzfIu
-        aj9m5WVaIR/92r0p9iBT+29/859hjm31RxZy0jHy854jiHVxHAahYrMDEarUq4lOwG/ou0
-        rLu1/uM0DEIOSwSZRW2wRGpFaByBpl4ImAk3B+xWgNu4NSeF6Esz2mGIXJoVRQ==
-ARC-Authentication-Results: i=1;
-        rspamd-77f9f854d9-ttcbd;
-        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
-X-MailChannels-Auth-Id: dreamhost
-X-Society-Skirt: 7e4acaf972c84e96_1654016416565_595515388
-X-MC-Loop-Signature: 1654016416565:4149019227
-X-MC-Ingress-Time: 1654016416565
-Received: from pdx1-sub0-mail-a312.dreamhost.com (pop.dreamhost.com
- [64.90.62.162])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-        by 100.105.211.140 (trex/6.7.1);
-        Tue, 31 May 2022 17:00:16 +0000
-Received: from offworld (unknown [104.36.31.105])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: dave@stgolabs.net)
-        by pdx1-sub0-mail-a312.dreamhost.com (Postfix) with ESMTPSA id 4LCJRy34rRz3H;
-        Tue, 31 May 2022 10:00:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
-        s=dreamhost; t=1654016415;
-        bh=xh6g3OnYgOARYnrm0HnNILhGZu8yEtDYkR54Gfjgl7k=;
-        h=Date:From:To:Cc:Subject:Content-Type;
-        b=F4lT6yesUDFDgcPAs9cdLLpTsFA5xC0blgAX71tJOj7IUjAmo8fkG98E556WoOYIb
-         HWuEqcdGhxKWt3ShUP7m6e4XR4MkYgrx8q67klmn9xmtz6s9pdS8LjwgOgGDOBpTQn
-         RWP4S9G9kzIO7MGchFKkzVC2ZsZdF5vaWcRizWnuwR7iJe+6/6CBk87zEIDbwYhBAB
-         RypbhRdrbuZTxhROk30hABEI06ah8Oz70dAn5Sbi4kt4Iixlt8cBHCE2mzODbUUebS
-         XjBQOARdTp4xx/0zhUWUdxVGk0D+oCCDzXcFCLJgiaLfj6dHU6nRAy5L8OIMxr7cJ7
-         DrpNXkUy27bxw==
-Date:   Tue, 31 May 2022 10:00:11 -0700
-From:   Davidlohr Bueso <dave@stgolabs.net>
-To:     "ira.weiny@intel.com" <ira.weiny@intel.com>
-Cc:     Dan Williams <dan.j.williams@intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alison Schofield <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Ben Widawsky <ben@bwidawsk.net>, linux-kernel@vger.kernel.org,
-        linux-cxl@vger.kernel.org, linux-pci@vger.kernel.org,
-        a.manzanares@samsung.com
-Subject: Re: [PATCH v9 1/9] PCI: Add vendor ID for the PCI SIG
-Message-ID: <20220531170011.4rm654khkff66j2h@offworld>
-References: <20220531152632.1397976-1-ira.weiny@intel.com>
- <20220531152632.1397976-2-ira.weiny@intel.com>
+        Tue, 31 May 2022 13:09:24 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8465A6B036;
+        Tue, 31 May 2022 10:09:23 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id s6so6526300lfo.13;
+        Tue, 31 May 2022 10:09:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=oXC+omMyhQE+yQOLbS6KJe5K78bZY03LjtAozxlOWS4=;
+        b=TAyjZkyHiTXmbmHCSrE2qWJwfpy2mK18RqayHB9KPwF3D5Pg+bZ6eGYNeN34jbspjz
+         XKAIAKaqLBFgTkjxxqEqqjzKoQ4toUSB64OhXxsfMMRXeKBxTuUTXvyIQGUiGfioo7kC
+         oMkYvmT4C0UXva0czCxfN3JpmbeZVhWBsYi1qGOpj0WhxatmjVmbr0Qp0zNQmGicVbqD
+         XOkcjG3W1KKt5f0akOma0UDAHja0EIq/KJOrVyQ2kluOg8ugvRzH57Wsp2EqTBQKNt5m
+         4tqMtwtv+jysyfjiBaAa2EYLry0bXPvGexMdU0w2FewQWJm/hZYWq2QWm7FRLYNLGMi4
+         npkw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=oXC+omMyhQE+yQOLbS6KJe5K78bZY03LjtAozxlOWS4=;
+        b=PtSFlzs/ZV6s2lB045ns/cNkFL0Qj4KFrIkWpZ2KrlQ1dUN8S1QVOuAgxnVDi9Zug5
+         5anLRvBfgYNGvoTJIrai+cQwo4f2kvmyWJuYE/Tc2sJo31gLiT6XRWxGqIRxPH2dj8qa
+         PnSDjGI9TTzfaURHJSGaVTQD60QS8wmQ7cy3AfDnfYwxWReFjMWu5xcaTvOn6nE7BLHh
+         Bb3tCw1wZcJcf9R4mAbR+E35OcJC8SoWYFawRxaleI5dsBshNAEdA9xE9PMILQCbUu/k
+         S1mb5hS5FaoQbj44hn6VjvK1U+vIn/VYuWWhMW6MMRX556BbvXc2sh33Bjk66aIVIPZJ
+         8Kaw==
+X-Gm-Message-State: AOAM5310fwHwklb2R2goWSWJUEMp1XPsvJ3KDzOqioSbHdTLPJYvhbc4
+        6whBHQPALodaYmZJQJmPr0O/fZogUOw=
+X-Google-Smtp-Source: ABdhPJwx9hqwCt9lTBlhLuxF3159ZiuKQMGeaQRRGSerHfQCM1lHwBJOFfe0u0PJDGwPNceRQMYbag==
+X-Received: by 2002:ac2:4f09:0:b0:478:6c80:64fc with SMTP id k9-20020ac24f09000000b004786c8064fcmr26696653lfr.34.1654016961692;
+        Tue, 31 May 2022 10:09:21 -0700 (PDT)
+Received: from [192.168.1.7] ([212.22.223.21])
+        by smtp.gmail.com with ESMTPSA id i6-20020a196d06000000b00477cab33759sm3072432lfc.256.2022.05.31.10.09.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 31 May 2022 10:09:21 -0700 (PDT)
+Subject: Re: [PATCH V3 5/8] dt-bindings: Add xen,grant-dma IOMMU description
+ for xen-grant DMA ops
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        xen-devel@lists.xenproject.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        iommu@lists.linux-foundation.org
+Cc:     Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Julien Grall <julien@xen.org>, Juergen Gross <jgross@suse.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>
+References: <1653944417-17168-1-git-send-email-olekstysh@gmail.com>
+ <1653944417-17168-6-git-send-email-olekstysh@gmail.com>
+ <15eef004-74c7-0eb5-3f87-86e164ef70ff@linaro.org>
+From:   Oleksandr <olekstysh@gmail.com>
+Message-ID: <f5aa3337-e1fc-752e-5337-120599ed508b@gmail.com>
+Date:   Tue, 31 May 2022 20:09:19 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20220531152632.1397976-2-ira.weiny@intel.com>
-User-Agent: NeoMutt/20220429
+In-Reply-To: <15eef004-74c7-0eb5-3f87-86e164ef70ff@linaro.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 31 May 2022, ira.weiny@intel.com wrote:
 
->From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
->
->This ID is used in DOE headers to identify protocols that are defined
->within the PCI Express Base Specification, PCIe r6.0, sec 6.30.1.1 table
->6-32.
->
->Acked-by: Bjorn Helgaas <bhelgaas@google.com>
->Reviewed-by: Dan Williams <dan.j.williams@intel.com>
->Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+On 31.05.22 14:52, Krzysztof Kozlowski wrote:
 
-Reviewed-by: Davidlohr Bueso <dave@stgolabs.net>
+Hello Krzysztof
 
->---
-> include/linux/pci_ids.h | 1 +
-> 1 file changed, 1 insertion(+)
+> On 30/05/2022 23:00, Oleksandr Tyshchenko wrote:
+>> From: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+> Thank you for your patch. There is something to discuss/improve.
 >
->diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h
->index 0178823ce8c2..8af3b86206b1 100644
->--- a/include/linux/pci_ids.h
->+++ b/include/linux/pci_ids.h
->@@ -151,6 +151,7 @@
-> #define PCI_CLASS_OTHERS		0xff
+>> diff --git a/Documentation/devicetree/bindings/iommu/xen,grant-dma.yaml b/Documentation/devicetree/bindings/iommu/xen,grant-dma.yaml
+>> new file mode 100644
+>> index 00000000..ab5765c
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/iommu/xen,grant-dma.yaml
+>> @@ -0,0 +1,49 @@
+>> +# SPDX-License-Identifier: (GPL-2.0-only or BSD-2-Clause)
+>> +%YAML 1.2
+>> +---
+>> +$id: http://devicetree.org/schemas/iommu/xen,grant-dma.yaml#
+>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>> +
+>> +title: Xen specific IOMMU for virtualized devices (e.g. virtio)
+>> +
+>> +maintainers:
+>> +  - Stefano Stabellini <sstabellini@kernel.org>
+>> +
+>> +description:
+>> +  The reference to Xen specific IOMMU node using "iommus" property indicates
+>> +  that Xen grant mappings need to be enabled for the device, and it specifies
+>> +  the ID of the domain where the corresponding backend resides.
+>> +  The binding is required to restrict memory access using Xen grant mappings.
+>> +
+>> +properties:
+>> +  compatible:
+>> +    const: xen,grant-dma
+>> +
+>> +  '#iommu-cells':
+>> +    const: 1
+>> +    description:
+>> +      Xen specific IOMMU is multiple-master IOMMU device.
+>> +      The single cell describes the domid (domain ID) of the domain where
+>> +      the backend is running.
+>> +
+>> +required:
+>> +  - compatible
+>> +  - "#iommu-cells"
+>> +
+>> +additionalProperties: false
+>> +
+>> +examples:
+>> +  - |
+>> +    xen_iommu {
+> No underscores in node names, generic node names, so this looks like
+> "iommu".
+
+
+ok, will change
+
+
 >
-> /* Vendors and devices.  Sort key: vendor first, device next. */
->+#define PCI_VENDOR_ID_PCI_SIG		0x0001
+>> +        compatible = "xen,grant-dma";
+>> +        #iommu-cells = <1>;
+>> +    };
+>> +
+>> +    virtio@3000 {
+>> +        compatible = "virtio,mmio";
+>> +        reg = <0x3000 0x100>;
+>> +        interrupts = <41>;
+>> +
+>> +        /* The backend is located in Xen domain with ID 1 */
+>> +        iommus = <&xen_iommu 1>;
+> There is no need usually to give consumer examples in provider binding.
+> If there is nothing specific here (looks exactly like every IOMMU
+> consumer in Linux kernel), drop the consumer.
+
+
+I got it.  There is nothing specific from the device tree's perspective, 
+I was thinking to draw attention to the IOMMU specifier (in our case, 
+the master device's ID == backend's domain ID). But  '#iommu-cells' 
+description above already clarifies that. Will drop.
+
+
 >
-> #define PCI_VENDOR_ID_LOONGSON		0x0014
+>> +    };
 >
->
->-- 
->2.35.1
->
+> Best regards,
+> Krzysztof
+
+-- 
+Regards,
+
+Oleksandr Tyshchenko
+
