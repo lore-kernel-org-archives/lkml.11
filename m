@@ -2,190 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38969C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 04:15:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D611DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 04:16:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243791AbiEaEPb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 00:15:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41916 "EHLO
+        id S243799AbiEaEQ2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 31 May 2022 00:16:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238733AbiEaEP1 (ORCPT
+        with ESMTP id S232244AbiEaEQ0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 00:15:27 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AB1A90CDC;
-        Mon, 30 May 2022 21:15:25 -0700 (PDT)
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24V3CNBR018710;
-        Tue, 31 May 2022 04:15:02 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding; s=pp1;
- bh=/9LInnWuKKhNhyYnDHrxS8Xb/Pzojn+6vFD2s6bYgQQ=;
- b=fEShOBfL5Aqx5bUH+j1RTdpFgzM0NMNeFllN+MoSZtbMer6Dj3tW9UxPWMs6+C/+dV9U
- wOsXddb74hm2jEFr9xMx5gKjeZiF9SQXKre+h2vcxsMVLR4n/84aMp9FmB9vAvIytiNC
- 9vDQYk4AiDPMIroo/2sqMNQt73SUivP8yt/jslr9BJca6v7N5Fv37FNhHHVC6Wu4lXf7
- RiOUsQo8tX2/pPm8I/tHZ4JN76grDD5sKy1xGK19FP4f7m9eqFryHsnqkbvqULih+7Yx
- OwL2xxCaFJjpj6HqN2hbiIGnr5K4sm77xxLCfo+2uVm8DcOd5hnkWsuQVDgldd7FcZ9d Wg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gdawb8rnc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 31 May 2022 04:15:01 +0000
-Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24V4CEdn002321;
-        Tue, 31 May 2022 04:15:01 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gdawb8rmx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 31 May 2022 04:15:00 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24V45RVE029354;
-        Tue, 31 May 2022 04:14:58 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma04ams.nl.ibm.com with ESMTP id 3gbcae3fqc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 31 May 2022 04:14:58 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24V4EtKP22675792
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 31 May 2022 04:14:55 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4088052051;
-        Tue, 31 May 2022 04:14:55 +0000 (GMT)
-Received: from vajain21.in.ibm.com (unknown [9.43.34.53])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with SMTP id 7D1D65204E;
-        Tue, 31 May 2022 04:14:48 +0000 (GMT)
-Received: by vajain21.in.ibm.com (sSMTP sendmail emulation); Tue, 31 May 2022 09:44:47 +0530
-From:   Vaibhav Jain <vaibhav@linux.ibm.com>
-To:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org
-Cc:     Vaibhav Jain <vaibhav@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Mimi Zohar <zohar@linux.vnet.ibm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Thiago Jung Bauermann <bauerman@linux.vnet.ibm.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Prakhar Srivastava <prsriva@linux.microsoft.com>,
-        Lakshmi Ramasubramanian <nramas@linux.microsoft.com>,
-        Thiago Jung Bauermann <bauerman@linux.ibm.com>,
-        Rob Herring <robh@kernel.org>,
-        Ritesh Harjani <ritesh.list@gmail.com>,
-        Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH v3] of: check previous kernel's ima-kexec-buffer against memory bounds
-Date:   Tue, 31 May 2022 09:44:46 +0530
-Message-Id: <20220531041446.3334259-1-vaibhav@linux.ibm.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 31 May 2022 00:16:26 -0400
+Received: from nksmu.kylinos.cn (mailgw.kylinos.cn [123.150.8.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11ED591566
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 21:16:23 -0700 (PDT)
+X-UUID: abb7c48168d341c5b76b13f5233e59cb-20220531
+X-GW-Reason: 13103
+X-Policy-Incident: 5pS25Lu25Lq66LaF6L+HMTDkurrpnIDopoHlrqHmoLg=
+X-Content-Feature: ica/max.line-size 100
+        audit/email.address 1
+        meta/cnt.alert 1
+X-CPASD-INFO: a36877d0361348c9a228887ad17d70b1@qoNwWGRpkmBfVnN_g3uuc4FjYmhoZFe
+        wpmtXlGVgjlGVhH5xTWJsXVKBfG5QZWNdYVN_eGpQYl9gZFB5i3-XblBgXoZgUZB3sHVwWGdllA==
+X-CLOUD-ID: a36877d0361348c9a228887ad17d70b1
+X-CPASD-SUMMARY: SIP:-1,APTIP:-2.0,KEY:0.0,FROMBLOCK:1,OB:0.0,URL:-5,TVAL:186.
+        0,ESV:0.0,ECOM:-5.0,ML:0.0,FD:0.0,CUTS:296.0,IP:-2.0,MAL:-5.0,PHF:-5.0,PHC:-5
+        .0,SPF:4.0,EDMS:-5,IPLABEL:4480.0,FROMTO:0,AD:0,FFOB:0.0,CFOB:0.0,SPC:0,SIG:-
+        5,AUF:9,DUF:41853,ACD:300,DCD:402,SL:0,EISP:0,AG:0,CFC:0.817,CFSR:0.03,UAT:0,
+        RAF:0,IMG:-5.0,DFA:0,DTA:0,IBL:-2.0,ADI:-5,SBL:0,REDM:0,REIP:0,ESB:0,ATTNUM:0
+        ,EAF:0,CID:-5.0,VERSION:2.3.17
+X-CPASD-ID: abb7c48168d341c5b76b13f5233e59cb-20220531
+X-CPASD-BLOCK: 1000
+X-CPASD-STAGE: 1
+X-UUID: abb7c48168d341c5b76b13f5233e59cb-20220531
+X-User: huangbing@kylinos.cn
+Received: from localhost.localdomain [(116.128.244.169)] by nksmu.kylinos.cn
+        (envelope-from <huangbing@kylinos.cn>)
+        (Generic MTA)
+        with ESMTP id 1892234530; Tue, 31 May 2022 11:15:50 +0800
+From:   Bing Huang <huangbing@kylinos.cn>
+To:     peterz@infradead.org
+Cc:     brauner@kernel.org, bristot@redhat.com, bsegall@google.com,
+        dietmar.eggemann@arm.com, juri.lelli@redhat.com,
+        linux-kernel@vger.kernel.org, mgorman@suse.de, mingo@redhat.com,
+        rostedt@goodmis.org, vincent.guittot@linaro.org
+Subject: [PATCH v2] sched/fair: static cpumasks for load balance
+Date:   Tue, 31 May 2022 11:12:55 +0800
+Message-Id: <20220531031255.30966-1-huangbing@kylinos.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: Qcq5m2-7pM6dQbx6vztd7xC-CvMTqTT9
-X-Proofpoint-ORIG-GUID: YPdZ-wyC1Vd67mhOjDzMZxRH8o2s6wYX
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
- definitions=2022-05-31_01,2022-05-30_03,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
- lowpriorityscore=0 clxscore=1011 mlxlogscore=999 suspectscore=0
- phishscore=0 malwarescore=0 adultscore=0 bulkscore=0 impostorscore=0
- priorityscore=1501 mlxscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2204290000 definitions=main-2205310019
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Presently ima_get_kexec_buffer() doesn't check if the previous kernel's
-ima-kexec-buffer lies outside the addressable memory range. This can result
-in a kernel panic if the new kernel is booted with 'mem=X' arg and the
-ima-kexec-buffer was allocated beyond that range by the previous kernel.
-The panic is usually of the form below:
+The both cpu mask load_balance_mask and select_idle_mask just only used
+in fair.c, but allocation in core.c in CONFIG_CPUMASK_OFFSTACK=y case,
+and global via declare per cpu variations. More or less, it looks wired.
 
-$ sudo kexec --initrd initrd vmlinux --append='mem=16G'
-
-<snip>
- BUG: Unable to handle kernel data access on read at 0xc000c01fff7f0000
- Faulting instruction address: 0xc000000000837974
- Oops: Kernel access of bad area, sig: 11 [#1]
-<snip>
- NIP [c000000000837974] ima_restore_measurement_list+0x94/0x6c0
- LR [c00000000083b55c] ima_load_kexec_buffer+0xac/0x160
- Call Trace:
- [c00000000371fa80] [c00000000083b55c] ima_load_kexec_buffer+0xac/0x160
- [c00000000371fb00] [c0000000020512c4] ima_init+0x80/0x108
- [c00000000371fb70] [c0000000020514dc] init_ima+0x4c/0x120
- [c00000000371fbf0] [c000000000012240] do_one_initcall+0x60/0x2c0
- [c00000000371fcc0] [c000000002004ad0] kernel_init_freeable+0x344/0x3ec
- [c00000000371fda0] [c0000000000128a4] kernel_init+0x34/0x1b0
- [c00000000371fe10] [c00000000000ce64] ret_from_kernel_thread+0x5c/0x64
- Instruction dump:
- f92100b8 f92100c0 90e10090 910100a0 4182050c 282a0017 3bc00000 40810330
- 7c0802a6 fb610198 7c9b2378 f80101d0 <a1240000> 2c090001 40820614 e9240010
- ---[ end trace 0000000000000000 ]---
-
-Fix this issue by checking returned PFN range of previous kernel's
-ima-kexec-buffer with page_is_ram() to ensure correct memory bounds.
-
-Fixes: 467d27824920 ("powerpc: ima: get the kexec buffer passed by the previous kernel")
-Cc: Frank Rowand <frowand.list@gmail.com>
-Cc: Prakhar Srivastava <prsriva@linux.microsoft.com>
-Cc: Lakshmi Ramasubramanian <nramas@linux.microsoft.com>
-Cc: Thiago Jung Bauermann <bauerman@linux.ibm.com>
-Cc: Rob Herring <robh@kernel.org>
-Cc: Ritesh Harjani <ritesh.list@gmail.com>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Signed-off-by: Vaibhav Jain <vaibhav@linux.ibm.com>
+Signed-off-by: Bing Huang <huangbing@kylinos.cn>
 ---
-Changelog
-==========
-v3:
-* change the type for {start,end}_pfn to unsigned long [ Ritesh ]
-* Switched to page_is_ram() from pfn_vaild() [ Rob ]
 
-v2:
-* Instead of using memblock to determine the valid bounds use pfn_valid() to do
-so since memblock may not be available late after the kernel init. [ Mpe ]
-* Changed the patch prefix from 'powerpc' to 'of' [ Mpe ]
-* Updated the 'Fixes' tag to point to correct commit that introduced this
-function. [ Rob ]
-* Fixed some whitespace/tab issues in the patch description [ Rob ]
-* Added another check for checking ig 'tmp_size' for ima-kexec-buffer is > 0
----
- drivers/of/kexec.c | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+ v2: move load_balance_mask and select_idle_mask allocation from
+sched_init() to init_sched_fair_class()   
 
-diff --git a/drivers/of/kexec.c b/drivers/of/kexec.c
-index 8d374cc552be..91b04b04eec4 100644
---- a/drivers/of/kexec.c
-+++ b/drivers/of/kexec.c
-@@ -126,6 +126,7 @@ int ima_get_kexec_buffer(void **addr, size_t *size)
+ kernel/sched/core.c | 11 -----------
+ kernel/sched/fair.c | 14 ++++++++++++--
+ 2 files changed, 12 insertions(+), 13 deletions(-)
+
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 696c6490bd5b..707df2aeebf8 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -9503,9 +9503,6 @@ LIST_HEAD(task_groups);
+ static struct kmem_cache *task_group_cache __read_mostly;
+ #endif
+ 
+-DECLARE_PER_CPU(cpumask_var_t, load_balance_mask);
+-DECLARE_PER_CPU(cpumask_var_t, select_idle_mask);
+-
+ void __init sched_init(void)
  {
- 	int ret, len;
- 	unsigned long tmp_addr;
-+	unsigned long start_pfn, end_pfn;
- 	size_t tmp_size;
- 	const void *prop;
+ 	unsigned long ptr = 0;
+@@ -9549,14 +9546,6 @@ void __init sched_init(void)
  
-@@ -140,6 +141,22 @@ int ima_get_kexec_buffer(void **addr, size_t *size)
- 	if (ret)
- 		return ret;
+ #endif /* CONFIG_RT_GROUP_SCHED */
+ 	}
+-#ifdef CONFIG_CPUMASK_OFFSTACK
+-	for_each_possible_cpu(i) {
+-		per_cpu(load_balance_mask, i) = (cpumask_var_t)kzalloc_node(
+-			cpumask_size(), GFP_KERNEL, cpu_to_node(i));
+-		per_cpu(select_idle_mask, i) = (cpumask_var_t)kzalloc_node(
+-			cpumask_size(), GFP_KERNEL, cpu_to_node(i));
+-	}
+-#endif
  
-+	/* Do some sanity on the returned size for the ima-kexec buffer */
-+	if (!tmp_size)
-+		return -ENOENT;
+ 	init_rt_bandwidth(&def_rt_bandwidth, global_rt_period(), global_rt_runtime());
+ 
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 8c5b74f66bd3..377d908866ab 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -5843,8 +5843,8 @@ static void dequeue_task_fair(struct rq *rq, struct task_struct *p, int flags)
+ #ifdef CONFIG_SMP
+ 
+ /* Working cpumask for: load_balance, load_balance_newidle. */
+-DEFINE_PER_CPU(cpumask_var_t, load_balance_mask);
+-DEFINE_PER_CPU(cpumask_var_t, select_idle_mask);
++static DEFINE_PER_CPU(cpumask_var_t, load_balance_mask);
++static DEFINE_PER_CPU(cpumask_var_t, select_idle_mask);
+ 
+ #ifdef CONFIG_NO_HZ_COMMON
+ 
+@@ -11841,6 +11841,16 @@ void show_numa_stats(struct task_struct *p, struct seq_file *m)
+ __init void init_sched_fair_class(void)
+ {
+ #ifdef CONFIG_SMP
 +
-+	/*
-+	 * Calculate the PFNs for the buffer and ensure
-+	 * they are with in addressable memory.
-+	 */
-+	start_pfn = PHYS_PFN(tmp_addr);
-+	end_pfn = PHYS_PFN(tmp_addr + tmp_size - 1);
-+	if (!page_is_ram(start_pfn) || !page_is_ram(end_pfn)) {
-+		pr_warn("IMA buffer at 0x%lx, size = 0x%zx beyond memory\n",
-+			tmp_addr, tmp_size);
-+		return -EINVAL;
++#ifdef CONFIG_CPUMASK_OFFSTACK
++	for_each_possible_cpu(i) {
++		per_cpu(load_balance_mask, i) = (cpumask_var_t)kzalloc_node(
++			cpumask_size(), GFP_KERNEL, cpu_to_node(i));
++		per_cpu(select_idle_mask, i) = (cpumask_var_t)kzalloc_node(
++			cpumask_size(), GFP_KERNEL, cpu_to_node(i));
 +	}
++#endif
 +
- 	*addr = __va(tmp_addr);
- 	*size = tmp_size;
+ 	open_softirq(SCHED_SOFTIRQ, run_rebalance_domains);
  
+ #ifdef CONFIG_NO_HZ_COMMON
 -- 
-2.35.1
+2.25.1
 
+
+No virus found
+		Checked by Hillstone Network AntiVirus
