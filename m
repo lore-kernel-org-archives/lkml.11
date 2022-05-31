@@ -2,98 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31989C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 14:49:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 740C3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 14:51:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345333AbiEaOts (ORCPT
+        id S1345330AbiEaOvq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 10:49:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34834 "EHLO
+        Tue, 31 May 2022 10:51:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345299AbiEaOtr (ORCPT
+        with ESMTP id S230302AbiEaOvo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 10:49:47 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BA2E1EAFF
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 07:49:46 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id e66so13045871pgc.8
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 07:49:46 -0700 (PDT)
+        Tue, 31 May 2022 10:51:44 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A57592C0;
+        Tue, 31 May 2022 07:51:42 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id gi33so27202962ejc.3;
+        Tue, 31 May 2022 07:51:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ceYIzlL/twTH8Sr59LajLbKK1xxBDxgWw7CtT5vS84w=;
-        b=K0S/p3jRO0pqQZ0yw9hdVvC9iMKHlzc6CLAZtSMin3YKcxUYUj0ek3P+WGYNxDZl/h
-         9azmVFZ0uzK8PCDufF/Gjw66qtxTwQqzJdFJuIxxWUxF8ww4bqrf15X+U13iBBErU1fp
-         DX3oH+7ABnJSlbwItxycWDd41+OPp8j+1cKrlbFn39i5y4pgUCwGq499xs8oPoiRbGv/
-         bwfjPX/feLbTjyI0TiFgnStzne1oJOBmjMLEgxGWTeffJ/3xpVBhg6lwr/qhOoGdjBWq
-         JqCwX0CVSpdiZWifOYpTuacvZTwYd6lwx9r5/r0M8zr3ltCWRlJ2SukjjgtidI0y2BYS
-         Zzdg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RyUYTxEhGVj/YIsL/hTx00frob1EwhFyyAlxk5eJqJA=;
+        b=c5jUWMojZvgZti6/EtmJ57YkLR6oDynJR2USvxGJHFWnb6HRX6qskr/MZ/exC8PpkG
+         DAMqrH6bm7rN8kHrecyf0yQ1+80KGh1OSii93TVVIWfTxJ70JSMsWtT5QTuPgqcUk0EG
+         MXV0K0uAxv64DWc6UbAdf9MS711tYfA2WXBbPoH8z0pG6JxTtKE7TLaVzH/VirVfhXN0
+         qLSTVOQG41Z5miblPbIHxV42N+/oUUfkhewl8vc56MB+26EhkHf+c8ugyR95iuHxrlQ6
+         opXKLDH9/q//+qz3Hzn33JYku9Iqvf1noOjMraprySoaxsIJ3hkqwHfn2Qkk0sO86a+i
+         NkiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ceYIzlL/twTH8Sr59LajLbKK1xxBDxgWw7CtT5vS84w=;
-        b=CDcNprzopwgzd3GPx+nYt6wE9mcUF2OyL0FG60nl1TuwoXCvczXIJwAuGv9ydaRrSu
-         j4gYPacsmf4c3P05xuc88utAFyOygMhWC9aHad89yHoZoD5nshGeo/QhGZFeZbSb+OVT
-         J0IoDWfh9IO9kiGFGD44F4DXTGXBVwPSHQVx/gKVCDrm0Fj+sCETASp3mHOMjsEsqLVk
-         OjUvUdJNH+gnUyeclorLqT7rg3gyb6kqAlsFOWtD4f2hNY6rohbsPTMJwNUU01KlRrFc
-         7PYip83YuviQWRPBDwGx+gCOG9tKA3RDKOsAjm3igfOizH8Idb1joKoP9lzkBo3LK7Xm
-         gtHA==
-X-Gm-Message-State: AOAM530hp2yWZyEPFh6Y8fSDvXce5AKOKCA0dA+RUpLkLhgTlc94Hkl7
-        mRdNNBGCA68K4aEBoNwt5E4=
-X-Google-Smtp-Source: ABdhPJzDSi4itj4Z6llVe4OArFqnAITyU34dFBtLDFQN+cm+fuixe6WVqtcPuXnd4vYgLmf0MRQtHA==
-X-Received: by 2002:a63:ef4e:0:b0:3f9:e8c4:b72d with SMTP id c14-20020a63ef4e000000b003f9e8c4b72dmr42409832pgk.328.1654008585955;
-        Tue, 31 May 2022 07:49:45 -0700 (PDT)
-Received: from localhost.localdomain ([202.120.234.246])
-        by smtp.googlemail.com with ESMTPSA id d3-20020a17090a8d8300b001e2d4ef6160sm2007215pjo.27.2022.05.31.07.49.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 May 2022 07:49:45 -0700 (PDT)
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     Neil Armstrong <narmstrong@baylibre.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        dri-devel@lists.freedesktop.org, linux-amlogic@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     linmq006@gmail.com
-Subject: [PATCH 2/2] drm/meson: encoder_hdmi: Fix refcount leak in meson_encoder_hdmi_init
-Date:   Tue, 31 May 2022 18:48:16 +0400
-Message-Id: <20220531144818.26943-2-linmq006@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220531144818.26943-1-linmq006@gmail.com>
-References: <20220531144818.26943-1-linmq006@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RyUYTxEhGVj/YIsL/hTx00frob1EwhFyyAlxk5eJqJA=;
+        b=75chPzIq1oeAZ5oHw2NYJISPe9uCEtc9O8B/IHNf0scxs7gGyOk0HgY+HZ+alIsdvU
+         iUA1ylbF4k+GgufL8p9TBecSc0fJ4WpEUPFwOUdw20TEEs0P+ZwD7dcMGCRCAvaKJ5jo
+         t7k0SuwHYyzl4zdevonxFN5XtOmu0CprIspdlO9YG2jjHYuQBn1BHCg8RzUfirSd8lgB
+         hKGqWp1TziX8CNaAjI/SdnodDU5ieSP3cDDMn5J/Hxd7npU+ygETki/Df68xL/ZiBewo
+         xfcfEh96dhJLqvcu1r1bLD5x9Gh0BTVDnHn7rhazSxIi+5bN5qxYB2pz2efXOtVZcbd8
+         FNYQ==
+X-Gm-Message-State: AOAM531yf5zJd4rgbbykAeSDCvR42e3v0aClaz6M83esJ2bf11MjOCVl
+        ZUsk3JlW0J7GY/Qq2I3myIRjaRYqbboRhVJDAjG5QdJRjW5smQ==
+X-Google-Smtp-Source: ABdhPJyyUxrqkDU9Pdnv/wBT4Ukiky8NfAEOA6SUjdD/jhw8Z0mgIWoKCw/A1Uiiw0BwLN05D8FyNz3mtYHWbLct3XQ=
+X-Received: by 2002:a17:907:2ce3:b0:6ff:1447:d3a4 with SMTP id
+ hz3-20020a1709072ce300b006ff1447d3a4mr27196777ejc.497.1654008700721; Tue, 31
+ May 2022 07:51:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220530221429.1248083-1-demonsingur@gmail.com> <20220530221429.1248083-3-demonsingur@gmail.com>
+In-Reply-To: <20220530221429.1248083-3-demonsingur@gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 31 May 2022 16:51:04 +0200
+Message-ID: <CAHp75Vdi8q1SkLz-SC9pr1Hj_tO=6d42g8OQM7zE8dMUGCG9Wg@mail.gmail.com>
+Subject: Re: [PATCH 3/4] serial: max310x: make accessing revision id interface-agnostic
+To:     Cosmin Tanislav <demonsingur@gmail.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Cosmin Tanislav <cosmin.tanislav@analog.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-of_graph_get_remote_node() returns remote device nodepointer with
-refcount incremented, we should use of_node_put() on it when done.
-Add missing of_node_put() to avoid refcount leak.
+On Tue, May 31, 2022 at 3:55 PM Cosmin Tanislav <demonsingur@gmail.com> wrote:
+>
+> From: Cosmin Tanislav <cosmin.tanislav@analog.com>
+>
+> SPI can only use 5 address bits, since one bit is reserved for
+> specifying R/W and 2 bits are used to specify the UART port.
+> To access registers that have addresses past 0x1F, an extended
+> register space can be enabled by writing to the GlobalCommand
+> register (address 0x1F).
+>
+> I2C uses 8 address bits. The R/W bit is placed in the slave
+> address, and so is the UART port. Because of this, registers
+> that have addresses higher than 0x1F can be accessed normally.
+>
+> To access the RevID register, on SPI, 0xCE must be written to
+> the 0x1F address to enable the extended register space, after
+> which the RevID register is accessible at address 0x5. 0xCD
+> must be written to the 0x1F address to disable the extended
+> register space.
+>
+> On I2C, the RevID register is accessible at address 0x25.
+>
+> Create an interface config struct, and add a method for
+> toggling the extended register space and a member for the RevId
+> register address. Implement these for SPI.
 
-Fixes: e67f6037ae1b ("drm/meson: split out encoder from meson_dw_hdmi")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
----
- drivers/gpu/drm/meson/meson_encoder_hdmi.c | 1 +
- 1 file changed, 1 insertion(+)
+...
 
-diff --git a/drivers/gpu/drm/meson/meson_encoder_hdmi.c b/drivers/gpu/drm/meson/meson_encoder_hdmi.c
-index 5e306de6f485..f3341458f8b7 100644
---- a/drivers/gpu/drm/meson/meson_encoder_hdmi.c
-+++ b/drivers/gpu/drm/meson/meson_encoder_hdmi.c
-@@ -363,6 +363,7 @@ int meson_encoder_hdmi_init(struct meson_drm *priv)
- 	}
- 
- 	meson_encoder_hdmi->next_bridge = of_drm_find_bridge(remote);
-+	of_node_put(remote);
- 	if (!meson_encoder_hdmi->next_bridge) {
- 		dev_err(priv->dev, "Failed to find HDMI transceiver bridge\n");
- 		return -EPROBE_DEFER;
+>  struct max310x_port {
+>         const struct max310x_devtype *devtype;
+> +       const struct max310x_if_cfg *if_cfg;
+>         struct regmap           *regmap;
+
+I believe the most used pointer is regmap and putting it to be a first
+member will make pointer arithmetic no-op at compile time. That said,
+adding new member is better after this one.
+
+>         struct clk              *clk;
+
+...
+
+> +       ret = s->if_cfg->set_ext_reg_en(dev, true);
+
+It sounds like a voodoo speech. Can we name the callback better?
+->extended_reg_enable() ?
+
+>         if (ret)
+>                 return ret;
+
+...
+
+>  static int max310x_probe(struct device *dev, const struct max310x_devtype *devtype,
+> +                        const struct max310x_if_cfg *if_cfg,
+>                          struct regmap **regmaps, int irq)
+
+It should be commented on the other patch, but since I can't see it in
+my mailbox (yet) I put it here. So,
+looking into usage of regmaps parameter it logically should be declared as
+
+struct regmap *regmaps[]
+
+(yes, I know that there is no difference for the compiler, but code
+human reader).
+
+...
+
+> -       return max310x_probe(&spi->dev, devtype, regmaps, spi->irq);
+> +       return max310x_probe(&spi->dev, devtype, &max310x_spi_if_cfg, regmaps,
+> +                            spi->irq);
+
+Can still be on one line, no?
+
 -- 
-2.25.1
-
+With Best Regards,
+Andy Shevchenko
