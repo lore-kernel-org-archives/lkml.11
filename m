@@ -2,488 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ADA4C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 19:47:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B70AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 19:47:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347544AbiEaTr0 (ORCPT
+        id S1347518AbiEaTrz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 15:47:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52936 "EHLO
+        Tue, 31 May 2022 15:47:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347441AbiEaTrJ (ORCPT
+        with ESMTP id S1347484AbiEaTrM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 15:47:09 -0400
-Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59C0113D32;
-        Tue, 31 May 2022 12:47:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-        d=metrotek.ru; s=mail;
-        h=from:subject:date:message-id:to:cc:mime-version:content-transfer-encoding:
-         in-reply-to:references;
-        bh=pTeA8xUTGfaCvNXLBeISqFWLKpNe5du5Hg3wbe3pdOg=;
-        b=Z1MYn0xV3CeZzcAdOJs+dceyEQt66CDvy11bV7mq+U3GQ9v82Cw8Uraw/83aFNo8yzQRrvlAGFzTm
-         e20hvSrc6oHbrTMHxtJmI+W4VdHNFWet2YhB/z4+Fsy1ptxTan/O7TzEyhcbbBeSrPRAGXzBkchR9I
-         vx+o8k2J8lfspCHLpS5XqaflhP1ognxjxS7vff44GEA2tKatZXTTwboX4pBq2zA6Zo2PwxuK53uhvy
-         OL5uR41/TgoG+mRNms3Vy64S4Ek5CV2hu2y+ulVEL3mdWXjRwbBWeDoVrnTeiPYbdouKQWOwjzbbJw
-         1cf0FIfI66cJ/3x20kh0KY3AifyfauA==
-X-Kerio-Anti-Spam:  Build: [Engines: 2.16.3.1424, Stamp: 3], Multi: [Enabled, t: (0.000011,0.035266)], BW: [Enabled, t: (0.000018,0.000001)], RTDA: [Enabled, t: (0.076121), Hit: No, Details: v2.39.0; Id: 15.52k3io.1g4dqg70g.2pc2; mclb], total: 0(700)
-X-Footer: bWV0cm90ZWsucnU=
-Received: from localhost.localdomain ([178.70.36.174])
-        (authenticated user i.bornyakov@metrotek.ru)
-        by mail.pr-group.ru with ESMTPSA
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
-        Tue, 31 May 2022 22:46:47 +0300
-From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
-To:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
-        trix@redhat.com, Conor.Dooley@microchip.com
-Cc:     Ivan Bornyakov <i.bornyakov@metrotek.ru>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-fpga@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        system@metrotek.ru
-Subject: [PATCH v14 2/3] fpga: microchip-spi: add Microchip MPF FPGA manager
-Date:   Tue, 31 May 2022 22:23:43 +0300
-Message-Id: <20220531192344.23038-3-i.bornyakov@metrotek.ru>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220531192344.23038-1-i.bornyakov@metrotek.ru>
-References: <20220531192344.23038-1-i.bornyakov@metrotek.ru>
+        Tue, 31 May 2022 15:47:12 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3D63DF93
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 12:47:10 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id bo5so14137140pfb.4
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 12:47:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=YhC+hN49BuSzPA2eVA/U+rfjQum2PYL/Zemnrj3txh0=;
+        b=FhMngP+h/QliKbg6XS8bp+cpEhNKyESg7EWr5+H4hY/gbY3FNqrhlm/dll7peYP7GT
+         Uv3Tw3xiYKMIDT+AFnDYlkyG2udMgt/V71thYzb1cHkzIT1plDbOGQRmnFXHHEU4XTcg
+         rRA/SS2DEXu8N1+QhdBn4DOnx6Adgx2dUSuA40QHDFEm3hTTJRF8/fhzs9WEHdxQdkU3
+         myIzXNU50STTaLKoMLjsDUqK6U4LhDzO9iwItNPCaqOqUrEYA4ShoqTWIu709HDdShfg
+         GkgMIrS5lTvPeNjYEC/uksKmjVeQyy18mT7QATDjrSuRdIK1FdlsMzUkiaz1N0jnvAMV
+         8srw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=YhC+hN49BuSzPA2eVA/U+rfjQum2PYL/Zemnrj3txh0=;
+        b=abKrsB1ZTwh0mO60AFof4woxc+Y78wTYE5XHl3uywBlWM2ykWJe3anZZjv3H0w+V6O
+         Zsgd5gbd9Q3KYiVQpQCEun4khhjA4/olKzYwPOdk0jdjJvM1+u3rcq97c5I6HknsTIu7
+         q8AA/YEfo77wCBv+zcNjwIe9v2VvFRpN3iJZ92veX0B4lFu3aUqX4Z6otFjdJlhjZ/P6
+         L1nvgrPyhlbiSLRSxasa7+ml2qo3HjRBuP4PuWQQ4PHSlbvniP18VhUz2LfaodL+1x4r
+         zIaZc3aiQQUgzql5PtYVTjGPlTXOdnf1MiKPF8dh2uFyiBqQepne0cdeqfEoxPOCYYsd
+         XTqQ==
+X-Gm-Message-State: AOAM532JcgmCk2cVuqXua70Ls23fEQuABft9dfbmDEWv3Scu0sJjyCcs
+        AaPNejfH5EXwY3VfywxRtgA6Yg==
+X-Google-Smtp-Source: ABdhPJy4qIorEF0xR242+k5TYE62Ryzupn+gQ6zveoRl/R0+HKvtWCf2fZxT8WQGDcjy25T3Y8vAaA==
+X-Received: by 2002:a63:1543:0:b0:3fa:8e73:d7a5 with SMTP id 3-20020a631543000000b003fa8e73d7a5mr34189956pgv.160.1654026430233;
+        Tue, 31 May 2022 12:47:10 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id m6-20020a635806000000b003c67e472338sm10741774pgb.42.2022.05.31.12.47.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 May 2022 12:47:09 -0700 (PDT)
+Date:   Tue, 31 May 2022 19:47:06 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Xiang wangx <wangxiang@cdjrlc.com>
+Cc:     pbonzini@redhat.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] KVM: Add const to file_operations
+Message-ID: <YpZwum3FHCJKnWIQ@google.com>
+References: <20220530020857.2565-1-wangxiang@cdjrlc.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220530020857.2565-1-wangxiang@cdjrlc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support to the FPGA manager for programming Microchip Polarfire
-FPGAs over slave SPI interface with .dat formatted bitsream image.
+On Mon, May 30, 2022, Xiang wangx wrote:
+> Struct file_operations should normally be const.
 
-Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
----
- drivers/fpga/Kconfig         |   9 +
- drivers/fpga/Makefile        |   1 +
- drivers/fpga/microchip-spi.c | 384 +++++++++++++++++++++++++++++++++++
- 3 files changed, 394 insertions(+)
- create mode 100644 drivers/fpga/microchip-spi.c
+Operative word being "should".  kvm_chardev_ops isn't constant because kvm_init()
+modifies the "owner".  The same was true for kvm_vcpu_fops and kvm_vm_fops until
+commit 70375c2d8fa3 ("Revert "KVM: set owner of cpu and vm file operations"").
 
-diff --git a/drivers/fpga/Kconfig b/drivers/fpga/Kconfig
-index 26025dbab353..75806ef5c9ea 100644
---- a/drivers/fpga/Kconfig
-+++ b/drivers/fpga/Kconfig
-@@ -248,4 +248,13 @@ config FPGA_MGR_VERSAL_FPGA
- 	  configure the programmable logic(PL).
- 
- 	  To compile this as a module, choose M here.
-+
-+config FPGA_MGR_MICROCHIP_SPI
-+	tristate "Microchip Polarfire SPI FPGA manager"
-+	depends on SPI
-+	help
-+	  FPGA manager driver support for Microchip Polarfire FPGAs
-+	  programming over slave SPI interface with .dat formatted
-+	  bitstream image.
-+
- endif # FPGA
-diff --git a/drivers/fpga/Makefile b/drivers/fpga/Makefile
-index e32bfa90f968..5425a15892df 100644
---- a/drivers/fpga/Makefile
-+++ b/drivers/fpga/Makefile
-@@ -19,6 +19,7 @@ obj-$(CONFIG_FPGA_MGR_XILINX_SPI)	+= xilinx-spi.o
- obj-$(CONFIG_FPGA_MGR_ZYNQ_FPGA)	+= zynq-fpga.o
- obj-$(CONFIG_FPGA_MGR_ZYNQMP_FPGA)	+= zynqmp-fpga.o
- obj-$(CONFIG_FPGA_MGR_VERSAL_FPGA)	+= versal-fpga.o
-+obj-$(CONFIG_FPGA_MGR_MICROCHIP_SPI)	+= microchip-spi.o
- obj-$(CONFIG_ALTERA_PR_IP_CORE)		+= altera-pr-ip-core.o
- obj-$(CONFIG_ALTERA_PR_IP_CORE_PLAT)	+= altera-pr-ip-core-plat.o
- 
-diff --git a/drivers/fpga/microchip-spi.c b/drivers/fpga/microchip-spi.c
-new file mode 100644
-index 000000000000..413e5c364f68
---- /dev/null
-+++ b/drivers/fpga/microchip-spi.c
-@@ -0,0 +1,384 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Microchip Polarfire FPGA programming over slave SPI interface.
-+ */
-+
-+#include <asm/unaligned.h>
-+#include <linux/delay.h>
-+#include <linux/fpga/fpga-mgr.h>
-+#include <linux/module.h>
-+#include <linux/of_device.h>
-+#include <linux/spi/spi.h>
-+
-+#define	MPF_SPI_ISC_ENABLE	0x0B
-+#define	MPF_SPI_ISC_DISABLE	0x0C
-+#define	MPF_SPI_READ_STATUS	0x00
-+#define	MPF_SPI_READ_DATA	0x01
-+#define	MPF_SPI_FRAME_INIT	0xAE
-+#define	MPF_SPI_FRAME		0xEE
-+#define	MPF_SPI_PRG_MODE	0x01
-+#define	MPF_SPI_RELEASE		0x23
-+
-+#define	MPF_SPI_FRAME_SIZE	16
-+
-+#define	MPF_HEADER_SIZE_OFFSET	24
-+#define	MPF_DATA_SIZE_OFFSET	55
-+
-+#define	MPF_LOOKUP_TABLE_RECORD_SIZE		9
-+#define	MPF_LOOKUP_TABLE_BLOCK_ID_OFFSET	0
-+#define	MPF_LOOKUP_TABLE_BLOCK_START_OFFSET	1
-+
-+#define	MPF_COMPONENTS_SIZE_ID	5
-+#define	MPF_BITSTREAM_ID	8
-+
-+#define	MPF_BITS_PER_COMPONENT_SIZE	22
-+
-+#define	MPF_STATUS_POLL_RETRIES		10000
-+#define	MPF_STATUS_BUSY			BIT(0)
-+#define	MPF_STATUS_READY		BIT(1)
-+#define	MPF_STATUS_SPI_VIOLATION	BIT(2)
-+#define	MPF_STATUS_SPI_ERROR		BIT(3)
-+
-+struct mpf_priv {
-+	struct spi_device *spi;
-+	bool program_mode;
-+};
-+
-+static int mpf_read_status(struct spi_device *spi)
-+{
-+	u8 status = 0, status_command = MPF_SPI_READ_STATUS;
-+	struct spi_transfer xfers[2] = { 0 };
-+	int ret;
-+
-+	/*
-+	 * HW status is returned on MISO in the first byte after CS went
-+	 * active. However, first reading can be inadequate, so we submit
-+	 * two identical SPI transfers and use result of the later one.
-+	 */
-+	xfers[0].tx_buf = xfers[1].tx_buf = &status_command;
-+	xfers[0].rx_buf = xfers[1].rx_buf = &status;
-+	xfers[0].len = xfers[1].len = 1;
-+	xfers[0].cs_change = 1;
-+
-+	ret = spi_sync_transfer(spi, xfers, 2);
-+
-+	if ((status & MPF_STATUS_SPI_VIOLATION) ||
-+	    (status & MPF_STATUS_SPI_ERROR))
-+		ret = -EIO;
-+
-+	return ret ? : status;
-+}
-+
-+static enum fpga_mgr_states mpf_ops_state(struct fpga_manager *mgr)
-+{
-+	struct mpf_priv *priv = mgr->priv;
-+	struct spi_device *spi;
-+	bool program_mode;
-+	int status;
-+
-+	spi = priv->spi;
-+	program_mode = priv->program_mode;
-+	status = mpf_read_status(spi);
-+
-+	if (!program_mode && !status)
-+		return FPGA_MGR_STATE_OPERATING;
-+
-+	return FPGA_MGR_STATE_UNKNOWN;
-+}
-+
-+static int mpf_ops_parse_header(struct fpga_manager *mgr,
-+				struct fpga_image_info *info,
-+				const char *buf, size_t count)
-+{
-+	size_t component_size_byte_num, component_size_byte_off,
-+	       block_id_offset, block_start_offset;
-+	u8 header_size, blocks_num, block_id;
-+	u32 block_start, component_size, i,
-+	    components_size_start = 0,
-+	    bitstream_start = 0;
-+	u16 components_num;
-+
-+	if (!buf) {
-+		dev_err(&mgr->dev, "Image buffer is not provided\n");
-+		return -EINVAL;
-+	}
-+
-+	header_size = *(buf + MPF_HEADER_SIZE_OFFSET);
-+	if (header_size > count) {
-+		info->header_size = header_size;
-+		return -EAGAIN;
-+	}
-+
-+	/*
-+	 * Go through look-up table to find out where actual bitstream starts
-+	 * and where sizes of components of the bitstream lies.
-+	 */
-+	blocks_num = *(buf + header_size - 1);
-+	block_id_offset = header_size + MPF_LOOKUP_TABLE_BLOCK_ID_OFFSET;
-+	block_start_offset = header_size + MPF_LOOKUP_TABLE_BLOCK_START_OFFSET;
-+
-+	header_size += blocks_num * MPF_LOOKUP_TABLE_RECORD_SIZE;
-+	if (header_size > count) {
-+		info->header_size = header_size;
-+		return -EAGAIN;
-+	}
-+
-+	while (blocks_num--) {
-+		block_id = *(buf + block_id_offset);
-+		block_start = get_unaligned_le32(buf + block_start_offset);
-+
-+		switch (block_id) {
-+		case MPF_BITSTREAM_ID:
-+			info->header_size = bitstream_start = block_start;
-+			if (block_start > count)
-+				return -EAGAIN;
-+
-+			break;
-+		case MPF_COMPONENTS_SIZE_ID:
-+			components_size_start = block_start;
-+			break;
-+		default:
-+			break;
-+		}
-+
-+		if (bitstream_start && components_size_start)
-+			break;
-+
-+		block_id_offset += MPF_LOOKUP_TABLE_RECORD_SIZE;
-+		block_start_offset += MPF_LOOKUP_TABLE_RECORD_SIZE;
-+	}
-+
-+	if (!bitstream_start || !components_size_start) {
-+		dev_err(&mgr->dev, "Failed to parse header look-up table\n");
-+		return -EFAULT;
-+	}
-+
-+	/*
-+	 * Parse bitstream size.
-+	 * Sizes of components of the bitstream are 22-bits long placed next
-+	 * to each other. Image header should be extended by now up to where
-+	 * actual bitstream starts, so no need for overflow check anymore.
-+	 */
-+	components_num = get_unaligned_le16(buf + MPF_DATA_SIZE_OFFSET);
-+
-+	for (i = 0; i < components_num; i++) {
-+		component_size_byte_num =
-+			(i * MPF_BITS_PER_COMPONENT_SIZE) / BITS_PER_BYTE;
-+		component_size_byte_off =
-+			(i * MPF_BITS_PER_COMPONENT_SIZE) % BITS_PER_BYTE;
-+
-+		component_size = get_unaligned_le32(buf +
-+						    components_size_start +
-+						    component_size_byte_num);
-+		component_size >>= component_size_byte_off;
-+		component_size &= GENMASK(MPF_BITS_PER_COMPONENT_SIZE - 1, 0);
-+
-+		info->data_size += component_size * MPF_SPI_FRAME_SIZE;
-+	}
-+
-+	return 0;
-+}
-+
-+/* Poll HW status until busy bit is cleared and mask bits are set. */
-+static int mpf_poll_status(struct spi_device *spi, u8 mask)
-+{
-+	int status, retries = MPF_STATUS_POLL_RETRIES;
-+
-+	while (retries--) {
-+		status = mpf_read_status(spi);
-+		if (status < 0)
-+			return status;
-+
-+		if (status & MPF_STATUS_BUSY)
-+			continue;
-+
-+		if (!mask || (status & mask))
-+			return status;
-+	}
-+
-+	return -EBUSY;
-+}
-+
-+static int mpf_spi_write(struct spi_device *spi, const void *buf, size_t buf_size)
-+{
-+	int status = mpf_poll_status(spi, 0);
-+
-+	if (status < 0)
-+		return status;
-+
-+	return spi_write(spi, buf, buf_size);
-+}
-+
-+static int mpf_spi_write_then_read(struct spi_device *spi,
-+				   const void *txbuf, size_t txbuf_size,
-+				   void *rxbuf, size_t rxbuf_size)
-+{
-+	const u8 read_command[] = { MPF_SPI_READ_DATA };
-+	int ret;
-+
-+	ret = mpf_spi_write(spi, txbuf, txbuf_size);
-+	if (ret)
-+		return ret;
-+
-+	ret = mpf_poll_status(spi, MPF_STATUS_READY);
-+	if (ret < 0)
-+		return ret;
-+
-+	return spi_write_then_read(spi, read_command, sizeof(read_command),
-+				   rxbuf, rxbuf_size);
-+}
-+
-+static int mpf_ops_write_init(struct fpga_manager *mgr,
-+			      struct fpga_image_info *info, const char *buf,
-+			      size_t count)
-+{
-+	const u8 program_mode[] = { MPF_SPI_FRAME_INIT, MPF_SPI_PRG_MODE };
-+	const u8 isc_en_command[] = { MPF_SPI_ISC_ENABLE };
-+	struct mpf_priv *priv = mgr->priv;
-+	struct device *dev = &mgr->dev;
-+	struct spi_device *spi;
-+	u32 isc_ret = 0;
-+	int ret;
-+
-+	if (info->flags & FPGA_MGR_PARTIAL_RECONFIG) {
-+		dev_err(dev, "Partial reconfiguration is not supported\n");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	spi = priv->spi;
-+
-+	ret = mpf_spi_write_then_read(spi, isc_en_command, sizeof(isc_en_command),
-+				      &isc_ret, sizeof(isc_ret));
-+	if (ret || isc_ret) {
-+		dev_err(dev, "Failed to enable ISC: spi_ret %d, isc_ret %u\n",
-+			ret, isc_ret);
-+		return -EFAULT;
-+	}
-+
-+	ret = mpf_spi_write(spi, program_mode, sizeof(program_mode));
-+	if (ret) {
-+		dev_err(dev, "Failed to enter program mode: %d\n", ret);
-+		return ret;
-+	}
-+
-+	priv->program_mode = true;
-+
-+	return 0;
-+}
-+
-+static int mpf_ops_write(struct fpga_manager *mgr, const char *buf, size_t count)
-+{
-+	u8 tmp_buf[MPF_SPI_FRAME_SIZE + 1] = { MPF_SPI_FRAME, };
-+	struct mpf_priv *priv = mgr->priv;
-+	struct device *dev = &mgr->dev;
-+	struct spi_device *spi;
-+	int ret, i;
-+
-+	if (count % MPF_SPI_FRAME_SIZE) {
-+		dev_err(dev, "Bitstream size is not a multiple of %d\n",
-+			MPF_SPI_FRAME_SIZE);
-+		return -EINVAL;
-+	}
-+
-+	spi = priv->spi;
-+
-+	for (i = 0; i < count / MPF_SPI_FRAME_SIZE; i++) {
-+		memcpy(tmp_buf + 1, buf + i * MPF_SPI_FRAME_SIZE,
-+		       MPF_SPI_FRAME_SIZE);
-+
-+		ret = mpf_spi_write(spi, tmp_buf, sizeof(tmp_buf));
-+		if (ret) {
-+			dev_err(dev, "Failed to write bitstream frame %d/%zu\n",
-+				i, count / MPF_SPI_FRAME_SIZE);
-+			return ret;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+static int mpf_ops_write_complete(struct fpga_manager *mgr,
-+				  struct fpga_image_info *info)
-+{
-+	const u8 isc_dis_command[] = { MPF_SPI_ISC_DISABLE };
-+	const u8 release_command[] = { MPF_SPI_RELEASE };
-+	struct mpf_priv *priv = mgr->priv;
-+	struct device *dev = &mgr->dev;
-+	struct spi_device *spi;
-+	int ret;
-+
-+	spi = priv->spi;
-+
-+	ret = mpf_spi_write(spi, isc_dis_command, sizeof(isc_dis_command));
-+	if (ret) {
-+		dev_err(dev, "Failed to disable ISC: %d\n", ret);
-+		return ret;
-+	}
-+
-+	usleep_range(1000, 2000);
-+
-+	ret = mpf_spi_write(spi, release_command, sizeof(release_command));
-+	if (ret) {
-+		dev_err(dev, "Failed to exit program mode: %d\n", ret);
-+		return ret;
-+	}
-+
-+	priv->program_mode = false;
-+
-+	return 0;
-+}
-+
-+static const struct fpga_manager_ops mpf_ops = {
-+	.state = mpf_ops_state,
-+	.initial_header_size = 71,
-+	.parse_header = mpf_ops_parse_header,
-+	.write_init = mpf_ops_write_init,
-+	.write = mpf_ops_write,
-+	.write_complete = mpf_ops_write_complete,
-+};
-+
-+static int mpf_probe(struct spi_device *spi)
-+{
-+	struct device *dev = &spi->dev;
-+	struct fpga_manager *mgr;
-+	struct mpf_priv *priv;
-+
-+	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	priv->spi = spi;
-+
-+	mgr = devm_fpga_mgr_register(dev, "Microchip Polarfire SPI FPGA Manager",
-+				     &mpf_ops, priv);
-+
-+	return PTR_ERR_OR_ZERO(mgr);
-+}
-+
-+static const struct spi_device_id mpf_spi_ids[] = {
-+	{ .name = "mpf-spi-fpga-mgr", },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(spi, mpf_spi_ids);
-+
-+#if IS_ENABLED(CONFIG_OF)
-+static const struct of_device_id mpf_of_ids[] = {
-+	{ .compatible = "microchip,mpf-spi-fpga-mgr" },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, mpf_of_ids);
-+#endif /* IS_ENABLED(CONFIG_OF) */
-+
-+static struct spi_driver mpf_driver = {
-+	.probe = mpf_probe,
-+	.id_table = mpf_spi_ids,
-+	.driver = {
-+		.name = "microchip_mpf_spi_fpga_mgr",
-+		.of_match_table = of_match_ptr(mpf_of_ids),
-+	},
-+};
-+
-+module_spi_driver(mpf_driver);
-+
-+MODULE_DESCRIPTION("Microchip Polarfire SPI FPGA Manager");
-+MODULE_LICENSE("GPL");
--- 
-2.35.1
+So, this patch is both stale, and completely broken when applied against current
+KVM as well as whatever old version of KVM it was generated with.
+
+arch/x86/kvm/../../../virt/kvm/kvm_main.c:4873:37: error: conflicting type qualifiers for ‘kvm_chardev_ops’
+ 4873 | static const struct file_operations kvm_chardev_ops = {
+      |                                     ^~~~~~~~~~~~~~~
+arch/x86/kvm/../../../virt/kvm/kvm_main.c:120:31: note: previous declaration of ‘kvm_chardev_ops’ with type ‘struct file_operations’
+  120 | static struct file_operations kvm_chardev_ops;
+      |                               ^~~~~~~~~~~~~~~
+arch/x86/kvm/../../../virt/kvm/kvm_main.c: In function ‘kvm_init’:
+arch/x86/kvm/../../../virt/kvm/kvm_main.c:5777:31: error: assignment of member ‘owner’ in read-only object
+ 5777 |         kvm_chardev_ops.owner = module;
+      |                               ^
+  CC      arch/x86/events/intel/p6.o
+make[3]: *** [scripts/Makefile.build:288: arch/x86/kvm/../../../virt/kvm/kvm_main.o] Error 1
+make[2]: *** [scripts/Makefile.build:550: arch/x86/kvm] Error 2
 
 
+> Signed-off-by: Xiang wangx <wangxiang@cdjrlc.com>
+> ---
+>  virt/kvm/kvm_main.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+> index 3f6d450355f0..7dc2433f1b01 100644
+> --- a/virt/kvm/kvm_main.c
+> +++ b/virt/kvm/kvm_main.c
+> @@ -3550,7 +3550,7 @@ static int kvm_vcpu_release(struct inode *inode, struct file *filp)
+>  	return 0;
+>  }
+>  
+> -static struct file_operations kvm_vcpu_fops = {
+> +static const struct file_operations kvm_vcpu_fops = {
+>  	.release        = kvm_vcpu_release,
+>  	.unlocked_ioctl = kvm_vcpu_ioctl,
+>  	.mmap           = kvm_vcpu_mmap,
+> @@ -4599,7 +4599,7 @@ static long kvm_vm_compat_ioctl(struct file *filp,
+>  }
+>  #endif
+>  
+> -static struct file_operations kvm_vm_fops = {
+> +static const struct file_operations kvm_vm_fops = {
+>  	.release        = kvm_vm_release,
+>  	.unlocked_ioctl = kvm_vm_ioctl,
+>  	.llseek		= noop_llseek,
+> @@ -4701,7 +4701,7 @@ static long kvm_dev_ioctl(struct file *filp,
+>  	return r;
+>  }
+>  
+> -static struct file_operations kvm_chardev_ops = {
+> +static const struct file_operations kvm_chardev_ops = {
+>  	.unlocked_ioctl = kvm_dev_ioctl,
+>  	.llseek		= noop_llseek,
+>  	KVM_COMPAT(kvm_dev_ioctl),
+> -- 
+> 2.36.1
+> 
