@@ -2,145 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EF57C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 07:29:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B70DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 07:35:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244519AbiEaH3l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 03:29:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39490 "EHLO
+        id S244528AbiEaHfW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 31 May 2022 03:35:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244507AbiEaH3i (ORCPT
+        with ESMTP id S244517AbiEaHfF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 03:29:38 -0400
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D4EF92D2B
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 00:29:36 -0700 (PDT)
-Received: by mail-pf1-x435.google.com with SMTP id i18so12429426pfk.7
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 00:29:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ynHr+f3HdbTV3fIx5fiKz75mjaU0slPzyjQUZFWsNNE=;
-        b=3BSBjnH3ZVmWwEIVHzHXEhghdgZpFnAo+yvYtAzpgRfIXkbyBVhTXgf5d/xjNpaQHS
-         sz0UFZvQzv5e5HRgAt9iGDSpGTZx9tTCiezIhnMbEdJOAJ7K+A0IMSH0rp5jdGF1tm8K
-         EIrFKWV2qoxlzowMCVlAVqGHTETYK99rGlF5k+vSuVBHe/TdQ3E8MnxKfl9JfYEjOtJH
-         gnrlRHJsGlcnnMfhwsuKx9xFyDr/GEvdyf13nvjHmdiDKABo1mgxQFAJZxSAAZaNhZhd
-         NeqvDimuZDLbss4uGUDTImQXiGHwgXTn0NpL9vNjO1nvo7gCeAaXNnUrMKHbLulytSh2
-         JmIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ynHr+f3HdbTV3fIx5fiKz75mjaU0slPzyjQUZFWsNNE=;
-        b=59fCqR5e79NhWqGJ2tR3nwR1lL58ipGQ1lyJXQd7sJSuBHzbln3rG/ekLolfmBCIJt
-         cnw+HlTFpcxLmU+Ueft4homgQ1aZL1B5se3B9fxRPwDazAKjrJhL1p+JZJ/8InGlFv7c
-         wea6tqNuZwWb81y7pDmQsT0pvi2Rg468LvN15q2LcVwAbc0kB6XLYCvvDXt/djBqvCuG
-         h+WTaUQ7DTv+A3xutQS48EWSDfwsG/YleWnnb/7Zpgd2ahM3DmE+z6AyFngrGmMnmIuQ
-         JblyIcBcftr06SYR8ezcwxBfJ4lEBp73bARia9KB9+/kuO7Rsd8JXUdSd7eciUst/9r4
-         VQ0w==
-X-Gm-Message-State: AOAM531zi8irc3ln8hK+93sLSneGzwBzuWoQGoRA+bisDtdECbdU4oqA
-        g/CPrql+3vRIqPnrJeOH8DrNgg==
-X-Google-Smtp-Source: ABdhPJz+sPjbBPJuUyu8J0KCWi2CcYAAAGGaUdZO4DWuoXNJnb+8eFlVVZ9wEVss1F0lkZnI3TSv0A==
-X-Received: by 2002:a63:7156:0:b0:3fb:fa23:480e with SMTP id b22-20020a637156000000b003fbfa23480emr9579581pgn.553.1653982176034;
-        Tue, 31 May 2022 00:29:36 -0700 (PDT)
-Received: from localhost ([2408:8207:18da:2310:94c7:fca6:824f:4dab])
-        by smtp.gmail.com with ESMTPSA id j190-20020a6380c7000000b003fbea5453c5sm4901384pgd.9.2022.05.31.00.29.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 May 2022 00:29:35 -0700 (PDT)
-Date:   Tue, 31 May 2022 15:29:27 +0800
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     Waiman Long <longman@redhat.com>
-Cc:     hannes@cmpxchg.org, mhocko@kernel.org, roman.gushchin@linux.dev,
-        shakeelb@google.com, akpm@linux-foundation.org,
-        cgroups@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, duanxiongchun@bytedance.com
-Subject: Re: [PATCH v5 00/11] Use obj_cgroup APIs to charge the LRU pages
-Message-ID: <YpXD12Qa51/5EUdy@FVFYT0MHHV2J.usts.net>
-References: <20220530074919.46352-1-songmuchun@bytedance.com>
- <1ecec7cb-035c-a4aa-3918-1a00ba48c6f9@redhat.com>
+        Tue, 31 May 2022 03:35:05 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5820D82172;
+        Tue, 31 May 2022 00:34:53 -0700 (PDT)
+Date:   Tue, 31 May 2022 07:34:49 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1653982490;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=MKjc1ott4nliLMZ5rP684FS2s1uy73yIZ5lLMoWVCvI=;
+        b=t1Zijdb8tKvNB72tlH87nB54Uwy7Ez6EXpzsN+hBll1eLkHsp03lZ3YhfWPmyThZzoBRy2
+        FjrGF4mgUelUyX/MYvDWBIZYDpzKiS1VtwQz2LgMwBSsfy+Yn4PxoPnO9YHYYtnWuaNswH
+        xf9IwScrEROgKKJxzC+BIqNxGn3ROkhYzon4ReSMLzgY0ybxoWv9GeMLMW8X57E3lfMdME
+        6THkwrOb9LICgbd5SfFvpjXZ5U3nDzIfKs1JwisUDUQKF3PMZ2j9DP9/pjQJ+bB/a1Yt9T
+        5j1ayVTsUThdkqjpXjYPj7y1jUMupATHK/LHJ3Cmq6fv5AYPulWD0ik0vrYymQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1653982490;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=MKjc1ott4nliLMZ5rP684FS2s1uy73yIZ5lLMoWVCvI=;
+        b=oCYFR/ninVASyT0KNBW+FDlWHmYA/VXNFIxP/r4NBvZHqyUefPwkIXcr+cgGFTwqcIFika
+        mnpSYesbrCXqeZCg==
+From:   "tip-bot2 for Borislav Petkov" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/microcode] x86/microcode: Default-disable late loading
+Cc:     Borislav Petkov <bp@suse.de>, Thomas Gleixner <tglx@linutronix.de>,
+        x86@kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <20220525161232.14924-3-bp@alien8.de>
+References: <20220525161232.14924-3-bp@alien8.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1ecec7cb-035c-a4aa-3918-1a00ba48c6f9@redhat.com>
+Message-ID: <165398248963.4207.4617963203135266046.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 30, 2022 at 10:41:30PM -0400, Waiman Long wrote:
-> On 5/30/22 03:49, Muchun Song wrote:
-> > This version is rebased on v5.18.
-> > 
-> > Since the following patchsets applied. All the kernel memory are charged
-> > with the new APIs of obj_cgroup.
-> > 
-> > 	[v17,00/19] The new cgroup slab memory controller [1]
-> > 	[v5,0/7] Use obj_cgroup APIs to charge kmem pages [2]
-> > 
-> > But user memory allocations (LRU pages) pinning memcgs for a long time -
-> > it exists at a larger scale and is causing recurring problems in the real
-> > world: page cache doesn't get reclaimed for a long time, or is used by the
-> > second, third, fourth, ... instance of the same job that was restarted into
-> > a new cgroup every time. Unreclaimable dying cgroups pile up, waste memory,
-> > and make page reclaim very inefficient.
-> > 
-> > We can convert LRU pages and most other raw memcg pins to the objcg direction
-> > to fix this problem, and then the LRU pages will not pin the memcgs.
-> > 
-> > This patchset aims to make the LRU pages to drop the reference to memory
-> > cgroup by using the APIs of obj_cgroup. Finally, we can see that the number
-> > of the dying cgroups will not increase if we run the following test script.
-> > 
-> > ```bash
-> > #!/bin/bash
-> > 
-> > dd if=/dev/zero of=temp bs=4096 count=1
-> > cat /proc/cgroups | grep memory
-> > 
-> > for i in {0..2000}
-> > do
-> > 	mkdir /sys/fs/cgroup/memory/test$i
-> > 	echo $$ > /sys/fs/cgroup/memory/test$i/cgroup.procs
-> > 	cat temp >> log
-> > 	echo $$ > /sys/fs/cgroup/memory/cgroup.procs
-> > 	rmdir /sys/fs/cgroup/memory/test$i
-> > done
-> > 
-> > cat /proc/cgroups | grep memory
-> > 
-> > rm -f temp log
-> > ```
-> > 
-> > [1] https://lore.kernel.org/linux-mm/20200623015846.1141975-1-guro@fb.com/
-> > [2] https://lore.kernel.org/linux-mm/20210319163821.20704-1-songmuchun@bytedance.com/
-> > 
-> > v4: https://lore.kernel.org/all/20220524060551.80037-1-songmuchun@bytedance.com/
-> > v3: https://lore.kernel.org/all/20220216115132.52602-1-songmuchun@bytedance.com/
-> > v2: https://lore.kernel.org/all/20210916134748.67712-1-songmuchun@bytedance.com/
-> > v1: https://lore.kernel.org/all/20210814052519.86679-1-songmuchun@bytedance.com/
-> > RFC v4: https://lore.kernel.org/all/20210527093336.14895-1-songmuchun@bytedance.com/
-> > RFC v3: https://lore.kernel.org/all/20210421070059.69361-1-songmuchun@bytedance.com/
-> > RFC v2: https://lore.kernel.org/all/20210409122959.82264-1-songmuchun@bytedance.com/
-> > RFC v1: https://lore.kernel.org/all/20210330101531.82752-1-songmuchun@bytedance.com/
-> > 
-> > v5:
-> >   - Lots of improvements from Johannes, Roman and Waiman.
-> >   - Fix lockdep warning reported by kernel test robot.
-> >   - Add two new patches to do code cleanup.
-> >   - Collect Acked-by and Reviewed-by from Johannes and Roman.
-> >   - I didn't replace local_irq_disable/enable() to local_lock/unlock_irq() since
-> >     local_lock/unlock_irq() takes an parameter, it needs more thinking to transform
-> >     it to local_lock.  It could be an improvement in the future.
-> 
-> My comment about local_lock/unlock is just a note that
-> local_irq_disable/enable() have to be eventually replaced. However, we need
-> to think carefully where to put the newly added local_lock. It is perfectly
-> fine to keep it as is and leave the conversion as a future follow-up.
->
+The following commit has been merged into the x86/microcode branch of tip:
 
-Totally agree.
+Commit-ID:     a77a94f86273ce42a39cb479217dd8d68acfe0ff
+Gitweb:        https://git.kernel.org/tip/a77a94f86273ce42a39cb479217dd8d68acfe0ff
+Author:        Borislav Petkov <bp@suse.de>
+AuthorDate:    Wed, 25 May 2022 18:12:30 +02:00
+Committer:     Thomas Gleixner <tglx@linutronix.de>
+CommitterDate: Tue, 31 May 2022 09:31:19 +02:00
+
+x86/microcode: Default-disable late loading
+
+It is dangerous and it should not be used anyway - there's a nice early
+loading already.
+
+Requested-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Link: https://lore.kernel.org/r/20220525161232.14924-3-bp@alien8.de
+---
+ arch/x86/Kconfig                     | 11 +++++++++++
+ arch/x86/kernel/cpu/common.c         |  2 ++
+ arch/x86/kernel/cpu/microcode/core.c |  7 ++++++-
+ 3 files changed, 19 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index f423a2d..976309d 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -1350,6 +1350,17 @@ config MICROCODE_AMD
+ 	  If you select this option, microcode patch loading support for AMD
+ 	  processors will be enabled.
  
-> Thank you very much for your work on this patchset.
->
-
-Thanks.
++config MICROCODE_LATE_LOADING
++	bool "Late microcode loading (DANGEROUS)"
++	default n
++	depends on MICROCODE
++	help
++	  Loading microcode late, when the system is up and executing instructions
++	  is a tricky business and should be avoided if possible. Just the sequence
++	  of synchronizing all cores and SMT threads is one fragile dance which does
++	  not guarantee that cores might not softlock after the loading. Therefore,
++	  use this at your own risk. Late loading taints the kernel too.
++
+ config X86_MSR
+ 	tristate "/dev/cpu/*/msr - Model-specific register support"
+ 	help
+diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
+index 2e91427..c296cb1 100644
+--- a/arch/x86/kernel/cpu/common.c
++++ b/arch/x86/kernel/cpu/common.c
+@@ -2222,6 +2222,7 @@ void cpu_init_secondary(void)
+ }
+ #endif
+ 
++#ifdef CONFIG_MICROCODE_LATE_LOADING
+ /*
+  * The microcode loader calls this upon late microcode load to recheck features,
+  * only when microcode has been updated. Caller holds microcode_mutex and CPU
+@@ -2251,6 +2252,7 @@ void microcode_check(void)
+ 	pr_warn("x86/CPU: CPU features have changed after loading microcode, but might not take effect.\n");
+ 	pr_warn("x86/CPU: Please consider either early loading through initrd/built-in or a potential BIOS update.\n");
+ }
++#endif
+ 
+ /*
+  * Invoked from core CPU hotplug code after hotplug operations
+diff --git a/arch/x86/kernel/cpu/microcode/core.c b/arch/x86/kernel/cpu/microcode/core.c
+index b72c413..c717db6 100644
+--- a/arch/x86/kernel/cpu/microcode/core.c
++++ b/arch/x86/kernel/cpu/microcode/core.c
+@@ -376,6 +376,7 @@ static int apply_microcode_on_target(int cpu)
+ /* fake device for request_firmware */
+ static struct platform_device	*microcode_pdev;
+ 
++#ifdef CONFIG_MICROCODE_LATE_LOADING
+ /*
+  * Late loading dance. Why the heavy-handed stomp_machine effort?
+  *
+@@ -543,6 +544,9 @@ put:
+ 	return ret;
+ }
+ 
++static DEVICE_ATTR_WO(reload);
++#endif
++
+ static ssize_t version_show(struct device *dev,
+ 			struct device_attribute *attr, char *buf)
+ {
+@@ -559,7 +563,6 @@ static ssize_t pf_show(struct device *dev,
+ 	return sprintf(buf, "0x%x\n", uci->cpu_sig.pf);
+ }
+ 
+-static DEVICE_ATTR_WO(reload);
+ static DEVICE_ATTR(version, 0444, version_show, NULL);
+ static DEVICE_ATTR(processor_flags, 0444, pf_show, NULL);
+ 
+@@ -712,7 +715,9 @@ static int mc_cpu_down_prep(unsigned int cpu)
+ }
+ 
+ static struct attribute *cpu_root_microcode_attrs[] = {
++#ifdef CONFIG_MICROCODE_LATE_LOADING
+ 	&dev_attr_reload.attr,
++#endif
+ 	NULL
+ };
+ 
