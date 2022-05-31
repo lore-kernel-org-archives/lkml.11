@@ -2,144 +2,263 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 447C3C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 12:18:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D493DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 12:18:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344180AbiEaMSS (ORCPT
+        id S1344198AbiEaMSW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 08:18:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50168 "EHLO
+        Tue, 31 May 2022 08:18:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232906AbiEaMSQ (ORCPT
+        with ESMTP id S1344170AbiEaMSQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 31 May 2022 08:18:16 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 842C937A1B;
-        Tue, 31 May 2022 05:18:14 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id j6so13005450pfe.13;
-        Tue, 31 May 2022 05:18:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=U7ahqBydDZnP+CjyjsQFK3suIZ5X/7W6Ul5AL8gL7a4=;
-        b=pbtIgDiOlAAzMPQJX9RSET7wKKMb0cURNTYAf8khBIJ7tgAMritvSeyBHK88OgWp3J
-         p2eY3mg3nQEC5svVgaRYVeHAiWB0LK1plQskY/5QYNoiPRdVCIIoFp6C7FMbAF8UGrrd
-         lBadBgtoaMg++H1MWs2p5uzAP/rBSoi7lJAW3YNDUwxLdmQJga2RGklhnlZheYx4tGWA
-         JDLreq67j91X+rNozmBhfZclynEPT46jWN/SwmgF8xb5UhpKWmTArXQaEu+WsdRc677y
-         XMwxshss89EaOuzNJZgSx1EX9fVS7xIgMGz1U4lbxqWjQpEQZw1NlJ6XcpFM9jWAulGH
-         LEpQ==
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 086BE37BEC
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 05:18:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653999494;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=9uLoEnI8xm05pZOEfh79Bm5RkqDb66wzQpVIVDjFd1Y=;
+        b=LuYBjqvMov5CE1+4KjLm98HWzilUyeVkJee0rW5bJ+5ynLFrtOIKMNrDwwg7tChv9wPfYT
+        I94LzB/CGU7ofwLINvTpzU6CQhDzYY8NJaKi9rtN0NlyV9T8iHHmAzmKuwf6pHpl4RkSLv
+        9/k1kCNhbqgjYZnJMJ2l7oXQYs87nEI=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-395-a3R-3TivNMyWJ4u68VnVIQ-1; Tue, 31 May 2022 08:18:13 -0400
+X-MC-Unique: a3R-3TivNMyWJ4u68VnVIQ-1
+Received: by mail-ed1-f72.google.com with SMTP id f9-20020a056402354900b0042ded146259so429621edd.20
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 05:18:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=U7ahqBydDZnP+CjyjsQFK3suIZ5X/7W6Ul5AL8gL7a4=;
-        b=WHXbqFH+cu6p6gjsD4bf+MOSHVeNabMUt7VTk7w1iiDQfpMDXCUfmOCxqkz3mPKxLk
-         rrjX9oPMbL2aiHL7jENqI3aO6ojgw5uQ9veVuTXZTiROriQYzFUl6Cbp4d+sr2sIhx7D
-         mqWH0ziiPeh3vzNtVu6aF9KdxbWEBP6vI0bO93pYn/y3hD9zX7z+SUD1NxE0K2L+3pvW
-         xvlgHV4bG2u1pY74vCYtnUqXxw0hqVMsdB7j0us0VQWdbeJ9iBUmwIAAhVNsWtPGGMe1
-         fSDW7VlTtDkbHFgWZJg4K+oXQSRfeZZnos9UoZwiEDBCOVhXaRaCrGFpfdtKtdqr03Vc
-         88tA==
-X-Gm-Message-State: AOAM533v4xUNp9ZVBHN2d3MDgf2H3LPkiOpvOOQhtwJ0JpBRbNlJZVzf
-        4xAmg4slsEqWTA/gkPj0nL2UP2LiVCY=
-X-Google-Smtp-Source: ABdhPJxfNtDreP69KzGE54ZQe7nNgxdxT4MxnC6lkz0a7elU8yTD8DI/llg0zMIxb1K6PG6nwQyNxQ==
-X-Received: by 2002:a63:1066:0:b0:3fa:c21c:bf38 with SMTP id 38-20020a631066000000b003fac21cbf38mr29418134pgq.453.1653993756469;
-        Tue, 31 May 2022 03:42:36 -0700 (PDT)
-Received: from RD-3580-24288.rt.l (42-72-220-172.emome-ip.hinet.net. [42.72.220.172])
-        by smtp.gmail.com with ESMTPSA id d19-20020a17090ac25300b001cd4989feebsm1525829pjx.55.2022.05.31.03.42.31
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=9uLoEnI8xm05pZOEfh79Bm5RkqDb66wzQpVIVDjFd1Y=;
+        b=uUXHtHFe7sJRb8PEqO4HoKUVOA+vIbEZzkTXMlK8WyuTXH0Nmgk2paEhKKyB2pWhw0
+         gJnmBsiHKJvJ5cTi7ygHq5HytqD0+ptXCE1DygtP8kfxHzi37jYt08SnoaAynPpof+dz
+         N3T1x2TM31UM/x2UWqkxb+2Em0oi2i0pusa+HtFQWh4YZfe/30XLvZgGMwtQECHAM4oW
+         wSf8bsAQy2yKdJwa0N7wlWodsKITj3V3pHmkDJ/lNRw0Vq8rrDit3ESZipCRAiPETkf8
+         Z0bNXbHcxyEIix3QSGDTMPzwWdaV9W45DVqx8N74A5ZgGqU4E5zEje/AMLetwnTKtjJK
+         DoyQ==
+X-Gm-Message-State: AOAM531PSYGgTfQSZLU1lNCRLA7A70V3PL6Fq9mPeAixnBaTZpcBEESz
+        UXkCQikTYnVSkph9sNSfL9m76vuuBSv3oYZoGhECSKgZyrAZmJ0qu3iQwEsR1UECmLYBIu/JKVn
+        8m13cmUD+SPPf+UR5gsU8zQ3q
+X-Received: by 2002:aa7:d789:0:b0:42b:cf4e:d585 with SMTP id s9-20020aa7d789000000b0042bcf4ed585mr15494188edq.321.1653999486630;
+        Tue, 31 May 2022 05:18:06 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyQfkPdyC7SgNA2BaBjdFN/n5w5hMEYyZWasZX+lhZnbuwJEkjpOYRv4tu109MMrSfJjcY91Q==
+X-Received: by 2002:aa7:d789:0:b0:42b:cf4e:d585 with SMTP id s9-20020aa7d789000000b0042bcf4ed585mr15494160edq.321.1653999486398;
+        Tue, 31 May 2022 05:18:06 -0700 (PDT)
+Received: from fedora (nat-2.ign.cz. [91.219.240.2])
+        by smtp.gmail.com with ESMTPSA id f13-20020a170906390d00b006fee961b9e0sm4840341eje.195.2022.05.31.05.18.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 May 2022 03:42:36 -0700 (PDT)
-From:   ChiaEn Wu <peterwu.pub@gmail.com>
-To:     lee.jones@linaro.org, daniel.thompson@linaro.org,
-        jingoohan1@gmail.com, pavel@ucw.cz, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
-        sre@kernel.org, chunfeng.yun@mediatek.com,
-        gregkh@linuxfoundation.org, jic23@kernel.org, lars@metafoo.de,
-        lgirdwood@gmail.com, broonie@kernel.org, linux@roeck-us.net,
-        heikki.krogerus@linux.intel.com, deller@gmx.de
-Cc:     cy_huang@richtek.com, alice_chen@richtek.com,
-        chiaen_wu@richtek.com, dri-devel@lists.freedesktop.org,
-        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-fbdev@vger.kernel.org
-Subject: [PATCH 12/14] dt-bindings: leds: Add Mediatek MT6370 flashlight binding documentation
-Date:   Tue, 31 May 2022 18:42:09 +0800
-Message-Id: <20220531104211.17106-4-peterwu.pub@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220531104211.17106-1-peterwu.pub@gmail.com>
-References: <20220531104211.17106-1-peterwu.pub@gmail.com>
+        Tue, 31 May 2022 05:18:05 -0700 (PDT)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     kvm@vger.kernel.org
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        Yuan Yao <yuan.yao@linux.intel.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: Re: [PATCH v5 21/37] KVM: nSVM: hyper-v: Enable L2 TLB flush
+In-Reply-To: <20220527155546.1528910-22-vkuznets@redhat.com>
+References: <20220527155546.1528910-1-vkuznets@redhat.com>
+ <20220527155546.1528910-22-vkuznets@redhat.com>
+Date:   Tue, 31 May 2022 14:18:05 +0200
+Message-ID: <874k15q4jm.fsf@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alice Chen <alice_chen@richtek.com>
+Vitaly Kuznetsov <vkuznets@redhat.com> writes:
 
-Add Mediatek MT6370 flashlight binding documentation
+> Implement Hyper-V L2 TLB flush for nSVM. The feature needs to be enabled
+> both in extended 'nested controls' in VMCB and partition assist page.
+> According to Hyper-V TLFS, synthetic vmexit to L1 is performed with
+> - HV_SVM_EXITCODE_ENL exit_code.
+> - HV_SVM_ENL_EXITCODE_TRAP_AFTER_FLUSH exit_info_1.
+>
+> Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+> ---
+>  arch/x86/kvm/svm/hyperv.c |  7 +++++++
+>  arch/x86/kvm/svm/hyperv.h | 19 +++++++++++++++++++
+>  arch/x86/kvm/svm/nested.c | 27 +++++++++++++++++++++++++--
+>  3 files changed, 51 insertions(+), 2 deletions(-)
+>
+> diff --git a/arch/x86/kvm/svm/hyperv.c b/arch/x86/kvm/svm/hyperv.c
+> index 911f51021af1..088f6429b24c 100644
+> --- a/arch/x86/kvm/svm/hyperv.c
+> +++ b/arch/x86/kvm/svm/hyperv.c
+> @@ -8,4 +8,11 @@
+>  
+>  void svm_hv_inject_synthetic_vmexit_post_tlb_flush(struct kvm_vcpu *vcpu)
+>  {
+> +	struct vcpu_svm *svm = to_svm(vcpu);
+> +
+> +	svm->vmcb->control.exit_code = HV_SVM_EXITCODE_ENL;
+> +	svm->vmcb->control.exit_code_hi = 0;
+> +	svm->vmcb->control.exit_info_1 = HV_SVM_ENL_EXITCODE_TRAP_AFTER_FLUSH;
+> +	svm->vmcb->control.exit_info_2 = 0;
+> +	nested_svm_vmexit(svm);
+>  }
+> diff --git a/arch/x86/kvm/svm/hyperv.h b/arch/x86/kvm/svm/hyperv.h
+> index dd2e393f84a0..6ea78499e21b 100644
+> --- a/arch/x86/kvm/svm/hyperv.h
+> +++ b/arch/x86/kvm/svm/hyperv.h
+> @@ -33,6 +33,9 @@ struct hv_enlightenments {
+>   */
+>  #define VMCB_HV_NESTED_ENLIGHTENMENTS VMCB_SW
+>  
+> +#define HV_SVM_EXITCODE_ENL 0xF0000000
+> +#define HV_SVM_ENL_EXITCODE_TRAP_AFTER_FLUSH   (1)
+> +
+>  static inline void nested_svm_hv_update_vm_vp_ids(struct kvm_vcpu *vcpu)
+>  {
+>  	struct vcpu_svm *svm = to_svm(vcpu);
+> @@ -48,6 +51,22 @@ static inline void nested_svm_hv_update_vm_vp_ids(struct kvm_vcpu *vcpu)
+>  	hv_vcpu->nested.vp_id = hve->hv_vp_id;
+>  }
+>  
+> +static inline bool nested_svm_l2_tlb_flush_enabled(struct kvm_vcpu *vcpu)
+> +{
+> +	struct vcpu_svm *svm = to_svm(vcpu);
+> +	struct hv_enlightenments *hve =
+> +		(struct hv_enlightenments *)svm->nested.ctl.reserved_sw;
+> +	struct hv_vp_assist_page assist_page;
+> +
+> +	if (unlikely(!kvm_hv_get_assist_page(vcpu, &assist_page)))
+> +		return false;
+> +
+> +	if (!hve->hv_enlightenments_control.nested_flush_hypercall)
+> +		return false;
+> +
+> +	return assist_page.nested_control.features.directhypercall;
+> +}
+> +
+>  void svm_hv_inject_synthetic_vmexit_post_tlb_flush(struct kvm_vcpu *vcpu);
+>  
+>  #endif /* __ARCH_X86_KVM_SVM_HYPERV_H__ */
+> diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
+> index b203e6cd75dc..083b95d85495 100644
+> --- a/arch/x86/kvm/svm/nested.c
+> +++ b/arch/x86/kvm/svm/nested.c
+> @@ -171,8 +171,12 @@ void recalc_intercepts(struct vcpu_svm *svm)
+>  		vmcb_clr_intercept(c, INTERCEPT_VINTR);
+>  	}
+>  
+> -	/* We don't want to see VMMCALLs from a nested guest */
+> -	vmcb_clr_intercept(c, INTERCEPT_VMMCALL);
+> +	/*
+> +	 * We want to see VMMCALLs from a nested guest only when Hyper-V L2 TLB
+> +	 * flush feature is enabled.
+> +	 */
+> +	if (!nested_svm_l2_tlb_flush_enabled(&svm->vcpu))
+> +		vmcb_clr_intercept(c, INTERCEPT_VMMCALL);
 
-Signed-off-by: Alice Chen <alice_chen@richtek.com>
----
- .../leds/mediatek,mt6370-flashlight.yaml      | 48 +++++++++++++++++++
- 1 file changed, 48 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/leds/mediatek,mt6370-flashlight.yaml
+I've just noticed that this generates a warning:
 
-diff --git a/Documentation/devicetree/bindings/leds/mediatek,mt6370-flashlight.yaml b/Documentation/devicetree/bindings/leds/mediatek,mt6370-flashlight.yaml
-new file mode 100644
-index 000000000000..b1b11bd3d410
---- /dev/null
-+++ b/Documentation/devicetree/bindings/leds/mediatek,mt6370-flashlight.yaml
-@@ -0,0 +1,48 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/leds/leds-mt6370-flashlight.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Flash LED driver for MT6370 PMIC from MediaTek Integrated.
-+
-+maintainers:
-+  - Alice Chen <alice_chen@richtek.com>
-+
-+description: |
-+  This module is part of the MT6370 MFD device.
-+  see Documentation/devicetree/bindings/mfd/mt6370.yaml
-+  Add MT6370 flash LED driver include 2-channel flash LED support Torch/Strobe Mode.
-+
-+properties:
-+  compatible:
-+    const: mediatek,mt6370-flashlight
-+
-+  "#address-cells":
-+    const: 1
-+
-+  "#size-cells":
-+    const: 0
-+
-+patternProperties:
-+  "^led@[0-1]$":
-+    type: object
-+    $ref: common.yaml#
-+    description:
-+      Properties for a single flash LED.
-+
-+    properties:
-+      reg:
-+        description: Index of the flash LED.
-+        enum:
-+          - 0 #Address of LED1
-+          - 1 #Address of LED2
-+
-+    unevaluatedProperties: false
-+
-+required:
-+  - compatible
-+  - "#address-cells"
-+  - "#size-cells"
-+
-+additionalProperties: false
+[  823.047913] =============================
+[  823.048376] WARNING: suspicious RCU usage
+[  823.048745] 5.18.0-rc1+ #454 Not tainted
+[  823.049098] -----------------------------
+[  823.049435] include/linux/kvm_host.h:936 suspicious rcu_dereference_check() usage!
+[  823.049791] 
+               other info that might help us debug this:
+
+[  823.050756] 
+               rcu_scheduler_active = 2, debug_locks = 1
+[  823.051410] 1 lock held by qemu-system-x86/8931:
+[  823.051747]  #0: ffff8ad90c144fa8 (&vcpu->mutex){+.+.}-{3:3}, at: kvm_vcpu_ioctl+0x77/0x700 [kvm]
+[  823.052171] 
+               stack backtrace:
+[  823.052849] CPU: 3 PID: 8931 Comm: qemu-system-x86 Kdump: loaded Not tainted 5.18.0-rc1+ #454
+[  823.053230] Hardware name: Dell Inc. PowerEdge R6415/065PKD, BIOS 1.9.3 06/25/2019
+[  823.053644] Call Trace:
+[  823.054279]  <TASK>
+[  823.054695]  dump_stack_lvl+0x6c/0x9b
+[  823.055076]  kvm_read_guest_offset_cached+0x14a/0x190 [kvm]
+[  823.055504]  kvm_hv_get_assist_page+0x40/0x50 [kvm]
+[  823.055932]  recalc_intercepts+0x6f/0x140 [kvm_amd]
+[  823.056317]  ? native_load_tr_desc+0x63/0x70
+[  823.056696]  ? svm_vcpu_run+0x27f/0x780 [kvm_amd]
+[  823.057080]  kvm_arch_vcpu_ioctl_run+0x1a9f/0x2220 [kvm]
+[  823.057519]  ? kvm_vcpu_ioctl+0x275/0x700 [kvm]
+[  823.057932]  kvm_vcpu_ioctl+0x275/0x700 [kvm]
+[  823.058358]  __x64_sys_ioctl+0x82/0xb0
+[  823.058747]  do_syscall_64+0x3b/0x90
+[  823.059133]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[  823.059519] RIP: 0033:0x7fcd123540ab
+[  823.059899] Code: ff ff ff 85 c0 79 9b 49 c7 c4 ff ff ff ff 5b 5d 4c 89 e0 41 5c c3 66 0f 1f 84 00 00 00 00 00 f3 0f 1e fa b8 10 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 9d bd 0c 00 f7 d8 64 89 01 48
+[  823.060787] RSP: 002b:00007fcd04dfa478 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+[  823.061246] RAX: ffffffffffffffda RBX: 000000000000ae80 RCX: 00007fcd123540ab
+[  823.061702] RDX: 0000000000000000 RSI: 000000000000ae80 RDI: 0000000000000010
+[  823.062166] RBP: 00005626d1d13c20 R08: 0000000000000000 R09: 00000000ffffffff
+[  823.062628] R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+[  823.063096] R13: 00005626d111fa6e R14: 0000000000000000 R15: 00007fcd04dff640
+[  823.063579]  </TASK>
+[  823.064024] BUG: sleeping function called from invalid context at include/linux/uaccess.h:69
+[  823.064485] in_atomic(): 1, irqs_disabled(): 1, non_block: 0, pid: 8931, name: qemu-system-x86
+[  823.064956] preempt_count: 1, expected: 0
+[  823.065416] RCU nest depth: 0, expected: 0
+
+It is likely a bad idea to read guest memory from recalc_intercepts()
+but we don't actually have to, we can cache the whole partition assist
+page and update it upon VMRUN (and after svm_set_nested_state()). For
+VMX, this can be part of enlightened vmentry.
+
+>  
+>  	for (i = 0; i < MAX_INTERCEPT; i++)
+>  		c->intercepts[i] |= g->intercepts[i];
+> @@ -489,6 +493,17 @@ static void nested_save_pending_event_to_vmcb12(struct vcpu_svm *svm,
+>  
+>  static void nested_svm_transition_tlb_flush(struct kvm_vcpu *vcpu)
+>  {
+> +	/*
+> +	 * KVM_REQ_HV_TLB_FLUSH flushes entries from either L1's VP_ID or
+> +	 * L2's VP_ID upon request from the guest. Make sure we check for
+> +	 * pending entries for the case when the request got misplaced (e.g.
+> +	 * a transition from L2->L1 happened while processing L2 TLB flush
+> +	 * request or vice versa). kvm_hv_vcpu_flush_tlb() will not flush
+> +	 * anything if there are no requests in the corresponding buffer.
+> +	 */
+> +	if (to_hv_vcpu(vcpu))
+> +		kvm_make_request(KVM_REQ_HV_TLB_FLUSH, vcpu);
+> +
+>  	/*
+>  	 * TODO: optimize unconditional TLB flush/MMU sync.  A partial list of
+>  	 * things to fix before this can be conditional:
+> @@ -1409,6 +1424,7 @@ static int svm_check_nested_events(struct kvm_vcpu *vcpu)
+>  int nested_svm_exit_special(struct vcpu_svm *svm)
+>  {
+>  	u32 exit_code = svm->vmcb->control.exit_code;
+> +	struct kvm_vcpu *vcpu = &svm->vcpu;
+>  
+>  	switch (exit_code) {
+>  	case SVM_EXIT_INTR:
+> @@ -1427,6 +1443,13 @@ int nested_svm_exit_special(struct vcpu_svm *svm)
+>  			return NESTED_EXIT_HOST;
+>  		break;
+>  	}
+> +	case SVM_EXIT_VMMCALL:
+> +		/* Hyper-V L2 TLB flush hypercall is handled by L0 */
+> +		if (guest_hv_cpuid_has_l2_tlb_flush(vcpu) &&
+> +		    nested_svm_l2_tlb_flush_enabled(vcpu) &&
+> +		    kvm_hv_is_tlb_flush_hcall(vcpu))
+> +			return NESTED_EXIT_HOST;
+> +		break;
+>  	default:
+>  		break;
+>  	}
+
 -- 
-2.25.1
+Vitaly
 
