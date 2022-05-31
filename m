@@ -2,104 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02451C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 09:07:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75620C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 09:07:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237917AbiEaJHD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 05:07:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41954 "EHLO
+        id S245086AbiEaJHJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 31 May 2022 05:07:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245123AbiEaJFc (ORCPT
+        with ESMTP id S234703AbiEaJHB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 05:05:32 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51E00369C9
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 02:05:31 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id s6so4429395lfo.13
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 02:05:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uXvtrwihxvcxSs1Fpbv4pO6ci42Kw2r2BvzhnZ4/XRo=;
-        b=Kbi70PlsR5+i802aBEmHE5kSCiTflqXipOGStTJBs7NP5am4ttQBpDKSC/hOGNlPMy
-         tPACEWG22DC0KB6dkW2WlKLfsmHkNVRPHWbE/zLJJWx5el74LNPkTotrhwwn+jf/+w/Y
-         nI9YCvELVEYgAiGlLYRs9ySgxD2TmI+gHcAUgTPLzQeFscQYoNM7/VjJWdkwzo3NIOcX
-         mzsG42+ToUxlCjQbQuf16n5Bu+kGWDNYuKQh/WS0dmuQ3Jh3mWuU72I03QvymNoF0SyD
-         qAatat4lTj2CUpcFoeDWenrT2jU39J+m2GS7CDjezZpEtxdh2AOXtZj2p6bztXsThp0y
-         swZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uXvtrwihxvcxSs1Fpbv4pO6ci42Kw2r2BvzhnZ4/XRo=;
-        b=IcH8G/fwM2iXKIk7DJvu97Sx2VR7R1lCfc5o0MYX6SsH8TxiQE4vKiCP+qizkkmeZc
-         lPoDo2zjJKdTeqgrLucJSxSSQHDJkwjFrJPsrC8H0O+OzXUHjPlellewD0Aee9NMPQCP
-         b7s+O+bs4GP/qYlAX0H11P1iSJVfWyWBYu32tZTJOqafIvtVnSZLaMnr/5sUvXDRy/y1
-         eC70xolzrEAbh6C6CltI79z5VquesZrlXHKRZa4qpX1vpoXZtH3DbND/arYrTV7bILaW
-         +JVzPrWx7ViqcLpg7TPWbp0q3nrnWvDmt0gYH84VFedr3rv0wedUdaB6HaWVdA2o3FYW
-         cv4w==
-X-Gm-Message-State: AOAM5328B5f3jPz1ZS7Uspuv2rrGkwifZyNQWeV36m3DpMOKeZDZaTxb
-        kXGVxfEff00DAC9BQZ473+B6kC37V5q3hODOpxUuMQ==
-X-Google-Smtp-Source: ABdhPJyz4e5cRckDm7lj2o7+M7mpbQaJQjZ1zy5BPi7XX0n8/aXbBoNj0soqbvW3QipRoCJ+q/B25+ibJO1Blaun0Ys=
-X-Received: by 2002:a05:6512:1156:b0:478:79b1:583c with SMTP id
- m22-20020a056512115600b0047879b1583cmr29681645lfg.206.1653987929308; Tue, 31
- May 2022 02:05:29 -0700 (PDT)
+        Tue, 31 May 2022 05:07:01 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 132031A071;
+        Tue, 31 May 2022 02:06:55 -0700 (PDT)
+Received: from kwepemi100010.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LC5vv4X22z1JCW9;
+        Tue, 31 May 2022 17:05:15 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ kwepemi100010.china.huawei.com (7.221.188.54) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 31 May 2022 17:06:53 +0800
+Received: from [10.174.176.73] (10.174.176.73) by
+ kwepemm600009.china.huawei.com (7.193.23.164) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 31 May 2022 17:06:52 +0800
+Subject: Re: [PATCH -next v7 2/3] block, bfq: refactor the counting of
+ 'num_groups_with_pending_reqs'
+To:     Paolo VALENTE <paolo.valente@unimore.it>
+CC:     Jan Kara <jack@suse.cz>, Jens Axboe <axboe@kernel.dk>,
+        Tejun Heo <tj@kernel.org>, <cgroups@vger.kernel.org>,
+        linux-block <linux-block@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, <yi.zhang@huawei.com>
+References: <20220528095020.186970-1-yukuai3@huawei.com>
+ <20220528095020.186970-3-yukuai3@huawei.com>
+ <0D9355CE-F85B-4B1A-AEC3-F63DFC4B3A54@linaro.org>
+ <b9a4ea60-28e5-b7aa-0154-ad7481eafbd3@huawei.com>
+ <efe01dd1-0f99-dadf-956d-b0e80e1e602c@huawei.com>
+ <1803FD7E-9FB1-4A1E-BD6D-D6657006589A@unimore.it>
+From:   Yu Kuai <yukuai3@huawei.com>
+Message-ID: <a0d8452c-e421-45d3-b012-5355207fc0e1@huawei.com>
+Date:   Tue, 31 May 2022 17:06:52 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-References: <000000000000f0b26205e04a183b@google.com> <3d3c6b5f-84cd-cb25-812e-dac77e02ddbf@kernel.dk>
- <e0867860-12c6-e958-07de-cfbcf644b9fe@icloud.com> <bcac089a-36e5-0d85-1ec3-b683dac68b4f@kernel.dk>
-In-Reply-To: <bcac089a-36e5-0d85-1ec3-b683dac68b4f@kernel.dk>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Tue, 31 May 2022 11:05:18 +0200
-Message-ID: <CACT4Y+aqriNp1F5CJofqaxNMM+-3cxNR2nY0tHEtb4YDqDuHtg@mail.gmail.com>
-Subject: Re: [syzbot] UBSAN: array-index-out-of-bounds in io_submit_sqes
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     Hao Xu <haoxu.linux@icloud.com>,
-        syzbot <syzbot+b6c9b65b6753d333d833@syzkaller.appspotmail.com>,
-        asml.silence@gmail.com, io-uring@vger.kernel.org,
-        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <1803FD7E-9FB1-4A1E-BD6D-D6657006589A@unimore.it>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.176.73]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 31 May 2022 at 11:01, Jens Axboe <axboe@kernel.dk> wrote:
->
-> On 5/31/22 3:00 AM, Hao Xu wrote:
-> > On 5/31/22 16:45, Jens Axboe wrote:
-> >> On 5/31/22 1:55 AM, syzbot wrote:
-> >>> Hello,
-> >>>
-> >>> syzbot found the following issue on:
-> >>>
-> >>> HEAD commit:    3b46e4e44180 Add linux-next specific files for 20220531
-> >>> git tree:       linux-next
-> >>> console output: https://syzkaller.appspot.com/x/log.txt?x=16e151f5f00000
-> >>> kernel config:  https://syzkaller.appspot.com/x/.config?x=ccb8d66fc9489ef
-> >>> dashboard link: https://syzkaller.appspot.com/bug?extid=b6c9b65b6753d333d833
-> >>> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> >>>
-> >>> Unfortunately, I don't have any reproducer for this issue yet.
-> >>>
-> >>> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> >>> Reported-by: syzbot+b6c9b65b6753d333d833@syzkaller.appspotmail.com
-> >>>
-> >>> ================================================================================
-> >>> ================================================================================
-> >>> UBSAN: array-index-out-of-bounds in fs/io_uring.c:8860:19
-> >>> index 75 is out of range for type 'io_op_def [47]'
-> >>
-> >> 'def' is just set here, it's not actually used after 'opcode' has been
-> >> verified.
-> >>
-> >
-> > Maybe we can move it to be below the opcode check to comfort UBSAN.
->
-> Yeah that's what I did, just rebased it to get rid of it:
->
-> https://git.kernel.dk/cgit/linux-block/commit/?h=io_uring-5.19&id=fcde59feb1affb6d56aecadc3868df4631480da5
+在 2022/05/31 16:36, Paolo VALENTE 写道:
+> 
+> 
+>> Il giorno 30 mag 2022, alle ore 10:40, Yu Kuai <yukuai3@huawei.com> ha scritto:
+>>
+>> 在 2022/05/30 16:34, Yu Kuai 写道:
+>>> 在 2022/05/30 16:10, Paolo Valente 写道:
+>>>>
+>>>>
+>>>>> Il giorno 28 mag 2022, alle ore 11:50, Yu Kuai <yukuai3@huawei.com> ha scritto:
+>>>>>
+>>>>> Currently, bfq can't handle sync io concurrently as long as they
+>>>>> are not issued from root group. This is because
+>>>>> 'bfqd->num_groups_with_pending_reqs > 0' is always true in
+>>>>> bfq_asymmetric_scenario().
+>>>>>
+>>>>> The way that bfqg is counted into 'num_groups_with_pending_reqs':
+>>>>>
+>>>>> Before this patch:
+>>>>> 1) root group will never be counted.
+>>>>> 2) Count if bfqg or it's child bfqgs have pending requests.
+>>>>> 3) Don't count if bfqg and it's child bfqgs complete all the requests.
+>>>>>
+>>>>> After this patch:
+>>>>> 1) root group is counted.
+>>>>> 2) Count if bfqg have at least one bfqq that is marked busy.
+>>>>> 3) Don't count if bfqg doesn't have any busy bfqqs.
+>>>>
+>>>> Unfortunately, I see a last problem here. I see a double change:
+>>>> (1) a bfqg is now counted only as a function of the state of its child
+>>>>       queues, and not of also its child bfqgs
+>>>> (2) the state considered for counting a bfqg moves from having pending
+>>>>       requests to having busy queues
+>>>>
+>>>> I'm ok with with (1), which is a good catch (you are lady explained
+>>>> the idea to me some time ago IIRC).
+>>>>
+>>>> Yet I fear that (2) is not ok.  A bfqq can become non busy even if it
+>>>> still has in-flight I/O, i.e.  I/O being served in the drive.  The
+>>>> weight of such a bfqq must still be considered in the weights_tree,
+>>>> and the group containing such a queue must still be counted when
+>>>> checking whether the scenario is asymmetric.  Otherwise service
+>>>> guarantees are broken.  The reason is that, if a scenario is deemed as
+>>>> symmetric because in-flight I/O is not taken into account, then idling
+>>>> will not be performed to protect some bfqq, and in-flight I/O may
+>>>> steal bandwidth to that bfqq in an uncontrolled way.
+>>> Hi, Paolo
+>>> Thanks for your explanation.
+>>> My orginal thoughts was using weights_tree insertion/removal, however,
+>>> Jan convinced me that using bfq_add/del_bfqq_busy() is ok.
+>>>  From what I see, when bfqq dispatch the last request,
+>>> bfq_del_bfqq_busy() will not be called from __bfq_bfqq_expire() if
+>>> idling is needed, and it will delayed to when such bfqq get scheduled as
+>>> in-service queue again. Which means the weight of such bfqq should still
+>>> be considered in the weights_tree.
+>>> I also run some tests on null_blk with "irqmode=2
+>>> completion_nsec=100000000(100ms) hw_queue_depth=1", and tests show
+>>> that service guarantees are still preserved on slow device.
+>>> Do you this is strong enough to cover your concern?
+> 
+> Unfortunately it is not.  Your very argument is what made be believe
+> that considering busy queues was enough, in the first place.  But, as
+> I found out, the problem is caused by the queues that do not enjoy
+> idling.  With your patch (as well as in my initial version) they are
+> not counted when they remain without requests queued.  And this makes
+> asymmetric scenarios be considered erroneously as symmetric.  The
+> consequence is that idling gets switched off when it had to be kept
+> on, and control on bandwidth is lost for the victim in-service queues.
 
-If you are rebasing it, please add the following tag so that the bug
-is closed later:
+Hi，Paolo
 
-Tested-by: syzbot+b6c9b65b6753d333d833@syzkaller.appspotmail.com
+Thanks for your explanation, are you thinking that if bfqq doesn't enjoy
+idling, then such bfqq will clear busy after dispatching the last
+request?
+
+Please kindly correct me if I'm wrong in the following process:
+
+If there are more than one bfqg that is activatied, then bfqqs that are
+not enjoying idle are still left busy after dispatching the last
+request.
+
+details in __bfq_bfqq_expire:
+
+         if (RB_EMPTY_ROOT(&bfqq->sort_list) &&
+         ┊   !(reason == BFQQE_PREEMPTED &&
+         ┊     idling_needed_for_service_guarantees(bfqd, bfqq))) {
+-> idling_needed_for_service_guarantees will always return true,
+bfqq(whether or not enjoy idling) will stay busy.
+                 if (bfqq->dispatched == 0)
+                         /*
+                         ┊* Overloading budget_timeout field to store
+                         ┊* the time at which the queue remains with no
+                         ┊* backlog and no outstanding request; used by
+                         ┊* the weight-raising mechanism.
+                         ┊*/
+                         bfqq->budget_timeout = jiffies;
+
+                 bfq_del_bfqq_busy(bfqd, bfqq, true);
+
+Thanks,
+Kuai
