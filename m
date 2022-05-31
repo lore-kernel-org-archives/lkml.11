@@ -2,143 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAFF6C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 13:14:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80E18C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 13:14:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344643AbiEaNOT (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 09:14:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46948 "EHLO
+        id S245378AbiEaNOZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 31 May 2022 09:14:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244090AbiEaNOR (ORCPT
+        with ESMTP id S238193AbiEaNOR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 31 May 2022 09:14:17 -0400
-Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75B606EB17;
-        Tue, 31 May 2022 06:14:14 -0700 (PDT)
-Received: (Authenticated sender: jacopo@jmondi.org)
-        by mail.gandi.net (Postfix) with ESMTPSA id 1A3B92000F;
-        Tue, 31 May 2022 13:14:10 +0000 (UTC)
-Date:   Tue, 31 May 2022 15:14:09 +0200
-From:   Jacopo Mondi <jacopo@jmondi.org>
-To:     Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
-Cc:     linuxfancy@googlegroups.com, linux-amarula@amarulasolutions.com,
-        michael@amarulasolutions.com,
-        Shunqian Zheng <zhengsq@rock-chips.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/4] media: i2c: ov5695: use
- regulator_bulk_enable/regulator_bulk disable instead of for loop
-Message-ID: <20220531131409.f54znvogejkwqqkf@uno.localdomain>
-References: <20220519075117.1003520-1-tommaso.merciai@amarulasolutions.com>
- <20220519075117.1003520-2-tommaso.merciai@amarulasolutions.com>
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82C9D91595
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 06:14:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654002855; x=1685538855;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=R6vRQO4G/trEQEVdtkATTxro2c90VkitZkvcda9bzQ4=;
+  b=jt725hFbPj4q9AW1MqioJT+tHAVC4ktfcOWu8goYKy+JV/p0oohu28Hy
+   6fVk7i5TdKG7pbhybI0XYvOSNbZCgoeAIvE/v6vrz2taXabTtf2kPLHWw
+   IMF2OXqMW6f6dt0Zh3JzoMGzSgLXbB/4bfg1ZP1boFlfGqRGxMmqyMl7I
+   BmsbaBXyZaz//7f8BG+DFqsMVh/ydhehPCxdRDq2WYp9jfmQSmoUhEsj4
+   IkUGXMGq76c83ZUUIrQA+XYgFWZY84pxXKO8F2W+T/sM2jzrt6wt2BsA8
+   wogBay8SbCvZqN13Mv6HmYO/hisV2kP/AQSW51VpV/FIn71yWHyBF2wHO
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10363"; a="338291788"
+X-IronPort-AV: E=Sophos;i="5.91,265,1647327600"; 
+   d="scan'208";a="338291788"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 06:14:15 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,265,1647327600"; 
+   d="scan'208";a="823268574"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by fmsmga006.fm.intel.com with ESMTP; 31 May 2022 06:14:13 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nw1hM-0002k6-LG;
+        Tue, 31 May 2022 13:14:12 +0000
+Date:   Tue, 31 May 2022 21:13:52 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Xiang wangx <wangxiang@cdjrlc.com>, gerg@linux-m68k.org
+Cc:     kbuild-all@lists.01.org, geert@linux-m68k.org,
+        linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org,
+        Xiang wangx <wangxiang@cdjrlc.com>
+Subject: Re: [PATCH] m68k: coldfire:Add const to clk_ops
+Message-ID: <202205312132.iaViCBtV-lkp@intel.com>
+References: <20220530025312.55057-1-wangxiang@cdjrlc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220519075117.1003520-2-tommaso.merciai@amarulasolutions.com>
+In-Reply-To: <20220530025312.55057-1-wangxiang@cdjrlc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Tommaso,
+Hi Xiang,
 
-On Thu, May 19, 2022 at 09:51:14AM +0200, Tommaso Merciai wrote:
-> Enable regulator using regulator_bulk_enable/regulatore_bulk_disable
-> function in __ov5695_power_on/__ov5695_power_off function instead of for loop.
-> This reduce code size and make things more clear
->
-> Signed-off-by: Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
-> Co-Developed-by: Michael Trimarchi <michael@amarulasolutions.com>
-> ---
->  drivers/media/i2c/ov5695.c | 25 +++++++------------------
->  1 file changed, 7 insertions(+), 18 deletions(-)
->
-> diff --git a/drivers/media/i2c/ov5695.c b/drivers/media/i2c/ov5695.c
-> index 439385938a51..880b586e55fe 100644
-> --- a/drivers/media/i2c/ov5695.c
-> +++ b/drivers/media/i2c/ov5695.c
-> @@ -972,7 +972,7 @@ static int ov5695_s_stream(struct v4l2_subdev *sd, int on)
->
->  static int __ov5695_power_on(struct ov5695 *ov5695)
->  {
-> -	int i, ret;
-> +	int ret;
->  	struct device *dev = &ov5695->client->dev;
->
->  	ret = clk_prepare_enable(ov5695->xvclk);
-> @@ -987,13 +987,10 @@ static int __ov5695_power_on(struct ov5695 *ov5695)
->  	 * The hardware requires the regulators to be powered on in order,
->  	 * so enable them one by one.
->  	 */
+Thank you for the patch! Yet something to improve:
 
-The comment says that the hardware requires regulators to be enabled
-in precise order
+[auto build test ERROR on gerg-m68knommu/for-next]
+[also build test ERROR on geert-m68k/for-next v5.18 next-20220531]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-> -	for (i = 0; i < OV5695_NUM_SUPPLIES; i++) {
-> -		ret = regulator_enable(ov5695->supplies[i].consumer);
-> -		if (ret) {
-> -			dev_err(dev, "Failed to enable %s: %d\n",
-> -				ov5695->supplies[i].supply, ret);
-> -			goto disable_reg_clk;
-> -		}
-> +	ret = regulator_bulk_enable(ARRAY_SIZE(ov5695->supplies), ov5695->supplies);
+url:    https://github.com/intel-lab-lkp/linux/commits/Xiang-wangx/m68k-coldfire-Add-const-to-clk_ops/20220530-105531
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gerg/m68knommu.git for-next
+config: m68k-allnoconfig (https://download.01.org/0day-ci/archive/20220531/202205312132.iaViCBtV-lkp@intel.com/config)
+compiler: m68k-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/e44f3b73f214f99802c9a010145922eb0a126933
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Xiang-wangx/m68k-coldfire-Add-const-to-clk_ops/20220530-105531
+        git checkout e44f3b73f214f99802c9a010145922eb0a126933
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash arch/m68k/coldfire/
 
-bulk_enable() uses the async API (async_schedule_domain() in
-particular) which by the name makes me think such ordering guarantee
-cannot be respected.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-However most sensors require some kind of ordering when enabling
-regulators, and most of the use the bulk API anyhow. The fact this
-driver uses the bulk API to get an release the regulators but not for
-enabling them and the above comment, makes me think it has been done
-on purpose ? Could you check with the driver author maybe ?
+All errors (new ones prefixed by >>):
 
-> +	if (ret) {
-> +		dev_err(dev, "Failed to enable regulators %d\n", ret);
-> +		goto disable_reg_clk;
->  	}
->
->  	gpiod_set_value_cansleep(ov5695->reset_gpio, 0);
-> @@ -1003,8 +1000,7 @@ static int __ov5695_power_on(struct ov5695 *ov5695)
->  	return 0;
->
->  disable_reg_clk:
-> -	for (--i; i >= 0; i--)
-> -		regulator_disable(ov5695->supplies[i].consumer);
-> +	regulator_bulk_disable(ARRAY_SIZE(ov5695->supplies), ov5695->supplies);
+>> arch/m68k/coldfire/clk.c:53:8: error: expected '{' before 'const'
+      53 | struct const clk_ops clk_ops0 = {
+         |        ^~~~~
+   arch/m68k/coldfire/clk.c:48:13: warning: '__clk_disable0' defined but not used [-Wunused-function]
+      48 | static void __clk_disable0(struct clk *clk)
+         |             ^~~~~~~~~~~~~~
+   arch/m68k/coldfire/clk.c:43:13: warning: '__clk_enable0' defined but not used [-Wunused-function]
+      43 | static void __clk_enable0(struct clk *clk)
+         |             ^~~~~~~~~~~~~
 
-FYI the bulk API does this for you if enabling any of the regulators fails.
-Hence this should not be necessary.
 
-Thanks
-   j
+vim +53 arch/m68k/coldfire/clk.c
 
->  	clk_disable_unprepare(ov5695->xvclk);
->
->  	return ret;
-> @@ -1012,8 +1008,6 @@ static int __ov5695_power_on(struct ov5695 *ov5695)
->
->  static void __ov5695_power_off(struct ov5695 *ov5695)
->  {
-> -	struct device *dev = &ov5695->client->dev;
-> -	int i, ret;
->
->  	clk_disable_unprepare(ov5695->xvclk);
->  	gpiod_set_value_cansleep(ov5695->reset_gpio, 1);
-> @@ -1022,12 +1016,7 @@ static void __ov5695_power_off(struct ov5695 *ov5695)
->  	 * The hardware requires the regulators to be powered off in order,
->  	 * so disable them one by one.
->  	 */
-> -	for (i = OV5695_NUM_SUPPLIES - 1; i >= 0; i--) {
-> -		ret = regulator_disable(ov5695->supplies[i].consumer);
-> -		if (ret)
-> -			dev_err(dev, "Failed to disable %s: %d\n",
-> -				ov5695->supplies[i].supply, ret);
-> -	}
-> +	regulator_bulk_disable(ARRAY_SIZE(ov5695->supplies), ov5695->supplies);
->  }
->
->  static int __maybe_unused ov5695_runtime_resume(struct device *dev)
-> --
-> 2.25.1
->
+    52	
+  > 53	struct const clk_ops clk_ops0 = {
+    54		.enable		= __clk_enable0,
+    55		.disable	= __clk_disable0,
+    56	};
+    57	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
