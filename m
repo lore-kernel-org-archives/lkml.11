@@ -2,157 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A08BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 16:10:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B83FC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 16:15:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346011AbiEaQKC (ORCPT
+        id S1346020AbiEaQPL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 12:10:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57682 "EHLO
+        Tue, 31 May 2022 12:15:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346020AbiEaQJ4 (ORCPT
+        with ESMTP id S230099AbiEaQPI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 12:09:56 -0400
-Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 311C557B13
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 09:09:55 -0700 (PDT)
-Received: from in01.mta.xmission.com ([166.70.13.51]:46482)
-        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nw4RG-001g9g-Vu; Tue, 31 May 2022 10:09:47 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:40316 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nw4RF-007jjf-IH; Tue, 31 May 2022 10:09:46 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     Ying Huang <ying.huang@intel.com>, <peterx@redhat.com>,
-        <apopple@nvidia.com>, <osalvador@suse.de>,
-        <mike.kravetz@oracle.com>, <songmuchun@bytedance.com>,
-        <hch@lst.de>, <dhowells@redhat.com>, <cl@linux.com>,
-        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        <akpm@linux-foundation.org>, <naoya.horiguchi@nec.com>
-References: <20220530113016.16663-1-linmiaohe@huawei.com>
-        <20220530113016.16663-2-linmiaohe@huawei.com>
-        <bbc060ca6e967790423e0a3ca940d1e700447554.camel@intel.com>
-        <b2ddcd64-2779-ede9-3615-ad5bc90a3bc1@huawei.com>
-Date:   Tue, 31 May 2022 11:09:01 -0500
-In-Reply-To: <b2ddcd64-2779-ede9-3615-ad5bc90a3bc1@huawei.com> (Miaohe Lin's
-        message of "Tue, 31 May 2022 17:01:09 +0800")
-Message-ID: <87bkvdfzvm.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Tue, 31 May 2022 12:15:08 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7850E95DC9;
+        Tue, 31 May 2022 09:15:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1654013706; x=1685549706;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=Edb7o5x82G2kwmy8SarSHg+LzOe4KThZlTxdJSXY1Ww=;
+  b=bPAdWNpskQE85FZUaGmTcvwp+grusoWj4Rsci5rX3EmR1jbmKxSn+UXV
+   IBvZt3rn5PISw0HeKAkxv+jVdueASUi1ZxUZ6B1afKrUUC2s+tpsIi6Wy
+   SG4MEgeGWHh4mifL30bTqCqZyQs0iPbrvVQLULyzwjpwhlpOp7kRYucn+
+   A=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 31 May 2022 09:15:06 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 09:15:05 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 31 May 2022 09:15:04 -0700
+Received: from hu-kriskura-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 31 May 2022 09:14:58 -0700
+From:   Krishna Kurapati <quic_kriskura@quicinc.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        "Doug Anderson" <dianders@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Wesley Cheng <quic_wcheng@quicinc.com>
+CC:     <devicetree@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        <linux-usb@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-phy@lists.infradead.org>, <quic_pkondeti@quicinc.com>,
+        <quic_ppratap@quicinc.com>, <quic_vpulyala@quicinc.com>,
+        Krishna Kurapati <quic_kriskura@quicinc.com>
+Subject: [PATCH v7 0/3] Add QCOM SNPS PHY overriding params support
+Date:   Tue, 31 May 2022 21:44:50 +0530
+Message-ID: <1654013693-21484-1-git-send-email-quic_kriskura@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
 Content-Type: text/plain
-X-XM-SPF: eid=1nw4RF-007jjf-IH;;;mid=<87bkvdfzvm.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX1/wo32upDdcYiQB3D7INFrZxxd/vhQS/wg=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH v4 1/4] mm: reduce the rcu lock duration
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Miaohe Lin <linmiaohe@huawei.com> writes:
+Added support for overriding tuning parameters in QCOM SNPS PHY
+from device tree. This parameter tuning is required to tune the
+hs signal on dp/dm lines for electrical compliance to be successful.
 
-> On 2022/5/31 14:06, Ying Huang wrote:
->> On Mon, 2022-05-30 at 19:30 +0800, Miaohe Lin wrote:
->>> Commit 3268c63eded4 ("mm: fix move/migrate_pages() race on task struct")
->>> extends the period of the rcu_read_lock until after the permissions checks
->>> are done to prevent the task pointed to from changing from under us. But
->>> the task_struct refcount is also taken at that time, the reference to task
->>> is guaranteed to be stable. So it's unnecessary to extend the period of
->>> the rcu_read_lock. Release the rcu lock after task refcount is successfully
->>> grabbed to reduce the rcu holding time.
->> 
->> Sorry for late reply, I am busy on something else recently.
->
-> That's all right. Many thanks for your hard work. :)
->
->> 
->> I have just read the whole thread of the original patch discussion. 
->> During discussion, in
->> 
->> https://lore.kernel.org/lkml/alpine.DEB.2.00.1202241131400.3726@router.home/
->> 
->> a patch that is same as your one is proposed.  Then in the following
->> message, Eric think that the rcu read lock should be released until
->> permission is checked,
->> 
->> https://lore.kernel.org/lkml/87sjhzun47.fsf@xmission.com/
->> 
->> "
->> At the moment I suspect the permissions checks are not safe unless
->> performed under both rcu_read_lock and task_lock to ensure that
->> the task<->mm association does not change on us while we are
->> working.  Even with that the cred can change under us but at least
->> we know the cred will be valid until rcu_read_unlock happens.
->> "
->> 
->> So the rcu lock duration is enlarged in the following message.
->> 
->> https://lore.kernel.org/lkml/alpine.DEB.2.00.1202271238450.32410@router.home/
->> 
->> But, after some thought, I don't think extended rcu read lock adds much
->> value.  Because after permission checking the permission may still be
->> changed.  There's no much difference.
->> 
->> So, I have no objection to the patch itself.  But you should add more
->> information in patch description about why the RCU proected region is
->> extended and why we can reduce it.
->
-> Does below patch description makes sense for you?
->
-> "
-> Commit 3268c63eded4 ("mm: fix move/migrate_pages() race on task struct")
-> extends the period of the rcu_read_lock until after the permissions checks
-> are done because it suspects the permissions checks are not safe unless
-> performed under both rcu_read_lock and task_lock to ensure the task<->mm
-> association does not change on us while we are working [1]. But extended
-> rcu read lock does not add much value. Because after permission checking
-> the permission may still be changed. There's no much difference. So it's
-> unnecessary to extend the period of the rcu_read_lock. Release the rcu
-> lock after task refcount is successfully grabbed to reduce the rcu holding
-> time.
->
-> [1] https://lore.kernel.org/lkml/87sjhzun47.fsf@xmission.com/
-> "
+changes in v7:
+Fixed nitpick in driver code and dtsi file.
 
-It doesn't make sense to me.
+changes in v6:
+Fixed errors in dt-bindings.
+Fixed nitpick in driver code.
 
-I don't see any sleeping functions called from find_mm_struct or
-kernel_migrate_pages in the area kernel_migrate_pages in the area of the
-code protected by get_task_struct.  So at a very basic level I see a
-justification for dirtying a cache line twice with get_task_struct and
-put_task_struct to reduce rcu_read_lock hold times.
+changes in v5:
+Fixed nitpicks in code.
+Added minimum and maximum for each parameter added in dt-bindings.
+Added proper suffixes to each parameter as per dtschema.
 
-I would contend that a reasonable cleanup based up on the current state
-of the code would be to extend the rcu_read_lock over get_task_mm so
-that a reference to task_struct does not need to be taken.  That has
-the potential to reduce contention and reduce lock hold times.
+changes in v4:
+Fixed nitpicks in code.
+Initial compliance test results showed overshoot in the middle of eye
+diagram. The current dt values were put in place to correct it and fix
+overshoot issue.
 
+changes in v3:
+Added support for phy tuning parameters to be represented in bps and
+corresponding register values to be written are obtained by traversing
+through data map declared in the driver.
 
-The code is missing a big fat comment with the assertion that it is ok
-if the permission checks are racy because the race is small, and the
-worst case thing that happens is the page is migrated to another
-numa node.
+changes in v2:
+Reading the individual fields in each overriding register from
+device tree.
 
+Krishna Kurapati (2):
+  phy: qcom-snps: Add support for overriding phy tuning parameters
+  arm64: dts: qcom: sc7280: Update SNPS Phy params for SC7280 IDP device
 
-Given that the get_mm_task takes task_lock the cost of dirtying the
-cache line is already being paid.  Perhaps not extending task_lock hold
-times a little bit is justified, but I haven't seen that case made.
+Sandeep Maheswaram (1):
+  dt-bindings: phy: qcom,usb-snps-femto-v2: Add phy override params
+    bindings
 
-This seems like code that is called little enough it would be better for
-it to be correct, and not need big fat comments explaining why it
-doesn't matter that they code is deliberately buggy.
+ .../bindings/phy/qcom,usb-snps-femto-v2.yaml       |  96 ++++++++
+ arch/arm64/boot/dts/qcom/sc7280-idp.dtsi           |   6 +
+ drivers/phy/qualcomm/phy-qcom-snps-femto-v2.c      | 268 ++++++++++++++++++++-
+ 3 files changed, 368 insertions(+), 2 deletions(-)
 
+-- 
+2.7.4
 
-In short it does not make sense to me to justify a patch for performance
-reasons when it appears that extending the rcu_read_lock hold time and
-not touch the task reference count would stop dirtying a cache line and
-likely have more impact.
-
-Eric
