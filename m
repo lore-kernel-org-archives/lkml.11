@@ -2,83 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B223BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 03:12:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB8C3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 31 May 2022 03:15:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238988AbiEaDM1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 30 May 2022 23:12:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40230 "EHLO
+        id S243609AbiEaDPU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 30 May 2022 23:15:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231163AbiEaDMX (ORCPT
+        with ESMTP id S231163AbiEaDPQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 30 May 2022 23:12:23 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C7367369DB
-        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 20:12:21 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7FD9F23A;
-        Mon, 30 May 2022 20:12:21 -0700 (PDT)
-Received: from [10.162.41.9] (unknown [10.162.41.9])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 07A1B3F66F;
-        Mon, 30 May 2022 20:12:17 -0700 (PDT)
-Message-ID: <2455da92-6522-6842-6c9c-c153e97d6e27@arm.com>
-Date:   Tue, 31 May 2022 08:42:15 +0530
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] mm: page_isolation: use compound_nr() correctly in
- isolate_single_pageblock()
-Content-Language: en-US
-To:     Zi Yan <ziy@nvidia.com>, Andrew Morton <akpm@linux-foundation.org>,
-        David Hildenbrand <david@redhat.com>, linux-mm@kvack.org
-Cc:     linux-kernel@vger.kernel.org, Qian Cai <quic_qiancai@quicinc.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Eric Ren <renzhengeek@gmail.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        Oscar Salvador <osalvador@suse.de>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>
-References: <20220531024450.2498431-1-zi.yan@sent.com>
-From:   Anshuman Khandual <anshuman.khandual@arm.com>
-In-Reply-To: <20220531024450.2498431-1-zi.yan@sent.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Mon, 30 May 2022 23:15:16 -0400
+Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 871C47B9E0
+        for <linux-kernel@vger.kernel.org>; Mon, 30 May 2022 20:15:14 -0700 (PDT)
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id DC608200EB0;
+        Tue, 31 May 2022 05:15:12 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id A6B2A200ECF;
+        Tue, 31 May 2022 05:15:12 +0200 (CEST)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 2CDB0180031F;
+        Tue, 31 May 2022 11:15:11 +0800 (+08)
+From:   Shengjiu Wang <shengjiu.wang@nxp.com>
+To:     nicoleotsuka@gmail.com, Xiubo.Lee@gmail.com, festevam@gmail.com,
+        shengjiu.wang@gmail.com, lgirdwood@gmail.com, broonie@kernel.org,
+        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
+Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] ASoC: fsl_sai: Add support for i.MX8MN
+Date:   Tue, 31 May 2022 11:02:03 +0800
+Message-Id: <1653966123-28217-1-git-send-email-shengjiu.wang@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The SAI module on i.MX8MN is almost same as i.MX8MP,
+So reuse same soc data as i.MX8MP.
 
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+---
+ sound/soc/fsl/fsl_sai.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-On 5/31/22 08:14, Zi Yan wrote:
-> From: Zi Yan <ziy@nvidia.com>
-> 
-> When compound_nr(page) was used, page was not guaranteed to be the head
-> of the compound page and it could cause an infinite loop. Fix it by calling
-> it on the head page.
-> 
-> Fixes: b2c9e2fbba32 ("mm: make alloc_contig_range work at pageblock granularity")
-> Reported-by: Anshuman Khandual <anshuman.khandual@arm.com>
-> Link: https://lore.kernel.org/linux-mm/20220530115027.123341-1-anshuman.khandual@arm.com/
-> Signed-off-by: Zi Yan <ziy@nvidia.com>
+diff --git a/sound/soc/fsl/fsl_sai.c b/sound/soc/fsl/fsl_sai.c
+index dae16a14f177..59a91a6d91a9 100644
+--- a/sound/soc/fsl/fsl_sai.c
++++ b/sound/soc/fsl/fsl_sai.c
+@@ -1299,6 +1299,7 @@ static const struct of_device_id fsl_sai_ids[] = {
+ 	{ .compatible = "fsl,imx8mm-sai", .data = &fsl_sai_imx8mm_data },
+ 	{ .compatible = "fsl,imx8mp-sai", .data = &fsl_sai_imx8mp_data },
+ 	{ .compatible = "fsl,imx8ulp-sai", .data = &fsl_sai_imx8ulp_data },
++	{ .compatible = "fsl,imx8mn-sai", .data = &fsl_sai_imx8mp_data },
+ 	{ /* sentinel */ }
+ };
+ MODULE_DEVICE_TABLE(of, fsl_sai_ids);
+-- 
+2.17.1
 
-Reviewed-by: Anshuman Khandual <anshuman.khandual@arm.com>
-
-> ---
->  mm/page_isolation.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/mm/page_isolation.c b/mm/page_isolation.c
-> index 6021f8444b5a..d200d41ad0d3 100644
-> --- a/mm/page_isolation.c
-> +++ b/mm/page_isolation.c
-> @@ -385,9 +385,9 @@ static int isolate_single_pageblock(unsigned long boundary_pfn, int flags,
->  		 * above do the rest. If migration is not possible, just fail.
->  		 */
->  		if (PageCompound(page)) {
-> -			unsigned long nr_pages = compound_nr(page);
->  			struct page *head = compound_head(page);
->  			unsigned long head_pfn = page_to_pfn(head);
-> +			unsigned long nr_pages = compound_nr(head);
->  
->  			if (head_pfn + nr_pages <= boundary_pfn) {
->  				pfn = head_pfn + nr_pages;
