@@ -2,108 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 523AAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 10:44:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69CD5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 10:45:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344394AbiFAKoS (ORCPT
+        id S1352247AbiFAKpk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 06:44:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48930 "EHLO
+        Wed, 1 Jun 2022 06:45:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236563AbiFAKoM (ORCPT
+        with ESMTP id S1351549AbiFAKpi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 06:44:12 -0400
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E70756D86E
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 03:44:10 -0700 (PDT)
-Received: by mail-lj1-x22e.google.com with SMTP id e4so1498011ljb.13
-        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 03:44:10 -0700 (PDT)
+        Wed, 1 Jun 2022 06:45:38 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81B627CB7D;
+        Wed,  1 Jun 2022 03:45:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fnL1OLV1PY9lMlL4F1psml7tqA7a4raxuISBfgJIhpI=;
-        b=JPQamR7LzqBH0jJ27Q0Lo1OAV/I4In+aj2UdcEhnFoer7CxhD2/6Th9So1GleiVW0s
-         UDhN164xgDIrzm42dhqzlmg6PmzohB3bxkZxWrHWgUV1R/hoQc3TNkLapmDN/NanpCh6
-         GOlLZmqx2w4nUKpsIb9EcLaWMr3+f3yw5x03SXud+iPX6FRxo7JTxHv9GKmrdY99uvIi
-         Eq4JaXgQscOudi91YWYXiFf0VE3WyAAJ8KiMt9Ne1Khmwu5NcwkN6jhk1o2dYXZTO1H7
-         unCPHAkLVQ/vH579QAadTf3eteQfjHt/FW0uDbdh3eGRUuqWtk1vETB2+SxNo6odo0XH
-         6nQw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fnL1OLV1PY9lMlL4F1psml7tqA7a4raxuISBfgJIhpI=;
-        b=lSsFrSQ6JPQQUMPYMc28YdDX3w6qq6Hz6xUl3fF3PQWr0g6pgndLa3ZYzRuQFjV+nM
-         7n1nWG16vyRSSlJh9LwsHHJZzvwa5WS7ZAChkgudztv10gX3y1ssejVn01ouIpNVg1Dm
-         gxBb6ZCOV5FmY6gZRYrq1KXEvBRu9Sbfh9uoa8c7y4AGHD4L6gO7bY3O4kCLYBoAN8Sn
-         J4QNcIMX0ZADG1Pke+FLIMxPtLY5e0E9cKzxmU+zxpR9nN9JNS4usl91qYs+6h+vPS+H
-         FFBHlzBP4RaCS72eAmlkdR/EB7XTq5mlfaWT6ewZZQFCjJiPCm1SsQGWnvMkrbBizZZY
-         zGvw==
-X-Gm-Message-State: AOAM5315cAewyA+5ALx1QjOnoufhT02UBoZ91DWFyMH2QYDW+MBlZpde
-        E7m2j0BtKLi7di5VxocfHtv0RHlrsAgiiYxMblWBqg==
-X-Google-Smtp-Source: ABdhPJzL6Hm338xmLjdt+tFgPO2JQEu2i6HOMaY+iApQ+fEFRrz+yOa5Wgm+FzcqjSzhM0e9sGs9ibkQ9ZNYB+uvycE=
-X-Received: by 2002:a2e:9216:0:b0:255:6834:dcae with SMTP id
- k22-20020a2e9216000000b002556834dcaemr2925927ljg.466.1654080249243; Wed, 01
- Jun 2022 03:44:09 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220601085122.28176-1-lukas.bulwahn@gmail.com>
-In-Reply-To: <20220601085122.28176-1-lukas.bulwahn@gmail.com>
-From:   Anup Patel <apatel@ventanamicro.com>
-Date:   Wed, 1 Jun 2022 16:13:57 +0530
-Message-ID: <CAK9=C2WB2eoiFQfvSeQkioqcMuSLhP5eVKrd+eaTbuNMAXaG2w@mail.gmail.com>
-Subject: Re: [PATCH] MAINTAINERS: Limit KVM RISC-V entry to existing selftests
-To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Cc:     Anup Patel <anup@brainfault.org>,
-        Atish Patra <atishp@atishpatra.org>,
-        KVM General <kvm@vger.kernel.org>,
-        kvm-riscv@lists.infradead.org,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        kernel-janitors@vger.kernel.org,
-        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1654080337; x=1685616337;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references;
+  bh=azlyfzRu9cMqIBHovpx4gwhu0zJW42GZxYs3Wuf5XOM=;
+  b=u1wnSgR4LgPJ9lRNC546rTUK7Z3HJfWVjIpFrjyQ2rMdsdiuHYXNqRY9
+   eZ/Bpduv92N/35+qRAoI2FEjVifVOxRpbtHW7RrMvYflGf/K8YOWur+/I
+   Tx4jRU8LAK2F7+vyjE5q6Aeze11il9NE8FD5D1cAWdLu0q3jCGGfcMsYE
+   I=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 01 Jun 2022 03:45:37 -0700
+X-QCInternal: smtphost
+Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 01 Jun 2022 03:45:35 -0700
+X-QCInternal: smtphost
+Received: from hu-rohiagar-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.106.138])
+  by ironmsg01-blr.qualcomm.com with ESMTP; 01 Jun 2022 16:15:24 +0530
+Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3970568)
+        id E3B983FCD; Wed,  1 Jun 2022 16:15:23 +0530 (+0530)
+From:   Rohit Agarwal <quic_rohiagar@quicinc.com>
+To:     agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, wim@linux-watchdog.org,
+        linux@roeck-us.net
+Cc:     linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        manivannan.sadhasivam@linaro.org,
+        Rohit Agarwal <quic_rohiagar@quicinc.com>
+Subject: [PATCH 11/11] ARM: dts: qcom: sdx65: Add pshold support
+Date:   Wed,  1 Jun 2022 16:15:12 +0530
+Message-Id: <1654080312-5408-12-git-send-email-quic_rohiagar@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1654080312-5408-1-git-send-email-quic_rohiagar@quicinc.com>
+References: <1654080312-5408-1-git-send-email-quic_rohiagar@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 1, 2022 at 2:21 PM Lukas Bulwahn <lukas.bulwahn@gmail.com> wrote:
->
-> Commit fed9b26b2501 ("MAINTAINERS: Update KVM RISC-V entry to cover
-> selftests support") optimistically adds a file entry for
-> tools/testing/selftests/kvm/riscv/, but this directory does not exist.
->
-> Hence, ./scripts/get_maintainer.pl --self-test=patterns complains about a
-> broken reference. The script is very useful to keep MAINTAINERS up to date
-> and MAINTAINERS can be kept in a state where the script emits no warning.
->
-> So, just drop the non-matching file entry rather than starting to collect
-> exceptions of entries that may match in some close or distant future.
->
-> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-> ---
-> Anup, please consider to pick this minor clean-up patch.
+Add support for pshold block to drive pshold towards the PMIC, which is
+used to trigger a configurable event such as reboot or poweroff of the
+SDX65 platform.
 
-Sure, I will include this as fix for 5.19-rcX
+Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
+---
+ arch/arm/boot/dts/qcom-sdx65.dtsi | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-Thanks,
-Anup
+diff --git a/arch/arm/boot/dts/qcom-sdx65.dtsi b/arch/arm/boot/dts/qcom-sdx65.dtsi
+index c76f330..a249646 100644
+--- a/arch/arm/boot/dts/qcom-sdx65.dtsi
++++ b/arch/arm/boot/dts/qcom-sdx65.dtsi
+@@ -394,6 +394,11 @@
+ 			};
+ 		};
+ 
++		restart@c264000 {
++			compatible = "qcom,pshold";
++			reg = <0x0c264000 0x1000>;
++		};
++
+ 		spmi_bus: qcom,spmi@c440000 {
+ 			compatible = "qcom,spmi-pmic-arb";
+ 			reg = <0xc440000 0xd00>,
+-- 
+2.7.4
 
->
->  MAINTAINERS | 1 -
->  1 file changed, 1 deletion(-)
->
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 36eab5ae237d..a8eee9d2aea5 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -10863,7 +10863,6 @@ F:      arch/riscv/include/asm/kvm*
->  F:     arch/riscv/include/uapi/asm/kvm*
->  F:     arch/riscv/kvm/
->  F:     tools/testing/selftests/kvm/*/riscv/
-> -F:     tools/testing/selftests/kvm/riscv/
->
->  KERNEL VIRTUAL MACHINE for s390 (KVM/s390)
->  M:     Christian Borntraeger <borntraeger@linux.ibm.com>
-> --
-> 2.17.1
->
