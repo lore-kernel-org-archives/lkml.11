@@ -2,121 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 927CCC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 09:33:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52A53C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 09:34:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347227AbiFAJd4 (ORCPT
+        id S1351157AbiFAJe3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 05:33:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49292 "EHLO
+        Wed, 1 Jun 2022 05:34:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351127AbiFAJdx (ORCPT
+        with ESMTP id S1351132AbiFAJeX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 05:33:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 786258B09E;
-        Wed,  1 Jun 2022 02:33:52 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0E3FBB8185E;
-        Wed,  1 Jun 2022 09:33:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F7B4C385A5;
-        Wed,  1 Jun 2022 09:33:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654076029;
-        bh=5T6DOvFw902lROs1sSAyrJ/DZ8vBhIwjqturHxstVd8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=bGGzdgsl0yWRtC4tWhYShHmsSXAkbeeoS1eRaWgAuHlUB8ydG6LiQgI9ENIJpxdvi
-         lI2Zh0dsTLjglJKNtjG3AJsMHdauUUCWmZMnJDlDaUW6FNuR9a/bnbZ2OsY9rYdlzs
-         1s/mzxOUsVKKevlFm5kdHfOHd2SOWfgorHG4Rtuw=
-Date:   Wed, 1 Jun 2022 11:33:29 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Quan Nguyen <quan@os.amperecomputing.com>
-Cc:     Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Derek Kiernan <derek.kiernan@xilinx.com>,
-        Dragan Cvetic <dragan.cvetic@xilinx.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Thu Nguyen <thu@os.amperecomputing.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, linux-doc@vger.kernel.org,
-        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
-        Open Source Submission <patches@amperecomputing.com>,
-        Phong Vo <phong@os.amperecomputing.com>,
-        "Thang Q . Nguyen" <thang@os.amperecomputing.com>
-Subject: Re: [PATCH v8 3/9] misc: smpro-errmon: Add Ampere's SMpro error
- monitor driver
-Message-ID: <YpcyaTqqsfDJx7HG@kroah.com>
-References: <20220422024653.2199489-1-quan@os.amperecomputing.com>
- <20220422024653.2199489-4-quan@os.amperecomputing.com>
- <YmJJIb1DAIq5arCw@kroah.com>
- <4f5d7746-3747-4a4d-525a-4fb69e706cd0@os.amperecomputing.com>
+        Wed, 1 Jun 2022 05:34:23 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1DA48FD50
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 02:34:20 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id b8so1338367edf.11
+        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 02:34:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=roNxqKUu0+AV4DeO1JbEmmYOyNX8wIcqoT9AzN3Cm2M=;
+        b=bRYOQ9fGbJR0V+y0wEZKLfg/TqqyZIxzKGA17cV2dYd4XNtRdHyH4/yeq/LxJn/NsU
+         j6OqB6oDPLhE4+MsUHuxGDg87PixqxiwzQaEWzu7LQlfhqmrcWF4UkzqEBolU2arg+t6
+         ZEwzrsNkZLoDZczkN8gxN3A8zioU+OYUAKXz6M2fKE+P44DYTD4hjyLrpXG1BBn8GjtJ
+         Zwt1N2HkZX6pvO+XccPH+zn+GyEdE+57hkLjfHZB8pbh1tqGeuiAAR6NSEznBiagvjAc
+         M1xkmzTZ28Y8eJe5MQO0kbBJUDQjPWxbeeOzk7JlypHCfAslHnHPBBQFMRZo+sI+F7y6
+         ilhw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=roNxqKUu0+AV4DeO1JbEmmYOyNX8wIcqoT9AzN3Cm2M=;
+        b=r29pHmJzl/UciMOXLqn/7lSmZMu/j7O6zxYUNUmVuewb11FDaDbzT0GfHv28eNr3Pz
+         XaaXBs4VoTPQo1jfcA93vnAxVzgnljHoFDXgiGQb7gAMLIfey/5jQnKfEEdSAgCVjSsa
+         4uiAeDKMzcK7X2s7Tp4GVev+11xy3EhD4T8s32PnaYYk6QKc2rxPkdKwTniDCpbfk6V9
+         GrLeV+f+NlwukDxX6OOxhhR+v6qhCaHyFSr2euG7F9fp1uUyJ9Y5mJHZ0BHdGHq+b+v0
+         m2ixK9VVJr51uRJ7D0vr7GD5Y6BYxsY60j4hCATC8eCVhWnQlv/8cPC9+UCxgPge767m
+         o6BA==
+X-Gm-Message-State: AOAM532wY0KuWN6e+TgcjX5OSLaqw4Te07NB2LwaA00swgy8niuxzHSj
+        xgw3vlD3L+KWrbYfDGa5T8gaLg==
+X-Google-Smtp-Source: ABdhPJzh9Lf8L/NKchmFQc388SPcHvGUJvGg8NbDDJ7Sxuy5dahguWAyQXRYAWLbvqWHCJKhyvlBgQ==
+X-Received: by 2002:a05:6402:42c1:b0:42d:fba6:d5c5 with SMTP id i1-20020a05640242c100b0042dfba6d5c5mr1180660edc.295.1654076059375;
+        Wed, 01 Jun 2022 02:34:19 -0700 (PDT)
+Received: from [192.168.0.179] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id b8-20020aa7c6c8000000b0042617ba637bsm710427eds.5.2022.06.01.02.34.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 01 Jun 2022 02:34:18 -0700 (PDT)
+Message-ID: <c510cf8e-4111-8886-99e0-8ad35b3086a8@linaro.org>
+Date:   Wed, 1 Jun 2022 11:34:17 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4f5d7746-3747-4a4d-525a-4fb69e706cd0@os.amperecomputing.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 02/17] dt-bindings: memory: add mt8365 SoC binding
+ documentation
+Content-Language: en-US
+To:     Fabien Parent <fparent@baylibre.com>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, vkoul@kernel.org,
+        qii.wang@mediatek.com, matthias.bgg@gmail.com, jic23@kernel.org,
+        chaotian.jing@mediatek.com, ulf.hansson@linaro.org,
+        srinivas.kandagatla@linaro.org, chunfeng.yun@mediatek.com,
+        broonie@kernel.org, wim@linux-watchdog.org, linux@roeck-us.net,
+        Yong Wu <yong.wu@mediatek.com>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dmaengine@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-iio@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-serial@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org
+References: <20220531135026.238475-1-fparent@baylibre.com>
+ <20220531135026.238475-3-fparent@baylibre.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220531135026.238475-3-fparent@baylibre.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 01, 2022 at 03:21:47PM +0700, Quan Nguyen wrote:
-> > > +	if (err_type & BIT(2)) {
-> > > +		/* Error with data type */
-> > > +		ret = regmap_read(errmon->regmap, err_info->err_data_low, &data_lo);
-> > > +		if (ret)
-> > > +			goto done;
-> > > +
-> > > +		ret = regmap_read(errmon->regmap, err_info->err_data_high, &data_hi);
-> > > +		if (ret)
-> > > +			goto done;
-> > > +
-> > > +		count = sysfs_emit(buf, "%01x%02x%01x%02x%04x%04x%04x\n",
-> > > +				   4, (ret_hi & 0xf000) >> 12, (ret_hi & 0x0800) >> 11,
-> > > +				   ret_hi & 0xff, ret_lo, data_hi, data_lo);
-> > > +		/* clear the read errors */
-> > > +		ret = regmap_write(errmon->regmap, err_info->err_type, BIT(2));
-> > > +
-> > > +	} else if (err_type & BIT(1)) {
-> > > +		/* Error type */
-> > > +		count = sysfs_emit(buf, "%01x%02x%01x%02x%04x%04x%04x\n",
-> > > +				   2, (ret_hi & 0xf000) >> 12, (ret_hi & 0x0800) >> 11,
-> > > +				   ret_hi & 0xff, ret_lo, data_hi, data_lo);
-> > > +		/* clear the read errors */
-> > > +		ret = regmap_write(errmon->regmap, err_info->err_type, BIT(1));
-> > > +
-> > > +	} else if (err_type & BIT(0)) {
-> > > +		/* Warning type */
-> > > +		count = sysfs_emit(buf, "%01x%02x%01x%02x%04x%04x%04x\n",
-> > > +				   1, (ret_hi & 0xf000) >> 12, (ret_hi & 0x0800) >> 11,
-> > > +				   ret_hi & 0xff, ret_lo, data_hi, data_lo);
+On 31/05/2022 15:50, Fabien Parent wrote:
+> Add MediaTek SMI bindings for MT8365 SoC.
 > 
-> Hi Greg,
+> Signed-off-by: Fabien Parent <fparent@baylibre.com>
+> ---
+>  .../bindings/memory-controllers/mediatek,smi-common.yaml    | 6 ++++++
+>  .../bindings/memory-controllers/mediatek,smi-larb.yaml      | 6 ++++++
+>  2 files changed, 12 insertions(+)
 > 
-> Since the internal representation of the internal error is split into high
-> low chunks of the info and data values which need to be communicated
-> atomicly, I'm treating them as "one value" here.
+> diff --git a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml
+> index a98b359bf909..e1029ac99ab4 100644
+> --- a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml
+> +++ b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml
+> @@ -46,6 +46,11 @@ properties:
+>            - const: mediatek,mt7623-smi-common
+>            - const: mediatek,mt2701-smi-common
+>  
+> +      - description: for mt8365
 
-That is a huge "one value", that's not what this really is, it needs to
-be parsed by userspace, right?
+Skip description and:
 
-And why does this have to be atomic?  What happens if the values change
-right after you read them?  What is userspace going to do with them?
+> +        items:
+> +          - const: mediatek,mt8365-smi-common
 
-> I could dump them in a
-> temporary array and print that, but it seems like additional complexity for
-> the same result. Can we consider this concatenated encoding as "an array of
-> the same type" for the purposes of this driver?"
+This should be rather enum. I see existing code did that way, but this
+way makes it bloated. If new device compatible with mt8186 comes, should
+be added to this enum, not to new items.
 
-That's really not a good idea as sysfs files should never need to be
-"parsed" like this.
+> +          - const: mediatek,mt8186-smi-common
+> +
+>    reg:
+>      maxItems: 1
+>  
+> @@ -130,6 +135,7 @@ allOf:
+>              - mediatek,mt8192-smi-common
+>              - mediatek,mt8195-smi-common-vdo
+>              - mediatek,mt8195-smi-common-vpp
+> +            - mediatek,mt8365-smi-common
+>  
+>      then:
+>        properties:
+> diff --git a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.yaml b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.yaml
+> index c886681f62a7..815d87fc64a0 100644
+> --- a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.yaml
+> +++ b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.yaml
+> @@ -32,6 +32,11 @@ properties:
+>            - const: mediatek,mt7623-smi-larb
+>            - const: mediatek,mt2701-smi-larb
+>  
+> +      - description: for mt8365
+> +        items:
+> +          - const: mediatek,mt8365-smi-larb
+> +          - const: mediatek,mt8186-smi-larb
 
-Again, what are you trying to do here, and why does it have to be
-atomic?
+Ditto.
 
-thanks,
+> +
+>    reg:
+>      maxItems: 1
+>  
+> @@ -78,6 +83,7 @@ allOf:
+>              - mediatek,mt8183-smi-larb
+>              - mediatek,mt8186-smi-larb
+>              - mediatek,mt8195-smi-larb
+> +            - mediatek,mt8365-smi-larb
+>  
+>      then:
+>        properties:
 
-greg k-h
+
+Best regards,
+Krzysztof
