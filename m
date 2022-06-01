@@ -2,184 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76CDEC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 03:31:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4124C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 03:31:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349426AbiFADbP (ORCPT
+        id S1349438AbiFADbz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 23:31:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35358 "EHLO
+        Tue, 31 May 2022 23:31:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349448AbiFADbM (ORCPT
+        with ESMTP id S1349403AbiFADbv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 23:31:12 -0400
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2042.outbound.protection.outlook.com [40.107.237.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A57639CF62;
-        Tue, 31 May 2022 20:31:08 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Jhcm/nHNE6pyyOKCkGXYGplDxVafDixSPWGd9sKm348IWxL7FO2vnU0UUxS1YBLpXNYeWapP/2CDseQa7jrExvGPwxi0bNZUBEZmAheyAtKlHgpomng8H+ftjnsJA0cZlpdHBONDmBGPMU7NxQAL+y3r/ykyBQA696mXrOVbmdp0QD33WsHmFH9HTFbeuzdgUtFSTuFYKJWnxYjVbGoWNmRcy4tig8oHenyJudOUCVB55emVJT/FhhzC48viYqquDaVBX3f3bhKsO7H6Ag28WEVxro2rXmd14uVgmXtopVvovAfgGjyV1hQnTGMBlNh2VENZliTgzWQtZY0rW0uHdg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ENgn8+omoEhMK3iILyBQxGAX+iDfdi2Upi/IMDFWqgw=;
- b=m+uO9INE5Xlsh0M2sl9a8jRGRFBqKGCGgJma0yim9lXN+M3oqt9EifVa0pYVRGv/YA9S3JmtGErqpw6nKZsDn2B5wIC9CbSOYCcQp7+KMn5Z5F0+vCOL1M3faAspuIZ94zXF0Z6UKqOS84JZjYgfTXvH9H5QAQXqlBZwHjFesAz5mtnWOqj7qR2aMZSN21ce6QM+o8TjnObr+rpijOC9ryD7loalH4TpPXyfnBkVDbWA0+uUMWorW5NXVALvveY8nFMAgn9UMmGZ4TrO03ttbwvZUt9s80bkLMS4h1XCqGJgau+24tO5d6XfLvAiNsHOb7MUaqC8r5+Ynf8+8L4vnA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ENgn8+omoEhMK3iILyBQxGAX+iDfdi2Upi/IMDFWqgw=;
- b=uhw/RHmltdQH84jKBw55jVdKfvtZGg0A8dl9/PQKtJTuMGIhXUBL2OQDhDD2wk05wdhk7mLnxF9UIJH8r3aSXiiVikBDtkaKx9cE/t5Fn0C1Bw1oNTwqHs/q8Ko9q2LGiM+Q+dZC1oIwzrVODHwTlaxuTEsHSOUnqhW/WehCSJs=
-Received: from MW4PR03CA0360.namprd03.prod.outlook.com (2603:10b6:303:dc::35)
- by DM6PR12MB4548.namprd12.prod.outlook.com (2603:10b6:5:2a1::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.12; Wed, 1 Jun
- 2022 03:31:06 +0000
-Received: from CO1NAM11FT046.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:dc:cafe::9e) by MW4PR03CA0360.outlook.office365.com
- (2603:10b6:303:dc::35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.12 via Frontend
- Transport; Wed, 1 Jun 2022 03:31:06 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT046.mail.protection.outlook.com (10.13.174.203) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5314.12 via Frontend Transport; Wed, 1 Jun 2022 03:31:06 +0000
-Received: from BLR-5CG113396H.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Tue, 31 May
- 2022 22:30:20 -0500
-From:   Ravi Bangoria <ravi.bangoria@amd.com>
-To:     <acme@kernel.org>, <kan.liang@linux.intel.com>
-CC:     <ravi.bangoria@amd.com>, <jolsa@kernel.org>, <irogers@google.com>,
-        <peterz@infradead.org>, <rrichter@amd.com>, <mingo@redhat.com>,
-        <mark.rutland@arm.com>, <namhyung@kernel.org>,
-        <tglx@linutronix.de>, <bp@alien8.de>, <james.clark@arm.com>,
-        <leo.yan@linaro.org>, <ak@linux.intel.com>, <eranian@google.com>,
-        <like.xu.linux@gmail.com>, <x86@kernel.org>,
-        <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <sandipan.das@amd.com>, <ananth.narayan@amd.com>,
-        <kim.phillips@amd.com>, <santosh.shukla@amd.com>
-Subject: [PATCH v5 7/8] perf tool ibs: Sync amd ibs header file
-Date:   Wed, 1 Jun 2022 08:56:07 +0530
-Message-ID: <20220601032608.1034-8-ravi.bangoria@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220601032608.1034-1-ravi.bangoria@amd.com>
-References: <20220601032608.1034-1-ravi.bangoria@amd.com>
+        Tue, 31 May 2022 23:31:51 -0400
+Received: from mail-oa1-x2c.google.com (mail-oa1-x2c.google.com [IPv6:2001:4860:4864:20::2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 311E81146D
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 20:31:49 -0700 (PDT)
+Received: by mail-oa1-x2c.google.com with SMTP id 586e51a60fabf-f2cbceefb8so1030787fac.11
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 20:31:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=ZXANg1Xbh102jrQayjOuezZ9O/gFRLgsMRDupXP1QUA=;
+        b=QCRv/9hjjsPosXK8+SozzTvw4mbpn5cVmMRPrTx8zbtfJZ8P6yp6nrPikH5M3Bb/zY
+         9zj+RzSvXK0g8rzpgjMmty2pyBIC2N8frbv66r+wBgGh1aQpLT8s8K+9i7Krw1YN9LgX
+         sVhAm8KDz42ZHGje/8QwEcJtsvASD/rChgUVA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=ZXANg1Xbh102jrQayjOuezZ9O/gFRLgsMRDupXP1QUA=;
+        b=qG0wSxedoLM/UZpa+Cc5Z9y+tVFpipvHFSFXH+wV/z9IR/99gjQLdR68ashWykF3uZ
+         ANa1OGXEeTz1rU1ejqiPiqCn346xewop6OWTCbue8B8koW1wM81ClpQt3/B5x8eOe3h7
+         CPjEGy7HZ8jOLTPC32dqOJvcbdAZlDeTgb8eaEGlVezxFxvIOclOEwTcXYJbh2aKwdP+
+         o1OAnjsNkthQ/FhXWJHneYGuBFahixvKz/Mx7nebg2YhkNRuQUItitjY3bYkmzmcJY+z
+         XtJwloR4re4gKp0MFBvBa/t2J/leVhaM1dpJAbTo6L+tBI9bidUrBLXtScCllE89ccyl
+         GwQw==
+X-Gm-Message-State: AOAM531UYQoIu+tiY7pkHsf/ZTjzRVjgi7BVzoapW4isZ6QQB0J+Q+RM
+        Xo1MLLTgs7SeOHn9/QiSjh+WwAMrR4cH/mycl0FqAw==
+X-Google-Smtp-Source: ABdhPJxWg/wQ47t6UdY8plKB4yDS5oiLWxRUVa6tt3bSryEz8iA4tslZ3JT274/cfraEHMrjdCaYi12Re0wyLgqxBE8=
+X-Received: by 2002:a05:6870:240d:b0:f1:b878:e97c with SMTP id
+ n13-20020a056870240d00b000f1b878e97cmr14788774oap.193.1654054308492; Tue, 31
+ May 2022 20:31:48 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Tue, 31 May 2022 20:31:47 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b0194db5-179d-4666-8a4e-08da437f297f
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4548:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB4548BEC35956B6D90A7DC470E0DF9@DM6PR12MB4548.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: IgifHaTsyrVitUoVRcwAeH3rNm+IrHg0PjuMLMsaqi7giHWnWwaFWPE3OgG2hgpKKEChwDX06LkVDR4/fmCYzdyodbpuwbLLcF7gGKG8jdWK7MzqV89IBFcWLYxXjDnDu+1zgVQm5FiMpPibETlvu7T7vE+oa8fDlMq0tEzLkO+qcnT17ZwiVkc/5t6OEj/EzTkBAda/kclCdg3zIfXAmVLKVxv5GQhPN6ryRk4Xq4vCc96JmKPnzyiHini2Ph4XKq5auRQnqjebMaWiGJctuGFuTk6r7yA5PZbgbBwbhGIUdYKYQJEeSHbYk6KifgUkyx0BAbHVe8vDhX9vO6YrvqoFrL9dIYROKbSysSHqoBvBTnkNAw70q4i6IGcsChXoJ/AmdBA3ocYaT+a3FmFIn/xYmJwaTVMM5adDUVyFU3+H5V/wBLKN1W4pLDviHuwHBL+mIecuMo0Q+SSJR5OVvNhpvfTsWEvttaCY9NZvbOwQQT80bC+VxkC02I0wZSMk2DlhSGvegsBKhVZ5di5S4dSoI8AQrdEQPdh5XQdYOkq5b3M/TlZDphmm1oBQk8ViQtyoMwMBIi/RbAZBMViIHrIMeOqLgcQKIRYib0dPT6g8th8yESnPMSfsgPP1ZOWwYIvdn5UxD5rPHlSFhmsKj/ilhgCjc8/tflJnVc/6Mo9PwHLZgoFn57snVRHozqooG1YpnFaRYn94vneJj13afA==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(2906002)(54906003)(82310400005)(6666004)(5660300002)(7416002)(508600001)(44832011)(47076005)(8936002)(1076003)(2616005)(86362001)(83380400001)(336012)(40460700003)(426003)(36860700001)(7696005)(26005)(16526019)(186003)(356005)(36756003)(316002)(70586007)(81166007)(4326008)(70206006)(8676002)(110136005)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jun 2022 03:31:06.0759
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b0194db5-179d-4666-8a4e-08da437f297f
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT046.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4548
+In-Reply-To: <20220531160059.v2.1.Ie7f6d4bf8cce28131da31a43354727e417cae98d@changeid>
+References: <20220531160059.v2.1.Ie7f6d4bf8cce28131da31a43354727e417cae98d@changeid>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Tue, 31 May 2022 20:31:47 -0700
+Message-ID: <CAE-0n53E+J9osr2ajviwFLwrtFrS2_i9fgW=d1P5=7UZ+s1Kew@mail.gmail.com>
+Subject: Re: [PATCH v2] drm/msm/dpu: Move min BW request and full BW disable
+ back to mdss
+To:     Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Rob Clark <robdclark@gmail.com>
+Cc:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Kalyan Thota <quic_kalyant@quicinc.com>,
+        Sean Paul <sean@poorly.run>,
+        Vinod Polimera <quic_vpolimer@quicinc.com>,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-IBS support has been enhanced with two new features in upcoming uarch:
-1. DataSrc extension and 2. L3 miss filtering. Additional set of bits
-has been introduced in IBS registers to exploit these features.
-New bits are already defining in arch/x86/ header. Sync it with tools
-header file. Also rename existing ibs_op_data field 'data_src' to
-'data_src_lo'.
+Quoting Douglas Anderson (2022-05-31 16:01:26)
+> In commit a670ff578f1f ("drm/msm/dpu: always use mdp device to scale
+> bandwidth") we fully moved interconnect stuff to the DPU driver. This
+> had no change for sc7180 but _did_ have an impact for other SoCs. It
+> made them match the sc7180 scheme.
+>
+> Unfortunately, the sc7180 scheme seems like it was a bit broken.
+> Specifically the interconnect needs to be on for more than just the
+> DPU driver's AXI bus. In the very least it also needs to be on for the
+> DSI driver's AXI bus. This can be seen fairly easily by doing this on
+> a ChromeOS sc7180-trogdor class device:
+>
+>   set_power_policy --ac_screen_dim_delay=5 --ac_screen_off_delay=10
+>   sleep 10
+>   cd /sys/bus/platform/devices/ae94000.dsi/power
+>   echo on > control
+>
+> When you do that, you'll get a warning splat in the logs about
+> "gcc_disp_hf_axi_clk status stuck at 'off'".
+>
+> One could argue that perhaps what I have done above is "illegal" and
+> that it can't happen naturally in the system because in normal system
+> usage the DPU is pretty much always on when DSI is on. That being
+> said:
+> * In official ChromeOS builds (admittedly a 5.4 kernel with backports)
+>   we have seen that splat at bootup.
+> * Even though we don't use "autosuspend" for these components, we
+>   don't use the "put_sync" variants. Thus plausibly the DSI could stay
+>   "runtime enabled" past when the DPU is enabled. Techncially we
+>   shouldn't do that if the DPU's suspend ends up yanking our clock.
+>
+> Let's change things such that the "bare minimum" request for the
+> interconnect happens in the mdss driver again. That means that all of
+> the children can assume that the interconnect is on at the minimum
+> bandwidth. We'll then let the DPU request the higher amount that it
+> wants.
+>
+> It should be noted that this isn't as hacky of a solution as it might
+> initially appear. Specifically:
+> * Since MDSS and DPU individually get their own references to the
+>   interconnect then the framework will actually handle aggregating
+>   them. The two drivers are _not_ clobbering each other.
+> * When the Qualcomm interconnect driver aggregates it takes the max of
+>   all the peaks. Thus having MDSS request a peak, as we're doing here,
+>   won't actually change the total interconnect bandwidth (it won't be
+>   added to the request for the DPU). This perhaps explains why the
+>   "average" requested in MDSS was historically 0 since that one
+>   _would_ be added in.
+>
+> NOTE also that in the downstream ChromeOS 5.4 and 5.15 kernels, we're
+> also seeing some RPMH hangs that are addressed by this fix. These
+> hangs are showing up in the field and on _some_ devices with enough
+> stress testing of suspend/resume. Specifically right at suspend time
+> with a stack crawl that looks like this (from chromeos-5.15 tree):
+>   rpmh_write_batch+0x19c/0x240
+>   qcom_icc_bcm_voter_commit+0x210/0x420
+>   qcom_icc_set+0x28/0x38
+>   apply_constraints+0x70/0xa4
+>   icc_set_bw+0x150/0x24c
+>   dpu_runtime_resume+0x50/0x1c4
+>   pm_generic_runtime_resume+0x30/0x44
+>   __genpd_runtime_resume+0x68/0x7c
+>   genpd_runtime_resume+0x12c/0x20c
+>   __rpm_callback+0x98/0x138
+>   rpm_callback+0x30/0x88
+>   rpm_resume+0x370/0x4a0
+>   __pm_runtime_resume+0x80/0xb0
+>   dpu_kms_enable_commit+0x24/0x30
+>   msm_atomic_commit_tail+0x12c/0x630
+>   commit_tail+0xac/0x150
+>   drm_atomic_helper_commit+0x114/0x11c
+>   drm_atomic_commit+0x68/0x78
+>   drm_atomic_helper_disable_all+0x158/0x1c8
+>   drm_atomic_helper_suspend+0xc0/0x1c0
+>   drm_mode_config_helper_suspend+0x2c/0x60
+>   msm_pm_prepare+0x2c/0x40
+>   pm_generic_prepare+0x30/0x44
+>   genpd_prepare+0x80/0xd0
+>   device_prepare+0x78/0x17c
+>   dpm_prepare+0xb0/0x384
+>   dpm_suspend_start+0x34/0xc0
+>
+> We don't completely understand all the mechanisms in play, but the
+> hang seemed to come and go with random factors. It's not terribly
+> surprising that the hang is gone after this patch since the line of
+> code that was failing is no longer present in the kernel.
+>
+> Fixes: a670ff578f1f ("drm/msm/dpu: always use mdp device to scale bandwidth")
+> Fixes: c33b7c0389e1 ("drm/msm/dpu: add support for clk and bw scaling for display")
+> Signed-off-by: Douglas Anderson <dianders@chromium.org>
+> ---
 
-Signed-off-by: Ravi Bangoria <ravi.bangoria@amd.com>
----
- tools/arch/x86/include/asm/amd-ibs.h | 16 ++++++++++------
- tools/perf/util/amd-sample-raw.c     |  4 ++--
- 2 files changed, 12 insertions(+), 8 deletions(-)
-
-diff --git a/tools/arch/x86/include/asm/amd-ibs.h b/tools/arch/x86/include/asm/amd-ibs.h
-index 765e9e752d03..9a3312e12e2e 100644
---- a/tools/arch/x86/include/asm/amd-ibs.h
-+++ b/tools/arch/x86/include/asm/amd-ibs.h
-@@ -29,7 +29,10 @@ union ibs_fetch_ctl {
- 			rand_en:1,	/* 57: random tagging enable */
- 			fetch_l2_miss:1,/* 58: L2 miss for sampled fetch
- 					 *      (needs IbsFetchComp) */
--			reserved:5;	/* 59-63: reserved */
-+			l3_miss_only:1,	/* 59: Collect L3 miss samples only */
-+			fetch_oc_miss:1,/* 60: Op cache miss for the sampled fetch */
-+			fetch_l3_miss:1,/* 61: L3 cache miss for the sampled fetch */
-+			reserved:2;	/* 62-63: reserved */
- 	};
- };
- 
-@@ -38,14 +41,14 @@ union ibs_op_ctl {
- 	__u64 val;
- 	struct {
- 		__u64	opmaxcnt:16,	/* 0-15: periodic op max. count */
--			reserved0:1,	/* 16: reserved */
-+			l3_miss_only:1,	/* 16: Collect L3 miss samples only */
- 			op_en:1,	/* 17: op sampling enable */
- 			op_val:1,	/* 18: op sample valid */
- 			cnt_ctl:1,	/* 19: periodic op counter control */
- 			opmaxcnt_ext:7,	/* 20-26: upper 7 bits of periodic op maximum count */
--			reserved1:5,	/* 27-31: reserved */
-+			reserved0:5,	/* 27-31: reserved */
- 			opcurcnt:27,	/* 32-58: periodic op counter current count */
--			reserved2:5;	/* 59-63: reserved */
-+			reserved1:5;	/* 59-63: reserved */
- 	};
- };
- 
-@@ -71,11 +74,12 @@ union ibs_op_data {
- union ibs_op_data2 {
- 	__u64 val;
- 	struct {
--		__u64	data_src:3,	/* 0-2: data source */
-+		__u64	data_src_lo:3,	/* 0-2: data source low */
- 			reserved0:1,	/* 3: reserved */
- 			rmt_node:1,	/* 4: destination node */
- 			cache_hit_st:1,	/* 5: cache hit state */
--			reserved1:57;	/* 5-63: reserved */
-+			data_src_hi:2,	/* 6-7: data source high */
-+			reserved1:56;	/* 8-63: reserved */
- 	};
- };
- 
-diff --git a/tools/perf/util/amd-sample-raw.c b/tools/perf/util/amd-sample-raw.c
-index d19d765195c5..3b623ea6ee7e 100644
---- a/tools/perf/util/amd-sample-raw.c
-+++ b/tools/perf/util/amd-sample-raw.c
-@@ -98,9 +98,9 @@ static void pr_ibs_op_data2(union ibs_op_data2 reg)
- 	};
- 
- 	printf("ibs_op_data2:\t%016llx %sRmtNode %d%s\n", reg.val,
--	       reg.data_src == 2 ? (reg.cache_hit_st ? "CacheHitSt 1=O-State "
-+	       reg.data_src_lo == 2 ? (reg.cache_hit_st ? "CacheHitSt 1=O-State "
- 						     : "CacheHitSt 0=M-state ") : "",
--	       reg.rmt_node, data_src_str[reg.data_src]);
-+	       reg.rmt_node, data_src_str[reg.data_src_lo]);
- }
- 
- static void pr_ibs_op_data3(union ibs_op_data3 reg)
--- 
-2.31.1
-
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
