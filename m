@@ -2,238 +2,217 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B364CCA468
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:21:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBAF3CCA468
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:21:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354765AbiFAOVp (ORCPT
+        id S1355275AbiFAOVu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:21:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32916 "EHLO
+        Wed, 1 Jun 2022 10:21:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356129AbiFAOUi (ORCPT
+        with ESMTP id S1356210AbiFAOUo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:20:38 -0400
-Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D744E15EC;
-        Wed,  1 Jun 2022 07:09:28 -0700 (PDT)
-Received: by mail-qt1-x834.google.com with SMTP id c8so1230278qtj.1;
-        Wed, 01 Jun 2022 07:09:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=dsbaIM6WigkoITIKWnOycXGrqyEVNssC8hn3uOsuVrc=;
-        b=Dqzj+615k9JDlf5h3LQiHgGSuWdTcb5des9J5Z7TdoUAYH+2EefV05woXSe+Y2WEPM
-         UORYWuyyctB9oXyqOhWQ+zPcnB1ixbKNXMjKVef9ibxdJ9hUfvbnDDIXFEml/EOOE+HU
-         gnpO7ODwFApHRqCmj536jbI7x8fyBzIhbkbcKWP7bIo0vlrCGUpTxJzR3t2Wxc3QC9kr
-         2EuEmz8TDdYUhw++hdJSEKDGgqzRHiw7BRGQ3GpDIRCBuN6dvcULQ4XH2k+tPsdezF1s
-         QGXqxZtyF2Gk2g9gpha6bRR0E6yZSMOFEs8cclpUZ8x/Gmh+0w8iDDqf8JJ4xB+JJ19y
-         RA3g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=dsbaIM6WigkoITIKWnOycXGrqyEVNssC8hn3uOsuVrc=;
-        b=2bpwMQQZPsWrvBiBx/qpeQklWQKWTVe/eElBH19GxVJ/isMYgZ4ImvDOG2pbyt0U+F
-         yfmstndw5DYi4ziN489X1U3YprKm/6DhPaYItxctzk4V+/pzAKnWH73njeO/WFBFF4/K
-         MBMGR5YEaz6iJr9TQXXMVGX19Wtu3NO0Abi+kGCYOB5/2pUx6Bu25I+dRl05TXaFcpfS
-         grcDk3gfA2dbSJEPoVkUbx+5RI52jyr8eIQsieT/EKRyjQFsdODbnQ9oZ3OGasH/27GE
-         di2Qbvm2cTX6vsJg+XstVh72WymcEgWH5rU4p+foKVz37EZ/qsDuj00ROnxvL3FL8xrd
-         xqAA==
-X-Gm-Message-State: AOAM533g2GXuhe4PHNNMjgOzBquJqWh9dfWPuhplQhftB9NbjOzA01eK
-        Gj42XVP5bpBHkTWmntzzUhY=
-X-Google-Smtp-Source: ABdhPJxm/bOXNFKIExhb1jHpxM6h1VcWwZT1kUP244ZKyQYrB6DaQ5SzA9F6Fhse+afxYAXGArEjaw==
-X-Received: by 2002:ac8:7f85:0:b0:303:8309:1cb6 with SMTP id z5-20020ac87f85000000b0030383091cb6mr12755649qtj.473.1654092565979;
-        Wed, 01 Jun 2022 07:09:25 -0700 (PDT)
-Received: from spruce (c-71-206-142-238.hsd1.va.comcast.net. [71.206.142.238])
-        by smtp.gmail.com with ESMTPSA id 2-20020a05620a040200b0069fd12a957bsm1314918qkp.17.2022.06.01.07.09.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Jun 2022 07:09:25 -0700 (PDT)
-Date:   Wed, 1 Jun 2022 10:09:23 -0400
-From:   Joe Simmons-Talbott <joetalbott@gmail.com>
-To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc:     linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+        Wed, 1 Jun 2022 10:20:44 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6A62A1A2
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 07:09:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654092576; x=1685628576;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=OIASPbT4ErywrxAuYrz/ZgaqSnR5UCcNc+ztvYy5GUs=;
+  b=a/sYWc8AnFSaqo9KZTUfBhMThbdr9ycV/vIS9hJU2LYxekvrLGxu7v/r
+   XsmcET8BSbKU8P+HLpep0yGvLctTSN0t7xVgKbxJO8C5kiDe6miyae+Nf
+   2KP6VzJDyJdWNlbPjfvh/F4srQdXLi35ORRxoL3Wf5nxe6oiFTGhVG5r0
+   TlxhG1qIPr77AwtFlyvnNhIzF6kGuMKSCQuxVAKJ0oQaVZ/NTw/104RIk
+   reYdeXRF7ZG1pj9roVRO/w0W8JE1k4xX7IU/j8bqth6Jfs/dv6mopfONR
+   gZD1PRZMDgg/bRBvqPl3QHcqZzCXSnsJIEuK2PusmhTOmYIp7yQNfISI0
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10365"; a="257668795"
+X-IronPort-AV: E=Sophos;i="5.91,268,1647327600"; 
+   d="scan'208";a="257668795"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 07:09:07 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,268,1647327600"; 
+   d="scan'208";a="680113133"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by fmsmga002.fm.intel.com with ESMTP; 01 Jun 2022 07:09:04 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nwP20-00043U-0h;
+        Wed, 01 Jun 2022 14:09:04 +0000
+Date:   Wed, 1 Jun 2022 22:08:03 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Haowen Bai <baihaowen@meizu.com>, Jan Harkes <jaharkes@cs.cmu.edu>,
+        coda@cs.cmu.edu
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Haowen Bai <baihaowen@meizu.com>, codalist@coda.cs.cmu.edu,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] iio: Prefer octal over symbolic permissions.
-Message-ID: <YpdzExJGBI88Udzy@spruce>
-References: <20220527185651.465204-1-joetalbott@gmail.com>
- <20220528183405.22b55033@jic23-huawei>
- <CAL7gdfeoRM8APfLL77bbGiWWBa0qOF8g0rza+=7hCdo+jaYNLQ@mail.gmail.com>
- <20220531105647.00006c00@Huawei.com>
+Subject: Re: [PATCH] coda: remove unused variable
+Message-ID: <202206012159.9WhO0iYq-lkp@intel.com>
+References: <1654070283-7216-1-git-send-email-baihaowen@meizu.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220531105647.00006c00@Huawei.com>
+In-Reply-To: <1654070283-7216-1-git-send-email-baihaowen@meizu.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 31, 2022 at 10:56:47AM +0100, Jonathan Cameron wrote:
-> On Sun, 29 May 2022 10:08:21 -0400
-> Joe Talbott <joetalbott@gmail.com> wrote:
-> 
-> > On Sat, May 28, 2022 at 1:25 PM Jonathan Cameron <jic23@kernel.org> wrote:
-> > >
-> > > On Fri, 27 May 2022 14:56:52 -0400
-> > > Joe Simmons-Talbott <joetalbott@gmail.com> wrote:
-> > >  
-> > > > As reported by checkpatch.pl use ocatl permissions rather than symbolic
-> > > > permissions.
-> > > >
-> > > > Signed-off-by: Joe Simmons-Talbott <joetalbott@gmail.com>  
-> > >
-> > > Hi Joe,
-> > >
-> > > Why the resend?  Given change of description, I'm guessing this is v2
-> > > because of feedback on a similar patch elsewhere. If so, please
-> > > put the version number in the patch log and provide a changelog
-> > > below the ---  
-> > 
-> > 
-> > I sent the patch again because I neglected to include linux-kernel and
-> > you in the
-> > original patch's recipients.  I wasn't sure if I should include the v2
-> > but will in the future.
-> 
-> For that case, common choice is [RESEND PATCH ....
-> with a brief note in the cover letter that you missed some to/cc
-> 
-> > Should I use v3 for my updated patch?
-> v2 is fine given v2 doesn't yet exist - v3 also fine though...
+Hi Haowen,
 
-Thanks for the info.  I've resubmitted the patch as:
-[PATCH v2] iio: Use octal permissions and DEVICE_ATTR_{RO,RW}.
+Thank you for the patch! Yet something to improve:
 
-Thanks,
-Joe
-> 
-> Jonathan
-> 
-> > 
-> > Thanks,
-> > Joe
-> > 
-> > >
-> > >
-> > > Hmm. I guess I don't really mind cleaning this up though it is
-> > > some churn in core code which is usually something we try to avoid
-> > > for fairly trivial style reasons.
-> > >
-> > > One request inline (though I suspect it applies in several places,
-> > > I just haven't checked ;)
-> > >
-> > > Thanks,
-> > >
-> > > Jonathan
-> > >  
-> > > > ---
-> > > >  drivers/iio/industrialio-buffer.c  | 12 ++++++------
-> > > >  drivers/iio/industrialio-core.c    | 10 +++++-----
-> > > >  drivers/iio/industrialio-trigger.c |  4 ++--
-> > > >  3 files changed, 13 insertions(+), 13 deletions(-)
-> > > >
-> > > > diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-> > > > index b078eb2f3c9d..c27f74a3c0f3 100644
-> > > > --- a/drivers/iio/industrialio-buffer.c
-> > > > +++ b/drivers/iio/industrialio-buffer.c
-> > > > @@ -1391,17 +1391,17 @@ static ssize_t direction_show(struct device *dev,
-> > > >       }
-> > > >  }
-> > > >
-> > > > -static DEVICE_ATTR(length, S_IRUGO | S_IWUSR, iio_buffer_read_length,
-> > > > +static DEVICE_ATTR(length, 0644, iio_buffer_read_length,
-> > > >                  iio_buffer_write_length);
-> > > >  static struct device_attribute dev_attr_length_ro = __ATTR(length,
-> > > > -     S_IRUGO, iio_buffer_read_length, NULL);
-> > > > -static DEVICE_ATTR(enable, S_IRUGO | S_IWUSR,
-> > > > +     0444, iio_buffer_read_length, NULL);
-> > > > +static DEVICE_ATTR(enable, 0644,
-> > > >                  iio_buffer_show_enable, iio_buffer_store_enable);
-> > > > -static DEVICE_ATTR(watermark, S_IRUGO | S_IWUSR,
-> > > > +static DEVICE_ATTR(watermark, 0644,
-> > > >                  iio_buffer_show_watermark, iio_buffer_store_watermark);
-> > > >  static struct device_attribute dev_attr_watermark_ro = __ATTR(watermark,
-> > > > -     S_IRUGO, iio_buffer_show_watermark, NULL);
-> > > > -static DEVICE_ATTR(data_available, S_IRUGO,
-> > > > +     0444, iio_buffer_show_watermark, NULL);
-> > > > +static DEVICE_ATTR(data_available, 0444,
-> > > >               iio_dma_show_data_available, NULL);  
-> > >
-> > > a side effect of this change a slight shortening of how long the above
-> > > two lines will be if combined into one.  It's now sub 80 chars
-> > > I think, so please make them a single line.  Also check for similar
-> > > cases elsewhere.
-> > >
-> > >  
-> > > >  static DEVICE_ATTR_RO(direction);
-> > > >
-> > > > diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> > > > index e1ed44dec2ab..35de348d686e 100644
-> > > > --- a/drivers/iio/industrialio-core.c
-> > > > +++ b/drivers/iio/industrialio-core.c
-> > > > @@ -1114,12 +1114,12 @@ int __iio_device_attr_init(struct device_attribute *dev_attr,
-> > > >       dev_attr->attr.name = name;
-> > > >
-> > > >       if (readfunc) {
-> > > > -             dev_attr->attr.mode |= S_IRUGO;
-> > > > +             dev_attr->attr.mode |= 0444;
-> > > >               dev_attr->show = readfunc;
-> > > >       }
-> > > >
-> > > >       if (writefunc) {
-> > > > -             dev_attr->attr.mode |= S_IWUSR;
-> > > > +             dev_attr->attr.mode |= 0200;
-> > > >               dev_attr->store = writefunc;
-> > > >       }
-> > > >
-> > > > @@ -1401,7 +1401,7 @@ static ssize_t iio_show_dev_name(struct device *dev,
-> > > >       return sysfs_emit(buf, "%s\n", indio_dev->name);
-> > > >  }
-> > > >
-> > > > -static DEVICE_ATTR(name, S_IRUGO, iio_show_dev_name, NULL);
-> > > > +static DEVICE_ATTR(name, 0444, iio_show_dev_name, NULL);
-> > > >
-> > > >  static ssize_t iio_show_dev_label(struct device *dev,
-> > > >                                struct device_attribute *attr,
-> > > > @@ -1411,7 +1411,7 @@ static ssize_t iio_show_dev_label(struct device *dev,
-> > > >       return sysfs_emit(buf, "%s\n", indio_dev->label);
-> > > >  }
-> > > >
-> > > > -static DEVICE_ATTR(label, S_IRUGO, iio_show_dev_label, NULL);
-> > > > +static DEVICE_ATTR(label, 0444, iio_show_dev_label, NULL);
-> > > >
-> > > >  static ssize_t iio_show_timestamp_clock(struct device *dev,
-> > > >                                       struct device_attribute *attr,
-> > > > @@ -1509,7 +1509,7 @@ int iio_device_register_sysfs_group(struct iio_dev *indio_dev,
-> > > >       return 0;
-> > > >  }
-> > > >
-> > > > -static DEVICE_ATTR(current_timestamp_clock, S_IRUGO | S_IWUSR,
-> > > > +static DEVICE_ATTR(current_timestamp_clock, 0644,
-> > > >                  iio_show_timestamp_clock, iio_store_timestamp_clock);
-> > > >
-> > > >  static int iio_device_register_sysfs(struct iio_dev *indio_dev)
-> > > > diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-> > > > index f504ed351b3e..e22a35634f2c 100644
-> > > > --- a/drivers/iio/industrialio-trigger.c
-> > > > +++ b/drivers/iio/industrialio-trigger.c
-> > > > @@ -54,7 +54,7 @@ static ssize_t iio_trigger_read_name(struct device *dev,
-> > > >       return sysfs_emit(buf, "%s\n", trig->name);
-> > > >  }
-> > > >
-> > > > -static DEVICE_ATTR(name, S_IRUGO, iio_trigger_read_name, NULL);
-> > > > +static DEVICE_ATTR(name, 0444, iio_trigger_read_name, NULL);
-> > > >
-> > > >  static struct attribute *iio_trig_dev_attrs[] = {
-> > > >       &dev_attr_name.attr,
-> > > > @@ -494,7 +494,7 @@ static ssize_t iio_trigger_write_current(struct device *dev,
-> > > >       return ret;
-> > > >  }
-> > > >
-> > > > -static DEVICE_ATTR(current_trigger, S_IRUGO | S_IWUSR,
-> > > > +static DEVICE_ATTR(current_trigger, 0644,
-> > > >                  iio_trigger_read_current,
-> > > >                  iio_trigger_write_current);
-> > > >  
-> > >  
-> 
+[auto build test ERROR on linus/master]
+[also build test ERROR on v5.18 next-20220601]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Haowen-Bai/coda-remove-unused-variable/20220601-160014
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 700170bf6b4d773e328fa54ebb70ba444007c702
+config: i386-randconfig-a006 (https://download.01.org/0day-ci/archive/20220601/202206012159.9WhO0iYq-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c825abd6b0198fb088d9752f556a70705bc99dfd)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/627c05172e8d819cb8dca41dfa795baae03ea6f9
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Haowen-Bai/coda-remove-unused-variable/20220601-160014
+        git checkout 627c05172e8d819cb8dca41dfa795baae03ea6f9
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash fs/coda/
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   fs/coda/upcall.c:115:27: warning: variable 'outp' set but not used [-Wunused-but-set-variable]
+           union outputArgs *outp;
+                             ^
+   fs/coda/upcall.c:164:20: warning: variable 'outp' set but not used [-Wunused-but-set-variable]
+           union outputArgs *outp;
+                             ^
+   fs/coda/upcall.c:238:27: warning: variable 'outp' set but not used [-Wunused-but-set-variable]
+           union outputArgs *outp;
+                             ^
+   fs/coda/upcall.c:306:27: warning: variable 'outp' set but not used [-Wunused-but-set-variable]
+           union outputArgs *outp;
+                             ^
+   fs/coda/upcall.c:329:27: warning: variable 'outp' set but not used [-Wunused-but-set-variable]
+           union outputArgs *outp;
+                             ^
+   fs/coda/upcall.c:383:27: warning: variable 'outp' set but not used [-Wunused-but-set-variable]
+           union outputArgs *outp;
+                             ^
+   fs/coda/upcall.c:410:27: warning: variable 'outp' set but not used [-Wunused-but-set-variable]
+           union outputArgs *outp;
+                             ^
+   fs/coda/upcall.c:443:27: warning: variable 'outp' set but not used [-Wunused-but-set-variable]
+           union outputArgs *outp; 
+                             ^
+   fs/coda/upcall.c:459:27: warning: variable 'outp' set but not used [-Wunused-but-set-variable]
+           union outputArgs *outp; 
+                             ^
+>> fs/coda/upcall.c:483:2: error: use of undeclared identifier 'insize'
+           UPARG(CODA_IOCTL);
+           ^
+   fs/coda/upcall.c:63:44: note: expanded from macro 'UPARG'
+           inp = (union inputArgs *)alloc_upcall(op, insize); \
+                                                     ^
+>> fs/coda/upcall.c:483:2: error: use of undeclared identifier 'insize'
+   fs/coda/upcall.c:66:19: note: expanded from macro 'UPARG'
+           outsize = insize; \
+                     ^
+   fs/coda/upcall.c:576:20: warning: variable 'outp' set but not used [-Wunused-but-set-variable]
+           union outputArgs *outp;
+                             ^
+   10 warnings and 2 errors generated.
+
+
+vim +/insize +483 fs/coda/upcall.c
+
+^1da177e4c3f41 Linus Torvalds   2005-04-16  473  
+^1da177e4c3f41 Linus Torvalds   2005-04-16  474  
+^1da177e4c3f41 Linus Torvalds   2005-04-16  475  int venus_pioctl(struct super_block *sb, struct CodaFid *fid,
+^1da177e4c3f41 Linus Torvalds   2005-04-16  476  		 unsigned int cmd, struct PioctlData *data)
+^1da177e4c3f41 Linus Torvalds   2005-04-16  477  {
+^1da177e4c3f41 Linus Torvalds   2005-04-16  478          union inputArgs *inp;
+^1da177e4c3f41 Linus Torvalds   2005-04-16  479          union outputArgs *outp;  
+627c05172e8d81 Haowen Bai       2022-06-01  480  	int outsize, error;
+^1da177e4c3f41 Linus Torvalds   2005-04-16  481  	int iocsize;
+^1da177e4c3f41 Linus Torvalds   2005-04-16  482  
+^1da177e4c3f41 Linus Torvalds   2005-04-16 @483  	UPARG(CODA_IOCTL);
+^1da177e4c3f41 Linus Torvalds   2005-04-16  484  
+^1da177e4c3f41 Linus Torvalds   2005-04-16  485          /* build packet for Venus */
+^1da177e4c3f41 Linus Torvalds   2005-04-16  486          if (data->vi.in_size > VC_MAXDATASIZE) {
+^1da177e4c3f41 Linus Torvalds   2005-04-16  487  		error = -EINVAL;
+^1da177e4c3f41 Linus Torvalds   2005-04-16  488  		goto exit;
+^1da177e4c3f41 Linus Torvalds   2005-04-16  489          }
+^1da177e4c3f41 Linus Torvalds   2005-04-16  490  
+^1da177e4c3f41 Linus Torvalds   2005-04-16  491          if (data->vi.out_size > VC_MAXDATASIZE) {
+^1da177e4c3f41 Linus Torvalds   2005-04-16  492  		error = -EINVAL;
+^1da177e4c3f41 Linus Torvalds   2005-04-16  493  		goto exit;
+^1da177e4c3f41 Linus Torvalds   2005-04-16  494  	}
+^1da177e4c3f41 Linus Torvalds   2005-04-16  495  
+^1da177e4c3f41 Linus Torvalds   2005-04-16  496          inp->coda_ioctl.VFid = *fid;
+^1da177e4c3f41 Linus Torvalds   2005-04-16  497      
+^1da177e4c3f41 Linus Torvalds   2005-04-16  498          /* the cmd field was mutated by increasing its size field to
+^1da177e4c3f41 Linus Torvalds   2005-04-16  499           * reflect the path and follow args. We need to subtract that
+^1da177e4c3f41 Linus Torvalds   2005-04-16  500           * out before sending the command to Venus.  */
+^1da177e4c3f41 Linus Torvalds   2005-04-16  501          inp->coda_ioctl.cmd = (cmd & ~(PIOCPARM_MASK << 16));	
+^1da177e4c3f41 Linus Torvalds   2005-04-16  502          iocsize = ((cmd >> 16) & PIOCPARM_MASK) - sizeof(char *) - sizeof(int);
+^1da177e4c3f41 Linus Torvalds   2005-04-16  503          inp->coda_ioctl.cmd |= (iocsize & PIOCPARM_MASK) <<	16;	
+^1da177e4c3f41 Linus Torvalds   2005-04-16  504      
+^1da177e4c3f41 Linus Torvalds   2005-04-16  505          /* in->coda_ioctl.rwflag = flag; */
+^1da177e4c3f41 Linus Torvalds   2005-04-16  506          inp->coda_ioctl.len = data->vi.in_size;
+^1da177e4c3f41 Linus Torvalds   2005-04-16  507          inp->coda_ioctl.data = (char *)(INSIZE(ioctl));
+^1da177e4c3f41 Linus Torvalds   2005-04-16  508       
+^1da177e4c3f41 Linus Torvalds   2005-04-16  509          /* get the data out of user space */
+^1da177e4c3f41 Linus Torvalds   2005-04-16  510  	if (copy_from_user((char *)inp + (long)inp->coda_ioctl.data,
+^1da177e4c3f41 Linus Torvalds   2005-04-16  511  			   data->vi.in, data->vi.in_size)) {
+^1da177e4c3f41 Linus Torvalds   2005-04-16  512  		error = -EINVAL;
+^1da177e4c3f41 Linus Torvalds   2005-04-16  513  	        goto exit;
+^1da177e4c3f41 Linus Torvalds   2005-04-16  514  	}
+^1da177e4c3f41 Linus Torvalds   2005-04-16  515  
+a1b0aa87647493 Jan Harkes       2007-07-19  516  	error = coda_upcall(coda_vcp(sb), SIZE(ioctl) + data->vi.in_size,
+^1da177e4c3f41 Linus Torvalds   2005-04-16  517  			    &outsize, inp);
+^1da177e4c3f41 Linus Torvalds   2005-04-16  518  
+^1da177e4c3f41 Linus Torvalds   2005-04-16  519          if (error) {
+6d6bd94f4d83d7 Fabian Frederick 2014-06-06  520  		pr_warn("%s: Venus returns: %d for %s\n",
+6d6bd94f4d83d7 Fabian Frederick 2014-06-06  521  			__func__, error, coda_f2s(fid));
+^1da177e4c3f41 Linus Torvalds   2005-04-16  522  		goto exit; 
+^1da177e4c3f41 Linus Torvalds   2005-04-16  523  	}
+^1da177e4c3f41 Linus Torvalds   2005-04-16  524  
+^1da177e4c3f41 Linus Torvalds   2005-04-16  525  	if (outsize < (long)outp->coda_ioctl.data + outp->coda_ioctl.len) {
+^1da177e4c3f41 Linus Torvalds   2005-04-16  526  		error = -EINVAL;
+^1da177e4c3f41 Linus Torvalds   2005-04-16  527  		goto exit;
+^1da177e4c3f41 Linus Torvalds   2005-04-16  528  	}
+^1da177e4c3f41 Linus Torvalds   2005-04-16  529          
+^1da177e4c3f41 Linus Torvalds   2005-04-16  530  	/* Copy out the OUT buffer. */
+^1da177e4c3f41 Linus Torvalds   2005-04-16  531          if (outp->coda_ioctl.len > data->vi.out_size) {
+^1da177e4c3f41 Linus Torvalds   2005-04-16  532  		error = -EINVAL;
+^1da177e4c3f41 Linus Torvalds   2005-04-16  533  		goto exit;
+^1da177e4c3f41 Linus Torvalds   2005-04-16  534          }
+^1da177e4c3f41 Linus Torvalds   2005-04-16  535  
+^1da177e4c3f41 Linus Torvalds   2005-04-16  536  	/* Copy out the OUT buffer. */
+^1da177e4c3f41 Linus Torvalds   2005-04-16  537  	if (copy_to_user(data->vi.out,
+^1da177e4c3f41 Linus Torvalds   2005-04-16  538  			 (char *)outp + (long)outp->coda_ioctl.data,
+^1da177e4c3f41 Linus Torvalds   2005-04-16  539  			 outp->coda_ioctl.len)) {
+^1da177e4c3f41 Linus Torvalds   2005-04-16  540  		error = -EFAULT;
+^1da177e4c3f41 Linus Torvalds   2005-04-16  541  		goto exit;
+^1da177e4c3f41 Linus Torvalds   2005-04-16  542  	}
+^1da177e4c3f41 Linus Torvalds   2005-04-16  543  
+^1da177e4c3f41 Linus Torvalds   2005-04-16  544   exit:
+936dae4525322f Dan Carpenter    2019-07-16  545  	kvfree(inp);
+^1da177e4c3f41 Linus Torvalds   2005-04-16  546  	return error;
+^1da177e4c3f41 Linus Torvalds   2005-04-16  547  }
+^1da177e4c3f41 Linus Torvalds   2005-04-16  548  
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
