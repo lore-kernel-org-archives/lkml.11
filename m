@@ -2,112 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC542C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:28:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87A79CCA46F
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:28:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354869AbiFAO2R (ORCPT
+        id S1354949AbiFAO2W (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:28:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52034 "EHLO
+        Wed, 1 Jun 2022 10:28:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354904AbiFAO1l (ORCPT
+        with ESMTP id S1354839AbiFAO1z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:27:41 -0400
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0D492650
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 07:22:34 -0700 (PDT)
-Received: by mail-lj1-x229.google.com with SMTP id y29so2167361ljd.7
-        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 07:22:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rasmusvillemoes.dk; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vsEqLx3OgDPWs4ZLZiTy/4sPplZIdTXobmR6Gec9Res=;
-        b=h94CdPcu+dARHjr4EssZ6BTEc/vGQO45X4Nuoq/mitPHx9QZKuiWPUxcRIR5NaOI4D
-         RN2tYmO+UX9I/BumRzmgOijyHBO+qvwQzKoIIjWVTdkluzwZOUB4gFYwPFaNLkdYRI+Z
-         JYSzmr88Kar6PBUw858oPrsyazEgLfqQuqVRY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vsEqLx3OgDPWs4ZLZiTy/4sPplZIdTXobmR6Gec9Res=;
-        b=GxzffGnw7JP0tYt1CdttvteKSpmMCkyGcblltwZhFWgRXUr/6UkaItyl9UFhHSH0cA
-         7DStf1xGiThKMlIoETc9C77pS9lsYEJPc9HrKPHNmUwBKJDRMwKNMDIxbICU47wcJ917
-         y6SScWkAxJkNkHj4kZ33QLUvCLWqrybbSXeEBNZWzm7kL2BptKnw103k4Y8nvIc4noyd
-         2cDWK6MPhsCZgSl6ZvsSwltlhImUUtEA2wu3unlbLLOcXj8Up2gSoPE3z6kqD6pyi0bW
-         L6aaTHZf5Jm/WyGFn32kcXv0tnY+v+imaB0PTPMjvOiiiOkQdLsf6/VpkkB0vf+4IRKW
-         mhfA==
-X-Gm-Message-State: AOAM531zoNg1a4Fjj0bhoQ2kSjniUoXWMl0XWIZKBPquzzEj2veFMtBv
-        WkcqIxT48bxHIL6zQF19YTexqQ==
-X-Google-Smtp-Source: ABdhPJxMAt1NLVYOUw6pB3tro1F7SV4gxh6HLOIWuCWEzEcs7MAgK5A7qupPnnzpzHH5YenUpHzBUA==
-X-Received: by 2002:a2e:88da:0:b0:255:51e2:32a6 with SMTP id a26-20020a2e88da000000b0025551e232a6mr7549883ljk.49.1654093352819;
-        Wed, 01 Jun 2022 07:22:32 -0700 (PDT)
-Received: from prevas-ravi.prevas.se ([81.216.59.226])
-        by smtp.gmail.com with ESMTPSA id f14-20020a05651232ce00b0047255d2118csm388255lfg.187.2022.06.01.07.22.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Jun 2022 07:22:32 -0700 (PDT)
-From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Subject: [PATCH] net: stmmac: use dev_err_probe() for reporting mdio bus registration failure
-Date:   Wed,  1 Jun 2022 16:22:26 +0200
-Message-Id: <20220601142226.1123110-1-linux@rasmusvillemoes.dk>
-X-Mailer: git-send-email 2.31.1
+        Wed, 1 Jun 2022 10:27:55 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CBC62C105;
+        Wed,  1 Jun 2022 07:23:28 -0700 (PDT)
+Received: from fraeml736-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LCrrg3xmHz685x5;
+        Wed,  1 Jun 2022 22:20:03 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml736-chm.china.huawei.com (10.206.15.217) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 1 Jun 2022 16:23:26 +0200
+Received: from localhost (10.202.226.42) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 1 Jun
+ 2022 15:23:25 +0100
+Date:   Wed, 1 Jun 2022 15:23:23 +0100
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     Lukas Wunner <lukas@wunner.de>
+CC:     Ira Weiny <ira.weiny@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Alison Schofield <alison.schofield@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Ben Widawsky <ben.widawsky@intel.com>,
+        <linux-kernel@vger.kernel.org>, <linux-cxl@vger.kernel.org>,
+        <linux-pci@vger.kernel.org>
+Subject: Re: [PATCH V8 03/10] PCI: Create PCI library functions in support
+ of DOE mailboxes.
+Message-ID: <20220601152323.00004b9e@Huawei.com>
+In-Reply-To: <20220601071808.GA19924@wunner.de>
+References: <20220414203237.2198665-1-ira.weiny@intel.com>
+        <20220414203237.2198665-4-ira.weiny@intel.com>
+        <20220530190657.GA14765@wunner.de>
+        <20220531113350.0000421e@Huawei.com>
+        <YpbWCYujYDEkMm1B@iweiny-desk3>
+        <20220601071808.GA19924@wunner.de>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.202.226.42]
+X-ClientProxiedBy: lhreml739-chm.china.huawei.com (10.201.108.189) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I have a board where these two lines are always printed during boot:
+On Wed, 1 Jun 2022 09:18:08 +0200
+Lukas Wunner <lukas@wunner.de> wrote:
 
-   imx-dwmac 30bf0000.ethernet: Cannot register the MDIO bus
-   imx-dwmac 30bf0000.ethernet: stmmac_dvr_probe: MDIO bus (id: 1) registration failed
+> On Tue, May 31, 2022 at 07:59:21PM -0700, Ira Weiny wrote:
+> > On Tue, May 31, 2022 at 11:33:50AM +0100, Jonathan Cameron wrote:  
+> > > On Mon, 30 May 2022 21:06:57 +0200 Lukas Wunner <lukas@wunner.de> wrote:  
+> > > > On Thu, Apr 14, 2022 at 01:32:30PM -0700, ira.weiny@intel.com wrote:  
+> > > > > +	/* First 2 dwords have already been read */
+> > > > > +	length -= 2;
+> > > > > +	/* Read the rest of the response payload */
+> > > > > +	for (i = 0; i < min(length, task->response_pl_sz / sizeof(u32)); i++) {
+> > > > > +		pci_read_config_dword(pdev, offset + PCI_DOE_READ,
+> > > > > +				      &task->response_pl[i]);
+> > > > > +		pci_write_config_dword(pdev, offset + PCI_DOE_READ, 0);
+> > > > > +	}    
+> > > > 
+> > > > You need to check the Data Object Ready bit.  The device may clear the
+> > > > bit prematurely (e.g. as a result of a concurrent FLR or Conventional
+> > > > Reset).  You'll continue reading zero dwords from the mailbox and
+> > > > pretend success to the caller even though the response is truncated.
+> > > > 
+> > > > If you're concerned about performance when checking the bit on every
+> > > > loop iteration, checking it only on the last but one iteration should
+> > > > be sufficient to detect truncation.  
+> > > 
+> > > Good catch - I hate corner cases.  Thankfully this one is trivial to
+> > > check for.  
+> > 
+> > Ok looking at the spec:  Strictly speaking this needs to happen multiple
+> > times both in doe_statemachine_work() and inside pci_doe_recv_resp();
+> > not just in this loop.  :-(
+> > 
+> > This is because, the check in doe_statemachine_work() only covers the
+> > 1st dword read IIUC.  
+> 
+> The spec says "this bit indicates the DOE instance has a *data object*
+> available to be read by system firmware/software".
+> 
+> So, the entire object is available for reading, not just one dword.
 
-It's perfectly fine, and the device is succesfully (and silently, as far
-as the console goes) probed later.
+Agreed
 
-Use dev_err_probe() instead, which will demote these messages to debug
-level (thus removing the alarming messages from the console) when the
-error is -EPROBE_DEFER, and also has the advantage of including the
-error code if/when it happens to be something other than -EPROBE_DEFER.
+> 
+> You've already got checks in place for the first two dwords which
+> cover reading an "all zeroes" response.  No need to amend them.
+> 
+> You only need to re-check the Data Object Ready bit on the last-but-one
+> dword in case the function was reset concurrently.  Per sec. 6.30.2,
+> "An FLR to a Function must result in the aborting of any DOE transfer
+> in progress."
 
-Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 2 +-
- drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+Ouch, isn't that racy as you can only check it slightly before reading the
+last dword and a reset could occur in between?
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 3b81d4e9dc83..8a739746c951 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -7129,7 +7129,7 @@ int stmmac_dvr_probe(struct device *device,
- 		/* MDIO bus Registration */
- 		ret = stmmac_mdio_register(ndev);
- 		if (ret < 0) {
--			dev_err(priv->device,
-+			dev_err_probe(priv->device, ret,
- 				"%s: MDIO bus (id: %d) registration failed",
- 				__func__, priv->plat->bus_id);
- 			goto error_mdio_register;
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-index 9bc625fccca0..03d3d1f7aa4b 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-@@ -482,7 +482,7 @@ int stmmac_mdio_register(struct net_device *ndev)
- 
- 	err = of_mdiobus_register(new_bus, mdio_node);
- 	if (err != 0) {
--		dev_err(dev, "Cannot register the MDIO bus\n");
-+		dev_err_probe(dev, err, "Cannot register the MDIO bus\n");
- 		goto bus_register_fail;
- 	}
- 
--- 
-2.31.1
+> 
+> 
+> > > > > +static irqreturn_t pci_doe_irq_handler(int irq, void *data)
+> > > > > +{
+> > > > > +	struct pci_doe_mb *doe_mb = data;
+> > > > > +	struct pci_dev *pdev = doe_mb->pdev;
+> > > > > +	int offset = doe_mb->cap_offset;
+> > > > > +	u32 val;
+> > > > > +
+> > > > > +	pci_read_config_dword(pdev, offset + PCI_DOE_STATUS, &val);
+> > > > > +
+> > > > > +	/* Leave the error case to be handled outside IRQ */
+> > > > > +	if (FIELD_GET(PCI_DOE_STATUS_ERROR, val)) {
+> > > > > +		mod_delayed_work(system_wq, &doe_mb->statemachine, 0);
+> > > > > +		return IRQ_HANDLED;
+> > > > > +	}
+> > > > > +
+> > > > > +	if (FIELD_GET(PCI_DOE_STATUS_INT_STATUS, val)) {
+> > > > > +		pci_write_config_dword(pdev, offset + PCI_DOE_STATUS,
+> > > > > +					PCI_DOE_STATUS_INT_STATUS);
+> > > > > +		mod_delayed_work(system_wq, &doe_mb->statemachine, 0);
+> > > > > +		return IRQ_HANDLED;
+> > > > > +	}
+> > > > > +
+> > > > > +	return IRQ_NONE;
+> > > > > +}    
+> > > > 
+> > > > PCIe 6.0, table 7-316 says that an interrupt is also raised when
+> > > > "the DOE Busy bit has been Cleared", yet such an interrupt is
+> > > > not handled here.  It is incorrectly treated as a spurious
+> > > > interrupt by returning IRQ_NONE.  The right thing to do
+> > > > is probably to wake the state machine in case it's polling
+> > > > for the Busy flag to clear.  
+> > > 
+> > > Ah. I remember testing this via a lot of hacking on the QEMU code
+> > > to inject the various races that can occur (it was really ugly to do).
+> > > 
+> > > Guess we lost the handling at some point.  I think your fix
+> > > is the right one.  
+> > 
+> > Perhaps I am missing something but digging into this more.  I disagree
+> > that the handler fails to handle this case.  If I read the spec correctly
+> > DOE Interrupt Status must be set when an interrupt is generated.
+> > The handler wakes the state machine in that case.  The state machine
+> > then checks for busy if there is work to be done.  
+> 
+> Right, I was mistaken, sorry for the noise.
+
+Ah. Makes sense - managed to confuse me too ;)
+I really don't like the absence of a status bit for the DOE busy bit has
+cleared interrupt source, but glad we did handle it.
+
+> 
+> 
+> > Normally we would not even need to check for status error.  But that is
+> > special cased because clearing that status is left to the state machine.  
+> 
+> That however looks wrong because the DOE Interrupt Status bit is never
+> cleared after a DOE Error is signaled.  The state machine performs an
+> explicit abort upon an error by setting the DOE Abort bit, but that
+> doesn't seem to clear DOE Interrupt Status:
+> 
+> Per section 6.30.2, "At any time, the system firmware/software is
+> permitted to set the DOE Abort bit in the DOE Control Register,
+> and the DOE instance must Clear the Data Object Ready bit,
+> if not already Clear, and Clear the DOE Error bit, if already Set,
+> in the DOE Status Register, within 1 second."
+> 
+> No mention of the DOE Interrupt Status bit, so we cannot assume that
+> it's cleared by a DOE Abort and we must clear it explicitly.
+
+Gah.
+
+Jonathan
+
+> 
+> Thanks,
+> 
+> Lukas
+> 
 
