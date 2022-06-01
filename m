@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AF03C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:55:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3BC6CCA468
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:55:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353803AbiFANz2 (ORCPT
+        id S1351985AbiFANzc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 09:55:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59532 "EHLO
+        Wed, 1 Jun 2022 09:55:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353783AbiFANyc (ORCPT
+        with ESMTP id S1353610AbiFANyc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 1 Jun 2022 09:54:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FC79880D2;
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98D4C87A36;
         Wed,  1 Jun 2022 06:54:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 350A261577;
-        Wed,  1 Jun 2022 13:53:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47836C385B8;
-        Wed,  1 Jun 2022 13:53:38 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 72235CE1A23;
+        Wed,  1 Jun 2022 13:53:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8ECEC34119;
+        Wed,  1 Jun 2022 13:53:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091619;
-        bh=/j62wDdCZ6jM4TCnRCrFXNWm9VQZyd9sGMYL8iWTtiw=;
+        s=k20201202; t=1654091633;
+        bh=pfvUU/V6IqUWT2zQcygVATlHHRSp7oNJoS8dGnypnnU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P9zYJWWvQ+FBaK14Wy6gQOzaYNrXveC8PpiPmk8tHPgtuzb8kpIglG0ypwx4Mw/IX
-         Ui3BPrkZUZfEgR8/vbGMw7IPN22hCgN2X+IBG0Vso7gngRyW2qg51LNhHyY73kikUz
-         zI9IPqzRWlgsQ/1vU4uwlZKkDdqM9fd52kHzT2TBOLMYUjQjQ+T1DL/yjvXoS6UB50
-         UQ9g+ZIGw5uq1jVSHbpdmdUh5BQ1YJnutmFLlU/icFTBdzAlshz67FQaHbuTDesnPl
-         NBBInGDnTXDyQpIhizFg0ICbg1oRgbZ/e2OuLX5KH6dLi23JyLJ+5Gko28Rd5092jH
-         NEodPqzCsf0uA==
+        b=eFuqhVCgWVyafNIumbNAmHZd3RRGRByzR2akAyo4PtcN1Iw4hc33ft9S/YwxkIiJP
+         kLjuSSuXl38tbX7OUiX0mIi7iARjTfFzhJYNNZDynLeDJegDPMr3+Zr9EKGy9MHcXo
+         ANzYc9VsN2TVe1A45/+sW4Hm4FRllYt8nHDYAiduYSgyTtk5Yg1fyY9vf+9O+FeHOW
+         MQSaNzOygGnQ1EeJZMzJJtXElAWl4x6220gWI1JbFFUAyJZO1J+5GdbJfeCMChL8y0
+         6ciYtMoaA6rJ/PigsKzpsuEn08QXHQKxEV9Uo5ixDFDgwvYRBpKcagdvs9Z9bpRmcL
+         Nwuf4E0wC26xw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ricardo Koller <ricarkol@google.com>,
-        Oliver Upton <oupton@google.com>,
-        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        catalin.marinas@arm.com, will@kernel.org, eric.auger@redhat.com,
-        yuzhe@nfschina.com, justin.he@arm.com,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu
-Subject: [PATCH AUTOSEL 5.18 35/49] KVM: arm64: vgic: Do not ignore vgic_its_restore_cte failures
-Date:   Wed,  1 Jun 2022 09:51:59 -0400
-Message-Id: <20220601135214.2002647-35-sashal@kernel.org>
+Cc:     Haren Myneni <haren@linux.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        npiggin@gmail.com, linuxppc-dev@lists.ozlabs.org,
+        linux-crypto@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 39/49] powerpc/powernv/vas: Assign real address to rx_fifo in vas_rx_win_attr
+Date:   Wed,  1 Jun 2022 09:52:03 -0400
+Message-Id: <20220601135214.2002647-39-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135214.2002647-1-sashal@kernel.org>
 References: <20220601135214.2002647-1-sashal@kernel.org>
@@ -55,102 +54,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ricardo Koller <ricarkol@google.com>
+From: Haren Myneni <haren@linux.ibm.com>
 
-[ Upstream commit a1ccfd6f6e06eceb632cc29c4f15a32860f05a7e ]
+[ Upstream commit c127d130f6d59fa81701f6b04023cf7cd1972fb3 ]
 
-Restoring a corrupted collection entry (like an out of range ID) is
-being ignored and treated as success. More specifically, a
-vgic_its_restore_cte failure is treated as success by
-vgic_its_restore_collection_table.  vgic_its_restore_cte uses positive
-and negative numbers to return error, and +1 to return success.  The
-caller then uses "ret > 0" to check for success.
+In init_winctx_regs(), __pa() is called on winctx->rx_fifo and this
+function is called to initialize registers for receive and fault
+windows. But the real address is passed in winctx->rx_fifo for
+receive windows and the virtual address for fault windows which
+causes errors with DEBUG_VIRTUAL enabled. Fixes this issue by
+assigning only real address to rx_fifo in vas_rx_win_attr struct
+for both receive and fault windows.
 
-Fix this by having vgic_its_restore_cte only return negative numbers on
-error.  Do this by changing alloc_collection return codes to only return
-negative numbers on error.
-
-Signed-off-by: Ricardo Koller <ricarkol@google.com>
-Reviewed-by: Oliver Upton <oupton@google.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220510001633.552496-4-ricarkol@google.com
+Reported-by: Michael Ellerman <mpe@ellerman.id.au>
+Signed-off-by: Haren Myneni <haren@linux.ibm.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/338e958c7ab8f3b266fa794a1f80f99b9671829e.camel@linux.ibm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/kvm/vgic/vgic-its.c | 27 +++++++++++++++++++++++----
- 1 file changed, 23 insertions(+), 4 deletions(-)
+ arch/powerpc/include/asm/vas.h              | 2 +-
+ arch/powerpc/platforms/powernv/vas-fault.c  | 2 +-
+ arch/powerpc/platforms/powernv/vas-window.c | 4 ++--
+ arch/powerpc/platforms/powernv/vas.h        | 2 +-
+ drivers/crypto/nx/nx-common-powernv.c       | 2 +-
+ 5 files changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/arch/arm64/kvm/vgic/vgic-its.c b/arch/arm64/kvm/vgic/vgic-its.c
-index 2e13402be3bd..eeee272729dd 100644
---- a/arch/arm64/kvm/vgic/vgic-its.c
-+++ b/arch/arm64/kvm/vgic/vgic-its.c
-@@ -976,15 +976,16 @@ static bool vgic_its_check_id(struct vgic_its *its, u64 baser, u32 id,
- 	return ret;
- }
+diff --git a/arch/powerpc/include/asm/vas.h b/arch/powerpc/include/asm/vas.h
+index 83afcb6c194b..c36f71e01c0f 100644
+--- a/arch/powerpc/include/asm/vas.h
++++ b/arch/powerpc/include/asm/vas.h
+@@ -126,7 +126,7 @@ static inline void vas_user_win_add_mm_context(struct vas_user_win_ref *ref)
+  * Receive window attributes specified by the (in-kernel) owner of window.
+  */
+ struct vas_rx_win_attr {
+-	void *rx_fifo;
++	u64 rx_fifo;
+ 	int rx_fifo_size;
+ 	int wcreds_max;
  
-+/*
-+ * Add a new collection into the ITS collection table.
-+ * Returns 0 on success, and a negative error value for generic errors.
-+ */
- static int vgic_its_alloc_collection(struct vgic_its *its,
- 				     struct its_collection **colp,
- 				     u32 coll_id)
- {
- 	struct its_collection *collection;
+diff --git a/arch/powerpc/platforms/powernv/vas-fault.c b/arch/powerpc/platforms/powernv/vas-fault.c
+index a7aabc18039e..c1bfad56447d 100644
+--- a/arch/powerpc/platforms/powernv/vas-fault.c
++++ b/arch/powerpc/platforms/powernv/vas-fault.c
+@@ -216,7 +216,7 @@ int vas_setup_fault_window(struct vas_instance *vinst)
+ 	vas_init_rx_win_attr(&attr, VAS_COP_TYPE_FAULT);
  
--	if (!vgic_its_check_id(its, its->baser_coll_table, coll_id, NULL))
--		return E_ITS_MAPC_COLLECTION_OOR;
--
- 	collection = kzalloc(sizeof(*collection), GFP_KERNEL_ACCOUNT);
- 	if (!collection)
- 		return -ENOMEM;
-@@ -1078,7 +1079,12 @@ static int vgic_its_cmd_handle_mapi(struct kvm *kvm, struct vgic_its *its,
+ 	attr.rx_fifo_size = vinst->fault_fifo_size;
+-	attr.rx_fifo = vinst->fault_fifo;
++	attr.rx_fifo = __pa(vinst->fault_fifo);
  
- 	collection = find_collection(its, coll_id);
- 	if (!collection) {
--		int ret = vgic_its_alloc_collection(its, &collection, coll_id);
-+		int ret;
-+
-+		if (!vgic_its_check_id(its, its->baser_coll_table, coll_id, NULL))
-+			return E_ITS_MAPC_COLLECTION_OOR;
-+
-+		ret = vgic_its_alloc_collection(its, &collection, coll_id);
- 		if (ret)
- 			return ret;
- 		new_coll = collection;
-@@ -1233,6 +1239,10 @@ static int vgic_its_cmd_handle_mapc(struct kvm *kvm, struct vgic_its *its,
- 		if (!collection) {
- 			int ret;
+ 	/*
+ 	 * Max creds is based on number of CRBs can fit in the FIFO.
+diff --git a/arch/powerpc/platforms/powernv/vas-window.c b/arch/powerpc/platforms/powernv/vas-window.c
+index 0f8d39fbf2b2..0072682531d8 100644
+--- a/arch/powerpc/platforms/powernv/vas-window.c
++++ b/arch/powerpc/platforms/powernv/vas-window.c
+@@ -404,7 +404,7 @@ static void init_winctx_regs(struct pnv_vas_window *window,
+ 	 *
+ 	 * See also: Design note in function header.
+ 	 */
+-	val = __pa(winctx->rx_fifo);
++	val = winctx->rx_fifo;
+ 	val = SET_FIELD(VAS_PAGE_MIGRATION_SELECT, val, 0);
+ 	write_hvwc_reg(window, VREG(LFIFO_BAR), val);
  
-+			if (!vgic_its_check_id(its, its->baser_coll_table,
-+						coll_id, NULL))
-+				return E_ITS_MAPC_COLLECTION_OOR;
-+
- 			ret = vgic_its_alloc_collection(its, &collection,
- 							coll_id);
- 			if (ret)
-@@ -2461,6 +2471,11 @@ static int vgic_its_save_cte(struct vgic_its *its,
- 	return kvm_write_guest_lock(its->dev->kvm, gpa, &val, esz);
- }
+@@ -739,7 +739,7 @@ static void init_winctx_for_rxwin(struct pnv_vas_window *rxwin,
+ 		 */
+ 		winctx->fifo_disable = true;
+ 		winctx->intr_disable = true;
+-		winctx->rx_fifo = NULL;
++		winctx->rx_fifo = 0;
+ 	}
  
-+/*
-+ * Restore a collection entry into the ITS collection table.
-+ * Return +1 on success, 0 if the entry was invalid (which should be
-+ * interpreted as end-of-table), and a negative error value for generic errors.
-+ */
- static int vgic_its_restore_cte(struct vgic_its *its, gpa_t gpa, int esz)
- {
- 	struct its_collection *collection;
-@@ -2487,6 +2502,10 @@ static int vgic_its_restore_cte(struct vgic_its *its, gpa_t gpa, int esz)
- 	collection = find_collection(its, coll_id);
- 	if (collection)
- 		return -EEXIST;
-+
-+	if (!vgic_its_check_id(its, its->baser_coll_table, coll_id, NULL))
-+		return -EINVAL;
-+
- 	ret = vgic_its_alloc_collection(its, &collection, coll_id);
- 	if (ret)
- 		return ret;
+ 	winctx->lnotify_lpid = rxattr->lnotify_lpid;
+diff --git a/arch/powerpc/platforms/powernv/vas.h b/arch/powerpc/platforms/powernv/vas.h
+index 8bb08e395de0..08d9d3d5a22b 100644
+--- a/arch/powerpc/platforms/powernv/vas.h
++++ b/arch/powerpc/platforms/powernv/vas.h
+@@ -376,7 +376,7 @@ struct pnv_vas_window {
+  * is a container for the register fields in the window context.
+  */
+ struct vas_winctx {
+-	void *rx_fifo;
++	u64 rx_fifo;
+ 	int rx_fifo_size;
+ 	int wcreds_max;
+ 	int rsvd_txbuf_count;
+diff --git a/drivers/crypto/nx/nx-common-powernv.c b/drivers/crypto/nx/nx-common-powernv.c
+index 32a036ada5d0..f418817c0f43 100644
+--- a/drivers/crypto/nx/nx-common-powernv.c
++++ b/drivers/crypto/nx/nx-common-powernv.c
+@@ -827,7 +827,7 @@ static int __init vas_cfg_coproc_info(struct device_node *dn, int chip_id,
+ 		goto err_out;
+ 
+ 	vas_init_rx_win_attr(&rxattr, coproc->ct);
+-	rxattr.rx_fifo = (void *)rx_fifo;
++	rxattr.rx_fifo = rx_fifo;
+ 	rxattr.rx_fifo_size = fifo_size;
+ 	rxattr.lnotify_lpid = lpid;
+ 	rxattr.lnotify_pid = pid;
 -- 
 2.35.1
 
