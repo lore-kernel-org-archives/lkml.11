@@ -2,97 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4270CCA46F
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:52:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D5B8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:52:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353424AbiFANwo (ORCPT
+        id S1348474AbiFANwr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 09:52:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52130 "EHLO
+        Wed, 1 Jun 2022 09:52:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347954AbiFANwe (ORCPT
+        with ESMTP id S1353378AbiFANwh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 09:52:34 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ECE933345
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 06:52:31 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id q1so3899669ejz.9
-        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 06:52:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Ek6pdeO0DB1Tm5mlcz1RuofuiBWoeBBusgfA8BxgA/s=;
-        b=LSkJbr+iy1alMRbMgu9/LZ3vGR3Qm7OChQM2qhsH3NtSJQCjaH28qtAAURfD9sOCho
-         EqmRJ3OazVa8XsRrtzqhYMl6MKqExGjA+TQrDZ+LXWp9byAJyO55kMxZaRFgjBTPZQ4W
-         N1ma8mXg+0eEKdpXyBxjA+2/KcXLpXliIQ/cxFHpWqo32slgmTrvVLegolg1csZL/hYw
-         gwgixwTCwQRUKJLviwktNacbTv6kocTGdcZjOdi9R+xDxvokD2xd98fdjkDhsQDg0u+E
-         UgGTgdkLZQYCfo0ffxTO7atN0rpVvpNw9CvsZlumWxc3wtqxWm6lGXCTNLXOpXuxt5Id
-         o7Dw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Ek6pdeO0DB1Tm5mlcz1RuofuiBWoeBBusgfA8BxgA/s=;
-        b=iEmhaeCjNogaOytjAlrYy9okKIpPsLEtpKnlrcUg9hL+MWzXWSNcB/e2/GFDp1KxKR
-         lXsr9qWgVAOVW04Rt7d9PSBCZgU8K2MSxUmndA11lc2TRjVyIxITtXbvcr/tUsQ7i6qF
-         At/r03sQ2HgOQKqSq5IFcDJss29tJgab0mxpReApM728utpeyoh3xMOBpkrZfKmg0QOd
-         FqmjmffsGUw7/sc0oZhxhToZsRQ7HZMW+kFWD4n7tCcOkubrrgboVnHVUbTcez3Nsu7m
-         sku4tMwdmyQRyGLkAwzt/WL5dcUm1Pmm0+Clmu05cXYd3mSqH+6a9pP8sUx/f+LCSMNb
-         S4Tw==
-X-Gm-Message-State: AOAM530LRGhPKjGtR5mKRrE3hEl9yHA4XLwgLIjlzPupcRt85y+5+FX8
-        09zN1KQ4uVNR+Mlv0vQGxPMlrA==
-X-Google-Smtp-Source: ABdhPJzUUcAgrI+YNY0uHpRqZh3IJeveL77dKpHjyDMdSa25aTO+oKqZHM/pDVbAQh83xS/7W8GMmA==
-X-Received: by 2002:a17:907:8a1a:b0:6fe:b42f:749a with SMTP id sc26-20020a1709078a1a00b006feb42f749amr52199639ejc.451.1654091550060;
-        Wed, 01 Jun 2022 06:52:30 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id si28-20020a170906cedc00b006f3ef214e0csm753070ejb.114.2022.06.01.06.52.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Jun 2022 06:52:29 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v2] dt-bindings: vendor-prefixes: document deprecated Atheros
-Date:   Wed,  1 Jun 2022 15:52:22 +0200
-Message-Id: <20220601135222.205035-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
+        Wed, 1 Jun 2022 09:52:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84DE135872;
+        Wed,  1 Jun 2022 06:52:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EABBE615C7;
+        Wed,  1 Jun 2022 13:52:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 662CAC3411D;
+        Wed,  1 Jun 2022 13:52:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654091551;
+        bh=1JzRnpagvBfhoh255qR5TvFSFePTnrey0KZPoyBXqfs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=M0v3BlTo0q859Kn2fTkGNLy8ydjP6k1LuKOjzJrD0WaMEZiw8WOwE2ka+6jkxjroz
+         NcKw6PBbo6QjmCKIgUgUkQvrr6ejxz8up79aXiJBCN4RsdSZMU+gpPwwE+LCdI8Hib
+         h2tjkqh0sE3bJQb79Py+oNF5rDPNY1ff5qWTd8LaKaytrp20zsQPkJMhoT1j0vOr1G
+         78SCIgpGjFk99HMfANreMjTgVtvP+Oa6EGF+9O1sbxWfxTAADXC7Qr0zIYfCeG8ce2
+         mNUXVBbu5++AVuzztK2KU8a4bOrs6siRluEfRg3D+CucSKmxaPgIC42TcFO4Y0ybgN
+         yO/Oc5b6IMDPA==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>, agross@kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 07/49] arm64: dts: qcom: msm8994: Fix the cont_splash_mem address
+Date:   Wed,  1 Jun 2022 09:51:31 -0400
+Message-Id: <20220601135214.2002647-7-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220601135214.2002647-1-sashal@kernel.org>
+References: <20220601135214.2002647-1-sashal@kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Two old boards use "atheros" prefix instead of already documented "qca".
-Document it as deprecated to fix warnings like:
+From: Konrad Dybcio <konrad.dybcio@somainline.org>
 
-  at91-gatwick.dtb: atheros@0: 'atheros,board-id' does not match any of the regexes
+[ Upstream commit 049c46f31a726bf8d202ff1681661513447fac84 ]
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+The default memory map places cont_splash_mem at 3401000, which was
+overlooked.. Fix it!
 
+Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220319174645.340379-9-konrad.dybcio@somainline.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
+ arch/arm64/boot/dts/qcom/msm8994.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Changes since v1:
-1. Rebase on Rob's dt/next branch.
----
- Documentation/devicetree/bindings/vendor-prefixes.yaml | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-index 113ff50eb46e..cba1d02dfec7 100644
---- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
-+++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-@@ -143,6 +143,9 @@ patternProperties:
-     description: ASPEED Technology Inc.
-   "^asus,.*":
-     description: AsusTek Computer Inc.
-+  "^atheros,.*":
-+    description: Qualcomm Atheros, Inc. (deprecated, use qca)
-+    deprecated: true
-   "^atlas,.*":
-     description: Atlas Scientific LLC
-   "^atmel,.*":
+diff --git a/arch/arm64/boot/dts/qcom/msm8994.dtsi b/arch/arm64/boot/dts/qcom/msm8994.dtsi
+index 8c1dc5155b71..c65618b95ce0 100644
+--- a/arch/arm64/boot/dts/qcom/msm8994.dtsi
++++ b/arch/arm64/boot/dts/qcom/msm8994.dtsi
+@@ -183,8 +183,8 @@ dfps_data_mem: dfps_data_mem@3400000 {
+ 			no-map;
+ 		};
+ 
+-		cont_splash_mem: memory@3800000 {
+-			reg = <0 0x03800000 0 0x2400000>;
++		cont_splash_mem: memory@3401000 {
++			reg = <0 0x03401000 0 0x2200000>;
+ 			no-map;
+ 		};
+ 
 -- 
-2.34.1
+2.35.1
 
