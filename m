@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75EBFCCA470
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3F43CCA47C
 	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:06:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355552AbiFAOGG (ORCPT
+        id S1355710AbiFAOGU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:06:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54122 "EHLO
+        Wed, 1 Jun 2022 10:06:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355238AbiFAOB0 (ORCPT
+        with ESMTP id S1355213AbiFAOBY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:01:26 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95323A5AA1;
-        Wed,  1 Jun 2022 06:58:01 -0700 (PDT)
+        Wed, 1 Jun 2022 10:01:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB9EBA5A8E;
+        Wed,  1 Jun 2022 06:57:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 1E55ACE1A23;
-        Wed,  1 Jun 2022 13:57:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAB7FC3411F;
-        Wed,  1 Jun 2022 13:57:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AF799615D2;
+        Wed,  1 Jun 2022 13:57:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AA32C34119;
+        Wed,  1 Jun 2022 13:57:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091822;
-        bh=FTiI156Bl/R9a/IH+dywYgcf8JKm5MuzE4oQ6KL5C9g=;
+        s=k20201202; t=1654091855;
+        bh=ynjdX7sqIzj3XGbBUvL+J2pZWNuexzQpo7a/4F/yD1M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MNk8vlJ+W4F1sHSftdFoEy4rQqc7xqPo9BHI5qJXpEW8r88ncMQAHZs2AJNX0NHrY
-         RIdxzh04QpXofGcX4dTVMcpqVfFOYMd8yb2HhIWYkJtDPx2Ui9WI05mSGWwoGv7vKt
-         7wvcqDD7n/aSItA0GHY/yMcUAHDDGe4CSCH7bbzbB5kbGFXAhEYgmDSVm8ODc0e/Q+
-         4KiSdhB7/lqfDJGvYNSKLAvK6/4ETd5oNxSOCCubd4h6yvZYupwwwQi5R98TQlXwF7
-         aieWRDZwOeFFSyiwfQAPnqZBDsD4ink5mvNE81FCdXqkHpGwBaAqLWS9sttG1YolMH
-         Cv8jbgr/iathQ==
+        b=uOOJeQQtulqsZ/hjs0NwuVi4i4tQ5A4nH09sw7anAEOYAFUuWw4UZI4X6JOTR5rKS
+         MQjz0dL4rXnLzBY4IE/PW8YTcHdriqzXiGeN0mdkBKhQSnv39cJlXZ+bRI+Trp7irr
+         cYJwZhpuhOfXlqhdSCSQHopOcWKBbGZ16l0hfMz44qT0/t38NIdhW6WNH+1W+9eY4D
+         W5/6/Nvx7QRRX05Yh1YjZPXCRcKe+iQky6e9QPgRQxgGvnDeLhZN5gCbiZ2ijFA/2+
+         lVC25raEjFIHkhLQLEmGwQtYjigPLEQb7GhX9mQBWhBsJXjp3hHFa7oiWzsRNbdXcP
+         BIZjjSvBh+P4A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>,
-        qianfan <qianfanguijin@163.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.15 18/37] fat: add ratelimit to fat*_ent_bread()
-Date:   Wed,  1 Jun 2022 09:56:03 -0400
-Message-Id: <20220601135622.2003939-18-sashal@kernel.org>
+Cc:     Haren Myneni <haren@linux.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        npiggin@gmail.com, linuxppc-dev@lists.ozlabs.org,
+        linux-crypto@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 29/37] powerpc/powernv/vas: Assign real address to rx_fifo in vas_rx_win_attr
+Date:   Wed,  1 Jun 2022 09:56:14 -0400
+Message-Id: <20220601135622.2003939-29-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135622.2003939-1-sashal@kernel.org>
 References: <20220601135622.2003939-1-sashal@kernel.org>
@@ -53,48 +54,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
+From: Haren Myneni <haren@linux.ibm.com>
 
-[ Upstream commit 183c3237c928109d2008c0456dff508baf692b20 ]
+[ Upstream commit c127d130f6d59fa81701f6b04023cf7cd1972fb3 ]
 
-fat*_ent_bread() can be the cause of too many report on I/O error path.
-So use fat_msg_ratelimit() instead.
+In init_winctx_regs(), __pa() is called on winctx->rx_fifo and this
+function is called to initialize registers for receive and fault
+windows. But the real address is passed in winctx->rx_fifo for
+receive windows and the virtual address for fault windows which
+causes errors with DEBUG_VIRTUAL enabled. Fixes this issue by
+assigning only real address to rx_fifo in vas_rx_win_attr struct
+for both receive and fault windows.
 
-Link: https://lkml.kernel.org/r/87bkxogfeq.fsf@mail.parknet.co.jp
-Signed-off-by: OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
-Reported-by: qianfan <qianfanguijin@163.com>
-Tested-by: qianfan <qianfanguijin@163.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Reported-by: Michael Ellerman <mpe@ellerman.id.au>
+Signed-off-by: Haren Myneni <haren@linux.ibm.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/338e958c7ab8f3b266fa794a1f80f99b9671829e.camel@linux.ibm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/fat/fatent.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ arch/powerpc/include/asm/vas.h              | 2 +-
+ arch/powerpc/platforms/powernv/vas-fault.c  | 2 +-
+ arch/powerpc/platforms/powernv/vas-window.c | 4 ++--
+ arch/powerpc/platforms/powernv/vas.h        | 2 +-
+ drivers/crypto/nx/nx-common-powernv.c       | 2 +-
+ 5 files changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/fs/fat/fatent.c b/fs/fat/fatent.c
-index 978ac6751aeb..1db348f8f887 100644
---- a/fs/fat/fatent.c
-+++ b/fs/fat/fatent.c
-@@ -94,7 +94,8 @@ static int fat12_ent_bread(struct super_block *sb, struct fat_entry *fatent,
- err_brelse:
- 	brelse(bhs[0]);
- err:
--	fat_msg(sb, KERN_ERR, "FAT read failed (blocknr %llu)", (llu)blocknr);
-+	fat_msg_ratelimit(sb, KERN_ERR, "FAT read failed (blocknr %llu)",
-+			  (llu)blocknr);
- 	return -EIO;
- }
+diff --git a/arch/powerpc/include/asm/vas.h b/arch/powerpc/include/asm/vas.h
+index 57573d9c1e09..56834a8a1465 100644
+--- a/arch/powerpc/include/asm/vas.h
++++ b/arch/powerpc/include/asm/vas.h
+@@ -112,7 +112,7 @@ static inline void vas_user_win_add_mm_context(struct vas_user_win_ref *ref)
+  * Receive window attributes specified by the (in-kernel) owner of window.
+  */
+ struct vas_rx_win_attr {
+-	void *rx_fifo;
++	u64 rx_fifo;
+ 	int rx_fifo_size;
+ 	int wcreds_max;
  
-@@ -107,8 +108,8 @@ static int fat_ent_bread(struct super_block *sb, struct fat_entry *fatent,
- 	fatent->fat_inode = MSDOS_SB(sb)->fat_inode;
- 	fatent->bhs[0] = sb_bread(sb, blocknr);
- 	if (!fatent->bhs[0]) {
--		fat_msg(sb, KERN_ERR, "FAT read failed (blocknr %llu)",
--		       (llu)blocknr);
-+		fat_msg_ratelimit(sb, KERN_ERR, "FAT read failed (blocknr %llu)",
-+				  (llu)blocknr);
- 		return -EIO;
+diff --git a/arch/powerpc/platforms/powernv/vas-fault.c b/arch/powerpc/platforms/powernv/vas-fault.c
+index a7aabc18039e..c1bfad56447d 100644
+--- a/arch/powerpc/platforms/powernv/vas-fault.c
++++ b/arch/powerpc/platforms/powernv/vas-fault.c
+@@ -216,7 +216,7 @@ int vas_setup_fault_window(struct vas_instance *vinst)
+ 	vas_init_rx_win_attr(&attr, VAS_COP_TYPE_FAULT);
+ 
+ 	attr.rx_fifo_size = vinst->fault_fifo_size;
+-	attr.rx_fifo = vinst->fault_fifo;
++	attr.rx_fifo = __pa(vinst->fault_fifo);
+ 
+ 	/*
+ 	 * Max creds is based on number of CRBs can fit in the FIFO.
+diff --git a/arch/powerpc/platforms/powernv/vas-window.c b/arch/powerpc/platforms/powernv/vas-window.c
+index 0f8d39fbf2b2..0072682531d8 100644
+--- a/arch/powerpc/platforms/powernv/vas-window.c
++++ b/arch/powerpc/platforms/powernv/vas-window.c
+@@ -404,7 +404,7 @@ static void init_winctx_regs(struct pnv_vas_window *window,
+ 	 *
+ 	 * See also: Design note in function header.
+ 	 */
+-	val = __pa(winctx->rx_fifo);
++	val = winctx->rx_fifo;
+ 	val = SET_FIELD(VAS_PAGE_MIGRATION_SELECT, val, 0);
+ 	write_hvwc_reg(window, VREG(LFIFO_BAR), val);
+ 
+@@ -739,7 +739,7 @@ static void init_winctx_for_rxwin(struct pnv_vas_window *rxwin,
+ 		 */
+ 		winctx->fifo_disable = true;
+ 		winctx->intr_disable = true;
+-		winctx->rx_fifo = NULL;
++		winctx->rx_fifo = 0;
  	}
- 	fatent->nr_bhs = 1;
+ 
+ 	winctx->lnotify_lpid = rxattr->lnotify_lpid;
+diff --git a/arch/powerpc/platforms/powernv/vas.h b/arch/powerpc/platforms/powernv/vas.h
+index 8bb08e395de0..08d9d3d5a22b 100644
+--- a/arch/powerpc/platforms/powernv/vas.h
++++ b/arch/powerpc/platforms/powernv/vas.h
+@@ -376,7 +376,7 @@ struct pnv_vas_window {
+  * is a container for the register fields in the window context.
+  */
+ struct vas_winctx {
+-	void *rx_fifo;
++	u64 rx_fifo;
+ 	int rx_fifo_size;
+ 	int wcreds_max;
+ 	int rsvd_txbuf_count;
+diff --git a/drivers/crypto/nx/nx-common-powernv.c b/drivers/crypto/nx/nx-common-powernv.c
+index 32a036ada5d0..f418817c0f43 100644
+--- a/drivers/crypto/nx/nx-common-powernv.c
++++ b/drivers/crypto/nx/nx-common-powernv.c
+@@ -827,7 +827,7 @@ static int __init vas_cfg_coproc_info(struct device_node *dn, int chip_id,
+ 		goto err_out;
+ 
+ 	vas_init_rx_win_attr(&rxattr, coproc->ct);
+-	rxattr.rx_fifo = (void *)rx_fifo;
++	rxattr.rx_fifo = rx_fifo;
+ 	rxattr.rx_fifo_size = fifo_size;
+ 	rxattr.lnotify_lpid = lpid;
+ 	rxattr.lnotify_pid = pid;
 -- 
 2.35.1
 
