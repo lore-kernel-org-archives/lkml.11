@@ -2,139 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 981CFCCA473
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:39:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1033C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:39:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354854AbiFAOi7 (ORCPT
+        id S1354899AbiFAOjS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:38:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40782 "EHLO
+        Wed, 1 Jun 2022 10:39:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229602AbiFAOi4 (ORCPT
+        with ESMTP id S229602AbiFAOjP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:38:56 -0400
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2100B31233;
-        Wed,  1 Jun 2022 07:38:55 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id f7-20020a1c3807000000b0039c1a10507fso1215854wma.1;
-        Wed, 01 Jun 2022 07:38:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=nEz+76T79tFW0RCrZGZI21N3hxWVslYlXYg2VKXX6II=;
-        b=MaD8PwmnHt8a09T+peqTHwVOA9ZMJagO1K5G+SyV6SZNU5n+F08WpEiHeJK3218K7q
-         TpMa2jHtVr6XzwZz/ZwmfQLeBpaol/DjLjdCgPEuGdts3zI+eeo5NBCLcFvgL1ZP7RD6
-         ioO/06Cr9tKOOMtD7GD9rb96R+083ZmEC0FgFh49pdInij8WyfudEHMhbbnzxvPO0cnl
-         NAsd2tz/9kZ9GjmlRo3jIZcOE2UrxK0mZt2K0ezbG16koclnfi0uXizmzNTmgP1BeCrB
-         gD3TN7uQWiJjBDB+QcU6rgIeiE87c2Uf8tumpI6vGFZpEp5j6HBVnKe/wAZaAMVzCe3d
-         oc4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=nEz+76T79tFW0RCrZGZI21N3hxWVslYlXYg2VKXX6II=;
-        b=eTF03sv0XModlC2rUL8sAzXAjCnLIndCsmoIO8Lx9KgUE/RhbdrFkj0RXOhQmlRAIP
-         Uo72rqefn2pa7Qw3pq2MGcOwDikxWa7I1GSbK2TxPGbmS8ThtSkQz5l2audYPuP43xIN
-         gBb1HySLSxbZ24sbX0FE0Ngvxz634WekORjbsJ3wFTriHvtrjnEfd2Rj/izt7+m+//or
-         WJdosRErNnC1Go++rKrwjFQMOYT5lyXu0QoH9d8lXYujewjDPwulZyIC0Ax/L2dc2ryY
-         SRvQCucaDpGd8ScOvD486kzj/VOorbUSYjnVUh50kt2x8nHxPs2r4IgxrRhcWpm997mZ
-         nzww==
-X-Gm-Message-State: AOAM532VBVmRTBSIZsBT5PG+7vfjs8TT50cxNs5oqh9gHug86eY/Ywlr
-        HrJsMVcmdsKQPaMHo+EeKek=
-X-Google-Smtp-Source: ABdhPJxFJm/fvrtPm0Q76kR0LnUENBqB8SBsBwD/wEAz7gTa4nHm3tJgWR7y3ldaWLBOVk3IV9s8LQ==
-X-Received: by 2002:a7b:cb91:0:b0:397:3225:244 with SMTP id m17-20020a7bcb91000000b0039732250244mr28954441wmi.68.1654094333691;
-        Wed, 01 Jun 2022 07:38:53 -0700 (PDT)
-Received: from ?IPV6:2a02:908:1256:79a0:d1fb:e1e4:e193:e55f? ([2a02:908:1256:79a0:d1fb:e1e4:e193:e55f])
-        by smtp.gmail.com with ESMTPSA id u12-20020adfdb8c000000b002119c1a03e4sm503684wri.31.2022.06.01.07.38.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Jun 2022 07:38:52 -0700 (PDT)
-Message-ID: <a009c207-a5fa-af1e-b961-8083b48360bf@gmail.com>
-Date:   Wed, 1 Jun 2022 16:38:51 +0200
+        Wed, 1 Jun 2022 10:39:15 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90B1F31233;
+        Wed,  1 Jun 2022 07:39:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654094354; x=1685630354;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=kgeZ5dHKGAmvtm2SI9klD7xeCUa8LmfIDO8LskDbpCY=;
+  b=MyuPw3nzSlQyeCaTmkm7Ejw6KJHsH675eqa5SmbWap7jFNJ/xMaYJDqT
+   LcG5mXaQwjwZTpl3btRS16ja0lzt3brAE2pkcGnCa+H5YaGJJsZg/uYMt
+   rifWWALy9MFPYaDKDwg+sMrx3kDu/iAgkTZRjfYKxXnLMZSfsq+AjgvS8
+   5QStByOq5thYnnAcjfm3VW0QqCWk/vK0fu/G5YuaEfqeAtAt+dbpE8kvc
+   tM9DeShSxR+0pB/CGmcQEmEO4SxdmohNxwGq+hVZG16A1fMerHoxsDnRQ
+   14cM7nsGN0lOtB8N4oL+XWK7KClFKQBPmTEwpEa7gprXfSfu1CnNDZBTN
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10365"; a="338656201"
+X-IronPort-AV: E=Sophos;i="5.91,268,1647327600"; 
+   d="scan'208";a="338656201"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 07:39:13 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,268,1647327600"; 
+   d="scan'208";a="581611535"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by fmsmga007.fm.intel.com with ESMTP; 01 Jun 2022 07:39:10 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nwPV2-00044e-Nc;
+        Wed, 01 Jun 2022 14:39:04 +0000
+Date:   Wed, 1 Jun 2022 22:38:35 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Haowen Bai <baihaowen@meizu.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        netdev@vger.kernel.org, Haowen Bai <baihaowen@meizu.com>,
+        linux-parisc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: tulip: de4x5: remove unused variable
+Message-ID: <202206012206.rmnA2Zg6-lkp@intel.com>
+References: <1654068277-6691-1-git-send-email-baihaowen@meizu.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [Linaro-mm-sig] Re: [PATCH] dma-fence: allow dma fence to have
- their own lock
-Content-Language: en-US
-To:     Sergey Senozhatsky <senozhatsky@chromium.org>
-Cc:     =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Gustavo Padovan <gustavo@padovan.org>,
-        Tomasz Figa <tfiga@chromium.org>,
-        Ricardo Ribalda <ribalda@chromium.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org
-References: <20220530142232.2871634-1-senozhatsky@chromium.org>
- <7eee4274-bd69-df8d-9067-771366217804@amd.com> <YpWCvniLzJfcp684@google.com>
- <33aba213-b6ad-4a15-9272-c62f5dfb1fb7@gmail.com>
- <Ypd3Us3a93aLonqT@google.com>
-From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <ckoenig.leichtzumerken@gmail.com>
-In-Reply-To: <Ypd3Us3a93aLonqT@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1654068277-6691-1-git-send-email-baihaowen@meizu.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 01.06.22 um 16:27 schrieb Sergey Senozhatsky:
-> On (22/06/01 14:45), Christian König wrote:
->> Am 31.05.22 um 04:51 schrieb Sergey Senozhatsky:
->>> On (22/05/30 16:55), Christian König wrote:
->>>> Am 30.05.22 um 16:22 schrieb Sergey Senozhatsky:
->>>>> [SNIP]
->>>>> So the `lock` should have at least same lifespan as the DMA fence
->>>>> that borrows it, which is impossible to guarantee in our case.
->>>> Nope, that's not correct. The lock should have at least same lifespan as the
->>>> context of the DMA fence.
->>> How does one know when it's safe to release the context? DMA fence
->>> objects are still transparently refcount-ed and "live their own lives",
->>> how does one synchronize lifespans?
->> Well, you don't.
->>
->> If you have a dynamic context structure you need to reference count that as
->> well. In other words every time you create a fence in your context you need
->> to increment the reference count and every time a fence is release you
->> decrement it.
-> OK then fence release should be able to point back to its "context"
-> structure. Either a "private" data in dma fence or we need to "embed"
-> fence into another object (refcounted) that owns the lock and provide
-> dma fence ops->release callback, which can container_of() to the object
-> that dma fence is embedded into.
->
-> I think you are suggesting the latter. Thanks for clarifications.
+Hi Haowen,
 
-Daniel might hurt me for this, but if you really only need a pointer to 
-your context then we could say that using a pointer value for the 
-context field is ok as well.
+Thank you for the patch! Yet something to improve:
 
-That should be fine as well as long as you can guarantee that it will be 
-unique during the lifetime of all it's fences.
+[auto build test ERROR on horms-ipvs/master]
+[also build test ERROR on v5.18]
+[cannot apply to net-next/master net/master linus/master next-20220601]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-We would just have to adjust the documentation a bit.
+url:    https://github.com/intel-lab-lkp/linux/commits/Haowen-Bai/net-tulip-de4x5-remove-unused-variable/20220601-152922
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/horms/ipvs.git master
+config: i386-randconfig-a004 (https://download.01.org/0day-ci/archive/20220601/202206012206.rmnA2Zg6-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c825abd6b0198fb088d9752f556a70705bc99dfd)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/98c118e28527e7ff29469521c68414943a7cfc3a
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Haowen-Bai/net-tulip-de4x5-remove-unused-variable/20220601-152922
+        git checkout 98c118e28527e7ff29469521c68414943a7cfc3a
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
 
-> The limiting factor of this approach is that now our ops->release() is
-> under the same "pressure" as dma_fence_put()->dma_fence_release() are.
-> dma_fence_put() and dma_fence_release() can be called from any context,
-> as far as I understand, e.g. IRQ, however our normal object ->release
-> can schedule, we do things like synchronize_rcu() and so on. Nothing is
-> impossible, just saying that even this approach is not 100% perfect and
-> may need additional workarounds.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Well just use a work item for release.
+All errors (new ones prefixed by >>):
 
-Regards,
-Christian.
+>> drivers/net/ethernet/dec/tulip/de4x5.c:3823:2: error: use of undeclared identifier 'imr'
+           UNMASK_IRQs;
+           ^
+   drivers/net/ethernet/dec/tulip/de4x5.c:694:5: note: expanded from macro 'UNMASK_IRQs'
+       imr |= lp->irq_mask;\
+       ^
+>> drivers/net/ethernet/dec/tulip/de4x5.c:3823:2: error: use of undeclared identifier 'imr'
+   drivers/net/ethernet/dec/tulip/de4x5.c:695:10: note: expanded from macro 'UNMASK_IRQs'
+       outl(imr, DE4X5_IMR);               /* Unmask the IRQs */\
+            ^
+   drivers/net/ethernet/dec/tulip/de4x5.c:3826:2: error: use of undeclared identifier 'imr'
+           ENABLE_IRQs;
+           ^
+   drivers/net/ethernet/dec/tulip/de4x5.c:683:5: note: expanded from macro 'ENABLE_IRQs'
+       imr |= lp->irq_en;\
+       ^
+   drivers/net/ethernet/dec/tulip/de4x5.c:3826:2: error: use of undeclared identifier 'imr'
+   drivers/net/ethernet/dec/tulip/de4x5.c:684:10: note: expanded from macro 'ENABLE_IRQs'
+       outl(imr, DE4X5_IMR);               /* Enable the IRQs */\
+            ^
+   4 errors generated.
 
->> If you have a static context structure like most drivers have then you must
->> make sure that all fences at least signal before you unload your driver. We
->> still somewhat have a race when you try to unload a driver and the fence_ops
->> structure suddenly disappear, but we currently live with that.
-> Hmm, indeed... I didn't consider fence_ops case.
->
->> Apart from that you are right, fences can live forever and we need to deal
->> with that.
-> OK. I see.
 
+vim +/imr +3823 drivers/net/ethernet/dec/tulip/de4x5.c
+
+^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3814  
+^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3815  static void
+^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3816  de4x5_setup_intr(struct net_device *dev)
+^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3817  {
+^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3818      struct de4x5_private *lp = netdev_priv(dev);
+^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3819      u_long iobase = dev->base_addr;
+98c118e28527e7 drivers/net/ethernet/dec/tulip/de4x5.c Haowen Bai     2022-06-01  3820      s32 sts;
+^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3821  
+^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3822      if (inl(DE4X5_OMR) & OMR_SR) {   /* Only unmask if TX/RX is enabled */
+^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16 @3823  	UNMASK_IRQs;
+^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3824  	sts = inl(DE4X5_STS);        /* Reset any pending (stale) interrupts */
+^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3825  	outl(sts, DE4X5_STS);
+^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3826  	ENABLE_IRQs;
+^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3827      }
+^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3828  }
+^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3829  
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
