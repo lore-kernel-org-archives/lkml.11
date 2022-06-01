@@ -2,102 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5578CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 20:57:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EAEAC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 20:58:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230442AbiFAU5h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 16:57:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46746 "EHLO
+        id S230476AbiFAU6O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 16:58:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230393AbiFAU5e (ORCPT
+        with ESMTP id S230410AbiFAU6N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 16:57:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1D3E217603;
-        Wed,  1 Jun 2022 13:57:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8F931B81C87;
-        Wed,  1 Jun 2022 20:57:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BA62C34119;
-        Wed,  1 Jun 2022 20:57:29 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="W1hGuE+Z"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1654117047;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=JHmJzQ6KWsGuyagW7BSdOmTThtw2XY0PLg0NtkYD4to=;
-        b=W1hGuE+ZEiX+I+VOckbOPx01nOpIsJC8xb6ufXiukgi50fSqw+kcApWuA7APMd6+J7ipqP
-        Ydzp+RjAaJF48I2koNRAmp5tzOiVHZsB+yvMxWP3c266F80jYw37VHbH0VpcC8UwqvksWS
-        3HojZvTvf4weY3ZvHfTBupqE3Kz2+og=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 908c7efb (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 1 Jun 2022 20:57:27 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        PaX Team <pageexec@freemail.hu>,
-        Emese Revfy <re.emese@gmail.com>
-Subject: [PATCH] random: always mix cycle counter in add_latent_entropy()
-Date:   Wed,  1 Jun 2022 22:56:24 +0200
-Message-Id: <20220601205624.92387-1-Jason@zx2c4.com>
+        Wed, 1 Jun 2022 16:58:13 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9565C21A569
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 13:58:10 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id q1so6158732ejz.9
+        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 13:58:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0oRhRRXkS4gcQY3huiGBgzO1+1XDsVvPhPhivTE45IY=;
+        b=LHqRAl3FERSqJvk9zPmSajjXej4l4jl2TW9I10C88w4KuygJWujPAfRvILHZ47nKyu
+         BjOeeHCsp14sFGSYpt7YTrpH87BsFokU8MaDhXvFbMFNA3dVM3zM747cl5wlm48NPlVG
+         uOzpSlMGCWdFl5Ctv2NCvWcZno1WdbKJ6zVAU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0oRhRRXkS4gcQY3huiGBgzO1+1XDsVvPhPhivTE45IY=;
+        b=8NZIy8sK/Qi7U7JaSDdwABkpHcpk9tMGQ07j28JgHXBzImLzaIxOWambWL02XbgsaS
+         4G0j+nW3T3vaWcKSJp7SMTTGaeN5qakTaeNOc3948TXiiT5h5esVdNVDvXSNjbc3Wabe
+         i9BOm0peTFrKmWr4TL4BxkdeDYjZDhYRy5aiYrvorQCQ5I7q1+O5qR17+zH/aLkZRtKC
+         jvPnNpDBU9uh3ipFRNcuIVRhDhJu1cTgoU06ZQECdqDrE8VauRysSUbdYt+S92PHi6BW
+         kGDR5WsX0NshCbicPZnd93A1MMu7Er9cLKvsUlV1ucCXl5f5THXtG4iB45H9/rTESPMl
+         zG3w==
+X-Gm-Message-State: AOAM53119yBvXREu6doRWdSHelxKQOWTilBdR3AYtqA3Lgxvm3smbZoW
+        k4OnygxofnnjLpT/MT93EpzCmvj6/m6KGHi5
+X-Google-Smtp-Source: ABdhPJxtIr9OQhsk3cIxXYdLq+B7cSFaQc9Ampxnqu2AiaIhfFaY3HIZmJdXC4KTlCZgarHrQz4hEQ==
+X-Received: by 2002:a17:907:7d8a:b0:6fe:dccb:cf4c with SMTP id oz10-20020a1709077d8a00b006fedccbcf4cmr1330663ejc.714.1654117089235;
+        Wed, 01 Jun 2022 13:58:09 -0700 (PDT)
+Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com. [209.85.221.43])
+        by smtp.gmail.com with ESMTPSA id m16-20020a170906259000b006f3ef214daesm1083306ejb.20.2022.06.01.13.58.08
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 01 Jun 2022 13:58:08 -0700 (PDT)
+Received: by mail-wr1-f43.google.com with SMTP id q21so3940498wra.2
+        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 13:58:08 -0700 (PDT)
+X-Received: by 2002:a05:6000:1605:b0:210:307a:a94a with SMTP id
+ u5-20020a056000160500b00210307aa94amr977501wrb.97.1654117088304; Wed, 01 Jun
+ 2022 13:58:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220601111128.7bf85da0.alex.williamson@redhat.com>
+In-Reply-To: <20220601111128.7bf85da0.alex.williamson@redhat.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Wed, 1 Jun 2022 13:57:52 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wi9QJsTw-Ob5z8-ioaHqzOXQd3qqUfOd3Meyq-eXM5kMg@mail.gmail.com>
+Message-ID: <CAHk-=wi9QJsTw-Ob5z8-ioaHqzOXQd3qqUfOd3Meyq-eXM5kMg@mail.gmail.com>
+Subject: Re: [GIT PULL] VFIO updates for v5.19-rc1
+To:     Alex Williamson <alex.williamson@redhat.com>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-add_latent_entropy() is called every time a process forks, in
-kernel_clone(). This in turn calls add_device_randomness() using the
-latent entropy global state. add_device_randomness() does two things:
+On Wed, Jun 1, 2022 at 10:11 AM Alex Williamson
+<alex.williamson@redhat.com> wrote:
+>
+> I'm not sure where git pull-request is getting the diffstat below, the
+> diff of the actual merge of this against mainline looks far less scary.
+> If I've botched something, please let me know.
 
-   2) Mixes into the input pool the latent entropy argument passed; and
-   1) Mixes in a cycle counter, a sort of measurement of when the event
-      took place, the high precision bits of which are presumably
-      difficult to predict.
+It's all normal, and due to you having merges in your tree and
+multiple merge bases.
 
-(2) is impossible without CONFIG_GCC_PLUGIN_LATENT_ENTROPY=y. But (1) is
-always possible. However, currently CONFIG_GCC_PLUGIN_LATENT_ENTROPY=n
-disables both (1) and (2), instead of just (2).
+See
 
-This commit causes the CONFIG_GCC_PLUGIN_LATENT_ENTROPY=n case to still
-do (1) by passing NULL (len 0) to add_device_randomness() when add_latent_
-entropy() is called.
+    Documentation/maintainer/messy-diffstat.rst
 
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-Cc: PaX Team <pageexec@freemail.hu>
-Cc: Emese Revfy <re.emese@gmail.com>
-Fixes: 38addce8b600 ("gcc-plugins: Add latent_entropy plugin")
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
- include/linux/random.h | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+for details (yay, Jonathan scrounged together docs so that I don't end
+up having to write a long email explanation any more, and there are
+links to some of my previous explanations on lore).
 
-diff --git a/include/linux/random.h b/include/linux/random.h
-index fae0c84027fd..5880da3f5b5b 100644
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -19,14 +19,14 @@ void add_input_randomness(unsigned int type, unsigned int code,
- void add_interrupt_randomness(int irq) __latent_entropy;
- void add_hwgenerator_randomness(const void *buf, size_t len, size_t entropy);
- 
--#if defined(LATENT_ENTROPY_PLUGIN) && !defined(__CHECKER__)
- static inline void add_latent_entropy(void)
- {
-+#if defined(LATENT_ENTROPY_PLUGIN) && !defined(__CHECKER__)
- 	add_device_randomness((const void *)&latent_entropy, sizeof(latent_entropy));
--}
- #else
--static inline void add_latent_entropy(void) { }
-+	add_device_randomness(NULL, 0);
- #endif
-+}
- 
- #if IS_ENABLED(CONFIG_VMGENID)
- void add_vmfork_randomness(const void *unique_vm_id, size_t len);
--- 
-2.35.1
+That also has a suggested remedy, ie just do a temporary merge and use
+the diffstat from that one instead.
 
+But I can also re-create that messy diffstat (and thus verify that
+what you sent me matches what I got) here locally too.
+
+So while the diffstat is messy and not very useful for a "this is what
+changed" angle (because it has a lot of other changes mixed in), even
+that messy diffstat is actually useful for my secondary reason, namely
+as a verification that yes, I got what you were trying to send and
+just didn't document very clearly because of those multiple merge
+bases.
+
+I can (and do) also check the shortlog, since the actual log doesn't
+have any issues with merges, it's only "diff" that needs a single
+well-defined <start,end> tuple.
+
+                 Linus
