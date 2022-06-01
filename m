@@ -2,90 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C7F4C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 21:09:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C9B2CCA479
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 21:10:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231156AbiFAVJq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 17:09:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53274 "EHLO
+        id S231327AbiFAVKZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 17:10:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231126AbiFAVJn (ORCPT
+        with ESMTP id S231315AbiFAVKK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 17:09:43 -0400
-Received: from mail-oa1-f46.google.com (mail-oa1-f46.google.com [209.85.160.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E228439689;
-        Wed,  1 Jun 2022 14:09:40 -0700 (PDT)
-Received: by mail-oa1-f46.google.com with SMTP id 586e51a60fabf-f33f0f5b1dso4350502fac.8;
-        Wed, 01 Jun 2022 14:09:40 -0700 (PDT)
+        Wed, 1 Jun 2022 17:10:10 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC8CA39BAB
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 14:10:04 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2f7dbceab08so25532617b3.10
+        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 14:10:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=JchwRFKuJHzPLAwFeWJ+f/HpkUvCCjwCkmb09umjAZQ=;
+        b=iKdv25CWOUBairih2XtXOpSzZR08HFkogjDTw5Tnemz3NhkhJtB/cIr40Z5657eVzZ
+         cUc4KED8/y7bRdyi0Qz44m3MSEbjJg+hFwH2JZx76hsl89ScnI8HZMKiehkFM2d/UUrI
+         HTdg/zoYNIhbyxvKczG2o2VTEXhTPa8MPenJjlkHrFZVNYdxc0TdOIhVcszdYhQdh+Ei
+         ckcw3VuuniztzRQNvN7xpIgHK4F7xUR5RxykNR3FsoE5qfR47cqcDNoa8mgevvvhyVr2
+         htrBahwDBd+bGLaFUJrDcVHnZMuLULIoLK3YWSeMTMIR1AJ8g0gCEC3Aric7jl19o2UH
+         faSQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=lz9YkXmluzI1p168QLYr9xM1kRCaRjaM0/FGvCuSWY8=;
-        b=ApHmYzwBrnWG6LVxH/M/lR0INi2hZThiS4EvtczgX+lEEvZ2h88L1oL99Y3mBoBnb+
-         1FQpBm2QeIGkoHYOJaEoaDYClhliS1TYWspYFyHehq97WWleJ7b3yCP4QOSTL3s8NlVU
-         IGoQsal5GuMZpG3jRasGXYUEEVEtDdPGE38J1toLAm4Gk7zzjS+z1tzTFE+67LeokNEZ
-         5ry7lN5ZFg/W8zeX2CM4oR+fRspuPebxSHNSlseaIGDMgif9rw0lYqWqcH6FoPxHsGvc
-         x9u0F9XAEwhWPU2cXHhVD80sImN/u8a8l6bUOQmk/F/vPJNZuddt00QXRDfZ5f+rZvRf
-         /g1Q==
-X-Gm-Message-State: AOAM5329QLotnAEfov6yzxloEoa0+SiJonQQhrEHVsqoFTNyLn0PTZHi
-        eVUf1LvXwJSRNprM1NqIgw==
-X-Google-Smtp-Source: ABdhPJzrWF2c69+FrFYHc/YQUqCI9lL1oAgA5F5TgXFwkCpLR8CEM1a7l1cxJ8pd4y096o7Y6Bbn3w==
-X-Received: by 2002:a05:6870:f587:b0:f5:eee4:d01c with SMTP id eh7-20020a056870f58700b000f5eee4d01cmr2201713oab.117.1654117780078;
-        Wed, 01 Jun 2022 14:09:40 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id q8-20020a056830440800b0060aeccf6b44sm1367078otv.41.2022.06.01.14.09.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Jun 2022 14:09:39 -0700 (PDT)
-Received: (nullmailer pid 457426 invoked by uid 1000);
-        Wed, 01 Jun 2022 21:09:38 -0000
-Date:   Wed, 1 Jun 2022 16:09:38 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     Rob Herring <robh+dt@kernel.org>, Daniel Vetter <daniel@ffwll.ch>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        David Airlie <airlied@linux.ie>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Boris Brezillon <bbrezillon@kernel.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH v3] dt-bindings: display: bridge: sil,sii9022: Convert to
- json-schema
-Message-ID: <20220601210938.GA457343-robh@kernel.org>
-References: <2f8e12b4980a82788c1dd413ceedf8d144fdca91.1652967387.git.geert+renesas@glider.be>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2f8e12b4980a82788c1dd413ceedf8d144fdca91.1652967387.git.geert+renesas@glider.be>
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=JchwRFKuJHzPLAwFeWJ+f/HpkUvCCjwCkmb09umjAZQ=;
+        b=5pB0Pm2RDVbeeo/JHBuuRGCRtQAEmnBnK5LypPxHQeHVPGMUS+p7NcQYRZHusSHWv1
+         T8VghW7ZnXxGcJ+H2nyjg/CJWkqYdgYobz2Vsm35zqu1OCk/Ukac2DCb9Xrb0OjogXgK
+         W7toI3CB4t00lnBCmfQvzhzDLWXSSNYin82QBxn0nVR92GRqTVjeWVijOC7cMWNPg7rO
+         Zp8G4uwkIuY9vmj89fPgHyygXGc2T3j6rZ5NTG3GC7HlWnCqyI7Vt3G5qdhhsvjKFfil
+         WYOMm8kRG5T61xunl2Canyz029KQD5N4/SvdPedAshMWbL6QlWNRIQTJt5ipBEc5d5Lj
+         fimg==
+X-Gm-Message-State: AOAM533WZJjyr1ziaqRSU65cN0+0kSgrMbyLnCsofQ4NGUhz7ee+FSsX
+        hhx0m2yOUrfTWutr0Rg0dMdmD/YO3rCBgb+KXhfy
+X-Google-Smtp-Source: ABdhPJy/eN27j4pZ1NkqpT8CI6PUsPWDSIHtIb4kG1E0T/sYOUaVzwtg5D3Dx0O3NczBDBxTwdx76j8TB/6t1bVwwgsF
+X-Received: from ajr0.svl.corp.google.com ([2620:15c:2cd:203:aaec:e358:9f0e:2b26])
+ (user=axelrasmussen job=sendgmr) by 2002:a81:a0d3:0:b0:30c:bf62:6f77 with
+ SMTP id x202-20020a81a0d3000000b0030cbf626f77mr1780208ywg.342.1654117803881;
+ Wed, 01 Jun 2022 14:10:03 -0700 (PDT)
+Date:   Wed,  1 Jun 2022 14:09:49 -0700
+In-Reply-To: <20220601210951.3916598-1-axelrasmussen@google.com>
+Message-Id: <20220601210951.3916598-5-axelrasmussen@google.com>
+Mime-Version: 1.0
+References: <20220601210951.3916598-1-axelrasmussen@google.com>
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+Subject: [PATCH v3 4/6] userfaultfd: update documentation to describe /dev/userfaultfd
+From:   Axel Rasmussen <axelrasmussen@google.com>
+To:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Charan Teja Reddy <charante@codeaurora.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "Dmitry V . Levin" <ldv@altlinux.org>,
+        Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>,
+        Hugh Dickins <hughd@google.com>, Jan Kara <jack@suse.cz>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@kernel.org>, Nadav Amit <namit@vmware.com>,
+        Peter Xu <peterx@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>, zhangyi <yi.zhang@huawei.com>
+Cc:     Axel Rasmussen <axelrasmussen@google.com>,
+        linux-doc@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-kselftest@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 19 May 2022 15:41:06 +0200, Geert Uytterhoeven wrote:
-> Convert the Silicon Image sii902x HDMI bridge Device Tree binding
-> documentation to json-schema.
-> 
-> Add missing sil,sii9022-cpi and sil,sii9022-tpi compatible values.
-> 
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> ---
-> v3:
->   - Add comments clarifying CPI/TPI,
->   - Improve wording,
->   - Drop port@2,
->   - Add port descriptions,
->   - Add schema references to individual ports.
-> 
-> v2:
->   - Rework sil,i2s-data-lanes,
->   - Add schema reference to ports.
-> ---
->  .../bindings/display/bridge/sii902x.txt       |  78 -----------
->  .../bindings/display/bridge/sil,sii9022.yaml  | 131 ++++++++++++++++++
->  2 files changed, 131 insertions(+), 78 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/display/bridge/sii902x.txt
->  create mode 100644 Documentation/devicetree/bindings/display/bridge/sil,sii9022.yaml
-> 
+Explain the different ways to create a new userfaultfd, and how access
+control works for each way.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
+---
+ Documentation/admin-guide/mm/userfaultfd.rst | 40 ++++++++++++++++++--
+ Documentation/admin-guide/sysctl/vm.rst      |  3 ++
+ 2 files changed, 40 insertions(+), 3 deletions(-)
+
+diff --git a/Documentation/admin-guide/mm/userfaultfd.rst b/Documentation/admin-guide/mm/userfaultfd.rst
+index 6528036093e1..9bae1acd431f 100644
+--- a/Documentation/admin-guide/mm/userfaultfd.rst
++++ b/Documentation/admin-guide/mm/userfaultfd.rst
+@@ -17,7 +17,10 @@ of the ``PROT_NONE+SIGSEGV`` trick.
+ Design
+ ======
+ 
+-Userfaults are delivered and resolved through the ``userfaultfd`` syscall.
++Userspace creates a new userfaultfd, initializes it, and registers one or more
++regions of virtual memory with it. Then, any page faults which occur within the
++region(s) result in a message being delivered to the userfaultfd, notifying
++userspace of the fault.
+ 
+ The ``userfaultfd`` (aside from registering and unregistering virtual
+ memory ranges) provides two primary functionalities:
+@@ -34,12 +37,11 @@ The real advantage of userfaults if compared to regular virtual memory
+ management of mremap/mprotect is that the userfaults in all their
+ operations never involve heavyweight structures like vmas (in fact the
+ ``userfaultfd`` runtime load never takes the mmap_lock for writing).
+-
+ Vmas are not suitable for page- (or hugepage) granular fault tracking
+ when dealing with virtual address spaces that could span
+ Terabytes. Too many vmas would be needed for that.
+ 
+-The ``userfaultfd`` once opened by invoking the syscall, can also be
++The ``userfaultfd``, once created, can also be
+ passed using unix domain sockets to a manager process, so the same
+ manager process could handle the userfaults of a multitude of
+ different processes without them being aware about what is going on
+@@ -50,6 +52,38 @@ is a corner case that would currently return ``-EBUSY``).
+ API
+ ===
+ 
++Creating a userfaultfd
++----------------------
++
++There are two ways to create a new userfaultfd, each of which provide ways to
++restrict access to this functionality (since historically userfaultfds which
++handle kernel page faults have been a useful tool for exploiting the kernel).
++
++The first way, supported by older kernels, is the userfaultfd(2) syscall.
++Access to this is controlled in several ways:
++
++- By default, the userfaultfd will be able to handle kernel page faults. This
++  can be disabled by passing in UFFD_USER_MODE_ONLY.
++
++- If vm.unprivileged_userfaultfd is 0, then the caller must *either* have
++  CAP_SYS_PTRACE, or pass in UFFD_USER_MODE_ONLY.
++
++- If vm.unprivileged_userfaultfd is 1, then no particular privilege is needed to
++  use this syscall, even if UFFD_USER_MODE_ONLY is *not* set.
++
++The second way, added to the kernel more recently, is by opening and issuing a
++USERFAULTFD_IOC_NEW ioctl to /dev/userfaultfd. This method yields equivalent
++userfaultfds to the userfaultfd(2) syscall; its benefit is in how access to
++creating userfaultfds is controlled.
++
++Access to /dev/userfaultfd is controlled via normal filesystem permissions
++(user/group/mode for example), which gives fine grained access to userfaultfd
++specifically, without also granting other unrelated privileges at the same time
++(as e.g. granting CAP_SYS_PTRACE would do).
++
++Initializing up a userfaultfd
++-----------------------------
++
+ When first opened the ``userfaultfd`` must be enabled invoking the
+ ``UFFDIO_API`` ioctl specifying a ``uffdio_api.api`` value set to ``UFFD_API`` (or
+ a later API version) which will specify the ``read/POLLIN`` protocol
+diff --git a/Documentation/admin-guide/sysctl/vm.rst b/Documentation/admin-guide/sysctl/vm.rst
+index d7374a1e8ac9..e3a952d1fd35 100644
+--- a/Documentation/admin-guide/sysctl/vm.rst
++++ b/Documentation/admin-guide/sysctl/vm.rst
+@@ -927,6 +927,9 @@ calls without any restrictions.
+ 
+ The default value is 0.
+ 
++An alternative to this sysctl / the userfaultfd(2) syscall is to create
++userfaultfds via /dev/userfaultfd. See
++Documentation/admin-guide/mm/userfaultfd.rst.
+ 
+ user_reserve_kbytes
+ ===================
+-- 
+2.36.1.255.ge46751e96f-goog
+
