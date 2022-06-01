@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C68EDCCA468
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:08:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5885C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:08:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354328AbiFAOIJ (ORCPT
+        id S1354436AbiFAOIP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:08:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54330 "EHLO
+        Wed, 1 Jun 2022 10:08:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354429AbiFAOEB (ORCPT
+        with ESMTP id S1354443AbiFAOEK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:04:01 -0400
+        Wed, 1 Jun 2022 10:04:10 -0400
 Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30A5D880C7;
-        Wed,  1 Jun 2022 06:58:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAC10A88BA;
+        Wed,  1 Jun 2022 06:58:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 368C1CE1A1F;
-        Wed,  1 Jun 2022 13:58:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D23E3C34119;
-        Wed,  1 Jun 2022 13:58:29 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 7AC49CE1C2F;
+        Wed,  1 Jun 2022 13:58:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23A13C3411D;
+        Wed,  1 Jun 2022 13:58:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091910;
-        bh=AztLQTwV6c2/ORAaTr9VKJzhEhFLOmaLcCN74dgSRZc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V84uAh+aNF9OnqZY7BuwqaarKVEUqQq8Z+Jal/C6aXZwb0nUesG/aWR+dMk172QFR
-         xJ2/5alg57emxQSTDfuuD5f6HvQPtB3zkjtzSOJJI7IPGW8cGSxzKYyFz6P9kMFbaS
-         6YpWvyvo1GYl/kDkEmSUpvU68QglzAB0UprekPAvTMTVkM/O30hMUghtPOLIN0QO3F
-         HYWQwAXT8I6H67DMcOXz3jnOSx3tZy9doSknzvMNK3NSsUH0b2RIe7T7fSNLeACL4O
-         89fErLKTdSGtBKRg7X3hoPJwjvtl3i9FrC2llOpj9bI47kit0hFdxO7qc21LdUf932
-         240tCAx+qW/eg==
+        s=k20201202; t=1654091881;
+        bh=cEhWmMxXvdBKqxo8lID1YPL2df86SOavf20+AeO8pMM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=r1ODeAUNzZLDSUThiKszBSc+9aYBkE74sT0qEcJaPGMGAoHiAnlOnBwY66TlwSQoY
+         TAPhu8otdRMnDZwNqzQJUUNatmHTvGmPF1l+Mwpt++v8rwLX2hguiaMQdRNxcrim7n
+         S7R5cfalBePjt2/q8zh8lGbgdnoH5/L4w4B7mPjg5ct4mSlntoqpBDBIWIGkNq9J7j
+         dabotkA0yNkc7MAoKzOT5t5lozc1A/53I2GqtC4NcW4czoLbu7JobFK6gSrM9Y6UpP
+         MxJG3iIyqvusMouOE/+jTfPuYUdvZhj8DgyBA4+s2+pmLe3qcZOTtSCVmprI4YXVbD
+         SzQ0B6xiHw1ZQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Peng Wu <wupeng58@huawei.com>, Wei Xu <xuwei5@hisilicon.com>,
-        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.10 17/26] ARM: hisi: Add missing of_node_put after of_find_compatible_node
-Date:   Wed,  1 Jun 2022 09:57:50 -0400
-Message-Id: <20220601135759.2004435-17-sashal@kernel.org>
+Cc:     Niels Dossche <dossche.niels@gmail.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>,
+        dennis.dalessandro@cornelisnetworks.com, linux-rdma@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 01/26] IB/rdmavt: add missing locks in rvt_ruc_loopback
+Date:   Wed,  1 Jun 2022 09:57:34 -0400
+Message-Id: <20220601135759.2004435-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220601135759.2004435-1-sashal@kernel.org>
-References: <20220601135759.2004435-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,50 +51,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peng Wu <wupeng58@huawei.com>
+From: Niels Dossche <dossche.niels@gmail.com>
 
-[ Upstream commit 9bc72e47d4630d58a840a66a869c56b29554cfe4 ]
+[ Upstream commit 22cbc6c2681a0a4fe76150270426e763d52353a4 ]
 
-of_find_compatible_node  will increment the refcount of the returned
-device_node. Calling of_node_put() to avoid the refcount leak
+The documentation of the function rvt_error_qp says both r_lock and
+s_lock need to be held when calling that function.
+It also asserts using lockdep that both of those locks are held.
+rvt_error_qp is called form rvt_send_cq, which is called from
+rvt_qp_complete_swqe, which is called from rvt_send_complete, which is
+called from rvt_ruc_loopback in two places. Both of these places do not
+hold r_lock. Fix this by acquiring a spin_lock of r_lock in both of
+these places.
+The r_lock acquiring cannot be added in rvt_qp_complete_swqe because
+some of its other callers already have r_lock acquired.
 
-Signed-off-by: Peng Wu <wupeng58@huawei.com>
-Signed-off-by: Wei Xu <xuwei5@hisilicon.com>
+Link: https://lore.kernel.org/r/20220228195144.71946-1-dossche.niels@gmail.com
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-hisi/platsmp.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/infiniband/sw/rdmavt/qp.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/mach-hisi/platsmp.c b/arch/arm/mach-hisi/platsmp.c
-index da7a09c1dae5..1cd1d9b0aabf 100644
---- a/arch/arm/mach-hisi/platsmp.c
-+++ b/arch/arm/mach-hisi/platsmp.c
-@@ -67,14 +67,17 @@ static void __init hi3xxx_smp_prepare_cpus(unsigned int max_cpus)
- 		}
- 		ctrl_base = of_iomap(np, 0);
- 		if (!ctrl_base) {
-+			of_node_put(np);
- 			pr_err("failed to map address\n");
- 			return;
- 		}
- 		if (of_property_read_u32(np, "smp-offset", &offset) < 0) {
-+			of_node_put(np);
- 			pr_err("failed to find smp-offset property\n");
- 			return;
- 		}
- 		ctrl_base += offset;
-+		of_node_put(np);
- 	}
- }
+diff --git a/drivers/infiniband/sw/rdmavt/qp.c b/drivers/infiniband/sw/rdmavt/qp.c
+index d8d52a00a1be..585a9c76e518 100644
+--- a/drivers/infiniband/sw/rdmavt/qp.c
++++ b/drivers/infiniband/sw/rdmavt/qp.c
+@@ -2826,7 +2826,7 @@ void rvt_qp_iter(struct rvt_dev_info *rdi,
+ EXPORT_SYMBOL(rvt_qp_iter);
  
-@@ -160,6 +163,7 @@ static int hip01_boot_secondary(unsigned int cpu, struct task_struct *idle)
- 	if (WARN_ON(!node))
- 		return -1;
- 	ctrl_base = of_iomap(node, 0);
-+	of_node_put(node);
+ /*
+- * This should be called with s_lock held.
++ * This should be called with s_lock and r_lock held.
+  */
+ void rvt_send_complete(struct rvt_qp *qp, struct rvt_swqe *wqe,
+ 		       enum ib_wc_status status)
+@@ -3185,7 +3185,9 @@ void rvt_ruc_loopback(struct rvt_qp *sqp)
+ 	rvp->n_loop_pkts++;
+ flush_send:
+ 	sqp->s_rnr_retry = sqp->s_rnr_retry_cnt;
++	spin_lock(&sqp->r_lock);
+ 	rvt_send_complete(sqp, wqe, send_status);
++	spin_unlock(&sqp->r_lock);
+ 	if (local_ops) {
+ 		atomic_dec(&sqp->local_ops_pending);
+ 		local_ops = 0;
+@@ -3239,7 +3241,9 @@ void rvt_ruc_loopback(struct rvt_qp *sqp)
+ 	spin_unlock_irqrestore(&qp->r_lock, flags);
+ serr_no_r_lock:
+ 	spin_lock_irqsave(&sqp->s_lock, flags);
++	spin_lock(&sqp->r_lock);
+ 	rvt_send_complete(sqp, wqe, send_status);
++	spin_unlock(&sqp->r_lock);
+ 	if (sqp->ibqp.qp_type == IB_QPT_RC) {
+ 		int lastwqe;
  
- 	/* set the secondary core boot from DDR */
- 	remap_reg_value = readl_relaxed(ctrl_base + REG_SC_CTRL);
 -- 
 2.35.1
 
