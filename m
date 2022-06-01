@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 499F2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:13:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08816C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:13:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348785AbiFAONu (ORCPT
+        id S1355209AbiFAONy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:13:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43914 "EHLO
+        Wed, 1 Jun 2022 10:13:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354403AbiFAOJZ (ORCPT
+        with ESMTP id S1354710AbiFAOJd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:09:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19305A5035;
-        Wed,  1 Jun 2022 07:00:40 -0700 (PDT)
+        Wed, 1 Jun 2022 10:09:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C17941163;
+        Wed,  1 Jun 2022 07:00:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BAD43B81AEB;
-        Wed,  1 Jun 2022 14:00:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C96DC3411D;
-        Wed,  1 Jun 2022 14:00:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D619615E9;
+        Wed,  1 Jun 2022 14:00:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01213C385B8;
+        Wed,  1 Jun 2022 14:00:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654092037;
-        bh=yFAJjDuee0KkcfhDSAPMvVKX9B6AQABnodhfFK3su7I=;
+        s=k20201202; t=1654092041;
+        bh=zlr3C4xgJD135dQdTWBXK1U0qwJZQAP7U25NcO+I5cQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QV0i+AP3dXX/YtCh7xn+/hyEiipkIPulx8QJOeH7DAUxqps/OZ7fjI6MNSALBOAsK
-         4rGAzgQTwXv7Ryzn8vXPK8NbTaMX/D+ICT50LSYpCMs9BPN0N0Kt0WqgoSp9qZywuP
-         vqTscIB6hK4ekCd+afwLn6GAvb0je1zkNvKw/2R7BPH4oBmxPvf/sItIS7cL40iJlV
-         7e3w3zgO9tcpe+mrslMkb4z3mB3ZD5v1WwFNm/u0UnejKeeXGuba0cvbN6tBuFxaIY
-         AAP6Z8tW5Sliw3dFo+RF2BJwUySB5thxx52tXx1nuDUkwr7o2Xoiv9yfBtYRskYdF/
-         rt5vWaOLZCRgw==
+        b=E/1vR3c3a4J+AjAzcChd3EQjtQQ94Kav4fTG7y5pSA2a+t/Y5OUJKjKAvZzzI4HiI
+         byrMrVVROe7PvDjovYttJTzZjMyv5mUKiHZOvF3ZyRD8vxJrZ9VKITzrsD1f4b42RT
+         MJ8tlCwBDekGKSqxCQMz5A0yQtFp0HdJMCv5f2bujg7xyhLixkEouq+8Bhun5KW0Il
+         bQmUsLlBOQk1OBZaf5JQKpJFf2ZezTbfOy/xRUT79IomZBXRDf4NbK0uU1f08DT/PZ
+         Fe7D75C7BRwbdFBcO27seBicNGNc07INRJZplkA4oNf1zxYkmuMhSyXfS6xSsmXXtz
+         uVrN5LfmlTfwg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>,
-        qianfan <qianfanguijin@163.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.14 05/14] fat: add ratelimit to fat*_ent_bread()
-Date:   Wed,  1 Jun 2022 10:00:18 -0400
-Message-Id: <20220601140027.2005280-5-sashal@kernel.org>
+Cc:     Peng Wu <wupeng58@huawei.com>, Wei Xu <xuwei5@hisilicon.com>,
+        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 4.14 08/14] ARM: hisi: Add missing of_node_put after of_find_compatible_node
+Date:   Wed,  1 Jun 2022 10:00:21 -0400
+Message-Id: <20220601140027.2005280-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601140027.2005280-1-sashal@kernel.org>
 References: <20220601140027.2005280-1-sashal@kernel.org>
@@ -53,48 +52,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
+From: Peng Wu <wupeng58@huawei.com>
 
-[ Upstream commit 183c3237c928109d2008c0456dff508baf692b20 ]
+[ Upstream commit 9bc72e47d4630d58a840a66a869c56b29554cfe4 ]
 
-fat*_ent_bread() can be the cause of too many report on I/O error path.
-So use fat_msg_ratelimit() instead.
+of_find_compatible_node  will increment the refcount of the returned
+device_node. Calling of_node_put() to avoid the refcount leak
 
-Link: https://lkml.kernel.org/r/87bkxogfeq.fsf@mail.parknet.co.jp
-Signed-off-by: OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
-Reported-by: qianfan <qianfanguijin@163.com>
-Tested-by: qianfan <qianfanguijin@163.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Peng Wu <wupeng58@huawei.com>
+Signed-off-by: Wei Xu <xuwei5@hisilicon.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/fat/fatent.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ arch/arm/mach-hisi/platsmp.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/fs/fat/fatent.c b/fs/fat/fatent.c
-index 24ed1f4e48ae..3ef3e773da1b 100644
---- a/fs/fat/fatent.c
-+++ b/fs/fat/fatent.c
-@@ -92,7 +92,8 @@ static int fat12_ent_bread(struct super_block *sb, struct fat_entry *fatent,
- err_brelse:
- 	brelse(bhs[0]);
- err:
--	fat_msg(sb, KERN_ERR, "FAT read failed (blocknr %llu)", (llu)blocknr);
-+	fat_msg_ratelimit(sb, KERN_ERR, "FAT read failed (blocknr %llu)",
-+			  (llu)blocknr);
- 	return -EIO;
+diff --git a/arch/arm/mach-hisi/platsmp.c b/arch/arm/mach-hisi/platsmp.c
+index da5689ababf7..d7fbfb6d293d 100644
+--- a/arch/arm/mach-hisi/platsmp.c
++++ b/arch/arm/mach-hisi/platsmp.c
+@@ -70,14 +70,17 @@ static void __init hi3xxx_smp_prepare_cpus(unsigned int max_cpus)
+ 		}
+ 		ctrl_base = of_iomap(np, 0);
+ 		if (!ctrl_base) {
++			of_node_put(np);
+ 			pr_err("failed to map address\n");
+ 			return;
+ 		}
+ 		if (of_property_read_u32(np, "smp-offset", &offset) < 0) {
++			of_node_put(np);
+ 			pr_err("failed to find smp-offset property\n");
+ 			return;
+ 		}
+ 		ctrl_base += offset;
++		of_node_put(np);
+ 	}
  }
  
-@@ -105,8 +106,8 @@ static int fat_ent_bread(struct super_block *sb, struct fat_entry *fatent,
- 	fatent->fat_inode = MSDOS_SB(sb)->fat_inode;
- 	fatent->bhs[0] = sb_bread(sb, blocknr);
- 	if (!fatent->bhs[0]) {
--		fat_msg(sb, KERN_ERR, "FAT read failed (blocknr %llu)",
--		       (llu)blocknr);
-+		fat_msg_ratelimit(sb, KERN_ERR, "FAT read failed (blocknr %llu)",
-+				  (llu)blocknr);
- 		return -EIO;
- 	}
- 	fatent->nr_bhs = 1;
+@@ -163,6 +166,7 @@ static int hip01_boot_secondary(unsigned int cpu, struct task_struct *idle)
+ 	if (WARN_ON(!node))
+ 		return -1;
+ 	ctrl_base = of_iomap(node, 0);
++	of_node_put(node);
+ 
+ 	/* set the secondary core boot from DDR */
+ 	remap_reg_value = readl_relaxed(ctrl_base + REG_SC_CTRL);
 -- 
 2.35.1
 
