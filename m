@@ -2,154 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0233EC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 06:16:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85877C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 06:18:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349816AbiFAGQR (ORCPT
+        id S1349760AbiFAGSV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 02:16:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39938 "EHLO
+        Wed, 1 Jun 2022 02:18:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349755AbiFAGQP (ORCPT
+        with ESMTP id S243882AbiFAGSS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 02:16:15 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 566AC6FA35
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 23:16:14 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id p10so823498wrg.12
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 23:16:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=vUroyxhPDzujIL+srQrQJbzj1rBmcTjbEH4aNuHu6u8=;
-        b=QDJd+JMtSbictp3JXuSTnUcFtrUT8VgQ8R4hk/9xlsI/xQieNS7UamrA41uiFJDkE0
-         XgXgIUC97MDtbIyS67TN33hdGqO8YaB+srytVD+PJ14E7d7vsrFEhpMTzqWyXGrzVlFm
-         kDRVuH3aEqSRdWf/O74FOrdH7KOZfsmBdqoh5qFApkyER06xLe6zCZiQ8H9iQe2zY55u
-         eyn6hIdNB1JF2C6qhvvOjwehBoCsMjCLsgLH3zNYlhWCw8WVu/pKywVfU8cKQu2miYWf
-         vIx2rrFhgSljAMJPD5g2A07ERmaAmjazqSRuhq2OHA3MjJTsglOO8+RMT4T1VMeObNF6
-         ZyJQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=vUroyxhPDzujIL+srQrQJbzj1rBmcTjbEH4aNuHu6u8=;
-        b=KAepPjE2luV7OwMlbiW5ibIvd9tP6EuUe1H2kXKgln6ykfWLy16IyHvAlH8o8po6o2
-         gymkwiuwZoapYxBncEXqZfVsCLTkIhVB78Vc0z9SwudlQe+tgBD3TDlb4+CyRU7ndYmm
-         lKZQbCQGapBIEaSWvm6dsLXAPZd6rGZldS/+qbuHBPCRuFZz/HOJaz38tsMzXdr/mPI/
-         4DlH0CujmB1B2AqHA3QT/SCM0nViEaboAQIVTOAH/JY3xIJ/w5iFdFv9t35dn3V+2m6m
-         cZfsdPxji2wpH6bu5CvPRew7jxwIbQN48oqG/pa8h7H/d9RrYVCzbDYTsXhyuE3On81g
-         HoXA==
-X-Gm-Message-State: AOAM531lCgAbE/BQ93AwstwpPVuJ519MDTVbpJvvWutQ/aXMCtYNSwC0
-        xdZCWO7n9cvNlFMSWKV/ZOz9bw==
-X-Google-Smtp-Source: ABdhPJymVvDLqx+/1DvfStNIMCuy4P2eY1dbazYi71Vp6xbE1/EYlA1FwV6n4UNJYRhaRUEHGJ1WWA==
-X-Received: by 2002:a05:6000:384:b0:210:28d:29f1 with SMTP id u4-20020a056000038400b00210028d29f1mr28708376wrf.512.1654064172802;
-        Tue, 31 May 2022 23:16:12 -0700 (PDT)
-Received: from [10.188.163.71] (cust-east-parth2-46-193-73-98.wb.wifirst.net. [46.193.73.98])
-        by smtp.gmail.com with ESMTPSA id h1-20020a5d6e01000000b0020d03c14b9csm617451wrz.1.2022.05.31.23.16.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 31 May 2022 23:16:12 -0700 (PDT)
-Message-ID: <03b3a6bc-586a-2b45-a60c-5ab81076bf13@kernel.dk>
-Date:   Wed, 1 Jun 2022 00:16:11 -0600
+        Wed, 1 Jun 2022 02:18:18 -0400
+X-Greylist: delayed 830 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 31 May 2022 23:18:17 PDT
+Received: from louie.mork.no (louie.mork.no [IPv6:2001:41c8:51:8a:feff:ff:fe00:e5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 970006A066
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 23:18:17 -0700 (PDT)
+Received: from canardo.dyn.mork.no ([IPv6:2a01:799:c9d:7e00:0:0:0:1])
+        (authenticated bits=0)
+        by louie.mork.no (8.15.2/8.15.2) with ESMTPSA id 25163bpO1194431
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
+        Wed, 1 Jun 2022 07:03:38 +0100
+Received: from miraculix.mork.no ([IPv6:2a01:799:c9d:7e02:9be5:c549:1a72:4709])
+        (authenticated bits=0)
+        by canardo.dyn.mork.no (8.15.2/8.15.2) with ESMTPSA id 25163VY73277715
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
+        Wed, 1 Jun 2022 08:03:31 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
+        t=1654063412; bh=Z8VQepQywpNhUdP9sxuS8hnvH4ZlltBtmsUuhQTli2c=;
+        h=From:To:Cc:Subject:References:Date:Message-ID:From;
+        b=fod5sVP1nRIUCLjzh5U/9k1uJkaqhtnrbBpk9XMMyVd9rS53i36+NN5b3jvPIqmjE
+         6ODblHo1JzsyA1n42cglXvZw8FJoMgVVvkO5ha2kZ66mD2WZXrEuNbGmrKnp+jpdFI
+         uY5Dxv/K2gzDJWEYyS1pNIqfODeBOoQUJ8Xrop3c=
+Received: (nullmailer pid 1032539 invoked by uid 1000);
+        Wed, 01 Jun 2022 06:03:31 -0000
+From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
+To:     Slark Xiao <slark_xiao@163.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: usb: qmi_wwan: Add support for Cinterion MV31 with
+ new baseline
+Organization: m
+References: <20220601040531.6016-1-slark_xiao@163.com>
+Date:   Wed, 01 Jun 2022 08:03:31 +0200
+In-Reply-To: <20220601040531.6016-1-slark_xiao@163.com> (Slark Xiao's message
+        of "Wed, 1 Jun 2022 12:05:31 +0800")
+Message-ID: <87o7zcly30.fsf@miraculix.mork.no>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH -next v5 0/3] support concurrent sync io for bfq on a
- specail occasion
-Content-Language: en-US
-To:     Yu Kuai <yukuai3@huawei.com>, Jan Kara <jack@suse.cz>
-Cc:     paolo.valente@linaro.org, tj@kernel.org,
-        linux-block@vger.kernel.org, cgroups@vger.kernel.org,
-        linux-kernel@vger.kernel.org, yi.zhang@huawei.com
-References: <20220428120837.3737765-1-yukuai3@huawei.com>
- <d50df657-d859-79cf-c292-412eaa383d2c@huawei.com>
- <61b67d5e-829c-8130-7bda-81615d654829@huawei.com>
- <81411289-e13c-20f5-df63-c059babca57a@huawei.com>
- <d5a90a08-1ac6-587a-e900-0436bd45543a@kernel.dk>
- <55919e29-1f22-e8aa-f3d2-08c57d9e1c22@huawei.com>
- <20220523085902.wmxoebyq3crerecr@quack3.lan>
- <25f6703e-9e10-75d9-a893-6df1e6b75254@kernel.dk>
- <20220523152516.7sr247i3bzwhr44w@quack3.lan>
- <13ad158e-7859-ca61-209e-7d1fe99d0bdb@huawei.com>
-From:   Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <13ad158e-7859-ca61-209e-7d1fe99d0bdb@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Virus-Scanned: clamav-milter 0.103.5 at canardo
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/23/22 7:13 PM, Yu Kuai wrote:
-> ? 2022/05/23 23:25, Jan Kara ??:
->> On Mon 23-05-22 06:36:58, Jens Axboe wrote:
->>> On 5/23/22 2:59 AM, Jan Kara wrote:
->>>> On Mon 23-05-22 09:10:38, yukuai (C) wrote:
->>>>> ? 2022/05/21 20:21, Jens Axboe ??:
->>>>>> On 5/21/22 1:22 AM, yukuai (C) wrote:
->>>>>>> ? 2022/05/14 17:29, yukuai (C) ??:
->>>>>>>> ? 2022/05/05 9:00, yukuai (C) ??:
->>>>>>>>> Hi, Paolo
->>>>>>>>>
->>>>>>>>> Can you take a look at this patchset? It has been quite a long time
->>>>>>>>> since we spotted this problem...
->>>>>>>>>
->>>>>>>>
->>>>>>>> friendly ping ...
->>>>>>> friendly ping ...
->>>>>>
->>>>>> I can't speak for Paolo, but I've mentioned before that the majority
->>>>>> of your messages end up in my spam. That's still the case, in fact
->>>>>> I just marked maybe 10 of them as not spam.
->>>>>>
->>>>>> You really need to get this issued sorted out, or you will continue
->>>>>> to have patches ignore because folks may simply not see them.
->>>>>>
->>>>> Hi,
->>>>>
->>>>> Thanks for your notice.
->>>>>
->>>>> Is it just me or do you see someone else's messages from *huawei.com
->>>>> end up in spam? I tried to seek help from our IT support, however, they
->>>>> didn't find anything unusual...
->>>>
->>>> So actually I have noticed that a lot of (valid) email from huawei.com (not
->>>> just you) ends up in the spam mailbox. For me direct messages usually pass
->>>> (likely matching SPF records for originating mail server save the email
->>>> from going to spam) but messages going through mailing lists are flagged as
->>>> spam because the emails are missing valid DKIM signature but huawei.com
->>>> DMARC config says there should be DKIM signature (even direct messages are
->>>> missing DKIM so this does not seem as a mailing list configuration issue).
->>>> So this seems as some misconfiguration of the mails on huawei.com side
->>>> (likely missing DKIM signing of outgoing email).
->>>
->>> SPF/DKIM was indeed a problem earlier for yukaui patches, but I don't
->>> see that anymore. Maybe it's still an issue for some emails, from them
->>> or Huawei in general?
->>
->> Hum, for me all emails from Huawei I've received even today fail the DKIM
->> check. After some more digging there is interesting inconsistency in DMARC
->> configuration for huawei.com domain. There is DMARC record for huawei.com
->> like:
->>
->> huawei.com.        600    IN    TXT    "v=DMARC1;p=none;rua=mailto:dmarc@edm.huawei.com"
->>
->> which means no DKIM is required but _dmarc.huawei.com has:
->>
->> _dmarc.huawei.com.    600    IN    TXT    "v=DMARC1;p=quarantine;ruf=mailto:dmarc@huawei.com;rua=mailto:dmarc@huawei.com"
->>
->> which says that DKIM is required. I guess this inconsistency may be the
->> reason why there are problems with DKIM validation for senders from
->> huawei.com. Yu Kuai, can you perhaps take this to your IT support to fix
->> this? Either make sure huawei.com emails get properly signed with DKIM or
->> remove the 'quarantine' record from _dmarc.huawei.com. Thanks!
-> Of course, I'll try to contact our IT support.
+Slark Xiao <slark_xiao@163.com> writes:
 
-I second that, pretty much every email has been going into spam since, I
-guess you just had a few lucky ones. Looks like Jan is right, it's a
-server side configuration error that's causing this, and it's still
-happening
+> Adding support for Cinterion device MV31 with Qualcomm
+> new baseline. Use different PIDs to separate it from
+> previous base line products.
+> All interfaces settings keep same as previous.
+>
+> T:  Bus=3D03 Lev=3D01 Prnt=3D01 Port=3D00 Cnt=3D01 Dev#=3D  7 Spd=3D480 M=
+xCh=3D 0
+> D:  Ver=3D 2.10 Cls=3Def(misc ) Sub=3D02 Prot=3D01 MxPS=3D64 #Cfgs=3D  1
+> P:  Vendor=3D1e2d ProdID=3D00b9 Rev=3D04.14
+> S:  Manufacturer=3DCinterion
+> S:  Product=3DCinterion PID 0x00B9 USB Mobile Broadband
+> S:  SerialNumber=3D90418e79
+> C:  #Ifs=3D 4 Cfg#=3D 1 Atr=3Da0 MxPwr=3D500mA
+> I:  If#=3D0x0 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3Dff Prot=3D50 Drive=
+r=3Dqmi_wwan
+> I:  If#=3D0x1 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3Dff Prot=3D40 Drive=
+r=3Doption
+> I:  If#=3D0x2 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3Dff Prot=3D60 Drive=
+r=3Doption
+> I:  If#=3D0x3 Alt=3D 0 #EPs=3D 2 Cls=3Dff(vend.) Sub=3Dff Prot=3D30 Drive=
+r=3Doption
+>
+> Signed-off-by: Slark Xiao <slark_xiao@163.com>
 
--- 
-Jens Axboe
+Thanks
 
+Acked-by: Bj=C3=B8rn Mork <bjorn@mork.no>
