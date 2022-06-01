@@ -2,100 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35056C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:54:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 479FBCCA470
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:54:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353703AbiFANyQ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 09:54:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59418 "EHLO
+        id S236913AbiFANy0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 09:54:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353599AbiFANx4 (ORCPT
+        with ESMTP id S1353541AbiFANx4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 1 Jun 2022 09:53:56 -0400
-Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 524DA87A02;
-        Wed,  1 Jun 2022 06:53:35 -0700 (PDT)
-Received: by mail-oi1-x22c.google.com with SMTP id h188so2749435oia.2;
-        Wed, 01 Jun 2022 06:53:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=50YiMVCaHxbvsoevu/L/Gf+lnMf24rl9MFtsvJQjpng=;
-        b=aQHApTJUSvi2Zf+BjPlqI1i02ehiMQAVRc1uj1cNodTSdVpWmkgphqaPj0ruJ8bsyA
-         34Y6yTT/NA+OICNaDrMN2vF68dvLZShbcsMPvdsnSBQaZRXGzl+ocae8iMWk9IN7yXZ6
-         obfkVsqo50Aia1EY2G/v2i+iXOFCPmQEMg5PnaV+5Bl6s9iksGR98B/aJr9S4ZASTR0w
-         chdDghnoZ3mEuJKKWatzOtQj/YE4rskA5O8NdeJSZcU4kGa0QX6hbEgBRejHdrmecf6B
-         +TCO19SBZblragEU+p/1UT3cvNzmw96De4F9ulSwqt+E2KOpjmLl6ugI/7vvM3OsgVda
-         5J6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=50YiMVCaHxbvsoevu/L/Gf+lnMf24rl9MFtsvJQjpng=;
-        b=3fHzq7M96EmCU0t6Y+99FpqupPLSbFmFtKz7zN+D6xQjefIwnoYTbGRt3AgpslAv88
-         Tzv2shSr1wVQJMftKeSo6uJhHPEsNecqrMsnVX0P4KuVlvqSqiTgw5Bw3xj5RIWm5Ye5
-         xoe7z7F/kbXYivQQz3q05Fq7FHQ6BFPCNn1KGB7x7OHI6n3syZQQ9/WCwi0oDoMEIjSa
-         BlfZ4sXey3CwBSb/b+/mG09ypDVFzZyikXiSPRuLyPUjTWNdWU75Vh8aqcSdiDnyuYTm
-         5lmROXl4viqWh5+Amspz2UGuxN65LU4amQECcaCCv8a0LBfT6wN/DUTqPT6DsomEpXBo
-         0Uww==
-X-Gm-Message-State: AOAM532trMqkykLLNEGkOK/Swjevi1uDX6EudmAJ2puWjqwi3gpa1gv3
-        xP9IpOGzrO2KPDazvmo/Xd8=
-X-Google-Smtp-Source: ABdhPJxLdWwFf3XQYgQrNRPd/KDBoMKbLpPPmVP74Zh9DBdhkpFy4FtSOwyYJDJfAFELGzHiQO1Ntg==
-X-Received: by 2002:a05:6808:13cc:b0:32c:7414:1d76 with SMTP id d12-20020a05680813cc00b0032c74141d76mr5140801oiw.91.1654091587850;
-        Wed, 01 Jun 2022 06:53:07 -0700 (PDT)
-Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id t4-20020a056808158400b0032b7b588f3asm874798oiw.46.2022.06.01.06.53.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Jun 2022 06:53:07 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Message-ID: <b8d280ed-b04f-e69c-8a0f-81ccaf43b895@roeck-us.net>
-Date:   Wed, 1 Jun 2022 06:53:04 -0700
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6201987A06;
+        Wed,  1 Jun 2022 06:53:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B4C95B81AEB;
+        Wed,  1 Jun 2022 13:53:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC69CC385A5;
+        Wed,  1 Jun 2022 13:53:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654091588;
+        bh=FTiI156Bl/R9a/IH+dywYgcf8JKm5MuzE4oQ6KL5C9g=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=MW7b9XREo1jhH+0wy2D1s7uYTy7mDlOlVl2OmbTaJ5kMCoqMFFxSYLSojW6fsoJLU
+         q5DrwR+jN/jgBMDMABUNN19BZ9WKUCaM+m7QN0mnnHifd2HOnbQbOg4y49wfEEGK4v
+         H0TH0BBxOh0fVsKeN5zhktJ+A3HeSrQ15v4DFmZ5a0UgHct7F31YJozw3X7yn76xHn
+         E1Mgiu1VaizNhNotEL7XowDnBAEoI4GJgMyHJ8u8d5rKaNsaJxTps46bfmdoLMjTRv
+         1HcMpN8WWXUCedH6bDdRd4/JD8I25Mi+uD8BhveHCSRwgORoIsxPW8n0VEkvp4JXeY
+         61zTE2iCWIx1w==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>,
+        qianfan <qianfanguijin@163.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.18 21/49] fat: add ratelimit to fat*_ent_bread()
+Date:   Wed,  1 Jun 2022 09:51:45 -0400
+Message-Id: <20220601135214.2002647-21-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220601135214.2002647-1-sashal@kernel.org>
+References: <20220601135214.2002647-1-sashal@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 09/11] dt-bindings: watchdog: Add binding for Qcom SDX65
-Content-Language: en-US
-To:     Rohit Agarwal <quic_rohiagar@quicinc.com>, agross@kernel.org,
-        bjorn.andersson@linaro.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, wim@linux-watchdog.org
-Cc:     linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        manivannan.sadhasivam@linaro.org
-References: <1654080312-5408-1-git-send-email-quic_rohiagar@quicinc.com>
- <1654080312-5408-10-git-send-email-quic_rohiagar@quicinc.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-In-Reply-To: <1654080312-5408-10-git-send-email-quic_rohiagar@quicinc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/1/22 03:45, Rohit Agarwal wrote:
-> Add devicetree binding for watchdog present in Qcom SDX65 platform.
-> 
-> Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
+From: OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
 
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+[ Upstream commit 183c3237c928109d2008c0456dff508baf692b20 ]
 
-> ---
->   Documentation/devicetree/bindings/watchdog/qcom-wdt.yaml | 1 +
->   1 file changed, 1 insertion(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/watchdog/qcom-wdt.yaml b/Documentation/devicetree/bindings/watchdog/qcom-wdt.yaml
-> index 16c6f82..e0acbc1 100644
-> --- a/Documentation/devicetree/bindings/watchdog/qcom-wdt.yaml
-> +++ b/Documentation/devicetree/bindings/watchdog/qcom-wdt.yaml
-> @@ -20,6 +20,7 @@ properties:
->         - qcom,apss-wdt-sc7280
->         - qcom,apss-wdt-sdm845
->         - qcom,apss-wdt-sdx55
-> +      - qcom,apss-wdt-sdx65
->         - qcom,apss-wdt-sm6350
->         - qcom,apss-wdt-sm8150
->         - qcom,apss-wdt-sm8250
+fat*_ent_bread() can be the cause of too many report on I/O error path.
+So use fat_msg_ratelimit() instead.
+
+Link: https://lkml.kernel.org/r/87bkxogfeq.fsf@mail.parknet.co.jp
+Signed-off-by: OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
+Reported-by: qianfan <qianfanguijin@163.com>
+Tested-by: qianfan <qianfanguijin@163.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ fs/fat/fatent.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/fs/fat/fatent.c b/fs/fat/fatent.c
+index 978ac6751aeb..1db348f8f887 100644
+--- a/fs/fat/fatent.c
++++ b/fs/fat/fatent.c
+@@ -94,7 +94,8 @@ static int fat12_ent_bread(struct super_block *sb, struct fat_entry *fatent,
+ err_brelse:
+ 	brelse(bhs[0]);
+ err:
+-	fat_msg(sb, KERN_ERR, "FAT read failed (blocknr %llu)", (llu)blocknr);
++	fat_msg_ratelimit(sb, KERN_ERR, "FAT read failed (blocknr %llu)",
++			  (llu)blocknr);
+ 	return -EIO;
+ }
+ 
+@@ -107,8 +108,8 @@ static int fat_ent_bread(struct super_block *sb, struct fat_entry *fatent,
+ 	fatent->fat_inode = MSDOS_SB(sb)->fat_inode;
+ 	fatent->bhs[0] = sb_bread(sb, blocknr);
+ 	if (!fatent->bhs[0]) {
+-		fat_msg(sb, KERN_ERR, "FAT read failed (blocknr %llu)",
+-		       (llu)blocknr);
++		fat_msg_ratelimit(sb, KERN_ERR, "FAT read failed (blocknr %llu)",
++				  (llu)blocknr);
+ 		return -EIO;
+ 	}
+ 	fatent->nr_bhs = 1;
+-- 
+2.35.1
 
