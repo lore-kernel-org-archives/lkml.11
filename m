@@ -2,49 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BC42CCA46F
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:09:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABCC5CCA468
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:09:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354649AbiFAOJj (ORCPT
+        id S1354515AbiFAOJn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:09:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47608 "EHLO
+        Wed, 1 Jun 2022 10:09:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354685AbiFAOFJ (ORCPT
+        with ESMTP id S1354731AbiFAOFL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:05:09 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FE86ABF5F;
-        Wed,  1 Jun 2022 06:59:03 -0700 (PDT)
+        Wed, 1 Jun 2022 10:05:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 042B1AE247;
+        Wed,  1 Jun 2022 06:59:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 15C5DCE1A1F;
-        Wed,  1 Jun 2022 13:59:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 963F7C385A5;
-        Wed,  1 Jun 2022 13:58:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D96936149F;
+        Wed,  1 Jun 2022 13:59:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 418B9C3411F;
+        Wed,  1 Jun 2022 13:59:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091938;
-        bh=BaKhQqgyfbfjuRLsJf8naFAGGNIsWBbdAWduy+Wsrg0=;
+        s=k20201202; t=1654091946;
+        bh=meEEYYb4Q/Zwm6saccKdiTfafAQE+aqAUob7xdy2nqM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TZyJ4SIHLPYcbV+STHXeCMVlciIvTDT6ZYq1M2OMU7Z4Z8+j53cnhizfg+GVRBn6l
-         J0dVE7tw+1otyZN7bChtS85PO7lOsM6eFwo/GkW8X6wiE+4tzF9YA2xM+Id91prq/H
-         XHFhUY5NqXNThRHlqwoEeG6bL9blEDP/gmLqbs/oYTGiPHlQ/MQ2CROqHzklgenvRH
-         en1BQ5PEYjSTCa0qT4nx2jePaudG1n6bUW6Wdm2LHkHzsWrTDCyd9faH9c/IDWqjDt
-         UqE1eDLRBG9rqjRsruUSfqPZ7ZLhzFNQ2qZNADLpPHkC7itACVdRWSA3OBmtN0DdQ+
-         7d0KKQMwspieQ==
+        b=GFHLD0e734PKcb/cr4JL6e3f4W/+KUzMD+GZTpdSbMdXfNiVeWJuCPgP2msfI7zLr
+         oc0xTyRfxDCkS7hdCyHhWKlJJ+Q0tk/FHN0WjKN4vVoB7kbG6HN0aVvXnF4k/ZlCeM
+         qfIxwAJazHaoEylARAmdZLRTKOFeU3tm1jVZx28ny3t+TKj9J3ILetO74wbwgGVzjc
+         SMNvDW0G9S8STGObunWaHv5pMf3n6poDlUlbaS8cQ7SkZdl/+TS89DexjWutDi5+3N
+         h/cUZc4oBUPztOn2sEdYVJk8xGo8EpEFo7fWPybG4gbGp4HBwDZnerUC2iGTctiltU
+         az/sbaCA4h6Xw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Peng Wu <wupeng58@huawei.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>, christophe.leroy@csgroup.eu,
-        nick.child@ibm.com, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 5.10 24/26] powerpc/iommu: Add missing of_node_put in iommu_init_early_dart
-Date:   Wed,  1 Jun 2022 09:57:57 -0400
-Message-Id: <20220601135759.2004435-24-sashal@kernel.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org,
+        linux-arm-kernel@lists.infradead.org, linux-oxnas@groups.io,
+        devicetree@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 02/20] ARM: dts: ox820: align interrupt controller node name with dtschema
+Date:   Wed,  1 Jun 2022 09:58:44 -0400
+Message-Id: <20220601135902.2004823-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220601135759.2004435-1-sashal@kernel.org>
-References: <20220601135759.2004435-1-sashal@kernel.org>
+In-Reply-To: <20220601135902.2004823-1-sashal@kernel.org>
+References: <20220601135902.2004823-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,47 +55,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peng Wu <wupeng58@huawei.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-[ Upstream commit 57b742a5b8945118022973e6416b71351df512fb ]
+[ Upstream commit fbcd5ad7a419ad40644a0bb8b4152bc660172d8a ]
 
-The device_node pointer is returned by of_find_compatible_node
-with refcount incremented. We should use of_node_put() to avoid
-the refcount leak.
+Fixes dtbs_check warnings like:
 
-Signed-off-by: Peng Wu <wupeng58@huawei.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220425081245.21705-1-wupeng58@huawei.com
+  gic@1000: $nodename:0: 'gic@1000' does not match '^interrupt-controller(@[0-9a-f,]+)*$'
+
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Acked-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20220317115705.450427-1-krzysztof.kozlowski@canonical.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/sysdev/dart_iommu.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ arch/arm/boot/dts/ox820.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/sysdev/dart_iommu.c b/arch/powerpc/sysdev/dart_iommu.c
-index 6b4a34b36d98..8ff9bcfe4b8d 100644
---- a/arch/powerpc/sysdev/dart_iommu.c
-+++ b/arch/powerpc/sysdev/dart_iommu.c
-@@ -403,9 +403,10 @@ void __init iommu_init_early_dart(struct pci_controller_ops *controller_ops)
- 	}
+diff --git a/arch/arm/boot/dts/ox820.dtsi b/arch/arm/boot/dts/ox820.dtsi
+index 90846a7655b4..dde4364892bf 100644
+--- a/arch/arm/boot/dts/ox820.dtsi
++++ b/arch/arm/boot/dts/ox820.dtsi
+@@ -287,7 +287,7 @@ local-timer@600 {
+ 				clocks = <&armclk>;
+ 			};
  
- 	/* Initialize the DART HW */
--	if (dart_init(dn) != 0)
-+	if (dart_init(dn) != 0) {
-+		of_node_put(dn);
- 		return;
--
-+	}
- 	/*
- 	 * U4 supports a DART bypass, we use it for 64-bit capable devices to
- 	 * improve performance.  However, that only works for devices connected
-@@ -418,6 +419,7 @@ void __init iommu_init_early_dart(struct pci_controller_ops *controller_ops)
- 
- 	/* Setup pci_dma ops */
- 	set_pci_dma_ops(&dma_iommu_ops);
-+	of_node_put(dn);
- }
- 
- #ifdef CONFIG_PM
+-			gic: gic@1000 {
++			gic: interrupt-controller@1000 {
+ 				compatible = "arm,arm11mp-gic";
+ 				interrupt-controller;
+ 				#interrupt-cells = <3>;
 -- 
 2.35.1
 
