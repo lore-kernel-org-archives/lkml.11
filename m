@@ -2,126 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00BA0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:54:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A820BCCA468
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:54:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238043AbiFANyD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 09:54:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58588 "EHLO
+        id S1353558AbiFANyG (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 09:54:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353562AbiFANxz (ORCPT
+        with ESMTP id S1353595AbiFANx4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 09:53:55 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F21614090D;
-        Wed,  1 Jun 2022 06:53:22 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id f23-20020a7bcc17000000b003972dda143eso3078265wmh.3;
-        Wed, 01 Jun 2022 06:53:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=Gkqx8uNGHQMl7//wICbhrmo/07INDVRlCWrBKZDsclM=;
-        b=Ve12/IxpNSBPttcoaHlRlZrHm92pIFyNWIzGp4j9wwkTa8iHtIBw8dcwytxiJU8E9B
-         cFQ8hZrytmwx2s4f2UuEwjOO9UIJ6Dm1r3s9CpXENWPhIN6j5t/DO8piLQudyplqOCei
-         SqfMGdd7Kv1zkZBObq7ReXs/cDEdX3dmrr4qSk/Hat5dBCjKpV+0gQ48ir6mweiNWHZP
-         Lpp/B+T5YF9t93Pw1FEd0hUK8VsfRdwGHO8yXJIhiHP+KLwzpcdvaHNY8Qjt4hWjaGhc
-         lRY3O9gyGScMsaYLgihxPTpmmW1O3KnfbzzvT3tOGJChyuY4aVaclh9t6SI3BjcCyOgI
-         gmvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Gkqx8uNGHQMl7//wICbhrmo/07INDVRlCWrBKZDsclM=;
-        b=ew1rDMT25/gQzAaL6JYwB4EUiglBMhO9x/WbNze2vGau/rzMmo1F30Ef6+t9E+CAsx
-         ZDoHCDJhvXK/jvSzvKXA4I5hy+G+g+LHpK/JUw/+HR8030lC3Pmr6dTG3O02K5FHhAjr
-         1h8xBWBJL31W7QneOpIn9gsphFd945W5cRPs1T0CDMpvYjsLnQTwsdtg8/RnPpAZ1Rw9
-         82diH4e7+sdFpkcLKD0+7eIVtABoM0TxDU5s/bP/v1pHeaKqkSyDeb3ELlPU2M+MlmhC
-         OLDgs/uoR/PlZTosjdnLxqOMB+a6OwBnngZOss4ifqkWNoijqCvQikbQznXeeY3n3gzg
-         iN7w==
-X-Gm-Message-State: AOAM531K7FZXyj/BPYixnQdPDCCVdLW4yFkEa34+W7qgl8757lyDR/ts
-        QWRqoTUkKjK9dfMxDcYcEl144qxaF3I=
-X-Google-Smtp-Source: ABdhPJwbZYR808yKUqN3/m85GcP2QTKQJSBiDQBR3SnLiJ67wdJ3ufk1zAMFeaXfFzxf1FgkOaYUlA==
-X-Received: by 2002:a05:600c:414e:b0:397:55aa:ccc0 with SMTP id h14-20020a05600c414e00b0039755aaccc0mr29543460wmm.51.1654091576305;
-        Wed, 01 Jun 2022 06:52:56 -0700 (PDT)
-Received: from ?IPV6:2a02:908:1256:79a0:d1fb:e1e4:e193:e55f? ([2a02:908:1256:79a0:d1fb:e1e4:e193:e55f])
-        by smtp.gmail.com with ESMTPSA id c16-20020a7bc850000000b003942a244f48sm5240824wml.33.2022.06.01.06.52.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Jun 2022 06:52:55 -0700 (PDT)
-Message-ID: <ab42ca92-70e3-ec82-c52c-0fc41d5b4a53@gmail.com>
-Date:   Wed, 1 Jun 2022 15:52:53 +0200
+        Wed, 1 Jun 2022 09:53:56 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B5C98720D;
+        Wed,  1 Jun 2022 06:53:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 6498ECE1A23;
+        Wed,  1 Jun 2022 13:53:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C61BEC36AFA;
+        Wed,  1 Jun 2022 13:52:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654091579;
+        bh=XHRtkpxftbgTm/PySu+8nLF6MiAvmFtE9vRGXyrzS1U=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=f5iZHf3TmnEikXpwKRla9dJvun4l6Du+YRDk25JVoqq9W7Dq1L0MRL/kUivX0y6hF
+         MtP9rBBopz9Czr8J0J3GcwHfXnAp0DVoxI9WHARGyieLGRWDmuO052t7k+cnGXyLra
+         ydPi7bxSXvT+29/rdmxghCPedOO2taHm8iKefTMdOMWxd5FVUIsiSFm5IzaOmJREgi
+         2vMrJHrTz2GjD4t9RNT1Ex9mv6sd//KO6mN4YSS865KEaGzSPY541YvhkOEvm/sfPV
+         /WhLaLugAiC4L03TBPTyl2TQUYorpz1CoZmYwJY3w2aCDNGaFXcjlUqkHlrdWT6gpy
+         1F3IupYKsTsow==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Janusz Krzysztofik <jmkrzyszt@gmail.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>,
+        paul@pwsan.com, aaro.koskinen@iki.fi, linux@armlinux.org.uk,
+        linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.18 18/49] ARM: OMAP1: clock: Fix UART rate reporting algorithm
+Date:   Wed,  1 Jun 2022 09:51:42 -0400
+Message-Id: <20220601135214.2002647-18-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220601135214.2002647-1-sashal@kernel.org>
+References: <20220601135214.2002647-1-sashal@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [Linaro-mm-sig] Re: [PATCH] dma-fence: allow dma fence to have
- their own lock
-Content-Language: en-US
-To:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Gustavo Padovan <gustavo@padovan.org>,
-        Tomasz Figa <tfiga@chromium.org>,
-        Ricardo Ribalda <ribalda@chromium.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org
-References: <20220530142232.2871634-1-senozhatsky@chromium.org>
- <7eee4274-bd69-df8d-9067-771366217804@amd.com> <YpWCvniLzJfcp684@google.com>
- <33aba213-b6ad-4a15-9272-c62f5dfb1fb7@gmail.com>
- <YpdoEzLmlBfJks3q@phenom.ffwll.local>
-From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <ckoenig.leichtzumerken@gmail.com>
-In-Reply-To: <YpdoEzLmlBfJks3q@phenom.ffwll.local>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 01.06.22 um 15:22 schrieb Daniel Vetter:
-> On Wed, Jun 01, 2022 at 02:45:42PM +0200, Christian König wrote:
->> Am 31.05.22 um 04:51 schrieb Sergey Senozhatsky:
->>> On (22/05/30 16:55), Christian König wrote:
->>>> Am 30.05.22 um 16:22 schrieb Sergey Senozhatsky:
->>>>> [SNIP]
->>>>> So the `lock` should have at least same lifespan as the DMA fence
->>>>> that borrows it, which is impossible to guarantee in our case.
->>>> Nope, that's not correct. The lock should have at least same lifespan as the
->>>> context of the DMA fence.
->>> How does one know when it's safe to release the context? DMA fence
->>> objects are still transparently refcount-ed and "live their own lives",
->>> how does one synchronize lifespans?
->> Well, you don't.
->>
->> If you have a dynamic context structure you need to reference count that as
->> well. In other words every time you create a fence in your context you need
->> to increment the reference count and every time a fence is release you
->> decrement it.
->>
->> If you have a static context structure like most drivers have then you must
->> make sure that all fences at least signal before you unload your driver. We
->> still somewhat have a race when you try to unload a driver and the fence_ops
->> structure suddenly disappear, but we currently live with that.
->>
->> Apart from that you are right, fences can live forever and we need to deal
->> with that.
-> Yeah this entire thing is a bit an "oops we might have screwed up" moment.
-> I think the cleanest way is to essentially do what the drm/sched codes
-> does, which is split the gpu job into the public dma_fence (which can live
-> forever) and the internal job fence (which has to deal with all the
-> resource refcounting issues). And then make sure that only ever the public
-> fence escapes to places where the fence can live forever (dma_resv,
-> drm_syncobj, sync_file as our uapi container objects are the prominent
-> cases really).
->
-> It sucks a bit.
+From: Janusz Krzysztofik <jmkrzyszt@gmail.com>
 
-It's actually not that bad.
+[ Upstream commit 338d5d476cde853dfd97378d20496baabc2ce3c0 ]
 
-See after signaling the dma_fence_ops is mostly used for debugging I 
-think, e.g. timeline name etc...
+Since its introduction to the mainline kernel, omap1_uart_recalc() helper
+makes incorrect use of clk->enable_bit as a ready to use bitmap mask while
+it only provides the bit number.  Fix it.
 
-Christian.
+Signed-off-by: Janusz Krzysztofik <jmkrzyszt@gmail.com>
+Acked-by: Tony Lindgren <tony@atomide.com>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/arm/mach-omap1/clock.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> -Daniel
+diff --git a/arch/arm/mach-omap1/clock.c b/arch/arm/mach-omap1/clock.c
+index 9d4a0ab50a46..d63d5eb8d8fd 100644
+--- a/arch/arm/mach-omap1/clock.c
++++ b/arch/arm/mach-omap1/clock.c
+@@ -41,7 +41,7 @@ static DEFINE_SPINLOCK(clockfw_lock);
+ unsigned long omap1_uart_recalc(struct clk *clk)
+ {
+ 	unsigned int val = __raw_readl(clk->enable_reg);
+-	return val & clk->enable_bit ? 48000000 : 12000000;
++	return val & 1 << clk->enable_bit ? 48000000 : 12000000;
+ }
+ 
+ unsigned long omap1_sossi_recalc(struct clk *clk)
+-- 
+2.35.1
 
