@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6A9FCCA468
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:12:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3405CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:12:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355201AbiFAOMB (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:12:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49688 "EHLO
+        id S243113AbiFAOMJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 10:12:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354450AbiFAOGn (ORCPT
+        with ESMTP id S1355838AbiFAOG3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:06:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65866B82C8;
-        Wed,  1 Jun 2022 07:00:11 -0700 (PDT)
+        Wed, 1 Jun 2022 10:06:29 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C3A3BA9A8;
+        Wed,  1 Jun 2022 07:00:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 47EC6B8175B;
-        Wed,  1 Jun 2022 14:00:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12C88C3411D;
-        Wed,  1 Jun 2022 14:00:06 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id D1CD2CE1A20;
+        Wed,  1 Jun 2022 13:59:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 636F8C385A5;
+        Wed,  1 Jun 2022 13:59:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654092008;
-        bh=zlr3C4xgJD135dQdTWBXK1U0qwJZQAP7U25NcO+I5cQ=;
+        s=k20201202; t=1654091987;
+        bh=BaKhQqgyfbfjuRLsJf8naFAGGNIsWBbdAWduy+Wsrg0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lV3GW+PZvSSD2WpKGQDD6OXnzDrapPpyeOjrn8YW0LBXKpvwc9q4RbJ5JWutwzEza
-         rjejyWL9mRbwlk+Jv2SyS1jBBVQshXXnOu654QWwUg5j7o7blAeE/F2/qS6DQ6jXBo
-         sdXnSIRmD7j1B32HRu9EYHOpjYK3CBDTQ9D0cIjJD0cKPiXKspVXuuQrjaNCR9faTi
-         x9tpkY/PVYqYI3yMVrGI1Iqicu+7mhzn3wcJxRAzKi4INr/yJeyxFcCOa7tqtqY259
-         0AY7kKpRurklGnCJeCBs158f6QLWz19100d6Ago+FudBfXnr5OXGtPKye3UFTzVwFt
-         WwQg2dc6OOTwg==
+        b=V0al70kT0VcDAZnjEwJt4pLZE18aX5hHhB59S+4bxNj/h+CaL9YWahHM1YRgQFDre
+         Oq7Slevxte1LNoaLQouM5pgOrxzOQMXtY33Rh+F5LnQaM38c/vdy9bXZ5Dsy4/Cg5z
+         ffrYxg5OYVu0OtMdMj71mDGKHTnYJ/vBe89nXuRiz/U13lgml3z7g5MuHwdPKSkF6x
+         7y2FODfy/IlIs4oSZ8RPn1Cmk+P1N6wonJC7UwLwjIffm+xo36gdLl6GtrySEh0ByB
+         0GPdjOyadfR6LM/IjSBjuR+3+v+MZJOBRg2o2l/RejpEhnjFVve5HwttkJooqdAVbN
+         kfh1Ol/+CX5Ng==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Peng Wu <wupeng58@huawei.com>, Wei Xu <xuwei5@hisilicon.com>,
-        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.19 09/15] ARM: hisi: Add missing of_node_put after of_find_compatible_node
-Date:   Wed,  1 Jun 2022 09:59:44 -0400
-Message-Id: <20220601135951.2005085-9-sashal@kernel.org>
+Cc:     Peng Wu <wupeng58@huawei.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>, nick.child@ibm.com,
+        christophe.leroy@csgroup.eu, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH AUTOSEL 5.4 18/20] powerpc/iommu: Add missing of_node_put in iommu_init_early_dart
+Date:   Wed,  1 Jun 2022 09:59:00 -0400
+Message-Id: <20220601135902.2004823-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220601135951.2005085-1-sashal@kernel.org>
-References: <20220601135951.2005085-1-sashal@kernel.org>
+In-Reply-To: <20220601135902.2004823-1-sashal@kernel.org>
+References: <20220601135902.2004823-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,48 +54,45 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peng Wu <wupeng58@huawei.com>
 
-[ Upstream commit 9bc72e47d4630d58a840a66a869c56b29554cfe4 ]
+[ Upstream commit 57b742a5b8945118022973e6416b71351df512fb ]
 
-of_find_compatible_node  will increment the refcount of the returned
-device_node. Calling of_node_put() to avoid the refcount leak
+The device_node pointer is returned by of_find_compatible_node
+with refcount incremented. We should use of_node_put() to avoid
+the refcount leak.
 
 Signed-off-by: Peng Wu <wupeng58@huawei.com>
-Signed-off-by: Wei Xu <xuwei5@hisilicon.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220425081245.21705-1-wupeng58@huawei.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-hisi/platsmp.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ arch/powerpc/sysdev/dart_iommu.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/mach-hisi/platsmp.c b/arch/arm/mach-hisi/platsmp.c
-index da5689ababf7..d7fbfb6d293d 100644
---- a/arch/arm/mach-hisi/platsmp.c
-+++ b/arch/arm/mach-hisi/platsmp.c
-@@ -70,14 +70,17 @@ static void __init hi3xxx_smp_prepare_cpus(unsigned int max_cpus)
- 		}
- 		ctrl_base = of_iomap(np, 0);
- 		if (!ctrl_base) {
-+			of_node_put(np);
- 			pr_err("failed to map address\n");
- 			return;
- 		}
- 		if (of_property_read_u32(np, "smp-offset", &offset) < 0) {
-+			of_node_put(np);
- 			pr_err("failed to find smp-offset property\n");
- 			return;
- 		}
- 		ctrl_base += offset;
-+		of_node_put(np);
+diff --git a/arch/powerpc/sysdev/dart_iommu.c b/arch/powerpc/sysdev/dart_iommu.c
+index 6b4a34b36d98..8ff9bcfe4b8d 100644
+--- a/arch/powerpc/sysdev/dart_iommu.c
++++ b/arch/powerpc/sysdev/dart_iommu.c
+@@ -403,9 +403,10 @@ void __init iommu_init_early_dart(struct pci_controller_ops *controller_ops)
  	}
+ 
+ 	/* Initialize the DART HW */
+-	if (dart_init(dn) != 0)
++	if (dart_init(dn) != 0) {
++		of_node_put(dn);
+ 		return;
+-
++	}
+ 	/*
+ 	 * U4 supports a DART bypass, we use it for 64-bit capable devices to
+ 	 * improve performance.  However, that only works for devices connected
+@@ -418,6 +419,7 @@ void __init iommu_init_early_dart(struct pci_controller_ops *controller_ops)
+ 
+ 	/* Setup pci_dma ops */
+ 	set_pci_dma_ops(&dma_iommu_ops);
++	of_node_put(dn);
  }
  
-@@ -163,6 +166,7 @@ static int hip01_boot_secondary(unsigned int cpu, struct task_struct *idle)
- 	if (WARN_ON(!node))
- 		return -1;
- 	ctrl_base = of_iomap(node, 0);
-+	of_node_put(node);
- 
- 	/* set the secondary core boot from DDR */
- 	remap_reg_value = readl_relaxed(ctrl_base + REG_SC_CTRL);
+ #ifdef CONFIG_PM
 -- 
 2.35.1
 
