@@ -2,291 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 524DAC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 20:45:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4362C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 20:45:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229965AbiFAUpu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 16:45:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39546 "EHLO
+        id S229608AbiFAUpy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 16:45:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229655AbiFAUpM (ORCPT
+        with ESMTP id S229637AbiFAUpR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 16:45:12 -0400
-Received: from smtp.smtpout.orange.fr (smtp06.smtpout.orange.fr [80.12.242.128])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEE3023B733
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 13:30:12 -0700 (PDT)
-Received: from [192.168.1.18] ([90.11.190.129])
-        by smtp.orange.fr with ESMTPA
-        id wUyenfSGZP8ApwUyeno3EU; Wed, 01 Jun 2022 22:30:10 +0200
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Wed, 01 Jun 2022 22:30:10 +0200
-X-ME-IP: 90.11.190.129
-Message-ID: <56f0c3cb-c17f-6bc1-f621-09e0c2e5e62f@wanadoo.fr>
-Date:   Wed, 1 Jun 2022 22:30:00 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 5/5] crypto: aspeed: add HACE crypto driver
-Content-Language: fr
-To:     Neal Liu <neal_liu@aspeedtech.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S . Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Johnny Huang <johnny_huang@aspeedtech.com>
-Cc:     linux-aspeed@lists.ozlabs.org, linux-crypto@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-References: <20220601054204.1522976-1-neal_liu@aspeedtech.com>
- <20220601054204.1522976-6-neal_liu@aspeedtech.com>
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <20220601054204.1522976-6-neal_liu@aspeedtech.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        Wed, 1 Jun 2022 16:45:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CA821203F7;
+        Wed,  1 Jun 2022 13:31:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A011DB81C4B;
+        Wed,  1 Jun 2022 19:34:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 2D86CC385A5;
+        Wed,  1 Jun 2022 19:34:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654112083;
+        bh=R/eV2ESj5TDDvndftPdRemnhTK/jSqQR+Fabf7jBK/E=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=Xg7DmQUsEU4JP/Pt5W8H8j7WmzRjKP80FV3/b0IQWc9YMIFzKSUrOU4kLfEgv/eKj
+         EMT8vkBis7Nov3rzv4yz4fizJRdBPCQE0rlmkHy0GXK/2PavlXnsRpnxlTlrCjmNig
+         C6/xi8aRRftfF/RbP8DL8NFLFeuuUkwjiAUNOsc/SCYoKfGLgw0Kk5baCP/lbb5kAe
+         O5Y6Mc2ihwLZMaslzHsMXNsP1YzXDUE5wiuwfLoiCktT62ouo7iMW6GbnR/nd8hwS7
+         EEFVXslSSje+BFK5/zMLhe0FSgFBKK19F7pWw8rx2J2gm2lAz3Bbae/4vXbtW5/2bf
+         yA+irNDhsYgJw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1B343F03944;
+        Wed,  1 Jun 2022 19:34:43 +0000 (UTC)
+Subject: Re: [GIT PULL] ksmbd server fixes
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <CAH2r5ms4eeQy-2bu_5BxFAW=GUR7T4VWM9khi7F0Hc-RSb8Uew@mail.gmail.com>
+References: <CAH2r5ms4eeQy-2bu_5BxFAW=GUR7T4VWM9khi7F0Hc-RSb8Uew@mail.gmail.com>
+X-PR-Tracked-List-Id: <linux-cifs.vger.kernel.org>
+X-PR-Tracked-Message-Id: <CAH2r5ms4eeQy-2bu_5BxFAW=GUR7T4VWM9khi7F0Hc-RSb8Uew@mail.gmail.com>
+X-PR-Tracked-Remote: git://git.samba.org/ksmbd.git tags/5.19-rc-ksmbd-server-fixes
+X-PR-Tracked-Commit-Id: 621433b7e25d6d42e5f75bd8c4a62d6c7251511b
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: e5b0208713326cdd3f0a83540e31f9b6f280da38
+Message-Id: <165411208308.25874.13836131531452728780.pr-tracker-bot@kernel.org>
+Date:   Wed, 01 Jun 2022 19:34:43 +0000
+To:     Steve French <smfrench@gmail.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Namjae Jeon <linkinjeon@kernel.org>,
+        CIFS <linux-cifs@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le 01/06/2022 à 07:42, Neal Liu a écrit :
- > Add HACE crypto driver to support symmetric-key
- > encryption and decryption with multiple modes of
- > operation.
- >
- > Signed-off-by: Neal Liu <neal_liu@aspeedtech.com>
- > Signed-off-by: Johnny Huang <johnny_huang@aspeedtech.com>
- > ---
- >   drivers/crypto/aspeed/Kconfig              |   16 +
- >   drivers/crypto/aspeed/Makefile             |    2 +
- >   drivers/crypto/aspeed/aspeed-hace-crypto.c | 1019 ++++++++++++++++++++
- >   drivers/crypto/aspeed/aspeed-hace.c        |  101 +-
- >   drivers/crypto/aspeed/aspeed-hace.h        |  107 ++
- >   5 files changed, 1242 insertions(+), 3 deletions(-)
- >   create mode 100644 drivers/crypto/aspeed/aspeed-hace-crypto.c
- >
- > diff --git a/drivers/crypto/aspeed/Kconfig 
-b/drivers/crypto/aspeed/Kconfig
- > index 17b800286a51..5e4d18288bf1 100644
-[...]
+The pull request you sent on Wed, 1 Jun 2022 01:20:28 -0500:
 
- > +int aspeed_register_hace_crypto_algs(struct aspeed_hace_dev *hace_dev)
- > +{
- > +	int rc, i;
- > +
- > +	for (i = 0; i < ARRAY_SIZE(aspeed_crypto_algs); i++) {
- > +		aspeed_crypto_algs[i].hace_dev = hace_dev;
- > +		rc = crypto_register_skcipher(&aspeed_crypto_algs[i].alg.skcipher);
- > +		if (rc)
- > +			return rc;
- > +	}
- > +
- > +	if (hace_dev->version == AST2600_VERSION) {
- > +		for (i = 0; i < ARRAY_SIZE(aspeed_crypto_algs_g6); i++) {
- > +			aspeed_crypto_algs_g6[i].hace_dev = hace_dev;
- > +			rc = crypto_register_skcipher(
- > +				&aspeed_crypto_algs_g6[i].alg.skcipher);
- > +			if (rc)
- > +				return rc;
- > +		}
- > +	}
-Should there be some kind of error handling here, in order to undo 
-things already done if an error occures?
+> git://git.samba.org/ksmbd.git tags/5.19-rc-ksmbd-server-fixes
 
- > +
- > +	return 0;
- > +}
- > diff --git a/drivers/crypto/aspeed/aspeed-hace.c 
-b/drivers/crypto/aspeed/aspeed-hace.c
- > index f25b13d120e8..f7f90c230843 100644
- > --- a/drivers/crypto/aspeed/aspeed-hace.c
- > +++ b/drivers/crypto/aspeed/aspeed-hace.c
- > @@ -40,10 +40,30 @@ void __weak 
-aspeed_unregister_hace_hash_algs(struct aspeed_hace_dev *hace_dev)
- >   	pr_warn("%s: Not supported yet\n", __func__);
- >   }
- >
- > +/* Weak function for HACE crypto */
- > +int __weak aspeed_hace_crypto_handle_queue(struct aspeed_hace_dev 
-*hace_dev,
- > +					   struct crypto_async_request *new_areq)
- > +{
- > +	pr_warn("%s: Not supported yet\n", __func__);
- > +	return -EINVAL;
- > +}
- > +
- > +int __weak aspeed_register_hace_crypto_algs(struct aspeed_hace_dev 
-*hace_dev)
- > +{
- > +	pr_warn("%s: Not supported yet\n", __func__);
- > +	return -EINVAL;
- > +}
- > +
- > +void __weak aspeed_unregister_hace_crypto_algs(struct 
-aspeed_hace_dev *hace_dev)
- > +{
- > +	pr_warn("%s: Not supported yet\n", __func__);
- > +}
- > +
- >   /* HACE interrupt service routine */
- >   static irqreturn_t aspeed_hace_irq(int irq, void *dev)
- >   {
- >   	struct aspeed_hace_dev *hace_dev = (struct aspeed_hace_dev *)dev;
- > +	struct aspeed_engine_crypto *crypto_engine = &hace_dev->crypto_engine;
- >   	struct aspeed_engine_hash *hash_engine = &hace_dev->hash_engine;
- >   	u32 sts;
- >
- > @@ -56,12 +76,36 @@ static irqreturn_t aspeed_hace_irq(int irq, void 
-*dev)
- >   		if (hash_engine->flags & CRYPTO_FLAGS_BUSY)
- >   			tasklet_schedule(&hash_engine->done_task);
- >   		else
- > -			dev_warn(hace_dev->dev, "no active requests.\n");
- > +			dev_warn(hace_dev->dev, "HASH no active requests.\n");
-To reduce diff, maybe this could already be part of patch 1/5?
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/e5b0208713326cdd3f0a83540e31f9b6f280da38
 
- > +	}
- > +
- > +	if (sts & HACE_CRYPTO_ISR) {
- > +		if (crypto_engine->flags & CRYPTO_FLAGS_BUSY)
- > +			tasklet_schedule(&crypto_engine->done_task);
- > +		else
- > +			dev_warn(hace_dev->dev, "CRYPTO no active requests.\n");
- >   	}
- >
- >   	return IRQ_HANDLED;
- >   }
- >
- > +static void aspeed_hace_cryptro_done_task(unsigned long data)
- > +{
- > +	struct aspeed_hace_dev *hace_dev = (struct aspeed_hace_dev *)data;
- > +	struct aspeed_engine_crypto *crypto_engine;
- > +
- > +	crypto_engine = &hace_dev->crypto_engine;
- > +	crypto_engine->is_async = true;
- > +	crypto_engine->resume(hace_dev);
- > +}
- > +
- > +static void aspeed_hace_crypto_queue_task(unsigned long data)
- > +{
- > +	struct aspeed_hace_dev *hace_dev = (struct aspeed_hace_dev *)data;
- > +
- > +	aspeed_hace_crypto_handle_queue(hace_dev, NULL);
- > +}
- > +
- >   static void aspeed_hace_hash_done_task(unsigned long data)
- >   {
- >   	struct aspeed_hace_dev *hace_dev = (struct aspeed_hace_dev *)data;
- > @@ -79,12 +123,27 @@ static void aspeed_hace_hash_queue_task(unsigned 
-long data)
- >
- >   static int aspeed_hace_register(struct aspeed_hace_dev *hace_dev)
- >   {
- > -	return aspeed_register_hace_hash_algs(hace_dev);
- > +	int rc1, rc2;
- > +
- > +	rc1 = aspeed_register_hace_hash_algs(hace_dev);
- > +	if (rc1) {
- > +		HACE_DBG(hace_dev, "Failed to register hash alg, rc:0x%x\n",
- > +			 rc1);
- > +	}
- > +
- > +	rc2 = aspeed_register_hace_crypto_algs(hace_dev);
- > +	if (rc2) {
- > +		HACE_DBG(hace_dev, "Failed to register crypto alg, rc:0x%x\n",
- > +			 rc2);
- > +	}
- > +
- > +	return rc1 + rc2;
-This looks odd. The error returned could finally be pointless if both 
-rc1 and rc2 are not 0.
+Thank you!
 
- >   }
- >
- >   static void aspeed_hace_unregister(struct aspeed_hace_dev *hace_dev)
- >   {
- >   	aspeed_unregister_hace_hash_algs(hace_dev);
- > +	aspeed_unregister_hace_crypto_algs(hace_dev);
- >   }
- >
- >   static const struct of_device_id aspeed_hace_of_matches[] = {
- > @@ -95,6 +154,7 @@ static const struct of_device_id 
-aspeed_hace_of_matches[] = {
- >
- >   static int aspeed_hace_probe(struct platform_device *pdev)
- >   {
- > +	struct aspeed_engine_crypto *crypto_engine;
- >   	const struct of_device_id *hace_dev_id;
- >   	struct aspeed_engine_hash *hash_engine;
- >   	struct aspeed_hace_dev *hace_dev;
- > @@ -115,6 +175,7 @@ static int aspeed_hace_probe(struct 
-platform_device *pdev)
- >   	hace_dev->dev = &pdev->dev;
- >   	hace_dev->version = (unsigned long)hace_dev_id->data;
- >   	hash_engine = &hace_dev->hash_engine;
- > +	crypto_engine = &hace_dev->crypto_engine;
- >
- >   	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- >
- > @@ -127,6 +188,13 @@ static int aspeed_hace_probe(struct 
-platform_device *pdev)
- >   		     (unsigned long)hace_dev);
- >   	crypto_init_queue(&hash_engine->queue, ASPEED_HASH_QUEUE_LENGTH);
- >
- > +	spin_lock_init(&crypto_engine->lock);
- > +	tasklet_init(&crypto_engine->done_task, aspeed_hace_cryptro_done_task,
- > +		     (unsigned long)hace_dev);
- > +	tasklet_init(&crypto_engine->queue_task, aspeed_hace_crypto_queue_task,
- > +		     (unsigned long)hace_dev);
- > +	crypto_init_queue(&crypto_engine->queue, ASPEED_HASH_QUEUE_LENGTH);
- > +
- >   	hace_dev->regs = devm_ioremap_resource(&pdev->dev, res);
- >   	if (!hace_dev->regs) {
- >   		dev_err(&pdev->dev, "Failed to map resources\n");
- > @@ -168,9 +236,36 @@ static int aspeed_hace_probe(struct 
-platform_device *pdev)
- >   		return -ENOMEM;
- >   	}
- >
- > +	crypto_engine->cipher_ctx =
- > +		dma_alloc_coherent(&pdev->dev,
- > +				   PAGE_SIZE,
- > +				   &crypto_engine->cipher_ctx_dma,
- > +				   GFP_KERNEL);
-Should all these dma_alloc_coherent() be undone in the error handling 
-path of the probe and in the .rmove function?
-If applicable, maybe dmam_alloc_coherent() would ease? realeasing of 
-resources?
-
- > +	crypto_engine->cipher_addr =
- > +		dma_alloc_coherent(&pdev->dev,
- > +				   ASPEED_CRYPTO_SRC_DMA_BUF_LEN,
- > +				   &crypto_engine->cipher_dma_addr,
- > +				   GFP_KERNEL);
- > +	if (!crypto_engine->cipher_ctx || !crypto_engine->cipher_addr) {
- > +		dev_err(&pdev->dev, "Failed to allocate cipher dma\n");
- > +		return -ENOMEM;
- > +	}
- > +
- > +	if (hace_dev->version == AST2600_VERSION) {
- > +		crypto_engine->dst_sg_addr =
- > +			dma_alloc_coherent(&pdev->dev,
- > +					   ASPEED_CRYPTO_DST_DMA_BUF_LEN,
- > +					   &crypto_engine->dst_sg_dma_addr,
- > +					   GFP_KERNEL);
- > +		if (!crypto_engine->dst_sg_addr) {
- > +			dev_err(&pdev->dev, "Failed to allocate dst_sg dma\n");
- > +			return -ENOMEM;
- > +		}
- > +	}
- > +
- >   	rc = aspeed_hace_register(hace_dev);
- >   	if (rc) {
- > -		dev_err(&pdev->dev, "Failed to register hash alg, rc:0x%x\n", rc);
- > +		dev_err(&pdev->dev, "Failed to register algs, rc:0x%x\n", rc);
-To reduce diff, maybe this could already be part of patch 1/5?
-
- >   		rc = 0;
- >   	}
- >   [...]
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
