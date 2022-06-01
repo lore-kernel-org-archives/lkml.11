@@ -2,117 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F137C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 11:30:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5B63C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 11:30:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352738AbiFALaR (ORCPT
+        id S1352769AbiFALa2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 07:30:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33414 "EHLO
+        Wed, 1 Jun 2022 07:30:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351526AbiFALaO (ORCPT
+        with ESMTP id S1351526AbiFALaZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 07:30:14 -0400
-Received: from mailbox.box.xen0n.name (mail.xen0n.name [115.28.160.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDBD16FA02;
-        Wed,  1 Jun 2022 04:30:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xen0n.name; s=mail;
-        t=1654083010; bh=c3qS0n8n88+tT/EbA//3xsAM4TxufqzUUQRbFEJfV+w=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=EywJLnYe7A8R/LTmgK3yGO7e6PNUeSyCjGLs1zzawBDPsZMKW/8UH5ABYC91HPm6h
-         IpcFYqkr/Qr2DnAv99qf6UVCE3CBdZuKWPtweb5POzDav/njGFp0wWL0czl7CQ9RLo
-         qDSDMdommChrpsrNhpJL4PZGLt1I2wjki+xbPPME=
-Received: from [192.168.9.172] (unknown [101.88.28.48])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by mailbox.box.xen0n.name (Postfix) with ESMTPSA id 69B7B60104;
-        Wed,  1 Jun 2022 19:30:10 +0800 (CST)
-Message-ID: <fe537ea1-01a0-d963-ec8b-f73788e049b3@xen0n.name>
-Date:   Wed, 1 Jun 2022 19:30:10 +0800
+        Wed, 1 Jun 2022 07:30:25 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 697BF6FA1F;
+        Wed,  1 Jun 2022 04:30:19 -0700 (PDT)
+Received: from kwepemi100017.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LCn3q1lX4zjXGk;
+        Wed,  1 Jun 2022 19:29:27 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ kwepemi100017.china.huawei.com (7.221.188.163) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 1 Jun 2022 19:30:17 +0800
+Received: from huawei.com (10.175.127.227) by kwepemm600009.china.huawei.com
+ (7.193.23.164) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 1 Jun
+ 2022 19:30:16 +0800
+From:   Yu Kuai <yukuai3@huawei.com>
+To:     <paolo.valente@linaro.org>, <jack@suse.cz>, <tj@kernel.org>,
+        <axboe@kernel.dk>
+CC:     <cgroups@vger.kernel.org>, <linux-block@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <yukuai3@huawei.com>,
+        <yi.zhang@huawei.com>
+Subject: [PATCH -next v9 1/4] block, bfq: support to track if bfqq has pending requests
+Date:   Wed, 1 Jun 2022 19:43:37 +0800
+Message-ID: <20220601114340.949953-2-yukuai3@huawei.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220601114340.949953-1-yukuai3@huawei.com>
+References: <20220601114340.949953-1-yukuai3@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:103.0) Gecko/20100101
- Thunderbird/103.0a1
-Subject: Re: [PATCH V12 00/24] arch: Add basic LoongArch support
-Content-Language: en-US
-To:     Huacai Chen <chenhuacai@loongson.cn>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Airlie <airlied@linux.ie>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-arch@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Huacai Chen <chenhuacai@gmail.com>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Eric Biederman <ebiederm@xmission.com>,
-        Ard Biesheuvel <ardb@kernel.org>
-References: <20220601100005.2989022-1-chenhuacai@loongson.cn>
-From:   WANG Xuerui <kernel@xen0n.name>
-In-Reply-To: <20220601100005.2989022-1-chenhuacai@loongson.cn>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/1/22 17:59, Huacai Chen wrote:
-> <snip>
->
-> Huacai Chen(24):
->   irqchip: Adjust Kconfig for Loongson.
->   irqchip/loongson-liointc: Fix build error for LoongArch.
->   Documentation: LoongArch: Add basic documentations.
->   Documentation/zh_CN: Add basic LoongArch documentations.
->   LoongArch: Add elf-related definitions.
->   LoongArch: Add writecombine support for drm.
->   LoongArch: Add build infrastructure.
->   LoongArch: Add CPU definition headers.
->   LoongArch: Add atomic/locking headers.
->   LoongArch: Add other common headers.
->   LoongArch: Add boot and setup routines.
->   LoongArch: Add exception/interrupt handling.
->   LoongArch: Add process management.
->   LoongArch: Add memory management.
->   LoongArch: Add system call support.
->   LoongArch: Add signal handling support.
->   LoongArch: Add elf and module support.
->   LoongArch: Add misc common routines.
->   LoongArch: Add some library functions.
->   LoongArch: Add PCI controller support.
->   LoongArch: Add VDSO and VSYSCALL support.
->   LoongArch: Add multi-processor (SMP) support.
->   LoongArch: Add Non-Uniform Memory Access (NUMA) support.
->   LoongArch: Add Loongson-3 default config file.
->
-> Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
+If entity belongs to bfqq, then entity->in_groups_with_pending_reqs
+is not used currently. This patch use it to track if bfqq has pending
+requests through callers of weights_tree insertion and removal.
 
-I have gone through every of these patches, and they now all look good 
-to me. Thanks for all the revisions and cooperation!
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+---
+ block/bfq-iosched.c |  1 +
+ block/bfq-iosched.h |  2 ++
+ block/bfq-wf2q.c    | 24 ++++++++++++++++++++++--
+ 3 files changed, 25 insertions(+), 2 deletions(-)
 
-I remember several more people have left comments on the v11 code; Eric 
-commented on the signal handling bits and Ard may have something to say 
-on the UEFI part. The first two cleanup patches to irqchip are 
-previously sent in a separate series, and they are already trivial 
-enough, but Marc may want to give the ack here too, for the patches to 
-go in via the asm-generic tree.
-
-At this time, although the port currently cannot work on any real 
-hardware, the value is mostly for unblocking downstream development 
-starting from the libc's, as the userspace ABI has been stable for 
-several months already and there's probably no point in delaying even 
-further. I've been working on the Gentoo/LoongArch port since August 
-2021 and experienced every ABI break since then, so I probably know 
-enough to make this statement.
-
-I think, with the userspace ABI effectively stable already, and other 
-implementation details available for continued improvement, we could 
-make it into this merge window after all. People, please take a final 
-quick look at this; your opinions and/or review and acks are appreciated.
+diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
+index 0d46cb728bbf..0ec21018daba 100644
+--- a/block/bfq-iosched.c
++++ b/block/bfq-iosched.c
+@@ -6263,6 +6263,7 @@ static void bfq_completed_request(struct bfq_queue *bfqq, struct bfq_data *bfqd)
+ 		 */
+ 		bfqq->budget_timeout = jiffies;
+ 
++		bfq_del_bfqq_in_groups_with_pending_reqs(bfqq);
+ 		bfq_weights_tree_remove(bfqd, bfqq);
+ 	}
+ 
+diff --git a/block/bfq-iosched.h b/block/bfq-iosched.h
+index ca8177d7bf7c..69c7d15417e5 100644
+--- a/block/bfq-iosched.h
++++ b/block/bfq-iosched.h
+@@ -1080,6 +1080,8 @@ void bfq_requeue_bfqq(struct bfq_data *bfqd, struct bfq_queue *bfqq,
+ void bfq_del_bfqq_busy(struct bfq_data *bfqd, struct bfq_queue *bfqq,
+ 		       bool expiration);
+ void bfq_add_bfqq_busy(struct bfq_data *bfqd, struct bfq_queue *bfqq);
++void bfq_add_bfqq_in_groups_with_pending_reqs(struct bfq_queue *bfqq);
++void bfq_del_bfqq_in_groups_with_pending_reqs(struct bfq_queue *bfqq);
+ 
+ /* --------------- end of interface of B-WF2Q+ ---------------- */
+ 
+diff --git a/block/bfq-wf2q.c b/block/bfq-wf2q.c
+index f8eb340381cf..5704a0315cf2 100644
+--- a/block/bfq-wf2q.c
++++ b/block/bfq-wf2q.c
+@@ -1647,6 +1647,22 @@ void bfq_requeue_bfqq(struct bfq_data *bfqd, struct bfq_queue *bfqq,
+ 				    bfqq == bfqd->in_service_queue, expiration);
+ }
+ 
++void bfq_add_bfqq_in_groups_with_pending_reqs(struct bfq_queue *bfqq)
++{
++	struct bfq_entity *entity = &bfqq->entity;
++
++	if (!entity->in_groups_with_pending_reqs)
++		entity->in_groups_with_pending_reqs = true;
++}
++
++void bfq_del_bfqq_in_groups_with_pending_reqs(struct bfq_queue *bfqq)
++{
++	struct bfq_entity *entity = &bfqq->entity;
++
++	if (entity->in_groups_with_pending_reqs)
++		entity->in_groups_with_pending_reqs = false;
++}
++
+ /*
+  * Called when the bfqq no longer has requests pending, remove it from
+  * the service tree. As a special case, it can be invoked during an
+@@ -1668,8 +1684,10 @@ void bfq_del_bfqq_busy(struct bfq_data *bfqd, struct bfq_queue *bfqq,
+ 
+ 	bfq_deactivate_bfqq(bfqd, bfqq, true, expiration);
+ 
+-	if (!bfqq->dispatched)
++	if (!bfqq->dispatched) {
++		bfq_del_bfqq_in_groups_with_pending_reqs(bfqq);
+ 		bfq_weights_tree_remove(bfqd, bfqq);
++	}
+ }
+ 
+ /*
+@@ -1684,10 +1702,12 @@ void bfq_add_bfqq_busy(struct bfq_data *bfqd, struct bfq_queue *bfqq)
+ 	bfq_mark_bfqq_busy(bfqq);
+ 	bfqd->busy_queues[bfqq->ioprio_class - 1]++;
+ 
+-	if (!bfqq->dispatched)
++	if (!bfqq->dispatched) {
++		bfq_add_bfqq_in_groups_with_pending_reqs(bfqq);
+ 		if (bfqq->wr_coeff == 1)
+ 			bfq_weights_tree_add(bfqd, bfqq,
+ 					     &bfqd->queue_weights_tree);
++	}
+ 
+ 	if (bfqq->wr_coeff > 1)
+ 		bfqd->wr_busy_queues++;
+-- 
+2.31.1
 
