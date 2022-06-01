@@ -2,183 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D0AAC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 06:10:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80786C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 06:12:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349849AbiFAGK1 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 02:10:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33356 "EHLO
+        id S243740AbiFAGMc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 02:12:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349824AbiFAGKW (ORCPT
+        with ESMTP id S238942AbiFAGMb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 02:10:22 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4E1350E10;
-        Tue, 31 May 2022 23:10:21 -0700 (PDT)
-Received: from kwepemi100008.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LCdxh256MzgYJS;
-        Wed,  1 Jun 2022 14:08:40 +0800 (CST)
-Received: from kwepemm600013.china.huawei.com (7.193.23.68) by
- kwepemi100008.china.huawei.com (7.221.188.57) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 1 Jun 2022 14:10:19 +0800
-Received: from huawei.com (10.175.127.227) by kwepemm600013.china.huawei.com
- (7.193.23.68) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 1 Jun
- 2022 14:10:19 +0800
-From:   Zhihao Cheng <chengzhihao1@huawei.com>
-To:     <ebiederm@xmission.com>
-CC:     <linux-kernel@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>,
-        <chengzhihao1@huawei.com>, <yukuai3@huawei.com>,
-        <yi.zhang@huawei.com>
-Subject: [PATCH v4] proc: Fix a dentry lock race between release_task and lookup
-Date:   Wed, 1 Jun 2022 14:23:32 +0800
-Message-ID: <20220601062332.232439-1-chengzhihao1@huawei.com>
-X-Mailer: git-send-email 2.31.1
-MIME-Version: 1.0
+        Wed, 1 Jun 2022 02:12:31 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4140F554AA
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 23:12:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654063950; x=1685599950;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=ejk+xQ9b0k0wC9j8WfBHQoNfMzyyS5YZ0KCtVf4OBQw=;
+  b=GH5EMaLPQFiM8BNsSkrnQdfqfrjAS76V8CwkAGFg7p1TpMAd9KXeVYsh
+   jKhyCpCrl8yebMrb3RJG+D8GUAGcr0B/AiQYaAuz2mnW+9H6EJBN96JO7
+   DO+32BYeJDd1cR8L+epRnS7IMa1pfyztk4Mwa02sFbk5P05WvQe9AtW4D
+   Bbi5aRb/vTCraLYdlDxB72xNZ5ol7b3Y8Lqx5Yr1aOZdtRuHJSk9BbY4+
+   9NCYC5FmyW+RBzjX8MQWLOhqV5/IVHMXhuI3lSPyHdnqQWQAhA6+rpDa6
+   JUyc1V10uv3UEfb2RZQ7r9wta9zl/xAY3g+HfP9l3+F8l7i9X7j1jWbvo
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10364"; a="255962236"
+X-IronPort-AV: E=Sophos;i="5.91,266,1647327600"; 
+   d="scan'208";a="255962236"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 23:12:29 -0700
+X-IronPort-AV: E=Sophos;i="5.91,266,1647327600"; 
+   d="scan'208";a="606087592"
+Received: from liangqiz-mobl.ccr.corp.intel.com ([10.254.214.157])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 23:12:25 -0700
+Message-ID: <61c47f98b4c0be1d5da5e097779412f9edd70753.camel@intel.com>
+Subject: Re: [PATCH 2/6] mm/vmscan: use node_is_toptier helper in
+ node_reclaim
+From:   Ying Huang <ying.huang@intel.com>
+To:     "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        Davidlohr Bueso <dave@stgolabs.net>, linux-mm@kvack.org,
+        Wei Xu <weixugc@google.com>
+Cc:     mhocko@kernel.org, akpm@linux-foundation.org, rientjes@google.com,
+        yosryahmed@google.com, hannes@cmpxchg.org, shakeelb@google.com,
+        dave.hansen@linux.intel.com, tim.c.chen@linux.intel.com,
+        roman.gushchin@linux.dev, gthelen@google.com,
+        a.manzanares@samsung.com, heekwon.p@samsung.com,
+        gim.jongmin@samsung.com, linux-kernel@vger.kernel.org
+Date:   Wed, 01 Jun 2022 14:12:22 +0800
+In-Reply-To: <87h755dip9.fsf@linux.ibm.com>
+References: <20220416053902.68517-1-dave@stgolabs.net>
+         <20220416053902.68517-3-dave@stgolabs.net> <87h755dip9.fsf@linux.ibm.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.3-1 
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemm600013.china.huawei.com (7.193.23.68)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit 7bc3e6e55acf06 ("proc: Use a list of inodes to flush from proc")
-moved proc_flush_task() behind __exit_signal(). Then, process systemd
-can take long period high cpu usage during releasing task in following
-concurrent processes:
+On Tue, 2022-05-31 at 17:20 +0530, Aneesh Kumar K.V wrote:
+> Davidlohr Bueso <dave@stgolabs.net> writes:
+> 
+> > We have helpers for a reason.
+> > 
+> > Signed-off-by: Davidlohr Bueso <dave@stgolabs.net>
+> > ---
+> >  mm/vmscan.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/mm/vmscan.c b/mm/vmscan.c
+> > index 1678802e03e7..cb583fcbf5bf 100644
+> > --- a/mm/vmscan.c
+> > +++ b/mm/vmscan.c
+> > @@ -4750,7 +4750,7 @@ int node_reclaim(struct pglist_data *pgdat, gfp_t gfp_mask, unsigned int order)
+> >  	 * over remote processors and spread off node memory allocations
+> >  	 * as wide as possible.
+> >  	 */
+> > -	if (node_state(pgdat->node_id, N_CPU) && pgdat->node_id != numa_node_id())
+> > +	if (node_is_toptier(pgdat->node_id) && pgdat->node_id != numa_node_id())
+> >  		return NODE_RECLAIM_NOSCAN;
+> >  
+> > 
+> >  	if (test_and_set_bit(PGDAT_RECLAIM_LOCKED, &pgdat->flags))
+> 
+> 
+> Are we really looking at the top tier in a tiered memory hierarchy here?
+> The comment seems to suggest we are looking at local NUMA node?
 
-  systemd                                 ps
-kernel_waitid                 stat(/proc/tgid)
-  do_wait                       filename_lookup
-    wait_consider_task            lookup_fast
-      release_task
-        __exit_signal
-          __unhash_process
-            detach_pid
-              __change_pid // remove task->pid_links
-                                     d_revalidate -> pid_revalidate  // 0
-                                     d_invalidate(/proc/tgid)
-                                       shrink_dcache_parent(/proc/tgid)
-                                         d_walk(/proc/tgid)
-                                           spin_lock_nested(/proc/tgid/fd)
-                                           // iterating opened fd
-        proc_flush_pid                                    |
-           d_invalidate (/proc/tgid/fd)                   |
-              shrink_dcache_parent(/proc/tgid/fd)         |
-                shrink_dentry_list(subdirs)               ↓
-                  shrink_lock_dentry(/proc/tgid/fd) --> race on dentry lock
+The code change itself is correct.  But it is an implementation details
+that node_is_toptier() == node_state(, N_CPU).  And after we supporting
+more memory tiers (like GPU, HBM), we will change the implementation of
+node_is_toptier() soon.   So I think that it's better to keep the
+original code.
 
-Function d_invalidate() will remove dentry from hash firstly, but why does
-proc_flush_pid() process dentry '/proc/tgid/fd' before dentry '/proc/tgid'?
-That's because proc_pid_make_inode() adds proc inode in reverse order by
-invoking hlist_add_head_rcu(). But proc should not add any inodes under
-'/proc/tgid' except '/proc/tgid/task/pid', fix it by adding inode into
-'pid->inodes' only if the inode is /proc/tgid or /proc/tgid/task/pid.
+Best Regards,
+Huang, Ying
 
-Performance regression:
-Create 200 tasks, each task open one file for 50,000 times. Kill all
-tasks when opened files exceed 10,000,000 (cat /proc/sys/fs/file-nr).
-
-Before fix:
-$ time killall -wq aa
-  real    4m40.946s   # During this period, we can see 'ps' and 'systemd'
-			taking high cpu usage.
-
-After fix:
-$ time killall -wq aa
-  real    1m20.732s   # During this period, we can see 'systemd' taking
-			high cpu usage.
-
-Fixes: 7bc3e6e55acf06 ("proc: Use a list of inodes to flush from proc")
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=216054
-Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
-Signed-off-by: Zhang Yi <yi.zhang@huawei.com>
----
- v1->v2: Add new helper proc_pid_make_base_inode that performs the extra
-	 work of adding to the pid->list.
- v2->v3: Add performance regression in commit message.
- v3->v4: Make proc_pid_make_base_inode() static
- fs/proc/base.c | 34 ++++++++++++++++++++++++++--------
- 1 file changed, 26 insertions(+), 8 deletions(-)
-
-diff --git a/fs/proc/base.c b/fs/proc/base.c
-index c1031843cc6a..d884933950fd 100644
---- a/fs/proc/base.c
-+++ b/fs/proc/base.c
-@@ -1885,7 +1885,7 @@ void proc_pid_evict_inode(struct proc_inode *ei)
- 	put_pid(pid);
- }
- 
--struct inode *proc_pid_make_inode(struct super_block * sb,
-+struct inode *proc_pid_make_inode(struct super_block *sb,
- 				  struct task_struct *task, umode_t mode)
- {
- 	struct inode * inode;
-@@ -1914,11 +1914,6 @@ struct inode *proc_pid_make_inode(struct super_block * sb,
- 
- 	/* Let the pid remember us for quick removal */
- 	ei->pid = pid;
--	if (S_ISDIR(mode)) {
--		spin_lock(&pid->lock);
--		hlist_add_head_rcu(&ei->sibling_inodes, &pid->inodes);
--		spin_unlock(&pid->lock);
--	}
- 
- 	task_dump_owner(task, 0, &inode->i_uid, &inode->i_gid);
- 	security_task_to_inode(task, inode);
-@@ -1931,6 +1926,27 @@ struct inode *proc_pid_make_inode(struct super_block * sb,
- 	return NULL;
- }
- 
-+static struct inode *proc_pid_make_base_inode(struct super_block *sb,
-+				struct task_struct *task, umode_t mode)
-+{
-+	struct inode *inode;
-+	struct proc_inode *ei;
-+	struct pid *pid;
-+
-+	inode = proc_pid_make_inode(sb, task, mode);
-+	if (!inode)
-+		return NULL;
-+
-+	/* Let proc_flush_pid find this directory inode */
-+	ei = PROC_I(inode);
-+	pid = ei->pid;
-+	spin_lock(&pid->lock);
-+	hlist_add_head_rcu(&ei->sibling_inodes, &pid->inodes);
-+	spin_unlock(&pid->lock);
-+
-+	return inode;
-+}
-+
- int pid_getattr(struct user_namespace *mnt_userns, const struct path *path,
- 		struct kstat *stat, u32 request_mask, unsigned int query_flags)
- {
-@@ -3350,7 +3366,8 @@ static struct dentry *proc_pid_instantiate(struct dentry * dentry,
- {
- 	struct inode *inode;
- 
--	inode = proc_pid_make_inode(dentry->d_sb, task, S_IFDIR | S_IRUGO | S_IXUGO);
-+	inode = proc_pid_make_base_inode(dentry->d_sb, task,
-+					 S_IFDIR | S_IRUGO | S_IXUGO);
- 	if (!inode)
- 		return ERR_PTR(-ENOENT);
- 
-@@ -3649,7 +3666,8 @@ static struct dentry *proc_task_instantiate(struct dentry *dentry,
- 	struct task_struct *task, const void *ptr)
- {
- 	struct inode *inode;
--	inode = proc_pid_make_inode(dentry->d_sb, task, S_IFDIR | S_IRUGO | S_IXUGO);
-+	inode = proc_pid_make_base_inode(dentry->d_sb, task,
-+					 S_IFDIR | S_IRUGO | S_IXUGO);
- 	if (!inode)
- 		return ERR_PTR(-ENOENT);
- 
--- 
-2.31.1
 
