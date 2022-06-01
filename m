@@ -2,144 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A3CEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:58:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 768B4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:58:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354060AbiFAN6Z (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 09:58:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59310 "EHLO
+        id S233338AbiFAN6e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 09:58:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353974AbiFAN5W (ORCPT
+        with ESMTP id S1353940AbiFAN5a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 09:57:22 -0400
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FAA435872
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 06:55:10 -0700 (PDT)
-Received: by mail-pg1-x52e.google.com with SMTP id 7so1177532pga.12
-        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 06:55:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:cc:in-reply-to:content-transfer-encoding;
-        bh=PsjGVD7Reui31MSU63J1iKeBMkxXWeZ9AfTgcc/uvGU=;
-        b=EofRlN3aikEIZe7XJgJdxUetgONlsRYqQ+CdJWrpshBMKh/5Sd7EQYaHQWlUsqvvsR
-         MMKRKp3aJwZegCTkrdOaHxbghtM5sMsnw5aIJ+B9per/10MowIfH1O4zr7I1hhmujMai
-         az5Xdd0o5izj69JoVEeRPg5CEVdgr2krgefWbjthsccc1oeHG/zZEE5Lr+VIc3+WkBvZ
-         puocbIQTPL6k1rp7jmEJ8OhdyvEW/xXMYZoecAJ1tn3ALAnfwR4OWukKHEmHmA2mkNfY
-         DxTniy+hqsgtJedVQM4wipaBS+4WnD9c2+HG9CWacHoyiT6hediVsnlA8qcyjL+uZIm0
-         7LAA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:cc:in-reply-to
-         :content-transfer-encoding;
-        bh=PsjGVD7Reui31MSU63J1iKeBMkxXWeZ9AfTgcc/uvGU=;
-        b=P+gZvMtCOd1hcvBLI8LK5CvabtS/32AajsEdFKba7lVE0fpkpDNxzlweP7zoPWqJQX
-         Fgp9T1Jvtf0wOPCwF3+KGtIrVmmVb4uvbWvekh+bM3l3v0fI9z63Ec032yS/ez+gy4+h
-         4dEtoCgryKiwdQszsz2QOVkhnH88oCm/oxDKYkfKJKFMjLgDrhHiX7yei5xa8UdgMc+j
-         M0Xzvsc/Nlx+m+NYvQxGTKkUCGW4pygIvsWFTHGLYTXhmatKw1xCm8VPHf8pY4xFPxzl
-         ggP0X8FZymqreHlLJuzJWT986ZXJ25Xzrhu/GpR8VJAFnKrGkoDjs9DhU3olRqglNOxl
-         gQvw==
-X-Gm-Message-State: AOAM530ShiN0l2xh3izpiCdNefKuxSDoqhCqFcDYW27DUGHDomj59ZjW
-        I427PvMzYpzDXaWaC/pPEhk=
-X-Google-Smtp-Source: ABdhPJx2kdH3EDLTWxxIZsf/SsRb2I8+HWu52bGvOlOTcxSZcRVI+7y/n58AnL2/Lz/6jyUB9+xjYA==
-X-Received: by 2002:a05:6a00:1690:b0:517:cc9e:3e2d with SMTP id k16-20020a056a00169000b00517cc9e3e2dmr46548pfc.0.1654091709025;
-        Wed, 01 Jun 2022 06:55:09 -0700 (PDT)
-Received: from [172.16.4.4] ([219.142.146.177])
-        by smtp.gmail.com with ESMTPSA id c9-20020a631c49000000b003fc600628a7sm1378030pgm.31.2022.06.01.06.55.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Jun 2022 06:55:08 -0700 (PDT)
-Message-ID: <55d99105-8492-e020-bed6-82e52b5fc8a1@gmail.com>
-Date:   Wed, 1 Jun 2022 21:55:02 +0800
+        Wed, 1 Jun 2022 09:57:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3164387A11;
+        Wed,  1 Jun 2022 06:55:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BBE15615BA;
+        Wed,  1 Jun 2022 13:54:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B859C34119;
+        Wed,  1 Jun 2022 13:54:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654091679;
+        bh=3a8gxMHCDSeL/R2EhuktrXzbJmCqXw0BGoZqVqZ6DYA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=A7gS/b5AT++KVGwFJwYxaNBys6yZ5OPrkn7+OmYzo7mK5U3W5HXGrFxPDCnKAz+VU
+         L+TSnPp6zH/t+cD2oo1x+yUry7gIay60n1jWU26kmZMZFhkcM1ZfNN+Jualx7BCFeA
+         OCnkvpmCrycRBAz5MLCxeQcc2QMG67ihMYMpvTap/lB9TFDBIoCVGb8MWIBa4JLWA0
+         bc0NOeXjp/qXVuqXWebMze9gSeGpWZv/TMtUaHiop1HCac2Wsj+WCdSB8DPnt/zLbe
+         b97I7Qgjvy28T1kPz6aoPtON9OsHtIRxisJZYlQ3sSX/x0uoIsoQpaiFMAlmrOFF4U
+         g8j/FKYQNye6A==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Brian Norris <briannorris@chromium.org>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Sasha Levin <sashal@kernel.org>, myungjoo.ham@samsung.com,
+        kyungmin.park@samsung.com, linux-pm@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 09/48] PM / devfreq: rk3399_dmc: Disable edev on remove()
+Date:   Wed,  1 Jun 2022 09:53:42 -0400
+Message-Id: <20220601135421.2003328-9-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220601135421.2003328-1-sashal@kernel.org>
+References: <20220601135421.2003328-1-sashal@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v3] drm/v3d/v3d_drv: Fix PM disable depth imbalance
-Content-Language: en-US
-To:     Emma Anholt <emma@anholt.net>, David Airlie <airlied@linux.ie>,
-        Eric Anholt <eric@anholt.net>, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-References: <20220601122050.1822-1-linmq006@gmail.com>
- <YpdpCWW9+igsVydr@phenom.ffwll.local>
-From:   Miaoqian Lin <linmq006@gmail.com>
-Cc:     Miaoqian Lin <linmq006@gmail.com>
-In-Reply-To: <YpdpCWW9+igsVydr@phenom.ffwll.local>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Daniel
+From: Brian Norris <briannorris@chromium.org>
 
-On 2022/6/1 21:26, Daniel Vetter wrote:
-> On Wed, Jun 01, 2022 at 04:20:50PM +0400, Miaoqian Lin wrote:
->> The pm_runtime_enable will increase power disable depth.
->> If the probe fails, we should use pm_runtime_disable() to balance
->> pm_runtime_enable().
->> Also call disable function in remove function.
->>
->> Fixes: 57692c94dcbe ("drm/v3d: Introduce a new DRM driver for Broadcom V3D V3.x+")
->> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
->> ---
->> Changes in v3:
->> - call pm_runtime_disable() in v3d_platform_drm_remove
->> - update commit message
->>
->> Changes in v2
->> - put pm_runtime_disable before dma_free_wc
->> - rename dma_free to pm_disable
->>
->> v1: https://lore.kernel.org/r/20220105120442.14418-1-linmq006@gmail.com
->> v2: https://lore.kernel.org/r/20220106124657.32737-1-linmq006@gmail.com
-> Maybe a bit late since we're at v3 already, but are there no devm_
-> functions here that would dtrt automatically? 
+[ Upstream commit 2fccf9e6050e0e3b8b4cd275d41daf7f7fa22804 ]
 
-Sorry I don't see one, or we can use devm_add_action_or_reset() to add handling
+Otherwise we hit an unablanced enable-count when unbinding the DFI
+device:
 
-action. something like disp_cc_sm8250_probe() in drivers/clk/qcom/dispcc-sm8250.c
+[ 1279.659119] ------------[ cut here ]------------
+[ 1279.659179] WARNING: CPU: 2 PID: 5638 at drivers/devfreq/devfreq-event.c:360 devfreq_event_remove_edev+0x84/0x8c
+...
+[ 1279.659352] Hardware name: Google Kevin (DT)
+[ 1279.659363] pstate: 80400005 (Nzcv daif +PAN -UAO -TCO BTYPE=--)
+[ 1279.659371] pc : devfreq_event_remove_edev+0x84/0x8c
+[ 1279.659380] lr : devm_devfreq_event_release+0x1c/0x28
+...
+[ 1279.659571] Call trace:
+[ 1279.659582]  devfreq_event_remove_edev+0x84/0x8c
+[ 1279.659590]  devm_devfreq_event_release+0x1c/0x28
+[ 1279.659602]  release_nodes+0x1cc/0x244
+[ 1279.659611]  devres_release_all+0x44/0x60
+[ 1279.659621]  device_release_driver_internal+0x11c/0x1ac
+[ 1279.659629]  device_driver_detach+0x20/0x2c
+[ 1279.659641]  unbind_store+0x7c/0xb0
+[ 1279.659650]  drv_attr_store+0x2c/0x40
+[ 1279.659663]  sysfs_kf_write+0x44/0x58
+[ 1279.659672]  kernfs_fop_write_iter+0xf4/0x190
+[ 1279.659684]  vfs_write+0x2b0/0x2e4
+[ 1279.659693]  ksys_write+0x80/0xec
+[ 1279.659701]  __arm64_sys_write+0x24/0x30
+[ 1279.659714]  el0_svc_common+0xf0/0x1d8
+[ 1279.659724]  do_el0_svc_compat+0x28/0x3c
+[ 1279.659738]  el0_svc_compat+0x10/0x1c
+[ 1279.659746]  el0_sync_compat_handler+0xa8/0xcc
+[ 1279.659758]  el0_sync_compat+0x188/0x1c0
+[ 1279.659768] ---[ end trace cec200e5094155b4 ]---
 
-How do you think?
+Signed-off-by: Brian Norris <briannorris@chromium.org>
+Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/devfreq/rk3399_dmc.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-> Or is there another reason
-> we can't use them?
-> -Daniel
->> ---
->>  drivers/gpu/drm/v3d/v3d_drv.c | 6 ++++--
->>  1 file changed, 4 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/gpu/drm/v3d/v3d_drv.c b/drivers/gpu/drm/v3d/v3d_drv.c
->> index 1afcd54fbbd5..f3380399fe17 100644
->> --- a/drivers/gpu/drm/v3d/v3d_drv.c
->> +++ b/drivers/gpu/drm/v3d/v3d_drv.c
->> @@ -286,7 +286,7 @@ static int v3d_platform_drm_probe(struct platform_device *pdev)
->>  
->>  	ret = v3d_gem_init(drm);
->>  	if (ret)
->> -		goto dma_free;
->> +		goto pm_disable;
->>  
->>  	ret = v3d_irq_init(v3d);
->>  	if (ret)
->> @@ -302,7 +302,8 @@ static int v3d_platform_drm_probe(struct platform_device *pdev)
->>  	v3d_irq_disable(v3d);
->>  gem_destroy:
->>  	v3d_gem_destroy(drm);
->> -dma_free:
->> +pm_disable:
->> +	pm_runtime_disable(dev);
->>  	dma_free_wc(dev, 4096, v3d->mmu_scratch, v3d->mmu_scratch_paddr);
->>  	return ret;
->>  }
->> @@ -316,6 +317,7 @@ static int v3d_platform_drm_remove(struct platform_device *pdev)
->>  
->>  	v3d_gem_destroy(drm);
->>  
->> +	pm_runtime_disable(&pdev->dev);
->>  	dma_free_wc(v3d->drm.dev, 4096, v3d->mmu_scratch,
->>  		    v3d->mmu_scratch_paddr);
->>  
->> -- 
->> 2.25.1
->>
+diff --git a/drivers/devfreq/rk3399_dmc.c b/drivers/devfreq/rk3399_dmc.c
+index 293857ebfd75..538e8dc74f40 100644
+--- a/drivers/devfreq/rk3399_dmc.c
++++ b/drivers/devfreq/rk3399_dmc.c
+@@ -477,6 +477,8 @@ static int rk3399_dmcfreq_remove(struct platform_device *pdev)
+ {
+ 	struct rk3399_dmcfreq *dmcfreq = dev_get_drvdata(&pdev->dev);
+ 
++	devfreq_event_disable_edev(dmcfreq->edev);
++
+ 	/*
+ 	 * Before remove the opp table we need to unregister the opp notifier.
+ 	 */
+-- 
+2.35.1
+
