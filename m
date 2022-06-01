@@ -2,111 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56EB8CCA477
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 17:43:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84D11C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 17:43:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356411AbiFARnq (ORCPT
+        id S1356422AbiFARnu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 13:43:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57720 "EHLO
+        Wed, 1 Jun 2022 13:43:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356404AbiFARnp (ORCPT
+        with ESMTP id S1356403AbiFARnp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 1 Jun 2022 13:43:45 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C5837B9DF
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 10:43:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654105424; x=1685641424;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=O76EMfv/RHibOpFDppwDuUPZWItQ/txbZlbLLYm8wfs=;
-  b=ath2uj1djCA/2x730oTkMg2upvtuVcZcak6m7IK2+NJURDJYyEm+bad2
-   rQ8ivdEPPs9vLPMR/wMgnaGPZ28FcGoyrymsgPTuIp0Bgh09kgzQ8/tz4
-   4tjLqHHRuf4ZtyPixD9LPdn7Y00p24fFJktqcEdL5fK5B+l+PalEt5aLn
-   TNLCFKJtoGUuhvFk17yAvdyvovmtTa/MkWROqOAvK2xJ+gpF87pmYg9EZ
-   j1Tiomt98hL8Y0KKFnidIaqN4DjY0pd+N9kJ0/6t0k2hCb0LZB867Bg2c
-   Np/50lL+/ytpzjH4DJni416d11+7eCJ71hcFj08eVQbPngj6pIPAMfTZJ
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10365"; a="256148007"
-X-IronPort-AV: E=Sophos;i="5.91,269,1647327600"; 
-   d="scan'208";a="256148007"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 10:43:44 -0700
-X-IronPort-AV: E=Sophos;i="5.91,269,1647327600"; 
-   d="scan'208";a="633638944"
-Received: from aloney-mobl2.amr.corp.intel.com (HELO [10.209.25.15]) ([10.209.25.15])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 10:43:43 -0700
-Message-ID: <66914bd5-8bed-adba-c7a7-6cbfe1ad3520@linux.intel.com>
-Date:   Wed, 1 Jun 2022 12:17:57 -0500
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF5B16FD0C;
+        Wed,  1 Jun 2022 10:43:43 -0700 (PDT)
+Received: by mail-wm1-x32b.google.com with SMTP id d5-20020a05600c34c500b0039776acee62so2587290wmq.1;
+        Wed, 01 Jun 2022 10:43:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7cbknEZGUGD2cxU937ieJPI9qyLodJRcbX0FPdvitY4=;
+        b=ifBZEtRLIZDgnjgCirPIRbDpD4+2k0ji6YiTOqqGf3vyBHkTGgWU2FrXcQ65T2Nv6E
+         LY/qQy0xpRocxt2MjbXIYNEzJ5ZIbgr8eTQtVAtSoW0BMfJq0KRJGhn615hQkdbri0zQ
+         J4oMNV2moa3q/9jdiTR/9qVYAwv34VDvnA+b7Nb0aYmKo41fEnWhToQzLiAG3RAG8Jo5
+         2VA9+UXbujviKWjeHig9tJohVjITD6sctW6AlJ/tglBmib/ME5dB1G7nHe4FYASNaTOo
+         OCCI2o7RMJeTcCEgRKYNnNhJKsKpHmpDmIZnH8q8UkySlK0gc8Mbf4q2rkJpPrWkXmIi
+         ZnfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7cbknEZGUGD2cxU937ieJPI9qyLodJRcbX0FPdvitY4=;
+        b=VIXfzlOZUnRhA8XL6w/h2qNY7igHEAUO/5MDEwG1UcCNfTrkY3s8K3eiJWBfrXgQj5
+         4tgpRDmiFGFSWxLYd965xeW3U76oe/XKX0ecZFgr7nNZwXm+p6v7Ibr4O7UCX/PQnQl+
+         QiUtoPkFf6y2bhwn8Hf1FXHH8g/JKQteuqI/pP3i5G+KYGHOrexoTOvxswxeCG+n5XbN
+         d3TSarKda17yrJEt3sikKRlKJPBVmGKW9NPcQO9Uxml030swLSFpTmmZ0lJOP1OeHy6k
+         IX9AXX1Fz0bvf8+dqA1Rtb7vRDHteDMmL1COunambumI8e6zbZpdcSj4jiEO6CQtHm/p
+         r+Nw==
+X-Gm-Message-State: AOAM531KW7T8Xk5IQUh0sOV/v7RddKYV08Ta28+4O7hGD1F2YW84ufkJ
+        6jDLbfwD2qkwrN9RXrd2rdDjkzBGvK4=
+X-Google-Smtp-Source: ABdhPJwLxV/v4JoM4W2W2dE7sIidkESeRh7JcIp8hPqVguQXHIYFoQQsNd4zVoXzYP27YjKcYKfeGw==
+X-Received: by 2002:a05:600c:1f0e:b0:397:707f:5a60 with SMTP id bd14-20020a05600c1f0e00b00397707f5a60mr463432wmb.3.1654105422243;
+        Wed, 01 Jun 2022 10:43:42 -0700 (PDT)
+Received: from localhost.localdomain ([197.57.182.33])
+        by smtp.gmail.com with ESMTPSA id az29-20020a05600c601d00b00398d2f6b5d8sm2940824wmb.4.2022.06.01.10.43.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Jun 2022 10:43:41 -0700 (PDT)
+From:   Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     outreachy@lists.linux.dev, roopa@nvidia.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        eng.alaamohamedsoliman.am@gmail.com
+Subject: [PATCH net-next v2] selftests: net: fib_rule_tests: fix support for running individual tests
+Date:   Wed,  1 Jun 2022 19:43:16 +0200
+Message-Id: <20220601174316.4278-1-eng.alaamohamedsoliman.am@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.5.0
-Subject: Re: soundwire: device drivers for PC based hardware
-Content-Language: en-US
-To:     Muni Sekhar <munisekharrms@gmail.com>, vkoul@kernel.org,
-        sanyog.r.kale@intel.com, alsa-devel <alsa-devel@alsa-project.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>
-References: <CAHhAz+gqRDh=CJseQEhAJcRVEguxQ5c4vdUX8dvzdPNT=Sy3iA@mail.gmail.com>
-From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-In-Reply-To: <CAHhAz+gqRDh=CJseQEhAJcRVEguxQ5c4vdUX8dvzdPNT=Sy3iA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+parsing and usage of -t got missed in the previous patch.
+this patch fixes it
 
+Signed-off-by: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
+---
+changes in v2:
+	edit commit subject and message.
+---
+ tools/testing/selftests/net/fib_rule_tests.sh | 23 +++++++++++++++++++
+ 1 file changed, 23 insertions(+)
 
-On 5/31/22 10:17, Muni Sekhar wrote:
-> Hi all,
-> 
-> I am looking for the soundwire device drivers which run on x86 CPU for
-> PC based platforms.
-> 
-> linux/drivers/soundwire at master · torvalds/linux · GitHub
-> 
-> Can the above mentioned mainline tree drivers can be used for this purpose?
-> 
-> config SOUNDWIRE_INTEL
-> depends on ACPI && SND_SOC
-> 
-> config SOUNDWIRE_QCOM
-> depends on SND_SOC
-> 
-> As per the Kconfig file, both the Intel and Qualcomm SoundWire Master
-> driver depend on SND_SOC, does it mean it is only possible to run on
-> SoC CPU(Arm chipsets)?
+diff --git a/tools/testing/selftests/net/fib_rule_tests.sh b/tools/testing/selftests/net/fib_rule_tests.sh
+index bbe3b379927a..c245476fa29d 100755
+--- a/tools/testing/selftests/net/fib_rule_tests.sh
++++ b/tools/testing/selftests/net/fib_rule_tests.sh
+@@ -303,6 +303,29 @@ run_fibrule_tests()
+ 	log_section "IPv6 fib rule"
+ 	fib_rule6_test
+ }
++################################################################################
++# usage
++
++usage()
++{
++	cat <<EOF
++usage: ${0##*/} OPTS
++
++        -t <test>   Test(s) to run (default: all)
++                    (options: $TESTS)
++EOF
++}
++
++################################################################################
++# main
++
++while getopts ":t:h" opt; do
++	case $opt in
++		t) TESTS=$OPTARG;;
++		h) usage; exit 0;;
++		*) usage; exit 1;;
++	esac
++done
+ 
+ if [ "$(id -u)" -ne 0 ];then
+ 	echo "SKIP: Need root privileges"
+-- 
+2.25.1
 
-Here's what you need in your .config to use SoundWire on x86-based
-hardware. Today this includes mostly Dell platforms, HP x360 convertible
-laptops and Intel 'bishop canyon' NUC laptops.
-
-CONFIG_REGMAP_SOUNDWIRE=m
-
-CONFIG_REGMAP_SOUNDWIRE_MBQ=m
-
-CONFIG_SND_INTEL_SOUNDWIRE_ACPI=m
-
-CONFIG_SND_SOC_INTEL_SOUNDWIRE_SOF_MACH=m
-
-CONFIG_SND_SOC_SOF_INTEL_SOUNDWIRE_LINK_BASELINE=m
-
-CONFIG_SND_SOC_SOF_INTEL_SOUNDWIRE=m
-
-CONFIG_SOUNDWIRE=m
-
-CONFIG_SOUNDWIRE_CADENCE=m
-
-CONFIG_SOUNDWIRE_INTEL=m
-
-# CONFIG_SOUNDWIRE_QCOM is not set
-
-CONFIG_SOUNDWIRE_GENERIC_ALLOCATION=m
-
-
-I think you can get everything if you select these 3 high-level ones:
-CONFIG_SOUNDWIRE
-CONFIG_SND_SOC_SOF_INTEL_SOUNDWIRE
-CONFIG_SND_SOC_INTEL_SOUNDWIRE_SOF_MACH
