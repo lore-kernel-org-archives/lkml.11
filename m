@@ -2,78 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66E6EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 02:28:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8E6CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 02:45:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349190AbiFAC2Y (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 22:28:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59918 "EHLO
+        id S235074AbiFACmo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 31 May 2022 22:42:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231981AbiFAC2W (ORCPT
+        with ESMTP id S233771AbiFACmk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 22:28:22 -0400
-Received: from out199-7.us.a.mail.aliyun.com (out199-7.us.a.mail.aliyun.com [47.90.199.7])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C489A66C93;
-        Tue, 31 May 2022 19:28:19 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046060;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0VEyjSoC_1654050495;
-Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0VEyjSoC_1654050495)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 01 Jun 2022 10:28:15 +0800
-From:   Yang Li <yang.lee@linux.alibaba.com>
-To:     miklos@szeredi.hu
-Cc:     linux-unionfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Yang Li <yang.lee@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH -next] ovl: Fix some kernel-doc comments
-Date:   Wed,  1 Jun 2022 10:28:14 +0800
-Message-Id: <20220601022814.122620-1-yang.lee@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
+        Tue, 31 May 2022 22:42:40 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C81A15AA56
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 19:42:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654051353;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=WB1eoNVPIkOVFlU558AybWrSuZCEkhfGeXbR5VK67Ks=;
+        b=NHE1ikkm1SqttpepD2MDmc585dJinB41vZ2tcwdaEv/sI4gKKMlAOMAj4HkI/XTDhmh4bg
+        KkdFI+ut/FHtSVA6Rir9TgGpwlnpCsEZ/pDH/XcGjaXf3JlSlR/plmvBU+i/BWJoQzSQOn
+        QBWgA7giRS1YmYwx+gsQEf1ZoExpOIQ=
+Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
+ [209.85.167.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-180-iMikUp3UOfm6UmrQ0LTtFA-1; Tue, 31 May 2022 22:42:29 -0400
+X-MC-Unique: iMikUp3UOfm6UmrQ0LTtFA-1
+Received: by mail-lf1-f69.google.com with SMTP id c6-20020a056512104600b00477b25bfdf8so212195lfb.9
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 19:42:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=WB1eoNVPIkOVFlU558AybWrSuZCEkhfGeXbR5VK67Ks=;
+        b=VDY5D6vtmef/6jiMh58XSod3KYgeW02iIroxI2qIEQIyyqyud0dEVJAJnk27CxS/MJ
+         USB8igiBp6jR5S35wUbsYjhi4A0XsvxOsfnQKxNy52fwIvlLe8oJSAU7bBcJuz9xGF7T
+         lNGfyQcIwPTXGSPF4KG8ti7CC3q4CpU+ux0cpcRIuOwF5s9Jlk8n+mv3DingpDZqCubE
+         +KKBKMN4F+A9mQ0343jR6weGd7ujATHdDD+oMs7ROSbqAioVX8creL0aJ3tFdwhiQW+X
+         lKAvtKddmuFMMq/qZBRcyamT/osfbWNwuK+hkdzVoc114k1rkXc1+wWsudWZqF/AkQ7N
+         EAjw==
+X-Gm-Message-State: AOAM533Cfeko871Sj6kVJ3ycEcZizgidVVCLETrWmgSwnfuP3mjGbR0F
+        YJrvlfKRLv7nUtUemepqFhMdWxu+TXC9HZM03KEJ0J/iKRXk+uq9FgpcLwzOypkyMh4YqBtLCYP
+        8dBQnqT5L9mEHDtXKEBtNrRSjMKEvvJGc3YW4VhNh
+X-Received: by 2002:a05:6512:c0e:b0:478:5a91:20bb with SMTP id z14-20020a0565120c0e00b004785a9120bbmr39100842lfu.587.1654051344057;
+        Tue, 31 May 2022 19:42:24 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxmBp820NSJHDcSD2dOZzrKRPNlKlD6GwXH3X8zApWh8utE/CuOZMV9CsZAbAB4NHKmtcInCEEIporstHBP+gc=
+X-Received: by 2002:a05:6512:c0e:b0:478:5a91:20bb with SMTP id
+ z14-20020a0565120c0e00b004785a9120bbmr39100798lfu.587.1654051343791; Tue, 31
+ May 2022 19:42:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220526124338.36247-1-eperezma@redhat.com> <PH0PR12MB54819C6C6DAF6572AEADC1AEDCD99@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20220527065442-mutt-send-email-mst@kernel.org> <CACGkMEubfv_OJOsJ_ROgei41Qx4mPO0Xz8rMVnO8aPFiEqr8rA@mail.gmail.com>
+ <PH0PR12MB5481695930E7548BAAF1B0D9DCDC9@PH0PR12MB5481.namprd12.prod.outlook.com>
+In-Reply-To: <PH0PR12MB5481695930E7548BAAF1B0D9DCDC9@PH0PR12MB5481.namprd12.prod.outlook.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Wed, 1 Jun 2022 10:42:12 +0800
+Message-ID: <CACGkMEsSKF_MyLgFdzVROptS3PCcp1y865znLWgnzq9L7CpFVQ@mail.gmail.com>
+Subject: Re: [PATCH v4 0/4] Implement vdpasim stop operation
+To:     Parav Pandit <parav@nvidia.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        =?UTF-8?Q?Eugenio_P=C3=A9rez?= <eperezma@redhat.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "martinh@xilinx.com" <martinh@xilinx.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "martinpo@xilinx.com" <martinpo@xilinx.com>,
+        "lvivier@redhat.com" <lvivier@redhat.com>,
+        "pabloc@xilinx.com" <pabloc@xilinx.com>,
+        Eli Cohen <elic@nvidia.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Xie Yongji <xieyongji@bytedance.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Zhang Min <zhang.min9@zte.com.cn>,
+        Wu Zongyong <wuzongyong@linux.alibaba.com>,
+        "lulu@redhat.com" <lulu@redhat.com>,
+        Zhu Lingshan <lingshan.zhu@intel.com>,
+        "Piotr.Uminski@intel.com" <Piotr.Uminski@intel.com>,
+        Si-Wei Liu <si-wei.liu@oracle.com>,
+        "ecree.xilinx@gmail.com" <ecree.xilinx@gmail.com>,
+        "gautam.dawar@amd.com" <gautam.dawar@amd.com>,
+        "habetsm.xilinx@gmail.com" <habetsm.xilinx@gmail.com>,
+        "tanuj.kamde@amd.com" <tanuj.kamde@amd.com>,
+        "hanand@xilinx.com" <hanand@xilinx.com>,
+        "dinang@xilinx.com" <dinang@xilinx.com>,
+        Longpeng <longpeng2@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove warnings found by running scripts/kernel-doc,
-which is caused by using 'make W=1'.
-fs/overlayfs/super.c:311: warning: Function parameter or member 'dentry'
-not described in 'ovl_statfs'
-fs/overlayfs/super.c:311: warning: Excess function parameter 'sb'
-description in 'ovl_statfs'
-fs/overlayfs/super.c:357: warning: Function parameter or member 'm' not
-described in 'ovl_show_options'
-fs/overlayfs/super.c:357: warning: Function parameter or member 'dentry'
-not described in 'ovl_show_options'
+On Wed, Jun 1, 2022 at 4:19 AM Parav Pandit <parav@nvidia.com> wrote:
+>
+>
+> > From: Jason Wang <jasowang@redhat.com>
+> > Sent: Sunday, May 29, 2022 11:39 PM
+> >
+> > On Fri, May 27, 2022 at 6:56 PM Michael S. Tsirkin <mst@redhat.com> wro=
+te:
+> > >
+> > > On Thu, May 26, 2022 at 12:54:32PM +0000, Parav Pandit wrote:
+> > > >
+> > > >
+> > > > > From: Eugenio P=C3=A9rez <eperezma@redhat.com>
+> > > > > Sent: Thursday, May 26, 2022 8:44 AM
+> > > >
+> > > > > Implement stop operation for vdpa_sim devices, so vhost-vdpa will
+> > > > > offer
+> > > > >
+> > > > > that backend feature and userspace can effectively stop the devic=
+e.
+> > > > >
+> > > > >
+> > > > >
+> > > > > This is a must before get virtqueue indexes (base) for live
+> > > > > migration,
+> > > > >
+> > > > > since the device could modify them after userland gets them. Ther=
+e
+> > > > > are
+> > > > >
+> > > > > individual ways to perform that action for some devices
+> > > > >
+> > > > > (VHOST_NET_SET_BACKEND, VHOST_VSOCK_SET_RUNNING, ...) but
+> > there
+> > > > > was no
+> > > > >
+> > > > > way to perform it for any vhost device (and, in particular, vhost=
+-vdpa).
+> > > > >
+> > > > >
+> > > > >
+> > > > > After the return of ioctl with stop !=3D 0, the device MUST finis=
+h
+> > > > > any
+> > > > >
+> > > > > pending operations like in flight requests. It must also preserve
+> > > > > all
+> > > > >
+> > > > > the necessary state (the virtqueue vring base plus the possible
+> > > > > device
+> > > > >
+> > > > > specific states) that is required for restoring in the future. Th=
+e
+> > > > >
+> > > > > device must not change its configuration after that point.
+> > > > >
+> > > > >
+> > > > >
+> > > > > After the return of ioctl with stop =3D=3D 0, the device can cont=
+inue
+> > > > >
+> > > > > processing buffers as long as typical conditions are met (vq is
+> > > > > enabled,
+> > > > >
+> > > > > DRIVER_OK status bit is enabled, etc).
+> > > >
+> > > > Just to be clear, we are adding vdpa level new ioctl() that doesn=
+=E2=80=99t map to
+> > any mechanism in the virtio spec.
+> > > >
+> > > > Why can't we use this ioctl() to indicate driver to start/stop the =
+device
+> > instead of driving it through the driver_ok?
+> > > > This is in the context of other discussion we had in the LM series.
+> > >
+> > > If there's something in the spec that does this then let's use that.
+> >
+> > Actually, we try to propose a independent feature here:
+> >
+> > https://lists.oasis-open.org/archives/virtio-dev/202111/msg00020.html
+> >
+> This will stop the device for all the operations.
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
----
- fs/overlayfs/super.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Well, the ability to query the virtqueue state was proposed as another
+feature (Eugenio, please correct me). This should be sufficient for
+making virtio-net to be live migrated.
 
-diff --git a/fs/overlayfs/super.c b/fs/overlayfs/super.c
-index e0a2e0468ee7..9282296dc4c9 100644
---- a/fs/overlayfs/super.c
-+++ b/fs/overlayfs/super.c
-@@ -301,7 +301,7 @@ static int ovl_sync_fs(struct super_block *sb, int wait)
- 
- /**
-  * ovl_statfs
-- * @sb: The overlayfs super block
-+ * @dentry: The dentry to query
-  * @buf: The struct kstatfs to fill in with stats
-  *
-  * Get the filesystem statistics.  As writes always target the upper layer
-@@ -349,6 +349,8 @@ static inline int ovl_xino_def(void)
- 
- /**
-  * ovl_show_options
-+ * @m: the seq_file handle
-+ * @dentry: The dentry to query
-  *
-  * Prints the mount options for a given superblock.
-  * Returns zero; does not fail.
--- 
-2.20.1.7.g153144c
+https://lists.oasis-open.org/archives/virtio-comment/202103/msg00008.html
+
+> Once the device is stopped, its state cannot be queried further as device=
+ won't respond.
+> It has limited use case.
+> What we need is to stop non admin queue related portion of the device.
+
+See above.
+
+Thanks
+
+>
+> > Does it make sense to you?
+> >
+> > Thanks
+> >
+> > > Unfortunately the LM series seems to be stuck on moving bits around
+> > > with the admin virtqueue ...
+> > >
+> > > --
+> > > MST
+> > >
+>
 
