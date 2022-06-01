@@ -2,25 +2,25 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB320C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 22:08:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 619DDC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 22:08:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232113AbiFAWII (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 18:08:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38846 "EHLO
+        id S232132AbiFAWIM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 18:08:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231998AbiFAWIA (ORCPT
+        with ESMTP id S232013AbiFAWIA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 1 Jun 2022 18:08:00 -0400
-Received: from relay03.th.seeweb.it (relay03.th.seeweb.it [5.144.164.164])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 116D222719F;
+Received: from relay01.th.seeweb.it (relay01.th.seeweb.it [5.144.164.162])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CE41152DA3;
         Wed,  1 Jun 2022 15:07:55 -0700 (PDT)
 Received: from Marijn-Arch-PC.localdomain (94-209-165-62.cable.dynamic.v4.ziggo.nl [94.209.165.62])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by m-r1.th.seeweb.it (Postfix) with ESMTPSA id 807E6206BE;
-        Thu,  2 Jun 2022 00:07:50 +0200 (CEST)
+        by m-r1.th.seeweb.it (Postfix) with ESMTPSA id 4EEEC206AE;
+        Thu,  2 Jun 2022 00:07:52 +0200 (CEST)
 From:   Marijn Suijten <marijn.suijten@somainline.org>
 To:     phone-devel@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
         Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
@@ -42,9 +42,9 @@ Cc:     ~postmarketos/upstreaming@lists.sr.ht,
         Jonathan Marek <jonathan@marek.ca>, linux-clk@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
         dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org
-Subject: [PATCH v2 01/11] clk: divider: Introduce devm_clk_hw_register_divider_parent_hw()
-Date:   Thu,  2 Jun 2022 00:07:37 +0200
-Message-Id: <20220601220747.1145095-2-marijn.suijten@somainline.org>
+Subject: [PATCH v2 03/11] clk: fixed-factor: Introduce *clk_hw_register_fixed_factor_parent_hw()
+Date:   Thu,  2 Jun 2022 00:07:39 +0200
+Message-Id: <20220601220747.1145095-4-marijn.suijten@somainline.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220601220747.1145095-1-marijn.suijten@somainline.org>
 References: <20220601220747.1145095-1-marijn.suijten@somainline.org>
@@ -54,45 +54,138 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the devres variant of clk_hw_register_divider_parent_hw() for
-registering a divider clock with clk_hw parent pointer instead of parent
-name.
+Add the devres and non-devres variant of
+clk_hw_register_fixed_factor_parent_hw() for registering a fixed factor
+clock with clk_hw parent pointer instead of parent name.
 
 Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
 ---
- include/linux/clk-provider.h | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+ drivers/clk/clk-fixed-factor.c | 57 ++++++++++++++++++++++++++++------
+ include/linux/clk-provider.h   |  8 +++++
+ 2 files changed, 55 insertions(+), 10 deletions(-)
 
-diff --git a/include/linux/clk-provider.h b/include/linux/clk-provider.h
-index c10dc4c659e2..4e07621849e6 100644
---- a/include/linux/clk-provider.h
-+++ b/include/linux/clk-provider.h
-@@ -831,6 +831,25 @@ struct clk *clk_register_divider_table(struct device *dev, const char *name,
- 	__devm_clk_hw_register_divider((dev), NULL, (name), (parent_name), NULL,   \
- 				  NULL, (flags), (reg), (shift), (width),     \
- 				  (clk_divider_flags), NULL, (lock))
+diff --git a/drivers/clk/clk-fixed-factor.c b/drivers/clk/clk-fixed-factor.c
+index 54942d758ee6..fabb98d0cdb2 100644
+--- a/drivers/clk/clk-fixed-factor.c
++++ b/drivers/clk/clk-fixed-factor.c
+@@ -78,7 +78,8 @@ static void devm_clk_hw_register_fixed_factor_release(struct device *dev, void *
+ 
+ static struct clk_hw *
+ __clk_hw_register_fixed_factor(struct device *dev, struct device_node *np,
+-		const char *name, const char *parent_name, int index,
++		const char *name, const char *parent_name,
++		const struct clk_hw *parent_hw, int index,
+ 		unsigned long flags, unsigned int mult, unsigned int div,
+ 		bool devm)
+ {
+@@ -108,7 +109,9 @@ __clk_hw_register_fixed_factor(struct device *dev, struct device_node *np,
+ 	init.name = name;
+ 	init.ops = &clk_fixed_factor_ops;
+ 	init.flags = flags;
+-	if (parent_name)
++	if (parent_hw)
++		init.parent_hws = &parent_hw;
++	else if (parent_name)
+ 		init.parent_names = &parent_name;
+ 	else
+ 		init.parent_data = &pdata;
+@@ -148,17 +151,50 @@ struct clk_hw *devm_clk_hw_register_fixed_factor_index(struct device *dev,
+ 		const char *name, unsigned int index, unsigned long flags,
+ 		unsigned int mult, unsigned int div)
+ {
+-	return __clk_hw_register_fixed_factor(dev, NULL, name, NULL, index,
+-					      flags, mult, div, true);
++	return __clk_hw_register_fixed_factor(dev, NULL, name, NULL, NULL,
++					      index, flags, mult, div, true);
+ }
+ EXPORT_SYMBOL_GPL(devm_clk_hw_register_fixed_factor_index);
+ 
 +/**
-+ * devm_clk_hw_register_divider_parent_hw - register a divider clock with the clock framework
-+ * @dev: device registering this clock
++ * devm_clk_hw_register_fixed_factor_parent_hw - Register a fixed factor clock with
++ * pointer to parent clock
++ * @dev: device that is registering this clock
 + * @name: name of this clock
 + * @parent_hw: pointer to parent clk
-+ * @flags: framework-specific flags
-+ * @reg: register address to adjust divider
-+ * @shift: number of bits to shift the bitfield
-+ * @width: width of the bitfield
-+ * @clk_divider_flags: divider-specific flags for this clock
-+ * @lock: shared register lock for this clock
++ * @flags: fixed factor flags
++ * @mult: multiplier
++ * @div: divider
++ *
++ * Return: Pointer to fixed factor clk_hw structure that was registered or
++ * an error pointer.
 + */
-+#define devm_clk_hw_register_divider_parent_hw(dev, name, parent_hw, flags,   \
-+					       reg, shift, width,	      \
-+					       clk_divider_flags, lock)       \
-+	__devm_clk_hw_register_divider((dev), NULL, (name), NULL,	      \
-+				       (parent_hw), NULL, (flags), (reg),     \
-+				       (shift), (width), (clk_divider_flags), \
-+				       NULL, (lock))
++struct clk_hw *devm_clk_hw_register_fixed_factor_parent_hw(struct device *dev,
++		const char *name, const struct clk_hw *parent_hw,
++		unsigned long flags, unsigned int mult, unsigned int div)
++{
++	return __clk_hw_register_fixed_factor(dev, NULL, name, NULL, parent_hw,
++					      -1, flags, mult, div, true);
++}
++EXPORT_SYMBOL_GPL(devm_clk_hw_register_fixed_factor_parent_hw);
++
++struct clk_hw *clk_hw_register_fixed_factor_parent_hw(struct device *dev,
++		const char *name, const struct clk_hw *parent_hw,
++		unsigned long flags, unsigned int mult, unsigned int div)
++{
++	return __clk_hw_register_fixed_factor(dev, NULL, name, NULL,
++					      parent_hw, -1, flags, mult, div,
++					      false);
++}
++EXPORT_SYMBOL_GPL(clk_hw_register_fixed_factor_parent_hw);
++
+ struct clk_hw *clk_hw_register_fixed_factor(struct device *dev,
+ 		const char *name, const char *parent_name, unsigned long flags,
+ 		unsigned int mult, unsigned int div)
+ {
+-	return __clk_hw_register_fixed_factor(dev, NULL, name, parent_name, -1,
+-					      flags, mult, div, false);
++	return __clk_hw_register_fixed_factor(dev, NULL, name, parent_name,
++					      NULL, -1, flags, mult, div,
++					      false);
+ }
+ EXPORT_SYMBOL_GPL(clk_hw_register_fixed_factor);
+ 
+@@ -204,8 +240,9 @@ struct clk_hw *devm_clk_hw_register_fixed_factor(struct device *dev,
+ 		const char *name, const char *parent_name, unsigned long flags,
+ 		unsigned int mult, unsigned int div)
+ {
+-	return __clk_hw_register_fixed_factor(dev, NULL, name, parent_name, -1,
+-			flags, mult, div, true);
++	return __clk_hw_register_fixed_factor(dev, NULL, name, parent_name,
++					      NULL, -1, flags, mult, div,
++					      true);
+ }
+ EXPORT_SYMBOL_GPL(devm_clk_hw_register_fixed_factor);
+ 
+@@ -240,8 +277,8 @@ static struct clk_hw *_of_fixed_factor_clk_setup(struct device_node *node)
+ 	if (of_match_node(set_rate_parent_matches, node))
+ 		flags |= CLK_SET_RATE_PARENT;
+ 
+-	hw = __clk_hw_register_fixed_factor(NULL, node, clk_name, NULL, 0,
+-					    flags, mult, div, false);
++	hw = __clk_hw_register_fixed_factor(NULL, node, clk_name, NULL, NULL,
++					    0, flags, mult, div, false);
+ 	if (IS_ERR(hw)) {
+ 		/*
+ 		 * Clear OF_POPULATED flag so that clock registration can be
+diff --git a/include/linux/clk-provider.h b/include/linux/clk-provider.h
+index 316c7e082934..94458cb669f0 100644
+--- a/include/linux/clk-provider.h
++++ b/include/linux/clk-provider.h
+@@ -1032,6 +1032,14 @@ struct clk_hw *devm_clk_hw_register_fixed_factor(struct device *dev,
+ struct clk_hw *devm_clk_hw_register_fixed_factor_index(struct device *dev,
+ 		const char *name, unsigned int index, unsigned long flags,
+ 		unsigned int mult, unsigned int div);
++
++struct clk_hw *devm_clk_hw_register_fixed_factor_parent_hw(struct device *dev,
++		const char *name, const struct clk_hw *parent_hw,
++		unsigned long flags, unsigned int mult, unsigned int div);
++
++struct clk_hw *clk_hw_register_fixed_factor_parent_hw(struct device *dev,
++		const char *name, const struct clk_hw *parent_hw,
++		unsigned long flags, unsigned int mult, unsigned int div);
  /**
-  * devm_clk_hw_register_divider_table - register a table based divider clock
-  * with the clock framework (devres variant)
+  * struct clk_fractional_divider - adjustable fractional divider clock
+  *
 -- 
 2.36.1
 
