@@ -2,95 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 517ABC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 07:45:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1120C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 07:46:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350411AbiFAHpn (ORCPT
+        id S1350482AbiFAHp5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 03:45:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47616 "EHLO
+        Wed, 1 Jun 2022 03:45:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350408AbiFAHpi (ORCPT
+        with ESMTP id S1350467AbiFAHpo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 03:45:38 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCD7AA0056
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 00:45:28 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 5C30021A9B;
-        Wed,  1 Jun 2022 07:45:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1654069527; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=c+kKVH4gdDZYbxjzcOg+jvGZrV/KqgQJdzEt6yLtxiw=;
-        b=S4LQzg4KaKuueGjKKTJTztLQBLTVTM/c3TROtrfcIiBWV1r0FZshxfMF8/d5hLWUwKxQ/T
-        VoY7CuPuR1DTfo6SjQ9XqCX6B9b7Yce7+pfomnSKgOshcw/3dIrbIJ9zsrHIYWSDWeDyWn
-        K0rMKoc/3Et8Cd5W6tATzOYhsy7r6Ao=
-Received: from suse.cz (unknown [10.100.201.86])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 1FF002C141;
-        Wed,  1 Jun 2022 07:45:27 +0000 (UTC)
-Date:   Wed, 1 Jun 2022 09:45:26 +0200
-From:   Michal Hocko <mhocko@suse.com>
-To:     Zhaoyu Liu <zackary.liu.pro@gmail.com>
-Cc:     akpm@linux-foundation.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mm/oom_kill: break evaluation when a task has been
- selected
-Message-ID: <YpcZFvVZRPTyTQ7s@dhcp22.suse.cz>
-References: <20220514075223.GA11384@pc>
+        Wed, 1 Jun 2022 03:45:44 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AB5B9D043
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 00:45:39 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id gi33so2001947ejc.3
+        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 00:45:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=icaxq30mttf79C4R9dYRsj76DdZgYPdfcBXzW0d+jXk=;
+        b=qhdsg4Ya4YN7Vaxx4KRqhrWlzhNNHdf0PVdqfG2J6C64ZYh4eb930sm0pQWNlvi5fz
+         e8MtDtNaaVfEvSo2ezzPWrRLXro7Sqa26fIPFSbaCr+rJ0K5llS8sj1WuXS0ZDeTRMW1
+         Lla3hXfeN1OxJw12hVjMokIA+Gg3SyEJ/1OccTNwV4hxjUV6DOmLxRNU0yqHr1WBheJA
+         DKAN/4VPGv+Rrlo/v4AXp1Snc9fqApNwGr7Sp7dRydFF6Uesn3rngsZOtwm7jmbM10Py
+         IXF8drlRGeO2+SbhjYcSN+V7StztXVXY7g8jUAjlpSxc7L9HE7C7byGXkP65BsiWnwF1
+         DWqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=icaxq30mttf79C4R9dYRsj76DdZgYPdfcBXzW0d+jXk=;
+        b=RHdlzO/OwDjWQtrPU9z6TiZ2sMhwgy7uHwlQiaFnj8HS9sCbQJ/mgVt3TRdmdhSUsl
+         AS/QVZbZGuqbwEQ04DUyFeYYBwH1EwU3YZdPWKsgrcwah8nCMApzdf7msJ1vPRodb1Xg
+         aLe29vPdv3RHbq2e6iL6UCkK8sIQI9puog8NmMD7Qu9Bsp/scRQeUiJhUGeQJuUIe5QU
+         bwZvAXyy49uLAowxgdQ62uccZHh4Dc/79N0QtfJNgjQi0fzM/DwvqZ9QFVY93Ztxj31y
+         gLVYjTsWt/xRgy3t8K87qC/7KNFC8jnS3HvHRWqRM0p0mfpZbA0AoxB24zCAprWfUktb
+         IUTA==
+X-Gm-Message-State: AOAM533/4UM82wMKqlB9yNZ7RwQ0RY0F9/Ks1E/Oi4tu2bBITwU9Imiq
+        ug//ZsvQD7shlVcnxOCFZmtt1Q==
+X-Google-Smtp-Source: ABdhPJxtNxlX3e7jclB2CRDTCFsHDIgFhYwHQFha34skmH3sd1hturimO7g/4A+a4S/XrA/j28pXsQ==
+X-Received: by 2002:a17:907:7f06:b0:6fe:b81f:f885 with SMTP id qf6-20020a1709077f0600b006feb81ff885mr48271947ejc.621.1654069537754;
+        Wed, 01 Jun 2022 00:45:37 -0700 (PDT)
+Received: from [192.168.0.179] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id e20-20020a056402149400b0042bd75c53casm517464edv.83.2022.06.01.00.45.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 01 Jun 2022 00:45:37 -0700 (PDT)
+Message-ID: <c2f1621e-21d0-3836-6bb2-c1fb038856c5@linaro.org>
+Date:   Wed, 1 Jun 2022 09:45:36 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220514075223.GA11384@pc>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 2/5] dt-bindings: clock: Add AST2600 HACE reset definition
+Content-Language: en-US
+To:     Neal Liu <neal_liu@aspeedtech.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Johnny Huang <johnny_huang@aspeedtech.com>
+Cc:     linux-aspeed@lists.ozlabs.org, linux-crypto@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+References: <20220601054204.1522976-1-neal_liu@aspeedtech.com>
+ <20220601054204.1522976-3-neal_liu@aspeedtech.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220601054204.1522976-3-neal_liu@aspeedtech.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat 14-05-22 15:52:28, Zhaoyu Liu wrote:
-> oom points no longer need to be calculated if a task is oom_task_origin(),
-> so return 1 to stop the oom_evaluate_task().
-
-This doesn't really explain why this is really desired. Is this a fix,
-optimization?
-
-Please also note that this change has some side effects. For one, the
-task marked as oom origin will get killed even if there is still a
-pending oom victim which hasn't been fully dismantled. Is this
-intentional?
-
-> Signed-off-by: Zhaoyu Liu <zackary.liu.pro@gmail.com>
-> ---
->  mm/oom_kill.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+On 01/06/2022 07:42, Neal Liu wrote:
+> Add HACE reset bit definition for ast2600.
 > 
-> diff --git a/mm/oom_kill.c b/mm/oom_kill.c
-> index 3996301450e8..b407fba21d19 100644
-> --- a/mm/oom_kill.c
-> +++ b/mm/oom_kill.c
-> @@ -308,7 +308,7 @@ static enum oom_constraint constrained_alloc(struct oom_control *oc)
->  static int oom_evaluate_task(struct task_struct *task, void *arg)
->  {
->  	struct oom_control *oc = arg;
-> -	long points;
-> +	long points = 0;
->  
->  	if (oom_unkillable_task(task))
->  		goto next;
-> @@ -349,7 +349,7 @@ static int oom_evaluate_task(struct task_struct *task, void *arg)
->  	oc->chosen = task;
->  	oc->chosen_points = points;
->  next:
-> -	return 0;
-> +	return points == LONG_MAX;
->  abort:
->  	if (oc->chosen)
->  		put_task_struct(oc->chosen);
-> -- 
-> 2.17.1
+> Signed-off-by: Neal Liu <neal_liu@aspeedtech.com>
+> Signed-off-by: Johnny Huang <johnny_huang@aspeedtech.com>
 
--- 
-Michal Hocko
-SUSE Labs
+
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+
+
+Best regards,
+Krzysztof
