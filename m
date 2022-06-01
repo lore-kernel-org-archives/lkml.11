@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E79DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 10:39:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02532C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 10:39:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352122AbiFAKjk (ORCPT
+        id S1352135AbiFAKjo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 06:39:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43616 "EHLO
+        Wed, 1 Jun 2022 06:39:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347833AbiFAKja (ORCPT
+        with ESMTP id S1352117AbiFAKjf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 06:39:30 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C90907CDCC
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 03:39:28 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id a10so1637181pju.3
-        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 03:39:28 -0700 (PDT)
+        Wed, 1 Jun 2022 06:39:35 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 002547CDCC
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 03:39:33 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id 187so1592212pfu.9
+        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 03:39:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=iyhf6brMfc11D4/C56YiSyoAx+hrLfJS2MsKHkeQdSU=;
-        b=edQmDBvTOZnRp+S7U+hlShKZoD5of6RQ9ZKELHbSmIOTHvZXpjms28A8imaluJwyVZ
-         XlSDbNQslUnlxjv8JGlU0NyJ+wI1qa4uqtvq6SU6fKonDTYlt4Ccd6Oxg23l1Ogh8sqL
-         Puj21O0B3ZQJVV96/+itll3gIkfOy6v5gwdd8=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=pVK/jozl1uAfEzK6vleMbKcySwChksKYsG5Iw08IS/c=;
+        b=C78pEyOpmxImWyrV8RjqLJf8nPmlGYFD0fqdmXSu3XWNvntM2agBp44iozoainWKJ3
+         Axaui0YVALbQSEnR8rjEVrFcjCX26PCWreT1waD7QsntpteG59FKz9Mnrrnuu3nB9eve
+         oCddJpnbDynKK9HCCW91lnavxEvDNpWEdylgo=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=iyhf6brMfc11D4/C56YiSyoAx+hrLfJS2MsKHkeQdSU=;
-        b=evKLLNyX2dXnK8DABDSTReddMpSdEk2jxK2zBsV0r+lwKnUpHaSX85DhLxVxK6n0b6
-         PQUJ02FbfQFr5rjOZF8Mztjl3mbilRzt4mI3mlHvYo9OmQoG3SD8PKd4qobKOVnSGlV5
-         85aCzPKCmzRguiu+nmryTpQ6fG0JiNq3R3dkwJBEIcYHSNR5uJwFpH/twWsYldAQzRfn
-         KshWoge9U7XAdnxohfxVqZ9undQfWrZdS0HnqbmB8sDbZrhPqAAxhFXtZVfp+t1TS5PU
-         1I91QyLmP0d6djr5c5OBDwa2H4p1t4YYzi2NkkTIiaLKLJXcyHACwnO9kVI9b4nZtgxO
-         nSbA==
-X-Gm-Message-State: AOAM533RgTS6oMUtwgsVKBWnb0/xJwu4bTvELNp64RgTvNcnbzDHL8Et
-        5cXFqul0xWX38teMcV6PvmQZfw==
-X-Google-Smtp-Source: ABdhPJxnq7OcG4oa1RcNJb0F7BVW1cIUZX5bmyuaYzhw8LuQyLX+dFmOGjL6+njBxNIEnRHiXx0mzw==
-X-Received: by 2002:a17:902:ba97:b0:161:524d:5adb with SMTP id k23-20020a170902ba9700b00161524d5adbmr64905940pls.126.1654079968231;
-        Wed, 01 Jun 2022 03:39:28 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=pVK/jozl1uAfEzK6vleMbKcySwChksKYsG5Iw08IS/c=;
+        b=A5AjWdry73xiEKwKoloqwEFZNMOJqKE9OjNwdG/2V8QONu6+Z69E+suylsZg1TMT5a
+         hpyFtqOrVdegNHGQQQmWoncMZ2YR9QD6t0lRsYA49fNP7pMOVKv/DzuPKFkbo5dm3HMD
+         nqF1KrFpSzzDBH83M3OBtE7ovRzi/MsPnc0tK/abnJpBT3lUeSNyWo5LwTZrvPeFupyf
+         MLyXfSUCF9avtG4wARDswq1wEDVUBBDxSkQSTFBw3x++/piciQOVm+b+sGqHQJQRYcf8
+         JnnsdBqhFxPc84m43C2J8EyFihRW7TO+ELbBza0etr/Z9nD5Qt/Z0MS5fJNZhJYAfoYR
+         MWaQ==
+X-Gm-Message-State: AOAM532jD9wR0/qiG9bxvvOPx+nEeLTpl3dJtDAKUSzGQAlbsev6bVdY
+        ySvsIIZPF3OAiZi7+I47DdbpwA==
+X-Google-Smtp-Source: ABdhPJxPBOFPDzYcJlTD535ykPd7L0x0pOe9kzUL+ouANmI7/8e7l2tiHiElnHP5BQ4D4XG6GTHbZA==
+X-Received: by 2002:a65:6b94:0:b0:3fb:16f4:3620 with SMTP id d20-20020a656b94000000b003fb16f43620mr26218963pgw.464.1654079973429;
+        Wed, 01 Jun 2022 03:39:33 -0700 (PDT)
 Received: from hsinyi-z840.tpe.corp.google.com ([2401:fa00:1:10:dc30:e75c:ae95:f2d6])
-        by smtp.gmail.com with ESMTPSA id i9-20020a17090332c900b00163bfaf0b17sm1183867plr.233.2022.06.01.03.39.25
+        by smtp.gmail.com with ESMTPSA id i9-20020a17090332c900b00163bfaf0b17sm1183867plr.233.2022.06.01.03.39.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Jun 2022 03:39:27 -0700 (PDT)
+        Wed, 01 Jun 2022 03:39:32 -0700 (PDT)
 From:   Hsin-Yi Wang <hsinyi@chromium.org>
 To:     Phillip Lougher <phillip@squashfs.org.uk>,
         Matthew Wilcox <willy@infradead.org>,
@@ -58,44 +58,103 @@ Cc:     Zheng Liang <zhengliang6@huawei.com>,
         "squashfs-devel @ lists . sourceforge . net" 
         <squashfs-devel@lists.sourceforge.net>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v4 0/3] Implement readahead for squashfs
-Date:   Wed,  1 Jun 2022 18:39:19 +0800
-Message-Id: <20220601103922.1338320-1-hsinyi@chromium.org>
+Subject: [PATCH v4 2/3] squashfs: always build "file direct" version of page actor
+Date:   Wed,  1 Jun 2022 18:39:21 +0800
+Message-Id: <20220601103922.1338320-3-hsinyi@chromium.org>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+In-Reply-To: <20220601103922.1338320-1-hsinyi@chromium.org>
+References: <20220601103922.1338320-1-hsinyi@chromium.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit c1f6925e1091("mm: put readahead pages in cache earlier") requires
-fs to implement readahead callback. Otherwise there will be a
-performance regression.
+From: Phillip Lougher <phillip@squashfs.org.uk>
 
-Commit 9eec1d897139("squashfs: provide backing_dev_info in order to
-disable read-ahead") mitigates the performance drop issue for squashfs
-by closing readahead for it.
+Squashfs_readahead uses the "file direct" version of the page
+actor, and so build it unconditionally.
 
-This series implements readahead callback for squashfs. The previous
-discussion are in [1] and [2].
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Phillip Lougher <phillip@squashfs.org.uk>
+Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
+---
+ fs/squashfs/Makefile     |  4 ++--
+ fs/squashfs/page_actor.h | 41 ----------------------------------------
+ 2 files changed, 2 insertions(+), 43 deletions(-)
 
-[1] https://lore.kernel.org/all/CAJMQK-g9G6KQmH-V=BRGX0swZji9Wxe_2c7ht-MMAapdFy2pXw@mail.gmail.com/T/
-[2] https://lore.kernel.org/linux-mm/Yn5Yij9pRPCzDozt@casper.infradead.org/t/#m4af4473b94f98a4996cb11756b633a07e5e059d1
-
-Hsin-Yi Wang (2):
-  Revert "squashfs: provide backing_dev_info in order to disable
-    read-ahead"
-  squashfs: implement readahead
-
-Phillip Lougher (1):
-  squashfs: always build "file direct" version of page actor
-
- fs/squashfs/Makefile     |  4 +-
- fs/squashfs/file.c       | 97 +++++++++++++++++++++++++++++++++++++++-
- fs/squashfs/page_actor.h | 41 -----------------
- fs/squashfs/super.c      | 33 --------------
- 4 files changed, 98 insertions(+), 77 deletions(-)
-
+diff --git a/fs/squashfs/Makefile b/fs/squashfs/Makefile
+index 7bd9b8b856d0..477c89a519ee 100644
+--- a/fs/squashfs/Makefile
++++ b/fs/squashfs/Makefile
+@@ -5,9 +5,9 @@
+ 
+ obj-$(CONFIG_SQUASHFS) += squashfs.o
+ squashfs-y += block.o cache.o dir.o export.o file.o fragment.o id.o inode.o
+-squashfs-y += namei.o super.o symlink.o decompressor.o
++squashfs-y += namei.o super.o symlink.o decompressor.o page_actor.o
+ squashfs-$(CONFIG_SQUASHFS_FILE_CACHE) += file_cache.o
+-squashfs-$(CONFIG_SQUASHFS_FILE_DIRECT) += file_direct.o page_actor.o
++squashfs-$(CONFIG_SQUASHFS_FILE_DIRECT) += file_direct.o
+ squashfs-$(CONFIG_SQUASHFS_DECOMP_SINGLE) += decompressor_single.o
+ squashfs-$(CONFIG_SQUASHFS_DECOMP_MULTI) += decompressor_multi.o
+ squashfs-$(CONFIG_SQUASHFS_DECOMP_MULTI_PERCPU) += decompressor_multi_percpu.o
+diff --git a/fs/squashfs/page_actor.h b/fs/squashfs/page_actor.h
+index 2e3073ace009..26e07373af8a 100644
+--- a/fs/squashfs/page_actor.h
++++ b/fs/squashfs/page_actor.h
+@@ -6,46 +6,6 @@
+  * Phillip Lougher <phillip@squashfs.org.uk>
+  */
+ 
+-#ifndef CONFIG_SQUASHFS_FILE_DIRECT
+-struct squashfs_page_actor {
+-	void	**page;
+-	int	pages;
+-	int	length;
+-	int	next_page;
+-};
+-
+-static inline struct squashfs_page_actor *squashfs_page_actor_init(void **page,
+-	int pages, int length)
+-{
+-	struct squashfs_page_actor *actor = kmalloc(sizeof(*actor), GFP_KERNEL);
+-
+-	if (actor == NULL)
+-		return NULL;
+-
+-	actor->length = length ? : pages * PAGE_SIZE;
+-	actor->page = page;
+-	actor->pages = pages;
+-	actor->next_page = 0;
+-	return actor;
+-}
+-
+-static inline void *squashfs_first_page(struct squashfs_page_actor *actor)
+-{
+-	actor->next_page = 1;
+-	return actor->page[0];
+-}
+-
+-static inline void *squashfs_next_page(struct squashfs_page_actor *actor)
+-{
+-	return actor->next_page == actor->pages ? NULL :
+-		actor->page[actor->next_page++];
+-}
+-
+-static inline void squashfs_finish_page(struct squashfs_page_actor *actor)
+-{
+-	/* empty */
+-}
+-#else
+ struct squashfs_page_actor {
+ 	union {
+ 		void		**buffer;
+@@ -76,4 +36,3 @@ static inline void squashfs_finish_page(struct squashfs_page_actor *actor)
+ 	actor->squashfs_finish_page(actor);
+ }
+ #endif
+-#endif
 -- 
 2.36.1.255.ge46751e96f-goog
 
