@@ -2,272 +2,447 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62E9AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 03:32:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6A46C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 03:34:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349458AbiFADc1 (ORCPT
+        id S1347013AbiFADeu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 23:32:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38384 "EHLO
+        Tue, 31 May 2022 23:34:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349457AbiFADcY (ORCPT
+        with ESMTP id S240608AbiFADes (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 23:32:24 -0400
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2049.outbound.protection.outlook.com [40.107.236.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09B3F255BD;
-        Tue, 31 May 2022 20:32:20 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nFJUUKoWEdMz7Owy1rp7rKoJBnpw4usAS0T8273cV5qaU7uPDLzhpaFJXMvBYUf1brWpwQRo20l/9yBCZiLt0rkOxgdszczVYpwpmnoe9t3nkhk2YzWF3l08ygNs5S5c7K+1i2nMpFakvVydUMcdgYZSVzOtWeqcsbGFnzmdOlC+7Dnjl7YSgaBrJDKORQkJflyT/Owde/pPREh/3prpGHS49fnSA1ulr/3a0mkpHCUqGBYAHRCQzAX1Op8DwO5dYvB4CPY51tuxchuE+R1ISDW2QPGkCy06qnqD7ixiJdXM16B9doTC+znpBtecxLRDhBdYiJVHnLylv6+jWd9Zgg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rDr3Aud2f3bEWRA5lYEAheLaXurwbvIRmVzaryhpqQQ=;
- b=Ik4f+c8lPCa32HkLttmlbbZsEs5ERYmqZXhMkdf3TGcMKZHoR+8Go4mkbgT1omzmCq1y/WfkENIvNaToRo9ifzrB6fJZPzF1DfcRZgCs5FVFZq/k/x4KM02a+IUU00bdjZ5swJHvFUgg/sypjrxLQRm8HEZ0HTT9T8CGAAeCiYRmdJEMbTzIlbR0eq1YWXm3aYAceDmtAKzIZeVgy3UIlGCkrW81Nczadv0uTxkDq1uhNuqe4iHXLqonmyMQ7rdj3TPqnZYqxVPyFT+Rjyp8l/N6Lqps7zd/IpQjRiVue4sV8Rsae+Pkbi0+5aF5c7Q0HyUxZ4eG6m7zulhJ/uokZw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rDr3Aud2f3bEWRA5lYEAheLaXurwbvIRmVzaryhpqQQ=;
- b=Mg1iva7gy/Ib6rj49SYnTs+vVheX7Kuyx2LPpmFvo8gblRtRcn00k8r57Ujjo3u/hqThMBijMp9p3dzNaAJNgd1k4n9dK51bsTFtNyA0+7KSZuZtMiw/FCS2CGrhy3XH6hx04jlCBaTtTsSce1rcG5FR7sJ71SgVrt33schw0ZY=
-Received: from CO2PR05CA0054.namprd05.prod.outlook.com (2603:10b6:102:2::22)
- by BN8PR12MB3570.namprd12.prod.outlook.com (2603:10b6:408:4a::31) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.12; Wed, 1 Jun
- 2022 03:32:17 +0000
-Received: from CO1NAM11FT068.eop-nam11.prod.protection.outlook.com
- (2603:10b6:102:2:cafe::8d) by CO2PR05CA0054.outlook.office365.com
- (2603:10b6:102:2::22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.12 via Frontend
- Transport; Wed, 1 Jun 2022 03:32:17 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT068.mail.protection.outlook.com (10.13.175.142) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5314.12 via Frontend Transport; Wed, 1 Jun 2022 03:32:16 +0000
-Received: from BLR-5CG113396H.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Tue, 31 May
- 2022 22:31:05 -0500
-From:   Ravi Bangoria <ravi.bangoria@amd.com>
-To:     <acme@kernel.org>, <kan.liang@linux.intel.com>
-CC:     <ravi.bangoria@amd.com>, <jolsa@kernel.org>, <irogers@google.com>,
-        <peterz@infradead.org>, <rrichter@amd.com>, <mingo@redhat.com>,
-        <mark.rutland@arm.com>, <namhyung@kernel.org>,
-        <tglx@linutronix.de>, <bp@alien8.de>, <james.clark@arm.com>,
-        <leo.yan@linaro.org>, <ak@linux.intel.com>, <eranian@google.com>,
-        <like.xu.linux@gmail.com>, <x86@kernel.org>,
-        <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <sandipan.das@amd.com>, <ananth.narayan@amd.com>,
-        <kim.phillips@amd.com>, <santosh.shukla@amd.com>
-Subject: [PATCH v5 8/8] perf script ibs: Support new IBS bits in raw trace dump
-Date:   Wed, 1 Jun 2022 08:56:08 +0530
-Message-ID: <20220601032608.1034-9-ravi.bangoria@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220601032608.1034-1-ravi.bangoria@amd.com>
-References: <20220601032608.1034-1-ravi.bangoria@amd.com>
+        Tue, 31 May 2022 23:34:48 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52E879CC84
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 20:34:46 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id q12-20020a17090a304c00b001e2d4fb0eb4so4853365pjl.4
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 20:34:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=hdDT/6T7l0ZVb1VtMK15A9JVqcIXYuqHXeMW+nsYzMM=;
+        b=nu83etTT7v4Bi61fWEcFiNcTl52/A5ff8UG4LKYXuSd6Z7u86xValOi7nAZivhRc3L
+         15RlW7eFcE7F9cFL18QHvKgieiL/agFgwnpNCtLFDznR7hkPkTrIkdXOnUDfBHgiU/zV
+         UhCy1p3cYOOPDCqKo1B6Tc8Oy2JqAV+R1ivrqAr50lg9tOZYulySkRjqcHQpL8jzQypo
+         GIARk2JWOqO8dXJk6EMxB0V6gidYgijC3Oh38hjCBN2he22tkj5ZKCll64nReEZhrZAj
+         6XngxeLnrHvmOnPHWxLXGR5z5Ei+zv7pkedOziLcItLmUw+SRKSJr1YiAXrgOX/MNQWp
+         WAXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=hdDT/6T7l0ZVb1VtMK15A9JVqcIXYuqHXeMW+nsYzMM=;
+        b=BNnfZWsLM+ZHfF6Wn/rdDfrbTU6lt6b98EJZjJuZ5vhFRUFETgzrili9uC3EXmMi1w
+         xqLHiwnQbyftrdKvRj5TMzOwg11TEpitRqLh7mcNEMoj2Sd9/68ZtfTW7PgDP5gTUuZd
+         mtLBhGXF85ZspPe/0ezgIVGo6SBYI1lytbN8tWlVSMbdFzplJ/3JKjr6ukEUuzeAQyF7
+         vvEO9caI3nmSOkAukuK0sLVIs693JjqFhJYIzigonwq8f9BtGqNxnyHjF9kLuzQQvHep
+         0hlhLoJjQzXt6c3UpvgU+UetsK4Q3xPsDy7YCZS7OQE7BkxbnaWGPJpOHBTjCcRSnRCZ
+         fIJA==
+X-Gm-Message-State: AOAM531B8De+Oi9oQGvQGgIskTaJytIMKPoIcT54jDa1/gK7QRpjmcJ8
+        MrCtxl5dIb57sBbjzhbu4M8=
+X-Google-Smtp-Source: ABdhPJxeCJoE+Cj666G4co/Wy8Q/kqOihdyEW+uDJpK6y4/BL5V5vHaS4PZG6i+blycBaEzg9gyj3g==
+X-Received: by 2002:a17:90a:7349:b0:1dc:9314:8699 with SMTP id j9-20020a17090a734900b001dc93148699mr32296801pjs.184.1654054485712;
+        Tue, 31 May 2022 20:34:45 -0700 (PDT)
+Received: from [192.168.66.3] (p912131-ipoe.ipoe.ocn.ne.jp. [153.243.13.130])
+        by smtp.gmail.com with ESMTPSA id o3-20020a170903210300b0015e8d4eb272sm270506ple.188.2022.05.31.20.34.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 31 May 2022 20:34:44 -0700 (PDT)
+Message-ID: <ea45517c-82cd-0c2d-71cb-770e06b7e957@gmail.com>
+Date:   Wed, 1 Jun 2022 12:34:39 +0900
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: fb70098c-44d9-4f10-7da0-08da437f53c4
-X-MS-TrafficTypeDiagnostic: BN8PR12MB3570:EE_
-X-Microsoft-Antispam-PRVS: <BN8PR12MB3570F2ABD4C39FF81366F791E0DF9@BN8PR12MB3570.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 4D8kvjawopgIu3E+9XJ/zSXe/fLyVyBwDTp4cG3hR5LOC/0hOt7zD+c7laXzXcP5YsK4cAGqwQRg9dIioGRAUp9tYbKphLZu8pl5jEplvWwrzuhUonLgAq5hyh4FHwde/slXMqbfGY3kcysjqtqePnJDwNS2mSgyt6a33ECyovBOeDDeCkyIDAnyJsxKPQAa4jUTKX5p3hdmHEiP7A9OPBIMoqAbgXB+AJanwOnVK+t9FDNz17/wHA8a6Kh941QK7ZrAFDu3U1lnwV0Ix4Eqt4aV4H1Qd0B3eh+yYkezf/AYAjOEfjy3opYSMBqes+6TYjhC1dZd9wYer1hiTBFvA2m1LQjcKclEiVII2OOFm7nf59R2TqPnAH50x9Vj8Il7yJ32ghrEyAGm/MxMcFj1EGGyPx6oQANVpPRFdBuNcj7hla6ym4IN3fnAzXkl7PVcVIgaq7gdl/4r8JGaLnLwIzhYL0Rj+UmStzXKAO8mDO98D7y9lLXr8ovn4fWgJ2ZwXQan7vDCQzBFWLpJ3vhiO8LAS2FP3LZ0iaD21ThNpLwML+TWyf10S8Z/xtFwv7HPSWX51szpVv5xK0/CtM3S8Jq3aqYuHrBGaTB/nYEaeqOrBabfNn6Vx6jrmwYQnU4TYz38dBUJzL9FdMFAQuOaHLV1c0FrSj0P6ZJGfRzjQttO6WIwCIhXnTV+1RA3VNFCrNBt7RIiKZRHGoVi5tbdRg==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(44832011)(36860700001)(7416002)(47076005)(82310400005)(81166007)(356005)(5660300002)(508600001)(8936002)(40460700003)(186003)(83380400001)(1076003)(16526019)(2906002)(26005)(426003)(336012)(86362001)(7696005)(2616005)(4326008)(8676002)(316002)(70206006)(70586007)(54906003)(110136005)(36756003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jun 2022 03:32:16.9765
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: fb70098c-44d9-4f10-7da0-08da437f53c4
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT068.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3570
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v5 1/2] ASoC: amd: acp: Add support for nau8825 and
+ max98360 card
+Content-Language: en-US
+To:     V sujith kumar Reddy <Vsujithkumar.Reddy@amd.com>,
+        broonie@kernel.org, alsa-devel@alsa-project.org
+Cc:     Vijendar.Mukunda@amd.com, Basavaraj.Hiregoudar@amd.com,
+        Sunil-kumar.Dommati@amd.com, ajitkumar.pandey@amd.com,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Daniel Baluta <daniel.baluta@nxp.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Jia-Ju Bai <baijiaju1990@gmail.com>,
+        Bard Liao <bard.liao@intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20220531120813.47116-1-Vsujithkumar.Reddy@amd.com>
+ <20220531120813.47116-2-Vsujithkumar.Reddy@amd.com>
+From:   Akihiko Odaki <akihiko.odaki@gmail.com>
+In-Reply-To: <20220531120813.47116-2-Vsujithkumar.Reddy@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Interpret Additional set of IBS register bits while doing
-perf report/script raw dump.
+Reviewed-by: Akihiko Odaki <akihiko.odaki@gmail.com>
 
-IBS op pmu ex:
-  $ sudo ./perf record -c 130 -a -e ibs_op/l3missonly=1/ --raw-samples
-  $ sudo ./perf report -D
-  ...
-  ibs_op_ctl:     0000004500070008 MaxCnt       128 L3MissOnly 1 En 1
-        Val 1 CntCtl 0=cycles CurCnt        69
-  ibs_op_data:    0000000000710002 CompToRetCtr     2 TagToRetCtr   113
-        BrnRet 0  RipInvalid 0 BrnFuse 0 Microcode 0
-  ibs_op_data2:   0000000000000002 CacheHitSt 0=M-state RmtNode 0
-        DataSrc 2=A peer cache in a near CCX
-  ibs_op_data3:   000000681d1700a1 LdOp 1 StOp 0 DcL1TlbMiss 0
-        DcL2TlbMiss 0 DcL1TlbHit2M 0 DcL1TlbHit1G 1 DcL2TlbHit2M 0
-        DcMiss 1 DcMisAcc 0 DcWcMemAcc 0 DcUcMemAcc 0 DcLockedOp 0
-        DcMissNoMabAlloc 1 DcLinAddrValid 1 DcPhyAddrValid 1
-        DcL2TlbHit1G 0 L2Miss 1 SwPf 0 OpMemWidth  8 bytes
-        OpDcMissOpenMemReqs  7 DcMissLat   104 TlbRefillLat     0
-
-IBS Fetch pmu ex:
-  $ sudo ./perf record -c 130 -a -e ibs_fetch/l3missonly=1/ --raw-samples
-  $ sudo ./perf report -D
-  ...
-  ibs_fetch_ctl:  3c1f00c700080008 MaxCnt     128 Cnt     128 Lat   199
-        En 1 Val 1 Comp 1 IcMiss 1 PhyAddrValid        1 L1TlbPgSz 4KB
-        L1TlbMiss 0 L2TlbMiss 0 RandEn 0 L2Miss 1 L3MissOnly 1
-        FetchOcMiss 1 FetchL3Miss 1
-
-With the DataSrc extensions, the source of data can be decoded among:
- - Local L3 or other L1/L2 in CCX.
- - A peer cache in a near CCX.
- - Data returned from DRAM.
- - A peer cache in a far CCX.
- - DRAM address map with "long latency" bit set.
- - Data returned from MMIO/Config/PCI/APIC.
- - Extension Memory (S-Link, GenZ, etc - identified by the CS target
-    and/or address map at DF's choice).
- - Peer Agent Memory.
-
-Signed-off-by: Ravi Bangoria <ravi.bangoria@amd.com>
----
- tools/perf/util/amd-sample-raw.c | 64 +++++++++++++++++++++++++++++---
- 1 file changed, 58 insertions(+), 6 deletions(-)
-
-diff --git a/tools/perf/util/amd-sample-raw.c b/tools/perf/util/amd-sample-raw.c
-index 3b623ea6ee7e..238305868644 100644
---- a/tools/perf/util/amd-sample-raw.c
-+++ b/tools/perf/util/amd-sample-raw.c
-@@ -18,6 +18,7 @@
- #include "pmu-events/pmu-events.h"
- 
- static u32 cpu_family, cpu_model, ibs_fetch_type, ibs_op_type;
-+static bool zen4_ibs_extensions;
- 
- static void pr_ibs_fetch_ctl(union ibs_fetch_ctl reg)
- {
-@@ -39,6 +40,7 @@ static void pr_ibs_fetch_ctl(union ibs_fetch_ctl reg)
- 	};
- 	const char *ic_miss_str = NULL;
- 	const char *l1tlb_pgsz_str = NULL;
-+	char l3_miss_str[sizeof(" L3MissOnly _ FetchOcMiss _ FetchL3Miss _")] = "";
- 
- 	if (cpu_family == 0x19 && cpu_model < 0x10) {
- 		/*
-@@ -53,12 +55,19 @@ static void pr_ibs_fetch_ctl(union ibs_fetch_ctl reg)
- 		ic_miss_str = ic_miss_strs[reg.ic_miss];
- 	}
- 
-+	if (zen4_ibs_extensions) {
-+		snprintf(l3_miss_str, sizeof(l3_miss_str),
-+			 " L3MissOnly %d FetchOcMiss %d FetchL3Miss %d",
-+			 reg.l3_miss_only, reg.fetch_oc_miss, reg.fetch_l3_miss);
-+	}
-+
- 	printf("ibs_fetch_ctl:\t%016llx MaxCnt %7d Cnt %7d Lat %5d En %d Val %d Comp %d%s "
--	       "PhyAddrValid %d%s L1TlbMiss %d L2TlbMiss %d RandEn %d%s\n",
-+		"PhyAddrValid %d%s L1TlbMiss %d L2TlbMiss %d RandEn %d%s%s\n",
- 		reg.val, reg.fetch_maxcnt << 4, reg.fetch_cnt << 4, reg.fetch_lat,
- 		reg.fetch_en, reg.fetch_val, reg.fetch_comp, ic_miss_str ? : "",
- 		reg.phy_addr_valid, l1tlb_pgsz_str ? : "", reg.l1tlb_miss, reg.l2tlb_miss,
--		reg.rand_en, reg.fetch_comp ? (reg.fetch_l2_miss ? " L2Miss 1" : " L2Miss 0") : "");
-+		reg.rand_en, reg.fetch_comp ? (reg.fetch_l2_miss ? " L2Miss 1" : " L2Miss 0") : "",
-+		l3_miss_str);
- }
- 
- static void pr_ic_ibs_extd_ctl(union ic_ibs_extd_ctl reg)
-@@ -68,9 +77,15 @@ static void pr_ic_ibs_extd_ctl(union ic_ibs_extd_ctl reg)
- 
- static void pr_ibs_op_ctl(union ibs_op_ctl reg)
- {
--	printf("ibs_op_ctl:\t%016llx MaxCnt %9d En %d Val %d CntCtl %d=%s CurCnt %9d\n",
--	       reg.val, ((reg.opmaxcnt_ext << 16) | reg.opmaxcnt) << 4, reg.op_en, reg.op_val,
--	       reg.cnt_ctl, reg.cnt_ctl ? "uOps" : "cycles", reg.opcurcnt);
-+	char l3_miss_only[sizeof(" L3MissOnly _")] = "";
-+
-+	if (zen4_ibs_extensions)
-+		snprintf(l3_miss_only, sizeof(l3_miss_only), " L3MissOnly %d", reg.l3_miss_only);
-+
-+	printf("ibs_op_ctl:\t%016llx MaxCnt %9d%s En %d Val %d CntCtl %d=%s CurCnt %9d\n",
-+		reg.val, ((reg.opmaxcnt_ext << 16) | reg.opmaxcnt) << 4, l3_miss_only,
-+		reg.op_en, reg.op_val, reg.cnt_ctl,
-+		reg.cnt_ctl ? "uOps" : "cycles", reg.opcurcnt);
- }
- 
- static void pr_ibs_op_data(union ibs_op_data reg)
-@@ -84,7 +99,34 @@ static void pr_ibs_op_data(union ibs_op_data reg)
- 		reg.op_brn_ret, reg.op_rip_invalid, reg.op_brn_fuse, reg.op_microcode);
- }
- 
--static void pr_ibs_op_data2(union ibs_op_data2 reg)
-+static void pr_ibs_op_data2_extended(union ibs_op_data2 reg)
-+{
-+	static const char * const data_src_str[] = {
-+		"",
-+		" DataSrc 1=Local L3 or other L1/L2 in CCX",
-+		" DataSrc 2=A peer cache in a near CCX",
-+		" DataSrc 3=Data returned from DRAM",
-+		" DataSrc 4=(reserved)",
-+		" DataSrc 5=A peer cache in a far CCX",
-+		" DataSrc 6=DRAM address map with \"long latency\" bit set",
-+		" DataSrc 7=Data returned from MMIO/Config/PCI/APIC",
-+		" DataSrc 8=Extension Memory (S-Link, GenZ, etc)",
-+		" DataSrc 9=(reserved)",
-+		" DataSrc 10=(reserved)",
-+		" DataSrc 11=(reserved)",
-+		" DataSrc 12=Peer Agent Memory",
-+		/* 13 to 31 are reserved. Avoid printing them. */
-+	};
-+	int data_src = (reg.data_src_hi << 3) | reg.data_src_lo;
-+
-+	printf("ibs_op_data2:\t%016llx %sRmtNode %d%s\n", reg.val,
-+		(data_src == 1 || data_src == 2 || data_src == 5) ?
-+			(reg.cache_hit_st ? "CacheHitSt 1=O-State " : "CacheHitSt 0=M-state ") : "",
-+		reg.rmt_node,
-+		data_src < (int)ARRAY_SIZE(data_src_str) ? data_src_str[data_src] : "");
-+}
-+
-+static void pr_ibs_op_data2_default(union ibs_op_data2 reg)
- {
- 	static const char * const data_src_str[] = {
- 		"",
-@@ -103,6 +145,13 @@ static void pr_ibs_op_data2(union ibs_op_data2 reg)
- 	       reg.rmt_node, data_src_str[reg.data_src_lo]);
- }
- 
-+static void pr_ibs_op_data2(union ibs_op_data2 reg)
-+{
-+	if (zen4_ibs_extensions)
-+		return pr_ibs_op_data2_extended(reg);
-+	pr_ibs_op_data2_default(reg);
-+}
-+
- static void pr_ibs_op_data3(union ibs_op_data3 reg)
- {
- 	char l2_miss_str[sizeof(" L2Miss _")] = "";
-@@ -279,6 +328,9 @@ bool evlist__has_amd_ibs(struct evlist *evlist)
- 		pmu_mapping += strlen(pmu_mapping) + 1 /* '\0' */;
- 	}
- 
-+	if (perf_env__find_pmu_cap(env, "ibs_op", "zen4_ibs_extensions"))
-+		zen4_ibs_extensions = 1;
-+
- 	if (ibs_fetch_type || ibs_op_type) {
- 		if (!cpu_family)
- 			parse_cpuid(env);
--- 
-2.31.1
-
+On 2022/05/31 21:08, V sujith kumar Reddy wrote:
+> We have new platform with nau8825 as a primary codec and max98360 as an
+> amp codec. Add machine struct to register sof audio based sound card
+> on such Chrome machine.
+> 
+> Signed-off-by: V sujith kumar Reddy <Vsujithkumar.Reddy@amd.com>
+> ---
+>   sound/soc/amd/acp-config.c          |  21 ++++
+>   sound/soc/amd/acp/Kconfig           |   1 +
+>   sound/soc/amd/acp/acp-mach-common.c | 166 +++++++++++++++++++++++++++-
+>   sound/soc/amd/acp/acp-mach.h        |   3 +
+>   sound/soc/amd/acp/acp-sof-mach.c    |  15 +++
+>   sound/soc/amd/mach-config.h         |   1 +
+>   6 files changed, 201 insertions(+), 6 deletions(-)
+> 
+> diff --git a/sound/soc/amd/acp-config.c b/sound/soc/amd/acp-config.c
+> index 5cbc82eca4c9..3b9f851bf50d 100644
+> --- a/sound/soc/amd/acp-config.c
+> +++ b/sound/soc/amd/acp-config.c
+> @@ -130,4 +130,25 @@ struct snd_soc_acpi_mach snd_soc_acpi_amd_sof_machines[] = {
+>   };
+>   EXPORT_SYMBOL(snd_soc_acpi_amd_sof_machines);
+>   
+> +struct snd_soc_acpi_mach snd_soc_acpi_amd_rmb_sof_machines[] = {
+> +	{
+> +		.id = "AMDI1019",
+> +		.drv_name = "rmb-dsp",
+> +		.pdata = &acp_quirk_data,
+> +		.fw_filename = "sof-rmb.ri",
+> +		.sof_tplg_filename = "sof-acp-rmb.tplg",
+> +	},
+> +	{
+> +		.id = "10508825",
+> +		.drv_name = "nau8825-max",
+> +		.pdata = &acp_quirk_data,
+> +		.machine_quirk = snd_soc_acpi_codec_list,
+> +		.quirk_data = &amp_max,
+> +		.fw_filename = "sof-rmb.ri",
+> +		.sof_tplg_filename = "sof-rmb-nau8825-max98360.tplg",
+> +	},
+> +	{},
+> +};
+> +EXPORT_SYMBOL(snd_soc_acpi_amd_rmb_sof_machines);
+> +
+>   MODULE_LICENSE("Dual BSD/GPL");
+> diff --git a/sound/soc/amd/acp/Kconfig b/sound/soc/amd/acp/Kconfig
+> index 9dae2719084c..7e56d2644105 100644
+> --- a/sound/soc/amd/acp/Kconfig
+> +++ b/sound/soc/amd/acp/Kconfig
+> @@ -49,6 +49,7 @@ config SND_SOC_AMD_MACH_COMMON
+>   	select SND_SOC_RT1019
+>   	select SND_SOC_MAX98357A
+>   	select SND_SOC_RT5682S
+> +	select SND_SOC_NAU8825
+>   	help
+>   	  This option enables common Machine driver module for ACP.
+>   
+> diff --git a/sound/soc/amd/acp/acp-mach-common.c b/sound/soc/amd/acp/acp-mach-common.c
+> index 6ae454bf60af..a03b396d96bb 100644
+> --- a/sound/soc/amd/acp/acp-mach-common.c
+> +++ b/sound/soc/amd/acp/acp-mach-common.c
+> @@ -24,6 +24,7 @@
+>   #include "../../codecs/rt5682.h"
+>   #include "../../codecs/rt1019.h"
+>   #include "../../codecs/rt5682s.h"
+> +#include "../../codecs/nau8825.h"
+>   #include "acp-mach.h"
+>   
+>   #define PCO_PLAT_CLK 48000000
+> @@ -175,7 +176,8 @@ static void acp_card_shutdown(struct snd_pcm_substream *substream)
+>   	struct snd_soc_card *card = rtd->card;
+>   	struct acp_card_drvdata *drvdata = card->drvdata;
+>   
+> -	clk_disable_unprepare(drvdata->wclk);
+> +	if (!drvdata->soc_mclk)
+> +		clk_disable_unprepare(drvdata->wclk);
+>   }
+>   
+>   static const struct snd_soc_ops acp_card_rt5682_ops = {
+> @@ -363,7 +365,7 @@ static int acp_card_amp_startup(struct snd_pcm_substream *substream)
+>   	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
+>   	struct snd_soc_card *card = rtd->card;
+>   	struct acp_card_drvdata *drvdata = card->drvdata;
+> -	int ret;
+> +	int ret = 0;
+>   
+>   	runtime->hw.channels_max = DUAL_CHANNEL;
+>   	snd_pcm_hw_constraint_list(runtime, 0, SNDRV_PCM_HW_PARAM_CHANNELS,
+> @@ -371,10 +373,13 @@ static int acp_card_amp_startup(struct snd_pcm_substream *substream)
+>   	snd_pcm_hw_constraint_list(runtime, 0, SNDRV_PCM_HW_PARAM_RATE,
+>   				      &constraints_rates);
+>   
+> -	ret = acp_clk_enable(drvdata);
+> -	if (ret < 0)
+> -		dev_err(rtd->card->dev, "Failed to enable AMP clk: %d\n", ret);
+> -
+> +	if (!drvdata->soc_mclk) {
+> +		ret = acp_clk_enable(drvdata);
+> +		if (ret < 0) {
+> +			dev_err(rtd->card->dev, "Failed to enable AMP clk: %d\n", ret);
+> +			return ret;
+> +		}
+> +	}
+>   	return ret;
+>   }
+>   
+> @@ -409,6 +414,104 @@ static const struct snd_soc_ops acp_card_maxim_ops = {
+>   	.shutdown = acp_card_shutdown,
+>   };
+>   
+> +/* Declare nau8825 codec components */
+> +SND_SOC_DAILINK_DEF(nau8825,
+> +		    DAILINK_COMP_ARRAY(COMP_CODEC("i2c-10508825:00", "nau8825-hifi")));
+> +
+> +static const struct snd_soc_dapm_route nau8825_map[] = {
+> +	{ "Headphone Jack", NULL, "HPOL" },
+> +	{ "Headphone Jack", NULL, "HPOR" },
+> +};
+> +
+> +static int acp_card_nau8825_init(struct snd_soc_pcm_runtime *rtd)
+> +{
+> +	struct snd_soc_card *card = rtd->card;
+> +	struct acp_card_drvdata *drvdata = card->drvdata;
+> +	struct snd_soc_dai *codec_dai = asoc_rtd_to_codec(rtd, 0);
+> +	struct snd_soc_component *component = codec_dai->component;
+> +	unsigned int fmt;
+> +	int ret;
+> +
+> +	dev_info(rtd->dev, "codec dai name = %s\n", codec_dai->name);
+> +
+> +	if (drvdata->hs_codec_id != NAU8825)
+> +		return -EINVAL;
+> +
+> +	if (drvdata->soc_mclk)
+> +		fmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF | SND_SOC_DAIFMT_CBC_CFC;
+> +	else
+> +		fmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF | SND_SOC_DAIFMT_CBP_CFP;
+> +
+> +	ret =  snd_soc_dai_set_fmt(codec_dai, fmt);
+> +	if (ret < 0) {
+> +		dev_err(rtd->card->dev, "Failed to set dai fmt: %d\n", ret);
+> +		return ret;
+> +	}
+> +	ret = snd_soc_card_jack_new(card, "Headset Jack",
+> +					 SND_JACK_HEADSET | SND_JACK_LINEOUT |
+> +					 SND_JACK_BTN_0 | SND_JACK_BTN_1 |
+> +					 SND_JACK_BTN_2 | SND_JACK_BTN_3,
+> +					 &pco_jack);
+> +	if (ret) {
+> +		dev_err(card->dev, "HP jack creation failed %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	snd_jack_set_key(pco_jack.jack, SND_JACK_BTN_0, KEY_PLAYPAUSE);
+> +	snd_jack_set_key(pco_jack.jack, SND_JACK_BTN_1, KEY_VOICECOMMAND);
+> +	snd_jack_set_key(pco_jack.jack, SND_JACK_BTN_2, KEY_VOLUMEUP);
+> +	snd_jack_set_key(pco_jack.jack, SND_JACK_BTN_3, KEY_VOLUMEDOWN);
+> +
+> +	ret = snd_soc_component_set_jack(component, &pco_jack, NULL);
+> +	if (ret) {
+> +		dev_err(rtd->dev, "Headset Jack call-back failed: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	return snd_soc_dapm_add_routes(&rtd->card->dapm, nau8825_map, ARRAY_SIZE(nau8825_map));
+> +}
+> +
+> +static int acp_nau8825_hw_params(struct snd_pcm_substream *substream,
+> +				 struct snd_pcm_hw_params *params)
+> +{
+> +	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
+> +	struct snd_soc_dai *codec_dai = asoc_rtd_to_codec(rtd, 0);
+> +	int ret;
+> +
+> +	ret = snd_soc_dai_set_sysclk(codec_dai, NAU8825_CLK_FLL_FS,
+> +				     (48000 * 256), SND_SOC_CLOCK_IN);
+> +	if (ret < 0)
+> +		dev_err(rtd->dev, "snd_soc_dai_set_sysclk err = %d\n", ret);
+> +
+> +	ret = snd_soc_dai_set_pll(codec_dai, 0, 0, params_rate(params),
+> +				  params_rate(params) * 256);
+> +	if (ret < 0) {
+> +		dev_err(rtd->dev, "can't set FLL: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +static int acp_nau8825_startup(struct snd_pcm_substream *substream)
+> +{
+> +	struct snd_pcm_runtime *runtime = substream->runtime;
+> +
+> +	runtime->hw.channels_max = 2;
+> +	snd_pcm_hw_constraint_list(runtime, 0, SNDRV_PCM_HW_PARAM_CHANNELS,
+> +				   &constraints_channels);
+> +
+> +	runtime->hw.formats = SNDRV_PCM_FMTBIT_S16_LE;
+> +	snd_pcm_hw_constraint_list(runtime, 0,
+> +				   SNDRV_PCM_HW_PARAM_RATE, &constraints_rates);
+> +	return 0;
+> +}
+> +
+> +static const struct snd_soc_ops acp_card_nau8825_ops = {
+> +	.startup =  acp_nau8825_startup,
+> +	.hw_params = acp_nau8825_hw_params,
+> +};
+> +
+>   /* Declare DMIC codec components */
+>   SND_SOC_DAILINK_DEF(dmic_codec,
+>   		DAILINK_COMP_ARRAY(COMP_CODEC("dmic-codec", "dmic-hifi")));
+> @@ -437,6 +540,8 @@ SND_SOC_DAILINK_DEF(i2s_sp,
+>   	DAILINK_COMP_ARRAY(COMP_CPU("acp-i2s-sp")));
+>   SND_SOC_DAILINK_DEF(sof_sp,
+>   	DAILINK_COMP_ARRAY(COMP_CPU("acp-sof-sp")));
+> +SND_SOC_DAILINK_DEF(sof_hs,
+> +		    DAILINK_COMP_ARRAY(COMP_CPU("acp-sof-hs")));
+>   SND_SOC_DAILINK_DEF(sof_dmic,
+>   	DAILINK_COMP_ARRAY(COMP_CPU("acp-sof-dmic")));
+>   SND_SOC_DAILINK_DEF(pdm_dmic,
+> @@ -491,6 +596,31 @@ int acp_sofdsp_dai_links_create(struct snd_soc_card *card)
+>   		i++;
+>   	}
+>   
+> +	if (drv_data->hs_cpu_id == I2S_HS) {
+> +		links[i].name = "acp-headset-codec";
+> +		links[i].id = HEADSET_BE_ID;
+> +		links[i].cpus = sof_hs;
+> +		links[i].num_cpus = ARRAY_SIZE(sof_hs);
+> +		links[i].platforms = sof_component;
+> +		links[i].num_platforms = ARRAY_SIZE(sof_component);
+> +		links[i].dpcm_playback = 1;
+> +		links[i].dpcm_capture = 1;
+> +		links[i].nonatomic = true;
+> +		links[i].no_pcm = 1;
+> +		if (!drv_data->hs_codec_id) {
+> +			/* Use dummy codec if codec id not specified */
+> +			links[i].codecs = dummy_codec;
+> +			links[i].num_codecs = ARRAY_SIZE(dummy_codec);
+> +		}
+> +		if (drv_data->hs_codec_id == NAU8825) {
+> +			links[i].codecs = nau8825;
+> +			links[i].num_codecs = ARRAY_SIZE(nau8825);
+> +			links[i].init = acp_card_nau8825_init;
+> +			links[i].ops = &acp_card_nau8825_ops;
+> +		}
+> +		i++;
+> +	}
+> +
+>   	if (drv_data->amp_cpu_id == I2S_SP) {
+>   		links[i].name = "acp-amp-codec";
+>   		links[i].id = AMP_BE_ID;
+> @@ -523,6 +653,30 @@ int acp_sofdsp_dai_links_create(struct snd_soc_card *card)
+>   		i++;
+>   	}
+>   
+> +	if (drv_data->amp_cpu_id == I2S_HS) {
+> +		links[i].name = "acp-amp-codec";
+> +		links[i].id = AMP_BE_ID;
+> +		links[i].cpus = sof_hs;
+> +		links[i].num_cpus = ARRAY_SIZE(sof_hs);
+> +		links[i].platforms = sof_component;
+> +		links[i].num_platforms = ARRAY_SIZE(sof_component);
+> +		links[i].dpcm_playback = 1;
+> +		links[i].nonatomic = true;
+> +		links[i].no_pcm = 1;
+> +		if (!drv_data->amp_codec_id) {
+> +			/* Use dummy codec if codec id not specified */
+> +			links[i].codecs = dummy_codec;
+> +			links[i].num_codecs = ARRAY_SIZE(dummy_codec);
+> +		}
+> +		if (drv_data->amp_codec_id == MAX98360A) {
+> +			links[i].codecs = max98360a;
+> +			links[i].num_codecs = ARRAY_SIZE(max98360a);
+> +			links[i].ops = &acp_card_maxim_ops;
+> +			links[i].init = acp_card_maxim_init;
+> +		}
+> +		i++;
+> +	}
+> +
+>   	if (drv_data->dmic_cpu_id == DMIC) {
+>   		links[i].name = "acp-dmic-codec";
+>   		links[i].id = DMIC_BE_ID;
+> diff --git a/sound/soc/amd/acp/acp-mach.h b/sound/soc/amd/acp/acp-mach.h
+> index 5dc47cfbff10..c95ee1c52eb1 100644
+> --- a/sound/soc/amd/acp/acp-mach.h
+> +++ b/sound/soc/amd/acp/acp-mach.h
+> @@ -26,6 +26,7 @@ enum be_id {
+>   
+>   enum cpu_endpoints {
+>   	NONE = 0,
+> +	I2S_HS,
+>   	I2S_SP,
+>   	I2S_BT,
+>   	DMIC,
+> @@ -37,6 +38,7 @@ enum codec_endpoints {
+>   	RT1019,
+>   	MAX98360A,
+>   	RT5682S,
+> +	NAU8825,
+>   };
+>   
+>   struct acp_card_drvdata {
+> @@ -49,6 +51,7 @@ struct acp_card_drvdata {
+>   	unsigned int dai_fmt;
+>   	struct clk *wclk;
+>   	struct clk *bclk;
+> +	bool soc_mclk;
+>   };
+>   
+>   int acp_sofdsp_dai_links_create(struct snd_soc_card *card);
+> diff --git a/sound/soc/amd/acp/acp-sof-mach.c b/sound/soc/amd/acp/acp-sof-mach.c
+> index d1531cdab110..adbae809f2aa 100644
+> --- a/sound/soc/amd/acp/acp-sof-mach.c
+> +++ b/sound/soc/amd/acp/acp-sof-mach.c
+> @@ -56,6 +56,16 @@ static struct acp_card_drvdata sof_rt5682s_max_data = {
+>   	.dmic_codec_id = DMIC,
+>   };
+>   
+> +static struct acp_card_drvdata sof_nau8825_data = {
+> +	.hs_cpu_id = I2S_HS,
+> +	.amp_cpu_id = I2S_HS,
+> +	.dmic_cpu_id = DMIC,
+> +	.hs_codec_id = NAU8825,
+> +	.amp_codec_id = MAX98360A,
+> +	.dmic_codec_id = DMIC,
+> +	.soc_mclk = true,
+> +};
+> +
+>   static const struct snd_kcontrol_new acp_controls[] = {
+>   	SOC_DAPM_PIN_SWITCH("Headphone Jack"),
+>   	SOC_DAPM_PIN_SWITCH("Headset Mic"),
+> @@ -124,6 +134,10 @@ static const struct platform_device_id board_ids[] = {
+>   		.name = "rt5682s-rt1019",
+>   		.driver_data = (kernel_ulong_t)&sof_rt5682s_rt1019_data
+>   	},
+> +	{
+> +		.name = "nau8825-max",
+> +		.driver_data = (kernel_ulong_t)&sof_nau8825_data
+> +	},
+>   	{ }
+>   };
+>   static struct platform_driver acp_asoc_audio = {
+> @@ -143,4 +157,5 @@ MODULE_ALIAS("platform:rt5682-rt1019");
+>   MODULE_ALIAS("platform:rt5682-max");
+>   MODULE_ALIAS("platform:rt5682s-max");
+>   MODULE_ALIAS("platform:rt5682s-rt1019");
+> +MODULE_ALIAS("platform:nau8825-max");
+>   MODULE_LICENSE("GPL v2");
+> diff --git a/sound/soc/amd/mach-config.h b/sound/soc/amd/mach-config.h
+> index 0a54567a2841..7b4c625da40d 100644
+> --- a/sound/soc/amd/mach-config.h
+> +++ b/sound/soc/amd/mach-config.h
+> @@ -19,6 +19,7 @@
+>   #define ACP_PCI_DEV_ID			0x15E2
+>   
+>   extern struct snd_soc_acpi_mach snd_soc_acpi_amd_sof_machines[];
+> +extern struct snd_soc_acpi_mach snd_soc_acpi_amd_rmb_sof_machines[];
+>   
+>   struct config_entry {
+>   	u32 flags
