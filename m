@@ -2,46 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96C96CCA46F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3D74CCA471
 	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:06:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354393AbiFAOEz (ORCPT
+        id S1354761AbiFAOFM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:04:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51920 "EHLO
+        Wed, 1 Jun 2022 10:05:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355218AbiFAOBY (ORCPT
+        with ESMTP id S1355322AbiFAOB3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:01:24 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87499A5A92;
-        Wed,  1 Jun 2022 06:58:00 -0700 (PDT)
+        Wed, 1 Jun 2022 10:01:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7A6FA76E1;
+        Wed,  1 Jun 2022 06:58:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 767E0CE1C34;
-        Wed,  1 Jun 2022 13:57:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08720C36AE2;
-        Wed,  1 Jun 2022 13:57:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 71E48B81B08;
+        Wed,  1 Jun 2022 13:57:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBC4CC34119;
+        Wed,  1 Jun 2022 13:57:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091823;
-        bh=MzavRj9nrP27S+bq6CPB0yuwsmyvhj3CJKBoxHtwgwM=;
+        s=k20201202; t=1654091868;
+        bh=Gd+81C6t792u/OyBDJ9pfgOthfvlR8CL7NYdML5/hfE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C/F6aAWir/sS6Qdn/oFyv2cg77Ctt28Xhtr1QcrhlHTgYM4kOjwCS9NtBH+vRx6JM
-         JyXfYj+RYd/4b/uCkioZR4gPMFn2tj8xJLD75HjDDXblLkIGegf558ohE3aOHrI+WU
-         gyFhUglwDtAI+JukflMOhp58l0jN+IpiB+dDFzZd764fK2dngilikqRjsdYb6HtHod
-         XMfPCSSPzjGEuWC6XViV99myv0zrgiXr7oRC+qIt5j+zIfgXA9tnnXXqi7AeFOwzHN
-         G0aceN2m2gW0jcNe21keVhez09vz3mVRig/jzUSbKJCkbdrJb63gkSZKAra3xZlY37
-         DjykfZRdf31tw==
+        b=rsX5zDcPG8mAFNL/5GmG1nDJfvTqiw6CsuJrjkM70TsMkoQrBouxqCRxHJoJfvejJ
+         ap6La6CG5DR6fxWeKXxpCXAPMdwH0sAOEfoLIJRJeTrpcDuRs0CBJSMSRdjPvWIsZ/
+         yu53khuncSARxYFZ+BECvyF463ZF3fEjHfNFkcOza2qg1PGhSAPrHYtxPDQaWGtz3L
+         Qb3JjUaZFha5UfthsEGFO1Ossx53qDdFRdp5cfmHJuFp3Hc6VWgag59lqLfWqKvlQP
+         +dVWS45gzPoVXUHYfVM7vZXooxsM64LNC2Q011/O+auoGRzCWXFf+3TD6JCzSGGy8V
+         rqQRgYtpp6UXA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yang Yingliang <yangyingliang@huawei.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sasha Levin <sashal@kernel.org>, linus.walleij@linaro.org,
-        linux-renesas-soc@vger.kernel.org, linux-gpio@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 19/37] pinctrl: renesas: rzn1: Fix possible null-ptr-deref in sh_pfc_map_resources()
-Date:   Wed,  1 Jun 2022 09:56:04 -0400
-Message-Id: <20220601135622.2003939-19-sashal@kernel.org>
+Cc:     Finn Thain <fthain@linux-m68k.org>,
+        kernel test robot <lkp@intel.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>, benh@kernel.crashing.org,
+        arnd@arndb.de, yebin10@huawei.com, adobriyan@gmail.com,
+        linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH AUTOSEL 5.15 32/37] macintosh/via-pmu: Fix build failure when CONFIG_INPUT is disabled
+Date:   Wed,  1 Jun 2022 09:56:17 -0400
+Message-Id: <20220601135622.2003939-32-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135622.2003939-1-sashal@kernel.org>
 References: <20220601135622.2003939-1-sashal@kernel.org>
@@ -53,49 +57,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Finn Thain <fthain@linux-m68k.org>
 
-[ Upstream commit 2f661477c2bb8068194dbba9738d05219f111c6e ]
+[ Upstream commit 86ce436e30d86327c9f5260f718104ae7b21f506 ]
 
-It will cause null-ptr-deref when using 'res', if platform_get_resource()
-returns NULL, so move using 'res' after devm_ioremap_resource() that
-will check it to avoid null-ptr-deref.
-And use devm_platform_get_and_ioremap_resource() to simplify code.
+drivers/macintosh/via-pmu-event.o: In function `via_pmu_event':
+via-pmu-event.c:(.text+0x44): undefined reference to `input_event'
+via-pmu-event.c:(.text+0x68): undefined reference to `input_event'
+via-pmu-event.c:(.text+0x94): undefined reference to `input_event'
+via-pmu-event.c:(.text+0xb8): undefined reference to `input_event'
+drivers/macintosh/via-pmu-event.o: In function `via_pmu_event_init':
+via-pmu-event.c:(.init.text+0x20): undefined reference to `input_allocate_device'
+via-pmu-event.c:(.init.text+0xc4): undefined reference to `input_register_device'
+via-pmu-event.c:(.init.text+0xd4): undefined reference to `input_free_device'
+make[1]: *** [Makefile:1155: vmlinux] Error 1
+make: *** [Makefile:350: __build_one_by_one] Error 2
 
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Link: https://lore.kernel.org/r/20220429082637.1308182-2-yangyingliang@huawei.com
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Don't call into the input subsystem unless CONFIG_INPUT is built-in.
+
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Finn Thain <fthain@linux-m68k.org>
+Tested-by: Randy Dunlap <rdunlap@infradead.org>
+Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Acked-by: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/5edbe76ce68227f71e09af4614cc4c1bd61c7ec8.1649326292.git.fthain@linux-m68k.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/renesas/pinctrl-rzn1.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ drivers/macintosh/Kconfig   | 4 ++++
+ drivers/macintosh/Makefile  | 3 ++-
+ drivers/macintosh/via-pmu.c | 2 +-
+ 3 files changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pinctrl/renesas/pinctrl-rzn1.c b/drivers/pinctrl/renesas/pinctrl-rzn1.c
-index ef5fb25b6016..849d091205d4 100644
---- a/drivers/pinctrl/renesas/pinctrl-rzn1.c
-+++ b/drivers/pinctrl/renesas/pinctrl-rzn1.c
-@@ -865,17 +865,15 @@ static int rzn1_pinctrl_probe(struct platform_device *pdev)
- 	ipctl->mdio_func[0] = -1;
- 	ipctl->mdio_func[1] = -1;
+diff --git a/drivers/macintosh/Kconfig b/drivers/macintosh/Kconfig
+index 5cdc361da37c..3942db15a2b8 100644
+--- a/drivers/macintosh/Kconfig
++++ b/drivers/macintosh/Kconfig
+@@ -67,6 +67,10 @@ config ADB_PMU
+ 	  this device; you should do so if your machine is one of those
+ 	  mentioned above.
  
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	ipctl->lev1_protect_phys = (u32)res->start + 0x400;
--	ipctl->lev1 = devm_ioremap_resource(&pdev->dev, res);
-+	ipctl->lev1 = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
- 	if (IS_ERR(ipctl->lev1))
- 		return PTR_ERR(ipctl->lev1);
-+	ipctl->lev1_protect_phys = (u32)res->start + 0x400;
++config ADB_PMU_EVENT
++	def_bool y
++	depends on ADB_PMU && INPUT=y
++
+ config ADB_PMU_LED
+ 	bool "Support for the Power/iBook front LED"
+ 	depends on PPC_PMAC && ADB_PMU
+diff --git a/drivers/macintosh/Makefile b/drivers/macintosh/Makefile
+index 49819b1b6f20..712edcb3e0b0 100644
+--- a/drivers/macintosh/Makefile
++++ b/drivers/macintosh/Makefile
+@@ -12,7 +12,8 @@ obj-$(CONFIG_MAC_EMUMOUSEBTN)	+= mac_hid.o
+ obj-$(CONFIG_INPUT_ADBHID)	+= adbhid.o
+ obj-$(CONFIG_ANSLCD)		+= ans-lcd.o
  
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
--	ipctl->lev2_protect_phys = (u32)res->start + 0x400;
--	ipctl->lev2 = devm_ioremap_resource(&pdev->dev, res);
-+	ipctl->lev2 = devm_platform_get_and_ioremap_resource(pdev, 1, &res);
- 	if (IS_ERR(ipctl->lev2))
- 		return PTR_ERR(ipctl->lev2);
-+	ipctl->lev2_protect_phys = (u32)res->start + 0x400;
- 
- 	ipctl->clk = devm_clk_get(&pdev->dev, NULL);
- 	if (IS_ERR(ipctl->clk))
+-obj-$(CONFIG_ADB_PMU)		+= via-pmu.o via-pmu-event.o
++obj-$(CONFIG_ADB_PMU)		+= via-pmu.o
++obj-$(CONFIG_ADB_PMU_EVENT)	+= via-pmu-event.o
+ obj-$(CONFIG_ADB_PMU_LED)	+= via-pmu-led.o
+ obj-$(CONFIG_PMAC_BACKLIGHT)	+= via-pmu-backlight.o
+ obj-$(CONFIG_ADB_CUDA)		+= via-cuda.o
+diff --git a/drivers/macintosh/via-pmu.c b/drivers/macintosh/via-pmu.c
+index 4b98bc26a94b..2109129ea1bb 100644
+--- a/drivers/macintosh/via-pmu.c
++++ b/drivers/macintosh/via-pmu.c
+@@ -1459,7 +1459,7 @@ pmu_handle_data(unsigned char *data, int len)
+ 		pmu_pass_intr(data, len);
+ 		/* len == 6 is probably a bad check. But how do I
+ 		 * know what PMU versions send what events here? */
+-		if (len == 6) {
++		if (IS_ENABLED(CONFIG_ADB_PMU_EVENT) && len == 6) {
+ 			via_pmu_event(PMU_EVT_POWER, !!(data[1]&8));
+ 			via_pmu_event(PMU_EVT_LID, data[1]&1);
+ 		}
 -- 
 2.35.1
 
