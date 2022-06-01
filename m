@@ -2,297 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1DB0C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:22:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D1A1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:22:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347557AbiFANWa (ORCPT
+        id S1351186AbiFANWk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 09:22:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44506 "EHLO
+        Wed, 1 Jun 2022 09:22:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242201AbiFANW1 (ORCPT
+        with ESMTP id S1353201AbiFANWe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 09:22:27 -0400
-Received: from mail-yw1-x1132.google.com (mail-yw1-x1132.google.com [IPv6:2607:f8b0:4864:20::1132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75CE04FC40
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 06:22:25 -0700 (PDT)
-Received: by mail-yw1-x1132.google.com with SMTP id 00721157ae682-2ef5380669cso18070777b3.9
-        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 06:22:25 -0700 (PDT)
+        Wed, 1 Jun 2022 09:22:34 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45F8850000
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 06:22:32 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id p10so2326553wrg.12
+        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 06:22:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VhusuxvebQeqIphuHKHIUuQtEdSN4sp1zhl3QpbUxns=;
-        b=YVxD9TPOCfh1WNfBWubBysJ8IwakpXPCIrSFx+JDGiMo41+fexBw54QsiegVVeULTa
-         NRyH2RMc4g1/XmDyCiJfnU4nRVD5jl9XeCmsQSx6Yf1e4I83h7I8XMXwvDQerk4iRMop
-         FrSSFm85U6rXhVd0NFs+inKQUtiXr5aWqz3i83D4VtjKdA3rnMnB9pwZx9m+tqKVfgey
-         phqHSwsGphl4ens97yGIWYIdRDkLVnMZZGl7nqD9PpJmaEcwqc3r/4ugaEXG/eXC5kKC
-         5Tw/8QU5QdRhTN9Dhaii+4f/ojJ83Ah4zFPfqNPt9Bb1DJo0Dj2/V+nWR3PA7nzlygba
-         9I1w==
+        d=ffwll.ch; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=grujjgVk78/kTeNAsYLCQutjse2S4qIjwux8s5I8vnE=;
+        b=lbp9nbUHl8ofN+dxS0sdOLugDeZaytx+OeJ/NUuXNjLXcor8DTOBLfkafd9Ko2hYX8
+         495GS2cLePb2F5knyThcbWf3wiId5H9lTMY9NZabHJK5EZ3R9hCa++G7oLq2EYPVKmNI
+         +UytFWz/nCngyWhhtdQW0HcQWOK9ikTgTBhTk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VhusuxvebQeqIphuHKHIUuQtEdSN4sp1zhl3QpbUxns=;
-        b=rbhMmMSB7To+tAHZZHTUGrLSHRkM4cq8/cdoe+C/R8c9YLWOJvaxQpEta6YKKJCuvG
-         V8ANzLpcFOYToykqy1Wt+9FOKT5lijq0+ZqPzAb1DClXprBIoaTjzzGdYlnyripESgC0
-         5mlqWcP3jTmegLpWY+HvmRdFhH5owAiaCv6iMT6iCdFmTX6jGv2/YxOFIG/9/MDZkk2+
-         Qjx1zBDQHwD+szpe27jmTp/PAEUCBOviz3OpZ6vBvS0wcA1wTCcPb9toAF40G0Jr3SCc
-         B772fZml+h23P6aMNW/ZcnjAgojYe7N5hC894/Q5Y1Iq32UIQKyMtu80nS/w3P2Uehje
-         xRLg==
-X-Gm-Message-State: AOAM531+b7kxJhoJiLsGK8gpwLUkNLW72/p24YZXUky+RboEO8PE+q1i
-        xZ4lLVi45ePnQuYTNwTZRmn3VweyJe1vtVDIJIH5SA==
-X-Google-Smtp-Source: ABdhPJwJkD2o+tUMBt3iBFEPAW7htjoMwWR0vQrC/Lhd9n5ey4SmVO9dop14EBdFhurPVkN4pnK4mQ8SMFdy15dYahs=
-X-Received: by 2002:a81:6189:0:b0:2eb:deb5:9f63 with SMTP id
- v131-20020a816189000000b002ebdeb59f63mr66706723ywb.319.1654089744536; Wed, 01
- Jun 2022 06:22:24 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :content-transfer-encoding:in-reply-to;
+        bh=grujjgVk78/kTeNAsYLCQutjse2S4qIjwux8s5I8vnE=;
+        b=4Xfy+bKo4v85XSAKTFJmPi/RFQqPrIke48NRlXS8BUW7MYJtW/Ka6+FriZCEE7RrGT
+         B7msNaCYFuKlQnMX9sPzw5xGv+0drXaEZZUj4FjhdXek9oA+A1lJ+GedRxZadtr+1bgj
+         OZOm0DOFUzQmxNx3QwbqaJscjnRtNQYwUW40WGkOFMjXng6Ab83g6pjP4CNrNHnc5zWX
+         LZBywYRtcMioftYpqrTItXCP1Qac6r/UhJEG72AXSvlwg/aCp63hzkS1nDa1VtkaZUWq
+         fUIjegAkuchMPzv4HtYZzMf3hogt9igStKPOXyPdKAYjnDX+yYs3W8Y690MYuukTI9oz
+         HhlQ==
+X-Gm-Message-State: AOAM533FeHcttY+qliwkYL0P6Ve/LMpuFYl23XBFMdQI8r/wz2aRahv9
+        LlQjAZvWOlg2u+/X6F1Jm3PILg==
+X-Google-Smtp-Source: ABdhPJwoJDsjkQSbDgWTJ7sUm3syg4hR/7CZJ/cx7MS5hpu1nj4Bt5HyEIhy7EmDZ7ZNnjRnexBFog==
+X-Received: by 2002:a5d:4646:0:b0:210:3e3c:86dc with SMTP id j6-20020a5d4646000000b002103e3c86dcmr2982159wrs.277.1654089751161;
+        Wed, 01 Jun 2022 06:22:31 -0700 (PDT)
+Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
+        by smtp.gmail.com with ESMTPSA id d13-20020adfef8d000000b0020fc40d006bsm1609106wro.17.2022.06.01.06.22.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Jun 2022 06:22:30 -0700 (PDT)
+Date:   Wed, 1 Jun 2022 15:22:27 +0200
+From:   Daniel Vetter <daniel@ffwll.ch>
+To:     Christian =?iso-8859-1?Q?K=F6nig?= 
+        <ckoenig.leichtzumerken@gmail.com>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Gustavo Padovan <gustavo@padovan.org>,
+        Tomasz Figa <tfiga@chromium.org>,
+        Ricardo Ribalda <ribalda@chromium.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org
+Subject: Re: [Linaro-mm-sig] Re: [PATCH] dma-fence: allow dma fence to have
+ their own lock
+Message-ID: <YpdoEzLmlBfJks3q@phenom.ffwll.local>
+Mail-Followup-To: Christian =?iso-8859-1?Q?K=F6nig?= <ckoenig.leichtzumerken@gmail.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Gustavo Padovan <gustavo@padovan.org>,
+        Tomasz Figa <tfiga@chromium.org>,
+        Ricardo Ribalda <ribalda@chromium.org>,
+        Christoph Hellwig <hch@infradead.org>, linux-media@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+        linux-kernel@vger.kernel.org
+References: <20220530142232.2871634-1-senozhatsky@chromium.org>
+ <7eee4274-bd69-df8d-9067-771366217804@amd.com>
+ <YpWCvniLzJfcp684@google.com>
+ <33aba213-b6ad-4a15-9272-c62f5dfb1fb7@gmail.com>
 MIME-Version: 1.0
-References: <20220601021848.76943-1-zhouchengming@bytedance.com>
-In-Reply-To: <20220601021848.76943-1-zhouchengming@bytedance.com>
-From:   Vincent Guittot <vincent.guittot@linaro.org>
-Date:   Wed, 1 Jun 2022 15:22:12 +0200
-Message-ID: <CAKfTPtBTj4u-NW4NDUORdWfdxsHwoMxzqEO4jAKVZDjyCKxL4w@mail.gmail.com>
-Subject: Re: [PATCH v4] sched/fair: optimize and simplify rq leaf_cfs_rq_list
-To:     Chengming Zhou <zhouchengming@bytedance.com>
-Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
-        mgorman@suse.de, bristot@redhat.com, vschneid@redhat.com,
-        linux-kernel@vger.kernel.org, duanxiongchun@bytedance.com,
-        songmuchun@bytedance.com, zhengqi.arch@bytedance.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <33aba213-b6ad-4a15-9272-c62f5dfb1fb7@gmail.com>
+X-Operating-System: Linux phenom 5.10.0-8-amd64 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 1 Jun 2022 at 04:19, Chengming Zhou <zhouchengming@bytedance.com> wrote:
->
-> We notice the rq leaf_cfs_rq_list has two problems when do bugfix
-> backports and some test profiling.
->
-> 1. cfs_rqs under throttled subtree could be added to the list, and
->    make their fully decayed ancestors on the list, even though not needed.
->
-> 2. #1 also make the leaf_cfs_rq_list management complex and error prone,
->    this is the list of related bugfix so far:
->
->    commit 31bc6aeaab1d ("sched/fair: Optimize update_blocked_averages()")
->    commit fe61468b2cbc ("sched/fair: Fix enqueue_task_fair warning")
->    commit b34cb07dde7c ("sched/fair: Fix enqueue_task_fair() warning some more")
->    commit 39f23ce07b93 ("sched/fair: Fix unthrottle_cfs_rq() for leaf_cfs_rq list")
->    commit 0258bdfaff5b ("sched/fair: Fix unfairness caused by missing load decay")
->    commit a7b359fc6a37 ("sched/fair: Correctly insert cfs_rq's to list on unthrottle")
->    commit fdaba61ef8a2 ("sched/fair: Ensure that the CFS parent is added after unthrottling")
->    commit 2630cde26711 ("sched/fair: Add ancestors of unthrottled undecayed cfs_rq")
->
-> commit 31bc6aeaab1d ("sched/fair: Optimize update_blocked_averages()")
-> delete every cfs_rq under throttled subtree from rq->leaf_cfs_rq_list,
-> and delete the throttled_hierarchy() test in update_blocked_averages(),
-> which optimized update_blocked_averages().
->
-> But those later bugfix add cfs_rqs under throttled subtree back to
-> rq->leaf_cfs_rq_list again, with their fully decayed ancestors, for
-> the integrity of rq->leaf_cfs_rq_list.
->
-> This patch takes another method, skip all cfs_rqs under throttled
-> hierarchy when list_add_leaf_cfs_rq(), to completely make cfs_rqs
-> under throttled subtree off the leaf_cfs_rq_list.
->
-> So we don't need to consider throttled related things in
-> enqueue_entity(), unthrottle_cfs_rq() and enqueue_task_fair(),
-> which simplify the code a lot. Also optimize update_blocked_averages()
-> since cfs_rqs under throttled hierarchy and their ancestors
-> won't be on the leaf_cfs_rq_list.
->
-> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+On Wed, Jun 01, 2022 at 02:45:42PM +0200, Christian König wrote:
+> Am 31.05.22 um 04:51 schrieb Sergey Senozhatsky:
+> > On (22/05/30 16:55), Christian König wrote:
+> > > Am 30.05.22 um 16:22 schrieb Sergey Senozhatsky:
+> > > > [SNIP]
+> > > > So the `lock` should have at least same lifespan as the DMA fence
+> > > > that borrows it, which is impossible to guarantee in our case.
+> > > Nope, that's not correct. The lock should have at least same lifespan as the
+> > > context of the DMA fence.
+> > How does one know when it's safe to release the context? DMA fence
+> > objects are still transparently refcount-ed and "live their own lives",
+> > how does one synchronize lifespans?
+> 
+> Well, you don't.
+> 
+> If you have a dynamic context structure you need to reference count that as
+> well. In other words every time you create a fence in your context you need
+> to increment the reference count and every time a fence is release you
+> decrement it.
+> 
+> If you have a static context structure like most drivers have then you must
+> make sure that all fences at least signal before you unload your driver. We
+> still somewhat have a race when you try to unload a driver and the fence_ops
+> structure suddenly disappear, but we currently live with that.
+> 
+> Apart from that you are right, fences can live forever and we need to deal
+> with that.
 
-Reviewed-by: Vincent Guittot <vincent.guittot@linaro.org>
+Yeah this entire thing is a bit an "oops we might have screwed up" moment.
+I think the cleanest way is to essentially do what the drm/sched codes
+does, which is split the gpu job into the public dma_fence (which can live
+forever) and the internal job fence (which has to deal with all the
+resource refcounting issues). And then make sure that only ever the public
+fence escapes to places where the fence can live forever (dma_resv,
+drm_syncobj, sync_file as our uapi container objects are the prominent
+cases really).
 
-> ---
-> v4:
->  - make sure the attach/detach is propagated down up to
->    the throttled cfs_rq. Thanks Vincent.
->
-> v3:
->  - fix !CONFIG_FAIR_GROUP_SCHED build error, reported by
->    kernel test robot <lkp@intel.com>
->
-> v2:
->  - move throttled_hierarchy() outside list_add_leaf_cfs_rq(),
->    suggested by Vincent.
-> ---
->  kernel/sched/fair.c | 92 ++++++++++++++-------------------------------
->  1 file changed, 28 insertions(+), 64 deletions(-)
->
-> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-> index 77b2048a9326..b3371fa40548 100644
-> --- a/kernel/sched/fair.c
-> +++ b/kernel/sched/fair.c
-> @@ -3144,6 +3144,8 @@ void reweight_task(struct task_struct *p, int prio)
->         load->inv_weight = sched_prio_to_wmult[prio];
->  }
->
-> +static inline int throttled_hierarchy(struct cfs_rq *cfs_rq);
-> +
->  #ifdef CONFIG_FAIR_GROUP_SCHED
->  #ifdef CONFIG_SMP
->  /*
-> @@ -3254,8 +3256,6 @@ static long calc_group_shares(struct cfs_rq *cfs_rq)
->  }
->  #endif /* CONFIG_SMP */
->
-> -static inline int throttled_hierarchy(struct cfs_rq *cfs_rq);
-> -
->  /*
->   * Recomputes the group entity based on the current state of its group
->   * runqueue.
-> @@ -4368,16 +4368,11 @@ enqueue_entity(struct cfs_rq *cfs_rq, struct sched_entity *se, int flags)
->                 __enqueue_entity(cfs_rq, se);
->         se->on_rq = 1;
->
-> -       /*
-> -        * When bandwidth control is enabled, cfs might have been removed
-> -        * because of a parent been throttled but cfs->nr_running > 1. Try to
-> -        * add it unconditionally.
-> -        */
-> -       if (cfs_rq->nr_running == 1 || cfs_bandwidth_used())
-> -               list_add_leaf_cfs_rq(cfs_rq);
-> -
-> -       if (cfs_rq->nr_running == 1)
-> +       if (cfs_rq->nr_running == 1) {
->                 check_enqueue_throttle(cfs_rq);
-> +               if (!throttled_hierarchy(cfs_rq))
-> +                       list_add_leaf_cfs_rq(cfs_rq);
-> +       }
->  }
->
->  static void __clear_buddies_last(struct sched_entity *se)
-> @@ -4992,11 +4987,18 @@ void unthrottle_cfs_rq(struct cfs_rq *cfs_rq)
->         /* update hierarchical throttle state */
->         walk_tg_tree_from(cfs_rq->tg, tg_nop, tg_unthrottle_up, (void *)rq);
->
-> -       /* Nothing to run but something to decay (on_list)? Complete the branch */
->         if (!cfs_rq->load.weight) {
-> -               if (cfs_rq->on_list)
-> -                       goto unthrottle_throttle;
-> -               return;
-> +               if (!cfs_rq->on_list)
-> +                       return;
-> +               /*
-> +                * Nothing to run but something to decay (on_list)?
-> +                * Complete the branch.
-> +                */
-> +               for_each_sched_entity(se) {
-> +                       if (list_add_leaf_cfs_rq(cfs_rq_of(se)))
-> +                               break;
-> +               }
-> +               goto unthrottle_throttle;
->         }
->
->         task_delta = cfs_rq->h_nr_running;
-> @@ -5034,31 +5036,12 @@ void unthrottle_cfs_rq(struct cfs_rq *cfs_rq)
->                 /* end evaluation on encountering a throttled cfs_rq */
->                 if (cfs_rq_throttled(qcfs_rq))
->                         goto unthrottle_throttle;
-> -
-> -               /*
-> -                * One parent has been throttled and cfs_rq removed from the
-> -                * list. Add it back to not break the leaf list.
-> -                */
-> -               if (throttled_hierarchy(qcfs_rq))
-> -                       list_add_leaf_cfs_rq(qcfs_rq);
->         }
->
->         /* At this point se is NULL and we are at root level*/
->         add_nr_running(rq, task_delta);
->
->  unthrottle_throttle:
-> -       /*
-> -        * The cfs_rq_throttled() breaks in the above iteration can result in
-> -        * incomplete leaf list maintenance, resulting in triggering the
-> -        * assertion below.
-> -        */
-> -       for_each_sched_entity(se) {
-> -               struct cfs_rq *qcfs_rq = cfs_rq_of(se);
-> -
-> -               if (list_add_leaf_cfs_rq(qcfs_rq))
-> -                       break;
-> -       }
-> -
->         assert_list_leaf_cfs_rq(rq);
->
->         /* Determine whether we need to wake up potentially idle CPU: */
-> @@ -5713,13 +5696,6 @@ enqueue_task_fair(struct rq *rq, struct task_struct *p, int flags)
->                 /* end evaluation on encountering a throttled cfs_rq */
->                 if (cfs_rq_throttled(cfs_rq))
->                         goto enqueue_throttle;
-> -
-> -               /*
-> -                * One parent has been throttled and cfs_rq removed from the
-> -                * list. Add it back to not break the leaf list.
-> -                */
-> -               if (throttled_hierarchy(cfs_rq))
-> -                       list_add_leaf_cfs_rq(cfs_rq);
->         }
->
->         /* At this point se is NULL and we are at root level*/
-> @@ -5743,21 +5719,6 @@ enqueue_task_fair(struct rq *rq, struct task_struct *p, int flags)
->                 update_overutilized_status(rq);
->
->  enqueue_throttle:
-> -       if (cfs_bandwidth_used()) {
-> -               /*
-> -                * When bandwidth control is enabled; the cfs_rq_throttled()
-> -                * breaks in the above iteration can result in incomplete
-> -                * leaf list maintenance, resulting in triggering the assertion
-> -                * below.
-> -                */
-> -               for_each_sched_entity(se) {
-> -                       cfs_rq = cfs_rq_of(se);
-> -
-> -                       if (list_add_leaf_cfs_rq(cfs_rq))
-> -                               break;
-> -               }
-> -       }
-> -
->         assert_list_leaf_cfs_rq(rq);
->
->         hrtick_update(rq);
-> @@ -11287,9 +11248,13 @@ static inline bool vruntime_normalized(struct task_struct *p)
->   */
->  static void propagate_entity_cfs_rq(struct sched_entity *se)
->  {
-> -       struct cfs_rq *cfs_rq;
-> +       struct cfs_rq *cfs_rq = cfs_rq_of(se);
-> +
-> +       if (cfs_rq_throttled(cfs_rq))
-> +               return;
->
-> -       list_add_leaf_cfs_rq(cfs_rq_of(se));
-> +       if (!throttled_hierarchy(cfs_rq))
-> +               list_add_leaf_cfs_rq(cfs_rq);
->
->         /* Start to propagate at parent */
->         se = se->parent;
-> @@ -11297,14 +11262,13 @@ static void propagate_entity_cfs_rq(struct sched_entity *se)
->         for_each_sched_entity(se) {
->                 cfs_rq = cfs_rq_of(se);
->
-> -               if (!cfs_rq_throttled(cfs_rq)){
-> -                       update_load_avg(cfs_rq, se, UPDATE_TG);
-> -                       list_add_leaf_cfs_rq(cfs_rq);
-> -                       continue;
-> -               }
-> +               update_load_avg(cfs_rq, se, UPDATE_TG);
->
-> -               if (list_add_leaf_cfs_rq(cfs_rq))
-> +               if (cfs_rq_throttled(cfs_rq))
->                         break;
-> +
-> +               if (!throttled_hierarchy(cfs_rq))
-> +                       list_add_leaf_cfs_rq(cfs_rq);
->         }
->  }
->  #else
-> --
-> 2.36.1
->
+It sucks a bit.
+-Daniel
+-- 
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
