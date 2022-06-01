@@ -2,121 +2,242 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DACDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 20:47:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6EBFC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 20:47:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229984AbiFAUq5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 16:46:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43084 "EHLO
+        id S230192AbiFAUrC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 16:47:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229876AbiFAUoJ (ORCPT
+        with ESMTP id S230227AbiFAUp4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 16:44:09 -0400
-Received: from mail-oa1-f42.google.com (mail-oa1-f42.google.com [209.85.160.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AA551EA075;
-        Wed,  1 Jun 2022 13:29:08 -0700 (PDT)
-Received: by mail-oa1-f42.google.com with SMTP id 586e51a60fabf-f16a3e0529so4265529fac.2;
-        Wed, 01 Jun 2022 13:29:08 -0700 (PDT)
+        Wed, 1 Jun 2022 16:45:56 -0400
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F11BA1EBEDF
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 13:36:23 -0700 (PDT)
+Received: by mail-lj1-x22d.google.com with SMTP id g12so3243842lja.3
+        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 13:36:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=hnRMWgmEz6zfwIb82WIa9Y2K1DBEpYohPM7DyrugX8E=;
+        b=oYGbX6KaeTgPk2iAU48PyWEJ5sasp65b85/ExshGxB51y6g8J4muFbIxohJDhEtipq
+         Qgq/oCQzFlBiR4WHRMKEDlVO3aSr1t8zMfT4bYVqu6+wjuWJtu5/6oQgxPVxr6fbL9hj
+         D1oPZ7tUHkT3TqNZdnIxKGEE0JZM3HbroqlaDoHJuJ0XyFLFT7DsZFUY5igq4vLNXDNe
+         ovsiXfKMppKA4nkSqLQosuxjbCNNBWJ4iY5rYU48E529rSfz12O1TxWBD5wBuUBWf2Hm
+         Xrrqsgi4GmqBXVtYus0EKe9R71ceIO6t3WFfmLEG5Z4Y6SWMWUa08SRfSeHQoRMoWSK3
+         4U+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=hM5KF5wCwVdKsYo5M+AgMiM3NVZvgB0creSQpi4bIVM=;
-        b=Jz8HlBWgG2oFQHPkRECQYy91Tn26RZe5Kfl4G8j9ZUCSxjflSozgOvRdA3Lnj+b5eT
-         K5FzuaA+gFEcM2R+/Of+B1xdaoz4r5K91abdfgtpGgINQzaL/kCHVu8QqhU85Z/D8NV/
-         hV7RWUBFrP0E8NdR08bKglKhOUc6BHWLtEyoeaDR9WAws5P7FrO05BoEu1JwuANLV9Nv
-         Erxdth6ZkdNm6N8TpmH33r7M7PWi5GNh2TYHwCAHeFNKOJUI4G4R3fmEM74czQOHHfmN
-         SlPRmcg9WcpO7pnqGo/I5em3CtAN2UN6DGF7DEOji3tGiyOSXWIHBih8WwJlX6ZeJBTE
-         OuFg==
-X-Gm-Message-State: AOAM530wJv0OPeCvbwj2p6tNTLG5bJqgkUifPal5TOyMTHvZ7Cr9XJEV
-        FXa4yXG3e6G4XhTLUlO0zeJQI14q9Q==
-X-Google-Smtp-Source: ABdhPJz/ahrvEIyLaTJn2tdg3qpfcBBKaT+gGiEjPOUSa+SOVMJSI109IsfvmyTNBHZT51qJxtq0fQ==
-X-Received: by 2002:a05:6808:15a3:b0:32b:9c85:3434 with SMTP id t35-20020a05680815a300b0032b9c853434mr16880204oiw.118.1654113704350;
-        Wed, 01 Jun 2022 13:01:44 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id r21-20020a056830081500b0060603221245sm1270062ots.21.2022.06.01.13.01.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Jun 2022 13:01:44 -0700 (PDT)
-Received: (nullmailer pid 338460 invoked by uid 1000);
-        Wed, 01 Jun 2022 20:01:43 -0000
-Date:   Wed, 1 Jun 2022 15:01:43 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Cc:     Matthias Brugger <matthias.bgg@gmail.com>, yong.wu@mediatek.com,
-        joro@8bytes.org, will@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org,
-        iommu@lists.linux-foundation.org,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        krzysztof.kozlowski@linaro.org
-Subject: Re: [PATCH v2 1/7] dt-bindings: iommu: mediatek: Add phandles for
- mediatek infra/pericfg
-Message-ID: <20220601200143.GA334351-robh@kernel.org>
-References: <20220518100503.37279-1-angelogioacchino.delregno@collabora.com>
- <20220518100503.37279-2-angelogioacchino.delregno@collabora.com>
- <4cfbc8dd-83d3-80df-630d-6f8fb2efb9fd@gmail.com>
- <2550039f-1cfc-eb5d-bbc9-bf82666e9abd@collabora.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=hnRMWgmEz6zfwIb82WIa9Y2K1DBEpYohPM7DyrugX8E=;
+        b=oCMFnMGyBwfLrLw3X0Nm+6TllsURERKDxUwQpdKZCB39Tvh7qAoDNuqQoSYZMDY+NE
+         JEUCjt+5Tl8/FR3efxkxXrBPEDSO/mSr32U4ODv6ZjZKEmSe93uVVNb+ZJvfi1rWXGDk
+         kUDgVWrJB/8AAnHWwobrAqaTc3oyP35f6kuKhQ7N9Pj1gBQNfNtI8+yFi770JONKYtqL
+         lXWyAamrIJfl3xrOoNVsRq9e8vyHEWmwLf3QDSInnSGx7yOgSvEals1zFXONMseS1kt7
+         ImSIhoL71n0jRl9kdF6fxGjiwNvlcqsaf0wjGLQZVmh5SytWEIy32vbMOFrZwY5qsdeR
+         7/5A==
+X-Gm-Message-State: AOAM5328cCZfCK2OeH9gN6vpyXXIsqJwXu0sC64C8LkFOzQgFiptfE9y
+        wJh/9DOIA+dJYDiVuyg54n6uBQ==
+X-Google-Smtp-Source: ABdhPJxkJRwJB0bBCZulH1+0G/aFguKjl0xcNUukjBNO1bwjaJ7gLhhqqPPOS2Y6T+q9wYEA6cqYBw==
+X-Received: by 2002:a05:651c:1542:b0:249:a87f:8a34 with SMTP id y2-20020a05651c154200b00249a87f8a34mr39972015ljp.442.1654115782175;
+        Wed, 01 Jun 2022 13:36:22 -0700 (PDT)
+Received: from [192.168.1.211] ([37.153.55.125])
+        by smtp.gmail.com with ESMTPSA id 17-20020ac25f51000000b00477cdd77ac0sm557258lfz.175.2022.06.01.13.36.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 01 Jun 2022 13:36:21 -0700 (PDT)
+Message-ID: <10e79606-65d7-73bc-34e1-92ed5740d8fc@linaro.org>
+Date:   Wed, 1 Jun 2022 23:36:21 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <2550039f-1cfc-eb5d-bbc9-bf82666e9abd@collabora.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v3 1/2] drm/probe-helper: Add helper for
+ drm_helper_probe_single_connector_modes()
+Content-Language: en-GB
+To:     Douglas Anderson <dianders@chromium.org>,
+        dri-devel@lists.freedesktop.org
+Cc:     freedreno@lists.freedesktop.org, swboyd@chromium.org,
+        quic_khsieh@quicinc.com, quic_sbillaka@quicinc.com,
+        quic_abhinavk@quicinc.com, ville.syrjala@linux.intel.com,
+        quic_aravindh@quicinc.com, tzimmermann@suse.de,
+        robdclark@gmail.com, linux-arm-msm@vger.kernel.org,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        linux-kernel@vger.kernel.org
+References: <20220511155749.v3.1.I2dd93486c6952bd52f2020904de0133970d11b29@changeid>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <20220511155749.v3.1.I2dd93486c6952bd52f2020904de0133970d11b29@changeid>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 01:42:20PM +0200, AngeloGioacchino Del Regno wrote:
-> Il 18/05/22 13:29, Matthias Brugger ha scritto:
-> > 
-> > 
-> > On 18/05/2022 12:04, AngeloGioacchino Del Regno wrote:
-> > > Add properties "mediatek,infracfg" and "mediatek,pericfg" to let the
-> > > mtk_iommu driver retrieve phandles to the infracfg and pericfg syscon(s)
-> > > instead of performing a per-soc compatible lookup.
-> > > 
-> > > Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> > > ---
-> > >   .../devicetree/bindings/iommu/mediatek,iommu.yaml         | 8 ++++++++
-> > >   1 file changed, 8 insertions(+)
-> > > 
-> > > diff --git
-> > > a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-> > > b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-> > > index 2ae3bbad7f1a..c4af41947593 100644
-> > > --- a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-> > > +++ b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-> > > @@ -101,6 +101,10 @@ properties:
-> > >       items:
-> > >         - const: bclk
-> > > +  mediatek,infracfg:
-> > > +    $ref: /schemas/types.yaml#/definitions/phandle
-> > > +    description: The phandle to the mediatek infracfg syscon
-> > > +
-> > >     mediatek,larbs:
-> > >       $ref: /schemas/types.yaml#/definitions/phandle-array
-> > >       minItems: 1
-> > > @@ -112,6 +116,10 @@ properties:
-> > >         Refer to bindings/memory-controllers/mediatek,smi-larb.yaml. It must sort
-> > >         according to the local arbiter index, like larb0, larb1, larb2...
-> > > +  mediatek,pericfg:
-> > > +    $ref: /schemas/types.yaml#/definitions/phandle
-> > > +    description: The phandle to the mediatek pericfg syscon
-> > > +
-> > 
-> > I didn't explain myself. What I was suguesting was to squash the patch
-> > that add requiered mediatek,infracfg with the patch that adds
-> > mediatk,infracfg to the binding description. And then squash the both
-> > patches adding pericfg as well.
+On 12/05/2022 01:58, Douglas Anderson wrote:
+> The drm_helper_probe_single_connector_modes() is a bit long. Let's
+> break a chunk off to update and validate modes. This helps avoid one
+> goto and also will allow us to more easily call the helper a second
+> time in a future patch without adding looping or another goto.
 > 
-> Sorry Matthias, I'm not sure ... I think I'm misunderstanding you again...
-> ...but if I'm not, I don't think that squashing actual code and bindings together
-> is something acceptable?
+> This change is intended to be a no-op change--just code movement.
 > 
-> I've made that kind of mistake in the past and I was told multiple times that
-> dt-bindings changes shall be sent separately from the actual driver changes.
+> Signed-off-by: Douglas Anderson <dianders@chromium.org>
+> Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+> Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
 
-Combine patches 1 and 6 is the suggestion, not driver changes.
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-Rob
+> ---
+> 
+> Changes in v3:
+> - Removed WARN_ON
+> 
+> Changes in v2:
+> - Two underscores for __drm_helper_update_and_validate().
+> - Return err and use WARN_ON instead of returning a bool.
+> 
+>   drivers/gpu/drm/drm_probe_helper.c | 106 ++++++++++++++++-------------
+>   1 file changed, 60 insertions(+), 46 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/drm_probe_helper.c b/drivers/gpu/drm/drm_probe_helper.c
+> index 682359512996..2570d47e7eab 100644
+> --- a/drivers/gpu/drm/drm_probe_helper.c
+> +++ b/drivers/gpu/drm/drm_probe_helper.c
+> @@ -354,6 +354,61 @@ drm_helper_probe_detect(struct drm_connector *connector,
+>   }
+>   EXPORT_SYMBOL(drm_helper_probe_detect);
+>   
+> +static int __drm_helper_update_and_validate(struct drm_connector *connector,
+> +					    uint32_t maxX, uint32_t maxY,
+> +					    struct drm_modeset_acquire_ctx *ctx)
+> +{
+> +	struct drm_device *dev = connector->dev;
+> +	struct drm_display_mode *mode;
+> +	int mode_flags = 0;
+> +	int ret;
+> +
+> +	drm_connector_list_update(connector);
+> +
+> +	if (connector->interlace_allowed)
+> +		mode_flags |= DRM_MODE_FLAG_INTERLACE;
+> +	if (connector->doublescan_allowed)
+> +		mode_flags |= DRM_MODE_FLAG_DBLSCAN;
+> +	if (connector->stereo_allowed)
+> +		mode_flags |= DRM_MODE_FLAG_3D_MASK;
+> +
+> +	list_for_each_entry(mode, &connector->modes, head) {
+> +		if (mode->status != MODE_OK)
+> +			continue;
+> +
+> +		mode->status = drm_mode_validate_driver(dev, mode);
+> +		if (mode->status != MODE_OK)
+> +			continue;
+> +
+> +		mode->status = drm_mode_validate_size(mode, maxX, maxY);
+> +		if (mode->status != MODE_OK)
+> +			continue;
+> +
+> +		mode->status = drm_mode_validate_flag(mode, mode_flags);
+> +		if (mode->status != MODE_OK)
+> +			continue;
+> +
+> +		ret = drm_mode_validate_pipeline(mode, connector, ctx,
+> +						 &mode->status);
+> +		if (ret) {
+> +			drm_dbg_kms(dev,
+> +				    "drm_mode_validate_pipeline failed: %d\n",
+> +				    ret);
+> +
+> +			if (drm_WARN_ON_ONCE(dev, ret != -EDEADLK))
+> +				mode->status = MODE_ERROR;
+> +			else
+> +				return -EDEADLK;
+> +		}
+> +
+> +		if (mode->status != MODE_OK)
+> +			continue;
+> +		mode->status = drm_mode_validate_ycbcr420(mode, connector);
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>   /**
+>    * drm_helper_probe_single_connector_modes - get complete set of display modes
+>    * @connector: connector to probe
+> @@ -421,7 +476,6 @@ int drm_helper_probe_single_connector_modes(struct drm_connector *connector,
+>   	const struct drm_connector_helper_funcs *connector_funcs =
+>   		connector->helper_private;
+>   	int count = 0, ret;
+> -	int mode_flags = 0;
+>   	bool verbose_prune = true;
+>   	enum drm_connector_status old_status;
+>   	struct drm_modeset_acquire_ctx ctx;
+> @@ -519,52 +573,12 @@ int drm_helper_probe_single_connector_modes(struct drm_connector *connector,
+>   			   connector->status == connector_status_unknown))
+>   		count = drm_add_modes_noedid(connector, 1024, 768);
+>   	count += drm_helper_probe_add_cmdline_mode(connector);
+> -	if (count == 0)
+> -		goto prune;
+> -
+> -	drm_connector_list_update(connector);
+> -
+> -	if (connector->interlace_allowed)
+> -		mode_flags |= DRM_MODE_FLAG_INTERLACE;
+> -	if (connector->doublescan_allowed)
+> -		mode_flags |= DRM_MODE_FLAG_DBLSCAN;
+> -	if (connector->stereo_allowed)
+> -		mode_flags |= DRM_MODE_FLAG_3D_MASK;
+> -
+> -	list_for_each_entry(mode, &connector->modes, head) {
+> -		if (mode->status != MODE_OK)
+> -			continue;
+> -
+> -		mode->status = drm_mode_validate_driver(dev, mode);
+> -		if (mode->status != MODE_OK)
+> -			continue;
+> -
+> -		mode->status = drm_mode_validate_size(mode, maxX, maxY);
+> -		if (mode->status != MODE_OK)
+> -			continue;
+> -
+> -		mode->status = drm_mode_validate_flag(mode, mode_flags);
+> -		if (mode->status != MODE_OK)
+> -			continue;
+> -
+> -		ret = drm_mode_validate_pipeline(mode, connector, &ctx,
+> -						 &mode->status);
+> -		if (ret) {
+> -			drm_dbg_kms(dev,
+> -				    "drm_mode_validate_pipeline failed: %d\n",
+> -				    ret);
+> -
+> -			if (drm_WARN_ON_ONCE(dev, ret != -EDEADLK)) {
+> -				mode->status = MODE_ERROR;
+> -			} else {
+> -				drm_modeset_backoff(&ctx);
+> -				goto retry;
+> -			}
+> +	if (count != 0) {
+> +		ret = __drm_helper_update_and_validate(connector, maxX, maxY, &ctx);
+> +		if (ret == -EDEADLK) {
+> +			drm_modeset_backoff(&ctx);
+> +			goto retry;
+>   		}
+> -
+> -		if (mode->status != MODE_OK)
+> -			continue;
+> -		mode->status = drm_mode_validate_ycbcr420(mode, connector);
+>   	}
+>   
+>   prune:
+
+
+-- 
+With best wishes
+Dmitry
