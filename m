@@ -2,49 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBE8CCCA476
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF06CCCA478
 	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:06:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355100AbiFAOFb (ORCPT
+        id S1355187AbiFAOFn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:05:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51924 "EHLO
+        Wed, 1 Jun 2022 10:05:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354441AbiFAOAY (ORCPT
+        with ESMTP id S1354546AbiFAOAl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:00:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F007BE088;
-        Wed,  1 Jun 2022 06:56:46 -0700 (PDT)
+        Wed, 1 Jun 2022 10:00:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 609AD10FF5;
+        Wed,  1 Jun 2022 06:57:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B12A5B8175B;
-        Wed,  1 Jun 2022 13:56:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70D07C385B8;
-        Wed,  1 Jun 2022 13:56:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EE15E6160E;
+        Wed,  1 Jun 2022 13:56:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F4E2C3411D;
+        Wed,  1 Jun 2022 13:56:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091798;
-        bh=yoxhDZYgsb+yYlZZwz5ToNqwGqQPdnkh/B9IKDpd3kM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tGm9ZbaQWUHQluCj4E+0ewMo75FZ2FTS0jDgIgXixBrclgnjECkdRusDXV1Bwo52f
-         b5/KpSiAgqOpXdFxGVzeMKtqqx0RYEauz7jDTRTFKQWcvYvNyfRPM1j33ImkpQiTgI
-         CQTpILlvkCGiK1hJivCUCWkbOJrvMTSH0yFgdUIEbqd6d2yAwKZzr924lRwOFAKroR
-         Pd662zjMR2dO8EDrErPfBtLJtlr1FJuGL96CyBJdHiReSU3+zEgHu+zk+zP9PoxC2U
-         KKFITXLH0pCYTkoZmE2MeJWrudEr40uuaVIQBdZNNBoWPwDRYAU2UJbmlBf+EA9DG6
-         n3+y2iTZIJk2A==
+        s=k20201202; t=1654091785;
+        bh=Io4HhJb+Cz16sRUnVJbOtBv6IWiQnhJuRY59WG07j+s=;
+        h=From:To:Cc:Subject:Date:From;
+        b=I7A5nLZMKYXpbZb1QJHxcS049h13VY7fF5Osn/gcBujNd/KTWMGy9116J5GNSej7c
+         fX0Y4jrwckeiTZkLTJtWCBCL8jSRC71XdVk+6wxGghto6tYLgzTvjCRPSkLOP4KIZ6
+         pO3Svcj+ejPwYiOa+2AKe9O/iQx+Wv+qaPlroUYpiatvphlV7ERU9UvpYt/V2pRFUT
+         cio1toR1hGV/F6i5OiNwXqYNe6QVn+rtlaJgf0WhYZxOd64cie5jFAKDthoJS2ZbEQ
+         Byar09f2LvajKJ88obyDaYCm4U1qBnOeECsPgPjYTX5q78oeOzMXPE+jsvGx2JnfFL
+         CsRCqcNUO/z4w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zixuan Fu <r33s3n6@gmail.com>, TOTE Robot <oslab@tsinghua.edu.cn>,
-        Dave Kleikamp <dave.kleikamp@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, shaggy@kernel.org,
-        jfs-discussion@lists.sourceforge.net
-Subject: [PATCH AUTOSEL 5.15 10/37] fs: jfs: fix possible NULL pointer dereference in dbFree()
-Date:   Wed,  1 Jun 2022 09:55:55 -0400
-Message-Id: <20220601135622.2003939-10-sashal@kernel.org>
+Cc:     Niels Dossche <dossche.niels@gmail.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>,
+        dennis.dalessandro@cornelisnetworks.com, linux-rdma@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 01/37] IB/rdmavt: add missing locks in rvt_ruc_loopback
+Date:   Wed,  1 Jun 2022 09:55:46 -0400
+Message-Id: <20220601135622.2003939-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220601135622.2003939-1-sashal@kernel.org>
-References: <20220601135622.2003939-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,56 +51,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zixuan Fu <r33s3n6@gmail.com>
+From: Niels Dossche <dossche.niels@gmail.com>
 
-[ Upstream commit 0d4837fdb796f99369cf7691d33de1b856bcaf1f ]
+[ Upstream commit 22cbc6c2681a0a4fe76150270426e763d52353a4 ]
 
-In our fault-injection testing, the variable "nblocks" in dbFree() can be
-zero when kmalloc_array() fails in dtSearch(). In this case, the variable
- "mp" in dbFree() would be NULL and then it is dereferenced in
-"write_metapage(mp)".
+The documentation of the function rvt_error_qp says both r_lock and
+s_lock need to be held when calling that function.
+It also asserts using lockdep that both of those locks are held.
+rvt_error_qp is called form rvt_send_cq, which is called from
+rvt_qp_complete_swqe, which is called from rvt_send_complete, which is
+called from rvt_ruc_loopback in two places. Both of these places do not
+hold r_lock. Fix this by acquiring a spin_lock of r_lock in both of
+these places.
+The r_lock acquiring cannot be added in rvt_qp_complete_swqe because
+some of its other callers already have r_lock acquired.
 
-The failure log is listed as follows:
-
-[   13.824137] BUG: kernel NULL pointer dereference, address: 0000000000000020
-...
-[   13.827416] RIP: 0010:dbFree+0x5f7/0x910 [jfs]
-[   13.834341] Call Trace:
-[   13.834540]  <TASK>
-[   13.834713]  txFreeMap+0x7b4/0xb10 [jfs]
-[   13.835038]  txUpdateMap+0x311/0x650 [jfs]
-[   13.835375]  jfs_lazycommit+0x5f2/0xc70 [jfs]
-[   13.835726]  ? sched_dynamic_update+0x1b0/0x1b0
-[   13.836092]  kthread+0x3c2/0x4a0
-[   13.836355]  ? txLockFree+0x160/0x160 [jfs]
-[   13.836763]  ? kthread_unuse_mm+0x160/0x160
-[   13.837106]  ret_from_fork+0x1f/0x30
-[   13.837402]  </TASK>
-...
-
-This patch adds a NULL check of "mp" before "write_metapage(mp)" is called.
-
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
-Signed-off-by: Dave Kleikamp <dave.kleikamp@oracle.com>
+Link: https://lore.kernel.org/r/20220228195144.71946-1-dossche.niels@gmail.com
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/jfs/jfs_dmap.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/infiniband/sw/rdmavt/qp.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/fs/jfs/jfs_dmap.c b/fs/jfs/jfs_dmap.c
-index d8502f4989d9..e75f31b81d63 100644
---- a/fs/jfs/jfs_dmap.c
-+++ b/fs/jfs/jfs_dmap.c
-@@ -385,7 +385,8 @@ int dbFree(struct inode *ip, s64 blkno, s64 nblocks)
- 	}
+diff --git a/drivers/infiniband/sw/rdmavt/qp.c b/drivers/infiniband/sw/rdmavt/qp.c
+index 8ef112f883a7..3acab569fbb9 100644
+--- a/drivers/infiniband/sw/rdmavt/qp.c
++++ b/drivers/infiniband/sw/rdmavt/qp.c
+@@ -2775,7 +2775,7 @@ void rvt_qp_iter(struct rvt_dev_info *rdi,
+ EXPORT_SYMBOL(rvt_qp_iter);
  
- 	/* write the last buffer. */
--	write_metapage(mp);
-+	if (mp)
-+		write_metapage(mp);
- 
- 	IREAD_UNLOCK(ipbmap);
+ /*
+- * This should be called with s_lock held.
++ * This should be called with s_lock and r_lock held.
+  */
+ void rvt_send_complete(struct rvt_qp *qp, struct rvt_swqe *wqe,
+ 		       enum ib_wc_status status)
+@@ -3134,7 +3134,9 @@ void rvt_ruc_loopback(struct rvt_qp *sqp)
+ 	rvp->n_loop_pkts++;
+ flush_send:
+ 	sqp->s_rnr_retry = sqp->s_rnr_retry_cnt;
++	spin_lock(&sqp->r_lock);
+ 	rvt_send_complete(sqp, wqe, send_status);
++	spin_unlock(&sqp->r_lock);
+ 	if (local_ops) {
+ 		atomic_dec(&sqp->local_ops_pending);
+ 		local_ops = 0;
+@@ -3188,7 +3190,9 @@ void rvt_ruc_loopback(struct rvt_qp *sqp)
+ 	spin_unlock_irqrestore(&qp->r_lock, flags);
+ serr_no_r_lock:
+ 	spin_lock_irqsave(&sqp->s_lock, flags);
++	spin_lock(&sqp->r_lock);
+ 	rvt_send_complete(sqp, wqe, send_status);
++	spin_unlock(&sqp->r_lock);
+ 	if (sqp->ibqp.qp_type == IB_QPT_RC) {
+ 		int lastwqe;
  
 -- 
 2.35.1
