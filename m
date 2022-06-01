@@ -2,146 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABEC1C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 19:43:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5920C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 19:44:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229554AbiFATnT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 15:43:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56842 "EHLO
+        id S229716AbiFAToJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 15:44:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbiFATnO (ORCPT
+        with ESMTP id S229577AbiFAToI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 15:43:14 -0400
-Received: from mail-ot1-f45.google.com (mail-ot1-f45.google.com [209.85.210.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79DE12612B8;
-        Wed,  1 Jun 2022 12:41:16 -0700 (PDT)
-Received: by mail-ot1-f45.google.com with SMTP id t22-20020a0568301e3600b0060b333f7a1eso1990641otr.0;
-        Wed, 01 Jun 2022 12:41:16 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=+v5j5ekx2Jgon4FWC0grFHHMjkCKNZHQytb0+MZZAWQ=;
-        b=Emeeb9+DM/HcvZnRMpwpOi0RxVpL67MnQw522F7NX0BAnwMdF8Ox/LAaAcFeeKOIaY
-         YZcjLzgyH5XfKmYPi425vZR0DZpOv6eonu7NuIKUoCsHcFP6ZXUyG/1XKaQBVtHJpLz3
-         Ft9VBtD1NtFmuBlgCdXAATsEer7pFT+U2Zz5xXAP63enx28FS/JEs4kxeeZ6NQTx1BIe
-         LZ5fySk3+Xb1zuWvNUeAI67N93INkt2gWvr2eFoBFONbFgppbnqGfQv6Jo8rdSmfo0w9
-         Ol/bQk2LOZ2wT3xwWeSzGB8Tqj71JcqJNTPCii7O6koAd8SRu0IkTqgQy232ro6QGhD7
-         5Y9A==
-X-Gm-Message-State: AOAM533VhaCHSCyttNHRdyGzNdwKKsTjz55rarEA75Y4+zxvOlCVT9VK
-        aXSrziIigQjV4GOGn00OdQbjrv+QKQ==
-X-Google-Smtp-Source: ABdhPJx/fJbMfVLJruJz1q5U9ewNqzGJeM1ex5DJpVTEeuXhhWvntCyhTm1jZcpILyQZakLjHaqNNw==
-X-Received: by 2002:a9d:694a:0:b0:60b:275f:fe2d with SMTP id p10-20020a9d694a000000b0060b275ffe2dmr621608oto.49.1654112397104;
-        Wed, 01 Jun 2022 12:39:57 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id 63-20020aca0542000000b00325643bce40sm1386527oif.0.2022.06.01.12.39.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Jun 2022 12:39:56 -0700 (PDT)
-Received: (nullmailer pid 300162 invoked by uid 1000);
-        Wed, 01 Jun 2022 19:39:56 -0000
-Date:   Wed, 1 Jun 2022 14:39:56 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Oleksii Moisieiev <Oleksii_Moisieiev@epam.com>
-Cc:     "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 0/1] dt-bindings: Add device-perms property description
-Message-ID: <20220601193956.GA234900-robh@kernel.org>
-References: <cover.1651749565.git.oleksii_moisieiev@epam.com>
+        Wed, 1 Jun 2022 15:44:08 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32D3C1C422A;
+        Wed,  1 Jun 2022 12:43:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=BHZbbhlnwWZ69g/BbqnWHLaBADjVX+Zh/qnzxYzNDO0=; b=ZNJxRbKgkoPIU1PbhayK20lWOc
+        zOSaeGjel+0cbGqgoSDF11BVPSMGnRo8bprJpkGZ2+dJtXT2naYo3XMWNtJmWTSHzYNI/4nvtN/Lr
+        VsXtpggm5OqGtC/wucz4NIl3gjx0JHwtsUE+kPP/doftwrxGhsJNAJOULb8nBEI3/8xzjqC+hBEtx
+        cJSyr0Gc7Fh2FH7QVhUIcOXwrbc7suIjM+CMImaLrBCGtFcA5LgII3aIWcQyMor0+aWBMDQ/WDv3Z
+        ks8YO6RtOc1uaI3LGcnKTMzKBBdn5NPc+AU7hIJH1jQh6tTdoo3uYMah2s8KsGMUmubimxRXN5/tN
+        CcK/NSLA==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nwTsA-006XqD-2w; Wed, 01 Jun 2022 19:19:14 +0000
+Date:   Wed, 1 Jun 2022 20:19:14 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Alexey Gladkov <legion@kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        "Eric W . Biederman" <ebiederm@xmission.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Iurii Zaikin <yzaikin@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Linux Containers <containers@lists.linux.dev>,
+        linux-fsdevel@vger.kernel.org,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Vasily Averin <vvs@virtuozzo.com>
+Subject: Re: [RFC PATCH 1/4] sysctl: API extension for handling sysctl
+Message-ID: <Ype7skNJzEQ1W96v@casper.infradead.org>
+References: <CAHk-=whi2SzU4XT_FsdTCAuK2qtYmH+-hwi1cbSdG8zu0KXL=g@mail.gmail.com>
+ <cover.1654086665.git.legion@kernel.org>
+ <5ec6759ab3b617f9c12449a9606b6f0b5a7582d0.1654086665.git.legion@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cover.1651749565.git.oleksii_moisieiev@epam.com>
+In-Reply-To: <5ec6759ab3b617f9c12449a9606b6f0b5a7582d0.1654086665.git.legion@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 05, 2022 at 11:23:50AM +0000, Oleksii Moisieiev wrote:
-> Introduce device-perms property which is intended to set the device
-> permissions for the System Management interfaces.
-> An example of this interface is SCMI (System Control and Management
-> Interface) which controls clocks/power-domains/resets etc from the
-> Firmware. This property sets the device_id to set the device permissions
-> for the Fimware using BASE_SET_DEVICE_PERMISSIONS message (see 4.2.2.10 of [0]).
+On Wed, Jun 01, 2022 at 03:20:29PM +0200, Alexey Gladkov wrote:
+> +struct ctl_fops {
+> +	int (*open) (struct ctl_context *, struct inode *, struct file *);
+> +	int (*release) (struct ctl_context *, struct inode *, struct file *);
+> +	ssize_t (*read) (struct ctl_context *, struct file *, char *, size_t *, loff_t *);
+> +	ssize_t (*write) (struct ctl_context *, struct file *, char *, size_t *, loff_t *);
+> +};
 
-Is that an exhaustive list of controls? Seems like there would be a 
-GET_DEVICE_PERMISSIONS.
-
-> Device permissions management described in DEN 0056, Section 4.2.2.10 [0].
-> Given parameter should set the device_id, needed to set device
-> permissions in the Firmware.
-> This property is used by trusted Agent to set permissions for the devices,
-> passed-through to the non-trusted Agents. Trusted Agent will use device-perms to
-> set the Device permissions for the Firmware (See Section 4.2.2.10 [0]
-> for details).
-> Agents concept is described in Section 4.2.1 [0].
-
-As I said on the call discussing this, this looks very similar to other 
-proposals wanting to control or check permissions on devices handled by 
-some provider. While the consumer of the binding is different in various 
-proposals, that doesn't really matter from a DT perspective. DT is just 
-describing some type of connection between nodes. So I'm looking for 
-collaboration here with folks that have made prior proposals. To put it 
-another way, for a new common binding like this, I want to see more than 
-one user. 
-
-> 
-> device-perms in Device-tree node example:
-> usb@e6590000
-> {
->     device-perms = <&scmi 19>;
-
-Please follow typical design patterns. For example, all of these:
-
->     clocks = <&scmi_clock 3>, <&scmi_clock 2>;
->     resets = <&scmi_reset 10>, <&scmi_reset 9>;
->     power-domains = <&scmi_power 0>;
-
-The provider is what determines the number of cells and their meaning. 
-That's certainly the case here.
-
-> };
-> 
-> Given example shows the configuration of the hsusb node, which is using
-> scmi to contol clocks, resets and power-domains. device-perms links to
-> &scmi phandle and set the permission parameter 19, which should match
-> defined id for usb in the Firmware.
-
-See, the provider is what determines the meaning.
-
-> Current implementation defines Xen hypervisor as trusted Agent and OS
-> (Linux or other) as non-trusted Agent.
-> Trusted Agent will use device-perms to set the device permissions for
-> the Agents. Non-trusted Agent (OS) should not have an access to the permissions
-> settings, so no code to process device-perms was presented in Linux
-> kernel.
-> 
-> We are currently contributing changes to Xen, which are intended to
-> mediate SCMI access from Guests to the Firmware. Xen uses device-perms to set
-> the permissions for the devices. See [1] thread for details.
-> 
-> [0] https://developer.arm.com/documentation/den0056/latest
-> [1] https://xen.markmail.org/message/mmi4fpb4qr6e3kad
-> 
-> ---
-> Changes V1 -> V2:
->    - update parameter name, made it xen-specific
->    - add xen vendor bindings
-> 
-> Changes V2 -> V3:
->    - update parameter name, make it generic
->    - update parameter format, add link to controller
->    - do not include xen vendor bindings as already upstreamed
-> 
-> Oleksii Moisieiev (1):
->   dt-bindings: Add device-perms property description
-> 
->  .../bindings/firmware/device-perms.yaml       | 43 +++++++++++++++++++
->  1 file changed, 43 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/firmware/device-perms.yaml
-> 
-> -- 
-> 2.27.0
-> 
+Why not pass the iocb in ->read and ->write?  We're still regretting not
+doing that with file_operations.
