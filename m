@@ -2,167 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78838C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 12:47:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78937C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 12:48:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353082AbiFAMrf (ORCPT
+        id S1353088AbiFAMsq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 08:47:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34822 "EHLO
+        Wed, 1 Jun 2022 08:48:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243412AbiFAMra (ORCPT
+        with ESMTP id S238006AbiFAMso (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 08:47:30 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D1B21054B
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 05:47:29 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id t25so2548424lfg.7
-        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 05:47:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4li32PBdxnIv+jFKvhCljFF/bYWyWatcYvkg3TZww1s=;
-        b=ywX1q/Sp7hV1p86goYqniFRV4cZlbD1R9yXvl2mfzeiuSR3efubHRWaiRdhX8Esqed
-         mJ3yGD0RUVPPt1f/R+ouSvoTxOqAtRGGgJUYbilgONCDkx8DOopTBoVTnK1YDUsrdubc
-         35isYXnsGcsXSl0mGJFgkq3r3lG7riqq0eSxluKLDD9BSI3Llw6eJre/ph0RCqD4obLC
-         i9YXHOcRy9Xt2c5IM1Gz2xlBGmspzRO9AVWXDux0w0p9TMNZeVhk0CUU/AV1ol0ip3mo
-         xFYcraKqvM6vRkJcCRd/ukGbYMiT6azPbdbKx0f8zsY59oJZGDh+lFQouG4FfWUAYOmP
-         Jukw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4li32PBdxnIv+jFKvhCljFF/bYWyWatcYvkg3TZww1s=;
-        b=cBU5gPcN9Akd54Ph4RxfBXdGoScOYl8TqSEVQdF1XRHFXy3Pru8Gfb0M9j82a/8irL
-         olBKJvU4JWgZa+hFiq+agolEz2TDM2if4RYx1HouPt0s8f9AZl89GGFP0QAC6EnVPHFX
-         6/J1qZFlOTgvf6TzNFQ5e1SD/mMQgXTZ3whEMi7D1mdO6WpsBUGpL15fsE7dARfz/k/w
-         B70X/226FByuAKcl/A834PRbB+66VEl09zavSf3WEdxARY2fjs7gzBShZyDCH/qDPSQV
-         t1HppfclUAr9ErsHg20fR3pDN9SE47BbTPByLG9BsKH9akQpNJWP8Hqs0QlK0zzrkF31
-         /Fgw==
-X-Gm-Message-State: AOAM532DT84a0qIpY3Q6SEj/kmXOIhVVOQIdrN9sWn+j/tO0IKqmW8CM
-        h0G2/x4qcSjidcuGd0wvSm6gn/EVHOw8hmYBRwggfQ==
-X-Google-Smtp-Source: ABdhPJw8rLYnetAKH4EyHC77hyUUHRF/sLZFy9a2sig6ks5ygw10wco9yqviC0600wPiouO4wz2Lk4I3fuUHalzgJn0=
-X-Received: by 2002:a05:6512:308b:b0:478:7ab5:4acd with SMTP id
- z11-20020a056512308b00b004787ab54acdmr34023519lfd.167.1654087647633; Wed, 01
- Jun 2022 05:47:27 -0700 (PDT)
+        Wed, 1 Jun 2022 08:48:44 -0400
+X-Greylist: delayed 936 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 01 Jun 2022 05:48:41 PDT
+Received: from m1322.mail.163.com (m1322.mail.163.com [220.181.13.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7E84C1145A;
+        Wed,  1 Jun 2022 05:48:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=NFBlK
+        pRDQs1uQ60u0KwM3jZAk4g2SpACH5FI7TLBoX0=; b=Y60/vm9hOGmDOw3gFFTyW
+        xkvGhGDCieHMsy2MY9yFPc+PGBU27jRCea5hbIlPTqM/Ft1Q5B5lNDTI1WgQlclz
+        Hj5TAkkk+MEZuOA1BF+pOiHs0H3gjreTSXWHMjclPmm06BGXcjr6xMM9yUEG2yoO
+        +AgDTPIYubFScaVNDoE+cQ=
+Received: from chen45464546$163.com ( [171.221.150.250] ) by
+ ajax-webmail-wmsvr22 (Coremail) ; Wed, 1 Jun 2022 20:32:48 +0800 (CST)
+X-Originating-IP: [171.221.150.250]
+Date:   Wed, 1 Jun 2022 20:32:48 +0800 (CST)
+From:   =?GBK?B?097K9w==?= <chen45464546@163.com>
+To:     "Alexander Duyck" <alexander.duyck@gmail.com>
+Cc:     "Jakub Kicinski" <kuba@kernel.org>,
+        "Andrew Morton" <akpm@linux-foundation.org>,
+        linux-mm <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>
+Subject: Re:Re: [PATCH v2] mm: page_frag: Warn_on when frag_alloc size is
+ bigger than PAGE_SIZE
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
+ Copyright (c) 2002-2022 www.mailtech.cn 163com
+In-Reply-To: <CAKgT0UfQsbAzsJ1e__irHY2xBRevpB9m=FBYDis3C1fMua+Zag@mail.gmail.com>
+References: <20220531081412.22db88cc@kernel.org>
+ <1654011382-2453-1-git-send-email-chen45464546@163.com>
+ <20220531084704.480133fa@kernel.org>
+ <CAKgT0UfQsbAzsJ1e__irHY2xBRevpB9m=FBYDis3C1fMua+Zag@mail.gmail.com>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=GBK
 MIME-Version: 1.0
-References: <1653674036-21829-1-git-send-email-quic_c_sbhanu@quicinc.com>
-In-Reply-To: <1653674036-21829-1-git-send-email-quic_c_sbhanu@quicinc.com>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Wed, 1 Jun 2022 14:46:51 +0200
-Message-ID: <CAPDyKFqqSdCGV-SGcbEFCA5rXaqUc0btYd9Tig43NouNuHUG5Q@mail.gmail.com>
-Subject: Re: [PATCH V8 0/5] mmc: add error statistics for eMMC and SD card
-To:     Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>,
-        adrian.hunter@intel.com
-Cc:     wsa+renesas@sang-engineering.com, shawn.lin@rock-chips.com,
-        yoshihiro.shimoda.uh@renesas.com, digetx@gmail.com,
-        quic_asutoshd@quicinc.com, linux-arm-msm@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        quic_rampraka@quicinc.com, quic_pragalla@quicinc.com,
-        quic_sartgarg@quicinc.com, quic_nitirawa@quicinc.com,
-        quic_sayalil@quicinc.com
-Content-Type: text/plain; charset="UTF-8"
+Message-ID: <3498989.c69f.1811f41186e.Coremail.chen45464546@163.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: FsGowAD3tDpwXJdiGSsdAA--.33056W
+X-CM-SenderInfo: hfkh0kqvuwkkiuw6il2tof0z/xtbBdhUTnmDknYJ7SQABsG
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 27 May 2022 at 19:54, Shaik Sajida Bhanu
-<quic_c_sbhanu@quicinc.com> wrote:
->
-> Changes since V7:
->         - Patch set V6 rebased on Ulf's(Ulf Hansson) master branch instead
->           of Ulf's (Ulf Hansson) next branch by mistake. So rebased patch
->           set on Ulf's next branch now as suggested by Adrain Hunter.
-
-Thanks to both of you for moving this forward to become an easy
-maintainable piece of code.
-
-Queued for v5.20 on the devel branch, thanks!
-
-Kind regards
-Uffe
-
-
->
-> Changes since V6:
->         - Rebased on Ulf's(Ulf Hansson) next branch as suggested by
->           Adrain Hunter.
->         - Replaced debugfs_create_file() with debugfs_create_file_unsafe()
->           as suggested by Adrain Hunter.
->         - "[V6,5/5] mmc: cqhci: Capture eMMC and SD card errors" not
->           included in this Patch series as we don't have cqhci changes
->           on Ulf's(Ulf Hansson)next branch.
->
-> Changes since V5:
->         - Considered all error stats enums to set error state.
->         - Added missed tuning error related code changes which was
->           missed in patch set V5 as Adrain Hunter pointed.
->         - Replaced DEFINE_SIMPLE_ATTRIBUTE with DEFINE_DEBUGFS_ATTRIBUTE
->           as suggested by Adrain Hunter.
->
-> Changes since V4:
->         - Defined new macro to increment err_stats members when error occured
->           as suggested by Adrain Hunter.
->         - Called err_stats members increment function after printing the error
->           as suggested by Adrain Hunter.
->         - Considered INDEX and END_BIT errors same as CRC errors as suggested
->           by Adrain Hunter.
->         - Removed Null check for host in debug fs functions and Reordered
->           err_stats declarationas suggested by Adrain Hunter.
->         - Removed err_state variable stuff and updated err_state debug fs entry
->           based on the err_stats members state as suggested by Adrain Hunter.
->
-> Changes since V3:
->         - Dropped error stats feature flag as suggested by Adrain Hunter.
->         - Separated error state related changes in separate patches as
->           suggested by Adrain Hunter.
->           [PATCH V4 4/7] : error state debug fs
->           [PATCH V4 5/7] : error state enable function
->           [PATCH V4 6/7] : error state enable in error case
->         - Note: we are enabling error state before calling sdhci_dumpregs
->           we couldn't add the err state in error stats array as err state
->           is not error type.
->         - Corrected Signed-off-by order as suggested by Bjron Andersson.
->         - Moved error state enable code from sdhci_dumpregs to error
->           conditions as suggested by Adrain Hunter
->
-> Changes since V2:
->         - Removed userspace error stats clear debug fs entry as suggested
->           by Adrain Hunter.
->         - Split patch into 4 patches
->           [PATCH V3 1/4] : sdhci driver
->           [PATCH V3 2/4] : debug fs entries
->           [PATCH V3 3/4] : core driver
->           [PATCH V3 4/4] : cqhci driver
->         - Used for loop to print error messages instead of using printf
->           statements for all error messages as suggested by Adrain Hunter.
->         - Introduced one flag to enable error stats feature, if any other
->           client wants to use this feature, they need to enable that flag.
->         - Moved reset command timeout error statement to card init flow
->           as suggested by Adrain Hunter.
->
-> Changes since V1:
->         - Removed sysfs entry for eMMC and SD card error statistics and added
->           debugfs entry as suggested by Adrian Hunter and Ulf Hansson.
->
-> Shaik Sajida Bhanu (5):
->   mmc: core: Capture eMMC and SD card errors
->   mmc: sdhci: Capture eMMC and SD card errors
->   mmc: debugfs: Add debug fs entry for mmc driver
->   mmc: debugfs: Add debug fs error state entry for mmc driver
->   mmc: cqhci: Capture eMMC and SD card errors
->
->  drivers/mmc/core/core.c       | 10 +++++-
->  drivers/mmc/core/debugfs.c    | 79 +++++++++++++++++++++++++++++++++++++++++++
->  drivers/mmc/host/cqhci-core.c |  9 ++++-
->  drivers/mmc/host/sdhci.c      | 59 ++++++++++++++++++++++++--------
->  drivers/mmc/host/sdhci.h      |  3 ++
->  include/linux/mmc/host.h      | 26 ++++++++++++++
->  include/linux/mmc/mmc.h       |  6 ++++
->  7 files changed, 175 insertions(+), 17 deletions(-)
->
-> --
-> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-> of Code Aurora Forum, hosted by The Linux Foundation
->
+QXQgMjAyMi0wNi0wMSAwMToyODo1OSwgIkFsZXhhbmRlciBEdXljayIgPGFsZXhhbmRlci5kdXlj
+a0BnbWFpbC5jb20+IHdyb3RlOgo+T24gVHVlLCBNYXkgMzEsIDIwMjIgYXQgODo0NyBBTSBKYWt1
+YiBLaWNpbnNraSA8a3ViYUBrZXJuZWwub3JnPiB3cm90ZToKPj4KPj4gT24gVHVlLCAzMSBNYXkg
+MjAyMiAyMzozNjoyMiArMDgwMCBDaGVuIExpbiB3cm90ZToKPj4gPiBBdCAyMDIyLTA1LTMxIDIy
+OjE0OjEyLCAiSmFrdWIgS2ljaW5za2kiIDxrdWJhQGtlcm5lbC5vcmc+IHdyb3RlOgo+PiA+ID5P
+biBUdWUsIDMxIE1heSAyMDIyIDIyOjQxOjEyICswODAwIENoZW4gTGluIHdyb3RlOgo+PiA+ID4+
+IFRoZSBzYW1wbGUgY29kZSBhYm92ZSBjYW5ub3QgY29tcGxldGVseSBzb2x2ZSB0aGUgY3VycmVu
+dCBwcm9ibGVtLgo+PiA+ID4+IEZvciBleGFtcGxlLCB3aGVuIGZyYWdzeiBpcyBncmVhdGVyIHRo
+YW4gUEFHRV9GUkFHX0NBQ0hFX01BWF9TSVpFKDMyNzY4KSwKPj4gPiA+PiBfX3BhZ2VfZnJhZ19j
+YWNoZV9yZWZpbGwgd2lsbCByZXR1cm4gYSBtZW1vcnkgb2Ygb25seSAzMjc2OCBieXRlcywgc28K
+Pj4gPiA+PiBzaG91bGQgd2UgY29udGludWUgdG8gZXhwYW5kIHRoZSBQQUdFX0ZSQUdfQ0FDSEVf
+TUFYX1NJWkU/IE1heWJlIG1vcmUKPj4gPiA+PiB3b3JrIG5lZWRzIHRvIGJlIGRvbmUKPj4gPiA+
+Cj4+ID4gPlJpZ2h0LCBidXQgSSBjYW4gdGhpbmsgb2YgdHdvIGRyaXZlcnMgb2ZmIHRoZSB0b3Ag
+b2YgbXkgaGVhZCB3aGljaCB3aWxsCj4+ID4gPmFsbG9jYXRlIDw9MzJrIGZyYWdzIGJ1dCBub25l
+IHdoaWNoIHdpbGwgYWxsb2NhdGUgbW9yZS4KPj4gPgo+PiA+IEluIGZhY3QsIGl0IGlzIHJhcmUg
+dG8gYXBwbHkgZm9yIG1vcmUgdGhhbiBvbmUgcGFnZSwgc28gaXMgaXQgbmVjZXNzYXJ5IHRvCj4+
+ID4gY2hhbmdlIGl0IHRvIHN1cHBvcnQ/Cj4+Cj4+IEkgZG9uJ3QgcmVhbGx5IGNhcmUgaWYgaXQn
+cyBzdXBwb3J0ZWQgVEJILCBidXQgSSBkaXNsaWtlIGFkZGluZwo+PiBhIGJyYW5jaCB0byB0aGUg
+ZmFzdCBwYXRoIGp1c3QgdG8gY2F0Y2ggb25lIG9yIHR3byBlc290ZXJpYyBiYWQKPj4gY2FsbGVy
+cy4KPj4KPj4gTWF5YmUgeW91IGNhbiB3cmFwIHRoZSBjaGVjayB3aXRoIHNvbWUgZGVidWcgQ09O
+RklHXyBzbyBpdCB3b24ndAo+PiBydW4gb24gcHJvZHVjdGlvbiBidWlsZHM/Cj4KPkFsc28gdGhl
+IGV4YW1wbGUgdXNlZCBoZXJlIHRvIGRlZmluZSB3aGF0IGlzIHRyaWdnZXJpbmcgdGhlIGJlaGF2
+aW9yCj5pcyBzZXJpb3VzbHkgZmxhd2VkLiBUaGUgY29kZSBpdHNlbGYgaXMgbWVhbnQgdG8gYWxs
+b3cgZm9yIG9yZGVyMCBwYWdlCj5yZXVzZSwgYW5kIHRoZSAzMksgcGFnZSB3YXMganVzdCBhbiBv
+cHRpbWl6YXRpb24uIFNvIHRoZSBhc3N1bXB0aW9uCj50aGF0IHlvdSBjb3VsZCByZXF1ZXN0IG1v
+cmUgdGhhbiA0ayBpcyBhIGJhZCBhc3N1bXB0aW9uIGluIHRoZSBkcml2ZXIKPnRoYXQgaXMgbWFr
+aW5nIHRoaXMgY2FsbC4KPgo+U28gSSBhbSBpbiBhZ3JlZW1lbnQgd2l0aCBLdWJhLiBXZSBzaG91
+bGRuJ3QgYmUgbmVlZGluZyB0byBhZGQgY29kZSBpbgo+dGhlIGZhc3QgcGF0aCB0byB0ZWxsIHVz
+ZXJzIG5vdCB0byBzaG9vdCB0aGVtc2VsdmVzIGluIHRoZSBmb290Lgo+Cj5XZSBhbHJlYWR5IGhh
+dmUgY29kZSBpbiBwbGFjZSBpbiBfX25ldGRldl9hbGxvY19za2IgdGhhdCBpcyBjYWxsaW5nCj50
+aGUgc2xhYiBhbGxvY2F0b3IgaWYgImxlbiA+IFNLQl9XSVRIX09WRVJIRUFEKFBBR0VfU0laRSki
+LiBXZSBjb3VsZAo+cHJvYmFibHkganVzdCBhZGQgYSBERUJVRyB3cmFwcGVkIEJVR19PTiB0byBj
+YXB0dXJlIHRob3NlIGNhc2VzIHdoZXJlCj5hIGRyaXZlciBpcyBtYWtpbmcgdGhhdCBtaXN0YWtl
+IHdpdGggX19uZXRkZXZfYWxsb2NfZnJhZ19hbGlnbi4KClRoYW5rcyBmb3IgdGhlIGNsZWFyIGV4
+cGxhbmF0aW9uLiAKVGhlIHJlYWxpdHkgaXMgdGhhdCBpdCBpcyBub3QgZWFzeSB0byBjYXB0dXJl
+IHRoZSBkcml2ZXJzIHRoYXQgbWFrZSBzdWNoIG1pc3Rha2UuCkJlY2F1c2UgbWVtb3J5IGNvcnJ1
+cHRpb24gdXN1YWxseSBsZWFkcyB0byBlcnJvcnMgb24gb3RoZXIgdW5yZWxhdGVkIG1vZHVsZXMu
+IApOb3QgbG9uZyBhZ28sIHdlIGhhdmUgc3BlbnQgYSBsb3Qgb2YgdGltZSBhbmQgZWZmb3J0IHRv
+IGxvY2F0ZSBhIGlzc3VlIHRoYXQgCm9jY2FzaW9uYWxseSBvY2N1cnMgaW4gZGlmZmVyZW50IGtl
+cm5lbCBtb2R1bGVzLCBhbmQgZmluYWxseSBmaW5kIHRoZSByb290IGNhdXNlIGlzCnRoZSBpbXBy
+b3BlciB1c2Ugb2YgdGhpcyBuZXRkZXZfYWxsb2NfZnJhZyBpbnRlcmZhY2UgaW4gRFBBQSBuZXQg
+ZHJpdmVyIGZyb20gTlhQLiAKSXQncyBhIG1pc2VyYWJsZSBwcm9jZXNzLgoKSSBhbHNvIGZvdW5k
+IHRoYXQgc29tZSBuZXQgZHJpdmVycyBpbiB0aGUgbGF0ZXN0IExpbnV4IHZlcnNpb24gaGF2ZSB0
+aGlzIGlzc3VlLgpMaWtlOgoxLiBuZXRkZXZfYWxsb2NfZnJhZyAibGVuIiBtYXkgbGFyZ2VyIHRo
+YW4gUEFHRV9TSVpFCiNlbGlmIChQQUdFX1NJWkUgPj0gRTEwMDBfUlhCVUZGRVJfNDA5NikKICAg
+ICAgICAgICAgICAgIGFkYXB0ZXItPnJ4X2J1ZmZlcl9sZW4gPSBQQUdFX1NJWkU7CiNlbmRpZgoK
+c3RhdGljIHVuc2lnbmVkIGludCBlMTAwMF9mcmFnX2xlbihjb25zdCBzdHJ1Y3QgZTEwMDBfYWRh
+cHRlciAqYSkKewogICAgICAgIHJldHVybiBTS0JfREFUQV9BTElHTihhLT5yeF9idWZmZXJfbGVu
+ICsgRTEwMDBfSEVBRFJPT00pICsKICAgICAgICAgICAgICAgIFNLQl9EQVRBX0FMSUdOKHNpemVv
+ZihzdHJ1Y3Qgc2tiX3NoYXJlZF9pbmZvKSk7Cn0KCnN0YXRpYyB2b2lkICplMTAwMF9hbGxvY19m
+cmFnKGNvbnN0IHN0cnVjdCBlMTAwMF9hZGFwdGVyICphKQp7CiAgICAgICAgdW5zaWduZWQgaW50
+IGxlbiA9IGUxMDAwX2ZyYWdfbGVuKGEpOwogICAgICAgIHU4ICpkYXRhID0gbmV0ZGV2X2FsbG9j
+X2ZyYWcobGVuKTsKfQoiLi9kcml2ZXJzL25ldC9ldGhlcm5ldC9pbnRlbC9lMTAwMC9lMTAwMF9t
+YWluLmMiIDUzMTYgIC0tMzglLS0gCgoyLiBuZXRkZXZfYWxsb2NfZnJhZyAicmluZy0+ZnJhZ19z
+aXplIiBtYXkgbGFyZ2VyIHRoYW4gKDQwOTYgKiAzKQoKI2RlZmluZSBNVEtfTUFYX0xST19SWF9M
+RU5HVEggICAgICAgICAgICg0MDk2ICogMykKICAgICAgICBpZiAocnhfZmxhZyA9PSBNVEtfUlhf
+RkxBR1NfSFdMUk8pIHsKICAgICAgICAgICAgICAgIHJ4X2RhdGFfbGVuID0gTVRLX01BWF9MUk9f
+UlhfTEVOR1RIOwogICAgICAgICAgICAgICAgcnhfZG1hX3NpemUgPSBNVEtfSFdfTFJPX0RNQV9T
+SVpFOwogICAgICAgIH0gZWxzZSB7CiAgICAgICAgICAgICAgICByeF9kYXRhX2xlbiA9IEVUSF9E
+QVRBX0xFTjsKICAgICAgICAgICAgICAgIHJ4X2RtYV9zaXplID0gTVRLX0RNQV9TSVpFOwogICAg
+ICAgIH0KCiAgICAgICAgcmluZy0+ZnJhZ19zaXplID0gbXRrX21heF9mcmFnX3NpemUocnhfZGF0
+YV9sZW4pOwogICAgICAgIAogICAgICAgIGZvciAoaSA9IDA7IGkgPCByeF9kbWFfc2l6ZTsgaSsr
+KSB7CiAgICAgICAgICAgICAgICByaW5nLT5kYXRhW2ldID0gbmV0ZGV2X2FsbG9jX2ZyYWcocmlu
+Zy0+ZnJhZ19zaXplKTsKICAgICAgICAgICAgICAgIGlmICghcmluZy0+ZGF0YVtpXSkKICAgICAg
+ICAgICAgICAgICAgICAgICAgcmV0dXJuIC1FTk9NRU07CiAgICAgICAgfQoiZHJpdmVycy9uZXQv
+ZXRoZXJuZXQvbWVkaWF0ZWsvbXRrX2V0aF9zb2MuYyIgMzM0NCAgLS01MCUtLSAKCkkgd2lsbCB0
+cnkgdG8gZml4IHRoZXNlIGRyaXZlcnMgbGF0ZXIuCgpFdmVuIGV4cGVyaWVuY2VkIGRyaXZlciBl
+bmdpbmVlcnMgbWF5IHVzZSB0aGlzIG5ldGRldl9hbGxvY19mcmFnIAppbnRlcmZhY2UgaW5jb3Jy
+ZWN0bHkuIApTbyBJIHRob3VnaHQgaXQgaXMgYmVzdCB0byBwcm92aWRlIHNvbWUgcHJvbXB0IGlu
+Zm9ybWF0aW9uIG9mIHVzYWdlIAplcnJvciBpbnNpZGUgdGhlIG5ldGRldl9hbGxvY19mcmFnLCBv
+ciBpdCdzIE9LIHRvIHJlcG9ydCBzdWNoIG1pc3Rha2UgCmR1cmluZyBzeXN0ZW0gcnVubmluZyB3
+aGljaCBtYXkgY2F1c2VkIGJ5IGZyYWdzeiB2YXJpZXMoZXhjZWVkZWQgcGFnZSBzaXplKS4KCk5v
+dywgYXMgeW91IGFuZCBLdWJhIG1lbnRpb25lZCBlYXJsaWVyLCAiZG8gbm90IGFkZCBjb2RlIGlu
+IGZhc3QgcGF0aCIuCgpDYW4gd2UganVzdCBhZGQgY29kZSB0byB0aGUgcmVsYXRpdmVseSBzbG93
+IHBhdGggdG8gY2FwdHVyZSB0aGUgbWlzdGFrZQpiZWZvcmUgaXQgbGVhZCB0byBtZW1vcnkgY29y
+cnVwdGlvbj8gCkxpa2U6CmRpZmYgLS1naXQgYS9tbS9wYWdlX2FsbG9jLmMgYi9tbS9wYWdlX2Fs
+bG9jLmMKaW5kZXggZTZmMjExZC4uYWM2MGE5NyAxMDA2NDQKLS0tIGEvbW0vcGFnZV9hbGxvYy5j
+CisrKyBiL21tL3BhZ2VfYWxsb2MuYwpAQCAtNTU4MCw2ICs1NTgwLDcgQEAgdm9pZCAqcGFnZV9m
+cmFnX2FsbG9jX2FsaWduKHN0cnVjdCBwYWdlX2ZyYWdfY2FjaGUgKm5jLAogICAgICAgICAgICAg
+ICAgLyogcmVzZXQgcGFnZSBjb3VudCBiaWFzIGFuZCBvZmZzZXQgdG8gc3RhcnQgb2YgbmV3IGZy
+YWcgKi8KICAgICAgICAgICAgICAgIG5jLT5wYWdlY250X2JpYXMgPSBQQUdFX0ZSQUdfQ0FDSEVf
+TUFYX1NJWkUgKyAxOwogICAgICAgICAgICAgICAgb2Zmc2V0ID0gc2l6ZSAtIGZyYWdzejsKKyAg
+ICAgICAgICAgICAgIEJVR19PTihvZmZzZXQgPCAwKTsKICAgICAgICB9CgogICAgICAgIG5jLT5w
+YWdlY250X2JpYXMtLTsKCgpBZGRpdGlvbmFsLCB3ZSBtYXkgbW9kaWZ5IGRvY3VtZW50IHRvIGNs
+ZWFybHkgaW5kaWNhdGUgdGhlIGxpbWl0cyBvZiB0aGUgCmlucHV0IHBhcmFtZXRlciBmcmFnc3ou
+Ckxpa2U6CmRpZmYgLS1naXQgYS9Eb2N1bWVudGF0aW9uL3ZtL3BhZ2VfZnJhZ3MucnN0IGIvRG9j
+dW1lbnRhdGlvbi92bS9wYWdlX2ZyYWdzLnJzdAppbmRleCA3ZDZmOTM4Li42MWIyODA1IDEwMDY0
+NAotLS0gYS9Eb2N1bWVudGF0aW9uL3ZtL3BhZ2VfZnJhZ3MucnN0CisrKyBiL0RvY3VtZW50YXRp
+b24vdm0vcGFnZV9mcmFncy5yc3QKQEAgLTQsNyArNCw3IEBACiBQYWdlIGZyYWdtZW50cwogPT09
+PT09PT09PT09PT0KCi1BIHBhZ2UgZnJhZ21lbnQgaXMgYW4gYXJiaXRyYXJ5LWxlbmd0aCBhcmJp
+dHJhcnktb2Zmc2V0IGFyZWEgb2YgbWVtb3J5CitBIHBhZ2UgZnJhZ21lbnQgaXMgYW4gYXJiaXRy
+YXJ5LWxlbmd0aChtdXN0IDw9IFBBR0VfU0laRSkgYXJiaXRyYXJ5LW9mZnNldCBhcmVhIG9mIG1l
+bW9yeQogd2hpY2ggcmVzaWRlcyB3aXRoaW4gYSAwIG9yIGhpZ2hlciBvcmRlciBjb21wb3VuZCBw
+YWdlLiAKClRoYW5rcwo=
