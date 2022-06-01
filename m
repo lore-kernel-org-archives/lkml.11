@@ -2,49 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 796C5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:13:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C229C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:13:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355260AbiFAONN (ORCPT
+        id S1355081AbiFAONR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:13:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46586 "EHLO
+        Wed, 1 Jun 2022 10:13:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354786AbiFAOFN (ORCPT
+        with ESMTP id S1351904AbiFAOH5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:05:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4FE6AE25E;
-        Wed,  1 Jun 2022 06:59:09 -0700 (PDT)
+        Wed, 1 Jun 2022 10:07:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69ACAA5017;
+        Wed,  1 Jun 2022 07:00:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C8E7615B2;
-        Wed,  1 Jun 2022 13:59:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C58FC385A5;
-        Wed,  1 Jun 2022 13:59:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4182DB81AE7;
+        Wed,  1 Jun 2022 14:00:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64C7EC385B8;
+        Wed,  1 Jun 2022 14:00:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091949;
-        bh=Pee4iM1pwQZocsKFEr4FpnFl5ch4rnt8kPIrAq5CT90=;
+        s=k20201202; t=1654092012;
+        bh=QsgEGlWyZ5KfG9+7DZ5KncemJyCDriy+OJ1G3S+RR38=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iiSLTm+e29HEgRiPhrBF3gQXDLV7RS4qUNB6Y8je8BclA/ZO1XrpZgmwM4t7HAcrm
-         0DsKCgtiMUoFWVe3fGNZsqBML1YQHMVEelDqT+dneRLgZ5w44D6JIMMK7fwfsiUlsn
-         JJzgTghyP4CxwkfQ80M+d/zyJNi49ROTBDfwoCOZWP672PU3BroUPrOZHnhn5yfzaF
-         aSyLDB0fOqE0WjkTG4gsxLLQ9kdxm0IjmlbiyrWst/V8OBppaZK3VFfmdABPPXKHlG
-         VOOfzOGXWXtOkR+8YUJgC0530vRDDLhTmDVXDkcySPvu/i7o5fBUspTVCfby5HIp86
-         w27RriBwxiLBg==
+        b=bxKgU+ZcqOGO1a+UYbY7i35hd6BeGv664lDIwIE6Cqa6+WhCZT4XmEp1x4ERrAQpa
+         F4mFk2h22b7cMoOCJvSVTVqVeCtFJs7j7amd9Z020x8o04fUL0DPGz3/RzvHE16Mq4
+         8PQtDyDF2INHijCfU6nLp14KrcJpo8waYJyUDfa11+UHjd1MU8wMtoxt8830+sgNbe
+         h0rB5J/Lei0ZM3B+XtQLPWl/gUyjCT6wniYf3H1V/uSMGWZspn9Z+YenIKbOQVLXZW
+         ZLkbMcnolnPP7bbTNwKGlV0Mug+mkcaLSR0jjNqlz9+dqb46SiE94hUvCECKBXHXkD
+         4Iub3XkyhbFbA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zixuan Fu <r33s3n6@gmail.com>, TOTE Robot <oslab@tsinghua.edu.cn>,
-        Dave Kleikamp <dave.kleikamp@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, shaggy@kernel.org,
-        jfs-discussion@lists.sourceforge.net
-Subject: [PATCH AUTOSEL 5.4 04/20] fs: jfs: fix possible NULL pointer dereference in dbFree()
-Date:   Wed,  1 Jun 2022 09:58:46 -0400
-Message-Id: <20220601135902.2004823-4-sashal@kernel.org>
+Cc:     Vasily Averin <vvs@openvz.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>, mingo@redhat.com,
+        mgorman@techsingularity.net, vbabka@suse.cz,
+        vasily.averin@linux.dev, yuzhao@google.com, willy@infradead.org,
+        vincent.whitchurch@axis.com
+Subject: [PATCH AUTOSEL 4.19 11/15] tracing: incorrect isolate_mote_t cast in mm_vmscan_lru_isolate
+Date:   Wed,  1 Jun 2022 09:59:46 -0400
+Message-Id: <20220601135951.2005085-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220601135902.2004823-1-sashal@kernel.org>
-References: <20220601135902.2004823-1-sashal@kernel.org>
+In-Reply-To: <20220601135951.2005085-1-sashal@kernel.org>
+References: <20220601135951.2005085-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,56 +56,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zixuan Fu <r33s3n6@gmail.com>
+From: Vasily Averin <vvs@openvz.org>
 
-[ Upstream commit 0d4837fdb796f99369cf7691d33de1b856bcaf1f ]
+[ Upstream commit 2b132903de7124dd9a758be0c27562e91a510848 ]
 
-In our fault-injection testing, the variable "nblocks" in dbFree() can be
-zero when kmalloc_array() fails in dtSearch(). In this case, the variable
- "mp" in dbFree() would be NULL and then it is dereferenced in
-"write_metapage(mp)".
+Fixes following sparse warnings:
 
-The failure log is listed as follows:
+  CHECK   mm/vmscan.c
+mm/vmscan.c: note: in included file (through
+include/trace/trace_events.h, include/trace/define_trace.h,
+include/trace/events/vmscan.h):
+./include/trace/events/vmscan.h:281:1: sparse: warning:
+ cast to restricted isolate_mode_t
+./include/trace/events/vmscan.h:281:1: sparse: warning:
+ restricted isolate_mode_t degrades to integer
 
-[   13.824137] BUG: kernel NULL pointer dereference, address: 0000000000000020
-...
-[   13.827416] RIP: 0010:dbFree+0x5f7/0x910 [jfs]
-[   13.834341] Call Trace:
-[   13.834540]  <TASK>
-[   13.834713]  txFreeMap+0x7b4/0xb10 [jfs]
-[   13.835038]  txUpdateMap+0x311/0x650 [jfs]
-[   13.835375]  jfs_lazycommit+0x5f2/0xc70 [jfs]
-[   13.835726]  ? sched_dynamic_update+0x1b0/0x1b0
-[   13.836092]  kthread+0x3c2/0x4a0
-[   13.836355]  ? txLockFree+0x160/0x160 [jfs]
-[   13.836763]  ? kthread_unuse_mm+0x160/0x160
-[   13.837106]  ret_from_fork+0x1f/0x30
-[   13.837402]  </TASK>
-...
-
-This patch adds a NULL check of "mp" before "write_metapage(mp)" is called.
-
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
-Signed-off-by: Dave Kleikamp <dave.kleikamp@oracle.com>
+Link: https://lkml.kernel.org/r/e85d7ff2-fd10-53f8-c24e-ba0458439c1b@openvz.org
+Signed-off-by: Vasily Averin <vvs@openvz.org>
+Acked-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/jfs/jfs_dmap.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ include/trace/events/vmscan.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/fs/jfs/jfs_dmap.c b/fs/jfs/jfs_dmap.c
-index 79f3440e204b..d3cb27487c70 100644
---- a/fs/jfs/jfs_dmap.c
-+++ b/fs/jfs/jfs_dmap.c
-@@ -385,7 +385,8 @@ int dbFree(struct inode *ip, s64 blkno, s64 nblocks)
- 	}
+diff --git a/include/trace/events/vmscan.h b/include/trace/events/vmscan.h
+index a1cb91342231..7add8c87fe22 100644
+--- a/include/trace/events/vmscan.h
++++ b/include/trace/events/vmscan.h
+@@ -294,7 +294,7 @@ TRACE_EVENT(mm_vmscan_lru_isolate,
+ 		__field(unsigned long, nr_scanned)
+ 		__field(unsigned long, nr_skipped)
+ 		__field(unsigned long, nr_taken)
+-		__field(isolate_mode_t, isolate_mode)
++		__field(unsigned int, isolate_mode)
+ 		__field(int, lru)
+ 	),
  
- 	/* write the last buffer. */
--	write_metapage(mp);
-+	if (mp)
-+		write_metapage(mp);
- 
- 	IREAD_UNLOCK(ipbmap);
+@@ -305,7 +305,7 @@ TRACE_EVENT(mm_vmscan_lru_isolate,
+ 		__entry->nr_scanned = nr_scanned;
+ 		__entry->nr_skipped = nr_skipped;
+ 		__entry->nr_taken = nr_taken;
+-		__entry->isolate_mode = isolate_mode;
++		__entry->isolate_mode = (__force unsigned int)isolate_mode;
+ 		__entry->lru = lru;
+ 	),
  
 -- 
 2.35.1
