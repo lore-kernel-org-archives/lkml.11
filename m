@@ -2,47 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5885C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:08:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9884DCCA468
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:08:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354436AbiFAOIP (ORCPT
+        id S1354447AbiFAOIV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:08:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47442 "EHLO
+        Wed, 1 Jun 2022 10:08:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354443AbiFAOEK (ORCPT
+        with ESMTP id S1354459AbiFAOEO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:04:10 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAC10A88BA;
-        Wed,  1 Jun 2022 06:58:40 -0700 (PDT)
+        Wed, 1 Jun 2022 10:04:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2899FAB0CA;
+        Wed,  1 Jun 2022 06:58:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 7AC49CE1C2F;
-        Wed,  1 Jun 2022 13:58:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23A13C3411D;
-        Wed,  1 Jun 2022 13:58:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 83E78B81AE6;
+        Wed,  1 Jun 2022 13:58:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1176C385B8;
+        Wed,  1 Jun 2022 13:58:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091881;
-        bh=cEhWmMxXvdBKqxo8lID1YPL2df86SOavf20+AeO8pMM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=r1ODeAUNzZLDSUThiKszBSc+9aYBkE74sT0qEcJaPGMGAoHiAnlOnBwY66TlwSQoY
-         TAPhu8otdRMnDZwNqzQJUUNatmHTvGmPF1l+Mwpt++v8rwLX2hguiaMQdRNxcrim7n
-         S7R5cfalBePjt2/q8zh8lGbgdnoH5/L4w4B7mPjg5ct4mSlntoqpBDBIWIGkNq9J7j
-         dabotkA0yNkc7MAoKzOT5t5lozc1A/53I2GqtC4NcW4czoLbu7JobFK6gSrM9Y6UpP
-         MxJG3iIyqvusMouOE/+jTfPuYUdvZhj8DgyBA4+s2+pmLe3qcZOTtSCVmprI4YXVbD
-         SzQ0B6xiHw1ZQ==
+        s=k20201202; t=1654091915;
+        bh=IOLloMgWNNND+MG+cMpo8BWAM9qcdlYLA/9sHrIUEEU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=JSspGRxjF07rkRQU02ZS1tFtzgUokytJ5Y9LVNmHG7kY79ePsb5G/MqVIBS9W6QAB
+         HdGhmjG8WTrbUx3r1L3rxeEHBBGtMlcWmyou2/6TzvuR0B7FK1YFLUs4JDpPJ6c9iE
+         lK6d6Xsaxl2iF2RurLnI9S5Pmx6JwMKzXl/QfDqKiEWw3wNW38uP0EjKqe2JDwj14J
+         8b6nEuHpQ842/qE6u7NEQS42lH6O9haSHz+9r9UbtFvnEVutEsYoOdbEzi74QIke01
+         yiPyh33mSlZ8nT8J5VpT2lZ/7a8dxh6gs8CxL+sHl1JoIynU1W2lFx9hqg0mlQKjr9
+         h8w9upFDj3UdQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Niels Dossche <dossche.niels@gmail.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>,
-        dennis.dalessandro@cornelisnetworks.com, linux-rdma@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 01/26] IB/rdmavt: add missing locks in rvt_ruc_loopback
-Date:   Wed,  1 Jun 2022 09:57:34 -0400
-Message-Id: <20220601135759.2004435-1-sashal@kernel.org>
+Cc:     Vasily Averin <vvs@openvz.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>, mingo@redhat.com,
+        mgorman@techsingularity.net, vbabka@suse.cz,
+        vasily.averin@linux.dev, vincent.whitchurch@axis.com,
+        willy@infradead.org, yuzhao@google.com
+Subject: [PATCH AUTOSEL 5.10 19/26] tracing: incorrect isolate_mote_t cast in mm_vmscan_lru_isolate
+Date:   Wed,  1 Jun 2022 09:57:52 -0400
+Message-Id: <20220601135759.2004435-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220601135759.2004435-1-sashal@kernel.org>
+References: <20220601135759.2004435-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -51,61 +56,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niels Dossche <dossche.niels@gmail.com>
+From: Vasily Averin <vvs@openvz.org>
 
-[ Upstream commit 22cbc6c2681a0a4fe76150270426e763d52353a4 ]
+[ Upstream commit 2b132903de7124dd9a758be0c27562e91a510848 ]
 
-The documentation of the function rvt_error_qp says both r_lock and
-s_lock need to be held when calling that function.
-It also asserts using lockdep that both of those locks are held.
-rvt_error_qp is called form rvt_send_cq, which is called from
-rvt_qp_complete_swqe, which is called from rvt_send_complete, which is
-called from rvt_ruc_loopback in two places. Both of these places do not
-hold r_lock. Fix this by acquiring a spin_lock of r_lock in both of
-these places.
-The r_lock acquiring cannot be added in rvt_qp_complete_swqe because
-some of its other callers already have r_lock acquired.
+Fixes following sparse warnings:
 
-Link: https://lore.kernel.org/r/20220228195144.71946-1-dossche.niels@gmail.com
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+  CHECK   mm/vmscan.c
+mm/vmscan.c: note: in included file (through
+include/trace/trace_events.h, include/trace/define_trace.h,
+include/trace/events/vmscan.h):
+./include/trace/events/vmscan.h:281:1: sparse: warning:
+ cast to restricted isolate_mode_t
+./include/trace/events/vmscan.h:281:1: sparse: warning:
+ restricted isolate_mode_t degrades to integer
+
+Link: https://lkml.kernel.org/r/e85d7ff2-fd10-53f8-c24e-ba0458439c1b@openvz.org
+Signed-off-by: Vasily Averin <vvs@openvz.org>
+Acked-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/sw/rdmavt/qp.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ include/trace/events/vmscan.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/infiniband/sw/rdmavt/qp.c b/drivers/infiniband/sw/rdmavt/qp.c
-index d8d52a00a1be..585a9c76e518 100644
---- a/drivers/infiniband/sw/rdmavt/qp.c
-+++ b/drivers/infiniband/sw/rdmavt/qp.c
-@@ -2826,7 +2826,7 @@ void rvt_qp_iter(struct rvt_dev_info *rdi,
- EXPORT_SYMBOL(rvt_qp_iter);
+diff --git a/include/trace/events/vmscan.h b/include/trace/events/vmscan.h
+index 2070df64958e..b4feeb4b216a 100644
+--- a/include/trace/events/vmscan.h
++++ b/include/trace/events/vmscan.h
+@@ -283,7 +283,7 @@ TRACE_EVENT(mm_vmscan_lru_isolate,
+ 		__field(unsigned long, nr_scanned)
+ 		__field(unsigned long, nr_skipped)
+ 		__field(unsigned long, nr_taken)
+-		__field(isolate_mode_t, isolate_mode)
++		__field(unsigned int, isolate_mode)
+ 		__field(int, lru)
+ 	),
  
- /*
-- * This should be called with s_lock held.
-+ * This should be called with s_lock and r_lock held.
-  */
- void rvt_send_complete(struct rvt_qp *qp, struct rvt_swqe *wqe,
- 		       enum ib_wc_status status)
-@@ -3185,7 +3185,9 @@ void rvt_ruc_loopback(struct rvt_qp *sqp)
- 	rvp->n_loop_pkts++;
- flush_send:
- 	sqp->s_rnr_retry = sqp->s_rnr_retry_cnt;
-+	spin_lock(&sqp->r_lock);
- 	rvt_send_complete(sqp, wqe, send_status);
-+	spin_unlock(&sqp->r_lock);
- 	if (local_ops) {
- 		atomic_dec(&sqp->local_ops_pending);
- 		local_ops = 0;
-@@ -3239,7 +3241,9 @@ void rvt_ruc_loopback(struct rvt_qp *sqp)
- 	spin_unlock_irqrestore(&qp->r_lock, flags);
- serr_no_r_lock:
- 	spin_lock_irqsave(&sqp->s_lock, flags);
-+	spin_lock(&sqp->r_lock);
- 	rvt_send_complete(sqp, wqe, send_status);
-+	spin_unlock(&sqp->r_lock);
- 	if (sqp->ibqp.qp_type == IB_QPT_RC) {
- 		int lastwqe;
+@@ -294,7 +294,7 @@ TRACE_EVENT(mm_vmscan_lru_isolate,
+ 		__entry->nr_scanned = nr_scanned;
+ 		__entry->nr_skipped = nr_skipped;
+ 		__entry->nr_taken = nr_taken;
+-		__entry->isolate_mode = isolate_mode;
++		__entry->isolate_mode = (__force unsigned int)isolate_mode;
+ 		__entry->lru = lru;
+ 	),
  
 -- 
 2.35.1
