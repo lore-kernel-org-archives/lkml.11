@@ -2,132 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EB78C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 09:30:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60300C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 09:30:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351016AbiFAJaS (ORCPT
+        id S1351050AbiFAJad (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 05:30:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43802 "EHLO
+        Wed, 1 Jun 2022 05:30:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350618AbiFAJaM (ORCPT
+        with ESMTP id S1351066AbiFAJa2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 05:30:12 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A972606D0;
-        Wed,  1 Jun 2022 02:30:11 -0700 (PDT)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2519Ts7j041056;
-        Wed, 1 Jun 2022 04:29:54 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1654075794;
-        bh=tNWTiL26yip0+8RRcm3Q4HITepb/6ZBenFxH0bJw1ro=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=Trot8imIKW2KUEAF31573pI1l80b/EVxxLUVds5Zu4mWnWEM7XtSOGnsln4U0Z5xU
-         Fzp4hCjTXOy4Pv1XL1ba72iZ8Xj8rgsnTRNzoZ+l2k2ghyb8ZoVBYqnHEbKeoxe6Sc
-         Hf4ee01r9VHpMqmJoPNBxUTEmz7j2qRWScgMOBnU=
-Received: from DFLE109.ent.ti.com (dfle109.ent.ti.com [10.64.6.30])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2519TsZL014057
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 1 Jun 2022 04:29:54 -0500
-Received: from DFLE103.ent.ti.com (10.64.6.24) by DFLE109.ent.ti.com
- (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 1
- Jun 2022 04:29:53 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE103.ent.ti.com
- (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Wed, 1 Jun 2022 04:29:53 -0500
-Received: from [172.24.222.108] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2519TliG022357;
-        Wed, 1 Jun 2022 04:29:48 -0500
-Message-ID: <41277985-28c9-9bf0-8b24-6acc40391ef2@ti.com>
-Date:   Wed, 1 Jun 2022 14:59:47 +0530
+        Wed, 1 Jun 2022 05:30:28 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8AF58A336
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 02:30:25 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id fu3so1021725ejc.7
+        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 02:30:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RTq2qApdr0XDjYdhICkGJiEtvpG4jeHig+budTOXpzw=;
+        b=N5bZXB4HEnh1aE629ihk0RNtGOggnXdOo8MhyhV/pnh0CS3sIL/F0HjMn6dkeMJhys
+         uvLvUCgQ22KIadzabZUoW8aH9DgEKYOj0O7xEDoueNU6mwjz5rjcJ9pvqB5Ab7qEQqf2
+         RzK5un4TdNweT81vZseW8sNyrkZ8icMt397oM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RTq2qApdr0XDjYdhICkGJiEtvpG4jeHig+budTOXpzw=;
+        b=b8mAALY452MSEW3q8skoEq1oW2/MpL6/SAd1Yh/C2Rf3DyRO6Pn4V+Tx3Dyj383mQh
+         n2AGrB6/rkOBPKKbFMbDByiyZ1OGooI9LtKmvtMJpjHGJ9kC3d1H1n5pYA/tE1HyHj8y
+         lxUZUUEE3+drjbeOuE5fkEmCkzakGdk5cqt5cZE6NDvFmihamGv2p6/BkCMzsxO0gTky
+         TctVBqjPbbcnHCacKQTwlSTFKtigHlKEMUQWHpQ+SJHFhNxXm5f+gVw6XnS1wHwHZ1WB
+         qyyykKz+05ZetvEPA70jHz+7YC+0U+Wze1nWtumpsLJtxWeHi5Ph58AL0AXz66if+2z1
+         6Bdw==
+X-Gm-Message-State: AOAM53280B0sWBDHaitMET+0K4owpIzFZDLWWQuFte1PlqWBLVcGrb7O
+        r1K57cilrMaAyiPrAddKQ4NLBZ9W6GdyVgFGuXA8rw==
+X-Google-Smtp-Source: ABdhPJxO4OEEAdvJqMndbTEvHBclpdxbIJVkiSSJC2U5lu+FvyjTBUCrzqDl4iM+Hnoyelw7MdIsxnbVinBAcMcjCA0=
+X-Received: by 2002:a17:907:160c:b0:6fe:c56f:751 with SMTP id
+ hb12-20020a170907160c00b006fec56f0751mr46232867ejc.746.1654075824444; Wed, 01
+ Jun 2022 02:30:24 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 3/3] net: ethernet: ti: am65-cpsw: Move phy_set_mode_ext()
- to correct location
-Content-Language: en-US
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <vladimir.oltean@nxp.com>,
-        <grygorii.strashko@ti.com>, <vigneshr@ti.com>, <nsekhar@ti.com>,
-        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <kishon@ti.com>
-References: <20220531113058.23708-1-s-vadapalli@ti.com>
- <20220531113058.23708-4-s-vadapalli@ti.com>
- <YpYCJv2SIExL+VHs@shell.armlinux.org.uk>
- <9f531f8d-9ff2-2ec9-504f-eed324ba86c6@ti.com>
- <YpcjaOdXHC+uYJ2J@shell.armlinux.org.uk>
-From:   Siddharth Vadapalli <s-vadapalli@ti.com>
-In-Reply-To: <YpcjaOdXHC+uYJ2J@shell.armlinux.org.uk>
+References: <20220601081823.1038797-1-hsinyi@chromium.org> <20220601081823.1038797-9-hsinyi@chromium.org>
+ <c890efc4-dfda-cab1-8a46-527e3e02168a@redhat.com>
+In-Reply-To: <c890efc4-dfda-cab1-8a46-527e3e02168a@redhat.com>
+From:   Hsin-Yi Wang <hsinyi@chromium.org>
+Date:   Wed, 1 Jun 2022 17:29:58 +0800
+Message-ID: <CAJMQK-iNFyScoh5pZkWA9cPmdmz+YNhuDH-v0fveSfCT0udZFA@mail.gmail.com>
+Subject: Re: [PATCH 8/8] drm/mediatek: Config orientation property if panel
+ provides it
+To:     Hans de Goede <hdegoede@redhat.com>
+Cc:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        dri-devel@lists.freedesktop.org,
+        linux-mediatek@lists.infradead.org,
+        Rob Clark <robdclark@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Russell,
+On Wed, Jun 1, 2022 at 4:57 PM Hans de Goede <hdegoede@redhat.com> wrote:
+>
+> Hi,
+>
+> On 6/1/22 10:18, Hsin-Yi Wang wrote:
+> > Panel orientation property should be set before drm_dev_register().
+> > Mediatek drm driver calls drm_dev_register() in .bind(). However, most
+> > panels sets orientation property relatively late, mostly in .get_modes()
+> > callback, since this is when they are able to get the connector and
+> > binds the orientation property to it, though the value should be known
+> > when the panel is probed.
+> >
+> > Let the drm driver check if the remote end point is a panel and if it
+> > contains the orientation property. If it does, set it before
+> > drm_dev_register() is called.
+> >
+> > Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
+> > ---
+> > The concept is the same as the previous version.
+> > https://patchwork.kernel.org/project/linux-mediatek/patch/20220530113033.124072-1-hsinyi@chromium.org/
+> > The only difference is, it now uses the panel API instead of parsing
+> > orientation from the driver.
+> > ---
+> >  drivers/gpu/drm/mediatek/mtk_dsi.c | 14 ++++++++++++++
+> >  1 file changed, 14 insertions(+)
+> >
+> > diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
+> > index bd3f5b485085..12836a697f56 100644
+> > --- a/drivers/gpu/drm/mediatek/mtk_dsi.c
+> > +++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
+> > @@ -185,6 +185,7 @@ struct mtk_dsi {
+> >       struct drm_encoder encoder;
+> >       struct drm_bridge bridge;
+> >       struct drm_bridge *next_bridge;
+> > +     struct drm_panel *panel;
+> >       struct drm_connector *connector;
+> >       struct phy *phy;
+> >
+> > @@ -822,6 +823,16 @@ static int mtk_dsi_encoder_init(struct drm_device *drm, struct mtk_dsi *dsi)
+> >               ret = PTR_ERR(dsi->connector);
+> >               goto err_cleanup_encoder;
+> >       }
+> > +
+> > +     /* Read panel orientation */
+> > +     if (dsi->panel) {
+> > +             enum drm_panel_orientation orientation;
+> > +
+> > +             orientation = drm_panel_get_orientation(dsi->panel);
+> > +             if (orientation != DRM_MODE_PANEL_ORIENTATION_UNKNOWN)
+> > +                     drm_connector_set_panel_orientation(dsi->connector, orientation);
+> > +     }
+> > +
+> >       drm_connector_attach_encoder(dsi->connector, &dsi->encoder);
+> >
+> >       return 0;
+>
+> drm_connector_set_panel_orientation() is a no-op when called with
+> DRM_MODE_PANEL_ORIENTATION_UNKNOWN, so the check for this is not
+> necessary. This allows this to be simplified to:
+>
+>         /* Read panel orientation */
+>         if (dsi->panel)
+>                 drm_connector_set_panel_orientation(dsi->connector,
+>                                                     drm_panel_get_orientation(dsi->panel));
+>
+>
+> Note since drm_panel_get_orientation() checks for a NULL panel, you could even
+> drop the "if (dsi->panel)", but I think the meaning of the code is more
+> clear with that present.
+>
+Will update this
+>
+>
+>
+>
+>
+> > @@ -837,6 +848,9 @@ static int mtk_dsi_bind(struct device *dev, struct device *master, void *data)
+> >       struct drm_device *drm = data;
+> >       struct mtk_dsi *dsi = dev_get_drvdata(dev);
+> >
+> > +     /* Get panel if existed */
+> > +     ret = drm_of_find_panel_or_bridge(dev->of_node, 0, 0, &dsi->panel, NULL);
+> > +
+>
+> Check ret? or maybe not assign to ret ?    I understand some errors are expected
+> so maybe something like:
+>
+>         if (ret && ret != -ENODEV)
+>                 return ret;
+>
+I will choose not to assign ret. In some cases that the end point is a
+bridge (not panel), since we assign NULL to the bridge, we will get
+EPROBE_DEFER.
 
-On 01/06/22 13:59, Russell King (Oracle) wrote:
-> On Wed, Jun 01, 2022 at 11:39:57AM +0530, Siddharth Vadapalli wrote:
->> Hello Russell,
->>
->> On 31/05/22 17:25, Russell King (Oracle) wrote:
->>> On Tue, May 31, 2022 at 05:00:58PM +0530, Siddharth Vadapalli wrote:
->>>> In TI's J7200 SoC CPSW5G ports, each of the 4 ports can be configured
->>>> as a QSGMII main or QSGMII-SUB port. This configuration is performed
->>>> by phy-gmii-sel driver on invoking the phy_set_mode_ext() function.
->>>>
->>>> It is necessary for the QSGMII main port to be configured before any of
->>>> the QSGMII-SUB interfaces are brought up. Currently, the QSGMII-SUB
->>>> interfaces come up before the QSGMII main port is configured.
->>>>
->>>> Fix this by moving the call to phy_set_mode_ext() from
->>>> am65_cpsw_nuss_ndo_slave_open() to am65_cpsw_nuss_init_slave_ports(),
->>>> thereby ensuring that the QSGMII main port is configured before any of
->>>> the QSGMII-SUB ports are brought up.
->>>
->>> This sounds like "if we're configured via port->slave.phy_if to be in
->>> QSGMII mode, then the serdes PHY needs to be configured before any of
->>> the QSGMII ports are used". Doesn't that mean that if
->>> port->slave.phy_if is QSGMII, then the port _only_ supports QSGMII
->>> mode, and conversely, the port doesn't support QSGMII unless firmware
->>> said it could be.
->>>
->>> So, doesn't that mean am65_cpsw_nuss_init_port_ndev() should indicate
->>> only QSGMII, or only the RGMII modes, but never both together?
->>
->> The phy-gmii-sel driver called by phy_set_mode_ext() configures the CPSW5G MAC
->> rather than the SerDes Phy. In the CPSW5G MAC, the QSGMII mode is further split
->> up as two modes that are TI SoC specific, namely QSGMII main and QSGMII-SUB. Of
->> the 4 ports present in CPSW5G (4 external ports), only one can be the main port
->> while the rest are the QSGMII-SUB ports. Only the QSGMII main interface is
->> responsible for auto-negotiation between the MAC and PHY. For this reason, the
->> writes to the CPSW5G MAC, mentioning which of the interfaces is the QSGMII main
->> interface and which ones are the QSGMII-SUB interfaces has to be done before any
->> of the interfaces are brought up. Otherwise, it would result in a QSGMII-SUB
->> interface being brought up before the QSGMII main interface is determined,
->> resulting in the failure of auto-negotiation process, thereby making the
->> QSGMII-SUB interfaces non-functional.
-> 
-> That confirms my suspicion - if an interface is in QSGMII mode, then
-> RGMII should not be marked as a supported interface to phylink. If the
+If the panel fails at this stage,
+drm_connector_set_panel_orientation() is just a no-op. Let dsi still
+be able to be binded.
 
-CPSW5G MAC supports both RGMII and QSGMII modes, so wouldn't it be correct to
-mark both RGMII and QSGMII modes as supported? The mode is specified in the
-device-tree and configured in CPSW5G MAC accordingly.
 
-> "QSGMII main interface" were to be switched to RGMII mode, then this
-> would break the other ports. So RGMII isn't supported if in QSGMII
-> mode.
-
-Yes, if the QSGMII main interface were to be switched to RGMII mode, then it
-would break the other ports. However, the am65-cpsw driver currently has no
-provision to dynamically change the port modes once the driver is initialized.
-
-Thanks,
-Siddharth.
+> ?
+>
+> Note -ENODEV is probably not the right error the check for!
+>
+> Regards,
+>
+> Hans
+>
+>
+>
+> >       ret = mtk_dsi_encoder_init(drm, dsi);
+> >       if (ret)
+> >               return ret;
+>
