@@ -2,48 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3405CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:12:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2281CCA468
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:12:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243113AbiFAOMJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:12:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48716 "EHLO
+        id S1355076AbiFAOMQ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 10:12:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355838AbiFAOG3 (ORCPT
+        with ESMTP id S1354700AbiFAOFK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:06:29 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C3A3BA9A8;
-        Wed,  1 Jun 2022 07:00:10 -0700 (PDT)
+        Wed, 1 Jun 2022 10:05:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1126ABF6B;
+        Wed,  1 Jun 2022 06:59:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D1CD2CE1A20;
-        Wed,  1 Jun 2022 13:59:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 636F8C385A5;
-        Wed,  1 Jun 2022 13:59:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0EF896164B;
+        Wed,  1 Jun 2022 13:59:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34FC5C3411E;
+        Wed,  1 Jun 2022 13:59:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091987;
-        bh=BaKhQqgyfbfjuRLsJf8naFAGGNIsWBbdAWduy+Wsrg0=;
+        s=k20201202; t=1654091941;
+        bh=yWMSUE+b2ncX5czDCiPQY7bzf6YbCvDYDvxWq7W5yjY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V0al70kT0VcDAZnjEwJt4pLZE18aX5hHhB59S+4bxNj/h+CaL9YWahHM1YRgQFDre
-         Oq7Slevxte1LNoaLQouM5pgOrxzOQMXtY33Rh+F5LnQaM38c/vdy9bXZ5Dsy4/Cg5z
-         ffrYxg5OYVu0OtMdMj71mDGKHTnYJ/vBe89nXuRiz/U13lgml3z7g5MuHwdPKSkF6x
-         7y2FODfy/IlIs4oSZ8RPn1Cmk+P1N6wonJC7UwLwjIffm+xo36gdLl6GtrySEh0ByB
-         0GPdjOyadfR6LM/IjSBjuR+3+v+MZJOBRg2o2l/RejpEhnjFVve5HwttkJooqdAVbN
-         kfh1Ol/+CX5Ng==
+        b=hIIMRS9D64cB1vlLWcpkLsZPaaprp0iBHeGxvm72VWmAwQU8BP9D1Z22aMV4N8inZ
+         FEbARQ1NB6p+wStLH0Whh44S7FXwh6m8yG65X7FNMZe97qN4O7zRraFxlvmsNkaEqa
+         4vpYYqT99VjPgKhth2C5s6VM9mup5RB7ij6/Ob4XkqB5FcY40D+pPitrWiXbBK2Nby
+         xqvEPcjudHRy5jloEnsIdjrYPSMMg5xGfYm+gwNvWn7jkC5tEZz4Ez/2UKlSdcr0AR
+         ZfgnJELMaXWuXUakF+WzAJWAeBVzdDz4GUwW78usDDYMZuQkwyxFDoSiIoQPZ6Mwq7
+         YCUvNo93OPEIA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Peng Wu <wupeng58@huawei.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>, nick.child@ibm.com,
-        christophe.leroy@csgroup.eu, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 5.4 18/20] powerpc/iommu: Add missing of_node_put in iommu_init_early_dart
-Date:   Wed,  1 Jun 2022 09:59:00 -0400
-Message-Id: <20220601135902.2004823-18-sashal@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Sasha Levin <sashal@kernel.org>,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.10 26/26] drm: fix EDID struct for old ARM OABI format
+Date:   Wed,  1 Jun 2022 09:57:59 -0400
+Message-Id: <20220601135759.2004435-26-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220601135902.2004823-1-sashal@kernel.org>
-References: <20220601135902.2004823-1-sashal@kernel.org>
+In-Reply-To: <20220601135759.2004435-1-sashal@kernel.org>
+References: <20220601135759.2004435-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,47 +59,112 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peng Wu <wupeng58@huawei.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 
-[ Upstream commit 57b742a5b8945118022973e6416b71351df512fb ]
+[ Upstream commit 47f15561b69e226bfc034e94ff6dbec51a4662af ]
 
-The device_node pointer is returned by of_find_compatible_node
-with refcount incremented. We should use of_node_put() to avoid
-the refcount leak.
+When building the kernel for arm with the "-mabi=apcs-gnu" option, gcc
+will force alignment of all structures and unions to a word boundary
+(see also STRUCTURE_SIZE_BOUNDARY and the "-mstructure-size-boundary=XX"
+option if you're a gcc person), even when the members of said structures
+do not want or need said alignment.
 
-Signed-off-by: Peng Wu <wupeng58@huawei.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220425081245.21705-1-wupeng58@huawei.com
+This completely messes up the structure alignment of 'struct edid' on
+those targets, because even though all the embedded structures are
+marked with "__attribute__((packed))", the unions that contain them are
+not.
+
+This was exposed by commit f1e4c916f97f ("drm/edid: add EDID block count
+and size helpers"), but the bug is pre-existing.  That commit just made
+the structure layout problem cause a build failure due to the addition
+of the
+
+        BUILD_BUG_ON(sizeof(*edid) != EDID_LENGTH);
+
+sanity check in drivers/gpu/drm/drm_edid.c:edid_block_data().
+
+This legacy union alignment should probably not be used in the first
+place, but we can fix the layout by adding the packed attribute to the
+union entries even when each member is already packed and it shouldn't
+matter in a sane build environment.
+
+You can see this issue with a trivial test program:
+
+  union {
+	struct {
+		char c[5];
+	};
+	struct {
+		char d;
+		unsigned e;
+	} __attribute__((packed));
+  } a = { "1234" };
+
+where building this with a normal "gcc -S" will result in the expected
+5-byte size of said union:
+
+	.type	a, @object
+	.size	a, 5
+
+but with an ARM compiler and the old ABI:
+
+    arm-linux-gnu-gcc -mabi=apcs-gnu -mfloat-abi=soft -S t.c
+
+you get
+
+	.type	a, %object
+	.size	a, 8
+
+instead, because even though each member of the union is packed, the
+union itself still gets aligned.
+
+This was reported by Sudip for the spear3xx_defconfig target.
+
+Link: https://lore.kernel.org/lkml/YpCUzStDnSgQLNFN@debian/
+Reported-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Acked-by: Arnd Bergmann <arnd@arndb.de>
+Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+Cc: Maxime Ripard <mripard@kernel.org>
+Cc: Thomas Zimmermann <tzimmermann@suse.de>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/sysdev/dart_iommu.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ include/drm/drm_edid.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/powerpc/sysdev/dart_iommu.c b/arch/powerpc/sysdev/dart_iommu.c
-index 6b4a34b36d98..8ff9bcfe4b8d 100644
---- a/arch/powerpc/sysdev/dart_iommu.c
-+++ b/arch/powerpc/sysdev/dart_iommu.c
-@@ -403,9 +403,10 @@ void __init iommu_init_early_dart(struct pci_controller_ops *controller_ops)
- 	}
+diff --git a/include/drm/drm_edid.h b/include/drm/drm_edid.h
+index e97daf6ffbb1..4526b6a1e583 100644
+--- a/include/drm/drm_edid.h
++++ b/include/drm/drm_edid.h
+@@ -121,7 +121,7 @@ struct detailed_data_monitor_range {
+ 			u8 supported_scalings;
+ 			u8 preferred_refresh;
+ 		} __attribute__((packed)) cvt;
+-	} formula;
++	} __attribute__((packed)) formula;
+ } __attribute__((packed));
  
- 	/* Initialize the DART HW */
--	if (dart_init(dn) != 0)
-+	if (dart_init(dn) != 0) {
-+		of_node_put(dn);
- 		return;
--
-+	}
- 	/*
- 	 * U4 supports a DART bypass, we use it for 64-bit capable devices to
- 	 * improve performance.  However, that only works for devices connected
-@@ -418,6 +419,7 @@ void __init iommu_init_early_dart(struct pci_controller_ops *controller_ops)
+ struct detailed_data_wpindex {
+@@ -154,7 +154,7 @@ struct detailed_non_pixel {
+ 		struct detailed_data_wpindex color;
+ 		struct std_timing timings[6];
+ 		struct cvt_timing cvt[4];
+-	} data;
++	} __attribute__((packed)) data;
+ } __attribute__((packed));
  
- 	/* Setup pci_dma ops */
- 	set_pci_dma_ops(&dma_iommu_ops);
-+	of_node_put(dn);
- }
+ #define EDID_DETAIL_EST_TIMINGS 0xf7
+@@ -172,7 +172,7 @@ struct detailed_timing {
+ 	union {
+ 		struct detailed_pixel_timing pixel_data;
+ 		struct detailed_non_pixel other_data;
+-	} data;
++	} __attribute__((packed)) data;
+ } __attribute__((packed));
  
- #ifdef CONFIG_PM
+ #define DRM_EDID_INPUT_SERRATION_VSYNC (1 << 0)
 -- 
 2.35.1
 
