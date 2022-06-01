@@ -2,102 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A433C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 10:30:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14308C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 10:30:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352055AbiFAKao (ORCPT
+        id S1352072AbiFAKas (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 06:30:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42544 "EHLO
+        Wed, 1 Jun 2022 06:30:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350236AbiFAKai (ORCPT
+        with ESMTP id S1352052AbiFAKan (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 06:30:38 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE56E56769;
-        Wed,  1 Jun 2022 03:30:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654079437; x=1685615437;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=qD5rv9i5Du7irA/swnuN3jwbdILA1dofh7zhQ5sAHp8=;
-  b=PNGe5sU+fW4qZsgPwB/w23r//14zsGfqk8+hpkCgle3R5aoUkE0VXTCK
-   yD75S09mgRDw9gKrqYDNo/zBQUe+5mfksnJoUVz+ZjZ2UwdgTRi2za/Fd
-   Xu5SfDsuDs1qOaKD0KR2B3t3I2cw7RAddSkX3CnqJxdITZoiQDEGd9r4X
-   76Xn5Itj+8dnTwAg0ax4/fGej44TggPYScBQalJxS9LgcJzlitRW1nVGg
-   glnGUkw4lxt8noUUyQbAAPWm9xVssZjDl0UVVFLa5mRwDWatjpiunqpoz
-   Ti3/YycWYyaBPyjLzkZsz+SMZUrm+AxIfHJtT20GA0NsIg+Ubr/njmddP
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10364"; a="361917350"
-X-IronPort-AV: E=Sophos;i="5.91,268,1647327600"; 
-   d="scan'208";a="361917350"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 03:30:37 -0700
-X-IronPort-AV: E=Sophos;i="5.91,268,1647327600"; 
-   d="scan'208";a="530002767"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 03:30:34 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nwLcV-000QYP-MW;
-        Wed, 01 Jun 2022 13:30:31 +0300
-Date:   Wed, 1 Jun 2022 13:30:31 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>
-Subject: Re: [PATCH v1 3/3] iio: adc: meson_saradc: Use temporary variable
- for struct device
-Message-ID: <Ypc/x2G+jgHvBjLY@smile.fi.intel.com>
-References: <20220531211842.71998-1-andriy.shevchenko@linux.intel.com>
- <20220531211842.71998-3-andriy.shevchenko@linux.intel.com>
- <CAFBinCDf4UfEPFV4_Qf3m16DE-NzNUk_ZVcHZhgxVvn_pokdgw@mail.gmail.com>
+        Wed, 1 Jun 2022 06:30:43 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E1B7579B5;
+        Wed,  1 Jun 2022 03:30:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1654079442; x=1685615442;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=Ib6unOMwSTojGHAyAVFozwqWKwEX+p2vdR09JUPf9Tg=;
+  b=tRuKRj3I4gmJp1GaFHAbSXtlYbjeV0BQAZRaiDl+F8joIWBKz4WfebUc
+   sekSiJdi7oKjv8WoXr2Ob07J4T49TnkbEcGnKpc/ppEpRVf8VyaS3eCOt
+   JtYLyHCarFyoGGpxtkdHofAVqgkqLe6rZbG9YtIlfp6NofrrgpFGYuNfp
+   E=;
+Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 01 Jun 2022 03:30:42 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 03:30:42 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 1 Jun 2022 03:30:41 -0700
+Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 1 Jun 2022 03:30:35 -0700
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <lgirdwood@gmail.com>, <broonie@kernel.org>, <robh+dt@kernel.org>,
+        <quic_plai@quicinc.com>, <bgoswami@quicinc.com>, <perex@perex.cz>,
+        <tiwai@suse.com>, <srinivas.kandagatla@linaro.org>,
+        <quic_rohkumar@quicinc.com>, <linux-arm-msm@vger.kernel.org>,
+        <alsa-devel@alsa-project.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
+        <judyhsiao@chromium.org>, Linus Walleij <linus.walleij@linaro.org>,
+        <linux-gpio@vger.kernel.org>
+CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
+        "Venkata Prasad Potturu" <quic_potturu@quicinc.com>
+Subject: [PATCH v2 1/2] dt-bindings: pinctrl: qcom: sc7280: Add compatible string for adsp based platforms
+Date:   Wed, 1 Jun 2022 16:00:14 +0530
+Message-ID: <1654079415-26217-2-git-send-email-quic_srivasam@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1654079415-26217-1-git-send-email-quic_srivasam@quicinc.com>
+References: <1654079415-26217-1-git-send-email-quic_srivasam@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAFBinCDf4UfEPFV4_Qf3m16DE-NzNUk_ZVcHZhgxVvn_pokdgw@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 31, 2022 at 11:47:50PM +0200, Martin Blumenstingl wrote:
-> On Tue, May 31, 2022 at 11:18 PM Andy Shevchenko
-> <andriy.shevchenko@linux.intel.com> wrote:
-> [...]
-> > @@ -650,11 +648,12 @@ static int meson_sar_adc_clk_init(struct iio_dev *indio_dev,
-> >                                   void __iomem *base)
-> >  {
-> >         struct meson_sar_adc_priv *priv = iio_priv(indio_dev);
-> > +       struct device *idev = &indio_dev->dev;
-> > +       struct device *dev = dev->parent;
-> It looks like this should read:
->     struct device *dev = idev->parent;
+Add compatible string to support adsp enabled sc7280 platforms.
 
-Oops, indeed.
+Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Acked-by: Rob Herring <robh@kernel.org>
+---
+ .../devicetree/bindings/pinctrl/qcom,sc7280-lpass-lpi-pinctrl.yaml    | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-> That said, I think this kind of typo is very easy with the current
-> naming schema.
-> It's been a while since I looked at other drivers but maybe the IIO
-> maintainers have some recommendations for us (which would apply to
-> multiple IIO drivers, not just meson_saradc).
-> For example: I am not sure if iio_{err,warn} functions (which take a
-> struct iio_dev pointer) have been proposed/discussed before. I think
-> they could be useful for other drivers as well.
-
-Looking deeper into this example, I think the IIO dev usage might be wrong
-in the first place, but since there are managed resources attached, I dunno
-if it's the way to go. Let's wait for maintainers to chime in.
-
-
+diff --git a/Documentation/devicetree/bindings/pinctrl/qcom,sc7280-lpass-lpi-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/qcom,sc7280-lpass-lpi-pinctrl.yaml
+index d32ee32..53c2c59 100644
+--- a/Documentation/devicetree/bindings/pinctrl/qcom,sc7280-lpass-lpi-pinctrl.yaml
++++ b/Documentation/devicetree/bindings/pinctrl/qcom,sc7280-lpass-lpi-pinctrl.yaml
+@@ -17,7 +17,9 @@ description: |
+ 
+ properties:
+   compatible:
+-    const: qcom,sc7280-lpass-lpi-pinctrl
++    enum:
++      - qcom,sc7280-lpass-lpi-pinctrl
++      - qcom,sc7280-lpass-adsp-lpi-pinctrl
+ 
+   reg:
+     minItems: 2
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.7.4
 
