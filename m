@@ -2,131 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 771E7CCA46F
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:58:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A3CEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:58:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353909AbiFAN6V (ORCPT
+        id S1354060AbiFAN6Z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 09:58:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58182 "EHLO
+        Wed, 1 Jun 2022 09:58:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353896AbiFAN5S (ORCPT
+        with ESMTP id S1353974AbiFAN5W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 09:57:18 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B482E8B0A7;
-        Wed,  1 Jun 2022 06:55:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 17FC1CE1A24;
-        Wed,  1 Jun 2022 13:54:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6843CC36AE2;
-        Wed,  1 Jun 2022 13:54:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091669;
-        bh=AwpP63mnwMx0YpBeBR+o75uBQzNi64ZU7FWswh0h5wo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jXf7kfLFklkycq+MTAiGU55gaVnHGP7iVZdSSPUZLVEsoDo5WNkLjOG7uC5K1XivJ
-         P5JfRaHjT4V3VMgMVuGAIT2rEtvZVCAmfg+Nzzx8MxNnn1HwIYf3BplSHqi07rODqj
-         7CdE/RpvxTtfYOxe98nXYC/C8ZN01mQgO6wNAKoLIvCmxdoFgZLFm4wXx2j46Ag8w3
-         YBFlDRSrkVkzYiDOFdI/Porq8Q3zkLuKiomilYa0o/FpvYt4aqp4PXn8U01rKpENbC
-         3VJ+o+2Pdjb7vaYJNEU/Izr2iUx9sBXIAuw3INZJytabCNqBz/FbAA0T9XOPngho+v
-         KUTRXw2NnjXLg==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzk@kernel.org>,
-        Jonathan Bakker <xc-racer2@live.ca>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 05/48] ARM: dts: s5pv210: align DMA channels with dtschema
-Date:   Wed,  1 Jun 2022 09:53:38 -0400
-Message-Id: <20220601135421.2003328-5-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220601135421.2003328-1-sashal@kernel.org>
-References: <20220601135421.2003328-1-sashal@kernel.org>
+        Wed, 1 Jun 2022 09:57:22 -0400
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FAA435872
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 06:55:10 -0700 (PDT)
+Received: by mail-pg1-x52e.google.com with SMTP id 7so1177532pga.12
+        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 06:55:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:cc:in-reply-to:content-transfer-encoding;
+        bh=PsjGVD7Reui31MSU63J1iKeBMkxXWeZ9AfTgcc/uvGU=;
+        b=EofRlN3aikEIZe7XJgJdxUetgONlsRYqQ+CdJWrpshBMKh/5Sd7EQYaHQWlUsqvvsR
+         MMKRKp3aJwZegCTkrdOaHxbghtM5sMsnw5aIJ+B9per/10MowIfH1O4zr7I1hhmujMai
+         az5Xdd0o5izj69JoVEeRPg5CEVdgr2krgefWbjthsccc1oeHG/zZEE5Lr+VIc3+WkBvZ
+         puocbIQTPL6k1rp7jmEJ8OhdyvEW/xXMYZoecAJ1tn3ALAnfwR4OWukKHEmHmA2mkNfY
+         DxTniy+hqsgtJedVQM4wipaBS+4WnD9c2+HG9CWacHoyiT6hediVsnlA8qcyjL+uZIm0
+         7LAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:cc:in-reply-to
+         :content-transfer-encoding;
+        bh=PsjGVD7Reui31MSU63J1iKeBMkxXWeZ9AfTgcc/uvGU=;
+        b=P+gZvMtCOd1hcvBLI8LK5CvabtS/32AajsEdFKba7lVE0fpkpDNxzlweP7zoPWqJQX
+         Fgp9T1Jvtf0wOPCwF3+KGtIrVmmVb4uvbWvekh+bM3l3v0fI9z63Ec032yS/ez+gy4+h
+         4dEtoCgryKiwdQszsz2QOVkhnH88oCm/oxDKYkfKJKFMjLgDrhHiX7yei5xa8UdgMc+j
+         M0Xzvsc/Nlx+m+NYvQxGTKkUCGW4pygIvsWFTHGLYTXhmatKw1xCm8VPHf8pY4xFPxzl
+         ggP0X8FZymqreHlLJuzJWT986ZXJ25Xzrhu/GpR8VJAFnKrGkoDjs9DhU3olRqglNOxl
+         gQvw==
+X-Gm-Message-State: AOAM530ShiN0l2xh3izpiCdNefKuxSDoqhCqFcDYW27DUGHDomj59ZjW
+        I427PvMzYpzDXaWaC/pPEhk=
+X-Google-Smtp-Source: ABdhPJx2kdH3EDLTWxxIZsf/SsRb2I8+HWu52bGvOlOTcxSZcRVI+7y/n58AnL2/Lz/6jyUB9+xjYA==
+X-Received: by 2002:a05:6a00:1690:b0:517:cc9e:3e2d with SMTP id k16-20020a056a00169000b00517cc9e3e2dmr46548pfc.0.1654091709025;
+        Wed, 01 Jun 2022 06:55:09 -0700 (PDT)
+Received: from [172.16.4.4] ([219.142.146.177])
+        by smtp.gmail.com with ESMTPSA id c9-20020a631c49000000b003fc600628a7sm1378030pgm.31.2022.06.01.06.55.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 01 Jun 2022 06:55:08 -0700 (PDT)
+Message-ID: <55d99105-8492-e020-bed6-82e52b5fc8a1@gmail.com>
+Date:   Wed, 1 Jun 2022 21:55:02 +0800
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v3] drm/v3d/v3d_drv: Fix PM disable depth imbalance
+Content-Language: en-US
+To:     Emma Anholt <emma@anholt.net>, David Airlie <airlied@linux.ie>,
+        Eric Anholt <eric@anholt.net>, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+References: <20220601122050.1822-1-linmq006@gmail.com>
+ <YpdpCWW9+igsVydr@phenom.ffwll.local>
+From:   Miaoqian Lin <linmq006@gmail.com>
+Cc:     Miaoqian Lin <linmq006@gmail.com>
+In-Reply-To: <YpdpCWW9+igsVydr@phenom.ffwll.local>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzk@kernel.org>
+Hi, Daniel
 
-[ Upstream commit 9e916fb9bc3d16066286f19fc9c51d26a6aec6bd ]
+On 2022/6/1 21:26, Daniel Vetter wrote:
+> On Wed, Jun 01, 2022 at 04:20:50PM +0400, Miaoqian Lin wrote:
+>> The pm_runtime_enable will increase power disable depth.
+>> If the probe fails, we should use pm_runtime_disable() to balance
+>> pm_runtime_enable().
+>> Also call disable function in remove function.
+>>
+>> Fixes: 57692c94dcbe ("drm/v3d: Introduce a new DRM driver for Broadcom V3D V3.x+")
+>> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+>> ---
+>> Changes in v3:
+>> - call pm_runtime_disable() in v3d_platform_drm_remove
+>> - update commit message
+>>
+>> Changes in v2
+>> - put pm_runtime_disable before dma_free_wc
+>> - rename dma_free to pm_disable
+>>
+>> v1: https://lore.kernel.org/r/20220105120442.14418-1-linmq006@gmail.com
+>> v2: https://lore.kernel.org/r/20220106124657.32737-1-linmq006@gmail.com
+> Maybe a bit late since we're at v3 already, but are there no devm_
+> functions here that would dtrt automatically? 
 
-dtschema expects DMA channels in specific order (tx, rx and tx-sec).
-The order actually should not matter because dma-names is used however
-let's make it aligned with dtschema to suppress warnings like:
+Sorry I don't see one, or we can use devm_add_action_or_reset() to add handling
 
-  i2s@eee30000: dma-names: ['rx', 'tx', 'tx-sec'] is not valid under any of the given schemas
+action. something like disp_cc_sm8250_probe() in drivers/clk/qcom/dispcc-sm8250.c
 
-Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
-Co-developed-by: Jonathan Bakker <xc-racer2@live.ca>
-Signed-off-by: Jonathan Bakker <xc-racer2@live.ca>
-Link: https://lore.kernel.org/r/CY4PR04MB056779A9C50DC95987C5272ACB1C9@CY4PR04MB0567.namprd04.prod.outlook.com
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/arm/boot/dts/s5pv210-aries.dtsi |  2 +-
- arch/arm/boot/dts/s5pv210.dtsi       | 12 ++++++------
- 2 files changed, 7 insertions(+), 7 deletions(-)
+How do you think?
 
-diff --git a/arch/arm/boot/dts/s5pv210-aries.dtsi b/arch/arm/boot/dts/s5pv210-aries.dtsi
-index 160f8cd9a68d..148536a91676 100644
---- a/arch/arm/boot/dts/s5pv210-aries.dtsi
-+++ b/arch/arm/boot/dts/s5pv210-aries.dtsi
-@@ -636,7 +636,7 @@ touchscreen@4a {
- };
- 
- &i2s0 {
--	dmas = <&pdma0 9>, <&pdma0 10>, <&pdma0 11>;
-+	dmas = <&pdma0 10>, <&pdma0 9>, <&pdma0 11>;
- 	status = "okay";
- };
- 
-diff --git a/arch/arm/boot/dts/s5pv210.dtsi b/arch/arm/boot/dts/s5pv210.dtsi
-index 353ba7b09a0c..c5265f3ae31d 100644
---- a/arch/arm/boot/dts/s5pv210.dtsi
-+++ b/arch/arm/boot/dts/s5pv210.dtsi
-@@ -239,8 +239,8 @@ i2s0: i2s@eee30000 {
- 			reg = <0xeee30000 0x1000>;
- 			interrupt-parent = <&vic2>;
- 			interrupts = <16>;
--			dma-names = "rx", "tx", "tx-sec";
--			dmas = <&pdma1 9>, <&pdma1 10>, <&pdma1 11>;
-+			dma-names = "tx", "rx", "tx-sec";
-+			dmas = <&pdma1 10>, <&pdma1 9>, <&pdma1 11>;
- 			clock-names = "iis",
- 				      "i2s_opclk0",
- 				      "i2s_opclk1";
-@@ -259,8 +259,8 @@ i2s1: i2s@e2100000 {
- 			reg = <0xe2100000 0x1000>;
- 			interrupt-parent = <&vic2>;
- 			interrupts = <17>;
--			dma-names = "rx", "tx";
--			dmas = <&pdma1 12>, <&pdma1 13>;
-+			dma-names = "tx", "rx";
-+			dmas = <&pdma1 13>, <&pdma1 12>;
- 			clock-names = "iis", "i2s_opclk0";
- 			clocks = <&clocks CLK_I2S1>, <&clocks SCLK_AUDIO1>;
- 			pinctrl-names = "default";
-@@ -274,8 +274,8 @@ i2s2: i2s@e2a00000 {
- 			reg = <0xe2a00000 0x1000>;
- 			interrupt-parent = <&vic2>;
- 			interrupts = <18>;
--			dma-names = "rx", "tx";
--			dmas = <&pdma1 14>, <&pdma1 15>;
-+			dma-names = "tx", "rx";
-+			dmas = <&pdma1 15>, <&pdma1 14>;
- 			clock-names = "iis", "i2s_opclk0";
- 			clocks = <&clocks CLK_I2S2>, <&clocks SCLK_AUDIO2>;
- 			pinctrl-names = "default";
--- 
-2.35.1
-
+> Or is there another reason
+> we can't use them?
+> -Daniel
+>> ---
+>>  drivers/gpu/drm/v3d/v3d_drv.c | 6 ++++--
+>>  1 file changed, 4 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/gpu/drm/v3d/v3d_drv.c b/drivers/gpu/drm/v3d/v3d_drv.c
+>> index 1afcd54fbbd5..f3380399fe17 100644
+>> --- a/drivers/gpu/drm/v3d/v3d_drv.c
+>> +++ b/drivers/gpu/drm/v3d/v3d_drv.c
+>> @@ -286,7 +286,7 @@ static int v3d_platform_drm_probe(struct platform_device *pdev)
+>>  
+>>  	ret = v3d_gem_init(drm);
+>>  	if (ret)
+>> -		goto dma_free;
+>> +		goto pm_disable;
+>>  
+>>  	ret = v3d_irq_init(v3d);
+>>  	if (ret)
+>> @@ -302,7 +302,8 @@ static int v3d_platform_drm_probe(struct platform_device *pdev)
+>>  	v3d_irq_disable(v3d);
+>>  gem_destroy:
+>>  	v3d_gem_destroy(drm);
+>> -dma_free:
+>> +pm_disable:
+>> +	pm_runtime_disable(dev);
+>>  	dma_free_wc(dev, 4096, v3d->mmu_scratch, v3d->mmu_scratch_paddr);
+>>  	return ret;
+>>  }
+>> @@ -316,6 +317,7 @@ static int v3d_platform_drm_remove(struct platform_device *pdev)
+>>  
+>>  	v3d_gem_destroy(drm);
+>>  
+>> +	pm_runtime_disable(&pdev->dev);
+>>  	dma_free_wc(v3d->drm.dev, 4096, v3d->mmu_scratch,
+>>  		    v3d->mmu_scratch_paddr);
+>>  
+>> -- 
+>> 2.25.1
+>>
