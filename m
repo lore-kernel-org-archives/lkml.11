@@ -2,126 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23EC7C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 04:18:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CC57C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 04:25:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239312AbiFAESe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 00:18:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57578 "EHLO
+        id S1346538AbiFAEZ3 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 00:25:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235163AbiFAESa (ORCPT
+        with ESMTP id S240934AbiFAEZZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 00:18:30 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00DBB5931F;
-        Tue, 31 May 2022 21:18:28 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id gi33so1238007ejc.3;
-        Tue, 31 May 2022 21:18:27 -0700 (PDT)
+        Wed, 1 Jun 2022 00:25:25 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D3169E9E1;
+        Tue, 31 May 2022 21:25:24 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id a10so850732pju.3;
+        Tue, 31 May 2022 21:25:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=RSw8k1d0PMD6wj66n+1hU8B9FRDPkW1CFpjiF9rIWpo=;
-        b=TrjwgnTl3ploNX8zp6ORq5aPD3FqDvLo44Q/ZISeWjgM9LzKROEkGRYve2Aw1eG9i0
-         bSsVkwTt3Q/6UxVCLBY3LvzMdzxs7gGQBwE8zZx4/g5BcYgS1tZNun5uhrmI+J/rGAsY
-         Hpgcezyg6qs7qwlyvuf5l8c0UaJdiN9e+YItj1Z7MvD1UOVjQY1ZQbTqk5YlFvMulQai
-         cQRtbuvXCwZZTYBpJ8cpL24BqRqj2flVyj6FgcEjJdpoyam20SSW0WqWT4RXOxsOGqsi
-         gfYoTo45CiLzohoTeFnVcEzE9/YlcnSjis36EqgKLPvQmgDzXKtYGPDGg2w48IlD9OGq
-         CvRA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qV/kQWWE5TCXDtwtIihkerreiew7iWC6lBTWJeucJIg=;
+        b=ReFoyD6+1Lqkr/R2pf+8AKWuf/SU8Gfa83eXY5S/LG50yi/hKWMyX/3OPwn6aJ1F59
+         ib9E9yb2Y+S9tgbMqi2DzZfsCNhEUZGbxD4oOkub/0tFfsfKT9wVkM86/SQIFsLo3BVz
+         e5cJitqsmzcKoJtU0zDAoJXxB/Z2c3YRZcfczyZeN6rgZiFxc0z9YfjrHcMfrDOIzBxV
+         u+rLPDPpIMOH6r2OBg5TTdGimLpRzbSuCskm47LvrMHkT2LLciV2MPVfHVIrOC8nH7HR
+         MEYS9/U+HJ6ikAALq2hyIwzab4ExehXGsmHSgM3JQxIvPbHiKj0rK4M0VnW+6Qi4/aq1
+         vRWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=RSw8k1d0PMD6wj66n+1hU8B9FRDPkW1CFpjiF9rIWpo=;
-        b=1iJitOcItwMo7LD9WBwymqbAGz5/xMx/HlNnmWewgx4okfrXzXJ2p7XZrHaQ2t549h
-         /ASS/bjmB+Xvs4n+wFpw1TSA95DEm37o/FiwjZT0qBQtXARgRBUCVF4T5osABi9xPERW
-         JftddGlUx6XAca8uk5yU2vElAzSHdOMAjDMpaIgqooHxaC4OPO1q4NOiDmnyOvW6l9Tu
-         lREKYHbBNhSoWV8bG6EmQMagFlKIA04MQS3ujDFuFE355arubzZhx7QYYkQ01YnevGQd
-         WSqk5kxJjNX0LqtfjzIL24ceRdWyPTRH8uzHjErx4RBYqHw6zUUlxuSrF1crmijYTr3e
-         fGWw==
-X-Gm-Message-State: AOAM531rMUlpbNcuci1626HA4tZ+NuATUuuRXHmuudFnzXuSKab7nikT
-        H3YV2yvlWaoZTc0VcykgqiY=
-X-Google-Smtp-Source: ABdhPJwgyhU+ZXDOZckYUwEphewTltQH7fIGAK729jV57SMSjG84XZZdUm4VashgG42xtDimZYYf/A==
-X-Received: by 2002:a17:906:9749:b0:6f5:38d:d4d8 with SMTP id o9-20020a170906974900b006f5038dd4d8mr57000119ejy.405.1654057106397;
-        Tue, 31 May 2022 21:18:26 -0700 (PDT)
-Received: from felia.fritz.box (200116b82620c00028af88788fa7d286.dip.versatel-1u1.de. [2001:16b8:2620:c000:28af:8878:8fa7:d286])
-        by smtp.gmail.com with ESMTPSA id t4-20020a056402020400b0042ab1735552sm279952edv.66.2022.05.31.21.18.24
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qV/kQWWE5TCXDtwtIihkerreiew7iWC6lBTWJeucJIg=;
+        b=1gJ7emSOgzsu5MHw1jXlb2eYKy2oTyMZIGlkaEgkRGi7vj2PYQKErkU8G18zIYPSAz
+         87YYHPomCIi4kS+blzK/S5OtphQm+jxkh+8Z411Z9GSo7kcP5SUudiRrjQCQ8PjdlqpB
+         5d9o2Kf+UBZZkSqsKEwr91lSSZrHQFdvvHtJxple+rpOn0n1/oQKAff7RoVEG+oTY6fK
+         mF+lZBv+Dfu3TeiHU04LFRbCFfkT0bYzgX+W1gPgbl5th7gqQEUerW26Z+KMD0rysz7x
+         8ovo/VraERsobG77GBndy5dw3u0A5javWcKJ2ckgKYJj2E3sxNxD7nylU5T42i+iiQmH
+         OsFw==
+X-Gm-Message-State: AOAM531ErYb6T1iAFg/QI24HQu1Qq2Ex+TsO/FFo7ITmeMw+Vdc/nYyQ
+        Q52IkR8g0mtDOyQKJYwdzu8=
+X-Google-Smtp-Source: ABdhPJzhh0v5mf83CiChYoplV/aivC7HiUkv4hOQhbwi4NqjR/XvCvK6+eyWrEazVoETOiYVO01X8A==
+X-Received: by 2002:a17:902:e54e:b0:162:4b8b:f2be with SMTP id n14-20020a170902e54e00b001624b8bf2bemr38630727plf.5.1654057524096;
+        Tue, 31 May 2022 21:25:24 -0700 (PDT)
+Received: from localhost.localdomain ([202.120.234.246])
+        by smtp.googlemail.com with ESMTPSA id fz21-20020a17090b025500b001df51e34036sm337111pjb.0.2022.05.31.21.25.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 May 2022 21:18:25 -0700 (PDT)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     Andre Przywara <andre.przywara@arm.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     Liviu Dudau <liviu.dudau@arm.com>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        James Wang <james.qian.wang@arm.com>,
-        Mihail Atanassov <mihail.atanassov@arm.com>,
-        Brian Starkey <brian.starkey@arm.com>,
-        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, malidp@foss.arm.com,
-        kernel-janitors@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH] MAINTAINERS: rectify entries for ARM DRM DRIVERS after dt conversion
-Date:   Wed,  1 Jun 2022 06:17:46 +0200
-Message-Id: <20220601041746.22986-1-lukas.bulwahn@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 31 May 2022 21:25:23 -0700 (PDT)
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     Hyun Kwon <hyun.kwon@xilinx.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Radhey Shyam Pandey <radheys@xilinx.com>,
+        Hans Verkuil <hans.verkuil@cisco.com>,
+        linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Cc:     linmq006@gmail.com
+Subject: [PATCH] v4l: xilinx-vipp: Fix refcount leak in xvip_graph_dma_init
+Date:   Wed,  1 Jun 2022 08:25:14 +0400
+Message-Id: <20220601042514.61780-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The three commits:
+of_get_child_by_name() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-  36fd2a65bcaf ("dt-bindings: display: convert Arm HDLCD to DT schema")
-  0f6983509ea1 ("dt-bindings: display: convert Arm Komeda to DT schema")
-  2c8b082a3ab1 ("dt-bindings: display: convert Arm Mali-DP to DT schema")
-
-convert the arm display dt-bindings, arm,*.txt to arm,*.yaml, but miss to
-adjust its reference in MAINTAINERS.
-
-Hence, ./scripts/get_maintainer.pl --self-test=patterns complains about
-broken references.
-
-Repair these file references in ARM HDLCD DRM DRIVER, ARM KOMEDA DRM-KMS
-DRIVER and ARM MALI-DP DRM DRIVER.
-
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Fixes: df3305156f98 ("[media] v4l: xilinx: Add Xilinx Video IP core")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 ---
-Andre, please ack.
-Rob, Krzysztof, please pick this minor non-urgent clean-up patch in
-your -next dt tree.
+ drivers/media/platform/xilinx/xilinx-vipp.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
- MAINTAINERS | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index ae685aaf8850..58e751b9346e 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1510,7 +1510,7 @@ F:	drivers/clocksource/arm_arch_timer.c
- ARM HDLCD DRM DRIVER
- M:	Liviu Dudau <liviu.dudau@arm.com>
- S:	Supported
--F:	Documentation/devicetree/bindings/display/arm,hdlcd.txt
-+F:	Documentation/devicetree/bindings/display/arm,hdlcd.yaml
- F:	drivers/gpu/drm/arm/hdlcd_*
+diff --git a/drivers/media/platform/xilinx/xilinx-vipp.c b/drivers/media/platform/xilinx/xilinx-vipp.c
+index f34f8b077e03..415579b63737 100644
+--- a/drivers/media/platform/xilinx/xilinx-vipp.c
++++ b/drivers/media/platform/xilinx/xilinx-vipp.c
+@@ -483,10 +483,12 @@ static int xvip_graph_dma_init(struct xvip_composite_device *xdev)
+ 		ret = xvip_graph_dma_init_one(xdev, port);
+ 		if (ret < 0) {
+ 			of_node_put(port);
++			of_node_put(ports);
+ 			return ret;
+ 		}
+ 	}
  
- ARM INTEGRATOR, VERSATILE AND REALVIEW SUPPORT
-@@ -1545,7 +1545,7 @@ M:	Mihail Atanassov <mihail.atanassov@arm.com>
- L:	Mali DP Maintainers <malidp@foss.arm.com>
- S:	Supported
- T:	git git://anongit.freedesktop.org/drm/drm-misc
--F:	Documentation/devicetree/bindings/display/arm,komeda.txt
-+F:	Documentation/devicetree/bindings/display/arm,komeda.yaml
- F:	Documentation/gpu/komeda-kms.rst
- F:	drivers/gpu/drm/arm/display/include/
- F:	drivers/gpu/drm/arm/display/komeda/
-@@ -1567,7 +1567,7 @@ M:	Brian Starkey <brian.starkey@arm.com>
- L:	Mali DP Maintainers <malidp@foss.arm.com>
- S:	Supported
- T:	git git://anongit.freedesktop.org/drm/drm-misc
--F:	Documentation/devicetree/bindings/display/arm,malidp.txt
-+F:	Documentation/devicetree/bindings/display/arm,malidp.yaml
- F:	Documentation/gpu/afbc.rst
- F:	drivers/gpu/drm/arm/
++	of_node_put(ports);
+ 	return 0;
+ }
  
 -- 
-2.17.1
+2.25.1
 
