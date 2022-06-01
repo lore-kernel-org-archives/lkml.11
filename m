@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D28A0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:56:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F05DCCA468
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:56:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353853AbiFAN4a (ORCPT
+        id S1353873AbiFAN4d (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 09:56:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58180 "EHLO
+        Wed, 1 Jun 2022 09:56:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353797AbiFANzI (ORCPT
+        with ESMTP id S1353739AbiFANzH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 09:55:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AB638CCC8;
-        Wed,  1 Jun 2022 06:54:26 -0700 (PDT)
+        Wed, 1 Jun 2022 09:55:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02D0E8A31E;
+        Wed,  1 Jun 2022 06:54:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 13ED2B81AE7;
-        Wed,  1 Jun 2022 13:53:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB4BEC3411D;
-        Wed,  1 Jun 2022 13:53:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9B113B81AEA;
+        Wed,  1 Jun 2022 13:54:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57D61C3411D;
+        Wed,  1 Jun 2022 13:54:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091589;
-        bh=MzavRj9nrP27S+bq6CPB0yuwsmyvhj3CJKBoxHtwgwM=;
+        s=k20201202; t=1654091651;
+        bh=dsPytRuScUu0MpZ3yhZ+4QHzYxtIjhaCZwMQMNhAK7s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cMjCZxeWNLUrg2XTU8JS1XKUF5e96t3Xsj6D7SI3ROzGhrkx+/ntHhcwJ1Y0h1luF
-         yz2i4EF4hBsHlZe58ugdk+n0ExRtG54BsWn66IMTb0unEl7oLIsA+7QT7Tb0NFPkz9
-         YdOc9O9rZfca7QkPJToW/nxQEHU8CRM5Ts2dsuJdldtkFAAFIHuZCe1x56PsTqyR4i
-         bF+OKwStqIIUrh+g8Ak5VozOvTEk5szV2ZcHghVkUYhUSkR8+xPtRSn1RxlKlY8tOV
-         VZmatdJBkvFiVVds9gdChsXZj+hjoeroZQ9Ulp+4nCJsuL30YeY1POgrvN01CkR9Rj
-         gZloub7acvS+Q==
+        b=JlWa+FlloHYUoMnbm2o9O2/DtH1iryQVpIN5f5yUUbtytu6f4u67Ll5t5hsgJcaVz
+         9jEhp7nWlQeDu5wSdbaEHlCseVSiV860I5z5nenrdM87dOwYVTn1r2fdKNPVjUeCZ6
+         tnorO6v6LNzOk4IU38ogGD368AtEaFzw/mMKLfu6vjJTkvpxiA6Yxj+tUPxjZn16de
+         xDr+/nYv/IivW0IZ+RX29asl7KsuoNcP11B6DbFacc3Sx7iLarfPwDllpdwSjgt0kb
+         RrE8KuGkJcNnwNTC0cFVlnwZ+SKOa+N0IUASc6eRKCrxCKUiw4DeCYy22RO+oatMfj
+         pUDnmVBmeZR0g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yang Yingliang <yangyingliang@huawei.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sasha Levin <sashal@kernel.org>, linus.walleij@linaro.org,
-        linux-renesas-soc@vger.kernel.org, linux-gpio@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 22/49] pinctrl: renesas: rzn1: Fix possible null-ptr-deref in sh_pfc_map_resources()
-Date:   Wed,  1 Jun 2022 09:51:46 -0400
-Message-Id: <20220601135214.2002647-22-sashal@kernel.org>
+Cc:     Vasily Averin <vvs@openvz.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Christoph Hellwig <hch@lst.de>, Jan Kara <jack@suse.cz>,
+        Sasha Levin <sashal@kernel.org>, linux-fsdevel@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 44/49] fanotify: fix incorrect fmode_t casts
+Date:   Wed,  1 Jun 2022 09:52:08 -0400
+Message-Id: <20220601135214.2002647-44-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135214.2002647-1-sashal@kernel.org>
 References: <20220601135214.2002647-1-sashal@kernel.org>
@@ -53,49 +53,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Vasily Averin <vvs@openvz.org>
 
-[ Upstream commit 2f661477c2bb8068194dbba9738d05219f111c6e ]
+[ Upstream commit dccd855771b37820b6d976a99729c88259549f85 ]
 
-It will cause null-ptr-deref when using 'res', if platform_get_resource()
-returns NULL, so move using 'res' after devm_ioremap_resource() that
-will check it to avoid null-ptr-deref.
-And use devm_platform_get_and_ioremap_resource() to simplify code.
+Fixes sparce warnings:
+fs/notify/fanotify/fanotify_user.c:267:63: sparse:
+ warning: restricted fmode_t degrades to integer
+fs/notify/fanotify/fanotify_user.c:1351:28: sparse:
+ warning: restricted fmode_t degrades to integer
 
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Link: https://lore.kernel.org/r/20220429082637.1308182-2-yangyingliang@huawei.com
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+FMODE_NONTIFY have bitwise fmode_t type and requires __force attribute
+for any casts.
+
+Signed-off-by: Vasily Averin <vvs@openvz.org>
+Reviewed-by: Christian Brauner (Microsoft) <brauner@kernel.org>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/9adfd6ac-1b89-791e-796b-49ada3293985@openvz.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/renesas/pinctrl-rzn1.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ fs/notify/fanotify/fanotify_user.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pinctrl/renesas/pinctrl-rzn1.c b/drivers/pinctrl/renesas/pinctrl-rzn1.c
-index ef5fb25b6016..849d091205d4 100644
---- a/drivers/pinctrl/renesas/pinctrl-rzn1.c
-+++ b/drivers/pinctrl/renesas/pinctrl-rzn1.c
-@@ -865,17 +865,15 @@ static int rzn1_pinctrl_probe(struct platform_device *pdev)
- 	ipctl->mdio_func[0] = -1;
- 	ipctl->mdio_func[1] = -1;
+diff --git a/fs/notify/fanotify/fanotify_user.c b/fs/notify/fanotify/fanotify_user.c
+index a792e21c5309..16d8fc84713a 100644
+--- a/fs/notify/fanotify/fanotify_user.c
++++ b/fs/notify/fanotify/fanotify_user.c
+@@ -264,7 +264,7 @@ static int create_fd(struct fsnotify_group *group, struct path *path,
+ 	 * originally opened O_WRONLY.
+ 	 */
+ 	new_file = dentry_open(path,
+-			       group->fanotify_data.f_flags | FMODE_NONOTIFY,
++			       group->fanotify_data.f_flags | __FMODE_NONOTIFY,
+ 			       current_cred());
+ 	if (IS_ERR(new_file)) {
+ 		/*
+@@ -1348,7 +1348,7 @@ SYSCALL_DEFINE2(fanotify_init, unsigned int, flags, unsigned int, event_f_flags)
+ 	    (!(fid_mode & FAN_REPORT_NAME) || !(fid_mode & FAN_REPORT_FID)))
+ 		return -EINVAL;
  
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	ipctl->lev1_protect_phys = (u32)res->start + 0x400;
--	ipctl->lev1 = devm_ioremap_resource(&pdev->dev, res);
-+	ipctl->lev1 = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
- 	if (IS_ERR(ipctl->lev1))
- 		return PTR_ERR(ipctl->lev1);
-+	ipctl->lev1_protect_phys = (u32)res->start + 0x400;
- 
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
--	ipctl->lev2_protect_phys = (u32)res->start + 0x400;
--	ipctl->lev2 = devm_ioremap_resource(&pdev->dev, res);
-+	ipctl->lev2 = devm_platform_get_and_ioremap_resource(pdev, 1, &res);
- 	if (IS_ERR(ipctl->lev2))
- 		return PTR_ERR(ipctl->lev2);
-+	ipctl->lev2_protect_phys = (u32)res->start + 0x400;
- 
- 	ipctl->clk = devm_clk_get(&pdev->dev, NULL);
- 	if (IS_ERR(ipctl->clk))
+-	f_flags = O_RDWR | FMODE_NONOTIFY;
++	f_flags = O_RDWR | __FMODE_NONOTIFY;
+ 	if (flags & FAN_CLOEXEC)
+ 		f_flags |= O_CLOEXEC;
+ 	if (flags & FAN_NONBLOCK)
 -- 
 2.35.1
 
