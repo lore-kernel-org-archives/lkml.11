@@ -2,139 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68282C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 17:42:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56EB8CCA477
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 17:43:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356398AbiFARmH (ORCPT
+        id S1356411AbiFARnq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 13:42:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56838 "EHLO
+        Wed, 1 Jun 2022 13:43:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354124AbiFARmF (ORCPT
+        with ESMTP id S1356404AbiFARnp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 13:42:05 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B289F53728
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 10:42:03 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id cx11so2713285pjb.1
-        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 10:42:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Tv+lrJqQ4Et9gRDXAG4uoZgL+FzMyJaBz4gkWA0oo5U=;
-        b=CEBnpwn7U8OOk2f91B9RzYtl5plgtoA6dQd0KO6OZZqujXGWSQ0c8e3hqmG5vJKa4S
-         23N7rY52Mu0KLNHSCkGA69MgZ/XrSpktd+3Hk9AeLccvgQdZiXb/JocKbvzGwaVv8c/O
-         wUAAlO/432IEqXF2/0b4ZIZKaARt35imKrx4Cc9WBrE7MGVCINVDJQAq0atRb2V2ks8N
-         viSSVCeuHE4vAtviTM49W9Sf/qaRiWp3o59fFCYgZyJdDN3riC0MaLRBwHh92FOzqKxC
-         MkfoQ6s7N2UtBM7Fp5tDOmS/Di8e/0k2BB4Sc2XlXIdigGNchLDR22gV/bqcmZNJEd7T
-         n6LQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Tv+lrJqQ4Et9gRDXAG4uoZgL+FzMyJaBz4gkWA0oo5U=;
-        b=mb94mngsOMbSVIVA7QRGAlH9gfokSAOeN8xgWlBL/RFjFe5JHS8rlaHIQ7Ked4eXWj
-         3nN2qNIDzoISvCiaI+e4z22W2wtpEnoik2R/EJIa3G6hG/pynhTbug+oPYHT22SolWrh
-         7KyJ/OVOrdZ0AJcWHoYC2o9VVnF+iALoEbBbx8AWgfdgKtJragcBrDmZKRpdcWFmMkcJ
-         fUB8+ZWhs2/6GBHRujBSfTUfmNxECyH/ggPak5kzgA78aVejyvO1Hvo7JbQH/94pRVz2
-         EiEzZOxPlvkyqL5dZvb9Gskrd7muJwW+LGgTvXca175LnMxDoDo7l4pmnI1Ydc2acubs
-         Oa3Q==
-X-Gm-Message-State: AOAM531QibzAqmdOwqMVFRkWbKo59QGc20Wd7R4t76gIY6Zx4KG8w0cY
-        Uzlr3s+QKYhJnGFaOK/Ek2KQpK/mQpnnCg==
-X-Google-Smtp-Source: ABdhPJw2yoeUzjbSj9ybeuQTKhogIf8O8EKVnSQU7o4hWlgDt6lfiDzhSUwWuNKXeuDUnfNfGDALIg==
-X-Received: by 2002:a17:90a:8b18:b0:1e0:b1cd:aa9a with SMTP id y24-20020a17090a8b1800b001e0b1cdaa9amr35619537pjn.103.1654105323224;
-        Wed, 01 Jun 2022 10:42:03 -0700 (PDT)
-Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
-        by smtp.gmail.com with ESMTPSA id 193-20020a6215ca000000b0050dc76281a4sm1782788pfv.126.2022.06.01.10.42.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Jun 2022 10:42:01 -0700 (PDT)
-Date:   Wed, 1 Jun 2022 11:41:59 -0600
-From:   Mathieu Poirier <mathieu.poirier@linaro.org>
-To:     Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Rob Herring <robh@kernel.org>, Christoph Hellwig <hch@lst.de>,
-        Stefano Stabellini <stefanos@xilinx.com>,
-        Bruce Ashfield <bruce.ashfield@xilinx.com>
-Subject: Re: [RFC PATCH v5 2/4] remoteproc: core: Introduce
- rproc_register_rvdev function
-Message-ID: <20220601174159.GD531268@p14s>
-References: <20220406095446.1187968-1-arnaud.pouliquen@foss.st.com>
- <20220406095446.1187968-3-arnaud.pouliquen@foss.st.com>
+        Wed, 1 Jun 2022 13:43:45 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C5837B9DF
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 10:43:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654105424; x=1685641424;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=O76EMfv/RHibOpFDppwDuUPZWItQ/txbZlbLLYm8wfs=;
+  b=ath2uj1djCA/2x730oTkMg2upvtuVcZcak6m7IK2+NJURDJYyEm+bad2
+   rQ8ivdEPPs9vLPMR/wMgnaGPZ28FcGoyrymsgPTuIp0Bgh09kgzQ8/tz4
+   4tjLqHHRuf4ZtyPixD9LPdn7Y00p24fFJktqcEdL5fK5B+l+PalEt5aLn
+   TNLCFKJtoGUuhvFk17yAvdyvovmtTa/MkWROqOAvK2xJ+gpF87pmYg9EZ
+   j1Tiomt98hL8Y0KKFnidIaqN4DjY0pd+N9kJ0/6t0k2hCb0LZB867Bg2c
+   Np/50lL+/ytpzjH4DJni416d11+7eCJ71hcFj08eVQbPngj6pIPAMfTZJ
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10365"; a="256148007"
+X-IronPort-AV: E=Sophos;i="5.91,269,1647327600"; 
+   d="scan'208";a="256148007"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 10:43:44 -0700
+X-IronPort-AV: E=Sophos;i="5.91,269,1647327600"; 
+   d="scan'208";a="633638944"
+Received: from aloney-mobl2.amr.corp.intel.com (HELO [10.209.25.15]) ([10.209.25.15])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 10:43:43 -0700
+Message-ID: <66914bd5-8bed-adba-c7a7-6cbfe1ad3520@linux.intel.com>
+Date:   Wed, 1 Jun 2022 12:17:57 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220406095446.1187968-3-arnaud.pouliquen@foss.st.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.5.0
+Subject: Re: soundwire: device drivers for PC based hardware
+Content-Language: en-US
+To:     Muni Sekhar <munisekharrms@gmail.com>, vkoul@kernel.org,
+        sanyog.r.kale@intel.com, alsa-devel <alsa-devel@alsa-project.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>
+References: <CAHhAz+gqRDh=CJseQEhAJcRVEguxQ5c4vdUX8dvzdPNT=Sy3iA@mail.gmail.com>
+From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+In-Reply-To: <CAHhAz+gqRDh=CJseQEhAJcRVEguxQ5c4vdUX8dvzdPNT=Sy3iA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 06, 2022 at 11:54:44AM +0200, Arnaud Pouliquen wrote:
-> The rproc structure contains a list of registered rproc_vdev structure.
 
-This should be rproc_rvdev.
 
-> To be able to move the management of the rproc_vdev structure in
-> remoteproc_virtio.c (i.e rproc_rvdev_add_device and
-> rproc_rvdev_remove_device functions), introduce the rproc_register_rvdev
-> and rproc_unregister_rvdev functions.
-
-The name of those functions doesn't match the content of the patch.
-
+On 5/31/22 10:17, Muni Sekhar wrote:
+> Hi all,
 > 
-> Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-> ---
->  drivers/remoteproc/remoteproc_core.c | 16 ++++++++++++++--
->  1 file changed, 14 insertions(+), 2 deletions(-)
+> I am looking for the soundwire device drivers which run on x86 CPU for
+> PC based platforms.
 > 
-> diff --git a/drivers/remoteproc/remoteproc_core.c b/drivers/remoteproc/remoteproc_core.c
-> index 3a469220ac73..081bea39daf4 100644
-> --- a/drivers/remoteproc/remoteproc_core.c
-> +++ b/drivers/remoteproc/remoteproc_core.c
-> @@ -484,6 +484,18 @@ static int copy_dma_range_map(struct device *to, struct device *from)
->  	return 0;
->  }
->  
-> +static void rproc_add_rvdev(struct rproc *rproc, struct rproc_vdev *rvdev)
-> +{
-> +	if (rvdev && rproc)
-> +		list_add_tail(&rvdev->node, &rproc->rvdevs);
-> +}
-> +
-> +static void rproc_remove_rvdev(struct rproc_vdev *rvdev)
-> +{
-> +	if (rvdev)
-> +		list_del(&rvdev->node);
-> +}
-> +
->  static struct rproc_vdev *
->  rproc_rvdev_add_device(struct rproc *rproc, struct rproc_vdev_data *rvdev_data)
->  {
-> @@ -547,7 +559,7 @@ rproc_rvdev_add_device(struct rproc *rproc, struct rproc_vdev_data *rvdev_data)
->  			goto unwind_vring_allocations;
->  	}
->  
-> -	list_add_tail(&rvdev->node, &rproc->rvdevs);
-> +	rproc_add_rvdev(rproc, rvdev);
->  
->  	rvdev->subdev.start = rproc_vdev_do_start;
->  	rvdev->subdev.stop = rproc_vdev_do_stop;
-> @@ -576,7 +588,7 @@ static void rproc_rvdev_remove_device(struct rproc_vdev *rvdev)
->  	}
->  
->  	rproc_remove_subdev(rproc, &rvdev->subdev);
-> -	list_del(&rvdev->node);
-> +	rproc_remove_rvdev(rvdev);
-
-With the above:
-
-Reviewed-by: Mathieu Poirier <mathieu.poirier@linaro.org>
-
->  	device_unregister(&rvdev->dev);
->  }
->  
-> -- 
-> 2.25.1
+> linux/drivers/soundwire at master · torvalds/linux · GitHub
 > 
+> Can the above mentioned mainline tree drivers can be used for this purpose?
+> 
+> config SOUNDWIRE_INTEL
+> depends on ACPI && SND_SOC
+> 
+> config SOUNDWIRE_QCOM
+> depends on SND_SOC
+> 
+> As per the Kconfig file, both the Intel and Qualcomm SoundWire Master
+> driver depend on SND_SOC, does it mean it is only possible to run on
+> SoC CPU(Arm chipsets)?
+
+Here's what you need in your .config to use SoundWire on x86-based
+hardware. Today this includes mostly Dell platforms, HP x360 convertible
+laptops and Intel 'bishop canyon' NUC laptops.
+
+CONFIG_REGMAP_SOUNDWIRE=m
+
+CONFIG_REGMAP_SOUNDWIRE_MBQ=m
+
+CONFIG_SND_INTEL_SOUNDWIRE_ACPI=m
+
+CONFIG_SND_SOC_INTEL_SOUNDWIRE_SOF_MACH=m
+
+CONFIG_SND_SOC_SOF_INTEL_SOUNDWIRE_LINK_BASELINE=m
+
+CONFIG_SND_SOC_SOF_INTEL_SOUNDWIRE=m
+
+CONFIG_SOUNDWIRE=m
+
+CONFIG_SOUNDWIRE_CADENCE=m
+
+CONFIG_SOUNDWIRE_INTEL=m
+
+# CONFIG_SOUNDWIRE_QCOM is not set
+
+CONFIG_SOUNDWIRE_GENERIC_ALLOCATION=m
+
+
+I think you can get everything if you select these 3 high-level ones:
+CONFIG_SOUNDWIRE
+CONFIG_SND_SOC_SOF_INTEL_SOUNDWIRE
+CONFIG_SND_SOC_INTEL_SOUNDWIRE_SOF_MACH
