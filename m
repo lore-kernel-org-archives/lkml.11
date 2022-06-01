@@ -2,156 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A7E3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 02:47:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BDF1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 02:47:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349221AbiFACrN (ORCPT
+        id S1349212AbiFACra (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 22:47:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53764 "EHLO
+        Tue, 31 May 2022 22:47:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349223AbiFACq4 (ORCPT
+        with ESMTP id S1348381AbiFACrZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 22:46:56 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A14BFD7E
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 19:46:43 -0700 (PDT)
-Received: from kwepemi100011.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LCYQj4qv6zfZDX;
-        Wed,  1 Jun 2022 10:45:01 +0800 (CST)
-Received: from kwepemm600013.china.huawei.com (7.193.23.68) by
- kwepemi100011.china.huawei.com (7.221.188.134) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 1 Jun 2022 10:46:41 +0800
-Received: from huawei.com (10.175.127.227) by kwepemm600013.china.huawei.com
- (7.193.23.68) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 1 Jun
- 2022 10:46:40 +0800
-From:   Zhihao Cheng <chengzhihao1@huawei.com>
-To:     <richard@nod.at>, <miquel.raynal@bootlin.com>,
-        <kirill.shutemov@linux.intel.com>, <willy@infradead.org>,
-        <s.hauer@pengutronix.de>, <ext-adrian.hunter@nokia.com>,
-        <Artem.Bityutskiy@nokia.com>
-CC:     <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <chengzhihao1@huawei.com>, <yukuai3@huawei.com>
-Subject: [PATCH v2 2/2] ubifs: ubifs_releasepage: Remove ubifs_assert(0) to valid this process
-Date:   Wed, 1 Jun 2022 11:00:00 +0800
-Message-ID: <20220601030000.49714-3-chengzhihao1@huawei.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220601030000.49714-1-chengzhihao1@huawei.com>
-References: <20220601030000.49714-1-chengzhihao1@huawei.com>
+        Tue, 31 May 2022 22:47:25 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F6641F623;
+        Tue, 31 May 2022 19:47:23 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id n8so510352plh.1;
+        Tue, 31 May 2022 19:47:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=oQFM+rCuk95LMnjjZ4Ns18+BJzWLRDuKapwPxrHg13w=;
+        b=NTo1+/bYpmehPMzgIL3+9DSkID+G6EFLDGoNstoFRqOJD5M8u4R7UvoyHt9PLkGtFT
+         jZgAMnQlkl3gOd0d3YzkdVFTWUI4knohfGkA2dQdZjXOiQCJzt8I+U9JMXqSR4/LUtpX
+         2j13RNpjUPvfVbH/yjdzMeib0+IE0enzqLyGRHgFM2Z5ArP9rEHkjghq65Z829jJDymt
+         euNusrE+75qWl4xs1eULrf/JOxFvnXxwv6L3G6BFfklihMb9K341/2lfg33PFVDyIKJ+
+         BmoIUiOX7RMz7ptiujCi2KXsD8QAP4pxTY/E3RRX4aWq0AtAGAfqIpWtrrKzVCixCjr/
+         e00w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=oQFM+rCuk95LMnjjZ4Ns18+BJzWLRDuKapwPxrHg13w=;
+        b=jZw/hDH3OIYl/BuJwtunL+OyvjpA4Byoc/QLq7HoW1tmPn9kjMtu0SD+FFU8QZEBIw
+         5X94j+GaiwhQqeVl0h7a7NL/yitiefcGOA7FsLeH42/O+58PH+LEwfsU8ZzEPt3SIs5F
+         cPeisV8F6L40Ag5ZD5i6yr6cUUt+evTeciSX+0Oq3xsrg+q2i2n78BSp6ylknqrTUsg0
+         3STeHI9h+EQBt3ZkbDWXcskOSxsg4x9K0NW+vO3z/RcvCyGvWBGo5SlXmMJNOMwBhOV9
+         QHIeMPhnc1hKZmlNg+raSyF1bDODxFfIzhfvXGSqeCJiE00RTPlp2QU5zpjpxtqU1Sug
+         hWdA==
+X-Gm-Message-State: AOAM532EHFot0G+d6tBe5s9KPGpYAlnKrJ32L/iZdiR7fiZ3L6NvZbXW
+        EDc3VSZF2ftgoE3R6xCvzhK/oVF5QS4Uhw==
+X-Google-Smtp-Source: ABdhPJy9jPEPzt+koescX8R9C1IhQZeP2eNX2AeLwbTTYek4Mbfukpu1gjjosD0TNYuerhY+z2+7Qg==
+X-Received: by 2002:a17:902:cecd:b0:163:29e3:b1d1 with SMTP id d13-20020a170902cecd00b0016329e3b1d1mr36119846plg.129.1654051643003;
+        Tue, 31 May 2022 19:47:23 -0700 (PDT)
+Received: from [192.168.50.247] ([103.84.139.165])
+        by smtp.gmail.com with ESMTPSA id 129-20020a621787000000b005180c127200sm164940pfx.24.2022.05.31.19.47.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 31 May 2022 19:47:22 -0700 (PDT)
+Message-ID: <c6a3f922-0a57-5e48-c4e6-abca62f85f49@gmail.com>
+Date:   Wed, 1 Jun 2022 10:47:15 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemm600013.china.huawei.com (7.193.23.68)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] xfrm: xfrm_input: fix a possible memory leak in
+ xfrm_input()
+Content-Language: en-US
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     herbert@gondor.apana.org.au, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220530102046.41249-1-hbh25y@gmail.com>
+ <20220530103734.GD2517843@gauss3.secunet.de>
+ <17ce0028-cbf2-20cd-c9ae-16b37ed61924@gmail.com>
+ <20220531113530.GL2517843@gauss3.secunet.de>
+From:   Hangyu Hua <hbh25y@gmail.com>
+In-Reply-To: <20220531113530.GL2517843@gauss3.secunet.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are two states for ubifs writing pages:
-1. Dirty, Private
-2. Not Dirty, Not Private
-
-The normal process cannot go to ubifs_releasepage() which means there
-exists pages being private but not dirty. Reproducer[1] shows that it
-could occur (which maybe related to [2]) with following process:
-
-     PA                     PB                    PC
-lock(page)[PA]
-ubifs_write_end
-  attach_page_private         // set Private
-  __set_page_dirty_nobuffers  // set Dirty
-unlock(page)
-
-write_cache_pages[PA]
-  lock(page)
-  clear_page_dirty_for_io(page)	// clear Dirty
-  ubifs_writepage
-
-                        do_truncation[PB]
-			  truncate_setsize
-			    i_size_write(inode, newsize) // newsize = 0
-
-    i_size = i_size_read(inode)	// i_size = 0
-    end_index = i_size >> PAGE_SHIFT
-    if (page->index > end_index)
-      goto out // jump
-out:
-unlock(page)   // Private, Not Dirty
-
-						generic_fadvise[PC]
-						  lock(page)
-						  invalidate_inode_page
-						    try_to_release_page
-						      ubifs_releasepage
-						        ubifs_assert(c, 0)
-		                                        // bad assertion!
-						  unlock(page)
-			  truncate_pagecache[PB]
-
-Then we may get following assertion failed:
-  UBIFS error (ubi0:0 pid 1683): ubifs_assert_failed [ubifs]:
-  UBIFS assert failed: 0, in fs/ubifs/file.c:1513
-  UBIFS warning (ubi0:0 pid 1683): ubifs_ro_mode [ubifs]:
-  switched to read-only mode, error -22
-  CPU: 2 PID: 1683 Comm: aa Not tainted 5.16.0-rc5-00184-g0bca5994cacc-dirty #308
-  Call Trace:
-    dump_stack+0x13/0x1b
-    ubifs_ro_mode+0x54/0x60 [ubifs]
-    ubifs_assert_failed+0x4b/0x80 [ubifs]
-    ubifs_releasepage+0x67/0x1d0 [ubifs]
-    try_to_release_page+0x57/0xe0
-    invalidate_inode_page+0xfb/0x130
-    __invalidate_mapping_pages+0xb9/0x280
-    invalidate_mapping_pagevec+0x12/0x20
-    generic_fadvise+0x303/0x3c0
-    ksys_fadvise64_64+0x4c/0xb0
-
-[1] https://bugzilla.kernel.org/show_bug.cgi?id=215373
-[2] https://linux-mtd.infradead.narkive.com/NQoBeT1u/patch-rfc-ubifs-fix-assert-failed-in-ubifs-set-page-dirty
-
-Fixes: 1e51764a3c2ac0 ("UBIFS: add new flash file system")
-Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
----
- fs/ubifs/file.c | 19 ++++++++++++++-----
- 1 file changed, 14 insertions(+), 5 deletions(-)
-
-diff --git a/fs/ubifs/file.c b/fs/ubifs/file.c
-index 264b0484ea56..bc2eaf331e56 100644
---- a/fs/ubifs/file.c
-+++ b/fs/ubifs/file.c
-@@ -1495,14 +1495,23 @@ static bool ubifs_release_folio(struct folio *folio, gfp_t unused_gfp_flags)
- 	struct inode *inode = folio->mapping->host;
- 	struct ubifs_info *c = inode->i_sb->s_fs_info;
- 
--	/*
--	 * An attempt to release a dirty page without budgeting for it - should
--	 * not happen.
--	 */
- 	if (folio_test_writeback(folio))
- 		return false;
-+
-+	/*
-+	 * Page is private but not dirty, weird? There is one condition
-+	 * making it happened. ubifs_writepage skipped the page because
-+	 * page index beyonds isize (for example. truncated by other
-+	 * process named A), then the page is invalidated by fadvise64
-+	 * syscall before being truncated by process A.
-+	 */
- 	ubifs_assert(c, folio_test_private(folio));
--	ubifs_assert(c, 0);
-+	if (folio_test_checked(folio))
-+		release_new_page_budget(c);
-+	else
-+		release_existing_page_budget(c);
-+
-+	atomic_long_dec(&c->dirty_pg_cnt);
- 	folio_detach_private(folio);
- 	folio_clear_checked(folio);
- 	return true;
--- 
-2.31.1
-
+On 2022/5/31 19:35, Steffen Klassert wrote:
+> On Tue, May 31, 2022 at 10:12:05AM +0800, Hangyu Hua wrote:
+>> On 2022/5/30 18:37, Steffen Klassert wrote:
+>>> On Mon, May 30, 2022 at 06:20:46PM +0800, Hangyu Hua wrote:
+>>>> xfrm_input needs to handle skb internally. But skb is not freed When
+>>>> xo->flags & XFRM_GRO == 0 and decaps == 0.
+>>>>
+>>>> Fixes: 7785bba299a8 ("esp: Add a software GRO codepath")
+>>>> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+>>>> ---
+>>>>    net/xfrm/xfrm_input.c | 2 +-
+>>>>    1 file changed, 1 insertion(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
+>>>> index 144238a50f3d..6f9576352f30 100644
+>>>> --- a/net/xfrm/xfrm_input.c
+>>>> +++ b/net/xfrm/xfrm_input.c
+>>>> @@ -742,7 +742,7 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
+>>>>    			gro_cells_receive(&gro_cells, skb);
+>>>>    			return err;
+>>>>    		}
+>>>> -
+>>>> +		kfree_skb(skb);
+>>>>    		return err;
+>>>>    	}
+>>>
+>>> Did you test this? The function behind the 'afinfo->the transport_finish()'
+>>> pointer handles this skb and frees it in that case.
+>>
+>> int xfrm4_transport_finish(struct sk_buff *skb, int async)
+>> {
+>> 	struct xfrm_offload *xo = xfrm_offload(skb);
+>> 	struct iphdr *iph = ip_hdr(skb);
+>>
+>> 	iph->protocol = XFRM_MODE_SKB_CB(skb)->protocol;
+>>
+>> #ifndef CONFIG_NETFILTER
+>> 	if (!async)
+>> 		return -iph->protocol;		<--- [1]
+>> #endif
+>> ...
+>> 	NF_HOOK(NFPROTO_IPV4, NF_INET_PRE_ROUTING,
+>> 		dev_net(skb->dev), NULL, skb, skb->dev, NULL,
+>> 		xfrm4_rcv_encap_finish);	<--- [2]
+>> 	return 0;
+>> }
+>>
+>> int xfrm6_transport_finish(struct sk_buff *skb, int async)
+>> {
+>> 	struct xfrm_offload *xo = xfrm_offload(skb);
+>> 	int nhlen = skb->data - skb_network_header(skb);
+>>
+>> 	skb_network_header(skb)[IP6CB(skb)->nhoff] =
+>> 		XFRM_MODE_SKB_CB(skb)->protocol;
+>>
+>> #ifndef CONFIG_NETFILTER
+>> 	if (!async)
+>> 		return 1;			<--- [3]
+>> #endif
+>> ...
+>> 	NF_HOOK(NFPROTO_IPV6, NF_INET_PRE_ROUTING,
+>> 		dev_net(skb->dev), NULL, skb, skb->dev, NULL,
+>> 		xfrm6_transport_finish2);
+>> 	return 0;				<--- [4]
+>> }
+>>
+>> If transport_finish() return in [1] or [3], there will be a memory leak.
+> 
+> No, even in that case there is no memleak. Look for instance at the
+> IPv4 case, we return -iph->protocol here.
+> Then look at ip_protocol_deliver_rcu(). If the ipprot->handler (xfrm)
+> returns a negative value, this is interpreted as the protocol number
+> and the packet is resubmitted to the next protocol handler.
+> 
+> Please test your patches before you submit them in the future.
+Thanks for your explanation. I will be more careful in the future.
