@@ -2,239 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89D06C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 10:49:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C025AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 10:49:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352400AbiFAKtR (ORCPT
+        id S1352361AbiFAKtj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 06:49:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32986 "EHLO
+        Wed, 1 Jun 2022 06:49:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352292AbiFAKtI (ORCPT
+        with ESMTP id S1352359AbiFAKtg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 06:49:08 -0400
+        Wed, 1 Jun 2022 06:49:36 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AC90027B28
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 03:49:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6700C2E09E
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 03:49:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654080545;
+        s=mimecast20190719; t=1654080573;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=T5n9A4eLifr47qhHLRf9Kq7hYcEBfD03DgfdoZ0OcNA=;
-        b=Uk1uvFgUXEo7skN5DF4HSeE4BQl9i3HmwsuRPo0FBTd8uH236zDXBSAA0C3JwMqLi9Ti5d
-        3wL5XqhxO+jyEmbiYw0oZHox7OOEsEadhYucimV9lNum3W0UUjwtVG2c10ETkHlGh/K0vu
-        1ubdZx0bRI2n4M6aNCgDvtQNet5flhs=
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
- [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=DS4blGTPG/TNOCJCMaY+3+JCDXOQcHN0U1VXQhbGGI4=;
+        b=OVW5GC3Q2fbman5xaKLPO1xCoh1UaDBTjmQKSuENQAIK3/dgxy80MzbyIXJJuzEwb2XFcI
+        Se5r7k2VQaUOdwwpqYg2HE2g4E87kXrIW7x1YnLHFm64MRp08N/3GZNJrxNxx/gLzAYxs3
+        GGgRhbiMN4n70buN5qKUq9GNl5g8mhY=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-54-taVFllKxMz2rI8Ujyg5ZYA-1; Wed, 01 Jun 2022 06:49:04 -0400
-X-MC-Unique: taVFllKxMz2rI8Ujyg5ZYA-1
-Received: by mail-qv1-f71.google.com with SMTP id x17-20020a0cfe11000000b004645917e45cso1089340qvr.4
-        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 03:49:04 -0700 (PDT)
+ us-mta-522-kMhGAKOSNNatawOqspwyyg-1; Wed, 01 Jun 2022 06:49:32 -0400
+X-MC-Unique: kMhGAKOSNNatawOqspwyyg-1
+Received: by mail-wm1-f69.google.com with SMTP id l34-20020a05600c1d2200b003973a50c1e4so944050wms.2
+        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 03:49:32 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=T5n9A4eLifr47qhHLRf9Kq7hYcEBfD03DgfdoZ0OcNA=;
-        b=wJIvbwU03tOBw/VdCxz4rpJEhKMly/vxRvZQE+djnYZu8VCCV+mHK6XdpGjRSZnkSn
-         210/K99fdU4U2qvA8QwZusPbpPI/8Z+0Xqu4SF4TXd7lh6DfwMS7KGQDQZT+JfzHLt4/
-         8NTln2CoETmoIe1eRqEhhO2f3xR4CZQylVdPyFavStbfEJl65CZN/n+BV4Th1p8ur3r8
-         FIDqahZ/Pj0FJ0myFzxeRYulyUQGXYsh2u2dZ4hv5VansDSO5v6TzaEt4ng70SLdAIvH
-         CtMUI7vsHC46cmpPiaIYw9lglalv5UTckQgur5HvkGwiPtSyv1Q6jO/5UvdEYScEngE4
-         SP8Q==
-X-Gm-Message-State: AOAM533L1M6NZLX8E0J0GxRZfrk935jr/+8XXQSedjHXTY6uTTf+jcbA
-        EhjgcFs0adWOmfblDX6tzw5GASJk67wDr1uByJ+OITiEhVm+v9PiWAN20tKHgp60mMFb2ArrpKS
-        y3jhWX/N+Vqo2aLV1J9epTitDMLmW42aCsHloR5qr
-X-Received: by 2002:a0c:fe48:0:b0:462:6a02:a17d with SMTP id u8-20020a0cfe48000000b004626a02a17dmr27671525qvs.108.1654080544238;
-        Wed, 01 Jun 2022 03:49:04 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJydnMnL2CGtfHvsmGsOMtRegKBWrDanbK1aFihPp/xsHxn9Wq3Oqc+JoLCDAIVDJM7yrsBugSDtOndvdK+IpM0=
-X-Received: by 2002:a0c:fe48:0:b0:462:6a02:a17d with SMTP id
- u8-20020a0cfe48000000b004626a02a17dmr27671514qvs.108.1654080544026; Wed, 01
- Jun 2022 03:49:04 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=DS4blGTPG/TNOCJCMaY+3+JCDXOQcHN0U1VXQhbGGI4=;
+        b=NGbXexDfaxtOvDZu+DYM2EuOSs3SB6r6gK567cvQQU8UwBRrLznOdPJ73fMY9wbpV5
+         8hME+dIaaPzX3Fenz5A6tbvQys0BqHj1He/XZnHJwSGovvm3/Sx85dKo3SBg5xStvDBW
+         rIziw+AMfZEmVKP+ULb4ChoG0jQRHKzpyOBLsW24OlM2ylw/kSqBj9xu6imWf8IycQZp
+         A+s2L1Ju/JOBNLZCkXE/PXIVPh29CkZWEw4HgdWlIHu45AgdIBfYEK+HAKd48dRprn7P
+         KPUzgUHQDpZyIlsgCJGIQQgpVDeCTLWdC0bAxLhjqQ2nlV27vcS87NfYUM3xpZ3oTLXH
+         cRsA==
+X-Gm-Message-State: AOAM531jHiuRhpg/Dausv3OhOUY7VV0rF5OjQD/SEfWocklDoW/Xy5Tl
+        x2Tz/aui5FDIdKCl+VSvphCW4mcqmOVu/qh5c4tvUqy2SlQpjt3zyCqD9r2KljPGkzuY5Po24gJ
+        jL+0mrkt3RiNQealVCfVKJh5R
+X-Received: by 2002:adf:e10d:0:b0:20c:dc8f:e5a5 with SMTP id t13-20020adfe10d000000b0020cdc8fe5a5mr54387150wrz.265.1654080571197;
+        Wed, 01 Jun 2022 03:49:31 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyNLblXQZWWG8YKRi1MWxDnwphi/PU6+MtD9BcohLoaFlU7Cvuccdym8QdqGZaoL9UVqtd5rQ==
+X-Received: by 2002:adf:e10d:0:b0:20c:dc8f:e5a5 with SMTP id t13-20020adfe10d000000b0020cdc8fe5a5mr54387131wrz.265.1654080570899;
+        Wed, 01 Jun 2022 03:49:30 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c705:2600:951d:63df:c091:3b45? (p200300cbc7052600951d63dfc0913b45.dip0.t-ipconnect.de. [2003:cb:c705:2600:951d:63df:c091:3b45])
+        by smtp.gmail.com with ESMTPSA id y18-20020a05600c365200b003942a244f54sm5775095wmq.45.2022.06.01.03.49.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 01 Jun 2022 03:49:29 -0700 (PDT)
+Message-ID: <48a4a7f2-bee5-371a-1d9d-549fc59ce4f4@redhat.com>
+Date:   Wed, 1 Jun 2022 12:49:28 +0200
 MIME-Version: 1.0
-References: <20220526124338.36247-1-eperezma@redhat.com> <PH0PR12MB54819C6C6DAF6572AEADC1AEDCD99@PH0PR12MB5481.namprd12.prod.outlook.com>
- <CACGkMEu1YenjBHAssP=FvKX6WxDQ5Aa50r-BsnkfR4zqNTk6hg@mail.gmail.com>
- <CAJaqyWfzoORc7V=xqdyLsdRPRYGNJBvWaPcZDhOb1vJWhbixoA@mail.gmail.com> <PH0PR12MB54813940FE5AC483C4676F24DCDC9@PH0PR12MB5481.namprd12.prod.outlook.com>
-In-Reply-To: <PH0PR12MB54813940FE5AC483C4676F24DCDC9@PH0PR12MB5481.namprd12.prod.outlook.com>
-From:   Eugenio Perez Martin <eperezma@redhat.com>
-Date:   Wed, 1 Jun 2022 12:48:27 +0200
-Message-ID: <CAJaqyWejR8M1sgNtJmWbDGKp2rMZO2rHZP_syqqJxVMiHfXLUQ@mail.gmail.com>
-Subject: Re: [PATCH v4 0/4] Implement vdpasim stop operation
-To:     Parav Pandit <parav@nvidia.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "martinh@xilinx.com" <martinh@xilinx.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        "martinpo@xilinx.com" <martinpo@xilinx.com>,
-        "lvivier@redhat.com" <lvivier@redhat.com>,
-        "pabloc@xilinx.com" <pabloc@xilinx.com>,
-        Eli Cohen <elic@nvidia.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Xie Yongji <xieyongji@bytedance.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Zhang Min <zhang.min9@zte.com.cn>,
-        Wu Zongyong <wuzongyong@linux.alibaba.com>,
-        "lulu@redhat.com" <lulu@redhat.com>,
-        Zhu Lingshan <lingshan.zhu@intel.com>,
-        "Piotr.Uminski@intel.com" <Piotr.Uminski@intel.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>,
-        "ecree.xilinx@gmail.com" <ecree.xilinx@gmail.com>,
-        "gautam.dawar@amd.com" <gautam.dawar@amd.com>,
-        "habetsm.xilinx@gmail.com" <habetsm.xilinx@gmail.com>,
-        "tanuj.kamde@amd.com" <tanuj.kamde@amd.com>,
-        "hanand@xilinx.com" <hanand@xilinx.com>,
-        "dinang@xilinx.com" <dinang@xilinx.com>,
-        Longpeng <longpeng2@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH 1/3] mm: hugetlb_vmemmap: cleanup hugetlb_vmemmap related
+ functions
+Content-Language: en-US
+To:     Muchun Song <songmuchun@bytedance.com>, mike.kravetz@oracle.com
+Cc:     akpm@linux-foundation.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, smuchun@bytedance.com
+References: <20220404074652.68024-1-songmuchun@bytedance.com>
+ <20220404074652.68024-2-songmuchun@bytedance.com>
+ <087817e3-98ce-09f6-9ae9-68e544f43775@redhat.com>
+ <YpdD7WCYlfCkvv2L@FVFYT0MHHV2J.googleapis.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <YpdD7WCYlfCkvv2L@FVFYT0MHHV2J.googleapis.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 31, 2022 at 10:26 PM Parav Pandit <parav@nvidia.com> wrote:
->
->
->
-> > From: Eugenio Perez Martin <eperezma@redhat.com>
-> > Sent: Friday, May 27, 2022 3:55 AM
-> >
-> > On Fri, May 27, 2022 at 4:26 AM Jason Wang <jasowang@redhat.com> wrote:
-> > >
-> > > On Thu, May 26, 2022 at 8:54 PM Parav Pandit <parav@nvidia.com> wrote=
-:
-> > > >
-> > > >
-> > > >
-> > > > > From: Eugenio P=C3=A9rez <eperezma@redhat.com>
-> > > > > Sent: Thursday, May 26, 2022 8:44 AM
-> > > >
-> > > > > Implement stop operation for vdpa_sim devices, so vhost-vdpa will
-> > > > > offer
-> > > > >
-> > > > > that backend feature and userspace can effectively stop the devic=
-e.
-> > > > >
-> > > > >
-> > > > >
-> > > > > This is a must before get virtqueue indexes (base) for live
-> > > > > migration,
-> > > > >
-> > > > > since the device could modify them after userland gets them. Ther=
-e
-> > > > > are
-> > > > >
-> > > > > individual ways to perform that action for some devices
-> > > > >
-> > > > > (VHOST_NET_SET_BACKEND, VHOST_VSOCK_SET_RUNNING, ...) but
-> > there
-> > > > > was no
-> > > > >
-> > > > > way to perform it for any vhost device (and, in particular, vhost=
--vdpa).
-> > > > >
-> > > > >
-> > > > >
-> > > > > After the return of ioctl with stop !=3D 0, the device MUST finis=
-h
-> > > > > any
-> > > > >
-> > > > > pending operations like in flight requests. It must also preserve
-> > > > > all
-> > > > >
-> > > > > the necessary state (the virtqueue vring base plus the possible
-> > > > > device
-> > > > >
-> > > > > specific states) that is required for restoring in the future. Th=
-e
-> > > > >
-> > > > > device must not change its configuration after that point.
-> > > > >
-> > > > >
-> > > > >
-> > > > > After the return of ioctl with stop =3D=3D 0, the device can cont=
-inue
-> > > > >
-> > > > > processing buffers as long as typical conditions are met (vq is
-> > > > > enabled,
-> > > > >
-> > > > > DRIVER_OK status bit is enabled, etc).
-> > > >
-> > > > Just to be clear, we are adding vdpa level new ioctl() that doesn=
-=E2=80=99t map to
-> > any mechanism in the virtio spec.
-> > >
-> > > We try to provide forward compatibility to VIRTIO_CONFIG_S_STOP. That
-> > > means it is expected to implement at least a subset of
-> > > VIRTIO_CONFIG_S_STOP.
-> > >
-> >
-> > Appending a link to the proposal, just for reference [1].
-> >
-> > > >
-> > > > Why can't we use this ioctl() to indicate driver to start/stop the =
-device
-> > instead of driving it through the driver_ok?
-> > >
-> >
-> > Parav, I'm not sure I follow you here.
-> >
-> > By the proposal, the resume of the device is (From qemu POV):
-> > 1. To configure all data vqs and cvq (addr, num, ...) 2. To enable only=
- CVQ, not
-> > data vqs 3. To send DRIVER_OK 4. Wait for all buffers of CVQ to be used=
- 5. To
-> > enable all others data vqs (individual ioctl at the moment)
-> >
-> > Where can we fit the resume (as "stop(false)") here? If the device is s=
-topped
-> > (as if we send stop(true) before DRIVER_OK), we don't read CVQ first. I=
-f we
-> > send it right after (or instead) DRIVER_OK, data buffers can reach data=
- vqs
-> > before configuring RSS.
-> >
-> It doesn=E2=80=99t make sense with currently proposed way of using cvq to=
- replay the config.
+>>>  #endif
+>>>  #ifdef CONFIG_CGROUP_HUGETLB
+>>>  	/* cgroup control files */
+>>> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+>>> index dd642cfc538b..1f9fbdddc86b 100644
+>>> --- a/mm/hugetlb.c
+>>> +++ b/mm/hugetlb.c
+>>> @@ -1540,7 +1540,7 @@ static void __update_and_free_page(struct hstate *h, struct page *page)
+>>>  	if (hstate_is_gigantic(h) && !gigantic_page_runtime_supported())
+>>>  		return;
+>>>  
+>>> -	if (alloc_huge_page_vmemmap(h, page)) {
+>>> +	if (hugetlb_vmemmap_alloc(h, page)) {
+>>>  		spin_lock_irq(&hugetlb_lock);
+>>>  		/*
+>>>  		 * If we cannot allocate vmemmap pages, just refuse to free the
+>>> @@ -1617,7 +1617,7 @@ static DECLARE_WORK(free_hpage_work, free_hpage_workfn);
+>>>  
+>>>  static inline void flush_free_hpage_work(struct hstate *h)
+>>>  {
+>>> -	if (free_vmemmap_pages_per_hpage(h))
+>>> +	if (hugetlb_optimize_vmemmap_pages(h))
+>>
+>> It might be reasonable to call that hugetlb_should_optimize_vmemmap()
+>> then, letting it return a bool.
+>>
+> 
+> How about the name of "hugetlb_vmemmap_optimizable()"?  "should" seems to
+> tell the user that this hugetlb should be optimized, however, optimization
+> also depends on "hugetlb_free_vmemmap=on".  "optimizable" seems to be more
+> appropriate, right?
 
-The stop/resume part is not intended to restore the config through the
-CVQ. The stop call is issued to be able to retrieve the vq status
-(base, in vhost terminology). The symmetric operation (resume) was
-added on demand, it was never intended to be part neither of the
-config restore or the virtqueue state restore workflow.
+No strong opinion. Either is clearer to me compared to what we have
+right now :)
 
-The configuration restore workflow was modelled after the device
-initialization, so each part needed to add the less things the better,
-and only qemu needed to be changed. From the device POV, there is no
-need to learn new tricks for this. The support of .set_vq_ready and
-.get_vq_ready is already in the kernel in every vdpa backend driver.
 
-> Need to continue with currently proposed temporary method that subsequent=
-ly to be replaced with optimized flow as we discussed.
+-- 
+Thanks,
 
-Back then, it was noted by you that enabling each data vq individually
-after DRIVER_OK is slow on mlx5 devices. The solution was to batch
-these enable calls accounting in the kernel, achieving no growth in
-the vdpa uAPI layer. The proposed solution did not involve the resume
-operation.
-
-After that, you proposed in this thread "Why can't we use this ioctl()
-to indicate driver to start/stop the device instead of driving it
-through the driver_ok?". As I understand, that is a mistake, since it
-requires the device, the vdpa layer, etc... to learn new tricks. It
-requires qemu to duplicate the initialization layer (it's now common
-for start and restore config). But I might have not seen the whole
-picture, missing advantages of using the resume call for this
-workflow. Can you describe the workflow you have in mind? How does
-that new workflow affect this proposal?
-
-I'm ok to change the proposal as long as we find we obtain a net gain.
-
-Thanks!
+David / dhildenb
 
