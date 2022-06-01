@@ -2,118 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C090DC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 18:34:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AB50C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 18:34:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232007AbiFASeW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 14:34:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50088 "EHLO
+        id S234986AbiFASep (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 14:34:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232688AbiFASeR (ORCPT
+        with ESMTP id S232362AbiFASel (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 14:34:17 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 927012A738
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 11:34:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654108456; x=1685644456;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=K7U9o3hCQvvE61UN1WrywuQLGgLPbvhCJ9N0oSynSNM=;
-  b=ZO4Vb1/p0p8GqdejCdAUCPetkuuIeZLcYuuEMdQL7EqR28kdfW+zLBRn
-   m8RWMUDfkBIoae9JTXK9N8FUhbv3ZgRnUpsG4Nhc/0AXh3Qvrl0Hk4hge
-   4B0hkcFnGuK+50yYMR/ccfBWRdj+JenaJ8EB7tOtZdn21BubSDqNpK7gE
-   BjpTurEHpc51SYkiwbGAEZC0Rs9NLAhTDHbxzu98pyam8bearmdM2p934
-   ndTV9VaF415zj/MlfftEWzxIpPU2bA8uZHpXSPTT6aAUaOSmPqkvKTaSF
-   mWt0csH18oxML+PYFO1bbB1HXHgyMxI5pnfYBjW/0Sw6iqVmeqv6Car+X
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10365"; a="275763299"
-X-IronPort-AV: E=Sophos;i="5.91,269,1647327600"; 
-   d="scan'208";a="275763299"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 11:34:16 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,269,1647327600"; 
-   d="scan'208";a="530194317"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 01 Jun 2022 11:34:14 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nwTAb-0004IS-Sb;
-        Wed, 01 Jun 2022 18:34:13 +0000
-Date:   Thu, 2 Jun 2022 02:33:23 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Mark Rutland <mark.rutland@arm.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [mark:arm64/ftrace/minimal-regs 6/6] include/linux/ftrace.h:126:16:
- error: implicit declaration of function 'arch_ftrace_get_regs'; did you mean
- 'ftrace_get_regs'?
-Message-ID: <202206020253.PecbI4Mb-lkp@intel.com>
+        Wed, 1 Jun 2022 14:34:41 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6358AF1CD
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 11:34:39 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id rs12so5462659ejb.13
+        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 11:34:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=njosF9y/4mY7h7cHbBRt7eN+aSzBOOky31pVud25XUc=;
+        b=NPllnz8RYVxm2SnTV64EXzDNNfLuN5S4zdx4+p5tMDUvBFc2HBR70PHsb0+FhzIYOe
+         5QBBj11OZ9MvXzN4JDhTfmL34kBXkF5cWwnTwj9QJCpAIQjmWFGOR+tY8hUC7FXp3TPu
+         gpZSXodqw0bfpX1vHBHuU/zTaxExUhW5Sii8s=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=njosF9y/4mY7h7cHbBRt7eN+aSzBOOky31pVud25XUc=;
+        b=STU2hJTeMumaAuhQZuGYcAmolvJUy3yD8aHbHcIBDALVwrR8hMyw5sQdDYsORGe4Gm
+         EKiIApwHhX89M3OkTdA50OGRZ+b7hPxKOObKLg0Vy4jYg2gd7BstTlpnFE7cJR141Rr/
+         e0mL57GGRas9wLrxkQejltqfkXP6ow2On8bhobVnjhzaCcfKKG6T5miCwIp4INgPXZ5k
+         qJVnKQ/qaj0nIfLhZRYtgaHSqbdx94i5Q1M4sKc3tLacwxQ7C8Uim5uVdbQX43GAGz+L
+         b0P6MW1N4RttfbeOd1xzPEdkhW1h1k7RmaxX1QN3fcND12zhk/VBL5P1NZ8yO7OaLWwk
+         ryDw==
+X-Gm-Message-State: AOAM530629sIWWwEB8G8JlDfrWtQj3tlSRFc4kymm95TdSZ8ptU1GdRw
+        JiZUF4kjeL9niySzK6o/JNSNnW/p+V3BbbKm
+X-Google-Smtp-Source: ABdhPJyvFAo7/KgPuM2kl1bVULcRThQoC28P/AP98dwrKdplcegJqeRFWMwtnzxanj8vDaC4A0IPDA==
+X-Received: by 2002:a17:907:1c8f:b0:6e8:f898:63bb with SMTP id nb15-20020a1709071c8f00b006e8f89863bbmr789353ejc.721.1654108477858;
+        Wed, 01 Jun 2022 11:34:37 -0700 (PDT)
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com. [209.85.128.45])
+        by smtp.gmail.com with ESMTPSA id l15-20020a17090615cf00b006f3ef214dd9sm980927ejd.63.2022.06.01.11.34.36
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 01 Jun 2022 11:34:36 -0700 (PDT)
+Received: by mail-wm1-f45.google.com with SMTP id d5-20020a05600c34c500b0039776acee62so2640259wmq.1
+        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 11:34:36 -0700 (PDT)
+X-Received: by 2002:a1c:7207:0:b0:397:66ee:9d71 with SMTP id
+ n7-20020a1c7207000000b0039766ee9d71mr692055wmc.8.1654108476150; Wed, 01 Jun
+ 2022 11:34:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <CAHk-=whi2SzU4XT_FsdTCAuK2qtYmH+-hwi1cbSdG8zu0KXL=g@mail.gmail.com>
+ <cover.1654086665.git.legion@kernel.org> <857cb160a981b5719d8ed6a3e5e7c456915c64fa.1654086665.git.legion@kernel.org>
+ <CAHk-=wjJ2CP0ugbOnwAd-=Cw0i-q_xC1PbJ-_1jrvR-aisiAAA@mail.gmail.com> <Ypeu97GDg6mNiKQ8@example.org>
+In-Reply-To: <Ypeu97GDg6mNiKQ8@example.org>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Wed, 1 Jun 2022 11:34:18 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wgBeQafNgw6DNUwM4vvw4snb83Tb65m_QH9XSic2JSJaQ@mail.gmail.com>
+Message-ID: <CAHk-=wgBeQafNgw6DNUwM4vvw4snb83Tb65m_QH9XSic2JSJaQ@mail.gmail.com>
+Subject: Re: [RFC PATCH 2/4] sysctl: ipc: Do not use dynamic memory
+To:     Alexey Gladkov <legion@kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        "Eric W . Biederman" <ebiederm@xmission.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Iurii Zaikin <yzaikin@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Linux Containers <containers@lists.linux.dev>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Vasily Averin <vvs@virtuozzo.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git arm64/ftrace/minimal-regs
-head:   b0741d059a9f19a1aa1191833140f53e41f1775a
-commit: b0741d059a9f19a1aa1191833140f53e41f1775a [6/6] WIP: arm64/ftrace: move from REGS to ARGS
-config: arm64-randconfig-r031-20220601 (https://download.01.org/0day-ci/archive/20220602/202206020253.PecbI4Mb-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git/commit/?id=b0741d059a9f19a1aa1191833140f53e41f1775a
-        git remote add mark https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git
-        git fetch --no-tags mark arm64/ftrace/minimal-regs
-        git checkout b0741d059a9f19a1aa1191833140f53e41f1775a
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm64 prepare
+On Wed, Jun 1, 2022 at 11:25 AM Alexey Gladkov <legion@kernel.org> wrote:
+>
+> I'm not sure how to get rid of ctl_table since net sysctls are heavily
+> dependent on it.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+I don't actually think it's worth getting rid of entirely, because
+there's just a lot of simple cases where it "JustWorks(tm)" and having
+just that table entry describe all the semantics is not wrong at all.
 
-All error/warnings (new ones prefixed by >>):
+The name may suck, but hey, it's not a big deal. Changing it now would
+be more pain than it's worth.
 
-   In file included from include/linux/kvm_host.h:32,
-                    from arch/arm64/kernel/asm-offsets.c:15:
-   include/linux/ftrace.h: In function 'ftrace_get_regs':
->> include/linux/ftrace.h:126:16: error: implicit declaration of function 'arch_ftrace_get_regs'; did you mean 'ftrace_get_regs'? [-Werror=implicit-function-declaration]
-     126 |         return arch_ftrace_get_regs(fregs);
-         |                ^~~~~~~~~~~~~~~~~~~~
-         |                ftrace_get_regs
->> include/linux/ftrace.h:126:16: warning: returning 'int' from a function with return type 'struct pt_regs *' makes pointer from integer without a cast [-Wint-conversion]
-     126 |         return arch_ftrace_get_regs(fregs);
-         |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
-   make[2]: *** [scripts/Makefile.build:121: arch/arm64/kernel/asm-offsets.s] Error 1
-   make[2]: Target '__build' not remade because of errors.
-   make[1]: *** [Makefile:1196: prepare0] Error 2
-   make[1]: Target 'prepare' not remade because of errors.
-   make: *** [Makefile:219: __sub-make] Error 2
-   make: Target 'prepare' not remade because of errors.
+No, I was more thinking that things that already need more
+infrastructure than that simple static ctl_table entry might be better
+off trying to migrate to your new "proper read op" model, and having
+more of that dynamic behavior in the read op.
 
+The whole "create dynamic ctl_table entries on the fly" model works,
+but it's kind of ugly.
 
-vim +126 include/linux/ftrace.h
+Anyway, I think all of this is "I think there is more room for cleanup
+in this area", and maybe we'll never have enough motivation to
+actually do that.
 
-d19ad0775dcd64 Steven Rostedt (VMware  2020-10-28  120) 
-d19ad0775dcd64 Steven Rostedt (VMware  2020-10-28  121) static __always_inline struct pt_regs *ftrace_get_regs(struct ftrace_regs *fregs)
-d19ad0775dcd64 Steven Rostedt (VMware  2020-10-28  122) {
-d19ad0775dcd64 Steven Rostedt (VMware  2020-10-28  123) 	if (!fregs)
-d19ad0775dcd64 Steven Rostedt (VMware  2020-10-28  124) 		return NULL;
-d19ad0775dcd64 Steven Rostedt (VMware  2020-10-28  125) 
-02a474ca266a47 Steven Rostedt (VMware  2020-10-27 @126) 	return arch_ftrace_get_regs(fregs);
-d19ad0775dcd64 Steven Rostedt (VMware  2020-10-28  127) }
-d19ad0775dcd64 Steven Rostedt (VMware  2020-10-28  128) 
+Your patches seem to fix the extant issue with the ipc namespace, and
+the truly disgusting parts (although maybe there are other truly
+disgusting things hiding - I didn't go look for them).
 
-:::::: The code at line 126 was first introduced by commit
-:::::: 02a474ca266a47ea8f4d5a11f4ffa120f83730ad ftrace/x86: Allow for arguments to be passed in to ftrace_regs by default
-
-:::::: TO: Steven Rostedt (VMware) <rostedt@goodmis.org>
-:::::: CC: Steven Rostedt (VMware) <rostedt@goodmis.org>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+                      Linus
