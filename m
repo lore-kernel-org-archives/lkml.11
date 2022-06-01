@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60F07CCA468
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:08:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E168DCCA468
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:08:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354167AbiFAOIp (ORCPT
+        id S1354629AbiFAOIx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:08:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54060 "EHLO
+        Wed, 1 Jun 2022 10:08:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354368AbiFAOEO (ORCPT
+        with ESMTP id S1354444AbiFAOEK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:04:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 706BAAB0DC;
-        Wed,  1 Jun 2022 06:58:46 -0700 (PDT)
+        Wed, 1 Jun 2022 10:04:10 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61A7FA88BE;
+        Wed,  1 Jun 2022 06:58:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5F6F7B81B43;
-        Wed,  1 Jun 2022 13:58:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14D88C3411D;
-        Wed,  1 Jun 2022 13:58:10 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 0BEBDCE1C2D;
+        Wed,  1 Jun 2022 13:58:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FC2BC34119;
+        Wed,  1 Jun 2022 13:58:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091891;
-        bh=ma7wx71PH5A9um/tqLsM/4B68rrnnd9bIJDnMJSd77Q=;
+        s=k20201202; t=1654091883;
+        bh=meEEYYb4Q/Zwm6saccKdiTfafAQE+aqAUob7xdy2nqM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=axPqqM0Iqgq4obTT0HmwvCZx50zBMI/0zhC6ijd9aPAgb2/1rzOEW5WUiFhI+QvJB
-         XsA1ehTvK882UKB2n2UCo1+lA7m5cTQYRLD59InNdjdoNrOnCBm9oDBJbwZJpM9V9C
-         SjecrtL8f+E80g/xtd8FN7zmVozdf3P8eJ8Lu5U1h0OE6GcXqXckVIifxmiwtKYDja
-         4h+k1prGsrae1ul54IcnNlP3uXU9zgC5okMG41qv89EiGXGKZWdBZSwr4cqjYmLq55
-         F/kkA3b4CnCLNHh5ins6JS74gbL3uAShINdrz8tRlW4OW5PXNEy4WURYiEc8wux7na
-         wfug0s9Zq61aA==
+        b=PWbZWtP+dsiT//TTt4Vo4op/Zzs5vVRx620+kg3hCf3gRUtB3eE22WdS/ih3Wswzq
+         qcGBCWE5s2iW2gBjv83JFIm1XyS/gTY47784DK1FYuvy+yRVwLGzHRg4B/oo368hSN
+         NqKt4b4Ib1WECRtQRPS2g5HbBIrac88nANsBWZA7utTp6fHpbw93SiH2pWHkkVQqzZ
+         x8VW753NyiWO4by5dOswzi/Nwl9Pz75s5o/3KWU4UQefZbbxdf0weJS/EciYPKoZXo
+         cTH0xFD/8EzoX6lvMmYdIS1wfk0pvzKgNpxp/WXit5iO5U75D+CfPDPEcUBhfDoE1E
+         UA+DmGlTHnwAg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zixuan Fu <r33s3n6@gmail.com>, TOTE Robot <oslab@tsinghua.edu.cn>,
-        Dave Kleikamp <dave.kleikamp@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, shaggy@kernel.org,
-        jfs-discussion@lists.sourceforge.net
-Subject: [PATCH AUTOSEL 5.10 08/26] fs: jfs: fix possible NULL pointer dereference in dbFree()
-Date:   Wed,  1 Jun 2022 09:57:41 -0400
-Message-Id: <20220601135759.2004435-8-sashal@kernel.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org,
+        linux-arm-kernel@lists.infradead.org, linux-oxnas@groups.io,
+        devicetree@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 02/26] ARM: dts: ox820: align interrupt controller node name with dtschema
+Date:   Wed,  1 Jun 2022 09:57:35 -0400
+Message-Id: <20220601135759.2004435-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135759.2004435-1-sashal@kernel.org>
 References: <20220601135759.2004435-1-sashal@kernel.org>
@@ -53,57 +55,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zixuan Fu <r33s3n6@gmail.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-[ Upstream commit 0d4837fdb796f99369cf7691d33de1b856bcaf1f ]
+[ Upstream commit fbcd5ad7a419ad40644a0bb8b4152bc660172d8a ]
 
-In our fault-injection testing, the variable "nblocks" in dbFree() can be
-zero when kmalloc_array() fails in dtSearch(). In this case, the variable
- "mp" in dbFree() would be NULL and then it is dereferenced in
-"write_metapage(mp)".
+Fixes dtbs_check warnings like:
 
-The failure log is listed as follows:
+  gic@1000: $nodename:0: 'gic@1000' does not match '^interrupt-controller(@[0-9a-f,]+)*$'
 
-[   13.824137] BUG: kernel NULL pointer dereference, address: 0000000000000020
-...
-[   13.827416] RIP: 0010:dbFree+0x5f7/0x910 [jfs]
-[   13.834341] Call Trace:
-[   13.834540]  <TASK>
-[   13.834713]  txFreeMap+0x7b4/0xb10 [jfs]
-[   13.835038]  txUpdateMap+0x311/0x650 [jfs]
-[   13.835375]  jfs_lazycommit+0x5f2/0xc70 [jfs]
-[   13.835726]  ? sched_dynamic_update+0x1b0/0x1b0
-[   13.836092]  kthread+0x3c2/0x4a0
-[   13.836355]  ? txLockFree+0x160/0x160 [jfs]
-[   13.836763]  ? kthread_unuse_mm+0x160/0x160
-[   13.837106]  ret_from_fork+0x1f/0x30
-[   13.837402]  </TASK>
-...
-
-This patch adds a NULL check of "mp" before "write_metapage(mp)" is called.
-
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
-Signed-off-by: Dave Kleikamp <dave.kleikamp@oracle.com>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Acked-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20220317115705.450427-1-krzysztof.kozlowski@canonical.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/jfs/jfs_dmap.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/ox820.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/jfs/jfs_dmap.c b/fs/jfs/jfs_dmap.c
-index e58ae29a223d..0ce17ea8fa8a 100644
---- a/fs/jfs/jfs_dmap.c
-+++ b/fs/jfs/jfs_dmap.c
-@@ -385,7 +385,8 @@ int dbFree(struct inode *ip, s64 blkno, s64 nblocks)
- 	}
+diff --git a/arch/arm/boot/dts/ox820.dtsi b/arch/arm/boot/dts/ox820.dtsi
+index 90846a7655b4..dde4364892bf 100644
+--- a/arch/arm/boot/dts/ox820.dtsi
++++ b/arch/arm/boot/dts/ox820.dtsi
+@@ -287,7 +287,7 @@ local-timer@600 {
+ 				clocks = <&armclk>;
+ 			};
  
- 	/* write the last buffer. */
--	write_metapage(mp);
-+	if (mp)
-+		write_metapage(mp);
- 
- 	IREAD_UNLOCK(ipbmap);
- 
+-			gic: gic@1000 {
++			gic: interrupt-controller@1000 {
+ 				compatible = "arm,arm11mp-gic";
+ 				interrupt-controller;
+ 				#interrupt-cells = <3>;
 -- 
 2.35.1
 
