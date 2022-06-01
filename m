@@ -2,87 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED08CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 07:16:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85D11C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 07:18:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350256AbiFAHQo (ORCPT
+        id S1344639AbiFAHSA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 03:16:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52692 "EHLO
+        Wed, 1 Jun 2022 03:18:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350844AbiFAHPy (ORCPT
+        with ESMTP id S1343803AbiFAHRy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 03:15:54 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50282A26E6;
-        Wed,  1 Jun 2022 00:15:36 -0700 (PDT)
-X-UUID: 716a8cf323a7496ba4f7d438554a5a9b-20220601
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:1aa1ea8f-56af-4e4f-9002-5fef85241bad,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:54,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:54
-X-CID-INFO: VERSION:1.1.5,REQID:1aa1ea8f-56af-4e4f-9002-5fef85241bad,OB:0,LOB:
-        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:54,FILE:0,RULE:Release_HamU,ACTI
-        ON:release,TS:54
-X-CID-META: VersionHash:2a19b09,CLOUDID:67008514-f88c-475e-badf-d9ee54230b8f,C
-        OID:d03bb2fe049f,Recheck:0,SF:28|16|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:1,File:nil,QS:0,BEC:nil
-X-UUID: 716a8cf323a7496ba4f7d438554a5a9b-20220601
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
-        (envelope-from <lina.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 748532127; Wed, 01 Jun 2022 15:15:27 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Wed, 1 Jun 2022 15:15:26 +0800
-Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by
- mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Wed, 1 Jun 2022 15:15:25 +0800
-From:   Lina Wang <lina.wang@mediatek.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Maciej enczykowski <maze@google.com>, <netdev@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <lkp@intel.com>,
-        <rong.a.chen@intel.com>, kernel test robot <oliver.sang@intel.com>
-Subject: Re: [PATCH] selftests net: fix bpf build error
-Date:   Wed, 1 Jun 2022 15:08:44 +0800
-Message-ID: <20220601070844.10515-1-lina.wang@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <9c462ffc-f2c0-f542-4e61-251571da8c22@iogearbox.net>
-References: <9c462ffc-f2c0-f542-4e61-251571da8c22@iogearbox.net>
+        Wed, 1 Jun 2022 03:17:54 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBDFA22BEA
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 00:17:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654067871; x=1685603871;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=hNzVhC2BQ7v7qd4GJVYOzEzYCDinZY6da33WxAy5gMo=;
+  b=dJmCdOvkWzZ7fgGrxue8ary5Gwa/BJY7SyIdG14/qfQsJqKY/52eWTgB
+   W0bcggEEMTTPKKUQbwNbv2VXG/+UkYYLWfIPgEwkqFCZXZumXLi9WN3yz
+   PyZRFc5hss8t8yOx2iVaK/mDhOi2DFpla3ghaw8SvfCjU3K4gmbiBuKKH
+   IBtd/V7Hc1Ad5tmNfowXD5kAX6//h4qeZVoVgsPtEDGa1iJ1sRQmAtDjj
+   9FLI0yLBS1BtxHdJNl40c5DO2qlYf73M/eHGPbFMmkDaAKpVOOAHgi/B0
+   R/IdnKJ8nG3rS3RipL7kbe7CliIalhR4oUAArQo7rG3QsKj4F1b9KIJJ2
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10364"; a="274302049"
+X-IronPort-AV: E=Sophos;i="5.91,266,1647327600"; 
+   d="scan'208";a="274302049"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 00:17:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,266,1647327600"; 
+   d="scan'208";a="755716160"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 01 Jun 2022 00:17:49 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nwIc1-0003gA-0J;
+        Wed, 01 Jun 2022 07:17:49 +0000
+Date:   Wed, 1 Jun 2022 15:17:10 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     David Howells <dhowells@redhat.com>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:dhowells/linux-fs/cifs-netfs 34/41]
+ fs/cifs/smb2ops.c:3965:34: sparse: sparse: incorrect type in argument 2
+ (different base types)
+Message-ID: <202206011525.hK4OI0FN-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-06-01 at 01:01 +0200, Daniel Borkmann wrote:
-> On 5/30/22 8:21 AM, Lina Wang wrote:
-> clang -O2 -target bpf -c bpf/nat6to4.c -I../../bpf -I../../../../lib
-> -I../../../../../usr/include/ -o
-> /root/daniel/bpf/tools/testing/selftests/net/bpf/nat6to4.o
-> In file included from bpf/nat6to4.c:27:
-> In file included from /usr/include/linux/bpf.h:11:
-> /usr/include/linux/types.h:5:10: fatal error: 'asm/types.h' file not
-> found
-> #include <asm/types.h>
->           ^~~~~~~~~~~~~
-> 1 error generated.
+tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/cifs-netfs
+head:   1fc71b6b30f6d2a981c163b77c9aee0aecaecb29
+commit: 4c67a0e88c041546f0a045d5034e045e0c404918 [34/41] cifs: Share server EOF pos with netfslib
+config: i386-randconfig-s002 (https://download.01.org/0day-ci/archive/20220601/202206011525.hK4OI0FN-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-1) 11.3.0
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.4-14-g5a0004b5-dirty
+        # https://github.com/ammarfaizi2/linux-block/commit/4c67a0e88c041546f0a045d5034e045e0c404918
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/cifs-netfs
+        git checkout 4c67a0e88c041546f0a045d5034e045e0c404918
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash fs/cifs/
 
-maybe your pc is ubuntu or Debian, you should apt-get install gcc-multilib, 
-guys on the internet meets the same problem when build libbpf related, just
-install gcc-multilib package
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-> Could we reuse the build infra from tools/testing/selftests/bpf/ for nat6to4.c?
 
-We discussed it before, please refer to https://patchwork.kernel.org/project/netdevbpf/patch/20220407084727.10241-1-lina.wang@mediatek.com/
+sparse warnings: (new ones prefixed by >>)
+>> fs/cifs/smb2ops.c:3965:34: sparse: sparse: incorrect type in argument 2 (different base types) @@     expected long long [usertype] new_i_size @@     got restricted __le64 [addressable] [assigned] [usertype] eof @@
+   fs/cifs/smb2ops.c:3965:34: sparse:     expected long long [usertype] new_i_size
+   fs/cifs/smb2ops.c:3965:34: sparse:     got restricted __le64 [addressable] [assigned] [usertype] eof
+>> fs/cifs/smb2ops.c:3966:33: sparse: sparse: incorrect type in argument 2 (different base types) @@     expected long long [usertype] newsize @@     got restricted __le64 [addressable] [assigned] [usertype] eof @@
+   fs/cifs/smb2ops.c:3966:33: sparse:     expected long long [usertype] newsize
+   fs/cifs/smb2ops.c:3966:33: sparse:     got restricted __le64 [addressable] [assigned] [usertype] eof
+>> fs/cifs/smb2ops.c:3967:57: sparse: sparse: incorrect type in argument 2 (different base types) @@     expected long long [usertype] new_size @@     got restricted __le64 [addressable] [assigned] [usertype] eof @@
+   fs/cifs/smb2ops.c:3967:57: sparse:     expected long long [usertype] new_size
+   fs/cifs/smb2ops.c:3967:57: sparse:     got restricted __le64 [addressable] [assigned] [usertype] eof
+   fs/cifs/smb2ops.c:4752:39: sparse: sparse: incompatible types in comparison expression (different type sizes):
+   fs/cifs/smb2ops.c:4752:39: sparse:    unsigned int *
+   fs/cifs/smb2ops.c:4752:39: sparse:    unsigned long *
 
-Thanks!
+vim +3965 fs/cifs/smb2ops.c
 
+  3932	
+  3933	static long smb3_collapse_range(struct file *file, struct cifs_tcon *tcon,
+  3934				    loff_t off, loff_t len)
+  3935	{
+  3936		int rc;
+  3937		unsigned int xid;
+  3938		struct inode *inode;
+  3939		struct cifsFileInfo *cfile = file->private_data;
+  3940		__le64 eof;
+  3941	
+  3942		xid = get_xid();
+  3943	
+  3944		inode = d_inode(cfile->dentry);
+  3945	
+  3946		if (off >= i_size_read(inode) ||
+  3947		    off + len >= i_size_read(inode)) {
+  3948			rc = -EINVAL;
+  3949			goto out;
+  3950		}
+  3951	
+  3952		rc = smb2_copychunk_range(xid, cfile, cfile, off + len,
+  3953					  i_size_read(inode) - off - len, off);
+  3954		if (rc < 0)
+  3955			goto out;
+  3956	
+  3957		eof = cpu_to_le64(i_size_read(inode) - len);
+  3958		rc = SMB2_set_eof(xid, tcon, cfile->fid.persistent_fid,
+  3959				  cfile->fid.volatile_fid, cfile->pid, &eof);
+  3960		if (rc < 0)
+  3961			goto out;
+  3962	
+  3963		rc = 0;
+  3964	
+> 3965		netfs_resize_file(inode, eof);
+> 3966		truncate_setsize(inode, eof);
+> 3967		fscache_resize_cookie(cifs_inode_cookie(inode), eof);
+  3968	 out:
+  3969		free_xid(xid);
+  3970		return rc;
+  3971	}
+  3972	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
