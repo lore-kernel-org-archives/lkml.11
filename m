@@ -2,168 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD07CC43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 09:49:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD275C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 09:50:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351477AbiFAJtl (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 05:49:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52824 "EHLO
+        id S238285AbiFAJuo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 05:50:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351500AbiFAJtj (ORCPT
+        with ESMTP id S1351530AbiFAJuL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 05:49:39 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7DE55FF2D;
-        Wed,  1 Jun 2022 02:49:35 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id u12so2589267eja.8;
-        Wed, 01 Jun 2022 02:49:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=27PUTNb2UH1CaFlaB6o+qtISHhMqVYpnRcYCFuMiVv4=;
-        b=RLZe4nVv/Ic2Sv7cEK7VnKNh8dqoPXLpxnLc7UHjGVmmaOPOdprU9K/lDH3Kr6SBBs
-         6QDIiqyi6WSTTNbbOkaJZQxy8YW00WXStF0ZngoQO8N9wcquuUTE85nb3APbRA0XivHe
-         pRiLCDAis4jbIvybxugAxhkZlTL8NK/7VRcrLnDf0uEQG2evVEh8fmhzHI46goYAy/Rj
-         q8Bbbjx+gKvOdjejX68tjSajQP70rVeZpFFv49Ib8lN+kErMrJya6+9vsV7cGjxOYuDc
-         3XgnvxTdqukRyUlMaSwf9b5Yn8Xatlmpk1zSwUk3glp21S87SI0Q0DdcTQbIgVdEgv4s
-         sXUA==
+        Wed, 1 Jun 2022 05:50:11 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BD2DF3120E
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 02:50:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654077008;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7yKbsAaRBxnFfxnHQsz2r5KMqANCbznDVvZ/VbavXuc=;
+        b=AzbJ6r7pmEgyNENfqGkSh83YUq3/j+X/kK1OIEOQjFFtPsMLD40rVLh8pWunP6S/p/GDda
+        NioX+dWMZ97lWwHQgE7O7YuPNtmtbvlnVoqq+ll5nLJG+mehdpWJokbWEszOzLZD/FWTkn
+        1TBmzVqiA5Hk8fItlxjhiUG9j+OmaTM=
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
+ [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-341-pDVwfhhePC2urKRvVkt16g-1; Wed, 01 Jun 2022 05:50:07 -0400
+X-MC-Unique: pDVwfhhePC2urKRvVkt16g-1
+Received: by mail-qt1-f199.google.com with SMTP id i5-20020ac85c05000000b00304bbcc1b72so875011qti.17
+        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 02:50:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=27PUTNb2UH1CaFlaB6o+qtISHhMqVYpnRcYCFuMiVv4=;
-        b=1C2x9Xdwy4Bs1peBFTJh47LRDOmAW7RdTOTF00nUKHQHyTwO2x1ywzNNOfLt35eSZp
-         QjoGnRBdlIxHJvXGYdTl5RayGjXsne7RthNEYtPlHcVwc82/A+0VsdlZH5Osof6jly0b
-         CJ1vqbEZOZ2EG4BzVgsxQuJDGkmn9b42Q0xZuAXT5T0Pw50ZY1PpQBy0qdvM2oK3jtTA
-         MV2LxuAne6Ws5zObDmjeR5oGQRFlzPch9Npm5Mv+9ew/XiEA62UDnFyEXZxZbDHUL4o1
-         fSyQRxnr49TGwVGaHuLJ0EcDMD31HJpeSfyV3ikbKuZAfbIUXTNO2UgBYszmYwBEsvLo
-         V9Qw==
-X-Gm-Message-State: AOAM530s4pfkYNdTuSt7i4dm/7TsXS8Np5KB77YWsPGd90gYbwrgweoA
-        A0hGavHcYgZGCWDAVAOQYZU9aZKWYrHn2/mNXFM=
-X-Google-Smtp-Source: ABdhPJyRwbLQFMmfl3jzbmPNjvUrFSOgiS+i5wMk8MNJphpsSnNZ8UtMTX/OTZ0ronnNTUPtL2vf7d9XmnEYugvrfuk=
-X-Received: by 2002:a17:907:6e1a:b0:6fe:f357:3837 with SMTP id
- sd26-20020a1709076e1a00b006fef3573837mr40896205ejc.44.1654076974098; Wed, 01
- Jun 2022 02:49:34 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=7yKbsAaRBxnFfxnHQsz2r5KMqANCbznDVvZ/VbavXuc=;
+        b=5b8Xxd3vF5Kbf2lR2ROQS3+oOg3k1GRsJP0BW+xDWFcOV3hmXaAmyB92ttzTUSE5Ik
+         a0omFoqXoThgIbzS6zW9HXz2jt0/CEvJOpk+c2XI12D9C9byuQYiX+Q8DeVCZTphAh65
+         /8WB6vV9dYKaVcXx9UQ1pnAuKOtlVj/GZoHyjIax1OpGbOpsL5/9jDThk1X9+0bzOtUj
+         i+0GxKhQSa+SzGC93mH2bZKpGzJbhhf5MwdxeyziqgFzZzXxfcP9VGSAZ76iQgj0u1gE
+         2uvapszh5xAjUX2VM3FTpIv+eR3RIM35WpZUYVKBSOskcJZc90OSbE1Gxm1S70pLpA2j
+         kxAQ==
+X-Gm-Message-State: AOAM5336gZtVPcHRHE+HESAWXCcHPO4WBaSZPQwsKNqt6iDuG9UB2YP6
+        C8oBOLA6398ffUe0bJWg1Mq482ffh4LJk3BGZvHNCAcJfZtn22DBj4Inm7Bd7cbiBAJCzprxeUX
+        2iZG/jCUIa0ORj5a/bG6pTRDYjiG62vSpG71jrFiY
+X-Received: by 2002:a05:620a:1a07:b0:6a5:dac2:6703 with SMTP id bk7-20020a05620a1a0700b006a5dac26703mr17515273qkb.522.1654077007238;
+        Wed, 01 Jun 2022 02:50:07 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzRCANxHMBICIyF7T/TATpYKUuPZE9sRo5w9g0aMKwREiJSGD74h1xPhQUOZXGeYlnmjSX1t48pqjcL8k7TFnM=
+X-Received: by 2002:a05:620a:1a07:b0:6a5:dac2:6703 with SMTP id
+ bk7-20020a05620a1a0700b006a5dac26703mr17515258qkb.522.1654077006995; Wed, 01
+ Jun 2022 02:50:06 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220531102809.11976-1-peterwu.pub@gmail.com> <20220531102809.11976-7-peterwu.pub@gmail.com>
-In-Reply-To: <20220531102809.11976-7-peterwu.pub@gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 1 Jun 2022 11:48:58 +0200
-Message-ID: <CAHp75Vd8taco19vsDmBcCv8euV1SvwSiY5=P9oMkA6zWsjwXxg@mail.gmail.com>
-Subject: Re: [PATCH 06/14] leds: mt6370: Add Mediatek MT6370 Indicator support
-To:     ChiaEn Wu <peterwu.pub@gmail.com>
-Cc:     Lee Jones <lee.jones@linaro.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@ucw.cz>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        "Krogerus, Heikki" <heikki.krogerus@linux.intel.com>,
-        Helge Deller <deller@gmx.de>, cy_huang@richtek.com,
-        alice_chen@richtek.com, chiaen_wu@richtek.com,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Linux LED Subsystem <linux-leds@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        USB <linux-usb@vger.kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        "open list:FRAMEBUFFER LAYER" <linux-fbdev@vger.kernel.org>
+References: <20220526124338.36247-1-eperezma@redhat.com> <PH0PR12MB54819C6C6DAF6572AEADC1AEDCD99@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20220527065442-mutt-send-email-mst@kernel.org> <CACGkMEubfv_OJOsJ_ROgei41Qx4mPO0Xz8rMVnO8aPFiEqr8rA@mail.gmail.com>
+ <PH0PR12MB5481695930E7548BAAF1B0D9DCDC9@PH0PR12MB5481.namprd12.prod.outlook.com>
+In-Reply-To: <PH0PR12MB5481695930E7548BAAF1B0D9DCDC9@PH0PR12MB5481.namprd12.prod.outlook.com>
+From:   Eugenio Perez Martin <eperezma@redhat.com>
+Date:   Wed, 1 Jun 2022 11:49:30 +0200
+Message-ID: <CAJaqyWe7YFM0anKLJvvRja-EJW5bwmb1gMGXnC62LVMKrSn3sw@mail.gmail.com>
+Subject: Re: [PATCH v4 0/4] Implement vdpasim stop operation
+To:     Parav Pandit <parav@nvidia.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "martinh@xilinx.com" <martinh@xilinx.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "martinpo@xilinx.com" <martinpo@xilinx.com>,
+        "lvivier@redhat.com" <lvivier@redhat.com>,
+        "pabloc@xilinx.com" <pabloc@xilinx.com>,
+        Eli Cohen <elic@nvidia.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Xie Yongji <xieyongji@bytedance.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Zhang Min <zhang.min9@zte.com.cn>,
+        Wu Zongyong <wuzongyong@linux.alibaba.com>,
+        "lulu@redhat.com" <lulu@redhat.com>,
+        Zhu Lingshan <lingshan.zhu@intel.com>,
+        "Piotr.Uminski@intel.com" <Piotr.Uminski@intel.com>,
+        Si-Wei Liu <si-wei.liu@oracle.com>,
+        "ecree.xilinx@gmail.com" <ecree.xilinx@gmail.com>,
+        "gautam.dawar@amd.com" <gautam.dawar@amd.com>,
+        "habetsm.xilinx@gmail.com" <habetsm.xilinx@gmail.com>,
+        "tanuj.kamde@amd.com" <tanuj.kamde@amd.com>,
+        "hanand@xilinx.com" <hanand@xilinx.com>,
+        "dinang@xilinx.com" <dinang@xilinx.com>,
+        Longpeng <longpeng2@huawei.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 31, 2022 at 1:16 PM ChiaEn Wu <peterwu.pub@gmail.com> wrote:
+On Tue, May 31, 2022 at 10:19 PM Parav Pandit <parav@nvidia.com> wrote:
 >
-> From: Alice Chen <alice_chen@richtek.com>
-
-All below comments are applicable to the rest of the series as well
-(one way or another), so please fix all your patches where it's
-appropriate.
-
 >
-> Add Mediatek MT6370 Indicator support
+> > From: Jason Wang <jasowang@redhat.com>
+> > Sent: Sunday, May 29, 2022 11:39 PM
+> >
+> > On Fri, May 27, 2022 at 6:56 PM Michael S. Tsirkin <mst@redhat.com> wro=
+te:
+> > >
+> > > On Thu, May 26, 2022 at 12:54:32PM +0000, Parav Pandit wrote:
+> > > >
+> > > >
+> > > > > From: Eugenio P=C3=A9rez <eperezma@redhat.com>
+> > > > > Sent: Thursday, May 26, 2022 8:44 AM
+> > > >
+> > > > > Implement stop operation for vdpa_sim devices, so vhost-vdpa will
+> > > > > offer
+> > > > >
+> > > > > that backend feature and userspace can effectively stop the devic=
+e.
+> > > > >
+> > > > >
+> > > > >
+> > > > > This is a must before get virtqueue indexes (base) for live
+> > > > > migration,
+> > > > >
+> > > > > since the device could modify them after userland gets them. Ther=
+e
+> > > > > are
+> > > > >
+> > > > > individual ways to perform that action for some devices
+> > > > >
+> > > > > (VHOST_NET_SET_BACKEND, VHOST_VSOCK_SET_RUNNING, ...) but
+> > there
+> > > > > was no
+> > > > >
+> > > > > way to perform it for any vhost device (and, in particular, vhost=
+-vdpa).
+> > > > >
+> > > > >
+> > > > >
+> > > > > After the return of ioctl with stop !=3D 0, the device MUST finis=
+h
+> > > > > any
+> > > > >
+> > > > > pending operations like in flight requests. It must also preserve
+> > > > > all
+> > > > >
+> > > > > the necessary state (the virtqueue vring base plus the possible
+> > > > > device
+> > > > >
+> > > > > specific states) that is required for restoring in the future. Th=
+e
+> > > > >
+> > > > > device must not change its configuration after that point.
+> > > > >
+> > > > >
+> > > > >
+> > > > > After the return of ioctl with stop =3D=3D 0, the device can cont=
+inue
+> > > > >
+> > > > > processing buffers as long as typical conditions are met (vq is
+> > > > > enabled,
+> > > > >
+> > > > > DRIVER_OK status bit is enabled, etc).
+> > > >
+> > > > Just to be clear, we are adding vdpa level new ioctl() that doesn=
+=E2=80=99t map to
+> > any mechanism in the virtio spec.
+> > > >
+> > > > Why can't we use this ioctl() to indicate driver to start/stop the =
+device
+> > instead of driving it through the driver_ok?
+> > > > This is in the context of other discussion we had in the LM series.
+> > >
+> > > If there's something in the spec that does this then let's use that.
+> >
+> > Actually, we try to propose a independent feature here:
+> >
+> > https://lists.oasis-open.org/archives/virtio-dev/202111/msg00020.html
+> >
+> This will stop the device for all the operations.
+> Once the device is stopped, its state cannot be queried further as device=
+ won't respond.
+> It has limited use case.
+> What we need is to stop non admin queue related portion of the device.
+>
 
-What indicator?
-Please also keep attention on English punctuation (missed period).
+Still don't follow this, sorry.
 
-...
+Adding the admin vq to the mix, this would stop a device of a device
+group, but not the whole virtqueue group. If the admin VQ is offered
+by the PF (since it's not exposed to the guest), it will continue
+accepting requests as normal. If it's exposed in the VF, I think the
+best bet is to shadow it, since guest and host requests could
+conflict.
 
-> +       help
-> +         Support 4 channels and reg/pwm/breath mode.
-> +         Isink4 can also use as a CHG_VIN power good Indicator.
+Since this is offered through vdpa, the device backend driver can
+route it to whatever method works better for the hardware. For
+example, to send an admin vq command to the PF. That's why it's
+important to keep the feature as self-contained and orthogonal to
+others as possible.
 
-be used
+> > Does it make sense to you?
+> >
+> > Thanks
+> >
+> > > Unfortunately the LM series seems to be stuck on moving bits around
+> > > with the admin virtqueue ...
+> > >
+> > > --
+> > > MST
+> > >
+>
 
-> +         Say Y here to enable support for
-> +         MT6370_RGB_LED device.
-
-...
-
-> +#include <linux/module.h>
-> +#include <linux/mutex.h>
-> +#include <linux/platform_device.h>
-
-> +#include <linux/of.h>
-
-Are you sure this is the correct header? Seems you need
-mod_devicetable.h instead.
-
-> +#include <linux/property.h>
-> +#include <linux/regmap.h>
-
-...
-
-> +struct mt6370_priv {
-> +       struct mutex lock;
-
-Do you use regmap locking?
-
-> +       struct device *dev;
-
-> +       struct regmap *regmap;
-
-> +       struct regmap_field *fields[F_MAX_FIELDS];
-> +       const struct reg_field *reg_fields;
-> +       const struct linear_range *ranges;
-> +       struct reg_cfg *reg_cfgs;
-> +       unsigned int leds_count;
-> +       unsigned int leds_active;
-> +       bool is_mt6372;
-> +       struct mt6370_led leds[];
-> +};
-
-...
-
-> +static const unsigned int common_tfreqs[] = {
-> +       10000, 5000, 2000, 1000, 500, 200, 5, 1
-
-Leave a comma at the end.
-
-> +};
-> +
-> +static const unsigned int mt6372_tfreqs[] = {
-> +       8000, 4000, 2000, 1000, 500, 250, 8, 4
-
-Ditto.
-
-> +};
-
-
--- 
-With Best Regards,
-Andy Shevchenko
