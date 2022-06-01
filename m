@@ -2,94 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBC4DC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 20:43:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A84CCCA473
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 20:44:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229834AbiFAUni (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 16:43:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40428 "EHLO
+        id S229603AbiFAUn5 convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 16:43:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229570AbiFAUmx (ORCPT
+        with ESMTP id S229567AbiFAUnZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 16:42:53 -0400
-X-Greylist: delayed 3277 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 01 Jun 2022 13:25:12 PDT
-Received: from mx01.omp.ru (mx01.omp.ru [90.154.21.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E271E1B12ED;
-        Wed,  1 Jun 2022 13:25:12 -0700 (PDT)
-Received: from [192.168.1.103] (178.176.74.72) by msexch01.omp.ru
- (10.188.4.12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.986.14; Wed, 1 Jun 2022
- 22:01:06 +0300
-Subject: Re: [PATCH v2] ata: pata_octeon_cf: Fix refcount leak in
- octeon_cf_probe
-To:     Miaoqian Lin <linmq006@gmail.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Jeff Garzik <jgarzik@redhat.com>,
-        David Daney <david.daney@cavium.com>,
-        <linux-ide@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20220601085926.45183-1-linmq006@gmail.com>
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Organization: Open Mobile Platform
-Message-ID: <6d7d546b-e3c0-cd87-522e-c537ddc949bb@omp.ru>
-Date:   Wed, 1 Jun 2022 22:01:06 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        Wed, 1 Jun 2022 16:43:25 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8401C1DB1F9;
+        Wed,  1 Jun 2022 13:25:36 -0700 (PDT)
+Received: from mail-yw1-f173.google.com ([209.85.128.173]) by
+ mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1Ml3ym-1nX03Z0AV2-00lX9C; Wed, 01 Jun 2022 21:26:33 +0200
+Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-300628e76f3so29516767b3.12;
+        Wed, 01 Jun 2022 12:26:32 -0700 (PDT)
+X-Gm-Message-State: AOAM5323KY4YjOzYaTS7yWk0mvibF1G8urcieeLacxWOujJ0WNcBFaU4
+        mBTtL13CaIYwEUDAJWFTCmK0UHhzZuJoWBwseYE=
+X-Google-Smtp-Source: ABdhPJz0JApbo0Qv67wndhuM17KjFiRygdVF6IoIIcQ65oBNOgfkV7dKkoHQPvHnC/sJqYfjVswl/2RhIyt72lCR3vQ=
+X-Received: by 2002:a81:ad7:0:b0:2e6:84de:3223 with SMTP id
+ 206-20020a810ad7000000b002e684de3223mr1208726ywk.209.1654111591816; Wed, 01
+ Jun 2022 12:26:31 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20220601085926.45183-1-linmq006@gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [178.176.74.72]
-X-ClientProxiedBy: msexch01.omp.ru (10.188.4.12) To msexch01.omp.ru
- (10.188.4.12)
-X-KSE-ServerInfo: msexch01.omp.ru, 9
-X-KSE-AntiSpam-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 06/01/2022 18:45:43
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 59
-X-KSE-AntiSpam-Info: Lua profiles 170848 [Jun 01 2022]
-X-KSE-AntiSpam-Info: Version: 5.9.20.0
-X-KSE-AntiSpam-Info: Envelope from: s.shtylyov@omp.ru
-X-KSE-AntiSpam-Info: LuaCore: 481 481 c5087bb700599c268f30b75691d6bf74e6210135
-X-KSE-AntiSpam-Info: {rep_avail}
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: {relay has no DNS name}
-X-KSE-AntiSpam-Info: {SMTP from is not routable}
-X-KSE-AntiSpam-Info: d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2;omp.ru:7.1.1;178.176.74.72:7.1.2
-X-KSE-AntiSpam-Info: {rdns complete}
-X-KSE-AntiSpam-Info: {fromrtbl complete}
-X-KSE-AntiSpam-Info: ApMailHostAddress: 178.176.74.72
-X-KSE-AntiSpam-Info: Rate: 59
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-AntiSpam-Info: Auth:dmarc=none header.from=omp.ru;spf=none
- smtp.mailfrom=omp.ru;dkim=none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Heuristic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 06/01/2022 18:48:00
-X-KSE-AttachmentFiltering-Interceptor-Info: protection disabled
-X-KSE-Antivirus-Interceptor-Info: scan successful
-X-KSE-Antivirus-Info: Clean, bases: 6/1/2022 4:07:00 PM
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+References: <20220601154647.80071-1-pan@semihalf.com>
+In-Reply-To: <20220601154647.80071-1-pan@semihalf.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 1 Jun 2022 21:26:14 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a2TXUd6JjSiXSZix1xL+bO-fVAbLWht-zNQV8r_Kn05Zg@mail.gmail.com>
+Message-ID: <CAK8P3a2TXUd6JjSiXSZix1xL+bO-fVAbLWht-zNQV8r_Kn05Zg@mail.gmail.com>
+Subject: Re: [PATCH v2 0/5] Add Chameleon v3 devicetree
+To:     =?UTF-8?Q?Pawe=C5=82_Anikiel?= <pan@semihalf.com>
+Cc:     soc@kernel.org, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        arnd@arndb.de, olof@lixom.net, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, amstan@chromium.org,
+        upstream@semihalf.com, Dinh Nguyen <dinguyen@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-Provags-ID: V03:K1:zhaHhEGjIFru1VL46j0+tZGVaWHAQkcciH1GX2cZnvcAcHfn5M+
+ Y+DCGLK6/9KjL7JM/R+qEU6PNETBlCWCFMRUwRdIsHzE4YI4OVCMBhDbKyeK60Ah5S9+Kyj
+ 3mgfAYbHE1dh6t94PWR6y7oPLEI4hxroOxyj5xz/nhLy0XN+wg21ltzB2Rr/mRVnOLtt2OH
+ SztwIPBUDKVyb4odgF42g==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:Qwpp7sOFPDg=:lS18uBZzeJ2sFdNI9fhC/y
+ +w1OWV/C6BGT1peIMYlENFqXTnSZmLsi7khdAxeoQ2xHv1ySNVeDTicW6pglKhk+53jGjqHpM
+ DoRHc3WfwrigUK9PmvaxfTU8m8mcPCivvDilzlqSuUMMXfiqR0nkbtreFjvAjr3+3pwNE3BNx
+ aypmegiG69pabkgUTtxO+Ks/zRUgQHwXxSTTzSPUq9bwubR87C+0LSbMVfD/ISG5qqTj5E6yY
+ rIMC7+FmKiy4A+y8bvMOtqFINPakAg5XtV1UZEL2E5tSjFi2rCEAdhJVIWc4Q+Ah7UIvRsBJ9
+ 47FbibD8A/0FGTQ/bL8Ac6iAtqsf9l0ozMCaoZtAdrJJPnvy6Eu4scBvsrGqqKOhyIQExRugZ
+ iMsDZSiT097uVGMPbTLJM8mbSz/F3mucO2MJK2WAFn/+UaFV/XD4tXEHPCVXZFvWC/Muuugvr
+ +JjQ4BmvQ998TGwNI4YoDGhxnSAA5S5hq4NPfThgmJnGrXJigTllD6nQDoVJdnS9n6O+rlzdv
+ uFdiwXnOBMtFv+lgMqRxVtQreYbDVlLR4GUu+9AtznAwT58vrUVhq98BxFEVlZL7oihybDQja
+ k0OsJ88BxZM4QlhPPH1qVpCXy71TCU9mOCCiMzjYmUflyFmaDbmry7cL1hhArb8Gv9ko45dpV
+ iGYI2d7rLeq8pQxomYTuq5kpVYkdQ7zPoh0hv1ciZOmdFuSfKFmSujoINxSAcDcvnvSKdUf9G
+ NPaRf4b0h55SDnofwwWGiAxdUihID5fKZluTHw==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello!
+On Wed, Jun 1, 2022 at 5:46 PM Paweł Anikiel <pan@semihalf.com> wrote:
+>
+> The Google Chameleon v3 is a board made for testing both video and audio
+> interfaces of external devices. It acts as a base board for the
+> Mercury+ AA1 module.
+>
+> socfpga_arria10_mercury_aa1.dtsi and socfpga_arria10_chameleonv3.dts
+> have also been sent to u-boot:
+> https://lists.denx.de/pipermail/u-boot/2022-May/485107.html
+> https://lists.denx.de/pipermail/u-boot/2022-May/485111.html
 
-On 6/1/22 11:59 AM, Miaoqian Lin wrote:
+Hi Paweł,
 
-> of_find_device_by_node() takes reference, we should use put_device()
-> to release it when not need anymore.
-> Add missing put_device() to avoid refcount leak.
-> 
-> Fixes: 43f01da0f279 ("MIPS/OCTEON/ata: Convert pata_octeon_cf.c to use device tree.")
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+The patches look ok to me, but I think you should be sending them to
+Dinh Nguyen for merging through the socfpga tree instead of directly
+going to soc@kernel.org.
 
-Reviewed-by: Sergey Shtylyov <s.shtylyov@omp.ru>
-
-[...]
-
-MBR, Sergey
+      Arnd
