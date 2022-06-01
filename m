@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6412DCCA46F
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:55:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41857C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:55:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350608AbiFANzs (ORCPT
+        id S1353721AbiFANzw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 09:55:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59414 "EHLO
+        Wed, 1 Jun 2022 09:55:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353700AbiFANzG (ORCPT
+        with ESMTP id S1353682AbiFANya (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 09:55:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE6408A303;
-        Wed,  1 Jun 2022 06:54:24 -0700 (PDT)
+        Wed, 1 Jun 2022 09:54:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D795C8721E;
+        Wed,  1 Jun 2022 06:54:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6E2DE615A7;
-        Wed,  1 Jun 2022 13:54:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18331C385B8;
-        Wed,  1 Jun 2022 13:54:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4A463B8175B;
+        Wed,  1 Jun 2022 13:54:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F5B6C385A5;
+        Wed,  1 Jun 2022 13:54:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091663;
-        bh=Io4HhJb+Cz16sRUnVJbOtBv6IWiQnhJuRY59WG07j+s=;
-        h=From:To:Cc:Subject:Date:From;
-        b=HD9q1mlOJ3GyGfOsW7Zt8X8L+SCQjVduH/C47s5WD5I5RCNSk2IAsGcmpIYMIb55O
-         Gl8+nv6Ecos175pUirtczoLpdPdFd2qei0IO/wvKicSMbEx9ZZ+ZqxPMzslq3+daXg
-         tIOmHdzjdCdW+7FXXabqDxgKvwLkxLSngwXkLxCDgw0EuMFKwyCLcVv9jSGUPl+P7s
-         z9AOa1xttTj/TA/6rv+xhPdkHxQ57kRovlcgdZoBVjkKN6wD2tysqkC9ersVMStNLp
-         7MQCsyrU9kmqxUyM9Fm8YAZUeccr7eBlYIp8d3dEMhzTZEeWl8LZPi1cxw/1TZIyu5
-         97qc/IhIRpPPw==
+        s=k20201202; t=1654091649;
+        bh=nDm+GwDgvJjU1T4VnyQabcgcfISjgZ8P6P4og/v0WJM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=tvqnqnyE4DTMHB2xuGkLpq4IV3pfyjr23zLOIf+oc7LAfdW7KJ03xrS5ue0tMw08O
+         0W9Swg56hhbNCWD24uRvWQiuuuBts9oyGxisak6Y20hQkSie6ayNb0xs3o+sSwImBZ
+         +L6gR6rUKQdVjhXiOGBqxjhYeNOQR2HUs9RdcAg9oFKmOB6tiZr/P0/VM+ybZX6wl/
+         V6sAig1Qd5erN4pH8yZbZwxHtdws7GJHUkv2wofKJZHzy7yxeo9m5nYS9bAWA4Df5a
+         4V8oDk8Q+ZIa6RcvTcHobeNrajm8PXEbtK5yj3tbq9QooHjo7UisJCfcmMIA3jYDsm
+         c80xnzP3vU5mA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Niels Dossche <dossche.niels@gmail.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>,
-        dennis.dalessandro@cornelisnetworks.com, linux-rdma@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 01/48] IB/rdmavt: add missing locks in rvt_ruc_loopback
-Date:   Wed,  1 Jun 2022 09:53:34 -0400
-Message-Id: <20220601135421.2003328-1-sashal@kernel.org>
+Cc:     Peng Wu <wupeng58@huawei.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>, christophe.leroy@csgroup.eu,
+        nick.child@ibm.com, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH AUTOSEL 5.18 43/49] powerpc/iommu: Add missing of_node_put in iommu_init_early_dart
+Date:   Wed,  1 Jun 2022 09:52:07 -0400
+Message-Id: <20220601135214.2002647-43-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220601135214.2002647-1-sashal@kernel.org>
+References: <20220601135214.2002647-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -51,62 +53,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niels Dossche <dossche.niels@gmail.com>
+From: Peng Wu <wupeng58@huawei.com>
 
-[ Upstream commit 22cbc6c2681a0a4fe76150270426e763d52353a4 ]
+[ Upstream commit 57b742a5b8945118022973e6416b71351df512fb ]
 
-The documentation of the function rvt_error_qp says both r_lock and
-s_lock need to be held when calling that function.
-It also asserts using lockdep that both of those locks are held.
-rvt_error_qp is called form rvt_send_cq, which is called from
-rvt_qp_complete_swqe, which is called from rvt_send_complete, which is
-called from rvt_ruc_loopback in two places. Both of these places do not
-hold r_lock. Fix this by acquiring a spin_lock of r_lock in both of
-these places.
-The r_lock acquiring cannot be added in rvt_qp_complete_swqe because
-some of its other callers already have r_lock acquired.
+The device_node pointer is returned by of_find_compatible_node
+with refcount incremented. We should use of_node_put() to avoid
+the refcount leak.
 
-Link: https://lore.kernel.org/r/20220228195144.71946-1-dossche.niels@gmail.com
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Peng Wu <wupeng58@huawei.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220425081245.21705-1-wupeng58@huawei.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/sw/rdmavt/qp.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ arch/powerpc/sysdev/dart_iommu.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/infiniband/sw/rdmavt/qp.c b/drivers/infiniband/sw/rdmavt/qp.c
-index 8ef112f883a7..3acab569fbb9 100644
---- a/drivers/infiniband/sw/rdmavt/qp.c
-+++ b/drivers/infiniband/sw/rdmavt/qp.c
-@@ -2775,7 +2775,7 @@ void rvt_qp_iter(struct rvt_dev_info *rdi,
- EXPORT_SYMBOL(rvt_qp_iter);
+diff --git a/arch/powerpc/sysdev/dart_iommu.c b/arch/powerpc/sysdev/dart_iommu.c
+index be6b99b1b352..9a02aed886a0 100644
+--- a/arch/powerpc/sysdev/dart_iommu.c
++++ b/arch/powerpc/sysdev/dart_iommu.c
+@@ -404,9 +404,10 @@ void __init iommu_init_early_dart(struct pci_controller_ops *controller_ops)
+ 	}
  
- /*
-- * This should be called with s_lock held.
-+ * This should be called with s_lock and r_lock held.
-  */
- void rvt_send_complete(struct rvt_qp *qp, struct rvt_swqe *wqe,
- 		       enum ib_wc_status status)
-@@ -3134,7 +3134,9 @@ void rvt_ruc_loopback(struct rvt_qp *sqp)
- 	rvp->n_loop_pkts++;
- flush_send:
- 	sqp->s_rnr_retry = sqp->s_rnr_retry_cnt;
-+	spin_lock(&sqp->r_lock);
- 	rvt_send_complete(sqp, wqe, send_status);
-+	spin_unlock(&sqp->r_lock);
- 	if (local_ops) {
- 		atomic_dec(&sqp->local_ops_pending);
- 		local_ops = 0;
-@@ -3188,7 +3190,9 @@ void rvt_ruc_loopback(struct rvt_qp *sqp)
- 	spin_unlock_irqrestore(&qp->r_lock, flags);
- serr_no_r_lock:
- 	spin_lock_irqsave(&sqp->s_lock, flags);
-+	spin_lock(&sqp->r_lock);
- 	rvt_send_complete(sqp, wqe, send_status);
-+	spin_unlock(&sqp->r_lock);
- 	if (sqp->ibqp.qp_type == IB_QPT_RC) {
- 		int lastwqe;
+ 	/* Initialize the DART HW */
+-	if (dart_init(dn) != 0)
++	if (dart_init(dn) != 0) {
++		of_node_put(dn);
+ 		return;
+-
++	}
+ 	/*
+ 	 * U4 supports a DART bypass, we use it for 64-bit capable devices to
+ 	 * improve performance.  However, that only works for devices connected
+@@ -419,6 +420,7 @@ void __init iommu_init_early_dart(struct pci_controller_ops *controller_ops)
  
+ 	/* Setup pci_dma ops */
+ 	set_pci_dma_ops(&dma_iommu_ops);
++	of_node_put(dn);
+ }
+ 
+ #ifdef CONFIG_PM
 -- 
 2.35.1
 
