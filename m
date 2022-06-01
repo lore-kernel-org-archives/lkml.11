@@ -2,46 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9384C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:57:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F288CCA468
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:57:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353706AbiFAN5T (ORCPT
+        id S1353921AbiFAN50 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 09:57:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59582 "EHLO
+        Wed, 1 Jun 2022 09:57:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353794AbiFANz5 (ORCPT
+        with ESMTP id S1353915AbiFAN4g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 09:55:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46B828E1BE;
-        Wed,  1 Jun 2022 06:54:50 -0700 (PDT)
+        Wed, 1 Jun 2022 09:56:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 237C9996BB;
+        Wed,  1 Jun 2022 06:54:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CDE8AB81806;
-        Wed,  1 Jun 2022 13:54:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2943C385B8;
-        Wed,  1 Jun 2022 13:54:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BF8A5615D1;
+        Wed,  1 Jun 2022 13:54:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBE10C3411E;
+        Wed,  1 Jun 2022 13:54:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091652;
-        bh=33xmMUUu2yyaxwek5Otu/Ihv7PjXK0y8lP29hOMLgw0=;
+        s=k20201202; t=1654091660;
+        bh=MmQJDZApS8UaiRibxxFyjqlEdDr50z7x4JFT5HUt8A4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M7Erp5BaM8BnmElMsSyDgYPWnRAylHRBvovENPpMy9I0m3rDIIr8PqorI2KFUuQzI
-         NB9kn+lHepVg4zbj4BLYXwavllpRkGhcvZnERwQ1ifdqVvCAdQRMAiPQId7LFiAd8r
-         a3TX4LexxlmCPKDDPBbvGrfDaJLe2n8/K/AoLObKEb0qIlzlXgL1M9/Ll1Cgcm8b7f
-         vTaH6txVCAr2KXRHVlJWi70O69yxoq4XndVSvDi4Unl+T0iFXroXzfgNL5O8ppmntt
-         26KCY3bmX5b/v/VKc64Bq4GstYQ98aI/sWqDalcHdT2jjn9icc1iZUQpcWsXYpwpY+
-         wqTahwb98lIrw==
+        b=LaBnTp+HtTl8IPX7DHPHYcmSWklJWIDeaTbPg0sOYh1ZUQwV5DTOacWy+aZ1npyhJ
+         bvHGk/Obiv+vsx5P0BCkTz3c3xugLGQmZI2f8nbKdRawUcGIW9CEpZS2ymW9a886tI
+         AUwTqA8r1qAT8BGcTFO8vzcBxV2bacWAQ93A5terPg+g0NCCTsMaxk6dlfglOwJ6gV
+         uU8P4LzMTAstaZMoeUtqHHA33QqkJRGQLizJWFyCIqO+esz5IusmR5oBYHSLCnLHzG
+         enV7dut/+Boiyh+jxiMQBVUbHC7bYdyTNUMvgTRrgkpWj9jBh3ynbFvA6rQrmncnui
+         zsAahQSTp7liQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Steve French <stfrench@microsoft.com>,
-        Ronnie Sahlberg <lsahlber@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, sfrench@samba.org,
-        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org
-Subject: [PATCH AUTOSEL 5.18 45/49] smb3: check for null tcon
-Date:   Wed,  1 Jun 2022 09:52:09 -0400
-Message-Id: <20220601135214.2002647-45-sashal@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Sasha Levin <sashal@kernel.org>,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.18 49/49] drm: fix EDID struct for old ARM OABI format
+Date:   Wed,  1 Jun 2022 09:52:13 -0400
+Message-Id: <20220601135214.2002647-49-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135214.2002647-1-sashal@kernel.org>
 References: <20220601135214.2002647-1-sashal@kernel.org>
@@ -53,47 +59,112 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steve French <stfrench@microsoft.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 
-[ Upstream commit bbdf6cf56c88845fb0b713cbf5c6623c53fe40d8 ]
+[ Upstream commit 47f15561b69e226bfc034e94ff6dbec51a4662af ]
 
-Although unlikely to be null, it is confusing to use a pointer
-before checking for it to be null so move the use down after
-null check.
+When building the kernel for arm with the "-mabi=apcs-gnu" option, gcc
+will force alignment of all structures and unions to a word boundary
+(see also STRUCTURE_SIZE_BOUNDARY and the "-mstructure-size-boundary=XX"
+option if you're a gcc person), even when the members of said structures
+do not want or need said alignment.
 
-Addresses-Coverity: 1517586 ("Null pointer dereferences  (REVERSE_INULL)")
-Reviewed-by: Ronnie Sahlberg <lsahlber@redhat.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+This completely messes up the structure alignment of 'struct edid' on
+those targets, because even though all the embedded structures are
+marked with "__attribute__((packed))", the unions that contain them are
+not.
+
+This was exposed by commit f1e4c916f97f ("drm/edid: add EDID block count
+and size helpers"), but the bug is pre-existing.  That commit just made
+the structure layout problem cause a build failure due to the addition
+of the
+
+        BUILD_BUG_ON(sizeof(*edid) != EDID_LENGTH);
+
+sanity check in drivers/gpu/drm/drm_edid.c:edid_block_data().
+
+This legacy union alignment should probably not be used in the first
+place, but we can fix the layout by adding the packed attribute to the
+union entries even when each member is already packed and it shouldn't
+matter in a sane build environment.
+
+You can see this issue with a trivial test program:
+
+  union {
+	struct {
+		char c[5];
+	};
+	struct {
+		char d;
+		unsigned e;
+	} __attribute__((packed));
+  } a = { "1234" };
+
+where building this with a normal "gcc -S" will result in the expected
+5-byte size of said union:
+
+	.type	a, @object
+	.size	a, 5
+
+but with an ARM compiler and the old ABI:
+
+    arm-linux-gnu-gcc -mabi=apcs-gnu -mfloat-abi=soft -S t.c
+
+you get
+
+	.type	a, %object
+	.size	a, 8
+
+instead, because even though each member of the union is packed, the
+union itself still gets aligned.
+
+This was reported by Sudip for the spear3xx_defconfig target.
+
+Link: https://lore.kernel.org/lkml/YpCUzStDnSgQLNFN@debian/
+Reported-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Acked-by: Arnd Bergmann <arnd@arndb.de>
+Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+Cc: Maxime Ripard <mripard@kernel.org>
+Cc: Thomas Zimmermann <tzimmermann@suse.de>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/cifs/smb2ops.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ include/drm/drm_edid.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/fs/cifs/smb2ops.c b/fs/cifs/smb2ops.c
-index d6aaeff4a30a..16aeb37636e5 100644
---- a/fs/cifs/smb2ops.c
-+++ b/fs/cifs/smb2ops.c
-@@ -760,8 +760,8 @@ int open_cached_dir(unsigned int xid, struct cifs_tcon *tcon,
- 		struct cifs_sb_info *cifs_sb,
- 		struct cached_fid **cfid)
- {
--	struct cifs_ses *ses = tcon->ses;
--	struct TCP_Server_Info *server = ses->server;
-+	struct cifs_ses *ses;
-+	struct TCP_Server_Info *server;
- 	struct cifs_open_parms oparms;
- 	struct smb2_create_rsp *o_rsp = NULL;
- 	struct smb2_query_info_rsp *qi_rsp = NULL;
-@@ -779,6 +779,9 @@ int open_cached_dir(unsigned int xid, struct cifs_tcon *tcon,
- 	if (tcon->nohandlecache)
- 		return -ENOTSUPP;
+diff --git a/include/drm/drm_edid.h b/include/drm/drm_edid.h
+index 144c495b99c4..d6b2aeb34211 100644
+--- a/include/drm/drm_edid.h
++++ b/include/drm/drm_edid.h
+@@ -121,7 +121,7 @@ struct detailed_data_monitor_range {
+ 			u8 supported_scalings;
+ 			u8 preferred_refresh;
+ 		} __attribute__((packed)) cvt;
+-	} formula;
++	} __attribute__((packed)) formula;
+ } __attribute__((packed));
  
-+	ses = tcon->ses;
-+	server = ses->server;
-+
- 	if (cifs_sb->root == NULL)
- 		return -ENOENT;
+ struct detailed_data_wpindex {
+@@ -154,7 +154,7 @@ struct detailed_non_pixel {
+ 		struct detailed_data_wpindex color;
+ 		struct std_timing timings[6];
+ 		struct cvt_timing cvt[4];
+-	} data;
++	} __attribute__((packed)) data;
+ } __attribute__((packed));
  
+ #define EDID_DETAIL_EST_TIMINGS 0xf7
+@@ -172,7 +172,7 @@ struct detailed_timing {
+ 	union {
+ 		struct detailed_pixel_timing pixel_data;
+ 		struct detailed_non_pixel other_data;
+-	} data;
++	} __attribute__((packed)) data;
+ } __attribute__((packed));
+ 
+ #define DRM_EDID_INPUT_SERRATION_VSYNC (1 << 0)
 -- 
 2.35.1
 
