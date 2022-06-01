@@ -2,139 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC13DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 18:08:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FDA4CCA479
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 18:16:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354397AbiFASIQ (ORCPT
+        id S1356230AbiFASP6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 14:08:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35014 "EHLO
+        Wed, 1 Jun 2022 14:15:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230345AbiFASIO (ORCPT
+        with ESMTP id S1353446AbiFASP4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 14:08:14 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2080.outbound.protection.outlook.com [40.107.220.80])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5816A30F62;
-        Wed,  1 Jun 2022 11:08:13 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=L2j3OjIDo9/2zre+kF+sL3boHQtq1/uK3Xv9S55dFI48/vuUjMUCpxoAEVYD10kIzDJymM8JS1rUKI6tKOjtbGCdn9xopXpLcPOgiCX0s8d+OpyvRTZKb8ocah5AmQUFwS4LEG+XwBvQLSvIVTchufvsoTbAdHmtO0zJHp3xm3Dej2E3hGlx2qONxAntOw6+R7V1JPhD7ZXgtf6jWkXmrhmFtD2UIi4Kx4Q0HZD6kd08ueyoE+Az2CdqRLGqJZqB69Eto/L7naO267/Wua02jjhB7FrJDPTmbfbTm2gW608iIMuctbg021pvwl5PtDqJJgnwy3v2xmM37QMV7rzSsw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=U3dIOJiS3txfpERQozYCY+n6Fp8ihPEBKXPncoEHGxo=;
- b=Pa45Qi4Gx3OzvhQ8yrCtQxplE/6uu/MAkf7sQD/1b21Sx5xOFe3VdllTqzFkRqwEHXw9FYyGBDT6naiNgrVnB6Aubm4P1t/RostNxDcvmZlbSSfLY09gJtHf4hI5yzfr3cEpQeKAnOSKjZbtK7WykEFbcPcqDqHrcaHoJ7xhzytvTw5mPFDMCOoCqRJ7RUbC+9tqvtIrvk3ESdPFUwZb0MrVz0hOG1xKMCarvBdPFcJgBAy6IwXtkwCNHIVBcgSQ6cEGE07ahsGkgGQ/o3En+2Ae8kUYrGJsPQXt+gnUQMTAHT8XaaB1lQ9EdyGoIeTKbY4EfKxPOiLyUOKP81BQgA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.238) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=U3dIOJiS3txfpERQozYCY+n6Fp8ihPEBKXPncoEHGxo=;
- b=KbaynKn6fC6d7QwfcYmcYQ2pZRQJFsOUE4ooIYSBZ3tVV/Sd4KcgwLX9Ub0YS87CSZDdKXStGOtj0737gOCsAnsrWjjl8OiF1qTMI1NYv0eWO7psxgQOVVSN9uQlD6P/4oxmXqdR3KOYDEgO5qKOYiensCg2BpwjTpYViRFsADyGd0zZJ67veR4P3TW+FoYVCinrV2cymdxK68iwphEJytLlSGnZcANK1AGyAJqtEwxX3D5S02kteSSu8w/qtcCcBUMluKahL6zq8/9LOn7y4Pho0Wqdq5dI/W0Er3pgOXt2NUFgvRvZyBPJDWgPuPNum689K0FcV4X19+a1WFp0Eg==
-Received: from BN6PR17CA0054.namprd17.prod.outlook.com (2603:10b6:405:75::43)
- by MN0PR12MB5713.namprd12.prod.outlook.com (2603:10b6:208:370::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.19; Wed, 1 Jun
- 2022 18:08:11 +0000
-Received: from BN8NAM11FT030.eop-nam11.prod.protection.outlook.com
- (2603:10b6:405:75:cafe::8d) by BN6PR17CA0054.outlook.office365.com
- (2603:10b6:405:75::43) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.19 via Frontend
- Transport; Wed, 1 Jun 2022 18:08:11 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.238; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.238) by
- BN8NAM11FT030.mail.protection.outlook.com (10.13.177.146) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5314.12 via Frontend Transport; Wed, 1 Jun 2022 18:08:11 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL105.nvidia.com
- (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Wed, 1 Jun
- 2022 18:08:10 +0000
-Received: from localhost (10.126.230.35) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 1 Jun 2022
- 11:08:09 -0700
-Date:   Wed, 1 Jun 2022 21:08:06 +0300
-From:   Leon Romanovsky <leonro@nvidia.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Boris Pismenny <borisp@nvidia.com>, <netdev@vger.kernel.org>,
-        <kernel-janitors@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        "Saeed Mahameed" <saeedm@nvidia.com>
-Subject: Re: [PATCH] MAINTAINERS: adjust MELLANOX ETHERNET INNOVA DRIVERS to
- TLS support removal
-Message-ID: <YperBiCh1rkKDmSR@unreal>
-References: <20220601045738.19608-1-lukas.bulwahn@gmail.com>
- <Ypc85O47YoNzUTr5@unreal>
- <20220601103032.28d14fc4@kicinski-fedora-PC1C0HJN>
+        Wed, 1 Jun 2022 14:15:56 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 976CA95A2F
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 11:15:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654107351;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8lnhgnSWwHutqtYkh7EtY0e4ON7IRphJYIb523UmDxM=;
+        b=gV/qqw1SwOLntwNjgwGSjwMO59S7Jzdx10x0qARGpwevRr6yJVuOlRgAu23H6O2uAho8mU
+        L6jdmKkORhD4LhywR6/653GBld/iJvPOA35hX0gboa63Brg/Kr9avNWj9IodRX75oAZy6w
+        a6Oladznh7NQ71fCI/b/HVc4Hmk1ycE=
+Received: from mail-io1-f71.google.com (mail-io1-f71.google.com
+ [209.85.166.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-623-MKe-zbBiOniEwcVGhuJ7Sg-1; Wed, 01 Jun 2022 14:15:50 -0400
+X-MC-Unique: MKe-zbBiOniEwcVGhuJ7Sg-1
+Received: by mail-io1-f71.google.com with SMTP id ay41-20020a5d9da9000000b006685ce50214so1346746iob.22
+        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 11:15:50 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=8lnhgnSWwHutqtYkh7EtY0e4ON7IRphJYIb523UmDxM=;
+        b=SV68Pt+7R3XVIuqcMHi0Hv3qgffBAmVwCeoMowyRCllxoCOGmZMhyY1uOYWN0ilKTk
+         +BjB6qEngysYE79n+DH6mhXCw8vkc8Mltd/moD0koC2oaLXAyV9ORrhVv2CVfSJ6OP6W
+         bdjNtQlUkJcifzZQ0EaduXoYiY6TH21lvu7Agv13ubLWaDN6y79E1FgqrwDawhhTE6TO
+         TEXJsJQC8tUSc7cR2kCMYzqqqgbd0KRR7aUcCovgyM/C+1/9uf9rZqEElHL1x5UICc53
+         gHpHTR2sDCQHYrIQHRvF+xmTPuphpg0mC9sI3YS1g1RdrQJLsFdUmhzEvNIov1YpLKSX
+         dJAA==
+X-Gm-Message-State: AOAM532TWXru/0ibfNXbKanPDTSPpdM5GegB/98a0gOdgpk9X/SG0uK+
+        zKmjSIWzpOpjkX/my9B6F8FTX02b/5z4huD2GzDLoWwGe6qVrhyiAUKrzJ50oo075zaI+hAViKk
+        dmRwCWSB+VFLBzAr+vO5NbIPa
+X-Received: by 2002:a05:6638:1909:b0:32e:d7f1:9072 with SMTP id p9-20020a056638190900b0032ed7f19072mr799190jal.261.1654107349221;
+        Wed, 01 Jun 2022 11:15:49 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxtWWYwIifn8Zm9fGxaP3UsiArl+84D6kY0AJluqcAh0yFl+n2OY1BLZaHw5+41MWCfjqu8Fw==
+X-Received: by 2002:a05:6638:1909:b0:32e:d7f1:9072 with SMTP id p9-20020a056638190900b0032ed7f19072mr799178jal.261.1654107349017;
+        Wed, 01 Jun 2022 11:15:49 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id i12-20020a926d0c000000b002d39ae9918asm719208ilc.54.2022.06.01.11.15.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Jun 2022 11:15:48 -0700 (PDT)
+Date:   Wed, 1 Jun 2022 12:15:47 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Abhishek Sahu <abhsahu@nvidia.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Yishai Hadas <yishaih@nvidia.com>,
+        Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Max Gurtovoy <mgurtovoy@nvidia.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-pci@vger.kernel.org
+Subject: Re: [PATCH v3 8/8] vfio/pci: Add the support for PCI D3cold state
+Message-ID: <20220601121547.03ebbf64.alex.williamson@redhat.com>
+In-Reply-To: <20220601173054.GS1343366@nvidia.com>
+References: <9e44e9cc-a500-ab0d-4785-5ae26874b3eb@nvidia.com>
+        <20220509154844.79e4915b.alex.williamson@redhat.com>
+        <68463d9b-98ee-b9ec-1a3e-1375e50a2ad2@nvidia.com>
+        <42518bd5-da8b-554f-2612-80278b527bf5@nvidia.com>
+        <20220530122546.GZ1343366@nvidia.com>
+        <c73d537b-a653-bf79-68cd-ddc8f0f62a25@nvidia.com>
+        <20220531194304.GN1343366@nvidia.com>
+        <20220531165209.1c18854f.alex.williamson@redhat.com>
+        <00b6e380-ecf4-1eaf-f950-2c418bdb6cac@nvidia.com>
+        <20220601102151.75445f6a.alex.williamson@redhat.com>
+        <20220601173054.GS1343366@nvidia.com>
+Organization: Red Hat
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220601103032.28d14fc4@kicinski-fedora-PC1C0HJN>
-X-Originating-IP: [10.126.230.35]
-X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 719790aa-e83d-445f-feb3-08da43f9b09b
-X-MS-TrafficTypeDiagnostic: MN0PR12MB5713:EE_
-X-Microsoft-Antispam-PRVS: <MN0PR12MB5713944BD39F17027EF21CE7BDDF9@MN0PR12MB5713.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: eM0SfkLkpaTQJnQC+7IXEQqWilhV+uL2PSAO6x8nmJltl1fWVqC1Ap6cuLg7kegsNXyO1Nt066aeB3axS5TIuPv2X0Bq8p8ewO3chGKK7x1LMz7GkSbPpDTwWAcBBLXBAXtcB0h+TbEWItUb3J9ZCBiS5Rlkv4rlfCKlcdMi7CdYhmCPXv7Ih56McCBBYSdXco4nxEcRIMRkvPV8vIM4hA1cPxD/DtKndKdvkVF1SIfC+5wybIlpdXsK3bumUl8Hot3KjQH33frc74EmDA5v8QJllNQWeskNpw3Us9dHuH47onNpVrdnJfMAJ36oYv3PIS7fqpzFWYyfEXqTs0Piqml+a4L1i+Wb/yeWA8PKSbP+3Tf1VitWSlhjhAgGKkB5UW3hnFVdmduw6GIfogUO1UPQUDYJIvGOXHM/aFU3zzI3eP1cAM+2nQH6tFP9NTycts7Twoajh7j26B+D08A1Bi8atjxhiJMlXZcx+We98SnSvfNcMPwvGNeWVcnzswyu8MdJu9i6cBJLsYDVBY4BfzaIXNZ5CfkDL3I6hLfYD6guyEKbmcI6SarI62awPy4CbU0Wqq+WvPBJtdg1hlyRtHhpbG3K0vFdh3hgmjrjAk3OreY6qjt3mP7ucuCMuyjUzcWWj0F/l2TjrSqZPWy8AVR/Zn8uSxhXbvw3Zm4i9JKqGTkjX6qkCJzOHtU8ulhUwWeEZ+O3ZtFpvM4WWyrbR0Nrciu+N8RYd/8SVAZ/Grng27h+SIE/vIk0SUsZsoTLt1UkDwbUJHOrNv9fqlWaG9xS9lmEMNXepicsBbyIebM=
-X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(7916004)(40470700004)(46966006)(36840700001)(54906003)(33716001)(316002)(2906002)(81166007)(9686003)(26005)(6916009)(356005)(47076005)(336012)(83380400001)(426003)(4326008)(16526019)(70206006)(5660300002)(70586007)(82310400005)(86362001)(8936002)(8676002)(40460700003)(508600001)(966005)(36860700001)(107886003)(186003)(6666004)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jun 2022 18:08:11.3402
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 719790aa-e83d-445f-feb3-08da43f9b09b
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT030.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB5713
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 01, 2022 at 10:30:39AM -0700, Jakub Kicinski wrote:
-> On Wed, 1 Jun 2022 13:18:12 +0300 Leon Romanovsky wrote:
-> > On Wed, Jun 01, 2022 at 06:57:38AM +0200, Lukas Bulwahn wrote:
-> > > Commit 40379a0084c2 ("net/mlx5_fpga: Drop INNOVA TLS support") removes all
-> > > files in the directory drivers/net/ethernet/mellanox/mlx5/core/accel/, but
-> > > misses to adjust its reference in MAINTAINERS.
-> > > 
-> > > Hence, ./scripts/get_maintainer.pl --self-test=patterns complains about a
-> > > broken reference.
-> > > 
-> > > Remove the file entry to the removed directory in MELLANOX ETHERNET INNOVA
-> > > DRIVERS.
-> > > 
-> > > Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-> > > ---
-> > > Leon, please pick this minor non-urgent clean-up patch on top of the commit
-> > > above.  
-> > 
-> > Thanks, we will submit it once net-next will be open.
+On Wed, 1 Jun 2022 14:30:54 -0300
+Jason Gunthorpe <jgg@nvidia.com> wrote:
+
+> On Wed, Jun 01, 2022 at 10:21:51AM -0600, Alex Williamson wrote:
 > 
-> It should go via net FWIW.
+> > Some ioctls clearly cannot occur while the device is in low power, such
+> > as resets and interrupt control, but even less obvious things like
+> > getting region info require device access.  Migration also provides a
+> > channel to device access.    
+> 
+> I wonder what power management means in a case like that.
+> 
+> For the migration drivers they all rely on a PF driver that is not
+> VFIO, so it should be impossible for power management to cause the PF
+> to stop working.
+> 
+> I would expect any sane design of power management for a VF to not
+> cause any harm to the migration driver..
 
-I'm slightly confused here.
+Is there even a significant benefit or use case for power management
+for VFs?  The existing D3hot support should be ok, but I imagine to
+support D3cold, all the VFs and the PF would need to move to low power.
+It might be safe to simply exclude VFs from providing this feature for
+now.
 
-According to net policy, the patches that goes there should have Fixes
-line, but Fixes lines are added for bugs [1].
+> > I'm also still curious how we're going to handle devices that cannot
+> > return to low power such as the self-refresh mode on the GPU.  We can
+> > potentially prevent any wake-ups from the vfio device interface, but
+> > that doesn't preclude a wake-up via an external lspci.  I think we need
+> > to understand how we're going to handle such devices before we can
+> > really complete the design.  AIUI, we cannot disable the self-refresh
+> > sleep mode without imposing unreasonable latency and memory
+> > requirements on the guest and we cannot retrigger the self-refresh
+> > low-power mode without non-trivial device specific code.  
+> 
+> It begs the question if power management should be something that only
+> a device-specific drivers should allow?
 
-This forgotten line in MAINTAINERS doesn't cause to any harm to
-users/developers.
+Yes, but that's also penalizing devices that require no special
+support, for the few that do.  I'm not opposed to some sort of
+vfio-pci-nvidia-gpu variant driver to provide that device specific
+support, but I'd think the device table for such a driver might just be
+added to the exclusion list for power management support in vfio-pci.
+vfio-pci-core would need some way for drivers to opt-out/in for power
+management.  Thanks,
 
-So when should I put Fixes line in netdev?
+Alex
 
-[1] https://lore.kernel.org/netdev/20211208070842.0ace6747@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com/
-
-Thanks
