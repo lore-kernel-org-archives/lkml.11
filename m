@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7F9CCCA472
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:06:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90BF7CCA46F
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:06:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355814AbiFAOG1 (ORCPT
+        id S1355603AbiFAOGL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:06:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54186 "EHLO
+        Wed, 1 Jun 2022 10:06:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355042AbiFAOBP (ORCPT
+        with ESMTP id S1355366AbiFAOBb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:01:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56B90532C3;
-        Wed,  1 Jun 2022 06:57:42 -0700 (PDT)
+        Wed, 1 Jun 2022 10:01:31 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CDE2A7743;
+        Wed,  1 Jun 2022 06:58:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 84743615AA;
-        Wed,  1 Jun 2022 13:56:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5026C34119;
-        Wed,  1 Jun 2022 13:56:38 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 201BDCE1A1F;
+        Wed,  1 Jun 2022 13:57:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C01F9C385B8;
+        Wed,  1 Jun 2022 13:57:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091800;
-        bh=EnpAIC7tVlvFBKyJDqA5TOV5FfME2skn3+dz8acKW48=;
+        s=k20201202; t=1654091873;
+        bh=Ir0V9XdICgoZ/GLaYLNxw9Lpqttbk/iKdMQZZJbOrvw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TvZm6phBdTQHCCax6Dcep9ay4WbuAh66GGiq5b9vkzM6mQJ7QZnFhZDp9c2k2+rUZ
-         +ScDWggEUKnqg9LvZEKKMPRqX/Zr5e+84YXpqVmongnaHPNlfpf3Ft5DD7sZnP0EXm
-         YGrcR+FyQKuwzMq2RwiYdK5YKSs/g1xhq37wKZ6xjFvmhUk6ubTgwuGEnORu621UvW
-         78gkiSK73tvmjXxKOQ7NBBBO1Ew2RTtDXpC47hEoVlxVQ+69Cnnc2TO1XdGT1Cb/UU
-         JGLv3EaY56JSg8A7+GcM73VX4BAfTiNrpm/pejUlOPEUi4Aa929wbmU4Sk5BjLja3K
-         6d6WMzAHP+XVg==
+        b=pPmeEeCuP9LstC3C0w1fsXmuV8JDRL2rhbk5w7bmUgVxaiDUNaXrcI08/URBOrch9
+         yKuGwmBDIVYr13cEL6peXHdxPOXGggpNf784VEBxb8RgPIyxHNeb1y7dHlFTKiN75y
+         2vwvTktLRIHA7OEyE6v6A/xsVjE/ed8IBr9PcWGZj64uk7jbupsIIkCZ5gZGhRNDiN
+         vL4aKPC0TTHBNloi/L/jgKO/sxP1I432+pSQEpQ5Yxv95d2og7lTV4JDlK+4m7nPE4
+         /0ALE1MoGe266ASqpB1q652JRo0I5MBONcZ/jqz3LEReFdLLTURkURKldpBSZPv+K3
+         3x252o7NSAJew==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Joel Selvaraj <jo@jsfamily.in>,
-        Caleb Connolly <caleb@connolly.tech>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>, agross@kernel.org,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 11/37] arm64: dts: qcom: sdm845-xiaomi-beryllium: fix typo in panel's vddio-supply property
-Date:   Wed,  1 Jun 2022 09:55:56 -0400
-Message-Id: <20220601135622.2003939-11-sashal@kernel.org>
+Cc:     Douglas Miller <doug.miller@cornelisnetworks.com>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>, linux-rdma@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 35/37] RDMA/hfi1: Prevent panic when SDMA is disabled
+Date:   Wed,  1 Jun 2022 09:56:20 -0400
+Message-Id: <20220601135622.2003939-35-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135622.2003939-1-sashal@kernel.org>
 References: <20220601135622.2003939-1-sashal@kernel.org>
@@ -55,34 +53,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joel Selvaraj <jo@jsfamily.in>
+From: Douglas Miller <doug.miller@cornelisnetworks.com>
 
-[ Upstream commit 1f1c494082a1f10d03ce4ee1485ee96d212e22ff ]
+[ Upstream commit 629e052d0c98e46dde9f0824f0aa437f678d9b8f ]
 
-vddio is misspelled with a "0" instead of "o". Fix it.
+If the hfi1 module is loaded with HFI1_CAP_SDMA off, a call to
+hfi1_write_iter() will dereference a NULL pointer and panic. A typical
+stack frame is:
 
-Signed-off-by: Joel Selvaraj <jo@jsfamily.in>
-Reviewed-by: Caleb Connolly <caleb@connolly.tech>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/BY5PR02MB7009901651E6A8D5ACB0425ED91F9@BY5PR02MB7009.namprd02.prod.outlook.com
+  sdma_select_user_engine [hfi1]
+  hfi1_user_sdma_process_request [hfi1]
+  hfi1_write_iter [hfi1]
+  do_iter_readv_writev
+  do_iter_write
+  vfs_writev
+  do_writev
+  do_syscall_64
+
+The fix is to test for SDMA in hfi1_write_iter() and fail the I/O with
+EINVAL.
+
+Link: https://lore.kernel.org/r/20220520183706.48973.79803.stgit@awfm-01.cornelisnetworks.com
+Signed-off-by: Douglas Miller <doug.miller@cornelisnetworks.com>
+Signed-off-by: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/infiniband/hw/hfi1/file_ops.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts b/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts
-index c60c8c640e17..736951fabb7a 100644
---- a/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts
-+++ b/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts
-@@ -221,7 +221,7 @@ &dsi0 {
- 	panel@0 {
- 		compatible = "tianma,fhd-video";
- 		reg = <0>;
--		vddi0-supply = <&vreg_l14a_1p8>;
-+		vddio-supply = <&vreg_l14a_1p8>;
- 		vddpos-supply = <&lab>;
- 		vddneg-supply = <&ibb>;
+diff --git a/drivers/infiniband/hw/hfi1/file_ops.c b/drivers/infiniband/hw/hfi1/file_ops.c
+index 1783a6ea5427..3ebdd42fec36 100644
+--- a/drivers/infiniband/hw/hfi1/file_ops.c
++++ b/drivers/infiniband/hw/hfi1/file_ops.c
+@@ -265,6 +265,8 @@ static ssize_t hfi1_write_iter(struct kiocb *kiocb, struct iov_iter *from)
+ 	unsigned long dim = from->nr_segs;
+ 	int idx;
  
++	if (!HFI1_CAP_IS_KSET(SDMA))
++		return -EINVAL;
+ 	idx = srcu_read_lock(&fd->pq_srcu);
+ 	pq = srcu_dereference(fd->pq, &fd->pq_srcu);
+ 	if (!cq || !pq) {
 -- 
 2.35.1
 
