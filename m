@@ -2,60 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 340EDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 07:04:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC179C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 07:07:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350178AbiFAHEp (ORCPT
+        id S1344682AbiFAHHU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 03:04:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59654 "EHLO
+        Wed, 1 Jun 2022 03:07:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348130AbiFAHEk (ORCPT
+        with ESMTP id S245271AbiFAHHQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 03:04:40 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FCA98BD3F
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 00:04:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=KYbdBtVVDGcmnK4PU+VMDFfZ6GKxbpQfLKErQkJk4D8=; b=SbweQnXKdT/sczeuAinciZhi07
-        e9c5igZa03bIvcPB2Y6l/6m/SxFe2DzS7Kpz5CBgRnjTp4D6KUmuAnqqs7XdoO3PCuY6Cf/DrGAy4
-        2kMCj0Mx/QVswOssTjtDQbfrdMqVGuiekEWC4ZOOIrHqKJwdAuEtYisPNbfFvPQte5/x9j45n48UP
-        nvgpi1q54Mmi+E4RRdTEWJFf3IslQovv6j3ycXhVyTAi3kMx8lOOlBosgqu6NlFTUfuA8B2hX3NFx
-        gOJjSpBLUqyn2X3cD0Uo5L6otg6TfvGH6Kx0+dGikqBa7XET02f/Rmax426swFM5lUYJ0J55n3S3q
-        3lSKO+dA==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nwIPA-00EJXM-18; Wed, 01 Jun 2022 07:04:32 +0000
-Date:   Wed, 1 Jun 2022 00:04:32 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Hillf Danton <hdanton@sina.com>
-Cc:     Christoph Hellwig <hch@infradead.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        syzbot <syzbot+3ba551855046ba3b3806@syzkaller.appspotmail.com>,
-        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot] WARNING in dma_map_sgtable (2)
-Message-ID: <YpcPgLQlNis0FOT1@infradead.org>
-References: <00000000000011e14605e03a125d@google.com>
- <20220530144542.4382-1-hdanton@sina.com>
- <20220530151044.GQ2146@kadam>
- <20220531090418.4552-1-hdanton@sina.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220531090418.4552-1-hdanton@sina.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+        Wed, 1 Jun 2022 03:07:16 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A34F8CB0A
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 00:07:15 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id m11-20020a25710b000000b0065d4a4abca1so704629ybc.18
+        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 00:07:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=Eq6nH6aGeuKpMU9nM7ibONmheABIDjQM7t9UjsNcl+w=;
+        b=dvfs6aw0o9enYr6q5JvsoITL1cIodQJtPwQKFVNV/ElWQiITwvlgBGIYVXYubJ0EWb
+         hQZknjUn8hWhfVG63Q26ahXT/ybuECTh3IQ0hlFzpMrRfffJaSxehOVATgqcGdOl5B63
+         UAGusDHfZ1+bZx3UPXTCMA74yfTvat1qBDbQNIwN2gBcEL0s2lgJJxBkvLKW4seHwHfy
+         yy/kVDyKrdiePicpV782RiPioPYMYI6dNrIPSqSRQjnVUQlBHfFoZNPq2vXgAhQA5tJ2
+         qPRfgtRDz89n2glwq1xvIPHXD3I9kan+rQBxaKWDF0fkq11SsjvYI3DlubXtUCtJ5N2t
+         udoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=Eq6nH6aGeuKpMU9nM7ibONmheABIDjQM7t9UjsNcl+w=;
+        b=siR9eRR32Shhk829YZJ3mRot/33T6Q6UT00QCJkxF+KP+T2+bFR0iQwFGLkwYi06RC
+         OkISGwhPFCXFZmI6WcJ1X4nmBZ6K2oYVeEuKi8BdYdBZP8d2KNvrv+VOWqr9MhxnoSrf
+         SWNfCwfgzF3XPuWUdRokVrAECIR+HI3SBqGRLWCFJSb3Mn1m3c0MB+dZvUCEMqc2A53O
+         Y+M2uw7q+IuBym2w5atM3+aA+PIfp0tC+YaPJkUYi7NGddIQWf3ua7BEhIm28kxdiqvj
+         8EGhkVEwn/grFeqpN0STd0S7KRXmpV+rVB4yN8iA8UTh1sb07oT8gQaXhN5lj/+lmWBg
+         iqFw==
+X-Gm-Message-State: AOAM530evs18nWUoiz+Ft6OReQkPPp7w0t/sgqs0NZ/9bW+zUFSn8jMX
+        ccKZ+PjDBuLKQmiGSj/IWBv8SWlpJg6RHsA=
+X-Google-Smtp-Source: ABdhPJyEEJmzYE3LJbKEPxep9Txd8IS2Y3Ohb4w4RDlkBWekTGGi+00/Yu83BjSHoAA0YZYV1qdNB+xcoJAZ8NA=
+X-Received: from saravanak.san.corp.google.com ([2620:15c:2d:3:f3aa:cafe:c20a:e136])
+ (user=saravanak job=sendgmr) by 2002:a25:2e06:0:b0:65c:ed2e:31bd with SMTP id
+ u6-20020a252e06000000b0065ced2e31bdmr13135711ybu.244.1654067234572; Wed, 01
+ Jun 2022 00:07:14 -0700 (PDT)
+Date:   Wed,  1 Jun 2022 00:06:57 -0700
+In-Reply-To: <20220601070707.3946847-1-saravanak@google.com>
+Message-Id: <20220601070707.3946847-2-saravanak@google.com>
+Mime-Version: 1.0
+References: <20220601070707.3946847-1-saravanak@google.com>
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+Subject: [PATCH v2 1/9] PM: domains: Delete usage of driver_deferred_probe_check_state()
+From:   Saravana Kannan <saravanak@google.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Kevin Hilman <khilman@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>
+Cc:     Saravana Kannan <saravanak@google.com>, kernel-team@android.com,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-gpio@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 31, 2022 at 05:04:18PM +0800, Hillf Danton wrote:
-> You are right. Thanks for taking a look.
-> 
-> And IMO we can do less on the exporter side as the udmabuf misc device
-> is different from those that for instance are dma capable on the PCI bus.
-> Regular dma games go only on the importer side.
+Now that fw_devlink=on by default and fw_devlink supports
+"power-domains" property, the execution will never get to the point
+where driver_deferred_probe_check_state() is called before the supplier
+has probed successfully or before deferred probe timeout has expired.
 
-I think you need the relevant maintainers here, this is above my
-paygrade.
+So, delete the call and replace it with -ENODEV.
+
+Signed-off-by: Saravana Kannan <saravanak@google.com>
+---
+ drivers/base/power/domain.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/base/power/domain.c b/drivers/base/power/domain.c
+index 739e52cd4aba..3e86772d5fac 100644
+--- a/drivers/base/power/domain.c
++++ b/drivers/base/power/domain.c
+@@ -2730,7 +2730,7 @@ static int __genpd_dev_pm_attach(struct device *dev, struct device *base_dev,
+ 		mutex_unlock(&gpd_list_lock);
+ 		dev_dbg(dev, "%s() failed to find PM domain: %ld\n",
+ 			__func__, PTR_ERR(pd));
+-		return driver_deferred_probe_check_state(base_dev);
++		return -ENODEV;
+ 	}
+ 
+ 	dev_dbg(dev, "adding to PM domain %s\n", pd->name);
+-- 
+2.36.1.255.ge46751e96f-goog
+
