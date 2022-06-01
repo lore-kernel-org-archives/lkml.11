@@ -2,91 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38BEFC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 10:47:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7C11C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 10:47:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352249AbiFAKrK (ORCPT
+        id S1352436AbiFAKrU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 06:47:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50194 "EHLO
+        Wed, 1 Jun 2022 06:47:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352288AbiFAKpt (ORCPT
+        with ESMTP id S1352409AbiFAKqn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 06:45:49 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5209A7E1FF;
-        Wed,  1 Jun 2022 03:45:45 -0700 (PDT)
+        Wed, 1 Jun 2022 06:46:43 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3258B7E1FA;
+        Wed,  1 Jun 2022 03:46:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1654080345; x=1685616345;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=hhRomhvdNZhQE6O0kMFK2TOlx0xN9MXXPxsURdSlbYw=;
-  b=x29szgdnXeccyAqSDGyhkvcqUZcdYzkA5UYkmgINf+bN9EhHYA+shatq
-   PTsSoHwwzRMO/INNn8d6W9JcHtzX+lbXU6tPtA7lHQ7Jen2UFixV3axgJ
-   VTZOeU4UjX6ex1ndivhHpKgJb5/O+smaX86NY2JLp3/BYwa75DlFBy3hU
-   o=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 01 Jun 2022 03:45:45 -0700
+  t=1654080395; x=1685616395;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=b5qedcwIh/YsEv38RoqMhtjohICmIZUWqBvAcbBcEqs=;
+  b=S9TG9S7iCHfCZfS3pit+G9vczBbx4kAMbf34eb/L6zRv0KveC7NtAKhk
+   Tj7Ttg6gNT1axznRH86iRLSOhLK+bQRn5/ONIMeGNkwzMJxsnc2DMtPo/
+   9+7lOYqE2asqERx3HZGoHjZ3ElmsXPlBL87eUeIwKywoV1mHIPmQGc9J7
+   s=;
+Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 01 Jun 2022 03:46:34 -0700
 X-QCInternal: smtphost
-Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 01 Jun 2022 03:45:43 -0700
-X-QCInternal: smtphost
-Received: from hu-rohiagar-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.106.138])
-  by ironmsg01-blr.qualcomm.com with ESMTP; 01 Jun 2022 16:15:21 +0530
-Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3970568)
-        id 1EBC53FE4; Wed,  1 Jun 2022 16:15:20 +0530 (+0530)
-From:   Rohit Agarwal <quic_rohiagar@quicinc.com>
-To:     agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, wim@linux-watchdog.org,
-        linux@roeck-us.net
-Cc:     linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        manivannan.sadhasivam@linaro.org,
-        Rohit Agarwal <quic_rohiagar@quicinc.com>
-Subject: [PATCH 03/11] ARM: dts: qcom: sdx65: Add IMEM and PIL info region
-Date:   Wed,  1 Jun 2022 16:15:04 +0530
-Message-Id: <1654080312-5408-4-git-send-email-quic_rohiagar@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1654080312-5408-1-git-send-email-quic_rohiagar@quicinc.com>
-References: <1654080312-5408-1-git-send-email-quic_rohiagar@quicinc.com>
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 03:46:34 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 1 Jun 2022 03:46:34 -0700
+Received: from [10.216.8.63] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 1 Jun 2022
+ 03:46:29 -0700
+Message-ID: <5d950007-7a92-a41b-e569-79e806adb06a@quicinc.com>
+Date:   Wed, 1 Jun 2022 16:15:59 +0530
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] tty: serial: qcom-geni-serial: minor fixes to
+ get_clk_div_rate()
+Content-Language: en-CA
+To:     Doug Anderson <dianders@chromium.org>
+CC:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, <quic_msavaliy@quicinc.com>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        "Stephen Boyd" <swboyd@chromium.org>
+References: <1654021066-13341-1-git-send-email-quic_vnivarth@quicinc.com>
+ <CAD=FV=UF3x5RHrQH-m1X-4kQSsKiufLnkew=VuJz7W9EAi3GHQ@mail.gmail.com>
+From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+In-Reply-To: <CAD=FV=UF3x5RHrQH-m1X-4kQSsKiufLnkew=VuJz7W9EAi3GHQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a simple-mfd representing IMEM on SDX65 and define the PIL
-relocation info region, so that post mortem tools will be able to locate
-the loaded remoteproc.
+Hi,
 
-Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
----
- arch/arm/boot/dts/qcom-sdx65.dtsi | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+On 6/1/2022 12:58 AM, Doug Anderson wrote:
+> Hi,
+>
+> On Tue, May 31, 2022 at 11:18 AM Vijaya Krishna Nivarthi
+> <quic_vnivarth@quicinc.com> wrote:
+>> Add missing initialisation and correct type casting
+>>
+>> Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+>> ---
+>>   drivers/tty/serial/qcom_geni_serial.c | 8 ++++----
+>>   1 file changed, 4 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+>> index 4733a23..08f3ad4 100644
+>> --- a/drivers/tty/serial/qcom_geni_serial.c
+>> +++ b/drivers/tty/serial/qcom_geni_serial.c
+>> @@ -943,11 +943,11 @@ static int qcom_geni_serial_startup(struct uart_port *uport)
+>>   static unsigned long get_clk_div_rate(struct clk *clk, unsigned int baud,
+>>                          unsigned int sampling_rate, unsigned int *clk_div)
+>>   {
+>> -       unsigned long ser_clk;
+>> +       unsigned long ser_clk = 0;
+> In this patch it's not at all obvious why you'd need to init to 0. I
+> think the "for loop" is guaranteed to run at least once because
+> "max_div" is known at compile time. ...and currently each time through
+> the "for" loop you'll always set "ser_clk".
 
-diff --git a/arch/arm/boot/dts/qcom-sdx65.dtsi b/arch/arm/boot/dts/qcom-sdx65.dtsi
-index 669721e..10e3226 100644
---- a/arch/arm/boot/dts/qcom-sdx65.dtsi
-+++ b/arch/arm/boot/dts/qcom-sdx65.dtsi
-@@ -395,6 +395,19 @@
- 			interrupt-controller;
- 		};
- 
-+		imem@1468f000 {
-+			compatible = "simple-mfd";
-+			reg = <0x1468f000 0x1000>;
-+			ranges = <0x0 0x1468f000 0x1000>;
-+			#address-cells = <1>;
-+			#size-cells = <1>;
-+
-+			pil-reloc@94c {
-+				compatible = "qcom,pil-reloc-info";
-+				reg = <0x94c 0xc8>;
-+			};
-+		};
-+
- 		apps_smmu: iommu@15000000 {
- 			compatible = "qcom,sdx65-smmu-500", "arm,mmu-500";
- 			reg = <0x15000000 0x40000>;
--- 
-2.7.4
+Ok, I realised we will never break out of for loop exceeding ULONG_MAX 
+in 1st pass, so yes ser_clk will always be set.
+
+> I think in a future patch you'll want to _remove_ this from the for loop:
+>
+> if (!prev)
+>    ser_clk = freq;
+
+Intent is to save (and use) 1st freq if we cannot find an exact divider.
+
+Isn't it ok?
+
+For example please find debug output for a required frequency of 51.2MHz.
+
+We try dividers 1, 2, 3 and end up with 52.1MHz the first result.
+
+[   18.815432] 20220509 get_clk_div_rate desired_clk:51200000
+[   18.821081] 20220509 get_clk_div_rate maxdiv:4095
+[   18.825924] 20220509 get_clk_div_rate div:1
+[   18.830239] 20220509 get_clk_div_rate freq:52174000
+[   18.835288] 20220509 get_clk_div_rate div:2
+[   18.839628] 20220509 get_clk_div_rate freq:100000000
+[   18.844794] 20220509 get_clk_div_rate div:3
+[   18.849119] 20220509 get_clk_div_rate freq:100000000
+[   18.854254] 20220509 get_clk_div_rate reached max frequency breaking...
+[   18.861072] 20220509 get_clk_div_rate clk_div=1, ser_clk=52174000
+
+The behaviour was same earlier too when root_freq table was present.
+
+The table did contain 51.2MHz and we would exit with same but on call to 
+clk_set_rate(51.2MHz) we were ending up with 52.1MHz
+
+>
+> ...and _that's_ when you should init "ser_clk" to 0. Until then I'd
+> leave it as uninitialized...
+>
+> Honestly, I'd throw all the fixes into one series, too.
+
+My concern was if there would be a requirement to split the changes.
+
+Will put in all in 1 series with Fixes tag.
+
+>
+>
+>>          unsigned long desired_clk;
+>>          unsigned long freq, prev;
+>>          unsigned long div, maxdiv;
+>> -       int64_t mult;
+>> +       unsigned long long mult;
+>>
+>>          desired_clk = baud * sampling_rate;
+>>          if (!desired_clk) {
+>> @@ -959,8 +959,8 @@ static unsigned long get_clk_div_rate(struct clk *clk, unsigned int baud,
+>>          prev = 0;
+>>
+>>          for (div = 1; div <= maxdiv; div++) {
+>> -               mult = div * desired_clk;
+>> -               if (mult > ULONG_MAX)
+>> +               mult = (unsigned long long)div * (unsigned long long)desired_clk;
+> I think you only need to cast one of the two. The other will be
+> up-cast automatically.
+Will change.
+>
+>
+>> +               if (mult > (unsigned long long)ULONG_MAX)
+> I don't think you need this cast. As far as I know the C language will
+> "upcast" to the larger of the two types.
+Will change.
+>
+>
+> -Doug
+
+Thank you.
+
+-Vijay/
 
