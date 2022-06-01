@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40195CCA46F
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:13:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2144ACCA468
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:13:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355304AbiFAONj (ORCPT
+        id S1355324AbiFAONp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:13:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50646 "EHLO
+        Wed, 1 Jun 2022 10:13:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354535AbiFAOJC (ORCPT
+        with ESMTP id S1354217AbiFAOJU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:09:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E85695492;
-        Wed,  1 Jun 2022 07:00:33 -0700 (PDT)
+        Wed, 1 Jun 2022 10:09:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1E29A5024;
+        Wed,  1 Jun 2022 07:00:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 65CC46164C;
-        Wed,  1 Jun 2022 14:00:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E32F2C3411F;
-        Wed,  1 Jun 2022 14:00:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7453FB8175B;
+        Wed,  1 Jun 2022 14:00:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47FCBC385B8;
+        Wed,  1 Jun 2022 14:00:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654092031;
-        bh=LZSVzGm+eApsXK45dI2BFu9jzJnYL96WdCNobNzk1qI=;
+        s=k20201202; t=1654092036;
+        bh=KJhUKllErRJpBntBCZwKFWW3K3q4jqc9MvCVLYA5Vgo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=chim8bWMuEbiJ7g+npKyillla5LpcwDLlqNxu1BcADjLtDa3shKECmXZT0MtDxwVq
-         XgxFWM4u6r8rXlwiaGxixfqPl3ezLds/DG4oRv9sNCUfsOZw9KXMN281DfC3S1QFCE
-         eYTd1W+ueBO/I1obnSnQV/nYjTHMeMKCaLA643ciBA/7NKGEQu/hMsiD4Q+hvBtMzY
-         dCRl6jQCNDdrp8littVkCv3tCnj6/84tsDrcFT7ue81w7GgXmUkdzyyMyi3g+F75RU
-         9/Cg1IHXLusRHfRwV9+LE6PxzlZ9u3nD3VuNqTpX5mZwMmQhf/qZ+WmQ8u2ESM6Bi4
-         HSRHFQqoXHs4g==
+        b=ACm97y0OHY5pc7wINFmLlzKz5i7crbJ3HVWo9kQXaCqBAnZfRadNwtR/d0q+o9Q7L
+         dhctCfPkS8nbbqm1YCrFGck/WhMwk+jXg+NnaK6WeEeiM+KB8QMmGKDateje9TRyz0
+         6KoMHLOPuNZuTD5sEcxJzRh8oxrBF9/6/fNxvY4QcRUUUoE39AJA4qwYof5uCFmDd1
+         JErVygfyp5zMs/x5znnNxBUGoRHfyVXMdEr+l7ZreDqOQakaRN06honA8ZmG26CPfm
+         +MsVHPQKH4ZeUgg89+cnPBIcQJE+OtI1l5v6zV7tJ6IMIKNPDm12dtjzekXTmRNSIV
+         d3MO2Noh30xsQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zixuan Fu <r33s3n6@gmail.com>, TOTE Robot <oslab@tsinghua.edu.cn>,
-        Dave Kleikamp <dave.kleikamp@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, shaggy@kernel.org,
-        jfs-discussion@lists.sourceforge.net
-Subject: [PATCH AUTOSEL 4.14 02/14] fs: jfs: fix possible NULL pointer dereference in dbFree()
-Date:   Wed,  1 Jun 2022 10:00:15 -0400
-Message-Id: <20220601140027.2005280-2-sashal@kernel.org>
+Cc:     Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 04/14] selftests/resctrl: Change the default limited time to 120 seconds
+Date:   Wed,  1 Jun 2022 10:00:17 -0400
+Message-Id: <20220601140027.2005280-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601140027.2005280-1-sashal@kernel.org>
 References: <20220601140027.2005280-1-sashal@kernel.org>
@@ -53,57 +55,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zixuan Fu <r33s3n6@gmail.com>
+From: Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>
 
-[ Upstream commit 0d4837fdb796f99369cf7691d33de1b856bcaf1f ]
+[ Upstream commit e2e3fb6ef0d6548defbe0be6e092397aaa92f3a1 ]
 
-In our fault-injection testing, the variable "nblocks" in dbFree() can be
-zero when kmalloc_array() fails in dtSearch(). In this case, the variable
- "mp" in dbFree() would be NULL and then it is dereferenced in
-"write_metapage(mp)".
+When testing on a Intel(R) Xeon(R) Gold 6254 CPU @ 3.10GHz the resctrl
+selftests fail due to timeout after exceeding the default time limit of
+45 seconds. On this system the test takes about 68 seconds.
+Since the failing test by default accesses a fixed size of memory, the
+execution time should not vary significantly between different environment.
+A new default of 120 seconds should be sufficient yet easy to customize
+with the introduction of the "settings" file for reference.
 
-The failure log is listed as follows:
-
-[   13.824137] BUG: kernel NULL pointer dereference, address: 0000000000000020
-...
-[   13.827416] RIP: 0010:dbFree+0x5f7/0x910 [jfs]
-[   13.834341] Call Trace:
-[   13.834540]  <TASK>
-[   13.834713]  txFreeMap+0x7b4/0xb10 [jfs]
-[   13.835038]  txUpdateMap+0x311/0x650 [jfs]
-[   13.835375]  jfs_lazycommit+0x5f2/0xc70 [jfs]
-[   13.835726]  ? sched_dynamic_update+0x1b0/0x1b0
-[   13.836092]  kthread+0x3c2/0x4a0
-[   13.836355]  ? txLockFree+0x160/0x160 [jfs]
-[   13.836763]  ? kthread_unuse_mm+0x160/0x160
-[   13.837106]  ret_from_fork+0x1f/0x30
-[   13.837402]  </TASK>
-...
-
-This patch adds a NULL check of "mp" before "write_metapage(mp)" is called.
-
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
-Signed-off-by: Dave Kleikamp <dave.kleikamp@oracle.com>
+Reviewed-by: Reinette Chatre <reinette.chatre@intel.com>
+Reviewed-by: Fenghua Yu <fenghua.yu@intel.com>
+Signed-off-by: Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/jfs/jfs_dmap.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ tools/testing/selftests/resctrl/settings | 3 +++
+ 1 file changed, 3 insertions(+)
+ create mode 100644 tools/testing/selftests/resctrl/settings
 
-diff --git a/fs/jfs/jfs_dmap.c b/fs/jfs/jfs_dmap.c
-index 6dac48e29d28..a07fbb60ac3c 100644
---- a/fs/jfs/jfs_dmap.c
-+++ b/fs/jfs/jfs_dmap.c
-@@ -398,7 +398,8 @@ int dbFree(struct inode *ip, s64 blkno, s64 nblocks)
- 	}
- 
- 	/* write the last buffer. */
--	write_metapage(mp);
-+	if (mp)
-+		write_metapage(mp);
- 
- 	IREAD_UNLOCK(ipbmap);
- 
+diff --git a/tools/testing/selftests/resctrl/settings b/tools/testing/selftests/resctrl/settings
+new file mode 100644
+index 000000000000..a383f3d4565b
+--- /dev/null
++++ b/tools/testing/selftests/resctrl/settings
+@@ -0,0 +1,3 @@
++# If running time is longer than 120 seconds when new tests are added in
++# the future, increase timeout here.
++timeout=120
 -- 
 2.35.1
 
