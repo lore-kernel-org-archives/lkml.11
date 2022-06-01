@@ -2,121 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D359BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:04:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 498E1CCA468
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:04:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354489AbiFAOEk (ORCPT
+        id S1354501AbiFAOEo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:04:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54330 "EHLO
+        Wed, 1 Jun 2022 10:04:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354862AbiFAOA7 (ORCPT
+        with ESMTP id S1355125AbiFAOBU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:00:59 -0400
-Received: from condef-10.nifty.com (condef-10.nifty.com [202.248.20.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D745647389;
-        Wed,  1 Jun 2022 06:57:23 -0700 (PDT)
-Received: from conssluserg-03.nifty.com ([10.126.8.82])by condef-10.nifty.com with ESMTP id 251DroRc014704;
-        Wed, 1 Jun 2022 22:53:50 +0900
-Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54]) (authenticated)
-        by conssluserg-03.nifty.com with ESMTP id 251DrHXv027234;
-        Wed, 1 Jun 2022 22:53:17 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com 251DrHXv027234
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1654091597;
-        bh=T0jniup0tdMhgXOVsaKHUqsHbruaPRstgNPuoFLQ+pc=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=ajuAOjVhvv07LABF+8ROyRe/wmobxoWCeF+GBjGsv3BNypwdUeUg6McGwAz7bNhIK
-         4ZZK/6ScCItnAHovrWEiOgl4K7feWIPxM7JPZUKhIyKlLOZtfv9iokhck/g56lsjQ0
-         7pCd5u9YAsd2HIy9QosDc4hLBPasM7LYTye6z9tXadY+HrJuAqLqxEsNxJDkumPGyF
-         jQKKyu1v/bZvvo31xslo0a/64JfjDHkqdIjlBEO587igis0fStzgshgrhTNR7lzuRD
-         MOYRGPUz34jV5A9jTRwvzvcQpUyYbABnxstkMylyCeDAGUdTwbB8u9zgdkXXNJ+DZc
-         ONI9K0yXitALg==
-X-Nifty-SrcIP: [209.85.216.54]
-Received: by mail-pj1-f54.google.com with SMTP id v5-20020a17090a7c0500b001df84fa82f8so2130406pjf.5;
-        Wed, 01 Jun 2022 06:53:17 -0700 (PDT)
-X-Gm-Message-State: AOAM532KUQ3U9cNBzHbt/t6gT7tS1QMXmiC4Hj5XY05WhVA2V4sOKTxK
-        NBRnVWYMkI+p/B3SXOsVpH/2qxcjVZIraX3al+I=
-X-Google-Smtp-Source: ABdhPJy07hu/OahBY3VJHSQdem7BDQ3c4Qu2+hwvYIGknJt0lPvMr2/KyufRbe4Ma0UKT+AqOzywxd7C0LHddmfLNl4=
-X-Received: by 2002:a17:903:1205:b0:15e:8cbc:fd2b with SMTP id
- l5-20020a170903120500b0015e8cbcfd2bmr66483581plh.99.1654091596577; Wed, 01
- Jun 2022 06:53:16 -0700 (PDT)
+        Wed, 1 Jun 2022 10:01:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27CEF996BB;
+        Wed,  1 Jun 2022 06:57:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DC3A6615DB;
+        Wed,  1 Jun 2022 13:57:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A170C3411F;
+        Wed,  1 Jun 2022 13:57:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654091872;
+        bh=/WC/lW7CLO2zBmtY0XGgxEHr2FUSZziWtG82aL1Sawo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=E76fRAsSn5roUv1/MhhUFeNwWYv9BYM+fOw2BTUZ8l4tVF2CreukzGUE+XfX1i3ZM
+         uBgEwy7J6SeORQEWUGavpG9+Vzqp4LCV4q9i2VePN8RCv8vtVC/BdVMQqqIkajw+Rc
+         71GGgiTJa7+8Tuf6PJLwY3kwHLj+h2Wq28XP0ghHNUoMJurFf6Kabr3PD+P9o5l4rH
+         ghl/K/7sV9fwSVSJBzZYFn9jSYhN5qB1nX9VEflNfDQe/duYGHxoiikB7MoMI658DH
+         tnQKnr+tPMWC2TuXTnxuU+462Zw/Kcn1KPVHQ0UTIglenyShm75ifrnvxRjQhLpmMI
+         7baN/DVNWgFgA==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Steve French <stfrench@microsoft.com>,
+        Ronnie Sahlberg <lsahlber@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, sfrench@samba.org,
+        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org
+Subject: [PATCH AUTOSEL 5.15 34/37] smb3: check for null tcon
+Date:   Wed,  1 Jun 2022 09:56:19 -0400
+Message-Id: <20220601135622.2003939-34-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220601135622.2003939-1-sashal@kernel.org>
+References: <20220601135622.2003939-1-sashal@kernel.org>
 MIME-Version: 1.0
-References: <20220601130819.11171-1-isak01@gmail.com>
-In-Reply-To: <20220601130819.11171-1-isak01@gmail.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Wed, 1 Jun 2022 22:52:39 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAReo0ACB_TbcCXu76OPeK6UQhWtAWOxGq=L88GZB5Tv8g@mail.gmail.com>
-Message-ID: <CAK7LNAReo0ACB_TbcCXu76OPeK6UQhWtAWOxGq=L88GZB5Tv8g@mail.gmail.com>
-Subject: Re: [PATCH] scripts: kconfig: nconf: make nconfig accept jk keybindings
-To:     Isak Ellmer <isak01@gmail.com>
-Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 1, 2022 at 10:08 PM Isak Ellmer <isak01@gmail.com> wrote:
->
-> Make nconfig accept jk keybindings for movement in addition to arrow
-> keys.
->
-> Signed-off-by: Isak Ellmer <isak01@gmail.com>
-> ---
+From: Steve French <stfrench@microsoft.com>
 
-Applied to linux-kbuild.
-Thanks.
+[ Upstream commit bbdf6cf56c88845fb0b713cbf5c6623c53fe40d8 ]
 
+Although unlikely to be null, it is confusing to use a pointer
+before checking for it to be null so move the use down after
+null check.
 
+Addresses-Coverity: 1517586 ("Null pointer dereferences  (REVERSE_INULL)")
+Reviewed-by: Ronnie Sahlberg <lsahlber@redhat.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ fs/cifs/smb2ops.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
->  scripts/kconfig/nconf.c | 8 ++++++--
->  1 file changed, 6 insertions(+), 2 deletions(-)
->
-> diff --git a/scripts/kconfig/nconf.c b/scripts/kconfig/nconf.c
-> index 7b371bd7fb36..3ba8b1af390f 100644
-> --- a/scripts/kconfig/nconf.c
-> +++ b/scripts/kconfig/nconf.c
-> @@ -52,8 +52,8 @@ static const char nconf_global_help[] =
->  "\n"
->  "Menu navigation keys\n"
->  "----------------------------------------------------------------------\n"
-> -"Linewise up                 <Up>\n"
-> -"Linewise down               <Down>\n"
-> +"Linewise up                 <Up>    <k>\n"
-> +"Linewise down               <Down>  <j>\n"
->  "Pagewise up                 <Page Up>\n"
->  "Pagewise down               <Page Down>\n"
->  "First entry                 <Home>\n"
-> @@ -1105,9 +1105,11 @@ static void conf(struct menu *menu)
->                                 break;
->                         switch (res) {
->                         case KEY_DOWN:
-> +                       case 'j':
->                                 menu_driver(curses_menu, REQ_DOWN_ITEM);
->                                 break;
->                         case KEY_UP:
-> +                       case 'k':
->                                 menu_driver(curses_menu, REQ_UP_ITEM);
->                                 break;
->                         case KEY_NPAGE:
-> @@ -1287,9 +1289,11 @@ static void conf_choice(struct menu *menu)
->                                 break;
->                         switch (res) {
->                         case KEY_DOWN:
-> +                       case 'j':
->                                 menu_driver(curses_menu, REQ_DOWN_ITEM);
->                                 break;
->                         case KEY_UP:
-> +                       case 'k':
->                                 menu_driver(curses_menu, REQ_UP_ITEM);
->                                 break;
->                         case KEY_NPAGE:
-> --
-> 2.35.1
->
-
-
+diff --git a/fs/cifs/smb2ops.c b/fs/cifs/smb2ops.c
+index 0c1af2dd9069..2317e8d45c4b 100644
+--- a/fs/cifs/smb2ops.c
++++ b/fs/cifs/smb2ops.c
+@@ -745,8 +745,8 @@ int open_cached_dir(unsigned int xid, struct cifs_tcon *tcon,
+ 		struct cifs_sb_info *cifs_sb,
+ 		struct cached_fid **cfid)
+ {
+-	struct cifs_ses *ses = tcon->ses;
+-	struct TCP_Server_Info *server = ses->server;
++	struct cifs_ses *ses;
++	struct TCP_Server_Info *server;
+ 	struct cifs_open_parms oparms;
+ 	struct smb2_create_rsp *o_rsp = NULL;
+ 	struct smb2_query_info_rsp *qi_rsp = NULL;
+@@ -764,6 +764,9 @@ int open_cached_dir(unsigned int xid, struct cifs_tcon *tcon,
+ 	if (tcon->nohandlecache)
+ 		return -ENOTSUPP;
+ 
++	ses = tcon->ses;
++	server = ses->server;
++
+ 	if (cifs_sb->root == NULL)
+ 		return -ENOENT;
+ 
 -- 
-Best Regards
-Masahiro Yamada
+2.35.1
+
