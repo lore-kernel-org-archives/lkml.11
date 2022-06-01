@@ -2,185 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 251ECCCA473
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 21:36:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A044CCA47A
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 21:39:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231687AbiFAVgo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 17:36:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52418 "EHLO
+        id S231701AbiFAVj3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 17:39:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231578AbiFAVgm (ORCPT
+        with ESMTP id S231625AbiFAVj0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 17:36:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4339B1C2D79;
-        Wed,  1 Jun 2022 14:36:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C97AF61331;
-        Wed,  1 Jun 2022 21:36:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DBA7C385A5;
-        Wed,  1 Jun 2022 21:36:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1654119400;
-        bh=N11gAQiSefrt49HoG+VdPLrSyzJ8gsx80XzIVHABxP8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Iptty91BhQzTEYnVSDH/IZ1dLjBE84XzIfhYEZ4yix6nJ70yTApfoXwFDuNibyU2c
-         OzOgEScmNBKLWnNjw2lL5oH5TiIqUDcpVFGkdmBwA2cc/Z9n1ZE8PTfvzwTwpqFg8I
-         xCQGqthWF9NNimTpr9X6/Oaf26/JBGAyITBOvO68=
-Date:   Wed, 1 Jun 2022 14:36:38 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Suren Baghdasaryan <surenb@google.com>
-Cc:     mhocko@suse.com, rientjes@google.com, willy@infradead.org,
-        hannes@cmpxchg.org, guro@fb.com, minchan@kernel.org,
-        kirill@shutemov.name, aarcange@redhat.com, brauner@kernel.org,
-        hch@infradead.org, oleg@redhat.com, david@redhat.com,
-        jannh@google.com, shakeelb@google.com, peterx@redhat.com,
-        jhubbard@nvidia.com, shuah@kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-kselftest@vger.kernel.org, kernel-team@android.com,
-        Liam Howlett <liam.howlett@oracle.com>
-Subject: Re: [PATCH RESEND v2 1/2] mm: drop oom code from exit_mmap
-Message-Id: <20220601143638.9e78c470d2c980053cc8059a@linux-foundation.org>
-In-Reply-To: <20220531223100.510392-1-surenb@google.com>
-References: <20220531223100.510392-1-surenb@google.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Wed, 1 Jun 2022 17:39:26 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 037F9522D5;
+        Wed,  1 Jun 2022 14:39:26 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id f9so6434529ejc.0;
+        Wed, 01 Jun 2022 14:39:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=KdQRrKNDo19m2xpYGSP742X+VIY6LKYcB4+u45tKW1U=;
+        b=AEnMo2AndmNDxu10Z4tyH3GAQLF70+buQB/9jGPKB+m1UUvYQfR8zQJmFOCBATkSsw
+         jfT9YtlkKaD13r+1Kr0WHR4rrEOSpfC15JVViccurKGaZGQ5E79p1FrSj5aZ8SIZzd/+
+         kC+wd1rDb0K0+ET34tIoH3+ca6tba9R5E+NZ62fSRs32R8LgDA7kDMcL+J7Q9bjpHw2b
+         UTjNkZnhKqRvdgQ/ZF9u8Vn8m3MT9Q2vPZaTfqdp7rwNIn52kWN/5O/onkYOLpm1a8rk
+         nYvsdYNB1F6nGV+J73SBnHhHigh+UEGjLHbBqWrQ/ZaQWW3RMfyg01by0P+J8L7lRbQF
+         /Vug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=KdQRrKNDo19m2xpYGSP742X+VIY6LKYcB4+u45tKW1U=;
+        b=oNuzDJCEkUFbyBJHM1fNRwCk/1J+BiEW95+rdDRfP5WZnJXA2NNDyUM/N75eu+c/cp
+         hzP1Z7pCgZVpfoxpNZS0K0D20SJ1PBIfu+3/IXzpns++RJtRpxmJcA4qxfN1MIOh0JCn
+         Yyydfi/IJdR7H00ElMLsRzjpqd/0HaWVEeVj9ndDLYgRXKGJKcb4GKOZIgur1yp9Gtom
+         h5/Rb7J4CqI2SgxHRvKrtRQ03x3EJaCiXfNnKcpJ3msNF25S66EBwU0Uiu+ldFQ1HIAp
+         SUPA83vw0l0rRwbrsI68nzowVahTkClDwZvYy1kIML2la2x6Q9dJHDJDaHn+s9I98N69
+         RjMg==
+X-Gm-Message-State: AOAM533j28BwgVml14XyiMEehiyCV3h3v47JPRndJ3VVG2lEZecJ9MQt
+        Q/yz3XgaoD2FR0V5Q+sp1oqzfZtYGhztkjvq
+X-Google-Smtp-Source: ABdhPJyFr+vMn4IaLj8ptljaopu5wmDjNOyvpwokjWn6WwAgEzGdw8AqR37AImPDd+WxcBhnK0OxYA==
+X-Received: by 2002:a17:907:6e29:b0:6ff:4f5d:8dc7 with SMTP id sd41-20020a1709076e2900b006ff4f5d8dc7mr1393952ejc.415.1654119564481;
+        Wed, 01 Jun 2022 14:39:24 -0700 (PDT)
+Received: from localhost.localdomain ([2a02:ab88:368f:2080:5d6e:322:57b6:5f03])
+        by smtp.googlemail.com with ESMTPSA id a14-20020a170906368e00b006fec5cef701sm1099080ejc.197.2022.06.01.14.39.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Jun 2022 14:39:23 -0700 (PDT)
+From:   David Virag <virag.david003@gmail.com>
+Cc:     phone-devel@vger.kernel.org,
+        David Virag <virag.david003@gmail.com>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Tomasz Figa <tomasz.figa@gmail.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 0/5] Bring up internal eMMC on Samsung Galaxy A8 (2018)
+Date:   Thu,  2 Jun 2022 01:37:38 +0200
+Message-Id: <20220601233743.56317-1-virag.david003@gmail.com>
+X-Mailer: git-send-email 2.36.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 31 May 2022 15:30:59 -0700 Suren Baghdasaryan <surenb@google.com> wrote:
+This set adds support to the internal eMMC storage found on the Samsung
+Galaxy A8 (2018) (jackpotlte). It seems to work reliably for reads and
+writes. postmarketOS is able to boot off of it.
 
-> The primary reason to invoke the oom reaper from the exit_mmap path used
-> to be a prevention of an excessive oom killing if the oom victim exit
-> races with the oom reaper (see [1] for more details). The invocation has
-> moved around since then because of the interaction with the munlock
-> logic but the underlying reason has remained the same (see [2]).
-> 
-> Munlock code is no longer a problem since [3] and there shouldn't be
-> any blocking operation before the memory is unmapped by exit_mmap so
-> the oom reaper invocation can be dropped. The unmapping part can be done
-> with the non-exclusive mmap_sem and the exclusive one is only required
-> when page tables are freed.
-> 
-> Remove the oom_reaper from exit_mmap which will make the code easier to
-> read. This is really unlikely to make any observable difference although
-> some microbenchmarks could benefit from one less branch that needs to be
-> evaluated even though it almost never is true.
-> 
-> [1] 212925802454 ("mm: oom: let oom_reap_task and exit_mmap run concurrently")
-> [2] 27ae357fa82b ("mm, oom: fix concurrent munlock and oom reaper unmap, v3")
-> [3] a213e5cf71cb ("mm/munlock: delete munlock_vma_pages_all(), allow oomreap")
-> 
+The original kernel from samsung sets pinctrl options at runtime
+changing pin-drv levels automatically. Without this code, mmc seems to
+work the best with the lv3 setting on jackpotlte.
 
-I've just reinstated the mapletree patchset so there are some
-conflicting changes.
+David Virag (5):
+  dt-bindings: clock: Add bindings for Exynos7885 CMU_FSYS
+  dt-bindings: clock: Add indices for Exynos7885 TREX clocks
+  clk: samsung: exynos7885: Implement CMU_FSYS domain
+  clk: samsung: exynos7885: Add TREX clocks
+  arm64: dts: exynos: Add internal eMMC support to jackpotlte
 
-> --- a/include/linux/oom.h
-> +++ b/include/linux/oom.h
-> @@ -106,8 +106,6 @@ static inline vm_fault_t check_stable_address_space(struct mm_struct *mm)
->  	return 0;
->  }
->  
-> -bool __oom_reap_task_mm(struct mm_struct *mm);
-> -
->  long oom_badness(struct task_struct *p,
->  		unsigned long totalpages);
->  
-> diff --git a/mm/mmap.c b/mm/mmap.c
-> index 2b9305ed0dda..b7918e6bb0db 100644
-> --- a/mm/mmap.c
-> +++ b/mm/mmap.c
-> @@ -3110,30 +3110,13 @@ void exit_mmap(struct mm_struct *mm)
->  	/* mm's last user has gone, and its about to be pulled down */
->  	mmu_notifier_release(mm);
->  
-> -	if (unlikely(mm_is_oom_victim(mm))) {
-> -		/*
-> -		 * Manually reap the mm to free as much memory as possible.
-> -		 * Then, as the oom reaper does, set MMF_OOM_SKIP to disregard
-> -		 * this mm from further consideration.  Taking mm->mmap_lock for
-> -		 * write after setting MMF_OOM_SKIP will guarantee that the oom
-> -		 * reaper will not run on this mm again after mmap_lock is
-> -		 * dropped.
-> -		 *
-> -		 * Nothing can be holding mm->mmap_lock here and the above call
-> -		 * to mmu_notifier_release(mm) ensures mmu notifier callbacks in
-> -		 * __oom_reap_task_mm() will not block.
-> -		 */
-> -		(void)__oom_reap_task_mm(mm);
-> -		set_bit(MMF_OOM_SKIP, &mm->flags);
-> -	}
-> -
-> -	mmap_write_lock(mm);
-> +	mmap_read_lock(mm);
+ .../clock/samsung,exynos7885-clock.yaml       |  27 +++
+ .../boot/dts/exynos/exynos7885-jackpotlte.dts |  20 ++
+ arch/arm64/boot/dts/exynos/exynos7885.dtsi    |  32 +++
+ drivers/clk/samsung/clk-exynos7885.c          | 207 +++++++++++++++++-
+ include/dt-bindings/clock/exynos7885.h        |  54 ++++-
+ 5 files changed, 324 insertions(+), 16 deletions(-)
 
-Unclear why this patch fiddles with the mm_struct locking in this
-fashion - changelogging that would have been helpful.
-
-But iirc mapletree wants to retain a write_lock here, so I ended up with
-
-void exit_mmap(struct mm_struct *mm)
-{
-	struct mmu_gather tlb;
-	struct vm_area_struct *vma;
-	unsigned long nr_accounted = 0;
-	MA_STATE(mas, &mm->mm_mt, 0, 0);
-	int count = 0;
-
-	/* mm's last user has gone, and its about to be pulled down */
-	mmu_notifier_release(mm);
-
-	mmap_write_lock(mm);
-	arch_exit_mmap(mm);
-
-	vma = mas_find(&mas, ULONG_MAX);
-	if (!vma) {
-		/* Can happen if dup_mmap() received an OOM */
-		mmap_write_unlock(mm);
-		return;
-	}
-
-	lru_add_drain();
-	flush_cache_mm(mm);
-	tlb_gather_mmu_fullmm(&tlb, mm);
-	/* update_hiwater_rss(mm) here? but nobody should be looking */
-	/* Use ULONG_MAX here to ensure all VMAs in the mm are unmapped */
-	unmap_vmas(&tlb, &mm->mm_mt, vma, 0, ULONG_MAX);
-
-	/*
-	 * Set MMF_OOM_SKIP to hide this task from the oom killer/reaper
-	 * because the memory has been already freed. Do not bother checking
-	 * mm_is_oom_victim because setting a bit unconditionally is cheaper.
-	 */
-	set_bit(MMF_OOM_SKIP, &mm->flags);
-	free_pgtables(&tlb, &mm->mm_mt, vma, FIRST_USER_ADDRESS,
-		      USER_PGTABLES_CEILING);
-	tlb_finish_mmu(&tlb);
-
-	/*
-	 * Walk the list again, actually closing and freeing it, with preemption
-	 * enabled, without holding any MM locks besides the unreachable
-	 * mmap_write_lock.
-	 */
-	do {
-		if (vma->vm_flags & VM_ACCOUNT)
-			nr_accounted += vma_pages(vma);
-		remove_vma(vma);
-		count++;
-		cond_resched();
-	} while ((vma = mas_find(&mas, ULONG_MAX)) != NULL);
-
-	BUG_ON(count != mm->map_count);
-
-	trace_exit_mmap(mm);
-	__mt_destroy(&mm->mm_mt);
-	mm->mmap = NULL;
-	mmap_write_unlock(mm);
-	vm_unacct_memory(nr_accounted);
-}
+-- 
+2.36.1
 
