@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7B4CCCA468
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:12:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3506DCCA468
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:12:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354624AbiFAOMp (ORCPT
+        id S1355086AbiFAOMr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:12:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47440 "EHLO
+        Wed, 1 Jun 2022 10:12:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354510AbiFAOHW (ORCPT
+        with ESMTP id S1354586AbiFAOH2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:07:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BB17A2073;
-        Wed,  1 Jun 2022 07:00:16 -0700 (PDT)
+        Wed, 1 Jun 2022 10:07:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBB55A3388;
+        Wed,  1 Jun 2022 07:00:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B2B0615BF;
-        Wed,  1 Jun 2022 14:00:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7D4FC34119;
-        Wed,  1 Jun 2022 14:00:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 652FA61632;
+        Wed,  1 Jun 2022 14:00:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9C14C385A5;
+        Wed,  1 Jun 2022 14:00:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654092001;
-        bh=KJhUKllErRJpBntBCZwKFWW3K3q4jqc9MvCVLYA5Vgo=;
+        s=k20201202; t=1654092015;
+        bh=SpEc8xwd/DWXEBIER3O/kILG2B+8H0RsWfZGILzBquk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WSbO3vNwdDp3hvanO2mD6VrlUEq/I9RD+hWykXMLzzUVp69GfYbvTpe0sBX35R41G
-         796O2Fk8kn/FBKJlzFlgfj6Klx9crgnTvD+e87cWRli0XFTyX5QoezAQFKT8l8RQTM
-         fLPBG4M+9Rtq1wc2Jr9OJiNI4G4mD3kDihgwf78Nw85TYeOCm5Yt+LxY2BGcC2SzkU
-         wigbkozU19+Cx0OMBMy8XhJh6yr0NT9P92LJ2MBrCY9V2PrGONq4J6ZfmrQ1i9WkE4
-         4p+NuIuBc91Cbm673wY0q3HjpgIsOn9t40IequX4X+QyIyARSOExPn4HDS9MrX3bdg
-         MfS4zkLeBZn7Q==
+        b=JNCOtMUBNfHRR16Mw+2aTgbriJFfDLe6bTCatnXOeHaXpWfDSGhUHMrE00tQY9Fnq
+         wfGGbliQHptvmPV3vo1KJSInR6hsMaAXBVN39RP/F67jIolJwQfKw5j+URRLJi/6ub
+         n+xEYPrIRSt4xCFnVZ1YhxgxTar9M5S5KcjRcAjda+9MzP962Wz/KqSjQU5cvfgadC
+         /wke+d0fVncQEkY4eZWx0jG5mfzWtQZ/gfQonN/S5tJryLlwn+IoQKXU6frr9voO71
+         PqN2Jlnt8o+arK9JsPUiM5w0AZ6jiuxlk3cKRjK1GRNtjpyKiu5f+ZNdGvzqUhPW9r
+         VMzKcskrABfLA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>,
-        Reinette Chatre <reinette.chatre@intel.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 05/15] selftests/resctrl: Change the default limited time to 120 seconds
-Date:   Wed,  1 Jun 2022 09:59:40 -0400
-Message-Id: <20220601135951.2005085-5-sashal@kernel.org>
+Cc:     Lv Ruyi <lv.ruyi@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>, nick.child@ibm.com,
+        maz@kernel.org, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH AUTOSEL 4.19 12/15] powerpc/xics: fix refcount leak in icp_opal_init()
+Date:   Wed,  1 Jun 2022 09:59:47 -0400
+Message-Id: <20220601135951.2005085-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135951.2005085-1-sashal@kernel.org>
 References: <20220601135951.2005085-1-sashal@kernel.org>
@@ -55,37 +53,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-[ Upstream commit e2e3fb6ef0d6548defbe0be6e092397aaa92f3a1 ]
+[ Upstream commit 5dd9e27ea4a39f7edd4bf81e9e70208e7ac0b7c9 ]
 
-When testing on a Intel(R) Xeon(R) Gold 6254 CPU @ 3.10GHz the resctrl
-selftests fail due to timeout after exceeding the default time limit of
-45 seconds. On this system the test takes about 68 seconds.
-Since the failing test by default accesses a fixed size of memory, the
-execution time should not vary significantly between different environment.
-A new default of 120 seconds should be sufficient yet easy to customize
-with the introduction of the "settings" file for reference.
+The of_find_compatible_node() function returns a node pointer with
+refcount incremented, use of_node_put() on it when done.
 
-Reviewed-by: Reinette Chatre <reinette.chatre@intel.com>
-Reviewed-by: Fenghua Yu <fenghua.yu@intel.com>
-Signed-off-by: Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220402013419.2410298-1-lv.ruyi@zte.com.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/resctrl/settings | 3 +++
- 1 file changed, 3 insertions(+)
- create mode 100644 tools/testing/selftests/resctrl/settings
+ arch/powerpc/sysdev/xics/icp-opal.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/tools/testing/selftests/resctrl/settings b/tools/testing/selftests/resctrl/settings
-new file mode 100644
-index 000000000000..a383f3d4565b
---- /dev/null
-+++ b/tools/testing/selftests/resctrl/settings
-@@ -0,0 +1,3 @@
-+# If running time is longer than 120 seconds when new tests are added in
-+# the future, increase timeout here.
-+timeout=120
+diff --git a/arch/powerpc/sysdev/xics/icp-opal.c b/arch/powerpc/sysdev/xics/icp-opal.c
+index e3e52cf035a9..672d8aedae12 100644
+--- a/arch/powerpc/sysdev/xics/icp-opal.c
++++ b/arch/powerpc/sysdev/xics/icp-opal.c
+@@ -199,6 +199,7 @@ int icp_opal_init(void)
+ 
+ 	printk("XICS: Using OPAL ICP fallbacks\n");
+ 
++	of_node_put(np);
+ 	return 0;
+ }
+ 
 -- 
 2.35.1
 
