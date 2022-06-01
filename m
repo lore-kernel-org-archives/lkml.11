@@ -2,156 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1316C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 03:20:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAF41C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 03:21:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349313AbiFADUe (ORCPT
+        id S1349318AbiFADV3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 23:20:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33086 "EHLO
+        Tue, 31 May 2022 23:21:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349284AbiFADUb (ORCPT
+        with ESMTP id S1345948AbiFADV2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 23:20:31 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 978268B0B6
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 20:20:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654053629;
-        h=from:from:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=YBZo/5acJzjtkfbN0zPOUXTmooXsDFbwGkdumr2Rppw=;
-        b=Cfc+tS+HvuC3/mK4nJa9EobrGl5VotDasG71zmWOTs43qXTxZFuX1pD+ph6N5oJqyhB4ps
-        k0OK4IyVYBaYEzjIYgc8bIwC1+kU6s3VNBHuvlCu2IJJttmLW4kQywYpSTLssiqTM7YLCb
-        nDEAbZ0FI0yFkSlcNFzY9+xv4EJLbUw=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-441-TIkAbRDJPAKi2hnHaoJ0_w-1; Tue, 31 May 2022 23:20:22 -0400
-X-MC-Unique: TIkAbRDJPAKi2hnHaoJ0_w-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 82E0E811E7A;
-        Wed,  1 Jun 2022 03:20:21 +0000 (UTC)
-Received: from [10.72.12.91] (ovpn-12-91.pek2.redhat.com [10.72.12.91])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 3DB8A1731B;
-        Wed,  1 Jun 2022 03:20:15 +0000 (UTC)
-Reply-To: Gavin Shan <gshan@redhat.com>
-Subject: Re: [PATCH v3 04/16] cacheinfo: Add support to check if last level
- cache(LLC) is valid or shared
-To:     Sudeep Holla <sudeep.holla@arm.com>, linux-kernel@vger.kernel.org
-Cc:     Atish Patra <atishp@atishpatra.org>,
-        Atish Patra <atishp@rivosinc.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Morten Rasmussen <morten.rasmussen@arm.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Qing Wang <wangqing@vivo.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-riscv@lists.infradead.org, Rob Herring <robh+dt@kernel.org>
-References: <20220525081416.3306043-1-sudeep.holla@arm.com>
- <20220525081416.3306043-2-sudeep.holla@arm.com>
- <20220525081416.3306043-3-sudeep.holla@arm.com>
- <20220525081416.3306043-4-sudeep.holla@arm.com>
- <20220525081416.3306043-5-sudeep.holla@arm.com>
-From:   Gavin Shan <gshan@redhat.com>
-Message-ID: <bf63ca22-944d-b709-242f-fd09c66ff519@redhat.com>
-Date:   Wed, 1 Jun 2022 11:20:12 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.0
+        Tue, 31 May 2022 23:21:28 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F08188B0A7
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 20:21:26 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LCZBp0nJzz1K95m;
+        Wed,  1 Jun 2022 11:19:46 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 1 Jun 2022 11:21:24 +0800
+Subject: Re: [PATCH v4 1/4] mm: reduce the rcu lock duration
+To:     Matthew Wilcox <willy@infradead.org>
+CC:     <akpm@linux-foundation.org>, <naoya.horiguchi@nec.com>,
+        <peterx@redhat.com>, <apopple@nvidia.com>, <ying.huang@intel.com>,
+        <osalvador@suse.de>, <mike.kravetz@oracle.com>,
+        <songmuchun@bytedance.com>, <hch@lst.de>, <dhowells@redhat.com>,
+        <cl@linux.com>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220530113016.16663-1-linmiaohe@huawei.com>
+ <20220530113016.16663-2-linmiaohe@huawei.com>
+ <YpYQ937N8Daad6u/@casper.infradead.org>
+ <YpYSjw/T8jTGr7e8@casper.infradead.org>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <f621877f-d181-21ab-d2a4-1765f248c45f@huawei.com>
+Date:   Wed, 1 Jun 2022 11:21:24 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-In-Reply-To: <20220525081416.3306043-5-sudeep.holla@arm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <YpYSjw/T8jTGr7e8@casper.infradead.org>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Sudeep,
-
-On 5/25/22 4:14 PM, Sudeep Holla wrote:
-> It is useful to have helper to check if the given two CPUs share last level
-> cache. We can do that check by comparing fw_token or by comparing the cache
-> ID. Currently we check just for fw_token as the cache ID is optional.
+On 2022/5/31 21:05, Matthew Wilcox wrote:
+> On Tue, May 31, 2022 at 01:58:31PM +0100, Matthew Wilcox wrote:
+>> On Mon, May 30, 2022 at 07:30:13PM +0800, Miaohe Lin wrote:
+>>> Commit 3268c63eded4 ("mm: fix move/migrate_pages() race on task struct")
+>>> extends the period of the rcu_read_lock until after the permissions checks
+>>> are done to prevent the task pointed to from changing from under us. But
+>>> the task_struct refcount is also taken at that time, the reference to task
+>>> is guaranteed to be stable. So it's unnecessary to extend the period of
+>>> the rcu_read_lock. Release the rcu lock after task refcount is successfully
+>>> grabbed to reduce the rcu holding time.
+>>
+>> But why bother?  You know the RCU read lock isn't a "real" lock, right?
 > 
-> This helper can be used to build the llc_sibling during arch specific
-> topology parsing and feeding information to the sched_domains. This also
-> helps to get rid of llc_id in the CPU topology as it is sort of duplicate
-> information.
+> Looking over this code some more, I think this may harm performance.
+> ptrace_may_access() itself takes the rcu_read_lock().  So we currently
+> have:
 > 
-> Also add helper to check if the llc information in cacheinfo is valid or not.
+> rcu_read_lock()
+> rcu_read_lock();
+> rcu_read_unlock();
+> rcu_read_unlock();
+
+More precisely, we currently have:
+
+rcu_read_lock()
+task_lock()
+rcu_read_lock();
+rcu_read_unlock();
+task_unlock()
+rcu_read_unlock();
+
 > 
-> Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
-> ---
->   drivers/base/cacheinfo.c  | 26 ++++++++++++++++++++++++++
->   include/linux/cacheinfo.h |  2 ++
->   2 files changed, 28 insertions(+)
+> In at least one RCU configuration, rcu_read_lock() maps to
+> preempt_disable().  Nested preempt_disable() just bump a counter, while
+> that counter reaching zero incurs some actual work.  So nested
+> rcu_read_lock() can be better than sequential lock/unlock/lock/unlock.
+
+In this case, I agree with you.
+But when task_lock is heavily contented, it might take a long time. So in this
+case, I think it's better to do the sequential rcu_lock+unlock to avoid long
+rcu lock duration. Or am I miss something?
+
 > 
+> This needs far better justification.
 
-With below nits fixed:
+Thanks!
 
-Reviewed-by: Gavin Shan <gshan@redhat.com>
-
-> diff --git a/drivers/base/cacheinfo.c b/drivers/base/cacheinfo.c
-> index 417e1ebf5525..ed74db18468f 100644
-> --- a/drivers/base/cacheinfo.c
-> +++ b/drivers/base/cacheinfo.c
-> @@ -47,6 +47,32 @@ static inline bool cache_leaves_are_shared(struct cacheinfo *this_leaf,
->   	return sib_leaf->fw_token == this_leaf->fw_token;
->   }
->   
-> +bool last_level_cache_is_valid(unsigned int cpu)
-> +{
-> +	struct cacheinfo *llc;
-> +
-> +	if (!cache_leaves(cpu))
-> +		return false;
-> +
-> +	llc = per_cpu_cacheinfo_idx(cpu, cache_leaves(cpu) - 1);
-> +
-> +	return llc->fw_token;
-> +}
-> +
-
-	return !!llc->fw_token;
-
-> +bool last_level_cache_is_shared(unsigned int cpu_x, unsigned int cpu_y)
-> +{
-> +	struct cacheinfo *llc_x, *llc_y;
-> +
-> +	if (!last_level_cache_is_valid(cpu_x) ||
-> +	    !last_level_cache_is_valid(cpu_y))
-> +		return false;
-> +
-> +	llc_x = per_cpu_cacheinfo_idx(cpu_x, cache_leaves(cpu_x) - 1);
-> +	llc_y = per_cpu_cacheinfo_idx(cpu_y, cache_leaves(cpu_y) - 1);
-> +
-> +	return cache_leaves_are_shared(llc_x, llc_y);
-> +}
-> +
->   #ifdef CONFIG_OF
->   /* OF properties to query for a given cache type */
->   struct cache_type_info {
-> diff --git a/include/linux/cacheinfo.h b/include/linux/cacheinfo.h
-> index 4ff37cb763ae..7e429bc5c1a4 100644
-> --- a/include/linux/cacheinfo.h
-> +++ b/include/linux/cacheinfo.h
-> @@ -82,6 +82,8 @@ struct cpu_cacheinfo *get_cpu_cacheinfo(unsigned int cpu);
->   int init_cache_level(unsigned int cpu);
->   int populate_cache_leaves(unsigned int cpu);
->   int cache_setup_acpi(unsigned int cpu);
-> +bool last_level_cache_is_valid(unsigned int cpu);
-> +bool last_level_cache_is_shared(unsigned int cpu_x, unsigned int cpu_y);
->   #ifndef CONFIG_ACPI_PPTT
->   /*
->    * acpi_find_last_cache_level is only called on ACPI enabled
 > 
-
-Thanks,
-Gavin
+> .
+> 
 
