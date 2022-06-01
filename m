@@ -2,53 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37A8BC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 21:40:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D041C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 21:44:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231845AbiFAVki (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 17:40:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37574 "EHLO
+        id S231645AbiFAVoC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 17:44:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231738AbiFAVkb (ORCPT
+        with ESMTP id S231491AbiFAVoA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 17:40:31 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F1702F398
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 14:40:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654119630; x=1685655630;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=3POCBbwqOjARhBc3ZqI5ZMr/1qxmHrTJpsMiys9Z118=;
-  b=nLAVwlTkuOtwaZgkRT1WyDG2Ho9E/BR0mYDoL4t8GPBBP/IfupgamFVK
-   fk13nt3seYw+cdQTSDSB6DGE8ReCKBeYBdTsg6gu0Op5byFmjAepspSz7
-   0tLHNbci6hSSWtxZHkG+4fF+VXXQ9k5yxdZIU8i52FfCdIAzbjjSKjF46
-   gklel3m050eQYGFbRkesPRUFAAsX3iDp3HdWvzgaTj/b5v9ihYSUMmH+M
-   ra0C6DsJ0pNTBoGNmeT1OY+w3zwhJKtUGGZswey+1xTtcr0LQNW54u2b0
-   R6PrOpvEyVqGXWF1sJ4TrIg3ImhEcJDZ2idgyI29z1NkgddRGgFsOw4+o
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10365"; a="273309239"
-X-IronPort-AV: E=Sophos;i="5.91,269,1647327600"; 
-   d="scan'208";a="273309239"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 14:40:30 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,269,1647327600"; 
-   d="scan'208";a="552517538"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 01 Jun 2022 14:40:23 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nwW4k-0004Qw-Jk;
-        Wed, 01 Jun 2022 21:40:22 +0000
-Date:   Thu, 2 Jun 2022 05:40:08 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Max Filippov <jcmvbkbc@gmail.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: xtensa-linux-ld: section .start VMA
- [00000000d1000000,00000000d1000007] overlaps section .image VMA
- [00000000d0003000,00000000d14ba417]
-Message-ID: <202206020537.Ffmlkawd-lkp@intel.com>
+        Wed, 1 Jun 2022 17:44:00 -0400
+Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [217.70.178.231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25B4233A3C;
+        Wed,  1 Jun 2022 14:43:56 -0700 (PDT)
+Received: (Authenticated sender: alexandre.belloni@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 34BC6100006;
+        Wed,  1 Jun 2022 21:43:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1654119835;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=QNra6cYe7rAZmodYJlA+KCX2uI9roIVccpwi/1khbXY=;
+        b=M3lBkn8EIlwxc0Jkj0TmAnQ7Gep9ftMoNCAkF7PJGS76XF9RgSN8UMRAPH1l5VxcnoNV97
+        B61zMQCx1J4+MzlibcyrY0E3VYq/iaII/6EOqiIrJAXQLz6icy0Rgs35xQ9SEZuorHpNRa
+        PUgEZJaczzC4CFSMvbbrwEhYBN/OEh2PItjPhnVKmKyoDuUZ/mh+o7KAg9lPb/d/nbaexy
+        INaBsgp2gsJa+nMHO8z4owBOn275jxNH1beCwll/Wxq2cfg3vEWNxWkwQ/9/ftiaAemNR6
+        SsyGsAGwNZRR4zPQRUJASQr1roEmTYMtt0BxdoTm51KVRlpbpsrdNWRJohP3CA==
+Date:   Wed, 1 Jun 2022 23:43:54 +0200
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-rtc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [GIT PULL] RTC for 5.19
+Message-ID: <Ypfdmml1GWU+gYzP@mail.local>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -56,30 +41,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   700170bf6b4d773e328fa54ebb70ba444007c702
-commit: 725aea873261e8d986e527838fde2a721f0962d8 xtensa: enable KCSAN
-date:   4 weeks ago
-config: xtensa-randconfig-r031-20220531 (https://download.01.org/0day-ci/archive/20220602/202206020537.Ffmlkawd-lkp@intel.com/config)
-compiler: xtensa-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=725aea873261e8d986e527838fde2a721f0962d8
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 725aea873261e8d986e527838fde2a721f0962d8
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=xtensa SHELL=/bin/bash
+Hello Linus,
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Here is the pull request for the RTC subsystem. A new driver represents
+the bulk of the changes and then we get the usual small fixes.
 
-All errors (new ones prefixed by >>):
+The following changes since commit 3123109284176b1532874591f7c81f3837bbdc17:
 
->> xtensa-linux-ld: section .start VMA [00000000d1000000,00000000d1000007] overlaps section .image VMA [00000000d0003000,00000000d14ba417]
+  Linux 5.18-rc1 (2022-04-03 14:08:21 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/abelloni/linux.git tags/rtc-5.19
+
+for you to fetch changes up to f78e3d407a339ffdd2620140300f821ea41118f4:
+
+  rtc: mxc: Silence a clang warning (2022-06-01 23:19:17 +0200)
+
+----------------------------------------------------------------
+RTC for 5.19
+
+New driver:
+ - Renesas RZN1 rtc
+
+Drivers:
+ - sun6i: Add nvmem support
+
+----------------------------------------------------------------
+Dan Carpenter (1):
+      rtc: rzn1: Fix error code in probe
+
+Fabio Estevam (3):
+      dt-binding: pcf85063: Add an entry for pca85073a
+      rtc: pcf85063: Add a compatible entry for pca85073a
+      rtc: mxc: Silence a clang warning
+
+Miaoqian Lin (1):
+      rtc: ftrtc010: Fix error handling in ftrtc010_rtc_probe
+
+Michel Pollet (1):
+      rtc: rzn1: Add new RTC driver
+
+Minghao Chi (1):
+      rtc: simplify the return expression of rx8025_set_offset()
+
+Miquel Raynal (6):
+      dt-bindings: rtc: rzn1: Describe the RZN1 RTC
+      rtc: rzn1: Add alarm support
+      rtc: rzn1: Add oscillator offset support
+      MAINTAINERS: Add myself as maintainer of the RZN1 RTC driver
+      rtc: rzn1: Avoid mixing variables
+      rtc: rzn1: Fix a variable type
+
+Nobuhiro Iwamatsu (1):
+      rtc: meson: Fix email address in MODULE_AUTHOR
+
+Samuel Holland (1):
+      rtc: sun6i: Add NVMEM provider
+
+Yang Li (1):
+      rtc: rzn1: fix platform_no_drv_owner.cocci warning
+
+Yang Yingliang (1):
+      rtc: mt6397: check return value after calling platform_get_resource()
+
+Yuan Can (1):
+      rtc: gamecube: Add missing iounmap in gamecube_rtc_read_offset_from_sram
+
+ .../devicetree/bindings/rtc/nxp,pcf85063.txt       |   1 +
+ .../devicetree/bindings/rtc/renesas,rzn1-rtc.yaml  |  70 ++++
+ MAINTAINERS                                        |   8 +
+ drivers/rtc/Kconfig                                |   7 +
+ drivers/rtc/Makefile                               |   1 +
+ drivers/rtc/rtc-ftrtc010.c                         |  34 +-
+ drivers/rtc/rtc-gamecube.c                         |   1 +
+ drivers/rtc/rtc-meson.c                            |   2 +-
+ drivers/rtc/rtc-mt6397.c                           |   2 +
+ drivers/rtc/rtc-mxc.c                              |   2 +-
+ drivers/rtc/rtc-pcf85063.c                         |   2 +
+ drivers/rtc/rtc-rx8025.c                           |   7 +-
+ drivers/rtc/rtc-rzn1.c                             | 418 +++++++++++++++++++++
+ drivers/rtc/rtc-sun6i.c                            |  42 +++
+ 14 files changed, 579 insertions(+), 18 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/rtc/renesas,rzn1-rtc.yaml
+ create mode 100644 drivers/rtc/rtc-rzn1.c
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Alexandre Belloni, co-owner and COO, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
