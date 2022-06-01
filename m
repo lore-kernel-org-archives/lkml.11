@@ -2,151 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78937C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 12:48:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE9C1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 12:54:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353088AbiFAMsq (ORCPT
+        id S1352301AbiFAMyj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 08:48:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40772 "EHLO
+        Wed, 1 Jun 2022 08:54:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238006AbiFAMso (ORCPT
+        with ESMTP id S1348543AbiFAMyc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 08:48:44 -0400
-X-Greylist: delayed 936 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 01 Jun 2022 05:48:41 PDT
-Received: from m1322.mail.163.com (m1322.mail.163.com [220.181.13.22])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7E84C1145A;
-        Wed,  1 Jun 2022 05:48:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=NFBlK
-        pRDQs1uQ60u0KwM3jZAk4g2SpACH5FI7TLBoX0=; b=Y60/vm9hOGmDOw3gFFTyW
-        xkvGhGDCieHMsy2MY9yFPc+PGBU27jRCea5hbIlPTqM/Ft1Q5B5lNDTI1WgQlclz
-        Hj5TAkkk+MEZuOA1BF+pOiHs0H3gjreTSXWHMjclPmm06BGXcjr6xMM9yUEG2yoO
-        +AgDTPIYubFScaVNDoE+cQ=
-Received: from chen45464546$163.com ( [171.221.150.250] ) by
- ajax-webmail-wmsvr22 (Coremail) ; Wed, 1 Jun 2022 20:32:48 +0800 (CST)
-X-Originating-IP: [171.221.150.250]
-Date:   Wed, 1 Jun 2022 20:32:48 +0800 (CST)
-From:   =?GBK?B?097K9w==?= <chen45464546@163.com>
-To:     "Alexander Duyck" <alexander.duyck@gmail.com>
-Cc:     "Jakub Kicinski" <kuba@kernel.org>,
-        "Andrew Morton" <akpm@linux-foundation.org>,
-        linux-mm <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>
-Subject: Re:Re: [PATCH v2] mm: page_frag: Warn_on when frag_alloc size is
- bigger than PAGE_SIZE
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
- Copyright (c) 2002-2022 www.mailtech.cn 163com
-In-Reply-To: <CAKgT0UfQsbAzsJ1e__irHY2xBRevpB9m=FBYDis3C1fMua+Zag@mail.gmail.com>
-References: <20220531081412.22db88cc@kernel.org>
- <1654011382-2453-1-git-send-email-chen45464546@163.com>
- <20220531084704.480133fa@kernel.org>
- <CAKgT0UfQsbAzsJ1e__irHY2xBRevpB9m=FBYDis3C1fMua+Zag@mail.gmail.com>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=GBK
+        Wed, 1 Jun 2022 08:54:32 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBCAB70349
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 05:54:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=ugEdXtdPTz7l7vpumg4n6fVUSq1X4RC9jlklJg1z4yw=; b=dvg2T38wTK91QzKunvS1ZhpYsz
+        nYopqQYOkSlqGxqxpyRCRjqcc2HS+2EmcnGRv4AeqQj1VkJxcThnmGoE+Uslfn7LZpfJOPKlUUnyR
+        jKuJ4cIc4CiUMX8QKhLv5vayfYrn6nmt73DIf73TsPNr47GuunPRndUFiPkIFiHx3RrXTjRrXHYjD
+        CKybdte42ObKCfhrfKPCjkjz5BXkpTzU2hippQ6dtYFBIQB9vEYbY99JecDNfxzlUHIeb+8nErAWB
+        dpnbbNIzHRuX9QS05I5s2i72tcgFwFN9ThACS/JVu8yI4OrNWkUHcVHl4uITDHq+3M6e5HcZqkGBd
+        Q466yiQw==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nwNre-006IlO-LK; Wed, 01 Jun 2022 12:54:18 +0000
+Date:   Wed, 1 Jun 2022 13:54:18 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Chen Wandun <chenwandun@huawei.com>
+Cc:     hughd@google.com, akpm@linux-foundation.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/4] mm/shmem: check return value of shmem_init_inodecache
+Message-ID: <YpdhehYSyJFOj3Tq@casper.infradead.org>
+References: <20220601124417.2872001-1-chenwandun@huawei.com>
+ <20220601124417.2872001-2-chenwandun@huawei.com>
 MIME-Version: 1.0
-Message-ID: <3498989.c69f.1811f41186e.Coremail.chen45464546@163.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: FsGowAD3tDpwXJdiGSsdAA--.33056W
-X-CM-SenderInfo: hfkh0kqvuwkkiuw6il2tof0z/xtbBdhUTnmDknYJ7SQABsG
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220601124417.2872001-2-chenwandun@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-QXQgMjAyMi0wNi0wMSAwMToyODo1OSwgIkFsZXhhbmRlciBEdXljayIgPGFsZXhhbmRlci5kdXlj
-a0BnbWFpbC5jb20+IHdyb3RlOgo+T24gVHVlLCBNYXkgMzEsIDIwMjIgYXQgODo0NyBBTSBKYWt1
-YiBLaWNpbnNraSA8a3ViYUBrZXJuZWwub3JnPiB3cm90ZToKPj4KPj4gT24gVHVlLCAzMSBNYXkg
-MjAyMiAyMzozNjoyMiArMDgwMCBDaGVuIExpbiB3cm90ZToKPj4gPiBBdCAyMDIyLTA1LTMxIDIy
-OjE0OjEyLCAiSmFrdWIgS2ljaW5za2kiIDxrdWJhQGtlcm5lbC5vcmc+IHdyb3RlOgo+PiA+ID5P
-biBUdWUsIDMxIE1heSAyMDIyIDIyOjQxOjEyICswODAwIENoZW4gTGluIHdyb3RlOgo+PiA+ID4+
-IFRoZSBzYW1wbGUgY29kZSBhYm92ZSBjYW5ub3QgY29tcGxldGVseSBzb2x2ZSB0aGUgY3VycmVu
-dCBwcm9ibGVtLgo+PiA+ID4+IEZvciBleGFtcGxlLCB3aGVuIGZyYWdzeiBpcyBncmVhdGVyIHRo
-YW4gUEFHRV9GUkFHX0NBQ0hFX01BWF9TSVpFKDMyNzY4KSwKPj4gPiA+PiBfX3BhZ2VfZnJhZ19j
-YWNoZV9yZWZpbGwgd2lsbCByZXR1cm4gYSBtZW1vcnkgb2Ygb25seSAzMjc2OCBieXRlcywgc28K
-Pj4gPiA+PiBzaG91bGQgd2UgY29udGludWUgdG8gZXhwYW5kIHRoZSBQQUdFX0ZSQUdfQ0FDSEVf
-TUFYX1NJWkU/IE1heWJlIG1vcmUKPj4gPiA+PiB3b3JrIG5lZWRzIHRvIGJlIGRvbmUKPj4gPiA+
-Cj4+ID4gPlJpZ2h0LCBidXQgSSBjYW4gdGhpbmsgb2YgdHdvIGRyaXZlcnMgb2ZmIHRoZSB0b3Ag
-b2YgbXkgaGVhZCB3aGljaCB3aWxsCj4+ID4gPmFsbG9jYXRlIDw9MzJrIGZyYWdzIGJ1dCBub25l
-IHdoaWNoIHdpbGwgYWxsb2NhdGUgbW9yZS4KPj4gPgo+PiA+IEluIGZhY3QsIGl0IGlzIHJhcmUg
-dG8gYXBwbHkgZm9yIG1vcmUgdGhhbiBvbmUgcGFnZSwgc28gaXMgaXQgbmVjZXNzYXJ5IHRvCj4+
-ID4gY2hhbmdlIGl0IHRvIHN1cHBvcnQ/Cj4+Cj4+IEkgZG9uJ3QgcmVhbGx5IGNhcmUgaWYgaXQn
-cyBzdXBwb3J0ZWQgVEJILCBidXQgSSBkaXNsaWtlIGFkZGluZwo+PiBhIGJyYW5jaCB0byB0aGUg
-ZmFzdCBwYXRoIGp1c3QgdG8gY2F0Y2ggb25lIG9yIHR3byBlc290ZXJpYyBiYWQKPj4gY2FsbGVy
-cy4KPj4KPj4gTWF5YmUgeW91IGNhbiB3cmFwIHRoZSBjaGVjayB3aXRoIHNvbWUgZGVidWcgQ09O
-RklHXyBzbyBpdCB3b24ndAo+PiBydW4gb24gcHJvZHVjdGlvbiBidWlsZHM/Cj4KPkFsc28gdGhl
-IGV4YW1wbGUgdXNlZCBoZXJlIHRvIGRlZmluZSB3aGF0IGlzIHRyaWdnZXJpbmcgdGhlIGJlaGF2
-aW9yCj5pcyBzZXJpb3VzbHkgZmxhd2VkLiBUaGUgY29kZSBpdHNlbGYgaXMgbWVhbnQgdG8gYWxs
-b3cgZm9yIG9yZGVyMCBwYWdlCj5yZXVzZSwgYW5kIHRoZSAzMksgcGFnZSB3YXMganVzdCBhbiBv
-cHRpbWl6YXRpb24uIFNvIHRoZSBhc3N1bXB0aW9uCj50aGF0IHlvdSBjb3VsZCByZXF1ZXN0IG1v
-cmUgdGhhbiA0ayBpcyBhIGJhZCBhc3N1bXB0aW9uIGluIHRoZSBkcml2ZXIKPnRoYXQgaXMgbWFr
-aW5nIHRoaXMgY2FsbC4KPgo+U28gSSBhbSBpbiBhZ3JlZW1lbnQgd2l0aCBLdWJhLiBXZSBzaG91
-bGRuJ3QgYmUgbmVlZGluZyB0byBhZGQgY29kZSBpbgo+dGhlIGZhc3QgcGF0aCB0byB0ZWxsIHVz
-ZXJzIG5vdCB0byBzaG9vdCB0aGVtc2VsdmVzIGluIHRoZSBmb290Lgo+Cj5XZSBhbHJlYWR5IGhh
-dmUgY29kZSBpbiBwbGFjZSBpbiBfX25ldGRldl9hbGxvY19za2IgdGhhdCBpcyBjYWxsaW5nCj50
-aGUgc2xhYiBhbGxvY2F0b3IgaWYgImxlbiA+IFNLQl9XSVRIX09WRVJIRUFEKFBBR0VfU0laRSki
-LiBXZSBjb3VsZAo+cHJvYmFibHkganVzdCBhZGQgYSBERUJVRyB3cmFwcGVkIEJVR19PTiB0byBj
-YXB0dXJlIHRob3NlIGNhc2VzIHdoZXJlCj5hIGRyaXZlciBpcyBtYWtpbmcgdGhhdCBtaXN0YWtl
-IHdpdGggX19uZXRkZXZfYWxsb2NfZnJhZ19hbGlnbi4KClRoYW5rcyBmb3IgdGhlIGNsZWFyIGV4
-cGxhbmF0aW9uLiAKVGhlIHJlYWxpdHkgaXMgdGhhdCBpdCBpcyBub3QgZWFzeSB0byBjYXB0dXJl
-IHRoZSBkcml2ZXJzIHRoYXQgbWFrZSBzdWNoIG1pc3Rha2UuCkJlY2F1c2UgbWVtb3J5IGNvcnJ1
-cHRpb24gdXN1YWxseSBsZWFkcyB0byBlcnJvcnMgb24gb3RoZXIgdW5yZWxhdGVkIG1vZHVsZXMu
-IApOb3QgbG9uZyBhZ28sIHdlIGhhdmUgc3BlbnQgYSBsb3Qgb2YgdGltZSBhbmQgZWZmb3J0IHRv
-IGxvY2F0ZSBhIGlzc3VlIHRoYXQgCm9jY2FzaW9uYWxseSBvY2N1cnMgaW4gZGlmZmVyZW50IGtl
-cm5lbCBtb2R1bGVzLCBhbmQgZmluYWxseSBmaW5kIHRoZSByb290IGNhdXNlIGlzCnRoZSBpbXBy
-b3BlciB1c2Ugb2YgdGhpcyBuZXRkZXZfYWxsb2NfZnJhZyBpbnRlcmZhY2UgaW4gRFBBQSBuZXQg
-ZHJpdmVyIGZyb20gTlhQLiAKSXQncyBhIG1pc2VyYWJsZSBwcm9jZXNzLgoKSSBhbHNvIGZvdW5k
-IHRoYXQgc29tZSBuZXQgZHJpdmVycyBpbiB0aGUgbGF0ZXN0IExpbnV4IHZlcnNpb24gaGF2ZSB0
-aGlzIGlzc3VlLgpMaWtlOgoxLiBuZXRkZXZfYWxsb2NfZnJhZyAibGVuIiBtYXkgbGFyZ2VyIHRo
-YW4gUEFHRV9TSVpFCiNlbGlmIChQQUdFX1NJWkUgPj0gRTEwMDBfUlhCVUZGRVJfNDA5NikKICAg
-ICAgICAgICAgICAgIGFkYXB0ZXItPnJ4X2J1ZmZlcl9sZW4gPSBQQUdFX1NJWkU7CiNlbmRpZgoK
-c3RhdGljIHVuc2lnbmVkIGludCBlMTAwMF9mcmFnX2xlbihjb25zdCBzdHJ1Y3QgZTEwMDBfYWRh
-cHRlciAqYSkKewogICAgICAgIHJldHVybiBTS0JfREFUQV9BTElHTihhLT5yeF9idWZmZXJfbGVu
-ICsgRTEwMDBfSEVBRFJPT00pICsKICAgICAgICAgICAgICAgIFNLQl9EQVRBX0FMSUdOKHNpemVv
-ZihzdHJ1Y3Qgc2tiX3NoYXJlZF9pbmZvKSk7Cn0KCnN0YXRpYyB2b2lkICplMTAwMF9hbGxvY19m
-cmFnKGNvbnN0IHN0cnVjdCBlMTAwMF9hZGFwdGVyICphKQp7CiAgICAgICAgdW5zaWduZWQgaW50
-IGxlbiA9IGUxMDAwX2ZyYWdfbGVuKGEpOwogICAgICAgIHU4ICpkYXRhID0gbmV0ZGV2X2FsbG9j
-X2ZyYWcobGVuKTsKfQoiLi9kcml2ZXJzL25ldC9ldGhlcm5ldC9pbnRlbC9lMTAwMC9lMTAwMF9t
-YWluLmMiIDUzMTYgIC0tMzglLS0gCgoyLiBuZXRkZXZfYWxsb2NfZnJhZyAicmluZy0+ZnJhZ19z
-aXplIiBtYXkgbGFyZ2VyIHRoYW4gKDQwOTYgKiAzKQoKI2RlZmluZSBNVEtfTUFYX0xST19SWF9M
-RU5HVEggICAgICAgICAgICg0MDk2ICogMykKICAgICAgICBpZiAocnhfZmxhZyA9PSBNVEtfUlhf
-RkxBR1NfSFdMUk8pIHsKICAgICAgICAgICAgICAgIHJ4X2RhdGFfbGVuID0gTVRLX01BWF9MUk9f
-UlhfTEVOR1RIOwogICAgICAgICAgICAgICAgcnhfZG1hX3NpemUgPSBNVEtfSFdfTFJPX0RNQV9T
-SVpFOwogICAgICAgIH0gZWxzZSB7CiAgICAgICAgICAgICAgICByeF9kYXRhX2xlbiA9IEVUSF9E
-QVRBX0xFTjsKICAgICAgICAgICAgICAgIHJ4X2RtYV9zaXplID0gTVRLX0RNQV9TSVpFOwogICAg
-ICAgIH0KCiAgICAgICAgcmluZy0+ZnJhZ19zaXplID0gbXRrX21heF9mcmFnX3NpemUocnhfZGF0
-YV9sZW4pOwogICAgICAgIAogICAgICAgIGZvciAoaSA9IDA7IGkgPCByeF9kbWFfc2l6ZTsgaSsr
-KSB7CiAgICAgICAgICAgICAgICByaW5nLT5kYXRhW2ldID0gbmV0ZGV2X2FsbG9jX2ZyYWcocmlu
-Zy0+ZnJhZ19zaXplKTsKICAgICAgICAgICAgICAgIGlmICghcmluZy0+ZGF0YVtpXSkKICAgICAg
-ICAgICAgICAgICAgICAgICAgcmV0dXJuIC1FTk9NRU07CiAgICAgICAgfQoiZHJpdmVycy9uZXQv
-ZXRoZXJuZXQvbWVkaWF0ZWsvbXRrX2V0aF9zb2MuYyIgMzM0NCAgLS01MCUtLSAKCkkgd2lsbCB0
-cnkgdG8gZml4IHRoZXNlIGRyaXZlcnMgbGF0ZXIuCgpFdmVuIGV4cGVyaWVuY2VkIGRyaXZlciBl
-bmdpbmVlcnMgbWF5IHVzZSB0aGlzIG5ldGRldl9hbGxvY19mcmFnIAppbnRlcmZhY2UgaW5jb3Jy
-ZWN0bHkuIApTbyBJIHRob3VnaHQgaXQgaXMgYmVzdCB0byBwcm92aWRlIHNvbWUgcHJvbXB0IGlu
-Zm9ybWF0aW9uIG9mIHVzYWdlIAplcnJvciBpbnNpZGUgdGhlIG5ldGRldl9hbGxvY19mcmFnLCBv
-ciBpdCdzIE9LIHRvIHJlcG9ydCBzdWNoIG1pc3Rha2UgCmR1cmluZyBzeXN0ZW0gcnVubmluZyB3
-aGljaCBtYXkgY2F1c2VkIGJ5IGZyYWdzeiB2YXJpZXMoZXhjZWVkZWQgcGFnZSBzaXplKS4KCk5v
-dywgYXMgeW91IGFuZCBLdWJhIG1lbnRpb25lZCBlYXJsaWVyLCAiZG8gbm90IGFkZCBjb2RlIGlu
-IGZhc3QgcGF0aCIuCgpDYW4gd2UganVzdCBhZGQgY29kZSB0byB0aGUgcmVsYXRpdmVseSBzbG93
-IHBhdGggdG8gY2FwdHVyZSB0aGUgbWlzdGFrZQpiZWZvcmUgaXQgbGVhZCB0byBtZW1vcnkgY29y
-cnVwdGlvbj8gCkxpa2U6CmRpZmYgLS1naXQgYS9tbS9wYWdlX2FsbG9jLmMgYi9tbS9wYWdlX2Fs
-bG9jLmMKaW5kZXggZTZmMjExZC4uYWM2MGE5NyAxMDA2NDQKLS0tIGEvbW0vcGFnZV9hbGxvYy5j
-CisrKyBiL21tL3BhZ2VfYWxsb2MuYwpAQCAtNTU4MCw2ICs1NTgwLDcgQEAgdm9pZCAqcGFnZV9m
-cmFnX2FsbG9jX2FsaWduKHN0cnVjdCBwYWdlX2ZyYWdfY2FjaGUgKm5jLAogICAgICAgICAgICAg
-ICAgLyogcmVzZXQgcGFnZSBjb3VudCBiaWFzIGFuZCBvZmZzZXQgdG8gc3RhcnQgb2YgbmV3IGZy
-YWcgKi8KICAgICAgICAgICAgICAgIG5jLT5wYWdlY250X2JpYXMgPSBQQUdFX0ZSQUdfQ0FDSEVf
-TUFYX1NJWkUgKyAxOwogICAgICAgICAgICAgICAgb2Zmc2V0ID0gc2l6ZSAtIGZyYWdzejsKKyAg
-ICAgICAgICAgICAgIEJVR19PTihvZmZzZXQgPCAwKTsKICAgICAgICB9CgogICAgICAgIG5jLT5w
-YWdlY250X2JpYXMtLTsKCgpBZGRpdGlvbmFsLCB3ZSBtYXkgbW9kaWZ5IGRvY3VtZW50IHRvIGNs
-ZWFybHkgaW5kaWNhdGUgdGhlIGxpbWl0cyBvZiB0aGUgCmlucHV0IHBhcmFtZXRlciBmcmFnc3ou
-Ckxpa2U6CmRpZmYgLS1naXQgYS9Eb2N1bWVudGF0aW9uL3ZtL3BhZ2VfZnJhZ3MucnN0IGIvRG9j
-dW1lbnRhdGlvbi92bS9wYWdlX2ZyYWdzLnJzdAppbmRleCA3ZDZmOTM4Li42MWIyODA1IDEwMDY0
-NAotLS0gYS9Eb2N1bWVudGF0aW9uL3ZtL3BhZ2VfZnJhZ3MucnN0CisrKyBiL0RvY3VtZW50YXRp
-b24vdm0vcGFnZV9mcmFncy5yc3QKQEAgLTQsNyArNCw3IEBACiBQYWdlIGZyYWdtZW50cwogPT09
-PT09PT09PT09PT0KCi1BIHBhZ2UgZnJhZ21lbnQgaXMgYW4gYXJiaXRyYXJ5LWxlbmd0aCBhcmJp
-dHJhcnktb2Zmc2V0IGFyZWEgb2YgbWVtb3J5CitBIHBhZ2UgZnJhZ21lbnQgaXMgYW4gYXJiaXRy
-YXJ5LWxlbmd0aChtdXN0IDw9IFBBR0VfU0laRSkgYXJiaXRyYXJ5LW9mZnNldCBhcmVhIG9mIG1l
-bW9yeQogd2hpY2ggcmVzaWRlcyB3aXRoaW4gYSAwIG9yIGhpZ2hlciBvcmRlciBjb21wb3VuZCBw
-YWdlLiAKClRoYW5rcwo=
+On Wed, Jun 01, 2022 at 08:44:14PM +0800, Chen Wandun wrote:
+> -static void shmem_init_inodecache(void)
+> +static struct kmem_cache *shmem_init_inodecache(void)
+>  {
+>  	shmem_inode_cachep = kmem_cache_create("shmem_inode_cache",
+>  				sizeof(struct shmem_inode_info),
+>  				0, SLAB_PANIC|SLAB_ACCOUNT, shmem_init_inode);
+> +
+> +	return shmem_inode_cachep;
+>  }
+>  
+>  static void shmem_destroy_inodecache(void)
+> @@ -3924,7 +3926,10 @@ void __init shmem_init(void)
+>  {
+>  	int error;
+>  
+> -	shmem_init_inodecache();
+> +	if (!shmem_init_inodecache()) {
+> +		error = -ENOMEM;
+> +		goto out2;
+> +	}
+
+better to return the errno from shmem_init_inodecache():
+
+	error = shmem_init_inodecache();
+	if (error)
+		goto out2;
