@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5184BCCA46F
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:56:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D28A0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:56:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348495AbiFAN4Y (ORCPT
+        id S1353853AbiFAN4a (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 09:56:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32854 "EHLO
+        Wed, 1 Jun 2022 09:56:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353809AbiFANzI (ORCPT
+        with ESMTP id S1353797AbiFANzI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 1 Jun 2022 09:55:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBD61880F3;
-        Wed,  1 Jun 2022 06:54:27 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AB638CCC8;
+        Wed,  1 Jun 2022 06:54:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9070CB81AF7;
-        Wed,  1 Jun 2022 13:54:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55D51C385A5;
-        Wed,  1 Jun 2022 13:54:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 13ED2B81AE7;
+        Wed,  1 Jun 2022 13:53:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB4BEC3411D;
+        Wed,  1 Jun 2022 13:53:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091655;
-        bh=yVrqBRl9ZOVGBnNMvoMUcvApocWVpxzJ2Q1PE/8m8wA=;
+        s=k20201202; t=1654091589;
+        bh=MzavRj9nrP27S+bq6CPB0yuwsmyvhj3CJKBoxHtwgwM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nnsdBJZ5Z03E5jCb6rVlZ+MdIguXN/vg165TjsQCa37TBUwDJki77F7WVcmxpCxmM
-         Wrla1twtTN+V3ErxCw9iYp+0Xlf2z7XOZvYfsL6KRxUKIozKB+8MgDFgsBpKpm96i0
-         W09wwS7jpUyQZZC6ZbQmVuUJ2+VxUKoLVahdUJ3H6Sas167kcX/kVR/SoTAkoO8pMm
-         7j+vQWqoNkM2ZQ5LlDkJhReC0O9bqu3FA7fiMnmrIQn9EbHt8qQ3kllwITvvnvpFwb
-         ErkwBjUAhgzZ00c6y3OyO0FFgs4cbX7Uf9QcgTCkU1y7u0HvHxhch6RBI1VzCfPVuK
-         DK9ZREoRHnawg==
+        b=cMjCZxeWNLUrg2XTU8JS1XKUF5e96t3Xsj6D7SI3ROzGhrkx+/ntHhcwJ1Y0h1luF
+         yz2i4EF4hBsHlZe58ugdk+n0ExRtG54BsWn66IMTb0unEl7oLIsA+7QT7Tb0NFPkz9
+         YdOc9O9rZfca7QkPJToW/nxQEHU8CRM5Ts2dsuJdldtkFAAFIHuZCe1x56PsTqyR4i
+         bF+OKwStqIIUrh+g8Ak5VozOvTEk5szV2ZcHghVkUYhUSkR8+xPtRSn1RxlKlY8tOV
+         VZmatdJBkvFiVVds9gdChsXZj+hjoeroZQ9Ulp+4nCJsuL30YeY1POgrvN01CkR9Rj
+         gZloub7acvS+Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Shyam Prasad N <sprasad@microsoft.com>,
-        Steve French <stfrench@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>, sfrench@samba.org,
-        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org
-Subject: [PATCH AUTOSEL 5.18 47/49] cifs: do not use tcpStatus after negotiate completes
-Date:   Wed,  1 Jun 2022 09:52:11 -0400
-Message-Id: <20220601135214.2002647-47-sashal@kernel.org>
+Cc:     Yang Yingliang <yangyingliang@huawei.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sasha Levin <sashal@kernel.org>, linus.walleij@linaro.org,
+        linux-renesas-soc@vger.kernel.org, linux-gpio@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 22/49] pinctrl: renesas: rzn1: Fix possible null-ptr-deref in sh_pfc_map_resources()
+Date:   Wed,  1 Jun 2022 09:51:46 -0400
+Message-Id: <20220601135214.2002647-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135214.2002647-1-sashal@kernel.org>
 References: <20220601135214.2002647-1-sashal@kernel.org>
@@ -53,114 +53,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shyam Prasad N <sprasad@microsoft.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 1a6a41d4cedd9b302e2200e6f0e3c44dbbe13689 ]
+[ Upstream commit 2f661477c2bb8068194dbba9738d05219f111c6e ]
 
-Recent changes to multichannel to allow channel reconnects to
-work in parallel and independent of each other did so by
-making use of tcpStatus for the connection, and status for the
-session. However, this did not take into account the multiuser
-scenario, where same connection is used by multiple connections.
+It will cause null-ptr-deref when using 'res', if platform_get_resource()
+returns NULL, so move using 'res' after devm_ioremap_resource() that
+will check it to avoid null-ptr-deref.
+And use devm_platform_get_and_ioremap_resource() to simplify code.
 
-However, tcpStatus should be tracked only till the end of
-negotiate exchange, and not used for session setup. This change
-fixes this.
-
-Signed-off-by: Shyam Prasad N <sprasad@microsoft.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Link: https://lore.kernel.org/r/20220429082637.1308182-2-yangyingliang@huawei.com
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/cifs/connect.c       | 23 +++++++++++------------
- fs/cifs/smb2pdu.c       |  3 ++-
- fs/cifs/smb2transport.c |  3 ++-
- 3 files changed, 15 insertions(+), 14 deletions(-)
+ drivers/pinctrl/renesas/pinctrl-rzn1.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/fs/cifs/connect.c b/fs/cifs/connect.c
-index 8e3fa59813e7..46ac08f3e09b 100644
---- a/fs/cifs/connect.c
-+++ b/fs/cifs/connect.c
-@@ -3962,7 +3962,7 @@ cifs_negotiate_protocol(const unsigned int xid, struct cifs_ses *ses,
- 	if (rc == 0) {
- 		spin_lock(&cifs_tcp_ses_lock);
- 		if (server->tcpStatus == CifsInNegotiate)
--			server->tcpStatus = CifsNeedSessSetup;
-+			server->tcpStatus = CifsGood;
- 		else
- 			rc = -EHOSTDOWN;
- 		spin_unlock(&cifs_tcp_ses_lock);
-@@ -3985,19 +3985,18 @@ cifs_setup_session(const unsigned int xid, struct cifs_ses *ses,
- 	bool is_binding = false;
+diff --git a/drivers/pinctrl/renesas/pinctrl-rzn1.c b/drivers/pinctrl/renesas/pinctrl-rzn1.c
+index ef5fb25b6016..849d091205d4 100644
+--- a/drivers/pinctrl/renesas/pinctrl-rzn1.c
++++ b/drivers/pinctrl/renesas/pinctrl-rzn1.c
+@@ -865,17 +865,15 @@ static int rzn1_pinctrl_probe(struct platform_device *pdev)
+ 	ipctl->mdio_func[0] = -1;
+ 	ipctl->mdio_func[1] = -1;
  
- 	/* only send once per connect */
-+	spin_lock(&ses->chan_lock);
-+	is_binding = !CIFS_ALL_CHANS_NEED_RECONNECT(ses);
-+	spin_unlock(&ses->chan_lock);
-+
- 	spin_lock(&cifs_tcp_ses_lock);
--	if ((server->tcpStatus != CifsNeedSessSetup) &&
--	    (ses->status == CifsGood)) {
-+	if (ses->status == CifsExiting) {
- 		spin_unlock(&cifs_tcp_ses_lock);
- 		return 0;
- 	}
--	server->tcpStatus = CifsInSessSetup;
-+	ses->status = CifsInSessSetup;
- 	spin_unlock(&cifs_tcp_ses_lock);
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	ipctl->lev1_protect_phys = (u32)res->start + 0x400;
+-	ipctl->lev1 = devm_ioremap_resource(&pdev->dev, res);
++	ipctl->lev1 = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
+ 	if (IS_ERR(ipctl->lev1))
+ 		return PTR_ERR(ipctl->lev1);
++	ipctl->lev1_protect_phys = (u32)res->start + 0x400;
  
--	spin_lock(&ses->chan_lock);
--	is_binding = !CIFS_ALL_CHANS_NEED_RECONNECT(ses);
--	spin_unlock(&ses->chan_lock);
--
- 	if (!is_binding) {
- 		ses->capabilities = server->capabilities;
- 		if (!linuxExtEnabled)
-@@ -4021,13 +4020,13 @@ cifs_setup_session(const unsigned int xid, struct cifs_ses *ses,
- 	if (rc) {
- 		cifs_server_dbg(VFS, "Send error in SessSetup = %d\n", rc);
- 		spin_lock(&cifs_tcp_ses_lock);
--		if (server->tcpStatus == CifsInSessSetup)
--			server->tcpStatus = CifsNeedSessSetup;
-+		if (ses->status == CifsInSessSetup)
-+			ses->status = CifsNeedSessSetup;
- 		spin_unlock(&cifs_tcp_ses_lock);
- 	} else {
- 		spin_lock(&cifs_tcp_ses_lock);
--		if (server->tcpStatus == CifsInSessSetup)
--			server->tcpStatus = CifsGood;
-+		if (ses->status == CifsInSessSetup)
-+			ses->status = CifsGood;
- 		/* Even if one channel is active, session is in good state */
- 		ses->status = CifsGood;
- 		spin_unlock(&cifs_tcp_ses_lock);
-diff --git a/fs/cifs/smb2pdu.c b/fs/cifs/smb2pdu.c
-index 1b7ad0c09566..f5321a3500f3 100644
---- a/fs/cifs/smb2pdu.c
-+++ b/fs/cifs/smb2pdu.c
-@@ -3899,7 +3899,8 @@ SMB2_echo(struct TCP_Server_Info *server)
- 	cifs_dbg(FYI, "In echo request for conn_id %lld\n", server->conn_id);
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+-	ipctl->lev2_protect_phys = (u32)res->start + 0x400;
+-	ipctl->lev2 = devm_ioremap_resource(&pdev->dev, res);
++	ipctl->lev2 = devm_platform_get_and_ioremap_resource(pdev, 1, &res);
+ 	if (IS_ERR(ipctl->lev2))
+ 		return PTR_ERR(ipctl->lev2);
++	ipctl->lev2_protect_phys = (u32)res->start + 0x400;
  
- 	spin_lock(&cifs_tcp_ses_lock);
--	if (server->tcpStatus == CifsNeedNegotiate) {
-+	if (server->ops->need_neg &&
-+	    server->ops->need_neg(server)) {
- 		spin_unlock(&cifs_tcp_ses_lock);
- 		/* No need to send echo on newly established connections */
- 		mod_delayed_work(cifsiod_wq, &server->reconnect, 0);
-diff --git a/fs/cifs/smb2transport.c b/fs/cifs/smb2transport.c
-index 2af79093b78b..01b732641edb 100644
---- a/fs/cifs/smb2transport.c
-+++ b/fs/cifs/smb2transport.c
-@@ -641,7 +641,8 @@ smb2_sign_rqst(struct smb_rqst *rqst, struct TCP_Server_Info *server)
- 	if (!is_signed)
- 		return 0;
- 	spin_lock(&cifs_tcp_ses_lock);
--	if (server->tcpStatus == CifsNeedNegotiate) {
-+	if (server->ops->need_neg &&
-+	    server->ops->need_neg(server)) {
- 		spin_unlock(&cifs_tcp_ses_lock);
- 		return 0;
- 	}
+ 	ipctl->clk = devm_clk_get(&pdev->dev, NULL);
+ 	if (IS_ERR(ipctl->clk))
 -- 
 2.35.1
 
