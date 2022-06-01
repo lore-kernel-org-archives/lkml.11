@@ -2,166 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9990FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 12:32:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93CA4C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 12:32:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352893AbiFAMck (ORCPT
+        id S1348221AbiFAMbL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 08:32:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47232 "EHLO
+        Wed, 1 Jun 2022 08:31:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351258AbiFAMcj (ORCPT
+        with ESMTP id S1352882AbiFAMaj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 08:32:39 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 900BB3FD80
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 05:32:37 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id q12-20020a17090a304c00b001e2d4fb0eb4so6076328pjl.4
-        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 05:32:37 -0700 (PDT)
+        Wed, 1 Jun 2022 08:30:39 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F0698CCFF
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 05:30:37 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id g205so1827759pfb.11
+        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 05:30:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language
-         :from:to:cc:references:in-reply-to:content-transfer-encoding;
-        bh=aNiEaNz3PE8EusgnD+3ibkIGrbwL5BaMxt0546m/AT0=;
-        b=7LFoWcKWkG9OxI3/dLi7p9o3QifvcD7DXsD+OPVitSZbZ+T2UyHOHk5v3bBfRhyRZo
-         hXpFPnPNnifxYROZmf3HvRaSmMING8uX8pqc3yvviDrLbqj5V6FlhErC7FjfPZapbhde
-         6ggTFVVuFNQZTWcWhPU01mptOwUELhAqHQGdUM7hRUyhoqdDu/gjAUymuJrqDrQRSjPP
-         ej1GZRJm5JIMAHm39fCbQzPs4+F5GJjYIDd2agQlmkoXBjv/ibFeJw9rYjMUmO5Q/VD8
-         Pyck5Ea9JibWRUnR3Ndo5h7x2xcGg0PQ+3On5OKwCanHoRq+R6xZwdOOsWq+zfya1VaW
-         Nwag==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dobCxK4OC92EBjp1RkCP1kDTote0DN9ExGNqTwwRdRU=;
+        b=Yj2ztRMVWHrKvL/JjhY21O2YiqbJ7ALPDfBZz7UhFk5/nSCS/hoBMD2HHjfAd26Jb4
+         m/kLFwbSjHyd55sxC0qFS2xVdH5zu/OkzelDi6G4LNAWlFtuy7WI+Eo7PO8NS9oIuZLi
+         xAGi+FcjpGcxg0PQHjfKIGogSKwzo5HKtPPecSWUMtnZaY+IS2m2PIOR5b4dep2Nx5XB
+         CGFnq6XTV/qrlYGU4H3Ze4OiF2PVCoL0qPx2LXvB65CCfIMElK955GzratfNiTKdExlW
+         audMBqkPtbKxCE8ddp5UEjdhyBVpix6Uu8sAEaWtO5yA9d61QoTOVruo00p4nL+/hhzy
+         1fnA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=aNiEaNz3PE8EusgnD+3ibkIGrbwL5BaMxt0546m/AT0=;
-        b=mkOLFdLnjHx0SobsK4BrbeXMpfcemelIIs75qcbjj8fDT9JSiJadK0vRvdAvk+FCae
-         cswpNqsAoV4HBEvViXQMbEePeZDFBQPcwYCB+9jhQHNNrJ8mekhptyzvypP+CPHh8FnI
-         ku5WMe2Vwo/OUHw6ekhdx6TkepjSKZk/cPQkCt5eNkgK6xy8xbOtuaaTLBJaaHUDYE1N
-         zboAK8c3hUuhrbCZcItMwXDfHL4FalOU75MN1qo+NtRyNAu4B7pnIeHJM7Fkqd49bdel
-         mdRx6DSbBtoZXWwYzWt+6zjKM+AI7uF5VoGSMoMSECLdwUJRw9H7Eny9oTRrfOwTTtFK
-         PsBw==
-X-Gm-Message-State: AOAM530qZHpisbiSOYO+n+GxT7VkEhvnLyncYMqAgFfPB13iDheFVF50
-        b9E1Ngac14ga26UZ99Zk6n+dzA==
-X-Google-Smtp-Source: ABdhPJwUKBFlsa9ecDKitfTCWR3Frt6/fJqwij4Dl0w7nYOx8kQQEFrF1dIIZ7O90+SsdC/CYwQa3g==
-X-Received: by 2002:a17:90a:d58d:b0:1e0:adde:a7f8 with SMTP id v13-20020a17090ad58d00b001e0addea7f8mr34225334pju.74.1654086757120;
-        Wed, 01 Jun 2022 05:32:37 -0700 (PDT)
-Received: from [10.4.211.178] ([139.177.225.231])
-        by smtp.gmail.com with ESMTPSA id e13-20020aa798cd000000b0050dc76281b8sm1438328pfm.146.2022.06.01.05.32.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Jun 2022 05:32:36 -0700 (PDT)
-Message-ID: <08dac681-6877-1323-9394-ffe812c07934@bytedance.com>
-Date:   Wed, 1 Jun 2022 20:32:32 +0800
+        bh=dobCxK4OC92EBjp1RkCP1kDTote0DN9ExGNqTwwRdRU=;
+        b=CguR8iq99U8p2j6EdZ/dt8y5s+S1e0x5SC6hthAYnvvDHeWGAqzu7tepq/El1tvPwZ
+         cvlYN7Fta8+BJ7MbCG/tkjU3uXYc0N15gDGC/n/nxa7YF0yf+FF2gfajqEZQaB8BAEbK
+         aWffd597bKsXDECaiZpl+uEQ47pAzQTbnBljRhaHKnzkRinK9svAC670Awb5VhA47wJa
+         tNP1O0wtBdiLjkpJ14ddLFmtcVVm9XLJlwp+OMq2tyvf4gocAd/D/UF1R/1lSvjgDnqG
+         GtnVe8OjelnDYIoc/iycrn0vLpDXkKmNDWyXfOoyattXKdyBnXGSZVMqPXxesPms063j
+         1LxQ==
+X-Gm-Message-State: AOAM5332g6+GdRpvenMYEcZaWSR8oNO0j3tf0QGpbr0yPaqzPIuQc4MI
+        76eTb0CejCymoWN/93LJIiQ=
+X-Google-Smtp-Source: ABdhPJzy47iKor+i/UJAy5jAnbJ63ro9WfMBurWXy0/UksARPx2R31tHOrC/Zo8U5p9FKx23f3CXpQ==
+X-Received: by 2002:a05:6a00:164c:b0:50a:472a:6b0a with SMTP id m12-20020a056a00164c00b0050a472a6b0amr66474311pfc.77.1654086636639;
+        Wed, 01 Jun 2022 05:30:36 -0700 (PDT)
+Received: from localhost.localdomain ([202.120.234.246])
+        by smtp.googlemail.com with ESMTPSA id x1-20020a170902820100b001618383483fsm1424740pln.224.2022.06.01.05.30.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Jun 2022 05:30:35 -0700 (PDT)
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Hans-Christian Egtvedt <hcegtvedt@atmel.com>,
+        Haavard Skinnemoen <hskinnemoen@atmel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     linmq006@gmail.com
+Subject: [RESEND PATCH] misc: atmel-ssc: Fix IRQ check in ssc_probe
+Date:   Wed,  1 Jun 2022 16:30:26 +0400
+Message-Id: <20220601123026.7119-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.9.1
-Subject: Re: [PATCH] blk-iocost: fix false positive lagging
-Content-Language: en-US
-From:   Chengming Zhou <zhouchengming@bytedance.com>
-To:     tj@kernel.org, axboe@kernel.dk
-Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220526133554.21079-1-zhouchengming@bytedance.com>
- <c76ee7e2-3dfe-b645-c32f-4f061b22ebc9@bytedance.com>
-In-Reply-To: <c76ee7e2-3dfe-b645-c32f-4f061b22ebc9@bytedance.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/5/28 16:17, Chengming Zhou wrote:
-> On 2022/5/26 21:35, Chengming Zhou wrote:
->> I found many false positive lagging during iocost test.
->>
->> Since iocg->vtime will be advanced to (vnow - margins.target)
->> in hweight_after_donation(), which called throw away excess,
->> the iocg->done_vtime will also be advanced that much.
->>
->>        period_at_vtime  <--period_vtime-->  vnow
->>               |                              |
->>   --------------------------------------------------->
->>         |<--->|
->>      margins.target
->>         |->
->>   vtime, done_vtime
->>
->> If that iocg has some inflight io when vnow, but its done_vtime
->> is before period_at_vtime, ioc_timer_fn() will think it has
->> lagging io, even these io maybe issued just before now.
->>
->> This patch change the condition to check if vdone is before
->> (period_at_vtime - margins.target) instead of period_at_vtime.
->>
->> But there is another problem that this patch doesn't fix.
->> Since vtime will be advanced, we can't check if vtime is
->> after (vnow - MAX_LAGGING_PERIODS * period_vtime) to tell
->> whether this iocg pin lagging for too long.
->>
->> Maybe we can add lagging_periods in iocg to record how many
->> periods this iocg pin lagging, but I don't know when to clean it.
-> 
-> Hello tejun, I add lagging_periods in iocg based on the original patch,
-> to record how many periods this iocg pin lagging. So we can use it to
-> avoid letting cmds which take a very long time pin lagging for too long.
-> 
-> Thanks.
-> 
-> 
-> diff --git a/block/blk-iocost.c b/block/blk-iocost.c
-> index 33a11ba971ea..998bb38ffb37 100644
-> --- a/block/blk-iocost.c
-> +++ b/block/blk-iocost.c
-> @@ -541,6 +541,8 @@ struct ioc_gq {
->         u64                             indebt_since;
->         u64                             indelay_since;
-> 
-> +       int                             lagging_periods;
-> +
->         /* this iocg's depth in the hierarchy and ancestors including self */
->         int                             level;
->         struct ioc_gq                   *ancestors[];
-> @@ -2257,10 +2259,13 @@ static void ioc_timer_fn(struct timer_list *timer)
->                 if ((ppm_rthr != MILLION || ppm_wthr != MILLION) &&
->                     !atomic_read(&iocg_to_blkg(iocg)->use_delay) &&
->                     time_after64(vtime, vdone) &&
-> -                   time_after64(vtime, now.vnow -
-> -                                MAX_LAGGING_PERIODS * period_vtime) &&
-> -                   time_before64(vdone, now.vnow - period_vtime))
-> -                       nr_lagging++;
-> +                   time_before64(vdone, ioc->period_at_vtime - ioc->margins.target)) {
-> +                       if (iocg->lagging_periods < MAX_LAGGING_PERIODS) {
-> +                               nr_lagging++;
-> +                               iocg->lagging_periods++;
-> +                       }
-> +               } else if (iocg->lagging_periods)
-> +                       iocg->lagging_periods = 0;
-> 
->                 /*
->                  * Determine absolute usage factoring in in-flight IOs to avoid
-> 
+platform_get_irq() returns negative error number instead 0 on failure.
+And the doc of platform_get_irq() provides a usage example:
 
-Hi, I tested with this version, previous false laggings are gone. So I wonder
-if I should send v2 for review?
+    int irq = platform_get_irq(pdev, 0);
+    if (irq < 0)
+        return irq;
 
-Thanks!
+Fix the check of return value to catch errors correctly.
 
-> 
->>
->> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
->> ---
->>  block/blk-iocost.c | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/block/blk-iocost.c b/block/blk-iocost.c
->> index 33a11ba971ea..42e301b7527b 100644
->> --- a/block/blk-iocost.c
->> +++ b/block/blk-iocost.c
->> @@ -2259,7 +2259,7 @@ static void ioc_timer_fn(struct timer_list *timer)
->>  		    time_after64(vtime, vdone) &&
->>  		    time_after64(vtime, now.vnow -
->>  				 MAX_LAGGING_PERIODS * period_vtime) &&
->> -		    time_before64(vdone, now.vnow - period_vtime))
->> +		    time_before64(vdone, ioc->period_at_vtime - ioc->margins.target))
->>  			nr_lagging++;
->>  
->>  		/*
+Fixes: eb1f2930609b ("Driver for the Atmel on-chip SSC on AT32AP and AT91")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+---
+ drivers/misc/atmel-ssc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/misc/atmel-ssc.c b/drivers/misc/atmel-ssc.c
+index d6cd5537126c..69f9b0336410 100644
+--- a/drivers/misc/atmel-ssc.c
++++ b/drivers/misc/atmel-ssc.c
+@@ -232,9 +232,9 @@ static int ssc_probe(struct platform_device *pdev)
+ 	clk_disable_unprepare(ssc->clk);
+ 
+ 	ssc->irq = platform_get_irq(pdev, 0);
+-	if (!ssc->irq) {
++	if (ssc->irq < 0) {
+ 		dev_dbg(&pdev->dev, "could not get irq\n");
+-		return -ENXIO;
++		return ssc->irq;
+ 	}
+ 
+ 	mutex_lock(&user_lock);
+-- 
+2.25.1
+
