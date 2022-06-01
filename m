@@ -2,61 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DC56C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 15:33:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70AF1CCA473
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 15:33:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354690AbiFAPc7 (ORCPT
+        id S1355550AbiFAPd3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 11:32:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56592 "EHLO
+        Wed, 1 Jun 2022 11:33:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231749AbiFAPc5 (ORCPT
+        with ESMTP id S1348694AbiFAPdY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 11:32:57 -0400
-Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F3DFA3085;
-        Wed,  1 Jun 2022 08:32:56 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:281:8300:73::5f6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id 216D92C3;
-        Wed,  1 Jun 2022 15:32:56 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 216D92C3
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-        t=1654097576; bh=1LkC4KBB+n4gWoH4zaqMyei5vIAn42/01o1vUxBV35A=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=rHE+zeqQrlMmd5TLzW9fUVRP9wdV9+rQ0uq2kHMSWXsrZrA/LZJBLv6dUyCmLze9q
-         BwTx0AeXkaK76i9hvS4fjtU8y8oU1TYlU508z2LJsS6pur/XkR5g7L65SCjHNH7ssa
-         OKuHewEsmGlUQnLfJfmlaihEdscU7bmIkNk/llzDMbCQFQ+j2xJRhwbr0KHYaxowa5
-         hkbWkNd+D4siI1GJ7FwlxzNp5olRJBRB/ssYunXGAK+KGLpKzt9dS5dK7EqzxPyN3K
-         UsdM8KWMPMK/5lLtMoHOF/xEisjc2i4+nQzVSmWnYE+Xzse/Gff959kHs1oMQgiO8r
-         ZT5OByurcOJAQ==
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     Miguel Ojeda <ojeda@kernel.org>
-Cc:     Garrett LeSage <garrett@lesage.us>,
-        IFo Hancroft <contact@ifohancroft.com>,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Miguel Ojeda <ojeda@kernel.org>
-Subject: Re: [PATCH v2 1/2] docs: move Linux logo into a new `images` folder
-In-Reply-To: <20220528153132.8636-1-ojeda@kernel.org>
-References: <20220528153132.8636-1-ojeda@kernel.org>
-Date:   Wed, 01 Jun 2022 09:33:06 -0600
-Message-ID: <871qw85rgt.fsf@meer.lwn.net>
+        Wed, 1 Jun 2022 11:33:24 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9D341A3085;
+        Wed,  1 Jun 2022 08:33:23 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6AC171FB;
+        Wed,  1 Jun 2022 08:33:23 -0700 (PDT)
+Received: from [10.57.36.60] (unknown [10.57.36.60])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 007BA3F66F;
+        Wed,  1 Jun 2022 08:33:21 -0700 (PDT)
+Message-ID: <be8395e3-98d7-7a8f-7153-c491b22d4463@arm.com>
+Date:   Wed, 1 Jun 2022 16:33:20 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 3/3] thermal/sysfs: Remove cooling device sysfs statistics
+Content-Language: en-US
+To:     Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        rafael@kernel.org, quic_manafm@quicinc.com,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>
+References: <20220601151441.9128-1-daniel.lezcano@linaro.org>
+ <20220601151441.9128-3-daniel.lezcano@linaro.org>
+From:   Lukasz Luba <lukasz.luba@arm.com>
+In-Reply-To: <20220601151441.9128-3-daniel.lezcano@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Miguel Ojeda <ojeda@kernel.org> writes:
+Hi Daniel,
 
-> Having assets in the top-level `Documentation` directory can make
-> it harder to find the documents one needs, especially if we want
-> to add more of them later on.
->
-> Instead, create a new `images` folder inside it that is used
-> to hold assets such as logos.
 
-Both patches applied, thanks.
+On 6/1/22 16:14, Daniel Lezcano wrote:
+> The statistics are for debugging purpose and belong to debugfs rather
+> than sysfs. As the previous changes introduced the same statistics in
+> debugfs, those in sysfs are no longer needed and can be removed.
 
-jon
+I just want to let you know that in current Android kernels we cannot
+even compile the kernel with CONFIG_DEBUG_FS. I have this pain with
+Energy Model there... Some vendors might see useful info via this
+sysfs interface in bring-up of the SoC.
+
+I don't know if there are user-space tools tracking this
+information via sysfs. We probably should check that.
+
+I agree that these statistics look more like debug info, rather than
+something useful for control.
+
+Furthermore, we have trace events for the cooling state changes, which
+should be good enough for bring-up and experiments.
+
+I don't have strong preferences here. I tend to agree to remove this
+interface if there are no user-space tools using it.
+
+Regards,
+Lukasz
