@@ -2,52 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFBF1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:17:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19E24CCA473
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:17:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355518AbiFAOPR (ORCPT
+        id S1355544AbiFAOPU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:15:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43892 "EHLO
+        Wed, 1 Jun 2022 10:15:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354974AbiFAOKi (ORCPT
+        with ESMTP id S1354620AbiFAOJu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:10:38 -0400
+        Wed, 1 Jun 2022 10:09:50 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 078EA1276C;
-        Wed,  1 Jun 2022 07:01:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95A1D101FF;
+        Wed,  1 Jun 2022 07:01:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B5CF6B81AEB;
-        Wed,  1 Jun 2022 14:01:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFFE1C3411D;
-        Wed,  1 Jun 2022 14:01:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 31B29B81AF7;
+        Wed,  1 Jun 2022 14:01:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2B0FC385B8;
+        Wed,  1 Jun 2022 14:01:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654092088;
-        bh=Bf5QOHaJpiVUqhHBRSN35OBw5iZVamMzadF9hlHiv/U=;
+        s=k20201202; t=1654092075;
+        bh=Mp4/GXgP2filxJIR06FyyxnCFKyje/qMW3/pzxMQAow=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Cpf7T/vUb1d4hvMoZxdKAUVcD5z+daL9PaQrq3n59KP52Ah0AVVs15A2Dc8HP95Qj
-         MdhL3McM3oQQwWWLDXr/0EbPebL+fapUJzrBBylw0jUALOUZb9pti8ijOAFzz0y/vr
-         LedDlpx4IjuH7bgxbMeUTGaxzHOi434cphgx2K/DHy+dAVh4pwnZtAc/1KmSndqYk4
-         Tmz4jRLl6zS9mfANuEO2QiNEG/zG2Wqf1fsZ8vbHHJ1hoVx3pM/XQRm9+Bqr43Kyzr
-         HUuXzSmWjVliSjceG2GTkb7R0+dh/h7WturgdyrQbMUr2T3K96LdIzK9wME7hxxbk9
-         jQCTd7ao28YEg==
+        b=TcZIkoTOqhf/ss0IfePtpdbfpz/ji7bIIBNmQ9zG5bH3QCEiBFqlQEo1oPCfW1OEG
+         sAtxZGA7PbpDf6KX+E1WRWgjZjfMfQB75AyUas9quQMAwQS7ZN/4i13i458CVB9GTH
+         kLHaTb0FD0OjIubUZLQvY4ItmkEo1QsiPAGCOzf5jrzLHzEUkcjZrIP28iVm5CaZZz
+         6Lzm8BPWNnKdmRWI1ckU+MiIhf9PlIZjEgD/3uCc+T4O8xKQPSgUv2HUYd33GAAt44
+         FYuRuWDjhsUw3JipBJtB9QOHMDq8stQyS8VKV4wzaQm2Pk86AKOYigP+iZMtREdc/r
+         5qRi0JOHx8nVQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Sasha Levin <sashal@kernel.org>,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 4.9 11/11] drm: fix EDID struct for old ARM OABI format
-Date:   Wed,  1 Jun 2022 10:01:00 -0400
-Message-Id: <20220601140100.2005469-11-sashal@kernel.org>
+Cc:     Yicong Yang <yangyicong@hisilicon.com>,
+        Jay Zhou <jianjay.zhou@huawei.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Sasha Levin <sashal@kernel.org>, linux-pci@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 08/11] PCI: Avoid pci_dev_lock() AB/BA deadlock with sriov_numvfs_store()
+Date:   Wed,  1 Jun 2022 10:00:57 -0400
+Message-Id: <20220601140100.2005469-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601140100.2005469-1-sashal@kernel.org>
 References: <20220601140100.2005469-1-sashal@kernel.org>
@@ -59,112 +53,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Yicong Yang <yangyicong@hisilicon.com>
 
-[ Upstream commit 47f15561b69e226bfc034e94ff6dbec51a4662af ]
+[ Upstream commit a91ee0e9fca9d7501286cfbced9b30a33e52740a ]
 
-When building the kernel for arm with the "-mabi=apcs-gnu" option, gcc
-will force alignment of all structures and unions to a word boundary
-(see also STRUCTURE_SIZE_BOUNDARY and the "-mstructure-size-boundary=XX"
-option if you're a gcc person), even when the members of said structures
-do not want or need said alignment.
+The sysfs sriov_numvfs_store() path acquires the device lock before the
+config space access lock:
 
-This completely messes up the structure alignment of 'struct edid' on
-those targets, because even though all the embedded structures are
-marked with "__attribute__((packed))", the unions that contain them are
-not.
+  sriov_numvfs_store
+    device_lock                 # A (1) acquire device lock
+    sriov_configure
+      vfio_pci_sriov_configure  # (for example)
+        vfio_pci_core_sriov_configure
+          pci_disable_sriov
+            sriov_disable
+              pci_cfg_access_lock
+                pci_wait_cfg    # B (4) wait for dev->block_cfg_access == 0
 
-This was exposed by commit f1e4c916f97f ("drm/edid: add EDID block count
-and size helpers"), but the bug is pre-existing.  That commit just made
-the structure layout problem cause a build failure due to the addition
-of the
+Previously, pci_dev_lock() acquired the config space access lock before the
+device lock:
 
-        BUILD_BUG_ON(sizeof(*edid) != EDID_LENGTH);
+  pci_dev_lock
+    pci_cfg_access_lock
+      dev->block_cfg_access = 1 # B (2) set dev->block_cfg_access = 1
+    device_lock                 # A (3) wait for device lock
 
-sanity check in drivers/gpu/drm/drm_edid.c:edid_block_data().
+Any path that uses pci_dev_lock(), e.g., pci_reset_function(), may
+deadlock with sriov_numvfs_store() if the operations occur in the sequence
+(1) (2) (3) (4).
 
-This legacy union alignment should probably not be used in the first
-place, but we can fix the layout by adding the packed attribute to the
-union entries even when each member is already packed and it shouldn't
-matter in a sane build environment.
+Avoid the deadlock by reversing the order in pci_dev_lock() so it acquires
+the device lock before the config space access lock, the same as the
+sriov_numvfs_store() path.
 
-You can see this issue with a trivial test program:
-
-  union {
-	struct {
-		char c[5];
-	};
-	struct {
-		char d;
-		unsigned e;
-	} __attribute__((packed));
-  } a = { "1234" };
-
-where building this with a normal "gcc -S" will result in the expected
-5-byte size of said union:
-
-	.type	a, @object
-	.size	a, 5
-
-but with an ARM compiler and the old ABI:
-
-    arm-linux-gnu-gcc -mabi=apcs-gnu -mfloat-abi=soft -S t.c
-
-you get
-
-	.type	a, %object
-	.size	a, 8
-
-instead, because even though each member of the union is packed, the
-union itself still gets aligned.
-
-This was reported by Sudip for the spear3xx_defconfig target.
-
-Link: https://lore.kernel.org/lkml/YpCUzStDnSgQLNFN@debian/
-Reported-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Acked-by: Arnd Bergmann <arnd@arndb.de>
-Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
-Cc: Maxime Ripard <mripard@kernel.org>
-Cc: Thomas Zimmermann <tzimmermann@suse.de>
-Cc: David Airlie <airlied@linux.ie>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+[bhelgaas: combined and adapted commit log from Jay Zhou's independent
+subsequent posting:
+https://lore.kernel.org/r/20220404062539.1710-1-jianjay.zhou@huawei.com]
+Link: https://lore.kernel.org/linux-pci/1583489997-17156-1-git-send-email-yangyicong@hisilicon.com/
+Also-posted-by: Jay Zhou <jianjay.zhou@huawei.com>
+Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/drm/drm_edid.h | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/pci/pci.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/include/drm/drm_edid.h b/include/drm/drm_edid.h
-index c3a7d440bc11..514a02095983 100644
---- a/include/drm/drm_edid.h
-+++ b/include/drm/drm_edid.h
-@@ -114,7 +114,7 @@ struct detailed_data_monitor_range {
- 			u8 supported_scalings;
- 			u8 preferred_refresh;
- 		} __attribute__((packed)) cvt;
--	} formula;
-+	} __attribute__((packed)) formula;
- } __attribute__((packed));
+diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+index 2cf13578fe75..e6e0012269cd 100644
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -4079,18 +4079,18 @@ static int __pci_dev_reset(struct pci_dev *dev, int probe)
  
- struct detailed_data_wpindex {
-@@ -147,7 +147,7 @@ struct detailed_non_pixel {
- 		struct detailed_data_wpindex color;
- 		struct std_timing timings[6];
- 		struct cvt_timing cvt[4];
--	} data;
-+	} __attribute__((packed)) data;
- } __attribute__((packed));
+ static void pci_dev_lock(struct pci_dev *dev)
+ {
+-	pci_cfg_access_lock(dev);
+ 	/* block PM suspend, driver probe, etc. */
+ 	device_lock(&dev->dev);
++	pci_cfg_access_lock(dev);
+ }
  
- #define EDID_DETAIL_EST_TIMINGS 0xf7
-@@ -165,7 +165,7 @@ struct detailed_timing {
- 	union {
- 		struct detailed_pixel_timing pixel_data;
- 		struct detailed_non_pixel other_data;
--	} data;
-+	} __attribute__((packed)) data;
- } __attribute__((packed));
+ /* Return 1 on successful lock, 0 on contention */
+ static int pci_dev_trylock(struct pci_dev *dev)
+ {
+-	if (pci_cfg_access_trylock(dev)) {
+-		if (device_trylock(&dev->dev))
++	if (device_trylock(&dev->dev)) {
++		if (pci_cfg_access_trylock(dev))
+ 			return 1;
+-		pci_cfg_access_unlock(dev);
++		device_unlock(&dev->dev);
+ 	}
  
- #define DRM_EDID_INPUT_SERRATION_VSYNC (1 << 0)
+ 	return 0;
+@@ -4098,8 +4098,8 @@ static int pci_dev_trylock(struct pci_dev *dev)
+ 
+ static void pci_dev_unlock(struct pci_dev *dev)
+ {
+-	device_unlock(&dev->dev);
+ 	pci_cfg_access_unlock(dev);
++	device_unlock(&dev->dev);
+ }
+ 
+ /**
 -- 
 2.35.1
 
