@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72132CCA468
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:59:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5367AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:59:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354102AbiFAN7g (ORCPT
+        id S1354108AbiFAN7j (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 09:59:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33262 "EHLO
+        Wed, 1 Jun 2022 09:59:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353927AbiFAN6Y (ORCPT
+        with ESMTP id S1354033AbiFAN6X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 09:58:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C25F8A32D;
-        Wed,  1 Jun 2022 06:55:32 -0700 (PDT)
+        Wed, 1 Jun 2022 09:58:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DBF0880F5;
+        Wed,  1 Jun 2022 06:55:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E19B615C2;
-        Wed,  1 Jun 2022 13:54:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7507C341C0;
-        Wed,  1 Jun 2022 13:54:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 432C4615F3;
+        Wed,  1 Jun 2022 13:55:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89CF2C3411E;
+        Wed,  1 Jun 2022 13:55:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091688;
-        bh=yoxhDZYgsb+yYlZZwz5ToNqwGqQPdnkh/B9IKDpd3kM=;
+        s=k20201202; t=1654091718;
+        bh=+7YLbsPjf0ff3HxBonzNas5xwXxkNQMQ7rDT4NH7mHI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s8NzxQCP7tlhFhW23WrgCauAEj2w6ytLQE24lctnutUck62VtdtfDboenc/Jt14Dj
-         islAPJsdttm9O8jo4WltI/Xg3dPVGl9XKFpyLVnOIIAC64C18k/x5B8z3crH922SiU
-         xEhIvfZw2AyXzYC3fYPrMTretav0SpIn8rvfZnggihtn1+7Yd9KB+Tos8xt/wmbDJC
-         8tLQ3xkucmnw//gvbF1zYv0GLhgwQ4wd8BEjs3I91T/iciDW5gdy+xgdcLrMbhoUvM
-         A1OkQM4eb8psaXK8/qWvuN1zb0fOx12Mxmh7Ym+dedvITXtsYSgKxjG3zxhWanZ+qy
-         5f6AxFojrP3uw==
+        b=FlTavO1YRo+vtZlQJrf2h+5sU8IPwYJLVRZOVEMz1gVv4wiUOyRY1ROnzEswQRrgY
+         G0YwF0F3BuBeDE1QdyEvkbP9ExZ6Uhl5dvWwDfvpHQZljtCdDCtd3nW/4b74s5eR4T
+         BXhNbqEXDZVA+0sdh9taJe2o1Izj+/qcqO05mbOkie7+AxVFfPnuUW6M7CTrMVtRun
+         rIRFUkR5dDBKEnbj2lt2krFcYiOcrhCdrdutPhcFbdhfAgJA+7NsP3OQJdQ2m6dC9C
+         w58RSbW0d9c3dZmCgGBWFw4oArZuYnDn5qGiiVotGCl6uES95JTi9KBHJq1KdnxXzF
+         WFyekSd3gMxiA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zixuan Fu <r33s3n6@gmail.com>, TOTE Robot <oslab@tsinghua.edu.cn>,
-        Dave Kleikamp <dave.kleikamp@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, shaggy@kernel.org,
-        jfs-discussion@lists.sourceforge.net
-Subject: [PATCH AUTOSEL 5.17 13/48] fs: jfs: fix possible NULL pointer dereference in dbFree()
-Date:   Wed,  1 Jun 2022 09:53:46 -0400
-Message-Id: <20220601135421.2003328-13-sashal@kernel.org>
+Cc:     Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>,
+        Douglas Anderson <dianders@chromium.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>, agross@kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 25/48] arm64: dts: qcom: sc7280-idp: Configure CTS pin to bias-bus-hold for bluetooth
+Date:   Wed,  1 Jun 2022 09:53:58 -0400
+Message-Id: <20220601135421.2003328-25-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135421.2003328-1-sashal@kernel.org>
 References: <20220601135421.2003328-1-sashal@kernel.org>
@@ -53,57 +55,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zixuan Fu <r33s3n6@gmail.com>
+From: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
 
-[ Upstream commit 0d4837fdb796f99369cf7691d33de1b856bcaf1f ]
+[ Upstream commit 497b272759986af1aa5a25b5e903d082c67bd8f6 ]
 
-In our fault-injection testing, the variable "nblocks" in dbFree() can be
-zero when kmalloc_array() fails in dtSearch(). In this case, the variable
- "mp" in dbFree() would be NULL and then it is dereferenced in
-"write_metapage(mp)".
+WLAN rail was leaking power during RBSC/sleep even after turning BT off.
+Change active and sleep pinctrl configurations to handle same.
 
-The failure log is listed as follows:
-
-[   13.824137] BUG: kernel NULL pointer dereference, address: 0000000000000020
-...
-[   13.827416] RIP: 0010:dbFree+0x5f7/0x910 [jfs]
-[   13.834341] Call Trace:
-[   13.834540]  <TASK>
-[   13.834713]  txFreeMap+0x7b4/0xb10 [jfs]
-[   13.835038]  txUpdateMap+0x311/0x650 [jfs]
-[   13.835375]  jfs_lazycommit+0x5f2/0xc70 [jfs]
-[   13.835726]  ? sched_dynamic_update+0x1b0/0x1b0
-[   13.836092]  kthread+0x3c2/0x4a0
-[   13.836355]  ? txLockFree+0x160/0x160 [jfs]
-[   13.836763]  ? kthread_unuse_mm+0x160/0x160
-[   13.837106]  ret_from_fork+0x1f/0x30
-[   13.837402]  </TASK>
-...
-
-This patch adds a NULL check of "mp" before "write_metapage(mp)" is called.
-
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
-Signed-off-by: Dave Kleikamp <dave.kleikamp@oracle.com>
+Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/1650556567-4995-2-git-send-email-quic_vnivarth@quicinc.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/jfs/jfs_dmap.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
-diff --git a/fs/jfs/jfs_dmap.c b/fs/jfs/jfs_dmap.c
-index d8502f4989d9..e75f31b81d63 100644
---- a/fs/jfs/jfs_dmap.c
-+++ b/fs/jfs/jfs_dmap.c
-@@ -385,7 +385,8 @@ int dbFree(struct inode *ip, s64 blkno, s64 nblocks)
- 	}
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+index d623d71d8bd4..dd6dac0e1784 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+@@ -462,10 +462,13 @@ &qup_uart5_rx {
  
- 	/* write the last buffer. */
--	write_metapage(mp);
-+	if (mp)
-+		write_metapage(mp);
+ &qup_uart7_cts {
+ 	/*
+-	 * Configure a pull-down on CTS to match the pull of
+-	 * the Bluetooth module.
++	 * Configure a bias-bus-hold on CTS to lower power
++	 * usage when Bluetooth is turned off. Bus hold will
++	 * maintain a low power state regardless of whether
++	 * the Bluetooth module drives the pin in either
++	 * direction or leaves the pin fully unpowered.
+ 	 */
+-	bias-pull-down;
++	bias-bus-hold;
+ };
  
- 	IREAD_UNLOCK(ipbmap);
+ &qup_uart7_rts {
+@@ -516,10 +519,13 @@ qup_uart7_sleep_cts: qup-uart7-sleep-cts {
+ 		pins = "gpio28";
+ 		function = "gpio";
+ 		/*
+-		 * Configure a pull-down on CTS to match the pull of
+-		 * the Bluetooth module.
++		 * Configure a bias-bus-hold on CTS to lower power
++		 * usage when Bluetooth is turned off. Bus hold will
++		 * maintain a low power state regardless of whether
++		 * the Bluetooth module drives the pin in either
++		 * direction or leaves the pin fully unpowered.
+ 		 */
+-		bias-pull-down;
++		bias-bus-hold;
+ 	};
  
+ 	qup_uart7_sleep_rts: qup-uart7-sleep-rts {
 -- 
 2.35.1
 
