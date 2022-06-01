@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D9B2CCA470
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:11:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6A9FCCA468
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:12:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238399AbiFAOLy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:11:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48722 "EHLO
+        id S1355201AbiFAOMB (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 10:12:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355837AbiFAOG3 (ORCPT
+        with ESMTP id S1354450AbiFAOGn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:06:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 883C2BA9A2;
-        Wed,  1 Jun 2022 07:00:09 -0700 (PDT)
+        Wed, 1 Jun 2022 10:06:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65866B82C8;
+        Wed,  1 Jun 2022 07:00:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1AE46615AA;
-        Wed,  1 Jun 2022 13:59:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4E38C3411F;
-        Wed,  1 Jun 2022 13:59:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 47EC6B8175B;
+        Wed,  1 Jun 2022 14:00:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12C88C3411D;
+        Wed,  1 Jun 2022 14:00:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091988;
-        bh=OrmCgyrADCQvNNfgQB2Hra1RezhD/GsfwcYi2XWqsis=;
+        s=k20201202; t=1654092008;
+        bh=zlr3C4xgJD135dQdTWBXK1U0qwJZQAP7U25NcO+I5cQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qx2WYyfEvSjso1+bRVg0+9wAELYbrLm4L5crq9NWgkgU7SHjG7jBWKcePZyjqY0Z2
-         2yWrx1hdkwcRJy120vCvz4CrQcd896prHJUMWiQ9Bg9aU7GmHwhgoIGp5ocKnr6RCA
-         9LlTzPLtOxR9js1kPztySri6odgvg1bSFwLf4BnvZPuKVk4lkw6Rvjk+cu+h68FmQp
-         7a0onenWXlJbN1ke5s4QTSCQ7K56WF9p9vJVcPaIM9HEC1JmH1Q6hnWckkSBNIedfC
-         sylwCXymiXYKgtDz7NlV3jOdDeUKJAd97LD0PKqaTUNvIoOlUVZFWa0cJi0htx0Kks
-         5ydS9fO+AnbLQ==
+        b=lV3GW+PZvSSD2WpKGQDD6OXnzDrapPpyeOjrn8YW0LBXKpvwc9q4RbJ5JWutwzEza
+         rjejyWL9mRbwlk+Jv2SyS1jBBVQshXXnOu654QWwUg5j7o7blAeE/F2/qS6DQ6jXBo
+         sdXnSIRmD7j1B32HRu9EYHOpjYK3CBDTQ9D0cIjJD0cKPiXKspVXuuQrjaNCR9faTi
+         x9tpkY/PVYqYI3yMVrGI1Iqicu+7mhzn3wcJxRAzKi4INr/yJeyxFcCOa7tqtqY259
+         0AY7kKpRurklGnCJeCBs158f6QLWz19100d6Ago+FudBfXnr5OXGtPKye3UFTzVwFt
+         WwQg2dc6OOTwg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Douglas Miller <doug.miller@cornelisnetworks.com>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>, linux-rdma@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 19/20] RDMA/hfi1: Prevent panic when SDMA is disabled
-Date:   Wed,  1 Jun 2022 09:59:01 -0400
-Message-Id: <20220601135902.2004823-19-sashal@kernel.org>
+Cc:     Peng Wu <wupeng58@huawei.com>, Wei Xu <xuwei5@hisilicon.com>,
+        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 4.19 09/15] ARM: hisi: Add missing of_node_put after of_find_compatible_node
+Date:   Wed,  1 Jun 2022 09:59:44 -0400
+Message-Id: <20220601135951.2005085-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220601135902.2004823-1-sashal@kernel.org>
-References: <20220601135902.2004823-1-sashal@kernel.org>
+In-Reply-To: <20220601135951.2005085-1-sashal@kernel.org>
+References: <20220601135951.2005085-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,48 +52,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Douglas Miller <doug.miller@cornelisnetworks.com>
+From: Peng Wu <wupeng58@huawei.com>
 
-[ Upstream commit 629e052d0c98e46dde9f0824f0aa437f678d9b8f ]
+[ Upstream commit 9bc72e47d4630d58a840a66a869c56b29554cfe4 ]
 
-If the hfi1 module is loaded with HFI1_CAP_SDMA off, a call to
-hfi1_write_iter() will dereference a NULL pointer and panic. A typical
-stack frame is:
+of_find_compatible_node  will increment the refcount of the returned
+device_node. Calling of_node_put() to avoid the refcount leak
 
-  sdma_select_user_engine [hfi1]
-  hfi1_user_sdma_process_request [hfi1]
-  hfi1_write_iter [hfi1]
-  do_iter_readv_writev
-  do_iter_write
-  vfs_writev
-  do_writev
-  do_syscall_64
-
-The fix is to test for SDMA in hfi1_write_iter() and fail the I/O with
-EINVAL.
-
-Link: https://lore.kernel.org/r/20220520183706.48973.79803.stgit@awfm-01.cornelisnetworks.com
-Signed-off-by: Douglas Miller <doug.miller@cornelisnetworks.com>
-Signed-off-by: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Peng Wu <wupeng58@huawei.com>
+Signed-off-by: Wei Xu <xuwei5@hisilicon.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/hw/hfi1/file_ops.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm/mach-hisi/platsmp.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/infiniband/hw/hfi1/file_ops.c b/drivers/infiniband/hw/hfi1/file_ops.c
-index 89e1dfd07a1b..8c7ba7bad42b 100644
---- a/drivers/infiniband/hw/hfi1/file_ops.c
-+++ b/drivers/infiniband/hw/hfi1/file_ops.c
-@@ -308,6 +308,8 @@ static ssize_t hfi1_write_iter(struct kiocb *kiocb, struct iov_iter *from)
- 	unsigned long dim = from->nr_segs;
- 	int idx;
+diff --git a/arch/arm/mach-hisi/platsmp.c b/arch/arm/mach-hisi/platsmp.c
+index da5689ababf7..d7fbfb6d293d 100644
+--- a/arch/arm/mach-hisi/platsmp.c
++++ b/arch/arm/mach-hisi/platsmp.c
+@@ -70,14 +70,17 @@ static void __init hi3xxx_smp_prepare_cpus(unsigned int max_cpus)
+ 		}
+ 		ctrl_base = of_iomap(np, 0);
+ 		if (!ctrl_base) {
++			of_node_put(np);
+ 			pr_err("failed to map address\n");
+ 			return;
+ 		}
+ 		if (of_property_read_u32(np, "smp-offset", &offset) < 0) {
++			of_node_put(np);
+ 			pr_err("failed to find smp-offset property\n");
+ 			return;
+ 		}
+ 		ctrl_base += offset;
++		of_node_put(np);
+ 	}
+ }
  
-+	if (!HFI1_CAP_IS_KSET(SDMA))
-+		return -EINVAL;
- 	idx = srcu_read_lock(&fd->pq_srcu);
- 	pq = srcu_dereference(fd->pq, &fd->pq_srcu);
- 	if (!cq || !pq) {
+@@ -163,6 +166,7 @@ static int hip01_boot_secondary(unsigned int cpu, struct task_struct *idle)
+ 	if (WARN_ON(!node))
+ 		return -1;
+ 	ctrl_base = of_iomap(node, 0);
++	of_node_put(node);
+ 
+ 	/* set the secondary core boot from DDR */
+ 	remap_reg_value = readl_relaxed(ctrl_base + REG_SC_CTRL);
 -- 
 2.35.1
 
