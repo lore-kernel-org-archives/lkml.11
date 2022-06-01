@@ -2,34 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93EC4C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 18:22:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E9D0C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 18:22:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356069AbiFASWV (ORCPT
+        id S1356594AbiFASWf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 14:22:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34044 "EHLO
+        Wed, 1 Jun 2022 14:22:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345115AbiFASWT (ORCPT
+        with ESMTP id S232776AbiFASWd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 14:22:19 -0400
+        Wed, 1 Jun 2022 14:22:33 -0400
+X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 01 Jun 2022 11:22:32 PDT
 Received: from conuserg-07.nifty.com (conuserg-07.nifty.com [210.131.2.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B94A3CFEA
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 11:22:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CF7D4B1CB;
+        Wed,  1 Jun 2022 11:22:32 -0700 (PDT)
 Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-07.nifty.com with ESMTP id 251IJkAS014364;
-        Thu, 2 Jun 2022 03:19:49 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-07.nifty.com 251IJkAS014364
+        by conuserg-07.nifty.com with ESMTP id 251IJkAQ014364;
+        Thu, 2 Jun 2022 03:19:47 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-07.nifty.com 251IJkAQ014364
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1654107589;
-        bh=tMDyL0rhu7Lqq/KCehxyT1DbD+leBMoEySfqxZD7ygQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sDGsn6MEry3DL/7zDaFzQ2QZabJwFxfQ6mpizg+eOuNIRBtdbJ15ceBfgtQ//brQH
-         C3Q5eGNxQ0LksIrSZf1e2eNInc+GtM6eFsCVl6/hF2Mq1pThTUORjMmQN9mjCubPKy
-         47b7vxX+yXHt5OdijhmwhmpRa/umFL1PGMcI5NedbEx7g5reM3v6NDomzyiAtBawvS
-         4CYFTabJoLGXJba0xqScxZ9MiLUHucMH/xjk9X23i5zpe6BQDLVBtxu7Jr7JK5AN9b
-         NDWvn5tvA/DOV7zQ4oKXD2ZnWUWwHDDToVFJ83wFsb8hLBVHcYvoQ4BiJgpNwCuDSR
-         YycShFfIOMI5A==
+        s=dec2015msa; t=1654107588;
+        bh=1RpBGGftTVY4f1Th6jTQ5+KvJS9jZPLe7SVIWfT+mGI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=xTkhr0bxDTEhtAk049KwrvCmJ8PmfLMOvfNqYQv6N1GGs+1JIoRe9bq32+GbKo7xo
+         6xLmO4yTpuIDczaOmrBiVYnxsQX9ze7wx8Xihc/Tcx23X8J3wMoBdOJCUFP9eFDmhC
+         FLqI2bfsMUORfZV3101r6VtWVpZsDX8rnIxwYLBvY03REIrUkBZWLcQCswwMBRrxRd
+         Xlh6JNyLIDBImFMen49QIfM1KpjSpV3QeKr+FWvAAUiMgafbPC1fcdl62ZM7GFbGW1
+         Z9hnHTrCa+k2Ll6r9C5vBROZCNUUBwBNzl0fbSRa81NuSX4cPQOeHO//MqIg9pzNBW
+         5PwU3IW5gfyUQ==
 X-Nifty-SrcIP: [133.32.177.133]
 From:   Masahiro Yamada <masahiroy@kernel.org>
 To:     Arnd Bergmann <arnd@arndb.de>
@@ -38,67 +39,40 @@ Cc:     Carlos Llamas <cmllamas@google.com>,
         Todd Kjos <tkjos@android.com>, linux-kernel@vger.kernel.org,
         Masahiro Yamada <masahiroy@kernel.org>,
         Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Michael Ellerman <mpe@ellerman.id.au>,
         Paul Mackerras <paulus@samba.org>,
-        linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH 2/3] powerpc: use __kernel_{uid,gid}32_t in uapi/asm/stat.h
-Date:   Thu,  2 Jun 2022 03:19:40 +0900
-Message-Id: <20220601181941.3706832-3-masahiroy@kernel.org>
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        sparclinux@vger.kernel.org
+Subject: [PATCH 0/3] asm-generic: fix misconversion of {uid,gid}_t
+Date:   Thu,  2 Jun 2022 03:19:38 +0900
+Message-Id: <20220601181941.3706832-1-masahiroy@kernel.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220601181941.3706832-1-masahiroy@kernel.org>
-References: <20220601181941.3706832-1-masahiroy@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit c01013a2f8dd ("powerpc: add asm/stat.h to UAPI compile-test
-coverage") converted as follows:
+I accidentally broke android binder.h:
+  https://lore.kernel.org/all/20220601010017.2639048-1-cmllamas@google.com/
 
-  uid_t  -->  __kernel_uid_t
-  gid_t  -->  __kernel_gid_t
+I checked my previous conversions, and found some more.
+(at least, the sparc one seems fatal.)
 
-The bit width of __kernel_{uid,gid}_t is 16 or 32-bits depending on
-architectures.
 
-PPC uses 32-bits for them as in include/uapi/asm-generic/posix_types.h,
-so the previous conversion is probably fine, but let's stick to the
-arch-independent conversion just in case.
 
-The safe replacements across all architectures are:
+Masahiro Yamada (3):
+  mips: use __kernel_{uid,gid}32_t in uapi/asm/stat.h
+  powerpc: use __kernel_{uid,gid}32_t in uapi/asm/stat.h
+  sparc: fix mis-use of __kernel_{uid,gid}_t in uapi/asm/stat.h
 
-  uid_t  -->  __kernel_uid32_t
-  gid_t  -->  __kernel_gid32_t
+ arch/mips/include/uapi/asm/stat.h    | 12 ++++++------
+ arch/powerpc/include/uapi/asm/stat.h |  4 ++--
+ arch/sparc/include/uapi/asm/stat.h   |  4 ++--
+ 3 files changed, 10 insertions(+), 10 deletions(-)
 
-as defined in include/linux/types.h.
-
-A similar issue was reported for the android binder. [1]
-
-[1]: https://lore.kernel.org/all/20220601010017.2639048-1-cmllamas@google.com/
-
-Fixes: c01013a2f8dd ("powerpc: add asm/stat.h to UAPI compile-test coverage")
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
----
-
- arch/powerpc/include/uapi/asm/stat.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/arch/powerpc/include/uapi/asm/stat.h b/arch/powerpc/include/uapi/asm/stat.h
-index a28c9a1201fa..d50901664239 100644
---- a/arch/powerpc/include/uapi/asm/stat.h
-+++ b/arch/powerpc/include/uapi/asm/stat.h
-@@ -37,8 +37,8 @@ struct stat {
- 	__kernel_mode_t	st_mode;
- 	unsigned short	st_nlink;
- #endif
--	__kernel_uid_t	st_uid;
--	__kernel_gid_t	st_gid;
-+	__kernel_uid32_t st_uid;
-+	__kernel_gid32_t st_gid;
- 	unsigned long	st_rdev;
- 	long		st_size;
- 	unsigned long	st_blksize;
 -- 
 2.32.0
 
