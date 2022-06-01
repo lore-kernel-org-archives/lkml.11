@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51FABC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:55:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 900BDCCA470
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:55:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353579AbiFANzP (ORCPT
+        id S1353620AbiFANzV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 09:55:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59582 "EHLO
+        Wed, 1 Jun 2022 09:55:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353735AbiFANyT (ORCPT
+        with ESMTP id S1353786AbiFANyc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 09:54:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E95D8CB0F;
-        Wed,  1 Jun 2022 06:54:08 -0700 (PDT)
+        Wed, 1 Jun 2022 09:54:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FD24880D3;
+        Wed,  1 Jun 2022 06:54:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BA203615C7;
-        Wed,  1 Jun 2022 13:53:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50B52C341C5;
-        Wed,  1 Jun 2022 13:53:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 82FC6615C2;
+        Wed,  1 Jun 2022 13:53:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA2D3C3411E;
+        Wed,  1 Jun 2022 13:53:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091600;
-        bh=Q2EBRsgfT+PTS/7GnCfPNIMf+eKY8QMFmv+If5+/aew=;
+        s=k20201202; t=1654091612;
+        bh=SIzEPNmhi3uXel6os5Hdua5jcjP8PY79NTHws9hQrjE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i7mFgnzkCelxJD/WLUUINWnIbMypIv2SG1WHougO0O1bXFYzrP0hRYvNgje2e8/b8
-         wvQ2AC3cofhbq9ZH9uWby70hoqgxNGbdY7D9YEbMoyZOuIdEdl5ZOhf5J2V1rFrTw+
-         9wH9o29YH0Om6PZVlUqmA+XTyVsce+h9sj/324ndcEMdcY1vYhUr666hcGrnuLWCyr
-         KUUIvZvIXszEF9urP3PrPePVdAGtH/4sPmZ4XQgWHTkHgAKdMTHYF+/226rIoafZCh
-         G6ePycHcngC2ev4PoQMCobbVzglqtFcd5ebhmY8TwYHznOGYk//IujlIXu/5tScaNU
-         Mx9Y29uGzZZlw==
+        b=schzvg+9xNdHfJipX2ibmAFcR8qV0w98WTonlocf3Y4MR6yCA1mXUEQN1ykt5/zXa
+         quWJZGTcz5GbdZGEOgW637X1WMQORweWRnrOx/cHLGOk+shEGH6Pd1s5oA7nOgUBPs
+         e46/YQqWHuiHwe0/63B7bAdv4/ae9EJOGyyCZmX0LKgyvRzNd3yKlkvuGGDFGfW49I
+         iKygt/3zd94vIbXAgkKhN2BxIvPrwmCCCHV+G7QWCcWKWj08pEV/gjqHCCA0JTm52l
+         aKIe/puNXJ4i5WHDhaS3nzvz64reYLpTZrL18UhuhXhpWSNio/e1V/04TaOpUoEXWX
+         W6PA0J5MfUAvQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Conor Dooley <conor.dooley@microchip.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Sasha Levin <sashal@kernel.org>, daire.mcnamara@microchip.com,
-        bhelgaas@google.com, linux-pci@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 29/49] PCI: microchip: Add missing chained_irq_enter()/exit() calls
-Date:   Wed,  1 Jun 2022 09:51:53 -0400
-Message-Id: <20220601135214.2002647-29-sashal@kernel.org>
+Cc:     Nicholas Piggin <npiggin@gmail.com>,
+        Fabiano Rosas <farosas@linux.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>, aik@ozlabs.ru, clg@kaod.org,
+        seanjc@google.com, bharata@linux.ibm.com,
+        maciej.szmigiero@oracle.com, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH AUTOSEL 5.18 33/49] KVM: PPC: Book3S HV Nested: L2 LPCR should inherit L1 LPES setting
+Date:   Wed,  1 Jun 2022 09:51:57 -0400
+Message-Id: <20220601135214.2002647-33-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135214.2002647-1-sashal@kernel.org>
 References: <20220601135214.2002647-1-sashal@kernel.org>
@@ -53,80 +55,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Conor Dooley <conor.dooley@microchip.com>
+From: Nicholas Piggin <npiggin@gmail.com>
 
-[ Upstream commit 30097efa334a706f9021b9aee6efcddcfa44a78a ]
+[ Upstream commit 2852ebfa10afdcefff35ec72c8da97141df9845c ]
 
-Two of the chained IRQ handlers miss their
-chained_irq_enter()/chained_irq_exit() calls, so add them in to avoid
-potentially lost interrupts.
+The L1 should not be able to adjust LPES mode for the L2. Setting LPES
+if the L0 needs it clear would cause external interrupts to be sent to
+L2 and missed by the L0.
 
-Reported by: Bjorn Helgaas <bhelgaas@google.com>
-Link: https://lore.kernel.org/linux-pci/87h76b8nxc.wl-maz@kernel.org
-Link: https://lore.kernel.org/r/20220511095504.2273799-1-conor.dooley@microchip.com
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Clearing LPES when it may be set, as typically happens with XIVE enabled
+could cause a performance issue despite having no native XIVE support in
+the guest, because it will cause mediated interrupts for the L2 to be
+taken in HV mode, which then have to be injected.
+
+Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
+Reviewed-by: Fabiano Rosas <farosas@linux.ibm.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220303053315.1056880-7-npiggin@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/pcie-microchip-host.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ arch/powerpc/kvm/book3s_hv.c        | 4 ++++
+ arch/powerpc/kvm/book3s_hv_nested.c | 3 +--
+ 2 files changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pci/controller/pcie-microchip-host.c b/drivers/pci/controller/pcie-microchip-host.c
-index 29d8e81e4181..8175abed0f05 100644
---- a/drivers/pci/controller/pcie-microchip-host.c
-+++ b/drivers/pci/controller/pcie-microchip-host.c
-@@ -406,6 +406,7 @@ static void mc_pcie_enable_msi(struct mc_pcie *port, void __iomem *base)
- static void mc_handle_msi(struct irq_desc *desc)
- {
- 	struct mc_pcie *port = irq_desc_get_handler_data(desc);
-+	struct irq_chip *chip = irq_desc_get_chip(desc);
- 	struct device *dev = port->dev;
- 	struct mc_msi *msi = &port->msi;
- 	void __iomem *bridge_base_addr =
-@@ -414,6 +415,8 @@ static void mc_handle_msi(struct irq_desc *desc)
- 	u32 bit;
- 	int ret;
- 
-+	chained_irq_enter(chip, desc);
-+
- 	status = readl_relaxed(bridge_base_addr + ISTATUS_LOCAL);
- 	if (status & PM_MSI_INT_MSI_MASK) {
- 		status = readl_relaxed(bridge_base_addr + ISTATUS_MSI);
-@@ -424,6 +427,8 @@ static void mc_handle_msi(struct irq_desc *desc)
- 						    bit);
- 		}
+diff --git a/arch/powerpc/kvm/book3s_hv.c b/arch/powerpc/kvm/book3s_hv.c
+index 6fa518f6501d..43af871383c2 100644
+--- a/arch/powerpc/kvm/book3s_hv.c
++++ b/arch/powerpc/kvm/book3s_hv.c
+@@ -5283,6 +5283,10 @@ static int kvmppc_core_init_vm_hv(struct kvm *kvm)
+ 		kvm->arch.host_lpcr = lpcr = mfspr(SPRN_LPCR);
+ 		lpcr &= LPCR_PECE | LPCR_LPES;
+ 	} else {
++		/*
++		 * The L2 LPES mode will be set by the L0 according to whether
++		 * or not it needs to take external interrupts in HV mode.
++		 */
+ 		lpcr = 0;
  	}
-+
-+	chained_irq_exit(chip, desc);
- }
+ 	lpcr |= (4UL << LPCR_DPFD_SH) | LPCR_HDICE |
+diff --git a/arch/powerpc/kvm/book3s_hv_nested.c b/arch/powerpc/kvm/book3s_hv_nested.c
+index c943a051c6e7..265bb30a0af2 100644
+--- a/arch/powerpc/kvm/book3s_hv_nested.c
++++ b/arch/powerpc/kvm/book3s_hv_nested.c
+@@ -261,8 +261,7 @@ static void load_l2_hv_regs(struct kvm_vcpu *vcpu,
+ 	/*
+ 	 * Don't let L1 change LPCR bits for the L2 except these:
+ 	 */
+-	mask = LPCR_DPFD | LPCR_ILE | LPCR_TC | LPCR_AIL | LPCR_LD |
+-		LPCR_LPES | LPCR_MER;
++	mask = LPCR_DPFD | LPCR_ILE | LPCR_TC | LPCR_AIL | LPCR_LD | LPCR_MER;
  
- static void mc_msi_bottom_irq_ack(struct irq_data *data)
-@@ -563,6 +568,7 @@ static int mc_allocate_msi_domains(struct mc_pcie *port)
- static void mc_handle_intx(struct irq_desc *desc)
- {
- 	struct mc_pcie *port = irq_desc_get_handler_data(desc);
-+	struct irq_chip *chip = irq_desc_get_chip(desc);
- 	struct device *dev = port->dev;
- 	void __iomem *bridge_base_addr =
- 		port->axi_base_addr + MC_PCIE_BRIDGE_ADDR;
-@@ -570,6 +576,8 @@ static void mc_handle_intx(struct irq_desc *desc)
- 	u32 bit;
- 	int ret;
- 
-+	chained_irq_enter(chip, desc);
-+
- 	status = readl_relaxed(bridge_base_addr + ISTATUS_LOCAL);
- 	if (status & PM_MSI_INT_INTX_MASK) {
- 		status &= PM_MSI_INT_INTX_MASK;
-@@ -581,6 +589,8 @@ static void mc_handle_intx(struct irq_desc *desc)
- 						    bit);
- 		}
- 	}
-+
-+	chained_irq_exit(chip, desc);
- }
- 
- static void mc_ack_intx_irq(struct irq_data *data)
+ 	/*
+ 	 * Additional filtering is required depending on hardware
 -- 
 2.35.1
 
