@@ -2,50 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ACCDCCA468
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:13:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D03DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:13:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355267AbiFAONU (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:13:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47442 "EHLO
+        id S243848AbiFAONW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 10:13:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354497AbiFAOIX (ORCPT
+        with ESMTP id S1354591AbiFAOIu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:08:23 -0400
+        Wed, 1 Jun 2022 10:08:50 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E2B8634C;
-        Wed,  1 Jun 2022 07:00:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B8A2F23;
+        Wed,  1 Jun 2022 07:00:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 30A896155E;
-        Wed,  1 Jun 2022 14:00:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C5DBC385B8;
-        Wed,  1 Jun 2022 14:00:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F3B8615B9;
+        Wed,  1 Jun 2022 14:00:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 720C3C3411D;
+        Wed,  1 Jun 2022 14:00:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654092023;
-        bh=v9+RNWOQ9qeTZotR6LR4cUE0Q1K4MG8guDKbNCg4adc=;
+        s=k20201202; t=1654092026;
+        bh=nJDxXZeW4dNZBJ3xKwI5D10rJwiQ5ZFbGJpcGhfvC24=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ni0mFRveVmRIEpfyiFmy2WQ3fjh9Stnf7nbCVvoh358VyKbr60QNOoyaEbJdc/k/M
-         27RM2iyQO7vCpY0bbEARRXuLY5dlUwiEB3qxBku0kFZ5Am5BVrACSgJr/WO5o0J2+E
-         stz/VD2DxCJFpcjmmfyR5sS9Jcb1vglg9anxvPT4hii2Gojt3Kedp5CNSh2PxfXeTL
-         a5BDpScijshvOwZgjcdvB8r17T4H0i3d3Orcmeq7pAcPJdk/fbjTfKW4QdoRGNOnwF
-         s2ayTxZFOPM7k1U4ZiqzC+H0iqPiShpG5bVImBhhssqQAG/kfhH9Droq7EwkPd6JZE
-         JpjopG1weMU/Q==
+        b=V8SexuT2KrvNoRkKjemnqg0qKey6+9DkqZnVBISmkY65axI6JI1nPSlsLG0by3uIi
+         04qP8I1cPsvFnpaxqL7orzKJ2z8l/xSbEeijkO/KQlDnOF0/QE1DtrH1jUzMEFLwfE
+         f30KpqzHynYGqkdADZN/SkB98UnxI8Jj5NBixIn4V5lq56zhSWTpZuyi2c9DskyatF
+         gojdmjPRqiFTljm0yA5Ws+MGIcM5uB5FpqPd67LJZ6o2GdUXMi3zVUwgDoWr0+5Si9
+         49jELxUw62PqPGmagfn4v2FlI4ilwdavcQH/11SN+zDn8PFiBVVbcoHIb9JMOsXoal
+         h2gmDQI5yJ3jQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Finn Thain <fthain@linux-m68k.org>,
-        kernel test robot <lkp@intel.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>, benh@kernel.crashing.org,
-        arnd@arndb.de, masahiroy@kernel.org, adobriyan@gmail.com,
-        yebin10@huawei.com, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 4.19 13/15] macintosh/via-pmu: Fix build failure when CONFIG_INPUT is disabled
-Date:   Wed,  1 Jun 2022 09:59:48 -0400
-Message-Id: <20220601135951.2005085-13-sashal@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Sasha Levin <sashal@kernel.org>,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 4.19 15/15] drm: fix EDID struct for old ARM OABI format
+Date:   Wed,  1 Jun 2022 09:59:50 -0400
+Message-Id: <20220601135951.2005085-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135951.2005085-1-sashal@kernel.org>
 References: <20220601135951.2005085-1-sashal@kernel.org>
@@ -57,80 +58,112 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Finn Thain <fthain@linux-m68k.org>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 
-[ Upstream commit 86ce436e30d86327c9f5260f718104ae7b21f506 ]
+[ Upstream commit 47f15561b69e226bfc034e94ff6dbec51a4662af ]
 
-drivers/macintosh/via-pmu-event.o: In function `via_pmu_event':
-via-pmu-event.c:(.text+0x44): undefined reference to `input_event'
-via-pmu-event.c:(.text+0x68): undefined reference to `input_event'
-via-pmu-event.c:(.text+0x94): undefined reference to `input_event'
-via-pmu-event.c:(.text+0xb8): undefined reference to `input_event'
-drivers/macintosh/via-pmu-event.o: In function `via_pmu_event_init':
-via-pmu-event.c:(.init.text+0x20): undefined reference to `input_allocate_device'
-via-pmu-event.c:(.init.text+0xc4): undefined reference to `input_register_device'
-via-pmu-event.c:(.init.text+0xd4): undefined reference to `input_free_device'
-make[1]: *** [Makefile:1155: vmlinux] Error 1
-make: *** [Makefile:350: __build_one_by_one] Error 2
+When building the kernel for arm with the "-mabi=apcs-gnu" option, gcc
+will force alignment of all structures and unions to a word boundary
+(see also STRUCTURE_SIZE_BOUNDARY and the "-mstructure-size-boundary=XX"
+option if you're a gcc person), even when the members of said structures
+do not want or need said alignment.
 
-Don't call into the input subsystem unless CONFIG_INPUT is built-in.
+This completely messes up the structure alignment of 'struct edid' on
+those targets, because even though all the embedded structures are
+marked with "__attribute__((packed))", the unions that contain them are
+not.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Finn Thain <fthain@linux-m68k.org>
-Tested-by: Randy Dunlap <rdunlap@infradead.org>
-Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Acked-by: Randy Dunlap <rdunlap@infradead.org>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/5edbe76ce68227f71e09af4614cc4c1bd61c7ec8.1649326292.git.fthain@linux-m68k.org
+This was exposed by commit f1e4c916f97f ("drm/edid: add EDID block count
+and size helpers"), but the bug is pre-existing.  That commit just made
+the structure layout problem cause a build failure due to the addition
+of the
+
+        BUILD_BUG_ON(sizeof(*edid) != EDID_LENGTH);
+
+sanity check in drivers/gpu/drm/drm_edid.c:edid_block_data().
+
+This legacy union alignment should probably not be used in the first
+place, but we can fix the layout by adding the packed attribute to the
+union entries even when each member is already packed and it shouldn't
+matter in a sane build environment.
+
+You can see this issue with a trivial test program:
+
+  union {
+	struct {
+		char c[5];
+	};
+	struct {
+		char d;
+		unsigned e;
+	} __attribute__((packed));
+  } a = { "1234" };
+
+where building this with a normal "gcc -S" will result in the expected
+5-byte size of said union:
+
+	.type	a, @object
+	.size	a, 5
+
+but with an ARM compiler and the old ABI:
+
+    arm-linux-gnu-gcc -mabi=apcs-gnu -mfloat-abi=soft -S t.c
+
+you get
+
+	.type	a, %object
+	.size	a, 8
+
+instead, because even though each member of the union is packed, the
+union itself still gets aligned.
+
+This was reported by Sudip for the spear3xx_defconfig target.
+
+Link: https://lore.kernel.org/lkml/YpCUzStDnSgQLNFN@debian/
+Reported-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Acked-by: Arnd Bergmann <arnd@arndb.de>
+Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+Cc: Maxime Ripard <mripard@kernel.org>
+Cc: Thomas Zimmermann <tzimmermann@suse.de>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/macintosh/Kconfig   | 4 ++++
- drivers/macintosh/Makefile  | 3 ++-
- drivers/macintosh/via-pmu.c | 2 +-
- 3 files changed, 7 insertions(+), 2 deletions(-)
+ include/drm/drm_edid.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/macintosh/Kconfig b/drivers/macintosh/Kconfig
-index 47c350cdfb12..a316624742f6 100644
---- a/drivers/macintosh/Kconfig
-+++ b/drivers/macintosh/Kconfig
-@@ -66,6 +66,10 @@ config ADB_PMU
- 	  this device; you should do so if your machine is one of those
- 	  mentioned above.
+diff --git a/include/drm/drm_edid.h b/include/drm/drm_edid.h
+index 53be104aab5c..8b9678bffe7b 100644
+--- a/include/drm/drm_edid.h
++++ b/include/drm/drm_edid.h
+@@ -115,7 +115,7 @@ struct detailed_data_monitor_range {
+ 			u8 supported_scalings;
+ 			u8 preferred_refresh;
+ 		} __attribute__((packed)) cvt;
+-	} formula;
++	} __attribute__((packed)) formula;
+ } __attribute__((packed));
  
-+config ADB_PMU_EVENT
-+	def_bool y
-+	depends on ADB_PMU && INPUT=y
-+
- config ADB_PMU_LED
- 	bool "Support for the Power/iBook front LED"
- 	depends on PPC_PMAC && ADB_PMU
-diff --git a/drivers/macintosh/Makefile b/drivers/macintosh/Makefile
-index 49819b1b6f20..712edcb3e0b0 100644
---- a/drivers/macintosh/Makefile
-+++ b/drivers/macintosh/Makefile
-@@ -12,7 +12,8 @@ obj-$(CONFIG_MAC_EMUMOUSEBTN)	+= mac_hid.o
- obj-$(CONFIG_INPUT_ADBHID)	+= adbhid.o
- obj-$(CONFIG_ANSLCD)		+= ans-lcd.o
+ struct detailed_data_wpindex {
+@@ -148,7 +148,7 @@ struct detailed_non_pixel {
+ 		struct detailed_data_wpindex color;
+ 		struct std_timing timings[6];
+ 		struct cvt_timing cvt[4];
+-	} data;
++	} __attribute__((packed)) data;
+ } __attribute__((packed));
  
--obj-$(CONFIG_ADB_PMU)		+= via-pmu.o via-pmu-event.o
-+obj-$(CONFIG_ADB_PMU)		+= via-pmu.o
-+obj-$(CONFIG_ADB_PMU_EVENT)	+= via-pmu-event.o
- obj-$(CONFIG_ADB_PMU_LED)	+= via-pmu-led.o
- obj-$(CONFIG_PMAC_BACKLIGHT)	+= via-pmu-backlight.o
- obj-$(CONFIG_ADB_CUDA)		+= via-cuda.o
-diff --git a/drivers/macintosh/via-pmu.c b/drivers/macintosh/via-pmu.c
-index d72c450aebe5..50299d68ddfc 100644
---- a/drivers/macintosh/via-pmu.c
-+++ b/drivers/macintosh/via-pmu.c
-@@ -1464,7 +1464,7 @@ pmu_handle_data(unsigned char *data, int len)
- 		pmu_pass_intr(data, len);
- 		/* len == 6 is probably a bad check. But how do I
- 		 * know what PMU versions send what events here? */
--		if (len == 6) {
-+		if (IS_ENABLED(CONFIG_ADB_PMU_EVENT) && len == 6) {
- 			via_pmu_event(PMU_EVT_POWER, !!(data[1]&8));
- 			via_pmu_event(PMU_EVT_LID, data[1]&1);
- 		}
+ #define EDID_DETAIL_EST_TIMINGS 0xf7
+@@ -166,7 +166,7 @@ struct detailed_timing {
+ 	union {
+ 		struct detailed_pixel_timing pixel_data;
+ 		struct detailed_non_pixel other_data;
+-	} data;
++	} __attribute__((packed)) data;
+ } __attribute__((packed));
+ 
+ #define DRM_EDID_INPUT_SERRATION_VSYNC (1 << 0)
 -- 
 2.35.1
 
