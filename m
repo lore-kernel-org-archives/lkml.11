@@ -2,50 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF9F5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:13:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F285C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:13:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355167AbiFAONd (ORCPT
+        id S1355297AbiFAONh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:13:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46588 "EHLO
+        Wed, 1 Jun 2022 10:13:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354540AbiFAOJC (ORCPT
+        with ESMTP id S1354543AbiFAOJC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 1 Jun 2022 10:09:02 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 691D1A33BC;
-        Wed,  1 Jun 2022 07:00:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EB0D939E4;
+        Wed,  1 Jun 2022 07:00:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F2564615B2;
-        Wed,  1 Jun 2022 14:00:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42DA6C385B8;
-        Wed,  1 Jun 2022 14:00:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 09C8B61627;
+        Wed,  1 Jun 2022 14:00:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62A3FC385B8;
+        Wed,  1 Jun 2022 14:00:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654092033;
-        bh=262NN7HEnh2igmL4l1gAU+SUwZl24FoHE7oXfKo85Lc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=moLi92bSuYX0K0vQJCqPmP82cjG+8ezhbwe98k/JjFMln9TfP4AZYVeMHX2V2BlE4
-         UHRqAnOK+B3zDGu5VcPQLdafBIvA714IYjULTQ3Q0ObO7U77WvLSuDOXoZKlaqusNw
-         syhqUwomVr8Q6GhfuBgMGX1lagyHhpFE3EmYxgQ6fO/O7IX4Hj3HsbKy6/lFrc857C
-         wnYydn1vzOuRV0EDLcP2HJN2C3Kf+2JSh+6yP6EuN+hlUWqUAcfXG2dRzQ3uq6DTBv
-         NUmr4VWv6oU3G9AsdizxtzJM/+0oGqErsN/xeCO0NlIiSdA9sicvpYueN23LGpv8TJ
-         Qm2RAVs4GSs0g==
+        s=k20201202; t=1654092030;
+        bh=z42OExAeZKAzjkFiuxCksJlnicHhYdUI6Nt4NvmD5S4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=f+mP6Wna7gS/E44PrVT5Y/QeV2WXd2aSm8Y2LiWkvhPg0Dljpt3rAN64E2Ai2Cgq/
+         zNUboc3lgtNRohSybVUoZNQFowQLs1cqQxe4JDETclVwGbqrZcc+5hjNJU26ANf1o1
+         hL1KJDis/lqiV55RFlztXU5Kqhc1Tt15yomWsj3WUqGITlZd/vFpS3XR69hGnu60xT
+         mKMuMaywUh9RXt9Kkeu7Oz95dMxPEez2KtuibKMjrBSsAnsRmpTXXuaeiWUb1j/E4r
+         rV1gw999y8S5pxT4jkrOYmOSb3N6LdMvntqAgpp4eF5+CQGgSVY3MluC0IZ9nAEqBh
+         7ZJsOm7xcJ3rw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Janusz Krzysztofik <jmkrzyszt@gmail.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>,
-        paul@pwsan.com, aaro.koskinen@iki.fi, linux@armlinux.org.uk,
-        linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.14 03/14] ARM: OMAP1: clock: Fix UART rate reporting algorithm
-Date:   Wed,  1 Jun 2022 10:00:16 -0400
-Message-Id: <20220601140027.2005280-3-sashal@kernel.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org,
+        linux-arm-kernel@lists.infradead.org, linux-oxnas@groups.io,
+        devicetree@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 01/14] ARM: dts: ox820: align interrupt controller node name with dtschema
+Date:   Wed,  1 Jun 2022 10:00:14 -0400
+Message-Id: <20220601140027.2005280-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220601140027.2005280-1-sashal@kernel.org>
-References: <20220601140027.2005280-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,35 +53,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Janusz Krzysztofik <jmkrzyszt@gmail.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-[ Upstream commit 338d5d476cde853dfd97378d20496baabc2ce3c0 ]
+[ Upstream commit fbcd5ad7a419ad40644a0bb8b4152bc660172d8a ]
 
-Since its introduction to the mainline kernel, omap1_uart_recalc() helper
-makes incorrect use of clk->enable_bit as a ready to use bitmap mask while
-it only provides the bit number.  Fix it.
+Fixes dtbs_check warnings like:
 
-Signed-off-by: Janusz Krzysztofik <jmkrzyszt@gmail.com>
-Acked-by: Tony Lindgren <tony@atomide.com>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+  gic@1000: $nodename:0: 'gic@1000' does not match '^interrupt-controller(@[0-9a-f,]+)*$'
+
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Acked-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20220317115705.450427-1-krzysztof.kozlowski@canonical.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-omap1/clock.c | 2 +-
+ arch/arm/boot/dts/ox820.dtsi | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/mach-omap1/clock.c b/arch/arm/mach-omap1/clock.c
-index fa512413a471..b277409f303a 100644
---- a/arch/arm/mach-omap1/clock.c
-+++ b/arch/arm/mach-omap1/clock.c
-@@ -44,7 +44,7 @@ static DEFINE_SPINLOCK(clockfw_lock);
- unsigned long omap1_uart_recalc(struct clk *clk)
- {
- 	unsigned int val = __raw_readl(clk->enable_reg);
--	return val & clk->enable_bit ? 48000000 : 12000000;
-+	return val & 1 << clk->enable_bit ? 48000000 : 12000000;
- }
+diff --git a/arch/arm/boot/dts/ox820.dtsi b/arch/arm/boot/dts/ox820.dtsi
+index 8355cb034525..3382b1a9cac9 100644
+--- a/arch/arm/boot/dts/ox820.dtsi
++++ b/arch/arm/boot/dts/ox820.dtsi
+@@ -286,7 +286,7 @@ local-timer@600 {
+ 				clocks = <&armclk>;
+ 			};
  
- unsigned long omap1_sossi_recalc(struct clk *clk)
+-			gic: gic@1000 {
++			gic: interrupt-controller@1000 {
+ 				compatible = "arm,arm11mp-gic";
+ 				interrupt-controller;
+ 				#interrupt-cells = <3>;
 -- 
 2.35.1
 
