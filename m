@@ -2,186 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD03AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 02:22:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 895BEC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 02:22:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349137AbiFACWB (ORCPT
+        id S1349141AbiFACWq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 22:22:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38990 "EHLO
+        Tue, 31 May 2022 22:22:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240621AbiFACV7 (ORCPT
+        with ESMTP id S237671AbiFACWp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 22:21:59 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E6FE25C54
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 19:21:56 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id g205so616124pfb.11
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 19:21:56 -0700 (PDT)
+        Tue, 31 May 2022 22:22:45 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 688B350E05
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 19:22:44 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id 129so570760pgc.2
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 19:22:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=2okyrQI7zzxx6armVnSyvWo3k8iS+WCjiSoArjw0fEE=;
-        b=lNtCXz826IraqgepKCt/0lBy+mvMAaE2ivM/1NtE1GDoY942T5NsfhN91WTgx4ANjM
-         0xSVtO126oHxAM52jRDdWZORous5WBraQcL6dZQ8Ia53sJcte67lY7MPex9Z5MtwU/t3
-         gxaV3/h3l0sz5h8It0hfiUZ5SYwVEdE3yMgblQkT9Y7FDq3ZPzr1CjWqoNE8KqzydtL7
-         /271RuA8uiEl61xA0JyyHu0VZm0P0a/V1g89g4LrVnV+p4AgH0064N0SDE9eU5hfMl7g
-         VE5X+2RmPw9fzhPqM6nWyZPLMWd+FDtQhwGBuRG5GGmVbXw2C45XfOEmviQBpXcD90GI
-         aq4w==
+        d=broadcom.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version;
+        bh=XKt+TouGGo3J4AeLqQrASRVvfWAtafJ/8qauvmSptzE=;
+        b=iOODlljBy6MSKjH7bcgy3vwWq5Dr2sM5rz9+yuTz7rEl20ugNyb7443ltHjd4nsqtb
+         fLIG9/coucFClkJl1cDx5xpTeVp8kWxu3/yrHQzGz8H6rktn+yph602FGPSOARADFdBx
+         HmNM4syMoAq21lwwb6G3LxFcw9cljCu1jHUzc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=2okyrQI7zzxx6armVnSyvWo3k8iS+WCjiSoArjw0fEE=;
-        b=V4s1L+OLfLcbn5yBIIK8nks6hxUbaR/yljRpwtX8FAtUWoZvaNoLLrDpZw0NanbmAJ
-         yh43dyxnnOG9FHg1akvKFX8487foSCG9nfkGFIl/24vhJmJ1PP7AzDxdsB48jsc8n9TV
-         NSD0G8ZAXVaK80uNRfzSkecM6Sln97J3HIY6bzxWCJwU/y7HQpXWSqsDfC8wbY1/BdwF
-         eOtJJw411kxblCmE3dD6V5XtUFL5jcmS+gRbVQwR0dgik/hfHwTba/8kAbfcXLtPsaJM
-         o9in36hwmgiBEpKAK8rhkmP6kVBD7h+GLkv9JbjRdvRcGCZrPXg0yGiyvPJezgPiQQ/p
-         Bqsw==
-X-Gm-Message-State: AOAM532CIG8+JjI8sLDKB/qLhpmsQDniL1buyaSB8Jy/WOTiLw4T6GiO
-        XBGECxdpRkeQQEosblSDXM3Vew==
-X-Google-Smtp-Source: ABdhPJzW0LFXWu1OWiBefZkXNcr/MWs15wzhND3amhX9Ouk0RYJnIvws91AeF3f0YhsM1ih2w98Iwg==
-X-Received: by 2002:a05:6a00:23ce:b0:50d:823f:981 with SMTP id g14-20020a056a0023ce00b0050d823f0981mr65646297pfc.10.1654050116005;
-        Tue, 31 May 2022 19:21:56 -0700 (PDT)
-Received: from [10.255.89.136] ([139.177.225.233])
-        by smtp.gmail.com with ESMTPSA id r4-20020a170902ea4400b001641a68f1c7sm190180plg.273.2022.05.31.19.21.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 31 May 2022 19:21:55 -0700 (PDT)
-Message-ID: <5f622a65-8348-8825-a167-414f2a8cd2eb@bytedance.com>
-Date:   Wed, 1 Jun 2022 10:17:54 +0800
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version;
+        bh=XKt+TouGGo3J4AeLqQrASRVvfWAtafJ/8qauvmSptzE=;
+        b=G034JoKIdNQdyhuJEPTvK3JYd8vvE95xm8x9UonugW0xLgm/xj4M8yzdExWlKZ0Pbg
+         8C5ZJTdCKS4aC3/BhdqXrEMqvMxuMsZqdqniY+W7wZbAJoB9Xk0kyOJi9+hXPGUcZxZ2
+         mjqBleAII3nP7uQ6MYuEW0pS2DLBCHHD/2pU6LJjIqJ0HKfsCJuIX2zEvQEimJSMjfxl
+         eDOfiDe3o34yIoX3FRqMTEK4aA4AkmIdYghiQVpE1hZiIRG3SEqoaJDzdaxWKhFXEWAU
+         IKkWv58gVmISFOv3Mrfck4M5+rl1E/lvgcdfjJ29pa52sHrNZbPWbR9VdcNeohdDddSf
+         j5Pg==
+X-Gm-Message-State: AOAM530cS6eEOhksZUVnXvuk5Qw0dQTmAw3ksolCU90PM2J2QtwoCNYr
+        byjm+nB6PJHdSHXlFy/fiZf6fw==
+X-Google-Smtp-Source: ABdhPJyDLNBEmdEbSvRFcwSc+ee5sb7XMtY+Q+MXPjPnw0CyKEe8Nbb1JR5QkYAtJ2BZjWTQJunr8Q==
+X-Received: by 2002:a65:5601:0:b0:3fb:355:5f2f with SMTP id l1-20020a655601000000b003fb03555f2fmr25790918pgs.78.1654050163716;
+        Tue, 31 May 2022 19:22:43 -0700 (PDT)
+Received: from T3500-3.dhcp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id v24-20020a634658000000b003fad46ceb85sm157824pgk.7.2022.05.31.19.22.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 May 2022 19:22:43 -0700 (PDT)
+From:   William Zhang <william.zhang@broadcom.com>
+To:     Linux ARM List <linux-arm-kernel@lists.infradead.org>
+Cc:     anand.gore@broadcom.com, dan.beygelman@broadcom.com,
+        florian.fainelli@broadcom.com, joel.peshkin@broadcom.com,
+        tomer.yacoby@broadcom.com, kursad.oney@broadcom.com,
+        samyon.furman@broadcom.com, philippe.reynes@softathome.com,
+        William Zhang <william.zhang@broadcom.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Olof Johansson <olof@lixom.net>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, soc@kernel.org
+Subject: [PATCH v3 0/3] arm: bcmbca: add bcm6846 SoC support
+Date:   Tue, 31 May 2022 19:22:10 -0700
+Message-Id: <20220601022215.32494-1-william.zhang@broadcom.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: Re: Re: [PATCH 0/3] recover hardware corrupted page by virtio
- balloon
-Content-Language: en-US
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        David Hildenbrand <david@redhat.com>,
-        =?UTF-8?B?SE9SSUdVQ0hJIE5BT1lBKOWggOWPoyDnm7TkuZ8p?= 
-        <naoya.horiguchi@nec.com>
-Cc:     Peter Xu <peterx@redhat.com>, Jue Wang <juew@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>, jasowang@redhat.com,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux MM <linux-mm@kvack.org>, mst@redhat.com,
-        qemu-devel@nongnu.org, virtualization@lists.linux-foundation.org
-References: <CAPcxDJ5pduUyMA0rf+-aTjK_2eBvig05UTiTptX1nVkWE-_g8w@mail.gmail.com>
- <Yo/I3oLkd9OU0ice@xz-m1.local>
- <24a95dea-9ea6-a904-7c0b-197961afa1d1@bytedance.com>
- <0d266c61-605d-ce0c-4274-b0c7e10f845a@redhat.com>
- <4b0c3e37-b882-681a-36fc-16cee7e1fff0@bytedance.com>
- <YpTngZ5Qr0KIvL0H@xz-m1.local>
- <CAPcxDJ5UMfpys8KyLQVnkV9BPO1vaubxbhc7f4XC_TdNO7jr7g@mail.gmail.com>
-From:   zhenwei pi <pizhenwei@bytedance.com>
-In-Reply-To: <CAPcxDJ5UMfpys8KyLQVnkV9BPO1vaubxbhc7f4XC_TdNO7jr7g@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="0000000000007a014905e059906a"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/31/22 12:08, Jue Wang wrote:
-> On Mon, May 30, 2022 at 8:49 AM Peter Xu <peterx@redhat.com> wrote:
->>
->> On Mon, May 30, 2022 at 07:33:35PM +0800, zhenwei pi wrote:
->>> A VM uses RAM of 2M huge page. Once a MCE(@HVAy in [HVAx,HVAz)) occurs, the
->>> 2M([HVAx,HVAz)) of hypervisor becomes unaccessible, but the guest poisons 4K
->>> (@GPAy in [GPAx, GPAz)) only, it may hit another 511 MCE ([GPAx, GPAz)
->>> except GPAy). This is the worse case, so I want to add
->>>   '__le32 corrupted_pages' in struct virtio_balloon_config, it is used in the
->>> next step: reporting 512 * 4K 'corrupted_pages' to the guest, the guest has
->>> a chance to isolate the other 511 pages ahead of time. And the guest
->>> actually loses 2M, fixing 512*4K seems to help significantly.
->>
->> It sounds hackish to teach a virtio device to assume one page will always
->> be poisoned in huge page granule.  That's only a limitation to host kernel
->> not virtio itself.
->>
->> E.g. there're upstream effort ongoing with enabling doublemap on hugetlbfs
->> pages so hugetlb pages can be mapped in 4k with it.  It provides potential
->> possibility to do page poisoning with huge pages in 4k too.  When that'll
->> be ready the assumption can go away, and that does sound like a better
->> approach towards this problem.
-> 
-> +1.
-> 
-> A hypervisor should always strive to minimize the guest memory loss.
-> 
-> The HugeTLB double mapping enlightened memory poisoning behavior (only
-> poison 4K out of a 2MB huge page and 4K in guest) is a much better
-> solution here. To be completely transparent, it's not _strictly_
-> required to poison the page (whatever the granularity it is) on the
-> host side, as long as the following are true:
-> 
-> 1. A hypervisor can emulate the _minimized_ (e.g., 4K) the poison to the guest.
-> 2. The host page with the UC error is "isolated" (could be PG_HWPOISON
-> or in some other way) and prevented from being reused by other
-> processes.
-> 
-> For #2, PG_HWPOISON and HugeTLB double mapping enlightened memory
-> poisoning is a good solution.
-> 
->>
->>>
->>>>
->>>> I assume when talking about "the performance memory drops a lot", you
->>>> imply that this patch set can mitigate that performance drop?
->>>>
->>>> But why do you see a performance drop? Because we might lose some
->>>> possible THP candidates (in the host or the guest) and you want to plug
->>>> does holes? I assume you'll see a performance drop simply because
->>>> poisoning memory is expensive, including migrating pages around on CE.
->>>>
->>>> If you have some numbers to share, especially before/after this change,
->>>> that would be great.
->>>>
->>>
->>> The CE storm leads 2 problems I have even seen:
->>> 1, the memory bandwidth slows down to 10%~20%, and the cycles per
->>> instruction of CPU increases a lot.
->>> 2, the THR (/proc/interrupts) interrupts frequently, the CPU has to use a
->>> lot time to handle IRQ.
->>
->> Totally no good knowledge on CMCI, but if 2) is true then I'm wondering
->> whether it's necessary to handle the interrupts that frequently.  When I
->> was reading the Intel CMCI vector handler I stumbled over this comment:
->>
->> /*
->>   * The interrupt handler. This is called on every event.
->>   * Just call the poller directly to log any events.
->>   * This could in theory increase the threshold under high load,
->>   * but doesn't for now.
->>   */
->> static void intel_threshold_interrupt(void)
->>
->> I think that matches with what I was thinking..  I mean for 2) not sure
->> whether it can be seen as a CMCI problem and potentially can be optimized
->> by adjust the cmci threshold dynamically.
-> 
-> The CE storm caused performance drop is caused by the extra cycles
-> spent by the ECC steps in memory controller, not in CMCI handling.
-> This is observed in the Google fleet as well. A good solution is to
-> monitor the CE rate closely in user space via /dev/mcelog and migrate
-> all VMs to another host once the CE rate exceeds some threshold.
-> 
-> CMCI is a _background_ interrupt that is not handled in the process
-> execution context and its handler is setup to switch to poll (1 / 5
-> min) mode if there are more than ~ a dozen CEs reported via CMCI per
-> second.
->>
->> --
->> Peter Xu
->>
+--0000000000007a014905e059906a
+Content-Transfer-Encoding: 8bit
 
-Hi, Andrew, David, Naoya
+This change adds the basic support for Broadcom's ARMv7 based
+Broadband SoC BCM6846. The initial support includes a bare-bone dts
+for dual core ARM A7 with a Broadcom uart.
 
-According to the suggestions, I'd give up the improvement of memory 
-failure on huge page in this series.
+Changes in v3:
+- Simplify dt-bindings patch subject line
+- Fix timer PPI interrupt cpu mask for dual core cpu
+- Remove unnecessary cpu_on and cpu_off properties from psci node
+- Add the missing gic registers and interrupts property to gic node
 
-Is it worth recovering corrupted pages for the guest kernel? I'd follow 
-your decision.
+Changes in v2:
+- Add new line between entries
+
+William Zhang (3):
+  dt-bindings: arm: add BCM6846 SoC
+  ARM: dts: add dts files for bcmbca SoC bcm6846
+  MAINTAINERS: add bcm6846 to bcmbca arch entry
+
+ .../bindings/arm/bcm/brcm,bcmbca.yaml         |   7 ++
+ MAINTAINERS                                   |   3 +-
+ arch/arm/boot/dts/Makefile                    |   3 +-
+ arch/arm/boot/dts/bcm6846.dtsi                | 103 ++++++++++++++++++
+ arch/arm/boot/dts/bcm96846.dts                |  30 +++++
+ 5 files changed, 143 insertions(+), 3 deletions(-)
+ create mode 100644 arch/arm/boot/dts/bcm6846.dtsi
+ create mode 100644 arch/arm/boot/dts/bcm96846.dts
 
 -- 
-zhenwei pi
+2.36.1
+
+
+--0000000000007a014905e059906a
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+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
+TltlrAeBKRJ1M9O/DY5v7L1Yrs//7XIRg/d2ZPAOSGBQzFYjYTFWwNBiR1s1zP0m2y56DPbS5gwj
+fqAN/I4PJHIvTh3zUgHXNKadYoYRiPHXfaTWO9UhzysOpQIDAQABo4IB2zCCAdcwDgYDVR0PAQH/
+BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3VyZS5nbG9i
+YWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEGCCsGAQUF
+BzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAy
+MDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93d3cuZ2xv
+YmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6hjhodHRw
+Oi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNybDAlBgNV
+HREEHjAcgRp3aWxsaWFtLnpoYW5nQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAf
+BgNVHSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUohM5GmNlGWe5wpzDxzIy
++EgzbRswDQYJKoZIhvcNAQELBQADggEBACKu9JSQAYTlmC+JTniO/C/UcXGonATI/muBjWTxtkHc
+abZtz0uwzzrRrpV+mbHLGVFFeRbXSLvcEzqHp8VomXifEZlfsE9LajSehzaqhd+np+tmUPz1RlI/
+ibZ7vW+1VF18lfoL+wHs2H0fsG6JfoqZldEWYXASXnUrs0iTLgXxvwaQj69cSMuzfFm1X5kWqWCP
+W0KkR8025J0L5L4yXfkSO6psD/k4VcTsMJHLN4RfMuaXIT6EM0cNO6h3GypyTuPf1N1X+F6WQPKb
+1u+rvdML63P9fX7e7mwwGt5klRnf8aK2VU7mIdYCcrFHaKDTW3fkG6kIgrE1wWSgiZYL400xggJt
+MIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYD
+VQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgw28eX6TfvsbNfu
+SIMwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIFklBBr5OVRDvzaDJeSmtkagLn+3
+lKtT4eNlT9WbjaTrMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIy
+MDYwMTAyMjI0NFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsG
+CWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFl
+AwQCATANBgkqhkiG9w0BAQEFAASCAQASPz4SfsI4mDbMlvaNetZiESGd7iIpAl/qO5Snyb9idhfR
+9QA9udAB8oDsCBCvJIvlWirWXbqWte8MDU/RBKKuZFBK8+d0SbQRpMkx+Er3fDF+dDJOQ8hZlYyo
+HvMEfTLMp+BAImCIm4gI2PgHGwT626WR3PRmFMyHOSscdUubxR9RK9+Z+M5MuyxBCqd6p3DDFTiK
+cHxHwW5YjTyc7GRW8fQr7L1VBrde2cNMAZKB3ikJGr+QpHttwH5y1Pq8PUItakio90Crv6rtgmV7
+oz9n76Qs+y6AxXyvuuYqKbKVyhVIhFCQo0mqUbb6WfDZV9tY4q9/V+QFD+TTj9diPAzt
+--0000000000007a014905e059906a--
