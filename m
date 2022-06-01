@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F055ECCA468
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:56:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F12D3CCA470
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:56:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349217AbiFAN4h (ORCPT
+        id S1353765AbiFAN4o (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 09:56:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59366 "EHLO
+        Wed, 1 Jun 2022 09:56:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353706AbiFANzX (ORCPT
+        with ESMTP id S1353717AbiFANzX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 1 Jun 2022 09:55:23 -0400
 Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C76C8CB38;
-        Wed,  1 Jun 2022 06:54:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E65328DDF2;
+        Wed,  1 Jun 2022 06:54:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 6B6E9CE1A1E;
-        Wed,  1 Jun 2022 13:53:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7642C385A5;
-        Wed,  1 Jun 2022 13:53:55 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 71DB5CE1A23;
+        Wed,  1 Jun 2022 13:54:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EE10C34119;
+        Wed,  1 Jun 2022 13:54:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091636;
-        bh=ctIJdYl0vlNt157giC31wNXX7wsg81SlduRBQ1uUmGs=;
+        s=k20201202; t=1654091667;
+        bh=cxgcH3SBCy9umCZCgXiZp8Edk8+bIdtQdn75xOEmsXA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I9+Vc4PBtN7MloQ9mUsfLBfaHAkG58FRjOQaqSt9yCFuD8w4zE0MWnPENzMScYGDe
-         lSMp4yVvEA81gkgCt+ClS7rt9oJFDirycqKbwA/7OKoQY7eKWKf4ecz1D76uFEmjAo
-         f1be02F5zaqjNSdQx2yX28TrqRsE5uG1RKjQXFhMAS9H8fmNRx1pHokg9uy4RSnE+i
-         udaaAnC100B9zB2GUUPkriQdqEJFIcWeDsbtrgXq1lYReKsiv4i+P2Jk853KPmiedN
-         sLBm2PrW5WW3MqrU6fycK9Cco1MnPHDTTl74qwMJNx+M+YAKAldYVRt7xsx3ORkRiu
-         +ONk6Bpc6D7ww==
+        b=DW1nxVViUr15aDfQgHMZ3GQgpQyoun7Ltm3hyoPFIX4MLnPMvM1OVfzCb0y2vx/f7
+         3MsDLKWrd8pqIrOVZASXyfwOVMkKU8mQplCToRnA02lbRlST3vC3Lpuzl7gqx1iFQ9
+         SV17/buWf0Sysbz4dbG291IRtABRWGkBNNoB/JbZdCj9v2mWRjQOqlK/37CpO7x6ow
+         nzd5+wDF4/6mCj7qAXbrsP7GEqBI1gXtJz9Q4XDwa94njeo0huO1ht5nL7CRUIUz2+
+         DWnfnHl5SzMn2NX1Fig4VAccIgVLl1nNDNVND3EpH7eC8D7UVdQh3dFXsSvQCHFKS/
+         NQyFi5YnoADSQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lv Ruyi <lv.ruyi@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>, nick.child@ibm.com,
-        maz@kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 5.18 40/49] powerpc/xics: fix refcount leak in icp_opal_init()
-Date:   Wed,  1 Jun 2022 09:52:04 -0400
-Message-Id: <20220601135214.2002647-40-sashal@kernel.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 04/48] ARM: dts: socfpga: align interrupt controller node name with dtschema
+Date:   Wed,  1 Jun 2022 09:53:37 -0400
+Message-Id: <20220601135421.2003328-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220601135214.2002647-1-sashal@kernel.org>
-References: <20220601135214.2002647-1-sashal@kernel.org>
+In-Reply-To: <20220601135421.2003328-1-sashal@kernel.org>
+References: <20220601135421.2003328-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,34 +53,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-[ Upstream commit 5dd9e27ea4a39f7edd4bf81e9e70208e7ac0b7c9 ]
+[ Upstream commit c9bdd50d2019f78bf4c1f6a79254c27771901023 ]
 
-The of_find_compatible_node() function returns a node pointer with
-refcount incremented, use of_node_put() on it when done.
+Fixes dtbs_check warnings like:
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220402013419.2410298-1-lv.ruyi@zte.com.cn
+  $nodename:0: 'intc@fffed000' does not match '^interrupt-controller(@[0-9a-f,]+)*$'
+
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Acked-by: Dinh Nguyen <dinguyen@kernel.org>
+Link: https://lore.kernel.org/r/20220317115705.450427-2-krzysztof.kozlowski@canonical.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/sysdev/xics/icp-opal.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/boot/dts/socfpga.dtsi         | 2 +-
+ arch/arm/boot/dts/socfpga_arria10.dtsi | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/powerpc/sysdev/xics/icp-opal.c b/arch/powerpc/sysdev/xics/icp-opal.c
-index bda4c32582d9..4dae624b9f2f 100644
---- a/arch/powerpc/sysdev/xics/icp-opal.c
-+++ b/arch/powerpc/sysdev/xics/icp-opal.c
-@@ -196,6 +196,7 @@ int __init icp_opal_init(void)
+diff --git a/arch/arm/boot/dts/socfpga.dtsi b/arch/arm/boot/dts/socfpga.dtsi
+index 7c1d6423d7f8..b8c5dd7860cb 100644
+--- a/arch/arm/boot/dts/socfpga.dtsi
++++ b/arch/arm/boot/dts/socfpga.dtsi
+@@ -46,7 +46,7 @@ pmu: pmu@ff111000 {
+ 		      <0xff113000 0x1000>;
+ 	};
  
- 	printk("XICS: Using OPAL ICP fallbacks\n");
+-	intc: intc@fffed000 {
++	intc: interrupt-controller@fffed000 {
+ 		compatible = "arm,cortex-a9-gic";
+ 		#interrupt-cells = <3>;
+ 		interrupt-controller;
+diff --git a/arch/arm/boot/dts/socfpga_arria10.dtsi b/arch/arm/boot/dts/socfpga_arria10.dtsi
+index 3ba431dfa8c9..f1e50d2e623a 100644
+--- a/arch/arm/boot/dts/socfpga_arria10.dtsi
++++ b/arch/arm/boot/dts/socfpga_arria10.dtsi
+@@ -38,7 +38,7 @@ pmu: pmu@ff111000 {
+ 		      <0xff113000 0x1000>;
+ 	};
  
-+	of_node_put(np);
- 	return 0;
- }
- 
+-	intc: intc@ffffd000 {
++	intc: interrupt-controller@ffffd000 {
+ 		compatible = "arm,cortex-a9-gic";
+ 		#interrupt-cells = <3>;
+ 		interrupt-controller;
 -- 
 2.35.1
 
