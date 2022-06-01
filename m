@@ -2,95 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC9CBC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 06:52:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D61B0C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 06:53:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343718AbiFAGwL (ORCPT
+        id S1349909AbiFAGxm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 02:52:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51418 "EHLO
+        Wed, 1 Jun 2022 02:53:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244719AbiFAGwK (ORCPT
+        with ESMTP id S1344194AbiFAGxk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 02:52:10 -0400
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57A722A738
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 23:52:08 -0700 (PDT)
-Received: from pendragon.ideasonboard.com (lmontsouris-659-1-41-236.w92-154.abo.wanadoo.fr [92.154.76.236])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 35F9D6D1;
-        Wed,  1 Jun 2022 08:52:06 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1654066326;
-        bh=9U51zIdFo623msxiQzlZ5c7urUVTOlg5NLFUSyleXjA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=T9U4nYh3scF7O79G7ri7mNf7EnIC7VTS5q1eVW+AyUiy4ZQok/wAL+N6UiU3ISjX/
-         fSP3Dno+DLsZtIrc5M7Q2X3r/mUsKwtVm2oIhauQSDxh4A4aOWOcNVRTyCD0+1rno3
-         X8LQDEIVHhg/VYlHnFLdfVgkbVTVnfFcyNRaxAJs=
-Date:   Wed, 1 Jun 2022 09:52:00 +0300
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Cc:     andrzej.hajda@intel.com, narmstrong@baylibre.com,
-        robert.foss@linaro.org, jonas@kwiboo.se, jernej.skrabec@gmail.com,
-        airlied@linux.ie, daniel@ffwll.ch, maxime@cerno.tech,
-        sam@ravnborg.org, alsi@bang-olufsen.dk, jagan@amarulasolutions.com,
-        biju.das.jz@bp.renesas.com, l.stach@pengutronix.de,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] drm: bridge: adv7511: Add check for
- mipi_dsi_driver_register
-Message-ID: <YpcMkIefWGCwZZJ+@pendragon.ideasonboard.com>
-References: <20220601024822.2804516-1-jiasheng@iscas.ac.cn>
+        Wed, 1 Jun 2022 02:53:40 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B97D8483B4;
+        Tue, 31 May 2022 23:53:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=hmAYDomcwUsUcR7EZzVH/pQ6WlVDw73Be6BYN2YaNzs=; b=EPULHYQ1Sz65HLz+Gdj48QLoFY
+        OaPxOAxvuSWJYEX/DHgJg5liasTp4WhjxR0nzv+G3EMnz4qV1sK8AWtv/HgAUgxeyTa4a6M17Bqkt
+        yopMmQXT+OcZ4gkbOKvdsRR3cSyFEiyQrIGCbgCzRs8wKWG4761q6ohrP2oL4lWm4mIlHqc5sRL9h
+        XQYIB5yNDDsObZPwsF7kpd55oQOEe7Bt46Q3qJUxFeymT/DBsBz1gj1AZ8WSOzx1bQTF9R8BKIddk
+        9om0KgCiW4lKwJRsvOmI0hQxW6tldSG47vi0EEa26r48NwnHT1Ixs6W8h+rKJcHDMYnfZxIBQfOx+
+        aJroz8ag==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nwIDu-003hBF-AM; Wed, 01 Jun 2022 06:52:59 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 30A3A98137D; Wed,  1 Jun 2022 08:52:51 +0200 (CEST)
+Date:   Wed, 1 Jun 2022 08:52:51 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     "Durrant, Paul" <pdurrant@amazon.co.uk>
+Cc:     "Allister, Jack" <jalliste@amazon.com>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "diapop@amazon.co.uk" <diapop@amazon.co.uk>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "jmattson@google.com" <jmattson@google.com>,
+        "joro@8bytes.org" <joro@8bytes.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "metikaya@amazon.co.uk" <metikaya@amazon.co.uk>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "pbonzini@redhat.com" <pbonzini@redhat.com>,
+        "rkrcmar@redhat.com" <rkrcmar@redhat.com>,
+        "sean.j.christopherson@intel.com" <sean.j.christopherson@intel.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "vkuznets@redhat.com" <vkuznets@redhat.com>,
+        "wanpengli@tencent.com" <wanpengli@tencent.com>,
+        "x86@kernel.org" <x86@kernel.org>
+Subject: Re: ...\n
+Message-ID: <YpcMw2TgNWzrcoRm@worktop.programming.kicks-ass.net>
+References: <YpYaYK7a28DFT5Ne@hirez.programming.kicks-ass.net>
+ <20220531140236.1435-1-jalliste@amazon.com>
+ <YpYpxzt4rmG+LFy9@hirez.programming.kicks-ass.net>
+ <059ab3327ac440479ecfdf49fa054347@EX13D32EUC003.ant.amazon.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220601024822.2804516-1-jiasheng@iscas.ac.cn>
+In-Reply-To: <059ab3327ac440479ecfdf49fa054347@EX13D32EUC003.ant.amazon.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jiasheng,
-
-Thank you for the patch.
-
-On Wed, Jun 01, 2022 at 10:48:22AM +0800, Jiasheng Jiang wrote:
-> As mipi_dsi_driver_register could return error if fails,
-> it should be better to check the return value and return error
-> if fails.
+On Tue, May 31, 2022 at 02:52:04PM +0000, Durrant, Paul wrote:
+> > -----Original Message-----
+> > From: Peter Zijlstra <peterz@infradead.org>
+> > Sent: 31 May 2022 15:44
+> > To: Allister, Jack <jalliste@amazon.com>
+> > Cc: bp@alien8.de; diapop@amazon.co.uk; hpa@zytor.com; jmattson@google.com; joro@8bytes.org;
+> > kvm@vger.kernel.org; linux-kernel@vger.kernel.org; metikaya@amazon.co.uk; mingo@redhat.com;
+> > pbonzini@redhat.com; rkrcmar@redhat.com; sean.j.christopherson@intel.com; tglx@linutronix.de;
+> > vkuznets@redhat.com; wanpengli@tencent.com; x86@kernel.org
+> > Subject: RE: [EXTERNAL]...\n
+> > 
+> > 
+> > On Tue, May 31, 2022 at 02:02:36PM +0000, Jack Allister wrote:
+> > > The reasoning behind this is that you may want to run a guest at a
+> > > lower CPU frequency for the purposes of trying to match performance
+> > > parity between a host of an older CPU type to a newer faster one.
+> > 
+> > That's quite ludicrus. Also, then it should be the host enforcing the
+> > cpufreq, not the guest.
 > 
-> Fixes: 1e4d58cd7f88 ("drm/bridge: adv7533: Create a MIPI DSI device")
-> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-> ---
->  drivers/gpu/drm/bridge/adv7511/adv7511_drv.c | 9 +++++++--
->  1 file changed, 7 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c b/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
-> index 5bb9300040dd..795855b41eb2 100644
-> --- a/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
-> +++ b/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
-> @@ -1392,8 +1392,13 @@ static struct i2c_driver adv7511_driver = {
->  
->  static int __init adv7511_init(void)
->  {
-> -	if (IS_ENABLED(CONFIG_DRM_MIPI_DSI))
-> -		mipi_dsi_driver_register(&adv7533_dsi_driver);
-> +	int ret;
-> +
-> +	if (IS_ENABLED(CONFIG_DRM_MIPI_DSI)) {
-> +		ret = mipi_dsi_driver_register(&adv7533_dsi_driver);
-> +		if (ret)
-> +			return ret;
-> +	}
->  
->  	return i2c_add_driver(&adv7511_driver);
+> I'll bite... What's ludicrous about wanting to run a guest at a lower
+> CPU freq to minimize observable change in whatever workload it is
+> running?
 
-While at it, should this then call mipi_dsi_driver_unregister() on
-failure ?
+*why* would you want to do that? Everybody wants their stuff done
+faster.
 
->  }
-> -- 
-> 2.25.1
-> 
+If this is some hare-brained money scheme; must not give them if they
+didn't pay up then I really don't care.
 
--- 
-Regards,
+On top of that, you can't hide uarch differences with cpufreq capping.
 
-Laurent Pinchart
+Also, it is probably more power efficient to let it run faster and idle
+more, so you're not being environmental either.
