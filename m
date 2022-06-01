@@ -2,129 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B57D4C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 12:45:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3114C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 12:45:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353034AbiFAMpM (ORCPT
+        id S1353030AbiFAMpy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 08:45:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57370 "EHLO
+        Wed, 1 Jun 2022 08:45:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353091AbiFAMo7 (ORCPT
+        with ESMTP id S243984AbiFAMpt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 08:44:59 -0400
-Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0790750052;
-        Wed,  1 Jun 2022 05:44:56 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 8B90E5C0276;
-        Wed,  1 Jun 2022 08:44:53 -0400 (EDT)
-Received: from imap44 ([10.202.2.94])
-  by compute4.internal (MEProxy); Wed, 01 Jun 2022 08:44:53 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=flygoat.com; h=
-        cc:cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm2; t=1654087493; x=
-        1654173893; bh=ub+c6okPZwdQLkIW5lMu7hQ1gS1h1Ff56ZsM8OV2VO4=; b=v
-        OqtjAVU8xRqiUC+PxkOe5oem6WnQC7gCDtAfL5i+pqaMu+jNIqHZz0h5YYgnvvMP
-        EiAJftkitrYwf55KHLQsj3YbS/tmMI9t56/ncBu4MZBA4bmXaAAKbz8OBYMA5xJH
-        1LXIg60eTiKCSFQiMWIsCgfupeMnRyd5o8SV+BM51Uza+hCn1JnusviUcjdq2qWK
-        Uu+VsX6Nxumj2YRqpQyAmyyH9o1jSsvx1OoU7ZMcAH0ADNHm0ckpRxpFsmgJvZbM
-        kVEyWFgOZPUsMWTph/i7Zy+MHWJkcJqrXeEdYjE1l1aYHfftXnX8oe069yoNV+Rs
-        CYyrQoqKn2Ezwg+e2TEGA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:feedback-id:feedback-id:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1654087493; x=
-        1654173893; bh=ub+c6okPZwdQLkIW5lMu7hQ1gS1h1Ff56ZsM8OV2VO4=; b=I
-        Fl7RJvKobbryZfYJapdV68pyUr3ygTLE/cgiNTIrYWYSljpPRRlbToJpeb9UO88Z
-        hcD+I0SDhPmT+Vzr53T4WPSoa4XBVuWU9Amr1k+J70lrZEcXYdSxv6qyX7vgsmwJ
-        IPNqJFSTO9qyUPZQ3QOx4C1rppQsbvigGLzfeyPb0psag9MSanLEzlk8X59Y1UQY
-        h7FCFr6PTtPGy0n2Bu7NK8eAFvApqDTPU7Q4OAJRsgsKSKUvr7qsp5u9kkCGe2FQ
-        LU7O8Ps/TIHF8PjB7HoSCWxv4dEhcKYhajpI0m+HJ5MgshCLhToiPG7nfilxPFgG
-        SMz2HOerunFJzADKkKbUw==
-X-ME-Sender: <xms:RF-XYv7rIKl12oTZCAX0eaJ_rYiFwT8wWqzhaomzDDG0Zzr3iiVQNw>
-    <xme:RF-XYk7LKLHLNLTSGJ__rRxbT13sONW68kyIYMI9GqC2trKB7XRwk1OWCnoSVrVG0
-    x6B4h5wQdsrOe1qbS8>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrledtgdehhecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefofgggkfgjfhffhffvvefutgfgsehtqhertderreejnecuhfhrohhmpedflfhi
-    rgiguhhnucgjrghnghdfuceojhhirgiguhhnrdihrghnghesfhhlhihgohgrthdrtghomh
-    eqnecuggftrfgrthhtvghrnhepudefgeeftedugeehffdtheefgfevffelfefghefhjeeu
-    geevtefhudduvdeihefgnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrg
-    hilhhfrhhomhepjhhirgiguhhnrdihrghnghesfhhlhihgohgrthdrtghomh
-X-ME-Proxy: <xmx:RF-XYmf8Thyw4HD_IE231ADPfsUfb6ixsfJdM5RLZn_UoX_JPI8MzQ>
-    <xmx:RF-XYgJuPUrjLjU9M2GqmA-nrlSWxww6fgod_rTRauYocyz7j7sNcQ>
-    <xmx:RF-XYjJnGS9YfkjcdheEQT5m386HJ_7mSwVoT1DVVJeuuvbAajGB6w>
-    <xmx:RV-XYk6o3dQokokW8sL6mtBNAbrltL1loa9JphRu2jvoG2qxr8_5Vw>
-Feedback-ID: ifd894703:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id D413436A006F; Wed,  1 Jun 2022 08:44:52 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.7.0-alpha0-591-gfe6c3a2700-fm-20220427.001-gfe6c3a27
-Mime-Version: 1.0
-Message-Id: <2c21b163-9eea-4221-b92c-afe471853add@www.fastmail.com>
-In-Reply-To: <20220601100005.2989022-1-chenhuacai@loongson.cn>
-References: <20220601100005.2989022-1-chenhuacai@loongson.cn>
-Date:   Wed, 01 Jun 2022 13:44:32 +0100
-From:   "Jiaxun Yang" <jiaxun.yang@flygoat.com>
-To:     "Huacai Chen" <chenhuacai@loongson.cn>,
-        "Arnd Bergmann" <arnd@arndb.de>,
-        "Andy Lutomirski" <luto@kernel.org>,
-        "Thomas Gleixner" <tglx@linutronix.de>,
-        "Peter Zijlstra" <peterz@infradead.org>,
-        "Andrew Morton" <akpm@linux-foundation.org>,
-        "David Airlie" <airlied@linux.ie>,
-        "Jonathan Corbet" <corbet@lwn.net>,
-        "Linus Torvalds" <torvalds@linux-foundation.org>
-Cc:     linux-arch@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, "Xuefeng Li" <lixuefeng@loongson.cn>,
-        "Yanteng Si" <siyanteng@loongson.cn>,
-        "Huacai Chen" <chenhuacai@gmail.com>,
-        "Guo Ren" <guoren@kernel.org>, "Xuerui Wang" <kernel@xen0n.name>,
-        "Stephen Rothwell" <sfr@canb.auug.org.au>
-Subject: Re: [PATCH V12 00/24] arch: Add basic LoongArch support
-Content-Type: text/plain;charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+        Wed, 1 Jun 2022 08:45:49 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9F325003E;
+        Wed,  1 Jun 2022 05:45:47 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id gi33so3536424ejc.3;
+        Wed, 01 Jun 2022 05:45:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=3gXXAFCIgEtF+YzTyCewnTjN33A3GV3iuvrjUd27wQQ=;
+        b=gta6eDw43Uu7sglXZL/Vx2eKNZv/oPKGubWeykfGXP6+d5MRPMny64oKmMnBVj1ov2
+         WBL+iirMwlra8edJZnYxIOoIQ+8fT9uqyc0vdTXiddtI5+dqrGKxPTEgZzRaq7luDAgW
+         Xbes5Fr0LjMEQOnXST9oMj7xnFY4gwNGyBwYzLwh3XRe3rysTNoaTaIJkSEtAtcG52IY
+         j7zMyk3iHiwwhxX7XXJeotHqR/xNBwJwhjlLqqwdHbJMW0Q6Ah3hCeYIQXfzX5inb5tu
+         NWNJLs72EwPyi5ZAzHA+k5531RYCDHMCs7XtmvxEfrpgZgFOXJFeJv1Uj0wa5qdZEjAh
+         wRxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=3gXXAFCIgEtF+YzTyCewnTjN33A3GV3iuvrjUd27wQQ=;
+        b=0RXi64uLfvqRkQWhz7APJFHjXjJE+8mKXx2JaHIJKMQdW6EDTgOdFSY5blIOxyOzWa
+         V6Kd+gjmSC9doVTDCUPDyjJq2IyY7gCjhsHuqxEHGgTJOdXPd6+MyM7NJIxFLkbQDScl
+         ZEWwRbz8wDvxIl+0Tf2nv2xPWq0z2sdYXe2QJxiqty6b+dUJAZwpoqHFaBLUQF319eOA
+         jHSvvZU0SZMKXp7h+GPHswCTPQpBlOnY1juafRIOxcCC0QNgRc2+mmzTZ59nxGPvBHgZ
+         1Z9YC8UB0E34XGOh3kYkxhcLUi9dmKdmqtLpU6fLcv5XPwhvFcVGnP2sm2Iwq8HMvoXR
+         1uGA==
+X-Gm-Message-State: AOAM532Uysx7UVi0MijWuveKCSVzfBg6Er85/aAaNPCf1+Qp+Tq1j0D1
+        Jz390vsi/dFxR8BaBUpOR2I=
+X-Google-Smtp-Source: ABdhPJw2hNXssU1Die826uY3QfwCGMNWy9eIR9jcXgxN1q7weKBiW4r00uIvzYLOojrC71wHndfrzQ==
+X-Received: by 2002:a17:906:2416:b0:6fe:a0be:91d5 with SMTP id z22-20020a170906241600b006fea0be91d5mr54759460eja.132.1654087544558;
+        Wed, 01 Jun 2022 05:45:44 -0700 (PDT)
+Received: from [192.168.178.21] (p5b0ea02f.dip0.t-ipconnect.de. [91.14.160.47])
+        by smtp.gmail.com with ESMTPSA id gk2-20020a17090790c200b006febce7081esm677798ejb.177.2022.06.01.05.45.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 01 Jun 2022 05:45:43 -0700 (PDT)
+Message-ID: <33aba213-b6ad-4a15-9272-c62f5dfb1fb7@gmail.com>
+Date:   Wed, 1 Jun 2022 14:45:42 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [Linaro-mm-sig] Re: [PATCH] dma-fence: allow dma fence to have
+ their own lock
+Content-Language: en-US
+To:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
+Cc:     Sumit Semwal <sumit.semwal@linaro.org>,
+        Gustavo Padovan <gustavo@padovan.org>,
+        Tomasz Figa <tfiga@chromium.org>,
+        Ricardo Ribalda <ribalda@chromium.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org
+References: <20220530142232.2871634-1-senozhatsky@chromium.org>
+ <7eee4274-bd69-df8d-9067-771366217804@amd.com> <YpWCvniLzJfcp684@google.com>
+From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <ckoenig.leichtzumerken@gmail.com>
+In-Reply-To: <YpWCvniLzJfcp684@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Am 31.05.22 um 04:51 schrieb Sergey Senozhatsky:
+> On (22/05/30 16:55), Christian König wrote:
+>> Am 30.05.22 um 16:22 schrieb Sergey Senozhatsky:
+>>> [SNIP]
+>>> So the `lock` should have at least same lifespan as the DMA fence
+>>> that borrows it, which is impossible to guarantee in our case.
+>> Nope, that's not correct. The lock should have at least same lifespan as the
+>> context of the DMA fence.
+> How does one know when it's safe to release the context? DMA fence
+> objects are still transparently refcount-ed and "live their own lives",
+> how does one synchronize lifespans?
 
+Well, you don't.
 
-=E5=9C=A82022=E5=B9=B46=E6=9C=881=E6=97=A5=E5=85=AD=E6=9C=88 =E4=B8=8A=E5=
-=8D=8810:59=EF=BC=8CHuacai Chen=E5=86=99=E9=81=93=EF=BC=9A
-> LoongArch is a new RISC ISA, which is a bit like MIPS or RISC-V.
-> LoongArch includes a reduced 32-bit version (LA32R), a standard 32-bit
-> version (LA32S) and a 64-bit version (LA64). LoongArch use ACPI as its
-> boot protocol LoongArch-specific interrupt controllers (similar to API=
-C)
-> are already added in the next revision of ACPI Specification (current
-> revision is 6.4).
->
+If you have a dynamic context structure you need to reference count that 
+as well. In other words every time you create a fence in your context 
+you need to increment the reference count and every time a fence is 
+release you decrement it.
 
-I=E2=80=99ve been reviewing all LA changes in past week and now I=E2=80=99=
-m giving out R-b
-for every patch I had reviewed in detail. (I don=E2=80=99t really now an=
-ything about
- mm and processes so I just leave them).
+If you have a static context structure like most drivers have then you 
+must make sure that all fences at least signal before you unload your 
+driver. We still somewhat have a race when you try to unload a driver 
+and the fence_ops structure suddenly disappear, but we currently live 
+with that.
 
-I also tried to run the kernel on my machine with Huacai=E2=80=99s next =
-tree and
-Xuerui=E2=80=99s BPI patch.
+Apart from that you are right, fences can live forever and we need to 
+deal with that.
 
-I watched the =E2=80=9CNew World=E2=80=9D of LoongArch grow up from scra=
-tch. And I must
-say it=E2=80=99s a epic work showing the collaboration between community=
- and Loongson
-company. Especially Xuerui who invested numerous days and nights without=
- any
-return.
+Regards,
+Christian.
 
-Thanks to all people involved.
-
-- Jiaxun
+> _______________________________________________
+> Linaro-mm-sig mailing list -- linaro-mm-sig@lists.linaro.org
+> To unsubscribe send an email to linaro-mm-sig-leave@lists.linaro.org
 
