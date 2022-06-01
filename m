@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 900BDCCA470
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:55:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AF03C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:55:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353620AbiFANzV (ORCPT
+        id S1353803AbiFANz2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 09:55:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59308 "EHLO
+        Wed, 1 Jun 2022 09:55:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353786AbiFANyc (ORCPT
+        with ESMTP id S1353783AbiFANyc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 1 Jun 2022 09:54:32 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FD24880D3;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FC79880D2;
         Wed,  1 Jun 2022 06:54:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 82FC6615C2;
-        Wed,  1 Jun 2022 13:53:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA2D3C3411E;
-        Wed,  1 Jun 2022 13:53:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 350A261577;
+        Wed,  1 Jun 2022 13:53:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47836C385B8;
+        Wed,  1 Jun 2022 13:53:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091612;
-        bh=SIzEPNmhi3uXel6os5Hdua5jcjP8PY79NTHws9hQrjE=;
+        s=k20201202; t=1654091619;
+        bh=/j62wDdCZ6jM4TCnRCrFXNWm9VQZyd9sGMYL8iWTtiw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=schzvg+9xNdHfJipX2ibmAFcR8qV0w98WTonlocf3Y4MR6yCA1mXUEQN1ykt5/zXa
-         quWJZGTcz5GbdZGEOgW637X1WMQORweWRnrOx/cHLGOk+shEGH6Pd1s5oA7nOgUBPs
-         e46/YQqWHuiHwe0/63B7bAdv4/ae9EJOGyyCZmX0LKgyvRzNd3yKlkvuGGDFGfW49I
-         iKygt/3zd94vIbXAgkKhN2BxIvPrwmCCCHV+G7QWCcWKWj08pEV/gjqHCCA0JTm52l
-         aKIe/puNXJ4i5WHDhaS3nzvz64reYLpTZrL18UhuhXhpWSNio/e1V/04TaOpUoEXWX
-         W6PA0J5MfUAvQ==
+        b=P9zYJWWvQ+FBaK14Wy6gQOzaYNrXveC8PpiPmk8tHPgtuzb8kpIglG0ypwx4Mw/IX
+         Ui3BPrkZUZfEgR8/vbGMw7IPN22hCgN2X+IBG0Vso7gngRyW2qg51LNhHyY73kikUz
+         zI9IPqzRWlgsQ/1vU4uwlZKkDdqM9fd52kHzT2TBOLMYUjQjQ+T1DL/yjvXoS6UB50
+         UQ9g+ZIGw5uq1jVSHbpdmdUh5BQ1YJnutmFLlU/icFTBdzAlshz67FQaHbuTDesnPl
+         NBBInGDnTXDyQpIhizFg0ICbg1oRgbZ/e2OuLX5KH6dLi23JyLJ+5Gko28Rd5092jH
+         NEodPqzCsf0uA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Nicholas Piggin <npiggin@gmail.com>,
-        Fabiano Rosas <farosas@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>, aik@ozlabs.ru, clg@kaod.org,
-        seanjc@google.com, bharata@linux.ibm.com,
-        maciej.szmigiero@oracle.com, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 5.18 33/49] KVM: PPC: Book3S HV Nested: L2 LPCR should inherit L1 LPES setting
-Date:   Wed,  1 Jun 2022 09:51:57 -0400
-Message-Id: <20220601135214.2002647-33-sashal@kernel.org>
+Cc:     Ricardo Koller <ricarkol@google.com>,
+        Oliver Upton <oupton@google.com>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        catalin.marinas@arm.com, will@kernel.org, eric.auger@redhat.com,
+        yuzhe@nfschina.com, justin.he@arm.com,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu
+Subject: [PATCH AUTOSEL 5.18 35/49] KVM: arm64: vgic: Do not ignore vgic_its_restore_cte failures
+Date:   Wed,  1 Jun 2022 09:51:59 -0400
+Message-Id: <20220601135214.2002647-35-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135214.2002647-1-sashal@kernel.org>
 References: <20220601135214.2002647-1-sashal@kernel.org>
@@ -55,58 +55,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicholas Piggin <npiggin@gmail.com>
+From: Ricardo Koller <ricarkol@google.com>
 
-[ Upstream commit 2852ebfa10afdcefff35ec72c8da97141df9845c ]
+[ Upstream commit a1ccfd6f6e06eceb632cc29c4f15a32860f05a7e ]
 
-The L1 should not be able to adjust LPES mode for the L2. Setting LPES
-if the L0 needs it clear would cause external interrupts to be sent to
-L2 and missed by the L0.
+Restoring a corrupted collection entry (like an out of range ID) is
+being ignored and treated as success. More specifically, a
+vgic_its_restore_cte failure is treated as success by
+vgic_its_restore_collection_table.  vgic_its_restore_cte uses positive
+and negative numbers to return error, and +1 to return success.  The
+caller then uses "ret > 0" to check for success.
 
-Clearing LPES when it may be set, as typically happens with XIVE enabled
-could cause a performance issue despite having no native XIVE support in
-the guest, because it will cause mediated interrupts for the L2 to be
-taken in HV mode, which then have to be injected.
+Fix this by having vgic_its_restore_cte only return negative numbers on
+error.  Do this by changing alloc_collection return codes to only return
+negative numbers on error.
 
-Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
-Reviewed-by: Fabiano Rosas <farosas@linux.ibm.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220303053315.1056880-7-npiggin@gmail.com
+Signed-off-by: Ricardo Koller <ricarkol@google.com>
+Reviewed-by: Oliver Upton <oupton@google.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220510001633.552496-4-ricarkol@google.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kvm/book3s_hv.c        | 4 ++++
- arch/powerpc/kvm/book3s_hv_nested.c | 3 +--
- 2 files changed, 5 insertions(+), 2 deletions(-)
+ arch/arm64/kvm/vgic/vgic-its.c | 27 +++++++++++++++++++++++----
+ 1 file changed, 23 insertions(+), 4 deletions(-)
 
-diff --git a/arch/powerpc/kvm/book3s_hv.c b/arch/powerpc/kvm/book3s_hv.c
-index 6fa518f6501d..43af871383c2 100644
---- a/arch/powerpc/kvm/book3s_hv.c
-+++ b/arch/powerpc/kvm/book3s_hv.c
-@@ -5283,6 +5283,10 @@ static int kvmppc_core_init_vm_hv(struct kvm *kvm)
- 		kvm->arch.host_lpcr = lpcr = mfspr(SPRN_LPCR);
- 		lpcr &= LPCR_PECE | LPCR_LPES;
- 	} else {
-+		/*
-+		 * The L2 LPES mode will be set by the L0 according to whether
-+		 * or not it needs to take external interrupts in HV mode.
-+		 */
- 		lpcr = 0;
- 	}
- 	lpcr |= (4UL << LPCR_DPFD_SH) | LPCR_HDICE |
-diff --git a/arch/powerpc/kvm/book3s_hv_nested.c b/arch/powerpc/kvm/book3s_hv_nested.c
-index c943a051c6e7..265bb30a0af2 100644
---- a/arch/powerpc/kvm/book3s_hv_nested.c
-+++ b/arch/powerpc/kvm/book3s_hv_nested.c
-@@ -261,8 +261,7 @@ static void load_l2_hv_regs(struct kvm_vcpu *vcpu,
- 	/*
- 	 * Don't let L1 change LPCR bits for the L2 except these:
- 	 */
--	mask = LPCR_DPFD | LPCR_ILE | LPCR_TC | LPCR_AIL | LPCR_LD |
--		LPCR_LPES | LPCR_MER;
-+	mask = LPCR_DPFD | LPCR_ILE | LPCR_TC | LPCR_AIL | LPCR_LD | LPCR_MER;
+diff --git a/arch/arm64/kvm/vgic/vgic-its.c b/arch/arm64/kvm/vgic/vgic-its.c
+index 2e13402be3bd..eeee272729dd 100644
+--- a/arch/arm64/kvm/vgic/vgic-its.c
++++ b/arch/arm64/kvm/vgic/vgic-its.c
+@@ -976,15 +976,16 @@ static bool vgic_its_check_id(struct vgic_its *its, u64 baser, u32 id,
+ 	return ret;
+ }
  
- 	/*
- 	 * Additional filtering is required depending on hardware
++/*
++ * Add a new collection into the ITS collection table.
++ * Returns 0 on success, and a negative error value for generic errors.
++ */
+ static int vgic_its_alloc_collection(struct vgic_its *its,
+ 				     struct its_collection **colp,
+ 				     u32 coll_id)
+ {
+ 	struct its_collection *collection;
+ 
+-	if (!vgic_its_check_id(its, its->baser_coll_table, coll_id, NULL))
+-		return E_ITS_MAPC_COLLECTION_OOR;
+-
+ 	collection = kzalloc(sizeof(*collection), GFP_KERNEL_ACCOUNT);
+ 	if (!collection)
+ 		return -ENOMEM;
+@@ -1078,7 +1079,12 @@ static int vgic_its_cmd_handle_mapi(struct kvm *kvm, struct vgic_its *its,
+ 
+ 	collection = find_collection(its, coll_id);
+ 	if (!collection) {
+-		int ret = vgic_its_alloc_collection(its, &collection, coll_id);
++		int ret;
++
++		if (!vgic_its_check_id(its, its->baser_coll_table, coll_id, NULL))
++			return E_ITS_MAPC_COLLECTION_OOR;
++
++		ret = vgic_its_alloc_collection(its, &collection, coll_id);
+ 		if (ret)
+ 			return ret;
+ 		new_coll = collection;
+@@ -1233,6 +1239,10 @@ static int vgic_its_cmd_handle_mapc(struct kvm *kvm, struct vgic_its *its,
+ 		if (!collection) {
+ 			int ret;
+ 
++			if (!vgic_its_check_id(its, its->baser_coll_table,
++						coll_id, NULL))
++				return E_ITS_MAPC_COLLECTION_OOR;
++
+ 			ret = vgic_its_alloc_collection(its, &collection,
+ 							coll_id);
+ 			if (ret)
+@@ -2461,6 +2471,11 @@ static int vgic_its_save_cte(struct vgic_its *its,
+ 	return kvm_write_guest_lock(its->dev->kvm, gpa, &val, esz);
+ }
+ 
++/*
++ * Restore a collection entry into the ITS collection table.
++ * Return +1 on success, 0 if the entry was invalid (which should be
++ * interpreted as end-of-table), and a negative error value for generic errors.
++ */
+ static int vgic_its_restore_cte(struct vgic_its *its, gpa_t gpa, int esz)
+ {
+ 	struct its_collection *collection;
+@@ -2487,6 +2502,10 @@ static int vgic_its_restore_cte(struct vgic_its *its, gpa_t gpa, int esz)
+ 	collection = find_collection(its, coll_id);
+ 	if (collection)
+ 		return -EEXIST;
++
++	if (!vgic_its_check_id(its, its->baser_coll_table, coll_id, NULL))
++		return -EINVAL;
++
+ 	ret = vgic_its_alloc_collection(its, &collection, coll_id);
+ 	if (ret)
+ 		return ret;
 -- 
 2.35.1
 
