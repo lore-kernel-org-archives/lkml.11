@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6CE8C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 07:19:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39542C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 07:19:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350270AbiFAHTj (ORCPT
+        id S1348855AbiFAHTp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 03:19:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36788 "EHLO
+        Wed, 1 Jun 2022 03:19:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350267AbiFAHT3 (ORCPT
+        with ESMTP id S1350290AbiFAHTc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 03:19:29 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 134CC4E3B3
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 00:19:27 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id m20so1819747ejj.10
-        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 00:19:26 -0700 (PDT)
+        Wed, 1 Jun 2022 03:19:32 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32E9D4F9DE
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 00:19:29 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id n10so1858756ejk.5
+        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 00:19:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=q4LiBXwvH4EX3rvx7Dp/YqRrRBsUkNnaPJfoXallj8A=;
-        b=IZyHiDMs/N+5e/vuN6kSchZpVDt8CgBfnXarfJcJJhIzygQU+lU/UAKKx1ZhfhTH7y
-         WlkD4q+a8/Ea532icKPdCeyCg+m7kyIWGIK7EbYCh/L4YX8Etow7m/xSC9CnoENNk/9h
-         7al2bT9TZeVv8TfpxjAMozPhsMxJWd1UWIa8kzOWfH47bw+klqtavcZoj9AGGicNjE2R
-         KanXllcdbpyvnHXyDpvgx/EqcnTn2Ou7AD5iy81IGO/9aOktgL1wHHH4JTjtz7NZ722h
-         +/dYUoS1p3vzOOo7EjdsG/IvqypR+J1ug63AjNBoAg9cth1EjMmTYO8lO5hhIU4i2tet
-         eUQA==
+        bh=nAMM4lRuazejy0EDJVvU8shLpINg8wAqjAlfsJ24pMs=;
+        b=MFhEN9UtsamUd6w8K2RVOWB94T0PodLHRCO2sIU63o/34w555v55HCkvO11Lh/RM0a
+         3+VPXnzbdjMQd00RL4JJvKoFgTTFha+byS9O5dECxgzSALna9VVe9xpuKCMkIqroIlOc
+         BRmibRDM9bpKF7umvnxkOKrL2GzITJwd7DvpKna1ZXHlcyGng4lOaFv0pnJ/5Yeh2+Do
+         JNX9kE13mnSKtoZBhPyVniz45n1dqdAr9l1hloDscFsHII4s5xC3OkOSdLsrBJoRGTmU
+         3JEquJhaX13Nh7BWl6+zOWV3qoOvXplE1Ezgbi22YtzGmge2p+dcVWRRUKNOIF24MWT4
+         dh7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=q4LiBXwvH4EX3rvx7Dp/YqRrRBsUkNnaPJfoXallj8A=;
-        b=P2ZtIYEAeAWzkoJt8l9NKbdiwlTHkIxTbZlyDvu3Ax2Dsn/x9lsypyNrp2LKhJtY/x
-         +wuEbkEdQnkVjbjEoCVu5MNOUpWx7HEFFuFRyWh3JjHthaFNz3DVU3ZzjzWFwsvJRXNc
-         o2MHLYZUrZOq0NYDd0kHPh7XYN2duahJ0sGBeoogqO59qjhbyMLjJXglqgBwNWrb9Js1
-         pQTahzxvZekSi0E4Hzff6zCeY6BoYD2mev02SRJZRjBcXfgZQpzN62TkCTYb2yocvUfP
-         yATabSvjVx25EHi/7AjGADopVIaMLCPiWNHRbwStPSrZqjN2tjw0OgWPppsXk4bCJTAF
-         UITw==
-X-Gm-Message-State: AOAM532QU5pCDXqNXCvEOKG8rOcC7MEDOcc38y/wWp/Y1uuyWI0+44AH
-        FdaA2zbcJVZ9v6cpaK65XSSW4w==
-X-Google-Smtp-Source: ABdhPJy99V6A/3kDbpSkpU0K/h7gHo38OoevIC2UrG6ogktLyOYPwq7LaNJ/8pwm2uZWJpjCsa0tbA==
-X-Received: by 2002:a17:906:99c5:b0:6fe:b069:4ab6 with SMTP id s5-20020a17090699c500b006feb0694ab6mr49112187ejn.436.1654067965500;
-        Wed, 01 Jun 2022 00:19:25 -0700 (PDT)
+        bh=nAMM4lRuazejy0EDJVvU8shLpINg8wAqjAlfsJ24pMs=;
+        b=jck2mIwkPsZj0gStW2UC6oHxHdqAj1qoBOUoMMeTQQSrP4XDRuE2HzFIJ/UZXqzcLr
+         LcmbXFLzbM6+J9fvQIYUMDn/6nTI1mO7g+hlKkAl4T6s6gF1EcO/h9zd/aHbCbzOZ1jw
+         FKpKz1LDF/8VwPn7v7Kjj+A2X81MhSY0TEo/sfA+Q4VVjPo1ceg0eEahPyC8bBiU4nZO
+         ql5qk5j9MFE/L02wH+D3kMtMVGT41kmGW0ERuOXTgJXHotg0HSW8WzKuR3ZWJDh7pCkj
+         nq5DvGn/5HQP+9xqHJG7F9RQsHl7PA0C3LKm9FK/sgbpjGsoJr9HtNenBxt53DvUC82G
+         2wUA==
+X-Gm-Message-State: AOAM531Vk0tXK+b59kikV8YZyi3Skw34Ib/EDiY9BAEqfjKAGVPbsZSo
+        WjA971/uhlArlepNmQ4tO9lRVg==
+X-Google-Smtp-Source: ABdhPJx3HWipshhxFlcuIAl26zCYvNK1o9wkgX//LLgCC/LPRIUoXZ26kEjL6jpWBYjstExVcgbU1A==
+X-Received: by 2002:a17:907:6d0e:b0:708:3ada:184c with SMTP id sa14-20020a1709076d0e00b007083ada184cmr318627ejc.192.1654067967665;
+        Wed, 01 Jun 2022 00:19:27 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id f27-20020a17090624db00b006f3ef214dcdsm358486ejb.51.2022.06.01.00.19.24
+        by smtp.gmail.com with ESMTPSA id f27-20020a17090624db00b006f3ef214dcdsm358486ejb.51.2022.06.01.00.19.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Jun 2022 00:19:25 -0700 (PDT)
+        Wed, 01 Jun 2022 00:19:27 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Sebastian Reichel <sre@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
@@ -57,9 +57,9 @@ To:     Sebastian Reichel <sre@kernel.org>,
         Dmitry Osipenko <digetx@gmail.com>, linux-pm@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 2/4] dt-bindings: power: supply: qcom,pm8941: use regulator schema for child node
-Date:   Wed,  1 Jun 2022 09:19:09 +0200
-Message-Id: <20220601071911.6435-2-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 4/4] dt-bindings: power: supply: summit,smb347: use absolute path to schema
+Date:   Wed,  1 Jun 2022 09:19:11 +0200
+Message-Id: <20220601071911.6435-4-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220601071911.6435-1-krzysztof.kozlowski@linaro.org>
 References: <20220601071911.6435-1-krzysztof.kozlowski@linaro.org>
@@ -69,27 +69,27 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The 'usb-otg-vbus' child node is a regulator so reference the regulator
-schema for proper evaluation.
+Reference regulator schema by absolute path, as expected by DT schema
+coding style.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- .../devicetree/bindings/power/supply/qcom,pm8941-charger.yaml   | 2 +-
+ .../devicetree/bindings/power/supply/summit,smb347-charger.yaml | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/power/supply/qcom,pm8941-charger.yaml b/Documentation/devicetree/bindings/power/supply/qcom,pm8941-charger.yaml
-index caeff68c66d5..cd6364d65751 100644
---- a/Documentation/devicetree/bindings/power/supply/qcom,pm8941-charger.yaml
-+++ b/Documentation/devicetree/bindings/power/supply/qcom,pm8941-charger.yaml
-@@ -121,7 +121,7 @@ properties:
-     description: Reference to the regulator supplying power to the USB_OTG_IN pin.
+diff --git a/Documentation/devicetree/bindings/power/supply/summit,smb347-charger.yaml b/Documentation/devicetree/bindings/power/supply/summit,smb347-charger.yaml
+index 20862cdfc116..ce0bca4689f6 100644
+--- a/Documentation/devicetree/bindings/power/supply/summit,smb347-charger.yaml
++++ b/Documentation/devicetree/bindings/power/supply/summit,smb347-charger.yaml
+@@ -82,7 +82,7 @@ properties:
+       - 1 # SMB3XX_SYSOK_INOK_ACTIVE_HIGH
  
-   otg-vbus:
--    type: object
+   usb-vbus:
+-    $ref: "../../regulator/regulator.yaml#"
 +    $ref: /schemas/regulator/regulator.yaml#
-     description: |
-       This node defines a regulator used to control the direction of VBUS voltage.
-       Specifically whether to supply voltage to VBUS for host mode operation of the OTG port,
+     type: object
+ 
+     properties:
 -- 
 2.34.1
 
