@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74070C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:01:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C01C0CCA474
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:01:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354024AbiFAOBq (ORCPT
+        id S1354051AbiFAOBx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:01:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53810 "EHLO
+        Wed, 1 Jun 2022 10:01:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354025AbiFAN7O (ORCPT
+        with ESMTP id S1354110AbiFAN7l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 09:59:14 -0400
+        Wed, 1 Jun 2022 09:59:41 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0301A0D0D;
-        Wed,  1 Jun 2022 06:56:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D6EBA207E;
+        Wed,  1 Jun 2022 06:56:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D594615A7;
-        Wed,  1 Jun 2022 13:55:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00885C34119;
-        Wed,  1 Jun 2022 13:55:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CB87A6160E;
+        Wed,  1 Jun 2022 13:56:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E6F1C3411E;
+        Wed,  1 Jun 2022 13:56:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091712;
-        bh=FTiI156Bl/R9a/IH+dywYgcf8JKm5MuzE4oQ6KL5C9g=;
+        s=k20201202; t=1654091774;
+        bh=N3kTbKDGhwPcAfEWlQX4qmpBTCC5UMNdyrw/bUyv9r4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sfw54+CycT1PMuu0YOt3GqT1dMm94ZJlRTDnZkbOjkfvewuhF6pOWIdLKJZj7T4+W
-         1O8bwSntTTmR4RFtuQs0Hby0XdIj1ybliQ+jDFF0psZLsyNy5mACuFCZanVSf6yQv5
-         988S+I2Ly+2pvEk+EznLOBZ8pJaq/1VDH7pgMSlqu/pRhkH0lLyjJHgj5Te5FSqKmR
-         zoeEXrQtZw9zJquPHX1+akvRJNdVE8f6tkgvyb3qHl/thQsbx+CYbL9OzLijjJD5mU
-         p/wFjgTxmzo8tTTmKtn2ziBLmOo6PCt7rwYuLxUSpusu9kZqdPZRkahC7DM8K9NtQ2
-         XGTJa2ocGklTQ==
+        b=OthGHI4g6zkm37uqh/sV4DjKevPfdX4XizvZu2/ZsZdc5T4e9y7o3iNSQCMC0w7Y1
+         a9ASBIMaHcHTo4cABWGx+4/Zsmr2t2uQ4pIKRuc8D179nseeUVfKsW+qy3tmqLZnS8
+         RrVvkXYYlmtNjCesSj+UoA5Y15jKsyWFE2PepVyRldMWkEjIN9LXrJS2iGk65VEF3l
+         zW/cDsmzI32A6WVRYtIv9Soj4Nhp223t4Mo7H7FZYNEg10e/co7+cM7vyUICL4ZMJR
+         4xTn0Qi7Yru5GIqhNfWp4VfyuL53XgrYpoxvvjMOD8xiN3nNpMhjJ5k7sYegPlHEPh
+         N1DzIH756bblA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>,
-        qianfan <qianfanguijin@163.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.17 21/48] fat: add ratelimit to fat*_ent_bread()
-Date:   Wed,  1 Jun 2022 09:53:54 -0400
-Message-Id: <20220601135421.2003328-21-sashal@kernel.org>
+Cc:     Steve French <stfrench@microsoft.com>,
+        Ronnie Sahlberg <lsahlber@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, sfrench@samba.org,
+        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org
+Subject: [PATCH AUTOSEL 5.17 44/48] smb3: check for null tcon
+Date:   Wed,  1 Jun 2022 09:54:17 -0400
+Message-Id: <20220601135421.2003328-44-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135421.2003328-1-sashal@kernel.org>
 References: <20220601135421.2003328-1-sashal@kernel.org>
@@ -53,48 +53,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
+From: Steve French <stfrench@microsoft.com>
 
-[ Upstream commit 183c3237c928109d2008c0456dff508baf692b20 ]
+[ Upstream commit bbdf6cf56c88845fb0b713cbf5c6623c53fe40d8 ]
 
-fat*_ent_bread() can be the cause of too many report on I/O error path.
-So use fat_msg_ratelimit() instead.
+Although unlikely to be null, it is confusing to use a pointer
+before checking for it to be null so move the use down after
+null check.
 
-Link: https://lkml.kernel.org/r/87bkxogfeq.fsf@mail.parknet.co.jp
-Signed-off-by: OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
-Reported-by: qianfan <qianfanguijin@163.com>
-Tested-by: qianfan <qianfanguijin@163.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Addresses-Coverity: 1517586 ("Null pointer dereferences  (REVERSE_INULL)")
+Reviewed-by: Ronnie Sahlberg <lsahlber@redhat.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/fat/fatent.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ fs/cifs/smb2ops.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/fs/fat/fatent.c b/fs/fat/fatent.c
-index 978ac6751aeb..1db348f8f887 100644
---- a/fs/fat/fatent.c
-+++ b/fs/fat/fatent.c
-@@ -94,7 +94,8 @@ static int fat12_ent_bread(struct super_block *sb, struct fat_entry *fatent,
- err_brelse:
- 	brelse(bhs[0]);
- err:
--	fat_msg(sb, KERN_ERR, "FAT read failed (blocknr %llu)", (llu)blocknr);
-+	fat_msg_ratelimit(sb, KERN_ERR, "FAT read failed (blocknr %llu)",
-+			  (llu)blocknr);
- 	return -EIO;
- }
+diff --git a/fs/cifs/smb2ops.c b/fs/cifs/smb2ops.c
+index 13080d6a140b..584b78d88db6 100644
+--- a/fs/cifs/smb2ops.c
++++ b/fs/cifs/smb2ops.c
+@@ -757,8 +757,8 @@ int open_cached_dir(unsigned int xid, struct cifs_tcon *tcon,
+ 		struct cifs_sb_info *cifs_sb,
+ 		struct cached_fid **cfid)
+ {
+-	struct cifs_ses *ses = tcon->ses;
+-	struct TCP_Server_Info *server = ses->server;
++	struct cifs_ses *ses;
++	struct TCP_Server_Info *server;
+ 	struct cifs_open_parms oparms;
+ 	struct smb2_create_rsp *o_rsp = NULL;
+ 	struct smb2_query_info_rsp *qi_rsp = NULL;
+@@ -776,6 +776,9 @@ int open_cached_dir(unsigned int xid, struct cifs_tcon *tcon,
+ 	if (tcon->nohandlecache)
+ 		return -ENOTSUPP;
  
-@@ -107,8 +108,8 @@ static int fat_ent_bread(struct super_block *sb, struct fat_entry *fatent,
- 	fatent->fat_inode = MSDOS_SB(sb)->fat_inode;
- 	fatent->bhs[0] = sb_bread(sb, blocknr);
- 	if (!fatent->bhs[0]) {
--		fat_msg(sb, KERN_ERR, "FAT read failed (blocknr %llu)",
--		       (llu)blocknr);
-+		fat_msg_ratelimit(sb, KERN_ERR, "FAT read failed (blocknr %llu)",
-+				  (llu)blocknr);
- 		return -EIO;
- 	}
- 	fatent->nr_bhs = 1;
++	ses = tcon->ses;
++	server = ses->server;
++
+ 	if (cifs_sb->root == NULL)
+ 		return -ENOENT;
+ 
 -- 
 2.35.1
 
