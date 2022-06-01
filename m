@@ -2,129 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E762BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 08:34:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25E2AC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 08:35:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350811AbiFAIev (ORCPT
+        id S1350836AbiFAIfg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 04:34:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57192 "EHLO
+        Wed, 1 Jun 2022 04:35:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239960AbiFAIes (ORCPT
+        with ESMTP id S1350893AbiFAIfS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 04:34:48 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 344AC5537F;
-        Wed,  1 Jun 2022 01:34:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1654072487; x=1685608487;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=x5nMSSI5/humEcyp6BGP5MXHhmWKZK8ljqf5CpFlbKg=;
-  b=fe1gVsH0qRH7EbcUP6rMO8/aw+W0sSlUzeWJ771tokHEgPc326CwrtGz
-   V5PWuRhZECcGUUEE+zZtMEFCYyyXzoQihem6sjdN9LyD0mLmWIEtob7kK
-   5TA8uRT2xHAdQnLrJYqne+KzEkWGEiJHmb3O/ldxzFwr5hQoSJAS0puMz
-   k=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 01 Jun 2022 01:34:46 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 01:34:46 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+        Wed, 1 Jun 2022 04:35:18 -0400
+Received: from smtp11.infineon.com (smtp11.infineon.com [IPv6:2a00:18f0:1e00:4::5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9A6F5A2C4;
+        Wed,  1 Jun 2022 01:35:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=infineon.com; i=@infineon.com; q=dns/txt; s=IFXMAIL;
+  t=1654072518; x=1685608518;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=GSKnelBxdWmfc7RJf11dvJoo5v+fqKtdhdUj6iF6Il0=;
+  b=VnV8qzNLnfaiC734L5R530Xut9H+4/DPd3/1LB+XF4H8LEOBdJHelQl5
+   69AucbnsK2MfO6pgc8UZYDDikqhk0QoSqTe6+hyyqYv9PazUnZMZOeFBg
+   U0t/Nq48FPp+nOwynYtDTDsBtXOvhISlCAK6Mca7PhjAZdYvp03/Cxi0v
+   0=;
+X-SBRS: None
+X-IronPort-AV: E=McAfee;i="6400,9594,10364"; a="299148781"
+X-IronPort-AV: E=Sophos;i="5.91,266,1647298800"; 
+   d="scan'208";a="299148781"
+Received: from unknown (HELO mucxv003.muc.infineon.com) ([172.23.11.20])
+  by smtp11.infineon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 10:35:15 +0200
+Received: from MUCSE805.infineon.com (MUCSE805.infineon.com [172.23.29.31])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mucxv003.muc.infineon.com (Postfix) with ESMTPS;
+        Wed,  1 Jun 2022 10:35:14 +0200 (CEST)
+Received: from MUCSE818.infineon.com (172.23.29.44) by MUCSE805.infineon.com
+ (172.23.29.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Wed, 1 Jun 2022
+ 10:35:14 +0200
+Received: from smaha-lin-dev01.agb.infineon.com (172.23.8.247) by
+ MUCSE818.infineon.com (172.23.29.44) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 1 Jun 2022 01:34:45 -0700
-Received: from [10.79.43.230] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 1 Jun 2022
- 01:34:43 -0700
-Subject: Re: [PATCH v2] remoteproc: qcom_q6v5_mss: map/unmap metadata region
- before/after use
-To:     Arnd Bergmann <arnd@arndb.de>
-CC:     <bjorn.andersson@linaro.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <sboyd@kernel.org>,
-        <agross@kernel.org>, <linux-remoteproc@vger.kernel.org>,
-        <mathieu.poirier@linaro.org>, <mka@chromium.org>
-References: <1652248625-990-1-git-send-email-quic_sibis@quicinc.com>
- <CAK8P3a2b05w3uRjXhx7CgdLEHL78ZHRjgOYoG_SR0SyDxcLDMg@mail.gmail.com>
-From:   Sibi Sankar <quic_sibis@quicinc.com>
-Message-ID: <08778603-4f15-0fb7-687d-4cf42c8ddbd3@quicinc.com>
-Date:   Wed, 1 Jun 2022 14:04:39 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+ 15.2.986.26; Wed, 1 Jun 2022 10:35:13 +0200
+From:   Stefan Mahnke-Hartmann <stefan.mahnke-hartmann@infineon.com>
+To:     <jarkko@kernel.org>, <linux-integrity@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <peterhuewe@gmx.de>, <jgg@ziepe.ca>,
+        <stefan.mahnke-hartmann@infineon.com>
+Subject: [PATCH] tpm: Add upgrade/reduced mode support for TPM1.2 modules
+Date:   Wed, 1 Jun 2022 10:38:11 +0200
+Message-ID: <20220601083810.330809-1-stefan.mahnke-hartmann@infineon.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <CAK8P3a2b05w3uRjXhx7CgdLEHL78ZHRjgOYoG_SR0SyDxcLDMg@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [172.23.8.247]
+X-ClientProxiedBy: MUCSE810.infineon.com (172.23.29.36) To
+ MUCSE818.infineon.com (172.23.29.44)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey Arnd,
-Thanks for taking time to review the patch.
+In case a TPM in failure mode is detected, the TPM should be accessible
+through a transparent communication channel for analysing purposes (e.g.
+TPM_GetTestResult) or a field upgrade. Since a TPM in failure mode has
+similar reduced functionality as in field upgrade mode, the flag
+TPM_CHIP_FLAG_FIRMWARE_UPGRADE_MODE is also valid.
 
-On 5/30/22 9:41 PM, Arnd Bergmann wrote:
-> On Wed, May 11, 2022 at 7:57 AM Sibi Sankar <quic_sibis@quicinc.com> wrote:
->>
->> The application processor accessing the dynamically assigned metadata
->> region after assigning it to the remote Q6 would lead to an XPU violation.
->> Fix this by un-mapping the metadata region post firmware header copy. The
->> metadata region is freed only after the modem Q6 is done with fw header
->> authentication.
->>
->> Signed-off-by: Sibi Sankar <quic_sibis@quicinc.com>
-> 
-> Acked-by: Arnd Bergmann <arnd@arndb.de>
-> 
-> Sorry for the late reply, this looks reasonable overall. Just two
-> small comments:
-> 
->>
->> -       memcpy(ptr, metadata, size);
->> +       count = PAGE_ALIGN(size) >> PAGE_SHIFT;
->> +       pages = kmalloc_array(count, sizeof(struct page *), GFP_KERNEL);
->> +       if (!pages) {
->> +               ret = -ENOMEM;
->> +               goto free_dma_attrs;
->> +       }
-> 
-> If you know a fixed upper bound for the array size, it might be easier to
-> put it on the stack.
+As described in TCG TPM Main Part1 Design Principles, Revision 116,
+chapter 9.2.1. the TPM also allows an update function in case a TPM is
+in failure mode.
 
-The metadata consists of the 32bit elf header and SoC dependent variable
-number of program headers. Arriving at the upper bound from the spec
-seemed futile since the max program headers supported could be > 0xffff.
-The best I can do is get the max size of metadata of all the QC SoCs
-supported upstream for putting the pages on stack and leave "count" as
-the min between the dynamic calculation and upper bound. Would that be
-good enough?
+If the TPM in failure mode is detected, the function tpm1_auto_startup()
+sets TPM_CHIP_FLAG_FIRMWARE_UPGRADE_MODE flag. This patch simply follows
+the same rationale as TPM2 in field upgrade mode.
 
-> 
->> +
->> +       for (i = 0; i < count; i++)
->> +               pages[i] = nth_page(page, i);
->> +
->> +       vaddr = vmap(pages, count, flags, pgprot_dmacoherent(PAGE_KERNEL));
-> 
-> I was a bit unsure about this part, as I don't know how portable this is.
-> If the CPU bypasses the cache with pgprot_dmacoherent(), then the
-> other side should not use a cacheable access either, but that is a property
-> of the hardware that is normally hidden from the driver interface.
-> 
-> It's probably ok here, since the pages are not mapped anywhere else
-> and should have no active cache lines.
+Signed-off-by: Stefan Mahnke-Hartmann <stefan.mahnke-hartmann@infineon.com>
+---
+If you have any better suggestions, please let me know.
 
-yup we make sure the other side can access the region only after no
-cache lines are active (that's the main problem that we are trying
-to solve through this patch).
+ drivers/char/tpm/tpm1-cmd.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
--Sibi
+diff --git a/drivers/char/tpm/tpm1-cmd.c b/drivers/char/tpm/tpm1-cmd.c
+index f7dc986fa4a0..7a42d74c450c 100644
+--- a/drivers/char/tpm/tpm1-cmd.c
++++ b/drivers/char/tpm/tpm1-cmd.c
+@@ -710,8 +710,10 @@ int tpm1_auto_startup(struct tpm_chip *chip)
+ 		goto out;
+ 	rc = tpm1_do_selftest(chip);
+ 	if (rc) {
+-		dev_err(&chip->dev, "TPM self test failed\n");
+-		goto out;
++		dev_err(&chip->dev, "TPM self test failed, so the TPM has limited functionality\n");
++		/* A TPM in this state possibly allows or needs a firmware upgrade */
++		chip->flags |= TPM_CHIP_FLAG_FIRMWARE_UPGRADE;
++		rc = 0;
+ 	}
+ 
+ 	return rc;
+-- 
+2.25.1
 
-> 
->         Arnd
-> 
