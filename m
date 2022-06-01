@@ -2,134 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F012CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:06:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCCBDC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:08:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352968AbiFANGx (ORCPT
+        id S1353067AbiFANIR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 09:06:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48610 "EHLO
+        Wed, 1 Jun 2022 09:08:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245269AbiFANGu (ORCPT
+        with ESMTP id S245269AbiFANIN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 09:06:50 -0400
+        Wed, 1 Jun 2022 09:08:13 -0400
 Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A9D22DE7
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 06:06:48 -0700 (PDT)
-Received: by mail-wm1-x32f.google.com with SMTP id c5-20020a1c3505000000b0038e37907b5bso3026430wma.0
-        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 06:06:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E32912099;
+        Wed,  1 Jun 2022 06:08:11 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id o9so960550wmd.0;
+        Wed, 01 Jun 2022 06:08:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=y7AFvgnHqwWsOFhTmk4i/DwYzcjtYaWfhp+4Z6qHobU=;
-        b=E637gfrRTkd2Xn1qbN2xOc9CfyQozzgeVso68I9JFpeOLf+kFLouA3I8IQET/AsKlb
-         Y1dDEG86g6pP4Wv54CJhzD2hSV7CirPJGhTV90LJS7FEzMjER6rlpwuWMrNPK05oY9ti
-         g4uXFNvyQlg2NlSWpDajepojAfWFSDMaIvfd3Q/O87hLvFgbOUCzO2VMOX0U4N2i/7OW
-         pu/JMTO8zx81A1CQp8ZfTD2kAMXiw3fId03fFm0Y4aOKue7WTXjAtPw/QR6+qrB7PS41
-         wfmtWUQa7MimFRBVziVFU7sBmsYRlrglvK4rE5jYWEvme7mUhgZr+yoyAMGn3TwxXPju
-         5OJQ==
+        d=gmail.com; s=20210112;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :content-transfer-encoding:user-agent:mime-version;
+        bh=G8G1wDJSbB2ex2GaSeSsf8H1z5vD3B/zuqms9eCbXDI=;
+        b=Rec1skFoe2Rnj1FvtON2aLb3K4CIsT8BEcZdVJciC9lMrkkAD9yjW91g3a8LwEr78R
+         ctPcLgH22B5UuiQTQP1Pet8EhLnRpe4Llor7YrUVzC9tWAxaC1oPQhXTB7v3l79zmesn
+         o9CPRSFeb778AWAmTB4rEDaxhX9qtCm0x5+djjtyDIOBlS5XKZLCyIRbLO6fAm29aQN3
+         zVpIArImbvG52GAOq/IzBFbM+vM/IzJa+gaezxSKUqzp6ImNPVjOgLh4aTO5KaQMU8SY
+         Hcy0JPc5eyF0jOShXLizAfmOewdm8EuoLqDORNEOvaQ45lnUTYc5YR0N+GBmvLwkFHVE
+         6UQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=y7AFvgnHqwWsOFhTmk4i/DwYzcjtYaWfhp+4Z6qHobU=;
-        b=XGuSfLVX6kBBC1Dwm7XMFYUFMjgSQWtDd+D1TiL0EtPOf2YezsSy5Vlv/I4F+oepPV
-         wcxJF/SKgg/cFEX6j9qJkMN2V4cV1IgAshTf7h3A5/mJ+AaAB3SRn1YMWWIxhh7LQaWi
-         MTjyLFxQwJeMoWOG5PAz7Ms005XwsdCRZH8uWa7UmWr3G05bLtM3fOohdwpe7BWzckke
-         meHzx6lXAFlQcIKl1/GcXCqn0/eSsJtQr/xHMpfLHcVI4jS1b1ylRlPVBdQkpkoHI3mz
-         7/HolF25DIZnaN+wd8kO/OKFmzgq8qMdM4si55klUFg7RnEhc+dEXWugcG9kw04KaYUM
-         g+6Q==
-X-Gm-Message-State: AOAM532GW2ncvWn00Ba94ybw+bUChMY4s1RJ9igoXapp3JsZF7YfeLhw
-        Q32OPrVN7kzptigp9VYhEL3vfA==
-X-Google-Smtp-Source: ABdhPJz5o9FuHCcYjcaH5dprQ7ehfD3MI+SA5JumBHiFDerZaHO2MPeu/niUrkcqkUu4GjHxBsRY7A==
-X-Received: by 2002:a05:600c:1f0e:b0:397:707f:5a60 with SMTP id bd14-20020a05600c1f0e00b00397707f5a60mr27623101wmb.3.1654088806145;
-        Wed, 01 Jun 2022 06:06:46 -0700 (PDT)
-Received: from [192.168.86.34] (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
-        by smtp.googlemail.com with ESMTPSA id m11-20020a5d624b000000b0020ff3a2a925sm1892597wrv.63.2022.06.01.06.06.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Jun 2022 06:06:45 -0700 (PDT)
-Message-ID: <1ec64a99-cfcf-c903-935b-d1bb0617c284@linaro.org>
-Date:   Wed, 1 Jun 2022 14:06:43 +0100
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:content-transfer-encoding:user-agent:mime-version;
+        bh=G8G1wDJSbB2ex2GaSeSsf8H1z5vD3B/zuqms9eCbXDI=;
+        b=Sv8yIm4P3vH5W2nUBoE0ZkgnO2W/hF5xoVFjxkMIYL8ruS9joe0YS/PafF5yx7VVNE
+         S7y2/60D8hyc8ZdpPkzGdrjJRF6dwx6tXNjDAUK/66hg/hsk22mHMXJI+iLkMC00L5Bz
+         1oPyMpVwil3rDGal1pTSYw7MzOHNtXSv3kyZbRX51XUWDHiaeWFi5PVBjfng4aSsyuBZ
+         56x0kl0NX+fcoisGpQ3eJwe2YaYZb1hFvuMrNbCY9FLNJPdRpnYWx02r3c1KcMpHR2GX
+         7YRxRpHma1kZfwqnMlKBraMz2kJMRWWGoCaUU7rtYXXqG06eeUpM2ZN7uB3bKc1iPlBb
+         7RGg==
+X-Gm-Message-State: AOAM533VslC7eHCZolXjQNZ5GUi3YGrjeQZlf1/zacxJ0RQNH0bDmylt
+        DhD2O5jGpZHE4w7JgN/rVkE=
+X-Google-Smtp-Source: ABdhPJwBuo/cKqq5pTiqjdVyhYMtSikGql1eGwHT2tWUqpu5BKFX8Hu1lO0l9SjqKVfNPECVMj5HLQ==
+X-Received: by 2002:a05:600c:a41:b0:39c:1512:98bd with SMTP id c1-20020a05600c0a4100b0039c151298bdmr11764958wmq.88.1654088889650;
+        Wed, 01 Jun 2022 06:08:09 -0700 (PDT)
+Received: from ?IPv6:2003:f6:ef02:1900:8f43:42cb:e8c8:c65c? (p200300f6ef0219008f4342cbe8c8c65c.dip0.t-ipconnect.de. [2003:f6:ef02:1900:8f43:42cb:e8c8:c65c])
+        by smtp.gmail.com with ESMTPSA id 63-20020a1c1942000000b003974cb37a94sm5251307wmz.22.2022.06.01.06.08.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Jun 2022 06:08:09 -0700 (PDT)
+Message-ID: <5b808f06ba7532bbfd9c2745420aedfa9464a297.camel@gmail.com>
+Subject: Re: [PATCH v1] iio: trigger: warn about non-registered iio trigger
+ getting attempt
+From:   Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To:     Dmitry Rokosov <DDRokosov@sberdevices.ru>
+Cc:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "jic23@kernel.org" <jic23@kernel.org>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Date:   Wed, 01 Jun 2022 15:09:03 +0200
+In-Reply-To: <20220601103356.xlimabcihaay5jky@CAB-WSD-L081021.sigma.sbrf.ru>
+References: <20220531181457.26034-1-ddrokosov@sberdevices.ru>
+         <20220531185729.z6246gexteyo4xmd@CAB-WSD-L081021.sigma.sbrf.ru>
+         <786db9cf74473caef10dcea79975716b5516f47e.camel@gmail.com>
+         <20220601103356.xlimabcihaay5jky@CAB-WSD-L081021.sigma.sbrf.ru>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.1 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2] ASoC: qcom: soundwire: Add support for controlling
- audio CGCR from HLOS
-Content-Language: en-US
-To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        Matthias Kaehlcke <mka@chromium.org>
-Cc:     Stephen Boyd <swboyd@chromium.org>, agross@kernel.org,
-        alsa-devel@alsa-project.org, bgoswami@quicinc.com,
-        bjorn.andersson@linaro.org, broonie@kernel.org,
-        devicetree@vger.kernel.org, judyhsiao@chromium.org,
-        lgirdwood@gmail.com, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, perex@perex.cz,
-        quic_plai@quicinc.com, quic_rohkumar@quicinc.com,
-        robh+dt@kernel.org, tiwai@suse.com, vkoul@kernel.org
-References: <1652877755-25120-1-git-send-email-quic_srivasam@quicinc.com>
- <CAE-0n53g9rWks+euk5KHBzmJNEB3xLbJzMgCxN52DO5x+9-Wgg@mail.gmail.com>
- <51b8aca1-e038-4907-e973-ebdbebaf9b28@quicinc.com>
- <YpaXZ6KfApGebkBy@google.com>
- <7c74868d-624b-c18e-b377-026e70813fcc@quicinc.com>
-From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-In-Reply-To: <7c74868d-624b-c18e-b377-026e70813fcc@quicinc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, 2022-06-01 at 10:33 +0000, Dmitry Rokosov wrote:
+> Hi Nuno,
+>=20
+> Thank you for comments!
+>=20
+> On Wed, Jun 01, 2022 at 10:47:54AM +0200, Nuno S=C3=A1 wrote:
+> > On Tue, 2022-05-31 at 18:57 +0000, Dmitry Rokosov wrote:
+> > > Hi Jonathan,
+> > >=20
+> > > I have one question about a cases when trigger owner is builtin
+> > > module.
+> > > In the such cases trig->owner =3D=3D null, because THIS_MODULE equals
+> > > to
+> > > null. How do you think, should we take into account such
+> > > situations?
+> > >=20
+> > > IMHO we have to take in and save this information to trig_info
+> > > during
+> > > trigger allocation call. For example we can check THIS_MODULE
+> > > from
+> > > the
+> >=20
+> > Hmmm, If we were to do something during iio_trigger_alloc(), we
+> > would
+> > rather assign already THIS_MODULE to owner and we would not need
+> > this
+> > WARN(). I mean, if someone calls iio_trigger_get() before
+> > allocating
+> > it, it will have bigger problems :).
+> >=20
+>=20
+> You are right, non-allocated pointer dereference is much bigger
+> problem :)
+>=20
+> > I think this could actually be something reasonable...
+>=20
+> I think it could be a good solution, but it's required a lot of
+> changes
+> in the IIO drivers code, because if we assign trig->owner from
+> iio_trigger_alloc(), we do not need this_mod parameter in the
+> iio_trigger_register() iface and its wrappers.
+> So it means to make it workable we must:
+> =C2=A0=C2=A0=C2=A0 - rework iio_trigger_alloc()
+> =C2=A0=C2=A0=C2=A0 - redesign iio_trigger_register() iface and its wrappe=
+rs
+> =C2=A0=C2=A0=C2=A0 - correct iio_trigger_register() call from all IIO dri=
+vers
+>=20
+> I suppose we need to wait for Jonathan's comments here...
+>=20
 
+I think we could actually get this done without having to change all
+the drivers. Note on how iio_trigger_register() passes THIS_MODULE to
+the internal API. We could also use macros in the alloc function in a
+way that only internal functions would need to be changed. But it all
+depends on whether or not Jonathan wants this moved...
 
-On 01/06/2022 13:57, Srinivasa Rao Mandadapu wrote:
-> 
-> On 6/1/2022 4:02 AM, Matthias Kaehlcke wrote:
-> Thanks for Your Time Matthias!!!
->> On Tue, May 24, 2022 at 04:19:47PM +0530, Srinivasa Rao Mandadapu wrote:
->>> On 5/21/2022 8:43 AM, Stephen Boyd wrote:
->>> Thanks for your time Stephen!!!
->>>> Quoting Srinivasa Rao Mandadapu (2022-05-18 05:42:35)
->>>>> diff --git a/drivers/soundwire/qcom.c b/drivers/soundwire/qcom.c
->>>>> index da1ad7e..445e481 100644
->>>>> --- a/drivers/soundwire/qcom.c
->>>>> +++ b/drivers/soundwire/qcom.c
->>>>> @@ -1333,6 +1337,10 @@ static int qcom_swrm_probe(struct 
->>>>> platform_device *pdev)
->>>>>           ctrl->bus.compute_params = &qcom_swrm_compute_params;
->>>>>           ctrl->bus.clk_stop_timeout = 300;
->>>>>
->>>>> +       ctrl->audio_cgcr = devm_reset_control_get_exclusive(dev, 
->>>>> "swr_audio_cgcr");
->>>>> +       if (IS_ERR(ctrl->audio_cgcr))
->>>>> +               dev_err(dev, "Failed to get audio_cgcr reset 
->>>>> required for soundwire-v1.6.0\n");
->>>> Why is there no return on error here? Is the reset optional?
->>> Yes it's optional. For older platforms this is not required.
->> If it's optional then either there should be no error message, or the
->> error message should only be logged when the version is >= 1.6.0. There
->> are few things worse than a kernel log riddled with misleading error
->> messages.
-> 
-> In that case, it can be done like below. Kindly let me know your opinion 
-> on this.
-> 
-> if (ctrl->version >= 0x01060000) {
-
-This is not true 1.7+ variants do not require anything as such.
-
-Why not add a flag in struct qcom_swrm_data and pass it as part of 
-of_match data specific to this version?
-
---srini
->      ctrl->audio_cgcr = devm_reset_control_get_exclusive(dev, 
-> "swr_audio_cgcr");
->          if (IS_ERR(ctrl->audio_cgcr)) {
->              dev_err(dev, "Failed to get audio_cgcr reset required for 
-> soundwire-v1.6.0\n");
->              ret = PTR_ERR(ctrl->audio_cgcr);
->              goto err_clk;
->          }
->      }
-> 
+- Nuno S=C3=A1
