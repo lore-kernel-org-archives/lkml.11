@@ -2,106 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25E2AC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 08:35:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 093A3C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 08:35:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350836AbiFAIfg (ORCPT
+        id S1350720AbiFAIfl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 04:35:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57552 "EHLO
+        Wed, 1 Jun 2022 04:35:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350893AbiFAIfS (ORCPT
+        with ESMTP id S1350823AbiFAIfc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 04:35:18 -0400
-Received: from smtp11.infineon.com (smtp11.infineon.com [IPv6:2a00:18f0:1e00:4::5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9A6F5A2C4;
-        Wed,  1 Jun 2022 01:35:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=infineon.com; i=@infineon.com; q=dns/txt; s=IFXMAIL;
-  t=1654072518; x=1685608518;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=GSKnelBxdWmfc7RJf11dvJoo5v+fqKtdhdUj6iF6Il0=;
-  b=VnV8qzNLnfaiC734L5R530Xut9H+4/DPd3/1LB+XF4H8LEOBdJHelQl5
-   69AucbnsK2MfO6pgc8UZYDDikqhk0QoSqTe6+hyyqYv9PazUnZMZOeFBg
-   U0t/Nq48FPp+nOwynYtDTDsBtXOvhISlCAK6Mca7PhjAZdYvp03/Cxi0v
-   0=;
-X-SBRS: None
-X-IronPort-AV: E=McAfee;i="6400,9594,10364"; a="299148781"
-X-IronPort-AV: E=Sophos;i="5.91,266,1647298800"; 
-   d="scan'208";a="299148781"
-Received: from unknown (HELO mucxv003.muc.infineon.com) ([172.23.11.20])
-  by smtp11.infineon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 10:35:15 +0200
-Received: from MUCSE805.infineon.com (MUCSE805.infineon.com [172.23.29.31])
+        Wed, 1 Jun 2022 04:35:32 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E82B5A2C1;
+        Wed,  1 Jun 2022 01:35:31 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 0304B1F8C2;
+        Wed,  1 Jun 2022 08:35:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1654072530; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZgDe2eXlhB42LN+QI5BZWIRc4kyPQuFvdb59+D3ByMQ=;
+        b=bV70JBnMBSgY94pQahRNjPumE6SgHGja6J+fLoGZJ9eClDYKyM6NQvJD0tf0hovyu6n+BB
+        /ivw96PkjmnPwGablQxiwPnrsd/LeMcmKhvDePXVtA+PSK+pqm1YExM+ZtznQ7+cyGiBB+
+        U2JqupjlBJ3c+xiH9bgd5t4wukBQxCk=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1654072530;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZgDe2eXlhB42LN+QI5BZWIRc4kyPQuFvdb59+D3ByMQ=;
+        b=rHP/WFvK2JmjuczkrX0+8NAVEE++a9lq4iv8fPBYMTFjHZdt9JXZydlvUU34LsCarDNPTm
+        2y9AXdwb/V2MZaCA==
+Received: from quack3.suse.cz (unknown [10.163.28.18])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mucxv003.muc.infineon.com (Postfix) with ESMTPS;
-        Wed,  1 Jun 2022 10:35:14 +0200 (CEST)
-Received: from MUCSE818.infineon.com (172.23.29.44) by MUCSE805.infineon.com
- (172.23.29.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Wed, 1 Jun 2022
- 10:35:14 +0200
-Received: from smaha-lin-dev01.agb.infineon.com (172.23.8.247) by
- MUCSE818.infineon.com (172.23.29.44) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.26; Wed, 1 Jun 2022 10:35:13 +0200
-From:   Stefan Mahnke-Hartmann <stefan.mahnke-hartmann@infineon.com>
-To:     <jarkko@kernel.org>, <linux-integrity@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <peterhuewe@gmx.de>, <jgg@ziepe.ca>,
-        <stefan.mahnke-hartmann@infineon.com>
-Subject: [PATCH] tpm: Add upgrade/reduced mode support for TPM1.2 modules
-Date:   Wed, 1 Jun 2022 10:38:11 +0200
-Message-ID: <20220601083810.330809-1-stefan.mahnke-hartmann@infineon.com>
-X-Mailer: git-send-email 2.25.1
+        by relay2.suse.de (Postfix) with ESMTPS id E91AE2C142;
+        Wed,  1 Jun 2022 08:35:29 +0000 (UTC)
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+        id B021CA0633; Wed,  1 Jun 2022 10:35:29 +0200 (CEST)
+Date:   Wed, 1 Jun 2022 10:35:29 +0200
+From:   Jan Kara <jack@suse.cz>
+To:     Yu Kuai <yukuai3@huawei.com>
+Cc:     paolo.valente@linaro.org, jack@suse.cz, axboe@kernel.dk,
+        tj@kernel.org, linux-block@vger.kernel.org,
+        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yi.zhang@huawei.com
+Subject: Re: [PATCH -next v8 2/4] block, bfq: record how many queues have
+ pending requests
+Message-ID: <20220601083529.oz26s6jefxz6fnyg@quack3.lan>
+References: <20220531140858.3324294-1-yukuai3@huawei.com>
+ <20220531140858.3324294-3-yukuai3@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [172.23.8.247]
-X-ClientProxiedBy: MUCSE810.infineon.com (172.23.29.36) To
- MUCSE818.infineon.com (172.23.29.44)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220531140858.3324294-3-yukuai3@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In case a TPM in failure mode is detected, the TPM should be accessible
-through a transparent communication channel for analysing purposes (e.g.
-TPM_GetTestResult) or a field upgrade. Since a TPM in failure mode has
-similar reduced functionality as in field upgrade mode, the flag
-TPM_CHIP_FLAG_FIRMWARE_UPGRADE_MODE is also valid.
+On Tue 31-05-22 22:08:56, Yu Kuai wrote:
+> Prepare to refactor the counting of 'num_groups_with_pending_reqs'.
+> 
+> Add a counter in bfq_group, and update it while tracking if bfqq have
+> pending requests.
+> 
+> Signed-off-by: Yu Kuai <yukuai3@huawei.com>
 
-As described in TCG TPM Main Part1 Design Principles, Revision 116,
-chapter 9.2.1. the TPM also allows an update function in case a TPM is
-in failure mode.
+Looks good, except I think that we also need to update the counters
+'num_groups_with_pending_reqs' in bfq_move_bfqq()?
 
-If the TPM in failure mode is detected, the function tpm1_auto_startup()
-sets TPM_CHIP_FLAG_FIRMWARE_UPGRADE_MODE flag. This patch simply follows
-the same rationale as TPM2 in field upgrade mode.
+								Honza
 
-Signed-off-by: Stefan Mahnke-Hartmann <stefan.mahnke-hartmann@infineon.com>
----
-If you have any better suggestions, please let me know.
-
- drivers/char/tpm/tpm1-cmd.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/char/tpm/tpm1-cmd.c b/drivers/char/tpm/tpm1-cmd.c
-index f7dc986fa4a0..7a42d74c450c 100644
---- a/drivers/char/tpm/tpm1-cmd.c
-+++ b/drivers/char/tpm/tpm1-cmd.c
-@@ -710,8 +710,10 @@ int tpm1_auto_startup(struct tpm_chip *chip)
- 		goto out;
- 	rc = tpm1_do_selftest(chip);
- 	if (rc) {
--		dev_err(&chip->dev, "TPM self test failed\n");
--		goto out;
-+		dev_err(&chip->dev, "TPM self test failed, so the TPM has limited functionality\n");
-+		/* A TPM in this state possibly allows or needs a firmware upgrade */
-+		chip->flags |= TPM_CHIP_FLAG_FIRMWARE_UPGRADE;
-+		rc = 0;
- 	}
- 
- 	return rc;
+> ---
+>  block/bfq-cgroup.c  |  1 +
+>  block/bfq-iosched.h |  1 +
+>  block/bfq-wf2q.c    | 12 ++++++++++--
+>  3 files changed, 12 insertions(+), 2 deletions(-)
+> 
+> diff --git a/block/bfq-cgroup.c b/block/bfq-cgroup.c
+> index 09574af83566..0954a258a107 100644
+> --- a/block/bfq-cgroup.c
+> +++ b/block/bfq-cgroup.c
+> @@ -557,6 +557,7 @@ static void bfq_pd_init(struct blkg_policy_data *pd)
+>  				   */
+>  	bfqg->bfqd = bfqd;
+>  	bfqg->active_entities = 0;
+> +	bfqg->num_queues_with_pending_reqs = 0;
+>  	bfqg->online = true;
+>  	bfqg->rq_pos_tree = RB_ROOT;
+>  }
+> diff --git a/block/bfq-iosched.h b/block/bfq-iosched.h
+> index 3b9b1a0e7c1c..a5f7c0c1a3b3 100644
+> --- a/block/bfq-iosched.h
+> +++ b/block/bfq-iosched.h
+> @@ -943,6 +943,7 @@ struct bfq_group {
+>  	struct bfq_entity *my_entity;
+>  
+>  	int active_entities;
+> +	int num_queues_with_pending_reqs;
+>  
+>  	struct rb_root rq_pos_tree;
+>  
+> diff --git a/block/bfq-wf2q.c b/block/bfq-wf2q.c
+> index 12d20f26ad69..b533e17e9f0c 100644
+> --- a/block/bfq-wf2q.c
+> +++ b/block/bfq-wf2q.c
+> @@ -1651,16 +1651,24 @@ static void bfq_add_bfqq_in_groups_with_pending_reqs(struct bfq_queue *bfqq)
+>  {
+>  	struct bfq_entity *entity = &bfqq->entity;
+>  
+> -	if (!entity->in_groups_with_pending_reqs)
+> +	if (!entity->in_groups_with_pending_reqs) {
+>  		entity->in_groups_with_pending_reqs = true;
+> +#ifdef CONFIG_BFQ_GROUP_IOSCHED
+> +		bfqq_group(bfqq)->num_queues_with_pending_reqs++;
+> +#endif
+> +	}
+>  }
+>  
+>  void bfq_del_bfqq_in_groups_with_pending_reqs(struct bfq_queue *bfqq)
+>  {
+>  	struct bfq_entity *entity = &bfqq->entity;
+>  
+> -	if (entity->in_groups_with_pending_reqs)
+> +	if (entity->in_groups_with_pending_reqs) {
+>  		entity->in_groups_with_pending_reqs = false;
+> +#ifdef CONFIG_BFQ_GROUP_IOSCHED
+> +		bfqq_group(bfqq)->num_queues_with_pending_reqs--;
+> +#endif
+> +	}
+>  }
+>  
+>  /*
+> -- 
+> 2.31.1
+> 
 -- 
-2.25.1
-
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
