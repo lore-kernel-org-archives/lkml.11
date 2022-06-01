@@ -2,48 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AEAFCCA468
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:57:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F021C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:57:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344107AbiFAN5f (ORCPT
+        id S1353991AbiFAN5q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 09:57:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33016 "EHLO
+        Wed, 1 Jun 2022 09:57:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353900AbiFAN40 (ORCPT
+        with ESMTP id S1353823AbiFANzr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 09:56:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEF9C996AB;
-        Wed,  1 Jun 2022 06:54:54 -0700 (PDT)
+        Wed, 1 Jun 2022 09:55:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1B548E1B8;
+        Wed,  1 Jun 2022 06:54:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AD2D0B81AE6;
-        Wed,  1 Jun 2022 13:54:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4B2DC34119;
-        Wed,  1 Jun 2022 13:54:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DABD615C7;
+        Wed,  1 Jun 2022 13:54:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 023B2C3411E;
+        Wed,  1 Jun 2022 13:54:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091687;
-        bh=85vm1vrtGgzFH8G8lTONTiZh58r6Wicm/naQSPQ/3OI=;
+        s=k20201202; t=1654091653;
+        bh=Ir0V9XdICgoZ/GLaYLNxw9Lpqttbk/iKdMQZZJbOrvw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i2wh2DOnyHljcwtf3qVDGgg+b5TOdQsjFdwftFXLQ3fBC28lDX6wF0jyEoW3m7UTg
-         bUatxB94x/8w0RjNj2CMmFNGlaM+xnuJKgiu5Sfr8MpuweD2RUPD8z75ytAHiTBmXK
-         PT2xlHTtrzcofbBoeEbgb33mWc5PusUfK7WL4s2HUI0dBU8iii9gJbj7qg277O9y13
-         dg1ZP0oVlzuHVuA6OsAQ/vhiwWzXe0f8M03e82TJhPWECCSBsJI4UT9t7taFyNtl9n
-         PjzQ2ZBewsQzRwTpxMFpNeTtD3RcO9a0TXEyc5sXkVMtfFAAR+hPzCtGzolv0WIab6
-         rOvbKzjsig7DQ==
+        b=rPi0CGFOvCZx/R7oLC0FOiI1B03lWR8x5ocGSAzKEbrjqK3xLa1xI20GPb2RaIDum
+         gx3H1Y9Hx3blK3+Ztnb197Qb8LZmTMVyS4UkXxWLbqraFWKkymKE05kUciaryVXcpc
+         taZE8SlW9gr0P20Kdn7rASj+Gontz7/Gly/N81Xz8wBBLjjY7K9IxppIXCZgAvoxNN
+         LG90Sw6/mkcQA1c7uORpwlXMPJPMmzLlQ1GFn8tjkOhYYKjGhS2XgUZeISWLZoZojw
+         Vs0MRDsa6U7aVKEDVZc5ULAheccgKDuk+5VvscmF4u4V7aJtO3JPRI1hFlqa6lCSYS
+         90a5UBA632j/Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     QintaoShen <unSimple1993@163.com>, Nishanth Menon <nm@ti.com>,
-        Sasha Levin <sashal@kernel.org>, kristo@kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.17 12/48] soc: ti: ti_sci_pm_domains: Check for null return of devm_kcalloc
-Date:   Wed,  1 Jun 2022 09:53:45 -0400
-Message-Id: <20220601135421.2003328-12-sashal@kernel.org>
+Cc:     Douglas Miller <doug.miller@cornelisnetworks.com>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>, linux-rdma@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 46/49] RDMA/hfi1: Prevent panic when SDMA is disabled
+Date:   Wed,  1 Jun 2022 09:52:10 -0400
+Message-Id: <20220601135214.2002647-46-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220601135421.2003328-1-sashal@kernel.org>
-References: <20220601135421.2003328-1-sashal@kernel.org>
+In-Reply-To: <20220601135214.2002647-1-sashal@kernel.org>
+References: <20220601135214.2002647-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,36 +53,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: QintaoShen <unSimple1993@163.com>
+From: Douglas Miller <doug.miller@cornelisnetworks.com>
 
-[ Upstream commit ba56291e297d28aa6eb82c5c1964fae2d7594746 ]
+[ Upstream commit 629e052d0c98e46dde9f0824f0aa437f678d9b8f ]
 
-The allocation funciton devm_kcalloc may fail and return a null pointer,
-which would cause a null-pointer dereference later.
-It might be better to check it and directly return -ENOMEM just like the
-usage of devm_kcalloc in previous code.
+If the hfi1 module is loaded with HFI1_CAP_SDMA off, a call to
+hfi1_write_iter() will dereference a NULL pointer and panic. A typical
+stack frame is:
 
-Signed-off-by: QintaoShen <unSimple1993@163.com>
-Signed-off-by: Nishanth Menon <nm@ti.com>
-Link: https://lore.kernel.org/r/1648107843-29077-1-git-send-email-unSimple1993@163.com
+  sdma_select_user_engine [hfi1]
+  hfi1_user_sdma_process_request [hfi1]
+  hfi1_write_iter [hfi1]
+  do_iter_readv_writev
+  do_iter_write
+  vfs_writev
+  do_writev
+  do_syscall_64
+
+The fix is to test for SDMA in hfi1_write_iter() and fail the I/O with
+EINVAL.
+
+Link: https://lore.kernel.org/r/20220520183706.48973.79803.stgit@awfm-01.cornelisnetworks.com
+Signed-off-by: Douglas Miller <doug.miller@cornelisnetworks.com>
+Signed-off-by: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soc/ti/ti_sci_pm_domains.c | 2 ++
+ drivers/infiniband/hw/hfi1/file_ops.c | 2 ++
  1 file changed, 2 insertions(+)
 
-diff --git a/drivers/soc/ti/ti_sci_pm_domains.c b/drivers/soc/ti/ti_sci_pm_domains.c
-index 8afb3f45d263..a33ec7eaf23d 100644
---- a/drivers/soc/ti/ti_sci_pm_domains.c
-+++ b/drivers/soc/ti/ti_sci_pm_domains.c
-@@ -183,6 +183,8 @@ static int ti_sci_pm_domain_probe(struct platform_device *pdev)
- 		devm_kcalloc(dev, max_id + 1,
- 			     sizeof(*pd_provider->data.domains),
- 			     GFP_KERNEL);
-+	if (!pd_provider->data.domains)
-+		return -ENOMEM;
+diff --git a/drivers/infiniband/hw/hfi1/file_ops.c b/drivers/infiniband/hw/hfi1/file_ops.c
+index 1783a6ea5427..3ebdd42fec36 100644
+--- a/drivers/infiniband/hw/hfi1/file_ops.c
++++ b/drivers/infiniband/hw/hfi1/file_ops.c
+@@ -265,6 +265,8 @@ static ssize_t hfi1_write_iter(struct kiocb *kiocb, struct iov_iter *from)
+ 	unsigned long dim = from->nr_segs;
+ 	int idx;
  
- 	pd_provider->data.num_domains = max_id + 1;
- 	pd_provider->data.xlate = ti_sci_pd_xlate;
++	if (!HFI1_CAP_IS_KSET(SDMA))
++		return -EINVAL;
+ 	idx = srcu_read_lock(&fd->pq_srcu);
+ 	pq = srcu_dereference(fd->pq, &fd->pq_srcu);
+ 	if (!cq || !pq) {
 -- 
 2.35.1
 
