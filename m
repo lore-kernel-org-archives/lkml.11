@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EE8BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:53:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1018ECCA468
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:53:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353503AbiFANxm (ORCPT
+        id S1353555AbiFANxt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 09:53:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57370 "EHLO
+        Wed, 1 Jun 2022 09:53:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353536AbiFANxh (ORCPT
+        with ESMTP id S1353520AbiFANxk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 09:53:37 -0400
+        Wed, 1 Jun 2022 09:53:40 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B35ED8A314;
-        Wed,  1 Jun 2022 06:53:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53B1387224;
+        Wed,  1 Jun 2022 06:53:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BC9BBB81911;
-        Wed,  1 Jun 2022 13:52:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50525C36AE2;
-        Wed,  1 Jun 2022 13:52:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F38FBB81AE8;
+        Wed,  1 Jun 2022 13:53:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB820C36AE2;
+        Wed,  1 Jun 2022 13:53:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091578;
-        bh=2JYU5DuEm+BMLnrJLtWoA5OKIcB5KezmZmgoLCAFNSc=;
+        s=k20201202; t=1654091582;
+        bh=KJhUKllErRJpBntBCZwKFWW3K3q4jqc9MvCVLYA5Vgo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u0aGCAFAqiGSbV+UAazc96jv3dhCioymkekr/ca4WJDh7N8vDOzqr8OSLQC74KsXo
-         6IaPlqsnNozsAvTC0HJqh+jK6f7NOKTic73j0naZPHoQ2knY1GagupDkSwxNh9UuK3
-         VPKDsreZWpwXVhl+ZbT6JzjTrw93Ca6g6Ja3o5TPHTleuJI53wn6iX3YJ767lVfvOx
-         TWJhpQRYMwQJNEegZqVZ6rMwq5/I94MTLzWbL/DqYhBVonZvZQB3CxRLQBPRXLROzT
-         ET3xgOVbsOmwrbG+tIHvgRjHc8OxNVyIN6Cs4aQg9t/5lHG1sQXaTm9ealq7UFttkw
-         BTzoqY1ZBwd9A==
+        b=h2LCE4WBlI0eekOGba0slT3Ok7AjwEp4HiNlpQ1Gr3RM8ua9nsuhRm4h9vK+/hg0s
+         JImtrj78HOHM658FwS4BchedocIK+s1JJk4AHOlfFZ/jAsW0FWfpRKzAGWezN9Acz+
+         xedTl5jG4yofsubF2BYnQvaJ3DesmA//VPmyqPq5O6otXT9GfQ1ezYvzpV7YrwWt9O
+         FQlkhU8ZrMDw9r5JSQdLusiq2kvrv5/KJss1UNQP13hlk3uPq0aKnelDl1j55anfNS
+         KUT4H+Nc6xYXX8X4pyeVSh5qQyVyOXvhn+90ZlYmYu9VL5ReriqU0ylICBhHoOTBr7
+         BqNlZURHZ0RZA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>,
-        perex@perex.cz, tiwai@suse.com, geraldogabriel@gmail.com,
-        matteomartelli3@gmail.com, alexander@tsoy.me,
-        alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.18 17/49] ALSA: usb-audio: Move generic implicit fb quirk entries into quirks.c
-Date:   Wed,  1 Jun 2022 09:51:41 -0400
-Message-Id: <20220601135214.2002647-17-sashal@kernel.org>
+Cc:     Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 19/49] selftests/resctrl: Change the default limited time to 120 seconds
+Date:   Wed,  1 Jun 2022 09:51:43 -0400
+Message-Id: <20220601135214.2002647-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135214.2002647-1-sashal@kernel.org>
 References: <20220601135214.2002647-1-sashal@kernel.org>
@@ -53,61 +55,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>
 
-[ Upstream commit 67d64069bc0867e52e73a1e255b17462005ca9b4 ]
+[ Upstream commit e2e3fb6ef0d6548defbe0be6e092397aaa92f3a1 ]
 
-Use the new quirk bits to manage the generic implicit fb quirk
-entries.  This makes easier to compare with other devices.
+When testing on a Intel(R) Xeon(R) Gold 6254 CPU @ 3.10GHz the resctrl
+selftests fail due to timeout after exceeding the default time limit of
+45 seconds. On this system the test takes about 68 seconds.
+Since the failing test by default accesses a fixed size of memory, the
+execution time should not vary significantly between different environment.
+A new default of 120 seconds should be sufficient yet easy to customize
+with the introduction of the "settings" file for reference.
 
-Link: https://lore.kernel.org/r/20220421064101.12456-2-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Reviewed-by: Reinette Chatre <reinette.chatre@intel.com>
+Reviewed-by: Fenghua Yu <fenghua.yu@intel.com>
+Signed-off-by: Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/usb/implicit.c | 5 -----
- sound/usb/quirks.c   | 6 ++++++
- 2 files changed, 6 insertions(+), 5 deletions(-)
+ tools/testing/selftests/resctrl/settings | 3 +++
+ 1 file changed, 3 insertions(+)
+ create mode 100644 tools/testing/selftests/resctrl/settings
 
-diff --git a/sound/usb/implicit.c b/sound/usb/implicit.c
-index 1fd087128538..e1bf1b5da423 100644
---- a/sound/usb/implicit.c
-+++ b/sound/usb/implicit.c
-@@ -45,11 +45,6 @@ struct snd_usb_implicit_fb_match {
- 
- /* Implicit feedback quirk table for playback */
- static const struct snd_usb_implicit_fb_match playback_implicit_fb_quirks[] = {
--	/* Generic matching */
--	IMPLICIT_FB_GENERIC_DEV(0x0499, 0x1509), /* Steinberg UR22 */
--	IMPLICIT_FB_GENERIC_DEV(0x0763, 0x2030), /* M-Audio Fast Track C400 */
--	IMPLICIT_FB_GENERIC_DEV(0x0763, 0x2031), /* M-Audio Fast Track C600 */
--
- 	/* Fixed EP */
- 	/* FIXME: check the availability of generic matching */
- 	IMPLICIT_FB_FIXED_DEV(0x0763, 0x2080, 0x81, 2), /* M-Audio FastTrack Ultra */
-diff --git a/sound/usb/quirks.c b/sound/usb/quirks.c
-index fbbe59054c3f..e8468f9b007d 100644
---- a/sound/usb/quirks.c
-+++ b/sound/usb/quirks.c
-@@ -1793,6 +1793,8 @@ static const struct usb_audio_quirk_flags_table quirk_flags_table[] = {
- 		   QUIRK_FLAG_CTL_MSG_DELAY_1M | QUIRK_FLAG_IGNORE_CTL_ERROR),
- 	DEVICE_FLG(0x046d, 0x09a4, /* Logitech QuickCam E 3500 */
- 		   QUIRK_FLAG_CTL_MSG_DELAY_1M | QUIRK_FLAG_IGNORE_CTL_ERROR),
-+	DEVICE_FLG(0x0499, 0x1509, /* Steinberg UR22 */
-+		   QUIRK_FLAG_GENERIC_IMPLICIT_FB),
- 	DEVICE_FLG(0x04d8, 0xfeea, /* Benchmark DAC1 Pre */
- 		   QUIRK_FLAG_GET_SAMPLE_RATE),
- 	DEVICE_FLG(0x04e8, 0xa051, /* Samsung USBC Headset (AKG) */
-@@ -1826,6 +1828,10 @@ static const struct usb_audio_quirk_flags_table quirk_flags_table[] = {
- 		   QUIRK_FLAG_GET_SAMPLE_RATE),
- 	DEVICE_FLG(0x074d, 0x3553, /* Outlaw RR2150 (Micronas UAC3553B) */
- 		   QUIRK_FLAG_GET_SAMPLE_RATE),
-+	DEVICE_FLG(0x0763, 0x2030, /* M-Audio Fast Track C400 */
-+		   QUIRK_FLAG_GENERIC_IMPLICIT_FB),
-+	DEVICE_FLG(0x0763, 0x2031, /* M-Audio Fast Track C600 */
-+		   QUIRK_FLAG_GENERIC_IMPLICIT_FB),
- 	DEVICE_FLG(0x08bb, 0x2702, /* LineX FM Transmitter */
- 		   QUIRK_FLAG_IGNORE_CTL_ERROR),
- 	DEVICE_FLG(0x0951, 0x16ad, /* Kingston HyperX */
+diff --git a/tools/testing/selftests/resctrl/settings b/tools/testing/selftests/resctrl/settings
+new file mode 100644
+index 000000000000..a383f3d4565b
+--- /dev/null
++++ b/tools/testing/selftests/resctrl/settings
+@@ -0,0 +1,3 @@
++# If running time is longer than 120 seconds when new tests are added in
++# the future, increase timeout here.
++timeout=120
 -- 
 2.35.1
 
