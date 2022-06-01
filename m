@@ -2,144 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D9E7CCA471
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:53:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00BA0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:54:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353622AbiFANx5 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 09:53:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58180 "EHLO
+        id S238043AbiFANyD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 09:54:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353525AbiFANxl (ORCPT
+        with ESMTP id S1353562AbiFANxz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 09:53:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 341998A33E;
-        Wed,  1 Jun 2022 06:53:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 332A7B81AE6;
-        Wed,  1 Jun 2022 13:52:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84D45C385B8;
-        Wed,  1 Jun 2022 13:52:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091573;
-        bh=FsnhM5PT/E5Fpk+dkdwL4mlsa9gXKVZzJ8yZXv4wNXk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R1pygdBMyvxmRa/D2qYSXNWdaq87QpjHUavaSSyO59XdFIFduXxLwZXb+tT4MQgVS
-         5XPMooyWVlO7u6mGGrGicmfsLFmg2gO8GC6d1rT59H9qU551m0ZYtY50BznaNbK+i9
-         VGj9j4ImKH1G6LrlKYkOpEhwT4L5CM1p9qVcGDgNx8E5f2yJny5hLLlp1NGD3xwiw1
-         hUQp6etxpzd7n5uQmm/fgWEBO8neclIRyfsQdnu0SjssJp9+O2UcCYThJmDruKWUas
-         SylcvdGSeePBfYWm1YN8qusfq65HOz4EzTnQQa0fKy7ZhDQC5IX76yPKrD+p7Yl7Wg
-         zAIuQCX5zFZ1A==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>,
-        perex@perex.cz, tiwai@suse.com, corbet@lwn.net,
-        geraldogabriel@gmail.com, matteomartelli3@gmail.com, bp@suse.de,
-        alsa-devel@alsa-project.org, linux-doc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 16/49] ALSA: usb-audio: Add quirk bits for enabling/disabling generic implicit fb
-Date:   Wed,  1 Jun 2022 09:51:40 -0400
-Message-Id: <20220601135214.2002647-16-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220601135214.2002647-1-sashal@kernel.org>
-References: <20220601135214.2002647-1-sashal@kernel.org>
+        Wed, 1 Jun 2022 09:53:55 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F21614090D;
+        Wed,  1 Jun 2022 06:53:22 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id f23-20020a7bcc17000000b003972dda143eso3078265wmh.3;
+        Wed, 01 Jun 2022 06:53:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=Gkqx8uNGHQMl7//wICbhrmo/07INDVRlCWrBKZDsclM=;
+        b=Ve12/IxpNSBPttcoaHlRlZrHm92pIFyNWIzGp4j9wwkTa8iHtIBw8dcwytxiJU8E9B
+         cFQ8hZrytmwx2s4f2UuEwjOO9UIJ6Dm1r3s9CpXENWPhIN6j5t/DO8piLQudyplqOCei
+         SqfMGdd7Kv1zkZBObq7ReXs/cDEdX3dmrr4qSk/Hat5dBCjKpV+0gQ48ir6mweiNWHZP
+         Lpp/B+T5YF9t93Pw1FEd0hUK8VsfRdwGHO8yXJIhiHP+KLwzpcdvaHNY8Qjt4hWjaGhc
+         lRY3O9gyGScMsaYLgihxPTpmmW1O3KnfbzzvT3tOGJChyuY4aVaclh9t6SI3BjcCyOgI
+         gmvg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Gkqx8uNGHQMl7//wICbhrmo/07INDVRlCWrBKZDsclM=;
+        b=ew1rDMT25/gQzAaL6JYwB4EUiglBMhO9x/WbNze2vGau/rzMmo1F30Ef6+t9E+CAsx
+         ZDoHCDJhvXK/jvSzvKXA4I5hy+G+g+LHpK/JUw/+HR8030lC3Pmr6dTG3O02K5FHhAjr
+         1h8xBWBJL31W7QneOpIn9gsphFd945W5cRPs1T0CDMpvYjsLnQTwsdtg8/RnPpAZ1Rw9
+         82diH4e7+sdFpkcLKD0+7eIVtABoM0TxDU5s/bP/v1pHeaKqkSyDeb3ELlPU2M+MlmhC
+         OLDgs/uoR/PlZTosjdnLxqOMB+a6OwBnngZOss4ifqkWNoijqCvQikbQznXeeY3n3gzg
+         iN7w==
+X-Gm-Message-State: AOAM531K7FZXyj/BPYixnQdPDCCVdLW4yFkEa34+W7qgl8757lyDR/ts
+        QWRqoTUkKjK9dfMxDcYcEl144qxaF3I=
+X-Google-Smtp-Source: ABdhPJwbZYR808yKUqN3/m85GcP2QTKQJSBiDQBR3SnLiJ67wdJ3ufk1zAMFeaXfFzxf1FgkOaYUlA==
+X-Received: by 2002:a05:600c:414e:b0:397:55aa:ccc0 with SMTP id h14-20020a05600c414e00b0039755aaccc0mr29543460wmm.51.1654091576305;
+        Wed, 01 Jun 2022 06:52:56 -0700 (PDT)
+Received: from ?IPV6:2a02:908:1256:79a0:d1fb:e1e4:e193:e55f? ([2a02:908:1256:79a0:d1fb:e1e4:e193:e55f])
+        by smtp.gmail.com with ESMTPSA id c16-20020a7bc850000000b003942a244f48sm5240824wml.33.2022.06.01.06.52.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 01 Jun 2022 06:52:55 -0700 (PDT)
+Message-ID: <ab42ca92-70e3-ec82-c52c-0fc41d5b4a53@gmail.com>
+Date:   Wed, 1 Jun 2022 15:52:53 +0200
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [Linaro-mm-sig] Re: [PATCH] dma-fence: allow dma fence to have
+ their own lock
+Content-Language: en-US
+To:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Gustavo Padovan <gustavo@padovan.org>,
+        Tomasz Figa <tfiga@chromium.org>,
+        Ricardo Ribalda <ribalda@chromium.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org
+References: <20220530142232.2871634-1-senozhatsky@chromium.org>
+ <7eee4274-bd69-df8d-9067-771366217804@amd.com> <YpWCvniLzJfcp684@google.com>
+ <33aba213-b6ad-4a15-9272-c62f5dfb1fb7@gmail.com>
+ <YpdoEzLmlBfJks3q@phenom.ffwll.local>
+From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <ckoenig.leichtzumerken@gmail.com>
+In-Reply-To: <YpdoEzLmlBfJks3q@phenom.ffwll.local>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+Am 01.06.22 um 15:22 schrieb Daniel Vetter:
+> On Wed, Jun 01, 2022 at 02:45:42PM +0200, Christian König wrote:
+>> Am 31.05.22 um 04:51 schrieb Sergey Senozhatsky:
+>>> On (22/05/30 16:55), Christian König wrote:
+>>>> Am 30.05.22 um 16:22 schrieb Sergey Senozhatsky:
+>>>>> [SNIP]
+>>>>> So the `lock` should have at least same lifespan as the DMA fence
+>>>>> that borrows it, which is impossible to guarantee in our case.
+>>>> Nope, that's not correct. The lock should have at least same lifespan as the
+>>>> context of the DMA fence.
+>>> How does one know when it's safe to release the context? DMA fence
+>>> objects are still transparently refcount-ed and "live their own lives",
+>>> how does one synchronize lifespans?
+>> Well, you don't.
+>>
+>> If you have a dynamic context structure you need to reference count that as
+>> well. In other words every time you create a fence in your context you need
+>> to increment the reference count and every time a fence is release you
+>> decrement it.
+>>
+>> If you have a static context structure like most drivers have then you must
+>> make sure that all fences at least signal before you unload your driver. We
+>> still somewhat have a race when you try to unload a driver and the fence_ops
+>> structure suddenly disappear, but we currently live with that.
+>>
+>> Apart from that you are right, fences can live forever and we need to deal
+>> with that.
+> Yeah this entire thing is a bit an "oops we might have screwed up" moment.
+> I think the cleanest way is to essentially do what the drm/sched codes
+> does, which is split the gpu job into the public dma_fence (which can live
+> forever) and the internal job fence (which has to deal with all the
+> resource refcounting issues). And then make sure that only ever the public
+> fence escapes to places where the fence can live forever (dma_resv,
+> drm_syncobj, sync_file as our uapi container objects are the prominent
+> cases really).
+>
+> It sucks a bit.
 
-[ Upstream commit 0f1f7a6661394fe4a53db254c346d6aa2dd64397 ]
+It's actually not that bad.
 
-For making easier to test, add the new quirk_flags bits 17 and 18 to
-enable and disable the generic implicit feedback mode.  The bit 17 is
-equivalent with implicit_fb=1 option, applying the generic implicit
-feedback sync mode.  OTOH, the bit 18 disables the implicit fb mode
-forcibly.
+See after signaling the dma_fence_ops is mostly used for debugging I 
+think, e.g. timeline name etc...
 
-Link: https://lore.kernel.org/r/20220421064101.12456-1-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- Documentation/sound/alsa-configuration.rst | 4 +++-
- sound/usb/implicit.c                       | 5 ++++-
- sound/usb/usbaudio.h                       | 6 ++++++
- 3 files changed, 13 insertions(+), 2 deletions(-)
+Christian.
 
-diff --git a/Documentation/sound/alsa-configuration.rst b/Documentation/sound/alsa-configuration.rst
-index 34888d4fc4a8..21ab5e6f7062 100644
---- a/Documentation/sound/alsa-configuration.rst
-+++ b/Documentation/sound/alsa-configuration.rst
-@@ -2246,7 +2246,7 @@ implicit_fb
-     Apply the generic implicit feedback sync mode.  When this is set
-     and the playback stream sync mode is ASYNC, the driver tries to
-     tie an adjacent ASYNC capture stream as the implicit feedback
--    source.
-+    source.  This is equivalent with quirk_flags bit 17.
- use_vmalloc
-     Use vmalloc() for allocations of the PCM buffers (default: yes).
-     For architectures with non-coherent memory like ARM or MIPS, the
-@@ -2288,6 +2288,8 @@ quirk_flags
-         * bit 14: Ignore errors for mixer access
-         * bit 15: Support generic DSD raw U32_BE format
-         * bit 16: Set up the interface at first like UAC1
-+        * bit 17: Apply the generic implicit feedback sync mode
-+        * bit 18: Don't apply implicit feedback sync mode
- 
- This module supports multiple devices, autoprobe and hotplugging.
- 
-diff --git a/sound/usb/implicit.c b/sound/usb/implicit.c
-index 2d444ec74202..1fd087128538 100644
---- a/sound/usb/implicit.c
-+++ b/sound/usb/implicit.c
-@@ -350,7 +350,8 @@ static int audioformat_implicit_fb_quirk(struct snd_usb_audio *chip,
- 	}
- 
- 	/* Try the generic implicit fb if available */
--	if (chip->generic_implicit_fb)
-+	if (chip->generic_implicit_fb ||
-+	    (chip->quirk_flags & QUIRK_FLAG_GENERIC_IMPLICIT_FB))
- 		return add_generic_implicit_fb(chip, fmt, alts);
- 
- 	/* No quirk */
-@@ -387,6 +388,8 @@ int snd_usb_parse_implicit_fb_quirk(struct snd_usb_audio *chip,
- 				    struct audioformat *fmt,
- 				    struct usb_host_interface *alts)
- {
-+	if (chip->quirk_flags & QUIRK_FLAG_SKIP_IMPLICIT_FB)
-+		return 0;
- 	if (fmt->endpoint & USB_DIR_IN)
- 		return audioformat_capture_quirk(chip, fmt, alts);
- 	else
-diff --git a/sound/usb/usbaudio.h b/sound/usb/usbaudio.h
-index b8359a0aa008..044cd7ab27cb 100644
---- a/sound/usb/usbaudio.h
-+++ b/sound/usb/usbaudio.h
-@@ -164,6 +164,10 @@ extern bool snd_usb_skip_validation;
-  *  Support generic DSD raw U32_BE format
-  * QUIRK_FLAG_SET_IFACE_FIRST:
-  *  Set up the interface at first like UAC1
-+ * QUIRK_FLAG_GENERIC_IMPLICIT_FB
-+ *  Apply the generic implicit feedback sync mode (same as implicit_fb=1 option)
-+ * QUIRK_FLAG_SKIP_IMPLICIT_FB
-+ *  Don't apply implicit feedback sync mode
-  */
- 
- #define QUIRK_FLAG_GET_SAMPLE_RATE	(1U << 0)
-@@ -183,5 +187,7 @@ extern bool snd_usb_skip_validation;
- #define QUIRK_FLAG_IGNORE_CTL_ERROR	(1U << 14)
- #define QUIRK_FLAG_DSD_RAW		(1U << 15)
- #define QUIRK_FLAG_SET_IFACE_FIRST	(1U << 16)
-+#define QUIRK_FLAG_GENERIC_IMPLICIT_FB	(1U << 17)
-+#define QUIRK_FLAG_SKIP_IMPLICIT_FB	(1U << 18)
- 
- #endif /* __USBAUDIO_H */
--- 
-2.35.1
+> -Daniel
 
