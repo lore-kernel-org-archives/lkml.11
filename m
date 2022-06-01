@@ -2,116 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EE02C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 08:03:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E751C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 08:06:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350006AbiFAIDQ (ORCPT
+        id S1350505AbiFAIG1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 04:03:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40160 "EHLO
+        Wed, 1 Jun 2022 04:06:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347889AbiFAIDO (ORCPT
+        with ESMTP id S234295AbiFAIGY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 04:03:14 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E59414614A
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 01:03:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654070591;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Xgdti+VwJR3VZPhJkWljxyzD9ChCNJZ2LKlv/SAahT4=;
-        b=LVgSnApf+ihxVDd7BIswWjH5nIJ788mIPyHsKBib8OPxeSOx6do1AuJRg9UWzzugKilRK+
-        tjxA93ZTHuArxY3XPTiK+SLJfPzuijHe8Phevtz/XEI3qpEtLkYWS3GNas+ipY/RdPTyHi
-        g7eIRAC+iSIix6gw6QKGdDX4GUQJ86U=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-626-uu0W-15tOreF66Y7z6KVRg-1; Wed, 01 Jun 2022 04:03:09 -0400
-X-MC-Unique: uu0W-15tOreF66Y7z6KVRg-1
-Received: by mail-ed1-f69.google.com with SMTP id q29-20020a056402249d00b0042d90fd98deso698407eda.12
-        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 01:03:08 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=Xgdti+VwJR3VZPhJkWljxyzD9ChCNJZ2LKlv/SAahT4=;
-        b=mIqaIKzCbxK+GkT0TpBkWcWupJasf8rS0eIoZdLfOtOVELOgKkS6w5MuQ0u2t9vjcX
-         LnHBbkXeoFg50WEMH1YaXG4580k7QQpYqFTYfu0PN0Os7na2yZXNRzgTfQ1bgQ2jMVxL
-         crlCnAoPIOflMGzz30Yo9VQ1jtEPq1lsGo5Pm16mYu7SL7ZW+BJKcg+jLaJKcelSMQTH
-         duYQijE6Q7KtXOmtAXbfHeRjTgVf7/E/Vpj+wRVdv+V7ZHoSiGsym6ZXjkH5d8nPhB/+
-         IX9wd3C314jf5A7pDcj4sHr2N+7ryJGkFoW6qfKG2z07ldgo1jzuy3Nr/gKEnxOPbWHs
-         7F4w==
-X-Gm-Message-State: AOAM532igbCOEf5c0gBp8WL0sgcJnWUPjJ1Rc6ME1iJr6Zp7G/6PWcXo
-        BloJZsqKm0b/S3zJqktaXBHTuzY8pgYDjTEZJ9+TTm1+loRDs7BPHH2mBwFAIRbxIUQo33n8z/Y
-        duw58UJYSJZI7JjQsES66mQYu
-X-Received: by 2002:a05:6402:34c1:b0:42b:4047:20b8 with SMTP id w1-20020a05640234c100b0042b404720b8mr57064169edc.88.1654070588076;
-        Wed, 01 Jun 2022 01:03:08 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwgO9mu44S3VLlU3/wD7qn0U/ff1HsZNyCf5jYGov3NDArM7pwpMiurcfJY5MoE5bqD3r/3EA==
-X-Received: by 2002:a05:6402:34c1:b0:42b:4047:20b8 with SMTP id w1-20020a05640234c100b0042b404720b8mr57064153edc.88.1654070587868;
-        Wed, 01 Jun 2022 01:03:07 -0700 (PDT)
-Received: from fedora (nat-2.ign.cz. [91.219.240.2])
-        by smtp.gmail.com with ESMTPSA id wj17-20020a170907051100b006fed9a0eb17sm388609ejb.187.2022.06.01.01.03.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Jun 2022 01:03:07 -0700 (PDT)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        "Durrant, Paul" <pdurrant@amazon.co.uk>
-Cc:     "Allister, Jack" <jalliste@amazon.com>,
-        "bp@alien8.de" <bp@alien8.de>,
-        "diapop@amazon.co.uk" <diapop@amazon.co.uk>,
+        Wed, 1 Jun 2022 04:06:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBD2A45AD5;
+        Wed,  1 Jun 2022 01:06:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7876261457;
+        Wed,  1 Jun 2022 08:06:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE2B1C385A5;
+        Wed,  1 Jun 2022 08:06:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654070781;
+        bh=Pe+xqjlEZkEvfqPm0TvyzYDROtRhOytTmfU9fiGZws8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=fffsVtEMEyvvzETBbzbLRANw5qSpp7g2hTxlgYQz+92zoX1gJ4zXLlEruzzqTTYSf
+         N2BAoyYsXpTHyVPmtOwTYApytoYIJPfrTIBwv2gyDHOq/5r47nwIHZPTWZzz9zoHk9
+         HIW68lMuS6J2BG6fNBdQzDZqpTs5jqdA1xRDTgQvl/O0vFZsBgZr0IZcc+8/f7VoHM
+         mBF2JE0x8Ik5pv3aB1Imh9Gv7aUytp6d1jtbut/qaDi9XZTuqB7BqQSbE4OFZACvzW
+         oy5d4OXtHdvuB+Q9kGqn/gRGVFqYIR5IuOvAiNdNdhEzfcmmRJPg/FEZRFrjXI8zOL
+         HJ48ltR8tywIg==
+Date:   Wed, 1 Jun 2022 11:06:08 +0300
+From:   Mike Rapoport <rppt@kernel.org>
+To:     "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
+Cc:     "bsingharora@gmail.com" <bsingharora@gmail.com>,
         "hpa@zytor.com" <hpa@zytor.com>,
-        "jmattson@google.com" <jmattson@google.com>,
-        "joro@8bytes.org" <joro@8bytes.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "metikaya@amazon.co.uk" <metikaya@amazon.co.uk>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "pbonzini@redhat.com" <pbonzini@redhat.com>,
-        "rkrcmar@redhat.com" <rkrcmar@redhat.com>,
-        "sean.j.christopherson@intel.com" <sean.j.christopherson@intel.com>,
+        "Syromiatnikov, Eugene" <esyr@redhat.com>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "rdunlap@infradead.org" <rdunlap@infradead.org>,
+        "keescook@chromium.org" <keescook@chromium.org>,
+        "0x7f454c46@gmail.com" <0x7f454c46@gmail.com>,
+        "Eranian, Stephane" <eranian@google.com>,
+        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "adrian@lisas.de" <adrian@lisas.de>,
+        "fweimer@redhat.com" <fweimer@redhat.com>,
+        "nadav.amit@gmail.com" <nadav.amit@gmail.com>,
+        "jannh@google.com" <jannh@google.com>,
+        "avagin@gmail.com" <avagin@gmail.com>,
+        "kcc@google.com" <kcc@google.com>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "pavel@ucw.cz" <pavel@ucw.cz>, "oleg@redhat.com" <oleg@redhat.com>,
+        "hjl.tools@gmail.com" <hjl.tools@gmail.com>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "Lutomirski, Andy" <luto@kernel.org>,
+        "Yang, Weijiang" <weijiang.yang@intel.com>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "Moreira, Joao" <joao.moreira@intel.com>,
         "tglx@linutronix.de" <tglx@linutronix.de>,
-        "wanpengli@tencent.com" <wanpengli@tencent.com>,
-        "x86@kernel.org" <x86@kernel.org>
-Subject: Re: ...\n
-In-Reply-To: <YpcMw2TgNWzrcoRm@worktop.programming.kicks-ass.net>
-References: <YpYaYK7a28DFT5Ne@hirez.programming.kicks-ass.net>
- <20220531140236.1435-1-jalliste@amazon.com>
- <YpYpxzt4rmG+LFy9@hirez.programming.kicks-ass.net>
- <059ab3327ac440479ecfdf49fa054347@EX13D32EUC003.ant.amazon.com>
- <YpcMw2TgNWzrcoRm@worktop.programming.kicks-ass.net>
-Date:   Wed, 01 Jun 2022 10:03:06 +0200
-Message-ID: <87r148olol.fsf@redhat.com>
+        "x86@kernel.org" <x86@kernel.org>,
+        "mike.kravetz@oracle.com" <mike.kravetz@oracle.com>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "john.allen@amd.com" <john.allen@amd.com>,
+        "dave.martin@arm.com" <dave.martin@arm.com>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "Hansen, Dave" <dave.hansen@intel.com>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "gorcunov@gmail.com" <gorcunov@gmail.com>,
+        "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
+        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>
+Subject: Re: [PATCH 00/35] Shadow stacks for userspace
+Message-ID: <Ypcd8HQtrn7T41LF@kernel.org>
+References: <YiEZyTT/UBFZd6Am@kernel.org>
+ <CALCETrWacW8SC2tpPxQSaLtxsOXfXHueyuwLcXpNF4aG-0ZvhA@mail.gmail.com>
+ <fb7d6e4da58ae77be2c6321ee3f3487485b2886c.camel@intel.com>
+ <40a3500c-835a-60b0-15bf-40c6622ad013@kernel.org>
+ <YiZVbPwlgSFnhadv@kernel.org>
+ <CAMe9rOrSLPKdL2gL=yx84zrs-u6ch1AVvjk3oqUe3thR5ZD=dQ@mail.gmail.com>
+ <YpYDKVjMEYVlV6Ya@kernel.org>
+ <d0c94eed6e3c7f35b78bab3f00aadebd960ee0d8.camel@intel.com>
+ <YpZEDjxSPxUfMxDZ@kernel.org>
+ <7c637f729e14f03d0df744568800fc986542e33d.camel@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7c637f729e14f03d0df744568800fc986542e33d.camel@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Peter Zijlstra <peterz@infradead.org> writes:
+On Tue, May 31, 2022 at 05:34:50PM +0000, Edgecombe, Rick P wrote:
+> On Tue, 2022-05-31 at 19:36 +0300, Mike Rapoport wrote:
+> > > WRSS is a feature where you would usually want to lock it as
+> > > disabled,
+> > > but WRSS cannot be enabled if shadow stack is not enabled. Locking
+> > > shadow stack and WRSS off together doesn't have any security
+> > > benefits
+> > > in theory. so I'm thinking glibc doesn't need to do this. The
+> > > kernel
+> > > could even refuse to lock WRSS without shadow stack being enabled.
+> > > Could we avoid the extra ptrace functionality then?
+> > 
+> > What I see for is that a program can support shadow stack, glibc
+> > enables
+> > shadow stack, does not enable WRSS and than calls
+> > 
+> >         arch_prctl(ARCH_X86_FEATURE_LOCK,
+> >                    LINUX_X86_FEATURE_SHSTK | LINUX_X86_FEATURE_WRSS);
+> 
+> I see the logic is glibc will lock SHSTK|IBT if either is enabled in
+> the elf header. I guess that is why I didn't see the locking happening
+> for me, because my manual enablement test doesn't have either set in
+> the header.
 
-> On Tue, May 31, 2022 at 02:52:04PM +0000, Durrant, Paul wrote:
+The locking was quite a surprise for me when I moved from standalone test
+to a system with CET-enabled glibc :)
+ 
+> It can't see where that glibc knows about WRSS though...
 
-...
+Right, it was my mistake, as H.J. said glibc locks SHSTK and IBT.
+ 
+> The glibc logic seems wrong to me also, because shadow stack or IBT
+> could be force-disabled via glibc tunables. I don't see why the elf
+> header bit should exclusively control the feature locking. Or why both
+> should be locked if only one is in the header.
+> 
+> > 
+> > so that WRSS cannot be re-enabled.
+> > 
+> > For the programs that do not support shadow stack, both SHSTK and
+> > WRSS are
+> > disabled, but still there is the same call to
+> > arch_prctl(ARCH_X86_FEATURE_LOCK, ...) and then neither shadow stack
+> > nor
+> > WRSS can be enabled.
+> > 
+> > My original plan was to run CRIU with no shadow stack, enable shadow
+> > stack
+> > and WRSS in the restored tasks using arch_prct() and after the shadow
+> > stack
+> > contents is restored disable WRSS.
+> > 
+> > Obviously, this didn't work with glibc I have :)
+> 
+> Were you disabling shadow stack via glibc tunnable? Or was the elf
+> header marked for IBT? If it was a plain old binary, the code looks to
+> me like it should not lock any features.
 
->> 
->> I'll bite... What's ludicrous about wanting to run a guest at a lower
->> CPU freq to minimize observable change in whatever workload it is
->> running?
->
-> *why* would you want to do that? Everybody wants their stuff done
-> faster.
->
+I built criu as a plain old binary, there were no SHSTK or IBT markers. And
+I've seen that there was a call to arch_prctl that locked the features as
+disabled. 
+ 
+> > On the bright side, having a ptrace call to unlock shadow stack and
+> > wrss
+> > allows running CRIU itself with shadow stack.
+> 
+> Yea, having something working is really great. My only hesitancy is
+> that, per a discussion on the LAM patchset, we are going to make this
+> enabling API CET only (same semantics for though). I suppose the
+> locking API arch_prctl() could still be support other arch features,
+> but it might be a second CET only regset. It's not the end of the
+> world.
 
-FWIW, I can see a valid use-case: imagine you're running some software
-which calibrates itself in the beginning to run at some desired real
-time speed but then the VM running it has to be migrated to a host with
-faster (newer) CPUs. I don't have a real world examples out of top of my
-head but I remember some old DOS era games were impossible to play on
-newer CPUs because everything was happenning too fast. Maybe that's the
-case :-)
+The support for CET in criu is anyway experimental for now, if the kernel
+API will be slightly different in the end, we'll update criu.
+The important things are the ability to control tracee shadow stack
+from ptrace, the ability to map the shadow stack at fixed address and the
+ability to control the features at least from ptrace.
+As long as we have APIs that provide those, it should be Ok.
+ 
+> I guess the other consideration is tieing CRIU to glibc peculiarities.
+> Like even if we fix glibc, then CRIU may not work with some other libc
+> or app that force disables for some weird reason. Is it supposed to be
+> libc-agnostic?
+
+Actually using the ptrace to control the CET features does not tie criu to
+glibc. The current proposal for the arch_prctl() allows libc to lock CET
+features and having a ptrace call to control the lock makes criu agnostic
+to libc behaviour.
 
 -- 
-Vitaly
-
+Sincerely yours,
+Mike.
