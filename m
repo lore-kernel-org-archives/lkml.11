@@ -2,171 +2,353 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42696C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 21:40:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B9ABC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 21:40:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231781AbiFAVjy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 17:39:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60828 "EHLO
+        id S231830AbiFAVka (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 17:40:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231733AbiFAVjf (ORCPT
+        with ESMTP id S231714AbiFAVk0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 17:39:35 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0DD680211;
-        Wed,  1 Jun 2022 14:39:34 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id h19so3953304edj.0;
-        Wed, 01 Jun 2022 14:39:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=HXG8iLTreEU+J/lVUamzhi0tH1NJB4Nk+ekloWw8ey0=;
-        b=q4sLaUb6C9WHlwr+BGtYiNab+Z/9DFTw/uTcExKbl2Bd5TMyKEB6byulmZruXYeFpm
-         NO9nA8ViBmJToeHcrKcupIiudItTFnvrD0V/o8eqdLkD6zec5d4wOZnERcm5HwbRurkx
-         B+6Ys3bd/cKLqEm4Nl02GPOixnGr5Qhow8FsrxPirFfdjV1YJIKAPO4Jdhiu9W+YJgrH
-         n31bu4o639UaItJX6wM+Omwp+7Yzri2z2b/Oksbzr0x2a+1a3JFHvaj0k35gKa4ChHBU
-         hFtBaS6IHbRybJ6mC/2y65pSUaHsY2a3gZ837gc8yVQFeQeDOCHyDFWD7BxWChTdOqRX
-         xSVw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=HXG8iLTreEU+J/lVUamzhi0tH1NJB4Nk+ekloWw8ey0=;
-        b=O41fltqj1n0KfCmvqqbsVuac6M82ulvrY8MpDVbQnXfX9M3NkhCxFtA+AL4GpXIK7C
-         E7+QWkYTRUpK+sRbOTr6G8MdkEahnpngjskHeuNvSGwqlhXCabS4k+QZ6tbtD3jzM9dU
-         ZKSYzjsUU/IKRMEltkPYF1PWAb8x0IVUJ2UTd6yKwKIKrdRNASk/c24O8ajvbCM06hk4
-         wScaGjPDsvRg1oal1O5sN7StduIai0ZlLjUEA9AlfRti7LBBCROerrJTchFDDV4PxCBC
-         7RryNvgEAa4+Pc6XdFkb4fxtrIL7miQitM+IktfMHl/NJ5n1KXECR+aswn2SnjIcfvqi
-         23tg==
-X-Gm-Message-State: AOAM533P19BbeM1RSTApTbCZBRhHJpEUNQJIv4SPvcJS03HuZUVCREXu
-        CrqaWrEkurL4ggTR1cwP4OC19fFOB/6SBiOu
-X-Google-Smtp-Source: ABdhPJx7ZQtrU+VcWljrrDnZU8bM4jUcwzK304gsvVGDEH11myXnse8gaqCiSBfikc3zZNHZ/lfpLA==
-X-Received: by 2002:aa7:c306:0:b0:42d:d4cc:c606 with SMTP id l6-20020aa7c306000000b0042dd4ccc606mr1947344edq.341.1654119573200;
-        Wed, 01 Jun 2022 14:39:33 -0700 (PDT)
-Received: from localhost.localdomain ([2a02:ab88:368f:2080:5d6e:322:57b6:5f03])
-        by smtp.googlemail.com with ESMTPSA id a14-20020a170906368e00b006fec5cef701sm1099080ejc.197.2022.06.01.14.39.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Jun 2022 14:39:32 -0700 (PDT)
-From:   David Virag <virag.david003@gmail.com>
-Cc:     phone-devel@vger.kernel.org,
-        David Virag <virag.david003@gmail.com>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Tomasz Figa <tomasz.figa@gmail.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Wed, 1 Jun 2022 17:40:26 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63B88C24
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 14:40:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654119625; x=1685655625;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=F1raApfcs620B/kgahY5y8OKGmxj85IM7DVX5FLddLs=;
+  b=EUW2Nt6HGvLv3GUqbPRbYO5HhTBxGcQpBjULqZHF3FYqFZ3lcYwRtPRB
+   W4P+JQsCZBbVxE/exPPuWIWmErZU6AflB+RvbLX+yE6Yj/jTrD93700h1
+   fdFZVdnNycEZUCpM2mt0WfF3kYoXPwxOZwbTHI7vmqy7SrVZsh5WCKwPP
+   Z+hIGBlHL++TV6YaHUtLVliN/tLJSKth4A8Y7IOdRmm1J5Jlj2zthsYdU
+   mTUOOcYdZwn1am0yRuX/9zKmUDN631LVYnaw7T/TdPSw4eqYeEOFa5LcQ
+   MF8wEB3HF89/8OWFJp2oVEZNH5azsWev29oi8kvBvEgfTQGqrveArWay4
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10365"; a="257809432"
+X-IronPort-AV: E=Sophos;i="5.91,269,1647327600"; 
+   d="scan'208";a="257809432"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 14:40:25 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,269,1647327600"; 
+   d="scan'208";a="562997118"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 01 Jun 2022 14:40:23 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nwW4k-0004Qy-KV;
+        Wed, 01 Jun 2022 21:40:22 +0000
+Date:   Thu, 2 Jun 2022 05:40:11 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     David Howells <dhowells@redhat.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 5/5] arm64: dts: exynos: Add internal eMMC support to jackpotlte
-Date:   Thu,  2 Jun 2022 01:37:43 +0200
-Message-Id: <20220601233743.56317-6-virag.david003@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220601233743.56317-1-virag.david003@gmail.com>
-References: <20220601233743.56317-1-virag.david003@gmail.com>
+Subject: [ammarfaizi2-block:dhowells/linux-fs/netfs-linked-list 58/59]
+ fs/netfs/buffered_flush.c:411:16: warning: comparison of distinct pointer
+ types ('typeof (hard_align) *' (aka 'unsigned int *') and 'typeof (((1UL) <<
+ 12) << ctx->cache_order) *' (aka 'unsigned long *'))
+Message-ID: <202206020513.KecvF1iO-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the nodes relevant to provide clocks for Exynos7885 eMMC and to
-support eMMC. eMMC is the internal storage used in the Samsung Galaxy A8
-(2018) (jackpotlte), and all other known devices using the Exynos7885
-SoC.
+tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/netfs-linked-list
+head:   22ecc2fcdab4616e624408911ec1d54644e82030
+commit: ff509dc49891f934a7a774e277b87729018db753 [58/59] netfs: Use flush from afs_writeback
+config: i386-randconfig-a002 (https://download.01.org/0day-ci/archive/20220602/202206020513.KecvF1iO-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c825abd6b0198fb088d9752f556a70705bc99dfd)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/ff509dc49891f934a7a774e277b87729018db753
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/netfs-linked-list
+        git checkout ff509dc49891f934a7a774e277b87729018db753
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash fs/netfs/
 
-Signed-off-by: David Virag <virag.david003@gmail.com>
----
- .../boot/dts/exynos/exynos7885-jackpotlte.dts | 20 ++++++++++++
- arch/arm64/boot/dts/exynos/exynos7885.dtsi    | 32 +++++++++++++++++++
- 2 files changed, 52 insertions(+)
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-diff --git a/arch/arm64/boot/dts/exynos/exynos7885-jackpotlte.dts b/arch/arm64/boot/dts/exynos/exynos7885-jackpotlte.dts
-index 4cf9aa25f618..5db9a81ac7bb 100644
---- a/arch/arm64/boot/dts/exynos/exynos7885-jackpotlte.dts
-+++ b/arch/arm64/boot/dts/exynos/exynos7885-jackpotlte.dts
-@@ -60,6 +60,26 @@ power-key {
- 	};
- };
- 
-+&mmc_0 {
-+	status = "okay";
-+	mmc-hs200-1_8v;
-+	mmc-hs400-1_8v;
-+	cap-mmc-highspeed;
-+	non-removable;
-+	mmc-hs400-enhanced-strobe;
-+	card-detect-delay = <200>;
-+	clock-frequency = <800000000>;
-+	bus-width = <8>;
-+	samsung,dw-mshc-ciu-div = <3>;
-+	samsung,dw-mshc-sdr-timing = <0 4>;
-+	samsung,dw-mshc-ddr-timing = <2 4>;
-+	samsung,dw-mshc-hs400-timing = <0 2>;
-+
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&sd0_clk_fast_slew_rate_3x &sd0_cmd &sd0_rdqs
-+		     &sd0_bus1 &sd0_bus4 &sd0_bus8>;
-+};
-+
- &oscclk {
- 	clock-frequency = <26000000>;
- };
-diff --git a/arch/arm64/boot/dts/exynos/exynos7885.dtsi b/arch/arm64/boot/dts/exynos/exynos7885.dtsi
-index 9c233c56558c..23c2e0bb0a2c 100644
---- a/arch/arm64/boot/dts/exynos/exynos7885.dtsi
-+++ b/arch/arm64/boot/dts/exynos/exynos7885.dtsi
-@@ -240,6 +240,25 @@ cmu_top: clock-controller@12060000 {
- 			clock-names = "oscclk";
- 		};
- 
-+		cmu_fsys: clock-controller@13400000 {
-+			compatible = "samsung,exynos7885-cmu-fsys";
-+			reg = <0x13400000 0x8000>;
-+			#clock-cells = <1>;
-+
-+			clocks = <&oscclk>,
-+				 <&cmu_top CLK_DOUT_FSYS_BUS>,
-+				 <&cmu_top CLK_DOUT_FSYS_MMC_CARD>,
-+				 <&cmu_top CLK_DOUT_FSYS_MMC_EMBD>,
-+				 <&cmu_top CLK_DOUT_FSYS_MMC_SDIO>,
-+				 <&cmu_top CLK_DOUT_FSYS_USB30DRD>;
-+			clock-names = "oscclk",
-+				      "dout_fsys_bus",
-+				      "dout_fsys_mmc_card",
-+				      "dout_fsys_mmc_embd",
-+				      "dout_fsys_mmc_sdio",
-+				      "dout_fsys_usb30drd";
-+		};
-+
- 		pinctrl_alive: pinctrl@11cb0000 {
- 			compatible = "samsung,exynos7885-pinctrl";
- 			reg = <0x11cb0000 0x1000>;
-@@ -274,6 +293,19 @@ pmu_system_controller: system-controller@11c80000 {
- 			reg = <0x11c80000 0x10000>;
- 		};
- 
-+		mmc_0: mmc@13500000 {
-+			compatible = "samsung,exynos7-dw-mshc-smu";
-+			reg = <0x13500000 0x2000>;
-+			interrupts = <GIC_SPI 146 IRQ_TYPE_LEVEL_HIGH>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			clocks = <&cmu_fsys CLK_GOUT_MMC_EMBD_ACLK>,
-+				 <&cmu_fsys CLK_GOUT_MMC_EMBD_SDCLKIN>;
-+			clock-names = "biu", "ciu";
-+			fifo-depth = <0x40>;
-+			status = "disabled";
-+		};
-+
- 		serial_0: serial@13800000 {
- 			compatible = "samsung,exynos5433-uart";
- 			reg = <0x13800000 0x100>;
+All warnings (new ones prefixed by >>):
+
+   fs/netfs/buffered_flush.c:408:16: warning: comparison of distinct pointer types ('typeof (hard_align) *' (aka 'unsigned int *') and 'typeof (1UL << __builtin_choose_expr(((!!(sizeof ((typeof (ctx->min_bshift) *)1 == (typeof (ctx->crypto_bshift) *)1))) && ((sizeof(int) == sizeof (*(8 ? ((void *)((long)(ctx->min_bshift) * 0L)) : (int *)8))) && (sizeof(int) == sizeof (*(8 ? ((void *)((long)(ctx->crypto_bshift) * 0L)) : (int *)8))))), ((ctx->min_bshift) > (ctx->crypto_bshift) ? (ctx->min_bshift) : (ctx->crypto_bshift)), ({
+       typeof (ctx->min_bshift) __UNIQUE_ID___x312 = (ctx->min_bshift);
+       typeof (ctx->crypto_bshift) __UNIQUE_ID___y313 = (ctx->crypto_bshift);
+       ((__UNIQUE_ID___x312) > (__UNIQUE_ID___y313) ? (__UNIQUE_ID___x312) : (__UNIQUE_ID___y313));
+   }))) *' (aka 'unsigned long *')) [-Wcompare-distinct-pointer-types]
+                   hard_align = max(hard_align,
+                                ^~~~~~~~~~~~~~~
+   include/linux/minmax.h:52:19: note: expanded from macro 'max'
+   #define max(x, y)       __careful_cmp(x, y, >)
+                           ^~~~~~~~~~~~~~~~~~~~~~
+   include/linux/minmax.h:36:24: note: expanded from macro '__careful_cmp'
+           __builtin_choose_expr(__safe_cmp(x, y), \
+                                 ^~~~~~~~~~~~~~~~
+   include/linux/minmax.h:26:4: note: expanded from macro '__safe_cmp'
+                   (__typecheck(x, y) && __no_side_effects(x, y))
+                    ^~~~~~~~~~~~~~~~~
+   include/linux/minmax.h:20:28: note: expanded from macro '__typecheck'
+           (!!(sizeof((typeof(x) *)1 == (typeof(y) *)1)))
+                      ~~~~~~~~~~~~~~ ^  ~~~~~~~~~~~~~~
+>> fs/netfs/buffered_flush.c:411:16: warning: comparison of distinct pointer types ('typeof (hard_align) *' (aka 'unsigned int *') and 'typeof (((1UL) << 12) << ctx->cache_order) *' (aka 'unsigned long *')) [-Wcompare-distinct-pointer-types]
+                   hard_align = max(hard_align, PAGE_SIZE << ctx->cache_order);
+                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/minmax.h:52:19: note: expanded from macro 'max'
+   #define max(x, y)       __careful_cmp(x, y, >)
+                           ^~~~~~~~~~~~~~~~~~~~~~
+   include/linux/minmax.h:36:24: note: expanded from macro '__careful_cmp'
+           __builtin_choose_expr(__safe_cmp(x, y), \
+                                 ^~~~~~~~~~~~~~~~
+   include/linux/minmax.h:26:4: note: expanded from macro '__safe_cmp'
+                   (__typecheck(x, y) && __no_side_effects(x, y))
+                    ^~~~~~~~~~~~~~~~~
+   include/linux/minmax.h:20:28: note: expanded from macro '__typecheck'
+           (!!(sizeof((typeof(x) *)1 == (typeof(y) *)1)))
+                      ~~~~~~~~~~~~~~ ^  ~~~~~~~~~~~~~~
+>> fs/netfs/buffered_flush.c:413:10: warning: comparison of distinct pointer types ('typeof (hard_align) *' (aka 'unsigned int *') and 'typeof ((1UL << (0 ? 4 : 6)) * ((1UL) << 12)) *' (aka 'unsigned long *')) [-Wcompare-distinct-pointer-types]
+           align = min(hard_align, XA_CHUNK_SIZE * PAGE_SIZE);
+                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/minmax.h:45:19: note: expanded from macro 'min'
+   #define min(x, y)       __careful_cmp(x, y, <)
+                           ^~~~~~~~~~~~~~~~~~~~~~
+   include/linux/minmax.h:36:24: note: expanded from macro '__careful_cmp'
+           __builtin_choose_expr(__safe_cmp(x, y), \
+                                 ^~~~~~~~~~~~~~~~
+   include/linux/minmax.h:26:4: note: expanded from macro '__safe_cmp'
+                   (__typecheck(x, y) && __no_side_effects(x, y))
+                    ^~~~~~~~~~~~~~~~~
+   include/linux/minmax.h:20:28: note: expanded from macro '__typecheck'
+           (!!(sizeof((typeof(x) *)1 == (typeof(y) *)1)))
+                      ~~~~~~~~~~~~~~ ^  ~~~~~~~~~~~~~~
+   fs/netfs/buffered_flush.c:533:22: warning: format specifies type 'size_t' (aka 'unsigned int') but the argument has type 'unsigned long' [-Wformat]
+           _leave(" ok [%zx]", wreq->last);
+                        ~~~    ^~~~~~~~~~
+                        %lx
+   fs/netfs/internal.h:299:65: note: expanded from macro '_leave'
+   #define _leave(FMT, ...) no_printk("<== %s()"FMT"", __func__, ##__VA_ARGS__)
+                                                ~~~                ^~~~~~~~~~~
+   include/linux/printk.h:132:17: note: expanded from macro 'no_printk'
+                   printk(fmt, ##__VA_ARGS__);             \
+                          ~~~    ^~~~~~~~~~~
+   include/linux/printk.h:446:60: note: expanded from macro 'printk'
+   #define printk(fmt, ...) printk_index_wrap(_printk, fmt, ##__VA_ARGS__)
+                                                       ~~~    ^~~~~~~~~~~
+   include/linux/printk.h:418:19: note: expanded from macro 'printk_index_wrap'
+                   _p_func(_fmt, ##__VA_ARGS__);                           \
+                           ~~~~    ^~~~~~~~~~~
+   fs/netfs/buffered_flush.c:545:26: warning: format specifies type 'size_t' (aka 'unsigned int') but the argument has type 'unsigned long' [-Wformat]
+           _leave(" cancel [%zx]", wreq->last);
+                            ~~~    ^~~~~~~~~~
+                            %lx
+   fs/netfs/internal.h:299:65: note: expanded from macro '_leave'
+   #define _leave(FMT, ...) no_printk("<== %s()"FMT"", __func__, ##__VA_ARGS__)
+                                                ~~~                ^~~~~~~~~~~
+   include/linux/printk.h:132:17: note: expanded from macro 'no_printk'
+                   printk(fmt, ##__VA_ARGS__);             \
+                          ~~~    ^~~~~~~~~~~
+   include/linux/printk.h:446:60: note: expanded from macro 'printk'
+   #define printk(fmt, ...) printk_index_wrap(_printk, fmt, ##__VA_ARGS__)
+                                                       ~~~    ^~~~~~~~~~~
+   include/linux/printk.h:418:19: note: expanded from macro 'printk_index_wrap'
+                   _p_func(_fmt, ##__VA_ARGS__);                           \
+                           ~~~~    ^~~~~~~~~~~
+   fs/netfs/buffered_flush.c:348:33: warning: unused function 'netfs_find_writeback' [-Wunused-function]
+   static struct netfs_io_request *netfs_find_writeback(struct netfs_i_context *ctx,
+                                   ^
+   fs/netfs/buffered_flush.c:364:13: warning: unused function 'netfs_wait_for_writeback' [-Wunused-function]
+   static void netfs_wait_for_writeback(struct netfs_io_request *wreq,
+               ^
+   7 warnings generated.
+
+
+vim +411 fs/netfs/buffered_flush.c
+
+   372	
+   373	/*
+   374	 * Extend the region to be written back to include subsequent contiguously
+   375	 * dirty pages if possible, but don't sleep while doing so.
+   376	 *
+   377	 * If this page holds new content, then we can include filler zeros in the
+   378	 * writeback.
+   379	 */
+   380	static void netfs_extend_writeback(struct netfs_io_request *wreq,
+   381					   struct writeback_control *wbc,
+   382					   struct netfs_i_context *ctx,
+   383					   struct netfs_dirty_region *region)
+   384	{
+   385		struct folio_batch fbatch;
+   386		struct folio *folio;
+   387		unsigned int i;
+   388		pgoff_t index = wreq->last + 1, stop_mask, stop_at, max_pages;
+   389		ssize_t max_size;
+   390		size_t align, hard_align;
+   391		bool stop = true, dirty;
+   392		int ret;
+   393	
+   394		XA_STATE(xas, &wreq->mapping->i_pages, index);
+   395	
+   396		_enter("%lx", index);
+   397	
+   398		/* We have a number of criteria by which we can decide where to stop
+   399		 * extension of this writeback:
+   400		 *
+   401		 *  1) The maximum I/O size (but wbacks can be subdivided)
+   402		 *  2) Boundaries within the filesystem (eg. ceph object size)
+   403		 *  3) Local boundaries (cache granules, VM radix node sizes)
+   404		 *  4) Content crypto/compression boundaries
+   405		 */
+   406		hard_align = PAGE_SIZE;
+   407		if (ctx->min_bshift || ctx->crypto_bshift)
+   408			hard_align = max(hard_align,
+   409					 1UL << max(ctx->min_bshift, ctx->crypto_bshift));
+   410		if (ctx->cache_order)
+ > 411			hard_align = max(hard_align, PAGE_SIZE << ctx->cache_order);
+   412	
+ > 413		align = min(hard_align, XA_CHUNK_SIZE * PAGE_SIZE);
+   414		if (wreq->alignment > align)
+   415			align = wreq->alignment;
+   416	
+   417		stop_mask = (align - 1) / PAGE_SIZE;
+   418	
+   419		max_size = XA_CHUNK_SIZE * PAGE_SIZE;
+   420		if (wreq->wsize > max_size)
+   421			max_size = roundup_pow_of_two(wreq->wsize);
+   422	
+   423		_debug("LIMITS al=%zx ha=%zx mx=%zx", align, hard_align, max_size);
+   424	
+   425		max_pages = max_size / PAGE_SIZE;
+   426		max_pages &= ~stop_mask;
+   427		_debug("MAX_PAGES %lx %lx", max_pages, stop_mask);
+   428		if (wreq->last - wreq->first + 1 >= max_pages) {
+   429			_leave(" [already hit wsize %lx %lx]",
+   430			       wreq->last - wreq->first + 1, max_pages);
+   431			return;
+   432		}
+   433	
+   434		stop_at = wreq->first + max_pages;
+   435		if (stop_at < wreq->first)
+   436			stop_at = ULONG_MAX;
+   437		else
+   438			stop_at = round_down(stop_at, align / PAGE_SIZE);
+   439		_debug("STOP_AT %lx (%lx %lx %lx)", stop_at, wreq->first, max_pages, align / PAGE_SIZE);
+   440	
+   441		if (index >= stop_at || wbc->nr_to_write <= 0 || wreq->len > max_size) {
+   442			_leave(" [prestop]");
+   443			return;
+   444		}
+   445	
+   446		do {
+   447			/* Firstly, we gather up a batch of contiguous dirty folios
+   448			 * under the RCU read lock - but we can't clear the dirty flags
+   449			 * there if any of those folios are mapped.
+   450			 */
+   451			folio_batch_init(&fbatch);
+   452			_debug("extend %lx %lx", index, xas.xa_index);
+   453			rcu_read_lock();
+   454	
+   455			xas_for_each(&xas, folio, ULONG_MAX) {
+   456				stop = true;
+   457				if (xas_retry(&xas, folio))
+   458					continue;
+   459				if (xa_is_value(folio))
+   460					break;
+   461				if (folio_index(folio) != index)
+   462					break;
+   463	
+   464				if (!folio_try_get_rcu(folio)) {
+   465					xas_reset(&xas);
+   466					continue;
+   467				}
+   468	
+   469				/* Has the folio moved or been split? */
+   470				if (unlikely(folio != xas_reload(&xas))) {
+   471					folio_put(folio);
+   472					break;
+   473				}
+   474	
+   475				if (!folio_trylock(folio)) {
+   476					folio_put(folio);
+   477					break;
+   478				}
+   479				if (!folio_test_dirty(folio) ||
+   480				    folio_test_writeback(folio)) {
+   481					folio_unlock(folio);
+   482					folio_put(folio);
+   483					break;
+   484				}
+   485	
+   486				wreq->len += folio_size(folio);
+   487				index += folio_nr_pages(folio);
+   488				stop = index >= stop_at || wbc->nr_to_write <= 0;
+   489	
+   490				if (!folio_batch_add(&fbatch, folio))
+   491					break;
+   492				if (stop)
+   493					break;
+   494			}
+   495	
+   496			if (!stop)
+   497				xas_pause(&xas);
+   498			rcu_read_unlock();
+   499	
+   500			/* Now, if we obtained any pages, we can shift them to being
+   501			 * writable and mark them for caching.
+   502			 */
+   503			if (!folio_batch_count(&fbatch))
+   504				break;
+   505	
+   506			for (i = 0; i < folio_batch_count(&fbatch); i++) {
+   507				folio = fbatch.folios[i];
+   508				//_debug("found [%x] %lx", i, folio->index);
+   509				trace_netfs_folio_dirty(wreq->mapping, folio,
+   510							netfs_folio_trace_store_ex);
+   511	
+   512				dirty = folio_clear_dirty_for_io(folio);
+   513				if (folio_start_writeback(folio)) {
+   514					_debug("! no wb");
+   515					goto nomem_redirty;
+   516				}
+   517	
+   518				ret = netfs_xa_store_and_mark(&wreq->buffer, folio->index, folio,
+   519							      true, true, dirty, GFP_NOFS);
+   520				if (ret < 0) {
+   521					_debug("! no buffer");
+   522					goto nomem_cancel_wb;
+   523				}
+   524				wbc->nr_to_write -= folio_nr_pages(folio);
+   525				index = folio_next_index(folio);
+   526				wreq->last = index - 1;
+   527				folio_unlock(folio);
+   528			}
+   529	
+   530			cond_resched();
+   531		} while (!stop);
+   532	
+   533		_leave(" ok [%zx]", wreq->last);
+   534		return;
+   535	
+   536	nomem_cancel_wb:
+   537		folio_end_writeback(folio);
+   538	nomem_redirty:
+   539		if (dirty)
+   540			folio_redirty_for_writepage(wbc, folio);
+   541		for (; i < folio_batch_count(&fbatch); i++) {
+   542			folio_unlock(folio);
+   543			folio_put(folio);
+   544		}
+   545		_leave(" cancel [%zx]", wreq->last);
+   546	}
+   547	
+
 -- 
-2.36.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
