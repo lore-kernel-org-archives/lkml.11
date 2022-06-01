@@ -2,113 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B561AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:26:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65EC7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:26:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353242AbiFAN0Q (ORCPT
+        id S1353250AbiFAN0k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 09:26:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46410 "EHLO
+        Wed, 1 Jun 2022 09:26:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236812AbiFAN0N (ORCPT
+        with ESMTP id S236812AbiFAN0i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 09:26:13 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 749014FC47;
-        Wed,  1 Jun 2022 06:26:12 -0700 (PDT)
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 251ATMAL020279;
-        Wed, 1 Jun 2022 15:25:47 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=wVUW8uMPP13aja6CCJEYa/t1b7jdtRgdhj/8bybOLRI=;
- b=RYa0r5uLW243c+5XQmONqfSkyZius11Ye1xpMzBNKqdFR1bH8fXU+7/o/ywGzkXC3hR0
- X2KxH6/f4MqvAPuBcLOQfpIuwzzkp9L7SsE7M7JOPBy85WqgFAunY3nalQjasI5kim+g
- zBZ8uThDIioNa1r4jLNL9anXa+2DhGz6TovfzemC4YYW8XpWzZpdSnedvKdf/Pqjk9cQ
- NPQkUfEcptyfJL+uydFhccPmiwLcfd+rYxwLtu/h9Ix96g1VBD25A3jPAOLQsIk/DwPq
- M0dS2x7jcqHJZeGqe3UaV5wismWgEJyF4cm+/ElNWXHFSho/Hr9YTwJXeoQ8SUVxiwFS Tg== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3gbc93rp68-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 01 Jun 2022 15:25:47 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id DB5F910003A;
-        Wed,  1 Jun 2022 15:25:44 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id B1D6A22A6FC;
-        Wed,  1 Jun 2022 15:25:44 +0200 (CEST)
-Received: from [10.211.9.37] (10.75.127.45) by SHFDAG1NODE2.st.com
- (10.75.129.70) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Wed, 1 Jun
- 2022 15:25:43 +0200
-Message-ID: <c497e1ef-5a62-d956-4516-87e7b53a6001@foss.st.com>
-Date:   Wed, 1 Jun 2022 15:25:42 +0200
+        Wed, 1 Jun 2022 09:26:38 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D1984FC62
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 06:26:37 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id y24so969088wmq.5
+        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 06:26:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ffwll.ch; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=noaGYaAS2ngUF9rHVIdsqxhgMZ5al5C5XajbVIc9isw=;
+        b=U9Q37OOk4NWi1lfVMCL5nxB3ANIs4vKn/tkhmKrp4ANPiZCL7MccGApGO1NslW5urV
+         VY3DyS4a3zVHfSl+H82ZxVMr5vz+nBIuGEx2a6jX0pacMGcibgvLq0wxWDSXydyynAFC
+         W/hDJDd57aiuvLD+4bvNQXITPUzouz0cAir9Y=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to;
+        bh=noaGYaAS2ngUF9rHVIdsqxhgMZ5al5C5XajbVIc9isw=;
+        b=byJBvU3QosXyjPltuHqmspw9MqoA1Uqu06O3ikRjE7Bo46CEXCmeCW4y4IhEQA17vC
+         TiAiBnBD9Etba+3g7Ng6s6fr0wHoUXVQCPA5jDZSlMJolXt0DuATwL5XQtQG6esaQ7qc
+         EmNk+XTJ8v0JPigLX3G8oYi1GT1Y2QmQ+LrbKJd+AMEuy78NuCBVhV9c760bEKo03Bq6
+         +3zwkyiaGjMCBt3ec6g3pXv4etAruQ6ILi0tNryTzwn1ssmmePPPL3mEGvB24TqHQ8G0
+         PsW+xJEvkmuvGlTztD6IQh5C3+qdZv5/08XqtilOnr4FnTAUwCC9j5A6InoQp7TwLFye
+         8IGQ==
+X-Gm-Message-State: AOAM530jvxIadMUujAvwS3muan/LFkNOUy7IO2B+l5RrYv5RBhZQbfkG
+        ePKz5bKVA2QW/cNDwik6qzhzxw==
+X-Google-Smtp-Source: ABdhPJxmblSP3nC88vFqaAjKJ7iAz+rr7pZAeiJzY+x4Fx1vknqCtD2WNZKbvxTL/xgpNn9A/fjafg==
+X-Received: by 2002:a05:600c:1f18:b0:39c:2360:d824 with SMTP id bd24-20020a05600c1f1800b0039c2360d824mr2178484wmb.75.1654089996195;
+        Wed, 01 Jun 2022 06:26:36 -0700 (PDT)
+Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
+        by smtp.gmail.com with ESMTPSA id m30-20020a05600c3b1e00b00395f15d993fsm5809686wms.5.2022.06.01.06.26.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Jun 2022 06:26:35 -0700 (PDT)
+Date:   Wed, 1 Jun 2022 15:26:33 +0200
+From:   Daniel Vetter <daniel@ffwll.ch>
+To:     Miaoqian Lin <linmq006@gmail.com>
+Cc:     Emma Anholt <emma@anholt.net>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, Eric Anholt <eric@anholt.net>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] drm/v3d/v3d_drv: Fix PM disable depth imbalance
+Message-ID: <YpdpCWW9+igsVydr@phenom.ffwll.local>
+Mail-Followup-To: Miaoqian Lin <linmq006@gmail.com>,
+        Emma Anholt <emma@anholt.net>, David Airlie <airlied@linux.ie>,
+        Eric Anholt <eric@anholt.net>, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+References: <20220601122050.1822-1-linmq006@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v3] arm64: defconfig: Config that had RPMSG_CHAR now gets
- RPMSG_CTRL
-Content-Language: en-US
-To:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        <linux-arm-kernel@lists.infradead.org>
-CC:     <linux-kernel@vger.kernel.org>, <linux-remoteproc@vger.kernel.org>
-References: <20220405161114.1107745-1-arnaud.pouliquen@foss.st.com>
-From:   Arnaud POULIQUEN <arnaud.pouliquen@foss.st.com>
-In-Reply-To: <20220405161114.1107745-1-arnaud.pouliquen@foss.st.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.45]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SHFDAG1NODE2.st.com
- (10.75.129.70)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
- definitions=2022-06-01_03,2022-06-01_01,2022-02-23_01
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220601122050.1822-1-linmq006@gmail.com>
+X-Operating-System: Linux phenom 5.10.0-8-amd64 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
-
-Gentle reminder.
-Please notice that Mathieu replied with a "Reviewed-by".
-
-Thanks,
-Arnaud
-
-On 4/5/22 18:11, Arnaud Pouliquen wrote:
-> In the commit 617d32938d1b ("rpmsg: Move the rpmsg control device
-> from rpmsg_char to rpmsg_ctrl"), we split the rpmsg_char driver in two.
-> By default give everyone who had the old driver enabled the rpmsg_ctrl
-> driver too.
+On Wed, Jun 01, 2022 at 04:20:50PM +0400, Miaoqian Lin wrote:
+> The pm_runtime_enable will increase power disable depth.
+> If the probe fails, we should use pm_runtime_disable() to balance
+> pm_runtime_enable().
+> Also call disable function in remove function.
 > 
-> Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
+> Fixes: 57692c94dcbe ("drm/v3d: Introduce a new DRM driver for Broadcom V3D V3.x+")
+> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 > ---
+> Changes in v3:
+> - call pm_runtime_disable() in v3d_platform_drm_remove
+> - update commit message
 > 
-> This patch is extracted from the series [1] that has been partially
-> integrated in the Linux Kernel 5.18-rc1.
+> Changes in v2
+> - put pm_runtime_disable before dma_free_wc
+> - rename dma_free to pm_disable
 > 
-> Update vs previous version:
-> - Add missing "---" separation marker after "Signed-off-by".
-> 
-> [1]https://lore.kernel.org/lkml/15be2f08-ba03-2b80-6f53-2056359d5c41@gmail.com/T/
-> [2]https://lore.kernel.org/linux-arm-kernel/CANLsYky1_b80qPbgOaLGVYD-GEr21V6C653iGEB7VCU=GbGvAQ@mail.gmail.com/T/
+> v1: https://lore.kernel.org/r/20220105120442.14418-1-linmq006@gmail.com
+> v2: https://lore.kernel.org/r/20220106124657.32737-1-linmq006@gmail.com
+
+Maybe a bit late since we're at v3 already, but are there no devm_
+functions here that would dtrt automatically? Or is there another reason
+we can't use them?
+-Daniel
 > ---
->  arch/arm64/configs/defconfig | 1 +
->  1 file changed, 1 insertion(+)
+>  drivers/gpu/drm/v3d/v3d_drv.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
 > 
-> diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-> index 50aa3d75ab4f..3f8906b8a2ca 100644
-> --- a/arch/arm64/configs/defconfig
-> +++ b/arch/arm64/configs/defconfig
-> @@ -1053,6 +1053,7 @@ CONFIG_QCOM_Q6V5_PAS=m
->  CONFIG_QCOM_SYSMON=m
->  CONFIG_QCOM_WCNSS_PIL=m
->  CONFIG_RPMSG_CHAR=m
-> +CONFIG_RPMSG_CTRL=m
->  CONFIG_RPMSG_QCOM_GLINK_RPM=y
->  CONFIG_RPMSG_QCOM_GLINK_SMEM=m
->  CONFIG_RPMSG_QCOM_SMD=y
+> diff --git a/drivers/gpu/drm/v3d/v3d_drv.c b/drivers/gpu/drm/v3d/v3d_drv.c
+> index 1afcd54fbbd5..f3380399fe17 100644
+> --- a/drivers/gpu/drm/v3d/v3d_drv.c
+> +++ b/drivers/gpu/drm/v3d/v3d_drv.c
+> @@ -286,7 +286,7 @@ static int v3d_platform_drm_probe(struct platform_device *pdev)
+>  
+>  	ret = v3d_gem_init(drm);
+>  	if (ret)
+> -		goto dma_free;
+> +		goto pm_disable;
+>  
+>  	ret = v3d_irq_init(v3d);
+>  	if (ret)
+> @@ -302,7 +302,8 @@ static int v3d_platform_drm_probe(struct platform_device *pdev)
+>  	v3d_irq_disable(v3d);
+>  gem_destroy:
+>  	v3d_gem_destroy(drm);
+> -dma_free:
+> +pm_disable:
+> +	pm_runtime_disable(dev);
+>  	dma_free_wc(dev, 4096, v3d->mmu_scratch, v3d->mmu_scratch_paddr);
+>  	return ret;
+>  }
+> @@ -316,6 +317,7 @@ static int v3d_platform_drm_remove(struct platform_device *pdev)
+>  
+>  	v3d_gem_destroy(drm);
+>  
+> +	pm_runtime_disable(&pdev->dev);
+>  	dma_free_wc(v3d->drm.dev, 4096, v3d->mmu_scratch,
+>  		    v3d->mmu_scratch_paddr);
+>  
+> -- 
+> 2.25.1
+> 
+
+-- 
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
