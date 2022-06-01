@@ -2,136 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 391B1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 20:42:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E6C6CCA473
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 20:42:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229763AbiFAUmo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 16:42:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39118 "EHLO
+        id S229584AbiFAUmj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 16:42:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229500AbiFAUmh (ORCPT
+        with ESMTP id S229534AbiFAUmh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 1 Jun 2022 16:42:37 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDE321D502C;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE33F1D5030;
         Wed,  1 Jun 2022 13:23:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A399615DA;
-        Wed,  1 Jun 2022 20:14:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B27E5C385A5;
-        Wed,  1 Jun 2022 20:14:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 296806167C;
+        Wed,  1 Jun 2022 19:26:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38913C385A5;
+        Wed,  1 Jun 2022 19:26:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654114446;
-        bh=ANEZGcC38fks5Sbmq7hFARmRKNzmPSYj5weqOHWaC7U=;
-        h=Date:From:To:Cc:Subject:From;
-        b=DbLxkgWvqnFalgNPxRu92f7qC3o0VDMSTwCtOBSrBwYpHvfO+xmIlTIKOzoBah1/I
-         R6OmGReJRlya0AwJRjpnGNK8+lgax09VuHPcSvcrOr3L9EmiKm9+zcevuK2w8qQhI6
-         vw/B8bBoj0l+8mfK081S8ap4iuH2ZpkhujIEmVshyvcDpb5Hi9FHghkDDXA3Iv0YRb
-         biXGU1Ni9rr4CY7uHL1tF8CSCAzMjGytrxmumik2chknBoiO33bhHSJlgy4gvACcXK
-         +uvbJMNrVsNppsns+N19pU2CVEpzqsM76KaQVg5uv1bGTZfi/SEhKZ46jv3S6WjgOY
-         f7po3Ozi14pnw==
-Received: by mercury (Postfix, from userid 1000)
-        id 28E8B106043A; Wed,  1 Jun 2022 22:14:04 +0200 (CEST)
-Date:   Wed, 1 Jun 2022 22:14:04 +0200
-From:   Sebastian Reichel <sre@kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
-Subject: [GIT PULL] power-supply changes for 5.19
-Message-ID: <20220601201404.nc66eejtt4tuvre6@mercury.elektranox.org>
+        s=k20201202; t=1654111579;
+        bh=kjzuy5OLcjNnr7n1+E35W4+dixKa9+A7A847BOlSHXQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=My9EOlOPXw6b1JIbY5dKxbfR4SKtNunO75fcat7yYSD2rPvReQ/OHt/WbAHOi4OiE
+         Jx7AEOsPKjE0VbDYtDvqCJr9saTAsCzjkDHFku5pQCBrvoQR0FcngJsHS89EYo1MlG
+         LYGG2hroi0tRrrLp5JAAxM2875plaZrnilWzm7piLsCi+e8IXBQ5m86+EEqVEuzgTc
+         ErfwqXxF+cIYudObD1Xqyp7W+78doqYtwqG4NXqQwnwgyIpForpKygIw6P9btdwlzd
+         qypamayShc3ATF0zx35OZfWhV+GoFZthqvSvscQMxGpIXIsI+gT3YvSiUzxy4EpDXh
+         3gkt8rNruVcjQ==
+Date:   Wed, 1 Jun 2022 12:26:18 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Leon Romanovsky <leonro@nvidia.com>
+Cc:     Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Boris Pismenny <borisp@nvidia.com>, <netdev@vger.kernel.org>,
+        <kernel-janitors@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        "Saeed Mahameed" <saeedm@nvidia.com>
+Subject: Re: [PATCH] MAINTAINERS: adjust MELLANOX ETHERNET INNOVA DRIVERS to
+ TLS support removal
+Message-ID: <20220601122618.78b93038@kernel.org>
+In-Reply-To: <YperBiCh1rkKDmSR@unreal>
+References: <20220601045738.19608-1-lukas.bulwahn@gmail.com>
+        <Ypc85O47YoNzUTr5@unreal>
+        <20220601103032.28d14fc4@kicinski-fedora-PC1C0HJN>
+        <YperBiCh1rkKDmSR@unreal>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="lpdghi3maawhqvbc"
-Content-Disposition: inline
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, 1 Jun 2022 21:08:06 +0300 Leon Romanovsky wrote:
+> On Wed, Jun 01, 2022 at 10:30:39AM -0700, Jakub Kicinski wrote:
+> > > Thanks, we will submit it once net-next will be open.  
+> > 
+> > It should go via net FWIW.  
+> 
+> I'm slightly confused here.
+> 
+> According to net policy, the patches that goes there should have Fixes
+> line, but Fixes lines are added for bugs [1].
+> 
+> This forgotten line in MAINTAINERS doesn't cause to any harm to
+> users/developers.
 
---lpdghi3maawhqvbc
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Fair, maybe I worded it too strongly. I should have said something like
+"FWIW it's okay for MAINTAINERS updates to go via net".
 
-Hi Linus,
+Documentation/ patches and MAINTAINERS are special, they can go into
+net without a Fixes tag so that changes to get_maintainer output and
+https://www.kernel.org/doc/html/latest/ propagate quickly.
 
-Not much from the power-supply subsystem this time around, since I
-was busy most of the cycle. The pull request also contains some
-fixes, that I originally planned to send for 5.18. Apart from this
-there is nothing noteworthy.
+> So when should I put Fixes line in netdev?
+> 
+> [1] https://lore.kernel.org/netdev/20211208070842.0ace6747@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com/
 
-Thanks,
-
--- Sebastian
-
-The following changes since commit 672c0c5173427e6b3e2a9bbb7be51ceeec78093a:
-
-  Linux 5.18-rc5 (2022-05-01 13:57:58 -0700)
-
-are available in the Git repository at:
-
-  ssh://git@gitolite.kernel.org/pub/scm/linux/kernel/git/sre/linux-power-supply.git tags/for-v5.19
-
-for you to fetch changes up to da50aad6d86716aa48a2b8463c85caea77c0355f:
-
-  Merge power-supply 'fixes' branch (2022-05-22 23:03:29 +0200)
-
-----------------------------------------------------------------
-power supply and reset changes for the v5.19 series
-
-power-supply core:
- - init power_supply_info struct to zero
-
-drivers:
- - bq27xxx: expose data for uncalibrated battery
- - bq24190-charger: use pm_runtime_resume_and_get
- - ab8500_fg: allocate wq in probe
- - axp288_fuel_gauge: drop BIOS version from "T3 MRD" quirk
- - axp288_fuel_gauge: modify "T3 MRD" quirk to also fix "One Mix 1"
-
-----------------------------------------------------------------
-Hans de Goede (2):
-      power: supply: axp288_fuel_gauge: Fix battery reporting on the One Mix 1
-      power: supply: axp288_fuel_gauge: Drop BIOS version check from "T3 MRD" DMI quirk
-
-Linus Walleij (2):
-      power: supply: core: Initialize struct to zero
-      power: supply: ab8500_fg: Allocate wq in probe
-
-Minghao Chi (1):
-      power: supply: bq24190_charger: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
-
-Sebastian Reichel (1):
-      Merge power-supply 'fixes' branch
-
-Sicelo A. Mhlongo (1):
-      power: supply: bq27xxx: expose battery data when CI=1
-
- drivers/power/supply/ab8500_fg.c         | 19 +++++-----
- drivers/power/supply/axp288_fuel_gauge.c | 41 ++++++++++++++++++---
- drivers/power/supply/bq24190_charger.c   | 63 +++++++++++---------------------
- drivers/power/supply/bq27xxx_battery.c   | 60 ++++++++++++++----------------
- drivers/power/supply/power_supply_core.c |  2 +-
- 5 files changed, 95 insertions(+), 90 deletions(-)
-
---lpdghi3maawhqvbc
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmKXyIgACgkQ2O7X88g7
-+po7pw/7B6fLcS5QfB5FPJaZ5e83qYO4zDsyJNqM7b3S6NTflIWkczFcMDcDm3ee
-cb6LKD9vLYaZGktAHWDcl2Wr4Br9V8bTuUe/ODfJsDdP8PL0XTnS02cfpgFxgMUx
-YxuYxXPsVWFLg5OfBN0e04Pw+qG1yJAKJN7FMMMOutNWGXcm+3T4dvvUNhTGjXYf
-gomAMAjRec6ZImV3eroa36hNcDAfoPo72JKMMQOuGKAa3Al/lK5iZQchqIpvT0BH
-Aw0oAdV5Evuf8RPq8Lvpg5ngLPcgNThwvBT+Vm9KSv7U1QA7BFN3WaInefKVyvDH
-zXPfOrBoUtFz59MtN8wHHaFOYnwMY118SONbYloUr17n6Yn+olzlYsuzbPwVfQaf
-AfJOHfHIffzyRBA8O6e4SAkT2xLjJ/XbyD9qglj3icHEtJRj3EE7w3QTLD9u0VXN
-kl2/e6/uz4OFkTNn6PXSvogdOuaQ6fkMMElvHU+netVCSJ2sMC65/OIAsdtcNaCg
-JW4ltSC3CQKwlJLv+umaD/UZkduPCkXWbOVfSzoL0JVtt5Qxe0xZzDwAMFEX1biW
-tFsaaOCHGE8TT7mcTcLaVdrmGvertzoqwQZQy8JRyLzZ+kriA3+Jh15tegOSHoQq
-HXS6MFE/K+oSOyku21DCIvT0yodYi/Dm/8R8uaKwpZp4dcTZRIE=
-=0syY
------END PGP SIGNATURE-----
-
---lpdghi3maawhqvbc--
