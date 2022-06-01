@@ -2,140 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 442DBC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 12:46:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0348EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 12:47:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237009AbiFAMp7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 08:45:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58190 "EHLO
+        id S1352858AbiFAMrA (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 08:47:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353022AbiFAMpx (ORCPT
+        with ESMTP id S1347894AbiFAMqv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 08:45:53 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5E00E4A91D
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 05:45:51 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1B3F9ED1;
-        Wed,  1 Jun 2022 05:45:51 -0700 (PDT)
-Received: from bogus (unknown [10.57.9.14])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0D5863F73D;
-        Wed,  1 Jun 2022 05:45:48 -0700 (PDT)
-Date:   Wed, 1 Jun 2022 13:45:01 +0100
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     Gavin Shan <gshan@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, Atish Patra <atishp@atishpatra.org>,
-        Atish Patra <atishp@rivosinc.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Morten Rasmussen <morten.rasmussen@arm.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Qing Wang <wangqing@vivo.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-riscv@lists.infradead.org, Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH v3 02/16] cacheinfo: Add helper to access any cache index
- for a given CPU
-Message-ID: <20220601124501.v4ylb4oqs4uq2oxj@bogus>
-References: <20220525081416.3306043-1-sudeep.holla@arm.com>
- <20220525081416.3306043-2-sudeep.holla@arm.com>
- <20220525081416.3306043-3-sudeep.holla@arm.com>
- <9a70f2b2-e45c-b125-1c14-d5a06097be58@redhat.com>
+        Wed, 1 Jun 2022 08:46:51 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64E3F654B
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 05:46:50 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id t25so2545501lfg.7
+        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 05:46:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ypan38TB2QoAzYWO+fMPZfJPmZAF9oC38F8TiawwsKI=;
+        b=QKLl9jqzOPmCnoTtwZwwMFVM597CPkRIzsC7zl/r8egWnTpbQxRvlGisNM+FCgz6zq
+         SzgGWfUjzldk9oesTJJ3pTNq2j0gQyWLBsTGI7TZsYGyzpEJO0skbzN8wwUT+JBhexmD
+         QRHtDOHBCPRrU4J1Z7EQfEZFVmbIrGWPsvlqdv1bV2JnALQp4eu8vjDC7sdZBdvsuZx/
+         Xqb1C1C7ULHIWYxfSuee1JQm+EMyl9Tg7gKE5IyXbcTgrVvTdj5a+6RPMNXcxsJRvU9j
+         toEZm6RcHXYkeIEMDDh9JcsViH4cOfp337Zy731WcU6doRnwxz7AvaAtyGL736ULW/R3
+         EMAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ypan38TB2QoAzYWO+fMPZfJPmZAF9oC38F8TiawwsKI=;
+        b=cB49RLz3m/o3KHG/Jat/QfzIZL8nJi+YYs4xs2+N/2nWLLC/rw7iw84+lJ+BtHXnZY
+         KAgROOPEtwwg6bVJi7BXyTUr/u8yO/raoIJJn8xAqQaGlfOT00Hv+j5uWRuvgZJACQYn
+         b41yQlI0ifr8XpbdTF7zMG5oZmhptGr1p8M9mFtz9YIgV1MR2LoPXkogqbIOditSPH8r
+         NrmchVFh6I7jOPZbkkuLQaEHZOcWO/ecae4HLzSQjNiadOeLLRarRscBJgxUu7nqll28
+         rBVXzfJLTvwhUe7+BI0qWl6/rHzWgvO7rqfRqBBI+HOWSjwWOhKfsjHBAJEI1WE//r7N
+         g8kg==
+X-Gm-Message-State: AOAM531+5aI0rtFh4y800q0M0990g+jHklKJ4GQ1VoF0AHcB5qxQmcQO
+        JrK2ws6bNC7wFAnZMsilgEDVe4GGc+4uKY0ryZ13hg==
+X-Google-Smtp-Source: ABdhPJzsrIu9md7U7n1zgj7u1cLuExn4AAVdSQM0L62PSHkBkuz5iBlGUZBgl32ya7QNulKtLODAF2LpeKSeB6JV/Cs=
+X-Received: by 2002:a05:6512:e93:b0:478:70ed:6dfb with SMTP id
+ bi19-20020a0565120e9300b0047870ed6dfbmr33055330lfb.358.1654087608721; Wed, 01
+ Jun 2022 05:46:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9a70f2b2-e45c-b125-1c14-d5a06097be58@redhat.com>
+References: <20220523144255.10310-1-linmq006@gmail.com>
+In-Reply-To: <20220523144255.10310-1-linmq006@gmail.com>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Wed, 1 Jun 2022 14:46:12 +0200
+Message-ID: <CAPDyKFrtNLRT8prMuVXx9RBVfVuj_yj=KTj9nHaUg0t6euxUDg@mail.gmail.com>
+Subject: Re: [PATCH] mmc: sdhci-of-esdhc: Fix refcount leak in esdhc_signal_voltage_switch
+To:     Miaoqian Lin <linmq006@gmail.com>
+Cc:     Adrian Hunter <adrian.hunter@intel.com>,
+        yangbo lu <yangbo.lu@nxp.com>, linux-mmc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 01, 2022 at 10:44:20AM +0800, Gavin Shan wrote:
-> Hi Sudeep,
-> 
-> On 5/25/22 4:14 PM, Sudeep Holla wrote:
-> > The cacheinfo for a given CPU at a given index is used at quite a few
-> > places by fetching the base point for index 0 using the helper
-> > per_cpu_cacheinfo(cpu) and offseting it by the required index.
-> > 
-> > Instead, add another helper to fetch the required pointer directly and
-> > use it to simplify and improve readability.
-> > 
-> > Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
-> > ---
-> >   drivers/base/cacheinfo.c | 14 +++++++-------
-> >   1 file changed, 7 insertions(+), 7 deletions(-)
-> > 
-> 
-> s/offseting/offsetting
-> 
-> It looks good to me with below nits fixed:
-> 
-> Reviewed-by: Gavin Shan <gshan@redhat.com>
-> 
-> 
-> > diff --git a/drivers/base/cacheinfo.c b/drivers/base/cacheinfo.c
-> > index b0bde272e2ae..c4547d8ac6f3 100644
-> > --- a/drivers/base/cacheinfo.c
-> > +++ b/drivers/base/cacheinfo.c
-> > @@ -25,6 +25,8 @@ static DEFINE_PER_CPU(struct cpu_cacheinfo, ci_cpu_cacheinfo);
-> >   #define ci_cacheinfo(cpu)	(&per_cpu(ci_cpu_cacheinfo, cpu))
-> >   #define cache_leaves(cpu)	(ci_cacheinfo(cpu)->num_leaves)
-> >   #define per_cpu_cacheinfo(cpu)	(ci_cacheinfo(cpu)->info_list)
-> > +#define per_cpu_cacheinfo_idx(cpu, idx)		\
-> > +				(per_cpu_cacheinfo(cpu) + (idx))
-> >   struct cpu_cacheinfo *get_cpu_cacheinfo(unsigned int cpu)
-> >   {
-> > @@ -172,7 +174,7 @@ static int cache_setup_of_node(unsigned int cpu)
-> >   	}
-> >   	while (index < cache_leaves(cpu)) {
-> > -		this_leaf = this_cpu_ci->info_list + index;
-> > +		this_leaf = per_cpu_cacheinfo_idx(cpu, index);
-> >   		if (this_leaf->level != 1)
-> >   			np = of_find_next_cache_node(np);
-> >   		else
-> > @@ -231,7 +233,7 @@ static int cache_shared_cpu_map_setup(unsigned int cpu)
-> >   	for (index = 0; index < cache_leaves(cpu); index++) {
-> >   		unsigned int i;
-> > -		this_leaf = this_cpu_ci->info_list + index;
-> > +		this_leaf = per_cpu_cacheinfo_idx(cpu, index);
-> >   		/* skip if shared_cpu_map is already populated */
-> >   		if (!cpumask_empty(&this_leaf->shared_cpu_map))
-> >   			continue;
-> > @@ -242,7 +244,7 @@ static int cache_shared_cpu_map_setup(unsigned int cpu)
-> >   			if (i == cpu || !sib_cpu_ci->info_list)
-> >   				continue;/* skip if itself or no cacheinfo */
-> > -			sib_leaf = sib_cpu_ci->info_list + index;
-> > +			sib_leaf = per_cpu_cacheinfo_idx(i, index);
-> >   			if (cache_leaves_are_shared(this_leaf, sib_leaf)) {
-> >   				cpumask_set_cpu(cpu, &sib_leaf->shared_cpu_map);
-> >   				cpumask_set_cpu(i, &this_leaf->shared_cpu_map);
-> > @@ -258,12 +260,11 @@ static int cache_shared_cpu_map_setup(unsigned int cpu)
-> >   static void cache_shared_cpu_map_remove(unsigned int cpu)
-> >   {
-> > -	struct cpu_cacheinfo *this_cpu_ci = get_cpu_cacheinfo(cpu);
-> >   	struct cacheinfo *this_leaf, *sib_leaf;
-> >   	unsigned int sibling, index;
-> >   	for (index = 0; index < cache_leaves(cpu); index++) {
-> > -		this_leaf = this_cpu_ci->info_list + index;
-> > +		this_leaf = per_cpu_cacheinfo_idx(cpu, index);
-> >   		for_each_cpu(sibling, &this_leaf->shared_cpu_map) {
-> >   			struct cpu_cacheinfo *sib_cpu_ci;
-> > 
-> 
-> In cache_shared_cpu_map_remove(), the newly introduced macro
-> can be applied when the sibling CPU's cache info is fetched.
-> 
->     sib_leaf = sib_cpu_ci->info_list + index;
-> 
->     to
-> 
->     sib_leaf = per_cpu_cacheinfo_idx(sibling, index);
-> 
+On Mon, 23 May 2022 at 16:43, Miaoqian Lin <linmq006@gmail.com> wrote:
+>
+> of_find_matching_node() returns a node pointer with refcount
+> incremented, we should use of_node_put() on it when not need anymore.
+> Add missing of_node_put() to avoid refcount leak.
+> of_node_put() checks null pointer.
+>
+> Fixes: ea35645a3c66 ("mmc: sdhci-of-esdhc: add support for signal voltage switch")
+> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 
-Right, I clearly missed to identify this. Thanks again for the review, all
-other comments are now fixed locally and pushed @[1], will post them as part
-of next version.
+Queued for v5.20 on the devel branch, thanks!
 
---
-Regards,
-Sudeep
+Kind regards
+Uffe
 
-[1] https://git.kernel.org/sudeep.holla/h/arch_topology
+
+> ---
+>  drivers/mmc/host/sdhci-of-esdhc.c | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/drivers/mmc/host/sdhci-of-esdhc.c b/drivers/mmc/host/sdhci-of-esdhc.c
+> index d9dc41143bb3..8b3d8119f388 100644
+> --- a/drivers/mmc/host/sdhci-of-esdhc.c
+> +++ b/drivers/mmc/host/sdhci-of-esdhc.c
+> @@ -904,6 +904,7 @@ static int esdhc_signal_voltage_switch(struct mmc_host *mmc,
+>                 scfg_node = of_find_matching_node(NULL, scfg_device_ids);
+>                 if (scfg_node)
+>                         scfg_base = of_iomap(scfg_node, 0);
+> +               of_node_put(scfg_node);
+>                 if (scfg_base) {
+>                         sdhciovselcr = SDHCIOVSELCR_TGLEN |
+>                                        SDHCIOVSELCR_VSELVAL;
+> --
+> 2.25.1
+>
