@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A309DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:58:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 771E7CCA46F
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:58:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347806AbiFAN6P (ORCPT
+        id S1353909AbiFAN6V (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 09:58:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33016 "EHLO
+        Wed, 1 Jun 2022 09:58:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353962AbiFAN4p (ORCPT
+        with ESMTP id S1353896AbiFAN5S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 09:56:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 888D6996AE;
-        Wed,  1 Jun 2022 06:55:04 -0700 (PDT)
+        Wed, 1 Jun 2022 09:57:18 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B482E8B0A7;
+        Wed,  1 Jun 2022 06:55:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C4DD9615C7;
-        Wed,  1 Jun 2022 13:55:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 283E8C36AE2;
-        Wed,  1 Jun 2022 13:55:03 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 17FC1CE1A24;
+        Wed,  1 Jun 2022 13:54:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6843CC36AE2;
+        Wed,  1 Jun 2022 13:54:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091704;
-        bh=XHRtkpxftbgTm/PySu+8nLF6MiAvmFtE9vRGXyrzS1U=;
+        s=k20201202; t=1654091669;
+        bh=AwpP63mnwMx0YpBeBR+o75uBQzNi64ZU7FWswh0h5wo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Fgy1/AUEf4je3jBEzJNstM9d8f+ThT6hVOEb0GALJ7/8pYY+d/dEIdmCWOpvukZb+
-         AzuLMcG6h8flpT/yFiEoL4cqRPJSp4chZyg6W0C831iUc5AHyFIeUwqUa7W4Jo/XMN
-         x0yTkuSKeCSUQ4xBZUSsuS9SLZhvcujgHQGTSsq/Kd45XHFCJRrC8oQ20dwy1KEf2d
-         kVSdpvgA1hzg8KHRr60Q5ATCTWJIArXHXFrvL48vu7J32yaqjbZxD6zhZM8Ye7NYYr
-         7crnErd6s5l+OG/zLuNIBnqyYC+TnEanDmkBb3SLIh5bUv+Fi4DwBd8en5S+ZnlsY2
-         AO0oH8P0+AOBg==
+        b=jXf7kfLFklkycq+MTAiGU55gaVnHGP7iVZdSSPUZLVEsoDo5WNkLjOG7uC5K1XivJ
+         P5JfRaHjT4V3VMgMVuGAIT2rEtvZVCAmfg+Nzzx8MxNnn1HwIYf3BplSHqi07rODqj
+         7CdE/RpvxTtfYOxe98nXYC/C8ZN01mQgO6wNAKoLIvCmxdoFgZLFm4wXx2j46Ag8w3
+         YBFlDRSrkVkzYiDOFdI/Porq8Q3zkLuKiomilYa0o/FpvYt4aqp4PXn8U01rKpENbC
+         3VJ+o+2Pdjb7vaYJNEU/Izr2iUx9sBXIAuw3INZJytabCNqBz/FbAA0T9XOPngho+v
+         KUTRXw2NnjXLg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Janusz Krzysztofik <jmkrzyszt@gmail.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>,
-        paul@pwsan.com, aaro.koskinen@iki.fi, linux@armlinux.org.uk,
-        linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.17 18/48] ARM: OMAP1: clock: Fix UART rate reporting algorithm
-Date:   Wed,  1 Jun 2022 09:53:51 -0400
-Message-Id: <20220601135421.2003328-18-sashal@kernel.org>
+Cc:     Krzysztof Kozlowski <krzk@kernel.org>,
+        Jonathan Bakker <xc-racer2@live.ca>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 05/48] ARM: dts: s5pv210: align DMA channels with dtschema
+Date:   Wed,  1 Jun 2022 09:53:38 -0400
+Message-Id: <20220601135421.2003328-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135421.2003328-1-sashal@kernel.org>
 References: <20220601135421.2003328-1-sashal@kernel.org>
@@ -54,35 +56,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Janusz Krzysztofik <jmkrzyszt@gmail.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
 
-[ Upstream commit 338d5d476cde853dfd97378d20496baabc2ce3c0 ]
+[ Upstream commit 9e916fb9bc3d16066286f19fc9c51d26a6aec6bd ]
 
-Since its introduction to the mainline kernel, omap1_uart_recalc() helper
-makes incorrect use of clk->enable_bit as a ready to use bitmap mask while
-it only provides the bit number.  Fix it.
+dtschema expects DMA channels in specific order (tx, rx and tx-sec).
+The order actually should not matter because dma-names is used however
+let's make it aligned with dtschema to suppress warnings like:
 
-Signed-off-by: Janusz Krzysztofik <jmkrzyszt@gmail.com>
-Acked-by: Tony Lindgren <tony@atomide.com>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+  i2s@eee30000: dma-names: ['rx', 'tx', 'tx-sec'] is not valid under any of the given schemas
+
+Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+Co-developed-by: Jonathan Bakker <xc-racer2@live.ca>
+Signed-off-by: Jonathan Bakker <xc-racer2@live.ca>
+Link: https://lore.kernel.org/r/CY4PR04MB056779A9C50DC95987C5272ACB1C9@CY4PR04MB0567.namprd04.prod.outlook.com
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-omap1/clock.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/boot/dts/s5pv210-aries.dtsi |  2 +-
+ arch/arm/boot/dts/s5pv210.dtsi       | 12 ++++++------
+ 2 files changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/arch/arm/mach-omap1/clock.c b/arch/arm/mach-omap1/clock.c
-index 9d4a0ab50a46..d63d5eb8d8fd 100644
---- a/arch/arm/mach-omap1/clock.c
-+++ b/arch/arm/mach-omap1/clock.c
-@@ -41,7 +41,7 @@ static DEFINE_SPINLOCK(clockfw_lock);
- unsigned long omap1_uart_recalc(struct clk *clk)
- {
- 	unsigned int val = __raw_readl(clk->enable_reg);
--	return val & clk->enable_bit ? 48000000 : 12000000;
-+	return val & 1 << clk->enable_bit ? 48000000 : 12000000;
- }
+diff --git a/arch/arm/boot/dts/s5pv210-aries.dtsi b/arch/arm/boot/dts/s5pv210-aries.dtsi
+index 160f8cd9a68d..148536a91676 100644
+--- a/arch/arm/boot/dts/s5pv210-aries.dtsi
++++ b/arch/arm/boot/dts/s5pv210-aries.dtsi
+@@ -636,7 +636,7 @@ touchscreen@4a {
+ };
  
- unsigned long omap1_sossi_recalc(struct clk *clk)
+ &i2s0 {
+-	dmas = <&pdma0 9>, <&pdma0 10>, <&pdma0 11>;
++	dmas = <&pdma0 10>, <&pdma0 9>, <&pdma0 11>;
+ 	status = "okay";
+ };
+ 
+diff --git a/arch/arm/boot/dts/s5pv210.dtsi b/arch/arm/boot/dts/s5pv210.dtsi
+index 353ba7b09a0c..c5265f3ae31d 100644
+--- a/arch/arm/boot/dts/s5pv210.dtsi
++++ b/arch/arm/boot/dts/s5pv210.dtsi
+@@ -239,8 +239,8 @@ i2s0: i2s@eee30000 {
+ 			reg = <0xeee30000 0x1000>;
+ 			interrupt-parent = <&vic2>;
+ 			interrupts = <16>;
+-			dma-names = "rx", "tx", "tx-sec";
+-			dmas = <&pdma1 9>, <&pdma1 10>, <&pdma1 11>;
++			dma-names = "tx", "rx", "tx-sec";
++			dmas = <&pdma1 10>, <&pdma1 9>, <&pdma1 11>;
+ 			clock-names = "iis",
+ 				      "i2s_opclk0",
+ 				      "i2s_opclk1";
+@@ -259,8 +259,8 @@ i2s1: i2s@e2100000 {
+ 			reg = <0xe2100000 0x1000>;
+ 			interrupt-parent = <&vic2>;
+ 			interrupts = <17>;
+-			dma-names = "rx", "tx";
+-			dmas = <&pdma1 12>, <&pdma1 13>;
++			dma-names = "tx", "rx";
++			dmas = <&pdma1 13>, <&pdma1 12>;
+ 			clock-names = "iis", "i2s_opclk0";
+ 			clocks = <&clocks CLK_I2S1>, <&clocks SCLK_AUDIO1>;
+ 			pinctrl-names = "default";
+@@ -274,8 +274,8 @@ i2s2: i2s@e2a00000 {
+ 			reg = <0xe2a00000 0x1000>;
+ 			interrupt-parent = <&vic2>;
+ 			interrupts = <18>;
+-			dma-names = "rx", "tx";
+-			dmas = <&pdma1 14>, <&pdma1 15>;
++			dma-names = "tx", "rx";
++			dmas = <&pdma1 15>, <&pdma1 14>;
+ 			clock-names = "iis", "i2s_opclk0";
+ 			clocks = <&clocks CLK_I2S2>, <&clocks SCLK_AUDIO2>;
+ 			pinctrl-names = "default";
 -- 
 2.35.1
 
