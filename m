@@ -2,103 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C322BC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 08:23:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 282BBC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 08:23:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348523AbiFAIXD (ORCPT
+        id S1349033AbiFAIXN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 04:23:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34486 "EHLO
+        Wed, 1 Jun 2022 04:23:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350802AbiFAIVI (ORCPT
+        with ESMTP id S245162AbiFAIW7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 04:21:08 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9C848BD27
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 01:21:03 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id fu3so674534ejc.7
-        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 01:21:03 -0700 (PDT)
+        Wed, 1 Jun 2022 04:22:59 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C79F29A;
+        Wed,  1 Jun 2022 01:22:57 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id d26so1217651wrb.13;
+        Wed, 01 Jun 2022 01:22:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=uO7TEYH3azvhwUyM/ipGTxrXysRtvFN6/SIsGkR3HG8=;
-        b=NjkKPpXGmU+NWHErKRRe69EDWMeEzFKN12rgI/cXEJyhK2DGo3DmwzEMiyOtRy1ihi
-         IqaDhDD/6v3DkysFIjotnu5gx66Jl6NaYz5KU/2VGuB8wktg++UdGT1+tqBEI0T7iI24
-         rWii3MCxkj3BWY441vC6tBOaQ0HIUi4C3keOLcsbYqeDfIiXmhXGibwTzPgLxKgmnL9b
-         6lTeIkJAnvmIIUMQ0DaB60AQp0T0OuhKXlrrh0BlFL138DKvHgmwrZvi55lnimpNJW0b
-         jHp84uVsOOPlPp+3Ki6RqdzbYs/R/270H669Sidw02IyMZcItzMOpnxJt/WBddIElBp/
-         rDRQ==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=dad+Xnw9+BHlkOfkwEsvmsktADHpLQsOI8/Vmibic24=;
+        b=c98fkegfP4WbFEarCBtHXwEwdDPMnZVn39M8+BWshFOHcUHEJwReSogoazpYM0NxBv
+         FB/50t+bZUTZAHTpLPtHjUbO/+8CbvecVrEiIKekPQeohACMNOnK+533LH0I5J/tLduZ
+         gAlRsxTpBkbS6eEcqLd1ngVtg/dQqC4fo+Hy4ZvT/e19LpyZVANDdXT3yLK6suXGQYqm
+         7orH4/YY6aMgsvGAjQjRUMahnNmILEc4sx8wBlENpnSJIzo2XBjf4VY9x//AnA+OOTse
+         dgNO9yoxi7Q8Akv5kKk2FJ8Pz8KXc8pD4zlKSN2/Y2jRREtNG+bZycMDMYHIhTNrqaug
+         3qmw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=uO7TEYH3azvhwUyM/ipGTxrXysRtvFN6/SIsGkR3HG8=;
-        b=U9LGk+IfZ+0B0LpZBZr/ndLKWzmX5eTdRPRNaui2ZANVgJA2/DZn/QJnxXQrCeJrsq
-         +kir6v72J0Lv6Rl2hQC7TqTue26dXaScXu8JWQdxeqf4KajpaWFdxqpAepMXm/T5+gCV
-         EE4sD5Sto38Rqa1RVK4txTERlZ0eeQQZiG2NcPeqbvXPcDT5xzkiGy1fS/uclIhVLVr4
-         flMBM+D8fmFn8AORduzmrKkngdT6PlYt5cG643q2dvugT8wesmY9eeGxNu7mgvTPi71w
-         cCjDq+gLvB/sGFGeBjuftbDi9sk+/o6bphaT5qVBP0x56uUj6zqVuGvkwErf7UZwYxyH
-         uAWw==
-X-Gm-Message-State: AOAM531JCOf/g0agHS4vFPw+33tuaKFT1jL+idQ9GLiUToyuOURNuYra
-        BxdN87nORd5PTOnFZfwNpuRAEg==
-X-Google-Smtp-Source: ABdhPJxKj1Jtc7LrmTypfsrPkk0nq3I2k/e/DRTwB3m8//Qdldwrqd8prSgRiLOzKRRtSPx5IElP5Q==
-X-Received: by 2002:a17:907:3e25:b0:6fe:fd4a:5b5e with SMTP id hp37-20020a1709073e2500b006fefd4a5b5emr37922766ejc.280.1654071662090;
-        Wed, 01 Jun 2022 01:21:02 -0700 (PDT)
-Received: from [192.168.0.179] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id kl10-20020a170907994a00b006fec69a3978sm408458ejc.207.2022.06.01.01.21.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Jun 2022 01:21:01 -0700 (PDT)
-Message-ID: <23cd3eff-0b51-8b03-8df6-b2eb8e131ef3@linaro.org>
-Date:   Wed, 1 Jun 2022 10:21:00 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v5 3/3] dt-bindings: arm: aspeed: document board
- compatibles
-Content-Language: en-US
-To:     David Wang <David_Wang6097@jabil.com>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     edward_chen@jabil.com, ben_pai@jabil.com
-References: <20220601080856.1548851-1-David_Wang6097@jabil.com>
- <20220601080856.1548851-2-David_Wang6097@jabil.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220601080856.1548851-2-David_Wang6097@jabil.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=dad+Xnw9+BHlkOfkwEsvmsktADHpLQsOI8/Vmibic24=;
+        b=ixKfNmXHpNKMHJTIiGkhEhiFPzqhj8Auyh8m7i4LEHwtSZ+hxez5F+rTUf/vRJOgpp
+         Akx3Izkgq9gydQT+FVkBXQ094SxkDa7yqa7RvZx0wQez6xCDAYBdZLvMa+C5zCEtJD+G
+         U2Lm+tfEXciIgj714SpfhWDjxFTjkPmFBJf7i28Kae8+GAe/zYyuQ7AEWMQiPW4RB1k+
+         PaeiABUdC8vUjayD6BD5UYoNhGYWrsxXngk7RfRoNvNBuVyT5336I60+ZuitHxF3JoXG
+         A+mKN2gIn0qNrID386nWJCkmA5eVIwVavxH0jwyVcRFA+LAlopzhSWZbw/jgC/KuE6ad
+         UR1Q==
+X-Gm-Message-State: AOAM531vefXV6pgDk139nu6ucMC1Kbc7E5AFMPHmpkw7Zski1ukKftJT
+        sJZrixtwVc30QCiBcdeCkwbZO6K17+Q=
+X-Google-Smtp-Source: ABdhPJyOalmR16SA5iW+2FehIi2Nvq77503ZWvxSfyIlOQ33ELNRszClzg8J/YrcJNnEkVK9KVdaCQ==
+X-Received: by 2002:a5d:5887:0:b0:20f:f354:981c with SMTP id n7-20020a5d5887000000b0020ff354981cmr33120018wrf.285.1654071775728;
+        Wed, 01 Jun 2022 01:22:55 -0700 (PDT)
+Received: from felia.fritz.box (200116b82620c00028af88788fa7d286.dip.versatel-1u1.de. [2001:16b8:2620:c000:28af:8878:8fa7:d286])
+        by smtp.gmail.com with ESMTPSA id d12-20020a5d4f8c000000b00210346cd0b7sm873957wru.101.2022.06.01.01.22.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Jun 2022 01:22:55 -0700 (PDT)
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+To:     Philipp Zabel <p.zabel@pengutronix.de>
+Cc:     Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH] MAINTAINERS: rectify entry for SYNOPSYS AXS10x RESET CONTROLLER DRIVER
+Date:   Wed,  1 Jun 2022 10:22:39 +0200
+Message-Id: <20220601082239.12009-1-lukas.bulwahn@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 01/06/2022 10:08, David Wang wrote:
-> - Depends on Krzysztof Kozlowski's Document Board Compatibility Patch.
-> - Document jabil board compatible.
+Commit 820f722c05dd ("dt-bindings: reset: snps,axs10x-reset: Convert to
+yaml") converts snps,axs10x-reset.txt to yaml, but misses to adjust its
+reference in MAINTAINERS.
 
-This is not a proper cover letter.
+Hence, ./scripts/get_maintainer.pl --self-test=patterns complains about a
+broken reference.
 
-https://elixir.bootlin.com/linux/v5.13/source/Documentation/process/submitting-patches.rst#L751
+Repair this file reference in SYNOPSYS AXS10x RESET CONTROLLER DRIVER.
 
-> 
-> Signed-off-by: David Wang <David_Wang6097@jabil.com>
-> ---
->  Documentation/devicetree/bindings/arm/aspeed/aspeed.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/arm/aspeed/aspeed.yaml b/Documentation/devicetree/bindings/arm/aspeed/aspeed.yaml
-> index 5c9aa014432d..407cfbe85153 100644
-> --- a/Documentation/devicetree/bindings/arm/aspeed/aspeed.yaml
-> +++ b/Documentation/devicetree/bindings/arm/aspeed/aspeed.yaml
-> @@ -78,6 +78,7 @@ properties:
->                - ibm,rainier-bmc
->                - ibm,tacoma-bmc
->                - inventec,transformer-bmc
-> +              - jabil,rbp-bmc  
->                - nuvia,dc-scm-bmc
->                - quanta,s6q-bmc
->            - const: aspeed,ast2600
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+---
+Philipp, please pick this minor non-urgent clean-up patch.
 
+ MAINTAINERS | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Best regards,
-Krzysztof
+diff --git a/MAINTAINERS b/MAINTAINERS
+index cc12a3aaad45..36eab5ae237d 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -19232,7 +19232,7 @@ F:	arch/arc/plat-axs10x
+ SYNOPSYS AXS10x RESET CONTROLLER DRIVER
+ M:	Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>
+ S:	Supported
+-F:	Documentation/devicetree/bindings/reset/snps,axs10x-reset.txt
++F:	Documentation/devicetree/bindings/reset/snps,axs10x-reset.yaml
+ F:	drivers/reset/reset-axs10x.c
+ 
+ SYNOPSYS CREG GPIO DRIVER
+-- 
+2.17.1
+
