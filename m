@@ -2,82 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D225C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 20:51:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5A93CCA473
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 20:52:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230032AbiFAUvn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 16:51:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38170 "EHLO
+        id S230481AbiFAUwI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 16:52:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231645AbiFAUut (ORCPT
+        with ESMTP id S229927AbiFAUv5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 16:50:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5521A1455BA;
-        Wed,  1 Jun 2022 13:49:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B2A0C616B9;
-        Wed,  1 Jun 2022 19:32:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86751C385A5;
-        Wed,  1 Jun 2022 19:32:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654111962;
-        bh=v9toHBa5TmDfdKsgDldwIfhdrCTl/2WwCykRfxoO4MQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=V3kanJeeGe3k4gb6Vh7lh2ApF/PlQ6NX9yY4cSw1b1HUXf5tUYr2Nh1gEXeVwk5Qq
-         atk7e3neaHszNz1sTnqzBEOVVLj3suwa34zmDXub6PRF5/0msdNxR72h2+tf2oZvcA
-         EiZbk1BNqA+2YMdemOqTtp/mUaVTZRO/Z6uEzR8FnBlpiQdeiUh3DgFcinrPo/sI9Q
-         Hkm24bpe3hJcMHwgn2I1AjnoQuNjpkSmVSRCd5mQTdZ1x4wvoWTp/ufPB5uPUh/5jO
-         /k8E+HnngmOC57ylnslsksW3bWpBJp0r4TGMkT372cTQ/Ss8X8BFvmteGaA7zYRLay
-         WbQVg8TDvp71w==
-Date:   Wed, 1 Jun 2022 21:32:35 +0200
-From:   Alexey Gladkov <legion@kernel.org>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Iurii Zaikin <yzaikin@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Linux Containers <containers@lists.linux.dev>,
-        linux-fsdevel@vger.kernel.org,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Vasily Averin <vvs@virtuozzo.com>
-Subject: Re: [RFC PATCH 1/4] sysctl: API extension for handling sysctl
-Message-ID: <Ype+08iXbbWghf3i@example.org>
-References: <CAHk-=whi2SzU4XT_FsdTCAuK2qtYmH+-hwi1cbSdG8zu0KXL=g@mail.gmail.com>
- <cover.1654086665.git.legion@kernel.org>
- <5ec6759ab3b617f9c12449a9606b6f0b5a7582d0.1654086665.git.legion@kernel.org>
- <Ype7skNJzEQ1W96v@casper.infradead.org>
+        Wed, 1 Jun 2022 16:51:57 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 161F11F62E8;
+        Wed,  1 Jun 2022 13:50:08 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id i1so2823413plg.7;
+        Wed, 01 Jun 2022 13:50:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=x7SiiXtdSg/AZep1wp9+274XMIvkQ8QgBS061aeEDxQ=;
+        b=JXFXO1zcpCArlFcjqNamEdZhPBE8QTNRw27l06VnUJHEEDQps6Dm5772r/lpF0AViL
+         jUbMJSgInhoF8fdb/a8PpMX2AzWPXUUTWwzfc1Vo7fUK2iEBMlff4y+uaKtgXPiktz19
+         oqidqUJXRRsjmYEItFn7PFBxGcdwixIshv5AUWk2LPAZkEDVGJ+1/QdNh/A5PLeVLbc6
+         zrscESu8MJg4nKMF09oG0jnTFF3YisTl/GlUiL5dcaWeTR3WWSTpy1035Irsm5q9yE2U
+         KOFOMCCfIXU9hzRSEjr/NKMZEfJ8TUaaW2u1WwbU7zoAV0JMypXlk/S+t4hEOUG7eKv2
+         k1bw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=x7SiiXtdSg/AZep1wp9+274XMIvkQ8QgBS061aeEDxQ=;
+        b=yTHK0Vez0ccqn3fB/u7WlHV7aT0x9Rkx5AmXfwxHJrOlkwWNJelNdG/etxVfOA5JRX
+         Fv0A/ZgWf9s/OZlAoaG7W9NVTRSSv5JAi/lFIqOJodUUy3fOhC8XMs5ONp38p7deUrYN
+         woyob9QIylvob/tyzTzXDK5bL1pYUIByU0SGNXayeJgD97on1yT0N7pl3xXMmD4F3fdk
+         Ki8w0BUvz6G4uITmYh7GlyHmo4RcMJhunhIs6JLJ1PE2+cyLJrhunf8AbPmXuPJGfGVh
+         snLBLcf94uAqsQ9kBsfoC+SNRkNiZGR1zOyJO8lEMXu/nG5m+zzHvkHJGiPEfHYboR0H
+         kynA==
+X-Gm-Message-State: AOAM532xfZW/2w52rdoo4DMgeL5YFBhyZLmKqMg2aM5kUkG4SjTZaQMt
+        QQpDdVUcuvF9MKXuTxGZuM8=
+X-Google-Smtp-Source: ABdhPJxyTTuuXdD/q5pDCy2KsYSVPL56X/GtjdP/ks02YUxwpPJ7cluqWsvbCueM/5ocijXtgwPtoQ==
+X-Received: by 2002:a17:902:d5d2:b0:161:f03a:eb41 with SMTP id g18-20020a170902d5d200b00161f03aeb41mr1256063plh.65.1654116606735;
+        Wed, 01 Jun 2022 13:50:06 -0700 (PDT)
+Received: from localhost ([192.55.54.49])
+        by smtp.gmail.com with ESMTPSA id h2-20020a635742000000b003db580384d6sm1739544pgm.60.2022.06.01.13.50.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Jun 2022 13:50:06 -0700 (PDT)
+Date:   Wed, 1 Jun 2022 13:50:05 -0700
+From:   Isaku Yamahata <isaku.yamahata@gmail.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, isaku.yamahata@gmail.com,
+        erdemaktas@google.com, Sean Christopherson <seanjc@google.com>,
+        Sagi Shahar <sagis@google.com>
+Subject: Re: [RFC PATCH v6 064/104] KVM: TDX: Add helper assembly function to
+ TDX vcpu
+Message-ID: <20220601205005.GB3778155@ls.amr.corp.intel.com>
+References: <cover.1651774250.git.isaku.yamahata@intel.com>
+ <f40b7827026d65963fea84d4af78cb1cbca85149.1651774250.git.isaku.yamahata@intel.com>
+ <bf76a63c-c687-34bf-4c46-ecc9cea575eb@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <Ype7skNJzEQ1W96v@casper.infradead.org>
+In-Reply-To: <bf76a63c-c687-34bf-4c46-ecc9cea575eb@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 01, 2022 at 08:19:14PM +0100, Matthew Wilcox wrote:
-> On Wed, Jun 01, 2022 at 03:20:29PM +0200, Alexey Gladkov wrote:
-> > +struct ctl_fops {
-> > +	int (*open) (struct ctl_context *, struct inode *, struct file *);
-> > +	int (*release) (struct ctl_context *, struct inode *, struct file *);
-> > +	ssize_t (*read) (struct ctl_context *, struct file *, char *, size_t *, loff_t *);
-> > +	ssize_t (*write) (struct ctl_context *, struct file *, char *, size_t *, loff_t *);
-> > +};
+On Tue, May 31, 2022 at 05:58:39PM +0200,
+Paolo Bonzini <pbonzini@redhat.com> wrote:
+
+> On 5/5/22 20:14, isaku.yamahata@intel.com wrote:
+> > From: Isaku Yamahata <isaku.yamahata@intel.com>
+> > 
+> > TDX defines an API to run TDX vcpu with its own ABI.  Define an assembly
+> > helper function to run TDX vcpu to hide the special ABI so that C code can
+> > call it with function call ABI.
+> > 
+> > Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 > 
-> Why not pass the iocb in ->read and ->write?  We're still regretting not
-> doing that with file_operations.
+> "ret" needs to be "RET" to support SLS mitigation.
 
-Because buf and len can be modified in BPF_CGROUP_RUN_PROG_SYSCTL.
-We need to pass the result of this hook to read/write callback.
-
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/fs/proc/proc_sysctl.c#n605
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/kernel/bpf/cgroup.c#n1441
-
+Thanks for pointing it out. As it's fixed in github repo. will be fixed on the
+next series.
 -- 
-Rgrds, legion
-
+Isaku Yamahata <isaku.yamahata@gmail.com>
