@@ -2,178 +2,276 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B1ECC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:02:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED047CCA46F
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:02:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354158AbiFAOCF (ORCPT
+        id S1354188AbiFAOCJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:02:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54770 "EHLO
+        Wed, 1 Jun 2022 10:02:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354200AbiFAOAG (ORCPT
+        with ESMTP id S1354233AbiFAOAI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:00:06 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3593CA30B9;
-        Wed,  1 Jun 2022 06:56:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 1BD45CE1A24;
-        Wed,  1 Jun 2022 13:55:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98A13C341C0;
-        Wed,  1 Jun 2022 13:55:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091743;
-        bh=8jW+wbclhVLRiL+4mYuuTKPY9fQZfW+0lZRvZfuv6to=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RGoGxXd+W/SE6jVbGzEBkmZUCNtRP1RYh8o+IeLNceTISQJmSq2ElVgyhfW+yzrmw
-         J3LtKddvevoWAl2fWgx0U8c8Kfpx6TTcrGgL1oYZh+5SuqLjO7mG6u9+l+mx3+5HvD
-         IAJpkGeTk7F7CcmznHov2aoXlfZ/f3c5zLc0wCcayq8I47S40/XU3VybPRlyuclaA/
-         PFEJHshIw9/a3GBfqVvt2jeZCy9fz/27hx6humQGiHmRVZJaKA6OmwwaySGCC7283l
-         64ipRu+fpf/JNKQA0arsGGOflb05nQ9GiM3AOT/LX5LFbw+VHb1+V6Sg75NMjFhr14
-         2k/hg5F0LEZ5Q==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Paulo Alcantara <pc@cjr.nz>, Ronnie Sahlberg <lsahlber@redhat.com>,
-        Steve French <stfrench@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>, sfrench@samba.org,
-        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org
-Subject: [PATCH AUTOSEL 5.17 35/48] cifs: fix signed integer overflow when fl_end is OFFSET_MAX
-Date:   Wed,  1 Jun 2022 09:54:08 -0400
-Message-Id: <20220601135421.2003328-35-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220601135421.2003328-1-sashal@kernel.org>
-References: <20220601135421.2003328-1-sashal@kernel.org>
-MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+        Wed, 1 Jun 2022 10:00:08 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on20603.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe5a::603])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCEDF91573;
+        Wed,  1 Jun 2022 06:56:25 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mEjKeoJWiOy1KZ8iSsLe3wNF/Udtz6kb5P4ZEnEeYt53kmiX9WeiOPFUKYRYUY4xSJBp/C5oZgNgRGNl4LR5Cv4kjoAxXzWZFjDHCWYb0zAFHbRVG11QEvr040vOGoehvEjtjdKJ/3E/msancZ0dtGTlHMxprvrCGP8ejGibVxft+zO81mgVt/malB8zPOhpC7V6QdoaswOe1W89VOitD3YMbzn9JqV0lVOcM+/L6ZVKpAhW4algBuHdZ6lMS2nF/VcIv9EjKFzo3mhORX0Q6S6OBbOpL6h7VLFrm0K49FknhyhQjZR51LI8tvkL4Okfh24JvCLNlSamF9d/xe5JzQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=dJqP1OvV1n+fff+L/BTJPGUrZxXimeTns5PAInVDUuo=;
+ b=deLAbU2gu4GazkAcI9QFxDU3ySnySzo8kX3j7NdFqbAanLn/tNLoOIYmcav4fuqXw8Vf/pCm3/UNAl/OM+lVOKvgC2CH6b47dLGbcVQ8iei8jAxWWc2+ATODw9qRqfIaLdch14Tlro402GuZxvpk4avQYVndXknue6va1W329PhrGaN8tPO5mO4iDdmRhU+zlpjuaW4r9f/7nuOko4DmSAuHqEO9P4OqcUKKdLB1DmKYzUb6wk69vNtr2ZJgkxOrFEE5p1RrrofQXrtWg9MdT/F6O00QsNx23Rwq8cIcyD9udNVjb9BwYtGvVcSlXIasHHT2umZ6wnT90Lmv0BfYPg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dJqP1OvV1n+fff+L/BTJPGUrZxXimeTns5PAInVDUuo=;
+ b=B/zGJ2UiXDCfO7sXHAbaW62hhluHTqFb0UQU7/3OMR1bCeVMHkTrhaHdwuQswCyJR227Wo0TioFX1MgN3oW+XC8TUjlz/CItaXT/Gfehte9f3qL1w7BS5tnsYKF7klj1stkv5VFrVvJKZZEQ8AqSsrPiopaEsOrfdINsIVQgPwE=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BN8PR12MB3587.namprd12.prod.outlook.com (2603:10b6:408:43::13)
+ by DM6PR12MB4450.namprd12.prod.outlook.com (2603:10b6:5:28e::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.12; Wed, 1 Jun
+ 2022 13:55:36 +0000
+Received: from BN8PR12MB3587.namprd12.prod.outlook.com
+ ([fe80::7146:65ee:8fd3:dd03]) by BN8PR12MB3587.namprd12.prod.outlook.com
+ ([fe80::7146:65ee:8fd3:dd03%4]) with mapi id 15.20.5314.013; Wed, 1 Jun 2022
+ 13:55:36 +0000
+Message-ID: <78efbada-6dd5-ead7-fc10-38b5e1e92fc5@amd.com>
+Date:   Wed, 1 Jun 2022 15:55:28 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 1/2] procfs: Add 'size' to /proc/<pid>/fdinfo/
+Content-Language: en-US
+To:     Kalesh Singh <kaleshsingh@google.com>
+Cc:     ilkos@google.com, tjmercier@google.com, surenb@google.com,
+        kernel-team@android.com, Jonathan Corbet <corbet@lwn.net>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Hildenbrand <david@redhat.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Christoph Anton Mitterer <mail@christoph.anton.mitterer.name>,
+        Paul Gortmaker <paul.gortmaker@windriver.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-media@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org
+References: <20220531212521.1231133-1-kaleshsingh@google.com>
+ <20220531212521.1231133-2-kaleshsingh@google.com>
+From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
+In-Reply-To: <20220531212521.1231133-2-kaleshsingh@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: AS9PR07CA0045.eurprd07.prod.outlook.com
+ (2603:10a6:20b:46b::17) To BN8PR12MB3587.namprd12.prod.outlook.com
+ (2603:10b6:408:43::13)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d7e69550-8df7-490c-4a8e-08da43d66785
+X-MS-TrafficTypeDiagnostic: DM6PR12MB4450:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR12MB445046A6ED32CEC5F7CC80B283DF9@DM6PR12MB4450.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: PcZb7jkDJ3w9q0eU2df2dMizU+u6PqIwLN8iCLbXlKvNWBQx6daFFHtm84My3IdVwD9sLPC8mzsNpZV2AQomPw/CYuRj8lj+SdN3BV9cVqEeNgmu81loCmY1wCaUg3rl04FtdDL4xQKF54TQsh+T/kpl0SOMHkU1/OSKQQJ5wdgfFd8AADuuBBja0IeOJi46hlXgvE/Y8/8KJ2RVjsuxGWIOLpsNeThFc8xtA8TIeoN9IbYqYH9RGrtwThMK36QbgNQRqxD0ak1szEYafhJJ0Lf3edP5NaMrLYVxtsQ2tBtHx5/rwpK6yRrZU757BuOF9+dveRTeAo6FVLUszl3+H12L6y8WtgPRp6xvspY/nJGGvrB2sKpwUtWmve2LRsR3ue37VbRIZXPOJ1DB9udnOVMkK5OaL6+KuERWgGRSLIbFEFnBQ5g1Yz1oSeY4yWWzAXnBDvHRVHIX+UrU2RQu6sQIZBo3h5NNcqwsb6Z2t7IbB4TNs0TuwQUuaL1jKjVLeEpjvGi5pP+15gdlU5FjyD8b/zLxIUfxngr3wgRTQrMeSF+4lb+Jyp6feG59bsS8XcvyFdE657XWfheNhOWnWOrpPH7M3YqsDG13XyxIz3NcU0wJrMhvLpUzR9mEIouEnnymibW+tAP8lXmis5U31rjjYhIi+qltEw57+m/btxFM3iHZY0wl/cPfWEzFEL6Nk5FedOoVBfFl88jE37twTHISC34eL5uOd9MeF2okp1r4/3hSYmvPdehsqt3kq6SpnNfTEb6cOGJxxHAhJqatXg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR12MB3587.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6506007)(54906003)(6666004)(6512007)(66476007)(2906002)(36756003)(83380400001)(6486002)(31686004)(31696002)(5660300002)(8676002)(86362001)(4326008)(7416002)(6916009)(316002)(66946007)(66556008)(38100700002)(8936002)(186003)(508600001)(2616005)(66574015)(21314003)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?S0ZaVzB5ZE9GTlBIdWc0blRHcjN0amhXWUhBejJIZkZWUTZueko5RktXZ1R2?=
+ =?utf-8?B?SGRlQnpBNm1qcjFINjlJNHp3VTh3TkFuMzJZbEhJaGlZZEJnMURhMFh2ZWVX?=
+ =?utf-8?B?MjJXYWhUcU9qcUdTWWg0NENrS0FoMVdBdWRNQTZ4MS9VbEFzYUlzWEZJa0xX?=
+ =?utf-8?B?Y0U3eWJzeGxyTVp5OG1rU3hnMXl6YUVFSHI0cTZKbzFBU1Mvd2lSRlZianBk?=
+ =?utf-8?B?bHBLL0xscjd3M1RuZk5YZkZja0pKODAvR0Y3QzFObzR6UVF0MnVwRk5Ea0lT?=
+ =?utf-8?B?K1dQTUFUay92OTdjcmJNSmVuMGxWSmo0YlVRNWRzQXRCa3FxZ2lWWW9Yc21X?=
+ =?utf-8?B?bzFycUJCclQ5Mk92bHc3eGppU3QwY09ibUhHS2xaQlZVWmg1cGt1K3ppUjRo?=
+ =?utf-8?B?ek0rWGJ1clkrSjZKT2JBTk5PZnFzTzAydER2WDNHVkZCaHBDOHgvazJPVDhT?=
+ =?utf-8?B?MVgwLy93aWMzeW5ETDVnNHM0USs4ZnVaZ3lBeXVlbTZnU0JsWXlxdHlXZWY2?=
+ =?utf-8?B?N0tuTlRSZjRpVjY4a0JPU1Y4c0FDbWdMWXRjU3Roam5qQUIyUFlmbUVmSGVy?=
+ =?utf-8?B?L05IZ29pYkxYeVlwMGd2enRWNGdKUkl1MU95RUZkN09BZE9PazNqd2h2aDdJ?=
+ =?utf-8?B?d2syRzJHdFI0SFNKNG10bFNIVUJibVhBanBhUTdpcW5qRzFqNXF4R05TVXo5?=
+ =?utf-8?B?dk01aXA1OCtWR2NPL0Rvb3ljWnNSR1ovMW1rTFlHeEt2NEpqTzlyd0dtWWZW?=
+ =?utf-8?B?MWkza3NaUTJycUdNTE1ITjljWkV1SlpDc25NYVhlVDdTTGhtMkZIQS9ITENt?=
+ =?utf-8?B?REtVcW42Sy9tc3RzZlF5YThJYlFvVTB6SnNkNHhUelVnb0FrNEF5dytyWFA2?=
+ =?utf-8?B?R0VrcGZHWmJDRUlIV1FqYjd5T1llTWtGZHZWZXlRS1pOU2pNVmswWFM0S1k3?=
+ =?utf-8?B?MFJtYWpGRVFlbkNjdlJta2hjL2N2dzFmZ2d4Q1NyLzVleGhYdlhsckRUSGxm?=
+ =?utf-8?B?TkhkbjFxVzRUTEh6TE1QdWJzLzNyRVRDY1ZYYVdhdlpMa3R3SlhZc21jSllN?=
+ =?utf-8?B?L0JnT0NINkxRc1JXTFVTUys2OVlvMm9xaEo2YWgzbzAzUHR0S1ZoN0ZFektt?=
+ =?utf-8?B?dHkrcE1JcGZaMXFuWDZTY1FucUYxZ25FeCsrN0hRWlhWOEdwU3dOUkp1eHox?=
+ =?utf-8?B?Yzd0eFBGeC84QjExNTY3U2doSU5TcHJLc1FaTnNyN0RoN1BDSm5FbXVPWE1W?=
+ =?utf-8?B?TlRVU3luY0kyN2thYWxLcUpFVU51NXpKR2w0Q1lkbFB4ZXVGRjFHMnRlNHRj?=
+ =?utf-8?B?c2hEVG1UbjBFMTNodkZBeS9XR2RzMWpYR2l2V0tVRDNxT1IzL1lJZEd4L3RG?=
+ =?utf-8?B?MVFiOU1xRTQ5VDl2blRFT29mOXFpbUt3ZnV6bjB4bXVqRldyN01LQUdqZVRl?=
+ =?utf-8?B?WS85L003YzJmdFVZbk8wSmdIVC80NjUrazljRXNibGxTcHh5bW1zeVpEZENS?=
+ =?utf-8?B?SjZ5ekVub1hoeHQyTVBxRzlsZDE5RncxS2xsb3VxaDFkWTdYSTkxN1dMbFJK?=
+ =?utf-8?B?KyttSnhtOW4zd1ZuSmpjS3cxTVVWY1NmS2ZON1JuMGFsZyt0YU0zT1VUOUlB?=
+ =?utf-8?B?bkRwOVNpaERmNGxqM0RsSkRYaVJadzl5NGNxL3FJOGJHc3BENkRSR2FxN2FU?=
+ =?utf-8?B?SmFSTjlnQWxDWFhoZ1FxeGtCQmh6MnpDM1hRWTFLV1JuSUN5TWJxVyswblI0?=
+ =?utf-8?B?Vlg2UC9FRTV5TzVkOXppV3VZSUpzUFRidXJzaVFXS0ZpVjdrMVZiYVRRWFJK?=
+ =?utf-8?B?YnA1UXhWK0pTdlJxcFhSb0xkZjRFcFZ0SjcwdFNOTWx4YlJDR3Y1Rmt6Zk03?=
+ =?utf-8?B?WnJrZ0RwSVlENkh1eEZWT09RRkJSeXBQQXJUSmphUnlpMVZWNzM1aVp0S2pU?=
+ =?utf-8?B?TEZUTXBVM0xFKzNUb1J6Q1BCY3lzZEhYbHZIWkE2UjUrOXpmYmhMZHlLcG0r?=
+ =?utf-8?B?ZWRzc0djR2NRT2FrNm13Y1RDMnIrclZWZ0d5NjZCTXFXM3FIS2I5eEV3dU1u?=
+ =?utf-8?B?WlJZNGFSejJoV2pjb0tVMmpWZnBvR0pubTlXM05yTm0wek5ZM2lyMkwzSFBv?=
+ =?utf-8?B?Y205TEI2UXhNNlI4Q0l1cWZBamdVYklmSm5oQkNXNUV2bTI1ODRZRUxuR3hM?=
+ =?utf-8?B?VWI5NUhnRE41dlBZUXpjd2wyQnJwZEtWTzBYMkZ1eXZ3NVVkMi95SFlyWkhS?=
+ =?utf-8?B?NGM3MkhsaXdqODREdTlVZ3MzL0pqV2NrZkhXZnlyVVpsTlBDSUw5akVQaXFo?=
+ =?utf-8?B?OW4vclJxNUV3b1MxOHdKOEpOZFVBcWpOS0dDYnBnanNQcHo4djBXZHlkSHRh?=
+ =?utf-8?Q?ns7XnK2ZxrGuQ0rlxapRnGHH+dwXQUkhStVUAnSWpcvCQ?=
+X-MS-Exchange-AntiSpam-MessageData-1: 3KCYxfYe406WtA==
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d7e69550-8df7-490c-4a8e-08da43d66785
+X-MS-Exchange-CrossTenant-AuthSource: BN8PR12MB3587.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jun 2022 13:55:36.8009
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: AA/IRNWAcXv6x9hXXRzqxclpNYt3ke66k0EH5Z5VANWrFkCuMyaOU1AAtQd3Qtd9
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4450
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paulo Alcantara <pc@cjr.nz>
+Am 31.05.22 um 23:25 schrieb Kalesh Singh:
+> To be able to account the amount of memory a process is keeping pinned
+> by open file descriptors add a 'size' field to fdinfo output.
+>
+> dmabufs fds already expose a 'size' field for this reason, remove this
+> and make it a common field for all fds. This allows tracking of
+> other types of memory (e.g. memfd and ashmem in Android).
+>
+> Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
 
-[ Upstream commit d80c69846ddfddf437167b31ab4cd0de12f61001 ]
+At least for the DMA-buf part feel free to add an Reviewed-by: Christian 
+König <christian.koenig@amd.com> for this.
 
-This fixes the following when running xfstests generic/504:
+Regards,
+Christian.
 
-[  134.394698] CIFS: Attempting to mount \\win16.vm.test\Share
-[  134.420905] CIFS: VFS: generate_smb3signingkey: dumping generated
-AES session keys
-[  134.420911] CIFS: VFS: Session Id    05 00 00 00 00 c4 00 00
-[  134.420914] CIFS: VFS: Cipher type   1
-[  134.420917] CIFS: VFS: Session Key   ea 0b d9 22 2e af 01 69 30 1b
-15 74 bf 87 41 11
-[  134.420920] CIFS: VFS: Signing Key   59 28 43 5c f0 b6 b1 6f f5 7b
-65 f2 9f 9e 58 7d
-[  134.420923] CIFS: VFS: ServerIn Key  eb aa 58 c8 95 01 9a f7 91 98
-e4 fa bc d8 74 f1
-[  134.420926] CIFS: VFS: ServerOut Key 08 5b 21 e5 2e 4e 86 f6 05 c2
-58 e0 af 53 83 e7
-[  134.771946]
-================================================================================
-[  134.771953] UBSAN: signed-integer-overflow in fs/cifs/file.c:1706:19
-[  134.771957] 9223372036854775807 + 1 cannot be represented in type
-'long long int'
-[  134.771960] CPU: 4 PID: 2773 Comm: flock Not tainted 5.11.22 #1
-[  134.771964] Hardware name: Red Hat KVM, BIOS 0.5.1 01/01/2011
-[  134.771966] Call Trace:
-[  134.771970]  dump_stack+0x8d/0xb5
-[  134.771981]  ubsan_epilogue+0x5/0x50
-[  134.771988]  handle_overflow+0xa3/0xb0
-[  134.771997]  ? lockdep_hardirqs_on_prepare+0xe8/0x1b0
-[  134.772006]  cifs_setlk+0x63c/0x680 [cifs]
-[  134.772085]  ? _get_xid+0x5f/0xa0 [cifs]
-[  134.772085]  cifs_flock+0x131/0x400 [cifs]
-[  134.772085]  __x64_sys_flock+0xfc/0x120
-[  134.772085]  do_syscall_64+0x33/0x40
-[  134.772085]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-[  134.772085] RIP: 0033:0x7fea4f83b3fb
-[  134.772085] Code: ff 48 8b 15 8f 1a 0d 00 f7 d8 64 89 02 b8 ff ff
-ff ff eb da e8 16 0b 02 00 66 0f 1f 44 00 00 f3 0f 1e fa b8 49 00 00
-00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 5d 1a 0d 00 f7 d8 64 89
-01 48
-
-Signed-off-by: Paulo Alcantara (SUSE) <pc@cjr.nz>
-Reviewed-by: Ronnie Sahlberg <lsahlber@redhat.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- fs/cifs/cifsglob.h | 5 +++++
- fs/cifs/cifssmb.c  | 3 ++-
- fs/cifs/file.c     | 8 ++++----
- 3 files changed, 11 insertions(+), 5 deletions(-)
-
-diff --git a/fs/cifs/cifsglob.h b/fs/cifs/cifsglob.h
-index 560ecc4ad87d..3c7865186e5e 100644
---- a/fs/cifs/cifsglob.h
-+++ b/fs/cifs/cifsglob.h
-@@ -1983,4 +1983,9 @@ static inline bool cifs_is_referral_server(struct cifs_tcon *tcon,
- 	return is_tcon_dfs(tcon) || (ref && (ref->flags & DFSREF_REFERRAL_SERVER));
- }
- 
-+static inline u64 cifs_flock_len(struct file_lock *fl)
-+{
-+	return fl->fl_end == OFFSET_MAX ? 0 : fl->fl_end - fl->fl_start + 1;
-+}
-+
- #endif	/* _CIFS_GLOB_H */
-diff --git a/fs/cifs/cifssmb.c b/fs/cifs/cifssmb.c
-index aca9338b0877..83820205d644 100644
---- a/fs/cifs/cifssmb.c
-+++ b/fs/cifs/cifssmb.c
-@@ -2558,7 +2558,8 @@ CIFSSMBPosixLock(const unsigned int xid, struct cifs_tcon *tcon,
- 
- 			pLockData->fl_start = le64_to_cpu(parm_data->start);
- 			pLockData->fl_end = pLockData->fl_start +
--					le64_to_cpu(parm_data->length) - 1;
-+				(le64_to_cpu(parm_data->length) ?
-+				 le64_to_cpu(parm_data->length) - 1 : 0);
- 			pLockData->fl_pid = -le32_to_cpu(parm_data->pid);
- 		}
- 	}
-diff --git a/fs/cifs/file.c b/fs/cifs/file.c
-index a2723f7cb5e9..b8a4b43870fe 100644
---- a/fs/cifs/file.c
-+++ b/fs/cifs/file.c
-@@ -1395,7 +1395,7 @@ cifs_push_posix_locks(struct cifsFileInfo *cfile)
- 			cifs_dbg(VFS, "Can't push all brlocks!\n");
- 			break;
- 		}
--		length = 1 + flock->fl_end - flock->fl_start;
-+		length = cifs_flock_len(flock);
- 		if (flock->fl_type == F_RDLCK || flock->fl_type == F_SHLCK)
- 			type = CIFS_RDLCK;
- 		else
-@@ -1511,7 +1511,7 @@ cifs_getlk(struct file *file, struct file_lock *flock, __u32 type,
- 	   bool wait_flag, bool posix_lck, unsigned int xid)
- {
- 	int rc = 0;
--	__u64 length = 1 + flock->fl_end - flock->fl_start;
-+	__u64 length = cifs_flock_len(flock);
- 	struct cifsFileInfo *cfile = (struct cifsFileInfo *)file->private_data;
- 	struct cifs_tcon *tcon = tlink_tcon(cfile->tlink);
- 	struct TCP_Server_Info *server = tcon->ses->server;
-@@ -1609,7 +1609,7 @@ cifs_unlock_range(struct cifsFileInfo *cfile, struct file_lock *flock,
- 	struct cifs_tcon *tcon = tlink_tcon(cfile->tlink);
- 	struct cifsInodeInfo *cinode = CIFS_I(d_inode(cfile->dentry));
- 	struct cifsLockInfo *li, *tmp;
--	__u64 length = 1 + flock->fl_end - flock->fl_start;
-+	__u64 length = cifs_flock_len(flock);
- 	struct list_head tmp_llist;
- 
- 	INIT_LIST_HEAD(&tmp_llist);
-@@ -1713,7 +1713,7 @@ cifs_setlk(struct file *file, struct file_lock *flock, __u32 type,
- 	   unsigned int xid)
- {
- 	int rc = 0;
--	__u64 length = 1 + flock->fl_end - flock->fl_start;
-+	__u64 length = cifs_flock_len(flock);
- 	struct cifsFileInfo *cfile = (struct cifsFileInfo *)file->private_data;
- 	struct cifs_tcon *tcon = tlink_tcon(cfile->tlink);
- 	struct TCP_Server_Info *server = tcon->ses->server;
--- 
-2.35.1
+> ---
+>
+> Changes from rfc:
+>    - Split adding 'size' and 'path' into a separate patches, per Christian
+>    - Split fdinfo seq_printf into separate lines, per Christian
+>    - Fix indentation (use tabs) in documentaion, per Randy
+>
+>   Documentation/filesystems/proc.rst | 12 ++++++++++--
+>   drivers/dma-buf/dma-buf.c          |  1 -
+>   fs/proc/fd.c                       |  9 +++++----
+>   3 files changed, 15 insertions(+), 7 deletions(-)
+>
+> diff --git a/Documentation/filesystems/proc.rst b/Documentation/filesystems/proc.rst
+> index 1bc91fb8c321..779c05528e87 100644
+> --- a/Documentation/filesystems/proc.rst
+> +++ b/Documentation/filesystems/proc.rst
+> @@ -1886,13 +1886,14 @@ if precise results are needed.
+>   3.8	/proc/<pid>/fdinfo/<fd> - Information about opened file
+>   ---------------------------------------------------------------
+>   This file provides information associated with an opened file. The regular
+> -files have at least four fields -- 'pos', 'flags', 'mnt_id' and 'ino'.
+> +files have at least five fields -- 'pos', 'flags', 'mnt_id', 'ino', and 'size'.
+> +
+>   The 'pos' represents the current offset of the opened file in decimal
+>   form [see lseek(2) for details], 'flags' denotes the octal O_xxx mask the
+>   file has been created with [see open(2) for details] and 'mnt_id' represents
+>   mount ID of the file system containing the opened file [see 3.5
+>   /proc/<pid>/mountinfo for details]. 'ino' represents the inode number of
+> -the file.
+> +the file, and 'size' represents the size of the file in bytes.
+>   
+>   A typical output is::
+>   
+> @@ -1900,6 +1901,7 @@ A typical output is::
+>   	flags:	0100002
+>   	mnt_id:	19
+>   	ino:	63107
+> +	size:	0
+>   
+>   All locks associated with a file descriptor are shown in its fdinfo too::
+>   
+> @@ -1917,6 +1919,7 @@ Eventfd files
+>   	flags:	04002
+>   	mnt_id:	9
+>   	ino:	63107
+> +	size:   0
+>   	eventfd-count:	5a
+>   
+>   where 'eventfd-count' is hex value of a counter.
+> @@ -1930,6 +1933,7 @@ Signalfd files
+>   	flags:	04002
+>   	mnt_id:	9
+>   	ino:	63107
+> +	size:   0
+>   	sigmask:	0000000000000200
+>   
+>   where 'sigmask' is hex value of the signal mask associated
+> @@ -1944,6 +1948,7 @@ Epoll files
+>   	flags:	02
+>   	mnt_id:	9
+>   	ino:	63107
+> +	size:   0
+>   	tfd:        5 events:       1d data: ffffffffffffffff pos:0 ino:61af sdev:7
+>   
+>   where 'tfd' is a target file descriptor number in decimal form,
+> @@ -1962,6 +1967,7 @@ For inotify files the format is the following::
+>   	flags:	02000000
+>   	mnt_id:	9
+>   	ino:	63107
+> +	size:   0
+>   	inotify wd:3 ino:9e7e sdev:800013 mask:800afce ignored_mask:0 fhandle-bytes:8 fhandle-type:1 f_handle:7e9e0000640d1b6d
+>   
+>   where 'wd' is a watch descriptor in decimal form, i.e. a target file
+> @@ -1985,6 +1991,7 @@ For fanotify files the format is::
+>   	flags:	02
+>   	mnt_id:	9
+>   	ino:	63107
+> +	size:   0
+>   	fanotify flags:10 event-flags:0
+>   	fanotify mnt_id:12 mflags:40 mask:38 ignored_mask:40000003
+>   	fanotify ino:4f969 sdev:800013 mflags:0 mask:3b ignored_mask:40000000 fhandle-bytes:8 fhandle-type:1 f_handle:69f90400c275b5b4
+> @@ -2010,6 +2017,7 @@ Timerfd files
+>   	flags:	02
+>   	mnt_id:	9
+>   	ino:	63107
+> +	size:   0
+>   	clockid: 0
+>   	ticks: 0
+>   	settime flags: 01
+> diff --git a/drivers/dma-buf/dma-buf.c b/drivers/dma-buf/dma-buf.c
+> index 32f55640890c..5f2ae38c960f 100644
+> --- a/drivers/dma-buf/dma-buf.c
+> +++ b/drivers/dma-buf/dma-buf.c
+> @@ -378,7 +378,6 @@ static void dma_buf_show_fdinfo(struct seq_file *m, struct file *file)
+>   {
+>   	struct dma_buf *dmabuf = file->private_data;
+>   
+> -	seq_printf(m, "size:\t%zu\n", dmabuf->size);
+>   	/* Don't count the temporary reference taken inside procfs seq_show */
+>   	seq_printf(m, "count:\t%ld\n", file_count(dmabuf->file) - 1);
+>   	seq_printf(m, "exp_name:\t%s\n", dmabuf->exp_name);
+> diff --git a/fs/proc/fd.c b/fs/proc/fd.c
+> index 913bef0d2a36..464bc3f55759 100644
+> --- a/fs/proc/fd.c
+> +++ b/fs/proc/fd.c
+> @@ -54,10 +54,11 @@ static int seq_show(struct seq_file *m, void *v)
+>   	if (ret)
+>   		return ret;
+>   
+> -	seq_printf(m, "pos:\t%lli\nflags:\t0%o\nmnt_id:\t%i\nino:\t%lu\n",
+> -		   (long long)file->f_pos, f_flags,
+> -		   real_mount(file->f_path.mnt)->mnt_id,
+> -		   file_inode(file)->i_ino);
+> +	seq_printf(m, "pos:\t%lli\n", (long long)file->f_pos);
+> +	seq_printf(m, "flags:\t0%o\n", f_flags);
+> +	seq_printf(m, "mnt_id:\t%i\n", real_mount(file->f_path.mnt)->mnt_id);
+> +	seq_printf(m, "ino:\t%lu\n", file_inode(file)->i_ino);
+> +	seq_printf(m, "size:\t%lli\n", (long long)file_inode(file)->i_size);
+>   
+>   	/* show_fd_locks() never deferences files so a stale value is safe */
+>   	show_fd_locks(m, file, files);
 
