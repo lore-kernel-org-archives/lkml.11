@@ -2,131 +2,211 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D041C43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 21:44:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53D6AC43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 21:44:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231645AbiFAVoC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 17:44:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52650 "EHLO
+        id S231656AbiFAVoX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 17:44:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231491AbiFAVoA (ORCPT
+        with ESMTP id S231491AbiFAVoS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 17:44:00 -0400
-Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [217.70.178.231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25B4233A3C;
-        Wed,  1 Jun 2022 14:43:56 -0700 (PDT)
-Received: (Authenticated sender: alexandre.belloni@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 34BC6100006;
-        Wed,  1 Jun 2022 21:43:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1654119835;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=QNra6cYe7rAZmodYJlA+KCX2uI9roIVccpwi/1khbXY=;
-        b=M3lBkn8EIlwxc0Jkj0TmAnQ7Gep9ftMoNCAkF7PJGS76XF9RgSN8UMRAPH1l5VxcnoNV97
-        B61zMQCx1J4+MzlibcyrY0E3VYq/iaII/6EOqiIrJAXQLz6icy0Rgs35xQ9SEZuorHpNRa
-        PUgEZJaczzC4CFSMvbbrwEhYBN/OEh2PItjPhnVKmKyoDuUZ/mh+o7KAg9lPb/d/nbaexy
-        INaBsgp2gsJa+nMHO8z4owBOn275jxNH1beCwll/Wxq2cfg3vEWNxWkwQ/9/ftiaAemNR6
-        SsyGsAGwNZRR4zPQRUJASQr1roEmTYMtt0BxdoTm51KVRlpbpsrdNWRJohP3CA==
-Date:   Wed, 1 Jun 2022 23:43:54 +0200
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-rtc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [GIT PULL] RTC for 5.19
-Message-ID: <Ypfdmml1GWU+gYzP@mail.local>
+        Wed, 1 Jun 2022 17:44:18 -0400
+X-Greylist: delayed 479 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 01 Jun 2022 14:44:16 PDT
+Received: from mail.stoffel.org (li1843-175.members.linode.com [172.104.24.175])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0D615DD1E
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 14:44:16 -0700 (PDT)
+Received: from quad.stoffel.org (068-116-170-226.res.spectrum.com [68.116.170.226])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.stoffel.org (Postfix) with ESMTPSA id 98DD7270B6;
+        Wed,  1 Jun 2022 17:36:16 -0400 (EDT)
+Received: by quad.stoffel.org (Postfix, from userid 1000)
+        id E147DA7C46; Wed,  1 Jun 2022 17:36:15 -0400 (EDT)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 7bit
+Message-ID: <25239.56271.848372.965726@quad.stoffel.home>
+Date:   Wed, 1 Jun 2022 17:36:15 -0400
+From:   "John Stoffel" <john@stoffel.org>
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Heming Zhao <heming.zhao@suse.com>,
+        kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Guoqing Jiang <guoqing.jiang@linux.dev>,
+        Song Liu <song@kernel.org>, linux-raid@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 5.4 18/55] md/bitmap: don't set sb values if can't pass sanity check
+In-Reply-To: <20220530134701.1935933-18-sashal@kernel.org>
+References: <20220530134701.1935933-1-sashal@kernel.org>
+        <20220530134701.1935933-18-sashal@kernel.org>
+X-Mailer: VM 8.2.0b under 27.1 (x86_64-pc-linux-gnu)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Linus,
+>>>>> "Sasha" == Sasha Levin <sashal@kernel.org> writes:
 
-Here is the pull request for the RTC subsystem. A new driver represents
-the bulk of the changes and then we get the usual small fixes.
+Sasha> From: Heming Zhao <heming.zhao@suse.com>
+Sasha> [ Upstream commit e68cb83a57a458b01c9739e2ad9cb70b04d1e6d2 ]
 
-The following changes since commit 3123109284176b1532874591f7c81f3837bbdc17:
+Sasha> If bitmap area contains invalid data, kernel will crash then mdadm
+Sasha> triggers "Segmentation fault".
+Sasha> This is cluster-md speical bug. In non-clustered env, mdadm will
 
-  Linux 5.18-rc1 (2022-04-03 14:08:21 -0700)
+special
 
-are available in the Git repository at:
+All the commit messages need to be fixed from what I see.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/abelloni/linux.git tags/rtc-5.19
+Sasha> handle broken metadata case. In clustered array, only kernel space
+Sasha> handles bitmap slot info. But even this bug only happened in clustered
+Sasha> env, current sanity check is wrong, the code should be changed.
 
-for you to fetch changes up to f78e3d407a339ffdd2620140300f821ea41118f4:
+Sasha> How to trigger: (faulty injection)
 
-  rtc: mxc: Silence a clang warning (2022-06-01 23:19:17 +0200)
+Sasha> dd if=/dev/zero bs=1M count=1 oflag=direct of=/dev/sda
+Sasha> dd if=/dev/zero bs=1M count=1 oflag=direct of=/dev/sdb
+Sasha> mdadm -C /dev/md0 -b clustered -e 1.2 -n 2 -l mirror /dev/sda /dev/sdb
+Sasha> mdadm -Ss
+Sasha> echo aaa > magic.txt
+Sasha>  == below modifying slot 2 bitmap data ==
+Sasha> dd if=magic.txt of=/dev/sda seek=16384 bs=1 count=3 <== destroy magic
+Sasha> dd if=/dev/zero of=/dev/sda seek=16436 bs=1 count=4 <== ZERO chunksize
+Sasha> mdadm -A /dev/md0 /dev/sda /dev/sdb
+Sasha>  == kernel crashes. mdadm outputs "Segmentation fault" ==
 
-----------------------------------------------------------------
-RTC for 5.19
+Sasha> Reason of kernel crash:
 
-New driver:
- - Renesas RZN1 rtc
+Sasha> In md_bitmap_read_sb (called by md_bitmap_create), bad bitmap magic didn't
+Sasha> block chunksize assignment, and zero value made DIV_ROUND_UP_SECTOR_T()
+Sasha> trigger "divide error".
 
-Drivers:
- - sun6i: Add nvmem support
+Sasha> Crash log:
 
-----------------------------------------------------------------
-Dan Carpenter (1):
-      rtc: rzn1: Fix error code in probe
+Sasha> kernel: md: md0 stopped.
+Sasha> kernel: md/raid1:md0: not clean -- starting background reconstruction
+Sasha> kernel: md/raid1:md0: active with 2 out of 2 mirrors
+Sasha> kernel: dlm: ... ...
+Sasha> kernel: md-cluster: Joined cluster 44810aba-38bb-e6b8-daca-bc97a0b254aa slot 1
+Sasha> kernel: md0: invalid bitmap file superblock: bad magic
+Sasha> kernel: md_bitmap_copy_from_slot can't get bitmap from slot 2
+Sasha> kernel: md-cluster: Could not gather bitmaps from slot 2
+Sasha> kernel: divide error: 0000 [#1] SMP NOPTI
+Sasha> kernel: CPU: 0 PID: 1603 Comm: mdadm Not tainted 5.14.6-1-default
+Sasha> kernel: Hardware name: QEMU Standard PC (i440FX + PIIX, 1996)
+Sasha> kernel: RIP: 0010:md_bitmap_create+0x1d1/0x850 [md_mod]
+Sasha> kernel: RSP: 0018:ffffc22ac0843ba0 EFLAGS: 00010246
+Sasha> kernel: ... ...
+Sasha> kernel: Call Trace:
+Sasha> kernel:  ? dlm_lock_sync+0xd0/0xd0 [md_cluster 77fe..7a0]
+Sasha> kernel:  md_bitmap_copy_from_slot+0x2c/0x290 [md_mod 24ea..d3a]
+Sasha> kernel:  load_bitmaps+0xec/0x210 [md_cluster 77fe..7a0]
+Sasha> kernel:  md_bitmap_load+0x81/0x1e0 [md_mod 24ea..d3a]
+Sasha> kernel:  do_md_run+0x30/0x100 [md_mod 24ea..d3a]
+Sasha> kernel:  md_ioctl+0x1290/0x15a0 [md_mod 24ea....d3a]
+Sasha> kernel:  ? mddev_unlock+0xaa/0x130 [md_mod 24ea..d3a]
+Sasha> kernel:  ? blkdev_ioctl+0xb1/0x2b0
+Sasha> kernel:  block_ioctl+0x3b/0x40
+Sasha> kernel:  __x64_sys_ioctl+0x7f/0xb0
+Sasha> kernel:  do_syscall_64+0x59/0x80
+Sasha> kernel:  ? exit_to_user_mode_prepare+0x1ab/0x230
+Sasha> kernel:  ? syscall_exit_to_user_mode+0x18/0x40
+Sasha> kernel:  ? do_syscall_64+0x69/0x80
+Sasha> kernel:  entry_SYSCALL_64_after_hwframe+0x44/0xae
+Sasha> kernel: RIP: 0033:0x7f4a15fa722b
+Sasha> kernel: ... ...
+Sasha> kernel: ---[ end trace 8afa7612f559c868 ]---
+Sasha> kernel: RIP: 0010:md_bitmap_create+0x1d1/0x850 [md_mod]
 
-Fabio Estevam (3):
-      dt-binding: pcf85063: Add an entry for pca85073a
-      rtc: pcf85063: Add a compatible entry for pca85073a
-      rtc: mxc: Silence a clang warning
+Sasha> Reported-by: kernel test robot <lkp@intel.com>
+Sasha> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Sasha> Acked-by: Guoqing Jiang <guoqing.jiang@linux.dev>
+Sasha> Signed-off-by: Heming Zhao <heming.zhao@suse.com>
+Sasha> Signed-off-by: Song Liu <song@kernel.org>
+Sasha> Signed-off-by: Sasha Levin <sashal@kernel.org>
+Sasha> ---
+Sasha>  drivers/md/md-bitmap.c | 44 ++++++++++++++++++++++--------------------
+Sasha>  1 file changed, 23 insertions(+), 21 deletions(-)
 
-Miaoqian Lin (1):
-      rtc: ftrtc010: Fix error handling in ftrtc010_rtc_probe
+Sasha> diff --git a/drivers/md/md-bitmap.c b/drivers/md/md-bitmap.c
+Sasha> index d7eef5292ae2..a95e20c3d0d4 100644
+Sasha> --- a/drivers/md/md-bitmap.c
+Sasha> +++ b/drivers/md/md-bitmap.c
+Sasha> @@ -642,14 +642,6 @@ static int md_bitmap_read_sb(struct bitmap *bitmap)
+Sasha>  	daemon_sleep = le32_to_cpu(sb->daemon_sleep) * HZ;
+Sasha>  	write_behind = le32_to_cpu(sb->write_behind);
+Sasha>  	sectors_reserved = le32_to_cpu(sb->sectors_reserved);
+Sasha> -	/* Setup nodes/clustername only if bitmap version is
+Sasha> -	 * cluster-compatible
+Sasha> -	 */
+Sasha> -	if (sb->version == cpu_to_le32(BITMAP_MAJOR_CLUSTERED)) {
+Sasha> -		nodes = le32_to_cpu(sb->nodes);
+Sasha> -		strlcpy(bitmap->mddev->bitmap_info.cluster_name,
+Sasha> -				sb->cluster_name, 64);
+Sasha> -	}
+ 
+Sasha>  	/* verify that the bitmap-specific fields are valid */
+Sasha>  	if (sb->magic != cpu_to_le32(BITMAP_MAGIC))
+Sasha> @@ -671,6 +663,16 @@ static int md_bitmap_read_sb(struct bitmap *bitmap)
+Sasha>  		goto out;
+Sasha>  	}
+ 
+Sasha> +	/*
+Sasha> +	 * Setup nodes/clustername only if bitmap version is
+Sasha> +	 * cluster-compatible
+Sasha> +	 */
+Sasha> +	if (sb->version == cpu_to_le32(BITMAP_MAJOR_CLUSTERED)) {
+Sasha> +		nodes = le32_to_cpu(sb->nodes);
+Sasha> +		strlcpy(bitmap->mddev->bitmap_info.cluster_name,
+Sasha> +				sb->cluster_name, 64);
+Sasha> +	}
+Sasha> +
+Sasha>  	/* keep the array size field of the bitmap superblock up to date */
+sb-> sync_size = cpu_to_le64(bitmap->mddev->resync_max_sectors);
+ 
+Sasha> @@ -703,9 +705,9 @@ static int md_bitmap_read_sb(struct bitmap *bitmap)
+ 
+Sasha>  out:
+Sasha>  	kunmap_atomic(sb);
+Sasha> -	/* Assigning chunksize is required for "re_read" */
+Sasha> -	bitmap->mddev->bitmap_info.chunksize = chunksize;
+Sasha>  	if (err == 0 && nodes && (bitmap->cluster_slot < 0)) {
+Sasha> +		/* Assigning chunksize is required for "re_read" */
+Sasha> +		bitmap->mddev->bitmap_info.chunksize = chunksize;
+Sasha>  		err = md_setup_cluster(bitmap->mddev, nodes);
+Sasha>  		if (err) {
+Sasha>  			pr_warn("%s: Could not setup cluster service (%d)\n",
+Sasha> @@ -716,18 +718,18 @@ static int md_bitmap_read_sb(struct bitmap *bitmap)
+Sasha>  		goto re_read;
+Sasha>  	}
+ 
+Sasha> -
+Sasha>  out_no_sb:
+Sasha> -	if (test_bit(BITMAP_STALE, &bitmap->flags))
+Sasha> -		bitmap->events_cleared = bitmap->mddev->events;
+Sasha> -	bitmap->mddev->bitmap_info.chunksize = chunksize;
+Sasha> -	bitmap->mddev->bitmap_info.daemon_sleep = daemon_sleep;
+Sasha> -	bitmap->mddev->bitmap_info.max_write_behind = write_behind;
+Sasha> -	bitmap->mddev->bitmap_info.nodes = nodes;
+Sasha> -	if (bitmap->mddev->bitmap_info.space == 0 ||
+Sasha> -	    bitmap->mddev->bitmap_info.space > sectors_reserved)
+Sasha> -		bitmap->mddev->bitmap_info.space = sectors_reserved;
+Sasha> -	if (err) {
+Sasha> +	if (err == 0) {
+Sasha> +		if (test_bit(BITMAP_STALE, &bitmap->flags))
+Sasha> +			bitmap->events_cleared = bitmap->mddev->events;
+Sasha> +		bitmap->mddev->bitmap_info.chunksize = chunksize;
+Sasha> +		bitmap->mddev->bitmap_info.daemon_sleep = daemon_sleep;
+Sasha> +		bitmap->mddev->bitmap_info.max_write_behind = write_behind;
+Sasha> +		bitmap->mddev->bitmap_info.nodes = nodes;
+Sasha> +		if (bitmap->mddev->bitmap_info.space == 0 ||
+Sasha> +			bitmap->mddev->bitmap_info.space > sectors_reserved)
+Sasha> +			bitmap->mddev->bitmap_info.space = sectors_reserved;
+Sasha> +	} else {
+Sasha>  		md_bitmap_print_sb(bitmap);
+Sasha>  		if (bitmap->cluster_slot < 0)
+Sasha>  			md_cluster_stop(bitmap->mddev);
+Sasha> -- 
+Sasha> 2.35.1
 
-Michel Pollet (1):
-      rtc: rzn1: Add new RTC driver
-
-Minghao Chi (1):
-      rtc: simplify the return expression of rx8025_set_offset()
-
-Miquel Raynal (6):
-      dt-bindings: rtc: rzn1: Describe the RZN1 RTC
-      rtc: rzn1: Add alarm support
-      rtc: rzn1: Add oscillator offset support
-      MAINTAINERS: Add myself as maintainer of the RZN1 RTC driver
-      rtc: rzn1: Avoid mixing variables
-      rtc: rzn1: Fix a variable type
-
-Nobuhiro Iwamatsu (1):
-      rtc: meson: Fix email address in MODULE_AUTHOR
-
-Samuel Holland (1):
-      rtc: sun6i: Add NVMEM provider
-
-Yang Li (1):
-      rtc: rzn1: fix platform_no_drv_owner.cocci warning
-
-Yang Yingliang (1):
-      rtc: mt6397: check return value after calling platform_get_resource()
-
-Yuan Can (1):
-      rtc: gamecube: Add missing iounmap in gamecube_rtc_read_offset_from_sram
-
- .../devicetree/bindings/rtc/nxp,pcf85063.txt       |   1 +
- .../devicetree/bindings/rtc/renesas,rzn1-rtc.yaml  |  70 ++++
- MAINTAINERS                                        |   8 +
- drivers/rtc/Kconfig                                |   7 +
- drivers/rtc/Makefile                               |   1 +
- drivers/rtc/rtc-ftrtc010.c                         |  34 +-
- drivers/rtc/rtc-gamecube.c                         |   1 +
- drivers/rtc/rtc-meson.c                            |   2 +-
- drivers/rtc/rtc-mt6397.c                           |   2 +
- drivers/rtc/rtc-mxc.c                              |   2 +-
- drivers/rtc/rtc-pcf85063.c                         |   2 +
- drivers/rtc/rtc-rx8025.c                           |   7 +-
- drivers/rtc/rtc-rzn1.c                             | 418 +++++++++++++++++++++
- drivers/rtc/rtc-sun6i.c                            |  42 +++
- 14 files changed, 579 insertions(+), 18 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/rtc/renesas,rzn1-rtc.yaml
- create mode 100644 drivers/rtc/rtc-rzn1.c
-
--- 
-Alexandre Belloni, co-owner and COO, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
