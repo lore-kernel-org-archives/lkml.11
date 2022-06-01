@@ -2,70 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4362C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 20:45:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9DBECCA473
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 20:46:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229608AbiFAUpy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 16:45:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43360 "EHLO
+        id S230094AbiFAUp6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 16:45:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229637AbiFAUpR (ORCPT
+        with ESMTP id S229513AbiFAUpW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 16:45:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CA821203F7;
-        Wed,  1 Jun 2022 13:31:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A011DB81C4B;
-        Wed,  1 Jun 2022 19:34:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2D86CC385A5;
-        Wed,  1 Jun 2022 19:34:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654112083;
-        bh=R/eV2ESj5TDDvndftPdRemnhTK/jSqQR+Fabf7jBK/E=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=Xg7DmQUsEU4JP/Pt5W8H8j7WmzRjKP80FV3/b0IQWc9YMIFzKSUrOU4kLfEgv/eKj
-         EMT8vkBis7Nov3rzv4yz4fizJRdBPCQE0rlmkHy0GXK/2PavlXnsRpnxlTlrCjmNig
-         C6/xi8aRRftfF/RbP8DL8NFLFeuuUkwjiAUNOsc/SCYoKfGLgw0Kk5baCP/lbb5kAe
-         O5Y6Mc2ihwLZMaslzHsMXNsP1YzXDUE5wiuwfLoiCktT62ouo7iMW6GbnR/nd8hwS7
-         EEFVXslSSje+BFK5/zMLhe0FSgFBKK19F7pWw8rx2J2gm2lAz3Bbae/4vXbtW5/2bf
-         yA+irNDhsYgJw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1B343F03944;
-        Wed,  1 Jun 2022 19:34:43 +0000 (UTC)
-Subject: Re: [GIT PULL] ksmbd server fixes
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <CAH2r5ms4eeQy-2bu_5BxFAW=GUR7T4VWM9khi7F0Hc-RSb8Uew@mail.gmail.com>
-References: <CAH2r5ms4eeQy-2bu_5BxFAW=GUR7T4VWM9khi7F0Hc-RSb8Uew@mail.gmail.com>
-X-PR-Tracked-List-Id: <linux-cifs.vger.kernel.org>
-X-PR-Tracked-Message-Id: <CAH2r5ms4eeQy-2bu_5BxFAW=GUR7T4VWM9khi7F0Hc-RSb8Uew@mail.gmail.com>
-X-PR-Tracked-Remote: git://git.samba.org/ksmbd.git tags/5.19-rc-ksmbd-server-fixes
-X-PR-Tracked-Commit-Id: 621433b7e25d6d42e5f75bd8c4a62d6c7251511b
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: e5b0208713326cdd3f0a83540e31f9b6f280da38
-Message-Id: <165411208308.25874.13836131531452728780.pr-tracker-bot@kernel.org>
-Date:   Wed, 01 Jun 2022 19:34:43 +0000
-To:     Steve French <smfrench@gmail.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Namjae Jeon <linkinjeon@kernel.org>,
-        CIFS <linux-cifs@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
+        Wed, 1 Jun 2022 16:45:22 -0400
+Received: from mail-yb1-f177.google.com (mail-yb1-f177.google.com [209.85.219.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5025426271D;
+        Wed,  1 Jun 2022 13:32:21 -0700 (PDT)
+Received: by mail-yb1-f177.google.com with SMTP id v22so4924389ybd.5;
+        Wed, 01 Jun 2022 13:32:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Mi2KakMLN5Oolk1j9IuMk3Qtihd6Doqcyb4Wzf1iGb8=;
+        b=61Z+F7FfX1RTSXCWowX8VUIC3KzVuBfD3m75Cjl5bQltO0Fil4mRfmnTo0Ma5V4qfX
+         EUGQtT7wY/alYb72p/8asn23T25AzM+Lc5dCWeZ+HU2oE8+hgoSatWujwq5F5etLwTDN
+         IcDL76auIF23Fx53sZOwmeArmsy2b24aeSLN/Yti43TA6KtQDTLMk0z0fIX3ci/oSyxQ
+         tsTBiNa4riZNh93yb+fHzGoebmOXYG/0md/TUfxKra/28X95f3qQw1886NOtqUgKiW3g
+         2Tdx2XxU6kqpDitpkmLVVgfis5FF7lkfjJhHQSL8FDYiIkw+e5k5gUk5q6BLJYhdWpYH
+         zEHQ==
+X-Gm-Message-State: AOAM532w1UEJk5CU4x2IJvlfGkNlJ0P/BwZewF1Rdn6zkJEkD3OHDLMS
+        Qxm941MIh+PVqUknpcL0LOzq0MLVHQ==
+X-Google-Smtp-Source: ABdhPJwqckOQJ3oMBSt13P0tpXRYlnNBp7YUsO7ydUCg7j9OhqxwYVxJIbSGKXig+2EFQEhRTAc4tw==
+X-Received: by 2002:a05:6830:45:b0:60b:196a:c0d7 with SMTP id d5-20020a056830004500b0060b196ac0d7mr637703otp.314.1654113324745;
+        Wed, 01 Jun 2022 12:55:24 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id v1-20020a056830090100b00605fd407259sm1228404ott.3.2022.06.01.12.55.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Jun 2022 12:55:24 -0700 (PDT)
+Received: (nullmailer pid 328210 invoked by uid 1000);
+        Wed, 01 Jun 2022 19:55:23 -0000
+Date:   Wed, 1 Jun 2022 14:55:23 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
+Cc:     linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+        michals@xilinx.com, lorenzo.pieralisi@arm.com, bhelgaas@google.com,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v2] dt-bindings: PCI: xilinx-cpm: Fix reg property order
+Message-ID: <20220601195523.GA328031-robh@kernel.org>
+References: <20220516102217.25960-1-bharat.kumar.gogada@xilinx.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220516102217.25960-1-bharat.kumar.gogada@xilinx.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Wed, 1 Jun 2022 01:20:28 -0500:
+On Mon, 16 May 2022 15:52:17 +0530, Bharat Kumar Gogada wrote:
+> All existing vendor DTSes are using "cpm_slcr" reg followed by "cfg" reg.
+> 
+> This order is also suggested by node name which is pcie@fca10000 which
+> suggests that cpm_slcr register should be the first.
+> 
+> Driver itself is using devm_platform_ioremap_resource_byname() for both
+> names that's why there is no functional change even on description which
+> are using current order.
+> 
+> But still prefer to change order to cover currently used description.
+> Fixes: e22fadb1d014 ("PCI: xilinx-cpm: Add YAML schemas for Versal CPM Root Port")
+> 
+> Signed-off-by: Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
+> ---
+>  .../devicetree/bindings/pci/xilinx-versal-cpm.yaml     | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
+> 
 
-> git://git.samba.org/ksmbd.git tags/5.19-rc-ksmbd-server-fixes
-
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/e5b0208713326cdd3f0a83540e31f9b6f280da38
-
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Applied, thanks!
