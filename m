@@ -2,112 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6141C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 01:41:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3E9EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 01:42:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349006AbiFABlN (ORCPT
+        id S1349007AbiFABmv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 21:41:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35588 "EHLO
+        Tue, 31 May 2022 21:42:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231584AbiFABlJ (ORCPT
+        with ESMTP id S231584AbiFABmt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 21:41:09 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B971C72209;
-        Tue, 31 May 2022 18:41:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654047668; x=1685583668;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=bREUMPRddav0ot+T1KCx4aoc9q3KUb7RuUd1KJFsQz8=;
-  b=mT0Cx6wUmJ93VKhZQoqaL9qNPKdam7Zr68B5wwn3QlajZCmqtGNYl8z1
-   M8yKcAo2J/lId/3fKgQOHt8Waanzrqn6SeSPlIYzU37A6T4IZsAf+MP7z
-   N3eQJ9Jr76EuFZvzUBN6vq9myoA75b9pM5eDdZ1L7wCr8P5w2WWQfrbRT
-   gG4Zun7/zg2TFeS7pndWrM7ouGf8xumHsSAI9W16C+0Ej4iyiU1QEwvBm
-   yNVUGcZlI3wY+KB3ZrubBUEdzB5qPzVXlh1eMQENxhtQgfMDpveCbUZX3
-   6nw0U2PgJsFarJxKqUmw+6z3FujB85TwwwFWUlNJCLvVI+BgM/Nv3kLjo
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10364"; a="255917808"
-X-IronPort-AV: E=Sophos;i="5.91,266,1647327600"; 
-   d="scan'208";a="255917808"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 18:41:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,266,1647327600"; 
-   d="scan'208";a="679861174"
-Received: from unknown (HELO localhost.localdomain) ([10.226.216.90])
-  by fmsmga002.fm.intel.com with ESMTP; 31 May 2022 18:41:06 -0700
-From:   tien.sung.ang@intel.com
-To:     yilun.xu@intel.com
-Cc:     hao.wu@intel.com, linux-fpga@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mdf@kernel.org,
-        tien.sung.ang@intel.com, trix@redhat.com, dinh.nguyen@intel.com
-Subject: [PATCH v2] fpga: altera-cvp: allow interrupt to continue next time
-Date:   Wed,  1 Jun 2022 09:40:27 +0800
-Message-Id: <20220601014027.2547481-1-tien.sung.ang@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220528120503.GB175058@yilunxu-OptiPlex-7050>
-References: <20220528120503.GB175058@yilunxu-OptiPlex-7050>
+        Tue, 31 May 2022 21:42:49 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 830FB69B50;
+        Tue, 31 May 2022 18:42:47 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LCX2p2B9Mz4xXJ;
+        Wed,  1 Jun 2022 11:42:42 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1654047762;
+        bh=siGya32yABE06OPBh8rD0LfumbDaJXyKE6rA7GhzRLI=;
+        h=Date:From:To:Cc:Subject:From;
+        b=pRNROhzQFTSlxgkixk/RLD3flanipsyJQcEt9d1B7qHe6xsD60CD7qwp6EysdPGjM
+         OOFeT5zLkZrL5OBXkpnnWtYufSHU25giFSQ20LD9rTyE6C77xl/osOy8N4Pt/3L2VZ
+         aqa+WCSjVrzfC6ArJ0eg9Qqyotlu73jAq/CRpG1eGQ1T2xv5vtWt+DbwrtqK0OPKMX
+         zqXXximBR6FO//JEHecYBy2uET6vXdtzC60fGO8AabhNmr+1307x1PLGysl9IQZZFe
+         shxGX6pvlVY8c0TJ6NaEawJSvbH9UlqB7XhwSs5R7rGN0WpI93lLkF60SOpCuR5X2a
+         VpV5kE2F3exwg==
+Date:   Wed, 1 Jun 2022 11:42:40 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Bo Liu <liubo03@inspur.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build failure after merge of the vhost tree
+Message-ID: <20220601114240.1dafefc6@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/lhaLPNCK4pASe4+RX.9ttxE";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dinh Nguyen <dinh.nguyen@intel.com>
+--Sig_/lhaLPNCK4pASe4+RX.9ttxE
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-The main objective of this change is to perform error handling
-if the CvP firmware becomes unresponsive. The error_path flow
-resets the CvP mode and HIP_CLK_SEL bit.
+Hi all,
 
-CFG_READY signal/bit may time-out due to firmware not responding
-within the given time-out. This time varies due to numerous
-factors like size of bitstream and others.
-This time-out error may or may not impact the result of the CvP
-previous transactions. The CvP driver shall then, respond with
-EAGAIN instead Time out error.
+After merging the vhost tree, today's linux-next build (powerpc
+ppc64_defconfig) failed like this:
 
-Signed-off-by: Dinh Nguyen <dinh.nguyen@intel.com>
-Signed-off-by: Ang Tien Sung <tien.sung.ang@intel.com>
----
+drivers/virtio/virtio_ring.c: In function 'virtqueue_add':
+drivers/virtio/virtio_ring.c:1783:16: error: 'vq' undeclared (first use in =
+this function); did you mean '_vq'?
+ 1783 |         return vq->packed_ring ? virtqueue_add_packed(_vq, sgs, tot=
+al_sg,
+      |                ^~
+      |                _vq
+drivers/virtio/virtio_ring.c:1783:16: note: each undeclared identifier is r=
+eported only once for each function it appears in
+drivers/virtio/virtio_ring.c:1787:1: error: control reaches end of non-void=
+ function [-Werror=3Dreturn-type]
+ 1787 | }
+      | ^
 
-changelog v2:
-* Amend the commit message
+Caused by commit
 
----
- drivers/fpga/altera-cvp.c | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+  a50f09346a34 ("virtio_ring: remove unused variable in virtqueue_add()")
 
-diff --git a/drivers/fpga/altera-cvp.c b/drivers/fpga/altera-cvp.c
-index 4ffb9da537d8..d74ff63c61e8 100644
---- a/drivers/fpga/altera-cvp.c
-+++ b/drivers/fpga/altera-cvp.c
-@@ -309,10 +309,22 @@ static int altera_cvp_teardown(struct fpga_manager *mgr,
- 	/* STEP 15 - poll CVP_CONFIG_READY bit for 0 with 10us timeout */
- 	ret = altera_cvp_wait_status(conf, VSE_CVP_STATUS_CFG_RDY, 0,
- 				     conf->priv->poll_time_us);
--	if (ret)
-+	if (ret) {
- 		dev_err(&mgr->dev, "CFG_RDY == 0 timeout\n");
-+		goto error_path;
-+	}
- 
- 	return ret;
-+
-+error_path:
-+	/* reset CVP_MODE and HIP_CLK_SEL bit */
-+	altera_read_config_dword(conf, VSE_CVP_MODE_CTRL, &val);
-+	val &= ~VSE_CVP_MODE_CTRL_HIP_CLK_SEL;
-+	val &= ~VSE_CVP_MODE_CTRL_CVP_MODE;
-+	altera_write_config_dword(conf, VSE_CVP_MODE_CTRL, val);
-+
-+	return -EAGAIN;
-+
- }
- 
- static int altera_cvp_write_init(struct fpga_manager *mgr,
--- 
-2.25.1
+I am sorry, but I expect better review and build testing than this :-(
 
+I have used the vhost tree from next-20220531 for today.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/lhaLPNCK4pASe4+RX.9ttxE
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmKWxBEACgkQAVBC80lX
+0GwA7Af+LZt1S294FZe5clfzMjmWLa1YBEtsHA456ozl9p7EP738LjANHXomOKmJ
+KZEHTbHuMulxGHlubL4aEi3OuEo6idIy5SOnXtQ6gkyR3uSen+T1xfmnW2/bSw1t
+5dqtL9hHckll6LKXAOmt3IdP9Lh3YThetu0xFrvDs9kRUnhMEll83ftiYpnJJc2H
+eTlcpqstfHI+wO5Alpq894RHrcXglTRVBQ65JV3lmlJDbZP3K2/3Y00eElQF3jLL
+08NyUD/TBljqppOBA9dNEYdf3uJcLm5CAGzEUSgLxEfLYPOle71ZFnZE8pmEXUMC
+psg97RCsGwtFoymGnBsYQHl7A/UcyQ==
+=o4BZ
+-----END PGP SIGNATURE-----
+
+--Sig_/lhaLPNCK4pASe4+RX.9ttxE--
