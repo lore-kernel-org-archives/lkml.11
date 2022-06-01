@@ -2,173 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEC93C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 06:54:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B722C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 06:54:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349942AbiFAGyA (ORCPT
+        id S1349952AbiFAGya (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 02:54:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59950 "EHLO
+        Wed, 1 Jun 2022 02:54:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344194AbiFAGx6 (ORCPT
+        with ESMTP id S1344194AbiFAGy1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 02:53:58 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 44CC0483B4
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 23:53:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654066436;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=MWmZwzFVpRksBO4BOLojz9NUjcykvBgvkXhMFxoUwY0=;
-        b=SUvqI2yud/hJezmgwK7tLL5n1BprhNBblapWRuco7yEV1EOZHnJXQq4jVGoyHL0D3Nv++D
-        DZ+9lJ2/vRzG/Ysdket+MWYcgCFXSkofMxHofgDZLUsDeB+67e9bpZ7C/B62KpmsTKGPJs
-        kaQrhiGKNJJoZOYpAgmRJTe1y1bxRWE=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-510-GTiykojcNo6de0JThg55Ww-1; Wed, 01 Jun 2022 02:53:55 -0400
-X-MC-Unique: GTiykojcNo6de0JThg55Ww-1
-Received: by mail-qv1-f72.google.com with SMTP id i6-20020a0cd846000000b0046262337c65so726923qvj.20
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 23:53:55 -0700 (PDT)
+        Wed, 1 Jun 2022 02:54:27 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0C1A49253;
+        Tue, 31 May 2022 23:54:26 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id u12-20020a17090a1d4c00b001df78c7c209so5282699pju.1;
+        Tue, 31 May 2022 23:54:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Vr5c2xUPPCzrWHyA1+m2wz+QOmZ7J+gQxTkYWDKocB4=;
+        b=pia0/JspGKwQoJCV1pBp/WXTXpCKH71LKwf0Q0YWoly2V42dcqvhXrwhsb8NbXtQ9j
+         869+MgNYaMMZu/eerbDusEiEOJp48EAQ2SvafYSOJF3PEOZZCHdgkkylw1lGfcyxxBfX
+         4ztQu2/KjB8hnsT7wLsLwmSSpmR9Vf1RK1v+0uaQc0rdzf8W2ABkQc0/UlWCIkqFahK8
+         X7pfxyoxYxVcYxYJUwnTzGAE1QJIrFzGbPn9U2iLZbxvJFRkp0LT2cKHN1hrdzuIrCf5
+         Pxhaw8iHC/duR3Omiz33jnChruU/hw2WVDdFGsrgR3acsxyNnxK1CNgyz6sHgPwg10eO
+         TJfg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=MWmZwzFVpRksBO4BOLojz9NUjcykvBgvkXhMFxoUwY0=;
-        b=Lniagw2WEU9wQ/DiMDgtglNC3SuHEvdCbkPbqgUHjulwQvtzfv3jOZWXQcgUTgsejG
-         MsyYSP9M+LYQ9KzGmx/KmxBKOUL3qgWAFkI/dMiNFbDK68Gyl7OHqG8SMMxFpQ87t3IY
-         AP+xcr4EIhqc4SuFqVxN41jACtNS/aA2Q+ctHAZy7BG28m7bmNR0mkmke8yq8TGGotMH
-         zCp2l3tvXJ6Cz/G+xXNLSQFaSydgR7Rph9bp8NZ3ZaWr3Oz6KHMfPbFvd7z43duoE2Ea
-         506+933CVHAyfMngWOMK4OhNecsdWTJYej4I5V6YPbiUBMxPhVVl1WkdJZ0qrUpArDuo
-         JIUg==
-X-Gm-Message-State: AOAM533R11lexkQu2xDZBcYkF7bB7JqGZQYD1RSvpOWI+G4YwcSKImB0
-        s8pnF5yc8fA+GvHYTmcnCD6A6F3qs+khCYUivslpiQYfWHj88c1OXDBxWoONBNr7kmNtR5sbSTK
-        MvVhWXnAgqCxDxQYRy+k3/gVunCWySIr1P37d1B4K
-X-Received: by 2002:ac8:5ad0:0:b0:2f3:e37a:e768 with SMTP id d16-20020ac85ad0000000b002f3e37ae768mr50097551qtd.592.1654066435028;
-        Tue, 31 May 2022 23:53:55 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwfPCaM1Mb2ZZ2MmLFAvNODRxUeZ4/DdHaMTc0SpE9AKwfijcq0lYwmMmaTnm8BsgB2V8pYGab8IEx/HQXQOwg=
-X-Received: by 2002:ac8:5ad0:0:b0:2f3:e37a:e768 with SMTP id
- d16-20020ac85ad0000000b002f3e37ae768mr50097535qtd.592.1654066434799; Tue, 31
- May 2022 23:53:54 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Vr5c2xUPPCzrWHyA1+m2wz+QOmZ7J+gQxTkYWDKocB4=;
+        b=XXpHqhemXLuZHM6D7mewSzVd7t+RrqzXQQDOL7xegr2J0iZWMK+PJeozURrjAVxgPZ
+         T4ZYixgkSvPjlSYYdnEqr/OtOElsTXlY2b5Rhl4HtFmznVVkneeMkcf1PfyYEK3yP9Kg
+         tnuSQkzoUCNqYDHLbH0ztcrlgb457uwrX+nHhYkG6pKWDSqVv7XCxmdBqUqCE3ZuxiaJ
+         ZwpWY4kv05Mo5RkpLSDmYUzlshzhkZS99SVGSKGMoxATZvLWu0TOSY7Cyl1LvW5kdPtd
+         UG8tsvNdk8oXOCFWFYDo2Oufui5RNlCq+K6l+iRo+i2ADjpRs7z9F2MpyLOYH8g+OukU
+         i2aw==
+X-Gm-Message-State: AOAM530R4aIVDGesAnaTYb7GESpOq41m9FtnUIkpjecSimOpsm0qFpFQ
+        YpD8EIxgAWuzruh+hohtytI=
+X-Google-Smtp-Source: ABdhPJy6Rlb+wvYRaHxSk4DE+e3ykIzInQapeRgnxaEtQB7kWqQBNMzrdigvD6n/9GImBr8Mq1Ffuw==
+X-Received: by 2002:a17:902:e881:b0:161:bfc2:c52 with SMTP id w1-20020a170902e88100b00161bfc20c52mr63401807plg.75.1654066466351;
+        Tue, 31 May 2022 23:54:26 -0700 (PDT)
+Received: from localhost.localdomain ([203.205.141.27])
+        by smtp.gmail.com with ESMTPSA id b11-20020a170902d50b00b0015e8d4eb276sm671460plg.192.2022.05.31.23.54.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 May 2022 23:54:25 -0700 (PDT)
+From:   menglong8.dong@gmail.com
+X-Google-Original-From: imagedong@tencent.com
+To:     kuba@kernel.org
+Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, nhorman@tuxdriver.com,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        imagedong@tencent.com, dsahern@kernel.org, talalahmad@google.com,
+        keescook@chromium.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH net-next v3 0/3] reorganize the code of the enum skb_drop_reason
+Date:   Wed,  1 Jun 2022 14:52:35 +0800
+Message-Id: <20220601065238.1357624-1-imagedong@tencent.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-References: <20220526124338.36247-1-eperezma@redhat.com> <20220526124338.36247-2-eperezma@redhat.com>
- <DM8PR12MB5400573627EEB71D774892C4ABDF9@DM8PR12MB5400.namprd12.prod.outlook.com>
-In-Reply-To: <DM8PR12MB5400573627EEB71D774892C4ABDF9@DM8PR12MB5400.namprd12.prod.outlook.com>
-From:   Eugenio Perez Martin <eperezma@redhat.com>
-Date:   Wed, 1 Jun 2022 08:53:18 +0200
-Message-ID: <CAJaqyWfHLtcFokus3PB1K+19gcD1yeazox426Ur0LoMqOPy7FQ@mail.gmail.com>
-Subject: Re: [PATCH v4 1/4] vdpa: Add stop operation
-To:     Eli Cohen <elic@nvidia.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Jason Wang <jasowang@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "martinh@xilinx.com" <martinh@xilinx.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        "martinpo@xilinx.com" <martinpo@xilinx.com>,
-        "lvivier@redhat.com" <lvivier@redhat.com>,
-        "pabloc@xilinx.com" <pabloc@xilinx.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Xie Yongji <xieyongji@bytedance.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Zhang Min <zhang.min9@zte.com.cn>,
-        Wu Zongyong <wuzongyong@linux.alibaba.com>,
-        "lulu@redhat.com" <lulu@redhat.com>,
-        Zhu Lingshan <lingshan.zhu@intel.com>,
-        "Piotr.Uminski@intel.com" <Piotr.Uminski@intel.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>,
-        "ecree.xilinx@gmail.com" <ecree.xilinx@gmail.com>,
-        "gautam.dawar@amd.com" <gautam.dawar@amd.com>,
-        "habetsm.xilinx@gmail.com" <habetsm.xilinx@gmail.com>,
-        "tanuj.kamde@amd.com" <tanuj.kamde@amd.com>,
-        "hanand@xilinx.com" <hanand@xilinx.com>,
-        "dinang@xilinx.com" <dinang@xilinx.com>,
-        Longpeng <longpeng2@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 1, 2022 at 7:35 AM Eli Cohen <elic@nvidia.com> wrote:
->
-> > From: Eugenio P=C3=A9rez <eperezma@redhat.com>
-> > Sent: Thursday, May 26, 2022 3:44 PM
-> > To: Michael S. Tsirkin <mst@redhat.com>; kvm@vger.kernel.org; virtualiz=
-ation@lists.linux-foundation.org; linux-kernel@vger.kernel.org;
-> > Jason Wang <jasowang@redhat.com>; netdev@vger.kernel.org
-> > Cc: martinh@xilinx.com; Stefano Garzarella <sgarzare@redhat.com>; marti=
-npo@xilinx.com; lvivier@redhat.com; pabloc@xilinx.com;
-> > Parav Pandit <parav@nvidia.com>; Eli Cohen <elic@nvidia.com>; Dan Carpe=
-nter <dan.carpenter@oracle.com>; Xie Yongji
-> > <xieyongji@bytedance.com>; Christophe JAILLET <christophe.jaillet@wanad=
-oo.fr>; Zhang Min <zhang.min9@zte.com.cn>; Wu Zongyong
-> > <wuzongyong@linux.alibaba.com>; lulu@redhat.com; Zhu Lingshan <lingshan=
-.zhu@intel.com>; Piotr.Uminski@intel.com; Si-Wei Liu <si-
-> > wei.liu@oracle.com>; ecree.xilinx@gmail.com; gautam.dawar@amd.com; habe=
-tsm.xilinx@gmail.com; tanuj.kamde@amd.com;
-> > hanand@xilinx.com; dinang@xilinx.com; Longpeng <longpeng2@huawei.com>
-> > Subject: [PATCH v4 1/4] vdpa: Add stop operation
-> >
-> > This operation is optional: It it's not implemented, backend feature bi=
-t
-> > will not be exposed.
-> >
-> > Signed-off-by: Eugenio P=C3=A9rez <eperezma@redhat.com>
-> > ---
-> >  include/linux/vdpa.h | 6 ++++++
-> >  1 file changed, 6 insertions(+)
-> >
-> > diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
-> > index 15af802d41c4..ddfebc4e1e01 100644
-> > --- a/include/linux/vdpa.h
-> > +++ b/include/linux/vdpa.h
-> > @@ -215,6 +215,11 @@ struct vdpa_map_file {
-> >   * @reset:                   Reset device
-> >   *                           @vdev: vdpa device
-> >   *                           Returns integer: success (0) or error (< =
-0)
-> > + * @stop:                    Stop or resume the device (optional, but =
-it must
-> > + *                           be implemented if require device stop)
-> > + *                           @vdev: vdpa device
-> > + *                           @stop: stop (true), not stop (false)
-> > + *                           Returns integer: success (0) or error (< =
-0)
->
-> I assume after successful "stop" the device is guaranteed to stop process=
-ing descriptors and after resume it may process descriptors?
-> If that is so, I think it should be clear in the change log.
->
+From: Menglong Dong <imagedong@tencent.com>
 
-Yes.
+The code of skb_drop_reason is a little wild, let's reorganize them.
+Three things and three patches:
 
-It's better described in the changelog of vdpa sim change, maybe it's
-better to move here.
+1) Move the enum 'skb_drop_reason' and related function to the standalone
+   header 'dropreason.h', as Jakub Kicinski suggested, as the skb drop
+   reasons are getting more and more.
 
-Thanks!
+2) use auto-generation to generate the source file that convert enum
+   skb_drop_reason to string.
 
-> >   * @get_config_size:         Get the size of the configuration space i=
-ncludes
-> >   *                           fields that are conditional on feature bi=
-ts.
-> >   *                           @vdev: vdpa device
-> > @@ -316,6 +321,7 @@ struct vdpa_config_ops {
-> >       u8 (*get_status)(struct vdpa_device *vdev);
-> >       void (*set_status)(struct vdpa_device *vdev, u8 status);
-> >       int (*reset)(struct vdpa_device *vdev);
-> > +     int (*stop)(struct vdpa_device *vdev, bool stop);
-> >       size_t (*get_config_size)(struct vdpa_device *vdev);
-> >       void (*get_config)(struct vdpa_device *vdev, unsigned int offset,
-> >                          void *buf, unsigned int len);
-> > --
-> > 2.31.1
->
+3) make the comment of skb drop reasons kernel-doc style.
+
+Changes since v2:
+2/3: - add new line in the end of .gitignore
+     - fix awk warning by make '\;' to ';', as ';' is not need to be
+       escaped
+     - export 'drop_reasons' in skbuff.c
+
+Changes since v1:
+1/3: move dropreason.h from include/linux/ to include/net/ (Jakub Kicinski)
+2/3: generate source file instead of header file for drop reasons string
+     array (Jakub Kicinski)
+3/3: use inline comment (Jakub Kicinski)
+
+Menglong Dong (3):
+  net: skb: move enum skb_drop_reason to standalone header file
+  net: skb: use auto-generation to convert skb drop reason to string
+  net: dropreason: reformat the comment fo skb drop reasons
+
+ include/linux/skbuff.h     | 179 +-------------------------
+ include/net/dropreason.h   | 257 +++++++++++++++++++++++++++++++++++++
+ include/trace/events/skb.h |  89 +------------
+ net/core/.gitignore        |   1 +
+ net/core/Makefile          |  23 +++-
+ net/core/drop_monitor.c    |  13 --
+ net/core/skbuff.c          |   3 +
+ 7 files changed, 285 insertions(+), 280 deletions(-)
+ create mode 100644 include/net/dropreason.h
+ create mode 100644 net/core/.gitignore
+
+-- 
+2.36.1
 
