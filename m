@@ -2,218 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D67CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 15:39:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77E06C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 15:40:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355677AbiFAPjS (ORCPT
+        id S1355783AbiFAPkl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 11:39:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37818 "EHLO
+        Wed, 1 Jun 2022 11:40:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245480AbiFAPjQ (ORCPT
+        with ESMTP id S1355775AbiFAPkj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 11:39:16 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3638125C5D
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 08:39:15 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id s6so3366914lfo.13
-        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 08:39:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vRk6vGh4OfMebJCRUN5kYJGknCcMU4aXJTSlNgPPV/8=;
-        b=dz0pNJaKv1dxbzo4juQ9Qea7coq/NfvPKfaWaZ3cTsCJFgxdHHo0i3kmtV/kijyBSM
-         LzF2AeScklVgZakFDbWt9wKF4Oo7UX2o67OLZXbCOKSp1q5ka/v6z93T/hE663iEwQHX
-         28gJrNT8FZ4I9Xm4jMQ2Njq3Gd8tKQYlLJRE0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vRk6vGh4OfMebJCRUN5kYJGknCcMU4aXJTSlNgPPV/8=;
-        b=c5/81WQPoTYSihZg0TQoT+WcSaMavKT3pT99c9NNRdhD0/XL5QvjLdg42lI6anOwp/
-         WQZea5Rfr+6M1pEDXeGw6RXl6rYU/PkqdcSYvWktPnCjuHC4iLzeLkNpDw6NvGDjeVvX
-         a5ImXP3c4ueeYMiJxuNzg/v2zAsaENMYiQBV4X84DGwDCx1Ux5VbIpowjlspEAyfyszf
-         z7PhTVQE9J9m6Q21KkmZ3rHPSHhVVZ5WikZ415zcGGdgqCwj1vKBayVcSuvIIDabtbSq
-         JRw6QqC/X1nuvXbMTcHdYkMa5ZZb9NFXLb7jNmkaK+eiSpywzGQyGVyQdJzztL2PQyHw
-         t1sQ==
-X-Gm-Message-State: AOAM531syXKpjl5YeHbqB5J7b5d3+vEYhhP5llIZJ2YwshJaiZu7w59X
-        VVgGyMazQ9tsvi1SHCWAVRTLvPXsf8txxHM/
-X-Google-Smtp-Source: ABdhPJwKpLA7yHlx6uRjV0M/x5xSdKq7dPr2yANZKDPGSxnVjFILPuFEGaPhVolUZH3bwnX2n+/jGw==
-X-Received: by 2002:a17:906:9b86:b0:6fe:d37f:b29d with SMTP id dd6-20020a1709069b8600b006fed37fb29dmr58602ejc.327.1654097606855;
-        Wed, 01 Jun 2022 08:33:26 -0700 (PDT)
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com. [209.85.221.42])
-        by smtp.gmail.com with ESMTPSA id gg1-20020a170906e28100b006f3ef214da9sm864704ejb.15.2022.06.01.08.33.25
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Jun 2022 08:33:25 -0700 (PDT)
-Received: by mail-wr1-f42.google.com with SMTP id x17so2878961wrg.6
-        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 08:33:25 -0700 (PDT)
-X-Received: by 2002:a05:6000:1c03:b0:20e:5cac:1eb5 with SMTP id
- ba3-20020a0560001c0300b0020e5cac1eb5mr7850wrb.422.1654097604512; Wed, 01 Jun
- 2022 08:33:24 -0700 (PDT)
+        Wed, 1 Jun 2022 11:40:39 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9859B313BA
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 08:40:37 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-142-DSHN-KKLM6GbHo2KcEfAdg-1; Wed, 01 Jun 2022 16:40:34 +0100
+X-MC-Unique: DSHN-KKLM6GbHo2KcEfAdg-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.36; Wed, 1 Jun 2022 16:40:31 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.036; Wed, 1 Jun 2022 16:40:31 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Kalesh Singh' <kaleshsingh@google.com>,
+        Stephen Brennan <stephen.s.brennan@oracle.com>
+CC:     Ioannis Ilkos <ilkos@google.com>,
+        "T.J. Mercier" <tjmercier@google.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        "Cc: Android Kernel" <kernel-team@android.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        =?utf-8?B?Q2hyaXN0aWFuIEvDtm5pZw==?= <christian.koenig@amd.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "David Hildenbrand" <david@redhat.com>,
+        Christoph Anton Mitterer <mail@christoph.anton.mitterer.name>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Colin Cross <ccross@google.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        "Paul Gortmaker" <paul.gortmaker@windriver.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        DRI mailing list <dri-devel@lists.freedesktop.org>,
+        "moderated list:DMA BUFFER SHARING FRAMEWORK" 
+        <linaro-mm-sig@lists.linaro.org>
+Subject: RE: [PATCH 2/2] procfs: Add 'path' to /proc/<pid>/fdinfo/
+Thread-Topic: [PATCH 2/2] procfs: Add 'path' to /proc/<pid>/fdinfo/
+Thread-Index: AQHYdT4SWIJvIUraZkitA/0m2+WPZq06r6HA
+Date:   Wed, 1 Jun 2022 15:40:31 +0000
+Message-ID: <959b0495a90e45b9816bb9f25d76a8f9@AcuMS.aculab.com>
+References: <20220531212521.1231133-1-kaleshsingh@google.com>
+ <20220531212521.1231133-3-kaleshsingh@google.com>
+ <14f85d24-a9de-9706-32f0-30be4999c71c@oracle.com>
+ <CAC_TJveDzDaYQKmuLSkGWpnuCW+gvrqdVJqq=wbzoTRjw4OoFw@mail.gmail.com>
+In-Reply-To: <CAC_TJveDzDaYQKmuLSkGWpnuCW+gvrqdVJqq=wbzoTRjw4OoFw@mail.gmail.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-References: <1654021066-13341-1-git-send-email-quic_vnivarth@quicinc.com>
- <CAD=FV=UF3x5RHrQH-m1X-4kQSsKiufLnkew=VuJz7W9EAi3GHQ@mail.gmail.com> <5d950007-7a92-a41b-e569-79e806adb06a@quicinc.com>
-In-Reply-To: <5d950007-7a92-a41b-e569-79e806adb06a@quicinc.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Wed, 1 Jun 2022 08:33:10 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=Xm1LJEoU5dKa5pMgqsHuAXuFVpdHvc1REULhAKTPbGnQ@mail.gmail.com>
-Message-ID: <CAD=FV=Xm1LJEoU5dKa5pMgqsHuAXuFVpdHvc1REULhAKTPbGnQ@mail.gmail.com>
-Subject: Re: [PATCH] tty: serial: qcom-geni-serial: minor fixes to get_clk_div_rate()
-To:     Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        quic_msavaliy@quicinc.com, Matthias Kaehlcke <mka@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+RnJvbTogS2FsZXNoIFNpbmdoDQo+IFNlbnQ6IDMxIE1heSAyMDIyIDIzOjMwDQouLi4NCj4gPiBG
+aWxlIHBhdGhzIGNhbiBjb250YWluIGZ1biBjaGFyYWN0ZXJzIGxpa2UgbmV3bGluZXMgb3IgY29s
+b25zLCB3aGljaA0KPiA+IGNvdWxkIG1ha2UgcGFyc2luZyBvdXQgZmlsZW5hbWVzIGluIHRoaXMg
+dGV4dCBmaWxlLi4uIGZ1bi4gSG93IHdvdWxkIHlvdXINCj4gPiB1c2Vyc3BhY2UgcGFyc2luZyBs
+b2dpYyBoYW5kbGUgIi9ob21lL3N0ZXBoZW4vZmlsZW5hbWVcbnNpemU6XHQ0MDk2Ij8gVGhlDQo+
+ID4gcmVhZGxpbmsoMikgQVBJIG1ha2VzIHRoYXQgZWFzeSBhbHJlYWR5Lg0KPiANCj4gSSB0aGlu
+ayBzaW5jZSB3ZSBoYXZlIGVzY2FwZWQgdGhlICJcbiIgKHNlcV9maWxlX3BhdGgobSwgZmlsZSwg
+IlxuIikpLA0KPiB0aGVuIHVzZXIgc3BhY2UgbWlnaHQgcGFyc2UgdGhpcyBsaW5lIGxpa2U6DQo+
+IA0KPiBpZiAoc3RybmNtcChsaW5lLCAicGF0aDpcdCIsIDYpID09IDApDQo+ICAgICAgICAgY2hh
+ciogcGF0aCA9IGxpbmUgKyA2Ow0KDQpUaGUgcmVhbCBhbm5veWFuY2UgaXMgb3RoZXIgdGhpbmdz
+IGRvaW5nIHNjYW5zIG9mIHRoZSBmaWxlc3lzdGVtDQp0aGF0IGFjY2lkZW50YWxseSAnYnVtcCBp
+bnRvJyBzdHJhbmdlIG5hbWVzLg0KDQpXaGlsZSBhbnl0aGluZyBzZXJpb3VzIHByb2JhYmx5IGdl
+dHMgaXQgcmlnaHQgaG93IG1hbnkgdGltZXMNCkRvIHlvdSBydW4gJ2ZpbmQnIHRvIHF1aWNrbHkg
+c2VhcmNoIGZvciBzb21ldGhpbmc/DQoNClNwYWNlcyBpbiBmaWxlbmFtZXMgKHBvcHVsYXJpc2Vk
+IGJ5IHNvbWUgb3RoZXIgb3MpIGFyZSBhIFBJVEEuDQpOb3QgdG8gbWVudGlvbiBsZWFkaW5nIGFu
+ZCB0cmFpbGluZyBzcGFjZXMhDQpBbnlvbmUgdXNpbmcgZmlsZW5hbWVzIHRoYXQgb25seSBjb250
+YWluIHNwYWNlcyBkb2VzIG5lZWQgc2hvb3RpbmcuDQoNCkRlbGliZXJhdGVseSBhZGRpbmcgbm9u
+LXByaW50YWJsZXMgaXNuJ3QgcmVhbGx5IGEgZ29vZCBpZGVhLg0KDQoJRGF2aWQNCg0KLQ0KUmVn
+aXN0ZXJlZCBBZGRyZXNzIExha2VzaWRlLCBCcmFtbGV5IFJvYWQsIE1vdW50IEZhcm0sIE1pbHRv
+biBLZXluZXMsIE1LMSAxUFQsIFVLDQpSZWdpc3RyYXRpb24gTm86IDEzOTczODYgKFdhbGVzKQ0K
 
-On Wed, Jun 1, 2022 at 3:46 AM Vijaya Krishna Nivarthi
-<quic_vnivarth@quicinc.com> wrote:
->
-> Hi,
->
-> On 6/1/2022 12:58 AM, Doug Anderson wrote:
-> > Hi,
-> >
-> > On Tue, May 31, 2022 at 11:18 AM Vijaya Krishna Nivarthi
-> > <quic_vnivarth@quicinc.com> wrote:
-> >> Add missing initialisation and correct type casting
-> >>
-> >> Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-> >> ---
-> >>   drivers/tty/serial/qcom_geni_serial.c | 8 ++++----
-> >>   1 file changed, 4 insertions(+), 4 deletions(-)
-> >>
-> >> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-> >> index 4733a23..08f3ad4 100644
-> >> --- a/drivers/tty/serial/qcom_geni_serial.c
-> >> +++ b/drivers/tty/serial/qcom_geni_serial.c
-> >> @@ -943,11 +943,11 @@ static int qcom_geni_serial_startup(struct uart_port *uport)
-> >>   static unsigned long get_clk_div_rate(struct clk *clk, unsigned int baud,
-> >>                          unsigned int sampling_rate, unsigned int *clk_div)
-> >>   {
-> >> -       unsigned long ser_clk;
-> >> +       unsigned long ser_clk = 0;
-> > In this patch it's not at all obvious why you'd need to init to 0. I
-> > think the "for loop" is guaranteed to run at least once because
-> > "max_div" is known at compile time. ...and currently each time through
-> > the "for" loop you'll always set "ser_clk".
->
-> Ok, I realised we will never break out of for loop exceeding ULONG_MAX
-> in 1st pass, so yes ser_clk will always be set.
->
-> > I think in a future patch you'll want to _remove_ this from the for loop:
-> >
-> > if (!prev)
-> >    ser_clk = freq;
->
-> Intent is to save (and use) 1st freq if we cannot find an exact divider.
->
-> Isn't it ok?
->
-> For example please find debug output for a required frequency of 51.2MHz.
->
-> We try dividers 1, 2, 3 and end up with 52.1MHz the first result.
->
-> [   18.815432] 20220509 get_clk_div_rate desired_clk:51200000
-> [   18.821081] 20220509 get_clk_div_rate maxdiv:4095
-> [   18.825924] 20220509 get_clk_div_rate div:1
-> [   18.830239] 20220509 get_clk_div_rate freq:52174000
-> [   18.835288] 20220509 get_clk_div_rate div:2
-> [   18.839628] 20220509 get_clk_div_rate freq:100000000
-> [   18.844794] 20220509 get_clk_div_rate div:3
-> [   18.849119] 20220509 get_clk_div_rate freq:100000000
-> [   18.854254] 20220509 get_clk_div_rate reached max frequency breaking...
-> [   18.861072] 20220509 get_clk_div_rate clk_div=1, ser_clk=52174000
->
-> The behaviour was same earlier too when root_freq table was present.
-
-Are you certain about the behavior being the same earlier? Before
-commit c2194bc999d4 ("tty: serial: qcom-geni-serial: Remove uart
-frequency table..."), the behavior was that get_clk_cfg() would return
-0 if there was no exact match. Then get_clk_div_rate() would see this
-0 and print an error and return. Then the rest of
-qcom_geni_serial_set_termios() would do nothing at all.
-
-Ah, or I guess what you're saying is that the table historically
-contained "rounded" rates but that clk_round_rate() isn't returning
-nice round rates. OK, but if we truly want to support an inexact
-match, you'd want to pick the rate that reduces the error, not just
-pick the first one. In other words, something like this (untested):
-
-freq = clk_round_rate(clk, mult);
-diff = abs(((long)mult - freq) / div);
-if (diff < best_diff) {
-  best_diff = diff;
-  ser_clk = freq;
-  best_div = div;
-}
-
-Why do you need this? Imagine that the desired rate was 50000001 or
-49999999. The closest match would be to use the rate 100000000 and
-divide it by 2. ...but your existing algorithm would just arbitrarily
-pick the first rate returned.
-
-NOTE also that you could end up with a slightly higher or slightly
-lower clock than requested, right? So it's important to:
-* Do signed math when comparing.
-* Save the "div" instead of trying to recompute it at the end.
-
-
-> The table did contain 51.2MHz and we would exit with same but on call to
-> clk_set_rate(51.2MHz) we were ending up with 52.1MHz
->
-> >
-> > ...and _that's_ when you should init "ser_clk" to 0. Until then I'd
-> > leave it as uninitialized...
-> >
-> > Honestly, I'd throw all the fixes into one series, too.
->
-> My concern was if there would be a requirement to split the changes.
->
-> Will put in all in 1 series with Fixes tag.
->
-> >
-> >
-> >>          unsigned long desired_clk;
-> >>          unsigned long freq, prev;
-> >>          unsigned long div, maxdiv;
-> >> -       int64_t mult;
-> >> +       unsigned long long mult;
-> >>
-> >>          desired_clk = baud * sampling_rate;
-> >>          if (!desired_clk) {
-> >> @@ -959,8 +959,8 @@ static unsigned long get_clk_div_rate(struct clk *clk, unsigned int baud,
-> >>          prev = 0;
-> >>
-> >>          for (div = 1; div <= maxdiv; div++) {
-> >> -               mult = div * desired_clk;
-> >> -               if (mult > ULONG_MAX)
-> >> +               mult = (unsigned long long)div * (unsigned long long)desired_clk;
-> > I think you only need to cast one of the two. The other will be
-> > up-cast automatically.
-> Will change.
-> >
-> >
-> >> +               if (mult > (unsigned long long)ULONG_MAX)
-> > I don't think you need this cast. As far as I know the C language will
-> > "upcast" to the larger of the two types.
-> Will change.
-> >
-> >
-> > -Doug
->
-> Thank you.
->
-> -Vijay/
->
