@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8356C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:06:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7F9CCCA472
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:06:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355653AbiFAOGS (ORCPT
+        id S1355814AbiFAOG1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:06:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55366 "EHLO
+        Wed, 1 Jun 2022 10:06:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355217AbiFAOBY (ORCPT
+        with ESMTP id S1355042AbiFAOBP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:01:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBBA1A5A8F;
-        Wed,  1 Jun 2022 06:57:59 -0700 (PDT)
+        Wed, 1 Jun 2022 10:01:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56B90532C3;
+        Wed,  1 Jun 2022 06:57:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8D064B81AE6;
-        Wed,  1 Jun 2022 13:56:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01553C3411E;
-        Wed,  1 Jun 2022 13:56:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 84743615AA;
+        Wed,  1 Jun 2022 13:56:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5026C34119;
+        Wed,  1 Jun 2022 13:56:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091814;
-        bh=XHRtkpxftbgTm/PySu+8nLF6MiAvmFtE9vRGXyrzS1U=;
+        s=k20201202; t=1654091800;
+        bh=EnpAIC7tVlvFBKyJDqA5TOV5FfME2skn3+dz8acKW48=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uxWTGPHt5aAIkLKc33FF38Bvd7o+Yw/TJ5GFP6eNVOj9XFNfrlTr3X6jnnX2MEP9D
-         diIHxZJWHxV3ZJmDGYassdsdDO4ZBIvnmTuCpaM/vi3OFxCVhuCRdRBq15USl8U1qM
-         gYY6Kn/dfcni5IHocWmCcErSN/VKeopzHB3/uNXNUgR01j1RyWsifvtkrkd1Ra3DvN
-         /gQiypdQkkQiSZdJ6lXxmdetlkWanwXf/XhunQQcNxmdd6u+qO3AML4I5eu+qYMP3+
-         9bFvgyTLeWBelfFDagKrV8WyI9F1do2F0LusT4wiZjf24qR37G2h7NIDwX/Iv73RyK
-         rgRgtnfkJhsHQ==
+        b=TvZm6phBdTQHCCax6Dcep9ay4WbuAh66GGiq5b9vkzM6mQJ7QZnFhZDp9c2k2+rUZ
+         +ScDWggEUKnqg9LvZEKKMPRqX/Zr5e+84YXpqVmongnaHPNlfpf3Ft5DD7sZnP0EXm
+         YGrcR+FyQKuwzMq2RwiYdK5YKSs/g1xhq37wKZ6xjFvmhUk6ubTgwuGEnORu621UvW
+         78gkiSK73tvmjXxKOQ7NBBBO1Ew2RTtDXpC47hEoVlxVQ+69Cnnc2TO1XdGT1Cb/UU
+         JGLv3EaY56JSg8A7+GcM73VX4BAfTiNrpm/pejUlOPEUi4Aa929wbmU4Sk5BjLja3K
+         6d6WMzAHP+XVg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Janusz Krzysztofik <jmkrzyszt@gmail.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>,
-        paul@pwsan.com, aaro.koskinen@iki.fi, linux@armlinux.org.uk,
-        linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 15/37] ARM: OMAP1: clock: Fix UART rate reporting algorithm
-Date:   Wed,  1 Jun 2022 09:56:00 -0400
-Message-Id: <20220601135622.2003939-15-sashal@kernel.org>
+Cc:     Joel Selvaraj <jo@jsfamily.in>,
+        Caleb Connolly <caleb@connolly.tech>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>, agross@kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 11/37] arm64: dts: qcom: sdm845-xiaomi-beryllium: fix typo in panel's vddio-supply property
+Date:   Wed,  1 Jun 2022 09:55:56 -0400
+Message-Id: <20220601135622.2003939-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135622.2003939-1-sashal@kernel.org>
 References: <20220601135622.2003939-1-sashal@kernel.org>
@@ -54,35 +55,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Janusz Krzysztofik <jmkrzyszt@gmail.com>
+From: Joel Selvaraj <jo@jsfamily.in>
 
-[ Upstream commit 338d5d476cde853dfd97378d20496baabc2ce3c0 ]
+[ Upstream commit 1f1c494082a1f10d03ce4ee1485ee96d212e22ff ]
 
-Since its introduction to the mainline kernel, omap1_uart_recalc() helper
-makes incorrect use of clk->enable_bit as a ready to use bitmap mask while
-it only provides the bit number.  Fix it.
+vddio is misspelled with a "0" instead of "o". Fix it.
 
-Signed-off-by: Janusz Krzysztofik <jmkrzyszt@gmail.com>
-Acked-by: Tony Lindgren <tony@atomide.com>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Joel Selvaraj <jo@jsfamily.in>
+Reviewed-by: Caleb Connolly <caleb@connolly.tech>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/BY5PR02MB7009901651E6A8D5ACB0425ED91F9@BY5PR02MB7009.namprd02.prod.outlook.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-omap1/clock.c | 2 +-
+ arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/mach-omap1/clock.c b/arch/arm/mach-omap1/clock.c
-index 9d4a0ab50a46..d63d5eb8d8fd 100644
---- a/arch/arm/mach-omap1/clock.c
-+++ b/arch/arm/mach-omap1/clock.c
-@@ -41,7 +41,7 @@ static DEFINE_SPINLOCK(clockfw_lock);
- unsigned long omap1_uart_recalc(struct clk *clk)
- {
- 	unsigned int val = __raw_readl(clk->enable_reg);
--	return val & clk->enable_bit ? 48000000 : 12000000;
-+	return val & 1 << clk->enable_bit ? 48000000 : 12000000;
- }
+diff --git a/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts b/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts
+index c60c8c640e17..736951fabb7a 100644
+--- a/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts
++++ b/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts
+@@ -221,7 +221,7 @@ &dsi0 {
+ 	panel@0 {
+ 		compatible = "tianma,fhd-video";
+ 		reg = <0>;
+-		vddi0-supply = <&vreg_l14a_1p8>;
++		vddio-supply = <&vreg_l14a_1p8>;
+ 		vddpos-supply = <&lab>;
+ 		vddneg-supply = <&ibb>;
  
- unsigned long omap1_sossi_recalc(struct clk *clk)
 -- 
 2.35.1
 
