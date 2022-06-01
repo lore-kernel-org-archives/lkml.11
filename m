@@ -2,87 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89ACBC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 21:20:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DF17C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 21:20:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231552AbiFAVUi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 17:20:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58206 "EHLO
+        id S231459AbiFAVTw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 17:19:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231355AbiFAVUg (ORCPT
+        with ESMTP id S231180AbiFAVTt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 17:20:36 -0400
-Received: from mail-oi1-f172.google.com (mail-oi1-f172.google.com [209.85.167.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEE82A7E0F;
-        Wed,  1 Jun 2022 14:20:33 -0700 (PDT)
-Received: by mail-oi1-f172.google.com with SMTP id s188so4294221oie.4;
-        Wed, 01 Jun 2022 14:20:33 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ELpqiUTUS9/MflkdXo00nljVnHKNvu4z7mxeaxEY9EY=;
-        b=pgxmfF/s0IEn7umyYVMYgPJGA27MYfuEkOrMolpeGFaOxkptVbpqVe56MCae8zsn+j
-         kuOaqVf7Tx5PDBId0ussL1UPjVSVPcln7qiWbzKy/Lw6JmDDqWCdzQctzJRcGO/orNLD
-         a/UDDr7hJp+FS5W471jbgKChkCGDDTOP0dfJQaXvckyVzhUuZG+vHDya+vbA91ZhAr1g
-         CGgBuus9xkdO4w1HQAD+NrbzQLXKyBLkhqPvCSVXeETJATynSbw+PTTTrHyQadRHIBSU
-         mrqfc/+q0nzPhYILbteIuLXOd8sxOlX4MckA4HH2KRUKwMFymX9cZHvhAcYq/jEtMz/y
-         LSIw==
-X-Gm-Message-State: AOAM532Vc03x6z9vY50YkyRu2arV6JZzDe2L1sLmYpUuawNsDS4B/Vmn
-        o4SzpozswrpHz0ys1Ussbg==
-X-Google-Smtp-Source: ABdhPJzXDEUMMEXjcJlhrMRFbLzgWr3OPihQXysk4ZN96spRUhvecHfdDhmKbFwb7uSg9kt5rREemg==
-X-Received: by 2002:aca:3945:0:b0:32b:3a61:35d6 with SMTP id g66-20020aca3945000000b0032b3a6135d6mr852287oia.293.1654118433226;
-        Wed, 01 Jun 2022 14:20:33 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id p21-20020a4ae155000000b0035eb4e5a6cbsm1435366oot.33.2022.06.01.14.20.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Jun 2022 14:20:32 -0700 (PDT)
-Received: (nullmailer pid 476464 invoked by uid 1000);
-        Wed, 01 Jun 2022 21:20:32 -0000
-Date:   Wed, 1 Jun 2022 16:20:32 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Irui Wang <irui.wang@mediatek.com>
-Cc:     Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        maoguang.meng@mediatek.com, linux-mediatek@lists.infradead.org,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Tzung-Bi Shih <tzungbi@chromium.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tomasz Figa <tfiga@chromium.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        kyrie wu <kyrie.wu@mediatek.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>, xia.jiang@mediatek.com,
-        linux-media@vger.kernel.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        linux-kernel@vger.kernel.org, srv_heupstream@mediatek.com
-Subject: Re: [RESEND V1,1/2] media: media: jpegenc: add
- mediatek,mt8186-jpgenc compatible
-Message-ID: <20220601212032.GA476431-robh@kernel.org>
-References: <20220520085910.28839-1-irui.wang@mediatek.com>
- <20220520085910.28839-2-irui.wang@mediatek.com>
+        Wed, 1 Jun 2022 17:19:49 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C59A3A76E7;
+        Wed,  1 Jun 2022 14:19:38 -0700 (PDT)
+Received: from leknes.fjasle.eu ([46.142.96.91]) by mrelayeu.kundenserver.de
+ (mreue011 [212.227.15.167]) with ESMTPSA (Nemesis) id
+ 1MnJUy-1nUtIA27Iy-00jLcz; Wed, 01 Jun 2022 21:49:58 +0200
+Received: from localhost.fjasle.eu (bergen.fjasle.eu [IPv6:fdda:8718:be81:0:6f0:21ff:fe91:394])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by leknes.fjasle.eu (Postfix) with ESMTPS id ABFE93C09F;
+        Wed,  1 Jun 2022 21:49:56 +0200 (CEST)
+Authentication-Results: leknes.fjasle.eu; dkim=none; dkim-atps=neutral
+Received: by localhost.fjasle.eu (Postfix, from userid 1000)
+        id 694BF27B9; Wed,  1 Jun 2022 21:49:55 +0200 (CEST)
+Date:   Wed, 1 Jun 2022 21:49:55 +0200
+From:   Nicolas Schier <nicolas@fjasle.eu>
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     linux-kbuild@vger.kernel.org,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        linux-kernel@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
+        Michal Marek <michal.lkml@markovi.net>
+Subject: Re: [PATCH 2/4] kbuild: clean .tmp_* pattern by make clean
+Message-ID: <YpfC42gQGDJiMMNT@bergen.fjasle.eu>
+References: <20220528154704.2576290-1-masahiroy@kernel.org>
+ <20220528154704.2576290-2-masahiroy@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20220520085910.28839-2-irui.wang@mediatek.com>
+In-Reply-To: <20220528154704.2576290-2-masahiroy@kernel.org>
+Jabber-ID: nicolas@jabber.no
+X-Operating-System: Debian GNU/Linux bookworm/sid
+X-Provags-ID: V03:K1:iWTC9Fl0s+F1OypqFKLOqkbj83zsZ//QByOdoNj6YEXh0YX+PLt
+ E+b8wieuJIY9Pkg98zqSC18mjpdoK4pyi9a5/4uSSDKUtftd2fq2C2LiTV07y8JNsaxzqaj
+ GB/9oxbZmIDmvq/mlhF+qVBhsHO9ABu0fjWIkWlAxZAdknuX3r5RYsyQ/PjWIgpbBV3zHM1
+ ++MOmZ4ncIN9Woa/yjNlg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:HPgegc6THJM=:e24xwd5frNJbGKgbys85Fo
+ oKM78EGdhZ0oSrl+2blQX6alQJjIUVIBR7tXSHg/lUWWXIjrWzFhkNi6JgJAq7X2Bpv5LPIoY
+ D7q51XWHJMnNcmPlq6s0JG6wBS/wPPqafkesWdRLKbPnTqQoOGOZ7gjCQnEgeVA+UfSbcseF1
+ 73A/KkWd2lMaMqX6/EGI76Wone4slykcugSfBAjZydDU9tndfUC0hr29kAHwCgh8lZhUxLk23
+ l9TFmISMiMfZgkWdti6+dC2HWI6TbarbYBrvjFUGaiUAGYJg7+GIFa9x+SnHfEAbGBdfAro7z
+ ilWmcPw0otrgfzmSJkOJvR8JwL/wo+SzXXJJltCFB2OgKuIMo7NX6xwPSMk8HL3Z/WeLJHp3B
+ xuMRVE6QfKpqDKdauYLx3zu6NmTe76lJyu9LoRoUA64VlqHFpP1nNAZxVEqe6fVgDUFzjkCVq
+ f/zxkbWKYqA1ksiI9DqmmPvXhXUkRCk/icJB1bMDLoau3+DFrPCo5zQsm3MqE7KZepREe9GPZ
+ F7QBkKH/K2nx+oUsvAn3IZZBYeN0Xu4Q202qahzdHfzntCJLqEGcKZFSXLNwPWiitQXc2UMib
+ nIirUb0tc7SgHknTQkflU0ymxAmaDJR5ZAFJVIL9NwH7FnCFotvq8jPwrtxUNs6c8uIBATCDQ
+ e9lZKPyeRGu/igg4hkyWPf8/kdd5Hg+/Eg8IGMjSNqlpiPBlL8CJ3wLi9AM7I9iqBXnXea43g
+ 0PvJ7Pd/L2BwYfMXmJcR8oM0O8wRMdAKkJlrdA==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 20 May 2022 16:59:09 +0800, Irui Wang wrote:
-> From: kyrie wu <kyrie.wu@mediatek.com>
+On Sun 29 May 2022 00:47:02 +0900, Masahiro Yamada wrote:
+> Change the "make clean" rule to remove all the .tmp_* files.
 > 
-> Add mediatek,mt8186-jpgenc compatible to binding document.
+> .tmp_objdiff is the only exception, which should be removed by
+> "make mrproper".
 > 
-> MT8186 iommu support 0~16GB iova. We separate it to four banks:
-> 0~4G; 4G~8G; 8G~12G; 12G~16G.
+> Rename the record directory of objdiff, .tmp_objdiff to .objdiff to
+> avoid the removal by "make clean".
 > 
-> The "dma-ranges" could be used to adjust the bank we locate.
-> If we don't set this property. The default range always is 0~4G.
-> 
-> Signed-off-by: kyrie wu <kyrie.wu@mediatek.com>
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 > ---
->  .../devicetree/bindings/media/mediatek-jpeg-encoder.yaml    | 6 ++++++
->  1 file changed, 6 insertions(+)
 > 
+>  Makefile                | 4 ++--
+>  scripts/link-vmlinux.sh | 3 ---
+>  scripts/objdiff         | 2 +-
+>  3 files changed, 3 insertions(+), 6 deletions(-)
+> 
+...
+> diff --git a/scripts/objdiff b/scripts/objdiff
+> index 72b0b63c3fe1..68b8d74e5c6f 100755
+> --- a/scripts/objdiff
+> +++ b/scripts/objdiff
+> @@ -32,7 +32,7 @@ if [ -z "$SRCTREE" ]; then
+>  	exit 1
+>  fi
+>  
+> -TMPD=$SRCTREE/.tmp_objdiff
+> +TMPD=$SRCTREE/.objdiff
+>  
+>  usage() {
+>  	echo >&2 "Usage: $0 <command> <args>"
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+scripts/objdiff still has two occurrences of .tmp_objdiff (in the 
+comment block at the top).
