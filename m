@@ -2,151 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9E8CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 03:30:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6890C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 03:30:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349381AbiFADaa (ORCPT
+        id S1349427AbiFADae (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 23:30:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34204 "EHLO
+        Tue, 31 May 2022 23:30:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349413AbiFADaE (ORCPT
+        with ESMTP id S1349465AbiFADaX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 23:30:04 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F0B9D6B0A9
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 20:30:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654054201;
-        h=from:from:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=g/QwG2vgWhruUHVSTvB1NROdcFoX8UsFct3vWYpMtXc=;
-        b=dXnkLHQRh0c/hxeCfkKJU3Mt6+EgO79eebVKv6CXMObdLXRkS231qAjj39+f8wdGx1J0/o
-        BesP/BWjd2c4fuYFYTcHpvnY8vtCInHkse9+Keegw9AQR9EVvki6WErFbmc2UNV3dwsHow
-        lEvjOHS5M2GeHUaWcvbRpfsATSWb7Eo=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-252-_0wYGXsEMgO2MBWxFVFRVw-1; Tue, 31 May 2022 23:29:57 -0400
-X-MC-Unique: _0wYGXsEMgO2MBWxFVFRVw-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7A55C101A54E;
-        Wed,  1 Jun 2022 03:29:56 +0000 (UTC)
-Received: from [10.72.12.91] (ovpn-12-91.pek2.redhat.com [10.72.12.91])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 680822166B26;
-        Wed,  1 Jun 2022 03:29:50 +0000 (UTC)
-Reply-To: Gavin Shan <gshan@redhat.com>
-Subject: Re: [PATCH v3 06/16] arch_topology: Add support to parse and detect
- cache attributes
-To:     Sudeep Holla <sudeep.holla@arm.com>, linux-kernel@vger.kernel.org
-Cc:     Atish Patra <atishp@atishpatra.org>,
-        Atish Patra <atishp@rivosinc.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Morten Rasmussen <morten.rasmussen@arm.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Qing Wang <wangqing@vivo.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-riscv@lists.infradead.org, Rob Herring <robh+dt@kernel.org>
-References: <20220525081416.3306043-1-sudeep.holla@arm.com>
- <20220525081416.3306043-2-sudeep.holla@arm.com>
- <20220525081416.3306043-3-sudeep.holla@arm.com>
- <20220525081416.3306043-4-sudeep.holla@arm.com>
- <20220525081416.3306043-5-sudeep.holla@arm.com>
- <20220525081416.3306043-6-sudeep.holla@arm.com>
- <20220525081416.3306043-7-sudeep.holla@arm.com>
-From:   Gavin Shan <gshan@redhat.com>
-Message-ID: <ccfcf360-fc61-7e6d-5814-1fb98a836f8f@redhat.com>
-Date:   Wed, 1 Jun 2022 11:29:46 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.0
+        Tue, 31 May 2022 23:30:23 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2085.outbound.protection.outlook.com [40.107.220.85])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCEC772E3A;
+        Tue, 31 May 2022 20:30:22 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LhwkVgOlhrGFPh4jycXofzMQSsSIKjUGEIF/Spocbc3XZJx/JJL2AihrOurpKAY4bHUAp6NYC9+NZGR8ig5S3HHyL4oeH9caela108MsPqYglytIpWr12QrtGiaqpyzD9IIus8Mqqt+j0h31tY7ZuIgcGVd4Q2MGJvI6sYkStuq9IbgMgm0XuzvTea1wgthGl0vUXNJfnfIPUPF9lOJtVeAaMzfX5eyqTj7XTMBIF+QAfI36BI0v6Fkl6zdClOCNt1FPzaFOv2FNF+JS+TIYJBfkrtcKS8zTWVillbcm5XZa2Sx0IFQ1/m5y9KMFYLEPCXE7p0p5nJcik9r/NQehrQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=58OUnmftGccIflpVRC3kry/dTTF/1fMLkNTsUzjZkiY=;
+ b=I0cg9U/Tyj6myHuvSJtKWgrvQXR9eKk/W6tqDpuOAgzOeJCFdXi1XYeewohXZecihTkt+1yCUafYKBSL1Uq3PEj/1mSiy1t3FOmwFQ7gvheP6DDs0sB9JulZodMSFQ8EmBdOzoAUUaw9saV32DcSGC7fzzkuitnWqpqEjfgO7OExwRdsd1XkB2z2vnLhM/wSZZNuupYlr90Gl9bq+KFUwkrUjNtGZ5R/+RofFoYS1ZA0OY4hBoG1O6SSLRpkxCjPhFi3I1Rrw3n2HP6a3Kq2mpjsqe0uamx8KsRp+Bk135S+nhHwRrX3QBvUTY5EVcd1hGkviPACswRbESEVjZdw6g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=58OUnmftGccIflpVRC3kry/dTTF/1fMLkNTsUzjZkiY=;
+ b=sPcdTg9885QkGpvLuf12NOiTPwjUdLh5vzYLNwjlLVa1OqoNYnzNFq44dIhVbcxChHE8G9hX4y24IZgoDWAYDvAShDhNXwmNdZLM38Vf+b91ioQcflII/unNeRrMcQBkSuJfDBsd6gJTdr+aldRDrvNV50fqz+olin0ClchDFDY=
+Received: from BN6PR11CA0067.namprd11.prod.outlook.com (2603:10b6:404:f7::29)
+ by DM6PR12MB4121.namprd12.prod.outlook.com (2603:10b6:5:220::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.13; Wed, 1 Jun
+ 2022 03:30:20 +0000
+Received: from BN8NAM11FT054.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:404:f7:cafe::89) by BN6PR11CA0067.outlook.office365.com
+ (2603:10b6:404:f7::29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.13 via Frontend
+ Transport; Wed, 1 Jun 2022 03:30:20 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ BN8NAM11FT054.mail.protection.outlook.com (10.13.177.102) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5314.12 via Frontend Transport; Wed, 1 Jun 2022 03:30:20 +0000
+Received: from BLR-5CG113396H.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Tue, 31 May
+ 2022 22:29:32 -0500
+From:   Ravi Bangoria <ravi.bangoria@amd.com>
+To:     <acme@kernel.org>, <kan.liang@linux.intel.com>
+CC:     <ravi.bangoria@amd.com>, <jolsa@kernel.org>, <irogers@google.com>,
+        <peterz@infradead.org>, <rrichter@amd.com>, <mingo@redhat.com>,
+        <mark.rutland@arm.com>, <namhyung@kernel.org>,
+        <tglx@linutronix.de>, <bp@alien8.de>, <james.clark@arm.com>,
+        <leo.yan@linaro.org>, <ak@linux.intel.com>, <eranian@google.com>,
+        <like.xu.linux@gmail.com>, <x86@kernel.org>,
+        <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <sandipan.das@amd.com>, <ananth.narayan@amd.com>,
+        <kim.phillips@amd.com>, <santosh.shukla@amd.com>
+Subject: [PATCH v5 6/8] perf/x86/ibs: Add new IBS register bits into header
+Date:   Wed, 1 Jun 2022 08:56:06 +0530
+Message-ID: <20220601032608.1034-7-ravi.bangoria@amd.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220601032608.1034-1-ravi.bangoria@amd.com>
+References: <20220601032608.1034-1-ravi.bangoria@amd.com>
 MIME-Version: 1.0
-In-Reply-To: <20220525081416.3306043-7-sudeep.holla@arm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6bfb2dd0-2baf-47d6-7242-08da437f0e63
+X-MS-TrafficTypeDiagnostic: DM6PR12MB4121:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR12MB412126160C69C1326DC3CCEAE0DF9@DM6PR12MB4121.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: ZZY5w1KQBH0wnLxDyDkjCMTCe9skLl4O0qAF3zgxRwDzJ68uMcjyoT3Boit3X5to7+9RbXfed7fjWPp7TivMpiPuItY+yCka84hRSl8x9Zs8z+fq0gmDsnL8XSeCR0ZJ96jWks4JmpfOobmn27qe+/rDE8N/8CyLKWSKkh8Q4u3QSkkPos7zbm3RJ9HRbNWv5WgTW3ihVI38us+M5+fXT3PIBfCNnj7IxNC2PLK7Lk9rNq3TVOU7gUL1BsG1GOycfbbihxFvhfNA4J3wThS4ajfIqnQz2UHIRd4eZslOSwYB1DH65O3iTuzQx8aYhTcsXfQO0K3C25sYN5gTbdyYyS4aY51JK9nxR/Fe8FobZ/+G97i9aePa90zw6Cl+yOL4WDisBbARo8tl4wmM31NfCmzqmBibv5/lnSrlDEePBl3TIIxnR8QSMGTZlh/j1WOmoZBijnAMLHwtf5NcxVfHNqaH2uLKBnlH7VaDRrTGxXE/fvALHStpepSiQfFlpQwA1CJH88uVbiEVID3Oj51I8STyaQFD1dgn71Zpy8nKS5/q24/Jo8OaTQRYP8qRQj+OU0BPVStpjpfRWFu9TW/BxLb2TpENXU4ee+Xr/qdjYIDb4FocSBOxxw7+6fOx8UkMtdxTv1jJaPeRK/dD1b4q/StgPHZjNpXXEU8TZWNOlfyObXFgm97AxqaVPXWGCPxcv3DvPTZ7xf0GUTbyf28O/Q==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(186003)(6666004)(86362001)(16526019)(40460700003)(336012)(81166007)(70206006)(7416002)(7696005)(5660300002)(1076003)(70586007)(4326008)(8936002)(36756003)(426003)(83380400001)(316002)(44832011)(2616005)(54906003)(8676002)(2906002)(110136005)(26005)(82310400005)(508600001)(47076005)(36860700001)(356005)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jun 2022 03:30:20.7027
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6bfb2dd0-2baf-47d6-7242-08da437f0e63
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT054.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4121
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Sudeep,
+IBS support has been enhanced with two new features in upcoming uarch:
+1. DataSrc extension and 2. L3 miss filtering. Additional set of bits
+has been introduced in IBS registers to exploit these features. Define
+these new bits into arch/x86/ header.
 
-On 5/25/22 4:14 PM, Sudeep Holla wrote:
-> Currently ACPI populates just the minimum information about the last
-> level cache from PPTT in order to feed the same to build sched_domains.
-> Similar support for DT platforms is not present.
-> 
-> In order to enable the same, the entire cache hierarchy information can
-> be built as part of CPU topoplogy parsing both on ACPI and DT platforms.
-> 
-> Note that this change builds the cacheinfo early even on ACPI systems, but
-> the current mechanism of building llc_sibling mask remains unchanged.
-> 
-> Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
-> ---
->   drivers/base/arch_topology.c | 23 ++++++++++++++++-------
->   1 file changed, 16 insertions(+), 7 deletions(-)
-> 
+Signed-off-by: Ravi Bangoria <ravi.bangoria@amd.com>
+Acked-by: Ian Rogers <irogers@google.com>
+---
+ arch/x86/include/asm/amd-ibs.h | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
 
-With below nits fixed:
-
-Reviewed-by: Gavin Shan <gshan@redhat.com>
-
-> diff --git a/drivers/base/arch_topology.c b/drivers/base/arch_topology.c
-> index f73b836047cf..765723448b10 100644
-> --- a/drivers/base/arch_topology.c
-> +++ b/drivers/base/arch_topology.c
-> @@ -7,6 +7,7 @@
->    */
->   
->   #include <linux/acpi.h>
-> +#include <linux/cacheinfo.h>
->   #include <linux/cpu.h>
->   #include <linux/cpufreq.h>
->   #include <linux/device.h>
-> @@ -775,15 +776,23 @@ __weak int __init parse_acpi_topology(void)
->   #if defined(CONFIG_ARM64) || defined(CONFIG_RISCV)
->   void __init init_cpu_topology(void)
->   {
-> +	int ret, cpu;
-> +
->   	reset_cpu_topology();
-> +	ret = parse_acpi_topology();
-> +	if (!ret)
-> +		ret = of_have_populated_dt() && parse_dt_topology();
->   
-> -	/*
-> -	 * Discard anything that was parsed if we hit an error so we
-> -	 * don't use partial information.
-> -	 */
-> -	if (parse_acpi_topology())
-> -		reset_cpu_topology();
-> -	else if (of_have_populated_dt() && parse_dt_topology())
-> +	if(ret) {
-> +		/*
-> +		 * Discard anything that was parsed if we hit an error so we
-> +		 * don't use partial information.
-> +		 */
->   		reset_cpu_topology();
-> +		return;
-> +	}
-> +
-> +	for_each_possible_cpu(cpu)
-> +		detect_cache_attributes(cpu);
->   }
->   #endif
-> 
-
-# ./scripts/checkpatch.pl --codespell patch/check/0006*
-ERROR: space required before the open parenthesis '('
-#55: FILE: drivers/base/arch_topology.c:786:
-+	if(ret) {
-
-Thanks,
-Gavin
+diff --git a/arch/x86/include/asm/amd-ibs.h b/arch/x86/include/asm/amd-ibs.h
+index aabdbb5ab920..f3eb098d63d4 100644
+--- a/arch/x86/include/asm/amd-ibs.h
++++ b/arch/x86/include/asm/amd-ibs.h
+@@ -29,7 +29,10 @@ union ibs_fetch_ctl {
+ 			rand_en:1,	/* 57: random tagging enable */
+ 			fetch_l2_miss:1,/* 58: L2 miss for sampled fetch
+ 					 *      (needs IbsFetchComp) */
+-			reserved:5;	/* 59-63: reserved */
++			l3_miss_only:1,	/* 59: Collect L3 miss samples only */
++			fetch_oc_miss:1,/* 60: Op cache miss for the sampled fetch */
++			fetch_l3_miss:1,/* 61: L3 cache miss for the sampled fetch */
++			reserved:2;	/* 62-63: reserved */
+ 	};
+ };
+ 
+@@ -38,14 +41,14 @@ union ibs_op_ctl {
+ 	__u64 val;
+ 	struct {
+ 		__u64	opmaxcnt:16,	/* 0-15: periodic op max. count */
+-			reserved0:1,	/* 16: reserved */
++			l3_miss_only:1,	/* 16: Collect L3 miss samples only */
+ 			op_en:1,	/* 17: op sampling enable */
+ 			op_val:1,	/* 18: op sample valid */
+ 			cnt_ctl:1,	/* 19: periodic op counter control */
+ 			opmaxcnt_ext:7,	/* 20-26: upper 7 bits of periodic op maximum count */
+-			reserved1:5,	/* 27-31: reserved */
++			reserved0:5,	/* 27-31: reserved */
+ 			opcurcnt:27,	/* 32-58: periodic op counter current count */
+-			reserved2:5;	/* 59-63: reserved */
++			reserved1:5;	/* 59-63: reserved */
+ 	};
+ };
+ 
+@@ -71,11 +74,12 @@ union ibs_op_data {
+ union ibs_op_data2 {
+ 	__u64 val;
+ 	struct {
+-		__u64	data_src:3,	/* 0-2: data source */
++		__u64	data_src_lo:3,	/* 0-2: data source low */
+ 			reserved0:1,	/* 3: reserved */
+ 			rmt_node:1,	/* 4: destination node */
+ 			cache_hit_st:1,	/* 5: cache hit state */
+-			reserved1:57;	/* 5-63: reserved */
++			data_src_hi:2,	/* 6-7: data source high */
++			reserved1:56;	/* 8-63: reserved */
+ 	};
+ };
+ 
+-- 
+2.31.1
 
