@@ -2,87 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8365C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 06:51:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC9CBC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 06:52:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343579AbiFAGvR (ORCPT
+        id S1343718AbiFAGwL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 02:51:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49072 "EHLO
+        Wed, 1 Jun 2022 02:52:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244719AbiFAGvL (ORCPT
+        with ESMTP id S244719AbiFAGwK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 02:51:11 -0400
+        Wed, 1 Jun 2022 02:52:10 -0400
 Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91B1C95A0F;
-        Tue, 31 May 2022 23:51:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57A722A738
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 23:52:08 -0700 (PDT)
 Received: from pendragon.ideasonboard.com (lmontsouris-659-1-41-236.w92-154.abo.wanadoo.fr [92.154.76.236])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 0AF256D1;
-        Wed,  1 Jun 2022 08:51:03 +0200 (CEST)
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 35F9D6D1;
+        Wed,  1 Jun 2022 08:52:06 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1654066264;
-        bh=I9ZmOGhYwlPu5Iw2LmEOgB3rLqHYXy5EaidCJYy1YSA=;
+        s=mail; t=1654066326;
+        bh=9U51zIdFo623msxiQzlZ5c7urUVTOlg5NLFUSyleXjA=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Jq97zO5uG0N8y3cg/druowOs8wOH2M8i2drfRBZtwxsTbvzANwqAl6UlvbQgRMg9f
-         muk8GUR/fncZ6UL6XQA+dD3ekVnmvLBV3zrZqMtx8iJiDgXDe84nUDkBwS15mkw9ZI
-         tC7fxk32bqI5DQGFK4MFG2m52PeE0lfYEdU7Deug=
-Date:   Wed, 1 Jun 2022 09:50:59 +0300
+        b=T9U4nYh3scF7O79G7ri7mNf7EnIC7VTS5q1eVW+AyUiy4ZQok/wAL+N6UiU3ISjX/
+         fSP3Dno+DLsZtIrc5M7Q2X3r/mUsKwtVm2oIhauQSDxh4A4aOWOcNVRTyCD0+1rno3
+         X8LQDEIVHhg/VYlHnFLdfVgkbVTVnfFcyNRaxAJs=
+Date:   Wed, 1 Jun 2022 09:52:00 +0300
 From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Miaoqian Lin <linmq006@gmail.com>
-Cc:     Tony Lindgren <tony@atomide.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Tomi Valkeinen <tomi.valkeinen@ti.com>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ARM: OMAP2+: Fix refcount leak in omapdss_init_of
-Message-ID: <YpcMU9o8w/zoDE+J@pendragon.ideasonboard.com>
-References: <20220601044858.3352-1-linmq006@gmail.com>
+To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Cc:     andrzej.hajda@intel.com, narmstrong@baylibre.com,
+        robert.foss@linaro.org, jonas@kwiboo.se, jernej.skrabec@gmail.com,
+        airlied@linux.ie, daniel@ffwll.ch, maxime@cerno.tech,
+        sam@ravnborg.org, alsi@bang-olufsen.dk, jagan@amarulasolutions.com,
+        biju.das.jz@bp.renesas.com, l.stach@pengutronix.de,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] drm: bridge: adv7511: Add check for
+ mipi_dsi_driver_register
+Message-ID: <YpcMkIefWGCwZZJ+@pendragon.ideasonboard.com>
+References: <20220601024822.2804516-1-jiasheng@iscas.ac.cn>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220601044858.3352-1-linmq006@gmail.com>
+In-Reply-To: <20220601024822.2804516-1-jiasheng@iscas.ac.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Lin,
+Hi Jiasheng,
 
 Thank you for the patch.
 
-On Wed, Jun 01, 2022 at 08:48:58AM +0400, Miaoqian Lin wrote:
-> omapdss_find_dss_of_node() calls of_find_compatible_node() to get device
-> node. of_find_compatible_node() returns a node pointer with refcount
-> incremented, we should use of_node_put() on it when done.
-> Add missing of_node_put() in later error path and normal path.
+On Wed, Jun 01, 2022 at 10:48:22AM +0800, Jiasheng Jiang wrote:
+> As mipi_dsi_driver_register could return error if fails,
+> it should be better to check the return value and return error
+> if fails.
 > 
-> Fixes: e0c827aca0730 ("drm/omap: Populate DSS children in omapdss driver")
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-
+> Fixes: 1e4d58cd7f88 ("drm/bridge: adv7533: Create a MIPI DSI device")
+> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 > ---
->  arch/arm/mach-omap2/display.c | 2 ++
->  1 file changed, 2 insertions(+)
+>  drivers/gpu/drm/bridge/adv7511/adv7511_drv.c | 9 +++++++--
+>  1 file changed, 7 insertions(+), 2 deletions(-)
 > 
-> diff --git a/arch/arm/mach-omap2/display.c b/arch/arm/mach-omap2/display.c
-> index 21413a9b7b6c..ed2cb2649cf6 100644
-> --- a/arch/arm/mach-omap2/display.c
-> +++ b/arch/arm/mach-omap2/display.c
-> @@ -259,11 +259,13 @@ static int __init omapdss_init_of(void)
+> diff --git a/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c b/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
+> index 5bb9300040dd..795855b41eb2 100644
+> --- a/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
+> +++ b/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
+> @@ -1392,8 +1392,13 @@ static struct i2c_driver adv7511_driver = {
 >  
->  	if (!pdev) {
->  		pr_err("Unable to find DSS platform device\n");
-> +		of_node_put(node);
->  		return -ENODEV;
->  	}
+>  static int __init adv7511_init(void)
+>  {
+> -	if (IS_ENABLED(CONFIG_DRM_MIPI_DSI))
+> -		mipi_dsi_driver_register(&adv7533_dsi_driver);
+> +	int ret;
+> +
+> +	if (IS_ENABLED(CONFIG_DRM_MIPI_DSI)) {
+> +		ret = mipi_dsi_driver_register(&adv7533_dsi_driver);
+> +		if (ret)
+> +			return ret;
+> +	}
 >  
->  	r = of_platform_populate(node, NULL, NULL, &pdev->dev);
->  	put_device(&pdev->dev);
-> +	of_node_put(node);
->  	if (r) {
->  		pr_err("Unable to populate DSS submodule devices\n");
->  		return r;
+>  	return i2c_add_driver(&adv7511_driver);
+
+While at it, should this then call mipi_dsi_driver_unregister() on
+failure ?
+
+>  }
+> -- 
+> 2.25.1
+> 
 
 -- 
 Regards,
