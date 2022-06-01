@@ -2,102 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F795C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 10:48:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A90DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 10:49:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352580AbiFAKsp (ORCPT
+        id S1344121AbiFAKtG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 06:48:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50980 "EHLO
+        Wed, 1 Jun 2022 06:49:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352578AbiFAKsd (ORCPT
+        with ESMTP id S1352292AbiFAKtA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 06:48:33 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03DB8275DB
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 03:48:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654080509; x=1685616509;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=FljOfQd0ovis2myCMXGwjQ7sjwvP24kidUblqHsfnRA=;
-  b=iI5F11nidUOKCcnuKJ41h/+z2jp0jbZKE4egwyAgHuFf4dwqeTWv3Bjz
-   6kI2zKANJYYFTanquxbPblXL/hwFk5G3wIXr0vwhFo6Gq7DCLnE0qweKt
-   DSIglapHdvN5odEhC5sREBRZtiRj5/pHSi9B9D52ERv+iX0L1p7IfKB9J
-   EK3TL5lPj+/hJogs1+078WybXtc0mvydnHGN6u0lPz2m7ND+O0z2jR4Jb
-   TH3t/mv6XhwyZzrzvGwwVrKm1NbYpBfhbXJl5kFtp+/n2rV5XKsldz4Ms
-   WC4T8i1VI0Wmzz+dgY/LtbLZGM6bBoL7FjLEtBrX8mazgN1e2/fN2TZhb
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10364"; a="300898703"
-X-IronPort-AV: E=Sophos;i="5.91,268,1647327600"; 
-   d="scan'208";a="300898703"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 03:48:28 -0700
-X-IronPort-AV: E=Sophos;i="5.91,268,1647327600"; 
-   d="scan'208";a="707004298"
-Received: from hej1-mobl.ccr.corp.intel.com (HELO [10.255.28.123]) ([10.255.28.123])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 03:48:25 -0700
-Message-ID: <c70501f3-9cee-fc7d-4ebc-6f88e1ad147f@linux.intel.com>
-Date:   Wed, 1 Jun 2022 18:48:23 +0800
+        Wed, 1 Jun 2022 06:49:00 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E8FE282155
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 03:48:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654080533;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=hrH+2QAikayivhZwVSMboNGmELij4yc/hiwsqHY23jQ=;
+        b=jUPo+16xlx3rXbDoqshhdDwwStThAk3TIY8eHgteyHiGhjwVZAFEWzDkgAV1PJk+fn4E6u
+        vJH6jJT+GFTEz+ZPF3twkG1kTFvcHww9QtN5YJFxuN1G1FLORartaUVgMU0+7t01E+n5tW
+        W4Aoq5mU73xunsax1lIwESkwJ6cfS88=
+Received: from mail-pg1-f199.google.com (mail-pg1-f199.google.com
+ [209.85.215.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-478-cvQ4Fq35P_eWrTnnUxQ7vQ-1; Wed, 01 Jun 2022 06:48:50 -0400
+X-MC-Unique: cvQ4Fq35P_eWrTnnUxQ7vQ-1
+Received: by mail-pg1-f199.google.com with SMTP id f9-20020a636a09000000b003c61848e622so886794pgc.0
+        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 03:48:50 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hrH+2QAikayivhZwVSMboNGmELij4yc/hiwsqHY23jQ=;
+        b=aNCz86XKBgQ1xxosZIqBryURzPq0KYQgPxbbaMD0nokynqGmk0qqmB5yfzRdw0LDWY
+         QNWfzaRS481oxfCvlm+iBGYf05lRjPcrx4OuBv2fEcEIGVfL3GK0biSYeA/o3PJbpy8I
+         QTD1N6RGFovza2PTKOFcrFFNKwXYEe24xMDCYWPAtPBmhtLQvpIHdc8jrQDAXF/KzQ/G
+         8MZNJvDd82QAUGN57OeBpJdeSpW/2X3e5bVe5NXqx1hq+aQ9ZgOMy/5vM9X7c2ajXJgz
+         DxCjR7bf2lpm9PptkOEBTuOiKubpQ/NpXasysjwqzWjpwbH6pyhXbFehNiQPLIF7ixla
+         h1kQ==
+X-Gm-Message-State: AOAM533D1M5RukOn6Gb6j706+Wej3Z1VXqtt4LkaWCy/qHoyBxX5mitz
+        VSkA9KOhrA0GV1E2Jg/6PMhzx98+PYj3/PVyhVgo/A42F+rm/XsAN8jlvGy31UZdyB9bNEHSw+V
+        Xu2JQ3Q2Sh8CdcE7M/9SAvOlM54an+HRCqkg4Lkyu
+X-Received: by 2002:a17:902:7c0e:b0:161:f9f6:be5b with SMTP id x14-20020a1709027c0e00b00161f9f6be5bmr55846790pll.156.1654080529835;
+        Wed, 01 Jun 2022 03:48:49 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJw8Z/R1QPBiL3zZ58Z7WbyHv1cLTETgAEl2rVhWxKGRnsk8bKpXpXQqWNnB+kkOIRq0CkwtBCtdW6dm6n516Mg=
+X-Received: by 2002:a17:902:7c0e:b0:161:f9f6:be5b with SMTP id
+ x14-20020a1709027c0e00b00161f9f6be5bmr55846774pll.156.1654080529546; Wed, 01
+ Jun 2022 03:48:49 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Cc:     baolu.lu@linux.intel.com, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        "Liu, Yi L" <yi.l.liu@intel.com>,
-        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 07/12] iommu/vt-d: Acquiring lock in pasid manipulation
- helpers
-Content-Language: en-US
-To:     "Tian, Kevin" <kevin.tian@intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        "Raj, Ashok" <ashok.raj@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Jason Gunthorpe <jgg@nvidia.com>
-References: <20220527063019.3112905-1-baolu.lu@linux.intel.com>
- <20220527063019.3112905-8-baolu.lu@linux.intel.com>
- <BN9PR11MB527639286A5F8BB4C8B4D3028CDF9@BN9PR11MB5276.namprd11.prod.outlook.com>
-From:   Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB527639286A5F8BB4C8B4D3028CDF9@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220531075540.14242-1-thuth@redhat.com> <YpZu6/k+8EydfBKf@google.com>
+In-Reply-To: <YpZu6/k+8EydfBKf@google.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+Date:   Wed, 1 Jun 2022 12:48:38 +0200
+Message-ID: <CABgObfZ8LipJXh28xjRxqZPyNX1muP=_fYdmH=a9hvQh7eq32w@mail.gmail.com>
+Subject: Re: [PATCH] KVM: Adjust the return type of kvm_vm_ioctl_check_extension_generic()
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Thomas Huth <thuth@redhat.com>, kvm <kvm@vger.kernel.org>,
+        "Kernel Mailing List, Linux" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/6/1 17:18, Tian, Kevin wrote:
->> From: Lu Baolu <baolu.lu@linux.intel.com>
->> Sent: Friday, May 27, 2022 2:30 PM
->>
->> The iommu->lock is used to protect the per-IOMMU pasid directory table
->> and pasid table. Move the spinlock acquisition/release into the helpers
->> to make the code self-contained.
->>
->> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> 
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>, with one nit
-> 
->>
->> -	/* Caller must ensure PASID entry is not in use. */
->> -	if (pasid_pte_is_present(pte))
->> -		return -EBUSY;
->> +	spin_lock(&iommu->lock);
->> +	pte = get_non_present_pasid_entry(dev, pasid);
->> +	if (!pte) {
->> +		spin_unlock(&iommu->lock);
->> +		return -ENODEV;
->> +	}
-> 
-> I don't think above is a good abstraction and it changes the error
-> code for an present entry from -EBUSY to -ENODEV.
+On Tue, May 31, 2022 at 9:39 PM Sean Christopherson <seanjc@google.com> wrote:
+> As for KVM_GET_NR_MMU_PAGES, my vote would be just sweep it under the rug with a
+> comment and blurb in the documentation that it's broken.  I highly doubt any VMM
+> actually uses the ioctl() in any meaningful way as it was largely made obsolete by
+> two-dimensional paging, e.g. neither QEMU nor our VMM use it.
 
-Sure. I will roll it back to -EBUSY. I added this helper because the
-same code appears at least three times in this file.
+I think we can just remove it, or return 0.
 
-Best regards,
-baolu
-
+Paolo
 
