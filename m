@@ -2,135 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B79DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 02:21:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD03AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 02:22:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349135AbiFACVQ (ORCPT
+        id S1349137AbiFACWB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 22:21:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37630 "EHLO
+        Tue, 31 May 2022 22:22:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240621AbiFACVP (ORCPT
+        with ESMTP id S240621AbiFACV7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 22:21:15 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5079A6FD06;
-        Tue, 31 May 2022 19:21:07 -0700 (PDT)
-X-UUID: 07695d2cffd245c0b685fd353bb5eaf9-20220601
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:96087467-c812-44e1-a06e-32648c4d7fe0,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:51,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:46
-X-CID-INFO: VERSION:1.1.5,REQID:96087467-c812-44e1-a06e-32648c4d7fe0,OB:0,LOB:
-        0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:51,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:46
-X-CID-META: VersionHash:2a19b09,CLOUDID:443d865e-0edb-42bb-b033-2ddb138eef19,C
-        OID:6e042c94bdec,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:0,File:nil,QS:0,BEC:nil
-X-UUID: 07695d2cffd245c0b685fd353bb5eaf9-20220601
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
-        (envelope-from <jianjun.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1162320749; Wed, 01 Jun 2022 10:21:03 +0800
-Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Wed, 1 Jun 2022 10:21:02 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 1 Jun 2022 10:21:01 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkmbs11n1.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
- Transport; Wed, 1 Jun 2022 10:21:00 +0800
-Message-ID: <96f7cc90171bb6e088ce0ed88e10ad14f06a98bb.camel@mediatek.com>
-Subject: Re: [PATCH v9 0/2] phy: mediatek: Add PCIe PHY driver
-From:   Jianjun Wang <jianjun.wang@mediatek.com>
-To:     Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "Chen-Yu Tsai" <wenst@chromium.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>
-CC:     Wei-Shun Chang <weishunc@google.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-phy@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <rex-bc.chen@mediatek.com>,
-        <randy.wu@mediatek.com>, <jieyy.yang@mediatek.com>,
-        <chuanjia.liu@mediatek.com>, <qizhong.cheng@mediatek.com>,
-        <jian.yang@mediatek.com>
-Date:   Wed, 1 Jun 2022 10:21:00 +0800
-In-Reply-To: <20220520064920.27313-1-jianjun.wang@mediatek.com>
-References: <20220520064920.27313-1-jianjun.wang@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Tue, 31 May 2022 22:21:59 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E6FE25C54
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 19:21:56 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id g205so616124pfb.11
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 19:21:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=2okyrQI7zzxx6armVnSyvWo3k8iS+WCjiSoArjw0fEE=;
+        b=lNtCXz826IraqgepKCt/0lBy+mvMAaE2ivM/1NtE1GDoY942T5NsfhN91WTgx4ANjM
+         0xSVtO126oHxAM52jRDdWZORous5WBraQcL6dZQ8Ia53sJcte67lY7MPex9Z5MtwU/t3
+         gxaV3/h3l0sz5h8It0hfiUZ5SYwVEdE3yMgblQkT9Y7FDq3ZPzr1CjWqoNE8KqzydtL7
+         /271RuA8uiEl61xA0JyyHu0VZm0P0a/V1g89g4LrVnV+p4AgH0064N0SDE9eU5hfMl7g
+         VE5X+2RmPw9fzhPqM6nWyZPLMWd+FDtQhwGBuRG5GGmVbXw2C45XfOEmviQBpXcD90GI
+         aq4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=2okyrQI7zzxx6armVnSyvWo3k8iS+WCjiSoArjw0fEE=;
+        b=V4s1L+OLfLcbn5yBIIK8nks6hxUbaR/yljRpwtX8FAtUWoZvaNoLLrDpZw0NanbmAJ
+         yh43dyxnnOG9FHg1akvKFX8487foSCG9nfkGFIl/24vhJmJ1PP7AzDxdsB48jsc8n9TV
+         NSD0G8ZAXVaK80uNRfzSkecM6Sln97J3HIY6bzxWCJwU/y7HQpXWSqsDfC8wbY1/BdwF
+         eOtJJw411kxblCmE3dD6V5XtUFL5jcmS+gRbVQwR0dgik/hfHwTba/8kAbfcXLtPsaJM
+         o9in36hwmgiBEpKAK8rhkmP6kVBD7h+GLkv9JbjRdvRcGCZrPXg0yGiyvPJezgPiQQ/p
+         Bqsw==
+X-Gm-Message-State: AOAM532CIG8+JjI8sLDKB/qLhpmsQDniL1buyaSB8Jy/WOTiLw4T6GiO
+        XBGECxdpRkeQQEosblSDXM3Vew==
+X-Google-Smtp-Source: ABdhPJzW0LFXWu1OWiBefZkXNcr/MWs15wzhND3amhX9Ouk0RYJnIvws91AeF3f0YhsM1ih2w98Iwg==
+X-Received: by 2002:a05:6a00:23ce:b0:50d:823f:981 with SMTP id g14-20020a056a0023ce00b0050d823f0981mr65646297pfc.10.1654050116005;
+        Tue, 31 May 2022 19:21:56 -0700 (PDT)
+Received: from [10.255.89.136] ([139.177.225.233])
+        by smtp.gmail.com with ESMTPSA id r4-20020a170902ea4400b001641a68f1c7sm190180plg.273.2022.05.31.19.21.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 31 May 2022 19:21:55 -0700 (PDT)
+Message-ID: <5f622a65-8348-8825-a167-414f2a8cd2eb@bytedance.com>
+Date:   Wed, 1 Jun 2022 10:17:54 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: Re: Re: [PATCH 0/3] recover hardware corrupted page by virtio
+ balloon
+Content-Language: en-US
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        David Hildenbrand <david@redhat.com>,
+        =?UTF-8?B?SE9SSUdVQ0hJIE5BT1lBKOWggOWPoyDnm7TkuZ8p?= 
+        <naoya.horiguchi@nec.com>
+Cc:     Peter Xu <peterx@redhat.com>, Jue Wang <juew@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>, jasowang@redhat.com,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux MM <linux-mm@kvack.org>, mst@redhat.com,
+        qemu-devel@nongnu.org, virtualization@lists.linux-foundation.org
+References: <CAPcxDJ5pduUyMA0rf+-aTjK_2eBvig05UTiTptX1nVkWE-_g8w@mail.gmail.com>
+ <Yo/I3oLkd9OU0ice@xz-m1.local>
+ <24a95dea-9ea6-a904-7c0b-197961afa1d1@bytedance.com>
+ <0d266c61-605d-ce0c-4274-b0c7e10f845a@redhat.com>
+ <4b0c3e37-b882-681a-36fc-16cee7e1fff0@bytedance.com>
+ <YpTngZ5Qr0KIvL0H@xz-m1.local>
+ <CAPcxDJ5UMfpys8KyLQVnkV9BPO1vaubxbhc7f4XC_TdNO7jr7g@mail.gmail.com>
+From:   zhenwei pi <pizhenwei@bytedance.com>
+In-Reply-To: <CAPcxDJ5UMfpys8KyLQVnkV9BPO1vaubxbhc7f4XC_TdNO7jr7g@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Maintainers,
+On 5/31/22 12:08, Jue Wang wrote:
+> On Mon, May 30, 2022 at 8:49 AM Peter Xu <peterx@redhat.com> wrote:
+>>
+>> On Mon, May 30, 2022 at 07:33:35PM +0800, zhenwei pi wrote:
+>>> A VM uses RAM of 2M huge page. Once a MCE(@HVAy in [HVAx,HVAz)) occurs, the
+>>> 2M([HVAx,HVAz)) of hypervisor becomes unaccessible, but the guest poisons 4K
+>>> (@GPAy in [GPAx, GPAz)) only, it may hit another 511 MCE ([GPAx, GPAz)
+>>> except GPAy). This is the worse case, so I want to add
+>>>   '__le32 corrupted_pages' in struct virtio_balloon_config, it is used in the
+>>> next step: reporting 512 * 4K 'corrupted_pages' to the guest, the guest has
+>>> a chance to isolate the other 511 pages ahead of time. And the guest
+>>> actually loses 2M, fixing 512*4K seems to help significantly.
+>>
+>> It sounds hackish to teach a virtio device to assume one page will always
+>> be poisoned in huge page granule.  That's only a limitation to host kernel
+>> not virtio itself.
+>>
+>> E.g. there're upstream effort ongoing with enabling doublemap on hugetlbfs
+>> pages so hugetlb pages can be mapped in 4k with it.  It provides potential
+>> possibility to do page poisoning with huge pages in 4k too.  When that'll
+>> be ready the assumption can go away, and that does sound like a better
+>> approach towards this problem.
+> 
+> +1.
+> 
+> A hypervisor should always strive to minimize the guest memory loss.
+> 
+> The HugeTLB double mapping enlightened memory poisoning behavior (only
+> poison 4K out of a 2MB huge page and 4K in guest) is a much better
+> solution here. To be completely transparent, it's not _strictly_
+> required to poison the page (whatever the granularity it is) on the
+> host side, as long as the following are true:
+> 
+> 1. A hypervisor can emulate the _minimized_ (e.g., 4K) the poison to the guest.
+> 2. The host page with the UC error is "isolated" (could be PG_HWPOISON
+> or in some other way) and prevented from being reused by other
+> processes.
+> 
+> For #2, PG_HWPOISON and HugeTLB double mapping enlightened memory
+> poisoning is a good solution.
+> 
+>>
+>>>
+>>>>
+>>>> I assume when talking about "the performance memory drops a lot", you
+>>>> imply that this patch set can mitigate that performance drop?
+>>>>
+>>>> But why do you see a performance drop? Because we might lose some
+>>>> possible THP candidates (in the host or the guest) and you want to plug
+>>>> does holes? I assume you'll see a performance drop simply because
+>>>> poisoning memory is expensive, including migrating pages around on CE.
+>>>>
+>>>> If you have some numbers to share, especially before/after this change,
+>>>> that would be great.
+>>>>
+>>>
+>>> The CE storm leads 2 problems I have even seen:
+>>> 1, the memory bandwidth slows down to 10%~20%, and the cycles per
+>>> instruction of CPU increases a lot.
+>>> 2, the THR (/proc/interrupts) interrupts frequently, the CPU has to use a
+>>> lot time to handle IRQ.
+>>
+>> Totally no good knowledge on CMCI, but if 2) is true then I'm wondering
+>> whether it's necessary to handle the interrupts that frequently.  When I
+>> was reading the Intel CMCI vector handler I stumbled over this comment:
+>>
+>> /*
+>>   * The interrupt handler. This is called on every event.
+>>   * Just call the poller directly to log any events.
+>>   * This could in theory increase the threshold under high load,
+>>   * but doesn't for now.
+>>   */
+>> static void intel_threshold_interrupt(void)
+>>
+>> I think that matches with what I was thinking..  I mean for 2) not sure
+>> whether it can be seen as a CMCI problem and potentially can be optimized
+>> by adjust the cmci threshold dynamically.
+> 
+> The CE storm caused performance drop is caused by the extra cycles
+> spent by the ECC steps in memory controller, not in CMCI handling.
+> This is observed in the Google fleet as well. A good solution is to
+> monitor the CE rate closely in user space via /dev/mcelog and migrate
+> all VMs to another host once the CE rate exceeds some threshold.
+> 
+> CMCI is a _background_ interrupt that is not handled in the process
+> execution context and its handler is setup to switch to poll (1 / 5
+> min) mode if there are more than ~ a dozen CEs reported via CMCI per
+> second.
+>>
+>> --
+>> Peter Xu
+>>
 
-Gentle ping for this patch series, if there is anything I can do to get
-these patches merged, please let me know.
+Hi, Andrew, David, Naoya
 
-Thanks.
+According to the suggestions, I'd give up the improvement of memory 
+failure on huge page in this series.
 
-On Fri, 2022-05-20 at 14:49 +0800, Jianjun Wang wrote:
-> These series patches add support for PCIe PHY driver on MediaTek
-> chipsets.
-> 
-> Changes in v9:
-> 1. Check if the return value is -ENOMEM when reading efuse data
-> fails.
-> 
-> Changes in v8:
-> 1. Use "device_property_present()" to increase human readability;
-> 2. Use "GPL" as recommended in commit bf7fbeeae6db ("module: Cure
->    the MODULE_LICENSE "GPL" vs. "GPL v2" bogosity").
-> 
-> Changes in v7:
-> 1. Add bitfield.h header to fix the build error on non-arm64
-> platforms.
-> 
-> Changes in v6:
-> 1. Remove unnecessary header files;
-> 2. Use FILELD_PREP in bitfield.h to set value.
-> 
-> Changes in v5:
-> 1. Fix typo in kerneldoc: "eFues" => "eFuse".
-> 
-> Changes in v4:
-> 1. Fix no return when calling dev_err_probe.
-> 
-> Changes in v3:
-> 1. Add introductions for structure members;
-> 2. Add SoC dependent data;
-> 3. Dynamically allocate efuse data;
-> 4. Check return value if it's an -EPROBE_DEFER.
-> 
-> Changes in v2:
-> 1. Add specific compatible name;
-> 2. Read NVMEM data at probe time;
-> 3. Fix typos.
-> 
-> Jianjun Wang (2):
->   dt-bindings: phy: mediatek: Add YAML schema for PCIe PHY
->   phy: mediatek: Add PCIe PHY driver
-> 
->  .../bindings/phy/mediatek,pcie-phy.yaml       |  75 +++++
->  drivers/phy/mediatek/Kconfig                  |  11 +
->  drivers/phy/mediatek/Makefile                 |   1 +
->  drivers/phy/mediatek/phy-mtk-pcie.c           | 267
-> ++++++++++++++++++
->  4 files changed, 354 insertions(+)
->  create mode 100644
-> Documentation/devicetree/bindings/phy/mediatek,pcie-phy.yaml
->  create mode 100644 drivers/phy/mediatek/phy-mtk-pcie.c
-> 
+Is it worth recovering corrupted pages for the guest kernel? I'd follow 
+your decision.
 
+-- 
+zhenwei pi
