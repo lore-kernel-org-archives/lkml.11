@@ -2,77 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9DBECCA473
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 20:46:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 117C6C43334
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 20:46:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230094AbiFAUp6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 16:45:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43894 "EHLO
+        id S229880AbiFAUqF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 16:46:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229513AbiFAUpW (ORCPT
+        with ESMTP id S229719AbiFAUpY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 16:45:22 -0400
-Received: from mail-yb1-f177.google.com (mail-yb1-f177.google.com [209.85.219.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5025426271D;
-        Wed,  1 Jun 2022 13:32:21 -0700 (PDT)
-Received: by mail-yb1-f177.google.com with SMTP id v22so4924389ybd.5;
-        Wed, 01 Jun 2022 13:32:21 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Mi2KakMLN5Oolk1j9IuMk3Qtihd6Doqcyb4Wzf1iGb8=;
-        b=61Z+F7FfX1RTSXCWowX8VUIC3KzVuBfD3m75Cjl5bQltO0Fil4mRfmnTo0Ma5V4qfX
-         EUGQtT7wY/alYb72p/8asn23T25AzM+Lc5dCWeZ+HU2oE8+hgoSatWujwq5F5etLwTDN
-         IcDL76auIF23Fx53sZOwmeArmsy2b24aeSLN/Yti43TA6KtQDTLMk0z0fIX3ci/oSyxQ
-         tsTBiNa4riZNh93yb+fHzGoebmOXYG/0md/TUfxKra/28X95f3qQw1886NOtqUgKiW3g
-         2Tdx2XxU6kqpDitpkmLVVgfis5FF7lkfjJhHQSL8FDYiIkw+e5k5gUk5q6BLJYhdWpYH
-         zEHQ==
-X-Gm-Message-State: AOAM532w1UEJk5CU4x2IJvlfGkNlJ0P/BwZewF1Rdn6zkJEkD3OHDLMS
-        Qxm941MIh+PVqUknpcL0LOzq0MLVHQ==
-X-Google-Smtp-Source: ABdhPJwqckOQJ3oMBSt13P0tpXRYlnNBp7YUsO7ydUCg7j9OhqxwYVxJIbSGKXig+2EFQEhRTAc4tw==
-X-Received: by 2002:a05:6830:45:b0:60b:196a:c0d7 with SMTP id d5-20020a056830004500b0060b196ac0d7mr637703otp.314.1654113324745;
-        Wed, 01 Jun 2022 12:55:24 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id v1-20020a056830090100b00605fd407259sm1228404ott.3.2022.06.01.12.55.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Jun 2022 12:55:24 -0700 (PDT)
-Received: (nullmailer pid 328210 invoked by uid 1000);
-        Wed, 01 Jun 2022 19:55:23 -0000
-Date:   Wed, 1 Jun 2022 14:55:23 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
-Cc:     linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        michals@xilinx.com, lorenzo.pieralisi@arm.com, bhelgaas@google.com,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v2] dt-bindings: PCI: xilinx-cpm: Fix reg property order
-Message-ID: <20220601195523.GA328031-robh@kernel.org>
-References: <20220516102217.25960-1-bharat.kumar.gogada@xilinx.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220516102217.25960-1-bharat.kumar.gogada@xilinx.com>
+        Wed, 1 Jun 2022 16:45:24 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A75E1E2278
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 13:32:44 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 19D251F93D;
+        Wed,  1 Jun 2022 19:13:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1654110836; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=a9u5hPonEj/nYbaH7KqEil1yX8WxZg/sHH0JzVEX0BA=;
+        b=eJWfOQDFbje58Pvln7Hd8ShUzOVhrTKrqwXaSOxBSiC0DO+NSkUpdFOHooDD7pCwI3mB5A
+        /XeFPtQNE1COwDVA9WjuZuFOsjCqr9247l9RkcwE23TEhe7at1wvck2+p4ak44jzv5woGM
+        hYmBbN7ngTTPfiOau0OUGGeYDNH+SxU=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1654110836;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=a9u5hPonEj/nYbaH7KqEil1yX8WxZg/sHH0JzVEX0BA=;
+        b=vlxyTuTtVr+kbwBfCwGIfyk6VP7yVYURsb4cSA52VWdDlhJCfKg5DTmBIYcZlq2n6mguVd
+        pNmYzqXgm6SIVaAA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id CCA9613A8F;
+        Wed,  1 Jun 2022 19:13:55 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id GhPeMHO6l2IGDgAAMHmgww
+        (envelope-from <tiwai@suse.de>); Wed, 01 Jun 2022 19:13:55 +0000
+Date:   Wed, 01 Jun 2022 21:13:55 +0200
+Message-ID: <87mtewyz64.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Richard Fitzgerald <rf@opensource.cirrus.com>
+Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Vitaly Rodionov <vitalyr@opensource.cirrus.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, Mark Brown <broonie@kernel.org>,
+        <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v4 00/17] ALSA: hda: cirrus: Add initial DSP support and firmware loading
+In-Reply-To: <008e3188-f35d-4323-08ea-de5f3a88333a@opensource.cirrus.com>
+References: <20220525131638.5512-1-vitalyr@opensource.cirrus.com>
+        <871qwf0x8t.wl-tiwai@suse.de>
+        <20220530090846.GS38351@ediswmail.ad.cirrus.com>
+        <87czfvxtsc.wl-tiwai@suse.de>
+        <20220530093639.GT38351@ediswmail.ad.cirrus.com>
+        <87a6azxr7h.wl-tiwai@suse.de>
+        <20220530103415.GU38351@ediswmail.ad.cirrus.com>
+        <871qwbxpsb.wl-tiwai@suse.de>
+        <008e3188-f35d-4323-08ea-de5f3a88333a@opensource.cirrus.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) Emacs/27.2 Mule/6.0
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 16 May 2022 15:52:17 +0530, Bharat Kumar Gogada wrote:
-> All existing vendor DTSes are using "cpm_slcr" reg followed by "cfg" reg.
+On Wed, 01 Jun 2022 18:43:31 +0200,
+Richard Fitzgerald wrote:
 > 
-> This order is also suggested by node name which is pcie@fca10000 which
-> suggests that cpm_slcr register should be the first.
+> On 30/05/2022 11:45, Takashi Iwai wrote:
+> > On Mon, 30 May 2022 12:34:15 +0200,
+> > Charles Keepax wrote:
+> >> 
+> >> On Mon, May 30, 2022 at 12:14:26PM +0200, Takashi Iwai wrote:
+> >>> On Mon, 30 May 2022 11:36:39 +0200,
+> >>> Charles Keepax wrote:
+> >>>> On Mon, May 30, 2022 at 11:18:43AM +0200, Takashi Iwai wrote:
+> >>>>> On Mon, 30 May 2022 11:08:46 +0200,
+> >>>>> Charles Keepax wrote:
+> >>>>>> On Fri, May 27, 2022 at 06:13:38PM +0200, Takashi Iwai wrote:
+> >>>>>>> On Wed, 25 May 2022 15:16:21 +0200,
+> >>>>>>> Vitaly Rodionov wrote:
+> >>>> Yeah that should be what is happening here. Although it looks
+> >>>> like this code might be removing all the controls if the firmware
+> >>>> is unloaded. I will discuss that with the guys, we normal just
+> >>>> disable the controls on the wm_adsp stuff.
+> >>> 
+> >>> OK, that sounds good.  Basically my concern came up from the code
+> >>> snippet doing asynchronous addition/removal via work.  This showed
+> >>> some yellow signal, as such a pattern doesn't appear in the normal
+> >>> implementation.  If this is (still) really necessary, it has to be
+> >>> clarified as an exception.
+> >>> 
+> >> 
+> >> Hm... ok we will think about that. I think that part will
+> >> probably still be necessary. Because there is an ALSA control
+> >> that selects the firmware, then it is necesarry to defer creating
+> >> the controls to some work, since you are already holding the
+> >> lock.
+> > 
+> > Well, if an ALSA control can trigger the firmware loading, that's
+> > already fragile.  A firmware loading is a heavy task, which should
+> > happen only at probing and/or resuming in general.  Do we have other
+> > drivers doing the f/w loading triggered by a kctl...?
+> > 
 > 
-> Driver itself is using devm_platform_ioremap_resource_byname() for both
-> names that's why there is no functional change even on description which
-> are using current order.
-> 
-> But still prefer to change order to cover currently used description.
-> Fixes: e22fadb1d014 ("PCI: xilinx-cpm: Add YAML schemas for Versal CPM Root Port")
-> 
-> Signed-off-by: Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
-> ---
->  .../devicetree/bindings/pci/xilinx-versal-cpm.yaml     | 10 +++++-----
->  1 file changed, 5 insertions(+), 5 deletions(-)
-> 
+> On Wolfson/Cirrus codecs the firmware isn't to "make the chip work".
+> The DSP is programmable to allow for additional audio processing
+> algorithms. Which algorithm you need depends on the audio use case(s)
+> you are running, and can change as you change use-case. Many of the
+> codecs don't have enough DSP memory to hold all possible algorithms.
+> Which is why the firmware load has always been triggered from ALSA
+> controls in the ASoC code. It's not something that can be loaded
+> once in probe().
 
-Applied, thanks!
+But it's still a question whether such an easily triggerable interface
+should be used for a heavy procedure like the DSP firmware load.
+e.g. calling the standard request_firmware() API directly from a
+control callback doesn't sound like a good idea at all.  The similar
+argument is applied to the dynamic addition/removal of other controls
+followed by a kctl callback.
+
+
+thanks,
+
+Takashi
