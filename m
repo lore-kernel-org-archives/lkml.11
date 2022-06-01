@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3506DCCA468
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:12:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAF55CCA468
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:12:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355086AbiFAOMr (ORCPT
+        id S1355211AbiFAOMx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:12:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51144 "EHLO
+        Wed, 1 Jun 2022 10:12:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354586AbiFAOH2 (ORCPT
+        with ESMTP id S1354630AbiFAOH3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:07:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBB55A3388;
-        Wed,  1 Jun 2022 07:00:17 -0700 (PDT)
+        Wed, 1 Jun 2022 10:07:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2957A339A;
+        Wed,  1 Jun 2022 07:00:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 652FA61632;
-        Wed,  1 Jun 2022 14:00:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9C14C385A5;
-        Wed,  1 Jun 2022 14:00:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 798786149F;
+        Wed,  1 Jun 2022 14:00:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96B8EC34119;
+        Wed,  1 Jun 2022 14:00:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654092015;
-        bh=SpEc8xwd/DWXEBIER3O/kILG2B+8H0RsWfZGILzBquk=;
+        s=k20201202; t=1654092004;
+        bh=rCm0BVpzsO/CK/q+0+njTSj5LZslu2hznfOgIzLZnVo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JNCOtMUBNfHRR16Mw+2aTgbriJFfDLe6bTCatnXOeHaXpWfDSGhUHMrE00tQY9Fnq
-         wfGGbliQHptvmPV3vo1KJSInR6hsMaAXBVN39RP/F67jIolJwQfKw5j+URRLJi/6ub
-         n+xEYPrIRSt4xCFnVZ1YhxgxTar9M5S5KcjRcAjda+9MzP962Wz/KqSjQU5cvfgadC
-         /wke+d0fVncQEkY4eZWx0jG5mfzWtQZ/gfQonN/S5tJryLlwn+IoQKXU6frr9voO71
-         PqN2Jlnt8o+arK9JsPUiM5w0AZ6jiuxlk3cKRjK1GRNtjpyKiu5f+ZNdGvzqUhPW9r
-         VMzKcskrABfLA==
+        b=FDLs1kEFCozFfQSzDXkm6zmb94RK5GrRN90yOW9/eTFlOMuweSKQs3Ta2I8uZMRDQ
+         DzZmU/xYIgo3R8A5k9LL7slUFvZKbymy1yF2fnJsI66gL3W6LeOjBrfvl1KJgpXQX5
+         nSJcdfGvzbEURd+9gsaz7bBhh67/7aWg8s+4mZ88fdn3uEPcpdIu/xobkUWIRlVfOC
+         gTzA+ivgpm31r4/V015UpI3LPSYm/65ojfpcOlB1/wL41umGJpyGFH0GL8G52I1CFD
+         VlvvaXyRyWy0IiN7eAKDvkX3WW58s1M4bZ4mYjbMAWVSdhF3T1c1hqUlCdN2+GLEux
+         dAlFW2HiUOm9w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lv Ruyi <lv.ruyi@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>, nick.child@ibm.com,
-        maz@kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 4.19 12/15] powerpc/xics: fix refcount leak in icp_opal_init()
-Date:   Wed,  1 Jun 2022 09:59:47 -0400
-Message-Id: <20220601135951.2005085-12-sashal@kernel.org>
+Cc:     Peng Wu <wupeng58@huawei.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>,
+        liviu.dudau@arm.com, sudeep.holla@arm.com,
+        lorenzo.pieralisi@arm.com, linux@armlinux.org.uk,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 4.19 07/15] ARM: versatile: Add missing of_node_put in dcscb_init
+Date:   Wed,  1 Jun 2022 09:59:42 -0400
+Message-Id: <20220601135951.2005085-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135951.2005085-1-sashal@kernel.org>
 References: <20220601135951.2005085-1-sashal@kernel.org>
@@ -53,34 +55,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+From: Peng Wu <wupeng58@huawei.com>
 
-[ Upstream commit 5dd9e27ea4a39f7edd4bf81e9e70208e7ac0b7c9 ]
+[ Upstream commit 23b44f9c649bbef10b45fa33080cd8b4166800ae ]
 
-The of_find_compatible_node() function returns a node pointer with
-refcount incremented, use of_node_put() on it when done.
+The device_node pointer is returned by of_find_compatible_node
+with refcount incremented. We should use of_node_put() to avoid
+the refcount leak.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220402013419.2410298-1-lv.ruyi@zte.com.cn
+Signed-off-by: Peng Wu <wupeng58@huawei.com>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Link: https://lore.kernel.org/r/20220428230356.69418-1-linus.walleij@linaro.org'
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/sysdev/xics/icp-opal.c | 1 +
+ arch/arm/mach-vexpress/dcscb.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/arch/powerpc/sysdev/xics/icp-opal.c b/arch/powerpc/sysdev/xics/icp-opal.c
-index e3e52cf035a9..672d8aedae12 100644
---- a/arch/powerpc/sysdev/xics/icp-opal.c
-+++ b/arch/powerpc/sysdev/xics/icp-opal.c
-@@ -199,6 +199,7 @@ int icp_opal_init(void)
- 
- 	printk("XICS: Using OPAL ICP fallbacks\n");
- 
-+	of_node_put(np);
- 	return 0;
- }
- 
+diff --git a/arch/arm/mach-vexpress/dcscb.c b/arch/arm/mach-vexpress/dcscb.c
+index ee2a0faafaa1..aaade91f6551 100644
+--- a/arch/arm/mach-vexpress/dcscb.c
++++ b/arch/arm/mach-vexpress/dcscb.c
+@@ -146,6 +146,7 @@ static int __init dcscb_init(void)
+ 	if (!node)
+ 		return -ENODEV;
+ 	dcscb_base = of_iomap(node, 0);
++	of_node_put(node);
+ 	if (!dcscb_base)
+ 		return -EADDRNOTAVAIL;
+ 	cfg = readl_relaxed(dcscb_base + DCS_CFG_R);
 -- 
 2.35.1
 
