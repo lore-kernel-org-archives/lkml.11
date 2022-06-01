@@ -2,50 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAF36C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:09:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C95DCCA468
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:10:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354653AbiFAOJt (ORCPT
+        id S1354682AbiFAOJz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:09:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50672 "EHLO
+        Wed, 1 Jun 2022 10:09:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354821AbiFAOFP (ORCPT
+        with ESMTP id S1354888AbiFAOFT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:05:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A6A3AE273;
-        Wed,  1 Jun 2022 06:59:13 -0700 (PDT)
+        Wed, 1 Jun 2022 10:05:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 222168DDFA;
+        Wed,  1 Jun 2022 06:59:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AF26A615BF;
-        Wed,  1 Jun 2022 13:59:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE46CC385A5;
-        Wed,  1 Jun 2022 13:59:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BE572B81B08;
+        Wed,  1 Jun 2022 13:58:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79033C34119;
+        Wed,  1 Jun 2022 13:58:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091952;
-        bh=dkX+/UPNVvWPNrpfYZLbW4qRgBCVg3RB4nxtPgNbhZs=;
+        s=k20201202; t=1654091899;
+        bh=KJhUKllErRJpBntBCZwKFWW3K3q4jqc9MvCVLYA5Vgo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QuPjMsu+w3l1kpwK2ymK63LkwRIGIfyLIOdjOOOS8GE5As8yvTVj6i5VaFkVFQbbF
-         EN9QztPkC+u/g6vjLC2fXvpqY9OM3tbeMqdSBiPK/U5/BM+pxz61wXDy15isFJwp3H
-         3XeXRrevBNqsIVaGzZ7trmSnjnnyE6pyow/NwlTouznKbpoi7aRcpvYkZZGb1plTUw
-         TtcdnQ1/o117YheOlrWL7YCb9bPGnrSbs10jme3Qlr8p9mMhpxU6SFhbonJIiw/Uo0
-         NKyOhe9lAByLdCYMxAuKdBMHRMfI59bCqdmfK+glDalN6fzlKAxKtcuaGazQVMFqw5
-         7Y7DSmT1RSG6g==
+        b=Awmyt1LQVO1oDLnI885ctGjxTdFcvB7CLgBJtQrWs4ZBLKmuOcPDfSeavtF6WShA2
+         LP6XyhK/niAcE2+buwOM969eTvqFgRFcWGyHaQCsyMRLNdPQ6C6VObWp7kMUWMBore
+         p4WD++Gl0lGofyWp4EW7SnddTUjddZV+ziJszZaFMMr+QkH/5uLhMkMF/9nGPkOXBK
+         iksSUo6UPkVUeqFFJj+neOPIIOgL8a3ZpCexzcPYbaAS/1q0kxFSAvuDHfkg4/Yu/y
+         CL+s8+B6aY8g8EUvDhDTGn3mmlH2hDoZolmXNKQjWDXnogqY825BHzqehaKYPfb73w
+         bLkxUNOsvdg7w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Marc Zyngier <maz@kernel.org>, Joey Gouly <joey.gouly@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Sasha Levin <sashal@kernel.org>, will@kernel.org,
-        alexandru.elisei@arm.com, broonie@kernel.org, mark.rutland@arm.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.4 05/20] arm64: Expand ESR_ELx_WFx_ISS_TI to match its ARMv8.7 definition
-Date:   Wed,  1 Jun 2022 09:58:47 -0400
-Message-Id: <20220601135902.2004823-5-sashal@kernel.org>
+Cc:     Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 11/26] selftests/resctrl: Change the default limited time to 120 seconds
+Date:   Wed,  1 Jun 2022 09:57:44 -0400
+Message-Id: <20220601135759.2004435-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220601135902.2004823-1-sashal@kernel.org>
-References: <20220601135902.2004823-1-sashal@kernel.org>
+In-Reply-To: <20220601135759.2004435-1-sashal@kernel.org>
+References: <20220601135759.2004435-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,51 +55,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Zyngier <maz@kernel.org>
+From: Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>
 
-[ Upstream commit 6a437208cb942a2dd98f7e1c3fd347ed3d425ffc ]
+[ Upstream commit e2e3fb6ef0d6548defbe0be6e092397aaa92f3a1 ]
 
-Starting with FEAT_WFXT in ARMv8.7, the TI field in the ISS
-that is reported on a WFx trap is expanded by one bit to
-allow the description of WFET and WFIT.
+When testing on a Intel(R) Xeon(R) Gold 6254 CPU @ 3.10GHz the resctrl
+selftests fail due to timeout after exceeding the default time limit of
+45 seconds. On this system the test takes about 68 seconds.
+Since the failing test by default accesses a fixed size of memory, the
+execution time should not vary significantly between different environment.
+A new default of 120 seconds should be sufficient yet easy to customize
+with the introduction of the "settings" file for reference.
 
-Special care is taken to exclude the WFxT bit from the mask
-used to match WFI so that it also matches WFIT when trapped from
-EL0.
-
-Reviewed-by: Joey Gouly <joey.gouly@arm.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Acked-by: Catalin Marinas <catalin.marinas@arm.com>
-Link: https://lore.kernel.org/r/20220419182755.601427-2-maz@kernel.org
+Reviewed-by: Reinette Chatre <reinette.chatre@intel.com>
+Reviewed-by: Fenghua Yu <fenghua.yu@intel.com>
+Signed-off-by: Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/include/asm/esr.h | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ tools/testing/selftests/resctrl/settings | 3 +++
+ 1 file changed, 3 insertions(+)
+ create mode 100644 tools/testing/selftests/resctrl/settings
 
-diff --git a/arch/arm64/include/asm/esr.h b/arch/arm64/include/asm/esr.h
-index cb29253ae86b..030c787a063e 100644
---- a/arch/arm64/include/asm/esr.h
-+++ b/arch/arm64/include/asm/esr.h
-@@ -128,7 +128,8 @@
- #define ESR_ELx_CV		(UL(1) << 24)
- #define ESR_ELx_COND_SHIFT	(20)
- #define ESR_ELx_COND_MASK	(UL(0xF) << ESR_ELx_COND_SHIFT)
--#define ESR_ELx_WFx_ISS_TI	(UL(1) << 0)
-+#define ESR_ELx_WFx_ISS_TI	(UL(3) << 0)
-+#define ESR_ELx_WFx_ISS_WFxT	(UL(2) << 0)
- #define ESR_ELx_WFx_ISS_WFI	(UL(0) << 0)
- #define ESR_ELx_WFx_ISS_WFE	(UL(1) << 0)
- #define ESR_ELx_xVC_IMM_MASK	((1UL << 16) - 1)
-@@ -141,7 +142,8 @@
- #define DISR_EL1_ESR_MASK	(ESR_ELx_AET | ESR_ELx_EA | ESR_ELx_FSC)
- 
- /* ESR value templates for specific events */
--#define ESR_ELx_WFx_MASK	(ESR_ELx_EC_MASK | ESR_ELx_WFx_ISS_TI)
-+#define ESR_ELx_WFx_MASK	(ESR_ELx_EC_MASK |			\
-+				 (ESR_ELx_WFx_ISS_TI & ~ESR_ELx_WFx_ISS_WFxT))
- #define ESR_ELx_WFx_WFI_VAL	((ESR_ELx_EC_WFx << ESR_ELx_EC_SHIFT) |	\
- 				 ESR_ELx_WFx_ISS_WFI)
- 
+diff --git a/tools/testing/selftests/resctrl/settings b/tools/testing/selftests/resctrl/settings
+new file mode 100644
+index 000000000000..a383f3d4565b
+--- /dev/null
++++ b/tools/testing/selftests/resctrl/settings
+@@ -0,0 +1,3 @@
++# If running time is longer than 120 seconds when new tests are added in
++# the future, increase timeout here.
++timeout=120
 -- 
 2.35.1
 
