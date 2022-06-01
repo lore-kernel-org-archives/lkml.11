@@ -2,147 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA4A2C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:14:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED9C9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:15:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353151AbiFANOv (ORCPT
+        id S1353154AbiFANPS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 09:14:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34120 "EHLO
+        Wed, 1 Jun 2022 09:15:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353147AbiFANOt (ORCPT
+        with ESMTP id S1353201AbiFANPK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 09:14:49 -0400
-Received: from APC01-TYZ-obe.outbound.protection.outlook.com (mail-tyzapc01on2100.outbound.protection.outlook.com [40.107.117.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1178C3CFDC
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 06:14:45 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FNF8/Xdhh8geNu2rWJlGa8B8lLtHyEGK9QbtHq2gA2nRPsFxZxgG4Gd6HWBmBJav8MuCM6z3eCbM72oIGd/W4QDslKw7TSyU2Y0DUnhgQjbJoEzzNTg1HJCTVJ60mb6OS2CpHM4eCWLSSF6rYdFlx1BHc+prOYmjMe7hur2UFZza3iaSeYq+UIWQ542KmpVRnxeFlPvHTKLEs9zC/lujZngk/a3uF9osOpanSOTUsep9qlUSxmEBg9/bTRJULhtXc4JrhjTGqE1xC6OlhIBNSBhYabVhRuZbWtyo+PhHuHAyTZl3BJxU2ckv55L6b+TuATAw0YUJSvuckFLAWSDO7Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=kHTah85rWBOUbG9SckPzdADENiGKeLbQF4354TiG8nM=;
- b=YZUNKutyt79/X355IgTLTxqEz1jIjdw0CHyEJ4nP+VLXauP+fvNs4unbN7dubnXDCl4z+5PiZmqSZhcnW60KizX+LlJ40bR9t4yuEd5O42svnMIetHxUwd55z3H0eBP/WHw8vkQ84KjT/bj+CJFwjSAlj+ukTORbyMXoltOso7qqPNSWGEUOSLlkR+JSAKxU10dsGQqR5FIFkD924CNH90w5mvXCmsr1f+0g2W6oppuqNLn/eajxjQTif6x/NzR5uqJGGaReIvTAlFsCFJ+20FIrwjmXFvAqTVh2caOdySV9cTrcyJZ227Jf2Io/FM1s4m0DoVfjDNIVmNeir2QVJg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
- dkim=pass header.d=vivo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
- s=selector2-vivo0-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kHTah85rWBOUbG9SckPzdADENiGKeLbQF4354TiG8nM=;
- b=ei1rT3PBiLpw+wrqKXAwbVWCwINeNHutalH3UlR2u4wGI3/qsOGIUIbGTSlP54f8Vic58sdv1vVw58tOgyZsKfDQd3MR9zmZjIVIZV4C1oj5ranPjXczfpe1ov27va0NwRF21t26j4WmtSLCaZXg4uL02/gvcoQVK/bAX4W75H4=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vivo.com;
-Received: from TYZPR06MB4173.apcprd06.prod.outlook.com (2603:1096:400:26::14)
- by SG2PR06MB3547.apcprd06.prod.outlook.com (2603:1096:4:9a::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.16; Wed, 1 Jun
- 2022 13:14:42 +0000
-Received: from TYZPR06MB4173.apcprd06.prod.outlook.com
- ([fe80::a92b:6d92:5ad9:febb]) by TYZPR06MB4173.apcprd06.prod.outlook.com
- ([fe80::a92b:6d92:5ad9:febb%9]) with mapi id 15.20.5314.012; Wed, 1 Jun 2022
- 13:14:42 +0000
-From:   Yihao Han <hanyihao@vivo.com>
-To:     Shengjiu Wang <shengjiu.wang@gmail.com>,
-        Xiubo Li <Xiubo.Lee@gmail.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Nicolin Chen <nicoleotsuka@gmail.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        alsa-devel@alsa-project.org, linuxppc-dev@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Yihao Han <hanyihao@vivo.com>
-Subject: [PATCH] ASoC: fsl: Check before clk_put() not needed
-Date:   Wed,  1 Jun 2022 06:14:29 -0700
-Message-Id: <20220601131429.9794-1-hanyihao@vivo.com>
-X-Mailer: git-send-email 2.17.1
-Content-Type: text/plain
-X-ClientProxiedBy: HK2PR02CA0149.apcprd02.prod.outlook.com
- (2603:1096:202:16::33) To TYZPR06MB4173.apcprd06.prod.outlook.com
- (2603:1096:400:26::14)
+        Wed, 1 Jun 2022 09:15:10 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A71F23D491;
+        Wed,  1 Jun 2022 06:15:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654089307; x=1685625307;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=u7ZLlN9ab0mHsIRqx2mjBaMaUlNGl85e+RLEouUCsbM=;
+  b=DXOBvjMofAJgjYBTectnfjtdPPCoXsdS7yGTXd5pB8VFI36O5DXyZ+aF
+   N5cU8v3E90nd+sFkDV4PtROfcdSjsu0ONoxrwFSSzMnIcEFf9sA0Z6fpe
+   091WKidcAF6/oetMfNSZRWmtAQnE8obi8tIwdGWr+Wyf4VRBDwHplQcBS
+   xNwcjzz32lmNo3nHQt0zAgUoZIlK9vkSBf4I790KXwyIZ9mBnKnXJZLB+
+   QIBqsOlMLN7Rvx9R9lgmgnyN8Q0EhQJeMDMgV1n/n7IZcVcBSeYNu0954
+   JUXvzO7Wa3BPBE6RpYjSBPuDN5ID7CcHaNemNn55pvh+AUmTg++YcRN/e
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10365"; a="273151672"
+X-IronPort-AV: E=Sophos;i="5.91,268,1647327600"; 
+   d="scan'208";a="273151672"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 06:15:07 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,268,1647327600"; 
+   d="scan'208";a="581576162"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by fmsmga007.fm.intel.com with ESMTP; 01 Jun 2022 06:15:02 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nwOBi-00040M-5B;
+        Wed, 01 Jun 2022 13:15:02 +0000
+Date:   Wed, 1 Jun 2022 21:15:00 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>, djakov@kernel.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, festevam@gmail.com,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        abel.vesa@nxp.com, abailon@baylibre.com, l.stach@pengutronix.de,
+        laurent.pinchart@ideasonboard.com, marex@denx.de,
+        paul.elder@ideasonboard.com, Markus.Niebel@ew.tq-group.com,
+        aford173@gmail.com
+Cc:     kbuild-all@lists.01.org, kernel@pengutronix.de,
+        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-imx@nxp.com, Peng Fan <peng.fan@nxp.com>
+Subject: Re: [PATCH 2/8] interconnect: add device managed bulk API
+Message-ID: <202206012137.3VySlLwf-lkp@intel.com>
+References: <20220601094156.3388454-3-peng.fan@oss.nxp.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 17ff8070-a217-49eb-6ee0-08da43d0b072
-X-MS-TrafficTypeDiagnostic: SG2PR06MB3547:EE_
-X-Microsoft-Antispam-PRVS: <SG2PR06MB354785F5FBD62DB0AB30011AA2DF9@SG2PR06MB3547.apcprd06.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: VZ8+WBQfRSdqCF0AE2jHeMWUQ95LpSFSvFIPhOlg96seR7LquK3yoc7A+Uj6BbYtnUgbOXd3q2fn3AhUUBgRP+1ehUe9e0pGxpS9TobSRP5uEEpqLqypbJxs0WpbWA/YhXKyoOAt8vDizptTpCbZQ2ue0Wb+CdlsiHoSR09l1C/kQADe76yV5mfodXIm2degVDNWvGDo6Hzci/egl79Supb3e6m6PG+e018dPpGzERl5gRfA6TG+emM5ACDyiPakLXeMCD+uf42LP2h2uFl1Ab+MLQBHeGjoydrt36xyon4IjxpM0OvC3FkTo44+ueOWAunih6cHFYpEuHtoa8RlS8bWulz/BEClNnMgfp8gHmY0135gDz2UAnWbT1MTKe/Azlubc4ayqYWl5a/TZGoOJf82j7JosTXmQ4qqvPfeJyd/gE2Yx4Klr+JlemPEpFq3z4IXCrYYQBsK7wP+qrQAIH41YC0G713L/h2XctYk6Mc4CxtQE/sSlNh9fBuHGtTffrF9n/mZqiQ+EYOFB/UAK5leu/z2ydcdI6tcsd9Qwg7WExCEyIY5ANk9jf1CJXr55SIs5x9hs3zaV1lVp3bhwEtkC6O5qWUqjS7qcuDuDM4o45PpWgmksN11IklNOIvtbdz0x05IUlHbHbRb8xemy5jYF0Kph5tO/tE7L/ucX9SmzfIGi3z2qgERAQD/mPIvboL3bIjU4kF3NYjhhbnP++ZFxFLLAKLd50Ux4siONIA=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYZPR06MB4173.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(36756003)(110136005)(316002)(66556008)(66476007)(83380400001)(8676002)(66946007)(38350700002)(4326008)(921005)(38100700002)(7416002)(4744005)(107886003)(6486002)(86362001)(186003)(8936002)(6512007)(26005)(5660300002)(52116002)(2906002)(6666004)(6506007)(1076003)(2616005)(508600001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?J6uSXer8Ee5OJP9Y7uettXELyc6FTd+BE0rI1XDYyBdRmLSTl5CeIeNDyfMt?=
- =?us-ascii?Q?peecR2LRLrL22V4I3gZavcWd/6+TyNdCRZGNhMqyU/OxMEilnnsh9lKtxQZC?=
- =?us-ascii?Q?S/x0U6qMHbHpavh8CCGTZiUdkcNSWQzwWFcaQbqA7oS83u4hxI/VYin1P62a?=
- =?us-ascii?Q?K88HcJ/O91u0yHw4dEtjg0o5oADVFtBaOT10oX2OHQg9HS5Of3XhsjFvZKDN?=
- =?us-ascii?Q?v/ipZEVYAj0T/FihebMY2l97EQLY7d6SDCcPNdSCmH4PGh3wT5BCOUcWeIOW?=
- =?us-ascii?Q?zbVDHAvIotmNclpAVTZddLSQ4giA71RjWExibKVppOHGCplSOQmd3pzbsCnC?=
- =?us-ascii?Q?HS6WjVXdmttxmrIWZxnbkwQWT2irwp+csyjyLr/5q+BujmbwXMTFIkXn21zv?=
- =?us-ascii?Q?lx7Sl11cvnMh00c7MILkqHbitfhDBV6CdlkukH4Dj2Jyw+9JYfQ8O5SpKuoH?=
- =?us-ascii?Q?Bxx6RZE40V6CHkn1Hgj4BXUhD4LaSt7UipUDnsgk0gkZnnMmJ/Pg5Uf+VJF8?=
- =?us-ascii?Q?SU3lJrH97PUgWXNqOwtZNEwoabH4am0NJgiUW7yJoDH0GKw1to/o0dnot/NF?=
- =?us-ascii?Q?s0nxhkiWAjqC3xsGjaWQAbgyEYctv93SM6cIlx3b/2k+mK42gf2p5oCfyp1v?=
- =?us-ascii?Q?OMwEsqEMSPe3W3Gf/GRIjmr75p0JFRoGlzS0Ixb4D49Q9DmzX44fnOzZcZo/?=
- =?us-ascii?Q?nNQe5a0dYVnMBwxAH7X/YfdNVpSU472mTsorBqtuXFxq86dC239yw+hVne5v?=
- =?us-ascii?Q?IfbRP6Yipg6BfrlC/AhHyaEVz9zP7BQxAcmiMbJYS1ySKgVjEsSObF3t+qNf?=
- =?us-ascii?Q?XDw1d1PnUIF4bGAsA0ElDzzziArQqVVP3uDucqnSq6ANlOtrtfiPYHVVmdPM?=
- =?us-ascii?Q?wyOeX2g6t+6hdV40qIPCkzmTvbGHp4c668b3wt1Rl8Ij12mWYFHr1qfSEnb/?=
- =?us-ascii?Q?Dx8slLHIfrR2qp4yhGsj7gGG2kwOj8sbP/U5l7s6MZ0d/XEHlTz7weJLkzDQ?=
- =?us-ascii?Q?+SHu3rUbKpbGlhEEiTOGEuxcynEGtuM3uY/8VJRB2HByrWdStg17lTzlSxV6?=
- =?us-ascii?Q?pxEaEYGCNaM+iGF3J95TiBSwqyDJ9JN7AWE5glcZ5La9lfAhzuhhohzrfP2L?=
- =?us-ascii?Q?v2G1GMSakG++IPLd6+T/WCweMtBO4NNJya5OW5e2LbFjOe9WwMWnyo7Rv9bk?=
- =?us-ascii?Q?5ZgMwgkMgHU+gF/eODcjzStbCp49hs2DoGX/4/tR3mFlOh4j9dCPqt+sTPrf?=
- =?us-ascii?Q?D2vdjt07S2MnXKIt+0aQ+l2+5zuDkr4scsbJWVkwWPr8KTlaYZaysrlXAJ4m?=
- =?us-ascii?Q?/te2dVDRIYPHTQYCQZtRZZ+YJid3JtCjY9EE9UXSw/KFZ4pu8Qo0vi9CFjmT?=
- =?us-ascii?Q?0BN1k76LPXKjx+HCcocc48zqCQyMstAf2E9Cw14oB7DtvcB5LJcGwrckeBHi?=
- =?us-ascii?Q?TJcH7suGtByzeQ7HAiwVgTxnUrPeMdb/X7hvIu1v9DSA5b4+M7nxO3bbdYjM?=
- =?us-ascii?Q?N/pjfVMYE2tLY41HvFIKg0bnxa7wlbnhh/Fds8sQRG4Z0H01X6YmlP/WATVW?=
- =?us-ascii?Q?2H8o/sarqDRIe4a5/zuMnr5rYGvjMSBH4j66gA9HbG3H2hFyiceQv5GECTZb?=
- =?us-ascii?Q?/ZArfaNrLW0qiUrto7P6r/cGx2Q/3lbYWWjO2y/IrY5NM/TxoMWn7couBoem?=
- =?us-ascii?Q?M9FnVAfE81h2tdeEgqj1s62LO4TN7QiWn+7IXQFVqSYcIw4Pk9BETU8VfjDx?=
- =?us-ascii?Q?lZUU0sz6uQ=3D=3D?=
-X-OriginatorOrg: vivo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 17ff8070-a217-49eb-6ee0-08da43d0b072
-X-MS-Exchange-CrossTenant-AuthSource: TYZPR06MB4173.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jun 2022 13:14:42.0615
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: KXfDyTAxSZmQpuDD+k/8X51OE7eijmHXAt83Z22vgtW+zJ5XQvm5vjYaig6gFEFK1ahoPetZE7wQ20PaVjXYWg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SG2PR06MB3547
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220601094156.3388454-3-peng.fan@oss.nxp.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-clk_put() already checks the clk ptr using !clk and IS_ERR()
-so there is no need to check it again before calling it.
+Hi "Peng,
 
-Signed-off-by: Yihao Han <hanyihao@vivo.com>
----
- sound/soc/fsl/imx-sgtl5000.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+Thank you for the patch! Yet something to improve:
 
-diff --git a/sound/soc/fsl/imx-sgtl5000.c b/sound/soc/fsl/imx-sgtl5000.c
-index 580a0d963f0e..16a281820186 100644
---- a/sound/soc/fsl/imx-sgtl5000.c
-+++ b/sound/soc/fsl/imx-sgtl5000.c
-@@ -185,8 +185,7 @@ static int imx_sgtl5000_probe(struct platform_device *pdev)
- put_device:
- 	put_device(&codec_dev->dev);
- fail:
--	if (data && !IS_ERR(data->codec_clk))
--		clk_put(data->codec_clk);
-+	clk_put(data->codec_clk);
- 	of_node_put(ssi_np);
- 	of_node_put(codec_np);
- 
+[auto build test ERROR on shawnguo/for-next]
+[also build test ERROR on robh/for-next linus/master v5.18 next-20220601]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Peng-Fan-OSS/interconnect-support-i-MX8MP/20220601-174431
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/shawnguo/linux.git for-next
+config: x86_64-kexec (https://download.01.org/0day-ci/archive/20220601/202206012137.3VySlLwf-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-1) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/23ecbba75b21962f25975cb014cf981a0420dae1
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Peng-Fan-OSS/interconnect-support-i-MX8MP/20220601-174431
+        git checkout 23ecbba75b21962f25975cb014cf981a0420dae1
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   ld: drivers/opp/cpu.o: in function `devm_of_icc_bulk_get':
+>> cpu.c:(.text+0x2ad): multiple definition of `devm_of_icc_bulk_get'; drivers/opp/core.o:core.c:(.text+0xa4a): first defined here
+   ld: drivers/opp/debugfs.o: in function `devm_of_icc_bulk_get':
+   debugfs.c:(.text+0x13c): multiple definition of `devm_of_icc_bulk_get'; drivers/opp/core.o:core.c:(.text+0xa4a): first defined here
+
 -- 
-2.17.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
