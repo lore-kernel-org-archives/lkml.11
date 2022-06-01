@@ -2,510 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D9FCC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 20:46:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0949CCA473
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 20:46:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229875AbiFAUql (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 16:46:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43124 "EHLO
+        id S230078AbiFAUqp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 16:46:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229825AbiFAUpz (ORCPT
+        with ESMTP id S229943AbiFAUo1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 16:45:55 -0400
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB3991DAE5D
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 13:35:37 -0700 (PDT)
-Received: by mail-lj1-x231.google.com with SMTP id e4so3202083ljb.13
-        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 13:35:37 -0700 (PDT)
+        Wed, 1 Jun 2022 16:44:27 -0400
+Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75AD32383DA
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 13:29:42 -0700 (PDT)
+Received: by mail-oi1-x230.google.com with SMTP id k187so4162902oif.1
+        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 13:29:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=xmbW7WJkCem4+kUpKbTnZHK0iD3Xw0y/dMJoplQapu0=;
-        b=yuFLQ+b1M0RNiY/Kmj9XG/hn4fiwKYuRugNqrFAkrwIuQ7oZetzaAp7hAavUOVFySd
-         JNKM1Mo12ONhXxaLdK6Yvrl6E6wUtoAPHmmH4B/MElFRVjkkFm2TSTFOAptFWAZU6t8K
-         rnskvp/ZOcqZ8FWvdxiLV8tLCv438Ra96cRidT6IO8fiqtisWHv5KcPcOQy4z441kGkH
-         hW/c7dUqGhcjKbQuyYgQJCBXH/Wm4yXfihD4WZMrIWQw4jxApPdXlv5X2JqBdFQcCbrB
-         AjG0aWBZUDXoVhFCvEVyj47fqhbbwxKWLqMeDJb2e6feDXJIpaOLk3NEpYKq27btwjEe
-         j/oQ==
+        d=broadcom.com; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version;
+        bh=nYwhXL0T2ODnS+1GX4ztX9T7qNRYGKmin9ME/ehLo/o=;
+        b=CuqVmXXRVMcMwz39X014iHp70UvuiaTWtDSSmpyYfQ/d5nVLlZmB5l/VhxiDngi+Fh
+         WO0jSw7C8OL+uFh+olkxc4TWKoKSMEMHjboF0eY4YMRodNtj1OA2EXnW5jLwyFrmbv36
+         scPYanQGuckmyTSNBVERka2K8kyZRUI8aU3rk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=xmbW7WJkCem4+kUpKbTnZHK0iD3Xw0y/dMJoplQapu0=;
-        b=pTgkvq5CsfP0Nqj3uducpKTSG6FSX/ALcfkg0MeVJ4Q1/JegTOqFJNIeJ3iBNEaUxZ
-         mFGmAsEelhcRoeekg9Xyayatot9oVQdzm3sXQ+hfQGhJpUxE7maL4O0eaGPcHhnSbtb6
-         eCvKnG9dZD/EIUY1Fmabep4VXXgEsTNhTmVyIa2UvXohP0qLRW1BR5zE0kNgSwTVksbw
-         qDyCtdXDUEDIkGNqkupfRcJ5PvgJT5IkD0x4YaG6vmgsEQFsIKd9V1b2B4+dH2A4Dy95
-         c1AWLR7JPGiYlPm5tmedU2wt3PjOf5PrZEejU64hvHEWRCVbaeFnIHXSjVR+fXyWPuzI
-         gWaQ==
-X-Gm-Message-State: AOAM530VkL8aMC5qXYAC+Rb2iO3/vJbtOenf4H7cSbRQSvQhgRIzXa+2
-        CooPDLqq5uGwAekGrN4kBjcH4Q==
-X-Google-Smtp-Source: ABdhPJxxBBsKT0QTjCQaO+e2+HPqW0vah2JgUjDHks9kzC72xlz78kNpHWQGJne4uRKuevvjP+u9+g==
-X-Received: by 2002:a05:651c:39c:b0:254:20d9:855a with SMTP id e28-20020a05651c039c00b0025420d9855amr18816566ljp.329.1654115735975;
-        Wed, 01 Jun 2022 13:35:35 -0700 (PDT)
-Received: from [192.168.1.211] ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id b8-20020ac25e88000000b004778632bff6sm507565lfq.59.2022.06.01.13.35.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Jun 2022 13:35:35 -0700 (PDT)
-Message-ID: <83ef6ca6-d8b2-0574-1cc8-a3873f29be8f@linaro.org>
-Date:   Wed, 1 Jun 2022 23:35:34 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v3 2/4] drm/dp: Add callbacks to make using DP AUX bus
- properly easier
-Content-Language: en-GB
-To:     Douglas Anderson <dianders@chromium.org>,
-        dri-devel@lists.freedesktop.org
-Cc:     Hsin-Yi Wang <hsinyi@chromium.org>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Philip Chen <philipchen@chromium.org>,
-        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        Stephen Boyd <swboyd@chromium.org>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Lyude Paul <lyude@redhat.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version;
+        bh=nYwhXL0T2ODnS+1GX4ztX9T7qNRYGKmin9ME/ehLo/o=;
+        b=rWzp6rGup/u16zlnwzKi69u2jyc8h83FuCslzZsGtsccxcYIKpOuzxTanTWa6et0LJ
+         utqk5hAHLLqMBacj3H91+/tlDkdLK91V/aYRXFSMTOMWLXitGKmMvNMhoo5xLSpnn0ZM
+         O820PX3plN9sgDIHrxUYfqVyCVH79YDbmKCRDw+RhxbyZSPeHcPbrDFWtT1FmBm4Zt/L
+         QJWDGS9sspzmv7lqkBWMswFXLqX7OsSWeoqNPqq6kHRsXMTAg2inQWEeJI02TT60aJLf
+         8FkLd6Tmu3pSAW2evUpwlU0OviYWGv6KPD2i/jFevBSk2ObR6T9+FQ0EYLeDC70GJVsq
+         H0OA==
+X-Gm-Message-State: AOAM531lEcpv6w4jIRXCPgVydT0ViSgBGRaQmnIWl/fvdHe3VusoTA2W
+        ld+sAYKOkJx24cWCGPM7odzgJrDGTBOEaw==
+X-Google-Smtp-Source: ABdhPJwnR0St4e5dDnG+SpXdBVRA0fTjNx2euuFkEyiMajxuqvqP2cwXsOyHqK4c6AVvSMiKKKtXww==
+X-Received: by 2002:a17:90b:3c6:b0:1e2:e9fc:4e79 with SMTP id go6-20020a17090b03c600b001e2e9fc4e79mr20734332pjb.192.1654114804963;
+        Wed, 01 Jun 2022 13:20:04 -0700 (PDT)
+Received: from linuxpc-ThinkServer-TS140.dhcp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id i184-20020a6254c1000000b0051b6091c452sm1861376pfb.70.2022.06.01.13.20.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Jun 2022 13:20:04 -0700 (PDT)
+From:   Anand Gore <anand.gore@broadcom.com>
+To:     Linux ARM List <linux-arm-kernel@lists.infradead.org>
+Cc:     kursad.oney@broadcom.com, tomer.yacoby@broadcom.com,
+        William Zhang <william.zhang@broadcom.com>,
+        florian.fainelli@broadcom.com, joel.peshkin@broadcom.com,
+        samyon.furman@broadcom.com, dan.beygelman@broadcom.com,
+        Anand Gore <anand.gore@broadcom.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-References: <20220510192944.2408515-1-dianders@chromium.org>
- <20220510122726.v3.2.I4182ae27e00792842cb86f1433990a0ef9c0a073@changeid>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <20220510122726.v3.2.I4182ae27e00792842cb86f1433990a0ef9c0a073@changeid>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: [PATCH v3 2/3] dt-bindings: arm64: add BCM6858 soc
+Date:   Wed,  1 Jun 2022 13:19:57 -0700
+Message-Id: <20220601131944.v3.2.I2bc1418dd24a902e941c7073bbadab00568b4f5d@changeid>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220601201958.3072173-1-anand.gore@broadcom.com>
+References: <20220601201958.3072173-1-anand.gore@broadcom.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="000000000000c36fb905e068bf80"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 10/05/2022 22:29, Douglas Anderson wrote:
-> As talked about in this patch in the kerneldoc of
-> of_dp_aux_populate_ep_device() and also in the past in commit
-> a1e3667a9835 ("drm/bridge: ti-sn65dsi86: Promote the AUX channel to
-> its own sub-dev"), it can be difficult for eDP controller drivers to
-> know when the panel has finished probing when they're using
-> of_dp_aux_populate_ep_devices().
-> 
-> The ti-sn65dsi86 driver managed to solve this because it was already
-> broken up into a bunch of sub-drivers. That means we could solve the
-> problem there by adding a new sub-driver to get the panel. We could
-> use the traditional -EPROBE_DEFER retry mechansim to handle the case
-> where the panel hadn't probed yet.
-> 
-> In parade-ps8640 we didn't really solve this. The code just expects
-> the panel to be ready right away. While reviewing the code originally
-> I had managed to convince myself it was fine to just expect the panel
-> right away, but additional testing has shown that not to be the
-> case. We could fix parade-ps8640 like we did ti-sn65dsi86 but it's
-> pretty cumbersome (since we're not already broken into multiple
-> drivers) and requires a bunch of boilerplate code.
-> 
-> After discussion [1] it seems like the best solution for most people
-> is:
-> - Accept that there's always at most one device that will probe as a
->    result of the DP AUX bus (it may have sub-devices, but there will be
->    one device _directly_ probed).
-> - When that device finishes probing, we can just have a call back.
-> 
-> This patch implements that idea. We'll now take a callback as an
-> argument to the populate function. To make this easier to land in
-> pieces, we'll make wrappers for the old functions. The functions with
-> the new name (which make it clear that we only have one child) will
-> take the callback and the functions with the old name will temporarily
-> wrap.
-> 
-> [1] https://lore.kernel.org/r/CAD=FV=Ur3afHhsXe7a3baWEnD=MFKFeKRbhFU+bt3P67G0MVzQ@mail.gmail.com
-> 
-> Signed-off-by: Douglas Anderson <dianders@chromium.org>
+--000000000000c36fb905e068bf80
+Content-Transfer-Encoding: 8bit
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Add BCM6858 SOC device tree description to bcmbca binding document.
 
-> ---
-> 
-> Changes in v3:
-> - Don't call done_probing() if there are no children; return -ENODEV.
-> - Split out EXPORT_SYMBOL and kerneldoc fixes to its own patch.
-> - Used Dmitry's proposed name: of_dp_aux_populate_bus()
-> 
-> Changes in v2:
-> - Change to assume exactly one device.
-> - Have a probe callback instead of an extra sub device.
-> 
->   drivers/gpu/drm/display/drm_dp_aux_bus.c | 209 +++++++++++++++--------
->   include/drm/display/drm_dp_aux_bus.h     |  34 +++-
->   2 files changed, 168 insertions(+), 75 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/display/drm_dp_aux_bus.c b/drivers/gpu/drm/display/drm_dp_aux_bus.c
-> index 552f949cff59..f5741b45ca07 100644
-> --- a/drivers/gpu/drm/display/drm_dp_aux_bus.c
-> +++ b/drivers/gpu/drm/display/drm_dp_aux_bus.c
-> @@ -3,10 +3,10 @@
->    * Copyright 2021 Google Inc.
->    *
->    * The DP AUX bus is used for devices that are connected over a DisplayPort
-> - * AUX bus. The devices on the far side of the bus are referred to as
-> - * endpoints in this code.
-> + * AUX bus. The device on the far side of the bus is referred to as an
-> + * endpoint in this code.
->    *
-> - * Commonly there is only one device connected to the DP AUX bus: a panel.
-> + * There is only one device connected to the DP AUX bus: an eDP panel.
->    * Though historically panels (even DP panels) have been modeled as simple
->    * platform devices, putting them under the DP AUX bus allows the panel driver
->    * to perform transactions on that bus.
-> @@ -22,6 +22,11 @@
->   #include <drm/display/drm_dp_aux_bus.h>
->   #include <drm/display/drm_dp_helper.h>
->   
-> +struct dp_aux_ep_device_with_data {
-> +	struct dp_aux_ep_device aux_ep;
-> +	int (*done_probing)(struct drm_dp_aux *aux);
-> +};
-> +
->   /**
->    * dp_aux_ep_match() - The match function for the dp_aux_bus.
->    * @dev: The device to match.
-> @@ -48,6 +53,8 @@ static int dp_aux_ep_probe(struct device *dev)
->   {
->   	struct dp_aux_ep_driver *aux_ep_drv = to_dp_aux_ep_drv(dev->driver);
->   	struct dp_aux_ep_device *aux_ep = to_dp_aux_ep_dev(dev);
-> +	struct dp_aux_ep_device_with_data *aux_ep_with_data =
-> +		container_of(aux_ep, struct dp_aux_ep_device_with_data, aux_ep);
->   	int ret;
->   
->   	ret = dev_pm_domain_attach(dev, true);
-> @@ -56,7 +63,32 @@ static int dp_aux_ep_probe(struct device *dev)
->   
->   	ret = aux_ep_drv->probe(aux_ep);
->   	if (ret)
-> -		dev_pm_domain_detach(dev, true);
-> +		goto err_attached;
-> +
-> +	if (aux_ep_with_data->done_probing) {
-> +		ret = aux_ep_with_data->done_probing(aux_ep->aux);
-> +		if (ret) {
-> +			/*
-> +			 * The done_probing() callback should not return
-> +			 * -EPROBE_DEFER to us. If it does, we treat it as an
-> +			 * error. Passing it on as-is would cause the _panel_
-> +			 * to defer.
-> +			 */
-> +			if (ret == -EPROBE_DEFER) {
-> +				dev_err(dev,
-> +					"DP AUX done_probing() can't defer\n");
-> +				ret = -EINVAL;
-> +			}
-> +			goto err_probed;
-> +		}
-> +	}
-> +
-> +	return 0;
-> +err_probed:
-> +	if (aux_ep_drv->remove)
-> +		aux_ep_drv->remove(aux_ep);
-> +err_attached:
-> +	dev_pm_domain_detach(dev, true);
->   
->   	return ret;
->   }
-> @@ -122,7 +154,11 @@ ATTRIBUTE_GROUPS(dp_aux_ep_dev);
->    */
->   static void dp_aux_ep_dev_release(struct device *dev)
->   {
-> -	kfree(to_dp_aux_ep_dev(dev));
-> +	struct dp_aux_ep_device *aux_ep = to_dp_aux_ep_dev(dev);
-> +	struct dp_aux_ep_device_with_data *aux_ep_with_data =
-> +		container_of(aux_ep, struct dp_aux_ep_device_with_data, aux_ep);
-> +
-> +	kfree(aux_ep_with_data);
->   }
->   
->   static struct device_type dp_aux_device_type_type = {
-> @@ -136,12 +172,14 @@ static struct device_type dp_aux_device_type_type = {
->    * @dev: The device to destroy.
->    * @data: Not used
->    *
-> - * This is just used as a callback by of_dp_aux_depopulate_ep_devices() and
-> + * This is just used as a callback by of_dp_aux_depopulate_bus() and
->    * is called for _all_ of the child devices of the device providing the AUX bus.
->    * We'll only act on those that are of type "dp_aux_bus_type".
->    *
-> - * This function is effectively an inverse of what's in the loop
-> - * in of_dp_aux_populate_ep_devices().
-> + * This function is effectively an inverse of what's in
-> + * of_dp_aux_populate_bus(). NOTE: since we only populate one child
-> + * then it's expected that only one device will match all the "if" tests in
-> + * this function and get to the device_unregister().
->    *
->    * Return: 0 if no error or negative error code.
->    */
-> @@ -164,123 +202,150 @@ static int of_dp_aux_ep_destroy(struct device *dev, void *data)
->   }
->   
->   /**
-> - * of_dp_aux_depopulate_ep_devices() - Undo of_dp_aux_populate_ep_devices
-> - * @aux: The AUX channel whose devices we want to depopulate
-> + * of_dp_aux_depopulate_bus() - Undo of_dp_aux_populate_bus
-> + * @aux: The AUX channel whose device we want to depopulate
->    *
-> - * This will destroy all devices that were created
-> - * by of_dp_aux_populate_ep_devices().
-> + * This will destroy the device that was created
-> + * by of_dp_aux_populate_bus().
->    */
-> -void of_dp_aux_depopulate_ep_devices(struct drm_dp_aux *aux)
-> +void of_dp_aux_depopulate_bus(struct drm_dp_aux *aux)
->   {
->   	device_for_each_child_reverse(aux->dev, NULL, of_dp_aux_ep_destroy);
->   }
-> -EXPORT_SYMBOL_GPL(of_dp_aux_depopulate_ep_devices);
-> +EXPORT_SYMBOL_GPL(of_dp_aux_depopulate_bus);
->   
->   /**
-> - * of_dp_aux_populate_ep_devices() - Populate the endpoint devices on the DP AUX
-> - * @aux: The AUX channel whose devices we want to populate. It is required that
-> + * of_dp_aux_populate_bus() - Populate the endpoint device on the DP AUX
-> + * @aux: The AUX channel whose device we want to populate. It is required that
->    *       drm_dp_aux_init() has already been called for this AUX channel.
-> + * @done_probing: Callback functions to call after EP device finishes probing.
-> + *                Will not be called if there are no EP devices and this
-> + *                function will return -ENODEV.
->    *
-> - * This will populate all the devices under the "aux-bus" node of the device
-> - * providing the AUX channel (AKA aux->dev).
-> + * This will populate the device (expected to be an eDP panel) under the
-> + * "aux-bus" node of the device providing the AUX channel (AKA aux->dev).
->    *
->    * When this function finishes, it is _possible_ (but not guaranteed) that
-> - * our sub-devices will have finished probing. It should be noted that if our
-> - * sub-devices return -EPROBE_DEFER that we will not return any error codes
-> - * ourselves but our sub-devices will _not_ have actually probed successfully
-> - * yet. There may be other cases (maybe added in the future?) where sub-devices
-> - * won't have been probed yet when this function returns, so it's best not to
-> - * rely on that.
-> + * our sub-device will have finished probing. It should be noted that if our
-> + * sub-device returns -EPROBE_DEFER or is probing asynchronously for some
-> + * reason that we will not return any error codes ourselves but our
-> + * sub-device will _not_ have actually probed successfully yet.
-> + *
-> + * In many cases it's important for the caller of this function to be notified
-> + * when our sub device finishes probing. Our sub device is expected to be an
-> + * eDP panel and the caller is expected to be an eDP controller. The eDP
-> + * controller needs to be able to get a reference to the panel when it finishes
-> + * probing. For this reason the caller can pass in a function pointer that
-> + * will be called when our sub-device finishes probing.
->    *
->    * If this function succeeds you should later make sure you call
-> - * of_dp_aux_depopulate_ep_devices() to undo it, or just use the devm version
-> + * of_dp_aux_depopulate_bus() to undo it, or just use the devm version
->    * of this function.
->    *
-> - * Return: 0 if no error or negative error code.
-> + * Return: 0 if no error or negative error code; returns -ENODEV if there are
-> + *         no children. The done_probing() function won't be called in that
-> + *         case.
->    */
-> -int of_dp_aux_populate_ep_devices(struct drm_dp_aux *aux)
-> +int of_dp_aux_populate_bus(struct drm_dp_aux *aux,
-> +			   int (*done_probing)(struct drm_dp_aux *aux))
->   {
-> -	struct device_node *bus, *np;
-> +	struct device_node *bus = NULL, *np = NULL;
->   	struct dp_aux_ep_device *aux_ep;
-> +	struct dp_aux_ep_device_with_data *aux_ep_with_data;
->   	int ret;
->   
->   	/* drm_dp_aux_init() should have been called already; warn if not */
->   	WARN_ON_ONCE(!aux->ddc.algo);
->   
->   	if (!aux->dev->of_node)
-> -		return 0;
-> -
-> +		return -ENODEV;
->   	bus = of_get_child_by_name(aux->dev->of_node, "aux-bus");
->   	if (!bus)
-> -		return 0;
-> +		return -ENODEV;
->   
-> -	for_each_available_child_of_node(bus, np) {
-> -		if (of_node_test_and_set_flag(np, OF_POPULATED))
-> -			continue;
-> +	np = of_get_next_available_child(bus, NULL);
-> +	of_node_put(bus);
-> +	if (!np)
-> +		return -ENODEV;
->   
-> -		aux_ep = kzalloc(sizeof(*aux_ep), GFP_KERNEL);
-> -		if (!aux_ep)
-> -			continue;
-> -		aux_ep->aux = aux;
-> +	if (of_node_test_and_set_flag(np, OF_POPULATED)) {
-> +		dev_err(aux->dev, "DP AUX EP device already populated\n");
-> +		ret = -EINVAL;
-> +		goto err_did_get_np;
-> +	}
->   
-> -		aux_ep->dev.parent = aux->dev;
-> -		aux_ep->dev.bus = &dp_aux_bus_type;
-> -		aux_ep->dev.type = &dp_aux_device_type_type;
-> -		aux_ep->dev.of_node = of_node_get(np);
-> -		dev_set_name(&aux_ep->dev, "aux-%s", dev_name(aux->dev));
-> +	aux_ep_with_data = kzalloc(sizeof(*aux_ep_with_data), GFP_KERNEL);
-> +	if (!aux_ep_with_data) {
-> +		ret = -ENOMEM;
-> +		goto err_did_set_populated;
-> +	}
->   
-> -		ret = device_register(&aux_ep->dev);
-> -		if (ret) {
-> -			dev_err(aux->dev, "Failed to create AUX EP for %pOF: %d\n", np, ret);
-> -			of_node_clear_flag(np, OF_POPULATED);
-> -			of_node_put(np);
-> +	aux_ep_with_data->done_probing = done_probing;
->   
-> -			/*
-> -			 * As per docs of device_register(), call this instead
-> -			 * of kfree() directly for error cases.
-> -			 */
-> -			put_device(&aux_ep->dev);
-> +	aux_ep = &aux_ep_with_data->aux_ep;
-> +	aux_ep->aux = aux;
-> +	aux_ep->dev.parent = aux->dev;
-> +	aux_ep->dev.bus = &dp_aux_bus_type;
-> +	aux_ep->dev.type = &dp_aux_device_type_type;
-> +	aux_ep->dev.of_node = of_node_get(np);
-> +	dev_set_name(&aux_ep->dev, "aux-%s", dev_name(aux->dev));
->   
-> -			/*
-> -			 * Following in the footsteps of of_i2c_register_devices(),
-> -			 * we won't fail the whole function here--we'll just
-> -			 * continue registering any other devices we find.
-> -			 */
-> -		}
-> -	}
-> +	ret = device_register(&aux_ep->dev);
-> +	if (ret) {
-> +		dev_err(aux->dev, "Failed to create AUX EP for %pOF: %d\n", np, ret);
->   
-> -	of_node_put(bus);
-> +		/*
-> +		 * As per docs of device_register(), call this instead
-> +		 * of kfree() directly for error cases.
-> +		 */
-> +		put_device(&aux_ep->dev);
-> +
-> +		goto err_did_set_populated;
-> +	}
->   
->   	return 0;
-> +
-> +err_did_set_populated:
-> +	of_node_clear_flag(np, OF_POPULATED);
-> +
-> +err_did_get_np:
-> +	of_node_put(np);
-> +
-> +	return ret;
->   }
-> -EXPORT_SYMBOL_GPL(of_dp_aux_populate_ep_devices);
-> +EXPORT_SYMBOL_GPL(of_dp_aux_populate_bus);
->   
-> -static void of_dp_aux_depopulate_ep_devices_void(void *data)
-> +static void of_dp_aux_depopulate_bus_void(void *data)
->   {
-> -	of_dp_aux_depopulate_ep_devices(data);
-> +	of_dp_aux_depopulate_bus(data);
->   }
->   
->   /**
-> - * devm_of_dp_aux_populate_ep_devices() - devm wrapper for of_dp_aux_populate_ep_devices()
-> - * @aux: The AUX channel whose devices we want to populate
-> + * devm_of_dp_aux_populate_bus() - devm wrapper for of_dp_aux_populate_bus()
-> + * @aux: The AUX channel whose device we want to populate
-> + * @done_probing: Callback functions to call after EP device finishes probing.
-> + *                Will not be called if there are no EP devices and this
-> + *                function will return -ENODEV.
->    *
->    * Handles freeing w/ devm on the device "aux->dev".
->    *
-> - * Return: 0 if no error or negative error code.
-> + * Return: 0 if no error or negative error code; returns -ENODEV if there are
-> + *         no children. The done_probing() function won't be called in that
-> + *         case.
->    */
-> -int devm_of_dp_aux_populate_ep_devices(struct drm_dp_aux *aux)
-> +int devm_of_dp_aux_populate_bus(struct drm_dp_aux *aux,
-> +				int (*done_probing)(struct drm_dp_aux *aux))
->   {
->   	int ret;
->   
-> -	ret = of_dp_aux_populate_ep_devices(aux);
-> +	ret = of_dp_aux_populate_bus(aux, done_probing);
->   	if (ret)
->   		return ret;
->   
->   	return devm_add_action_or_reset(aux->dev,
-> -					of_dp_aux_depopulate_ep_devices_void,
-> -					aux);
-> +					of_dp_aux_depopulate_bus_void, aux);
->   }
-> -EXPORT_SYMBOL_GPL(devm_of_dp_aux_populate_ep_devices);
-> +EXPORT_SYMBOL_GPL(devm_of_dp_aux_populate_bus);
->   
->   int __dp_aux_dp_driver_register(struct dp_aux_ep_driver *drv, struct module *owner)
->   {
-> diff --git a/include/drm/display/drm_dp_aux_bus.h b/include/drm/display/drm_dp_aux_bus.h
-> index 4f19b20b1dd6..8a0a486383c5 100644
-> --- a/include/drm/display/drm_dp_aux_bus.h
-> +++ b/include/drm/display/drm_dp_aux_bus.h
-> @@ -44,9 +44,37 @@ static inline struct dp_aux_ep_driver *to_dp_aux_ep_drv(struct device_driver *dr
->   	return container_of(drv, struct dp_aux_ep_driver, driver);
->   }
->   
-> -int of_dp_aux_populate_ep_devices(struct drm_dp_aux *aux);
-> -void of_dp_aux_depopulate_ep_devices(struct drm_dp_aux *aux);
-> -int devm_of_dp_aux_populate_ep_devices(struct drm_dp_aux *aux);
-> +int of_dp_aux_populate_bus(struct drm_dp_aux *aux,
-> +			   int (*done_probing)(struct drm_dp_aux *aux));
-> +void of_dp_aux_depopulate_bus(struct drm_dp_aux *aux);
-> +int devm_of_dp_aux_populate_bus(struct drm_dp_aux *aux,
-> +				int (*done_probing)(struct drm_dp_aux *aux));
-> +
-> +/* Deprecated versions of the above functions. To be removed when no callers. */
-> +static inline int of_dp_aux_populate_ep_devices(struct drm_dp_aux *aux)
-> +{
-> +	int ret;
-> +
-> +	ret = of_dp_aux_populate_bus(aux, NULL);
-> +
-> +	/* New API returns -ENODEV for no child case; adapt to old assumption */
-> +	return (ret != -ENODEV) ? ret : 0;
-> +}
-> +
-> +static inline int devm_of_dp_aux_populate_ep_devices(struct drm_dp_aux *aux)
-> +{
-> +	int ret;
-> +
-> +	ret = devm_of_dp_aux_populate_bus(aux, NULL);
-> +
-> +	/* New API returns -ENODEV for no child case; adapt to old assumption */
-> +	return (ret != -ENODEV) ? ret : 0;
-> +}
-> +
-> +static inline void of_dp_aux_depopulate_ep_devices(struct drm_dp_aux *aux)
-> +{
-> +	of_dp_aux_depopulate_bus(aux);
-> +}
->   
->   #define dp_aux_dp_driver_register(aux_ep_drv) \
->   	__dp_aux_dp_driver_register(aux_ep_drv, THIS_MODULE)
+Signed-off-by: Anand Gore <anand.gore@broadcom.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
+---
 
+(no changes since v2)
+
+Changes in v2:
+- Remove extra empty lines
+- Simplify subject line
+
+ Documentation/devicetree/bindings/arm/bcm/brcm,bcmbca.yaml | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/arm/bcm/brcm,bcmbca.yaml b/Documentation/devicetree/bindings/arm/bcm/brcm,bcmbca.yaml
+index 24357cf09888..97e5b1c4619e 100644
+--- a/Documentation/devicetree/bindings/arm/bcm/brcm,bcmbca.yaml
++++ b/Documentation/devicetree/bindings/arm/bcm/brcm,bcmbca.yaml
+@@ -35,6 +35,13 @@ properties:
+           - const: brcm,bcm63178
+           - const: brcm,bcmbca
+ 
++      - description: BCM6858 based boards
++        items:
++          - enum:
++              - brcm,bcm96858
++          - const: brcm,bcm6858
++          - const: brcm,bcmbca
++
+ additionalProperties: true
+ 
+ ...
 -- 
-With best wishes
-Dmitry
+2.25.1
+
+
+--000000000000c36fb905e068bf80
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+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
+dD3eNkKBkknQBWvFfBHcITIVdVccQg5YcIwowkVZhhA3NG0BXGI4l/3o+wjrl2BGO/t969dabQ5x
+/SxGBTK8Vyn6NG7U0Lrjb0VtnrFXgEdxFvJuEQIDAQABo4IB2DCCAdQwDgYDVR0PAQH/BAQDAgWg
+MIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3VyZS5nbG9iYWxzaWdu
+LmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEGCCsGAQUFBzABhjVo
+dHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMDBNBgNV
+HSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93d3cuZ2xvYmFsc2ln
+bi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6hjhodHRwOi8vY3Js
+Lmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNybDAiBgNVHREEGzAZ
+gRdhbmFuZC5nb3JlQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNVHSMEGDAW
+gBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUH4HXhI4xxNPqnv0yfNL6is0cLFYwDQYJ
+KoZIhvcNAQELBQADggEBAAU15tMIqa2yrLdoPoNXMk6scL+6XJK/EVe0Lq0Uyq0SV8wpFV09ujno
+nLmSFYTz1RjmiKr1eu/pwyTImqMUj1JAXZ2zgE0rFS5SvchJsSlB8Nv3WeTaf5Lha5ZmRTaB0U/E
+eo7SFjA240UWLCGqXM69XCc5PHk6mWLNTsyDTgK2kLUKP1RVFswACNsI284fxiwA0qSCu2WnOEKE
+LiytE/NBFgzVtBcryeBtcMnhZgMo0PQYRl4O+58O1O703CD1jiO4/ikP+hUTdxWQiiWAzpE89YCH
+S0Pc2d2yC8RWARAiArr1jXHWA4+snG+TS3A1YVSPRZpboS5AXMutIIQ5YZQxggJtMIICaQIBATBr
+MFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhHbG9i
+YWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgxzcZR0ocq9f8sVOu8wDQYJYIZI
+AWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIPUhuTNaZCnGbOhWzIDy0DjHd3gqdBk+c+pdcKZv
+XxUoMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDYwMTIwMjk0
+MlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCGSAFlAwQB
+AjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQCATANBgkq
+hkiG9w0BAQEFAASCAQAvpTvX2qiAsF+tUVjAvnUja2viRTaa1fYp12U98+srWrgiRQi1W6gPuLUI
+GdMkrj2O+c2z0jZGt3yoe4iJxNmjfZd6B9lJzGdNFvqgpKgiH+T4/TkPiM6qyrbY6pBwxOORAR/z
+Lh8jwtDH0XMrc7DJOyDzlSIq7IgucRdE+1u4wCwVQgpEAk9J6pzC/O0j0GltmZftSBrP2DoJdfcv
+t/eu1JTaFZPST/tfdP/lAC0/sBYY8d/BhRK5xOCEc+n4uzoy6ib5KKdf4H4edqn2k1G1yuMy7fQH
+bxvbreK58+N+FWWGvXPIsmQnXtseo/kEgJHQVaouNE+o2Hhpz3skSQQx
+--000000000000c36fb905e068bf80--
