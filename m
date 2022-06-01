@@ -2,139 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 302DEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 01:34:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6141C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 01:41:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349000AbiFABeJ (ORCPT
+        id S1349006AbiFABlN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 21:34:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57902 "EHLO
+        Tue, 31 May 2022 21:41:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244972AbiFABeH (ORCPT
+        with ESMTP id S231584AbiFABlJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 21:34:07 -0400
-Received: from mail-4317.proton.ch (mail-4317.proton.ch [185.70.43.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8789A5B3F9;
-        Tue, 31 May 2022 18:34:06 -0700 (PDT)
-Date:   Wed, 01 Jun 2022 01:34:00 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wujek.eu;
-        s=protonmail2; t=1654047244; x=1654306444;
-        bh=HNyDEZPUiD5WQaSU7ZB0ohB0dUGEd+n30NevK73Q/eI=;
-        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:In-Reply-To:
-         References:Feedback-ID:From:To:Cc:Date:Subject:Reply-To:
-         Feedback-ID:Message-ID;
-        b=umXE7fDg9UuUBFZhWph6ZfofMERBm05Gjwtrwv8u/71VhAYOt5IP6X+Ak3y69SKpC
-         Cqy+GMIiGV00jDMMsXQ96f/nev0j6CJC0y5uX6yCEIsYGYfykGmZsYsoi21Rsb+XMQ
-         CZ/O/8FXfaldufSLQL2Q+aIoTo3QZbRX3GqenNFmPRcHxVRD6sxwAwY8XvGqFlbRXP
-         bx2KEyJoHfmRFmTGt+Rxf4hf89XmTZHgjXSkKV/umnXuYYaIIlhWQ07PPPq510AJoN
-         IfRF/mnTPagHtAobrvM1DuFOxYnsJ5ZV/nsDEklwcGdAILWSpBUoTC/gHCOhxEirGu
-         4MmxbHDxmE7bQ==
-To:     Guenter Roeck <linux@roeck-us.net>
-From:   wujek dev <dev_public@wujek.eu>
-Cc:     Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Reply-To: wujek dev <dev_public@wujek.eu>
-Subject: Re: [PATCH v2 1/2] hwmon: (pmbus) add a function to check the presence of a block register
-Message-ID: <WVehAlzjh6tqHumVgSPQaBJ2HyS2440oKiqR96qmMbXIv1Z0h_HQuGZf-6xh1KgeCXIGFmTg1Vym3ekryjnKUB8pEN3Hdm-PJBVakHg1FDo=@wujek.eu>
-In-Reply-To: <e0bfc3c0-d15f-f19e-5355-03a76ffa71ee@roeck-us.net>
-References: <20220524104307.272806-1-dev_public@wujek.eu> <e0bfc3c0-d15f-f19e-5355-03a76ffa71ee@roeck-us.net>
-Feedback-ID: 23425257:user:proton
+        Tue, 31 May 2022 21:41:09 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B971C72209;
+        Tue, 31 May 2022 18:41:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654047668; x=1685583668;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=bREUMPRddav0ot+T1KCx4aoc9q3KUb7RuUd1KJFsQz8=;
+  b=mT0Cx6wUmJ93VKhZQoqaL9qNPKdam7Zr68B5wwn3QlajZCmqtGNYl8z1
+   M8yKcAo2J/lId/3fKgQOHt8Waanzrqn6SeSPlIYzU37A6T4IZsAf+MP7z
+   N3eQJ9Jr76EuFZvzUBN6vq9myoA75b9pM5eDdZ1L7wCr8P5w2WWQfrbRT
+   gG4Zun7/zg2TFeS7pndWrM7ouGf8xumHsSAI9W16C+0Ej4iyiU1QEwvBm
+   yNVUGcZlI3wY+KB3ZrubBUEdzB5qPzVXlh1eMQENxhtQgfMDpveCbUZX3
+   6nw0U2PgJsFarJxKqUmw+6z3FujB85TwwwFWUlNJCLvVI+BgM/Nv3kLjo
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10364"; a="255917808"
+X-IronPort-AV: E=Sophos;i="5.91,266,1647327600"; 
+   d="scan'208";a="255917808"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 18:41:08 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,266,1647327600"; 
+   d="scan'208";a="679861174"
+Received: from unknown (HELO localhost.localdomain) ([10.226.216.90])
+  by fmsmga002.fm.intel.com with ESMTP; 31 May 2022 18:41:06 -0700
+From:   tien.sung.ang@intel.com
+To:     yilun.xu@intel.com
+Cc:     hao.wu@intel.com, linux-fpga@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mdf@kernel.org,
+        tien.sung.ang@intel.com, trix@redhat.com, dinh.nguyen@intel.com
+Subject: [PATCH v2] fpga: altera-cvp: allow interrupt to continue next time
+Date:   Wed,  1 Jun 2022 09:40:27 +0800
+Message-Id: <20220601014027.2547481-1-tien.sung.ang@intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220528120503.GB175058@yilunxu-OptiPlex-7050>
+References: <20220528120503.GB175058@yilunxu-OptiPlex-7050>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Dinh Nguyen <dinh.nguyen@intel.com>
 
-On Tuesday, May 24th, 2022 at 15:32, Guenter Roeck <linux@roeck-us.net> wro=
-te:
+The main objective of this change is to perform error handling
+if the CvP firmware becomes unresponsive. The error_path flow
+resets the CvP mode and HIP_CLK_SEL bit.
 
+CFG_READY signal/bit may time-out due to firmware not responding
+within the given time-out. This time varies due to numerous
+factors like size of bitstream and others.
+This time-out error may or may not impact the result of the CvP
+previous transactions. The CvP driver shall then, respond with
+EAGAIN instead Time out error.
 
->
->
-> On 5/24/22 03:43, Adam Wujek wrote:
->
-> > Other functions (like pmbus_check_byte_register) cannot be used to chec=
-k
-> > the presence of a block register, because it will generate error when P=
-EC
-> > is used.
-> >
-> > Signed-off-by: Adam Wujek dev_public@wujek.eu
-> > ---
-> > Notes:
-> > Changes in v2:
-> > - Use Phase 0xff when setting the page
-> >
-> > drivers/hwmon/pmbus/pmbus_core.c | 26 ++++++++++++++++++++++++++
-> > 1 file changed, 26 insertions(+)
-> >
-> > diff --git a/drivers/hwmon/pmbus/pmbus_core.c b/drivers/hwmon/pmbus/pmb=
-us_core.c
-> > index acf78d0829d9..2ff66f133d95 100644
-> > --- a/drivers/hwmon/pmbus/pmbus_core.c
-> > +++ b/drivers/hwmon/pmbus/pmbus_core.c
-> > @@ -421,6 +421,18 @@ static int _pmbus_read_byte_data(struct i2c_client=
- *client, int page, int reg)
-> > return pmbus_read_byte_data(client, page, reg);
-> > }
-> >
-> > +static int pmbus_read_block_data(struct i2c_client *client, int page, =
-u8 reg,
-> > + char *data_buf)
-> > +{
-> > + int rv;
-> > +
-> > + rv =3D pmbus_set_page(client, page, 0xff);
-> > + if (rv < 0)
-> > + return rv;
-> > +
-> > + return i2c_smbus_read_block_data(client, reg, data_buf);
-> > +}
-> > +
-> > static struct pmbus_sensor *pmbus_find_sensor(struct pmbus_data *data, =
-int page,
-> > int reg)
-> > {
-> > @@ -558,6 +570,20 @@ bool pmbus_check_word_register(struct i2c_client *=
-client, int page, int reg)
-> > }
-> > EXPORT_SYMBOL_NS_GPL(pmbus_check_word_register, PMBUS);
-> >
-> > +static bool pmbus_check_block_register(struct i2c_client *client, int =
-page,
-> > + int reg)
-> > +{
-> > + int rv;
-> > + struct pmbus_data *data =3D i2c_get_clientdata(client);
-> > + char data_buf[I2C_SMBUS_BLOCK_MAX + 2] =3D { 0 };
->
->
-> Unnecessary initialization.
-Agree
->
-> > +
-> > + rv =3D pmbus_read_block_data(client, page, reg, data_buf);
-> > + if (rv >=3D 0 && !(data->flags & PMBUS_SKIP_STATUS_CHECK))
-> > + rv =3D pmbus_check_status_cml(client);
->
->
-> How about PMBUS_READ_STATUS_AFTER_FAILED_CHECK ?
-added in the next version
->
-> Thanks,
-> Guenter
-BR,
-Adam
->
-> > + pmbus_clear_fault_page(client, -1);
-> > + return rv >=3D 0;
-> > +}
-> > +
-> > const struct pmbus_driver_info *pmbus_get_driver_info(struct i2c_client=
- *client)
-> > {
-> > struct pmbus_data *data =3D i2c_get_clientdata(client);
-> > --
-> > 2.17.1
+Signed-off-by: Dinh Nguyen <dinh.nguyen@intel.com>
+Signed-off-by: Ang Tien Sung <tien.sung.ang@intel.com>
+---
+
+changelog v2:
+* Amend the commit message
+
+---
+ drivers/fpga/altera-cvp.c | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/fpga/altera-cvp.c b/drivers/fpga/altera-cvp.c
+index 4ffb9da537d8..d74ff63c61e8 100644
+--- a/drivers/fpga/altera-cvp.c
++++ b/drivers/fpga/altera-cvp.c
+@@ -309,10 +309,22 @@ static int altera_cvp_teardown(struct fpga_manager *mgr,
+ 	/* STEP 15 - poll CVP_CONFIG_READY bit for 0 with 10us timeout */
+ 	ret = altera_cvp_wait_status(conf, VSE_CVP_STATUS_CFG_RDY, 0,
+ 				     conf->priv->poll_time_us);
+-	if (ret)
++	if (ret) {
+ 		dev_err(&mgr->dev, "CFG_RDY == 0 timeout\n");
++		goto error_path;
++	}
+ 
+ 	return ret;
++
++error_path:
++	/* reset CVP_MODE and HIP_CLK_SEL bit */
++	altera_read_config_dword(conf, VSE_CVP_MODE_CTRL, &val);
++	val &= ~VSE_CVP_MODE_CTRL_HIP_CLK_SEL;
++	val &= ~VSE_CVP_MODE_CTRL_CVP_MODE;
++	altera_write_config_dword(conf, VSE_CVP_MODE_CTRL, val);
++
++	return -EAGAIN;
++
+ }
+ 
+ static int altera_cvp_write_init(struct fpga_manager *mgr,
+-- 
+2.25.1
+
