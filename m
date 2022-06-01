@@ -2,108 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82645C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 08:29:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8F10C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 08:29:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350755AbiFAI3X (ORCPT
+        id S1350776AbiFAI3u (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 04:29:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48772 "EHLO
+        Wed, 1 Jun 2022 04:29:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349252AbiFAI3T (ORCPT
+        with ESMTP id S1350766AbiFAI3h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 04:29:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A25824B861;
-        Wed,  1 Jun 2022 01:29:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 513D3B81854;
-        Wed,  1 Jun 2022 08:29:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8AB1C385A5;
-        Wed,  1 Jun 2022 08:29:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654072155;
-        bh=1iXjC+c5NDksDK4JWBcsRyUMhftWpjNZ5o01WmkxYAc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=HAildSU/sq7Bgxx0sWq8pyb5IW7hO4kp1mXK9VDpSGGieB/7DZd6I8AvLt0YkEDB5
-         +9cFXyLVug9Vm/WIEm8VnZNUT1z4Cq5kg6vxviY5FCRX+zYt+qLBnUkiDVvOmLyK5S
-         Vg07weRxFj18FDJWZQi0lB1p2bS1+QR/pMOUgNmyRTu+bsRv+D/tdfQN1BzCCN+cV2
-         efEexTSPtk+K5OXjyDx9LUL8ZJ2inc1V9RNShdvvit0zVWv85IWkYtNwak3eDwNJsp
-         Te868s6mOvSqgnV87dZx3TlrTHQeRWEjOuELjgaBo7/vwhXdgF+CD8Y975G7UB7sz/
-         TDqCVKcQG9zjg==
-Date:   Wed, 1 Jun 2022 11:29:10 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Kent Overstreet <kent.overstreet@gmail.com>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        Andrew Lunn <andrew@lunn.ch>, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
-        netdev@vger.kernel.org, mcgrof@kernel.org, tytso@mit.edu,
-        RDMA mailing list <linux-rdma@vger.kernel.org>
-Subject: Re: RFC: Ioctl v2
-Message-ID: <YpcjVs/41EzAtr9k@unreal>
-References: <20220520161652.rmhqlvwvfrvskg4w@moria.home.lan>
- <Yof6hsC1hLiYITdh@lunn.ch>
- <20220521164546.h7huckdwvguvmmyy@moria.home.lan>
- <20220521124559.69414fec@hermes.local>
- <20220525170233.2yxb5pm75dehrjuj@moria.home.lan>
+        Wed, 1 Jun 2022 04:29:37 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EAAF24BFE3
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 01:29:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654072174;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=eYHc8MFYSzdCoe/K1c8WWYjHXxoxdvsTfd+zWYaMPWE=;
+        b=LtOhIhBARSk3wWJotrgvh8x4/oELkA0tsj2rjPA/rSwEIU3b6Jo6JA73vncTdfpUTekyoF
+        cZ9aNGxoudPU05FH1huJXb2+1oM6/9qRAwZ7GEU01ifEb3U69y57kHPnCJZdCC5d0stG57
+        IuPGJ58vNm9QpsvbH5JGoNcbpFAmiDo=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-57-RXWEit2tPbC5rRNT8asufQ-1; Wed, 01 Jun 2022 04:29:32 -0400
+X-MC-Unique: RXWEit2tPbC5rRNT8asufQ-1
+Received: by mail-ej1-f70.google.com with SMTP id k7-20020a1709062a4700b006fe92440164so555018eje.23
+        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 01:29:32 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=eYHc8MFYSzdCoe/K1c8WWYjHXxoxdvsTfd+zWYaMPWE=;
+        b=pNJxSbA5Py1ykLj5uGDcquOH82fClamMCATWaZ5HqIcKOEtS0YYFzhyIIeRdXbLJb3
+         IKpcZz62CcGqjIOl+ImAONwJb+kGjPHpsiirsA7cS/OUSNoKHN5btpF2ZREOgEr7mxkw
+         2/VM+/9KtM488K4QwfUw1nQKWpbw1wX5kiHjYOfATVIfUsabOIsgc8cTmQHfQtgszQEb
+         e58fEGxTYtra3O2uCHSt4NoXjUeA/DD9HEa+x3C5BGGaprpbLYpGhpludYUUAAZp5Bp8
+         5UbdO4XVsFROeCgjNAejUDlIMkI+yUbiOWIRXHuqPyYzQjosemzrCDGIngmDjp+yVPr5
+         lsIA==
+X-Gm-Message-State: AOAM531y7jxwE7vMQR3GsJdJcLgfz6w9JUYO9chNba8BmWK0hp4GgzL8
+        gZAvPLvrMiLQ04pYscN9xSutSGJNZnJXQLggx5CJoDtKs9vOah1F98iW+0TmF5K+0OzNrcWOKPb
+        nITh9SFxc4cOq9SKURyfRyLCG
+X-Received: by 2002:a05:6402:500a:b0:42d:d109:b7da with SMTP id p10-20020a056402500a00b0042dd109b7damr16226316eda.289.1654072171794;
+        Wed, 01 Jun 2022 01:29:31 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyD6nPqYLx+Nc693yDBowHp2HcbQByU14BxAf1JV4Xeqyk+5VgxXIcx8URHxJNllz9jSMIj8g==
+X-Received: by 2002:a05:6402:500a:b0:42d:d109:b7da with SMTP id p10-20020a056402500a00b0042dd109b7damr16226300eda.289.1654072171560;
+        Wed, 01 Jun 2022 01:29:31 -0700 (PDT)
+Received: from fedora (nat-2.ign.cz. [91.219.240.2])
+        by smtp.gmail.com with ESMTPSA id j22-20020a1709066dd600b006fea2705d18sm403105ejt.210.2022.06.01.01.29.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Jun 2022 01:29:31 -0700 (PDT)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Kees Cook <keescook@chromium.org>,
+        Robert Dinse <nanook@eskimo.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: Re: [PATCH v2 6/8] KVM: x86: Bug the VM if the emulator accesses a
+ non-existent GPR
+In-Reply-To: <20220526210817.3428868-7-seanjc@google.com>
+References: <20220526210817.3428868-1-seanjc@google.com>
+ <20220526210817.3428868-7-seanjc@google.com>
+Date:   Wed, 01 Jun 2022 10:29:30 +0200
+Message-ID: <87o7zcokgl.fsf@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220525170233.2yxb5pm75dehrjuj@moria.home.lan>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 25, 2022 at 01:02:33PM -0400, Kent Overstreet wrote:
-> On Sat, May 21, 2022 at 12:45:59PM -0700, Stephen Hemminger wrote:
-> > On Sat, 21 May 2022 12:45:46 -0400
-> > Kent Overstreet <kent.overstreet@gmail.com> wrote:
-> > 
-> > > On Fri, May 20, 2022 at 10:31:02PM +0200, Andrew Lunn wrote:
-> > > > > I want to circulate this and get some comments and feedback, and if
-> > > > > no one raises any serious objections - I'd love to get collaborators
-> > > > > to work on this with me. Flame away!  
-> > > > 
-> > > > Hi Kent
-> > > > 
-> > > > I doubt you will get much interest from netdev. netdev already
-> > > > considers ioctl as legacy, and mostly uses netlink and a message
-> > > > passing structure, which is easy to extend in a backwards compatible
-> > > > manor.  
-> > > 
-> > > The more I look at netlink the more I wonder what on earth it's targeted at or
-> > > was trying to solve. It must exist for a reason, but I've written a few ioctls
-> > > myself and I can't fathom a situation where I'd actually want any of the stuff
-> > > netlink provides.
-> > 
-> > Netlink was built for networking operations, you want to set something like a route with a large
-> > number of varying parameters in one transaction. And you don't want to have to invent
-> > a new system call every time a new option is added.
-> > 
-> > Also, you want to monitor changes and see these events for a userspace control
-> > application such as a routing daemon.
-> 
-> That makes sense - perhaps the new mount API could've been done as a netlink
-> interface :)
-> 
-> But perhaps it makes sense to have both - netlink for the big complicated
-> stateful operations, ioctl v2 for the simpler ones. I haven't looked at netlink
-> usage at all, but most of the filesystem ioctls I've looked at fall into the the
-> simple bucket, for me.
+Sean Christopherson <seanjc@google.com> writes:
 
-In RDMA, we solved this thing (standard entry points, multiple
-parameters and vendor specific data) by combining netlink and ioctls.
+> Bug the VM, i.e. kill it, if the emulator accesses a non-existent GPR,
+> i.e. generates an out-of-bounds GPR index.  Continuing on all but
+> gaurantees some form of data corruption in the guest, e.g. even if KVM
+> were to redirect to a dummy register, KVM would be incorrectly read zeros
+> and drop writes.
+>
+> Note, bugging the VM doesn't completely prevent data corruption, e.g. the
+> current round of emulation will complete before the vCPU bails out to
+> userspace.  But, the very act of killing the guest can also cause data
+> corruption, e.g. due to lack of file writeback before termination, so
+> taking on additional complexity to cleanly bail out of the emulator isn't
+> justified, the goal is purely to stem the bleeding and alert userspace
+> that something has gone horribly wrong, i.e. to avoid _silent_ data
+> corruption.
 
-The entry point is done with ioctls (mainly performance reason, but not
-only) while data is passed in netlink attributes style.
+Thanks, I agree wholeheartedly :-)
 
-ib_uverbs_ioctl:
-https://elixir.bootlin.com/linux/v5.18/source/drivers/infiniband/core/uverbs_ioctl.c#L605
+>
+> Signed-off-by: Sean Christopherson <seanjc@google.com>
+> ---
+>  arch/x86/kvm/emulate.c     |  4 ++--
+>  arch/x86/kvm/kvm_emulate.h | 10 ++++++++++
+>  arch/x86/kvm/x86.c         |  9 +++++++++
+>  3 files changed, 21 insertions(+), 2 deletions(-)
+>
+> diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
+> index 77161f57c8d3..70a8e0cd9fdc 100644
+> --- a/arch/x86/kvm/emulate.c
+> +++ b/arch/x86/kvm/emulate.c
+> @@ -247,7 +247,7 @@ enum x86_transfer_type {
+>  
+>  static ulong reg_read(struct x86_emulate_ctxt *ctxt, unsigned nr)
+>  {
+> -	if (WARN_ON_ONCE(nr >= NR_EMULATOR_GPRS))
+> +	if (KVM_EMULATOR_BUG_ON(nr >= NR_EMULATOR_GPRS, ctxt))
+>  		nr &= NR_EMULATOR_GPRS - 1;
+>  
+>  	if (!(ctxt->regs_valid & (1 << nr))) {
+> @@ -259,7 +259,7 @@ static ulong reg_read(struct x86_emulate_ctxt *ctxt, unsigned nr)
+>  
+>  static ulong *reg_write(struct x86_emulate_ctxt *ctxt, unsigned nr)
+>  {
+> -	if (WARN_ON_ONCE(nr >= NR_EMULATOR_GPRS))
+> +	if (KVM_EMULATOR_BUG_ON(nr >= NR_EMULATOR_GPRS, ctxt))
+>  		nr &= NR_EMULATOR_GPRS - 1;
+>  
+>  	BUILD_BUG_ON(sizeof(ctxt->regs_dirty) * BITS_PER_BYTE < NR_EMULATOR_GPRS);
+> diff --git a/arch/x86/kvm/kvm_emulate.h b/arch/x86/kvm/kvm_emulate.h
+> index 034c845b3c63..89246446d6aa 100644
+> --- a/arch/x86/kvm/kvm_emulate.h
+> +++ b/arch/x86/kvm/kvm_emulate.h
+> @@ -89,6 +89,7 @@ struct x86_instruction_info {
+>  #define X86EMUL_INTERCEPTED     6 /* Intercepted by nested VMCB/VMCS */
+>  
+>  struct x86_emulate_ops {
+> +	void (*vm_bugged)(struct x86_emulate_ctxt *ctxt);
+>  	/*
+>  	 * read_gpr: read a general purpose register (rax - r15)
+>  	 *
+> @@ -383,6 +384,15 @@ struct x86_emulate_ctxt {
+>  	bool is_branch;
+>  };
+>  
+> +#define KVM_EMULATOR_BUG_ON(cond, ctxt)		\
+> +({						\
+> +	int __ret = (cond);			\
+> +						\
+> +	if (WARN_ON_ONCE(__ret))		\
+> +		ctxt->ops->vm_bugged(ctxt);	\
+> +	unlikely(__ret);			\
+> +})
+> +
+>  /* Repeat String Operation Prefix */
+>  #define REPE_PREFIX	0xf3
+>  #define REPNE_PREFIX	0xf2
+> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+> index 7460b9a77d9a..e60badfbbc42 100644
+> --- a/arch/x86/kvm/x86.c
+> +++ b/arch/x86/kvm/x86.c
+> @@ -7887,7 +7887,16 @@ static int emulator_set_xcr(struct x86_emulate_ctxt *ctxt, u32 index, u64 xcr)
+>  	return __kvm_set_xcr(emul_to_vcpu(ctxt), index, xcr);
+>  }
+>  
+> +static void emulator_vm_bugged(struct x86_emulate_ctxt *ctxt)
+> +{
+> +	struct kvm *kvm = emul_to_vcpu(ctxt)->kvm;
+> +
+> +	if (!kvm->vm_bugged)
+> +		kvm_vm_bugged(kvm);
+> +}
+> +
+>  static const struct x86_emulate_ops emulate_ops = {
+> +	.vm_bugged           = emulator_vm_bugged,
+>  	.read_gpr            = emulator_read_gpr,
+>  	.write_gpr           = emulator_write_gpr,
+>  	.read_std            = emulator_read_std,
 
-Latest example of newly added global to whole stack command:
-RDMA/uverbs: Add uverbs command for dma-buf based MR registration
-https://lore.kernel.org/linux-rdma/1608067636-98073-4-git-send-email-jianxin.xiong@intel.com/
+Is it actually "vm_bugged" or "kvm_bugged"? :-)
 
-Thanks
+Reviewed-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+
+-- 
+Vitaly
+
