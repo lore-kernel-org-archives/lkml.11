@@ -2,188 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B7ADC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 00:21:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AC13C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 00:35:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348615AbiFAAV6 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 20:21:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34326 "EHLO
+        id S235315AbiFAAfJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 31 May 2022 20:35:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235844AbiFAAVz (ORCPT
+        with ESMTP id S1343793AbiFAAfB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 20:21:55 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5213422B0D
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 17:21:53 -0700 (PDT)
-Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24VNxEUd018461;
-        Wed, 1 Jun 2022 00:21:50 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=S5aFB8pK1q4/tQGCS1voDodiNiEO0Ya85/YBR4aoY/E=;
- b=otzKxhMWeRPJJKWaRYj38Rlbn2WQKzvtHZx5YdTf63OwDOfTd64AamcNFQwwiitQhXws
- ju+MLxzx+q3jwMuvp5tBmZ4onXm/NbDFBWg7v1OHPLmZDtWZCLtfkw/TyBAZhGLwPi29
- BtpPpAh6HwYaHCYrMN5N5xkSuaen2jCWql+6SZZKVzrnEJ13ry1PTAIAm4OerfPnMQIa
- POQkf4Xtl6UOF/oa6XKEKc/PCHy6uZNX/ScQ9B+QbWiD7wOQWW1y0HyB2o8iLefZXfS/
- L7CTUE9ECeUSgY9N308wiD0AuidnR3Dl1aoyZZ2kviVcgPuh3SYoQd0XGof/8dMKeA0T vQ== 
-Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.appoci.oracle.com [147.154.114.232])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3gbc7kpaac-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 01 Jun 2022 00:21:50 +0000
-Received: from pps.filterd (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 25100Tai015499;
-        Wed, 1 Jun 2022 00:01:40 GMT
-Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2049.outbound.protection.outlook.com [104.47.66.49])
-        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3gc8hw6pnu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 01 Jun 2022 00:01:39 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QeJrjP+kOkqoOokM9c7shH0p/8NUyMFEbcsCulRqIu9ZpNUv1aHrnHgpTIx+CLoYj4VY24HzOwgrik5nzb/g9dorORnyv91/UBbNtpoyaLjwcSp0O2BAti3BUtXz/sS9d3YmK7RqmGgdnmx6XCG+2lS56vHd6VGwoUc/OPOhXZ5dz63F2AAOB8eTe7qcl3MgYawDdBgrsAMVcSf5o+/zzjtVqZftg5wXNFS4Nes+gWtuuatldx/iX1d1SONinfjZNAOG6xAiopwXrngHoXwuN+SO2ATETIDK6ruFaJSTd+A+nLG+lEdjdi6sV+oKWvtZ4+QYDxmTc0DL7WchIxCa4Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=S5aFB8pK1q4/tQGCS1voDodiNiEO0Ya85/YBR4aoY/E=;
- b=HCVf6uhP7aCOAgSeaVCjpUiuW4mv6EY42pcQf6weGxlwt5YBoaq5lqZF/FB+vlErldEWCl31wF/M45y2z2xBBKoy1o3riH9ixZoaSvcrms5yZNWuXn/pxCO7cbfMYMxxUUKxzVI5TZ8vzdLN3Df9/gKmHfgvOjyV2xOcLRyTVQesO0JJ19/Rgs1FawwmRE/mGG8WfUegsxQqAyakOR/depXwZIqTqGUjmEWzkplVvPzaTVfzhUesAoMOpB3a8KCcfVdJgJXIhG5Ww1VuJ8WT45VHqfzHozvgRSkdd3Q+VgK7hyBoEBKLZbgRBGsFb7p1AoddA/7x4UM5RQ2ZNGZysg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=S5aFB8pK1q4/tQGCS1voDodiNiEO0Ya85/YBR4aoY/E=;
- b=Cr6I1mKDZhNtCFtKrGsKp0Y3HxSLIlPHncP+PSxAwnUHhIy2B1Hhi11Peee+qxbmMz8BMIH2N5Ry8/NqhdIsmh9LMqil57vppRspM3/CsfkrQ+jm7IgtdUQ9yyFwf+7Qq2ZAAEnwgNIMitL8P12osz1YtCRi2yC8ZS8POmGj4+4=
-Received: from BY5PR10MB4196.namprd10.prod.outlook.com (2603:10b6:a03:20d::23)
- by DS0PR10MB6246.namprd10.prod.outlook.com (2603:10b6:8:d2::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.18; Wed, 1 Jun
- 2022 00:01:38 +0000
-Received: from BY5PR10MB4196.namprd10.prod.outlook.com
- ([fe80::2125:9bb7:bfeb:81f9]) by BY5PR10MB4196.namprd10.prod.outlook.com
- ([fe80::2125:9bb7:bfeb:81f9%9]) with mapi id 15.20.5314.012; Wed, 1 Jun 2022
- 00:01:38 +0000
-Message-ID: <27ea9c9e-cd1b-c92f-5fe5-ccb778d90f95@oracle.com>
-Date:   Tue, 31 May 2022 17:01:36 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH 2/3] mm: hugetlb_vmemmap: cleanup
- hugetlb_free_vmemmap_enabled*
-Content-Language: en-US
-To:     Muchun Song <songmuchun@bytedance.com>, akpm@linux-foundation.org,
-        david@redhat.com
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        smuchun@bytedance.com
-References: <20220404074652.68024-1-songmuchun@bytedance.com>
- <20220404074652.68024-3-songmuchun@bytedance.com>
-From:   Mike Kravetz <mike.kravetz@oracle.com>
-In-Reply-To: <20220404074652.68024-3-songmuchun@bytedance.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MW3PR05CA0021.namprd05.prod.outlook.com
- (2603:10b6:303:2b::26) To BY5PR10MB4196.namprd10.prod.outlook.com
- (2603:10b6:a03:20d::23)
+        Tue, 31 May 2022 20:35:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9798768304;
+        Tue, 31 May 2022 17:34:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3DED06149E;
+        Wed,  1 Jun 2022 00:34:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D44A2C385A9;
+        Wed,  1 Jun 2022 00:34:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654043696;
+        bh=AGLxz/xreC1/Xeaa2Sjt8QqZXIylnuwZjPxvPygrygg=;
+        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+        b=DfuMHCjbgseVb9ElRvU6+fEgDpIv3ulhOxsoIPOQDdh5GUh8KjIJ28oGLRaKeGvWL
+         0OGOBkYVHKvSBhLuz9k1LfSVAr5J41JWFoFQ4TABVCeTglNoTjSMmz8FJQ49sdckLg
+         qsGKa+Yr+MoyMmAdmNIWUZGeNcE1QpV9WDLAqZFgKgw12wg03tSKY2yAzfzVh+OlIr
+         IhSeKnYLMf2s3ZC0XoXksZyr4Mb/ha+g8gPhA0eQAKOPF5QkoCt5VR2mG2iYj77PY2
+         +OIvjXfirEI3JrU/2GAu0wBIXEs9XmzEmlNrwfNOn0Ao2FA84oEYKiBszft0wz/igv
+         pc1IcOOf15l3Q==
+Date:   Tue, 31 May 2022 17:34:54 -0700 (PDT)
+From:   Stefano Stabellini <sstabellini@kernel.org>
+X-X-Sender: sstabellini@ubuntu-linux-20-04-desktop
+To:     Oleksandr Tyshchenko <olekstysh@gmail.com>
+cc:     xen-devel@lists.xenproject.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        iommu@lists.linux-foundation.org,
+        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Julien Grall <julien@xen.org>, Juergen Gross <jgross@suse.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH V3 5/8] dt-bindings: Add xen,grant-dma IOMMU description
+ for xen-grant DMA ops
+In-Reply-To: <1653944417-17168-6-git-send-email-olekstysh@gmail.com>
+Message-ID: <alpine.DEB.2.22.394.2205311726000.1905099@ubuntu-linux-20-04-desktop>
+References: <1653944417-17168-1-git-send-email-olekstysh@gmail.com> <1653944417-17168-6-git-send-email-olekstysh@gmail.com>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6693b871-abca-40a3-8fdf-08da4361e636
-X-MS-TrafficTypeDiagnostic: DS0PR10MB6246:EE_
-X-Microsoft-Antispam-PRVS: <DS0PR10MB6246105B3439EDA99976980CE2DF9@DS0PR10MB6246.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: t8KRtT4Sa8jfoVzQkYnBRf/uHbSAMGMW7fK13bKzSpBEzz/ZnJcbq58IrEL24C+7EECgMXz2JA81AAGWWqThLRFvd/jGoKUQvvFvzXFY52B/FDzg6DazpTrFL17thP78wS+GiyX3xTfoIWe/m7AZ96LAWbXSWDT4Ru5wro9gw5TD3t76XFcXOYeF6lE8RmwLUPRg6n/sWyCMDPo7p9flcRiIbZ8QbK4KrcD1sKxFVkiCTGIvKJpmNTugwEGy7ZyD42iGboSIBJONy8Q6EKHkjcuV90OHjAmTZOrCKiDn7gZW/pn46RMQ57tZQ+P1HEH3peKRb9N/9CpIaa8IcnYf4GFnnxCvVv3MTUMPXB5s/bjPNRAXpRb8G233eQWBELS0LtHzc1y+CnB97gayNk/41IfWQ5Z6yBMHlxhTOJwUkdrxZAqHpkryP7ItV0lM5pGsYR7eXVJMiYLh5uUlK2rKU7nvR2KhCuIaWXsrIAe3gqrz9UgB9vK2rbJX4g69ov1Quw3gzzXriX4XNG7hkNJWlpLQj/g5aYk4RtQCECRBoviuf9FIA5tbyqLdNvf9kzZ3KbLO6hAaz28DFdYRURKQdVQh+CiWzQ1x/59PIl2VGTOVPxj6Tu6nBb4HypjNmPxWIGK6l3tSJb1ppoLdE7leenebjuLM7H1pR2t73Drtp+Nmn2S8eLIBKCr59gE7Lcjy3tDcUGxjbgium/Umk6HRoWpFo13nXctSX325WQMYpFZydWMiaIJrn8tdNbkgJjSDJxsuPc74pXdtvOMoPslc/Q==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR10MB4196.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(66946007)(66556008)(66476007)(4326008)(52116002)(8676002)(53546011)(2906002)(44832011)(2616005)(6512007)(26005)(6506007)(38350700002)(38100700002)(186003)(31696002)(36756003)(31686004)(508600001)(5660300002)(6486002)(4744005)(8936002)(86362001)(316002)(83380400001)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?YU9INU5qNnhYUVBWbXhHMGt1eUZVVC9xazAvaVB3Rkl4aWd6aTZFa3VpN0NU?=
- =?utf-8?B?WXlKa1lQbGZpMFdWQ3JYQWVXVWFqZURPbWpvUVJ3STAyaVVmZHZLbkdWSHRJ?=
- =?utf-8?B?RUpxN2M1SmZGMUE1Q0lkdUZtbytseE9BalBFK3QwSERUdlBHbWFTbWNZY1FH?=
- =?utf-8?B?Y0g4U0hoV3RXUTM5S2pSa2UxNmlZMUMzdGxabGpiVC9Zb3pIaXhQSmpYaHcz?=
- =?utf-8?B?SXR6RFpoRkNkcXdrOEt4VTFCV0lJUy9KNnBJbTlobTJKcU45SVJPL3pZTWEw?=
- =?utf-8?B?NlE0aE9aOGVlS0FlbHJzWnRoYWtMSnJNZXZjbW8vd3VEU0JMYzJzYUg5ekJj?=
- =?utf-8?B?dStqb1FaVFVqbGx2TVY5cVVNZlZDRFoxSXNvSVJuRVJHUlRxYTdVOVV2dDNH?=
- =?utf-8?B?VnFHZllWWXVvQytpL2dvcmRWcXBmNUFTODQvc2hBWi9hMmZPZHRqZFJRREJR?=
- =?utf-8?B?RzA5aFUyQ2NGYUs0MEJDVW9rOFpmdUhFaGJuSklDVG4xTEVYc0YxQjNWOERx?=
- =?utf-8?B?MnRpZ3Z4L0Nnb0MzVlNodm03QWl1YWlkb1U0c2RLQjkrWHhvVmgyd0JOVzhB?=
- =?utf-8?B?Y3J4YnViWWtGUHBqQUJBQ3NrTWEwMWlpRlZOdjhuTzRNV1RBU29ZM3JPc1Fr?=
- =?utf-8?B?OTY3UlRCUm9FWWFObWRkMmRNaTd2dTYwZG9MTWtmMThqcWZxbXJFQVdMR3RL?=
- =?utf-8?B?a1NybVFXNm8yVGZGU3pubmozZnViTXQxZEhsdWYwVDZtdllzc2Foem9XSnFX?=
- =?utf-8?B?ZjkwZmtjMkVsM09EZGJpQStBWmtaL1N4dTExQ0hLZnFGSVdHbGh6TDNudFh4?=
- =?utf-8?B?bDQ0R3A2eXczTmlEaWFqbDBIWGRKYjB2cWRhVGpXaEl3Y2hpZmZoRGhpZlVJ?=
- =?utf-8?B?NnZ3dHpBWWFNOVp2MzBKZyt4M1BMYlFWWXRFUVNnRjRSdjFYU1N3Z2JhdlFW?=
- =?utf-8?B?ZHRnVnJCR2pML1pKcjZNMVlvMUlkL3Zub1N4aHpYWVhGMFlHMUdOa3BJQ2xL?=
- =?utf-8?B?eExOUm5UMFVtZWV4S3FXRUU1OUF2U2VnS25VWGFhbWY5ckRWTE1OM09DdEVY?=
- =?utf-8?B?b0NIbWVRZEliaUJTSW05ekdPd2ZMejdqZlo2dVRmRG1nSHYwRGx2Qm4wN2Zm?=
- =?utf-8?B?eE5hRG5CY1Z6V3F5SUpJNVRVL0Mydkh3V2x2UytzSDNOSEZMMWsvTlpuQXdw?=
- =?utf-8?B?U29qc2hNOTIyVVdtWWU0Q0FGQ0gzQ0MwNzBGc1lPNVFKam10VStCRkNjZG5L?=
- =?utf-8?B?MGVUOGxuNFM0a3JEclQzY1JlYjN2Y09zTVZlcTloRWduMjgwSG1RRnpINmYr?=
- =?utf-8?B?RUdBU3RDRHVGZG0rTXZoWEZsZnFYTWxreTdxbVFFMm5pRElJMFJ6K01HVUhu?=
- =?utf-8?B?bzhONzhsdTI3TG91bTc0M21BMnNtQ3NLZXIwUDhLVHg0VlppNmNCUUkxREJR?=
- =?utf-8?B?NExVT3ovb0JWQUxwTHYvdXRUbHlUTk9aNVJEc2ZLTkk1YVV1UlNqQmNmSU13?=
- =?utf-8?B?VEFkU2RUeWFLZDJQUzVQY3IwRDlsMm14UjhucitramxHa1BSRXFCMi9wRUpP?=
- =?utf-8?B?UzFQTnkvZmJac1pSOUFTWit0eG1rSjM4NUtia29udWZmVnRWOU9CalNmWW5p?=
- =?utf-8?B?N3dJV1A3Mll5ajNRZHk3a2xycDZReXIycDlPRTE2UWZpRW45R0ZScEpWV01N?=
- =?utf-8?B?dUNickFVMEs3R1RhWjQrdmtNYU15UjRSWFNoajRvMUoxNmpIQVdjTFR2RkZC?=
- =?utf-8?B?NmxrLytwR2JGRlFERjVXaW5MdDQrRVJLdkFZVzFJYnNHQmx6T2ZPVWs4NUZq?=
- =?utf-8?B?L2o1R2JhZU45S0Z2S2h6Z1Q5cm5hZnJ4ajQrTE1ia2dXWUtoclpkS0xOenRQ?=
- =?utf-8?B?aUV2WjlCSk1uTTZjM3ZNVEI3L2V5WDkxak1ER3JtTzUxZW5CZmNpUHY0RHBM?=
- =?utf-8?B?cHpHR1M3UmhWazJmTFZyNFFQdjAwcVcrRFBsbFdGRE9sVFR3bzNPOHVvaldo?=
- =?utf-8?B?ZGdXUzIwQmZkUXdPSVROK1NnUG5QQ3ROVkNYdmlSZStzS0VZNm55T2srS1Bw?=
- =?utf-8?B?dXkxeTlqTGR0cExPUXlEWU8raTZLRGJWU3g3bGJESFBrMzBqOEFEbDJCQy9R?=
- =?utf-8?B?R2VFVEVIaGVvRHMwUFBsNDErazhkR1gzMzB6cHE5a1FpK0hJTmtHV2xpZ1pL?=
- =?utf-8?B?ODl1aFhYNEhhUHBrSlVpcXl0NXo5TE9RQVdDcGk3RWlQdGxiR21CdlN6S0RJ?=
- =?utf-8?B?MkViUFdEQS9wM0FCR2VwU3JqWHZRQ0hxSjBGVW9xUDNKelpFZFBRNHl6dGpW?=
- =?utf-8?B?R2F0Z0haY3hkeVcxRlR5SWZ4QnppMlpqeTkzOGd0VDhQekN4cXpDTWJycndQ?=
- =?utf-8?Q?TtYRtjha67vQHVds=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6693b871-abca-40a3-8fdf-08da4361e636
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR10MB4196.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jun 2022 00:01:38.0507
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: /+1yhclOyFwdRN3pPuDtH/zartF817zpG/Gc3jPIVjOG2MpBhHrU44hDbdiXiAJNShKZIeqIf/nXYdsqXpa6Ig==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR10MB6246
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.874
- definitions=2022-05-31_08:2022-05-30,2022-05-31 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 bulkscore=0 suspectscore=0
- mlxlogscore=948 mlxscore=0 spamscore=0 adultscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2204290000
- definitions=main-2205310104
-X-Proofpoint-GUID: rCP_7MDxAlJqfZKbwnbvGeNFUlQ5sHG-
-X-Proofpoint-ORIG-GUID: rCP_7MDxAlJqfZKbwnbvGeNFUlQ5sHG-
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/4/22 00:46, Muchun Song wrote:
-> The word of "free" is not expressive enough to express the feature of optimizing
-> vmemmap pages associated with each HugeTLB, rename this keywork to "optimeze".
-> In this patch , cheanup the static key and hugetlb_free_vmemmap_enabled() to make
-> code more expressive.
-
-Commit message might look better as:
-
-The keyword "free" is not expressive enough to describe the feature of
-optimizing vmemmap pages associated with each HugeTLB page.  Rename the
-keyword to "optimize".
-
-Rename the static key and hugetlb_free_vmemmap_enabled() to make the code
-more expressive.
-
+On Tue, 31 May 2022, Oleksandr Tyshchenko wrote:
+> From: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
 > 
-> Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+> The main purpose of this binding is to communicate Xen specific
+> information using generic IOMMU device tree bindings (which is
+> a good fit here) rather than introducing a custom property.
+> 
+> Introduce Xen specific IOMMU for the virtualized device (e.g. virtio)
+> to be used by Xen grant DMA-mapping layer in the subsequent commit.
+> 
+> The reference to Xen specific IOMMU node using "iommus" property
+> indicates that Xen grant mappings need to be enabled for the device,
+> and it specifies the ID of the domain where the corresponding backend
+> resides. The domid (domain ID) is used as an argument to the Xen grant
+> mapping APIs.
+> 
+> This is needed for the option to restrict memory access using Xen grant
+> mappings to work which primary goal is to enable using virtio devices
+> in Xen guests.
+> 
+> Signed-off-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
 > ---
->  arch/arm64/mm/flush.c      |  2 +-
->  include/linux/page-flags.h | 12 ++++++------
->  mm/hugetlb_vmemmap.c       | 10 +++++-----
->  mm/memory_hotplug.c        |  2 +-
->  4 files changed, 13 insertions(+), 13 deletions(-)
+> Changes RFC -> V1:
+>    - update commit subject/description and text in description
+>    - move to devicetree/bindings/arm/
+> 
+> Changes V1 -> V2:
+>    - update text in description
+>    - change the maintainer of the binding
+>    - fix validation issue
+>    - reference xen,dev-domid.yaml schema from virtio/mmio.yaml
+> 
+> Change V2 -> V3:
+>    - Stefano already gave his Reviewed-by, I dropped it due to the changes (significant)
+>    - use generic IOMMU device tree bindings instead of custom property
+>      "xen,dev-domid"
+>    - change commit subject and description, was
+>      "dt-bindings: Add xen,dev-domid property description for xen-grant DMA ops"
+> ---
+>  .../devicetree/bindings/iommu/xen,grant-dma.yaml   | 49 ++++++++++++++++++++++
+>  1 file changed, 49 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iommu/xen,grant-dma.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/iommu/xen,grant-dma.yaml b/Documentation/devicetree/bindings/iommu/xen,grant-dma.yaml
+> new file mode 100644
+> index 00000000..ab5765c
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iommu/xen,grant-dma.yaml
+> @@ -0,0 +1,49 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only or BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iommu/xen,grant-dma.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Xen specific IOMMU for virtualized devices (e.g. virtio)
+> +
+> +maintainers:
+> +  - Stefano Stabellini <sstabellini@kernel.org>
+> +
+> +description:
+> +  The reference to Xen specific IOMMU node using "iommus" property indicates
+> +  that Xen grant mappings need to be enabled for the device, and it specifies
+> +  the ID of the domain where the corresponding backend resides.
+> +  The binding is required to restrict memory access using Xen grant mappings.
 
-Code changes look fine,
+I think this is OK and in line with the discussion we had on the list. I
+propose the following wording instead:
 
-Reviewed-by: Mike Kravetz <mike.kravetz@oracle.com>
+"""
+The Xen IOMMU represents the Xen grant table interface. Grant mappings
+are to be used with devices connected to the Xen IOMMU using the
+"iommus" property, which also specifies the ID of the backend domain.
+The binding is required to restrict memory access using Xen grant
+mappings.
+"""
 
--- 
-Mike Kravetz
+
+> +properties:
+> +  compatible:
+> +    const: xen,grant-dma
+> +
+> +  '#iommu-cells':
+> +    const: 1
+> +    description:
+> +      Xen specific IOMMU is multiple-master IOMMU device.
+> +      The single cell describes the domid (domain ID) of the domain where
+> +      the backend is running.
+
+Here I would say:
+
+"""
+The single cell is the domid (domain ID) of the domain where the backend
+is running.
+"""
+
+With the two wording improvements:
+
+Reviewed-by: Stefano Stabellini <sstabellini@kernel.org>
+
+
+> +required:
+> +  - compatible
+> +  - "#iommu-cells"
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    xen_iommu {
+> +        compatible = "xen,grant-dma";
+> +        #iommu-cells = <1>;
+> +    };
+> +
+> +    virtio@3000 {
+> +        compatible = "virtio,mmio";
+> +        reg = <0x3000 0x100>;
+> +        interrupts = <41>;
+> +
+> +        /* The backend is located in Xen domain with ID 1 */
+> +        iommus = <&xen_iommu 1>;
+> +    };
+> -- 
+> 2.7.4
+> 
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+> 
