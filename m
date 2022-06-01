@@ -2,168 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9587CC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 07:18:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6CE7C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 07:19:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350119AbiFAHSV (ORCPT
+        id S1350249AbiFAHTZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 03:18:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34864 "EHLO
+        Wed, 1 Jun 2022 03:19:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349941AbiFAHST (ORCPT
+        with ESMTP id S1350234AbiFAHTX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 03:18:19 -0400
-Received: from bmailout3.hostsharing.net (bmailout3.hostsharing.net [IPv6:2a01:4f8:150:2161:1:b009:f23e:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EEFE30572;
-        Wed,  1 Jun 2022 00:18:15 -0700 (PDT)
-Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by bmailout3.hostsharing.net (Postfix) with ESMTPS id 229E71002A013;
-        Wed,  1 Jun 2022 09:18:09 +0200 (CEST)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id F2FF5118737; Wed,  1 Jun 2022 09:18:08 +0200 (CEST)
-Date:   Wed, 1 Jun 2022 09:18:08 +0200
-From:   Lukas Wunner <lukas@wunner.de>
-To:     Ira Weiny <ira.weiny@intel.com>
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Alison Schofield <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Ben Widawsky <ben.widawsky@intel.com>,
-        linux-kernel@vger.kernel.org, linux-cxl@vger.kernel.org,
-        linux-pci@vger.kernel.org
-Subject: Re: [PATCH V8 03/10] PCI: Create PCI library functions in support of
- DOE mailboxes.
-Message-ID: <20220601071808.GA19924@wunner.de>
-References: <20220414203237.2198665-1-ira.weiny@intel.com>
- <20220414203237.2198665-4-ira.weiny@intel.com>
- <20220530190657.GA14765@wunner.de>
- <20220531113350.0000421e@Huawei.com>
- <YpbWCYujYDEkMm1B@iweiny-desk3>
+        Wed, 1 Jun 2022 03:19:23 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 645C14DF4A;
+        Wed,  1 Jun 2022 00:19:21 -0700 (PDT)
+Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LCgW02QC4zDqYc;
+        Wed,  1 Jun 2022 15:19:08 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ kwepemi500013.china.huawei.com (7.221.188.120) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 1 Jun 2022 15:19:19 +0800
+Received: from [10.174.176.73] (10.174.176.73) by
+ kwepemm600009.china.huawei.com (7.193.23.164) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 1 Jun 2022 15:19:18 +0800
+Subject: Re: [PATCH -next v5 0/3] support concurrent sync io for bfq on a
+ specail occasion
+To:     Jens Axboe <axboe@kernel.dk>, Jan Kara <jack@suse.cz>
+CC:     <paolo.valente@linaro.org>, <tj@kernel.org>,
+        <linux-block@vger.kernel.org>, <cgroups@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <yi.zhang@huawei.com>
+References: <20220428120837.3737765-1-yukuai3@huawei.com>
+ <d50df657-d859-79cf-c292-412eaa383d2c@huawei.com>
+ <61b67d5e-829c-8130-7bda-81615d654829@huawei.com>
+ <81411289-e13c-20f5-df63-c059babca57a@huawei.com>
+ <d5a90a08-1ac6-587a-e900-0436bd45543a@kernel.dk>
+ <55919e29-1f22-e8aa-f3d2-08c57d9e1c22@huawei.com>
+ <20220523085902.wmxoebyq3crerecr@quack3.lan>
+ <25f6703e-9e10-75d9-a893-6df1e6b75254@kernel.dk>
+ <20220523152516.7sr247i3bzwhr44w@quack3.lan>
+ <13ad158e-7859-ca61-209e-7d1fe99d0bdb@huawei.com>
+ <03b3a6bc-586a-2b45-a60c-5ab81076bf13@kernel.dk>
+From:   Yu Kuai <yukuai3@huawei.com>
+Message-ID: <3e2bc90f-464d-f80d-a624-5337af420ec9@huawei.com>
+Date:   Wed, 1 Jun 2022 15:19:17 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YpbWCYujYDEkMm1B@iweiny-desk3>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <03b3a6bc-586a-2b45-a60c-5ab81076bf13@kernel.dk>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.176.73]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 31, 2022 at 07:59:21PM -0700, Ira Weiny wrote:
-> On Tue, May 31, 2022 at 11:33:50AM +0100, Jonathan Cameron wrote:
-> > On Mon, 30 May 2022 21:06:57 +0200 Lukas Wunner <lukas@wunner.de> wrote:
-> > > On Thu, Apr 14, 2022 at 01:32:30PM -0700, ira.weiny@intel.com wrote:
-> > > > +	/* First 2 dwords have already been read */
-> > > > +	length -= 2;
-> > > > +	/* Read the rest of the response payload */
-> > > > +	for (i = 0; i < min(length, task->response_pl_sz / sizeof(u32)); i++) {
-> > > > +		pci_read_config_dword(pdev, offset + PCI_DOE_READ,
-> > > > +				      &task->response_pl[i]);
-> > > > +		pci_write_config_dword(pdev, offset + PCI_DOE_READ, 0);
-> > > > +	}  
-> > > 
-> > > You need to check the Data Object Ready bit.  The device may clear the
-> > > bit prematurely (e.g. as a result of a concurrent FLR or Conventional
-> > > Reset).  You'll continue reading zero dwords from the mailbox and
-> > > pretend success to the caller even though the response is truncated.
-> > > 
-> > > If you're concerned about performance when checking the bit on every
-> > > loop iteration, checking it only on the last but one iteration should
-> > > be sufficient to detect truncation.
-> > 
-> > Good catch - I hate corner cases.  Thankfully this one is trivial to
-> > check for.
+在 2022/06/01 14:16, Jens Axboe 写道:
+> On 5/23/22 7:13 PM, Yu Kuai wrote:
+>> ? 2022/05/23 23:25, Jan Kara ??:
+>>> On Mon 23-05-22 06:36:58, Jens Axboe wrote:
+>>>> On 5/23/22 2:59 AM, Jan Kara wrote:
+>>>>> On Mon 23-05-22 09:10:38, yukuai (C) wrote:
+>>>>>> ? 2022/05/21 20:21, Jens Axboe ??:
+>>>>>>> On 5/21/22 1:22 AM, yukuai (C) wrote:
+>>>>>>>> ? 2022/05/14 17:29, yukuai (C) ??:
+>>>>>>>>> ? 2022/05/05 9:00, yukuai (C) ??:
+>>>>>>>>>> Hi, Paolo
+>>>>>>>>>>
+>>>>>>>>>> Can you take a look at this patchset? It has been quite a long time
+>>>>>>>>>> since we spotted this problem...
+>>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> friendly ping ...
+>>>>>>>> friendly ping ...
+>>>>>>>
+>>>>>>> I can't speak for Paolo, but I've mentioned before that the majority
+>>>>>>> of your messages end up in my spam. That's still the case, in fact
+>>>>>>> I just marked maybe 10 of them as not spam.
+>>>>>>>
+>>>>>>> You really need to get this issued sorted out, or you will continue
+>>>>>>> to have patches ignore because folks may simply not see them.
+>>>>>>>
+>>>>>> Hi,
+>>>>>>
+>>>>>> Thanks for your notice.
+>>>>>>
+>>>>>> Is it just me or do you see someone else's messages from *huawei.com
+>>>>>> end up in spam? I tried to seek help from our IT support, however, they
+>>>>>> didn't find anything unusual...
+>>>>>
+>>>>> So actually I have noticed that a lot of (valid) email from huawei.com (not
+>>>>> just you) ends up in the spam mailbox. For me direct messages usually pass
+>>>>> (likely matching SPF records for originating mail server save the email
+>>>>> from going to spam) but messages going through mailing lists are flagged as
+>>>>> spam because the emails are missing valid DKIM signature but huawei.com
+>>>>> DMARC config says there should be DKIM signature (even direct messages are
+>>>>> missing DKIM so this does not seem as a mailing list configuration issue).
+>>>>> So this seems as some misconfiguration of the mails on huawei.com side
+>>>>> (likely missing DKIM signing of outgoing email).
+>>>>
+>>>> SPF/DKIM was indeed a problem earlier for yukaui patches, but I don't
+>>>> see that anymore. Maybe it's still an issue for some emails, from them
+>>>> or Huawei in general?
+>>>
+>>> Hum, for me all emails from Huawei I've received even today fail the DKIM
+>>> check. After some more digging there is interesting inconsistency in DMARC
+>>> configuration for huawei.com domain. There is DMARC record for huawei.com
+>>> like:
+>>>
+>>> huawei.com.        600    IN    TXT    "v=DMARC1;p=none;rua=mailto:dmarc@edm.huawei.com"
+>>>
+>>> which means no DKIM is required but _dmarc.huawei.com has:
+>>>
+>>> _dmarc.huawei.com.    600    IN    TXT    "v=DMARC1;p=quarantine;ruf=mailto:dmarc@huawei.com;rua=mailto:dmarc@huawei.com"
+>>>
+>>> which says that DKIM is required. I guess this inconsistency may be the
+>>> reason why there are problems with DKIM validation for senders from
+>>> huawei.com. Yu Kuai, can you perhaps take this to your IT support to fix
+>>> this? Either make sure huawei.com emails get properly signed with DKIM or
+>>> remove the 'quarantine' record from _dmarc.huawei.com. Thanks!
+>> Of course, I'll try to contact our IT support.
 > 
-> Ok looking at the spec:  Strictly speaking this needs to happen multiple
-> times both in doe_statemachine_work() and inside pci_doe_recv_resp();
-> not just in this loop.  :-(
+> I second that, pretty much every email has been going into spam since, I
+> guess you just had a few lucky ones. Looks like Jan is right, it's a
+> server side configuration error that's causing this, and it's still
+> happening
 > 
-> This is because, the check in doe_statemachine_work() only covers the
-> 1st dword read IIUC.
 
-The spec says "this bit indicates the DOE instance has a *data object*
-available to be read by system firmware/software".
+Thanks for your response 😄
 
-So, the entire object is available for reading, not just one dword.
-
-You've already got checks in place for the first two dwords which
-cover reading an "all zeroes" response.  No need to amend them.
-
-You only need to re-check the Data Object Ready bit on the last-but-one
-dword in case the function was reset concurrently.  Per sec. 6.30.2,
-"An FLR to a Function must result in the aborting of any DOE transfer
-in progress."
-
-
-> > > > +static irqreturn_t pci_doe_irq_handler(int irq, void *data)
-> > > > +{
-> > > > +	struct pci_doe_mb *doe_mb = data;
-> > > > +	struct pci_dev *pdev = doe_mb->pdev;
-> > > > +	int offset = doe_mb->cap_offset;
-> > > > +	u32 val;
-> > > > +
-> > > > +	pci_read_config_dword(pdev, offset + PCI_DOE_STATUS, &val);
-> > > > +
-> > > > +	/* Leave the error case to be handled outside IRQ */
-> > > > +	if (FIELD_GET(PCI_DOE_STATUS_ERROR, val)) {
-> > > > +		mod_delayed_work(system_wq, &doe_mb->statemachine, 0);
-> > > > +		return IRQ_HANDLED;
-> > > > +	}
-> > > > +
-> > > > +	if (FIELD_GET(PCI_DOE_STATUS_INT_STATUS, val)) {
-> > > > +		pci_write_config_dword(pdev, offset + PCI_DOE_STATUS,
-> > > > +					PCI_DOE_STATUS_INT_STATUS);
-> > > > +		mod_delayed_work(system_wq, &doe_mb->statemachine, 0);
-> > > > +		return IRQ_HANDLED;
-> > > > +	}
-> > > > +
-> > > > +	return IRQ_NONE;
-> > > > +}  
-> > > 
-> > > PCIe 6.0, table 7-316 says that an interrupt is also raised when
-> > > "the DOE Busy bit has been Cleared", yet such an interrupt is
-> > > not handled here.  It is incorrectly treated as a spurious
-> > > interrupt by returning IRQ_NONE.  The right thing to do
-> > > is probably to wake the state machine in case it's polling
-> > > for the Busy flag to clear.
-> > 
-> > Ah. I remember testing this via a lot of hacking on the QEMU code
-> > to inject the various races that can occur (it was really ugly to do).
-> > 
-> > Guess we lost the handling at some point.  I think your fix
-> > is the right one.
-> 
-> Perhaps I am missing something but digging into this more.  I disagree
-> that the handler fails to handle this case.  If I read the spec correctly
-> DOE Interrupt Status must be set when an interrupt is generated.
-> The handler wakes the state machine in that case.  The state machine
-> then checks for busy if there is work to be done.
-
-Right, I was mistaken, sorry for the noise.
-
-
-> Normally we would not even need to check for status error.  But that is
-> special cased because clearing that status is left to the state machine.
-
-That however looks wrong because the DOE Interrupt Status bit is never
-cleared after a DOE Error is signaled.  The state machine performs an
-explicit abort upon an error by setting the DOE Abort bit, but that
-doesn't seem to clear DOE Interrupt Status:
-
-Per section 6.30.2, "At any time, the system firmware/software is
-permitted to set the DOE Abort bit in the DOE Control Register,
-and the DOE instance must Clear the Data Object Ready bit,
-if not already Clear, and Clear the DOE Error bit, if already Set,
-in the DOE Status Register, within 1 second."
-
-No mention of the DOE Interrupt Status bit, so we cannot assume that
-it's cleared by a DOE Abort and we must clear it explicitly.
-
-Thanks,
-
-Lukas
+I aready contack our IT support, and hopefully this can be solved
+soon...
