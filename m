@@ -2,49 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF538C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:14:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BED7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:14:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355390AbiFAOOq (ORCPT
+        id S1355325AbiFAOOw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:14:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46456 "EHLO
+        Wed, 1 Jun 2022 10:14:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243688AbiFAOJu (ORCPT
+        with ESMTP id S1354526AbiFAOJq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:09:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF47CFD01;
-        Wed,  1 Jun 2022 07:01:15 -0700 (PDT)
+        Wed, 1 Jun 2022 10:09:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A135E0FA;
+        Wed,  1 Jun 2022 07:01:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3F574B81AF7;
-        Wed,  1 Jun 2022 13:56:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11912C385A5;
-        Wed,  1 Jun 2022 13:56:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ACF4AB81AE7;
+        Wed,  1 Jun 2022 14:01:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B8DBC385A5;
+        Wed,  1 Jun 2022 14:01:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091772;
-        bh=SvxtK91i3xQESf6tbSBGHp7J+Iwy+arLxPKjfKCQuOg=;
+        s=k20201202; t=1654092071;
+        bh=qToVZsXl134a53xo2VcsV0MaOUoIecEvvSYgrba1pOU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bxezu5f4IBcWrsDUXlDTBSF7d51XPHuJtZa+q7kpqztFiyvt/Mrtrowf2RdHoD0Tf
-         JgS0t1IxU8zEeuxEFbrXVw4snK4aWp/jkKZzTDjSm17LsDmM9EEGT9XanMutTaARCJ
-         wESv3p2O7bLMph2MEuaTHTcL4N4YApDL1qvDLMNV9r0D7Z5S8IX85HRYYYOUif/EKB
-         9n5CRcNWnyXT/l1AxF30VehFB5etOpSc8DBOfniCoZ2D5ywuctH40vfneQqtv9c/sR
-         9kv708DUu0JhK4cHWp0jEeI290t/rJP6raaAxJqDHDMddzvplRglP+NkuPTMILBPuo
-         twS+AVPcUjQSQ==
+        b=hbchicdfftPpeVVO6pNy5RwfQWz/2cI1qrNhhr0go17Zvv8jicG9tbpVPGJ43da7L
+         ipgJDHULdo1KoDJFjFjn8uUiIO2NsNUSs0RoZbBj1RwjBCUuNATpABufJJeLn5yJa2
+         1jrdaHASVm/d4zjAOpkasFiOh9DXH/K1c3U1n0rBh1J4zyGPZb/qXseHCQZVosypll
+         bD8VJdgqNUqJGocg87nygAq/2nqOY+qZMrcMWt3fZd7KkzNz6+TeyFix3TZusA5h9w
+         gOqWhSgsqunJzKn/VBwDYSVNnxI0St7lU1wr+OvzBSMmPoFhoV9bymL2t5vGFcIT9r
+         0lg12qYnFjWnw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vasily Averin <vvs@openvz.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Christoph Hellwig <hch@lst.de>, Jan Kara <jack@suse.cz>,
-        Sasha Levin <sashal@kernel.org>, linux-fsdevel@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 43/48] fanotify: fix incorrect fmode_t casts
-Date:   Wed,  1 Jun 2022 09:54:16 -0400
-Message-Id: <20220601135421.2003328-43-sashal@kernel.org>
+Cc:     Peng Wu <wupeng58@huawei.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>,
+        liviu.dudau@arm.com, sudeep.holla@arm.com,
+        lorenzo.pieralisi@arm.com, linux@armlinux.org.uk,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 4.9 05/11] ARM: versatile: Add missing of_node_put in dcscb_init
+Date:   Wed,  1 Jun 2022 10:00:54 -0400
+Message-Id: <20220601140100.2005469-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220601135421.2003328-1-sashal@kernel.org>
-References: <20220601135421.2003328-1-sashal@kernel.org>
+In-Reply-To: <20220601140100.2005469-1-sashal@kernel.org>
+References: <20220601140100.2005469-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,51 +55,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vasily Averin <vvs@openvz.org>
+From: Peng Wu <wupeng58@huawei.com>
 
-[ Upstream commit dccd855771b37820b6d976a99729c88259549f85 ]
+[ Upstream commit 23b44f9c649bbef10b45fa33080cd8b4166800ae ]
 
-Fixes sparce warnings:
-fs/notify/fanotify/fanotify_user.c:267:63: sparse:
- warning: restricted fmode_t degrades to integer
-fs/notify/fanotify/fanotify_user.c:1351:28: sparse:
- warning: restricted fmode_t degrades to integer
+The device_node pointer is returned by of_find_compatible_node
+with refcount incremented. We should use of_node_put() to avoid
+the refcount leak.
 
-FMODE_NONTIFY have bitwise fmode_t type and requires __force attribute
-for any casts.
-
-Signed-off-by: Vasily Averin <vvs@openvz.org>
-Reviewed-by: Christian Brauner (Microsoft) <brauner@kernel.org>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/9adfd6ac-1b89-791e-796b-49ada3293985@openvz.org
+Signed-off-by: Peng Wu <wupeng58@huawei.com>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Link: https://lore.kernel.org/r/20220428230356.69418-1-linus.walleij@linaro.org'
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/notify/fanotify/fanotify_user.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm/mach-vexpress/dcscb.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/fs/notify/fanotify/fanotify_user.c b/fs/notify/fanotify/fanotify_user.c
-index f2a1947ec5ee..ead37db01ab5 100644
---- a/fs/notify/fanotify/fanotify_user.c
-+++ b/fs/notify/fanotify/fanotify_user.c
-@@ -264,7 +264,7 @@ static int create_fd(struct fsnotify_group *group, struct path *path,
- 	 * originally opened O_WRONLY.
- 	 */
- 	new_file = dentry_open(path,
--			       group->fanotify_data.f_flags | FMODE_NONOTIFY,
-+			       group->fanotify_data.f_flags | __FMODE_NONOTIFY,
- 			       current_cred());
- 	if (IS_ERR(new_file)) {
- 		/*
-@@ -1329,7 +1329,7 @@ SYSCALL_DEFINE2(fanotify_init, unsigned int, flags, unsigned int, event_f_flags)
- 	    (!(fid_mode & FAN_REPORT_NAME) || !(fid_mode & FAN_REPORT_FID)))
- 		return -EINVAL;
- 
--	f_flags = O_RDWR | FMODE_NONOTIFY;
-+	f_flags = O_RDWR | __FMODE_NONOTIFY;
- 	if (flags & FAN_CLOEXEC)
- 		f_flags |= O_CLOEXEC;
- 	if (flags & FAN_NONBLOCK)
+diff --git a/arch/arm/mach-vexpress/dcscb.c b/arch/arm/mach-vexpress/dcscb.c
+index 5cedcf572104..3e86cff1d4d3 100644
+--- a/arch/arm/mach-vexpress/dcscb.c
++++ b/arch/arm/mach-vexpress/dcscb.c
+@@ -146,6 +146,7 @@ static int __init dcscb_init(void)
+ 	if (!node)
+ 		return -ENODEV;
+ 	dcscb_base = of_iomap(node, 0);
++	of_node_put(node);
+ 	if (!dcscb_base)
+ 		return -EADDRNOTAVAIL;
+ 	cfg = readl_relaxed(dcscb_base + DCS_CFG_R);
 -- 
 2.35.1
 
