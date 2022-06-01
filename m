@@ -2,30 +2,29 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E579FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 10:46:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B0BEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 10:46:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352291AbiFAKqK (ORCPT
+        id S1352323AbiFAKqT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 06:46:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49990 "EHLO
+        Wed, 1 Jun 2022 06:46:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352269AbiFAKpo (ORCPT
+        with ESMTP id S1352265AbiFAKpn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 06:45:44 -0400
+        Wed, 1 Jun 2022 06:45:43 -0400
 Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36C227E1FF;
-        Wed,  1 Jun 2022 03:45:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2BF27E1DB;
+        Wed,  1 Jun 2022 03:45:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
   t=1654080343; x=1685616343;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=O2yg0I20nG+oUK+kNJ2d1RGgrkEmhPuBlC/mEvavGQQ=;
-  b=Im/7K/n5nTKdBirGInFJ4MXhVodpTpXVcZt7sWsdyNFd44OTcnnKVYa5
-   +WrUk+wjyv9tJMF5AFe18MgRYRy8nIMFjhatIzG3fLsgFxRz/+IgP942W
-   wdpXAalHv7h6UPP7NIprl4pZKR3FUE1QJWakwVfsJi7EWyqV9Fub8uQ4I
-   4=;
+  h=from:to:cc:subject:date:message-id;
+  bh=rpi2VzHyXBf4aaeMCg1+hxYs73JeG6jNmWiysOqFD4s=;
+  b=Fcxyt6p/neVsN912RIPaxtdqy/0CAtUZ++mOcyli9+pHTezW03LkEw94
+   +anVg7424E0+ljy2+ex8bOkztQ0VK16BZIj5isNeDgcOjGRLmhciNciIS
+   QD0HSKnbS5F3y8J7oY959JYW9BI2DW+qxTOloadC/vN1u7gSiI17tVvO+
+   E=;
 Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
   by alexa-out.qualcomm.com with ESMTP; 01 Jun 2022 03:45:43 -0700
 X-QCInternal: smtphost
@@ -33,9 +32,9 @@ Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
   by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 01 Jun 2022 03:45:41 -0700
 X-QCInternal: smtphost
 Received: from hu-rohiagar-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.106.138])
-  by ironmsg01-blr.qualcomm.com with ESMTP; 01 Jun 2022 16:15:23 +0530
+  by ironmsg01-blr.qualcomm.com with ESMTP; 01 Jun 2022 16:15:19 +0530
 Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3970568)
-        id 732EB3FCD; Wed,  1 Jun 2022 16:15:22 +0530 (+0530)
+        id CD1F43F92; Wed,  1 Jun 2022 16:15:18 +0530 (+0530)
 From:   Rohit Agarwal <quic_rohiagar@quicinc.com>
 To:     agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org, wim@linux-watchdog.org,
@@ -44,48 +43,39 @@ Cc:     linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
         manivannan.sadhasivam@linaro.org,
         Rohit Agarwal <quic_rohiagar@quicinc.com>
-Subject: [PATCH 08/11] ARM: dts: qcom: sdx65-mtp: Increase the vmalloc size
-Date:   Wed,  1 Jun 2022 16:15:09 +0530
-Message-Id: <1654080312-5408-9-git-send-email-quic_rohiagar@quicinc.com>
+Subject: [PATCH 00/11] Devicetree Changes SDX65
+Date:   Wed,  1 Jun 2022 16:15:01 +0530
+Message-Id: <1654080312-5408-1-git-send-email-quic_rohiagar@quicinc.com>
 X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1654080312-5408-1-git-send-email-quic_rohiagar@quicinc.com>
-References: <1654080312-5408-1-git-send-email-quic_rohiagar@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Increase the size of vmalloc using the bootargs in sdx65
-mtp board.
-It is failing to alloacte the size needed for firmware and
-giving the error logs due to actual vmalloc region lesser than requested.
+This series adds cpufreq, watchdog dt nodes and enables 
+remoteproc in sdx65 mtp.
 
-cat /proc/meminfo shows the size of VmallocTotal as 245760 kB.
+Thanks,
+Rohit.
 
-[ 10.980356] vmap allocation for size 268439552 failed: use vmalloc=<size> to increase size
-[ 10.980505] qcom_q6v5_pas 4080000.remoteproc: unable to map memory region: 0x90800000+10000000
-[ 10.988542] In adsp alloc memory: adsp_probe 482
-[ 10.988592] remoteproc remoteproc0: releasing 4080000.remoteproc
-[ 11.001598] qcom_q6v5_pas: probe of 4080000.remoteproc failed with error -16
+Rohit Agarwal (11):
+  ARM: dts: qcom: sdx65: Add CPUFreq support
+  ARM: dts: qcom: sdx65: Add modem SMP2P node
+  ARM: dts: qcom: sdx65: Add IMEM and PIL info region
+  dt-bindings: firmware: scm: Add compatible for SDX65
+  ARM: dts: qcom: sdx65: Add SCM node
+  ARM: dts: qcom: sdx65: Add Modem remoteproc node
+  ARM: dts: qcom: sdx65-mtp: Enable modem
+  ARM: dts: qcom: sdx65-mtp: Increase the vmalloc size
+  dt-bindings: watchdog: Add binding for Qcom SDX65
+  ARM: dts: qcom: sdx65: Add Watchdog support
+  ARM: dts: qcom: sdx65: Add pshold support
 
-Thus, increasing the size to 300000000 as modem is not the only one using vmalloc region.
+ .../devicetree/bindings/firmware/qcom,scm.txt      |   1 +
+ .../devicetree/bindings/watchdog/qcom-wdt.yaml     |   1 +
+ arch/arm/boot/dts/qcom-sdx65-mtp.dts               |   6 +
+ arch/arm/boot/dts/qcom-sdx65.dtsi                  | 124 +++++++++++++++++++++
+ 4 files changed, 132 insertions(+)
 
-Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
----
- arch/arm/boot/dts/qcom-sdx65-mtp.dts | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/arch/arm/boot/dts/qcom-sdx65-mtp.dts b/arch/arm/boot/dts/qcom-sdx65-mtp.dts
-index 85ea02d..966385f 100644
---- a/arch/arm/boot/dts/qcom-sdx65-mtp.dts
-+++ b/arch/arm/boot/dts/qcom-sdx65-mtp.dts
-@@ -21,6 +21,7 @@
- 
- 	chosen {
- 		stdout-path = "serial0:115200n8";
-+		bootargs = "vmalloc=300000000";
- 	};
- 
- 	reserved-memory {
 -- 
 2.7.4
 
