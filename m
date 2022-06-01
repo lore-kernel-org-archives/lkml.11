@@ -2,127 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F738C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:38:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BC5CC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:38:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240364AbiFANiT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 09:38:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41756 "EHLO
+        id S1353295AbiFANiW (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 09:38:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353290AbiFANiE (ORCPT
+        with ESMTP id S1353291AbiFANiG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 09:38:04 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 403CA5F269
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 06:38:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654090682;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=IvrCNRXCazmiTGI84GoccDVofe1EBkASPxviHdEDhYI=;
-        b=E8pjv/GI7apjAmcy3qrZjsGn9QpyI7PQRkJCQI8CPgsUp/NbjXctLZ1DTPLo5OU8k5DEAa
-        oPGCAkEld3ij0nbxCdYtaupbaB9dn0lJ7N0pqvZ3p78r7J/1mfY1MIwABJj13BT+oWILFB
-        mCp4NkavLXIuvlGe43FFNiuXI379C4w=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-511-bm0OqgH6PSeSzQXPs2kzpA-1; Wed, 01 Jun 2022 09:37:58 -0400
-X-MC-Unique: bm0OqgH6PSeSzQXPs2kzpA-1
-Received: by mail-wm1-f70.google.com with SMTP id i30-20020a1c541e000000b0039c1bf9739fso917861wmb.6
-        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 06:37:58 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=IvrCNRXCazmiTGI84GoccDVofe1EBkASPxviHdEDhYI=;
-        b=5bV0WTAkE2FKr20r52XMPE2IRif3DtXOGzKanVA5USDBnOAHxPJkFPIkB0sLpFAjum
-         XuQC77JJP+9oIAO4IhJeeNyGK3uUC2e+1l2ii9pzH+pVOyoazPRIm5ark8jY0faHO2kp
-         w/WntNvzLqTkrp5/nQi1zzmcJOlPCpU6N9uGvgoglUlAlIqvMDb/cFqvsEOKZB+x3BRw
-         ro/r5KXNRRvFCpGp7+IOpJ/GjKOzfqeo742fJEXYs0LKrsmJ8NGe5iCIkL8tNku3a4fd
-         1Cfa0BnwqXZbwG3lk+LAGVj9xW/XhYWWEfo2/ws2mNbgBdkiMWEBQjbCal3vXR5pklZF
-         c0NA==
-X-Gm-Message-State: AOAM533g5v+sZ1Fkvf2VD6W+UTSpgtjIeERwPGN7btfxIkwApSFGlgqb
-        biBi9u1cRA8uX5h8OE6pHgKhRxGYrqr/vZwV+UlSQIFYJdh/tilEj+qlMZCvGgg9Amd9mETHKud
-        BawsUAmECRjVtTUmJ3LZ58mZZ
-X-Received: by 2002:adf:e58c:0:b0:210:2f76:93fc with SMTP id l12-20020adfe58c000000b002102f7693fcmr14439937wrm.573.1654090677778;
-        Wed, 01 Jun 2022 06:37:57 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxPJjny9EEpZxgvOYA+JuC+sAEWEALch9FLpvGi6zxKd3fa5TGpUJ/JOOocoNyN+CRX8eso4A==
-X-Received: by 2002:adf:e58c:0:b0:210:2f76:93fc with SMTP id l12-20020adfe58c000000b002102f7693fcmr14439921wrm.573.1654090677480;
-        Wed, 01 Jun 2022 06:37:57 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c705:2600:951d:63df:c091:3b45? (p200300cbc7052600951d63dfc0913b45.dip0.t-ipconnect.de. [2003:cb:c705:2600:951d:63df:c091:3b45])
-        by smtp.gmail.com with ESMTPSA id z2-20020adff1c2000000b0020c5253d8dcsm1536613wro.40.2022.06.01.06.37.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Jun 2022 06:37:56 -0700 (PDT)
-Message-ID: <d5f4c444-032d-81f6-c7b8-6e1627aaf7f7@redhat.com>
-Date:   Wed, 1 Jun 2022 15:37:55 +0200
+        Wed, 1 Jun 2022 09:38:06 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B16AD5DE50
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 06:38:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654090685; x=1685626685;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=JR5obCoehj3ulyaBpP75i60De/pEvORZKnoggn39DHk=;
+  b=fsg1rfbh5PF8wtKd05riPgTivR6PwCVeRzyVMu728Knl6Hap0sqOGe4q
+   X8WWPnMjAlJXPVZBWFaKDLZQDeTA9saXh/cz9ORRBZjXihajFDU20gC+d
+   6byooNbZOE1MVFFl/5nB2OdJ1XZV9JDGZbopskjA6CZKjzXqzsK2fLu1n
+   lJYDherpmJk1JHz4mQ2CnB431S5GA48GXcBekZl/lQ7zlVwLosuCA2ynD
+   2KVdPDn4k8idBbOdWNG1MpC2TkPfTCrDfvs3iMKBNm3HmxB659wPAAkUb
+   cBrkl2WbqiZfgXxKfP4ar68B/kFNyq+EwyZhGCu+sKFbYHuZ8B7FoGiRC
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10365"; a="275598963"
+X-IronPort-AV: E=Sophos;i="5.91,268,1647327600"; 
+   d="scan'208";a="275598963"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 06:38:05 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,268,1647327600"; 
+   d="scan'208";a="562800373"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 01 Jun 2022 06:38:03 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nwOXz-00041u-07;
+        Wed, 01 Jun 2022 13:38:03 +0000
+Date:   Wed, 1 Jun 2022 21:37:34 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Peter Collingbourne <pcc@google.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Will Deacon <will@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>
+Subject: arch/arm64/kernel/mte.c:197:13: warning: no previous prototype for
+ function 'kasan_hw_tags_enable'
+Message-ID: <202206012143.S2fcThHk-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH 2/4] mm/shmem: return -EINVAL for addr not PAGE_SIZE
- aligned
-Content-Language: en-US
-To:     Chen Wandun <chenwandun@huawei.com>, hughd@google.com,
-        akpm@linux-foundation.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-References: <20220601124417.2872001-1-chenwandun@huawei.com>
- <20220601124417.2872001-3-chenwandun@huawei.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <20220601124417.2872001-3-chenwandun@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 01.06.22 14:44, Chen Wandun wrote:
-> If addr is not PAGE_SIZE aligned, return -EINVAL directly.
+Hi Peter,
 
-Why is this one to be treated in a special way compared to all of the
-other related checks?
+FYI, the error/warning still remains.
 
-> Besides, use macro offset_in_page to check addr is not
-> PAGE_SIZE aligned case.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   700170bf6b4d773e328fa54ebb70ba444007c702
+commit: e5af50a5df571c1d0268b02f924de49b742c990f arm64: kasan: mte: move GCR_EL1 switch to task switch when KASAN disabled
+date:   8 months ago
+config: arm64-buildonly-randconfig-r001-20220531 (https://download.01.org/0day-ci/archive/20220601/202206012143.S2fcThHk-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c825abd6b0198fb088d9752f556a70705bc99dfd)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=e5af50a5df571c1d0268b02f924de49b742c990f
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout e5af50a5df571c1d0268b02f924de49b742c990f
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/kernel/
 
-Using offset_in_page() LGTM.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-> 
-> Signed-off-by: Chen Wandun <chenwandun@huawei.com>
-> ---
->  mm/shmem.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/mm/shmem.c b/mm/shmem.c
-> index 80c361c3d82c..1136dd7da9e5 100644
-> --- a/mm/shmem.c
-> +++ b/mm/shmem.c
-> @@ -2143,8 +2143,8 @@ unsigned long shmem_get_unmapped_area(struct file *file,
->  		return addr;
->  	if (IS_ERR_VALUE(addr))
->  		return addr;
-> -	if (addr & ~PAGE_MASK)
-> -		return addr;
-> +	if (offset_in_page(addr))
-> +		return -EINVAL;
->  	if (addr > TASK_SIZE - len)
->  		return addr;
->  
-> @@ -2197,7 +2197,7 @@ unsigned long shmem_get_unmapped_area(struct file *file,
->  	inflated_addr = get_area(NULL, uaddr, inflated_len, 0, flags);
->  	if (IS_ERR_VALUE(inflated_addr))
->  		return addr;
-> -	if (inflated_addr & ~PAGE_MASK)
-> +	if (offset_in_page(inflated_addr))
->  		return addr;
->  
->  	inflated_offset = inflated_addr & (HPAGE_PMD_SIZE-1);
+Note: functions only called from assembly code should be annotated with the asmlinkage attribute
+All warnings (new ones prefixed by >>):
 
+>> arch/arm64/kernel/mte.c:197:13: warning: no previous prototype for function 'kasan_hw_tags_enable' [-Wmissing-prototypes]
+   void __init kasan_hw_tags_enable(struct alt_instr *alt, __le32 *origptr,
+               ^
+   arch/arm64/kernel/mte.c:197:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void __init kasan_hw_tags_enable(struct alt_instr *alt, __le32 *origptr,
+   ^
+   static 
+   arch/arm64/kernel/mte.c:103:20: warning: unused function '__mte_enable_kernel' [-Wunused-function]
+   static inline void __mte_enable_kernel(const char *mode, unsigned long tcf)
+                      ^
+   2 warnings generated.
+
+
+vim +/kasan_hw_tags_enable +197 arch/arm64/kernel/mte.c
+
+   196	
+ > 197	void __init kasan_hw_tags_enable(struct alt_instr *alt, __le32 *origptr,
+   198					 __le32 *updptr, int nr_inst)
+   199	{
+   200		BUG_ON(nr_inst != 1); /* Branch -> NOP */
+   201	
+   202		if (kasan_hw_tags_enabled())
+   203			*updptr = cpu_to_le32(aarch64_insn_gen_nop());
+   204	}
+   205	
 
 -- 
-Thanks,
-
-David / dhildenb
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
