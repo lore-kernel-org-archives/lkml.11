@@ -2,79 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 192E8C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 12:23:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B462BC43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 12:23:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231854AbiFAMXn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 08:23:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51830 "EHLO
+        id S1345207AbiFAMXr (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 08:23:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346708AbiFAMXb (ORCPT
+        with ESMTP id S1350269AbiFAMXi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 08:23:31 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2783A3B3E2
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 05:23:28 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.56])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LCpDC2Bw4z1K9BD;
-        Wed,  1 Jun 2022 20:21:47 +0800 (CST)
-Received: from dggpemm500002.china.huawei.com (7.185.36.229) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 1 Jun 2022 20:23:27 +0800
-Received: from localhost.localdomain (10.175.112.125) by
- dggpemm500002.china.huawei.com (7.185.36.229) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 1 Jun 2022 20:23:26 +0800
-From:   Chen Wandun <chenwandun@huawei.com>
-To:     <hughd@google.com>, <akpm@linux-foundation.org>,
-        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>
-CC:     <chenwandun@huawei.com>
-Subject: [PATCH 4/4] mm/shmem: rework calculation of inflated_addr in shmem_get_unmapped_area
-Date:   Wed, 1 Jun 2022 20:44:17 +0800
-Message-ID: <20220601124417.2872001-5-chenwandun@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220601124417.2872001-1-chenwandun@huawei.com>
-References: <20220601124417.2872001-1-chenwandun@huawei.com>
+        Wed, 1 Jun 2022 08:23:38 -0400
+Received: from mail-oa1-x2f.google.com (mail-oa1-x2f.google.com [IPv6:2001:4860:4864:20::2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EA393C721
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 05:23:34 -0700 (PDT)
+Received: by mail-oa1-x2f.google.com with SMTP id 586e51a60fabf-f2bb84f9edso2431629fac.10
+        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 05:23:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2ZeeMPsVq/F2kMhsR41ridh7qdYgsJ3WBnG/douuUrE=;
+        b=LhBaRrG1fxI90fUlzneUqaVvc+fkDfCztkgs5q9MatvTuiEqmSvtYMbnAwd52xAe3I
+         zRg+odQHSeRcWScWnjEEPEspwgMwqc57zsBgANK9qxcR/kC6iYapF9+qayx00vxc6wRv
+         /Vs+8vxLR4eTTSluzg1B77+eIiHTEkyV1GgUGpqLmiizynYkKvNDJCCE+vFjmMqVTJEi
+         lUue1Ca/NSvQBtbgV2UvUWvXgLYjD3MUFRwP9F0iEint4G1qw2QDf0xThtXF9qdZezFG
+         uj5IRomooli3fEPqh78YSdz6Du36gS0MQaqPb/AG6dZ/m4p+E12JPifC7VfvwLg3+++o
+         VVYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2ZeeMPsVq/F2kMhsR41ridh7qdYgsJ3WBnG/douuUrE=;
+        b=OcTRPtND6DX3AVAuqlhsmPifQwlJ7e/Y9wMFQ5VL4YtVRuTtFRsj3RV5K4Ty7IWK0e
+         bCO8OF7uJIz6aw1IIxM+Mv2QCqNNQ2o/yXsqJqMML0ZxXfuKkLDOb2Sw0OYiH7vyfkX3
+         aFmwyYpWio7JfX2uo9MNnqk6Bob3NwGdbM0cs+5jv0utCL1xVjLHk0XUj9EMo0yqCAbs
+         vjFtW45U5ifTw4CdIxpeGYf70pS9DZxrbRtjKfLOHoAczWRt5nrdEQ2HWBBvDJ8u9ikD
+         W7uRrjhMOYucHOcCj13bwRWg8JB0HQD4NuLJbdYN7yQFfQ5G7CxdgXGAUEUvWOqqzzei
+         VuNw==
+X-Gm-Message-State: AOAM533fmivGDwiCCt4h2rWVRNZVMVfhhUxJrGjBj64qojtv2qnl+yfh
+        7HkUJCqcPjc5lHJv0OGfQ1IAxw==
+X-Google-Smtp-Source: ABdhPJwsy06DtmIXDK6TBLlB20wpUQ7qEftOU5W93iRILKFthhSU/xOYgS9iXHJc+MH8bri2mp3d9A==
+X-Received: by 2002:a05:6870:891f:b0:f3:3811:3e30 with SMTP id i31-20020a056870891f00b000f338113e30mr8652915oao.269.1654086213813;
+        Wed, 01 Jun 2022 05:23:33 -0700 (PDT)
+Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id u2-20020a9d7202000000b00606387601a2sm685418otj.34.2022.06.01.05.23.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Jun 2022 05:23:33 -0700 (PDT)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Ohad Ben-Cohen <ohad@wizery.com>, linux-remoteproc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
+Subject: [GIT PULL] rpmsg updates for v5.19
+Date:   Wed,  1 Jun 2022 07:23:32 -0500
+Message-Id: <20220601122332.536516-1-bjorn.andersson@linaro.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500002.china.huawei.com (7.185.36.229)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In function shmem_get_unmapped_area, inflated_offset and offset
-are unsigned long, it will result in underflow when offset below
-inflated_offset, a little confusing, no functional change.
+The following changes since commit ce522ba9ef7e2d9fb22a39eb3371c0c64e2a433e:
 
-Signed-off-by: Chen Wandun <chenwandun@huawei.com>
----
- mm/shmem.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+  Linux 5.18-rc2 (2022-04-10 14:21:36 -1000)
 
-diff --git a/mm/shmem.c b/mm/shmem.c
-index ca04f3975a8a..f12163bd0f69 100644
---- a/mm/shmem.c
-+++ b/mm/shmem.c
-@@ -2201,9 +2201,12 @@ unsigned long shmem_get_unmapped_area(struct file *file,
- 		return addr;
- 
- 	inflated_offset = inflated_addr & (HPAGE_PMD_SIZE-1);
--	inflated_addr += offset - inflated_offset;
--	if (inflated_offset > offset)
-+	if (offset > inflated_offset)
-+		inflated_addr += offset - inflated_offset;
-+	else if (offset < inflated_offset) {
-+		inflated_addr -= inflated_offset - offset;
- 		inflated_addr += HPAGE_PMD_SIZE;
-+	}
- 
- 	if (inflated_addr > TASK_SIZE - len)
- 		return addr;
--- 
-2.25.1
+are available in the Git repository at:
 
+  https://git.kernel.org/pub/scm/linux/kernel/git/remoteproc/linux.git tags/rpmsg-v5.19
+
+for you to fetch changes up to 59d6f72f6f9c92fec8757d9e29527da828e9281f:
+
+  rpmsg: qcom_smd: Fix returning 0 if irq_of_parse_and_map() fails (2022-04-28 14:32:15 -0500)
+
+----------------------------------------------------------------
+rpmsg updates for v5.19
+
+This corrects the check for irq_of_parse_and_map() failures in the
+Qualcomm SMD driver and fixes unregistration and a couple of double free
+in the virtio rpmsg driver.
+
+----------------------------------------------------------------
+Arnaud Pouliquen (1):
+      rpmsg: virtio: Fix the unregistration of the device rpmsg_ctrl
+
+Hangyu Hua (2):
+      rpmsg: virtio: Fix possible double free in rpmsg_probe()
+      rpmsg: virtio: Fix possible double free in rpmsg_virtio_add_ctrl_dev()
+
+Krzysztof Kozlowski (2):
+      rpmsg: qcom_smd: Fix irq_of_parse_and_map() return value
+      rpmsg: qcom_smd: Fix returning 0 if irq_of_parse_and_map() fails
+
+ drivers/rpmsg/qcom_smd.c         | 4 ++--
+ drivers/rpmsg/virtio_rpmsg_bus.c | 9 ++++-----
+ 2 files changed, 6 insertions(+), 7 deletions(-)
