@@ -2,113 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33EEECCA471
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:02:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5483BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:02:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354277AbiFAOCq (ORCPT
+        id S1354290AbiFAOCt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:02:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51488 "EHLO
+        Wed, 1 Jun 2022 10:02:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354364AbiFAOAS (ORCPT
+        with ESMTP id S1354394AbiFAOAU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:00:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4695A33B3;
-        Wed,  1 Jun 2022 06:56:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Wed, 1 Jun 2022 10:00:20 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1D93A5006;
+        Wed,  1 Jun 2022 06:56:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654091800; x=1685627800;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=jUqZ7w2WMAE0tbVZTXI0Gl8U5/1ENzxvvW17y8aE7po=;
+  b=ethjiQYobhnk61a7Yk0v7zoeTr2OtGogxpgd91NLxNWZVfYdxjkERoDy
+   QeiTFQgA8wpa/fsffOozwoEUKPisGhELr84uiIJLAA2c2ZcTzpKm8gjhh
+   0h1Kg8Ve86oQTtYaZJumMezZ5dVQMAAX1exV7M6zurkR7yDNkcRirz5H9
+   ytsmkrHjKmBvffWVtTu8n1hkbIQMkohXLP5lDeBx8U8CqCuT64g8QX5xg
+   ed0mlnleB3VTBNfanIEe+NdGTCprvob3yrctDbQZW/0IAYEpDy8jaDdyB
+   jQHBqG3E3P1RSyxYy15wRfNPlPE8ergTUaw7JUd/PkUD5fuBmHAAxMlnG
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10365"; a="275604135"
+X-IronPort-AV: E=Sophos;i="5.91,268,1647327600"; 
+   d="scan'208";a="275604135"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 06:55:36 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,268,1647327600"; 
+   d="scan'208";a="530068655"
+Received: from linux.intel.com ([10.54.29.200])
+  by orsmga003.jf.intel.com with ESMTP; 01 Jun 2022 06:55:36 -0700
+Received: from [10.252.214.178] (kliang2-MOBL.ccr.corp.intel.com [10.252.214.178])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BA8BAB81AE7;
-        Wed,  1 Jun 2022 13:56:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B278C34119;
-        Wed,  1 Jun 2022 13:56:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091794;
-        bh=3a8gxMHCDSeL/R2EhuktrXzbJmCqXw0BGoZqVqZ6DYA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Jt9fX2x7NKMvfZ81RLm+5WqNMPdOj/phB4oqoqa6O1oQ4Wvz/Rq9rfSAHd0ly/RBm
-         FZjfufdMLE/xHpNWntwJ63F3LbSbiJ97wOSi4HXFgf7wlSNhVM6kh+whnpvAQ45na0
-         gbGcOjMBZd11i7Y7MKGSoFTZT7GsmlqWV9mmpBARy2H+bojBApePyNdVTtRI4WXWXN
-         DapLA8j5tYjiC1WnzXQ/wLfBuDMD+83jmLFTcedEtuKdtnoXZGuhO/GRpP3i2xHUKW
-         3BaIPYlaEuMw91gm4iuYeg7lNLG2Ws6XTeDQ/bOB4tLPqrNnpTCTanoE5QXv7P6x/M
-         oId78eNzmdpAg==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Brian Norris <briannorris@chromium.org>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Sasha Levin <sashal@kernel.org>, myungjoo.ham@samsung.com,
-        kyungmin.park@samsung.com, linux-pm@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 07/37] PM / devfreq: rk3399_dmc: Disable edev on remove()
-Date:   Wed,  1 Jun 2022 09:55:52 -0400
-Message-Id: <20220601135622.2003939-7-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220601135622.2003939-1-sashal@kernel.org>
-References: <20220601135622.2003939-1-sashal@kernel.org>
+        by linux.intel.com (Postfix) with ESMTPS id 66EBD580514;
+        Wed,  1 Jun 2022 06:55:33 -0700 (PDT)
+Message-ID: <9fa06966-ceec-e48b-677c-c8f2dc8ab20a@linux.intel.com>
+Date:   Wed, 1 Jun 2022 09:55:31 -0400
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v5 2/8] perf tool: Parse pmu caps sysfs only once
+Content-Language: en-US
+To:     Ravi Bangoria <ravi.bangoria@amd.com>
+Cc:     acme@kernel.org, jolsa@kernel.org, irogers@google.com,
+        peterz@infradead.org, rrichter@amd.com, mingo@redhat.com,
+        mark.rutland@arm.com, namhyung@kernel.org, tglx@linutronix.de,
+        bp@alien8.de, james.clark@arm.com, leo.yan@linaro.org,
+        ak@linux.intel.com, eranian@google.com, like.xu.linux@gmail.com,
+        x86@kernel.org, linux-perf-users@vger.kernel.org,
+        linux-kernel@vger.kernel.org, sandipan.das@amd.com,
+        ananth.narayan@amd.com, kim.phillips@amd.com,
+        santosh.shukla@amd.com
+References: <20220601032608.1034-1-ravi.bangoria@amd.com>
+ <20220601032608.1034-3-ravi.bangoria@amd.com>
+ <47584a6b-20b9-9a3d-3125-d9fe848cea54@linux.intel.com>
+ <0c795f97-c582-8059-fcf8-82b43239f0d1@amd.com>
+From:   "Liang, Kan" <kan.liang@linux.intel.com>
+In-Reply-To: <0c795f97-c582-8059-fcf8-82b43239f0d1@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brian Norris <briannorris@chromium.org>
 
-[ Upstream commit 2fccf9e6050e0e3b8b4cd275d41daf7f7fa22804 ]
 
-Otherwise we hit an unablanced enable-count when unbinding the DFI
-device:
+On 6/1/2022 9:51 AM, Ravi Bangoria wrote:
+> Hi Kan,
+> 
+> [...]
+> 
+>>> diff --git a/tools/perf/util/pmu.h b/tools/perf/util/pmu.h
+>>> index 541889fa9f9c..4b45fd8da5a3 100644
+>>> --- a/tools/perf/util/pmu.h
+>>> +++ b/tools/perf/util/pmu.h
+>>> @@ -46,6 +46,8 @@ struct perf_pmu {
+>>>        struct perf_cpu_map *cpus;
+>>>        struct list_head format;  /* HEAD struct perf_pmu_format -> list */
+>>>        struct list_head aliases; /* HEAD struct perf_pmu_alias -> list */
+>>> +    bool caps_initialized;
+>>> +    u32 nr_caps;
+>>
+>> If they are just used for the cache purpose, I don't think we need to add the variables in the struct perf_pmu.
+>>
+>> A static variable should be good enough. See sysctl__nmi_watchdog_enabled().
+> 
+> These fields are per pmu. Static variable won't help :) And they are
+> used in subsequent patches as well.
+> 
 
-[ 1279.659119] ------------[ cut here ]------------
-[ 1279.659179] WARNING: CPU: 2 PID: 5638 at drivers/devfreq/devfreq-event.c:360 devfreq_event_remove_edev+0x84/0x8c
-...
-[ 1279.659352] Hardware name: Google Kevin (DT)
-[ 1279.659363] pstate: 80400005 (Nzcv daif +PAN -UAO -TCO BTYPE=--)
-[ 1279.659371] pc : devfreq_event_remove_edev+0x84/0x8c
-[ 1279.659380] lr : devm_devfreq_event_release+0x1c/0x28
-...
-[ 1279.659571] Call trace:
-[ 1279.659582]  devfreq_event_remove_edev+0x84/0x8c
-[ 1279.659590]  devm_devfreq_event_release+0x1c/0x28
-[ 1279.659602]  release_nodes+0x1cc/0x244
-[ 1279.659611]  devres_release_all+0x44/0x60
-[ 1279.659621]  device_release_driver_internal+0x11c/0x1ac
-[ 1279.659629]  device_driver_detach+0x20/0x2c
-[ 1279.659641]  unbind_store+0x7c/0xb0
-[ 1279.659650]  drv_attr_store+0x2c/0x40
-[ 1279.659663]  sysfs_kf_write+0x44/0x58
-[ 1279.659672]  kernfs_fop_write_iter+0xf4/0x190
-[ 1279.659684]  vfs_write+0x2b0/0x2e4
-[ 1279.659693]  ksys_write+0x80/0xec
-[ 1279.659701]  __arm64_sys_write+0x24/0x30
-[ 1279.659714]  el0_svc_common+0xf0/0x1d8
-[ 1279.659724]  do_el0_svc_compat+0x28/0x3c
-[ 1279.659738]  el0_svc_compat+0x10/0x1c
-[ 1279.659746]  el0_sync_compat_handler+0xa8/0xcc
-[ 1279.659758]  el0_sync_compat+0x188/0x1c0
-[ 1279.659768] ---[ end trace cec200e5094155b4 ]---
+Ah, I see. Then the patch looks good to me.
 
-Signed-off-by: Brian Norris <briannorris@chromium.org>
-Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/devfreq/rk3399_dmc.c | 2 ++
- 1 file changed, 2 insertions(+)
+Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
 
-diff --git a/drivers/devfreq/rk3399_dmc.c b/drivers/devfreq/rk3399_dmc.c
-index 293857ebfd75..538e8dc74f40 100644
---- a/drivers/devfreq/rk3399_dmc.c
-+++ b/drivers/devfreq/rk3399_dmc.c
-@@ -477,6 +477,8 @@ static int rk3399_dmcfreq_remove(struct platform_device *pdev)
- {
- 	struct rk3399_dmcfreq *dmcfreq = dev_get_drvdata(&pdev->dev);
- 
-+	devfreq_event_disable_edev(dmcfreq->edev);
-+
- 	/*
- 	 * Before remove the opp table we need to unregister the opp notifier.
- 	 */
--- 
-2.35.1
-
+Thanks,
+Kan
