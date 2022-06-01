@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 185EDCCA472
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:07:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBC85CCA46F
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:07:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355460AbiFAOFx (ORCPT
+        id S1355356AbiFAOFs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:05:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55412 "EHLO
+        Wed, 1 Jun 2022 10:05:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354992AbiFAOBK (ORCPT
+        with ESMTP id S1354613AbiFAOAp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:01:10 -0400
+        Wed, 1 Jun 2022 10:00:45 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0106552B07;
-        Wed,  1 Jun 2022 06:57:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41E7A1838A;
+        Wed,  1 Jun 2022 06:57:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B60FA6162C;
-        Wed,  1 Jun 2022 13:57:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EF4DC385A5;
-        Wed,  1 Jun 2022 13:57:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 87576615D3;
+        Wed,  1 Jun 2022 13:56:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E457EC36AEA;
+        Wed,  1 Jun 2022 13:56:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091828;
-        bh=djdQ9S61mfxn5Qroahz8b0fLg9sK1orzkaSB+oH7BUw=;
+        s=k20201202; t=1654091793;
+        bh=5qyxIHSJtGOnmf8C0NxsexbhzBIOvakF7hmosyKhzC4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cN+X5Q4KPNWk1SwTRYwQY06W3utjYZrKwvm58V15MA8kmGzoTpCFNij3nW4MnkS/4
-         dvor8i91kKLt821Way8/StWbo6CKr/c37RgdGoJlHcfe1oybfPAAUInEV3j7Hs8c4m
-         ka7VLRvx5FtZGOBp13PBZ8kDM70bJkFvgSGzMKkuhcnQe9nQVIHqUB06FYNtiEnxfT
-         oie2L7sIC1p/aB97wlIFKx7+ns4pwWmUUQAnnfW6W2kWcWa4Cl7BAVSN45i4NFwctO
-         wWQg5IjhMbbREOmr0SUT+uPLEQxdsggVRlRL2Utuxx0Lv6/WWiInBRztSx3ub9uW9t
-         Fvr6Gj1D/F7IA==
+        b=IzjOhqYjXS8KoycTyNKZpL28xwOA0LZ6Sje5a8gzXZyDB0T9RJxREr5HoFhu+pNxL
+         pc+tuO2eCiZDBtauWoqiB319I/AaM1wt5ZrdOeziyEKROODtjGzjfwQreWQqoG1pom
+         CguSn/GhsiIXMmnfkoqZYJgeyO0abiSi3AVSYvT4I776++eWCuL674GksNOM63Yow9
+         DxTMqKDCV7Hh7oiYsRD/QYlKobQ50BJXJ5uHBpWUxdr6fVtiDNuSnYrDvHrvOzWwiU
+         qDzvC7RxfHT10LRu1C1mpLrm912Q9mLz4cRYy3SLOw68pu/DAUAczAdK+RnXJGYXlG
+         s35RA8ELUDdog==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Peng Wu <wupeng58@huawei.com>, Wei Xu <xuwei5@hisilicon.com>,
-        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 22/37] ARM: hisi: Add missing of_node_put after of_find_compatible_node
-Date:   Wed,  1 Jun 2022 09:56:07 -0400
-Message-Id: <20220601135622.2003939-22-sashal@kernel.org>
+Cc:     Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>, agross@kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 06/37] arm64: dts: qcom: msm8994: Fix BLSP[12]_DMA channels count
+Date:   Wed,  1 Jun 2022 09:55:51 -0400
+Message-Id: <20220601135622.2003939-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135622.2003939-1-sashal@kernel.org>
 References: <20220601135622.2003939-1-sashal@kernel.org>
@@ -52,50 +54,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peng Wu <wupeng58@huawei.com>
+From: Konrad Dybcio <konrad.dybcio@somainline.org>
 
-[ Upstream commit 9bc72e47d4630d58a840a66a869c56b29554cfe4 ]
+[ Upstream commit 1ae438d26b620979ed004d559c304d31c42173ae ]
 
-of_find_compatible_node  will increment the refcount of the returned
-device_node. Calling of_node_put() to avoid the refcount leak
+MSM8994 actually features 24 DMA channels for each BLSP,
+fix it!
 
-Signed-off-by: Peng Wu <wupeng58@huawei.com>
-Signed-off-by: Wei Xu <xuwei5@hisilicon.com>
+Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220319174645.340379-14-konrad.dybcio@somainline.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-hisi/platsmp.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ arch/arm64/boot/dts/qcom/msm8994.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/mach-hisi/platsmp.c b/arch/arm/mach-hisi/platsmp.c
-index a56cc64deeb8..9ce93e0b6cdc 100644
---- a/arch/arm/mach-hisi/platsmp.c
-+++ b/arch/arm/mach-hisi/platsmp.c
-@@ -67,14 +67,17 @@ static void __init hi3xxx_smp_prepare_cpus(unsigned int max_cpus)
- 		}
- 		ctrl_base = of_iomap(np, 0);
- 		if (!ctrl_base) {
-+			of_node_put(np);
- 			pr_err("failed to map address\n");
- 			return;
- 		}
- 		if (of_property_read_u32(np, "smp-offset", &offset) < 0) {
-+			of_node_put(np);
- 			pr_err("failed to find smp-offset property\n");
- 			return;
- 		}
- 		ctrl_base += offset;
-+		of_node_put(np);
- 	}
- }
+diff --git a/arch/arm64/boot/dts/qcom/msm8994.dtsi b/arch/arm64/boot/dts/qcom/msm8994.dtsi
+index 1165269f059e..3c27671c8b5c 100644
+--- a/arch/arm64/boot/dts/qcom/msm8994.dtsi
++++ b/arch/arm64/boot/dts/qcom/msm8994.dtsi
+@@ -498,7 +498,7 @@ blsp1_dma: dma-controller@f9904000 {
+ 			#dma-cells = <1>;
+ 			qcom,ee = <0>;
+ 			qcom,controlled-remotely;
+-			num-channels = <18>;
++			num-channels = <24>;
+ 			qcom,num-ees = <4>;
+ 		};
  
-@@ -160,6 +163,7 @@ static int hip01_boot_secondary(unsigned int cpu, struct task_struct *idle)
- 	if (WARN_ON(!node))
- 		return -1;
- 	ctrl_base = of_iomap(node, 0);
-+	of_node_put(node);
+@@ -634,7 +634,7 @@ blsp2_dma: dma-controller@f9944000 {
+ 			#dma-cells = <1>;
+ 			qcom,ee = <0>;
+ 			qcom,controlled-remotely;
+-			num-channels = <18>;
++			num-channels = <24>;
+ 			qcom,num-ees = <4>;
+ 		};
  
- 	/* set the secondary core boot from DDR */
- 	remap_reg_value = readl_relaxed(ctrl_base + REG_SC_CTRL);
 -- 
 2.35.1
 
