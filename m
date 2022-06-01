@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FAC0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:58:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FDD3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:58:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353969AbiFAN6p (ORCPT
+        id S1343614AbiFAN6t (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 09:58:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59592 "EHLO
+        Wed, 1 Jun 2022 09:58:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353915AbiFAN52 (ORCPT
+        with ESMTP id S1353926AbiFAN52 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 1 Jun 2022 09:57:28 -0400
 Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD71C326F4;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C98C87A09;
         Wed,  1 Jun 2022 06:55:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D363BCE1C22;
-        Wed,  1 Jun 2022 13:54:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 554A7C36AE2;
-        Wed,  1 Jun 2022 13:54:35 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A7F14CE1A1E;
+        Wed,  1 Jun 2022 13:55:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25D5EC385B8;
+        Wed,  1 Jun 2022 13:55:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091676;
-        bh=Zr7YC4rgbso/fpVcgH8HKP6qnO/dpBaDX89+uXZI+Xw=;
+        s=k20201202; t=1654091707;
+        bh=KJhUKllErRJpBntBCZwKFWW3K3q4jqc9MvCVLYA5Vgo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pu7rP2OhIdt0E8C1A3plR74qgX+LfiSdC5DQciPQmODJNnFihb+JKb2dubjxWG2Ax
-         gEHuWPDv/BnY0O7dbdTHbEq1ogRTQQG6DKuNCHEyIe050MQVF7hjwH6FDX9qb6cDlX
-         ybmtOmDzGNmtXJOO29Gw+OAILavItjgZ+yXxUPQKcQTgioqS19Sb9/TR05d0a8bI9P
-         7oLJLyLaxP1HnRgxFuyAhacI9IyRtWAqmUadvUyIRkn9scaM1JCVI+hzZuEyuD9re4
-         C5MaIEQCZVY21WfLqHa7GAuxDUkdynUU3NvPepxoZ0YvnZffUuXGgNz3rlmoHcmoab
-         8nsAv1KEQckdQ==
+        b=TypX2Hcj5/sx/NiZDNDxUZJqK8u50Seq+EZ/Nl9qEBS4uHjEv+tNQbf8VBZkRi3sT
+         yuHhHewUYTYUmuaygWhGDJ+s4nTRfAb+BatUe85HfgNkrLGlvc4VqcJmnAS2wOQJnC
+         WE8WILFu1nsWVW4Evq8Bh/ARyJShnqu9WyPSC0gbZw9fAAAkQDuoHgFZCePV7jSOCX
+         glIh5N58sdCGzI8NZWaW1o2tPxnVf5ypWeFI31utFwpBQuOJUfZMSJ7jPInQ/a0BTq
+         nFu3lMf0gRcuAoTCnEWorrz/6oCfOtbzCNmUPdJGzxUbGEFXji/DqR6ApL2b8Q2+yQ
+         LkAB/5cZoJZ3Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>, agross@kernel.org,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 07/48] arm64: dts: qcom: msm8994: Fix the cont_splash_mem address
-Date:   Wed,  1 Jun 2022 09:53:40 -0400
-Message-Id: <20220601135421.2003328-7-sashal@kernel.org>
+Cc:     Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 19/48] selftests/resctrl: Change the default limited time to 120 seconds
+Date:   Wed,  1 Jun 2022 09:53:52 -0400
+Message-Id: <20220601135421.2003328-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135421.2003328-1-sashal@kernel.org>
 References: <20220601135421.2003328-1-sashal@kernel.org>
@@ -54,36 +55,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Konrad Dybcio <konrad.dybcio@somainline.org>
+From: Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>
 
-[ Upstream commit 049c46f31a726bf8d202ff1681661513447fac84 ]
+[ Upstream commit e2e3fb6ef0d6548defbe0be6e092397aaa92f3a1 ]
 
-The default memory map places cont_splash_mem at 3401000, which was
-overlooked.. Fix it!
+When testing on a Intel(R) Xeon(R) Gold 6254 CPU @ 3.10GHz the resctrl
+selftests fail due to timeout after exceeding the default time limit of
+45 seconds. On this system the test takes about 68 seconds.
+Since the failing test by default accesses a fixed size of memory, the
+execution time should not vary significantly between different environment.
+A new default of 120 seconds should be sufficient yet easy to customize
+with the introduction of the "settings" file for reference.
 
-Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220319174645.340379-9-konrad.dybcio@somainline.org
+Reviewed-by: Reinette Chatre <reinette.chatre@intel.com>
+Reviewed-by: Fenghua Yu <fenghua.yu@intel.com>
+Signed-off-by: Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/msm8994.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ tools/testing/selftests/resctrl/settings | 3 +++
+ 1 file changed, 3 insertions(+)
+ create mode 100644 tools/testing/selftests/resctrl/settings
 
-diff --git a/arch/arm64/boot/dts/qcom/msm8994.dtsi b/arch/arm64/boot/dts/qcom/msm8994.dtsi
-index 215f56daa26c..480bc686e8e8 100644
---- a/arch/arm64/boot/dts/qcom/msm8994.dtsi
-+++ b/arch/arm64/boot/dts/qcom/msm8994.dtsi
-@@ -183,8 +183,8 @@ dfps_data_mem: dfps_data_mem@3400000 {
- 			no-map;
- 		};
- 
--		cont_splash_mem: memory@3800000 {
--			reg = <0 0x03800000 0 0x2400000>;
-+		cont_splash_mem: memory@3401000 {
-+			reg = <0 0x03401000 0 0x2200000>;
- 			no-map;
- 		};
- 
+diff --git a/tools/testing/selftests/resctrl/settings b/tools/testing/selftests/resctrl/settings
+new file mode 100644
+index 000000000000..a383f3d4565b
+--- /dev/null
++++ b/tools/testing/selftests/resctrl/settings
+@@ -0,0 +1,3 @@
++# If running time is longer than 120 seconds when new tests are added in
++# the future, increase timeout here.
++timeout=120
 -- 
 2.35.1
 
