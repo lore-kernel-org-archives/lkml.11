@@ -2,94 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18247CCA468
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 436FFCCA46F
 	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:50:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353337AbiFANt7 (ORCPT
+        id S1353360AbiFANu4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 09:49:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46808 "EHLO
+        Wed, 1 Jun 2022 09:50:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348518AbiFANt4 (ORCPT
+        with ESMTP id S1353355AbiFANuy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 09:49:56 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 716F56EC68
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 06:49:55 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id er5so2245931edb.12
-        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 06:49:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=SSTmyO7r/mS6th8O2P4H7/DxEelyPzQghynixwdI0fw=;
-        b=bO8DTowex8MiGGLFPY7tvF6/wGDXcK4tkC0V9koEkl3HGfUXH2oC2o1VSOchys1J8n
-         6hpyeQ+GhM8yQvnLuyD0qwLhXwMvycLRUBYkWYQByxnikhuC+CKHCg2skik+Zf7VA68C
-         CXduRsfOhC2L4fY1rU/prtawC9XXlec2feeCMFnMHkARNzLX0CmnKcwPDSiV3N28elaa
-         cHgBapAtYTLryGCpt/GGJ0+rQfQwU+/JkDi+SZCJQE9NSV5q+qpgRLI6TNX4v5u/8E0H
-         ZAXUzU7RDRkshukPiO3d02ewfZ3AIBZp6T6bVlWldszxOh1rAlsgTLlJoafoyeQXC8pn
-         EPvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=SSTmyO7r/mS6th8O2P4H7/DxEelyPzQghynixwdI0fw=;
-        b=WjpsDP6oTxKVyiQGy7cn4yba+zLs3lGoeZUXBWjJNJoMrBAFdUm9UjXkYUhk0l56fl
-         JGVOZg1Cyv5jjFK/3OBFUBmv7TcULiy2HwUlNcnUt23AVsitT7pVamQTwvKBy2kgIfE3
-         HP3ZH2z3DYegIqgBqtnFd0IAYzY2DjtAsRdHqZoivwR6vTpTyqlC5IOPVFiG5XHDKv2T
-         gf0et4YKQf9AAKrGTZGceR+bGX7LWbXajsx9kkRHqvzFmH3QDctImIDTVfEaG7t4BZXp
-         p3uFnGJln6IrYWp5yY9WNAwMzVvBdJof3SDBY+UFufH3HcaBvgnnslrnwZfkoGsGfjfN
-         JtzA==
-X-Gm-Message-State: AOAM531gUl3ASsEEHQSnb8baRo6rgVT+ObHNOgcbVY6D9tgn8BJ6KDj4
-        WWPmc8BxA9lpOkRRvRqxmk4FVA==
-X-Google-Smtp-Source: ABdhPJyZxcpKpGRWORTwSy90l0in3vkdzYK1jCmwYLf7w0jKuXiB3mEJOnpgLSp23aWdqSgXVoTJYg==
-X-Received: by 2002:a05:6402:2405:b0:425:a4bc:db86 with SMTP id t5-20020a056402240500b00425a4bcdb86mr12092eda.98.1654091394021;
-        Wed, 01 Jun 2022 06:49:54 -0700 (PDT)
-Received: from [192.168.0.179] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id m9-20020a170906580900b006feb7b1379dsm699306ejq.181.2022.06.01.06.49.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Jun 2022 06:49:53 -0700 (PDT)
-Message-ID: <7978ed42-ff8b-567a-9dbe-8535d8698328@linaro.org>
-Date:   Wed, 1 Jun 2022 15:49:52 +0200
+        Wed, 1 Jun 2022 09:50:54 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC61F6F481;
+        Wed,  1 Jun 2022 06:50:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 2262ACE1A1E;
+        Wed,  1 Jun 2022 13:50:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09A7CC385A5;
+        Wed,  1 Jun 2022 13:50:48 +0000 (UTC)
+Date:   Wed, 1 Jun 2022 14:50:45 +0100
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     Arnaud POULIQUEN <arnaud.pouliquen@foss.st.com>
+Cc:     Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org
+Subject: Re: [PATCH v3] arm64: defconfig: Config that had RPMSG_CHAR now gets
+ RPMSG_CTRL
+Message-ID: <YpdutV3/jOsfPb5c@arm.com>
+References: <20220405161114.1107745-1-arnaud.pouliquen@foss.st.com>
+ <c497e1ef-5a62-d956-4516-87e7b53a6001@foss.st.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] dt-bindings: vendor-prefixes: document deprecated Atheros
-Content-Language: en-US
-To:     Rob Herring <robh+dt@kernel.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20220529111515.182810-1-krzysztof.kozlowski@linaro.org>
- <CAL_JsqKcn+NDaPvRYBFbOZZ-x7fKPLenGBh5xdUPBU3usk9hnw@mail.gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <CAL_JsqKcn+NDaPvRYBFbOZZ-x7fKPLenGBh5xdUPBU3usk9hnw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c497e1ef-5a62-d956-4516-87e7b53a6001@foss.st.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 01/06/2022 15:47, Rob Herring wrote:
-> On Sun, May 29, 2022 at 6:15 AM Krzysztof Kozlowski
-> <krzysztof.kozlowski@linaro.org> wrote:
->>
->> Two old boards use "atheros" prefix instead of already documented "qca".
->> Document it as deprecated to fix warnings like:
->>
->>   at91-gatwick.dtb: atheros@0: 'atheros,board-id' does not match any of the regexes
->>
->> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->> ---
->>  Documentation/devicetree/bindings/vendor-prefixes.yaml | 3 +++
->>  1 file changed, 3 insertions(+)
+On Wed, Jun 01, 2022 at 03:25:42PM +0200, Arnaud POULIQUEN wrote:
+> Gentle reminder.
+> Please notice that Mathieu replied with a "Reviewed-by".
+
+We usually leave the defconfig updates to the SoC team. Cc'ing Arnd.
+
+Catalin
+
+> Thanks,
+> Arnaud
 > 
-> Can you resend this not dependent on 'dt-bindings: vendor-prefixes:
-> document several vendors for Aspeed BMC boards'.
-
-Indeed there is a trailing "ASRock". I'll send a fresh one.
-
-
-Best regards,
-Krzysztof
+> On 4/5/22 18:11, Arnaud Pouliquen wrote:
+> > In the commit 617d32938d1b ("rpmsg: Move the rpmsg control device
+> > from rpmsg_char to rpmsg_ctrl"), we split the rpmsg_char driver in two.
+> > By default give everyone who had the old driver enabled the rpmsg_ctrl
+> > driver too.
+> > 
+> > Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
+> > ---
+> > 
+> > This patch is extracted from the series [1] that has been partially
+> > integrated in the Linux Kernel 5.18-rc1.
+> > 
+> > Update vs previous version:
+> > - Add missing "---" separation marker after "Signed-off-by".
+> > 
+> > [1]https://lore.kernel.org/lkml/15be2f08-ba03-2b80-6f53-2056359d5c41@gmail.com/T/
+> > [2]https://lore.kernel.org/linux-arm-kernel/CANLsYky1_b80qPbgOaLGVYD-GEr21V6C653iGEB7VCU=GbGvAQ@mail.gmail.com/T/
+> > ---
+> >  arch/arm64/configs/defconfig | 1 +
+> >  1 file changed, 1 insertion(+)
+> > 
+> > diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
+> > index 50aa3d75ab4f..3f8906b8a2ca 100644
+> > --- a/arch/arm64/configs/defconfig
+> > +++ b/arch/arm64/configs/defconfig
+> > @@ -1053,6 +1053,7 @@ CONFIG_QCOM_Q6V5_PAS=m
+> >  CONFIG_QCOM_SYSMON=m
+> >  CONFIG_QCOM_WCNSS_PIL=m
+> >  CONFIG_RPMSG_CHAR=m
+> > +CONFIG_RPMSG_CTRL=m
+> >  CONFIG_RPMSG_QCOM_GLINK_RPM=y
+> >  CONFIG_RPMSG_QCOM_GLINK_SMEM=m
+> >  CONFIG_RPMSG_QCOM_SMD=y
