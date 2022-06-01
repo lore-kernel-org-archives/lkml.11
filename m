@@ -2,358 +2,304 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6340AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 16:21:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C59BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 16:21:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356071AbiFAQVP (ORCPT
+        id S1356094AbiFAQVv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 12:21:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46674 "EHLO
+        Wed, 1 Jun 2022 12:21:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356059AbiFAQVJ (ORCPT
+        with ESMTP id S1356075AbiFAQVp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 12:21:09 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A94967939B;
-        Wed,  1 Jun 2022 09:21:07 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: nicolas)
-        with ESMTPSA id E62581F443BF
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1654100466;
-        bh=E4FJUmMAl8Mh7E9Z5cNlbSozATjPpKyz0sy+o9BoOYw=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=B8HOs0uWx/cB0v1FqSf8WnIOe1v4nUaBA7oS/8aP/HN5vTsdUjuQhtzKFwDYyQr33
-         3Rw+jhZtcpXoTP9f2vH+TZFE16VfPrIvaovjbRDcUC00s9H4t0IYN+PMQ+XWdQNq1b
-         9XbQojRLNl1tCKc7/2Tea4tbbWaXMsklluscD6qxM27AznZ8MSZHFQR7iJr7jbPUKn
-         YBAE7qvTPES/otVfp9O//OQXPj7ZFX2npCIu1AsFEqabRWEffFv5QyZHpMuZvBgovK
-         pXYb/PIO/SXXQZ/jBBWwu6kcomll2MSIruaUXuA2kzaQNfkJUCnUCv8DFlEOezXTLM
-         COX7FJW+RrsCA==
-Message-ID: <95261aa18425e8f5571888a41ee03d9dfd2814b9.camel@collabora.com>
-Subject: Re: Re: [PATCH v6 11/17] media: uapi: Add
- V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS control
-From:   Nicolas Dufresne <nicolas.dufresne@collabora.com>
-To:     Jernej =?UTF-8?Q?=C5=A0krabec?= <jernej.skrabec@gmail.com>,
-        mchehab@kernel.org, ezequiel@vanguardiasur.com.ar,
-        p.zabel@pengutronix.de, gregkh@linuxfoundation.org,
-        mripard@kernel.org, paul.kocialkowski@bootlin.com, wens@csie.org,
-        samuel@sholland.org, andrzej.p@collabora.com,
-        Hans Verkuil <hverkuil@xs4all.nl>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        kernel@collabora.com
-Date:   Wed, 01 Jun 2022 12:20:53 -0400
-In-Reply-To: <2102878.irdbgypaU6@kista>
-References: <20220527143134.3360174-1-benjamin.gaignard@collabora.com>
-         <5824953.lOV4Wx5bFT@kista>
-         <b398272b-daf8-7499-b4fd-8a6f2af30053@collabora.com>
-         <2102878.irdbgypaU6@kista>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.1 (3.44.1-1.fc36) 
+        Wed, 1 Jun 2022 12:21:45 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2084.outbound.protection.outlook.com [40.107.244.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4271CF71;
+        Wed,  1 Jun 2022 09:21:43 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fD62uRApJBWnyRW37rzh3+P2qRHqUfIyP9k6aZtdi8rtayVaniEdKJGsBBV36INVb5r4ZQqyXQN+Jm1jx7wUGjkZLfI61322Nct4aPZ5Vd+eKBhPNJKv20ND9dv3Fwf9ZZogmfTV/KMEybNrGeGGUczJmmiS+jOwL8OI+RMttX2caomgpISso1JdILIne4R9hT67/plxMPaBhwEUM1jLcj2T71ud0cGv6zZTzFAjCWKgdS7Bno0HrEuagVZHKb8G3SR10jEhGOJLxPE1p4D37tWim2LnUYgDt1s8h0Z3wj4d8v6DyAhAG8Pi1n45dTSqEPo0GdTkhv6nVFAt9WxvYw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=j8nYALWdi2VaD7LQsvqKvBKhSrzLHMBaxT2zxG9NCkA=;
+ b=dFrGUGT2q0ntOiqxIQozA2lY3Ld4M8gWyYpzM0o1rpJ5S8LO3BVSfkfGblSQMsOzgQJV8zn6kMQP1b0LUU2zuA0ra7+lYdQv06tro/eG6OAIFT7js9Uku4XHdxPAcgt5dZHcfXikd7j4tQOm3iKeKnW/E/Id5h8gC7TO0Q64lGBPCnFqIgfb7wXlElqeNhFccNXlrlN2H2fudCpQmK3Jryhib/djg8gt0hZR8JzEo82dhvy0co1RLC5vo8SDVEb/dRoFCzLzZCTRq79RBQcj6sxl8tVa1jFswDPdfhTOGfEDu7GknSVUb4gZvb1y+sFA/x4AyGVXZ495o1jzerV5ZA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=lists.openampproject.org
+ smtp.mailfrom=xilinx.com; dmarc=pass (p=none sp=none pct=100) action=none
+ header.from=xilinx.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=j8nYALWdi2VaD7LQsvqKvBKhSrzLHMBaxT2zxG9NCkA=;
+ b=L7lulCbs++c3r7e023TNhj436NQJVx0UL8kIV8KkccRo8ZPrWVFQ/gyrSpW3NQHhBFCN4fppkxg2uEXjMp5TzoJ9UZgcsbbhL0mjYlnvqy/kBrRfkIPT2PY/WfP+vNxtFoohDNDfg3wAgjHy4SZNI+cB0jjcz6UNLz2zz31DZDc=
+Received: from SN7P220CA0008.NAMP220.PROD.OUTLOOK.COM (2603:10b6:806:123::13)
+ by SA2PR02MB7530.namprd02.prod.outlook.com (2603:10b6:806:149::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.13; Wed, 1 Jun
+ 2022 16:21:41 +0000
+Received: from SN1NAM02FT0064.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:806:123:cafe::6a) by SN7P220CA0008.outlook.office365.com
+ (2603:10b6:806:123::13) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.12 via Frontend
+ Transport; Wed, 1 Jun 2022 16:21:41 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.62.198; helo=xsj-pvapexch01.xlnx.xilinx.com; pr=C
+Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
+ SN1NAM02FT0064.mail.protection.outlook.com (10.97.4.66) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5314.12 via Frontend Transport; Wed, 1 Jun 2022 16:21:41 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Wed, 1 Jun 2022 09:21:38 -0700
+Received: from smtp.xilinx.com (172.19.127.95) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Wed, 1 Jun 2022 09:21:38 -0700
+Envelope-to: openamp-system-reference@lists.openampproject.org,
+ bjorn.andersson@linaro.org,
+ mathieu.poirier@linaro.org,
+ robh+dt@kernel.org,
+ krzk+dt@kernel.org,
+ linux-remoteproc@vger.kernel.org,
+ devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org
+Received: from [172.19.3.14] (port=50642 helo=xsjtanmays50.xilinx.com)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <tanmay.shah@xilinx.com>)
+        id 1nwR6I-0003Rb-Cx; Wed, 01 Jun 2022 09:21:38 -0700
+From:   Tanmay Shah <tanmay.shah@xilinx.com>
+To:     <openamp-system-reference@lists.openampproject.org>,
+        <bjorn.andersson@linaro.org>, <mathieu.poirier@linaro.org>,
+        <robh+dt@kernel.org>, <krzk+dt@kernel.org>,
+        <michal.simek@xilinx.com>, <ben.levinsky@xilinx.com>,
+        <tanmay.shah@xilinx.com>
+CC:     <linux-remoteproc@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+Subject: [PATCH v7 1/6] dt-bindings: remoteproc: Add Xilinx RPU subsystem bindings
+Date:   Wed, 1 Jun 2022 09:21:07 -0700
+Message-ID: <20220601162111.3505458-2-tanmay.shah@xilinx.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220601162111.3505458-1-tanmay.shah@xilinx.com>
+References: <20220601162111.3505458-1-tanmay.shah@xilinx.com>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 69ac61d5-1345-4619-8abd-08da43eacfbd
+X-MS-TrafficTypeDiagnostic: SA2PR02MB7530:EE_
+X-Microsoft-Antispam-PRVS: <SA2PR02MB75302E967950BA73279AC719CADF9@SA2PR02MB7530.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: DN2TQCBlNcFB0F/J/iUq9WeOGpw5tL/M/Fp2FOmpPAXN9nSLK9PDL7aF/aoOgTo/uBwKSAm64/+R14bmIMoTXhcoDr0XLfujjE9DCIwxKe195o53JB3aDEzkcIrAN0kPl28TMzsIoPl5Dyp/V1lkXMnpp02sk4LRug3LljxmP/cuZAWGJ2gSGM7JXpmWGDvzy456ZNxajx1e5aYxvAN1eeTLsaaU6gglaV8dcIgLk9ynmOyM24au4UeDmYbZI8V2PyweFde0AVqh13oRN6tkGnhv5wemuYvVhBnMTpY1GTEYMKyYA+R8ta+M1e6Rjo+Mzrpt2fkgGLVyRCg1f1/zE99YDIMW0WTSOXNV6KWu2Xx0HPVGP7yWvAZQ8exhlT04l3/4IfB/H0aqDexrci5KznNcOvsed/Py4BDHyGWxsXhA3RzPiGcy3EDzWnr2PuucNBTdZfNdgXdELDiS7p6QR4g8W2MRWnnodG7pIdQ6x46oQ17a6e80Atv6qd/OtF0SdzDMzNEXtsTAs9fxQw8KKie6h4T71ggOsB7Rle5be0l45lsEYZTYJJ/zS6hu/rDaZBeBqBD16Y5iVD/wbPqh6J+7I/wmI40hZrCqlhMliC3aDuJEJyiD4kXi7ZvlLv5VGmnJElpGkN48K7uXGoXVy8EO5Uqji5wrl+NpR96g89DQAmml9UXAAtR0JfbgqknmVTdgmqAruavvEy+yJmv4cWJWUI6IDXmkCBB9J6VQ4dWRa2+ftSkHiC+6/HgU6ygHCyuDYMKC4s6hVZ682iNo1ed/iEEYYAY8Xan3r9Pju3d8kOZlUDfQlAFik48XV1GkE26JvjRGPUtgZr/ISTclSg==
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(336012)(2906002)(1076003)(8936002)(6666004)(966005)(9786002)(186003)(44832011)(508600001)(5660300002)(47076005)(426003)(7049001)(2616005)(7696005)(356005)(7636003)(26005)(70586007)(70206006)(8676002)(316002)(4326008)(82310400005)(36756003)(54906003)(110136005)(83380400001)(40460700003)(36860700001)(102446001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jun 2022 16:21:41.2279
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 69ac61d5-1345-4619-8abd-08da43eacfbd
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch01.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: SN1NAM02FT0064.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR02MB7530
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le mardi 31 mai 2022 =C3=A0 20:20 +0200, Jernej =C5=A0krabec a =C3=A9crit=
-=C2=A0:
-> Dne torek, 31. maj 2022 ob 08:58:46 CEST je Benjamin Gaignard napisal(a):
-> >=20
-> > Le 30/05/2022 =C3=A0 23:24, Jernej =C5=A0krabec a =C3=A9crit :
-> > > Dne ponedeljek, 30. maj 2022 ob 15:49:57 CEST je Hans Verkuil napisal=
-(a):
-> > > > On 30/05/2022 11:18, Hans Verkuil wrote:
-> > > > > On 29/05/2022 08:40, Jernej =C5=A0krabec wrote:
-> > > > > > Hi!
-> > > > > >=20
-> > > > > > This series looks very good and I plan to test it shortly on Ce=
-drus,=20
-> but
-> > > I
-> > > > > > have one major concern below.
-> > > > > >=20
-> > > > > > Dne petek, 27. maj 2022 ob 16:31:28 CEST je Benjamin Gaignard=
-=20
-> napisal(a):
-> > > > > > > The number of 'entry point offset' can be very variable.
-> > > > > > > Instead of using a large static array define a v4l2 dynamic a=
-rray
-> > > > > > > of U32 (V4L2_CTRL_TYPE_U32).
-> > > > > > > The number of entry point offsets is reported by the elems fi=
-eld
-> > > > > > > and in struct v4l2_ctrl_hevc_slice_params.num_entry_point_off=
-sets
-> > > > > > > field.
-> > > > > > Slice control by itself is variable length array, so you would =
-actually
-> > > need
-> > > > > > 2D variable array for entry points which is not supported. Howe=
-ver,=20
-> easy
-> > > > > > workaround for that is to flatten 2D array to 1D and either hav=
-e another
-> > > slice
-> > > > > > control field which would tell first entry point index for conv=
-enience or
-> > > let
-> > > > > > driver calculate it by adding up all num_entry_point_offsets of=
- previous
-> > > > > > slices.
-> > > > > >=20
-> > > > > > Hans, what do you think?
-> > > > > If I would support 2D variable array sizes, wouldn't that be more=
-=20
-> elegant?
-> > > > >=20
-> > > > > The current implementation doesn't support that, but as the commi=
-t log=20
-> for
-> > > > > patch 1/17 says:
-> > > > >=20
-> > > > > "Currently dynamically sized arrays are limited to one dimensiona=
-l=20
-> arrays,
-> > > > > but that might change in the future if there is a need for it."
-> > > > >=20
-> > > > > Let me know if you agree, and I'll try to implement this. It's be=
-en a
-> > > while
-> > > > > since I last looked at this, so I'm not sure how much work it is,=
- but it
-> > > is
-> > > > > probably worth a shot.
-> > > > Digging more into this made me realize that this doesn't actually h=
-elp=20
-> for
-> > > this
-> > > > particular case.
-> > > >=20
-> > > > I would lean towards your second suggestion of adding up all
-> > > num_entry_point_offsets
-> > > > of previous slices.
-> > > Just one question/clarification about dynamic arrays - does driver ne=
-ed to
-> > > reserve maximum amount of memory for dynamic array control at=20
-> initialization
-> > > time? If so, this would still be problematic, since there cound be a =
-huge
-> > > amount of entry points in theory.
-> >=20
-> > When adding the control the driver could set .dims field to specify
-> > the max number of accepted slices.
-> > I have added '#define V4L2_HEVC_SLICE_MAX_COUNT 600' that you could use
-> > for this field. It is the value we have found when using slices with RK=
-VDEC
-> > driver.
->=20
-> Is this maximum value applicable only to RKVDEC or is universal? Anyway, =
-this=20
-> means maximum offset points control for Cedrus would be 600 * 1024 (max. =
-offset=20
-> points supported per slice) * 4 ~=3D 2.4 MB, which is a lot for one contr=
-ol, but=20
-> I can live with that...
+Xilinx ZynqMP platform has dual-core ARM Cortex R5 Realtime Processing
+Unit(RPU) subsystem. This patch adds dt-bindings for RPU subsystem
+(cluster).
 
-I believe its defined following "Table A.8 =E2=80=93 General tier and level=
- limits".
-With the assumption there will never be a level 7 (which I think is fair). =
-If
-anyone saw other reasons for this limit, let me know.
+Signed-off-by: Tanmay Shah <tanmay.shah@xilinx.com>
+---
 
-This is a worse case scenario, this is quite unlikely in practice, so while
-performance might be a disaster if your craft a stream for that case, I don=
-'t
-think it will ever happen in real life.
+Changes in v7:
+  - Add minItems in sram property
 
->=20
-> Best regards,
-> Jernej
->=20
-> >=20
-> > Regards,
-> > Benjamin
-> >=20
-> > >=20
-> > > Best regards,
-> > > Jernej
-> > >=20
-> > > > Regards,
-> > > >=20
-> > > > 	Hans
-> > > >=20
-> > > > > Regards,
-> > > > >=20
-> > > > > 	Hans
-> > > > >=20
-> > > > > > Note, it seems that H265 decoding on Cedrus still works without=
- entry
-> > > points,
-> > > > > > so this problem can be solved later. I'm not sure what we lose =
-with=20
-> that
-> > > but
-> > > > > > it was suggested that this could influence speed or error resil=
-ience or
-> > > both.
-> > > > > > However, I think we're close to solve it, so I'd like to do tha=
-t now.
-> > > > > >=20
-> > > > > > Best regards,
-> > > > > > Jernej
-> > > > > >=20
-> > > > > > > Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora=
-.com>
-> > > > > > > ---
-> > > > > > >   .../userspace-api/media/v4l/ext-ctrls-codec.rst       | 11 =
-+++++++++
-> ++
-> > > > > > >   drivers/media/v4l2-core/v4l2-ctrls-defs.c             |  5 =
-+++++
-> > > > > > >   include/media/hevc-ctrls.h                            |  5 =
-++++-
-> > > > > > >   3 files changed, 20 insertions(+), 1 deletion(-)
-> > > > > > >=20
-> > > > > > > diff --git a/Documentation/userspace-api/media/v4l/ext-ctrls-=
-codec.rst=20
-> b/
-> > > > > > Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
-> > > > > > > index 0796b1563daa..05228e280f66 100644
-> > > > > > > --- a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.r=
-st
-> > > > > > > +++ b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.r=
-st
-> > > > > > > @@ -3010,6 +3010,9 @@ enum v4l2_mpeg_video_hevc_size_of_lengt=
-h_field -
-> > > > > > >       * - __u32
-> > > > > > >         - ``data_bit_offset``
-> > > > > > >         - Offset (in bits) to the video data in the current s=
-lice data.
-> > > > > > > +    * - __u32
-> > > > > > > +      - ``num_entry_point_offsets``
-> > > > > > > +      - Specifies the number of entry point offset syntax el=
-ements in=20
-> the
-> > > > > > slice header.
-> > > > > > >       * - __u8
-> > > > > > >         - ``nal_unit_type``
-> > > > > > >         - Specifies the coding type of the slice (B, P or I).
-> > > > > > > @@ -3150,6 +3153,14 @@ enum v4l2_mpeg_video_hevc_size_of_leng=
-th_field -
-> > > > > > >  =20
-> > > > > > >       \normalsize
-> > > > > > >  =20
-> > > > > > > +``V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS (integer)``
-> > > > > > > +    Specifies entry point offsets in bytes.
-> > > > > > > +    This control is a dynamically sized array. The number of=
- entry
-> > > point
-> > > > > > > +    offsets is reported by the ``elems`` field.
-> > > > > > > +    This bitstream parameter is defined according to :ref:`h=
-evc`.
-> > > > > > > +    They are described in section 7.4.7.1 "General slice seg=
-ment=20
-> header
-> > > > > > > +    semantics" of the specification.
-> > > > > > > +
-> > > > > > >   ``V4L2_CID_STATELESS_HEVC_SCALING_MATRIX (struct)``
-> > > > > > >       Specifies the HEVC scaling matrix parameters used for t=
-he scaling
-> > > > > > process
-> > > > > > >       for transform coefficients.
-> > > > > > > diff --git a/drivers/media/v4l2-core/v4l2-ctrls-defs.c b/driv=
-ers/media/
-> > > v4l2-
-> > > > > > core/v4l2-ctrls-defs.c
-> > > > > > > index d594efbcbb93..e22921e7ea61 100644
-> > > > > > > --- a/drivers/media/v4l2-core/v4l2-ctrls-defs.c
-> > > > > > > +++ b/drivers/media/v4l2-core/v4l2-ctrls-defs.c
-> > > > > > > @@ -1188,6 +1188,7 @@ const char *v4l2_ctrl_get_name(u32 id)
-> > > > > > >   	case V4L2_CID_STATELESS_HEVC_DECODE_PARAMS:		return
-> > > > > > "HEVC Decode Parameters";
-> > > > > > >   	case V4L2_CID_STATELESS_HEVC_DECODE_MODE:		return
-> > > > > > "HEVC Decode Mode";
-> > > > > > >   	case V4L2_CID_STATELESS_HEVC_START_CODE:		return
-> > > > > > "HEVC Start Code";
-> > > > > > > +	case V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS:	return
-> > > > > > "HEVC Entry Point Offsets";
-> > > > > > >  =20
-> > > > > > >   	/* Colorimetry controls */
-> > > > > > >   	/* Keep the order of the 'case's the same as in v4l2-contr=
-ols.h!
-> > > > > > */
-> > > > > > > @@ -1518,6 +1519,10 @@ void v4l2_ctrl_fill(u32 id, const char=
- **name,
-> > > enum
-> > > > > > v4l2_ctrl_type *type,
-> > > > > > >   	case V4L2_CID_STATELESS_HEVC_DECODE_PARAMS:
-> > > > > > >   		*type =3D V4L2_CTRL_TYPE_HEVC_DECODE_PARAMS;
-> > > > > > >   		break;
-> > > > > > > +	case V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS:
-> > > > > > > +		*type =3D V4L2_CTRL_TYPE_U32;
-> > > > > > > +		*flags |=3D V4L2_CTRL_FLAG_DYNAMIC_ARRAY;
-> > > > > > > +		break;
-> > > > > > >   	case V4L2_CID_STATELESS_VP9_COMPRESSED_HDR:
-> > > > > > >   		*type =3D V4L2_CTRL_TYPE_VP9_COMPRESSED_HDR;
-> > > > > > >   		break;
-> > > > > > > diff --git a/include/media/hevc-ctrls.h b/include/media/hevc-=
-ctrls.h
-> > > > > > > index a3c829ef531a..1319cb99ae3f 100644
-> > > > > > > --- a/include/media/hevc-ctrls.h
-> > > > > > > +++ b/include/media/hevc-ctrls.h
-> > > > > > > @@ -20,6 +20,7 @@
-> > > > > > >   #define V4L2_CID_STATELESS_HEVC_DECODE_PARAMS=09
-> (V4L2_CID_CODEC_BASE
-> > > > > > + 1012)
-> > > > > > >   #define V4L2_CID_STATELESS_HEVC_DECODE_MODE=09
-> (V4L2_CID_CODEC_BASE
-> > > + 1015)
-> > > > > > >   #define V4L2_CID_STATELESS_HEVC_START_CODE=09
-> (V4L2_CID_CODEC_BASE + 1016)
-> > > > > > > +#define V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS=20
-> (V4L2_CID_CODEC_BASE
-> > > +
-> > > > > > 1017)
-> > > > > > >  =20
-> > > > > > >   /* enum v4l2_ctrl_type type values */
-> > > > > > >   #define V4L2_CTRL_TYPE_HEVC_SPS 0x0120
-> > > > > > > @@ -318,6 +319,8 @@ struct v4l2_hevc_pred_weight_table {
-> > > > > > >    *
-> > > > > > >    * @bit_size: size (in bits) of the current slice data
-> > > > > > >    * @data_bit_offset: offset (in bits) to the video data in =
-the current
-> > > slice
-> > > > > > data
-> > > > > > > + * @num_entry_point_offsets: specifies the number of entry p=
-oint offset
-> > > syntax
-> > > > > > > + *			     elements in the slice header.
-> > > > > > >    * @nal_unit_type: specifies the coding type of the slice (=
-B, P or I)
-> > > > > > >    * @nuh_temporal_id_plus1: minus 1 specifies a temporal ide=
-ntifier for
-> > > the
-> > > > > > NAL unit
-> > > > > > >    * @slice_type: see V4L2_HEVC_SLICE_TYPE_{}
-> > > > > > > @@ -360,7 +363,7 @@ struct v4l2_hevc_pred_weight_table {
-> > > > > > >   struct v4l2_ctrl_hevc_slice_params {
-> > > > > > >   	__u32	bit_size;
-> > > > > > >   	__u32	data_bit_offset;
-> > > > > > > -
-> > > > > > > +	__u32	num_entry_point_offsets;
-> > > > > > >   	/* ISO/IEC 23008-2, ITU-T Rec. H.265: NAL unit header */
-> > > > > > >   	__u8	nal_unit_type;
-> > > > > > >   	__u8	nuh_temporal_id_plus1;
-> > > > > > > --=20
-> > > > > > > 2.32.0
-> > > > > > >=20
-> > > > > > >=20
-> > > > > >=20
-> > > >=20
-> > >=20
-> >=20
->=20
->=20
+Changes in v6:
+  - Add maxItems to sram and memory-region property
+
+Changes in v5:
+- Add constraints of the possible values of xlnx,cluster-mode property
+- fix description of power-domains property for r5 core
+- Remove reg, address-cells and size-cells properties as it is not required
+- Fix description of mboxes property
+- Add description of each memory-region and remove old .txt binding link
+  reference in the description
+
+Changes in v4:
+  - Add memory-region, mboxes and mbox-names properties in example
+
+Changes in v3:
+  - None
+
+ .../bindings/remoteproc/xlnx,r5f-rproc.yaml   | 130 ++++++++++++++++++
+ include/dt-bindings/power/xlnx-zynqmp-power.h |   6 +
+ 2 files changed, 136 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/remoteproc/xlnx,r5f-rproc.yaml
+
+diff --git a/Documentation/devicetree/bindings/remoteproc/xlnx,r5f-rproc.yaml b/Documentation/devicetree/bindings/remoteproc/xlnx,r5f-rproc.yaml
+new file mode 100644
+index 000000000000..89ce9ec10163
+--- /dev/null
++++ b/Documentation/devicetree/bindings/remoteproc/xlnx,r5f-rproc.yaml
+@@ -0,0 +1,130 @@
++# SPDX-License-Identifier: (GPL-2.0-only or BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/remoteproc/xlnx,r5f-rproc.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Xilinx R5F processor subsystem
++
++maintainers:
++  - Ben Levinsky <ben.levinsky@xilinx.com>
++  - Tanmay Shah <tanmay.shah@xilinx.com>
++
++description: |
++  The Xilinx platforms include a pair of Cortex-R5F processors (RPU) for
++  real-time processing based on the Cortex-R5F processor core from ARM.
++  The Cortex-R5F processor implements the Arm v7-R architecture and includes a
++  floating-point unit that implements the Arm VFPv3 instruction set.
++
++properties:
++  compatible:
++    const: xlnx,zynqmp-r5fss
++
++  xlnx,cluster-mode:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    enum: [0, 1, 2]
++    description: |
++      The RPU MPCore can operate in split mode(Dual-processor performance), Safety
++      lock-step mode(Both RPU cores execute the same code in lock-step,
++      clock-for-clock) or Single CPU mode (RPU core 0 can be held in reset while
++      core 1 runs normally). The processor does not support dynamic configuration.
++      Switching between modes is only permitted immediately after a processor reset.
++      If set to  1 then lockstep mode and if 0 then split mode.
++      If set to  2 then single CPU mode. When not defined, default will be lockstep mode.
++
++patternProperties:
++  "^r5f-[a-f0-9]+$":
++    type: object
++    description: |
++      The RPU is located in the Low Power Domain of the Processor Subsystem.
++      Each processor includes separate L1 instruction and data caches and
++      tightly coupled memories (TCM). System memory is cacheable, but the TCM
++      memory space is non-cacheable.
++
++      Each RPU contains one 64KB memory and two 32KB memories that
++      are accessed via the TCM A and B port interfaces, for a total of 128KB
++      per processor. In lock-step mode, the processor has access to 256KB of
++      TCM memory.
++
++    properties:
++      compatible:
++        const: xlnx,zynqmp-r5f
++
++      power-domains:
++        description: RPU core PM domain specifier
++        maxItems: 1
++
++      mboxes:
++        minItems: 1
++        items:
++          - description: mailbox channel to send data to RPU
++          - description: mailbox channel to receive data from RPU
++
++      mbox-names:
++        minItems: 1
++        items:
++          - const: tx
++          - const: rx
++
++      sram:
++        $ref: /schemas/types.yaml#/definitions/phandle-array
++        minItems: 1
++        maxItems: 8
++        description: |
++          phandles to one or more reserved on-chip SRAM regions. Other than TCM,
++          the RPU can execute instructions and access data from, the OCM memory,
++          the main DDR memory, and other system memories.
++
++          The regions should be defined as child nodes of the respective SRAM
++          node, and should be defined as per the generic bindings in,
++          Documentation/devicetree/bindings/sram/sram.yaml
++
++      memory-region:
++        description: |
++          List of phandles to the reserved memory regions associated with the
++          remoteproc device. This is variable and describes the memories shared with
++          the remote processor (e.g. remoteproc firmware and carveouts, rpmsg
++          vrings, ...). This reserved memory region will be allocated on DDR memory.
++        minItems: 1
++        maxItems: 8
++        items:
++          - description: region used for RPU firmware image section
++          - description: vdev buffer
++          - description: vring0
++          - description: vring1
++        additionalItems: true
++
++    required:
++      - compatible
++      - power-domains
++
++    unevaluatedProperties: false
++
++required:
++  - compatible
++
++additionalProperties: false
++
++examples:
++  - |
++    r5fss: r5fss {
++        compatible = "xlnx,zynqmp-r5fss";
++        xlnx,cluster-mode = <1>;
++
++        r5f-0 {
++            compatible = "xlnx,zynqmp-r5f";
++            power-domains = <&zynqmp_firmware 0x7>;
++            memory-region = <&rproc_0_fw_image>, <&rpu0vdev0buffer>, <&rpu0vdev0vring0>, <&rpu0vdev0vring1>;
++            mboxes = <&ipi_mailbox_rpu0 0>, <&ipi_mailbox_rpu0 1>;
++            mbox-names = "tx", "rx";
++        };
++
++        r5f-1 {
++            compatible = "xlnx,zynqmp-r5f";
++            power-domains = <&zynqmp_firmware 0x8>;
++            memory-region = <&rproc_1_fw_image>, <&rpu1vdev0buffer>, <&rpu1vdev0vring0>, <&rpu1vdev0vring1>;
++            mboxes = <&ipi_mailbox_rpu1 0>, <&ipi_mailbox_rpu1 1>;
++            mbox-names = "tx", "rx";
++        };
++    };
++...
+diff --git a/include/dt-bindings/power/xlnx-zynqmp-power.h b/include/dt-bindings/power/xlnx-zynqmp-power.h
+index 0d9a412fd5e0..618024cbb20d 100644
+--- a/include/dt-bindings/power/xlnx-zynqmp-power.h
++++ b/include/dt-bindings/power/xlnx-zynqmp-power.h
+@@ -6,6 +6,12 @@
+ #ifndef _DT_BINDINGS_ZYNQMP_POWER_H
+ #define _DT_BINDINGS_ZYNQMP_POWER_H
+ 
++#define		PD_RPU_0	7
++#define		PD_RPU_1	8
++#define		PD_R5_0_ATCM	15
++#define		PD_R5_0_BTCM	16
++#define		PD_R5_1_ATCM	17
++#define		PD_R5_1_BTCM	18
+ #define		PD_USB_0	22
+ #define		PD_USB_1	23
+ #define		PD_TTC_0	24
+-- 
+2.25.1
 
