@@ -2,49 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CAA6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:07:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B32FCCA46F
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:08:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232973AbiFAOHw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:07:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54840 "EHLO
+        id S1354211AbiFAOH5 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 10:07:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354239AbiFAOCa (ORCPT
+        with ESMTP id S1354408AbiFAODp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:02:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8163A7E01;
-        Wed,  1 Jun 2022 06:58:29 -0700 (PDT)
+        Wed, 1 Jun 2022 10:03:45 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1022AA7E25;
+        Wed,  1 Jun 2022 06:58:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D5D4661632;
-        Wed,  1 Jun 2022 13:57:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5A74C385A5;
-        Wed,  1 Jun 2022 13:57:22 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 8B5A8CE1A24;
+        Wed,  1 Jun 2022 13:57:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18203C385A5;
+        Wed,  1 Jun 2022 13:57:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091844;
-        bh=p/08dZfZ7CBeLXRE9nPAnm/+jHFflppoG/BYqplNPyk=;
+        s=k20201202; t=1654091871;
+        bh=ECd6Aicrn/3hNiarGoTPZt4Prq14+yb8QnQNVxzNFr0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=loq+PnEthqsN1piiqNYF18ozggWATd66m7AdJS3yVjqjiIcHcJcS/ULEVtOaiDne6
-         Q4628XJWiAm4QGMJ87DGz5ynqVw805eqbNLzviDPgzsXR2dmUt3WQAmO5t7MRRZ1Zw
-         ISjBrf9Wcv2D5UPwNv6sCLO1xdHkCIoN2pRMRf1BjTTzkpfbG8Z47+joervNDjhhnk
-         ZScYvfCKbbApTE5jVjaB5IeJWAon+r+DghxWaliRPkOq6A7zn1WGWMOUJ9s8ozvlbu
-         lrVKynxIRcVLurtW8AVnLGV5d30CbSPoZzjmv5u4CxQQL9FrhE/4gkDYf3xF/k9va2
-         Ta7RnGhgH0D/w==
+        b=BrHqDi3I6FlCiGqr1XEfnpxjIB71VsKuPJDWJ+3h5h9FALB1hR1ctobNLXxbHimiK
+         V3dUYfkbvCdVHy7j3mkKvObIBKGAfalIFG5K78A2bMscjMHckvFboP2dHl2JO9DZkc
+         unvNVDtAzaMBxQlUe4iaAHNL66dCdy701cD5JilBFeXcm9g7ayMTO/UacJvpu9y+zJ
+         4d5Il/8g0r8QVx9gq+k2cUpIW4/N4/7A6dBhuybLBRy9KZPOfC/2PDcQWdMGBVRId7
+         cVmRZ/+vRyow2fETMgW+KA7vhrWqewHdmkPD0aHytBuqwXQdjZM/LX17r+aBp2SYGQ
+         raFGe4CckH2Gw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>, rth@twiddle.net,
-        ink@jurassic.park.msu.ru, mattst88@gmail.com,
-        catalin.marinas@arm.com, will@kernel.org, pcc@google.com,
-        linux-alpha@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 27/37] alpha: fix alloc_zeroed_user_highpage_movable()
-Date:   Wed,  1 Jun 2022 09:56:12 -0400
-Message-Id: <20220601135622.2003939-27-sashal@kernel.org>
+Cc:     Peng Wu <wupeng58@huawei.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>, nick.child@ibm.com,
+        christophe.leroy@csgroup.eu, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH AUTOSEL 5.15 33/37] powerpc/iommu: Add missing of_node_put in iommu_init_early_dart
+Date:   Wed,  1 Jun 2022 09:56:18 -0400
+Message-Id: <20220601135622.2003939-33-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135622.2003939-1-sashal@kernel.org>
 References: <20220601135622.2003939-1-sashal@kernel.org>
@@ -56,37 +53,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
+From: Peng Wu <wupeng58@huawei.com>
 
-[ Upstream commit f9c668d281aa20e38c9bda3b7b0adeb8891aa15e ]
+[ Upstream commit 57b742a5b8945118022973e6416b71351df512fb ]
 
-Due to a typo, the final argument to alloc_page_vma() didn't refer to a
-real variable.  This only affected CONFIG_NUMA, which was marked BROKEN in
-2006 and removed from alpha in 2021.  Found due to a refactoring patch.
+The device_node pointer is returned by of_find_compatible_node
+with refcount incremented. We should use of_node_put() to avoid
+the refcount leak.
 
-Link: https://lkml.kernel.org/r/20220504182857.4013401-4-willy@infradead.org
-Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Peng Wu <wupeng58@huawei.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220425081245.21705-1-wupeng58@huawei.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/alpha/include/asm/page.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/powerpc/sysdev/dart_iommu.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/arch/alpha/include/asm/page.h b/arch/alpha/include/asm/page.h
-index 18f48a6f2ff6..8f3f5eecba28 100644
---- a/arch/alpha/include/asm/page.h
-+++ b/arch/alpha/include/asm/page.h
-@@ -18,7 +18,7 @@ extern void clear_page(void *page);
- #define clear_user_page(page, vaddr, pg)	clear_page(page)
+diff --git a/arch/powerpc/sysdev/dart_iommu.c b/arch/powerpc/sysdev/dart_iommu.c
+index 1d33b7a5ea83..dc774b204c06 100644
+--- a/arch/powerpc/sysdev/dart_iommu.c
++++ b/arch/powerpc/sysdev/dart_iommu.c
+@@ -404,9 +404,10 @@ void __init iommu_init_early_dart(struct pci_controller_ops *controller_ops)
+ 	}
  
- #define alloc_zeroed_user_highpage_movable(vma, vaddr) \
--	alloc_page_vma(GFP_HIGHUSER_MOVABLE | __GFP_ZERO, vma, vmaddr)
-+	alloc_page_vma(GFP_HIGHUSER_MOVABLE | __GFP_ZERO, vma, vaddr)
- #define __HAVE_ARCH_ALLOC_ZEROED_USER_HIGHPAGE_MOVABLE
+ 	/* Initialize the DART HW */
+-	if (dart_init(dn) != 0)
++	if (dart_init(dn) != 0) {
++		of_node_put(dn);
+ 		return;
+-
++	}
+ 	/*
+ 	 * U4 supports a DART bypass, we use it for 64-bit capable devices to
+ 	 * improve performance.  However, that only works for devices connected
+@@ -419,6 +420,7 @@ void __init iommu_init_early_dart(struct pci_controller_ops *controller_ops)
  
- extern void copy_page(void * _to, void * _from);
+ 	/* Setup pci_dma ops */
+ 	set_pci_dma_ops(&dma_iommu_ops);
++	of_node_put(dn);
+ }
+ 
+ #ifdef CONFIG_PM
 -- 
 2.35.1
 
