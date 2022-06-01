@@ -2,434 +2,217 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA72FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 02:59:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA71FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 03:06:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349254AbiFAC73 (ORCPT
+        id S1349269AbiFADFR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 22:59:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39478 "EHLO
+        Tue, 31 May 2022 23:05:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235209AbiFAC7Z (ORCPT
+        with ESMTP id S1349263AbiFADFP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 22:59:25 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0D4F5C36E;
-        Tue, 31 May 2022 19:59:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654052362; x=1685588362;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Hl7KfxA4mAvYuX6bXfAwqm9smucW6jlMZ7lolYrRSnc=;
-  b=NldqxLz71Rq6Z1NfcwwTnnRnbxeywouAPnor98hYwgzvu6wO5Vbci8ps
-   cKPdlMpHjDGkxqdXLzZfe4g2S5Rq7jPWBy7etNLFrtw0e84TqDYcPxS4E
-   KY9CPYTocJHJ3vT1eJq0Cz7xgGD4FZhpyprOfGYf+igr58VFeQpe+ReCv
-   e3efZEqxn8SdEht+0SM8KPDxT9VIwSkTSn91kVFvlFfsQJ9xz6jGfnUs6
-   qGkdKRy+JCwR4KXxqv/O+T1QW6f5at1D8UEpR+nKbVkyif6zUlOI09tAE
-   6ZZay+coe0UoE1j9OpPaRbObSCjjfnObiQvHP+FbwEoDAB0nzTDN0pUmi
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10364"; a="274254920"
-X-IronPort-AV: E=Sophos;i="5.91,266,1647327600"; 
-   d="scan'208";a="274254920"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 19:59:22 -0700
-X-IronPort-AV: E=Sophos;i="5.91,266,1647327600"; 
-   d="scan'208";a="581375572"
-Received: from mdossant-mobl1.amr.corp.intel.com (HELO localhost) ([10.212.154.135])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 19:59:21 -0700
-Date:   Tue, 31 May 2022 19:59:21 -0700
-From:   Ira Weiny <ira.weiny@intel.com>
-To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc:     Lukas Wunner <lukas@wunner.de>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Alison Schofield <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Ben Widawsky <ben.widawsky@intel.com>,
-        linux-kernel@vger.kernel.org, linux-cxl@vger.kernel.org,
-        linux-pci@vger.kernel.org
-Subject: Re: [PATCH V8 03/10] PCI: Create PCI library functions in support of
- DOE mailboxes.
-Message-ID: <YpbWCYujYDEkMm1B@iweiny-desk3>
-References: <20220414203237.2198665-1-ira.weiny@intel.com>
- <20220414203237.2198665-4-ira.weiny@intel.com>
- <20220530190657.GA14765@wunner.de>
- <20220531113350.0000421e@Huawei.com>
+        Tue, 31 May 2022 23:05:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A1A98D6A3
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 20:05:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C7C42B81765
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 03:05:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 579E5C385A9;
+        Wed,  1 Jun 2022 03:05:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654052711;
+        bh=FL4trFaVlrtgGhxl6RfunZqzu7ydSpuIPCmAbrVFlJk=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=tWHXJzs6FWyLAuZxGqbf9O7WNu+Xu4HYr/3MxyjRSOxldvM7Z7GT5BiQnnEHJrA5a
+         A1XT+R5O7+RxWypHf4ARPbcXlPVjICKJeYzbF93z3cB76IC6wZUqRj2YKMeNPy5BoX
+         ies9gOD3hhsNJoMGnEkWaTOgGXr8rHuI0JSxGEo3w6m69/ahTD7SAllUP+jez2WtyZ
+         myJq1sOKdeYT4tedWJAaAAxr+psM/kMImFzDcYvJzz9z+ba9hBpW/KTdzo4qO64Xd0
+         TpJmhG4vNeLrowC7Ouo98g/mkf4TvO9CqCl7TnfU0uh9vgQlPI2Ta97JBA1EEF0xUR
+         hcMyuQgaB+92A==
+Message-ID: <7ea1c35f-e176-1a17-f3ed-14d4118d3c21@kernel.org>
+Date:   Wed, 1 Jun 2022 11:05:07 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220531113350.0000421e@Huawei.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v4] f2fs: separate NOCoW and pinfile semantics
+Content-Language: en-US
+To:     Jaegeuk Kim <jaegeuk@kernel.org>
+Cc:     linux-f2fs-devel@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, Chao Yu <chao.yu@oppo.com>
+References: <20220517032410.3564033-1-chao@kernel.org>
+ <YoPZh+vl68IH5loV@google.com>
+ <fa3cbe36-1738-a811-ce03-dd5aaf8ea3d4@kernel.org>
+ <YpZ4MxH3bkWbTPvI@google.com>
+From:   Chao Yu <chao@kernel.org>
+In-Reply-To: <YpZ4MxH3bkWbTPvI@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 31, 2022 at 11:33:50AM +0100, Jonathan Cameron wrote:
-> On Mon, 30 May 2022 21:06:57 +0200
-> Lukas Wunner <lukas@wunner.de> wrote:
+On 2022/6/1 4:18, Jaegeuk Kim wrote:
+> On 05/31, Chao Yu wrote:
+>> On 2022/5/18 1:21, Jaegeuk Kim wrote:
+>>> On 05/17, Chao Yu wrote:
+>>>> Pinning a file is heavy, because skipping pinned files make GC
+>>>> running with heavy load or no effect.
+>>>>
+>>>> So that this patch proposes to separate nocow and pinfile semantics:
+>>>> - NOCoW flag can only be set on regular file.
+>>>> - NOCoW file will only trigger IPU at common writeback/flush.
+>>>> - NOCow file will do OPU during GC.
+>>>
+>>> How about adding
+>>>    - NOCow file will allocate 2MB-aligned space via fallocate.
+>>>
+>>> So, it'd be same as file pinning except allowing GCs. wdyt?
+>>
+>> Well, it seems the segment-aligned allocation feature should not couple with
+>> pin_file or NoCow flag, what about introducing another ioctl for that? something
+>> like: F2FS_IOC_ALIGNMENT_PREALLOCATION w/ arg.alignment_start, arg.alignment_len,
+>> arg.total_len?
 > 
-> > On Thu, Apr 14, 2022 at 01:32:30PM -0700, ira.weiny@intel.com wrote:
-> > > +static int pci_doe_recv_resp(struct pci_doe_mb *doe_mb, struct pci_doe_task *task)  
-> > [...]
-> > > +	pci_write_config_dword(pdev, offset + PCI_DOE_READ, 0);
-> > > +	/* Read the second dword to get the length */
-> > > +	pci_read_config_dword(pdev, offset + PCI_DOE_READ, &val);
-> > > +	pci_write_config_dword(pdev, offset + PCI_DOE_READ, 0);
-> > > +
-> > > +	length = FIELD_GET(PCI_DOE_DATA_OBJECT_HEADER_2_LENGTH, val);
-> > > +	if (length > SZ_1M || length < 2)
-> > > +		return -EIO;
-> > > +  
-> > 
-> > This API requires consumers to know the size of the response in advance.
-> > That's not always the case, as exemplified by SPDM VERSION responses.
-> > Jonathan uses a kludge in his SPDM patch which submits a first request
-> > with a fixed size of 2 versions and, if that turns out to be too small,
-> > submits a second request.
-> > 
-> > It would be nice if consumers are allowed to set request_pl to NULL.
-> > Then a payload can be allocated here in pci_doe_recv_resp() with the
-> > size retrieved above.
-> > 
-> > A flag may be necessary to indicate that the response is heap-allocated
-> > and needs to be freed upon destruction of the pci_doe_task.
-> 
-> If possible I'd make that the callers problem. It should know it provided
-> NULL and expected a response.
-> 
-> I'd suggest making this a 'future' feature just to keep this initial
-> version simple.  Won't be hard to add later.
+> We should allocate 2MB to pin the file, since android is using it.
 
-Agreed.
+I mean we can use nocow + new ioctl instead of pinfile, thoughts?
+
+Thanks,
 
 > 
-> > 
-> > 
-> > > +	/* First 2 dwords have already been read */
-> > > +	length -= 2;
-> > > +	/* Read the rest of the response payload */
-> > > +	for (i = 0; i < min(length, task->response_pl_sz / sizeof(u32)); i++) {
-> > > +		pci_read_config_dword(pdev, offset + PCI_DOE_READ,
-> > > +				      &task->response_pl[i]);
-> > > +		pci_write_config_dword(pdev, offset + PCI_DOE_READ, 0);
-> > > +	}  
-> > 
-> > You need to check the Data Object Ready bit.  The device may clear the
-> > bit prematurely (e.g. as a result of a concurrent FLR or Conventional
-> > Reset).  You'll continue reading zero dwords from the mailbox and
-> > pretend success to the caller even though the response is truncated.
-> > 
-> > If you're concerned about performance when checking the bit on every
-> > loop iteration, checking it only on the last but one iteration should
-> > be sufficient to detect truncation.
-> 
-> Good catch - I hate corner cases.  Thankfully this one is trivial to
-> check for.
-
-Ok looking at the spec:  Strictly speaking this needs to happen multiple times
-both in doe_statemachine_work() and inside pci_doe_recv_resp(); not just in
-this loop.  :-(
-
-This is because, the check in doe_statemachine_work() only covers the 1st dword
-read IIUC.  Therefore, we should put this into the statemachine properly unless
-it is agreed to busy wait for the Data Object Ready bit once the first one is
-seen?
-
-I'm not sure I really like that because I'm not sure how hardware is going to
-behave.  Will it potentially delay mid response payload?
-
-I think complete correctness requires pci_doe_recv_resp() to be split up such
-that the state machine could be scheduled on any dword read...  :-(  And I
-suspect that anything else is a hack.  That is going to take a bit of rework.
-But I think it may be the best thing to do.
-
-Before I embark on this rework, tell me I'm not crazy?
-
-> 
-> > 
-> > 
-> > > +	*vid = FIELD_GET(PCI_DOE_DATA_OBJECT_DISC_RSP_3_VID, response_pl);
-> > > +	*protocol = FIELD_GET(PCI_DOE_DATA_OBJECT_DISC_RSP_3_PROTOCOL,
-> > > +			      response_pl);
-> > > +	*index = FIELD_GET(PCI_DOE_DATA_OBJECT_DISC_RSP_3_NEXT_INDEX,
-> > > +			   response_pl);  
-> > 
-> > The fact that you need line breaks here is an indication that the
-> > macros are too long.
-> > 
-> > 
-> > > +/* DOE Data Object - note not actually registers */
-> > > +#define PCI_DOE_DATA_OBJECT_HEADER_1_VID		0x0000ffff
-> > > +#define PCI_DOE_DATA_OBJECT_HEADER_1_TYPE		0x00ff0000
-> > > +#define PCI_DOE_DATA_OBJECT_HEADER_2_LENGTH		0x0003ffff
-> > > +
-> > > +#define PCI_DOE_DATA_OBJECT_DISC_REQ_3_INDEX		0x000000ff
-> > > +#define PCI_DOE_DATA_OBJECT_DISC_RSP_3_VID		0x0000ffff
-> > > +#define PCI_DOE_DATA_OBJECT_DISC_RSP_3_PROTOCOL		0x00ff0000
-> > > +#define PCI_DOE_DATA_OBJECT_DISC_RSP_3_NEXT_INDEX	0xff000000  
-> > 
-> > I'd get rid of "DATA_OBJECT_" everywhere, it's redundant with the
-> > "Data Object" in "DOE".
-> 
-> We need something to make it clear these aren't DVSEC headers for
-> example, but definitely could be shorter.
-> 
-> PCI_DOE_OBJ_... 
-> 
-> perhaps?
-
-FWIW I'm inclined to leave them for now.
-
-> 
-> > 
-> > 
-> > > +#define  PCI_DOE_STATUS_INT_STATUS		0x00000002  /* DOE Interrupt Status */  
-> > 
-> > Another redundancy, I would get rid of the second "_STATUS".
-> 
-> Hmm. I'll leave this one to Ira's discretion but I'm not keen on cropping
-> too much of naming given loss of alignment with the spec.
-
-Again I'm inclined to leave it.
-
-> 
-> > 
-> > 
-> > > +#define  PCI_DOE_STATUS_DATA_OBJECT_READY	0x80000000  /* Data Object Ready */  
-> > 
-> > I would shorten to PCI_DOE_STATUS_READY.
-> 
-> Seems reasonable though always some burden in moving
-> away from full spec names.
-
-I think this is fine.
-
-> 
-> > 
-> > 
-> > > 		Simplify submitting work to the mailbox
-> > > 			Replace pci_doe_exchange_sync() with
-> > > 			pci_doe_submit_task() Consumers of the mailbox
-> > > 			are now responsible for setting up callbacks
-> > > 			within a task object and submitting them to the
-> > > 			mailbox to be processed.  
-> > 
-> > I honestly think that's a mistake.  All consumers both in the CDAT
-> > as well as in the SPDM series just want to wait for completion of
-> > the task.  They have no need for an arbitrary callback and shouldn't
-> > be burdended with providing one.  It just unnecessarily complicates
-> > the API.
-> > 
-> > So only providing pci_doe_exchange_sync() and doing away with
-> > pci_doe_submit_task() would seem like a more appropriate approach.
-> 
-> We've gone around the houses with this.  At this stage I don't
-> care strongly either way and it's all in kernel code so we
-> can refine it later once we have lots of examples.
-
-Agreed.
-
-> 
-> > 
-> > 
-> > > +/**
-> > > + * pci_doe_for_each_off - Iterate each DOE capability
-> > > + * @pdev: struct pci_dev to iterate
-> > > + * @off: u16 of config space offset of each mailbox capability found
-> > > + */
-> > > +#define pci_doe_for_each_off(pdev, off) \
-> > > +	for (off = pci_find_next_ext_capability(pdev, off, \
-> > > +					PCI_EXT_CAP_ID_DOE); \
-> > > +		off > 0; \
-> > > +		off = pci_find_next_ext_capability(pdev, off, \
-> > > +					PCI_EXT_CAP_ID_DOE))
-> > > +
-> > > +struct pci_doe_mb *pci_doe_create_mb(struct pci_dev *pdev, u16 cap_offset,
-> > > +				     bool use_irq);
-> > > +void pci_doe_destroy_mb(struct pci_doe_mb *doe_mb);
-> > > +bool pci_doe_supports_prot(struct pci_doe_mb *doe_mb, u16 vid, u8 type);  
-> > 
-> > Drivers should not be concerned with the intricacies of DOE
-> > capabilities and mailboxes.
-> > 
-> > Moreover, the above API doesn't allow different drivers to access
-> > the same DOE mailbox concurrently, e.g. if that mailbox supports
-> > multiple protocols.  There's no locking to serialize access to the
-> > mailbox by the drivers.
-> > 
-> > This should be moved to the PCI core instead:  In pci_init_capabilities(),
-> > add a new call pci_doe_init() which enumerates all DOE capabilities.
-> > Add a list_head to struct pci_dev and add each DOE instance found
-> > to that list.  Destroy the list elements in pci_destroy_dev().
-> > No locking needed for the list_head, you only ever modify the list
-> > on device enumeration and destruction.
-> > 
-> > Then provide a pci_doe_find_mailbox() library function which drivers
-> > call to retrieve the pci_doe_mb for a given pci_dev/vid/type tuple.
-> > That avoids the need to traverse the list time and again.
-> 
-> I've lost track a bit as this thread has been running a long time,  but
-> I think we are moving back to something that looks more like this
-> (and the much earlier versions of the set which did more or less what you
-> describe - though they had their own issues resolved in the meantime)
-> 
-> There is an exciting corner around interrupts though that complicates
-> things.  Currently I think I'm right in saying the pci core never
-> sets up interrupts, that is always a job for the drivers.
-> 
-> My first thought is to do something similar to the hack I did for
-> the switch ports, and use polled mode to query support protocols.
-> Then later call from driver that will attempt to enable interrupts
-> if desired for a given DOE instance.
-> 
-
-V9 is already getting respun but lets look there for the move toward this.  I
-don't think the CXL code should get any of the DOE mailbox code directly.  But
-I'm unclear how to tie it together with the PCI side ATM.
-
-For this series CDAT is only useful for CXL and as the only user I think having
-the CXL PCI code instantiate the mailboxes for now is fine.  But having a more
-general home for that is needed I think for other protocols and users.
-
-> 
-> > 
-> > 
-> > > +/**
-> > > + * struct pci_doe_mb - State for a single DOE mailbox  
-> > 
-> > We generally use the same terms as the spec to make it easier for
-> > readers to connect the language in the spec to the implementation.
-> > 
-> > The spec uniformly refers to "DOE instance".  I guess "mailbox"
-> > is slightly more concise, so keep that, but please at least mention
-> > the term "instance" in the struct's kernel-doc.
-> > 
-> > This implementation uses the term "task" for one request/response.
-> > That term is not mentioned in the spec at all.  The spec refers to
-> > "exchange" and "transfer" on several occasions, so I would have chosen
-> > either one of those instead of the somewhat unfortunate "task".
-> > 
-> > 
-> > > + * This state is used to manage a single DOE mailbox capability.  All fields
-> > > + * should be considered opaque to the consumers and the structure passed into
-> > > + * the helpers below after being created by devm_pci_doe_create()  
-> > 
-> > If the struct is considered opaque, why is it exposed in a public
-> > header file?  Just use a forward declaration in the header
-> > so that consumers can pass around pointers to the struct,
-> > and hide the declaration proper in doe.c.
-> > 
-> > 
-> > > + * @pdev: PCI device this belongs to mailbox belongs to  
-> >                              ^^^^^^^^^^
-> > Typo.
-> > 
-> > > + * @prots: Array of protocols supported on this DOE
-> > > + * @num_prots: Size of prots array  
-> > 
-> > Use @prots instead of prots everywhere in the kernel-doc.
-> > 
-> > 
-> > > +	/*
-> > > +	 * NOTE: doe_mb_prots is freed by pci_doe_free_mb automatically on
-> > > +	 * error if pci_doe_cache_protocols() fails past this point.
-> > > +	 */  
-> > 
-> > s/doe_mb_prots/doe_mb->prots/
-> > s/pci_doe_free_mb/pci_doe_free_mb()/
-> > 
-> > 
-> > > +	/* DOE requests must be a whole number of DW */
-> > > +	if (task->request_pl_sz % sizeof(u32))
-> > > +		return -EINVAL;  
-> > 
-> > It would be nice if this restriction could be lifted.  SPDM uses
-> > requests which are not padded to dword-length.  It can run over other
-> > transports which may not impose such restrictions.  The SPDM layer
-> > should not need to worry about quirks of the transport layer.
-> 
-> This is a pain.  DOE absolutely requires 32 bit padding and
-> reads need to be 32 bit.   We can obviously do something nasty
-> with dealing with the tail via a bounce buffer though.
-> 
-> I'd pencil that in as a future feature though rather than worry
-> about it before we have any support at all in place.
-
-I think any missmatch between something like SPDM and DOE will need to be
-handled by SPDM to DOE code.  Not the DOE layer.
-
-> 
-> > 
-> > 
-> > > +static irqreturn_t pci_doe_irq_handler(int irq, void *data)
-> > > +{
-> > > +	struct pci_doe_mb *doe_mb = data;
-> > > +	struct pci_dev *pdev = doe_mb->pdev;
-> > > +	int offset = doe_mb->cap_offset;
-> > > +	u32 val;
-> > > +
-> > > +	pci_read_config_dword(pdev, offset + PCI_DOE_STATUS, &val);
-> > > +
-> > > +	/* Leave the error case to be handled outside IRQ */
-> > > +	if (FIELD_GET(PCI_DOE_STATUS_ERROR, val)) {
-> > > +		mod_delayed_work(system_wq, &doe_mb->statemachine, 0);
-> > > +		return IRQ_HANDLED;
-> > > +	}
-> > > +
-> > > +	if (FIELD_GET(PCI_DOE_STATUS_INT_STATUS, val)) {
-> > > +		pci_write_config_dword(pdev, offset + PCI_DOE_STATUS,
-> > > +					PCI_DOE_STATUS_INT_STATUS);
-> > > +		mod_delayed_work(system_wq, &doe_mb->statemachine, 0);
-> > > +		return IRQ_HANDLED;
-> > > +	}
-> > > +
-> > > +	return IRQ_NONE;
-> > > +}  
-> > 
-> > PCIe 6.0, table 7-316 says that an interrupt is also raised when
-> > "the DOE Busy bit has been Cleared", yet such an interrupt is
-> > not handled here.  It is incorrectly treated as a spurious
-> > interrupt by returning IRQ_NONE.  The right thing to do
-> > is probably to wake the state machine in case it's polling
-> > for the Busy flag to clear.
-> 
-> Ah. I remember testing this via a lot of hacking on the QEMU code
-> to inject the various races that can occur (it was really ugly to do).
-> 
-> Guess we lost the handling at some point.  I think your fix
-> is the right one.
-
-Perhaps I am missing something but digging into this more.  I disagree that the
-handler fails to handle this case.  If I read the spec correctly DOE Interrupt
-Status must be set when an interrupt is generated.  The handler wakes the state
-machine in that case.  The state machine then checks for busy if there is work
-to be done.
-
-Normally we would not even need to check for status error.  But that is special
-cased because clearing that status is left to the state machine.
-
-> 
-> > 
-> > 
-> > > +enum pci_doe_state {
-> > > +	DOE_IDLE,
-> > > +	DOE_WAIT_RESP,
-> > > +	DOE_WAIT_ABORT,
-> > > +	DOE_WAIT_ABORT_ON_ERR,
-> > > +};
-> > > +
-> > > +#define PCI_DOE_FLAG_ABORT	0
-> > > +#define PCI_DOE_FLAG_DEAD	1  
-> > 
-> > That's all internal and should live in doe.c, not the header file.
-> > 
-> > Thanks,
-> > 
-> > Lukas
-> > 
-> 
-> Thanks for the review and thanks again to Ira for taking this forwards.
-
-Thanks!
-Ira
+>>
+>> Thanks,
+>>
+>>>
+>>>>
+>>>> This flag can satisfying the demand of:
+>>>> 1) avoiding fragment of file's physical block
+>>>> 2) userspace doesn't want to pin file's physical address
+>>>>
+>>>> After commit 5d539245cb18 ("f2fs: export FS_NOCOW_FL flag to user"),
+>>>> Pin_file and NOCoW flags have already been twined closely. e.g.
+>>>> once we set pinfile flag in file, nocow flag will be shown; and after
+>>>> clearing pinfile flag, nocow flag will disappear.
+>>>>
+>>>> So, in order to keep backward compatibility, let use below semantics:
+>>>>
+>>>> f2fs_ioc_set_pin_file/f2fs_fileattr_set logic:
+>>>> 		pinfile			nocow
+>>>> set		set pinfile | nocow	set nocow
+>>>> clear		clear pinfile | nocow	clear nocow
+>>>>
+>>>> File Behaviors:
+>>>> w/ pinfile, w/ nocow:		use pinfile semantics
+>>>> w/ pinfile, w/o nocow:		use pinfile semantics
+>>>> w/o pinfile, w/ nocow:		use nocow semantics
+>>>> w/o pinfile, w/o nocow:		no pinfile or nocow semantics
+>>>>
+>>>> NOCoW can also be set on directory, and it will have no effect on
+>>>> directory, however, new files created in nocow directory will have the
+>>>> flag set.
+>>>>
+>>>> Signed-off-by: Chao Yu <chao.yu@oppo.com>
+>>>> ---
+>>>> v4:
+>>>> - allow IPU only for NoCowed regular inode.
+>>>>    fs/f2fs/data.c |  3 +++
+>>>>    fs/f2fs/f2fs.h | 13 +++++++++++--
+>>>>    fs/f2fs/file.c | 18 +++++++++++++++++-
+>>>>    3 files changed, 31 insertions(+), 3 deletions(-)
+>>>>
+>>>> diff --git a/fs/f2fs/data.c b/fs/f2fs/data.c
+>>>> index 54a7a8ad994d..42d95ac6b508 100644
+>>>> --- a/fs/f2fs/data.c
+>>>> +++ b/fs/f2fs/data.c
+>>>> @@ -2498,6 +2498,9 @@ bool f2fs_should_update_inplace(struct inode *inode, struct f2fs_io_info *fio)
+>>>>    	if (f2fs_is_pinned_file(inode))
+>>>>    		return true;
+>>>> +	if (S_ISREG(inode->i_mode) && F2FS_I(inode)->i_flags & F2FS_NOCOW_FL)
+>>>> +		return true;
+>>>> +
+>>>>    	/* if this is cold file, we should overwrite to avoid fragmentation */
+>>>>    	if (file_is_cold(inode))
+>>>>    		return true;
+>>>> diff --git a/fs/f2fs/f2fs.h b/fs/f2fs/f2fs.h
+>>>> index 492af5b96de1..5c67736000a7 100644
+>>>> --- a/fs/f2fs/f2fs.h
+>>>> +++ b/fs/f2fs/f2fs.h
+>>>> @@ -2916,13 +2916,15 @@ static inline void f2fs_change_bit(unsigned int nr, char *addr)
+>>>>    #define F2FS_NOCOMP_FL			0x00000400 /* Don't compress */
+>>>>    #define F2FS_INDEX_FL			0x00001000 /* hash-indexed directory */
+>>>>    #define F2FS_DIRSYNC_FL			0x00010000 /* dirsync behaviour (directories only) */
+>>>> +#define F2FS_NOCOW_FL			0x00800000 /* Do not cow file */
+>>>>    #define F2FS_PROJINHERIT_FL		0x20000000 /* Create with parents projid */
+>>>>    #define F2FS_CASEFOLD_FL		0x40000000 /* Casefolded file */
+>>>>    /* Flags that should be inherited by new inodes from their parent. */
+>>>>    #define F2FS_FL_INHERITED (F2FS_SYNC_FL | F2FS_NODUMP_FL | F2FS_NOATIME_FL | \
+>>>>    			   F2FS_DIRSYNC_FL | F2FS_PROJINHERIT_FL | \
+>>>> -			   F2FS_CASEFOLD_FL | F2FS_COMPR_FL | F2FS_NOCOMP_FL)
+>>>> +			   F2FS_CASEFOLD_FL | F2FS_COMPR_FL | F2FS_NOCOMP_FL | \
+>>>> +			   F2FS_NOCOW_FL)
+>>>>    /* Flags that are appropriate for regular files (all but dir-specific ones). */
+>>>>    #define F2FS_REG_FLMASK		(~(F2FS_DIRSYNC_FL | F2FS_PROJINHERIT_FL | \
+>>>> @@ -2954,9 +2956,16 @@ static inline void __mark_inode_dirty_flag(struct inode *inode,
+>>>>    		fallthrough;
+>>>>    	case FI_DATA_EXIST:
+>>>>    	case FI_INLINE_DOTS:
+>>>> -	case FI_PIN_FILE:
+>>>>    	case FI_COMPRESS_RELEASED:
+>>>>    		f2fs_mark_inode_dirty_sync(inode, true);
+>>>> +		break;
+>>>> +	case FI_PIN_FILE:
+>>>> +		if (set)
+>>>> +			F2FS_I(inode)->i_flags |= F2FS_NOCOW_FL;
+>>>> +		else
+>>>> +			F2FS_I(inode)->i_flags &= ~F2FS_NOCOW_FL;
+>>>> +		f2fs_mark_inode_dirty_sync(inode, true);
+>>>> +		break;
+>>>>    	}
+>>>>    }
+>>>> diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
+>>>> index 216081ea8c81..9e71ce8601f9 100644
+>>>> --- a/fs/f2fs/file.c
+>>>> +++ b/fs/f2fs/file.c
+>>>> @@ -1851,6 +1851,20 @@ static int f2fs_setflags_common(struct inode *inode, u32 iflags, u32 mask)
+>>>>    	if (IS_NOQUOTA(inode))
+>>>>    		return -EPERM;
+>>>> +	if ((iflags ^ masked_flags) & F2FS_NOCOW_FL) {
+>>>> +		int ret;
+>>>> +
+>>>> +		if (!S_ISREG(inode->i_mode) && !S_ISDIR(inode->i_mode))
+>>>> +			return -EINVAL;
+>>>> +		if (S_ISREG(inode->i_mode)) {
+>>>> +			if (f2fs_should_update_outplace(inode, NULL))
+>>>> +				return -EINVAL;
+>>>> +			ret = f2fs_convert_inline_inode(inode);
+>>>> +			if (ret)
+>>>> +				return ret;
+>>>> +		}
+>>>> +	}
+>>>> +
+>>>>    	if ((iflags ^ masked_flags) & F2FS_CASEFOLD_FL) {
+>>>>    		if (!f2fs_sb_has_casefold(F2FS_I_SB(inode)))
+>>>>    			return -EOPNOTSUPP;
+>>>> @@ -1926,6 +1940,7 @@ static const struct {
+>>>>    	{ F2FS_NOCOMP_FL,	FS_NOCOMP_FL },
+>>>>    	{ F2FS_INDEX_FL,	FS_INDEX_FL },
+>>>>    	{ F2FS_DIRSYNC_FL,	FS_DIRSYNC_FL },
+>>>> +	{ F2FS_NOCOW_FL,	FS_NOCOW_FL },
+>>>>    	{ F2FS_PROJINHERIT_FL,	FS_PROJINHERIT_FL },
+>>>>    	{ F2FS_CASEFOLD_FL,	FS_CASEFOLD_FL },
+>>>>    };
+>>>> @@ -1957,7 +1972,8 @@ static const struct {
+>>>>    		FS_NOCOMP_FL |		\
+>>>>    		FS_DIRSYNC_FL |		\
+>>>>    		FS_PROJINHERIT_FL |	\
+>>>> -		FS_CASEFOLD_FL)
+>>>> +		FS_CASEFOLD_FL |	\
+>>>> +		FS_NOCOW_FL)
+>>>>    /* Convert f2fs on-disk i_flags to FS_IOC_{GET,SET}FLAGS flags */
+>>>>    static inline u32 f2fs_iflags_to_fsflags(u32 iflags)
+>>>> -- 
+>>>> 2.25.1
