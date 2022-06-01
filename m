@@ -2,152 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F292DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 12:22:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35724C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 12:22:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353019AbiFAMV6 (ORCPT
+        id S1345006AbiFAMWt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 08:21:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42940 "EHLO
+        Wed, 1 Jun 2022 08:22:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243225AbiFAMVV (ORCPT
+        with ESMTP id S1352877AbiFAMWo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 08:21:21 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 527925D5FD
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 05:21:19 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id u18so1654410plb.3
-        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 05:21:19 -0700 (PDT)
+        Wed, 1 Jun 2022 08:22:44 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 588033A71A
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 05:22:40 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id n10so3395450ejk.5
+        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 05:22:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=cvyMZ32vWUq0PQ25pSdJ7F9z18j1tkrk0X4DK0wb+pM=;
-        b=kxnZ7vRN+WQqWOB5MR7wfAgarJxLA8uLDRHyri1tlk0f3K2IslXSjPSWuFg5pMnFdh
-         HDprEkLHaoZeQty7cXur4ieJIQFBwHlhllSwX0QHPN5RZ18H+aLarpAS4eTynppFq7tr
-         8u6ndn8SaZbl57XrVoqT3djuazguIoR19fS3i/SyMs63WJtK++FLs/FpvVbyFjEW6dY5
-         r3+JiisF0irEv6sMXMqmLlQvAsAwuK6WoHky9FPY8nBi/NWIgEfT9T+kg2uW+emFntPh
-         Uq361otGJ8ZZOo4bGCiX/3ngHRQ/ra8xFDjVDh2xuWumlHmfa+nBgNtDMNJ2pZEVshRR
-         lOnA==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=ZDgi6QT1T7EpVIAwPl8YawRZEJZufjvXhtek/OEXbdU=;
+        b=IGH9KuLMT3HYQF2PpAJxEcijlE9gMLD3M570Hqtdk9x/5aqV4hW0tiLeZpxEfnOGKr
+         9Shmi8k54+r6RaWu9Y0sPyM2ih3Q0AzczEqglxN5Hp0niQ5o5DAulAjuUjY3ehCwR8Ff
+         jYZKYkjAJ4nkfeNbVwdNoh2xA4lOB6QEBXJrIQymVjr+viKC7z5M+lQ53kZFnRBkVgl4
+         +IXuPqiQrAmLg52aD2xT5T3ypEPqCFUyc4vjiTk/GUocyo6a0AU8KMj2hOMV19gb29Gi
+         srFj0P4uB0/cHWcpRL6uS70TGZnWX0nujTZ1suoxqMUiSqqsio6yptx+tZ8yM5hwMB9X
+         VB6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=cvyMZ32vWUq0PQ25pSdJ7F9z18j1tkrk0X4DK0wb+pM=;
-        b=Gglq3D4nEUEiYQjlLMykEWRa7ei+FUkUXWgZh4SftFfUe+kdoXqOzcQzmuGFf6k7QE
-         XErAtF5WnhuTQTkgGnFvw74HqT4xq3BW+BSKvqbNuv85hbQhERuzAJ3/5vsSWYloNDb+
-         NZQspoUIO3IyY8VTg4rz5ypEVQrxRQzehBhDGVjSsHDwwm7kcrhrYHjS1HPnFiAV8LZq
-         bZDNkEeQMHWxLnP7nnWVSWMYYeSilpvLIrLQm6buYqYmki2GP1SIVTJf+k2Q4v3aq0At
-         Zd4Jv/SRVWmrT33Uksj91/49H1NiHVe+86EQqAcVogRfZ8Hah52xceeT43JGW0Jb8k7J
-         vW+w==
-X-Gm-Message-State: AOAM533CiWtfCGQnOo69wlEfW4r2tkO2mKOi8+DYNco+va8ngXNZLE8D
-        M/E3eD6q4KdGG6stlDoJTqKZ0w==
-X-Google-Smtp-Source: ABdhPJxGNOmMnzBvygoNU/XIaL9fFEvwZd9o7+MdRm17YWKvByOJnl3tUA+d8dJYE9JdwafzFEa25A==
-X-Received: by 2002:a17:90b:4c47:b0:1df:ad5b:e32e with SMTP id np7-20020a17090b4c4700b001dfad5be32emr33826198pjb.59.1654086078831;
-        Wed, 01 Jun 2022 05:21:18 -0700 (PDT)
-Received: from C02CV1DAMD6P.bytedance.net ([139.177.225.231])
-        by smtp.gmail.com with ESMTPSA id ij24-20020a170902ab5800b0015e8d4eb1f7sm1427535plb.65.2022.06.01.05.21.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Jun 2022 05:21:18 -0700 (PDT)
-From:   Chengming Zhou <zhouchengming@bytedance.com>
-To:     tj@kernel.org, axboe@kernel.dk
-Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Chengming Zhou <zhouchengming@bytedance.com>
-Subject: [PATCH 1/2] blk-iocost: factor out iocg_deactivate()
-Date:   Wed,  1 Jun 2022 20:20:06 +0800
-Message-Id: <20220601122007.1057-1-zhouchengming@bytedance.com>
-X-Mailer: git-send-email 2.35.1
+        bh=ZDgi6QT1T7EpVIAwPl8YawRZEJZufjvXhtek/OEXbdU=;
+        b=wYP5s5ZetKFsqmbccbQJQVbYGO8R+RFwo8/SRCMC+mN+jyehVCbWDCZ/a1HokLM+gh
+         P6shS5OKwGgRtkP/vDi9/JrJR2UEB5oygLWatS3hsq0r/VeY4827BgTm3N487e5vFs32
+         xhyhxvken5Ft1WRrVIwxsaAB3j64STptOR4Ubt34crrMNrXR91j2DRirnrseUABpYMDD
+         Hhn0Y0SMC6Hz/lKaYrjcxyZ5ye2WoZzUQdBu2Pla6qYfB02sTqvN94s+NsY53URVj7pC
+         EPf+XG3b8KJb8eGYBLi0FDWMIh8v/WmWm2FwM/I6rAyBkrGMMiBr5qCpRr0ABpqCc8KI
+         mzMQ==
+X-Gm-Message-State: AOAM533ZEayhRmHLkA3ZNkAMSKo+1xDWB4w/KLUmCHYeBWVfoVoiv/UY
+        6xDzMK9alZl6raVkStfIchEZnQ==
+X-Google-Smtp-Source: ABdhPJyvJbwGPjXVa+X3djqfGIJHVCyeFGfVCL8frzhyOFUP05z/hnZlK01sRTcQV+QNd9iwdn52IQ==
+X-Received: by 2002:a17:907:2cc4:b0:6fe:1c72:7888 with SMTP id hg4-20020a1709072cc400b006fe1c727888mr58492508ejc.373.1654086158619;
+        Wed, 01 Jun 2022 05:22:38 -0700 (PDT)
+Received: from [192.168.0.179] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id o17-20020a1709061b1100b006febc1ef61csm637801ejg.106.2022.06.01.05.22.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 01 Jun 2022 05:22:38 -0700 (PDT)
+Message-ID: <44053e7d-71fd-2012-dc7f-5641536c1f2c@linaro.org>
+Date:   Wed, 1 Jun 2022 14:22:36 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v6 1/6] dt-bindings: remoteproc: Add Xilinx RPU subsystem
+ bindings
+Content-Language: en-US
+To:     Tanmay Shah <tanmay.shah@xilinx.com>,
+        openamp-system-reference@lists.openampproject.org,
+        bjorn.andersson@linaro.org, mathieu.poirier@linaro.org,
+        robh+dt@kernel.org, krzk+dt@kernel.org, michal.simek@xilinx.com,
+        ben.levinsky@xilinx.com
+Cc:     linux-remoteproc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+References: <20220531234308.3317795-1-tanmay.shah@xilinx.com>
+ <20220531234308.3317795-2-tanmay.shah@xilinx.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220531234308.3317795-2-tanmay.shah@xilinx.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch factor out iocg deactivation into a separate function:
-iocg_deactivate(). No functional changes.
+On 01/06/2022 01:43, Tanmay Shah wrote:
+> Xilinx ZynqMP platform has dual-core ARM Cortex R5 Realtime Processing
+> Unit(RPU) subsystem. This patch adds dt-bindings for RPU subsystem
+> (cluster).
+> 
+> Signed-off-by: Tanmay Shah <tanmay.shah@xilinx.com>
+> ---
+> 
+> Changes in v6:
+>   - Add maxItems to sram and memory-region property
+> 
+> Changes in v5:
+> - Add constraints of the possible values of xlnx,cluster-mode property
+> - fix description of power-domains property for r5 core
+> - Remove reg, address-cells and size-cells properties as it is not required
+> - Fix description of mboxes property
+> - Add description of each memory-region and remove old .txt binding link
+>   reference in the description
+> 
+> Changes in v4:
+>   - Add memory-region, mboxes and mbox-names properties in example
+> 
+> Changes in v3:
+>   - None
+> 
+> 
+>  .../bindings/remoteproc/xlnx,r5f-rproc.yaml   | 129 ++++++++++++++++++
+>  include/dt-bindings/power/xlnx-zynqmp-power.h |   6 +
+>  2 files changed, 135 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/remoteproc/xlnx,r5f-rproc.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/remoteproc/xlnx,r5f-rproc.yaml b/Documentation/devicetree/bindings/remoteproc/xlnx,r5f-rproc.yaml
+> new file mode 100644
+> index 000000000000..cbff1c201a89
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/remoteproc/xlnx,r5f-rproc.yaml
+> @@ -0,0 +1,129 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only or BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/remoteproc/xlnx,r5f-rproc.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Xilinx R5F processor subsystem
+> +
+> +maintainers:
+> +  - Ben Levinsky <ben.levinsky@xilinx.com>
+> +  - Tanmay Shah <tanmay.shah@xilinx.com>
+> +
+> +description: |
+> +  The Xilinx platforms include a pair of Cortex-R5F processors (RPU) for
+> +  real-time processing based on the Cortex-R5F processor core from ARM.
+> +  The Cortex-R5F processor implements the Arm v7-R architecture and includes a
+> +  floating-point unit that implements the Arm VFPv3 instruction set.
+> +
+> +properties:
+> +  compatible:
+> +    const: xlnx,zynqmp-r5fss
+> +
+> +  xlnx,cluster-mode:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    enum: [0, 1, 2]
+> +    description: |
+> +      The RPU MPCore can operate in split mode(Dual-processor performance), Safety
+> +      lock-step mode(Both RPU cores execute the same code in lock-step,
+> +      clock-for-clock) or Single CPU mode (RPU core 0 can be held in reset while
+> +      core 1 runs normally). The processor does not support dynamic configuration.
+> +      Switching between modes is only permitted immediately after a processor reset.
+> +      If set to  1 then lockstep mode and if 0 then split mode.
+> +      If set to  2 then single CPU mode. When not defined, default will be lockstep mode.
+> +
+> +patternProperties:
+> +  "^r5f-[a-f0-9]+$":
+> +    type: object
+> +    description: |
+> +      The RPU is located in the Low Power Domain of the Processor Subsystem.
+> +      Each processor includes separate L1 instruction and data caches and
+> +      tightly coupled memories (TCM). System memory is cacheable, but the TCM
+> +      memory space is non-cacheable.
+> +
+> +      Each RPU contains one 64KB memory and two 32KB memories that
+> +      are accessed via the TCM A and B port interfaces, for a total of 128KB
+> +      per processor. In lock-step mode, the processor has access to 256KB of
+> +      TCM memory.
+> +
+> +    properties:
+> +      compatible:
+> +        const: xlnx,zynqmp-r5f
+> +
+> +      power-domains:
+> +        description: RPU core PM domain specifier
+> +        maxItems: 1
+> +
+> +      mboxes:
+> +        minItems: 1
+> +        items:
+> +          - description: mailbox channel to send data to RPU
+> +          - description: mailbox channel to receive data from RPU
+> +
+> +      mbox-names:
+> +        minItems: 1
+> +        items:
+> +          - const: tx
+> +          - const: rx
+> +
+> +      sram:
+> +        $ref: /schemas/types.yaml#/definitions/phandle-array
+> +        maxItems: 8
 
-Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
----
- block/blk-iocost.c | 59 ++++++++++++++++++++++++++--------------------
- 1 file changed, 33 insertions(+), 26 deletions(-)
+Without minItems, this means maxItems=minItems and previously you had
+here "minItems:1", so is it really what you want?
 
-diff --git a/block/blk-iocost.c b/block/blk-iocost.c
-index 33a11ba971ea..b1f2305e8032 100644
---- a/block/blk-iocost.c
-+++ b/block/blk-iocost.c
-@@ -1322,6 +1322,37 @@ static bool iocg_activate(struct ioc_gq *iocg, struct ioc_now *now)
- 	return false;
- }
- 
-+static void iocg_deactivate(struct ioc_gq *iocg, struct ioc_now *now)
-+{
-+	struct ioc *ioc = iocg->ioc;
-+	u64 vtime = atomic64_read(&iocg->vtime);
-+	s64 excess;
-+
-+	lockdep_assert_held(&ioc->lock);
-+	lockdep_assert_held(&iocg->waitq.lock);
-+
-+	/*
-+	 * @iocg has been inactive for a full duration and will
-+	 * have a high budget. Account anything above target as
-+	 * error and throw away. On reactivation, it'll start
-+	 * with the target budget.
-+	 */
-+	excess = now->vnow - vtime - ioc->margins.target;
-+	if (excess > 0) {
-+		u32 old_hwi;
-+
-+		current_hweight(iocg, NULL, &old_hwi);
-+		ioc->vtime_err -= div64_u64(excess * old_hwi,
-+					    WEIGHT_ONE);
-+	}
-+
-+	TRACE_IOCG_PATH(iocg_idle, iocg, now,
-+			atomic64_read(&iocg->active_period),
-+			atomic64_read(&ioc->cur_period), vtime);
-+	__propagate_weights(iocg, 0, 0, false, now);
-+	list_del_init(&iocg->active_list);
-+}
-+
- static bool iocg_kick_delay(struct ioc_gq *iocg, struct ioc_now *now)
- {
- 	struct ioc *ioc = iocg->ioc;
-@@ -2165,32 +2196,8 @@ static int ioc_check_iocgs(struct ioc *ioc, struct ioc_now *now)
- 			iocg_kick_waitq(iocg, true, now);
- 			if (iocg->abs_vdebt || iocg->delay)
- 				nr_debtors++;
--		} else if (iocg_is_idle(iocg)) {
--			/* no waiter and idle, deactivate */
--			u64 vtime = atomic64_read(&iocg->vtime);
--			s64 excess;
--
--			/*
--			 * @iocg has been inactive for a full duration and will
--			 * have a high budget. Account anything above target as
--			 * error and throw away. On reactivation, it'll start
--			 * with the target budget.
--			 */
--			excess = now->vnow - vtime - ioc->margins.target;
--			if (excess > 0) {
--				u32 old_hwi;
--
--				current_hweight(iocg, NULL, &old_hwi);
--				ioc->vtime_err -= div64_u64(excess * old_hwi,
--							    WEIGHT_ONE);
--			}
--
--			TRACE_IOCG_PATH(iocg_idle, iocg, now,
--					atomic64_read(&iocg->active_period),
--					atomic64_read(&ioc->cur_period), vtime);
--			__propagate_weights(iocg, 0, 0, false, now);
--			list_del_init(&iocg->active_list);
--		}
-+		} else if (iocg_is_idle(iocg))
-+			iocg_deactivate(iocg, now);
- 
- 		spin_unlock(&iocg->waitq.lock);
- 	}
--- 
-2.36.1
+Anyway rest looks good to me.
 
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+Best regards,
+Krzysztof
