@@ -2,331 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85211C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 20:52:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30F53C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 20:52:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230236AbiFAUwp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 16:52:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37972 "EHLO
+        id S230174AbiFAUww (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 16:52:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230373AbiFAUwP (ORCPT
+        with ESMTP id S230469AbiFAUwR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 16:52:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67E792004F5;
-        Wed,  1 Jun 2022 13:51:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CBF196119E;
-        Wed,  1 Jun 2022 20:51:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BF2BC385A5;
-        Wed,  1 Jun 2022 20:51:33 +0000 (UTC)
-From:   Clark Williams <williams@redhat.com>
-Subject: [ANNOUNCE] 5.15.44-rt46
-Date:   Wed, 01 Jun 2022 20:46:43 -0000
-Message-ID: <165411640340.626197.12029562400290292841@puck.lan>
-To:     LKML <linux-kernel@vger.kernel.org>,
-        linux-rt-users <linux-rt-users@vger.kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Carsten Emde <C.Emde@osadl.org>,
-        John Kacur <jkacur@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Daniel Wagner <daniel.wagner@suse.com>,
-        Tom Zanussi <tom.zanussi@linux.intel.com>,
-        Clark Williams <williams@redhat.com>,
-        Pavel Machek <pavel@denx.de>
+        Wed, 1 Jun 2022 16:52:17 -0400
+Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5CCF65E4;
+        Wed,  1 Jun 2022 13:52:04 -0700 (PDT)
+Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-f33f0f5b1dso4295949fac.8;
+        Wed, 01 Jun 2022 13:52:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=gn5G0sk6V7ansC6nBxDu6+mXNt9uJIpkYkYkuE5zjDs=;
+        b=WyUKnG4lGjxLKBmD82qOADKFTT/PT9SIY8RJQQYPlMlQ91NR1NXyF9daoejumGt2i/
+         IJ87DJC2b24QBJXy50gBn8et3d9g/4JunBK+5jkc+pRNSsbeCLh8+oS3W4f2fqwQ+p3+
+         cUJ4+Eo9o/u1NLSrSDTsW2r6WjLMlJ/cV/yCIalaJQ3wKgFB+Je02BRS3wGsP9QPfjpU
+         19jaUV6n+I4SyLOn7vmOEdO7yZ8WsUpxf74MrhkMbSFQqQ0RVsUx5P0O1zSO0dZiBbTY
+         BbREAfUt6T+iv0wq7JW1EXkHNCRtZ/B4+YLnedTns49z+0L4YuURaF7dlkFaGOZfIE3I
+         x5Rw==
+X-Gm-Message-State: AOAM5305WkJK2Ux4SNZpyMuCmX+OacvafIeahwwriIL/xaetzGupaDNj
+        QymyU0UrpnD5LLnrB0nVsdhGOhNAxQ==
+X-Google-Smtp-Source: ABdhPJwAJpzi0PcdaldTmKtUN95zZ7XXm0EePIpfGX5LC4bNAZ845Iwj0Rw0ZOPMk6mqDxpbS339oA==
+X-Received: by 2002:aca:f143:0:b0:32b:dc40:c1c4 with SMTP id p64-20020acaf143000000b0032bdc40c1c4mr12678221oih.293.1654113065824;
+        Wed, 01 Jun 2022 12:51:05 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id bc32-20020a05682016a000b0035eb4e5a6dasm1361259oob.48.2022.06.01.12.51.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Jun 2022 12:51:05 -0700 (PDT)
+Received: (nullmailer pid 320227 invoked by uid 1000);
+        Wed, 01 Jun 2022 19:51:04 -0000
+Date:   Wed, 1 Jun 2022 14:51:04 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Liang Yang <liang.yang@amlogic.com>
+Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        linux-arm-kernel@lists.infradead.org,
+        XianWei Zhao <xianwei.zhao@amlogic.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        YongHui Yu <yonghui.yu@amlogic.com>,
+        Richard Weinberger <richard@nod.at>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Kevin Hilman <khilman@baylibre.com>,
+        linux-kernel@vger.kernel.org,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        linux-amlogic@lists.infradead.org,
+        Jianxin Pan <jianxin.pan@amlogic.com>,
+        Victor Wan <victor.wan@amlogic.com>,
+        BiChao Zheng <bichao.zheng@amlogic.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-mtd@lists.infradead.org,
+        Kelvin Zhang <kelvin.zhang@amlogic.com>
+Subject: Re: [PATCH v5 1/4] dt-bindings: nand: meson: fix meson nfc clock
+Message-ID: <20220601195104.GA320194-robh@kernel.org>
+References: <20220513123404.48513-1-liang.yang@amlogic.com>
+ <20220513123404.48513-2-liang.yang@amlogic.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220513123404.48513-2-liang.yang@amlogic.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello RT-list!
+On Fri, 13 May 2022 20:34:01 +0800, Liang Yang wrote:
+> EMMC and NAND have the same clock control register named 'SD_EMMC_CLOCK'
+> which is defined in EMMC port internally. bit0~5 of 'SD_EMMC_CLOCK' is
+> the divider and bit6~7 is the mux for fix pll and xtal. At the beginning,
+> a common MMC and NAND sub-clock was discussed and planed to be implemented
+> as NFC clock provider, but now this series of patches of a common MMC and
+> NAND sub-clock are never being accepted and the current binding was never
+> valid. the reasons are:
+> 1. EMMC and NAND, which are mutually exclusive anyway
+> 2. coupling the EMMC and NAND.
+> 3. it seems that a common MMC and NAND sub-clock is over engineered.
+> and let us see the link for more information:
+> https://lore.kernel.org/all/20220121074508.42168-5-liang.yang@amlogic.com
+> so The meson nfc can't work now, let us rework the clock.
+> 
+> Signed-off-by: Liang Yang <liang.yang@amlogic.com>
+> ---
+>  .../bindings/mtd/amlogic,meson-nand.txt       | 29 ++++++++-----------
+>  1 file changed, 12 insertions(+), 17 deletions(-)
+> 
 
-I'm pleased to announce the 5.15.44-rt46 stable release.
-
-Note that this is a pretty big update of the /dev/random driver that took a bit
-longer to eyeball than a lot of other stable updates. If you are a heavy user
-of /dev/random please check your results and let us know if you see problems.
-
-That being said, I do feel confident of the update.
-
-You can get this release via the git tree at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
-
-  branch: v5.15-rt
-  Head SHA1: dd1275d9e897e9d8d76fefa6e08ababe083e2a24
-
-Or to build 5.15.44-rt46 directly, the following patches should be applied:
-
-  https://www.kernel.org/pub/linux/kernel/v5.x/linux-5.15.tar.xz
-
-  https://www.kernel.org/pub/linux/kernel/v5.x/patch-5.15.44.xz
-
-  https://www.kernel.org/pub/linux/kernel/projects/rt/5.15/patch-5.15.44-rt46.patch.xz
-
-
-Enjoy!
-Clark
-
-Changes from v5.15.43-rt45:
----
-
-Basavaraj Natikar (1):
-      HID: amd_sfh: Add support for sensor discovery
-
-Clark Williams (2):
-      Merge tag 'v5.15.44' into v5.15-rt
-      'Linux 5.15.44-rt46'
-
-Dominik Brodowski (7):
-      random: harmonize "crng init done" messages
-      random: early initialization of ChaCha constants
-      random: continually use hwgenerator randomness
-      random: access primary_pool directly rather than through pointer
-      random: only call crng_finalize_init() for primary_crng
-      random: fix locking in crng_fast_load()
-      random: fix locking for crng_init in crng_reseed()
-
-Edward Matijevic (1):
-      ALSA: ctxfi: Add SB046x PCI ID
-
-Eric Biggers (1):
-      random: remove use_input_pool parameter from crng_reseed()
-
-Greg Kroah-Hartman (1):
-      Linux 5.15.44
-
-Jan Varho (1):
-      random: do not split fast init input in add_hwgenerator_randomness()
-
-Jann Horn (2):
-      random: don't reset crng_init_cnt on urandom_read()
-      random: check for signal_pending() outside of need_resched() check
-
-Jason A. Donenfeld (123):
-      MAINTAINERS: co-maintain random.c
-      MAINTAINERS: add git tree for random.c
-      lib/crypto: blake2s: include as built-in
-      lib/crypto: blake2s: move hmac construction into wireguard
-      lib/crypto: sha1: re-roll loops to reduce code size
-      lib/crypto: blake2s: avoid indirect calls to compression function for Clang CFI
-      random: use BLAKE2s instead of SHA1 in extraction
-      random: do not sign extend bytes for rotation when mixing
-      random: do not re-init if crng_reseed completes before primary init
-      random: mix bootloader randomness into pool
-      random: use IS_ENABLED(CONFIG_NUMA) instead of ifdefs
-      random: avoid superfluous call to RDRAND in CRNG extraction
-      random: cleanup poolinfo abstraction
-      random: cleanup integer types
-      random: remove incomplete last_data logic
-      random: remove unused extract_entropy() reserved argument
-      random: rather than entropy_store abstraction, use global
-      random: remove unused OUTPUT_POOL constants
-      random: de-duplicate INPUT_POOL constants
-      random: prepend remaining pool constants with POOL_
-      random: cleanup fractional entropy shift constants
-      random: access input_pool_data directly rather than through pointer
-      random: selectively clang-format where it makes sense
-      random: simplify arithmetic function flow in account()
-      random: use computational hash for entropy extraction
-      random: simplify entropy debiting
-      random: use linear min-entropy accumulation crediting
-      random: always wake up entropy writers after extraction
-      random: make credit_entropy_bits() always safe
-      random: remove batched entropy locking
-      random: use RDSEED instead of RDRAND in entropy extraction
-      random: get rid of secondary crngs
-      random: inline leaves of rand_initialize()
-      random: ensure early RDSEED goes through mixer on init
-      random: do not xor RDRAND when writing into /dev/random
-      random: absorb fast pool into input pool after fast load
-      random: use simpler fast key erasure flow on per-cpu keys
-      random: use hash function for crng_slow_load()
-      random: make more consistent use of integer types
-      random: remove outdated INT_MAX >> 6 check in urandom_read()
-      random: zero buffer after reading entropy from userspace
-      random: tie batched entropy generation to base_crng generation
-      random: remove ifdef'd out interrupt bench
-      random: remove unused tracepoints
-      random: add proper SPDX header
-      random: deobfuscate irq u32/u64 contributions
-      random: introduce drain_entropy() helper to declutter crng_reseed()
-      random: remove useless header comment
-      random: remove whitespace and reorder includes
-      random: group initialization wait functions
-      random: group crng functions
-      random: group entropy extraction functions
-      random: group entropy collection functions
-      random: group userspace read/write functions
-      random: group sysctl functions
-      random: rewrite header introductory comment
-      random: defer fast pool mixing to worker
-      random: do not take pool spinlock at boot
-      random: unify early init crng load accounting
-      random: check for crng_init == 0 in add_device_randomness()
-      random: pull add_hwgenerator_randomness() declaration into random.h
-      random: clear fast pool, crng, and batches in cpuhp bring up
-      random: round-robin registers as ulong, not u32
-      random: only wake up writers after zap if threshold was passed
-      random: cleanup UUID handling
-      random: unify cycles_t and jiffies usage and types
-      random: do crng pre-init loading in worker rather than irq
-      random: give sysctl_random_min_urandom_seed a more sensible value
-      random: don't let 644 read-only sysctls be written to
-      random: replace custom notifier chain with standard one
-      random: use SipHash as interrupt entropy accumulator
-      random: make consistent usage of crng_ready()
-      random: reseed more often immediately after booting
-      random: check for signal and try earlier when generating entropy
-      random: skip fast_init if hwrng provides large chunk of entropy
-      random: treat bootloader trust toggle the same way as cpu trust toggle
-      random: re-add removed comment about get_random_{u32,u64} reseeding
-      random: mix build-time latent entropy into pool at init
-      random: do not allow user to keep crng key around on stack
-      random: check for signals every PAGE_SIZE chunk of /dev/[u]random
-      random: allow partial reads if later user copies fail
-      random: make random_get_entropy() return an unsigned long
-      random: document crng_fast_key_erasure() destination possibility
-      random: fix sysctl documentation nits
-      init: call time_init() before rand_initialize()
-      ia64: define get_cycles macro for arch-override
-      s390: define get_cycles macro for arch-override
-      parisc: define get_cycles macro for arch-override
-      alpha: define get_cycles macro for arch-override
-      powerpc: define get_cycles macro for arch-override
-      timekeeping: Add raw clock fallback for random_get_entropy()
-      m68k: use fallback for random_get_entropy() instead of zero
-      riscv: use fallback for random_get_entropy() instead of zero
-      mips: use fallback for random_get_entropy() instead of just c0 random
-      arm: use fallback for random_get_entropy() instead of zero
-      nios2: use fallback for random_get_entropy() instead of zero
-      x86/tsc: Use fallback for random_get_entropy() instead of zero
-      um: use fallback for random_get_entropy() instead of zero
-      sparc: use fallback for random_get_entropy() instead of zero
-      xtensa: use fallback for random_get_entropy() instead of zero
-      random: insist on random_get_entropy() existing in order to simplify
-      random: do not use batches when !crng_ready()
-      random: use first 128 bits of input as fast init
-      random: do not pretend to handle premature next security model
-      random: order timer entropy functions below interrupt functions
-      random: do not use input pool from hard IRQs
-      random: help compiler out with fast_mix() by using simpler arguments
-      siphash: use one source of truth for siphash permutations
-      random: use symbolic constants for crng_init states
-      random: avoid initializing twice in credit race
-      random: move initialization out of reseeding hot path
-      random: remove ratelimiting for in-kernel unseeded randomness
-      random: use proper jiffies comparison macro
-      random: handle latent entropy and command line from random_init()
-      random: credit architectural init the exact amount
-      random: use static branch for crng_ready()
-      random: remove extern from functions in header
-      random: use proper return types on get_random_{int,long}_wait()
-      random: make consistent use of buf and len
-      random: move initialization functions out of hot pages
-      random: move randomize_page() into mm where it belongs
-      random: unify batched entropy implementations
-      random: check for signals after page of pool writes
-
-Jens Axboe (3):
-      random: convert to using fops->read_iter()
-      random: convert to using fops->write_iter()
-      random: wire up fops->splice_{read,write}_iter()
-
-Lorenzo Pieralisi (1):
-      ACPI: sysfs: Fix BERT error region memory mapping
-
-Magnus Karlsson (1):
-      ice: fix crash at allocation failure
-
-Mark Brown (1):
-      random: document add_hwgenerator_randomness() with other input functions
-
-Paolo Bonzini (1):
-      KVM: x86/mmu: fix NULL pointer dereference on guest INVPCID
-
-Schspa Shi (1):
-      random: fix typo in comments
-
-Sebastian Andrzej Siewior (1):
-      random: remove unused irq_flags argument from add_interrupt_randomness()
----
-Documentation/admin-guide/kernel-parameters.txt |    6 +
- Documentation/admin-guide/sysctl/kernel.rst     |   22 +-
- MAINTAINERS                                     |    2 +
- Makefile                                        |    2 +-
- arch/alpha/include/asm/timex.h                  |    1 +
- arch/arm/crypto/Makefile                        |    4 +-
- arch/arm/crypto/blake2s-core.S                  |    8 +-
- arch/arm/crypto/blake2s-glue.c                  |   73 +-
- arch/arm/crypto/blake2s-shash.c                 |   75 +
- arch/arm/include/asm/timex.h                    |    1 +
- arch/ia64/include/asm/timex.h                   |    1 +
- arch/m68k/include/asm/timex.h                   |    2 +-
- arch/mips/include/asm/timex.h                   |   17 +-
- arch/nios2/include/asm/timex.h                  |    3 +
- arch/parisc/include/asm/timex.h                 |    3 +-
- arch/powerpc/include/asm/timex.h                |    1 +
- arch/riscv/include/asm/timex.h                  |    2 +-
- arch/s390/include/asm/timex.h                   |    1 +
- arch/sparc/include/asm/timex_32.h               |    4 +-
- arch/um/include/asm/timex.h                     |    9 +-
- arch/x86/crypto/Makefile                        |    4 +-
- arch/x86/crypto/blake2s-glue.c                  |   68 +-
- arch/x86/crypto/blake2s-shash.c                 |   77 +
- arch/x86/include/asm/timex.h                    |    9 +
- arch/x86/include/asm/tsc.h                      |    7 +-
- arch/x86/kernel/cpu/mshyperv.c                  |    3 +-
- arch/x86/kvm/mmu/mmu.c                          |    6 +-
- arch/xtensa/include/asm/timex.h                 |    6 +-
- crypto/Kconfig                                  |    3 +-
- crypto/blake2s_generic.c                        |    4 +-
- crypto/drbg.c                                   |   17 +-
- drivers/acpi/sysfs.c                            |   25 +-
- drivers/char/Kconfig                            |    3 +-
- drivers/char/hw_random/core.c                   |    1 +
- drivers/char/random.c                           | 3009 +++++++++--------------
- drivers/hid/amd-sfh-hid/amd_sfh_client.c        |   11 +
- drivers/hid/amd-sfh-hid/amd_sfh_pcie.c          |    7 +
- drivers/hid/amd-sfh-hid/amd_sfh_pcie.h          |    4 +
- drivers/hv/hyperv_vmbus.h                       |    1 -
- drivers/hv/vmbus_drv.c                          |    5 +-
- drivers/net/Kconfig                             |    1 -
- drivers/net/ethernet/intel/ice/ice_xsk.c        |    2 +-
- drivers/net/wireguard/noise.c                   |   45 +-
- include/crypto/blake2s.h                        |    3 -
- include/crypto/chacha.h                         |   15 +-
- include/crypto/drbg.h                           |    2 +-
- include/crypto/internal/blake2s.h               |   46 +-
- include/linux/cpuhotplug.h                      |    2 +
- include/linux/hw_random.h                       |    2 -
- include/linux/irqdesc.h                         |    1 -
- include/linux/mm.h                              |    1 +
- include/linux/prandom.h                         |   23 +-
- include/linux/random.h                          |  100 +-
- include/linux/siphash.h                         |   28 +
- include/linux/timex.h                           |   10 +-
- include/trace/events/random.h                   |  247 --
- init/main.c                                     |   13 +-
- kernel/cpu.c                                    |   11 +
- kernel/irq/handle.c                             |   10 +-
- kernel/irq/manage.c                             |    6 -
- kernel/time/timekeeping.c                       |   15 +
- lib/Kconfig.debug                               |    3 +-
- lib/crypto/Kconfig                              |   23 +-
- lib/crypto/Makefile                             |    9 +-
- lib/crypto/blake2s-generic.c                    |    6 +-
- lib/crypto/blake2s-selftest.c                   |   31 -
- lib/crypto/blake2s.c                            |   47 +-
- lib/random32.c                                  |   16 +-
- lib/sha1.c                                      |   95 +-
- lib/siphash.c                                   |   32 +-
- lib/vsprintf.c                                  |   10 +-
- localversion-rt                                 |    2 +-
- mm/util.c                                       |   32 +
- sound/pci/ctxfi/ctatc.c                         |    2 +
- sound/pci/ctxfi/cthardware.h                    |    3 +-
- 75 files changed, 1684 insertions(+), 2717 deletions(-)
----
+Acked-by: Rob Herring <robh@kernel.org>
