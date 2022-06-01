@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7496CCA468
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:54:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAFC8CCA46F
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:54:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353097AbiFANyt (ORCPT
+        id S1353578AbiFANyz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 09:54:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33280 "EHLO
+        Wed, 1 Jun 2022 09:54:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353705AbiFANyR (ORCPT
+        with ESMTP id S1353698AbiFANyQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 09:54:17 -0400
+        Wed, 1 Jun 2022 09:54:16 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 537AC8AE7A;
-        Wed,  1 Jun 2022 06:54:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E122E8AE48;
+        Wed,  1 Jun 2022 06:54:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 93994B81806;
-        Wed,  1 Jun 2022 13:53:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE64EC385A5;
-        Wed,  1 Jun 2022 13:53:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 36EE7B81AFB;
+        Wed,  1 Jun 2022 13:53:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D241C3411F;
+        Wed,  1 Jun 2022 13:53:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091616;
-        bh=p/08dZfZ7CBeLXRE9nPAnm/+jHFflppoG/BYqplNPyk=;
+        s=k20201202; t=1654091598;
+        bh=r3DLkc6jEcY3i0/3z56pH0qiShiXBiSeWD+DV9othKc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jwB1cGNLE/Wa7MV4TpB5uKF82EVi0n62RMTjcnAZf7kvIQ8XkrBpJVlTMQKEjVbKx
-         bo/x3q1UYx3mgkQ7WsfiVT4PiDfqO2ZsO6cpgRBwVomAA6MYcjmvwXKegor47E0wt6
-         pb9m2Oqq+2tMbkofz3iWOc7iW9X15ooa1Jcx0KFOpLdxMy0cyGDZUkEYv7egJsETTL
-         poE+B4MjDOuAjzPUHjYW/uJOuB5syxAuolbCz3e/lS6KQlNuAL1Px3s89/78VLimsd
-         v6/fPneJN5W5CzxKL104jOYEgg26j/IJaj/RfoQWHvITmGGRxehE9i9gIXvNYVTvkX
-         Lek0WX3nwq8RA==
+        b=G297vWd24QTYYN8UVhD/TX1OSFHuraIhEjO6QHdxM23UILW+Dd15Mzk1790p5UJXi
+         d8ljLl4YFLuwPga5T17I5vCi/eCahcgmB7own6W5OWFF3zciw1JIJryzoRMXC/SXKG
+         bekoqvwupBzFHW/fC3UWpqeUv/ADv8LFieZHpXjkCdeaf6DxFqiaW2d9evvf+peUKu
+         4+b58QZZ9lr4Ajtiz1ZlykBepn/pSHb/Z4Kud3fqGdOw5xf/bVXTKUX9wmxrlSwOpP
+         dXw4j8VwCfUh6DcpWet9zA79DhdTXjscxx8HXaWeN4CGs3jHpo45MwxisQl/+Xn8Bk
+         pB8fynyOebNFg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>, rth@twiddle.net,
-        ink@jurassic.park.msu.ru, mattst88@gmail.com,
-        catalin.marinas@arm.com, pcc@google.com, will@kernel.org,
-        linux-alpha@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 34/49] alpha: fix alloc_zeroed_user_highpage_movable()
-Date:   Wed,  1 Jun 2022 09:51:58 -0400
-Message-Id: <20220601135214.2002647-34-sashal@kernel.org>
+Cc:     Viresh Kumar <viresh.kumar@linaro.org>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>,
+        Jia-wei Chang <jia-wei.chang@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
+        linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.18 28/49] cpufreq: Avoid unnecessary frequency updates due to mismatch
+Date:   Wed,  1 Jun 2022 09:51:52 -0400
+Message-Id: <20220601135214.2002647-28-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135214.2002647-1-sashal@kernel.org>
 References: <20220601135214.2002647-1-sashal@kernel.org>
@@ -57,37 +57,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
+From: Viresh Kumar <viresh.kumar@linaro.org>
 
-[ Upstream commit f9c668d281aa20e38c9bda3b7b0adeb8891aa15e ]
+[ Upstream commit f55ae08c89873e140c7cac2a7fa161d31a0d60cf ]
 
-Due to a typo, the final argument to alloc_page_vma() didn't refer to a
-real variable.  This only affected CONFIG_NUMA, which was marked BROKEN in
-2006 and removed from alpha in 2021.  Found due to a refactoring patch.
+For some platforms, the frequency returned by hardware may be slightly
+different from what is provided in the frequency table. For example,
+hardware may return 499 MHz instead of 500 MHz. In such cases it is
+better to avoid getting into unnecessary frequency updates, as we may
+end up switching policy->cur between the two and sending unnecessary
+pre/post update notifications, etc.
 
-Link: https://lkml.kernel.org/r/20220504182857.4013401-4-willy@infradead.org
-Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+This patch has chosen allows the hardware frequency and table frequency
+to deviate by 1 MHz for now, we may want to increase it a bit later on
+if someone still complains.
+
+Reported-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+Tested-by: Jia-wei Chang <jia-wei.chang@mediatek.com>
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/alpha/include/asm/page.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/cpufreq/cpufreq.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/arch/alpha/include/asm/page.h b/arch/alpha/include/asm/page.h
-index 18f48a6f2ff6..8f3f5eecba28 100644
---- a/arch/alpha/include/asm/page.h
-+++ b/arch/alpha/include/asm/page.h
-@@ -18,7 +18,7 @@ extern void clear_page(void *page);
- #define clear_user_page(page, vaddr, pg)	clear_page(page)
+diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
+index 80f535cc8a75..fbaa8e6c7d23 100644
+--- a/drivers/cpufreq/cpufreq.c
++++ b/drivers/cpufreq/cpufreq.c
+@@ -28,6 +28,7 @@
+ #include <linux/suspend.h>
+ #include <linux/syscore_ops.h>
+ #include <linux/tick.h>
++#include <linux/units.h>
+ #include <trace/events/power.h>
  
- #define alloc_zeroed_user_highpage_movable(vma, vaddr) \
--	alloc_page_vma(GFP_HIGHUSER_MOVABLE | __GFP_ZERO, vma, vmaddr)
-+	alloc_page_vma(GFP_HIGHUSER_MOVABLE | __GFP_ZERO, vma, vaddr)
- #define __HAVE_ARCH_ALLOC_ZEROED_USER_HIGHPAGE_MOVABLE
+ static LIST_HEAD(cpufreq_policy_list);
+@@ -1707,6 +1708,16 @@ static unsigned int cpufreq_verify_current_freq(struct cpufreq_policy *policy, b
+ 		return new_freq;
  
- extern void copy_page(void * _to, void * _from);
+ 	if (policy->cur != new_freq) {
++		/*
++		 * For some platforms, the frequency returned by hardware may be
++		 * slightly different from what is provided in the frequency
++		 * table, for example hardware may return 499 MHz instead of 500
++		 * MHz. In such cases it is better to avoid getting into
++		 * unnecessary frequency updates.
++		 */
++		if (abs(policy->cur - new_freq) < HZ_PER_MHZ)
++			return policy->cur;
++
+ 		cpufreq_out_of_sync(policy, new_freq);
+ 		if (update)
+ 			schedule_work(&policy->update);
 -- 
 2.35.1
 
