@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 919A5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:59:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72132CCA468
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:59:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354091AbiFAN73 (ORCPT
+        id S1354102AbiFAN7g (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 09:59:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32768 "EHLO
+        Wed, 1 Jun 2022 09:59:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353959AbiFAN6o (ORCPT
+        with ESMTP id S1353927AbiFAN6Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 09:58:44 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6E0F8B0A4;
-        Wed,  1 Jun 2022 06:55:37 -0700 (PDT)
+        Wed, 1 Jun 2022 09:58:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C25F8A32D;
+        Wed,  1 Jun 2022 06:55:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 49159CE1C0A;
-        Wed,  1 Jun 2022 13:55:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5B25C385A5;
-        Wed,  1 Jun 2022 13:55:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E19B615C2;
+        Wed,  1 Jun 2022 13:54:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7507C341C0;
+        Wed,  1 Jun 2022 13:54:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091702;
-        bh=0AATGhPKUXP8RHSIHly1sLcQzI8B/0tKl/5Mevs/1vk=;
+        s=k20201202; t=1654091688;
+        bh=yoxhDZYgsb+yYlZZwz5ToNqwGqQPdnkh/B9IKDpd3kM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PP3Pr/rKXgBDNdDS4p/8siXNGaXkyFWahXTOndinGwRSE1xHYcx4GNGLA0aqJ56SK
-         4XaRJmh68BOqhvLlIUvarW1VcVoUilqPU7Tmwzd/dgFuHQYW5z1DvGR5jolg4OvG90
-         c/t96PG3Eegv5PTeDyrqy60phLeKLtIKM1QGDPjw82zs0LGHwNRaEdKrlK9piE0E0r
-         S+L87wyst6kJ04fgR1+hR46F2wzybUm7+MjlhAQP3m3h85kjBSMAXBiHA63KohUGOF
-         LAzQvG1Clg0Q8aqfzd4m7p4zB3n1mlRRUYZoBl0E/vWmPaqLwNd/g0gWK9KcZ7Bc3t
-         nViKXTvlRUW1w==
+        b=s8NzxQCP7tlhFhW23WrgCauAEj2w6ytLQE24lctnutUck62VtdtfDboenc/Jt14Dj
+         islAPJsdttm9O8jo4WltI/Xg3dPVGl9XKFpyLVnOIIAC64C18k/x5B8z3crH922SiU
+         xEhIvfZw2AyXzYC3fYPrMTretav0SpIn8rvfZnggihtn1+7Yd9KB+Tos8xt/wmbDJC
+         8tLQ3xkucmnw//gvbF1zYv0GLhgwQ4wd8BEjs3I91T/iciDW5gdy+xgdcLrMbhoUvM
+         A1OkQM4eb8psaXK8/qWvuN1zb0fOx12Mxmh7Ym+dedvITXtsYSgKxjG3zxhWanZ+qy
+         5f6AxFojrP3uw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>,
-        perex@perex.cz, tiwai@suse.com, geraldogabriel@gmail.com,
-        matteomartelli3@gmail.com, alexander@tsoy.me,
-        alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.17 17/48] ALSA: usb-audio: Move generic implicit fb quirk entries into quirks.c
-Date:   Wed,  1 Jun 2022 09:53:50 -0400
-Message-Id: <20220601135421.2003328-17-sashal@kernel.org>
+Cc:     Zixuan Fu <r33s3n6@gmail.com>, TOTE Robot <oslab@tsinghua.edu.cn>,
+        Dave Kleikamp <dave.kleikamp@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, shaggy@kernel.org,
+        jfs-discussion@lists.sourceforge.net
+Subject: [PATCH AUTOSEL 5.17 13/48] fs: jfs: fix possible NULL pointer dereference in dbFree()
+Date:   Wed,  1 Jun 2022 09:53:46 -0400
+Message-Id: <20220601135421.2003328-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135421.2003328-1-sashal@kernel.org>
 References: <20220601135421.2003328-1-sashal@kernel.org>
@@ -53,61 +53,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Zixuan Fu <r33s3n6@gmail.com>
 
-[ Upstream commit 67d64069bc0867e52e73a1e255b17462005ca9b4 ]
+[ Upstream commit 0d4837fdb796f99369cf7691d33de1b856bcaf1f ]
 
-Use the new quirk bits to manage the generic implicit fb quirk
-entries.  This makes easier to compare with other devices.
+In our fault-injection testing, the variable "nblocks" in dbFree() can be
+zero when kmalloc_array() fails in dtSearch(). In this case, the variable
+ "mp" in dbFree() would be NULL and then it is dereferenced in
+"write_metapage(mp)".
 
-Link: https://lore.kernel.org/r/20220421064101.12456-2-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+The failure log is listed as follows:
+
+[   13.824137] BUG: kernel NULL pointer dereference, address: 0000000000000020
+...
+[   13.827416] RIP: 0010:dbFree+0x5f7/0x910 [jfs]
+[   13.834341] Call Trace:
+[   13.834540]  <TASK>
+[   13.834713]  txFreeMap+0x7b4/0xb10 [jfs]
+[   13.835038]  txUpdateMap+0x311/0x650 [jfs]
+[   13.835375]  jfs_lazycommit+0x5f2/0xc70 [jfs]
+[   13.835726]  ? sched_dynamic_update+0x1b0/0x1b0
+[   13.836092]  kthread+0x3c2/0x4a0
+[   13.836355]  ? txLockFree+0x160/0x160 [jfs]
+[   13.836763]  ? kthread_unuse_mm+0x160/0x160
+[   13.837106]  ret_from_fork+0x1f/0x30
+[   13.837402]  </TASK>
+...
+
+This patch adds a NULL check of "mp" before "write_metapage(mp)" is called.
+
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
+Signed-off-by: Dave Kleikamp <dave.kleikamp@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/usb/implicit.c | 5 -----
- sound/usb/quirks.c   | 6 ++++++
- 2 files changed, 6 insertions(+), 5 deletions(-)
+ fs/jfs/jfs_dmap.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/sound/usb/implicit.c b/sound/usb/implicit.c
-index 1fd087128538..e1bf1b5da423 100644
---- a/sound/usb/implicit.c
-+++ b/sound/usb/implicit.c
-@@ -45,11 +45,6 @@ struct snd_usb_implicit_fb_match {
+diff --git a/fs/jfs/jfs_dmap.c b/fs/jfs/jfs_dmap.c
+index d8502f4989d9..e75f31b81d63 100644
+--- a/fs/jfs/jfs_dmap.c
++++ b/fs/jfs/jfs_dmap.c
+@@ -385,7 +385,8 @@ int dbFree(struct inode *ip, s64 blkno, s64 nblocks)
+ 	}
  
- /* Implicit feedback quirk table for playback */
- static const struct snd_usb_implicit_fb_match playback_implicit_fb_quirks[] = {
--	/* Generic matching */
--	IMPLICIT_FB_GENERIC_DEV(0x0499, 0x1509), /* Steinberg UR22 */
--	IMPLICIT_FB_GENERIC_DEV(0x0763, 0x2030), /* M-Audio Fast Track C400 */
--	IMPLICIT_FB_GENERIC_DEV(0x0763, 0x2031), /* M-Audio Fast Track C600 */
--
- 	/* Fixed EP */
- 	/* FIXME: check the availability of generic matching */
- 	IMPLICIT_FB_FIXED_DEV(0x0763, 0x2080, 0x81, 2), /* M-Audio FastTrack Ultra */
-diff --git a/sound/usb/quirks.c b/sound/usb/quirks.c
-index ab9f3da49941..5461cdf907e2 100644
---- a/sound/usb/quirks.c
-+++ b/sound/usb/quirks.c
-@@ -1793,6 +1793,8 @@ static const struct usb_audio_quirk_flags_table quirk_flags_table[] = {
- 		   QUIRK_FLAG_CTL_MSG_DELAY_1M | QUIRK_FLAG_IGNORE_CTL_ERROR),
- 	DEVICE_FLG(0x046d, 0x09a4, /* Logitech QuickCam E 3500 */
- 		   QUIRK_FLAG_CTL_MSG_DELAY_1M | QUIRK_FLAG_IGNORE_CTL_ERROR),
-+	DEVICE_FLG(0x0499, 0x1509, /* Steinberg UR22 */
-+		   QUIRK_FLAG_GENERIC_IMPLICIT_FB),
- 	DEVICE_FLG(0x04d8, 0xfeea, /* Benchmark DAC1 Pre */
- 		   QUIRK_FLAG_GET_SAMPLE_RATE),
- 	DEVICE_FLG(0x04e8, 0xa051, /* Samsung USBC Headset (AKG) */
-@@ -1824,6 +1826,10 @@ static const struct usb_audio_quirk_flags_table quirk_flags_table[] = {
- 		   QUIRK_FLAG_IGNORE_CTL_ERROR),
- 	DEVICE_FLG(0x074d, 0x3553, /* Outlaw RR2150 (Micronas UAC3553B) */
- 		   QUIRK_FLAG_GET_SAMPLE_RATE),
-+	DEVICE_FLG(0x0763, 0x2030, /* M-Audio Fast Track C400 */
-+		   QUIRK_FLAG_GENERIC_IMPLICIT_FB),
-+	DEVICE_FLG(0x0763, 0x2031, /* M-Audio Fast Track C600 */
-+		   QUIRK_FLAG_GENERIC_IMPLICIT_FB),
- 	DEVICE_FLG(0x08bb, 0x2702, /* LineX FM Transmitter */
- 		   QUIRK_FLAG_IGNORE_CTL_ERROR),
- 	DEVICE_FLG(0x0951, 0x16ad, /* Kingston HyperX */
+ 	/* write the last buffer. */
+-	write_metapage(mp);
++	if (mp)
++		write_metapage(mp);
+ 
+ 	IREAD_UNLOCK(ipbmap);
+ 
 -- 
 2.35.1
 
