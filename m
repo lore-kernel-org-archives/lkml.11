@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54068CCA470
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:54:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94C4ECCA468
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:54:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241325AbiFANyl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 09:54:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33076 "EHLO
+        id S1353052AbiFANyp (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 09:54:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353681AbiFANyP (ORCPT
+        with ESMTP id S1353696AbiFANyQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 09:54:15 -0400
+        Wed, 1 Jun 2022 09:54:16 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1789F87A26;
-        Wed,  1 Jun 2022 06:53:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B18A78A314;
+        Wed,  1 Jun 2022 06:54:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 45BA1B81AF8;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4894EB81AF7;
+        Wed,  1 Jun 2022 13:53:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD46AC385A5;
         Wed,  1 Jun 2022 13:53:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7C8AC385B8;
-        Wed,  1 Jun 2022 13:53:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091592;
-        bh=13UolS7KDt4vOmU7bTBJvLxXjZB4205noXfbgb8J1tQ=;
+        s=k20201202; t=1654091596;
+        bh=8NbJ170rIUXQQVJxOIKNvepMghO4/rzK/KFcWRAlTeE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FSEKM2u7axTuJHq5nRni4Ea9tctdfE7SRFXdMS8sYVlsId0ph31bfCsV1qek+fBJH
-         fVIYOcDi6J370c+GKdfBnHXhSNDoPuLM/ddMwq4SwYILnn6PtOQ09kxEK9uFs5XAWw
-         yBFr2JU88p1x+eLsUlrjwxEXh6YSnjJznhnRbNGGPw9Yutdl+vJ163d77bYXsKKNco
-         L/K/IU3/uV6+wMVzaGL3ByBgunJe1Ky7AmYWYnwpeZPB6sb1e4zeId4ZFbaHheWz8e
-         xXai7zlgOExDT70SjO9v+BUGRq/o3A3iYi0Bk57kWaI4Dx1hoJfPA5Uuhpm+6XBOaS
-         amu2BpQStf2tQ==
+        b=ceeVWfbmSSSKNtQ/242MSKK0eqWnriMX2Z3lMZUsX0wBVk6vkh+bYQj1uv/fIExOJ
+         eB66TZrJNvVTj0NOd4HY/feKAMhfL8f8fYhnyFn1U3y9BO81r3qIqArNADPzZErONv
+         eZwzzQjdLuLLHTBnNqVoYxSuduPXBagpBsd907j7o6ibH8g8wAr6m3sJEVB84dEY+n
+         hJqaHLdrzq8HkYFKZ+9bUfN8DxBQsedNt0DxGkvN+8IWmsUlzspUT9yigD6nB2BKy0
+         phZq78PgTPhmtEQQW2EkJlPLCVkoGmSWqujYAiZ8UlDBUYtjJZTsFKpTfCq0C/t2rW
+         Nv0g1VszcweTA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>,
+Cc:     Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>,
+        Douglas Anderson <dianders@chromium.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>, agross@kernel.org,
         robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 24/49] ARM: dts: exynos: add atmel,24c128 fallback to Samsung EEPROM
-Date:   Wed,  1 Jun 2022 09:51:48 -0400
-Message-Id: <20220601135214.2002647-24-sashal@kernel.org>
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 26/49] arm64: dts: qcom: sc7280-qcard: Configure CTS pin to bias-bus-hold for bluetooth
+Date:   Wed,  1 Jun 2022 09:51:50 -0400
+Message-Id: <20220601135214.2002647-26-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135214.2002647-1-sashal@kernel.org>
 References: <20220601135214.2002647-1-sashal@kernel.org>
@@ -53,43 +55,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
 
-[ Upstream commit f038e8186fbc5723d7d38c6fa1d342945107347e ]
+[ Upstream commit 3d0e375bae55c2dfa6dd0762f45ad71f0b192f71 ]
 
-The Samsung s524ad0xd1 EEPROM should use atmel,24c128 fallback,
-according to the AT24 EEPROM bindings.
+WLAN rail was leaking power during RBSC/sleep even after turning BT off.
+Change active and sleep pinctrl configurations to handle same.
 
-Reported-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220426183443.243113-1-krzysztof.kozlowski@linaro.org
+Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/1650556567-4995-3-git-send-email-quic_vnivarth@quicinc.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/exynos5250-smdk5250.dts | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi | 19 ++++++++++++++-----
+ 1 file changed, 14 insertions(+), 5 deletions(-)
 
-diff --git a/arch/arm/boot/dts/exynos5250-smdk5250.dts b/arch/arm/boot/dts/exynos5250-smdk5250.dts
-index 21fbbf3d8684..71293749ac48 100644
---- a/arch/arm/boot/dts/exynos5250-smdk5250.dts
-+++ b/arch/arm/boot/dts/exynos5250-smdk5250.dts
-@@ -129,7 +129,7 @@ &i2c_0 {
- 	samsung,i2c-max-bus-freq = <20000>;
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi b/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi
+index b833ba1e8f4a..98b5cd70bca5 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi
+@@ -398,8 +398,14 @@ &qup_i2c13_data_clk {
  
- 	eeprom@50 {
--		compatible = "samsung,s524ad0xd1";
-+		compatible = "samsung,s524ad0xd1", "atmel,24c128";
- 		reg = <0x50>;
+ /* For mos_bt_uart */
+ &qup_uart7_cts {
+-	/* Configure a pull-down on CTS to match the pull of the Bluetooth module. */
+-	bias-pull-down;
++	/*
++	 * Configure a bias-bus-hold on CTS to lower power
++	 * usage when Bluetooth is turned off. Bus hold will
++	 * maintain a low power state regardless of whether
++	 * the Bluetooth module drives the pin in either
++	 * direction or leaves the pin fully unpowered.
++	 */
++	bias-bus-hold;
+ };
+ 
+ /* For mos_bt_uart */
+@@ -490,10 +496,13 @@ qup_uart7_sleep_cts: qup-uart7-sleep-cts {
+ 		pins = "gpio28";
+ 		function = "gpio";
+ 		/*
+-		 * Configure a pull-down on CTS to match the pull of
+-		 * the Bluetooth module.
++		 * Configure a bias-bus-hold on CTS to lower power
++		 * usage when Bluetooth is turned off. Bus hold will
++		 * maintain a low power state regardless of whether
++		 * the Bluetooth module drives the pin in either
++		 * direction or leaves the pin fully unpowered.
+ 		 */
+-		bias-pull-down;
++		bias-bus-hold;
  	};
  
-@@ -289,7 +289,7 @@ &i2c_1 {
- 	samsung,i2c-max-bus-freq = <20000>;
- 
- 	eeprom@51 {
--		compatible = "samsung,s524ad0xd1";
-+		compatible = "samsung,s524ad0xd1", "atmel,24c128";
- 		reg = <0x51>;
- 	};
- 
+ 	/* For mos_bt_uart */
 -- 
 2.35.1
 
