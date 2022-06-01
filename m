@@ -2,155 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41705C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 09:31:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 566C5C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 09:31:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351069AbiFAJbH (ORCPT
+        id S1351059AbiFAJby (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 05:31:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45046 "EHLO
+        Wed, 1 Jun 2022 05:31:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351056AbiFAJbA (ORCPT
+        with ESMTP id S1351074AbiFAJbd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 05:31:00 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3890B87201;
-        Wed,  1 Jun 2022 02:30:59 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A601323A;
-        Wed,  1 Jun 2022 02:30:58 -0700 (PDT)
-Received: from [10.57.38.89] (unknown [10.57.38.89])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2A7803F66F;
-        Wed,  1 Jun 2022 02:30:56 -0700 (PDT)
-Message-ID: <006b7edd-20d2-3165-7c83-352b7fb312e7@arm.com>
-Date:   Wed, 1 Jun 2022 10:30:54 +0100
+        Wed, 1 Jun 2022 05:31:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BF8287A15;
+        Wed,  1 Jun 2022 02:31:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E3C2561525;
+        Wed,  1 Jun 2022 09:31:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 075FBC385A5;
+        Wed,  1 Jun 2022 09:31:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654075889;
+        bh=q4poYj+BRht8GXruvK1w1TZdcsRrzubhd/fGLHHrnnk=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=siA+xPQZb10gKzIYyU3EwcK9DwzYXbvARkuuf8KyXKLiIw33gbdSlv0jWxzWWxWyC
+         qz1ITlIeOjaO2NEoNkQmGO0cX4KmwC11DX6UkFYP4lNzTDIMh2KlNXmHeAR6C1pKTz
+         WCzUMiIfCLMmH43TFzq+osRyDNJpYmFfxLWRfBT2QOoIrNrRJ4UKMRfIdQmlJjgO9z
+         YbBb9GinP0eFBWgKOQ1nqJ69RvycfYG1XFfGEX5g8/re/Ftd20f2w0jW8z9Fri700a
+         m/p1G9YQxfp2DHnJT9HItFqicCGueOP5xZy0wFkPZOmlBSLWWMlv01rHdoOam8OhZj
+         GfukFZRhg/Ypg==
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 50B3C4051AD; Wed,  1 Jun 2022 11:25:28 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@kernel.org>
+To:     Zhengchao Shao <shaozhengchao@huawei.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
+        kuba@kernel.org, hawk@kernel.org, john.fastabend@gmail.com,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        kpsingh@kernel.org
+Cc:     weiyongjun1@huawei.com, shaozhengchao@huawei.com,
+        yuehaibing@huawei.com
+Subject: Re: [PATCH v4,bpf-next] samples/bpf: check detach prog exist or not
+ in xdp_fwd
+In-Reply-To: <20220531121804.194901-1-shaozhengchao@huawei.com>
+References: <20220531121804.194901-1-shaozhengchao@huawei.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 01 Jun 2022 11:25:28 +0200
+Message-ID: <87pmjs7n1z.fsf@toke.dk>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.9.1
-Subject: Re: [PATCH v7 02/10] Coresight: Add coresight TPDM source driver
-To:     Jinlong Mao <quic_jinlmao@quicinc.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Konrad Dybcio <konradybcio@gmail.com>,
-        Mike Leach <mike.leach@linaro.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        Tingwei Zhang <quic_tingweiz@quicinc.com>,
-        Yuanfang Zhang <quic_yuanfang@quicinc.com>,
-        Tao Zhang <quic_taozha@quicinc.com>,
-        Trilok Soni <quic_tsoni@quicinc.com>,
-        Hao Zhang <quic_hazha@quicinc.com>,
-        linux-arm-msm@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-References: <20220509133947.20987-1-quic_jinlmao@quicinc.com>
- <20220509133947.20987-3-quic_jinlmao@quicinc.com>
- <38bb1ec9-56bc-0cdf-6c46-d448a46ec886@arm.com>
- <ea720e1a-c0d2-84b0-8dbc-bb5031d32208@quicinc.com>
- <7d6b2e24-21f4-eef1-a722-23cdcd1d8a88@quicinc.com>
-From:   Suzuki K Poulose <suzuki.poulose@arm.com>
-In-Reply-To: <7d6b2e24-21f4-eef1-a722-23cdcd1d8a88@quicinc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 01/06/2022 10:21, Jinlong Mao wrote:
-> Hi Suzuki,
-> 
-> On 5/24/2022 3:00 PM, Jinlong Mao wrote:
->> Hi Suzuki,
->>
->> Thank you for the review.
->>
->> On 5/23/2022 4:57 PM, Suzuki K Poulose wrote:
->>> Hi
->>>
->>> On 09/05/2022 14:39, Mao Jinlong wrote:
->>>> Add driver to support Coresight device TPDM (Trace, Profiling and
->>>> Diagnostics Monitor). TPDM is a monitor to collect data from
->>>> different datasets. This change is to add probe/enable/disable
->>>> functions for tpdm source.
->>>>
->>>> Signed-off-by: Tao Zhang <quic_taozha@quicinc.com>
->>>> Signed-off-by: Mao Jinlong <quic_jinlmao@quicinc.com>
->>>> ---
->>>>   drivers/hwtracing/coresight/Kconfig          |  13 ++
->>>>   drivers/hwtracing/coresight/Makefile         |   1 +
->>>>   drivers/hwtracing/coresight/coresight-core.c |   5 +-
->>>>   drivers/hwtracing/coresight/coresight-tpdm.c | 146 
->>>> +++++++++++++++++++
->>>>   drivers/hwtracing/coresight/coresight-tpdm.h |  26 ++++
->>>>   include/linux/coresight.h                    |   1 +
->>>>   6 files changed, 191 insertions(+), 1 deletion(-)
->>>>   create mode 100644 drivers/hwtracing/coresight/coresight-tpdm.c
->>>>   create mode 100644 drivers/hwtracing/coresight/coresight-tpdm.h
->>>>
-> 
->>>> +/**
->>>> + * struct tpdm_drvdata - specifics associated to an TPDM component
->>>> + * @base:       memory mapped base address for this component.
->>>> + * @dev:        The device entity associated to this component.
->>>> + * @csdev:      component vitals needed by the framework.
->>>> + * @lock:       lock for the enable value.
->>>> + * @enable:     enable status of the component.
->>>> + */
->>>> +
->>>> +struct tpdm_drvdata {
->>>> +    void __iomem        *base;
->>>> +    struct device        *dev;
->>>> +    struct coresight_device    *csdev;
->>>> +    struct mutex        lock;
->>>
->>> Why mutex lock ? Couldn't this be a spinlock ?
->> 1. There is no irq for TPDM
->> 2. As there are 7 dataset types, there will be some FOR loop to configure
->> tpdm registers which may cause some time.
+Zhengchao Shao <shaozhengchao@huawei.com> writes:
 
-How long does it take to configure ? Is it too long enough to trigger
-RCU stalls ? as long as we don't do any sleeping/blocking operations
-we should be fine with a spinlock.
+> Before detach the prog, we should check detach prog exist or not.
+>
+> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
 
-Suzuki
+The logic looks good now, just spotted one issue with the use of 'return
+errno' (which I just realised I suggested on the last version, sorry
+about that).
 
->>
-> I think we can use mutex lock here. Do you have any more comments for 
-> this ?
+>  samples/bpf/xdp_fwd_user.c | 62 ++++++++++++++++++++++++++++++++------
+>  1 file changed, 53 insertions(+), 9 deletions(-)
+>
+> diff --git a/samples/bpf/xdp_fwd_user.c b/samples/bpf/xdp_fwd_user.c
+> index 1828487bae9a..a4ba53891653 100644
+> --- a/samples/bpf/xdp_fwd_user.c
+> +++ b/samples/bpf/xdp_fwd_user.c
+> @@ -47,17 +47,61 @@ static int do_attach(int idx, int prog_fd, int map_fd, const char *name)
+>  	return err;
+>  }
+>  
+> -static int do_detach(int idx, const char *name)
+> +static int do_detach(int ifindex, const char *ifname, const char *app_name)
+>  {
+> -	int err;
+> +	LIBBPF_OPTS(bpf_xdp_attach_opts, opts);
+> +	struct bpf_prog_info prog_info = {};
+> +	char prog_name[BPF_OBJ_NAME_LEN];
+> +	__u32 info_len, curr_prog_id;
+> +	int prog_fd;
+> +	int err = 1;
+> +
+> +	if (bpf_xdp_query_id(ifindex, xdp_flags, &curr_prog_id)) {
+> +		printf("ERROR: bpf_xdp_query_id failed (%s)\n",
+> +		       strerror(errno));
+> +		return -errno;
 
-> 
-> Thanks
-> Jinlong Mao
->>>
->>>> +    bool            enable;
->>>> +};
->>>> +
->>>> +#endif  /* _CORESIGHT_CORESIGHT_TPDM_H */
->>>> diff --git a/include/linux/coresight.h b/include/linux/coresight.h
->>>> index 247147c11231..a9efac55029d 100644
->>>> --- a/include/linux/coresight.h
->>>> +++ b/include/linux/coresight.h
->>>> @@ -61,6 +61,7 @@ enum coresight_dev_subtype_source {
->>>>       CORESIGHT_DEV_SUBTYPE_SOURCE_PROC,
->>>>       CORESIGHT_DEV_SUBTYPE_SOURCE_BUS,
->>>>       CORESIGHT_DEV_SUBTYPE_SOURCE_SOFTWARE,
->>>> +    CORESIGHT_DEV_SUBTYPE_SOURCE_DATA_ONLY,
->>>
->>> super minor nit: I find the choice of name a bit odd.
->>> We could simply make it something like :
->>>
->>>     CORESIGHT_DEV_SUBTYPE_SOURCE_OTHERS:
->>>
->>> Suzuki
->> I will check and update.
->>>
->>>>   };
->>>>     enum coresight_dev_subtype_helper {
->>>
->>> _______________________________________________
->>> CoreSight mailing list -- coresight@lists.linaro.org
->>> To unsubscribe send an email to coresight-leave@lists.linaro.org
->> _______________________________________________
->> CoreSight mailing list -- coresight@lists.linaro.org
->> To unsubscribe send an email to coresight-leave@lists.linaro.org
+The printf above may override errno, so this could return 0; the actual
+return value is not really used by the caller, so you could just always
+'return -1' or 'return err'.
 
+> +	}
+> +
+> +	if (!curr_prog_id) {
+> +		printf("ERROR: flags(0x%x) xdp prog is not attached to %s\n",
+> +		       xdp_flags, ifname);
+> +		goto err_out;
+
+Doesn't really need a label, just do a direct return here as well.
+
+> +	}
+>  
+> -	err = bpf_xdp_detach(idx, xdp_flags, NULL);
+> -	if (err < 0)
+> -		printf("ERROR: failed to detach program from %s\n", name);
+> +	info_len = sizeof(prog_info);
+> +	prog_fd = bpf_prog_get_fd_by_id(curr_prog_id);
+> +	if (prog_fd < 0) {
+> +		printf("ERROR: bpf_prog_get_fd_by_id failed (%s)\n",
+> +		       strerror(errno));
+> +		return -errno;
+
+Same issue as above with errno being overwritten.
+
+> +	}
+> +
+> +	err = bpf_obj_get_info_by_fd(prog_fd, &prog_info, &info_len);
+> +	if (err) {
+> +		printf("ERROR: bpf_obj_get_info_by_fd failed (%s)\n",
+> +		       strerror(errno));
+> +		goto close_out;
+> +	}
+> +	snprintf(prog_name, sizeof(prog_name), "%s_prog", app_name);
+> +	prog_name[BPF_OBJ_NAME_LEN - 1] = '\0';
+> +
+> +	if (strcmp(prog_info.name, prog_name)) {
+> +		printf("ERROR: %s isn't attached to %s\n", app_name, ifname);
+> +		err = 1;
+> +	} else {
+
+You can save a level of indentation by adding a 'goto close_out' after
+'err=1' instead of using an 'else' block.
+
+> +		opts.old_prog_fd = prog_fd;
+> +		err = bpf_xdp_detach(ifindex, xdp_flags, &opts);
+> +		if (err < 0)
+> +			printf("ERROR: failed to detach program from %s (%s)\n",
+> +			       ifname, strerror(errno));
+> +		/* TODO: Remember to cleanup map, when adding use of shared map
+> +		 *  bpf_map_delete_elem((map_fd, &idx);
+> +		 */
+> +	}
+>  
+> -	/* TODO: Remember to cleanup map, when adding use of shared map
+> -	 *  bpf_map_delete_elem((map_fd, &idx);
+> -	 */
+> +close_out:
+> +	close(prog_fd);
+> +err_out:
+
+don't need the err_out label, see above.
+
+-Toke
