@@ -2,66 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA890C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 10:18:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE3ACC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 10:19:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351807AbiFAKSr (ORCPT
+        id S1352022AbiFAKTw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 06:18:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39870 "EHLO
+        Wed, 1 Jun 2022 06:19:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243633AbiFAKSk (ORCPT
+        with ESMTP id S243633AbiFAKTt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 06:18:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AA566A02E
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 03:18:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 01794B81910
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 10:18:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08C35C34119;
-        Wed,  1 Jun 2022 10:18:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654078716;
-        bh=LQC0N6hCla1p6RvYrBTedcFGJaeX6b92BTEoRrjN5CQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=wUB+n4zc2GtSTXVyRhQLgU6dnWEqXr9r4dqyZJk80YJHl5j5f6Wl6G+vF0bQI1r9/
-         BM1OulRtMkDS1XY0xXgLp3h619Y7deZDFbcuH42mvFrn5sRU2ID891Kl5JJyLATGrr
-         GZP2QBOb8AGtPyWIWqhz9nxcGaHU/5Y9tdzbQ6mA=
-Date:   Wed, 1 Jun 2022 12:18:28 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Haowen Bai <baihaowen@meizu.com>
-Cc:     larry.finger@lwfinger.net, linux-kernel@vger.kernel.org,
-        linux-staging@lists.linux.dev, phil@philpotter.co.uk
-Subject: Re: [PATCH V2] staging: r8188eu: Drop redundant memset overwritten
- by memcpy
-Message-ID: <Ypc89GXegCft+vEq@kroah.com>
-References: <007ab767-b124-26fd-20f4-29fea899a573@lwfinger.net>
- <1654077926-9687-1-git-send-email-baihaowen@meizu.com>
+        Wed, 1 Jun 2022 06:19:49 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AFAD6B677;
+        Wed,  1 Jun 2022 03:19:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=kmPFKn3CfNA6S8ITvZmyqXq/Q8dnPnZS1T5Vpg4XptA=; b=E08QSsEDzDXwZxdVkGb/CWF7xQ
+        efHbWb78SvKvZHoGfgBASeiDq2eiD4WCHpcjIM4FMywEwVHPoUX9UK02Kpb3m6GKjRV5TwHFOq7Qa
+        NLi6ISL8StPtArU+wtQGRT/6+M1akpUNg+r0CF29a5nZpULH3kYcWWu4YUZs528GePslagJkbEW6Q
+        4kHnRWaB77R7h3xQQQEYLb/3Xd+ZKpzJcqiAdAiJ24BI/CNpdwDHFDjS7gGZRPYvTs7A4o3SxnRvi
+        IJWqCLfCW8watu1HENAsz6uXFRanaVgoH4xv+htG+QSV9FxCoNKHHg+066jGLnWV97DUWXFIIoqFN
+        /jueuXgA==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nwLRV-003k8D-Hj; Wed, 01 Jun 2022 10:19:09 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 3319198137D; Wed,  1 Jun 2022 12:19:07 +0200 (CEST)
+Date:   Wed, 1 Jun 2022 12:19:07 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
+        "Durrant, Paul" <pdurrant@amazon.co.uk>,
+        "Allister, Jack" <jalliste@amazon.com>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "diapop@amazon.co.uk" <diapop@amazon.co.uk>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "jmattson@google.com" <jmattson@google.com>,
+        "joro@8bytes.org" <joro@8bytes.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "metikaya@amazon.co.uk" <metikaya@amazon.co.uk>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "rkrcmar@redhat.com" <rkrcmar@redhat.com>,
+        "sean.j.christopherson@intel.com" <sean.j.christopherson@intel.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "wanpengli@tencent.com" <wanpengli@tencent.com>,
+        "x86@kernel.org" <x86@kernel.org>
+Subject: Re: ...\n
+Message-ID: <Ypc9G3nTkib1y9X4@worktop.programming.kicks-ass.net>
+References: <YpYaYK7a28DFT5Ne@hirez.programming.kicks-ass.net>
+ <20220531140236.1435-1-jalliste@amazon.com>
+ <YpYpxzt4rmG+LFy9@hirez.programming.kicks-ass.net>
+ <059ab3327ac440479ecfdf49fa054347@EX13D32EUC003.ant.amazon.com>
+ <307f19cc-322e-c900-2894-22bdee1e248a@redhat.com>
+ <87tu94olyd.fsf@redhat.com>
+ <b9238c07-68a7-31fa-c654-d8111a1e2d4b@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1654077926-9687-1-git-send-email-baihaowen@meizu.com>
+In-Reply-To: <b9238c07-68a7-31fa-c654-d8111a1e2d4b@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 01, 2022 at 06:05:26PM +0800, Haowen Bai wrote:
-> The region set by the call to memset is immediately overwritten by the
-> subsequent call to memcpy. So we drop redundant memset.
+On Wed, Jun 01, 2022 at 10:59:17AM +0200, Paolo Bonzini wrote:
+> On 6/1/22 09:57, Vitaly Kuznetsov wrote:
+> > > > I'll bite... What's ludicrous about wanting to run a guest at a lower CPU freq to minimize observable change in whatever workload it is running?
+> > > Well, the right API is cpufreq, there's no need to make it a KVM
+> > > functionality.
+> > KVM may probably use the cpufreq API to run each vCPU at the desired
+> > frequency: I don't quite see how this can be done with a VMM today when
+> > it's not a 1-vCPU-per-1-pCPU setup.
 > 
-> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
-> ---
-> V1->V2: change title for unique subjects.
+> True, but then there's also a policy issue, in that KVM shouldn't be allowed
+> to *bump* the frequency if userspace would ordinarily not have access to the
+> cpufreq files in sysfs.
 
-That's not really unique, why is this just not 1 patch with both changes
-in it as you are doing the same thing to the same driver source, just in
-different locations in the files.
+So, when using schedutil (which requires intel_pstate in passive mode),
+then there's the option to use per-task uclamps which are somewhat
+complicated but also affect cpufreq.
 
-Please merge together.
 
-thanks,
-
-greg k-h
