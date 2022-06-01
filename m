@@ -2,48 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47B56CCA468
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:14:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9E01C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:14:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355219AbiFAOOA (ORCPT
+        id S1355248AbiFAOOB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:14:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44802 "EHLO
+        Wed, 1 Jun 2022 10:14:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354722AbiFAOJd (ORCPT
+        with ESMTP id S1354737AbiFAOJd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 1 Jun 2022 10:09:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1C79251;
-        Wed,  1 Jun 2022 07:00:41 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78AAB25CB;
+        Wed,  1 Jun 2022 07:00:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 68892B81AE7;
-        Wed,  1 Jun 2022 14:00:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C64ADC3411E;
-        Wed,  1 Jun 2022 14:00:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1807C615B9;
+        Wed,  1 Jun 2022 14:00:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B749C385A5;
+        Wed,  1 Jun 2022 14:00:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654092039;
-        bh=rCm0BVpzsO/CK/q+0+njTSj5LZslu2hznfOgIzLZnVo=;
+        s=k20201202; t=1654092046;
+        bh=FQzVNMnLYI5uHT3rQ0PmNawNLjc6hqdIBzkgK+v51q8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HSaxGGg8sJnhT8FQ3jF2mnt9MTZEH3xhkzBwofugy8LPm4DuaeIyJfru58IPH0GiX
-         Umhkt1f5fq9T5eyTcfqonkUh4778lf8UX2NsRO+OlnuxTjXDopOZH1/7y9MMw3CEkG
-         0jU9YLBpXvR0BqLcJYFH+OvraBUPVpAuhTuRitu/Tv1lmNjbLu76IBne+Spj/NkxHL
-         5BT/vE2yCCIn5pdY7mbVcMcrPtsHQ11pnYHy/hb3RqnY7Epq4OsKfFQ4mgDMmC3jy4
-         ODX4gLGUFx+Mxs2GueD8/rxc1iGF8h6r2oznLcx0eR/zsfsrR72FM/j9swJYN5XRnJ
-         Ecy2YANXDBODA==
+        b=QpmpyFxGGNzo878uXMNmOalvq/kBaLyL3rI1hFBT+vMdNWu8z5E0+9kvXYO4KI/Aw
+         hHfdfzREXiFtGpLLclHdOVAg0sJDxr5F/fIxkupGpXL0S1YeagWSeqlmzw8/9H0e1j
+         7YrvHMH7mVQnxE3VTOUkzfzYrmBJvVL3LDLOocKgpWxoyZpG0Wwrl55YkhRKgT0P8s
+         4sxOReoVBvVnng0IlLxxsepCJJNYWE1TWmmrw97lOl8+G2G2sK6y4NIvhdLqIiKLKW
+         ZZSyXUd66gOYS3JhQpJYWLfU326ACtJk7jP3iPOob0dcv/dO14kC995kCxgU31LnYf
+         WUzTjlKPrTlgg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Peng Wu <wupeng58@huawei.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>,
-        liviu.dudau@arm.com, sudeep.holla@arm.com,
-        lorenzo.pieralisi@arm.com, linux@armlinux.org.uk,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.14 06/14] ARM: versatile: Add missing of_node_put in dcscb_init
-Date:   Wed,  1 Jun 2022 10:00:19 -0400
-Message-Id: <20220601140027.2005280-6-sashal@kernel.org>
+Cc:     Vasily Averin <vvs@openvz.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>, mingo@redhat.com,
+        mgorman@techsingularity.net, vbabka@suse.cz,
+        vasily.averin@linux.dev, hughd@google.com, yuzhao@google.com,
+        willy@infradead.org, vincent.whitchurch@axis.com
+Subject: [PATCH AUTOSEL 4.14 10/14] tracing: incorrect isolate_mote_t cast in mm_vmscan_lru_isolate
+Date:   Wed,  1 Jun 2022 10:00:23 -0400
+Message-Id: <20220601140027.2005280-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601140027.2005280-1-sashal@kernel.org>
 References: <20220601140027.2005280-1-sashal@kernel.org>
@@ -55,35 +56,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peng Wu <wupeng58@huawei.com>
+From: Vasily Averin <vvs@openvz.org>
 
-[ Upstream commit 23b44f9c649bbef10b45fa33080cd8b4166800ae ]
+[ Upstream commit 2b132903de7124dd9a758be0c27562e91a510848 ]
 
-The device_node pointer is returned by of_find_compatible_node
-with refcount incremented. We should use of_node_put() to avoid
-the refcount leak.
+Fixes following sparse warnings:
 
-Signed-off-by: Peng Wu <wupeng58@huawei.com>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Link: https://lore.kernel.org/r/20220428230356.69418-1-linus.walleij@linaro.org'
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+  CHECK   mm/vmscan.c
+mm/vmscan.c: note: in included file (through
+include/trace/trace_events.h, include/trace/define_trace.h,
+include/trace/events/vmscan.h):
+./include/trace/events/vmscan.h:281:1: sparse: warning:
+ cast to restricted isolate_mode_t
+./include/trace/events/vmscan.h:281:1: sparse: warning:
+ restricted isolate_mode_t degrades to integer
+
+Link: https://lkml.kernel.org/r/e85d7ff2-fd10-53f8-c24e-ba0458439c1b@openvz.org
+Signed-off-by: Vasily Averin <vvs@openvz.org>
+Acked-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-vexpress/dcscb.c | 1 +
- 1 file changed, 1 insertion(+)
+ include/trace/events/vmscan.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/mach-vexpress/dcscb.c b/arch/arm/mach-vexpress/dcscb.c
-index ee2a0faafaa1..aaade91f6551 100644
---- a/arch/arm/mach-vexpress/dcscb.c
-+++ b/arch/arm/mach-vexpress/dcscb.c
-@@ -146,6 +146,7 @@ static int __init dcscb_init(void)
- 	if (!node)
- 		return -ENODEV;
- 	dcscb_base = of_iomap(node, 0);
-+	of_node_put(node);
- 	if (!dcscb_base)
- 		return -EADDRNOTAVAIL;
- 	cfg = readl_relaxed(dcscb_base + DCS_CFG_R);
+diff --git a/include/trace/events/vmscan.h b/include/trace/events/vmscan.h
+index dc23cf032403..9553f6167e51 100644
+--- a/include/trace/events/vmscan.h
++++ b/include/trace/events/vmscan.h
+@@ -290,7 +290,7 @@ TRACE_EVENT(mm_vmscan_lru_isolate,
+ 		__field(unsigned long, nr_scanned)
+ 		__field(unsigned long, nr_skipped)
+ 		__field(unsigned long, nr_taken)
+-		__field(isolate_mode_t, isolate_mode)
++		__field(unsigned int, isolate_mode)
+ 		__field(int, lru)
+ 	),
+ 
+@@ -301,7 +301,7 @@ TRACE_EVENT(mm_vmscan_lru_isolate,
+ 		__entry->nr_scanned = nr_scanned;
+ 		__entry->nr_skipped = nr_skipped;
+ 		__entry->nr_taken = nr_taken;
+-		__entry->isolate_mode = isolate_mode;
++		__entry->isolate_mode = (__force unsigned int)isolate_mode;
+ 		__entry->lru = lru;
+ 	),
+ 
 -- 
 2.35.1
 
