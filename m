@@ -2,215 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26656C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 08:27:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DE14C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 08:27:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350678AbiFAI1O (ORCPT
+        id S1350722AbiFAI1h (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 04:27:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41954 "EHLO
+        Wed, 1 Jun 2022 04:27:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350621AbiFAI1K (ORCPT
+        with ESMTP id S1350621AbiFAI1e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 04:27:10 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A54FDE99
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 01:27:04 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id u12so2173024eja.8
-        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 01:27:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=suGTguNgHNwFoVKJnInY/A0FAKDNS8MrOyf97TQ0XqE=;
-        b=Kz8kZXot4lBQ750zIIvzF3+bHcnNBQtqQzQ1b2o8YXiovCx4t37CQJaYYLktnNzNWJ
-         oiuAIk4+P0ht5DpbHp+/pH42JI/DYgbAj/NglXOGybp75vRdDPoI+c7MEl2u+BKuUcEg
-         G0ED2t7sW1NRpNK8E9QGxnmiTuZCCtBR+LrDM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=suGTguNgHNwFoVKJnInY/A0FAKDNS8MrOyf97TQ0XqE=;
-        b=P0tb/vJoWxlQO0B/OQ06ggoNT6YEcQiqYrF6pSSQ/i/J04wZRBsnXYhc6CprT0dxBo
-         PAd0UVch4sAdzBWEfPNWQmJRtU3x1FBAZ2wlCcxXTp4o8KwhXEFGjSlASx79tTUfjUdM
-         Wmd8PcZWf902ytxfvejm9cnPPrOJbcZ2wuKCaQ7H6iVVq83/oSgmb+zpXJzvBSDPiVeB
-         y9r5x0dEnpK9CCNHGJl5U/Db6Y9WkwANG4ktIBZEbV6sPhBqe8vcxThKzsflaOfXCQTP
-         /9ShCEsv7Ha+4ZEA5d34Gv4pVoBvgv23yElVy8MOwUozUDjym3X/FcgaCUoUwMNZZ6FF
-         Gi0A==
-X-Gm-Message-State: AOAM530dMaVZhKspdhCZtfctbTLdMuG0g6SQFwyjNy41sjjnY5Pkwwy6
-        mFifQddW1hooQbj7cN46Ctb5xutVBS0NE5zZZhkEfg==
-X-Google-Smtp-Source: ABdhPJzKyQ9RhDDQ9wnQwF0m5mvEJpb5dxyTIDWPhvbLIROaZRgzrB121HfZ6Kvw/3Mtkh8DpWUjMyD3cSjoY6y1xU0=
-X-Received: by 2002:a17:906:d7ba:b0:6fe:a119:c4ac with SMTP id
- pk26-20020a170906d7ba00b006fea119c4acmr54450591ejb.129.1654072023238; Wed, 01
- Jun 2022 01:27:03 -0700 (PDT)
+        Wed, 1 Jun 2022 04:27:34 -0400
+Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0928CDF83;
+        Wed,  1 Jun 2022 01:27:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+        d=metrotek.ru; s=mail;
+        h=from:subject:date:message-id:to:cc:mime-version:content-type:in-reply-to:
+         references;
+        bh=50cD+iAXnAyDsdbwmGD7FRwmVdHsOBuhM7VzSWfWv/c=;
+        b=mONxoWLc0dnmRAC/rqdhQApB6FiuPqzDTv7s+fmE77nRRrzq5mjh/7yeYYU5qufEdKuv0uj1os9Mu
+         detewmiW10ioee8RMehatZb0C1rur0SMmczGS+ONVyTk+YJZyU0Np6fJIjCs/sGoESb9tAve9zvhC0
+         gQ2lrGCEgLe9balM9LBOXD+qIYaUx7L8Hl8ZrtSttZmTHjxowMcc0pZeHwUS2aS9/ZHqNSZyyBIr/J
+         mBMq7G0i+G7q4EKSnnfXLsuXoxiIHsyokZiHQqf+HOOqy2r8WJpgBsBy7vm8hIlECvwpQ1uRMeKpZ3
+         Orv+Vu2k4PSwOdVUt5Pejzu4w1JsLSQ==
+X-Kerio-Anti-Spam:  Build: [Engines: 2.16.3.1424, Stamp: 3], Multi: [Enabled, t: (0.000009,0.020715)], BW: [Enabled, t: (0.000029,0.000001)], RTDA: [Enabled, t: (1.097317), Hit: No, Details: v3.19.0; Id: 15.52k2o7.1g4f60dc0.81025], total: 0(700)
+X-Footer: bWV0cm90ZWsucnU=
+Received: from x260 ([178.70.36.174])
+        (authenticated user i.bornyakov@metrotek.ru)
+        by mail.pr-group.ru with ESMTPSA
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
+        Wed, 1 Jun 2022 11:27:06 +0300
+Date:   Wed, 1 Jun 2022 11:04:55 +0300
+From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
+To:     Conor.Dooley@microchip.com
+Cc:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
+        trix@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-fpga@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        system@metrotek.ru
+Subject: Re: [PATCH v14 2/3] fpga: microchip-spi: add Microchip MPF FPGA
+ manager
+Message-ID: <20220601080455.hfi34aknvasbxz2q@x260>
+References: <20220531192344.23038-1-i.bornyakov@metrotek.ru>
+ <20220531192344.23038-3-i.bornyakov@metrotek.ru>
+ <7a350b92-d6a6-c0e1-95f7-ff711699f850@microchip.com>
 MIME-Version: 1.0
-References: <20220530081910.3947168-1-hsinyi@chromium.org> <a8d1fe13-e747-016a-2d45-bfb50f23f2d9@redhat.com>
- <CAJMQK-iM-ip7edA2mBOhp-8maWKG5+kTceZUM5U6BOLLBq1H4Q@mail.gmail.com> <5ba0b86a-fa9c-ed97-3b43-7814599deab5@redhat.com>
-In-Reply-To: <5ba0b86a-fa9c-ed97-3b43-7814599deab5@redhat.com>
-From:   Hsin-Yi Wang <hsinyi@chromium.org>
-Date:   Wed, 1 Jun 2022 16:26:37 +0800
-Message-ID: <CAJMQK-iYy1ONRF-4Y5DriogsJX3F0MD_951pdKK0rpT3j=keYw@mail.gmail.com>
-Subject: Re: [PATCH v10 0/4] Separate panel orientation property creating and
- value setting
-To:     Hans de Goede <hdegoede@redhat.com>
-Cc:     dri-devel@lists.freedesktop.org, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org,
-        Rob Clark <robdclark@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Sean Paul <sean@poorly.run>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Simon Ser <contact@emersion.fr>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Emil Velikov <emil.l.velikov@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7a350b92-d6a6-c0e1-95f7-ff711699f850@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 31, 2022 at 6:56 PM Hans de Goede <hdegoede@redhat.com> wrote:
->
-> Hi,
->
-> On 5/30/22 13:34, Hsin-Yi Wang wrote:
-> > On Mon, May 30, 2022 at 4:53 PM Hans de Goede <hdegoede@redhat.com> wrote:
-> >>
-> >> Hi,
-> >>
-> >> On 5/30/22 10:19, Hsin-Yi Wang wrote:
-> >>> Some drivers, eg. mtk_drm and msm_drm, rely on the panel to set the
-> >>> orientation. Panel calls drm_connector_set_panel_orientation() to create
-> >>> orientation property and sets the value. However, connector properties
-> >>> can't be created after drm_dev_register() is called. The goal is to
-> >>> separate the orientation property creation, so drm drivers can create it
-> >>> earlier before drm_dev_register().
-> >>
-> >> Sorry for jumping in pretty late in the discussion (based on the v10
-> >> I seem to have missed this before).
-> >>
-> >> This sounds to me like the real issue here is that drm_dev_register()
-> >> is getting called too early?
-> >>
-> > Right.
-> >
-> >> To me it seems sensible to delay calling drm_dev_register() and
-> >> thus allowing userspace to start detecting available displays +
-> >> features until after the panel has been probed.
-> >>
-> >
-> > Most panels set this value very late, in .get_modes callback (since it
-> > is when the connector is known), though the value was known during
-> > panel probe.
->
-> Hmm I would expect the main drm/kms driver to register the drm_connector
-> object after probing the panel, right ?
->
-> So maybe this is a problem with the panel API? How about adding
-> separate callback to the panel API to get the orientation, which the
-> main drm/kms driver can then call before registering the connector ?
->
-> And then have the main drm/kms driver call
-> drm_connector_set_panel_orientation() with the returned orientation
-> on the connecter before registering it.
->
-> The new get_orientation callback for the panel should of course
-> be optional (IOW amy be NULL), so we probably want a small
-> helper for drivers using panel (sub)drivers to take care of
-> the process of getting the panel orientation from the panel
-> (if supported) and then setting it on the connector.
->
+On Wed, Jun 01, 2022 at 07:49:48AM +0000, Conor.Dooley@microchip.com wrote:
+> On 31/05/2022 20:23, Ivan Bornyakov wrote:
+> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> > 
+> > Add support to the FPGA manager for programming Microchip Polarfire
+> > FPGAs over slave SPI interface with .dat formatted bitsream image.
+> > 
+> > Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
+> 
+> Hey Ivan,
+> Could've kept at least the R-b tag from v13, but either way:
+> Tested-by: Conor Dooley <conor.dooley@microchip.com>
+> Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
+> 
+> I did have another look at Yiluns two questions.
+> The reason for the double status read effectively boils down
+> to the system controller potentially not having had enough
+> time to process the previous command/frame and update its
+> status yet.
+> 
+> And see below about the memcpy()...
+> 
+> > ---
+> >   drivers/fpga/Kconfig         |   9 +
+> >   drivers/fpga/Makefile        |   1 +
+> >   drivers/fpga/microchip-spi.c | 384 +++++++++++++++++++++++++++++++++++
+> >   3 files changed, 394 insertions(+)
+> >   create mode 100644 drivers/fpga/microchip-spi.c
+> > 
+> > diff --git a/drivers/fpga/Kconfig b/drivers/fpga/Kconfig
+> > index 26025dbab353..75806ef5c9ea 100644
+> > --- a/drivers/fpga/Kconfig
+> > +++ b/drivers/fpga/Kconfig
+> > @@ -248,4 +248,13 @@ config FPGA_MGR_VERSAL_FPGA
+> >            configure the programmable logic(PL).
+> > 
+> >            To compile this as a module, choose M here.
+> > +
+> > +config FPGA_MGR_MICROCHIP_SPI
+> > +       tristate "Microchip Polarfire SPI FPGA manager"
+> > +       depends on SPI
+> > +       help
+> > +         FPGA manager driver support for Microchip Polarfire FPGAs
+> > +         programming over slave SPI interface with .dat formatted
+> > +         bitstream image.
+> > +
+> >   endif # FPGA
+> > diff --git a/drivers/fpga/Makefile b/drivers/fpga/Makefile
+> > index e32bfa90f968..5425a15892df 100644
+> > --- a/drivers/fpga/Makefile
+> > +++ b/drivers/fpga/Makefile
+> > @@ -19,6 +19,7 @@ obj-$(CONFIG_FPGA_MGR_XILINX_SPI)     += xilinx-spi.o
+> >   obj-$(CONFIG_FPGA_MGR_ZYNQ_FPGA)       += zynq-fpga.o
+> >   obj-$(CONFIG_FPGA_MGR_ZYNQMP_FPGA)     += zynqmp-fpga.o
+> >   obj-$(CONFIG_FPGA_MGR_VERSAL_FPGA)     += versal-fpga.o
+> > +obj-$(CONFIG_FPGA_MGR_MICROCHIP_SPI)   += microchip-spi.o
+> >   obj-$(CONFIG_ALTERA_PR_IP_CORE)                += altera-pr-ip-core.o
+> >   obj-$(CONFIG_ALTERA_PR_IP_CORE_PLAT)   += altera-pr-ip-core-plat.o
+> > 
+> > diff --git a/drivers/fpga/microchip-spi.c b/drivers/fpga/microchip-spi.c
+> > new file mode 100644
+> > index 000000000000..413e5c364f68
+> ---8<---
+> > +
+> > +static int mpf_ops_write(struct fpga_manager *mgr, const char *buf, size_t count)
+> > +{
+> > +       u8 tmp_buf[MPF_SPI_FRAME_SIZE + 1] = { MPF_SPI_FRAME, };
+> > +       struct mpf_priv *priv = mgr->priv;
+> > +       struct device *dev = &mgr->dev;
+> > +       struct spi_device *spi;
+> > +       int ret, i;
+> > +
+> > +       if (count % MPF_SPI_FRAME_SIZE) {
+> > +               dev_err(dev, "Bitstream size is not a multiple of %d\n",
+> > +                       MPF_SPI_FRAME_SIZE);
+> > +               return -EINVAL;
+> > +       }
+> > +
+> > +       spi = priv->spi;
+> > +
+> > +       for (i = 0; i < count / MPF_SPI_FRAME_SIZE; i++) {
+> > +               memcpy(tmp_buf + 1, buf + i * MPF_SPI_FRAME_SIZE,
+> > +                      MPF_SPI_FRAME_SIZE);
+> > +
+> > +               ret = mpf_spi_write(spi, tmp_buf, sizeof(tmp_buf));
+> > +               if (ret) {
+> > +                       dev_err(dev, "Failed to write bitstream frame %d/%zu\n",
+> > +                               i, count / MPF_SPI_FRAME_SIZE);
+> > +                       return ret;
+> > +               }
+> > +       }
+> > +
+> > +       return 0;
+> > +}
+> 
+> I was able to program with the following diff, which is effectively
+> the same as the one you sent (which also worked for me):
+> 
+> diff --git a/drivers/fpga/microchip-spi.c b/drivers/fpga/microchip-spi.c
+> index 413e5c364f68..fa6220e8056a 100644
+> --- a/drivers/fpga/microchip-spi.c
+> +++ b/drivers/fpga/microchip-spi.c
+> @@ -268,7 +268,8 @@ static int mpf_ops_write_init(struct fpga_manager *mgr,
+>   
+>   static int mpf_ops_write(struct fpga_manager *mgr, const char *buf, size_t count)
+>   {
+> -       u8 tmp_buf[MPF_SPI_FRAME_SIZE + 1] = { MPF_SPI_FRAME, };
+> +       u8 spi_frame_command = MPF_SPI_FRAME;
+> +       struct spi_transfer xfers[2] = { 0 };
+>          struct mpf_priv *priv = mgr->priv;
+>          struct device *dev = &mgr->dev;
+>          struct spi_device *spi;
+> @@ -282,11 +283,16 @@ static int mpf_ops_write(struct fpga_manager *mgr, const char *buf, size_t count
+>   
+>          spi = priv->spi;
+>   
+> +       xfers[0].tx_buf = &spi_frame_command;
+> +       xfers[0].len = 1;
+> +
+>          for (i = 0; i < count / MPF_SPI_FRAME_SIZE; i++) {
+> -               memcpy(tmp_buf + 1, buf + i * MPF_SPI_FRAME_SIZE,
+> -                      MPF_SPI_FRAME_SIZE);
+> +               xfers[1].tx_buf = buf + i * MPF_SPI_FRAME_SIZE;
+> +               xfers[1].len = MPF_SPI_FRAME_SIZE;
+>   
+> -               ret = mpf_spi_write(spi, tmp_buf, sizeof(tmp_buf));
+> +               ret = mpf_poll_status(spi, 0);
+> +               if (ret >= 0)
+> +                       ret = spi_sync_transfer(spi, xfers, 2);
+>                  if (ret) {
+>                          dev_err(dev, "Failed to write bitstream frame %d/%zu\n",
+>                                  i, count / MPF_SPI_FRAME_SIZE);
+> 
+> Have you been able to look at a waveform of programming like this
+> on your hardware? Off the top of my head, I was wondering if your
+> spi controller releases CS between every xfer?
+> Mine is perfectly happy not to release it - which is why I noticed
+> the extra cs_change in mpf_read_status().
+> 
+> Thanks,
+> Conor.
+> 
 
-Hi Hans,
+Thanks for the hint. I'll ask our HW folks if it's possible.
 
-Thanks for the suggestion. I've sent a new version for this:
-https://patchwork.kernel.org/project/dri-devel/patch/20220601081823.1038797-2-hsinyi@chromium.org/
-
-Panel can implement the optional callback to return the orientation
-property, while drm/kms driver will call a drm API to get the value
-then they can call drm_connector_set_panel_orientation().
-Panel .get_mode will still call drm_connector_set_panel_orientation()
-but now it will be a no-op as the value was set by drm/kms driver
-previously.
-
-This is similar to the small patch below:
-https://patchwork.kernel.org/project/linux-mediatek/patch/20220530113033.124072-1-hsinyi@chromium.org/
-But it's now using the panel API.
-
->
-> > I think we can also let drm check if they have remote panel nodes: If
-> > there is a panel and the panel sets the orientation, let the drm read
-> > this value and set the property. Does this workflow sound reasonable?
-> >
-> > The corresponding patch to implement this:
-> > https://patchwork.kernel.org/project/linux-mediatek/patch/20220530113033.124072-1-hsinyi@chromium.org/
->
-> That is a suprisingly small patch (which is good). I guess that
-> my suggestion to add a new panel driver callback to get
-> the orientation would be a bit bigget then this. Still I think
-> that that would be a bit cleaner, as it would also solve this
-> for cases where the orientation comes from the panel itself
-> (through say some EDID extenstion) rather then from devicetree.
->
-> Still I think either way should be acceptable upstream.
->
-> Opinions from other drm devs on the above are very much welcome!
->
-> Your small patch nicely avoids the probe ordering problem,
-> so it is much better then this patch series.
->
-> Regards,
->
-> Hans
->
->
->
-> >
-> > Thanks
-> >
-> >> I see a devicetree patch in this series, so I guess that the panel
-> >> is described in devicetree. Especially in the case of devicetree
-> >> I would expect the kernel to have enough info to do the right
-> >> thing and make sure the panel is probed before calling
-> >> drm_dev_register() ?
-> >>
-> >> Regards,
-> >>
-> >> Hans
-> >>
-> >>
-> >>
-> >>
-> >>>
-> >>> After this series, drm_connector_set_panel_orientation() works like
-> >>> before. It won't affect existing callers of
-> >>> drm_connector_set_panel_orientation(). The only difference is that
-> >>> some drm drivers can call drm_connector_init_panel_orientation_property()
-> >>> earlier.
-> >>>
-> >>> Hsin-Yi Wang (4):
-> >>>   gpu: drm: separate panel orientation property creating and value
-> >>>     setting
-> >>>   drm/mediatek: init panel orientation property
-> >>>   drm/msm: init panel orientation property
-> >>>   arm64: dts: mt8183: Add panel rotation
-> >>>
-> >>>  .../arm64/boot/dts/mediatek/mt8183-kukui.dtsi |  1 +
-> >>>  drivers/gpu/drm/drm_connector.c               | 58 ++++++++++++++-----
-> >>>  drivers/gpu/drm/mediatek/mtk_dsi.c            |  7 +++
-> >>>  drivers/gpu/drm/msm/dsi/dsi_manager.c         |  4 ++
-> >>>  include/drm/drm_connector.h                   |  2 +
-> >>>  5 files changed, 59 insertions(+), 13 deletions(-)
-> >>>
-> >>
-> >
->
