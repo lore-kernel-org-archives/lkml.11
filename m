@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DE6DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:11:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61DCAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:11:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355012AbiFAOLW (ORCPT
+        id S1355063AbiFAOL2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:11:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47834 "EHLO
+        Wed, 1 Jun 2022 10:11:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355171AbiFAOFm (ORCPT
+        with ESMTP id S1355177AbiFAOFm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 1 Jun 2022 10:05:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09337AE44E;
-        Wed,  1 Jun 2022 06:59:34 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31948AF1D6;
+        Wed,  1 Jun 2022 06:59:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BFBB6615B9;
-        Wed,  1 Jun 2022 13:59:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B0CEC36AE2;
-        Wed,  1 Jun 2022 13:59:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4CE7C6162F;
+        Wed,  1 Jun 2022 13:59:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BD62C3411F;
+        Wed,  1 Jun 2022 13:59:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091974;
-        bh=tiyZ3eOGweBf18A/dadGgQ0sLxVwdPM+W/Agj24C7+w=;
+        s=k20201202; t=1654091953;
+        bh=0vLOqckxqz6FAn6Yj85sK+G/Bi0voXu2VUuWxkW7Bm4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dt9pw/DzDFEQ76hRdI/jbTDaE7sWEc35vtmcYkIylHlRARjdJ8m8QeEn1m7JszvHq
-         05VHeHWybqF3sqFqJ0f1M9kZawIwSY12g29PSmzDqEtgr3PMwW+ImihwrJB4OEyqpk
-         tTF76807R9MIPMmHH/MuM0h4f/8MLb1IwIeYm1iRL/a2MpBIDm2R0v+zxBXf495byI
-         h0n21rE0aa6iqJylbWBm6NkTtmzinHApPf6ZyUfm/Bh9fKlG0NB5WR0s9eNswOg6Qz
-         EnTXEWzYKhRz8xavgJs/sC4wykj2nitc9EmEiVDD3qX7vOugJxF3b3hgWrAxz42rMA
-         mOcpWaKVvgtaw==
+        b=QQP+2TWYpG5evbZcwxwMxasZsvOJBUE/Ge90q77qT1A3JCOJHdbPlbVZLq767b5cF
+         VSlePSNOk8puFivt6a7or5O7+Ms4xxh/izDVub9zzZ6tYEXtbS4N8Cdu+UGrRB5PXA
+         n9J4W8OVY65mg1kKBkihF8/wCTp/wvuTxnPe2z3qRUAyyL6fNfDX8YGOjNgs4sb0SN
+         mSSx5qAYKNjDNUjwY7WlZSK7sszQoPOark1laiq6xvhg11y7VaaVJie3G9GVqqswEG
+         U/uu7OaVtypz5TJUongMJhmwFOv4k2qxsLnRG8GPN3Vd/IIirR/vbxR0JDYg3uk1XV
+         tFTP5MP96hzDg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lv Ruyi <lv.ruyi@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>, nick.child@ibm.com,
-        maz@kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 5.4 15/20] powerpc/xics: fix refcount leak in icp_opal_init()
-Date:   Wed,  1 Jun 2022 09:58:57 -0400
-Message-Id: <20220601135902.2004823-15-sashal@kernel.org>
+Cc:     Janusz Krzysztofik <jmkrzyszt@gmail.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>,
+        paul@pwsan.com, aaro.koskinen@iki.fi, linux@armlinux.org.uk,
+        linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.4 06/20] ARM: OMAP1: clock: Fix UART rate reporting algorithm
+Date:   Wed,  1 Jun 2022 09:58:48 -0400
+Message-Id: <20220601135902.2004823-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135902.2004823-1-sashal@kernel.org>
 References: <20220601135902.2004823-1-sashal@kernel.org>
@@ -53,34 +54,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+From: Janusz Krzysztofik <jmkrzyszt@gmail.com>
 
-[ Upstream commit 5dd9e27ea4a39f7edd4bf81e9e70208e7ac0b7c9 ]
+[ Upstream commit 338d5d476cde853dfd97378d20496baabc2ce3c0 ]
 
-The of_find_compatible_node() function returns a node pointer with
-refcount incremented, use of_node_put() on it when done.
+Since its introduction to the mainline kernel, omap1_uart_recalc() helper
+makes incorrect use of clk->enable_bit as a ready to use bitmap mask while
+it only provides the bit number.  Fix it.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220402013419.2410298-1-lv.ruyi@zte.com.cn
+Signed-off-by: Janusz Krzysztofik <jmkrzyszt@gmail.com>
+Acked-by: Tony Lindgren <tony@atomide.com>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/sysdev/xics/icp-opal.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/mach-omap1/clock.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/sysdev/xics/icp-opal.c b/arch/powerpc/sysdev/xics/icp-opal.c
-index 68fd2540b093..7fa520efcefa 100644
---- a/arch/powerpc/sysdev/xics/icp-opal.c
-+++ b/arch/powerpc/sysdev/xics/icp-opal.c
-@@ -195,6 +195,7 @@ int icp_opal_init(void)
- 
- 	printk("XICS: Using OPAL ICP fallbacks\n");
- 
-+	of_node_put(np);
- 	return 0;
+diff --git a/arch/arm/mach-omap1/clock.c b/arch/arm/mach-omap1/clock.c
+index bd5be82101f3..d89bda12bf3c 100644
+--- a/arch/arm/mach-omap1/clock.c
++++ b/arch/arm/mach-omap1/clock.c
+@@ -41,7 +41,7 @@ static DEFINE_SPINLOCK(clockfw_lock);
+ unsigned long omap1_uart_recalc(struct clk *clk)
+ {
+ 	unsigned int val = __raw_readl(clk->enable_reg);
+-	return val & clk->enable_bit ? 48000000 : 12000000;
++	return val & 1 << clk->enable_bit ? 48000000 : 12000000;
  }
  
+ unsigned long omap1_sossi_recalc(struct clk *clk)
 -- 
 2.35.1
 
