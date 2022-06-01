@@ -2,88 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85877C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 06:18:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60BA7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 06:20:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349760AbiFAGSV (ORCPT
+        id S1349768AbiFAGUo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 02:18:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44766 "EHLO
+        Wed, 1 Jun 2022 02:20:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243882AbiFAGSS (ORCPT
+        with ESMTP id S239823AbiFAGUm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 02:18:18 -0400
-X-Greylist: delayed 830 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 31 May 2022 23:18:17 PDT
-Received: from louie.mork.no (louie.mork.no [IPv6:2001:41c8:51:8a:feff:ff:fe00:e5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 970006A066
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 23:18:17 -0700 (PDT)
-Received: from canardo.dyn.mork.no ([IPv6:2a01:799:c9d:7e00:0:0:0:1])
-        (authenticated bits=0)
-        by louie.mork.no (8.15.2/8.15.2) with ESMTPSA id 25163bpO1194431
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
-        Wed, 1 Jun 2022 07:03:38 +0100
-Received: from miraculix.mork.no ([IPv6:2a01:799:c9d:7e02:9be5:c549:1a72:4709])
-        (authenticated bits=0)
-        by canardo.dyn.mork.no (8.15.2/8.15.2) with ESMTPSA id 25163VY73277715
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
-        Wed, 1 Jun 2022 08:03:31 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
-        t=1654063412; bh=Z8VQepQywpNhUdP9sxuS8hnvH4ZlltBtmsUuhQTli2c=;
-        h=From:To:Cc:Subject:References:Date:Message-ID:From;
-        b=fod5sVP1nRIUCLjzh5U/9k1uJkaqhtnrbBpk9XMMyVd9rS53i36+NN5b3jvPIqmjE
-         6ODblHo1JzsyA1n42cglXvZw8FJoMgVVvkO5ha2kZ66mD2WZXrEuNbGmrKnp+jpdFI
-         uY5Dxv/K2gzDJWEYyS1pNIqfODeBOoQUJ8Xrop3c=
-Received: (nullmailer pid 1032539 invoked by uid 1000);
-        Wed, 01 Jun 2022 06:03:31 -0000
-From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-To:     Slark Xiao <slark_xiao@163.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: usb: qmi_wwan: Add support for Cinterion MV31 with
- new baseline
-Organization: m
-References: <20220601040531.6016-1-slark_xiao@163.com>
-Date:   Wed, 01 Jun 2022 08:03:31 +0200
-In-Reply-To: <20220601040531.6016-1-slark_xiao@163.com> (Slark Xiao's message
-        of "Wed, 1 Jun 2022 12:05:31 +0800")
-Message-ID: <87o7zcly30.fsf@miraculix.mork.no>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Wed, 1 Jun 2022 02:20:42 -0400
+Received: from mail-vk1-xa2f.google.com (mail-vk1-xa2f.google.com [IPv6:2607:f8b0:4864:20::a2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E472A6A066;
+        Tue, 31 May 2022 23:20:40 -0700 (PDT)
+Received: by mail-vk1-xa2f.google.com with SMTP id j11so412060vka.6;
+        Tue, 31 May 2022 23:20:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=Cvoj+RO+skmK4uotN8SSFJtBNUiO3qHrHDUxMlyGe68=;
+        b=ReCnqqVWMgsH8NHsHeRUZMnyYPK+cJT2cJqru+YdqevmRTxovqxSK0UebMccFQOQ0g
+         iCiArqo1k58Tv4ZXshEHyJRXekOn7uiA1GepUNHb8844UO3lVOV63XbF4H29lgVce8a+
+         ZzF/mLA9/4HjtTFsw6zbGARUsuVs4J3krS4KrIdnVEOtiqxF+QFG2JKBeXyr4rFwOl7x
+         2G8dIodHNcWtmoSR47gL99e99qfnswMs85D7U8ocMJfNYcoaEwJlZofUeLPmt0ztQwA6
+         C74SSo3UQ92G44WDTfcVNpJiwQ34WdM6sd3bN3o520jHvuGXfhgDjCr4203ZsdI+TTRM
+         hNsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=Cvoj+RO+skmK4uotN8SSFJtBNUiO3qHrHDUxMlyGe68=;
+        b=jpKryiXgtTl4fPH3ra4380KaLz6XkLD97sJuzSJPajndXSdv6rPBVdjo0+jR6Jm6IH
+         CpsDyM+IJclVz8dgKHSDiDM4vCjEx4Vs8pBRe1o0mCEsRMi+Nto2EqBK5oWdOd/EonH9
+         AqKeWcRhQR7tfex3gvHkMstc7W5/HK5PTHkUF2Dta8L8QL01IqobWHtNdLp56ZThCtUl
+         kJ0IdZuYh3HGVWvDDkrHA2nfF+bQc/o/Esc6CzSgm53RvXYg3gWvBsYEXbv1a9bodOHL
+         CzdMbt9n/HuG9+3YQtS7uQTsV4wcGAJT2X7m2ytUn3eeZJ2kM+MmhvRbUWgBjfoQhvrm
+         0ziA==
+X-Gm-Message-State: AOAM530wQEpCB+rS9jZTXIzdFL1B18Ny2FvarHT0g6t4lYOBWEf0c24i
+        4B4FiuRfFWga5GLwRUYQGGNkLunf5gQShgTd7xI=
+X-Google-Smtp-Source: ABdhPJwc2LZwvyEvJkHYDLJIbdgmwanNMcS6f8KRwVS1eR82zJxzIHucJWQhiJkwtRkxaMq3pnqZMmjSc8LEOTtsQ20=
+X-Received: by 2002:a05:6122:14e:b0:358:4f5b:f65c with SMTP id
+ r14-20020a056122014e00b003584f5bf65cmr12758277vko.3.1654064439940; Tue, 31
+ May 2022 23:20:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Virus-Scanned: clamav-milter 0.103.5 at canardo
-X-Virus-Status: Clean
+From:   Steve French <smfrench@gmail.com>
+Date:   Wed, 1 Jun 2022 01:20:28 -0500
+Message-ID: <CAH2r5ms4eeQy-2bu_5BxFAW=GUR7T4VWM9khi7F0Hc-RSb8Uew@mail.gmail.com>
+Subject: [GIT PULL] ksmbd server fixes
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Namjae Jeon <linkinjeon@kernel.org>,
+        CIFS <linux-cifs@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Slark Xiao <slark_xiao@163.com> writes:
+Please pull the following changes since commit
+c5eb0a61238dd6faf37f58c9ce61c9980aaffd7a:
 
-> Adding support for Cinterion device MV31 with Qualcomm
-> new baseline. Use different PIDs to separate it from
-> previous base line products.
-> All interfaces settings keep same as previous.
->
-> T:  Bus=3D03 Lev=3D01 Prnt=3D01 Port=3D00 Cnt=3D01 Dev#=3D  7 Spd=3D480 M=
-xCh=3D 0
-> D:  Ver=3D 2.10 Cls=3Def(misc ) Sub=3D02 Prot=3D01 MxPS=3D64 #Cfgs=3D  1
-> P:  Vendor=3D1e2d ProdID=3D00b9 Rev=3D04.14
-> S:  Manufacturer=3DCinterion
-> S:  Product=3DCinterion PID 0x00B9 USB Mobile Broadband
-> S:  SerialNumber=3D90418e79
-> C:  #Ifs=3D 4 Cfg#=3D 1 Atr=3Da0 MxPwr=3D500mA
-> I:  If#=3D0x0 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3Dff Prot=3D50 Drive=
-r=3Dqmi_wwan
-> I:  If#=3D0x1 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3Dff Prot=3D40 Drive=
-r=3Doption
-> I:  If#=3D0x2 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3Dff Prot=3D60 Drive=
-r=3Doption
-> I:  If#=3D0x3 Alt=3D 0 #EPs=3D 2 Cls=3Dff(vend.) Sub=3Dff Prot=3D30 Drive=
-r=3Doption
->
-> Signed-off-by: Slark Xiao <slark_xiao@163.com>
+  Linux 5.18-rc6 (2022-05-08 13:54:17 -0700)
 
-Thanks
+are available in the Git repository at:
 
-Acked-by: Bj=C3=B8rn Mork <bjorn@mork.no>
+  git://git.samba.org/ksmbd.git tags/5.19-rc-ksmbd-server-fixes
+
+for you to fetch changes up to 621433b7e25d6d42e5f75bd8c4a62d6c7251511b:
+
+  ksmbd: smbd: relax the count of sges required (2022-05-27 21:31:20 -0500)
+
+----------------------------------------------------------------
+fourteen smb3 server fixes:
+- 8 RDMA (smbdirect) fixes, cleanup and optimizations
+- crediting (flow control) fix for mounts from Windows client
+- ACL fix
+- 2 cleanup fix
+- Windows client query dir fix
+- Write validation fix
+----------------------------------------------------------------
+Hyunchul Lee (8):
+      ksmbd: smbd: change prototypes of RDMA read/write related functions
+      ksmbd: smbd: introduce read/write credits for RDMA read/write
+      ksmbd: smbd: simplify tracking pending packets
+      ksmbd: smbd: change the return value of get_sg_list
+      ksmbd: smbd: handle multiple Buffer descriptors
+      ksmbd: smbd: fix connection dropped issue
+      ksmbd: fix outstanding credits related bugs
+      ksmbd: smbd: relax the count of sges required
+
+Marios Makassikis (1):
+      ksmbd: validate length in smb2_write()
+
+Namjae Jeon (3):
+      ksmbd: handle smb2 query dir request for OutputBufferLength that
+is too small
+      ksmbd: add smbd max io size parameter
+      ksmbd: fix wrong smbd max read/write size check
+
+Xin Xiong (1):
+      ksmbd: fix reference count leak in smb_check_perm_dacl()
+
+Yang Li (1):
+      ksmbd: Fix some kernel-doc comments
+
+ fs/ksmbd/connection.c     |  22 ++--
+ fs/ksmbd/connection.h     |  27 ++--
+ fs/ksmbd/ksmbd_netlink.h  |   3 +-
+ fs/ksmbd/misc.c           |  10 +-
+ fs/ksmbd/smb2misc.c       |   2 +-
+ fs/ksmbd/smb2pdu.c        | 126 ++++++++++---------
+ fs/ksmbd/smb_common.c     |   4 +-
+ fs/ksmbd/smbacl.c         |   1 +
+ fs/ksmbd/transport_ipc.c  |   3 +
+ fs/ksmbd/transport_rdma.c | 363
+++++++++++++++++++++++++++++++++----------------------
+ fs/ksmbd/transport_rdma.h |   8 ++
+ 11 files changed, 325 insertions(+), 244 deletions(-)
+
+-- 
+Thanks,
+
+Steve
