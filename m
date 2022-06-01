@@ -2,97 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1893CCA473
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 20:45:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 006EECCA473
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 20:45:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229510AbiFAUpe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 16:45:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39770 "EHLO
+        id S229925AbiFAUpj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 16:45:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230062AbiFAUpR (ORCPT
+        with ESMTP id S230058AbiFAUpQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 16:45:17 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF7891842DB
+        Wed, 1 Jun 2022 16:45:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5491E3E0FA
         for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 13:31:08 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id t25so4613794lfg.7
-        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 13:31:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XQjh59P+YL657/ugkQgJkelCDXFl1T1Vs2NaT8wJJmg=;
-        b=ZZSpwU9hNx1vIgT23ZqORpMaSlb67mK71XYRdg7+sMMlwAstjUOjkA0TEXRoOiSjBx
-         1jZ+YVX1Q02lET6yIsH0PSBUu0oWXEAM0SWXWzAqwObT9JFumL5b5q+9KN6/0sp3uyvB
-         Pok3GJX3EYSYz40c743Gtv1qk9/v1YKTSe4Gk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XQjh59P+YL657/ugkQgJkelCDXFl1T1Vs2NaT8wJJmg=;
-        b=Aq36YJOkbvQ6rWH0ckGQfBKoh5wYM82EIKl8jdSd7GiuREjrzOiW9boWCmy9o7YwRk
-         nW9ivShbIplBxa5V9yyvCyxq3Yzd3M2xItnIE8tqFKQHgbOmg79WHmoujVyHJXqwwIBj
-         I8hmkN2ZOMHmgsKwXfxuDNpe56o0CowXFG8FHrlHszy25qvHJ5sU+CbFLFmcU+7MRlgL
-         Uv2h0ihZxtEDlqy2y2xpuOTyewbebug1JVXw4e6ccIiMpiA7KwPslgYqPfCFuaUMW/r5
-         LXDOiSo/BBtQMP1TJhPntnJd67kWZOdhSZvBws5bbRUResSZ6G4d0u7LAwH7G9t1c0VD
-         Hzcg==
-X-Gm-Message-State: AOAM532idqESG2E7vo52WDHTYBGyaU4bt4qNk3rSr18ryM4V0xq9j3Cg
-        1hiNZZTot4/WhtkKReE/3dlm5J3wW9BaEWpo
-X-Google-Smtp-Source: ABdhPJz8YNLMZGQfEVyOLTQeyFpMyxl7Idv2/Z618mMeDk49sieLX+riAxxSTfWUm/GfVfR/fGPuLA==
-X-Received: by 2002:a17:906:4784:b0:6ff:34ea:d824 with SMTP id cw4-20020a170906478400b006ff34ead824mr999873ejc.526.1654111404095;
-        Wed, 01 Jun 2022 12:23:24 -0700 (PDT)
-Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com. [209.85.221.44])
-        by smtp.gmail.com with ESMTPSA id dc15-20020a170906c7cf00b006ff045d7c9bsm1013243ejb.173.2022.06.01.12.23.23
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Jun 2022 12:23:23 -0700 (PDT)
-Received: by mail-wr1-f44.google.com with SMTP id k16so3661982wrg.7
-        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 12:23:23 -0700 (PDT)
-X-Received: by 2002:a05:6000:1605:b0:210:307a:a94a with SMTP id
- u5-20020a056000160500b00210307aa94amr744700wrb.97.1654111402828; Wed, 01 Jun
- 2022 12:23:22 -0700 (PDT)
-MIME-Version: 1.0
-References: <CAHk-=whi2SzU4XT_FsdTCAuK2qtYmH+-hwi1cbSdG8zu0KXL=g@mail.gmail.com>
- <cover.1654086665.git.legion@kernel.org> <5ec6759ab3b617f9c12449a9606b6f0b5a7582d0.1654086665.git.legion@kernel.org>
- <Ype7skNJzEQ1W96v@casper.infradead.org>
-In-Reply-To: <Ype7skNJzEQ1W96v@casper.infradead.org>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed, 1 Jun 2022 12:23:06 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wiTtYMia0FR4h7_nV2RZ5pq=wR-7oMMK3o8o=EgAxMsmg@mail.gmail.com>
-Message-ID: <CAHk-=wiTtYMia0FR4h7_nV2RZ5pq=wR-7oMMK3o8o=EgAxMsmg@mail.gmail.com>
-Subject: Re: [RFC PATCH 1/4] sysctl: API extension for handling sysctl
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Alexey Gladkov <legion@kernel.org>,
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 596F9B81C4A
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 19:34:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0760FC385B8;
+        Wed,  1 Jun 2022 19:34:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654112086;
+        bh=UdpTW9Gy69BdEVInp3sI8aauVuoLZKYRoAEZvBK+D0o=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=N8waOipncG7vdnHa+5gKgOGoCY1LXayvCngfS//eSYKHWoCYC0k8bhAL6j4s+gbEY
+         um8KhHpOCCeWKqTqzjmNGfHZsnc1i+eK5yTxbQGkKRKY+bez9JVDcsu11vTT9PPV6x
+         PhXCNmADkQN1Q4YtL8ITSx0DjvSFVrwDKl0S+UyUmqqOp0GSzv2Yu2+snh6BO0dGff
+         +h4zlVQDR+qDadTPTH1GHSYOf4GF9yzi8DBTUg1PTF4BJxsqwcxxPXg+q4lTZZv4Fb
+         iX27sbdFMM149ZbavWGlvNbQN1pgO75dzVKzACIx4xKgP6xSbWcOtANbxuTSywE1fp
+         MSCrz2x+1fGKg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E6E14F03944;
+        Wed,  1 Jun 2022 19:34:45 +0000 (UTC)
+Subject: Re: [GIT PULL] erofs fixes for 5.19-rc1
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <YpebV0BiGsrl8UDQ@debian>
+References: <YpebV0BiGsrl8UDQ@debian>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <YpebV0BiGsrl8UDQ@debian>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/xiang/erofs.git tags/erofs-for-5.19-rc1-fixes
+X-PR-Tracked-Commit-Id: 4398d3c31b582db0d640b23434bf344a6c8df57c
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 8171acb8bc9b33f3ed827f0615b24f7a06495cd0
+Message-Id: <165411208594.25874.3614907223802868163.pr-tracker-bot@kernel.org>
+Date:   Wed, 01 Jun 2022 19:34:45 +0000
+To:     Gao Xiang <xiang@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
         LKML <linux-kernel@vger.kernel.org>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Iurii Zaikin <yzaikin@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Linux Containers <containers@lists.linux.dev>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Vasily Averin <vvs@virtuozzo.com>
-Content-Type: text/plain; charset="UTF-8"
+        linux-erofs@lists.ozlabs.org, Chao Yu <chao@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 1, 2022 at 12:19 PM Matthew Wilcox <willy@infradead.org> wrote:
->
-> Why not pass the iocb in ->read and ->write?  We're still regretting not
-> doing that with file_operations.
+The pull request you sent on Thu, 2 Jun 2022 01:01:11 +0800:
 
-No, all the actual "io" is done by the caller.
+> git://git.kernel.org/pub/scm/linux/kernel/git/xiang/erofs.git tags/erofs-for-5.19-rc1-fixes
 
-There is no way in hell I want the sysctl callbacks to actually
-possibly do user space accesses etc.
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/8171acb8bc9b33f3ed827f0615b24f7a06495cd0
 
-They get a kernel buffer that has already been set up. There is no
-iocb or iovec left for them.
+Thank you!
 
-(That also means that they can take whatever locks they need,
-including spinlocks, because there's not going to be any random user
-accesses or complex pipe buffer lookups or whatever).
-
-                Linus
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
