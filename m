@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19127CCA47A
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:06:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75EBFCCA470
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:06:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355496AbiFAOF5 (ORCPT
+        id S1355552AbiFAOGG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:05:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55356 "EHLO
+        Wed, 1 Jun 2022 10:06:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355090AbiFAOBR (ORCPT
+        with ESMTP id S1355238AbiFAOB0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:01:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65D4292D1C;
-        Wed,  1 Jun 2022 06:57:46 -0700 (PDT)
+        Wed, 1 Jun 2022 10:01:26 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95323A5AA1;
+        Wed,  1 Jun 2022 06:58:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F2836149F;
-        Wed,  1 Jun 2022 13:57:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4927C36AE2;
-        Wed,  1 Jun 2022 13:57:05 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 1E55ACE1A23;
+        Wed,  1 Jun 2022 13:57:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAB7FC3411F;
+        Wed,  1 Jun 2022 13:57:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091826;
-        bh=TincU48qiU403YeYmoXveeSxoB8H+arboGKvNQg07k8=;
+        s=k20201202; t=1654091822;
+        bh=FTiI156Bl/R9a/IH+dywYgcf8JKm5MuzE4oQ6KL5C9g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p45MNYyfVZwXCTLeiItR2Bzyq22V6kj/KvSfWCK3rYmQRXkAV4cWdkkIqGDn4D68l
-         BRjoh95ugxNAoJ9+MzzNs5fzHYaECxFylEQAtP57nuQOHP1BHVyIUXxgtS6xaYnPUq
-         fI5+OHJd3uvZJ4d420OTU5Ba8slEwBRoZfBsGEhVW6AeCcFWpx7nK18D1p8jKjCR6b
-         qmIuitHveS/YnEtMlyhIpvZgwMK17FnHPp0JOkc4bv1W1frPhDvpBikF8P8x+dINOQ
-         J4ebQqUb2jsKNA+/TXtcXGpEZI2Iu584Tv5XUzleDQizyl6jzeUWEEvYqJUzGLBSQx
-         XPlUllhVM/h9A==
+        b=MNk8vlJ+W4F1sHSftdFoEy4rQqc7xqPo9BHI5qJXpEW8r88ncMQAHZs2AJNX0NHrY
+         RIdxzh04QpXofGcX4dTVMcpqVfFOYMd8yb2HhIWYkJtDPx2Ui9WI05mSGWwoGv7vKt
+         7wvcqDD7n/aSItA0GHY/yMcUAHDDGe4CSCH7bbzbB5kbGFXAhEYgmDSVm8ODc0e/Q+
+         4KiSdhB7/lqfDJGvYNSKLAvK6/4ETd5oNxSOCCubd4h6yvZYupwwwQi5R98TQlXwF7
+         aieWRDZwOeFFSyiwfQAPnqZBDsD4ink5mvNE81FCdXqkHpGwBaAqLWS9sttG1YolMH
+         Cv8jbgr/iathQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 21/37] ARM: dts: exynos: add atmel,24c128 fallback to Samsung EEPROM
-Date:   Wed,  1 Jun 2022 09:56:06 -0400
-Message-Id: <20220601135622.2003939-21-sashal@kernel.org>
+Cc:     OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>,
+        qianfan <qianfanguijin@163.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.15 18/37] fat: add ratelimit to fat*_ent_bread()
+Date:   Wed,  1 Jun 2022 09:56:03 -0400
+Message-Id: <20220601135622.2003939-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135622.2003939-1-sashal@kernel.org>
 References: <20220601135622.2003939-1-sashal@kernel.org>
@@ -54,43 +53,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
 
-[ Upstream commit f038e8186fbc5723d7d38c6fa1d342945107347e ]
+[ Upstream commit 183c3237c928109d2008c0456dff508baf692b20 ]
 
-The Samsung s524ad0xd1 EEPROM should use atmel,24c128 fallback,
-according to the AT24 EEPROM bindings.
+fat*_ent_bread() can be the cause of too many report on I/O error path.
+So use fat_msg_ratelimit() instead.
 
-Reported-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220426183443.243113-1-krzysztof.kozlowski@linaro.org
+Link: https://lkml.kernel.org/r/87bkxogfeq.fsf@mail.parknet.co.jp
+Signed-off-by: OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
+Reported-by: qianfan <qianfanguijin@163.com>
+Tested-by: qianfan <qianfanguijin@163.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/exynos5250-smdk5250.dts | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ fs/fat/fatent.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm/boot/dts/exynos5250-smdk5250.dts b/arch/arm/boot/dts/exynos5250-smdk5250.dts
-index f042954bdfa5..e4861415a0fe 100644
---- a/arch/arm/boot/dts/exynos5250-smdk5250.dts
-+++ b/arch/arm/boot/dts/exynos5250-smdk5250.dts
-@@ -129,7 +129,7 @@ &i2c_0 {
- 	samsung,i2c-max-bus-freq = <20000>;
+diff --git a/fs/fat/fatent.c b/fs/fat/fatent.c
+index 978ac6751aeb..1db348f8f887 100644
+--- a/fs/fat/fatent.c
++++ b/fs/fat/fatent.c
+@@ -94,7 +94,8 @@ static int fat12_ent_bread(struct super_block *sb, struct fat_entry *fatent,
+ err_brelse:
+ 	brelse(bhs[0]);
+ err:
+-	fat_msg(sb, KERN_ERR, "FAT read failed (blocknr %llu)", (llu)blocknr);
++	fat_msg_ratelimit(sb, KERN_ERR, "FAT read failed (blocknr %llu)",
++			  (llu)blocknr);
+ 	return -EIO;
+ }
  
- 	eeprom@50 {
--		compatible = "samsung,s524ad0xd1";
-+		compatible = "samsung,s524ad0xd1", "atmel,24c128";
- 		reg = <0x50>;
- 	};
- 
-@@ -289,7 +289,7 @@ &i2c_1 {
- 	samsung,i2c-max-bus-freq = <20000>;
- 
- 	eeprom@51 {
--		compatible = "samsung,s524ad0xd1";
-+		compatible = "samsung,s524ad0xd1", "atmel,24c128";
- 		reg = <0x51>;
- 	};
- 
+@@ -107,8 +108,8 @@ static int fat_ent_bread(struct super_block *sb, struct fat_entry *fatent,
+ 	fatent->fat_inode = MSDOS_SB(sb)->fat_inode;
+ 	fatent->bhs[0] = sb_bread(sb, blocknr);
+ 	if (!fatent->bhs[0]) {
+-		fat_msg(sb, KERN_ERR, "FAT read failed (blocknr %llu)",
+-		       (llu)blocknr);
++		fat_msg_ratelimit(sb, KERN_ERR, "FAT read failed (blocknr %llu)",
++				  (llu)blocknr);
+ 		return -EIO;
+ 	}
+ 	fatent->nr_bhs = 1;
 -- 
 2.35.1
 
