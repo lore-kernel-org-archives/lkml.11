@@ -2,156 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEB5DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 07:16:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED08CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 07:16:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350223AbiFAHQb (ORCPT
+        id S1350256AbiFAHQo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 03:16:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55208 "EHLO
+        Wed, 1 Jun 2022 03:16:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350951AbiFAHQQ (ORCPT
+        with ESMTP id S1350844AbiFAHPy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 03:16:16 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0B1C9D076;
-        Wed,  1 Jun 2022 00:16:15 -0700 (PDT)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2517GDPm002488;
-        Wed, 1 Jun 2022 02:16:13 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1654067773;
-        bh=mpZtlGZNYZkzKrIar+gOtdyJV1Br8CEFg9AwOfSIA8I=;
-        h=From:To:CC:Subject:Date;
-        b=LcJvdYGHWq5GNJvZS+CX77ExQNj4i2IvmbJ18nlrQX2xWA/BJCSfz4iPu/+c40LXb
-         Be/ZV1Pz98/8zES/C4V4Dw4FUfEtceP9bnNEAaauEeVIE7jxLPXYzp52c0r39xu6FC
-         aY0uPhiofmT9Idvb2FDl9L4ieJ2CgLUmVdMO3PoM=
-Received: from DLEE109.ent.ti.com (dlee109.ent.ti.com [157.170.170.41])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2517GDOn091123
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 1 Jun 2022 02:16:13 -0500
-Received: from DLEE109.ent.ti.com (157.170.170.41) by DLEE109.ent.ti.com
- (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 1
- Jun 2022 02:16:12 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE109.ent.ti.com
- (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Wed, 1 Jun 2022 02:16:12 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2517GBnC070231;
-        Wed, 1 Jun 2022 02:16:12 -0500
-From:   Vaishnav Achath <vaishnav.a@ti.com>
-To:     <broonie@kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-spi@vger.kernel.org>
-CC:     <vaishnav.a@ti.com>, <p.yadav@ti.com>, <vigneshr@ti.com>
-Subject: [PATCH -next] spi: cadence-quadspi: Remove spi_master_put() in probe failure path
-Date:   Wed, 1 Jun 2022 12:46:11 +0530
-Message-ID: <20220601071611.11853-1-vaishnav.a@ti.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 1 Jun 2022 03:15:54 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50282A26E6;
+        Wed,  1 Jun 2022 00:15:36 -0700 (PDT)
+X-UUID: 716a8cf323a7496ba4f7d438554a5a9b-20220601
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:1aa1ea8f-56af-4e4f-9002-5fef85241bad,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:54,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:54
+X-CID-INFO: VERSION:1.1.5,REQID:1aa1ea8f-56af-4e4f-9002-5fef85241bad,OB:0,LOB:
+        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:54,FILE:0,RULE:Release_HamU,ACTI
+        ON:release,TS:54
+X-CID-META: VersionHash:2a19b09,CLOUDID:67008514-f88c-475e-badf-d9ee54230b8f,C
+        OID:d03bb2fe049f,Recheck:0,SF:28|16|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:1,File:nil,QS:0,BEC:nil
+X-UUID: 716a8cf323a7496ba4f7d438554a5a9b-20220601
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+        (envelope-from <lina.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 748532127; Wed, 01 Jun 2022 15:15:27 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Wed, 1 Jun 2022 15:15:26 +0800
+Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by
+ mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.3 via Frontend Transport; Wed, 1 Jun 2022 15:15:25 +0800
+From:   Lina Wang <lina.wang@mediatek.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Maciej enczykowski <maze@google.com>, <netdev@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <lkp@intel.com>,
+        <rong.a.chen@intel.com>, kernel test robot <oliver.sang@intel.com>
+Subject: Re: [PATCH] selftests net: fix bpf build error
+Date:   Wed, 1 Jun 2022 15:08:44 +0800
+Message-ID: <20220601070844.10515-1-lina.wang@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <9c462ffc-f2c0-f542-4e61-251571da8c22@iogearbox.net>
+References: <9c462ffc-f2c0-f542-4e61-251571da8c22@iogearbox.net>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently the spi_master is allocated by devm_spi_alloc_master()
-and devres core manages the deallocation, but in probe failure
-path spi_master_put() is being handled manually which causes
-"refcount underflow use-after-free" warning when probe failure happens
-after allocating spi_master.
+On Wed, 2022-06-01 at 01:01 +0200, Daniel Borkmann wrote:
+> On 5/30/22 8:21 AM, Lina Wang wrote:
+> clang -O2 -target bpf -c bpf/nat6to4.c -I../../bpf -I../../../../lib
+> -I../../../../../usr/include/ -o
+> /root/daniel/bpf/tools/testing/selftests/net/bpf/nat6to4.o
+> In file included from bpf/nat6to4.c:27:
+> In file included from /usr/include/linux/bpf.h:11:
+> /usr/include/linux/types.h:5:10: fatal error: 'asm/types.h' file not
+> found
+> #include <asm/types.h>
+>           ^~~~~~~~~~~~~
+> 1 error generated.
 
-Trimmed backtrace during failure:
+maybe your pc is ubuntu or Debian, you should apt-get install gcc-multilib, 
+guys on the internet meets the same problem when build libbpf related, just
+install gcc-multilib package
 
-refcount_t: underflow; use-after-free.
-pc : refcount_warn_saturate+0xf4/0x144
-Call trace:
-refcount_warn_saturate
-kobject_put
-put_device
-devm_spi_release_controller
-devres_release_all
+> Could we reuse the build infra from tools/testing/selftests/bpf/ for nat6to4.c?
 
-This commit makes relevant changes to remove spi_master_put() from probe
-failure path.
+We discussed it before, please refer to https://patchwork.kernel.org/project/netdevbpf/patch/20220407084727.10241-1-lina.wang@mediatek.com/
 
-Fixes: 606e5d408184 ("spi: cadence-quadspi: Handle spi_unregister_master() in remove()")
-
-Signed-off-by: Vaishnav Achath <vaishnav.a@ti.com>
----
- drivers/spi/spi-cadence-quadspi.c | 19 +++++++------------
- 1 file changed, 7 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/spi/spi-cadence-quadspi.c b/drivers/spi/spi-cadence-quadspi.c
-index 2b9fc8449a62..72b1a5a2298c 100644
---- a/drivers/spi/spi-cadence-quadspi.c
-+++ b/drivers/spi/spi-cadence-quadspi.c
-@@ -1578,8 +1578,7 @@ static int cqspi_probe(struct platform_device *pdev)
- 	ret = cqspi_of_get_pdata(cqspi);
- 	if (ret) {
- 		dev_err(dev, "Cannot get mandatory OF data.\n");
--		ret = -ENODEV;
--		goto probe_master_put;
-+		return -ENODEV;
- 	}
- 
- 	/* Obtain QSPI clock. */
-@@ -1587,7 +1586,7 @@ static int cqspi_probe(struct platform_device *pdev)
- 	if (IS_ERR(cqspi->clk)) {
- 		dev_err(dev, "Cannot claim QSPI clock.\n");
- 		ret = PTR_ERR(cqspi->clk);
--		goto probe_master_put;
-+		return ret;
- 	}
- 
- 	/* Obtain and remap controller address. */
-@@ -1596,7 +1595,7 @@ static int cqspi_probe(struct platform_device *pdev)
- 	if (IS_ERR(cqspi->iobase)) {
- 		dev_err(dev, "Cannot remap controller address.\n");
- 		ret = PTR_ERR(cqspi->iobase);
--		goto probe_master_put;
-+		return ret;
- 	}
- 
- 	/* Obtain and remap AHB address. */
-@@ -1605,7 +1604,7 @@ static int cqspi_probe(struct platform_device *pdev)
- 	if (IS_ERR(cqspi->ahb_base)) {
- 		dev_err(dev, "Cannot remap AHB address.\n");
- 		ret = PTR_ERR(cqspi->ahb_base);
--		goto probe_master_put;
-+		return ret;
- 	}
- 	cqspi->mmap_phys_base = (dma_addr_t)res_ahb->start;
- 	cqspi->ahb_size = resource_size(res_ahb);
-@@ -1614,15 +1613,13 @@ static int cqspi_probe(struct platform_device *pdev)
- 
- 	/* Obtain IRQ line. */
- 	irq = platform_get_irq(pdev, 0);
--	if (irq < 0) {
--		ret = -ENXIO;
--		goto probe_master_put;
--	}
-+	if (irq < 0)
-+		return -ENXIO;
- 
- 	pm_runtime_enable(dev);
- 	ret = pm_runtime_resume_and_get(dev);
- 	if (ret < 0)
--		goto probe_master_put;
-+		return ret;
- 
- 	ret = clk_prepare_enable(cqspi->clk);
- 	if (ret) {
-@@ -1716,8 +1713,6 @@ static int cqspi_probe(struct platform_device *pdev)
- probe_clk_failed:
- 	pm_runtime_put_sync(dev);
- 	pm_runtime_disable(dev);
--probe_master_put:
--	spi_master_put(master);
- 	return ret;
- }
- 
--- 
-2.17.1
+Thanks!
 
