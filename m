@@ -2,50 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAFC8CCA46F
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:54:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F9CDCCA468
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:55:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353578AbiFANyz (ORCPT
+        id S1353633AbiFANzB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 09:54:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59416 "EHLO
+        Wed, 1 Jun 2022 09:55:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353698AbiFANyQ (ORCPT
+        with ESMTP id S1353686AbiFANyQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 1 Jun 2022 09:54:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E122E8AE48;
-        Wed,  1 Jun 2022 06:54:02 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DD518A33C;
+        Wed,  1 Jun 2022 06:54:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 36EE7B81AFB;
-        Wed,  1 Jun 2022 13:53:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D241C3411F;
-        Wed,  1 Jun 2022 13:53:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EBAFC61598;
+        Wed,  1 Jun 2022 13:53:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C0CBC3411E;
+        Wed,  1 Jun 2022 13:53:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091598;
-        bh=r3DLkc6jEcY3i0/3z56pH0qiShiXBiSeWD+DV9othKc=;
+        s=k20201202; t=1654091594;
+        bh=fvK3Uqo0VtKOO2Rbz2ONUakdG9jzowb8mmBKZpMms/k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G297vWd24QTYYN8UVhD/TX1OSFHuraIhEjO6QHdxM23UILW+Dd15Mzk1790p5UJXi
-         d8ljLl4YFLuwPga5T17I5vCi/eCahcgmB7own6W5OWFF3zciw1JIJryzoRMXC/SXKG
-         bekoqvwupBzFHW/fC3UWpqeUv/ADv8LFieZHpXjkCdeaf6DxFqiaW2d9evvf+peUKu
-         4+b58QZZ9lr4Ajtiz1ZlykBepn/pSHb/Z4Kud3fqGdOw5xf/bVXTKUX9wmxrlSwOpP
-         dXw4j8VwCfUh6DcpWet9zA79DhdTXjscxx8HXaWeN4CGs3jHpo45MwxisQl/+Xn8Bk
-         pB8fynyOebNFg==
+        b=hL31ZP5RqCUrB6zMwYE8KaCzyAm02HZGhOvcz+Khj/xjtAYvYvNAHeXt4vQNIYrBm
+         h5jjHLR5Cgd1mFQCqIehF56keK5aYl3EJIITdtcuRJyNmBfzg8gSsZGWfeArtNRRnS
+         wlo3th4KnE6LXjT5UO+I6hqY77g54bW2fKRmzMMszadnOGVtrfsPx+7yYaFqNIOg0P
+         bstmETf67LRuFr3oW4RhSMOXCEmeipa+h76T2VHFMGbKcnc8OWR7yQ1JQBobWLnm6P
+         P6cxdK+rU1c1uA3HOgOhgqlNbf39zJTwaL65aWEItu6o2ljp2dlJTM0mrqdp2+1X68
+         YA0o2jmdYW3ww==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Viresh Kumar <viresh.kumar@linaro.org>,
-        Rex-BC Chen <rex-bc.chen@mediatek.com>,
-        Jia-wei Chang <jia-wei.chang@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
-        linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.18 28/49] cpufreq: Avoid unnecessary frequency updates due to mismatch
-Date:   Wed,  1 Jun 2022 09:51:52 -0400
-Message-Id: <20220601135214.2002647-28-sashal@kernel.org>
+Cc:     Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>,
+        Douglas Anderson <dianders@chromium.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>, agross@kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 25/49] arm64: dts: qcom: sc7280-idp: Configure CTS pin to bias-bus-hold for bluetooth
+Date:   Wed,  1 Jun 2022 09:51:49 -0400
+Message-Id: <20220601135214.2002647-25-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135214.2002647-1-sashal@kernel.org>
 References: <20220601135214.2002647-1-sashal@kernel.org>
@@ -57,60 +55,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Viresh Kumar <viresh.kumar@linaro.org>
+From: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
 
-[ Upstream commit f55ae08c89873e140c7cac2a7fa161d31a0d60cf ]
+[ Upstream commit 497b272759986af1aa5a25b5e903d082c67bd8f6 ]
 
-For some platforms, the frequency returned by hardware may be slightly
-different from what is provided in the frequency table. For example,
-hardware may return 499 MHz instead of 500 MHz. In such cases it is
-better to avoid getting into unnecessary frequency updates, as we may
-end up switching policy->cur between the two and sending unnecessary
-pre/post update notifications, etc.
+WLAN rail was leaking power during RBSC/sleep even after turning BT off.
+Change active and sleep pinctrl configurations to handle same.
 
-This patch has chosen allows the hardware frequency and table frequency
-to deviate by 1 MHz for now, we may want to increase it a bit later on
-if someone still complains.
-
-Reported-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
-Tested-by: Jia-wei Chang <jia-wei.chang@mediatek.com>
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/1650556567-4995-2-git-send-email-quic_vnivarth@quicinc.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/cpufreq/cpufreq.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
-index 80f535cc8a75..fbaa8e6c7d23 100644
---- a/drivers/cpufreq/cpufreq.c
-+++ b/drivers/cpufreq/cpufreq.c
-@@ -28,6 +28,7 @@
- #include <linux/suspend.h>
- #include <linux/syscore_ops.h>
- #include <linux/tick.h>
-+#include <linux/units.h>
- #include <trace/events/power.h>
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+index ecbf2b89d896..5ab3696af354 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+@@ -400,10 +400,13 @@ &qup_uart5_rx {
  
- static LIST_HEAD(cpufreq_policy_list);
-@@ -1707,6 +1708,16 @@ static unsigned int cpufreq_verify_current_freq(struct cpufreq_policy *policy, b
- 		return new_freq;
+ &qup_uart7_cts {
+ 	/*
+-	 * Configure a pull-down on CTS to match the pull of
+-	 * the Bluetooth module.
++	 * Configure a bias-bus-hold on CTS to lower power
++	 * usage when Bluetooth is turned off. Bus hold will
++	 * maintain a low power state regardless of whether
++	 * the Bluetooth module drives the pin in either
++	 * direction or leaves the pin fully unpowered.
+ 	 */
+-	bias-pull-down;
++	bias-bus-hold;
+ };
  
- 	if (policy->cur != new_freq) {
-+		/*
-+		 * For some platforms, the frequency returned by hardware may be
-+		 * slightly different from what is provided in the frequency
-+		 * table, for example hardware may return 499 MHz instead of 500
-+		 * MHz. In such cases it is better to avoid getting into
-+		 * unnecessary frequency updates.
-+		 */
-+		if (abs(policy->cur - new_freq) < HZ_PER_MHZ)
-+			return policy->cur;
-+
- 		cpufreq_out_of_sync(policy, new_freq);
- 		if (update)
- 			schedule_work(&policy->update);
+ &qup_uart7_rts {
+@@ -495,10 +498,13 @@ qup_uart7_sleep_cts: qup-uart7-sleep-cts {
+ 		pins = "gpio28";
+ 		function = "gpio";
+ 		/*
+-		 * Configure a pull-down on CTS to match the pull of
+-		 * the Bluetooth module.
++		 * Configure a bias-bus-hold on CTS to lower power
++		 * usage when Bluetooth is turned off. Bus hold will
++		 * maintain a low power state regardless of whether
++		 * the Bluetooth module drives the pin in either
++		 * direction or leaves the pin fully unpowered.
+ 		 */
+-		bias-pull-down;
++		bias-bus-hold;
+ 	};
+ 
+ 	qup_uart7_sleep_rts: qup-uart7-sleep-rts {
 -- 
 2.35.1
 
