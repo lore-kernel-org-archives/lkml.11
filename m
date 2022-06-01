@@ -2,51 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAF55CCA468
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:12:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD77BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:13:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355211AbiFAOMx (ORCPT
+        id S1347881AbiFAOM5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:12:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48004 "EHLO
+        Wed, 1 Jun 2022 10:12:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354630AbiFAOH3 (ORCPT
+        with ESMTP id S1355833AbiFAOG3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:07:29 -0400
+        Wed, 1 Jun 2022 10:06:29 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2957A339A;
-        Wed,  1 Jun 2022 07:00:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 331FEBA9BA;
+        Wed,  1 Jun 2022 07:00:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 798786149F;
-        Wed,  1 Jun 2022 14:00:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96B8EC34119;
-        Wed,  1 Jun 2022 14:00:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C25F6155E;
+        Wed,  1 Jun 2022 13:59:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E39CEC34119;
+        Wed,  1 Jun 2022 13:59:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654092004;
-        bh=rCm0BVpzsO/CK/q+0+njTSj5LZslu2hznfOgIzLZnVo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FDLs1kEFCozFfQSzDXkm6zmb94RK5GrRN90yOW9/eTFlOMuweSKQs3Ta2I8uZMRDQ
-         DzZmU/xYIgo3R8A5k9LL7slUFvZKbymy1yF2fnJsI66gL3W6LeOjBrfvl1KJgpXQX5
-         nSJcdfGvzbEURd+9gsaz7bBhh67/7aWg8s+4mZ88fdn3uEPcpdIu/xobkUWIRlVfOC
-         gTzA+ivgpm31r4/V015UpI3LPSYm/65ojfpcOlB1/wL41umGJpyGFH0GL8G52I1CFD
-         VlvvaXyRyWy0IiN7eAKDvkX3WW58s1M4bZ4mYjbMAWVSdhF3T1c1hqUlCdN2+GLEux
-         dAlFW2HiUOm9w==
+        s=k20201202; t=1654091994;
+        bh=cJFlLz+jFyLB/OFW6ZZBIAU34k0Q+vivDjWMB3mrnGI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=BaQr74OVHhEguiDVV9MNq8c1hE9+qJc13C/u0jW01BTQCimWvCkTLkDfHHlRaOwLn
+         mXJ0Q3cuwK6LTm1q0I0C9+yu9w1o2v2uk4DdHUgIATK1A0RiKz27fFuxzanhCdmhTV
+         807cOwQOaPqwrU10AcbsD1Zitl+Rf2D67AmZ7RLbq7Y1RGHevjAIn+DmQFg/guHdld
+         oxXf0P4bBeFZOVmJyaHf+qPV+k3ugUB+MCQNg/K8+Khk5MBk4hF2w8z6287AarUh5V
+         OQ1IqnYsljnYLd494YgMjcXHpIcZe1qiXm6+ZafD840+Ubau7Ej3YyfCsaYTlcuLR5
+         wV6xSiGChTbPA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Peng Wu <wupeng58@huawei.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>,
-        liviu.dudau@arm.com, sudeep.holla@arm.com,
-        lorenzo.pieralisi@arm.com, linux@armlinux.org.uk,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.19 07/15] ARM: versatile: Add missing of_node_put in dcscb_init
-Date:   Wed,  1 Jun 2022 09:59:42 -0400
-Message-Id: <20220601135951.2005085-7-sashal@kernel.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org,
+        linux-arm-kernel@lists.infradead.org, linux-oxnas@groups.io,
+        devicetree@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 01/15] ARM: dts: ox820: align interrupt controller node name with dtschema
+Date:   Wed,  1 Jun 2022 09:59:36 -0400
+Message-Id: <20220601135951.2005085-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220601135951.2005085-1-sashal@kernel.org>
-References: <20220601135951.2005085-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,35 +53,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peng Wu <wupeng58@huawei.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-[ Upstream commit 23b44f9c649bbef10b45fa33080cd8b4166800ae ]
+[ Upstream commit fbcd5ad7a419ad40644a0bb8b4152bc660172d8a ]
 
-The device_node pointer is returned by of_find_compatible_node
-with refcount incremented. We should use of_node_put() to avoid
-the refcount leak.
+Fixes dtbs_check warnings like:
 
-Signed-off-by: Peng Wu <wupeng58@huawei.com>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Link: https://lore.kernel.org/r/20220428230356.69418-1-linus.walleij@linaro.org'
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+  gic@1000: $nodename:0: 'gic@1000' does not match '^interrupt-controller(@[0-9a-f,]+)*$'
+
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Acked-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20220317115705.450427-1-krzysztof.kozlowski@canonical.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-vexpress/dcscb.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/boot/dts/ox820.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/mach-vexpress/dcscb.c b/arch/arm/mach-vexpress/dcscb.c
-index ee2a0faafaa1..aaade91f6551 100644
---- a/arch/arm/mach-vexpress/dcscb.c
-+++ b/arch/arm/mach-vexpress/dcscb.c
-@@ -146,6 +146,7 @@ static int __init dcscb_init(void)
- 	if (!node)
- 		return -ENODEV;
- 	dcscb_base = of_iomap(node, 0);
-+	of_node_put(node);
- 	if (!dcscb_base)
- 		return -EADDRNOTAVAIL;
- 	cfg = readl_relaxed(dcscb_base + DCS_CFG_R);
+diff --git a/arch/arm/boot/dts/ox820.dtsi b/arch/arm/boot/dts/ox820.dtsi
+index f7dddfb01f81..d629caf8b98f 100644
+--- a/arch/arm/boot/dts/ox820.dtsi
++++ b/arch/arm/boot/dts/ox820.dtsi
+@@ -286,7 +286,7 @@ local-timer@600 {
+ 				clocks = <&armclk>;
+ 			};
+ 
+-			gic: gic@1000 {
++			gic: interrupt-controller@1000 {
+ 				compatible = "arm,arm11mp-gic";
+ 				interrupt-controller;
+ 				#interrupt-cells = <3>;
 -- 
 2.35.1
 
