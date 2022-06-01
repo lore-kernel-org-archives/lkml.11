@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19DD9CCA468
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:58:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2863CCA468
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:58:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353815AbiFAN54 (ORCPT
+        id S1353791AbiFAN6E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 09:57:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59470 "EHLO
+        Wed, 1 Jun 2022 09:58:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353939AbiFAN4m (ORCPT
+        with ESMTP id S1353942AbiFAN4m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 1 Jun 2022 09:56:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 533149BAEB;
-        Wed,  1 Jun 2022 06:55:01 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7CFD9BAE0;
+        Wed,  1 Jun 2022 06:55:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A0BF9B81AF5;
-        Wed,  1 Jun 2022 13:54:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AAB7C385A5;
-        Wed,  1 Jun 2022 13:54:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 25F84615F9;
+        Wed,  1 Jun 2022 13:54:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DDF5C3411E;
+        Wed,  1 Jun 2022 13:54:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091693;
-        bh=+iw9H9HE5DC6fgpz+aGX4rOtBTIwTitF/Aqy17elXPg=;
+        s=k20201202; t=1654091666;
+        bh=meEEYYb4Q/Zwm6saccKdiTfafAQE+aqAUob7xdy2nqM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gO5PdHOLs/YNv2PkxN13AXIguPfwz9uWU7xD5UKETAN4u5fKqTZ0NcLL6pNSOxvUO
-         Tf7TmvYkmgVygKJQwqGssjay9argdb9d3Caf9ZLY7/JsAH41kvQIQjDGlgP762MQ5U
-         QWtLJQArReaFkKAJBfPr2ugiOdQdOJOQerYj4rJSfrVP0oTOVmKEOeV78hRcZLeWaR
-         a0Sd2eDLV5BFkc9Rp2anCbZUFHfoC3C1eypx6prcp/Kc09eNLSVFy1YBss00xqmGKc
-         kNTVXD3peaAFlAV84TJx3KGniuKRGQrlty9Dv2Ibccc6VtOiJE7CbPLRkoxFuUYPDk
-         ldi/dVWeKBLMA==
+        b=YUV6VCx9Bp4v5KF9gNRy/rzEefD5kqXLHL6/1xDxFPkjQF7OcEuR3jW+0EyrYoeja
+         QCfplqcnjXsfO+LAne+Jzp01RSxBh0XfNGt3X0w3eRXscHodJJ+oj2e7SrjNAZ3bCX
+         inK4gZ427Eyfr7U0EMoNQEJd1Ki9Zh0Bz1jLn8ziULhzcFuhTUtrc6NlPI7igMakJV
+         1wd8BF95M1731varg2NkixjExW4pCxiGh0Tkmj4k0/k/rzBd2701i56IV/5nc6vlRh
+         74zkgmZ3wVzTRrJcOpS1arKZ4DJwINiNNcRXmYHEOAEPJvf6vykCulTboX2hiECh6c
+         56amBvc3e1btw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Marc Zyngier <maz@kernel.org>, Joey Gouly <joey.gouly@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Sasha Levin <sashal@kernel.org>, will@kernel.org,
-        alexandru.elisei@arm.com, broonie@kernel.org, mark.rutland@arm.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.17 15/48] arm64: Expand ESR_ELx_WFx_ISS_TI to match its ARMv8.7 definition
-Date:   Wed,  1 Jun 2022 09:53:48 -0400
-Message-Id: <20220601135421.2003328-15-sashal@kernel.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org,
+        linux-arm-kernel@lists.infradead.org, linux-oxnas@groups.io,
+        devicetree@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 03/48] ARM: dts: ox820: align interrupt controller node name with dtschema
+Date:   Wed,  1 Jun 2022 09:53:36 -0400
+Message-Id: <20220601135421.2003328-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135421.2003328-1-sashal@kernel.org>
 References: <20220601135421.2003328-1-sashal@kernel.org>
@@ -54,51 +55,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Zyngier <maz@kernel.org>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-[ Upstream commit 6a437208cb942a2dd98f7e1c3fd347ed3d425ffc ]
+[ Upstream commit fbcd5ad7a419ad40644a0bb8b4152bc660172d8a ]
 
-Starting with FEAT_WFXT in ARMv8.7, the TI field in the ISS
-that is reported on a WFx trap is expanded by one bit to
-allow the description of WFET and WFIT.
+Fixes dtbs_check warnings like:
 
-Special care is taken to exclude the WFxT bit from the mask
-used to match WFI so that it also matches WFIT when trapped from
-EL0.
+  gic@1000: $nodename:0: 'gic@1000' does not match '^interrupt-controller(@[0-9a-f,]+)*$'
 
-Reviewed-by: Joey Gouly <joey.gouly@arm.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Acked-by: Catalin Marinas <catalin.marinas@arm.com>
-Link: https://lore.kernel.org/r/20220419182755.601427-2-maz@kernel.org
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Acked-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20220317115705.450427-1-krzysztof.kozlowski@canonical.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/include/asm/esr.h | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ arch/arm/boot/dts/ox820.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/include/asm/esr.h b/arch/arm64/include/asm/esr.h
-index d52a0b269ee8..65c2201b11b2 100644
---- a/arch/arm64/include/asm/esr.h
-+++ b/arch/arm64/include/asm/esr.h
-@@ -133,7 +133,8 @@
- #define ESR_ELx_CV		(UL(1) << 24)
- #define ESR_ELx_COND_SHIFT	(20)
- #define ESR_ELx_COND_MASK	(UL(0xF) << ESR_ELx_COND_SHIFT)
--#define ESR_ELx_WFx_ISS_TI	(UL(1) << 0)
-+#define ESR_ELx_WFx_ISS_TI	(UL(3) << 0)
-+#define ESR_ELx_WFx_ISS_WFxT	(UL(2) << 0)
- #define ESR_ELx_WFx_ISS_WFI	(UL(0) << 0)
- #define ESR_ELx_WFx_ISS_WFE	(UL(1) << 0)
- #define ESR_ELx_xVC_IMM_MASK	((1UL << 16) - 1)
-@@ -146,7 +147,8 @@
- #define DISR_EL1_ESR_MASK	(ESR_ELx_AET | ESR_ELx_EA | ESR_ELx_FSC)
+diff --git a/arch/arm/boot/dts/ox820.dtsi b/arch/arm/boot/dts/ox820.dtsi
+index 90846a7655b4..dde4364892bf 100644
+--- a/arch/arm/boot/dts/ox820.dtsi
++++ b/arch/arm/boot/dts/ox820.dtsi
+@@ -287,7 +287,7 @@ local-timer@600 {
+ 				clocks = <&armclk>;
+ 			};
  
- /* ESR value templates for specific events */
--#define ESR_ELx_WFx_MASK	(ESR_ELx_EC_MASK | ESR_ELx_WFx_ISS_TI)
-+#define ESR_ELx_WFx_MASK	(ESR_ELx_EC_MASK |			\
-+				 (ESR_ELx_WFx_ISS_TI & ~ESR_ELx_WFx_ISS_WFxT))
- #define ESR_ELx_WFx_WFI_VAL	((ESR_ELx_EC_WFx << ESR_ELx_EC_SHIFT) |	\
- 				 ESR_ELx_WFx_ISS_WFI)
- 
+-			gic: gic@1000 {
++			gic: interrupt-controller@1000 {
+ 				compatible = "arm,arm11mp-gic";
+ 				interrupt-controller;
+ 				#interrupt-cells = <3>;
 -- 
 2.35.1
 
