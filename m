@@ -2,89 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0E41C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 07:03:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 340EDC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 07:04:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350166AbiFAHD6 (ORCPT
+        id S1350178AbiFAHEp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 03:03:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56508 "EHLO
+        Wed, 1 Jun 2022 03:04:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241833AbiFAHDz (ORCPT
+        with ESMTP id S1348130AbiFAHEk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 03:03:55 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B2CA8BD3F;
-        Wed,  1 Jun 2022 00:03:53 -0700 (PDT)
-Received: from kwepemi500014.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LCg7Q5gDFz1K97R;
-        Wed,  1 Jun 2022 15:02:10 +0800 (CST)
-Received: from huawei.com (10.67.174.157) by kwepemi500014.china.huawei.com
- (7.221.188.232) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 1 Jun
- 2022 15:03:49 +0800
-From:   Li Zhengyu <lizhengyu3@huawei.com>
-To:     <rdunlap@infradead.org>, <palmer@rivosinc.com>, <mick@ics.forth.gr>
-CC:     <paul.walmsley@sifive.com>, <aou@eecs.berkeley.edu>,
-        <liaochang1@huawei.com>, <linux-riscv@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <ebiederm@xmission.com>,
-        <kexec@lists.infradead.org>, <linux-next@vger.kernel.org>
-Subject: [PATCH] RISC-V: kexec: Fix build error without CONFIG_KEXEC
-Date:   Wed, 1 Jun 2022 15:02:04 +0800
-Message-ID: <20220601070204.26882-1-lizhengyu3@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 1 Jun 2022 03:04:40 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FCA98BD3F
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 00:04:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=KYbdBtVVDGcmnK4PU+VMDFfZ6GKxbpQfLKErQkJk4D8=; b=SbweQnXKdT/sczeuAinciZhi07
+        e9c5igZa03bIvcPB2Y6l/6m/SxFe2DzS7Kpz5CBgRnjTp4D6KUmuAnqqs7XdoO3PCuY6Cf/DrGAy4
+        2kMCj0Mx/QVswOssTjtDQbfrdMqVGuiekEWC4ZOOIrHqKJwdAuEtYisPNbfFvPQte5/x9j45n48UP
+        nvgpi1q54Mmi+E4RRdTEWJFf3IslQovv6j3ycXhVyTAi3kMx8lOOlBosgqu6NlFTUfuA8B2hX3NFx
+        gOJjSpBLUqyn2X3cD0Uo5L6otg6TfvGH6Kx0+dGikqBa7XET02f/Rmax426swFM5lUYJ0J55n3S3q
+        3lSKO+dA==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nwIPA-00EJXM-18; Wed, 01 Jun 2022 07:04:32 +0000
+Date:   Wed, 1 Jun 2022 00:04:32 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Hillf Danton <hdanton@sina.com>
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        syzbot <syzbot+3ba551855046ba3b3806@syzkaller.appspotmail.com>,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot] WARNING in dma_map_sgtable (2)
+Message-ID: <YpcPgLQlNis0FOT1@infradead.org>
+References: <00000000000011e14605e03a125d@google.com>
+ <20220530144542.4382-1-hdanton@sina.com>
+ <20220530151044.GQ2146@kadam>
+ <20220531090418.4552-1-hdanton@sina.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.174.157]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemi500014.china.huawei.com (7.221.188.232)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220531090418.4552-1-hdanton@sina.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When CONFIG_KEXEC_FILE=y but CONFIG_KEXEC is not set:
+On Tue, May 31, 2022 at 05:04:18PM +0800, Hillf Danton wrote:
+> You are right. Thanks for taking a look.
+> 
+> And IMO we can do less on the exporter side as the udmabuf misc device
+> is different from those that for instance are dma capable on the PCI bus.
+> Regular dma games go only on the importer side.
 
-kernel/kexec_core.o: In function `kimage_free':
-kexec_core.c:(.text+0xa0c): undefined reference to `machine_kexec_cleanup'
-kernel/kexec_core.o: In function `.L0 ':
-kexec_core.c:(.text+0xde8): undefined reference to `machine_crash_shutdown'
-kexec_core.c:(.text+0xdf4): undefined reference to `machine_kexec'
-kernel/kexec_core.o: In function `.L231':
-kexec_core.c:(.text+0xe1c): undefined reference to `riscv_crash_save_regs'
-kernel/kexec_core.o: In function `.L0 ':
-kexec_core.c:(.text+0x119e): undefined reference to `machine_shutdown'
-kernel/kexec_core.o: In function `.L312':
-kexec_core.c:(.text+0x11b2): undefined reference to `machine_kexec'
-kernel/kexec_file.o: In function `.L0 ':
-kexec_file.c:(.text+0xb84): undefined reference to `machine_kexec_prepare'
-kernel/kexec_file.o: In function `.L177':
-kexec_file.c:(.text+0xc5a): undefined reference to `machine_kexec_prepare'
-Makefile:1160: recipe for target 'vmlinux' failed
-make: *** [vmlinux] Error 1
-
-These symbols should depend on CONFIG_KEXEC_CORE rather than CONFIG_KEXEC
-when kexec_file has been implemented on RISC-V, like the other archs have
-done.
-
-Signed-off-by: Li Zhengyu <lizhengyu3@huawei.com>
----
- arch/riscv/kernel/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/riscv/kernel/Makefile b/arch/riscv/kernel/Makefile
-index c71d6591d539..33bb60a354cd 100644
---- a/arch/riscv/kernel/Makefile
-+++ b/arch/riscv/kernel/Makefile
-@@ -78,7 +78,7 @@ obj-$(CONFIG_SMP) += cpu_ops_sbi.o
- endif
- obj-$(CONFIG_HOTPLUG_CPU)	+= cpu-hotplug.o
- obj-$(CONFIG_KGDB)		+= kgdb.o
--obj-$(CONFIG_KEXEC)		+= kexec_relocate.o crash_save_regs.o machine_kexec.o
-+obj-$(CONFIG_KEXEC_CORE)	+= kexec_relocate.o crash_save_regs.o machine_kexec.o
- obj-$(CONFIG_KEXEC_FILE)	+= elf_kexec.o machine_kexec_file.o
- obj-$(CONFIG_CRASH_DUMP)	+= crash_dump.o
- 
--- 
-2.17.1
-
+I think you need the relevant maintainers here, this is above my
+paygrade.
