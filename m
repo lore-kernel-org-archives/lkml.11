@@ -2,52 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5367AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:59:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC5E0CCA468
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:59:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354108AbiFAN7j (ORCPT
+        id S1354132AbiFAN7o (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 09:59:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33000 "EHLO
+        Wed, 1 Jun 2022 09:59:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354033AbiFAN6X (ORCPT
+        with ESMTP id S1353970AbiFAN6x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 09:58:23 -0400
+        Wed, 1 Jun 2022 09:58:53 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DBF0880F5;
-        Wed,  1 Jun 2022 06:55:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94AAE8CB1B;
+        Wed,  1 Jun 2022 06:55:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 432C4615F3;
-        Wed,  1 Jun 2022 13:55:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89CF2C3411E;
-        Wed,  1 Jun 2022 13:55:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2ECEC61577;
+        Wed,  1 Jun 2022 13:55:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DDD4C385B8;
+        Wed,  1 Jun 2022 13:55:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091718;
-        bh=+7YLbsPjf0ff3HxBonzNas5xwXxkNQMQ7rDT4NH7mHI=;
+        s=k20201202; t=1654091727;
+        bh=rZ2OXPCITf7LRFHCb0HH1soMLzMUo8JEpL8zp4zSYqI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FlTavO1YRo+vtZlQJrf2h+5sU8IPwYJLVRZOVEMz1gVv4wiUOyRY1ROnzEswQRrgY
-         G0YwF0F3BuBeDE1QdyEvkbP9ExZ6Uhl5dvWwDfvpHQZljtCdDCtd3nW/4b74s5eR4T
-         BXhNbqEXDZVA+0sdh9taJe2o1Izj+/qcqO05mbOkie7+AxVFfPnuUW6M7CTrMVtRun
-         rIRFUkR5dDBKEnbj2lt2krFcYiOcrhCdrdutPhcFbdhfAgJA+7NsP3OQJdQ2m6dC9C
-         w58RSbW0d9c3dZmCgGBWFw4oArZuYnDn5qGiiVotGCl6uES95JTi9KBHJq1KdnxXzF
-         WFyekSd3gMxiA==
+        b=uIVE5Evhf0Pz/NrAbisP4qkgjol87keqO9zPMeHusxRpYj6udiX3+RIe8F9ZyyvCX
+         yQkPWBJ8lkdwGjkIxGgt65dTvmKwIxHINHUvr8/l3dTd6gr/ldHijWr0140+A4vOZq
+         tURgiyZN3QmfmgjA62BIU32FHJSHCxzST1O+njNrlCqn0qAJY2tDRYGKKe5XEpMV1o
+         /7mkpWjT4mnCzKpOcvN24f8lAPXy/uR/B7swoJKuZBSsgxvDPAQodux9VeLu+jXpv/
+         t7mT3TtCMPze0+t1dxilpKiZ8jyKeF8HlqP04EQ1pyswectRj1OETfgqCxlcwfuZfS
+         ovaS4ymLD2cZg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>,
-        Douglas Anderson <dianders@chromium.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>, agross@kernel.org,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 25/48] arm64: dts: qcom: sc7280-idp: Configure CTS pin to bias-bus-hold for bluetooth
-Date:   Wed,  1 Jun 2022 09:53:58 -0400
-Message-Id: <20220601135421.2003328-25-sashal@kernel.org>
+Cc:     Laurent Dufour <ldufour@linux.ibm.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>, christophe.leroy@csgroup.eu,
+        nathanl@linux.ibm.com, adobriyan@gmail.com,
+        sourabhjain@linux.ibm.com, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH AUTOSEL 5.17 29/48] powerpc/rtas: Keep MSR[RI] set when calling RTAS
+Date:   Wed,  1 Jun 2022 09:54:02 -0400
+Message-Id: <20220601135421.2003328-29-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135421.2003328-1-sashal@kernel.org>
 References: <20220601135421.2003328-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -55,60 +56,162 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+From: Laurent Dufour <ldufour@linux.ibm.com>
 
-[ Upstream commit 497b272759986af1aa5a25b5e903d082c67bd8f6 ]
+[ Upstream commit b6b1c3ce06ca438eb24e0f45bf0e63ecad0369f5 ]
 
-WLAN rail was leaking power during RBSC/sleep even after turning BT off.
-Change active and sleep pinctrl configurations to handle same.
+RTAS runs in real mode (MSR[DR] and MSR[IR] unset) and in 32-bit big
+endian mode (MSR[SF,LE] unset).
 
-Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/1650556567-4995-2-git-send-email-quic_vnivarth@quicinc.com
+The change in MSR is done in enter_rtas() in a relatively complex way,
+since the MSR value could be hardcoded.
+
+Furthermore, a panic has been reported when hitting the watchdog interrupt
+while running in RTAS, this leads to the following stack trace:
+
+  watchdog: CPU 24 Hard LOCKUP
+  watchdog: CPU 24 TB:997512652051031, last heartbeat TB:997504470175378 (15980ms ago)
+  ...
+  Supported: No, Unreleased kernel
+  CPU: 24 PID: 87504 Comm: drmgr Kdump: loaded Tainted: G            E  X    5.14.21-150400.71.1.bz196362_2-default #1 SLE15-SP4 (unreleased) 0d821077ef4faa8dfaf370efb5fdca1fa35f4e2c
+  NIP:  000000001fb41050 LR: 000000001fb4104c CTR: 0000000000000000
+  REGS: c00000000fc33d60 TRAP: 0100   Tainted: G            E  X     (5.14.21-150400.71.1.bz196362_2-default)
+  MSR:  8000000002981000 <SF,VEC,VSX,ME>  CR: 48800002  XER: 20040020
+  CFAR: 000000000000011c IRQMASK: 1
+  GPR00: 0000000000000003 ffffffffffffffff 0000000000000001 00000000000050dc
+  GPR04: 000000001ffb6100 0000000000000020 0000000000000001 000000001fb09010
+  GPR08: 0000000020000000 0000000000000000 0000000000000000 0000000000000000
+  GPR12: 80040000072a40a8 c00000000ff8b680 0000000000000007 0000000000000034
+  GPR16: 000000001fbf6e94 000000001fbf6d84 000000001fbd1db0 000000001fb3f008
+  GPR20: 000000001fb41018 ffffffffffffffff 000000000000017f fffffffffffff68f
+  GPR24: 000000001fb18fe8 000000001fb3e000 000000001fb1adc0 000000001fb1cf40
+  GPR28: 000000001fb26000 000000001fb460f0 000000001fb17f18 000000001fb17000
+  NIP [000000001fb41050] 0x1fb41050
+  LR [000000001fb4104c] 0x1fb4104c
+  Call Trace:
+  Instruction dump:
+  XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX
+  XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX
+  Oops: Unrecoverable System Reset, sig: 6 [#1]
+  LE PAGE_SIZE=64K MMU=Hash SMP NR_CPUS=2048 NUMA pSeries
+  ...
+  Supported: No, Unreleased kernel
+  CPU: 24 PID: 87504 Comm: drmgr Kdump: loaded Tainted: G            E  X    5.14.21-150400.71.1.bz196362_2-default #1 SLE15-SP4 (unreleased) 0d821077ef4faa8dfaf370efb5fdca1fa35f4e2c
+  NIP:  000000001fb41050 LR: 000000001fb4104c CTR: 0000000000000000
+  REGS: c00000000fc33d60 TRAP: 0100   Tainted: G            E  X     (5.14.21-150400.71.1.bz196362_2-default)
+  MSR:  8000000002981000 <SF,VEC,VSX,ME>  CR: 48800002  XER: 20040020
+  CFAR: 000000000000011c IRQMASK: 1
+  GPR00: 0000000000000003 ffffffffffffffff 0000000000000001 00000000000050dc
+  GPR04: 000000001ffb6100 0000000000000020 0000000000000001 000000001fb09010
+  GPR08: 0000000020000000 0000000000000000 0000000000000000 0000000000000000
+  GPR12: 80040000072a40a8 c00000000ff8b680 0000000000000007 0000000000000034
+  GPR16: 000000001fbf6e94 000000001fbf6d84 000000001fbd1db0 000000001fb3f008
+  GPR20: 000000001fb41018 ffffffffffffffff 000000000000017f fffffffffffff68f
+  GPR24: 000000001fb18fe8 000000001fb3e000 000000001fb1adc0 000000001fb1cf40
+  GPR28: 000000001fb26000 000000001fb460f0 000000001fb17f18 000000001fb17000
+  NIP [000000001fb41050] 0x1fb41050
+  LR [000000001fb4104c] 0x1fb4104c
+  Call Trace:
+  Instruction dump:
+  XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX
+  XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX
+  ---[ end trace 3ddec07f638c34a2 ]---
+
+This happens because MSR[RI] is unset when entering RTAS but there is no
+valid reason to not set it here.
+
+RTAS is expected to be called with MSR[RI] as specified in PAPR+ section
+"7.2.1 Machine State":
+
+  R1–7.2.1–9. If called with MSR[RI] equal to 1, then RTAS must protect
+  its own critical regions from recursion by setting the MSR[RI] bit to
+  0 when in the critical regions.
+
+Fixing this by reviewing the way MSR is compute before calling RTAS. Now a
+hardcoded value meaning real mode, 32 bits big endian mode and Recoverable
+Interrupt is loaded. In the case MSR[S] is set, it will remain set while
+entering RTAS as only urfid can unset it (thanks Fabiano).
+
+In addition a check is added in do_enter_rtas() to detect calls made with
+MSR[RI] unset, as we are forcing it on later.
+
+This patch has been tested on the following machines:
+Power KVM Guest
+  P8 S822L (host Ubuntu kernel 5.11.0-49-generic)
+PowerVM LPAR
+  P8 9119-MME (FW860.A1)
+  p9 9008-22L (FW950.00)
+  P10 9080-HEX (FW1010.00)
+
+Suggested-by: Nicholas Piggin <npiggin@gmail.com>
+Signed-off-by: Laurent Dufour <ldufour@linux.ibm.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220504101244.12107-1-ldufour@linux.ibm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+ arch/powerpc/kernel/entry_64.S | 24 ++++++++++++------------
+ arch/powerpc/kernel/rtas.c     |  9 +++++++++
+ 2 files changed, 21 insertions(+), 12 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-index d623d71d8bd4..dd6dac0e1784 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-@@ -462,10 +462,13 @@ &qup_uart5_rx {
+diff --git a/arch/powerpc/kernel/entry_64.S b/arch/powerpc/kernel/entry_64.S
+index 9581906b5ee9..da18f83ef883 100644
+--- a/arch/powerpc/kernel/entry_64.S
++++ b/arch/powerpc/kernel/entry_64.S
+@@ -330,22 +330,22 @@ _GLOBAL(enter_rtas)
+ 	clrldi	r4,r4,2			/* convert to realmode address */
+        	mtlr	r4
  
- &qup_uart7_cts {
- 	/*
--	 * Configure a pull-down on CTS to match the pull of
--	 * the Bluetooth module.
-+	 * Configure a bias-bus-hold on CTS to lower power
-+	 * usage when Bluetooth is turned off. Bus hold will
-+	 * maintain a low power state regardless of whether
-+	 * the Bluetooth module drives the pin in either
-+	 * direction or leaves the pin fully unpowered.
- 	 */
--	bias-pull-down;
-+	bias-bus-hold;
- };
+-	li	r0,0
+-	ori	r0,r0,MSR_EE|MSR_SE|MSR_BE|MSR_RI
+-	andc	r0,r6,r0
+-	
+-        li      r9,1
+-        rldicr  r9,r9,MSR_SF_LG,(63-MSR_SF_LG)
+-	ori	r9,r9,MSR_IR|MSR_DR|MSR_FE0|MSR_FE1|MSR_FP|MSR_RI|MSR_LE
+-	andc	r6,r0,r9
+-
+ __enter_rtas:
+-	sync				/* disable interrupts so SRR0/1 */
+-	mtmsrd	r0			/* don't get trashed */
+-
+ 	LOAD_REG_ADDR(r4, rtas)
+ 	ld	r5,RTASENTRY(r4)	/* get the rtas->entry value */
+ 	ld	r4,RTASBASE(r4)		/* get the rtas->base value */
++
++	/*
++	 * RTAS runs in 32-bit big endian real mode, but leave MSR[RI] on as we
++	 * may hit NMI (SRESET or MCE) while in RTAS. RTAS should disable RI in
++	 * its critical regions (as specified in PAPR+ section 7.2.1). MSR[S]
++	 * is not impacted by RFI_TO_KERNEL (only urfid can unset it). So if
++	 * MSR[S] is set, it will remain when entering RTAS.
++	 */
++	LOAD_REG_IMMEDIATE(r6, MSR_ME | MSR_RI)
++
++	li      r0,0
++	mtmsrd  r0,1                    /* disable RI before using SRR0/1 */
+ 	
+ 	mtspr	SPRN_SRR0,r5
+ 	mtspr	SPRN_SRR1,r6
+diff --git a/arch/powerpc/kernel/rtas.c b/arch/powerpc/kernel/rtas.c
+index 1f42aabbbab3..6bc89d9ccf63 100644
+--- a/arch/powerpc/kernel/rtas.c
++++ b/arch/powerpc/kernel/rtas.c
+@@ -49,6 +49,15 @@ void enter_rtas(unsigned long);
  
- &qup_uart7_rts {
-@@ -516,10 +519,13 @@ qup_uart7_sleep_cts: qup-uart7-sleep-cts {
- 		pins = "gpio28";
- 		function = "gpio";
- 		/*
--		 * Configure a pull-down on CTS to match the pull of
--		 * the Bluetooth module.
-+		 * Configure a bias-bus-hold on CTS to lower power
-+		 * usage when Bluetooth is turned off. Bus hold will
-+		 * maintain a low power state regardless of whether
-+		 * the Bluetooth module drives the pin in either
-+		 * direction or leaves the pin fully unpowered.
- 		 */
--		bias-pull-down;
-+		bias-bus-hold;
- 	};
+ static inline void do_enter_rtas(unsigned long args)
+ {
++	unsigned long msr;
++
++	/*
++	 * Make sure MSR[RI] is currently enabled as it will be forced later
++	 * in enter_rtas.
++	 */
++	msr = mfmsr();
++	BUG_ON(!(msr & MSR_RI));
++
+ 	enter_rtas(args);
  
- 	qup_uart7_sleep_rts: qup-uart7-sleep-rts {
+ 	srr_regs_clobbered(); /* rtas uses SRRs, invalidate */
 -- 
 2.35.1
 
