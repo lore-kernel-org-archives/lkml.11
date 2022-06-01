@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D639CCA477
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE771CCA47B
 	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:06:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355019AbiFAOF2 (ORCPT
+        id S1355420AbiFAOFu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:05:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54770 "EHLO
+        Wed, 1 Jun 2022 10:05:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354303AbiFAOAO (ORCPT
+        with ESMTP id S1354974AbiFAOBJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:00:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 612A2A5016;
-        Wed,  1 Jun 2022 06:56:32 -0700 (PDT)
+        Wed, 1 Jun 2022 10:01:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08E8E51306;
+        Wed,  1 Jun 2022 06:57:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C126615BF;
-        Wed,  1 Jun 2022 13:56:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66012C36AE3;
-        Wed,  1 Jun 2022 13:56:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5803EB81AF8;
+        Wed,  1 Jun 2022 13:57:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AEEAC385B8;
+        Wed,  1 Jun 2022 13:57:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091791;
-        bh=lLkGQp4gFi3CYmBXRBphL+XRcw4c59eKL1LT6Vrp458=;
+        s=k20201202; t=1654091858;
+        bh=G1gax5Xss8HQPWq41h/Wu8k+afvXNnM5IWX6Ml/e6dY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a0xJvo4OZ5JDxgaVgMlTUvXv5ERoOqjdsdbdltrs2OmD3WqvibbtkwSSPPben5RbV
-         buRiN6bbhXa/QNjM7sHAOuyVhSiJtxPwCb/woZGrOaERxRfI5qwPtigajPZHNB7CXF
-         weQSorFi+b15jREp8V5lRLZo5CI9aCBAi131cp0oTd0fYz4/yiLN//nElKtBHYD0na
-         bbP7nE+VN9sPikm7HJOZatRaAU0jCPrSxzt90NupIuYDhqwCslUrDv9mhdkd0meNDy
-         HXemi4tGPTMQu4UlYyg6BCrPWAbI65+3wfLae6TqdvFh4pCqO/k30uiUBQyvvtE3Ng
-         YwCz7YddBRuig==
+        b=f83itaVNGpEp69DxQ9U8gp7J0etHZnLjX9HN61AHWpgzLjxIUQfBHGemnLUYF3hui
+         dV7QT7VWfbO5HvtHkW8pP6Yr9Usz3sESml5oe3v902rEELQdcCx3t/0HH/Xv5/9Qtx
+         lvcxvUJCtTDk4e0qXKb8cnseoKPri+Nz3DweOJ0Q+qlzknmXGOpC1HKtXHbR1DD2gg
+         Ut3F+W+KXheuMZ3TIQC/dPcqaJgMWUtTY1X8ztoXzqcBKnQAV94a2L0xmlDNRHe38V
+         O5K4W3bsB6UByzO4oLoodQkigcqcXuDpoHZT/w4NeIKj6PVfhfEIA0IixHqqtrbUs5
+         WjELZKlY6ztnA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>, agross@kernel.org,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 05/37] arm64: dts: qcom: msm8994: Fix the cont_splash_mem address
-Date:   Wed,  1 Jun 2022 09:55:50 -0400
-Message-Id: <20220601135622.2003939-5-sashal@kernel.org>
+Cc:     Lv Ruyi <lv.ruyi@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>, nick.child@ibm.com,
+        maz@kernel.org, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH AUTOSEL 5.15 30/37] powerpc/xics: fix refcount leak in icp_opal_init()
+Date:   Wed,  1 Jun 2022 09:56:15 -0400
+Message-Id: <20220601135622.2003939-30-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135622.2003939-1-sashal@kernel.org>
 References: <20220601135622.2003939-1-sashal@kernel.org>
@@ -54,35 +53,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Konrad Dybcio <konrad.dybcio@somainline.org>
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-[ Upstream commit 049c46f31a726bf8d202ff1681661513447fac84 ]
+[ Upstream commit 5dd9e27ea4a39f7edd4bf81e9e70208e7ac0b7c9 ]
 
-The default memory map places cont_splash_mem at 3401000, which was
-overlooked.. Fix it!
+The of_find_compatible_node() function returns a node pointer with
+refcount incremented, use of_node_put() on it when done.
 
-Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220319174645.340379-9-konrad.dybcio@somainline.org
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220402013419.2410298-1-lv.ruyi@zte.com.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/msm8994.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/powerpc/sysdev/xics/icp-opal.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm64/boot/dts/qcom/msm8994.dtsi b/arch/arm64/boot/dts/qcom/msm8994.dtsi
-index 5a9a5ed0565f..1165269f059e 100644
---- a/arch/arm64/boot/dts/qcom/msm8994.dtsi
-+++ b/arch/arm64/boot/dts/qcom/msm8994.dtsi
-@@ -183,8 +183,8 @@ dfps_data_mem: dfps_data_mem@3400000 {
- 			no-map;
- 		};
+diff --git a/arch/powerpc/sysdev/xics/icp-opal.c b/arch/powerpc/sysdev/xics/icp-opal.c
+index 675d708863d5..db0452e7c351 100644
+--- a/arch/powerpc/sysdev/xics/icp-opal.c
++++ b/arch/powerpc/sysdev/xics/icp-opal.c
+@@ -196,6 +196,7 @@ int icp_opal_init(void)
  
--		cont_splash_mem: memory@3800000 {
--			reg = <0 0x03800000 0 0x2400000>;
-+		cont_splash_mem: memory@3401000 {
-+			reg = <0 0x03401000 0 0x2200000>;
- 			no-map;
- 		};
+ 	printk("XICS: Using OPAL ICP fallbacks\n");
+ 
++	of_node_put(np);
+ 	return 0;
+ }
  
 -- 
 2.35.1
