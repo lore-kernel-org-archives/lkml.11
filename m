@@ -2,48 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD7AFCCA468
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDA01CCA474
 	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:10:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354973AbiFAOKi (ORCPT
+        id S1354994AbiFAOKq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:10:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50766 "EHLO
+        Wed, 1 Jun 2022 10:10:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355677AbiFAOGT (ORCPT
+        with ESMTP id S1355740AbiFAOGV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:06:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66724B41F4;
-        Wed,  1 Jun 2022 06:59:57 -0700 (PDT)
+        Wed, 1 Jun 2022 10:06:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CFA6B82FB;
+        Wed,  1 Jun 2022 07:00:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7DA106149F;
-        Wed,  1 Jun 2022 13:59:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23CD0C36AE2;
-        Wed,  1 Jun 2022 13:59:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 92DE061632;
+        Wed,  1 Jun 2022 13:59:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07E45C34119;
+        Wed,  1 Jun 2022 13:59:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091976;
-        bh=y5FpsC0QGeen2RQowSl2Y0D8H3xk4G0Akqg3acr5AMs=;
+        s=k20201202; t=1654091997;
+        bh=+N1svJ9b7dBVizj/wNX2p9bgXZls3aWC/w3Ff93xYv0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Iua1UMlrkqHxMA2KrxxmTLwQanlIenlMP5U5fddVc4ZKxQ0MuXhKlHw1e+yjVpebw
-         6bWhoquhNoG9nX1w0m/8BpSfwXdBdGjxB3oj3s5C4LKRuQDXl/Cq5f0MErT5sY60PY
-         Vj854Sigb8iHOhars2C4lqo36ngDtuHWuuWUvH3seXGtSk2c7oUOvoD2JZGwgU1fCb
-         QvDMKn4eebuh6jUfBw8fuOgF5T8dDEnt7zxrgG5vOSajh9Op2GLVT+HCosa0fC0ID7
-         huEGxH+VrhIbeDL0fjX3iytb6gHs1qw77xqbE4Cu/cI2ywALC14xpJ2OpDD5E1OmPZ
-         WBwCJaapLUDTg==
+        b=Xb6aaJydx1BFArasLwe7Gf1CqCeuOv//GzhyQU3WyKuZG0/qMttebV8YPRbfoKXYe
+         /pPCcCm3XRj0ipQYLDR7hveTSMHgf9sYHm4urYlnfJLVfR14dJnlyEkqnCzBmvuq18
+         hbjPM8j1C7XFGpXeD+Df/o0G3IOW2R04pJ4tttHLuIWSerrObMdCaWG+xosmoIRwZe
+         /lmErUywv6QDZMPPL4d6cXfUb9/ZCgHbemCl5rYvmk6fFumROGpt0gDpkQz/7p1FdL
+         5B9M5KI0LI2fY6qdnzvWuP85r9jAHd5nJ8BmIjyNym/6h+Xrzu1GiW3PV5E/GarrsI
+         UX1+C2fzYerEw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lv Ruyi <lv.ruyi@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 5.4 16/20] powerpc/powernv: fix missing of_node_put in uv_init()
-Date:   Wed,  1 Jun 2022 09:58:58 -0400
-Message-Id: <20220601135902.2004823-16-sashal@kernel.org>
+Cc:     Zixuan Fu <r33s3n6@gmail.com>, TOTE Robot <oslab@tsinghua.edu.cn>,
+        Dave Kleikamp <dave.kleikamp@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, shaggy@kernel.org,
+        jfs-discussion@lists.sourceforge.net
+Subject: [PATCH AUTOSEL 4.19 03/15] fs: jfs: fix possible NULL pointer dereference in dbFree()
+Date:   Wed,  1 Jun 2022 09:59:38 -0400
+Message-Id: <20220601135951.2005085-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220601135902.2004823-1-sashal@kernel.org>
-References: <20220601135902.2004823-1-sashal@kernel.org>
+In-Reply-To: <20220601135951.2005085-1-sashal@kernel.org>
+References: <20220601135951.2005085-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,33 +53,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+From: Zixuan Fu <r33s3n6@gmail.com>
 
-[ Upstream commit 3ffa9fd471f57f365bc54fc87824c530422f64a5 ]
+[ Upstream commit 0d4837fdb796f99369cf7691d33de1b856bcaf1f ]
 
-of_find_compatible_node() returns node pointer with refcount incremented,
-use of_node_put() on it when done.
+In our fault-injection testing, the variable "nblocks" in dbFree() can be
+zero when kmalloc_array() fails in dtSearch(). In this case, the variable
+ "mp" in dbFree() would be NULL and then it is dereferenced in
+"write_metapage(mp)".
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220407090043.2491854-1-lv.ruyi@zte.com.cn
+The failure log is listed as follows:
+
+[   13.824137] BUG: kernel NULL pointer dereference, address: 0000000000000020
+...
+[   13.827416] RIP: 0010:dbFree+0x5f7/0x910 [jfs]
+[   13.834341] Call Trace:
+[   13.834540]  <TASK>
+[   13.834713]  txFreeMap+0x7b4/0xb10 [jfs]
+[   13.835038]  txUpdateMap+0x311/0x650 [jfs]
+[   13.835375]  jfs_lazycommit+0x5f2/0xc70 [jfs]
+[   13.835726]  ? sched_dynamic_update+0x1b0/0x1b0
+[   13.836092]  kthread+0x3c2/0x4a0
+[   13.836355]  ? txLockFree+0x160/0x160 [jfs]
+[   13.836763]  ? kthread_unuse_mm+0x160/0x160
+[   13.837106]  ret_from_fork+0x1f/0x30
+[   13.837402]  </TASK>
+...
+
+This patch adds a NULL check of "mp" before "write_metapage(mp)" is called.
+
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
+Signed-off-by: Dave Kleikamp <dave.kleikamp@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/platforms/powernv/ultravisor.c | 1 +
- 1 file changed, 1 insertion(+)
+ fs/jfs/jfs_dmap.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/platforms/powernv/ultravisor.c b/arch/powerpc/platforms/powernv/ultravisor.c
-index e4a00ad06f9d..67c8c4b2d8b1 100644
---- a/arch/powerpc/platforms/powernv/ultravisor.c
-+++ b/arch/powerpc/platforms/powernv/ultravisor.c
-@@ -55,6 +55,7 @@ static int __init uv_init(void)
- 		return -ENODEV;
+diff --git a/fs/jfs/jfs_dmap.c b/fs/jfs/jfs_dmap.c
+index f05805a10a50..1014f2a24697 100644
+--- a/fs/jfs/jfs_dmap.c
++++ b/fs/jfs/jfs_dmap.c
+@@ -398,7 +398,8 @@ int dbFree(struct inode *ip, s64 blkno, s64 nblocks)
+ 	}
  
- 	uv_memcons = memcons_init(node, "memcons");
-+	of_node_put(node);
- 	if (!uv_memcons)
- 		return -ENOENT;
+ 	/* write the last buffer. */
+-	write_metapage(mp);
++	if (mp)
++		write_metapage(mp);
+ 
+ 	IREAD_UNLOCK(ipbmap);
  
 -- 
 2.35.1
