@@ -2,138 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6CE7C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 07:19:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D20CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 07:19:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350249AbiFAHTZ (ORCPT
+        id S1350203AbiFAHTe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 03:19:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36626 "EHLO
+        Wed, 1 Jun 2022 03:19:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350234AbiFAHTX (ORCPT
+        with ESMTP id S1350234AbiFAHT1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 03:19:23 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 645C14DF4A;
-        Wed,  1 Jun 2022 00:19:21 -0700 (PDT)
-Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.53])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LCgW02QC4zDqYc;
-        Wed,  1 Jun 2022 15:19:08 +0800 (CST)
-Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
- kwepemi500013.china.huawei.com (7.221.188.120) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 1 Jun 2022 15:19:19 +0800
-Received: from [10.174.176.73] (10.174.176.73) by
- kwepemm600009.china.huawei.com (7.193.23.164) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 1 Jun 2022 15:19:18 +0800
-Subject: Re: [PATCH -next v5 0/3] support concurrent sync io for bfq on a
- specail occasion
-To:     Jens Axboe <axboe@kernel.dk>, Jan Kara <jack@suse.cz>
-CC:     <paolo.valente@linaro.org>, <tj@kernel.org>,
-        <linux-block@vger.kernel.org>, <cgroups@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <yi.zhang@huawei.com>
-References: <20220428120837.3737765-1-yukuai3@huawei.com>
- <d50df657-d859-79cf-c292-412eaa383d2c@huawei.com>
- <61b67d5e-829c-8130-7bda-81615d654829@huawei.com>
- <81411289-e13c-20f5-df63-c059babca57a@huawei.com>
- <d5a90a08-1ac6-587a-e900-0436bd45543a@kernel.dk>
- <55919e29-1f22-e8aa-f3d2-08c57d9e1c22@huawei.com>
- <20220523085902.wmxoebyq3crerecr@quack3.lan>
- <25f6703e-9e10-75d9-a893-6df1e6b75254@kernel.dk>
- <20220523152516.7sr247i3bzwhr44w@quack3.lan>
- <13ad158e-7859-ca61-209e-7d1fe99d0bdb@huawei.com>
- <03b3a6bc-586a-2b45-a60c-5ab81076bf13@kernel.dk>
-From:   Yu Kuai <yukuai3@huawei.com>
-Message-ID: <3e2bc90f-464d-f80d-a624-5337af420ec9@huawei.com>
-Date:   Wed, 1 Jun 2022 15:19:17 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        Wed, 1 Jun 2022 03:19:27 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0553E48398
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 00:19:26 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id gi33so1874118ejc.3
+        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 00:19:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sFHTTgpzWh1X2kU61LH+ozniVe7avF1oD6MyUb1nFlw=;
+        b=JhClqqiGuZnkQDox/hUhOZMoOiJPzCcpVYaTRf4QcExfDNMhsi8myCeHESCpy+P4RS
+         Y6cOsPuEG06xmppycyjaPVYMhy4ak4Tbwh8vddqZd0Cf7JNtj4bVtxwjyZ2uOXC2qKRc
+         JAeRyS06bfesWcsWwbWMJUbzLldWxez+UxcGtqXD4Fdknd6JjTMGAA5hIQM1XAhdahYW
+         +AM6YLJ5Hs92H5zZiCKcdSEoe6uOaHQ9QEJ1fvOYCieqePDtySNsaAXAygrM9oEPRTjI
+         X6n0hYueQPCoQBYgn/urUM276E7cfonVUrwEy1ww41lI8jLfH8lAGh5FKdx6O+3B1zmr
+         FO6g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sFHTTgpzWh1X2kU61LH+ozniVe7avF1oD6MyUb1nFlw=;
+        b=IM97CJWF+aE0NlLkdAv7f4SdWRzALf/ASklROnMTFJdoRfE+xEIoqoIFa3Y8np1F56
+         /GJ0qkTlsuLog09jHHhXUf8H2ha1NOQ2ZZBQVhcztzGGh1UDr6zInHMFym0hoN2avUXL
+         TjvN/sBYdWbQQlb2oK1nqC05jN0yNcD7Z+sMRN4SrklKfHWZpOx/eBRWJyBj6il8kTql
+         97CLp9qejno3M+4/GzCOBX9TNzPPiOfDvtDmtrgS3ChyalFp1O+mNViA3pKNjtFqfPqV
+         D8+YUU1Yb6ASGYpPHQ4Kdqc2FphgWd9q/x7iWpBEI+9KT0cEUptv0KDZSbcROh3Kfgn2
+         4toQ==
+X-Gm-Message-State: AOAM533pCO4IV6QCFKE3toRnBLBkooCVM3gnLbOxJtyzL22a/z/6aUP5
+        eMqOw0zKvb8+ltPemoYi3NugOQ==
+X-Google-Smtp-Source: ABdhPJyfshPk80g9xKAbLEuToIc9ClZTMcVqk9A86vdPPGtI2sruppsVdMnmbEn3HqQneIpreEv3cA==
+X-Received: by 2002:a17:907:3f90:b0:6fe:cd08:dc21 with SMTP id hr16-20020a1709073f9000b006fecd08dc21mr44428596ejc.136.1654067964500;
+        Wed, 01 Jun 2022 00:19:24 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id f27-20020a17090624db00b006f3ef214dcdsm358486ejb.51.2022.06.01.00.19.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Jun 2022 00:19:23 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Sebastian Reichel <sre@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        David Heidelberg <david@ixit.cz>,
+        Dmitry Osipenko <digetx@gmail.com>, linux-pm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 1/4] dt-bindings: power: supply: bq24190: use regulator schema for child node
+Date:   Wed,  1 Jun 2022 09:19:08 +0200
+Message-Id: <20220601071911.6435-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-In-Reply-To: <03b3a6bc-586a-2b45-a60c-5ab81076bf13@kernel.dk>
-Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.176.73]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemm600009.china.huawei.com (7.193.23.164)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-在 2022/06/01 14:16, Jens Axboe 写道:
-> On 5/23/22 7:13 PM, Yu Kuai wrote:
->> ? 2022/05/23 23:25, Jan Kara ??:
->>> On Mon 23-05-22 06:36:58, Jens Axboe wrote:
->>>> On 5/23/22 2:59 AM, Jan Kara wrote:
->>>>> On Mon 23-05-22 09:10:38, yukuai (C) wrote:
->>>>>> ? 2022/05/21 20:21, Jens Axboe ??:
->>>>>>> On 5/21/22 1:22 AM, yukuai (C) wrote:
->>>>>>>> ? 2022/05/14 17:29, yukuai (C) ??:
->>>>>>>>> ? 2022/05/05 9:00, yukuai (C) ??:
->>>>>>>>>> Hi, Paolo
->>>>>>>>>>
->>>>>>>>>> Can you take a look at this patchset? It has been quite a long time
->>>>>>>>>> since we spotted this problem...
->>>>>>>>>>
->>>>>>>>>
->>>>>>>>> friendly ping ...
->>>>>>>> friendly ping ...
->>>>>>>
->>>>>>> I can't speak for Paolo, but I've mentioned before that the majority
->>>>>>> of your messages end up in my spam. That's still the case, in fact
->>>>>>> I just marked maybe 10 of them as not spam.
->>>>>>>
->>>>>>> You really need to get this issued sorted out, or you will continue
->>>>>>> to have patches ignore because folks may simply not see them.
->>>>>>>
->>>>>> Hi,
->>>>>>
->>>>>> Thanks for your notice.
->>>>>>
->>>>>> Is it just me or do you see someone else's messages from *huawei.com
->>>>>> end up in spam? I tried to seek help from our IT support, however, they
->>>>>> didn't find anything unusual...
->>>>>
->>>>> So actually I have noticed that a lot of (valid) email from huawei.com (not
->>>>> just you) ends up in the spam mailbox. For me direct messages usually pass
->>>>> (likely matching SPF records for originating mail server save the email
->>>>> from going to spam) but messages going through mailing lists are flagged as
->>>>> spam because the emails are missing valid DKIM signature but huawei.com
->>>>> DMARC config says there should be DKIM signature (even direct messages are
->>>>> missing DKIM so this does not seem as a mailing list configuration issue).
->>>>> So this seems as some misconfiguration of the mails on huawei.com side
->>>>> (likely missing DKIM signing of outgoing email).
->>>>
->>>> SPF/DKIM was indeed a problem earlier for yukaui patches, but I don't
->>>> see that anymore. Maybe it's still an issue for some emails, from them
->>>> or Huawei in general?
->>>
->>> Hum, for me all emails from Huawei I've received even today fail the DKIM
->>> check. After some more digging there is interesting inconsistency in DMARC
->>> configuration for huawei.com domain. There is DMARC record for huawei.com
->>> like:
->>>
->>> huawei.com.        600    IN    TXT    "v=DMARC1;p=none;rua=mailto:dmarc@edm.huawei.com"
->>>
->>> which means no DKIM is required but _dmarc.huawei.com has:
->>>
->>> _dmarc.huawei.com.    600    IN    TXT    "v=DMARC1;p=quarantine;ruf=mailto:dmarc@huawei.com;rua=mailto:dmarc@huawei.com"
->>>
->>> which says that DKIM is required. I guess this inconsistency may be the
->>> reason why there are problems with DKIM validation for senders from
->>> huawei.com. Yu Kuai, can you perhaps take this to your IT support to fix
->>> this? Either make sure huawei.com emails get properly signed with DKIM or
->>> remove the 'quarantine' record from _dmarc.huawei.com. Thanks!
->> Of course, I'll try to contact our IT support.
-> 
-> I second that, pretty much every email has been going into spam since, I
-> guess you just had a few lucky ones. Looks like Jan is right, it's a
-> server side configuration error that's causing this, and it's still
-> happening
-> 
+The 'usb-otg-vbus' child node is a regulator so reference the regulator
+schema for proper evaluation.
 
-Thanks for your response 😄
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ Documentation/devicetree/bindings/power/supply/bq24190.yaml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I aready contack our IT support, and hopefully this can be solved
-soon...
+diff --git a/Documentation/devicetree/bindings/power/supply/bq24190.yaml b/Documentation/devicetree/bindings/power/supply/bq24190.yaml
+index 0d7cbbdf808b..402d9d2ed2b9 100644
+--- a/Documentation/devicetree/bindings/power/supply/bq24190.yaml
++++ b/Documentation/devicetree/bindings/power/supply/bq24190.yaml
+@@ -28,7 +28,7 @@ properties:
+     maxItems: 1
+ 
+   usb-otg-vbus:
+-    type: object
++    $ref: /schemas/regulator/regulator.yaml#
+     description: |
+       Regulator that is used to control the VBUS voltage direction for
+       either USB host mode or for charging on the OTG port
+-- 
+2.34.1
+
