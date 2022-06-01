@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FDD3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:58:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECB6ECCA468
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:58:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343614AbiFAN6t (ORCPT
+        id S1353936AbiFAN6z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 09:58:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59582 "EHLO
+        Wed, 1 Jun 2022 09:58:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353926AbiFAN52 (ORCPT
+        with ESMTP id S1353997AbiFAN6K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 09:57:28 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C98C87A09;
-        Wed,  1 Jun 2022 06:55:10 -0700 (PDT)
+        Wed, 1 Jun 2022 09:58:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE6428D6B5;
+        Wed,  1 Jun 2022 06:55:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id A7F14CE1A1E;
-        Wed,  1 Jun 2022 13:55:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25D5EC385B8;
-        Wed,  1 Jun 2022 13:55:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D842615C7;
+        Wed,  1 Jun 2022 13:55:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21CEEC3411D;
+        Wed,  1 Jun 2022 13:55:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091707;
-        bh=KJhUKllErRJpBntBCZwKFWW3K3q4jqc9MvCVLYA5Vgo=;
+        s=k20201202; t=1654091714;
+        bh=MzavRj9nrP27S+bq6CPB0yuwsmyvhj3CJKBoxHtwgwM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TypX2Hcj5/sx/NiZDNDxUZJqK8u50Seq+EZ/Nl9qEBS4uHjEv+tNQbf8VBZkRi3sT
-         yuHhHewUYTYUmuaygWhGDJ+s4nTRfAb+BatUe85HfgNkrLGlvc4VqcJmnAS2wOQJnC
-         WE8WILFu1nsWVW4Evq8Bh/ARyJShnqu9WyPSC0gbZw9fAAAkQDuoHgFZCePV7jSOCX
-         glIh5N58sdCGzI8NZWaW1o2tPxnVf5ypWeFI31utFwpBQuOJUfZMSJ7jPInQ/a0BTq
-         nFu3lMf0gRcuAoTCnEWorrz/6oCfOtbzCNmUPdJGzxUbGEFXji/DqR6ApL2b8Q2+yQ
-         LkAB/5cZoJZ3Q==
+        b=J3nplUO8UlARphvSGW6+OHmMXzgrLfPQ/SdQU5qK7tOYQWtyr3iTKIbV7al4b6/cn
+         WQynQ8Xi+OUOplxQJJ7O7R5VkNubqNYZnfcf/0jLcZ1vJEd6tVConW6WLxjFBdxK5/
+         iUqD4IFyEXJ7xryd4dFPk7vD5Cla7UJy/FXs2MAlOif12shLh28hMzvEHgdmC0madM
+         q7NBDBlFscg/QkenAJy6L2XvDo+nUIgDn9yk18Eu4WElQ93erq3nh6FOnqrr4QJfvq
+         ImUdqS+xTJ0dKnZtBFFglom+soCvaRjOLAxTHpi5ywdwu4Cmlfm0bdw/43ej01InPU
+         qwyQ3Nz5kZiwA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>,
-        Reinette Chatre <reinette.chatre@intel.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 19/48] selftests/resctrl: Change the default limited time to 120 seconds
-Date:   Wed,  1 Jun 2022 09:53:52 -0400
-Message-Id: <20220601135421.2003328-19-sashal@kernel.org>
+Cc:     Yang Yingliang <yangyingliang@huawei.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sasha Levin <sashal@kernel.org>, linus.walleij@linaro.org,
+        linux-renesas-soc@vger.kernel.org, linux-gpio@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 22/48] pinctrl: renesas: rzn1: Fix possible null-ptr-deref in sh_pfc_map_resources()
+Date:   Wed,  1 Jun 2022 09:53:55 -0400
+Message-Id: <20220601135421.2003328-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135421.2003328-1-sashal@kernel.org>
 References: <20220601135421.2003328-1-sashal@kernel.org>
@@ -55,37 +53,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit e2e3fb6ef0d6548defbe0be6e092397aaa92f3a1 ]
+[ Upstream commit 2f661477c2bb8068194dbba9738d05219f111c6e ]
 
-When testing on a Intel(R) Xeon(R) Gold 6254 CPU @ 3.10GHz the resctrl
-selftests fail due to timeout after exceeding the default time limit of
-45 seconds. On this system the test takes about 68 seconds.
-Since the failing test by default accesses a fixed size of memory, the
-execution time should not vary significantly between different environment.
-A new default of 120 seconds should be sufficient yet easy to customize
-with the introduction of the "settings" file for reference.
+It will cause null-ptr-deref when using 'res', if platform_get_resource()
+returns NULL, so move using 'res' after devm_ioremap_resource() that
+will check it to avoid null-ptr-deref.
+And use devm_platform_get_and_ioremap_resource() to simplify code.
 
-Reviewed-by: Reinette Chatre <reinette.chatre@intel.com>
-Reviewed-by: Fenghua Yu <fenghua.yu@intel.com>
-Signed-off-by: Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Link: https://lore.kernel.org/r/20220429082637.1308182-2-yangyingliang@huawei.com
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/resctrl/settings | 3 +++
- 1 file changed, 3 insertions(+)
- create mode 100644 tools/testing/selftests/resctrl/settings
+ drivers/pinctrl/renesas/pinctrl-rzn1.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/tools/testing/selftests/resctrl/settings b/tools/testing/selftests/resctrl/settings
-new file mode 100644
-index 000000000000..a383f3d4565b
---- /dev/null
-+++ b/tools/testing/selftests/resctrl/settings
-@@ -0,0 +1,3 @@
-+# If running time is longer than 120 seconds when new tests are added in
-+# the future, increase timeout here.
-+timeout=120
+diff --git a/drivers/pinctrl/renesas/pinctrl-rzn1.c b/drivers/pinctrl/renesas/pinctrl-rzn1.c
+index ef5fb25b6016..849d091205d4 100644
+--- a/drivers/pinctrl/renesas/pinctrl-rzn1.c
++++ b/drivers/pinctrl/renesas/pinctrl-rzn1.c
+@@ -865,17 +865,15 @@ static int rzn1_pinctrl_probe(struct platform_device *pdev)
+ 	ipctl->mdio_func[0] = -1;
+ 	ipctl->mdio_func[1] = -1;
+ 
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	ipctl->lev1_protect_phys = (u32)res->start + 0x400;
+-	ipctl->lev1 = devm_ioremap_resource(&pdev->dev, res);
++	ipctl->lev1 = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
+ 	if (IS_ERR(ipctl->lev1))
+ 		return PTR_ERR(ipctl->lev1);
++	ipctl->lev1_protect_phys = (u32)res->start + 0x400;
+ 
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+-	ipctl->lev2_protect_phys = (u32)res->start + 0x400;
+-	ipctl->lev2 = devm_ioremap_resource(&pdev->dev, res);
++	ipctl->lev2 = devm_platform_get_and_ioremap_resource(pdev, 1, &res);
+ 	if (IS_ERR(ipctl->lev2))
+ 		return PTR_ERR(ipctl->lev2);
++	ipctl->lev2_protect_phys = (u32)res->start + 0x400;
+ 
+ 	ipctl->clk = devm_clk_get(&pdev->dev, NULL);
+ 	if (IS_ERR(ipctl->clk))
 -- 
 2.35.1
 
