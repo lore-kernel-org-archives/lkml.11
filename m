@@ -2,112 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2589C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 08:30:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8F1FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 08:30:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350791AbiFAI3z (ORCPT
+        id S1350796AbiFAIax (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 04:29:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49092 "EHLO
+        Wed, 1 Jun 2022 04:30:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349252AbiFAI3q (ORCPT
+        with ESMTP id S1350808AbiFAI35 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 04:29:46 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A88C04B86B;
-        Wed,  1 Jun 2022 01:29:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=hUcYa8u6coeEqMUwnvlLzfUj34eb1m5imtA8bKADKGY=; b=CjtD9x0IC7BZ2I0RCGMwMpYUA1
-        UifYNmQLjK9EOCJGtNDfeqX0Zio+3tm4Zoq/mqT1yOWmBbxZXhhoj5WM41VJYJmMBHz2wMy6HHY6X
-        X7nKiZC1RVRhxCitUovdQ32VLT9KUYnvQeGeD2C6fEDKjX0DjoKAIHWimZEWxX6atXV+JhqjCKsRi
-        gvswIn0V1tTbExn4irwLbMPVZ6zxCRlTcFyNtdPHcRcZlRGywL3kP6Hnd7FLneZ+cqDwMDChYnU5w
-        lzzQXex+lQ8+KdJSNa9fixC0q1n30XEY/YBjOD8cUn2Z6sZtlIKzvaSGzYCTAzOn0jINqSA9XN1NR
-        lJVoA5Sw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:60916)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nwJjP-0005ls-4h; Wed, 01 Jun 2022 09:29:31 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nwJjM-0003Jb-FF; Wed, 01 Jun 2022 09:29:28 +0100
-Date:   Wed, 1 Jun 2022 09:29:28 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Siddharth Vadapalli <s-vadapalli@ti.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, vladimir.oltean@nxp.com,
-        grygorii.strashko@ti.com, vigneshr@ti.com, nsekhar@ti.com,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kishon@ti.com
-Subject: Re: [PATCH 3/3] net: ethernet: ti: am65-cpsw: Move
- phy_set_mode_ext() to correct location
-Message-ID: <YpcjaOdXHC+uYJ2J@shell.armlinux.org.uk>
-References: <20220531113058.23708-1-s-vadapalli@ti.com>
- <20220531113058.23708-4-s-vadapalli@ti.com>
- <YpYCJv2SIExL+VHs@shell.armlinux.org.uk>
- <9f531f8d-9ff2-2ec9-504f-eed324ba86c6@ti.com>
+        Wed, 1 Jun 2022 04:29:57 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E93C64C78A
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 01:29:55 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id q21so2233718ejm.1
+        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 01:29:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=tE+HUVUrHikVji7UM5tJAdcQHFX328uHVV2QzrrXjtA=;
+        b=VemYYxf0S7hescYJHrg9tYxr/KIPygy9wx/KpJESDjoPj0azEdQHUa3XBsjxIgPQKq
+         vGmJ+o5wXyLmR//u1EQ/7r8lPD/2VIDbDx9z5/ktwbma6A10QiTZLmAbGILYvi+Ga6Gn
+         Zyi3PugYSbuEB/PQx3lpmoEhOcDCafT1109npdiC45JmWypdOIxMV002oFgnrjiaTc4A
+         Blt7ZsyIXgbKg6Z3y+C0TyCebSXtjmtFnN2iQXB1MhuLtSArjBTgx2u+H1GxnERoXEHl
+         /ro1h+6X4gUWKTSM81elWl8trhePloOFmBHNFL/ZtU0f29tc70zcChRob3H2C2KaycId
+         TQhQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=tE+HUVUrHikVji7UM5tJAdcQHFX328uHVV2QzrrXjtA=;
+        b=hlyRcoM6vGIu25Z3Aw3f77FE7CKt7j3lQMUPQD9sMf9iVoj1uihXhR1YST/3Tw+p67
+         umY26OadLjG3AEU2alAiurELW+O9rb+2jnT6GoBy7C76UbvsUdwT4e9jLAusHnaDe2NP
+         Ot+YUWkgulnjZa2dLErCCexn16niH+Omf0GXuekeOtk53Dss4KDfj9ef963hpE8PRPfS
+         FJvAPXBA4QCIfTgG3ub1OTJxZWsUmo6CAL0FW5Pp0tnSTyheK/n8FV2QVI5lSlmRmz50
+         WiaZeiecUkC1CK8dnDI4Z57SSiDBoFofx5Ry/w6RDW3R2W38hQGNR+osabXIoE0/afgm
+         XgFA==
+X-Gm-Message-State: AOAM532Sdd9i3OwcnfjFHy4ydJD3vPL9Q6d+73KtpsOCJ2JN/Xch1AzE
+        bNvE5kIbQz2A/KWGJAuBCmLneg==
+X-Google-Smtp-Source: ABdhPJyi4Z3RZzaBOS7ZnglUpKpLJgK5BnLa+QWibqgsr0wLo+mZsbF/byEfhXpXRBC1g3i7pXmhqg==
+X-Received: by 2002:a17:906:7313:b0:6fe:ed0b:9964 with SMTP id di19-20020a170906731300b006feed0b9964mr40660647ejc.95.1654072194206;
+        Wed, 01 Jun 2022 01:29:54 -0700 (PDT)
+Received: from [192.168.0.179] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id jo13-20020a170906f6cd00b006febc86b8besm421340ejb.117.2022.06.01.01.29.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 01 Jun 2022 01:29:53 -0700 (PDT)
+Message-ID: <98e508e5-50cf-e8ae-e251-f2f1fc90fb92@linaro.org>
+Date:   Wed, 1 Jun 2022 10:29:52 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9f531f8d-9ff2-2ec9-504f-eed324ba86c6@ti.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 1/3] ARM: dts: aspeed: Adding Jabil Rubypass BMC
+Content-Language: en-US
+To:     David Wang <David_Wang6097@jabil.com>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     edward_chen@jabil.com, ben_pai@jabil.com
+References: <20220601080856.1548851-1-David_Wang6097@jabil.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220601080856.1548851-1-David_Wang6097@jabil.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 01, 2022 at 11:39:57AM +0530, Siddharth Vadapalli wrote:
-> Hello Russell,
+On 01/06/2022 10:08, David Wang wrote:
+> The initial introduction of the jabil server with AST2600 BMC SoC.
 > 
-> On 31/05/22 17:25, Russell King (Oracle) wrote:
-> > On Tue, May 31, 2022 at 05:00:58PM +0530, Siddharth Vadapalli wrote:
-> >> In TI's J7200 SoC CPSW5G ports, each of the 4 ports can be configured
-> >> as a QSGMII main or QSGMII-SUB port. This configuration is performed
-> >> by phy-gmii-sel driver on invoking the phy_set_mode_ext() function.
-> >>
-> >> It is necessary for the QSGMII main port to be configured before any of
-> >> the QSGMII-SUB interfaces are brought up. Currently, the QSGMII-SUB
-> >> interfaces come up before the QSGMII main port is configured.
-> >>
-> >> Fix this by moving the call to phy_set_mode_ext() from
-> >> am65_cpsw_nuss_ndo_slave_open() to am65_cpsw_nuss_init_slave_ports(),
-> >> thereby ensuring that the QSGMII main port is configured before any of
-> >> the QSGMII-SUB ports are brought up.
-> > 
-> > This sounds like "if we're configured via port->slave.phy_if to be in
-> > QSGMII mode, then the serdes PHY needs to be configured before any of
-> > the QSGMII ports are used". Doesn't that mean that if
-> > port->slave.phy_if is QSGMII, then the port _only_ supports QSGMII
-> > mode, and conversely, the port doesn't support QSGMII unless firmware
-> > said it could be.
-> > 
-> > So, doesn't that mean am65_cpsw_nuss_init_port_ndev() should indicate
-> > only QSGMII, or only the RGMII modes, but never both together?
+> ---
 > 
-> The phy-gmii-sel driver called by phy_set_mode_ext() configures the CPSW5G MAC
-> rather than the SerDes Phy. In the CPSW5G MAC, the QSGMII mode is further split
-> up as two modes that are TI SoC specific, namely QSGMII main and QSGMII-SUB. Of
-> the 4 ports present in CPSW5G (4 external ports), only one can be the main port
-> while the rest are the QSGMII-SUB ports. Only the QSGMII main interface is
-> responsible for auto-negotiation between the MAC and PHY. For this reason, the
-> writes to the CPSW5G MAC, mentioning which of the interfaces is the QSGMII main
-> interface and which ones are the QSGMII-SUB interfaces has to be done before any
-> of the interfaces are brought up. Otherwise, it would result in a QSGMII-SUB
-> interface being brought up before the QSGMII main interface is determined,
-> resulting in the failure of auto-negotiation process, thereby making the
-> QSGMII-SUB interfaces non-functional.
+> v6
+> - Delete unneeded blank line at the end.
+> 
 
-That confirms my suspicion - if an interface is in QSGMII mode, then
-RGMII should not be marked as a supported interface to phylink. If the
-"QSGMII main interface" were to be switched to RGMII mode, then this
-would break the other ports. So RGMII isn't supported if in QSGMII
-mode.
+Thanks. This is v6 however, not even v5 like mentioned in dt-bindings
+patch, so please name entire patchset correctly.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+
+Best regards,
+Krzysztof
