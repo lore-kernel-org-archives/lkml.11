@@ -2,53 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3D74CCA471
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:06:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B112CCA473
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:06:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354761AbiFAOFM (ORCPT
+        id S1354823AbiFAOFP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:05:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50494 "EHLO
+        Wed, 1 Jun 2022 10:05:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355322AbiFAOB3 (ORCPT
+        with ESMTP id S1355306AbiFAOB3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 1 Jun 2022 10:01:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7A6FA76E1;
-        Wed,  1 Jun 2022 06:58:09 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 817BBA76D9;
+        Wed,  1 Jun 2022 06:58:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 71E48B81B08;
-        Wed,  1 Jun 2022 13:57:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBC4CC34119;
-        Wed,  1 Jun 2022 13:57:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F1E83B81B00;
+        Wed,  1 Jun 2022 13:58:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94482C385B8;
+        Wed,  1 Jun 2022 13:58:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091868;
-        bh=Gd+81C6t792u/OyBDJ9pfgOthfvlR8CL7NYdML5/hfE=;
+        s=k20201202; t=1654091886;
+        bh=6JL0iVgo30oD/fUK/Sy7Lw9Ov0ag3gYY8TBuffoUznU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rsX5zDcPG8mAFNL/5GmG1nDJfvTqiw6CsuJrjkM70TsMkoQrBouxqCRxHJoJfvejJ
-         ap6La6CG5DR6fxWeKXxpCXAPMdwH0sAOEfoLIJRJeTrpcDuRs0CBJSMSRdjPvWIsZ/
-         yu53khuncSARxYFZ+BECvyF463ZF3fEjHfNFkcOza2qg1PGhSAPrHYtxPDQaWGtz3L
-         Qb3JjUaZFha5UfthsEGFO1Ossx53qDdFRdp5cfmHJuFp3Hc6VWgag59lqLfWqKvlQP
-         +dVWS45gzPoVXUHYfVM7vZXooxsM64LNC2Q011/O+auoGRzCWXFf+3TD6JCzSGGy8V
-         rqQRgYtpp6UXA==
+        b=JMyi7IdBq/d4mz/amX7FQjn+dkl8HUvcJW19ci/jmoxHODWCXfZN9/m9HRjQKkbZO
+         cqV8csQ80TpHDcoUOj2mShNtw0N1GreB+qlQRkibEfRN1SZTDFqITab5NGqzw5fE/f
+         dYr0EJbtTFvR7SDm+2u/k/TjRagUQuUfdpiR2X2gcI3lpts539A6lAMtR7h9e/Tt+3
+         TSihhMZOb/FHEPm/8jBp8tlIcJCl+gZ0s0g6cxZi5kj6RWHRwisOS99W7G8rOrhhen
+         UI0CfauoanWJ2MmnNGB4PBmbpPAHr89udNwBzg7clNhY20gZzCBX29pB79jjTNnHfi
+         MqC+KGt2uiv5g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Finn Thain <fthain@linux-m68k.org>,
-        kernel test robot <lkp@intel.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>, benh@kernel.crashing.org,
-        arnd@arndb.de, yebin10@huawei.com, adobriyan@gmail.com,
-        linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 5.15 32/37] macintosh/via-pmu: Fix build failure when CONFIG_INPUT is disabled
-Date:   Wed,  1 Jun 2022 09:56:17 -0400
-Message-Id: <20220601135622.2003939-32-sashal@kernel.org>
+Cc:     Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>, agross@kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 04/26] arm64: dts: qcom: msm8994: Fix BLSP[12]_DMA channels count
+Date:   Wed,  1 Jun 2022 09:57:37 -0400
+Message-Id: <20220601135759.2004435-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220601135622.2003939-1-sashal@kernel.org>
-References: <20220601135622.2003939-1-sashal@kernel.org>
+In-Reply-To: <20220601135759.2004435-1-sashal@kernel.org>
+References: <20220601135759.2004435-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -57,80 +54,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Finn Thain <fthain@linux-m68k.org>
+From: Konrad Dybcio <konrad.dybcio@somainline.org>
 
-[ Upstream commit 86ce436e30d86327c9f5260f718104ae7b21f506 ]
+[ Upstream commit 1ae438d26b620979ed004d559c304d31c42173ae ]
 
-drivers/macintosh/via-pmu-event.o: In function `via_pmu_event':
-via-pmu-event.c:(.text+0x44): undefined reference to `input_event'
-via-pmu-event.c:(.text+0x68): undefined reference to `input_event'
-via-pmu-event.c:(.text+0x94): undefined reference to `input_event'
-via-pmu-event.c:(.text+0xb8): undefined reference to `input_event'
-drivers/macintosh/via-pmu-event.o: In function `via_pmu_event_init':
-via-pmu-event.c:(.init.text+0x20): undefined reference to `input_allocate_device'
-via-pmu-event.c:(.init.text+0xc4): undefined reference to `input_register_device'
-via-pmu-event.c:(.init.text+0xd4): undefined reference to `input_free_device'
-make[1]: *** [Makefile:1155: vmlinux] Error 1
-make: *** [Makefile:350: __build_one_by_one] Error 2
+MSM8994 actually features 24 DMA channels for each BLSP,
+fix it!
 
-Don't call into the input subsystem unless CONFIG_INPUT is built-in.
-
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Finn Thain <fthain@linux-m68k.org>
-Tested-by: Randy Dunlap <rdunlap@infradead.org>
-Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Acked-by: Randy Dunlap <rdunlap@infradead.org>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/5edbe76ce68227f71e09af4614cc4c1bd61c7ec8.1649326292.git.fthain@linux-m68k.org
+Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220319174645.340379-14-konrad.dybcio@somainline.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/macintosh/Kconfig   | 4 ++++
- drivers/macintosh/Makefile  | 3 ++-
- drivers/macintosh/via-pmu.c | 2 +-
- 3 files changed, 7 insertions(+), 2 deletions(-)
+ arch/arm64/boot/dts/qcom/msm8994.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/macintosh/Kconfig b/drivers/macintosh/Kconfig
-index 5cdc361da37c..3942db15a2b8 100644
---- a/drivers/macintosh/Kconfig
-+++ b/drivers/macintosh/Kconfig
-@@ -67,6 +67,10 @@ config ADB_PMU
- 	  this device; you should do so if your machine is one of those
- 	  mentioned above.
+diff --git a/arch/arm64/boot/dts/qcom/msm8994.dtsi b/arch/arm64/boot/dts/qcom/msm8994.dtsi
+index 45f9a44326a6..297408b947ff 100644
+--- a/arch/arm64/boot/dts/qcom/msm8994.dtsi
++++ b/arch/arm64/boot/dts/qcom/msm8994.dtsi
+@@ -316,7 +316,7 @@ blsp1_dma: dma@f9904000 {
+ 			#dma-cells = <1>;
+ 			qcom,ee = <0>;
+ 			qcom,controlled-remotely;
+-			num-channels = <18>;
++			num-channels = <24>;
+ 			qcom,num-ees = <4>;
+ 		};
  
-+config ADB_PMU_EVENT
-+	def_bool y
-+	depends on ADB_PMU && INPUT=y
-+
- config ADB_PMU_LED
- 	bool "Support for the Power/iBook front LED"
- 	depends on PPC_PMAC && ADB_PMU
-diff --git a/drivers/macintosh/Makefile b/drivers/macintosh/Makefile
-index 49819b1b6f20..712edcb3e0b0 100644
---- a/drivers/macintosh/Makefile
-+++ b/drivers/macintosh/Makefile
-@@ -12,7 +12,8 @@ obj-$(CONFIG_MAC_EMUMOUSEBTN)	+= mac_hid.o
- obj-$(CONFIG_INPUT_ADBHID)	+= adbhid.o
- obj-$(CONFIG_ANSLCD)		+= ans-lcd.o
+@@ -412,7 +412,7 @@ blsp2_dma: dma@f9944000 {
+ 			#dma-cells = <1>;
+ 			qcom,ee = <0>;
+ 			qcom,controlled-remotely;
+-			num-channels = <18>;
++			num-channels = <24>;
+ 			qcom,num-ees = <4>;
+ 		};
  
--obj-$(CONFIG_ADB_PMU)		+= via-pmu.o via-pmu-event.o
-+obj-$(CONFIG_ADB_PMU)		+= via-pmu.o
-+obj-$(CONFIG_ADB_PMU_EVENT)	+= via-pmu-event.o
- obj-$(CONFIG_ADB_PMU_LED)	+= via-pmu-led.o
- obj-$(CONFIG_PMAC_BACKLIGHT)	+= via-pmu-backlight.o
- obj-$(CONFIG_ADB_CUDA)		+= via-cuda.o
-diff --git a/drivers/macintosh/via-pmu.c b/drivers/macintosh/via-pmu.c
-index 4b98bc26a94b..2109129ea1bb 100644
---- a/drivers/macintosh/via-pmu.c
-+++ b/drivers/macintosh/via-pmu.c
-@@ -1459,7 +1459,7 @@ pmu_handle_data(unsigned char *data, int len)
- 		pmu_pass_intr(data, len);
- 		/* len == 6 is probably a bad check. But how do I
- 		 * know what PMU versions send what events here? */
--		if (len == 6) {
-+		if (IS_ENABLED(CONFIG_ADB_PMU_EVENT) && len == 6) {
- 			via_pmu_event(PMU_EVT_POWER, !!(data[1]&8));
- 			via_pmu_event(PMU_EVT_LID, data[1]&1);
- 		}
 -- 
 2.35.1
 
