@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DF62CCA468
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:03:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20713CCA468
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:03:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354319AbiFAODE (ORCPT
+        id S1348657AbiFAODP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:03:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54340 "EHLO
+        Wed, 1 Jun 2022 10:03:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354483AbiFAOA1 (ORCPT
+        with ESMTP id S1354525AbiFAOA3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:00:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA95ADF3A;
-        Wed,  1 Jun 2022 06:56:45 -0700 (PDT)
+        Wed, 1 Jun 2022 10:00:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7652511A06;
+        Wed,  1 Jun 2022 06:57:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 06A3C61555;
-        Wed,  1 Jun 2022 13:55:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31FF4C385A5;
-        Wed,  1 Jun 2022 13:55:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5729AB81B07;
+        Wed,  1 Jun 2022 13:56:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F37F6C385A5;
+        Wed,  1 Jun 2022 13:56:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091735;
-        bh=a4qFuWEqZC0lHRCkY7Blx87Le22rwe0ztnrHoEFNJ4o=;
+        s=k20201202; t=1654091776;
+        bh=0ao9rCtXzF+E1mhOIXSzAMgWHTlay5M9C7gXZhzBtCg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UsZbOLhaa3NCelbzPOc5toVLk8MqyQgbeCvpb58TCq00xqyZT409nltGmHIiULjji
-         TxvlE+G2BBrk3b4dHopiZzW6Mt7RKezCiz8diGSUgo8l9pwJGMi495tq6n3pgBytrY
-         ThEH062aaPw9ybKIq/EWwki0dYTM+wikEEzr0sLB0gSEnpBoUtbxWhcogIHmOcAKpq
-         Xcv7kXJn1YjuC0jvSK2fByyaajElg0td7yQpswgRc9uSnQFaHwd49Qt7XTzbZSt0Iq
-         9R9hW2iIvG0jAEjNF300oXkWDj3f2udw5DVPJWRxHe4W7bwpdrPbx0HZMLDNtk0GDv
-         c/rA3DhMdRHig==
+        b=Y5P/g24FoPmBzO63+/rkOSUwdOFEYOQrl3ea2BXlizbkSJ7b5yIqiVjCl+Wd6wPzR
+         lvKIaw2idaa58VowoVkpHy7BHhEtuf5OC2eWBOg1T4PxmRVico6f9F6Yjw9fIaxq8P
+         054fwl5RR0Vb/HUINO19dPEU8c02laArckEdrViPRHaUOky4ZfZzTYs5Kv3zj/imGq
+         4C44XP/E0l0VBZtGtwhWutG5+4r+qLSSAgiUZ0qG+JDlWaPqPqh5+r6AoUuwxtoWrH
+         xtr93NtuhRnOD8Ei4/dQHswePnVGqGmWmHDkCml4v2JyAj9PHu9DNWR95ji70YkmUT
+         bZ2788vPQI70w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Nicholas Piggin <npiggin@gmail.com>,
-        Fabiano Rosas <farosas@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>, aik@ozlabs.ru, clg@kaod.org,
-        bharata@linux.ibm.com, seanjc@google.com,
-        maciej.szmigiero@oracle.com, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 5.17 32/48] KVM: PPC: Book3S HV Nested: L2 LPCR should inherit L1 LPES setting
-Date:   Wed,  1 Jun 2022 09:54:05 -0400
-Message-Id: <20220601135421.2003328-32-sashal@kernel.org>
+Cc:     Shyam Prasad N <sprasad@microsoft.com>,
+        Steve French <stfrench@microsoft.com>,
+        Sasha Levin <sashal@kernel.org>, sfrench@samba.org,
+        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org
+Subject: [PATCH AUTOSEL 5.17 46/48] cifs: do not use tcpStatus after negotiate completes
+Date:   Wed,  1 Jun 2022 09:54:19 -0400
+Message-Id: <20220601135421.2003328-46-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135421.2003328-1-sashal@kernel.org>
 References: <20220601135421.2003328-1-sashal@kernel.org>
@@ -55,58 +53,114 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicholas Piggin <npiggin@gmail.com>
+From: Shyam Prasad N <sprasad@microsoft.com>
 
-[ Upstream commit 2852ebfa10afdcefff35ec72c8da97141df9845c ]
+[ Upstream commit 1a6a41d4cedd9b302e2200e6f0e3c44dbbe13689 ]
 
-The L1 should not be able to adjust LPES mode for the L2. Setting LPES
-if the L0 needs it clear would cause external interrupts to be sent to
-L2 and missed by the L0.
+Recent changes to multichannel to allow channel reconnects to
+work in parallel and independent of each other did so by
+making use of tcpStatus for the connection, and status for the
+session. However, this did not take into account the multiuser
+scenario, where same connection is used by multiple connections.
 
-Clearing LPES when it may be set, as typically happens with XIVE enabled
-could cause a performance issue despite having no native XIVE support in
-the guest, because it will cause mediated interrupts for the L2 to be
-taken in HV mode, which then have to be injected.
+However, tcpStatus should be tracked only till the end of
+negotiate exchange, and not used for session setup. This change
+fixes this.
 
-Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
-Reviewed-by: Fabiano Rosas <farosas@linux.ibm.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220303053315.1056880-7-npiggin@gmail.com
+Signed-off-by: Shyam Prasad N <sprasad@microsoft.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kvm/book3s_hv.c        | 4 ++++
- arch/powerpc/kvm/book3s_hv_nested.c | 3 +--
- 2 files changed, 5 insertions(+), 2 deletions(-)
+ fs/cifs/connect.c       | 23 +++++++++++------------
+ fs/cifs/smb2pdu.c       |  3 ++-
+ fs/cifs/smb2transport.c |  3 ++-
+ 3 files changed, 15 insertions(+), 14 deletions(-)
 
-diff --git a/arch/powerpc/kvm/book3s_hv.c b/arch/powerpc/kvm/book3s_hv.c
-index 316f61a4cb59..0da8c0df768d 100644
---- a/arch/powerpc/kvm/book3s_hv.c
-+++ b/arch/powerpc/kvm/book3s_hv.c
-@@ -5289,6 +5289,10 @@ static int kvmppc_core_init_vm_hv(struct kvm *kvm)
- 		kvm->arch.host_lpcr = lpcr = mfspr(SPRN_LPCR);
- 		lpcr &= LPCR_PECE | LPCR_LPES;
- 	} else {
-+		/*
-+		 * The L2 LPES mode will be set by the L0 according to whether
-+		 * or not it needs to take external interrupts in HV mode.
-+		 */
- 		lpcr = 0;
- 	}
- 	lpcr |= (4UL << LPCR_DPFD_SH) | LPCR_HDICE |
-diff --git a/arch/powerpc/kvm/book3s_hv_nested.c b/arch/powerpc/kvm/book3s_hv_nested.c
-index 9d373f8963ee..58e05a9122ac 100644
---- a/arch/powerpc/kvm/book3s_hv_nested.c
-+++ b/arch/powerpc/kvm/book3s_hv_nested.c
-@@ -261,8 +261,7 @@ static void load_l2_hv_regs(struct kvm_vcpu *vcpu,
- 	/*
- 	 * Don't let L1 change LPCR bits for the L2 except these:
- 	 */
--	mask = LPCR_DPFD | LPCR_ILE | LPCR_TC | LPCR_AIL | LPCR_LD |
--		LPCR_LPES | LPCR_MER;
-+	mask = LPCR_DPFD | LPCR_ILE | LPCR_TC | LPCR_AIL | LPCR_LD | LPCR_MER;
+diff --git a/fs/cifs/connect.c b/fs/cifs/connect.c
+index 1ec77ebc71a0..9aae410a17f8 100644
+--- a/fs/cifs/connect.c
++++ b/fs/cifs/connect.c
+@@ -3962,7 +3962,7 @@ cifs_negotiate_protocol(const unsigned int xid, struct cifs_ses *ses,
+ 	if (rc == 0) {
+ 		spin_lock(&cifs_tcp_ses_lock);
+ 		if (server->tcpStatus == CifsInNegotiate)
+-			server->tcpStatus = CifsNeedSessSetup;
++			server->tcpStatus = CifsGood;
+ 		else
+ 			rc = -EHOSTDOWN;
+ 		spin_unlock(&cifs_tcp_ses_lock);
+@@ -3985,19 +3985,18 @@ cifs_setup_session(const unsigned int xid, struct cifs_ses *ses,
+ 	bool is_binding = false;
  
- 	/*
- 	 * Additional filtering is required depending on hardware
+ 	/* only send once per connect */
++	spin_lock(&ses->chan_lock);
++	is_binding = !CIFS_ALL_CHANS_NEED_RECONNECT(ses);
++	spin_unlock(&ses->chan_lock);
++
+ 	spin_lock(&cifs_tcp_ses_lock);
+-	if ((server->tcpStatus != CifsNeedSessSetup) &&
+-	    (ses->status == CifsGood)) {
++	if (ses->status == CifsExiting) {
+ 		spin_unlock(&cifs_tcp_ses_lock);
+ 		return 0;
+ 	}
+-	server->tcpStatus = CifsInSessSetup;
++	ses->status = CifsInSessSetup;
+ 	spin_unlock(&cifs_tcp_ses_lock);
+ 
+-	spin_lock(&ses->chan_lock);
+-	is_binding = !CIFS_ALL_CHANS_NEED_RECONNECT(ses);
+-	spin_unlock(&ses->chan_lock);
+-
+ 	if (!is_binding) {
+ 		ses->capabilities = server->capabilities;
+ 		if (!linuxExtEnabled)
+@@ -4021,13 +4020,13 @@ cifs_setup_session(const unsigned int xid, struct cifs_ses *ses,
+ 	if (rc) {
+ 		cifs_server_dbg(VFS, "Send error in SessSetup = %d\n", rc);
+ 		spin_lock(&cifs_tcp_ses_lock);
+-		if (server->tcpStatus == CifsInSessSetup)
+-			server->tcpStatus = CifsNeedSessSetup;
++		if (ses->status == CifsInSessSetup)
++			ses->status = CifsNeedSessSetup;
+ 		spin_unlock(&cifs_tcp_ses_lock);
+ 	} else {
+ 		spin_lock(&cifs_tcp_ses_lock);
+-		if (server->tcpStatus == CifsInSessSetup)
+-			server->tcpStatus = CifsGood;
++		if (ses->status == CifsInSessSetup)
++			ses->status = CifsGood;
+ 		/* Even if one channel is active, session is in good state */
+ 		ses->status = CifsGood;
+ 		spin_unlock(&cifs_tcp_ses_lock);
+diff --git a/fs/cifs/smb2pdu.c b/fs/cifs/smb2pdu.c
+index 1704fd358b85..55e6879ef18b 100644
+--- a/fs/cifs/smb2pdu.c
++++ b/fs/cifs/smb2pdu.c
+@@ -3904,7 +3904,8 @@ SMB2_echo(struct TCP_Server_Info *server)
+ 	cifs_dbg(FYI, "In echo request for conn_id %lld\n", server->conn_id);
+ 
+ 	spin_lock(&cifs_tcp_ses_lock);
+-	if (server->tcpStatus == CifsNeedNegotiate) {
++	if (server->ops->need_neg &&
++	    server->ops->need_neg(server)) {
+ 		spin_unlock(&cifs_tcp_ses_lock);
+ 		/* No need to send echo on newly established connections */
+ 		mod_delayed_work(cifsiod_wq, &server->reconnect, 0);
+diff --git a/fs/cifs/smb2transport.c b/fs/cifs/smb2transport.c
+index 2af79093b78b..01b732641edb 100644
+--- a/fs/cifs/smb2transport.c
++++ b/fs/cifs/smb2transport.c
+@@ -641,7 +641,8 @@ smb2_sign_rqst(struct smb_rqst *rqst, struct TCP_Server_Info *server)
+ 	if (!is_signed)
+ 		return 0;
+ 	spin_lock(&cifs_tcp_ses_lock);
+-	if (server->tcpStatus == CifsNeedNegotiate) {
++	if (server->ops->need_neg &&
++	    server->ops->need_neg(server)) {
+ 		spin_unlock(&cifs_tcp_ses_lock);
+ 		return 0;
+ 	}
 -- 
 2.35.1
 
