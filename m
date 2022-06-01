@@ -2,149 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13525C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 11:23:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84EFFC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 11:24:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352687AbiFALXj (ORCPT
+        id S1352827AbiFALYP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 07:23:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60664 "EHLO
+        Wed, 1 Jun 2022 07:24:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352538AbiFALWS (ORCPT
+        with ESMTP id S1352810AbiFALX7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 07:22:18 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1626942A08;
-        Wed,  1 Jun 2022 04:22:16 -0700 (PDT)
-X-UUID: a9e2278eda1a493487c1d42d9a189f49-20220601
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:2bf4b5a4-4a17-4456-a3cf-dcb57f4d3732,OB:60,L
-        OB:60,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,
-        ACTION:release,TS:90
-X-CID-INFO: VERSION:1.1.5,REQID:2bf4b5a4-4a17-4456-a3cf-dcb57f4d3732,OB:60,LOB
-        :60,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,
-        ACTION:quarantine,TS:90
-X-CID-META: VersionHash:2a19b09,CLOUDID:b0648f14-f88c-475e-badf-d9ee54230b8f,C
-        OID:cf170092d950,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:0,File:nil,QS:0,BEC:nil
-X-UUID: a9e2278eda1a493487c1d42d9a189f49-20220601
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
-        (envelope-from <tinghan.shen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 2082968515; Wed, 01 Jun 2022 19:22:06 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Wed, 1 Jun 2022 19:22:05 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
- mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Wed, 1 Jun 2022 19:22:05 +0800
-From:   Tinghan Shen <tinghan.shen@mediatek.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Daisuke Nojiri <dnojiri@chromium.org>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        "Dustin L. Howett" <dustin@howett.net>,
-        Tzung-Bi Shih <tzungbi@kernel.org>,
-        Tinghan Shen <tinghan.shen@mediatek.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Prashant Malani <pmalani@chromium.org>,
-        "Enric Balletbo i Serra" <enric.balletbo@collabora.com>,
-        Brian Norris <briannorris@chromium.org>
-CC:     <linux-remoteproc@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <chrome-platform@lists.linux.dev>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <weishunc@google.com>
-Subject: [PATCH v1 08/15] remoteproc: mediatek: Add SCP core 1 interrupt support
-Date:   Wed, 1 Jun 2022 19:21:54 +0800
-Message-ID: <20220601112201.15510-9-tinghan.shen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220601112201.15510-1-tinghan.shen@mediatek.com>
-References: <20220601112201.15510-1-tinghan.shen@mediatek.com>
+        Wed, 1 Jun 2022 07:23:59 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 736B35E774
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 04:23:11 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id o10so1732106edi.1
+        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 04:23:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=EmX78kZDbpi7zDJcl5NRBNnxEqWkEcLfuWB3zLytvQ4=;
+        b=r55wWxDb8gLLLDShPuOiJjmUz1D5Xgin/ldr6b/Tnulo5/FyaoiTrGCFmJK10iRxpl
+         /b5twD1DES3+6TJftiXJLlEH5MTxw6tzyqTXWS49/e4fUXACwFeWmyPUdl79bB1ZMm28
+         1EQZtIGbcpDoxuCn3othqQWKg+D6efafEyLZYTIBuSeyngpnqUPZSWp0zb/eRJWQMD+4
+         W6q5xcRyZJBNbHcwT564fW1iOCfBexrbxseQQNfQI9zG+QVQGtdYMM8Iugx4ALnbLNtu
+         EfIQzbvmIUrpisGyxuU8pS95ihIaVEMR2VjCfh69jDHQWuXdYfHfC7+QL1vDtMre9YvW
+         WOjA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=EmX78kZDbpi7zDJcl5NRBNnxEqWkEcLfuWB3zLytvQ4=;
+        b=x/X63ZGh+0J12h0o7fKSoZXZrmlq6igG8mgUsvAddBKqTlPCXHBZmT6rkvTq/pV0+A
+         KhXOlaUc94GqrrHzFmLBvVtAqj5Gw8qpf8ZVinOHH62NLpN2AMiStsG6f0Rfc87Up2/E
+         w2XRAemaT4arRd6dPHNNEL9LUlDD5Yro9rfC3tsL75J28zhsy6n/DfurdA0bTWZLIHRm
+         5qcM+mQ59GZmustgP7OQwRqWSM/LKxcCmT2JnYHSTjNaIh7fPIN2UXiAWjprwHqNJfj0
+         5lkgenmsKNKtkmk108w+SkH2zWGxByGHOTKH6FBUSNOEsdO7+jzKmgmOBmaBn/gCmrGk
+         Ygiw==
+X-Gm-Message-State: AOAM532iUvNglLHAkryApfjXty/+h5tMO0QsUS+QUx7OQQU1I/D2Yz6r
+        yve4quqP6LJW3hg7rTFZ+uIKYg==
+X-Google-Smtp-Source: ABdhPJzOJxGalCbiJf1Q2Q8zI2vrTUHr2z0fwXYzl5tTyez6dQrB/mI0xzVPeI2IOWLC/p/Lwqsvsw==
+X-Received: by 2002:a05:6402:1907:b0:42d:e90e:337 with SMTP id e7-20020a056402190700b0042de90e0337mr7327648edz.405.1654082589971;
+        Wed, 01 Jun 2022 04:23:09 -0700 (PDT)
+Received: from [192.168.0.179] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id p19-20020a056402155300b0042617ba638esm823008edx.24.2022.06.01.04.23.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 01 Jun 2022 04:23:09 -0700 (PDT)
+Message-ID: <7a66f2e2-1a2a-a262-138c-f535499984ae@linaro.org>
+Date:   Wed, 1 Jun 2022 13:23:08 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [RFC PATCH v2 4/6] PM: opp: allow control of multiple clocks
+Content-Language: en-US
+To:     Viresh Kumar <viresh.kumar@linaro.org>
+Cc:     Stephen Boyd <sboyd@kernel.org>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Avri Altman <avri.altman@wdc.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Taniya Das <tdas@codeaurora.org>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-scsi@vger.kernel.org,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+References: <20220411154347.491396-1-krzysztof.kozlowski@linaro.org>
+ <20220411154347.491396-5-krzysztof.kozlowski@linaro.org>
+ <20220425072710.v6gwo4gu3aouezg4@vireshk-i7>
+ <dea39b1f-0091-2690-7f07-108d07ef9f3c@linaro.org>
+ <20220510044053.ykn6ygnbeokhzrsa@vireshk-i7>
+ <1e533194-7047-8342-b426-f607fddbfaa3@linaro.org>
+ <20220511050643.hd5tcrojb3wkbg7t@vireshk-i7>
+ <20220518235708.1A04CC385A9@smtp.kernel.org>
+ <65a4c28d-6702-3a9f-f837-1ea69a428777@linaro.org>
+ <20220531103029.ntoypaafnd6447ag@vireshk-i7>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220531103029.ntoypaafnd6447ag@vireshk-i7>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Reuse the interrupt handling API of SCP core 0 on SCP core 1.
+On 31/05/2022 12:30, Viresh Kumar wrote:
+> On 19-05-22, 10:03, Krzysztof Kozlowski wrote:
+>> Yes, true. The clock frequencies are still changed with each gear, but
+>> in general the UFS indeed operates on gear concept.
+> 
+> Hi Krzysztof,
+> 
+> I have redesigned the OPP core a bit (two patchsets until now) to make
+> it easier to add multiple clock support going forward. I need some
+> inputs from you before moving forward with it now. Will this work for
+> your use case:
+> 
+> - Add support for multiple clocks, where none of them is primary.
+> 
+> - Which means you won't be able to use dev_pm_opp_set_rate() but will
+>   need something like dev_pm_opp_set_level(), will add it.
+> 
+> - That is, your OPP table will need to implement levels (I think of
+>   them as UFS gears) and then call dev_pm_opp_set_level() instead.
+> 
+> - This new API will work just like dev_pm_opp_set_rate(), except that
+>   it will find the target OPP based on level instead of freq and
+>   support configuration of multiple clock frequencies.
+> 
+> - Of course both these APIs will share most of the code.
 
-Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
----
- drivers/remoteproc/mtk_common.h   |  1 +
- drivers/remoteproc/mtk_scp.c      |  3 ++-
- drivers/remoteproc/mtk_scp_dual.c | 17 +++++++++++++++++
- 3 files changed, 20 insertions(+), 1 deletion(-)
+Hi Viresh,
 
-diff --git a/drivers/remoteproc/mtk_common.h b/drivers/remoteproc/mtk_common.h
-index da3ea2243678..04f7ee590f96 100644
---- a/drivers/remoteproc/mtk_common.h
-+++ b/drivers/remoteproc/mtk_common.h
-@@ -170,4 +170,5 @@ void *scp_da_to_va(struct rproc *rproc, u64 da, size_t len, bool *is_iomem);
- int scp_parse_fw(struct rproc *rproc, const struct firmware *fw);
- int scp_map_memory_region(struct mtk_scp *scp);
- void scp_unmap_memory_region(struct mtk_scp *scp);
-+irqreturn_t scp_irq_handler(int irq, void *priv);
- #endif
-diff --git a/drivers/remoteproc/mtk_scp.c b/drivers/remoteproc/mtk_scp.c
-index 75d161da0f59..c67883c28a43 100644
---- a/drivers/remoteproc/mtk_scp.c
-+++ b/drivers/remoteproc/mtk_scp.c
-@@ -237,7 +237,7 @@ static void mt8195_scp_irq_handler(struct mtk_scp *scp)
- 	}
- }
- 
--static irqreturn_t scp_irq_handler(int irq, void *priv)
-+irqreturn_t scp_irq_handler(int irq, void *priv)
- {
- 	struct mtk_scp *scp = priv;
- 	int ret;
-@@ -254,6 +254,7 @@ static irqreturn_t scp_irq_handler(int irq, void *priv)
- 
- 	return IRQ_HANDLED;
- }
-+EXPORT_SYMBOL_GPL(scp_irq_handler);
- 
- static int scp_elf_load_segments(struct rproc *rproc, const struct firmware *fw)
- {
-diff --git a/drivers/remoteproc/mtk_scp_dual.c b/drivers/remoteproc/mtk_scp_dual.c
-index 0f932d26f864..7bed39722bd5 100644
---- a/drivers/remoteproc/mtk_scp_dual.c
-+++ b/drivers/remoteproc/mtk_scp_dual.c
-@@ -71,7 +71,24 @@ static int scp_dual_probe(struct platform_device *pdev)
- 	init_waitqueue_head(&scp->run.wq);
- 	init_waitqueue_head(&scp->ack_wq);
- 
-+	ret = devm_request_threaded_irq(dev, platform_get_irq(pdev, 0), NULL,
-+					scp_irq_handler, IRQF_ONESHOT,
-+					pdev->name, scp);
-+
-+	if (ret) {
-+		dev_err(dev, "failed to request irq\n");
-+		goto release_dev_mem;
-+	}
-+
- 	return 0;
-+
-+release_dev_mem:
-+	scp_unmap_memory_region(scp);
-+	for (i = 0; i < SCP_IPI_MAX; i++)
-+		mutex_destroy(&scp->ipi_desc[i].lock);
-+	mutex_destroy(&scp->send_lock);
-+
-+	return ret;
- }
- 
- static int scp_dual_remove(struct platform_device *pdev)
--- 
-2.18.0
+In general this looks reasonable and matches how the UFS gears should be
+modeled. It does not match how UFS drivers implemented the clock
+scaling, but that's the internal problem of UFS drivers. They scale the
+clocks only max or min, even though there are multiple gears in between.
+The new approach looks therefore appropriate.
 
+Best regards,
+Krzysztof
