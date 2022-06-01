@@ -2,96 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4D24C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 10:12:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EF47C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 10:13:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350861AbiFAKM0 (ORCPT
+        id S1351887AbiFAKNH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 06:12:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44332 "EHLO
+        Wed, 1 Jun 2022 06:13:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351849AbiFAKMD (ORCPT
+        with ESMTP id S1351988AbiFAKMp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 06:12:03 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B49CF201BC
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 03:11:52 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id me5so2185836ejb.2
-        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 03:11:52 -0700 (PDT)
+        Wed, 1 Jun 2022 06:12:45 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80E0F4B861
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 03:12:36 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id 25so1222601edw.8
+        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 03:12:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=l4c6eL6FkT3F5Q2UMeh1SdTOW/jzEthp0aJ+P51R6LI=;
-        b=uuPC3WbwM8ZeORzZE8dCBKB08/lnjrHUzk3Cg4Zg1UwAEa5bQR32aQ//XmiIHULElg
-         0fZ1cMu0jjAq6JEXla/7eTnkIGUBmkDMWfdwb4XExb4NEHk98/tMZpaqIayfHyolUr3z
-         FlEtKFJRBc08u1+m2weeKmvg0rujrEB/UKRv+4thJ4aeC4bqJf2UKWHZxgaiUpeknJz3
-         aNQpnmjUF2fWgbwAXrwhOyF4rR1sAutZoigj5aiw4pIhv/e8Z8zLBL9iscIc22jjoDDt
-         diyzJlpXBjUMWfXTt0dmcaJpqFeviYZOr3z6R/DRBE4C8SIskhupNPPszYHAHtjco+fC
-         mu2g==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=OGHEh5EflFJ5JP3LQKty6QMpN7VhyP1gug8Yda8OW5A=;
+        b=RdNA06eZU3yur7GOEDYb/UfDCCZsD85cyaXv5fd/COilGbz32N1RnyYy1z8gcwDzkY
+         mAVL49ZJa57+GiLqP6rh2AGmpF8gqhrRsXiys799/vPHu0F2re5olFzUntYNr45K98Of
+         IvfZ0COVWTtulHvL2/uNU/wARd3MbMn8PJMnhD9FDes0cd4hB4Fm01kmWpL7n/2TsKN1
+         6Y6UL1QXpu5HgehbvpAToUxztbyruB1E0Jw53mKfHg9a4gGeZcz4G5lMKLn67rO8ipla
+         QAu5clsvjq2bNfKqwPAXMTT8nA1D22YnF30L1q5El2UGtHD+vSF1E0cIoVf36llXBhl3
+         ff2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=l4c6eL6FkT3F5Q2UMeh1SdTOW/jzEthp0aJ+P51R6LI=;
-        b=bgCawGXTJOUUUl+t1Q8wDdTajiFc+Kw8T/esx5FrvDCzkgAMc0gT4aEoIwTCVTSc6R
-         SVjuhO47/SOaZIK2ID839cVzzcCg1OWwFKVAY9Q0+g51t/tQxlh6rErMutWyUm7sa35N
-         cOH7Cb/ftNUwOpVIDudJSX4WkimgvsFioMpVJdTxIH68kQoDC5uxpngN+2kZI0nPhCAC
-         DVWzYmA05ygwsiPkaQJxHLybYEFSrTrOmIC9UdDiSEt4fh9Z5W8AzkzZvlz06EF3d8Ek
-         XenAxaywnxb6yn+ZY2bF2clKO23aEJkdhUUS6mWNx3hqgHYLV/q3+knMwFg4N6ASabic
-         /dtA==
-X-Gm-Message-State: AOAM532ApaJ3wAJoGGch7/YLEKq/0/Krt94CoeyJ2mDGzbiQEJpo/cKM
-        HTyLLV9/vdH57omfv9vDkO4ugA==
-X-Google-Smtp-Source: ABdhPJwEaTgdn1GKj/YKJ6G6b9+WZD+Roai4KFJAHqMLkyF7A6Gtke8DwN+FifgXiG1cP2KFOXKohA==
-X-Received: by 2002:a17:907:9719:b0:6fe:f541:fa1c with SMTP id jg25-20020a170907971900b006fef541fa1cmr40448308ejc.450.1654078311241;
-        Wed, 01 Jun 2022 03:11:51 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id m9-20020a170906580900b006feb7b1379dsm501373ejq.181.2022.06.01.03.11.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Jun 2022 03:11:50 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Georgi Djakov <djakov@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, linux-arm-msm@vger.kernel.org,
-        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v4 3/4] arm64: defconfig: enable Qualcomm Bandwidth Monitor
-Date:   Wed,  1 Jun 2022 12:11:39 +0200
-Message-Id: <20220601101140.170504-4-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220601101140.170504-1-krzysztof.kozlowski@linaro.org>
-References: <20220601101140.170504-1-krzysztof.kozlowski@linaro.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=OGHEh5EflFJ5JP3LQKty6QMpN7VhyP1gug8Yda8OW5A=;
+        b=FsH4LPg9mBWab6Df5hixQKlpGyrQ2kGHqUVgtVNiZvfEun9z3JNrZZjKQC6Pyigcco
+         QCzEm9BEsP4QEeM1tbNMysOznPjRa4xFEOxOMZix96qtUNCj2Plkgry9dwNWb9FAu77Q
+         /9scn0o4PK0fxawV2QjD1c9ZaZz7jfzQoz6q8Wrj+K266L+j9dZDxgnVoSZv42R1mXSJ
+         GAz+IUc7NdWvgLtujCvlGtyHIu3dIogOoyjibug2ebypTJFM2oHNdOajASh2hVMpS33R
+         WS8sw0SHT6HjNojZ0McQGN0Uh+ujYcyjFJUlTeEhnqynM+zRWNm4ey37QcfYgDOGh6E2
+         2XSA==
+X-Gm-Message-State: AOAM532sY/Yzil/eR4iDPZG/9HPycWqxpSHIScK1zHPCsWiATC7zGfu7
+        umtYt+mluL87Q8zSYwYrmks4CQ==
+X-Google-Smtp-Source: ABdhPJz1Iw3aklyf+Hl4aU2S4N3wtkB5v1M5a6xE+R+Ctu54ed/8biBVX/Tgf6wfycHD4EafkrobCg==
+X-Received: by 2002:a05:6402:424b:b0:42b:3871:75fa with SMTP id g11-20020a056402424b00b0042b387175famr58104048edb.92.1654078355157;
+        Wed, 01 Jun 2022 03:12:35 -0700 (PDT)
+Received: from [192.168.0.179] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id e26-20020a50ec9a000000b0042ad0358c8bsm721575edr.38.2022.06.01.03.12.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 01 Jun 2022 03:12:34 -0700 (PDT)
+Message-ID: <c6b6b255-0793-c833-8af5-2e2c98c71db7@linaro.org>
+Date:   Wed, 1 Jun 2022 12:12:32 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 10/17] dt-bindings: serial: mediatek: add MT8365 bindings
+Content-Language: en-US
+To:     Fabien Parent <fparent@baylibre.com>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, vkoul@kernel.org,
+        qii.wang@mediatek.com, matthias.bgg@gmail.com, jic23@kernel.org,
+        chaotian.jing@mediatek.com, ulf.hansson@linaro.org,
+        srinivas.kandagatla@linaro.org, chunfeng.yun@mediatek.com,
+        broonie@kernel.org, wim@linux-watchdog.org, linux@roeck-us.net,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dmaengine@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-iio@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-serial@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org
+References: <20220531135026.238475-1-fparent@baylibre.com>
+ <20220531135026.238475-11-fparent@baylibre.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220531135026.238475-11-fparent@baylibre.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enable the Qualcomm Bandwidth Monitor to allow scaling interconnects
-depending on bandwidth usage between CPU and memory.  This is used
-already on Qualcomm SDM845 SoC.
+On 31/05/2022 15:50, Fabien Parent wrote:
+> Add binding documentation for the MT8365 SoC.
+> 
+> Signed-off-by: Fabien Parent <fparent@baylibre.com>
+> ---
+>  Documentation/devicetree/bindings/serial/mediatek,uart.yaml | 1 +
+>  1 file changed, 1 insertion(+)
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- arch/arm64/configs/defconfig | 1 +
- 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-index 6906b83f5e45..6edbcfd3f4ca 100644
---- a/arch/arm64/configs/defconfig
-+++ b/arch/arm64/configs/defconfig
-@@ -1096,6 +1096,7 @@ CONFIG_QCOM_SOCINFO=m
- CONFIG_QCOM_STATS=m
- CONFIG_QCOM_WCNSS_CTRL=m
- CONFIG_QCOM_APR=m
-+CONFIG_QCOM_ICC_BWMON=m
- CONFIG_ARCH_R8A77995=y
- CONFIG_ARCH_R8A77990=y
- CONFIG_ARCH_R8A77950=y
--- 
-2.34.1
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
+
+Best regards,
+Krzysztof
