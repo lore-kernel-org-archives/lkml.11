@@ -2,86 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 797CECCA468
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:04:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D359BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:04:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354481AbiFAOEi (ORCPT
+        id S1354489AbiFAOEk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:04:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53810 "EHLO
+        Wed, 1 Jun 2022 10:04:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355005AbiFAOBL (ORCPT
+        with ESMTP id S1354862AbiFAOA7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:01:11 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34D3E52E58;
-        Wed,  1 Jun 2022 06:57:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 87B38CE1A24;
-        Wed,  1 Jun 2022 13:56:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33450C385A5;
-        Wed,  1 Jun 2022 13:56:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091797;
-        bh=85vm1vrtGgzFH8G8lTONTiZh58r6Wicm/naQSPQ/3OI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fegC8XnKGfkXbX1CoCvYsycdkZ4KwEtE5koNJNZiCqNRcV6KDPV6KHJl2Pk29tqro
-         CZaiHg+ezzpLsFQd7VNQmmVGQXPTR6BFP9sqFEw002DH3sAEbvopH6ImAFGQ6WuXRY
-         SAxIZjcE3i1t1lWmf5dnpetM0gPjk1S2uBOONz744HUEtY0+KeDmsLL2TzzD/i7m+S
-         vNkt08PsLuda2ZYD75Vx0EATySk7o4krUvnYUF71+tp8ISPhv46SX7EGEs3Ol6hJRn
-         iL1M44KCu0BYqz91o2fbEKy2INgDTnoyKXqSh0KkS97RgYeLZB4OIJXLKz8HmD21VN
-         VRYWsS9zxy7hA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     QintaoShen <unSimple1993@163.com>, Nishanth Menon <nm@ti.com>,
-        Sasha Levin <sashal@kernel.org>, kristo@kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 09/37] soc: ti: ti_sci_pm_domains: Check for null return of devm_kcalloc
-Date:   Wed,  1 Jun 2022 09:55:54 -0400
-Message-Id: <20220601135622.2003939-9-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220601135622.2003939-1-sashal@kernel.org>
-References: <20220601135622.2003939-1-sashal@kernel.org>
+        Wed, 1 Jun 2022 10:00:59 -0400
+Received: from condef-10.nifty.com (condef-10.nifty.com [202.248.20.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D745647389;
+        Wed,  1 Jun 2022 06:57:23 -0700 (PDT)
+Received: from conssluserg-03.nifty.com ([10.126.8.82])by condef-10.nifty.com with ESMTP id 251DroRc014704;
+        Wed, 1 Jun 2022 22:53:50 +0900
+Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54]) (authenticated)
+        by conssluserg-03.nifty.com with ESMTP id 251DrHXv027234;
+        Wed, 1 Jun 2022 22:53:17 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com 251DrHXv027234
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1654091597;
+        bh=T0jniup0tdMhgXOVsaKHUqsHbruaPRstgNPuoFLQ+pc=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=ajuAOjVhvv07LABF+8ROyRe/wmobxoWCeF+GBjGsv3BNypwdUeUg6McGwAz7bNhIK
+         4ZZK/6ScCItnAHovrWEiOgl4K7feWIPxM7JPZUKhIyKlLOZtfv9iokhck/g56lsjQ0
+         7pCd5u9YAsd2HIy9QosDc4hLBPasM7LYTye6z9tXadY+HrJuAqLqxEsNxJDkumPGyF
+         jQKKyu1v/bZvvo31xslo0a/64JfjDHkqdIjlBEO587igis0fStzgshgrhTNR7lzuRD
+         MOYRGPUz34jV5A9jTRwvzvcQpUyYbABnxstkMylyCeDAGUdTwbB8u9zgdkXXNJ+DZc
+         ONI9K0yXitALg==
+X-Nifty-SrcIP: [209.85.216.54]
+Received: by mail-pj1-f54.google.com with SMTP id v5-20020a17090a7c0500b001df84fa82f8so2130406pjf.5;
+        Wed, 01 Jun 2022 06:53:17 -0700 (PDT)
+X-Gm-Message-State: AOAM532KUQ3U9cNBzHbt/t6gT7tS1QMXmiC4Hj5XY05WhVA2V4sOKTxK
+        NBRnVWYMkI+p/B3SXOsVpH/2qxcjVZIraX3al+I=
+X-Google-Smtp-Source: ABdhPJy07hu/OahBY3VJHSQdem7BDQ3c4Qu2+hwvYIGknJt0lPvMr2/KyufRbe4Ma0UKT+AqOzywxd7C0LHddmfLNl4=
+X-Received: by 2002:a17:903:1205:b0:15e:8cbc:fd2b with SMTP id
+ l5-20020a170903120500b0015e8cbcfd2bmr66483581plh.99.1654091596577; Wed, 01
+ Jun 2022 06:53:16 -0700 (PDT)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+References: <20220601130819.11171-1-isak01@gmail.com>
+In-Reply-To: <20220601130819.11171-1-isak01@gmail.com>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Wed, 1 Jun 2022 22:52:39 +0900
+X-Gmail-Original-Message-ID: <CAK7LNAReo0ACB_TbcCXu76OPeK6UQhWtAWOxGq=L88GZB5Tv8g@mail.gmail.com>
+Message-ID: <CAK7LNAReo0ACB_TbcCXu76OPeK6UQhWtAWOxGq=L88GZB5Tv8g@mail.gmail.com>
+Subject: Re: [PATCH] scripts: kconfig: nconf: make nconfig accept jk keybindings
+To:     Isak Ellmer <isak01@gmail.com>
+Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: QintaoShen <unSimple1993@163.com>
+On Wed, Jun 1, 2022 at 10:08 PM Isak Ellmer <isak01@gmail.com> wrote:
+>
+> Make nconfig accept jk keybindings for movement in addition to arrow
+> keys.
+>
+> Signed-off-by: Isak Ellmer <isak01@gmail.com>
+> ---
 
-[ Upstream commit ba56291e297d28aa6eb82c5c1964fae2d7594746 ]
+Applied to linux-kbuild.
+Thanks.
 
-The allocation funciton devm_kcalloc may fail and return a null pointer,
-which would cause a null-pointer dereference later.
-It might be better to check it and directly return -ENOMEM just like the
-usage of devm_kcalloc in previous code.
 
-Signed-off-by: QintaoShen <unSimple1993@163.com>
-Signed-off-by: Nishanth Menon <nm@ti.com>
-Link: https://lore.kernel.org/r/1648107843-29077-1-git-send-email-unSimple1993@163.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/soc/ti/ti_sci_pm_domains.c | 2 ++
- 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/soc/ti/ti_sci_pm_domains.c b/drivers/soc/ti/ti_sci_pm_domains.c
-index 8afb3f45d263..a33ec7eaf23d 100644
---- a/drivers/soc/ti/ti_sci_pm_domains.c
-+++ b/drivers/soc/ti/ti_sci_pm_domains.c
-@@ -183,6 +183,8 @@ static int ti_sci_pm_domain_probe(struct platform_device *pdev)
- 		devm_kcalloc(dev, max_id + 1,
- 			     sizeof(*pd_provider->data.domains),
- 			     GFP_KERNEL);
-+	if (!pd_provider->data.domains)
-+		return -ENOMEM;
- 
- 	pd_provider->data.num_domains = max_id + 1;
- 	pd_provider->data.xlate = ti_sci_pd_xlate;
+>  scripts/kconfig/nconf.c | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
+>
+> diff --git a/scripts/kconfig/nconf.c b/scripts/kconfig/nconf.c
+> index 7b371bd7fb36..3ba8b1af390f 100644
+> --- a/scripts/kconfig/nconf.c
+> +++ b/scripts/kconfig/nconf.c
+> @@ -52,8 +52,8 @@ static const char nconf_global_help[] =
+>  "\n"
+>  "Menu navigation keys\n"
+>  "----------------------------------------------------------------------\n"
+> -"Linewise up                 <Up>\n"
+> -"Linewise down               <Down>\n"
+> +"Linewise up                 <Up>    <k>\n"
+> +"Linewise down               <Down>  <j>\n"
+>  "Pagewise up                 <Page Up>\n"
+>  "Pagewise down               <Page Down>\n"
+>  "First entry                 <Home>\n"
+> @@ -1105,9 +1105,11 @@ static void conf(struct menu *menu)
+>                                 break;
+>                         switch (res) {
+>                         case KEY_DOWN:
+> +                       case 'j':
+>                                 menu_driver(curses_menu, REQ_DOWN_ITEM);
+>                                 break;
+>                         case KEY_UP:
+> +                       case 'k':
+>                                 menu_driver(curses_menu, REQ_UP_ITEM);
+>                                 break;
+>                         case KEY_NPAGE:
+> @@ -1287,9 +1289,11 @@ static void conf_choice(struct menu *menu)
+>                                 break;
+>                         switch (res) {
+>                         case KEY_DOWN:
+> +                       case 'j':
+>                                 menu_driver(curses_menu, REQ_DOWN_ITEM);
+>                                 break;
+>                         case KEY_UP:
+> +                       case 'k':
+>                                 menu_driver(curses_menu, REQ_UP_ITEM);
+>                                 break;
+>                         case KEY_NPAGE:
+> --
+> 2.35.1
+>
+
+
 -- 
-2.35.1
-
+Best Regards
+Masahiro Yamada
