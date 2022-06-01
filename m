@@ -2,95 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48317C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 09:30:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EB78C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 09:30:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350478AbiFAJaL (ORCPT
+        id S1351016AbiFAJaS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 05:30:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43690 "EHLO
+        Wed, 1 Jun 2022 05:30:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350477AbiFAJaA (ORCPT
+        with ESMTP id S1350618AbiFAJaM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 05:30:00 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F34E35DA54
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 02:29:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654075798;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=xgyHZKDlB7p0BuLqs9M8WohBIMnlgdhuu+3hRlyeW88=;
-        b=AiDy20If9cS9YXS6vLszxDL8mnL3zw7v2h2i4qPsAi2nMXbVDWtZWr9SaRK194n/74fDkg
-        MKNiFkFiVrr7awfsM/EcmBxvBXbrfHQNCqmKFvrU7s33/uDk/Tdwn37e1LzzS1EOvhrSTr
-        10Ts8ZJltdJ2XLkt+Ie9785i97MvB6Q=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-103-KjLXDmhFMYyymM_WmH0kOA-1; Wed, 01 Jun 2022 05:29:57 -0400
-X-MC-Unique: KjLXDmhFMYyymM_WmH0kOA-1
-Received: by mail-wm1-f70.google.com with SMTP id u12-20020a05600c19cc00b0038ec265155fso3057285wmq.6
-        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 02:29:56 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=xgyHZKDlB7p0BuLqs9M8WohBIMnlgdhuu+3hRlyeW88=;
-        b=m6YJPD9PxPADcmipNHSuPYyCzwV2coqf8KxzqiD4c2TL+giCyuHXZbm0nTxm7AqOSR
-         +VZCqFwLgf99/N7/O4bbbCK30IoAm1JVPpmY46sJslHufizGrjyKs54HTt7u+I1dNctt
-         bQnBEB1Z/y4IrPR54LadYoR7MoRk7Bdra9OPyAFlfZx0CxynDzDXM6U4fFvSkKwW70Rj
-         f2MOyie5J3cBeEezZ5deBPvqumdNBgQFPu19bUeokxtZRwjtVEpfyDaXs1/PdGzoT74Z
-         B9cr4gEZNoRfUU5t2WVS0jHqU3tGPhEJINFWB5waDEoLQu9MNFZI20KiiLSsC2Wzly27
-         x1pw==
-X-Gm-Message-State: AOAM533qrfsMFcDdWbWr14pqbyPCrXEozoHvLo95GfcPX+QP8Hl9JFen
-        UbOHLvcf2WpVgnYDD2MD36cm1CpkKBSr1UM6LHEcAAEduZtObtJd7jT8O3hsaiU2Zv4IfHEBW4O
-        H0oX1Arxdzg1CGYsnwMiDTkJx
-X-Received: by 2002:a5d:5686:0:b0:20e:63e7:8769 with SMTP id f6-20020a5d5686000000b0020e63e78769mr51278095wrv.419.1654075795909;
-        Wed, 01 Jun 2022 02:29:55 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxcIqqZdHxN0sh9iYav8gIoBSPR/rcvqW5Zg8PD/o3XgcU5QpPwH6r/7z/TzcYhFY+iy06BqQ==
-X-Received: by 2002:a5d:5686:0:b0:20e:63e7:8769 with SMTP id f6-20020a5d5686000000b0020e63e78769mr51278080wrv.419.1654075795718;
-        Wed, 01 Jun 2022 02:29:55 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c705:2600:951d:63df:c091:3b45? (p200300cbc7052600951d63dfc0913b45.dip0.t-ipconnect.de. [2003:cb:c705:2600:951d:63df:c091:3b45])
-        by smtp.gmail.com with ESMTPSA id y18-20020a05600c365200b003942a244f54sm5510819wmq.45.2022.06.01.02.29.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Jun 2022 02:29:55 -0700 (PDT)
-Message-ID: <77ae3b7d-a7d7-2484-cac1-d352d873ed1c@redhat.com>
-Date:   Wed, 1 Jun 2022 11:29:54 +0200
+        Wed, 1 Jun 2022 05:30:12 -0400
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A972606D0;
+        Wed,  1 Jun 2022 02:30:11 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2519Ts7j041056;
+        Wed, 1 Jun 2022 04:29:54 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1654075794;
+        bh=tNWTiL26yip0+8RRcm3Q4HITepb/6ZBenFxH0bJw1ro=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=Trot8imIKW2KUEAF31573pI1l80b/EVxxLUVds5Zu4mWnWEM7XtSOGnsln4U0Z5xU
+         Fzp4hCjTXOy4Pv1XL1ba72iZ8Xj8rgsnTRNzoZ+l2k2ghyb8ZoVBYqnHEbKeoxe6Sc
+         Hf4ee01r9VHpMqmJoPNBxUTEmz7j2qRWScgMOBnU=
+Received: from DFLE109.ent.ti.com (dfle109.ent.ti.com [10.64.6.30])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2519TsZL014057
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 1 Jun 2022 04:29:54 -0500
+Received: from DFLE103.ent.ti.com (10.64.6.24) by DFLE109.ent.ti.com
+ (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 1
+ Jun 2022 04:29:53 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE103.ent.ti.com
+ (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Wed, 1 Jun 2022 04:29:53 -0500
+Received: from [172.24.222.108] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2519TliG022357;
+        Wed, 1 Jun 2022 04:29:48 -0500
+Message-ID: <41277985-28c9-9bf0-8b24-6acc40391ef2@ti.com>
+Date:   Wed, 1 Jun 2022 14:59:47 +0530
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH 2/3] mm: hugetlb_vmemmap: cleanup
- hugetlb_free_vmemmap_enabled*
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 3/3] net: ethernet: ti: am65-cpsw: Move phy_set_mode_ext()
+ to correct location
 Content-Language: en-US
-To:     Muchun Song <songmuchun@bytedance.com>, mike.kravetz@oracle.com,
-        akpm@linux-foundation.org
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        smuchun@bytedance.com
-References: <20220404074652.68024-1-songmuchun@bytedance.com>
- <20220404074652.68024-3-songmuchun@bytedance.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <20220404074652.68024-3-songmuchun@bytedance.com>
-Content-Type: text/plain; charset=UTF-8
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <vladimir.oltean@nxp.com>,
+        <grygorii.strashko@ti.com>, <vigneshr@ti.com>, <nsekhar@ti.com>,
+        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <kishon@ti.com>
+References: <20220531113058.23708-1-s-vadapalli@ti.com>
+ <20220531113058.23708-4-s-vadapalli@ti.com>
+ <YpYCJv2SIExL+VHs@shell.armlinux.org.uk>
+ <9f531f8d-9ff2-2ec9-504f-eed324ba86c6@ti.com>
+ <YpcjaOdXHC+uYJ2J@shell.armlinux.org.uk>
+From:   Siddharth Vadapalli <s-vadapalli@ti.com>
+In-Reply-To: <YpcjaOdXHC+uYJ2J@shell.armlinux.org.uk>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04.04.22 09:46, Muchun Song wrote:
-> The word of "free" is not expressive enough to express the feature of optimizing
-> vmemmap pages associated with each HugeTLB, rename this keywork to "optimeze".
-> In this patch , cheanup the static key and hugetlb_free_vmemmap_enabled() to make
-> code more expressive.
+Hello Russell,
+
+On 01/06/22 13:59, Russell King (Oracle) wrote:
+> On Wed, Jun 01, 2022 at 11:39:57AM +0530, Siddharth Vadapalli wrote:
+>> Hello Russell,
+>>
+>> On 31/05/22 17:25, Russell King (Oracle) wrote:
+>>> On Tue, May 31, 2022 at 05:00:58PM +0530, Siddharth Vadapalli wrote:
+>>>> In TI's J7200 SoC CPSW5G ports, each of the 4 ports can be configured
+>>>> as a QSGMII main or QSGMII-SUB port. This configuration is performed
+>>>> by phy-gmii-sel driver on invoking the phy_set_mode_ext() function.
+>>>>
+>>>> It is necessary for the QSGMII main port to be configured before any of
+>>>> the QSGMII-SUB interfaces are brought up. Currently, the QSGMII-SUB
+>>>> interfaces come up before the QSGMII main port is configured.
+>>>>
+>>>> Fix this by moving the call to phy_set_mode_ext() from
+>>>> am65_cpsw_nuss_ndo_slave_open() to am65_cpsw_nuss_init_slave_ports(),
+>>>> thereby ensuring that the QSGMII main port is configured before any of
+>>>> the QSGMII-SUB ports are brought up.
+>>>
+>>> This sounds like "if we're configured via port->slave.phy_if to be in
+>>> QSGMII mode, then the serdes PHY needs to be configured before any of
+>>> the QSGMII ports are used". Doesn't that mean that if
+>>> port->slave.phy_if is QSGMII, then the port _only_ supports QSGMII
+>>> mode, and conversely, the port doesn't support QSGMII unless firmware
+>>> said it could be.
+>>>
+>>> So, doesn't that mean am65_cpsw_nuss_init_port_ndev() should indicate
+>>> only QSGMII, or only the RGMII modes, but never both together?
+>>
+>> The phy-gmii-sel driver called by phy_set_mode_ext() configures the CPSW5G MAC
+>> rather than the SerDes Phy. In the CPSW5G MAC, the QSGMII mode is further split
+>> up as two modes that are TI SoC specific, namely QSGMII main and QSGMII-SUB. Of
+>> the 4 ports present in CPSW5G (4 external ports), only one can be the main port
+>> while the rest are the QSGMII-SUB ports. Only the QSGMII main interface is
+>> responsible for auto-negotiation between the MAC and PHY. For this reason, the
+>> writes to the CPSW5G MAC, mentioning which of the interfaces is the QSGMII main
+>> interface and which ones are the QSGMII-SUB interfaces has to be done before any
+>> of the interfaces are brought up. Otherwise, it would result in a QSGMII-SUB
+>> interface being brought up before the QSGMII main interface is determined,
+>> resulting in the failure of auto-negotiation process, thereby making the
+>> QSGMII-SUB interfaces non-functional.
 > 
+> That confirms my suspicion - if an interface is in QSGMII mode, then
+> RGMII should not be marked as a supported interface to phylink. If the
 
-Reviewed-by: David Hildenbrand <david@redhat.com>
+CPSW5G MAC supports both RGMII and QSGMII modes, so wouldn't it be correct to
+mark both RGMII and QSGMII modes as supported? The mode is specified in the
+device-tree and configured in CPSW5G MAC accordingly.
 
--- 
+> "QSGMII main interface" were to be switched to RGMII mode, then this
+> would break the other ports. So RGMII isn't supported if in QSGMII
+> mode.
+
+Yes, if the QSGMII main interface were to be switched to RGMII mode, then it
+would break the other ports. However, the am65-cpsw driver currently has no
+provision to dynamically change the port modes once the driver is initialized.
+
 Thanks,
-
-David / dhildenb
-
+Siddharth.
