@@ -2,90 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEAA7C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 16:09:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CA1BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 16:11:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356007AbiFAQJ2 (ORCPT
+        id S1356013AbiFAQLN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 12:09:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48334 "EHLO
+        Wed, 1 Jun 2022 12:11:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355090AbiFAQJ0 (ORCPT
+        with ESMTP id S1349045AbiFAQLL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 12:09:26 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B9A7A502D;
-        Wed,  1 Jun 2022 09:09:25 -0700 (PDT)
+        Wed, 1 Jun 2022 12:11:11 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02B86A502D
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 09:11:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654099765; x=1685635765;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=+oZC6UP0stKwFCCsu2gFuJQpdMUHJaXRTUCn92+/3iA=;
-  b=npxa+fbGJTKeo+ZBuLYeCUv1muXIYJ1+c3xLHlJKRVOPI03B1YJr+L4B
-   0an6o/x8bHa/LfhCvYR1a2Y+2xmCbcGCIhRLPTkUaY4Ca3+nM/QemQ4MB
-   2iyuM9AhqW0cnYBe+xzPbq/e7lJ4BPbxGCSsD7h0TTyviKzNKxmINzXLp
-   T4WdhVUeXtVssN5fPsBOAzt0jYxtaIYMWrDNgSEE9ak9CRQIyWE35mGd5
-   ++ZByCS5E73FRvi9iw0/5h3+eYVldDm2j4PaBs7MtUQ4+AHxMgXRhlm2z
-   RwK1oWQvZhxKHvB4eduFwlOHl0Zq5qDvSqnb9VAeDM8ZuDwt4IDGNKTk8
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10365"; a="257709041"
+  t=1654099869; x=1685635869;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=26YWsW3yM1+zsK31KPcT4uJ3P+X/vv2kYM1UOFXZJDY=;
+  b=X4Z5+9HVqqfeFe2ZS2nSU7TCgSixzRL15qFEPe6Nz8HTkzSzPhUoVH32
+   0oMLieEOVW6TmVZm2awbfBfj6vyZIqjc/Ot81u0udOWkyPRR71w8+IiKx
+   Zcy/ovjqzyxuVv6zA3J9efs/xh2NmZdZIU6xaGjce1f4QemxVNtgWhGhL
+   pDdzkH4sPwCpQzkOPgbSf9wNVVTi3fi6rLBFPywv8NxhXkg5DzPU6Bgs3
+   i30iB5UIgoj9wXRdQqE5DqM3zllYNwNDd+vcuNB1loQ+w10EnUmaYNgZR
+   eiwj+k9QVHITNuWSjWWAuiTrmjV5fS6LCs/l1BuP2iCMG0J1kW23mzwXd
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10365"; a="274442855"
 X-IronPort-AV: E=Sophos;i="5.91,268,1647327600"; 
-   d="scan'208";a="257709041"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 09:09:22 -0700
+   d="scan'208";a="274442855"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 09:11:09 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,268,1647327600"; 
-   d="scan'208";a="680171311"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 09:09:20 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nwQuL-000Qne-LA;
-        Wed, 01 Jun 2022 19:09:17 +0300
-Date:   Wed, 1 Jun 2022 19:09:17 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Sathyanarayanan Kuppuswamy 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>
-Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andy Shevchenko <andy@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>
-Subject: Re: [PATCH v1 1/1] gpio: wcove: make irq_chip immutable
-Message-ID: <YpePLa0jbTLusGU9@smile.fi.intel.com>
-References: <20220601154833.2173-1-andriy.shevchenko@linux.intel.com>
- <e965160d-08d1-f148-6452-f759053e7e99@linux.intel.com>
+   d="scan'208";a="633601679"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 01 Jun 2022 09:11:08 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nwQw7-00049g-Pi;
+        Wed, 01 Jun 2022 16:11:07 +0000
+Date:   Thu, 2 Jun 2022 00:10:31 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [mark:arm64/ftrace/minimal-regs 5/6]
+ arch/x86/include/asm/ftrace.h:47:32: error: initialization of 'struct
+ pt_regs *' from 'int' makes pointer from integer without a cast
+Message-ID: <202206020032.Mu3eiis7-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <e965160d-08d1-f148-6452-f759053e7e99@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 01, 2022 at 08:51:03AM -0700, Sathyanarayanan Kuppuswamy wrote:
-> On 6/1/22 8:48 AM, Andy Shevchenko wrote:
-> > Since recently, the kernel is nagging about mutable irq_chips:
-> > 
-> >     "not an immutable chip, please consider fixing it!"
-> > 
-> > Drop the unneeded copy, flag it as IRQCHIP_IMMUTABLE, add the new
-> > helper functions and call the appropriate gpiolib functions.
-> > 
-> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> 
-> Looks good to me
-> 
-> Reviewed-by: Kuppuswamy Sathyanarayanan
-> <sathyanarayanan.kuppuswamy@linux.intel.com>
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git arm64/ftrace/minimal-regs
+head:   b0741d059a9f19a1aa1191833140f53e41f1775a
+commit: c694698df7f633bcbdf8bc0edb94f4a70ed0d092 [5/6] ftrace: pass fregs to arch_ftrace_set_direct_caller()
+config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220602/202206020032.Mu3eiis7-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-1) 11.3.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git/commit/?id=c694698df7f633bcbdf8bc0edb94f4a70ed0d092
+        git remote add mark https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git
+        git fetch --no-tags mark arm64/ftrace/minimal-regs
+        git checkout c694698df7f633bcbdf8bc0edb94f4a70ed0d092
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/gpu/drm/i915/
 
-Thanks!
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Please fix your tools so it won't split tag line and `b4` may automatically test it.
+All errors (new ones prefixed by >>):
 
+   In file included from include/linux/ftrace.h:23,
+                    from include/linux/kprobes.h:28,
+                    from include/linux/kgdb.h:19,
+                    from include/drm/drm_util.h:36,
+                    from drivers/gpu/drm/i915/display/intel_display.h:28,
+                    from drivers/gpu/drm/i915/display/intel_cdclk.h:11,
+                    from <command-line>:
+   arch/x86/include/asm/ftrace.h:45:57: error: 'struct ftrace_regs' declared inside parameter list will not be visible outside of this definition or declaration [-Werror]
+      45 | static inline void arch_ftrace_set_direct_caller(struct ftrace_regs *fregs, unsigned long addr)
+         |                                                         ^~~~~~~~~~~
+   arch/x86/include/asm/ftrace.h: In function 'arch_ftrace_set_direct_caller':
+   arch/x86/include/asm/ftrace.h:47:32: error: implicit declaration of function 'ftrace_get_regs' [-Werror=implicit-function-declaration]
+      47 |         struct pt_regs *regs = ftrace_get_regs(fregs);
+         |                                ^~~~~~~~~~~~~~~
+>> arch/x86/include/asm/ftrace.h:47:32: error: initialization of 'struct pt_regs *' from 'int' makes pointer from integer without a cast [-Werror=int-conversion]
+   In file included from include/linux/kprobes.h:28,
+                    from include/linux/kgdb.h:19,
+                    from include/drm/drm_util.h:36,
+                    from drivers/gpu/drm/i915/display/intel_display.h:28,
+                    from drivers/gpu/drm/i915/display/intel_cdclk.h:11,
+                    from <command-line>:
+   include/linux/ftrace.h: At top level:
+   include/linux/ftrace.h:121:40: error: conflicting types for 'ftrace_get_regs'; have 'struct pt_regs *(struct ftrace_regs *)'
+     121 | static __always_inline struct pt_regs *ftrace_get_regs(struct ftrace_regs *fregs)
+         |                                        ^~~~~~~~~~~~~~~
+   In file included from include/linux/ftrace.h:23,
+                    from include/linux/kprobes.h:28,
+                    from include/linux/kgdb.h:19,
+                    from include/drm/drm_util.h:36,
+                    from drivers/gpu/drm/i915/display/intel_display.h:28,
+                    from drivers/gpu/drm/i915/display/intel_cdclk.h:11,
+                    from <command-line>:
+   arch/x86/include/asm/ftrace.h:47:32: note: previous implicit declaration of 'ftrace_get_regs' with type 'int()'
+      47 |         struct pt_regs *regs = ftrace_get_regs(fregs);
+         |                                ^~~~~~~~~~~~~~~
+   cc1: all warnings being treated as errors
+--
+   In file included from include/linux/ftrace.h:23,
+                    from include/linux/kprobes.h:28,
+                    from include/linux/kgdb.h:19,
+                    from include/drm/drm_util.h:36,
+                    from include/drm/drm_connector.h:32,
+                    from drivers/gpu/drm/i915/i915_drv.h:37,
+                    from drivers/gpu/drm/i915/pxp/intel_pxp_debugfs.c:14:
+   arch/x86/include/asm/ftrace.h:45:57: error: 'struct ftrace_regs' declared inside parameter list will not be visible outside of this definition or declaration [-Werror]
+      45 | static inline void arch_ftrace_set_direct_caller(struct ftrace_regs *fregs, unsigned long addr)
+         |                                                         ^~~~~~~~~~~
+   arch/x86/include/asm/ftrace.h: In function 'arch_ftrace_set_direct_caller':
+   arch/x86/include/asm/ftrace.h:47:32: error: implicit declaration of function 'ftrace_get_regs' [-Werror=implicit-function-declaration]
+      47 |         struct pt_regs *regs = ftrace_get_regs(fregs);
+         |                                ^~~~~~~~~~~~~~~
+>> arch/x86/include/asm/ftrace.h:47:32: error: initialization of 'struct pt_regs *' from 'int' makes pointer from integer without a cast [-Werror=int-conversion]
+   In file included from include/linux/kprobes.h:28,
+                    from include/linux/kgdb.h:19,
+                    from include/drm/drm_util.h:36,
+                    from include/drm/drm_connector.h:32,
+                    from drivers/gpu/drm/i915/i915_drv.h:37,
+                    from drivers/gpu/drm/i915/pxp/intel_pxp_debugfs.c:14:
+   include/linux/ftrace.h: At top level:
+   include/linux/ftrace.h:121:40: error: conflicting types for 'ftrace_get_regs'; have 'struct pt_regs *(struct ftrace_regs *)'
+     121 | static __always_inline struct pt_regs *ftrace_get_regs(struct ftrace_regs *fregs)
+         |                                        ^~~~~~~~~~~~~~~
+   In file included from include/linux/ftrace.h:23,
+                    from include/linux/kprobes.h:28,
+                    from include/linux/kgdb.h:19,
+                    from include/drm/drm_util.h:36,
+                    from include/drm/drm_connector.h:32,
+                    from drivers/gpu/drm/i915/i915_drv.h:37,
+                    from drivers/gpu/drm/i915/pxp/intel_pxp_debugfs.c:14:
+   arch/x86/include/asm/ftrace.h:47:32: note: previous implicit declaration of 'ftrace_get_regs' with type 'int()'
+      47 |         struct pt_regs *regs = ftrace_get_regs(fregs);
+         |                                ^~~~~~~~~~~~~~~
+   drivers/gpu/drm/i915/pxp/intel_pxp_debugfs.c:61:6: error: no previous prototype for 'intel_pxp_debugfs_register' [-Werror=missing-prototypes]
+      61 | void intel_pxp_debugfs_register(struct intel_pxp *pxp, struct dentry *gt_root)
+         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~
+   cc1: all warnings being treated as errors
+
+
+vim +47 arch/x86/include/asm/ftrace.h
+
+    37	
+    38	/*
+    39	 * When a ftrace registered caller is tracing a function that is
+    40	 * also set by a register_ftrace_direct() call, it needs to be
+    41	 * differentiated in the ftrace_caller trampoline. To do this, we
+    42	 * place the direct caller in the ORIG_AX part of pt_regs. This
+    43	 * tells the ftrace_caller that there's a direct caller.
+    44	 */
+    45	static inline void arch_ftrace_set_direct_caller(struct ftrace_regs *fregs, unsigned long addr)
+    46	{
+  > 47		struct pt_regs *regs = ftrace_get_regs(fregs);
+    48	
+    49		/* Emulate a call */
+    50		regs->orig_ax = addr;
+    51	}
+    52	
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
