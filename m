@@ -2,141 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1033C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:39:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E2B6CCA473
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:39:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354899AbiFAOjS (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:39:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41168 "EHLO
+        id S229602AbiFAOje (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 10:39:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229602AbiFAOjP (ORCPT
+        with ESMTP id S1354947AbiFAOj2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:39:15 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90B1F31233;
-        Wed,  1 Jun 2022 07:39:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654094354; x=1685630354;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=kgeZ5dHKGAmvtm2SI9klD7xeCUa8LmfIDO8LskDbpCY=;
-  b=MyuPw3nzSlQyeCaTmkm7Ejw6KJHsH675eqa5SmbWap7jFNJ/xMaYJDqT
-   LcG5mXaQwjwZTpl3btRS16ja0lzt3brAE2pkcGnCa+H5YaGJJsZg/uYMt
-   rifWWALy9MFPYaDKDwg+sMrx3kDu/iAgkTZRjfYKxXnLMZSfsq+AjgvS8
-   5QStByOq5thYnnAcjfm3VW0QqCWk/vK0fu/G5YuaEfqeAtAt+dbpE8kvc
-   tM9DeShSxR+0pB/CGmcQEmEO4SxdmohNxwGq+hVZG16A1fMerHoxsDnRQ
-   14cM7nsGN0lOtB8N4oL+XWK7KClFKQBPmTEwpEa7gprXfSfu1CnNDZBTN
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10365"; a="338656201"
-X-IronPort-AV: E=Sophos;i="5.91,268,1647327600"; 
-   d="scan'208";a="338656201"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 07:39:13 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,268,1647327600"; 
-   d="scan'208";a="581611535"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 01 Jun 2022 07:39:10 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nwPV2-00044e-Nc;
-        Wed, 01 Jun 2022 14:39:04 +0000
-Date:   Wed, 1 Jun 2022 22:38:35 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Haowen Bai <baihaowen@meizu.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        netdev@vger.kernel.org, Haowen Bai <baihaowen@meizu.com>,
-        linux-parisc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: tulip: de4x5: remove unused variable
-Message-ID: <202206012206.rmnA2Zg6-lkp@intel.com>
-References: <1654068277-6691-1-git-send-email-baihaowen@meizu.com>
+        Wed, 1 Jun 2022 10:39:28 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3B06B338BC
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 07:39:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654094362;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qlU0tkzpCjcg/jU3LgCOcXpRFl3qkGqk9lVl6FW9S+g=;
+        b=T3lLK89+tCok2oiaNJSiZBSncEZtYjmnOl/e5+nrPhcmiStbyNe6+A8ok7E25fl3Eda3rA
+        BajBq/dTwZTasUz5zrBJdCWoIXS/xgiWYlnwNqH1NL2JPfq2Yp9F8tS33Zf4nrisPs+FZF
+        Lm+gX7CljDof55uNm1A5TwfTTiFz8Dk=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-615-bbHG5tH7NnK2htDUV0xOGA-1; Wed, 01 Jun 2022 10:39:20 -0400
+X-MC-Unique: bbHG5tH7NnK2htDUV0xOGA-1
+Received: by mail-wr1-f72.google.com with SMTP id p10-20020adfaa0a000000b0020c4829af5fso344618wrd.16
+        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 07:39:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=qlU0tkzpCjcg/jU3LgCOcXpRFl3qkGqk9lVl6FW9S+g=;
+        b=LmHflgZPJTpZyukkKXgJTdCTAFPXCzxlCgct+Dr2Q0YZet1BVG6NCcwloXK7KN0IVz
+         O/5zORPZVE6BsomgrFxVf83C+F0an+DvoSCfEL/5YAX7Z+NoJdoQHBvz9Xnsu1RHPLge
+         fw8k8BMQ0qr5b5uBUMiSjTqxW3BWDVpAhBbdGiun8b2tc9v9sA3qOMghlARcEP9uSR1Z
+         49dDibYPQ0gM2sCP2a6h0Dwmzf68ZnVHknaxYlBU/sBmuy7VBlsua4RDCMHijwGnOvjl
+         631nZhod0U81JqpGIX653/pLAEYbQlsf+z9MEaGLLsS08wQ8SY/Xq87W7hh8iWGJuGrp
+         PUyw==
+X-Gm-Message-State: AOAM5302IeZ9FxKqBUEu63cxMKWfKMt70IcYTP0ZJvCRAf+c5XQVv3V5
+        rQY/LwpIoLKprhfQ98q/ysKp9oh98ZnjWkuAyt3uNOqpzHvM+lKBTSN2LPrnNVYHy53lthlBrUy
+        rMcWokIF2RXQxjDVp9nMjR4zF
+X-Received: by 2002:a05:600c:1d99:b0:397:482b:429 with SMTP id p25-20020a05600c1d9900b00397482b0429mr28614916wms.130.1654094359707;
+        Wed, 01 Jun 2022 07:39:19 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwZmvS/ySSMSACfcbs5N8wx4zgU89IJgDAitfH9pT2OXqot4AKsgn1nc41biOJdFJqGw1r+Pw==
+X-Received: by 2002:a05:600c:1d99:b0:397:482b:429 with SMTP id p25-20020a05600c1d9900b00397482b0429mr28614883wms.130.1654094359401;
+        Wed, 01 Jun 2022 07:39:19 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c705:2600:951d:63df:c091:3b45? (p200300cbc7052600951d63dfc0913b45.dip0.t-ipconnect.de. [2003:cb:c705:2600:951d:63df:c091:3b45])
+        by smtp.gmail.com with ESMTPSA id t22-20020a05600c41d600b00397550b387bsm2720288wmh.23.2022.06.01.07.39.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 01 Jun 2022 07:39:18 -0700 (PDT)
+Message-ID: <116f7be4-7b75-a83b-899b-c23b52534b30@redhat.com>
+Date:   Wed, 1 Jun 2022 16:39:16 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1654068277-6691-1-git-send-email-baihaowen@meizu.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCHv6 03/15] efi/x86: Get full memory map in allocate_e820()
+Content-Language: en-US
+To:     "Kirill A. Shutemov" <kirill@shutemov.name>
+Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joerg Roedel <jroedel@suse.de>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Varad Gautam <varad.gautam@suse.com>,
+        Dario Faggioli <dfaggioli@suse.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Mike Rapoport <rppt@kernel.org>, marcelo.cerri@canonical.com,
+        tim.gardner@canonical.com, khalid.elmously@canonical.com,
+        philip.cox@canonical.com, x86@kernel.org, linux-mm@kvack.org,
+        linux-coco@lists.linux.dev, linux-efi@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220517153444.11195-1-kirill.shutemov@linux.intel.com>
+ <20220517153444.11195-4-kirill.shutemov@linux.intel.com>
+ <b9a0eb0a-ce27-5306-a12f-79d196445254@redhat.com>
+ <20220601143515.iavmtysdchirbtel@box.shutemov.name>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <20220601143515.iavmtysdchirbtel@box.shutemov.name>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Haowen,
+On 01.06.22 16:35, Kirill A. Shutemov wrote:
+> On Wed, Jun 01, 2022 at 11:00:23AM +0200, David Hildenbrand wrote:
+>> On 17.05.22 17:34, Kirill A. Shutemov wrote:
+>>> Currently allocate_e820() only interested in the size of map and size of
+>>> memory descriptor to determine how many e820 entries the kernel needs.
+>>>
+>>> UEFI Specification version 2.9 introduces a new memory type --
+>>> unaccepted memory. To track unaccepted memory kernel needs to allocate
+>>> a bitmap. The size of the bitmap is dependent on the maximum physical
+>>> address present in the system. A full memory map is required to find
+>>> the maximum address.
+>>>
+>>> Modify allocate_e820() to get a full memory map.
+>>
+>> Usually we use max_pfn, if we want to know the maximum pfn that's
+>> present in the system (well, IIRC, excluding hotunplug).
+>>
+>> How exactly will this (different?) maximum from UEFI for the bitmap
+>> interact with
+>>
+>> max_pfn = e820__end_of_ram_pfn();
+>>
+>> from e820 in existing code
+>>
+>> ?
+> 
+> I'm not sure I understand the question.
 
-Thank you for the patch! Yet something to improve:
+Essentially, if the PFN you calculate here for the bitmap size will
+essentially match later max_pfn.
 
-[auto build test ERROR on horms-ipvs/master]
-[also build test ERROR on v5.18]
-[cannot apply to net-next/master net/master linus/master next-20220601]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+> 
+> On EFI system, E820 is constructed based on EFI memory map and size of
+> bitmap calculated based of EFI memmap will always be enough to address all
+> memory. e820__end_of_ram_pfn() can be smaller than what what we calculate
+> as size of memory here, if kernel reserve very top of the memory, but it
+> will never be larger.
+> 
+> Later during the boot we use e820__end_of_ram_pfn() to infer size of
+> bitmap and it is safe.
+> 
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Haowen-Bai/net-tulip-de4x5-remove-unused-variable/20220601-152922
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/horms/ipvs.git master
-config: i386-randconfig-a004 (https://download.01.org/0day-ci/archive/20220601/202206012206.rmnA2Zg6-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c825abd6b0198fb088d9752f556a70705bc99dfd)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/98c118e28527e7ff29469521c68414943a7cfc3a
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Haowen-Bai/net-tulip-de4x5-remove-unused-variable/20220601-152922
-        git checkout 98c118e28527e7ff29469521c68414943a7cfc3a
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> drivers/net/ethernet/dec/tulip/de4x5.c:3823:2: error: use of undeclared identifier 'imr'
-           UNMASK_IRQs;
-           ^
-   drivers/net/ethernet/dec/tulip/de4x5.c:694:5: note: expanded from macro 'UNMASK_IRQs'
-       imr |= lp->irq_mask;\
-       ^
->> drivers/net/ethernet/dec/tulip/de4x5.c:3823:2: error: use of undeclared identifier 'imr'
-   drivers/net/ethernet/dec/tulip/de4x5.c:695:10: note: expanded from macro 'UNMASK_IRQs'
-       outl(imr, DE4X5_IMR);               /* Unmask the IRQs */\
-            ^
-   drivers/net/ethernet/dec/tulip/de4x5.c:3826:2: error: use of undeclared identifier 'imr'
-           ENABLE_IRQs;
-           ^
-   drivers/net/ethernet/dec/tulip/de4x5.c:683:5: note: expanded from macro 'ENABLE_IRQs'
-       imr |= lp->irq_en;\
-       ^
-   drivers/net/ethernet/dec/tulip/de4x5.c:3826:2: error: use of undeclared identifier 'imr'
-   drivers/net/ethernet/dec/tulip/de4x5.c:684:10: note: expanded from macro 'ENABLE_IRQs'
-       outl(imr, DE4X5_IMR);               /* Enable the IRQs */\
-            ^
-   4 errors generated.
-
-
-vim +/imr +3823 drivers/net/ethernet/dec/tulip/de4x5.c
-
-^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3814  
-^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3815  static void
-^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3816  de4x5_setup_intr(struct net_device *dev)
-^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3817  {
-^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3818      struct de4x5_private *lp = netdev_priv(dev);
-^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3819      u_long iobase = dev->base_addr;
-98c118e28527e7 drivers/net/ethernet/dec/tulip/de4x5.c Haowen Bai     2022-06-01  3820      s32 sts;
-^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3821  
-^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3822      if (inl(DE4X5_OMR) & OMR_SR) {   /* Only unmask if TX/RX is enabled */
-^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16 @3823  	UNMASK_IRQs;
-^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3824  	sts = inl(DE4X5_STS);        /* Reset any pending (stale) interrupts */
-^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3825  	outl(sts, DE4X5_STS);
-^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3826  	ENABLE_IRQs;
-^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3827      }
-^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3828  }
-^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3829  
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thanks,
+
+David / dhildenb
+
