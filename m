@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0DC7C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:53:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC8EDCCA468
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:53:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353498AbiFANxQ (ORCPT
+        id S1353522AbiFANx0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 09:53:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51302 "EHLO
+        Wed, 1 Jun 2022 09:53:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353386AbiFANwZ (ORCPT
+        with ESMTP id S1350649AbiFANxU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 09:52:25 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F8392DD56;
-        Wed,  1 Jun 2022 06:52:24 -0700 (PDT)
+        Wed, 1 Jun 2022 09:53:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B904A87A07;
+        Wed,  1 Jun 2022 06:52:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 81005CE1A21;
-        Wed,  1 Jun 2022 13:52:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 194D0C3411D;
-        Wed,  1 Jun 2022 13:52:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1DBCB615C4;
+        Wed,  1 Jun 2022 13:52:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AC00C385B8;
+        Wed,  1 Jun 2022 13:52:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091541;
-        bh=cxgcH3SBCy9umCZCgXiZp8Edk8+bIdtQdn75xOEmsXA=;
+        s=k20201202; t=1654091561;
+        bh=etlSzNB3grrboXbbp7K/HPtPiQ3/vS9tQOuqaVtCEwM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ku185ggBVbJKp9TQvsst2WXva/gxi0M5fwpJOGFZljP8mUZqk19U+4CUVWIx90xfK
-         92PY45ZCP+FjowLlQ773OpI89/gZWnw4m5/8R/g0c6uZiRnDVsMfayIeeZprZub/9y
-         OEXE7PlTy9fF2XeUgUktZ0ZL1xhEdwrT0vNfVXuzINmKFKJtxvkYfRt9ZWxAQcijHv
-         5x4Y5r3IgKhiQ73PimhKLiZp7R6Xzq0WQbxUVjtskDvsp4iwWlb0cHb3BMeLDmkTrt
-         QOL1TLBdfTRBhLcgPaivZYc3KZcCwniqUY1B2+87lesF4+soGQPaU7AvUMiW7O7e0c
-         RnDWTpxiRh26w==
+        b=eROl3brhj6D+yyafLxLkPiR1lDbIZLhdEayYSUq+dodEvGongv0wdyj5NZej8vUXJ
+         Ee6v48at3u/NSycilIH+G2kMnxWXpAzNfWz8JuAooLJtDSR2mSK5zYlLU/BhXObRrk
+         3HAt3OyUlvlKIgBC7OC4uxE8yjTv0spXp4vuBgxwC/PBjPFXOdNB2NdObA849oKWxd
+         rtyN5PIwgNM+OdqhYz9K6Na++0asrbk1eH0PKzvTUtVB85kucGZ7fwbvNsAl+rd2ur
+         v63ZxztA0OnBDKpFW2qz00/2bK+rhQlYOBrEweMIrtAVK9OW7k4qNfVTiZazzdcWKX
+         Yv67DslQkzhng==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 04/49] ARM: dts: socfpga: align interrupt controller node name with dtschema
-Date:   Wed,  1 Jun 2022 09:51:28 -0400
-Message-Id: <20220601135214.2002647-4-sashal@kernel.org>
+Cc:     Marco Chiappero <marco.chiappero@intel.com>,
+        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        fiona.trahe@intel.com, qat-linux@intel.com,
+        linux-crypto@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 11/49] crypto: qat - fix off-by-one error in PFVF debug print
+Date:   Wed,  1 Jun 2022 09:51:35 -0400
+Message-Id: <20220601135214.2002647-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135214.2002647-1-sashal@kernel.org>
 References: <20220601135214.2002647-1-sashal@kernel.org>
@@ -53,49 +55,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Marco Chiappero <marco.chiappero@intel.com>
 
-[ Upstream commit c9bdd50d2019f78bf4c1f6a79254c27771901023 ]
+[ Upstream commit dd3d081b7ea6754913222ed0313fcf644edcc7e6 ]
 
-Fixes dtbs_check warnings like:
+PFVF Block Message requests for CRC use 0-based values to indicate
+amounts, which have to be remapped to 1-based values on the receiving
+side.
 
-  $nodename:0: 'intc@fffed000' does not match '^interrupt-controller(@[0-9a-f,]+)*$'
+This patch fixes one debug print which was however using the wire value.
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Acked-by: Dinh Nguyen <dinguyen@kernel.org>
-Link: https://lore.kernel.org/r/20220317115705.450427-2-krzysztof.kozlowski@canonical.com
+Signed-off-by: Marco Chiappero <marco.chiappero@intel.com>
+Reviewed-by: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/socfpga.dtsi         | 2 +-
- arch/arm/boot/dts/socfpga_arria10.dtsi | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/crypto/qat/qat_common/adf_pfvf_pf_proto.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/socfpga.dtsi b/arch/arm/boot/dts/socfpga.dtsi
-index 7c1d6423d7f8..b8c5dd7860cb 100644
---- a/arch/arm/boot/dts/socfpga.dtsi
-+++ b/arch/arm/boot/dts/socfpga.dtsi
-@@ -46,7 +46,7 @@ pmu: pmu@ff111000 {
- 		      <0xff113000 0x1000>;
- 	};
+diff --git a/drivers/crypto/qat/qat_common/adf_pfvf_pf_proto.c b/drivers/crypto/qat/qat_common/adf_pfvf_pf_proto.c
+index 588352de1ef0..d17318d3f63a 100644
+--- a/drivers/crypto/qat/qat_common/adf_pfvf_pf_proto.c
++++ b/drivers/crypto/qat/qat_common/adf_pfvf_pf_proto.c
+@@ -154,7 +154,7 @@ static struct pfvf_message handle_blkmsg_req(struct adf_accel_vf_info *vf_info,
+ 	if (FIELD_GET(ADF_VF2PF_BLOCK_CRC_REQ_MASK, req.data)) {
+ 		dev_dbg(&GET_DEV(vf_info->accel_dev),
+ 			"BlockMsg of type %d for CRC over %d bytes received from VF%d\n",
+-			blk_type, blk_byte, vf_info->vf_nr);
++			blk_type, blk_byte + 1, vf_info->vf_nr);
  
--	intc: intc@fffed000 {
-+	intc: interrupt-controller@fffed000 {
- 		compatible = "arm,cortex-a9-gic";
- 		#interrupt-cells = <3>;
- 		interrupt-controller;
-diff --git a/arch/arm/boot/dts/socfpga_arria10.dtsi b/arch/arm/boot/dts/socfpga_arria10.dtsi
-index 3ba431dfa8c9..f1e50d2e623a 100644
---- a/arch/arm/boot/dts/socfpga_arria10.dtsi
-+++ b/arch/arm/boot/dts/socfpga_arria10.dtsi
-@@ -38,7 +38,7 @@ pmu: pmu@ff111000 {
- 		      <0xff113000 0x1000>;
- 	};
- 
--	intc: intc@ffffd000 {
-+	intc: interrupt-controller@ffffd000 {
- 		compatible = "arm,cortex-a9-gic";
- 		#interrupt-cells = <3>;
- 		interrupt-controller;
+ 		if (!adf_pf2vf_blkmsg_get_data(vf_info, blk_type, blk_byte,
+ 					       byte_max, &resp_data,
 -- 
 2.35.1
 
