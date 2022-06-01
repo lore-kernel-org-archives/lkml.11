@@ -2,180 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23560C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 06:01:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E31BBC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 06:03:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349794AbiFAGBu (ORCPT
+        id S1349801AbiFAGDX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 02:01:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50834 "EHLO
+        Wed, 1 Jun 2022 02:03:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344119AbiFAGBr (ORCPT
+        with ESMTP id S243177AbiFAGDT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 02:01:47 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B685C1007;
-        Tue, 31 May 2022 23:01:43 -0700 (PDT)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 25161Zak111534;
-        Wed, 1 Jun 2022 01:01:35 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1654063295;
-        bh=+aCCojRMiq5xMMa2smOMLWywfcMjA8WBVUZc2agFKro=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=zLvqwmLzLBFdgDsmYNrzpfTjIocb1yyGcJIcj2XS9wPqywSh6iznmIQliBc9LVtiP
-         YKhguYdLs+0A9P9hqUE+dEH47aHFXf6Jj5fqNipHNz/zJzr3XGsdCP4NWQNNkGN84u
-         df5Wq0tiluRWgwEM7U2t3Wbo8N1kRJ4U+KMEbXLc=
-Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 25161ZPT018041
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 1 Jun 2022 01:01:35 -0500
-Received: from DLEE101.ent.ti.com (157.170.170.31) by DLEE114.ent.ti.com
- (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 1
- Jun 2022 01:01:34 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE101.ent.ti.com
- (157.170.170.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Wed, 1 Jun 2022 01:01:34 -0500
-Received: from [172.24.222.108] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 25161TfB020842;
-        Wed, 1 Jun 2022 01:01:30 -0500
-Message-ID: <b5353c06-c8b4-c065-3843-28b2a34e1867@ti.com>
-Date:   Wed, 1 Jun 2022 11:31:29 +0530
+        Wed, 1 Jun 2022 02:03:19 -0400
+Received: from mailbox.box.xen0n.name (mail.xen0n.name [115.28.160.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15C4864D0D;
+        Tue, 31 May 2022 23:03:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xen0n.name; s=mail;
+        t=1654062778; bh=+SQ/0eJGKRfUjrv0y7MBl6u9+aie9yNgtn9zXiJXatQ=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=MPrVk57osmnSJSH8usd6C0hOYOQnqvMfimKla8SPTKb1b3p7S7z4TV3QbmJvgi8wz
+         QvqDrG+EPygWMfJumqmcMARAyrD4yUYS9QesvYMzOhDspws14XkxFR1mG0+D9SYk4H
+         PbOG71wY9849hZUFfXVpJ1HsxE8Qs6miB8t2TYJA=
+Received: from [192.168.9.172] (unknown [101.88.28.48])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mailbox.box.xen0n.name (Postfix) with ESMTPSA id 9FFC260104;
+        Wed,  1 Jun 2022 13:52:57 +0800 (CST)
+Message-ID: <832c3ae8-6c68-db2c-2c7f-0a5cd3071543@xen0n.name>
+Date:   Wed, 1 Jun 2022 13:52:57 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 1/2] dt-bindings: phy: ti: phy-gmii-sel: Add bindings for
- J7200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:103.0) Gecko/20100101
+ Thunderbird/103.0a1
+Subject: Re: [musl] Re: [GIT PULL] asm-generic changes for 5.19
 Content-Language: en-US
-To:     Roger Quadros <rogerq@kernel.org>, <robh+dt@kernel.org>,
-        <lee.jones@linaro.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <kishon@ti.com>, <vkoul@kernel.org>, <dan.carpenter@oracle.com>,
-        <grygorii.strashko@ti.com>
-CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-phy@lists.infradead.org>
-References: <20220531111221.22963-1-s-vadapalli@ti.com>
- <20220531111221.22963-2-s-vadapalli@ti.com>
- <26603540-8887-ef8d-8f4d-26f2f33d2a6f@kernel.org>
-From:   Siddharth Vadapalli <s-vadapalli@ti.com>
-In-Reply-To: <26603540-8887-ef8d-8f4d-26f2f33d2a6f@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+To:     Huacai Chen <chenhuacai@kernel.org>,
+        Arnd Bergmann <arnd@kernel.org>
+Cc:     musl@lists.openwall.com, WANG Xuerui <kernel@xen0n.name>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        GNU C Library <libc-alpha@sourceware.org>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Marc Zyngier <maz@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Jianmin Lv <lvjianmin@loongson.cn>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Huacai Chen <chenhuacai@loongson.cn>
+References: <CAK8P3a2_52JPnBWNvTTkFVwLxPAa7=NaQ4whwC1UeH_NYHeUKQ@mail.gmail.com>
+ <CAK8P3a0SpU1n+29KQxzKnPRvzmDE=L0V9RUpKxhemv=74kevcQ@mail.gmail.com>
+ <df5c406c-eec6-c340-2847-49670b7fe8bf@xen0n.name>
+ <CAK8P3a3awFdB1-G65DC38NBuSTvo6SvFTaS0m9YBxunHjHjQvQ@mail.gmail.com>
+ <CAAhV-H6sNr-yo8brBFtzziH6k9Tby0dFp7yehK55SfH5HjZ8hQ@mail.gmail.com>
+ <358025d1-28e6-708b-d23d-3f22ae12a800@xen0n.name>
+ <CAK8P3a1ge2bZS13ahm_LdO3jEcbtR4w3do-gLjggKvppqnBDkw@mail.gmail.com>
+ <CAAhV-H5NCUpR6aBtR9d7c9vW2KiHpk3iFQxj7BeTSS0boMz8PQ@mail.gmail.com>
+ <CAK8P3a2JgrW5a7_udCUWen-gOnJgVeRV2oAd-uq4VSuYkFUqNQ@mail.gmail.com>
+ <CAAhV-H6wfmdcV=a4L43dcabsvO+JbOebCX3_6PV+p85NjA9qhQ@mail.gmail.com>
+ <CAK8P3a0c_tbHov_b6cz-_Tj6VD3OWLwpGJf_2rj-nitipSKdYQ@mail.gmail.com>
+ <CAAhV-H4_qqQtTp2=mJF=OV+qcKzA0j8SPWKRMR-LJgC0zNfatQ@mail.gmail.com>
+From:   WANG Xuerui <kernel@xen0n.name>
+In-Reply-To: <CAAhV-H4_qqQtTp2=mJF=OV+qcKzA0j8SPWKRMR-LJgC0zNfatQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Roger,
+On 6/1/22 00:01, Huacai Chen wrote:
+> https://git.kernel.org/pub/scm/linux/kernel/git/chenhuacai/linux-loongson.git/log/?h=loongarch-next
+> has been updated. Now this branch droped irqchip drivers and pci
+> drivers. But the existing irqchip drivers need some small adjustment
+> to avoid build errors [1], and I hope Marc can give an Acked-by.
+> Thanks.
+>
+> This branch can be built with defconfig and allmodconfig (except
+> drivers/platform/surface/aggregator/controller.c, because it requires
+> 8bit/16bit cmpxchg, which I was told to remove their support).
+>
+> [1] https://lore.kernel.org/lkml/e7cf33a170d0b4e98e53744f60dbf922@kernel.org/T/#t
 
-On 31/05/22 17:15, Roger Quadros wrote:
-> Hi Siddharth,
-> 
-> On 31/05/2022 14:12, Siddharth Vadapalli wrote:
->> TI's J7200 SoC supports additional PHY modes like QSGMII and SGMII
->> that are not supported on earlier SoCs. Add a compatible for it.
->>
->> Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
->> ---
->>  .../mfd/ti,j721e-system-controller.yaml       |  5 ++++
->>  .../bindings/phy/ti,phy-gmii-sel.yaml         | 24 ++++++++++++++++++-
->>  2 files changed, 28 insertions(+), 1 deletion(-)
->>
->> diff --git a/Documentation/devicetree/bindings/mfd/ti,j721e-system-controller.yaml b/Documentation/devicetree/bindings/mfd/ti,j721e-system-controller.yaml
->> index fa86691ebf16..e381ba62a513 100644
->> --- a/Documentation/devicetree/bindings/mfd/ti,j721e-system-controller.yaml
->> +++ b/Documentation/devicetree/bindings/mfd/ti,j721e-system-controller.yaml
->> @@ -48,6 +48,11 @@ patternProperties:
->>      description:
->>        This is the SERDES lane control mux.
->>  
->> +  "phy@[0-9a-f]+$":
->> +    type: object
->> +    description:
->> +      This is the register to set phy mode through phy-gmii-sel driver.
->> +
-> 
-> Is this really required? The system controller has 100s of different such registers and it is not practical to mention about all.
+I see the loongarch-next HEAD has been updated and it's now purely arch 
+changes aside from the two trivial irqchip cleanups. Some other changes 
+to the v11 patchset [1] are included, but arguably minor enough to not 
+invalidate previous Reviewed-by tags.
 
-The property has to be mentioned in order to pass: make dtbs_check.
+After some small tweaks:
 
-> 
->>  required:
->>    - compatible
->>    - reg
->> diff --git a/Documentation/devicetree/bindings/phy/ti,phy-gmii-sel.yaml b/Documentation/devicetree/bindings/phy/ti,phy-gmii-sel.yaml
->> index ff8a6d9eb153..7427758451e7 100644
->> --- a/Documentation/devicetree/bindings/phy/ti,phy-gmii-sel.yaml
->> +++ b/Documentation/devicetree/bindings/phy/ti,phy-gmii-sel.yaml
->> @@ -53,12 +53,21 @@ properties:
->>        - ti,am43xx-phy-gmii-sel
->>        - ti,dm814-phy-gmii-sel
->>        - ti,am654-phy-gmii-sel
->> +      - ti,j7200-cpsw5g-phy-gmii-sel
-> 
-> Why not just "ti,j7200-phy-gmii-sel" so it is consistent naming.
+- adding "#include <asm/irqflags.h>" to arch/loongarch/include/asm/ptrace.h,
+- adding an arch/loongarch/include/uapi/asm/bpf_perf_event.h with the 
+same content as arch/arm64's, and
+- adding "depends on ARM64 || X86" to 
+drivers/platform/surface/aggregator/Kconfig,
 
-In TI's J7200 device, there are two CPSW MACs, namely CPSW2G and CPSW5G. While
-CPSW5G supports QSGMII mode, CPSW2G does not. Hence, the compatible being added
-with the extra mode (QSGMII) enabled is applicable only for CPSW5G and not for
-CPSW2G. Thus, to highlight this, the word "CPSW5G" has been included in the name
-of the compatible.
+the current loongarch-next HEAD (commit 
+36552a24f70d21b7d63d9ef490561dbdc13798d7) now passes allmodconfig build 
+(with CONFIG_WERROR disabled; my Gentoo-flavored gcc-12 seems to emit 
+warnings on a few drivers).
 
-> 
->>  
->>    reg:
->>      maxItems: 1
->>  
->>    '#phy-cells': true
->>  
->> +  ti,enet-ctrl-qsgmii:
->> +    $ref: /schemas/types.yaml#/definitions/uint32
->> +    description: |
->> +      Required only for QSGMII mode. Bitmask to select the port for
->> +      QSGMII main mode. Rest of the ports are selected as QSGMII_SUB
->> +      ports automatically. Any of the 4 CPSW5G ports can act as the
->> +      main port with the rest of them being the QSGMII_SUB ports.
->> +
-> 
-> This is weird way of doing things.
-> 
-> The Ethernet controller driver already knows which mode the port is
-> supposed to operate.
+The majority of userspace ABI has been stable for a few months already, 
+after the addition of orig_a0 and removal of newfstatat; the necessary 
+changes to switch to statx are already reviewed [2] / merged [3], and 
+have been integrated into the LoongArch port of Gentoo for a while. Eric 
+looked at the v11 and gave comments, and changes were made according to 
+the suggestions, but it'd probably better to get a proper Reviewed-by.
 
-From the ethernet driver perspective, there is no difference between the QSGMII
-or QSGMII-SUB modes and both are treated the same. However, the phy-gmii-sel
-driver configures CPSW MAC registers differently depending on the mode being
-QSGMII or QSGMII-SUB. Hence, the ti,enet-ctrl-qsgmii property is used to
-identify the QSGMII main port and the rest are configured in CPSW MAC as
-QSGMII-SUB ports.
+Among the rest of patches, I think maybe the EFI/boot protocol part 
+still need approval/ack from the EFI maintainer. However because the 
+current port isn't going to be able to run on any real hardware, maybe 
+that part could be done later; I'm not sure if the unacknowledged EFI 
+bits should be removed as well.
 
-> 
-> e.g.
-> +&cpsw0_port1 {
-> +	phy-handle = <&cpsw5g_phy0>;
-> +	phy-mode = "qsgmii";
-> +	mac-address = [00 00 00 00 00 00];
-> +	phys = <&cpsw0_phy_gmii_sel 1>;
-> +};
-> +
-> +&cpsw0_port2 {
-> +	phy-handle = <&cpsw5g_phy1>;
-> +	phy-mode = "qsgmii-sub";
-> +	mac-address = [00 00 00 00 00 00];
-> +	phys = <&cpsw0_phy_gmii_sel 2>;
-> 
-> And it can convey the mode to the PHY driver via phy_ops->set_mode.
-> So you should be depending on that instead of adding this new property.
+Arnd, what do you think about the current branch's status? Do Huacai 
+need to send a quick final v12 to gather tags?
 
-QSGMII-SUB is not a standard mode in the Linux kernel. In order to proceed with
-the suggested implementation, a new phy mode named PHY_INTERFACE_MODE_QSGMII_SUB
-has to be introduced to the kernel. Additionally, all existing phy drivers will
-have to be updated to recognize the new phy mode.
 
-Since the QSGMII-SUB mode is TI specific, it was decided that it would be better
-to add a new property in TI specific files for identifying the QSGMII main port
-and treating the rest as QSGMII-SUB ports.
+[1]: 
+https://lore.kernel.org/all/20220518092619.1269111-1-chenhuacai@loongson.cn/
+[2]: https://sourceware.org/pipermail/libc-alpha/2022-May/139127.html
+[3]: https://go-review.googlesource.com/c/go/+/407694
 
-Thanks,
-Siddharth.
