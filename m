@@ -2,127 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E636DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 10:21:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24C9DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 10:23:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350854AbiFAKV0 (ORCPT
+        id S1351726AbiFAKXM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 06:21:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45074 "EHLO
+        Wed, 1 Jun 2022 06:23:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230182AbiFAKVX (ORCPT
+        with ESMTP id S245623AbiFAKXK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 06:21:23 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 189A46D955;
-        Wed,  1 Jun 2022 03:21:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654078883; x=1685614883;
-  h=date:from:to:cc:subject:message-id:reply-to:references:
-   mime-version:in-reply-to;
-  bh=MPDfwkz64kDPQGnp5LEYEWHtzrsbbGi1CtkgkpVVQ9g=;
-  b=my0Teip4tC+h3shpaalEILbiEcsZvyfUzCTkEnYUqVGXPt8d1tylIeSC
-   qhwvDylj53iu1h2GlNGQnChlyIxX+ESo1w/xIu1nQYXlAlHpX2eqW7hgr
-   zGGcipkkeX9Pz4GHyWfISA4Mg9qrVGSCNGYNROK5vWlng7/W4tw2i2sw1
-   Tic7YnnuEDcfJUyiLpRHkStg+ZOgrqEsuTyt/TKklXrE2WHj+tCU/NKHw
-   A9yqMUdVKiqRH4R7p6lf8pwEpmJRK4w1bgviNvncuhqxcC6fSoOzADrSt
-   2+QAckyQe/R4cztUs5dLmiqZYU1ioFMP2R9dPNTUuGo5dCVPPOM4p6VXA
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10364"; a="336197555"
-X-IronPort-AV: E=Sophos;i="5.91,266,1647327600"; 
-   d="scan'208";a="336197555"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 03:21:22 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,266,1647327600"; 
-   d="scan'208";a="755837829"
-Received: from chaop.bj.intel.com (HELO localhost) ([10.240.192.101])
-  by orsmga005.jf.intel.com with ESMTP; 01 Jun 2022 03:21:12 -0700
-Date:   Wed, 1 Jun 2022 18:17:47 +0800
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     Vishal Annapurve <vannapurve@google.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-api@vger.kernel.org, linux-doc@vger.kernel.org,
-        qemu-devel@nongnu.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Jun Nakajima <jun.nakajima@intel.com>, dave.hansen@intel.com,
-        ak@linux.intel.com, david@redhat.com, aarcange@redhat.com,
-        ddutile@redhat.com, dhildenb@redhat.com,
-        Quentin Perret <qperret@google.com>,
-        Michael Roth <michael.roth@amd.com>, mhocko@suse.com
-Subject: Re: [PATCH v6 3/8] mm/memfd: Introduce MFD_INACCESSIBLE flag
-Message-ID: <20220601101747.GA1255243@chaop.bj.intel.com>
-Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
-References: <20220519153713.819591-1-chao.p.peng@linux.intel.com>
- <20220519153713.819591-4-chao.p.peng@linux.intel.com>
- <CAGtprH8EMsPMMoOEzjRu0SMVKT0RqmkLk=n+6uXkBA6-wiRtUA@mail.gmail.com>
+        Wed, 1 Jun 2022 06:23:10 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1641C44767
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 03:23:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654078988;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=p9awC6ut2PTSQbGY3p4pWteTXzbAIaEKO51IEMOl7Y8=;
+        b=f/SwYRdDOmDyEiIYdRXgO4vdcfHsEhVeRND9LkvW3NAnsufqGWkTzabdl1owVfDbhP+5+A
+        dFh2Hhq/o0Mq7662T994ad/4xadusmhV9hnBqzj5w35fQBiBwL1yVOwM+sTe3kS14Lj0WW
+        jymb7qmaYDWIxPM8SG1UygvhiM39+3E=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-28-uPKu9w-xPdC1mPE1Hv2_sQ-1; Wed, 01 Jun 2022 06:23:07 -0400
+X-MC-Unique: uPKu9w-xPdC1mPE1Hv2_sQ-1
+Received: by mail-wm1-f71.google.com with SMTP id o2-20020a05600c510200b0039747b0216fso3147774wms.0
+        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 03:23:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=p9awC6ut2PTSQbGY3p4pWteTXzbAIaEKO51IEMOl7Y8=;
+        b=MGSoRLUfcRIH8Jz0Ml72BM8CiCW6q1h/rA7DrwgY0EQCKV+D86EuUtkmVh7lgjP2WF
+         VE2TsTualYefcZ+Yuw1/nCbzzbHGqc+eyaaTt2MfUrpjVx2+PllwLoy2I4y7502LMTkV
+         q0cyxtYteCuLZJtWzIYJKza6VTzoYA6Dt88x+to/GFOLNY79yhynG1Tej8m+4N7zV1oD
+         X1mmQfeVbZM/t2opYd8JbwYO2Rm3v6O/Zn/LGA82kdkV16jlAgd5gFxi/6X1tnif6P+e
+         fgbBCALHi9+apALfgXbH0F/pj8C9VlRV9r4ji8OpImiv7xgGb98z8SMLmOpedteKe05I
+         kmLA==
+X-Gm-Message-State: AOAM530GzYexioTpEngwEcfuMlNTy0SGav8S8PKntdacApPROQHCshXO
+        Yqj+MEEjh42DKbFreta943SNb6hrv/0Xa/q+nm87zJCMs69fkpN+U0sVGB9w//5dy76lB5vAjet
+        HB9thhDNbJxCSf6RqTaaizVoR
+X-Received: by 2002:a5d:6c62:0:b0:20f:cd17:a013 with SMTP id r2-20020a5d6c62000000b0020fcd17a013mr43543311wrz.503.1654078985936;
+        Wed, 01 Jun 2022 03:23:05 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyY5EyeMv70h0gHF2VR5cWe1wh3iQD58gFYE3mNODgR24fbmqqmQdriq6eVTkbTYfoFp9Nqyw==
+X-Received: by 2002:a5d:6c62:0:b0:20f:cd17:a013 with SMTP id r2-20020a5d6c62000000b0020fcd17a013mr43543286wrz.503.1654078985705;
+        Wed, 01 Jun 2022 03:23:05 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:9af8:e5f5:7516:fa89? ([2001:b07:6468:f312:9af8:e5f5:7516:fa89])
+        by smtp.googlemail.com with ESMTPSA id f6-20020a05600c4e8600b0039466988f6csm6126351wmq.31.2022.06.01.03.22.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 01 Jun 2022 03:23:05 -0700 (PDT)
+Message-ID: <483f243c-a244-bc77-ede5-000ce73c1cc8@redhat.com>
+Date:   Wed, 1 Jun 2022 12:22:56 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAGtprH8EMsPMMoOEzjRu0SMVKT0RqmkLk=n+6uXkBA6-wiRtUA@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH 1/3] KVM: x86/pmu: Accept 0 for absent PMU MSRs when
+ host-initiated if !enable_pmu
+Content-Language: en-US
+To:     Like Xu <like.xu.linux@gmail.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>
+Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220601031925.59693-1-likexu@tencent.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <20220601031925.59693-1-likexu@tencent.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 31, 2022 at 12:15:00PM -0700, Vishal Annapurve wrote:
-> On Thu, May 19, 2022 at 8:41 AM Chao Peng <chao.p.peng@linux.intel.com> wrote:
-> >
-> > Introduce a new memfd_create() flag indicating the content of the
-> > created memfd is inaccessible from userspace through ordinary MMU
-> > access (e.g., read/write/mmap). However, the file content can be
-> > accessed via a different mechanism (e.g. KVM MMU) indirectly.
-> >
+On 6/1/22 05:19, Like Xu wrote:
+> From: Like Xu <likexu@tencent.com>
 > 
-> SEV, TDX, pkvm and software-only VMs seem to have usecases to set up
-> initial guest boot memory with the needed blobs.
-> TDX already supports a KVM IOCTL to transfer contents to private
-> memory using the TDX module but rest of the implementations will need
-> to invent
-> a way to do this.
-
-There are some discussions in https://lkml.org/lkml/2022/5/9/1292
-already. I somehow agree with Sean. TDX is using an dedicated ioctl to
-copy guest boot memory to private fd so the rest can do that similarly.
-The concern is the performance (extra memcpy) but it's trivial since the
-initial guest payload is usually optimized in size.
-
+> Whenever an MSR is part of KVM_GET_MSR_INDEX_LIST, as is the case for
+> MSR_K7_EVNTSEL0 or MSR_F15H_PERF_CTL0, it has to be always retrievable
+> and settable with KVM_GET_MSR and KVM_SET_MSR.
 > 
-> Is there a plan to support a common implementation for either allowing
-> initial write access from userspace to private fd or adding a KVM
-> IOCTL to transfer contents to such a file,
-> as part of this series through future revisions?
-
-Indeed, adding pre-boot private memory populating on current design
-isn't impossible, but there are still some opens, e.g. how to expose
-private fd to userspace for access, pKVM and CC usages may have
-different requirements. Before that's well-studied I would tend to not
-add that and instead use an ioctl to copy. Whether we need a generic
-ioctl or feature-specific ioctl, I don't have strong opinion here.
-Current TDX uses a feature-specific ioctl so it's not covered in this
-series.
-
-Chao
+> Accept a zero value for these MSRs to obey the contract.
 > 
-> Regards,
-> Vishal
+> Signed-off-by: Like Xu <likexu@tencent.com>
+> ---
+> Note, if !enable_pmu, it is easy to reproduce and verify it with selftest.
+> 
+>   arch/x86/kvm/pmu.c     |  8 ++++++++
+>   arch/x86/kvm/svm/pmu.c | 11 ++++++++++-
+>   2 files changed, 18 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
+> index 7a74691de223..3575a3746bf9 100644
+> --- a/arch/x86/kvm/pmu.c
+> +++ b/arch/x86/kvm/pmu.c
+> @@ -439,11 +439,19 @@ static void kvm_pmu_mark_pmc_in_use(struct kvm_vcpu *vcpu, u32 msr)
+>   
+>   int kvm_pmu_get_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+>   {
+> +	if (msr_info->host_initiated && !vcpu->kvm->arch.enable_pmu) {
+> +		msr_info->data = 0;
+> +		return 0;
+> +	}
+> +
+>   	return static_call(kvm_x86_pmu_get_msr)(vcpu, msr_info);
+>   }
+>   
+>   int kvm_pmu_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+>   {
+> +	if (msr_info->host_initiated && !vcpu->kvm->arch.enable_pmu)
+> +		return !!msr_info->data;
+> +
+>   	kvm_pmu_mark_pmc_in_use(vcpu, msr_info->index);
+>   	return static_call(kvm_x86_pmu_set_msr)(vcpu, msr_info);
+>   }
+> diff --git a/arch/x86/kvm/svm/pmu.c b/arch/x86/kvm/svm/pmu.c
+> index 256244b8f89c..fe520b2649b5 100644
+> --- a/arch/x86/kvm/svm/pmu.c
+> +++ b/arch/x86/kvm/svm/pmu.c
+> @@ -182,7 +182,16 @@ static struct kvm_pmc *amd_rdpmc_ecx_to_pmc(struct kvm_vcpu *vcpu,
+>   static bool amd_is_valid_msr(struct kvm_vcpu *vcpu, u32 msr, bool host_initiated)
+>   {
+>   	/* All MSRs refer to exactly one PMC, so msr_idx_to_pmc is enough.  */
+> -	return false;
+> +	if (!host_initiated)
+> +		return false;
+> +
+> +	switch (msr) {
+> +	case MSR_K7_EVNTSEL0 ... MSR_K7_PERFCTR3:
+> +	case MSR_F15H_PERF_CTL0 ... MSR_F15H_PERF_CTR5:
+> +		return true;
+> +	default:
+> +		return false;
+> +	}
+>   }
+>   
+>   static struct kvm_pmc *amd_msr_idx_to_pmc(struct kvm_vcpu *vcpu, u32 msr)
+
+Queued all three, thanks.
+
+Paolo
+
