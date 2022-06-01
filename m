@@ -2,205 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A4CFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 22:28:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78A66CCA473
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 22:31:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232227AbiFAW2e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 18:28:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42242 "EHLO
+        id S232311AbiFAWbD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 18:31:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232184AbiFAW2c (ORCPT
+        with ESMTP id S232301AbiFAWbB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 18:28:32 -0400
-Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C3A5B482
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 15:28:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=inria.fr; s=dc;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=AkDE+5ZI+IK3BHuS7N7ViWTtDYvZB4rptzcmh8eb1n8=;
-  b=ciO8DIRhw86/ODL5KXlAbuCIsWdUVr65CDTHtk2tDoP9AoVAH7qNtfnF
-   KU+mwi2rgZ6Cf64GqsKh3HgBkBJMfS2VQbVTEcVT4U7O3d2xR7VeMOmDI
-   2ZKs9XO4RK+y56oP0BgJpCEo8Qpz091wtL7m22O6JPphXLTN2WA5VzsxQ
-   Y=;
-Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=keisuke.nishimura@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
-X-IronPort-AV: E=Sophos;i="5.91,269,1647298800"; 
-   d="scan'208";a="39079992"
-Received: from eth-east-parth2-46-193-69-7.wb.wifirst.net (HELO [10.188.210.33]) ([46.193.69.7])
-  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2022 00:28:28 +0200
-Message-ID: <d971a684-ccd9-3839-1e30-c166fd55cf49@inria.fr>
-Date:   Thu, 2 Jun 2022 07:28:29 +0900
+        Wed, 1 Jun 2022 18:31:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D7ED101CB;
+        Wed,  1 Jun 2022 15:30:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 12B9660C98;
+        Wed,  1 Jun 2022 22:30:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B1C1C385A5;
+        Wed,  1 Jun 2022 22:30:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654122658;
+        bh=Is0lHUzMG8//soZVMgz0ruaa6kON13kwXAtlgdtJw6s=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=nGsYQX3k61YJkwTPy7HflD3pb9VyTIcNuEwF6KgKAgIfAXRZWcDtnrSLg994KU1mc
+         Wew5o1hEVzoOUJjWmMmTW6AbA6NK364G4371JXHvAOVC5kPYnQW9ZLE2z4hQAmBUio
+         H0zbgpAAcL5GUlmjy8vcAc1iVGNANcpIFFT7rMkny31SGA02nBZefeW4YTw/cpJW/Z
+         Hfdx58KX+G0MGoKv5vGWpEXfjhBFshZDQ4pSd9JPl545mjFgH/Pg0F2xNe/dN9Cx+n
+         FjtijbkCrnHOkD7qWqzI0zieHUo6bmmpXfZpH9wvlAI0EWi7EALMHUWpaM6dkIUCrg
+         9hZ0e247MZ4fQ==
+Date:   Wed, 1 Jun 2022 17:30:56 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Mario Limonciello <mario.limonciello@amd.com>
+Cc:     Clemens Ladisch <clemens@ladisch.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Yazen Ghannam <yazen.ghannam@amd.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        "open list:X86 ARCHITECTURE (32-BIT AND 64-BIT)" 
+        <linux-kernel@vger.kernel.org>,
+        "open list:PCI SUBSYSTEM" <linux-pci@vger.kernel.org>,
+        linux-hwmon@vger.kernel.org,
+        Gabriel Craciunescu <nix.or.die@googlemail.com>,
+        babu.moger@amd.com
+Subject: Re: [PATCH 1/2] x86/amd_nb: Add AMD Family 19h A0-AF IDs
+Message-ID: <20220601223056.GA10215@bhelgaas>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: mainline build failure due to f1e4c916f97f ("drm/edid: add EDID
- block count and size helpers")
-Content-Language: en-US
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Julia Lawall <Julia.Lawall@inria.fr>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Viresh Kumar <vireshk@kernel.org>,
-        Shiraz Hashim <shiraz.linux.kernel@gmail.com>,
-        =?UTF-8?B?VmlsbGUgU3lyasOkbMOk?= <ville.syrjala@linux.intel.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        SoC Team <soc@kernel.org>
-References: <CAK8P3a2Zg2QDS1_Ysn8-Zqqd+K7bbTFS7JV7gPabp6nvPiKaog@mail.gmail.com>
- <91E67F46-A3C7-4159-9E0C-C6C6306F3669@inria.fr>
- <CAK8P3a2iAsemAQdbTZ_E7GGGCXAOeWbjSjLgXEsd5sg_buZWhw@mail.gmail.com>
- <CAHk-=wgO0V9OdY+DFm-f0qZYMyFSm0ptReO+_qgSTEpBLtFV7Q@mail.gmail.com>
-From:   Keisuke Nishimura <keisuke.nishimura@inria.fr>
-In-Reply-To: <CAHk-=wgO0V9OdY+DFm-f0qZYMyFSm0ptReO+_qgSTEpBLtFV7Q@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220601172121.18612-1-mario.limonciello@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 2022/06/01 1:41, Linus Torvalds wrote:
-> On Tue, May 31, 2022 at 1:04 AM Arnd Bergmann <arnd@arndb.de> wrote:
->>
->> As an experiment: what kind of results would we get when looking
->> for packed structures and unions that contain any of these:
+On Wed, Jun 01, 2022 at 12:21:18PM -0500, Mario Limonciello wrote:
+> commit 4fb0abfee424 ("x86/amd_nb: Add AMD Family 19h Models (10h-1Fh)
+> and (A0h-AFh) PCI IDs") had claimed to add the IDs for models A0h-AFh,
+> but it appears to only have added the models 10h-1Fh.
 > 
-
-> I don't think we have that. Not only because it would already cause
-> breakage, but simply because the kinds of structures that people pack
-> aren't generally the kind that contain these kinds of things.
+> Add the actual IDs for A0-AF which are needed for SMN communication to
+> work properly in amd_nb.
 > 
-> That said, you might have a struct that is packed, but that
-> intentionally aligns parts of itself, so it *could* be valid.
+> Fixes: 4fb0abfee424 ("x86/amd_nb: Add AMD Family 19h Models (10h-1Fh) and (A0h-AFh) PCI IDs")
+> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+> ---
+>  arch/x86/kernel/amd_nb.c | 5 +++++
+>  include/linux/pci_ids.h  | 1 +
+>  2 files changed, 6 insertions(+)
 > 
-> But it would probably not be a bad idea to check that packed
-> structures/unions don't have atomic types or locks in them. I _think_
-> we're all good, but who knows..
+> diff --git a/arch/x86/kernel/amd_nb.c b/arch/x86/kernel/amd_nb.c
+> index 190e0f763375..cc8c7cfa9068 100644
+> --- a/arch/x86/kernel/amd_nb.c
+> +++ b/arch/x86/kernel/amd_nb.c
+> @@ -25,11 +25,13 @@
+>  #define PCI_DEVICE_ID_AMD_17H_M30H_DF_F4 0x1494
+>  #define PCI_DEVICE_ID_AMD_17H_M60H_DF_F4 0x144c
+>  #define PCI_DEVICE_ID_AMD_17H_M70H_DF_F4 0x1444
+> +#define PCI_DEVICE_ID_AMD_19H_MA0H_ROOT	0x14b5
+>  #define PCI_DEVICE_ID_AMD_19H_DF_F4	0x1654
+>  #define PCI_DEVICE_ID_AMD_19H_M10H_DF_F4 0x14b1
+>  #define PCI_DEVICE_ID_AMD_19H_M40H_ROOT	0x14b5
+>  #define PCI_DEVICE_ID_AMD_19H_M40H_DF_F4 0x167d
+>  #define PCI_DEVICE_ID_AMD_19H_M50H_DF_F4 0x166e
+> +#define PCI_DEVICE_ID_AMD_19H_MA0H_DF_F4 0x1728
+>  
+>  /* Protect the PCI config register pairs used for SMN. */
+>  static DEFINE_MUTEX(smn_mutex);
+> @@ -43,6 +45,7 @@ static const struct pci_device_id amd_root_ids[] = {
+>  	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_17H_M60H_ROOT) },
+>  	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_19H_M10H_ROOT) },
+>  	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_19H_M40H_ROOT) },
+> +	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_19H_MA0H_ROOT) },
+>  	{}
+>  };
+>  
+> @@ -67,6 +70,7 @@ static const struct pci_device_id amd_nb_misc_ids[] = {
+>  	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_19H_M10H_DF_F3) },
+>  	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_19H_M40H_DF_F3) },
+>  	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_19H_M50H_DF_F3) },
+> +	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_19H_MA0H_DF_F3) },
+>  	{}
+>  };
+>  
+> @@ -85,6 +89,7 @@ static const struct pci_device_id amd_nb_link_ids[] = {
+>  	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_19H_M10H_DF_F4) },
+>  	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_19H_M40H_DF_F4) },
+>  	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_19H_M50H_DF_F4) },
+> +	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_19H_MA0H_DF_F4) },
+>  	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_CNB17H_F4) },
+>  	{}
+>  };
+> diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h
+> index 0178823ce8c2..05b4c67a8a2a 100644
+> --- a/include/linux/pci_ids.h
+> +++ b/include/linux/pci_ids.h
+> @@ -560,6 +560,7 @@
+>  #define PCI_DEVICE_ID_AMD_19H_M10H_DF_F3 0x14b0
+>  #define PCI_DEVICE_ID_AMD_19H_M40H_DF_F3 0x167c
+>  #define PCI_DEVICE_ID_AMD_19H_M50H_DF_F3 0x166d
+> +#define PCI_DEVICE_ID_AMD_19H_MA0H_DF_F3 0x1727
 
+This file is nominally sorted by numeric device ID inside the vendor
+section, but that has really deteriorated over time.
 
-I am Julia's student at INRIA and I heard from her that there is an 
-opportunity to use Coccinelle to find specific types in packed struct or
-enum.
+I can't quite figure out the rationale for deciding whether to put
+things in amd_nb.c vs pci_ids.h.  The IDs in amd_nb.c look basically
+the same as this one.
 
-I found 13 definitions of packed structure that contains:
- > - spinlock_t
- > - atomic_t
- > - dma_addr_t
- > - phys_addr_t
- > - size_t
+Normally we put things in pci_ids.h if they are used more than one
+place.  PCI_DEVICE_ID_AMD_19H_MA0H_DF_F3 looks like it's only used in
+one place.
 
- > - struct mutex
- > - struct device
-
-- raw_spinlock_t
-
-== Results ==
-security/tomoyo/common.h: atomic_t in tomoyo_shared_acl_head
-drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls.h: spinlock_t in 
-key_map
-include/linux/ti-emif-sram.h: phys_addr_t in ti_emif_pm_data
-drivers/scsi/wd719x.h: dma_addr_t in wd719x_scb
-drivers/net/wireless/intel/ipw2x00/ipw2200.h: dma_addr_t in clx2_queue
-drivers/infiniband/hw/irdma/osdep.h: dma_addr_t in irdma_dma_mem
-drivers/infiniband/core/mad_priv.h: size_t in ib_mad_private
-drivers/crypto/qat/qat_common/qat_asym_algs.c:
-- dma_addr_t in qat_rsa_ctx
-- dma_addr_t in qat_dh_ctx
-drivers/atm/idt77252.h: dma_addr_t in idt77252_skb_prv
-arch/s390/include/asm/kvm_host.h: atomic_t in kvm_s390_sie_block
-
-drivers/net/wireless/ath/ath10k/core.h: dma_addr_t in ath10k_skb_cb
-drivers/net/wireless/ath/ath11k/core.h: dma_addr_t in ath10k_skb_cb
-drivers/crypto/ccp/ccp-dev.h: dma_addr_t in ccp_dma_info
-
-The last 3 structures have a dma_adddr_t member defined as the first 
-member variable. Most of the others also seems valid.
-
-I used this SmPL script to find them:
-
-@e1@
-type T;
-identifier i;
-position p;
-attribute name __packed;
-@@
-  T@p  {
-   ...
-(
-   atomic_t i;
-|
-   raw_spinlock_t i;
-|
-   struct mutex i;
-|
-   spinlock_t i;
-|
-   dma_addr_t i;
-|
-   phys_addr_t i;
-|
-   size_t i;
-|
-  struct device i;
-)
-   ...
-  }
-  __packed;
-
-@e2@
-type T;
-identifier i;
-position p;
-@@
-  T@p  {
-   ...
-(
-   atomic_t i;
-|
-   raw_spinlock_t i;
-|
-   struct mutex i;
-|
-   spinlock_t i;
-|
-   dma_addr_t i;
-|
-   phys_addr_t i;
-|
-   size_t i;
-|
-  struct device i;
-)
-   ...
-  }
-    __attribute__((
-(
-  pack
-|
-  __pack__
-)
-  ,... ));
-
-@script:python@
-ps <<e1.p;
-@@
-for p in ps:
-   print p.file, p.line
-@script:python@
-ps <<e2.p;
-@@
-for p in ps:
-   print p.file, p.line
-
-
-Keisuke
+>  #define PCI_DEVICE_ID_AMD_CNB17H_F3	0x1703
+>  #define PCI_DEVICE_ID_AMD_LANCE		0x2000
+>  #define PCI_DEVICE_ID_AMD_LANCE_HOME	0x2001
+> -- 
+> 2.34.1
+> 
