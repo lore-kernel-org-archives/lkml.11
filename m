@@ -2,97 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CFDFC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 07:20:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4101FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 07:24:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350202AbiFAHUZ (ORCPT
+        id S1344580AbiFAHYs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 03:20:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37714 "EHLO
+        Wed, 1 Jun 2022 03:24:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350413AbiFAHUN (ORCPT
+        with ESMTP id S236045AbiFAHYo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 03:20:13 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A96DE6461
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 00:20:11 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id c2so988421plh.2
-        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 00:20:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=MC41gEQuVXDAqpv4xe0itsDAYcLiXNNvtLvOXnYJomI=;
-        b=gdRCXYyPwtL93x7erslFonthTsqPPXlZ0UgsTR8AVRJYsOq8MvZJPvbLGsreKshXqi
-         fz7DK3PEIiNHGy/PPfhuZMFta+U3NxNCsPdWrmEdCA9aRfFfM1n8S6izYx7QmllKgDFF
-         XEv/ilDs9dvvhochneQ7KZzX3YiAaDv2QMwEhLbFk2IIlSU3jkA4pTjO0ga/ScryjxcX
-         qdA3PHCX0cJpLHPVE0cNpCX84fdZI7L5T2iKWpg1cAhGbAKZ6t8tfRbLijKjDL3HsBl9
-         0oK77ctPv47PahAHbsMhjm7HAOBF4xXzRZWxlyam2MN6mQRR5wxMxaK2zbxza7kt1oO0
-         133A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=MC41gEQuVXDAqpv4xe0itsDAYcLiXNNvtLvOXnYJomI=;
-        b=atuyDNvVrLlftHrg+mgxBOkCr42Zx/7zTLq86JMhrUMKaxLzNJhWzk9MbEoaZnIXJT
-         TcNlguWRhw5Nsed6ZNgrr3C9+kio7+mkay82RBjb+mEzoBcZP5ibAmwkXRtZoY257xjA
-         KLBdoLsLR6pRDAsPN/NSLGIR0OF/wjuhzVtasMgMeml8ruFSGMUnDyNgAay7MtBtO0Z1
-         O7eNWvyUZAh2Q3iKSWYaN9zYkiF+wWCDa7N7SoNoyYLU2eJxVB+M0N2Loyr9t9k0eQV3
-         2Qrp52ZQ7pw2ksTZXXYT/ZJhw1Zb+h4XaJVfvY6aPBLRBbfs5iEAXbygSsLsB22aFBz5
-         M3Yg==
-X-Gm-Message-State: AOAM530tJsfAtaPefXcaxQ9rn1nAHinzqWLguIgOamK4gYPtutxkoNc0
-        UbNE9rU/CESYbQVUJ5eet2VK+YR7POs=
-X-Google-Smtp-Source: ABdhPJytqL76MOI+aqc7h42RwJx2/Icf5zWS/KnylCaqAGDVX70Bn3WD3b9VofJvcmvhZ6MH2bXQ4w==
-X-Received: by 2002:a17:902:8c92:b0:161:e861:861f with SMTP id t18-20020a1709028c9200b00161e861861fmr61330746plo.33.1654068010907;
-        Wed, 01 Jun 2022 00:20:10 -0700 (PDT)
-Received: from Vostro-5471.. ([2001:288:7001:2708:d63b:41f9:65b2:fe0d])
-        by smtp.gmail.com with ESMTPSA id f1-20020a170902684100b001637fd08a75sm471297pln.63.2022.06.01.00.20.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Jun 2022 00:20:10 -0700 (PDT)
-From:   Jui-Tse Huang <juitse.huang@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Jui-Tse Huang <juitse.huang@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Bruno Randolf <br1@einfach.org>,
-        Ching-Chun Huang <jserv@ccns.ncku.edu.tw>
-Subject: [PATCH v2] average: Clarify the restrictions
-Date:   Wed,  1 Jun 2022 15:19:06 +0800
-Message-Id: <20220601071907.22070-1-juitse.huang@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        Wed, 1 Jun 2022 03:24:44 -0400
+Received: from mail.meizu.com (edge05.meizu.com [157.122.146.251])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 882EF4EA3A;
+        Wed,  1 Jun 2022 00:24:41 -0700 (PDT)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail12.meizu.com
+ (172.16.1.108) with Microsoft SMTP Server (TLS) id 14.3.487.0; Wed, 1 Jun
+ 2022 15:24:41 +0800
+Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
+ (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Wed, 1 Jun
+ 2022 15:24:38 +0800
+From:   Haowen Bai <baihaowen@meizu.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+CC:     Haowen Bai <baihaowen@meizu.com>, <netdev@vger.kernel.org>,
+        <linux-parisc@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH] net: tulip: de4x5: remove unused variable
+Date:   Wed, 1 Jun 2022 15:24:36 +0800
+Message-ID: <1654068277-6691-1-git-send-email-baihaowen@meizu.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [172.16.137.70]
+X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
+ IT-EXMB-1-125.meizu.com (172.16.1.125)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is several restrictions in the EWMA helper macro that the
-developers should take care of, but the comment does not mentioned yet,
-thus, this patch clarify the restrictions.
+The variable imr is initialized but never used otherwise.
 
-Signed-off-by: Jui-Tse Huang <juitse.huang@gmail.com>
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
 ---
+ drivers/net/ethernet/dec/tulip/de4x5.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-Notes:
-    v2: fix spelling and wording (Bruno Randolf)
-
- include/linux/average.h | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/include/linux/average.h b/include/linux/average.h
-index a1a8f09631ce..ff0953ba2820 100644
---- a/include/linux/average.h
-+++ b/include/linux/average.h
-@@ -13,6 +13,9 @@
-  * precision and fall-off coefficient determined at compile-time
-  * and built into the generated helper funtions.
-  *
-+ * This implementation supports up to 30 bits of precition, and only
-+ * the API for fetching non-fractional part is provided for now.
-+ *
-  * The first argument to the macro is the name that will be used
-  * for the struct and helper functions.
-  *
+diff --git a/drivers/net/ethernet/dec/tulip/de4x5.c b/drivers/net/ethernet/dec/tulip/de4x5.c
+index 71730ef4cd57..40a54827d599 100644
+--- a/drivers/net/ethernet/dec/tulip/de4x5.c
++++ b/drivers/net/ethernet/dec/tulip/de4x5.c
+@@ -3817,10 +3817,9 @@ de4x5_setup_intr(struct net_device *dev)
+ {
+     struct de4x5_private *lp = netdev_priv(dev);
+     u_long iobase = dev->base_addr;
+-    s32 imr, sts;
++    s32 sts;
+ 
+     if (inl(DE4X5_OMR) & OMR_SR) {   /* Only unmask if TX/RX is enabled */
+-	imr = 0;
+ 	UNMASK_IRQs;
+ 	sts = inl(DE4X5_STS);        /* Reset any pending (stale) interrupts */
+ 	outl(sts, DE4X5_STS);
 -- 
-2.34.1
+2.7.4
 
