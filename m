@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 000FEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 15:48:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F118AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 15:48:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355836AbiFAPsK (ORCPT
+        id S1355855AbiFAPsP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 11:48:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47372 "EHLO
+        Wed, 1 Jun 2022 11:48:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355593AbiFAPrq (ORCPT
+        with ESMTP id S1355701AbiFAPrs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 11:47:46 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EC0331229
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 08:47:45 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id t25so3429587lfg.7
-        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 08:47:45 -0700 (PDT)
+        Wed, 1 Jun 2022 11:47:48 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C93C3136F
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 08:47:47 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id j10so3409048lfe.12
+        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 08:47:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=semihalf-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=4Ppw8UVo/qEPgt1AkXxmf7JhE2d9K4tKcX8rTq2VqM0=;
-        b=IfDJ6Y/LBiKfML25dHZi4KzD+/YqzPwyzQgsdy7RcT3HdhiSl4RyaHT64fsrU2OR2Y
-         DIFOnMYGWYS7CYmjEXgsmd7l6UJSqaDmY5lx/H0zTT0qjuFLG0THmztBb/2iPVhsoni5
-         veiEhaXzEtIohcXf31m1Yt67aq1W4MatJMkVihdhVKZbro75VxTkfSP5m9Vsu+6IO96T
-         iHRLH70w8Vev+mhIAMhPkJr45VIPXutbrU10nAng5cXVYvoT2cx34HTNreFMQqejf81I
-         CgpWUHVaJj4GeAbK4NN2xL9Ixjwyl3j6X5HCpS7Z8+hp8aXYdzv5szQ55ldoLPWE7SPt
-         jt8Q==
+        bh=s1I1Lu6vDnv+FXCTPOWPHqa85mx5mVRb44SdNNE1HaQ=;
+        b=5gR5CbreQ7srjG4Ym7Ultz+/q2nE9r/GfUDpbd3uPQOeB+iu3HtDcbNu0p5kZmpUVg
+         fPsNMYipnB9IVUAWme2bDC4FLqYU/14GMYY6J4Y3SCThHAjhYedfsTWBDiDxtcIn9H49
+         5qyC6kVfcQssWlVcxU/8uB8L8K503iFBC0fVZlOcVQZCQoXP1w1YMCTqkkvxjFUH7XjT
+         k2NSE+lny5cnmbM8CvqoOxLSaP8P9QHuGLm7TzOLwct2gxHP/CHXtxvtLi9Rt9/vvAsO
+         QPi7t527ylkC9oTqEyokrkmCuXLU8nBZZyCyqKVY0qN8ifyP6ypEoNYx8ZgRmj8LCmZL
+         xi8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=4Ppw8UVo/qEPgt1AkXxmf7JhE2d9K4tKcX8rTq2VqM0=;
-        b=LGVBOLFGbuci25vH4NQl5UA6Hc8Gtyx/0mEPIRxL1Lrp1lqWB48czDcIjIkROC6BWE
-         zX3efS7u9lnSarVeiMLwxHQgd/j47dv6STGUGPViyFsQigZul2u8g006+VI4Wj6lUieS
-         AKext3M2TWWncnShI2V0GKzZ5i5K9dE5ACABD0QzC49k6Nj6j4oA01PzQrHZC4n1CzKK
-         agt8lFz659byoIvjypMlNTjasdVo86R3b2YZTaZCVAQJAHpTSqnV1u5dCZrA8yUOJdxu
-         5o2tN1Rxtdrmlz6Qy73mpyxKWtdaiCH28VlqT5xkmiNetsDLP8u8rhf6iam5aMhTx2Vx
-         OciA==
-X-Gm-Message-State: AOAM530yVA6+dozu+Iw1QgpddXFGlnugKV7YyZDJweBwlNuLZp/eDYIN
-        asUoY9FLgqb64ejUOMer6C2Irw==
-X-Google-Smtp-Source: ABdhPJynYZi16/O8cBrcIt/J7dx1Ms13LA/nzWfRSH7AoMTjLNzcmzT5zdlPGWmMyk1MP9o2B/deOw==
-X-Received: by 2002:a05:6512:3054:b0:478:70d9:845f with SMTP id b20-20020a056512305400b0047870d9845fmr34389294lfb.201.1654098463785;
-        Wed, 01 Jun 2022 08:47:43 -0700 (PDT)
+        bh=s1I1Lu6vDnv+FXCTPOWPHqa85mx5mVRb44SdNNE1HaQ=;
+        b=NKD5Q4YCQDXK9KUFuEKfxx+rcvu6+gGWWkyqfpasQlO+2HU1sOhfSiJFNf1kV0VjEi
+         3EgWJGxv8PehqEfyhRA1tUszQoR9uPNcoKRnscNBGGqJDq1DWEJXy/4kaKMkDxaJD6rB
+         im4IZA/Foe10sLEqAcMCYwSr3orR+XmEKxNDWL51YrvFLmoWvxeHzhzGj2Yxc0Fjen6K
+         azUrZ9vogMhJBDbkK02evx2tXk1PsFZLxgjRqhFzHc08Cbx4QAeUWFb4Ezno+fyhMOwW
+         TBAGmrwp4Hpa48tJ3Mw/T6jxdajSugBSJOC5I3yPcRfZpKtbETlU3AQ0WEsTXNEEozpF
+         lpLA==
+X-Gm-Message-State: AOAM530+WvsM8nn4RIQkuD2ENQzsaGB8YPJKHiZy5e5tvMJUF/guK7t0
+        8V6ukY/dY7Zm5pWV8KR24BkaFw==
+X-Google-Smtp-Source: ABdhPJxDG73AD76s9kMvKtHwHRysyphsIohDnmLglBHeLvKPQfhd9oKlb71wR7C2XDycAqZr0Ev1hw==
+X-Received: by 2002:a05:6512:6c9:b0:478:dc36:b25b with SMTP id u9-20020a05651206c900b00478dc36b25bmr13149300lff.369.1654098465821;
+        Wed, 01 Jun 2022 08:47:45 -0700 (PDT)
 Received: from panikiel.wifi.semihalf.net ([83.142.187.86])
-        by smtp.gmail.com with ESMTPSA id f10-20020a19380a000000b00478ad871b25sm431219lfa.145.2022.06.01.08.47.42
+        by smtp.gmail.com with ESMTPSA id f10-20020a19380a000000b00478ad871b25sm431219lfa.145.2022.06.01.08.47.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Jun 2022 08:47:43 -0700 (PDT)
+        Wed, 01 Jun 2022 08:47:45 -0700 (PDT)
 From:   =?UTF-8?q?Pawe=C5=82=20Anikiel?= <pan@semihalf.com>
 To:     soc@kernel.org, linux-arm-kernel@lists.infradead.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
@@ -56,9 +56,9 @@ Cc:     arnd@arndb.de, olof@lixom.net, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org, dinguyen@kernel.org,
         amstan@chromium.org, upstream@semihalf.com,
         =?UTF-8?q?Pawe=C5=82=20Anikiel?= <pan@semihalf.com>
-Subject: [PATCH v2 3/5] ARM: dts: socfpga: Add atsha204a node to Mercury+ AA1 dts
-Date:   Wed,  1 Jun 2022 17:46:45 +0200
-Message-Id: <20220601154647.80071-4-pan@semihalf.com>
+Subject: [PATCH v2 5/5] dt-bindings: altera: Add Chameleon v3 board
+Date:   Wed,  1 Jun 2022 17:46:47 +0200
+Message-Id: <20220601154647.80071-6-pan@semihalf.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
 In-Reply-To: <20220601154647.80071-1-pan@semihalf.com>
 References: <20220601154647.80071-1-pan@semihalf.com>
@@ -69,38 +69,25 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add atsha204a node to Mercury+ AA1 dts
+Add Chameleon v3 to Arria 10 boards.
 
 Signed-off-by: Paweł Anikiel <pan@semihalf.com>
 ---
- arch/arm/boot/dts/socfpga_arria10_mercury_aa1.dtsi | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ Documentation/devicetree/bindings/arm/altera.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm/boot/dts/socfpga_arria10_mercury_aa1.dtsi b/arch/arm/boot/dts/socfpga_arria10_mercury_aa1.dtsi
-index b0d20101cd00..dd1bfa7e1a78 100644
---- a/arch/arm/boot/dts/socfpga_arria10_mercury_aa1.dtsi
-+++ b/arch/arm/boot/dts/socfpga_arria10_mercury_aa1.dtsi
-@@ -1,5 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0
--
-+/*
-+ * Copyright 2022 Google LLC
-+ */
- #include "socfpga_arria10.dtsi"
+diff --git a/Documentation/devicetree/bindings/arm/altera.yaml b/Documentation/devicetree/bindings/arm/altera.yaml
+index 5e2017c0a051..400543fbe78d 100644
+--- a/Documentation/devicetree/bindings/arm/altera.yaml
++++ b/Documentation/devicetree/bindings/arm/altera.yaml
+@@ -26,6 +26,7 @@ properties:
+           - enum:
+               - altr,socfpga-arria10-socdk
+               - enclustra,mercury-aa1
++              - google,chameleon-v3
+           - const: altr,socfpga-arria10
+           - const: altr,socfpga
  
- / {
-@@ -54,6 +56,11 @@ phy3: ethernet-phy@3 {
- };
- 
- &i2c1 {
-+	atsha204a: crypto@64 {
-+		compatible = "atmel,atsha204a";
-+		reg = <0x64>;
-+	};
-+
- 	isl12022: isl12022@6f {
- 		compatible = "isil,isl12022";
- 		reg = <0x6f>;
 -- 
 2.36.1.255.ge46751e96f-goog
 
