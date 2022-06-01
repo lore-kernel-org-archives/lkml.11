@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9C84CCA46F
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:57:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6827CCA468
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:57:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353950AbiFAN5t (ORCPT
+        id S1353630AbiFAN5w (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 09:57:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59308 "EHLO
+        Wed, 1 Jun 2022 09:57:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353822AbiFANzr (ORCPT
+        with ESMTP id S1353920AbiFAN4l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 09:55:47 -0400
+        Wed, 1 Jun 2022 09:56:41 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4694395A39;
-        Wed,  1 Jun 2022 06:54:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFE828CCC2;
+        Wed,  1 Jun 2022 06:54:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9A6F6B8175B;
-        Wed,  1 Jun 2022 13:54:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D134C385A5;
-        Wed,  1 Jun 2022 13:54:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 79FD8B81AEB;
+        Wed,  1 Jun 2022 13:54:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E978C34119;
+        Wed,  1 Jun 2022 13:54:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091686;
-        bh=etlSzNB3grrboXbbp7K/HPtPiQ3/vS9tQOuqaVtCEwM=;
+        s=k20201202; t=1654091690;
+        bh=EbLXjcLRXtxb0jXjdZtiVIGjSd5602C1FKsy5V+dTeA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DfktdDBTkjwjyyvgmu2tvNu+Qr6YZEg2wM47Ol4tB83uKUFIdKXIDzb3CNv+o1a2g
-         iWEQttT+VSoMto0xK8+gbZYaYind6yFF8QhkumJbTBcG5kitLEG/5iSsoAgkQwOkAd
-         u2d+eHZBYKRlvKDIxUO+ECmlK3qh6QeXMAc33bHQXIU8otTJNEnPHUSJOwY3gw+MA/
-         SYNgbnc3D54w8S2Mc29zDWPROaKnuy6+ItpLlVfyQXJPdcuzCBvsA7AEPiV91V0Q8S
-         JnD2ToO+wr+2gOUMZ5Ssil+cSwkxeXKvF0JbIxPrQP9KvXPUgwRWQjWdjxSxzsjmSD
-         1UUokPSvgozsQ==
+        b=PbB1uj6FZiThQ/T6OWVdDEWCqwR48yTbI64GEFJNaF/LZqjYYQoVRT0BtMcD1nZ/Q
+         iHLJNvLVvDcYYxEACd2JhkCmeAGpQ2b6HFTt+W3jbNJw+GGPwOr6mpBjGAi5owPtil
+         RKceryKdBAIY3hftgr54Fv6nYE9PUec+ACOLX5L6p33d1SCyD2cV+7JvjgT+GkzBVx
+         FL2YneTUFsaFF6YCAd5WWtJ/wfNsVMf92MMe9qRCgQ+klFprOUk406uj8y8BiZ/Bk4
+         7JxR++K2ZWdXc5uosW14vl69tZ4EJN19TGmAzP5FQfH4nBpHDf/XTn++MR4kRZmop5
+         sl0jomFR3Xx8w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Marco Chiappero <marco.chiappero@intel.com>,
-        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        fiona.trahe@intel.com, qat-linux@intel.com,
-        linux-crypto@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 11/48] crypto: qat - fix off-by-one error in PFVF debug print
-Date:   Wed,  1 Jun 2022 09:53:44 -0400
-Message-Id: <20220601135421.2003328-11-sashal@kernel.org>
+Cc:     Joel Selvaraj <jo@jsfamily.in>,
+        Caleb Connolly <caleb@connolly.tech>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>, agross@kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 14/48] arm64: dts: qcom: sdm845-xiaomi-beryllium: fix typo in panel's vddio-supply property
+Date:   Wed,  1 Jun 2022 09:53:47 -0400
+Message-Id: <20220601135421.2003328-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135421.2003328-1-sashal@kernel.org>
 References: <20220601135421.2003328-1-sashal@kernel.org>
@@ -55,37 +55,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marco Chiappero <marco.chiappero@intel.com>
+From: Joel Selvaraj <jo@jsfamily.in>
 
-[ Upstream commit dd3d081b7ea6754913222ed0313fcf644edcc7e6 ]
+[ Upstream commit 1f1c494082a1f10d03ce4ee1485ee96d212e22ff ]
 
-PFVF Block Message requests for CRC use 0-based values to indicate
-amounts, which have to be remapped to 1-based values on the receiving
-side.
+vddio is misspelled with a "0" instead of "o". Fix it.
 
-This patch fixes one debug print which was however using the wire value.
-
-Signed-off-by: Marco Chiappero <marco.chiappero@intel.com>
-Reviewed-by: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Joel Selvaraj <jo@jsfamily.in>
+Reviewed-by: Caleb Connolly <caleb@connolly.tech>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/BY5PR02MB7009901651E6A8D5ACB0425ED91F9@BY5PR02MB7009.namprd02.prod.outlook.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/qat/qat_common/adf_pfvf_pf_proto.c | 2 +-
+ arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/crypto/qat/qat_common/adf_pfvf_pf_proto.c b/drivers/crypto/qat/qat_common/adf_pfvf_pf_proto.c
-index 588352de1ef0..d17318d3f63a 100644
---- a/drivers/crypto/qat/qat_common/adf_pfvf_pf_proto.c
-+++ b/drivers/crypto/qat/qat_common/adf_pfvf_pf_proto.c
-@@ -154,7 +154,7 @@ static struct pfvf_message handle_blkmsg_req(struct adf_accel_vf_info *vf_info,
- 	if (FIELD_GET(ADF_VF2PF_BLOCK_CRC_REQ_MASK, req.data)) {
- 		dev_dbg(&GET_DEV(vf_info->accel_dev),
- 			"BlockMsg of type %d for CRC over %d bytes received from VF%d\n",
--			blk_type, blk_byte, vf_info->vf_nr);
-+			blk_type, blk_byte + 1, vf_info->vf_nr);
+diff --git a/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts b/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts
+index 367389526b41..a97f5e89e1d0 100644
+--- a/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts
++++ b/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts
+@@ -218,7 +218,7 @@ &dsi0 {
+ 	panel@0 {
+ 		compatible = "tianma,fhd-video";
+ 		reg = <0>;
+-		vddi0-supply = <&vreg_l14a_1p8>;
++		vddio-supply = <&vreg_l14a_1p8>;
+ 		vddpos-supply = <&lab>;
+ 		vddneg-supply = <&ibb>;
  
- 		if (!adf_pf2vf_blkmsg_get_data(vf_info, blk_type, blk_byte,
- 					       byte_max, &resp_data,
 -- 
 2.35.1
 
