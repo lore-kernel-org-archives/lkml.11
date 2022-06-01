@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A23EAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:53:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EE8BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:53:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353532AbiFANxi (ORCPT
+        id S1353503AbiFANxm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 09:53:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56488 "EHLO
+        Wed, 1 Jun 2022 09:53:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353505AbiFANxV (ORCPT
+        with ESMTP id S1353536AbiFANxh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 09:53:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D477E85EDE;
-        Wed,  1 Jun 2022 06:52:43 -0700 (PDT)
+        Wed, 1 Jun 2022 09:53:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B35ED8A314;
+        Wed,  1 Jun 2022 06:53:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 53E5B615C2;
-        Wed,  1 Jun 2022 13:52:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE3A4C34119;
-        Wed,  1 Jun 2022 13:52:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BC9BBB81911;
+        Wed,  1 Jun 2022 13:52:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50525C36AE2;
+        Wed,  1 Jun 2022 13:52:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091562;
-        bh=85vm1vrtGgzFH8G8lTONTiZh58r6Wicm/naQSPQ/3OI=;
+        s=k20201202; t=1654091578;
+        bh=2JYU5DuEm+BMLnrJLtWoA5OKIcB5KezmZmgoLCAFNSc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B9XmghjYk/ynou9o8yS2FzaidFvq3XEvQ4MXav4QATu5khRhjkSG+dtUEkXuqwsSz
-         FId2oHVgpyx3Zxmd8BP2pnze73FK37LfDCv5TCQ3p45X4efWdsIZoXXiItTPTxNdPD
-         YvV4d71/BfLy7PE9H1mRQh+Jk3+uCCkGkfyuOavVxjVIjPEcCyshPTQDHORUoG8NP+
-         PCu4yTtoTkX95Lh47li98kr1p4Gimw7h0M7nq2/wTtZAyUYOUptuH5E3DsqibAzDTc
-         qOI7l+gMN6/mdWiJbw292cP4ZHWKcVdm3SA//+13umbHMyiRRiZzslrkoS0GAOO48d
-         3aiWaGJfzi1FA==
+        b=u0aGCAFAqiGSbV+UAazc96jv3dhCioymkekr/ca4WJDh7N8vDOzqr8OSLQC74KsXo
+         6IaPlqsnNozsAvTC0HJqh+jK6f7NOKTic73j0naZPHoQ2knY1GagupDkSwxNh9UuK3
+         VPKDsreZWpwXVhl+ZbT6JzjTrw93Ca6g6Ja3o5TPHTleuJI53wn6iX3YJ767lVfvOx
+         TWJhpQRYMwQJNEegZqVZ6rMwq5/I94MTLzWbL/DqYhBVonZvZQB3CxRLQBPRXLROzT
+         ET3xgOVbsOmwrbG+tIHvgRjHc8OxNVyIN6Cs4aQg9t/5lHG1sQXaTm9ealq7UFttkw
+         BTzoqY1ZBwd9A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     QintaoShen <unSimple1993@163.com>, Nishanth Menon <nm@ti.com>,
-        Sasha Levin <sashal@kernel.org>, kristo@kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.18 12/49] soc: ti: ti_sci_pm_domains: Check for null return of devm_kcalloc
-Date:   Wed,  1 Jun 2022 09:51:36 -0400
-Message-Id: <20220601135214.2002647-12-sashal@kernel.org>
+Cc:     Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>,
+        perex@perex.cz, tiwai@suse.com, geraldogabriel@gmail.com,
+        matteomartelli3@gmail.com, alexander@tsoy.me,
+        alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.18 17/49] ALSA: usb-audio: Move generic implicit fb quirk entries into quirks.c
+Date:   Wed,  1 Jun 2022 09:51:41 -0400
+Message-Id: <20220601135214.2002647-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135214.2002647-1-sashal@kernel.org>
 References: <20220601135214.2002647-1-sashal@kernel.org>
@@ -52,36 +53,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: QintaoShen <unSimple1993@163.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit ba56291e297d28aa6eb82c5c1964fae2d7594746 ]
+[ Upstream commit 67d64069bc0867e52e73a1e255b17462005ca9b4 ]
 
-The allocation funciton devm_kcalloc may fail and return a null pointer,
-which would cause a null-pointer dereference later.
-It might be better to check it and directly return -ENOMEM just like the
-usage of devm_kcalloc in previous code.
+Use the new quirk bits to manage the generic implicit fb quirk
+entries.  This makes easier to compare with other devices.
 
-Signed-off-by: QintaoShen <unSimple1993@163.com>
-Signed-off-by: Nishanth Menon <nm@ti.com>
-Link: https://lore.kernel.org/r/1648107843-29077-1-git-send-email-unSimple1993@163.com
+Link: https://lore.kernel.org/r/20220421064101.12456-2-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soc/ti/ti_sci_pm_domains.c | 2 ++
- 1 file changed, 2 insertions(+)
+ sound/usb/implicit.c | 5 -----
+ sound/usb/quirks.c   | 6 ++++++
+ 2 files changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/soc/ti/ti_sci_pm_domains.c b/drivers/soc/ti/ti_sci_pm_domains.c
-index 8afb3f45d263..a33ec7eaf23d 100644
---- a/drivers/soc/ti/ti_sci_pm_domains.c
-+++ b/drivers/soc/ti/ti_sci_pm_domains.c
-@@ -183,6 +183,8 @@ static int ti_sci_pm_domain_probe(struct platform_device *pdev)
- 		devm_kcalloc(dev, max_id + 1,
- 			     sizeof(*pd_provider->data.domains),
- 			     GFP_KERNEL);
-+	if (!pd_provider->data.domains)
-+		return -ENOMEM;
+diff --git a/sound/usb/implicit.c b/sound/usb/implicit.c
+index 1fd087128538..e1bf1b5da423 100644
+--- a/sound/usb/implicit.c
++++ b/sound/usb/implicit.c
+@@ -45,11 +45,6 @@ struct snd_usb_implicit_fb_match {
  
- 	pd_provider->data.num_domains = max_id + 1;
- 	pd_provider->data.xlate = ti_sci_pd_xlate;
+ /* Implicit feedback quirk table for playback */
+ static const struct snd_usb_implicit_fb_match playback_implicit_fb_quirks[] = {
+-	/* Generic matching */
+-	IMPLICIT_FB_GENERIC_DEV(0x0499, 0x1509), /* Steinberg UR22 */
+-	IMPLICIT_FB_GENERIC_DEV(0x0763, 0x2030), /* M-Audio Fast Track C400 */
+-	IMPLICIT_FB_GENERIC_DEV(0x0763, 0x2031), /* M-Audio Fast Track C600 */
+-
+ 	/* Fixed EP */
+ 	/* FIXME: check the availability of generic matching */
+ 	IMPLICIT_FB_FIXED_DEV(0x0763, 0x2080, 0x81, 2), /* M-Audio FastTrack Ultra */
+diff --git a/sound/usb/quirks.c b/sound/usb/quirks.c
+index fbbe59054c3f..e8468f9b007d 100644
+--- a/sound/usb/quirks.c
++++ b/sound/usb/quirks.c
+@@ -1793,6 +1793,8 @@ static const struct usb_audio_quirk_flags_table quirk_flags_table[] = {
+ 		   QUIRK_FLAG_CTL_MSG_DELAY_1M | QUIRK_FLAG_IGNORE_CTL_ERROR),
+ 	DEVICE_FLG(0x046d, 0x09a4, /* Logitech QuickCam E 3500 */
+ 		   QUIRK_FLAG_CTL_MSG_DELAY_1M | QUIRK_FLAG_IGNORE_CTL_ERROR),
++	DEVICE_FLG(0x0499, 0x1509, /* Steinberg UR22 */
++		   QUIRK_FLAG_GENERIC_IMPLICIT_FB),
+ 	DEVICE_FLG(0x04d8, 0xfeea, /* Benchmark DAC1 Pre */
+ 		   QUIRK_FLAG_GET_SAMPLE_RATE),
+ 	DEVICE_FLG(0x04e8, 0xa051, /* Samsung USBC Headset (AKG) */
+@@ -1826,6 +1828,10 @@ static const struct usb_audio_quirk_flags_table quirk_flags_table[] = {
+ 		   QUIRK_FLAG_GET_SAMPLE_RATE),
+ 	DEVICE_FLG(0x074d, 0x3553, /* Outlaw RR2150 (Micronas UAC3553B) */
+ 		   QUIRK_FLAG_GET_SAMPLE_RATE),
++	DEVICE_FLG(0x0763, 0x2030, /* M-Audio Fast Track C400 */
++		   QUIRK_FLAG_GENERIC_IMPLICIT_FB),
++	DEVICE_FLG(0x0763, 0x2031, /* M-Audio Fast Track C600 */
++		   QUIRK_FLAG_GENERIC_IMPLICIT_FB),
+ 	DEVICE_FLG(0x08bb, 0x2702, /* LineX FM Transmitter */
+ 		   QUIRK_FLAG_IGNORE_CTL_ERROR),
+ 	DEVICE_FLG(0x0951, 0x16ad, /* Kingston HyperX */
 -- 
 2.35.1
 
