@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E168DCCA468
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:08:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89637CCA46F
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:09:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354629AbiFAOIx (ORCPT
+        id S1354730AbiFAOHo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:08:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47550 "EHLO
+        Wed, 1 Jun 2022 10:07:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354444AbiFAOEK (ORCPT
+        with ESMTP id S1354260AbiFAOCj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:04:10 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61A7FA88BE;
-        Wed,  1 Jun 2022 06:58:41 -0700 (PDT)
+        Wed, 1 Jun 2022 10:02:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8021A7E00;
+        Wed,  1 Jun 2022 06:58:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 0BEBDCE1C2D;
-        Wed,  1 Jun 2022 13:58:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FC2BC34119;
-        Wed,  1 Jun 2022 13:58:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BAB3DB81B44;
+        Wed,  1 Jun 2022 13:58:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 517D9C36AE3;
+        Wed,  1 Jun 2022 13:58:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091883;
-        bh=meEEYYb4Q/Zwm6saccKdiTfafAQE+aqAUob7xdy2nqM=;
+        s=k20201202; t=1654091909;
+        bh=0KurtFvb84/IHe0+/QVB/gtVqsWvd5K4Bd4o2HAX4FY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PWbZWtP+dsiT//TTt4Vo4op/Zzs5vVRx620+kg3hCf3gRUtB3eE22WdS/ih3Wswzq
-         qcGBCWE5s2iW2gBjv83JFIm1XyS/gTY47784DK1FYuvy+yRVwLGzHRg4B/oo368hSN
-         NqKt4b4Ib1WECRtQRPS2g5HbBIrac88nANsBWZA7utTp6fHpbw93SiH2pWHkkVQqzZ
-         x8VW753NyiWO4by5dOswzi/Nwl9Pz75s5o/3KWU4UQefZbbxdf0weJS/EciYPKoZXo
-         cTH0xFD/8EzoX6lvMmYdIS1wfk0pvzKgNpxp/WXit5iO5U75D+CfPDPEcUBhfDoE1E
-         UA+DmGlTHnwAg==
+        b=VmaT6gdD0eaJm9Qsg9WuQ5Xl+b06wugJeNkbpUtpPAEk4z7MpcAO3ft0EyKNFE79G
+         FDRQ3mBs84eBEadIInBqdNlQlSdcJbMxb7kYX6N5Tl/nRm67dGT1/WfpPYTTA40LpH
+         wlDIrsSVvFbxQIYQRxCK4l5a5OUDABBOvz3q46+5nDbBFl7RGnFSxz8cmnRSOdcLZj
+         VltM73o7mCsv6ubsCyOGn8jtwmE2qgXPC7BPs5Ofwa/36WUgBEb5HWAPn3VBwy1c94
+         Pdz8R4J8Y3H1n4I2toD5ByRD1Wh6/MTyaxwyR7kTxkX40Wep0M5pNW9Sn8WqdhfN5S
+         WRntEqGXMXC8A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org,
-        linux-arm-kernel@lists.infradead.org, linux-oxnas@groups.io,
-        devicetree@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 02/26] ARM: dts: ox820: align interrupt controller node name with dtschema
-Date:   Wed,  1 Jun 2022 09:57:35 -0400
-Message-Id: <20220601135759.2004435-2-sashal@kernel.org>
+        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 16/26] ARM: dts: exynos: add atmel,24c128 fallback to Samsung EEPROM
+Date:   Wed,  1 Jun 2022 09:57:49 -0400
+Message-Id: <20220601135759.2004435-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135759.2004435-1-sashal@kernel.org>
 References: <20220601135759.2004435-1-sashal@kernel.org>
@@ -57,33 +56,41 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-[ Upstream commit fbcd5ad7a419ad40644a0bb8b4152bc660172d8a ]
+[ Upstream commit f038e8186fbc5723d7d38c6fa1d342945107347e ]
 
-Fixes dtbs_check warnings like:
+The Samsung s524ad0xd1 EEPROM should use atmel,24c128 fallback,
+according to the AT24 EEPROM bindings.
 
-  gic@1000: $nodename:0: 'gic@1000' does not match '^interrupt-controller(@[0-9a-f,]+)*$'
-
+Reported-by: Rob Herring <robh@kernel.org>
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Acked-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://lore.kernel.org/r/20220317115705.450427-1-krzysztof.kozlowski@canonical.com
+Link: https://lore.kernel.org/r/20220426183443.243113-1-krzysztof.kozlowski@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/ox820.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/boot/dts/exynos5250-smdk5250.dts | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/ox820.dtsi b/arch/arm/boot/dts/ox820.dtsi
-index 90846a7655b4..dde4364892bf 100644
---- a/arch/arm/boot/dts/ox820.dtsi
-+++ b/arch/arm/boot/dts/ox820.dtsi
-@@ -287,7 +287,7 @@ local-timer@600 {
- 				clocks = <&armclk>;
- 			};
+diff --git a/arch/arm/boot/dts/exynos5250-smdk5250.dts b/arch/arm/boot/dts/exynos5250-smdk5250.dts
+index 572198b6834e..06c4e0996503 100644
+--- a/arch/arm/boot/dts/exynos5250-smdk5250.dts
++++ b/arch/arm/boot/dts/exynos5250-smdk5250.dts
+@@ -129,7 +129,7 @@ &i2c_0 {
+ 	samsung,i2c-max-bus-freq = <20000>;
  
--			gic: gic@1000 {
-+			gic: interrupt-controller@1000 {
- 				compatible = "arm,arm11mp-gic";
- 				interrupt-controller;
- 				#interrupt-cells = <3>;
+ 	eeprom@50 {
+-		compatible = "samsung,s524ad0xd1";
++		compatible = "samsung,s524ad0xd1", "atmel,24c128";
+ 		reg = <0x50>;
+ 	};
+ 
+@@ -289,7 +289,7 @@ &i2c_1 {
+ 	samsung,i2c-max-bus-freq = <20000>;
+ 
+ 	eeprom@51 {
+-		compatible = "samsung,s524ad0xd1";
++		compatible = "samsung,s524ad0xd1", "atmel,24c128";
+ 		reg = <0x51>;
+ 	};
+ 
 -- 
 2.35.1
 
