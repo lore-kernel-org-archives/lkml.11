@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1018ECCA468
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:53:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D9E7CCA471
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:53:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353555AbiFANxt (ORCPT
+        id S1353622AbiFANx5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 09:53:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58110 "EHLO
+        Wed, 1 Jun 2022 09:53:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353520AbiFANxk (ORCPT
+        with ESMTP id S1353525AbiFANxl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 09:53:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53B1387224;
-        Wed,  1 Jun 2022 06:53:18 -0700 (PDT)
+        Wed, 1 Jun 2022 09:53:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 341998A33E;
+        Wed,  1 Jun 2022 06:53:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F38FBB81AE8;
-        Wed,  1 Jun 2022 13:53:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB820C36AE2;
-        Wed,  1 Jun 2022 13:53:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 332A7B81AE6;
+        Wed,  1 Jun 2022 13:52:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84D45C385B8;
+        Wed,  1 Jun 2022 13:52:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091582;
-        bh=KJhUKllErRJpBntBCZwKFWW3K3q4jqc9MvCVLYA5Vgo=;
+        s=k20201202; t=1654091573;
+        bh=FsnhM5PT/E5Fpk+dkdwL4mlsa9gXKVZzJ8yZXv4wNXk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h2LCE4WBlI0eekOGba0slT3Ok7AjwEp4HiNlpQ1Gr3RM8ua9nsuhRm4h9vK+/hg0s
-         JImtrj78HOHM658FwS4BchedocIK+s1JJk4AHOlfFZ/jAsW0FWfpRKzAGWezN9Acz+
-         xedTl5jG4yofsubF2BYnQvaJ3DesmA//VPmyqPq5O6otXT9GfQ1ezYvzpV7YrwWt9O
-         FQlkhU8ZrMDw9r5JSQdLusiq2kvrv5/KJss1UNQP13hlk3uPq0aKnelDl1j55anfNS
-         KUT4H+Nc6xYXX8X4pyeVSh5qQyVyOXvhn+90ZlYmYu9VL5ReriqU0ylICBhHoOTBr7
-         BqNlZURHZ0RZA==
+        b=R1pygdBMyvxmRa/D2qYSXNWdaq87QpjHUavaSSyO59XdFIFduXxLwZXb+tT4MQgVS
+         5XPMooyWVlO7u6mGGrGicmfsLFmg2gO8GC6d1rT59H9qU551m0ZYtY50BznaNbK+i9
+         VGj9j4ImKH1G6LrlKYkOpEhwT4L5CM1p9qVcGDgNx8E5f2yJny5hLLlp1NGD3xwiw1
+         hUQp6etxpzd7n5uQmm/fgWEBO8neclIRyfsQdnu0SjssJp9+O2UcCYThJmDruKWUas
+         SylcvdGSeePBfYWm1YN8qusfq65HOz4EzTnQQa0fKy7ZhDQC5IX76yPKrD+p7Yl7Wg
+         zAIuQCX5zFZ1A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>,
-        Reinette Chatre <reinette.chatre@intel.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 19/49] selftests/resctrl: Change the default limited time to 120 seconds
-Date:   Wed,  1 Jun 2022 09:51:43 -0400
-Message-Id: <20220601135214.2002647-19-sashal@kernel.org>
+Cc:     Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>,
+        perex@perex.cz, tiwai@suse.com, corbet@lwn.net,
+        geraldogabriel@gmail.com, matteomartelli3@gmail.com, bp@suse.de,
+        alsa-devel@alsa-project.org, linux-doc@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 16/49] ALSA: usb-audio: Add quirk bits for enabling/disabling generic implicit fb
+Date:   Wed,  1 Jun 2022 09:51:40 -0400
+Message-Id: <20220601135214.2002647-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135214.2002647-1-sashal@kernel.org>
 References: <20220601135214.2002647-1-sashal@kernel.org>
@@ -55,37 +53,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit e2e3fb6ef0d6548defbe0be6e092397aaa92f3a1 ]
+[ Upstream commit 0f1f7a6661394fe4a53db254c346d6aa2dd64397 ]
 
-When testing on a Intel(R) Xeon(R) Gold 6254 CPU @ 3.10GHz the resctrl
-selftests fail due to timeout after exceeding the default time limit of
-45 seconds. On this system the test takes about 68 seconds.
-Since the failing test by default accesses a fixed size of memory, the
-execution time should not vary significantly between different environment.
-A new default of 120 seconds should be sufficient yet easy to customize
-with the introduction of the "settings" file for reference.
+For making easier to test, add the new quirk_flags bits 17 and 18 to
+enable and disable the generic implicit feedback mode.  The bit 17 is
+equivalent with implicit_fb=1 option, applying the generic implicit
+feedback sync mode.  OTOH, the bit 18 disables the implicit fb mode
+forcibly.
 
-Reviewed-by: Reinette Chatre <reinette.chatre@intel.com>
-Reviewed-by: Fenghua Yu <fenghua.yu@intel.com>
-Signed-off-by: Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20220421064101.12456-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/resctrl/settings | 3 +++
- 1 file changed, 3 insertions(+)
- create mode 100644 tools/testing/selftests/resctrl/settings
+ Documentation/sound/alsa-configuration.rst | 4 +++-
+ sound/usb/implicit.c                       | 5 ++++-
+ sound/usb/usbaudio.h                       | 6 ++++++
+ 3 files changed, 13 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/resctrl/settings b/tools/testing/selftests/resctrl/settings
-new file mode 100644
-index 000000000000..a383f3d4565b
---- /dev/null
-+++ b/tools/testing/selftests/resctrl/settings
-@@ -0,0 +1,3 @@
-+# If running time is longer than 120 seconds when new tests are added in
-+# the future, increase timeout here.
-+timeout=120
+diff --git a/Documentation/sound/alsa-configuration.rst b/Documentation/sound/alsa-configuration.rst
+index 34888d4fc4a8..21ab5e6f7062 100644
+--- a/Documentation/sound/alsa-configuration.rst
++++ b/Documentation/sound/alsa-configuration.rst
+@@ -2246,7 +2246,7 @@ implicit_fb
+     Apply the generic implicit feedback sync mode.  When this is set
+     and the playback stream sync mode is ASYNC, the driver tries to
+     tie an adjacent ASYNC capture stream as the implicit feedback
+-    source.
++    source.  This is equivalent with quirk_flags bit 17.
+ use_vmalloc
+     Use vmalloc() for allocations of the PCM buffers (default: yes).
+     For architectures with non-coherent memory like ARM or MIPS, the
+@@ -2288,6 +2288,8 @@ quirk_flags
+         * bit 14: Ignore errors for mixer access
+         * bit 15: Support generic DSD raw U32_BE format
+         * bit 16: Set up the interface at first like UAC1
++        * bit 17: Apply the generic implicit feedback sync mode
++        * bit 18: Don't apply implicit feedback sync mode
+ 
+ This module supports multiple devices, autoprobe and hotplugging.
+ 
+diff --git a/sound/usb/implicit.c b/sound/usb/implicit.c
+index 2d444ec74202..1fd087128538 100644
+--- a/sound/usb/implicit.c
++++ b/sound/usb/implicit.c
+@@ -350,7 +350,8 @@ static int audioformat_implicit_fb_quirk(struct snd_usb_audio *chip,
+ 	}
+ 
+ 	/* Try the generic implicit fb if available */
+-	if (chip->generic_implicit_fb)
++	if (chip->generic_implicit_fb ||
++	    (chip->quirk_flags & QUIRK_FLAG_GENERIC_IMPLICIT_FB))
+ 		return add_generic_implicit_fb(chip, fmt, alts);
+ 
+ 	/* No quirk */
+@@ -387,6 +388,8 @@ int snd_usb_parse_implicit_fb_quirk(struct snd_usb_audio *chip,
+ 				    struct audioformat *fmt,
+ 				    struct usb_host_interface *alts)
+ {
++	if (chip->quirk_flags & QUIRK_FLAG_SKIP_IMPLICIT_FB)
++		return 0;
+ 	if (fmt->endpoint & USB_DIR_IN)
+ 		return audioformat_capture_quirk(chip, fmt, alts);
+ 	else
+diff --git a/sound/usb/usbaudio.h b/sound/usb/usbaudio.h
+index b8359a0aa008..044cd7ab27cb 100644
+--- a/sound/usb/usbaudio.h
++++ b/sound/usb/usbaudio.h
+@@ -164,6 +164,10 @@ extern bool snd_usb_skip_validation;
+  *  Support generic DSD raw U32_BE format
+  * QUIRK_FLAG_SET_IFACE_FIRST:
+  *  Set up the interface at first like UAC1
++ * QUIRK_FLAG_GENERIC_IMPLICIT_FB
++ *  Apply the generic implicit feedback sync mode (same as implicit_fb=1 option)
++ * QUIRK_FLAG_SKIP_IMPLICIT_FB
++ *  Don't apply implicit feedback sync mode
+  */
+ 
+ #define QUIRK_FLAG_GET_SAMPLE_RATE	(1U << 0)
+@@ -183,5 +187,7 @@ extern bool snd_usb_skip_validation;
+ #define QUIRK_FLAG_IGNORE_CTL_ERROR	(1U << 14)
+ #define QUIRK_FLAG_DSD_RAW		(1U << 15)
+ #define QUIRK_FLAG_SET_IFACE_FIRST	(1U << 16)
++#define QUIRK_FLAG_GENERIC_IMPLICIT_FB	(1U << 17)
++#define QUIRK_FLAG_SKIP_IMPLICIT_FB	(1U << 18)
+ 
+ #endif /* __USBAUDIO_H */
 -- 
 2.35.1
 
