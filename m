@@ -2,124 +2,260 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA03FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 02:45:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C328DC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 02:46:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235995AbiFACpY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 22:45:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51578 "EHLO
+        id S1349195AbiFACqe (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 31 May 2022 22:46:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233771AbiFACpV (ORCPT
+        with ESMTP id S236514AbiFACqY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 22:45:21 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 449B15AA56
-        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 19:45:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654051519;
-        h=from:from:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=jwDnrFd7uXmUoAYEBuzB/Z1dpZnq4v5IwtowuAg3PDA=;
-        b=M/FPx1DQp7vj0YARnV2kg+U22p3WotBDmaop/O6sKvMEuu069a+rZOloAUwwj+8vXCSJQ1
-        MaI4CdXZwGPedJP+ip44W5vysBjluSrUhQuxF6yKfD4HSNaJjNZ4vYGvMTAoVWWHLTdrum
-        l9IxNHSZAYpyAkamA5NZZvTLfTjfAQE=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-111-djZtqZtiOnW-x7e8J32zNQ-1; Tue, 31 May 2022 22:45:13 -0400
-X-MC-Unique: djZtqZtiOnW-x7e8J32zNQ-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2A45E811E7A;
-        Wed,  1 Jun 2022 02:45:09 +0000 (UTC)
-Received: from [10.72.12.91] (ovpn-12-91.pek2.redhat.com [10.72.12.91])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 25F96C15E72;
-        Wed,  1 Jun 2022 02:45:03 +0000 (UTC)
-Reply-To: Gavin Shan <gshan@redhat.com>
-Subject: Re: [PATCH v3 01/16] cacheinfo: Use of_cpu_device_node_get instead
- cpu_dev->of_node
-To:     Sudeep Holla <sudeep.holla@arm.com>, linux-kernel@vger.kernel.org
-Cc:     Atish Patra <atishp@atishpatra.org>,
-        Atish Patra <atishp@rivosinc.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Morten Rasmussen <morten.rasmussen@arm.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Qing Wang <wangqing@vivo.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-riscv@lists.infradead.org, Rob Herring <robh+dt@kernel.org>
-References: <20220525081416.3306043-1-sudeep.holla@arm.com>
- <20220525081416.3306043-2-sudeep.holla@arm.com>
-From:   Gavin Shan <gshan@redhat.com>
-Message-ID: <42bb2efe-e28c-fd15-d00e-8f45dc24b0d1@redhat.com>
-Date:   Wed, 1 Jun 2022 10:45:00 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.0
+        Tue, 31 May 2022 22:46:24 -0400
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 345A65AA55;
+        Tue, 31 May 2022 19:46:23 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id 187so667526pfu.9;
+        Tue, 31 May 2022 19:46:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=04dC20NnK01mBVvwIG46FgYf/L1ar7DW5hi7hZSimsw=;
+        b=O742tovRUrLcBitwk2HOb6gTi3EjyUwVAh04Jm8tzfDCoB0iblsUZyLBRJmOGAoBN8
+         mF8m9ApCljK11nOaRQglpusFSM3QoyNGul9QfaJnWrAgMZkYbohDhoW0Jl9aWhjxKhiX
+         VrSZ6rbZJMpbgM2QTns1B7JefhDysbWJ5t28jjsHCtqTRU81F8Dawzmdsxsi8V5hCLF8
+         nCMonC2Z7cTGODo0aX8ueJY4XyMOl0/8XI1pO8+N2ot3MQRlqJSF1iALAQ74Y1nxeeni
+         qg4gLOaIIILG5RUN2UL3k1SJJx16VjDdubuteHMXYafGzL6rviwL89BdStODds5wjRaA
+         w6Eg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=04dC20NnK01mBVvwIG46FgYf/L1ar7DW5hi7hZSimsw=;
+        b=MgT06HlW4x2JvcBugn0L1kaXw9KywKdDLjHw29NqRRY3e8pf4Qu9brIV/N8TKdbNZI
+         J62krJEE/Ax0qdx/URKDCjC2qpxeVjLylEC1uAcw3qiYJJlQADmGZZ6YE1Eer4tGJJn3
+         sToKzgt1bdmOZZ9GHcKZ372O/MOj7Xweb8Jv0R9U2pfdi4Td+NeQPRZ48pAsGyIxPLeQ
+         DfVoDxJ6lJk2POmTd0vBKohxueCqJgTY+oea7F6Z0s7rjckwK+rZV7Cpg/J65JYOQNEw
+         1jFRu98BKv3x5TKSubsyWhiMaAMumGPCxBp4+jcY4XsqnSGz1GpLXf09bqOY+n5tYM7F
+         OVzg==
+X-Gm-Message-State: AOAM5337ajNXGoyEkWTIF1Av0g9kbjPxDXHzWOLCR5MK18N82/RESeHk
+        4mT0uM0yLOjaWCF8jlfDeU0hQiErYld93Q==
+X-Google-Smtp-Source: ABdhPJzwyzIzPD35TMdiIX/4bEsAcEVTvnpTq1aybfQdCTgfmvev/beOAv8Ujz4t13U3ZNuGtf72ZA==
+X-Received: by 2002:a05:6a00:14d4:b0:518:b918:fae4 with SMTP id w20-20020a056a0014d400b00518b918fae4mr41880834pfu.55.1654051582684;
+        Tue, 31 May 2022 19:46:22 -0700 (PDT)
+Received: from [192.168.255.10] ([203.205.141.20])
+        by smtp.gmail.com with ESMTPSA id x13-20020a17090a294d00b001e0cc5b13c6sm2693884pjf.26.2022.05.31.19.46.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 31 May 2022 19:46:22 -0700 (PDT)
+Message-ID: <ce2b4fed-3d9e-a179-a907-5b8e09511b7d@gmail.com>
+Date:   Wed, 1 Jun 2022 10:46:18 +0800
 MIME-Version: 1.0
-In-Reply-To: <20220525081416.3306043-2-sudeep.holla@arm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.1
+Subject: Re: [PATCH 1/2] KVM: vmx, pmu: accept 0 for absent MSRs when
+ host-initiated
 Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+References: <20220531175450.295552-1-pbonzini@redhat.com>
+ <20220531175450.295552-2-pbonzini@redhat.com> <YpZgU+vfjkRuHZZR@google.com>
+From:   Like Xu <like.xu.linux@gmail.com>
+In-Reply-To: <YpZgU+vfjkRuHZZR@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/25/22 4:14 PM, Sudeep Holla wrote:
-> The of_cpu_device_node_get takes care of fetching the CPU'd device node
-> either from cached cpu_dev->of_node if cpu_dev is initialised or uses
-> of_get_cpu_node to parse and fetch node if cpu_dev isn't available yet.
-> 
-> Just use of_cpu_device_node_get instead of getting the cpu device first
-> and then using cpu_dev->of_node for two reasons:
-> 1. There is no other use of cpu_dev and can be simplified
-> 2. It enabled the use detect_cache_attributes and hence cache_setup_of_node
->     much earlier before the CPUs are registered as devices.
-> 
-> Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
-> ---
->   drivers/base/cacheinfo.c | 9 ++-------
->   1 file changed, 2 insertions(+), 7 deletions(-)
-> 
+On 1/6/2022 2:37 am, Sean Christopherson wrote:
+> On Tue, May 31, 2022, Paolo Bonzini wrote:
+>> Whenever an MSR is part of KVM_GET_MSR_INDEX_LIST, as is the case for
+>> MSR_IA32_DS_AREA, MSR_ARCH_LBR_DEPTH or MSR_ARCH_LBR_CTL, it has to be
+>> always settable with KVM_SET_MSR.  Accept a zero value for these MSRs
+>> to obey the contract.
 
-Reviewed-by: Gavin Shan <gshan@redhat.com>
+Do we have a rule to decide whether to put MSRs into KVM_GET_MSR_INDEX_LIST,
+for example a large number of LBR MSRs do not appear in it ?
 
-> diff --git a/drivers/base/cacheinfo.c b/drivers/base/cacheinfo.c
-> index dad296229161..b0bde272e2ae 100644
-> --- a/drivers/base/cacheinfo.c
-> +++ b/drivers/base/cacheinfo.c
-> @@ -14,7 +14,7 @@
->   #include <linux/cpu.h>
->   #include <linux/device.h>
->   #include <linux/init.h>
-> -#include <linux/of.h>
-> +#include <linux/of_device.h>
->   #include <linux/sched.h>
->   #include <linux/slab.h>
->   #include <linux/smp.h>
-> @@ -157,7 +157,6 @@ static int cache_setup_of_node(unsigned int cpu)
->   {
->   	struct device_node *np;
->   	struct cacheinfo *this_leaf;
-> -	struct device *cpu_dev = get_cpu_device(cpu);
->   	struct cpu_cacheinfo *this_cpu_ci = get_cpu_cacheinfo(cpu);
->   	unsigned int index = 0;
->   
-> @@ -166,11 +165,7 @@ static int cache_setup_of_node(unsigned int cpu)
->   		return 0;
->   	}
->   
-> -	if (!cpu_dev) {
-> -		pr_err("No cpu device for CPU %d\n", cpu);
-> -		return -ENODEV;
-> -	}
-> -	np = cpu_dev->of_node;
-> +	np = of_cpu_device_node_get(cpu);
->   	if (!np) {
->   		pr_err("Failed to find cpu%d device node\n", cpu);
->   		return -ENOENT;
+I assume that this rule also applies in the case of !enable_pmu:
+
+diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
+index 7a74691de223..3575a3746bf9 100644
+--- a/arch/x86/kvm/pmu.c
++++ b/arch/x86/kvm/pmu.c
+@@ -439,11 +439,19 @@ static void kvm_pmu_mark_pmc_in_use(struct kvm_vcpu *vcpu, 
+u32 msr)
+
+  int kvm_pmu_get_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+  {
++	if (msr_info->host_initiated && !vcpu->kvm->arch.enable_pmu) {
++		msr_info->data = 0;
++		return 0;
++	}
++
+  	return static_call(kvm_x86_pmu_get_msr)(vcpu, msr_info);
+  }
+
+  int kvm_pmu_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+  {
++	if (msr_info->host_initiated && !vcpu->kvm->arch.enable_pmu)
++		return !!msr_info->data;
++
+  	kvm_pmu_mark_pmc_in_use(vcpu, msr_info->index);
+  	return static_call(kvm_x86_pmu_set_msr)(vcpu, msr_info);
+  }
+diff --git a/arch/x86/kvm/svm/pmu.c b/arch/x86/kvm/svm/pmu.c
+index 256244b8f89c..fe520b2649b5 100644
+--- a/arch/x86/kvm/svm/pmu.c
++++ b/arch/x86/kvm/svm/pmu.c
+@@ -182,7 +182,16 @@ static struct kvm_pmc *amd_rdpmc_ecx_to_pmc(struct kvm_vcpu 
+*vcpu,
+  static bool amd_is_valid_msr(struct kvm_vcpu *vcpu, u32 msr, bool host_initiated)
+  {
+  	/* All MSRs refer to exactly one PMC, so msr_idx_to_pmc is enough.  */
+-	return false;
++	if (!host_initiated)
++		return false;
++
++	switch (msr) {
++	case MSR_K7_EVNTSEL0 ... MSR_K7_PERFCTR3:
++	case MSR_F15H_PERF_CTL0 ... MSR_F15H_PERF_CTR5:
++		return true;
++	default:
++		return false;
++	}
+  }
+
+  static struct kvm_pmc *amd_msr_idx_to_pmc(struct kvm_vcpu *vcpu, u32 msr)
+
+>>
+>> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+>> ---
+>>   arch/x86/kvm/vmx/pmu_intel.c | 15 ++++++++++++---
+>>   1 file changed, 12 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
+>> index 3e04d0407605..66496cb41494 100644
+>> --- a/arch/x86/kvm/vmx/pmu_intel.c
+>> +++ b/arch/x86/kvm/vmx/pmu_intel.c
+>> @@ -367,8 +367,9 @@ static bool arch_lbr_depth_is_valid(struct kvm_vcpu *vcpu, u64 depth)
+>>   {
+>>   	struct kvm_pmu *pmu = vcpu_to_pmu(vcpu);
+>>   
+>> -	if (!kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR))
+>> -		return false;
+>> +	if (!kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR) ||
+>> +	    !guest_cpuid_has(vcpu, X86_FEATURE_ARCH_LBR))
+>> +		return depth == 0;
+>>   
+>>   	return (depth == pmu->kvm_arch_lbr_depth);
+>>   }
+>> @@ -378,7 +379,7 @@ static bool arch_lbr_ctl_is_valid(struct kvm_vcpu *vcpu, u64 ctl)
+>>   	struct kvm_cpuid_entry2 *entry;
+>>   
+>>   	if (!kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR))
+>> -		return false;
+>> +		return ctl == 0;
+>>   
+>>   	if (ctl & ~KVM_ARCH_LBR_CTL_MASK)
+>>   		goto warn;
+>> @@ -510,6 +511,8 @@ static int intel_pmu_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+>>   		}
+>>   		break;
+>>   	case MSR_IA32_DS_AREA:
+>> +		if (msr_info->host_initiated && data && !guest_cpuid_has(vcpu, X86_FEATURE_DS))
+>> +			return 1;
+>>   		if (is_noncanonical_address(data, vcpu))
+>>   			return 1;
+>>   		pmu->ds_area = data;
+>> @@ -525,7 +528,11 @@ static int intel_pmu_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+>>   	case MSR_ARCH_LBR_DEPTH:
+>>   		if (!arch_lbr_depth_is_valid(vcpu, data))
+>>   			return 1;
+>> +
+>>   		lbr_desc->records.nr = data;
+>> +		if (!guest_cpuid_has(vcpu, X86_FEATURE_ARCH_LBR))
+>> +			return 0;
 > 
+> This is wrong, it will allow an unchecked wrmsrl() to MSR_ARCH_LBR_DEPTH if
+> X86_FEATURE_ARCH_LBR is not supported by hardware but userspace forces it in
+> guest CPUID.
 
+What should we expect if the userspace forces guest to use features not 
+supported by KVM,
+especially the emulation of this feature depends on the functionality of host 
+and guest vcpu model ?
+
+> 
+> This the only user of arch_lbr_depth_is_valid(), just open code the logic.
+> 
+>> +
+>>   		/*
+>>   		 * Writing depth MSR from guest could either setting the
+>>   		 * MSR or resetting the LBR records with the side-effect.
+>> @@ -535,6 +542,8 @@ static int intel_pmu_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+>>   	case MSR_ARCH_LBR_CTL:
+>>   		if (!arch_lbr_ctl_is_valid(vcpu, data))
+>>   			break;
+>> +		if (!guest_cpuid_has(vcpu, X86_FEATURE_ARCH_LBR))
+>> +			return 0;
+> 
+> Similar bug here.
+> 
+> Can we just punt this out of kvm/queue until its been properly reviewed?  At the
+> barest of glances, there are multiple flaws that should block this from being
+
+TBH, our reviewers' attention could not be focused on these patches until the
+day it was ready to be ravaged. "Try to accept" is a good thing, and things need
+to move forward, not simply be abandoned to the side.
+
+Although later versions of ARCH_LBR is not on my review list, any developer would
+sincerely appreciate finding more flaws through the queue tree, please take a 
+look at PEBS.
+
+> merged.  Based on the number of checks against X86_FEATURE_ARCH_LBR in KVM, and
+> my vague recollection of the passthrough behavior, this is a _massive_ feature.
+> 
+> The pr_warn_ratelimited() shouldn't exist; it's better than a non-ratelimited warn,
+> but it's ultimately useless.
+
+We have two pr_warn_ratelimited(). The one in arch_lbr_ctl_is_valid() should be 
+dropped.
+
+> 
+> This should check kvm_cpu_has() to ensure the field exists, e.g. if the feature
+> is supported in hardware but cpu_has_vmx_arch_lbr() returns false for whatever
+> reason.
+> 
+> 	if (!init_event) {
+> 		if (static_cpu_has(X86_FEATURE_ARCH_LBR))
+> 			vmcs_write64(GUEST_IA32_LBR_CTL, 0);
+
+If we tweak vmcs_config.vm*_ctrl via adjust_vmx_controls(), VMCS fields
+(if any, like this one on a capable platform) are still accessible on the KVM 
+side, aren't they?
+
+- VM_ENTRY_LOAD_IA32_LBR_CTL
+- VM_EXIT_CLEAR_IA32_LBR_CTL
+
+> 
+> intel_pmu_lbr_is_enabled() is going to be a performance problem, e.g. _should_ be
+> gated by static_cpu_has() to avoid overhead on CPUs without arch LBRs, and is
+> going to incur a _guest_ CPUID lookup on X86_FEATURE_PDCM for every VM-Entry if
+> arch LBRs are exposed to the guest (at least, I think that's what it does).
+
+Indeed, this also applies to the legacy LBR, and we can certainly improve it.
+
+> 
+>>   
+>>   		vmcs_write64(GUEST_IA32_LBR_CTL, data);
+>>   
+>> -- 
+>> 2.31.1
+>>
+>>
+> 
