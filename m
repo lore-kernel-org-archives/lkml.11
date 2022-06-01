@@ -2,167 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61BBBC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 02:04:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D541C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 02:06:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349094AbiFACE1 (ORCPT
+        id S1349096AbiFACGP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 31 May 2022 22:04:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54342 "EHLO
+        Tue, 31 May 2022 22:06:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345940AbiFACEZ (ORCPT
+        with ESMTP id S233582AbiFACGM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 31 May 2022 22:04:25 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63D9E72E18;
-        Tue, 31 May 2022 19:04:22 -0700 (PDT)
-Received: from kwepemi100012.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LCXTs42RczgYMX;
-        Wed,  1 Jun 2022 10:02:41 +0800 (CST)
-Received: from kwepemm600013.china.huawei.com (7.193.23.68) by
- kwepemi100012.china.huawei.com (7.221.188.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 1 Jun 2022 10:04:21 +0800
-Received: from huawei.com (10.175.127.227) by kwepemm600013.china.huawei.com
- (7.193.23.68) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 1 Jun
- 2022 10:04:20 +0800
-From:   Zhihao Cheng <chengzhihao1@huawei.com>
-To:     <ebiederm@xmission.com>
-CC:     <linux-kernel@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>,
-        <chengzhihao1@huawei.com>, <yukuai3@huawei.com>,
-        <yi.zhang@huawei.com>
-Subject: [PATCH v2] proc: Fix a dentry lock race between release_task and lookup
-Date:   Wed, 1 Jun 2022 10:17:42 +0800
-Message-ID: <20220601021742.4163063-1-chengzhihao1@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Tue, 31 May 2022 22:06:12 -0400
+Received: from mail-oa1-x29.google.com (mail-oa1-x29.google.com [IPv6:2001:4860:4864:20::29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED8F572E18
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 19:06:11 -0700 (PDT)
+Received: by mail-oa1-x29.google.com with SMTP id 586e51a60fabf-f2cd424b9cso860664fac.7
+        for <linux-kernel@vger.kernel.org>; Tue, 31 May 2022 19:06:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=AOE+maVk5InZYmJxq3fFhzfqd22A3DYPkKeLdVjuAXk=;
+        b=f418KBsuUtPiY0sjTEprLPFRqYykXYxhDm3pCbzhRk0tBeu2jD9ibbibHZNVHnhd8i
+         uC8Rjv7AS1geBjT2NNE1+sUcZYazcFXFchxAUW8ydsGAZC8v2OMmSAg393T8YOzZGBwD
+         oxueJieo+f0E9wLol0w8P9QBTTCx2n1SUhbZ4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=AOE+maVk5InZYmJxq3fFhzfqd22A3DYPkKeLdVjuAXk=;
+        b=f47jpY8UBrcY1WZidJ6D4VO+fmbiaOJLI3P51gZCAZJ0SyxC3ZMjhio4i3D6htGrm6
+         jZHDf5SCTnziFuI/yVDfLSVJSTyVPvCWYgujyJmPlN4G59EPDKAA8zKqJ+O6VlBAZp3f
+         X/saKIm0m5SDBMzahqEGkNBM4+fSjf2XRwHMLSmPoMFKZjCIQml6rlOrwsZ98xt8n4uW
+         V+MOVIfRvgqtfsiOXWf6/e5sIlZKcX3jh/4akzfmS1cKYL6EjQK0d41HW+zNSpEm+ElZ
+         C65MmtCmfl5bYdpUSdfJaYLLEIuL3GJ1wl2zk0tue+Wq6dLi96JVJBbISuB11zDRj8LX
+         XxFg==
+X-Gm-Message-State: AOAM530wp1QupJyI9MvKmcyFNpNu2yQSAOIpo/NazvJA+BqSnCH8xAaL
+        kG4TR2z1b9/jbAigC1Mz6a3W3YnOF2y7yBVIdqwsjQ==
+X-Google-Smtp-Source: ABdhPJzu+uxIbiEpXSSvXqOR1ScFSqXQ+1eOAxLwujTyveBbGBmycq4fzS+xsM0gn91chDVuTC4ooQ4KFJJEREQ22+Y=
+X-Received: by 2002:a05:6870:558e:b0:e1:db7c:26aa with SMTP id
+ n14-20020a056870558e00b000e1db7c26aamr15376480oao.63.1654049171244; Tue, 31
+ May 2022 19:06:11 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Tue, 31 May 2022 19:06:10 -0700
 MIME-Version: 1.0
+In-Reply-To: <4b9a2abe-c462-81d9-2098-d430da24f030@quicinc.com>
+References: <1653043777-24003-1-git-send-email-quic_c_skakit@quicinc.com>
+ <1653043777-24003-8-git-send-email-quic_c_skakit@quicinc.com>
+ <CAE-0n53WLYR1pjnr6wASVmXXQ7xTq5n2Q7GdeKOCkWf4H4n=0A@mail.gmail.com>
+ <e70aceba-02d5-15b5-46d0-d5ed5706e81a@quicinc.com> <CAE-0n539gePyXhw7r+XcaHtooN98KfYsx_qwgDaFkJtMSg+80g@mail.gmail.com>
+ <4b9a2abe-c462-81d9-2098-d430da24f030@quicinc.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Tue, 31 May 2022 19:06:10 -0700
+Message-ID: <CAE-0n529AD8OKrxbTpDNqR7Gw9SdCnJyWtiWvZAsADQKgj4kxQ@mail.gmail.com>
+Subject: Re: [PATCH V13 7/9] regulator: Add a regulator driver for the PM8008 PMIC
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Satya Priya Kakitapalli <quic_c_skakit@quicinc.com>
+Cc:     Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        quic_collinsd@quicinc.com, quic_subbaram@quicinc.com,
+        quic_jprakash@quicinc.com
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemm600013.china.huawei.com (7.193.23.68)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit 7bc3e6e55acf06 ("proc: Use a list of inodes to flush from proc")
-moved proc_flush_task() behind __exit_signal(). Then, process systemd
-can take long period high cpu usage during releasing task in following
-concurrent processes:
+Quoting Satya Priya Kakitapalli (Temp) (2022-05-30 03:33:47)
+>
+> On 5/28/2022 2:32 AM, Stephen Boyd wrote:
+> > Quoting Satya Priya Kakitapalli (Temp) (2022-05-27 01:24:19)
+> >> On 5/21/2022 8:26 AM, Stephen Boyd wrote:
+> >>          +       }
+> >>          +
+> >>          +       pm8008_reg->dev = dev;
+> >>          +
+> >>          +       rc = of_property_read_string(dev->of_node, "regulator-name", &name);
+> >>          +       if (rc)
+> >>          +               return rc;
+> >>          +
+> >>          +       /* get the required regulator data */
+> >>          +       for (i = 0; i < ARRAY_SIZE(reg_data); i++)
+> >>          +               if (strstr(name, reg_data[i].name))
+> >>
+> >>      Why not find this via reg/address instead? It would save storing the
+> >>      regulator name in the reg_data table.
+> >>
+> >>
+> >> You mean match this using base address? then we should add base address in the
+> >> reg_data table. We will need the name to be stored in reg_data table anyway for
+> >> the pm8008_reg->rdesc.of_match
+> > Why? Now that this driver binds to each node individually the usage of
+> > of_match doesn't make any sense to me. Can you set 'struct
+> > regulator_config::dev' instead and not set of_match?
+>
+>
+> Currently we are setting regulator_config::dev as dev->parent i.e.,
+> pm8008@8, because the parent supplies are present under pm8008@8, to get
+> the regulators mapped correctly to the parent supplies we are using
+> dev->parent.
+>
+> If we do not set of_match in regulator descriptor,
+> regulator_of_get_init_node() would return NULL, causing init_data to be
+> NULL during regulator_register and regulators are not getting probed.
+> This can be resolved, if we get the init_data during pm8008_probe
+> itself. I'll do that in the next version.
+>
 
-  systemd                                 ps
-kernel_waitid                 stat(/proc/tgid)
-  do_wait                       filename_lookup
-    wait_consider_task            lookup_fast
-      release_task
-        __exit_signal
-          __unhash_process
-            detach_pid
-              __change_pid // remove task->pid_links
-                                     d_revalidate -> pid_revalidate  // 0
-                                     d_invalidate(/proc/tgid)
-                                       shrink_dcache_parent(/proc/tgid)
-                                         d_walk(/proc/tgid)
-                                           spin_lock_nested(/proc/tgid/fd)
-                                           // iterating opened fd
-        proc_flush_pid                                    |
-           d_invalidate (/proc/tgid/fd)                   |
-              shrink_dcache_parent(/proc/tgid/fd)         |
-                shrink_dentry_list(subdirs)               ↓
-                  shrink_lock_dentry(/proc/tgid/fd) --> race on dentry lock
-
-Function d_invalidate() will remove dentry from hash firstly, but why does
-proc_flush_pid() process dentry '/proc/tgid/fd' before dentry '/proc/tgid'?
-That's because proc_pid_make_inode() adds proc inode in reverse order by
-invoking hlist_add_head_rcu(). But proc should not add any inodes under
-'/proc/tgid' except '/proc/tgid/task/pid', fix it by adding inode into
-'pid->inodes' only if the inode is /proc/tgid or /proc/tgid/task/pid.
-
-Fixes: 7bc3e6e55acf06 ("proc: Use a list of inodes to flush from proc")
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=216054
-Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
-Signed-off-by: Zhang Yi <yi.zhang@huawei.com>
----
- v1->v2: Add new helper proc_pid_make_base_inode that performs the extra
-	 work of adding to the pid->list
- fs/proc/base.c | 34 ++++++++++++++++++++++++++--------
- 1 file changed, 26 insertions(+), 8 deletions(-)
-
-diff --git a/fs/proc/base.c b/fs/proc/base.c
-index c1031843cc6a..f22fad3bf7f0 100644
---- a/fs/proc/base.c
-+++ b/fs/proc/base.c
-@@ -1885,7 +1885,7 @@ void proc_pid_evict_inode(struct proc_inode *ei)
- 	put_pid(pid);
- }
- 
--struct inode *proc_pid_make_inode(struct super_block * sb,
-+struct inode *proc_pid_make_inode(struct super_block *sb,
- 				  struct task_struct *task, umode_t mode)
- {
- 	struct inode * inode;
-@@ -1914,11 +1914,6 @@ struct inode *proc_pid_make_inode(struct super_block * sb,
- 
- 	/* Let the pid remember us for quick removal */
- 	ei->pid = pid;
--	if (S_ISDIR(mode)) {
--		spin_lock(&pid->lock);
--		hlist_add_head_rcu(&ei->sibling_inodes, &pid->inodes);
--		spin_unlock(&pid->lock);
--	}
- 
- 	task_dump_owner(task, 0, &inode->i_uid, &inode->i_gid);
- 	security_task_to_inode(task, inode);
-@@ -1931,6 +1926,27 @@ struct inode *proc_pid_make_inode(struct super_block * sb,
- 	return NULL;
- }
- 
-+struct inode *proc_pid_make_base_inode(struct super_block *sb,
-+				       struct task_struct *task, umode_t mode)
-+{
-+	struct inode *inode;
-+	struct proc_inode *ei;
-+	struct pid *pid;
-+
-+	inode = proc_pid_make_inode(sb, task, mode);
-+	if (!inode)
-+		return NULL;
-+
-+	/* Let proc_flush_pid find this directory inode */
-+	ei = PROC_I(inode);
-+	pid = ei->pid;
-+	spin_lock(&pid->lock);
-+	hlist_add_head_rcu(&ei->sibling_inodes, &pid->inodes);
-+	spin_unlock(&pid->lock);
-+
-+	return inode;
-+}
-+
- int pid_getattr(struct user_namespace *mnt_userns, const struct path *path,
- 		struct kstat *stat, u32 request_mask, unsigned int query_flags)
- {
-@@ -3350,7 +3366,8 @@ static struct dentry *proc_pid_instantiate(struct dentry * dentry,
- {
- 	struct inode *inode;
- 
--	inode = proc_pid_make_inode(dentry->d_sb, task, S_IFDIR | S_IRUGO | S_IXUGO);
-+	inode = proc_pid_make_base_inode(dentry->d_sb, task,
-+					 S_IFDIR | S_IRUGO | S_IXUGO);
- 	if (!inode)
- 		return ERR_PTR(-ENOENT);
- 
-@@ -3649,7 +3666,8 @@ static struct dentry *proc_task_instantiate(struct dentry *dentry,
- 	struct task_struct *task, const void *ptr)
- {
- 	struct inode *inode;
--	inode = proc_pid_make_inode(dentry->d_sb, task, S_IFDIR | S_IRUGO | S_IXUGO);
-+	inode = proc_pid_make_base_inode(dentry->d_sb, task,
-+					 S_IFDIR | S_IRUGO | S_IXUGO);
- 	if (!inode)
- 		return ERR_PTR(-ENOENT);
- 
--- 
-2.31.1
-
+Ok then it seems ok to leave it as is. I suspect getting init data
+during probe is more code vs. having the node name and the address in
+the table.
