@@ -2,173 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F29FEC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 08:58:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 543D7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 08:59:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351041AbiFAI6y (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 04:58:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42448 "EHLO
+        id S239184AbiFAI73 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 04:59:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350991AbiFAI6l (ORCPT
+        with ESMTP id S1347947AbiFAI71 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 04:58:41 -0400
-Received: from esa3.hgst.iphmx.com (esa3.hgst.iphmx.com [216.71.153.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12EB45B8B0
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 01:58:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
-  t=1654073919; x=1685609919;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=yekFtGAN4w5p9PA5IUJd0rrnGMpkzjL2GetVtAzLt5g=;
-  b=OoXwJdAQcEvlSjd+6WxSebotWwp6aQfUPOH+Zt0IiN2mgMdOiPDtkejS
-   H1MW4FFSHABnPPL7Pk0T2q71Gpq59V6HZTgmPXRlwYSQ4Q3k2ho8P73Dc
-   G4JzBdPNzcm2rKVR5ZivmcE3gaDJLXG+qbC67+SJNzBhJ8ojfXFvMXOXL
-   wOVUjG4XvyZVVnrBgv9pKiRbjGE3Uf4qNnDjxYXDuNUBC4pDDLP3UZ5uT
-   sSchdemA1yO14I1kusj2l2xI2mSiPztEz21Cy+1LGy8K6/Pe8kOa9VdIS
-   Hg9ilSs7Hx+jqkHRakq6cTQhkyHXrX5GpQ0aIFEbzmfechWA1NbJn3gy8
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.91,266,1647273600"; 
-   d="scan'208";a="206835107"
-Received: from h199-255-45-14.hgst.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
-  by ob1.hgst.iphmx.com with ESMTP; 01 Jun 2022 16:58:38 +0800
-IronPort-SDR: IVTBIen0mvYA32A3XgxVP/U+8kezkBzy4CcyA+jHjWSlwba+IlhIyRwgPz0wzDKmXfs8xZBoJr
- grby71ndkC7NEfkgIPQ++mhvH1iXrp5MJUxWRvgkvOi8zTxc97We4uqAttZi8YmczlzdS2jgGA
- nCAcVdtXGwfaRiKcyE4LrupKA03zf5itvDozq/UKtBbHrh/CtltxR3zrE1pGealv890a1YU9/O
- dg2iQZMQVpyheNjkCmvi8s34DzRLxtSjTCoguow+e8BUu5BoNb3carFELKD9u/uXElKo4P/tTw
- QXaOWtIaZk98R4ycQSSyukey
-Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
-  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 01 Jun 2022 01:22:20 -0700
-IronPort-SDR: yNnfB7HTNnm9ZHMU41EbnWIuWppmgETQgCd+5/V8fXX1L+UccZ57bRZn5EhPeDKvCrHTMyXUJK
- QSSl+/5IvxqcAJs3xIgxaYeoZ8VCh67oNv6hyRfOuIODVSqwuk+9g5vgx9cPswpoCGHAwDnPyx
- UnC+BShXzZuiUTxBCQXRdgoNiR3yJdP+cVvOvxmq/lANbVPnMNoP7moAEZxfNjDye9Td7fbtdb
- js3p1SN8GhdLP18xS+oJY7BoiNXQOHNd+o0Z7kBFNLJFKB+4nFfvGuS7oRyBDUhtAZfdy7eUzw
- L98=
-WDCIronportException: Internal
-Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
-  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 01 Jun 2022 01:58:39 -0700
-Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4LCjjp1lVcz1SHwl
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 01:58:38 -0700 (PDT)
-Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
-        reason="pass (just generated, assumed good)"
-        header.d=opensource.wdc.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
-        opensource.wdc.com; h=content-transfer-encoding:content-type
-        :in-reply-to:organization:from:references:to:content-language
-        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
-        1654073917; x=1656665918; bh=yekFtGAN4w5p9PA5IUJd0rrnGMpkzjL2Get
-        VtAzLt5g=; b=eO0FLVRiepamJCS9LGoLsEj2MVtNlZuwkihjqgxxKyIKnF394Ho
-        yW043E6mDLqEhmAWVEdQ4QyxU22FpSx9II99fLTKBJe/woxFIzb3vZYsLeZPqjBE
-        DTmPISUK4UjJcO17oV80au9sFEyORaCJQvoGw/Ai9Vth9Kzz20g2ipfm0xwfFywO
-        AksUlbBGAjFCaeftHdGGbIcL1x6vsO+6t3rbfZ6BnWuSPS6LOnHS2dvPwz+q/eEG
-        53hTJ/sKgyJO2F/aIbRDlqpU5KQGRA1zULKDHw52bWjbtBsJQ/GE9iJRzaOJ9Ru+
-        RXRDXqFtwy6I+oA8tzPNVn5e3FJRvurwJpA==
-X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
-Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
-        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id SChruGuBDXfX for <linux-kernel@vger.kernel.org>;
-        Wed,  1 Jun 2022 01:58:37 -0700 (PDT)
-Received: from [10.225.163.63] (unknown [10.225.163.63])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4LCjjm6M3jz1Rvlc;
-        Wed,  1 Jun 2022 01:58:36 -0700 (PDT)
-Message-ID: <3135eed0-b7e3-42fa-5b6c-80360f34e428@opensource.wdc.com>
-Date:   Wed, 1 Jun 2022 17:58:35 +0900
+        Wed, 1 Jun 2022 04:59:27 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 71BA26BFE7
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 01:59:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654073965;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=uzxCOihBBp2MvYCnWOOgAbyz9Dw1/OZ2iZqah66p3+o=;
+        b=EXOjlnKQirydQ4DGET0xbN2cNa7Z4L70epX6LmNKhu9loYdD15pyTETP25xHGuxCuJVG7A
+        4XIiqBTwMdBcx6IAxe/0BSkmgiMyA/pS5eAPF2CpRmbuhi14SWtJYPqCZ4ZByJjpE7lVF2
+        nQE8rwCdnsiYKtQWG2S6MN5nYYfmGvw=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-131-CLrASgcsNEyjDov6QsFk5Q-1; Wed, 01 Jun 2022 04:59:24 -0400
+X-MC-Unique: CLrASgcsNEyjDov6QsFk5Q-1
+Received: by mail-ed1-f71.google.com with SMTP id g7-20020a056402424700b0042dee9d11d0so812658edb.3
+        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 01:59:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=uzxCOihBBp2MvYCnWOOgAbyz9Dw1/OZ2iZqah66p3+o=;
+        b=WpqtDLPDNZjrOX03/ygc8KxZQa1TnKDlqG++0Ko9AzAweHhdcnFI5YkAAdoIt7Q1Mf
+         Oy24OOSfBKYmfXoO0S20WqfOQv+H3ZJ0v6MkAYyj6woB9E7cjPPlGA/n6kQeDwvsXRFh
+         WYDHapcDWQWFrDoz9OvWTFwOQ41XgWJGeK+3td2luG7SwNCrTNi0354Ch5ZeeubdSMdA
+         PhqqlrtkxLIF5EKgrBSDSl+/z414ZASiZQqR42ODsOItBY4CS2S5cIp2M1uRmuMllqw1
+         vMQoMhTpAU8gA3/TaXFBcA3qwW97mHNcaojm5ZqBr+qhJ7kDIw0SaxvJ4b8GOYztVc3g
+         51nQ==
+X-Gm-Message-State: AOAM531U6LfvQAC+iXVTT17BLufWdDrJQ2s/8PNrVXpsF6ze6w4TPa04
+        EPeWLuCwFOE5dQuHADKiE0pGu1m6zQXM22AdveMrNviNjoRL5UUkt+N5Hf1CPs0SrhtqxJKa7OU
+        R1oU5ZQtDAwP6I7q5o9EdzPud
+X-Received: by 2002:a50:ea8b:0:b0:428:7d05:eb7e with SMTP id d11-20020a50ea8b000000b004287d05eb7emr66994806edo.185.1654073963162;
+        Wed, 01 Jun 2022 01:59:23 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzcZzdAmqTqAOV48EeckvF3+BiTMXPZ6japnr184Gq8Eqzb54YOTFyRdX28qRg+QRUvnZvVOA==
+X-Received: by 2002:a50:ea8b:0:b0:428:7d05:eb7e with SMTP id d11-20020a50ea8b000000b004287d05eb7emr66994790edo.185.1654073962970;
+        Wed, 01 Jun 2022 01:59:22 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:9af8:e5f5:7516:fa89? ([2001:b07:6468:f312:9af8:e5f5:7516:fa89])
+        by smtp.googlemail.com with ESMTPSA id cx12-20020a05640222ac00b0042bd6630a14sm644395edb.87.2022.06.01.01.59.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 01 Jun 2022 01:59:22 -0700 (PDT)
+Message-ID: <b9238c07-68a7-31fa-c654-d8111a1e2d4b@redhat.com>
+Date:   Wed, 1 Jun 2022 10:59:17 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v2 3/3] ata: ahci: Skip 200 ms debounce delay for AMD 300
- Series Chipset SATA Controller
+ Thunderbird/91.8.0
+Subject: Re: ...\n
 Content-Language: en-US
-To:     Paul Menzel <pmenzel@molgen.mpg.de>
-Cc:     Mario Limonciello <Mario.Limonciello@amd.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        linux-ide@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
-References: <20220321212431.13717-1-pmenzel@molgen.mpg.de>
- <20220321212431.13717-3-pmenzel@molgen.mpg.de>
- <BL1PR12MB5157DDFD5E75360F032346D3E2169@BL1PR12MB5157.namprd12.prod.outlook.com>
- <cc7b4426-f6a6-e6b1-4aaf-0a713ee3d388@opensource.wdc.com>
- <5fb6af7b-d84f-cbae-7eb1-543f3a7e53e4@molgen.mpg.de>
- <d9837420-1cbb-ed5e-7043-985d9eb9d065@opensource.wdc.com>
- <b3e4435d-335c-1aba-1920-c225b46d09e7@molgen.mpg.de>
- <f6c78650-f22f-fcaf-a660-b1fc4ea7f641@molgen.mpg.de>
- <22f69d9a-7d0d-a408-70b3-11295f14b82d@opensource.wdc.com>
- <67950993-2eb9-c180-7c80-98c9954c9b22@molgen.mpg.de>
- <85f8c8cb-b4b9-b3ed-e79f-a1a161c9b672@opensource.wdc.com>
- <65012735-0a92-1071-e8e0-9d101c247a64@molgen.mpg.de>
-From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Organization: Western Digital Research
-In-Reply-To: <65012735-0a92-1071-e8e0-9d101c247a64@molgen.mpg.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+To:     Vitaly Kuznetsov <vkuznets@redhat.com>,
+        "Durrant, Paul" <pdurrant@amazon.co.uk>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "Allister, Jack" <jalliste@amazon.com>
+Cc:     "bp@alien8.de" <bp@alien8.de>,
+        "diapop@amazon.co.uk" <diapop@amazon.co.uk>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "jmattson@google.com" <jmattson@google.com>,
+        "joro@8bytes.org" <joro@8bytes.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "metikaya@amazon.co.uk" <metikaya@amazon.co.uk>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "rkrcmar@redhat.com" <rkrcmar@redhat.com>,
+        "sean.j.christopherson@intel.com" <sean.j.christopherson@intel.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "wanpengli@tencent.com" <wanpengli@tencent.com>,
+        "x86@kernel.org" <x86@kernel.org>
+References: <YpYaYK7a28DFT5Ne@hirez.programming.kicks-ass.net>
+ <20220531140236.1435-1-jalliste@amazon.com>
+ <YpYpxzt4rmG+LFy9@hirez.programming.kicks-ass.net>
+ <059ab3327ac440479ecfdf49fa054347@EX13D32EUC003.ant.amazon.com>
+ <307f19cc-322e-c900-2894-22bdee1e248a@redhat.com> <87tu94olyd.fsf@redhat.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <87tu94olyd.fsf@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/1/22 01:18, Paul Menzel wrote:
->>>> With that in mind, I am not planning to apply your previous patches
->>>> for 5.18, as they would conflict and would only end up being churn
->>>> since the delay removal by default will undo your changes.
->>> Obviously, I do not agree, as this would give the a little bit more
->>> testing already, if changing the default is a good idea. Also, if the
->>> conflict will be hard to resolve, I happily do it (the patches could
->>> even be reverted on top =E2=80=93 git commits are cheap and easy to h=
-andle).
->>
->> The conflict is not hard to resolve. The point is that my patches chan=
-ging
->> the default to no debounce delay completely remove the changes of your
->> patch to do the same for one or some adapters. So adding your patches =
-now
->> and then my patches on top does not make much sense at all.
->>
->> If too many problems show up and I end up reverting/removing the patch=
-es,
->> then I will be happy to take your patches for the adapter you tested. =
-Note
->> that *all* the machines I have tested so far are OK without a debounce
->> delay too. So we could add them too... And endup with a long list of
->> adapters that use the default ahci driver without debounce delay. The =
-goal
->> of changing the default to no delay is to avoid that. So far, the adap=
-ters
->> I have identified that need the delay have their own declaration, so w=
-e
->> only need to add a flag there. Simpler change that listing up adapters
->> that are OK without the delay.
->>
->>> Anyway, I wrote my piece, but you are the maintainer, so it=E2=80=99s=
- your call
->>> and I stop bothering you.
->=20
-> I just wanted to inquire about the status of your changes? I do not fin=
-d=20
-> them in your `for-5.19` branch. As they should be tested in linux-next=20
-> before the merge window opens, if these are not ready yet, could you=20
-> please apply my (tested) patches?
+On 6/1/22 09:57, Vitaly Kuznetsov wrote:
+>>> I'll bite... What's ludicrous about wanting to run a guest at a lower CPU freq to minimize observable change in whatever workload it is running?
+>> Well, the right API is cpufreq, there's no need to make it a KVM
+>> functionality.
+> KVM may probably use the cpufreq API to run each vCPU at the desired
+> frequency: I don't quite see how this can be done with a VMM today when
+> it's not a 1-vCPU-per-1-pCPU setup.
 
-I could, but 5.19 now has an updated libata.force kernel parameter that
-allows one to disable the debounce delay for a particular port or for all
-ports of an adapter. See libata.force=3Dx.y:nodbdelay for a port y of
-adapter x or libata.force=3Dx:nodbdelay for all ports of adapter x.
+True, but then there's also a policy issue, in that KVM shouldn't be 
+allowed to *bump* the frequency if userspace would ordinarily not have 
+access to the cpufreq files in sysfs.
 
-I still plan to revisit the arbitrary link debounce timers but I prefer t=
-o
-have the power management cleanup applied first. The reason is that link
-debounce depends on PHY readiness, which itself depends heavily on power
-mode transitions. My plan is to get this done during this cycle for
-release with 5.20 and then fix on top the arbitrary delays for 5.21.
+All in all, I think it's simpler to let privileged userspace (which 
+knows when it has a 1:1 mapping of vCPU to pCPU) handle it with cpufreq.
 
-Is the libata.force solution OK for you until we have a final more solid
-fix that can benefit most modern adapters (and not just the ones you
-identified) ? If you do have a use case that needs a "nodbdelay" horkage
-due to some constraint in the field, then I will apply your patches, but
-they likely will be voided by coming changes. Let me know.
+Paolo
 
-Cheers.
-
-
---=20
-Damien Le Moal
-Western Digital Research
