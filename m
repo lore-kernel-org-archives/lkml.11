@@ -2,48 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94C4ECCA468
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:54:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7496CCA468
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:54:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353052AbiFANyp (ORCPT
+        id S1353097AbiFANyt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 09:54:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59398 "EHLO
+        Wed, 1 Jun 2022 09:54:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353696AbiFANyQ (ORCPT
+        with ESMTP id S1353705AbiFANyR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 09:54:16 -0400
+        Wed, 1 Jun 2022 09:54:17 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B18A78A314;
-        Wed,  1 Jun 2022 06:54:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 537AC8AE7A;
+        Wed,  1 Jun 2022 06:54:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4894EB81AF7;
-        Wed,  1 Jun 2022 13:53:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD46AC385A5;
-        Wed,  1 Jun 2022 13:53:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 93994B81806;
+        Wed,  1 Jun 2022 13:53:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE64EC385A5;
+        Wed,  1 Jun 2022 13:53:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091596;
-        bh=8NbJ170rIUXQQVJxOIKNvepMghO4/rzK/KFcWRAlTeE=;
+        s=k20201202; t=1654091616;
+        bh=p/08dZfZ7CBeLXRE9nPAnm/+jHFflppoG/BYqplNPyk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ceeVWfbmSSSKNtQ/242MSKK0eqWnriMX2Z3lMZUsX0wBVk6vkh+bYQj1uv/fIExOJ
-         eB66TZrJNvVTj0NOd4HY/feKAMhfL8f8fYhnyFn1U3y9BO81r3qIqArNADPzZErONv
-         eZwzzQjdLuLLHTBnNqVoYxSuduPXBagpBsd907j7o6ibH8g8wAr6m3sJEVB84dEY+n
-         hJqaHLdrzq8HkYFKZ+9bUfN8DxBQsedNt0DxGkvN+8IWmsUlzspUT9yigD6nB2BKy0
-         phZq78PgTPhmtEQQW2EkJlPLCVkoGmSWqujYAiZ8UlDBUYtjJZTsFKpTfCq0C/t2rW
-         Nv0g1VszcweTA==
+        b=jwB1cGNLE/Wa7MV4TpB5uKF82EVi0n62RMTjcnAZf7kvIQ8XkrBpJVlTMQKEjVbKx
+         bo/x3q1UYx3mgkQ7WsfiVT4PiDfqO2ZsO6cpgRBwVomAA6MYcjmvwXKegor47E0wt6
+         pb9m2Oqq+2tMbkofz3iWOc7iW9X15ooa1Jcx0KFOpLdxMy0cyGDZUkEYv7egJsETTL
+         poE+B4MjDOuAjzPUHjYW/uJOuB5syxAuolbCz3e/lS6KQlNuAL1Px3s89/78VLimsd
+         v6/fPneJN5W5CzxKL104jOYEgg26j/IJaj/RfoQWHvITmGGRxehE9i9gIXvNYVTvkX
+         Lek0WX3nwq8RA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>,
-        Douglas Anderson <dianders@chromium.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>, agross@kernel.org,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 26/49] arm64: dts: qcom: sc7280-qcard: Configure CTS pin to bias-bus-hold for bluetooth
-Date:   Wed,  1 Jun 2022 09:51:50 -0400
-Message-Id: <20220601135214.2002647-26-sashal@kernel.org>
+Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        kernel test robot <lkp@intel.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>, rth@twiddle.net,
+        ink@jurassic.park.msu.ru, mattst88@gmail.com,
+        catalin.marinas@arm.com, pcc@google.com, will@kernel.org,
+        linux-alpha@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 34/49] alpha: fix alloc_zeroed_user_highpage_movable()
+Date:   Wed,  1 Jun 2022 09:51:58 -0400
+Message-Id: <20220601135214.2002647-34-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135214.2002647-1-sashal@kernel.org>
 References: <20220601135214.2002647-1-sashal@kernel.org>
@@ -55,60 +57,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 
-[ Upstream commit 3d0e375bae55c2dfa6dd0762f45ad71f0b192f71 ]
+[ Upstream commit f9c668d281aa20e38c9bda3b7b0adeb8891aa15e ]
 
-WLAN rail was leaking power during RBSC/sleep even after turning BT off.
-Change active and sleep pinctrl configurations to handle same.
+Due to a typo, the final argument to alloc_page_vma() didn't refer to a
+real variable.  This only affected CONFIG_NUMA, which was marked BROKEN in
+2006 and removed from alpha in 2021.  Found due to a refactoring patch.
 
-Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/1650556567-4995-3-git-send-email-quic_vnivarth@quicinc.com
+Link: https://lkml.kernel.org/r/20220504182857.4013401-4-willy@infradead.org
+Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi | 19 ++++++++++++++-----
- 1 file changed, 14 insertions(+), 5 deletions(-)
+ arch/alpha/include/asm/page.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi b/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi
-index b833ba1e8f4a..98b5cd70bca5 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi
-@@ -398,8 +398,14 @@ &qup_i2c13_data_clk {
+diff --git a/arch/alpha/include/asm/page.h b/arch/alpha/include/asm/page.h
+index 18f48a6f2ff6..8f3f5eecba28 100644
+--- a/arch/alpha/include/asm/page.h
++++ b/arch/alpha/include/asm/page.h
+@@ -18,7 +18,7 @@ extern void clear_page(void *page);
+ #define clear_user_page(page, vaddr, pg)	clear_page(page)
  
- /* For mos_bt_uart */
- &qup_uart7_cts {
--	/* Configure a pull-down on CTS to match the pull of the Bluetooth module. */
--	bias-pull-down;
-+	/*
-+	 * Configure a bias-bus-hold on CTS to lower power
-+	 * usage when Bluetooth is turned off. Bus hold will
-+	 * maintain a low power state regardless of whether
-+	 * the Bluetooth module drives the pin in either
-+	 * direction or leaves the pin fully unpowered.
-+	 */
-+	bias-bus-hold;
- };
+ #define alloc_zeroed_user_highpage_movable(vma, vaddr) \
+-	alloc_page_vma(GFP_HIGHUSER_MOVABLE | __GFP_ZERO, vma, vmaddr)
++	alloc_page_vma(GFP_HIGHUSER_MOVABLE | __GFP_ZERO, vma, vaddr)
+ #define __HAVE_ARCH_ALLOC_ZEROED_USER_HIGHPAGE_MOVABLE
  
- /* For mos_bt_uart */
-@@ -490,10 +496,13 @@ qup_uart7_sleep_cts: qup-uart7-sleep-cts {
- 		pins = "gpio28";
- 		function = "gpio";
- 		/*
--		 * Configure a pull-down on CTS to match the pull of
--		 * the Bluetooth module.
-+		 * Configure a bias-bus-hold on CTS to lower power
-+		 * usage when Bluetooth is turned off. Bus hold will
-+		 * maintain a low power state regardless of whether
-+		 * the Bluetooth module drives the pin in either
-+		 * direction or leaves the pin fully unpowered.
- 		 */
--		bias-pull-down;
-+		bias-bus-hold;
- 	};
- 
- 	/* For mos_bt_uart */
+ extern void copy_page(void * _to, void * _from);
 -- 
 2.35.1
 
