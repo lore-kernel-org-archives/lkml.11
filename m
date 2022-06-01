@@ -2,161 +2,462 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10216C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 12:33:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D4A9C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 12:33:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352487AbiFAMda (ORCPT
+        id S1352906AbiFAMdo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 08:33:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51326 "EHLO
+        Wed, 1 Jun 2022 08:33:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230171AbiFAMd1 (ORCPT
+        with ESMTP id S1352897AbiFAMdm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 08:33:27 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2074.outbound.protection.outlook.com [40.107.93.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F66F8FD6B
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 05:33:26 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cX7fSRpUpuZrCIFe2xifnlBHBE4jswS97ZR6E6cmyfuS23HC84P5jYSj5PWq21yMQqI87RgEo/ptYTUxBqn2WnIrQNIUisIoSvhoYglvQJrxBLS7f5vp5CXnE1fYPsUQfKY4p86PY6edJ8f7fZaXvqLoLCnsBqCLAzw/1lLUEJAoMSGzLhbfOXnm5La0pMFTBYUdMrKdIH6/FnS8jjVJKZs2+DydH61WeicyZJlNZTzYctR7F4mNBsRMy1DxLlGGXKM4mHTEHaGbC11AZFNf5zWbw86w6A3czc3NbSRB8mxOPMYZbfR6J1iVM8xbAjMatFSNn2RnqcWpTh0RDp9FgQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+KlnR+Q4LobtH2FTCEkGMfeKjmJT6j/Xu0IO6U6czjM=;
- b=fUb+FNJ7HDc2EnKY8L7LHGSH0x+IoTO2x854VMWd6v+TKY/Grfh5xAqWYaKcggYDpFBgOmR9KhuluWjlbnhNrD6VDjLmHane9DYGhyxY98DmAyEpRwzq6Tw5C7TXLQVVrazBDlN4lI9pMnuMMUKkrlfi31My/Y6nWdHhE6NZkCM8yhnckIenuvkZl07WEpYvOQNKBoNpTZQ5a+/S485wfgvPuYBRPaccJb3x0El/WnKSQczCptqBU3wvRiKrsfzQtUg85CiRwCKOJhgpTd80vkXpXnk9fWAvczJ5ht2/Z6XSPtmwyDSPW9jdCut+zKjeZrl5ApAfxsTv2Wb2TteEAg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+KlnR+Q4LobtH2FTCEkGMfeKjmJT6j/Xu0IO6U6czjM=;
- b=mqC8ntSIHir292Y+cQbhajtJZKLTElKcHbyNfuRVLhDSewjYGYY5jBsUqS4me2KWjIB4TsfaJU8cyQU3YNaNDX/yZtWaVQoBqCSmzePDjxBaQzIG7/0V/I/K0IYeMY5Oeqit6h7dgQsgNzNwnhyMEqD5lKiN79aR/AcQs/SXEOkJ3nfti4u7EhLg2T103i0sLDhqEh4r1cdiIPhz3MbabcYt6U5SPsUxWO8UH4s2k7aSliab0l/96rrD956uco9o4xVddhTFQcIqehR2WZL5T1531vyiJoKxsaWM1bzA6S3m7MLaakvATxe+mavhO6NQKprhwVRG7806uo1nQhtYqw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by MN2PR12MB4032.namprd12.prod.outlook.com (2603:10b6:208:16d::32) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.13; Wed, 1 Jun
- 2022 12:33:23 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::2484:51da:d56f:f1a5]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::2484:51da:d56f:f1a5%9]) with mapi id 15.20.5314.013; Wed, 1 Jun 2022
- 12:33:22 +0000
-Date:   Wed, 1 Jun 2022 09:33:21 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Joao Martins <joao.m.martins@oracle.com>
-Cc:     Robin Murphy <robin.murphy@arm.com>,
-        Baolu Lu <baolu.lu@linux.intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Will Deacon <will@kernel.org>, Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 01/12] iommu/vt-d: Use iommu_get_domain_for_dev() in
- debugfs
-Message-ID: <20220601123321.GQ1343366@nvidia.com>
-References: <20220531145301.GE1343366@nvidia.com>
- <a7d6d830-cb06-e0d7-0688-028f9af900e5@arm.com>
- <20220531151332.GF1343366@nvidia.com>
- <b66a2e3b-9adc-5150-fe00-d68b141b1c28@arm.com>
- <20220531162152.GH1343366@nvidia.com>
- <10f16c13-c50d-892c-a20d-979b2135c953@arm.com>
- <20220531185110.GJ1343366@nvidia.com>
- <56bbbad7-bcba-a440-692b-64e50b4eddf8@arm.com>
- <20220531231039.GO1343366@nvidia.com>
- <135e22b8-14cc-446f-98b6-9ee059236641@oracle.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <135e22b8-14cc-446f-98b6-9ee059236641@oracle.com>
-X-ClientProxiedBy: BL0PR1501CA0035.namprd15.prod.outlook.com
- (2603:10b6:207:17::48) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6a604826-4722-4b3d-c52f-08da43caeab0
-X-MS-TrafficTypeDiagnostic: MN2PR12MB4032:EE_
-X-Microsoft-Antispam-PRVS: <MN2PR12MB40321427F6332275C07908E0C2DF9@MN2PR12MB4032.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: PmHb3QVG6RglEy6Vx3BAXC4tZnCexUBjGtewOwms5UD4IeNBSvYkyN0QbbLjTtjg875VhVe2O25AydlauMIqDbRpIf+s0jtT1VmOY34LYtErYZTf59RnaBGwOSigrsF5Ms4lF988rc97Wg7aT4jNC82JQ/wCVZxzcLYTAwdC8zOZQyxNaUudYTsGmpydxXHpo/N40NsgYi72IgrAvQAKXfccVvURTz4GA+EBlga1q0ojdBEtSFwTB0EsTe0aFFysnlu470R8uXrlsg7V6WAjkXulm9gpxs2UMBO6SGT0fgteE+KwSqz5i/J9OqzGCN09NXZaZfSy2JdtUTDBpsDw0614FqfxnVyu3GVUsCQARFVw2V5xWABsZxlZgEXRAIu37lU/3Rs9/YxKROvlDkDXAcWGmGpVvcEFn6l+zyJfCGuUZcftBBVFGUGyL/IMzxiAqOREBCuWN3S8y02dkhy6Fc7xJP+KFqK9AHQZRVGoXG1XB9+1AQErXp7unkBYp62u+2aKiub/I4i3CljFMPWnKMtg+X01ugb3ZJaRXuUe1/zcEnCtEf3XhQFPU1kgm6cpWJrTFAyJ2wzjsfVsn7/K4bzCzkx5OqD7kFLP3NyhwVZ4bnw/un6QpqB+ttWJTHf7BJ2p7sy1H8VSXlUsMv7Gcw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6512007)(86362001)(54906003)(66476007)(66556008)(66946007)(36756003)(1076003)(2616005)(186003)(38100700002)(6506007)(8676002)(508600001)(4326008)(2906002)(83380400001)(316002)(6486002)(26005)(33656002)(7416002)(5660300002)(6916009)(8936002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?W2xw5JTBO56xhU+/wjhYnycaoPsXXnq1wq8dH7gWjaouDjNDED/2TXIx8DaD?=
- =?us-ascii?Q?f8Qfs3jWd1o5E8F+ALoxQpM0ouTRzjMKrBzZ/c+hxqF+r91SDEOHyOHIrogj?=
- =?us-ascii?Q?p0CrEwEzBtzdlVkuEoScGE/lwAD4WiF9B8JuSgfOCxdIotOxzmsqogazVynG?=
- =?us-ascii?Q?0GY4yXs010IGQMXILv1XTE0bgP3VvBwXTw3NVWhjLcjjZ+NzDTM2JWClezGw?=
- =?us-ascii?Q?NkCAK6C4umAgw+LbA0KrmVJ9DXmz5qzxDy1Clu29NSyKSTHXjIeRQ5CS6EI9?=
- =?us-ascii?Q?YNQnvy16027jM4WmRU9LUVUSIUO+v9xm9diNe0krr26TdA4l1BPrlqi3sNZr?=
- =?us-ascii?Q?VMiCxFu6brjeVVekcsaRDpbDKXUdjpj5Ho8jnvdLwvVK/4PsDNXwQaLfe7go?=
- =?us-ascii?Q?L4+EU4gJXNl5KlnibC06lGTKVczxupabRR26eyiqZeyzqxtRQv3d89bj9pqf?=
- =?us-ascii?Q?s6vzG1bfDzJ0bKQkEpnyh4mN61lf5FwbiZ81uftdBaC6/n2zVlACOWVCwOTv?=
- =?us-ascii?Q?6+0Q0io4aiiA9aR17ySJhUE7yf5l7X2YoAVQdBg0+67EEhlRO0fJiEywiqOY?=
- =?us-ascii?Q?q+3fQVTkHSKf0HOugVVJxZWRlmYbEuPC05LWZE6JB/I91QGzylsQHrygjhOh?=
- =?us-ascii?Q?WqcQ+2/JdbRx0PTRLs6hzzQYOzuZSid+g10rxBf9OMjD+80krNW73e9vRbJ7?=
- =?us-ascii?Q?4H9cXEEJwvXTbld0dC6RiKnZ11F+WaIhORxlvkxyuLDgFtlRvBLAQU40ft2I?=
- =?us-ascii?Q?nVrq6A+JUKQZSBbiRnehoIWxIwMhvuggHbIMQUK5k9IzIBifNqWWBwVvUvUx?=
- =?us-ascii?Q?gyTpoBA9tPG10QAX06aQAFc7v/73K1eSKoonYgg60UDLny8obGMR+pyWAnUk?=
- =?us-ascii?Q?4bzgwFYtt8nX7koKU3+KQLosT/DmpgFhY9Nid9Znn7J6bYn1okJburyeZclg?=
- =?us-ascii?Q?H48UZ+d/FbnFlXvGPcm6rOTKmoQk3++lbuTwitMcADuC9jboUrODXONIbCqK?=
- =?us-ascii?Q?7QIG0+9CBKj/UdZ3skGOYie1nhEdNXXrkMePJUww58o/RYgcYhIRZElHG7Q9?=
- =?us-ascii?Q?yIUJ3PBt729ig4ceGIBh2/a+xwgDQfxDwGfJgiTQpSoSPODhA17XDKyTHmgK?=
- =?us-ascii?Q?qTy5kPu5y1R6CQu4Rbbl7e5HAYbsP9REbrADpWlq1igv9nrCRLk7NsVrJR2k?=
- =?us-ascii?Q?ld1ZmwMvVjD1jQKA4U/Y2MIDNGBxSjqt0JeC/+fNVnyy2epflNETvb3K1zfV?=
- =?us-ascii?Q?X3rpXYOsbUDtioGw3IlEB9Mj3eK+MeZCK+v/c0qCnulhGny+qc1AATVK2Y+A?=
- =?us-ascii?Q?mDBcZ3B2ujrutN4NFmYR3jyhDg1mEZBjOTCDtigkYZwurECoBIGg0tMzO8Os?=
- =?us-ascii?Q?sBCda7JnMRAo+k7m2TS/ZiLfdPnLZkCuYchOytF/8xRVionYckk6mIp92hUd?=
- =?us-ascii?Q?sUdy7D6Ss9I51NYRRyqnQpyGUKwTqAnqpJBlWzLsJyEDn2DIJlc2Y8CKEwOz?=
- =?us-ascii?Q?8m8oGP3MINioJ2zzS2msRdt5gLrMRzG4Cl8p2saH4A4S55t+8ZtaQJSsKbJV?=
- =?us-ascii?Q?8z/Z27CeUVP1/KWMnIyEVgxs2DzU1x6Q0FFqDn+IZqedKMj0FQA0dlYnLIU9?=
- =?us-ascii?Q?7G5TSNY571mHw2cfVWmKzoS+MFLT9UV4A9DZUavJryHWP2fSa1yvq10QpLfD?=
- =?us-ascii?Q?Sn2elJXHpfrD9jluRy32nzTvGKlWSZPpSA7OhY/4iMID0QtJ5BcLqhOoprzX?=
- =?us-ascii?Q?vCXGZ0hOQw=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6a604826-4722-4b3d-c52f-08da43caeab0
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jun 2022 12:33:22.8610
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: E9zYlCZ+cJcGQbah1uRWnbnWni/SNE0JkRihVQBabxu7tpyy1/k6yOWANN19VKHR
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4032
+        Wed, 1 Jun 2022 08:33:42 -0400
+Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDE509CC99;
+        Wed,  1 Jun 2022 05:33:40 -0700 (PDT)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 0DD5A5C02E7;
+        Wed,  1 Jun 2022 08:33:40 -0400 (EDT)
+Received: from imap44 ([10.202.2.94])
+  by compute4.internal (MEProxy); Wed, 01 Jun 2022 08:33:40 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=flygoat.com; h=
+        cc:cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm2; t=1654086820; x=
+        1654173220; bh=IReQZu40HMuKJt6G+/lDXOkEOlJDntVBO42UzEHC5Ko=; b=X
+        3nl7SndjvRvPN2UhU99txLk8Beb0pyY+mv3F5uR5GbxTJ8efcqzQvt62VXiNOjDz
+        jrCgaUyjlnFLVDW2zzPVQI6f8kjjYdmgEAqfQ4hDYEb4gFmGQg6ReTDwggyRJhZ4
+        T573tlnNeWq3uwURKCPg25/j+HzGGndQTm2+zlpu0g5qomyxJ+7vGjWFzdkgYuh7
+        B59yDr53UqFcHP79UhU/pQfIzOA1nwicl9u8X1H4hoQVP8vvTXlpyd63KH2v4gI5
+        DEOnZcBa4iUvnU6JOY/ezVODa3CVrhWBaZVZip7zuMR2Masg/0lXicEIaOVj9pFT
+        sHfOHi7WulofT38dBuCDQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:feedback-id:feedback-id:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1654086820; x=
+        1654173220; bh=IReQZu40HMuKJt6G+/lDXOkEOlJDntVBO42UzEHC5Ko=; b=i
+        oO6iTOxpX9D5FjEdD3VQPYzHtz2fvmmgGn4YxVCEEFE1CxOsCsdWYqmPxKwnBTDh
+        VpMpRadmFouKCVsvaWBMslcw1Ffxn5JgNcJFAZMea4tLz+jfGwTTLkOEqcXrVrBk
+        GIed3rn9hqgX2ozS0jSDP0p9TWVGPfGdJl+UJrsIUjHikqE3eM7vz8PWakQVCGev
+        IjD+hlD3mbjx4SsAvUofOWkhhS3kOvHcX3NvcF0Yfb0WkwUKB6KO69H/++u1pFD2
+        mwJbRhRPg+EvovMFFGm3SBWW+bEPFO5UKGhnBglI/+pX9POJydXOwxRCj+ge+AfP
+        ruZAJCKkeSpUQcsRTAOQg==
+X-ME-Sender: <xms:o1yXYjGdhGI80LO0nAbpwG6m5ZFIu5LXkndtqnRl-iBLjTVr1UHUEw>
+    <xme:o1yXYgUQ08YVy3hY2Clp9r3ddhKkBzZE7Yvlm-YyRzhgCh4LXwGrkj80KZ-60wKpz
+    Rre4AI_XOy-EEh_VQ4>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrledtgdehfecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefofgggkfgjfhffhffvvefutgfgsehtqhertderreejnecuhfhrohhmpedflfhi
+    rgiguhhnucgjrghnghdfuceojhhirgiguhhnrdihrghnghesfhhlhihgohgrthdrtghomh
+    eqnecuggftrfgrthhtvghrnhepjefhleetteeludegleehhffgledvvddvleeujefghfet
+    heeftddugeelgfdukeegnecuffhomhgrihhnpehushgvrhdrshgsnecuvehluhhsthgvrh
+    fuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepjhhirgiguhhnrdihrghnghes
+    fhhlhihgohgrthdrtghomh
+X-ME-Proxy: <xmx:o1yXYlKoPlo2FwTRHSSApuCjUW9RSU9hTdm_t1TfuUZ6wqPJofS1bQ>
+    <xmx:o1yXYhHDYkQ_n9acmqfpCVtwJrPiX5PY3kUSfAob_4GcwPqEu3Y_Hg>
+    <xmx:o1yXYpUYPqd1b8UoRYQI0yvmgkpeaUSlXbIwCSGfttbAe7EBgL9mAQ>
+    <xmx:pFyXYtnEUCW9KF6Q04qgjGzmfb2372e0dxk196-57lvsUTEpgXQ-1Q>
+Feedback-ID: ifd894703:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id C163F36A006D; Wed,  1 Jun 2022 08:33:39 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.7.0-alpha0-591-gfe6c3a2700-fm-20220427.001-gfe6c3a27
+Mime-Version: 1.0
+Message-Id: <29c5ec6f-5898-4212-afbb-75f76f5320ff@www.fastmail.com>
+In-Reply-To: <20220601100005.2989022-20-chenhuacai@loongson.cn>
+References: <20220601100005.2989022-1-chenhuacai@loongson.cn>
+ <20220601100005.2989022-20-chenhuacai@loongson.cn>
+Date:   Wed, 01 Jun 2022 13:33:18 +0100
+From:   "Jiaxun Yang" <jiaxun.yang@flygoat.com>
+To:     "Huacai Chen" <chenhuacai@loongson.cn>,
+        "Arnd Bergmann" <arnd@arndb.de>,
+        "Andy Lutomirski" <luto@kernel.org>,
+        "Thomas Gleixner" <tglx@linutronix.de>,
+        "Peter Zijlstra" <peterz@infradead.org>,
+        "Andrew Morton" <akpm@linux-foundation.org>,
+        "David Airlie" <airlied@linux.ie>,
+        "Jonathan Corbet" <corbet@lwn.net>,
+        "Linus Torvalds" <torvalds@linux-foundation.org>
+Cc:     linux-arch@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, "Xuefeng Li" <lixuefeng@loongson.cn>,
+        "Yanteng Si" <siyanteng@loongson.cn>,
+        "Huacai Chen" <chenhuacai@gmail.com>,
+        "Guo Ren" <guoren@kernel.org>, "Xuerui Wang" <kernel@xen0n.name>,
+        "Stephen Rothwell" <sfr@canb.auug.org.au>,
+        "WANG Xuerui" <git@xen0n.name>
+Subject: Re: [PATCH V12 19/24] LoongArch: Add some library functions
+Content-Type: text/plain;charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 01, 2022 at 01:18:52PM +0100, Joao Martins wrote:
 
-> > So having safe racy reading in the kernel is probably best, and so RCU
-> > would be good here too.
-> 
-> Reading dirties ought to be similar to map/unmap but slightly simpler as
-> I supposedly don't need to care about the pte changing under the hood (or
-> so I initially thought). I was wrestling at some point if test-and-clear
-> was enough or whether I switch back cmpxchg to detect the pte has changed
-> and only mark dirty based on the old value[*]. The latter would align with
-> how map/unmap performs the pte updates.
 
-test-and-clear should be fine, but this all needs to be done under a
-RCU context while the page tables themsevles are freed by RCU. Then
-you can safely chase the page table pointers down to each level
-without fear of UAF.
+=E5=9C=A82022=E5=B9=B46=E6=9C=881=E6=97=A5=E5=85=AD=E6=9C=88 =E4=B8=8A=E5=
+=8D=8811:00=EF=BC=8CHuacai Chen=E5=86=99=E9=81=93=EF=BC=9A
+> Add some library functions for LoongArch, including: delay, memset,
+> memcpy, memmove, copy_user, strncpy_user, strnlen_user and tlb dump
+> functions.
+>
+> Reviewed-by: WANG Xuerui <git@xen0n.name>
+> Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
 
-> I am not sure yet on dynamic demote/promote of page sizes if it changes this.
+Reviewed-by: Jiaxun Yang <jiaxun.yang@flygoat.com>
 
-For this kind of primitive the caller must provide the locking, just
-like map/unmap.
+I particularly love tlbdump function for MIPS. It=E2=80=99s a handy tool=
+ for mm debugging.
+Good job for LA one.
 
-Effectively you can consider the iommu_domain has having externally
-provided range-locks over the IOVA space. map/unmap/demote/promote
-must run serially over intersecting IOVA ranges.
+Thanks.
 
-In terms of iommufd this means we always have to hold a lock related
-to the area (which is the IOVA range) before issuing any iommu call on
-the domain.
+> ---
+>  arch/loongarch/include/asm/delay.h  |  26 +++++++
+>  arch/loongarch/include/asm/string.h |  12 +++
+>  arch/loongarch/lib/clear_user.S     |  43 +++++++++++
+>  arch/loongarch/lib/copy_user.S      |  47 ++++++++++++
+>  arch/loongarch/lib/delay.c          |  43 +++++++++++
+>  arch/loongarch/lib/dump_tlb.c       | 111 ++++++++++++++++++++++++++++
+>  6 files changed, 282 insertions(+)
+>  create mode 100644 arch/loongarch/include/asm/delay.h
+>  create mode 100644 arch/loongarch/include/asm/string.h
+>  create mode 100644 arch/loongarch/lib/clear_user.S
+>  create mode 100644 arch/loongarch/lib/copy_user.S
+>  create mode 100644 arch/loongarch/lib/delay.c
+>  create mode 100644 arch/loongarch/lib/dump_tlb.c
+>
+> diff --git a/arch/loongarch/include/asm/delay.h=20
+> b/arch/loongarch/include/asm/delay.h
+> new file mode 100644
+> index 000000000000..36d775191310
+> --- /dev/null
+> +++ b/arch/loongarch/include/asm/delay.h
+> @@ -0,0 +1,26 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +/*
+> + * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
+> + */
+> +#ifndef _ASM_DELAY_H
+> +#define _ASM_DELAY_H
+> +
+> +#include <linux/param.h>
+> +
+> +extern void __delay(unsigned long cycles);
+> +extern void __ndelay(unsigned long ns);
+> +extern void __udelay(unsigned long us);
+> +
+> +#define ndelay(ns) __ndelay(ns)
+> +#define udelay(us) __udelay(us)
+> +
+> +/* make sure "usecs *=3D ..." in udelay do not overflow. */
+> +#if HZ >=3D 1000
+> +#define MAX_UDELAY_MS	1
+> +#elif HZ <=3D 200
+> +#define MAX_UDELAY_MS	5
+> +#else
+> +#define MAX_UDELAY_MS	(1000 / HZ)
+> +#endif
+> +
+> +#endif /* _ASM_DELAY_H */
+> diff --git a/arch/loongarch/include/asm/string.h=20
+> b/arch/loongarch/include/asm/string.h
+> new file mode 100644
+> index 000000000000..b07e60ded957
+> --- /dev/null
+> +++ b/arch/loongarch/include/asm/string.h
+> @@ -0,0 +1,12 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +/*
+> + * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
+> + */
+> +#ifndef _ASM_STRING_H
+> +#define _ASM_STRING_H
+> +
+> +extern void *memset(void *__s, int __c, size_t __count);
+> +extern void *memcpy(void *__to, __const__ void *__from, size_t __n);
+> +extern void *memmove(void *__dest, __const__ void *__src, size_t __n);
+> +
+> +#endif /* _ASM_STRING_H */
+> diff --git a/arch/loongarch/lib/clear_user.S=20
+> b/arch/loongarch/lib/clear_user.S
+> new file mode 100644
+> index 000000000000..25d9be5fbb19
+> --- /dev/null
+> +++ b/arch/loongarch/lib/clear_user.S
+> @@ -0,0 +1,43 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +/*
+> + * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
+> + */
+> +
+> +#include <asm/asm.h>
+> +#include <asm/asmmacro.h>
+> +#include <asm/export.h>
+> +#include <asm/regdef.h>
+> +
+> +.macro fixup_ex from, to, offset, fix
+> +.if \fix
+> +	.section .fixup, "ax"
+> +\to:	addi.d	a0, a1, \offset
+> +	jr	ra
+> +	.previous
+> +.endif
+> +	.section __ex_table, "a"
+> +	PTR	\from\()b, \to\()b
+> +	.previous
+> +.endm
+> +
+> +/*
+> + * unsigned long __clear_user(void *addr, size_t size)
+> + *
+> + * a0: addr
+> + * a1: size
+> + */
+> +SYM_FUNC_START(__clear_user)
+> +	beqz	a1, 2f
+> +
+> +1:	st.b	zero, a0, 0
+> +	addi.d	a0, a0, 1
+> +	addi.d	a1, a1, -1
+> +	bgt	a1, zero, 1b
+> +
+> +2:	move	a0, a1
+> +	jr	ra
+> +
+> +	fixup_ex 1, 3, 0, 1
+> +SYM_FUNC_END(__clear_user)
+> +
+> +EXPORT_SYMBOL(__clear_user)
+> diff --git a/arch/loongarch/lib/copy_user.S=20
+> b/arch/loongarch/lib/copy_user.S
+> new file mode 100644
+> index 000000000000..9ae507f851b5
+> --- /dev/null
+> +++ b/arch/loongarch/lib/copy_user.S
+> @@ -0,0 +1,47 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +/*
+> + * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
+> + */
+> +
+> +#include <asm/asm.h>
+> +#include <asm/asmmacro.h>
+> +#include <asm/export.h>
+> +#include <asm/regdef.h>
+> +
+> +.macro fixup_ex from, to, offset, fix
+> +.if \fix
+> +	.section .fixup, "ax"
+> +\to:	addi.d	a0, a2, \offset
+> +	jr	ra
+> +	.previous
+> +.endif
+> +	.section __ex_table, "a"
+> +	PTR	\from\()b, \to\()b
+> +	.previous
+> +.endm
+> +
+> +/*
+> + * unsigned long __copy_user(void *to, const void *from, size_t n)
+> + *
+> + * a0: to
+> + * a1: from
+> + * a2: n
+> + */
+> +SYM_FUNC_START(__copy_user)
+> +	beqz	a2, 3f
+> +
+> +1:	ld.b	t0, a1, 0
+> +2:	st.b	t0, a0, 0
+> +	addi.d	a0, a0, 1
+> +	addi.d	a1, a1, 1
+> +	addi.d	a2, a2, -1
+> +	bgt	a2, zero, 1b
+> +
+> +3:	move	a0, a2
+> +	jr	ra
+> +
+> +	fixup_ex 1, 4, 0, 1
+> +	fixup_ex 2, 4, 0, 0
+> +SYM_FUNC_END(__copy_user)
+> +
+> +EXPORT_SYMBOL(__copy_user)
+> diff --git a/arch/loongarch/lib/delay.c b/arch/loongarch/lib/delay.c
+> new file mode 100644
+> index 000000000000..5d856694fcfe
+> --- /dev/null
+> +++ b/arch/loongarch/lib/delay.c
+> @@ -0,0 +1,43 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
+> + */
+> +#include <linux/delay.h>
+> +#include <linux/export.h>
+> +#include <linux/smp.h>
+> +#include <linux/timex.h>
+> +
+> +#include <asm/compiler.h>
+> +#include <asm/processor.h>
+> +
+> +void __delay(unsigned long cycles)
+> +{
+> +	u64 t0 =3D get_cycles();
+> +
+> +	while ((unsigned long)(get_cycles() - t0) < cycles)
+> +		cpu_relax();
+> +}
+> +EXPORT_SYMBOL(__delay);
+> +
+> +/*
+> + * Division by multiplication: you don't have to worry about
+> + * loss of precision.
+> + *
+> + * Use only for very small delays ( < 1 msec).	Should probably use a
+> + * lookup table, really, as the multiplications take much too long wi=
+th
+> + * short delays.  This is a "reasonable" implementation, though (and=20
+> the
+> + * first constant multiplications gets optimized away if the delay is
+> + * a constant)
+> + */
+> +
+> +void __udelay(unsigned long us)
+> +{
+> +	__delay((us * 0x000010c7ull * HZ * lpj_fine) >> 32);
+> +}
+> +EXPORT_SYMBOL(__udelay);
+> +
+> +void __ndelay(unsigned long ns)
+> +{
+> +	__delay((ns * 0x00000005ull * HZ * lpj_fine) >> 32);
+> +}
+> +EXPORT_SYMBOL(__ndelay);
+> diff --git a/arch/loongarch/lib/dump_tlb.c=20
+> b/arch/loongarch/lib/dump_tlb.c
+> new file mode 100644
+> index 000000000000..cda2c6bc7f09
+> --- /dev/null
+> +++ b/arch/loongarch/lib/dump_tlb.c
+> @@ -0,0 +1,111 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
+> + *
+> + * Derived from MIPS:
+> + * Copyright (C) 1994, 1995 by Waldorf Electronics, written by Ralf=20
+> Baechle.
+> + * Copyright (C) 1999 by Silicon Graphics, Inc.
+> + */
+> +#include <linux/kernel.h>
+> +#include <linux/mm.h>
+> +
+> +#include <asm/loongarch.h>
+> +#include <asm/page.h>
+> +#include <asm/pgtable.h>
+> +#include <asm/tlb.h>
+> +
+> +void dump_tlb_regs(void)
+> +{
+> +	const int field =3D 2 * sizeof(unsigned long);
+> +
+> +	pr_info("Index    : %0x\n", read_csr_tlbidx());
+> +	pr_info("PageSize : %0x\n", read_csr_pagesize());
+> +	pr_info("EntryHi  : %0*llx\n", field, read_csr_entryhi());
+> +	pr_info("EntryLo0 : %0*llx\n", field, read_csr_entrylo0());
+> +	pr_info("EntryLo1 : %0*llx\n", field, read_csr_entrylo1());
+> +}
+> +
+> +static void dump_tlb(int first, int last)
+> +{
+> +	unsigned long s_entryhi, entryhi, asid;
+> +	unsigned long long entrylo0, entrylo1, pa;
+> +	unsigned int index;
+> +	unsigned int s_index, s_asid;
+> +	unsigned int pagesize, c0, c1, i;
+> +	unsigned long asidmask =3D cpu_asid_mask(&current_cpu_data);
+> +	int pwidth =3D 11;
+> +	int vwidth =3D 11;
+> +	int asidwidth =3D DIV_ROUND_UP(ilog2(asidmask) + 1, 4);
+> +
+> +	s_entryhi =3D read_csr_entryhi();
+> +	s_index =3D read_csr_tlbidx();
+> +	s_asid =3D read_csr_asid();
+> +
+> +	for (i =3D first; i <=3D last; i++) {
+> +		write_csr_index(i);
+> +		tlb_read();
+> +		pagesize =3D read_csr_pagesize();
+> +		entryhi	 =3D read_csr_entryhi();
+> +		entrylo0 =3D read_csr_entrylo0();
+> +		entrylo1 =3D read_csr_entrylo1();
+> +		index =3D read_csr_tlbidx();
+> +		asid =3D read_csr_asid();
+> +
+> +		/* EHINV bit marks entire entry as invalid */
+> +		if (index & CSR_TLBIDX_EHINV)
+> +			continue;
+> +		/*
+> +		 * ASID takes effect in absence of G (global) bit.
+> +		 */
+> +		if (!((entrylo0 | entrylo1) & ENTRYLO_G) &&
+> +		    asid !=3D s_asid)
+> +			continue;
+> +
+> +		/*
+> +		 * Only print entries in use
+> +		 */
+> +		pr_info("Index: %2d pgsize=3D%x ", i, (1 << pagesize));
+> +
+> +		c0 =3D (entrylo0 & ENTRYLO_C) >> ENTRYLO_C_SHIFT;
+> +		c1 =3D (entrylo1 & ENTRYLO_C) >> ENTRYLO_C_SHIFT;
+> +
+> +		pr_cont("va=3D%0*lx asid=3D%0*lx",
+> +			vwidth, (entryhi & ~0x1fffUL), asidwidth, asid & asidmask);
+> +
+> +		/* NR/NX are in awkward places, so mask them off separately */
+> +		pa =3D entrylo0 & ~(ENTRYLO_NR | ENTRYLO_NX);
+> +		pa =3D pa & PAGE_MASK;
+> +		pr_cont("\n\t[");
+> +		pr_cont("ri=3D%d xi=3D%d ",
+> +			(entrylo0 & ENTRYLO_NR) ? 1 : 0,
+> +			(entrylo0 & ENTRYLO_NX) ? 1 : 0);
+> +		pr_cont("pa=3D%0*llx c=3D%d d=3D%d v=3D%d g=3D%d plv=3D%lld] [",
+> +			pwidth, pa, c0,
+> +			(entrylo0 & ENTRYLO_D) ? 1 : 0,
+> +			(entrylo0 & ENTRYLO_V) ? 1 : 0,
+> +			(entrylo0 & ENTRYLO_G) ? 1 : 0,
+> +			(entrylo0 & ENTRYLO_PLV) >> ENTRYLO_PLV_SHIFT);
+> +		/* NR/NX are in awkward places, so mask them off separately */
+> +		pa =3D entrylo1 & ~(ENTRYLO_NR | ENTRYLO_NX);
+> +		pa =3D pa & PAGE_MASK;
+> +		pr_cont("ri=3D%d xi=3D%d ",
+> +			(entrylo1 & ENTRYLO_NR) ? 1 : 0,
+> +			(entrylo1 & ENTRYLO_NX) ? 1 : 0);
+> +		pr_cont("pa=3D%0*llx c=3D%d d=3D%d v=3D%d g=3D%d plv=3D%lld]\n",
+> +			pwidth, pa, c1,
+> +			(entrylo1 & ENTRYLO_D) ? 1 : 0,
+> +			(entrylo1 & ENTRYLO_V) ? 1 : 0,
+> +			(entrylo1 & ENTRYLO_G) ? 1 : 0,
+> +			(entrylo1 & ENTRYLO_PLV) >> ENTRYLO_PLV_SHIFT);
+> +	}
+> +	pr_info("\n");
+> +
+> +	write_csr_entryhi(s_entryhi);
+> +	write_csr_tlbidx(s_index);
+> +	write_csr_asid(s_asid);
+> +}
+> +
+> +void dump_tlb_all(void)
+> +{
+> +	dump_tlb(0, current_cpu_data.tlbsize - 1);
+> +}
+> --=20
+> 2.27.0
 
-Jason
+--=20
+- Jiaxun
