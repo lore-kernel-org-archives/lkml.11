@@ -2,47 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0C13C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:14:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19780C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:14:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354497AbiFAOOY (ORCPT
+        id S1355272AbiFAOOa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:14:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51222 "EHLO
+        Wed, 1 Jun 2022 10:14:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354716AbiFAOJd (ORCPT
+        with ESMTP id S1354768AbiFAOJf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:09:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26B2B38B8;
-        Wed,  1 Jun 2022 07:00:43 -0700 (PDT)
+        Wed, 1 Jun 2022 10:09:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7519B851;
+        Wed,  1 Jun 2022 07:01:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D50A1B81A79;
-        Wed,  1 Jun 2022 14:00:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7301DC34119;
-        Wed,  1 Jun 2022 14:00:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 555C36155E;
+        Wed,  1 Jun 2022 14:01:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80D4BC385B8;
+        Wed,  1 Jun 2022 14:00:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654092040;
-        bh=3ayjXfh8crDvx/tS+PqRBF69eq4DxJ+TQm7C1u1kBJY=;
+        s=k20201202; t=1654092059;
+        bh=ZFNXhbHfbocFCUSfvXMVgWSinwDEA9oa7M4fSnZ4Qwg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XGJWcDW5D6rAsk9WNkCW+XZMAAmK4vpIKbWWhYpC6UDSDWQq2xylySrWzwcv7uvvT
-         syRllqpa9IkxbnRDErxaET4qS1pSMUjzZTPUWUpOQAWSysMcbWqRDP4Gvo0B26uSCu
-         iTyROfhzNO7hZUzuFMSn8jBivWBJzdEgDsD2JEvnFrmWA/zML2UiMfE4GuG4vWn5AT
-         IP5CjSJ1KULHYyeDAy0hcwJkf/hm7EBmHe+fnnb3adhzL0LOFlPsh4W/S52ES/k9RO
-         fWA9OVvznBSukvX1lFU6d2tzdwbrhh/Kyf8CsJNqKiIHdYESAAv/aHJWVPe9Nrc8jr
-         4Xoff6gtwxjqg==
+        b=jyI9y5q9WJBng//2EWtxX09EZxnxvNJ4ktkSNqnRwY/2EZQlYhUGgXSrDXjNk6JGM
+         5hZmT/dgXbx7VVS/sPv3ALPRVHEz/q48Yu/JXO7IQzwGFRhx5BIBupdzB2XBqw3Ab2
+         76AEmS2ECX6syBH45/f/Cv1/o9GN7emLhBFoXKh0Qp1pPCAiSBblLqD6Z7tXYGeJy9
+         ye2gY0zoyEmQzxfs6kI5zf3Dw06mVr+8XX2GcvkLRm87rEGLUqpvpgvv1dZOkDVleo
+         /+y1M/qktk6Fzf3UWoUczGK7RVx9i1o1YatxQBw7xRBs/zikMeSeGR1NFjQdngrnAz
+         8kJ/ZIibfeHhQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 07/14] ARM: dts: exynos: add atmel,24c128 fallback to Samsung EEPROM
-Date:   Wed,  1 Jun 2022 10:00:20 -0400
-Message-Id: <20220601140027.2005280-7-sashal@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Sasha Levin <sashal@kernel.org>,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 4.14 14/14] drm: fix EDID struct for old ARM OABI format
+Date:   Wed,  1 Jun 2022 10:00:27 -0400
+Message-Id: <20220601140027.2005280-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601140027.2005280-1-sashal@kernel.org>
 References: <20220601140027.2005280-1-sashal@kernel.org>
@@ -54,43 +59,112 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 
-[ Upstream commit f038e8186fbc5723d7d38c6fa1d342945107347e ]
+[ Upstream commit 47f15561b69e226bfc034e94ff6dbec51a4662af ]
 
-The Samsung s524ad0xd1 EEPROM should use atmel,24c128 fallback,
-according to the AT24 EEPROM bindings.
+When building the kernel for arm with the "-mabi=apcs-gnu" option, gcc
+will force alignment of all structures and unions to a word boundary
+(see also STRUCTURE_SIZE_BOUNDARY and the "-mstructure-size-boundary=XX"
+option if you're a gcc person), even when the members of said structures
+do not want or need said alignment.
 
-Reported-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220426183443.243113-1-krzysztof.kozlowski@linaro.org
+This completely messes up the structure alignment of 'struct edid' on
+those targets, because even though all the embedded structures are
+marked with "__attribute__((packed))", the unions that contain them are
+not.
+
+This was exposed by commit f1e4c916f97f ("drm/edid: add EDID block count
+and size helpers"), but the bug is pre-existing.  That commit just made
+the structure layout problem cause a build failure due to the addition
+of the
+
+        BUILD_BUG_ON(sizeof(*edid) != EDID_LENGTH);
+
+sanity check in drivers/gpu/drm/drm_edid.c:edid_block_data().
+
+This legacy union alignment should probably not be used in the first
+place, but we can fix the layout by adding the packed attribute to the
+union entries even when each member is already packed and it shouldn't
+matter in a sane build environment.
+
+You can see this issue with a trivial test program:
+
+  union {
+	struct {
+		char c[5];
+	};
+	struct {
+		char d;
+		unsigned e;
+	} __attribute__((packed));
+  } a = { "1234" };
+
+where building this with a normal "gcc -S" will result in the expected
+5-byte size of said union:
+
+	.type	a, @object
+	.size	a, 5
+
+but with an ARM compiler and the old ABI:
+
+    arm-linux-gnu-gcc -mabi=apcs-gnu -mfloat-abi=soft -S t.c
+
+you get
+
+	.type	a, %object
+	.size	a, 8
+
+instead, because even though each member of the union is packed, the
+union itself still gets aligned.
+
+This was reported by Sudip for the spear3xx_defconfig target.
+
+Link: https://lore.kernel.org/lkml/YpCUzStDnSgQLNFN@debian/
+Reported-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Acked-by: Arnd Bergmann <arnd@arndb.de>
+Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+Cc: Maxime Ripard <mripard@kernel.org>
+Cc: Thomas Zimmermann <tzimmermann@suse.de>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/exynos5250-smdk5250.dts | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ include/drm/drm_edid.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm/boot/dts/exynos5250-smdk5250.dts b/arch/arm/boot/dts/exynos5250-smdk5250.dts
-index a3c4b9e03fbf..dc539a4eb27a 100644
---- a/arch/arm/boot/dts/exynos5250-smdk5250.dts
-+++ b/arch/arm/boot/dts/exynos5250-smdk5250.dts
-@@ -128,7 +128,7 @@ &i2c_0 {
- 	samsung,i2c-max-bus-freq = <20000>;
+diff --git a/include/drm/drm_edid.h b/include/drm/drm_edid.h
+index 267e0426c479..0262e32ab59e 100644
+--- a/include/drm/drm_edid.h
++++ b/include/drm/drm_edid.h
+@@ -115,7 +115,7 @@ struct detailed_data_monitor_range {
+ 			u8 supported_scalings;
+ 			u8 preferred_refresh;
+ 		} __attribute__((packed)) cvt;
+-	} formula;
++	} __attribute__((packed)) formula;
+ } __attribute__((packed));
  
- 	eeprom@50 {
--		compatible = "samsung,s524ad0xd1";
-+		compatible = "samsung,s524ad0xd1", "atmel,24c128";
- 		reg = <0x50>;
- 	};
+ struct detailed_data_wpindex {
+@@ -148,7 +148,7 @@ struct detailed_non_pixel {
+ 		struct detailed_data_wpindex color;
+ 		struct std_timing timings[6];
+ 		struct cvt_timing cvt[4];
+-	} data;
++	} __attribute__((packed)) data;
+ } __attribute__((packed));
  
-@@ -287,7 +287,7 @@ &i2c_1 {
- 	samsung,i2c-max-bus-freq = <20000>;
+ #define EDID_DETAIL_EST_TIMINGS 0xf7
+@@ -166,7 +166,7 @@ struct detailed_timing {
+ 	union {
+ 		struct detailed_pixel_timing pixel_data;
+ 		struct detailed_non_pixel other_data;
+-	} data;
++	} __attribute__((packed)) data;
+ } __attribute__((packed));
  
- 	eeprom@51 {
--		compatible = "samsung,s524ad0xd1";
-+		compatible = "samsung,s524ad0xd1", "atmel,24c128";
- 		reg = <0x51>;
- 	};
- 
+ #define DRM_EDID_INPUT_SERRATION_VSYNC (1 << 0)
 -- 
 2.35.1
 
