@@ -2,95 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82249C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 11:52:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69D05C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 11:53:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352987AbiFALvE (ORCPT
+        id S1345158AbiFALw7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 07:51:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33088 "EHLO
+        Wed, 1 Jun 2022 07:52:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352970AbiFALuv (ORCPT
+        with ESMTP id S243564AbiFALwy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 07:50:51 -0400
-Received: from conssluserg-03.nifty.com (conssluserg-03.nifty.com [210.131.2.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E69F57163;
-        Wed,  1 Jun 2022 04:50:50 -0700 (PDT)
-Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173]) (authenticated)
-        by conssluserg-03.nifty.com with ESMTP id 251BoWtW017272;
-        Wed, 1 Jun 2022 20:50:33 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com 251BoWtW017272
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1654084233;
-        bh=NATsHGCbKK8PLdAiZ14t0wK1RPAlU5XauGOgv25vz2Q=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=FcxrU9gUfili9Q5SstEgSpxLaaV0nz3bM0Yy8fKMH+6R5J9RfiQpf1/ZY4iK/bACG
-         3Zo4oft8Ri09tR/v9CCnUC2XE7okwtkz6yDTqIu/65BmCH1mI2sYtf1ObBXfQq8NWj
-         v+Hmjv90XiAnPyVNjujZHJMojQedtPzYuFMKfCytuWqRfrmclK5auD2V78EpUYTBWV
-         7d3rt94Jl0LsWysMIZEv34HH3S8k/TQ9/xYum6sK9jxDAq06z7EBp0O1zOzRGkFxZ3
-         stFvI1HjNwnUs+96Oh4rs2l2OJy3B/6Eih4MrlVIOa3+ETT9C4bPn9iG62kK6LiAJR
-         /a2+s4Rm85JvQ==
-X-Nifty-SrcIP: [209.85.214.173]
-Received: by mail-pl1-f173.google.com with SMTP id i1so1561459plg.7;
-        Wed, 01 Jun 2022 04:50:32 -0700 (PDT)
-X-Gm-Message-State: AOAM532y68Wi9imx6VZfx5b9EKrWwYV7LfM8pKvJpGPcd8OWaSFzRKa0
-        Nfdid7wgqDfEOhwqyHTHMXBH4JFFFB1cr/Wa06k=
-X-Google-Smtp-Source: ABdhPJyuQ86Chu9+Z6HG3rMD5E8egdmdsP1qvRPB7VUu7U3nrj9aJIk50Z/W4oqMDRDJ4D05ERPURs1SKzSx1NIG6WY=
-X-Received: by 2002:a17:902:f68f:b0:162:23c6:e61b with SMTP id
- l15-20020a170902f68f00b0016223c6e61bmr48058326plg.136.1654084232131; Wed, 01
- Jun 2022 04:50:32 -0700 (PDT)
+        Wed, 1 Jun 2022 07:52:54 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E58C362129
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 04:52:53 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id n10so3230045ejk.5
+        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 04:52:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=0AglY+1+Y6nT5tUGbirs2CVjYEPSqR8ctpG8KYL1ge4=;
+        b=FI2JqFwBnVkQXCxczdrEtJeFFev4XkicqMbur0gVHJqUK+t0fWlK7500VhKo60XhBh
+         uroIJmwO/oB+MO810EYP3Q3WoyS3qpBIjOkSl1u6V3rwTHXjIgd9S3sTcdH8+ecus5Eq
+         RRGO/O1kV/q4DkxdF4D4Pmwe8MlGTeFGA2cC55SSlCz/2DLtqyzFAfmasUQxVoo8mWsg
+         r5gCbQ2me/G5AD1GRdVrxrCBHCHqNmzyOpOCvFlY3CpzQvCH3T6sS2pJSJTFcZ9C2Q6r
+         7BQpXM5wWo7J/R2QY0zpsmg+bL45QHFC+wWfAAS6fPdL2iVtMmzp2NpcSKSGpDpO/i/I
+         SOiQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=0AglY+1+Y6nT5tUGbirs2CVjYEPSqR8ctpG8KYL1ge4=;
+        b=EYdSQchuiLbrHHprR7CHBqxOVmkMWBbhdX1nVXLgF4Vem1k4SMV3XGR1hxNas46BSR
+         GvfLg/r8mHuuhBkDFrZ9uvhaTtjtROf+IpMOSfCVlgla9d3UH7gXCvZle9kYV6wdd+c7
+         CJKKEvdYCMBw7D0QEVCGUoj4+dDyU0JFcuMqYMNZZQCouy0O1KtzMkc3bla7KjOFBNdY
+         ZXVAb+6mTzA/jKH+mIFdcARzjNDyPOtepgEpwnQx+izFx1+oDUEoy14I3Im3ZIi7r1Cp
+         Ump774NGuQ2Kq36GzBapzRUj8lEsZJBGnDkHlS8nQsL9ZuZkkKaMrGmqyNNF45F4QeTQ
+         Btcg==
+X-Gm-Message-State: AOAM530TTfAXr4hdvLm3DMNS7H+nYiN7Ap0oWGuf6ZfbGH6IgW5OfYH0
+        9196mimKlRH1mn70aOZsykpskw==
+X-Google-Smtp-Source: ABdhPJzcHqbLNZZnX7RgY3FztZmfteRZ5qeFecs5cZpTfofuYQdpVGoGRjira252J7iyp4ia7DFfTg==
+X-Received: by 2002:a17:907:6d1f:b0:6fe:e53b:7f53 with SMTP id sa31-20020a1709076d1f00b006fee53b7f53mr42448923ejc.375.1654084372371;
+        Wed, 01 Jun 2022 04:52:52 -0700 (PDT)
+Received: from [192.168.0.179] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id ff4-20020a1709069c0400b006f3ef214e62sm609153ejc.200.2022.06.01.04.52.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 01 Jun 2022 04:52:51 -0700 (PDT)
+Message-ID: <5c754795-e569-1dfb-7474-658ccc3dc7a9@linaro.org>
+Date:   Wed, 1 Jun 2022 13:52:50 +0200
 MIME-Version: 1.0
-References: <YpdOBmEmkG0AaOX0@debian>
-In-Reply-To: <YpdOBmEmkG0AaOX0@debian>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Wed, 1 Jun 2022 20:49:55 +0900
-X-Gmail-Original-Message-ID: <CAK7LNATjJ-n2FM28FvK6iof=DDs073MJ_fDmvgVGymQvRQj_gw@mail.gmail.com>
-Message-ID: <CAK7LNATjJ-n2FM28FvK6iof=DDs073MJ_fDmvgVGymQvRQj_gw@mail.gmail.com>
-Subject: Re: mainline build failure due to f292d875d0dc ("modpost: extract
- symbol versions from *.cmd files")
-To:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Cc:     Nicolas Schier <nicolas@fjasle.eu>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Sedat Dilek <sedat.dilek@gmail.com>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 3/8] dt-bindings: soc: imx: add interconnect property for
+ i.MX8MP hsio blk ctrl
+Content-Language: en-US
+To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>, djakov@kernel.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, festevam@gmail.com,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        abel.vesa@nxp.com, abailon@baylibre.com, l.stach@pengutronix.de,
+        laurent.pinchart@ideasonboard.com, marex@denx.de,
+        paul.elder@ideasonboard.com, Markus.Niebel@ew.tq-group.com,
+        aford173@gmail.com
+Cc:     kernel@pengutronix.de, linux-pm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-imx@nxp.com,
+        Peng Fan <peng.fan@nxp.com>
+References: <20220601094537.3390127-1-peng.fan@oss.nxp.com>
+ <20220601094537.3390127-4-peng.fan@oss.nxp.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220601094537.3390127-4-peng.fan@oss.nxp.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 1, 2022 at 8:31 PM Sudip Mukherjee
-<sudipm.mukherjee@gmail.com> wrote:
->
-> Hi All,
->
-> The latest mainline kernel branch fails to build for csky allmodconfig
-> with the error:
->
-> ._divsi3.o.cmd: No such file or directory
-> make[1]: *** [scripts/Makefile.modpost:59: vmlinux.symvers] Error 1
-> make: *** [Makefile:1160: vmlinux] Error 2
->
-> git bisect pointed to f292d875d0dc ("modpost: extract symbol versions from *.cmd files")
->
-> I will be happy to test any patch or provide any extra log if needed.
->
->
-> --
-> Regards
-> Sudip
-
-A patch exists, and is already queued up in linux-next.
-
-https://patchwork.kernel.org/project/linux-kbuild/patch/20220529042318.2630379-1-masahiroy@kernel.org/
-
-I will send a pull request this week.
+On 01/06/2022 11:45, Peng Fan (OSS) wrote:
+> From: Peng Fan <peng.fan@nxp.com>
+> 
+> Add interconnect property for i.MX8MP hsio blk ctrl
+> 
+> Signed-off-by: Peng Fan <peng.fan@nxp.com>
 
 
--- 
-Best Regards
-Masahiro Yamada
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+
+Best regards,
+Krzysztof
