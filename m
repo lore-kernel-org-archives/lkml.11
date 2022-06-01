@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00BD1CCA468
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:57:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E839FCCA468
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:57:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353758AbiFAN5L (ORCPT
+        id S1353848AbiFAN5Q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 09:57:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59396 "EHLO
+        Wed, 1 Jun 2022 09:57:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353764AbiFANzZ (ORCPT
+        with ESMTP id S1353874AbiFANz3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 09:55:25 -0400
+        Wed, 1 Jun 2022 09:55:29 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 433E38FD77;
-        Wed,  1 Jun 2022 06:54:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6686A93475;
+        Wed,  1 Jun 2022 06:54:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6AC04615AA;
-        Wed,  1 Jun 2022 13:54:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAFC9C36AF8;
-        Wed,  1 Jun 2022 13:54:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1DFBF615E6;
+        Wed,  1 Jun 2022 13:54:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A263BC3411E;
+        Wed,  1 Jun 2022 13:54:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091674;
-        bh=ysGPMCEE6zTrrAwWhMonkdrC5EuSx87LJP4/nYS+s1I=;
+        s=k20201202; t=1654091680;
+        bh=VZt2nOdWMwFzurUHIONWPqfBKwllbRhQspuztDZ+FDA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oytYFRzq5R4OuWbwLD5cdAmY7s3jXvTMTVUK6jm+/sk4Lq0ZLPGDzbt0exCu3qKFJ
-         9gNq/ZjOyluK6HnpXyCZSiLDL3qvHd4gt1UxaJTDIjoMTLqDY/+BDytb3Z4qDX9U+9
-         Xxakqu2IKEc/2WMzcQ3j8+NA5/RxlSGFSMtYkVfLagKx2iXt3/sv/ugCyNK2jenf8g
-         sz+X4ZE4iHAMDNWWpJEJqRGcoy9biQNcyG9gHfnbGPZq+aIUv6eOJGVZnD+3jOlLNS
-         r00d3q77O8L9eoUmpRwbMmVx3c1p14FKe8ZXiuLHKdwP8KFqZIfDzVXUWYHqolt3tM
-         v6hIz3OyNuanw==
+        b=Mygib4T1yeePQ4UjO3dIiTxg/WRjDQVC1UP9wjF0Yz9za9na5StX+7j5SmqIo5nE7
+         HycWrC6fJC7MUWN55zVZ09KF6sqioSn5/F2DhqbrrTBB2kVJSIq1Nyo+7a7EbqipgZ
+         /LPHPvHESh6EDbPVJ8zaJ8VD/KsiOu6XfB75H8fxv+DoWPOhLTcmR93nvaagZ9+r7d
+         fGr96X7fqnywe3X5sEKVlp26d+39+tLTvu77AJRtXLt2E4zBYqTS/Fp48RkW6UedK0
+         97HOs+TYJ0uD/r+I4Arsz8KdHm3Mw+Sw1tQXOJ1uhdp3Xe7XQAQMpkKHZKTYX1ntoV
+         gz+8mkOvooxgA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mario Limonciello <mario.limonciello@amd.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, Vijendar.Mukunda@amd.com,
-        alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.17 06/48] ASoC: amd: Add driver data to acp6x machine driver
-Date:   Wed,  1 Jun 2022 09:53:39 -0400
-Message-Id: <20220601135421.2003328-6-sashal@kernel.org>
+Cc:     Gilad Ben-Yossef <gilad@benyossef.com>,
+        Corentin Labbe <clabbe.montjoie@gmail.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        linux-crypto@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 10/48] crypto: ccree - use fine grained DMA mapping dir
+Date:   Wed,  1 Jun 2022 09:53:43 -0400
+Message-Id: <20220601135421.2003328-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135421.2003328-1-sashal@kernel.org>
 References: <20220601135421.2003328-1-sashal@kernel.org>
@@ -54,182 +54,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mario Limonciello <mario.limonciello@amd.com>
+From: Gilad Ben-Yossef <gilad@benyossef.com>
 
-[ Upstream commit e521f087780d07731e8c950f2f34d08358c86bc9 ]
+[ Upstream commit a260436c98171cd825955a84a7f6e62bc8f4f00d ]
 
-Currently all of the quirked systems use the same card and so the
-DMI quirk list doesn't contain driver data.
+Use a fine grained specification of DMA mapping directions
+in certain cases, allowing both a more optimized operation
+as well as shushing out a harmless, though persky
+dma-debug warning.
 
-Add driver data to these quirks and then check the data was present
-or not.  This will allow potentially setting quirks for systems with
-faulty firmware that claims to have a DMIC but doesn't really.
-
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-Link: https://lore.kernel.org/r/20220411134532.13538-2-mario.limonciello@amd.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Gilad Ben-Yossef <gilad@benyossef.com>
+Reported-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/amd/yc/acp6x-mach.c | 29 +++++++++++++++++++++++++----
- 1 file changed, 25 insertions(+), 4 deletions(-)
+ drivers/crypto/ccree/cc_buffer_mgr.c | 27 +++++++++++++++------------
+ 1 file changed, 15 insertions(+), 12 deletions(-)
 
-diff --git a/sound/soc/amd/yc/acp6x-mach.c b/sound/soc/amd/yc/acp6x-mach.c
-index 9a767f47b89f..959b70e8baf2 100644
---- a/sound/soc/amd/yc/acp6x-mach.c
-+++ b/sound/soc/amd/yc/acp6x-mach.c
-@@ -45,108 +45,126 @@ static struct snd_soc_card acp6x_card = {
+diff --git a/drivers/crypto/ccree/cc_buffer_mgr.c b/drivers/crypto/ccree/cc_buffer_mgr.c
+index 11e0278c8631..6140e4927322 100644
+--- a/drivers/crypto/ccree/cc_buffer_mgr.c
++++ b/drivers/crypto/ccree/cc_buffer_mgr.c
+@@ -356,12 +356,14 @@ void cc_unmap_cipher_request(struct device *dev, void *ctx,
+ 			      req_ctx->mlli_params.mlli_dma_addr);
+ 	}
  
- static const struct dmi_system_id yc_acp_quirk_table[] = {
- 	{
-+		.driver_data = &acp6x_card,
- 		.matches = {
- 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
- 			DMI_MATCH(DMI_PRODUCT_NAME, "21D2"),
- 		}
- 	},
- 	{
-+		.driver_data = &acp6x_card,
- 		.matches = {
- 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
- 			DMI_MATCH(DMI_PRODUCT_NAME, "21D3"),
- 		}
- 	},
- 	{
-+		.driver_data = &acp6x_card,
- 		.matches = {
- 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
- 			DMI_MATCH(DMI_PRODUCT_NAME, "21D4"),
- 		}
- 	},
- 	{
-+		.driver_data = &acp6x_card,
- 		.matches = {
- 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
- 			DMI_MATCH(DMI_PRODUCT_NAME, "21D5"),
- 		}
- 	},
- 	{
-+		.driver_data = &acp6x_card,
- 		.matches = {
- 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
- 			DMI_MATCH(DMI_PRODUCT_NAME, "21CF"),
- 		}
- 	},
- 	{
-+		.driver_data = &acp6x_card,
- 		.matches = {
- 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
- 			DMI_MATCH(DMI_PRODUCT_NAME, "21CG"),
- 		}
- 	},
- 	{
-+		.driver_data = &acp6x_card,
- 		.matches = {
- 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
- 			DMI_MATCH(DMI_PRODUCT_NAME, "21CQ"),
- 		}
- 	},
- 	{
-+		.driver_data = &acp6x_card,
- 		.matches = {
- 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
- 			DMI_MATCH(DMI_PRODUCT_NAME, "21CR"),
- 		}
- 	},
- 	{
-+		.driver_data = &acp6x_card,
- 		.matches = {
- 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
- 			DMI_MATCH(DMI_PRODUCT_NAME, "21AW"),
- 		}
- 	},
- 	{
-+		.driver_data = &acp6x_card,
- 		.matches = {
- 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
- 			DMI_MATCH(DMI_PRODUCT_NAME, "21AX"),
- 		}
- 	},
- 	{
-+		.driver_data = &acp6x_card,
- 		.matches = {
- 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
- 			DMI_MATCH(DMI_PRODUCT_NAME, "21BN"),
- 		}
- 	},
- 	{
-+		.driver_data = &acp6x_card,
- 		.matches = {
- 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
- 			DMI_MATCH(DMI_PRODUCT_NAME, "21BQ"),
- 		}
- 	},
- 	{
-+		.driver_data = &acp6x_card,
- 		.matches = {
- 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
- 			DMI_MATCH(DMI_PRODUCT_NAME, "21CH"),
- 		}
- 	},
- 	{
-+		.driver_data = &acp6x_card,
- 		.matches = {
- 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
- 			DMI_MATCH(DMI_PRODUCT_NAME, "21CJ"),
- 		}
- 	},
- 	{
-+		.driver_data = &acp6x_card,
- 		.matches = {
- 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
- 			DMI_MATCH(DMI_PRODUCT_NAME, "21CK"),
- 		}
- 	},
- 	{
-+		.driver_data = &acp6x_card,
- 		.matches = {
- 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
- 			DMI_MATCH(DMI_PRODUCT_NAME, "21CL"),
- 		}
- 	},
- 	{
-+		.driver_data = &acp6x_card,
- 		.matches = {
- 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
- 			DMI_MATCH(DMI_PRODUCT_NAME, "21D8"),
- 		}
- 	},
- 	{
-+		.driver_data = &acp6x_card,
- 		.matches = {
- 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
- 			DMI_MATCH(DMI_PRODUCT_NAME, "21D9"),
-@@ -157,18 +175,21 @@ static const struct dmi_system_id yc_acp_quirk_table[] = {
+-	dma_unmap_sg(dev, src, req_ctx->in_nents, DMA_BIDIRECTIONAL);
+-	dev_dbg(dev, "Unmapped req->src=%pK\n", sg_virt(src));
+-
+ 	if (src != dst) {
+-		dma_unmap_sg(dev, dst, req_ctx->out_nents, DMA_BIDIRECTIONAL);
++		dma_unmap_sg(dev, src, req_ctx->in_nents, DMA_TO_DEVICE);
++		dma_unmap_sg(dev, dst, req_ctx->out_nents, DMA_FROM_DEVICE);
+ 		dev_dbg(dev, "Unmapped req->dst=%pK\n", sg_virt(dst));
++		dev_dbg(dev, "Unmapped req->src=%pK\n", sg_virt(src));
++	} else {
++		dma_unmap_sg(dev, src, req_ctx->in_nents, DMA_BIDIRECTIONAL);
++		dev_dbg(dev, "Unmapped req->src=%pK\n", sg_virt(src));
+ 	}
+ }
  
- static int acp6x_probe(struct platform_device *pdev)
- {
-+	const struct dmi_system_id *dmi_id;
- 	struct acp6x_pdm *machine = NULL;
- 	struct snd_soc_card *card;
- 	int ret;
--	const struct dmi_system_id *dmi_id;
+@@ -377,6 +379,7 @@ int cc_map_cipher_request(struct cc_drvdata *drvdata, void *ctx,
+ 	u32 dummy = 0;
+ 	int rc = 0;
+ 	u32 mapped_nents = 0;
++	int src_direction = (src != dst ? DMA_TO_DEVICE : DMA_BIDIRECTIONAL);
  
-+	/* check for any DMI overrides */
- 	dmi_id = dmi_first_match(yc_acp_quirk_table);
--	if (!dmi_id)
-+	if (dmi_id)
-+		platform_set_drvdata(pdev, dmi_id->driver_data);
-+
-+	card = platform_get_drvdata(pdev);
-+	if (!card)
- 		return -ENODEV;
--	card = &acp6x_card;
- 	acp6x_card.dev = &pdev->dev;
+ 	req_ctx->dma_buf_type = CC_DMA_BUF_DLLI;
+ 	mlli_params->curr_pool = NULL;
+@@ -399,7 +402,7 @@ int cc_map_cipher_request(struct cc_drvdata *drvdata, void *ctx,
+ 	}
  
--	platform_set_drvdata(pdev, card);
- 	snd_soc_card_set_drvdata(card, machine);
- 	ret = devm_snd_soc_register_card(&pdev->dev, card);
- 	if (ret) {
+ 	/* Map the src SGL */
+-	rc = cc_map_sg(dev, src, nbytes, DMA_BIDIRECTIONAL, &req_ctx->in_nents,
++	rc = cc_map_sg(dev, src, nbytes, src_direction, &req_ctx->in_nents,
+ 		       LLI_MAX_NUM_OF_DATA_ENTRIES, &dummy, &mapped_nents);
+ 	if (rc)
+ 		goto cipher_exit;
+@@ -416,7 +419,7 @@ int cc_map_cipher_request(struct cc_drvdata *drvdata, void *ctx,
+ 		}
+ 	} else {
+ 		/* Map the dst sg */
+-		rc = cc_map_sg(dev, dst, nbytes, DMA_BIDIRECTIONAL,
++		rc = cc_map_sg(dev, dst, nbytes, DMA_FROM_DEVICE,
+ 			       &req_ctx->out_nents, LLI_MAX_NUM_OF_DATA_ENTRIES,
+ 			       &dummy, &mapped_nents);
+ 		if (rc)
+@@ -456,6 +459,7 @@ void cc_unmap_aead_request(struct device *dev, struct aead_request *req)
+ 	struct aead_req_ctx *areq_ctx = aead_request_ctx(req);
+ 	unsigned int hw_iv_size = areq_ctx->hw_iv_size;
+ 	struct cc_drvdata *drvdata = dev_get_drvdata(dev);
++	int src_direction = (req->src != req->dst ? DMA_TO_DEVICE : DMA_BIDIRECTIONAL);
+ 
+ 	if (areq_ctx->mac_buf_dma_addr) {
+ 		dma_unmap_single(dev, areq_ctx->mac_buf_dma_addr,
+@@ -514,13 +518,11 @@ void cc_unmap_aead_request(struct device *dev, struct aead_request *req)
+ 		sg_virt(req->src), areq_ctx->src.nents, areq_ctx->assoc.nents,
+ 		areq_ctx->assoclen, req->cryptlen);
+ 
+-	dma_unmap_sg(dev, req->src, areq_ctx->src.mapped_nents,
+-		     DMA_BIDIRECTIONAL);
++	dma_unmap_sg(dev, req->src, areq_ctx->src.mapped_nents, src_direction);
+ 	if (req->src != req->dst) {
+ 		dev_dbg(dev, "Unmapping dst sgl: req->dst=%pK\n",
+ 			sg_virt(req->dst));
+-		dma_unmap_sg(dev, req->dst, areq_ctx->dst.mapped_nents,
+-			     DMA_BIDIRECTIONAL);
++		dma_unmap_sg(dev, req->dst, areq_ctx->dst.mapped_nents, DMA_FROM_DEVICE);
+ 	}
+ 	if (drvdata->coherent &&
+ 	    areq_ctx->gen_ctx.op_type == DRV_CRYPTO_DIRECTION_DECRYPT &&
+@@ -843,7 +845,7 @@ static int cc_aead_chain_data(struct cc_drvdata *drvdata,
+ 		else
+ 			size_for_map -= authsize;
+ 
+-		rc = cc_map_sg(dev, req->dst, size_for_map, DMA_BIDIRECTIONAL,
++		rc = cc_map_sg(dev, req->dst, size_for_map, DMA_FROM_DEVICE,
+ 			       &areq_ctx->dst.mapped_nents,
+ 			       LLI_MAX_NUM_OF_DATA_ENTRIES, &dst_last_bytes,
+ 			       &dst_mapped_nents);
+@@ -1056,7 +1058,8 @@ int cc_map_aead_request(struct cc_drvdata *drvdata, struct aead_request *req)
+ 		size_to_map += authsize;
+ 	}
+ 
+-	rc = cc_map_sg(dev, req->src, size_to_map, DMA_BIDIRECTIONAL,
++	rc = cc_map_sg(dev, req->src, size_to_map,
++		       (req->src != req->dst ? DMA_TO_DEVICE : DMA_BIDIRECTIONAL),
+ 		       &areq_ctx->src.mapped_nents,
+ 		       (LLI_MAX_NUM_OF_ASSOC_DATA_ENTRIES +
+ 			LLI_MAX_NUM_OF_DATA_ENTRIES),
 -- 
 2.35.1
 
