@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92CFACCA468
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:14:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B3B9CCA46F
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:14:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244649AbiFAOOh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:14:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50616 "EHLO
+        id S1355316AbiFAOOl (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 10:14:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354650AbiFAOJg (ORCPT
+        with ESMTP id S1354655AbiFAOJu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:09:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DC4FD11B;
-        Wed,  1 Jun 2022 07:01:06 -0700 (PDT)
+        Wed, 1 Jun 2022 10:09:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58DFBF59E;
+        Wed,  1 Jun 2022 07:01:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C33A4B8175B;
-        Wed,  1 Jun 2022 14:01:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7368AC385A5;
-        Wed,  1 Jun 2022 14:01:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E9733615B9;
+        Wed,  1 Jun 2022 14:01:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 718A6C3411F;
+        Wed,  1 Jun 2022 14:01:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654092063;
-        bh=LZSVzGm+eApsXK45dI2BFu9jzJnYL96WdCNobNzk1qI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=DmVt2KgdLDzTBOBEltgu0qcN9lXQCBXIzW581N9PB2DiS8ngZOpIncmwvaSFJCBeg
-         FbWwVhkFCKsNLQGOjWemQWNAInWbzcC8YW+yXAzlcTbCJQDE+4A/2ZQeMhUQMxNWax
-         Q8/nXHyE5Od7CZgjw7Zbt8KL1FJG0KTiF6pFrJesyVaX6Sh1I1ICpTu58L3q6kUOtE
-         PO8ToD4iaZvQHW69j5rTHtdRpLiKYS/ArjqpRhJOK7uncvTVTAv2uZBSJgDaAJnUH4
-         RE2/gdkz5MjIs31Odm8nXJ+ZzyLpwZS09liWQSaVKMe5Z4nyqwOxiadmZ+Lg/gv+qd
-         LosWNNQZf/Yhg==
+        s=k20201202; t=1654092074;
+        bh=zNPkcQOyShqLbV+xa1BwXlT08Aj8LMQ7Mr3OHGehq1E=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=jv0K/ZUSRvM6KwX5tTORi6Lq6wdz0I3gL2KR8fWCmGQ6v2f5SRdSNdpurQApTT43A
+         Pv3BzRd5qXSB30vnvRK6KVI7MVS5k3Tdh/2UhoGC2a7R+LO+IZUOKAdpYpGQ96utDr
+         QGryjM8ZL8zmQ8x2R6nsyKKVM2bwOhQoNstL4WUXJ6pXgne7a1EwWr2i6xNxNBLFHk
+         iYun0osRGpnX9u+Wcl/XfrpLBqR4gK2+HEaom1RDwy3P4meMl8pNNBYRpOXhPNyK/M
+         qShapf8ftl0d+uEoqH1nXo3OToRFKc94KU74W3iiGBKRx71XeqTIVUf6SHEasEjdmj
+         Qjx85cHKA7Mcw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zixuan Fu <r33s3n6@gmail.com>, TOTE Robot <oslab@tsinghua.edu.cn>,
-        Dave Kleikamp <dave.kleikamp@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, shaggy@kernel.org,
-        jfs-discussion@lists.sourceforge.net
-Subject: [PATCH AUTOSEL 4.9 01/11] fs: jfs: fix possible NULL pointer dereference in dbFree()
-Date:   Wed,  1 Jun 2022 10:00:50 -0400
-Message-Id: <20220601140100.2005469-1-sashal@kernel.org>
+Cc:     Peng Wu <wupeng58@huawei.com>, Wei Xu <xuwei5@hisilicon.com>,
+        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 4.9 07/11] ARM: hisi: Add missing of_node_put after of_find_compatible_node
+Date:   Wed,  1 Jun 2022 10:00:56 -0400
+Message-Id: <20220601140100.2005469-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220601140100.2005469-1-sashal@kernel.org>
+References: <20220601140100.2005469-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -50,57 +52,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zixuan Fu <r33s3n6@gmail.com>
+From: Peng Wu <wupeng58@huawei.com>
 
-[ Upstream commit 0d4837fdb796f99369cf7691d33de1b856bcaf1f ]
+[ Upstream commit 9bc72e47d4630d58a840a66a869c56b29554cfe4 ]
 
-In our fault-injection testing, the variable "nblocks" in dbFree() can be
-zero when kmalloc_array() fails in dtSearch(). In this case, the variable
- "mp" in dbFree() would be NULL and then it is dereferenced in
-"write_metapage(mp)".
+of_find_compatible_node  will increment the refcount of the returned
+device_node. Calling of_node_put() to avoid the refcount leak
 
-The failure log is listed as follows:
-
-[   13.824137] BUG: kernel NULL pointer dereference, address: 0000000000000020
-...
-[   13.827416] RIP: 0010:dbFree+0x5f7/0x910 [jfs]
-[   13.834341] Call Trace:
-[   13.834540]  <TASK>
-[   13.834713]  txFreeMap+0x7b4/0xb10 [jfs]
-[   13.835038]  txUpdateMap+0x311/0x650 [jfs]
-[   13.835375]  jfs_lazycommit+0x5f2/0xc70 [jfs]
-[   13.835726]  ? sched_dynamic_update+0x1b0/0x1b0
-[   13.836092]  kthread+0x3c2/0x4a0
-[   13.836355]  ? txLockFree+0x160/0x160 [jfs]
-[   13.836763]  ? kthread_unuse_mm+0x160/0x160
-[   13.837106]  ret_from_fork+0x1f/0x30
-[   13.837402]  </TASK>
-...
-
-This patch adds a NULL check of "mp" before "write_metapage(mp)" is called.
-
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
-Signed-off-by: Dave Kleikamp <dave.kleikamp@oracle.com>
+Signed-off-by: Peng Wu <wupeng58@huawei.com>
+Signed-off-by: Wei Xu <xuwei5@hisilicon.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/jfs/jfs_dmap.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/arm/mach-hisi/platsmp.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/fs/jfs/jfs_dmap.c b/fs/jfs/jfs_dmap.c
-index 6dac48e29d28..a07fbb60ac3c 100644
---- a/fs/jfs/jfs_dmap.c
-+++ b/fs/jfs/jfs_dmap.c
-@@ -398,7 +398,8 @@ int dbFree(struct inode *ip, s64 blkno, s64 nblocks)
+diff --git a/arch/arm/mach-hisi/platsmp.c b/arch/arm/mach-hisi/platsmp.c
+index e1d67648d5d0..fccceab33325 100644
+--- a/arch/arm/mach-hisi/platsmp.c
++++ b/arch/arm/mach-hisi/platsmp.c
+@@ -70,14 +70,17 @@ static void __init hi3xxx_smp_prepare_cpus(unsigned int max_cpus)
+ 		}
+ 		ctrl_base = of_iomap(np, 0);
+ 		if (!ctrl_base) {
++			of_node_put(np);
+ 			pr_err("failed to map address\n");
+ 			return;
+ 		}
+ 		if (of_property_read_u32(np, "smp-offset", &offset) < 0) {
++			of_node_put(np);
+ 			pr_err("failed to find smp-offset property\n");
+ 			return;
+ 		}
+ 		ctrl_base += offset;
++		of_node_put(np);
  	}
+ }
  
- 	/* write the last buffer. */
--	write_metapage(mp);
-+	if (mp)
-+		write_metapage(mp);
+@@ -163,6 +166,7 @@ static int hip01_boot_secondary(unsigned int cpu, struct task_struct *idle)
+ 	if (WARN_ON(!node))
+ 		return -1;
+ 	ctrl_base = of_iomap(node, 0);
++	of_node_put(node);
  
- 	IREAD_UNLOCK(ipbmap);
- 
+ 	/* set the secondary core boot from DDR */
+ 	remap_reg_value = readl_relaxed(ctrl_base + REG_SC_CTRL);
 -- 
 2.35.1
 
