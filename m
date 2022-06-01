@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17928CCA468
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:04:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED7F5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:04:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354407AbiFAOEZ (ORCPT
+        id S1354411AbiFAOE3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:04:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51922 "EHLO
+        Wed, 1 Jun 2022 10:04:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354917AbiFAOBG (ORCPT
+        with ESMTP id S1355001AbiFAOBL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:01:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65A434E3A0;
-        Wed,  1 Jun 2022 06:57:34 -0700 (PDT)
+        Wed, 1 Jun 2022 10:01:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 407F4517D1;
+        Wed,  1 Jun 2022 06:57:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D67B615B9;
-        Wed,  1 Jun 2022 13:56:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AAB2C385A5;
-        Wed,  1 Jun 2022 13:56:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5E77AB81B08;
+        Wed,  1 Jun 2022 13:56:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4D1CC34119;
+        Wed,  1 Jun 2022 13:56:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091807;
-        bh=fDG575ttLgWbeLrePzoV7rDswfiDL4S0LUn1GVNsufA=;
+        s=k20201202; t=1654091790;
+        bh=AwpP63mnwMx0YpBeBR+o75uBQzNi64ZU7FWswh0h5wo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XQ3ibUjysyhYFRwV0Xdo/ZvgJW06POU12BPuSAqHblDT8U4+u+qwnk1MeWGFyuQIH
-         eJIl5oJBWB8OYelPoS2crGdR0Tz5/MjP/g5eVu/MlCTyIPQFXc7ae2IQ3zXTdqkQnU
-         CPRuI5c9RtEBKgh0cMhwkYnU3EAmCcVWOpEVuGBVkpbzn3pMXwPJt3upolw8Ov1idB
-         Z5YEhqHze6YorwWPsPw1mRIlnyFgX+owRw1kztDTCeC4FX9pkqKJNZCdiUJYvMy23R
-         WsVFnOSO+2A0oMwQjnFHeeOUyRj9baC9FkagqQukVDbz/P7A8gF/GdtM8Vx2SUBgPz
-         ruXI8LWO6YIsg==
+        b=diBVYcEXjBjVYFHzslVsM/BzxZ6jMADxL/7sm3dG8MWXVMUyS1UwMe9aJBCkOT3EL
+         TmDpB4UfwndaWcbqUF5Ur8/zxDVIrv7MOPuUDI5mV+KPBT22R+vHCG6Ixwp7gu1qvW
+         6HqkX8yUAlwr9a6IvG/HZ1g6bs3rfqzHzYXP2M9Vf5aCzh29WHXkROPJwmXa8SP9Kh
+         c+2Vy/VRL1PwFhT7GDkqnPJigc/wShQ3FcseH69I1o5D7SziTjPKR6OBgC1c2Q0EZr
+         SD12s7zLStrz7WAIh9lhD4NvXR68m8MO+17Z8jlVvnX5JGxsobgyo0Mw+dROkXB3t0
+         7wOEpSi+jGMyg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>,
-        perex@perex.cz, tiwai@suse.com, corbet@lwn.net,
-        geraldogabriel@gmail.com, matteomartelli3@gmail.com, bp@suse.de,
-        alsa-devel@alsa-project.org, linux-doc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 13/37] ALSA: usb-audio: Add quirk bits for enabling/disabling generic implicit fb
-Date:   Wed,  1 Jun 2022 09:55:58 -0400
-Message-Id: <20220601135622.2003939-13-sashal@kernel.org>
+Cc:     Krzysztof Kozlowski <krzk@kernel.org>,
+        Jonathan Bakker <xc-racer2@live.ca>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 04/37] ARM: dts: s5pv210: align DMA channels with dtschema
+Date:   Wed,  1 Jun 2022 09:55:49 -0400
+Message-Id: <20220601135622.2003939-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135622.2003939-1-sashal@kernel.org>
 References: <20220601135622.2003939-1-sashal@kernel.org>
@@ -53,93 +56,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Krzysztof Kozlowski <krzk@kernel.org>
 
-[ Upstream commit 0f1f7a6661394fe4a53db254c346d6aa2dd64397 ]
+[ Upstream commit 9e916fb9bc3d16066286f19fc9c51d26a6aec6bd ]
 
-For making easier to test, add the new quirk_flags bits 17 and 18 to
-enable and disable the generic implicit feedback mode.  The bit 17 is
-equivalent with implicit_fb=1 option, applying the generic implicit
-feedback sync mode.  OTOH, the bit 18 disables the implicit fb mode
-forcibly.
+dtschema expects DMA channels in specific order (tx, rx and tx-sec).
+The order actually should not matter because dma-names is used however
+let's make it aligned with dtschema to suppress warnings like:
 
-Link: https://lore.kernel.org/r/20220421064101.12456-1-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+  i2s@eee30000: dma-names: ['rx', 'tx', 'tx-sec'] is not valid under any of the given schemas
+
+Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+Co-developed-by: Jonathan Bakker <xc-racer2@live.ca>
+Signed-off-by: Jonathan Bakker <xc-racer2@live.ca>
+Link: https://lore.kernel.org/r/CY4PR04MB056779A9C50DC95987C5272ACB1C9@CY4PR04MB0567.namprd04.prod.outlook.com
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/sound/alsa-configuration.rst | 4 +++-
- sound/usb/implicit.c                       | 5 ++++-
- sound/usb/usbaudio.h                       | 6 ++++++
- 3 files changed, 13 insertions(+), 2 deletions(-)
+ arch/arm/boot/dts/s5pv210-aries.dtsi |  2 +-
+ arch/arm/boot/dts/s5pv210.dtsi       | 12 ++++++------
+ 2 files changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/Documentation/sound/alsa-configuration.rst b/Documentation/sound/alsa-configuration.rst
-index 65f61695f561..5d093fb4896b 100644
---- a/Documentation/sound/alsa-configuration.rst
-+++ b/Documentation/sound/alsa-configuration.rst
-@@ -2237,7 +2237,7 @@ implicit_fb
-     Apply the generic implicit feedback sync mode.  When this is set
-     and the playback stream sync mode is ASYNC, the driver tries to
-     tie an adjacent ASYNC capture stream as the implicit feedback
--    source.
-+    source.  This is equivalent with quirk_flags bit 17.
- use_vmalloc
-     Use vmalloc() for allocations of the PCM buffers (default: yes).
-     For architectures with non-coherent memory like ARM or MIPS, the
-@@ -2279,6 +2279,8 @@ quirk_flags
-         * bit 14: Ignore errors for mixer access
-         * bit 15: Support generic DSD raw U32_BE format
-         * bit 16: Set up the interface at first like UAC1
-+        * bit 17: Apply the generic implicit feedback sync mode
-+        * bit 18: Don't apply implicit feedback sync mode
+diff --git a/arch/arm/boot/dts/s5pv210-aries.dtsi b/arch/arm/boot/dts/s5pv210-aries.dtsi
+index 160f8cd9a68d..148536a91676 100644
+--- a/arch/arm/boot/dts/s5pv210-aries.dtsi
++++ b/arch/arm/boot/dts/s5pv210-aries.dtsi
+@@ -636,7 +636,7 @@ touchscreen@4a {
+ };
  
- This module supports multiple devices, autoprobe and hotplugging.
+ &i2s0 {
+-	dmas = <&pdma0 9>, <&pdma0 10>, <&pdma0 11>;
++	dmas = <&pdma0 10>, <&pdma0 9>, <&pdma0 11>;
+ 	status = "okay";
+ };
  
-diff --git a/sound/usb/implicit.c b/sound/usb/implicit.c
-index 2d444ec74202..1fd087128538 100644
---- a/sound/usb/implicit.c
-+++ b/sound/usb/implicit.c
-@@ -350,7 +350,8 @@ static int audioformat_implicit_fb_quirk(struct snd_usb_audio *chip,
- 	}
- 
- 	/* Try the generic implicit fb if available */
--	if (chip->generic_implicit_fb)
-+	if (chip->generic_implicit_fb ||
-+	    (chip->quirk_flags & QUIRK_FLAG_GENERIC_IMPLICIT_FB))
- 		return add_generic_implicit_fb(chip, fmt, alts);
- 
- 	/* No quirk */
-@@ -387,6 +388,8 @@ int snd_usb_parse_implicit_fb_quirk(struct snd_usb_audio *chip,
- 				    struct audioformat *fmt,
- 				    struct usb_host_interface *alts)
- {
-+	if (chip->quirk_flags & QUIRK_FLAG_SKIP_IMPLICIT_FB)
-+		return 0;
- 	if (fmt->endpoint & USB_DIR_IN)
- 		return audioformat_capture_quirk(chip, fmt, alts);
- 	else
-diff --git a/sound/usb/usbaudio.h b/sound/usb/usbaudio.h
-index b8359a0aa008..044cd7ab27cb 100644
---- a/sound/usb/usbaudio.h
-+++ b/sound/usb/usbaudio.h
-@@ -164,6 +164,10 @@ extern bool snd_usb_skip_validation;
-  *  Support generic DSD raw U32_BE format
-  * QUIRK_FLAG_SET_IFACE_FIRST:
-  *  Set up the interface at first like UAC1
-+ * QUIRK_FLAG_GENERIC_IMPLICIT_FB
-+ *  Apply the generic implicit feedback sync mode (same as implicit_fb=1 option)
-+ * QUIRK_FLAG_SKIP_IMPLICIT_FB
-+ *  Don't apply implicit feedback sync mode
-  */
- 
- #define QUIRK_FLAG_GET_SAMPLE_RATE	(1U << 0)
-@@ -183,5 +187,7 @@ extern bool snd_usb_skip_validation;
- #define QUIRK_FLAG_IGNORE_CTL_ERROR	(1U << 14)
- #define QUIRK_FLAG_DSD_RAW		(1U << 15)
- #define QUIRK_FLAG_SET_IFACE_FIRST	(1U << 16)
-+#define QUIRK_FLAG_GENERIC_IMPLICIT_FB	(1U << 17)
-+#define QUIRK_FLAG_SKIP_IMPLICIT_FB	(1U << 18)
- 
- #endif /* __USBAUDIO_H */
+diff --git a/arch/arm/boot/dts/s5pv210.dtsi b/arch/arm/boot/dts/s5pv210.dtsi
+index 353ba7b09a0c..c5265f3ae31d 100644
+--- a/arch/arm/boot/dts/s5pv210.dtsi
++++ b/arch/arm/boot/dts/s5pv210.dtsi
+@@ -239,8 +239,8 @@ i2s0: i2s@eee30000 {
+ 			reg = <0xeee30000 0x1000>;
+ 			interrupt-parent = <&vic2>;
+ 			interrupts = <16>;
+-			dma-names = "rx", "tx", "tx-sec";
+-			dmas = <&pdma1 9>, <&pdma1 10>, <&pdma1 11>;
++			dma-names = "tx", "rx", "tx-sec";
++			dmas = <&pdma1 10>, <&pdma1 9>, <&pdma1 11>;
+ 			clock-names = "iis",
+ 				      "i2s_opclk0",
+ 				      "i2s_opclk1";
+@@ -259,8 +259,8 @@ i2s1: i2s@e2100000 {
+ 			reg = <0xe2100000 0x1000>;
+ 			interrupt-parent = <&vic2>;
+ 			interrupts = <17>;
+-			dma-names = "rx", "tx";
+-			dmas = <&pdma1 12>, <&pdma1 13>;
++			dma-names = "tx", "rx";
++			dmas = <&pdma1 13>, <&pdma1 12>;
+ 			clock-names = "iis", "i2s_opclk0";
+ 			clocks = <&clocks CLK_I2S1>, <&clocks SCLK_AUDIO1>;
+ 			pinctrl-names = "default";
+@@ -274,8 +274,8 @@ i2s2: i2s@e2a00000 {
+ 			reg = <0xe2a00000 0x1000>;
+ 			interrupt-parent = <&vic2>;
+ 			interrupts = <18>;
+-			dma-names = "rx", "tx";
+-			dmas = <&pdma1 14>, <&pdma1 15>;
++			dma-names = "tx", "rx";
++			dmas = <&pdma1 15>, <&pdma1 14>;
+ 			clock-names = "iis", "i2s_opclk0";
+ 			clocks = <&clocks CLK_I2S2>, <&clocks SCLK_AUDIO2>;
+ 			pinctrl-names = "default";
 -- 
 2.35.1
 
