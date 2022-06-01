@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7DD4CCA471
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:59:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A7B2CCA468
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 13:59:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236628AbiFAN7G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 09:59:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33006 "EHLO
+        id S1354011AbiFAN7I (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 09:59:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353935AbiFAN6W (ORCPT
+        with ESMTP id S1353735AbiFAN6g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 09:58:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C62CC8722D;
-        Wed,  1 Jun 2022 06:55:25 -0700 (PDT)
+        Wed, 1 Jun 2022 09:58:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 994068B08F;
+        Wed,  1 Jun 2022 06:55:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AA18561598;
-        Wed,  1 Jun 2022 13:55:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AD8CC34119;
-        Wed,  1 Jun 2022 13:55:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 66E9DB81A79;
+        Wed,  1 Jun 2022 13:55:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26267C385B8;
+        Wed,  1 Jun 2022 13:55:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654091717;
-        bh=TincU48qiU403YeYmoXveeSxoB8H+arboGKvNQg07k8=;
+        s=k20201202; t=1654091719;
+        bh=djdQ9S61mfxn5Qroahz8b0fLg9sK1orzkaSB+oH7BUw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T8G+3jngk3BRt6fQMuFVP7h1epY3FjJudRNfmvxp32+PlFowv2Qti/yA2ZE/5UQ0D
-         8+g7sKVbvNN7b3ZaFLNugf9irRSjl7Dbr81D0VtiYRFjEcingWC0ECuUmS5mAc3Ndz
-         iEz4k7laXZef862296ZbK/Ayf7DQpQQdoA17s9n3IQZ0Muzmhu7b/Hsv98Pnf5py3t
-         YGz/NxxQMRlhQoC09fuh5fTa9eIoRTRXXU9QQRnACZwQAOOYjwroanFVQeUhAY3Cq+
-         IALI5zPdhpLOCtZ+Y1elhePrGzX4Rrpl5fdfm1H0aJNsEf7mKwg1HvM54HTBj55y85
-         WJq07lvpX4arg==
+        b=a081PHeC0TmLzkQNVH/ESkXWm+FyQOkAvFUmF2nzrJXIDUPYAObnGPVpZf/tNX2xP
+         z9Jlgp6+rcOkUlelo+9uDUcMzbvdBi7QEYYIaIwrxGOQtGXZMii8Y6yoSvGUljh+UV
+         na7Zp5NfAhFL9XWrF3AtKQR8ikXaRPMUeB8iul9+KWCAaNcLkXWOnfXohY0XxpLa9h
+         VjgIGo/rMy6+YtIjDkrd96mhPFPdYEUbXkRRBqHKQ//tYJCgcLVW5znVrqc006yeLh
+         3W64fNihVmNInVFK5YJc6wamVHmIwNQa8+4Thc/3O9ammBgSodDwtHvWiOYk3BxBue
+         EbVteIoA36IPQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 24/48] ARM: dts: exynos: add atmel,24c128 fallback to Samsung EEPROM
-Date:   Wed,  1 Jun 2022 09:53:57 -0400
-Message-Id: <20220601135421.2003328-24-sashal@kernel.org>
+Cc:     Peng Wu <wupeng58@huawei.com>, Wei Xu <xuwei5@hisilicon.com>,
+        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.17 26/48] ARM: hisi: Add missing of_node_put after of_find_compatible_node
+Date:   Wed,  1 Jun 2022 09:53:59 -0400
+Message-Id: <20220601135421.2003328-26-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601135421.2003328-1-sashal@kernel.org>
 References: <20220601135421.2003328-1-sashal@kernel.org>
@@ -53,43 +52,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Peng Wu <wupeng58@huawei.com>
 
-[ Upstream commit f038e8186fbc5723d7d38c6fa1d342945107347e ]
+[ Upstream commit 9bc72e47d4630d58a840a66a869c56b29554cfe4 ]
 
-The Samsung s524ad0xd1 EEPROM should use atmel,24c128 fallback,
-according to the AT24 EEPROM bindings.
+of_find_compatible_node  will increment the refcount of the returned
+device_node. Calling of_node_put() to avoid the refcount leak
 
-Reported-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220426183443.243113-1-krzysztof.kozlowski@linaro.org
+Signed-off-by: Peng Wu <wupeng58@huawei.com>
+Signed-off-by: Wei Xu <xuwei5@hisilicon.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/exynos5250-smdk5250.dts | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm/mach-hisi/platsmp.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/arch/arm/boot/dts/exynos5250-smdk5250.dts b/arch/arm/boot/dts/exynos5250-smdk5250.dts
-index f042954bdfa5..e4861415a0fe 100644
---- a/arch/arm/boot/dts/exynos5250-smdk5250.dts
-+++ b/arch/arm/boot/dts/exynos5250-smdk5250.dts
-@@ -129,7 +129,7 @@ &i2c_0 {
- 	samsung,i2c-max-bus-freq = <20000>;
+diff --git a/arch/arm/mach-hisi/platsmp.c b/arch/arm/mach-hisi/platsmp.c
+index a56cc64deeb8..9ce93e0b6cdc 100644
+--- a/arch/arm/mach-hisi/platsmp.c
++++ b/arch/arm/mach-hisi/platsmp.c
+@@ -67,14 +67,17 @@ static void __init hi3xxx_smp_prepare_cpus(unsigned int max_cpus)
+ 		}
+ 		ctrl_base = of_iomap(np, 0);
+ 		if (!ctrl_base) {
++			of_node_put(np);
+ 			pr_err("failed to map address\n");
+ 			return;
+ 		}
+ 		if (of_property_read_u32(np, "smp-offset", &offset) < 0) {
++			of_node_put(np);
+ 			pr_err("failed to find smp-offset property\n");
+ 			return;
+ 		}
+ 		ctrl_base += offset;
++		of_node_put(np);
+ 	}
+ }
  
- 	eeprom@50 {
--		compatible = "samsung,s524ad0xd1";
-+		compatible = "samsung,s524ad0xd1", "atmel,24c128";
- 		reg = <0x50>;
- 	};
+@@ -160,6 +163,7 @@ static int hip01_boot_secondary(unsigned int cpu, struct task_struct *idle)
+ 	if (WARN_ON(!node))
+ 		return -1;
+ 	ctrl_base = of_iomap(node, 0);
++	of_node_put(node);
  
-@@ -289,7 +289,7 @@ &i2c_1 {
- 	samsung,i2c-max-bus-freq = <20000>;
- 
- 	eeprom@51 {
--		compatible = "samsung,s524ad0xd1";
-+		compatible = "samsung,s524ad0xd1", "atmel,24c128";
- 		reg = <0x51>;
- 	};
- 
+ 	/* set the secondary core boot from DDR */
+ 	remap_reg_value = readl_relaxed(ctrl_base + REG_SC_CTRL);
 -- 
 2.35.1
 
