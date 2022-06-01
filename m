@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8313FCCA468
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:14:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0C13C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 14:14:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244337AbiFAOOT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 10:14:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51246 "EHLO
+        id S1354497AbiFAOOY (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 10:14:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354757AbiFAOJe (ORCPT
+        with ESMTP id S1354716AbiFAOJd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 10:09:34 -0400
+        Wed, 1 Jun 2022 10:09:33 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11BC163B8;
-        Wed,  1 Jun 2022 07:00:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26B2B38B8;
+        Wed,  1 Jun 2022 07:00:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A547CB81B35;
-        Wed,  1 Jun 2022 14:00:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CA7AC385A5;
-        Wed,  1 Jun 2022 14:00:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D50A1B81A79;
+        Wed,  1 Jun 2022 14:00:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7301DC34119;
+        Wed,  1 Jun 2022 14:00:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654092049;
-        bh=lmlUxpqSq8SeGyucPtyJ86223H3HnhRr2pO7KXDiykQ=;
+        s=k20201202; t=1654092040;
+        bh=3ayjXfh8crDvx/tS+PqRBF69eq4DxJ+TQm7C1u1kBJY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Fsj70/SKLoqcTm5YazNnMjomI1Dor7QIe1fsA6yFTryp/6I3z76Xwtj8vrmo3Wch+
-         wmTZlrGQu0FkXFfdxlRnIsEg6gA+kfKk6trm/foJB6gs9xJDzUyuRSvnkuK4cJSKFK
-         qpTTaj2ia3qBYA0vtY2ka3O4L6WF7WKAnb5weh4T74MEQ2XaNDx3WQmMQw9EKbdgwD
-         YBrY6Wib7QKS4TUZm7KvE8rXyGD5FLTs2KD1xuwM9W/UKF7mo23PpDWpQxaQWPodAe
-         VaHiqmC9M0dldgnhu6T8nFiSXrnwEgj5tg3q9q6c1dKg6tKU5X+qwJwqDjuJSWEd/Y
-         oQyWUpUJk8c1Q==
+        b=XGJWcDW5D6rAsk9WNkCW+XZMAAmK4vpIKbWWhYpC6UDSDWQq2xylySrWzwcv7uvvT
+         syRllqpa9IkxbnRDErxaET4qS1pSMUjzZTPUWUpOQAWSysMcbWqRDP4Gvo0B26uSCu
+         iTyROfhzNO7hZUzuFMSn8jBivWBJzdEgDsD2JEvnFrmWA/zML2UiMfE4GuG4vWn5AT
+         IP5CjSJ1KULHYyeDAy0hcwJkf/hm7EBmHe+fnnb3adhzL0LOFlPsh4W/S52ES/k9RO
+         fWA9OVvznBSukvX1lFU6d2tzdwbrhh/Kyf8CsJNqKiIHdYESAAv/aHJWVPe9Nrc8jr
+         4Xoff6gtwxjqg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lv Ruyi <lv.ruyi@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>, maz@kernel.org,
-        nick.child@ibm.com, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 4.14 11/14] powerpc/xics: fix refcount leak in icp_opal_init()
-Date:   Wed,  1 Jun 2022 10:00:24 -0400
-Message-Id: <20220601140027.2005280-11-sashal@kernel.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 07/14] ARM: dts: exynos: add atmel,24c128 fallback to Samsung EEPROM
+Date:   Wed,  1 Jun 2022 10:00:20 -0400
+Message-Id: <20220601140027.2005280-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220601140027.2005280-1-sashal@kernel.org>
 References: <20220601140027.2005280-1-sashal@kernel.org>
@@ -52,33 +54,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-[ Upstream commit 5dd9e27ea4a39f7edd4bf81e9e70208e7ac0b7c9 ]
+[ Upstream commit f038e8186fbc5723d7d38c6fa1d342945107347e ]
 
-The of_find_compatible_node() function returns a node pointer with
-refcount incremented, use of_node_put() on it when done.
+The Samsung s524ad0xd1 EEPROM should use atmel,24c128 fallback,
+according to the AT24 EEPROM bindings.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220402013419.2410298-1-lv.ruyi@zte.com.cn
+Reported-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Link: https://lore.kernel.org/r/20220426183443.243113-1-krzysztof.kozlowski@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/sysdev/xics/icp-opal.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/boot/dts/exynos5250-smdk5250.dts | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/powerpc/sysdev/xics/icp-opal.c b/arch/powerpc/sysdev/xics/icp-opal.c
-index c71d2ea42627..3c9dd871491e 100644
---- a/arch/powerpc/sysdev/xics/icp-opal.c
-+++ b/arch/powerpc/sysdev/xics/icp-opal.c
-@@ -199,6 +199,7 @@ int icp_opal_init(void)
+diff --git a/arch/arm/boot/dts/exynos5250-smdk5250.dts b/arch/arm/boot/dts/exynos5250-smdk5250.dts
+index a3c4b9e03fbf..dc539a4eb27a 100644
+--- a/arch/arm/boot/dts/exynos5250-smdk5250.dts
++++ b/arch/arm/boot/dts/exynos5250-smdk5250.dts
+@@ -128,7 +128,7 @@ &i2c_0 {
+ 	samsung,i2c-max-bus-freq = <20000>;
  
- 	printk("XICS: Using OPAL ICP fallbacks\n");
+ 	eeprom@50 {
+-		compatible = "samsung,s524ad0xd1";
++		compatible = "samsung,s524ad0xd1", "atmel,24c128";
+ 		reg = <0x50>;
+ 	};
  
-+	of_node_put(np);
- 	return 0;
- }
+@@ -287,7 +287,7 @@ &i2c_1 {
+ 	samsung,i2c-max-bus-freq = <20000>;
+ 
+ 	eeprom@51 {
+-		compatible = "samsung,s524ad0xd1";
++		compatible = "samsung,s524ad0xd1", "atmel,24c128";
+ 		reg = <0x51>;
+ 	};
  
 -- 
 2.35.1
