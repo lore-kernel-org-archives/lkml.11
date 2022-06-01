@@ -2,191 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94ECDC43334
-	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 21:10:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADA94C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  1 Jun 2022 21:10:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231322AbiFAVKa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 17:10:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54932 "EHLO
+        id S231376AbiFAVKd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 17:10:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231319AbiFAVKK (ORCPT
+        with ESMTP id S231363AbiFAVKT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 17:10:10 -0400
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0C2739BB1
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 14:10:06 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2f4e17a5809so25911117b3.2
-        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 14:10:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=dcDBeY/HLlNXef9d9FAHPxWe/EV2aZU1witDOt2KoeY=;
-        b=KaDwHX79CJbASDMmgXRlKLc/huskW7utSclJ0kfppbnZS1T/syXXX0OOqqco2+9elP
-         5EBfVeZWFsTr/FQRRajBdxKDD8WMBg7o9fiYLOlSBVHnkUMU6qLlmQ8wbxRiy97vjj1n
-         d1MHsEJH+Fi8Yb2ErPHvZ95O8Pno4nEVoSdAmNwSrCbw8KI+39rmeI321hQC0x1VXEWa
-         VizEGAex47VEQ4UJzuGfcJgV8KzlCSFFPFdauODxm1cORxr0QYeWj8tzyU2u86tekVow
-         Y2TOE/hImTDvfKNFRWfSNAw6WFb0njnagrXm1EE2xQotfnLtM0lz0f8/yYojMTbYOQce
-         HPJQ==
+        Wed, 1 Jun 2022 17:10:19 -0400
+Received: from mail-oa1-f42.google.com (mail-oa1-f42.google.com [209.85.160.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A89FDF7A;
+        Wed,  1 Jun 2022 14:10:18 -0700 (PDT)
+Received: by mail-oa1-f42.google.com with SMTP id 586e51a60fabf-e656032735so4434542fac.0;
+        Wed, 01 Jun 2022 14:10:18 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=dcDBeY/HLlNXef9d9FAHPxWe/EV2aZU1witDOt2KoeY=;
-        b=IQQDTowk0q7ptgv9lPTQ4eIvlOwmyY1UNCUpVuU3xzYyctjCPEm2IdylOOtHSmrhD+
-         lPAcS9zABFUopCqdpFc5m7763JfI/6WqZX4cbC/pGXNTT93BvEoDmWZqh7iW0PUaHkdr
-         psBVSPC3m+995tF0H4ps+RbYdghVJTX2CIATmsHgivanD4dQPA+F9xRY6/jo+EVd3lBJ
-         NQrZvy32Y/3MygIv05oqz2uWmiT8KyfIiou8PpjD9zRhpOBXgG7cS4APmxlqTytYHRzT
-         1d1cN4AV9PuWlopoudJ85KImj6fFtqCCIlFkJV15Uy3L3h3I65ji/e5PTx2uFDgbPo7e
-         mnyg==
-X-Gm-Message-State: AOAM5333PRa6IxXCartrek25wPs7hR9hfFgnnFmPEomJTLVNoS1Rm4Dv
-        Ss3BHol6cmgQuIlBMiL1cwZvlFG8gb0SvIrBIYDv
-X-Google-Smtp-Source: ABdhPJykmwhlBXZrVDl0pEafra93LcclZ+yr17pnesiatozzZ/fWqR+h2P6cAMloCLCsdJazTqo9524d106wb6pcRX79
-X-Received: from ajr0.svl.corp.google.com ([2620:15c:2cd:203:aaec:e358:9f0e:2b26])
- (user=axelrasmussen job=sendgmr) by 2002:a25:744:0:b0:64f:79e5:6528 with SMTP
- id 65-20020a250744000000b0064f79e56528mr1969376ybh.104.1654117805867; Wed, 01
- Jun 2022 14:10:05 -0700 (PDT)
-Date:   Wed,  1 Jun 2022 14:09:50 -0700
-In-Reply-To: <20220601210951.3916598-1-axelrasmussen@google.com>
-Message-Id: <20220601210951.3916598-6-axelrasmussen@google.com>
-Mime-Version: 1.0
-References: <20220601210951.3916598-1-axelrasmussen@google.com>
-X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v3 5/6] userfaultfd: selftests: make /dev/userfaultfd testing configurable
-From:   Axel Rasmussen <axelrasmussen@google.com>
-To:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Charan Teja Reddy <charante@codeaurora.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "Dmitry V . Levin" <ldv@altlinux.org>,
-        Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>,
-        Hugh Dickins <hughd@google.com>, Jan Kara <jack@suse.cz>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mike Rapoport <rppt@kernel.org>, Nadav Amit <namit@vmware.com>,
-        Peter Xu <peterx@redhat.com>, Shuah Khan <shuah@kernel.org>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>, zhangyi <yi.zhang@huawei.com>
-Cc:     Axel Rasmussen <axelrasmussen@google.com>,
-        linux-doc@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-kselftest@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=zS8J0ClQ9ncsVxOr+NVUGTE71ygnVRFhlsutEE3bBag=;
+        b=zxMNNN7qaLW0MN1hGUb6HRMFBBOCvbYttomcUQAtgKYUtbryKNhMuBtLS2Q+dcr7uj
+         OCa7z+QHBJQN7Ze1MbGc/beJIg8z4P/aQdnXNarlTHtzT+Y1eJ70YRg9ZlaM8ryrtOn/
+         +Z+3pzERwFvi2aGbWeSLwm9qpLw10TLEJSUX1rQYDCIbJXb7jwysWHfsThidwo9bs/eA
+         L5Rg5SVrASRazMUOAL7FAWqRrfyD2dSgFS1OAbnjE9sD8OFPhj3N5MVCAlZobnRSdFHp
+         5+wvunPAdQkMXy2UezdxuVjzC8MW21tiCw4PNG72PNZHdS2CwsgsEyZIDon66UuWmpiu
+         Srww==
+X-Gm-Message-State: AOAM5308QXrp1QptcQGg3APXQTST7WOF0A97b0CHLzqbvHM6kBabBKMF
+        k7W6lFWfJO3pUCf+pqMcs4pNeu0whg==
+X-Google-Smtp-Source: ABdhPJySTKybAFaXLV7rHHqdLw4yAznMtl7MahmiSgkE2Og1CipW7OAc/4aJ+8aSCSSEgwAvvCKleg==
+X-Received: by 2002:a05:6870:1485:b0:f3:bd4:aab0 with SMTP id k5-20020a056870148500b000f30bd4aab0mr916727oab.229.1654117817386;
+        Wed, 01 Jun 2022 14:10:17 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id ec29-20020a0568708c1d00b000f1c2847f8csm1162395oab.32.2022.06.01.14.10.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Jun 2022 14:10:17 -0700 (PDT)
+Received: (nullmailer pid 458641 invoked by uid 1000);
+        Wed, 01 Jun 2022 21:10:16 -0000
+Date:   Wed, 1 Jun 2022 16:10:16 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Maxime Chevallier <maxime.chevallier@bootlin.com>
+Cc:     Allan.Nielsen@microchip.com, thomas.petazzoni@bootlin.com,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org, Andrew Lunn <andrew@lunn.ch>,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>, Horatiu.Vultur@microchip.com,
+        Richard Cochran <richardcochran@gmail.com>,
+        linux-kernel@vger.kernel.org, davem@davemloft.net,
+        UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH net-next 2/6] dt-bindings: net: ethernet-controller: add
+ QUSGMII mode
+Message-ID: <20220601211016.GA458579-robh@kernel.org>
+References: <20220519135647.465653-1-maxime.chevallier@bootlin.com>
+ <20220519135647.465653-3-maxime.chevallier@bootlin.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220519135647.465653-3-maxime.chevallier@bootlin.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of always testing both userfaultfd(2) and /dev/userfaultfd,
-let the user choose which to test.
+On Thu, 19 May 2022 15:56:43 +0200, Maxime Chevallier wrote:
+> Add a new QUSGMII mode, standing for "Quad Universal Serial Gigabit
+> Media Independent Interface", a derivative of USGMII which, similarly to
+> QSGMII, allows to multiplex 4 1Gbps links to a Quad-PHY.
+> 
+> The main difference with QSGMII is that QUSGMII can include an extension
+> instead of the standard 7bytes ethernet preamble, allowing to convey
+> arbitrary data such as Timestamps.
+> 
+> Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
+> ---
+>  Documentation/devicetree/bindings/net/ethernet-controller.yaml | 1 +
+>  1 file changed, 1 insertion(+)
+> 
 
-As with other test features, change the behavior based on a new
-command line flag. Introduce the idea of "test mods", which are
-generic (not specific to a test type) modifications to the behavior of
-the test. This is sort of borrowed from this RFC patch series [1], but
-simplified a bit.
-
-The benefit is, in "typical" configurations this test is somewhat slow
-(say, 30sec or something). Testing both clearly doubles it, so it may
-not always be desirable, as users are likely to use one or the other,
-but never both, in the "real world".
-
-[1]: https://patchwork.kernel.org/project/linux-mm/patch/20201129004548.1619714-14-namit@vmware.com/
-
-Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
----
- tools/testing/selftests/vm/userfaultfd.c | 41 +++++++++++++++++-------
- 1 file changed, 30 insertions(+), 11 deletions(-)
-
-diff --git a/tools/testing/selftests/vm/userfaultfd.c b/tools/testing/selftests/vm/userfaultfd.c
-index 1badb5d31bf9..aeee6f1ad8ef 100644
---- a/tools/testing/selftests/vm/userfaultfd.c
-+++ b/tools/testing/selftests/vm/userfaultfd.c
-@@ -128,6 +128,8 @@ struct uffd_stats {
- const char *examples =
-     "# Run anonymous memory test on 100MiB region with 99999 bounces:\n"
-     "./userfaultfd anon 100 99999\n\n"
-+    "# Run the same anonymous memory test, but using /dev/userfaultfd:\n"
-+    "./userfaultfd anon:dev 100 99999\n\n"
-     "# Run share memory test on 1GiB region with 99 bounces:\n"
-     "./userfaultfd shmem 1000 99\n\n"
-     "# Run hugetlb memory test on 256MiB region with 50 bounces:\n"
-@@ -144,6 +146,13 @@ static void usage(void)
- 		"[hugetlbfs_file]\n\n");
- 	fprintf(stderr, "Supported <test type>: anon, hugetlb, "
- 		"hugetlb_shared, shmem\n\n");
-+	fprintf(stderr, "'Test mods' can be joined to the test type string with a ':'. "
-+		"Supported mods:\n");
-+	fprintf(stderr, "\tdev - Use /dev/userfaultfd instead of userfaultfd(2)\n");
-+	fprintf(stderr, "\nExample test mod usage:\n");
-+	fprintf(stderr, "# Run anonymous memory test with /dev/userfaultfd:\n");
-+	fprintf(stderr, "./userfaultfd anon:dev 100 99999\n\n");
-+
- 	fprintf(stderr, "Examples:\n\n");
- 	fprintf(stderr, "%s", examples);
- 	exit(1);
-@@ -1607,8 +1616,6 @@ unsigned long default_huge_page_size(void)
- 
- static void set_test_type(const char *type)
- {
--	uint64_t features = UFFD_API_FEATURES;
--
- 	if (!strcmp(type, "anon")) {
- 		test_type = TEST_ANON;
- 		uffd_test_ops = &anon_uffd_test_ops;
-@@ -1626,10 +1633,28 @@ static void set_test_type(const char *type)
- 		test_type = TEST_SHMEM;
- 		uffd_test_ops = &shmem_uffd_test_ops;
- 		test_uffdio_minor = true;
--	} else {
--		err("Unknown test type: %s", type);
-+	}
-+}
-+
-+static void parse_test_type_arg(const char *raw_type)
-+{
-+	char *buf = strdup(raw_type);
-+	uint64_t features = UFFD_API_FEATURES;
-+
-+	while (buf) {
-+		const char *token = strsep(&buf, ":");
-+
-+		if (!test_type)
-+			set_test_type(token);
-+		else if (!strcmp(token, "dev"))
-+			test_dev_userfaultfd = true;
-+		else
-+			err("unrecognized test mod '%s'", token);
- 	}
- 
-+	if (!test_type)
-+		err("failed to parse test type argument: '%s'", raw_type);
-+
- 	if (test_type == TEST_HUGETLB)
- 		page_size = default_huge_page_size();
- 	else
-@@ -1676,7 +1701,7 @@ int main(int argc, char **argv)
- 		err("failed to arm SIGALRM");
- 	alarm(ALARM_INTERVAL_SECS);
- 
--	set_test_type(argv[1]);
-+	parse_test_type_arg(argv[1]);
- 
- 	nr_cpus = sysconf(_SC_NPROCESSORS_ONLN);
- 	nr_pages_per_cpu = atol(argv[2]) * 1024*1024 / page_size /
-@@ -1714,12 +1739,6 @@ int main(int argc, char **argv)
- 	}
- 	printf("nr_pages: %lu, nr_pages_per_cpu: %lu\n",
- 	       nr_pages, nr_pages_per_cpu);
--
--	test_dev_userfaultfd = false;
--	if (userfaultfd_stress())
--		return 1;
--
--	test_dev_userfaultfd = true;
- 	return userfaultfd_stress();
- }
- 
--- 
-2.36.1.255.ge46751e96f-goog
-
+Acked-by: Rob Herring <robh@kernel.org>
