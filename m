@@ -2,113 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7C07C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 15:56:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1456C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 15:57:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236665AbiFBP4j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 11:56:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47926 "EHLO
+        id S236691AbiFBP5L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 11:57:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235088AbiFBP4h (ORCPT
+        with ESMTP id S236679AbiFBP5D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 11:56:37 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B21BD2A8917
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 08:56:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654185395; x=1685721395;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=G260DLjKCKHF/IsA/C/V8T/NPk6CUeLQeiSsWDsH2IA=;
-  b=PW8NkqtJkfsSbEaTlEqb71nzI5ap8r+PUf8SdPXo51WPRJkOkvI4EW6U
-   Pmi225qIGC9Sd+4GEEtA3Rr2Cz71uN9pHHL/qoIaEeTdq2ut5RM4Stkav
-   jRnqB2+VGodvirAGLM4I7xcKhrgxF/EWdHo7LN3XBdEP+CYTsFwoty/Va
-   kqqDTV+OE8gVeNYgCV4yR2VmJN2sOS0KwsqCFOV9eoaUlRsgUHveYr+C5
-   DLqHUCx/P9M1Ly68O49AIw0K5b75LV/Y67Y/nKBdH5HAFyMKeZHDpkFXW
-   M1jhUW+Ai0Q1d/JF3xHSb/e+YjKrEoP85wj26iBW+YYcX+tOKtWfu72bZ
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10366"; a="255856489"
-X-IronPort-AV: E=Sophos;i="5.91,271,1647327600"; 
-   d="scan'208";a="255856489"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2022 08:56:35 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,271,1647327600"; 
-   d="scan'208";a="563366864"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 02 Jun 2022 08:56:33 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nwnBY-0005Ef-Va;
-        Thu, 02 Jun 2022 15:56:32 +0000
-Date:   Thu, 2 Jun 2022 23:55:54 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jiri Pirko <jiri@nvidia.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [jpirko-mlxsw:jiri_devel_lc_dev 4/5]
- drivers/net/ethernet/mellanox/mlxsw/core_linecard_dev.c:26:5: warning: no
- previous prototype for function 'mlxsw_linecard_dev_id_alloc'
-Message-ID: <202206022331.m9R8tlOt-lkp@intel.com>
+        Thu, 2 Jun 2022 11:57:03 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB76C3B02F
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 08:57:01 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id s24so7000793wrb.10
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 08:57:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/Ig/QhQNnSaLYheTCx1UmngTcl4ocLyAvqu6aDJbhrs=;
+        b=HE5pG9/aW4cFaYUi6zQUrIpflq8Rz1EmOHhp5Vv9uU3l1AcUZYYvub4GDxHpMx5KMw
+         uY/vleFSi86p0QlWLGyezZ9otl0kAng0Rd3nZuX95pp/rRZlldec20Y2LTzHC+jiBqd9
+         0QTTJUZlCVjvdcLONhDBx3i7TSkiZXyES1367AcQuiiMjTI21+6pzzLv3z1IFjSC4waw
+         IGL/sHVyXuljO7Vjhzo7TPlUN3fyLYUlGWpxnB5Es2TQFHXCVzh3Khxx6SKyM+6jOGEx
+         tPpR7YdLpJP/dBJR9nWW5ahN/GhzX9sNawbsOr2kjaQ+lykJiLPoUlblkDuHQTayp2M9
+         Wnug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/Ig/QhQNnSaLYheTCx1UmngTcl4ocLyAvqu6aDJbhrs=;
+        b=2QaW7EzWcyFb62yI2/VnrH9GDjo9BtU5bqVMctnjd0XV/Yafkm44oirKT0XyNeumgp
+         zygJRP8nrek+GX2opq1HoroURaiyLG+0nYNhSYrQluSiIzxrWfnhsbdvMvFH9mUGB/lD
+         /Vysogc8kGR5XnBVQCbQg9JKbKLrud1slItzd+9DpoxVRSrA5kNUGsm38te2tFX6LR1u
+         lkTOEMcrQvpSDoYfzRIUOlg2th6SpeSlcjgA+CnS8rDVHp8cAkK4lHkmCCXNUXoP0kb0
+         CP/MRxU7gh0405wv4SIBJkrsMLljsX//goOKX899yhKIMye01J1NsCSYiUQnUk8BYdHL
+         P8Ow==
+X-Gm-Message-State: AOAM530dovDxG9Tg363lzaM/YCxkHxvSdUBBJ8tshP/C/h72ZFFzP88l
+        Ga0vxFCkN55njUdgAjq32ZsB6bMDKbxjmTzzp6ZaQw==
+X-Google-Smtp-Source: ABdhPJz5ISXPXoE/MgUc6zgjthJZFFkewnKP4x4ZhIf/sbQktclnaMMA/XyT6n+o3tl8kLWpfpu945b4VsR6Hx2qLxM=
+X-Received: by 2002:a05:6000:1acc:b0:20f:f12a:a535 with SMTP id
+ i12-20020a0560001acc00b0020ff12aa535mr4463758wry.375.1654185419962; Thu, 02
+ Jun 2022 08:56:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220602153603.1884710-1-zhengjun.xing@linux.intel.com>
+In-Reply-To: <20220602153603.1884710-1-zhengjun.xing@linux.intel.com>
+From:   Ian Rogers <irogers@google.com>
+Date:   Thu, 2 Jun 2022 08:56:45 -0700
+Message-ID: <CAP-5=fUw2TdA_nqbhCc7GjG6+XOfst6gW4FGAeshW7xxmq64nA@mail.gmail.com>
+Subject: Re: [PATCH] perf record: Support sample-read topdown metric group for
+ hybrid platforms
+To:     zhengjun.xing@linux.intel.com
+Cc:     acme@kernel.org, peterz@infradead.org, mingo@redhat.com,
+        alexander.shishkin@intel.com, jolsa@redhat.com,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        adrian.hunter@intel.com, ak@linux.intel.com,
+        kan.liang@linux.intel.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/jpirko/linux_mlxsw jiri_devel_lc_dev
-head:   ef34c1c33c0ae43a9ad3c0ed3708eb1880972de0
-commit: 2d0852c5fa89a48c6fa1f860600b5e24e2faab4b [4/5] mlxsw: core_linecards: Introduce per line card auxiliary device
-config: x86_64-randconfig-a016 (https://download.01.org/0day-ci/archive/20220602/202206022331.m9R8tlOt-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project b364c76683f8ef241025a9556300778c07b590c2)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/jpirko/linux_mlxsw/commit/2d0852c5fa89a48c6fa1f860600b5e24e2faab4b
-        git remote add jpirko-mlxsw https://github.com/jpirko/linux_mlxsw
-        git fetch --no-tags jpirko-mlxsw jiri_devel_lc_dev
-        git checkout 2d0852c5fa89a48c6fa1f860600b5e24e2faab4b
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/net/ethernet/mellanox/mlxsw/
+On Thu, Jun 2, 2022 at 8:35 AM <zhengjun.xing@linux.intel.com> wrote:
+>
+> From: Zhengjun Xing <zhengjun.xing@linux.intel.com>
+>
+> With the hardware TopDown metrics feature, the sample-read feature should
+> be supported for a TopDown group, e.g., sample a non-topdown event and read
+> a Topdown metric group. But the current perf record code errors are out.
+>
+> For a TopDown metric group,the slots event must be the leader of the group,
+> but the leader slots event doesn't support sampling. To support sample-read
+> the TopDown metric group, uses the 2nd event of the group as the "leader"
+> for the purposes of sampling.
+>
+> Only the platform with the TopDown metric feature supports sample-read the
+> topdown group. In commit acb65150a47c ("perf record: Support sample-read
+> topdown metric group"), it adds arch_topdown_sample_read() to indicate
+> whether the TopDown group supports sample-read, it should only work on the
+> non-hybrid systems, this patch extends the support for hybrid platforms.
+>
+> Before:
+>
+>  # ./perf record -e "{cpu_core/slots/,cpu_core/cycles/,cpu_core/topdown-retiring/}:S" -a sleep 1
+> Error:
+> The sys_perf_event_open() syscall returned with 22 (Invalid argument) for event (cpu_core/topdown-retiring/).
+> /bin/dmesg | grep -i perf may provide additional information.
+>
+> After:
+>
+>  # ./perf record -e "{cpu_core/slots/,cpu_core/cycles/,cpu_core/topdown-retiring/}:S" -a sleep 1
+> [ perf record: Woken up 1 times to write data ]
+> [ perf record: Captured and wrote 0.238 MB perf.data (369 samples) ]
+>
+> Fixes: acb65150a47c ("perf record: Support sample-read topdown metric group")
+> Signed-off-by: Zhengjun Xing <zhengjun.xing@linux.intel.com>
+> Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Acked-by: Ian Rogers <irogers@google.com>
 
-All warnings (new ones prefixed by >>):
+Thanks,
+Ian
 
->> drivers/net/ethernet/mellanox/mlxsw/core_linecard_dev.c:26:5: warning: no previous prototype for function 'mlxsw_linecard_dev_id_alloc' [-Wmissing-prototypes]
-   int mlxsw_linecard_dev_id_alloc(void)
-       ^
-   drivers/net/ethernet/mellanox/mlxsw/core_linecard_dev.c:26:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   int mlxsw_linecard_dev_id_alloc(void)
-   ^
-   static 
->> drivers/net/ethernet/mellanox/mlxsw/core_linecard_dev.c:31:6: warning: no previous prototype for function 'mlxsw_linecard_dev_id_free' [-Wmissing-prototypes]
-   void mlxsw_linecard_dev_id_free(int id)
-        ^
-   drivers/net/ethernet/mellanox/mlxsw/core_linecard_dev.c:31:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void mlxsw_linecard_dev_id_free(int id)
-   ^
-   static 
-   2 warnings generated.
-
-
-vim +/mlxsw_linecard_dev_id_alloc +26 drivers/net/ethernet/mellanox/mlxsw/core_linecard_dev.c
-
-    25	
-  > 26	int mlxsw_linecard_dev_id_alloc(void)
-    27	{
-    28		return ida_alloc(&mlxsw_linecard_dev_ida, GFP_KERNEL);
-    29	}
-    30	
-  > 31	void mlxsw_linecard_dev_id_free(int id)
-    32	{
-    33		ida_free(&mlxsw_linecard_dev_ida, id);
-    34	}
-    35	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> ---
+>  tools/perf/arch/x86/util/evsel.c   |  3 ++-
+>  tools/perf/arch/x86/util/evsel.h   |  7 +++++++
+>  tools/perf/arch/x86/util/topdown.c | 21 ++++-----------------
+>  3 files changed, 13 insertions(+), 18 deletions(-)
+>  create mode 100644 tools/perf/arch/x86/util/evsel.h
+>
+> diff --git a/tools/perf/arch/x86/util/evsel.c b/tools/perf/arch/x86/util/evsel.c
+> index ff4561b7b600..3501399cef35 100644
+> --- a/tools/perf/arch/x86/util/evsel.c
+> +++ b/tools/perf/arch/x86/util/evsel.c
+> @@ -5,6 +5,7 @@
+>  #include "util/env.h"
+>  #include "util/pmu.h"
+>  #include "linux/string.h"
+> +#include "evsel.h"
+>
+>  void arch_evsel__set_sample_weight(struct evsel *evsel)
+>  {
+> @@ -32,7 +33,7 @@ void arch_evsel__fixup_new_cycles(struct perf_event_attr *attr)
+>  }
+>
+>  /* Check whether the evsel's PMU supports the perf metrics */
+> -static bool evsel__sys_has_perf_metrics(const struct evsel *evsel)
+> +bool evsel__sys_has_perf_metrics(const struct evsel *evsel)
+>  {
+>         const char *pmu_name = evsel->pmu_name ? evsel->pmu_name : "cpu";
+>
+> diff --git a/tools/perf/arch/x86/util/evsel.h b/tools/perf/arch/x86/util/evsel.h
+> new file mode 100644
+> index 000000000000..19ad1691374d
+> --- /dev/null
+> +++ b/tools/perf/arch/x86/util/evsel.h
+> @@ -0,0 +1,7 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +#ifndef _EVSEL_H
+> +#define _EVSEL_H 1
+> +
+> +bool evsel__sys_has_perf_metrics(const struct evsel *evsel);
+> +
+> +#endif
+> diff --git a/tools/perf/arch/x86/util/topdown.c b/tools/perf/arch/x86/util/topdown.c
+> index f4d5422e9960..f81a7cfe4d63 100644
+> --- a/tools/perf/arch/x86/util/topdown.c
+> +++ b/tools/perf/arch/x86/util/topdown.c
+> @@ -4,6 +4,7 @@
+>  #include "util/pmu.h"
+>  #include "util/topdown.h"
+>  #include "topdown.h"
+> +#include "evsel.h"
+>
+>  /* Check whether there is a PMU which supports the perf metrics. */
+>  bool topdown_sys_has_perf_metrics(void)
+> @@ -55,33 +56,19 @@ void arch_topdown_group_warn(void)
+>
+>  #define TOPDOWN_SLOTS          0x0400
+>
+> -static bool is_topdown_slots_event(struct evsel *counter)
+> -{
+> -       if (!counter->pmu_name)
+> -               return false;
+> -
+> -       if (strcmp(counter->pmu_name, "cpu"))
+> -               return false;
+> -
+> -       if (counter->core.attr.config == TOPDOWN_SLOTS)
+> -               return true;
+> -
+> -       return false;
+> -}
+> -
+>  /*
+>   * Check whether a topdown group supports sample-read.
+>   *
+> - * Only Topdown metic supports sample-read. The slots
+> + * Only Topdown metric supports sample-read. The slots
+>   * event must be the leader of the topdown group.
+>   */
+>
+>  bool arch_topdown_sample_read(struct evsel *leader)
+>  {
+> -       if (!pmu_have_event("cpu", "slots"))
+> +       if (!evsel__sys_has_perf_metrics(leader))
+>                 return false;
+>
+> -       if (is_topdown_slots_event(leader))
+> +       if (leader->core.attr.config == TOPDOWN_SLOTS)
+>                 return true;
+>
+>         return false;
+> --
+> 2.25.1
+>
