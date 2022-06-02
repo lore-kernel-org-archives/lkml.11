@@ -2,155 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14B28C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 14:27:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8F84C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 14:27:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235888AbiFBO1h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 10:27:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54954 "EHLO
+        id S235903AbiFBO1t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 10:27:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235896AbiFBO1d (ORCPT
+        with ESMTP id S233749AbiFBO1p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 10:27:33 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2067.outbound.protection.outlook.com [40.107.223.67])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BD07DFF4C;
-        Thu,  2 Jun 2022 07:27:30 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mgbOBmKkzvlTEwI043jTrxFgwI3M/4NtI1cOsiCLC6iRaknecHPUsrAefqEDH6fArBAGqFAwd8W/sqwUaE/MF4WcpkYEwwf7NrPnqj9c7WbawcRKmuS+TqgPVOlcCO435WXfqUexqQgPIf4IROAuUvyhWM64MbHkNwEdJ1MkH9mDiGfqFGCC++kvnYiq+1zShse0h1FixnIWoPtYKNHXuohU5XAKPOuZkob5FyjSt+EYC141e+5pOqSB4Sfwlu/0Anj+NTAE14dyZGyZAFoJlqQD9dvUdG5JK17UmmnONLKLnNOUwga1ABg+xZdy5UmWI0bklikUuPzT9JK2S78lMw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=SGjK0lYQ5r5zdEw1lFFLxAt1rgcslKLijmP8URQtT+8=;
- b=flTUS+WqTHshbW98sLwmPRvMMri8oyD0OhH7vhJVP8RMd016N8C+xyu2j4BHc5NQwNCPOvcCQ8Hs+0cnHpVOb3mrzTWHXpqHIYsQ7dtzkeokRzMvp3dww+DDSvn/mudf6UNCKAcTcQESQirOQjipsHNTsJx9KCl5+tBrjcYO4qmwEy8MLEYQBBbkFS7FfYj3kLzWXCLL9rLKrOUPi6Zrl230LKWzON/dSp/1E711cwNDtyaHa6yjcZsUKjgIC3lgaMswgqVUWAsJZvxXzM6paZu2/B3hoh0pOVa10uIm4CW0TDl123kCiTMrn12MP5vCXxDr/06tvpIgilG6zfcauw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=redhat.com smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SGjK0lYQ5r5zdEw1lFFLxAt1rgcslKLijmP8URQtT+8=;
- b=ccgx4Va105WkNGurDoxJWFjpQRAIH62Vg5FbEA7wAmeq+psILjUUZXJTrS6iL/5sHhoK9b1ifzR5qoA/CMfKghcBIR473mrpUyMatx4tcHgJuZa+tMk+GzOo24gu1V0RYsa8jPyhvTpY0aF/XDkag6aTOFAd9EosN4JieVj19jU=
-Received: from BN9PR03CA0549.namprd03.prod.outlook.com (2603:10b6:408:138::14)
- by MN2PR12MB3839.namprd12.prod.outlook.com (2603:10b6:208:168::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.13; Thu, 2 Jun
- 2022 14:27:27 +0000
-Received: from BN8NAM11FT004.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:138:cafe::fc) by BN9PR03CA0549.outlook.office365.com
- (2603:10b6:408:138::14) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.13 via Frontend
- Transport; Thu, 2 Jun 2022 14:27:27 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT004.mail.protection.outlook.com (10.13.176.164) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5314.12 via Frontend Transport; Thu, 2 Jun 2022 14:27:27 +0000
-Received: from BLR-5CG113396M.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 2 Jun
- 2022 09:27:23 -0500
-From:   Santosh Shukla <santosh.shukla@amd.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-CC:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Tom Lendacky <thomas.lendacky@amd.com>, <kvm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <Santosh.Shukla@amd.com>
-Subject: [PATCH 3/7] KVM: SVM: Add VNMI support in get/set_nmi_mask
-Date:   Thu, 2 Jun 2022 19:56:16 +0530
-Message-ID: <20220602142620.3196-4-santosh.shukla@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220602142620.3196-1-santosh.shukla@amd.com>
-References: <20220602142620.3196-1-santosh.shukla@amd.com>
+        Thu, 2 Jun 2022 10:27:45 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4D0012C97A;
+        Thu,  2 Jun 2022 07:27:43 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id k16so6699003wrg.7;
+        Thu, 02 Jun 2022 07:27:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=PU8lc3rqUKJ9fwYFMxTWZiWtxbKl/aHmbF7KgXVxdw8=;
+        b=nTCCpeSYwfMZY+4KPdvMlazL72pUA9cf31ff5VpnywSiVU9k5w5t458nw6elFguljg
+         OyVTJ6tj4p5kxFAUAVicDk6q903TOeCzEEX7UqisGtUPG8ui4J274meFJKWGwWzRorv5
+         h5Y/xMsiRDKaMFfBWbUE9FlqYBqmZC0lnC6o170UwiLmvD1F4cIwmf7q6WKP+ypzmGfO
+         fpHzIbIvQPob9eBzeY3t0iu0sV9vuWV98dAV+9s35Y3YBfLr2FiMHs3dQHaWnTqKjxYZ
+         HtUvhV7aVJm+ZxGEJfifkYjdHnZJFL+muk90bFTjaLFdQ1KGsobxK1HtczYZDzorbLox
+         rnCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=PU8lc3rqUKJ9fwYFMxTWZiWtxbKl/aHmbF7KgXVxdw8=;
+        b=H+O+oW4rJdWcycYvIPSzOPvFbKm1WD7kLeHu/uTp5no0wDNTrWDeHmiRDlCkUIrPL0
+         eCXnFxFkFjbUELMJ+rGKoYjbWTLRGVaL5OaQJOzULZZIfEpIkj8b8FsxJtOsM6oXaRAu
+         OVDXky2cufMAmctA+4ZqFPWsjhyJvjXZu4rZdR0EGUjwXC7ixmK0muOLpM09ELpPo9t/
+         yme/2Bcb1trgEcwqmbplt16QipdX0GBYikS//HN1ivf1iYEcKu1Zz/ftADYRM79babZ0
+         hygVH4UHFKDQb28GOZ/Du/bwtcgmgcQCcbWmA4vIO9+ZFLl6daATloUIfOugiJHyYpBO
+         QS1w==
+X-Gm-Message-State: AOAM532DjcPVuSpKWpRUKBPoubouq0lyeEVxuSmL0nv7geI8zahfa62p
+        pXyqbWFNc+cvYh4ql2fLvmo6h9bM+Z6SPA==
+X-Google-Smtp-Source: ABdhPJwjC4sOY/AU32uEMgLGNEAI19FhBPDUP9arLJ7oiFGKBMRXEJZ7V09GeOEGnuHwTIckNIWbKQ==
+X-Received: by 2002:a5d:5885:0:b0:20f:f390:c47e with SMTP id n5-20020a5d5885000000b0020ff390c47emr3997562wrf.133.1654180061203;
+        Thu, 02 Jun 2022 07:27:41 -0700 (PDT)
+Received: from [10.40.36.42] ([193.52.24.5])
+        by smtp.gmail.com with ESMTPSA id ay1-20020a5d6f01000000b0020fee88d0f2sm5954781wrb.0.2022.06.02.07.27.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 02 Jun 2022 07:27:38 -0700 (PDT)
+Message-ID: <c5022150-a2b4-07b9-d8ec-789147134d85@gmail.com>
+Date:   Thu, 2 Jun 2022 16:27:37 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5104c35c-4424-4c02-88b9-08da44a404db
-X-MS-TrafficTypeDiagnostic: MN2PR12MB3839:EE_
-X-Microsoft-Antispam-PRVS: <MN2PR12MB38391A1738AE8BF2B1B4404E87DE9@MN2PR12MB3839.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: WP7ctwBHe62lM+WOEXzsYvYOc1jgEqQGKnOT6j7BxUi8/ZKy457WikxEnzOHuvKtqm4UOFDqUHpzf4wwOPOB1V7c2T08GI2D6EL7PzhQ/KGC9g+79lzdt5q4xdlgRvwhWDWiO/+crCwc8XTXJvwot/8sG0qQDFMDaN9OTdV4QV6nJ+1bGZ/62fo8yIxy5POAa93nJlWXuB+QWDsqQ4ziQtmR8HJIgj/KJ2HV4HOLVN7jR6bxFVfOlCkCOD0gCm4YvLZ4i4kWbG0kR7Y8ETSam9EW+/Nnrzpsw78zLB8O3adyK8F1a/0kmlgk1jEkC5J73fpexXRxdlvcZADzChyp6JpX1QyhLXUheff0ZlkT9go2Ld+pk05gBZf5EZG8Bj/5R+ATNxKp+qgGonyVUvMfpftK880uViJDt2oBRKuBT0ZQvcZM0fuy0biln7e/clYkMJCopkdPwNyz21ltmJfcEeRobLhwBtaUHKuXJtgsNpjIALEmDyR9kSJXEaktKZnzhP5FyV8jrFXzJdrrUyvNYV3Ll67fiRYS/xwuMywbcYzmLTDAvTj+FinwU+bLo0JB2yZz9WS+yqdY0n5MRLrDoB7hdbrI/0U6BRdNN6MQ6vfpyeinjDVDE03V1Ev/dxap0xKMtneiieYtqMxhOd5VMVP/vEkBJrg2diVNNzB2dfp1q2nT/B1HrT7KD7eVG5EFp7jgTbCc5uwXDZwo93MJ+A==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(508600001)(8936002)(16526019)(336012)(47076005)(1076003)(186003)(40460700003)(2616005)(83380400001)(6666004)(5660300002)(2906002)(26005)(7696005)(86362001)(4326008)(8676002)(316002)(44832011)(36756003)(6916009)(426003)(82310400005)(54906003)(70206006)(70586007)(36860700001)(356005)(81166007)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2022 14:27:27.2543
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5104c35c-4424-4c02-88b9-08da44a404db
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT004.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3839
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v2 0/3] Support MediaTek devapc for MT8186
+Content-Language: en-US
+To:     Chen-Yu Tsai <wenst@chromium.org>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        runyang.chen@mediatek.com, linux-mediatek@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220504115501.3490-1-rex-bc.chen@mediatek.com>
+ <CAGXv+5E9s3c0j501fHZxhwsHSeK0vG+GEqLMhtZMvtvC=+etjQ@mail.gmail.com>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <CAGXv+5E9s3c0j501fHZxhwsHSeK0vG+GEqLMhtZMvtvC=+etjQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-VMCB intr_ctrl bit12 (V_NMI_MASK) is set by the processor when handling
-NMI in guest and is cleared after the NMI is handled. Treat V_NMI_MASK as
-read-only in the hypervisor and do not populate set accessors.
 
-Signed-off-by: Santosh Shukla <santosh.shukla@amd.com>
----
- arch/x86/kvm/svm/svm.c | 20 +++++++++++++++++++-
- 1 file changed, 19 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index 860f28c668bd..d67a54517d95 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -323,6 +323,16 @@ static int is_external_interrupt(u32 info)
- 	return info == (SVM_EVTINJ_VALID | SVM_EVTINJ_TYPE_INTR);
- }
- 
-+static bool is_vnmi_enabled(struct vmcb *vmcb)
-+{
-+	return vnmi && (vmcb->control.int_ctl & V_NMI_ENABLE);
-+}
-+
-+static bool is_vnmi_mask_set(struct vmcb *vmcb)
-+{
-+	return !!(vmcb->control.int_ctl & V_NMI_MASK);
-+}
-+
- static u32 svm_get_interrupt_shadow(struct kvm_vcpu *vcpu)
- {
- 	struct vcpu_svm *svm = to_svm(vcpu);
-@@ -3502,13 +3512,21 @@ static int svm_nmi_allowed(struct kvm_vcpu *vcpu, bool for_injection)
- 
- static bool svm_get_nmi_mask(struct kvm_vcpu *vcpu)
- {
--	return !!(vcpu->arch.hflags & HF_NMI_MASK);
-+	struct vcpu_svm *svm = to_svm(vcpu);
-+
-+	if (is_vnmi_enabled(svm->vmcb))
-+		return is_vnmi_mask_set(svm->vmcb);
-+	else
-+		return !!(vcpu->arch.hflags & HF_NMI_MASK);
- }
- 
- static void svm_set_nmi_mask(struct kvm_vcpu *vcpu, bool masked)
- {
- 	struct vcpu_svm *svm = to_svm(vcpu);
- 
-+	if (is_vnmi_enabled(svm->vmcb))
-+		return;
-+
- 	if (masked) {
- 		vcpu->arch.hflags |= HF_NMI_MASK;
- 		if (!sev_es_guest(vcpu->kvm))
--- 
-2.25.1
+On 02/06/2022 09:48, Chen-Yu Tsai wrote:
+> On Wed, May 4, 2022 at 7:55 PM Rex-BC Chen <rex-bc.chen@mediatek.com> wrote:
+>>
+>> This series is for supporting devapc implementation in MT8186.
+>>
+>> V2:
+>> - Add a patch to separate register offsets from mtk_devapc_data.
+>>
+>> V1:
+>> - Add dt-binding and add devapc data for MT8186.
+>>
+>> Rex-BC Chen (3):
+>>    dt-bindings: soc: mediatek: devapc: Add bindings for MT8186
+>>    soc: mediatek: devapc: Separate register offsets from mtk_devapc_data
+>>    soc: mediatek: devapc: Add support for MT8186
+> 
+> Applied this on next-20220602 (with a few fixes for other section mismatch
+> errors), booted and got:
+> 
+> [    1.948483] mtk-devapc 10207000.devapc: Read Violation
+> [    1.948488] mtk-devapc 10207000.devapc: Bus ID:0x100, Dom ID:0x0,
+> Vio Addr:0x13000000
+> [    1.948520] mtk-devapc 10207000.devapc: Read Violation
+> [    1.948523] mtk-devapc 10207000.devapc: Bus ID:0x200, Dom ID:0x0,
+> Vio Addr:0x140001a0
+> [    1.948537] mtk-devapc 10207000.devapc: Read Violation
+> [    1.948540] mtk-devapc 10207000.devapc: Bus ID:0x200, Dom ID:0x0,
+> Vio Addr:0x140001a0
+> [    1.948555] mtk-devapc 10207000.devapc: Read Violation
+> [    1.948558] mtk-devapc 10207000.devapc: Bus ID:0x200, Dom ID:0x0,
+> Vio Addr:0x14000100
+> [    1.948573] mtk-devapc 10207000.devapc: Read Violation
+> [    1.948576] mtk-devapc 10207000.devapc: Bus ID:0x200, Dom ID:0x0,
+> Vio Addr:0x14000100
+> [    1.948590] mtk-devapc 10207000.devapc: Read Violation
+> [    1.948593] mtk-devapc 10207000.devapc: Bus ID:0x200, Dom ID:0x0,
+> Vio Addr:0x14000100
+> [    1.948607] mtk-devapc 10207000.devapc: Read Violation
+> [    1.948610] mtk-devapc 10207000.devapc: Bus ID:0x200, Dom ID:0x0,
+> Vio Addr:0x14000100
+> [    1.948624] mtk-devapc 10207000.devapc: Read Violation
+> [    1.948627] mtk-devapc 10207000.devapc: Bus ID:0x200, Dom ID:0x0,
+> Vio Addr:0x14000100
+> 
+> during the boot process. So I think this works well. Manually reading a
+> known secure address also triggers it:
+> 
+> root@hayato:~# busybox devmem 0x1000e000
+> 0x00000000
+> [  135.069121] mtk-devapc 10207000.devapc: Read Violation
+> [  135.069132] mtk-devapc 10207000.devapc: Bus ID:0x482, Dom ID:0x0,
+> Vio Addr:0x1000e000
+> 
+> So,
+> 
+> Tested-by: Chen-Yu Tsai <wenst@chromium.org>
+> 
 
+Whole series applied to v5.19-next/soc
+
+> BTW, looks like MT8186 support in mainline is shaping up real good.
+> SCP firmware is still missing, so video codec stuff won't work.
