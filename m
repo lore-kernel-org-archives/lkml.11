@@ -2,73 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D9CBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 15:40:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCF10CCA47D
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 15:41:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236499AbiFBPki convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 11:40:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41528 "EHLO
+        id S236502AbiFBPlX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 11:41:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232621AbiFBPkh (ORCPT
+        with ESMTP id S232621AbiFBPlW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 11:40:37 -0400
-Received: from mail.holtmann.org (coyote.holtmann.net [212.227.132.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C0C19279E75;
-        Thu,  2 Jun 2022 08:40:35 -0700 (PDT)
-Received: from smtpclient.apple (p4ff9fc30.dip0.t-ipconnect.de [79.249.252.48])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 0D110CED19;
-        Thu,  2 Jun 2022 17:40:35 +0200 (CEST)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.100.31\))
-Subject: Re: [PATCH] iBluetooth: hci_intel: Add check for
- platform_driver_register
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20220531033228.1939386-1-jiasheng@iscas.ac.cn>
-Date:   Thu, 2 Jun 2022 17:40:34 +0200
-Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Transfer-Encoding: 8BIT
-Message-Id: <1230E2E8-B3F7-470F-B03F-2060173B5821@holtmann.org>
-References: <20220531033228.1939386-1-jiasheng@iscas.ac.cn>
-To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
-X-Mailer: Apple Mail (2.3696.100.31)
+        Thu, 2 Jun 2022 11:41:22 -0400
+Received: from mail1.wrs.com (unknown-3-146.windriver.com [147.11.3.146])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 649A8279E75;
+        Thu,  2 Jun 2022 08:41:20 -0700 (PDT)
+Received: from ala-exchng01.corp.ad.wrs.com (ala-exchng01.corp.ad.wrs.com [147.11.82.252])
+        by mail1.wrs.com (8.15.2/8.15.2) with ESMTPS id 252EnJEW009792
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 2 Jun 2022 07:49:19 -0700
+Received: from otp-dpanait-l2.corp.ad.wrs.com (128.224.125.150) by
+ ala-exchng01.corp.ad.wrs.com (147.11.82.252) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.12; Thu, 2 Jun 2022 07:49:17 -0700
+From:   Dragos-Marian Panait <dragos.panait@windriver.com>
+To:     <stable@vger.kernel.org>
+CC:     Haimin Zhang <tcs.kernel@gmail.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
+        <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [PATCH 4.19 0/1] block-map: backport fix for CVE-2022-0494
+Date:   Thu, 2 Jun 2022 17:49:07 +0300
+Message-ID: <20220602144908.2250166-1-dragos.panait@windriver.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [128.224.125.150]
+X-ClientProxiedBy: ala-exchng01.corp.ad.wrs.com (147.11.82.252) To
+ ala-exchng01.corp.ad.wrs.com (147.11.82.252)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jiasheng,
+The following commit is needed to fix CVE-2022-0494:
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=cc8f7fe1f5eab010191aa4570f27641876fa1267
 
-> As platform_driver_register() could fail, it should be better
-> to deal with the return value in order to maintain the code
-> consisitency.
-> 
-> Fixes: 1ab1f239bf17 ("Bluetooth: hci_intel: Add support for platform driver")
-> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-> ---
-> drivers/bluetooth/hci_intel.c | 6 +++++-
-> 1 file changed, 5 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/bluetooth/hci_intel.c b/drivers/bluetooth/hci_intel.c
-> index 7249b91d9b91..d4801b26cc8e 100644
-> --- a/drivers/bluetooth/hci_intel.c
-> +++ b/drivers/bluetooth/hci_intel.c
-> @@ -1217,7 +1217,11 @@ static struct platform_driver intel_driver = {
-> 
-> int __init intel_init(void)
-> {
-> -	platform_driver_register(&intel_driver);
-> +	int ret;
-> +
-> +	ret = platform_driver_register(&intel_driver);
-> +	if (ret)
-> +		return ret;
+Haimin Zhang (1):
+  block-map: add __GFP_ZERO flag for alloc_page in function
+    bio_copy_kern
 
-most of the driver uses int err. So please do that as well.
+ block/bio.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Regards
 
-Marcel
+base-commit: 06d93c33da2cc9c3ca79f5ba757e08306455d9d6
+-- 
+2.36.1
 
