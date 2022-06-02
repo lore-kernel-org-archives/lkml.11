@@ -2,190 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD07DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 10:02:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9225FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 10:04:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233308AbiFBKCc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 06:02:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36968 "EHLO
+        id S233331AbiFBKD7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 06:03:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233072AbiFBKCX (ORCPT
+        with ESMTP id S231933AbiFBKDz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 06:02:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6358010D9;
-        Thu,  2 Jun 2022 03:02:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BED95614FA;
-        Thu,  2 Jun 2022 10:02:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24F94C3411E;
-        Thu,  2 Jun 2022 10:02:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654164140;
-        bh=FbzUCD0Nyys1GvPjap25s98kySjc2A+W4LnGeGiZ0vs=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=ETMG8MESltoMId/pTxjM5BKdiXqbNoT+K9rtBbmJvfwjr7xkdX1N+xQ4Mj1c7Z3E2
-         JG5Ob+10iGq7/7rgmvMjJo6QHGpyKFTfdUvKlzhfOD8L47VTlKfW3ipFykcjZCYaom
-         x7Vkh+glnePKauzzCRdWDkWnkhe2mlFGX3EqNnaldQAX/JIudeqlWwbky+8QOgYKyC
-         Yd+BQLg2mu5QLtpvz+6gu9iEa1dTF/ujh4FIqxjYCBTQEr7PZ9oLPMjRK0/UQcPhls
-         NRrCrijcIl+29mZuPsfutOZDgiL3KwIJDc1UKpf/ari+G+YIzdX9Pl3WJxgTv45N+E
-         gka9QmCY1iueg==
-Received: by mail-io1-f53.google.com with SMTP id b4so4286659iog.11;
-        Thu, 02 Jun 2022 03:02:20 -0700 (PDT)
-X-Gm-Message-State: AOAM532PjMmTmRPSE4FuYt/XViiHGHsPeQtFDhueiLKm8ZIS9w4W3FH4
-        UYn6ngbQBfGCh4/3xggj0HX0Mfr5+15aS1Bt22c=
-X-Google-Smtp-Source: ABdhPJz+8ZXb25r7ObdDPSo1yCDAM4q4Hg1Q724ZPndy3EVmKfFgOMxE05ZJh5Hma9jrAfFmInrAEilM27IBWk/nms0=
-X-Received: by 2002:a05:6638:1692:b0:32e:e00f:ec2 with SMTP id
- f18-20020a056638169200b0032ee00f0ec2mr2572945jat.270.1654164139147; Thu, 02
- Jun 2022 03:02:19 -0700 (PDT)
+        Thu, 2 Jun 2022 06:03:55 -0400
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6625BFD347;
+        Thu,  2 Jun 2022 03:03:52 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 252A3ftt075162;
+        Thu, 2 Jun 2022 05:03:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1654164221;
+        bh=Mhu4wLDnsE/ZNGCAq11U03NXmXeOClrY6ZpD/8qzWTk=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=Q1ahS700ccV8cGuhGp+kTVm5CpPKz53cWiyRJygEmTG8F6hMsp+4VmJ47I3lB/N3p
+         VDSK0zTTk7r3AFdvZKAYGLWJZjRpV+swQOxBUZmN9CJsElaOpTASj31tvbQ4+x4vio
+         5pE5RMo5iH4A9I3LFLMR+qk3elmFooh1SjgHlVjI=
+Received: from DLEE105.ent.ti.com (dlee105.ent.ti.com [157.170.170.35])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 252A3f3X033139
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 2 Jun 2022 05:03:41 -0500
+Received: from DLEE106.ent.ti.com (157.170.170.36) by DLEE105.ent.ti.com
+ (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 2
+ Jun 2022 05:03:41 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE106.ent.ti.com
+ (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Thu, 2 Jun 2022 05:03:41 -0500
+Received: from [10.24.69.159] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 252A3bLW061739;
+        Thu, 2 Jun 2022 05:03:38 -0500
+Message-ID: <68381314-136b-776d-070a-e825506f2132@ti.com>
+Date:   Thu, 2 Jun 2022 15:33:37 +0530
 MIME-Version: 1.0
-References: <CAK8P3a2_52JPnBWNvTTkFVwLxPAa7=NaQ4whwC1UeH_NYHeUKQ@mail.gmail.com>
- <CAK8P3a0SpU1n+29KQxzKnPRvzmDE=L0V9RUpKxhemv=74kevcQ@mail.gmail.com>
- <df5c406c-eec6-c340-2847-49670b7fe8bf@xen0n.name> <CAK8P3a3awFdB1-G65DC38NBuSTvo6SvFTaS0m9YBxunHjHjQvQ@mail.gmail.com>
- <CAAhV-H6sNr-yo8brBFtzziH6k9Tby0dFp7yehK55SfH5HjZ8hQ@mail.gmail.com>
- <358025d1-28e6-708b-d23d-3f22ae12a800@xen0n.name> <CAK8P3a1ge2bZS13ahm_LdO3jEcbtR4w3do-gLjggKvppqnBDkw@mail.gmail.com>
- <CAAhV-H5NCUpR6aBtR9d7c9vW2KiHpk3iFQxj7BeTSS0boMz8PQ@mail.gmail.com>
- <CAK8P3a2JgrW5a7_udCUWen-gOnJgVeRV2oAd-uq4VSuYkFUqNQ@mail.gmail.com>
- <CAAhV-H6wfmdcV=a4L43dcabsvO+JbOebCX3_6PV+p85NjA9qhQ@mail.gmail.com>
- <CAK8P3a0c_tbHov_b6cz-_Tj6VD3OWLwpGJf_2rj-nitipSKdYQ@mail.gmail.com>
- <CAAhV-H4_qqQtTp2=mJF=OV+qcKzA0j8SPWKRMR-LJgC0zNfatQ@mail.gmail.com>
- <832c3ae8-6c68-db2c-2c7f-0a5cd3071543@xen0n.name> <CAK8P3a1Mg=Mr6aig25Kk9+Qf_E6DPMs0Yd-ozcvmY11kvCU74Q@mail.gmail.com>
- <CAMj1kXFijHBnQVPR=O85u78n6A1Ev_24k=vns4yPQ=d-aiAC8Q@mail.gmail.com> <47b559c0-b1e8-e800-0491-2431e2083dad@xen0n.name>
-In-Reply-To: <47b559c0-b1e8-e800-0491-2431e2083dad@xen0n.name>
-From:   Huacai Chen <chenhuacai@kernel.org>
-Date:   Thu, 2 Jun 2022 18:02:09 +0800
-X-Gmail-Original-Message-ID: <CAAhV-H6BVo8nsCsC11oBGgmZOw0TFQbBwqGQRmqR1bSHsM9mJg@mail.gmail.com>
-Message-ID: <CAAhV-H6BVo8nsCsC11oBGgmZOw0TFQbBwqGQRmqR1bSHsM9mJg@mail.gmail.com>
-Subject: Re: [musl] Re: [GIT PULL] asm-generic changes for 5.19
-To:     WANG Xuerui <kernel@xen0n.name>, Ard Biesheuvel <ardb@kernel.org>
-Cc:     Arnd Bergmann <arnd@kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        GNU C Library <libc-alpha@sourceware.org>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        musl@lists.openwall.com,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Jianmin Lv <lvjianmin@loongson.cn>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Huacai Chen <chenhuacai@loongson.cn>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH 1/2] dt-bindings: soc: ti: pruss: Update bindings for K3
+ AM62x SoCs
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Nishanth Menon <nm@ti.com>
+CC:     Santosh Shilimkar <ssantosh@kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>
+References: <20220427072703.4898-1-kishon@ti.com>
+ <20220427072703.4898-2-kishon@ti.com>
+ <53212a3b-d02c-ab5e-6b5c-e19d359c7c2b@linaro.org>
+ <dcce6737-5881-a703-67f0-59c5f55f1cd1@ti.com>
+ <81d94ea8-9d0f-785b-07aa-fe9c9093ad73@linaro.org>
+From:   Kishon Vijay Abraham I <kishon@ti.com>
+In-Reply-To: <81d94ea8-9d0f-785b-07aa-fe9c9093ad73@linaro.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Ard,
+Hi Krzysztof,
 
-On Thu, Jun 2, 2022 at 12:44 AM WANG Xuerui <kernel@xen0n.name> wrote:
->
-> Hi Ard,
->
-> On 6/2/22 00:01, Ard Biesheuvel wrote:
-> > On Wed, 1 Jun 2022 at 09:41, Arnd Bergmann <arnd@kernel.org> wrote:
-> >> On Wed, Jun 1, 2022 at 7:52 AM WANG Xuerui <kernel@xen0n.name> wrote:
-> >>> On 6/1/22 00:01, Huacai Chen wrote:
-> >>>> https://git.kernel.org/pub/scm/linux/kernel/git/chenhuacai/linux-loongson.git/log/?h=loongarch-next
-> >>>> has been updated. Now this branch droped irqchip drivers and pci
-> >>>> drivers. But the existing irqchip drivers need some small adjustment
-> >>>> to avoid build errors [1], and I hope Marc can give an Acked-by.
-> >>>> Thanks.
-> >>>>
-> >>>> This branch can be built with defconfig and allmodconfig (except
-> >>>> drivers/platform/surface/aggregator/controller.c, because it requires
-> >>>> 8bit/16bit cmpxchg, which I was told to remove their support).
-> >>>>
-> >>>> [1] https://lore.kernel.org/lkml/e7cf33a170d0b4e98e53744f60dbf922@kernel.org/T/#t
-> >>> I see the loongarch-next HEAD has been updated and it's now purely arch
-> >>> changes aside from the two trivial irqchip cleanups. Some other changes
-> >>> to the v11 patchset [1] are included, but arguably minor enough to not
-> >>> invalidate previous Reviewed-by tags.
-> >> Very nice! I don't see exactly how the previous build bugs were addressed,
-> >> but I can confirm that this version builds. Regarding the two irqchip patches,
-> >> 621e7015b529 ("irqchip/loongson-liointc: Fix build error for LoongArch") is
-> >> a good way to work around the mips oddity, and I have no problem taking
-> >> that through the asm-generic tree. The other one, f54b4a166023 ("irqchip:
-> >>   Adjust Kconfig for Loongson"), looks mostly unnecessary, and I think only
-> >> the LOONGSON_HTPIC change should be included here, while I would
-> >> leave out the COMPILE_TEST changes and instead have the driver
-> >> changes take care of making it possible to keep building it on x86, possibly
-> >> doing
-> >>
-> >>          depends on MACH_LOONGSON64 || (COMPILE_TEST && ACPI)
-> >>
-> >> in the future, after the loongarch64 ACPI support is merged.
-> >>
-> >>> After some small tweaks:
-> >>>
-> >>> - adding "#include <asm/irqflags.h>" to arch/loongarch/include/asm/ptrace.h,
-> >>> - adding an arch/loongarch/include/uapi/asm/bpf_perf_event.h with the
-> >>> same content as arch/arm64's, and
-> >>> - adding "depends on ARM64 || X86" to
-> >>> drivers/platform/surface/aggregator/Kconfig,
-> >>>
-> >>> the current loongarch-next HEAD (commit
-> >>> 36552a24f70d21b7d63d9ef490561dbdc13798d7) now passes allmodconfig build
-> >>> (with CONFIG_WERROR disabled; my Gentoo-flavored gcc-12 seems to emit
-> >>> warnings on a few drivers).
-> >> The only one of these issues that I see is the surface aggregator one.
-> >> I think we can address all three as follow-up fixes after -rc1 if the port
-> >> gets merged and these are still required.
-> >>
-> >>> The majority of userspace ABI has been stable for a few months already,
-> >>> after the addition of orig_a0 and removal of newfstatat; the necessary
-> >>> changes to switch to statx are already reviewed [2] / merged [3], and
-> >>> have been integrated into the LoongArch port of Gentoo for a while. Eric
-> >>> looked at the v11 and gave comments, and changes were made according to
-> >>> the suggestions, but it'd probably better to get a proper Reviewed-by.
-> >> Right.
-> >>
-> >>> Among the rest of patches, I think maybe the EFI/boot protocol part
-> >>> still need approval/ack from the EFI maintainer. However because the
-> >>> current port isn't going to be able to run on any real hardware, maybe
-> >>> that part could be done later; I'm not sure if the unacknowledged EFI
-> >>> bits should be removed as well.
-> >> Ard, do you have any last comments on this?
-> >>
-> > It would be nice if the questions I raised against the previous
-> > revision (v11) were addressed (or at least answered) first. In
-> > general, I think this is feeling a bit rushed and IMHO we should
-> > probably defer this to the next cycle.
->
-> Actually I think Huacai did reply to your review on v11:
-> https://lore.kernel.org/all/CAAhV-H7KAg8RxN7M=WiOOh0fDhEKTyqrwp6V-SC0cyR0iMrdeg@mail.gmail.com/.
-> It's a bit unfortunate that he probably didn't justify some of the
-> approaches enough, and it's especially unfortunate that some of the
-> points (like maybe the kernel version string in the EFI stub header) are
-> result of their internal discussion, which I presume to be especially
-> hard to change due to their particularly worrying corporate dynamics...
-I'm sorry that you haven't seen my reply, but as Xuerui said, I have
-replied to your review. :)
-Since you didn't reply to my answers again, I supposed that you
-consider "everything is OK". :)
-Now I plan to send V13, with the following changes:
-1, Remove kernel_version string in efistub;
-2, Remove the boardinfo knob in /sys/firmware/efi;
-3, Add a reference in the commit message to explain while we need a
-magic number [1].
-[1] https://lists.gnu.org/archive/html/grub-devel/2021-10/msg00215.html
+On 16/05/22 20:48, Krzysztof Kozlowski wrote:
+> On 16/05/2022 14:33, Kishon Vijay Abraham I wrote:
+>> Hi Krzysztof,
+>>
+>> On 28/04/22 11:48, Krzysztof Kozlowski wrote:
+>>> On 27/04/2022 09:27, Kishon Vijay Abraham I wrote:
+>>>> Update the PRUSS bindings for the PRUSSM instance present in
+>>>> AM625 SoC.
+>>>>
+>>>> Signed-off-by: Kishon Vijay Abraham I <kishon@ti.com>
+>>>> ---
+>>>>  Documentation/devicetree/bindings/soc/ti/ti,pruss.yaml | 1 +
+>>>>  1 file changed, 1 insertion(+)
+>>>>
+>>>> diff --git a/Documentation/devicetree/bindings/soc/ti/ti,pruss.yaml b/Documentation/devicetree/bindings/soc/ti/ti,pruss.yaml
+>>>> index 64461d432004..cf13e5179657 100644
+>>>> --- a/Documentation/devicetree/bindings/soc/ti/ti,pruss.yaml
+>>>> +++ b/Documentation/devicetree/bindings/soc/ti/ti,pruss.yaml
+>>>> @@ -69,6 +69,7 @@ properties:
+>>>>        - ti,am654-icssg   # for K3 AM65x SoC family
+>>>>        - ti,j721e-icssg   # for K3 J721E SoC family
+>>>>        - ti,am642-icssg   # for K3 AM64x SoC family
+>>>> +      - ti,am625-pruss   # for K3 AM62x SoC family
+>>>>  
+>>>
+>>> Looks like out of order (although for some reason before it was also
+>>> misordered...).
+>>
+>> These are really in the chronological order of the introduction of SoCs.
+>> Isn't that okay to have?
+> 
+> You mean order of release on the market of order of adding files here?
+> The first is ok, the latter would mean there is no order at all.
 
-Huacai
+I meant order of release to market. Anyways, I'll send a patch to change
+the order to alphabetic order.
 
->
-> But again, my point is that the userspace ABI in particular is *not*
-> rushed -- it has been brewing since v1 of the port which is already
-> several months ago, and multiple distro-building efforts are already
-> underway. We (LoongArch distro packagers) want to freeze the userspace
-> ABI so that many downstream efforts wouldn't be blocked by the merging
-> of kernel port.
->
-> As the boot protocol is technically not part of the userspace ABI that
-> toolchains care about, and we already know it'll be a rather
-> standards-compliant UEFI implementation even if this part gets dropped
-> for brewing one more cycle, would taking this part out work for you?
->
+Thanks,
+Kishon
