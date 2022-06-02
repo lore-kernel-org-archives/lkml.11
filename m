@@ -2,128 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FF4EC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 06:59:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3B7DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 07:10:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231526AbiFBG7t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 02:59:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53984 "EHLO
+        id S231617AbiFBHKs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 03:10:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231335AbiFBG7p (ORCPT
+        with ESMTP id S231205AbiFBHKo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 02:59:45 -0400
-Received: from relay12.mail.gandi.net (relay12.mail.gandi.net [IPv6:2001:4b98:dc4:8::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA9B024DE54;
-        Wed,  1 Jun 2022 23:59:40 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 9314B20000E;
-        Thu,  2 Jun 2022 06:59:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1654153179;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Ukpk2PhTNgnldCy67ZFRAl2tgnnTsdT1m3HaHzQ3lmU=;
-        b=TYqxujkmVKqU+VxmpJpCxk7SVMB0b6DXFe4sKxtH/hD3Y6fko286gmLEAZcAm0LAxOqAr9
-        QU/anKOonLufbm7E7DrcnjBPEBndSVbmWnIZ2BU139vl3nTPZTvbw/tIEF9bE0ct07L5rI
-        cIDmpAf5jb/u5Lf2CK4P4tlfxeBleDMUTq2Fl76cYxKMeHFs1iVjjlZA8hHGGc7ODs0Qez
-        jaJJCZYfh7HVUfzvn6mdn3P+lS4z7uGPvluCC1EnkBAG7ThHvgqIlLHgG6+xBzUrzyCNe6
-        1ng6MwmFwcb2t8vxMvZBtOrNAxgrdyYl/THFP5oKy3eWirnPxkHjKQxNM86MHg==
-Date:   Thu, 2 Jun 2022 08:58:28 +0200
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Tyrel Datwyler <tyreld@linux.ibm.com>
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Nathan Lynch <nathanl@linux.ibm.com>,
-        Laurent Dufour <ldufour@linux.ibm.com>,
-        Daniel Henrique Barboza <danielhb413@gmail.com>,
-        David Gibson <david@gibson.dropbear.id.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Hildenbrand <david@redhat.com>,
-        Ohhoon Kwon <ohoono.kwon@samsung.com>,
-        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
-        YueHaibing <yuehaibing@huawei.com>, devicetree@vger.kernel.org,
-        Steen Hegelund <steen.hegelund@microchip.com>,
-        linux-kernel@vger.kernel.org, Lizhi Hou <lizhi.hou@xilinx.com>,
-        Allan Nielsen <allan.nielsen@microchip.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        linuxppc-dev@lists.ozlabs.org,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: Re: [PATCH v2 2/4] of: dynamic: add of_property_alloc() and
- of_property_free()
-Message-ID: <20220602085828.2138554a@fixe.home>
-In-Reply-To: <4b92277e-5133-2362-8d3a-fa82b0c7a045@linux.ibm.com>
-References: <20220601081801.348571-1-clement.leger@bootlin.com>
-        <20220601081801.348571-3-clement.leger@bootlin.com>
-        <4b92277e-5133-2362-8d3a-fa82b0c7a045@linux.ibm.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
+        Thu, 2 Jun 2022 03:10:44 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C2823BBDA
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 00:10:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654153843; x=1685689843;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=XZsW2B7H+o5XWTJCx/TePFDSwcBCR7MzL4ujujBD1h8=;
+  b=l7RJqkzuLvttmnSuO1fakcMz4cQyCkiSqJfMEpvn7hCRW/zVU1tZ1+wT
+   4mdcn/D7pl2lg78HBiERaQl/YtXP0F3/tdGpmnNydhNzaHTgeItyG3tct
+   ig5U0rwLKEQoH6ppe30lP2EwPxu7y5nNe+a+N30LcAaOdWjwx3zxoA3l3
+   +iXpV7lx9Hhv50PlQC9GGpETL7IUQOC/YMD+C/iBESX8NBD65yrqzSx5m
+   JVmEv567xLXfjac3SaJzCEBByRK2ld6wMgXZS7OVvFMkkVY6rncn+CiST
+   +piBuDkBSkUcvA6FSJGzfcbqW2a05hMVYfSHdH2jSXFSMZF13o/UT2kUT
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10365"; a="263487320"
+X-IronPort-AV: E=Sophos;i="5.91,270,1647327600"; 
+   d="scan'208";a="263487320"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2022 00:10:42 -0700
+X-IronPort-AV: E=Sophos;i="5.91,270,1647327600"; 
+   d="scan'208";a="530440407"
+Received: from xsang-optiplex-9020.sh.intel.com (HELO xsang-OptiPlex-9020) ([10.239.159.143])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2022 00:10:40 -0700
+Date:   Thu, 2 Jun 2022 15:10:33 +0800
+From:   Oliver Sang <oliver.sang@intel.com>
+To:     John Ogness <john.ogness@linutronix.de>
+Cc:     Petr Mladek <pmladek@suse.com>,
+        LKML <linux-kernel@vger.kernel.org>, lkp@lists.01.org,
+        lkp@intel.com
+Subject: Re: [printk]  8e27473211: hwsim.ap_ft_pmf_bip_cmac_128.fail
+Message-ID: <20220602071033.GA27190@xsang-OptiPlex-9020>
+References: <20220531033052.GD17663@xsang-OptiPlex-9020>
+ <874k15n2jt.fsf@jogness.linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <874k15n2jt.fsf@jogness.linutronix.de>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Wed, 1 Jun 2022 15:32:29 -0700,
-Tyrel Datwyler <tyreld@linux.ibm.com> a =C3=A9crit :
+Hi John Ogness,
 
-> >  /**
-> > - * __of_prop_dup - Copy a property dynamically.
-> > - * @prop:	Property to copy
-> > + * of_property_free - Free a property allocated dynamically.
-> > + * @prop:	Property to be freed
-> > + */
-> > +void of_property_free(const struct property *prop)
-> > +{
-> > +	if (!of_property_check_flag(prop, OF_DYNAMIC))
-> > +		return;
-> > + =20
->=20
-> This looks wrong to me. From what I understand the value data is allocate=
-d as
-> trailing memory that is part of the property allocation itself. (ie. prop=
- =3D
-> kzalloc(sizeof(*prop) + len, allocflags)). So, kfree(prop) should also ta=
-ke care
-> of the trailing value data. Calling kfree(prop->value) is bogus since
-> prop->value wasn't dynamically allocated on its own.
+On Tue, May 31, 2022 at 05:35:26PM +0206, John Ogness wrote:
+> Hi Oliver,
+> 
+> I am having great difficulties trying to reproduce this test. It seems I
+> need to setup real hardware with multiple access points. Can you point
+> me to some detailed documentation about preparing this test? Thanks.
 
-kfree(prop->value) is only called if the value is not the trailing data
-of the property so I don't see what is wrong there. In that case, only
-kfree(prop) is called.
+we got this test suite from https://github.com/bcopeland/wmediumd. there is
+a detail README there, hope it would be helpful to you.
 
->=20
-> Also, this condition will always fail. You explicitly set prop->value =3D=
- prop + 1
-> in alloc.
+_but_, since you mentioned it's difficult to reproduce, we did more tests,
+and found this could be platform specific.
 
-The user that did allocated the property might want to provide its own
-"value". In that case, prop->value would be overwritten by the user
-allocated value and thus the check would be true, hence calling
-kfree(prop->value).
+first, we queued more jobs to platform from which the original report was made,
 
->=20
-> Maybe I need to go back and look at v1 again.
->=20
-> -Tyrel
->=20
-> > +	if (prop->value !=3D prop + 1)
-> > +		kfree(prop->value);
-> > +
-> > +	kfree(prop->name);
-> > +	kfree(prop);
-> > +}
-> > +EXPORT_SYMBOL(of_property_free);
-> > +
+model: Skylake
+nr_cpu: 4
+memory: 32G
+brand: Intel(R) Core(TM) i5-6500 CPU @ 3.20GHz
+
+and confirmed the parent is still clean, and tests still failed on 8e27473211
+
+========================================================================================
+compiler/kconfig/rootfs/tbox_group/test/testcase/ucode:
+  gcc-11/x86_64-rhel-8.3-func/debian-10.4-x86_64-20200603.cgz/lkp-skl-d03/group-18/hwsim/0xec
+
+09c5ba0aa2fcfdad 8e274732115f63c1d0913628443
+---------------- ---------------------------
+       fail:runs  %reproduction    fail:runs
+           |             |             |
+           :10         190%          19:20    hwsim.ap_ft_eap_cui.fail
+         10:10         -90%           1:20    hwsim.ap_ft_eap_cui.pass  <-- just saw one pass for 8e27473211  which seems random
+           :10         200%          20:20    hwsim.ap_ft_many.fail
+         10:10        -100%            :20    hwsim.ap_ft_many.pass
+           :10         200%          20:20    hwsim.ap_ft_pmf_bip_cmac_128.fail
+         10:10        -100%            :20    hwsim.ap_ft_pmf_bip_cmac_128.pass
 
 
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
+secondly, we tested on another very similar Skylake desktop platform, confirmed
+similar results:
+
+=========================================================================================
+compiler/kconfig/rootfs/tbox_group/test/testcase/ucode:
+  gcc-11/x86_64-rhel-8.3-func/debian-10.4-x86_64-20200603.cgz/lkp-skl-d05/group-18/hwsim/0xec
+
+09c5ba0aa2fcfdad 8e274732115f63c1d0913628443
+---------------- ---------------------------
+       fail:runs  %reproduction    fail:runs
+           |             |             |
+           :3          100%           3:3     hwsim.ap_ft_eap_cui.fail
+          3:3         -100%            :3     hwsim.ap_ft_eap_cui.pass
+           :3          100%           3:3     hwsim.ap_ft_many.fail
+          3:3         -100%            :3     hwsim.ap_ft_many.pass
+           :3          100%           3:3     hwsim.ap_ft_pmf_bip_cmac_128.fail
+          3:3         -100%            :3     hwsim.ap_ft_pmf_bip_cmac_128.pass
+
+
+_but_, when we tested on one Ivy Bridge desktop platform:
+
+model: Ivy Bridge
+nr_node: 1
+nr_cpu: 4
+memory: 8G
+brand: Intel(R) Core(TM) i3-3220 CPU @ 3.30GHz
+
+we found ap_ft_eap_cui/ap_ft_many/ap_ft_pmf_bip_cmac_128 can pass on both
+8e27473211 and its parent:
+
+=========================================================================================
+compiler/kconfig/rootfs/tbox_group/test/testcase/ucode:
+  gcc-11/x86_64-rhel-8.3-func/debian-10.4-x86_64-20200603.cgz/lkp-ivb-d02/group-18/hwsim/0x21
+
+09c5ba0aa2fcfdad 8e274732115f63c1d0913628443
+---------------- ---------------------------
+       fail:runs  %reproduction    fail:runs
+           |             |             |
+          3:3            0%           3:3     hwsim.ap_ft_eap_cui.pass
+           :3           33%           1:3     hwsim.ap_ft_many.fail  <-- here is a fail, but maybe random
+          3:3          -33%           2:3     hwsim.ap_ft_many.pass
+          3:3            0%           3:3     hwsim.ap_ft_pmf_bip_cmac_128.pass
+
+
+from above, the issue could be reproduced persistently on Skylake desktop
+platform, but not surely for others.
+
+hope these information could give you some hints and please request us for
+further tests if you have some ideas or doubts. Thanks a lot!
+
+> 
+> John Ogness
+> 
+> On 2022-05-31, kernel test robot <oliver.sang@intel.com> wrote:
+> > (please be noted we reported
+> > "[printk]  8e27473211: hwsim.ap_ft_pmf_bip_gmac_256.fail"
+> > on
+> > https://lore.kernel.org/all/20220430143056.GA27004@xsang-OptiPlex-9020/
+> > when this commit is on linux-next/master
+> > now we noticed there are other hwsim tests failures while
+> > ap_ft_pmf_bip_gmac_256 problem is still existing, after this commit is on
+> > mainline now.
+> > FYI)
