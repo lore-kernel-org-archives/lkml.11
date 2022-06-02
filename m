@@ -2,101 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40967C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 08:25:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE9A6C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 08:25:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230200AbiFBIZS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 04:25:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43390 "EHLO
+        id S232260AbiFBIZY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 04:25:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231533AbiFBIZP (ORCPT
+        with ESMTP id S231558AbiFBIZT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 04:25:15 -0400
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93ECB16581
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 01:25:13 -0700 (PDT)
-Received: by mail-pf1-x42a.google.com with SMTP id u2so4163510pfc.2
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 01:25:13 -0700 (PDT)
+        Thu, 2 Jun 2022 04:25:19 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74E4616581;
+        Thu,  2 Jun 2022 01:25:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=x2NGVK3ecMQmaSm/x/Ltq/st8dTSwNqY+rsrQ93ARxg=;
-        b=jc6TkZPdF34qvkPaOsthSV7mmEZvVf2sOSBCZE0TIrNEZQ0qLy0uFRR2GN0uwmVGKM
-         Y9FSd486m0gUl7cG6gJiMTxfjpzF5gLQe03S2ni4wyQN11A4eqqG53a3F5PxR8CMun5E
-         XiBcFzESnMdpb8EiQ8S3z72pu4lz122VAyWoC7CoBKJTSP373LAotX5OH0EQeFRt9LdZ
-         Bx1n/fLCgBzSw9DHz/Jd5fxq8CLkZRYIof8CA3lq870EXSdQzUf+hPjPcqFiIrzB5RvZ
-         Z2uFpZwT1zOREgraxUWrtCFiiGqfwyAfSRqdpl1asAS+n2xKgL8QWVG4c3uO9izlCsl9
-         pDFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=x2NGVK3ecMQmaSm/x/Ltq/st8dTSwNqY+rsrQ93ARxg=;
-        b=D+wcR+FzMd9cN5LItqWbrE3jx2zpupXIX/AG1g8nwRUheE0LfiJQJeGuN3SSC9vV8p
-         AQeUrz8F/RTJd4a/VnhAhIsRuqQjVt8mDRTTJnYIOMTRktyciyeDBBrs5+A/8I6kYdiF
-         jEjzCuElBoiA+XOAUapIsMoBvr9y5+0LaWAYQ6l6vR2Ui8WO4qhMZ+nXu5JYU0/eyXbG
-         gHyPdJkPGmdtL5g2w8sDd3bUbyE1ficOndHO4pKYiOI7vX9HBwKvfsL+w61+nCmGculW
-         8LfKUTneLEA7zwMnzU3yjTR7OLjI2Zh3ORBGc9fQypAYM8dtd9nXFpU+Otz/bGvZhtT+
-         iaMw==
-X-Gm-Message-State: AOAM530ZE1eOFTY/r6KJ+vuBCP/zxsfW0JMTVeHZ2/rC9KxCkjZ3j7At
-        vvlw2JnCLiEi1I2jeD+lhl0zO+VHPNLXqLD/LJA=
-X-Google-Smtp-Source: ABdhPJxdaxZfVyttIyFl2Xtrm0P2nA2t98lJywz/DUY7UhvNHVye505VrOw5VIzkRXBl6bMh8PTdM2L7cWgK0/xxPWQ=
-X-Received: by 2002:a63:8449:0:b0:3fc:85a5:5b69 with SMTP id
- k70-20020a638449000000b003fc85a55b69mr3191172pgd.261.1654158313021; Thu, 02
- Jun 2022 01:25:13 -0700 (PDT)
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1654158317; x=1685694317;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=Uclr9TNqmmdXvvT/NbtqpYkZ+jeCIKQ2HEPc798ulwA=;
+  b=kdVmN3EnlNaz9Bujc8DHYRdvf7iInL3KSuk8AILjQam1TvDe7Jty9509
+   b+ITb9v1mwsoq9uCWmogX+wlZ1u0cm6WYMf+9o7ro0xJ65/SVhx3kw7Zw
+   eCc2AcU3yV9qJJgTHkoKtF388XrGw/He8kch3tlMRNnFTNeXbTRskgusD
+   k=;
+Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 02 Jun 2022 01:25:17 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2022 01:25:16 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Thu, 2 Jun 2022 01:25:16 -0700
+Received: from hu-kriskura-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Thu, 2 Jun 2022 01:25:09 -0700
+From:   Krishna Kurapati <quic_kriskura@quicinc.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Doug Anderson <dianders@chromium.org>,
+        "Matthias Kaehlcke" <mka@chromium.org>,
+        Mathias Nyman <mathias.nyman@intel.com>
+CC:     <devicetree@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        <linux-usb@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-pm@vger.kernel.org>, <quic_pkondeti@quicinc.com>,
+        <quic_ppratap@quicinc.com>, <quic_vpulyala@quicinc.com>,
+        Sandeep Maheswaram <quic_c_sanm@quicinc.com>,
+        Krishna Kurapati <quic_kriskura@quicinc.com>
+Subject: [PATCH v20 2/5] usb: dwc3: core: Host wake up support from system suspend
+Date:   Thu, 2 Jun 2022 13:54:34 +0530
+Message-ID: <1654158277-12921-3-git-send-email-quic_kriskura@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1654158277-12921-1-git-send-email-quic_kriskura@quicinc.com>
+References: <1654158277-12921-1-git-send-email-quic_kriskura@quicinc.com>
 MIME-Version: 1.0
-References: <tencent_E15665F62AAE22B108A00645874D3F53CF07@qq.com>
-In-Reply-To: <tencent_E15665F62AAE22B108A00645874D3F53CF07@qq.com>
-From:   Patrik Jakobsson <patrik.r.jakobsson@gmail.com>
-Date:   Thu, 2 Jun 2022 10:25:01 +0200
-Message-ID: <CAMeQTsYNQ6_zfVKLS5pdA2q4s6UnHVWNmyG2ijGDnmDnzzetqw@mail.gmail.com>
-Subject: Re: [PATCH 2/5] drm/gma500: Fix spelling typo in comment
-To:     1064094935@qq.com
-Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        pengfuyuan <pengfuyuan@kylinos.cn>, k2ci <kernel-bot@kylinos.cn>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 27, 2022 at 5:42 AM <1064094935@qq.com> wrote:
->
-> From: pengfuyuan <pengfuyuan@kylinos.cn>
->
-> Fix spelling typo in comment.
->
-> Reported-by: k2ci <kernel-bot@kylinos.cn>
-> Signed-off-by: pengfuyuan <pengfuyuan@kylinos.cn>
-> ---
->  drivers/gpu/drm/gma500/psb_intel_sdvo_regs.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/gpu/drm/gma500/psb_intel_sdvo_regs.h b/drivers/gpu/drm/gma500/psb_intel_sdvo_regs.h
-> index 600e79744d68..7efbd7c45c90 100644
-> --- a/drivers/gpu/drm/gma500/psb_intel_sdvo_regs.h
-> +++ b/drivers/gpu/drm/gma500/psb_intel_sdvo_regs.h
-> @@ -371,7 +371,7 @@ struct psb_intel_sdvo_tv_format {
->
->  #define SDVO_CMD_SET_TV_FORMAT                         0x29
->
-> -/** Returns the resolutiosn that can be used with the given TV format */
-> +/** Returns the resolution that can be used with the given TV format */
+From: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
 
-Hi,
-Can you also fix the /** at the start of the comment. One patch for
-both changes is fine.
+Check wakeup-source property for dwc3 core node to set the
+wakeup capability. Drop the device_init_wakeup call from
+runtime suspend and resume.
 
--Patrik
+If the dwc3 is wakeup capable, don't power down the USB PHY(s).
+The glue drivers are expected to take care of configuring the
+additional wakeup settings if needed based on the dwc3 wakeup
+capability status. In some SOC designs, powering off the PHY is
+resulting in higher leakage, so this patch save power on such boards.
 
->  #define SDVO_CMD_GET_SDTV_RESOLUTION_SUPPORT           0x83
->  struct psb_intel_sdvo_sdtv_resolution_request {
->      unsigned int ntsc_m:1;
-> --
-> 2.25.1
->
->
-> No virus found
->                 Checked by Hillstone Network AntiVirus
+Signed-off-by: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+Signed-off-by: Krishna Kurapati <quic_kriskura@quicinc.com>
+Reviewed-by: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
+---
+ drivers/usb/dwc3/core.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
+index e027c04..b99d3c2 100644
+--- a/drivers/usb/dwc3/core.c
++++ b/drivers/usb/dwc3/core.c
+@@ -1787,6 +1787,7 @@ static int dwc3_probe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, dwc);
+ 	dwc3_cache_hwparams(dwc);
++	device_init_wakeup(&pdev->dev, of_property_read_bool(dev->of_node, "wakeup-source"));
+ 
+ 	spin_lock_init(&dwc->lock);
+ 	mutex_init(&dwc->mutex);
+@@ -1948,7 +1949,7 @@ static int dwc3_suspend_common(struct dwc3 *dwc, pm_message_t msg)
+ 		dwc3_core_exit(dwc);
+ 		break;
+ 	case DWC3_GCTL_PRTCAP_HOST:
+-		if (!PMSG_IS_AUTO(msg)) {
++		if (!PMSG_IS_AUTO(msg) && !device_can_wakeup(dwc->dev)) {
+ 			dwc3_core_exit(dwc);
+ 			break;
+ 		}
+@@ -2009,7 +2010,7 @@ static int dwc3_resume_common(struct dwc3 *dwc, pm_message_t msg)
+ 		spin_unlock_irqrestore(&dwc->lock, flags);
+ 		break;
+ 	case DWC3_GCTL_PRTCAP_HOST:
+-		if (!PMSG_IS_AUTO(msg)) {
++		if (!PMSG_IS_AUTO(msg) && !device_can_wakeup(dwc->dev)) {
+ 			ret = dwc3_core_init_for_resume(dwc);
+ 			if (ret)
+ 				return ret;
+@@ -2086,8 +2087,6 @@ static int dwc3_runtime_suspend(struct device *dev)
+ 	if (ret)
+ 		return ret;
+ 
+-	device_init_wakeup(dev, true);
+-
+ 	return 0;
+ }
+ 
+@@ -2096,8 +2095,6 @@ static int dwc3_runtime_resume(struct device *dev)
+ 	struct dwc3     *dwc = dev_get_drvdata(dev);
+ 	int		ret;
+ 
+-	device_init_wakeup(dev, false);
+-
+ 	ret = dwc3_resume_common(dwc, PMSG_AUTO_RESUME);
+ 	if (ret)
+ 		return ret;
+-- 
+2.7.4
+
