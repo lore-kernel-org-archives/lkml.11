@@ -2,153 +2,267 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C143BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 10:57:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD247C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 11:05:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234025AbiFBK5x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 06:57:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36344 "EHLO
+        id S234026AbiFBLFm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 07:05:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234003AbiFBK5o (ORCPT
+        with ESMTP id S232354AbiFBLFk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 06:57:44 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DEB020B14C
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 03:57:40 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id l30so7214778lfj.3
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 03:57:40 -0700 (PDT)
+        Thu, 2 Jun 2022 07:05:40 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41B262997A1;
+        Thu,  2 Jun 2022 04:05:39 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id o6-20020a17090a0a0600b001e2c6566046so9069741pjo.0;
+        Thu, 02 Jun 2022 04:05:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=x+CytCKlX79rhtBNDGo+eN/Csfz4tGbSW706glfcV3s=;
-        b=IrBYH2atiRJTij4OLkL2McNzaoMR3RqF5IQNxPWSS4MKmKEZwVfo766LNbSjF5dRWW
-         cXFMBvyydlUCOY5FUNClP3TU0KNiwEN3SZzoW/65g1Pm+DmVX3C8nvtlRiP3KA7teXx6
-         ThGTHny9ze7dy+BMT4LA6doHWH7JqDtK33XtP2NkYcyLx0NC/nEI5L89L4ZSs0/CXrct
-         CcTH8POG8oZpMV8ORMcHbE/H7LriMVrPMKQ4M+UJjJABi9RQ8a3bHWLowlT+KQqHYC4z
-         EyW1W7L5bVRmR5ijb7kU/SlZMCNH572BPtAKMyOEGJd6xN6Wz/gBnbVK5UrRQSwpE1mk
-         KnLQ==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ot7WIeiKTGQtC++IcJ6ZuEJK/3LcqAZnTEywxnlnHF0=;
+        b=e7MuQo9sEQki55DGkvGfnRjLVZOGnr09P9w0X6mdHMZKowCsh1udYr9ng35NdPxP9A
+         hKrHow+xhzjnTdwUQCeKJObDALkuQA4LOZdyIeG6K6Lr6ISW4mGrUZ1RV9gcFZlO/CiC
+         rDdPfIKBpfGO+rwSHL8b8QbC35lLQk+siHWvZZG1UJb2LGgHi/2xbuf1u9YBSV6qqZ6i
+         HwOr+daUpaHMStZZIV4cXl93jupYMI0nChRlQhDMwVosyNBtGOWx4ErNqGpachE01SOd
+         7UTPO2vfAGKE57lccI8flB/UJTAlFSTRZq3gHIZ9T5qoZSCaatvDFxS2yjW8V4jUXfBs
+         s4Lg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=x+CytCKlX79rhtBNDGo+eN/Csfz4tGbSW706glfcV3s=;
-        b=VgdK/GxZdSo3YVNeKxurFa3fBOzyOwinFSPuo4DOGFMSCfNWxTFPEmQtm1dJFJ+Kmk
-         F0hJghdJ4C4T/64OH6Ng84szt/wlClitLWgXGICCkP0cslc2wKCPvHK7ZuUQmo1XNqto
-         Qt3995JkE8tInlUvzvo/FmjwD9OvyJuDj0I60jdYOriOploanjzR0LQyr7GPho9jZiso
-         YHMQM2xQJ/xwRti6OUn1Gket61Uw4C8tP6IynjeIoHdjMS9tkFbNQVoVoeOqQUAv9TRk
-         cis5PxCvfQw/C4y4FHXge5z4+NoTz7hF6EuAt2m0Z6/7prw+M9/+1y+hkrzTCX9lIztE
-         adbQ==
-X-Gm-Message-State: AOAM532feXVYBtT/0Fy4PkA1I4cAfE73w17ug5H+TlpJCynVsMggigKH
-        DBYLQ1GvnAtDNP0Yz4JK1PmCnpLldsNdYO/JGvBDzw==
-X-Google-Smtp-Source: ABdhPJyRW4SMizmg/2yd0bFF1lI+Tau+09O/qHPkI3ruuPazvFnilXmy/61Dibd6p0qtuaD+W+P4LBZ7Y/pFJQAK4jA=
-X-Received: by 2002:a05:6512:1156:b0:478:79b1:583c with SMTP id
- m22-20020a056512115600b0047879b1583cmr3211435lfg.206.1654167458543; Thu, 02
- Jun 2022 03:57:38 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ot7WIeiKTGQtC++IcJ6ZuEJK/3LcqAZnTEywxnlnHF0=;
+        b=7O2g7wcOKW3mUJPfeqA6Tp5g4M1bQLdg6AvThaEqh1yiUm9S1hmzbWD70kbwqL7xZn
+         uoonS0tb4MpEhxCSVE1X/Qu5IRNFa/1OgoWxYpocJJoqJNlDkUySOztPrAezYfCL5+pU
+         pBEhpYzUYbBDAgTO1ik1c+iBjV2mHC0XVYPvXuGpXSyczP8DZc9Cz3En1BXmlap873ci
+         ZtxNhtAK0hkbuMsbBordfXQReaPrScjXTxjMxjG2ivgwyrCpaxuTdp76wKdAioRE3N1n
+         e95QsPDQHZtVZ4cJ5V4LoXY+LMn8BEjdKyE8HTAaY6hVUriS31EdwKaSKm6BnfGgdr9A
+         dICQ==
+X-Gm-Message-State: AOAM532ECEQK9+VbIgt1ywpmZQKZs1IUxFYVW/3pIhp7dg9B4mf6szNy
+        4HwsptffYB2jzFXLzUDBgXg=
+X-Google-Smtp-Source: ABdhPJzs28+OeblhoOXsNlCb201ilbsPe7iVTa/FahKnwnmuRDm7Ju1TcDKVSBFpJpTtHjQWwDQFMw==
+X-Received: by 2002:a17:902:d2c2:b0:164:1047:5438 with SMTP id n2-20020a170902d2c200b0016410475438mr4375254plc.18.1654167938705;
+        Thu, 02 Jun 2022 04:05:38 -0700 (PDT)
+Received: from ubuntu-Virtual-Machine.corp.microsoft.com ([2001:4898:80e8:b:75c6:1ee6:fd1b:7d08])
+        by smtp.gmail.com with ESMTPSA id s4-20020a655844000000b003fc8ce7e30csm3034148pgr.68.2022.06.02.04.05.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Jun 2022 04:05:37 -0700 (PDT)
+From:   Tianyu Lan <ltykernel@gmail.com>
+To:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, hpa@zytor.com, michael.h.kelley@microsoft.com
+Cc:     Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+        vkuznets@redhat.com, parri.andrea@gmail.com,
+        thomas.lendacky@amd.com
+Subject: [PATCH V2] x86/Hyper-V: Add SEV negotiate protocol support in Isolation VM
+Date:   Thu,  2 Jun 2022 07:05:07 -0400
+Message-Id: <20220602110507.243083-1-ltykernel@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <000000000000044cc505e0741a4b@google.com>
-In-Reply-To: <000000000000044cc505e0741a4b@google.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Thu, 2 Jun 2022 12:57:27 +0200
-Message-ID: <CACT4Y+ay0SQiiu2MwanpYEGmybHZc-nuqOxWOz1hC0PgLRRhuQ@mail.gmail.com>
-Subject: Re: [syzbot] riscv/fixes boot error: BUG: soft lockup in corrupted
-To:     syzbot <syzbot+1d1952c211a38ac43f10@syzkaller.appspotmail.com>
-Cc:     aou@eecs.berkeley.edu, axboe@kernel.dk, justin@coraid.com,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org, palmer@dabbelt.com,
-        paul.walmsley@sifive.com, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2 Jun 2022 at 12:02, syzbot
-<syzbot+1d1952c211a38ac43f10@syzkaller.appspotmail.com> wrote:
->
-> Hello,
->
-> syzbot found the following issue on:
->
-> HEAD commit:    c932edeaf6d6 riscv: dts: microchip: fix gpio1 reg property..
-> git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git fixes
-> console output: https://syzkaller.appspot.com/x/log.txt?x=14de11edf00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=aa6b5702bdf14a17
-> dashboard link: https://syzkaller.appspot.com/bug?extid=1d1952c211a38ac43f10
-> compiler:       riscv64-linux-gnu-gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> userspace arch: riscv64
->
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+1d1952c211a38ac43f10@syzkaller.appspotmail.com
+From: Tianyu Lan <Tianyu.Lan@microsoft.com>
 
+Hyper-V Isolation VM current code uses sev_es_ghcb_hv_call()
+to read/write MSR via GHCB page and depends on the sev code.
+This may cause regression when sev code changes interface
+design.
 
-This is the issue with riscv command line length we discussed in the
-other thread:
-https://lore.kernel.org/all/CACT4Y+bP+U2Co67SJG4qri=qHqCk38cq_JwGmo7m0s-8hCF8ww@mail.gmail.com/
+The latest SEV-ES code requires to negotiate GHCB version before
+reading/writing MSR via GHCB page and sev_es_ghcb_hv_call() doesn't
+work for Hyper-V Isolation VM. Add Hyper-V ghcb related implementation
+to decouple SEV and Hyper-V code. Negotiate GHCB version in the
+hyperv_init_ghcb() and use the version to communicate with Hyper-V
+in the ghcb hv call function.
 
+Fixes: 2ea29c5abbc2 ("x86/sev: Save the negotiated GHCB version")
+Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
+---
+ arch/x86/hyperv/hv_init.c       |  6 +++
+ arch/x86/hyperv/ivm.c           | 88 ++++++++++++++++++++++++++++++---
+ arch/x86/include/asm/mshyperv.h |  4 ++
+ 3 files changed, 92 insertions(+), 6 deletions(-)
 
-> watchdog: BUG: soft lockup - CPU#0 stuck for 23s! [swapper/0:1]
-> Modules linked in:
-> irq event stamp: 410297
-> hardirqs last  enabled at (410296): [<ffffffff8000ee74>] __trace_hardirqs_on+0x18/0x20 arch/riscv/kernel/trace_irq.c:19
-> hardirqs last disabled at (410297): [<ffffffff8000ee94>] __trace_hardirqs_off+0x18/0x20 arch/riscv/kernel/trace_irq.c:25
-> softirqs last  enabled at (405886): [<ffffffff83207a08>] softirq_handle_end kernel/softirq.c:401 [inline]
-> softirqs last  enabled at (405886): [<ffffffff83207a08>] __do_softirq+0x618/0x8fc kernel/softirq.c:587
-> softirqs last disabled at (405891): [<ffffffff8006164a>] do_softirq_own_stack include/asm-generic/softirq_stack.h:10 [inline]
-> softirqs last disabled at (405891): [<ffffffff8006164a>] invoke_softirq kernel/softirq.c:439 [inline]
-> softirqs last disabled at (405891): [<ffffffff8006164a>] __irq_exit_rcu+0x142/0x1f8 kernel/softirq.c:637
-> CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.18.0-rc1-syzkaller #0
-> Hardware name: riscv-virtio,qemu (DT)
-> epc : arch_static_branch arch/riscv/include/asm/jump_label.h:20 [inline]
-> epc : kfence_alloc include/linux/kfence.h:120 [inline]
-> epc : slab_alloc_node mm/slub.c:3135 [inline]
-> epc : kmem_cache_alloc_node+0xa0/0x3c6 mm/slub.c:3267
->  ra : slab_pre_alloc_hook mm/slab.h:724 [inline]
->  ra : slab_alloc_node mm/slub.c:3131 [inline]
->  ra : kmem_cache_alloc_node+0x66/0x3c6 mm/slub.c:3267
-> epc : ffffffff8047df56 ra : ffffffff8047df1c sp : ff200000002273b0
->  gp : ffffffff85a76440 tp : ff60000007430000 t0 : 0000000000046000
->  t1 : ffebffff014d10b7 t2 : ffffffff80668f62 s0 : ff20000000227450
->  s1 : ff600000075a93c0 a0 : 0000000000000000 a1 : 0000000000000007
->  a2 : 1ffffffff09c876c a3 : ffffffff80bec434 a4 : 0000000000000000
->  a5 : 0000000000000000 a6 : 0000000000f00000 a7 : ff6000000a6885bb
->  s2 : 0000000000000a20 s3 : 0000000000000000 s4 : 0000000000000a20
->  s5 : ffffffffffffffff s6 : ffffffff8271f756 s7 : ffffffff85a9c780
->  s8 : 00000000000000e8 s9 : ffffffff85a7c2c0 s10: 00000000000000ff
->  s11: ffffffffffffa288 t3 : fffffffff3f3f300 t4 : ffebffff014d10b7
->  t5 : ffebffff014d10b8 t6 : ff6000001239fc00
-> status: 0000000000000120 badaddr: 0000000000000000 cause: 8000000000000005
-> [<ffffffff8271f756>] __alloc_skb+0x234/0x2e4 net/core/skbuff.c:414
-> [<ffffffff81a42954>] alloc_skb include/linux/skbuff.h:1300 [inline]
-> [<ffffffff81a42954>] new_skb+0x2c/0xcc drivers/block/aoe/aoecmd.c:66
-> [<ffffffff81a48ab2>] aoecmd_cfg_pkts drivers/block/aoe/aoecmd.c:425 [inline]
-> [<ffffffff81a48ab2>] aoecmd_cfg+0x1f6/0x5c6 drivers/block/aoe/aoecmd.c:1362
-> [<ffffffff81a4bdfc>] discover_timer+0x4a/0x54 drivers/block/aoe/aoemain.c:24
-> [<ffffffff8016c084>] call_timer_fn+0x164/0x694 kernel/time/timer.c:1421
-> [<ffffffff8016ca9a>] expire_timers kernel/time/timer.c:1466 [inline]
-> [<ffffffff8016ca9a>] __run_timers.part.0+0x4e6/0x76e kernel/time/timer.c:1734
-> [<ffffffff8016cda8>] __run_timers kernel/time/timer.c:1715 [inline]
-> [<ffffffff8016cda8>] run_timer_softirq+0x86/0x100 kernel/time/timer.c:1747
-> [<ffffffff83207664>] __do_softirq+0x274/0x8fc kernel/softirq.c:558
-> [<ffffffff8006164a>] do_softirq_own_stack include/asm-generic/softirq_stack.h:10 [inline]
-> [<ffffffff8006164a>] invoke_softirq kernel/softirq.c:439 [inline]
-> [<ffffffff8006164a>] __irq_exit_rcu+0x142/0x1f8 kernel/softirq.c:637
-> [<ffffffff80061958>] irq_exit+0x10/0x7a kernel/softirq.c:661
-> [<ffffffff831f7c8e>] generic_handle_arch_irq+0x48/0x54 kernel/irq/handle.c:240
-> [<ffffffff800057b2>] ret_from_exception+0x0/0x10
-> [<ffffffff8047df1c>] slab_pre_alloc_hook mm/slab.h:724 [inline]
-> [<ffffffff8047df1c>] slab_alloc_node mm/slub.c:3131 [inline]
-> [<ffffffff8047df1c>] kmem_cache_alloc_node+0x66/0x3c6 mm/slub.c:3267
->
->
-> ---
-> This report is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
->
-> syzbot will keep track of this issue. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
->
-> --
-> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/000000000000044cc505e0741a4b%40google.com.
+diff --git a/arch/x86/hyperv/hv_init.c b/arch/x86/hyperv/hv_init.c
+index 8b392b6b7b93..40b6874accdb 100644
+--- a/arch/x86/hyperv/hv_init.c
++++ b/arch/x86/hyperv/hv_init.c
+@@ -29,6 +29,7 @@
+ #include <clocksource/hyperv_timer.h>
+ #include <linux/highmem.h>
+ #include <linux/swiotlb.h>
++#include <asm/sev.h>
+ 
+ int hyperv_init_cpuhp;
+ u64 hv_current_partition_id = ~0ull;
+@@ -70,6 +71,11 @@ static int hyperv_init_ghcb(void)
+ 	ghcb_base = (void **)this_cpu_ptr(hv_ghcb_pg);
+ 	*ghcb_base = ghcb_va;
+ 
++	/* Negotiate GHCB Version. */
++	if (!hv_ghcb_negotiate_protocol())
++		hv_ghcb_terminate(SEV_TERM_SET_GEN,
++				  GHCB_SEV_ES_PROT_UNSUPPORTED);
++
+ 	return 0;
+ }
+ 
+diff --git a/arch/x86/hyperv/ivm.c b/arch/x86/hyperv/ivm.c
+index 2b994117581e..4b67c4d7c4f5 100644
+--- a/arch/x86/hyperv/ivm.c
++++ b/arch/x86/hyperv/ivm.c
+@@ -53,6 +53,8 @@ union hv_ghcb {
+ 	} hypercall;
+ } __packed __aligned(HV_HYP_PAGE_SIZE);
+ 
++static u16 ghcb_version __ro_after_init;
++
+ u64 hv_ghcb_hypercall(u64 control, void *input, void *output, u32 input_size)
+ {
+ 	union hv_ghcb *hv_ghcb;
+@@ -96,12 +98,89 @@ u64 hv_ghcb_hypercall(u64 control, void *input, void *output, u32 input_size)
+ 	return status;
+ }
+ 
++static inline u64 rd_ghcb_msr(void)
++{
++	return __rdmsr(MSR_AMD64_SEV_ES_GHCB);
++}
++
++static inline void wr_ghcb_msr(u64 val)
++{
++	u32 low, high;
++
++	low  = (u32)(val);
++	high = (u32)(val >> 32);
++
++	native_wrmsr(MSR_AMD64_SEV_ES_GHCB, low, high);
++}
++
++static enum es_result ghcb_hv_call(struct ghcb *ghcb, u64 exit_code,
++				   u64 exit_info_1, u64 exit_info_2)
++{
++	/* Fill in protocol and format specifiers */
++	ghcb->protocol_version = ghcb_version;
++	ghcb->ghcb_usage       = GHCB_DEFAULT_USAGE;
++
++	ghcb_set_sw_exit_code(ghcb, exit_code);
++	ghcb_set_sw_exit_info_1(ghcb, exit_info_1);
++	ghcb_set_sw_exit_info_2(ghcb, exit_info_2);
++
++	VMGEXIT();
++
++	if (ghcb->save.sw_exit_info_1 & GENMASK_ULL(31, 0))
++		return ES_VMM_ERROR;
++	else
++		return ES_OK;
++}
++
++void hv_ghcb_terminate(unsigned int set, unsigned int reason)
++{
++	u64 val = GHCB_MSR_TERM_REQ;
++
++	/* Tell the hypervisor what went wrong. */
++	val |= GHCB_SEV_TERM_REASON(set, reason);
++
++	/* Request Guest Termination from Hypvervisor */
++	wr_ghcb_msr(val);
++	VMGEXIT();
++
++	while (true)
++		asm volatile("hlt\n" : : : "memory");
++}
++
++bool hv_ghcb_negotiate_protocol(void)
++{
++	u64 ghcb_gpa;
++	u64 val;
++
++	/* Save ghcb page gpa. */
++	ghcb_gpa = rd_ghcb_msr();
++
++	/* Do the GHCB protocol version negotiation */
++	wr_ghcb_msr(GHCB_MSR_SEV_INFO_REQ);
++	VMGEXIT();
++	val = rd_ghcb_msr();
++
++	if (GHCB_MSR_INFO(val) != GHCB_MSR_SEV_INFO_RESP)
++		return false;
++
++	if (GHCB_MSR_PROTO_MAX(val) < GHCB_PROTOCOL_MIN ||
++	    GHCB_MSR_PROTO_MIN(val) > GHCB_PROTOCOL_MAX)
++		return false;
++
++	ghcb_version = min_t(size_t, GHCB_MSR_PROTO_MAX(val), GHCB_PROTOCOL_MAX);
++
++	/* Write ghcb page back after negotiating protocol. */
++	wr_ghcb_msr(ghcb_gpa);
++	VMGEXIT();
++
++	return true;
++}
++
+ void hv_ghcb_msr_write(u64 msr, u64 value)
+ {
+ 	union hv_ghcb *hv_ghcb;
+ 	void **ghcb_base;
+ 	unsigned long flags;
+-	struct es_em_ctxt ctxt;
+ 
+ 	if (!hv_ghcb_pg)
+ 		return;
+@@ -120,8 +199,7 @@ void hv_ghcb_msr_write(u64 msr, u64 value)
+ 	ghcb_set_rax(&hv_ghcb->ghcb, lower_32_bits(value));
+ 	ghcb_set_rdx(&hv_ghcb->ghcb, upper_32_bits(value));
+ 
+-	if (sev_es_ghcb_hv_call(&hv_ghcb->ghcb, false, &ctxt,
+-				SVM_EXIT_MSR, 1, 0))
++	if (ghcb_hv_call(&hv_ghcb->ghcb, SVM_EXIT_MSR, 1, 0))
+ 		pr_warn("Fail to write msr via ghcb %llx.\n", msr);
+ 
+ 	local_irq_restore(flags);
+@@ -133,7 +211,6 @@ void hv_ghcb_msr_read(u64 msr, u64 *value)
+ 	union hv_ghcb *hv_ghcb;
+ 	void **ghcb_base;
+ 	unsigned long flags;
+-	struct es_em_ctxt ctxt;
+ 
+ 	/* Check size of union hv_ghcb here. */
+ 	BUILD_BUG_ON(sizeof(union hv_ghcb) != HV_HYP_PAGE_SIZE);
+@@ -152,8 +229,7 @@ void hv_ghcb_msr_read(u64 msr, u64 *value)
+ 	}
+ 
+ 	ghcb_set_rcx(&hv_ghcb->ghcb, msr);
+-	if (sev_es_ghcb_hv_call(&hv_ghcb->ghcb, false, &ctxt,
+-				SVM_EXIT_MSR, 0, 0))
++	if (ghcb_hv_call(&hv_ghcb->ghcb, SVM_EXIT_MSR, 0, 0))
+ 		pr_warn("Fail to read msr via ghcb %llx.\n", msr);
+ 	else
+ 		*value = (u64)lower_32_bits(hv_ghcb->ghcb.save.rax)
+diff --git a/arch/x86/include/asm/mshyperv.h b/arch/x86/include/asm/mshyperv.h
+index a82f603d4312..61f0c206bff0 100644
+--- a/arch/x86/include/asm/mshyperv.h
++++ b/arch/x86/include/asm/mshyperv.h
+@@ -179,9 +179,13 @@ int hv_set_mem_host_visibility(unsigned long addr, int numpages, bool visible);
+ #ifdef CONFIG_AMD_MEM_ENCRYPT
+ void hv_ghcb_msr_write(u64 msr, u64 value);
+ void hv_ghcb_msr_read(u64 msr, u64 *value);
++bool hv_ghcb_negotiate_protocol(void);
++void hv_ghcb_terminate(unsigned int set, unsigned int reason);
+ #else
+ static inline void hv_ghcb_msr_write(u64 msr, u64 value) {}
+ static inline void hv_ghcb_msr_read(u64 msr, u64 *value) {}
++static inline bool hv_ghcb_negotiate_protocol(void) { return false; }
++static inline void hv_ghcb_terminate(unsigned int set, unsigned int reason) {}
+ #endif
+ 
+ extern bool hv_isolation_type_snp(void);
+-- 
+2.25.1
+
