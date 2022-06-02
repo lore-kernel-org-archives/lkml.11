@@ -2,116 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14467C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 08:20:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DADF7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 08:23:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232116AbiFBIT5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 04:19:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48340 "EHLO
+        id S232120AbiFBIXC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 04:23:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229846AbiFBITw (ORCPT
+        with ESMTP id S229846AbiFBIW7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 04:19:52 -0400
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95E6DC15;
-        Thu,  2 Jun 2022 01:19:51 -0700 (PDT)
-Received: by mail-lj1-x22d.google.com with SMTP id g25so4436474ljm.2;
-        Thu, 02 Jun 2022 01:19:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wgIZR7dvI9d7yKsWI61xGA/OPJcvvRD4X0FBHSe3Sfk=;
-        b=Pg54oRUAqhJdc4T3bRYGpCzdjKqgEqDn2MLsyuNCWVEPwaewweQz4mmy5Qg9NhGEPe
-         SSJ2IJ8ZgzhsL8EegHcWGTuLM0jKcnY4WCne3PDWRmjiZ9TJ6oLpWL3P4JiG8UzbxgRm
-         kBylYcazGJeuVDIEojcf/na17ZGtmFyGxqOoaa3ZawreuAMkS/kTJeMi5qtWPaEeGPen
-         678L0uzIOVPJ8CFOOeJqr70oFzxq1k23mBCn8zL/VFtZOfsS0fJadqB4nESw4FPWuhp5
-         OzFBcZFItn+K7xcPMQzhm3qVjWlq0v5VJJ0eWAJJu5ZNbnftykcK0plzyTi/4FzZyHG5
-         kEww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wgIZR7dvI9d7yKsWI61xGA/OPJcvvRD4X0FBHSe3Sfk=;
-        b=QSftVSTZMn8zMTDhZTH33CdW+Fg5l3qrbfInPU26ugWCiQlCZW8NvwUwdb7LIm6rgD
-         YjX9QHiuxutAAEq2CXLLbPdqoEAvUlNmOArdniSU3h/a9IJqFXS/Qo9sOXMttXR+nHaO
-         eKUDzW9eHj6i4QPTcvtiNDPWyGQ5dEcQjMuf737idcDNuoKPyL6YFn0rXcAqiQAEcTOJ
-         inFd5FNM9TkzHY808QNQ7Ifz9j+DvO5FJrvMZ/1uxeOTlhQTHP6j1g/pvAvBlKoBo/B9
-         nR+5u35vUQfbJxKRSdxmkk7OckzmCg7N4vQrA0IZhvXsR+uc51G5QyR1DZO4O96v9guc
-         50Dg==
-X-Gm-Message-State: AOAM532UY30JT4zllFCCviCXRfT+Do9ZAxGgXIMQeRRbaMC/m/UHPd+y
-        bGFLi+HF7hCVupxrmsaq7ck=
-X-Google-Smtp-Source: ABdhPJwDGAb+Zq72WAJKKAG6b45ubLRipgsdl7M5Xhp3ys/FBwq/sVTMIncqljv7PvZaoIyeNrkq2g==
-X-Received: by 2002:a2e:bc13:0:b0:253:e72a:aa2f with SMTP id b19-20020a2ebc13000000b00253e72aaa2fmr32550928ljf.390.1654157989975;
-        Thu, 02 Jun 2022 01:19:49 -0700 (PDT)
-Received: from PC-752.milrem.lan (87-119-163-145.tll.elisa.ee. [87.119.163.145])
-        by smtp.gmail.com with ESMTPSA id y2-20020a056512044200b0047255d2117csm896132lfk.171.2022.06.02.01.19.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Jun 2022 01:19:49 -0700 (PDT)
-From:   =?UTF-8?q?Kaarel=20P=C3=A4rtel?= <kaarelp2rtel@gmail.com>
-To:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     =?UTF-8?q?Kaarel=20P=C3=A4rtel?= <kaarelp2rtel@gmail.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        Thu, 2 Jun 2022 04:22:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AB8565AE
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 01:22:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B42C1B81EE5
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 08:22:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21CDCC385A5;
+        Thu,  2 Jun 2022 08:22:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654158175;
+        bh=ZpIOdxZnOly6RZsL7QR5L4vfkBeqynInUaysfvgG8WU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Zb12ayniOU+izs1rKvzmzUueVt6ofuHMPWNB5EzzPTF477EQLHuA5hEgLRqzPuWPI
+         jl5CTdq97StJpyjNTiC+Ggudx1AB0MSTqtkMthN8YOw+WEmTCjGiF97X//U7p58kBA
+         rY4ZJlkZYBMea06lmVsnVAmjFunhtcOMhvIsX5p8U8Gev3Gwnt17ub6inHzff+iaGS
+         LLiafqXaRWJc3/L5QOFXA/hrLhH8JbwKZPuC88Y5BazwfIoyAT2cnRtbGvkIYz03Oe
+         Wt8QDi+aadim2fKQN6JYuBZAYvs4SfMWx69YmB97/TDgdwtStbnpO/v7MsM3hRHG/m
+         oJbi6RZRr7Lnw==
+Date:   Thu, 2 Jun 2022 10:22:52 +0200
+From:   Mark Brown <broonie@kernel.org>
+To:     Catalin Marinas <catalin.marinas@arm.com>
+Cc:     kernel test robot <lkp@intel.com>, kbuild-all@lists.01.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] net: add operstate for vcan and dummy
-Date:   Thu,  2 Jun 2022 11:19:29 +0300
-Message-Id: <20220602081929.21929-1-kaarelp2rtel@gmail.com>
-X-Mailer: git-send-email 2.25.1
+Subject: Re: arch/arm64/kernel/fpsimd.c:1944:55: sparse: sparse: dereference
+ of noderef expression
+Message-ID: <YphzXEcBKARluNVM@sirena.org.uk>
+References: <202205280635.XKlMkfKD-lkp@intel.com>
+ <YpZJBoxqvaCLRQfX@arm.com>
+ <YpcaTwI4SvV3IrwF@sirena.org.uk>
+ <YpeZ0M5we/0yzxVC@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="PeXLahpez0u4U49V"
+Content-Disposition: inline
+In-Reply-To: <YpeZ0M5we/0yzxVC@arm.com>
+X-Cookie: May your camel be as swift as the wind.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The idea here is simple. The vcan and the dummy network devices
-currently do not set the operational state of the interface.
-The result is that the interface state will be UNKNOWN.
 
-The kernel considers the unknown state to be the same as up:
-https://elixir.bootlin.com/linux/latest/source/include/linux/netdevice.h#L4125
+--PeXLahpez0u4U49V
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-However for users this creates confusion:
-https://serverfault.com/questions/629676/dummy-network-interface-in-linux
+On Wed, Jun 01, 2022 at 05:54:40PM +0100, Catalin Marinas wrote:
+> On Wed, Jun 01, 2022 at 09:50:39AM +0200, Mark Brown wrote:
+> > On Tue, May 31, 2022 at 05:57:42PM +0100, Catalin Marinas wrote:
 
-The change in this patch is very simple. When the interface is set up, the
-operational state is set to IF_OPER_UP.
+> > Yes, that looks right - feel free to add my Reviewed-by or I'll
+> > do that when I see the patch sent properly.
 
-Signed-off-by: Kaarel Pärtel <kaarelp2rtel@gmail.com>
----
- drivers/net/can/vcan.c | 1 +
- drivers/net/dummy.c    | 1 +
- 2 files changed, 2 insertions(+)
+> I'm no longer convinced that's the right fix. In __efi_fpsimd_begin(),
+> ffr is true if either !system_supports_fa64() or SVCR.SM is set. The FFR
+> state would be saved in this case.
 
-diff --git a/drivers/net/can/vcan.c b/drivers/net/can/vcan.c
-index a15619d883ec..79768f9d4294 100644
---- a/drivers/net/can/vcan.c
-+++ b/drivers/net/can/vcan.c
-@@ -162,6 +162,7 @@ static void vcan_setup(struct net_device *dev)
- 
- 	dev->netdev_ops		= &vcan_netdev_ops;
- 	dev->needs_free_netdev	= true;
-+	dev->operstate = IF_OPER_UP;
- }
- 
- static struct rtnl_link_ops vcan_link_ops __read_mostly = {
-diff --git a/drivers/net/dummy.c b/drivers/net/dummy.c
-index f82ad7419508..ab128f66de00 100644
---- a/drivers/net/dummy.c
-+++ b/drivers/net/dummy.c
-@@ -133,6 +133,7 @@ static void dummy_setup(struct net_device *dev)
- 
- 	dev->min_mtu = 0;
- 	dev->max_mtu = 0;
-+	dev->operstate = IF_OPER_UP;
- }
- 
- static int dummy_validate(struct nlattr *tb[], struct nlattr *data[],
--- 
-2.25.1
+That's the wrong way round - we should only save FFR if we have
+FA64 or SVCR.SM is *not* set.  Checking again efi_fpsimd_begin()
+is wrong.
 
+> In __efi_fpsimd_end(), shouldn't we just restore the FFR state if
+> efi_sm_state, irrespective of system_supports_fa64() (as it was checked
+> in the beginning). Something like:
+
+No, we should restore it only if we saved it.  The below should
+resolve things but it's completely untested:
+
+diff --git a/arch/arm64/kernel/fpsimd.c b/arch/arm64/kernel/fpsimd.c
+index 819979398127..3c66a061ff6f 100644
+--- a/arch/arm64/kernel/fpsimd.c
++++ b/arch/arm64/kernel/fpsimd.c
+@@ -1916,10 +1916,11 @@ void __efi_fpsimd_begin(void)
+ 			if (system_supports_sme()) {
+ 				svcr =3D read_sysreg_s(SYS_SVCR);
+=20
+-				if (!system_supports_fa64())
+-					ffr =3D svcr & SVCR_SM_MASK;
++				__this_cpu_write(efi_sm_state,
++						 svcr & SVCR_SM_MASK);
+=20
+-				__this_cpu_write(efi_sm_state, ffr);
++				if (!system_supports_fa64())
++					ffr =3D !(svcr & SVCR_SM_MASK);
+ 			}
+=20
+ 			sve_save_state(sve_state + sve_ffr_offset(sve_max_vl()),
+@@ -1965,7 +1966,7 @@ void __efi_fpsimd_end(void)
+ 							   0,
+ 							   SVCR_SM_MASK);
+ 					if (!system_supports_fa64())
+-						ffr =3D efi_sm_state;
++						ffr =3D false;
+ 				}
+ 			}
+=20
+
+--PeXLahpez0u4U49V
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKYc1wACgkQJNaLcl1U
+h9C2UQf+J0ClE8Vhx0jAbXXsz7P/saaEv/Mcp7gLzO4V4ATcXH8gQox+kztlh7tJ
+pGRdvskRugJ6Tg54xr9tdGKSlwFJW8nH0KLEAIev9Qgj0z1u77otapePtwRdunZZ
+uvFFOjqmHMJMyZnRXbbAqe6+wma3on89TmE7PCTfjBIQqytronG2YOBUI2n4l3Rk
+JJJBqWdoYbU/idvoujgon+AnFxRZDkHmzf+U5FGWW6aSu9WOddSxPCDVttyVOrj9
+hYsmXu60aPEh2gzjg+WJH35nzUyAGPX4VDT3IrHBYAMcpmP4XUJj/2yQP4TpMHOd
+rY9ZwRBwgbiUAD+MaQoLa6L0OfcQ5g==
+=Phwp
+-----END PGP SIGNATURE-----
+
+--PeXLahpez0u4U49V--
