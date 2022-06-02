@@ -2,110 +2,219 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66044C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 10:50:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF046C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 10:57:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234004AbiFBKuo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 06:50:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38332 "EHLO
+        id S233973AbiFBK5o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 06:57:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234003AbiFBKum (ORCPT
+        with ESMTP id S231843AbiFBK5n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 06:50:42 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 900C83ED29
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 03:50:41 -0700 (PDT)
+        Thu, 2 Jun 2022 06:57:43 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EF0F420A73D
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 03:57:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654167040;
+        s=mimecast20190719; t=1654167458;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=DrhV5vnxv6SRuKZJ5gBXpRv/4ZhVI+1PkR2Fak5zt3E=;
-        b=PqE6hC/lUcz630ZnZyFPtwZE+lEPTGuWWTQQUmI5UIOO/At38K8Ou4UnnC3nYU2HSqChFL
-        Ui7pUtU4So4zfsTJReO3UBkJMfxwS/pRoLc5sY+YxBEa/PxxkdDRS/SsqY6oWyS8iIX0N6
-        vRiOSseDAjSdDkqWB6cjx98S0X4wq/8=
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
- [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=ILOH+9qB4kdX+wuRsiCR0WoKSLzvv92mSp/II4owxY4=;
+        b=bPvd3gblWo/HdjfKW88Rsu9hCPh6P4pL/q/dfj2G3djSCkPVbU3xE06+3JXqZih9tgzHHR
+        2xpvTr2Re6jHs+3LqbTrSV+rKvzYviWI35BnQcSrMrK2Vpraq5hTf2RMjbVv3i5XtovbeA
+        rUSAbe3+5fns/5o20V8uUL7kLNW2Se8=
+Received: from mail-pg1-f198.google.com (mail-pg1-f198.google.com
+ [209.85.215.198]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-490-CX_6wEC9Ow-VAiDipp8GPQ-1; Thu, 02 Jun 2022 06:50:39 -0400
-X-MC-Unique: CX_6wEC9Ow-VAiDipp8GPQ-1
-Received: by mail-ej1-f70.google.com with SMTP id au8-20020a170907092800b00707784fd7e0so2187485ejc.22
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 03:50:39 -0700 (PDT)
+ us-mta-261-oui8lFhWP3qBbRabQIniaw-1; Thu, 02 Jun 2022 06:57:37 -0400
+X-MC-Unique: oui8lFhWP3qBbRabQIniaw-1
+Received: by mail-pg1-f198.google.com with SMTP id q195-20020a632acc000000b003fcb9b2b053so1731683pgq.4
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 03:57:36 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=DrhV5vnxv6SRuKZJ5gBXpRv/4ZhVI+1PkR2Fak5zt3E=;
-        b=WiWLh5BSmtK9OhTUOLzkggJr14Qh8f8yr9K9JzJmvvXWQXAI0s6cGrvSU340Fnej6p
-         NdA/lBLlK3B/jtQj1GlA/9gRKE2RVlws/Pdqp4NsDtCnlD4u6jHsi+ah5SIjCjnHlRk4
-         YNESY7HsfdZ9v8iYBMbQXi0KlwGhuPZi4rvCOQ9cqBjSuq0vcOwK0a6DWims8nBXM7+F
-         PEG/kRt0edrcQhb50M5Z+myWwLgoThihVhYBjWmBqPLrlkrqSlzP63Geg2Id28R3t853
-         CCJC+EkLZUHAhm3eExHE5HI9nS8mB6xawx1fv16ZPvkFn3WVBDy+Fyak6x8/FEfy+qsI
-         ZY5g==
-X-Gm-Message-State: AOAM531cttMct+/vxlpxJoAPyUtFR+2mUj8g5vcCI+J4BHxKdaSjv9tP
-        jHSV15tpj4GI2019EB2DFEa/TGyOhuaCiK6BVhOebAIH4NFGRMdciSN9A3uzZ/I1/KyyFzJCELh
-        aP5ktiAQcR87h475QT7X1Xzfm
-X-Received: by 2002:aa7:c852:0:b0:42d:70d8:2864 with SMTP id g18-20020aa7c852000000b0042d70d82864mr4622041edt.379.1654167038352;
-        Thu, 02 Jun 2022 03:50:38 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxagkCoICyD4tyHlyBtfQJTn2p3Yp2BOSbtulSpElsl0xzECJsO+qskjhWefExGoeHv99aQBQ==
-X-Received: by 2002:aa7:c852:0:b0:42d:70d8:2864 with SMTP id g18-20020aa7c852000000b0042d70d82864mr4622024edt.379.1654167038205;
-        Thu, 02 Jun 2022 03:50:38 -0700 (PDT)
-Received: from [192.168.42.54] ([109.38.144.46])
-        by smtp.gmail.com with ESMTPSA id e1-20020a170906374100b006f3ef214da8sm1651719ejc.14.2022.06.02.03.50.36
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=ILOH+9qB4kdX+wuRsiCR0WoKSLzvv92mSp/II4owxY4=;
+        b=g3MEoabu+0m1ulEdtCm48fQNRi2Q1YDAkhBnQExKsiBH523kAr+OP92ocEY16agzYH
+         zdEIe3X/2yq3YUa9hEX7AFnFK1cXsNsG3sONurUwU7eXxW7j5FLvVQpSnI17DGFrkfiJ
+         7nWcFqDN5UuIXF9jBKveJpbJMyMXYCsAIRCPmYBkOSlOh/8gg2O2hE0AlmYLSOZUdtUx
+         8DGm/9If/ItJlOupdsS+NF1Zbs1BxylThcmuxieoCk7fIZJyPdkG8dJvzu2jrScWL2lo
+         hrl0MucqbNbK5V9Qme2exCzuZ6p4RjiVFS0hEpgzMpzAaoi9G/LbVFG0ZWR2iZerRM4T
+         /VIg==
+X-Gm-Message-State: AOAM530qcDm8GjXjYLR7OGX5/DUDICdpJn+47G4ANRj2dsYfgffUIN5Z
+        mcn0fUQT/+SQRl0UeoXg1OBwkaQ9UTd7eMlLkZ9WTbYWLybJVkWxFFnLUDf5S7zHjoCqOs7kaLB
+        rCNR1mdK4M8P+pLvvJAsqJHkH0vTZEbmJd+u0ucJ9xkhBGVrJHvBum1yGEfD2leD/BgHse+QYAw
+        ==
+X-Received: by 2002:a05:6a00:a8b:b0:4e1:52db:9e5c with SMTP id b11-20020a056a000a8b00b004e152db9e5cmr71021377pfl.38.1654167455325;
+        Thu, 02 Jun 2022 03:57:35 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwWjC5hh3/8j1LD0iiMwtyQH0XgoH1waiLuwyJfZVxO3GOio+lEf9rK8zpnGSWpieZ9MmIHwA==
+X-Received: by 2002:a05:6a00:a8b:b0:4e1:52db:9e5c with SMTP id b11-20020a056a000a8b00b004e152db9e5cmr71021348pfl.38.1654167454906;
+        Thu, 02 Jun 2022 03:57:34 -0700 (PDT)
+Received: from [10.72.12.107] ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id d20-20020a056a00199400b0051878e8cc13sm3498622pfl.116.2022.06.02.03.57.30
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 02 Jun 2022 03:50:37 -0700 (PDT)
-Message-ID: <84aa3225-d514-4c08-f6d3-ed8f0423e513@redhat.com>
-Date:   Thu, 2 Jun 2022 12:50:36 +0200
+        Thu, 02 Jun 2022 03:57:34 -0700 (PDT)
+Subject: Re: [RFC PATCH v3] ceph: prevent a client from exceeding the MDS
+ maximum xattr size
+To:     =?UTF-8?Q?Lu=c3=ads_Henriques?= <lhenriques@suse.de>
+Cc:     Jeff Layton <jlayton@kernel.org>,
+        Ilya Dryomov <idryomov@gmail.com>,
+        Gregory Farnum <gfarnum@redhat.com>,
+        ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220601162939.12278-1-lhenriques@suse.de>
+ <b788a7f9-9177-0398-7d21-a19ce7e6c957@redhat.com>
+ <87h7534dr9.fsf@brahms.olymp>
+ <289f5136-d2fc-1474-eb0f-521586f241b2@redhat.com>
+ <87a6av4awn.fsf@brahms.olymp>
+From:   Xiubo Li <xiubli@redhat.com>
+Message-ID: <d271bdc1-f95a-01e2-7a0f-b6511aee2d58@redhat.com>
+Date:   Thu, 2 Jun 2022 18:57:28 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH] fbdev: simplefb: Check before clk_put() not needed
+In-Reply-To: <87a6av4awn.fsf@brahms.olymp>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-To:     Yihao Han <hanyihao@vivo.com>, Helge Deller <deller@gmx.de>,
-        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-References: <20220602094219.13024-1-hanyihao@vivo.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <20220602094219.13024-1-hanyihao@vivo.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
 
-On 6/2/22 11:42, Yihao Han wrote:
-> clk_put() already checks the clk ptr using !clk and IS_ERR()
-> so there is no need to check it again before calling it.
-> 
-> Signed-off-by: Yihao Han <hanyihao@vivo.com>
-> ---
->  drivers/video/fbdev/simplefb.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/drivers/video/fbdev/simplefb.c b/drivers/video/fbdev/simplefb.c
-> index 2c198561c338..f96ce8801be4 100644
-> --- a/drivers/video/fbdev/simplefb.c
-> +++ b/drivers/video/fbdev/simplefb.c
-> @@ -237,8 +237,7 @@ static int simplefb_clocks_get(struct simplefb_par *par,
->  		if (IS_ERR(clock)) {
->  			if (PTR_ERR(clock) == -EPROBE_DEFER) {
->  				while (--i >= 0) {
-> -					if (par->clks[i])
-> -						clk_put(par->clks[i]);
-> +					clk_put(par->clks[i]);
->  				}
->  				kfree(par->clks);
->  				return -EPROBE_DEFER;
+On 6/2/22 6:28 PM, Luís Henriques wrote:
+> Xiubo Li <xiubli@redhat.com> writes:
+>
+>> On 6/2/22 5:26 PM, Luís Henriques wrote:
+>>> Xiubo Li <xiubli@redhat.com> writes:
+>>>
+>>>> On 6/2/22 12:29 AM, Luís Henriques wrote:
+>>>>> The MDS tries to enforce a limit on the total key/values in extended
+>>>>> attributes.  However, this limit is enforced only if doing a synchronous
+>>>>> operation (MDS_OP_SETXATTR) -- if we're buffering the xattrs, the MDS
+>>>>> doesn't have a chance to enforce these limits.
+>>>>>
+>>>>> This patch adds support for decoding the xattrs maximum size setting that is
+>>>>> distributed in the mdsmap.  Then, when setting an xattr, the kernel client
+>>>>> will revert to do a synchronous operation if that maximum size is exceeded.
+>>>>>
+>>>>> While there, fix a dout() that would trigger a printk warning:
+>>>>>
+>>>>> [   98.718078] ------------[ cut here ]------------
+>>>>> [   98.719012] precision 65536 too large
+>>>>> [   98.719039] WARNING: CPU: 1 PID: 3755 at lib/vsprintf.c:2703 vsnprintf+0x5e3/0x600
+>>>>> ...
+>>>>>
+>>>>> URL: https://tracker.ceph.com/issues/55725
+>>>>> Signed-off-by: Luís Henriques <lhenriques@suse.de>
+>>>>> ---
+>>>>>     fs/ceph/mdsmap.c            | 27 +++++++++++++++++++++++----
+>>>>>     fs/ceph/xattr.c             | 12 ++++++++----
+>>>>>     include/linux/ceph/mdsmap.h |  1 +
+>>>>>     3 files changed, 32 insertions(+), 8 deletions(-)
+>>>>>
+>>>>> * Changes since v2
+>>>>>
+>>>>> Well, a lot has changed since v2!  Now the xattr max value setting is
+>>>>> obtained through the mdsmap, which needs to be decoded, and the feature
+>>>>> that was used in the previous revision was dropped.  The drawback is that
+>>>>> the MDS isn't unable to know in advance if a client is aware of this xattr
+>>>>> max value.
+>>>>>
+>>>>> * Changes since v1
+>>>>>
+>>>>> Added support for new feature bit to get the MDS max_xattr_pairs_size
+>>>>> setting.
+>>>>>
+>>>>> Also note that this patch relies on a patch that hasn't been merged yet
+>>>>> ("ceph: use correct index when encoding client supported features"),
+>>>>> otherwise the new feature bit won't be correctly encoded.
+>>>>>
+>>>>> diff --git a/fs/ceph/mdsmap.c b/fs/ceph/mdsmap.c
+>>>>> index 30387733765d..36b2bc18ca2a 100644
+>>>>> --- a/fs/ceph/mdsmap.c
+>>>>> +++ b/fs/ceph/mdsmap.c
+>>>>> @@ -13,6 +13,12 @@
+>>>>>       #include "super.h"
+>>>>>     +/*
+>>>>> + * Maximum size of xattrs the MDS can handle per inode by default.  This
+>>>>> + * includes the attribute name and 4+4 bytes for the key/value sizes.
+>>>>> + */
+>>>>> +#define MDS_MAX_XATTR_SIZE (1<<16) /* 64K */
+>>>>> +
+>>>>>     #define CEPH_MDS_IS_READY(i, ignore_laggy) \
+>>>>>     	(m->m_info[i].state > 0 && ignore_laggy ? true : !m->m_info[i].laggy)
+>>>>>     @@ -352,12 +358,10 @@ struct ceph_mdsmap *ceph_mdsmap_decode(void **p, void
+>>>>> *end, bool msgr2)
+>>>>>     		__decode_and_drop_type(p, end, u8, bad_ext);
+>>>>>     	}
+>>>>>     	if (mdsmap_ev >= 8) {
+>>>>> -		u32 name_len;
+>>>>>     		/* enabled */
+>>>>>     		ceph_decode_8_safe(p, end, m->m_enabled, bad_ext);
+>>>>> -		ceph_decode_32_safe(p, end, name_len, bad_ext);
+>>>>> -		ceph_decode_need(p, end, name_len, bad_ext);
+>>>>> -		*p += name_len;
+>>>>> +		/* fs_name */
+>>>>> +		ceph_decode_skip_string(p, end, bad_ext);
+>>>>>     	}
+>>>>>     	/* damaged */
+>>>>>     	if (mdsmap_ev >= 9) {
+>>>>> @@ -370,6 +374,21 @@ struct ceph_mdsmap *ceph_mdsmap_decode(void **p, void *end, bool msgr2)
+>>>>>     	} else {
+>>>>>     		m->m_damaged = false;
+>>>>>     	}
+>>>>> +	if (mdsmap_ev >= 17) {
+>>>>> +		/* balancer */
+>>>>> +		ceph_decode_skip_string(p, end, bad_ext);
+>>>>> +		/* standby_count_wanted */
+>>>>> +		ceph_decode_skip_32(p, end, bad_ext);
+>>>>> +		/* old_max_mds */
+>>>>> +		ceph_decode_skip_32(p, end, bad_ext);
+>>>>> +		/* min_compat_client */
+>>>>> +		ceph_decode_skip_8(p, end, bad_ext);
+>>>> This is incorrect.
+>>>>
+>>>> If mdsmap_ev == 15 the min_compat_client will be a feature_bitset_t instead of
+>>>> int8_t.
+>>> Hmm... can you point me at where that's done in the code?  As usual, I'm
+>>> confused with that code and simply can't see that.
+>>>
+>>> Also, if that happens only when mdsmap_ev == 15, then there's no problem
+>>> because that branch is only taken if it's >= 17.
+>> Yeah, so you should skip 32 or 32+64 bits instead here, just likes:
+>>
+>> 3536                 /* version >= 3, feature bits */
+>> 3537                 ceph_decode_32_safe(&p, end, len, bad);
+>> 3538                 if (len) {
+>> 3539                         ceph_decode_64_safe(&p, end, features, bad);
+>> 3540                         p += len - sizeof(features);
+>> 3541                 }
+>>
+>> For the ceph code please see:
+>>
+>> Please see https://github.com/ceph/ceph/blob/main/src/mds/MDSMap.cc#L925.
+> I still don't see what your saying.  From what I understand, with <= 15 we
+> used to have 'min_compat_client', which is of type 'ceph_release_t',
+> defined in src/common/ceph_releases.h:
+>
+> enum class ceph_release_t : std::uint8_t {
+> ...
+> }
 
-Thanks, patch looks good to me:
+Okay, you are right.
 
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+I miss reading that code.
 
-Regards,
+-- Xiubo
 
-Hans
+
+> Then, starting with >= 16 the MDS ignores this 'min_compat_client' field
+> (but still encodes/decodes it), and it *adds* 'required_client_features',
+> which is a 'feature_bitset_t' and that is decoded immediately after (see
+> bellow, the ceph_decode_skip_set() call).
+>
+> Cheers,
 
