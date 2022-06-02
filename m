@@ -2,146 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67117C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 10:22:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 456BEC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 10:22:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233651AbiFBKWr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 06:22:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33376 "EHLO
+        id S233641AbiFBKW4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 06:22:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233178AbiFBKWl (ORCPT
+        with ESMTP id S233652AbiFBKWn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 06:22:41 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 089E21DA40;
-        Thu,  2 Jun 2022 03:22:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 2FC75CE1FD2;
-        Thu,  2 Jun 2022 10:22:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA91DC385A5;
-        Thu,  2 Jun 2022 10:22:29 +0000 (UTC)
-From:   Huacai Chen <chenhuacai@loongson.cn>
-To:     Arnd Bergmann <arnd@arndb.de>, Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Airlie <airlied@linux.ie>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-arch@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Huacai Chen <chenhuacai@gmail.com>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Huacai Chen <chenhuacai@loongson.cn>,
-        WANG Xuerui <git@xen0n.name>
-Subject: [PATCH V13 05/24] LoongArch: Add ELF-related definitions
-Date:   Thu,  2 Jun 2022 18:19:30 +0800
-Message-Id: <20220602101949.3873682-6-chenhuacai@loongson.cn>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220602101949.3873682-1-chenhuacai@loongson.cn>
-References: <20220602101949.3873682-1-chenhuacai@loongson.cn>
+        Thu, 2 Jun 2022 06:22:43 -0400
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8910213E7E
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 03:22:38 -0700 (PDT)
+Received: by mail-lj1-x232.google.com with SMTP id m25so1432652lji.11
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 03:22:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=mhke0saUmUh/aB/di9/WbB1JwcFcgftrzK7UikGh97E=;
+        b=bFvw+MLHVt+ArFBhnhxD4VGaWyar1Iw3Ys0oV4R9sP/bLgk9xK9kxzaaTZalR0EZcs
+         DYSWd3KPnS2lKOJh8kuqKmbP0WytCHCLGP6f8aTF+7KR6jaPf/5c6UWfEtDMiLmKuYvu
+         nSRNVsYr30Wy9XsFQjKkTsSelPDRlDAzdaouzM8KqVJC1FgwxXkJQKq2hqYkt76XSiQB
+         zVCYTPHReYyktuzPNOEHoZK7KUZiiTF95MfsA6Lj40AukNe97nQ2ovR44xX/dekLSSVa
+         TxXYFlcJ7uFbdFw6GvMxus+wXABsmy51VnApOpbnLGuauTZdeDtz6FXQ0PgkF3PwHF3w
+         mrAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=mhke0saUmUh/aB/di9/WbB1JwcFcgftrzK7UikGh97E=;
+        b=iZaEHCTpSuWjNKTwZfgkWWq1r/5yVSZFBTPFpYLFFiKh9kAsNMh0SxjWP7744ccj5V
+         JC3vhpCLt+xruUP6M32NpArAY84PJMgavksl6NNrrQbUuBvtrgyxTGf4Mx/VZ6tSgNOl
+         X07Lma6H/nuaqYgWgmG+5U8ppShaN+iqxRjixRlSKoCDAmelNEhksjcWw5U0wdcq1+0H
+         z3D7HQlOmVNNK0O26RTcjO3JEh4eh+R+x0ddspbPs88tGtlY1HjckgRLwLxr0fcDGxz7
+         lAEBcYXs8luUZ9zk3PllrVOTI2LQTLkA9LztjXUGJiBWagPe/ASz5QQDPT3HUh3/xGrs
+         zBlA==
+X-Gm-Message-State: AOAM533Q4wUoTcp7sduUGJxLcN3ld4UHEamZe5DabpWM/bKVZoxZlLw5
+        i+f6mrLiiYK2kzy6L9/SzEricw==
+X-Google-Smtp-Source: ABdhPJxBmqiSkec8TbeMYs+RFw+Rm4q/emiOOaTWMfi/pJk8O6t7jgcEYLMBlu3LcQem9bMjd/eBbg==
+X-Received: by 2002:a2e:8881:0:b0:255:7790:25e6 with SMTP id k1-20020a2e8881000000b00255779025e6mr964729lji.525.1654165357162;
+        Thu, 02 Jun 2022 03:22:37 -0700 (PDT)
+Received: from [192.168.1.211] ([37.153.55.125])
+        by smtp.gmail.com with ESMTPSA id d16-20020a0565123d1000b0047255d21132sm961705lfv.97.2022.06.02.03.22.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 02 Jun 2022 03:22:36 -0700 (PDT)
+Message-ID: <b157ebf3-9846-1235-c8e7-693abe4569d3@linaro.org>
+Date:   Thu, 2 Jun 2022 13:22:35 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v3 1/4] drm/dp: Add wait_hpd_asserted() callback to struct
+ drm_dp_aux
+Content-Language: en-GB
+To:     Douglas Anderson <dianders@chromium.org>,
+        dri-devel@lists.freedesktop.org
+Cc:     Hsin-Yi Wang <hsinyi@chromium.org>,
+        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
+        Philip Chen <philipchen@chromium.org>,
+        Robert Foss <robert.foss@linaro.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Jani Nikula <jani.nikula@intel.com>,
+        Kees Cook <keescook@chromium.org>,
+        Lyude Paul <lyude@redhat.com>,
+        Maxime Ripard <maxime@cerno.tech>, linux-kernel@vger.kernel.org
+References: <20220418171757.2282651-1-dianders@chromium.org>
+ <20220418101725.v3.1.Icf57bb12233a47727013c6ab69eebf803e22ebc1@changeid>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <20220418101725.v3.1.Icf57bb12233a47727013c6ab69eebf803e22ebc1@changeid>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add ELF-related definitions for LoongArch, including: EM_LOONGARCH,
-KEXEC_ARCH_LOONGARCH, AUDIT_ARCH_LOONGARCH32, AUDIT_ARCH_LOONGARCH64
-and NT_LOONGARCH_*.
+On 18/04/2022 20:17, Douglas Anderson wrote:
+> Sometimes it's useful for users of the DP AUX bus (like panels) to be
+> able to poll HPD. Let's add a callback that allows DP AUX busses
+> drivers to provide this.
+> 
+> Suggested-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> Signed-off-by: Douglas Anderson <dianders@chromium.org>
 
-Reviewed-by: WANG Xuerui <git@xen0n.name>
-Reviewed-by: Jiaxun Yang <jiaxun.yang@flygoat.com>
-Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
----
- include/uapi/linux/audit.h  | 2 ++
- include/uapi/linux/elf-em.h | 1 +
- include/uapi/linux/elf.h    | 5 +++++
- include/uapi/linux/kexec.h  | 1 +
- scripts/sorttable.c         | 5 +++++
- 5 files changed, 14 insertions(+)
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-diff --git a/include/uapi/linux/audit.h b/include/uapi/linux/audit.h
-index 8eda133ca4c1..7c1dc818b1d5 100644
---- a/include/uapi/linux/audit.h
-+++ b/include/uapi/linux/audit.h
-@@ -439,6 +439,8 @@ enum {
- #define AUDIT_ARCH_UNICORE	(EM_UNICORE|__AUDIT_ARCH_LE)
- #define AUDIT_ARCH_X86_64	(EM_X86_64|__AUDIT_ARCH_64BIT|__AUDIT_ARCH_LE)
- #define AUDIT_ARCH_XTENSA	(EM_XTENSA)
-+#define AUDIT_ARCH_LOONGARCH32	(EM_LOONGARCH|__AUDIT_ARCH_LE)
-+#define AUDIT_ARCH_LOONGARCH64	(EM_LOONGARCH|__AUDIT_ARCH_64BIT|__AUDIT_ARCH_LE)
- 
- #define AUDIT_PERM_EXEC		1
- #define AUDIT_PERM_WRITE	2
-diff --git a/include/uapi/linux/elf-em.h b/include/uapi/linux/elf-em.h
-index f47e853546fa..ef38c2bc5ab7 100644
---- a/include/uapi/linux/elf-em.h
-+++ b/include/uapi/linux/elf-em.h
-@@ -51,6 +51,7 @@
- #define EM_RISCV	243	/* RISC-V */
- #define EM_BPF		247	/* Linux BPF - in-kernel virtual machine */
- #define EM_CSKY		252	/* C-SKY */
-+#define EM_LOONGARCH	258	/* LoongArch */
- #define EM_FRV		0x5441	/* Fujitsu FR-V */
- 
- /*
-diff --git a/include/uapi/linux/elf.h b/include/uapi/linux/elf.h
-index c4abd09c3da9..2b9f5e9985e5 100644
---- a/include/uapi/linux/elf.h
-+++ b/include/uapi/linux/elf.h
-@@ -438,6 +438,11 @@ typedef struct elf64_shdr {
- #define NT_MIPS_DSP	0x800		/* MIPS DSP ASE registers */
- #define NT_MIPS_FP_MODE	0x801		/* MIPS floating-point mode */
- #define NT_MIPS_MSA	0x802		/* MIPS SIMD registers */
-+#define NT_LOONGARCH_CPUCFG	0xa00	/* LoongArch CPU config registers */
-+#define NT_LOONGARCH_CSR	0xa01	/* LoongArch control and status registers */
-+#define NT_LOONGARCH_LSX	0xa02	/* LoongArch Loongson SIMD Extension registers */
-+#define NT_LOONGARCH_LASX	0xa03	/* LoongArch Loongson Advanced SIMD Extension registers */
-+#define NT_LOONGARCH_LBT	0xa04	/* LoongArch Loongson Binary Translation registers */
- 
- /* Note types with note name "GNU" */
- #define NT_GNU_PROPERTY_TYPE_0	5
-diff --git a/include/uapi/linux/kexec.h b/include/uapi/linux/kexec.h
-index fb7e2ef60825..981016e05cfa 100644
---- a/include/uapi/linux/kexec.h
-+++ b/include/uapi/linux/kexec.h
-@@ -43,6 +43,7 @@
- #define KEXEC_ARCH_MIPS    ( 8 << 16)
- #define KEXEC_ARCH_AARCH64 (183 << 16)
- #define KEXEC_ARCH_RISCV   (243 << 16)
-+#define KEXEC_ARCH_LOONGARCH	(258 << 16)
- 
- /* The artificial cap on the number of segments passed to kexec_load. */
- #define KEXEC_SEGMENT_MAX 16
-diff --git a/scripts/sorttable.c b/scripts/sorttable.c
-index d00504c5f530..fba40e99f354 100644
---- a/scripts/sorttable.c
-+++ b/scripts/sorttable.c
-@@ -60,6 +60,10 @@
- #define EM_RISCV	243
- #endif
- 
-+#ifndef EM_LOONGARCH
-+#define EM_LOONGARCH	258
-+#endif
-+
- static uint32_t (*r)(const uint32_t *);
- static uint16_t (*r2)(const uint16_t *);
- static uint64_t (*r8)(const uint64_t *);
-@@ -313,6 +317,7 @@ static int do_file(char const *const fname, void *addr)
- 	case EM_ARCOMPACT:
- 	case EM_ARCV2:
- 	case EM_ARM:
-+	case EM_LOONGARCH:
- 	case EM_MICROBLAZE:
- 	case EM_MIPS:
- 	case EM_XTENSA:
+
+> ---
+> Left Dmitry's Reviewed-by tag off since patch changed enough.
+> 
+> (no changes since v2)
+> 
+> Changes in v2:
+> - Change is_hpd_asserted() to wait_hpd_asserted()
+> 
+>   include/drm/dp/drm_dp_helper.h | 26 ++++++++++++++++++++++++++
+>   1 file changed, 26 insertions(+)
+> 
+> diff --git a/include/drm/dp/drm_dp_helper.h b/include/drm/dp/drm_dp_helper.h
+> index 53d1e722f4de..0940c415db8c 100644
+> --- a/include/drm/dp/drm_dp_helper.h
+> +++ b/include/drm/dp/drm_dp_helper.h
+> @@ -2035,6 +2035,32 @@ struct drm_dp_aux {
+>   	ssize_t (*transfer)(struct drm_dp_aux *aux,
+>   			    struct drm_dp_aux_msg *msg);
+>   
+> +	/**
+> +	 * @wait_hpd_asserted: wait for HPD to be asserted
+> +	 *
+> +	 * This is mainly useful for eDP panels drivers to wait for an eDP
+> +	 * panel to finish powering on. This is an optional function.
+> +	 *
+> +	 * This function will efficiently wait for up to `wait_us` microseconds
+> +	 * for HPD to be asserted and might sleep.
+> +	 *
+> +	 * This function returns 0 if HPD was asserted or -ETIMEDOUT if time
+> +	 * expired and HPD wasn't asserted. This function should not print
+> +	 * timeout errors to the log.
+> +	 *
+> +	 * The semantics of this function are designed to match the
+> +	 * readx_poll_timeout() function. That means a `wait_us` of 0 means
+> +	 * to wait forever. If you want to do a quick poll you could pass 1
+> +	 * for `wait_us`.
+> +	 *
+> +	 * NOTE: this function specifically reports the state of the HPD pin
+> +	 * that's associated with the DP AUX channel. This is different from
+> +	 * the HPD concept in much of the rest of DRM which is more about
+> +	 * physical presence of a display. For eDP, for instance, a display is
+> +	 * assumed always present even if the HPD pin is deasserted.
+> +	 */
+> +	int (*wait_hpd_asserted)(struct drm_dp_aux *aux, unsigned long wait_us);
+> +
+>   	/**
+>   	 * @i2c_nack_count: Counts I2C NACKs, used for DP validation.
+>   	 */
+
+
 -- 
-2.27.0
-
+With best wishes
+Dmitry
