@@ -2,75 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 847AEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 13:37:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C873C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 13:37:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235431AbiFBNhJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 09:37:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47302 "EHLO
+        id S235492AbiFBNhT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 09:37:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235432AbiFBNfF (ORCPT
+        with ESMTP id S235472AbiFBNg6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 09:35:05 -0400
-Received: from mail-oa1-f54.google.com (mail-oa1-f54.google.com [209.85.160.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2749947068;
-        Thu,  2 Jun 2022 06:35:04 -0700 (PDT)
-Received: by mail-oa1-f54.google.com with SMTP id 586e51a60fabf-f2e0a41009so6743830fac.6;
-        Thu, 02 Jun 2022 06:35:04 -0700 (PDT)
+        Thu, 2 Jun 2022 09:36:58 -0400
+Received: from mail-oi1-f172.google.com (mail-oi1-f172.google.com [209.85.167.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09CEC38BFE;
+        Thu,  2 Jun 2022 06:36:52 -0700 (PDT)
+Received: by mail-oi1-f172.google.com with SMTP id w130so6616387oig.0;
+        Thu, 02 Jun 2022 06:36:52 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=tgfreAiExWVjh0PELNOgid7tEm3i3yoN+t28LQQbOv8=;
-        b=YEqn23BaaEPKkTfa2UILJWlFXlIPlGU5nxB3XVWA3451/MaIttP59UENDrWI1lEHJR
-         Qf8x6BJDhO9u2jIzR4KfIf3qyhzSy7URQ7eC/asT/uZnq2hiaHiCzrHKFugV0jDgsqQP
-         cvAJ8X/sQs5f3IZ5u6A4NU/FjwfRicWIOE09IBtid3ckHlmTd3nq6hHTPw12wbiHWHz+
-         TTiAgyjcpCBskRDqVKJXt+fWRJCE9K5e7+t5RDuOGQdsTqtHEGCOQIRQuALDhS4Yw6AK
-         gKxvPI2YKrlXyc5jGieOVerDePLNsxHJxPOeyIJCUff1To5P/s5BBF166e51QZy5eaH6
-         1iNQ==
-X-Gm-Message-State: AOAM532s+nWiLValBFAVtc7+DRoH7WnpmxHhRxl7kvc87HHmmRseAlPk
-        ksHVuXI9mdFDbkbeieGeGg==
-X-Google-Smtp-Source: ABdhPJwWILYV+CaH9AQ9LI9AUkPXoe8U3uEh9QSpzW+3Pmotl16aphMbVSG0O8No11RVjqhlcb7ghg==
-X-Received: by 2002:a05:6870:630a:b0:e2:f8bb:5ec with SMTP id s10-20020a056870630a00b000e2f8bb05ecmr2572853oao.171.1654176903469;
-        Thu, 02 Jun 2022 06:35:03 -0700 (PDT)
+        bh=pwfbSlcoi2C5nDJgDNKyjclPhwf+l/0Xc9Z6UrC0aU0=;
+        b=cZAWqLcUgB/uw0sG0OHI58jLiJVldyrOB9jdnyu2kGVVmKD3TDRoRrHlUnIAdKC8Lz
+         dCuW2jqnCVwPAehOEMavDp3raNvEPWgUizoLSQzAPPlT9vXfRFJdF9FqPf14iRT/emko
+         fs15A33bDAReQnFyb35qTIJfQ2RyyUZHMgNOP0APgPxGEYsDhZeHDhdih4OeHH6FdSLk
+         dxG3wOlwTilOWpQmkqCYOpUurwZ5F0FFLiWB9NJ0+Da1WBwQ6jJkA4RIfsJFIN8RMoJE
+         IW/Pd1uEtO/C2giXYbo2qMh+LjQEv0xpyQsqp9t7iQhwBG6oYNYCzXom8WLoyTVNoU/d
+         Tz4A==
+X-Gm-Message-State: AOAM532SR3siV58HgXeE8jk+DaCpJynV21dF0hlXsK1+Y0vGH6rmbYlT
+        M23lJbVUHRyXG3gYWxLKmQ==
+X-Google-Smtp-Source: ABdhPJyrAZUWQ0T2CZPatmZOUh88Y6+3CIiOzGsT97Tx4iCEE988ZVcRncw7dgmawOZ42YndW6Kv3Q==
+X-Received: by 2002:a05:6808:1448:b0:326:e239:a490 with SMTP id x8-20020a056808144800b00326e239a490mr18668182oiv.253.1654177011518;
+        Thu, 02 Jun 2022 06:36:51 -0700 (PDT)
 Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id o3-20020a0568080bc300b0032e41b45ea7sm368959oik.18.2022.06.02.06.35.02
+        by smtp.gmail.com with ESMTPSA id w5-20020a056808140500b00326cb6225f8sm2412022oiv.44.2022.06.02.06.36.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Jun 2022 06:35:03 -0700 (PDT)
-Received: (nullmailer pid 2160289 invoked by uid 1000);
-        Thu, 02 Jun 2022 13:35:02 -0000
-Date:   Thu, 2 Jun 2022 08:35:02 -0500
+        Thu, 02 Jun 2022 06:36:51 -0700 (PDT)
+Received: (nullmailer pid 2163694 invoked by uid 1000);
+        Thu, 02 Jun 2022 13:36:50 -0000
+Date:   Thu, 2 Jun 2022 08:36:50 -0500
 From:   Rob Herring <robh@kernel.org>
-To:     Jiaxin Yu <jiaxin.yu@mediatek.com>
-Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
-        alsa-devel@alsa-project.org, broonie@kernel.org,
-        aaronyu@google.com, linux-mediatek@lists.infradead.org,
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Marc Zyngier <maz@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-renesas-soc@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org,
-        angelogioacchino.delregno@collabora.com, robh+dt@kernel.org,
-        devicetree@vger.kernel.org, julianbraha@gmail.com,
-        trevor.wu@mediatek.com, tzungbi@google.com, matthias.bgg@gmail.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v5 18/20] dt-bindings: mediatek: mt8186: add
- mt8186-mt6366-da7219-max98357 document
-Message-ID: <20220602133502.GA2160227-robh@kernel.org>
-References: <20220523132858.22166-1-jiaxin.yu@mediatek.com>
- <20220523132858.22166-19-jiaxin.yu@mediatek.com>
+        Thierry Reding <thierry.reding@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Andy Gross <agross@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Phil Edworthy <phil.edworthy@renesas.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        linux-tegra@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Jonathan Hunter <jonathanh@nvidia.com>
+Subject: Re: [PATCH v5 4/5] dt-bindings: pinctrl: renesas,rzg2l-pinctrl:
+ Document the properties to handle GPIO IRQ
+Message-ID: <20220602133650.GA2163633-robh@kernel.org>
+References: <20220523174238.28942-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20220523174238.28942-5-prabhakar.mahadev-lad.rj@bp.renesas.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220523132858.22166-19-jiaxin.yu@mediatek.com>
+In-Reply-To: <20220523174238.28942-5-prabhakar.mahadev-lad.rj@bp.renesas.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 23 May 2022 21:28:56 +0800, Jiaxin Yu wrote:
-> Add document for mt8186 board with mt6366, da7219 and max98357.
+On Mon, 23 May 2022 18:42:37 +0100, Lad Prabhakar wrote:
+> Document the required properties to handle GPIO IRQ.
 > 
-> Signed-off-by: Jiaxin Yu <jiaxin.yu@mediatek.com>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 > ---
->  .../sound/mt8186-mt6366-da7219-max98357.yaml  | 75 +++++++++++++++++++
->  1 file changed, 75 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/sound/mt8186-mt6366-da7219-max98357.yaml
+>  .../bindings/pinctrl/renesas,rzg2l-pinctrl.yaml   | 15 +++++++++++++++
+>  1 file changed, 15 insertions(+)
 > 
 
-Acked-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Rob Herring <robh@kernel.org>
