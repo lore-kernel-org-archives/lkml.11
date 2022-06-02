@@ -2,249 +2,810 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D59FCC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 10:31:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEBF9C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 10:32:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233922AbiFBKbH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 06:31:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39076 "EHLO
+        id S233724AbiFBKb6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 06:31:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233910AbiFBKal (ORCPT
+        with ESMTP id S231171AbiFBKb4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 06:30:41 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 244EA6D383;
-        Thu,  2 Jun 2022 03:30:31 -0700 (PDT)
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 252A3bSs007605;
-        Thu, 2 Jun 2022 10:30:23 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=VKd5vFUiEKfuRcGuSWKwzFHHhQa5vtGA/lkq5v9/Zc8=;
- b=cyscfWEuEF5gJTMeZZ+ZRhSXHb3YXeB3Cht4rRf2Ka0vt9uin73Hdql+mENqx0MWlmof
- gFsI7eeVHIb8zoigEZM0V+VCOjPsQzWA1Yq0F7tfVu8A7KgChLR4VA7CJVF5Wwwpka6/
- vz7EgxNB5KcTuoJCMJdADV7mtJBX1FC4o2qS2xEmBIBSPYmx35vEmzGUniTdYRrsCCXW
- m8ij0jFn+9OZgN+XItuN4Q67sv/nXKtWdOLvGWn2kP4CxhysGQzmg4ozfbPsExaxaX8C
- BIAbjRoQgjv8qm3lMUpZHMQX4elMO32Vrsk+n/tJHgpbUWULnW3yZ/KeNWauNSX3TKPX 1w== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3geu4age4h-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 02 Jun 2022 10:30:23 +0000
-Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 252APtCS009521;
-        Thu, 2 Jun 2022 10:30:22 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3geu4age3x-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 02 Jun 2022 10:30:22 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 252AL1lq024733;
-        Thu, 2 Jun 2022 10:30:20 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma03ams.nl.ibm.com with ESMTP id 3gbc7h6w3d-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 02 Jun 2022 10:30:20 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 252AUIOs24314162
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 2 Jun 2022 10:30:18 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 914ECA4055;
-        Thu,  2 Jun 2022 10:30:17 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5658DA404D;
-        Thu,  2 Jun 2022 10:30:17 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu,  2 Jun 2022 10:30:17 +0000 (GMT)
-From:   Niklas Schnelle <schnelle@linux.ibm.com>
-To:     Bjorn Helgaas <bhelgaas@google.com>,
-        Jan Kiszka <jan.kiszka@siemens.com>,
-        Matthew Rosato <mjrosato@linux.ibm.com>,
-        Pierre Morel <pmorel@linux.ibm.com>
-Cc:     linux-s390@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH RESEND v5 4/4] s390/pci: allow zPCI zbus without a function zero
-Date:   Thu,  2 Jun 2022 12:30:16 +0200
-Message-Id: <20220602103016.1499031-5-schnelle@linux.ibm.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220602103016.1499031-1-schnelle@linux.ibm.com>
-References: <20220602103016.1499031-1-schnelle@linux.ibm.com>
+        Thu, 2 Jun 2022 06:31:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D745FBA567;
+        Thu,  2 Jun 2022 03:31:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6A38AB80AE8;
+        Thu,  2 Jun 2022 10:31:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DF8CC385A5;
+        Thu,  2 Jun 2022 10:31:46 +0000 (UTC)
+From:   Huacai Chen <chenhuacai@loongson.cn>
+To:     Arnd Bergmann <arnd@arndb.de>, Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Airlie <airlied@linux.ie>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-arch@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
+        Yanteng Si <siyanteng@loongson.cn>,
+        Huacai Chen <chenhuacai@gmail.com>,
+        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Huacai Chen <chenhuacai@loongson.cn>,
+        WANG Xuerui <git@xen0n.name>
+Subject: [PATCH V13 20/24] LoongArch: Add VDSO and VSYSCALL support
+Date:   Thu,  2 Jun 2022 18:19:45 +0800
+Message-Id: <20220602101949.3873682-21-chenhuacai@loongson.cn>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220602101949.3873682-1-chenhuacai@loongson.cn>
+References: <20220602101949.3873682-1-chenhuacai@loongson.cn>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: wiDIw29KI5PkWw4vLdyrsc9XqM5Sl1Ia
-X-Proofpoint-ORIG-GUID: 5XmRFYMu6qdf2n5WPMgQdspeHsM-b81Y
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
- definitions=2022-06-02_01,2022-06-01_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501 mlxscore=0
- adultscore=0 mlxlogscore=952 suspectscore=0 lowpriorityscore=0
- clxscore=1015 phishscore=0 malwarescore=0 impostorscore=0 bulkscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206020042
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently the zPCI code block PCI bus creation and probing of a zPCI
-zbus unless there is a PCI function with devfn 0. This is always the
-case for the PCI functions with hidden RID but may keep PCI functions
-from a multi-function PCI device with RID information invisible until
-the function 0 becomes visible. Worse as a PCI bus is necessary to even
-present a PCI hotplug slot even that remains invisible.
+Add VDSO and VSYSCALL support (sigreturn, gettimeofday and its friends)
+for LoongArch.
 
-With the probing of these so called isolated PCI functions enabled for
-s390 in common code this restriction is no longer necessary. On network
-cards with multiple ports and a PF per port this also allows using each
-port on its own while still providing the physical PCI topology
-information in the devfn needed to associate VFs with their parent PF.
-
-Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+Reviewed-by: WANG Xuerui <git@xen0n.name>
+Reviewed-by: Jiaxun Yang <jiaxun.yang@flygoat.com>
+Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
 ---
- arch/s390/pci/pci_bus.c | 82 ++++++++++-------------------------------
- 1 file changed, 20 insertions(+), 62 deletions(-)
+ arch/loongarch/include/asm/vdso.h             |  38 +++++
+ arch/loongarch/include/asm/vdso/clocksource.h |   8 +
+ .../loongarch/include/asm/vdso/gettimeofday.h |  99 +++++++++++++
+ arch/loongarch/include/asm/vdso/processor.h   |  14 ++
+ arch/loongarch/include/asm/vdso/vdso.h        |  30 ++++
+ arch/loongarch/include/asm/vdso/vsyscall.h    |  27 ++++
+ arch/loongarch/kernel/time.c                  |   1 +
+ arch/loongarch/kernel/vdso.c                  | 138 ++++++++++++++++++
+ arch/loongarch/vdso/Makefile                  |  96 ++++++++++++
+ arch/loongarch/vdso/elf.S                     |  15 ++
+ arch/loongarch/vdso/gen_vdso_offsets.sh       |  13 ++
+ arch/loongarch/vdso/sigreturn.S               |  24 +++
+ arch/loongarch/vdso/vdso.S                    |  22 +++
+ arch/loongarch/vdso/vdso.lds.S                |  72 +++++++++
+ arch/loongarch/vdso/vgettimeofday.c           |  25 ++++
+ 15 files changed, 622 insertions(+)
+ create mode 100644 arch/loongarch/include/asm/vdso.h
+ create mode 100644 arch/loongarch/include/asm/vdso/clocksource.h
+ create mode 100644 arch/loongarch/include/asm/vdso/gettimeofday.h
+ create mode 100644 arch/loongarch/include/asm/vdso/processor.h
+ create mode 100644 arch/loongarch/include/asm/vdso/vdso.h
+ create mode 100644 arch/loongarch/include/asm/vdso/vsyscall.h
+ create mode 100644 arch/loongarch/kernel/vdso.c
+ create mode 100644 arch/loongarch/vdso/Makefile
+ create mode 100644 arch/loongarch/vdso/elf.S
+ create mode 100755 arch/loongarch/vdso/gen_vdso_offsets.sh
+ create mode 100644 arch/loongarch/vdso/sigreturn.S
+ create mode 100644 arch/loongarch/vdso/vdso.S
+ create mode 100644 arch/loongarch/vdso/vdso.lds.S
+ create mode 100644 arch/loongarch/vdso/vgettimeofday.c
 
-diff --git a/arch/s390/pci/pci_bus.c b/arch/s390/pci/pci_bus.c
-index 5d77acbd1c87..6a8da1b742ae 100644
---- a/arch/s390/pci/pci_bus.c
-+++ b/arch/s390/pci/pci_bus.c
-@@ -145,9 +145,6 @@ int zpci_bus_scan_bus(struct zpci_bus *zbus)
- 	struct zpci_dev *zdev;
- 	int devfn, rc, ret = 0;
- 
--	if (!zbus->function[0])
--		return 0;
--
- 	for (devfn = 0; devfn < ZPCI_FUNCTIONS_PER_BUS; devfn++) {
- 		zdev = zbus->function[devfn];
- 		if (zdev && zdev->state == ZPCI_FN_STATE_CONFIGURED) {
-@@ -184,26 +181,26 @@ void zpci_bus_scan_busses(void)
- 
- /* zpci_bus_create_pci_bus - Create the PCI bus associated with this zbus
-  * @zbus: the zbus holding the zdevices
-- * @f0: function 0 of the bus
-+ * @fr: PCI root function that will determine the bus's domain, and bus speeed
-  * @ops: the pci operations
-  *
-- * Function zero is taken as a parameter as this is used to determine the
-- * domain, multifunction property and maximum bus speed of the entire bus.
-+ * The PCI function @fr determines the domain (its UID), multifunction property
-+ * and maximum bus speed of the entire bus.
-  *
-  * Return: 0 on success, an error code otherwise
-  */
--static int zpci_bus_create_pci_bus(struct zpci_bus *zbus, struct zpci_dev *f0, struct pci_ops *ops)
-+static int zpci_bus_create_pci_bus(struct zpci_bus *zbus, struct zpci_dev *fr, struct pci_ops *ops)
- {
- 	struct pci_bus *bus;
- 	int domain;
- 
--	domain = zpci_alloc_domain((u16)f0->uid);
-+	domain = zpci_alloc_domain((u16)fr->uid);
- 	if (domain < 0)
- 		return domain;
- 
- 	zbus->domain_nr = domain;
--	zbus->multifunction = f0->rid_available;
--	zbus->max_bus_speed = f0->max_bus_speed;
-+	zbus->multifunction = fr->rid_available;
-+	zbus->max_bus_speed = fr->max_bus_speed;
- 
- 	/*
- 	 * Note that the zbus->resources are taken over and zbus->resources
-@@ -303,47 +300,6 @@ void pcibios_bus_add_device(struct pci_dev *pdev)
- 	}
- }
- 
--/* zpci_bus_create_hotplug_slots - Add hotplug slot(s) for device added to bus
-- * @zdev: the zPCI device that was newly added
-- *
-- * Add the hotplug slot(s) for the newly added PCI function. Normally this is
-- * simply the slot for the function itself. If however we are adding the
-- * function 0 on a zbus, it might be that we already registered functions on
-- * that zbus but could not create their hotplug slots yet so add those now too.
-- *
-- * Return: 0 on success, an error code otherwise
-- */
--static int zpci_bus_create_hotplug_slots(struct zpci_dev *zdev)
--{
--	struct zpci_bus *zbus = zdev->zbus;
--	int devfn, rc = 0;
--
--	rc = zpci_init_slot(zdev);
--	if (rc)
--		return rc;
--	zdev->has_hp_slot = 1;
--
--	if (zdev->devfn == 0 && zbus->multifunction) {
--		/* Now that function 0 is there we can finally create the
--		 * hotplug slots for those functions with devfn != 0 that have
--		 * been parked in zbus->function[] waiting for us to be able to
--		 * create the PCI bus.
--		 */
--		for  (devfn = 1; devfn < ZPCI_FUNCTIONS_PER_BUS; devfn++) {
--			zdev = zbus->function[devfn];
--			if (zdev && !zdev->has_hp_slot) {
--				rc = zpci_init_slot(zdev);
--				if (rc)
--					return rc;
--				zdev->has_hp_slot = 1;
--			}
--		}
--
--	}
--
--	return rc;
--}
--
- static int zpci_bus_add_device(struct zpci_bus *zbus, struct zpci_dev *zdev)
- {
- 	int rc = -EINVAL;
-@@ -352,21 +308,19 @@ static int zpci_bus_add_device(struct zpci_bus *zbus, struct zpci_dev *zdev)
- 		pr_err("devfn %04x is already assigned\n", zdev->devfn);
- 		return rc;
- 	}
+diff --git a/arch/loongarch/include/asm/vdso.h b/arch/loongarch/include/asm/vdso.h
+new file mode 100644
+index 000000000000..8f8a0f9a4953
+--- /dev/null
++++ b/arch/loongarch/include/asm/vdso.h
+@@ -0,0 +1,38 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Author: Huacai Chen <chenhuacai@loongson.cn>
++ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
++ */
 +
- 	zdev->zbus = zbus;
- 	zbus->function[zdev->devfn] = zdev;
- 	zpci_nb_devices++;
++#ifndef __ASM_VDSO_H
++#define __ASM_VDSO_H
++
++#include <linux/mm_types.h>
++#include <vdso/datapage.h>
++
++#include <asm/barrier.h>
++
++/*
++ * struct loongarch_vdso_info - Details of a VDSO image.
++ * @vdso: Pointer to VDSO image (page-aligned).
++ * @size: Size of the VDSO image (page-aligned).
++ * @off_rt_sigreturn: Offset of the rt_sigreturn() trampoline.
++ * @code_mapping: Special mapping structure for vdso code.
++ * @code_mapping: Special mapping structure for vdso data.
++ *
++ * This structure contains details of a VDSO image, including the image data
++ * and offsets of certain symbols required by the kernel. It is generated as
++ * part of the VDSO build process, aside from the mapping page array, which is
++ * populated at runtime.
++ */
++struct loongarch_vdso_info {
++	void *vdso;
++	unsigned long size;
++	unsigned long offset_sigreturn;
++	struct vm_special_mapping code_mapping;
++	struct vm_special_mapping data_mapping;
++};
++
++extern struct loongarch_vdso_info vdso_info;
++
++#endif /* __ASM_VDSO_H */
+diff --git a/arch/loongarch/include/asm/vdso/clocksource.h b/arch/loongarch/include/asm/vdso/clocksource.h
+new file mode 100644
+index 000000000000..13cd580d406d
+--- /dev/null
++++ b/arch/loongarch/include/asm/vdso/clocksource.h
+@@ -0,0 +1,8 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++#ifndef __ASM_VDSOCLOCKSOURCE_H
++#define __ASM_VDSOCLOCKSOURCE_H
++
++#define VDSO_ARCH_CLOCKMODES	\
++	VDSO_CLOCKMODE_CPU
++
++#endif /* __ASM_VDSOCLOCKSOURCE_H */
+diff --git a/arch/loongarch/include/asm/vdso/gettimeofday.h b/arch/loongarch/include/asm/vdso/gettimeofday.h
+new file mode 100644
+index 000000000000..7b2cd37641e2
+--- /dev/null
++++ b/arch/loongarch/include/asm/vdso/gettimeofday.h
+@@ -0,0 +1,99 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Author: Huacai Chen <chenhuacai@loongson.cn>
++ *
++ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
++ */
++#ifndef __ASM_VDSO_GETTIMEOFDAY_H
++#define __ASM_VDSO_GETTIMEOFDAY_H
++
++#ifndef __ASSEMBLY__
++
++#include <asm/unistd.h>
++#include <asm/vdso/vdso.h>
++
++#define VDSO_HAS_CLOCK_GETRES		1
++
++static __always_inline long gettimeofday_fallback(
++				struct __kernel_old_timeval *_tv,
++				struct timezone *_tz)
++{
++	register struct __kernel_old_timeval *tv asm("a0") = _tv;
++	register struct timezone *tz asm("a1") = _tz;
++	register long nr asm("a7") = __NR_gettimeofday;
++	register long ret asm("a0");
++
++	asm volatile(
++	"       syscall 0\n"
++	: "+r" (ret)
++	: "r" (nr), "r" (tv), "r" (tz)
++	: "$t0", "$t1", "$t2", "$t3", "$t4", "$t5", "$t6", "$t7",
++	  "$t8", "memory");
++
++	return ret;
++}
++
++static __always_inline long clock_gettime_fallback(
++					clockid_t _clkid,
++					struct __kernel_timespec *_ts)
++{
++	register clockid_t clkid asm("a0") = _clkid;
++	register struct __kernel_timespec *ts asm("a1") = _ts;
++	register long nr asm("a7") = __NR_clock_gettime;
++	register long ret asm("a0");
++
++	asm volatile(
++	"       syscall 0\n"
++	: "+r" (ret)
++	: "r" (nr), "r" (clkid), "r" (ts)
++	: "$t0", "$t1", "$t2", "$t3", "$t4", "$t5", "$t6", "$t7",
++	  "$t8", "memory");
++
++	return ret;
++}
++
++static __always_inline int clock_getres_fallback(
++					clockid_t _clkid,
++					struct __kernel_timespec *_ts)
++{
++	register clockid_t clkid asm("a0") = _clkid;
++	register struct __kernel_timespec *ts asm("a1") = _ts;
++	register long nr asm("a7") = __NR_clock_getres;
++	register long ret asm("a0");
++
++	asm volatile(
++	"       syscall 0\n"
++	: "+r" (ret)
++	: "r" (nr), "r" (clkid), "r" (ts)
++	: "$t0", "$t1", "$t2", "$t3", "$t4", "$t5", "$t6", "$t7",
++	  "$t8", "memory");
++
++	return ret;
++}
++
++static __always_inline u64 __arch_get_hw_counter(s32 clock_mode,
++						 const struct vdso_data *vd)
++{
++	uint64_t count;
++
++	__asm__ __volatile__(
++	"	rdtime.d %0, $zero\n"
++	: "=r" (count));
++
++	return count;
++}
++
++static inline bool loongarch_vdso_hres_capable(void)
++{
++	return true;
++}
++#define __arch_vdso_hres_capable loongarch_vdso_hres_capable
++
++static __always_inline const struct vdso_data *__arch_get_vdso_data(void)
++{
++	return get_vdso_data();
++}
++
++#endif /* !__ASSEMBLY__ */
++
++#endif /* __ASM_VDSO_GETTIMEOFDAY_H */
+diff --git a/arch/loongarch/include/asm/vdso/processor.h b/arch/loongarch/include/asm/vdso/processor.h
+new file mode 100644
+index 000000000000..ef5770b343a0
+--- /dev/null
++++ b/arch/loongarch/include/asm/vdso/processor.h
+@@ -0,0 +1,14 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/*
++ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
++ */
++#ifndef __ASM_VDSO_PROCESSOR_H
++#define __ASM_VDSO_PROCESSOR_H
++
++#ifndef __ASSEMBLY__
++
++#define cpu_relax()	barrier()
++
++#endif /* __ASSEMBLY__ */
++
++#endif /* __ASM_VDSO_PROCESSOR_H */
+diff --git a/arch/loongarch/include/asm/vdso/vdso.h b/arch/loongarch/include/asm/vdso/vdso.h
+new file mode 100644
+index 000000000000..5a01643a65b3
+--- /dev/null
++++ b/arch/loongarch/include/asm/vdso/vdso.h
+@@ -0,0 +1,30 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++/*
++ * Author: Huacai Chen <chenhuacai@loongson.cn>
++ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
++ */
++
++#ifndef __ASSEMBLY__
++
++#include <asm/asm.h>
++#include <asm/page.h>
++
++static inline unsigned long get_vdso_base(void)
++{
++	unsigned long addr;
++
++	__asm__(
++	" la.pcrel %0, _start\n"
++	: "=r" (addr)
++	:
++	:);
++
++	return addr;
++}
++
++static inline const struct vdso_data *get_vdso_data(void)
++{
++	return (const struct vdso_data *)(get_vdso_base() - PAGE_SIZE);
++}
++
++#endif /* __ASSEMBLY__ */
+diff --git a/arch/loongarch/include/asm/vdso/vsyscall.h b/arch/loongarch/include/asm/vdso/vsyscall.h
+new file mode 100644
+index 000000000000..5de615383a22
+--- /dev/null
++++ b/arch/loongarch/include/asm/vdso/vsyscall.h
+@@ -0,0 +1,27 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef __ASM_VDSO_VSYSCALL_H
++#define __ASM_VDSO_VSYSCALL_H
++
++#ifndef __ASSEMBLY__
++
++#include <linux/timekeeper_internal.h>
++#include <vdso/datapage.h>
++
++extern struct vdso_data *vdso_data;
++
++/*
++ * Update the vDSO data page to keep in sync with kernel timekeeping.
++ */
++static __always_inline
++struct vdso_data *__loongarch_get_k_vdso_data(void)
++{
++	return vdso_data;
++}
++#define __arch_get_k_vdso_data __loongarch_get_k_vdso_data
++
++/* The asm-generic header needs to be included after the definitions above */
++#include <asm-generic/vdso/vsyscall.h>
++
++#endif /* !__ASSEMBLY__ */
++
++#endif /* __ASM_VDSO_VSYSCALL_H */
+diff --git a/arch/loongarch/kernel/time.c b/arch/loongarch/kernel/time.c
+index b2bb14844f01..fe6823875895 100644
+--- a/arch/loongarch/kernel/time.c
++++ b/arch/loongarch/kernel/time.c
+@@ -183,6 +183,7 @@ static struct clocksource clocksource_const = {
+ 	.read = read_const_counter,
+ 	.mask = CLOCKSOURCE_MASK(64),
+ 	.flags = CLOCK_SOURCE_IS_CONTINUOUS,
++	.vdso_clock_mode = VDSO_CLOCKMODE_CPU,
+ };
  
--	if (zbus->bus) {
--		if (zbus->multifunction && !zdev->rid_available) {
--			WARN_ONCE(1, "rid_available not set for multifunction\n");
--			goto error;
--		}
--
--		zpci_bus_create_hotplug_slots(zdev);
--	} else {
--		/* Hotplug slot will be created once function 0 appears */
--		zbus->multifunction = 1;
-+	if (zbus->multifunction && !zdev->rid_available) {
-+		WARN_ONCE(1, "rid_available not set for multifunction\n");
-+		goto error;
- 	}
-+	rc = zpci_init_slot(zdev);
-+	if (rc)
-+		goto error;
-+	zdev->has_hp_slot = 1;
- 
- 	return 0;
- 
-@@ -400,7 +354,11 @@ int zpci_bus_device_register(struct zpci_dev *zdev, struct pci_ops *ops)
- 			return -ENOMEM;
- 	}
- 
--	if (zdev->devfn == 0) {
-+	if (!zbus->bus) {
-+		/* The UID of the first PCI function registered with a zpci_bus
-+		 * is used as the domain number for that bus. Currently there
-+		 * is exactly one zpci_bus per domain.
-+		 */
- 		rc = zpci_bus_create_pci_bus(zbus, zdev, ops);
- 		if (rc)
- 			goto error;
+ int __init constant_clocksource_init(void)
+diff --git a/arch/loongarch/kernel/vdso.c b/arch/loongarch/kernel/vdso.c
+new file mode 100644
+index 000000000000..e20c8ca87473
+--- /dev/null
++++ b/arch/loongarch/kernel/vdso.c
+@@ -0,0 +1,138 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Author: Huacai Chen <chenhuacai@loongson.cn>
++ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
++ */
++
++#include <linux/binfmts.h>
++#include <linux/elf.h>
++#include <linux/err.h>
++#include <linux/init.h>
++#include <linux/ioport.h>
++#include <linux/kernel.h>
++#include <linux/mm.h>
++#include <linux/random.h>
++#include <linux/sched.h>
++#include <linux/slab.h>
++#include <linux/timekeeper_internal.h>
++
++#include <asm/page.h>
++#include <asm/vdso.h>
++#include <vdso/helpers.h>
++#include <vdso/vsyscall.h>
++#include <generated/vdso-offsets.h>
++
++extern char vdso_start[], vdso_end[];
++
++/* Kernel-provided data used by the VDSO. */
++static union loongarch_vdso_data {
++	u8 page[PAGE_SIZE];
++	struct vdso_data data[CS_BASES];
++} loongarch_vdso_data __page_aligned_data;
++struct vdso_data *vdso_data = loongarch_vdso_data.data;
++static struct page *vdso_pages[] = { NULL };
++
++static int vdso_mremap(const struct vm_special_mapping *sm, struct vm_area_struct *new_vma)
++{
++	current->mm->context.vdso = (void *)(new_vma->vm_start);
++
++	return 0;
++}
++
++struct loongarch_vdso_info vdso_info = {
++	.vdso = vdso_start,
++	.size = PAGE_SIZE,
++	.code_mapping = {
++		.name = "[vdso]",
++		.pages = vdso_pages,
++		.mremap = vdso_mremap,
++	},
++	.data_mapping = {
++		.name = "[vvar]",
++	},
++	.offset_sigreturn = vdso_offset_sigreturn,
++};
++
++static int __init init_vdso(void)
++{
++	unsigned long i, pfn;
++
++	BUG_ON(!PAGE_ALIGNED(vdso_info.vdso));
++	BUG_ON(!PAGE_ALIGNED(vdso_info.size));
++
++	pfn = __phys_to_pfn(__pa_symbol(vdso_info.vdso));
++	for (i = 0; i < vdso_info.size / PAGE_SIZE; i++)
++		vdso_info.code_mapping.pages[i] = pfn_to_page(pfn + i);
++
++	return 0;
++}
++subsys_initcall(init_vdso);
++
++static unsigned long vdso_base(void)
++{
++	unsigned long base = STACK_TOP;
++
++	if (current->flags & PF_RANDOMIZE) {
++		base += get_random_int() & (VDSO_RANDOMIZE_SIZE - 1);
++		base = PAGE_ALIGN(base);
++	}
++
++	return base;
++}
++
++int arch_setup_additional_pages(struct linux_binprm *bprm, int uses_interp)
++{
++	int ret;
++	unsigned long vvar_size, size, data_addr, vdso_addr;
++	struct mm_struct *mm = current->mm;
++	struct vm_area_struct *vma;
++	struct loongarch_vdso_info *info = current->thread.vdso;
++
++	if (mmap_write_lock_killable(mm))
++		return -EINTR;
++
++	/*
++	 * Determine total area size. This includes the VDSO data itself
++	 * and the data page.
++	 */
++	vvar_size = PAGE_SIZE;
++	size = vvar_size + info->size;
++
++	data_addr = get_unmapped_area(NULL, vdso_base(), size, 0, 0);
++	if (IS_ERR_VALUE(data_addr)) {
++		ret = data_addr;
++		goto out;
++	}
++	vdso_addr = data_addr + PAGE_SIZE;
++
++	vma = _install_special_mapping(mm, data_addr, vvar_size,
++				       VM_READ | VM_MAYREAD,
++				       &info->data_mapping);
++	if (IS_ERR(vma)) {
++		ret = PTR_ERR(vma);
++		goto out;
++	}
++
++	/* Map VDSO data page. */
++	ret = remap_pfn_range(vma, data_addr,
++			      virt_to_phys(vdso_data) >> PAGE_SHIFT,
++			      PAGE_SIZE, PAGE_READONLY);
++	if (ret)
++		goto out;
++
++	/* Map VDSO code page. */
++	vma = _install_special_mapping(mm, vdso_addr, info->size,
++				       VM_READ | VM_EXEC | VM_MAYREAD | VM_MAYWRITE | VM_MAYEXEC,
++				       &info->code_mapping);
++	if (IS_ERR(vma)) {
++		ret = PTR_ERR(vma);
++		goto out;
++	}
++
++	mm->context.vdso = (void *)vdso_addr;
++	ret = 0;
++
++out:
++	mmap_write_unlock(mm);
++	return ret;
++}
+diff --git a/arch/loongarch/vdso/Makefile b/arch/loongarch/vdso/Makefile
+new file mode 100644
+index 000000000000..6b6e16732c60
+--- /dev/null
++++ b/arch/loongarch/vdso/Makefile
+@@ -0,0 +1,96 @@
++# SPDX-License-Identifier: GPL-2.0
++# Objects to go into the VDSO.
++
++# Absolute relocation type $(ARCH_REL_TYPE_ABS) needs to be defined before
++# the inclusion of generic Makefile.
++ARCH_REL_TYPE_ABS := R_LARCH_32|R_LARCH_64|R_LARCH_MARK_LA|R_LARCH_JUMP_SLOT
++include $(srctree)/lib/vdso/Makefile
++
++obj-vdso-y := elf.o vgettimeofday.o sigreturn.o
++
++# Common compiler flags between ABIs.
++ccflags-vdso := \
++	$(filter -I%,$(KBUILD_CFLAGS)) \
++	$(filter -E%,$(KBUILD_CFLAGS)) \
++	$(filter -march=%,$(KBUILD_CFLAGS)) \
++	$(filter -m%-float,$(KBUILD_CFLAGS)) \
++	-D__VDSO__
++
++ifeq ($(cc-name),clang)
++ccflags-vdso += $(filter --target=%,$(KBUILD_CFLAGS))
++endif
++
++cflags-vdso := $(ccflags-vdso) \
++	$(filter -W%,$(filter-out -Wa$(comma)%,$(KBUILD_CFLAGS))) \
++	-O2 -g -fno-strict-aliasing -fno-common -fno-builtin -G0 \
++	-fno-stack-protector -fno-jump-tables -DDISABLE_BRANCH_PROFILING \
++	$(call cc-option, -fno-asynchronous-unwind-tables) \
++	$(call cc-option, -fno-stack-protector)
++aflags-vdso := $(ccflags-vdso) \
++	-D__ASSEMBLY__ -Wa,-gdwarf-2
++
++ifneq ($(c-gettimeofday-y),)
++  CFLAGS_vgettimeofday.o += -include $(c-gettimeofday-y)
++endif
++
++# VDSO linker flags.
++ldflags-y := -Bsymbolic --no-undefined -soname=linux-vdso.so.1 \
++	$(filter -E%,$(KBUILD_CFLAGS)) -nostdlib -shared \
++	--hash-style=sysv --build-id -T
++
++GCOV_PROFILE := n
++
++#
++# Shared build commands.
++#
++
++quiet_cmd_vdsold_and_vdso_check = LD      $@
++      cmd_vdsold_and_vdso_check = $(cmd_ld); $(cmd_vdso_check)
++
++quiet_cmd_vdsoas_o_S = AS       $@
++      cmd_vdsoas_o_S = $(CC) $(a_flags) -c -o $@ $<
++
++# Generate VDSO offsets using helper script
++gen-vdsosym := $(srctree)/$(src)/gen_vdso_offsets.sh
++quiet_cmd_vdsosym = VDSOSYM $@
++      cmd_vdsosym = $(NM) $< | $(gen-vdsosym) | LC_ALL=C sort > $@
++
++include/generated/vdso-offsets.h: $(obj)/vdso.so.dbg FORCE
++	$(call if_changed,vdsosym)
++
++#
++# Build native VDSO.
++#
++
++native-abi := $(filter -mabi=%,$(KBUILD_CFLAGS))
++
++targets += $(obj-vdso-y)
++targets += vdso.lds vdso.so.dbg vdso.so
++
++obj-vdso := $(obj-vdso-y:%.o=$(obj)/%.o)
++
++$(obj-vdso): KBUILD_CFLAGS := $(cflags-vdso) $(native-abi)
++$(obj-vdso): KBUILD_AFLAGS := $(aflags-vdso) $(native-abi)
++
++$(obj)/vdso.lds: KBUILD_CPPFLAGS := $(ccflags-vdso) $(native-abi)
++
++$(obj)/vdso.so.dbg: $(obj)/vdso.lds $(obj-vdso) FORCE
++	$(call if_changed,vdsold_and_vdso_check)
++
++$(obj)/vdso.so: OBJCOPYFLAGS := -S
++$(obj)/vdso.so: $(obj)/vdso.so.dbg FORCE
++	$(call if_changed,objcopy)
++
++obj-y += vdso.o
++
++$(obj)/vdso.o : $(obj)/vdso.so
++
++# install commands for the unstripped file
++quiet_cmd_vdso_install = INSTALL $@
++      cmd_vdso_install = cp $(obj)/$@.dbg $(MODLIB)/vdso/$@
++
++vdso.so: $(obj)/vdso.so.dbg
++	@mkdir -p $(MODLIB)/vdso
++	$(call cmd,vdso_install)
++
++vdso_install: vdso.so
+diff --git a/arch/loongarch/vdso/elf.S b/arch/loongarch/vdso/elf.S
+new file mode 100644
+index 000000000000..9bb21b9f9583
+--- /dev/null
++++ b/arch/loongarch/vdso/elf.S
+@@ -0,0 +1,15 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Author: Huacai Chen <chenhuacai@loongson.cn>
++ *
++ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
++ */
++
++#include <asm/vdso/vdso.h>
++
++#include <linux/elfnote.h>
++#include <linux/version.h>
++
++ELFNOTE_START(Linux, 0, "a")
++	.long LINUX_VERSION_CODE
++ELFNOTE_END
+diff --git a/arch/loongarch/vdso/gen_vdso_offsets.sh b/arch/loongarch/vdso/gen_vdso_offsets.sh
+new file mode 100755
+index 000000000000..1bb4e12642ff
+--- /dev/null
++++ b/arch/loongarch/vdso/gen_vdso_offsets.sh
+@@ -0,0 +1,13 @@
++#!/bin/sh
++# SPDX-License-Identifier: GPL-2.0
++
++#
++# Derived from RISC-V and ARM64:
++# Author: Will Deacon <will.deacon@arm.com>
++#
++# Match symbols in the DSO that look like VDSO_*; produce a header file
++# of constant offsets into the shared object.
++#
++
++LC_ALL=C sed -n -e 's/^00*/0/' -e \
++'s/^\([0-9a-fA-F]*\) . VDSO_\([a-zA-Z0-9_]*\)$/\#define vdso_offset_\2\t0x\1/p'
+diff --git a/arch/loongarch/vdso/sigreturn.S b/arch/loongarch/vdso/sigreturn.S
+new file mode 100644
+index 000000000000..9cb3c58fad03
+--- /dev/null
++++ b/arch/loongarch/vdso/sigreturn.S
+@@ -0,0 +1,24 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Author: Huacai Chen <chenhuacai@loongson.cn>
++ *
++ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
++ */
++
++#include <asm/vdso/vdso.h>
++
++#include <linux/linkage.h>
++#include <uapi/asm/unistd.h>
++
++#include <asm/regdef.h>
++#include <asm/asm.h>
++
++	.section	.text
++	.cfi_sections	.debug_frame
++
++SYM_FUNC_START(__vdso_rt_sigreturn)
++
++	li.w	a7, __NR_rt_sigreturn
++	syscall	0
++
++SYM_FUNC_END(__vdso_rt_sigreturn)
+diff --git a/arch/loongarch/vdso/vdso.S b/arch/loongarch/vdso/vdso.S
+new file mode 100644
+index 000000000000..46789bade6ff
+--- /dev/null
++++ b/arch/loongarch/vdso/vdso.S
+@@ -0,0 +1,22 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/*
++ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
++ *
++ * Derived from RISC-V:
++ * Copyright (C) 2014 Regents of the University of California
++ */
++
++#include <linux/init.h>
++#include <linux/linkage.h>
++#include <asm/page.h>
++
++	__PAGE_ALIGNED_DATA
++
++	.globl vdso_start, vdso_end
++	.balign PAGE_SIZE
++vdso_start:
++	.incbin "arch/loongarch/vdso/vdso.so"
++	.balign PAGE_SIZE
++vdso_end:
++
++	.previous
+diff --git a/arch/loongarch/vdso/vdso.lds.S b/arch/loongarch/vdso/vdso.lds.S
+new file mode 100644
+index 000000000000..955f02de4a2d
+--- /dev/null
++++ b/arch/loongarch/vdso/vdso.lds.S
+@@ -0,0 +1,72 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Author: Huacai Chen <chenhuacai@loongson.cn>
++ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
++ */
++
++OUTPUT_FORMAT("elf64-loongarch", "elf64-loongarch", "elf64-loongarch")
++
++OUTPUT_ARCH(loongarch)
++
++SECTIONS
++{
++	PROVIDE(_start = .);
++	. = SIZEOF_HEADERS;
++
++	.hash		: { *(.hash) }			:text
++	.gnu.hash	: { *(.gnu.hash) }
++	.dynsym		: { *(.dynsym) }
++	.dynstr		: { *(.dynstr) }
++	.gnu.version	: { *(.gnu.version) }
++	.gnu.version_d	: { *(.gnu.version_d) }
++	.gnu.version_r	: { *(.gnu.version_r) }
++
++	.note		: { *(.note.*) }		:text :note
++
++	.text		: { *(.text*) }			:text
++	PROVIDE (__etext = .);
++	PROVIDE (_etext = .);
++	PROVIDE (etext = .);
++
++	.eh_frame_hdr	: { *(.eh_frame_hdr) }		:text :eh_frame_hdr
++	.eh_frame	: { KEEP (*(.eh_frame)) }	:text
++
++	.dynamic	: { *(.dynamic) }		:text :dynamic
++
++	.rodata		: { *(.rodata*) }		:text
++
++	_end = .;
++	PROVIDE(end = .);
++
++	/DISCARD/	: {
++		*(.gnu.attributes)
++		*(.note.GNU-stack)
++		*(.data .data.* .gnu.linkonce.d.* .sdata*)
++		*(.bss .sbss .dynbss .dynsbss)
++	}
++}
++
++PHDRS
++{
++	text		PT_LOAD		FLAGS(5) FILEHDR PHDRS; /* PF_R|PF_X */
++	dynamic		PT_DYNAMIC	FLAGS(4);		/* PF_R */
++	note		PT_NOTE		FLAGS(4);		/* PF_R */
++	eh_frame_hdr	PT_GNU_EH_FRAME;
++}
++
++VERSION
++{
++	LINUX_5.10 {
++	global:
++		__vdso_clock_getres;
++		__vdso_clock_gettime;
++		__vdso_gettimeofday;
++		__vdso_rt_sigreturn;
++	local: *;
++	};
++}
++
++/*
++ * Make the sigreturn code visible to the kernel.
++ */
++VDSO_sigreturn		= __vdso_rt_sigreturn;
+diff --git a/arch/loongarch/vdso/vgettimeofday.c b/arch/loongarch/vdso/vgettimeofday.c
+new file mode 100644
+index 000000000000..b1f4548dae92
+--- /dev/null
++++ b/arch/loongarch/vdso/vgettimeofday.c
+@@ -0,0 +1,25 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * LoongArch userspace implementations of gettimeofday() and similar.
++ *
++ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
++ */
++#include <linux/types.h>
++
++int __vdso_clock_gettime(clockid_t clock,
++			 struct __kernel_timespec *ts)
++{
++	return __cvdso_clock_gettime(clock, ts);
++}
++
++int __vdso_gettimeofday(struct __kernel_old_timeval *tv,
++			struct timezone *tz)
++{
++	return __cvdso_gettimeofday(tv, tz);
++}
++
++int __vdso_clock_getres(clockid_t clock_id,
++			struct __kernel_timespec *res)
++{
++	return __cvdso_clock_getres(clock_id, res);
++}
 -- 
-2.32.0
+2.27.0
 
