@@ -2,136 +2,241 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 945EDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 09:42:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1EA1CCA478
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 09:43:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233205AbiFBJmp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 05:42:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43056 "EHLO
+        id S233225AbiFBJnG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 05:43:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233195AbiFBJmk (ORCPT
+        with ESMTP id S233209AbiFBJnE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 05:42:40 -0400
-Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01on2123.outbound.protection.outlook.com [40.107.255.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82290132770;
-        Thu,  2 Jun 2022 02:42:35 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ea1VzQnzoZEYR8Xo2bKW95+qPpk37s6jP/Pe9mfPpgxb1Ehyi8Lm9u3gmuahWilRefQzne6NmMn/9kXYu1HsbWSZK8telYm5WkpXsW2qXR0HZZF0n/BSXavUUiLVtUmpqMmMVtQY4RmWC+ZV4eW5x/seZMU84OorXrUxcoRGaHMR1pOdsqv9BbXc1aS2cEevoXZhqvdeHPnRDo3m5jXhbL45WkQo4RPv3OjzqO906pVmBF1/eHeF1bP4R9BbXnRCXIbyaHJU3h/t5A+AX0WFrb4APd+Fo9rmXSp33HvU8Hi2+K47RKUba7rNW7hwsyJRtYoRqh114u/2JL2H9HjkGg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gmFQTQ4pQcjHlySgG2/GWhbvEOMT3P7YmUTQJgkB4AI=;
- b=Gw80xbifDIZxmHZf5mS1wUlVlvy9VSUs+++ycKQU9IjzgOERTzzmaeQisflbk0JeH07Wr9YplqnI/JipOzx7mG+bAkXOD7Gn5FsxfSyAHYhSz4Q3YANgAJmurGqckB8ygYa9wFCC6lIize8dSOlZBAdzAoHGIIptvqlCekxOwhczQ72ie75JD9AXHYRpaENB8p+LOI8j4KSp5PQx/8tzRWINlAH1ghpjA5gerd9Lap7UTghhB9sxnRZ9zr3AhKVIgrIr4Ns9soxAKermNlL2KSA0AgGQlztEfAy8NQqh14P5tHaydUzdEPPRU4M9p0IGyqcvBJ6kQ7wc30vJFmleWw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
- dkim=pass header.d=vivo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
- s=selector2-vivo0-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gmFQTQ4pQcjHlySgG2/GWhbvEOMT3P7YmUTQJgkB4AI=;
- b=qF218vCHyKAZNB7Py1ZAmWKVLH7I28Co8ufUmHz4jt1UdIu0I95wgC/1nEJFCZMT1UFokl4vNAFZKDl8IBcFuPyekY2cpXxRuTxoaTUCkPJXxFcBZf50fkZOEDJG9CrLa9Y68uxp2vQx5QRvfZ+KqCmFO/EeI6ewRHxB80LA21c=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vivo.com;
-Received: from TYZPR06MB4173.apcprd06.prod.outlook.com (2603:1096:400:26::14)
- by KL1PR0601MB4323.apcprd06.prod.outlook.com (2603:1096:820:75::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.13; Thu, 2 Jun
- 2022 09:42:33 +0000
-Received: from TYZPR06MB4173.apcprd06.prod.outlook.com
- ([fe80::a92b:6d92:5ad9:febb]) by TYZPR06MB4173.apcprd06.prod.outlook.com
- ([fe80::a92b:6d92:5ad9:febb%9]) with mapi id 15.20.5314.013; Thu, 2 Jun 2022
- 09:42:33 +0000
-From:   Yihao Han <hanyihao@vivo.com>
-To:     Hans de Goede <hdegoede@redhat.com>, Helge Deller <deller@gmx.de>,
-        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Cc:     Yihao Han <hanyihao@vivo.com>
-Subject: [PATCH] fbdev: simplefb: Check before clk_put() not needed
-Date:   Thu,  2 Jun 2022 02:42:18 -0700
-Message-Id: <20220602094219.13024-1-hanyihao@vivo.com>
-X-Mailer: git-send-email 2.17.1
-Content-Type: text/plain
-X-ClientProxiedBy: SI2PR06CA0012.apcprd06.prod.outlook.com
- (2603:1096:4:186::13) To TYZPR06MB4173.apcprd06.prod.outlook.com
- (2603:1096:400:26::14)
+        Thu, 2 Jun 2022 05:43:04 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F18CF13B2D8
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 02:43:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654162981;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=JvpBJgFNptHg6js/ah8cyCcyPzqiNcEeiwhG2uOaTXY=;
+        b=gJHQtxRgGZ0HfKNskY7KnhRaxal427mrOEzJwf+TL86l7EuIk0FRiEx9ikW/dz/M/Dm7n9
+        d/Ly6cdIvQz0U/DMV6Cc+AakJWn9lLn28ewkh1P/7hglE8ZYLRU1J/D8uVuqoGdECGYuWW
+        BsYk2e9Nr546WOATb6eHMzlzqcB9siA=
+Received: from mail-pl1-f199.google.com (mail-pl1-f199.google.com
+ [209.85.214.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-284-fEo85abEN_Wsz7PzcPUGbw-1; Thu, 02 Jun 2022 05:43:00 -0400
+X-MC-Unique: fEo85abEN_Wsz7PzcPUGbw-1
+Received: by mail-pl1-f199.google.com with SMTP id h13-20020a170902f70d00b0015f4cc5d19aso2457223plo.18
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 02:43:00 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=JvpBJgFNptHg6js/ah8cyCcyPzqiNcEeiwhG2uOaTXY=;
+        b=W2YD/K5BEHuS12LoKW9jGhnOmolGlpJ8WOSdkY6e8nmTKevdaAMuu/6IIyiy769rn8
+         D4B5rUsiOhW4rZDy6bbTXEFKr/VKwXhYMuxYqTxrJqm5i0p+XblhFR0/xQyifxeE/ZTb
+         rYPhdRXeBImfu4zbFSG9Um/X78C5doH6lrMBNYzNDmHiR+Y2rpKlWWFKx8Qi3ligcLZ7
+         oQvdf8ULRyn6xQgtyP6JJjCT49nI4zP1197mebkSq5MaYpSCJZDgjOxZCClb8kIj0dCh
+         dDyDfu3St6xteJZ3T1/rGsgItrC4cj92RDeks04j7YGyosjNQhLNUfCwBAms/stc5tTO
+         GUcg==
+X-Gm-Message-State: AOAM533j5CFqmf2tfXLUz6Zmz79JOapmFELGSBD+TN0pXFIMl5prRrcy
+        8qgV1+v9ZhH/BM/CjoW9clPjtLdfwfC/mTfZDl50z3Gl8PL19hwWhdTo2Un1a6/DNntZbdxgeSS
+        yUl2M650252C/iNN7+W8iBmiTG65iDDqrkx+VI532Tjpmbu2gqD+aLAihg+fjXHB0JGNSRKdJXQ
+        ==
+X-Received: by 2002:a62:140c:0:b0:51b:bd14:6859 with SMTP id 12-20020a62140c000000b0051bbd146859mr5141556pfu.28.1654162978506;
+        Thu, 02 Jun 2022 02:42:58 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyv0Fnp154lJ3zdr12+hPZG//GkL7o63kRnr8RbZLa8Qyjnj/j3qGVf9FDRMZHLkQ8GOjUI9w==
+X-Received: by 2002:a62:140c:0:b0:51b:bd14:6859 with SMTP id 12-20020a62140c000000b0051bbd146859mr5141520pfu.28.1654162978132;
+        Thu, 02 Jun 2022 02:42:58 -0700 (PDT)
+Received: from [10.72.12.107] ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id y71-20020a638a4a000000b003c25dfd7372sm446757pgd.26.2022.06.02.02.42.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 02 Jun 2022 02:42:57 -0700 (PDT)
+Subject: Re: [RFC PATCH v3] ceph: prevent a client from exceeding the MDS
+ maximum xattr size
+To:     =?UTF-8?Q?Lu=c3=ads_Henriques?= <lhenriques@suse.de>
+Cc:     Jeff Layton <jlayton@kernel.org>,
+        Ilya Dryomov <idryomov@gmail.com>,
+        Gregory Farnum <gfarnum@redhat.com>,
+        ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220601162939.12278-1-lhenriques@suse.de>
+ <b788a7f9-9177-0398-7d21-a19ce7e6c957@redhat.com>
+ <87h7534dr9.fsf@brahms.olymp>
+From:   Xiubo Li <xiubli@redhat.com>
+Message-ID: <289f5136-d2fc-1474-eb0f-521586f241b2@redhat.com>
+Date:   Thu, 2 Jun 2022 17:42:50 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9f8504cf-5519-45b3-9451-08da447c37df
-X-MS-TrafficTypeDiagnostic: KL1PR0601MB4323:EE_
-X-Microsoft-Antispam-PRVS: <KL1PR0601MB4323DC27EC9420D930F13036A2DE9@KL1PR0601MB4323.apcprd06.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: nuCOCUg2L2CnHVkruBPw7sxiZxxTJFZEzfCA1Yq+p4f6HbyRxz7mXgGUu7i0AF4sAn3GWpDOpDkMeM6bhu7IaVjbQp31sRDXMhqxrcHpvDCkpRVozdEJCr8COzcXs69If5ldbhjcnpoy53Z8VbYlNLWuMJ7p6/AMEsM8iPpvArqSzxaN+6LKJnPy20xNdh0O39uS8dnO5LrJKVSU5rjbbSlM/iiYLx3QexPRpMcO5iXBNQzMYMWVFPgNBKgj9AGkQA/Y44T7QfJg/Y17cVPI5aUjj5QT7euYZm9ozheMLk2YEfoDDh52vuLFCEOo24Df3WC91/UEoqqNvHQ7udN2OoELtIjWdShOGJJweCfuehZydt4xhZ0gcv8/ZyGy5W/9G3RRDb3R3GGk0z8OUHo87dwMQqw1SA8Dy6KSsTp4/Vsui8ChU6O81ZPVlQa1bXdCzpGjhLbiiX6+lfJBQDI8KLGAkJWjoHdu/G2im942s8hpNIOBwprpe4hWw3d6vgPvwcGuY1/aBo0EXrcjZmCmbdRm0QjzZlgZYGQCNmUmjVjMyj0zmHLlU6P7nCi5ILungv49Gm2Lg/fLRezfTkK+VBzvvvZRdaz43T/X1a6acLtITLTDiSFlJ2K9LyUR0htlJGvwerrvuCr6F1E9GjarZAWv/GR6QkCHJzIv4viicLPeV9o+t9sCdkEyPeqEWK7gwOHjmS/YPO9syZCidSr6XA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYZPR06MB4173.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6486002)(4326008)(66556008)(508600001)(66946007)(66476007)(8676002)(86362001)(110136005)(316002)(83380400001)(38350700002)(38100700002)(2616005)(186003)(52116002)(107886003)(6506007)(6666004)(26005)(1076003)(6512007)(4744005)(8936002)(2906002)(36756003)(5660300002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?VNr1WvJpETFGkk6/nDe50RELnVifupDVsnjtQ8ut/V5vXVrb1OkYwpYMcUkD?=
- =?us-ascii?Q?nozalz4Qsv1NwP7opxzTllXjxewlTapTxyjTrGHXmLeju/SvVkwMQ0/oKiTA?=
- =?us-ascii?Q?YuMAiFcaCqUTlRivqa1bjXdVY1YeweFuiV9Er7LjS+Mo5RmopuNUXfgbt2dS?=
- =?us-ascii?Q?Zn7A1qilhH9WOlvy5W67/MSsTnqpjnok1TjTukN9Rzkpe9LrUeTiWNcMy3nL?=
- =?us-ascii?Q?KvIA2n01DcmLuXb+1u0NIDTk61pqXEkmSkyEuQ75QRpIe/XsY8mVvnq2zVDa?=
- =?us-ascii?Q?JE74tQjGH0rz2enFi8jXyi8zH80J2ynwj1fGegsx3sxun9IloQ4Bj4FB5Vhn?=
- =?us-ascii?Q?w5+HxAEQ2tS3tO0+RQ65SSG97+GPCaBRkJlNmwiaAjRoaxhmDC+J9FTK2tQZ?=
- =?us-ascii?Q?alc2YtSqKZ6j8kL95jOwZftkdztxcOMLlPhxVg7UZVChkK/wBm26NuJ0TRLX?=
- =?us-ascii?Q?aySdufQY6jpLMpZD1zGn0cN3CfRy6FFUB4w+pzfvzXz/vbtpWzfsub3M616a?=
- =?us-ascii?Q?/+V/554vLUHdRUcPp2HbGpORTt8k+bEhrYZ7bWrKDDOkxB0hoc9RuZxbDoqf?=
- =?us-ascii?Q?eGOPzPPsjTPe1ZOBE2IAj6aB+l+/27uCVqvEirJH8p7lMUNbnSVhu5TC380z?=
- =?us-ascii?Q?Wii1wxdin1/jdh/h7OmB6zNHPius4WRrMQ2xJprfKMZdsKCXdX0JpzdBGYxI?=
- =?us-ascii?Q?b85hmDK3xnLaQCqmGsxqsHWeSZEyMYgtUk993kJVdZdyXY/Z0zj88EAYMHqN?=
- =?us-ascii?Q?Hgv+6bInYZfBJR5qTWlHTSzcLlmKfNjRG8L5v6xfwb5QpMCkc/iuILU69HkB?=
- =?us-ascii?Q?GzWsMM0sGgKDG13WD/DsQvCMGccmRiSnji0dIs+oDS90IC5lvhJIw1h/XQbq?=
- =?us-ascii?Q?Ax/WUn31xtESlmRRVV9wIXnGj1W6RGOyfzlKb2kbdFGB0sE0a1RzlPjPS5y7?=
- =?us-ascii?Q?4LITGRwbkGUftg5mj7XvqXdR3WKijg0PKOoBT+koLKJ2tENncULnolitnLts?=
- =?us-ascii?Q?/xkwDPUlEA6/5dVDey0XzxoEHQbN5wxuMDVrMxawmH7293oSJGy2BkgznxNY?=
- =?us-ascii?Q?xHjpw/nU/ISgQHP1aDqTOGtE6nLdLc4n/GKRI9hmZ+i6s9ps5vfMa3jj2HTB?=
- =?us-ascii?Q?RZM3QxeEyED6f3KmMBizWX1Jwh5OAkXY4oTyCVC+ViVfwl82MpaHprjH1BA3?=
- =?us-ascii?Q?KHEYFAk0D14I1rySCO3MxdaYLJF5gCZ6+KtPUPBENfQokjMb9GyQldSBVSLF?=
- =?us-ascii?Q?bF7JGHSP/G2Ax+kRA2XGIWuJyR2AEHZE2/CYBsQQH72YeeM9H5FXWqGDNFIU?=
- =?us-ascii?Q?NUNyhnJtR+QX2JaeZzk/yhdzd+PCcoImJLDk0fuCQ0DbCHBaBDob257prsef?=
- =?us-ascii?Q?t5wQKBz22rHOBHrqjSuecWy0EfnuYSKmRWzqufTuymhG7KRVhWM60eiUuRwm?=
- =?us-ascii?Q?k6OJd1w3VIbCEUKsCj72NoVQKx7oQ1K9VV91t48c9mEM1yBLKqeWr2sKuqtk?=
- =?us-ascii?Q?8c9p0I4UePimOQJlBvZ/5oYuHzzRRJcoBNRNcFuZN9IuTkd0dmnp5ceT3st/?=
- =?us-ascii?Q?MgdlMB01R39Wc4aOgtd0nQaz9fO1OFJbQSSZUSuogzA572MsDPmEeKmzuyYi?=
- =?us-ascii?Q?eLrLRAJ6UNkGkW/g901ApDMhXVFy7qKTbt2gULZqQHIEXl5yopMxhxrXuXTK?=
- =?us-ascii?Q?3tUw/NQxLyP6z6ar2Cp1wHkrY4eBB24vw4THsrCj/wQeVZynoNdbzJGGHrnD?=
- =?us-ascii?Q?fuQZmY86jA=3D=3D?=
-X-OriginatorOrg: vivo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9f8504cf-5519-45b3-9451-08da447c37df
-X-MS-Exchange-CrossTenant-AuthSource: TYZPR06MB4173.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2022 09:42:33.2254
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: jJcU3aaSpLxFGoB8LlLNMoM+JkcKIOOVuWkyeUMbeRSRuM79F1ONF50LXJ/CnnTRtPJU89sd/bLTOprEnLyTJQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: KL1PR0601MB4323
+In-Reply-To: <87h7534dr9.fsf@brahms.olymp>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-clk_put() already checks the clk ptr using !clk and IS_ERR()
-so there is no need to check it again before calling it.
 
-Signed-off-by: Yihao Han <hanyihao@vivo.com>
----
- drivers/video/fbdev/simplefb.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+On 6/2/22 5:26 PM, Luís Henriques wrote:
+> Xiubo Li <xiubli@redhat.com> writes:
+>
+>> On 6/2/22 12:29 AM, Luís Henriques wrote:
+>>> The MDS tries to enforce a limit on the total key/values in extended
+>>> attributes.  However, this limit is enforced only if doing a synchronous
+>>> operation (MDS_OP_SETXATTR) -- if we're buffering the xattrs, the MDS
+>>> doesn't have a chance to enforce these limits.
+>>>
+>>> This patch adds support for decoding the xattrs maximum size setting that is
+>>> distributed in the mdsmap.  Then, when setting an xattr, the kernel client
+>>> will revert to do a synchronous operation if that maximum size is exceeded.
+>>>
+>>> While there, fix a dout() that would trigger a printk warning:
+>>>
+>>> [   98.718078] ------------[ cut here ]------------
+>>> [   98.719012] precision 65536 too large
+>>> [   98.719039] WARNING: CPU: 1 PID: 3755 at lib/vsprintf.c:2703 vsnprintf+0x5e3/0x600
+>>> ...
+>>>
+>>> URL: https://tracker.ceph.com/issues/55725
+>>> Signed-off-by: Luís Henriques <lhenriques@suse.de>
+>>> ---
+>>>    fs/ceph/mdsmap.c            | 27 +++++++++++++++++++++++----
+>>>    fs/ceph/xattr.c             | 12 ++++++++----
+>>>    include/linux/ceph/mdsmap.h |  1 +
+>>>    3 files changed, 32 insertions(+), 8 deletions(-)
+>>>
+>>> * Changes since v2
+>>>
+>>> Well, a lot has changed since v2!  Now the xattr max value setting is
+>>> obtained through the mdsmap, which needs to be decoded, and the feature
+>>> that was used in the previous revision was dropped.  The drawback is that
+>>> the MDS isn't unable to know in advance if a client is aware of this xattr
+>>> max value.
+>>>
+>>> * Changes since v1
+>>>
+>>> Added support for new feature bit to get the MDS max_xattr_pairs_size
+>>> setting.
+>>>
+>>> Also note that this patch relies on a patch that hasn't been merged yet
+>>> ("ceph: use correct index when encoding client supported features"),
+>>> otherwise the new feature bit won't be correctly encoded.
+>>>
+>>> diff --git a/fs/ceph/mdsmap.c b/fs/ceph/mdsmap.c
+>>> index 30387733765d..36b2bc18ca2a 100644
+>>> --- a/fs/ceph/mdsmap.c
+>>> +++ b/fs/ceph/mdsmap.c
+>>> @@ -13,6 +13,12 @@
+>>>      #include "super.h"
+>>>    +/*
+>>> + * Maximum size of xattrs the MDS can handle per inode by default.  This
+>>> + * includes the attribute name and 4+4 bytes for the key/value sizes.
+>>> + */
+>>> +#define MDS_MAX_XATTR_SIZE (1<<16) /* 64K */
+>>> +
+>>>    #define CEPH_MDS_IS_READY(i, ignore_laggy) \
+>>>    	(m->m_info[i].state > 0 && ignore_laggy ? true : !m->m_info[i].laggy)
+>>>    @@ -352,12 +358,10 @@ struct ceph_mdsmap *ceph_mdsmap_decode(void **p, void
+>>> *end, bool msgr2)
+>>>    		__decode_and_drop_type(p, end, u8, bad_ext);
+>>>    	}
+>>>    	if (mdsmap_ev >= 8) {
+>>> -		u32 name_len;
+>>>    		/* enabled */
+>>>    		ceph_decode_8_safe(p, end, m->m_enabled, bad_ext);
+>>> -		ceph_decode_32_safe(p, end, name_len, bad_ext);
+>>> -		ceph_decode_need(p, end, name_len, bad_ext);
+>>> -		*p += name_len;
+>>> +		/* fs_name */
+>>> +		ceph_decode_skip_string(p, end, bad_ext);
+>>>    	}
+>>>    	/* damaged */
+>>>    	if (mdsmap_ev >= 9) {
+>>> @@ -370,6 +374,21 @@ struct ceph_mdsmap *ceph_mdsmap_decode(void **p, void *end, bool msgr2)
+>>>    	} else {
+>>>    		m->m_damaged = false;
+>>>    	}
+>>> +	if (mdsmap_ev >= 17) {
+>>> +		/* balancer */
+>>> +		ceph_decode_skip_string(p, end, bad_ext);
+>>> +		/* standby_count_wanted */
+>>> +		ceph_decode_skip_32(p, end, bad_ext);
+>>> +		/* old_max_mds */
+>>> +		ceph_decode_skip_32(p, end, bad_ext);
+>>> +		/* min_compat_client */
+>>> +		ceph_decode_skip_8(p, end, bad_ext);
+>> This is incorrect.
+>>
+>> If mdsmap_ev == 15 the min_compat_client will be a feature_bitset_t instead of
+>> int8_t.
+> Hmm... can you point me at where that's done in the code?  As usual, I'm
+> confused with that code and simply can't see that.
+>
+> Also, if that happens only when mdsmap_ev == 15, then there's no problem
+> because that branch is only taken if it's >= 17.
 
-diff --git a/drivers/video/fbdev/simplefb.c b/drivers/video/fbdev/simplefb.c
-index 2c198561c338..f96ce8801be4 100644
---- a/drivers/video/fbdev/simplefb.c
-+++ b/drivers/video/fbdev/simplefb.c
-@@ -237,8 +237,7 @@ static int simplefb_clocks_get(struct simplefb_par *par,
- 		if (IS_ERR(clock)) {
- 			if (PTR_ERR(clock) == -EPROBE_DEFER) {
- 				while (--i >= 0) {
--					if (par->clks[i])
--						clk_put(par->clks[i]);
-+					clk_put(par->clks[i]);
- 				}
- 				kfree(par->clks);
- 				return -EPROBE_DEFER;
--- 
-2.17.1
+Yeah, so you should skip 32 or 32+64 bits instead here, just likes:
+
+3536                 /* version >= 3, feature bits */
+3537                 ceph_decode_32_safe(&p, end, len, bad);
+3538                 if (len) {
+3539                         ceph_decode_64_safe(&p, end, features, bad);
+3540                         p += len - sizeof(features);
+3541                 }
+
+For the ceph code please see:
+
+Please see https://github.com/ceph/ceph/blob/main/src/mds/MDSMap.cc#L925.
+
+>>
+>>> +		/* required_client_features */
+>>> +		ceph_decode_skip_set(p, end, 64, bad_ext);
+>>> +		ceph_decode_64_safe(p, end, m->m_max_xattr_size, bad_ext);
+>>> +	} else {
+>>> +		m->m_max_xattr_size = MDS_MAX_XATTR_SIZE;
+>>> +	}
+>>>    bad_ext:
+>>>    	dout("mdsmap_decode m_enabled: %d, m_damaged: %d, m_num_laggy: %d\n",
+>>>    	     !!m->m_enabled, !!m->m_damaged, m->m_num_laggy);
+>>> diff --git a/fs/ceph/xattr.c b/fs/ceph/xattr.c
+>>> index 8c2dc2c762a4..67f046dac35c 100644
+>>> --- a/fs/ceph/xattr.c
+>>> +++ b/fs/ceph/xattr.c
+>>> @@ -1086,7 +1086,7 @@ static int ceph_sync_setxattr(struct inode *inode, const char *name,
+>>>    			flags |= CEPH_XATTR_REMOVE;
+>>>    	}
+>>>    -	dout("setxattr value=%.*s\n", (int)size, value);
+>>> +	dout("setxattr value size: %ld\n", size);
+>>>      	/* do request */
+>>>    	req = ceph_mdsc_create_request(mdsc, op, USE_AUTH_MDS);
+>>> @@ -1184,8 +1184,14 @@ int __ceph_setxattr(struct inode *inode, const char *name,
+>>>    	spin_lock(&ci->i_ceph_lock);
+>>>    retry:
+>>>    	issued = __ceph_caps_issued(ci, NULL);
+>>> -	if (ci->i_xattrs.version == 0 || !(issued & CEPH_CAP_XATTR_EXCL))
+>>> +	required_blob_size = __get_required_blob_size(ci, name_len, val_len);
+>>> +	if ((ci->i_xattrs.version == 0) || !(issued & CEPH_CAP_XATTR_EXCL) ||
+>>> +	    (required_blob_size >= mdsc->mdsmap->m_max_xattr_size)) {
+>> Shouldn't it be '>' instead ?
+> Ok, I'll fix that.
+>
+>> We'd better always force to do a sync request with old ceph. Just check if the
+>> mdsmap_ev < 17. It's not safe to buffer it because it maybe discarded as your
+>> ceph PR does.
+> Right, that can be done.  So, I can simply set the m_max_xattr_size to '0'
+> if mdsmap_ev < 17.  Then, this 'if' condition will always be evaluated to
+> true because required_blob_size will be > 0.  Does that sound OK?
+
+Yeah, sounds good.
+
+-- Xiubo
+
+
+>
+> Cheers,
 
