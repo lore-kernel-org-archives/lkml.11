@@ -2,82 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9837FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 12:22:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DC0DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 12:23:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234940AbiFBMWK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 08:22:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44266 "EHLO
+        id S234933AbiFBMW7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 08:22:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232097AbiFBMWG (ORCPT
+        with ESMTP id S232484AbiFBMWz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 08:22:06 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE56010A7
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 05:22:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654172525; x=1685708525;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=K0RnMTtm6/0xuSTlPAD0Tp2bmCGrrymvRxF7juGErjQ=;
-  b=exbGzCUxM3yYbbkCAPKN7YqkPkcTu0aHlUH+E1EcPS5GlEM7z4gCMQSk
-   YB/8ecN5tNdgDwpEWd0H+ur72MnIZ0R7yNQUgW3+47l+ctlfs908j3Ji5
-   tQzqBPSRJkfKFyOtQvCDD0v0RbIY0hQj9dFtS5iTyjV9+mRABLQuwZ6hG
-   Yz75lhmKZikthFYZRRH1C8LfF9hy/PDZWRt+JawCqL106wztWqJwE7x9r
-   DeSKFRdodyWEONTyizxn8d1w4yYLr1dEZsMe0UzbdFJe0miGsNZUHwVlP
-   8kyBqSopTkI+LVC5qu370MWLJ589SDYF70acDZVeaYC+vPOz9M2opR/kj
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10365"; a="275939420"
-X-IronPort-AV: E=Sophos;i="5.91,271,1647327600"; 
-   d="scan'208";a="275939420"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2022 05:22:05 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,271,1647327600"; 
-   d="scan'208";a="612798886"
-Received: from unknown (HELO localhost.localdomain) ([10.226.216.117])
-  by orsmga001.jf.intel.com with ESMTP; 02 Jun 2022 05:22:03 -0700
-From:   kah.jing.lee@intel.com
-To:     arnd@arndb.de, gregkh@linuxfoundation.org
-Cc:     linux-kernel@vger.kernel.org, dinguyen@kernel.org,
-        tien.sung.ang@intel.com, Kah Jing Lee <kah.jing.lee@intel.com>
-Subject: [PATCH 0/2] New driver for Intel(Altera) FPGA System ID softIP 
-Date:   Thu,  2 Jun 2022 20:20:09 +0800
-Message-Id: <20220602122008.3021030-1-kah.jing.lee@intel.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 2 Jun 2022 08:22:55 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 867F82192;
+        Thu,  2 Jun 2022 05:22:53 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id s6so7506893lfo.13;
+        Thu, 02 Jun 2022 05:22:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=VOQZA0pHYqK4XdbW9GaYy4EgHWG2TtOSiKjo+AkEHcM=;
+        b=UnE1Rplcr6LJMmwXyiL8ub39B1DsH07ftzTp2OVzdHGbBuxHegfEbgNiYk0LTgRA8Q
+         52K0TR54JuB4WxHpGvQ8tl2RYold0dDK00bsLnJbq8Yg+lCaOSCQFasYxpY0dLfInTgs
+         7gQ19qYW1M6D6Z3e4mL14Y9+XIwN3YOm/MtYtG/Wv7bJJs9vyp/VNaV0eQM3FEhoyMIi
+         3x7yA+IhqxRTNkOak9X+TW13moVPwvJqYCv4jKAf/TucWy6yL6+bZaHiQjnbCqwEN+ih
+         cDn2R3aLAl1xQWUM+KA8AFT23ALZPYKaRyK6YHf/zAkApYAkW0pA3x1pXfoJQkUNTFDv
+         g2wg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=VOQZA0pHYqK4XdbW9GaYy4EgHWG2TtOSiKjo+AkEHcM=;
+        b=URF+7EYcfLXv9ffDV1OeuEof9+z6Yb++7NZmwMeVKfD3DVvoNayx7RiPr1+6c073Ls
+         TPaUnTwGPqxesLxhvdfHMXMJx3lf2mlmpDsRjLd+123OxSYXzxfoHoieAaKQGELFjiii
+         9bKCnRsBgSGZ4a8d8YSIWrQzGbrEkLUZylxRME3UK929ELFQQZyijsY6O1UlTCEqJs+E
+         tAYwq6P1Gqv74KKxRO3/CiTKd63+5YfVxQWyq3sSFkiXFD+noRfehZbfXtbKhDTz0LMh
+         mORzg4C4wz2TAOAejaj8L1B3DougDa+yPK9LZGe0zR6aX4w2vx5pzQMMFnVKCJdXWEIJ
+         hP5g==
+X-Gm-Message-State: AOAM532s0L9mtqhEHQ4llkuarSSHLcbRn50uFXS440wuvKdMjbftzMCh
+        vA4aPc5AjtYUBpCI2BoZHwXpXZkQK34MnbhscuY=
+X-Google-Smtp-Source: ABdhPJyVvZ/uTNq8sMKoJG6ijdTCL0j2WKweW33CgjPbnGda+c3G9nCqp0xIzgTsfNiXS+BPfYkG1BIjTPHHQt2wSv4=
+X-Received: by 2002:a05:6512:b17:b0:478:d66d:f747 with SMTP id
+ w23-20020a0565120b1700b00478d66df747mr17038767lfu.447.1654172571822; Thu, 02
+ Jun 2022 05:22:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220601195341.28581-1-jandryuk@gmail.com> <YphSYfdzy8kekhTZ@infradead.org>
+In-Reply-To: <YphSYfdzy8kekhTZ@infradead.org>
+From:   Jason Andryuk <jandryuk@gmail.com>
+Date:   Thu, 2 Jun 2022 08:22:40 -0400
+Message-ID: <CAKf6xpsbgyvJjdRGrE3ru114iuXv98rumf8nVvKu5WmErf+zTA@mail.gmail.com>
+Subject: Re: [PATCH] xen-blkfront: Handle NULL gendisk
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     =?UTF-8?Q?Roger_Pau_Monn=C3=A9?= <roger.pau@citrix.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Juergen Gross <jgross@suse.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        xen-devel <xen-devel@lists.xenproject.org>,
+        linux-block@vger.kernel.org,
+        open list <linux-kernel@vger.kernel.org>,
+        =?UTF-8?Q?Marek_Marczykowski=2DG=C3=B3recki?= 
+        <marmarek@invisiblethingslab.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kah Jing Lee <kah.jing.lee@intel.com>
+On Thu, Jun 2, 2022 at 2:02 AM Christoph Hellwig <hch@infradead.org> wrote:
+>
+> On Wed, Jun 01, 2022 at 03:53:41PM -0400, Jason Andryuk wrote:
+> > When a VBD is not fully created and then closed, the kernel can have a
+> > NULL pointer dereference:
+> >
 
-Hi,
-Patches have been internally reviewed by colleagues at Intel.
+> >
+> > info->rq and info->gd are only set in blkfront_connect(), which is
+> > called for state 4 (XenbusStateConnected).  Guard against using NULL
+> > variables in blkfront_closing() to avoid the issue.
+> >
+> > The rest of blkfront_closing looks okay.  If info->nr_rings is 0, then
+> > for_each_rinfo won't do anything.
+> >
+> > blkfront_remove also needs to check for non-NULL pointers before
+> > cleaning up the gendisk and request queue.
+> >
+> > Fixes: 05d69d950d9d "xen-blkfront: sanitize the removal state machine"
+> > Reported-by: Marek Marczykowski-G=C3=B3recki <marmarek@invisiblethingsl=
+ab.com>
+> > Signed-off-by: Jason Andryuk <jandryuk@gmail.com>
+>
+> Tis looks ok, but do we have anything that prevents races between
+> blkfront_connect, blkfront_closing and blkfront_remove?
 
-New sysid driver for Altera(Intel) Sysid component is generally part of an
-FPGA design. The component can be hotplugged when the FPGA is reconfigured.
-This patch fixes the driver to support the component being hotplugged.
+Thanks for taking a look, Christoph.
 
-Thanks,
-KJ
+blkfront_connect and blkfront_closing are called by the state machine
+in blkback_changed.  blkback_changed is the xenbus_driver
+.otherend_changed callback.  The xenwatch kthread calls callbacks
+synchronously and one at a time, so that seems okay today.
 
-Kah Jing Lee (2):
-  drivers: misc: intel_sysid: Add sysid from arch to drivers
-  dt-bindings: misc: Add the system id binding for Altera(Intel) FPGA
-    platform
+blkfront_remove is the xenbus_driver .remove callback, so it is tied
+to the life cycle of the device.  It's called after the
+otherend_changed callback is unregistered, so those won't run when
+blkfront_remove is running.
 
- .../misc/intel,socfpga-sysid-1.0.yaml         |  39 +++++
- drivers/misc/Kconfig                          |   9 ++
- drivers/misc/Makefile                         |   1 +
- drivers/misc/intel_sysid.c                    | 142 ++++++++++++++++++
- 4 files changed, 191 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/misc/
-intel,socfpga-sysid-1.0.yaml
- create mode 100644 drivers/misc/intel_sysid.c
+Given that, I think it's okay.
 
--- 
-2.25.1
-
+Regards,
+Jason
