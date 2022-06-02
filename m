@@ -2,104 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E2AFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 08:25:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40967C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 08:25:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232221AbiFBIZC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 04:25:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42340 "EHLO
+        id S230200AbiFBIZS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 04:25:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232201AbiFBIZA (ORCPT
+        with ESMTP id S231533AbiFBIZP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 04:25:00 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 613131D30A;
-        Thu,  2 Jun 2022 01:24:59 -0700 (PDT)
+        Thu, 2 Jun 2022 04:25:15 -0400
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93ECB16581
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 01:25:13 -0700 (PDT)
+Received: by mail-pf1-x42a.google.com with SMTP id u2so4163510pfc.2
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 01:25:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1654158299; x=1685694299;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=qVr8/mvSFRbTljiz0gsLGoI/JJOOdlNbUdj63y+eWdk=;
-  b=lPKVOFDlHBAJEvv39IaXpLyjPUmLbYoSMc5tDaZg3cxSeLS8q9+y2EYH
-   IZBEoYMy2WDopGL/3wrGX0GV6/xzF626hr/RFAFlsIzeqYn6ThgOA9P2R
-   7Jt4+7cnHavBnSw83rdSyEnr3LfEuaFs/XWVS/ZtFVQuLiq1Ghccif/BP
-   M=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 02 Jun 2022 01:24:59 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2022 01:24:58 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 2 Jun 2022 01:24:58 -0700
-Received: from hu-kriskura-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 2 Jun 2022 01:24:51 -0700
-From:   Krishna Kurapati <quic_kriskura@quicinc.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Doug Anderson <dianders@chromium.org>,
-        "Matthias Kaehlcke" <mka@chromium.org>,
-        Mathias Nyman <mathias.nyman@intel.com>
-CC:     <devicetree@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-usb@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-pm@vger.kernel.org>, <quic_pkondeti@quicinc.com>,
-        <quic_ppratap@quicinc.com>, <quic_vpulyala@quicinc.com>,
-        Sandeep Maheswaram <quic_c_sanm@quicinc.com>,
-        Krishna Kurapati <quic_kriskura@quicinc.com>
-Subject: [PATCH v20 1/5] dt-bindings: usb: dwc3: Add wakeup-source property support
-Date:   Thu, 2 Jun 2022 13:54:33 +0530
-Message-ID: <1654158277-12921-2-git-send-email-quic_kriskura@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1654158277-12921-1-git-send-email-quic_kriskura@quicinc.com>
-References: <1654158277-12921-1-git-send-email-quic_kriskura@quicinc.com>
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=x2NGVK3ecMQmaSm/x/Ltq/st8dTSwNqY+rsrQ93ARxg=;
+        b=jc6TkZPdF34qvkPaOsthSV7mmEZvVf2sOSBCZE0TIrNEZQ0qLy0uFRR2GN0uwmVGKM
+         Y9FSd486m0gUl7cG6gJiMTxfjpzF5gLQe03S2ni4wyQN11A4eqqG53a3F5PxR8CMun5E
+         XiBcFzESnMdpb8EiQ8S3z72pu4lz122VAyWoC7CoBKJTSP373LAotX5OH0EQeFRt9LdZ
+         Bx1n/fLCgBzSw9DHz/Jd5fxq8CLkZRYIof8CA3lq870EXSdQzUf+hPjPcqFiIrzB5RvZ
+         Z2uFpZwT1zOREgraxUWrtCFiiGqfwyAfSRqdpl1asAS+n2xKgL8QWVG4c3uO9izlCsl9
+         pDFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=x2NGVK3ecMQmaSm/x/Ltq/st8dTSwNqY+rsrQ93ARxg=;
+        b=D+wcR+FzMd9cN5LItqWbrE3jx2zpupXIX/AG1g8nwRUheE0LfiJQJeGuN3SSC9vV8p
+         AQeUrz8F/RTJd4a/VnhAhIsRuqQjVt8mDRTTJnYIOMTRktyciyeDBBrs5+A/8I6kYdiF
+         jEjzCuElBoiA+XOAUapIsMoBvr9y5+0LaWAYQ6l6vR2Ui8WO4qhMZ+nXu5JYU0/eyXbG
+         gHyPdJkPGmdtL5g2w8sDd3bUbyE1ficOndHO4pKYiOI7vX9HBwKvfsL+w61+nCmGculW
+         8LfKUTneLEA7zwMnzU3yjTR7OLjI2Zh3ORBGc9fQypAYM8dtd9nXFpU+Otz/bGvZhtT+
+         iaMw==
+X-Gm-Message-State: AOAM530ZE1eOFTY/r6KJ+vuBCP/zxsfW0JMTVeHZ2/rC9KxCkjZ3j7At
+        vvlw2JnCLiEi1I2jeD+lhl0zO+VHPNLXqLD/LJA=
+X-Google-Smtp-Source: ABdhPJxdaxZfVyttIyFl2Xtrm0P2nA2t98lJywz/DUY7UhvNHVye505VrOw5VIzkRXBl6bMh8PTdM2L7cWgK0/xxPWQ=
+X-Received: by 2002:a63:8449:0:b0:3fc:85a5:5b69 with SMTP id
+ k70-20020a638449000000b003fc85a55b69mr3191172pgd.261.1654158313021; Thu, 02
+ Jun 2022 01:25:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+References: <tencent_E15665F62AAE22B108A00645874D3F53CF07@qq.com>
+In-Reply-To: <tencent_E15665F62AAE22B108A00645874D3F53CF07@qq.com>
+From:   Patrik Jakobsson <patrik.r.jakobsson@gmail.com>
+Date:   Thu, 2 Jun 2022 10:25:01 +0200
+Message-ID: <CAMeQTsYNQ6_zfVKLS5pdA2q4s6UnHVWNmyG2ijGDnmDnzzetqw@mail.gmail.com>
+Subject: Re: [PATCH 2/5] drm/gma500: Fix spelling typo in comment
+To:     1064094935@qq.com
+Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        pengfuyuan <pengfuyuan@kylinos.cn>, k2ci <kernel-bot@kylinos.cn>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+On Fri, May 27, 2022 at 5:42 AM <1064094935@qq.com> wrote:
+>
+> From: pengfuyuan <pengfuyuan@kylinos.cn>
+>
+> Fix spelling typo in comment.
+>
+> Reported-by: k2ci <kernel-bot@kylinos.cn>
+> Signed-off-by: pengfuyuan <pengfuyuan@kylinos.cn>
+> ---
+>  drivers/gpu/drm/gma500/psb_intel_sdvo_regs.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/gpu/drm/gma500/psb_intel_sdvo_regs.h b/drivers/gpu/drm/gma500/psb_intel_sdvo_regs.h
+> index 600e79744d68..7efbd7c45c90 100644
+> --- a/drivers/gpu/drm/gma500/psb_intel_sdvo_regs.h
+> +++ b/drivers/gpu/drm/gma500/psb_intel_sdvo_regs.h
+> @@ -371,7 +371,7 @@ struct psb_intel_sdvo_tv_format {
+>
+>  #define SDVO_CMD_SET_TV_FORMAT                         0x29
+>
+> -/** Returns the resolutiosn that can be used with the given TV format */
+> +/** Returns the resolution that can be used with the given TV format */
 
-Added support for wakeup-source property. This property can be
-used to check and power down the phy during system suspend if
-wake up is not supported.
+Hi,
+Can you also fix the /** at the start of the comment. One patch for
+both changes is fine.
 
-Signed-off-by: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
-Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Krishna Kurapati <quic_kriskura@quicinc.com>
----
- Documentation/devicetree/bindings/usb/snps,dwc3.yaml | 5 +++++
- 1 file changed, 5 insertions(+)
+-Patrik
 
-diff --git a/Documentation/devicetree/bindings/usb/snps,dwc3.yaml b/Documentation/devicetree/bindings/usb/snps,dwc3.yaml
-index f4471f8..4d4de2f 100644
---- a/Documentation/devicetree/bindings/usb/snps,dwc3.yaml
-+++ b/Documentation/devicetree/bindings/usb/snps,dwc3.yaml
-@@ -341,6 +341,11 @@ properties:
-       This port is used with the 'usb-role-switch' property  to connect the
-       dwc3 to type C connector.
- 
-+  wakeup-source:
-+    $ref: /schemas/types.yaml#/definitions/flag
-+    description:
-+      Enable USB remote wakeup.
-+
- unevaluatedProperties: false
- 
- required:
--- 
-2.7.4
-
+>  #define SDVO_CMD_GET_SDTV_RESOLUTION_SUPPORT           0x83
+>  struct psb_intel_sdvo_sdtv_resolution_request {
+>      unsigned int ntsc_m:1;
+> --
+> 2.25.1
+>
+>
+> No virus found
+>                 Checked by Hillstone Network AntiVirus
