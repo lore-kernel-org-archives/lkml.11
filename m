@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABBADC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 05:07:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40ACFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 05:07:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229949AbiFBFH1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 01:07:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36910 "EHLO
+        id S229938AbiFBFHb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 01:07:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229539AbiFBFHI (ORCPT
+        with ESMTP id S229926AbiFBFHP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 01:07:08 -0400
-Received: from out1.migadu.com (out1.migadu.com [91.121.223.63])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A30ABC8A
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 22:07:05 -0700 (PDT)
+        Thu, 2 Jun 2022 01:07:15 -0400
+Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CC4DDED3
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 22:07:13 -0700 (PDT)
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1654146423;
+        t=1654146432;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=fvjgKpSpd6vLLDTvBjr5eSnjiZxFu3lgcpJpXhpnkYU=;
-        b=huhz5I1gFAwH66TksJg8V8xQm8U25z83Rs/uca4PVrJXeak9ugEQpvHMJZUIbkZ5K9kKaZ
-        TcQ6mseCkGfF5IlXQbeAHprjP7LCR5gnbRs0PQ5uqZxjRiVMVW0upMK5hCgytyLGy/v7Wx
-        +ugdNGgrtZZI+PRpMWhGGbrbyJIB6Bw=
+        bh=DyOll928F39kd/7foHlO9PskbUXpYx8gLtnTg/AubRM=;
+        b=to/byFHDEZZzBz+ilC/vfPbbmmbqN7PiQmd0smz+yne4xEr2XU2AH65Fg0Tnud3ecAlDJz
+        FjXLi5/eDhzXNNo+JEGgffe+Rn968fx5TUGzR0HboszyNIpZpWYUz+FjleC//0o9bzQSIP
+        hSnBYUPQDJT3hQmSwN79f6q6g1WQ1WY=
 From:   Naoya Horiguchi <naoya.horiguchi@linux.dev>
 To:     linux-mm@kvack.org
 Cc:     Andrew Morton <akpm@linux-foundation.org>,
@@ -38,9 +38,9 @@ Cc:     Andrew Morton <akpm@linux-foundation.org>,
         Muchun Song <songmuchun@bytedance.com>,
         Naoya Horiguchi <naoya.horiguchi@nec.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v1 1/5] mm, hwpoison, hugetlb: introduce SUBPAGE_INDEX_HWPOISON to save raw error page
-Date:   Thu,  2 Jun 2022 14:06:27 +0900
-Message-Id: <20220602050631.771414-2-naoya.horiguchi@linux.dev>
+Subject: [PATCH v1 3/5] mm, hwpoison: make __page_handle_poison returns int
+Date:   Thu,  2 Jun 2022 14:06:29 +0900
+Message-Id: <20220602050631.771414-4-naoya.horiguchi@linux.dev>
 In-Reply-To: <20220602050631.771414-1-naoya.horiguchi@linux.dev>
 References: <20220602050631.771414-1-naoya.horiguchi@linux.dev>
 MIME-Version: 1.0
@@ -53,108 +53,73 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Naoya Horiguchi <naoya.horiguchi@nec.com>
 
-When handling memory error on a hugetlb page, the error handler tries to
-dissolve and turn it into 4kB pages.  If it's successfully dissolved,
-PageHWPoison flag is moved to the raw error page, so that's all right.
-However, dissolve sometimes fails, then the error page is left as
-hwpoisoned hugepage. It's useful if we can retry to dissolve it to save
-healthy pages, but that's not possible now because the information about
-where the raw error page is lost.
-
-Use the private field of a tail page to keep that information.  The code
-path of shrinking hugepage pool used this info to try delayed dissolve.
-This only keeps one hwpoison page for now, which might be OK because it's
-simple and multiple hwpoison pages in a hugepage can be rare. But it can
-be extended in the future.
+__page_handle_poison() returns bool that shows whether
+take_page_off_buddy() has passed or not now.  But we will want to
+distinguish another case of "dissolve has passed but taking off failed"
+by its return value. So change the type of the return value.
+No functional change.
 
 Signed-off-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
 ---
-ChangeLog since previous post on 4/27:
-- fixed typo in patch description (by Miaohe)
-- fixed config value in #ifdef statement (by Miaohe)
-- added sentences about "multiple hwpoison pages" scenario in patch
-  description
----
- include/linux/hugetlb.h | 24 ++++++++++++++++++++++++
- mm/hugetlb.c            |  9 +++++++++
- mm/memory-failure.c     |  2 ++
- 3 files changed, 35 insertions(+)
+ mm/memory-failure.c | 17 +++++++++++------
+ 1 file changed, 11 insertions(+), 6 deletions(-)
 
-diff --git a/include/linux/hugetlb.h b/include/linux/hugetlb.h
-index ac2a1d758a80..a5341a3a0d4b 100644
---- a/include/linux/hugetlb.h
-+++ b/include/linux/hugetlb.h
-@@ -42,6 +42,9 @@ enum {
- 	SUBPAGE_INDEX_CGROUP,		/* reuse page->private */
- 	SUBPAGE_INDEX_CGROUP_RSVD,	/* reuse page->private */
- 	__MAX_CGROUP_SUBPAGE_INDEX = SUBPAGE_INDEX_CGROUP_RSVD,
-+#endif
-+#ifdef CONFIG_MEMORY_FAILURE
-+	SUBPAGE_INDEX_HWPOISON,
- #endif
- 	__NR_USED_SUBPAGE,
- };
-@@ -784,6 +787,27 @@ extern int dissolve_free_huge_page(struct page *page);
- extern int dissolve_free_huge_pages(unsigned long start_pfn,
- 				    unsigned long end_pfn);
- 
-+#ifdef CONFIG_MEMORY_FAILURE
-+/*
-+ * pointer to raw error page is located in hpage[SUBPAGE_INDEX_HWPOISON].private
-+ */
-+static inline struct page *hugetlb_page_hwpoison(struct page *hpage)
-+{
-+	return (void *)page_private(hpage + SUBPAGE_INDEX_HWPOISON);
-+}
-+
-+static inline void hugetlb_set_page_hwpoison(struct page *hpage,
-+					struct page *page)
-+{
-+	set_page_private(hpage + SUBPAGE_INDEX_HWPOISON, (unsigned long)page);
-+}
-+#else
-+static inline struct page *hugetlb_page_hwpoison(struct page *hpage)
-+{
-+	return NULL;
-+}
-+#endif
-+
- #ifdef CONFIG_ARCH_ENABLE_HUGEPAGE_MIGRATION
- #ifndef arch_hugetlb_migration_supported
- static inline bool arch_hugetlb_migration_supported(struct hstate *h)
-diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-index f8e048b939c7..6867ea8345d1 100644
---- a/mm/hugetlb.c
-+++ b/mm/hugetlb.c
-@@ -1547,6 +1547,15 @@ static void __update_and_free_page(struct hstate *h, struct page *page)
- 		return;
- 	}
- 
-+	if (unlikely(PageHWPoison(page))) {
-+		struct page *raw_error = hugetlb_page_hwpoison(page);
-+
-+		if (raw_error && raw_error != page) {
-+			SetPageHWPoison(raw_error);
-+			ClearPageHWPoison(page);
-+		}
-+	}
-+
- 	for (i = 0; i < pages_per_huge_page(h);
- 	     i++, subpage = mem_map_next(subpage, page, i)) {
- 		subpage->flags &= ~(1 << PG_locked | 1 << PG_error |
 diff --git a/mm/memory-failure.c b/mm/memory-failure.c
-index 66edaa7e5092..056dbb2050f8 100644
+index fe6a7961dc66..f149a7864c81 100644
 --- a/mm/memory-failure.c
 +++ b/mm/memory-failure.c
-@@ -1534,6 +1534,8 @@ int __get_huge_page_for_hwpoison(unsigned long pfn, int flags)
- 		goto out;
- 	}
+@@ -68,7 +68,13 @@ int sysctl_memory_failure_recovery __read_mostly = 1;
  
-+	hugetlb_set_page_hwpoison(head, page);
-+
- 	return ret;
- out:
- 	if (count_increased)
+ atomic_long_t num_poisoned_pages __read_mostly = ATOMIC_LONG_INIT(0);
+ 
+-static bool __page_handle_poison(struct page *page)
++/*
++ * Return values:
++ *   1:   the page is dissolved (if needed) and taken off from buddy,
++ *   0:   the page is dissolved (if needed) and not taken off from buddy,
++ *   < 0: failed to dissolve.
++ */
++static int __page_handle_poison(struct page *page)
+ {
+ 	int ret;
+ 
+@@ -78,7 +84,7 @@ static bool __page_handle_poison(struct page *page)
+ 		ret = take_page_off_buddy(page);
+ 	zone_pcp_enable(page_zone(page));
+ 
+-	return ret > 0;
++	return ret;
+ }
+ 
+ static bool page_handle_poison(struct page *page, bool hugepage_or_freepage, bool release)
+@@ -88,7 +94,7 @@ static bool page_handle_poison(struct page *page, bool hugepage_or_freepage, boo
+ 		 * Doing this check for free pages is also fine since dissolve_free_huge_page
+ 		 * returns 0 for non-hugetlb pages as well.
+ 		 */
+-		if (!__page_handle_poison(page))
++		if (__page_handle_poison(page) <= 0)
+ 			/*
+ 			 * We could fail to take off the target page from buddy
+ 			 * for example due to racy page allocation, but that's
+@@ -1045,7 +1051,7 @@ static int me_huge_page(struct page_state *ps, struct page *p)
+ 		 * save healthy subpages.
+ 		 */
+ 		put_page(hpage);
+-		if (__page_handle_poison(p)) {
++		if (__page_handle_poison(p) > 0) {
+ 			page_ref_inc(p);
+ 			res = MF_RECOVERED;
+ 		}
+@@ -1595,8 +1601,7 @@ static int try_memory_failure_hugetlb(unsigned long pfn, int flags, int *hugetlb
+ 	 */
+ 	if (res == 0) {
+ 		unlock_page(head);
+-		res = MF_FAILED;
+-		if (__page_handle_poison(p)) {
++		if (__page_handle_poison(p) > 0) {
+ 			page_ref_inc(p);
+ 			res = MF_RECOVERED;
+ 		}
 -- 
 2.25.1
 
