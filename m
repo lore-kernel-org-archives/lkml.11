@@ -2,135 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15AAACCA473
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 01:13:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59E10C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 01:13:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232999AbiFBBNF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 21:13:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55896 "EHLO
+        id S233023AbiFBBNt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 21:13:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232904AbiFBBNE (ORCPT
+        with ESMTP id S232996AbiFBBNq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 21:13:04 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0065227B4A3;
-        Wed,  1 Jun 2022 18:13:01 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LD7K46WVFzjXLQ;
-        Thu,  2 Jun 2022 09:12:08 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
- (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 2 Jun
- 2022 09:12:59 +0800
-From:   Zhengchao Shao <shaozhengchao@huawei.com>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <hawk@kernel.org>, <john.fastabend@gmail.com>, <andrii@kernel.org>,
-        <kafai@fb.com>, <songliubraving@fb.com>, <yhs@fb.com>,
-        <kpsingh@kernel.org>, <toke@kernel.org>
-CC:     <weiyongjun1@huawei.com>, <shaozhengchao@huawei.com>,
-        <yuehaibing@huawei.com>
-Subject: [PATCH v5,bpf-next] samples/bpf: check detach prog exist or not in xdp_fwd
-Date:   Thu, 2 Jun 2022 09:19:15 +0800
-Message-ID: <20220602011915.264431-1-shaozhengchao@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 1 Jun 2022 21:13:46 -0400
+Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A161028DC11
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 18:13:41 -0700 (PDT)
+Received: by mail-ot1-x329.google.com with SMTP id h9-20020a056830400900b0060b03bfe792so2432338ots.12
+        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 18:13:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=Rm+nlWHmtK3hCgXCMXiJ7jm13/nhGeNK572RFA6RE68=;
+        b=hz8L42GZ3MjrJT8zQvbU0Gjdz6YpJMtgCtl4dpGSC964xc2evT/CnKhIY1JHh4LWjp
+         +LM+FyszkciMtKhP7Zam1U3H6f3j/LPYW7SODR25bKL72QneSpkZ1S1ScDH1mE8dYPw8
+         w3fwww6eOnrGvo4dZ5RvKgo8dO+U0i5wU5/Ms=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=Rm+nlWHmtK3hCgXCMXiJ7jm13/nhGeNK572RFA6RE68=;
+        b=XZgz2F9agh5Z+iFCQqNYJsyBxwOi2sjSBlXeIF8CYROP5QwO9jOQ+TdOnOQZj7M7uo
+         HmEUxhe9FWP/zvHyzQ0BOFh+IAKxP+ffVfpNjdCBJ4LPYmE5OCstDUwcDPi3GDAKcMen
+         tUlKdwe2EBaWBYx/Whr77JsfRAjLruj8nYaUi9ithKDNN1UcHHhmRqSsveK849UuFMiN
+         0Hks7MtGnXM+AwF7kAEpVBQvRxFDEKXxkJ99iW8RWZ4ytrO/sQi6/7K01yTeOY3m8jqF
+         UeHUxm1cmLn+spYWp5IwTflc2lzWo1iV4gBSCsjlsXVMBSOwAWpkfiOijL49UISJDJt0
+         5vJA==
+X-Gm-Message-State: AOAM533oOMbt/eK0iTVCIfmod0JwpU08MSaC1mAAK/X21NeFGrV4gepM
+        wHSkBqFASvB+TjKG0BIcgBasova1OopnjGLFsDQ0Cw==
+X-Google-Smtp-Source: ABdhPJy3LJfihXvgizpO9YOYl97KB0keIbmS8UgdFCl7rKBWuosnrAafB55EO8lfmUfiw5usvkSZMT4lK7UtFaOPPIg=
+X-Received: by 2002:a9d:63cd:0:b0:606:9e7f:79f8 with SMTP id
+ e13-20020a9d63cd000000b006069e7f79f8mr1153603otl.77.1654132421005; Wed, 01
+ Jun 2022 18:13:41 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Wed, 1 Jun 2022 18:13:40 -0700
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
+In-Reply-To: <1654079415-26217-2-git-send-email-quic_srivasam@quicinc.com>
+References: <1654079415-26217-1-git-send-email-quic_srivasam@quicinc.com> <1654079415-26217-2-git-send-email-quic_srivasam@quicinc.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Wed, 1 Jun 2022 18:13:40 -0700
+Message-ID: <CAE-0n50nfwZPdSS7Vw9FiV+Shfn9-bX44hfLq5ey9DBsAy0y4g@mail.gmail.com>
+Subject: Re: [PATCH v2 1/2] dt-bindings: pinctrl: qcom: sc7280: Add compatible
+ string for adsp based platforms
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
+        agross@kernel.org, alsa-devel@alsa-project.org,
+        bgoswami@quicinc.com, bjorn.andersson@linaro.org,
+        broonie@kernel.org, devicetree@vger.kernel.org,
+        judyhsiao@chromium.org, lgirdwood@gmail.com,
+        linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, perex@perex.cz,
+        quic_plai@quicinc.com, quic_rohkumar@quicinc.com,
+        robh+dt@kernel.org, srinivas.kandagatla@linaro.org, tiwai@suse.com
+Cc:     Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Before detach the prog, we should check detach prog exist or not.
+Quoting Srinivasa Rao Mandadapu (2022-06-01 03:30:14)
+> Add compatible string to support adsp enabled sc7280 platforms.
+>
+> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> Acked-by: Rob Herring <robh@kernel.org>
+> ---
+>  .../devicetree/bindings/pinctrl/qcom,sc7280-lpass-lpi-pinctrl.yaml    | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+>
+> diff --git a/Documentation/devicetree/bindings/pinctrl/qcom,sc7280-lpass-lpi-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/qcom,sc7280-lpass-lpi-pinctrl.yaml
+> index d32ee32..53c2c59 100644
+> --- a/Documentation/devicetree/bindings/pinctrl/qcom,sc7280-lpass-lpi-pinctrl.yaml
+> +++ b/Documentation/devicetree/bindings/pinctrl/qcom,sc7280-lpass-lpi-pinctrl.yaml
+> @@ -17,7 +17,9 @@ description: |
+>
+>  properties:
+>    compatible:
+> -    const: qcom,sc7280-lpass-lpi-pinctrl
+> +    enum:
+> +      - qcom,sc7280-lpass-lpi-pinctrl
+> +      - qcom,sc7280-lpass-adsp-lpi-pinctrl
 
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
----
- samples/bpf/xdp_fwd_user.c | 55 +++++++++++++++++++++++++++++++++-----
- 1 file changed, 49 insertions(+), 6 deletions(-)
+Can you confirm that this is the same hardware (i.e. same reg property)
+but just a different compatible string used to convey that the device is
+using "adsp" mode or not? If so, this looks to be a common pattern for
+the audio hardware here, where we have two "views" of the hardware, one
+for adsp mode and one for not adsp mode. I guess the not adsp mode is
+called "adsp bypass"?
 
-diff --git a/samples/bpf/xdp_fwd_user.c b/samples/bpf/xdp_fwd_user.c
-index 1828487bae9a..d321e6aa9364 100644
---- a/samples/bpf/xdp_fwd_user.c
-+++ b/samples/bpf/xdp_fwd_user.c
-@@ -47,17 +47,60 @@ static int do_attach(int idx, int prog_fd, int map_fd, const char *name)
- 	return err;
- }
- 
--static int do_detach(int idx, const char *name)
-+static int do_detach(int ifindex, const char *ifname, const char *app_name)
- {
--	int err;
-+	LIBBPF_OPTS(bpf_xdp_attach_opts, opts);
-+	struct bpf_prog_info prog_info = {};
-+	char prog_name[BPF_OBJ_NAME_LEN];
-+	__u32 info_len, curr_prog_id;
-+	int prog_fd;
-+	int err = 1;
-+
-+	if (bpf_xdp_query_id(ifindex, xdp_flags, &curr_prog_id)) {
-+		printf("ERROR: bpf_xdp_query_id failed (%s)\n",
-+		       strerror(errno));
-+		return err;
-+	}
- 
--	err = bpf_xdp_detach(idx, xdp_flags, NULL);
--	if (err < 0)
--		printf("ERROR: failed to detach program from %s\n", name);
-+	if (!curr_prog_id) {
-+		printf("ERROR: flags(0x%x) xdp prog is not attached to %s\n",
-+		       xdp_flags, ifname);
-+		return err;
-+	}
- 
-+	info_len = sizeof(prog_info);
-+	prog_fd = bpf_prog_get_fd_by_id(curr_prog_id);
-+	if (prog_fd < 0) {
-+		printf("ERROR: bpf_prog_get_fd_by_id failed (%s)\n",
-+		       strerror(errno));
-+		return errno;
-+	}
-+
-+	err = bpf_obj_get_info_by_fd(prog_fd, &prog_info, &info_len);
-+	if (err) {
-+		printf("ERROR: bpf_obj_get_info_by_fd failed (%s)\n",
-+		       strerror(errno));
-+		goto close_out;
-+	}
-+	snprintf(prog_name, sizeof(prog_name), "%s_prog", app_name);
-+	prog_name[BPF_OBJ_NAME_LEN - 1] = '\0';
-+
-+	if (strcmp(prog_info.name, prog_name)) {
-+		printf("ERROR: %s isn't attached to %s\n", app_name, ifname);
-+		err = 1;
-+		goto close_out;
-+	}
-+
-+	opts.old_prog_fd = prog_fd;
-+	err = bpf_xdp_detach(ifindex, xdp_flags, &opts);
-+	if (err < 0)
-+		printf("ERROR: failed to detach program from %s (%s)\n",
-+		       ifname, strerror(errno));
- 	/* TODO: Remember to cleanup map, when adding use of shared map
- 	 *  bpf_map_delete_elem((map_fd, &idx);
- 	 */
-+close_out:
-+	close(prog_fd);
- 	return err;
- }
- 
-@@ -169,7 +212,7 @@ int main(int argc, char **argv)
- 			return 1;
- 		}
- 		if (!attach) {
--			err = do_detach(idx, argv[i]);
-+			err = do_detach(idx, argv[i], prog_name);
- 			if (err)
- 				ret = err;
- 		} else {
--- 
-2.17.1
-
+Is that right? Why are we conveying this information via the compatible
+string?
