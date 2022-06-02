@@ -2,145 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A670C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 10:30:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C22E9CCA479
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 10:30:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233886AbiFBKaX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 06:30:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36306 "EHLO
+        id S233710AbiFBKan (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 06:30:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233909AbiFBKaL (ORCPT
+        with ESMTP id S233867AbiFBKaj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 06:30:11 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAF1C1BE80
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 03:30:09 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id me5so8566753ejb.2
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 03:30:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=iabOKt8Lt4ClyBb4r4Q/KqHn7Cps1qrTWhdLROC0vws=;
-        b=VQCl9uRJ1U9yzv+giXqEkz6Z1yMCqEp3hD2gW4Jaw5s1Ewt13S9ZakS15xCYWgi3dv
-         xayD1UAWLjkxDApMnNgrFpkP1w09bQiGAG1jDOT96JEC8CsV4tlBXUJHtyiCTPMsiDZx
-         Ayt7KUdq8NRJLYDz2WlL2v8d2xGg5Kc1SDjshNLy/xPvE3M4zaxkKtVQdbvoCpaT8Fwp
-         zD8In4NBTo53lm8LB1BxmK9EXteWssgCifKEmDLsDDB4VC2y7OtAmcxx/TCoq8dQR+2r
-         9Ma6Txx/6cNyejFL24zKary5+Wajx7zFRWu44J5LchvKYmsCy0hhGgqcVVhxQ0Qdw/dh
-         EJxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=iabOKt8Lt4ClyBb4r4Q/KqHn7Cps1qrTWhdLROC0vws=;
-        b=sP/11nkjpyjClFHvbC6gv3tlz9T6f8BYUw+zNz8hx/DMP9Z2WFYwE2e4Q/ldoeVBwk
-         9BNOUBtkJsv9pWrkcyDB3UjQPEEoLYNXnRd13rdOZ1BcWMWlAF09o5fXc89Dwc2Qfhew
-         oiiC5jP0tJIB4GvDhI8ZCNNBLhTf++iAo64Uy39UVqfctRtoQaUCJ3FS56uh3cAchiyu
-         JUBCo2ojOKykHJ2SGoB6r5gTC0qMzdKIXZfO9L0EJRn2hblVMw49QdhYexLtVQ0xHTKZ
-         oAdiPo6TQ2h8OO1SW6zyL9QytSrD+iBanw+IqUM4OgLMXZQQGlFc9EJbXI7VgFfQVkNL
-         E01Q==
-X-Gm-Message-State: AOAM532PrqVepIZA0KX/g2YViLRIxXWSkXG82fdFzeouGlkNGAWH7/fB
-        Y01QS/SfEZ+i/R6EK8J0cANzuA==
-X-Google-Smtp-Source: ABdhPJy5pwOku+BM+CDHZx5dxzOvjqNeMSrLQbz9dkgce9cywc4H7D1hWfs/mduin6qoqUr7KiN1hQ==
-X-Received: by 2002:a17:907:3e07:b0:6fe:fdf9:2c2e with SMTP id hp7-20020a1709073e0700b006fefdf92c2emr3609612ejc.378.1654165808343;
-        Thu, 02 Jun 2022 03:30:08 -0700 (PDT)
-Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id oy9-20020a170907104900b006fe99b66198sm133279ejb.60.2022.06.02.03.30.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 02 Jun 2022 03:30:07 -0700 (PDT)
-Message-ID: <3d93d46d-c484-da0a-c12c-80e83eba31c9@blackwall.org>
-Date:   Thu, 2 Jun 2022 13:30:06 +0300
+        Thu, 2 Jun 2022 06:30:39 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB39769B63;
+        Thu,  2 Jun 2022 03:30:25 -0700 (PDT)
+Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2528RlA9004842;
+        Thu, 2 Jun 2022 10:30:22 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=eQMrxDwS4o5AY3NeYTPbXuHkF5e1oKNwRgLoIiLPsKE=;
+ b=bfeV+OMSMS9U7IzCkV87degRxs6V/Nl/P9O5UrgRK8mxzaiKFn3PiRl28a0Xj5eJJi5U
+ Q5SEN7PrZENknYmU6xB9jilcHRdrr8RbwU+A7IJSyOC9r9TjbGsoBaiEnX9Rr9xxmF0M
+ oObvE45R1T06g3NftiOmt3MuPhCgCbEGBnhQN9t2z8RBDITiFBBgx7yOgn4eYZX63a9I
+ MvC3inwHtMrZzs5ZmaPT1q0rx0Zq0Z1+g3OvlPgn7TLAT5HhWMxhaVSRImJNxwVwlG1k
+ 1j6lnzZDLioIjcVjYyh783jiIdcXfTKOv58i29E2ZvjsiHFG1RdVxMF51d1AKoQnVCoh fw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gesqga4wr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 02 Jun 2022 10:30:22 +0000
+Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 252APCL7010460;
+        Thu, 2 Jun 2022 10:30:22 GMT
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gesqga4w0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 02 Jun 2022 10:30:22 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 252AL1B8024703;
+        Thu, 2 Jun 2022 10:30:19 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma03ams.nl.ibm.com with ESMTP id 3gbc7h6w3c-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 02 Jun 2022 10:30:19 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 252AUGID19333600
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 2 Jun 2022 10:30:16 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B2F65A4040;
+        Thu,  2 Jun 2022 10:30:16 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 77443A4051;
+        Thu,  2 Jun 2022 10:30:16 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu,  2 Jun 2022 10:30:16 +0000 (GMT)
+From:   Niklas Schnelle <schnelle@linux.ibm.com>
+To:     Bjorn Helgaas <bhelgaas@google.com>,
+        Jan Kiszka <jan.kiszka@siemens.com>,
+        Matthew Rosato <mjrosato@linux.ibm.com>,
+        Pierre Morel <pmorel@linux.ibm.com>
+Cc:     linux-s390@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH RESEND v5 1/4] PCI: Clean up pci_scan_slot()
+Date:   Thu,  2 Jun 2022 12:30:13 +0200
+Message-Id: <20220602103016.1499031-2-schnelle@linux.ibm.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220602103016.1499031-1-schnelle@linux.ibm.com>
+References: <20220602103016.1499031-1-schnelle@linux.ibm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH V3 net-next 1/4] net: bridge: add fdb flag to extent
- locked port feature
-Content-Language: en-US
-To:     Hans Schultz <schultz.hans@gmail.com>,
-        Ido Schimmel <idosch@nvidia.com>
-Cc:     Ido Schimmel <idosch@idosch.org>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>, Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
-        linux-kselftest@vger.kernel.org
-References: <20220524152144.40527-1-schultz.hans+netdev@gmail.com>
- <20220524152144.40527-2-schultz.hans+netdev@gmail.com>
- <Yo+LAj1vnjq0p36q@shredder> <86sfov2w8k.fsf@gmail.com>
- <YpCgxtJf9Qe7fTFd@shredder> <86sfoqgi5e.fsf@gmail.com>
- <YpYk4EIeH6sdRl+1@shredder> <86y1yfzap3.fsf@gmail.com>
- <d88b6090-2ac8-0664-0e38-bb2860be7f6e@blackwall.org>
- <86sfonjroi.fsf@gmail.com>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <86sfonjroi.fsf@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: vRptsqR1bog7f75OPad7Rfv8K_IkTp0r
+X-Proofpoint-ORIG-GUID: X6Kv4EO8UjbfMWZBN2PjzShrQaD7uZol
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-02_01,2022-06-02_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 spamscore=0
+ priorityscore=1501 mlxscore=0 adultscore=0 phishscore=0 clxscore=1015
+ impostorscore=0 suspectscore=0 mlxlogscore=841 bulkscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206020042
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 02/06/2022 13:17, Hans Schultz wrote:
-> On tor, jun 02, 2022 at 12:33, Nikolay Aleksandrov <razor@blackwall.org> wrote:
->> On 02/06/2022 12:17, Hans Schultz wrote:
->>> On tis, maj 31, 2022 at 17:23, Ido Schimmel <idosch@nvidia.com> wrote:
->>>> On Tue, May 31, 2022 at 11:34:21AM +0200, Hans Schultz wrote:
-> 
->>> Another issue is that
->>> bridge fdb add MAC dev DEV master static
->>> seems to add the entry with the SELF flag set, which I don't think is
->>> what we would want it to do or?
->>
->> I don't see such thing (hacked iproute2 to print the flags before cmd):
->> $ bridge fdb add 00:11:22:33:44:55 dev vnet110 master static
->> flags 0x4
->>
->> 0x4 = NTF_MASTER only
->>
-> 
-> I also get 0x4 from iproute2, but I still get SELF entries when I look
-> with:
-> bridge fdb show dev DEV
-> 
+While determining the next PCI function is factored out of
+pci_scan_slot() into next_fn() the former still handles the first
+function as a special case. This duplicates the code from the scan loop.
 
-after the above add:
-$ bridge fdb show dev vnet110 | grep 00:11
-00:11:22:33:44:55 master virbr0 static
+Furthermore the non ARI branch of next_fn() is generally hard to
+understand and especially the check for multifunction devices is hidden
+in the handling of NULL devices for non-contiguous multifunction. It
+also signals that no further functions need to be scanned by returning
+0 via wraparound and this is a valid function number.
 
->>> Also the replace command is not really supported properly as it is. I
->>> have made a fix for that which looks something like this:
->>>
->>> diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
->>> index 6cbb27e3b976..f43aa204f375 100644
->>> --- a/net/bridge/br_fdb.c
->>> +++ b/net/bridge/br_fdb.c
->>> @@ -917,6 +917,9 @@ static int fdb_add_entry(struct net_bridge *br, struct net_bridge_port *source,
->>>                 if (flags & NLM_F_EXCL)
->>>                         return -EEXIST;
->>>  
->>> +               if (flags & NLM_F_REPLACE)
->>> +                       modified = true;
->>> +
->>>                 if (READ_ONCE(fdb->dst) != source) {
->>>                         WRITE_ONCE(fdb->dst, source);
->>>                         modified = true;
->>>
->>> The argument for always sending notifications to the driver in the case
->>> of replace is that a replace command will refresh the entries timeout if
->>> the entry is the same. Any thoughts on this?
->>
->> I don't think so. It always updates its "used" timer, not its "updated" timer which is the one
->> for expire. A replace that doesn't actually change anything on the entry shouldn't generate
->> a notification.
-> 
-> Okay, so then there is missing checks on flags as the issue arose from
-> replacing locked entries with dynamic entries. I will do another fix
-> based on flags as modified needs to be true for the driver to get notified.
+Improve upon this by transforming the conditions in next_fn() to be
+easier to understand.
+
+By changing next_fn() to return -ENODEV instead of 0 when there is no
+next function we can then handle the initial function inside the loop
+and deduplicate the shared handling. This also makes it more explicit
+that only function 0 must exist.
+
+No functional change is intended.
+
+Cc: Jan Kiszka <jan.kiszka@siemens.com>
+Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+---
+ drivers/pci/probe.c | 38 +++++++++++++++++++-------------------
+ 1 file changed, 19 insertions(+), 19 deletions(-)
+
+diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+index 17a969942d37..78aa1bccab2f 100644
+--- a/drivers/pci/probe.c
++++ b/drivers/pci/probe.c
+@@ -2579,8 +2579,7 @@ struct pci_dev *pci_scan_single_device(struct pci_bus *bus, int devfn)
+ }
+ EXPORT_SYMBOL(pci_scan_single_device);
+ 
+-static unsigned int next_fn(struct pci_bus *bus, struct pci_dev *dev,
+-			    unsigned int fn)
++static int next_fn(struct pci_bus *bus, struct pci_dev *dev, int fn)
+ {
+ 	int pos;
+ 	u16 cap = 0;
+@@ -2588,24 +2587,26 @@ static unsigned int next_fn(struct pci_bus *bus, struct pci_dev *dev,
+ 
+ 	if (pci_ari_enabled(bus)) {
+ 		if (!dev)
+-			return 0;
++			return -ENODEV;
+ 		pos = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_ARI);
+ 		if (!pos)
+-			return 0;
++			return -ENODEV;
+ 
+ 		pci_read_config_word(dev, pos + PCI_ARI_CAP, &cap);
+ 		next_fn = PCI_ARI_CAP_NFN(cap);
+ 		if (next_fn <= fn)
+-			return 0;	/* protect against malformed list */
++			return -ENODEV;	/* protect against malformed list */
+ 
+ 		return next_fn;
+ 	}
++	if (fn >= 7)
++		return -ENODEV;
+ 
+-	/* dev may be NULL for non-contiguous multifunction devices */
+-	if (!dev || dev->multifunction)
+-		return (fn + 1) % 8;
++	/* only multifunction devices may have more functions */
++	if (dev && !dev->multifunction)
++		return -ENODEV;
+ 
+-	return 0;
++	return fn + 1;
+ }
+ 
+ static int only_one_child(struct pci_bus *bus)
+@@ -2643,26 +2644,25 @@ static int only_one_child(struct pci_bus *bus)
+  */
+ int pci_scan_slot(struct pci_bus *bus, int devfn)
+ {
+-	unsigned int fn, nr = 0;
+ 	struct pci_dev *dev;
++	int fn = 0, nr = 0;
+ 
+ 	if (only_one_child(bus) && (devfn > 0))
+ 		return 0; /* Already scanned the entire slot */
+ 
+-	dev = pci_scan_single_device(bus, devfn);
+-	if (!dev)
+-		return 0;
+-	if (!pci_dev_is_added(dev))
+-		nr++;
+-
+-	for (fn = next_fn(bus, dev, 0); fn > 0; fn = next_fn(bus, dev, fn)) {
++	do {
+ 		dev = pci_scan_single_device(bus, devfn + fn);
+ 		if (dev) {
+ 			if (!pci_dev_is_added(dev))
+ 				nr++;
+-			dev->multifunction = 1;
++			if (fn > 0)
++				dev->multifunction = 1;
++		} else if (fn == 0) {
++			/* function 0 is required */
++			break;
+ 		}
+-	}
++		fn = next_fn(bus, dev, fn);
++	} while (fn >= 0);
+ 
+ 	/* Only one slot has PCIe device */
+ 	if (bus->self && nr)
+-- 
+2.32.0
 
