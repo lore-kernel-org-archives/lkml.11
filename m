@@ -2,89 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F884C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 11:27:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A241AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 11:27:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234201AbiFBL10 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 07:27:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39170 "EHLO
+        id S234212AbiFBL1b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 07:27:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234195AbiFBL1W (ORCPT
+        with ESMTP id S234186AbiFBL1X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 07:27:22 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 721652AB236;
-        Thu,  2 Jun 2022 04:27:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1654169238; x=1685705238;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=H9dBjTw0cbAQOjaubAyGRHRBW53k1gZfcUzCESN/OuQ=;
-  b=Prpi0Mu47Si89azPaV0jIhi/rV1VJY72VYQCALfjmbtNJnjMlmcUAVA+
-   ZnBLMDP3ptrQ0p8jB2ucNxxBwQU7Q8u5c8adGY/H/gyzZIjzJQl/9cmVr
-   CiHXj3tH1A+KkDrY7Ab9lakKTEXs3jn4Q1z9ewgvs8IIQMgyJoS/Efqcj
-   I=;
-Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 02 Jun 2022 04:27:17 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2022 04:27:16 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 2 Jun 2022 04:27:16 -0700
-Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 2 Jun 2022 04:27:10 -0700
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <lgirdwood@gmail.com>, <broonie@kernel.org>, <robh+dt@kernel.org>,
-        <quic_plai@quicinc.com>, <bgoswami@quicinc.com>, <perex@perex.cz>,
-        <tiwai@suse.com>, <srinivas.kandagatla@linaro.org>,
-        <quic_rohkumar@quicinc.com>, <linux-arm-msm@vger.kernel.org>,
-        <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>,
-        <swboyd@chromium.org>, <judyhsiao@chromium.org>,
-        <devicetree@vger.kernel.org>
-CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Subject: [PATCH 2/2] ASoC: qcom: lpass-sc7280: Update external mclk0 name
-Date:   Thu, 2 Jun 2022 16:56:46 +0530
-Message-ID: <1654169206-12255-3-git-send-email-quic_srivasam@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1654169206-12255-1-git-send-email-quic_srivasam@quicinc.com>
-References: <1654169206-12255-1-git-send-email-quic_srivasam@quicinc.com>
+        Thu, 2 Jun 2022 07:27:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 509102ACB46;
+        Thu,  2 Jun 2022 04:27:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 395F8B81EFC;
+        Thu,  2 Jun 2022 11:27:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 999A9C385A5;
+        Thu,  2 Jun 2022 11:27:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654169238;
+        bh=bkkX8lyw+LlhjrWMM9UPH00U1eomprbT2CFStMN6JTw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=fec5AsNMHf1/CMW5blwRUqYNKLZZuq8z35ueIPBTc335mfgxSp/pO/sq8yCVBIl+x
+         KRrwEzAO/oqKQJzJSceuE7U0nXAZTa6XhRR74WQkJFt5TQJ1NzA3uFStQ7zFY+L1VE
+         DvjOUTVC1OoKmh8g7OJMhz4fTRiihbaI3QqEpoTkX/z7Khsq673LGR8LUvQ6T+NaS6
+         c9ZT7h0QliTPw7/PoMB2qvrrJ7KWsSk7ZqSxpslIry3PbAyZn/uzMjHxPJvmCmyaYc
+         z4WmbM15tFbfKT6P8Wl7n4PchUaqTgJ0poc9Ho1Rc7t0EBlq7N9klGdYDboBpEmbyW
+         SOsQmx1Gf9/7g==
+Date:   Thu, 2 Jun 2022 14:25:26 +0300
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Stefan Mahnke-Hartmann <stefan.mahnke-hartmann@infineon.com>
+Cc:     linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
+        peterhuewe@gmx.de, jgg@ziepe.ca
+Subject: Re: [PATCH] tpm: Add upgrade/reduced mode support for TPM1.2 modules
+Message-ID: <YpieJlx511jZUDmn@iki.fi>
+References: <20220601083810.330809-1-stefan.mahnke-hartmann@infineon.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220601083810.330809-1-stefan.mahnke-hartmann@infineon.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update "audio_cc_ext_mclk0" name to "core_cc_ext_mclk0",
-as MI2S mclk is being used is from lpass core cc.
+On Wed, Jun 01, 2022 at 10:38:11AM +0200, Stefan Mahnke-Hartmann wrote:
+> In case a TPM in failure mode is detected, the TPM should be accessible
+> through a transparent communication channel for analysing purposes (e.g.
+> TPM_GetTestResult) or a field upgrade. Since a TPM in failure mode has
+> similar reduced functionality as in field upgrade mode, the flag
+> TPM_CHIP_FLAG_FIRMWARE_UPGRADE_MODE is also valid.
+> 
+> As described in TCG TPM Main Part1 Design Principles, Revision 116,
+> chapter 9.2.1. the TPM also allows an update function in case a TPM is
+> in failure mode.
+> 
+> If the TPM in failure mode is detected, the function tpm1_auto_startup()
+> sets TPM_CHIP_FLAG_FIRMWARE_UPGRADE_MODE flag. This patch simply follows
+> the same rationale as TPM2 in field upgrade mode.
 
-Fixes: b62c4e5fba2f ("ASoC: qcom: lpass-sc7280: Add platform driver for lpass audio")
-Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
----
- sound/soc/qcom/lpass-sc7280.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+"following the rationale" does not give a clue what it does.
 
-diff --git a/sound/soc/qcom/lpass-sc7280.c b/sound/soc/qcom/lpass-sc7280.c
-index 70c4df8..e65bf7e 100644
---- a/sound/soc/qcom/lpass-sc7280.c
-+++ b/sound/soc/qcom/lpass-sc7280.c
-@@ -403,7 +403,7 @@ static struct lpass_variant sc7280_data = {
- 	.dai_driver			= sc7280_lpass_cpu_dai_driver,
- 	.num_dai			= ARRAY_SIZE(sc7280_lpass_cpu_dai_driver),
- 	.dai_osr_clk_names		= (const char *[]) {
--							"audio_cc_ext_mclk0",
-+							"core_cc_ext_mclk0",
- 							"null"
- 							},
- 	.dai_bit_clk_names		= (const char *[]) {
--- 
-2.7.4
+Also minor nit: write in imperative from, and please do not say "this
+patch". It won't be a patch, once it is in git.
 
+> Signed-off-by: Stefan Mahnke-Hartmann <stefan.mahnke-hartmann@infineon.com>
+> ---
+> If you have any better suggestions, please let me know.
+> 
+>  drivers/char/tpm/tpm1-cmd.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/char/tpm/tpm1-cmd.c b/drivers/char/tpm/tpm1-cmd.c
+> index f7dc986fa4a0..7a42d74c450c 100644
+> --- a/drivers/char/tpm/tpm1-cmd.c
+> +++ b/drivers/char/tpm/tpm1-cmd.c
+> @@ -710,8 +710,10 @@ int tpm1_auto_startup(struct tpm_chip *chip)
+>  		goto out;
+>  	rc = tpm1_do_selftest(chip);
+>  	if (rc) {
+> -		dev_err(&chip->dev, "TPM self test failed\n");
+> -		goto out;
+> +		dev_err(&chip->dev, "TPM self test failed, so the TPM has limited functionality\n");
+> +		/* A TPM in this state possibly allows or needs a firmware upgrade */
+> +		chip->flags |= TPM_CHIP_FLAG_FIRMWARE_UPGRADE;
+> +		rc = 0;
+>  	}
+>  
+>  	return rc;
+> -- 
+> 2.25.1
+> 
+
+Why all error codes trigger this action, e.g. all possible TPM2
+errors and -ETIME?
+
+BR, Jarkko
