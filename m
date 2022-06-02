@@ -2,103 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA5FDCCA478
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 15:50:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90214C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 15:50:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236595AbiFBPuR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 11:50:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50714 "EHLO
+        id S236600AbiFBPuV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 11:50:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231797AbiFBPuO (ORCPT
+        with ESMTP id S236576AbiFBPuP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 11:50:14 -0400
-Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com [209.85.167.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B65D62E09B;
-        Thu,  2 Jun 2022 08:50:12 -0700 (PDT)
-Received: by mail-oi1-f173.google.com with SMTP id k11so6966781oia.12;
-        Thu, 02 Jun 2022 08:50:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=4M65yO1MSPMaaEDxpgxAeSakHO4GbEVK8l/HDI7ey7E=;
-        b=iGmzDqhtpsxMzxm22qQgnkRIBwk6TSQ+as4aB4Fnqk3F9hlmPE3g1BI7PGi4QpiIKP
-         PBZ73wi9zmxkjL7w+q6r+HeSOrxTig2Ex5qTsNk+yFY2nhlCGlC0eFApAMnzyU4TkuNx
-         C+ZIyqmUcfpxjogeNEjE2FP808P2WFkNltT9Ecnqh0JpAn/j5tyRWmzKRouGaELG1hbj
-         0JtOBEP3hhsBKwhXw3qgNrQg6rcfO0T8lA2aR7nA/SkA1C9LuKmLaeRjgSdC+85M4K9/
-         agGVdiblLongl+GofVWfGAhQyCieMh3FJcsUOTX0mNTLMBZaeiLuPPBcY5zU+NQjUJ1i
-         JmKw==
-X-Gm-Message-State: AOAM532zbcAqTILS8HI4m6C8e5wE5xCvZNTMl4WEhTjehrDmXjLxY6Aj
-        DLeczHowGONZD4R+hEMYUA==
-X-Google-Smtp-Source: ABdhPJweeB9Qgg0inliBye4ZwpAwslfzL2dtqBXMZ5lTOF4/7QDMtbhTUga29CdeEcyJUYzgbdCydQ==
-X-Received: by 2002:a05:6808:1646:b0:328:ffdf:6821 with SMTP id az6-20020a056808164600b00328ffdf6821mr3065177oib.115.1654185011996;
-        Thu, 02 Jun 2022 08:50:11 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id lq10-20020a0568708dca00b000e90544b79fsm2100598oab.41.2022.06.02.08.50.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Jun 2022 08:50:11 -0700 (PDT)
-Received: (nullmailer pid 2398310 invoked by uid 1000);
-        Thu, 02 Jun 2022 15:50:10 -0000
-Date:   Thu, 2 Jun 2022 10:50:10 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Dmitry Rokosov <DDRokosov@sberdevices.ru>
-Cc:     "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
-        kernel <kernel@sberdevices.ru>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "stano.jakubek@gmail.com" <stano.jakubek@gmail.com>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "stephan@gerhold.net" <stephan@gerhold.net>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "jic23@kernel.org" <jic23@kernel.org>
-Subject: Re: [PATCH v2 1/3] dt-bindings: vendor-prefixes: add MEMSensing
- Microsystems Co., Ltd.
-Message-ID: <20220602155010.GA2349024-robh@kernel.org>
-References: <20220525181532.6805-1-ddrokosov@sberdevices.ru>
- <20220525181532.6805-2-ddrokosov@sberdevices.ru>
- <20220602135015.GA2186715-robh@kernel.org>
- <20220602135934.f4exakny4rbrdboy@CAB-WSD-L081021.sigma.sbrf.ru>
+        Thu, 2 Jun 2022 11:50:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5A6A2E09B;
+        Thu,  2 Jun 2022 08:50:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BAA926124C;
+        Thu,  2 Jun 2022 15:50:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 14F9CC3411E;
+        Thu,  2 Jun 2022 15:50:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654185013;
+        bh=wB/MEXAf/c0kGO3cPyTVqTrfCM+kgdsXTuQGvpftntI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Wc9zwc9sIm3iry68zZ2UoKsXulPDc+lwLsSzLtvmUuVn1LgEU7QuT0MDccsntEr+R
+         I+FbuGKanpMebKkSxFy4A2/l9kpGI+jh80EJjCQJBLwmnDzk7M1hc8cxPVynP+LCNJ
+         w26BsnEZYAQ4oG66tsjypzF6kUYDQJJLQAZXI4nYcm8SXoVvr35FWe6FfoBEppvXQ2
+         7WbPvgJ7DmA+LLe7AwBYnli8vH5BKrl4MCAU6eW4nHGIaEoErWI7qgpOnKfqwCWq/H
+         M+cMPO9EXQKyOAvduyqnYx7M2zHjDvp79PJ6lIi27An/ZKEXXkcA3jNDAyk7BGYJaX
+         NC0Eb+RzgwnjQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id EE707F03953;
+        Thu,  2 Jun 2022 15:50:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220602135934.f4exakny4rbrdboy@CAB-WSD-L081021.sigma.sbrf.ru>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2] Bluetooth: clear the temporary linkkey in hci_conn_cleanup
+From:   patchwork-bot+bluetooth@kernel.org
+Message-Id: <165418501297.10758.2881771584555714145.git-patchwork-notify@kernel.org>
+Date:   Thu, 02 Jun 2022 15:50:12 +0000
+References: <20220602151456.v2.1.I9f2f4ef058af96a5ad610a90c6938ed17a7d103f@changeid>
+In-Reply-To: <20220602151456.v2.1.I9f2f4ef058af96a5ad610a90c6938ed17a7d103f@changeid>
+To:     Alain Michaud <alainmichaud@google.com>
+Cc:     linux-bluetooth@vger.kernel.org,
+        chromeos-bluetooth-upstreaming@chromium.org, alainm@chromium.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        johan.hedberg@gmail.com, luiz.dentz@gmail.com, marcel@holtmann.org,
+        pabeni@redhat.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 02, 2022 at 01:59:18PM +0000, Dmitry Rokosov wrote:
-> Rob,
-> 
-> Thank you for the Ack. I'm going to send v3 patch series and don't
-> understand, should I append Acked-by line to v3 version of vendor-prefix
-> patch... Please suggest me if possible.
+Hello:
 
-Yes. When you send another version, add any acks unless there are 
-significant changes that warrant not adding them. You don't need to send 
-another version just to add acks. The maintainer will add any given on 
-the current version.
+This patch was applied to bluetooth/bluetooth-next.git (master)
+by Marcel Holtmann <marcel@holtmann.org>:
 
-Rob
+On Thu,  2 Jun 2022 15:15:03 +0000 you wrote:
+> From: Alain Michaud <alainm@chromium.org>
+> 
+> If a hardware error occurs and the connections are flushed without a
+> disconnection_complete event being signaled, the temporary linkkeys are
+> not flushed.
+> 
+> This change ensures that any outstanding flushable linkkeys are flushed
+> when the connection are flushed from the hash table.
+> 
+> [...]
 
-> 
-> On Thu, Jun 02, 2022 at 08:50:15AM -0500, Rob Herring wrote:
-> > On Wed, 25 May 2022 18:15:30 +0000, Dmitry Rokosov wrote:
-> > > MEMSensing Microsystems (Suzhou, China) Co., Ltd. operates as a micro
-> > > electromechanical system technology company which produces micro
-> > > electromechanical system microphones and sensors.
-> > > MEMSensing Microsystems (Suzhou, China) Co., Ltd. applies its products
-> > > in consumer electronics, industrial control, medical electronics
-> > > and automotive, and other fields.
-> > > 
-> > > Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
-> > > ---
-> > >  Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
-> > >  1 file changed, 2 insertions(+)
-> > > 
-> > 
-> > Acked-by: Rob Herring <robh@kernel.org>
-> 
-> -- 
-> Thank you,
-> Dmitry
+Here is the summary with links:
+  - [v2] Bluetooth: clear the temporary linkkey in hci_conn_cleanup
+    https://git.kernel.org/bluetooth/bluetooth-next/c/5a4e1528d840
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
