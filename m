@@ -2,194 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 763E1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 03:16:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D85E2C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 03:19:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233535AbiFBDQm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 23:16:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35692 "EHLO
+        id S233555AbiFBDTl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 23:19:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233483AbiFBDQj (ORCPT
+        with ESMTP id S233544AbiFBDTh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 23:16:39 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 81BF72ACB68
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 20:16:38 -0700 (PDT)
-Received: from [192.168.10.143] (unknown [123.117.60.26])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Cxb+aPK5hieh0NAA--.52840S3;
-        Thu, 02 Jun 2022 11:16:31 +0800 (CST)
-Subject: Re: [PATCH RFC V2 02/10] irqchip: Add LoongArch CPU interrupt
- controller support
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Huacai Chen <chenhuacai@gmail.com>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Huacai Chen <chenhuacai@loongson.cn>
-References: <1653649335-11998-1-git-send-email-lvjianmin@loongson.cn>
- <1653649335-11998-3-git-send-email-lvjianmin@loongson.cn>
- <87bkvf56wg.wl-maz@kernel.org>
- <64990891.8322.18119c6d212.Coremail.lvjianmin@loongson.cn>
- <87a6ax6c0n.wl-maz@kernel.org>
-From:   Jianmin Lv <lvjianmin@loongson.cn>
-Message-ID: <1c7b1ee5-3f1e-c090-fb2e-65741de76a9f@loongson.cn>
-Date:   Thu, 2 Jun 2022 11:16:30 +0800
-User-Agent: Mozilla/5.0 (X11; Linux loongarch64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        Wed, 1 Jun 2022 23:19:37 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 413CF23CA1C;
+        Wed,  1 Jun 2022 20:19:35 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LDB835sp2z4xD9;
+        Thu,  2 Jun 2022 13:19:31 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1654139973;
+        bh=E+//hDsmvB3zuaCgRs7jMhl87gw5tuJD7IgL5GScDHA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=TVkIK5XIg4kyfsC5a9bC5GfryB82JhSKHSQnd7MqFdT0X4T/ouRzFY0NrBogxNd5e
+         +R7fzQqLEwvthSt87Js1JHukj3bXIPJdaikpTFKmpHnekLkMfheq2+pXbl5pM2KH3F
+         aQm8vKsYtWUco7HSEca9npUQDg9mv+KsqkDEJlr1R+0vYKV7BADMk9NWqQ8VzCPFCi
+         Rl+ZlhUl73qlI5GRk/Y0LdlloWJx/g33tozVQ8d6W3VOAQIPARvVZKI1At8tbgx/mq
+         aKRhepZuSrHMO0+7X34hkMgfiIuJFxfFQiVAIt8qqsNtwTZkPj1Yyc6xhCQX9WZvV7
+         MOZD39uJqHmTA==
+Date:   Thu, 2 Jun 2022 13:19:30 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Bo Liu <liubo03@inspur.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build failure after merge of the vhost tree
+Message-ID: <20220602131930.1128f31f@canb.auug.org.au>
+In-Reply-To: <20220601060641-mutt-send-email-mst@kernel.org>
+References: <20220601114240.1dafefc6@canb.auug.org.au>
+        <20220601060641-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <87a6ax6c0n.wl-maz@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-CM-TRANSID: AQAAf9Cxb+aPK5hieh0NAA--.52840S3
-X-Coremail-Antispam: 1UD129KBjvJXoWxKr1DGF4DJr1UXr4kAFWrKrg_yoW7Ar43pr
-        yrGF1UXrWUJr10qr10gw18Xr9xtr18Ja1UXw15JasrJr1DCF12qr15ur1j9r1kAr48Jr4U
-        Zr1UJFW5ury3JFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvG14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26F1j6w1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
-        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVCY1x0267AKxV
-        W0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv
-        7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r
-        1j6r4UM4x0Y48IcVAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCYjI0SjxkI62AI1cAE
-        67vIY487MxkIecxEwVAFwVW8GwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJV
-        W8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF
-        1VAFwI0_JF0_Jw1lIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6x
-        IIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26cxKx2IYs7xG6rW3Jr0E3s1lIxAI
-        cVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVWUJVW8JbIYCTnIWIevJa
-        73UjIFyTuYvjfUnQ6pDUUUU
-X-CM-SenderInfo: 5oymxthqpl0qxorr0wxvrqhubq/
+Content-Type: multipart/signed; boundary="Sig_/OOpm8wCH_V1MHxEsTg=xXo5";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
->>>> +
->>>> +int acpi_gsi_to_irq(u32 gsi, unsigned int *irqp)
->>>> +{
->>>> +	if (irqp != NULL)
->>>> +		*irqp = acpi_register_gsi(NULL, gsi, -1, -1);
->>>> +	return (*irqp >= 0) ? 0 : -EINVAL;
->>>> +}
->>>> +EXPORT_SYMBOL_GPL(acpi_gsi_to_irq);
->>>> +
->>>> +int acpi_isa_irq_to_gsi(unsigned int isa_irq, u32 *gsi)
->>>> +{
->>>> +	if (gsi)
->>>> +		*gsi = isa_irq;
->>>> +	return 0;
->>>> +}
->>>> +
->>>> +/*
->>>> + * success: return IRQ number (>=0)
->>>> + * failure: return &lt; 0
->>>> + */
->>>> +int acpi_register_gsi(struct device *dev, u32 gsi, int trigger, int polarity)
->>>> +{
->>>> +	int id;
->>>> +	struct irq_fwspec fwspec;
->>>> +
->>>> +	switch (gsi) {
->>>> +	case GSI_MIN_CPU_IRQ ... GSI_MAX_CPU_IRQ:
->>>> +		fwspec.fwnode = liointc_domain->fwnode;
->>>> +		fwspec.param[0] = gsi - GSI_MIN_CPU_IRQ;
->>>> +		fwspec.param_count = 1;
->>>> +
->>>> +		return irq_create_fwspec_mapping(&amp;fwspec);
->>>> +
->>>> +	case GSI_MIN_LPC_IRQ ... GSI_MAX_LPC_IRQ:
->>>> +		if (!pch_lpc_domain)
->>>> +			return -EINVAL;
->>>> +
->>>> +		fwspec.fwnode = pch_lpc_domain->fwnode;
->>>> +		fwspec.param[0] = gsi - GSI_MIN_LPC_IRQ;
->>>> +		fwspec.param[1] = acpi_dev_get_irq_type(trigger, polarity);
->>>> +		fwspec.param_count = 2;
->>>> +
->>>> +		return irq_create_fwspec_mapping(&amp;fwspec);
->>>> +
->>>> +	case GSI_MIN_PCH_IRQ ... GSI_MAX_PCH_IRQ:
->>>> +		id = find_pch_pic(gsi);
->>>> +		if (id &lt; 0)
->>>> +			return -EINVAL;
->>>> +
->>>> +		fwspec.fwnode = pch_pic_domain[id]->fwnode;
->>>> +		fwspec.param[0] = gsi - acpi_pchpic[id]->gsi_base;
->>>> +		fwspec.param[1] = IRQ_TYPE_LEVEL_HIGH;
->>>> +		fwspec.param_count = 2;
->>>> +
->>>> +		return irq_create_fwspec_mapping(&amp;fwspec);
->>>> +	}
->>> So all the complexity here seems to stem from the fact that you deal
->>> with three ranges of interrupts, managed by three different pieces of
->>> code?
->>>
->> Yes.
->>
->>> Other architectures have similar requirements, and don't require to
->>> re-implement a private version of the ACPI API. Instead, they expose a
->>> single irqdomain, and deal with the various ranges internally.
->>>
->>> Clearly, not being able to reuse drivers/acpi/irq.c *is* an issue.
->>>
->> Thanks, I agree, that sounds a good and reasonable suggestion, and
->> I'll reserach it further and reuse code from drivers/acpi/irq.c as
->> can as possible.
->>
-Hi, Marc, according to your suggestion, I carefully looked into gic 
-driver of ARM, and I found one possible gsi mapping path as following:
+--Sig_/OOpm8wCH_V1MHxEsTg=xXo5
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-acpi_register_gsi /* whatever the gsi is, gic domain for ARM is only 
-single domain to use.*/
-  ->irq_create_fwspec_mapping
-    ->irq_find_mapping /* return irq in the mapping of irqdomain with 
-fwnode_handle of acpi_gsi_domain_id if configured. */
-    ->irq_domain_alloc_irqs /* if not configured and hierarchy domain */
-      ->irq_domain_alloc_irqs_hierarchy
-        ->domain->ops->alloc /* call gic_irq_domain_alloc */
-          ->gic_irq_domain_map /* handle different GSI range as 
-following code: */
+Hi Michael,
 
+On Wed, 1 Jun 2022 17:57:12 -0400 "Michael S. Tsirkin" <mst@redhat.com> wro=
+te:
+>
+> Indeed, pushed a wrong tree :(=20
+> I hope I pushed the correct one now, pls let me know whether this is now =
+fixed.
 
-         switch (__get_intid_range(hw)) {
-         case SGI_RANGE:
-         case PPI_RANGE:
-         case EPPI_RANGE:
-                 irq_set_percpu_devid(irq);
-                 irq_domain_set_info(d, irq, hw, chip, d->host_data,
-                                     handle_percpu_devid_irq, NULL, NULL);
-                 break;
+Looks good here, thanks.
 
-         case SPI_RANGE:
-         case ESPI_RANGE:
-                 irq_domain_set_info(d, irq, hw, chip, d->host_data,
-                                     handle_fasteoi_irq, NULL, NULL);
-                 irq_set_probe(irq);
-                 irqd_set_single_target(irqd);
-                 break;
+--=20
+Cheers,
+Stephen Rothwell
 
-         case LPI_RANGE:
-                 if (!gic_dist_supports_lpis())
-                         return -EPERM;
-                 irq_domain_set_info(d, irq, hw, chip, d->host_data,
-                                     handle_fasteoi_irq, NULL, NULL);
-                 break;
+--Sig_/OOpm8wCH_V1MHxEsTg=xXo5
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
-Yes, it's well for ARM by this way, and I found that only one 
-domain(specified by acpi_gsi_domain_id)is used.
+-----BEGIN PGP SIGNATURE-----
 
-But for LoongArch, different GSI range have to be handled in different 
-domain(e.g. GSI for LIOINTC irqchip can be only mapped in LIOINTC 
-domain.). The hwirq->irq mapping of different GSI range is stored in 
-related separate domain. The reason leading to this is that an interrupt 
-source is hardcodingly to connected to an interrupt vector for these 
-irqchip(LIOINTC,LPC-PIC and PCH-PIC), and the interrupt source of them 
-need to be configured with GSI in DSDT or FADT(e.g. SCI).
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmKYLEIACgkQAVBC80lX
+0Gx/Ogf+NqMYbRqN7YYPqiGpnN2w3EOIw9k6jdYC73uKFWMzXqJTPSrOFZbET9Do
+9YfpxUfBIM9jCIqYqBJgLt1yF4rig/dLlHNXZy4mnKtF8DyVBN4JRHawaqc0UWxY
+n4iUGcDoEX2QZegLShH8BvEem3DQQblfP1Tm4mpa4Iv1xGpoPvI5vKe27nOS0xvc
+TCR+dzRw/tSKhitwFxFj+/IfWFuRXiPj3/tIZWceSzTIqVGF+bZ9KeMCZ86WaKo+
+kC8kR9L94+Vmi2Nzy/c3kohjlPBTx+PprAk2qGnbVK+7aA4vSHtf4mHxbpOPXmNP
+vX/qGZoA4oFAcIrOKlBs6XQaZVOH6g==
+=Ks2b
+-----END PGP SIGNATURE-----
 
-If only exposing one domain for LoongArch, when calling irq_find_mapping 
-in acpi_register_gsi flow, the irq is returned only from the domain 
-specfied by acpi_gsi_domain_id, so I'm afraid it's unsuitable to expose 
-a single domain for acpi_register_gsi.
-
-I'm so sorry, I really don't find a way to reuse driver/acpi/irq.c after 
-my humble work.
-
+--Sig_/OOpm8wCH_V1MHxEsTg=xXo5--
