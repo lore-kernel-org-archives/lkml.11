@@ -2,96 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82840C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 12:02:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FABEC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 12:02:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233520AbiFBMCm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 08:02:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44534 "EHLO
+        id S234785AbiFBMCy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 08:02:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234701AbiFBMC3 (ORCPT
+        with ESMTP id S234735AbiFBMCs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 08:02:29 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C684FEA8
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 05:02:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654171346; x=1685707346;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=TesyJ3a5vi+Ne4ngaTWX9TvJ0deEipl3mdqT/hu1DN0=;
-  b=h+GhJf/X0Xe4Dl4dwYqPjx3RgKDprbJXxGUTuPmbct3T7dCK+UX48593
-   tNPJIUpl1PJe+S3vBWnmT7H5s9v5y6Y+Be6N71tVIx+WzxML2/iLjrhXu
-   5uCmK3y9k8tQm7fSy0arTwyqY90ajjahk2J8Buf5K3nVIGalrb9bXkXxw
-   dStUW0SCFjPJJF6XKFA3z3cjFnrS3N9xG9iWWsqv0xxBgVyppQxt+h5J7
-   Tq2nLJmkBnOVxPfFgW3O7KH/tiHnI1IY7f+AiKv97J3BjWJ+K4yvSCw79
-   UDMDTxA+7oXsstXpRguJyQXarzntUBDz0lad+vvBbQn6Wa0AYc0y//H7W
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10365"; a="336584386"
-X-IronPort-AV: E=Sophos;i="5.91,271,1647327600"; 
-   d="scan'208";a="336584386"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2022 05:02:26 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,271,1647327600"; 
-   d="scan'208";a="721275416"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 02 Jun 2022 05:02:24 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nwjWy-00052f-6x;
-        Thu, 02 Jun 2022 12:02:24 +0000
-Date:   Thu, 2 Jun 2022 20:02:17 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Michael Shych <michaelsh@nvidia.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Hans de Goede <hdegoede@redhat.com>,
-        Vadim Pasternak <vadimp@nvidia.com>
-Subject: drivers/platform/mellanox/nvsw-sn2201.c:329:42: sparse: sparse:
- symbol 'nvsw_sn2201_i2c_data' was not declared. Should it be static?
-Message-ID: <202206021946.HcEMyEHG-lkp@intel.com>
+        Thu, 2 Jun 2022 08:02:48 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CD9C1004
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 05:02:43 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id er5so5945847edb.12
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 05:02:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=U+8T6fn4T3vaS0Pi2aB2h1k72+HYKHqTINehwyE+Qxw=;
+        b=WgJo3UOrlWF/xukiH2Ku/H4mdceQ13UjCa+NEb9eL5GFxciQb2m/H0biH39C8/iyoC
+         UiorpjyI/JVwc5x53o5eiy8NCi3h6nJmU8Rk9KIT8GaOKNKLmN3LegL1M9r+RA9cnJLX
+         0DJtMJfNukuJqKElDBGjAkXwePDty6ctIvt+5JhABmGuOTBy23VV8UeP7SEl2/bHl96G
+         qy4eTw7224jmjab9pUBps6c0AQd+dXl3i0VGUN8h/6JgRErzSyA58TmBAsJuVvOzjlZd
+         Hxl6dDWlth12mYKgJ/B9bJYwO0pSLB4e1NXvXKd4av+jDkIZf18lh0UHkcX+TqvmV6PI
+         dTMA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=U+8T6fn4T3vaS0Pi2aB2h1k72+HYKHqTINehwyE+Qxw=;
+        b=EDjO+35D2+rYhKjJNVW1Gu9ra0yllqENwSY4LpBuW5pPVv7gvjNbbswU09ZBY05XQ/
+         EgrLOlLvgbSRv2SV2HcLozJJURkUP6D0mXN4QefT2/somOPGhMyPscEwtNJwO7EzU/kw
+         dL5tu4LqDSqVQyZjpuEOlewU3WCBjFgB0/RstU/7+29Xfjr1XiNgIvRB/6RcZrRdOo1L
+         erOY8kf1ooWQMaeGTMCzbJ9s+SNSoBWAIR7NAcCS/1g+vzlnW53ASW2PfgA+pjWm2uQm
+         Jm7SLd6AM/9h6m/aDCbQJt6pCoLk7RIOd1EJ4aWq95P8+9i6qKukmpPDbR/Tjnhu7aOR
+         sR9g==
+X-Gm-Message-State: AOAM532XT71OsRDVBGw+13E3vGGpvPMjr5pKBMaTpeL10TY1a2ILeDRP
+        sG1NWW9RDZYPMsrXN3zLQ3/cCg==
+X-Google-Smtp-Source: ABdhPJx4oO7YkUav5hDFlqrl3kvMLXszr+upvgPvjdffSEadzOq3Ofn3+ntG6LnID8A7MNz5hB5ENQ==
+X-Received: by 2002:a05:6402:1f0e:b0:42d:e38a:51f7 with SMTP id b14-20020a0564021f0e00b0042de38a51f7mr5117059edb.68.1654171361576;
+        Thu, 02 Jun 2022 05:02:41 -0700 (PDT)
+Received: from [192.168.0.181] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id b8-20020aa7c6c8000000b0042617ba637bsm2480855eds.5.2022.06.02.05.02.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 02 Jun 2022 05:02:41 -0700 (PDT)
+Message-ID: <e084e508-d886-3e6c-53ab-1f0b22706964@linaro.org>
+Date:   Thu, 2 Jun 2022 14:02:39 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v1 01/15] dt-binding: remoteproc: mediatek: Support
+ dual-core SCP
+Content-Language: en-US
+To:     Tinghan Shen <tinghan.shen@mediatek.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        Daisuke Nojiri <dnojiri@chromium.org>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        "Dustin L. Howett" <dustin@howett.net>,
+        Tzung-Bi Shih <tzungbi@kernel.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Prashant Malani <pmalani@chromium.org>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Brian Norris <briannorris@chromium.org>
+Cc:     linux-remoteproc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        chrome-platform@lists.linux.dev,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        weishunc@google.com
+References: <20220601112201.15510-1-tinghan.shen@mediatek.com>
+ <20220601112201.15510-2-tinghan.shen@mediatek.com>
+ <dd3ea397-fa21-abe5-85ad-b8a4818dc011@linaro.org>
+ <3c837acfbefa5b7e23e1121678b5b878f08e4ef2.camel@mediatek.com>
+ <476baef8-0255-45ed-85f4-2b9d877c4af1@linaro.org>
+ <287d88a62fd13cd762b20faa3e9df826632fe1eb.camel@mediatek.com>
+ <45c8050e-16d3-80d6-0799-8b067a38d956@linaro.org>
+ <5c614dc0947aba6ce2eb0cdc3055a390da723d08.camel@mediatek.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <5c614dc0947aba6ce2eb0cdc3055a390da723d08.camel@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   d1dc87763f406d4e67caf16dbe438a5647692395
-commit: 662f24826f954d49d56211822bcd7b3109287961 platform/mellanox: Add support for new SN2201 system
-date:   3 weeks ago
-config: s390-randconfig-s031-20220602 (https://download.01.org/0day-ci/archive/20220602/202206021946.HcEMyEHG-lkp@intel.com/config)
-compiler: s390-linux-gcc (GCC) 11.3.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-14-g5a0004b5-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=662f24826f954d49d56211822bcd7b3109287961
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 662f24826f954d49d56211822bcd7b3109287961
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=s390 SHELL=/bin/bash drivers/platform/mellanox/
+On 02/06/2022 13:29, Tinghan Shen wrote:
+>> Maybe the hardware property is that one core has its sibling and you
+>> provide here that sibling?
+> 
+> Yes, exactly. I'm sorry for misreading your argument.
+> 
+> How about this one,
+>    
+>   Reference to the sibling SCP core. This is required when 
+>   dual-core SCP support is enabled.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Yes, sounds good. Thank you.
 
 
-sparse warnings: (new ones prefixed by >>)
->> drivers/platform/mellanox/nvsw-sn2201.c:329:42: sparse: sparse: symbol 'nvsw_sn2201_i2c_data' was not declared. Should it be static?
-
-vim +/nvsw_sn2201_i2c_data +329 drivers/platform/mellanox/nvsw-sn2201.c
-
-   327	
-   328	/* SN2201 I2C platform data. */
- > 329	struct mlxreg_core_hotplug_platform_data nvsw_sn2201_i2c_data = {
-   330		.irq = NVSW_SN2201_CPLD_SYSIRQ,
-   331	};
-   332	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Best regards,
+Krzysztof
