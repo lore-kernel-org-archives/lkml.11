@@ -2,129 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD79BCCA478
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 16:53:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4FF6C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 16:53:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237284AbiFBQxL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 12:53:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52600 "EHLO
+        id S237317AbiFBQxg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 12:53:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235643AbiFBQxD (ORCPT
+        with ESMTP id S237369AbiFBQxb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 12:53:03 -0400
-X-Greylist: delayed 445 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 02 Jun 2022 09:52:59 PDT
-Received: from mail.shift-gmbh.com (mail.shift-gmbh.com [85.10.195.145])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DCB027B9B0;
-        Thu,  2 Jun 2022 09:52:59 -0700 (PDT)
-From:   Alexander Martinz <amartinz@shiftphones.com>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=shiftphones.com;
-        s=2018; t=1654188331;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=EtLUtGgtzmMn/jbekYRhgMbH2I3kcpmuGEIvnJpeso0=;
-        b=b4JM09k7nFCSVq0T51RJbyb2fTAuM5XtI3WD+QMJwNzcS5nVhCZ5NiWjxFyxT2x068LG85
-        jWwCTMycoDmu1v3tSHXq3UE4X5AOLKIGRxPxiZBHZygfD5HoN4xGdreaOSSC0ljoeYw6mA
-        qyorhrGR+M6x4g5qoOHJzNCQLM/pyvQF9i5ABm7gl7Ig/KizYeTMKSs4O/sZRbXNLZd0AW
-        KNAQgjIbPJdVKdCwe9GrI3AQy+8YOcrlbQdjQIaiNQlM5Ygc2ovzjdeInwfA4qqpUWThGl
-        G628nuK0mmtsW2H5+nGQZLDxBjPqRmWPJWZ53sGXiu9CvVxahMo1KbewQ2zZww==
-To:     ~postmarketos/upstreaming@lists.sr.ht
-Cc:     phone-devel@vger.kernel.org, Stephan Gerhold <stephan@gerhold.net>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Caleb Connolly <caleb@connolly.tech>,
-        Dylan Van Assche <me@dylanvanassche.be>,
-        Alexander Martinz <amartinz@shiftphones.com>
-Subject: [PATCH 1/2] ASoC: codecs: tfa989x: Add support for tfa9890
-Date:   Thu,  2 Jun 2022 18:45:03 +0200
-Message-Id: <20220602164504.261361-1-amartinz@shiftphones.com>
+        Thu, 2 Jun 2022 12:53:31 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 211302B2EAA
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 09:53:24 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id m20so11070268ejj.10
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 09:53:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JZ8UPU6ugki+PkwkthIYbz7oUO9hdXo6b9SQ7nkdwtM=;
+        b=L/0QynMd8+v88ZZU+c9xvsS2+4IBAk0qnvPWUUmgZAkop0TG4KZxd99dk7jRpG2xjP
+         KUc2tplVKuDgLdfIaBZhtckFNJvUhIHInGndmo36fHngmE8m6jBeiLD0zmlU+8/OdXH8
+         9Mhv3pV/nWVpkGYnhijstSeCiN20370swxDcIslOPlNz0qlzwWzr80kwtbP2UAzr+X5t
+         bT2vvDe3PqbnmNaxHJbmazQRDsxxA4Yh8PekOBHYmvau5bphFYS+zjlSYH/aafxUQ8Vo
+         hECS/upWIjnqQOS5ZSqLfaFOUr/hiOcHh2H6Rf5rblMMuM7gC2MEZPcSyYtpMgzVgJI9
+         7g8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JZ8UPU6ugki+PkwkthIYbz7oUO9hdXo6b9SQ7nkdwtM=;
+        b=a1RwKaNZHHNQHajq+owJJ3N4cL10bzCW3vFQT+Jc+zvo+QCyqUC48GJLGPLib7+zA5
+         6O3bBwMfOnDD6ztw2MnEZVt3IX/dEzX6X41OpMPe5KSozakK57I6y0RNmpsYjUfx/TSh
+         fijC//PBfan85ZXyQDyZqUujbhidRhJLgyXioBW30rdg6cf/CV+JDAPAR8GyWm9OwG/Y
+         yd3PsJZIsadsTWs0V3A4774utsfbTBCzr9frMzzGl9pshUOZGxlvnMqrFZaMiwGYvGK7
+         bFsa8a5gNVc2JvyyMoOS5D9ggpDkRi1C1kZ93+Fdghy5q8Wb1km4bIdv2qSwaMEvDl2e
+         SMug==
+X-Gm-Message-State: AOAM533GyGFEK7nb5bPCLEVOOY2JxcieovcGpcxpqb9jkpYZzpbFwIi0
+        qj3zy/vAxRp4tQ2zYJtGNvjlro/xA0XRRgrG8v+NvQ==
+X-Google-Smtp-Source: ABdhPJye4s8o1On+/9V61ouTi9MALoHFgmdsjmdC8JHeouR+fU7woYtXknF+evLqmso/PBYsaCxmbQR4cCcPLIhgO8M=
+X-Received: by 2002:a17:906:308f:b0:709:af33:9fa7 with SMTP id
+ 15-20020a170906308f00b00709af339fa7mr4961024ejv.369.1654188802902; Thu, 02
+ Jun 2022 09:53:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Authentication-Results: ORIGINATING;
-        auth=pass smtp.auth=amartinz@shiftphones.com smtp.mailfrom=amartinz@shiftphones.com
+References: <20220530102017.471865-1-jose.exposito89@gmail.com>
+ <20220530102017.471865-2-jose.exposito89@gmail.com> <e26de140-afb7-7b1b-4826-6ac4f3a4fe02@redhat.com>
+In-Reply-To: <e26de140-afb7-7b1b-4826-6ac4f3a4fe02@redhat.com>
+From:   Daniel Latypov <dlatypov@google.com>
+Date:   Thu, 2 Jun 2022 09:53:10 -0700
+Message-ID: <CAGS_qxpFO4ixW=08ZcdcD9J1kU=B3mwoBJkPW8AKu0sKs8aKfA@mail.gmail.com>
+Subject: Re: [RFC PATCH 1/1] drm/format-helper: Add KUnit tests for drm_fb_xrgb8888_to_rgb332()
+To:     Javier Martinez Canillas <javierm@redhat.com>
+Cc:     =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
+        tzimmermann@suse.de, maarten.lankhorst@linux.intel.com,
+        mripard@kernel.org, airlied@linux.ie, daniel@ffwll.ch,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        kunit-dev@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The initialization sequence is taken from the version provided
-by the supplier [1].
+On Thu, Jun 2, 2022 at 9:27 AM Javier Martinez Canillas
+<javierm@redhat.com> wrote:
+> > +CFLAGS_drm_format_helper_test.o += $(DISABLE_STRUCTLEAK_PLUGIN)
+> >
+>
+> A comment on why this is needed would useful.
 
-This allows speakers using the TFA9890 amplifier to work, which are
-used by various mobile phones such as the SHIFT6mq.
+Ah, I think that should not be necessary anymore.
+We added this to some tests to mitigate against compilers that didn't
+optimize away stack-local structs used internally in KUNIT_EXPECT*.
+Functions with ~30 or so EXPECTs could get flagged for excessively
+large stack frames.
 
-[1]: https://source.codeaurora.org/external/mas/tfa98xx/tree/src/tfa_init.c?id=d2cd12931fbc48df988b62931fb9960d4e9dc05d#n1827
+But in 5.18, I had some patches to reduce the naive stack usage from
+[48..88] => [8..32] bytes per EXPECT.
+I also have some RFC patches out to get it down to [0, 24] bytes.
 
-Signed-off-by: Alexander Martinz <amartinz@shiftphones.com>
----
- sound/soc/codecs/tfa989x.c | 30 ++++++++++++++++++++++++++++++
- 1 file changed, 30 insertions(+)
+So going forward, this should only be necessary if you have something
+like 100s of EXPECTs in a single function (in which case you should
+also consider splitting that function up).
 
-diff --git a/sound/soc/codecs/tfa989x.c b/sound/soc/codecs/tfa989x.c
-index dc86852752c5..8ab2656de750 100644
---- a/sound/soc/codecs/tfa989x.c
-+++ b/sound/soc/codecs/tfa989x.c
-@@ -40,12 +40,14 @@
- #define TFA989X_I2S_SEL_REG		0x0a
- #define TFA989X_I2S_SEL_REG_SPKR_MSK	GENMASK(10, 9)	/* speaker impedance */
- #define TFA989X_I2S_SEL_REG_DCFG_MSK	GENMASK(14, 11)	/* DCDC compensation */
-+#define TFA989X_HIDE_UNHIDE_KEY	0x40
- #define TFA989X_PWM_CONTROL		0x41
- #define TFA989X_CURRENTSENSE1		0x46
- #define TFA989X_CURRENTSENSE2		0x47
- #define TFA989X_CURRENTSENSE3		0x48
- #define TFA989X_CURRENTSENSE4		0x49
- 
-+#define TFA9890_REVISION		0x80
- #define TFA9895_REVISION		0x12
- #define TFA9897_REVISION		0x97
- 
-@@ -188,6 +190,33 @@ static struct snd_soc_dai_driver tfa989x_dai = {
- 	.ops = &tfa989x_dai_ops,
- };
- 
-+static int tfa9890_init(struct regmap *regmap)
-+{
-+	int ret;
-+
-+	/* unhide keys to allow updating them */
-+	ret = regmap_write(regmap, TFA989X_HIDE_UNHIDE_KEY, 0x5a6b);
-+	if (ret)
-+		return ret;
-+
-+	/* update PLL registers */
-+	ret = regmap_set_bits(regmap, 0x59, 0x3);
-+	if (ret)
-+		return ret;
-+
-+	/* hide keys again */
-+	ret = regmap_write(regmap, TFA989X_HIDE_UNHIDE_KEY, 0x0000);
-+	if (ret)
-+		return ret;
-+
-+	return regmap_write(regmap, TFA989X_CURRENTSENSE2, 0x7BE1);
-+}
-+
-+static const struct tfa989x_rev tfa9890_rev = {
-+	.rev	= TFA9890_REVISION,
-+	.init	= tfa9890_init,
-+};
-+
- static const struct reg_sequence tfa9895_reg_init[] = {
- 	/* some other registers must be set for optimal amplifier behaviour */
- 	{ TFA989X_BAT_PROT, 0x13ab },
-@@ -376,6 +405,7 @@ static int tfa989x_i2c_probe(struct i2c_client *i2c)
- }
- 
- static const struct of_device_id tfa989x_of_match[] = {
-+	{ .compatible = "nxp,tfa9890", .data = &tfa9890_rev },
- 	{ .compatible = "nxp,tfa9895", .data = &tfa9895_rev },
- 	{ .compatible = "nxp,tfa9897", .data = &tfa9897_rev },
- 	{ }
--- 
-2.36.1
-
+Daniel
