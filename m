@@ -2,143 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6A23C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 01:10:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 442E6C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 01:12:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232983AbiFBBKh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 21:10:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44930 "EHLO
+        id S232977AbiFBBMN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 21:12:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232904AbiFBBKf (ORCPT
+        with ESMTP id S232904AbiFBBMM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 21:10:35 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E683227F888
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 18:10:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654132233; x=1685668233;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=KrdIbRbmRLLRWI/cK2bpf4TRwJK5Nb/IfEswB6l/4P0=;
-  b=FePX4JKj2T+ZsPO3l7eL2GIJNYjy/X0zwA7SWRgNyFElQYPlDjCDrA+v
-   yIEq68mMz/0jvefOuxQTgjqq1m6pX+qQQFuLeJOYpe6GDePL2uDuEv0/j
-   68N0KGDgaJuYpVmD9ffoIAdW30PluQRMm05SGzcBE34joAcHi/E0y0zZl
-   3k+1WX/bTD1z5CAVZVlMRSvM2886Tua6AwYWfMZ8cnpRujKp4BVUSud4+
-   qNRWPdQElHeLsrpzhzrMVoXwZ/Hn6aFYNcWoRJgchWoYkrsT58Kotspmz
-   KQnYF1PLUGjM3SdAVG9GToriAk5JQHcpyqHW4cgvYujbn/6QxFMBUuCST
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10365"; a="275789785"
-X-IronPort-AV: E=Sophos;i="5.91,270,1647327600"; 
-   d="scan'208";a="275789785"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 18:10:33 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,270,1647327600"; 
-   d="scan'208";a="756724542"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 01 Jun 2022 18:10:32 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nwZM7-0004bg-Cu;
-        Thu, 02 Jun 2022 01:10:31 +0000
-Date:   Thu, 2 Jun 2022 09:09:34 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Darrick J. Wong" <djwong@kernel.org>
-Cc:     kbuild-all@lists.01.org,
-        "Darrick J. Wong" <darrick.wong@oracle.com>,
-        linux-kernel@vger.kernel.org
-Subject: [djwong-xfs:vectorized-scrub 172/401]
- fs/xfs/libxfs/xfs_btree.c:140:23: error: implicit declaration of function
- 'xfs_daddr_to_xfo'; did you mean 'xfs_daddr_to_agno'?
-Message-ID: <202206020920.2x0m0E4y-lkp@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+        Wed, 1 Jun 2022 21:12:12 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC7EC128142
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 18:12:10 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id w21so3480736pfc.0
+        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 18:12:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=X2ieJMGlzcaHYK99zy4O4rgZqpHj0MIlPUsyySv/jig=;
+        b=WAJNsnTQTnLlQTwXRbmYJVNioljwUHZ1Z0T7bvtRBgAzunZgyiZCuJvchhSQD/34Qs
+         +5uo0zNsEoH3EPJQrQkr+02cxslNn1SkBgyn6iKetTeCHb2/TCmpeCKQnb0pwIHC41g7
+         L60OA2pcpBGtPxFoIVmYWv0YAuvbQc48d0ffKOv7uaeUBzY1FewzbjZUk6ruNJQLie+W
+         ieQtgXF6jsXZC3GGf7KPmtaaPzb1OP0UIwRd9EoKlr0ByWe8SNiNegvzWLDL2Phu3Tk/
+         +6BCxvDtCruSKKu+Y4BFPA/tu/dE32CVIDCzKwpehJXDppeZNrZbUhHtm1BoZsM+TVlC
+         x4Bg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=X2ieJMGlzcaHYK99zy4O4rgZqpHj0MIlPUsyySv/jig=;
+        b=LZ+1lUt0WKeJ7DWHxx+OnzsPE0lCmw67ifc1SRnbZrYiPwrFrela+2wmxLg0Gu3b4E
+         BYH+pJw4ZUUhkN3g9IIcAdA9yIHZ4c+Ms7wREQs4T0M85u1sJ73CtpIY5kOCL8ZznKLd
+         TrkrFHNi1WlwMaYAdTbn3vbH+gmk7fE4egkN2UfVKm4FNtMIXLI20zaRSNRC5Sj5Z8ef
+         mm7WqtqN2ykSqrZy2L3z4N2skX9Hz6oanek0gBxmH0W9jpge3+zPNj4ITYf9E4Or4Vqe
+         x/0OeXayHDKJsSrjerhPVP3/53N9EpZT6M4luQIiClmzsmqkhhg6xyOE8Nahgw+6tbGu
+         RDwQ==
+X-Gm-Message-State: AOAM533FPBgS1SYbL5XFjb64yN/XpXTaxLPvXRdiSH9kwpa5MNUHDdcs
+        KuVl3Qu4QTtm71NqXjKFBFA=
+X-Google-Smtp-Source: ABdhPJyaG5V6z6gxNedqJo9ojAnzAe5IkX6r7knIvqhRd313m5j5s6anp39u1re8qhBfU1S6EtjGcg==
+X-Received: by 2002:a62:be14:0:b0:505:a43b:cf6e with SMTP id l20-20020a62be14000000b00505a43bcf6emr69455849pff.33.1654132330347;
+        Wed, 01 Jun 2022 18:12:10 -0700 (PDT)
+Received: from 192.168.3.10 ([111.202.144.35])
+        by smtp.gmail.com with ESMTPSA id fa23-20020a17090af0d700b001e2ff3a1221sm1940288pjb.33.2022.06.01.18.12.07
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 01 Jun 2022 18:12:08 -0700 (PDT)
+From:   chengkaitao <pilgrimtao@gmail.com>
+X-Google-Original-From: chengkaitao <chengkaitao@didiglobal.com>
+To:     mst@redhat.com, jasowang@redhat.com
+Cc:     virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, smcdef@gmail.com,
+        chengkaitao <pilgrimtao@gmail.com>
+Subject: [PATCH] virtio-mmio: fix missing put_device() when vm_cmdline_parent registration failed
+Date:   Thu,  2 Jun 2022 08:55:42 +0800
+Message-Id: <20220602005542.16489-1-chengkaitao@didiglobal.com>
+X-Mailer: git-send-email 2.14.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/djwong/xfs-linux.git vectorized-scrub
-head:   1fcd9cea011a657d62ee332d161966c1ec92ffd5
-commit: 737a5536fdb7ee845a8a656e14ec1c4554be6dec [172/401] xfs: support in-memory btrees
-config: m68k-defconfig (https://download.01.org/0day-ci/archive/20220602/202206020920.2x0m0E4y-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/djwong/xfs-linux.git/commit/?id=737a5536fdb7ee845a8a656e14ec1c4554be6dec
-        git remote add djwong-xfs https://git.kernel.org/pub/scm/linux/kernel/git/djwong/xfs-linux.git
-        git fetch --no-tags djwong-xfs vectorized-scrub
-        git checkout 737a5536fdb7ee845a8a656e14ec1c4554be6dec
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash fs/xfs/
+From: chengkaitao <pilgrimtao@gmail.com>
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+The reference must be released when device_register(&vm_cmdline_parent)
+failed. Add the corresponding 'put_device()' in the error handling path.
 
-All errors (new ones prefixed by >>):
+Signed-off-by: chengkaitao <pilgrimtao@gmail.com>
+---
+ drivers/virtio/virtio_mmio.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-   fs/xfs/libxfs/xfs_btree.c: In function '__xfs_btree_check_lblock':
->> fs/xfs/libxfs/xfs_btree.c:140:23: error: implicit declaration of function 'xfs_daddr_to_xfo'; did you mean 'xfs_daddr_to_agno'? [-Werror=implicit-function-declaration]
-     140 |                 fsb = xfs_daddr_to_xfo(xfs_buf_daddr(bp));
-         |                       ^~~~~~~~~~~~~~~~
-         |                       xfs_daddr_to_agno
-   cc1: some warnings being treated as errors
-
-
-vim +140 fs/xfs/libxfs/xfs_btree.c
-
-   103	
-   104	/*
-   105	 * Check a long btree block header.  Return the address of the failing check,
-   106	 * or NULL if everything is ok.
-   107	 */
-   108	xfs_failaddr_t
-   109	__xfs_btree_check_lblock(
-   110		struct xfs_btree_cur	*cur,
-   111		struct xfs_btree_block	*block,
-   112		int			level,
-   113		struct xfs_buf		*bp)
-   114	{
-   115		struct xfs_mount	*mp = cur->bc_mp;
-   116		xfs_btnum_t		btnum = cur->bc_btnum;
-   117		int			crc = xfs_has_crc(mp);
-   118		xfs_failaddr_t		fa;
-   119		xfs_fsblock_t		fsb = NULLFSBLOCK;
-   120	
-   121		if (crc) {
-   122			if (!uuid_equal(&block->bb_u.l.bb_uuid, &mp->m_sb.sb_meta_uuid))
-   123				return __this_address;
-   124			if (block->bb_u.l.bb_blkno !=
-   125			    cpu_to_be64(bp ? xfs_buf_daddr(bp) : XFS_BUF_DADDR_NULL))
-   126				return __this_address;
-   127			if (block->bb_u.l.bb_pad != cpu_to_be32(0))
-   128				return __this_address;
-   129		}
-   130	
-   131		if (be32_to_cpu(block->bb_magic) != xfs_btree_magic(crc, btnum))
-   132			return __this_address;
-   133		if (be16_to_cpu(block->bb_level) != level)
-   134			return __this_address;
-   135		if (be16_to_cpu(block->bb_numrecs) >
-   136		    cur->bc_ops->get_maxrecs(cur, level))
-   137			return __this_address;
-   138	
-   139		if ((cur->bc_flags & XFS_BTREE_IN_MEMORY) && bp)
- > 140			fsb = xfs_daddr_to_xfo(xfs_buf_daddr(bp));
-   141		else if (bp)
-   142			fsb = XFS_DADDR_TO_FSB(mp, xfs_buf_daddr(bp));
-   143	
-   144		fa = xfs_btree_check_lblock_siblings(mp, cur, level, fsb,
-   145				be64_to_cpu(block->bb_u.l.bb_leftsib));
-   146		if (!fa)
-   147			fa = xfs_btree_check_lblock_siblings(mp, cur, level, fsb,
-   148					be64_to_cpu(block->bb_u.l.bb_rightsib));
-   149		return fa;
-   150	}
-   151	
-
+diff --git a/drivers/virtio/virtio_mmio.c b/drivers/virtio/virtio_mmio.c
+index 56128b9c46eb..1dd396d4bebb 100644
+--- a/drivers/virtio/virtio_mmio.c
++++ b/drivers/virtio/virtio_mmio.c
+@@ -688,6 +688,7 @@ static int vm_cmdline_set(const char *device,
+ 	if (!vm_cmdline_parent_registered) {
+ 		err = device_register(&vm_cmdline_parent);
+ 		if (err) {
++			put_device(&vm_cmdline_parent);
+ 			pr_err("Failed to register parent device!\n");
+ 			return err;
+ 		}
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.14.1
+
