@@ -2,80 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82586C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 19:38:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47CEFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 19:40:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238786AbiFBTiu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 15:38:50 -0400
+        id S238797AbiFBTkx convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 15:40:53 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238690AbiFBThx (ORCPT
+        with ESMTP id S238909AbiFBTki (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 15:37:53 -0400
-Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E93F2ED62
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 12:37:52 -0700 (PDT)
-Received: from ipservice-092-217-081-045.092.217.pools.vodafone-ip.de ([92.217.81.45] helo=martin-debian-2.paytec.ch)
-        by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <martin@kaiser.cx>)
-        id 1nwqdb-0003py-Lj; Thu, 02 Jun 2022 21:37:43 +0200
-From:   Martin Kaiser <martin@kaiser.cx>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Michael Straube <straube.linux@gmail.com>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 05/11] staging: r8188eu: calculate the addba response length
-Date:   Thu,  2 Jun 2022 21:37:20 +0200
-Message-Id: <20220602193726.280922-6-martin@kaiser.cx>
+        Thu, 2 Jun 2022 15:40:38 -0400
+Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 533AB2F3B0
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 12:39:51 -0700 (PDT)
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 252AItbM020992
+        for <linux-kernel@vger.kernel.org>; Thu, 2 Jun 2022 12:39:50 -0700
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3geubaub24-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 12:39:50 -0700
+Received: from twshared35153.14.frc2.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Thu, 2 Jun 2022 12:39:48 -0700
+Received: by devbig932.frc1.facebook.com (Postfix, from userid 4523)
+        id AE1C286C00B8; Thu,  2 Jun 2022 12:37:13 -0700 (PDT)
+From:   Song Liu <song@kernel.org>
+To:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <kernel-team@fb.com>, <rostedt@goodmis.org>, <jolsa@kernel.org>,
+        <mhiramat@kernel.org>, Song Liu <song@kernel.org>
+Subject: [PATCH v2 bpf-next 1/5] ftrace: allow customized flags for ftrace_direct_multi ftrace_ops
+Date:   Thu, 2 Jun 2022 12:37:02 -0700
+Message-ID: <20220602193706.2607681-2-song@kernel.org>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220602193726.280922-1-martin@kaiser.cx>
-References: <20220602193726.280922-1-martin@kaiser.cx>
+In-Reply-To: <20220602193706.2607681-1-song@kernel.org>
+References: <20220602193706.2607681-1-song@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-GUID: d4WpjTGRzPn_BiOPB5J37Uok7ngmsTIO
+X-Proofpoint-ORIG-GUID: d4WpjTGRzPn_BiOPB5J37Uok7ngmsTIO
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-02_05,2022-06-02_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-An addba response always ends with the timeout field. The length of the
-addba response is the offset of the end of the timeout field in the struct
-ieee80211_mgmt that defines the message.
+This enables users of ftrace_direct_multi to specify the flags based on
+the actual use case. For example, some users may not set flag IPMODIFY.
 
-Use offsetofend to calculate this offset and drop the intermediate pktlen
-increments as we add addba response components.
-
-Signed-off-by: Martin Kaiser <martin@kaiser.cx>
+Signed-off-by: Song Liu <song@kernel.org>
 ---
- drivers/staging/r8188eu/core/rtw_mlme_ext.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+ kernel/trace/ftrace.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/staging/r8188eu/core/rtw_mlme_ext.c b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
-index b391273969af..2a13546e585c 100644
---- a/drivers/staging/r8188eu/core/rtw_mlme_ext.c
-+++ b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
-@@ -5441,18 +5441,14 @@ void issue_action_BA(struct adapter *padapter, unsigned char *raddr, unsigned ch
- 		break;
- 	case WLAN_ACTION_ADDBA_RESP:
- 		mgmt->u.action.u.addba_resp.action_code = WLAN_ACTION_ADDBA_RESP;
--		pattrib->pktlen++;
- 		mgmt->u.action.u.addba_resp.dialog_token = pmlmeinfo->ADDBA_req.dialog_token;
--		pattrib->pktlen++;
- 		mgmt->u.action.u.addba_resp.status = cpu_to_le16(status);
--		pattrib->pktlen += 2;
- 		capab = le16_to_cpu(pmlmeinfo->ADDBA_req.BA_para_set) & 0x3f;
- 		capab |= u16_encode_bits(64, IEEE80211_ADDBA_PARAM_BUF_SIZE_MASK);
- 		capab |= u16_encode_bits(pregpriv->ampdu_amsdu, IEEE80211_ADDBA_PARAM_AMSDU_MASK);
- 		mgmt->u.action.u.addba_req.capab = cpu_to_le16(capab);
--		pattrib->pktlen += 2;
- 		mgmt->u.action.u.addba_resp.timeout = pmlmeinfo->ADDBA_req.BA_timeout_value;
--		pattrib->pktlen += 2;
-+		pattrib->pktlen = offsetofend(struct ieee80211_mgmt, u.action.u.addba_resp.timeout);
- 		break;
- 	case WLAN_ACTION_DELBA:
- 		mgmt->u.action.u.delba.action_code = WLAN_ACTION_DELBA;
+diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
+index 2fcd17857ff6..afe782ae28d3 100644
+--- a/kernel/trace/ftrace.c
++++ b/kernel/trace/ftrace.c
+@@ -5456,8 +5456,7 @@ int modify_ftrace_direct(unsigned long ip,
+ }
+ EXPORT_SYMBOL_GPL(modify_ftrace_direct);
+ 
+-#define MULTI_FLAGS (FTRACE_OPS_FL_IPMODIFY | FTRACE_OPS_FL_DIRECT | \
+-		     FTRACE_OPS_FL_SAVE_REGS)
++#define MULTI_FLAGS (FTRACE_OPS_FL_DIRECT | FTRACE_OPS_FL_SAVE_REGS)
+ 
+ static int check_direct_multi(struct ftrace_ops *ops)
+ {
+@@ -5547,7 +5546,7 @@ int register_ftrace_direct_multi(struct ftrace_ops *ops, unsigned long addr)
+ 	}
+ 
+ 	ops->func = call_direct_funcs;
+-	ops->flags = MULTI_FLAGS;
++	ops->flags |= MULTI_FLAGS;
+ 	ops->trampoline = FTRACE_REGS_ADDR;
+ 
+ 	err = register_ftrace_function(ops);
 -- 
 2.30.2
 
