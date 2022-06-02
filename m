@@ -2,119 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A242C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 06:43:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1881FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 06:43:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231334AbiFBGnD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 02:43:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41708 "EHLO
+        id S231357AbiFBGnv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 02:43:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231143AbiFBGnB (ORCPT
+        with ESMTP id S231219AbiFBGns (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 02:43:01 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 30CF9E0B3
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 23:43:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654152180;
-        h=from:from:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=zsd0rEL421smM5kXILQFm1d6e8rO04GSNAHeoKg8KqM=;
-        b=M5R9BIzesHelirJFvEsSGbF26+icaNlu2apqGDa+sTIx+25DquusWeliaSLGdk3gLwu6TC
-        dyHqbTFRXeKiRCpTb3gqIY4+Oo//dkBRvJgFukZwv/y9YStIcn+XQDbOKTWGV+FAibhsQw
-        iZY58h31/0Ri9zWl7h0+HhN616x1CP4=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-628-Ko-f9xzWNhmZ6rRWwFv-Og-1; Thu, 02 Jun 2022 02:42:59 -0400
-X-MC-Unique: Ko-f9xzWNhmZ6rRWwFv-Og-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 84DDA101A56C;
-        Thu,  2 Jun 2022 06:42:58 +0000 (UTC)
-Received: from [10.72.12.91] (ovpn-12-91.pek2.redhat.com [10.72.12.91])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 8EFF52166B26;
-        Thu,  2 Jun 2022 06:42:53 +0000 (UTC)
-Reply-To: Gavin Shan <gshan@redhat.com>
-Subject: Re: [PATCH v3 09/16] arch_topology: Drop LLC identifier stash from
- the CPU topology
-To:     Sudeep Holla <sudeep.holla@arm.com>, linux-kernel@vger.kernel.org
-Cc:     Atish Patra <atishp@atishpatra.org>,
-        Atish Patra <atishp@rivosinc.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Morten Rasmussen <morten.rasmussen@arm.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Qing Wang <wangqing@vivo.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-riscv@lists.infradead.org, Rob Herring <robh+dt@kernel.org>
-References: <20220525081416.3306043-1-sudeep.holla@arm.com>
- <20220525081416.3306043-2-sudeep.holla@arm.com>
- <20220525081416.3306043-3-sudeep.holla@arm.com>
- <20220525081416.3306043-4-sudeep.holla@arm.com>
- <20220525081416.3306043-5-sudeep.holla@arm.com>
- <20220525081416.3306043-6-sudeep.holla@arm.com>
- <20220525081416.3306043-7-sudeep.holla@arm.com>
- <20220525081416.3306043-8-sudeep.holla@arm.com>
- <20220525081416.3306043-9-sudeep.holla@arm.com>
- <20220525081416.3306043-10-sudeep.holla@arm.com>
-From:   Gavin Shan <gshan@redhat.com>
-Message-ID: <a8cd3ce8-64a7-e97d-0dba-71e910296258@redhat.com>
-Date:   Thu, 2 Jun 2022 14:42:50 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.0
+        Thu, 2 Jun 2022 02:43:48 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94DFADF7A
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 23:43:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654152226; x=1685688226;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=KUS8mVgdTc5Hj0xMVFCoSGE47Yrh0WZN2tGJ3zjuvKw=;
+  b=cdga+2IJg81u6D5Zx6HQhOTz3NYEY3s2/eobr7pmK9w9D3bY4xZp9dUp
+   E0W+sKmSXR2ihkkqYYCO/VH2v6T2AB+4F16gLrtONv8CKKC02cCXbscOm
+   JGotsms/nOlrFZ90z81s2WkyRrWppkEIvpYwDwWl1tsXROgKE1B0F8kO0
+   dKAPuvq06yCiso9i7svownivtJSrdvcvEam91zvB1mOdTtomi/Ns4ly8P
+   8ENwUhJOZXwmWQ+v267ZnAFAsUkRqCNhosfGpJ3SbaQvq3ouTqC+r+3TK
+   Ibe2etcMLuDDWx7VKvhtUYatLsmyoByFYcRsngPihrqLYZ1fC5LwGFCvc
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10365"; a="275570229"
+X-IronPort-AV: E=Sophos;i="5.91,270,1647327600"; 
+   d="scan'208";a="275570229"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 23:43:46 -0700
+X-IronPort-AV: E=Sophos;i="5.91,270,1647327600"; 
+   d="scan'208";a="606683307"
+Received: from yanqingl-mobl1.ccr.corp.intel.com ([10.254.212.10])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 23:43:41 -0700
+Message-ID: <2316b2f571cd812b5c2e4335c2ed51a227005098.camel@intel.com>
+Subject: Re: [RFC PATCH v4 6/7] mm/demotion: Add support for removing node
+ from demotion memory tiers
+From:   Ying Huang <ying.huang@intel.com>
+To:     "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        linux-mm@kvack.org, akpm@linux-foundation.org
+Cc:     Greg Thelen <gthelen@google.com>, Yang Shi <shy828301@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Tim C Chen <tim.c.chen@intel.com>,
+        Brice Goglin <brice.goglin@gmail.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hesham Almatary <hesham.almatary@huawei.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Jagdish Gediya <jvgediya@linux.ibm.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        David Rientjes <rientjes@google.com>
+Date:   Thu, 02 Jun 2022 14:43:38 +0800
+In-Reply-To: <20220527122528.129445-7-aneesh.kumar@linux.ibm.com>
+References: <CAAPL-u-dFp7PwPH6DfbYdnY8xaGsHz3tRQ0CPGVkiqURvdN8=A@mail.gmail.com>
+         <20220527122528.129445-1-aneesh.kumar@linux.ibm.com>
+         <20220527122528.129445-7-aneesh.kumar@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
-In-Reply-To: <20220525081416.3306043-10-sudeep.holla@arm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/25/22 4:14 PM, Sudeep Holla wrote:
-> Since the cacheinfo LLC information is used directly in arch_topology,
-> there is no need to parse and store the LLC ID information only for
-> ACPI systems in the CPU topology.
+On Fri, 2022-05-27 at 17:55 +0530, Aneesh Kumar K.V wrote:
+> This patch adds the special string "none" as a supported memtier value
+> that we can use to remove a specific node from being using as demotion target.
 > 
-> Remove the redundant LLC ID from the generic CPU arch_topology information.
-> 
-> Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
-> ---
->   drivers/base/arch_topology.c  | 1 -
->   include/linux/arch_topology.h | 1 -
->   2 files changed, 2 deletions(-)
-> 
+> For ex:
+> :/sys/devices/system/node/node1# cat memtier
+> 1
+> :/sys/devices/system/node/node1# cat ../../memtier/memtier1/nodelist
+> 1-3
+> :/sys/devices/system/node/node1# echo none > memtier
+> :/sys/devices/system/node/node1#
+> :/sys/devices/system/node/node1# cat memtier
+> :/sys/devices/system/node/node1# cat ../../memtier/memtier1/nodelist
+> 2-3
+> :/sys/devices/system/node/node1#
 
-Reviewed-by: Gavin Shan <gshan@redhat.com>
+Why do you need this?  Do you have some real users?
 
-> diff --git a/drivers/base/arch_topology.c b/drivers/base/arch_topology.c
-> index 4c486e4e6f2f..76c702c217c5 100644
-> --- a/drivers/base/arch_topology.c
-> +++ b/drivers/base/arch_topology.c
-> @@ -747,7 +747,6 @@ void __init reset_cpu_topology(void)
->   		cpu_topo->core_id = -1;
->   		cpu_topo->cluster_id = -1;
->   		cpu_topo->package_id = -1;
-> -		cpu_topo->llc_id = -1;
->   
->   		clear_cpu_topology(cpu);
->   	}
-> diff --git a/include/linux/arch_topology.h b/include/linux/arch_topology.h
-> index 58cbe18d825c..a07b510e7dc5 100644
-> --- a/include/linux/arch_topology.h
-> +++ b/include/linux/arch_topology.h
-> @@ -68,7 +68,6 @@ struct cpu_topology {
->   	int core_id;
->   	int cluster_id;
->   	int package_id;
-> -	int llc_id;
->   	cpumask_t thread_sibling;
->   	cpumask_t core_sibling;
->   	cpumask_t cluster_sibling;
-> 
+Best Regards,
+Huang, Ying
+
+
+[snip]
+
 
