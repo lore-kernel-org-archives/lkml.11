@@ -2,164 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFDFEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 16:27:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33567C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 16:29:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236996AbiFBQ1M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 12:27:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35240 "EHLO
+        id S237049AbiFBQ3a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 12:29:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237022AbiFBQ1I (ORCPT
+        with ESMTP id S236935AbiFBQ30 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 12:27:08 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C88F550E17
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 09:27:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654187221;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=mygmPhKiJi7o/hltZa2N+7CYRMGUR5v63WXlkfkXj6Q=;
-        b=R6MSc+KJrBbbE3GeKudpgQvp9VRbZk0FLo8PO4hD0U24mAmERU7y+7rXDyqfvTUqInwQ6n
-        6H9QpDT6Vek6fXfRsw9IrP9DMpUVPYNu2r2+Pxo+VrUlLwM1uBGu6TbyPttgdyrybybRFH
-        5h09P5ITHuYTkiVjxrc0SodgcVti5Y8=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-650-oGYZcEttNWa1pAkqpJ5lfg-1; Thu, 02 Jun 2022 12:27:00 -0400
-X-MC-Unique: oGYZcEttNWa1pAkqpJ5lfg-1
-Received: by mail-wr1-f69.google.com with SMTP id n3-20020a5d5983000000b0021021e3036eso836680wri.19
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 09:27:00 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=mygmPhKiJi7o/hltZa2N+7CYRMGUR5v63WXlkfkXj6Q=;
-        b=pgR4Zl7cDJONIo7vHSWe3tsqVAOujvZCIyrqiw8Ih7D5WJIJ17WmVEv/22q9B2lIDs
-         aRoZK/gPuUWcm/UbqpdZ+ycFbxZsKUsNOss+IOoalw5dUMNBeSoGJs7Ss5nPb7H6qlpq
-         /FuXzXz3fn3WFfF6Yo0SIZCTmxsH1pLdMfmWInF/030oFeJ0YfTsjH8QENrz73uI/PzC
-         os/A+ZHlHsanoahM8n2jUX5KAfFoIdwRwXSTzSJIBc5iUXxbZUV586uqhZNKtmOR04qz
-         NHrNEUfPtpMyoZDLPXnwRmk+UpVaYJ4r1TpeakqyMJxtrRinz5uRQbU2E91cf7BHMzSr
-         Hzag==
-X-Gm-Message-State: AOAM530KwP0fYpRDHolRYSZTe9ayDX9Tajffgk4p9zVn57UnTQTNjiYh
-        ePRIemGUAJjd6oIXpOGn3WaxeAMyHMplfoW6XkzAvf52FnbNbRQpoy5TQ+F+Sy7AXnqO9ypCXr8
-        TvFiCDhx5O/MG8jtZZuqHQ0ng
-X-Received: by 2002:a05:6000:1887:b0:20f:e155:9db4 with SMTP id a7-20020a056000188700b0020fe1559db4mr4296985wri.243.1654187219644;
-        Thu, 02 Jun 2022 09:26:59 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyz3mxXpaL3a1n46/Ak3TghAtlxNB5xnz5LUKaE7clzJo3LROi83rBH+pU6l0xxChUwQLHFIg==
-X-Received: by 2002:a05:6000:1887:b0:20f:e155:9db4 with SMTP id a7-20020a056000188700b0020fe1559db4mr4296961wri.243.1654187219328;
-        Thu, 02 Jun 2022 09:26:59 -0700 (PDT)
-Received: from [192.168.1.129] (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id l65-20020a1c2544000000b00397393419e3sm8948736wml.28.2022.06.02.09.26.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 02 Jun 2022 09:26:59 -0700 (PDT)
-Message-ID: <e26de140-afb7-7b1b-4826-6ac4f3a4fe02@redhat.com>
-Date:   Thu, 2 Jun 2022 18:26:57 +0200
+        Thu, 2 Jun 2022 12:29:26 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 032F22612A0;
+        Thu,  2 Jun 2022 09:29:24 -0700 (PDT)
+Received: from mail-yb1-f172.google.com ([209.85.219.172]) by
+ mrelayeu.kundenserver.de (mreue106 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1MKbwg-1oDEcg1mZQ-00L1f6; Thu, 02 Jun 2022 18:29:22 +0200
+Received: by mail-yb1-f172.google.com with SMTP id p13so9233631ybm.1;
+        Thu, 02 Jun 2022 09:29:21 -0700 (PDT)
+X-Gm-Message-State: AOAM532a93TmUGNd6iIyeTE4VKNUwpbrxZQaW0d9h1CefBy4jB2M2hKr
+        O/2URZAhT6BrzNvQD0HZAdFSKOuI7pbx1VdV/Co=
+X-Google-Smtp-Source: ABdhPJwP5jTmDmnjC7cLxXQtoGkT8BZ75OYKH3xGYjmaKjlmC4WfmO4BaZj5D5FasDHcj719xc61DL7YDK73tV843fE=
+X-Received: by 2002:a25:db8a:0:b0:65c:b04a:f612 with SMTP id
+ g132-20020a25db8a000000b0065cb04af612mr6098775ybf.106.1654187360931; Thu, 02
+ Jun 2022 09:29:20 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [RFC PATCH 1/1] drm/format-helper: Add KUnit tests for
- drm_fb_xrgb8888_to_rgb332()
-Content-Language: en-US
-To:     =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>
-Cc:     tzimmermann@suse.de, maarten.lankhorst@linux.intel.com,
-        mripard@kernel.org, airlied@linux.ie, daniel@ffwll.ch,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Daniel Latypov <dlatypov@google.com>,
-        kunit-dev@googlegroups.com
-References: <20220530102017.471865-1-jose.exposito89@gmail.com>
- <20220530102017.471865-2-jose.exposito89@gmail.com>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <20220530102017.471865-2-jose.exposito89@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220602115141.3962749-1-chenhuacai@loongson.cn>
+ <20220602115141.3962749-12-chenhuacai@loongson.cn> <d88ede74-b7a5-e568-1863-107c6c7f5fe0@xen0n.name>
+ <CAMj1kXE1Gg+jN0yGZCi86HQBPrtX=-EHjMW9Z9XxsobH=RS0LA@mail.gmail.com>
+In-Reply-To: <CAMj1kXE1Gg+jN0yGZCi86HQBPrtX=-EHjMW9Z9XxsobH=RS0LA@mail.gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Thu, 2 Jun 2022 18:29:03 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a2dv1_vtg2k8ifxD+XAJX6SZEYRsCt0W065yDA9gmssmg@mail.gmail.com>
+Message-ID: <CAK8P3a2dv1_vtg2k8ifxD+XAJX6SZEYRsCt0W065yDA9gmssmg@mail.gmail.com>
+Subject: Re: Steps forward for the LoongArch UEFI bringup patch? (was: Re:
+ [PATCH V14 11/24] LoongArch: Add boot and setup routines)
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     WANG Xuerui <kernel@xen0n.name>,
+        Huacai Chen <chenhuacai@loongson.cn>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Xuefeng Li <lixuefeng@loongson.cn>,
+        Yanteng Si <siyanteng@loongson.cn>,
+        Huacai Chen <chenhuacai@gmail.com>,
+        Guo Ren <guoren@kernel.org>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        linux-efi <linux-efi@vger.kernel.org>,
+        WANG Xuerui <git@xen0n.name>, Yun Liu <liuyun@loongson.cn>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Airlie <airlied@linux.ie>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:DnVKkGncdufV9sCWB9XsY0zExdcMqqK0gYhTR5Y7fqeqsS+pFHH
+ vq9xR3UE4klYfFmK3lSqXaXobkAEYeZpUqf5YonXIQqVn3ZFniKWYfqM2kzdcgdEj277Jkp
+ +y38opr7CQeSqSZ9ETMydpFdHjNLu8juY+904NNh5mP7rc1pnICHe77IIbcdwy1AUJd7AIb
+ jBH+0JHFeLBrultUIFT9Q==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:947M/0Jq/qc=:ybRHRJxH6J0Tk7+ohVyUHG
+ uZLRrgz/vrj5ET6MPpMAy3+BVehxgj/HtRt4QnsMB7l5buEKitILKa9tqd62XSqkff6wdehSr
+ LiypoYzjeq2K7ZPlixK0fcpLnojca4WtLZ0e13OeHQXSV+nD/MpSevejyoKnVM0xYRjAGy/mS
+ PSAvoU5X71OxlQZuNO6ETJBU65LLbVxxSU9NS+ep3fn3ttLzDtPlHgZpd04vuT5gtWFOtZaLC
+ o2zAAcgXBqY/TliRwdMQhEQ5UmpZnSlr1nhP7hJjLXGrF97/KxeMw47e+gpwyiCuOoIperF7i
+ QrTFQ3ZN/RLIqZZAMeJpMSY5BNNCeQ46Oy8NVPd2YB0U7wdHFTk955NqC1q8kPwKHpoae8VN/
+ LgZNgY3Fv/cMFUyqyfevdYKq8h0KuLAwOqORvy+fqvOiewabiFW09pS8t9+vm/RCeteu3r1wF
+ X+BywKue3E3yNE5ojfcx/o9RqiBUVL4kaNZ4vwIP/pzDdIbDrc4tB2gf0our8PrPIerDILq+v
+ Fhptk5hAH2wvrZCmLlgyRe8CPR5aZ7Ge2fFx/6IGByKEq8e2cKwvLp0u1KrRqoDTnZQQDTpym
+ UfAh8/ndO0XZU8ObYkkl6AnadfLBYyKlb9kxUDlm32xmMboQuSz9xQs4BlEQdEIU+e86R04xs
+ 4JZkPxgxEcELEukJCAJJJgSG0d/BUj2r2LeeFkus+n+3VGsCRbCgHj0Bpms1k6zE3ke1w0RwB
+ dlVXS/RBLYyR0iYvmFlRk60YtNK6I0leZxdiehpCafhr/3uMnYIT9JHzCs00hW1UU6Xqr1ekN
+ FKwNXORm9wqhlffsmVMbqF3KiL+5O+vnmwaBUtIEwXAQVZKEKxP2S4mH45LiwAOP75VjvVqbK
+ wY8mi3r/SLjdrUJiHMnw==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello José,
-
-On 5/30/22 12:20, José Expósito wrote:
-> Test the conversion from XRGB8888 to RGB332.
-> 
-> What is tested?
-> 
->  - Different values for the X in XRGB8888 to make sure it is ignored
->  - Different clip values: Single pixel and full and partial buffer
->  - Well know colors: White, black, red, green, blue, magenta, yellow
->    and cyan
->  - Other colors: Randomly picked
->  - Destination pitch
-> 
-> Suggested-by: Javier Martinez Canillas <javierm@redhat.com>
-> Signed-off-by: José Expósito <jose.exposito89@gmail.com>
-> ---
-
-Thanks a lot for working on this! It's very cool to see the first KUnit
-tests added to DRM :)
-
->  drivers/gpu/drm/Kconfig                  |  12 ++
->  drivers/gpu/drm/Makefile                 |   3 +
->  drivers/gpu/drm/drm_format_helper_test.c | 166 +++++++++++++++++++++++
->  3 files changed, 181 insertions(+)
->  create mode 100644 drivers/gpu/drm/drm_format_helper_test.c
-> 
-> diff --git a/drivers/gpu/drm/Kconfig b/drivers/gpu/drm/Kconfig
-> index e88c497fa010..d92be6faef15 100644
-> --- a/drivers/gpu/drm/Kconfig
-> +++ b/drivers/gpu/drm/Kconfig
-> @@ -76,6 +76,18 @@ config DRM_KMS_HELPER
->  	help
->  	  CRTC helpers for KMS drivers.
->  
-> +config DRM_FORMAR_HELPER_TEST
-
-I wonder if we want this level of detail for the test Kconfig symbols.
-Maybe we could just have a DRM_KUNIT_TEST symbol that will enable all
-the KUnit test suites for DRM ?
-
-> +	bool "drm_format_helper tests" if !KUNIT_ALL_TESTS
-> +	depends on DRM && KUNIT=y
-> +	select DRM_KMS_HELPER
-
-Daniel didn't like this `select DRM_KMS_HELPER` and I think that we can avoid
-it if instead drm_format_helper_test.c is included in drm_format_helper.c, i.e:
-
-diff --git a/drivers/gpu/drm/drm_format_helper.c b/drivers/gpu/drm/drm_format_helper.c
-index a3ccd8bc966f..d63e02da528f 100644
---- a/drivers/gpu/drm/drm_format_helper.c
-+++ b/drivers/gpu/drm/drm_format_helper.c
-@@ -692,3 +692,7 @@ void drm_fb_xrgb8888_to_mono(void *dst, unsigned int dst_pitch, const void *vadd
-        kfree(src32);
- }
- EXPORT_SYMBOL(drm_fb_xrgb8888_to_mono);
-+
-+#ifdef DRM_KUNIT_TEST
-+#include "drm_format_helper_test.c"
-+#endif
-
-This also has the advantage that will allow to have KUnit tests for the static
-functions that are only available in the drm_format_helper.c compilation unit.
-
->  obj-$(CONFIG_DRM_DEBUG_SELFTEST) += selftests/
-> +obj-$(CONFIG_DRM_FORMAR_HELPER_TEST) += drm_kms_helper.o \
-> +		drm_format_helper_test.o
-
-And doing that will also allow you to get rid of this, since just selecting
-CONFIG_DRM_KUNIT_TEST=y would be enough for the tests built and run by KUnit.
-
-> +CFLAGS_drm_format_helper_test.o += $(DISABLE_STRUCTLEAK_PLUGIN)
+On Thu, Jun 2, 2022 at 6:14 PM Ard Biesheuvel <ardb@kernel.org> wrote:
+> On Thu, 2 Jun 2022 at 16:09, WANG Xuerui <kernel@xen0n.name> wrote:
 >
+> > For this, I don't know if Huacai should really just leave those
+> > modification in the downstream fork to keep the upstream Linux clean of
+> > such hacks, because to some degree dealing with such notoriety is life,
+> > it seems to me. I think at this point Huacai would cooperate and tweak
+> > the patch to get rid of the SVAM and other nonstandard bits as much as
+> > possible, and I'll help him where necessary too.
+> >
+>
+> I don't want to be the one standing in your way, and I understand the
+> desire to get this merged for the user space side of things. So
+> perhaps it is better to merge this without the EFI support, and take
+> another cycle to implement this properly across all the other
+> components as well.
 
-A comment on why this is needed would useful.
+I think that's ok. As of today, there is still no working interrupt controller
+driver because it hasn't passed review yet, so there is little value in
+merging the boot support.
 
--- 
-Best regards,
+The main point of merging the port at all is of course to allow compile
+testing and building userspace, and both can be done without being
+able to boot it.
 
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
+If Huacai is able to produce a tree by tomorrow that still builds and
+leaves out the boot support, I can send a pull request to Linus and
+let him make the final decision about it, but at this point I think there
+is a good chance that he prefers to let it all sit for another release.
 
+If the port doesn't make the cut for 5.19, we can still debate with the
+libc maintainers whether they want to merge their side of it anyway,
+given that the user ABI at least is now as stable as one plan for,
+regardless of the upstream state.
+
+      Arnd
