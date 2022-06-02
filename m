@@ -2,66 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 141C9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 19:48:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8EB4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 19:49:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237083AbiFBTsg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 15:48:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39064 "EHLO
+        id S238889AbiFBTtE convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 15:49:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238879AbiFBTsY (ORCPT
+        with ESMTP id S239006AbiFBTs4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 15:48:24 -0400
-Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92F2B60E6
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 12:48:23 -0700 (PDT)
-Received: from ipservice-092-217-081-045.092.217.pools.vodafone-ip.de ([92.217.81.45] helo=martin-debian-2.paytec.ch)
-        by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <martin@kaiser.cx>)
-        id 1nwqnr-000400-Aw; Thu, 02 Jun 2022 21:48:19 +0200
-From:   Martin Kaiser <martin@kaiser.cx>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Michael Straube <straube.linux@gmail.com>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 3/3] staging: r8188eu: fix the declaration of process_pwrbit_data
-Date:   Thu,  2 Jun 2022 21:48:07 +0200
-Message-Id: <20220602194807.281115-4-martin@kaiser.cx>
+        Thu, 2 Jun 2022 15:48:56 -0400
+Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DFDE3388C
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 12:48:46 -0700 (PDT)
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2529scbL008820
+        for <linux-kernel@vger.kernel.org>; Thu, 2 Jun 2022 12:48:45 -0700
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3geu05bgdg-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 12:48:45 -0700
+Received: from twshared14818.18.frc3.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Thu, 2 Jun 2022 12:48:43 -0700
+Received: by devbig932.frc1.facebook.com (Postfix, from userid 4523)
+        id E309486C00F3; Thu,  2 Jun 2022 12:37:19 -0700 (PDT)
+From:   Song Liu <song@kernel.org>
+To:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <kernel-team@fb.com>, <rostedt@goodmis.org>, <jolsa@kernel.org>,
+        <mhiramat@kernel.org>, Song Liu <song@kernel.org>
+Subject: [PATCH v2 bpf-next 4/5] bpf, x64: Allow to use caller address from stack
+Date:   Thu, 2 Jun 2022 12:37:05 -0700
+Message-ID: <20220602193706.2607681-5-song@kernel.org>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220602194807.281115-1-martin@kaiser.cx>
-References: <20220602194807.281115-1-martin@kaiser.cx>
+In-Reply-To: <20220602193706.2607681-1-song@kernel.org>
+References: <20220602193706.2607681-1-song@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-GUID: MFbdeSM3JrJqGjbviu3Z5VIyjh6-Dmsg
+X-Proofpoint-ORIG-GUID: MFbdeSM3JrJqGjbviu3Z5VIyjh6-Dmsg
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-02_05,2022-06-02_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix the declaration of process_pwrbit_data. Make the function static and
-remove its prototype.
+From: Jiri Olsa <jolsa@kernel.org>
 
-Signed-off-by: Martin Kaiser <martin@kaiser.cx>
+Currently we call the original function by using the absolute address
+given at the JIT generation. That's not usable when having trampoline
+attached to multiple functions, or the target address changes dynamically
+(in case of live patch). In such cases we need to take the return address
+from the stack.
+
+Adding support to retrieve the original function address from the stack
+by adding new BPF_TRAMP_F_ORIG_STACK flag for arch_prepare_bpf_trampoline
+function.
+
+Basically we take the return address of the 'fentry' call:
+
+   function + 0: call fentry    # stores 'function + 5' address on stack
+   function + 5: ...
+
+The 'function + 5' address will be used as the address for the
+original function to call.
+
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+Signed-off-by: Song Liu <song@kernel.org>
 ---
- drivers/staging/r8188eu/core/rtw_recv.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ arch/x86/net/bpf_jit_comp.c | 13 +++++++++----
+ include/linux/bpf.h         |  5 +++++
+ 2 files changed, 14 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/staging/r8188eu/core/rtw_recv.c b/drivers/staging/r8188eu/core/rtw_recv.c
-index df518439aea2..fe3d597fea69 100644
---- a/drivers/staging/r8188eu/core/rtw_recv.c
-+++ b/drivers/staging/r8188eu/core/rtw_recv.c
-@@ -452,8 +452,7 @@ static int recv_decache(struct recv_frame *precv_frame, u8 bretry, struct stainf
- 	return _SUCCESS;
- }
+diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
+index f298b18a9a3d..c835a9f18fd8 100644
+--- a/arch/x86/net/bpf_jit_comp.c
++++ b/arch/x86/net/bpf_jit_comp.c
+@@ -2130,10 +2130,15 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
+ 	if (flags & BPF_TRAMP_F_CALL_ORIG) {
+ 		restore_regs(m, &prog, nr_args, regs_off);
  
--void process_pwrbit_data(struct adapter *padapter, struct recv_frame *precv_frame);
--void process_pwrbit_data(struct adapter *padapter, struct recv_frame *precv_frame)
-+static void process_pwrbit_data(struct adapter *padapter, struct recv_frame *precv_frame)
- {
- 	unsigned char pwrbit;
- 	u8 *ptr = precv_frame->rx_data;
+-		/* call original function */
+-		if (emit_call(&prog, orig_call, prog)) {
+-			ret = -EINVAL;
+-			goto cleanup;
++		if (flags & BPF_TRAMP_F_ORIG_STACK) {
++			emit_ldx(&prog, BPF_DW, BPF_REG_0, BPF_REG_FP, 8);
++			EMIT2(0xff, 0xd0); /* call *rax */
++		} else {
++			/* call original function */
++			if (emit_call(&prog, orig_call, prog)) {
++				ret = -EINVAL;
++				goto cleanup;
++			}
+ 		}
+ 		/* remember return value in a stack for bpf prog to access */
+ 		emit_stx(&prog, BPF_DW, BPF_REG_FP, BPF_REG_0, -8);
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index 8e6092d0ea95..a6e06f384e81 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -733,6 +733,11 @@ struct btf_func_model {
+ /* Return the return value of fentry prog. Only used by bpf_struct_ops. */
+ #define BPF_TRAMP_F_RET_FENTRY_RET	BIT(4)
+ 
++/* Get original function from stack instead of from provided direct address.
++ * Makes sense for fexit programs only.
++ */
++#define BPF_TRAMP_F_ORIG_STACK		BIT(5)
++
+ /* Each call __bpf_prog_enter + call bpf_func + call __bpf_prog_exit is ~50
+  * bytes on x86.
+  */
 -- 
 2.30.2
 
