@@ -2,228 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0A78CCA478
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 14:12:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B114BC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 14:17:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235756AbiFBOMa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 10:12:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55996 "EHLO
+        id S235776AbiFBORk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 10:17:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230168AbiFBOM3 (ORCPT
+        with ESMTP id S232088AbiFBORh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 10:12:29 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD60A28720;
-        Thu,  2 Jun 2022 07:12:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654179147; x=1685715147;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=KbrPrIvCS+mi/COhLEjYkOuQ96crZbeQdqbKiwSPa2c=;
-  b=SWK1qHLUtK1mJ2JHon0BPr87RIS6NMv6ZX2ybH9ItGjF3KH9p02XXUtQ
-   idiZREBE5a2mFi6Jrq50EsFdCxiTE3/3rnz0rWtBK3IcIMWB+jVs7TjyF
-   AB+I0c1+adqL6IG4qr5sKPzxBUEYF2t3bhTiKewBffof0GM9MDtQsBGCc
-   kwCNHhYpGr7400llzDxSWGiXwixp1DLonHYPs76G+tGnfxpEsDAHPQahO
-   BeH6Kpcqqg+wH6XKjC8StzZxjrGAlbCr7c3t+OOzq9/kELTvVTMnIJilZ
-   JoiV/ijmmHZjUm6oM2CzStq6wlgYNw4YfqKUuzVURa0BV2XMkqvypyUDs
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10365"; a="276034496"
-X-IronPort-AV: E=Sophos;i="5.91,271,1647327600"; 
-   d="scan'208";a="276034496"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2022 07:12:26 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,271,1647327600"; 
-   d="scan'208";a="707580844"
-Received: from unknown (HELO localhost.localdomain) ([10.226.216.116])
-  by orsmga004.jf.intel.com with ESMTP; 02 Jun 2022 07:12:23 -0700
-From:   wen.ping.teh@intel.com
-To:     Catalin Marinas <catalin.marinas@arm.com>,
+        Thu, 2 Jun 2022 10:17:37 -0400
+Received: from mail-ot1-f44.google.com (mail-ot1-f44.google.com [209.85.210.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFF051FCE3;
+        Thu,  2 Jun 2022 07:17:35 -0700 (PDT)
+Received: by mail-ot1-f44.google.com with SMTP id e11-20020a9d6e0b000000b0060afcbafa80so3493389otr.3;
+        Thu, 02 Jun 2022 07:17:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=TCCwJv6EhxWlaEc1Brd2505WQxC3GVxol8XUS0Q3iIQ=;
+        b=wWBsC8NfMMU90Yfiz8XoiaUJdjZMiwT8uBBGAL4WTaEKCbR925MzdKexvE+IxJWq+c
+         TDVsmpWbF4PmvNrWmH3Qf6eRugQG57ii6Dpi//ZcBERJLgzYS71eHQwh6OFq8QasNM7y
+         oJvlhtYJvl4O4XqXWnul46D4c+6iXc9257GbrAEAnj0Q2u4urzPfqBiN47HmGMGICseX
+         pblx51aBVEgd/zESfqjJvH/4QS+WH48OQb+/n8tYCb4juWDbgE8y8T3MdHb87INmMQFK
+         Eu4Ivy2Q+cZPthPMZcXnZNgHSn6w/cfV5Uo/83m/Y1A8sW+9QnvWtwjWoeAPpsaJt3Ws
+         vyWA==
+X-Gm-Message-State: AOAM531xWE8xeAOK/li3YAvuepbtGBfhLYgnXyHa4eflOV958FU7WyOh
+        qoElMkS8a81aDVb0EGxQwy7XebfbzA==
+X-Google-Smtp-Source: ABdhPJxYVbALGE594K0AOIrngTP0BTDjw28b1fwlQJNHJriJPoZ+rLecoT8+hiuf2AyA7nCY83K4nA==
+X-Received: by 2002:a9d:5f16:0:b0:60b:4fbb:ac5a with SMTP id f22-20020a9d5f16000000b0060b4fbbac5amr2120193oti.189.1654179454963;
+        Thu, 02 Jun 2022 07:17:34 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id gu23-20020a056870ab1700b000f5d765bc02sm2098115oab.8.2022.06.02.07.17.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Jun 2022 07:17:34 -0700 (PDT)
+Received: (nullmailer pid 2234679 invoked by uid 1000);
+        Thu, 02 Jun 2022 14:17:33 -0000
+Date:   Thu, 2 Jun 2022 09:17:33 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Konrad Dybcio <konrad.dybcio@somainline.org>
+Cc:     ~postmarketos/upstreaming@lists.sr.ht,
+        linux-arm-msm@vger.kernel.org, bjorn.andersson@linaro.org,
+        linux-arm-kernel@lists.infradead.org,
+        iommu@lists.linux-foundation.org, martin.botka@somainline.org,
+        angelogioacchino.delregno@somainline.org,
+        marijn.suijten@somainline.org, jamipkettunen@somainline.org,
+        Andy Gross <agross@kernel.org>, Joerg Roedel <joro@8bytes.org>,
         Will Deacon <will@kernel.org>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, Teh Wen Ping <wen.ping.teh@intel.com>
-Subject: [PATCH v2] arm64: dts: Add support for Stratix 10 Software Virtual Platform
-Date:   Thu,  2 Jun 2022 22:11:51 +0800
-Message-Id: <20220602141151.3431212-1-wen.ping.teh@intel.com>
-X-Mailer: git-send-email 2.25.1
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Clark <robdclark@gmail.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 4/6] iommu/qcom: Add support for AArch64 IOMMU pagetables
+Message-ID: <20220602141733.GA2227595-robh@kernel.org>
+References: <20220527212901.29268-1-konrad.dybcio@somainline.org>
+ <20220527212901.29268-5-konrad.dybcio@somainline.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220527212901.29268-5-konrad.dybcio@somainline.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Teh Wen Ping <wen.ping.teh@intel.com>
+On Fri, May 27, 2022 at 11:28:59PM +0200, Konrad Dybcio wrote:
+> From: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
+> 
+> Some IOMMUs associated with some TZ firmwares may support switching
+> to the AArch64 pagetable format by sending a "set pagetable format"
+> scm command indicating the IOMMU secure ID and the context number
+> to switch.
+> 
+> Add a DT property "qcom,use-aarch64-pagetables" for this driver to
+> send this command to the secure world and to switch the pagetable
+> format to benefit of the ARM64 IOMMU pagetables, where possible.
+> 
+> Note that, even though the command should be valid to switch each
+> context, the property is made global because:
+> 1. It doesn't make too much sense to switch only one or two
+>    context(s) to AA64 instead of just the entire thing
+> 2. Some IOMMUs will go crazy and produce spectacular results when
+>    trying to mix up the pagetables on a per-context basis.
+> 
+> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
+> Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
+> Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+> ---
+>  .../devicetree/bindings/iommu/qcom,iommu.txt  |  2 +
 
-Add Stratix 10 Software Virtual Platform device tree
+Bindings should be separate patch.
 
-Signed-off-by: Teh Wen Ping <wen.ping.teh@intel.com>
----
+As you are making multiple changes, please convert this to DT schema 
+first.
 
-changes in v2:
--remove indentation before GPL
--change root compatible to "altr,socfpga-stratix10"
--remove bootargs
--move clock-frequency to label
--remove l2-cache
--remove no longer exist authors from commit message
-
- arch/arm64/Kconfig.platforms                  |   3 +-
- arch/arm64/boot/dts/altera/Makefile           |   3 +-
- .../dts/altera/socfpga_stratix10_swvp.dts     | 117 ++++++++++++++++++
- 3 files changed, 121 insertions(+), 2 deletions(-)
- create mode 100644 arch/arm64/boot/dts/altera/socfpga_stratix10_swvp.dts
-
-diff --git a/arch/arm64/Kconfig.platforms b/arch/arm64/Kconfig.platforms
-index de9a18d3026f..48abe5dafaae 100644
---- a/arch/arm64/Kconfig.platforms
-+++ b/arch/arm64/Kconfig.platforms
-@@ -249,7 +249,8 @@ config ARCH_INTEL_SOCFPGA
- 	bool "Intel's SoCFPGA ARMv8 Families"
- 	help
- 	  This enables support for Intel's SoCFPGA ARMv8 families:
--	  Stratix 10 (ex. Altera), Agilex and eASIC N5X.
-+	  Stratix 10 (ex. Altera), Stratix10 Software Virtual Platform,
-+	  Agilex and eASIC N5X.
- 
- config ARCH_SYNQUACER
- 	bool "Socionext SynQuacer SoC Family"
-diff --git a/arch/arm64/boot/dts/altera/Makefile b/arch/arm64/boot/dts/altera/Makefile
-index 4db83fbeb115..1bf0c472f6b4 100644
---- a/arch/arm64/boot/dts/altera/Makefile
-+++ b/arch/arm64/boot/dts/altera/Makefile
-@@ -1,3 +1,4 @@
- # SPDX-License-Identifier: GPL-2.0-only
- dtb-$(CONFIG_ARCH_INTEL_SOCFPGA) += socfpga_stratix10_socdk.dtb \
--				socfpga_stratix10_socdk_nand.dtb
-+				socfpga_stratix10_socdk_nand.dtb \
-+				socfpga_stratix10_swvp.dtb
-diff --git a/arch/arm64/boot/dts/altera/socfpga_stratix10_swvp.dts b/arch/arm64/boot/dts/altera/socfpga_stratix10_swvp.dts
-new file mode 100644
-index 000000000000..93fa5091a6c3
---- /dev/null
-+++ b/arch/arm64/boot/dts/altera/socfpga_stratix10_swvp.dts
-@@ -0,0 +1,117 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (C) 2022, Intel Corporation
-+ */
-+
-+#include "socfpga_stratix10.dtsi"
-+
-+/ {
-+	model = "SOCFPGA Stratix 10 SWVP";
-+	compatible = "altr,socfpga-stratix10";
-+
-+	aliases {
-+		serial0 = &uart0;
-+		serial1 = &uart1;
-+
-+		timer0 = &timer0;
-+		timer1 = &timer1;
-+		timer2 = &timer2;
-+		timer3 = &timer3;
-+
-+		ethernet0 = &gmac0;
-+		ethernet1 = &gmac1;
-+		ethernet2 = &gmac2;
-+	};
-+
-+	chosen {
-+		stdout-path = "serial1:115200n8";
-+		linux,initrd-start = <0x10000000>;
-+		linux,initrd-end = <0x125c8324>;
-+	};
-+
-+	memory {
-+		device_type = "memory";
-+		reg = <0x0 0x0 0x0 0x80000000>;
-+	};
-+};
-+
-+&cpu0 {
-+	enable-method = "spin-table";
-+	cpu-release-addr = <0x0 0x0000fff8>;
-+};
-+
-+&cpu1 {
-+	enable-method = "spin-table";
-+	cpu-release-addr = <0x0 0x0000fff8>;
-+};
-+
-+&cpu2 {
-+	enable-method = "spin-table";
-+	cpu-release-addr = <0x0 0x0000fff8>;
-+};
-+
-+&cpu3 {
-+	enable-method = "spin-table";
-+	cpu-release-addr = <0x0 0x0000fff8>;
-+};
-+
-+&osc1 {
-+	clock-frequency = <25000000>;
-+};
-+
-+&gmac0 {
-+	status = "okay";
-+	phy-mode = "rgmii";
-+	phy-addr = <0xffffffff>;
-+	snps,max-mtu = <0x0>;
-+};
-+
-+&gmac1 {
-+	status = "okay";
-+	phy-mode = "rgmii";
-+	phy-addr = <0xffffffff>;
-+};
-+
-+&gmac2 {
-+	status = "okay";
-+	phy-mode = "rgmii";
-+	phy-addr = <0xffffffff>;
-+};
-+
-+&mmc {
-+	status = "okay";
-+	altr,dw-mshc-ciu-div = <0x3>;
-+	altr,dw-mshc-sdr-timing = <0x0 0x3>;
-+	cap-sd-highspeed;
-+	cap-mmc-highspeed;
-+	broken-cd;
-+	bus-width = <4>;
-+};
-+
-+&uart0 {
-+	status = "okay";
-+};
-+
-+&uart1 {
-+	status = "okay";
-+};
-+
-+&usb0 {
-+	clocks = <&clkmgr STRATIX10_L4_MP_CLK>;
-+	status = "okay";
-+};
-+
-+&usb1 {
-+	clocks = <&clkmgr STRATIX10_L4_MP_CLK>;
-+	status = "okay";
-+};
-+
-+&rst {
-+	altr,modrst-offset = <0x20>;
-+};
-+
-+&sysmgr {
-+	reg = <0xffd12000 0x1000>;
-+	interrupts = <0x0 0x10 0x4>;
-+	cpu1-start-addr = <0xffd06230>;
-+};
--- 
-2.25.1
-
+>  drivers/iommu/arm/arm-smmu/qcom_iommu.c       | 54 +++++++++++++++----
+>  2 files changed, 47 insertions(+), 9 deletions(-)
