@@ -2,138 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8F84C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 14:27:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67AC1C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 14:28:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235903AbiFBO1t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 10:27:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55852 "EHLO
+        id S235908AbiFBO17 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 10:27:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233749AbiFBO1p (ORCPT
+        with ESMTP id S235899AbiFBO1z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 10:27:45 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4D0012C97A;
-        Thu,  2 Jun 2022 07:27:43 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id k16so6699003wrg.7;
-        Thu, 02 Jun 2022 07:27:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=PU8lc3rqUKJ9fwYFMxTWZiWtxbKl/aHmbF7KgXVxdw8=;
-        b=nTCCpeSYwfMZY+4KPdvMlazL72pUA9cf31ff5VpnywSiVU9k5w5t458nw6elFguljg
-         OyVTJ6tj4p5kxFAUAVicDk6q903TOeCzEEX7UqisGtUPG8ui4J274meFJKWGwWzRorv5
-         h5Y/xMsiRDKaMFfBWbUE9FlqYBqmZC0lnC6o170UwiLmvD1F4cIwmf7q6WKP+ypzmGfO
-         fpHzIbIvQPob9eBzeY3t0iu0sV9vuWV98dAV+9s35Y3YBfLr2FiMHs3dQHaWnTqKjxYZ
-         HtUvhV7aVJm+ZxGEJfifkYjdHnZJFL+muk90bFTjaLFdQ1KGsobxK1HtczYZDzorbLox
-         rnCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=PU8lc3rqUKJ9fwYFMxTWZiWtxbKl/aHmbF7KgXVxdw8=;
-        b=H+O+oW4rJdWcycYvIPSzOPvFbKm1WD7kLeHu/uTp5no0wDNTrWDeHmiRDlCkUIrPL0
-         eCXnFxFkFjbUELMJ+rGKoYjbWTLRGVaL5OaQJOzULZZIfEpIkj8b8FsxJtOsM6oXaRAu
-         OVDXky2cufMAmctA+4ZqFPWsjhyJvjXZu4rZdR0EGUjwXC7ixmK0muOLpM09ELpPo9t/
-         yme/2Bcb1trgEcwqmbplt16QipdX0GBYikS//HN1ivf1iYEcKu1Zz/ftADYRM79babZ0
-         hygVH4UHFKDQb28GOZ/Du/bwtcgmgcQCcbWmA4vIO9+ZFLl6daATloUIfOugiJHyYpBO
-         QS1w==
-X-Gm-Message-State: AOAM532DjcPVuSpKWpRUKBPoubouq0lyeEVxuSmL0nv7geI8zahfa62p
-        pXyqbWFNc+cvYh4ql2fLvmo6h9bM+Z6SPA==
-X-Google-Smtp-Source: ABdhPJwjC4sOY/AU32uEMgLGNEAI19FhBPDUP9arLJ7oiFGKBMRXEJZ7V09GeOEGnuHwTIckNIWbKQ==
-X-Received: by 2002:a5d:5885:0:b0:20f:f390:c47e with SMTP id n5-20020a5d5885000000b0020ff390c47emr3997562wrf.133.1654180061203;
-        Thu, 02 Jun 2022 07:27:41 -0700 (PDT)
-Received: from [10.40.36.42] ([193.52.24.5])
-        by smtp.gmail.com with ESMTPSA id ay1-20020a5d6f01000000b0020fee88d0f2sm5954781wrb.0.2022.06.02.07.27.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 02 Jun 2022 07:27:38 -0700 (PDT)
-Message-ID: <c5022150-a2b4-07b9-d8ec-789147134d85@gmail.com>
-Date:   Thu, 2 Jun 2022 16:27:37 +0200
+        Thu, 2 Jun 2022 10:27:55 -0400
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2054.outbound.protection.outlook.com [40.107.100.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8003C133925;
+        Thu,  2 Jun 2022 07:27:48 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OmRRWxx9zaS67HvCtgJQuCp7RIledLbUs4u1BQUwqiILQa0YhnD5wC8d/I6fqCpngtzXMQGkT8PuxW05ppxxg7yu4zgrm2HQhEckKEKLO2MMMJjgvruxm1ZaKKMBaWOzVPGZh7Np+ZoZ05XOO3ApHeQ9bpA+C6CsscJ40tXG4GQURYinI4jo+123mBq7ZvxZ8flyqnC+LxA3Lk3xHXdg2urget/JHprUZSxWihPulQi4puURjYA94tVdjKfyJNQs64JF5oayw+IePXb/akUCLpIUYiWCzFHy8sK8I6dd47V4LkIDzj3j0yyevcdZKsorWIvmynAq0xtqiGPmzI6Vew==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=mlD+4SbguM0bIQlqJuEe0HNi3zDkdGvdNbQfXS3Wgws=;
+ b=Jd1rvXYqw5DpzuOcHtlpLYr/T3YCpWc98VNcCiaw3Ytf4SXjQhEc3TYA763vnunq49fE36LHzp0nsEAw3x3vUls+bmpHvvTASOg8H/ec+Cz9NXS7P58ER7AikAK3DyjXOrrkCU5HcQvHD8Mpc78YWol5tmJRaq3KaIUTzFbdgpx0XetnQU4qJHu+TWEvBnbb8fKV+/613jI7/DmT6QNNOVL9gisJutLSw8iC1UsF5tSEzAGpW4EkDWTasMqZgM84RSGxoawOoBWJNHmjsoPYuq0MDhJMEfrd6O5wLE+e3t9ybGx5xADra3ZpV/2e5zndE783SDFwDGLMi1WZGlhIYg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=redhat.com smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mlD+4SbguM0bIQlqJuEe0HNi3zDkdGvdNbQfXS3Wgws=;
+ b=xZZy3siqUawgWg6A+M6LkDATURljxb6PbCmwJunLhu0pAS3wNkBSiou3QKOcO+pnRqf7z7V/oN9zmVDYbsSMqQ2Em9gx9gTzza2YsaJwgMdtiHt3rt5LptLgKlhYLBrl72xKarFcHUQYJCg3fx4OeuZ/i3Hy9OYsOkXtHpoDa3o=
+Received: from BN9PR03CA0268.namprd03.prod.outlook.com (2603:10b6:408:ff::33)
+ by BY5PR12MB4307.namprd12.prod.outlook.com (2603:10b6:a03:20c::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.13; Thu, 2 Jun
+ 2022 14:27:45 +0000
+Received: from BN8NAM11FT010.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:ff:cafe::3c) by BN9PR03CA0268.outlook.office365.com
+ (2603:10b6:408:ff::33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.13 via Frontend
+ Transport; Thu, 2 Jun 2022 14:27:45 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ BN8NAM11FT010.mail.protection.outlook.com (10.13.177.53) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5314.12 via Frontend Transport; Thu, 2 Jun 2022 14:27:45 +0000
+Received: from BLR-5CG113396M.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 2 Jun
+ 2022 09:27:40 -0500
+From:   Santosh Shukla <santosh.shukla@amd.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+CC:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Tom Lendacky <thomas.lendacky@amd.com>, <kvm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <Santosh.Shukla@amd.com>
+Subject: [PATCH 4/7] KVM: SVM: Report NMI not allowed when Guest busy handling VNMI
+Date:   Thu, 2 Jun 2022 19:56:17 +0530
+Message-ID: <20220602142620.3196-5-santosh.shukla@amd.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220602142620.3196-1-santosh.shukla@amd.com>
+References: <20220602142620.3196-1-santosh.shukla@amd.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v2 0/3] Support MediaTek devapc for MT8186
-Content-Language: en-US
-To:     Chen-Yu Tsai <wenst@chromium.org>,
-        Rex-BC Chen <rex-bc.chen@mediatek.com>
-Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        runyang.chen@mediatek.com, linux-mediatek@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220504115501.3490-1-rex-bc.chen@mediatek.com>
- <CAGXv+5E9s3c0j501fHZxhwsHSeK0vG+GEqLMhtZMvtvC=+etjQ@mail.gmail.com>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <CAGXv+5E9s3c0j501fHZxhwsHSeK0vG+GEqLMhtZMvtvC=+etjQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: da666443-c178-4b50-0226-08da44a40f8e
+X-MS-TrafficTypeDiagnostic: BY5PR12MB4307:EE_
+X-Microsoft-Antispam-PRVS: <BY5PR12MB430791AE93D2465101C99F4487DE9@BY5PR12MB4307.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: vnx2e6VXePlCDnKvVIDaR7zLZy0fq3nTpQNwZzzO04aPw39ovMFrD7tgie4l9ocpbri2JYFwqkVt/0YUdpaWZWVvRnz3U15X74+6yil+RCddc9H/V/m2csA+t7djEhpEIPr/IHTP6uDct7s7ZRCNDSN15kb0G3Dudf/nNnsd1VMMBXqjHjZB/sqvpbJBgBPHa2MvnOuWpMS5dfZa1TP2wNM/Cr4GSlB+Fr5VN3DSyAIwdhicuIQPjYvKsKe8lw+/Xvl34/W0XDcNQRyI0ABjRBLcghgXU5kzfHYyZ/r6NvL8f7GJGa2b9oqDX6HIn93ljPRHqts9qYWmN4ulIvCSQE4o2mYJge0jW4wa9DUXnDyMPeep6mAfo5CdKTbxSM000U4Owtb6aThRgWnz0iUd5S/mNzxsW06nsaiZRn4jLJuLjIFClJmAvIxrO4yQGCtDdQcLBmwI8nmXicikRlvKg67pvuCu7tzPI5Jl9w4KVDovik0zbtc+G0atf0rdo1pD7kDtBhDgqmdqTvArHnhXcaj81pm+eApb1U1XvYlbP4uBxLjOeemAHQNcp1hBIRKVwhd8p5UqK8k1IMezjaNzcGN3T4aAYWK+WsveWJCqemsE+YPWxG7VonwCvDZX/ROIxV2lksAoRPxdF5ni8RLo9ldXkdYZIamqLfk1zBeqkx1n7hr0hvyOIVGi88Enioyq1k6ONZeZ5dAIrWTMFMdSWg==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(70206006)(6916009)(54906003)(36756003)(4326008)(36860700001)(6666004)(40460700003)(8676002)(316002)(86362001)(82310400005)(70586007)(26005)(7696005)(8936002)(186003)(1076003)(81166007)(16526019)(2616005)(508600001)(5660300002)(356005)(4744005)(2906002)(44832011)(336012)(426003)(47076005)(83380400001)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2022 14:27:45.1855
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: da666443-c178-4b50-0226-08da44a40f8e
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT010.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4307
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+In the VNMI case, Report NMI is not allowed when the processor set the
+V_NMI_MASK to 1 which means the Guest is busy handling VNMI.
 
+Signed-off-by: Santosh Shukla <santosh.shukla@amd.com>
+---
+ arch/x86/kvm/svm/svm.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-On 02/06/2022 09:48, Chen-Yu Tsai wrote:
-> On Wed, May 4, 2022 at 7:55 PM Rex-BC Chen <rex-bc.chen@mediatek.com> wrote:
->>
->> This series is for supporting devapc implementation in MT8186.
->>
->> V2:
->> - Add a patch to separate register offsets from mtk_devapc_data.
->>
->> V1:
->> - Add dt-binding and add devapc data for MT8186.
->>
->> Rex-BC Chen (3):
->>    dt-bindings: soc: mediatek: devapc: Add bindings for MT8186
->>    soc: mediatek: devapc: Separate register offsets from mtk_devapc_data
->>    soc: mediatek: devapc: Add support for MT8186
-> 
-> Applied this on next-20220602 (with a few fixes for other section mismatch
-> errors), booted and got:
-> 
-> [    1.948483] mtk-devapc 10207000.devapc: Read Violation
-> [    1.948488] mtk-devapc 10207000.devapc: Bus ID:0x100, Dom ID:0x0,
-> Vio Addr:0x13000000
-> [    1.948520] mtk-devapc 10207000.devapc: Read Violation
-> [    1.948523] mtk-devapc 10207000.devapc: Bus ID:0x200, Dom ID:0x0,
-> Vio Addr:0x140001a0
-> [    1.948537] mtk-devapc 10207000.devapc: Read Violation
-> [    1.948540] mtk-devapc 10207000.devapc: Bus ID:0x200, Dom ID:0x0,
-> Vio Addr:0x140001a0
-> [    1.948555] mtk-devapc 10207000.devapc: Read Violation
-> [    1.948558] mtk-devapc 10207000.devapc: Bus ID:0x200, Dom ID:0x0,
-> Vio Addr:0x14000100
-> [    1.948573] mtk-devapc 10207000.devapc: Read Violation
-> [    1.948576] mtk-devapc 10207000.devapc: Bus ID:0x200, Dom ID:0x0,
-> Vio Addr:0x14000100
-> [    1.948590] mtk-devapc 10207000.devapc: Read Violation
-> [    1.948593] mtk-devapc 10207000.devapc: Bus ID:0x200, Dom ID:0x0,
-> Vio Addr:0x14000100
-> [    1.948607] mtk-devapc 10207000.devapc: Read Violation
-> [    1.948610] mtk-devapc 10207000.devapc: Bus ID:0x200, Dom ID:0x0,
-> Vio Addr:0x14000100
-> [    1.948624] mtk-devapc 10207000.devapc: Read Violation
-> [    1.948627] mtk-devapc 10207000.devapc: Bus ID:0x200, Dom ID:0x0,
-> Vio Addr:0x14000100
-> 
-> during the boot process. So I think this works well. Manually reading a
-> known secure address also triggers it:
-> 
-> root@hayato:~# busybox devmem 0x1000e000
-> 0x00000000
-> [  135.069121] mtk-devapc 10207000.devapc: Read Violation
-> [  135.069132] mtk-devapc 10207000.devapc: Bus ID:0x482, Dom ID:0x0,
-> Vio Addr:0x1000e000
-> 
-> So,
-> 
-> Tested-by: Chen-Yu Tsai <wenst@chromium.org>
-> 
+diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+index d67a54517d95..a405e414cae4 100644
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -3483,6 +3483,9 @@ bool svm_nmi_blocked(struct kvm_vcpu *vcpu)
+ 	struct vmcb *vmcb = svm->vmcb;
+ 	bool ret;
+ 
++	if (is_vnmi_enabled(vmcb) && is_vnmi_mask_set(vmcb))
++		return true;
++
+ 	if (!gif_set(svm))
+ 		return true;
+ 
+@@ -3618,6 +3621,9 @@ static void svm_enable_nmi_window(struct kvm_vcpu *vcpu)
+ {
+ 	struct vcpu_svm *svm = to_svm(vcpu);
+ 
++	if (is_vnmi_enabled(svm->vmcb) && is_vnmi_mask_set(svm->vmcb))
++		return;
++
+ 	if ((vcpu->arch.hflags & (HF_NMI_MASK | HF_IRET_MASK)) == HF_NMI_MASK)
+ 		return; /* IRET will cause a vm exit */
+ 
+-- 
+2.25.1
 
-Whole series applied to v5.19-next/soc
-
-> BTW, looks like MT8186 support in mainline is shaping up real good.
-> SCP firmware is still missing, so video codec stuff won't work.
