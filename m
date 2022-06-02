@@ -2,125 +2,261 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2C41C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 03:42:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7E2BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 03:44:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229576AbiFBDmQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 23:42:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60360 "EHLO
+        id S229459AbiFBDoJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 23:44:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229589AbiFBDmA (ORCPT
+        with ESMTP id S229451AbiFBDoD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 23:42:00 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B897E186C5
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 20:41:55 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id x12so3648670pgj.7
-        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 20:41:55 -0700 (PDT)
+        Wed, 1 Jun 2022 23:44:03 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4561140844
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 20:44:00 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id z17so3666270pff.7
+        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 20:44:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:mime-version
+        d=dabbelt-com.20210112.gappssmtp.com; s=20210112;
+        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
          :content-transfer-encoding;
-        bh=96Q41uk4y6XbcZl1Zsx4+krpYFpttRN8NWnLOQ9e608=;
-        b=XUstNAd+TkZxYOg2nB0/CnWOe031scydaaFy5ujX6N9OPZ4fDymvFtAI9RQ5HtU9xy
-         1mPG+WzesqN4xw/HI+17JlvYsYombwEsWJy+zxHHswmhFSXNKdx6fgFhpGGP8juPpFz6
-         5bYIBgfJW5l3glxrFfHyFw6eCaCdbe7URRR2yAselbs8VOuEWjwsNBowqmT0TzePPjrk
-         Ld7vQMAppj2mohHZqCfIoa3gjuGIyvzm8iFMAru5vGPmAqdIAAqkceY9mie5fLcqPv0s
-         PbLdcJQIxOxrsBdXRC9VtP5+lnuaZfIbA1QDX2XuCNqjoLaG7zeTvavawY9e5kh8Ku/c
-         CAgQ==
+        bh=41Cix8/wz/98CXmQSSNUVoc/eGMSQu30WNS71XR8dIw=;
+        b=xlIUxlaBeKYzS7iUqyyVg/FYULyNn8vEmUTA5PcIHuIOtLrrU7nbkXrOKP9Lg6mqiK
+         W5/9UgFSa3Alf1969E1hbz1M5DB1P5ur5GONVnGfG//sbT+TiORVPZiRTZi5KK4w7bJ+
+         pZtm0lUbV42MuWDuh+RlzKGoAVZ8GKtMcfkihTJrye/Nj4Z5HAWOnfKNs7IVmk3cCWey
+         ROVwkByRLmZjiOLtcjmmWDuU+1lSkucqYjL6LEafERcG9yUMdkV00JL4uO8flM/XkiLQ
+         ya2K1hW0u7leuQU71+7MsxCIP2xAbwHayNxOkSNT9fSUqUwPxMYp3R0LzC5Od+CIBSzI
+         ZF6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=96Q41uk4y6XbcZl1Zsx4+krpYFpttRN8NWnLOQ9e608=;
-        b=D7pg4ypSCsxN9LVLx7XusELCbRMRfQC5tVN7P+f3QpaAlqsWnbyeg+IuoNCygge6SF
-         ovX8qwMpvHcPB1yfgGirzSr2unFIlBrndyvF++D+rUbq+eYc7OW6bMjCwFTIHVt92cjo
-         veJdKSoed7H6wHA3Ksa32jt0mwY0W56c2sNDMJdDlpktks8Hl2paVbGchBf9zKvzu279
-         NQDrgYIy5fsXs4O+tYKkfyqF3oXV7YaNVOpt8q6I7MsBibmu+AsXuWQJLvHxVm3T1IcD
-         BgpTmf20eE7x0M85m1echn1hebSNLBFKHj444mrTJ69emUwQxuSLuVt6uzdhxG+Grg+M
-         HFjw==
-X-Gm-Message-State: AOAM532QGSw0TygXtjaQrQODws9/r6aHTrsxGlotZ361q69O6xU84u8J
-        vXSnIGP8QhOpFBK7BUsqtms=
-X-Google-Smtp-Source: ABdhPJyPyKsY1RQq4rtR0YQcNAGzw5ULWmM3dgngCbyE+JjqSgZREIGNeNy4NwVWNPsBK4RJSAeXyg==
-X-Received: by 2002:a63:7e4e:0:b0:3db:945a:2575 with SMTP id o14-20020a637e4e000000b003db945a2575mr2354037pgn.227.1654141315261;
-        Wed, 01 Jun 2022 20:41:55 -0700 (PDT)
-Received: from localhost.localdomain ([202.120.234.246])
-        by smtp.googlemail.com with ESMTPSA id o24-20020a17090ac09800b001e2f578560csm2104137pjs.45.2022.06.01.20.41.49
+        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
+         :mime-version:content-transfer-encoding;
+        bh=41Cix8/wz/98CXmQSSNUVoc/eGMSQu30WNS71XR8dIw=;
+        b=Y33baVCorV9+q45aC6Jote+DhNwL75HiGsYa9yyM2xf7Sv4p0Gpw+30ZUKIhchGGjk
+         /cNxSVcWbQbjB5tRxH1Yt6kVGoo450uadS4EDyMRpMTjB/4X7c7dgNCd4mFaku7tj5gS
+         JQHWf7t7Ax1DcPwkKw/HmqAI8icPvo2pI6DXuLqyYgcYV4m9RhUpEpfyWd93Fi2eUVoW
+         RqermylR4JzEi2CalH+KjOZOgnrqB90p2eD5CignSxJsHX74g7g4Bh6lTHGx8nAMcEH/
+         Q9spFLVxlfFVsH8eF3R3cgoPbXNJ79g7Lu6FGhepu0e8+1Qmod4NjhVQRj6Zhsx/N3cX
+         D/sA==
+X-Gm-Message-State: AOAM533e9mCnmBeI5P+krca9cfufJx22N/s1sf9xqnFIPUKnbOcJLc17
+        2y3E23hrvkWVZSQowAeEcXV0fw==
+X-Google-Smtp-Source: ABdhPJwj8pNW5zGNYm4XHNrU/V+RpEOW+y5QQGSkxJYkaR5O97+HdBnk7f1z0+QUbeTv16fOV5xp7A==
+X-Received: by 2002:a63:6b02:0:b0:3fb:da5e:42a1 with SMTP id g2-20020a636b02000000b003fbda5e42a1mr2388919pgc.273.1654141439808;
+        Wed, 01 Jun 2022 20:43:59 -0700 (PDT)
+Received: from localhost ([12.3.194.138])
+        by smtp.gmail.com with ESMTPSA id g2-20020aa79f02000000b005185407eda5sm2254092pfr.44.2022.06.01.20.43.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Jun 2022 20:41:54 -0700 (PDT)
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tzung-Bi Shih <tzungbi@google.com>,
-        Miaoqian Lin <linmq006@gmail.com>,
-        Jiaxin Yu <jiaxin.yu@mediatek.com>,
-        Akihiko Odaki <akihiko.odaki@gmail.com>,
-        Koro Chen <koro.chen@mediatek.com>,
-        alsa-devel@alsa-project.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] ASoC: mediatek: mt8173: Fix refcount leak in mt8173_rt5650_rt5676_dev_probe
-Date:   Thu,  2 Jun 2022 07:41:42 +0400
-Message-Id: <20220602034144.60159-1-linmq006@gmail.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
+        Wed, 01 Jun 2022 20:43:59 -0700 (PDT)
+Date:   Wed, 01 Jun 2022 20:43:59 -0700 (PDT)
+X-Google-Original-Date: Wed, 01 Jun 2022 20:40:23 PDT (-0700)
+Subject:     Re: [PATCH v3 00/13] Introduce sv48 support without relocatable kernel
+In-Reply-To: <mhng-f386a42e-77d9-4644-914f-552a8e721f5c@palmer-ri-x1c9>
+CC:     corbet@lwn.net, Paul Walmsley <paul.walmsley@sifive.com>,
+        aou@eecs.berkeley.edu, zong.li@sifive.com, anup@brainfault.org,
+        Atish.Patra@rivosinc.com, Christoph Hellwig <hch@lst.de>,
+        ryabinin.a.a@gmail.com, glider@google.com, andreyknvl@gmail.com,
+        dvyukov@google.com, ardb@kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        keescook@chromium.org, guoren@linux.alibaba.com,
+        heinrich.schuchardt@canonical.com, mchitale@ventanamicro.com,
+        panqinglin2020@iscas.ac.cn, linux-doc@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kasan-dev@googlegroups.com, linux-efi@vger.kernel.org,
+        linux-arch@vger.kernel.org
+From:   Palmer Dabbelt <palmer@dabbelt.com>
+To:     alexandre.ghiti@canonical.com
+Message-ID: <mhng-2ff855c7-1f97-46c9-b692-84ea3735eb05@palmer-ri-x1c9>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-of_parse_phandle() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Fix missing of_node_put() in error paths.
+On Fri, 22 Apr 2022 18:50:47 PDT (-0700), Palmer Dabbelt wrote:
+> On Fri, 01 Apr 2022 05:56:30 PDT (-0700), alexandre.ghiti@canonical.com wrote:
+>> On Fri, Feb 18, 2022 at 11:45 AM Alexandre Ghiti
+>> <alexandre.ghiti@canonical.com> wrote:
+>>>
+>>> Hi Palmer,
+>>>
+>>> On Thu, Jan 20, 2022 at 11:05 AM Alexandre Ghiti
+>>> <alexandre.ghiti@canonical.com> wrote:
+>>> >
+>>> > On Thu, Jan 20, 2022 at 8:30 AM Alexandre Ghiti
+>>> > <alexandre.ghiti@canonical.com> wrote:
+>>> > >
+>>> > > On Thu, Jan 20, 2022 at 5:18 AM Palmer Dabbelt <palmer@dabbelt.com> wrote:
+>>> > > >
+>>> > > > On Mon, 06 Dec 2021 02:46:44 PST (-0800), alexandre.ghiti@canonical.com wrote:
+>>> > > > > * Please note notable changes in memory layouts and kasan population *
+>>> > > > >
+>>> > > > > This patchset allows to have a single kernel for sv39 and sv48 without
+>>> > > > > being relocatable.
+>>> > > > >
+>>> > > > > The idea comes from Arnd Bergmann who suggested to do the same as x86,
+>>> > > > > that is mapping the kernel to the end of the address space, which allows
+>>> > > > > the kernel to be linked at the same address for both sv39 and sv48 and
+>>> > > > > then does not require to be relocated at runtime.
+>>> > > > >
+>>> > > > > This implements sv48 support at runtime. The kernel will try to
+>>> > > > > boot with 4-level page table and will fallback to 3-level if the HW does not
+>>> > > > > support it. Folding the 4th level into a 3-level page table has almost no
+>>> > > > > cost at runtime.
+>>> > > > >
+>>> > > > > Note that kasan region had to be moved to the end of the address space
+>>> > > > > since its location must be known at compile-time and then be valid for
+>>> > > > > both sv39 and sv48 (and sv57 that is coming).
+>>> > > > >
+>>> > > > > Tested on:
+>>> > > > >   - qemu rv64 sv39: OK
+>>> > > > >   - qemu rv64 sv48: OK
+>>> > > > >   - qemu rv64 sv39 + kasan: OK
+>>> > > > >   - qemu rv64 sv48 + kasan: OK
+>>> > > > >   - qemu rv32: OK
+>>> > > > >
+>>> > > > > Changes in v3:
+>>> > > > >   - Fix SZ_1T, thanks to Atish
+>>> > > > >   - Fix warning create_pud_mapping, thanks to Atish
+>>> > > > >   - Fix k210 nommu build, thanks to Atish
+>>> > > > >   - Fix wrong rebase as noted by Samuel
+>>> > > > >   - * Downgrade to sv39 is only possible if !KASAN (see commit changelog) *
+>>> > > > >   - * Move KASAN next to the kernel: virtual layouts changed and kasan population *
+>>> > > > >
+>>> > > > > Changes in v2:
+>>> > > > >   - Rebase onto for-next
+>>> > > > >   - Fix KASAN
+>>> > > > >   - Fix stack canary
+>>> > > > >   - Get completely rid of MAXPHYSMEM configs
+>>> > > > >   - Add documentation
+>>> > > > >
+>>> > > > > Alexandre Ghiti (13):
+>>> > > > >   riscv: Move KASAN mapping next to the kernel mapping
+>>> > > > >   riscv: Split early kasan mapping to prepare sv48 introduction
+>>> > > > >   riscv: Introduce functions to switch pt_ops
+>>> > > > >   riscv: Allow to dynamically define VA_BITS
+>>> > > > >   riscv: Get rid of MAXPHYSMEM configs
+>>> > > > >   asm-generic: Prepare for riscv use of pud_alloc_one and pud_free
+>>> > > > >   riscv: Implement sv48 support
+>>> > > > >   riscv: Use pgtable_l4_enabled to output mmu_type in cpuinfo
+>>> > > > >   riscv: Explicit comment about user virtual address space size
+>>> > > > >   riscv: Improve virtual kernel memory layout dump
+>>> > > > >   Documentation: riscv: Add sv48 description to VM layout
+>>> > > > >   riscv: Initialize thread pointer before calling C functions
+>>> > > > >   riscv: Allow user to downgrade to sv39 when hw supports sv48 if !KASAN
+>>> > > > >
+>>> > > > >  Documentation/riscv/vm-layout.rst             |  48 ++-
+>>> > > > >  arch/riscv/Kconfig                            |  37 +-
+>>> > > > >  arch/riscv/configs/nommu_k210_defconfig       |   1 -
+>>> > > > >  .../riscv/configs/nommu_k210_sdcard_defconfig |   1 -
+>>> > > > >  arch/riscv/configs/nommu_virt_defconfig       |   1 -
+>>> > > > >  arch/riscv/include/asm/csr.h                  |   3 +-
+>>> > > > >  arch/riscv/include/asm/fixmap.h               |   1
+>>> > > > >  arch/riscv/include/asm/kasan.h                |  11 +-
+>>> > > > >  arch/riscv/include/asm/page.h                 |  20 +-
+>>> > > > >  arch/riscv/include/asm/pgalloc.h              |  40 ++
+>>> > > > >  arch/riscv/include/asm/pgtable-64.h           | 108 ++++-
+>>> > > > >  arch/riscv/include/asm/pgtable.h              |  47 +-
+>>> > > > >  arch/riscv/include/asm/sparsemem.h            |   6 +-
+>>> > > > >  arch/riscv/kernel/cpu.c                       |  23 +-
+>>> > > > >  arch/riscv/kernel/head.S                      |   4 +-
+>>> > > > >  arch/riscv/mm/context.c                       |   4 +-
+>>> > > > >  arch/riscv/mm/init.c                          | 408 ++++++++++++++----
+>>> > > > >  arch/riscv/mm/kasan_init.c                    | 250 ++++++++---
+>>> > > > >  drivers/firmware/efi/libstub/efi-stub.c       |   2
+>>> > > > >  drivers/pci/controller/pci-xgene.c            |   2 +-
+>>> > > > >  include/asm-generic/pgalloc.h                 |  24 +-
+>>> > > > >  include/linux/sizes.h                         |   1
+>>> > > > >  22 files changed, 833 insertions(+), 209 deletions(-)
+>>> > > >
+>>> > > > Sorry this took a while.  This is on for-next, with a bit of juggling: a
+>>> > > > handful of trivial fixes for configs that were failing to build/boot and
+>>> > > > some merge issues.  I also pulled out that MAXPHYSMEM fix to the top, so
+>>> > > > it'd be easier to backport.  This is bigger than something I'd normally like to
+>>> > > > take late in the cycle, but given there's a lot of cleanups, likely some fixes,
+>>> > > > and it looks like folks have been testing this I'm just going to go with it.
+>>> > > >
+>>> > >
+>>> > > Yes yes yes! That's fantastic news :)
+>>> > >
+>>> > > > Let me know if there's any issues with the merge, it was a bit hairy.
+>>> > > > Probably best to just send along a fixup patch at this point.
+>>> > >
+>>> > > I'm going to take a look at that now, and I'll fix anything that comes
+>>> > > up quickly :)
+>>> >
+>>> > I see in for-next that you did not take the following patches:
+>>> >
+>>> >   riscv: Improve virtual kernel memory layout dump
+>>> >   Documentation: riscv: Add sv48 description to VM layout
+>>> >   riscv: Initialize thread pointer before calling C functions
+>>> >   riscv: Allow user to downgrade to sv39 when hw supports sv48 if !KASAN
+>>> >
+>>> > I'm not sure this was your intention. If it was, I believe that at
+>>> > least the first 2 patches are needed in this series, the 3rd one is a
+>>> > useful fix and we can discuss the 4th if that's an issue for you.
+>>>
+>>> Can you confirm that this was intentional and maybe explain the
+>>> motivation behind it? Because I see value in those patches.
+>>
+>> Palmer,
+>>
+>> I read that you were still taking patches for 5.18, so I confirm again
+>> that the patches above are needed IMO.
+>
+> It was too late for this when it was sent (I saw it then, but just got
+> around to actually doing the work to sort it out).
+>
+> It took me a while to figure out exactly what was going on here, but I
+> think I remember now: that downgrade patch (and the follow-on I just
+> sent) is broken for medlow, because mm/init.c must be built medany
+> (which we're using for the mostly-PIC qualities).  I remember being in
+> the middle of rebasing/debugging this a while ago, I must have forgotten
+> I was in the middle of that and accidentally merged the branch as-is.
+> Certainly wasn't trying to silently take half the patch set and leave
+> the rest in limbo, that's the wrong way to do things.
+>
+> I'm not sure what the right answer is here, but I just sent a patch to
+> drop support for medlow.  We'll have to talk about that, for now I
+> cleaned up some other minor issues, rearranged that docs and fix to come
+> first, and put this at palmer/riscv-sv48.  I think that fix is
+> reasonable to take the doc and fix into fixes, then the dump improvement
+> on for-next.  We'll have to see what folks think about the medany-only
+> kernels, the other option would be to build FDT as medany which seems a
+> bit awkward.
 
-Fixes: 94319ba10eca ("ASoC: mediatek: Use platform_of_node for machine drivers")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
----
- sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+All but the last one are on for-next, there's some discussion on that 
+last one that pointed out some better ways to do it.
 
-diff --git a/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c b/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c
-index 70bf312e855f..8794720cea3a 100644
---- a/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c
-+++ b/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c
-@@ -256,14 +256,16 @@ static int mt8173_rt5650_rt5676_dev_probe(struct platform_device *pdev)
- 	if (!mt8173_rt5650_rt5676_dais[DAI_LINK_CODEC_I2S].codecs[0].of_node) {
- 		dev_err(&pdev->dev,
- 			"Property 'audio-codec' missing or invalid\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto put_node;
- 	}
- 	mt8173_rt5650_rt5676_dais[DAI_LINK_CODEC_I2S].codecs[1].of_node =
- 		of_parse_phandle(pdev->dev.of_node, "mediatek,audio-codec", 1);
- 	if (!mt8173_rt5650_rt5676_dais[DAI_LINK_CODEC_I2S].codecs[1].of_node) {
- 		dev_err(&pdev->dev,
- 			"Property 'audio-codec' missing or invalid\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto put_node;
- 	}
- 	mt8173_rt5650_rt5676_codec_conf[0].dlc.of_node =
- 		mt8173_rt5650_rt5676_dais[DAI_LINK_CODEC_I2S].codecs[1].of_node;
-@@ -276,13 +278,15 @@ static int mt8173_rt5650_rt5676_dev_probe(struct platform_device *pdev)
- 	if (!mt8173_rt5650_rt5676_dais[DAI_LINK_HDMI_I2S].codecs->of_node) {
- 		dev_err(&pdev->dev,
- 			"Property 'audio-codec' missing or invalid\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto put_node;
- 	}
- 
- 	card->dev = &pdev->dev;
- 
- 	ret = devm_snd_soc_register_card(&pdev->dev, card);
- 
-+put_node:
- 	of_node_put(platform_node);
- 	return ret;
- }
--- 
-2.25.1
-
+>
+>> Maybe even the relocatable series?
+>
+> Do you mind giving me a pointer?  I'm not sure why I'm so drop-prone
+> with your patches, I promise I'm not doing it on purpose.
+>
+>>
+>> Thanks,
+>>
+>> Alex
+>>
+>>>
+>>> Thanks,
+>>>
+>>> Alex
+>>>
+>>> >
+>>> > I tested for-next on both sv39 and sv48 successfully, I took a glance
+>>> > at the code and noticed you fixed the PTRS_PER_PGD error, thanks for
+>>> > that. Otherwise nothing obvious has popped.
+>>> >
+>>> > Thanks again,
+>>> >
+>>> > Alex
+>>> >
+>>> > >
+>>> > > Thanks!
+>>> > >
+>>> > > Alex
+>>> > >
+>>> > > >
+>>> > > > Thanks!
