@@ -2,67 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB0AAC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 09:53:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19B8EC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 09:53:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233235AbiFBJxU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 05:53:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60152 "EHLO
+        id S233250AbiFBJx4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 05:53:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231555AbiFBJxT (ORCPT
+        with ESMTP id S231395AbiFBJxy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 05:53:19 -0400
-Received: from smtpbg.qq.com (smtpbg136.qq.com [106.55.201.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6F9F33E3E
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 02:53:14 -0700 (PDT)
-X-QQ-mid: bizesmtp86t1654163561tf6rfbf6
-Received: from localhost.localdomain ( [117.176.187.31])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 02 Jun 2022 17:52:29 +0800 (CST)
-X-QQ-SSF: 01000000002000B0G000B00A0000000
-X-QQ-FEAT: 7mv2T88v/OpM5Pi91uMmJzPlbWZZoGHBYo5xAVdo5omcyRlQ3IPYsnN7/hb3y
-        afz9HpgUvpKAkW6dH/tnHXXAtGl3tFhMm1maWZzpb8x9xMe/RxTzlrcMkAIVznbtA1qUgyd
-        j8+SzKXP6Zx7lqsdYg2O39K/Jm3ZJgVCqqC48cf6OOA5Th4MpYfkshKv3hlUdtugDdZ5oIE
-        aXQAp4sayWwH97tW+wubJvKPfVs3b5XD+DLB/vKuD6g9Lmo95/aBJs6pxXX6+QyiSGoXSzd
-        MpP1PVbx/HZYpvhwXMsOzyzVwmQRwszASpPmy5HsbtDXG/jZEm7gBliPYWJUnAUyw5cMqId
-        RBHNv/l8jnZDsPRGOo=
-X-QQ-GoodBg: 0
-From:   Xiang wangx <wangxiang@cdjrlc.com>
-To:     linux@armlinux.org.uk
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Xiang wangx <wangxiang@cdjrlc.com>
-Subject: [PATCH] arm: Fix syntax errors in comments
-Date:   Thu,  2 Jun 2022 17:52:28 +0800
-Message-Id: <20220602095228.14791-1-wangxiang@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Thu, 2 Jun 2022 05:53:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5FF438BFC;
+        Thu,  2 Jun 2022 02:53:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 45670614B9;
+        Thu,  2 Jun 2022 09:53:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48252C385A5;
+        Thu,  2 Jun 2022 09:53:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654163632;
+        bh=I5Mm7R454ghX3y+4lNT7scOk785tAQqHkkGPCAKIiPs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=cU0O4BUWTfM7SfMOueIwu+MkdcuOE5k/cSh/FcAu5t51+nKHKNY1U19B7Gw3J+ORR
+         QS7pIK9OFE4kJzd3H7V/dLP632UmSl4YLKZ3xS/Ndjt8Q1wz6UKCHJM/fpKdxajp9x
+         oosP5B+ViSDDSta92zFKwdkYc8kezdsTTsTRXK9igX9v4WIKshwI1cGOcnjuwBemsJ
+         adhta/wWLsDN5GVJjYa0hAyiFzWdT+G4snVuWrf3zh1m7MPqZ7X8sIweL/UjELU7sh
+         vbj72mqE4j9oegex5YKsy3G5QdqU+dDDMoPxXvkBw2GAg4oCMx3tNxyr3GFMz3Cp83
+         7tGiRDl5wB+Yw==
+Received: by pali.im (Postfix)
+        id 21192689; Thu,  2 Jun 2022 11:53:49 +0200 (CEST)
+Date:   Thu, 2 Jun 2022 11:53:49 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Adam Borowski <kilobyte@angband.pl>
+Cc:     Sean Young <sean@mess.org>, Namjae Jeon <linkinjeon@kernel.org>,
+        Sungjong Seo <sj1557.seo@samsung.com>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: Incorrect handling of . and .. files
+Message-ID: <20220602095349.7yttadyibgw5za5y@pali>
+References: <20210927111948.GA16257@gofer.mess.org>
+ <20211211020453.mkuzumgpnignsuri@pali>
+ <YbbskNBJI8Ak1Vl/@angband.pl>
+ <20211213113903.bkspqw2qlpct3uxr@pali>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam7
+In-Reply-To: <20211213113903.bkspqw2qlpct3uxr@pali>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Delete the redundant word 'the'.
+On Monday 13 December 2021 12:39:03 Pali Rohár wrote:
+> On Monday 13 December 2021 07:47:44 Adam Borowski wrote:
+> > On Sat, Dec 11, 2021 at 03:04:53AM +0100, Pali Rohár wrote:
+> > > I tried to find some information what is allowed and what not.
+> > > 
+> > > On Monday 27 September 2021 12:19:48 Sean Young wrote:
+> > > > Windows allows files and directories called "." and ".." to be created
+> > > > using UNC paths, i.e. "\\?\D:\..". Now this is totally insane behaviour,
+> > > > but when an exfat filesytem with such a file is mounted on Linux, those
+> > > > files show up as another directory and its contents is inaccessible.
+> > > > 
+> > > > I can replicate this using exfat filesystems, but not ntfs.
+> > > 
+> > > Microsoft exFAT specification explicitly disallow "." and "..", see:
+> > [...]
+> > > On the other hand Microsoft FAT32 specification can be understood that
+> > > file may have long name (vfat) set to "." or ".." but not short name.
+> > [...]
+> > > OSTA UDF 2.60 specification does not disallow "." and ".." entries, but
+> > [...]
+> > > So it means that "." and ".." entries could be stored on disk as valid
+> > > file names.
+> > 
+> > It doesn't matter one whit what the specification says.  Anyone with a disk
+> > editor can craft a filesystem containing filenames such as "." or "..", "/"
+> > "foo/bar" or anything else we would like to ban.
+> 
+> That is truth. But question is what should do fsck tools with such file
+> names on filesystems where "." and ".." are permitted? Fully valid
+> argument is "do not touch them" because there is nothing bad with these
+> names.
+> 
+> > > > So, in Linux cannot read "." or ".." (i.e., I can't see "Hello, World!"). I
+> > > > don't know what the correct handling should be, but having two "." and two
+> > > > ".." files does not seem right at all.
+> > > 
+> > > This is really a bug in Linux kernel. It should not export "." and ".."
+> > > into VFS even when filesystem disk format supports such insane file
+> > > names.
+> > 
+> > This.
+> > 
+> > Otherwise, every filesystem driver would need to contain redundant code for
+> > checking for such bad names.
+> > 
+> > > So either Linux needs to completely hide these insane file names from
+> > > VFS or translate them to something which do not conflict with other
+> > > files in correct directory.
+> > 
+> > Escaping bad names has the problem of the escaped name also possibly
+> > existing -- perhaps even recursively.  Plus, the filesystem might be using
+> > hashed or tree indices which could go wrong if a name is altered.
+> 
+> vfat has already own escaping scheme and it is documented in mount(8)
+> manpage. Invalid characters are translated either to fixed char '?' or
+> to ':'... esc sequence if uni_xlate mount option is used. But it looks
+> like that that kernel vfat driver do not have these two entries "." and
+> ".." in its blacklist.
+> 
+> And, another important thing about vfat is that it has two file names
+> for each file. One short 8.3 and one long vfat. Short 8.3 do not allow
+> "." or "..", so another possibility how to handle this issue for vfat is
+> to show short 8.3 name in VFS when long is invalid.
+> 
+> For UDF case, specification already says how to handle problematic
+> file names, so I think that udf.ko could implement it according to
+> specification.
+> 
+> But for all other filesystems it is needed to do something ideally on
+> VFS layer.
+> 
+> What about generating some deterministic / predicable file names which
+> will not conflict with other file names in current directory for these
+> problematic files?
 
-Signed-off-by: Xiang wangx <wangxiang@cdjrlc.com>
----
- arch/arm/include/asm/unwind.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+PING? Any opinion how to handle this issue?
 
-diff --git a/arch/arm/include/asm/unwind.h b/arch/arm/include/asm/unwind.h
-index b51f85417f58..5fc323586c7a 100644
---- a/arch/arm/include/asm/unwind.h
-+++ b/arch/arm/include/asm/unwind.h
-@@ -10,7 +10,7 @@
- 
- #ifndef __ASSEMBLY__
- 
--/* Unwind reason code according the the ARM EABI documents */
-+/* Unwind reason code according the ARM EABI documents */
- enum unwind_reason_code {
- 	URC_OK = 0,			/* operation completed successfully */
- 	URC_CONTINUE_UNWIND = 8,
--- 
-2.36.1
+For VFAT this is still open question.
 
+> > But then, I once proposed (and I'm pondering reviving) a ban for characters
+> > \x01..\x1f and possibly others, and if banned, they can still legitimately
+> > occur in old filesystems.
+> > 
+> > > I guess that hiding them for exfat is valid thing as Microsoft
+> > > specification explicitly disallow them. Probably fsck.exfat can be teach
+> > > to rename these files and/or put them to lost+found directory.
+> > 
+> > fsck fixing those is a good thing but we still need to handle them at
+> > runtime.
+> 
+> Namjae Jeon, would you be able to implement fixing of such filenames in
+> fsck.exfat tool?
+> 
+> > 
+> > Meow!
+> > -- 
+> > ⢀⣴⠾⠻⢶⣦⠀
+> > ⣾⠁⢠⠒⠀⣿⡁ in the beginning was the boot and root floppies and they were good.
+> > ⢿⡄⠘⠷⠚⠋⠀                                       -- <willmore> on #linux-sunxi
+> > ⠈⠳⣄⠀⠀⠀⠀
