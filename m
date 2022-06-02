@@ -2,86 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 442E6C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 01:12:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15AAACCA473
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 01:13:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232977AbiFBBMN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 21:12:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52360 "EHLO
+        id S232999AbiFBBNF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 21:13:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232904AbiFBBMM (ORCPT
+        with ESMTP id S232904AbiFBBNE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 21:12:12 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC7EC128142
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 18:12:10 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id w21so3480736pfc.0
-        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 18:12:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=X2ieJMGlzcaHYK99zy4O4rgZqpHj0MIlPUsyySv/jig=;
-        b=WAJNsnTQTnLlQTwXRbmYJVNioljwUHZ1Z0T7bvtRBgAzunZgyiZCuJvchhSQD/34Qs
-         +5uo0zNsEoH3EPJQrQkr+02cxslNn1SkBgyn6iKetTeCHb2/TCmpeCKQnb0pwIHC41g7
-         L60OA2pcpBGtPxFoIVmYWv0YAuvbQc48d0ffKOv7uaeUBzY1FewzbjZUk6ruNJQLie+W
-         ieQtgXF6jsXZC3GGf7KPmtaaPzb1OP0UIwRd9EoKlr0ByWe8SNiNegvzWLDL2Phu3Tk/
-         +6BCxvDtCruSKKu+Y4BFPA/tu/dE32CVIDCzKwpehJXDppeZNrZbUhHtm1BoZsM+TVlC
-         x4Bg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=X2ieJMGlzcaHYK99zy4O4rgZqpHj0MIlPUsyySv/jig=;
-        b=LZ+1lUt0WKeJ7DWHxx+OnzsPE0lCmw67ifc1SRnbZrYiPwrFrela+2wmxLg0Gu3b4E
-         BYH+pJw4ZUUhkN3g9IIcAdA9yIHZ4c+Ms7wREQs4T0M85u1sJ73CtpIY5kOCL8ZznKLd
-         TrkrFHNi1WlwMaYAdTbn3vbH+gmk7fE4egkN2UfVKm4FNtMIXLI20zaRSNRC5Sj5Z8ef
-         mm7WqtqN2ykSqrZy2L3z4N2skX9Hz6oanek0gBxmH0W9jpge3+zPNj4ITYf9E4Or4Vqe
-         x/0OeXayHDKJsSrjerhPVP3/53N9EpZT6M4luQIiClmzsmqkhhg6xyOE8Nahgw+6tbGu
-         RDwQ==
-X-Gm-Message-State: AOAM533FPBgS1SYbL5XFjb64yN/XpXTaxLPvXRdiSH9kwpa5MNUHDdcs
-        KuVl3Qu4QTtm71NqXjKFBFA=
-X-Google-Smtp-Source: ABdhPJyaG5V6z6gxNedqJo9ojAnzAe5IkX6r7knIvqhRd313m5j5s6anp39u1re8qhBfU1S6EtjGcg==
-X-Received: by 2002:a62:be14:0:b0:505:a43b:cf6e with SMTP id l20-20020a62be14000000b00505a43bcf6emr69455849pff.33.1654132330347;
-        Wed, 01 Jun 2022 18:12:10 -0700 (PDT)
-Received: from 192.168.3.10 ([111.202.144.35])
-        by smtp.gmail.com with ESMTPSA id fa23-20020a17090af0d700b001e2ff3a1221sm1940288pjb.33.2022.06.01.18.12.07
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 01 Jun 2022 18:12:08 -0700 (PDT)
-From:   chengkaitao <pilgrimtao@gmail.com>
-X-Google-Original-From: chengkaitao <chengkaitao@didiglobal.com>
-To:     mst@redhat.com, jasowang@redhat.com
-Cc:     virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, smcdef@gmail.com,
-        chengkaitao <pilgrimtao@gmail.com>
-Subject: [PATCH] virtio-mmio: fix missing put_device() when vm_cmdline_parent registration failed
-Date:   Thu,  2 Jun 2022 08:55:42 +0800
-Message-Id: <20220602005542.16489-1-chengkaitao@didiglobal.com>
-X-Mailer: git-send-email 2.14.1
+        Wed, 1 Jun 2022 21:13:04 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0065227B4A3;
+        Wed,  1 Jun 2022 18:13:01 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LD7K46WVFzjXLQ;
+        Thu,  2 Jun 2022 09:12:08 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
+ (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 2 Jun
+ 2022 09:12:59 +0800
+From:   Zhengchao Shao <shaozhengchao@huawei.com>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <hawk@kernel.org>, <john.fastabend@gmail.com>, <andrii@kernel.org>,
+        <kafai@fb.com>, <songliubraving@fb.com>, <yhs@fb.com>,
+        <kpsingh@kernel.org>, <toke@kernel.org>
+CC:     <weiyongjun1@huawei.com>, <shaozhengchao@huawei.com>,
+        <yuehaibing@huawei.com>
+Subject: [PATCH v5,bpf-next] samples/bpf: check detach prog exist or not in xdp_fwd
+Date:   Thu, 2 Jun 2022 09:19:15 +0800
+Message-ID: <20220602011915.264431-1-shaozhengchao@huawei.com>
+X-Mailer: git-send-email 2.17.1
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpeml500026.china.huawei.com (7.185.36.106)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: chengkaitao <pilgrimtao@gmail.com>
+Before detach the prog, we should check detach prog exist or not.
 
-The reference must be released when device_register(&vm_cmdline_parent)
-failed. Add the corresponding 'put_device()' in the error handling path.
-
-Signed-off-by: chengkaitao <pilgrimtao@gmail.com>
+Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
 ---
- drivers/virtio/virtio_mmio.c | 1 +
- 1 file changed, 1 insertion(+)
+ samples/bpf/xdp_fwd_user.c | 55 +++++++++++++++++++++++++++++++++-----
+ 1 file changed, 49 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/virtio/virtio_mmio.c b/drivers/virtio/virtio_mmio.c
-index 56128b9c46eb..1dd396d4bebb 100644
---- a/drivers/virtio/virtio_mmio.c
-+++ b/drivers/virtio/virtio_mmio.c
-@@ -688,6 +688,7 @@ static int vm_cmdline_set(const char *device,
- 	if (!vm_cmdline_parent_registered) {
- 		err = device_register(&vm_cmdline_parent);
- 		if (err) {
-+			put_device(&vm_cmdline_parent);
- 			pr_err("Failed to register parent device!\n");
- 			return err;
+diff --git a/samples/bpf/xdp_fwd_user.c b/samples/bpf/xdp_fwd_user.c
+index 1828487bae9a..d321e6aa9364 100644
+--- a/samples/bpf/xdp_fwd_user.c
++++ b/samples/bpf/xdp_fwd_user.c
+@@ -47,17 +47,60 @@ static int do_attach(int idx, int prog_fd, int map_fd, const char *name)
+ 	return err;
+ }
+ 
+-static int do_detach(int idx, const char *name)
++static int do_detach(int ifindex, const char *ifname, const char *app_name)
+ {
+-	int err;
++	LIBBPF_OPTS(bpf_xdp_attach_opts, opts);
++	struct bpf_prog_info prog_info = {};
++	char prog_name[BPF_OBJ_NAME_LEN];
++	__u32 info_len, curr_prog_id;
++	int prog_fd;
++	int err = 1;
++
++	if (bpf_xdp_query_id(ifindex, xdp_flags, &curr_prog_id)) {
++		printf("ERROR: bpf_xdp_query_id failed (%s)\n",
++		       strerror(errno));
++		return err;
++	}
+ 
+-	err = bpf_xdp_detach(idx, xdp_flags, NULL);
+-	if (err < 0)
+-		printf("ERROR: failed to detach program from %s\n", name);
++	if (!curr_prog_id) {
++		printf("ERROR: flags(0x%x) xdp prog is not attached to %s\n",
++		       xdp_flags, ifname);
++		return err;
++	}
+ 
++	info_len = sizeof(prog_info);
++	prog_fd = bpf_prog_get_fd_by_id(curr_prog_id);
++	if (prog_fd < 0) {
++		printf("ERROR: bpf_prog_get_fd_by_id failed (%s)\n",
++		       strerror(errno));
++		return errno;
++	}
++
++	err = bpf_obj_get_info_by_fd(prog_fd, &prog_info, &info_len);
++	if (err) {
++		printf("ERROR: bpf_obj_get_info_by_fd failed (%s)\n",
++		       strerror(errno));
++		goto close_out;
++	}
++	snprintf(prog_name, sizeof(prog_name), "%s_prog", app_name);
++	prog_name[BPF_OBJ_NAME_LEN - 1] = '\0';
++
++	if (strcmp(prog_info.name, prog_name)) {
++		printf("ERROR: %s isn't attached to %s\n", app_name, ifname);
++		err = 1;
++		goto close_out;
++	}
++
++	opts.old_prog_fd = prog_fd;
++	err = bpf_xdp_detach(ifindex, xdp_flags, &opts);
++	if (err < 0)
++		printf("ERROR: failed to detach program from %s (%s)\n",
++		       ifname, strerror(errno));
+ 	/* TODO: Remember to cleanup map, when adding use of shared map
+ 	 *  bpf_map_delete_elem((map_fd, &idx);
+ 	 */
++close_out:
++	close(prog_fd);
+ 	return err;
+ }
+ 
+@@ -169,7 +212,7 @@ int main(int argc, char **argv)
+ 			return 1;
  		}
+ 		if (!attach) {
+-			err = do_detach(idx, argv[i]);
++			err = do_detach(idx, argv[i], prog_name);
+ 			if (err)
+ 				ret = err;
+ 		} else {
 -- 
-2.14.1
+2.17.1
 
