@@ -2,127 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F18BC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 10:22:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67117C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 10:22:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233639AbiFBKW0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 06:22:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60180 "EHLO
+        id S233651AbiFBKWr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 06:22:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232285AbiFBKWX (ORCPT
+        with ESMTP id S233178AbiFBKWl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 06:22:23 -0400
-Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AE0F2ADF49
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 03:22:22 -0700 (PDT)
-Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-30fdbe7467cso11267277b3.1
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 03:22:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RUd3SPNTBG11Pw4ONwPRjvgnGE2d3p2dtoAJcfU9H9o=;
-        b=nlFi7M3tVp4pU0E+EsVFl71MIOQgnjG/VIgFEYoBqd5wL5HW85p7qwOMrc7kSxxMSD
-         tKziZmGmQZNze4UEDfqNLwkQAl6+Vpn9cR0R2CPRBmg9OHKSUDbyaKag6NVI/sOg5XRL
-         FmQqV6ZOW1JLooFruZDqNqFZSeLVlcO2KGhyt6h5Iy+sjbY0rEd8cYIK6RaOYM+W5PYJ
-         xmv3UMY/zCWm2gO5ZjXB9ZkuvOCOQJPcZLW8Ya75ElBU9OsmLO5NfeZcoNcXWrtbfIX/
-         hWi6KD2Yf2SivFGS8G2PIKWuEVRjUaoA+VuPStNaEEShkULE92qVBimRO2q7wdRHgcge
-         LHVw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RUd3SPNTBG11Pw4ONwPRjvgnGE2d3p2dtoAJcfU9H9o=;
-        b=MQu4nsCBrNN0mwUR0PM1ZNFFaa9GKI/z3elQbIPcTasIjFZqWhXabLoWSb5WAZA67Z
-         0OtYtxtOyLYqefdnCNdT3bWkLRUKJnyNNwyh1YT0mj4vaXEAnWVsNSmm44XiPZ52ddM8
-         Td037jAfOI7TIhr6WMyW8sjMEVWhO7zHGPKEGAwbx9eWEv0SMxnTTjn+LA7v8CVWre4p
-         NZHhfrvYwpxwfAZcXnhBL5uBaLBbH84HsNxcXRMfKSP8e/5l4I9UfP17iHun9fy2Zml/
-         8NoqNwD6wYqAyoB76tMr9xPyBqILClXb6IneAwLfc+VlrG5gLirN2LuxykobP81xFV14
-         uxzg==
-X-Gm-Message-State: AOAM531vnIxSVO6cg4OO8k8IscMTs2B76tg7cyMuLBOg3H/h1VsR79Zb
-        QIaIKDUSx5s+F8Wch5NBqBYsoGycXDPmPrr0Hw0=
-X-Google-Smtp-Source: ABdhPJx1PIEvF6A2hj9tWw5qrvzoGZMFb4SzV9gd+N6cpS04kOWoA7HW5LFF2wYgEEM58ydCeW4zASwefd1r7SFbZcc=
-X-Received: by 2002:a0d:f502:0:b0:2ff:3e75:b4ea with SMTP id
- e2-20020a0df502000000b002ff3e75b4eamr4499151ywf.171.1654165341322; Thu, 02
- Jun 2022 03:22:21 -0700 (PDT)
+        Thu, 2 Jun 2022 06:22:41 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 089E21DA40;
+        Thu,  2 Jun 2022 03:22:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 2FC75CE1FD2;
+        Thu,  2 Jun 2022 10:22:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA91DC385A5;
+        Thu,  2 Jun 2022 10:22:29 +0000 (UTC)
+From:   Huacai Chen <chenhuacai@loongson.cn>
+To:     Arnd Bergmann <arnd@arndb.de>, Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Airlie <airlied@linux.ie>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-arch@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
+        Yanteng Si <siyanteng@loongson.cn>,
+        Huacai Chen <chenhuacai@gmail.com>,
+        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Huacai Chen <chenhuacai@loongson.cn>,
+        WANG Xuerui <git@xen0n.name>
+Subject: [PATCH V13 05/24] LoongArch: Add ELF-related definitions
+Date:   Thu,  2 Jun 2022 18:19:30 +0800
+Message-Id: <20220602101949.3873682-6-chenhuacai@loongson.cn>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220602101949.3873682-1-chenhuacai@loongson.cn>
+References: <20220602101949.3873682-1-chenhuacai@loongson.cn>
 MIME-Version: 1.0
-References: <20220531150823.1004101-1-patrick.wang.shcn@gmail.com>
- <YpZCWbfNE32EzCnz@arm.com> <99faf6b0-30bf-f87c-2620-1eafb4eac1ac@gmail.com> <YpeQNkk31d7JL9g6@arm.com>
-In-Reply-To: <YpeQNkk31d7JL9g6@arm.com>
-From:   patrick wang <patrick.wang.shcn@gmail.com>
-Date:   Thu, 2 Jun 2022 18:22:10 +0800
-Message-ID: <CAGcnep_brHvOBv=cM6y4zdefc=kdJyRxG2W8_yaYeBOt0vtQ8Q@mail.gmail.com>
-Subject: Re: [PATCH] mm: kmemleak: check boundary of objects allocated with
- physical address when scan
-To:     Catalin Marinas <catalin.marinas@arm.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        "open list:MEMORY MANAGEMENT" <linux-mm@kvack.org>,
-        linux-kernel@vger.kernel.org, Yee Lee <yee.lee@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 2, 2022 at 12:13 AM Catalin Marinas <catalin.marinas@arm.com> wrote:
->
-> On Wed, Jun 01, 2022 at 06:24:34PM +0800, Patrick Wang wrote:
-> > On 2022/6/1 00:29, Catalin Marinas wrote:
-> > > On Tue, May 31, 2022 at 11:08:23PM +0800, Patrick Wang wrote:
-> > > > + if (kmemleak_enabled && (unsigned long)__va(phys) >= PAGE_OFFSET &&
-> > > > +     !IS_ERR(__va(phys)))
-> > > > +         /* create object with OBJECT_PHYS flag */
-> > > > +         create_object((unsigned long)__va(phys), size, min_count,
-> > > > +                       gfp, true);
-> > >
-> > > Do we still need to check for __va(phys) >= PAGE_OFFSET? Also I don't
-> > > think IS_ERR(__va(phys)) makes sense, we can't store an error in a
-> > > physical address. The kmemleak_alloc_phys() function is only called on
-> > > successful allocation, so shouldn't bother with error codes.
-> >
-> > In this commit:
-> > 972fa3a7c17c(mm: kmemleak: alloc gray object for reserved
-> > region with direct map)
-> >
-> > The kmemleak_alloc_phys() function is called directly by passing
-> > physical address from devicetree. So I'm concerned that could
-> > __va() => __pa() convert always get the phys back? I thought
-> > check for __va(phys) might help, but it probably dosen't work
-> > and using IS_ERR is indeed inappropriate.
-> >
-> > We might have to store phys in object and convert it via __va()
-> > for normal use like:
-> >
-> > #define object_pointer(obj)   \
-> >       (obj->flags & OBJECT_PHYS ? (unsigned long)__va((void *)obj->pointer)   \
-> >                               : obj->pointer)
->
-> In the commit you mentioned, the kmemleak callback is skipped if the
-> memory is marked no-map.
->
-> But you have a point with the va->pa conversion. On 32-bit
-> architectures, the __va() is no longer valid if the pfn is above
-> max_low_pfn. So whatever we add to the rbtree may be entirely bogus,
-> and we can't guarantee that the va->pa conversion back is correct.
->
-> Storing the phys address in object->pointer only solves the conversion
-> but it doesn't solve the rbtree problem (VA and PA values may overlap,
-> we can't just store the physical address either). And we use the rbtree
-> for searching objects on freeing as well.
->
-> Given that all the kmemleak_alloc_phys() calls always pass min_count=0
-> (we should probably get rid of the extra arguments), we don't expect
-> them to leak, so there's no point in adding them to the rbtree. We can
-> instead add a new object_phys_tree_root to store these objects by the
-> physical address for when we need to search (kmemleak_free_part_phys()).
-> This would probably look simpler than recording the callbacks and
-> replaying them.
->
-> Wherever we use object_tree_root we should check for OBJECT_PHYS and use
-> object_phys_tree_root instead. There aren't many places.
+Add ELF-related definitions for LoongArch, including: EM_LOONGARCH,
+KEXEC_ARCH_LOONGARCH, AUDIT_ARCH_LOONGARCH32, AUDIT_ARCH_LOONGARCH64
+and NT_LOONGARCH_*.
 
-Considering the usage of objects with OBJECT_PHYS, storing
-the phys address and giving their own rbtree should solve the
-phys problem. I will post a v2 ASAP.
+Reviewed-by: WANG Xuerui <git@xen0n.name>
+Reviewed-by: Jiaxun Yang <jiaxun.yang@flygoat.com>
+Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
+---
+ include/uapi/linux/audit.h  | 2 ++
+ include/uapi/linux/elf-em.h | 1 +
+ include/uapi/linux/elf.h    | 5 +++++
+ include/uapi/linux/kexec.h  | 1 +
+ scripts/sorttable.c         | 5 +++++
+ 5 files changed, 14 insertions(+)
 
-Thanks,
-Patrick
+diff --git a/include/uapi/linux/audit.h b/include/uapi/linux/audit.h
+index 8eda133ca4c1..7c1dc818b1d5 100644
+--- a/include/uapi/linux/audit.h
++++ b/include/uapi/linux/audit.h
+@@ -439,6 +439,8 @@ enum {
+ #define AUDIT_ARCH_UNICORE	(EM_UNICORE|__AUDIT_ARCH_LE)
+ #define AUDIT_ARCH_X86_64	(EM_X86_64|__AUDIT_ARCH_64BIT|__AUDIT_ARCH_LE)
+ #define AUDIT_ARCH_XTENSA	(EM_XTENSA)
++#define AUDIT_ARCH_LOONGARCH32	(EM_LOONGARCH|__AUDIT_ARCH_LE)
++#define AUDIT_ARCH_LOONGARCH64	(EM_LOONGARCH|__AUDIT_ARCH_64BIT|__AUDIT_ARCH_LE)
+ 
+ #define AUDIT_PERM_EXEC		1
+ #define AUDIT_PERM_WRITE	2
+diff --git a/include/uapi/linux/elf-em.h b/include/uapi/linux/elf-em.h
+index f47e853546fa..ef38c2bc5ab7 100644
+--- a/include/uapi/linux/elf-em.h
++++ b/include/uapi/linux/elf-em.h
+@@ -51,6 +51,7 @@
+ #define EM_RISCV	243	/* RISC-V */
+ #define EM_BPF		247	/* Linux BPF - in-kernel virtual machine */
+ #define EM_CSKY		252	/* C-SKY */
++#define EM_LOONGARCH	258	/* LoongArch */
+ #define EM_FRV		0x5441	/* Fujitsu FR-V */
+ 
+ /*
+diff --git a/include/uapi/linux/elf.h b/include/uapi/linux/elf.h
+index c4abd09c3da9..2b9f5e9985e5 100644
+--- a/include/uapi/linux/elf.h
++++ b/include/uapi/linux/elf.h
+@@ -438,6 +438,11 @@ typedef struct elf64_shdr {
+ #define NT_MIPS_DSP	0x800		/* MIPS DSP ASE registers */
+ #define NT_MIPS_FP_MODE	0x801		/* MIPS floating-point mode */
+ #define NT_MIPS_MSA	0x802		/* MIPS SIMD registers */
++#define NT_LOONGARCH_CPUCFG	0xa00	/* LoongArch CPU config registers */
++#define NT_LOONGARCH_CSR	0xa01	/* LoongArch control and status registers */
++#define NT_LOONGARCH_LSX	0xa02	/* LoongArch Loongson SIMD Extension registers */
++#define NT_LOONGARCH_LASX	0xa03	/* LoongArch Loongson Advanced SIMD Extension registers */
++#define NT_LOONGARCH_LBT	0xa04	/* LoongArch Loongson Binary Translation registers */
+ 
+ /* Note types with note name "GNU" */
+ #define NT_GNU_PROPERTY_TYPE_0	5
+diff --git a/include/uapi/linux/kexec.h b/include/uapi/linux/kexec.h
+index fb7e2ef60825..981016e05cfa 100644
+--- a/include/uapi/linux/kexec.h
++++ b/include/uapi/linux/kexec.h
+@@ -43,6 +43,7 @@
+ #define KEXEC_ARCH_MIPS    ( 8 << 16)
+ #define KEXEC_ARCH_AARCH64 (183 << 16)
+ #define KEXEC_ARCH_RISCV   (243 << 16)
++#define KEXEC_ARCH_LOONGARCH	(258 << 16)
+ 
+ /* The artificial cap on the number of segments passed to kexec_load. */
+ #define KEXEC_SEGMENT_MAX 16
+diff --git a/scripts/sorttable.c b/scripts/sorttable.c
+index d00504c5f530..fba40e99f354 100644
+--- a/scripts/sorttable.c
++++ b/scripts/sorttable.c
+@@ -60,6 +60,10 @@
+ #define EM_RISCV	243
+ #endif
+ 
++#ifndef EM_LOONGARCH
++#define EM_LOONGARCH	258
++#endif
++
+ static uint32_t (*r)(const uint32_t *);
+ static uint16_t (*r2)(const uint16_t *);
+ static uint64_t (*r8)(const uint64_t *);
+@@ -313,6 +317,7 @@ static int do_file(char const *const fname, void *addr)
+ 	case EM_ARCOMPACT:
+ 	case EM_ARCV2:
+ 	case EM_ARM:
++	case EM_LOONGARCH:
+ 	case EM_MICROBLAZE:
+ 	case EM_MIPS:
+ 	case EM_XTENSA:
+-- 
+2.27.0
+
