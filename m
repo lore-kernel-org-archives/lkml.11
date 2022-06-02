@@ -2,99 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59406CCA47D
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 16:51:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A203C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 16:53:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237208AbiFBQvX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 12:51:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47026 "EHLO
+        id S237304AbiFBQxG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 12:53:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235749AbiFBQvS (ORCPT
+        with ESMTP id S234955AbiFBQxD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 12:51:18 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 748CB2B1977
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 09:51:17 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id o6-20020a17090a0a0600b001e2c6566046so9980567pjo.0
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 09:51:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language
-         :from:to:cc:references:in-reply-to:content-transfer-encoding;
-        bh=TDQ+cU4491SkrItFnZHpClm+jYuYcgPGIy7tcDzQFG8=;
-        b=uOpcLIN9c4RrfisvBugPN3DU8GT5x7q/U3iglMCQS2iPkf6OGDg/RlBsS4TbrfuHa+
-         SF2uHL5r1DR1bUycKKwv4eHSrkxecyed8V89R24tG7kaZYXUpnYYnEB7FKXFMtiUNpcu
-         bD9YZs8MzgjVhzapu9xBK6NoVnvzgb9QwHMa/Nus9D2QIE167N2oav9Pst/sYQEhyW9P
-         eAu56AoaRhl33j/JSVbAUNYigMBLVC68FVIdZUrWi8MgzWb0atPoAZ/CukdYwy/HNS8N
-         Ot9ZWFGiAxMu2HaXyL4lzIaXLnSRACVX6pSCyvdAwZp56RWl8IxS4/ex0JjuzQd/jVHf
-         q58g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=TDQ+cU4491SkrItFnZHpClm+jYuYcgPGIy7tcDzQFG8=;
-        b=cCx/likyYhPsAYMvE56kYp1mdzOBcXR8h2W321JKIBGBOc1HfHe4ardDjTjzjYyotu
-         eS4Ss3P4X8lfeHrfDz9ZshdR3LtJYUScbDCiMoiOzLbOb5Qe8zzuHOrmC1gWxy4k41Dn
-         Lqko9q0GIOuQgUGrXyB5jBHtgvMRE/DY7JNiORgKUauonBiURAlEtuBK5F1FtnLK5jiT
-         DDc4zcLnYAP5k2v5Muws29jFVifSHMilffzTleZcLwVLxmqvD+oc8UxoFHo2/d8vCsc8
-         /hriy/J+XR7qORyYtXB4FgD5jr86jgFGESbaq2LFlKqIImDtv5UfnGKAay2eYV6B+hUJ
-         OWAg==
-X-Gm-Message-State: AOAM532KASWLGtOtGr1LGHsUaqds+6y+Sju3YJdacjpWXL6yiUacLt/r
-        RvnefF7dWV/8GfqH4B2CmaVvLA==
-X-Google-Smtp-Source: ABdhPJxMosGB+Mky+SRCGAt1T9DAyMnXHNfnYdje10jH0ruMadl41RhUn/Hf0PTErE9vR4unxYUxWQ==
-X-Received: by 2002:a17:90a:fa5:b0:1e2:ee1b:8f85 with SMTP id 34-20020a17090a0fa500b001e2ee1b8f85mr6235190pjz.216.1654188676791;
-        Thu, 02 Jun 2022 09:51:16 -0700 (PDT)
-Received: from [192.168.254.36] ([50.39.160.154])
-        by smtp.gmail.com with ESMTPSA id u11-20020a63d34b000000b003c14af505f6sm3609472pgi.14.2022.06.02.09.51.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 02 Jun 2022 09:51:16 -0700 (PDT)
-Message-ID: <902f1d2b-9e71-753c-566b-62a7d245c3a3@linaro.org>
-Date:   Thu, 2 Jun 2022 09:51:15 -0700
+        Thu, 2 Jun 2022 12:53:03 -0400
+X-Greylist: delayed 443 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 02 Jun 2022 09:52:59 PDT
+Received: from mail.shift-gmbh.com (mail.shift-gmbh.com [IPv6:2a01:4f8:a0:5496::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2FDB27B9BD;
+        Thu,  2 Jun 2022 09:52:59 -0700 (PDT)
+From:   Alexander Martinz <amartinz@shiftphones.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=shiftphones.com;
+        s=2018; t=1654188336;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=imGM7saNPOQ6vbKogvcqXOICfijWBW6J11L5perWAFg=;
+        b=SPkvOhTj83B6oiJW3ZAr24eQ87yTw5YKMp8thSdc+8WpuYXGlWvxUk4x3VYgij5bb4pOhs
+        dQbS4mOPX1RWY/Pu1wgAh41UG3hwC2EZcw7HcMoEg1c33blT+f7q5V4f9tTARR3kOdlYZP
+        CaQTjPSJF7G4uIaPouDVMMwa6fYRIa1l9h+NRSaZF55+ua8vne/ugrWaUnXXmUk09tKKKm
+        dnW8FXetCsw1XtkBuauUiw366+SuKbEOwAmKxtDq9Lostm16iyTS7ZfyVurzQf4wiS30LI
+        ftKT364RV/wmI64x5etHJMHvwIOyC0MmW06r1LmlAzXMSc6SM1CKtYNnKPxrAg==
+To:     ~postmarketos/upstreaming@lists.sr.ht
+Cc:     phone-devel@vger.kernel.org, Stephan Gerhold <stephan@gerhold.net>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Caleb Connolly <caleb@connolly.tech>,
+        Dylan Van Assche <me@dylanvanassche.be>,
+        Alexander Martinz <amartinz@shiftphones.com>
+Subject: [PATCH 2/2] ASoC: dt-bindings: nxp,tfa989x: Add tfa9890 support
+Date:   Thu,  2 Jun 2022 18:45:04 +0200
+Message-Id: <20220602164504.261361-2-amartinz@shiftphones.com>
+In-Reply-To: <20220602164504.261361-1-amartinz@shiftphones.com>
+References: <20220602164504.261361-1-amartinz@shiftphones.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v4] bpf: Fix KASAN use-after-free Read in
- compute_effective_progs
-Content-Language: en-US
-From:   Tadeusz Struk <tadeusz.struk@linaro.org>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        linux- stable <stable@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        syzbot+f264bffdfbd5614f3bb2@syzkaller.appspotmail.com
-References: <CAEf4BzY-p13huoqo6N7LJRVVj8rcjPeP3Cp=KDX4N2x9BkC9Zw@mail.gmail.com>
- <20220517180420.87954-1-tadeusz.struk@linaro.org>
- <7949d722-86e8-8122-e607-4b09944b76ae@linaro.org>
- <CAEf4BzaD1Z6uOZwbquPYWB0_Z0+CkEKiXQ6zS2imiSHpTgX3pg@mail.gmail.com>
- <41265f4d-45b4-a3a6-e0c0-5460d2a06377@linaro.org>
- <CAEf4Bza-fp-9j+dzwdJQagxVNseNofxY2aJV0E6eHw+eQyyeaQ@mail.gmail.com>
- <21780d7b-2fe0-e6b8-6b4c-7053ec7b99ef@linaro.org>
-In-Reply-To: <21780d7b-2fe0-e6b8-6b4c-7053ec7b99ef@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Authentication-Results: ORIGINATING;
+        auth=pass smtp.auth=amartinz@shiftphones.com smtp.mailfrom=amartinz@shiftphones.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/2/22 09:25, Tadeusz Struk wrote:
-> On 6/2/22 09:11, Andrii Nakryiko wrote:
->>> Did you get a chance to look at this yet?
->>>
->> Hm.. I've applied it two days ago, but for some reason there was no
->> notification from the bot. It's now c89c79fda9b6 ("bpf: Fix KASAN
->> use-after-free Read in compute_effective_progs").
+Document TFA9890 binding for tfa989x.
 
-FYI. Just requested a test on bpf-next and it passed fine.
-https://groups.google.com/g/syzkaller-android-bugs/c/nr6mD4vhRA4
+Signed-off-by: Alexander Martinz <amartinz@shiftphones.com>
+---
+ Documentation/devicetree/bindings/sound/nxp,tfa989x.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
+diff --git a/Documentation/devicetree/bindings/sound/nxp,tfa989x.yaml b/Documentation/devicetree/bindings/sound/nxp,tfa989x.yaml
+index b9b1dba40856..7f2e68ff6d34 100644
+--- a/Documentation/devicetree/bindings/sound/nxp,tfa989x.yaml
++++ b/Documentation/devicetree/bindings/sound/nxp,tfa989x.yaml
+@@ -15,6 +15,7 @@ allOf:
+ properties:
+   compatible:
+     enum:
++      - nxp,tfa9890
+       - nxp,tfa9895
+       - nxp,tfa9897
+ 
 -- 
-Thanks,
-Tadeusz
+2.36.1
+
