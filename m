@@ -2,124 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00605C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 14:28:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C03EC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 14:29:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235943AbiFBO2w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 10:28:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60732 "EHLO
+        id S235950AbiFBO3W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 10:29:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235955AbiFBO2q (ORCPT
+        with ESMTP id S235859AbiFBO3U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 10:28:46 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2045.outbound.protection.outlook.com [40.107.92.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3477018C069;
-        Thu,  2 Jun 2022 07:28:37 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fmRsTHgxjM+qLW8VGUDQoIsXqkInz8oCSrpRKrp6HVhEFepSR3BKkjgixOgMeCB2JOlY/z1T1D3aCwXMRjy4R5kTRoNSOnUxSfqhSzsEy8OxTZBkfmeLP+7wEFNc/IV03TrLCbopt1dSzmzaFPtkJndiFjzWihYBnASgnOM2Z6u5W0sNqfMNAFycWFnhRx37euJHqTZCxstGiVmUvhtqwisSjTtY8GTZEsgrxV2Jzqfnyz48cJ7HrgXyM8tb/G5XeJdWSlspKVzy4qHk4glezZ8Da1YZe8SnOnSYeF6H60TlFq4hUAI9nb8ejhWrL8/q8XGzuCLhxKqfsQmC23YojA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4o5M/PHVM2K2EaB3FB0RY9K4/h4bIXBFz2A3qhlq/MU=;
- b=bEcRWrRH5OtgG/VlhxqDlGJqh8zrqhjayueAqk+OcMj7P1jQDBh1YoXZ11Rlsq30d/sGtm5ycwmxvrR/pbdQPj2JPfGnzGMFlpegOf0N4ImwQvofHkXaUPJPxweGD2vnxt/67lK/Np8nabdz+F6IKlcDgslKqWtAErh9XtQYGQUhUv/wJAVgSP4GoevcwxHzsTKuUkLSYdCe2DsMUc2OjUc7p0CjyiyeJgzQfaKJKcViX2/Sw8rdZ3lUJhWUEe+vPDVzCg4/E3szOH7ntfUvmLtHLXQLGRrVIUSfvhkGSWzbC/TRdDemudps+WkA/HOOulv2DAq5VXSbD5TM6haSyQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=redhat.com smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4o5M/PHVM2K2EaB3FB0RY9K4/h4bIXBFz2A3qhlq/MU=;
- b=QUojEj1pX1csNDuxq9TqGyK1LhoLZzpOim7OusrgGb2VqjdqHgUppEkpcNwZgavG76aMiLszob5eaid/QkCcRVJ6/seSwszc1mf+TYgzPh4sMCp/Rtvj0OgHeGETFB30izqxCZ8dZnIfugFlI4dj1GaQaEYo2fp/cnmHAnNpiic=
-Received: from BN9PR03CA0120.namprd03.prod.outlook.com (2603:10b6:408:fd::35)
- by DM4PR12MB5181.namprd12.prod.outlook.com (2603:10b6:5:394::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.13; Thu, 2 Jun
- 2022 14:28:35 +0000
-Received: from BN8NAM11FT067.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:fd:cafe::6c) by BN9PR03CA0120.outlook.office365.com
- (2603:10b6:408:fd::35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.14 via Frontend
- Transport; Thu, 2 Jun 2022 14:28:34 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT067.mail.protection.outlook.com (10.13.177.159) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5314.12 via Frontend Transport; Thu, 2 Jun 2022 14:28:34 +0000
-Received: from BLR-5CG113396M.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 2 Jun
- 2022 09:28:31 -0500
-From:   Santosh Shukla <santosh.shukla@amd.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-CC:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Tom Lendacky <thomas.lendacky@amd.com>, <kvm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <Santosh.Shukla@amd.com>
-Subject: [PATCH 7/7] KVM: SVM: Enable VNMI feature
-Date:   Thu, 2 Jun 2022 19:56:20 +0530
-Message-ID: <20220602142620.3196-8-santosh.shukla@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220602142620.3196-1-santosh.shukla@amd.com>
-References: <20220602142620.3196-1-santosh.shukla@amd.com>
+        Thu, 2 Jun 2022 10:29:20 -0400
+Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com [209.85.210.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E21541EB41A;
+        Thu,  2 Jun 2022 07:29:18 -0700 (PDT)
+Received: by mail-ot1-f53.google.com with SMTP id w19-20020a9d6393000000b0060aeb359ca8so3519967otk.6;
+        Thu, 02 Jun 2022 07:29:18 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=3LdxAC+hjoGbT8X2doYYpQEStBAtaF+fLV0X0u4yir4=;
+        b=KHDFjHHCpgdiUo9QqYaa0gIenz6tSgZ51roA5gizgVG8qKpQL0DkodlB8U6W5JBCVa
+         0MrKD4T4xxaW/7ZFvxk+5TuhUtIggR2cSDrtP0AA5VCUiz0xOdWRYWAxxU1UXnRYb/uC
+         3bbpHn6zHYcnZOzvZMLn4P82dQb1MXCotUh7yk4nbJriJky2O0VXAnya8MbyCod04+jh
+         mwFbXr+lkFDwW/C0uiwJUntzK5qewUEpHKiGQ0bN9jZ+qnH5X6eBpT3HPqp4bFRJrN7Z
+         GeKsW7yMSRxcL7qK1ut1NQ9NZSNR1LiO+b0zD4VbAUDZjOR5j+yKMWEQs578zCNk1OIu
+         oa2w==
+X-Gm-Message-State: AOAM531u1Wk385aFvjPa/pIAsa7t8LNEqCsZq+o4Rsp+R0X6FZv8HC+V
+        2NyfHphFx+ZANqaU8hNS3A==
+X-Google-Smtp-Source: ABdhPJxpzv7HpzITyd+wSw147FKRkc3JqW2DfLG9yre4EqpNix4xcaTZaxmSlhKlegS5iTyFsoVN3A==
+X-Received: by 2002:a05:6830:2b07:b0:60b:b38:fcc0 with SMTP id l7-20020a0568302b0700b0060b0b38fcc0mr2109243otv.353.1654180158189;
+        Thu, 02 Jun 2022 07:29:18 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id s42-20020a05683043aa00b0060613c844adsm2183325otv.10.2022.06.02.07.29.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Jun 2022 07:29:17 -0700 (PDT)
+Received: (nullmailer pid 2255406 invoked by uid 1000);
+        Thu, 02 Jun 2022 14:29:17 -0000
+Date:   Thu, 2 Jun 2022 09:29:17 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Palmer Dabbelt <palmer@rivosinc.com>
+Cc:     kuba@kernel.org, michael.hennerich@analog.com, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com,
+        krzysztof.kozlowski+dt@linaro.org, alexandru.ardelean@analog.com,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux@rivosinc.com
+Subject: Re: [PATCH] dt-bindings: net: adin: Escape a trailing ":"
+Message-ID: <20220602142917.GA2254348-robh@kernel.org>
+References: <20220602012809.8384-1-palmer@rivosinc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 037eec7a-2e42-4aa6-69e8-08da44a42d17
-X-MS-TrafficTypeDiagnostic: DM4PR12MB5181:EE_
-X-Microsoft-Antispam-PRVS: <DM4PR12MB5181F8EA4391115B068213D187DE9@DM4PR12MB5181.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: vMATC3bz/hzMS/UFskpr0JlDqLicprtCqRWCMJP1y1C85wwCep6BN3lyZoMpaFInCw3/r1pUWg6BY9xz9QR9QhU+7r9zDAcQ/5fVrFhtc7eZdVVcQ+a6BJQV+fKlbD5Pe4J406dVICnH4F2NG8PXtC6PXLvFo28N0X0gZNW+PCohj2RwCudk8FznH9oWqOYZ2e4ftivYeCpFxVTdxCvqdwOPSE/0nbHGTr9HAtwSzBn1Et8eT1W4SA132zGV4eXsrDn7qo6x1AE4JB0/dyQD8ad3grSH5UfG7Akbmnar/VRVkexu5+ZihwM0VSsOPCC6cqCErFOavri7I9NybfqWtzwKedRwOi+QLDSbeTHQiaYjhkzXjzfYhh9l8zWuKoKvoXo83TugJiqMe3sS1SFfcfrrw/3IgQ+lhnsvwZYvqhz/1a13Ml1MnB6csNsie0nW5XqUN5l5+wnCNLwCtD+fPap9QDDsGFLtH8LUZdawIVepgju1Fst6RxWc092I+ig0GvGW1zsWDLQhwiKLcj0V3KXZkO4qzQdVfCeDn7D78GjNhr/avyD1+Pr7bomDZgbE2yQsmhDagewSznb0sahKnsUaREqS5b3zbQDkVTfmhuKTv8pgr8u7nATIq74LsUntYled3KXx3UK9zXbLIMX3VhbBmsvfYUBkUQoqFPxzA+Lh3rGGBgAWajRXGYnK2k8bVCde9S4ZVqKcGrLyzbBuag==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(70206006)(508600001)(8676002)(70586007)(6666004)(36860700001)(4326008)(316002)(86362001)(40460700003)(36756003)(336012)(426003)(186003)(16526019)(47076005)(1076003)(4744005)(82310400005)(8936002)(356005)(26005)(54906003)(6916009)(2616005)(7696005)(2906002)(81166007)(5660300002)(44832011)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2022 14:28:34.7399
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 037eec7a-2e42-4aa6-69e8-08da44a42d17
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT067.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5181
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220602012809.8384-1-palmer@rivosinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enable the NMI virtualization (V_NMI_ENABLE) in the VMCB interrupt
-control when the vnmi module parameter is set.
+On Wed, Jun 01, 2022 at 06:28:09PM -0700, Palmer Dabbelt wrote:
+> From: Palmer Dabbelt <palmer@rivosinc.com>
+> 
+> 1f77204e11f8 ("dt-bindings: net: adin: document phy clock output
+> properties") added a line with a ":" at the end, which is tripping up my
+> attempts to run the DT schema checks due to this being invalid YAML
+> syntax.  I get a schema check failure with the following error
+> 
+>     ruamel.yaml.scanner.ScannerError: mapping values are not allowed in this context
+> 
+> This just escapes the line in question, so it can parse.
+> 
+> Fixes: 1f77204e11f8 ("dt-bindings: net: adin: document phy clock output properties")
+> Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+> ---
+>  Documentation/devicetree/bindings/net/adi,adin.yaml | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 
-Signed-off-by: Santosh Shukla <santosh.shukla@amd.com>
----
- arch/x86/kvm/svm/svm.c | 3 +++
- 1 file changed, 3 insertions(+)
+Already have a fix queued in netdev.
 
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index c91af728420b..69a98419203e 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -1205,6 +1205,9 @@ static void init_vmcb(struct kvm_vcpu *vcpu)
- 	if (kvm_vcpu_apicv_active(vcpu))
- 		avic_init_vmcb(svm, vmcb);
- 
-+	if (vnmi)
-+		svm->vmcb->control.int_ctl |= V_NMI_ENABLE;
-+
- 	if (vgif) {
- 		svm_clr_intercept(svm, INTERCEPT_STGI);
- 		svm_clr_intercept(svm, INTERCEPT_CLGI);
--- 
-2.25.1
-
+Rob
