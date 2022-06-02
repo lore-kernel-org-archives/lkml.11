@@ -2,165 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DCE7CCA478
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 15:59:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4C50CCA478
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 16:01:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236698AbiFBP7b convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 11:59:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59960 "EHLO
+        id S236717AbiFBQBe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 12:01:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230011AbiFBP73 (ORCPT
+        with ESMTP id S230011AbiFBQBb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 11:59:29 -0400
-Received: from mail.holtmann.org (coyote.holtmann.net [212.227.132.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 47C17D02BB;
-        Thu,  2 Jun 2022 08:59:25 -0700 (PDT)
-Received: from smtpclient.apple (p4ff9fc30.dip0.t-ipconnect.de [79.249.252.48])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 2E1E8CED19;
-        Thu,  2 Jun 2022 17:59:24 +0200 (CEST)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.100.31\))
-Subject: Re: [PATCH v6 5/5] Bluetooth: let HCI_QUALITY_REPORT persist over
- adapter power cycle
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20220526112135.2486883-3-josephsih@chromium.org>
-Date:   Thu, 2 Jun 2022 17:59:23 +0200
-Cc:     BlueZ <linux-bluetooth@vger.kernel.org>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        =?utf-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
-        CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
-        Joseph Hwang <josephsih@google.com>,
-        Archie Pusaka <apusaka@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org
-Content-Transfer-Encoding: 8BIT
-Message-Id: <0DB8D064-222A-4420-8F9F-2BEEA63DF76A@holtmann.org>
-References: <20220526112135.2486883-1-josephsih@chromium.org>
- <20220526112135.2486883-3-josephsih@chromium.org>
-To:     Joseph Hwang <josephsih@chromium.org>
-X-Mailer: Apple Mail (2.3696.100.31)
+        Thu, 2 Jun 2022 12:01:31 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE7BB2A892A
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 09:01:30 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id j7so5296949pjn.4
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 09:01:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=FBRJMzvAGkJGILGKDbXoB8GLtDkkWNL+J8Ai62jsA+Q=;
+        b=LhSseVAFwzWc/U+GtdQ+rNb9khcuSQv817u+uRBRcRw+c1lr5UkuGwWphoEVkRJju0
+         +tIhZb39WMVHD5ZhtSUIP3kWxE3u/c4nvYQPz/w0QN0n5qE0gf7m/8QnnpvljBxz5IW1
+         Il34Ze/l9MNa848R8LhloC0klP5/0Qig5LjbH0Z2ODIZ66c/VZ7q7vs70cVICYLuHxEM
+         +mxI7MDFfUnr6SfELj/1bIqipbprfpYCdDEZkAYcZg7zDuBEcsQfwWPZGQ48yJrj4Wgl
+         OQ18YYCroOU+oBwthmEboLwX4a7y49QuaO/M4Gd2XtIGmHc5lGxqoi1mDzgdtP8R5Sar
+         xK9g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=FBRJMzvAGkJGILGKDbXoB8GLtDkkWNL+J8Ai62jsA+Q=;
+        b=CuTweF9z9JvwZAPoivoDDTADzU9iDRpHcCIxhwmUTFNKNcnuoEd0c7VmRK7xZpcanP
+         AsGsfbBHG5gAcOSkCLenaiWxqJkQR/DdukX1MC24eTxIRPVLOQwU1/pgdlCaZixf5TYS
+         SgEUAyqGtf8UESfclPmiP6X41/fY8/m6/+CtpIb6S7KWcOtL/C0aWOeoufxliB1lHayQ
+         9vQTAKE5Cbha1dMA/sF4hMpJ12GB8/vnlcdv0iYWDyownM7UJNOksMpoVeRTH32qP7YD
+         mN4ju5H0Ij5rg6EgGWIHQ1qWTZWA8UYWM5zrDDMyTHszMwUwHPhFulnFmk20zNSLjFpB
+         xz9A==
+X-Gm-Message-State: AOAM532b423Bq8hmQFHbAAKFUGAeQi5dyeGANOkcwmLfK5VwiksDLhYN
+        0QZWt0y9vSVj4FEwcygXrftZSA==
+X-Google-Smtp-Source: ABdhPJz2IAfCKOE9RlomIcAKq3CSGTE1uFkWqYXOJ7w0xR/St7BpuaqLXukIggRC2picMNq2mluBgA==
+X-Received: by 2002:a17:90a:aa8a:b0:1c9:bfd8:9a90 with SMTP id l10-20020a17090aaa8a00b001c9bfd89a90mr6083378pjq.118.1654185690041;
+        Thu, 02 Jun 2022 09:01:30 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id iz3-20020a170902ef8300b0015edc07dcf3sm3741600plb.21.2022.06.02.09.01.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Jun 2022 09:01:29 -0700 (PDT)
+Date:   Thu, 2 Jun 2022 16:01:25 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Vitaly Kuznetsov <vkuznets@redhat.com>
+Cc:     Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Kees Cook <keescook@chromium.org>,
+        Robert Dinse <nanook@eskimo.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: Re: [PATCH v2 6/8] KVM: x86: Bug the VM if the emulator accesses a
+ non-existent GPR
+Message-ID: <Ypje1evt/iNB2+MH@google.com>
+References: <20220526210817.3428868-1-seanjc@google.com>
+ <20220526210817.3428868-7-seanjc@google.com>
+ <87o7zcokgl.fsf@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87o7zcokgl.fsf@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Joseph,
+On Wed, Jun 01, 2022, Vitaly Kuznetsov wrote:
+> >  static const struct x86_emulate_ops emulate_ops = {
+> > +	.vm_bugged           = emulator_vm_bugged,
+> >  	.read_gpr            = emulator_read_gpr,
+> >  	.write_gpr           = emulator_write_gpr,
+> >  	.read_std            = emulator_read_std,
+> 
+> Is it actually "vm_bugged" or "kvm_bugged"? :-)
 
-> The quality report specifications, including AOSP Bluetooth Quality
-> Report and Intel Telemetry Event, do not define what happen when
-> the adapter is turned off and then on. To be consistent among
-> different specifications and vendors, the quality report feature is
-> turned off when the adapter is powered off and is turned on when
-> the adapter is powered on if the feature has been on before power
-> cycle.
-> 
-> Signed-off-by: Joseph Hwang <josephsih@chromium.org>
-> Reviewed-by: Archie Pusaka <apusaka@chromium.org>
-> ---
-> 
-> (no changes since v5)
-> 
-> Changes in v5:
-> - This is a new patch in this series changes version.
-> 
-> include/net/bluetooth/hci_core.h |  1 -
-> net/bluetooth/hci_sync.c         | 35 +++++++++++++++++++++++++++++++-
-> 2 files changed, 34 insertions(+), 2 deletions(-)
-> 
-> diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-> index 9e48d606591e..5788350efa68 100644
-> --- a/include/net/bluetooth/hci_core.h
-> +++ b/include/net/bluetooth/hci_core.h
-> @@ -807,7 +807,6 @@ extern struct mutex hci_cb_list_lock;
-> 		hci_dev_clear_flag(hdev, HCI_LE_ADV);		\
-> 		hci_dev_clear_flag(hdev, HCI_LL_RPA_RESOLUTION);\
-> 		hci_dev_clear_flag(hdev, HCI_PERIODIC_INQ);	\
-> -		hci_dev_clear_flag(hdev, HCI_QUALITY_REPORT);	\
-> 	} while (0)
-
-this really need to go into your 1/5 patch.
-
-> 
-> #define hci_dev_le_state_simultaneous(hdev) \
-> diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
-> index a6ada9dcede5..12a18d046bb6 100644
-> --- a/net/bluetooth/hci_sync.c
-> +++ b/net/bluetooth/hci_sync.c
-> @@ -3849,6 +3849,31 @@ static const struct {
-> 			 "advertised, but not supported.")
-> };
-> 
-> +static void suspend_resume_quality_report(struct hci_dev *hdev, bool enable)
-> +{
-> +	int err;
-> +
-> +	/* Suspend and resume quality report only when the feature has
-> +	 * already been enabled. The HCI_QUALITY_REPORT flag, as an indicator
-> +	 * whether to re-enable the feature after resume, is not changed by
-> +	 * suspend/resume.
-> +	 */
-> +	if (!hci_dev_test_flag(hdev, HCI_QUALITY_REPORT))
-> +		return;
-> +
-> +	if (hdev->set_quality_report)
-> +		err = hdev->set_quality_report(hdev, enable);
-> +	else
-> +		err = aosp_set_quality_report(hdev, enable);
-> +
-> +	if (err)
-> +		bt_dev_err(hdev, "%s quality report error %d",
-> +			   enable ? "resume" : "suspend", err);
-> +	else
-> +		bt_dev_info(hdev, "%s quality report",
-> +			    enable ? "resume" : "suspend");
-
-Do you really need this “debug” output?
-
-> +}
-> +
-> int hci_dev_open_sync(struct hci_dev *hdev)
-> {
-> 	int ret = 0;
-> @@ -4013,6 +4038,7 @@ int hci_dev_open_sync(struct hci_dev *hdev)
-> 	if (!hci_dev_test_flag(hdev, HCI_USER_CHANNEL)) {
-> 		msft_do_open(hdev);
-> 		aosp_do_open(hdev);
-> +		suspend_resume_quality_report(hdev, true);
-> 	}
-> 
-> 	clear_bit(HCI_INIT, &hdev->flags);
-> @@ -4095,6 +4121,14 @@ int hci_dev_close_sync(struct hci_dev *hdev)
-> 
-> 	hci_request_cancel_all(hdev);
-> 
-> +	/* Disable quality report and close aosp before shutdown()
-> +	 * is called. Otherwise, some chips may panic.
-> +	 */
-> +	if (!hci_dev_test_flag(hdev, HCI_USER_CHANNEL)) {
-> +		suspend_resume_quality_report(hdev, false);
-> +		aosp_do_close(hdev);
-> +	}
-> +
-
-Why move aosp_do_close here. I prefer to keep it where it was.
-
-> 	if (!hci_dev_test_flag(hdev, HCI_UNREGISTER) &&
-> 	    !hci_dev_test_flag(hdev, HCI_USER_CHANNEL) &&
-> 	    test_bit(HCI_UP, &hdev->flags)) {
-> @@ -4158,7 +4192,6 @@ int hci_dev_close_sync(struct hci_dev *hdev)
-> 	hci_sock_dev_event(hdev, HCI_DEV_DOWN);
-> 
-> 	if (!hci_dev_test_flag(hdev, HCI_USER_CHANNEL)) {
-> -		aosp_do_close(hdev);
-> 		msft_do_close(hdev);
-> 	}
-
-Regards
-
-Marcel
-
+vm_bugged.  KVM_BUG_ON() because it's a KVM bug on the condition, but the invididual
+VM is what's bugged/dead, i.e. other VMs and thus KVM itself get to live on. :-)
