@@ -2,164 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EB76C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 16:35:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4301C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 16:45:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237146AbiFBQfu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 12:35:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44886 "EHLO
+        id S237165AbiFBQps (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 12:45:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237137AbiFBQfs (ORCPT
+        with ESMTP id S237158AbiFBQpq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 12:35:48 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18BF42B12D7;
-        Thu,  2 Jun 2022 09:35:48 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id gd1so5404810pjb.2;
-        Thu, 02 Jun 2022 09:35:48 -0700 (PDT)
+        Thu, 2 Jun 2022 12:45:46 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 042A664E8
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 09:45:44 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id w2-20020a17090ac98200b001e0519fe5a8so5289259pjt.4
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 09:45:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=NPlK307c48MdlGmg7luqnrkmG504nwebNc0iVQuTMyY=;
-        b=R45ge7K/GujP+0NWTnSdk8mJOV4UMKO7d6UUPo6iz8UstLYz3d8u2YLlad32RkzkjU
-         j2mu8e54JF3vFiaSWeLeSKE0h68IkHwmtS8nySJ03CtYeH5XO6ICnj38kr6MLKKPvca+
-         lL4PbU6Viq2oVeGX5PPkuP2iRmWdmGwYApAdKj6GDJbCPLZ6FxCdFFj1CtWjJhkL/oja
-         N6AURuaiOph5XVI9tXu4GbDWKgJvh6z3Gk1p7+BrORp1hBzb5Zf4yj60nhkKYLApv6U7
-         PGvdWAzM2zm0/rNgPd/3iLxHedl9TQnp44ExUZVpRHBVsZzpVqJSIGXVSBm454y6fhxc
-         pAYQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=M6dERsmrmug+K7Tnlfb6C1GizfO0ykvPw45q8nWSWPg=;
+        b=enlOIbCjmCok1ARYz0eDIoiE3SMdbgcFjtSWGh/L6LxQD85JN+CdxoTostMAkd3G40
+         3+McCajRazeWfcowkfc6QnyWD5oZ0+o3hUf8FWFQajnLSfA47pv8ky2U+i7ru4iFwfUi
+         JWNFa4LMt95iQzgwbh03mzRzEv0VL+dgXf8glQxQ0ztdTFatwO6KHt49kBVAWh+EXLbm
+         0tBrt7lBFtSaWb6WDDytimKIkBZ6Cnb/nEPYFEXi0Ytl4EOA4FNIqmvR+XfANbk8DTE9
+         CHjINaGoOawL7fb+WE0kGrebz10QycR2bsAnLHLCCi5ZfePgLLeLgDOggpE/Bf5cC677
+         OaFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=NPlK307c48MdlGmg7luqnrkmG504nwebNc0iVQuTMyY=;
-        b=akceX80+8MAZUc+a28WcMStIDLq4k8+cPWCq/NBlaDTaVzBpWyWIgi29JdGC3nlP8W
-         eibQaz2c0BDCJWxhtNEhhZAfEXXwsPVOndVCK3joABTwHBw5l8W8GRinps7zW4Oggv+q
-         fYl7CgyZY1eYhmWgpE+j395fDLTTPPEDasUrMno18Vv2k7xwqK1AuAv63KX7cVsjmsJp
-         OEWcPDP+guOQKBm5YhAERPbOQHb4S473nwbK9/Z+0++LqnwoQh+4TSkRDTK7xaa8rXPO
-         21j5xz2nW77jrdBMPGw4SKws7+5Nb6fiIUQRBXRAmwBzUWcBzflrn/fxmal1TxU65tZF
-         vsIw==
-X-Gm-Message-State: AOAM53075XvzI+bE1MhK4cnHXjCpCDOXE09BsxkcZGQq2FeUcb8Vrgoy
-        TugETIabgbxsm0qvfqjfUUQ=
-X-Google-Smtp-Source: ABdhPJzviwECzgv7IfyBv3nsLhdM05WbfKVPsoMlqMaPOsr5m9LClLIefzbFpdob8MDyHe3Q0Pti7A==
-X-Received: by 2002:a17:902:c402:b0:163:fa50:b345 with SMTP id k2-20020a170902c40200b00163fa50b345mr5798902plk.94.1654187747663;
-        Thu, 02 Jun 2022 09:35:47 -0700 (PDT)
-Received: from ssy-OptiPlex-7050.mioffice.cn ([43.224.245.236])
-        by smtp.gmail.com with ESMTPSA id k17-20020a170902d59100b0016242b71e9fsm3715190plh.158.2022.06.02.09.35.45
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 02 Jun 2022 09:35:47 -0700 (PDT)
-From:   shisiyuan <shisiyuan19870131@gmail.com>
-X-Google-Original-From: shisiyuan <shisiyuan@xiaomi.com>
-To:     tj@kernel.org, hannes@cmpxchg.org, lizefan@huawei.com,
-        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     shisiyuan <shisiyuan@xiaomi.com>
-Subject: [PATCH] cgroup: handle cset multiidentity issue when migration
-Date:   Fri,  3 Jun 2022 00:34:48 +0800
-Message-Id: <1654187688-27411-1-git-send-email-shisiyuan@xiaomi.com>
-X-Mailer: git-send-email 2.7.4
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=M6dERsmrmug+K7Tnlfb6C1GizfO0ykvPw45q8nWSWPg=;
+        b=gxa3gkpmUR5l1Sy+Kdnbf8ly1sFZcDVJWQIaULnj9KNowP3P2T9m9wnS0Pb30/lzxZ
+         0OLI3sejddbkYDYC0Lo1gMO4JBldlEPvZx6oJ1NvsIKDUMT/kxBs8OoZO4Fi7obNA1cN
+         zoGaIkzWjPXhZQbw42fUdmByTcheieEkGGTtEJQyOaqr8tk9QwiuNPMhjbhWmHk6JqbQ
+         qQjaOV+Xn+YK+R4/ybDhgxga7tHuyjfGK8Ud5tn4NhhkSDdcRDBE4NsMcVwTd00vCaxP
+         tWOWLQrExQ6pxJuXlU9obcaMiBGprlBjIfDsO0i70MeSBFPkQ5/2cGh8oATysvIsJzZN
+         RB/Q==
+X-Gm-Message-State: AOAM531Mxt+OTeqnbkR+4eLC7MiC0m88FcIV3Lttpa1vUjuaRU289eLL
+        PLX/fxXj8VghbP9rOPGF5Rg=
+X-Google-Smtp-Source: ABdhPJzvn6a3vWiKtD/TmOEZRbjLRodVtl71y1fjq0RxC0/5sRP+I8ot564U+VH/iN2VvnDzAuVQXQ==
+X-Received: by 2002:a17:90b:3a89:b0:1de:bad4:b614 with SMTP id om9-20020a17090b3a8900b001debad4b614mr41259592pjb.139.1654188343416;
+        Thu, 02 Jun 2022 09:45:43 -0700 (PDT)
+Received: from localhost.localdomain (li567-56.members.linode.com. [192.155.81.56])
+        by smtp.gmail.com with ESMTPSA id b127-20020a62cf85000000b0051b9c02e4a3sm3821888pfg.178.2022.06.02.09.45.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Jun 2022 09:45:43 -0700 (PDT)
+From:   Jeff Xie <xiehuan09@gmail.com>
+To:     rostedt@goodmis.org
+Cc:     mingo@redhat.com, mhiramat@kernel.org, zanussi@kernel.org,
+        linux-kernel@vger.kernel.org, Jeff Xie <xiehuan09@gmail.com>
+Subject: [PATCH v11 0/4] trace: Introduce objtrace trigger to trace the kernel object
+Date:   Fri,  3 Jun 2022 00:45:14 +0800
+Message-Id: <20220602164518.286295-1-xiehuan09@gmail.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Bug code flow:
-cset X's initial refcount is 1.
-1. cgroup_attach_task()
-2. [For thread1]
-   cgroup_migrate_add_src()
-   [For thread2]
-   cgroup_migrate_add_src()
-     cset X is thread2's src_cset , ref->2,
-     and its mg_preload_node is added to
-     mgctx->preloaded_src_csets.
-3. cgroup_migrate_prepare_dst()
-   [For thread1]
-   find_css_set()
-     cset X is thread1's dst_cset, ref->3
-   put_css_set()
-     ref->2 because cset X's mg_preload_node is not
-     empty(already in mgctx->preloaded_src_csets).
-   [For thread2]
-   find_css_cset()
-     cset X is also thread2's dst_cset, ref->3
-     then drop src_cset, ref->1
-[cgroup_free] ref->0
-4. cgroup_migrate_execute
-   [For thread1]
-   ref -> 0xc0000000(UAF)
-The issue occurs because cset X's refcount should
-not be substraced by one in this case. So mark a flag
-'multiidentity' to this cset and call put_css_set()
-one more time if 'multiidentity' marked in cleanup
-progress.
+Introduce a method based on function tracer to trace any object and get
+the value of the object dynamically. the object can be obtained from the
+dynamic event (kprobe_event/uprobe_event) or the static event(tracepoint).
 
-Signed-off-by: shisiyuan <shisiyuan@xiaomi.com>
----
- include/linux/cgroup-defs.h |  5 +++++
- kernel/cgroup/cgroup.c      | 23 +++++++++++++++++++++++
- 2 files changed, 28 insertions(+)
+Usage:
+When using the kprobe event, only need to set the objtrace(a new trigger),
+we can get the value of the object. The object is from the setting of the 
+kprobe event.
 
-diff --git a/include/linux/cgroup-defs.h b/include/linux/cgroup-defs.h
-index 8c19303..c9f2237 100644
---- a/include/linux/cgroup-defs.h
-+++ b/include/linux/cgroup-defs.h
-@@ -280,6 +280,11 @@ struct css_set {
- 
- 	/* For RCU-protected deletion */
- 	struct rcu_head rcu_head;
-+
-+	/* Indicate if the css_set is the src_cset of one thread and
-+	 * the dst_cset of anonther thread during migration process.
-+	 */
-+	bool multiidentity;
- };
- 
- struct cgroup_base_stat {
-diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
-index e914646..cfdd12e 100644
---- a/kernel/cgroup/cgroup.c
-+++ b/kernel/cgroup/cgroup.c
-@@ -2593,6 +2593,10 @@ void cgroup_migrate_finish(struct cgroup_mgctx *mgctx)
- 		cset->mg_dst_cgrp = NULL;
- 		cset->mg_dst_cset = NULL;
- 		list_del_init(&cset->mg_preload_node);
-+		if (cset->multiidentity == true) {
-+			cset->multiidentity = false;
-+			put_css_set_locked(cset);
-+		}
- 		put_css_set_locked(cset);
- 	}
- 
-@@ -2648,6 +2652,18 @@ void cgroup_migrate_add_src(struct css_set *src_cset,
- 	list_add_tail(&src_cset->mg_preload_node, &mgctx->preloaded_src_csets);
- }
- 
-+static bool list_contains(struct list_head *node, struct list_head *head)
-+{
-+	struct list_head *tmp;
-+
-+	list_for_each(tmp, head) {
-+		if (tmp == node)
-+			return true;
-+	}
-+
-+	return false;
-+}
-+
- /**
-  * cgroup_migrate_prepare_dst - prepare destination css_sets for migration
-  * @mgctx: migration context
-@@ -2700,6 +2716,13 @@ int cgroup_migrate_prepare_dst(struct cgroup_mgctx *mgctx)
- 		if (list_empty(&dst_cset->mg_preload_node))
- 			list_add_tail(&dst_cset->mg_preload_node,
- 				      &mgctx->preloaded_dst_csets);
-+		/* If dst_cset is already in mgctx->preloaded_src_csets,
-+		 * it means the dst_cset has multi identities. Keep it
-+		 * in mgctx->preloaded_src_csets, and mark it.
-+		 */
-+		else if (list_contains(&dst_cset->mg_preload_node,
-+					&mgctx->preloaded_src_csets))
-+			dst_cset->multiidentity = true;
- 		else
- 			put_css_set(dst_cset);
- 
+For example:
+For the function bio_add_page():
+
+int bio_add_page(struct bio *bio, struct page *page,
+	unsigned int len, unsigned int offset)
+
+Firstly, we can set the base of the object, thus the first string "arg1"
+stands for the value of the first parameter of this function bio_add_gage(),
+
+# echo 'p bio_add_page arg1=$arg1' > ./kprobe_events
+
+Secondly, we can get the value dynamically based on above object. 
+
+find the offset of the bi_size in struct bio:
+$ gdb vmlinux
+(gdb) p &(((struct bio *)0)->bi_iter.bi_size)
+$1 = (unsigned int *) 0x28
+
+# echo 'objtrace:add:arg1,0x28:u32:1 if comm == "cat"' > ./events/kprobes/ \
+	p_bio_add_page_0/trigger
+
+# cd /sys/kernel/debug/tracing/
+# echo 'p bio_add_page arg1=$arg1' > ./kprobe_events
+# echo 'objtrace:add:arg1,0x28:u32:1 if comm == "cat"' > ./events/kprobes/p_bio_add_page_0/trigger
+
+# du -sh /test.txt
+12.0K   /test.txt
+
+# cat  /test.txt > /dev/null
+# cat ./trace
+# tracer: nop
+#
+# entries-in-buffer/entries-written: 128/128   #P:4
+#
+#                                _-----=> irqs-off/BH-disabled
+#                               / _----=> need-resched
+#                              | / _---=> hardirq/softirq
+#                              || / _--=> preempt-depth
+#                              ||| / _-=> migrate-disable
+#                              |||| /     delay
+#           TASK-PID     CPU#  |||||  TIMESTAMP  FUNCTION
+#              | |         |   |||||     |         |
+             cat-117     [002] ...1.     1.602243: __bio_try_merge_page <-bio_add_page object:0xffff88811bee4000 value:0x0
+             cat-117     [002] ...1.     1.602244: __bio_add_page <-bio_add_page object:0xffff88811bee4000 value:0x0
+             cat-117     [002] ...2.     1.602244: bio_add_page <-ext4_mpage_readpages object:0xffff88811bee4000 value:0x1000
+             cat-117     [002] ...1.     1.602245: __bio_try_merge_page <-bio_add_page object:0xffff88811bee4000 value:0x1000
+             cat-117     [002] ...1.     1.602245: __bio_add_page <-bio_add_page object:0xffff88811bee4000 value:0x1000
+             cat-117     [002] ...2.     1.602245: bio_add_page <-ext4_mpage_readpages object:0xffff88811bee4000 value:0x2000
+             cat-117     [002] ...1.     1.602245: __bio_try_merge_page <-bio_add_page object:0xffff88811bee4000 value:0x2000
+             cat-117     [002] ...1.     1.602245: __bio_add_page <-bio_add_page object:0xffff88811bee4000 value:0x2000
+             cat-117     [002] ...1.     1.602245: submit_bio <-ext4_mpage_readpages object:0xffff88811bee4000 value:0x3000
+             cat-117     [002] ...1.     1.602245: submit_bio_noacct <-ext4_mpage_readpages object:0xffff88811bee4000 value:0x3000
+             cat-117     [002] ...1.     1.602246: __submit_bio <-submit_bio_noacct object:0xffff88811bee4000 value:0x3000
+             cat-117     [002] ...1.     1.602246: submit_bio_checks <-__submit_bio object:0xffff88811bee4000 value:0x3000
+             cat-117     [002] ...1.     1.602246: __cond_resched <-submit_bio_checks object:0xffff88811bee4000 value:0x3000
+             cat-117     [002] ...1.     1.602246: should_fail_bio <-submit_bio_checks object:0xffff88811bee4000 value:0x3000
+             cat-117     [002] ...1.     1.602246: blk_mq_submit_bio <-submit_bio_noacct object:0xffff88811bee4000 value:0x3000
+             cat-117     [002] ...1.     1.602246: blk_attempt_plug_merge <-blk_mq_submit_bio object:0xffff88811bee4000 value:0x3000
+             cat-117     [002] ...1.     1.602246: blk_mq_sched_bio_merge <-blk_mq_submit_bio object:0xffff88811bee4000 value:0x3000
+             cat-117     [002] ...1.     1.602247: __rcu_read_lock <-blk_mq_submit_bio object:0xffff88811bee4000 value:0x3000
+             cat-117     [002] ...1.     1.602247: __rcu_read_unlock <-blk_mq_submit_bio object:0xffff88811bee4000 value:0x3000
+             cat-117     [002] ...1.     1.602247: __blk_mq_alloc_requests <-blk_mq_submit_bio object:0xffff88811bee4000 value:0x3000
+          <idle>-0       [002] d..3.     1.602298: bio_endio <-blk_update_request object:0xffff88811bee4000 value:0x0
+          <idle>-0       [002] d..3.     1.602298: mpage_end_io <-blk_update_request object:0xffff88811bee4000 value:0x0
+          <idle>-0       [002] d..3.     1.602298: __read_end_io <-blk_update_request object:0xffff88811bee4000 value:0x0
+          <idle>-0       [002] d..3.     1.602300: bio_put <-blk_update_request object:0xffff88811bee4000 value:0x0
+          <idle>-0       [002] d..3.     1.602300: bio_free <-blk_update_request object:0xffff88811bee4000 value:0x0
+          <idle>-0       [002] d..3.     1.602300: mempool_free <-blk_update_request object:0xffff88811bee4000 value:0x0
+          <idle>-0       [002] d..3.     1.602300: mempool_free_slab <-blk_update_request object:0xffff88811bee4000 value:0x0
+          <idle>-0       [002] d..3.     1.602300: kmem_cache_free <-blk_update_request object:0xffff88811bee4000 value:0x0
+	  ...
+
+Almost all changelogs were suggested by Masami(mhiramat@kernel.org)
+and steve(rostedt@goodmis.org), thank you all so much.
+
+v11:
+- remove useless atomic counting methods for num_traced_obj
+- make array objtrace_fetch_types null terminated
+- add raw_spin_lock_init for obj_data_lock
+
+v10:
+- support ftrace instances
+- use trace_buffer_lock_reserve instead of trace_event_buffer_lock_reserve
+- a lot of cleanup work has been done mainly for event_object_trigger_parse
+
+v9:
+- fix objtrace trigger output was incomplete
+- fix the objtrace trigger was removed when using the existed parameter on
+  event.
+- add testcase for the second fix above.
+
+v8:
+- revert to use per-cpu recursion for the function trace_object_events_call
+- recover the filter when getting the value of the object
+- simplify the implementation for the function get_object_value
+- fix the build error
+
+v7:
+- use fixed-size array for object pool instead of list structure
+- use ftrace_test_recursion_trylock for function trace hook function
+- fix trace_object_ref reference count in the init_trace_object
+- invoke exit_trace_object no matter whether data->ops->free is null 
+  in the unregister_object_trigger
+- release private_data of event_trigger_data in the trace_object_trigger_free
+- remove [RFC] tag
+
+v6:
+- change the objtrace trigger syntax.
+- add patchset description
+- add <tracefs>/README
+
+v5:
+- add testcasts
+- add check the field->size
+- add lockless to search object
+- describe the object trace more clearly in Kconfig
+
+v4:
+- please ignore the v4 which is the same as v3
+
+v3:
+- change the objfilter to objtrace
+- add a command to the objfilter syntax
+- change to get the value of the object
+- use trace_find_event_field to find the field instead of using argN
+- get data from @rec in the event trigger callback funciton
+
+v2:
+- adding a "objfilter" trigger to update object
+
+Jeff Xie (4):
+  trace: Add trace any kernel object
+  trace/objtrace: Get the value of the object
+  trace/objtrace: Add testcases for objtrace
+  trace/objtrace: Add documentation for objtrace
+
+ Documentation/trace/events.rst                |  83 +++
+ include/linux/trace_events.h                  |   1 +
+ kernel/trace/Kconfig                          |  10 +
+ kernel/trace/Makefile                         |   1 +
+ kernel/trace/trace.c                          |  11 +
+ kernel/trace/trace.h                          |  21 +
+ kernel/trace/trace_entries.h                  |  18 +
+ kernel/trace/trace_events_trigger.c           |   5 +-
+ kernel/trace/trace_object.c                   | 615 ++++++++++++++++++
+ kernel/trace/trace_output.c                   |  40 ++
+ .../ftrace/test.d/trigger/trigger-objtrace.tc |  41 ++
+ 11 files changed, 844 insertions(+), 2 deletions(-)
+ create mode 100644 kernel/trace/trace_object.c
+ create mode 100644 tools/testing/selftests/ftrace/test.d/trigger/trigger-objtrace.tc
+
+
+base-commit: b39181f7c6907dc66ff937b74758671fa6ba430c
 -- 
-2.7.4
+2.25.1
 
