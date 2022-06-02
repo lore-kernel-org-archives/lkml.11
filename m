@@ -2,87 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A635CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 12:20:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9837FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 12:22:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234930AbiFBMUx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 08:20:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38748 "EHLO
+        id S234940AbiFBMWK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 08:22:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234920AbiFBMUu (ORCPT
+        with ESMTP id S232097AbiFBMWG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 08:20:50 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6DB4FD13
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 05:20:49 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id x62so6026741ede.10
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 05:20:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=FtOiIkV4ug7vKNy9XOE34Pci3xBG3uAAi0c6Gr7aiC4=;
-        b=CkOaDxIoAlZOkpylrHDPhpkBKUbqAy4R65Mlsp7VpFhLqe5PM4xJVQPAwG5UrV8XH8
-         vU1mjuKZZ+letq1VvxeF7YdDO9ISLQJtCZwp/A8opjh0n//AZKnVAzze0C3Vf2TvgziI
-         7lHotX0lW708CXxXvuLhaNeabPppTXcXIDJbxSC/S38+SQiiH14cmhOYOYGW2uq2WoKT
-         DNFkgZFJ6YKfRa4KfBOSw55gdFUJ0yH20sUCExBVLFn/olFDldQoi3X4598x/1FPtYk5
-         a8m7KqURE7PhGjeaEoH+agsnFXdKCb+jsHkNipy5VjeiZliamX/sV1XHQOEA5AbLOvIB
-         /j1A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=FtOiIkV4ug7vKNy9XOE34Pci3xBG3uAAi0c6Gr7aiC4=;
-        b=TpKZb//TQEQgbb+3xjHGyZNtUfo8ARSGAAh5tiohDFWCfKIdx4POODqSZdYewRu2/7
-         qUiqhIf5J+eRz8qHFnZaLNYq3D1h0lWMZrjNSpVusudxTDHAIlqWKQry7ypv/Fknlzzj
-         i5TenburkPYHCp2TKmgQigHaIahsCvZimgUBPXLUumQefTM0MEhKLVQ4kXa9jPdPaovI
-         I4NfQyK1G3sevfaUTnx3esifxWGXQd47gAc+Kz5fl0WzBN3Oe9gJ4Aaifw1VFdNZmcxM
-         NQoJd/AO4LEUXGIPkakGIbD5pA6jAeVEcNI2Bp48e7Qx+UKQPVew2Ho1VliqZFZ9t0PC
-         Zyaw==
-X-Gm-Message-State: AOAM5300R4za6HWGeRgbONiU2YRCJwBI0k4/Hgr/vzKdzYVMHLITyYBY
-        ctYPUwGyr+TctVh4U9dwfqC9hJHc7b06Kafa
-X-Google-Smtp-Source: ABdhPJyUxSuNQJGlhNRIME/yhmzD8Iv88CDO5k/3PT93otIJAaLpe2nfe2tUn55lCuMSellx5ETl1A==
-X-Received: by 2002:aa7:dbc1:0:b0:42b:77a2:4f81 with SMTP id v1-20020aa7dbc1000000b0042b77a24f81mr5084597edt.287.1654172448433;
-        Thu, 02 Jun 2022 05:20:48 -0700 (PDT)
-Received: from [192.168.0.181] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id w7-20020a056402070700b0042aa153e73esm2382597edx.12.2022.06.02.05.20.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 02 Jun 2022 05:20:48 -0700 (PDT)
-Message-ID: <1cb6d111-25d2-a608-21b6-899ef20d735c@linaro.org>
-Date:   Thu, 2 Jun 2022 14:20:47 +0200
+        Thu, 2 Jun 2022 08:22:06 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE56010A7
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 05:22:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654172525; x=1685708525;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=K0RnMTtm6/0xuSTlPAD0Tp2bmCGrrymvRxF7juGErjQ=;
+  b=exbGzCUxM3yYbbkCAPKN7YqkPkcTu0aHlUH+E1EcPS5GlEM7z4gCMQSk
+   YB/8ecN5tNdgDwpEWd0H+ur72MnIZ0R7yNQUgW3+47l+ctlfs908j3Ji5
+   tQzqBPSRJkfKFyOtQvCDD0v0RbIY0hQj9dFtS5iTyjV9+mRABLQuwZ6hG
+   Yz75lhmKZikthFYZRRH1C8LfF9hy/PDZWRt+JawCqL106wztWqJwE7x9r
+   DeSKFRdodyWEONTyizxn8d1w4yYLr1dEZsMe0UzbdFJe0miGsNZUHwVlP
+   8kyBqSopTkI+LVC5qu370MWLJ589SDYF70acDZVeaYC+vPOz9M2opR/kj
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10365"; a="275939420"
+X-IronPort-AV: E=Sophos;i="5.91,271,1647327600"; 
+   d="scan'208";a="275939420"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2022 05:22:05 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,271,1647327600"; 
+   d="scan'208";a="612798886"
+Received: from unknown (HELO localhost.localdomain) ([10.226.216.117])
+  by orsmga001.jf.intel.com with ESMTP; 02 Jun 2022 05:22:03 -0700
+From:   kah.jing.lee@intel.com
+To:     arnd@arndb.de, gregkh@linuxfoundation.org
+Cc:     linux-kernel@vger.kernel.org, dinguyen@kernel.org,
+        tien.sung.ang@intel.com, Kah Jing Lee <kah.jing.lee@intel.com>
+Subject: [PATCH 0/2] New driver for Intel(Altera) FPGA System ID softIP 
+Date:   Thu,  2 Jun 2022 20:20:09 +0800
+Message-Id: <20220602122008.3021030-1-kah.jing.lee@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2 2/3] dt-bindings: soc: ti: pruss: Update bindings for
- K3 AM62x SoCs
-Content-Language: en-US
-To:     Kishon Vijay Abraham I <kishon@ti.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Nishanth Menon <nm@ti.com>,
-        Santosh Shilimkar <ssantosh@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-References: <20220602120613.2175-1-kishon@ti.com>
- <20220602120613.2175-3-kishon@ti.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220602120613.2175-3-kishon@ti.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 02/06/2022 14:06, Kishon Vijay Abraham I wrote:
-> Update the PRUSS bindings for the PRUSSM instance present in
-> AM625 SoC.
-> 
-> Signed-off-by: Kishon Vijay Abraham I <kishon@ti.com>
+From: Kah Jing Lee <kah.jing.lee@intel.com>
 
+Hi,
+Patches have been internally reviewed by colleagues at Intel.
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+New sysid driver for Altera(Intel) Sysid component is generally part of an
+FPGA design. The component can be hotplugged when the FPGA is reconfigured.
+This patch fixes the driver to support the component being hotplugged.
 
+Thanks,
+KJ
 
-Best regards,
-Krzysztof
+Kah Jing Lee (2):
+  drivers: misc: intel_sysid: Add sysid from arch to drivers
+  dt-bindings: misc: Add the system id binding for Altera(Intel) FPGA
+    platform
+
+ .../misc/intel,socfpga-sysid-1.0.yaml         |  39 +++++
+ drivers/misc/Kconfig                          |   9 ++
+ drivers/misc/Makefile                         |   1 +
+ drivers/misc/intel_sysid.c                    | 142 ++++++++++++++++++
+ 4 files changed, 191 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/misc/
+intel,socfpga-sysid-1.0.yaml
+ create mode 100644 drivers/misc/intel_sysid.c
+
+-- 
+2.25.1
+
