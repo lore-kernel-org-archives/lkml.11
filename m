@@ -2,140 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68133C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 04:52:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08C6BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 04:52:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229876AbiFBEwr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 00:52:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42194 "EHLO
+        id S229884AbiFBEwu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 00:52:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229621AbiFBEwl (ORCPT
+        with ESMTP id S229864AbiFBEwl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 2 Jun 2022 00:52:41 -0400
 Received: from nksmu.kylinos.cn (mailgw.kylinos.cn [123.150.8.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BCF71159
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C05CC70
         for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 21:52:38 -0700 (PDT)
-X-UUID: a828858c71ec40fdbd2877cbb1e1c59f-20220602
+X-UUID: 4ff4440716a24f549134accc90c5eaa0-20220602
 X-GW-Reason: 13103
 X-Policy-Incident: 5pS25Lu25Lq66LaF6L+HMTDkurrpnIDopoHlrqHmoLg=
-X-Content-Feature: ica/max.line-size 100
-        audit/email.address 3
-        meta/cnt.alert 1
-X-CPASD-INFO: 83a86b36504749499f45c750e0154d2d@gYObWGOUYWZhUHaDg3x_c1mXZGWTY1V
-        _p2pRZWKUXoSVhH5xTWJsXVKBfG5QZWNdYVN_eGpQYl9gZFB5i3-XblBgXoZgUZB3h3WbWGaQYw==
-X-CLOUD-ID: 83a86b36504749499f45c750e0154d2d
-X-CPASD-SUMMARY: SIP:-1,APTIP:-2.0,KEY:0.0,FROMBLOCK:1,OB:0.0,URL:-5,TVAL:186.
-        0,ESV:0.0,ECOM:-5.0,ML:0.0,FD:0.0,CUTS:304.0,IP:-2.0,MAL:-5.0,PHF:-5.0,PHC:-5
+X-Content-Feature: ica/max.line-size 91
+        audit/email.address 1
+X-CPASD-INFO: a618c05e78804ae1b72ad106831ec851@qoZrWJBiY5VjWHp8g6Swa4JoYpGUXVC
+        Fem1RlZFoYVGVhH5xTWJsXVKBfG5QZWNdYVN_eGpQYl9gZFB5i3-XblBgXoZgUZB3sHhrWJNeZQ==
+X-CLOUD-ID: a618c05e78804ae1b72ad106831ec851
+X-CPASD-SUMMARY: SIP:-1,APTIP:-2.0,KEY:0.0,FROMBLOCK:1,OB:0.0,URL:-5,TVAL:158.
+        0,ESV:0.0,ECOM:-5.0,ML:0.0,FD:0.0,CUTS:223.0,IP:-2.0,MAL:-5.0,PHF:-5.0,PHC:-5
         .0,SPF:4.0,EDMS:-5,IPLABEL:4480.0,FROMTO:0,AD:0,FFOB:0.0,CFOB:0.0,SPC:0,SIG:-
-        5,AUF:11,DUF:42066,ACD:302,DCD:404,SL:0,EISP:0,AG:0,CFC:0.812,CFSR:0.029,UAT:
-        0,RAF:0,IMG:-5.0,DFA:0,DTA:0,IBL:-2.0,ADI:-5,SBL:0,REDM:0,REIP:0,ESB:0,ATTNUM
-        :0,EAF:0,CID:-5.0,VERSION:2.3.17
-X-CPASD-ID: a828858c71ec40fdbd2877cbb1e1c59f-20220602
+        5,AUF:10,DUF:42064,ACD:302,DCD:404,SL:0,EISP:0,AG:0,CFC:0.786,CFSR:0.04,UAT:0
+        ,RAF:2,IMG:-5.0,DFA:0,DTA:0,IBL:-2.0,ADI:-5,SBL:0,REDM:0,REIP:0,ESB:0,ATTNUM:
+        0,EAF:0,CID:-5.0,VERSION:2.3.17
+X-CPASD-ID: 4ff4440716a24f549134accc90c5eaa0-20220602
 X-CPASD-BLOCK: 1000
 X-CPASD-STAGE: 1
-X-UUID: a828858c71ec40fdbd2877cbb1e1c59f-20220602
+X-UUID: 4ff4440716a24f549134accc90c5eaa0-20220602
 X-User: huangbing@kylinos.cn
-Received: from localhost.localdomain [(116.128.244.169)] by nksmu.kylinos.cn
+Received: from [172.20.108.189] [(116.128.244.169)] by nksmu.kylinos.cn
         (envelope-from <huangbing@kylinos.cn>)
-        (Generic MTA)
-        with ESMTP id 1997259765; Thu, 02 Jun 2022 11:04:31 +0800
-From:   Bing Huang <huangbing@kylinos.cn>
-To:     peterz@infradead.org, dietmar.eggemann@arm.com
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES128-GCM-SHA256 128/128)
+        with ESMTP id 460479508; Thu, 02 Jun 2022 10:59:48 +0800
+Message-ID: <6940568c-a9e9-bf6d-0071-25e00c42f621@kylinos.cn>
+Date:   Thu, 2 Jun 2022 10:56:48 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v2] sched/fair: static cpumasks for load balance
+Content-Language: en-US
+To:     Dietmar Eggemann <dietmar.eggemann@arm.com>, peterz@infradead.org
 Cc:     brauner@kernel.org, bristot@redhat.com, bsegall@google.com,
         juri.lelli@redhat.com, linux-kernel@vger.kernel.org,
         mgorman@suse.de, mingo@redhat.com, rostedt@goodmis.org,
         vincent.guittot@linaro.org
-Subject: [PATCH v3] sched/fair: static cpumasks for load balance
-Date:   Thu,  2 Jun 2022 11:01:35 +0800
-Message-Id: <20220602030135.398697-1-huangbing@kylinos.cn>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220531031255.30966-1-huangbing@kylinos.cn>
+ <b1c1bfa7-f1ba-8590-65fb-df6b8c0d1168@arm.com>
+From:   "huangbing@kylinos" <huangbing@kylinos.cn>
+In-Reply-To: <b1c1bfa7-f1ba-8590-65fb-df6b8c0d1168@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The both cpu mask load_balance_mask and select_idle_mask just only used
-in fair.c, but allocation in core.c in CONFIG_CPUMASK_OFFSTACK=y case,
-and global via declare per cpu variations. More or less, it looks wired.
 
-Co-developed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
-Signed-off-by: Bing Huang <huangbing@kylinos.cn>
----
-
- v1->v2:
-   move load_balance_mask and select_idle_mask allocation from 
-   sched_init() to init_sched_fair_class()
- v2->v3: 
-   fixup by Marco Elver <elver@google.com>
-
- kernel/sched/core.c | 11 -----------
- kernel/sched/fair.c | 13 +++++++++++--
- 2 files changed, 11 insertions(+), 13 deletions(-)
-
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 696c6490bd5b..707df2aeebf8 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -9503,9 +9503,6 @@ LIST_HEAD(task_groups);
- static struct kmem_cache *task_group_cache __read_mostly;
- #endif
- 
--DECLARE_PER_CPU(cpumask_var_t, load_balance_mask);
--DECLARE_PER_CPU(cpumask_var_t, select_idle_mask);
--
- void __init sched_init(void)
- {
- 	unsigned long ptr = 0;
-@@ -9549,14 +9546,6 @@ void __init sched_init(void)
- 
- #endif /* CONFIG_RT_GROUP_SCHED */
- 	}
--#ifdef CONFIG_CPUMASK_OFFSTACK
--	for_each_possible_cpu(i) {
--		per_cpu(load_balance_mask, i) = (cpumask_var_t)kzalloc_node(
--			cpumask_size(), GFP_KERNEL, cpu_to_node(i));
--		per_cpu(select_idle_mask, i) = (cpumask_var_t)kzalloc_node(
--			cpumask_size(), GFP_KERNEL, cpu_to_node(i));
--	}
--#endif /* CONFIG_CPUMASK_OFFSTACK */
- 
- 	init_rt_bandwidth(&def_rt_bandwidth, global_rt_period(), global_rt_runtime());
- 
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 8c5b74f66bd3..310b6f52a7df 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -5843,8 +5843,8 @@ static void dequeue_task_fair(struct rq *rq, struct task_struct *p, int flags)
- #ifdef CONFIG_SMP
- 
- /* Working cpumask for: load_balance, load_balance_newidle. */
--DEFINE_PER_CPU(cpumask_var_t, load_balance_mask);
--DEFINE_PER_CPU(cpumask_var_t, select_idle_mask);
-+static DEFINE_PER_CPU(cpumask_var_t, load_balance_mask);
-+static DEFINE_PER_CPU(cpumask_var_t, select_idle_mask);
- 
- #ifdef CONFIG_NO_HZ_COMMON
- 
-@@ -11841,6 +11841,15 @@ void show_numa_stats(struct task_struct *p, struct seq_file *m)
- __init void init_sched_fair_class(void)
- {
- #ifdef CONFIG_SMP
-+	int i;
-+
-+	for_each_possible_cpu(i) {
-+		zalloc_cpumask_var_node(&per_cpu(load_balance_mask, i),
-+								GFP_KERNEL, cpu_to_node(i));
-+		zalloc_cpumask_var_node(&per_cpu(select_idle_mask, i),
-+								GFP_KERNEL, cpu_to_node(i));
-+	}
-+
- 	open_softirq(SCHED_SOFTIRQ, run_rebalance_domains);
- 
- #ifdef CONFIG_NO_HZ_COMMON
--- 
-2.25.1
-
-
-No virus found
-		Checked by Hillstone Network AntiVirus
+On 6/1/22 16:45, Dietmar Eggemann wrote:
+> On 31/05/2022 05:12, Bing Huang wrote:
+>> The both cpu mask load_balance_mask and select_idle_mask just only used
+>> in fair.c, but allocation in core.c in CONFIG_CPUMASK_OFFSTACK=y case,
+>> and global via declare per cpu variations. More or less, it looks wired.
+>>
+>> Signed-off-by: Bing Huang <huangbing@kylinos.cn>
+>> ---
+>>
+>>   v2: move load_balance_mask and select_idle_mask allocation from
+>> sched_init() to init_sched_fair_class()
+> This would align CFS with RT (local_cpu_mask) and DL
+> (local_cpu_mask_dl).
+>
+> [...]
+>
+>> @@ -11841,6 +11841,16 @@ void show_numa_stats(struct task_struct *p, struct seq_file *m)
+>>   __init void init_sched_fair_class(void)
+>>   {
+>>   #ifdef CONFIG_SMP
+>      `int i` missing for DEBUG_PER_CPU_MAPS/CONFIG_CPUMASK_OFFSTACK case.
+sorry,my fault.
+>
+>> +
+>> +#ifdef CONFIG_CPUMASK_OFFSTACK
+>> +	for_each_possible_cpu(i) {
+>> +		per_cpu(load_balance_mask, i) = (cpumask_var_t)kzalloc_node(
+>> +			cpumask_size(), GFP_KERNEL, cpu_to_node(i));
+>> +		per_cpu(select_idle_mask, i) = (cpumask_var_t)kzalloc_node(
+>> +			cpumask_size(), GFP_KERNEL, cpu_to_node(i));
+>> +	}
+>> +#endif
+>> +
+> What about:
+>
+> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+> index 98319b654788..9ef5133c72d6 100644
+> --- a/kernel/sched/fair.c
+> +++ b/kernel/sched/fair.c
+> @@ -11811,15 +11811,14 @@ void show_numa_stats(struct task_struct *p, struct seq_file *m)
+>   __init void init_sched_fair_class(void)
+>   {
+>   #ifdef CONFIG_SMP
+> +       int i;
+>   
+> -#ifdef CONFIG_CPUMASK_OFFSTACK
+>          for_each_possible_cpu(i) {
+> -               per_cpu(load_balance_mask, i) = (cpumask_var_t)kzalloc_node(
+> -                       cpumask_size(), GFP_KERNEL, cpu_to_node(i));
+> -               per_cpu(select_idle_mask, i) = (cpumask_var_t)kzalloc_node(
+> -                       cpumask_size(), GFP_KERNEL, cpu_to_node(i));
+> +               zalloc_cpumask_var_node(&per_cpu(load_balance_mask, i),
+> +                                       GFP_KERNEL, cpu_to_node(i));
+> +               zalloc_cpumask_var_node(&per_cpu(select_idle_mask, i),
+> +                                       GFP_KERNEL, cpu_to_node(i));
+>          }
+> -#endif
+>
+> to get rid of the #ifdef ? We do the same for RT (local_cpu_mask) and DL
+> (local_cpu_mask_dl).
+good suggestion, thanks very much. happy to do that.
+>
+> [...]
