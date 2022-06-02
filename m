@@ -2,134 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04BE9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 06:13:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1547C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 06:18:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230440AbiFBGNm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 02:13:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39658 "EHLO
+        id S230321AbiFBGSk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 02:18:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230106AbiFBGNh (ORCPT
+        with ESMTP id S229457AbiFBGSi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 02:13:37 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2043.outbound.protection.outlook.com [40.107.243.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51FB22A1D6F;
-        Wed,  1 Jun 2022 23:13:34 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NJvR2jV/1a5l0buroogPzaT3xY+jU7eOwFUFuCqOsUVZAhzyHBBgLUvvU80BuzV2W8ffkJ9k+X72ParBFkLnHM7+UoGPqXbW8dEtq76+LR89DF91CtELKwW6u1xe+7gzXT6vX2EfYVry2t8glcyGS7d6akvc2LGSYKVr21phKk6n36LbDmtuPDUVPiE2UJgteaHiVfFaQPc2eN3YkVQJvmyLEne2ljoVeSMN8vR8hB7F1FsNy0+U6i1KdmTqgO2QrjQVMNvApvWivlDwPueBChVO53WOosPaSJXDuCH/bEGOsuh4wak/CBugQI+oW6PSN1IugEkWPv6ibhxaW+sihA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=uC9VjVJeLskg+glQTHs1bLxDw4MSt6blFqZ55P2amt4=;
- b=SkxLBAvc7kI2kykUJJ4wIOBXr0vOoTt9zW0Nlphgu5ARwLJmYPCZM/6rNK7SQlFqxeghDcCb5zoomTnqIWud/LBDpEgJppCXPRX8xrOy00DUrmGlPQqumYLHKbgum4subsmUrEldVuezQSlgb5FBLyJkf3kK72bCG5sjoyOBrz9VscUp29ckPA1tU63hhJ4ZNw2UIm666EtMBhl/fYIytMcA5JeISgn8SeabRzxvi1pZdpeK5IUQRQ0gRGQTgyexmrIZ+dUTfFZVk3yIj43NG+WOYaeuobaywkkvbgN7cQLhsxFeC4XKMS5pSdgZmy+KFOLuvGPHrRMvF3ZCvEE0ZA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.235) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uC9VjVJeLskg+glQTHs1bLxDw4MSt6blFqZ55P2amt4=;
- b=crf/j0HddS8nBAFC1+D5S2FS1HuoQ6yLSsNJRayOtRKpj3tPXGoMgnedsCksauHuI2HQyFFf3x+PkDm/y0ieEcvgDBSS76BqUZhN1kARYIzXEPoewgwXp9qDPrseAMITXw8VWH646C3llw/2qkeBCCt3k+eaxkX9h0pNHgOsZeRq1X4s3ZRabmHTtoYmot8ftXzbWWuGOXYte857r86CUMwP1jwVGnza4IQzriYVTGhRwMjURk5cMKrQlqfb81SCW5ADHN7iC83pwY6wWrWU1I9U5IFfNQpg+GilYwI6yzEnyfH0sKvcfwgrkadzh8jfmWSlYfkmInMpH5OaydxWbQ==
-Received: from MW4P223CA0012.NAMP223.PROD.OUTLOOK.COM (2603:10b6:303:80::17)
- by BN6PR12MB1778.namprd12.prod.outlook.com (2603:10b6:404:106::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.16; Thu, 2 Jun
- 2022 06:13:32 +0000
-Received: from CO1NAM11FT041.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:80:cafe::71) by MW4P223CA0012.outlook.office365.com
- (2603:10b6:303:80::17) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.12 via Frontend
- Transport; Thu, 2 Jun 2022 06:13:32 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.235; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.235) by
- CO1NAM11FT041.mail.protection.outlook.com (10.13.174.217) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5314.12 via Frontend Transport; Thu, 2 Jun 2022 06:13:32 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL107.nvidia.com
- (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Thu, 2 Jun
- 2022 06:13:31 +0000
-Received: from localhost (10.126.231.35) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 1 Jun 2022
- 23:13:30 -0700
-Date:   Thu, 2 Jun 2022 09:13:27 +0300
-From:   Leon Romanovsky <leonro@nvidia.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Boris Pismenny <borisp@nvidia.com>, <netdev@vger.kernel.org>,
-        <kernel-janitors@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        "Saeed Mahameed" <saeedm@nvidia.com>
-Subject: Re: [PATCH] MAINTAINERS: adjust MELLANOX ETHERNET INNOVA DRIVERS to
- TLS support removal
-Message-ID: <YphVB3EGzcLtZxvQ@unreal>
-References: <20220601045738.19608-1-lukas.bulwahn@gmail.com>
- <Ypc85O47YoNzUTr5@unreal>
- <20220601103032.28d14fc4@kicinski-fedora-PC1C0HJN>
- <YperBiCh1rkKDmSR@unreal>
- <20220601122618.78b93038@kernel.org>
+        Thu, 2 Jun 2022 02:18:38 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4250987A3D
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 23:18:36 -0700 (PDT)
+X-UUID: 1eed4d444bfe48c5abd146ff8529dfa1-20220602
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:ed063c35-6848-45de-8eb4-a1723bfda1ba,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:-5
+X-CID-META: VersionHash:2a19b09,CLOUDID:2050920d-3a0d-4bbe-9d72-0e5d26d57423,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+        ,QS:0,BEC:nil
+X-UUID: 1eed4d444bfe48c5abd146ff8529dfa1-20220602
+Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw02.mediatek.com
+        (envelope-from <yong.wu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 428153746; Thu, 02 Jun 2022 14:18:31 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Thu, 2 Jun 2022 14:18:29 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkmbs11n2.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Thu, 2 Jun 2022 14:18:29 +0800
+Message-ID: <e970f47d462b0cca9bc6107843721b6b0aabd73a.camel@mediatek.com>
+Subject: Re: [PATCH 2/3] iommu: mtk_iommu: add support for 6-bit encoded
+ port IDs
+From:   Yong Wu <yong.wu@mediatek.com>
+To:     Fabien Parent <fparent@baylibre.com>
+CC:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        "Matthias Brugger" <matthias.bgg@gmail.com>,
+        <iommu@lists.linux-foundation.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Date:   Thu, 2 Jun 2022 14:18:29 +0800
+In-Reply-To: <20220530180328.845692-2-fparent@baylibre.com>
+References: <20220530180328.845692-1-fparent@baylibre.com>
+         <20220530180328.845692-2-fparent@baylibre.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220601122618.78b93038@kernel.org>
-X-Originating-IP: [10.126.231.35]
-X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d105b601-0e97-4436-9a6d-08da445f04ec
-X-MS-TrafficTypeDiagnostic: BN6PR12MB1778:EE_
-X-Microsoft-Antispam-PRVS: <BN6PR12MB1778731AC1EE781073B5E1D7BDDE9@BN6PR12MB1778.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: FsHockwrJTFFDsZirzpBqKjyJpSJbJ/2YrZQJxHyNCxLTFdqHLNMYsLQC4/c0Sl4SYLafJDtq2mEFccN5EPLBmEsxs0PjnXvVnb2Uty8CiSHBhzaw/bt312EeeZHqrJAL+sKm7KnUtYXUBjJoRJTU4xZ2DB/oIgZKGLQdO34gaDFhSdjsfyPG8a3DFpxCj9wKdpro5JaDyOrcvsyF47hRlij1IL/hi2HEY6/6iYDpYh1RIXRtFA4KT72SzRhcqZ4neCz87hDV7EetYlq0AkcR8HJFWFhJzWoRblGEcmPxb4qnd7r1H6IqG6dB47fBhDORqiNN/hBQx0+egc1tat1qyQ+GnIMpQeV3eoJ/hAaOTfdnta9fjOAccUzVkZKS04tfhvtChSgrGkEnSkzxCYxbaYEK5WOPadmExBYod/AOeMh6oXpzUxy9DxeZCiovoNsCvEmzxCCPU8LFj/MLuo2YqZXrQ+NH2pzdfZMDARWzrcQPpcMgUhSL8wxKKmesI86dBeLmGlouvu/xLOjQsXF35deGuXmhblYDu8dA6B7BIq+VeRU7hlU3o361rLX3MGa9v65q1l28G2kmyQ+SrUhZiqAh6dDLW7oCGCTPJsBg7G0PUPhzBIpW7ULtVhtmkYtsArgcotdXs55F+nBrljsIZApo6czWssd7KsX0Csv/jNc3HBSL61ItQhkqU19SjOtcgJ5yqLnx7/5JhXOr4m3d2CaH7fPG+6EnKx4lkk1SSUXO3PUxD/FwPNDlf54++NhWpaK4/OGEw5F0Y7Ik1UJuCZyCM+wcmx6sBppqXgZQzNLvmAZ7bKT+6VB4sXCxQFWTNBDLswjEV3M1PASNLIIKA==
-X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(7916004)(4636009)(36840700001)(46966006)(40470700004)(186003)(70206006)(426003)(40460700003)(356005)(336012)(316002)(16526019)(2906002)(54906003)(86362001)(5660300002)(508600001)(6916009)(47076005)(8936002)(107886003)(966005)(6666004)(81166007)(83380400001)(82310400005)(33716001)(9686003)(26005)(8676002)(36860700001)(4326008)(70586007)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2022 06:13:32.0449
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d105b601-0e97-4436-9a6d-08da445f04ec
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT041.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1778
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 01, 2022 at 12:26:18PM -0700, Jakub Kicinski wrote:
-> On Wed, 1 Jun 2022 21:08:06 +0300 Leon Romanovsky wrote:
-> > On Wed, Jun 01, 2022 at 10:30:39AM -0700, Jakub Kicinski wrote:
-> > > > Thanks, we will submit it once net-next will be open.  
-> > > 
-> > > It should go via net FWIW.  
-> > 
-> > I'm slightly confused here.
-> > 
-> > According to net policy, the patches that goes there should have Fixes
-> > line, but Fixes lines are added for bugs [1].
-> > 
-> > This forgotten line in MAINTAINERS doesn't cause to any harm to
-> > users/developers.
-> 
-> Fair, maybe I worded it too strongly. I should have said something like
-> "FWIW it's okay for MAINTAINERS updates to go via net".
-> 
-> Documentation/ patches and MAINTAINERS are special, they can go into
-> net without a Fixes tag so that changes to get_maintainer output and
-> https://www.kernel.org/doc/html/latest/ propagate quickly.
+Hi Fabien,
 
-Awesome, thanks
+Thanks for very much for this patch.
 
+Retitle to iommu/mediatek: Xxx
+
+On Mon, 2022-05-30 at 20:03 +0200, Fabien Parent wrote:
+> Until now the port ID was always encoded as a 5-bit data. On MT8365,
+> the port ID is encoded as a 6-bit data. This requires to rework the
+> macros F_MMU_INT_ID_LARB_ID, and F_MMU_INT_ID_PORT_ID in order
+> to support 5-bit and 6-bit encoded port IDs.
 > 
-> > So when should I put Fixes line in netdev?
-> > 
-> > [1] https://lore.kernel.org/netdev/20211208070842.0ace6747@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com/
+> Signed-off-by: Fabien Parent <fparent@baylibre.com>
+> ---
+>  drivers/iommu/mtk_iommu.c | 17 +++++++++++++----
+>  drivers/iommu/mtk_iommu.h |  1 +
+>  2 files changed, 14 insertions(+), 4 deletions(-)
 > 
+> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index 6fd75a60abd6..b692347d8d56 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -103,8 +103,10 @@
+>  #define REG_MMU1_INT_ID				0x154
+>  #define F_MMU_INT_ID_COMM_ID(a)			(((a) >> 9) &
+> 0x7)
+>  #define F_MMU_INT_ID_SUB_COMM_ID(a)		(((a) >> 7) & 0x3)
+> -#define F_MMU_INT_ID_LARB_ID(a)			(((a) >> 7) &
+> 0x7)
+> -#define F_MMU_INT_ID_PORT_ID(a)			(((a) >> 2) &
+> 0x1f)
+> +#define F_MMU_INT_ID_LARB_ID(a, port_width)	\
+> +				((a) >> ((port_width + 2) & 0x7))
+> +#define F_MMU_INT_ID_PORT_ID(a, port_width)	\
+> +				(((a) >> 2) & GENMASK(port_width - 1,
+> 0))
+
+Add () for port_width.
+
+>  
+>  #define MTK_PROTECT_PA_ALIGN			256
+>  
+> @@ -291,12 +293,13 @@ static irqreturn_t mtk_iommu_isr(int irq, void
+> *dev_id)
+>  		fault_pa |= (u64)pa34_32 << 32;
+>  	}
+>  
+> -	fault_port = F_MMU_INT_ID_PORT_ID(regval);
+> +	fault_port = F_MMU_INT_ID_PORT_ID(regval, data->plat_data-
+> >port_width);
+>  	if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_SUB_COMM)) {
+>  		fault_larb = F_MMU_INT_ID_COMM_ID(regval);
+>  		sub_comm = F_MMU_INT_ID_SUB_COMM_ID(regval);
+>  	} else {
+> -		fault_larb = F_MMU_INT_ID_LARB_ID(regval);
+> +		fault_larb = F_MMU_INT_ID_LARB_ID(regval,
+> +						  data->plat_data-
+> >port_width);
+>  	}
+>  	fault_larb = data->plat_data-
+> >larbid_remap[fault_larb][sub_comm];
+>  
+> @@ -1034,6 +1037,7 @@ static const struct mtk_iommu_plat_data
+> mt2712_data = {
+>  	.iova_region  = single_domain,
+>  	.iova_region_nr = ARRAY_SIZE(single_domain),
+>  	.larbid_remap = {{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}},
+> +	.port_width   = 5,
+>  };
+>  
+>  static const struct mtk_iommu_plat_data mt6779_data = {
+> @@ -1043,6 +1047,7 @@ static const struct mtk_iommu_plat_data
+> mt6779_data = {
+>  	.iova_region   = single_domain,
+>  	.iova_region_nr = ARRAY_SIZE(single_domain),
+>  	.larbid_remap  = {{0}, {1}, {2}, {3}, {5}, {7, 8}, {10}, {9}},
+> +	.port_width    = 5,
+>  };
+>  
+>  static const struct mtk_iommu_plat_data mt8167_data = {
+> @@ -1052,6 +1057,7 @@ static const struct mtk_iommu_plat_data
+> mt8167_data = {
+>  	.iova_region  = single_domain,
+>  	.iova_region_nr = ARRAY_SIZE(single_domain),
+>  	.larbid_remap = {{0}, {1}, {2}}, /* Linear mapping. */
+> +	.port_width   = 5,
+>  };
+>  
+>  static const struct mtk_iommu_plat_data mt8173_data = {
+> @@ -1062,6 +1068,7 @@ static const struct mtk_iommu_plat_data
+> mt8173_data = {
+>  	.iova_region  = single_domain,
+>  	.iova_region_nr = ARRAY_SIZE(single_domain),
+>  	.larbid_remap = {{0}, {1}, {2}, {3}, {4}, {5}}, /* Linear
+> mapping. */
+> +	.port_width   = 5,
+>  };
+>  
+>  static const struct mtk_iommu_plat_data mt8183_data = {
+> @@ -1071,6 +1078,7 @@ static const struct mtk_iommu_plat_data
+> mt8183_data = {
+>  	.iova_region  = single_domain,
+>  	.iova_region_nr = ARRAY_SIZE(single_domain),
+>  	.larbid_remap = {{0}, {4}, {5}, {6}, {7}, {2}, {3}, {1}},
+> +	.port_width   = 5,
+>  };
+>  
+>  static const struct mtk_iommu_plat_data mt8192_data = {
+> @@ -1082,6 +1090,7 @@ static const struct mtk_iommu_plat_data
+> mt8192_data = {
+>  	.iova_region_nr = ARRAY_SIZE(mt8192_multi_dom),
+>  	.larbid_remap   = {{0}, {1}, {4, 5}, {7}, {2}, {9, 11, 19, 20},
+>  			   {0, 14, 16}, {0, 13, 18, 17}},
+> +	.port_width     = 5,
+>  };
+>  
+>  static const struct of_device_id mtk_iommu_of_ids[] = {
+> diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
+> index b742432220c5..84cecaf6d61c 100644
+> --- a/drivers/iommu/mtk_iommu.h
+> +++ b/drivers/iommu/mtk_iommu.h
+> @@ -54,6 +54,7 @@ struct mtk_iommu_plat_data {
+>  	enum mtk_iommu_plat m4u_plat;
+>  	u32                 flags;
+>  	u32                 inv_sel_reg;
+> +	u8                  port_width;
+
+Please help rename to int_id_port_width for more detailed from the
+register name (REG_MMU0_INT_ID).
+
+>  
+>  	unsigned int				iova_region_nr;
+>  	const struct mtk_iommu_iova_region	*iova_region;
+> -- 
+> 2.36.1
+> 
+
