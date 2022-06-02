@@ -2,146 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 456BEC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 10:22:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA693C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 10:23:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233641AbiFBKW4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 06:22:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33486 "EHLO
+        id S233653AbiFBKXW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 06:23:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233652AbiFBKWn (ORCPT
+        with ESMTP id S233169AbiFBKXV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 06:22:43 -0400
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8910213E7E
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 03:22:38 -0700 (PDT)
-Received: by mail-lj1-x232.google.com with SMTP id m25so1432652lji.11
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 03:22:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=mhke0saUmUh/aB/di9/WbB1JwcFcgftrzK7UikGh97E=;
-        b=bFvw+MLHVt+ArFBhnhxD4VGaWyar1Iw3Ys0oV4R9sP/bLgk9xK9kxzaaTZalR0EZcs
-         DYSWd3KPnS2lKOJh8kuqKmbP0WytCHCLGP6f8aTF+7KR6jaPf/5c6UWfEtDMiLmKuYvu
-         nSRNVsYr30Wy9XsFQjKkTsSelPDRlDAzdaouzM8KqVJC1FgwxXkJQKq2hqYkt76XSiQB
-         zVCYTPHReYyktuzPNOEHoZK7KUZiiTF95MfsA6Lj40AukNe97nQ2ovR44xX/dekLSSVa
-         TxXYFlcJ7uFbdFw6GvMxus+wXABsmy51VnApOpbnLGuauTZdeDtz6FXQ0PgkF3PwHF3w
-         mrAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=mhke0saUmUh/aB/di9/WbB1JwcFcgftrzK7UikGh97E=;
-        b=iZaEHCTpSuWjNKTwZfgkWWq1r/5yVSZFBTPFpYLFFiKh9kAsNMh0SxjWP7744ccj5V
-         JC3vhpCLt+xruUP6M32NpArAY84PJMgavksl6NNrrQbUuBvtrgyxTGf4Mx/VZ6tSgNOl
-         X07Lma6H/nuaqYgWgmG+5U8ppShaN+iqxRjixRlSKoCDAmelNEhksjcWw5U0wdcq1+0H
-         z3D7HQlOmVNNK0O26RTcjO3JEh4eh+R+x0ddspbPs88tGtlY1HjckgRLwLxr0fcDGxz7
-         lAEBcYXs8luUZ9zk3PllrVOTI2LQTLkA9LztjXUGJiBWagPe/ASz5QQDPT3HUh3/xGrs
-         zBlA==
-X-Gm-Message-State: AOAM533Q4wUoTcp7sduUGJxLcN3ld4UHEamZe5DabpWM/bKVZoxZlLw5
-        i+f6mrLiiYK2kzy6L9/SzEricw==
-X-Google-Smtp-Source: ABdhPJxBmqiSkec8TbeMYs+RFw+Rm4q/emiOOaTWMfi/pJk8O6t7jgcEYLMBlu3LcQem9bMjd/eBbg==
-X-Received: by 2002:a2e:8881:0:b0:255:7790:25e6 with SMTP id k1-20020a2e8881000000b00255779025e6mr964729lji.525.1654165357162;
-        Thu, 02 Jun 2022 03:22:37 -0700 (PDT)
-Received: from [192.168.1.211] ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id d16-20020a0565123d1000b0047255d21132sm961705lfv.97.2022.06.02.03.22.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 02 Jun 2022 03:22:36 -0700 (PDT)
-Message-ID: <b157ebf3-9846-1235-c8e7-693abe4569d3@linaro.org>
-Date:   Thu, 2 Jun 2022 13:22:35 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v3 1/4] drm/dp: Add wait_hpd_asserted() callback to struct
- drm_dp_aux
-Content-Language: en-GB
-To:     Douglas Anderson <dianders@chromium.org>,
-        dri-devel@lists.freedesktop.org
-Cc:     Hsin-Yi Wang <hsinyi@chromium.org>,
-        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
-        Philip Chen <philipchen@chromium.org>,
-        Robert Foss <robert.foss@linaro.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
+        Thu, 2 Jun 2022 06:23:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEF73213E7E;
+        Thu,  2 Jun 2022 03:23:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 49C37614ED;
+        Thu,  2 Jun 2022 10:23:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4F71C385A5;
+        Thu,  2 Jun 2022 10:23:13 +0000 (UTC)
+From:   Huacai Chen <chenhuacai@loongson.cn>
+To:     Arnd Bergmann <arnd@arndb.de>, Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
         David Airlie <airlied@linux.ie>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Kees Cook <keescook@chromium.org>,
-        Lyude Paul <lyude@redhat.com>,
-        Maxime Ripard <maxime@cerno.tech>, linux-kernel@vger.kernel.org
-References: <20220418171757.2282651-1-dianders@chromium.org>
- <20220418101725.v3.1.Icf57bb12233a47727013c6ab69eebf803e22ebc1@changeid>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <20220418101725.v3.1.Icf57bb12233a47727013c6ab69eebf803e22ebc1@changeid>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-arch@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
+        Yanteng Si <siyanteng@loongson.cn>,
+        Huacai Chen <chenhuacai@gmail.com>,
+        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Huacai Chen <chenhuacai@loongson.cn>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel@lists.freedesktop.org, WANG Xuerui <git@xen0n.name>
+Subject: [PATCH V13 06/24] LoongArch: Add writecombine support for drm
+Date:   Thu,  2 Jun 2022 18:19:31 +0800
+Message-Id: <20220602101949.3873682-7-chenhuacai@loongson.cn>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220602101949.3873682-1-chenhuacai@loongson.cn>
+References: <20220602101949.3873682-1-chenhuacai@loongson.cn>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 18/04/2022 20:17, Douglas Anderson wrote:
-> Sometimes it's useful for users of the DP AUX bus (like panels) to be
-> able to poll HPD. Let's add a callback that allows DP AUX busses
-> drivers to provide this.
-> 
-> Suggested-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-> Signed-off-by: Douglas Anderson <dianders@chromium.org>
+LoongArch maintains cache coherency in hardware, but its WUC attribute
+(Weak-ordered UnCached, which is similar to WC) is out of the scope of
+cache coherency machanism. This means WUC can only used for write-only
+memory regions.
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: dri-devel@lists.freedesktop.org
+Reviewed-by: WANG Xuerui <git@xen0n.name>
+Reviewed-by: Jiaxun Yang <jiaxun.yang@flygoat.com>
+Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
+---
+ drivers/gpu/drm/drm_vm.c         | 2 +-
+ drivers/gpu/drm/ttm/ttm_module.c | 2 +-
+ include/drm/drm_cache.h          | 8 ++++++++
+ 3 files changed, 10 insertions(+), 2 deletions(-)
 
-
-> ---
-> Left Dmitry's Reviewed-by tag off since patch changed enough.
-> 
-> (no changes since v2)
-> 
-> Changes in v2:
-> - Change is_hpd_asserted() to wait_hpd_asserted()
-> 
->   include/drm/dp/drm_dp_helper.h | 26 ++++++++++++++++++++++++++
->   1 file changed, 26 insertions(+)
-> 
-> diff --git a/include/drm/dp/drm_dp_helper.h b/include/drm/dp/drm_dp_helper.h
-> index 53d1e722f4de..0940c415db8c 100644
-> --- a/include/drm/dp/drm_dp_helper.h
-> +++ b/include/drm/dp/drm_dp_helper.h
-> @@ -2035,6 +2035,32 @@ struct drm_dp_aux {
->   	ssize_t (*transfer)(struct drm_dp_aux *aux,
->   			    struct drm_dp_aux_msg *msg);
->   
-> +	/**
-> +	 * @wait_hpd_asserted: wait for HPD to be asserted
-> +	 *
-> +	 * This is mainly useful for eDP panels drivers to wait for an eDP
-> +	 * panel to finish powering on. This is an optional function.
-> +	 *
-> +	 * This function will efficiently wait for up to `wait_us` microseconds
-> +	 * for HPD to be asserted and might sleep.
-> +	 *
-> +	 * This function returns 0 if HPD was asserted or -ETIMEDOUT if time
-> +	 * expired and HPD wasn't asserted. This function should not print
-> +	 * timeout errors to the log.
-> +	 *
-> +	 * The semantics of this function are designed to match the
-> +	 * readx_poll_timeout() function. That means a `wait_us` of 0 means
-> +	 * to wait forever. If you want to do a quick poll you could pass 1
-> +	 * for `wait_us`.
-> +	 *
-> +	 * NOTE: this function specifically reports the state of the HPD pin
-> +	 * that's associated with the DP AUX channel. This is different from
-> +	 * the HPD concept in much of the rest of DRM which is more about
-> +	 * physical presence of a display. For eDP, for instance, a display is
-> +	 * assumed always present even if the HPD pin is deasserted.
-> +	 */
-> +	int (*wait_hpd_asserted)(struct drm_dp_aux *aux, unsigned long wait_us);
-> +
->   	/**
->   	 * @i2c_nack_count: Counts I2C NACKs, used for DP validation.
->   	 */
-
-
+diff --git a/drivers/gpu/drm/drm_vm.c b/drivers/gpu/drm/drm_vm.c
+index e957d4851dc0..f024dc93939e 100644
+--- a/drivers/gpu/drm/drm_vm.c
++++ b/drivers/gpu/drm/drm_vm.c
+@@ -69,7 +69,7 @@ static pgprot_t drm_io_prot(struct drm_local_map *map,
+ 	pgprot_t tmp = vm_get_page_prot(vma->vm_flags);
+ 
+ #if defined(__i386__) || defined(__x86_64__) || defined(__powerpc__) || \
+-    defined(__mips__)
++    defined(__mips__) || defined(__loongarch__)
+ 	if (map->type == _DRM_REGISTERS && !(map->flags & _DRM_WRITE_COMBINING))
+ 		tmp = pgprot_noncached(tmp);
+ 	else
+diff --git a/drivers/gpu/drm/ttm/ttm_module.c b/drivers/gpu/drm/ttm/ttm_module.c
+index a3ad7c9736ec..b3fffe7b5062 100644
+--- a/drivers/gpu/drm/ttm/ttm_module.c
++++ b/drivers/gpu/drm/ttm/ttm_module.c
+@@ -74,7 +74,7 @@ pgprot_t ttm_prot_from_caching(enum ttm_caching caching, pgprot_t tmp)
+ #endif /* CONFIG_UML */
+ #endif /* __i386__ || __x86_64__ */
+ #if defined(__ia64__) || defined(__arm__) || defined(__aarch64__) || \
+-	defined(__powerpc__) || defined(__mips__)
++	defined(__powerpc__) || defined(__mips__) || defined(__loongarch__)
+ 	if (caching == ttm_write_combined)
+ 		tmp = pgprot_writecombine(tmp);
+ 	else
+diff --git a/include/drm/drm_cache.h b/include/drm/drm_cache.h
+index 22deb216b59c..08e0e3ffad13 100644
+--- a/include/drm/drm_cache.h
++++ b/include/drm/drm_cache.h
+@@ -67,6 +67,14 @@ static inline bool drm_arch_can_wc_memory(void)
+ 	 * optimization entirely for ARM and arm64.
+ 	 */
+ 	return false;
++#elif defined(CONFIG_LOONGARCH)
++	/*
++	 * LoongArch maintains cache coherency in hardware, but its WUC attribute
++	 * (Weak-ordered UnCached, which is similar to WC) is out of the scope of
++	 * cache coherency machanism. This means WUC can only used for write-only
++	 * memory regions.
++	 */
++	return false;
+ #else
+ 	return true;
+ #endif
 -- 
-With best wishes
-Dmitry
+2.27.0
+
