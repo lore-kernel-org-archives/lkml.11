@@ -2,82 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0447C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 12:19:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD360C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 12:20:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234908AbiFBMTm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 08:19:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33216 "EHLO
+        id S234918AbiFBMUq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 08:20:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232328AbiFBMTl (ORCPT
+        with ESMTP id S233364AbiFBMUo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 08:19:41 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92BCBE0D0
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 05:19:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=spjc1NV0tUcIwlyH3r+o1pjArgZsS0mBD5aKUtZaglY=; b=a8cqrPdTs/qxidHZhDFLhcaUr+
-        rWxaXcKx6i+s1vcq8M7kVMAxI7iOCkQJv1b9eR59IFfXAhvJBtSMMmCe6GY3dYGLlYpd4PC5ZB4SY
-        NdFZ7oVhQD6ELNWiK62a2SS4CeAXaQ2VAzHa+Vk1+TfaeGRoZ2gQjOkO66YR+sULeV4SYyfSq2nBh
-        ljG7J1vhQWz/RNshKWkiNipOOJkRNvJZ6oqIDTtzBTA2ZKxX7Ok7jfPzTbAXk/G/KhfkS8R8S2+IY
-        Hhe0KVRJgiGnaAx6aM4FaWN3AAOJtgVVSxQVtlc1mZCdJa/r12d55dMaVQlIgVtMpfSYJ98FQMVot
-        7tx/UdJg==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nwjnE-003B8U-45; Thu, 02 Jun 2022 12:19:12 +0000
-Date:   Thu, 2 Jun 2022 05:19:12 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Keisuke Nishimura <keisuke.nishimura@inria.fr>,
-        Kentaro Takeda <takedakn@nttdata.co.jp>,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Ayush Sawal <ayush.sawal@chelsio.com>,
-        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
-        Rohit Maheshwari <rohitm@chelsio.com>,
-        Julia Lawall <Julia.Lawall@inria.fr>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Viresh Kumar <vireshk@kernel.org>,
-        Shiraz Hashim <shiraz.linux.kernel@gmail.com>,
-        Ville =?iso-8859-1?Q?Syrj=E4l=E4?= 
-        <ville.syrjala@linux.intel.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        SoC Team <soc@kernel.org>
-Subject: Re: mainline build failure due to f1e4c916f97f ("drm/edid: add EDID
- block count and size helpers")
-Message-ID: <YpiqwDjCP0Am8kZV@infradead.org>
-References: <CAK8P3a2Zg2QDS1_Ysn8-Zqqd+K7bbTFS7JV7gPabp6nvPiKaog@mail.gmail.com>
- <91E67F46-A3C7-4159-9E0C-C6C6306F3669@inria.fr>
- <CAK8P3a2iAsemAQdbTZ_E7GGGCXAOeWbjSjLgXEsd5sg_buZWhw@mail.gmail.com>
- <CAHk-=wgO0V9OdY+DFm-f0qZYMyFSm0ptReO+_qgSTEpBLtFV7Q@mail.gmail.com>
- <d971a684-ccd9-3839-1e30-c166fd55cf49@inria.fr>
- <CAHk-=wiViikY0szsJGipSxFmMwdsvxjm7SwDfwNfMHYvQ64kAA@mail.gmail.com>
- <CAK8P3a1m80u+eVnoSJ-APihjNQ1se9=FG+E6tKBb-hRJx5FAVg@mail.gmail.com>
+        Thu, 2 Jun 2022 08:20:44 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B583FE0D0
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 05:20:42 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id f9so9720779ejc.0
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 05:20:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=w3NU5Pd6RdYjWBDHbyo9ZXR/sDqD7HVPsWUeAk61S/E=;
+        b=LdiGj4MEYQyU5F+TIewCPHHuLUyUl2bLsqrCCSyBPVE4EOVfgtgZ79OzaiHVKidJiG
+         /RZLQP7l033/vrqYbv9WFHj57x9Z7x/MU66hCf+yoqYKOQADFxvth17LXDNhlr+fBZu6
+         lmXgfOG6Q+vp8QEDgWyYdOgZhuDkglvHpKPwKsQvRqjBwrAUkgIBXqVwSIhvzhJk4Nny
+         ft5eDNs6nRaqYUiM7UaK/4pNO3Ty5U9kLdLShFM20rw3Q9TmZPoyjBwnyTdNrqll5tPh
+         CkHW+HAvuWApxihuH7sA2EdYnWdiyNz2OQjyDixRF6uLuz9UAVqzcOHGbzh5CF3k/Usx
+         jwzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=w3NU5Pd6RdYjWBDHbyo9ZXR/sDqD7HVPsWUeAk61S/E=;
+        b=65A3b96hDbRJ6p5fmLo/4AxFRqGDuwpMQirT8CvzGoPsF3aLAR6d2Hl4sVPmScHIRH
+         Ds8GMaMNRO9OaxvRH0WZIjQh0ou6I+6qOU3B/YCi2FL5qDrqWhAcddoocp0fPSgsIdzM
+         suhOWdmp9ALSeODifHieWzBt3520pnDM0fdX7mgdMjrZquzGZXwRYtOYR9noE9HMwCZ/
+         TK6g9RloMMqn/8OKpLTg9xM81BTUHXOQes+Exdx9Gci9jpIsSFrCMfn5X2PLpv67TXmI
+         kYh1fmC6dZtgH6enUIrLAHW13Ivylqwe9rItVHCzRbspxyLe/DIVTVRpoDVVbZzKX61u
+         kbXw==
+X-Gm-Message-State: AOAM531zrw/nyRctfUDxzlXDS88GckpSq//ybrcjQGMvddeHxrf2POGd
+        7z8UK1JnQXYTJjFH0odFFagftA==
+X-Google-Smtp-Source: ABdhPJzqHGlDHD4WYxGAe/oW+BJi9G97Ku+puxcqkm6xUmICZTlEK4Dg6DMTJvIrdr6f3f4LkNAIwg==
+X-Received: by 2002:a17:906:9753:b0:6fe:dece:982a with SMTP id o19-20020a170906975300b006fedece982amr4124274ejy.560.1654172441357;
+        Thu, 02 Jun 2022 05:20:41 -0700 (PDT)
+Received: from [192.168.0.181] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id kz10-20020a17090777ca00b0070beb9401d9sm315486ejc.171.2022.06.02.05.20.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 02 Jun 2022 05:20:40 -0700 (PDT)
+Message-ID: <c25d90a6-7f6b-8c0c-a227-94fc4f53e4a2@linaro.org>
+Date:   Thu, 2 Jun 2022 14:20:40 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAK8P3a1m80u+eVnoSJ-APihjNQ1se9=FG+E6tKBb-hRJx5FAVg@mail.gmail.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2 1/3] dt-bindings: soc: ti: pruss: Re-arrange
+ "compatible" in alphabetic order
+Content-Language: en-US
+To:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Nishanth Menon <nm@ti.com>,
+        Santosh Shilimkar <ssantosh@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+References: <20220602120613.2175-1-kishon@ti.com>
+ <20220602120613.2175-2-kishon@ti.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220602120613.2175-2-kishon@ti.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 02, 2022 at 09:38:56AM +0200, Arnd Bergmann wrote:
-> - dma_addr_t/phys_addr_t are sometimes put into hardware data
->   structures in coherent DMA allocations.
+On 02/06/2022 14:06, Kishon Vijay Abraham I wrote:
+> Re-arrange "compatible" string in alphabetic order to decrease the
+> chance of conflicts.
+> 
+> Signed-off-by: Kishon Vijay Abraham I <kishon@ti.com>
 
-Putting a dma_addr_t into a hardware data structure is broken.
-dma_addr_t is the in-memory type, for the hardare it should always
-be a __le/__be type of the actual width that the particular piece
-of hardware uses.
+
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+
+Best regards,
+Krzysztof
