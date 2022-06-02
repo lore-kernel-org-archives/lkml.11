@@ -2,108 +2,229 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D80F6C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 09:27:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5DB3C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 09:29:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233051AbiFBJ1K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 05:27:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35642 "EHLO
+        id S233054AbiFBJ3U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 05:29:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233057AbiFBJ1E (ORCPT
+        with ESMTP id S232296AbiFBJ3Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 05:27:04 -0400
-Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A69042A46CD;
-        Thu,  2 Jun 2022 02:27:01 -0700 (PDT)
-Received: by mail-io1-xd32.google.com with SMTP id q203so4280967iod.0;
-        Thu, 02 Jun 2022 02:27:01 -0700 (PDT)
+        Thu, 2 Jun 2022 05:29:16 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E596D13F71;
+        Thu,  2 Jun 2022 02:29:14 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id t13so5658871wrg.9;
+        Thu, 02 Jun 2022 02:29:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=C+EMAmeFZRp3TpuWkCRyv9pKB/CTk056YS87itpmWkg=;
-        b=D+SU6LNlQnSn/HNiKiYSBUr4ljM0Q/WxPuIdSALbrS/aSUy5MFA0RQcdgV/76jyqW5
-         CkMAQFqL2Ib2gRHa3G6yfytEFENO+cAnH1ucAtIRyBGKg8/WOOtmBAsZJJfGXBOoT6WR
-         oQPAYCqYm5UEDFMRTKPRr1+E0UTzWpp0MZcLZPMWNaQ0J35dgJgXeO7OK7gA9gP2G2E8
-         EJGvb0cJQAygIMGW8+0WTw7PHNiJdFQHyHMkebCT6OLpNTwkP3FxQHquGChIB9A0XoEC
-         HLIxPiOxBczJj15khy+QfouuTbFrIPZivLu3OPqNgKd3Ns8hgk7HL8O0XjdV2TPON2m2
-         Htaw==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=77Gpxnelo2/dzLY+errjgrjfiIA7jRfswZeq6VkrpC4=;
+        b=S201HAOGhgwdYnrVEpOhkpqt+pH0TAM5mVos5XVgWFmyu9pt0r4/VwEybX8Oc07/Eh
+         X5RJE4pTdgNWHCVGYO6xL+Imui5R3zJPTPu+VfZV/Vhj/K53F/Cw4WGKCNtCwhqxBcLv
+         bQdSXTnNf3ADgxq9ADVSwnLynkcVdCehO7KsqfveQvoQDIIZdjdZtSvB22qr3FlbNK/k
+         7rtpyYyldORov2TlUOuT0CZouw+VaKsVubp8AYPXwwVUj+krVM/BQsy0zsAAO2Jwkht7
+         V6Kz2oODRSo4qluU9SdTiNll18vHH34ZcDKy/1EoQ/2ck14PBNOj+0VY6JYu8C0sHwnA
+         uRfA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=C+EMAmeFZRp3TpuWkCRyv9pKB/CTk056YS87itpmWkg=;
-        b=iGsmzZvD50F5N36PVkLC3Npq0TUANQ2XOyL3uKIRPbHw9+Q7CmTlN/HYQE9A0ypQkk
-         nPW1VEMqjGkUu8rErWWdZUikqwwEJWLQbr/WesVgAEsZFl6Y8v8k9zddRxmb5vnl6edk
-         VrEZAMSYwhdQ1yrhn2HfY2wMF3xCVVI1DJx26eJF5WstpL9V7ivEzZqr1mN2WMdFhZct
-         wYsKqvYm9XqNtLIKLKDhMzIY5pXP5qBF1/HdKzcDYi14PkX9p/sUsIrlGgMl+Ls+/8kH
-         BZsmmyOmW6VZBu2q7A7OU5RTFCojtrJh+z/8aTiTKI9Su0lCydkKSOslZc6dcCaj0iLS
-         EzDw==
-X-Gm-Message-State: AOAM532z8ecVX5fUyJWozB0ZWKXKHdjG4me3Cf7rf9DZvkN4czsQP+H1
-        U0YzdnjyOrc4HkAiMmBCmI28PTOU91SS9ysGPt0=
-X-Google-Smtp-Source: ABdhPJwlpWpdB/ytI31JwutxbVKBoDGmOXA6+bkbvuq/cwiSYf170f4WOIXhJkFkQDVZTPOv1JFevXIUlVGkIuhangg=
-X-Received: by 2002:a5d:9d8c:0:b0:664:afc8:64df with SMTP id
- ay12-20020a5d9d8c000000b00664afc864dfmr2090581iob.42.1654162021097; Thu, 02
- Jun 2022 02:27:01 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=77Gpxnelo2/dzLY+errjgrjfiIA7jRfswZeq6VkrpC4=;
+        b=poWOu9VGKw0YaKVLCbyFUl8tOKjcAi0galCWfMFCRgVNQ8Mykfn+j0YPGfSkd1zxIc
+         L/55XUFWKNkK9WPhj9+gmjuy8afpxJID67cIQK4A8F3IgJBVUT6nORGnAqUuDNxBcFOD
+         xy8P/IKso8DPccXlBi4NuOzUK5ofPh78H5EpioM8bNA8LVlkI+cthAHnjmqAAeYt4j/j
+         1/ejQLs7sf34y5dTbeKaq3XEmJTanh0tyCO0mSnAFgv2ILhZGakH7moY73qcJvGAeckC
+         qTdF/hjHCJHVkDBesi8zrap11WTZmnXHqNJO0jGUDjI9wLO6GTENXwV5oeJgZpq7XcK5
+         msGg==
+X-Gm-Message-State: AOAM532o3hNHJj3unWIlL3mv9g1qmtcAxA8GwRKfT3OSkLB9MiC5tYIl
+        zVwKjLcMncbqq6wfGB38/hc=
+X-Google-Smtp-Source: ABdhPJxE4bp1e34dpAR0XXIxmkmYxmskLpltLRIHexUMOnKu5az1MV7atfofzSBm70J8E4WAtEJSOg==
+X-Received: by 2002:a5d:6c6b:0:b0:1ea:77ea:dde8 with SMTP id r11-20020a5d6c6b000000b001ea77eadde8mr2904047wrz.690.1654162153418;
+        Thu, 02 Jun 2022 02:29:13 -0700 (PDT)
+Received: from ?IPV6:2a01:e0a:181:90d0:6ce1:d6aa:6a23:353b? ([2a01:e0a:181:90d0:6ce1:d6aa:6a23:353b])
+        by smtp.gmail.com with ESMTPSA id h1-20020a5d4fc1000000b0020fc4cd81f6sm3740571wrw.60.2022.06.02.02.29.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 02 Jun 2022 02:29:12 -0700 (PDT)
+Message-ID: <5dae58ca-487a-cbd8-00f8-9951a425f70e@gmail.com>
+Date:   Thu, 2 Jun 2022 11:29:12 +0200
 MIME-Version: 1.0
-References: <20220601100005.2989022-1-chenhuacai@loongson.cn>
- <20220601100005.2989022-4-chenhuacai@loongson.cn> <Yph/Q+szVkhDPg4a@debian.me>
-In-Reply-To: <Yph/Q+szVkhDPg4a@debian.me>
-From:   Huacai Chen <chenhuacai@gmail.com>
-Date:   Thu, 2 Jun 2022 17:26:51 +0800
-Message-ID: <CAAhV-H4MeVyT1TVx6gfaYaPU3oNSLUyr4iJpt0-FRCNzPf=jfw@mail.gmail.com>
-Subject: Re: [PATCH V12 03/24] Documentation: LoongArch: Add basic documentations
-To:     Bagas Sanjaya <bagasdotme@gmail.com>
-Cc:     Huacai Chen <chenhuacai@loongson.cn>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Airlie <airlied@linux.ie>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        WANG Xuerui <git@xen0n.name>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH 2/3] tty: serial: atmel: improve clock management
+Content-Language: fr-FR
+To:     Claudiu Beznea <claudiu.beznea@microchip.com>,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
+        patrice.chotard@foss.st.com
+Cc:     linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+References: <20220525133733.1051714-1-claudiu.beznea@microchip.com>
+ <20220525133733.1051714-3-claudiu.beznea@microchip.com>
+From:   Richard Genoud <richard.genoud@gmail.com>
+In-Reply-To: <20220525133733.1051714-3-claudiu.beznea@microchip.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Bagas,
+Hi,
 
-On Thu, Jun 2, 2022 at 5:13 PM Bagas Sanjaya <bagasdotme@gmail.com> wrote:
->
-> On Wed, Jun 01, 2022 at 05:59:44PM +0800, Huacai Chen wrote:
->
-> > +Note: The register ``$r21`` is reserved in the ELF psABI, but used by the Linux
-> > +kernel for storing the percpu base address. It normally has no ABI name, but is
-> > +called ``$u0`` in the kernel. You may also see ``$v0`` or ``$v1`` in some old code,
-> > +they are deprecated aliases of ``$a0`` and ``$a1`` respectively.
->
-> A nitpick: instead of just comma (,), also use "however" conjunction, that
-> is "You may also see ..., however they ... ."
-OK, thanks.
+Le 25/05/2022 à 15:37, Claudiu Beznea a écrit :
+> atmel_port->clk was requested in atmel_init_port() (which is called only
+> on probe path) only if atmel_port->clk was NULL. But atmel_port->clk is
+> NULL on probing path. Thus don't check this. Along with this the clock is
+> now requested with devm_clk_get() and the clock request has been moved in
+> atmel_serial_probe() function to avoid disabling/re-enabling it on probe
+> path for multiple times. All the checks of atmel_port->clk were removed
+> along with clk_put() and atmel_port->clk = NULL. Now, on probing time the
+> clock is enabled at the beginning and disabled at the end of probe. As
+> atmel_console_setup() is called in the middle of probe and clock is
+> already enabled at that time the clk_prepare_enable() in
+> atmel_console_setup() has also been removed.
+Could you split this patch into smaller steps ?
+I think it will be easier to read and review.
 
-Huacai
->
-> > +
-> > +Note: You may see ``$fv0`` or ``$fv1`` in some old code, they are deprecated
-> > +aliases of ``$fa0`` and ``$fa1`` respectively.
-> > +
->
-> The nitpick above also applies here, too.
->
-> Otherwise, htmldocs built successfully without any new warnings.
->
-> Tested-by: Bagas Sanjaya <bagasdotme@gmail.com>
->
-> --
-> An old man doll... just what I always wanted! - Clara
+> 
+> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+> ---
+>   drivers/tty/serial/atmel_serial.c | 65 +++++++------------------------
+>   1 file changed, 15 insertions(+), 50 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+> index 5c793a23dc54..2955b1012014 100644
+> --- a/drivers/tty/serial/atmel_serial.c
+> +++ b/drivers/tty/serial/atmel_serial.c
+> @@ -2501,24 +2501,7 @@ static int atmel_init_port(struct atmel_uart_port *atmel_port,
+>   	if (ret)
+>   		return ret;
+>   
+> -	/* for console, the clock could already be configured */
+> -	if (!atmel_port->clk) {
+> -		atmel_port->clk = clk_get(&mpdev->dev, "usart");
+> -		if (IS_ERR(atmel_port->clk)) {
+> -			ret = PTR_ERR(atmel_port->clk);
+> -			atmel_port->clk = NULL;
+> -			return ret;
+> -		}
+> -		ret = clk_prepare_enable(atmel_port->clk);
+> -		if (ret) {
+> -			clk_put(atmel_port->clk);
+> -			atmel_port->clk = NULL;
+> -			return ret;
+> -		}
+> -		port->uartclk = clk_get_rate(atmel_port->clk);
+> -		clk_disable_unprepare(atmel_port->clk);
+> -		/* only enable clock when USART is in use */
+> -	}
+> +	port->uartclk = clk_get_rate(atmel_port->clk);
+>   
+>   	/*
+>   	 * Use TXEMPTY for interrupt when rs485 or ISO7816 else TXRDY or
+> @@ -2640,10 +2623,6 @@ static int __init atmel_console_setup(struct console *co, char *options)
+>   		return -ENODEV;
+>   	}
+>   
+> -	ret = clk_prepare_enable(atmel_ports[co->index].clk);
+> -	if (ret)
+> -		return ret;
+> -
+Now, "int ret;" is unused, you can remove it.
+
+>   	atmel_uart_writel(port, ATMEL_US_IDR, -1);
+>   	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_RSTSTA | ATMEL_US_RSTRX);
+>   	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXEN | ATMEL_US_RXEN);
+> @@ -2889,14 +2868,23 @@ static int atmel_serial_probe(struct platform_device *pdev)
+>   	atomic_set(&atmel_port->tasklet_shutdown, 0);
+>   	spin_lock_init(&atmel_port->lock_suspended);
+>   
+> +	atmel_port->clk = devm_clk_get(&pdev->dev, "usart");
+> +	if (IS_ERR(atmel_port->clk)) {
+> +		ret = PTR_ERR(atmel_port->clk);
+> +		goto err;
+> +	}
+> +	ret = clk_prepare_enable(atmel_port->clk);
+> +	if (ret)
+> +		goto err;
+> +
+>   	ret = atmel_init_port(atmel_port, pdev);
+>   	if (ret)
+> -		goto err_clear_bit;
+> +		goto err_clk_disable_unprepare;
+>   
+>   	atmel_port->gpios = mctrl_gpio_init(&atmel_port->uart, 0);
+>   	if (IS_ERR(atmel_port->gpios)) {
+>   		ret = PTR_ERR(atmel_port->gpios);
+> -		goto err_clear_bit;
+> +		goto err_clk_disable_unprepare;
+>   	}
+>   
+>   	if (!atmel_use_pdc_rx(&atmel_port->uart)) {
+> @@ -2905,7 +2893,7 @@ static int atmel_serial_probe(struct platform_device *pdev)
+>   				     sizeof(struct atmel_uart_char),
+>   				     GFP_KERNEL);
+>   		if (!data)
+> -			goto err_alloc_ring;
+> +			goto err_clk_disable_unprepare;
+>   		atmel_port->rx_ring.buf = data;
+>   	}
+>   
+> @@ -2915,26 +2903,9 @@ static int atmel_serial_probe(struct platform_device *pdev)
+>   	if (ret)
+>   		goto err_add_port;
+>   
+> -#ifdef CONFIG_SERIAL_ATMEL_CONSOLE
+> -	if (uart_console(&atmel_port->uart)
+> -			&& ATMEL_CONSOLE_DEVICE->flags & CON_ENABLED) {
+> -		/*
+> -		 * The serial core enabled the clock for us, so undo
+> -		 * the clk_prepare_enable() in atmel_console_setup()
+> -		 */
+> -		clk_disable_unprepare(atmel_port->clk);
+> -	}
+> -#endif
+> -
+>   	device_init_wakeup(&pdev->dev, 1);
+>   	platform_set_drvdata(pdev, atmel_port);
+>   
+> -	/*
+> -	 * The peripheral clock has been disabled by atmel_init_port():
+> -	 * enable it before accessing I/O registers
+> -	 */
+> -	clk_prepare_enable(atmel_port->clk);
+> -
+>   	if (rs485_enabled) {
+>   		atmel_uart_writel(&atmel_port->uart, ATMEL_US_MR,
+>   				  ATMEL_US_USMODE_NORMAL);
+> @@ -2958,12 +2929,8 @@ static int atmel_serial_probe(struct platform_device *pdev)
+>   err_add_port:
+>   	kfree(atmel_port->rx_ring.buf);
+>   	atmel_port->rx_ring.buf = NULL;
+> -err_alloc_ring:
+> -	if (!uart_console(&atmel_port->uart)) {
+> -		clk_put(atmel_port->clk);
+> -		atmel_port->clk = NULL;
+> -	}
+> -err_clear_bit:
+> +err_clk_disable_unprepare:
+> +	clk_disable_unprepare(atmel_port->clk);
+>   	clear_bit(atmel_port->uart.line, atmel_ports_in_use);
+>   err:
+>   	return ret;
+> @@ -2997,8 +2964,6 @@ static int atmel_serial_remove(struct platform_device *pdev)
+>   
+>   	clear_bit(port->line, atmel_ports_in_use);
+>   
+> -	clk_put(atmel_port->clk);
+> -	atmel_port->clk = NULL;
+>   	pdev->dev.of_node = NULL;
+>   
+>   	return ret;
+Thanks !
+
+Regards,
+Richard
