@@ -2,93 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E63AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 19:46:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5652C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 19:46:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238825AbiFBTqY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 15:46:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60546 "EHLO
+        id S237254AbiFBTqe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 15:46:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237482AbiFBTqV (ORCPT
+        with ESMTP id S237242AbiFBTqb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 15:46:21 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49108235
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 12:46:20 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id x62so7574864ede.10
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 12:46:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=g8dK6D+XTwQM6Q2wZRKTjnaTGLe0PvZRBSojaTGRw0o=;
-        b=Fw9O5ZQr2akCs4XmkAleh4S1lzR/HnmE+gr+ExVcOzwPxlPBN+cxqks9XAmHum3a9r
-         EdR/pADzdNu2xsnplxjkFSOSAh4MgTkZa39ydrHWleBPDB0V3sGb1fyOvp86Qg0iOUmA
-         ZL4/cbSunc8oCfQv/NmSPlM9MXREEBXgNEDzo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=g8dK6D+XTwQM6Q2wZRKTjnaTGLe0PvZRBSojaTGRw0o=;
-        b=JIM95eeVc6Bxn4rSA8whJWH5nqYtGQnfOrltUGaV3DUoTVeJ1oBv7Vjt80KwvG7tef
-         HiFNVHkQv6PbXJd9bFvnsqswb/o5aOsNjYXk9eB2zr/x9lkOH0P4MxKn4Jc/uUPeMofV
-         xXbqh0JFB8DlIK6K6exn9/ZrLDaU5VLuDlwlW0MFDhBLfP1hx94rLO9JcWBIXbxpQmxq
-         SXawji+qZ2PONSg7I/eTAStTVYNSpfZTzJtq4aaef0lqJISuTgFXKcG+5Qtewst0tb3+
-         kE0Ux/gxBWO1SaWJp/wKfONI2Hu1qvbbdi9hzrasg7eDjK8nf3lLEzmuLrtD8pEvrEty
-         TlcA==
-X-Gm-Message-State: AOAM533ytRGROENGFA53x3SjrlGnno7JFn4NfVVsFwyjGlQnLWHj78jE
-        8EOObPeCVbgMQDrtYolVPGxocNn0kUWkIteUSFE=
-X-Google-Smtp-Source: ABdhPJwEF2d71LX73zEKn+zqWxBmwsY8aAPI/HXm8wJo9O5pq2By174qSenAooW1X5fAd5605aoOPQ==
-X-Received: by 2002:aa7:d14c:0:b0:42d:bbab:43d6 with SMTP id r12-20020aa7d14c000000b0042dbbab43d6mr7241400edo.15.1654199178615;
-        Thu, 02 Jun 2022 12:46:18 -0700 (PDT)
-Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com. [209.85.221.44])
-        by smtp.gmail.com with ESMTPSA id j12-20020a170906254c00b0070759e37183sm2010057ejb.59.2022.06.02.12.46.18
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 02 Jun 2022 12:46:18 -0700 (PDT)
-Received: by mail-wr1-f44.google.com with SMTP id x17so7725217wrg.6
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 12:46:18 -0700 (PDT)
-X-Received: by 2002:a5d:6da6:0:b0:20f:bc8a:9400 with SMTP id
- u6-20020a5d6da6000000b0020fbc8a9400mr4890049wrs.274.1654198848176; Thu, 02
- Jun 2022 12:40:48 -0700 (PDT)
+        Thu, 2 Jun 2022 15:46:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2026DB1A
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 12:46:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B2A2BB81F2E
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 19:46:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3664BC34115;
+        Thu,  2 Jun 2022 19:46:26 +0000 (UTC)
+Date:   Thu, 2 Jun 2022 20:46:22 +0100
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Stephen Boyd <swboyd@chromium.org>, Will Deacon <will@kernel.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>, patches@lists.linux.dev
+Subject: Re: [PATCH] arm64: Initialize jump labels before setup_machine_fdt()
+Message-ID: <YpkTjv6i+IlO32wM@arm.com>
+References: <20220602022109.780348-1-swboyd@chromium.org>
+ <165419885870.2681883.10934677413962491141.b4-ty@arm.com>
+ <CAHmME9qBOwb==N9AWSSb8VhCXANsieWi7JpiiiUMvjU2rdb5XA@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220322140344.556474-2-atomlin@redhat.com> <20220602035653.4167316-1-saravanak@google.com>
- <YpkMelZC+E5hKTw6@bombadil.infradead.org>
-In-Reply-To: <YpkMelZC+E5hKTw6@bombadil.infradead.org>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Thu, 2 Jun 2022 12:40:32 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wit6ttmzdFsbH+YLkMeLucTspYADHnENn4fBXNrit0BUQ@mail.gmail.com>
-Message-ID: <CAHk-=wit6ttmzdFsbH+YLkMeLucTspYADHnENn4fBXNrit0BUQ@mail.gmail.com>
-Subject: Re: [PATCH v1] module: Fix prefix for module.sig_enforce module param
-To:     Luis Chamberlain <mcgrof@kernel.org>
-Cc:     Saravana Kannan <saravanak@google.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Aaron Tomlin <atomlin@redhat.com>,
-        Christoph Lameter <cl@linux.com>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jessica Yu <jeyu@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-modules@vger.kernel.org, void@manifault.com,
-        atomlin@atomlin.com, Allen Pais <allen.lkml@gmail.com>,
-        Joe Perches <joe@perches.com>,
-        Michal Suchanek <msuchanek@suse.de>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Android Kernel Team <kernel-team@android.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHmME9qBOwb==N9AWSSb8VhCXANsieWi7JpiiiUMvjU2rdb5XA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 2, 2022 at 12:16 PM Luis Chamberlain <mcgrof@kernel.org> wrote:
->
-> Linus want to take this in or should I just queue these up?
+Hi Jason,
 
-I'll take it, and remove the unnecessary #ifdef/#endif. The #undef
-might as well be unconditional - simpler and doesn't hurt.
+On Thu, Jun 02, 2022 at 09:42:49PM +0200, Jason A. Donenfeld wrote:
+> On Thu, Jun 2, 2022 at 9:41 PM Catalin Marinas <catalin.marinas@arm.com> wrote:
+> > On Wed, 1 Jun 2022 19:21:09 -0700, Stephen Boyd wrote:
+> > > A static key warning splat appears during early boot on arm64 systems
+> > > that credit randomness from devicetrees that contain an "rng-seed"
+> > > property. This is because setup_machine_fdt() is called before
+> > > jump_label_init() during setup_arch(). Let's swap the order of these two
+> > > calls so that jump labels are initialized before the devicetree is
+> > > unflattened and the rng seed is credited.
+> > >
+> > > [...]
+> >
+> > Applied to arm64 (for-next/core), thanks!
+> >
+> > [1/1] arm64: Initialize jump labels before setup_machine_fdt()
+> >       https://git.kernel.org/arm64/c/73e2d827a501
+> 
+> I'm not sure precisely what your for-next tag corresponds to, but just
+> FYI, this should probably go into 5.19 asap and be marked for stable@.
 
-            Linus
+The for-next/core branch should go in 5.19-rc1 (I'll send a pull request
+tomorrow). There's no need to cc stable since the fixed commit just went
+in (unless you mean something else by "marked for stable").
+
+-- 
+Catalin
