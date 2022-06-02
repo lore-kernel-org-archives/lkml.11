@@ -2,123 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 684B3C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 06:46:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5C52C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 06:50:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231401AbiFBGqu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 02:46:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58872 "EHLO
+        id S231288AbiFBGt4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 02:49:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231439AbiFBGqm (ORCPT
+        with ESMTP id S229737AbiFBGty (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 02:46:42 -0400
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F37AB2A3A04;
-        Wed,  1 Jun 2022 23:46:40 -0700 (PDT)
-Received: by mail-yb1-xb2b.google.com with SMTP id g4so6705644ybf.12;
-        Wed, 01 Jun 2022 23:46:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BszKUWBoDhe4QochGZDZFlBkPYZcs7PuZmpP6HGKNOM=;
-        b=CZpI41s86ZMmSgVndxepBehDJn37LAJpF4lJD+Vv9uqU+84sORclP23vCS8vNJxFnJ
-         XmmR7jhK63Mtpjn57lySuY0YBXb9mjRD+2golXeTaoes3dAvAbL5qnqi3urd4uColD/c
-         VCaG3IpEZXRfY3xosx7rpsHyWKm+vWV3mQbXPrdsqzPEEWenjjQBaV/4Pzn/zFM9wKyl
-         5Z//gVMqTYJXp+EkufKYVEjH+m9X47ZXFY8TbXQHa5JOhAqgS4xCJFnVVmAHMShjSyJa
-         O5SkMlogQV25sswqgweGLR/4L+vv59Nxu+gCELogE9FQZEDR+JNPRCBPU2cjIti/YK4m
-         1fTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BszKUWBoDhe4QochGZDZFlBkPYZcs7PuZmpP6HGKNOM=;
-        b=m0Q88LG5ykSbnRatc88mSG5KjMaVy882YOi/N2Qb84+v88JQXEXFEOam+/4XlqK3Ng
-         vtEC5jjrHG9OtmlsC2N+0koXRPwEPCzPUqTCftlxb5ybDOXGp9ZyR8c+8jnY0jofOAKU
-         c1O7USu3Amd/ypUdXTvRCRW3ELx7X2cvE7Jqhkci+RiC9E1Bl+eY5+oLocGhj0HcBUVf
-         XNCKs7fmoWswv5JIjdg2YLlSLUlIwORZpWh5BsdySSvFqQ+biWhSiK9VL06iHi7Dq20+
-         LS1DXbx5AKLd5T3/8xRCqlAJqWx9I/k/Nvk/0RXFMPu0+bADiPGoNDbceDzgnoCj3khJ
-         Yfvw==
-X-Gm-Message-State: AOAM530dj8D5accccFHcNEaJBh9xM7eImGjBdrVP86FUnKa2btEBD2NE
-        kQmZ0gCH2QyRxhdEqq+IKzwlmVQM5q/HMEZALXU=
-X-Google-Smtp-Source: ABdhPJzcjK3Ou9Sihzm14OPh2Y0uzrI4p+hQtSOakPQVOIeVXabsHkZORABZ+BFkVxF4tfYOR0TNSILzFlX2DxhynKg=
-X-Received: by 2002:a5b:691:0:b0:64d:ab44:f12e with SMTP id
- j17-20020a5b0691000000b0064dab44f12emr3640214ybq.533.1654152400227; Wed, 01
- Jun 2022 23:46:40 -0700 (PDT)
+        Thu, 2 Jun 2022 02:49:54 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95C85229B41;
+        Wed,  1 Jun 2022 23:49:52 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.56])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LDGpV4mBKzKmHh;
+        Thu,  2 Jun 2022 14:49:38 +0800 (CST)
+Received: from dggpemm500018.china.huawei.com (7.185.36.111) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 2 Jun 2022 14:49:50 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ dggpemm500018.china.huawei.com (7.185.36.111) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 2 Jun 2022 14:49:50 +0800
+From:   Ke Liu <liuke94@huawei.com>
+To:     <bhelgaas@google.com>
+CC:     <nirmal.patel@linux.intel.com>, <jonathan.derrick@linux.dev>,
+        <lpieralisi@kernel.org>, <robh@kernel.org>, <kw@linux.com>,
+        <kurt.schwemmer@microsemi.com>, <logang@deltatee.com>,
+        <linux-pci@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Ke Liu <liuke94@huawei.com>
+Subject: [PATCH v2] drivers: pci: Directly use ida_alloc()/free()
+Date:   Thu, 2 Jun 2022 07:11:15 +0000
+Message-ID: <20220602071115.3833935-1-liuke94@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220520114242.150235-1-benchuanggli@gmail.com> <CAPDyKFoQP=4OSwcjj6bJOxDXvrWjqwi-MpvpMe4L5ftWwkEhFQ@mail.gmail.com>
-In-Reply-To: <CAPDyKFoQP=4OSwcjj6bJOxDXvrWjqwi-MpvpMe4L5ftWwkEhFQ@mail.gmail.com>
-From:   Ben Chuang <benchuanggli@gmail.com>
-Date:   Thu, 2 Jun 2022 14:46:29 +0800
-Message-ID: <CACT4zj9x34TV_cTTV37crgtMqLEd-=rHkKUmdi=FsJDy3xpeYA@mail.gmail.com>
-Subject: Re: [RESEND, PATCH] mmc: sdhci-pci-gli: Fix GL9763E runtime PM when
- the system resumes from suspend
-To:     Ulf Hansson <ulf.hansson@linaro.org>
-Cc:     Adrian Hunter <adrian.hunter@intel.com>,
-        linux-mmc <linux-mmc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        greg.tu@genesyslogic.com.tw,
-        Ben Chuang <ben.chuang@genesyslogic.com.tw>,
-        SeanHY.Chen@genesyslogic.com.tw, jason.lai@genesyslogic.com.tw,
-        victor.shih@genesyslogic.com.tw,
-        kane.chen@intel.corp-partner.google.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500018.china.huawei.com (7.185.36.111)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 31, 2022 at 9:39 PM Ulf Hansson <ulf.hansson@linaro.org> wrote:
->
-> On Fri, 20 May 2022 at 13:43, Ben Chuang <benchuanggli@gmail.com> wrote:
-> >
-> > When the system resumes from suspend (S3 or S4), the power mode is
-> > MMC_POWER_OFF. In this status, gl9763e_runtime_resume() should not enable
-> > PLL. Add a condition to this function to enable PLL only when the power
-> > mode is MMC_POWER_ON.
-> >
-> > Fixes: d607667bb8fa (mmc: sdhci-pci-gli: Add runtime PM for GL9763E)
-> > Signed-off-by: Ben Chuang <benchuanggli@gmail.com>
->
-> Sorry for the delay, I have been out traveling. Unfortunately this
-> didn't make it for v5.18, although I have queued it up for v5.19 and
-> added a stable tag.
->
-> Thanks and kind regards
-> Uffe
->
+Use ida_alloc()/ida_free() instead of deprecated
+ida_simple_get()/ida_simple_remove().
 
-It's ok. Thank you for the explanation.
+Signed-off-by: Ke Liu <liuke94@huawei.com>
+---
+v2	fix sign-off name suggest by Bjorn Helgaas
+---
+ drivers/pci/controller/vmd.c   | 6 +++---
+ drivers/pci/switch/switchtec.c | 7 +++----
+ 2 files changed, 6 insertions(+), 7 deletions(-)
 
-Best regards,
-Ben
+diff --git a/drivers/pci/controller/vmd.c b/drivers/pci/controller/vmd.c
+index 94a14a3d7e55..49c72c2d8fe7 100644
+--- a/drivers/pci/controller/vmd.c
++++ b/drivers/pci/controller/vmd.c
+@@ -894,7 +894,7 @@ static int vmd_probe(struct pci_dev *dev, const struct pci_device_id *id)
+ 		return -ENOMEM;
+ 
+ 	vmd->dev = dev;
+-	vmd->instance = ida_simple_get(&vmd_instance_ida, 0, 0, GFP_KERNEL);
++	vmd->instance = ida_alloc(&vmd_instance_ida, GFP_KERNEL);
+ 	if (vmd->instance < 0)
+ 		return vmd->instance;
+ 
+@@ -935,7 +935,7 @@ static int vmd_probe(struct pci_dev *dev, const struct pci_device_id *id)
+ 	return 0;
+ 
+  out_release_instance:
+-	ida_simple_remove(&vmd_instance_ida, vmd->instance);
++	ida_free(&vmd_instance_ida, vmd->instance);
+ 	kfree(vmd->name);
+ 	return err;
+ }
+@@ -958,7 +958,7 @@ static void vmd_remove(struct pci_dev *dev)
+ 	vmd_cleanup_srcu(vmd);
+ 	vmd_detach_resources(vmd);
+ 	vmd_remove_irq_domain(vmd);
+-	ida_simple_remove(&vmd_instance_ida, vmd->instance);
++	ida_free(&vmd_instance_ida, vmd->instance);
+ 	kfree(vmd->name);
+ }
+ 
+diff --git a/drivers/pci/switch/switchtec.c b/drivers/pci/switch/switchtec.c
+index c36c1238c604..75be4fe22509 100644
+--- a/drivers/pci/switch/switchtec.c
++++ b/drivers/pci/switch/switchtec.c
+@@ -1376,8 +1376,7 @@ static struct switchtec_dev *stdev_create(struct pci_dev *pdev)
+ 	dev->groups = switchtec_device_groups;
+ 	dev->release = stdev_release;
+ 
+-	minor = ida_simple_get(&switchtec_minor_ida, 0, 0,
+-			       GFP_KERNEL);
++	minor = ida_alloc(&switchtec_minor_ida, GFP_KERNEL);
+ 	if (minor < 0) {
+ 		rc = minor;
+ 		goto err_put;
+@@ -1692,7 +1691,7 @@ static int switchtec_pci_probe(struct pci_dev *pdev,
+ err_devadd:
+ 	stdev_kill(stdev);
+ err_put:
+-	ida_simple_remove(&switchtec_minor_ida, MINOR(stdev->dev.devt));
++	ida_free(&switchtec_minor_ida, MINOR(stdev->dev.devt));
+ 	put_device(&stdev->dev);
+ 	return rc;
+ }
+@@ -1704,7 +1703,7 @@ static void switchtec_pci_remove(struct pci_dev *pdev)
+ 	pci_set_drvdata(pdev, NULL);
+ 
+ 	cdev_device_del(&stdev->cdev, &stdev->dev);
+-	ida_simple_remove(&switchtec_minor_ida, MINOR(stdev->dev.devt));
++	ida_free(&switchtec_minor_ida, MINOR(stdev->dev.devt));
+ 	dev_info(&stdev->dev, "unregistered.\n");
+ 	stdev_kill(stdev);
+ 	put_device(&stdev->dev);
+-- 
+2.25.1
 
->
-> > ---
-> > Hi,
-> >
-> > Sorry, resend this patch because typo two email addresses.
-> > Sorry for Adrian and Kane.
-> >
-> > Best regards,
-> > Ben
-> > ---
-> >  drivers/mmc/host/sdhci-pci-gli.c | 3 +++
-> >  1 file changed, 3 insertions(+)
-> >
-> > diff --git a/drivers/mmc/host/sdhci-pci-gli.c b/drivers/mmc/host/sdhci-pci-gli.c
-> > index d09728c37d03..d81e5dc90e15 100644
-> > --- a/drivers/mmc/host/sdhci-pci-gli.c
-> > +++ b/drivers/mmc/host/sdhci-pci-gli.c
-> > @@ -972,6 +972,9 @@ static int gl9763e_runtime_resume(struct sdhci_pci_chip *chip)
-> >         struct sdhci_host *host = slot->host;
-> >         u16 clock;
-> >
-> > +       if (host->mmc->ios.power_mode != MMC_POWER_ON)
-> > +               return 0;
-> > +
-> >         clock = sdhci_readw(host, SDHCI_CLOCK_CONTROL);
-> >
-> >         clock |= SDHCI_CLOCK_PLL_EN;
-> > --
-> > 2.36.0
-> >
