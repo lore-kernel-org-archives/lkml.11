@@ -2,97 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96B6EC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 03:19:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A4BECCA473
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 03:20:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233562AbiFBDTo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 23:19:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48018 "EHLO
+        id S233593AbiFBDUN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 23:20:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233549AbiFBDTj (ORCPT
+        with ESMTP id S233597AbiFBDUC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 23:19:39 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9500923CA1C;
-        Wed,  1 Jun 2022 20:19:38 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id 137so3621012pgb.5;
-        Wed, 01 Jun 2022 20:19:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DNuRE/GAXdxtn6roiJJAyTqusXsj7xkWB9v744C6KtQ=;
-        b=UZ9Bgpv8gRre7NiiTeQPFyN1Xh5L4bYRuTD7qkuhK2pcLtngkQIuN131ACsE8hkG+N
-         gqzyCkxQFe/NitIvTDpPshsTcBKmCWJgyy4fzNtA0yt2WNR8W/E0kNJ4RO+VmbIQq+My
-         hyA/Y9Yiz4Jowbwqk7TNCWrGtjOdpOALOw191BDjtV7N1jYoTf6Q4hACPFcarK5adoCg
-         JYAztQ1J+BOEXtPl0DCPubaInsobQtCX+ODsu0T5LOSf+P9gr0rxGims1Xu9vghZM2bd
-         KCfloaQlA7xByUWAcbbRclToW6XprxpUqS+XtHXbbBXIatCPHqelIDTZa+yz4U04fiO1
-         Y5eA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DNuRE/GAXdxtn6roiJJAyTqusXsj7xkWB9v744C6KtQ=;
-        b=Y+nhrSfgTBUNiQJZTTYOV3ohT8QfZXtvQEPhTLqKiKHhkCZ9Zt+u33ZFGkCgV+rKiL
-         isNkz2VvKDVzRnuoQ9OYqHZwxxpRaCSOQ4oLBclaBrPHu/b5fHCmsKQqqQsQwG15FGzr
-         tkl/iTaWGOP9/4yjyMUm1RljSkd8wFfWovAJ6nTBjl/DQzLJyHhkImoN/xun6E5UV5wG
-         oKlpXK11c4KCQCgCyVgP1dDqx2gjRLOG8k3m/8+PzYdWPNz1t/B1WdygeJP2Z6o1IfNr
-         zO9ELDC0XXDY2TGWO0ZyBK67ktbbanwWaFl7zU9chUpIHjB65GYJBUlStBESkQrnDlGO
-         aCcw==
-X-Gm-Message-State: AOAM5329COnZA+O/gbPw/BWPPHJQzP0b654eeRJ/3pvf84ts8Hk1ZNVp
-        6Sy2GA4wzENsG02Lun9myh8=
-X-Google-Smtp-Source: ABdhPJwJLMaVLD2u2bJY4KVpXbDijKCzOaTpwPMfdI94WT0FcKKy7drYlOlA9HTHThXN4TtxlUI6Jg==
-X-Received: by 2002:a63:42:0:b0:3fa:b4d7:eeb5 with SMTP id 63-20020a630042000000b003fab4d7eeb5mr2229233pga.71.1654139978086;
-        Wed, 01 Jun 2022 20:19:38 -0700 (PDT)
-Received: from localhost.localdomain ([202.120.234.246])
-        by smtp.googlemail.com with ESMTPSA id iw10-20020a170903044a00b0016188a4005asm2257477plb.122.2022.06.01.20.19.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Jun 2022 20:19:37 -0700 (PDT)
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Vidya Sagar <vidyas@nvidia.com>,
-        Om Prakash Singh <omp@nvidia.com>,
-        Fan Fei <ffclaire1224@gmail.com>,
-        Miaoqian Lin <linmq006@gmail.com>, linux-pci@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] PCI: tegra194: Fix PM error handling in tegra_pcie_config_ep
-Date:   Thu,  2 Jun 2022 07:19:08 +0400
-Message-Id: <20220602031910.55859-1-linmq006@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 1 Jun 2022 23:20:02 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 639D524408A
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 20:20:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654140000;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=VAgArk0BcNk+9GP0AOx8PMvAT8X1PDlB7xL7ZWCfJ7g=;
+        b=IniU+KbTaV4Rb5CsKHTMxkQcySSQBye5kHN7GIbAw5ktp1/ZDwt9VCBZNBjoea3euXAedM
+        28CKkkzhgUNHxtDFhRWbS5BOktjTPGwpMdjN3tkdYT48wLPnyne/+ikJw3XCOxRtmXkdN0
+        Nxg8uvhKV8dxZnVeaOPM0tPcWP+b9+w=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-170-Uw4D5aDwNOa_EmLS7mxQdw-1; Wed, 01 Jun 2022 23:19:54 -0400
+X-MC-Unique: Uw4D5aDwNOa_EmLS7mxQdw-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B0CA38032E5;
+        Thu,  2 Jun 2022 03:19:53 +0000 (UTC)
+Received: from T590 (ovpn-8-29.pek2.redhat.com [10.72.8.29])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 5F8C140CF8EB;
+        Thu,  2 Jun 2022 03:19:47 +0000 (UTC)
+Date:   Thu, 2 Jun 2022 11:19:42 +0800
+From:   Ming Lei <ming.lei@redhat.com>
+To:     Pavel Machek <pavel@ucw.cz>
+Cc:     Jens Axboe <axboe@kernel.dk>, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, io-uring@vger.kernel.org,
+        Gabriel Krisman Bertazi <krisman@collabora.com>,
+        ZiyangZhang <ZiyangZhang@linux.alibaba.com>,
+        Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>
+Subject: Re: [RFC PATCH] ubd: add io_uring based userspace block driver
+Message-ID: <YpgsTojc4mVKghZA@T590>
+References: <20220509092312.254354-1-ming.lei@redhat.com>
+ <20220530070700.GF1363@bug>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220530070700.GF1363@bug>
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pm_runtime_enable() will increase power disable depth.
-if dw_pcie_ep_init() fails, we should use pm_runtime_disable()
-to balance it pm_runtime_enable().
-Add missing pm_runtime_disable() for tegra_pcie_config_ep()
+Hello Pavel,
 
-Fixes: c57247f940e8 ("PCI: tegra: Add support for PCIe endpoint mode in Tegra194")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
----
- drivers/pci/controller/dwc/pcie-tegra194.c | 1 +
- 1 file changed, 1 insertion(+)
+On Mon, May 30, 2022 at 09:07:00AM +0200, Pavel Machek wrote:
+> Hi!
+> 
+> > This is the driver part of userspace block driver(ubd driver), the other
+> > part is userspace daemon part(ubdsrv)[1].
+> 
+> > @@ -0,0 +1,1193 @@
+> > +// SPDX-License-Identifier: GPL-2.0-or-later
+> > +/*
+> > + * Userspace block device - block device which IO is handled from userspace
+> > + *
+> > + * Take full use of io_uring passthrough command for communicating with
+> > + * ubd userspace daemon(ubdsrvd) for handling basic IO request.
+> 
+> > +
+> > +static inline unsigned int ubd_req_build_flags(struct request *req)
+> > +{
+> ...
+> > +	if (req->cmd_flags & REQ_SWAP)
+> > +		flags |= UBD_IO_F_SWAP;
+> > +
+> > +	return flags;
+> > +}
+> 
+> Does it work? How do you guarantee operation will be deadlock-free with swapping and
+> writebacks going on?
 
-diff --git a/drivers/pci/controller/dwc/pcie-tegra194.c b/drivers/pci/controller/dwc/pcie-tegra194.c
-index cc2678490162..d992371a36e6 100644
---- a/drivers/pci/controller/dwc/pcie-tegra194.c
-+++ b/drivers/pci/controller/dwc/pcie-tegra194.c
-@@ -1949,6 +1949,7 @@ static int tegra_pcie_config_ep(struct tegra194_pcie *pcie,
- 	if (ret) {
- 		dev_err(dev, "Failed to initialize DWC Endpoint subsystem: %d\n",
- 			ret);
-+		pm_runtime_disable(dev);
- 		return ret;
- 	}
- 
--- 
-2.25.1
+The above is just for providing command flags to user side, so that the
+user side can understand/handle the request better.
+
+prtrl(PR_SET_IO_FLUSHER) has been merged for avoiding the deadlock.
+
+> 
+> What are restriction on ubdsrv? What happens when it needs to allocate memory, or is
+> swapped out?
+
+Yeah, ubd_copy_pages() needs to pin pages for copying data between
+user VM and block request pages, and get_user_pages may run out of pages.
+But I think forward progress can still be provided by reserving one VM buffer
+with single page locked.
+
+> Have mm people seen this?
+
+I remembered that the early RFC with related discussion is CCed to mm
+list, and all follow-up are CC to linux-kernel.
+
+Not one big deal, will Cc mm list in the future post.
+
+
+thanks,
+Ming
 
