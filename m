@@ -2,220 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6EBBC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 14:36:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5865AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 14:37:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235992AbiFBOgU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 10:36:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38002 "EHLO
+        id S235994AbiFBOh4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 10:37:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235361AbiFBOgS (ORCPT
+        with ESMTP id S234681AbiFBOhy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 10:36:18 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E47FD2823C5;
-        Thu,  2 Jun 2022 07:36:15 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id B02AA1FB0F;
-        Thu,  2 Jun 2022 14:36:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1654180574; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=SMO+MwyCe0IQ+/S0EkGIFy+OB+c8ELcZUEsCIONrmks=;
-        b=eY7MZ4IYVufYbc27eGYyUfHtTTs/VvBFa35vHIc0JopazXV11q15W3LqqmgHocOEQCObWa
-        NLgiM22YyzuWF2kml49F9vxzrgLsXyM7/xfBd1o/7zgVN0IG1hyGFhpvRV9qdeZxWP7lAI
-        9xPASOqRkk1vg2O+SUWcNT5TfvQ0Mbo=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1654180574;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=SMO+MwyCe0IQ+/S0EkGIFy+OB+c8ELcZUEsCIONrmks=;
-        b=/Sjl0gNxAN8eP1NKXuyIcbdumf07hWNyHEmaJX3xFsPKanmHa3b1oJRopH4zucyUZt6skC
-        0uyCr4ECdkCVjzBg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 3F182134F3;
-        Thu,  2 Jun 2022 14:36:14 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id wHqIDN7KmGKnXgAAMHmgww
-        (envelope-from <lhenriques@suse.de>); Thu, 02 Jun 2022 14:36:14 +0000
-Received: from localhost (brahms.olymp [local])
-        by brahms.olymp (OpenSMTPD) with ESMTPA id a9ec07d0;
-        Thu, 2 Jun 2022 14:36:53 +0000 (UTC)
-From:   =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>
-To:     Jeff Layton <jlayton@kernel.org>, Xiubo Li <xiubli@redhat.com>,
-        Ilya Dryomov <idryomov@gmail.com>,
-        Gregory Farnum <gfarnum@redhat.com>
-Cc:     ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>
-Subject: [RFC PATCH v4] ceph: prevent a client from exceeding the MDS maximum xattr size
-Date:   Thu,  2 Jun 2022 15:36:52 +0100
-Message-Id: <20220602143652.28244-1-lhenriques@suse.de>
+        Thu, 2 Jun 2022 10:37:54 -0400
+Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1040B2DA9C;
+        Thu,  2 Jun 2022 07:37:51 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id 5ECCF5C00E0;
+        Thu,  2 Jun 2022 10:37:48 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute2.internal (MEProxy); Thu, 02 Jun 2022 10:37:48 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm3; t=1654180668; x=1654267068; bh=BzjRBbEu68
+        Kzk8yC4V4e2pbTUKKqIZY45MXe4ZImIak=; b=WQRNUcou5TAqDeXht8BzuPsoBR
+        Crp+v/UFTBIxi0spr1Fxtb2gOq0OyUjgHlAKxwJisASxTD5dYqmvlDa2pTt6u8IC
+        HS/1DmzzDnkmSiNOZMWlTGXPz5bR2fJo73GPqD5Ik26netbJCWS0dD+yhbie74Ji
+        qyBUsgYEK1Y2zYvbIU7mj+kN9PZLR4rlVAXxN6GGjvdH7iCeJuwz4i5Mqa93E87y
+        mzO2rmYd4lkt8zv8FtBAd7NLxRFEmfw8I/bHp7c8cTnvFDt/7I8+0qyafMP2bdyt
+        Vl/Om8uMpeyDKBUU2b+UEgqXjvITQMasazi38tkGEnpztB5Ft8NEWXCpb44Q==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1654180668; x=1654267068; bh=BzjRBbEu68Kzk8yC4V4e2pbTUKKq
+        IZY45MXe4ZImIak=; b=uFZlaPl/p0d+T6LLoet0CnPwBL82RRIG+/GTxIrVhnhA
+        hIbAPnEPAspo3h5WLAG4K2KF48d4iNK6Cc47igpo2tyUgWc03pn8uTP8sUxMLxWE
+        mkvVRtG2uFiTBVAuWSjgZcPNuLrprQ5w4mh1LgR2ElX9de/kc4yCyGsfXjqEeGWL
+        hh/lognlm+8vf4XpcpNarLKSwxXNtYXpk5wZ5BzitAbpJJhRRYeKcWkF1EE4LOsv
+        u8Q7rvwT5umpdpb3XyVE4/kiuHugHXnY71v4NvstgOtn+n7p5uUC+KUKT9uJrXZ5
+        n7H0LXe16yBb/UmGROGx3rUTMQhEaoUu9AEALuOzew==
+X-ME-Sender: <xms:PMuYYg4FTL-ZO80AV-QyIuIIkAViJJWMz8Gorg_-1ujzsc-3mZDnGA>
+    <xme:PMuYYh7XxtRZ5sMpsv49QFiIjoYmkZLbI-K_QQnvw82E196dgKnhfZjxQMTRavKPO
+    V29zFDqUxsA_oUrjA>
+X-ME-Received: <xmr:PMuYYvfj9oivpHy5P8QRZ8jBnpkt6bchbjPiTvyKIVMh-KYkWb8fSe_x7oTNIWs7NautkrHEYw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrledvgdejiecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenfg
+    hrlhcuvffnffculdejtddmnecujfgurhepfffhvfevuffkfhggtggujgesthdtredttddt
+    vdenucfhrhhomhepffgrnhhivghlucgiuhcuoegugihusegugihuuhhurdighiiiqeenuc
+    ggtffrrghtthgvrhhnpeevuddugeeihfdtffehgffgudeggeegheetgfevhfekkeeileeu
+    ieejleekiedvgfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfh
+    hrohhmpegugihusegugihuuhhurdighiii
+X-ME-Proxy: <xmx:PMuYYlJmhsCk7t3w5NQWbb53m-rwrBYVX77SAzgntwISoSAcU-YWEQ>
+    <xmx:PMuYYkIBA2X_EYIn79pJrhsUUGtACiCn90VETHRiSftH0ToCWSoiBQ>
+    <xmx:PMuYYmxxJ5v69nMQISt532WDmX63jmRma6rthPEYoW7yDr-fnggkQQ>
+    <xmx:PMuYYpHBhI55sVA2ccPy3RVnMWN8R7MrcbX4CqeWbjlMoY3c7rW3Wg>
+Feedback-ID: i6a694271:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 2 Jun 2022 10:37:47 -0400 (EDT)
+Date:   Thu, 2 Jun 2022 09:37:46 -0500
+From:   Daniel Xu <dxu@dxuuu.xyz>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH bpf-next 1/2] bpf, test_run: Add PROG_TEST_RUN support to
+ kprobe
+Message-ID: <20220602143746.dydumxrrvhb6jdv5@kashmir.localdomain>
+References: <cover.1653861287.git.dxu@dxuuu.xyz>
+ <b544771c7bce102f2a97a34e2f5e7ebbb9ea0a24.1653861287.git.dxu@dxuuu.xyz>
+ <CAADnVQL6Duc5qdwkqf+DWqYhngE3Dj-J37=7QoVA3ycFoWBU2w@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAADnVQL6Duc5qdwkqf+DWqYhngE3Dj-J37=7QoVA3ycFoWBU2w@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The MDS tries to enforce a limit on the total key/values in extended
-attributes.  However, this limit is enforced only if doing a synchronous
-operation (MDS_OP_SETXATTR) -- if we're buffering the xattrs, the MDS
-doesn't have a chance to enforce these limits.
+On Tue, May 31, 2022 at 11:07:31AM -0700, Alexei Starovoitov wrote:
+> On Sun, May 29, 2022 at 3:06 PM Daniel Xu <dxu@dxuuu.xyz> wrote:
+> >
+> > This commit adds PROG_TEST_RUN support to BPF_PROG_TYPE_KPROBE progs. On
+> > top of being generally useful for unit testing kprobe progs, this commit
+> > more specifically helps solve a relability problem with bpftrace BEGIN
+> > and END probes.
+> >
+> > BEGIN and END probes are run exactly once at the beginning and end of a
+> > bpftrace tracing session, respectively. bpftrace currently implements
+> > the probes by creating two dummy functions and attaching the BEGIN and
+> > END progs, if defined, to those functions and calling the dummy
+> > functions as appropriate. This works pretty well most of the time except
+> > for when distros strip symbols from bpftrace. Every now and then this
+> > happens and users get confused. Having PROG_TEST_RUN support will help
+> > solve this issue by allowing us to directly trigger uprobes from
+> > userspace.
+> >
+> > Admittedly, this is a pretty specific problem and could probably be
+> > solved other ways. However, PROG_TEST_RUN also makes unit testing more
+> > convenient, especially as users start building more complex tracing
+> > applications. So I see this as killing two birds with one stone.
+> 
+> bpftrace approach of uprobe-ing into BEGIN_trigger can
+> be solved with raw_tp prog.
+> "BEGIN" bpftrace's program doesn't have to be uprobe.
+> I can be raw_tp and prog_test_run command is
+> already implemented for raw_tp.
+> 
+> kprobe prog has pt_regs as arguments,
+> raw_tp has tracepoint args.
+> Both progs expect kernel addresses in args.
+> Passing 'struct pt_regs' filled with integers and non-kernel addresses
+> won't help to unit test bpf-kprobe programs.
+> There is little use in creating a dummy kprobe-bpf prog
+> that expects RDI to be 1 and RSI to be 2
+> (like selftest from patch 2 does) and running it.
 
-This patch adds support for decoding the xattrs maximum size setting that is
-distributed in the mdsmap.  Then, when setting an xattr, the kernel client
-will revert to do a synchronous operation if that maximum size is exceeded.
+Yeah that's a good point about the kprobe case. But AFAICT uprobes are
+implemented using a kprobe prog in which case it would be both possible
+and useful to insert userspace args and userspace addrspace addrs.
 
-While there, fix a dout() that would trigger a printk warning:
+> We already have raw_tp with similar args and such
+> progs can be executed already.
+> Whether SEC() part says kprobe/ or raw_tp/ doesn't change
+> much in the prog itself.
 
-[   98.718078] ------------[ cut here ]------------
-[   98.719012] precision 65536 too large
-[   98.719039] WARNING: CPU: 1 PID: 3755 at lib/vsprintf.c:2703 vsnprintf+0x5e3/0x600
-...
+I suppose so, and I guess you could always bpf_program__set_type(..).
 
-URL: https://tracker.ceph.com/issues/55725
-Signed-off-by: Luís Henriques <lhenriques@suse.de>
----
- fs/ceph/mdsmap.c            | 28 ++++++++++++++++++++++++----
- fs/ceph/xattr.c             | 12 ++++++++----
- include/linux/ceph/mdsmap.h |  1 +
- 3 files changed, 33 insertions(+), 8 deletions(-)
+> More so raw_tp prog will work on all architectures,
+> whereas kprobe's pt_regs are arch specific.
+> So even if kprobe progs were runnable, bpftrace
+> should probably be using raw_tp to be arch independent.
 
-* Changes since v3
+bpftrace has all the infra to pull arbitrary structs out of vmlinux BTF
+already. It should be fairly simple to get the arch-specific struct
+pt_regs size and construct a buffer of all 0s. And fall back to old
+logic (that'll be necessary for a while) if kprobe BPF_PROG_RUN or
+vmlinux BTF is missing.
 
-As per Xiubo review:
-  - Always force a (sync) SETXATTR Op when connecting to an old cluster
-  - use '>' instead of '>='
-Also fixed the warning detected by 0day.
+That being said, I didn't realize that when I put up the patch, so
+thanks for the hint. It sounds like it's probably simpler to just use
+raw_tp then.
 
-* Changes since v2
+FWIW I still think this feature is useful, but since I probably won't
+use it in bpftrace I'm fine with dropping the patchset. If anyone still
+wants it in I'm also fine with continuing on it.
 
-Well, a lot has changed since v2!  Now the xattr max value setting is
-obtained through the mdsmap, which needs to be decoded, and the feature
-that was used in the previous revision was dropped.  The drawback is that
-the MDS isn't unable to know in advance if a client is aware of this xattr
-max value.
-
-* Changes since v1
-
-Added support for new feature bit to get the MDS max_xattr_pairs_size
-setting.
-
-Also note that this patch relies on a patch that hasn't been merged yet
-("ceph: use correct index when encoding client supported features"),
-otherwise the new feature bit won't be correctly encoded.
-
-diff --git a/fs/ceph/mdsmap.c b/fs/ceph/mdsmap.c
-index 30387733765d..c6ce83a48175 100644
---- a/fs/ceph/mdsmap.c
-+++ b/fs/ceph/mdsmap.c
-@@ -13,6 +13,12 @@
- 
- #include "super.h"
- 
-+/*
-+ * Maximum size of xattrs the MDS can handle per inode by default.  This
-+ * includes the attribute name and 4+4 bytes for the key/value sizes.
-+ */
-+#define MDS_MAX_XATTR_SIZE (1<<16) /* 64K */
-+
- #define CEPH_MDS_IS_READY(i, ignore_laggy) \
- 	(m->m_info[i].state > 0 && ignore_laggy ? true : !m->m_info[i].laggy)
- 
-@@ -352,12 +358,10 @@ struct ceph_mdsmap *ceph_mdsmap_decode(void **p, void *end, bool msgr2)
- 		__decode_and_drop_type(p, end, u8, bad_ext);
- 	}
- 	if (mdsmap_ev >= 8) {
--		u32 name_len;
- 		/* enabled */
- 		ceph_decode_8_safe(p, end, m->m_enabled, bad_ext);
--		ceph_decode_32_safe(p, end, name_len, bad_ext);
--		ceph_decode_need(p, end, name_len, bad_ext);
--		*p += name_len;
-+		/* fs_name */
-+		ceph_decode_skip_string(p, end, bad_ext);
- 	}
- 	/* damaged */
- 	if (mdsmap_ev >= 9) {
-@@ -370,6 +374,22 @@ struct ceph_mdsmap *ceph_mdsmap_decode(void **p, void *end, bool msgr2)
- 	} else {
- 		m->m_damaged = false;
- 	}
-+	if (mdsmap_ev >= 17) {
-+		/* balancer */
-+		ceph_decode_skip_string(p, end, bad_ext);
-+		/* standby_count_wanted */
-+		ceph_decode_skip_32(p, end, bad_ext);
-+		/* old_max_mds */
-+		ceph_decode_skip_32(p, end, bad_ext);
-+		/* min_compat_client */
-+		ceph_decode_skip_8(p, end, bad_ext);
-+		/* required_client_features */
-+		ceph_decode_skip_set(p, end, 64, bad_ext);
-+		ceph_decode_64_safe(p, end, m->m_max_xattr_size, bad_ext);
-+	} else {
-+		/* This forces the usage of the (sync) SETXATTR Op */
-+		m->m_max_xattr_size = 0;
-+	}
- bad_ext:
- 	dout("mdsmap_decode m_enabled: %d, m_damaged: %d, m_num_laggy: %d\n",
- 	     !!m->m_enabled, !!m->m_damaged, m->m_num_laggy);
-diff --git a/fs/ceph/xattr.c b/fs/ceph/xattr.c
-index 8c2dc2c762a4..1be415e9220b 100644
---- a/fs/ceph/xattr.c
-+++ b/fs/ceph/xattr.c
-@@ -1086,7 +1086,7 @@ static int ceph_sync_setxattr(struct inode *inode, const char *name,
- 			flags |= CEPH_XATTR_REMOVE;
- 	}
- 
--	dout("setxattr value=%.*s\n", (int)size, value);
-+	dout("setxattr value size: %lu\n", size);
- 
- 	/* do request */
- 	req = ceph_mdsc_create_request(mdsc, op, USE_AUTH_MDS);
-@@ -1184,8 +1184,14 @@ int __ceph_setxattr(struct inode *inode, const char *name,
- 	spin_lock(&ci->i_ceph_lock);
- retry:
- 	issued = __ceph_caps_issued(ci, NULL);
--	if (ci->i_xattrs.version == 0 || !(issued & CEPH_CAP_XATTR_EXCL))
-+	required_blob_size = __get_required_blob_size(ci, name_len, val_len);
-+	if ((ci->i_xattrs.version == 0) || !(issued & CEPH_CAP_XATTR_EXCL) ||
-+	    (required_blob_size > mdsc->mdsmap->m_max_xattr_size)) {
-+		dout("%s do sync setxattr: version: %llu size: %d max: %llu\n",
-+		     __func__, ci->i_xattrs.version, required_blob_size,
-+		     mdsc->mdsmap->m_max_xattr_size);
- 		goto do_sync;
-+	}
- 
- 	if (!lock_snap_rwsem && !ci->i_head_snapc) {
- 		lock_snap_rwsem = true;
-@@ -1201,8 +1207,6 @@ int __ceph_setxattr(struct inode *inode, const char *name,
- 	     ceph_cap_string(issued));
- 	__build_xattrs(inode);
- 
--	required_blob_size = __get_required_blob_size(ci, name_len, val_len);
--
- 	if (!ci->i_xattrs.prealloc_blob ||
- 	    required_blob_size > ci->i_xattrs.prealloc_blob->alloc_len) {
- 		struct ceph_buffer *blob;
-diff --git a/include/linux/ceph/mdsmap.h b/include/linux/ceph/mdsmap.h
-index 523fd0452856..4c3e0648dc27 100644
---- a/include/linux/ceph/mdsmap.h
-+++ b/include/linux/ceph/mdsmap.h
-@@ -25,6 +25,7 @@ struct ceph_mdsmap {
- 	u32 m_session_timeout;          /* seconds */
- 	u32 m_session_autoclose;        /* seconds */
- 	u64 m_max_file_size;
-+	u64 m_max_xattr_size;		/* maximum size for xattrs blob */
- 	u32 m_max_mds;			/* expected up:active mds number */
- 	u32 m_num_active_mds;		/* actual up:active mds number */
- 	u32 possible_max_rank;		/* possible max rank index */
+Thanks,
+Daniel
