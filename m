@@ -2,146 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 135CEC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 11:53:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6290CC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 11:54:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234508AbiFBLx0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 07:53:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33548 "EHLO
+        id S234526AbiFBLyI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 07:54:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234513AbiFBLxR (ORCPT
+        with ESMTP id S232842AbiFBLyA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 07:53:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F004252259;
-        Thu,  2 Jun 2022 04:53:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 530B2B81F1D;
-        Thu,  2 Jun 2022 11:53:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89BA1C385A5;
-        Thu,  2 Jun 2022 11:52:59 +0000 (UTC)
-From:   Huacai Chen <chenhuacai@loongson.cn>
-To:     Arnd Bergmann <arnd@arndb.de>, Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Airlie <airlied@linux.ie>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-arch@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Huacai Chen <chenhuacai@gmail.com>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Huacai Chen <chenhuacai@loongson.cn>,
-        WANG Xuerui <git@xen0n.name>
-Subject: [PATCH V14 05/24] LoongArch: Add ELF-related definitions
-Date:   Thu,  2 Jun 2022 19:51:22 +0800
-Message-Id: <20220602115141.3962749-6-chenhuacai@loongson.cn>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220602115141.3962749-1-chenhuacai@loongson.cn>
-References: <20220602115141.3962749-1-chenhuacai@loongson.cn>
+        Thu, 2 Jun 2022 07:54:00 -0400
+Received: from www381.your-server.de (www381.your-server.de [78.46.137.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 239591DA40;
+        Thu,  2 Jun 2022 04:53:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
+         s=default2002; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID;
+        bh=QxS95NZvfvenpMssN8GdGggpAUbQye4uoJjCm8L++y0=; b=dA7RvGXsT0Ahu/E4UyD7BzQNNn
+        Z9GHJfzVFA3E0KIVV/k4h68SP1MLZxlnI18ySyPCfyGO+h++PeShZ0kRnDZZz2m3fpixb5Vr7CetG
+        nh/AfXTG+9nu7k1ml9j1IzJhUqvJsJghUNYHO8j2f3jQYsYDN+I94nWwr6YhKIH9Nvld3d4gWfSTH
+        16Ryt+yhdHOe/qE0ZdcAa2/ODessv/8IUjrwDzThJec2QYIpEHtfBxJiTzXIR+WGMTWv7CrKJin7U
+        npJokGkns8SvkcwRQ/qVvuqj2ELa4gQDG/Zutzva4DvygBs0Xr7D+T91IqbL0CyoA935jxs0wN8QR
+        zvbG/a/w==;
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www381.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <lars@metafoo.de>)
+        id 1nwjOk-00033v-Fo; Thu, 02 Jun 2022 13:53:54 +0200
+Received: from [2001:a61:2a7f:a201:9e5c:8eff:fe01:8578]
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <lars@metafoo.de>)
+        id 1nwjOk-000Udv-3t; Thu, 02 Jun 2022 13:53:54 +0200
+Message-ID: <ad3af033-97f1-3aad-d082-c6ed56185b59@metafoo.de>
+Date:   Thu, 2 Jun 2022 13:53:53 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v2 3/3] iio: adc: meson_saradc: Use temporary variable for
+ struct device
+Content-Language: en-US
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>
+References: <20220602114241.12601-1-andriy.shevchenko@linux.intel.com>
+ <20220602114241.12601-3-andriy.shevchenko@linux.intel.com>
+From:   Lars-Peter Clausen <lars@metafoo.de>
+In-Reply-To: <20220602114241.12601-3-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: lars@metafoo.de
+X-Virus-Scanned: Clear (ClamAV 0.103.6/26560/Thu Jun  2 10:06:31 2022)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add ELF-related definitions for LoongArch, including: EM_LOONGARCH,
-KEXEC_ARCH_LOONGARCH, AUDIT_ARCH_LOONGARCH32, AUDIT_ARCH_LOONGARCH64
-and NT_LOONGARCH_*.
+On 6/2/22 13:42, Andy Shevchenko wrote:
+return -ENOMEM;
+>   
+> @@ -690,7 +687,7 @@ static int meson_sar_adc_clk_init(struct iio_dev *indio_dev,
+>   	priv->clk_gate.bit_idx = __ffs(MESON_SAR_ADC_REG3_CLK_EN);
+>   	priv->clk_gate.hw.init = &init;
+>   
+> -	priv->adc_clk = devm_clk_register(&indio_dev->dev, &priv->clk_gate.hw);
+> +	priv->adc_clk = devm_clk_register(idev, &priv->clk_gate.hw);
 
-Reviewed-by: WANG Xuerui <git@xen0n.name>
-Reviewed-by: Jiaxun Yang <jiaxun.yang@flygoat.com>
-Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
----
- include/uapi/linux/audit.h  | 2 ++
- include/uapi/linux/elf-em.h | 1 +
- include/uapi/linux/elf.h    | 5 +++++
- include/uapi/linux/kexec.h  | 1 +
- scripts/sorttable.c         | 5 +++++
- 5 files changed, 14 insertions(+)
+You are not changing anything here. But we shouldn't be devm'ing on the 
+IIO device. It will get freed eventually, but only when the last 
+reference to the iio device has been dropped, which might be long after 
+the platform device has been removed. devm'ing should happen on the 
+platform_device's device. Might be worth fixing.
 
-diff --git a/include/uapi/linux/audit.h b/include/uapi/linux/audit.h
-index 8eda133ca4c1..7c1dc818b1d5 100644
---- a/include/uapi/linux/audit.h
-+++ b/include/uapi/linux/audit.h
-@@ -439,6 +439,8 @@ enum {
- #define AUDIT_ARCH_UNICORE	(EM_UNICORE|__AUDIT_ARCH_LE)
- #define AUDIT_ARCH_X86_64	(EM_X86_64|__AUDIT_ARCH_64BIT|__AUDIT_ARCH_LE)
- #define AUDIT_ARCH_XTENSA	(EM_XTENSA)
-+#define AUDIT_ARCH_LOONGARCH32	(EM_LOONGARCH|__AUDIT_ARCH_LE)
-+#define AUDIT_ARCH_LOONGARCH64	(EM_LOONGARCH|__AUDIT_ARCH_64BIT|__AUDIT_ARCH_LE)
- 
- #define AUDIT_PERM_EXEC		1
- #define AUDIT_PERM_WRITE	2
-diff --git a/include/uapi/linux/elf-em.h b/include/uapi/linux/elf-em.h
-index f47e853546fa..ef38c2bc5ab7 100644
---- a/include/uapi/linux/elf-em.h
-+++ b/include/uapi/linux/elf-em.h
-@@ -51,6 +51,7 @@
- #define EM_RISCV	243	/* RISC-V */
- #define EM_BPF		247	/* Linux BPF - in-kernel virtual machine */
- #define EM_CSKY		252	/* C-SKY */
-+#define EM_LOONGARCH	258	/* LoongArch */
- #define EM_FRV		0x5441	/* Fujitsu FR-V */
- 
- /*
-diff --git a/include/uapi/linux/elf.h b/include/uapi/linux/elf.h
-index c4abd09c3da9..2b9f5e9985e5 100644
---- a/include/uapi/linux/elf.h
-+++ b/include/uapi/linux/elf.h
-@@ -438,6 +438,11 @@ typedef struct elf64_shdr {
- #define NT_MIPS_DSP	0x800		/* MIPS DSP ASE registers */
- #define NT_MIPS_FP_MODE	0x801		/* MIPS floating-point mode */
- #define NT_MIPS_MSA	0x802		/* MIPS SIMD registers */
-+#define NT_LOONGARCH_CPUCFG	0xa00	/* LoongArch CPU config registers */
-+#define NT_LOONGARCH_CSR	0xa01	/* LoongArch control and status registers */
-+#define NT_LOONGARCH_LSX	0xa02	/* LoongArch Loongson SIMD Extension registers */
-+#define NT_LOONGARCH_LASX	0xa03	/* LoongArch Loongson Advanced SIMD Extension registers */
-+#define NT_LOONGARCH_LBT	0xa04	/* LoongArch Loongson Binary Translation registers */
- 
- /* Note types with note name "GNU" */
- #define NT_GNU_PROPERTY_TYPE_0	5
-diff --git a/include/uapi/linux/kexec.h b/include/uapi/linux/kexec.h
-index fb7e2ef60825..981016e05cfa 100644
---- a/include/uapi/linux/kexec.h
-+++ b/include/uapi/linux/kexec.h
-@@ -43,6 +43,7 @@
- #define KEXEC_ARCH_MIPS    ( 8 << 16)
- #define KEXEC_ARCH_AARCH64 (183 << 16)
- #define KEXEC_ARCH_RISCV   (243 << 16)
-+#define KEXEC_ARCH_LOONGARCH	(258 << 16)
- 
- /* The artificial cap on the number of segments passed to kexec_load. */
- #define KEXEC_SEGMENT_MAX 16
-diff --git a/scripts/sorttable.c b/scripts/sorttable.c
-index d00504c5f530..fba40e99f354 100644
---- a/scripts/sorttable.c
-+++ b/scripts/sorttable.c
-@@ -60,6 +60,10 @@
- #define EM_RISCV	243
- #endif
- 
-+#ifndef EM_LOONGARCH
-+#define EM_LOONGARCH	258
-+#endif
-+
- static uint32_t (*r)(const uint32_t *);
- static uint16_t (*r2)(const uint16_t *);
- static uint64_t (*r8)(const uint64_t *);
-@@ -313,6 +317,7 @@ static int do_file(char const *const fname, void *addr)
- 	case EM_ARCOMPACT:
- 	case EM_ARCV2:
- 	case EM_ARM:
-+	case EM_LOONGARCH:
- 	case EM_MICROBLAZE:
- 	case EM_MIPS:
- 	case EM_XTENSA:
--- 
-2.27.0
+>   	if (WARN_ON(IS_ERR(priv->adc_clk)))
+>   		return PTR_ERR(priv->adc_clk);
+>   
+> @@ -706,8 +703,7 @@ static int meson_sar_adc_temp_sensor_init(struct iio_dev *indio_dev)
+>   	size_t read_len;
+>   	
 
