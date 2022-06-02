@@ -2,87 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59976C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 13:35:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51BC0CCA478
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 13:36:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235408AbiFBNfR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 09:35:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48078 "EHLO
+        id S235418AbiFBNf6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 09:35:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235383AbiFBNfN (ORCPT
+        with ESMTP id S231596AbiFBNfz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 09:35:13 -0400
-Received: from azure-sdnproxy-1.icoremail.net (azure-sdnproxy.icoremail.net [52.237.72.81])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 37DDD4C790;
-        Thu,  2 Jun 2022 06:35:11 -0700 (PDT)
-Received: from ubuntu.localdomain (unknown [106.117.80.109])
-        by mail-app3 (Coremail) with SMTP id cC_KCgCXn08uvJhiAyNhAQ--.19784S2;
-        Thu, 02 Jun 2022 21:33:45 +0800 (CST)
-From:   Duoming Zhou <duoming@zju.edu.cn>
-To:     linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     amitkarwar@gmail.com, ganapathi017@gmail.com,
-        sharvari.harisangam@nxp.com, huxinming820@gmail.com,
-        kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        gregkh@linuxfoundation.org, johannes@sipsolutions.net,
-        rafael@kernel.org, Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH v4 0/2] Remove extra param of dev_coredumpv and fix bugs
-Date:   Thu,  2 Jun 2022 21:33:32 +0800
-Message-Id: <cover.1654175941.git.duoming@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: cC_KCgCXn08uvJhiAyNhAQ--.19784S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7ZFW8JFyDtw13CF1kuF1fXrb_yoW8XF1fpF
-        48Gas3ZryfKr4DCay8Ja1xCa45J3WfWF9F9rZ3Z34rW3WfAF1rJr1Y9FyFkrn0vFW8ta4Y
-        qF13tr13GF9agFDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvC14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
-        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
-        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
-        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
-        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2
-        Y2ka0xkIwI1lc2xSY4AK67AK6ry8MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r
-        1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CE
-        b7AF67AKxVW8ZVWrXwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0x
-        vE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAI
-        cVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2Kf
-        nxnUUI43ZEXa7VUjHGQDUUUUU==
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgkJAVZdtaAX3gBis2
+        Thu, 2 Jun 2022 09:35:55 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A8C1B6C0F2
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 06:35:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654176953;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=RM/VM/BkJCFXBDQbLQtl/dczfhsVjGbr9q7yL7pUo/s=;
+        b=h7+vuQTcfWUxQsc/esJFsSxdNkViUigZKoyCLdad8URbBiMb4Wxo2mSAfVDxNBihpsiBLL
+        UPlHk+WJtD/3TeoAC5bLKwAQVB7DCsCSRWLLP/RgqwRNewZ7KQTUsooScNsdosrohWsFVq
+        rbePF9PZmJOS98e2VNWFGMTe5nsrTaI=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-644-QpfwInDINwOXB57FDsZcwA-1; Thu, 02 Jun 2022 09:35:52 -0400
+X-MC-Unique: QpfwInDINwOXB57FDsZcwA-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D160B811E81;
+        Thu,  2 Jun 2022 13:35:51 +0000 (UTC)
+Received: from llong.com (unknown [10.22.32.147])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6AF3C2166B2C;
+        Thu,  2 Jun 2022 13:35:51 +0000 (UTC)
+From:   Waiman Long <longman@redhat.com>
+To:     Tejun Heo <tj@kernel.org>, Jens Axboe <axboe@kernel.dk>
+Cc:     cgroups@vger.kernel.org, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Ming Lei <ming.lei@redhat.com>,
+        Waiman Long <longman@redhat.com>
+Subject: [PATCH v5 0/3] blk-cgroup: Optimize blkcg_rstat_flush()
+Date:   Thu,  2 Jun 2022 09:35:40 -0400
+Message-Id: <20220602133543.128088-1-longman@redhat.com>
+In-Reply-To: <20220601211824.89626-1-longman@redhat.com>
+References: <20220601211824.89626-1-longman@redhat.com>
+MIME-Version: 1.0
+Content-type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The first patch removes the extra gfp_t param of dev_coredumpv.
-The second patch fix sleep in atomic context bugs of mwifiex
-caused by dev_coredumpv.
+ v5:
+  - Add a new patch 2 to eliminate the use of intermediate "ret"
+    variable in blkcg_css_alloc() to fix compilation warning reported
+    by kernel test robot.
 
-Duoming Zhou (2):
-  devcoredump: remove the useless gfp_t parameter in dev_coredumpv
-  mwifiex: fix sleep in atomic context bugs caused by dev_coredumpv
+ v4:
+  - Update comment and eliminate "inline" keywords as suggested by TJ.
 
- drivers/base/devcoredump.c                             |  6 ++----
- drivers/bluetooth/btmrvl_sdio.c                        |  2 +-
- drivers/bluetooth/hci_qca.c                            |  2 +-
- drivers/gpu/drm/etnaviv/etnaviv_dump.c                 |  2 +-
- drivers/media/platform/qcom/venus/core.c               |  2 +-
- drivers/net/can/spi/mcp251xfd/mcp251xfd-dump.c         |  2 +-
- drivers/net/wireless/ath/ath10k/coredump.c             |  2 +-
- drivers/net/wireless/ath/wil6210/wil_crash_dump.c      |  2 +-
- .../net/wireless/broadcom/brcm80211/brcmfmac/debug.c   |  2 +-
- drivers/net/wireless/marvell/mwifiex/init.c            | 10 ++++++----
- drivers/net/wireless/marvell/mwifiex/main.c            |  3 +--
- drivers/net/wireless/marvell/mwifiex/main.h            |  2 +-
- drivers/net/wireless/marvell/mwifiex/sta_event.c       |  6 +++---
- drivers/net/wireless/mediatek/mt76/mt7615/mac.c        |  3 +--
- drivers/net/wireless/mediatek/mt76/mt7921/mac.c        |  3 +--
- drivers/net/wireless/realtek/rtw88/main.c              |  2 +-
- drivers/net/wireless/realtek/rtw89/ser.c               |  2 +-
- drivers/remoteproc/qcom_q6v5_mss.c                     |  2 +-
- drivers/remoteproc/remoteproc_coredump.c               |  4 ++--
- include/linux/devcoredump.h                            |  5 ++---
- sound/soc/intel/catpt/dsp.c                            |  2 +-
- 21 files changed, 31 insertions(+), 35 deletions(-)
+ v3:
+  - Update comments in patch 2.
+  - Put rcu_read_lock/unlock() in blkcg_rstat_flush().
+  - Use READ_ONCE/WRITE_ONCE() to access lnode->next to reduce data
+    races.
+  - Get a blkg reference when putting into the lockless list and put it
+    back when removed.
+ 
+This patch series improves blkcg_rstat_flush() performance by eliminating
+unnecessary blkg enumeration and flush operations for those blkg's and
+blkg_iostat_set's that haven't been updated since the last flush.
+
+Waiman Long (3):
+  blk-cgroup: Correctly free percpu iostat_cpu in blkg on error exit
+  blk-cgroup: Return -ENOMEM directly in blkcg_css_alloc() error path
+  blk-cgroup: Optimize blkcg_rstat_flush()
+
+ block/blk-cgroup.c | 103 ++++++++++++++++++++++++++++++++++++++-------
+ block/blk-cgroup.h |   9 ++++
+ 2 files changed, 96 insertions(+), 16 deletions(-)
 
 -- 
-2.17.1
+2.31.1
 
