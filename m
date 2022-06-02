@@ -2,270 +2,241 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDB28C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 06:22:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48758C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 06:23:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230508AbiFBGWp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 02:22:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45274 "EHLO
+        id S231135AbiFBGXi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 02:23:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230497AbiFBGWm (ORCPT
+        with ESMTP id S230470AbiFBGXe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 02:22:42 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5DF7C33372
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 23:22:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654150955;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=dftoX5xxTZB/c8O5WA81vrlQezqU2CDPcAxmSZhNEc4=;
-        b=Hxp3PweVceqPY9q0omzQ4eKyLu/maXeie1mURY0XlG/gN9FWUHFdPVV/A6q/lZNwDvzWhQ
-        QpEGRV0FWauwoJCi/T0YG9VfQ/grfR0nwfZrN1yorRRFR3cAfRGW0FoAOThmhdIXVQXSMD
-        Yut10gLONjr3+n/DQjmEQPYkhrxQPBQ=
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
- [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-582-Ai9lckmTNpWkQVI2j6bT9g-1; Thu, 02 Jun 2022 02:22:32 -0400
-X-MC-Unique: Ai9lckmTNpWkQVI2j6bT9g-1
-Received: by mail-qv1-f69.google.com with SMTP id az18-20020ad45512000000b004645f3d2c36so2926060qvb.0
-        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 23:22:32 -0700 (PDT)
+        Thu, 2 Jun 2022 02:23:34 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD2C52873F
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 23:23:32 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id k16so5088278wrg.7
+        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 23:23:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cFf/wKtid+qqccnmCaXHbzsv7XOixvDy8MiGyLaP5Qo=;
+        b=PqntItYQPiJwKKS6LxUkXZsMQ6h6bpmWtjoPdJai/0MKKdyVctE4sgX4tuP9P7udN6
+         vvdXyCf37H6omgn5heEWafAu1BrY2wyr643CcRjVZKSU+TdhkUw2coEK7Kt8l2bmLmRx
+         T7wOV8rnYTUJG/O8COvGeZZ6Z//+sdWE/FjuLbs6QguKYGbXq1yu+XGYnDn5Y64tgArh
+         J5AETSnWSVT9Hif4ZruHaQncMJc8Wgnf/hOqPs1BQX86MDLterZhrvfKyL+2cDGvbH69
+         b+2CJ5TWM3qyNRRIB32wu27FzySTutvKzf2Bb1MvxvLwlBd3G8Ruh9Imdw1LhQlGGXb3
+         5cqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=dftoX5xxTZB/c8O5WA81vrlQezqU2CDPcAxmSZhNEc4=;
-        b=S2/6SXSv0NQiNyZBy7/O51wiSv7T/09rC46nZjO+IYoedmhFKW22ilCHe1zC8kkHJB
-         +vaEZsfSqy2vw+Ur0nK0FPowZ3CjGcFH+XLsovFvzP356voRkSRdJeD850dUdfLea9Nj
-         UintCKf2z9//5E105fBz5y04o/kp85N1lUS1CKmwSepvboyjpeurd4vwjLTffCOsy6gl
-         JjIkRANFOz9M3Yjtb1KwXIMFk09c0QsrcN3GTKro46DF6rkYocHaZAVpkZFpXGX+uQBd
-         ZfEyFYRtFzDQzy71pw7sPuzgzPHXiequXCzq3rijK21T6BxluMTcD5142mjatqEOnYQg
-         7ahQ==
-X-Gm-Message-State: AOAM530zb3V5dL7JBcEi4K0K21DWrFoAkPFen7OLRDaB/hwXh+6+8Lcx
-        9899QmwEHTZ0f+dK0VrQlTTGLm7XcjGevkLV8AQ3zZ5Xh/MotuRG1U2qLSEwdmDwjU1xzl4Nsex
-        zxmd1F7IbHaQ1Jzk3lKWEJWJhThfrPxEvS2KkJRrK
-X-Received: by 2002:a0c:e702:0:b0:467:538e:ebba with SMTP id d2-20020a0ce702000000b00467538eebbamr2217003qvn.2.1654150951932;
-        Wed, 01 Jun 2022 23:22:31 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJz0WJo9DePlOEq7IsA8BZdRFxkhg64PwaZaZWcafFZW35XH5PUzPmmmXhlP8oswWj9PLLjDa3nyytbYkOLb1wI=
-X-Received: by 2002:a0c:e702:0:b0:467:538e:ebba with SMTP id
- d2-20020a0ce702000000b00467538eebbamr2216984qvn.2.1654150951730; Wed, 01 Jun
- 2022 23:22:31 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=cFf/wKtid+qqccnmCaXHbzsv7XOixvDy8MiGyLaP5Qo=;
+        b=SKNUHwOgtbG+GndiYSdYi+7tdyx0ZNQR2LWAWtB7QvtO5RWykaE9OlC4XSsD+NHoEa
+         A5EvidgeSBuhoJxMBTr+67XPlauqf40+GXJLa4/E+DzdiaQ8QsihPnqxAU0SzgmcByfv
+         aacjk/U7LNn0lQXjONZVVjBBbLINltjds6HFXR0gVCVXsvfBCFNZ0vYSjVx0YynEjtYf
+         o6LNGl0nd66JUNhZR91MVTzccGxXkpcDdbqJvIdU1Osg2FbnMtHzK3FvxlXl1OOHg6ei
+         yzIl36Ci07b46z0VPr0plNsTlLREXZHbjOmv6+kie4sAwSJcXZHv8cGH8slEUkrtlvU+
+         Stig==
+X-Gm-Message-State: AOAM533rQTgyui0a2j58w2nlaNWOOxwNRLWeayZbT+b4qt9ZX5RReKlF
+        H3TA03v/ecUdI1m75gXcZgrX7G+SB6r+7pslBXuJnQ==
+X-Google-Smtp-Source: ABdhPJxGLD1VpApAnmNP6w3Pc683S/fjU5HhAr23MHk/sDTUluttPZncUt28EOBNAy+ndZVOco8MtSEygg+vL9ysNSM=
+X-Received: by 2002:adf:eb91:0:b0:20f:fcc2:475c with SMTP id
+ t17-20020adfeb91000000b0020ffcc2475cmr2253920wrn.40.1654151011227; Wed, 01
+ Jun 2022 23:23:31 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220526124338.36247-1-eperezma@redhat.com> <20220526124338.36247-4-eperezma@redhat.com>
- <20220601070303-mutt-send-email-mst@kernel.org> <CAJaqyWcK7CwWLr5unxXr=FDbuufeA38X0eAboJy8yKLcsdiPow@mail.gmail.com>
- <PH0PR12MB54819A5DC204CED360C3BA86DCDF9@PH0PR12MB5481.namprd12.prod.outlook.com>
-In-Reply-To: <PH0PR12MB54819A5DC204CED360C3BA86DCDF9@PH0PR12MB5481.namprd12.prod.outlook.com>
-From:   Eugenio Perez Martin <eperezma@redhat.com>
-Date:   Thu, 2 Jun 2022 08:21:55 +0200
-Message-ID: <CAJaqyWfJVDj+u0UVXGkJFriRJ5Lo5os6FWq02Q7av+NYG2JB9w@mail.gmail.com>
-Subject: Re: [PATCH v4 3/4] vhost-vdpa: uAPI to stop the device
-To:     Parav Pandit <parav@nvidia.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        kvm list <kvm@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Jason Wang <jasowang@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        Martin Petrus Hubertus Habets <martinh@xilinx.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Martin Porter <martinpo@xilinx.com>,
-        Laurent Vivier <lvivier@redhat.com>,
-        Pablo Cascon Katchadourian <pabloc@xilinx.com>,
-        Eli Cohen <elic@nvidia.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Xie Yongji <xieyongji@bytedance.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Zhang Min <zhang.min9@zte.com.cn>,
-        Wu Zongyong <wuzongyong@linux.alibaba.com>,
-        Cindy Lu <lulu@redhat.com>,
-        Zhu Lingshan <lingshan.zhu@intel.com>,
-        "Uminski, Piotr" <Piotr.Uminski@intel.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>,
-        "ecree.xilinx@gmail.com" <ecree.xilinx@gmail.com>,
-        "Dawar, Gautam" <gautam.dawar@amd.com>,
-        "habetsm.xilinx@gmail.com" <habetsm.xilinx@gmail.com>,
-        "Kamde, Tanuj" <tanuj.kamde@amd.com>,
-        Harpreet Singh Anand <hanand@xilinx.com>,
-        Dinan Gunawardena <dinang@xilinx.com>,
-        Longpeng <longpeng2@huawei.com>
+References: <20220601065846.456965-1-namhyung@kernel.org> <20220601065846.456965-4-namhyung@kernel.org>
+In-Reply-To: <20220601065846.456965-4-namhyung@kernel.org>
+From:   Ian Rogers <irogers@google.com>
+Date:   Wed, 1 Jun 2022 23:23:18 -0700
+Message-ID: <CAP-5=fWDN_DjaVhJWDCiHvnKJnbD4xj8_VMtJz+rQyZKvjvdUw@mail.gmail.com>
+Subject: Re: [PATCH 3/5] perf lock: Handle lock contention tracepoints
+To:     Namhyung Kim <namhyung@kernel.org>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>, Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-perf-users@vger.kernel.org, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 1, 2022 at 9:13 PM Parav Pandit <parav@nvidia.com> wrote:
+On Tue, May 31, 2022 at 11:58 PM Namhyung Kim <namhyung@kernel.org> wrote:
 >
+> When the lock contention events are used, there's no tracking of
+> acquire and release.  So the state machine is simplified to use
+> UNINITIALIZED -> CONTENDED -> ACQUIRED only.
 >
+> Note that CONTENDED state is re-entrant since mutex locks can hit two
+> or more consecutive contention_begin events for optimistic spinning
+> and sleep.
 >
-> > From: Eugenio Perez Martin <eperezma@redhat.com>
-> > Sent: Wednesday, June 1, 2022 7:15 AM
-> >
-> > On Wed, Jun 1, 2022 at 1:03 PM Michael S. Tsirkin <mst@redhat.com> wrot=
-e:
-> > >
-> > > On Thu, May 26, 2022 at 02:43:37PM +0200, Eugenio P=C3=A9rez wrote:
-> > > > The ioctl adds support for stop the device from userspace.
-> > > >
-> > > > Signed-off-by: Eugenio P=C3=A9rez <eperezma@redhat.com>
-> > > > ---
-> > > >  drivers/vhost/vdpa.c       | 18 ++++++++++++++++++
-> > > >  include/uapi/linux/vhost.h | 14 ++++++++++++++
-> > > >  2 files changed, 32 insertions(+)
-> > > >
-> > > > diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c index
-> > > > 32713db5831d..d1d19555c4b7 100644
-> > > > --- a/drivers/vhost/vdpa.c
-> > > > +++ b/drivers/vhost/vdpa.c
-> > > > @@ -478,6 +478,21 @@ static long vhost_vdpa_get_vqs_count(struct
-> > vhost_vdpa *v, u32 __user *argp)
-> > > >       return 0;
-> > > >  }
-> > > >
-> > > > +static long vhost_vdpa_stop(struct vhost_vdpa *v, u32 __user *argp=
-)
-> > > > +{
-> > > > +     struct vdpa_device *vdpa =3D v->vdpa;
-> > > > +     const struct vdpa_config_ops *ops =3D vdpa->config;
-> > > > +     int stop;
-> > > > +
-> > > > +     if (!ops->stop)
-> > > > +             return -EOPNOTSUPP;
-> > > > +
-> > > > +     if (copy_from_user(&stop, argp, sizeof(stop)))
-> > > > +             return -EFAULT;
-> > > > +
-> > > > +     return ops->stop(vdpa, stop);
-> > > > +}
-> > > > +
-> > > >  static long vhost_vdpa_vring_ioctl(struct vhost_vdpa *v, unsigned =
-int
-> > cmd,
-> > > >                                  void __user *argp)  { @@ -650,6
-> > > > +665,9 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
-> > > >       case VHOST_VDPA_GET_VQS_COUNT:
-> > > >               r =3D vhost_vdpa_get_vqs_count(v, argp);
-> > > >               break;
-> > > > +     case VHOST_VDPA_STOP:
-> > > > +             r =3D vhost_vdpa_stop(v, argp);
-> > > > +             break;
-> > > >       default:
-> > > >               r =3D vhost_dev_ioctl(&v->vdev, cmd, argp);
-> > > >               if (r =3D=3D -ENOIOCTLCMD) diff --git
-> > > > a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h index
-> > > > cab645d4a645..c7e47b29bf61 100644
-> > > > --- a/include/uapi/linux/vhost.h
-> > > > +++ b/include/uapi/linux/vhost.h
-> > > > @@ -171,4 +171,18 @@
-> > > >  #define VHOST_VDPA_SET_GROUP_ASID    _IOW(VHOST_VIRTIO, 0x7C,
-> > \
-> > > >                                            struct vhost_vring_state=
-)
-> > > >
-> > > > +/* Stop or resume a device so it does not process virtqueue
-> > > > +requests anymore
-> > > > + *
-> > > > + * After the return of ioctl with stop !=3D 0, the device must fin=
-ish
-> > > > +any
-> > > > + * pending operations like in flight requests. It must also
-> > > > +preserve all
-> > > > + * the necessary state (the virtqueue vring base plus the possible
-> > > > +device
-> > > > + * specific states) that is required for restoring in the future.
-> > > > +The
-> > > > + * device must not change its configuration after that point.
-> > > > + *
-> > > > + * After the return of ioctl with stop =3D=3D 0, the device can
-> > > > +continue
-> > > > + * processing buffers as long as typical conditions are met (vq is
-> > > > +enabled,
-> > > > + * DRIVER_OK status bit is enabled, etc).
-> > > > + */
-> > > > +#define VHOST_VDPA_STOP                      _IOW(VHOST_VIRTIO, 0x=
-7D, int)
-> > > > +
-> A better name is VHOST_VDPA_SET_STATE
-> State =3D stop/suspend
-> State =3D start/resume
+> Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+
+Acked-by: Ian Rogers <irogers@google.com>
+
+Thanks,
+Ian
+
+> ---
+>  tools/perf/builtin-lock.c | 125 ++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 125 insertions(+)
 >
-> Suspend/resume seems more logical, as opposed start/stop, because it more=
- clearly indicates that the resume (start) is from some programmed beginnin=
-g (and not first boot).
+> diff --git a/tools/perf/builtin-lock.c b/tools/perf/builtin-lock.c
+> index 3e3320b8cede..82cbf0f2e4cd 100644
+> --- a/tools/perf/builtin-lock.c
+> +++ b/tools/perf/builtin-lock.c
+> @@ -789,6 +789,124 @@ static int report_lock_release_event(struct evsel *evsel,
+>         return 0;
+>  }
 >
-
-It's fine to move to that nomenclature in my opinion.
-
-> > > >  #endif
-> > >
-> > > I wonder how does this interact with the admin vq idea.
-> > > I.e. if we stop all VQs then apparently admin vq can't work either ..=
-.
-> > > Thoughts?
-> > >
-> >
-> > Copying here the answer to Parav, feel free to answer to any thread or
-> > highlight if I missed something :). Using the admin vq proposal termino=
-logy of
-> > "device group".
-> >
-> > --
-> > This would stop a device of a device
-> > group, but not the whole virtqueue group. If the admin VQ is offered by=
- the
-> > PF (since it's not exposed to the guest), it will continue accepting re=
-quests as
-> > normal. If it's exposed in the VF, I think the best bet is to shadow it=
-, since
-> > guest and host requests could conflict.
-> >
+> +static int report_lock_contention_begin_event(struct evsel *evsel,
+> +                                             struct perf_sample *sample)
+> +{
+> +       struct lock_stat *ls;
+> +       struct thread_stat *ts;
+> +       struct lock_seq_stat *seq;
+> +       u64 addr = evsel__intval(evsel, sample, "lock_addr");
+> +
+> +       if (show_thread_stats)
+> +               addr = sample->tid;
+> +
+> +       ls = lock_stat_findnew(addr, "No name");
+> +       if (!ls)
+> +               return -ENOMEM;
+> +
+> +       ts = thread_stat_findnew(sample->tid);
+> +       if (!ts)
+> +               return -ENOMEM;
+> +
+> +       seq = get_seq(ts, addr);
+> +       if (!seq)
+> +               return -ENOMEM;
+> +
+> +       switch (seq->state) {
+> +       case SEQ_STATE_UNINITIALIZED:
+> +       case SEQ_STATE_ACQUIRED:
+> +               break;
+> +       case SEQ_STATE_CONTENDED:
+> +               /*
+> +                * It can have nested contention begin with mutex spinning,
+> +                * then we would use the original contention begin event and
+> +                * ignore the second one.
+> +                */
+> +               goto end;
+> +       case SEQ_STATE_ACQUIRING:
+> +       case SEQ_STATE_READ_ACQUIRED:
+> +       case SEQ_STATE_RELEASED:
+> +               /* broken lock sequence */
+> +               if (!ls->broken) {
+> +                       ls->broken = 1;
+> +                       bad_hist[BROKEN_CONTENDED]++;
+> +               }
+> +               list_del_init(&seq->list);
+> +               free(seq);
+> +               goto end;
+> +       default:
+> +               BUG_ON("Unknown state of lock sequence found!\n");
+> +               break;
+> +       }
+> +
+> +       if (seq->state != SEQ_STATE_CONTENDED) {
+> +               seq->state = SEQ_STATE_CONTENDED;
+> +               seq->prev_event_time = sample->time;
+> +               ls->nr_contended++;
+> +       }
+> +end:
+> +       return 0;
+> +}
+> +
+> +static int report_lock_contention_end_event(struct evsel *evsel,
+> +                                           struct perf_sample *sample)
+> +{
+> +       struct lock_stat *ls;
+> +       struct thread_stat *ts;
+> +       struct lock_seq_stat *seq;
+> +       u64 contended_term;
+> +       u64 addr = evsel__intval(evsel, sample, "lock_addr");
+> +
+> +       if (show_thread_stats)
+> +               addr = sample->tid;
+> +
+> +       ls = lock_stat_findnew(addr, "No name");
+> +       if (!ls)
+> +               return -ENOMEM;
+> +
+> +       ts = thread_stat_findnew(sample->tid);
+> +       if (!ts)
+> +               return -ENOMEM;
+> +
+> +       seq = get_seq(ts, addr);
+> +       if (!seq)
+> +               return -ENOMEM;
+> +
+> +       switch (seq->state) {
+> +       case SEQ_STATE_UNINITIALIZED:
+> +               goto end;
+> +       case SEQ_STATE_CONTENDED:
+> +               contended_term = sample->time - seq->prev_event_time;
+> +               ls->wait_time_total += contended_term;
+> +               if (contended_term < ls->wait_time_min)
+> +                       ls->wait_time_min = contended_term;
+> +               if (ls->wait_time_max < contended_term)
+> +                       ls->wait_time_max = contended_term;
+> +               break;
+> +       case SEQ_STATE_ACQUIRING:
+> +       case SEQ_STATE_ACQUIRED:
+> +       case SEQ_STATE_READ_ACQUIRED:
+> +       case SEQ_STATE_RELEASED:
+> +               /* broken lock sequence */
+> +               if (!ls->broken) {
+> +                       ls->broken = 1;
+> +                       bad_hist[BROKEN_CONTENDED]++;
+> +               }
+> +               list_del_init(&seq->list);
+> +               free(seq);
+> +               goto end;
+> +       default:
+> +               BUG_ON("Unknown state of lock sequence found!\n");
+> +               break;
+> +       }
+> +
+> +       seq->state = SEQ_STATE_ACQUIRED;
+> +       ls->nr_acquired++;
+> +       ls->avg_wait_time = ls->wait_time_total/ls->nr_acquired;
+> +end:
+> +       return 0;
+> +}
+> +
+>  /* lock oriented handlers */
+>  /* TODO: handlers for CPU oriented, thread oriented */
+>  static struct trace_lock_handler report_lock_ops  = {
+> @@ -796,6 +914,8 @@ static struct trace_lock_handler report_lock_ops  = {
+>         .acquired_event         = report_lock_acquired_event,
+>         .contended_event        = report_lock_contended_event,
+>         .release_event          = report_lock_release_event,
+> +       .contention_begin_event = report_lock_contention_begin_event,
+> +       .contention_end_event   = report_lock_contention_end_event,
+>  };
 >
-> vhost-vdpa device is exposed for a VF through vp-vdpa driver to user land=
-.
-> Now vp-vdpa driver will have to choose between using config register vs u=
-sing AQ to suspend/resume the device.
+>  static struct trace_lock_handler *trace_handler;
+> @@ -1081,6 +1201,11 @@ static int __cmd_report(bool display_info)
+>                 goto out_delete;
+>         }
 >
-
-vp_vdpa cannot choose if the virtio device has an admin vq or any
-other feature, it just wraps the virtio device. If that virtio device
-does not expose AQ, vp_vdpa cannot expose it.
-
-> Why not always begin with more superior interface of AQ that address mult=
-iple of these needs for LM case?
+> +       if (perf_session__set_tracepoints_handlers(session, contention_tracepoints)) {
+> +               pr_err("Initializing perf session tracepoint handlers failed\n");
+> +               goto out_delete;
+> +       }
+> +
+>         if (setup_output_field(output_fields))
+>                 goto out_delete;
 >
-
-Because it doesn't address valid use cases like vp_vdpa with no AQ,
-devices that are not VF, or nested virtualization.
-
-VHOST_VDPA_STOP / VHOST_VDPA_SET_STATE does not replace AQ commands:
-It's just the way vhost-vdpa exposes that capability to qemu. vdpa
-backend is free to choose whatever methods it finds better to
-implement it.
-
-> For LM case, more you explore, we realize that either VF relying on PF's =
-AQ for query/config/setup/restore makes more sense or have its own dedicate=
-d AQ.
+> --
+> 2.36.1.255.ge46751e96f-goog
 >
-
-This ioctl does not mandate that the device cannot implement it
-through AQ, or that the device has to be a VF.
-
-Thanks!
-
-> VM's suspend/resume operation can be handled through the shadow Q.
->
-> > Since this is offered through vdpa, the device backend driver can route=
- it to
-> > whatever method works better for the hardware. For example, to send an
-> > admin vq command to the PF. That's why it's important to keep the featu=
-re
-> > as self-contained and orthogonal to others as possible.
-> > --
-> >
-> > > > --
-> > > > 2.31.1
-> > >
->
-
