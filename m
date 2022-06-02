@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FB1CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 18:19:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB112C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 18:19:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238060AbiFBSTF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 14:19:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43640 "EHLO
+        id S238074AbiFBSTM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 14:19:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237926AbiFBSSY (ORCPT
+        with ESMTP id S237945AbiFBSSg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 14:18:24 -0400
+        Thu, 2 Jun 2022 14:18:36 -0400
 Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB16D4DF5B;
-        Thu,  2 Jun 2022 11:18:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA0904E39D;
+        Thu,  2 Jun 2022 11:18:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Cc:To:From:content-disposition;
-        bh=Z2bqpdyim3k54UNGywHdz6SV6HWQMMuMEb3NCguedfE=; b=tLUuTWJGMou4JoIsi68WxJ1Q00
-        tOJduKuINR4axLQfI7zi1WbNIBU/njhnSODNlNjeNGr7NgjiG8TF14svzUIYoFwYbhkwYNxpJMbz5
-        wN0WIWMTywYksQOpihXbT/9XQzfggILEir/tJRkyUImBW4gfV5NPFDSDFFZ8oeVgKFxVh/cTyxCx0
-        FaNrxQPKZKiBIiJwo0FGYaQYZzIfrf2wCigKkirXuEbO6/lubkLymf/ECPXMzGI+H0PyH3Yk95Q9T
-        u3i4+HVCRSxZhP9qEkMx73I3lcSqZbnSeOB7nyY/NoncoXDptztTGw5OwqNT9ATlyKQtMNoBSkevu
-        DvOgZYUQ==;
+        bh=KPxyHl5McdIBsrZVYzmedsuwOe9Hs+sIzKMYT+CRgdg=; b=LrSxondlmjxzZxumaLp+VeRQmL
+        +w29AInQ3Q5NOcs2iyjAo8P1tOCCAdrn2QglNlg7cBAfz8mUSwyE59rJwCEaj2qqdW/IpSxBdkJ69
+        qBtVxXDt8alIh8LRXVDde0zJPaoajE5Q6+N2M966Oy7YZQMDJO1vOlbmGusYi7ic1L7hXqJHqh3+V
+        TEcNUmWG3wNoO+32fdszC037WEzcF7Okw5gvPh1W70Z6lzq9ybdMJ/wyQOEcqOYxD5o4rLyLKozSk
+        fLfK5ywNlZP4kFUNTvY8kBU3ckFYJkspm8bZlcLUF+L08srAfP2Nh0I9EmHuSaP3moj7EiUtMCTZw
+        /w7aY6dQ==;
 Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
         by ale.deltatee.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <gunthorp@deltatee.com>)
-        id 1nwpOo-00EPmZ-5d; Thu, 02 Jun 2022 12:18:22 -0600
+        id 1nwpOo-00EPmV-R8; Thu, 02 Jun 2022 12:18:23 -0600
 Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim 4.94.2)
         (envelope-from <gunthorp@deltatee.com>)
-        id 1nwpOn-000DDm-EL; Thu, 02 Jun 2022 12:18:21 -0600
+        id 1nwpOm-000DDP-52; Thu, 02 Jun 2022 12:18:20 -0600
 From:   Logan Gunthorpe <logang@deltatee.com>
 To:     linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org,
         Song Liu <song@kernel.org>
@@ -42,8 +42,8 @@ Cc:     Christoph Hellwig <hch@infradead.org>,
         Martin Oliveira <Martin.Oliveira@eideticom.com>,
         David Sloan <David.Sloan@eideticom.com>,
         Logan Gunthorpe <logang@deltatee.com>
-Date:   Thu,  2 Jun 2022 12:18:17 -0600
-Message-Id: <20220602181818.50729-12-logang@deltatee.com>
+Date:   Thu,  2 Jun 2022 12:18:11 -0600
+Message-Id: <20220602181818.50729-6-logang@deltatee.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220602181818.50729-1-logang@deltatee.com>
 References: <20220602181818.50729-1-logang@deltatee.com>
@@ -52,54 +52,74 @@ Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 172.16.1.31
 X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org, song@kernel.org, hch@infradead.org, buczek@molgen.mpg.de, guoqing.jiang@linux.dev, xni@redhat.com, sbates@raithlin.com, Martin.Oliveira@eideticom.com, David.Sloan@eideticom.com, logang@deltatee.com
 X-SA-Exim-Mail-From: gunthorp@deltatee.com
-Subject: [PATCH v3 11/11] md/raid5-ppl: Fix argument order in bio_alloc_bioset()
+Subject: [PATCH v3 05/11] md/raid5-cache: Drop RCU usage of conf->log
 X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
 X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-bio_alloc_bioset() takes a block device, number of vectors, the
-OP flags, the GFP mask and the bio set. However when the prototype
-was changed, the callisite in ppl_do_flush() had the OP flags and
-the GFP flags reversed. This introduced some sparse error:
+The only place that uses RCU to access conf->log is in
+r5l_log_disk_error(). This function is mostly used in the IO path
+and once with mddev_lock() held in raid5_change_consistency_policy().
 
-  drivers/md/raid5-ppl.c:632:57: warning: incorrect type in argument 3
-				    (different base types)
-  drivers/md/raid5-ppl.c:632:57:    expected unsigned int opf
-  drivers/md/raid5-ppl.c:632:57:    got restricted gfp_t [usertype]
-  drivers/md/raid5-ppl.c:633:61: warning: incorrect type in argument 4
-  				    (different base types)
-  drivers/md/raid5-ppl.c:633:61:    expected restricted gfp_t [usertype]
-				    gfp_mask
-  drivers/md/raid5-ppl.c:633:61:    got unsigned long long
+It is known that the IO will be suspended before the log is freed and
+r5l_log_exit() is called with the mddev_lock() held.
 
-The sparse error introduction may not have been reported correctly by
-0day due to other work that was cleaning up other sparse errors in this
-area.
+This should mean that conf->log can not be freed while the function is
+being called, so the RCU protection is not necessary. Drop the
+rcu_read_lock() as well as the synchronize_rcu() and
+rcu_assign_pointer() usage.
 
-Fixes: 609be1066731 ("block: pass a block_device and opf to bio_alloc_bioset")
 Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
 ---
- drivers/md/raid5-ppl.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/md/raid5-cache.c | 16 +++++-----------
+ 1 file changed, 5 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/md/raid5-ppl.c b/drivers/md/raid5-ppl.c
-index 4f5bdb4cad2b..db49edec362a 100644
---- a/drivers/md/raid5-ppl.c
-+++ b/drivers/md/raid5-ppl.c
-@@ -629,9 +629,9 @@ static void ppl_do_flush(struct ppl_io_unit *io)
- 		if (bdev) {
- 			struct bio *bio;
+diff --git a/drivers/md/raid5-cache.c b/drivers/md/raid5-cache.c
+index 69b95005abca..48020d36b334 100644
+--- a/drivers/md/raid5-cache.c
++++ b/drivers/md/raid5-cache.c
+@@ -1590,18 +1590,13 @@ void r5l_quiesce(struct r5l_log *log, int quiesce)
  
--			bio = bio_alloc_bioset(bdev, 0, GFP_NOIO,
-+			bio = bio_alloc_bioset(bdev, 0,
- 					       REQ_OP_WRITE | REQ_PREFLUSH,
--					       &ppl_conf->flush_bs);
-+					       GFP_NOIO, &ppl_conf->flush_bs);
- 			bio->bi_private = io;
- 			bio->bi_end_io = ppl_flush_endio;
+ bool r5l_log_disk_error(struct r5conf *conf)
+ {
+-	struct r5l_log *log;
+-	bool ret;
+-	/* don't allow write if journal disk is missing */
+-	rcu_read_lock();
+-	log = rcu_dereference(conf->log);
++	struct r5l_log *log = conf->log;
  
++	/* don't allow write if journal disk is missing */
+ 	if (!log)
+-		ret = test_bit(MD_HAS_JOURNAL, &conf->mddev->flags);
++		return test_bit(MD_HAS_JOURNAL, &conf->mddev->flags);
+ 	else
+-		ret = test_bit(Faulty, &log->rdev->flags);
+-	rcu_read_unlock();
+-	return ret;
++		return test_bit(Faulty, &log->rdev->flags);
+ }
+ 
+ #define R5L_RECOVERY_PAGE_POOL_SIZE 256
+@@ -3148,7 +3143,7 @@ int r5l_init_log(struct r5conf *conf, struct md_rdev *rdev)
+ 	spin_lock_init(&log->stripe_in_journal_lock);
+ 	atomic_set(&log->stripe_in_journal_count, 0);
+ 
+-	rcu_assign_pointer(conf->log, log);
++	conf->log = log;
+ 
+ 	set_bit(MD_HAS_JOURNAL, &conf->mddev->flags);
+ 	return 0;
+@@ -3173,7 +3168,6 @@ void r5l_exit_log(struct r5conf *conf)
+ 	lockdep_assert_held(&conf->mddev->reconfig_mutex);
+ 
+ 	conf->log = NULL;
+-	synchronize_rcu();
+ 
+ 	/* Ensure disable_writeback_work wakes up and exits */
+ 	wake_up(&conf->mddev->sb_wait);
 -- 
 2.30.2
 
