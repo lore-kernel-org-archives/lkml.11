@@ -2,114 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D74BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 20:18:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 556E1C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 20:18:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238537AbiFBUSk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 16:18:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36350 "EHLO
+        id S238614AbiFBUSs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 16:18:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238159AbiFBUS2 (ORCPT
+        with ESMTP id S237676AbiFBUS2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 2 Jun 2022 16:18:28 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1EA241ED
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 13:18:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654201104;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58193F38
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 13:18:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DF975613CA
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 20:18:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9202C34115
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 20:18:21 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="Y9AjzC6t"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1654201097;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=l4iW0euo2hpUkJUtHiLJMCOQOvdkFw2OylvP6PRtFgU=;
-        b=Ctm/vu9kROTsD1prTv5BASdDO195zYSMrK5b0wd8h+o8tnAMrNA0U+XDOghQAVBqMP488P
-        I/cglasJCt+sVER4Yqc2sbnz77ENcOnCOfqJEcp8voz+p3PS7w/J/ItTOuJRmMrdTG1BaZ
-        8+UM+WTvUUMpaZsDuCp8GiNI75p9zq0=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-656-nJSe9AyMNWyvtZ7uq8_tKA-1; Thu, 02 Jun 2022 16:18:19 -0400
-X-MC-Unique: nJSe9AyMNWyvtZ7uq8_tKA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2DE02955B00;
-        Thu,  2 Jun 2022 20:18:18 +0000 (UTC)
-Received: from emerald.redhat.com (unknown [10.22.34.8])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A2E59414A7E7;
-        Thu,  2 Jun 2022 20:18:17 +0000 (UTC)
-From:   Lyude Paul <lyude@redhat.com>
-To:     dri-devel@lists.freedesktop.org
-Cc:     =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>, stable@vger.kernel.org,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Wayne Lin <Wayne.Lin@amd.com>,
-        Bhawanpreet Lakha <Bhawanpreet.Lakha@amd.com>,
-        Imran Khan <imran.f.khan@oracle.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Fangzhi Zuo <Jerry.Zuo@amd.com>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH 2/3] drm/display/dp_mst: Fix drm_atomic_get_mst_topology_state()
-Date:   Thu,  2 Jun 2022 16:17:56 -0400
-Message-Id: <20220602201757.30431-3-lyude@redhat.com>
-In-Reply-To: <20220602201757.30431-1-lyude@redhat.com>
-References: <20220602201757.30431-1-lyude@redhat.com>
+        bh=4X9RFE7u/m9m1zpXuX5bcZxKzb6oraJPXpGtx/XO9Tc=;
+        b=Y9AjzC6tvduF4Vi21xfFgKI4bVl5p17TtQ/I9S29w4kDotZyWmPfWsQnuh4LSuqUFtrXyt
+        HeII2yQh3hTnY/EOe3eGc50eAKSuOjXldV++K5M71XJXa1F+EC+r1K0odYO2ymlawAUn6K
+        t2nmjXtvLiWnAFsSKpIw+g5+sYCER04=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 39ede800 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO)
+        for <linux-kernel@vger.kernel.org>;
+        Thu, 2 Jun 2022 20:18:17 +0000 (UTC)
+Received: by mail-yb1-f175.google.com with SMTP id z186so10262488ybz.3
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 13:18:15 -0700 (PDT)
+X-Gm-Message-State: AOAM533ObSowHdurpkZ7tXUMvGh9EqTA83u3DwDLRTrq7mQo+lC5OkVN
+        osKDKDSmpvuQ2b6l5dQsM1kPabxUNlj/NCMoD/k=
+X-Google-Smtp-Source: ABdhPJzXi+s/TO32ednriWkXhf4jI9E5kn5aAwDIvHX4k5lPCje5vfCCQIh4nBVKCN1a4gxpRPxK/1zwVpwc0X8IEgE=
+X-Received: by 2002:a25:890b:0:b0:659:b9d6:a134 with SMTP id
+ e11-20020a25890b000000b00659b9d6a134mr7210862ybl.235.1654201095190; Thu, 02
+ Jun 2022 13:18:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+References: <20220602022109.780348-1-swboyd@chromium.org> <165419885870.2681883.10934677413962491141.b4-ty@arm.com>
+ <CAHmME9qBOwb==N9AWSSb8VhCXANsieWi7JpiiiUMvjU2rdb5XA@mail.gmail.com> <YpkTjv6i+IlO32wM@arm.com>
+In-Reply-To: <YpkTjv6i+IlO32wM@arm.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Thu, 2 Jun 2022 22:18:04 +0200
+X-Gmail-Original-Message-ID: <CAHmME9pU+t_rvQULcOwQmhU74ye3ShWi4Tgz5JdGrzW29XO+Kg@mail.gmail.com>
+Message-ID: <CAHmME9pU+t_rvQULcOwQmhU74ye3ShWi4Tgz5JdGrzW29XO+Kg@mail.gmail.com>
+Subject: Re: [PATCH] arm64: Initialize jump labels before setup_machine_fdt()
+To:     Catalin Marinas <catalin.marinas@arm.com>
+Cc:     Stephen Boyd <swboyd@chromium.org>, Will Deacon <will@kernel.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>, patches@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I noticed a rather surprising issue here while working on removing all of
-the non-atomic MST code: drm_atomic_get_mst_topology_state() doesn't check
-the return value of drm_atomic_get_private_obj_state() and instead just
-passes it directly to to_dp_mst_topology_state(). This means that if we
-hit a deadlock or something else which would return an error code pointer,
-we'll likely segfault the kernel.
+On Thu, Jun 2, 2022 at 9:46 PM Catalin Marinas <catalin.marinas@arm.com> wrote:
+>
+> Hi Jason,
+>
+> On Thu, Jun 02, 2022 at 09:42:49PM +0200, Jason A. Donenfeld wrote:
+> > On Thu, Jun 2, 2022 at 9:41 PM Catalin Marinas <catalin.marinas@arm.com> wrote:
+> > > On Wed, 1 Jun 2022 19:21:09 -0700, Stephen Boyd wrote:
+> > > > A static key warning splat appears during early boot on arm64 systems
+> > > > that credit randomness from devicetrees that contain an "rng-seed"
+> > > > property. This is because setup_machine_fdt() is called before
+> > > > jump_label_init() during setup_arch(). Let's swap the order of these two
+> > > > calls so that jump labels are initialized before the devicetree is
+> > > > unflattened and the rng seed is credited.
+> > > >
+> > > > [...]
+> > >
+> > > Applied to arm64 (for-next/core), thanks!
+> > >
+> > > [1/1] arm64: Initialize jump labels before setup_machine_fdt()
+> > >       https://git.kernel.org/arm64/c/73e2d827a501
+> >
+> > I'm not sure precisely what your for-next tag corresponds to, but just
+> > FYI, this should probably go into 5.19 asap and be marked for stable@.
+>
+> The for-next/core branch should go in 5.19-rc1 (I'll send a pull request
+> tomorrow). There's no need to cc stable since the fixed commit just went
+> in (unless you mean something else by "marked for stable").
 
-This is definitely another one of those fixes where I'm astonished we
-somehow managed never to discover this issue until now…
+It is actually in stable, so please do CC. Otherwise I'll just forward manually.
 
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Fixes: a4370c777406 ("drm/atomic: Make private objs proper objects")
-Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Cc: <stable@vger.kernel.org> # v4.14+
----
- drivers/gpu/drm/display/drm_dp_mst_topology.c | 2 +-
- include/drm/display/drm_dp_mst_helper.h       | 2 ++
- 2 files changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/gpu/drm/display/drm_dp_mst_topology.c b/drivers/gpu/drm/display/drm_dp_mst_topology.c
-index d84673b3294b..d6e595b95f07 100644
---- a/drivers/gpu/drm/display/drm_dp_mst_topology.c
-+++ b/drivers/gpu/drm/display/drm_dp_mst_topology.c
-@@ -5468,7 +5468,7 @@ EXPORT_SYMBOL(drm_dp_mst_topology_state_funcs);
- struct drm_dp_mst_topology_state *drm_atomic_get_mst_topology_state(struct drm_atomic_state *state,
- 								    struct drm_dp_mst_topology_mgr *mgr)
- {
--	return to_dp_mst_topology_state(drm_atomic_get_private_obj_state(state, &mgr->base));
-+	return to_dp_mst_topology_state_safe(drm_atomic_get_private_obj_state(state, &mgr->base));
- }
- EXPORT_SYMBOL(drm_atomic_get_mst_topology_state);
- 
-diff --git a/include/drm/display/drm_dp_mst_helper.h b/include/drm/display/drm_dp_mst_helper.h
-index 10adec068b7f..fe7577e7f305 100644
---- a/include/drm/display/drm_dp_mst_helper.h
-+++ b/include/drm/display/drm_dp_mst_helper.h
-@@ -541,6 +541,8 @@ struct drm_dp_payload {
- };
- 
- #define to_dp_mst_topology_state(x) container_of(x, struct drm_dp_mst_topology_state, base)
-+#define to_dp_mst_topology_state_safe(x) \
-+	container_of_safe(x, struct drm_dp_mst_topology_state, base)
- 
- struct drm_dp_vcpi_allocation {
- 	struct drm_dp_mst_port *port;
--- 
-2.35.3
-
+Jason
