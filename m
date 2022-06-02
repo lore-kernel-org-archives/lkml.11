@@ -2,156 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C305C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 04:48:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68133C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 04:52:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229853AbiFBEsh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 00:48:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55202 "EHLO
+        id S229876AbiFBEwr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 00:52:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229621AbiFBEse (ORCPT
+        with ESMTP id S229621AbiFBEwl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 00:48:34 -0400
-Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB67F2823E0
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 21:48:32 -0700 (PDT)
-Received: by mail-wr1-f43.google.com with SMTP id q7so4866220wrg.5
-        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 21:48:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=AUkIrxS+XdWPb8Cp2nIkEd8cc/NScUdoM6o1x+2YUu4=;
-        b=H+I3KPaKDu2vAXMm81hwAZN7P1ijnyOot4dMUNopd7KYMmy4j+jd0irgEnExJN1p81
-         NHSIGXguPJZ6PpGdLfjOR+jWpomfF3xgJ/5cXbfOu+N97pGbwv1rLHNJ2EVzQPdej8X3
-         6+cWkqixkBWXJh4LXSP2D1YQUo2mJRZ+zNHlZBGZCSGGsITnVCDV22Q5AAn20TtXVOgX
-         3Y+ZZb78/fkspl0SFxvNHgZtdlSlWp8xN08PR4ulJ8zATCuEeBZOoR/azZT96yX3ikDU
-         hb3nw/zklQvYxoO+u0Bthe28nelE8CD8O74cycmlmee+sVKg5GBoxPorzuBUxkdc82VQ
-         bLTA==
-X-Gm-Message-State: AOAM531Ccat/lwneJPmJpAMlZGeqtRbO7YH/piM3iMOX+s7WOzBn9rec
-        xBRMlzbFW97B3prr8SncZF5twBm9D/Zlkw==
-X-Google-Smtp-Source: ABdhPJyIz/NVsaPw8UNBIeCQcB01t4PENq2t2NN6Gs2dK1ZUgPkErt1toDQjfelA+6K+mFXYkh2bTw==
-X-Received: by 2002:a5d:40c7:0:b0:210:3135:e662 with SMTP id b7-20020a5d40c7000000b002103135e662mr1954347wrq.280.1654145311366;
-        Wed, 01 Jun 2022 21:48:31 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
-        by smtp.gmail.com with ESMTPSA id r184-20020a1c2bc1000000b0039768532c79sm4083788wmr.6.2022.06.01.21.48.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Jun 2022 21:48:30 -0700 (PDT)
-Message-ID: <0dc35f2e-746c-bcec-160c-645055a6f8d2@kernel.org>
-Date:   Thu, 2 Jun 2022 06:48:29 +0200
+        Thu, 2 Jun 2022 00:52:41 -0400
+Received: from nksmu.kylinos.cn (mailgw.kylinos.cn [123.150.8.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BCF71159
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 21:52:38 -0700 (PDT)
+X-UUID: a828858c71ec40fdbd2877cbb1e1c59f-20220602
+X-GW-Reason: 13103
+X-Policy-Incident: 5pS25Lu25Lq66LaF6L+HMTDkurrpnIDopoHlrqHmoLg=
+X-Content-Feature: ica/max.line-size 100
+        audit/email.address 3
+        meta/cnt.alert 1
+X-CPASD-INFO: 83a86b36504749499f45c750e0154d2d@gYObWGOUYWZhUHaDg3x_c1mXZGWTY1V
+        _p2pRZWKUXoSVhH5xTWJsXVKBfG5QZWNdYVN_eGpQYl9gZFB5i3-XblBgXoZgUZB3h3WbWGaQYw==
+X-CLOUD-ID: 83a86b36504749499f45c750e0154d2d
+X-CPASD-SUMMARY: SIP:-1,APTIP:-2.0,KEY:0.0,FROMBLOCK:1,OB:0.0,URL:-5,TVAL:186.
+        0,ESV:0.0,ECOM:-5.0,ML:0.0,FD:0.0,CUTS:304.0,IP:-2.0,MAL:-5.0,PHF:-5.0,PHC:-5
+        .0,SPF:4.0,EDMS:-5,IPLABEL:4480.0,FROMTO:0,AD:0,FFOB:0.0,CFOB:0.0,SPC:0,SIG:-
+        5,AUF:11,DUF:42066,ACD:302,DCD:404,SL:0,EISP:0,AG:0,CFC:0.812,CFSR:0.029,UAT:
+        0,RAF:0,IMG:-5.0,DFA:0,DTA:0,IBL:-2.0,ADI:-5,SBL:0,REDM:0,REIP:0,ESB:0,ATTNUM
+        :0,EAF:0,CID:-5.0,VERSION:2.3.17
+X-CPASD-ID: a828858c71ec40fdbd2877cbb1e1c59f-20220602
+X-CPASD-BLOCK: 1000
+X-CPASD-STAGE: 1
+X-UUID: a828858c71ec40fdbd2877cbb1e1c59f-20220602
+X-User: huangbing@kylinos.cn
+Received: from localhost.localdomain [(116.128.244.169)] by nksmu.kylinos.cn
+        (envelope-from <huangbing@kylinos.cn>)
+        (Generic MTA)
+        with ESMTP id 1997259765; Thu, 02 Jun 2022 11:04:31 +0800
+From:   Bing Huang <huangbing@kylinos.cn>
+To:     peterz@infradead.org, dietmar.eggemann@arm.com
+Cc:     brauner@kernel.org, bristot@redhat.com, bsegall@google.com,
+        juri.lelli@redhat.com, linux-kernel@vger.kernel.org,
+        mgorman@suse.de, mingo@redhat.com, rostedt@goodmis.org,
+        vincent.guittot@linaro.org
+Subject: [PATCH v3] sched/fair: static cpumasks for load balance
+Date:   Thu,  2 Jun 2022 11:01:35 +0800
+Message-Id: <20220602030135.398697-1-huangbing@kylinos.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: CVE-2022-1462: race condition vulnerability in
- drivers/tty/tty_buffers.c
-Content-Language: en-US
-To:     Hillf Danton <hdanton@sina.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     ChenBigNB <chennbnbnb@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-References: <20220602024857.4808-1-hdanton@sina.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20220602024857.4808-1-hdanton@sina.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 02. 06. 22, 4:48, Hillf Danton wrote:
-> On Wed, 1 Jun 2022 21:34:26 +0300 Dan Carpenter wrote:
->> Hi Greg, Jiri,
->>
->> I searched lore.kernel.org and it seemed like CVE-2022-1462 might not
->> have ever been reported to you?  Here is the original email with the
->> syzkaller reproducer.
->>
->> https://seclists.org/oss-sec/2022/q2/155
->>
->> The reporter proposed a fix, but it won't work.  Smatch says that some
->> of the callers are already holding the port->lock.  For example,
->> sci_dma_rx_complete() will deadlock.
-> 
-> Hi Dan
-> 
-> To erase the deadlock above, we need to add another helper folding
-> tty_insert_flip_string() and tty_flip_buffer_push() into one nutshell,
-> with buf->tail covered by port->lock.
-> 
-> The diff attached in effect reverts
-> 71a174b39f10 ("pty: do tty_flip_buffer_push without port->lock in pty_write").
-> 
-> Only for thoughts now.
+The both cpu mask load_balance_mask and select_idle_mask just only used
+in fair.c, but allocation in core.c in CONFIG_CPUMASK_OFFSTACK=y case,
+and global via declare per cpu variations. More or less, it looks wired.
 
-I think this the likely the best approach. Except few points inlined below.
+Co-developed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+Signed-off-by: Bing Huang <huangbing@kylinos.cn>
+---
 
-Another would be to split tty_flip_buffer_push() into two and call only 
-the first one (doing smp_store_release()) inside the lock. I tried that 
-already, but it looks much worse.
+ v1->v2:
+   move load_balance_mask and select_idle_mask allocation from 
+   sched_init() to init_sched_fair_class()
+ v2->v3: 
+   fixup by Marco Elver <elver@google.com>
 
-Another would be to add flags to tty_flip_buffer_push(). Like 
-ONLY_ADVANCE and ONLY_QUEUE. Call with the first under the lock, the 
-second outside.
+ kernel/sched/core.c | 11 -----------
+ kernel/sched/fair.c | 13 +++++++++++--
+ 2 files changed, 11 insertions(+), 13 deletions(-)
 
-Ideas, comments?
-
-> Hillf
-> 
-> +++ b/drivers/tty/pty.c
-> @@ -116,15 +116,8 @@ static int pty_write(struct tty_struct *
->   	if (tty->flow.stopped)
->   		return 0;
->   
-> -	if (c > 0) {
-> -		spin_lock_irqsave(&to->port->lock, flags);
-> -		/* Stuff the data into the input queue of the other end */
-> -		c = tty_insert_flip_string(to->port, buf, c);
-> -		spin_unlock_irqrestore(&to->port->lock, flags);
-> -		/* And shovel */
-> -		if (c)
-> -			tty_flip_buffer_push(to->port);
-> -	}
-> +	if (c > 0)
-> +		c = tty_flip_insert_and_push_buffer(to->port, buf, c);
->   	return c;
->   }
->   
-> +++ b/drivers/tty/tty_buffer.c
-> @@ -554,6 +554,26 @@ void tty_flip_buffer_push(struct tty_por
->   }
->   EXPORT_SYMBOL(tty_flip_buffer_push);
->   
-> +int tty_flip_insert_and_push_buffer(struct tty_port *port, const unsigned char *string, int cnt)
-
-It should be _insert_string_, IMO.
-
-> +{
-> +	struct tty_bufhead *buf = &port->buf;
-> +	unsigned long flags;
-> +
-> +	spin_lock_irqsave(&port->lock, flags);
-> +	cnt = tty_insert_flip_string(port, string, cnt);
-> +	if (cnt) {
-> +		/*
-> +		 * Paired w/ acquire in flush_to_ldisc(); ensures flush_to_ldisc() sees
-> +		 * buffer data.
-> +		 */
-> +		smp_store_release(&buf->tail->commit, buf->tail->used);
-> +	}
-> +	spin_unlock_irqrestore(&port->lock, flags);
-> +	queue_work(system_unbound_wq, &buf->work);
-
-\n here please.
-
-> +	return cnt;
-> +}
-> +EXPORT_SYMBOL(tty_flip_insert_and_push_buffer);
-
-No need to export this, right?
-
-thanks,
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 696c6490bd5b..707df2aeebf8 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -9503,9 +9503,6 @@ LIST_HEAD(task_groups);
+ static struct kmem_cache *task_group_cache __read_mostly;
+ #endif
+ 
+-DECLARE_PER_CPU(cpumask_var_t, load_balance_mask);
+-DECLARE_PER_CPU(cpumask_var_t, select_idle_mask);
+-
+ void __init sched_init(void)
+ {
+ 	unsigned long ptr = 0;
+@@ -9549,14 +9546,6 @@ void __init sched_init(void)
+ 
+ #endif /* CONFIG_RT_GROUP_SCHED */
+ 	}
+-#ifdef CONFIG_CPUMASK_OFFSTACK
+-	for_each_possible_cpu(i) {
+-		per_cpu(load_balance_mask, i) = (cpumask_var_t)kzalloc_node(
+-			cpumask_size(), GFP_KERNEL, cpu_to_node(i));
+-		per_cpu(select_idle_mask, i) = (cpumask_var_t)kzalloc_node(
+-			cpumask_size(), GFP_KERNEL, cpu_to_node(i));
+-	}
+-#endif /* CONFIG_CPUMASK_OFFSTACK */
+ 
+ 	init_rt_bandwidth(&def_rt_bandwidth, global_rt_period(), global_rt_runtime());
+ 
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 8c5b74f66bd3..310b6f52a7df 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -5843,8 +5843,8 @@ static void dequeue_task_fair(struct rq *rq, struct task_struct *p, int flags)
+ #ifdef CONFIG_SMP
+ 
+ /* Working cpumask for: load_balance, load_balance_newidle. */
+-DEFINE_PER_CPU(cpumask_var_t, load_balance_mask);
+-DEFINE_PER_CPU(cpumask_var_t, select_idle_mask);
++static DEFINE_PER_CPU(cpumask_var_t, load_balance_mask);
++static DEFINE_PER_CPU(cpumask_var_t, select_idle_mask);
+ 
+ #ifdef CONFIG_NO_HZ_COMMON
+ 
+@@ -11841,6 +11841,15 @@ void show_numa_stats(struct task_struct *p, struct seq_file *m)
+ __init void init_sched_fair_class(void)
+ {
+ #ifdef CONFIG_SMP
++	int i;
++
++	for_each_possible_cpu(i) {
++		zalloc_cpumask_var_node(&per_cpu(load_balance_mask, i),
++								GFP_KERNEL, cpu_to_node(i));
++		zalloc_cpumask_var_node(&per_cpu(select_idle_mask, i),
++								GFP_KERNEL, cpu_to_node(i));
++	}
++
+ 	open_softirq(SCHED_SOFTIRQ, run_rebalance_domains);
+ 
+ #ifdef CONFIG_NO_HZ_COMMON
 -- 
-js
-suse labs
+2.25.1
+
+
+No virus found
+		Checked by Hillstone Network AntiVirus
