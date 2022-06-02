@@ -2,199 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1456C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 15:57:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0B1DC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 15:57:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236691AbiFBP5L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 11:57:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49374 "EHLO
+        id S236682AbiFBP5o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 11:57:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236679AbiFBP5D (ORCPT
+        with ESMTP id S233858AbiFBP5k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 11:57:03 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB76C3B02F
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 08:57:01 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id s24so7000793wrb.10
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 08:57:01 -0700 (PDT)
+        Thu, 2 Jun 2022 11:57:40 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F3005044C;
+        Thu,  2 Jun 2022 08:57:39 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id q21so7038638wra.2;
+        Thu, 02 Jun 2022 08:57:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/Ig/QhQNnSaLYheTCx1UmngTcl4ocLyAvqu6aDJbhrs=;
-        b=HE5pG9/aW4cFaYUi6zQUrIpflq8Rz1EmOHhp5Vv9uU3l1AcUZYYvub4GDxHpMx5KMw
-         uY/vleFSi86p0QlWLGyezZ9otl0kAng0Rd3nZuX95pp/rRZlldec20Y2LTzHC+jiBqd9
-         0QTTJUZlCVjvdcLONhDBx3i7TSkiZXyES1367AcQuiiMjTI21+6pzzLv3z1IFjSC4waw
-         IGL/sHVyXuljO7Vjhzo7TPlUN3fyLYUlGWpxnB5Es2TQFHXCVzh3Khxx6SKyM+6jOGEx
-         tPpR7YdLpJP/dBJR9nWW5ahN/GhzX9sNawbsOr2kjaQ+lykJiLPoUlblkDuHQTayp2M9
-         Wnug==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=U45oZztThwfTU4bE8oeP5EulZ4cbmdTMrasnTC5Jdpk=;
+        b=WhGySQvOuchgsSe7+FbwcFf+mI+6SdW3TND8tEcZP15hSvH7EO+WJbESdN6KE67pK2
+         i55m7YhNDq/U/FivXmqhRnOBGq7qmgSk50qkkKeQ9Chu2Ci5FI7sggl7TdtnUKfujZjK
+         GkSKRkz8U8Nhjdf6M/jXDfrUqWE4npO+yQvSrp1Q+bIeGl7kV3WhVykb2ZV1PlCxuVZr
+         OwK2iZffbwKgAV+vp+oInKlnVc+dPEj3L/COOaU3k0lSLgmJdcUjFaOHWpRbfPQP7FKk
+         YXH9MbAws4dCiPoCSpNZjCgjVSmYy1Bx+5nOOpiXMQSzt/EXpwnqfk95wOVOTdo3VUlj
+         nC9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/Ig/QhQNnSaLYheTCx1UmngTcl4ocLyAvqu6aDJbhrs=;
-        b=2QaW7EzWcyFb62yI2/VnrH9GDjo9BtU5bqVMctnjd0XV/Yafkm44oirKT0XyNeumgp
-         zygJRP8nrek+GX2opq1HoroURaiyLG+0nYNhSYrQluSiIzxrWfnhsbdvMvFH9mUGB/lD
-         /Vysogc8kGR5XnBVQCbQg9JKbKLrud1slItzd+9DpoxVRSrA5kNUGsm38te2tFX6LR1u
-         lkTOEMcrQvpSDoYfzRIUOlg2th6SpeSlcjgA+CnS8rDVHp8cAkK4lHkmCCXNUXoP0kb0
-         CP/MRxU7gh0405wv4SIBJkrsMLljsX//goOKX899yhKIMye01J1NsCSYiUQnUk8BYdHL
-         P8Ow==
-X-Gm-Message-State: AOAM530dovDxG9Tg363lzaM/YCxkHxvSdUBBJ8tshP/C/h72ZFFzP88l
-        Ga0vxFCkN55njUdgAjq32ZsB6bMDKbxjmTzzp6ZaQw==
-X-Google-Smtp-Source: ABdhPJz5ISXPXoE/MgUc6zgjthJZFFkewnKP4x4ZhIf/sbQktclnaMMA/XyT6n+o3tl8kLWpfpu945b4VsR6Hx2qLxM=
-X-Received: by 2002:a05:6000:1acc:b0:20f:f12a:a535 with SMTP id
- i12-20020a0560001acc00b0020ff12aa535mr4463758wry.375.1654185419962; Thu, 02
- Jun 2022 08:56:59 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=U45oZztThwfTU4bE8oeP5EulZ4cbmdTMrasnTC5Jdpk=;
+        b=GHlke+1LiMrbnsnS3LkcBsKF3l7tGa9FJ79fVeYtvvIX+Hk16eIe+mHGckvBADwWG3
+         wzrxUqZ7GcNzQg/ENU8fVedWJv6atGSiI8htXgFNfIVbSH2qehSgCVia9wmXDomlttOW
+         36pZx4pNyiXyI7ngur0NK4qah4dP+oaj2DKe6dd/ssyaatHch/+zvjbuWWliMNxPAQaB
+         ycms8E+FstvDDj4NZlcUQPk6TXKQvu74C9Pa8yHyTSSWv7V/fFruxnbtkq8dChTqae+y
+         gDKtHQlebkIXFSrttCayqH2fThj/OajFiEUGNhNjaZ2AFrVu+drFKYNK7a1t3dNFQB2Y
+         0cMQ==
+X-Gm-Message-State: AOAM533giM31b4PmJS03+cU0/yLjdU2BjcghAzCvdw46Jzpc2yAQo9MN
+        8n0HiJN+b49gqQxCShJQT6A=
+X-Google-Smtp-Source: ABdhPJyz5Kv5HQB5RBrB9iVOmWYxmgljnyJaImOlllFIG4+8+d3kzf27yp84e7joZRyHTookq75vNw==
+X-Received: by 2002:adf:f645:0:b0:20e:652d:2a4e with SMTP id x5-20020adff645000000b0020e652d2a4emr4425383wrp.344.1654185457556;
+        Thu, 02 Jun 2022 08:57:37 -0700 (PDT)
+Received: from orome ([62.96.65.119])
+        by smtp.gmail.com with ESMTPSA id y7-20020a5d4707000000b002103e9c1233sm4664997wrq.56.2022.06.02.08.57.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Jun 2022 08:57:36 -0700 (PDT)
+Date:   Thu, 2 Jun 2022 17:57:34 +0200
+From:   Thierry Reding <thierry.reding@gmail.com>
+To:     Dipen Patel <dipenp@nvidia.com>
+Cc:     linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linus.walleij@linaro.org, devicetree@vger.kernel.org,
+        robh+dt@kernel.org
+Subject: Re: [PATCH] dt-bindings: timestamp: Correct id path
+Message-ID: <Ypjd7lsn7KCDXBXv@orome>
+References: <20220523172515.5941-1-dipenp@nvidia.com>
 MIME-Version: 1.0
-References: <20220602153603.1884710-1-zhengjun.xing@linux.intel.com>
-In-Reply-To: <20220602153603.1884710-1-zhengjun.xing@linux.intel.com>
-From:   Ian Rogers <irogers@google.com>
-Date:   Thu, 2 Jun 2022 08:56:45 -0700
-Message-ID: <CAP-5=fUw2TdA_nqbhCc7GjG6+XOfst6gW4FGAeshW7xxmq64nA@mail.gmail.com>
-Subject: Re: [PATCH] perf record: Support sample-read topdown metric group for
- hybrid platforms
-To:     zhengjun.xing@linux.intel.com
-Cc:     acme@kernel.org, peterz@infradead.org, mingo@redhat.com,
-        alexander.shishkin@intel.com, jolsa@redhat.com,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        adrian.hunter@intel.com, ak@linux.intel.com,
-        kan.liang@linux.intel.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="HnqFdPgdWrRBfQgN"
+Content-Disposition: inline
+In-Reply-To: <20220523172515.5941-1-dipenp@nvidia.com>
+User-Agent: Mutt/2.2.4 (c3baa83e) (2022-04-30)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 2, 2022 at 8:35 AM <zhengjun.xing@linux.intel.com> wrote:
->
-> From: Zhengjun Xing <zhengjun.xing@linux.intel.com>
->
-> With the hardware TopDown metrics feature, the sample-read feature should
-> be supported for a TopDown group, e.g., sample a non-topdown event and read
-> a Topdown metric group. But the current perf record code errors are out.
->
-> For a TopDown metric group,the slots event must be the leader of the group,
-> but the leader slots event doesn't support sampling. To support sample-read
-> the TopDown metric group, uses the 2nd event of the group as the "leader"
-> for the purposes of sampling.
->
-> Only the platform with the TopDown metric feature supports sample-read the
-> topdown group. In commit acb65150a47c ("perf record: Support sample-read
-> topdown metric group"), it adds arch_topdown_sample_read() to indicate
-> whether the TopDown group supports sample-read, it should only work on the
-> non-hybrid systems, this patch extends the support for hybrid platforms.
->
-> Before:
->
->  # ./perf record -e "{cpu_core/slots/,cpu_core/cycles/,cpu_core/topdown-retiring/}:S" -a sleep 1
-> Error:
-> The sys_perf_event_open() syscall returned with 22 (Invalid argument) for event (cpu_core/topdown-retiring/).
-> /bin/dmesg | grep -i perf may provide additional information.
->
-> After:
->
->  # ./perf record -e "{cpu_core/slots/,cpu_core/cycles/,cpu_core/topdown-retiring/}:S" -a sleep 1
-> [ perf record: Woken up 1 times to write data ]
-> [ perf record: Captured and wrote 0.238 MB perf.data (369 samples) ]
->
-> Fixes: acb65150a47c ("perf record: Support sample-read topdown metric group")
-> Signed-off-by: Zhengjun Xing <zhengjun.xing@linux.intel.com>
-> Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
 
-Acked-by: Ian Rogers <irogers@google.com>
+--HnqFdPgdWrRBfQgN
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Mon, May 23, 2022 at 10:25:15AM -0700, Dipen Patel wrote:
+> During the repository renaming from hte to timestamp, $id path was not
+> updated accordingly. This patch corrects $id path.
+>=20
+> Fixes: af583852d2ef ("dt-bindings: Renamed hte directory to timestamp")
+> Signed-off-by: Dipen Patel <dipenp@nvidia.com>
+> ---
+>  .../bindings/timestamp/hardware-timestamps-common.yaml          | 2 +-
+>  Documentation/devicetree/bindings/timestamp/hte-consumer.yaml   | 2 +-
+>  .../devicetree/bindings/timestamp/nvidia,tegra194-hte.yaml      | 2 +-
+>  3 files changed, 3 insertions(+), 3 deletions(-)
+
+Sorry for the delay. I've applied this patch now and dt_binding_check
+now no longer shows any errors for these files.
 
 Thanks,
-Ian
+Thierry
 
-> ---
->  tools/perf/arch/x86/util/evsel.c   |  3 ++-
->  tools/perf/arch/x86/util/evsel.h   |  7 +++++++
->  tools/perf/arch/x86/util/topdown.c | 21 ++++-----------------
->  3 files changed, 13 insertions(+), 18 deletions(-)
->  create mode 100644 tools/perf/arch/x86/util/evsel.h
->
-> diff --git a/tools/perf/arch/x86/util/evsel.c b/tools/perf/arch/x86/util/evsel.c
-> index ff4561b7b600..3501399cef35 100644
-> --- a/tools/perf/arch/x86/util/evsel.c
-> +++ b/tools/perf/arch/x86/util/evsel.c
-> @@ -5,6 +5,7 @@
->  #include "util/env.h"
->  #include "util/pmu.h"
->  #include "linux/string.h"
-> +#include "evsel.h"
->
->  void arch_evsel__set_sample_weight(struct evsel *evsel)
->  {
-> @@ -32,7 +33,7 @@ void arch_evsel__fixup_new_cycles(struct perf_event_attr *attr)
->  }
->
->  /* Check whether the evsel's PMU supports the perf metrics */
-> -static bool evsel__sys_has_perf_metrics(const struct evsel *evsel)
-> +bool evsel__sys_has_perf_metrics(const struct evsel *evsel)
->  {
->         const char *pmu_name = evsel->pmu_name ? evsel->pmu_name : "cpu";
->
-> diff --git a/tools/perf/arch/x86/util/evsel.h b/tools/perf/arch/x86/util/evsel.h
-> new file mode 100644
-> index 000000000000..19ad1691374d
-> --- /dev/null
-> +++ b/tools/perf/arch/x86/util/evsel.h
-> @@ -0,0 +1,7 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +#ifndef _EVSEL_H
-> +#define _EVSEL_H 1
-> +
-> +bool evsel__sys_has_perf_metrics(const struct evsel *evsel);
-> +
-> +#endif
-> diff --git a/tools/perf/arch/x86/util/topdown.c b/tools/perf/arch/x86/util/topdown.c
-> index f4d5422e9960..f81a7cfe4d63 100644
-> --- a/tools/perf/arch/x86/util/topdown.c
-> +++ b/tools/perf/arch/x86/util/topdown.c
-> @@ -4,6 +4,7 @@
->  #include "util/pmu.h"
->  #include "util/topdown.h"
->  #include "topdown.h"
-> +#include "evsel.h"
->
->  /* Check whether there is a PMU which supports the perf metrics. */
->  bool topdown_sys_has_perf_metrics(void)
-> @@ -55,33 +56,19 @@ void arch_topdown_group_warn(void)
->
->  #define TOPDOWN_SLOTS          0x0400
->
-> -static bool is_topdown_slots_event(struct evsel *counter)
-> -{
-> -       if (!counter->pmu_name)
-> -               return false;
-> -
-> -       if (strcmp(counter->pmu_name, "cpu"))
-> -               return false;
-> -
-> -       if (counter->core.attr.config == TOPDOWN_SLOTS)
-> -               return true;
-> -
-> -       return false;
-> -}
-> -
->  /*
->   * Check whether a topdown group supports sample-read.
->   *
-> - * Only Topdown metic supports sample-read. The slots
-> + * Only Topdown metric supports sample-read. The slots
->   * event must be the leader of the topdown group.
->   */
->
->  bool arch_topdown_sample_read(struct evsel *leader)
->  {
-> -       if (!pmu_have_event("cpu", "slots"))
-> +       if (!evsel__sys_has_perf_metrics(leader))
->                 return false;
->
-> -       if (is_topdown_slots_event(leader))
-> +       if (leader->core.attr.config == TOPDOWN_SLOTS)
->                 return true;
->
->         return false;
-> --
-> 2.25.1
->
+--HnqFdPgdWrRBfQgN
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmKY3e0ACgkQ3SOs138+
+s6Eyrw/+OmA3OMFoGE0eUxpA/a3G8BO4A+6BIw3lzA/WREnaxMpZ4DdwVhUIZzmV
+oJK2DDt5zzWAf2dpl8UaM8A9FFkAjeWU6q6P2F8C0bUJXNvvUC2cnfUtl3iSHwsO
+lysnFZjR2BA881grh2LtEs4309Rddf5f3FA3BqKisF+XsAcrOYGGely435TXCFby
+CiGvllH4zfE5FmUtdIARVqhDbJRPDIPqik6Qdl0iPkUc4yDbeE0An2jVV2/L12uO
+UUFQM0+qpxBmkkLXSWgis8U9+kGxVBWmr+8adF1AGY5D5wXU94PtHTCxtWjxVBhK
+1jl6X0iW8EZ+B9ehaypjOZk7lNIxj0gq1iz/7M9e1IYN/3aNAu+p+hDdX88ii3Gp
+sP0l/eH+77OTpoBN/YJUItnsK3iAh7VyjS63mFRUv9fPf1h9/acueO/f+N3ySDgs
+iUAtPbyx56FiZ+omXhQ2rIRmPZaiDPm3MJj6cQyFGqThlXncinlBnQ0Sk5IeL3Q0
+HaR7AFJLJ9AqHg2pvt5qU60E+MvAsO4OW6SDTnz7YeNDezEg7k9/EWWVgeNVmXbS
+pXRQX2JrRc7sIVyMrGZN7c/vC3psfO572vsw0JVwZ0qZqvovKGHm9uPFfhwoKtbx
+/ylsKr+7UEahxfhG3IcLv6KmDMXLwkaAyLNRf8TPpCwAdN0ari0=
+=dVCk
+-----END PGP SIGNATURE-----
+
+--HnqFdPgdWrRBfQgN--
