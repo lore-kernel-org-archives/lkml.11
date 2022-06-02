@@ -2,153 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30B02C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 05:23:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53ABAC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 05:25:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229996AbiFBFXk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 01:23:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42278 "EHLO
+        id S229973AbiFBFZX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 01:25:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229737AbiFBFXf (ORCPT
+        with ESMTP id S229647AbiFBFZS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 01:23:35 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 554DD1E227F
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 22:23:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654147414; x=1685683414;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=R7muiVv/9fpCE6xhaxI4/K+31SjhHgOvwPjMsc4fiJo=;
-  b=PBNo5bXI79I7cnhmvm86vceBgdptqLtPEaDXkOl68bpsArkeBeBvdpuk
-   zOFScWCciZBkS0nB0fFQc2ua6IgTmEWiB4NGvW0fWqBEfmdSiOE7KMIFM
-   YqzmvKDvB/LuqP0yetZH0ZyexFIS4pyw5+rWZDBZLZUGkKCTRaiLpb94e
-   kF0VrHjGN/eHd/DRjbk8yfl74vfugEI5iN9xLhjw01bS6y25ivgRy86iL
-   IArDE6FR2C7tBLBJr4O+3aEmZTTi4hvwJ7f48ajpM66mfoAkdU7BXsSFN
-   PkfcIyd5xBV1nolKwrted5j9Gu0TNQvVRxQT72Ffqoulb0Z1LNE5Rx01a
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10365"; a="256306021"
-X-IronPort-AV: E=Sophos;i="5.91,270,1647327600"; 
-   d="scan'208";a="256306021"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 22:23:33 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,270,1647327600"; 
-   d="scan'208";a="563136430"
-Received: from brentlu-brix.itwn.intel.com ([10.5.253.25])
-  by orsmga002.jf.intel.com with ESMTP; 01 Jun 2022 22:23:31 -0700
-From:   Brent Lu <brent.lu@intel.com>
-To:     alsa-devel@alsa-project.org
-Cc:     Cezary Rojewski <cezary.rojewski@intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Liam Girdwood <liam.r.girdwood@linux.intel.com>,
-        Jie Yang <yang.jie@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, Brent Lu <brent.lu@intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        xliu <xiang.liu@cirrus.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] ASoC: Intel: cirrus-common: fix incorrect channel mapping
-Date:   Thu,  2 Jun 2022 13:19:22 +0800
-Message-Id: <20220602051922.1232457-1-brent.lu@intel.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
+        Thu, 2 Jun 2022 01:25:18 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D5381EA85A
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 22:25:17 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id l20-20020a17090a409400b001dd2a9d555bso3966779pjg.0
+        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 22:25:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=dabbelt-com.20210112.gappssmtp.com; s=20210112;
+        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nelGoRK+fUlDKeet8T6l+sbmUXeRjWjPVssTQWUr0Ig=;
+        b=vy3yfyw9SSoKqKUSG57P5OxTHOUY0U58Reiri26Ry2fbin3EOFn9+OMZRlJPFsxqdS
+         YR7e4cJWsWrfEYJk0S28SJdXVJWDQ7D0rSroeuZf8t5mc8lR1vmpReLG4xpqV9GOzxRt
+         wuvlSQlvWOimcQL03fXEcHpkFkR995r446bETmFN47vO6yPUXm2bALrmR0JrNLafZghM
+         uM7meFZsKE13WCTsTDPB/nRSUJP244sgpBfuXabsLjbEm6bKapJt32prrTCM9sOObgCL
+         NHaSBr38dhMAXqsqY85ED+a9L+UfsJgVbCpkErO7DgXoBjKxliNsA8J7F1zUfyxPezBb
+         4cNg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
+         :mime-version:content-transfer-encoding;
+        bh=nelGoRK+fUlDKeet8T6l+sbmUXeRjWjPVssTQWUr0Ig=;
+        b=U0ahsoXBPbgoJY+CeO1QK+121xPMWXsarfk1GBWn8FOxlSW+D19P2PSRFSnkGpkaMW
+         DN1QUJGtRxZPkGkV/kPNING2nGT0IflAq31lkuH8bqbRa9UsK8yvf3FSKd7fqBoJ1GXK
+         KiO1swOdhQrTaCg8a6j5pkj5O7o0yRAUyLNhCcDFMWxrHEPmyLiPFN+rGWBjOt0/GHZu
+         lIg674heE0yitI0o97vpmMEh/0i0eyCYRLPwVWcuDml4NBDhzB1cvlJCeqXBjTo15nGu
+         0ydwH/cR1Ch0//8+0DONtnlwtV1NeAMJ6iiN3I/+IOMKxhTnht/1MVQm6AAWpp4i2zpq
+         ef7w==
+X-Gm-Message-State: AOAM530hdMwDNs2rZQ9Acez/kiYIM+y2OnumSt9XcGYk651aBoe9b+pf
+        dQtnn8xw8un2M6oQAbjL4v081BEuGNhR/w==
+X-Google-Smtp-Source: ABdhPJzMXV9QJAtuK5pym+rv06ZhuwstBd4WZB8JJPd7lfWyo0CdXpHHu3SEHpum9mdsVWX+p+JXbg==
+X-Received: by 2002:a17:902:ea0b:b0:164:81f:682f with SMTP id s11-20020a170902ea0b00b00164081f682fmr3115061plg.39.1654147516250;
+        Wed, 01 Jun 2022 22:25:16 -0700 (PDT)
+Received: from localhost ([12.3.194.138])
+        by smtp.gmail.com with ESMTPSA id z15-20020a170903018f00b00163b66d90b2sm2518364plg.126.2022.06.01.22.25.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Jun 2022 22:25:15 -0700 (PDT)
+Date:   Wed, 01 Jun 2022 22:25:15 -0700 (PDT)
+X-Google-Original-Date: Wed, 01 Jun 2022 22:25:06 PDT (-0700)
+Subject:     Re: [PATCH v2] arch/riscv: add Zihintpause support
+In-Reply-To: <20220524211954.1936117-1-daolu@rivosinc.com>
+CC:     linux-kernel@vger.kernel.org, daolu@rivosinc.com, heiko@sntech.de,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        aou@eecs.berkeley.edu, atishp@atishpatra.org, anup@brainfault.org,
+        rdunlap@infradead.org, robh@kernel.org,
+        alexandre.ghiti@canonical.com, panqinglin2020@iscas.ac.cn,
+        research_trasio@irq.a4lg.com, jszhang@kernel.org,
+        linux-riscv@lists.infradead.org (open list:RISC-V ARCHITECTURE)
+From:   Palmer Dabbelt <palmer@dabbelt.com>
+To:     daolu@rivosinc.com
+Message-ID: <mhng-62ce3647-fc60-42ce-bff0-9436c7e15028@palmer-ri-x1c9>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: xliu <xiang.liu@cirrus.com>
+On Tue, 24 May 2022 14:19:50 PDT (-0700), daolu@rivosinc.com wrote:
+> Implement support for the ZiHintPause extension.
+>
+> The PAUSE instruction is a HINT that indicates the current hart’s rate of
+> instruction retirement should be temporarily reduced or paused.
+>
+> Reviewed-by: Heiko Stuebner <heiko@sntech.de>
+> Tested-by: Heiko Stuebner <heiko@sntech.de>
+> Signed-off-by: Dao Lu <daolu@rivosinc.com>
+> ---
+>
+> v1 -> v2:
+>  Remove the usage of static branch, use PAUSE if toolchain supports it
 
-The default mapping of ASPRX1 (DAC source) is slot 0. Change the slot
-mapping of right amplifiers (WR and TR) to slot 1 to receive right
-channel data. Also update the ACPI instance ID mapping according to HW
-configuration.
+Sorry for the back and forth here, but IMO we do want to probe for this 
+at runtime: sure there's no issue executing the pause (aside from that 
+PC silliness, but we've all agreed to ignore that) but we still need to 
+execute the div on platforms that predate Zihintpause otherwise we 
+regress on cpu_relax() there.  IIUC there's still no hardware with 
+Zihintpause, so regressing on real hardware in favor of an unimplemented 
+extension is the wrong way to go.
 
-Signed-off-by: xliu <xiang.liu@cirrus.com>
-Signed-off-by: Brent Lu <brent.lu@intel.com>
----
- sound/soc/intel/boards/sof_cirrus_common.c | 40 +++++++++++++++++++---
- 1 file changed, 36 insertions(+), 4 deletions(-)
+Should be pretty easy to do this with the alternatives mechanism.
 
-diff --git a/sound/soc/intel/boards/sof_cirrus_common.c b/sound/soc/intel/boards/sof_cirrus_common.c
-index e71d74ec1b0b..f4192df962d6 100644
---- a/sound/soc/intel/boards/sof_cirrus_common.c
-+++ b/sound/soc/intel/boards/sof_cirrus_common.c
-@@ -54,22 +54,29 @@ static struct snd_soc_dai_link_component cs35l41_components[] = {
- 	},
- };
- 
-+/*
-+ * Mapping between ACPI instance id and speaker position.
-+ *
-+ * Four speakers:
-+ *         0: Tweeter left, 1: Woofer left
-+ *         2: Tweeter right, 3: Woofer right
-+ */
- static struct snd_soc_codec_conf cs35l41_codec_conf[] = {
- 	{
- 		.dlc = COMP_CODEC_CONF(CS35L41_DEV0_NAME),
--		.name_prefix = "WL",
-+		.name_prefix = "TL",
- 	},
- 	{
- 		.dlc = COMP_CODEC_CONF(CS35L41_DEV1_NAME),
--		.name_prefix = "WR",
-+		.name_prefix = "WL",
- 	},
- 	{
- 		.dlc = COMP_CODEC_CONF(CS35L41_DEV2_NAME),
--		.name_prefix = "TL",
-+		.name_prefix = "TR",
- 	},
- 	{
- 		.dlc = COMP_CODEC_CONF(CS35L41_DEV3_NAME),
--		.name_prefix = "TR",
-+		.name_prefix = "WR",
- 	},
- };
- 
-@@ -101,6 +108,21 @@ static int cs35l41_init(struct snd_soc_pcm_runtime *rtd)
- 	return ret;
- }
- 
-+/*
-+ * Channel map:
-+ *
-+ * TL/WL: ASPRX1 on slot 0, ASPRX2 on slot 1 (default)
-+ * TR/WR: ASPRX1 on slot 1, ASPRX2 on slot 0
-+ */
-+static const struct {
-+	unsigned int rx[2];
-+} cs35l41_channel_map[] = {
-+	{.rx = {0, 1}}, /* TL */
-+	{.rx = {0, 1}}, /* WL */
-+	{.rx = {1, 0}}, /* TR */
-+	{.rx = {1, 0}}, /* WR */
-+};
-+
- static int cs35l41_hw_params(struct snd_pcm_substream *substream,
- 			     struct snd_pcm_hw_params *params)
- {
-@@ -134,6 +156,16 @@ static int cs35l41_hw_params(struct snd_pcm_substream *substream,
- 				ret);
- 			return ret;
- 		}
-+
-+		/* setup channel map */
-+		ret = snd_soc_dai_set_channel_map(codec_dai, 0, NULL,
-+						  ARRAY_SIZE(cs35l41_channel_map[i].rx),
-+						  (unsigned int *)cs35l41_channel_map[i].rx);
-+		if (ret < 0) {
-+			dev_err(codec_dai->dev, "fail to set channel map, ret %d\n",
-+				ret);
-+			return ret;
-+		}
- 	}
- 
- 	return 0;
--- 
-2.25.1
-
+>
+>  arch/riscv/Makefile                     | 4 ++++
+>  arch/riscv/include/asm/hwcap.h          | 1 +
+>  arch/riscv/include/asm/vdso/processor.h | 8 +++++++-
+>  arch/riscv/kernel/cpu.c                 | 1 +
+>  arch/riscv/kernel/cpufeature.c          | 2 ++
+>  5 files changed, 15 insertions(+), 1 deletion(-)
+>
+> diff --git a/arch/riscv/Makefile b/arch/riscv/Makefile
+> index 7d81102cffd4..900a8fda1a2d 100644
+> --- a/arch/riscv/Makefile
+> +++ b/arch/riscv/Makefile
+> @@ -56,6 +56,10 @@ riscv-march-$(CONFIG_RISCV_ISA_C)	:= $(riscv-march-y)c
+>  toolchain-need-zicsr-zifencei := $(call cc-option-yn, -march=$(riscv-march-y)_zicsr_zifencei)
+>  riscv-march-$(toolchain-need-zicsr-zifencei) := $(riscv-march-y)_zicsr_zifencei
+>
+> +# Check if the toolchain supports Zihintpause extension
+> +toolchain-supports-zihintpause := $(call cc-option-yn, -march=$(riscv-march-y)_zihintpause)
+> +riscv-march-$(toolchain-supports-zihintpause) := $(riscv-march-y)_zihintpause
+> +
+>  KBUILD_CFLAGS += -march=$(subst fd,,$(riscv-march-y))
+>  KBUILD_AFLAGS += -march=$(riscv-march-y)
+>
+> diff --git a/arch/riscv/include/asm/hwcap.h b/arch/riscv/include/asm/hwcap.h
+> index 0734e42f74f2..caa9ee5459b4 100644
+> --- a/arch/riscv/include/asm/hwcap.h
+> +++ b/arch/riscv/include/asm/hwcap.h
+> @@ -52,6 +52,7 @@ extern unsigned long elf_hwcap;
+>   */
+>  enum riscv_isa_ext_id {
+>  	RISCV_ISA_EXT_SSCOFPMF = RISCV_ISA_EXT_BASE,
+> +	RISCV_ISA_EXT_ZIHINTPAUSE,
+>  	RISCV_ISA_EXT_ID_MAX = RISCV_ISA_EXT_MAX,
+>  };
+>
+> diff --git a/arch/riscv/include/asm/vdso/processor.h b/arch/riscv/include/asm/vdso/processor.h
+> index 134388cbaaa1..4de911a25051 100644
+> --- a/arch/riscv/include/asm/vdso/processor.h
+> +++ b/arch/riscv/include/asm/vdso/processor.h
+> @@ -8,7 +8,13 @@
+>
+>  static inline void cpu_relax(void)
+>  {
+> -#ifdef __riscv_muldiv
+> +#ifdef __riscv_zihintpause
+> +	/*
+> +	 * Reduce instruction retirement.
+> +	 * This assumes the PC changes.
+> +	 */
+> +	__asm__ __volatile__ ("pause");
+> +#elif __riscv_muldiv
+>  	int dummy;
+>  	/* In lieu of a halt instruction, induce a long-latency stall. */
+>  	__asm__ __volatile__ ("div %0, %0, zero" : "=r" (dummy));
+> diff --git a/arch/riscv/kernel/cpu.c b/arch/riscv/kernel/cpu.c
+> index ccb617791e56..89e563e9c4cc 100644
+> --- a/arch/riscv/kernel/cpu.c
+> +++ b/arch/riscv/kernel/cpu.c
+> @@ -88,6 +88,7 @@ int riscv_of_parent_hartid(struct device_node *node)
+>   */
+>  static struct riscv_isa_ext_data isa_ext_arr[] = {
+>  	__RISCV_ISA_EXT_DATA(sscofpmf, RISCV_ISA_EXT_SSCOFPMF),
+> +	__RISCV_ISA_EXT_DATA(zihintpause, RISCV_ISA_EXT_ZIHINTPAUSE),
+>  	__RISCV_ISA_EXT_DATA("", RISCV_ISA_EXT_MAX),
+>  };
+>
+> diff --git a/arch/riscv/kernel/cpufeature.c b/arch/riscv/kernel/cpufeature.c
+> index 1b2d42d7f589..37ff06682ae6 100644
+> --- a/arch/riscv/kernel/cpufeature.c
+> +++ b/arch/riscv/kernel/cpufeature.c
+> @@ -25,6 +25,7 @@ static DECLARE_BITMAP(riscv_isa, RISCV_ISA_EXT_MAX) __read_mostly;
+>  __ro_after_init DEFINE_STATIC_KEY_FALSE(cpu_hwcap_fpu);
+>  #endif
+>
+> +
+>  /**
+>   * riscv_isa_extension_base() - Get base extension word
+>   *
+> @@ -192,6 +193,7 @@ void __init riscv_fill_hwcap(void)
+>  				set_bit(*ext - 'a', this_isa);
+>  			} else {
+>  				SET_ISA_EXT_MAP("sscofpmf", RISCV_ISA_EXT_SSCOFPMF);
+> +				SET_ISA_EXT_MAP("zihintpause", RISCV_ISA_EXT_ZIHINTPAUSE);
+>  			}
+>  #undef SET_ISA_EXT_MAP
+>  		}
