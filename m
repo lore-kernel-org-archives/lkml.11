@@ -2,96 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F0ACC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 03:44:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8947FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 03:45:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229551AbiFBDoV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 23:44:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38422 "EHLO
+        id S229570AbiFBDoz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 23:44:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229495AbiFBDoD (ORCPT
+        with ESMTP id S229458AbiFBDov (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 23:44:03 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05E8114084A
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 20:44:02 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id l20-20020a17090a409400b001dd2a9d555bso3812258pjg.0
-        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 20:44:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dabbelt-com.20210112.gappssmtp.com; s=20210112;
-        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
-         :content-transfer-encoding;
-        bh=gVoZS2vzK4dR4Y6/3npxg/APivJZF2gUX/to47n1YCM=;
-        b=Q44pl4PZC8gOSRYB6J0wGoC2a9zoIQKt3GhYfvNGdyNqMi1D28LpJHDXUCib4gwEjc
-         uHYPnsmGF4OQWkOriCKFRuh+wwpork/HmVYvSZFObqIVYFcNme6V2lbNnDyY1RV19Q9a
-         XcEsWsXVq7t4LcaDTbJ4gFcJYA6BWSvcldHcjhYeUtGk+/ANknZ4Ah+EDgmfsttlBZ+w
-         ewej66JKui+QNQ5xzzWescXdSGIy0d3NgUYmn6eAKA35WkWT4yYojaX6eNAl9XHV5FYQ
-         1lNWlrC9Cz8NOlXMlCYO4/t581jvyztxvBvvS61gxRNNdkWeHPCckqsN66LLP4Rxj0fK
-         9FIQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
-         :mime-version:content-transfer-encoding;
-        bh=gVoZS2vzK4dR4Y6/3npxg/APivJZF2gUX/to47n1YCM=;
-        b=WFDKGVT+3zLPESKSY1GU9B+nv2UwVZGk+6b15DLMDnGNzKPG63Tg6qM8aD4mbdOmfZ
-         Vu3r0sddhxQleYkTaf97wqhU9zpbrksWDn2BVhGw1b+LGqZ93kVikDZKa9Gpqi/SY1V0
-         CE+HhhkQWY4cs6EBeVVglZcd6uhVGudjBxSXjRYO74a44NIVTvwSTx/F/RbWZ1BW5C6K
-         xR2qZWaXdNSGitPRd9Y3ADFpdLoaZ4NgmGKOXPcSF7dzyEgQ0MX8ctdgxJIfK2QHXnqc
-         zf4TY/MXxl7bO4E7TGsPXLQhGPLYwYe5wryn9fUcGAuUNCKllvoRyVY16M26Yud74TQO
-         qgNQ==
-X-Gm-Message-State: AOAM5302UNcEcNsYK4JFltTOXQxX1k/JYIU75QSLBVOArNTfM7w+5wRz
-        ChOm7L6W9VDdIxBbyEkjZuVQTdZdso0Gag==
-X-Google-Smtp-Source: ABdhPJyEM2/VwvlC2CQzIqSXaE9/L6LNxoxkGMuwk5y4slDj7Ce2IqnUVMNuNFwIjbCt4hFIkjlXTw==
-X-Received: by 2002:a17:902:8203:b0:15f:4423:6e9c with SMTP id x3-20020a170902820300b0015f44236e9cmr2747281pln.25.1654141441419;
-        Wed, 01 Jun 2022 20:44:01 -0700 (PDT)
-Received: from localhost ([12.3.194.138])
-        by smtp.gmail.com with ESMTPSA id x1-20020a170902820100b001618383483fsm2268587pln.224.2022.06.01.20.44.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Jun 2022 20:44:00 -0700 (PDT)
-Date:   Wed, 01 Jun 2022 20:44:00 -0700 (PDT)
-X-Google-Original-Date: Wed, 01 Jun 2022 20:43:21 PDT (-0700)
-Subject:     Re: arch/riscv: SV48 patch series questions
-In-Reply-To: <83813d991f96428c95c6d681c16ae852@EXMBX161.cuchost.com>
-CC:     alexandre.ghiti@canonical.com, linux-riscv@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-From:   Palmer Dabbelt <palmer@dabbelt.com>
-To:     leyfoon.tan@starfivetech.com
-Message-ID: <mhng-055df44c-3feb-41ae-b8c0-ae3a6489dee1@palmer-ri-x1c9>
-Mime-Version: 1.0 (MHng)
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        Wed, 1 Jun 2022 23:44:51 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2044.outbound.protection.outlook.com [40.107.244.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B471B16A51B;
+        Wed,  1 Jun 2022 20:44:50 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NZ6Zr1Qst6UQR2xt29Pqt5mYLzrs2Nghf5zCpY8MOpf4ZbPwkwYv7faOWJWJ/6gqxcUzrSu0r7u7zMUTHYHzw4Ke0G2m+UbJHmKjS3xBBSrNeYMx8oQ/yiderRqnd73vWMsXUASivTUw72SB1P3qreEpzfJKns/g8ixsixdZjo3gAdbSUBLyvj02AP1Ruqw0JcvMkj4WTseYJapT4nYVn9Obp/znatTCK6i1xumfk++cxuBT/i2diz54ENrKQZaVsaw2p88VYnQQ/5spPIUSHwY3pQPEdFVFMBtitHCAQFKc2SYAj07c3Lk1jL4/Gd+qAQq8n8/2XD6GWHL6RzWe1Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=2LO0FtnNN082qHyxxWS/HSdQINrPpYR901eNde+tl5U=;
+ b=icQX/j+7NoDKxnensQx65wA7gmBEvuGXoxN/dXJX48iN5QHahqONPSFqS+M/O0xBWBN7LwPtUg/kwQ3cZBMBZHkNNIbJeyOQf96p0SwEga2Jav9PJyyv9CwlYvNoQ6VkYEqaj6rqDdAmcg/oDhzeViOU+rmIRUe/W97qWGSdIuCEQ6mrFCmQDdWAL6HRMzDw8th8A1kGTSBZAK2vbsa6+T3nCtRxi7q8byhdOFo9C4S22LctPZst8RB8Wz6IpWHaI21Ooljn3vXu3UWKGZHLOWbxANX4QMEHk6sMOBaHfG0gsptIUo4zN29eEACwn+xgDrZYrX++dfaX7xzHKp4Ltw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2LO0FtnNN082qHyxxWS/HSdQINrPpYR901eNde+tl5U=;
+ b=K3qXSvGZTnWYwH1MoNeqWIulxmKIP1xt36tfWVKaCX7LAvEELhC0p4UXuzHfe2V5uNiepOEFRMNU1qONvrF5EC6OTjyTBLtZ7VGoccu38sDRjluNDpZqraZDo4z1iowxfcQ8Cx9G7WgnBzyMUGKmeYsceyzugB+JBKYhFm2OCnJg7082HTg5uP1oNmZkr/bPQXu8K/merWergQ18zKUKp6Ys7Cm5SliayDq1ZZ3DummwELrL7+XaJx4RFpxPzqhGDTQvHkHgGhLE2q1AqUIVCD5MFIvVOPK9sjCeak8X4lXoHQLt17jBKCW6LKJac7a1+HFshti0mX+r1Bz10LiACw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from SJ0PR12MB5504.namprd12.prod.outlook.com (2603:10b6:a03:3ad::24)
+ by MN2PR12MB2944.namprd12.prod.outlook.com (2603:10b6:208:ae::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.13; Thu, 2 Jun
+ 2022 03:43:47 +0000
+Received: from SJ0PR12MB5504.namprd12.prod.outlook.com
+ ([fe80::ede1:a4f9:5bf5:c3a0]) by SJ0PR12MB5504.namprd12.prod.outlook.com
+ ([fe80::ede1:a4f9:5bf5:c3a0%4]) with mapi id 15.20.5314.013; Thu, 2 Jun 2022
+ 03:43:47 +0000
+Message-ID: <534a43c8-5491-b57c-292a-dd56d6c8af86@nvidia.com>
+Date:   Wed, 1 Jun 2022 20:43:44 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH net-next v2] selftests: net: fib_rule_tests: fix support
+ for running individual tests
+Content-Language: en-US
+To:     Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>,
+        netdev@vger.kernel.org
+Cc:     outreachy@lists.linux.dev, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220601174316.4278-1-eng.alaamohamedsoliman.am@gmail.com>
+From:   Roopa Prabhu <roopa@nvidia.com>
+In-Reply-To: <20220601174316.4278-1-eng.alaamohamedsoliman.am@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SJ0PR13CA0178.namprd13.prod.outlook.com
+ (2603:10b6:a03:2c7::33) To SJ0PR12MB5504.namprd12.prod.outlook.com
+ (2603:10b6:a03:3ad::24)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ce4ba6a2-ead2-4e42-8758-08da444a1971
+X-MS-TrafficTypeDiagnostic: MN2PR12MB2944:EE_
+X-Microsoft-Antispam-PRVS: <MN2PR12MB294452A5540105479FFC30A6CBDE9@MN2PR12MB2944.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Wha1wi8JQrw+XaeZo9Cu6QjvbI0F8bypiG32hdU4JvLCTJI/COHTRhfJsG2jeiq4kxEp9EnI4A20a+crQje70YBY2EH2gx5Srqw7TXz4SwXWcFS7E8ZgcztIIcALcPPO2cVEJ69DfqD/VrEnjyKmRcO++C7h+Kw7VjjBRfxEMXTY91PINg7sfI5mj0BEgzxB3JMW3HigXG00adGIL0kSYW2vNwZgbPQBpEg7g4Wwkp5DLGkEsFLIak4zZu0yAykOaQRDugZ+FeMS35rH+pVLtWqW7vJNLHmj55FE6ls3XSCAVvVnMv4lu23uqo5UC1IY+OXw7FiDbl/S1aPLC4PTPB1PNZ9oCV+NosHBX6ZcIOcLWsml4uZTY628yEF7bxtMnLJm3aLYWvB/nnVCZyAk2aJz2QJSdhiGxYiHAnwcFTs9s+u9hYqtOLLU7kEIBsVqCWYhrZiX9T3xwkfijm3ilqAUo64Cv0Vx9lAZ1ycuCDUIcB0vret//Pu67GiW0W3lZ0V4nJaj5LaPgGnABQUoWDfy083AZJQJWv9kqWVFyj+vzx5lFCXRHJvpa4FCHDUZaTzRP56W13htW+8HuRwLgeEIqcR9ZsLoc8gyCQZWx67SgruIPbvJF1VJFArJ/y9nKdJVK4v75fWXvOw32cgVBTVjrSaJ6t9MZcMcZbGaWGdfgCiS01YEwC7QF2jTG5/ZvSJyhZs0hJnHzCYmILxI+fOAPF1pH4z57BQ2rOuC3gNUyQT7BvZOIWkxn/0ayiKI
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR12MB5504.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(2616005)(186003)(38100700002)(316002)(8676002)(4326008)(66946007)(66476007)(83380400001)(36756003)(31686004)(6506007)(66556008)(31696002)(86362001)(53546011)(6486002)(8936002)(5660300002)(26005)(6512007)(6666004)(2906002)(508600001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?bEtkdVlVa3ZkcHVaMlNVYU9NNjRlYXJxem82N0ZCNnhuR0o2SnR6bCtNaU5a?=
+ =?utf-8?B?aXpHS1lEK1pxSzNsYXhSR1Vob1c5TjQ1eGQrb2lvVHNOZytlRXlob1JJZ0VB?=
+ =?utf-8?B?NTlvZTZDNkJjR2htTE4xdmJWeGRWNjBiQks5MGhXSGpFRGxtWlVESW9KZTQx?=
+ =?utf-8?B?K1dWVDg5ZnRUa1pqRHNyOVhQNVJwQ09UUDhlT1hkS2ZlQWkwOTVSTTF0bXZp?=
+ =?utf-8?B?QXVHemJPNzFyYVpxS2RKQk5EdmlNT2FYblNwb212OVNWbVRLMDV2bS9uSmNT?=
+ =?utf-8?B?dFN2RTZhQ3pQcERRTEdKM1dUcC84NGE0S2ZIZFV6cFJiSlZsN3BoZUFpMzdq?=
+ =?utf-8?B?ckFGbjgzcXErZnAwejErVW1rVmk1OGhwazc3MVNRUThRbFlBcGpIWEV3R0VF?=
+ =?utf-8?B?bVBIdG84U2M1WmlieEVoUFh4Y0JhTUdMUmFJdlRSMVFRSzBsejZmenRiK25l?=
+ =?utf-8?B?ZXdYbWpBWGMycXdXVjQrTHptQXFBR3VCUWtlYWNiN2JiSHZOVE5Hc3FRT2tD?=
+ =?utf-8?B?aXhnVDlGamR1REFqU21kMFJ4bHg5dnB5T3pKaERhN0g2NzdYTUszby9UMTBR?=
+ =?utf-8?B?WGV3THp6NzQ4TFRVbUFCdi9IVnQrMUI4L2NvTzhIM1hUcndSbDVxaEtSUUlF?=
+ =?utf-8?B?TE00c2Rad0VDcDV0dURwb3pyNTlORWd0ckkyNUtMT0xuNHd0YTRjM2JMMmN2?=
+ =?utf-8?B?VXRVVERGVmR6a2gzUFlDK2ZvdlFMdnoxSW1KMDlvS0dScEdGTDRiNEZiRW1y?=
+ =?utf-8?B?cFhQdUtvNW9OOVFpNndzRzNnY21xY3V1bnp4NVhnMTVRZEZxanZWa0pzY1dj?=
+ =?utf-8?B?ZWFLUnQ1Q2RUTlhlajdheUlSVnBCODRycTlCaHdqTnNadk5PSURPdmpQdmd4?=
+ =?utf-8?B?bW9lSzRFZGdyUlZZQmtWWXppQjVkVTY1MDJRUmEzTXEvajZTTGdKVGtndXdp?=
+ =?utf-8?B?a2FENENNV1RwRm15b1BiRm9ma0o2aWZ3SjR4MWVIT2NucG1xT09RV1dLTE9s?=
+ =?utf-8?B?VmtMelR2TVNmS2ZOaDVyRU1YSGphQ3E0dlpjVElMTTBUSUE2by81c2RMbUlF?=
+ =?utf-8?B?RlZQUFJkTlRzc09GY2ZGQURMLzh0UmtjTjNObUxENUN6ZFFoUEFOandWTmdr?=
+ =?utf-8?B?SDc5YVB4MXA2OHo2aHRkMitUVHdLRjdQZis1YXhQd2FvZEI3alBYRU8yS3hZ?=
+ =?utf-8?B?RE9KUmIzUWlBN3FRRGtzbXBla2g2U3EvR1N3ZmQ3SXpFT2lhbmJ2QkpHN0tD?=
+ =?utf-8?B?SjNDTGdoaHVyZU8zQUZnNUV2R2s1cEZCbGdYWkZJdGljdlluOERVbGhReXdW?=
+ =?utf-8?B?b1ZFV3NuckxWcFV5WCtGZ2g4eC9RTFpDYjdIYUY5Ukt5cFlYWmFVckR0WkVZ?=
+ =?utf-8?B?MERER3dVTmNyR2ZseG5UVmZ2enAzT0swd0M1UnUyNjgwSmVZd0hySXpLU3hM?=
+ =?utf-8?B?L0hVM2pmUDRNZytaUDlnZmVXK2c3SkpKUDlBc1R4VVRtUFMwT04wR0lpM2JN?=
+ =?utf-8?B?L2NQUjE2MUFNK0s2T09PakVKajVzTWFxc3VuV2RxSzhzOVZacS9HczRJM1pR?=
+ =?utf-8?B?aWxDYllYb2YzdWI1TWU2bU03QlVUaWlCZ09PVmRjWjB2MHYwMy9pd0VlSysx?=
+ =?utf-8?B?Q2xIWTkwbDQzenpGbG9EbkxqeVNyaHlZdE9lVGVwcUZvMUFhaUMwVW10S2t6?=
+ =?utf-8?B?Smt1UmVqbHBFMDkyQlo4UndUdHppUW5BVjV6bkg5bnJDUWcyWkFTeFV6YzVK?=
+ =?utf-8?B?UUMvM1BkbXdJaG11Qk01TlQyRTFOcUVLcHFnV2hkMDZhVzVOYnFvaDhyYXdX?=
+ =?utf-8?B?UEdESU44dGVXcUVSWWVVRHZJam9IMnlqZnEvU3FCZ1hhRmxWTjlDVkpzSDlQ?=
+ =?utf-8?B?VGE3bkZranZGN0F6ODZlaG9GWWZjOFBaRHlxbUE3cUtJb3NXUkVEMk8wSnpJ?=
+ =?utf-8?B?UW5JNEtrMVBBMmVoKzJoVmZJMFROUmkyblFlTGlJZ2FhSXdRcDFqMDg4dncx?=
+ =?utf-8?B?NmdvSnJ2c2U0NFN4Rm5uOFpqZ0hxQ0VTNlVvSTRyaWdBNkphRDJwMWwzc2Jx?=
+ =?utf-8?B?MWMvOHZGZmZibFg0c2xFNFA0bEtiMTZqNnVsdVZYdnVHdzFUWW5xb081MVh1?=
+ =?utf-8?B?TFRiL0thbnBYN0NoNXRkZkRWeUZZb0ExVWxmNWpReVduUVEzZW1JanY2b3dO?=
+ =?utf-8?B?aUVTOXFmaU5oTkJCT3NjL1JKZkFaUHI2RVVEZFFNRDlyOUtGMjFWT2ZsbTdM?=
+ =?utf-8?B?SW5JRllveFdHMFhoZlorbFNOdUFTNGJLV3lOeGlhSVFPME9aSUVXcEtLN1o3?=
+ =?utf-8?B?UThqcHgxMWN6d1YyM3hVMXUxeC9oMmFwSndWamdwUjVvWHcrOHFLZz09?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ce4ba6a2-ead2-4e42-8758-08da444a1971
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR12MB5504.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2022 03:43:47.3672
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: YIp7akzSbX8e3T/a9TFqDwdyjh2Rf4YkIRhq6Fd2SPfKWcfEuwcgeFBXdhp/UvovkN2EoHN3c4poiHROqGvj9w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB2944
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 27 May 2022 02:37:34 PDT (-0700), leyfoon.tan@starfivetech.com wrote:
-> Hi Palmer
->
-> Alex's "Introduce sv48 support without relocatable kernel" patch series in [1] was partially merged to Linux v5.17. But there are 4 patches are not merged (Patch-10 to 13).
->
-> May I know what is the plan for these patches? Will them merged to next v5.19 merging window? Or do you expect any changes for these patches or Alex needs resend with rebase to latest kernel version?
 
-I just saw this as I was digging up Alex's old email to reply to, all 
-but #13 are now on for-next.
-
-> Note, we would like to use the Patch-13 in this series.
-
-Is your use case a CPU errata?  If so I think we should just go ahead 
-and add that errata via the existing errata mechanism.  If you've got 
-some other use case, do you mind elaborating?  From that other thread it 
-sounds like a command-line argument is the way to go for folks who want 
-to turn this off more dynamically, but happy to hear if you've got 
-something different in mind.
-
-> Patches not merged:
-> [v3,10/13] riscv: Improve virtual kernel memory layout dump
-> [v3,11/13] Documentation: riscv: Add sv48 description to VM layout
-> [v3,12/13] riscv: Initialize thread pointer before calling C functions
-> [v3,13/13] riscv: Allow user to downgrade to sv39 when hw supports sv48 if !KASAN
+On 6/1/22 10:43, Alaa Mohamed wrote:
+> parsing and usage of -t got missed in the previous patch.
+> this patch fixes it
 >
-> [1]: https://patchwork.kernel.org/project/linux-riscv/cover/20211206104657.433304-1-alexandre.ghiti@canonical.com/
+> Signed-off-by: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
+> ---
+
+Alaa, need a v3 with Fixes tag
+
+Fixes: 816cda9ae531 ("selftests: net: fib_rule_tests: add support to 
+select a test to run")
+
+do a git log and grep for "Fixes:" to see an example
+
+
+> changes in v2:
+> 	edit commit subject and message.
+> ---
+>   tools/testing/selftests/net/fib_rule_tests.sh | 23 +++++++++++++++++++
+>   1 file changed, 23 insertions(+)
 >
-> Thanks.
->
-> Regards
-> Ley Foon
+> diff --git a/tools/testing/selftests/net/fib_rule_tests.sh b/tools/testing/selftests/net/fib_rule_tests.sh
+> index bbe3b379927a..c245476fa29d 100755
+> --- a/tools/testing/selftests/net/fib_rule_tests.sh
+> +++ b/tools/testing/selftests/net/fib_rule_tests.sh
+> @@ -303,6 +303,29 @@ run_fibrule_tests()
+>   	log_section "IPv6 fib rule"
+>   	fib_rule6_test
+>   }
+> +################################################################################
+> +# usage
+> +
+> +usage()
+> +{
+> +	cat <<EOF
+> +usage: ${0##*/} OPTS
+> +
+> +        -t <test>   Test(s) to run (default: all)
+> +                    (options: $TESTS)
+> +EOF
+> +}
+> +
+> +################################################################################
+> +# main
+> +
+> +while getopts ":t:h" opt; do
+> +	case $opt in
+> +		t) TESTS=$OPTARG;;
+> +		h) usage; exit 0;;
+> +		*) usage; exit 1;;
+> +	esac
+> +done
+>   
+>   if [ "$(id -u)" -ne 0 ];then
+>   	echo "SKIP: Need root privileges"
