@@ -2,104 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8ED8C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 09:26:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1E80CCA478
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 09:26:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233005AbiFBJ0R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 05:26:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32920 "EHLO
+        id S233020AbiFBJ0c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 05:26:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232285AbiFBJ0H (ORCPT
+        with ESMTP id S233009AbiFBJ02 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 05:26:07 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DEC629FE66;
-        Thu,  2 Jun 2022 02:26:06 -0700 (PDT)
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2528Q8cR013089;
-        Thu, 2 Jun 2022 11:25:57 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=selector1;
- bh=MXrgzl/V2YRiK3xTeuYKtDlVPXp3ezbyqB7OhN2g5iU=;
- b=aHzS2pB4lQ6MQ+QTcsHQmqBGbrAqBqOq1FU/zS2eTvlLbFwTGZtif1tvqbENMZXiaPSQ
- Erg8wbMF/hlOrrzeN04CkuiL4+KN7jGW+Jxz+/ei4yXnDRPqmH1XMO6aPDAFs6138TfU
- x6o7ro56B+FMYkuReaZrnSSp1nQixAV2fkIrGfSy3JK8cw3mAdQEFWvh09e1Vsblwz94
- NAyBVdEJHznz+kP2dfWVXLCGlR5o4hGNa0vmAIjovlG4K1FDx83OlqOG16nRoL4GhNXq
- RDWVvPXInOq8Z9An20x2BeBe/KYdiHSRPFyEbNKgHgotXlAZxYGKtVNweWqJ4YmOujwB Lw== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3gespq0dp7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 02 Jun 2022 11:25:57 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 9EB3B10002A;
-        Thu,  2 Jun 2022 11:25:56 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 9808A217B6C;
-        Thu,  2 Jun 2022 11:25:56 +0200 (CEST)
-Received: from localhost (10.75.127.45) by SHFDAG1NODE1.st.com (10.75.129.69)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Thu, 2 Jun
- 2022 11:25:56 +0200
-From:   <patrice.chotard@foss.st.com>
-To:     Mark Brown <broonie@kernel.org>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>
-CC:     <linux-spi@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
+        Thu, 2 Jun 2022 05:26:28 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6787E29FE77;
+        Thu,  2 Jun 2022 02:26:27 -0700 (PDT)
+X-UUID: a6acc6b7c4cb4109a56c71315cd17c46-20220602
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:1e05d194-4848-463e-84bc-860c4bf27875,OB:10,L
+        OB:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,AC
+        TION:release,TS:45
+X-CID-INFO: VERSION:1.1.5,REQID:1e05d194-4848-463e-84bc-860c4bf27875,OB:10,LOB
+        :0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:45
+X-CID-META: VersionHash:2a19b09,CLOUDID:b4b3e337-9855-4915-a138-f5705f1f3d02,C
+        OID:e2b011970263,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:0,File:nil,QS:0,BEC:nil
+X-UUID: a6acc6b7c4cb4109a56c71315cd17c46-20220602
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+        (envelope-from <yong.wu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 661290087; Thu, 02 Jun 2022 17:26:23 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Thu, 2 Jun 2022 17:26:21 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 2 Jun 2022 17:26:20 +0800
+Message-ID: <cf1fa83c5b6e76fe11768d9efc2374a9c45d4ba5.camel@mediatek.com>
+Subject: Re: [PATCH 1/3] dt-bindings: iommu: mediatek: add binding
+ documentation for MT8365 SoC
+From:   Yong Wu <yong.wu@mediatek.com>
+To:     Macpaul Lin <macpaul.lin@mediatek.com>,
+        Fabien Parent <fparent@baylibre.com>
+CC:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        "Rob Herring" <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        <iommu@lists.linux-foundation.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <christophe.kerello@foss.st.com>,
-        <patrice.chotard@foss.st.com>
-Subject: [PATCH v2 2/3] spi: stm32-qspi: Remove stm32_qspi_wait_cmd() unused parameter
-Date:   Thu, 2 Jun 2022 11:25:39 +0200
-Message-ID: <20220602092540.369604-3-patrice.chotard@foss.st.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220602092540.369604-1-patrice.chotard@foss.st.com>
-References: <20220602092540.369604-1-patrice.chotard@foss.st.com>
+        "Bear Wang" <bear.wang@mediatek.com>,
+        Macross Chen <macross.chen@mediatek.com>,
+        Kidd-KW Chen <Kidd-KW.Chen@mediatek.com>,
+        Andy Hsieh <Andy.Hsieh@mediatek.com>,
+        Pablo Sun <pablo.sun@mediatek.com>
+Date:   Thu, 2 Jun 2022 17:26:19 +0800
+In-Reply-To: <6b6c4cfc-6f20-0eda-4a0d-31d993341ae8@mediatek.com>
+References: <20220530180328.845692-1-fparent@baylibre.com>
+         <8ac7a6766c635412b408cb5295ddb3da37541140.camel@mediatek.com>
+         <59cedd50-4141-e589-11ae-b8d1a017eb46@mediatek.com>
+         <6b6c4cfc-6f20-0eda-4a0d-31d993341ae8@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.45]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SHFDAG1NODE1.st.com
- (10.75.129.69)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
- definitions=2022-06-02_01,2022-06-01_01,2022-02-23_01
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Patrice Chotard <patrice.chotard@foss.st.com>
+On Thu, 2022-06-02 at 16:42 +0800, Macpaul Lin wrote:
+> On 6/2/22 4:27 PM, Macpaul Lin wrote:
+> > On 6/2/22 2:18 PM, Yong Wu wrote:
+> > > On Mon, 2022-05-30 at 20:03 +0200, Fabien Parent wrote:
+> > > > Add IOMMU binding documentation for the MT8365 SoC.
+> > > > 
+> > > > Signed-off-by: Fabien Parent <fparent@baylibre.com>
+> > > > ---
+> > > >   .../bindings/iommu/mediatek,iommu.yaml        |  2 +
+> > > >   include/dt-bindings/memory/mt8365-larb-port.h | 96
+> > > > +++++++++++++++++++
+> > > >   2 files changed, 98 insertions(+)
+> > > >   create mode 100644 include/dt-bindings/memory/mt8365-larb-
+> > > > port.h
+> > > 
+> > > [snip...]
+> > > 
+> > > > +#ifndef _DT_BINDINGS_MEMORY_MT8365_LARB_PORT_H_
+> > > > +#define _DT_BINDINGS_MEMORY_MT8365_LARB_PORT_H_
+> > > > +
+> > > > +#include <dt-bindings/memory/mtk-memory-port.h>
+> > > > +
+> > > > +#define M4U_LARB0_ID            0
+> > > > +#define M4U_LARB1_ID            1
+> > > > +#define M4U_LARB2_ID            2
+> > > > +#define M4U_LARB3_ID            3
+> > > > +#define M4U_LARB4_ID            4
+> > > > +#define M4U_LARB5_ID            5
+> > > > +#define M4U_LARB6_ID            6
+> > > > +#define M4U_LARB7_ID            7
+> > > 
+> > > Remove these. they are no used, right?
+> > 
+> > AIOT and customers are using the modules and their related IOMMU
+> > modules.
+> > DISP0, VENC, VDEC, ISP (CAMSYS), and APU (as far as I know, which
+> > should 
+> > be VP6?) were all supported.
+> 
+> Dear Yong,
+> How about to replace the following definitions?
+> 
+> For example, replace
+> #define M4U_PORT_DISP_OVL0		MTK_M4U_ID(0, 0)
+> to
+> #define M4U_PORT_DISP_OVL0              MTK_M4U_ID(M4U_LARB0_ID , 0)
 
-struct spi_mem_op *op parameter is no more used, remove it.
+Yes. It is ok.
 
-Signed-off-by: Patrice Chotard <patrice.chotard@foss.st.com>
----
- drivers/spi/spi-stm32-qspi.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/spi/spi-stm32-qspi.c b/drivers/spi/spi-stm32-qspi.c
-index 2ad43c2f0526..e5068e694ca5 100644
---- a/drivers/spi/spi-stm32-qspi.c
-+++ b/drivers/spi/spi-stm32-qspi.c
-@@ -299,8 +299,7 @@ static int stm32_qspi_wait_nobusy(struct stm32_qspi *qspi)
- 						 STM32_BUSY_TIMEOUT_US);
- }
- 
--static int stm32_qspi_wait_cmd(struct stm32_qspi *qspi,
--			       const struct spi_mem_op *op)
-+static int stm32_qspi_wait_cmd(struct stm32_qspi *qspi)
- {
- 	u32 cr, sr;
- 	int err = 0;
-@@ -420,7 +419,7 @@ static int stm32_qspi_send(struct spi_mem *mem, const struct spi_mem_op *op)
- 		goto abort;
- 
- 	/* wait end of tx in indirect mode */
--	err = stm32_qspi_wait_cmd(qspi, op);
-+	err = stm32_qspi_wait_cmd(qspi);
- 	if (err)
- 		goto abort;
- 
--- 
-2.25.1
+> 
+> > > 
+> > > > +
+> > > > +/* larb0 */
+> > > > +#define M4U_PORT_DISP_OVL0        MTK_M4U_ID(0, 0)
+> > > > +#define M4U_PORT_DISP_OVL0_2L    MTK_M4U_ID(0, 1)
+> > > 
+> > > [...]
+> > > 
+> > > > 
+> > > > +/* larb4 */
+> > > > +#define M4U_PORT_APU_READ        MTK_M4U_ID(0, 0)
+> > > > +#define M4U_PORT_APU_WRITE        MTK_M4U_ID(0, 1)
+> > > 
+> > > Please remove these two APU definitions. currently these are not
+> > > supported.
+> > 
+> > Kidd, please help to check if APU use these definitions with Yong.
+> > However, I think these are all available to the customers.
+> > 
+> > Thanks
+> > Macpaul Lin
+> 
+> Thanks
+> Macpaul Lin
 
