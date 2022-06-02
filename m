@@ -2,104 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC692C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 18:18:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F5EDC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 18:18:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237910AbiFBSSW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 14:18:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43434 "EHLO
+        id S237936AbiFBSS1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 14:18:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234209AbiFBSSU (ORCPT
+        with ESMTP id S237919AbiFBSSX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 14:18:20 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7C56C4CD4E
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 11:18:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654193898;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8cILwmtkvSQjYb8QuEETKqwmhc+FPzA1S+q/o/FgcNc=;
-        b=bo+AQDk7U0j+EkdfW8iNZyrXS0HBDrLudcS22oxAHzEHBYTu8qFx0nvP5fKnW94UDFYaX4
-        iV76PTF6o4MJr5wBEKcuEqCtL8ij0vlzs8jNyvdA2+nBAsBAF5L41HjbpaESmMJFn87Hw/
-        HpktZLEPYp3qbd/jQDlPfxbdmJmIi/g=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-148-paQpCGJ5NQWI91QC9NROAg-1; Thu, 02 Jun 2022 14:18:15 -0400
-X-MC-Unique: paQpCGJ5NQWI91QC9NROAg-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0548C801228;
-        Thu,  2 Jun 2022 18:18:15 +0000 (UTC)
-Received: from [10.22.32.147] (unknown [10.22.32.147])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B090D1731B;
-        Thu,  2 Jun 2022 18:18:14 +0000 (UTC)
-Message-ID: <c7893920-e88d-8721-320d-b57d86e6b778@redhat.com>
-Date:   Thu, 2 Jun 2022 14:18:14 -0400
+        Thu, 2 Jun 2022 14:18:23 -0400
+Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FC704D26B;
+        Thu,  2 Jun 2022 11:18:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=deltatee.com; s=20200525; h=Subject:MIME-Version:Message-Id:Date:Cc:To:From
+        :references:content-disposition:in-reply-to;
+        bh=157u6PWKooSuu4KOF7rMgNHIpCSulick1bTC+P/d8hM=; b=P9xP28hD4TKNdYGjPol8Nm765i
+        kaaXtDFXkJxC1t/dqOF3m5nfCevjfXT1CJgBAPFLiVsJrxMyF09Vq7ho6dVAGXT9f1E0Pun6jfXe1
+        /cqkV1EOrd9NSa2NXK2Dn5ONp+ufqxsV6O4dvcc6yaCxPgo/aV7sjubNEHbNmwVH1aJrd7bOFIXHH
+        VcCdfJ+ON92LpCFIO2LgyzCVDrEvp8oWEVfw1nvXVC2qF9c/PwvaVtbJM+W9kov1J2FU+3cJcTFXg
+        +CqIEVjnh6ChZ5YXO02EspfW6oz4b6ZS0NfvN+t2BEE7GMBxD0zjRtW9kIos2BzIMETQ0loAAmI5Y
+        WomT/fxA==;
+Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
+        by ale.deltatee.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <gunthorp@deltatee.com>)
+        id 1nwpOm-00EPmV-Pu; Thu, 02 Jun 2022 12:18:21 -0600
+Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim 4.94.2)
+        (envelope-from <gunthorp@deltatee.com>)
+        id 1nwpOl-000DDB-AR; Thu, 02 Jun 2022 12:18:19 -0600
+From:   Logan Gunthorpe <logang@deltatee.com>
+To:     linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org,
+        Song Liu <song@kernel.org>
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        Donald Buczek <buczek@molgen.mpg.de>,
+        Guoqing Jiang <guoqing.jiang@linux.dev>,
+        Xiao Ni <xni@redhat.com>, Stephen Bates <sbates@raithlin.com>,
+        Martin Oliveira <Martin.Oliveira@eideticom.com>,
+        David Sloan <David.Sloan@eideticom.com>,
+        Logan Gunthorpe <logang@deltatee.com>
+Date:   Thu,  2 Jun 2022 12:18:06 -0600
+Message-Id: <20220602181818.50729-1-logang@deltatee.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v5 3/3] blk-cgroup: Optimize blkcg_rstat_flush()
-Content-Language: en-US
-To:     Tejun Heo <tj@kernel.org>
-Cc:     Jens Axboe <axboe@kernel.dk>, cgroups@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Ming Lei <ming.lei@redhat.com>
-References: <20220601211824.89626-1-longman@redhat.com>
- <20220602133543.128088-4-longman@redhat.com>
- <YpjsTNZx4DG+kot4@slm.duckdns.org>
- <42da456d-8f6a-3af0-4cd3-d33a07e3b81e@redhat.com>
- <Ypj3hcodkAU1MUR7@slm.duckdns.org>
-From:   Waiman Long <longman@redhat.com>
-In-Reply-To: <Ypj3hcodkAU1MUR7@slm.duckdns.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 172.16.1.31
+X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org, song@kernel.org, hch@infradead.org, buczek@molgen.mpg.de, guoqing.jiang@linux.dev, xni@redhat.com, sbates@raithlin.com, Martin.Oliveira@eideticom.com, David.Sloan@eideticom.com, logang@deltatee.com
+X-SA-Exim-Mail-From: gunthorp@deltatee.com
+Subject: [PATCH v3 00/11] Bug fixes for mdadm tests
+X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
+X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/2/22 13:46, Tejun Heo wrote:
-> On Thu, Jun 02, 2022 at 01:26:10PM -0400, Waiman Long wrote:
->> On 6/2/22 12:58, Tejun Heo wrote:
->>> Hello,
->>>
->>> On Thu, Jun 02, 2022 at 09:35:43AM -0400, Waiman Long wrote:
->>>> @@ -2011,9 +2076,16 @@ void blk_cgroup_bio_start(struct bio *bio)
->>>>    	}
->>>>    	bis->cur.ios[rwd]++;
->>>> +	if (!READ_ONCE(bis->lnode.next)) {
->>>> +		struct llist_head *lhead = per_cpu_ptr(blkcg->lhead, cpu);
->>>> +
->>>> +		llist_add(&bis->lnode, lhead);
->>>> +		percpu_ref_get(&bis->blkg->refcnt);
->>> Hmm... what guarantees that more than one threads race here? llist assumes
->>> that there's a single writer for a given llist_node and the ref count would
->>> be off too, right?
->> The llist_add() function is atomic. It calls into llist_add_batch() in
->> lib/llist.c which uses cmpxchg() to make the change. There is a non-atomic
->> version __llist_add() which may be problematic in this case. Note that irq
->> is disabled in the u64_stats_update* critical section, there shouldn't be a
->> racing thread running in the same cpu. Other cpus will modify their own
->> version of lhead. Perhaps the non-atomic version can be used here as well.
-> Ah, right, this is per-cpu, so there can be no second writer trying to add
-> the same node at the same time. Can you add a comment explaining the overall
-> design / behavior? Other than that, please feel free to add
->
->   Acked-by: Tejun Heo <tj@kernel.org>
->
-> Thanks.
+Hi,
 
-OK, I will send another patch to document the design in 
-block/blk-cgroup.c. I don't want to touch this patch unless I need to 
-correct some code here.
+This is the updated series with the feedback received in v2[1].
+
+This series includes fixes to fix all the kernel panics in the mdadm
+tests and some, related, sparse issues, plus some cleanup.
+
+The first two patches are cleanup from the original series that aren't
+related now but I thought are worth including.
+
+Patches 3 through 6 fix bugs with conf->log and remove the single,
+unecessary, RCU access. This cleans up some sparse errors.
+
+Patch 7 cleans up some sparse warnings with pslot usage.
+
+Patch 8 is a cleanup which adds an enum so that patch 9 can
+fix an mdadm hang. Patch 10 also fixes an mdadm hang.
+
+I've also included Patch 11 in this series which fixes a recent
+mistake in raid5-ppl that was reported by 0day which I don't think
+has been fixed yet.
+
+This series will be followed by another series for mdadm which fixes
+the segfaults and annotates some failing tests to make mdadm tests
+runnable fairly reliably, but I'll wait for a stable hash for this
+series to note the kernel version tested against. Following that,
+v3 of my lock contention series will be sent with more confidence
+of its correctness.
+
+This series is based on the current md/md-next branch as of yesterday
+(42b805af10). A git branch is available here:
+
+  https://github.com/sbates130272/linux-p2pmem md-bug_v3
 
 Thanks,
-Longman
 
->
+Logan
 
+--
+
+Changes since v2:
+  * Rework the RCU changes to remove the RCU usage instead of using
+    it every. This makes more sense seeing most accesses do not need
+    RCU due to them being on the IO path, or with mddev_lock() held
+    and the remaining ones are on the slow path and may use
+    mddev_lock(). (Per Christoph)
+  * Collect a couple more Reviewed-by tags from Christoph
+
+Changes since v1:
+  * Add a patch to move the struct r5l_log to raid5-log.h in order
+    to fix a compiler error with rcu_access_pointer() in versions
+    prior to gcc-10
+  * Rework r5c_is_writeback() changes to make less churn (per Christoph)
+  * Change some 1s to trues in rcu_dereference_protected calls (per
+    Christoph)
+  * Fix an odd hunk mistake in the RCU protection patch (per Christoph)
+  * Fix an inverted conditional (noticed by Donald)
+  * Add a patch to add an enum for the overloaded values used by
+    mddev->curr_resync to make the status_resync() fixes clearer
+    (per Christoph)
+
+--
+
+[1] https://lore.kernel.org/all/20220526163604.32736-1-logang@deltatee.com
+
+Logan Gunthorpe (11):
+  md/raid5-log: Drop extern decorators for function prototypes
+  md/raid5-ppl: Drop unused argument from ppl_handle_flush_request()
+  md/raid5: Ensure array is suspended for calls to log_exit()
+  md/raid5-cache: Take mddev_lock in r5c_journal_mode_show()
+  md/raid5-cache: Drop RCU usage of conf->log
+  md/raid5-cache: Clear conf->log after finishing work
+  md/raid5-cache: Annotate pslot with __rcu notation
+  md: Use enum for overloaded magic numbers used by mddev->curr_resync
+  md: Ensure resync is reported after it starts
+  md: Notify sysfs sync_completed in md_reap_sync_thread()
+  md/raid5-ppl: Fix argument order in bio_alloc_bioset()
+
+ drivers/md/md.c          | 55 +++++++++++++++-------------
+ drivers/md/md.h          | 15 ++++++++
+ drivers/md/raid5-cache.c | 34 +++++++++---------
+ drivers/md/raid5-log.h   | 77 +++++++++++++++++++---------------------
+ drivers/md/raid5-ppl.c   |  6 ++--
+ drivers/md/raid5.c       | 18 ++++------
+ 6 files changed, 109 insertions(+), 96 deletions(-)
+
+
+base-commit: 42b805af102471f53e3c7867b8c2b502ea4eef7e
+--
+2.30.2
