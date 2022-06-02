@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3012C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 12:06:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 946BBC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 12:06:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234795AbiFBMGb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 08:06:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34798 "EHLO
+        id S234812AbiFBMGe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 08:06:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234789AbiFBMG3 (ORCPT
+        with ESMTP id S234788AbiFBMG3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 2 Jun 2022 08:06:29 -0400
 Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A82F243196;
-        Thu,  2 Jun 2022 05:06:28 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 252C6OF9075023;
-        Thu, 2 Jun 2022 07:06:24 -0500
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E50A71CC5DB;
+        Thu,  2 Jun 2022 05:06:27 -0700 (PDT)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 252C6HIl075010;
+        Thu, 2 Jun 2022 07:06:17 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1654171584;
-        bh=f69nidx0rjtwKo5j6+YRsIqjQkHzP5dTRTLO7s/dj04=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=MxsweVOO0uO1rtbH2ZzJh+9ts1U8RidLOuNMYWUp85zPnJ5XsT/dGGJH9kxH+5aRz
-         VPCrto3trBPy2XblCpEfd4l9HTLdNfIJRNlAn6eQcxO6Bys1OqwcbgaoLJgZA5I1EZ
-         aPmXTVaWeTjJUzY0VHg3LCWccbZcmR3kYvN6paKc=
-Received: from DLEE103.ent.ti.com (dlee103.ent.ti.com [157.170.170.33])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 252C6Oe4099066
+        s=ti-com-17Q1; t=1654171577;
+        bh=DuEXCXoL9IDcgvsAnIMRAW9BTFe3e1IHN5JFOrrh8Rk=;
+        h=From:To:CC:Subject:Date;
+        b=HqAWt98jOUlKKvxdBEbgAHz5PfVo2zmNFsKD1ZSSiI5ldII2YrsvQSgWTxh4vTzhw
+         YH/pVaywTR25luf+WXhPB0gjGz3bi59lOOAfl8Bcuz5p9fgdL+nWJmoTMDCLtbsvVC
+         geAmq4VhINW6G+wzaojYTTKxX7zgZG1RT5+EwLdY=
+Received: from DFLE104.ent.ti.com (dfle104.ent.ti.com [10.64.6.25])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 252C6HUc079056
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 2 Jun 2022 07:06:24 -0500
-Received: from DLEE107.ent.ti.com (157.170.170.37) by DLEE103.ent.ti.com
- (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
+        Thu, 2 Jun 2022 07:06:17 -0500
+Received: from DFLE106.ent.ti.com (10.64.6.27) by DFLE104.ent.ti.com
+ (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 2
- Jun 2022 07:06:24 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE107.ent.ti.com
- (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
+ Jun 2022 07:06:17 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE106.ent.ti.com
+ (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Thu, 2 Jun 2022 07:06:23 -0500
+ Frontend Transport; Thu, 2 Jun 2022 07:06:17 -0500
 Received: from a0393678ub.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 252C6EEo054710;
-        Thu, 2 Jun 2022 07:06:21 -0500
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 252C6EEm054710;
+        Thu, 2 Jun 2022 07:06:15 -0500
 From:   Kishon Vijay Abraham I <kishon@ti.com>
 To:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
@@ -48,12 +48,10 @@ To:     Rob Herring <robh+dt@kernel.org>,
 CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         Kishon Vijay Abraham I <kishon@ti.com>
-Subject: [PATCH v2 2/3] dt-bindings: soc: ti: pruss: Update bindings for K3 AM62x SoCs
-Date:   Thu, 2 Jun 2022 17:36:12 +0530
-Message-ID: <20220602120613.2175-3-kishon@ti.com>
+Subject: [PATCH v2 0/3] soc: ti: Enable PRUSS-M on K3 AM62x SoCs
+Date:   Thu, 2 Jun 2022 17:36:10 +0530
+Message-ID: <20220602120613.2175-1-kishon@ti.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220602120613.2175-1-kishon@ti.com>
-References: <20220602120613.2175-1-kishon@ti.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
@@ -61,26 +59,25 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update the PRUSS bindings for the PRUSSM instance present in
-AM625 SoC.
+Series adds AM62x specific compatible string to enable PRUSS-M in
+AM62x SoCs.
 
-Signed-off-by: Kishon Vijay Abraham I <kishon@ti.com>
----
- Documentation/devicetree/bindings/soc/ti/ti,pruss.yaml | 1 +
- 1 file changed, 1 insertion(+)
+Changes from v1:
+1) Added a new patch to re-arrange "compatible" in alphabetic
+   order
 
-diff --git a/Documentation/devicetree/bindings/soc/ti/ti,pruss.yaml b/Documentation/devicetree/bindings/soc/ti/ti,pruss.yaml
-index 20aec9b8fb5b..847873289f25 100644
---- a/Documentation/devicetree/bindings/soc/ti/ti,pruss.yaml
-+++ b/Documentation/devicetree/bindings/soc/ti/ti,pruss.yaml
-@@ -65,6 +65,7 @@ properties:
-       - ti,am4376-pruss0 # for AM437x SoC family and PRUSS unit 0
-       - ti,am4376-pruss1 # for AM437x SoC family and PRUSS unit 1
-       - ti,am5728-pruss  # for AM57xx SoC family
-+      - ti,am625-pruss   # for K3 AM62x SoC family
-       - ti,am642-icssg   # for K3 AM64x SoC family
-       - ti,am654-icssg   # for K3 AM65x SoC family
-       - ti,j721e-icssg   # for K3 J721E SoC family
+v1: https://lore.kernel.org/r/20220427072703.4898-1-kishon@ti.com
+
+Kishon Vijay Abraham I (3):
+  dt-bindings: soc: ti: pruss: Re-arrange "compatible" in alphabetic
+    order
+  dt-bindings: soc: ti: pruss: Update bindings for K3 AM62x SoCs
+  soc: ti: pruss: Enable support for PRUSS-M subsystem on K3 AM62x SoCs
+
+ Documentation/devicetree/bindings/soc/ti/ti,pruss.yaml | 5 +++--
+ drivers/soc/ti/pruss.c                                 | 1 +
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
 -- 
 2.17.1
 
