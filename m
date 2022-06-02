@@ -2,170 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B4D3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 10:00:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5720CCA47D
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 10:02:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233346AbiFBKAZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 06:00:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59288 "EHLO
+        id S233293AbiFBKC0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 06:02:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233322AbiFBKAX (ORCPT
+        with ESMTP id S233278AbiFBKCX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 06:00:23 -0400
-Received: from smtp-8fab.mail.infomaniak.ch (smtp-8fab.mail.infomaniak.ch [IPv6:2001:1600:3:17::8fab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B407DF18
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 03:00:20 -0700 (PDT)
-Received: from smtp-2-0000.mail.infomaniak.ch (unknown [10.5.36.107])
-        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4LDM2S0hckzMqVZ1;
-        Thu,  2 Jun 2022 12:00:16 +0200 (CEST)
-Received: from [10.0.0.141] (unknown [31.10.206.125])
-        by smtp-2-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4LDM2R1hVrzljk0H;
-        Thu,  2 Jun 2022 12:00:15 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=pschenker.ch;
-        s=20220412; t=1654164016;
-        bh=6clftNNkW5b/aLVfOs7w8oDA4IjZgT0jJnfYalkyXtc=;
-        h=Subject:From:Reply-To:To:Cc:Date:In-Reply-To:References:From;
-        b=MpfhxnUiBgc+nT3XyFNggIH4DEYXpuPFvnua6h7NJWilzYTT4MomXlytP5wDq6uDj
-         lP3sLe/hjP4cDifzRVZiBGxdxaZ7YA99O+wL3SUKgDsOPJqSKmqd1p6tvJs6nj47Az
-         BGEAbuMmyRoRhgzAiPemv/lhoB+iIXufekVl5a7M=
-Message-ID: <75b5f888b2e23f52aabce54ff38ddc70d1ad6a34.camel@pschenker.ch>
-Subject: Re: [PATCH] Revert "mt76: mt7921: enable aspm by default"
-From:   Philippe Schenker <dev@pschenker.ch>
-Reply-To: dev@pschenker.ch
-To:     Deren Wu <deren.wu@mediatek.com>, Kalle Valo <kvalo@kernel.org>
-Cc:     linux-wireless@vger.kernel.org, Felix Fietkau <nbd@nbd.name>,
-        linux@leemhuis.info, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Shayne Chen <shayne.chen@mediatek.com>,
-        YN Chen <YN.Chen@mediatek.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, netdev@vger.kernel.org,
-        regressions@lists.linux.dev
-Date:   Thu, 02 Jun 2022 12:00:14 +0200
-In-Reply-To: <da79fa2a94c435a308ea763efc557fc352d0245c.camel@mediatek.com>
-References: <20220412090415.17541-1-dev@pschenker.ch>
-         <87y20aod5d.fsf@kernel.org>
-         <668f1310cc78b17c24ce7be10f5f907d5578e280.camel@mediatek.com>
-         <e93aef5c9f8a97efe23cfb5892f78f919ce328e7.camel@pschenker.ch>
-         <87mtewoj4e.fsf@kernel.org>
-         <da79fa2a94c435a308ea763efc557fc352d0245c.camel@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.1 
+        Thu, 2 Jun 2022 06:02:23 -0400
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75CA0261B
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 03:02:21 -0700 (PDT)
+Received: by mail-io1-f70.google.com with SMTP id a11-20020a6b660b000000b0066577bb520dso2441720ioc.8
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 03:02:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=PlXyMH9yroMr86joJkDazD6M1cZkidX1eo+3QNu0Ks0=;
+        b=BKMUKWD/738lCGoQkCat7mRClIPpQ5cKj8IdKFLL17d9/BGru97rD4q85B3gGpTCMb
+         jaAzZT6CW4JENRBOjIHRuE4NkA5EA2AhZSqM38xBq4M+AATk5qsaLNiwLvTR7BCZD8BT
+         ehJTdhy4d/8ivJGDHXiYDetsjVcCGVPSq7MwLjd+S5rXEwuKJXdBupWMInf7AhmqJEEy
+         M1yeE5TfYVCCLNtbdSppqiAuwsYWtiUkxHJtwKI2iU8Zgn2RJ7JdiXMDXNgz1+bDmhS/
+         Zp7oOkjHgj9LAfE9rWP0VecBne6VcsyEf6cfsFx25nnmzEZ1lK8uYJl+GB8GhTyly9Mf
+         HLOQ==
+X-Gm-Message-State: AOAM532QUdPYJ1G0GkHiBgqbc7QVdqLeGlE3n06SjQ/sIzlVz8E/TVnT
+        44HIDQ4aiDPC0Qs+NN7FlwLjm3O3zzlw4Ts0ZFzLUtHPt4/R
+X-Google-Smtp-Source: ABdhPJzqQ55gAWfuzGONGd07P+o5i1tRB1eL/ZTHM2UomwBl6hJUahKq1mY2x/7hMV7bcfDVutkx1vrRegtJpg7tHboJ8hR+5wdk
 MIME-Version: 1.0
+X-Received: by 2002:a05:6e02:1d14:b0:2d3:a75e:140b with SMTP id
+ i20-20020a056e021d1400b002d3a75e140bmr2599005ila.61.1654164140868; Thu, 02
+ Jun 2022 03:02:20 -0700 (PDT)
+Date:   Thu, 02 Jun 2022 03:02:20 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000044cc505e0741a4b@google.com>
+Subject: [syzbot] riscv/fixes boot error: BUG: soft lockup in corrupted
+From:   syzbot <syzbot+1d1952c211a38ac43f10@syzkaller.appspotmail.com>
+To:     aou@eecs.berkeley.edu, axboe@kernel.dk, justin@coraid.com,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org, palmer@dabbelt.com,
+        paul.walmsley@sifive.com, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-06-02 at 00:55 +0800, Deren Wu wrote:
-> On Wed, 2022-06-01 at 11:58 +0300, Kalle Valo wrote:
-> > Philippe Schenker <dev@pschenker.ch> writes:
-> >=20
-> > > On Tue, 2022-04-12 at 19:06 +0800, Deren Wu wrote:
-> > > > On Tue, 2022-04-12 at 12:37 +0300, Kalle Valo wrote:
-> > > > > Philippe Schenker <dev@pschenker.ch> writes:
-> > > > >=20
-> > > > > > This reverts commit
-> > > > > > bf3747ae2e25dda6a9e6c464a717c66118c588c8.
-> > > > > >=20
-> > > > > > This commit introduces a regression on some systems where
-> > > > > > the
-> > > > > > kernel is
-> > > > > > crashing in different locations after a reboot was issued.
-> > > > > >=20
-> > > > > > This issue was bisected on a Thinkpad P14s Gen2 (AMD) with
-> > > > > > latest
-> > > > > > firmware.
-> > > > > >=20
-> > > > > > Link:=20
-> > > > > >=20
-> https://urldefense.com/v3/__https://lore.kernel.org/linux-wireless/5077a9=
-53487275837e81bdf1808ded00b9676f9f.camel@pschenker.ch/__;!!CTRNKA9wMg0ARbw!=
-09tjyaQlMci3fVI3yiNiDJKUW_qwNA_CbVhoAraeIX96B99Q14J4iDycWA9cq36Y$
-> > > > > > =C2=A0
-> > > > > > Signed-off-by: Philippe Schenker <dev@pschenker.ch>
-> > > > >=20
-> > > > > Can I take this to wireless tree? Felix, ack?
-> > > > >=20
-> > > > > I'll also add:
-> > > > >=20
-> > > > > Fixes: bf3747ae2e25 ("mt76: mt7921: enable aspm by default")
-> > > > >=20
-> > > >=20
-> > > > Hi Kalle,
-> > > >=20
-> > > > We have a patch for a similar problem. Can you wait for the
-> > > > verification by Philippe?
-> > > > Commit 602cc0c9618a81 ("mt76: mt7921e: fix possible probe
-> > > > failure
-> > > > after
-> > > > reboot")
-> > > > Link:=20
-> > > >=20
-> https://urldefense.com/v3/__https://git.kernel.org/pub/scm/linux/kernel/g=
-it/torvalds/linux.git/commit/drivers/net/wireless/mediatek/mt76?id=3D602cc0=
-c9618a819ab00ea3c9400742a0ca318380__;!!CTRNKA9wMg0ARbw!zCYyDcufJ-OLqQV6leCe=
-gA5SkNOOVjAIo-jzTHTk6HUWT9Gjt-bvSz8lr81Zv95u$
-> > > > =C2=A0
-> > > >=20
-> > > > I can reproduce the problem in my v5.16-rc5 desktop. And the
-> > > > issue can
-> > > > be fixed when the patch applied.
-> > > >=20
-> > > >=20
-> > > > Hi Philippe,
-> > > >=20
-> > > > Can you please help to check the patch in your platform?
-> > >=20
-> > > Hi Kalle and Deren,
-> > >=20
-> > > I just noticed on my system and mainline v5.18 reboots do now work
-> > > however Bluetooth is no longer accessible after a reboot.
-> > >=20
-> > > Reverting commit bf3747ae2e25dda6a9e6c464a717c66118c588c8 on top
-> > > of
-> > > v5.18 solves this problem for me.
-> > >=20
-> > > @Deren are you aware of this bug?
-> > > @Kalle Is there a bugtracker somewhere I can submit this?
-> >=20
-> > For regressions the best is to submit it to the regressions list,
-> > CCed
-> > it now.
-> >=20
-> Hi Philippe,
->=20
-> Tried your test with v5.18.0 on my desktop and both wifi/bt are still
-> avaible after reboot. The only problem is I need to insert btusb
-> module
-> by command "modprobe btusb" to make BT workable.
->=20
-> I will check the issue on different platforms. If there are any
-> finding, I will let you know.
+Hello,
 
-Thanks for your tests, I did test again on my platform. This time with a
-hand-built v5.18 straight from torvalds/linux. And I can confirm my
-findings I even loaded btusb (removed and reloaded) nothing helped. I
-always get the message
+syzbot found the following issue on:
 
-No default controller available
+HEAD commit:    c932edeaf6d6 riscv: dts: microchip: fix gpio1 reg property..
+git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git fixes
+console output: https://syzkaller.appspot.com/x/log.txt?x=14de11edf00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=aa6b5702bdf14a17
+dashboard link: https://syzkaller.appspot.com/bug?extid=1d1952c211a38ac43f10
+compiler:       riscv64-linux-gnu-gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+userspace arch: riscv64
 
-In this case I guess it could be rather a BIOS issue. In this testing
-round also some USB ports did not work.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+1d1952c211a38ac43f10@syzkaller.appspotmail.com
 
-If it helps any my system is a Lenovo P14s Gen2. I believe then the
-driver is good.
+watchdog: BUG: soft lockup - CPU#0 stuck for 23s! [swapper/0:1]
+Modules linked in:
+irq event stamp: 410297
+hardirqs last  enabled at (410296): [<ffffffff8000ee74>] __trace_hardirqs_on+0x18/0x20 arch/riscv/kernel/trace_irq.c:19
+hardirqs last disabled at (410297): [<ffffffff8000ee94>] __trace_hardirqs_off+0x18/0x20 arch/riscv/kernel/trace_irq.c:25
+softirqs last  enabled at (405886): [<ffffffff83207a08>] softirq_handle_end kernel/softirq.c:401 [inline]
+softirqs last  enabled at (405886): [<ffffffff83207a08>] __do_softirq+0x618/0x8fc kernel/softirq.c:587
+softirqs last disabled at (405891): [<ffffffff8006164a>] do_softirq_own_stack include/asm-generic/softirq_stack.h:10 [inline]
+softirqs last disabled at (405891): [<ffffffff8006164a>] invoke_softirq kernel/softirq.c:439 [inline]
+softirqs last disabled at (405891): [<ffffffff8006164a>] __irq_exit_rcu+0x142/0x1f8 kernel/softirq.c:637
+CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.18.0-rc1-syzkaller #0
+Hardware name: riscv-virtio,qemu (DT)
+epc : arch_static_branch arch/riscv/include/asm/jump_label.h:20 [inline]
+epc : kfence_alloc include/linux/kfence.h:120 [inline]
+epc : slab_alloc_node mm/slub.c:3135 [inline]
+epc : kmem_cache_alloc_node+0xa0/0x3c6 mm/slub.c:3267
+ ra : slab_pre_alloc_hook mm/slab.h:724 [inline]
+ ra : slab_alloc_node mm/slub.c:3131 [inline]
+ ra : kmem_cache_alloc_node+0x66/0x3c6 mm/slub.c:3267
+epc : ffffffff8047df56 ra : ffffffff8047df1c sp : ff200000002273b0
+ gp : ffffffff85a76440 tp : ff60000007430000 t0 : 0000000000046000
+ t1 : ffebffff014d10b7 t2 : ffffffff80668f62 s0 : ff20000000227450
+ s1 : ff600000075a93c0 a0 : 0000000000000000 a1 : 0000000000000007
+ a2 : 1ffffffff09c876c a3 : ffffffff80bec434 a4 : 0000000000000000
+ a5 : 0000000000000000 a6 : 0000000000f00000 a7 : ff6000000a6885bb
+ s2 : 0000000000000a20 s3 : 0000000000000000 s4 : 0000000000000a20
+ s5 : ffffffffffffffff s6 : ffffffff8271f756 s7 : ffffffff85a9c780
+ s8 : 00000000000000e8 s9 : ffffffff85a7c2c0 s10: 00000000000000ff
+ s11: ffffffffffffa288 t3 : fffffffff3f3f300 t4 : ffebffff014d10b7
+ t5 : ffebffff014d10b8 t6 : ff6000001239fc00
+status: 0000000000000120 badaddr: 0000000000000000 cause: 8000000000000005
+[<ffffffff8271f756>] __alloc_skb+0x234/0x2e4 net/core/skbuff.c:414
+[<ffffffff81a42954>] alloc_skb include/linux/skbuff.h:1300 [inline]
+[<ffffffff81a42954>] new_skb+0x2c/0xcc drivers/block/aoe/aoecmd.c:66
+[<ffffffff81a48ab2>] aoecmd_cfg_pkts drivers/block/aoe/aoecmd.c:425 [inline]
+[<ffffffff81a48ab2>] aoecmd_cfg+0x1f6/0x5c6 drivers/block/aoe/aoecmd.c:1362
+[<ffffffff81a4bdfc>] discover_timer+0x4a/0x54 drivers/block/aoe/aoemain.c:24
+[<ffffffff8016c084>] call_timer_fn+0x164/0x694 kernel/time/timer.c:1421
+[<ffffffff8016ca9a>] expire_timers kernel/time/timer.c:1466 [inline]
+[<ffffffff8016ca9a>] __run_timers.part.0+0x4e6/0x76e kernel/time/timer.c:1734
+[<ffffffff8016cda8>] __run_timers kernel/time/timer.c:1715 [inline]
+[<ffffffff8016cda8>] run_timer_softirq+0x86/0x100 kernel/time/timer.c:1747
+[<ffffffff83207664>] __do_softirq+0x274/0x8fc kernel/softirq.c:558
+[<ffffffff8006164a>] do_softirq_own_stack include/asm-generic/softirq_stack.h:10 [inline]
+[<ffffffff8006164a>] invoke_softirq kernel/softirq.c:439 [inline]
+[<ffffffff8006164a>] __irq_exit_rcu+0x142/0x1f8 kernel/softirq.c:637
+[<ffffffff80061958>] irq_exit+0x10/0x7a kernel/softirq.c:661
+[<ffffffff831f7c8e>] generic_handle_arch_irq+0x48/0x54 kernel/irq/handle.c:240
+[<ffffffff800057b2>] ret_from_exception+0x0/0x10
+[<ffffffff8047df1c>] slab_pre_alloc_hook mm/slab.h:724 [inline]
+[<ffffffff8047df1c>] slab_alloc_node mm/slub.c:3131 [inline]
+[<ffffffff8047df1c>] kmem_cache_alloc_node+0x66/0x3c6 mm/slub.c:3267
 
-Regards,
-Philippe
 
->=20
-> Regards,
-> Deren
->=20
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
