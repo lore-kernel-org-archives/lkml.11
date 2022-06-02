@@ -2,102 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FF3EC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 21:01:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18E86C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 21:02:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239321AbiFBVBV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 17:01:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50342 "EHLO
+        id S239317AbiFBVC4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 17:02:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239299AbiFBVBO (ORCPT
+        with ESMTP id S232821AbiFBVCy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 17:01:14 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4F99235253
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 14:01:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654203672;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=oqtjLES5h9VyqujFfP0LIXi0+7ZX2bu0LxgK1iAi69Q=;
-        b=MBJ3OBWmRPYVy3hGwmQyDZmjzunrN9RXv5IM/gbK12+ENIZYdE+BbV8EMfXIgXeP3b8HGY
-        4dumlgRFpmn7wrVXfGPCgOrpO4dn+28y70cV6WtYbPi05UOWdtj+SF1JIBohRz7dwMSirp
-        hjuqU0NvWxJaJ4ZwHSw04uLOC0cMX8k=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-629-niFFMZ9nMa2Ed0rJvorMbQ-1; Thu, 02 Jun 2022 17:01:08 -0400
-X-MC-Unique: niFFMZ9nMa2Ed0rJvorMbQ-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 609E8101A54E;
-        Thu,  2 Jun 2022 21:01:07 +0000 (UTC)
-Received: from emerald.redhat.com (unknown [10.22.34.8])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id BD5671410F36;
-        Thu,  2 Jun 2022 21:01:06 +0000 (UTC)
-From:   Lyude Paul <lyude@redhat.com>
-To:     amd-gfx@freedesktop.org
-Cc:     Harry Wentland <harry.wentland@amd.com>,
-        Leo Li <sunpeng.li@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, Hersen Wu <hersenwu@amd.com>,
-        Roman Li <Roman.Li@amd.com>,
-        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        amd-gfx@lists.freedesktop.org (open list:AMD DISPLAY CORE),
-        dri-devel@lists.freedesktop.org (open list:DRM DRIVERS),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH 2/3] drm/amdgpu/dm/mst: Stop grabbing mst_mgr->lock in pre_compute_mst_dsc_configs_for_state()
-Date:   Thu,  2 Jun 2022 17:00:55 -0400
-Message-Id: <20220602210056.73316-3-lyude@redhat.com>
-In-Reply-To: <20220602210056.73316-1-lyude@redhat.com>
-References: <20220602210056.73316-1-lyude@redhat.com>
+        Thu, 2 Jun 2022 17:02:54 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE2221CB21
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 14:02:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654203772; x=1685739772;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=0UzVWwaOi/8bfFUzsc83WA6PHSfLMI2rHT/Y5hwvIF0=;
+  b=KxlxS9dCH/LwjUU1dOffJ7zRMJB+vYzqakzMigkVKG9vuZwLTBN8n2YL
+   6aicfqKsREnycyvekJcbkQ2aoTIK33I32OWn2azZAv3x3uBYQs6Bi4Vgm
+   pGJwzf5LI9PnVVFzMsCkn0q9gUx8IVMPyjsuMe6SY9488vW0fsvbR6Uv+
+   RZhVLP5BG0SnYRCnlvMN5IR4F/Exszu0U/MM0miHPwgetZpn+sw0+I+gR
+   ZlXZP3OrWjnk2qZXHjUK+jHEqoKhTUAfM/jcGa4XGUOBQK9g/ZDFQYcbM
+   tRwdLqzVIVea7yN/bSPCZJMbtMbVEIqRpHiXb9lXoCN4umRx6OlISYzOr
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10366"; a="275814813"
+X-IronPort-AV: E=Sophos;i="5.91,272,1647327600"; 
+   d="scan'208";a="275814813"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2022 14:02:52 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,272,1647327600"; 
+   d="scan'208";a="612991715"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 02 Jun 2022 14:02:50 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nwrxx-0005RP-SR;
+        Thu, 02 Jun 2022 21:02:49 +0000
+Date:   Fri, 3 Jun 2022 05:02:20 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jiri Pirko <jiri@nvidia.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [jpirko-mlxsw:jiri_devel_lc_dev 4/5] ld.lld: error: undefined
+ symbol: auxiliary_device_init
+Message-ID: <202206030535.Sbiik5tQ-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This lock is only needed if you're iterating through the in-memory topology
-(e.g. drm_dp_mst_branch->ports, drm_dp_mst_port->mstb, etc.). This doesn't
-actually seem to be what's going on here though, so we can just drop this
-lock.
+tree:   https://github.com/jpirko/linux_mlxsw jiri_devel_lc_dev
+head:   ef34c1c33c0ae43a9ad3c0ed3708eb1880972de0
+commit: 2d0852c5fa89a48c6fa1f860600b5e24e2faab4b [4/5] mlxsw: core_linecards: Introduce per line card auxiliary device
+config: x86_64-randconfig-a016 (https://download.01.org/0day-ci/archive/20220603/202206030535.Sbiik5tQ-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project b364c76683f8ef241025a9556300778c07b590c2)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/jpirko/linux_mlxsw/commit/2d0852c5fa89a48c6fa1f860600b5e24e2faab4b
+        git remote add jpirko-mlxsw https://github.com/jpirko/linux_mlxsw
+        git fetch --no-tags jpirko-mlxsw jiri_devel_lc_dev
+        git checkout 2d0852c5fa89a48c6fa1f860600b5e24e2faab4b
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-Signed-off-by: Lyude Paul <lyude@redhat.com>
----
- drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_mst_types.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_mst_types.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_mst_types.c
-index cb3b0e08acc4..1259f2f7a8f9 100644
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_mst_types.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_mst_types.c
-@@ -1112,16 +1112,12 @@ static bool
- 		if (!is_dsc_need_re_compute(state, dc_state, stream->link))
- 			continue;
- 
--		mutex_lock(&aconnector->mst_mgr.lock);
- 		if (!compute_mst_dsc_configs_for_link(state,
- 						      dc_state,
- 						      stream->link,
- 						      vars,
--						      &link_vars_start_index)) {
--			mutex_unlock(&aconnector->mst_mgr.lock);
-+						      &link_vars_start_index))
- 			return false;
--		}
--		mutex_unlock(&aconnector->mst_mgr.lock);
- 
- 		for (j = 0; j < dc_state->stream_count; j++) {
- 			if (dc_state->streams[j]->link == stream->link)
+All errors (new ones prefixed by >>):
+
+   vmlinux.o: warning: objtool: fixup_bad_iret+0x1e: call to memset() leaves .noinstr.text section
+   vmlinux.o: warning: objtool: in_entry_stack+0x9: call to __this_cpu_preempt_check() leaves .noinstr.text section
+   vmlinux.o: warning: objtool: exc_nmi+0x8: call to sev_es_nmi_complete() leaves .noinstr.text section
+   vmlinux.o: warning: objtool: default_do_nmi+0x10: call to __this_cpu_preempt_check() leaves .noinstr.text section
+   vmlinux.o: warning: objtool: kvm_read_and_reset_apf_flags+0x1: call to __this_cpu_preempt_check() leaves .noinstr.text section
+   vmlinux.o: warning: objtool: lockdep_hardirqs_on+0xa6: call to __this_cpu_preempt_check() leaves .noinstr.text section
+   vmlinux.o: warning: objtool: lockdep_hardirqs_off+0xa3: call to __this_cpu_preempt_check() leaves .noinstr.text section
+   vmlinux.o: warning: objtool: irqentry_nmi_enter+0x63: call to __this_cpu_preempt_check() leaves .noinstr.text section
+   vmlinux.o: warning: objtool: irqentry_nmi_exit+0x32: call to __this_cpu_preempt_check() leaves .noinstr.text section
+>> ld.lld: error: undefined symbol: auxiliary_device_init
+   >>> referenced by core_linecard_dev.c
+   >>> net/ethernet/mellanox/mlxsw/core_linecard_dev.o:(mlxsw_linecard_dev_add) in archive drivers/built-in.a
+--
+>> ld.lld: error: undefined symbol: __auxiliary_device_add
+   >>> referenced by core_linecard_dev.c
+   >>> net/ethernet/mellanox/mlxsw/core_linecard_dev.o:(mlxsw_linecard_dev_add) in archive drivers/built-in.a
+--
+>> ld.lld: error: undefined symbol: __auxiliary_driver_register
+   >>> referenced by core_linecard_dev.c
+   >>> net/ethernet/mellanox/mlxsw/core_linecard_dev.o:(mlxsw_linecard_driver_register) in archive drivers/built-in.a
+--
+>> ld.lld: error: undefined symbol: auxiliary_driver_unregister
+   >>> referenced by core_linecard_dev.c
+   >>> net/ethernet/mellanox/mlxsw/core_linecard_dev.o:(mlxsw_linecard_driver_unregister) in archive drivers/built-in.a
+
 -- 
-2.35.3
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
