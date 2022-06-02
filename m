@@ -2,87 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 444F1C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 12:07:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 785CFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 12:08:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234864AbiFBMHj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 08:07:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39390 "EHLO
+        id S234807AbiFBMIu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 08:08:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234855AbiFBMHe (ORCPT
+        with ESMTP id S231604AbiFBMIs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 08:07:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FADF1F42A8;
-        Thu,  2 Jun 2022 05:07:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2CF67616F7;
-        Thu,  2 Jun 2022 12:07:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09433C3411A;
-        Thu,  2 Jun 2022 12:07:27 +0000 (UTC)
-From:   Huacai Chen <chenhuacai@loongson.cn>
-To:     Arnd Bergmann <arnd@arndb.de>, Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Airlie <airlied@linux.ie>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-arch@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Huacai Chen <chenhuacai@gmail.com>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Huacai Chen <chenhuacai@loongson.cn>,
-        WANG Xuerui <git@xen0n.name>
-Subject: [PATCH V14 24/24] MAINTAINERS: Add maintainer information for LoongArch
-Date:   Thu,  2 Jun 2022 19:51:41 +0800
-Message-Id: <20220602115141.3962749-25-chenhuacai@loongson.cn>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220602115141.3962749-1-chenhuacai@loongson.cn>
-References: <20220602115141.3962749-1-chenhuacai@loongson.cn>
+        Thu, 2 Jun 2022 08:08:48 -0400
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 110BA2717BD;
+        Thu,  2 Jun 2022 05:08:47 -0700 (PDT)
+Received: by mail-lj1-x235.google.com with SMTP id g25so4987944ljm.2;
+        Thu, 02 Jun 2022 05:08:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=QdNf1+ADCDYIFdMt/u0EWuhJR3TaXSiM6WxoeP7Eubo=;
+        b=Sr4MSscJ3lDmLRDowY0p2F36myUdh5acadCAYqP6y6lRile9Ir7mBytU3OgIgUFZUF
+         1CZmrb7YxF0A/b4XWk+rLAlmOMiQjL46TOhhS7qsB53sWCKLsbpKldE6N0S+YBplVoLB
+         sBFlPQHIBjuSbG9EpX2gv1OPch3Sk2FPoFD83yjh3A0AQcFC+VJSX/x8knhDDr8Slx3u
+         fNNpeIEbuIkrcndC7Dvct4MzKA2XSMmQWZ8MfgMcux/h4yPji5DwAZzb0jiCg572EYsm
+         XrKx+EfbQEcGjMEUs/Rmc8WtDaD0J5+3bRqRVXOgWRlbpgBWbh6Kwc1zXesWIptqZbP+
+         VjbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=QdNf1+ADCDYIFdMt/u0EWuhJR3TaXSiM6WxoeP7Eubo=;
+        b=07VkBYE3d7HkLTJwZUqeztmH3e8S6xv6Usj6UIWp+HKIFN6unOxnwqcBpsTdykIRCm
+         8+1nzkMBwPv+sxbwXjPuoVKnMwIhKOqtqiP7c4owwqo49kMb4SYDZ81FHvmgjnZwbgzr
+         yZrLJMrMG7vn9iOKCD23zb28L9UsUAKyi18X1Ml6z87GPjaPCOPdYT4Js9YI/vS6daQU
+         wRlQLRUg1f/Ls7Ie5fcTKqcoa7r7/OMzluakmCo7o95Xwnfk0/mM3i5TfpBUCzJVs6Aq
+         Z+bkfwxSpLs9QBda2C8A4/jAdk09KoIGj4Q3In//mwGuBZMT1blD/SKNsCGxU+uiPWgN
+         AVUA==
+X-Gm-Message-State: AOAM533y6nC6xd1F2m0dMKczFleJo5Tdf1b1EciYOs63HBvuD7B2fJYm
+        qn6219szFS2s9brFtLGM7dVUEUnm4b7JLA==
+X-Google-Smtp-Source: ABdhPJyzjXZmbGB25Nt6LYzK4/Lb1b18NojM2rGYKC4gJb6rhYHNS5GmPPf2ZZCqPqhuXGeoBdiM6w==
+X-Received: by 2002:a05:651c:1a2c:b0:253:d897:ee2f with SMTP id by44-20020a05651c1a2c00b00253d897ee2fmr39569928ljb.232.1654171725398;
+        Thu, 02 Jun 2022 05:08:45 -0700 (PDT)
+Received: from wse-c0127 ([208.127.141.28])
+        by smtp.gmail.com with ESMTPSA id h9-20020a056512054900b00477c8127e50sm1001299lfl.122.2022.06.02.05.08.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Jun 2022 05:08:44 -0700 (PDT)
+From:   Hans Schultz <schultz.hans@gmail.com>
+X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
+To:     Ido Schimmel <idosch@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>
+Cc:     Hans Schultz <schultz.hans@gmail.com>,
+        Ido Schimmel <idosch@idosch.org>, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>, Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH V3 net-next 1/4] net: bridge: add fdb flag to extent
+ locked port feature
+In-Reply-To: <YpiTbOsh0HBMwiTE@shredder>
+References: <20220524152144.40527-2-schultz.hans+netdev@gmail.com>
+ <Yo+LAj1vnjq0p36q@shredder> <86sfov2w8k.fsf@gmail.com>
+ <YpCgxtJf9Qe7fTFd@shredder> <86sfoqgi5e.fsf@gmail.com>
+ <YpYk4EIeH6sdRl+1@shredder> <86y1yfzap3.fsf@gmail.com>
+ <d88b6090-2ac8-0664-0e38-bb2860be7f6e@blackwall.org>
+ <86sfonjroi.fsf@gmail.com>
+ <3d93d46d-c484-da0a-c12c-80e83eba31c9@blackwall.org>
+ <YpiTbOsh0HBMwiTE@shredder>
+Date:   Thu, 02 Jun 2022 14:08:41 +0200
+Message-ID: <86mtevjmie.fsf@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the maintainer information for the LoongArch (LA or LArch for short)
-architecture.
+>
+> I think Hans is testing with mv88e6xxx which dumps entries directly from
+> HW via ndo_fdb_dump(). See dsa_slave_port_fdb_do_dump() which sets
+> NTF_SELF.
+>
+> Hans, are you seeing the entry twice? Once with 'master' and once with
+> 'self'?
+>
 
-Reviewed-by: Guo Ren <guoren@kernel.org>
-Reviewed-by: Jiaxun Yang <jiaxun.yang@flygoat.com>
-Signed-off-by: WANG Xuerui <git@xen0n.name>
-Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
----
- MAINTAINERS | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+When replacing a locked entry it looks like this:
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 7dff84d95e5f..03fe17f7c062 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -11544,6 +11544,16 @@ S:	Maintained
- F:	Documentation/devicetree/bindings/display/bridge/lontium,lt8912b.yaml
- F:	drivers/gpu/drm/bridge/lontium-lt8912b.c
- 
-+LOONGARCH
-+M:	Huacai Chen <chenhuacai@kernel.org>
-+R:	WANG Xuerui <kernel@xen0n.name>
-+S:	Maintained
-+T:	git git://git.kernel.org/pub/scm/linux/kernel/git/chenhuacai/linux-loongson.git
-+F:	arch/loongarch/
-+F:	drivers/*/*loongarch*
-+F:	Documentation/loongarch/
-+F:	Documentation/translations/zh_CN/loongarch/
-+
- LSILOGIC MPT FUSION DRIVERS (FC/SAS/SPI)
- M:	Sathya Prakash <sathya.prakash@broadcom.com>
- M:	Sreekanth Reddy <sreekanth.reddy@broadcom.com>
--- 
-2.27.0
+# bridge fdb show dev eth6 | grep 4c
+00:4c:4c:4c:4c:4c vlan 1 master br0 extern_learn offload locked
 
+# bridge fdb replace 00:4c:4c:4c:4c:4c dev eth6 vlan 1 master static ; bridge fdb show dev eth6 | grep 4c
+00:4c:4c:4c:4c:4c vlan 1 self static
+
+The problem is then that the function
+br_fdb_find_rcu(br,eth_hdr(skb)->h_source, vid);
+, where the h_source and vid is the entry above, does not find the entry.
+My hypothesis was then that this is because of the 'self' flag that I
+see.
+
+I am thinking that the function dsa_slave_port_fdb_do_dump() is only for
+debug, and thus does not really set any flags in the bridge modules FDB,
+but then I don't understand why the above find function does not find
+the entry?
