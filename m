@@ -2,141 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73458C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 10:11:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95428C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 10:11:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233434AbiFBKLQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 06:11:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42440 "EHLO
+        id S233450AbiFBKL1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 06:11:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230406AbiFBKLN (ORCPT
+        with ESMTP id S233441AbiFBKLQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 06:11:13 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CED7D2AD5C2;
-        Thu,  2 Jun 2022 03:11:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654164672; x=1685700672;
-  h=date:from:to:cc:subject:message-id:reply-to:references:
-   mime-version:in-reply-to;
-  bh=da86tUUULUVat8HuHmdIwGDy5StYU/aEj+aL1ESVKiM=;
-  b=fHDYKqgFDHVQviH6ChjxYfgt1oORIuPN7lRKfUdcYRYt40abOD/amhhf
-   C5eF6K4qDsSlNQIHbJ87jbtAbaEDOf3T0ifprAkgruf8hhUI7tOT2H6Rt
-   nwk9Pm6SEFSQnfsSEFX/2Q9i1O3ZtiB5TmYPM3fPmpCQdHP03GLUMYO+z
-   SYdKNyzIVd22JepgAltlTJ8wS5cBW3NUVY5kBQoAEgpQfdqvEql9Rqau/
-   Yyn7PIgh9sOTldkumprPtotX0p6oeKVLQZiBQVDG/2qSdYYhBnp2zMRAC
-   WGFg9t80LwiWeCvx91frsgzmYOHucZqd6ZeU2s+jrIhoAIYa0R+b0oaYm
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10365"; a="336560321"
-X-IronPort-AV: E=Sophos;i="5.91,270,1647327600"; 
-   d="scan'208";a="336560321"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2022 03:11:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,270,1647327600"; 
-   d="scan'208";a="721237238"
-Received: from chaop.bj.intel.com (HELO localhost) ([10.240.192.101])
-  by fmsmga001.fm.intel.com with ESMTP; 02 Jun 2022 03:10:58 -0700
-Date:   Thu, 2 Jun 2022 18:07:33 +0800
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     "Gupta, Pankaj" <pankaj.gupta@amd.com>
-Cc:     Vishal Annapurve <vannapurve@google.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org, linux-api@vger.kernel.org,
-        linux-doc@vger.kernel.org, qemu-devel@nongnu.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Jun Nakajima <jun.nakajima@intel.com>, dave.hansen@intel.com,
-        ak@linux.intel.com, david@redhat.com, aarcange@redhat.com,
-        ddutile@redhat.com, dhildenb@redhat.com,
-        Quentin Perret <qperret@google.com>,
-        Michael Roth <michael.roth@amd.com>, mhocko@suse.com
-Subject: Re: [PATCH v6 3/8] mm/memfd: Introduce MFD_INACCESSIBLE flag
-Message-ID: <20220602100733.GA1296997@chaop.bj.intel.com>
-Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
-References: <20220519153713.819591-1-chao.p.peng@linux.intel.com>
- <20220519153713.819591-4-chao.p.peng@linux.intel.com>
- <CAGtprH8EMsPMMoOEzjRu0SMVKT0RqmkLk=n+6uXkBA6-wiRtUA@mail.gmail.com>
- <20220601101747.GA1255243@chaop.bj.intel.com>
- <1f1b17e8-a16d-c029-88e0-01f522cc077a@amd.com>
+        Thu, 2 Jun 2022 06:11:16 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DCD72AD5C2
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 03:11:16 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id f21so8968987ejh.11
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 03:11:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XP2MYhxOsKZps4QmlXxrybN7eWdufRzVMujwQeLYeiQ=;
+        b=Y7onb5K2NewHqCE/PuGP/wM6SCeTA9lIvWKzv8jJhtUkxUOyaEHEvZiw4JImYrjs5s
+         kN6M2jWBn/hQJ/gO0U4qlL+XEEZs8pBtfUQ7IuiVcWEY+wkFthPiLSsrRXsS3fAejXjf
+         kvvCJdXMPDrXcvk9yeZZs+tpjZf5dJArjVjTut02jEijcVhq8rbRluqdP29ZKyXUlZ0F
+         fJkhZe5RKIX9fdItmgPXHqlKhpZXFaipTO/Gruap1SOY4B/9/Ytjd2qjTb2u4T/Z7HIv
+         oAhNBOBsbESgy+TS8gXxGpo9jSv+l6+EKeAQ+jf9dQdnk/13eCdBqS3ieLyeeOzv7xBB
+         liEw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XP2MYhxOsKZps4QmlXxrybN7eWdufRzVMujwQeLYeiQ=;
+        b=iy32GNT97LJybfYtuLRscPM6j5wxcDlgDNrI84uSn/Gxz+J0w6rl1Ok3xYK9glaSbj
+         kVQcRJGrT4O8T1wwavBtJFm0+mprxJ22W8tpfTageVpnQO3FmqmdxQOhXd4QgutIhHeF
+         mC1vMS0pIF+JPvNz+7mJL8FE0UeAJ6w/NzOmLXeOxwklJGC3ySnfcuiY4qseOflbsR07
+         prOxuakM1RNGOm5CtwpBY+ydueTzLQ2wJetrbdq+nUBiYEBlYx7RY8f7bBtEofW3hwSi
+         3M8znFIFY9U467D0cws0nJ0SBx9V8vDx+Y2py8COwmDQE4chX66amBGwGjO8so2o37RK
+         MtIg==
+X-Gm-Message-State: AOAM533PK50RHofWjv2Y9FWSNthO6XWRDtkcfDqCdbCBk5h2O/FQA1Sr
+        GyyJPW3pTXld19ablzYtcgA=
+X-Google-Smtp-Source: ABdhPJxDXM6X2WzIbpB2ecG4Bo1W47SYy6zSGtMFLhp5s1cFEX36s9yh+wV046gKroqLIrujwyPa2g==
+X-Received: by 2002:a17:907:3e8a:b0:6fe:fcb6:6d45 with SMTP id hs10-20020a1709073e8a00b006fefcb66d45mr3454512ejc.348.1654164674585;
+        Thu, 02 Jun 2022 03:11:14 -0700 (PDT)
+Received: from orangepi3.mydomain.example ([195.234.74.2])
+        by smtp.gmail.com with ESMTPSA id kx16-20020a170907775000b00706e8ac43b8sm1599621ejc.199.2022.06.02.03.11.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Jun 2022 03:11:14 -0700 (PDT)
+From:   Roman Stratiienko <r.stratiienko@gmail.com>
+To:     mripard@kernel.org, wens@csie.org, jernej.skrabec@gmail.com,
+        airlied@linux.ie, daniel@ffwll.ch, samuel@sholland.org,
+        dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org, megi@xff.cz
+Cc:     Roman Stratiienko <r.stratiienko@gmail.com>
+Subject: [PATCH] drm/sun4i: Enable output signal premultiplication for DE2/DE3
+Date:   Thu,  2 Jun 2022 10:10:57 +0000
+Message-Id: <20220602101057.48170-1-r.stratiienko@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1f1b17e8-a16d-c029-88e0-01f522cc077a@amd.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 01, 2022 at 02:11:42PM +0200, Gupta, Pankaj wrote:
-> 
-> > > > Introduce a new memfd_create() flag indicating the content of the
-> > > > created memfd is inaccessible from userspace through ordinary MMU
-> > > > access (e.g., read/write/mmap). However, the file content can be
-> > > > accessed via a different mechanism (e.g. KVM MMU) indirectly.
-> > > > 
-> > > 
-> > > SEV, TDX, pkvm and software-only VMs seem to have usecases to set up
-> > > initial guest boot memory with the needed blobs.
-> > > TDX already supports a KVM IOCTL to transfer contents to private
-> > > memory using the TDX module but rest of the implementations will need
-> > > to invent
-> > > a way to do this.
-> > 
-> > There are some discussions in https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Flkml.org%2Flkml%2F2022%2F5%2F9%2F1292&amp;data=05%7C01%7Cpankaj.gupta%40amd.com%7Cb81ef334e2dd44c6143308da43b87d17%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637896756895977587%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=oQbM2Hj7GlhJTwnTM%2FPnwsfJlmTL7JR9ULBysAqm6V8%3D&amp;reserved=0
-> > already. I somehow agree with Sean. TDX is using an dedicated ioctl to
-> > copy guest boot memory to private fd so the rest can do that similarly.
-> > The concern is the performance (extra memcpy) but it's trivial since the
-> > initial guest payload is usually optimized in size.
-> > 
-> > > 
-> > > Is there a plan to support a common implementation for either allowing
-> > > initial write access from userspace to private fd or adding a KVM
-> > > IOCTL to transfer contents to such a file,
-> > > as part of this series through future revisions?
-> > 
-> > Indeed, adding pre-boot private memory populating on current design
-> > isn't impossible, but there are still some opens, e.g. how to expose
-> > private fd to userspace for access, pKVM and CC usages may have
-> > different requirements. Before that's well-studied I would tend to not
-> > add that and instead use an ioctl to copy. Whether we need a generic
-> > ioctl or feature-specific ioctl, I don't have strong opinion here.
-> > Current TDX uses a feature-specific ioctl so it's not covered in this
-> > series.
-> 
-> Common function or ioctl to populate preboot private memory actually makes
-> sense.
-> 
-> Sorry, did not follow much of TDX code yet, Is it possible to filter out
-> the current TDX specific ioctl to common function so that it can be used by
-> other technologies?
+Otherwise alpha value is discarded, resulting incorrect pixel
+apperance on the display.
 
-TDX code is here:
-https://patchwork.kernel.org/project/kvm/patch/70ed041fd47c1f7571aa259450b3f9244edda48d.1651774250.git.isaku.yamahata@intel.com/
+This also fixes missing transparency for the most bottom layer.
 
-AFAICS It might be possible to filter that out to a common function. But
-would like to hear from Paolo/Sean for their opinion.
+Test applications and videos w/ w/o this patch are available at [1].
 
-Chao
-> 
-> Thanks,
-> Pankaj
+[1]: https://github.com/GloDroid/glodroid_tests/issues/1
+Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
+---
+ drivers/gpu/drm/sun4i/sun8i_mixer.c | 2 ++
+ drivers/gpu/drm/sun4i/sun8i_mixer.h | 1 +
+ 2 files changed, 3 insertions(+)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.c b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+index 6b1711a9a71f..71ab0a00b4de 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_mixer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+@@ -320,6 +320,8 @@ static void sun8i_mixer_mode_set(struct sunxi_engine *engine,
+ 	else
+ 		val = 0;
+ 
++	val |= SUN8I_MIXER_BLEND_OUTCTL_PREMULTIPLY;
++
+ 	regmap_update_bits(engine->regs, SUN8I_MIXER_BLEND_OUTCTL(bld_base),
+ 			   SUN8I_MIXER_BLEND_OUTCTL_INTERLACED, val);
+ 
+diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.h b/drivers/gpu/drm/sun4i/sun8i_mixer.h
+index ebfc276b2464..bc12c95af6f3 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_mixer.h
++++ b/drivers/gpu/drm/sun4i/sun8i_mixer.h
+@@ -65,6 +65,7 @@
+ #define SUN8I_MIXER_BLEND_ROUTE_PIPE_MSK(n)	(0xf << ((n) << 2))
+ #define SUN8I_MIXER_BLEND_ROUTE_PIPE_SHIFT(n)	((n) << 2)
+ 
++#define SUN8I_MIXER_BLEND_OUTCTL_PREMULTIPLY	BIT(0)
+ #define SUN8I_MIXER_BLEND_OUTCTL_INTERLACED	BIT(1)
+ 
+ #define SUN50I_MIXER_BLEND_CSC_CTL_EN(ch)	BIT(ch)
+-- 
+2.30.2
+
