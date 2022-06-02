@@ -2,157 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F5B4C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 14:38:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4AD6C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 14:39:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236028AbiFBOin (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 10:38:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44704 "EHLO
+        id S236153AbiFBOjd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 10:39:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236025AbiFBOiO (ORCPT
+        with ESMTP id S236193AbiFBOjM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 10:38:14 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34AFE1A8E29;
-        Thu,  2 Jun 2022 07:38:08 -0700 (PDT)
-Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.201])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LDT761sbfz67sRl;
-        Thu,  2 Jun 2022 22:34:42 +0800 (CST)
-Received: from roberto-ThinkStation-P620.huawei.com (10.204.63.22) by
- fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 2 Jun 2022 16:38:05 +0200
-From:   Roberto Sassu <roberto.sassu@huawei.com>
-To:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
-        <kpsingh@kernel.org>
-CC:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Roberto Sassu <roberto.sassu@huawei.com>
-Subject: [PATCH v2 3/9] bpftool: Add flags parameter to open_obj_pinned_any() and open_obj_pinned()
-Date:   Thu, 2 Jun 2022 16:37:42 +0200
-Message-ID: <20220602143748.673971-4-roberto.sassu@huawei.com>
+        Thu, 2 Jun 2022 10:39:12 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAABE26D356;
+        Thu,  2 Jun 2022 07:38:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654180737; x=1685716737;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=6FLATGDBi3yu7IKVmGaVFcjGWShYzk2UB4TqoSCIdfA=;
+  b=jH4uWiY1yQANMAAM4GEdzqVipfNpKyKcTglPAoaWDb8TyCmFlLEXpgjE
+   gb0mg5bGVLII5mBibJZR9Ie5MkH0if0wOILC9L8nSDq1FQK4FjdzkHOg/
+   4crpLC1AVvaSywD3eZdgjt65jNGR2REQtc+nyWzVIKB8MGRIHu2P/8zIH
+   E8zkxc3ufVrEI2Hg/6uAWXwwiVA8rWm9ZohvBr6RaXIFFUXu0onwpo38o
+   335bEC2IUk0Y1Q8otY6tT2Mgci1NR0E5IIkEafqNMYP77WvtT32GEwg02
+   A65TzQIDAP7PwN4QJL3Ll9WMn5OGOqUYHy+ausCJ4NDnaa06vcfVwxgga
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10365"; a="256445683"
+X-IronPort-AV: E=Sophos;i="5.91,271,1647327600"; 
+   d="scan'208";a="256445683"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2022 07:38:41 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,271,1647327600"; 
+   d="scan'208";a="552868014"
+Received: from unknown (HELO localhost.localdomain) ([10.226.216.116])
+  by orsmga006.jf.intel.com with ESMTP; 02 Jun 2022 07:38:38 -0700
+From:   wen.ping.teh@intel.com
+To:     robin.murphy@arm.com
+Cc:     catalin.marinas@arm.com, devicetree@vger.kernel.org,
+        dinguyen@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        robh+dt@kernel.org, wen.ping.teh@intel.com, will@kernel.org
+Subject: Re: [PATCH] arm64: dts: Add support for Stratix 10 Software Virtual Platform
+Date:   Thu,  2 Jun 2022 22:38:16 +0800
+Message-Id: <20220602143816.3432427-1-wen.ping.teh@intel.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220602143748.673971-1-roberto.sassu@huawei.com>
-References: <20220602143748.673971-1-roberto.sassu@huawei.com>
+In-Reply-To: <7439ce39-a2c2-7310-27d3-08ba2ed75ac9@arm.com>
+References: <7439ce39-a2c2-7310-27d3-08ba2ed75ac9@arm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.204.63.22]
-X-ClientProxiedBy: lhreml754-chm.china.huawei.com (10.201.108.204) To
- fraeml714-chm.china.huawei.com (10.206.15.33)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the flags parameter to open_obj_pinned_any() and open_obj_pinned(), so
-that it is possible to specify the right permissions when obtaining a file
-descriptor from a pinned object.
+From: wen.ping.teh@intel.com=0D
 
-By default, the value passed to those functions is zero, so that there is
-no change in the current behavior.
-
-Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
----
- tools/bpf/bpftool/common.c | 15 ++++++++-------
- tools/bpf/bpftool/link.c   |  2 +-
- tools/bpf/bpftool/main.h   |  5 +++--
- 3 files changed, 12 insertions(+), 10 deletions(-)
-
-diff --git a/tools/bpf/bpftool/common.c b/tools/bpf/bpftool/common.c
-index a45b42ee8ab0..88e5e1900270 100644
---- a/tools/bpf/bpftool/common.c
-+++ b/tools/bpf/bpftool/common.c
-@@ -118,7 +118,7 @@ int mount_tracefs(const char *target)
- 	return err;
- }
- 
--int open_obj_pinned(const char *path, bool quiet)
-+int open_obj_pinned(const char *path, bool quiet, __u32 flags)
- {
- 	char *pname;
- 	int fd = -1;
-@@ -130,7 +130,7 @@ int open_obj_pinned(const char *path, bool quiet)
- 		goto out_ret;
- 	}
- 
--	fd = bpf_obj_get(pname);
-+	fd = bpf_obj_get_flags(pname, flags);
- 	if (fd < 0) {
- 		if (!quiet)
- 			p_err("bpf obj get (%s): %s", pname,
-@@ -146,12 +146,13 @@ int open_obj_pinned(const char *path, bool quiet)
- 	return fd;
- }
- 
--int open_obj_pinned_any(const char *path, enum bpf_obj_type exp_type)
-+int open_obj_pinned_any(const char *path, enum bpf_obj_type exp_type,
-+			__u32 flags)
- {
- 	enum bpf_obj_type type;
- 	int fd;
- 
--	fd = open_obj_pinned(path, false);
-+	fd = open_obj_pinned(path, false, flags);
- 	if (fd < 0)
- 		return -1;
- 
-@@ -400,7 +401,7 @@ static int do_build_table_cb(const char *fpath, const struct stat *sb,
- 	if (typeflag != FTW_F)
- 		goto out_ret;
- 
--	fd = open_obj_pinned(fpath, true);
-+	fd = open_obj_pinned(fpath, true, 0);
- 	if (fd < 0)
- 		goto out_ret;
- 
-@@ -761,7 +762,7 @@ int prog_parse_fds(int *argc, char ***argv, int **fds)
- 		path = **argv;
- 		NEXT_ARGP();
- 
--		(*fds)[0] = open_obj_pinned_any(path, BPF_OBJ_PROG);
-+		(*fds)[0] = open_obj_pinned_any(path, BPF_OBJ_PROG, 0);
- 		if ((*fds)[0] < 0)
- 			return -1;
- 		return 1;
-@@ -898,7 +899,7 @@ int map_parse_fds(int *argc, char ***argv, int **fds)
- 		path = **argv;
- 		NEXT_ARGP();
- 
--		(*fds)[0] = open_obj_pinned_any(path, BPF_OBJ_MAP);
-+		(*fds)[0] = open_obj_pinned_any(path, BPF_OBJ_MAP, 0);
- 		if ((*fds)[0] < 0)
- 			return -1;
- 		return 1;
-diff --git a/tools/bpf/bpftool/link.c b/tools/bpf/bpftool/link.c
-index 7a20931c3250..04447ad9b3b3 100644
---- a/tools/bpf/bpftool/link.c
-+++ b/tools/bpf/bpftool/link.c
-@@ -44,7 +44,7 @@ static int link_parse_fd(int *argc, char ***argv)
- 		path = **argv;
- 		NEXT_ARGP();
- 
--		return open_obj_pinned_any(path, BPF_OBJ_LINK);
-+		return open_obj_pinned_any(path, BPF_OBJ_LINK, 0);
- 	}
- 
- 	p_err("expected 'id' or 'pinned', got: '%s'?", **argv);
-diff --git a/tools/bpf/bpftool/main.h b/tools/bpf/bpftool/main.h
-index 6c311f47147e..3f6c03afb2f8 100644
---- a/tools/bpf/bpftool/main.h
-+++ b/tools/bpf/bpftool/main.h
-@@ -141,8 +141,9 @@ void get_prog_full_name(const struct bpf_prog_info *prog_info, int prog_fd,
- int get_fd_type(int fd);
- const char *get_fd_type_name(enum bpf_obj_type type);
- char *get_fdinfo(int fd, const char *key);
--int open_obj_pinned(const char *path, bool quiet);
--int open_obj_pinned_any(const char *path, enum bpf_obj_type exp_type);
-+int open_obj_pinned(const char *path, bool quiet, __u32 flags);
-+int open_obj_pinned_any(const char *path, enum bpf_obj_type exp_type,
-+			__u32 flags);
- int mount_bpffs_for_pin(const char *name);
- int do_pin_any(int argc, char **argv, int (*get_fd_by_id)(int *, char ***));
- int do_pin_fd(int fd, const char *name);
--- 
-2.25.1
-
+Hello Robin,=0D
+=0D
+>> +/ {=0D
+>> +	model =3D "SOCFPGA Stratix 10 SWVP";=0D
+>> +	compatible =3D "arm,foundation-aarch64", "arm,vexpress";=0D
+>=0D
+>This is definitely not compatible with any Arm Versatile Express =0D
+>platform. It doesn't even have RAM in the same place, for starters.=0D
+=0D
+Will change to the correct platform i.e. "altr,socfpga-stratix10"=0D
+=0D
+>> +		l2-cache@fffff000 {=0D
+>> +			compatible =3D "arm,pl310-cache";=0D
+>=0D
+>Yikes, I hope not!=0D
+>=0D
+>I didn't think AArch64 even allows outer caches that don't honour CPU =0D
+>cache maintenance by VA? Either way I can't imagine we'd ever accept =0D
+>PL310 support in mainline, so even if your model does actually have this =
+=0D
+>for some inexplicable reason, I don't think there's any point exposing =0D
+>it in the DT.=0D
+=0D
+Will remove outer cache.=0D
+All fixes have been done in v2 patch.=0D
+https://lore.kernel.org/linux-arm-kernel/20220602141151.3431212-1-wen.ping.=
+teh@intel.com/T/#u=0D
+=0D
+Thanks,=0D
+Wen Ping=
