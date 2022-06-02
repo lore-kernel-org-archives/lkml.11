@@ -2,207 +2,205 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A55FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 06:21:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F87CC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 06:22:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230447AbiFBGV4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 02:21:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42998 "EHLO
+        id S230490AbiFBGWl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 02:22:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbiFBGVv (ORCPT
+        with ESMTP id S229959AbiFBGWg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 02:21:51 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA0DCDED1
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 23:21:49 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id h62-20020a1c2141000000b0039aa4d054e2so4238121wmh.1
-        for <linux-kernel@vger.kernel.org>; Wed, 01 Jun 2022 23:21:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=LOVgUxA1bDTDyTIwmAcMyzfNGeAcBs7vn2fkT3URToc=;
-        b=avOI5wm80HcfnD5JSHV7pK5BsH2+jVSuFyJ0O3c7HNgCLu8Iq6iYXahvWw0avss3eR
-         OnEGjxGmWICyBVIHkTj92usczbn9/N5FBHaBqO1wp3+Uqkmyul0llhXTdVW9kDmpUYAW
-         veDqiLVP0TXTyVsIk6kp2QSlg57vDs6nj4e/sDOVEFr7KjDkgdqkshtQvMa107DP6z0R
-         L71RMNTEyjhK78/fN80/mjnnY2cNuTZJ2jgjuHtqDhgksnFn/5HojsgBb6Syb6oZH1Ys
-         +b5+kf8wPP4yulJL4bcrJaiSJGja9DLWWySsMTnwb9zp1/JkzhO9uPs4dEkOCfi9NgoN
-         MFaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LOVgUxA1bDTDyTIwmAcMyzfNGeAcBs7vn2fkT3URToc=;
-        b=ISkUD/XR+MhS6BYzvzQI0dU6r5GEQpsv5LQCjWoQXMp9nTM6nl1fljCyfv43Nc/plR
-         xZsQd8UnnjsAEHWUL5uFoSKuZq4AIvazqzgOVStzwfCBenV14FVM2HSswcBzd3b/fpys
-         9WnvVdbn5Lnc8KilUZQELsKhe+s/LshFzeMqQNzb4F3WOnIfJsPn0ZYkL41vUaUkXlG5
-         49F6wt5TUrQWQKG8cc/sZW1l/l5IJAmHQVYC034yW5vaShm68xh9Y0XHpfrvEQOwnbs6
-         WbuXcCN28e+k7MzgbfyE7LF7zjPsiU5OEOKKNtUrLjeJ/PXPjppWKG81KYFDrkKBa1rk
-         Xuag==
-X-Gm-Message-State: AOAM531M/nGTqg0IKOE1f1W+jU7GwSfCIA+THbqhAv45KOPu/J3/yKzl
-        jEu5WrlE7yu4QnZGtREIPC/j3X1MBeGAGkABD6NDUg==
-X-Google-Smtp-Source: ABdhPJx+Qg9/XPJgAjGUvPxditJJ54bsPjYt9M7fFcFlP4MsNMvGJmvit/KkVxeCCqj60h0rP7xlP0ScE+qOSxcDlPA=
-X-Received: by 2002:a1c:a301:0:b0:392:9bc5:203c with SMTP id
- m1-20020a1ca301000000b003929bc5203cmr2446589wme.67.1654150908114; Wed, 01 Jun
- 2022 23:21:48 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220601065846.456965-1-namhyung@kernel.org> <20220601065846.456965-3-namhyung@kernel.org>
-In-Reply-To: <20220601065846.456965-3-namhyung@kernel.org>
-From:   Ian Rogers <irogers@google.com>
-Date:   Wed, 1 Jun 2022 23:21:34 -0700
-Message-ID: <CAP-5=fWvS=1XrXnE_a+sif8ZKy2oc6pmo6RmZ6+fFrWoa1VM3A@mail.gmail.com>
-Subject: Re: [PATCH 2/5] perf lock: Add lock contention tracepoints record support
-To:     Namhyung Kim <namhyung@kernel.org>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@kernel.org>, Ingo Molnar <mingo@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-perf-users@vger.kernel.org, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Davidlohr Bueso <dave@stgolabs.net>
+        Thu, 2 Jun 2022 02:22:36 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E043A2873F;
+        Wed,  1 Jun 2022 23:22:34 -0700 (PDT)
+X-UUID: 0b8bf9b9aa0c49ff88bad3bf8e12a3a2-20220602
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:193bdc81-635f-4c1e-bc32-7e35d6db20d2,OB:0,LO
+        B:0,IP:0,URL:25,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:25
+X-CID-META: VersionHash:2a19b09,CLOUDID:b5a10615-b515-4766-a72d-4514488fe823,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
+        ,QS:0,BEC:nil
+X-UUID: 0b8bf9b9aa0c49ff88bad3bf8e12a3a2-20220602
+Received: from mtkmbs11n2.mediatek.inc [(172.21.101.187)] by mailgw01.mediatek.com
+        (envelope-from <tinghan.shen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 609628221; Thu, 02 Jun 2022 14:22:29 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Thu, 2 Jun 2022 14:22:28 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n2.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Thu, 2 Jun 2022 14:22:28 +0800
+Message-ID: <6d432025e3f7e96a26d07ad0c779234a246ef4fe.camel@mediatek.com>
+Subject: Re: [PATCH v1] dt-bindings: dsp: mediatek: add mt8186 dsp document
+From:   Tinghan Shen <tinghan.shen@mediatek.com>
+To:     Rex-BC Chen <rex-bc.chen@mediatek.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+CC:     <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Thu, 2 Jun 2022 14:22:28 +0800
+In-Reply-To: <177a0be5289045602fdbde295b1bd076bee9e854.camel@mediatek.com>
+References: <20220422071534.15653-1-tinghan.shen@mediatek.com>
+         <177a0be5289045602fdbde295b1bd076bee9e854.camel@mediatek.com>
 Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 31, 2022 at 11:58 PM Namhyung Kim <namhyung@kernel.org> wrote:
->
-> When LOCKDEP and LOCK_STAT events are not available, it falls back to
-> record the new lock contention tracepoints.
->
-> Signed-off-by: Namhyung Kim <namhyung@kernel.org>
-> ---
->  tools/perf/builtin-lock.c | 70 +++++++++++++++++++++++++++++++++++----
->  1 file changed, 63 insertions(+), 7 deletions(-)
->
-> diff --git a/tools/perf/builtin-lock.c b/tools/perf/builtin-lock.c
-> index 23a33ac15e68..3e3320b8cede 100644
-> --- a/tools/perf/builtin-lock.c
-> +++ b/tools/perf/builtin-lock.c
-> @@ -495,6 +495,12 @@ struct trace_lock_handler {
->
->         int (*release_event)(struct evsel *evsel,
->                              struct perf_sample *sample);
-> +
-> +       int (*contention_begin_event)(struct evsel *evsel,
-> +                                     struct perf_sample *sample);
-> +
-> +       int (*contention_end_event)(struct evsel *evsel,
-> +                                   struct perf_sample *sample);
+Hi Rex,
 
-Would it make sense to add a comment here about LOCKDEP and LOCK_STAT?
-It could be confusing if the handler isn't called on different
-kernels.
+On Fri, 2022-04-22 at 15:59 +0800, Rex-BC Chen wrote:
+> On Fri, 2022-04-22 at 15:15 +0800, Tinghan Shen wrote:
+> > This patch adds mt8186 dsp document. The dsp is used for Sound Open
+> > Firmware driver node. It includes registers, clocks, memory regions,
+> > and mailbox for dsp.
+> > 
+> > Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
+> > ---
+> > 
+> > This patch depends on MT8186 clock bindings.
+> > 
+> 
+> https://lore.kernel.org/all/20220409132251.31725-2-chun-jie.chen@mediatek.com/
+> > 
+> > ---
+> >  .../bindings/dsp/mediatek,mt8186-dsp.yaml     | 93
+> > +++++++++++++++++++
+> >  1 file changed, 93 insertions(+)
+> >  create mode 100644
+> > Documentation/devicetree/bindings/dsp/mediatek,mt8186-dsp.yaml
+> > 
+> > diff --git a/Documentation/devicetree/bindings/dsp/mediatek,mt8186-
+> > dsp.yaml b/Documentation/devicetree/bindings/dsp/mediatek,mt8186-
+> > dsp.yaml
+> > new file mode 100644
+> > index 000000000000..00a79e880895
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/dsp/mediatek,mt8186-dsp.yaml
+> > @@ -0,0 +1,93 @@
+> > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/dsp/mediatek,mt8186-dsp.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: Mediatek mt8186 DSP core
+> 
+> Hello Tinghan,
+> 
+> Please use MediaTek.
+
+Ok. I'll update it at next version.
+
 
 Thanks,
-Ian
+TingHan
 
->  };
->
->  static struct lock_seq_stat *get_seq(struct thread_stat *ts, u64 addr)
-> @@ -822,6 +828,20 @@ static int evsel__process_lock_release(struct evsel *evsel, struct perf_sample *
->         return 0;
->  }
->
-> +static int evsel__process_contention_begin(struct evsel *evsel, struct perf_sample *sample)
-> +{
-> +       if (trace_handler->contention_begin_event)
-> +               return trace_handler->contention_begin_event(evsel, sample);
-> +       return 0;
-> +}
-> +
-> +static int evsel__process_contention_end(struct evsel *evsel, struct perf_sample *sample)
-> +{
-> +       if (trace_handler->contention_end_event)
-> +               return trace_handler->contention_end_event(evsel, sample);
-> +       return 0;
-> +}
-> +
->  static void print_bad_events(int bad, int total)
->  {
->         /* Output for debug, this have to be removed */
-> @@ -1023,6 +1043,11 @@ static const struct evsel_str_handler lock_tracepoints[] = {
->         { "lock:lock_release",   evsel__process_lock_release,   }, /* CONFIG_LOCKDEP */
->  };
->
-> +static const struct evsel_str_handler contention_tracepoints[] = {
-> +       { "lock:contention_begin", evsel__process_contention_begin, },
-> +       { "lock:contention_end",   evsel__process_contention_end,   },
-> +};
-> +
->  static bool force;
->
->  static int __cmd_report(bool display_info)
-> @@ -1086,20 +1111,41 @@ static int __cmd_record(int argc, const char **argv)
->                 "record", "-R", "-m", "1024", "-c", "1", "--synth", "task",
->         };
->         unsigned int rec_argc, i, j, ret;
-> +       unsigned int nr_tracepoints;
->         const char **rec_argv;
-> +       bool has_lock_stat = true;
->
->         for (i = 0; i < ARRAY_SIZE(lock_tracepoints); i++) {
->                 if (!is_valid_tracepoint(lock_tracepoints[i].name)) {
-> -                               pr_err("tracepoint %s is not enabled. "
-> -                                      "Are CONFIG_LOCKDEP and CONFIG_LOCK_STAT enabled?\n",
-> -                                      lock_tracepoints[i].name);
-> -                               return 1;
-> +                       pr_debug("tracepoint %s is not enabled. "
-> +                                "Are CONFIG_LOCKDEP and CONFIG_LOCK_STAT enabled?\n",
-> +                                lock_tracepoints[i].name);
-> +                       has_lock_stat = false;
-> +                       break;
-> +               }
-> +       }
-> +
-> +       if (has_lock_stat)
-> +               goto setup_args;
-> +
-> +       for (i = 0; i < ARRAY_SIZE(contention_tracepoints); i++) {
-> +               if (!is_valid_tracepoint(contention_tracepoints[i].name)) {
-> +                       pr_err("tracepoint %s is not enabled.\n",
-> +                              contention_tracepoints[i].name);
-> +                       return 1;
->                 }
->         }
->
-> +setup_args:
->         rec_argc = ARRAY_SIZE(record_args) + argc - 1;
-> +
-> +       if (has_lock_stat)
-> +               nr_tracepoints = ARRAY_SIZE(lock_tracepoints);
-> +       else
-> +               nr_tracepoints = ARRAY_SIZE(contention_tracepoints);
-> +
->         /* factor of 2 is for -e in front of each tracepoint */
-> -       rec_argc += 2 * ARRAY_SIZE(lock_tracepoints);
-> +       rec_argc += 2 * nr_tracepoints;
->
->         rec_argv = calloc(rec_argc + 1, sizeof(char *));
->         if (!rec_argv)
-> @@ -1108,9 +1154,19 @@ static int __cmd_record(int argc, const char **argv)
->         for (i = 0; i < ARRAY_SIZE(record_args); i++)
->                 rec_argv[i] = strdup(record_args[i]);
->
-> -       for (j = 0; j < ARRAY_SIZE(lock_tracepoints); j++) {
-> +       for (j = 0; j < nr_tracepoints; j++) {
-> +               const char *ev_name;
-> +
-> +               if (has_lock_stat)
-> +                       ev_name = strdup(lock_tracepoints[j].name);
-> +               else
-> +                       ev_name = strdup(contention_tracepoints[j].name);
-> +
-> +               if (!ev_name)
-> +                       return -ENOMEM;
-> +
->                 rec_argv[i++] = "-e";
-> -               rec_argv[i++] = strdup(lock_tracepoints[j].name);
-> +               rec_argv[i++] = ev_name;
->         }
->
->         for (j = 1; j < (unsigned int)argc; j++, i++)
-> --
-> 2.36.1.255.ge46751e96f-goog
->
+
+> Thanks.
+> 
+> BRs,
+> Rex
+> 
+> > +
+> > +maintainers:
+> > +  - Tinghan Shen <tinghan.shen@mediatek.com>
+> > +
+> > +description: |
+> > +  MediaTek mt8186 SoC contains a DSP core used for
+> > +  advanced pre- and post- audio processing.
+> > +
+> > +properties:
+> > +  compatible:
+> > +    const: mediatek,mt8186-dsp
+> > +
+> > +  reg:
+> > +    items:
+> > +      - description: Address and size of the DSP config registers
+> > +      - description: Address and size of the DSP SRAM
+> > +      - description: Address and size of the DSP secure registers
+> > +      - description: Address and size of the DSP bus registers
+> > +
+> > +  reg-names:
+> > +    items:
+> > +      - const: cfg
+> > +      - const: sram
+> > +      - const: sec
+> > +      - const: bus
+> > +
+> > +  clocks:
+> > +    items:
+> > +      - description: mux for audio dsp clock
+> > +      - description: mux for audio dsp local bus
+> > +
+> > +  clock-names:
+> > +    items:
+> > +      - const: audiodsp_sel
+> > +      - const: adsp_bus_sel
+> > +
+> > +  power-domains:
+> > +    maxItems: 1
+> > +
+> > +  mboxes:
+> > +    items:
+> > +      - description: ipc reply between host and audio DSP.
+> > +      - description: ipc request between host and audio DSP.
+> > +
+> > +  mbox-names:
+> > +    items:
+> > +      - const: mbox0
+> > +      - const: mbox1
+> > +
+> > +  memory-region:
+> > +    items:
+> > +      - description: dma buffer between host and DSP.
+> > +      - description: DSP system memory.
+> > +
+> > +required:
+> > +  - compatible
+> > +  - reg
+> > +  - reg-names
+> > +  - clocks
+> > +  - clock-names
+> > +  - power-domains
+> > +  - mbox-names
+> > +  - mboxes
+> > +
+> > +additionalProperties: false
+> > +
+> > +examples:
+> > +  - |
+> > +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> > +    #include <dt-bindings/interrupt-controller/irq.h>
+> > +    #include <dt-bindings/clock/mt8186-clk.h>
+> > +    dsp@10680000 {
+> > +        compatible = "mediatek,mt8186-dsp";
+> > +        reg = <0x10680000 0x2000>,
+> > +              <0x10800000 0x100000>,
+> > +              <0x1068b000 0x100>,
+> > +              <0x1068f000 0x1000>;
+> > +        reg-names = "cfg", "sram", "sec", "bus";
+> > +        clocks = <&topckgen CLK_TOP_AUDIODSP>,
+> > +                 <&topckgen CLK_TOP_ADSP_BUS>;
+> > +        clock-names = "audiodsp_sel",
+> > +                      "adsp_bus_sel";
+> > +        power-domains = <&spm 6>;
+> > +        mbox-names = "mbox0", "mbox1";
+> > +        mboxes = <&adsp_mailbox0>, <&adsp_mailbox1>;
+> > +    };
+> 
+> 
+
