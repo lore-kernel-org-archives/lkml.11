@@ -2,198 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AFB6C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 11:33:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93C36C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 11:34:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234259AbiFBLdl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 07:33:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37820 "EHLO
+        id S234269AbiFBLee (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 07:34:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231533AbiFBLdg (ORCPT
+        with ESMTP id S234258AbiFBLea (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 07:33:36 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACCA124BC2;
-        Thu,  2 Jun 2022 04:33:33 -0700 (PDT)
-Received: from dggpeml500020.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LDP2S5kt8zRhXB;
-        Thu,  2 Jun 2022 19:30:24 +0800 (CST)
-Received: from huawei.com (10.175.127.227) by dggpeml500020.china.huawei.com
- (7.185.36.88) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 2 Jun
- 2022 19:33:31 +0800
-From:   Baokun Li <libaokun1@huawei.com>
-To:     <linux-ext4@vger.kernel.org>
-CC:     <tytso@mit.edu>, <adilger.kernel@dilger.ca>, <jack@suse.cz>,
-        <ritesh.list@gmail.com>, <lczerner@redhat.com>,
-        <linux-kernel@vger.kernel.org>, <yi.zhang@huawei.com>,
-        <yebin10@huawei.com>, <yukuai3@huawei.com>, <libaokun1@huawei.com>,
-        Hulk Robot <hulkci@huawei.com>
-Subject: [PATCH] ext4: fix use-after-free in ext4_xattr_set_entry
-Date:   Thu, 2 Jun 2022 19:46:51 +0800
-Message-ID: <20220602114651.3244889-1-libaokun1@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Thu, 2 Jun 2022 07:34:30 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2063.outbound.protection.outlook.com [40.107.236.63])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02EA059BB5;
+        Thu,  2 Jun 2022 04:34:29 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=f37KiRKoYLS8hqQf4+CCreh20PtpOeOWN4mDRmDfJGGr+H371jqsGjm/0z8Sb38bdBB/ztZZwCpJjgAki4/OItRap09bvl07efqYsx06At+W4jREjaZz5lcv7F269cEiGa8dHd7dAfhbMkR3e9kx/PX45xiCDzKTB8UCHTaZqRR8jx6XKnrxoO02ZOC+P2h1+jxPnGx6GaH7KydUqj4f/aGjD23Mow+VG/GTrDD31rPbBWFNtqmww5ORQVY9dqLH7aD3sgo52m1ZCpDiIk6LzifjXHKiL9+9z1XsA8c54IX+c8YHyf7AoYXL6KLgeOR9sO2MMcy4WeHOhQElEul9NQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=A4MmQqD0uDI3XZ6uuDAOJVKCK6EhAEcqHKLaJw9fanc=;
+ b=m7oSCYBsAaErO6zJhIrzXRs4o1jI7qGy000AdyhjEL/NOOjWpYHB3EVx0VIQKMgF0EN8u/+6X9/xPSNAa8QT6lIwRSoNYzc3ULPxRECTxn6CDr5EVLOs5qqjJ00uTZYzYqr7anOrE5l0tMTQgb2wPS0wUi+4f9B7DvGjIidWU/etzeZ1VaP9VzGXFjaRPLrVnt/1hMvsi4EF1IrXjNSd8VLPKv8l+NZHhs7l1i3akyrd3vkHjyxaqig2XClXdyefn8KLqgTIkVXyhwaUzYhHVoTVsRrDVz//t7iCCbKiIZTUrf0/ZQWFA+5ueIox9I3RdRxEjCIemucLsTbl6Lh3Yg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=A4MmQqD0uDI3XZ6uuDAOJVKCK6EhAEcqHKLaJw9fanc=;
+ b=gosPeY1kEyJw41UfnDfynj6/WMikIY3PBJNyUYuVN8l4ZIlcDqs6RDDxAEav87A+1a+FBr9zGsOf4R5r2dQaH3C2VoWD0nwzVWqvpXh4PxuQmdcCMUMm5wydUoYZRtWZkc9gNFp8sXuiHR0ja3bmZPrNaDk+U71zb8cP6Aq0BUNmsgYAkdUATk5pg82Lp0329Ogv54iu+oSAsZjgeaFbmQj3YZ1MBJamonO/Hc3+yUFIeJdJvT6CoPmaMJGNWZJNPWIuXoi60FufKm7zb8p/Tq9va9xVQQgPY+9nlSo0SLo9SIR6s7USvzdY+Ueve+wrjnLK7z6TIP9RHQiR9oIUhw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from BN8PR12MB2900.namprd12.prod.outlook.com (2603:10b6:408:69::18)
+ by BN8PR12MB3092.namprd12.prod.outlook.com (2603:10b6:408:48::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.13; Thu, 2 Jun
+ 2022 11:34:27 +0000
+Received: from BN8PR12MB2900.namprd12.prod.outlook.com
+ ([fe80::4c17:a358:335:87c5]) by BN8PR12MB2900.namprd12.prod.outlook.com
+ ([fe80::4c17:a358:335:87c5%7]) with mapi id 15.20.5314.013; Thu, 2 Jun 2022
+ 11:34:27 +0000
+Message-ID: <7e1ddcb4-8e89-e7cf-3abf-b6dfba09102c@nvidia.com>
+Date:   Thu, 2 Jun 2022 17:04:13 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.2
+Subject: Re: [PATCH] PCI: tegra194: Fix PM error handling in
+ tegra_pcie_config_ep
+Content-Language: en-US
+To:     Miaoqian Lin <linmq006@gmail.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Om Prakash Singh <omp@nvidia.com>,
+        Fan Fei <ffclaire1224@gmail.com>, linux-pci@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220602031910.55859-1-linmq006@gmail.com>
+From:   Vidya Sagar <vidyas@nvidia.com>
+In-Reply-To: <20220602031910.55859-1-linmq006@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MA0PR01CA0096.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:a01:af::12) To BN8PR12MB2900.namprd12.prod.outlook.com
+ (2603:10b6:408:69::18)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpeml500020.china.huawei.com (7.185.36.88)
-X-CFilter-Loop: Reflected
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 61f3aff7-28ad-4dea-e307-08da448bd9af
+X-MS-TrafficTypeDiagnostic: BN8PR12MB3092:EE_
+X-Microsoft-Antispam-PRVS: <BN8PR12MB30922A00F22F4C421FF143C3B8DE9@BN8PR12MB3092.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: VQBa7rO1a+9/ApPbtou/XZqsXh4oicP5kejamV8gF91zp0jjSfTM2OjPK+2g2YkZvWN0OL8Id1aE06NoeVw3xk6UHaR6FOh2CiJ8GmK2IeuMMBj224jDfhwdQO+4lxWMoLh4p2VUg6kB4bv/FaW6fblPuWeDMldztuVfPZF86bJVizz4f4VTHkWNPfe13JZHlyFYXUK3xin+fbBSiWD+4HEK7vJELHXwT352PBPfXhmLkcf9AZeYtuqvvLty1iXROZPifJB2hcXMo6RwSWjKRvl1KBCYLTlPFhmmWKRkaUcqcKqYJme5rhS6ienheZH51p++t7/Dfv3JhzftAB00oram4UcaSEAbxDwdM7+Xwcnab4hPoYZjyecAd6fokQ/dy7PDmZGTM+EnPNkVO5yDC7FhO/AD2hLaZ2yFmLEaqfmIiY2ncqwmxCnYtyGm0GINCmSbm2r8u9RKTxu6oYAVrisGGQlRIuY7JhXRd8Fv6HoDVLNhOb5UPTjPY7JTFUXerCqFWdV5kURK8AYnkY9OQKTIf7miZU86c+qOm1BB4mpt25jALoLZjotoCohIn391PHn/2pg8Hf8ftbO5vGpTmYl46Lzx+Ao+gp3KL2g/qyMiKfHzL5TG4x9Xzbvr6pZTUGGZLlLUMF2QlCzCedekuiR14/rIcf8QWXpsMy62LEH8GTuWllvK81hMBxw/9bnClSuBw0RHdFPBv+uVdHMRC7lGuRe9z6tYbnD1MulSz7X/LIUHW9u1PlLC5foMTQZM86OXI6A2UbzeQP7dUBWdUQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR12MB2900.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(186003)(6506007)(86362001)(66476007)(8676002)(110136005)(7416002)(8936002)(921005)(6486002)(508600001)(5660300002)(6512007)(31696002)(2906002)(316002)(31686004)(26005)(53546011)(2616005)(36756003)(38100700002)(66946007)(66556008)(6666004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?eGg3YUZ2aXJYK3lwWXk1TURtVVZZQkFmVXJhL2UrSkhyQ0VQdUxHQXZFNzZa?=
+ =?utf-8?B?MElldXBnTWhYVVFwVW5zdE9pTWJHZ0dUejJUcm5nc1F5WHpFalE0UEhEaklY?=
+ =?utf-8?B?VnovajBVa2czVXdiZDlNN3NUUDJkRGtKRlRlM2RIUEY0SU0yOU5jeEZtcnJx?=
+ =?utf-8?B?akcvampQTUlvMm8vRUJidnVKcG9SeTBEeXM5VHFZL29xS25CWVIrYWpuUG5s?=
+ =?utf-8?B?WXVVMlQxQ0VTVmVILzlJTVBwUVlTblI0VHBMYmk1OEQ3aWo3dDVIT2hpeExB?=
+ =?utf-8?B?c0pkU3lHZ2J4YmZOMmZlWW5Fb1YwVHlmYktKSndKeWFicEZiNkRadE84ZHlH?=
+ =?utf-8?B?bkNWQmxIb0NZeHBhZGNYUG00OXhZeHpHMCs0d2dpOTNlUEFJa3JvcUc1MnpK?=
+ =?utf-8?B?WjNwdTgrNGFaWlE3RTgvbjZ2SEVsR2JVMVpVRGRuamxPdlhDVS9QL2FTT1Jr?=
+ =?utf-8?B?ak13T1YyU0ozcm9uUXlWeEd1eDNnMGZiSEMrSjRQbEIvMjRibDdPSTB0UDFp?=
+ =?utf-8?B?bmg1TW11VjdjVS9lQm9PVy9iQnJwUUxPSU1VYzIzbFQ3dVVrNFZNVnVNeEZx?=
+ =?utf-8?B?SDBsWHdFc09kUldqZWJseU5Bem1iVkt2M0tJVFhvNGQvTHR5VDBRZEM4dmkv?=
+ =?utf-8?B?TzUycjBqYjhPeUdyK1RGaHJ4eDl5eG5oR3BXUTdFMlhPd0pJRFN4dFhPWjh2?=
+ =?utf-8?B?Y1hGSllGWEt0akcxUmROUHREZTZLcERNR1pJV25UdkN3YU5kd09lQVVDalBm?=
+ =?utf-8?B?aWE3dHdJUUwyTXhoVHNqZm9UQXNGV1hWSnpEVTdNN2dXTlorcXpscXhXamk4?=
+ =?utf-8?B?a2N0aUNRUmZOOHRLaFErdDZaeGxnWk1sVkk2eERFeThCZVA4VXIvWXI2TndI?=
+ =?utf-8?B?QWVLNWMzbUNYOTdQZnoxQWVIbnJ3VUovRDBVNGZQa2EyMFdLZ2RnTlRjMFdS?=
+ =?utf-8?B?bXlnblhUU1UzQ2JLd08vakh5QVlKbWJOT2NPTTRYVGVDUVk3RDl1SGJadGo1?=
+ =?utf-8?B?cUxzOTcvWVFNVkxDSy91ckNnQ1FPRjJabWo3b1NrZko5c09pbEVIWTRyTWRj?=
+ =?utf-8?B?OGpHQVhkTzNtKzdRUzRDUVAzdU02dkdHSW1UU1JVTEJxUDBDMU9yVXdGYmI5?=
+ =?utf-8?B?cEJKN01JM1RnWlpabDVMa09HdGNUOUQ4SEZ1MXlpc3VOcDl5c0RxcEczdUlH?=
+ =?utf-8?B?RkF2KzJTR244dit4NzhqSURYalgycW5XU09US3k0YmNIMjhZQm41dFF1WUpa?=
+ =?utf-8?B?TWcwblpVUHdUdHFzT0lrS3NBTC9qcTY5Ly9vMDhLSHVmazNZbk9raGxvanpn?=
+ =?utf-8?B?enl6M2RPZ3NYeGNrbUtZQ1ZPbzAvVTh1OUN0bUtuR2tnZDdkUzI2SHFaUkty?=
+ =?utf-8?B?cGZ0aUFMR2VyeENEdk9nTzZLRjlWWFdVc3o2NElvWlRQVjlqZXV5Vmc0NjB3?=
+ =?utf-8?B?bTdwQUlaazdWc2haQkhNejNMZ3dYUHVYTm1NbFZ1N01xMHhaUHFMTHhLaG9G?=
+ =?utf-8?B?RXVqYXVZNTB3alZ1cXhRVXdNNXhlSHhQa01JODM1c2c2S1kwMXBmSHlESHJ3?=
+ =?utf-8?B?NnRUYWxsZm5YMWIrK2Y4aWw5ZUdwejRrN1pCTzRLa0Rra1RzcTJoSXpPSUZt?=
+ =?utf-8?B?YVNWZHk1SXNrTkxydDdxcFBqTitydVNQVmlsWjZ5bTA5VmF6UC9IV0NENWlJ?=
+ =?utf-8?B?UUZCcXZGWlBhSkgxRmN0UVlPZm5ETnFtZDJBTzFKeCs1eUtGRkszQ1pTd3Jk?=
+ =?utf-8?B?TjJjQUhVd095K3BCZVpKZ2ZUVVFjSFBwZmpKdEZxazZSSGlEVmJRdkdmL1VY?=
+ =?utf-8?B?cVdQZno5Y3M1WDVzVEJLZXp4WTBDcmp1R2lWcFFPcHptcElmYWJiV1VUSzZ6?=
+ =?utf-8?B?NkZTdGJJaEYwUGRHcldYS3VmNWZjREpwUFZvR3ozVE5adUNYTTVUMUVHdGRk?=
+ =?utf-8?B?WDgwUGc2NklKNTdPUlF6VDFldmI2Y2lQSi9kNG1SNWJOZDc3aGp5bEwxUUJv?=
+ =?utf-8?B?WE94NnBIcHBkb1huaGFqUUc2NTZlVDV2ZER4WUhiTVV6UlRKa25YQzUrUUoz?=
+ =?utf-8?B?cXhBNTlGNkwvalFsV2dsSDlPOWQ4VFdzY2RwdDlxcUduTUZWRkpSTEJIN2NF?=
+ =?utf-8?B?cUxRL3lHMUFTNHRDT1JQTy9KU1hwMW9BVHdQcms2QjhTcjc2V0FxeGNDWWQ5?=
+ =?utf-8?B?Y2xHTSsvMzQ5Vy9hSlJvUEd6em05SjVqVGdDaXI1NjhZaUVBNTBhR1g1d2tv?=
+ =?utf-8?B?M3ZUVGdDT1RqMEw2b0J1WUdSSjk5TVZjeHczcExyNlREa0lSckhSUVBoeVRV?=
+ =?utf-8?B?S1lEM1cyTTUwUFAvVytRTHhHSlNjT1c5RzZvN1dpalR0NHZ3SC9vUT09?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 61f3aff7-28ad-4dea-e307-08da448bd9af
+X-MS-Exchange-CrossTenant-AuthSource: BN8PR12MB2900.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2022 11:34:27.3890
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ovNK1ZR8CEINQu5z8huoBnb0ZOZbAnU4dePxEw9zjpuG9ieK0aFtL6EuxhZhM40Y4dt+lKF9U/kRUyPL7xM/4g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3092
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hulk Robot reported a issue:
-==================================================================
-BUG: KASAN: use-after-free in ext4_xattr_set_entry+0x18ab/0x3500
-Write of size 4105 at addr ffff8881675ef5f4 by task syz-executor.0/7092
+Thanks for pushing the change.
 
-CPU: 1 PID: 7092 Comm: syz-executor.0 Not tainted 4.19.90-dirty #17
-Call Trace:
-[...]
- memcpy+0x34/0x50 mm/kasan/kasan.c:303
- ext4_xattr_set_entry+0x18ab/0x3500 fs/ext4/xattr.c:1747
- ext4_xattr_ibody_inline_set+0x86/0x2a0 fs/ext4/xattr.c:2205
- ext4_xattr_set_handle+0x940/0x1300 fs/ext4/xattr.c:2386
- ext4_xattr_set+0x1da/0x300 fs/ext4/xattr.c:2498
- __vfs_setxattr+0x112/0x170 fs/xattr.c:149
- __vfs_setxattr_noperm+0x11b/0x2a0 fs/xattr.c:180
- __vfs_setxattr_locked+0x17b/0x250 fs/xattr.c:238
- vfs_setxattr+0xed/0x270 fs/xattr.c:255
- setxattr+0x235/0x330 fs/xattr.c:520
- path_setxattr+0x176/0x190 fs/xattr.c:539
- __do_sys_lsetxattr fs/xattr.c:561 [inline]
- __se_sys_lsetxattr fs/xattr.c:557 [inline]
- __x64_sys_lsetxattr+0xc2/0x160 fs/xattr.c:557
- do_syscall_64+0xdf/0x530 arch/x86/entry/common.c:298
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x459fe9
-RSP: 002b:00007fa5e54b4c08 EFLAGS: 00000246 ORIG_RAX: 00000000000000bd
-RAX: ffffffffffffffda RBX: 000000000051bf60 RCX: 0000000000459fe9
-RDX: 00000000200003c0 RSI: 0000000020000180 RDI: 0000000020000140
-RBP: 000000000051bf60 R08: 0000000000000001 R09: 0000000000000000
-R10: 0000000000001009 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007ffc73c93fc0 R14: 000000000051bf60 R15: 00007fa5e54b4d80
-[...]
-==================================================================
+Reviewed-by: Vidya Sagar <vidyas@nvidia.com>
 
-Above issue may happen as follows:
--------------------------------------
-ext4_xattr_set
-  ext4_xattr_set_handle
-    ext4_xattr_ibody_find
-      >> s->end < s->base
-      >> no EXT4_STATE_XATTR
-      >> xattr_check_inode is not executed
-    ext4_xattr_ibody_set
-      ext4_xattr_set_entry
-       >> size_t min_offs = s->end - s->base
-       >> UAF in memcpy
-
-we can easily reproduce this problem with the following commands:
-    mkfs.ext4 -F /dev/sda
-    mount -o debug_want_extra_isize=128 /dev/sda /mnt
-    touch /mnt/file
-    setfattr -n user.cat -v `seq -s z 4096|tr -d '[:digit:]'` /mnt/file
-
-In ext4_xattr_ibody_find, we have the following assignment logic:
-  header = IHDR(inode, raw_inode)
-         = raw_inode + EXT4_GOOD_OLD_INODE_SIZE + i_extra_isize
-  is->s.base = IFIRST(header)
-             = header + sizeof(struct ext4_xattr_ibody_header)
-  is->s.end = raw_inode + s_inode_size
-
-Obviously, when the inode does not have EXT4_status_XATTR and its
-i_extra_isize is large, is->s.end may be larger than is->s.base.
-In this case, the above issue may be triggered.
-
-   EXT4_GOOD_OLD_INODE_SIZE  extra_isize  header   entry   pad   data
-|---------------------------|------------|------|---------|---|--------|
-
-As shown above, when adding an xattr to an inode, we must ensure that the
-inode_size is not less than EXT4_GOOD_OLD_INODE_SIZE + extra_isize + pad.
-
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Baokun Li <libaokun1@huawei.com>
----
- fs/ext4/inline.c | 3 +++
- fs/ext4/inode.c  | 3 +--
- fs/ext4/xattr.c  | 6 ++++--
- fs/ext4/xattr.h  | 6 ++++++
- 4 files changed, 14 insertions(+), 4 deletions(-)
-
-diff --git a/fs/ext4/inline.c b/fs/ext4/inline.c
-index cff52ff6549d..b8cec7cb4b08 100644
---- a/fs/ext4/inline.c
-+++ b/fs/ext4/inline.c
-@@ -35,6 +35,9 @@ static int get_max_inline_xattr_value_size(struct inode *inode,
- 	struct ext4_inode *raw_inode;
- 	int free, min_offs;
- 
-+	if (!INODE_HAVE_XATTR_SPACE(inode))
-+		return 0;
-+
- 	min_offs = EXT4_SB(inode->i_sb)->s_inode_size -
- 			EXT4_GOOD_OLD_INODE_SIZE -
- 			EXT4_I(inode)->i_extra_isize -
-diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
-index 3dce7d058985..714fa61d0afb 100644
---- a/fs/ext4/inode.c
-+++ b/fs/ext4/inode.c
-@@ -4685,8 +4685,7 @@ static inline int ext4_iget_extra_inode(struct inode *inode,
- 	__le32 *magic = (void *)raw_inode +
- 			EXT4_GOOD_OLD_INODE_SIZE + ei->i_extra_isize;
- 
--	if (EXT4_GOOD_OLD_INODE_SIZE + ei->i_extra_isize + sizeof(__le32) <=
--	    EXT4_INODE_SIZE(inode->i_sb) &&
-+	if (INODE_HAVE_XATTR_SPACE(inode) &&
- 	    *magic == cpu_to_le32(EXT4_XATTR_MAGIC)) {
- 		ext4_set_inode_state(inode, EXT4_STATE_XATTR);
- 		return ext4_find_inline_data_nolock(inode);
-diff --git a/fs/ext4/xattr.c b/fs/ext4/xattr.c
-index 042325349098..4a63f8386910 100644
---- a/fs/ext4/xattr.c
-+++ b/fs/ext4/xattr.c
-@@ -2176,8 +2176,9 @@ int ext4_xattr_ibody_find(struct inode *inode, struct ext4_xattr_info *i,
- 	struct ext4_inode *raw_inode;
- 	int error;
- 
--	if (EXT4_I(inode)->i_extra_isize == 0)
-+	if (!INODE_HAVE_XATTR_SPACE(inode))
- 		return 0;
-+
- 	raw_inode = ext4_raw_inode(&is->iloc);
- 	header = IHDR(inode, raw_inode);
- 	is->s.base = is->s.first = IFIRST(header);
-@@ -2205,8 +2206,9 @@ int ext4_xattr_ibody_set(handle_t *handle, struct inode *inode,
- 	struct ext4_xattr_search *s = &is->s;
- 	int error;
- 
--	if (EXT4_I(inode)->i_extra_isize == 0)
-+	if (!INODE_HAVE_XATTR_SPACE(inode))
- 		return -ENOSPC;
-+
- 	error = ext4_xattr_set_entry(i, s, handle, inode, false /* is_block */);
- 	if (error)
- 		return error;
-diff --git a/fs/ext4/xattr.h b/fs/ext4/xattr.h
-index 77efb9a627ad..f2b299b347f9 100644
---- a/fs/ext4/xattr.h
-+++ b/fs/ext4/xattr.h
-@@ -95,6 +95,12 @@ struct ext4_xattr_entry {
- 
- #define EXT4_ZERO_XATTR_VALUE ((void *)-1)
- 
-+#define INODE_HAVE_XATTR_SPACE(inode)					\
-+	((EXT4_I(inode)->i_extra_isize != 0) &&				\
-+	 (EXT4_GOOD_OLD_INODE_SIZE + EXT4_I(inode)->i_extra_isize +	\
-+	  sizeof(struct ext4_xattr_ibody_header) + EXT4_XATTR_PAD <=	\
-+	  EXT4_INODE_SIZE((inode)->i_sb)))
-+
- struct ext4_xattr_info {
- 	const char *name;
- 	const void *value;
--- 
-2.31.1
-
+On 6/2/2022 8:49 AM, Miaoqian Lin wrote:
+> External email: Use caution opening links or attachments
+> 
+> 
+> The pm_runtime_enable() will increase power disable depth.
+> if dw_pcie_ep_init() fails, we should use pm_runtime_disable()
+> to balance it pm_runtime_enable().
+> Add missing pm_runtime_disable() for tegra_pcie_config_ep()
+> 
+> Fixes: c57247f940e8 ("PCI: tegra: Add support for PCIe endpoint mode in Tegra194")
+> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+> ---
+>   drivers/pci/controller/dwc/pcie-tegra194.c | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/pci/controller/dwc/pcie-tegra194.c b/drivers/pci/controller/dwc/pcie-tegra194.c
+> index cc2678490162..d992371a36e6 100644
+> --- a/drivers/pci/controller/dwc/pcie-tegra194.c
+> +++ b/drivers/pci/controller/dwc/pcie-tegra194.c
+> @@ -1949,6 +1949,7 @@ static int tegra_pcie_config_ep(struct tegra194_pcie *pcie,
+>          if (ret) {
+>                  dev_err(dev, "Failed to initialize DWC Endpoint subsystem: %d\n",
+>                          ret);
+> +               pm_runtime_disable(dev);
+>                  return ret;
+>          }
+> 
+> --
+> 2.25.1
+> 
