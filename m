@@ -2,133 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B18B7C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 14:28:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1F8CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 14:28:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235926AbiFBO2X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 10:28:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57710 "EHLO
+        id S235857AbiFBO2c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 10:28:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235945AbiFBO2O (ORCPT
+        with ESMTP id S235905AbiFBO2T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 10:28:14 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2069.outbound.protection.outlook.com [40.107.243.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB88C13B8C2;
-        Thu,  2 Jun 2022 07:28:03 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RX56qFR8kF5ZZn663C709B3H6Iui9upaHq27VCg/5xmr8BhLnQxdfrpwuAyIGLWoTwdHdYgifK5l0wuZ5EfrEaVTPbXRYPkihHoddfo0/1eTEyCB8vcPS305PXVJO0D/a/4gUmGwdFWwJzkRjLc7DYT7gwwXswjEcfsE1Q9YkyaoyXl7Suydxa1UQY4sEV9tXeHVBas9yKTUQqUwR431vCIrCNePvHT+Qod3yhG6ucZ41zo2oxUICrKKQqi41lWn2JRmfPbGi3kymijzrosYdVBmalYIpXgqc+F+1ji2XIcNPDxoZ/7/EPFSVH9Iy88Y+7UyrUKcWiQ2mOGXJUuXkQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xvz62h4ce8x6Jlg0rnGiIt19HXPFdGmibPoOctF8Fig=;
- b=JSevWlUy80gC3WFeCkJasbn7roz7JIsb/7OPC+AYlPezETVw16f3ESY7yaF+5SiQbvuIgu3DDCUKG8FfqSoLTiN/fDn0jXY1HyHdgshkkZcRtHT1zCY+j3QBXz17ypheHbOGO9jeIswqNIrxExAamoOVu+6dggwCacq/JNPlciNcAQcUl3CIHtLIljhTxR4BWKAmp19bl7YJ1LD/fHB45JNKxYb3XOMUbxfCHD1SmWCXqzs7ZOdKUv11zwBbFNV6Isl3V7YcFejoYN9oY6qWu5Rbd7RoXlxP5fl1/GJeXfT58MR77UK9sAeQjUZtiXIiHPLDKJJvmWs/QAFVjWdT5A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=redhat.com smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xvz62h4ce8x6Jlg0rnGiIt19HXPFdGmibPoOctF8Fig=;
- b=s3qRPgKytzfoLQHyLCqZ8lDSvyUTcJbpL84m9HeVcrb2FuJ+1sXMBqCI5FVH3DBZMLsrzCSjYDeA3cfSvfBcyGPymAW4G97sgoyBJ3F0n5+tb7Fw4ERFco4oeDBRtrHoEMA5pABqh48xpoG4lmw0kACAmcDstOWI8Ssp1bNHz34=
-Received: from BN6PR19CA0116.namprd19.prod.outlook.com (2603:10b6:404:a0::30)
- by BN7PR12MB2802.namprd12.prod.outlook.com (2603:10b6:408:25::33) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.18; Thu, 2 Jun
- 2022 14:28:02 +0000
-Received: from BN8NAM11FT022.eop-nam11.prod.protection.outlook.com
- (2603:10b6:404:a0:cafe::c9) by BN6PR19CA0116.outlook.office365.com
- (2603:10b6:404:a0::30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.13 via Frontend
- Transport; Thu, 2 Jun 2022 14:28:02 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT022.mail.protection.outlook.com (10.13.176.112) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5314.12 via Frontend Transport; Thu, 2 Jun 2022 14:28:01 +0000
-Received: from BLR-5CG113396M.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 2 Jun
- 2022 09:27:57 -0500
-From:   Santosh Shukla <santosh.shukla@amd.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-CC:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Tom Lendacky <thomas.lendacky@amd.com>, <kvm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <Santosh.Shukla@amd.com>
-Subject: [PATCH 5/7] KVM: SVM: Add VNMI support in inject_nmi
-Date:   Thu, 2 Jun 2022 19:56:18 +0530
-Message-ID: <20220602142620.3196-6-santosh.shukla@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220602142620.3196-1-santosh.shukla@amd.com>
-References: <20220602142620.3196-1-santosh.shukla@amd.com>
+        Thu, 2 Jun 2022 10:28:19 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E488140846
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 07:28:18 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id l20-20020a17090a409400b001dd2a9d555bso5017015pjg.0
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 07:28:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:content-language:to:cc
+         :references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=L4Gxk4Bv5TfkgMZFmRZVdKI/nfnxSbVJuJD+KEhCTwA=;
+        b=vznR9E/huPyrIZXpXnkqdLBfuApJkQscKlKcZknXDqfZ/UzpBujU19WWiJ4F6oTRe2
+         lR7uP5EHAzxXwKjHa6B5RqiR9qnOaBkPs/hQSA9fnvdrxoQ3mFlfPq0VrvKG3gS6OE8R
+         plY2qTLcDyWkxvE1BNieB15nFdOsnxMIE+Z3bRp/rMWZr/XzOq6qPJcP4JcL5r7v8+Rb
+         AuEZVAjpLmZiBKWgqlash0NfkGGjUBMR+u0O48hccdnAFA9NmfkAD3b9WxtR17/cgOAz
+         DCZGvSeh7xnKG8Wnji3N5tPQM53K3hXQH89J3bXgB0U78Q5roB6xZZQCZ+Ql/XFJLHXu
+         pSWw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=L4Gxk4Bv5TfkgMZFmRZVdKI/nfnxSbVJuJD+KEhCTwA=;
+        b=KKy6MFM2qiuEONNwMe9pSyihl+YN7/+s9zE4Zg73LLH+/PbqIXHjfk7zpBitqdZ7g7
+         GR5CxF1wfPzhoIBUWnBOse5Gb+dVFkbW2FDU3OMeqWsTdLz72uAPqWewLKy3evWlJrTZ
+         LcZgALUJyN3w9xQdhInhQlzftFsHm2VSXa9l+1/0UnxNGXeG4udkvPWWIwdIzoxMZ8kk
+         +qi8uHDjyZY/dH3WQUYB/YsplU1e5nU2RLxhH/CODJ3Hqrxss0wEg5o9VbTRhHrsBXAF
+         WSrDLJyUbvZG+HNURqkYJjQxzf9dojEqW541vm0d4kat/fXWF003cCMZfsPYHExxHfrX
+         tSdQ==
+X-Gm-Message-State: AOAM532YBD9Fn3Id5JigZxFuA4oa5raBDxjuXX5K0MWfKH3hlGqKW2Z2
+        NuTNzcPxJ9ACPXnb2zNu5pChLg==
+X-Google-Smtp-Source: ABdhPJznhWKPETXcZJrKMM+bn5m7VYTIN0w3D9vJ7qTBPI6tQ12pVtLVSqQrS4E7he1I2F8wZslmWQ==
+X-Received: by 2002:a17:902:8f81:b0:161:f4a7:f2fc with SMTP id z1-20020a1709028f8100b00161f4a7f2fcmr5196569plo.117.1654180097855;
+        Thu, 02 Jun 2022 07:28:17 -0700 (PDT)
+Received: from [192.168.254.36] ([50.39.160.154])
+        by smtp.gmail.com with ESMTPSA id d13-20020a170903230d00b0015ed003552fsm3564512plh.293.2022.06.02.07.28.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 02 Jun 2022 07:28:17 -0700 (PDT)
+Message-ID: <1e4fe5c8-4bac-087b-ae32-6fa2fa5b44f6@linaro.org>
+Date:   Thu, 2 Jun 2022 07:28:11 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Content-Language: en-US
+To:     =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>
+Cc:     Tejun Heo <tj@kernel.org>, cgroups@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Bui Quang Minh <minhquangbui99@gmail.com>
+References: <Yo/DtjEU/kYr190u@slm.duckdns.org>
+ <0babd7df-bdef-9edc-3682-1144bc0c2d2b@linaro.org>
+ <Ypf0VnKUMiuRgZqT@slm.duckdns.org>
+ <1fb4d8d7-ccc0-b020-715e-38c2dfd94c23@linaro.org>
+ <Ypf5jpI7dSmpi4W0@slm.duckdns.org>
+ <c3bd8e63-7204-f86d-8efa-254db71185fc@linaro.org>
+ <Ypf/MpwzByOrSp6A@slm.duckdns.org>
+ <416dc60a-f0e5-7d05-1613-3cd0ca415768@linaro.org>
+ <YpgEY/lJbLidLOhc@slm.duckdns.org>
+ <0fd1c3fd-fa86-dbed-f3f0-74c91b1efa11@linaro.org>
+ <20220602114705.GB21320@blackbody.suse.cz>
+From:   Tadeusz Struk <tadeusz.struk@linaro.org>
+Subject: Re: [PATCH 2/2] cgroup: Use separate work structs on css release path
+In-Reply-To: <20220602114705.GB21320@blackbody.suse.cz>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 2989aefa-0f97-46b2-2f6b-08da44a4197c
-X-MS-TrafficTypeDiagnostic: BN7PR12MB2802:EE_
-X-Microsoft-Antispam-PRVS: <BN7PR12MB28026A4D8026A15A044164EC87DE9@BN7PR12MB2802.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 5bbQBT7ixgC8qmdKohj87BuTMry3f2+VdE1F7KCsrmJdHNCIldFIdAck3GpzmDzSLtGNR77KQ5wVkhbEy6QexOdj6+Il4tPav7PPF6ZIeJNaMN4CuTo8Le5BZq9VU3TMEi3aIK9JD9v14eMs8SO3DksSj47AliRqm7mV3FOkhlN9t/xxJkA0biEFFsT5KO3SzJ6ePj4ahS5uc7HtXM6Ahe4Yw1yd9uKUcbsuy8zRUuyFiegqeNEcWrzKR/MpE8qDn49uk9lfcML1KqggI/o7/tDYQh38KivIkLGcC+RoJwWBdbIytXy8Z3d1BDqIoFdOS7P/VkPnuSgiL5NMTLGyg044m4HuLGCzwL0z/JKu+XNNyOX7VoxNZrH9lk/lNbEgdzaGp8RSOZLW2dgylGFhkuvtVNe31O2iEtq9b0MJJVFA3gWg9ZF80MfSuPbgdoemA89dBm4KGemSOUjPSrWzbcAev4p9DeLzYt6/74pd1kDS4b4MfmJ/+BG5RIUogjbC1XoMEXPlNP40M/bONb/Le0CVtDR+OCluRj4cx38+qzp8M9/LHw8FrNrjuH7q3cLFm4tCpVSvwRcgoMq/+cjpgyOTtheZim+y7occVEEcR1CikDGwAJPEXcX9RBYI90laQwg2z+GSK4z0Lb8gr12RKHIeCmZi70craSR6SKKrnRAGkw9yyJAlM30WWN4idPFFOc4K2zWDqmpIS4Wu4Yp7LA==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(36756003)(6666004)(508600001)(316002)(40460700003)(6916009)(54906003)(36860700001)(336012)(186003)(426003)(82310400005)(2906002)(16526019)(70586007)(1076003)(70206006)(2616005)(47076005)(4326008)(5660300002)(8936002)(44832011)(86362001)(83380400001)(81166007)(356005)(26005)(8676002)(7696005)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2022 14:28:01.8459
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2989aefa-0f97-46b2-2f6b-08da44a4197c
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT022.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR12MB2802
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Inject the NMI by setting V_NMI in the VMCB interrupt control. processor
-will clear V_NMI to acknowledge processing has started and will keep the
-V_NMI_MASK set until the processor is done with processing the NMI event.
+On 6/2/22 04:47, Michal Koutný wrote:
+> On Wed, Jun 01, 2022 at 05:40:51PM -0700, Tadeusz Struk<tadeusz.struk@linaro.org>  wrote:
+>> css_killed_ref_fn() will be called regardless of the value of refcnt (via percpu_ref_kill_and_confirm())
+>> and it will only enqueue the css_killed_work_fn() to be called later.
+>> Then css_put()->css_release() will be called before the css_killed_work_fn() will even
+>> get a chance to run, and it will also*only*  enqueue css_release_work_fn() to be called later.
+>> The problem happens on the second enqueue. So there need to be something in place that
+>> will make sure that css_killed_work_fn() is done before css_release() can enqueue
+>> the second job.
+> IIUC, here you describe the same scenario I broke down at [1].
 
-Signed-off-by: Santosh Shukla <santosh.shukla@amd.com>
----
- arch/x86/kvm/svm/svm.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+Right, except the last css_put(), which I think is called from cgroup_kn_unlock()
+See below.
 
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index a405e414cae4..200f979169e0 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -3385,11 +3385,16 @@ static void svm_inject_nmi(struct kvm_vcpu *vcpu)
- {
- 	struct vcpu_svm *svm = to_svm(vcpu);
- 
-+	++vcpu->stat.nmi_injections;
-+	if (is_vnmi_enabled(svm->vmcb)) {
-+		svm->vmcb->control.int_ctl |= V_NMI_PENDING;
-+		return;
-+	}
-+
- 	svm->vmcb->control.event_inj = SVM_EVTINJ_VALID | SVM_EVTINJ_TYPE_NMI;
- 	vcpu->arch.hflags |= HF_NMI_MASK;
- 	if (!sev_es_guest(vcpu->kvm))
- 		svm_set_intercept(svm, INTERCEPT_IRET);
--	++vcpu->stat.nmi_injections;
- }
- 
- static void svm_inject_irq(struct kvm_vcpu *vcpu)
+>> Does it sound right?
+> I added a parameter A there (that is sum of base and percpu references
+> before kill_css()).
+> I thought it fails because A == 1 (i.e. killing the base reference),
+> however, that seems an unlikely situation (because cgroup code uses a
+> "fuse" reference to pin css for offline_css()).
+> 
+> So the remaining option (at least I find it more likely now) is that
+> A == 0 (A < 0 would trigger the warning in
+> percpu_ref_switch_to_atomic_rcu()), aka the ref imbalance. I hope we can
+> get to the bottom of this with detailed enough tracing of gets/puts.
+> 
+> Splitting the work struct is condradictive to the existing approach with
+> the "fuse" reference.
+> 
+> (BTW you also wrote On Wed, Jun 01, 2022 at 05:00:44PM -0700, Tadeusz Struk<tadeusz.struk@linaro.org>  wrote:
+>> The fact the css_release() is called (via cgroup_kn_unlock()) just after
+>> kill_css() causes the css->destroy_work to be enqueued twice on the same WQ
+>> (cgroup_destroy_wq), just with different function. This results in the
+>> BUG: corrupted list in insert_work issue.
+> Where do you see a critical css_release called from cgroup_kn_unlock()?
+> I always observed the css_release() being called via
+> percpu_ref_call_confirm_rcu() (in the original and subsequent syzbot
+
+it goes like this:
+cgroup_kn_unlock(kn)->cgroup_put(cgrp)->css_put(&cgrp->self), which
+brings the refcnt to zero and triggers css_release().
+I think what's missing is something that will serialize the kill
+and release paths. I will try to put something together today.
+
 -- 
-2.25.1
-
+Thanks,
+Tadeusz
