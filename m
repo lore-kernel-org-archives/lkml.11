@@ -2,279 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86F97C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 13:36:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AB5CC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 13:36:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235478AbiFBNgU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 09:36:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51844 "EHLO
+        id S235450AbiFBNgs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 09:36:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235416AbiFBNf6 (ORCPT
+        with ESMTP id S235449AbiFBNgk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 09:35:58 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7234B70379
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 06:35:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654176956;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=CUEV8v/lejdqWktm+UQv6qh9A0AqQe8YDhCKJcagALE=;
-        b=JRb9jL/XltZ1smgTWllvVaw6nut+7fV2YPS2fMZJYyV96DPg/3vDghd22PQqOqjzTjYc1G
-        YQYzGDf2LJDzv72/+UVQpvj3ltRt3WUF51WqBc5+bDMpMHXSHg7mjDsd29QarvT7bLPooo
-        r8uPpMfwsoFpzb4A9+57C9NsvgnxXwk=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-561-mKbl9aULOgKwR7tUtkE-kw-1; Thu, 02 Jun 2022 09:35:53 -0400
-X-MC-Unique: mKbl9aULOgKwR7tUtkE-kw-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D456C101A54E;
-        Thu,  2 Jun 2022 13:35:52 +0000 (UTC)
-Received: from llong.com (unknown [10.22.32.147])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8E1362166B26;
-        Thu,  2 Jun 2022 13:35:52 +0000 (UTC)
-From:   Waiman Long <longman@redhat.com>
-To:     Tejun Heo <tj@kernel.org>, Jens Axboe <axboe@kernel.dk>
-Cc:     cgroups@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Ming Lei <ming.lei@redhat.com>,
-        Waiman Long <longman@redhat.com>
-Subject: [PATCH v5 3/3] blk-cgroup: Optimize blkcg_rstat_flush()
-Date:   Thu,  2 Jun 2022 09:35:43 -0400
-Message-Id: <20220602133543.128088-4-longman@redhat.com>
-In-Reply-To: <20220601211824.89626-1-longman@redhat.com>
-References: <20220601211824.89626-1-longman@redhat.com>
+        Thu, 2 Jun 2022 09:36:40 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82EDDA339A;
+        Thu,  2 Jun 2022 06:36:39 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id s12so4596449plp.0;
+        Thu, 02 Jun 2022 06:36:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CYqtRMhf3hiwAxmny26ATlj89B2aT7j2j31cLRb7NFo=;
+        b=N/QkVfXfuzLFS7CtYfLP5H0xPJvDYgTqu6BaHVbKtDdNTxvzCIdAorS7Q+xvvp3fOy
+         CmYZWv1SrO6QwfOzSPUyFaZewIBY7SNNA6HVW7pofMVCQG01qzn20UcL8IL1DlTvxoF5
+         TC2S4oMuPJybzNOZP5Bvju3lyoTBd56QgAMhDT8QRzVznHce6L7bRGfnoW4VqNfIic22
+         KQ28Wc2oCpqQz9Fv8huAUar1SxmJ+HeWjyY5D3fTU1oQbkC8DXwWvC1SVA0xNB9BN7Sw
+         Gi23J276to19NJWnApIQlhxwP0kffnVUfFRgFXoOL4WpWQC8CGSsZunIhy7ilGn22EiN
+         qy/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CYqtRMhf3hiwAxmny26ATlj89B2aT7j2j31cLRb7NFo=;
+        b=a0Olyl82iPlXvQ/q6egYumwV0a3YoIFf+x2Okes1DSP8hCVXfnfnvDOucbHmsPro4i
+         8ZdeBHMrTh3TGOhPQIzu1kPTe2iAChOaNtm96QDEu0JmBitP3tTIH+17yPhLYBPsOT3/
+         aacKp+LzV1Z7Rgnl6gTOecBS1ettOBP1RvmPJ0QzLUrS9Dyie1gnZE5k7WZMG3Gl8A96
+         GLSg7HT3Ptcmx3eueQD+9ydMYve/KZMR53N50RmWoXG5leGOF+CIfLxRjJ+yWWhyQqPW
+         oJ8sQvVgFvPgQ95rXZsT3AG27BxxJTLIwJlIxvVn1sB/NxrWtvWuHAsmeVYa5wDHMofb
+         lQBg==
+X-Gm-Message-State: AOAM531WeI/oL/MJxKtcWrku8ceRup7KTE/v4BhONQs7odBWMaRw+S6i
+        kU3GY/IRg2SrHTun0BeBhjfYGI/WZHRSx457d/A=
+X-Google-Smtp-Source: ABdhPJwn+N4ftxqLaaFHmqmB5fFV7zWz2efb3dQmSH5zr9NZ+eYzHHyhJ1tHgcxVwJMf2GkjXdsAsw==
+X-Received: by 2002:a17:90a:8909:b0:1e0:bba8:32c3 with SMTP id u9-20020a17090a890900b001e0bba832c3mr40564809pjn.39.1654176999074;
+        Thu, 02 Jun 2022 06:36:39 -0700 (PDT)
+Received: from localhost.localdomain ([202.120.234.246])
+        by smtp.googlemail.com with ESMTPSA id d17-20020a63d651000000b003f24d67d226sm3263566pgj.92.2022.06.02.06.36.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Jun 2022 06:36:38 -0700 (PDT)
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     linmq006@gmail.com
+Subject: [PATCH] net: ethernet: bgmac: Fix refcount leak in bcma_mdio_mii_register
+Date:   Thu,  2 Jun 2022 17:36:29 +0400
+Message-Id: <20220602133629.35528-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-type: text/plain
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For a system with many CPUs and block devices, the time to do
-blkcg_rstat_flush() from cgroup_rstat_flush() can be rather long. It
-can be especially problematic as interrupt is disabled during the flush.
-It was reported that it might take seconds to complete in some extreme
-cases leading to hard lockup messages.
+of_get_child_by_name() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-As it is likely that not all the percpu blkg_iostat_set's has been
-updated since the last flush, those stale blkg_iostat_set's don't need
-to be flushed in this case. This patch optimizes blkcg_rstat_flush()
-by keeping a lockless list of recently updated blkg_iostat_set's in a
-newly added percpu blkcg->lhead pointer.
-
-The blkg_iostat_set is added to the lockless list on the update side
-in blk_cgroup_bio_start(). It is removed from the lockless list when
-flushed in blkcg_rstat_flush(). Due to racing, it is possible that
-blk_iostat_set's in the lockless list may have no new IO stats to be
-flushed. To protect against destruction of blkg, a percpu reference is
-gotten when putting into the lockless list and put back when removed.
-
-A blkg_iostat_set can determine if it is in a lockless list by checking
-the content of its lnode.next pointer which will be non-NULL when in
-a lockless list. This requires the presence of a special llist_last
-sentinel node to be put at the end of the lockless list.
-
-When booting up an instrumented test kernel with this patch on a
-2-socket 96-thread system with cgroup v2, out of the 2051 calls to
-cgroup_rstat_flush() after bootup, 1788 of the calls were exited
-immediately because of empty lockless list. After an all-cpu kernel
-build, the ratio became 6295424/6340513. That was more than 99%.
-
-Signed-off-by: Waiman Long <longman@redhat.com>
-Acked-by: Tejun Heo <tj@kernel.org>
+Fixes: format:55954f3bfdac ("net: ethernet: bgmac: move BCMA MDIO Phy
+code into a separate file")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 ---
- block/blk-cgroup.c | 84 ++++++++++++++++++++++++++++++++++++++++++----
- block/blk-cgroup.h |  9 +++++
- 2 files changed, 87 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/broadcom/bgmac-bcma-mdio.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/block/blk-cgroup.c b/block/blk-cgroup.c
-index 9021f75fc752..8af97f3b2fc9 100644
---- a/block/blk-cgroup.c
-+++ b/block/blk-cgroup.c
-@@ -59,6 +59,56 @@ static struct workqueue_struct *blkcg_punt_bio_wq;
+diff --git a/drivers/net/ethernet/broadcom/bgmac-bcma-mdio.c b/drivers/net/ethernet/broadcom/bgmac-bcma-mdio.c
+index 086739e4f40a..9b83d5361699 100644
+--- a/drivers/net/ethernet/broadcom/bgmac-bcma-mdio.c
++++ b/drivers/net/ethernet/broadcom/bgmac-bcma-mdio.c
+@@ -234,6 +234,7 @@ struct mii_bus *bcma_mdio_mii_register(struct bgmac *bgmac)
+ 	np = of_get_child_by_name(core->dev.of_node, "mdio");
  
- #define BLKG_DESTROY_BATCH_SIZE  64
- 
-+/*
-+ * lnode.next of the last entry in a lockless list is NULL. To enable us to
-+ * use lnode.next as a boolean flag to indicate its presence in a lockless
-+ * list, we have to make it non-NULL for all. This is done by using a
-+ * sentinel node at the end of the lockless list. All the percpu lhead's
-+ * are initialized to point to that sentinel node as being empty.
-+ */
-+static struct llist_node llist_last;
-+
-+static bool blkcg_llist_empty(struct llist_head *lhead)
-+{
-+	return lhead->first == &llist_last;
-+}
-+
-+static void init_blkcg_llists(struct blkcg *blkcg)
-+{
-+	int cpu;
-+
-+	for_each_possible_cpu(cpu)
-+		per_cpu_ptr(blkcg->lhead, cpu)->first = &llist_last;
-+}
-+
-+static struct llist_node *fetch_delete_blkcg_llist(struct llist_head *lhead)
-+{
-+	return xchg(&lhead->first, &llist_last);
-+}
-+
-+static struct llist_node *fetch_delete_lnode_next(struct llist_node *lnode)
-+{
-+	struct llist_node *next = READ_ONCE(lnode->next);
-+	struct blkcg_gq *blkg = llist_entry(lnode, struct blkg_iostat_set,
-+					    lnode)->blkg;
-+
-+	WRITE_ONCE(lnode->next, NULL);
-+	percpu_ref_put(&blkg->refcnt);
-+	return next;
-+}
-+
-+/*
-+ * The retrieved blkg_iostat_set is immediately marked as not in the
-+ * lockless list by clearing its node->next pointer. It could be put
-+ * back into the list by a parallel update before the iostat's are
-+ * finally flushed including probably the new update.
-+ */
-+#define blkcg_llist_for_each_entry_safe(pos, node, nxt)			\
-+	for (; (node != &llist_last) &&					\
-+	       (pos = llist_entry(node, struct blkg_iostat_set, lnode),	\
-+		nxt = fetch_delete_lnode_next(node), true);		\
-+		node = nxt)
-+
- /**
-  * blkcg_css - find the current css
-  *
-@@ -236,8 +286,10 @@ static struct blkcg_gq *blkg_alloc(struct blkcg *blkcg, struct request_queue *q,
- 	blkg->blkcg = blkcg;
- 
- 	u64_stats_init(&blkg->iostat.sync);
--	for_each_possible_cpu(cpu)
-+	for_each_possible_cpu(cpu) {
- 		u64_stats_init(&per_cpu_ptr(blkg->iostat_cpu, cpu)->sync);
-+		per_cpu_ptr(blkg->iostat_cpu, cpu)->blkg = blkg;
-+	}
- 
- 	for (i = 0; i < BLKCG_MAX_POLS; i++) {
- 		struct blkcg_policy *pol = blkcg_policy[i];
-@@ -852,17 +904,23 @@ static void blkg_iostat_sub(struct blkg_iostat *dst, struct blkg_iostat *src)
- static void blkcg_rstat_flush(struct cgroup_subsys_state *css, int cpu)
- {
- 	struct blkcg *blkcg = css_to_blkcg(css);
--	struct blkcg_gq *blkg;
-+	struct llist_head *lhead = per_cpu_ptr(blkcg->lhead, cpu);
-+	struct llist_node *lnode, *lnext;
-+	struct blkg_iostat_set *bisc;
- 
- 	/* Root-level stats are sourced from system-wide IO stats */
- 	if (!cgroup_parent(css->cgroup))
- 		return;
- 
-+	if (blkcg_llist_empty(lhead))
-+		return;
-+
- 	rcu_read_lock();
- 
--	hlist_for_each_entry_rcu(blkg, &blkcg->blkg_list, blkcg_node) {
-+	lnode = fetch_delete_blkcg_llist(lhead);
-+	blkcg_llist_for_each_entry_safe(bisc, lnode, lnext) {
-+		struct blkcg_gq *blkg = bisc->blkg;
- 		struct blkcg_gq *parent = blkg->parent;
--		struct blkg_iostat_set *bisc = per_cpu_ptr(blkg->iostat_cpu, cpu);
- 		struct blkg_iostat cur, delta;
- 		unsigned long flags;
- 		unsigned int seq;
-@@ -1189,6 +1247,11 @@ blkcg_css_alloc(struct cgroup_subsys_state *parent_css)
- 			goto unlock;
- 	}
- 
-+	blkcg->lhead = alloc_percpu_gfp(struct llist_head, GFP_KERNEL);
-+	if (!blkcg->lhead)
-+		goto free_blkcg;
-+	init_blkcg_llists(blkcg);
-+
- 	for (i = 0; i < BLKCG_MAX_POLS ; i++) {
- 		struct blkcg_policy *pol = blkcg_policy[i];
- 		struct blkcg_policy_data *cpd;
-@@ -1229,7 +1292,8 @@ blkcg_css_alloc(struct cgroup_subsys_state *parent_css)
- 	for (i--; i >= 0; i--)
- 		if (blkcg->cpd[i])
- 			blkcg_policy[i]->cpd_free_fn(blkcg->cpd[i]);
--
-+	free_percpu(blkcg->lhead);
-+free_blkcg:
- 	if (blkcg != &blkcg_root)
- 		kfree(blkcg);
- unlock:
-@@ -1993,6 +2057,7 @@ static int blk_cgroup_io_type(struct bio *bio)
- 
- void blk_cgroup_bio_start(struct bio *bio)
- {
-+	struct blkcg *blkcg = bio->bi_blkg->blkcg;
- 	int rwd = blk_cgroup_io_type(bio), cpu;
- 	struct blkg_iostat_set *bis;
- 	unsigned long flags;
-@@ -2011,9 +2076,16 @@ void blk_cgroup_bio_start(struct bio *bio)
- 	}
- 	bis->cur.ios[rwd]++;
- 
-+	if (!READ_ONCE(bis->lnode.next)) {
-+		struct llist_head *lhead = per_cpu_ptr(blkcg->lhead, cpu);
-+
-+		llist_add(&bis->lnode, lhead);
-+		percpu_ref_get(&bis->blkg->refcnt);
-+	}
-+
- 	u64_stats_update_end_irqrestore(&bis->sync, flags);
- 	if (cgroup_subsys_on_dfl(io_cgrp_subsys))
--		cgroup_rstat_updated(bio->bi_blkg->blkcg->css.cgroup, cpu);
-+		cgroup_rstat_updated(blkcg->css.cgroup, cpu);
- 	put_cpu();
- }
- 
-diff --git a/block/blk-cgroup.h b/block/blk-cgroup.h
-index d4de0a35e066..2c36362a332e 100644
---- a/block/blk-cgroup.h
-+++ b/block/blk-cgroup.h
-@@ -18,6 +18,7 @@
- #include <linux/cgroup.h>
- #include <linux/kthread.h>
- #include <linux/blk-mq.h>
-+#include <linux/llist.h>
- 
- struct blkcg_gq;
- struct blkg_policy_data;
-@@ -43,6 +44,8 @@ struct blkg_iostat {
- 
- struct blkg_iostat_set {
- 	struct u64_stats_sync		sync;
-+	struct llist_node		lnode;
-+	struct blkcg_gq		       *blkg;
- 	struct blkg_iostat		cur;
- 	struct blkg_iostat		last;
- };
-@@ -97,6 +100,12 @@ struct blkcg {
- 	struct blkcg_policy_data	*cpd[BLKCG_MAX_POLS];
- 
- 	struct list_head		all_blkcgs_node;
-+
-+	/*
-+	 * List of updated percpu blkg_iostat_set's since the last flush.
-+	 */
-+	struct llist_head __percpu	*lhead;
-+
- #ifdef CONFIG_BLK_CGROUP_FC_APPID
- 	char                            fc_app_id[FC_APPID_LEN];
- #endif
+ 	err = of_mdiobus_register(mii_bus, np);
++	of_node_put(np);
+ 	if (err) {
+ 		dev_err(&core->dev, "Registration of mii bus failed\n");
+ 		goto err_free_bus;
 -- 
-2.31.1
+2.25.1
 
