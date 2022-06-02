@@ -2,118 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 928B0C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 08:23:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7836ECCA47C
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 08:23:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232139AbiFBIXZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 04:23:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34690 "EHLO
+        id S232153AbiFBIXi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 04:23:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232126AbiFBIXX (ORCPT
+        with ESMTP id S232146AbiFBIXf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 04:23:23 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A146C15FED
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 01:23:22 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nwg6u-0001YT-9J; Thu, 02 Jun 2022 10:23:16 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nwg6u-005zgh-Fz; Thu, 02 Jun 2022 10:23:15 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nwg6s-00DhT4-Cw; Thu, 02 Jun 2022 10:23:14 +0200
-Date:   Thu, 2 Jun 2022 10:22:50 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Eddie James <eajames@linux.ibm.com>
-Cc:     broonie@kernel.org, linux-spi@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] spi: core: Display return code when failing to
- transfer message
-Message-ID: <20220602082250.s4llxsng4fecduhc@pengutronix.de>
-References: <20220525165852.33167-1-eajames@linux.ibm.com>
- <20220525165852.33167-3-eajames@linux.ibm.com>
+        Thu, 2 Jun 2022 04:23:35 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBB5317E3E;
+        Thu,  2 Jun 2022 01:23:33 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id c14so4122154pgu.13;
+        Thu, 02 Jun 2022 01:23:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cbmNOareeTE5Db8Piv7hDPn78IPOWasDWjVRSeszEak=;
+        b=F2LlSXp3PxiU4nJ+UEfZulTenT901DxKJZUBhWrOIghbAJO7H41vsGxbtH7E6owQWK
+         zQNb3UDVLjgTRyR3z0DwxC517totfjnOMzlmsup9oVLRJ7WIcIHmVTAS06wIa0d3jzBn
+         pGeP0Hnz64qgoYJ2AGAah3DGsQXD+uEy0SyEZlkn9IU2qLQiwtVQsW+yvaR8P/V7kamU
+         PSl9zdxBEmC6RnXKuSxR823fwizfddWXsJUYVeIciFVC6gcr6ZiEvi6BrVD861SpdSCl
+         rVYObcA9UB3exWvMCpScTGJFvKdKHge8UpqidsV4EqPSuxyGlR/kwSWy/e7x5HT03n9x
+         a/BA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cbmNOareeTE5Db8Piv7hDPn78IPOWasDWjVRSeszEak=;
+        b=CiM9cgp5HC14Bbbvn85oRL23reUx+LNK9EKItSmyY8EDhpexh7NRI/Wwe4/RW/FbMV
+         4ZZxT9OrX0fX/puwOWK/7quVlaZFjcfyB3DTUR2w71hUGPDl28t+c5j5Wigz5a7xwOgE
+         qEi5uB5ucrf8icDPWjhFmEadMQcto8B0SphGfVIfCzz5NbeDF4BtJdu3VXqDrsL+Nbsc
+         Nfg+KrwxkMbFE4WWG9few/Z1F1WTDbZsDfMyqktKsV89pzQky9xYLgGv1c4pqb6t90FQ
+         V4t6RZJVkk+Z2/8XE8g7j0BD9DcEUYW9fNs8jg5L6W83rCqa8yuxtO80Vh40v+L6xs9z
+         C9SA==
+X-Gm-Message-State: AOAM532GpZ96spuGwrLaIiK431dHU9xBWe4IiEAuOYoK786xWo/gO7tX
+        POAueHJ+aIl4+3wjLQcZElXK+La3ZqUDAg==
+X-Google-Smtp-Source: ABdhPJxFm4ypSV8CsNf46zwnitNOtF7T1Y2Qz7WihywdMlvPbxJxJgebJkp9t7XcCiJigUBLFeMVdA==
+X-Received: by 2002:a05:6a00:16cd:b0:51b:5f55:9bd with SMTP id l13-20020a056a0016cd00b0051b5f5509bdmr15451936pfc.6.1654158212946;
+        Thu, 02 Jun 2022 01:23:32 -0700 (PDT)
+Received: from debian.me (subs03-180-214-233-21.three.co.id. [180.214.233.21])
+        by smtp.gmail.com with ESMTPSA id z14-20020a170903018e00b0016368840c41sm2972334plg.14.2022.06.02.01.23.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Jun 2022 01:23:32 -0700 (PDT)
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+To:     linux-doc@vger.kernel.org
+Cc:     Bagas Sanjaya <bagasdotme@gmail.com>,
+        kernel test robot <lkp@intel.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        Nikolai Kondrashov <spbnick@gmail.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        llvm@lists.linux.dev, stable@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3] HID: uclogic: properly format kernel-doc comment for hid_dbg() wrappers
+Date:   Thu,  2 Jun 2022 15:23:21 +0700
+Message-Id: <20220602082321.313143-1-bagasdotme@gmail.com>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="b6nldfoupl3pmrdy"
-Content-Disposition: inline
-In-Reply-To: <20220525165852.33167-3-eajames@linux.ibm.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Running kernel-doc script on drivers/hid/hid-uclogic-params.c, it found
+6 warnings for hid_dbg() wrapper functions below:
 
---b6nldfoupl3pmrdy
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+drivers/hid/hid-uclogic-params.c:48: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+ * Dump tablet interface pen parameters with hid_dbg(), indented with one tab.
+drivers/hid/hid-uclogic-params.c:48: warning: missing initial short description on line:
+ * Dump tablet interface pen parameters with hid_dbg(), indented with one tab.
+drivers/hid/hid-uclogic-params.c:48: info: Scanning doc for function Dump
+drivers/hid/hid-uclogic-params.c:80: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+ * Dump tablet interface frame parameters with hid_dbg(), indented with two
+drivers/hid/hid-uclogic-params.c:80: warning: missing initial short description on line:
+ * Dump tablet interface frame parameters with hid_dbg(), indented with two
+drivers/hid/hid-uclogic-params.c:80: info: Scanning doc for function Dump
+drivers/hid/hid-uclogic-params.c:105: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+ * Dump tablet interface parameters with hid_dbg().
+drivers/hid/hid-uclogic-params.c:105: warning: missing initial short description on line:
+ * Dump tablet interface parameters with hid_dbg().
 
-Hello,
+One of them is reported by kernel test robot.
 
-On Wed, May 25, 2022 at 11:58:52AM -0500, Eddie James wrote:
-> All the other calls to the controller driver display the error
-> return code. The return code is helpful to understand what went
-> wrong, so include it when failing to transfer one message.
->=20
-> Signed-off-by: Eddie James <eajames@linux.ibm.com>
-> ---
->  drivers/spi/spi.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
->=20
-> diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
-> index 481edea77c62..ea09d1b42bf6 100644
-> --- a/drivers/spi/spi.c
-> +++ b/drivers/spi/spi.c
-> @@ -1654,7 +1654,8 @@ static void __spi_pump_messages(struct spi_controll=
-er *ctlr, bool in_kthread)
->  	ret =3D ctlr->transfer_one_message(ctlr, msg);
->  	if (ret) {
->  		dev_err(&ctlr->dev,
-> -			"failed to transfer one message from queue\n");
-> +			"failed to transfer one message from queue: %d\n",
-> +			ret);
+Fix these warnings by properly format kernel-doc comment for these
+functions.
 
-(I know it's too late, just stumbled over this commit in mainline by
-chance. So maybe just a suggestion for the next similar change...)
+Link: https://lore.kernel.org/linux-doc/202205272033.XFYlYj8k-lkp@intel.com/
+Fixes: a228809fa6f39c ("HID: uclogic: Move param printing to a function")
+Reported-by: kernel test robot <lkp@intel.com>
+Tested-by: Randy Dunlap <rdunlap@infradead.org>
+Tested-by: José Expósito <jose.exposito89@gmail.com>
+Acked-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: Nikolai Kondrashov <spbnick@gmail.com>
+Cc: Jiri Kosina <jikos@kernel.org>
+Cc: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Cc: llvm@lists.linux.dev
+Cc: stable@vger.kernel.org # v5.18
+Cc: linux-input@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
+---
+ Changes since v2 [1]:
+   - Format NULL as kernel-doc constant (suggested by Randy Dunlap)
+   - Collect review tags:
+     - Tested-by and Acked-by from Randy Dunlap
+     - Tested-by from José Expósito
 
-A tad nicer would be to use %pe instead of %d that results in
+ [1]: https://lore.kernel.org/linux-doc/20220531092817.13894-1-bagasdotme@gmail.com/
+ drivers/hid/hid-uclogic-params.c | 24 ++++++++++++++----------
+ 1 file changed, 14 insertions(+), 10 deletions(-)
 
-	mydev mybus: failed to transfer one message from queue: -EIO
+diff --git a/drivers/hid/hid-uclogic-params.c b/drivers/hid/hid-uclogic-params.c
+index db838f16282d64..e5e65d849faa97 100644
+--- a/drivers/hid/hid-uclogic-params.c
++++ b/drivers/hid/hid-uclogic-params.c
+@@ -23,11 +23,11 @@
+ /**
+  * uclogic_params_pen_inrange_to_str() - Convert a pen in-range reporting type
+  *                                       to a string.
+- *
+  * @inrange:	The in-range reporting type to convert.
+  *
+- * Returns:
+- *	The string representing the type, or NULL if the type is unknown.
++ * Return:
++ * * The string representing the type, or
++ * * %NULL if the type is unknown.
+  */
+ static const char *uclogic_params_pen_inrange_to_str(
+ 				enum uclogic_params_pen_inrange inrange)
+@@ -45,10 +45,12 @@ static const char *uclogic_params_pen_inrange_to_str(
+ }
+ 
+ /**
+- * Dump tablet interface pen parameters with hid_dbg(), indented with one tab.
+- *
++ * uclogic_params_pen_hid_dbg() - Dump tablet interface pen parameters
+  * @hdev:	The HID device the pen parameters describe.
+  * @pen:	The pen parameters to dump.
++ *
++ * Dump tablet interface pen parameters with hid_dbg(). The dump is indented
++ * with a tab.
+  */
+ static void uclogic_params_pen_hid_dbg(const struct hid_device *hdev,
+ 					const struct uclogic_params_pen *pen)
+@@ -77,11 +79,12 @@ static void uclogic_params_pen_hid_dbg(const struct hid_device *hdev,
+ }
+ 
+ /**
+- * Dump tablet interface frame parameters with hid_dbg(), indented with two
+- * tabs.
+- *
++ * uclogic_params_frame_hid_dbg() - Dump tablet interface frame parameters
+  * @hdev:	The HID device the pen parameters describe.
+  * @frame:	The frame parameters to dump.
++ *
++ * Dump tablet interface frame parameters with hid_dbg(). The dump is
++ * indented with two tabs.
+  */
+ static void uclogic_params_frame_hid_dbg(
+ 				const struct hid_device *hdev,
+@@ -102,10 +105,11 @@ static void uclogic_params_frame_hid_dbg(
+ }
+ 
+ /**
+- * Dump tablet interface parameters with hid_dbg().
+- *
++ * uclogic_params_hid_dbg() - Dump tablet interface parameters
+  * @hdev:	The HID device the parameters describe.
+  * @params:	The parameters to dump.
++ *
++ * Dump tablet interface parameters with hid_dbg().
+  */
+ void uclogic_params_hid_dbg(const struct hid_device *hdev,
+ 				const struct uclogic_params *params)
 
-instead of
+base-commit: d1dc87763f406d4e67caf16dbe438a5647692395
+-- 
+An old man doll... just what I always wanted! - Clara
 
-	mydev mybus: failed to transfer one message from queue: -5
-
-and so is more descriptive. (Note you need ERR_PTR(ret) for %pe.)
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---b6nldfoupl3pmrdy
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmKYc1EACgkQwfwUeK3K
-7AlvuQf/SW2QRJEmHhltTqXdJ0dLZ3pvlWA9CtOkNfO3QuJKbG0TablgBoHJptN4
-hmxrdQeEM3ISXL2OlJ4wMf41i20G6TXVrcNGHduZ3sPP7AiiGIhG1ZbxC1aWJqo+
-H86PLgo8C5MX1WcpayJoJBMnAI5TtkMB3ubeWU4eputBkfCO3udWYZbCGagaxt4K
-4u5MoHo7I9q9TaVkVaKfeGR8k4vh4f9nrh2ZfEuIeb6CV6uBVm1LyAg7NMaWemE4
-LkIDcotB0J60DnwEH8oDnDVdimwO3U3SPEjwbqjge22A2vch5tAi6TtRsG+q5T/V
-sncY0W+KoLI3P7k94X+gGTCG/Y5dIg==
-=xFn8
------END PGP SIGNATURE-----
-
---b6nldfoupl3pmrdy--
