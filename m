@@ -2,61 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F168AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 20:02:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DC1ACCA47B
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 20:06:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239138AbiFBUCy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 16:02:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37036 "EHLO
+        id S239137AbiFBUGy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 16:06:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238383AbiFBUCb (ORCPT
+        with ESMTP id S238383AbiFBUGt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 16:02:31 -0400
-X-Greylist: delayed 64 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 02 Jun 2022 13:02:30 PDT
-Received: from smtp687out9.mel.oss-core.net (smtp687out9.mel.oss-core.net [210.50.216.236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9B651FC5
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 13:02:30 -0700 (PDT)
-X-IPAS-Result: =?us-ascii?q?A2AIbgDRFZli/7NplnpaGQEBAQEBATwBAQEBAQEBAQEBA?=
- =?us-ascii?q?QECAQEBAQEBAQEBAQEVCYFGAoE6AgEBAaQ+hxkbgiWHZ4F8CwEBASEwBAEBh?=
- =?us-ascii?q?HgBAYVRJjYHDgECBAEBAQEDAgMBAQEBAQEDAQEGAQEBAQEBBgSBHIUvRoZUI?=
- =?us-ascii?q?AcBgVYBDgEehXUBAaxugTMNdIRZFIIQBAqCc4E7AgEBAQEBiUKFX32BEIFYg?=
- =?us-ascii?q?jgBhX2DQIIuBJJGhCMEGzsDIRUYNBKBIUUsAQgGBgcKBTIGAgwYFAQCExJTH?=
- =?us-ascii?q?QISDAocDlQZDA8DEgMRAQcCCxIIFSwIAwIDCAMCAy4CAxgJBwoDHQgKChISE?=
- =?us-ascii?q?BQCBAYNHgsIAxkfLQkCBA4DQwgLCgMRBAMTGAsWCBAEBgMJLw0oCwMUDwEGA?=
- =?us-ascii?q?wYCBQUBAyADFAMFJwcDIQcLJg0NBCMdAwMFJgMCAhsHAgIDAgYXBgICcQooD?=
- =?us-ascii?q?QgECAQMEB0lEwUCBzEFBC8CHgQFBhEJAhYCBgQFAgQEFgICEggCCCcbBxY2G?=
- =?us-ascii?q?QEFDk8GCwkhHAkgEQUGFgMjcwVIDyk1OQZ8D65SkECeMwqDTgUpB4EJB55JM?=
- =?us-ascii?q?YNjAZcSEQEngVeLVJZoqBKBCQOCC3AVggiBHFAonRCBEAIGCwEBAwmPCgEB?=
-IronPort-Data: A9a23:LtxA+qIJ49jhOKGdFE+RW5clxSXFcZb7ZxGr2PjKsXjdYENShDYAm
- mBNWTiAaa6Ma2Gkcohwadnl8xgEsMXXzNNhQVYd+CA2RRqmi+KbXIjFdi8cHM8zwunrFh8PA
- xA2M4GYRCwMo/u1Si6FatANl1ElvU2zbue6Wbes1hxZH1c+En9/0Ug7wYbVv6Yx6TSHK1LV0
- T/Ni5W31G+Ng1aY5UpNtspvADs21BjDkGtwUm4WPJinj3eC/5UhN6/zEInqR5fOria4KcbhL
- wrL5OnREmo0ZH7BAPv9+lrwWhVirrI/oWFih1IOM5VOjCSuqQQW7p8yJtcBan1GjiqxkZdul
- tpTua6vHFJB0q3kwIzxUjFnMgc7H/Jp1pPtCF/i6O77I0/uKiG2hawzVAdvZdBeo7kmaY1N3
- aVwxDQlbxaNgMqzybS3W69ngcFLwMzDbNlH5y8/lmCx4fAOWa3mcZjjwsFh5xQdivtPTK/lf
- vVEdm86BPjHS1gVUrsNM7o6neG1ljz8fidepVa9u6U6+S7QwRZ33byrN8DaEuFmXu0MxBzd/
- z+euj2hX1RDa43Z0iaMtG2mnOjGkSnyXo5UErCksPd36LGO+lEu5NQtfQPTiZGEZoSWArqz9
- 2R8FvISkJUP
-IronPort-HdrOrdr: A9a23:9fYsm6P9BzN1F8BcTqKjsMiBIKoaSvp037BN7S9MoH1uHvBw+P
- rOoB1273TJYUgqOE3I8OroUJVoJ0mzyXcf2+Ms1NmZMTXbhA==
-X-IronPort-Anti-Spam-Filtered: true
-X-IronPort-AV: E=Sophos;i="5.91,272,1647262800"; 
-   d="scan'208";a="82056739"
-Received: from 122-150-105-179.sta.wbroadband.net.au (HELO WIN-J7GFDBAO51J) ([122.150.105.179])
-  by smtp687.mel.oss-core.net with ESMTP; 03 Jun 2022 06:01:23 +1000
-From:   "Martin Otamori" <info@mandy.com>
-Subject: Acknowledge this message
-To:     <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Reply-To: <okkmart68@gmail.com>
-Date:   Thu, 2 Jun 2022 13:01:20 -0700
-Message-Id: <021920220601131F0DDFDF5E-91A9E3996D@mandy.com>
+        Thu, 2 Jun 2022 16:06:49 -0400
+Received: from mail-oi1-f174.google.com (mail-oi1-f174.google.com [209.85.167.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B96BA236;
+        Thu,  2 Jun 2022 13:06:46 -0700 (PDT)
+Received: by mail-oi1-f174.google.com with SMTP id y144so2773781oia.7;
+        Thu, 02 Jun 2022 13:06:46 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=AJx8EzZFfK8sPhpdoIX1JZPKfbXDh5xv5Av3MuXsAYI=;
+        b=glBURCeIaI9wyQ9Lt0jShRRY8CpxrvuG3aAtd4KiFZions1LD0zHzhC6SlWLVJU1O9
+         sSVknPkbp9D3genIFH8l8fg7w0srrIV+YOh03M3TiyijsSLA8lp5+L7l/LdFFvMJbxW4
+         lxeqwRhRuWVE1eZDEqfOqrUGu+ElaSDcV5vlBJVxg7Q5ue3rggMPiAdZKDZ9lJQwqznk
+         QsS3y7Y/JWl6GU7iHfmuckDIIMsjOdimKG7YYaAhgcTwiPayWpWYeptxWnaTMRDFu4T7
+         pMKd0D5EJLhY8RkjX4kiFQKybroH03Mxs9j19b9YEbsOUQbYH7J982bcUpdaxE75Fr9u
+         8ukA==
+X-Gm-Message-State: AOAM531nhdWnMvGotuUCa2cHzZBfQ7S38b6jSB/5sEKNnEULs5+NIlhC
+        16AwjTMFMkJCfuP8LMJGp2spNrzx+fRnRyq6Cyk=
+X-Google-Smtp-Source: ABdhPJxjPC7wm9cBiImBF5sK+Q/d4b72Jf+ZiDnArJjtCpDt5SG1lNVnykldTXmmR91r2AudAqs9F24/vVEdIfOoT34=
+X-Received: by 2002:a05:6808:1a01:b0:32b:1f24:9213 with SMTP id
+ bk1-20020a0568081a0100b0032b1f249213mr3469092oib.92.1654200406066; Thu, 02
+ Jun 2022 13:06:46 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220601065846.456965-1-namhyung@kernel.org> <20220601065846.456965-3-namhyung@kernel.org>
+ <CAP-5=fWvS=1XrXnE_a+sif8ZKy2oc6pmo6RmZ6+fFrWoa1VM3A@mail.gmail.com>
+In-Reply-To: <CAP-5=fWvS=1XrXnE_a+sif8ZKy2oc6pmo6RmZ6+fFrWoa1VM3A@mail.gmail.com>
+From:   Namhyung Kim <namhyung@kernel.org>
+Date:   Thu, 2 Jun 2022 13:06:34 -0700
+Message-ID: <CAM9d7chthpaF9A_uZCm3uRzLe7Ho4-kuJ6J4D1evJPdMgSV9Ng@mail.gmail.com>
+Subject: Re: [PATCH 2/5] perf lock: Add lock contention tracepoints record support
+To:     Ian Rogers <irogers@google.com>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>, Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-perf-users <linux-perf-users@vger.kernel.org>,
+        Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I will give you more details as soon as you acknowledge this message.
-Thank you.
-Martin Otamori.
+Hi Ian,
 
+On Wed, Jun 1, 2022 at 11:21 PM Ian Rogers <irogers@google.com> wrote:
+>
+> On Tue, May 31, 2022 at 11:58 PM Namhyung Kim <namhyung@kernel.org> wrote:
+> >
+> > When LOCKDEP and LOCK_STAT events are not available, it falls back to
+> > record the new lock contention tracepoints.
+> >
+> > Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+> > ---
+> >  tools/perf/builtin-lock.c | 70 +++++++++++++++++++++++++++++++++++----
+> >  1 file changed, 63 insertions(+), 7 deletions(-)
+> >
+> > diff --git a/tools/perf/builtin-lock.c b/tools/perf/builtin-lock.c
+> > index 23a33ac15e68..3e3320b8cede 100644
+> > --- a/tools/perf/builtin-lock.c
+> > +++ b/tools/perf/builtin-lock.c
+> > @@ -495,6 +495,12 @@ struct trace_lock_handler {
+> >
+> >         int (*release_event)(struct evsel *evsel,
+> >                              struct perf_sample *sample);
+> > +
+> > +       int (*contention_begin_event)(struct evsel *evsel,
+> > +                                     struct perf_sample *sample);
+> > +
+> > +       int (*contention_end_event)(struct evsel *evsel,
+> > +                                   struct perf_sample *sample);
+>
+> Would it make sense to add a comment here about LOCKDEP and LOCK_STAT?
+> It could be confusing if the handler isn't called on different
+> kernels.
+
+Sure, I'll add some comments here.
+
+Thanks,
+Namhyung
