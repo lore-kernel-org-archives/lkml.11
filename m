@@ -2,222 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C686CCA478
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 11:30:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AFB6C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 11:33:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234252AbiFBLaK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 07:30:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52212 "EHLO
+        id S234259AbiFBLdl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 07:33:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232427AbiFBLaI (ORCPT
+        with ESMTP id S231533AbiFBLdg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 07:30:08 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D99C42A90C4;
-        Thu,  2 Jun 2022 04:30:03 -0700 (PDT)
-X-UUID: 03141ef6998e406b9ee57b42c2864a68-20220602
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:833e7725-c1d2-4053-9e1b-9d8a6be6f89d,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:2a19b09,CLOUDID:beefe737-9855-4915-a138-f5705f1f3d02,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
-        ,QS:0,BEC:nil
-X-UUID: 03141ef6998e406b9ee57b42c2864a68-20220602
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
-        (envelope-from <tinghan.shen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 2087878321; Thu, 02 Jun 2022 19:29:57 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 2 Jun 2022 19:29:57 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 2 Jun 2022 19:29:56 +0800
-Message-ID: <5c614dc0947aba6ce2eb0cdc3055a390da723d08.camel@mediatek.com>
-Subject: Re: [PATCH v1 01/15] dt-binding: remoteproc: mediatek: Support
- dual-core SCP
-From:   Tinghan Shen <tinghan.shen@mediatek.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Daisuke Nojiri <dnojiri@chromium.org>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        "Dustin L. Howett" <dustin@howett.net>,
-        Tzung-Bi Shih <tzungbi@kernel.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Prashant Malani <pmalani@chromium.org>,
-        "Enric Balletbo i Serra" <enric.balletbo@collabora.com>,
-        Brian Norris <briannorris@chromium.org>
-CC:     <linux-remoteproc@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <chrome-platform@lists.linux.dev>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <weishunc@google.com>
-Date:   Thu, 2 Jun 2022 19:29:56 +0800
-In-Reply-To: <45c8050e-16d3-80d6-0799-8b067a38d956@linaro.org>
-References: <20220601112201.15510-1-tinghan.shen@mediatek.com>
-         <20220601112201.15510-2-tinghan.shen@mediatek.com>
-         <dd3ea397-fa21-abe5-85ad-b8a4818dc011@linaro.org>
-         <3c837acfbefa5b7e23e1121678b5b878f08e4ef2.camel@mediatek.com>
-         <476baef8-0255-45ed-85f4-2b9d877c4af1@linaro.org>
-         <287d88a62fd13cd762b20faa3e9df826632fe1eb.camel@mediatek.com>
-         <45c8050e-16d3-80d6-0799-8b067a38d956@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Thu, 2 Jun 2022 07:33:36 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACCA124BC2;
+        Thu,  2 Jun 2022 04:33:33 -0700 (PDT)
+Received: from dggpeml500020.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LDP2S5kt8zRhXB;
+        Thu,  2 Jun 2022 19:30:24 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by dggpeml500020.china.huawei.com
+ (7.185.36.88) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 2 Jun
+ 2022 19:33:31 +0800
+From:   Baokun Li <libaokun1@huawei.com>
+To:     <linux-ext4@vger.kernel.org>
+CC:     <tytso@mit.edu>, <adilger.kernel@dilger.ca>, <jack@suse.cz>,
+        <ritesh.list@gmail.com>, <lczerner@redhat.com>,
+        <linux-kernel@vger.kernel.org>, <yi.zhang@huawei.com>,
+        <yebin10@huawei.com>, <yukuai3@huawei.com>, <libaokun1@huawei.com>,
+        Hulk Robot <hulkci@huawei.com>
+Subject: [PATCH] ext4: fix use-after-free in ext4_xattr_set_entry
+Date:   Thu, 2 Jun 2022 19:46:51 +0800
+Message-ID: <20220602114651.3244889-1-libaokun1@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpeml500020.china.huawei.com (7.185.36.88)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Krzysztof,
+Hulk Robot reported a issue:
+==================================================================
+BUG: KASAN: use-after-free in ext4_xattr_set_entry+0x18ab/0x3500
+Write of size 4105 at addr ffff8881675ef5f4 by task syz-executor.0/7092
 
-On Thu, 2022-06-02 at 12:37 +0200, Krzysztof Kozlowski wrote:
-> On 02/06/2022 10:58, Tinghan Shen wrote:
-> > Hi Krzysztof,
-> > 
-> > On Thu, 2022-06-02 at 08:55 +0200, Krzysztof Kozlowski wrote:
-> > > On 02/06/2022 07:21, Tinghan Shen wrote:
-> > > > Hi Krzysztof,
-> > > > 
-> > > > On Wed, 2022-06-01 at 13:50 +0200, Krzysztof Kozlowski wrote:
-> > > > > On 01/06/2022 13:21, Tinghan Shen wrote:
-> > > > > > The SCP co-processor is a dual-core RISC-V MCU on MT8195.
-> > > > > > 
-> > > > > > Add a new property to identify each core and helps to find drivers
-> > > > > > through device tree API to cooperate with each other, e.g. boot flow and
-> > > > > > watchdog timeout flow.
-> > > > > > 
-> > > > > > Add a new compatile for the driver of SCP 2nd core.
-> > > > > > 
-> > > > > > Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
-> > > > > > ---
-> > > > > >  .../devicetree/bindings/remoteproc/mtk,scp.yaml      | 12 ++++++++++++
-> > > > > >  1 file changed, 12 insertions(+)
-> > > > > > 
-> > > > > > diff --git a/Documentation/devicetree/bindings/remoteproc/mtk,scp.yaml
-> > > > > > b/Documentation/devicetree/bindings/remoteproc/mtk,scp.yaml
-> > > > > > index eec3b9c4c713..b181786d9575 100644
-> > > > > > --- a/Documentation/devicetree/bindings/remoteproc/mtk,scp.yaml
-> > > > > > +++ b/Documentation/devicetree/bindings/remoteproc/mtk,scp.yaml
-> > > > > > @@ -20,6 +20,7 @@ properties:
-> > > > > >        - mediatek,mt8186-scp
-> > > > > >        - mediatek,mt8192-scp
-> > > > > >        - mediatek,mt8195-scp
-> > > > > > +      - mediatek,mt8195-scp-dual
-> > > > > >  
-> > > > > >    reg:
-> > > > > >      description:
-> > > > > > @@ -57,6 +58,16 @@ properties:
-> > > > > >    memory-region:
-> > > > > >      maxItems: 1
-> > > > > >  
-> > > > > > +  mediatek,scp-core:
-> > > > > > +    $ref: /schemas/types.yaml#/definitions/uint32-array
-> > > > > > +    description:
-> > > > > > +      The property value is a list with 2 items, a core id and a phandle
-> > > > > 
-> > > > > uint32, not phandle.
-> > > > > 
-> > > > > > +      to the sibling SCP node. 
-> > > > > 
-> > > > > Skip this. First part is obvious from the schema, second part should be
-> > > > > described via items.
-> > > > > 
-> > > > > The core id represents the id of the dts node contains
-> > > > > > +      this property. The valid values of core id are 0 and 1 for dual-core SCP.
-> > > > > > +      The phandle of sibling SCP node is used to find the register settings,
-> > > > > > +      trigger core dependent callback, and invoke rproc API.
-> > > > > 
-> > > > > Entire description did not help me to understand what's this. So far it
-> > > > > looks like it is not a hardware property but some programming help, so
-> > > > > it does not look like properly described in bindings.
-> > > > > 
-> > > > > > +    maxItems: 1
-> > > > > 
-> > > > > In description you said - two items.
-> > > > > 
-> > > > > You need allOf:if:then disallowing this property for other variants.
-> > > > > 
-> > > > > > +
-> > > > > >  required:
-> > > > > >    - compatible
-> > > > > >    - reg
-> > > > > > @@ -115,6 +126,7 @@ examples:
-> > > > > >          reg-names = "sram", "cfg", "l1tcm";
-> > > > > >          clocks = <&infracfg CLK_INFRA_SCPSYS>;
-> > > > > >          clock-names = "main";
-> > > > > > +        mediatek,scp-core = <0 &scp_dual>;
-> > > > > 
-> > > > > This looks like phandle, so wrong type.
-> > > > > >  
-> > > > > >          cros_ec {
-> > > > > >              mediatek,rpmsg-name = "cros-ec-rpmsg";
-> > > > 
-> > > > Thanks for your feedback.
-> > > > After looking for a comparable uses case, I find out a different approach.
-> > > > 
-> > > >   mediatek,scp-core:
-> > > >     $ref: "/schemas/types.yaml#/definitions/phandle-array"
-> > > >     description:
-> > > >       Enable the dual-core support in scp driver.
-> > > 
-> > > You describe desired functional behavior, not the hardware. What is the
-> > > property about? If you just want to indicate this is two-core processor,
-> > > then it could be:
-> > > 	mediatek,cores = <2>; /* number of cores */
-> > > 
-> > > 
-> > > However it seems you want to achieve here something different and as I
-> > > raised last time - it does not look like DT property.
-> > > 
-> > > Or maybe this is for first core and you want to indicate the sibling?
-> > > Something like that was mentioned in previous description.
-> > 
-> > This property is mainly added for scp 1st core driver 
-> > and scp 2nd core driver to find each other via DT API.
-> > 
-> > After reconsidering the use of core id in the scp driver, it 
-> > is not necessary in the control flow. I'll remove the core id 
-> > at next version.
-> > 
-> > How about change the description as following,
-> > 
-> >   This property enables the dual-core support in scp driver.
-> >   By providing the phandle of SCP 2nd core node, the 1st SCP node
-> >   can control the SCP 2nd core as the subdevice of remoteproc framework.
-> 
-> Please, read it again:
-> 
-> > > You describe desired functional behavior, not the hardware.
-> 
-> Again, you describe Linux implementation (scp driver, remoteproc
-> framework). You need to describe the hardware, not Linux drivers.
-> 
-> Maybe the hardware property is that one core has its sibling and you
-> provide here that sibling?
+CPU: 1 PID: 7092 Comm: syz-executor.0 Not tainted 4.19.90-dirty #17
+Call Trace:
+[...]
+ memcpy+0x34/0x50 mm/kasan/kasan.c:303
+ ext4_xattr_set_entry+0x18ab/0x3500 fs/ext4/xattr.c:1747
+ ext4_xattr_ibody_inline_set+0x86/0x2a0 fs/ext4/xattr.c:2205
+ ext4_xattr_set_handle+0x940/0x1300 fs/ext4/xattr.c:2386
+ ext4_xattr_set+0x1da/0x300 fs/ext4/xattr.c:2498
+ __vfs_setxattr+0x112/0x170 fs/xattr.c:149
+ __vfs_setxattr_noperm+0x11b/0x2a0 fs/xattr.c:180
+ __vfs_setxattr_locked+0x17b/0x250 fs/xattr.c:238
+ vfs_setxattr+0xed/0x270 fs/xattr.c:255
+ setxattr+0x235/0x330 fs/xattr.c:520
+ path_setxattr+0x176/0x190 fs/xattr.c:539
+ __do_sys_lsetxattr fs/xattr.c:561 [inline]
+ __se_sys_lsetxattr fs/xattr.c:557 [inline]
+ __x64_sys_lsetxattr+0xc2/0x160 fs/xattr.c:557
+ do_syscall_64+0xdf/0x530 arch/x86/entry/common.c:298
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x459fe9
+RSP: 002b:00007fa5e54b4c08 EFLAGS: 00000246 ORIG_RAX: 00000000000000bd
+RAX: ffffffffffffffda RBX: 000000000051bf60 RCX: 0000000000459fe9
+RDX: 00000000200003c0 RSI: 0000000020000180 RDI: 0000000020000140
+RBP: 000000000051bf60 R08: 0000000000000001 R09: 0000000000000000
+R10: 0000000000001009 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007ffc73c93fc0 R14: 000000000051bf60 R15: 00007fa5e54b4d80
+[...]
+==================================================================
 
-Yes, exactly. I'm sorry for misreading your argument.
+Above issue may happen as follows:
+-------------------------------------
+ext4_xattr_set
+  ext4_xattr_set_handle
+    ext4_xattr_ibody_find
+      >> s->end < s->base
+      >> no EXT4_STATE_XATTR
+      >> xattr_check_inode is not executed
+    ext4_xattr_ibody_set
+      ext4_xattr_set_entry
+       >> size_t min_offs = s->end - s->base
+       >> UAF in memcpy
 
-How about this one,
-   
-  Reference to the sibling SCP core. This is required when 
-  dual-core SCP support is enabled.
+we can easily reproduce this problem with the following commands:
+    mkfs.ext4 -F /dev/sda
+    mount -o debug_want_extra_isize=128 /dev/sda /mnt
+    touch /mnt/file
+    setfattr -n user.cat -v `seq -s z 4096|tr -d '[:digit:]'` /mnt/file
 
-Thanks,
-TingHan
+In ext4_xattr_ibody_find, we have the following assignment logic:
+  header = IHDR(inode, raw_inode)
+         = raw_inode + EXT4_GOOD_OLD_INODE_SIZE + i_extra_isize
+  is->s.base = IFIRST(header)
+             = header + sizeof(struct ext4_xattr_ibody_header)
+  is->s.end = raw_inode + s_inode_size
 
+Obviously, when the inode does not have EXT4_status_XATTR and its
+i_extra_isize is large, is->s.end may be larger than is->s.base.
+In this case, the above issue may be triggered.
 
+   EXT4_GOOD_OLD_INODE_SIZE  extra_isize  header   entry   pad   data
+|---------------------------|------------|------|---------|---|--------|
 
+As shown above, when adding an xattr to an inode, we must ensure that the
+inode_size is not less than EXT4_GOOD_OLD_INODE_SIZE + extra_isize + pad.
 
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
+---
+ fs/ext4/inline.c | 3 +++
+ fs/ext4/inode.c  | 3 +--
+ fs/ext4/xattr.c  | 6 ++++--
+ fs/ext4/xattr.h  | 6 ++++++
+ 4 files changed, 14 insertions(+), 4 deletions(-)
+
+diff --git a/fs/ext4/inline.c b/fs/ext4/inline.c
+index cff52ff6549d..b8cec7cb4b08 100644
+--- a/fs/ext4/inline.c
++++ b/fs/ext4/inline.c
+@@ -35,6 +35,9 @@ static int get_max_inline_xattr_value_size(struct inode *inode,
+ 	struct ext4_inode *raw_inode;
+ 	int free, min_offs;
+ 
++	if (!INODE_HAVE_XATTR_SPACE(inode))
++		return 0;
++
+ 	min_offs = EXT4_SB(inode->i_sb)->s_inode_size -
+ 			EXT4_GOOD_OLD_INODE_SIZE -
+ 			EXT4_I(inode)->i_extra_isize -
+diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
+index 3dce7d058985..714fa61d0afb 100644
+--- a/fs/ext4/inode.c
++++ b/fs/ext4/inode.c
+@@ -4685,8 +4685,7 @@ static inline int ext4_iget_extra_inode(struct inode *inode,
+ 	__le32 *magic = (void *)raw_inode +
+ 			EXT4_GOOD_OLD_INODE_SIZE + ei->i_extra_isize;
+ 
+-	if (EXT4_GOOD_OLD_INODE_SIZE + ei->i_extra_isize + sizeof(__le32) <=
+-	    EXT4_INODE_SIZE(inode->i_sb) &&
++	if (INODE_HAVE_XATTR_SPACE(inode) &&
+ 	    *magic == cpu_to_le32(EXT4_XATTR_MAGIC)) {
+ 		ext4_set_inode_state(inode, EXT4_STATE_XATTR);
+ 		return ext4_find_inline_data_nolock(inode);
+diff --git a/fs/ext4/xattr.c b/fs/ext4/xattr.c
+index 042325349098..4a63f8386910 100644
+--- a/fs/ext4/xattr.c
++++ b/fs/ext4/xattr.c
+@@ -2176,8 +2176,9 @@ int ext4_xattr_ibody_find(struct inode *inode, struct ext4_xattr_info *i,
+ 	struct ext4_inode *raw_inode;
+ 	int error;
+ 
+-	if (EXT4_I(inode)->i_extra_isize == 0)
++	if (!INODE_HAVE_XATTR_SPACE(inode))
+ 		return 0;
++
+ 	raw_inode = ext4_raw_inode(&is->iloc);
+ 	header = IHDR(inode, raw_inode);
+ 	is->s.base = is->s.first = IFIRST(header);
+@@ -2205,8 +2206,9 @@ int ext4_xattr_ibody_set(handle_t *handle, struct inode *inode,
+ 	struct ext4_xattr_search *s = &is->s;
+ 	int error;
+ 
+-	if (EXT4_I(inode)->i_extra_isize == 0)
++	if (!INODE_HAVE_XATTR_SPACE(inode))
+ 		return -ENOSPC;
++
+ 	error = ext4_xattr_set_entry(i, s, handle, inode, false /* is_block */);
+ 	if (error)
+ 		return error;
+diff --git a/fs/ext4/xattr.h b/fs/ext4/xattr.h
+index 77efb9a627ad..f2b299b347f9 100644
+--- a/fs/ext4/xattr.h
++++ b/fs/ext4/xattr.h
+@@ -95,6 +95,12 @@ struct ext4_xattr_entry {
+ 
+ #define EXT4_ZERO_XATTR_VALUE ((void *)-1)
+ 
++#define INODE_HAVE_XATTR_SPACE(inode)					\
++	((EXT4_I(inode)->i_extra_isize != 0) &&				\
++	 (EXT4_GOOD_OLD_INODE_SIZE + EXT4_I(inode)->i_extra_isize +	\
++	  sizeof(struct ext4_xattr_ibody_header) + EXT4_XATTR_PAD <=	\
++	  EXT4_INODE_SIZE((inode)->i_sb)))
++
+ struct ext4_xattr_info {
+ 	const char *name;
+ 	const void *value;
+-- 
+2.31.1
 
