@@ -2,128 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1F8CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 14:28:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23A42C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 14:28:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235857AbiFBO2c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 10:28:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57572 "EHLO
+        id S235917AbiFBO2h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 10:28:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235905AbiFBO2T (ORCPT
+        with ESMTP id S235920AbiFBO2V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 10:28:19 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E488140846
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 07:28:18 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id l20-20020a17090a409400b001dd2a9d555bso5017015pjg.0
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 07:28:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:content-language:to:cc
-         :references:from:subject:in-reply-to:content-transfer-encoding;
-        bh=L4Gxk4Bv5TfkgMZFmRZVdKI/nfnxSbVJuJD+KEhCTwA=;
-        b=vznR9E/huPyrIZXpXnkqdLBfuApJkQscKlKcZknXDqfZ/UzpBujU19WWiJ4F6oTRe2
-         lR7uP5EHAzxXwKjHa6B5RqiR9qnOaBkPs/hQSA9fnvdrxoQ3mFlfPq0VrvKG3gS6OE8R
-         plY2qTLcDyWkxvE1BNieB15nFdOsnxMIE+Z3bRp/rMWZr/XzOq6qPJcP4JcL5r7v8+Rb
-         AuEZVAjpLmZiBKWgqlash0NfkGGjUBMR+u0O48hccdnAFA9NmfkAD3b9WxtR17/cgOAz
-         DCZGvSeh7xnKG8Wnji3N5tPQM53K3hXQH89J3bXgB0U78Q5roB6xZZQCZ+Ql/XFJLHXu
-         pSWw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:subject:in-reply-to
-         :content-transfer-encoding;
-        bh=L4Gxk4Bv5TfkgMZFmRZVdKI/nfnxSbVJuJD+KEhCTwA=;
-        b=KKy6MFM2qiuEONNwMe9pSyihl+YN7/+s9zE4Zg73LLH+/PbqIXHjfk7zpBitqdZ7g7
-         GR5CxF1wfPzhoIBUWnBOse5Gb+dVFkbW2FDU3OMeqWsTdLz72uAPqWewLKy3evWlJrTZ
-         LcZgALUJyN3w9xQdhInhQlzftFsHm2VSXa9l+1/0UnxNGXeG4udkvPWWIwdIzoxMZ8kk
-         +qi8uHDjyZY/dH3WQUYB/YsplU1e5nU2RLxhH/CODJ3Hqrxss0wEg5o9VbTRhHrsBXAF
-         WSrDLJyUbvZG+HNURqkYJjQxzf9dojEqW541vm0d4kat/fXWF003cCMZfsPYHExxHfrX
-         tSdQ==
-X-Gm-Message-State: AOAM532YBD9Fn3Id5JigZxFuA4oa5raBDxjuXX5K0MWfKH3hlGqKW2Z2
-        NuTNzcPxJ9ACPXnb2zNu5pChLg==
-X-Google-Smtp-Source: ABdhPJznhWKPETXcZJrKMM+bn5m7VYTIN0w3D9vJ7qTBPI6tQ12pVtLVSqQrS4E7he1I2F8wZslmWQ==
-X-Received: by 2002:a17:902:8f81:b0:161:f4a7:f2fc with SMTP id z1-20020a1709028f8100b00161f4a7f2fcmr5196569plo.117.1654180097855;
-        Thu, 02 Jun 2022 07:28:17 -0700 (PDT)
-Received: from [192.168.254.36] ([50.39.160.154])
-        by smtp.gmail.com with ESMTPSA id d13-20020a170903230d00b0015ed003552fsm3564512plh.293.2022.06.02.07.28.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 02 Jun 2022 07:28:17 -0700 (PDT)
-Message-ID: <1e4fe5c8-4bac-087b-ae32-6fa2fa5b44f6@linaro.org>
-Date:   Thu, 2 Jun 2022 07:28:11 -0700
+        Thu, 2 Jun 2022 10:28:21 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2055.outbound.protection.outlook.com [40.107.223.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAC1914384A;
+        Thu,  2 Jun 2022 07:28:19 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=FZTgb7axA73cOy+tg9NTNFt7/MtLfwqVneRkjpzwslK1KH417eSILvywvfjaVR+DhE0fEA7xNHVxF5ZdtcTp0M3ZJukFx4GJrF6zmcjNFt27ojQUznmot/BO8DN2vHVtpePg1Ix5JtCZUUG84ff0/bubh7h3zbnXpO9HqfVMoU/oAQOyLpVXB2vCnCXXCFaUBDvCQghjcr0n/xDJILTShZgBazDYDuAbALOS2aHQEhWq0p/tZ6G8ijTETsMBodklsnpOncPWy4IW4lt3pRJa9VLfnna7KMh+rjn7lg95ay0umUbKcUmlDOQ//iLvRmyL4HBqeL5/huLNZVa/r0cNfw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=GyEVcaBruJ4JWrm47fj0kT7aSHHgsOLC3gTRPDHESB4=;
+ b=bHrS39CYasqfCXIWj3WzrLBk6liHpsCACDd3SKO+jW/Ktt0vKYFI5/qvBdsdqFBLH3UmeWR3Swi0D2eHbnNFj4+F6Afl+8QadqMvs2lDypPsKYY5E1wLj85zQj73GzTlJSTsbl07QdvUFRyaUxnxgwLCCxVwviCSPKqLIWYPbr3wiRq78F5v2hlQK3G3VIBQ5rga5G7gQGMqzH88IjSP37YNsq2iHXJ+CKRzAfl9xAEOI10y5FFPsY02DAeUVQ7xOSzW/ssjKIf+SICWG/wTx7hrySQ/f0nnMMpMUamCzNTzqQs5B4UIOhXuwglTvL9wcG1CuUcS86yG2oSRJexJHg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=redhat.com smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GyEVcaBruJ4JWrm47fj0kT7aSHHgsOLC3gTRPDHESB4=;
+ b=qtFvEsyJFPu/j56Ij+oJewhdpsf9xHp/m70u8Wo5MTkakroXGlV8I0erOyOykYqmvAlwwH0byLzLm7cWIBTGCCZ7ETVUvImsYzL/xGbQyrSZHq3H87LsTHdhcwVl15p+CaiWXDRT60aJ2B66OPHAv9EnMv2tJXxiz4JU9bCd8jk=
+Received: from BN9P221CA0027.NAMP221.PROD.OUTLOOK.COM (2603:10b6:408:10a::21)
+ by CY4PR12MB1848.namprd12.prod.outlook.com (2603:10b6:903:11d::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.17; Thu, 2 Jun
+ 2022 14:28:18 +0000
+Received: from BN8NAM11FT029.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:10a:cafe::2d) by BN9P221CA0027.outlook.office365.com
+ (2603:10b6:408:10a::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.13 via Frontend
+ Transport; Thu, 2 Jun 2022 14:28:17 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ BN8NAM11FT029.mail.protection.outlook.com (10.13.177.68) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5314.12 via Frontend Transport; Thu, 2 Jun 2022 14:28:17 +0000
+Received: from BLR-5CG113396M.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 2 Jun
+ 2022 09:28:14 -0500
+From:   Santosh Shukla <santosh.shukla@amd.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+CC:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Tom Lendacky <thomas.lendacky@amd.com>, <kvm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <Santosh.Shukla@amd.com>
+Subject: [PATCH 6/7] KVM: nSVM: implement nested VNMI
+Date:   Thu, 2 Jun 2022 19:56:19 +0530
+Message-ID: <20220602142620.3196-7-santosh.shukla@amd.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220602142620.3196-1-santosh.shukla@amd.com>
+References: <20220602142620.3196-1-santosh.shukla@amd.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Content-Language: en-US
-To:     =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>
-Cc:     Tejun Heo <tj@kernel.org>, cgroups@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Bui Quang Minh <minhquangbui99@gmail.com>
-References: <Yo/DtjEU/kYr190u@slm.duckdns.org>
- <0babd7df-bdef-9edc-3682-1144bc0c2d2b@linaro.org>
- <Ypf0VnKUMiuRgZqT@slm.duckdns.org>
- <1fb4d8d7-ccc0-b020-715e-38c2dfd94c23@linaro.org>
- <Ypf5jpI7dSmpi4W0@slm.duckdns.org>
- <c3bd8e63-7204-f86d-8efa-254db71185fc@linaro.org>
- <Ypf/MpwzByOrSp6A@slm.duckdns.org>
- <416dc60a-f0e5-7d05-1613-3cd0ca415768@linaro.org>
- <YpgEY/lJbLidLOhc@slm.duckdns.org>
- <0fd1c3fd-fa86-dbed-f3f0-74c91b1efa11@linaro.org>
- <20220602114705.GB21320@blackbody.suse.cz>
-From:   Tadeusz Struk <tadeusz.struk@linaro.org>
-Subject: Re: [PATCH 2/2] cgroup: Use separate work structs on css release path
-In-Reply-To: <20220602114705.GB21320@blackbody.suse.cz>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 286acfcb-1ea2-4682-dd9a-08da44a422f9
+X-MS-TrafficTypeDiagnostic: CY4PR12MB1848:EE_
+X-Microsoft-Antispam-PRVS: <CY4PR12MB1848652030F5A7EBD1288DB387DE9@CY4PR12MB1848.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: s3OuF0q8rpvdu09ZJ/5KThFz08dwyCZEjE9axfp9zsMKqdMVfYk5NqTLL4+nWcQZAd8vYdfBgJ4EfiXnyY2X99bnaL+O4DqE5mwi+4BhcuZfRX3zXioLHGG7nBK0FKbzqsMshNQTxT/h9mnbP782TMzYuUqOk8tk2Q0aqS4CbxYn6g7dKnFR2hZxGwaHc9XOEu29cLMkwYKLQIUCtaEWyEebrro3RSUZM0rEsFnxOLTnVjDxsY1Nj/3gLibML6rzCwr1DkYIWZQy6TrDo6JRrR31b7cMPOH5ewIGHqRLZsxH4Qae96KP1LnRjOY1mTP+4iMSXUa5KFTy//P3u3HHhgj3yKEE/YbtmMNaZ2C/MCUJnUuND69O8WPvwhyNIqAisQB1vliizKTk54SEPGdpJXRAwt4T+0y2e0sXo9poMYlGG1iqNVcstw96Kjx4HS21ndntFUoViwoAoR+mHUYE5/RjzX0jmF/wafckmAJ1Ltv7iX8/8TCmA36bIHT6Tfy3m8vOLJNnm4Zr0PXgq432774d1pFn6Q+VywpIMEAZyiXaoGSEbr6khm380/G/c3diVQNoNcwopHJuquXQaL67Ms3NSqqp3YzxsNalkWtZmzQRb3jlVhzYeV4OGoUPCKJofitgib9rOPM5XslEUCfJFjCWymQ8Do1pAbNKc2+b6kTDEZQQliRLC6a2Ls9RQ2RNAozOte87EO5yAbwSuQI5Aw==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(36860700001)(316002)(70586007)(26005)(44832011)(1076003)(4326008)(70206006)(508600001)(82310400005)(36756003)(8676002)(5660300002)(54906003)(8936002)(86362001)(6916009)(81166007)(2616005)(2906002)(16526019)(186003)(356005)(7696005)(336012)(426003)(47076005)(40460700003)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2022 14:28:17.7847
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 286acfcb-1ea2-4682-dd9a-08da44a422f9
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT029.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1848
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/2/22 04:47, Michal Koutný wrote:
-> On Wed, Jun 01, 2022 at 05:40:51PM -0700, Tadeusz Struk<tadeusz.struk@linaro.org>  wrote:
->> css_killed_ref_fn() will be called regardless of the value of refcnt (via percpu_ref_kill_and_confirm())
->> and it will only enqueue the css_killed_work_fn() to be called later.
->> Then css_put()->css_release() will be called before the css_killed_work_fn() will even
->> get a chance to run, and it will also*only*  enqueue css_release_work_fn() to be called later.
->> The problem happens on the second enqueue. So there need to be something in place that
->> will make sure that css_killed_work_fn() is done before css_release() can enqueue
->> the second job.
-> IIUC, here you describe the same scenario I broke down at [1].
+Currently nested_vmcb02_prepare_control func checks and programs bits
+(V_TPR,_INTR, _IRQ) in nested mode, To support nested VNMI,
+extending the check for VNMI bits if VNMI is enabled.
 
-Right, except the last css_put(), which I think is called from cgroup_kn_unlock()
-See below.
+Tested with the KVM-unit-test that is developed for this purpose.
 
->> Does it sound right?
-> I added a parameter A there (that is sum of base and percpu references
-> before kill_css()).
-> I thought it fails because A == 1 (i.e. killing the base reference),
-> however, that seems an unlikely situation (because cgroup code uses a
-> "fuse" reference to pin css for offline_css()).
-> 
-> So the remaining option (at least I find it more likely now) is that
-> A == 0 (A < 0 would trigger the warning in
-> percpu_ref_switch_to_atomic_rcu()), aka the ref imbalance. I hope we can
-> get to the bottom of this with detailed enough tracing of gets/puts.
-> 
-> Splitting the work struct is condradictive to the existing approach with
-> the "fuse" reference.
-> 
-> (BTW you also wrote On Wed, Jun 01, 2022 at 05:00:44PM -0700, Tadeusz Struk<tadeusz.struk@linaro.org>  wrote:
->> The fact the css_release() is called (via cgroup_kn_unlock()) just after
->> kill_css() causes the css->destroy_work to be enqueued twice on the same WQ
->> (cgroup_destroy_wq), just with different function. This results in the
->> BUG: corrupted list in insert_work issue.
-> Where do you see a critical css_release called from cgroup_kn_unlock()?
-> I always observed the css_release() being called via
-> percpu_ref_call_confirm_rcu() (in the original and subsequent syzbot
+Signed-off-by: Santosh Shukla <santosh.shukla@amd.com>
+---
+ arch/x86/kvm/svm/nested.c | 8 ++++++++
+ arch/x86/kvm/svm/svm.c    | 5 +++++
+ arch/x86/kvm/svm/svm.h    | 1 +
+ 3 files changed, 14 insertions(+)
 
-it goes like this:
-cgroup_kn_unlock(kn)->cgroup_put(cgrp)->css_put(&cgrp->self), which
-brings the refcnt to zero and triggers css_release().
-I think what's missing is something that will serialize the kill
-and release paths. I will try to put something together today.
-
+diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
+index bed5e1692cef..ce83739bae50 100644
+--- a/arch/x86/kvm/svm/nested.c
++++ b/arch/x86/kvm/svm/nested.c
+@@ -608,6 +608,11 @@ static void nested_vmcb02_prepare_save(struct vcpu_svm *svm, struct vmcb *vmcb12
+ 	}
+ }
+ 
++static inline bool nested_vnmi_enabled(struct vcpu_svm *svm)
++{
++	return svm->vnmi_enabled && (svm->nested.ctl.int_ctl & V_NMI_ENABLE);
++}
++
+ static void nested_vmcb02_prepare_control(struct vcpu_svm *svm)
+ {
+ 	u32 int_ctl_vmcb01_bits = V_INTR_MASKING_MASK;
+@@ -627,6 +632,9 @@ static void nested_vmcb02_prepare_control(struct vcpu_svm *svm)
+ 	else
+ 		int_ctl_vmcb01_bits |= (V_GIF_MASK | V_GIF_ENABLE_MASK);
+ 
++	if (nested_vnmi_enabled(svm))
++		int_ctl_vmcb12_bits |= (V_NMI_PENDING | V_NMI_ENABLE);
++
+ 	/* Copied from vmcb01.  msrpm_base can be overwritten later.  */
+ 	vmcb02->control.nested_ctl = vmcb01->control.nested_ctl;
+ 	vmcb02->control.iopm_base_pa = vmcb01->control.iopm_base_pa;
+diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+index 200f979169e0..c91af728420b 100644
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -4075,6 +4075,8 @@ static void svm_vcpu_after_set_cpuid(struct kvm_vcpu *vcpu)
+ 
+ 	svm->vgif_enabled = vgif && guest_cpuid_has(vcpu, X86_FEATURE_VGIF);
+ 
++	svm->vnmi_enabled = vnmi && guest_cpuid_has(vcpu, X86_FEATURE_V_NMI);
++
+ 	svm_recalc_instruction_intercepts(vcpu, svm);
+ 
+ 	/* For sev guests, the memory encryption bit is not reserved in CR3.  */
+@@ -4831,6 +4833,9 @@ static __init void svm_set_cpu_caps(void)
+ 		if (vgif)
+ 			kvm_cpu_cap_set(X86_FEATURE_VGIF);
+ 
++		if (vnmi)
++			kvm_cpu_cap_set(X86_FEATURE_V_NMI);
++
+ 		/* Nested VM can receive #VMEXIT instead of triggering #GP */
+ 		kvm_cpu_cap_set(X86_FEATURE_SVME_ADDR_CHK);
+ 	}
+diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
+index 21c5460e947a..f926c77bf857 100644
+--- a/arch/x86/kvm/svm/svm.h
++++ b/arch/x86/kvm/svm/svm.h
+@@ -240,6 +240,7 @@ struct vcpu_svm {
+ 	bool pause_filter_enabled         : 1;
+ 	bool pause_threshold_enabled      : 1;
+ 	bool vgif_enabled                 : 1;
++	bool vnmi_enabled                 : 1;
+ 
+ 	u32 ldr_reg;
+ 	u32 dfr_reg;
 -- 
-Thanks,
-Tadeusz
+2.25.1
+
