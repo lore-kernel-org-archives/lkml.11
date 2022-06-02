@@ -2,110 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EBD9C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 07:40:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5DAFC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 07:47:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231889AbiFBHkc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 03:40:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60250 "EHLO
+        id S231852AbiFBHrn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 03:47:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231876AbiFBHkY (ORCPT
+        with ESMTP id S230448AbiFBHrm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 03:40:24 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB754D9F
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 00:40:20 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id f21so8275384ejh.11
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 00:40:20 -0700 (PDT)
+        Thu, 2 Jun 2022 03:47:42 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F07C21C2047
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 00:47:40 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id s24so5317370wrb.10
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 00:47:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=HFO/87aGbgtk33I/L3fMAte270UwuSA7why2H6PNvOA=;
-        b=mN+9jqmfWnKT/Fy45KzmqTXK61LpYwelBn53fMaaCN3lzzj6Wk1I4DwXrQcGQv7Om0
-         ZW/yKEF02ARPnGCLi0JYn6G8+2Euzm7zo937S/x3Kgdw7mFKrMWdzzDkUE39OmVwdAyl
-         jdxTGxalpwlo6x4nn9ZTVZnMMa0IpX40CBniWDnDJOm19W39m8EKqnw34gSjpMgWghAP
-         +js28jW5WuMytQUUDrU2MCk1Q9su+9FAjejSbzfhKgITz/KdTDmLhWmgJtAJN4id/IAu
-         VN6OjcyLJX3mTS6A3VZosYlgLj+Yy/ahQAmK2C+U+BBo0ArlPkSvc7gpdSBpjiKL0uJv
-         GhvA==
+        bh=9kdMgzSp/zK4XvFrabmbmRZg12uCf3858qxXGwAU0cU=;
+        b=PFNJNTA87IOCDhrW3/l/NwQNA6jwdVkbiAXLWvLuNEY60NW8N0PZkJCexuXZVNw0q8
+         +3mivkQPgmEh/KWakNv2h2WvK+XnOYVeB1WNERgA5D1mfStggP4jQ1Anc4+DVBA9b9TO
+         0HdTEDFsDRrkkpbv6n9Vf80AgTP2eMSp0fI+BAr4hicZXn3iI7tR55sfNEEfCXy/svs7
+         7uhBnU94JvVzua11hxDZvfbLnKPqCh95jR0dB5ngPafxtF8pvNYitqWbaatbX10wIy2U
+         aWHhEA4T5Fbum1ST3sb9RfdXRQHEahzWd3+josZpnpvBkCXTRsTRCT9vJY7ALO7A4pIr
+         Psww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=HFO/87aGbgtk33I/L3fMAte270UwuSA7why2H6PNvOA=;
-        b=O1jX91RU3fquOrwPhs9EcP2vbw94Wvoo/fw962Q8Op0pev9iUkQJzlNLSS4tRJHUU6
-         u7o9/XKHPRNZ6Dooe5jaPkoJR5h4X0RUwKYgJM8IAy98q73qF/VqnD0A7okPfP6UCCjx
-         zu3qHoltwTsGDU41GlFvxCPIOUNbcUnv1xoo8r6BcHfhb3qi+P7NtIf3fiqAYgHapaY/
-         d+CjWa+Vp7EQj30wzAUlxjFZqFJDChKuAg6i+22oCPxqn5rQ0Bcu70DO0EoKtS5b5p+U
-         DSU98P/CXUgWUCFavEOIQCsH30VXRWxEXrHfwHQ5uSGW9Omv/kadBTYMERNZH3cJFYHT
-         x3tw==
-X-Gm-Message-State: AOAM531WIB9XASBBKozRZWc8KoFabrD1GQF6qqtqRvA+w6PqxaA4sJW1
-        zlTjOTlPem4pwec75V336KgSbQ==
-X-Google-Smtp-Source: ABdhPJy700q4fNsXKgsESmT7E5pefeLTeGNQEt9yQudDkNdyZe3ocIfN2I7Ewpexw384BVFeCMpDrg==
-X-Received: by 2002:a17:906:b0c5:b0:6f3:bb5e:54a8 with SMTP id bk5-20020a170906b0c500b006f3bb5e54a8mr3136287ejb.534.1654155619493;
-        Thu, 02 Jun 2022 00:40:19 -0700 (PDT)
-Received: from [192.168.0.181] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id j3-20020a170906094300b0070ad296e4b0sm371503ejd.186.2022.06.02.00.40.18
+        bh=9kdMgzSp/zK4XvFrabmbmRZg12uCf3858qxXGwAU0cU=;
+        b=3bJxd54d2kX2Luj/YaMMF1SA9pI4zpotqNqblk7P3K9F1aZKvJfxCQ68wjgtiT9N/7
+         GiCaCi26L/JB5Y2wrMAFS97L80qAFd1PtTcLrScSWA7FJYGMQD6LWMqcbbqbXp4mI9yg
+         susw/qps9Zvw1rLEqd5SCMqhAcBXQHI9JP+rSrp9MO9H1znrhblIHLjrEDTYIDPDSvR7
+         KniqXrlAV19AxmL7DRmDdoeHDRv0n/HSV+UNRQ0tlsujWXuGyobMRoBtt2zj/+MCq/TR
+         BFP9zd1eS6ZARI0cnGfmPAuKMhPpTLhLuytrJ1+YBJyvkQGll+fH6J9kjS4YKr/4zusA
+         4dFw==
+X-Gm-Message-State: AOAM533g3MA5x2Ne7QYhI2kAdNzrxMFEYG0cfzUozSsoxjWKZIMpkO2P
+        IzVYAyfID55WDNqKvUMBizv6cA==
+X-Google-Smtp-Source: ABdhPJwZ2W6qYjAzEYw/UNnt2Cpq7X1kA43QSCreWUXMta5Zt9NBJrgMDyBFeBFYCx4T7SWbzQh3Mg==
+X-Received: by 2002:a05:6000:34f:b0:210:346c:1df3 with SMTP id e15-20020a056000034f00b00210346c1df3mr2578894wre.292.1654156059446;
+        Thu, 02 Jun 2022 00:47:39 -0700 (PDT)
+Received: from [10.40.36.78] ([193.52.24.5])
+        by smtp.gmail.com with ESMTPSA id v5-20020a5d4b05000000b0020d0c37b350sm4309277wrq.27.2022.06.02.00.47.38
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 02 Jun 2022 00:40:19 -0700 (PDT)
-Message-ID: <591767ee-e349-7a17-a9e9-b95d0500c7c1@linaro.org>
-Date:   Thu, 2 Jun 2022 09:40:18 +0200
+        Thu, 02 Jun 2022 00:47:38 -0700 (PDT)
+Message-ID: <1647636f-007e-2912-c2d9-7fed172ca352@kernel.dk>
+Date:   Thu, 2 Jun 2022 01:47:38 -0600
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v1] dt-bindings: dsp: mediatek: add mt8186 dsp document
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH] io_uring: Remove redundant NULL check before kfree
 Content-Language: en-US
-To:     Tinghan Shen <tinghan.shen@mediatek.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220422071534.15653-1-tinghan.shen@mediatek.com>
- <c0a188e5-8a8c-d4a3-5a3d-9b9dd85d8f44@linaro.org>
- <eb4deff1a01c09783518bbaff8fe4e4c4ca6fa5b.camel@mediatek.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <eb4deff1a01c09783518bbaff8fe4e4c4ca6fa5b.camel@mediatek.com>
+To:     cgel.zte@gmail.com
+Cc:     asml.silence@gmail.com, io-uring@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+References: <20220602071841.278214-1-chi.minghao@zte.com.cn>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <20220602071841.278214-1-chi.minghao@zte.com.cn>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 02/06/2022 08:44, Tinghan Shen wrote:
->>> +  mbox-names:
->>> +    items:
->>> +      - const: mbox0
->>> +      - const: mbox1
->>
->> These should be rather some meaningful names, e.g. "rx" and "tx".
-> 
-> The mbox name has to align with the adsp ipc driver.
-> The adsp ipc driver is using 'mbox%d' for mailbox channels.
-> 
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git/commit/?id=9db69df4bdd37eb1f65b6931ee067fb15b9a4d5c
-> 
-> 	chan_name = kasprintf(GFP_KERNEL, "mbox%d", i);
-> 
-> 	/* ...snip... */
-> 
-> 	adsp_chan->ch = mbox_request_channel_byname(cl, chan_name);
-> 
-> Is it ok to continue using these names?
+On 6/2/22 1:18 AM, cgel.zte@gmail.com wrote:
+> diff --git a/fs/io_uring.c b/fs/io_uring.c
+> index 1fc0166d9133..d1fe967f2343 100644
+> --- a/fs/io_uring.c
+> +++ b/fs/io_uring.c
+> @@ -4445,8 +4445,7 @@ static int io_read(struct io_kiocb *req, unsigned int issue_flags)
+>  	kiocb_done(req, ret, issue_flags);
+>  out_free:
+>  	/* it's faster to check here then delegate to kfree */
+> -	if (iovec)
+> -		kfree(iovec);
+> +	kfree(iovec);
+>  	return 0;
+>  }
 
-It is a bit confusing... how did that driver got merged recently without
-bindings? Why bindings are separate?
+There is _literally_ a comment right above your change that explains why
+this is there. Please read surrounding code, at least.
 
-The bindings always come together in one patchset with the driver
-implementing them. Bindings are though a separate patch, yet still
-followed by the driver which uses them.
+-- 
+Jens Axboe
 
-I do not see any compatibles in that driver, which suggests there is no
-other binding using it. If that's correct, then you need to change the
-driver.
-
-Best regards,
-Krzysztof
