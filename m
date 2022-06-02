@@ -2,138 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06BB1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 13:58:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93D40C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 13:58:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235641AbiFBN6F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 09:58:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56290 "EHLO
+        id S235002AbiFBN6i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 09:58:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231286AbiFBN6A (ORCPT
+        with ESMTP id S234875AbiFBN6g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 09:58:00 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DAD0793B2;
-        Thu,  2 Jun 2022 06:57:58 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id n10so10158719ejk.5;
-        Thu, 02 Jun 2022 06:57:58 -0700 (PDT)
+        Thu, 2 Jun 2022 09:58:36 -0400
+Received: from mail-oa1-x31.google.com (mail-oa1-x31.google.com [IPv6:2001:4860:4864:20::31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DF0D87A20
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 06:58:33 -0700 (PDT)
+Received: by mail-oa1-x31.google.com with SMTP id 586e51a60fabf-f2cd424b9cso6821570fac.7
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 06:58:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=lCjXd1DtLAOiKDUVepuP3tVKlqmoM9phz1lypZW4eiM=;
-        b=eKXUR7kiBU80Kt1ivUsBYC1Vp5ABsZgOFlwcUTfYnL3EYaoBLLC4llE6qNCbLYkoPK
-         yV/E9DUt2ifgfA2Nbk6ykWpgQhfm9txSuz+Z9LmYA2e0QtK14BpQdaIg86EMFNfuUWkx
-         hMXNoGeRpp7Hw5ALo7uCiIN/Vg+bFN+64MnxIrSs4784P1udBgejLUQnnHasBXCy/VJv
-         Hraq92Husrz3Xf7aLdubPKJuxySVXpGPA0CZZLKoHOr29+EvAoDaQOSqIfuA/pA2wdFl
-         oxnZHqbsTfLFBaxgW2BGhnhwkC0uMC12x04YUFSe3zvFWWisWKPD/j9A/tTeJZTOCSWO
-         kQFQ==
+         :cc;
+        bh=2L2ObJyA5aSAMYg/ooYObOJj991nQteSKXjuDuNhvCw=;
+        b=Bb5NTBROxJdLUTbonbdi14UD9v3tDr1oU1S+IeAYUwTUdbHPQY26Dc/kvLzg2pqCd/
+         aCT00EyhkTQ1jkzHf8yho+GP8PJTRZuwgSj5UlVuueawgQHOoZBPTDm3mPxzul+JW7iU
+         /cwQvwAzepsY8lWF4DVXDJ2B8ERuGFTuCS3ovLQc15pqWz1Cj2GpxPBm2YKjDoSD7eZ7
+         RNzMo5oRBELVXe2Rz02E403frVUxGrE2xjamoela22Ll9uqnQmJvpE/3Ud17uYMBEI87
+         W6Rrx5UpQ3s4+hw1lS1VATGpvr8Bjs7POrF36N9A0NtkIHUyNIJY60qvhp6FiiFBmKQl
+         YRfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=lCjXd1DtLAOiKDUVepuP3tVKlqmoM9phz1lypZW4eiM=;
-        b=NWuso4ZzJ2XIOREiQvXrUw/xeTo07Z3fHySVFA9TDeKu07xHWPceLUwXEDFYALRl0S
-         uaeG7QzPp1TeVgLicOtPL8nwiXYTN3cgFBJrLk69g/Mx7HPVHkUb7rNoEPXj1qvDL4nv
-         oJaMJPPL/vAxZkKZv3B4ffi8V0TmuCV2SdURfhKLPZ/qGDXIes5HimrFntNNtz13e5zM
-         rkFSzx1v5Og1dZIrjRBTGpLPyUiVgR4nbuJehcnrg/yNqwr2SL18Vmvxwhr4yPzsD0u8
-         Y6QD6XDuj+bMSIQSRzwDVROxrZl4VAPwwt/izuS1JBcd5cAxpsi+DVO7mGdbD+ccmghI
-         yLwg==
-X-Gm-Message-State: AOAM5316Gy/jrnPFisdF0TmIb9D8QZ3WQg76+w3E9C+Cel0YmpXYq7K+
-        tOdhpMRUbSgymgoHxR4FF/WmYF9ZwQ9AeQW+Rb0=
-X-Google-Smtp-Source: ABdhPJw17vPxP2UwrASUkgWE75bkBumiXi0yzz2upgIbMhdhBA7mECqviI1+XnRf2zU0lOm4Q01q8wM9WsX0p02cGPY=
-X-Received: by 2002:a17:907:6e04:b0:6f4:d6f3:c72a with SMTP id
- sd4-20020a1709076e0400b006f4d6f3c72amr4545345ejc.636.1654178277156; Thu, 02
- Jun 2022 06:57:57 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=2L2ObJyA5aSAMYg/ooYObOJj991nQteSKXjuDuNhvCw=;
+        b=PVNkE170Sb1LAooZ/ed23LH41BPT4eupvoiL9rWRMZzb2UhLV+OLVVXVFkOoDbi5u7
+         CDE0+KIR381hUHBZrMG/vQuPLm1EAPHnyVqhbLNuHlfbmC7kIfCHpmKcbHiZkHzJl4NL
+         KWNBFtQNj93XMqNEiLGQtzmMNXabBs+8cRxjfBgHJ8TYClvooJasroYMt85XGFyh3oy4
+         6qJYuAv3d9VHJtkewMRkUVelyIOdeD8AZ1p+yQTmMoMjR7+hsjhqbPm5mC3SIL7bHony
+         qVjfMXMh6PblgxdU+RI8BAZwDgd6qGg2jnYZNNDvqKPt14o61dxTtbyKR3FwxxvqlRtU
+         k+xA==
+X-Gm-Message-State: AOAM5337Q9LM2EmWs2F2FzHUhEYXKy12iRxgTawCrlSxtmgot+PJZ3rX
+        7qXjFkmoZkQYSJ7Y9h5NZ8N1V+PtymjCcKsAdrc=
+X-Google-Smtp-Source: ABdhPJwDy6DJ5qiR0rFGMNl9Es1ZF1OGqrTAAVs3U0JDV3pUTwhOg+jdn03Umz0Fe1sVdCzwIFWA7VgzMu7kRZ7N63s=
+X-Received: by 2002:a05:6870:d683:b0:de:eaa2:3550 with SMTP id
+ z3-20020a056870d68300b000deeaa23550mr2810070oap.253.1654178312926; Thu, 02
+ Jun 2022 06:58:32 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220531102809.11976-1-peterwu.pub@gmail.com> <20220531102809.11976-8-peterwu.pub@gmail.com>
- <CAHp75VdUQqihr=AX-wEUD05jY1ReL63hMCL+eaqmjkN8CsS_Vg@mail.gmail.com> <CA+hk2fasiriGHepNjsnPCqTMJOgAEbVHACmWrDRZY7cHPcOQqA@mail.gmail.com>
-In-Reply-To: <CA+hk2fasiriGHepNjsnPCqTMJOgAEbVHACmWrDRZY7cHPcOQqA@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 2 Jun 2022 15:57:19 +0200
-Message-ID: <CAHp75Vf=ATRfaaaGFuuPHuQj6wTjnRPBw4W5WYfgYuUP-A-L=g@mail.gmail.com>
-Subject: Re: [PATCH 07/14] leds: flashlight: mt6370: Add Mediatek MT6370
- flashlight support
-To:     szuni chen <szunichen@gmail.com>
-Cc:     ChiaEn Wu <peterwu.pub@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@ucw.cz>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        "Krogerus, Heikki" <heikki.krogerus@linux.intel.com>,
-        Helge Deller <deller@gmx.de>, cy_huang@richtek.com,
-        alice_chen@richtek.com, chiaen_wu@richtek.com,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Linux LED Subsystem <linux-leds@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        USB <linux-usb@vger.kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        "open list:FRAMEBUFFER LAYER" <linux-fbdev@vger.kernel.org>
+References: <20220527090039.pdrazo5e6mwgo3d3@lion.mk-sys.cz> <20220527124459.mfo4tjdsjohamsvy@lion.mk-sys.cz>
+In-Reply-To: <20220527124459.mfo4tjdsjohamsvy@lion.mk-sys.cz>
+From:   Alex Deucher <alexdeucher@gmail.com>
+Date:   Thu, 2 Jun 2022 09:58:22 -0400
+Message-ID: <CADnq5_Pr-FKfhuXT9DR2rYD=dMfD=+Dfev+CO-xeaPGnhwSQaA@mail.gmail.com>
+Subject: Re: (REGRESSION bisected) Re: amdgpu errors (VM fault / GPU fault
+ detected) with 5.19 merge window snapshots
+To:     Michal Kubecek <mkubecek@suse.cz>,
+        "Yang, Philip" <Philip.Yang@amd.com>
+Cc:     amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Felix Kuehling <Felix.Kuehling@amd.com>,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+        LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 2, 2022 at 2:07 PM szuni chen <szunichen@gmail.com> wrote:
-> Andy Shevchenko <andy.shevchenko@gmail.com> =E6=96=BC 2022=E5=B9=B46=E6=
-=9C=881=E6=97=A5 =E9=80=B1=E4=B8=89 =E4=B8=8B=E5=8D=885:57=E5=AF=AB=E9=81=
-=93=EF=BC=9A
-> > On Tue, May 31, 2022 at 1:32 PM ChiaEn Wu <peterwu.pub@gmail.com> wrote=
-:
-
-...
-
-> > > +       const char * const states[] =3D { "off", "keep", "on" };
-> > > +       const char *str;
-> > > +       int ret;
-> > > +
-> > > +       if (!fwnode_property_read_string(init_data->fwnode,
-> > > +                                        "default-state", &str)) {
-> > > +               ret =3D match_string(states, ARRAY_SIZE(states), str)=
-;
-> > > +               if (ret < 0)
-> > > +                       ret =3D STATE_OFF;
-> > > +
-> > > +               led->default_state =3D ret;
-> > > +       }
+On Fri, May 27, 2022 at 8:58 AM Michal Kubecek <mkubecek@suse.cz> wrote:
+>
+> On Fri, May 27, 2022 at 11:00:39AM +0200, Michal Kubecek wrote:
+> > Hello,
 > >
-> > fwnode_property_match_string()?
-> Sorry, but I think the use of this function is different from my target.
-> I want to read the string of the "default-state" property and figure
-> out if the string is in the states array.
-> But the fwnode_property_match_string aimed to figure out if the state
-> in the property array.
-> One is a property array and another one is a state array.
+> > while testing 5.19 merge window snapshots (commits babf0bb978e3 and
+> > 7e284070abe5), I keep getting errors like below. I have not seen them
+> > with 5.18 final or older.
+> >
+> > ------------------------------------------------------------------------
+> > [  247.150333] gmc_v8_0_process_interrupt: 46 callbacks suppressed
+> > [  247.150336] amdgpu 0000:0c:00.0: amdgpu: GPU fault detected: 147 0x00020802 for process firefox pid 6101 thread firefox:cs0 pid 6116
+> > [  247.150339] amdgpu 0000:0c:00.0: amdgpu:   VM_CONTEXT1_PROTECTION_FAULT_ADDR   0x00107800
+> > [  247.150340] amdgpu 0000:0c:00.0: amdgpu:   VM_CONTEXT1_PROTECTION_FAULT_STATUS 0x0D008002
+> > [  247.150341] amdgpu 0000:0c:00.0: amdgpu: VM fault (0x02, vmid 6, pasid 32780) at page 1079296, write from 'TC2' (0x54433200) (8)
+> [...]
+> > [  249.925909] amdgpu 0000:0c:00.0: amdgpu: IH ring buffer overflow (0x000844C0, 0x00004A00, 0x000044D0)
+> > [  250.434986] [drm] Fence fallback timer expired on ring sdma0
+> > [  466.621568] gmc_v8_0_process_interrupt: 122 callbacks suppressed
+> [...]
+> > ------------------------------------------------------------------------
+> >
+> > There does not seem to be any apparent immediate problem with graphics
+> > but when running commit babf0bb978e3, there seemed to be a noticeable
+> > lag in some operations, e.g. when moving a window or repainting large
+> > part of the terminal window in konsole (no idea if it's related).
+> >
+> > My GPU is Radeon Pro WX 2100 (1002:6995). What other information should
+> > I collect to help debugging the issue?
+>
+> Bisected to commit 5255e146c99a ("drm/amdgpu: rework TLB flushing").
+> There seem to be later commits depending on it so I did not test
+> a revert on top of current mainline.
+>
+> I should also mention that most commits tested as "bad" during the
+> bisect did behave much worse than current mainline (errors starting as
+> early as with sddm, visibly damaged screen content, sometimes even
+> crashes). But all of them issued messages similar to those above into
+> kernel log.
 
-Ah, indeed. Nevertheless you may reduce the code base by doing like
-the following (I wonder what your code do if there is no default-state
-property):
+Can you verify that the kernel you tested has this patch:
+https://cgit.freedesktop.org/drm/drm/commit/?id=5be323562c6a699d38430bc068a3fd192be8ed0d
 
-  led->default_state =3D STATE_OFF; // it's by default off since
-kzalloc(), so I don't see why we need this line at all.
-
-  fwnode_property_read_string(init_data->fwnode, "default-state", &str);
-  ret =3D match_string(states, ARRAY_SIZE(states), str);
-  if (ret >=3D 0)
-    led->default_state =3D ret;
-
-
---=20
-With Best Regards,
-Andy Shevchenko
+Alex
