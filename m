@@ -2,115 +2,298 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97B13C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 19:41:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11366C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 19:43:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238844AbiFBTlz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 15:41:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54700 "EHLO
+        id S238907AbiFBTnE convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 15:43:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238914AbiFBTl3 (ORCPT
+        with ESMTP id S238835AbiFBTmx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 15:41:29 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F4712E9E8;
-        Thu,  2 Jun 2022 12:41:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=Eceey+RredpO1DUpw4XgOlm7hqUoNbIq9MwFfP+irVY=; b=VRfjtgzVIIfFh/6aegPoMJ5pyK
-        7gk1arWHebBfVWqJyt7uVOHx6SccEXwTqEY4lmki3xAk/qtzDLUH/1h6P7WkO5+TI+V+WeXu+q1zW
-        MKwPhqjFfksjbafDWz/o58AsRSqI3qKUxVt/TG5ZyxlpLgjf4xYG3vQzdOW3Ojhl0/k9BEK7hVPge
-        vQQDgt2E+uzU7nGqfhz+pdZ8UvuHHOEjUTBveG1XXbJ7+qD58PscQcpWReyxghMtyCtLvZexlxH5A
-        xWrB7CHz3eMGKOSGlDx1LQXODDK1IYdclZ9DSkkwRBSPLbaiNjrWly5+ox1t3zfrMt6ueTradwhiw
-        j+OX/Zrw==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nwqgx-0047ut-H1; Thu, 02 Jun 2022 19:41:11 +0000
-Date:   Thu, 2 Jun 2022 12:41:11 -0700
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Cc:     "Bird, Tim" <Tim.Bird@sony.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Richard Fontana <fontana@sharpeleven.org>,
-        "tj@kernel.org" <tj@kernel.org>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "jeyu@kernel.org" <jeyu@kernel.org>,
-        "shuah@kernel.org" <shuah@kernel.org>,
-        "bvanassche@acm.org" <bvanassche@acm.org>,
-        "dan.j.williams@intel.com" <dan.j.williams@intel.com>,
-        "joe@perches.com" <joe@perches.com>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "minchan@kernel.org" <minchan@kernel.org>,
-        "linux-spdx@vger.kernel.org" <linux-spdx@vger.kernel.org>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Goldwyn Rodrigues <rgoldwyn@suse.com>,
-        Kuno Woudt <kuno@frob.nl>,
-        "copyleft-next@lists.fedorahosted.org" 
-        <copyleft-next@lists.fedorahosted.org>,
-        Ciaran Farrell <Ciaran.Farrell@suse.com>,
-        Christopher De Nicolo <Christopher.DeNicolo@suse.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Thorsten Leemhuis <linux@leemhuis.info>
-Subject: Re: [PATCH v9 1/6] LICENSES: Add the copyleft-next-0.3.1 license
-Message-ID: <YpkSV51Pieq7K4x2@bombadil.infradead.org>
-References: <20211029184500.2821444-1-mcgrof@kernel.org>
- <20211029184500.2821444-2-mcgrof@kernel.org>
- <87bkvo0wjd.ffs@tglx>
- <Yo5cxWghV/v2Fnzf@bombadil.infradead.org>
- <BN7PR13MB24998CAFCFB973C80549F308FDD69@BN7PR13MB2499.namprd13.prod.outlook.com>
- <Yo5xTwGLmbsgJhfM@bombadil.infradead.org>
- <BN7PR13MB2499BA2AFAC1C79197734D81FDD69@BN7PR13MB2499.namprd13.prod.outlook.com>
- <871qwhz2aa.ffs@tglx>
- <BYAPR13MB2503DAC31B8B5CC69F8FECD3FDDE9@BYAPR13MB2503.namprd13.prod.outlook.com>
- <YphWomPaMdLCa3Pt@kroah.com>
+        Thu, 2 Jun 2022 15:42:53 -0400
+Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B133B5FDB
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 12:42:51 -0700 (PDT)
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 252D0tNK023025
+        for <linux-kernel@vger.kernel.org>; Thu, 2 Jun 2022 12:42:51 -0700
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3gewq92pme-5
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 12:42:51 -0700
+Received: from twshared24024.25.frc3.facebook.com (2620:10d:c085:208::11) by
+ mail.thefacebook.com (2620:10d:c085:11d::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Thu, 2 Jun 2022 12:42:45 -0700
+Received: by devbig932.frc1.facebook.com (Postfix, from userid 4523)
+        id 117FA86C0112; Thu,  2 Jun 2022 12:37:22 -0700 (PDT)
+From:   Song Liu <song@kernel.org>
+To:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <kernel-team@fb.com>, <rostedt@goodmis.org>, <jolsa@kernel.org>,
+        <mhiramat@kernel.org>, Song Liu <song@kernel.org>
+Subject: [PATCH v2 bpf-next 5/5] bpf: trampoline: support FTRACE_OPS_FL_SHARE_IPMODIFY
+Date:   Thu, 2 Jun 2022 12:37:06 -0700
+Message-ID: <20220602193706.2607681-6-song@kernel.org>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220602193706.2607681-1-song@kernel.org>
+References: <20220602193706.2607681-1-song@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YphWomPaMdLCa3Pt@kroah.com>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: wg02rf2Neuji4E93i0EjX0Vmmob2ZsTS
+X-Proofpoint-GUID: wg02rf2Neuji4E93i0EjX0Vmmob2ZsTS
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-02_05,2022-06-02_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 02, 2022 at 08:20:18AM +0200, gregkh@linuxfoundation.org wrote:
-> On Thu, Jun 02, 2022 at 04:11:16AM +0000, Bird, Tim wrote:
-> > I don't think that the Linux kernel should be used for license promotion, but if it is,
-> > then it should be used to promote GPL-v2-only.
-> 
-> I agree, and in a way, I feel like that is what is happening here for
-> this original submission.  See below for more...
+This allows bpf trampoline to trace kernel functions with live patch.
+Also, move bpf trampoline to *_ftrace_direct_multi APIs, which allows
+setting different flags of ftrace_ops.
 
-I have been using copyleft-next for years and cross polination for me is real.
+Signed-off-by: Song Liu <song@kernel.org>
+---
+ include/linux/bpf.h     |   3 ++
+ kernel/bpf/trampoline.c | 109 +++++++++++++++++++++++++++++++++++-----
+ 2 files changed, 99 insertions(+), 13 deletions(-)
 
-> I agree, dual licensed code that is added to the kernel is either done:
-> 	- because the original code had a non-GPL license and it was
-> 	  added so that it could be compatible so that it could be added
-> 	  to Linux.
-> 	- because the code being accepted into Linux can also be used in
-> 	  another non-Linux codebase now or in the future.
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index a6e06f384e81..20a8ed600ca6 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -44,6 +44,7 @@ struct kobject;
+ struct mem_cgroup;
+ struct module;
+ struct bpf_func_state;
++struct ftrace_ops;
+ 
+ extern struct idr btf_idr;
+ extern spinlock_t btf_idr_lock;
+@@ -816,6 +817,7 @@ struct bpf_tramp_image {
+ struct bpf_trampoline {
+ 	/* hlist for trampoline_table */
+ 	struct hlist_node hlist;
++	struct ftrace_ops *fops;
+ 	/* serializes access to fields of this trampoline */
+ 	struct mutex mutex;
+ 	refcount_t refcnt;
+@@ -838,6 +840,7 @@ struct bpf_trampoline {
+ 	struct bpf_tramp_image *cur_image;
+ 	u64 selector;
+ 	struct module *mod;
++	bool indirect_call;
+ };
+ 
+ struct bpf_attach_target_info {
+diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
+index 93c7675f0c9e..447c788c5520 100644
+--- a/kernel/bpf/trampoline.c
++++ b/kernel/bpf/trampoline.c
+@@ -27,6 +27,44 @@ static struct hlist_head trampoline_table[TRAMPOLINE_TABLE_SIZE];
+ /* serializes access to trampoline_table */
+ static DEFINE_MUTEX(trampoline_mutex);
+ 
++#ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
++static int bpf_trampoline_update(struct bpf_trampoline *tr, bool lock_direct_mutex);
++
++static int bpf_tramp_ftrace_ops_func(struct ftrace_ops *ops, enum ftrace_ops_cmd cmd)
++{
++	struct bpf_trampoline *tr = ops->private;
++	int ret;
++
++	/*
++	 * The normal locking order is
++	 *    tr->mutex => direct_mutex (ftrace.c) => ftrace_lock (ftrace.c)
++	 *
++	 * This is called from prepare_direct_functions_for_ipmodify, with
++	 * direct_mutex locked. Use mutex_trylock() to avoid dead lock.
++	 * Also, bpf_trampoline_update here should not lock direct_mutex.
++	 */
++	if (!mutex_trylock(&tr->mutex))
++		return -EAGAIN;
++
++	switch (cmd) {
++	case FTRACE_OPS_CMD_ENABLE_SHARE_IPMODIFY:
++		tr->indirect_call = true;
++		ret = bpf_trampoline_update(tr, false /* lock_direct_mutex */);
++		break;
++	case FTRACE_OPS_CMD_DISABLE_SHARE_IPMODIFY:
++		tr->indirect_call = false;
++		tr->fops->flags &= ~FTRACE_OPS_FL_SHARE_IPMODIFY;
++		ret = bpf_trampoline_update(tr, false /* lock_direct_mutex */);
++		break;
++	default:
++		ret = -EINVAL;
++		break;
++	};
++	mutex_unlock(&tr->mutex);
++	return ret;
++}
++#endif
++
+ bool bpf_prog_has_trampoline(const struct bpf_prog *prog)
+ {
+ 	enum bpf_attach_type eatype = prog->expected_attach_type;
+@@ -87,7 +125,16 @@ static struct bpf_trampoline *bpf_trampoline_lookup(u64 key)
+ 	tr = kzalloc(sizeof(*tr), GFP_KERNEL);
+ 	if (!tr)
+ 		goto out;
+-
++#ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
++	tr->fops = kzalloc(sizeof(struct ftrace_ops), GFP_KERNEL);
++	if (!tr->fops) {
++		kfree(tr);
++		tr = NULL;
++		goto out;
++	}
++	tr->fops->private = tr;
++	tr->fops->ops_func = bpf_tramp_ftrace_ops_func;
++#endif
+ 	tr->key = key;
+ 	INIT_HLIST_NODE(&tr->hlist);
+ 	hlist_add_head(&tr->hlist, head);
+@@ -126,7 +173,7 @@ static int unregister_fentry(struct bpf_trampoline *tr, void *old_addr)
+ 	int ret;
+ 
+ 	if (tr->func.ftrace_managed)
+-		ret = unregister_ftrace_direct((long)ip, (long)old_addr);
++		ret = unregister_ftrace_direct_multi(tr->fops, (long)old_addr);
+ 	else
+ 		ret = bpf_arch_text_poke(ip, BPF_MOD_CALL, old_addr, NULL);
+ 
+@@ -135,15 +182,20 @@ static int unregister_fentry(struct bpf_trampoline *tr, void *old_addr)
+ 	return ret;
+ }
+ 
+-static int modify_fentry(struct bpf_trampoline *tr, void *old_addr, void *new_addr)
++static int modify_fentry(struct bpf_trampoline *tr, void *old_addr, void *new_addr,
++			 bool lock_direct_mutex)
+ {
+ 	void *ip = tr->func.addr;
+ 	int ret;
+ 
+-	if (tr->func.ftrace_managed)
+-		ret = modify_ftrace_direct((long)ip, (long)old_addr, (long)new_addr);
+-	else
++	if (tr->func.ftrace_managed) {
++		if (lock_direct_mutex)
++			ret = modify_ftrace_direct_multi(tr->fops, (long)new_addr);
++		else
++			ret = modify_ftrace_direct_multi_nolock(tr->fops, (long)new_addr);
++	} else {
+ 		ret = bpf_arch_text_poke(ip, BPF_MOD_CALL, old_addr, new_addr);
++	}
+ 	return ret;
+ }
+ 
+@@ -161,10 +213,15 @@ static int register_fentry(struct bpf_trampoline *tr, void *new_addr)
+ 	if (bpf_trampoline_module_get(tr))
+ 		return -ENOENT;
+ 
+-	if (tr->func.ftrace_managed)
+-		ret = register_ftrace_direct((long)ip, (long)new_addr);
+-	else
++	if (tr->func.ftrace_managed) {
++		ftrace_set_filter_ip(tr->fops, (unsigned long)ip, 0, 0);
++		ret = register_ftrace_direct_multi(tr->fops, (long)new_addr);
++		if (ret)
++			ftrace_set_filter_ip(tr->fops, (unsigned long)ip, 1, 0);
++
++	} else {
+ 		ret = bpf_arch_text_poke(ip, BPF_MOD_CALL, NULL, new_addr);
++	}
+ 
+ 	if (ret)
+ 		bpf_trampoline_module_put(tr);
+@@ -330,7 +387,7 @@ static struct bpf_tramp_image *bpf_tramp_image_alloc(u64 key, u32 idx)
+ 	return ERR_PTR(err);
+ }
+ 
+-static int bpf_trampoline_update(struct bpf_trampoline *tr)
++static int bpf_trampoline_update(struct bpf_trampoline *tr, bool lock_direct_mutex)
+ {
+ 	struct bpf_tramp_image *im;
+ 	struct bpf_tramp_links *tlinks;
+@@ -363,20 +420,45 @@ static int bpf_trampoline_update(struct bpf_trampoline *tr)
+ 	if (ip_arg)
+ 		flags |= BPF_TRAMP_F_IP_ARG;
+ 
++#ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
++again:
++	if (tr->indirect_call)
++		flags |= BPF_TRAMP_F_ORIG_STACK;
++#endif
++
+ 	err = arch_prepare_bpf_trampoline(im, im->image, im->image + PAGE_SIZE,
+ 					  &tr->func.model, flags, tlinks,
+ 					  tr->func.addr);
+ 	if (err < 0)
+ 		goto out;
+ 
++#ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
++	if (tr->indirect_call)
++		tr->fops->flags |= FTRACE_OPS_FL_SHARE_IPMODIFY;
++#endif
++
+ 	WARN_ON(tr->cur_image && tr->selector == 0);
+ 	WARN_ON(!tr->cur_image && tr->selector);
+ 	if (tr->cur_image)
+ 		/* progs already running at this address */
+-		err = modify_fentry(tr, tr->cur_image->image, im->image);
++		err = modify_fentry(tr, tr->cur_image->image, im->image, lock_direct_mutex);
+ 	else
+ 		/* first time registering */
+ 		err = register_fentry(tr, im->image);
++
++#ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
++	if (err == -EAGAIN) {
++		if (WARN_ON_ONCE(tr->indirect_call))
++			goto out;
++		/* should only retry on the first register */
++		if (WARN_ON_ONCE(tr->cur_image))
++			goto out;
++		tr->indirect_call = true;
++		tr->fops->func = NULL;
++		tr->fops->trampoline = 0;
++		goto again;
++	}
++#endif
+ 	if (err)
+ 		goto out;
+ 	if (tr->cur_image)
+@@ -460,7 +542,7 @@ int bpf_trampoline_link_prog(struct bpf_tramp_link *link, struct bpf_trampoline
+ 
+ 	hlist_add_head(&link->tramp_hlist, &tr->progs_hlist[kind]);
+ 	tr->progs_cnt[kind]++;
+-	err = bpf_trampoline_update(tr);
++	err = bpf_trampoline_update(tr, true /* lock_direct_mutex */);
+ 	if (err) {
+ 		hlist_del_init(&link->tramp_hlist);
+ 		tr->progs_cnt[kind]--;
+@@ -487,7 +569,7 @@ int bpf_trampoline_unlink_prog(struct bpf_tramp_link *link, struct bpf_trampolin
+ 	}
+ 	hlist_del_init(&link->tramp_hlist);
+ 	tr->progs_cnt[kind]--;
+-	err = bpf_trampoline_update(tr);
++	err = bpf_trampoline_update(tr, true /* lock_direct_mutex */);
+ out:
+ 	mutex_unlock(&tr->mutex);
+ 	return err;
+@@ -535,6 +617,7 @@ void bpf_trampoline_put(struct bpf_trampoline *tr)
+ 	 * multiple rcu callbacks.
+ 	 */
+ 	hlist_del(&tr->hlist);
++	kfree(tr->fops);
+ 	kfree(tr);
+ out:
+ 	mutex_unlock(&trampoline_mutex);
+-- 
+2.30.2
 
-Sometimes such cross polination is purely speculative, but we don't
-stop and ask people for evidence of this.
-
-You forgot that another reason is because some attorneys like some
-permissive license more. That's it. The Clear BSD license is an example.
-In that case it was a new license to Linux. So let us be clear that one
-could argue that was a bit of license promotion.
-
-> The submission here was neither of these.
-
-You are incorrect.
-
-I have a vision for Linux kernel testing and I have put *years* of
-effort in this regard and thinking about architecture behind all this.
-So yes cross polination is *extremely* important to me and hence some
-of this effort.
-
-  Luis
