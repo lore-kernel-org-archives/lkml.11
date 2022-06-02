@@ -2,69 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2236EC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 01:15:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9751CCA47A
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 01:20:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233112AbiFBBPh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 1 Jun 2022 21:15:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40870 "EHLO
+        id S233088AbiFBBUR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 1 Jun 2022 21:20:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233098AbiFBBPc (ORCPT
+        with ESMTP id S232837AbiFBBUP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 1 Jun 2022 21:15:32 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FB5028E719;
-        Wed,  1 Jun 2022 18:15:32 -0700 (PDT)
+        Wed, 1 Jun 2022 21:20:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA12D13C1C3;
+        Wed,  1 Jun 2022 18:20:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 98E6FCE1DBA;
-        Thu,  2 Jun 2022 01:15:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id F29A7C385A5;
-        Thu,  2 Jun 2022 01:15:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A68061618;
+        Thu,  2 Jun 2022 01:20:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 90729C385A5;
+        Thu,  2 Jun 2022 01:20:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654132529;
-        bh=dIyI0EHO1+u34y11qkC09d6/0IBp5okee0/nHVtoRaY=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=F40VZTmu9X86cKRVpETm98IWDDE8DzvvHQ1gXzI0r8JSMvtl/++Xwhw2izxLq2amV
-         i9WSIpVzWHkVOxYj/s4JrYBc826IqnI6CXjClsA4ZaHwIo0UcnwsDupp5utxf1Xkkz
-         kPN/n25xc26zgQ8aJ/2Jhxk3H/dVs/uWNadd4oAye764+fBzvwGcafxAEUiubSBfuW
-         D5QlkJu26YD9Usfz/ypb97xaKi2G/JgHnTrJL930qqVZstSFbkc+r+J7WtHd6D0P4i
-         xoRrNStrzmKyNCXCtHwYofcb0F+AIaG4CqQU0uLye1JU3iDGB6KxI5EpjGQ4uOzl4q
-         ZKhcbzNoDa2Dg==
+        s=k20201202; t=1654132813;
+        bh=FRtoPmqtpuxAOYkV1Jjz5r5gJ4V+Izk5bHDOjEi63VU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Axr3XH9b3BTn8b0AcnN1k7xEIYpsSvtW2Zfe1lervE9iLE7kW4MrskFNqWa1vE9FR
+         fjCoMLo7qg6sr4nATcvsJauhiUxyaF/WI3S0Al9rMJKdq6oH6kbZIxPL0nbHXPgAPL
+         ADsPPiH7QbCnsUD4DAyLTYAFCYxly5nx9spzyriFYo6HuSDol0sCmy3L2tmnZ/8lI5
+         J+WKvt9ZXUKRzAmclFjfGdN8WtFtxabpI+WCvqxeAKrwSpVmiMQkTrLYGTsK13pF0m
+         GP3RspFmeaUA/eLffwcwWLFUxL0pU+39u/Dj/nKIH96NOXo3YyJKPI1I6KwpuOz1VL
+         f56WVd0AueXTg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DEDE0EAC081;
-        Thu,  2 Jun 2022 01:15:28 +0000 (UTC)
-Subject: Re: [GIT PULL] xfs: changes for 5.19-rc1 [2nd set]
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220601221431.GG227878@dread.disaster.area>
-References: <20220601221431.GG227878@dread.disaster.area>
-X-PR-Tracked-List-Id: <linux-xfs.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220601221431.GG227878@dread.disaster.area>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/fs/xfs/xfs-linux.git tags/xfs-5.19-for-linus-2
-X-PR-Tracked-Commit-Id: 7146bda743e6f543af60584fad2cfbb6ce83d8ac
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 0e5ab8dd87c29640a46aee9e38bc3ba7645b1db0
-Message-Id: <165413252890.5973.590261192738155869.pr-tracker-bot@kernel.org>
-Date:   Thu, 02 Jun 2022 01:15:28 +0000
-To:     Dave Chinner <david@fromorbit.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-xfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        sandeen@sandeen.net, djwong@kernel.org
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 701BFEAC081;
+        Thu,  2 Jun 2022 01:20:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net: usb: qmi_wwan: Add support for Cinterion MV31 with new
+ baseline
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165413281345.8511.6891110071999430771.git-patchwork-notify@kernel.org>
+Date:   Thu, 02 Jun 2022 01:20:13 +0000
+References: <20220601040531.6016-1-slark_xiao@163.com>
+In-Reply-To: <20220601040531.6016-1-slark_xiao@163.com>
+To:     Slark Xiao <slark_xiao@163.com>
+Cc:     bjorn@mork.no, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Thu, 2 Jun 2022 08:14:31 +1000:
+Hello:
 
-> git://git.kernel.org/pub/scm/fs/xfs/xfs-linux.git tags/xfs-5.19-for-linus-2
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/0e5ab8dd87c29640a46aee9e38bc3ba7645b1db0
+On Wed,  1 Jun 2022 12:05:31 +0800 you wrote:
+> Adding support for Cinterion device MV31 with Qualcomm
+> new baseline. Use different PIDs to separate it from
+> previous base line products.
+> All interfaces settings keep same as previous.
+> 
+> T:  Bus=03 Lev=01 Prnt=01 Port=00 Cnt=01 Dev#=  7 Spd=480 MxCh= 0
+> D:  Ver= 2.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
+> P:  Vendor=1e2d ProdID=00b9 Rev=04.14
+> S:  Manufacturer=Cinterion
+> S:  Product=Cinterion PID 0x00B9 USB Mobile Broadband
+> S:  SerialNumber=90418e79
+> C:  #Ifs= 4 Cfg#= 1 Atr=a0 MxPwr=500mA
+> I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=50 Driver=qmi_wwan
+> I:  If#=0x1 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=40 Driver=option
+> I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=60 Driver=option
+> I:  If#=0x3 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=30 Driver=option
+> 
+> [...]
 
-Thank you!
+Here is the summary with links:
+  - net: usb: qmi_wwan: Add support for Cinterion MV31 with new baseline
+    https://git.kernel.org/netdev/net/c/9f4fc18bf285
 
+You are awesome, thank you!
 -- 
 Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
