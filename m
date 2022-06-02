@@ -2,202 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB5D5C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 05:14:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2FC3C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 05:21:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229991AbiFBFNm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 01:13:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33930 "EHLO
+        id S230030AbiFBFV3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 01:21:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229647AbiFBFNk (ORCPT
+        with ESMTP id S229750AbiFBFVZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 01:13:40 -0400
-Received: from JPN01-TYC-obe.outbound.protection.outlook.com (mail-tycjpn01on2046.outbound.protection.outlook.com [40.107.114.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFD3B41626
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 22:13:35 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=U1TGrwO3dNpvHut89psm4AAfB/uLOP+0/EGUu9S8DB5qohLaRdYdeAbUgLsKeD/HMXgwjV+RD0UsI8P7JipTMtD4oYE0halcfWCn/ymxqH+CDkWbBS+gO0HafLskhgN1B5Z6LmZD8Im7dRhS/SmairQCVUcyvHyY1AvvWkmuKkjlGvLK9HGYgOI8F8dZ1/efXEWjzhi8rNF48KK3KPIkZABl3gyss37lhTXenW9kbhawN9inO1k0ZvLifUprTDTw1xPxb/RQ+TPqC0KXOc/d/+sZDS1TJQeiiRxBgMY2jpxKIHFpVCGu+tRxnB+n6485O4J10sULKtt35tE+h7mXtw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8UhHJGXSlNEy4IPUUk9Tujk31QcOEbj0vg2QcSgJVgA=;
- b=C0jA2LRJmwRH86z77yW0PWvP/Xpi+IpFQRj+DmwMI4xnz4/6kFpLrlkZbvSp1hkY+LMeLt9Y2NOjBPT5gZGBwHmVJjYK+D13zm+L/tP1knvMw+c/5GOg7viYgWLsxvSAAUOhseTqIo8Tk1ECqkP/SksDLStvBFJZaBB69Ez5oRWoFgFwWjQW54/XZFXC/ZVRk2K0AM4dMoyQyssRlCfy5OzBob6XJ0bhk9h12pkiGswHVhsTshRYFJxutvS/kdlXGV6sIH3Mu7awYQjvIqpc1NpPoLJtPSU2hbqqhQExP/M2tqmpVgzWE4dOSJPziHVnK+qX/3MbilMyHXwqH7E6OA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nec.com; dmarc=pass action=none header.from=nec.com; dkim=pass
- header.d=nec.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nec.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8UhHJGXSlNEy4IPUUk9Tujk31QcOEbj0vg2QcSgJVgA=;
- b=ejdfpSCJt2BNiFbsoW6DaqcdJoYGaKJhmpYjsV7x925BvXPBgT0M8X35WG1ISM3SkEtzaboVJCNoKtEfCKjg52WPus7eeiG/IAoNlOAZosiX5LJSfxKYXinxePzIf6CA1mqgSnfax80nkSbKHFolwpq9lkw0H7JPIBA2pF9C+6A=
-Received: from TYWPR01MB8591.jpnprd01.prod.outlook.com (2603:1096:400:13c::10)
- by OSBPR01MB3205.jpnprd01.prod.outlook.com (2603:1096:604:1f::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.12; Thu, 2 Jun
- 2022 05:13:33 +0000
-Received: from TYWPR01MB8591.jpnprd01.prod.outlook.com
- ([fe80::246b:9355:73ad:b995]) by TYWPR01MB8591.jpnprd01.prod.outlook.com
- ([fe80::246b:9355:73ad:b995%2]) with mapi id 15.20.5314.013; Thu, 2 Jun 2022
- 05:13:33 +0000
-From:   =?utf-8?B?SE9SSUdVQ0hJIE5BT1lBKOWggOWPo+OAgOebtOS5nyk=?= 
-        <naoya.horiguchi@nec.com>
-To:     Liu Shixin <liushixin2@huawei.com>
-CC:     Andrew Morton <akpm@linux-foundation.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: Question about hwpoison handling of 1GB hugepage
-Thread-Topic: Question about hwpoison handling of 1GB hugepage
-Thread-Index: AQHYRO39spkM6Er2D0SYmGhvNd4geaze3zIAgERjEICAAoEwgIAWMbMA
-Date:   Thu, 2 Jun 2022 05:13:33 +0000
-Message-ID: <20220602051332.GA1172281@hori.linux.bs1.fc.nec.co.jp>
-References: <0af88a11-4dfe-9a4e-7b94-08f12caafcf3@huawei.com>
- <20220403234250.GA2217943@hori.linux.bs1.fc.nec.co.jp>
- <eae3ec5d-51ce-db2d-cc0b-f8e1d4310679@huawei.com>
- <20220519021757.GA520829@hori.linux.bs1.fc.nec.co.jp>
-In-Reply-To: <20220519021757.GA520829@hori.linux.bs1.fc.nec.co.jp>
-Accept-Language: ja-JP, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nec.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: c5f68675-ac7c-4dce-10f0-08da4456a3bd
-x-ms-traffictypediagnostic: OSBPR01MB3205:EE_
-x-microsoft-antispam-prvs: <OSBPR01MB3205844F76E95A218CF7B7DEE7DE9@OSBPR01MB3205.jpnprd01.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: HUrb3PQiaO3qV/XPJasLqHqo3acfUGx6H1amca2Vv7/BNhMJtlsWGaihXA7kMNk2VQZDGECHYHepuAF15qYcySRDBRzlLjycBk1brpBzRNbCR2J6kbNS3DHBVuf2SBQUqudvYaIutDLiLKdhHKxj1mAh7iMl7FNPZuTzzAEPHViX91dT8RPNW+oQ+8pDq2oyENAMzTUAT76vvV5PDOe6qtVVy8znF2asxPkk/26ZFB3BN4NMWzT1xwWlEJWGRY8WIiHemHpc2yMOsrCTlJzLwkAgX4x1lyQGwexvrugxlPutcqCWnNpCs+K5BUvi+YiZpZpPnKNUEqseY94FNVFEfsPeBFzyPYZ5ZcayOWwHYFNSPe3UIIdpDIJjAEHbIkX7TVHlkoBcsYl9xX0bpsekxfXt1ZWfU1jv0R9pTi5SXh/2TxI1ro3vcaOGBnhOsfwxXyHRfloFKqVyujTlenU1VUCIsn43uYCr1W0RzbnMOpPX6eRp6e5c5UreDCw/OFtV8ZVBZUf8kSTYElI3IQCia0b4dUfblBzmcarayhEZXMOmsXfJESTj4+g2zqWb4DBNxy//3EfYtGGiG3FE4vmbJojcEGfZ0vk54dfrwnCYFyPEnru/bfihEJlPAjWR2CRf1esbiS5V9MMaJeLr6ve4/HBPX47OMfrcB/ChYi4Si86bosaSsSq0WgXdxweH4+ya6dPfMFOv7L8Kl34mkBbf6onoPLrQep0fn0KgvPMnSIT4eimoYSrXxTPXSS6qC0KmKckYtcshwrbcP0o5sfvHc/zHVHMwv9uuH9tAUTG57PA=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYWPR01MB8591.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(966005)(38070700005)(66476007)(66946007)(76116006)(66556008)(64756008)(66446008)(4326008)(8676002)(508600001)(83380400001)(26005)(6916009)(316002)(9686003)(55236004)(53546011)(54906003)(6512007)(86362001)(1076003)(6506007)(186003)(6486002)(71200400001)(2906002)(122000001)(82960400001)(85182001)(38100700002)(5660300002)(8936002)(33656002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?SXhvRjJCWUxoaVNocUF2cFJNM2U3Vi9PK0NuY1JTYTc3dURReU16czdjKzhz?=
- =?utf-8?B?Uk1nWldHY2xpOVp2V3Q0Y2JhaVRzYkFQUHBJYVNjcVJuTUw1Vno4QU9QMzFa?=
- =?utf-8?B?QlBXM2VHaXdaZkhmMTRMR3Jvc2cwUUsxSktNdHJjMzRsRkgrSEltTys2Zyt2?=
- =?utf-8?B?N3JvZm1obnFZT2dOZTlhSkRUWDc5czZRR0FvQTFZVkVQZHZRRWtGZGNvMEVV?=
- =?utf-8?B?SmJRSmpBTkVUa2pRZ2ZoWGlSRmcvc1BxSzlmL2MwVDc0QzgrWWo0Y0I0RnA0?=
- =?utf-8?B?MG0xNUtPSU9IYmw1dVY1VndzQy9mQ01ZOHdHaDZaN1VsMXRETkhEUUQ2ekM4?=
- =?utf-8?B?K1paTGpMWmpLMzRKUVNmMUpsQnBiWWtzd2cwYXM4dmFFNlJpdWZsRTFzbG5j?=
- =?utf-8?B?L3p3ekZxUGh0aXJKazl1VU5ObG9PNmUxTmR1QkR6SjJzMldYeEFvVTVwK0ZF?=
- =?utf-8?B?YTk2R3p0blJLejFtakxVUmp6N2pNaDkxMVU0WEtRczBnbXl4aXhUdlB5dVll?=
- =?utf-8?B?UVZyc3B0czY3ZCtUQ3kwNXdQcm5KYnFRdlhQQUxncEJLZUJsN1lUY2EzcjdW?=
- =?utf-8?B?NitVZlE2VnBVQ1FCVDRuc1lneXAzanRXLzFDSnlWZ1JaMnB1NWlaZklHUUdI?=
- =?utf-8?B?YVlCZVkwV1oyRUZVcGhxU245MzBJWHMxdWNvanFkN3djUnBTakdJNFNCd2o5?=
- =?utf-8?B?UHFDeWIxSitLbkhjbWp1TzNMSFdtS1FEMHRpdTRFV1NQbGVQNk9vank2VVdZ?=
- =?utf-8?B?ZEkxOHNkNFpTazJrRGcxVmR2Q1RDRmhhUzZBWWEyMWEvT2h6Z0tPQ3ZsL0ZD?=
- =?utf-8?B?bXd3RFRUK3V6cnEvZ2k0UUdoNzFiSzVKa2pHOFZCUWNzQlJnd08va2szK2Rl?=
- =?utf-8?B?elVCTCtON2xzQWFTOU1zR25sTTFmRFhBYmNKY2RCWjIydSs0S2xnS0ZhTTFv?=
- =?utf-8?B?eGJhRXc3ZXk4MmVYaDUyZ1J6ekxxTkNtSk05TVRpSmM1MEpLT3hidDBSTVdF?=
- =?utf-8?B?T3F2REtaQnc4S01UdFMzTFplRkxuYnpvaWJCNVZiU3MvUjZ5dkxUN0NmaWZP?=
- =?utf-8?B?SEJiT29Ubjd5UGN6UWNUeXhyZmpZQkRMaWlMb2ZyWmxnOVUrVEk4WC83ejhj?=
- =?utf-8?B?R09Md20ydzg3dHZ6NUxXR0M3YW1DUlVXcWZjb09IcExPeC9mRVdMY1RsdldE?=
- =?utf-8?B?VVcxREVWcVlra3dRSFBaSmdEMkhULzd2Ni82WXp4YzVnbGVrOVA1MXd0Ully?=
- =?utf-8?B?M3dKOXNhWTdUay9pNkpoMWRiT09oc3ZueVlhdDAxUTMxcGduV0JWV3FMeFNH?=
- =?utf-8?B?bVZrNmRMVldYUk5MVDZrOXZXTTdpcXUyNWQ2Zmx4dEtsT29IbVRSbXpjUmQy?=
- =?utf-8?B?NUJwYVE5Q2tFRDBIL1VGZHc3YVFWNTFRcVdDa2lGR1NPcERqVXVScGNvelFQ?=
- =?utf-8?B?aFc3Y1M2MFNKbmNJNzlld2tUbFRtREQ5Uk54WUs3NTdJQmRkb2thQk1VbSth?=
- =?utf-8?B?amlCMVU4RFd4VWRLbm56aXgwWitURWtpZE1jZENqektWdTdEb3FLZTczWkd0?=
- =?utf-8?B?SkFTQjgwTWNaT2pLSUZPdDViVEk3U2VxeGd0ZlkwcDM5Si9mUmU4bS9pRU1J?=
- =?utf-8?B?OTA5Z2VuNHdrcXFMUjZBSlZ0dWMyRkFweHpOanBkS2Y1YUFvWHZERG9BblpJ?=
- =?utf-8?B?dnpFVUZxaXpsblFFVVRFcGYvdUI1ZnNhNEZPZWRWMkZzbnJhRHBhN3ZYNWdj?=
- =?utf-8?B?Wldtall3WFVpWnZDRGNsejVXc21WSkNKSEVVME5uTWl6QnpORlNtU001MzZx?=
- =?utf-8?B?cDZxQnV0a08ySkYxaTlYQkdZSitJcUxiZ3QvNmRiOW9VVFZCcWZCZml1cHk5?=
- =?utf-8?B?K3N3RVdwTGlFTDV5U1U0dFBJK3liOVlvbjcvTnF6TUxud1BuWnh0UUdnUVdq?=
- =?utf-8?B?b2lRYjU3RjhnenZYWml0b2M0UG5ya0JZUEhuWGFPZ1ZKUXYyQ1I5VW9BeFJC?=
- =?utf-8?B?aXYyeFVzSGlSdjI0UzRaL3F2NVpJS2kxT0haUlF4QTF0V2J5VksxWHkrTUli?=
- =?utf-8?B?ZW5oaWx4ZExxckFDcFU0UGZlV3kwTE9FZDFmc2wxODg1WDBiQ1FtREdFZGEw?=
- =?utf-8?B?RjZoclBuaHU3N0hZck5OTmhVUndRUTVXWHN1Z0hoZUc1NStvS0czZnVkeTRP?=
- =?utf-8?B?T2hrQk0zdkllMVF4OTdIYTVWSzlxZjNDNnpYWFoxYS9uZ3VQK2MxU2E3K0hM?=
- =?utf-8?B?ajBWRzBpS1lET0cxVUlNK2d0ZDZ3RTR3WU1mL3FrZzZ1emNCRDhDaWliOUla?=
- =?utf-8?B?OG5wQ25WWmVrODdFL2ZoK2gwUGZ2dEpnZVgvUDVUMnMyU2tJN0Y5YklwdEVF?=
- =?utf-8?Q?lsQs/rL1BtdZpFCk=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <E1FBABE61972AD44A6E8D78B5539D4EC@jpnprd01.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        Thu, 2 Jun 2022 01:21:25 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C85A21789D;
+        Wed,  1 Jun 2022 22:21:19 -0700 (PDT)
+X-UUID: 45217320bfc549768738f244ebdcbd4a-20220602
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:4c6e7e22-4ee9-40c7-a15b-1eb1ca0b54e5,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:2a19b09,CLOUDID:1f170415-b515-4766-a72d-4514488fe823,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+        ,QS:0,BEC:nil
+X-UUID: 45217320bfc549768738f244ebdcbd4a-20220602
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
+        (envelope-from <tinghan.shen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1495350360; Thu, 02 Jun 2022 13:21:14 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Thu, 2 Jun 2022 13:21:13 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 2 Jun 2022 13:21:12 +0800
+Message-ID: <3c837acfbefa5b7e23e1121678b5b878f08e4ef2.camel@mediatek.com>
+Subject: Re: [PATCH v1 01/15] dt-binding: remoteproc: mediatek: Support
+ dual-core SCP
+From:   Tinghan Shen <tinghan.shen@mediatek.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        Daisuke Nojiri <dnojiri@chromium.org>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        "Dustin L. Howett" <dustin@howett.net>,
+        Tzung-Bi Shih <tzungbi@kernel.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Prashant Malani <pmalani@chromium.org>,
+        "Enric Balletbo i Serra" <enric.balletbo@collabora.com>,
+        Brian Norris <briannorris@chromium.org>
+CC:     <linux-remoteproc@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <chrome-platform@lists.linux.dev>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <weishunc@google.com>
+Date:   Thu, 2 Jun 2022 13:21:12 +0800
+In-Reply-To: <dd3ea397-fa21-abe5-85ad-b8a4818dc011@linaro.org>
+References: <20220601112201.15510-1-tinghan.shen@mediatek.com>
+         <20220601112201.15510-2-tinghan.shen@mediatek.com>
+         <dd3ea397-fa21-abe5-85ad-b8a4818dc011@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-X-OriginatorOrg: nec.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TYWPR01MB8591.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c5f68675-ac7c-4dce-10f0-08da4456a3bd
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Jun 2022 05:13:33.0830
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: e67df547-9d0d-4f4d-9161-51c6ed1f7d11
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: V1ZlIHKeHh+P3ypXVf3GNGjT3/vPJWjS0EA0pZS75a/RQ5SsXWJvHokrJOAK4M+K3yLzdzwPBaCst9HdN+oT2w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSBPR01MB3205
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-T24gVGh1LCBNYXkgMTksIDIwMjIgYXQgMDI6MTc6NThBTSArMDAwMCwgSE9SSUdVQ0hJIE5BT1lB
-KOWggOWPoyDnm7TkuZ8pIHdyb3RlOg0KPiBPbiBUdWUsIE1heSAxNywgMjAyMiBhdCAwODowMzow
-M1BNICswODAwLCBMaXUgU2hpeGluIHdyb3RlOg0KPiA+IEhlbGxvIE5hb3lhLA0KPiA+IA0KPiA+
-IElzIHRoZXJlIGFueSBwcm9ncmVzcyBvbiBtZW1vcnkgZXJyb3IgaGFuZGxpbmcgb24gMUdCIGh1
-Z2VwYWdlIDogKQ0KPiANCj4gSGkgU2hpeGluLA0KPiANCj4gSSBoYXZlIGEgbGl0dGxlIC4uLiwg
-SSBmb3VuZCB0aGF0IGVycm9yIGhhbmRsaW5nIGZhaWxzIGZvciBhbm9ueW1vdXMgMUdCDQo+IGh1
-Z2VwYWdlIGJlY2F1c2UgX19wYWdlX2hhbmRsZV9wb2lzb24oKSBmYWlscy4gIEkgZG9uJ3QgcGlu
-cG9pbnQgdGhlIGlzc3VlDQo+IHByZWNpc2VseSB5ZXQsIGJ1dCBJIGZlZWwgdGhhdCB0aGVyZSdz
-IHNvbWUgaXNzdWUgaW4gZnJlZV9naWdhbnRpY19wYWdlKCkNCj4gdGhhdCBmYWlscyB0byBzZW5k
-IHRoZSB2aWN0aW0gcmF3IHBhZ2UgdG8gYnVkZHkuICBJIGRvbid0IHRoaW5rIHRoYXQgdGhpcyBp
-cw0KPiBhbiBjcml0aWNhbCBpc3N1ZSBiZWNhdXNlIHRoZSBlcnJvciBwYWdlIHNob3VsZCBub3Qg
-YmUgcmV1c2VkIChpdCdzIGlzb2xhdGVkDQo+IGJ1dCBub3QgaW4gY29udHJvbGxlZCBtYW5uZXIp
-LiAgVGhpcyBwcmV2ZW50cyB1bnBvaXNvbmluZyBhbmQgbWFrZSB0ZXN0aW5nDQo+IGluZWZmaWNp
-ZW50LCBzbyBJJ2QgbGlrZSB0byBmaXguDQoNCkkgcG9zdGVkIGEgcGF0Y2hzZXQgZW5hYmxpbmcg
-MUdCIGh1Z2VwYWdlIHN1cHBvcnQsDQpodHRwczovL2xvcmUua2VybmVsLm9yZy9saW51eC1tbS8y
-MDIyMDYwMjA1MDYzMS43NzE0MTQtMS1uYW95YS5ob3JpZ3VjaGlAbGludXguZGV2L1QvI3UNCg0K
-SXQgcGFzc2VkIG15IHRlc3RpbmcgYnV0IEkgYXBwcmVjaWF0ZSBpdCBpZiB5b3UgdHJ5IHRlc3Rp
-bmcgaXQNCmluIHlvdXIgd29ya2xvYWQuDQoNClRoYW5rcywNCk5hb3lhIEhvcmlndWNoaQ0KDQo+
-IA0KPiA+IA0KPiA+IFRoYW5rcywNCj4gPiBMaXUgU2hpeGluDQo+ID4gDQo+ID4gT24gMjAyMi80
-LzQgNzo0MiwgSE9SSUdVQ0hJIE5BT1lBKOWggOWPo+OAgOebtOS5nykgd3JvdGU6DQo+ID4gPiBP
-biBUaHUsIE1hciAzMSwgMjAyMiBhdCAwNjo1NjoyNVBNICswODAwLCBMaXUgU2hpeGluIHdyb3Rl
-Og0KPiA+ID4+IEhpLA0KPiA+ID4+DQo+ID4gPj4gUmVjZW50bHksIEkgZm91bmQgYSBwcm9ibGVt
-IHdpdGggaHdwb2lzb24gMUdCIGh1Z2VwYWdlLg0KPiA+ID4+IEkgY3JlYXRlZCBhIHByb2Nlc3Mg
-YW5kIG1hcHBlZCAxR0IgaHVnZXBhZ2UuIFRoaXMgcHJvY2VzcyB3aWxsIHRoZW4gZm9yayBhDQo+
-ID4gPj4gY2hpbGQgcHJvY2VzcyBhbmQgd3JpdGUvcmVhZCB0aGlzIDFHQiBodWdlcGFnZS4gVGhl
-biBJIGluamVjdCBod3BvaXNvbiBpbnRvDQo+ID4gPj4gdGhpcyAxR0IgaHVnZXBhZ2UuIFRoZSBj
-aGlsZCBwcm9jZXNzIHRyaWdnZXJzIHRoZSBtZW1vcnkgZmFpbHVyZSBhbmQgaXMNCj4gPiA+PiBi
-ZWluZyBraWxsZWQgYXMgZXhwZWN0ZWQuIEFmdGVyIHRoaXMsIHRoZSBwYXJlbnQgcHJvY2VzcyB3
-aWxsIHRyeSB0byBmb3JrIGENCj4gPiA+PiBuZXcgY2hpbGQgcHJvY2VzcyBhbmQgZG8gdGhlIHNh
-bWUgdGhpbmcuIEl0IGlzIGtpbGxlZCBhZ2FpbiBhbmQgZmluYWxseSBpdA0KPiA+ID4+IGdvZXMg
-aW50byBzdWNoIGFuIGluZmluaXRlIGxvb3AuIEkgZm91bmQgdGhpcyB3YXMgY2F1c2VkIGJ5DQo+
-ID4gPj4gY29tbWl0IDMxMjg2YTg0ODRhOCAoIm1tOiBod3BvaXNvbjogZGlzYWJsZSBtZW1vcnkg
-ZXJyb3IgaGFuZGxpbmcgb24gMUdCIGh1Z2VwYWdlIikNCj4gPiA+IEhlbGxvIFNoaXhpbiwNCj4g
-PiA+DQo+ID4gPiBJdCdzIGxpdHRsZSB1bmNsZWFyIHRvIG1lIGFib3V0IHdoYXQgYmVoYXZpb3Ig
-eW91IGFyZSBleHBlY3RpbmcgYW5kDQo+ID4gPiB3aGF0IHRoZSBpbmZpbml0ZSBsb29wIHJlcGVh
-dHMsIGNvdWxkIHlvdSBleHBsYWluIGxpdHRsZSBtb3JlIGFib3V0IHRoZW0/DQo+ID4gPiAoSSBi
-cmllZmx5IHRyaWVkIHRvIHJlcHJvZHVjZSBpdCwgYnV0IGRpZG4ndCBtYWtlIGl0Li4uKQ0KPiA+
-ID4NCj4gPiA+PiBJdCBsb29rcyBsaWtlIHRoZXJlIGlzIGEgYnVnIGZvciBod3BvaXNvbiAxR0Ig
-aHVnZXBhZ2Ugc28gSSB0cnkgdG8gcmVwcm9kdWNlDQo+ID4gPj4gdGhlIGJ1ZyBkZXNjcmliZWQu
-IEFmdGVyIHRyeWluZyB0byByZXZlcnQgdGhlIHBhdGNoIGluIGFuIGVhcmxpZXIgdmVyc2lvbiBv
-Zg0KPiA+ID4+IHRoZSBrZXJuZWwsIEkgcmVwcm9kdWNlIHRoZSBidWcgZGVzY3JpYmVkLiBUaGVu
-IEkgdHJ5IHRvIHJldmVydCB0aGUgcGF0Y2ggaW4NCj4gPiA+PiBsYXRlc3QgdmVyc2lvbiwgYW5k
-IGZpbmQgdGhlIGJ1ZyBpcyBubyBsb25nZXIgcmVwcm9kdWNlZC4NCj4gPiA+Pg0KPiA+ID4+IEkg
-Y29tcGFyZSB0aGUgY29kZSBwYXRocyBvZiAxIEdCIGh1Z2VwYWdlIGFuZCAyIE1CIGh1Z2VwYWdl
-IGZvciBzZWNvbmQgbWFkdmlzZShNQURWX0hXUE9JU09OKSwNCj4gPiA+PiBhbmQgZmluZCB0aGF0
-IHRoZSBwcm9ibGVtIGlzIGNhdXNlZCBiZWNhdXNlIGluIGd1cF9wdWRfcmFuZ2UoKSwgcHVkX25v
-bmUoKSBhbmQNCj4gPiA+PiBwdWRfaHVnZSgpIGJvdGggcmV0dXJuIGZhbHNlIGFuZCB0aGVuIHRy
-aWdnZXIgdGhlIGJ1Zy4gQnV0IGluIGd1cF9wbWRfcmFuZ2UoKSwNCj4gPiA+PiB0aGUgcG1kX25v
-bmUoKSBpcyBtb2RpZmllZCB0byBwbWRfcHJlc2VudCgpIHdoaWNoIHdpbGwgbWFrZSBjb2RlIHJl
-dHVybiBkaXJlY3RseS4NCj4gPiA+PiBUaGUgSSBmaW5kIHRoYXQgaXQgaXMgY29tbWl0IDE1NDk0
-NTIwYjc3NiAoIm1tOiBmaXggZ3VwX3B1ZF9yYW5nZSIpIHdoaWNoDQo+ID4gPj4gY2F1c2UgbGF0
-ZXN0IHZlcnNpb24gbm90IHJlcHJvZHVjZWQuIEkgYmFja3BvcnQgY29tbWl0IDE1NDk0NTIwYjc3
-NiBpbg0KPiA+ID4+IGVhcmxpZXIgdmVyc2lvbiBhbmQgZmluZCB0aGUgYnVnIGlzIG5vIGxvbmdl
-ciByZXByb2R1Y2VkIGVpdGhlci4NCj4gPiA+IFRoYW5rIHlvdSBmb3IgdGhlIGFuYWx5c2lzLg0K
-PiA+ID4gU28gdGhpcyBwYXRjaCBtaWdodCBtYWtlIDMxMjg2YTg0ODRhOCB1bm5lY2Vzc2FyeSwg
-dGhhdCdzIGEgZ29vZCBuZXdzLg0KPiA+ID4NCj4gPiA+PiBTbyBJJ2QgbGlrZSB0byBjb25zdWx0
-IHRoYXQgaXMgaXQgdGhlIHRpbWUgdG8gcmV2ZXJ0IGNvbW1pdCAzMTI4NmE4NDg0YTg/DQo+ID4g
-Pj4gT3IgaWYgd2UgbW9kaWZ5IHB1ZF9odWdlIHRvIGJlIHNpbWlsYXIgd2l0aCBwbWRfaHVnZSwg
-aXMgaXQgc3VmZmljaWVudD8NCj4gPiA+Pg0KPiA+ID4+IEkgYWxzbyBub3RpY2VkIHRoZXJlIGlz
-IGEgVE9ETyBjb21tZW50IGluIG1lbW9yeV9mYWlsdXJlX2h1Z2V0bGIoKToNCj4gPiA+PiAgICAg
-LSBjb252ZXJzaW9uIG9mIGEgcHVkIHRoYXQgbWFwcyBhbiBlcnJvciBodWdldGxiIGludG8gaHdw
-b2lzb24NCj4gPiA+PiAgICAgICBlbnRyeSBwcm9wZXJseSB3b3JrcywgYW5kDQo+ID4gPj4gICAg
-IC0gb3RoZXIgbW0gY29kZSB3YWxraW5nIG92ZXIgcGFnZSB0YWJsZSBpcyBhd2FyZSBvZiBwdWQt
-YWxpZ25lZA0KPiA+ID4+ICAgICAgIGh3cG9pc29uIGVudHJpZXMuIA0KPiA+ID4gVGhlc2UgYXJl
-IHNpbXBseSBtaW5pbXVtIHJlcXVpcmVtZW50cywgYnV0IG1pZ2h0IG5vdCBiZSBzdWZmaWNpZW50
-Lg0KPiA+ID4gV2UgbmVlZCB0ZXN0aW5nICh3aXRoIHJlbW92aW5nIDMxMjg2YTg0ODRhOCkgdG8g
-bWFrZSBzdXJlIHRoYXQNCj4gPiA+IHRoZXJlJ3Mgbm8gaXNzdWVzIG9uIHNvbWUgY29ybmVyIGNh
-c2VzLg0KPiA+ID4gKEkgc3RhcnQgdG8gZXh0ZW5kIGV4aXN0aW5nIGh1Z2V0bGItcmVsYXRlZCB0
-ZXN0Y2FzZXMgdG8gMUdCIG9uZXMuKQ0KPiA+ID4NCj4gPiA+IFRoYW5rcywNCj4gPiA+IE5hb3lh
-IEhvcmlndWNoaQ0KPiA+ID4NCj4gPiA+PiBJJ20gbm90IHN1cmUgd2hldGhlciB0aGUgYWJvdmUg
-Zml4IGFyZSBzdWZmaWNpZW50LCBzbyBpcyB0aGVyZSBhbnl0aGluZyBlbHNlIG5lZWQNCj4gPiA+
-PiB0byBhbmFseXNpcyB0aGF0IEkgaGF2ZW4ndCBjb25zaWRlcmVkPw==
+Hi Krzysztof,
+
+On Wed, 2022-06-01 at 13:50 +0200, Krzysztof Kozlowski wrote:
+> On 01/06/2022 13:21, Tinghan Shen wrote:
+> > The SCP co-processor is a dual-core RISC-V MCU on MT8195.
+> > 
+> > Add a new property to identify each core and helps to find drivers
+> > through device tree API to cooperate with each other, e.g. boot flow and
+> > watchdog timeout flow.
+> > 
+> > Add a new compatile for the driver of SCP 2nd core.
+> > 
+> > Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
+> > ---
+> >  .../devicetree/bindings/remoteproc/mtk,scp.yaml      | 12 ++++++++++++
+> >  1 file changed, 12 insertions(+)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/remoteproc/mtk,scp.yaml
+> > b/Documentation/devicetree/bindings/remoteproc/mtk,scp.yaml
+> > index eec3b9c4c713..b181786d9575 100644
+> > --- a/Documentation/devicetree/bindings/remoteproc/mtk,scp.yaml
+> > +++ b/Documentation/devicetree/bindings/remoteproc/mtk,scp.yaml
+> > @@ -20,6 +20,7 @@ properties:
+> >        - mediatek,mt8186-scp
+> >        - mediatek,mt8192-scp
+> >        - mediatek,mt8195-scp
+> > +      - mediatek,mt8195-scp-dual
+> >  
+> >    reg:
+> >      description:
+> > @@ -57,6 +58,16 @@ properties:
+> >    memory-region:
+> >      maxItems: 1
+> >  
+> > +  mediatek,scp-core:
+> > +    $ref: /schemas/types.yaml#/definitions/uint32-array
+> > +    description:
+> > +      The property value is a list with 2 items, a core id and a phandle
+> 
+> uint32, not phandle.
+> 
+> > +      to the sibling SCP node. 
+> 
+> Skip this. First part is obvious from the schema, second part should be
+> described via items.
+> 
+> The core id represents the id of the dts node contains
+> > +      this property. The valid values of core id are 0 and 1 for dual-core SCP.
+> > +      The phandle of sibling SCP node is used to find the register settings,
+> > +      trigger core dependent callback, and invoke rproc API.
+> 
+> Entire description did not help me to understand what's this. So far it
+> looks like it is not a hardware property but some programming help, so
+> it does not look like properly described in bindings.
+> 
+> > +    maxItems: 1
+> 
+> In description you said - two items.
+> 
+> You need allOf:if:then disallowing this property for other variants.
+> 
+> > +
+> >  required:
+> >    - compatible
+> >    - reg
+> > @@ -115,6 +126,7 @@ examples:
+> >          reg-names = "sram", "cfg", "l1tcm";
+> >          clocks = <&infracfg CLK_INFRA_SCPSYS>;
+> >          clock-names = "main";
+> > +        mediatek,scp-core = <0 &scp_dual>;
+> 
+> This looks like phandle, so wrong type.
+> >  
+> >          cros_ec {
+> >              mediatek,rpmsg-name = "cros-ec-rpmsg";
+> 
+
+Thanks for your feedback.
+After looking for a comparable uses case, I find out a different approach.
+
+  mediatek,scp-core:
+    $ref: "/schemas/types.yaml#/definitions/phandle-array"
+    description:
+      Enable the dual-core support in scp driver.
+    items:
+      - items:
+          - description: Assign a core id for current scp node.
+            enum: [0, 1]
+          - description:
+              Phandle of another SCP node. This helps to find
+              the scp driver of another core to trigger core
+              dependent callback, invoke rproc subdevice API, etc.
+
+> 
+> Best regards,
+> Krzysztof
+
