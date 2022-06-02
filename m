@@ -2,75 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89DDFC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 14:56:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96183C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 14:56:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236273AbiFBO4d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 10:56:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38042 "EHLO
+        id S236284AbiFBO4h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 10:56:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232395AbiFBO4V (ORCPT
+        with ESMTP id S236275AbiFBO43 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 10:56:21 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D10A02332CE
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 07:56:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=ydvIhpgLEADdD5BuqSKgbyA0NtFIKzXjlgMW574OjrM=; b=FEbhP23QCwz/ndLVTOKOjs3/ig
-        5Nh/epGvQmigX+9Pz2L42sIZRcPFusyUD+kd1dQbkt2ZVzl0erGcMOaNsFdnmeTFHU9FrUZAeRIef
-        MIUABf3qnAtRdh660k2pjtoF+Tohk3SZfMyWTu5K80UrR6czPhArQdQwpD6ERue3fcxMv+ehxUP32
-        3cKLQEmfU/mPSZjP3kZB0EY1aF4YYIhkAQ9CFhwMO18/HyAvx4I8p1ZrTE8nH2BrNbYKqs+QuhT+s
-        HG2ta4hMNWMk990aFyDcyjweysXJb1oUte+L+DZog7D9JD2I/nROy7HtAZEqf+sO4S2iI+/Fv1XDY
-        6M3Tevlg==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nwmF1-007DXh-Ky; Thu, 02 Jun 2022 14:56:03 +0000
-Message-ID: <4e2ef3c7-f329-eeaf-f330-3da2b30b0b7a@infradead.org>
-Date:   Thu, 2 Jun 2022 07:55:58 -0700
+        Thu, 2 Jun 2022 10:56:29 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82DF32AD5F2
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 07:56:25 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id s12so3261746ejx.3
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 07:56:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zCSSFQ2L4JXpdmXrE1zZ/i+Swl9oJ6KcROQdZ1N3Ha8=;
+        b=ITZNq6NL54WMwUJGlIfxvdXqqOqhvvCVLdmzhwDzjVYtZoXqK/cElJsPRARmEaVe3x
+         n+jVzu4v3nvlV2c7IJFSYkm5LXlZzZH2ujl0FiOQ9Z9rnMLleRRdaFJDfwhCfmx/Zv8L
+         XNqtFYriy+qTO3tQmgY6aqVsGhqB7Hrww9Ypy9DFg/vMxYzcXYOaSe7BcTjQbClI9Syl
+         2ysK/PXoPGwVP3Ns8dIW9wZRm500ED6Jr57O8MBF/3Yzl0wY+xHa79x1ja1/6hBc8XCQ
+         BFQLCWqTG0ijre9u3cVf0qTPjjUX9qpH/zObaEgGaXgO+sMB0rMDymdaGebAESww0kax
+         YqHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zCSSFQ2L4JXpdmXrE1zZ/i+Swl9oJ6KcROQdZ1N3Ha8=;
+        b=fKE3u8/6r7mgfL3kbrt4vcR8AlENqvQ4OBVH/FBV8CvEpW2JttGSeqDELBHmBuoXhs
+         xXGCTfEwaD7mv3Y2PO2R6xAVCk/n4NLpGx7cRMNXMJCvlL13attMApXQVzvAMpaKtXrJ
+         OkgMaHX6hUB+9U7BjddogQH0UHSKNU9blFSooj6N2f1ozi+M746kwPWSLIhHRHmvyMl1
+         QzNWE1rr5nC8kBLI2qk7IYUpOmdR4PMVeVS9ZNblW4MFVfbQHipiOu00tlqZZX+zk3vs
+         3+7gPJYklL5Tgqq2VvJwM58qOc5Z/atcGWDpjm5QiVQM2zA965DoPTBWU6sPA8DZV/zC
+         C4Og==
+X-Gm-Message-State: AOAM530BetAcdeiudihbzcWPrKjZiwAUlehGHRlOxhYZU9alXXmYBbjZ
+        FsuRxcizD5vK5v+0lga4bJ4=
+X-Google-Smtp-Source: ABdhPJyHM+S/vrNSui5eDofEaJLcLlz5Ju+mz8n8aLIwipJ9sog0+AFkOD1upwCZfy9Aj/HP+VkkrQ==
+X-Received: by 2002:a17:907:6d1f:b0:6fe:e53b:7f53 with SMTP id sa31-20020a1709076d1f00b006fee53b7f53mr4659077ejc.375.1654181783946;
+        Thu, 02 Jun 2022 07:56:23 -0700 (PDT)
+Received: from orion.localdomain ([93.99.228.15])
+        by smtp.gmail.com with ESMTPSA id wj17-20020a170907051100b006fed9a0eb17sm1800254ejb.187.2022.06.02.07.56.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Jun 2022 07:56:23 -0700 (PDT)
+Received: by orion.localdomain (Postfix, from userid 1003)
+        id 2879BA0884; Thu,  2 Jun 2022 16:56:57 +0200 (CEST)
+From:   =?UTF-8?q?Jakub=20Mat=C4=9Bna?= <matenajakub@gmail.com>
+To:     akpm@linux-foundation.org
+Cc:     linux-mm@kvack.org, patches@lists.linux.dev,
+        linux-kernel@vger.kernel.org, vbabka@suse.cz, mhocko@kernel.org,
+        mgorman@techsingularity.net, willy@infradead.org,
+        liam.howlett@oracle.com, hughd@google.com, kirill@shutemov.name,
+        riel@surriel.com, rostedt@goodmis.org, peterz@infradead.org,
+        =?UTF-8?q?Jakub=20Mat=C4=9Bna?= <matenajakub@gmail.com>
+Subject: [PATCH v2 0/2] Refactor of vma_merge and new merge call
+Date:   Thu,  2 Jun 2022 16:56:40 +0200
+Message-Id: <20220602145642.16948-1-matenajakub@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 1/2] drivers: misc: intel_sysid: Add sysid from arch to
- drivers
-Content-Language: en-US
-To:     kah.jing.lee@intel.com, arnd@arndb.de, gregkh@linuxfoundation.org
-Cc:     linux-kernel@vger.kernel.org, dinguyen@kernel.org,
-        tien.sung.ang@intel.com, Ley Foon Tan <lftan@altera.com>
-References: <20220602122212.3021232-1-kah.jing.lee@intel.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220602122212.3021232-1-kah.jing.lee@intel.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi--
+I am currently working on my master's thesis trying to increase
+number of merges of VMAs currently failing because of page offset
+incompatibility and difference in their anon_vmas. The following
+refactor and added merge call included in this series is just two
+smaller upgrades I created along the way.
 
-On 6/2/22 05:22, kah.jing.lee@intel.com wrote:
-> diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
-> index 41d2bb0ae23a..a31489cc092c 100644
-> --- a/drivers/misc/Kconfig
-> +++ b/drivers/misc/Kconfig
-> @@ -483,6 +483,15 @@ config OPEN_DICE
->  
->  	  If unsure, say N.
->  
-> +config INTEL_SYSID
-> +	tristate "Intel System ID"
-> +	help
-> +	  This enables Intel System ID soft core driver.
-> +	  Say Y here if you want to build a driver for Intel System ID driver.
+The rest of the work is still being worked on but was send to mailing
+list as a RFC:
+https://lore.kernel.org/all/20220516125405.1675-1-matenajakub@gmail.com/
 
-Probably drop the last (redundant)                                     driver
+This patch series is based on tag v5.18. This is third version,
+I added a mremap expand merge test, added a comment and new variables to
+the merge call and based the series on a newer kernel version.
 
-> +
-> +	  To compile this driver as a module, choose M here: the
-> +	  module will be called intel_sysid. If unsure, say N here.
-> +
+Jakub Matěna (2):
+  mm: refactor of vma_merge()
+  mm: add merging after mremap resize
+
+ mm/mmap.c   | 87 +++++++++++++++++++++++------------------------------
+ mm/mremap.c |  8 +++--
+ 2 files changed, 43 insertions(+), 52 deletions(-)
 
 -- 
-~Randy
+2.35.1
+
