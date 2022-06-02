@@ -2,112 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2EDBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 15:00:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BEE0CCA47A
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 15:02:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236321AbiFBPAQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 11:00:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52256 "EHLO
+        id S236337AbiFBPCU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 11:02:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236305AbiFBPAN (ORCPT
+        with ESMTP id S236330AbiFBPCS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 11:00:13 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9B61635C;
-        Thu,  2 Jun 2022 08:00:12 -0700 (PDT)
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 252ElRtr030329;
-        Thu, 2 Jun 2022 15:00:10 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : reply-to : subject : to : cc : references : from :
- in-reply-to : content-type : content-transfer-encoding; s=pp1;
- bh=9ZGzFHtuo+KLmxdJa7LKUjTf9KUlOisU8ToyMKZ8tuQ=;
- b=G2LZPsEj5VU/3+SkksJB3fZwQDZOE1RmN3pYuHt5Qaze+Fw+pQSKe9I5IG20IHNSxflV
- 1lsrYTUK2VPeEcHDVEoHeJQxXVm0nk32uNrog5lw0a5Ph9x1SvYAkarWwoFOuIu1TVvr
- ye6OBK5Hst093wSjZOl/yarWm96o/AG5QjTOiMin1jabNPYbsekQW+ot78P0TSPPkXOd
- QomIbYeM8wmzDf0qXr9RXBioY0mtN29drhWb/hLbKi5s7bw2bo9eMHSzGx1ERH18LKEz
- 75kivNKKVLPv7puszvPqYYwDwfvwl/1OCJSeoMpCc03TMHQK12a2BwhdK5i4u2I6ywn9 AQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gey9586w6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 02 Jun 2022 15:00:10 +0000
-Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 252EnWkR033941;
-        Thu, 2 Jun 2022 15:00:09 GMT
-Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gey9586vd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 02 Jun 2022 15:00:09 +0000
-Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
-        by ppma03dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 252Eoc14007348;
-        Thu, 2 Jun 2022 15:00:08 GMT
-Received: from b03cxnp08027.gho.boulder.ibm.com (b03cxnp08027.gho.boulder.ibm.com [9.17.130.19])
-        by ppma03dal.us.ibm.com with ESMTP id 3gd3yn0sgu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 02 Jun 2022 15:00:08 +0000
-Received: from b03ledav003.gho.boulder.ibm.com (b03ledav003.gho.boulder.ibm.com [9.17.130.234])
-        by b03cxnp08027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 252F076X8979086
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 2 Jun 2022 15:00:07 GMT
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 374B76A057;
-        Thu,  2 Jun 2022 15:00:07 +0000 (GMT)
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 501DE6A05A;
-        Thu,  2 Jun 2022 15:00:06 +0000 (GMT)
-Received: from [9.60.75.219] (unknown [9.60.75.219])
-        by b03ledav003.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Thu,  2 Jun 2022 15:00:06 +0000 (GMT)
-Message-ID: <64bd26eb-b3ff-c3be-247b-c81681227e5e@linux.ibm.com>
-Date:   Thu, 2 Jun 2022 11:00:05 -0400
+        Thu, 2 Jun 2022 11:02:18 -0400
+X-Greylist: delayed 133 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 02 Jun 2022 08:02:17 PDT
+Received: from mail1.wrs.com (unknown-3-146.windriver.com [147.11.3.146])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A765411E1F8;
+        Thu,  2 Jun 2022 08:02:17 -0700 (PDT)
+Received: from ala-exchng01.corp.ad.wrs.com (ala-exchng01.corp.ad.wrs.com [147.11.82.252])
+        by mail1.wrs.com (8.15.2/8.15.2) with ESMTPS id 252F2AvY010739
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 2 Jun 2022 08:02:10 -0700
+Received: from otp-dpanait-l2.corp.ad.wrs.com (128.224.125.150) by
+ ala-exchng01.corp.ad.wrs.com (147.11.82.252) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.12; Thu, 2 Jun 2022 08:02:08 -0700
+From:   Dragos-Marian Panait <dragos.panait@windriver.com>
+To:     <stable@vger.kernel.org>
+CC:     Haimin Zhang <tcs.kernel@gmail.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
+        <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        Dragos-Marian Panait <dragos.panait@windriver.com>
+Subject: [PATCH 4.14 1/1] block-map: add __GFP_ZERO flag for alloc_page in function bio_copy_kern
+Date:   Thu, 2 Jun 2022 18:01:57 +0300
+Message-ID: <20220602150157.2255674-2-dragos.panait@windriver.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220602150157.2255674-1-dragos.panait@windriver.com>
+References: <20220602150157.2255674-1-dragos.panait@windriver.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Reply-To: jjherne@linux.ibm.com
-Subject: Re: [PATCH v19 14/20] s390/vfio-ap: reset queues after adapter/domain
- unassignment
-Content-Language: en-US
-To:     Tony Krowiak <akrowiak@linux.ibm.com>, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     freude@linux.ibm.com, borntraeger@de.ibm.com, cohuck@redhat.com,
-        mjrosato@linux.ibm.com, pasic@linux.ibm.com,
-        alex.williamson@redhat.com, kwankhede@nvidia.com,
-        fiuczy@linux.ibm.com
-References: <20220404221039.1272245-1-akrowiak@linux.ibm.com>
- <20220404221039.1272245-15-akrowiak@linux.ibm.com>
-From:   "Jason J. Herne" <jjherne@linux.ibm.com>
-Organization: IBM
-In-Reply-To: <20220404221039.1272245-15-akrowiak@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: xfBvXxMCbj73eV5sSl7FY7rVBH5QExKY
-X-Proofpoint-ORIG-GUID: 3lJK_ZqDUyWMiA-NfKWzQBKbc93qrgQa
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
- definitions=2022-06-02_03,2022-06-02_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
- lowpriorityscore=0 impostorscore=0 mlxlogscore=999 spamscore=0
- clxscore=1015 adultscore=0 bulkscore=0 mlxscore=0 phishscore=0
- priorityscore=1501 suspectscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2204290000 definitions=main-2206020063
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [128.224.125.150]
+X-ClientProxiedBy: ala-exchng01.corp.ad.wrs.com (147.11.82.252) To
+ ala-exchng01.corp.ad.wrs.com (147.11.82.252)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/4/22 18:10, Tony Krowiak wrote:
-> When an adapter or domain is unassigned from an mdev attached to a KVM
-> guest, one or more of the guest's queues may get dynamically removed. Since
-> the removed queues could get re-assigned to another mdev, they need to be
-> reset. So, when an adapter or domain is unassigned from the mdev, the
-> queues that are removed from the guest's AP configuration (APCB) will be
-> reset.
-> 
-> Signed-off-by: Tony Krowiak <akrowiak@linux.ibm.com>
-> ---
->   drivers/s390/crypto/vfio_ap_ops.c     | 152 +++++++++++++++++++-------
->   drivers/s390/crypto/vfio_ap_private.h |   2 +
->   2 files changed, 114 insertions(+), 40 deletions(-)
+From: Haimin Zhang <tcs.kernel@gmail.com>
 
+commit cc8f7fe1f5eab010191aa4570f27641876fa1267 upstream.
 
-Reviewed-by: Jason J. Herne <jjherne@linux.ibm.com>
+Add __GFP_ZERO flag for alloc_page in function bio_copy_kern to initialize
+the buffer of a bio.
+
+Signed-off-by: Haimin Zhang <tcs.kernel@gmail.com>
+Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220216084038.15635-1-tcs.kernel@gmail.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+[DP: Backported to 4.14: Manually added __GFP_ZERO flag]
+Signed-off-by: Dragos-Marian Panait <dragos.panait@windriver.com>
+---
+ block/bio.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/block/bio.c b/block/bio.c
+index 30df1b45dde8..1eaf31976702 100644
+--- a/block/bio.c
++++ b/block/bio.c
+@@ -1657,7 +1657,7 @@ struct bio *bio_copy_kern(struct request_queue *q, void *data, unsigned int len,
+ 		if (bytes > len)
+ 			bytes = len;
+ 
+-		page = alloc_page(q->bounce_gfp | gfp_mask);
++		page = alloc_page(q->bounce_gfp | __GFP_ZERO | gfp_mask);
+ 		if (!page)
+ 			goto cleanup;
+ 
+-- 
+2.36.1
+
