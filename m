@@ -2,85 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69DDBC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 15:50:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49C88C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 15:52:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236641AbiFBPua (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 11:50:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51050 "EHLO
+        id S236591AbiFBPwz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 11:52:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236599AbiFBPuS (ORCPT
+        with ESMTP id S235319AbiFBPwx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 11:50:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D79A2ED7B;
-        Thu,  2 Jun 2022 08:50:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6C862B81FB7;
-        Thu,  2 Jun 2022 15:50:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0F74CC34114;
-        Thu,  2 Jun 2022 15:50:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654185013;
-        bh=Tr5NsmZ75wsMcr/rnTwmOZKbA/bD5/3grGU5g8/DvUQ=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=PpOfKD+19naoj8FeQ5/iScsD1rVCMffgti9q7Zl6YyJFXTIftAglva0da7tfY5vFZ
-         9byaEXld5PMtzOS4YQoTmceKRApPcnTyJuE7ZLfLymi29I0xt2SNHgQ/pMW5ppz0Nk
-         gVpiZHVLK5aJcQeLmQYulHL4RcHoEMAur4/a3B+T1PmM/6WCoUXz6Y7jziMwqIri1e
-         L8vbVeruojNVpsmZpXPqHoH+WIoAZ6Cp6wyeRimooXAkH3b72glBHwhtRdpa8WKHJd
-         RVSj7+7l1KD0zWEQxbDFNVAXo9lhTUIPNZL8lW/sB4bqMS8SSI7qY6KER6e980IM0R
-         nmqJdC/4fbiyA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E5421EAC09C;
-        Thu,  2 Jun 2022 15:50:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Thu, 2 Jun 2022 11:52:53 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79D471153;
+        Thu,  2 Jun 2022 08:52:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654185172; x=1685721172;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=stX6Gbo8Um10A6pAxqR7sGPejpzsxUNu9FxYx00Kap4=;
+  b=cmmH804WMCgdWqBbGi9PAHWdewtf0Acbsc2AHjOKjIGGj/F7TeDz9RCa
+   eiqNBYEukIPoPtDnxHV+UxihmGF+OOx4pe08hDffANZNqVpdHT64iddu1
+   qNA+dICQlk/lnUXQLRuCTJH+16qkXo5UUDgaarP4lXf6lZDrqTjB/f/yh
+   VrNuLlAc90M8uQ+ccS+HLCgjCkXYMsH+azoK2H8Hh8VwiaKMnxdjiV1zz
+   Qz/j7TsMgNAdMkO2+O0otoooXk8/ApKUNdHFkE+RcrNB7prdbG2M1Ycsh
+   Gx0vwnVvO/GNdfL2VpMTTnh4j2ipH+tjbCggvHr9CK5du1imrWmo4mv8S
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10366"; a="256468521"
+X-IronPort-AV: E=Sophos;i="5.91,271,1647327600"; 
+   d="scan'208";a="256468521"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2022 08:52:50 -0700
+X-IronPort-AV: E=Sophos;i="5.91,271,1647327600"; 
+   d="scan'208";a="606908627"
+Received: from bcappucc-mobl3.amr.corp.intel.com (HELO spandruv-desk1.amr.corp.intel.com) ([10.212.183.28])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2022 08:52:49 -0700
+Message-ID: <6caf53e059758234ee12a236f967412f1df1f8a0.camel@linux.intel.com>
+Subject: Re: x86/mce/therm_throt incorrect THERM_STATUS_CLEAR_CORE_MASK?
+From:   srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
+To:     Arnd Bergmann <arnd@kernel.org>, Len Brown <len.brown@intel.com>,
+        Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Thu, 02 Jun 2022 08:52:49 -0700
+In-Reply-To: <CAK8P3a1mkHEjRJgJPsRy+kuN=48=JEDJAeR2z9n+O71qbJ8hSA@mail.gmail.com>
+References: <CAK8P3a1mkHEjRJgJPsRy+kuN=48=JEDJAeR2z9n+O71qbJ8hSA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v3 0/2] Bluetooth: hci_bcm: Autobaud mode support
-From:   patchwork-bot+bluetooth@kernel.org
-Message-Id: <165418501293.10758.7339216786088070363.git-patchwork-notify@kernel.org>
-Date:   Thu, 02 Jun 2022 15:50:12 +0000
-References: <cover.1653916330.git.hakan.jansson@infineon.com>
-In-Reply-To: <cover.1653916330.git.hakan.jansson@infineon.com>
-To:     Hakan Jansson <hakan.jansson@infineon.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        linus.walleij@linaro.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com,
-        linux-bluetooth@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
-
-This series was applied to bluetooth/bluetooth-next.git (master)
-by Marcel Holtmann <marcel@holtmann.org>:
-
-On Mon, 30 May 2022 17:02:16 +0200 you wrote:
-> Some devices (e.g. CYW5557x) require autobaud mode to enable FW loading.
-> Autobaud mode can also be required on some boards where the controller
-> device is using a non-standard baud rate when first powered on.
+On Thu, 2022-06-02 at 11:19 +0200, Arnd Bergmann wrote:
+> I have a Xeon W-2265 (family 6, model 85, stepping 7) that started
+> constantly spewing messages from the therm_throt driver after one
+> core overheated:
 > 
-> Only a limited subset of HCI commands are supported in autobaud mode.
+I think this is a Cascade Lake system. Have you tried the latest micro-
+code?
+
+Thanks,
+Srinivas
+
+
+> May 31 13:57:54 kernel: [15512.209474] unchecked MSR access error:
+> WRMSR to 0x19c (tried to write 0x0000000000002a80) at rIP:
+> 0xffffffff9f67f974 (native_write_msr+0x4/0x20)
+> May 31 13:57:54 kernel: [15512.209486] Call Trace:
+> May 31 13:57:54 kernel: [15512.209488]  <TASK>
+> May 31 13:57:54 kernel: [15512.209489]  ?
+> throttle_active_work+0xea/0x1f0
+> May 31 13:57:54 kernel: [15512.209498]  process_one_work+0x21d/0x3c0
+> May 31 13:57:54 kernel: [15512.209502]  worker_thread+0x4d/0x3f0
+> May 31 13:57:54 kernel: [15512.209505]  ?
+> process_one_work+0x3c0/0x3c0
+> May 31 13:57:54 kernel: [15512.209508]  kthread+0x127/0x150
+> May 31 13:57:54 kernel: [15512.209510]  ?
+> set_kthread_struct+0x40/0x40
+> May 31 13:57:54 kernel: [15512.209513]  ret_from_fork+0x1f/0x30
+> ...
+> May 31 13:57:59 kernel: [15517.333445] CPU11: Core temperature is
+> above threshold, cpu clock is throttled (total events = 3)
 > 
-> These patches add a DT property, "brcm,requires-autobaud-mode", to control
-> autobaud mode selection.
+> I could not find CPU model specific documentation for this register,
+> but I see that in [1], the bits 13 through 15 are marked as reserved
+> in some cases but not others. Manually writing the value 0xa80
+> instead of 0x2a80 from user space makes the warnings stop, so
+> my guess is that this CPU does not support the 0x2000 bit:
 > 
-> [...]
-
-Here is the summary with links:
-  - [v3,1/2] dt-bindings: net: broadcom-bluetooth: Add property for autobaud mode
-    https://git.kernel.org/bluetooth/bluetooth-next/c/6d912cc3c21f
-  - [v3,2/2] Bluetooth: hci_bcm: Add support for FW loading in autobaud mode
-    https://git.kernel.org/bluetooth/bluetooth-next/c/3f125894bed7
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+> $ sudo  wrmsr -p 11 0x19c 0xa80 ; dmesg
+> [177764.874555] msr: Write to unrecognized MSR 0x19c by wrmsr (pid:
+> 142969).
+> [177764.874560] msr: See
+> https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git/about for
+> details.
+> [177765.371180] CPU11: Core temperature/speed normal (total events =
+> 42)
+> [177765.371180] CPU23: Core temperature/speed normal (total events =
+> 42)
+> 
+> I have not tried the patch below, but I think this would address it
+> on my
+> system, while likely breaking other machines. Any ideas what the
+> correct fix is?
+> 
+>       Arnd
+> 
+> diff --git a/drivers/thermal/intel/therm_throt.c
+> b/drivers/thermal/intel/therm_throt.c
+> index 8352083b87c7..620d7f4c013e 100644
+> --- a/drivers/thermal/intel/therm_throt.c
+> +++ b/drivers/thermal/intel/therm_throt.c
+> @@ -196,7 +196,7 @@ static const struct attribute_group
+> thermal_attr_group = {
+>  #define THERM_THROT_POLL_INTERVAL      HZ
+>  #define THERM_STATUS_PROCHOT_LOG       BIT(1)
+> 
+> -#define THERM_STATUS_CLEAR_CORE_MASK (BIT(1) | BIT(3) | BIT(5) |
+> BIT(7) | BIT(9) | BIT(11) | BIT(13) | BIT(15))
+> +#define THERM_STATUS_CLEAR_CORE_MASK (BIT(1) | BIT(3) | BIT(5) |
+> BIT(7) | BIT(9) | BIT(11))
+>  #define THERM_STATUS_CLEAR_PKG_MASK  (BIT(1) | BIT(3) | BIT(5) |
+> BIT(7) | BIT(9) | BIT(11))
+> 
+>  static void clear_therm_status_log(int level)
+> 
+> [1]
+> https://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-vol-3b-part-2-manual.pdf
 
