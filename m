@@ -2,110 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CCF6CCA479
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 06:18:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1596C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 06:19:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230331AbiFBGSs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 02:18:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58266 "EHLO
+        id S230118AbiFBGTU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 02:19:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbiFBGSm (ORCPT
+        with ESMTP id S229457AbiFBGTQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 02:18:42 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 158A4138918;
-        Wed,  1 Jun 2022 23:18:40 -0700 (PDT)
-X-UUID: 0a7e62f55cba46cba0a6c51946e8b18b-20220602
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:e972d23b-ed1e-425a-a388-017c63e457f3,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:2a19b09,CLOUDID:aa6e0615-b515-4766-a72d-4514488fe823,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
-        ,QS:0,BEC:nil
-X-UUID: 0a7e62f55cba46cba0a6c51946e8b18b-20220602
-Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw01.mediatek.com
-        (envelope-from <yong.wu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 263189467; Thu, 02 Jun 2022 14:18:35 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Thu, 2 Jun 2022 14:18:34 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkmbs11n2.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
- Transport; Thu, 2 Jun 2022 14:18:33 +0800
-Message-ID: <8ac7a6766c635412b408cb5295ddb3da37541140.camel@mediatek.com>
-Subject: Re: [PATCH 1/3] dt-bindings: iommu: mediatek: add binding
- documentation for MT8365 SoC
-From:   Yong Wu <yong.wu@mediatek.com>
-To:     Fabien Parent <fparent@baylibre.com>
-CC:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        "Rob Herring" <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        <iommu@lists.linux-foundation.org>,
-        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-Date:   Thu, 2 Jun 2022 14:18:33 +0800
-In-Reply-To: <20220530180328.845692-1-fparent@baylibre.com>
-References: <20220530180328.845692-1-fparent@baylibre.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Thu, 2 Jun 2022 02:19:16 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4C20138918
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 23:19:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654150754; x=1685686754;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=KtSPVOdPn0+cS/TkXKKvL4dDM8chwCM+l+IUKX2FPQc=;
+  b=D0pEdWJ88zIkeCM44hV10T3vOlQd6gdB0rYKYm6GDOc0LIFGjQSgqS27
+   GnBK522BQgdEB/zn/vx9CaAn2IrJZXCEMhXwzShlzxYzSzf/SPxh6oZyC
+   XS/Ra+2aDS06KrTxfDy1w/kC326z6zrMalCbfK7iVPKEjmSGbQxClWpfe
+   UZQybvrOTqOXpghDkVVaktJFeFcvjQ15qZBbuNih7ifrbK1c2cGqCvIPM
+   jGgxrlYtNXsxX6MwGHM1/kLzVyVQrNX5SVqdDToR7opkAQZlc2jB1WzBY
+   aKsaW+y7v8kkzZW58EW8pa5MK6OLe6fMgJrXfwshHYKUMDlNaJWvzudRw
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10365"; a="338884437"
+X-IronPort-AV: E=Sophos;i="5.91,270,1647327600"; 
+   d="scan'208";a="338884437"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 23:19:14 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,270,1647327600"; 
+   d="scan'208";a="552678250"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 01 Jun 2022 23:19:12 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nweAq-0004mz-8X;
+        Thu, 02 Jun 2022 06:19:12 +0000
+Date:   Thu, 02 Jun 2022 14:18:14 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [paulmck-rcu:dev.2022.05.23a] BUILD SUCCESS
+ 81955dcfda2589b64d45e5bb6819b03de2f54f5a
+Message-ID: <62985626.zlbDlApMKNxDmu5E%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-05-30 at 20:03 +0200, Fabien Parent wrote:
-> Add IOMMU binding documentation for the MT8365 SoC.
-> 
-> Signed-off-by: Fabien Parent <fparent@baylibre.com>
-> ---
->  .../bindings/iommu/mediatek,iommu.yaml        |  2 +
->  include/dt-bindings/memory/mt8365-larb-port.h | 96
-> +++++++++++++++++++
->  2 files changed, 98 insertions(+)
->  create mode 100644 include/dt-bindings/memory/mt8365-larb-port.h
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git dev.2022.05.23a
+branch HEAD: 81955dcfda2589b64d45e5bb6819b03de2f54f5a  rcu/rcuscale: Fix smp_processor_id()-in-preemptible warnings
 
-[snip...]
+elapsed time: 741m
 
-> +#ifndef _DT_BINDINGS_MEMORY_MT8365_LARB_PORT_H_
-> +#define _DT_BINDINGS_MEMORY_MT8365_LARB_PORT_H_
-> +
-> +#include <dt-bindings/memory/mtk-memory-port.h>
-> +
-> +#define M4U_LARB0_ID			0
-> +#define M4U_LARB1_ID			1
-> +#define M4U_LARB2_ID			2
-> +#define M4U_LARB3_ID			3
-> +#define M4U_LARB4_ID			4
-> +#define M4U_LARB5_ID			5
-> +#define M4U_LARB6_ID			6
-> +#define M4U_LARB7_ID			7
+configs tested: 83
+configs skipped: 3
 
-Remove these. they are no used, right?
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-> +
-> +/* larb0 */
-> +#define M4U_PORT_DISP_OVL0		MTK_M4U_ID(0, 0)
-> +#define M4U_PORT_DISP_OVL0_2L	MTK_M4U_ID(0, 1)
+gcc tested configs:
+arm                              allyesconfig
+arm                                 defconfig
+arm64                               defconfig
+arm                              allmodconfig
+arm64                            allyesconfig
+ia64                                defconfig
+ia64                             allmodconfig
+m68k                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+alpha                               defconfig
+csky                                defconfig
+alpha                            allyesconfig
+nios2                            allyesconfig
+nios2                               defconfig
+arc                              allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+h8300                            allyesconfig
+xtensa                           allyesconfig
+parisc                              defconfig
+s390                             allmodconfig
+parisc                           allyesconfig
+s390                                defconfig
+s390                             allyesconfig
+parisc64                            defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+i386                                defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+sparc                               defconfig
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                           allnoconfig
+powerpc                          allmodconfig
+powerpc                          allyesconfig
+x86_64                        randconfig-a004
+x86_64                        randconfig-a002
+x86_64                        randconfig-a006
+i386                          randconfig-a001
+i386                          randconfig-a003
+i386                          randconfig-a005
+x86_64                        randconfig-a013
+x86_64                        randconfig-a011
+x86_64                        randconfig-a015
+i386                          randconfig-a014
+i386                          randconfig-a012
+i386                          randconfig-a016
+arc                  randconfig-r043-20220531
+riscv                randconfig-r042-20220531
+s390                 randconfig-r044-20220531
+riscv                             allnoconfig
+riscv                            allyesconfig
+riscv                            allmodconfig
+riscv                    nommu_k210_defconfig
+riscv                          rv32_defconfig
+riscv                    nommu_virt_defconfig
+riscv                               defconfig
+um                             i386_defconfig
+um                           x86_64_defconfig
+x86_64                          rhel-8.3-func
+x86_64                         rhel-8.3-kunit
+x86_64                    rhel-8.3-kselftests
+x86_64                           rhel-8.3-syz
+x86_64                              defconfig
+x86_64                                  kexec
+x86_64                               rhel-8.3
+x86_64                           allyesconfig
 
-[...]
+clang tested configs:
+x86_64                        randconfig-a005
+x86_64                        randconfig-a001
+x86_64                        randconfig-a003
+i386                          randconfig-a002
+i386                          randconfig-a004
+i386                          randconfig-a006
+x86_64                        randconfig-a016
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+i386                          randconfig-a013
+i386                          randconfig-a015
+i386                          randconfig-a011
+hexagon              randconfig-r041-20220531
+hexagon              randconfig-r045-20220531
 
-> 
-> +/* larb4 */
-> +#define M4U_PORT_APU_READ		MTK_M4U_ID(0, 0)
-> +#define M4U_PORT_APU_WRITE		MTK_M4U_ID(0, 1)
-
-Please remove these two APU definitions. currently these are not
-supported.
-
-Thanks.
-
-> +
-> +#endif
-
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
