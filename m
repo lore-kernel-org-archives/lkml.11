@@ -2,39 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E766C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 19:41:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09EE9C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 19:41:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238746AbiFBTle (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 15:41:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56746 "EHLO
+        id S235834AbiFBTlm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 15:41:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238813AbiFBTlY (ORCPT
+        with ESMTP id S238924AbiFBTl3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 15:41:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A800824BCE;
-        Thu,  2 Jun 2022 12:41:07 -0700 (PDT)
+        Thu, 2 Jun 2022 15:41:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B7A23FD8B
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 12:41:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D641617BF;
-        Thu,  2 Jun 2022 19:41:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE438C385A5;
-        Thu,  2 Jun 2022 19:41:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3D66FB8214F
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 19:41:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFFD4C34114;
+        Thu,  2 Jun 2022 19:41:15 +0000 (UTC)
 From:   Catalin Marinas <catalin.marinas@arm.com>
-To:     linux-kselftest@vger.kernel.org,
-        Cristian Marussi <cristian.marussi@arm.com>
-Cc:     Will Deacon <will@kernel.org>, skhan@linuxfoundation.org,
+To:     Stephen Boyd <swboyd@chromium.org>, Will Deacon <will@kernel.org>
+Cc:     Dominik Brodowski <linux@dominikbrodowski.net>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        "Jason A . Donenfeld" <Jason@zx2c4.com>,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Andre Przywara <andre.przywara@arm.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH] kselftest/arm64: signal: Skip SVE signal test if not enough VLs supported
-Date:   Thu,  2 Jun 2022 20:41:02 +0100
-Message-Id: <165419885870.2681883.16583571077813960590.b4-ty@arm.com>
+        Douglas Anderson <dianders@chromium.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>, patches@lists.linux.dev
+Subject: Re: [PATCH] arm64: Initialize jump labels before setup_machine_fdt()
+Date:   Thu,  2 Jun 2022 20:41:12 +0100
+Message-Id: <165419885870.2681883.10934677413962491141.b4-ty@arm.com>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220524103149.2802-1-cristian.marussi@arm.com>
-References: <20220524103149.2802-1-cristian.marussi@arm.com>
+In-Reply-To: <20220602022109.780348-1-swboyd@chromium.org>
+References: <20220602022109.780348-1-swboyd@chromium.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -42,16 +44,20 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 24 May 2022 11:31:49 +0100, Cristian Marussi wrote:
-> On platform where SVE is supported but there are less than 2 VLs available
-> the signal SVE change test should be skipped instead of failing.
+On Wed, 1 Jun 2022 19:21:09 -0700, Stephen Boyd wrote:
+> A static key warning splat appears during early boot on arm64 systems
+> that credit randomness from devicetrees that contain an "rng-seed"
+> property. This is because setup_machine_fdt() is called before
+> jump_label_init() during setup_arch(). Let's swap the order of these two
+> calls so that jump labels are initialized before the devicetree is
+> unflattened and the rng seed is credited.
 > 
-> 
+> [...]
 
 Applied to arm64 (for-next/core), thanks!
 
-[1/1] kselftest/arm64: signal: Skip SVE signal test if not enough VLs supported
-      https://git.kernel.org/arm64/c/78c09c0f4df8
+[1/1] arm64: Initialize jump labels before setup_machine_fdt()
+      https://git.kernel.org/arm64/c/73e2d827a501
 
 -- 
 Catalin
