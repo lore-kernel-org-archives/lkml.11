@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD841C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 04:52:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3E6BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 04:53:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229885AbiFBEw5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 00:52:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42250 "EHLO
+        id S229724AbiFBExA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 00:53:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229865AbiFBEwm (ORCPT
+        with ESMTP id S229867AbiFBEwm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 2 Jun 2022 00:52:42 -0400
 Received: from nksmu.kylinos.cn (mailgw.kylinos.cn [123.150.8.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37EB05586
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 21:52:39 -0700 (PDT)
-X-UUID: 05070a5c46ec486298f547090cc1ff9d-20220602
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 949B555B0
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 21:52:40 -0700 (PDT)
+X-UUID: c5b39320cda94d40b717a0897b88f1fd-20220602
 X-GW-Reason: 13103
 X-Policy-Incident: 5pS25Lu25Lq66LaF6L+HMTDkurrpnIDopoHlrqHmoLg=
 X-Content-Feature: ica/max.line-size 100
         audit/email.address 2
         meta/cnt.alert 1
-X-CPASD-INFO: 45cdf54338944cdfa48855161aff88cf@fYWdhJNnYmNfWHuAg6avoIFlaGhlYVG
-        Fc5uGlmZoj4aVhH5xTWJsXVKBfG5QZWNdYVN_eGpQYl9gZFB5i3-XblBgXoZgUZB3g3edhJhjZA==
-X-CLOUD-ID: 45cdf54338944cdfa48855161aff88cf
+X-CPASD-INFO: cbbbc0d484424a0a9583bbd036ec801d@rLKcgpBikmRkVHZ-g6R7m1lmaGOSjoR
+        _dXCFk2ZgXYSVhH5xTWJsXVKBfG5QZWNdYVN_eGpQYl9gZFB5i3-XblBgXoZgUZB3sqScgpRelA==
+X-CLOUD-ID: cbbbc0d484424a0a9583bbd036ec801d
 X-CPASD-SUMMARY: SIP:-1,APTIP:-2.0,KEY:0.0,FROMBLOCK:1,OB:0.0,URL:-5,TVAL:186.
-        0,ESV:0.0,ECOM:-5.0,ML:0.0,FD:0.0,CUTS:311.0,IP:-2.0,MAL:-5.0,PHF:-5.0,PHC:-5
-        .0,SPF:4.0,EDMS:-5,IPLABEL:4480.0,FROMTO:0,AD:0,FFOB:0.0,CFOB:2.0,SPC:0,SIG:-
-        5,AUF:13,DUF:42070,ACD:302,DCD:404,SL:0,EISP:0,AG:0,CFC:0.794,CFSR:0.031,UAT:
+        0,ESV:0.0,ECOM:-5.0,ML:0.0,FD:0.0,CUTS:305.0,IP:-2.0,MAL:-5.0,PHF:-5.0,PHC:-5
+        .0,SPF:4.0,EDMS:-5,IPLABEL:4480.0,FROMTO:0,AD:0,FFOB:0.0,CFOB:1.0,SPC:0,SIG:-
+        5,AUF:12,DUF:42068,ACD:302,DCD:404,SL:0,EISP:0,AG:0,CFC:0.802,CFSR:0.031,UAT:
         0,RAF:0,IMG:-5.0,DFA:0,DTA:0,IBL:-2.0,ADI:-5,SBL:0,REDM:0,REIP:0,ESB:0,ATTNUM
         :0,EAF:0,CID:-5.0,VERSION:2.3.17
-X-CPASD-ID: 05070a5c46ec486298f547090cc1ff9d-20220602
+X-CPASD-ID: c5b39320cda94d40b717a0897b88f1fd-20220602
 X-CPASD-BLOCK: 1000
 X-CPASD-STAGE: 1
-X-UUID: 05070a5c46ec486298f547090cc1ff9d-20220602
+X-UUID: c5b39320cda94d40b717a0897b88f1fd-20220602
 X-User: huangbing@kylinos.cn
 Received: from localhost.localdomain [(116.128.244.169)] by nksmu.kylinos.cn
         (envelope-from <huangbing@kylinos.cn>)
         (Generic MTA)
-        with ESMTP id 1684790633; Thu, 02 Jun 2022 11:25:21 +0800
+        with ESMTP id 2121234482; Thu, 02 Jun 2022 11:10:52 +0800
 From:   Bing Huang <huangbing@kylinos.cn>
 To:     peterz@infradead.org, dietmar.eggemann@arm.com
 Cc:     brauner@kernel.org, bristot@redhat.com, bsegall@google.com,
@@ -46,8 +46,8 @@ Cc:     brauner@kernel.org, bristot@redhat.com, bsegall@google.com,
         mgorman@suse.de, mingo@redhat.com, rostedt@goodmis.org,
         vincent.guittot@linaro.org
 Subject: [PATCH v3] sched/fair: static cpumasks for load balance
-Date:   Thu,  2 Jun 2022 11:22:30 +0800
-Message-Id: <20220602032230.400611-1-huangbing@kylinos.cn>
+Date:   Thu,  2 Jun 2022 11:07:53 +0800
+Message-Id: <20220602030753.399566-1-huangbing@kylinos.cn>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -60,7 +60,6 @@ in fair.c, but allocation in core.c in CONFIG_CPUMASK_OFFSTACK=y case,
 and global via declare per cpu variations. More or less, it looks wired.
 
 Co-developed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
-Signed-off-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
 Signed-off-by: Bing Huang <huangbing@kylinos.cn>
 ---
 
@@ -126,9 +125,9 @@ index 8c5b74f66bd3..310b6f52a7df 100644
 +
 +	for_each_possible_cpu(i) {
 +		zalloc_cpumask_var_node(&per_cpu(load_balance_mask, i),
-+					GFP_KERNEL, cpu_to_node(i));
++								GFP_KERNEL, cpu_to_node(i));
 +		zalloc_cpumask_var_node(&per_cpu(select_idle_mask, i),
-+					GFP_KERNEL, cpu_to_node(i));
++								GFP_KERNEL, cpu_to_node(i));
 +	}
 +
  	open_softirq(SCHED_SOFTIRQ, run_rebalance_domains);
