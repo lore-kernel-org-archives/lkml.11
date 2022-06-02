@@ -2,138 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3933EC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 11:54:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9F8BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 11:54:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234541AbiFBLyM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 07:54:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36184 "EHLO
+        id S234546AbiFBLyQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 07:54:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232849AbiFBLyC (ORCPT
+        with ESMTP id S234400AbiFBLyD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 07:54:02 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 151D42124F;
-        Thu,  2 Jun 2022 04:54:00 -0700 (PDT)
-X-UUID: 183222a3be0e4e32885b82fb4483396f-20220602
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:aac1de43-83cb-4c44-a7c1-966b469447ee,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:2a19b09,CLOUDID:0a2fb26e-b02c-4af4-b838-5c14aaa063c7,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
-        ,QS:0,BEC:nil
-X-UUID: 183222a3be0e4e32885b82fb4483396f-20220602
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
-        (envelope-from <tinghan.shen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1510683135; Thu, 02 Jun 2022 19:53:54 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 2 Jun 2022 19:53:54 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 2 Jun 2022 19:53:53 +0800
-Message-ID: <a1140bd47cbd68436d0b9e147c2d6d6327ac092e.camel@mediatek.com>
-Subject: Re: [PATCH v1] dt-bindings: dsp: mediatek: add mt8186 dsp document
-From:   Tinghan Shen <tinghan.shen@mediatek.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        "Matthias Brugger" <matthias.bgg@gmail.com>
-CC:     <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Thu, 2 Jun 2022 19:53:54 +0800
-In-Reply-To: <9e3f5586-59fa-42cc-770c-b8694b4f2bf3@linaro.org>
-References: <20220422071534.15653-1-tinghan.shen@mediatek.com>
-         <c0a188e5-8a8c-d4a3-5a3d-9b9dd85d8f44@linaro.org>
-         <eb4deff1a01c09783518bbaff8fe4e4c4ca6fa5b.camel@mediatek.com>
-         <591767ee-e349-7a17-a9e9-b95d0500c7c1@linaro.org>
-         <774c075ca4ad815c88be755cfb51889a171e835d.camel@mediatek.com>
-         <9e3f5586-59fa-42cc-770c-b8694b4f2bf3@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Thu, 2 Jun 2022 07:54:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1429B1DA40;
+        Thu,  2 Jun 2022 04:54:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B8DD8B81F08;
+        Thu,  2 Jun 2022 11:54:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B42DC385A5;
+        Thu,  2 Jun 2022 11:53:54 +0000 (UTC)
+From:   Huacai Chen <chenhuacai@loongson.cn>
+To:     Arnd Bergmann <arnd@arndb.de>, Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Airlie <airlied@linux.ie>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-arch@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
+        Yanteng Si <siyanteng@loongson.cn>,
+        Huacai Chen <chenhuacai@gmail.com>,
+        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Huacai Chen <chenhuacai@loongson.cn>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel@lists.freedesktop.org, WANG Xuerui <git@xen0n.name>
+Subject: [PATCH V14 06/24] LoongArch: Add writecombine support for drm
+Date:   Thu,  2 Jun 2022 19:51:23 +0800
+Message-Id: <20220602115141.3962749-7-chenhuacai@loongson.cn>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220602115141.3962749-1-chenhuacai@loongson.cn>
+References: <20220602115141.3962749-1-chenhuacai@loongson.cn>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Krzysztof,
+LoongArch maintains cache coherency in hardware, but its WUC attribute
+(Weak-ordered UnCached, which is similar to WC) is out of the scope of
+cache coherency machanism. This means WUC can only used for write-only
+memory regions.
 
-On Thu, 2022-06-02 at 12:45 +0200, Krzysztof Kozlowski wrote:
-> On 02/06/2022 12:19, Tinghan Shen wrote:
-> > Hi Krzysztof,
-> > 
-> > On Thu, 2022-06-02 at 09:40 +0200, Krzysztof Kozlowski wrote:
-> > > On 02/06/2022 08:44, Tinghan Shen wrote:
-> > > > > > +  mbox-names:
-> > > > > > +    items:
-> > > > > > +      - const: mbox0
-> > > > > > +      - const: mbox1
-> > > > > 
-> > > > > These should be rather some meaningful names, e.g. "rx" and "tx".
-> > > > 
-> > > > The mbox name has to align with the adsp ipc driver.
-> > > > The adsp ipc driver is using 'mbox%d' for mailbox channels.
-> > > > 
-> > > > 
-> > > > 
-> > 
-> > 
-https://urldefense.com/v3/__https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git/commit/?id=9db69df4bdd37eb1f65b6931ee067fb15b9a4d5c__;!!CTRNKA9wMg0ARbw!1TmempNkQhC5QuLBhyfWo_AC97MoLuWipsGV-LPaW9RKNPheU7Bgc-eboNi1JA1nC5I$
-> > > >  
-> > > > 
-> > > > 	chan_name = kasprintf(GFP_KERNEL, "mbox%d", i);
-> > > > 
-> > > > 	/* ...snip... */
-> > > > 
-> > > > 	adsp_chan->ch = mbox_request_channel_byname(cl, chan_name);
-> > > > 
-> > > > Is it ok to continue using these names?
-> > > 
-> > > It is a bit confusing... how did that driver got merged recently without
-> > > bindings? Why bindings are separate?
-> > > 
-> > > The bindings always come together in one patchset with the driver
-> > > implementing them. Bindings are though a separate patch, yet still
-> > > followed by the driver which uses them.
-> > > 
-> > > I do not see any compatibles in that driver, which suggests there is no
-> > > other binding using it. If that's correct, then you need to change the
-> > > driver.
-> > > 
-> > 
-> > The mtk-adsp-ipc driver's sole function is to encapsulate the operations 
-> > of mailbox framework from adsp ipc users. The mtk-adsp-ipc is not defined 
-> > in the dts file and we don't need it to be defined. The creation of mtk-adsp-ipc 
-> > device is requested by adsp ipc users via the use of 'platform_device_register_data'[1].
-> > 
-> > the driver implemented the mailbox framework is 'mtk-adsp-mailbox'[2]. it has 
-> > corresponding hardwares and a yaml file[3] to describe it.
-> 
-> I don't understand how is this related. We talk here about the
-> mbox-names for this bindings file. You replied, that these bindings are
-> already used by something, but now you say that they are not? So why do
-> you need to change anything in any driver?
-> 
-> Simple question - do the bindings here "add mt8186 dsp document" are
-> used by any specific Linux driver already?
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: dri-devel@lists.freedesktop.org
+Reviewed-by: WANG Xuerui <git@xen0n.name>
+Reviewed-by: Jiaxun Yang <jiaxun.yang@flygoat.com>
+Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
+---
+ drivers/gpu/drm/drm_vm.c         | 2 +-
+ drivers/gpu/drm/ttm/ttm_module.c | 2 +-
+ include/drm/drm_cache.h          | 8 ++++++++
+ 3 files changed, 10 insertions(+), 2 deletions(-)
 
-This bindings, 'add mt8186 dsp document', are used by the SOF sound driver of MT8186[1]. 
-
-I'm sorry for miss leading you in previous reply. I was thought that you're 
-asking why the mtk-adsp-ipc driver got merged without bindings. So, I tried 
-to explain why mtk-adsp-ipc doesn't have bindings.
-
-[1] 
-https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git/commit/?id=1f0214a86de87011ecb96f22545dd6e5c7324cd7
-
-Thanks,
-TingHan
+diff --git a/drivers/gpu/drm/drm_vm.c b/drivers/gpu/drm/drm_vm.c
+index e957d4851dc0..f024dc93939e 100644
+--- a/drivers/gpu/drm/drm_vm.c
++++ b/drivers/gpu/drm/drm_vm.c
+@@ -69,7 +69,7 @@ static pgprot_t drm_io_prot(struct drm_local_map *map,
+ 	pgprot_t tmp = vm_get_page_prot(vma->vm_flags);
+ 
+ #if defined(__i386__) || defined(__x86_64__) || defined(__powerpc__) || \
+-    defined(__mips__)
++    defined(__mips__) || defined(__loongarch__)
+ 	if (map->type == _DRM_REGISTERS && !(map->flags & _DRM_WRITE_COMBINING))
+ 		tmp = pgprot_noncached(tmp);
+ 	else
+diff --git a/drivers/gpu/drm/ttm/ttm_module.c b/drivers/gpu/drm/ttm/ttm_module.c
+index a3ad7c9736ec..b3fffe7b5062 100644
+--- a/drivers/gpu/drm/ttm/ttm_module.c
++++ b/drivers/gpu/drm/ttm/ttm_module.c
+@@ -74,7 +74,7 @@ pgprot_t ttm_prot_from_caching(enum ttm_caching caching, pgprot_t tmp)
+ #endif /* CONFIG_UML */
+ #endif /* __i386__ || __x86_64__ */
+ #if defined(__ia64__) || defined(__arm__) || defined(__aarch64__) || \
+-	defined(__powerpc__) || defined(__mips__)
++	defined(__powerpc__) || defined(__mips__) || defined(__loongarch__)
+ 	if (caching == ttm_write_combined)
+ 		tmp = pgprot_writecombine(tmp);
+ 	else
+diff --git a/include/drm/drm_cache.h b/include/drm/drm_cache.h
+index 22deb216b59c..08e0e3ffad13 100644
+--- a/include/drm/drm_cache.h
++++ b/include/drm/drm_cache.h
+@@ -67,6 +67,14 @@ static inline bool drm_arch_can_wc_memory(void)
+ 	 * optimization entirely for ARM and arm64.
+ 	 */
+ 	return false;
++#elif defined(CONFIG_LOONGARCH)
++	/*
++	 * LoongArch maintains cache coherency in hardware, but its WUC attribute
++	 * (Weak-ordered UnCached, which is similar to WC) is out of the scope of
++	 * cache coherency machanism. This means WUC can only used for write-only
++	 * memory regions.
++	 */
++	return false;
+ #else
+ 	return true;
+ #endif
+-- 
+2.27.0
 
