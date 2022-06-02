@@ -2,82 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC7C4C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 08:08:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44627C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 08:12:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232071AbiFBIIO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 04:08:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56178 "EHLO
+        id S232089AbiFBIMw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 04:12:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232062AbiFBIIL (ORCPT
+        with ESMTP id S232060AbiFBIMt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 04:08:11 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75DDB25FE;
-        Thu,  2 Jun 2022 01:08:08 -0700 (PDT)
-Received: from kwepemi500025.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LDJTR4TJ2zRhYy;
-        Thu,  2 Jun 2022 16:04:59 +0800 (CST)
-Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
- kwepemi500025.china.huawei.com (7.221.188.170) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 2 Jun 2022 16:08:06 +0800
-Received: from huawei.com (10.175.127.227) by kwepemm600009.china.huawei.com
- (7.193.23.164) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 2 Jun
- 2022 16:08:05 +0800
-From:   Yu Kuai <yukuai3@huawei.com>
-To:     <willy@infradead.org>, <akpm@linux-foundation.org>,
-        <kent.overstreet@gmail.com>
-CC:     <axboe@kernel.dk>, <linux-fsdevel@vger.kernel.org>,
-        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        <yukuai3@huawei.com>, <yi.zhang@huawei.com>
-Subject: [PATCH -next] mm/filemap: fix that first page is not mark accessed in filemap_read()
-Date:   Thu, 2 Jun 2022 16:21:29 +0800
-Message-ID: <20220602082129.2805890-1-yukuai3@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Thu, 2 Jun 2022 04:12:49 -0400
+Received: from mail.boiledscript.com (unknown [192.151.158.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46554235103;
+        Thu,  2 Jun 2022 01:12:42 -0700 (PDT)
+Received: from localhost (unknown [192.168.203.1])
+        by mail.boiledscript.com (Postfix) with ESMTP id 2A9B1300A0B;
+        Thu,  2 Jun 2022 08:12:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ultrarare.space;
+        s=dkim; t=1654157556;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=9MTqppfgRAlAl0ocM4Vnd0OF+AaNkKzf3y9bMt+MpcY=;
+        b=WUk9MDOHtCN/SOtKX+PmZ4BO/nW+bPTVqbpA13pSCvKugr1v4+VUvWlBKHLLMD8kLeGz0p
+        NZWt/bw1DOkF5H1aJ4gB617dO4N3JNQTCWtg3OypAHptdctFVmPZfzvLMOT0gjNy1EuZSX
+        wqAbFTeSso8aY7TDhm4mvd13jY+B2E0cpSK3ApWc94p9WljA00/LuyOq+iAn/vX4k9tthK
+        uqj+HcyB1OCQzpVDkJ8U3RQGLMUx52qyhsZ71UVFHz/AFblgdE7ciQA5m+22jDfWtIP2be
+        CNa8Fst9VSypiCTtUwczdDKvwVRA9wJ66RpROI8TcFtQlW6GM4E43DLAzGnWKw==
+Date:   Thu, 2 Jun 2022 16:12:19 +0800
+From:   Hilton Chain <hako@ultrarare.space>
+To:     =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        Bryan Cain <bryancain3@gmail.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Subject: [PATCH v5] HID: apple: Properly handle function keys on non-Apple 
+ keyboard
+Message-ID: <20220602161219.152be32d@ultrarare.space>
+In-Reply-To: <20220601174956.GA10418@elementary>
+References: <20220529182036.10226-1-jose.exposito89@gmail.com>
+        <20220530083752.1973a905@ultrarare.space>
+        <20220530061812.GA10391@elementary>
+        <20220531221102.7bd7da7d@ultrarare.space>
+        <20220531223330.3d63e2fe@ultrarare.space>
+        <20220531172053.GA10651@elementary>
+        <CAPnXWxG8gbe1arQK9kBtwM1Xcta+wreTN742kgtBBr1v0ewKug@mail.gmail.com>
+        <7f67ac07b8bd37d5817cd151674cc6b0@ultrarare.space>
+        <20220601072651.242ce08a@ultrarare.space>
+        <20220601121737.1226ffea@ultrarare.space>
+        <20220601174956.GA10418@elementary>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemm600009.china.huawei.com (7.193.23.164)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spamd-Bar: +
+Authentication-Results: mail.boiledscript.com;
+        none
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In filemap_read(), 'ra->prev_pos' is set to 'iocb->ki_pos + copied',
-while it should be 'iocb->ki_ops'. For consequence,
-folio_mark_accessed() will not be called for 'fbatch.folios[0]' since
-'iocb->ki_pos' is always equal to 'ra->prev_pos'.
+This commit extends fa33382c7f74 ("HID: apple: Properly handle function
+keys on Keychron keyboards") by adding an array of known non-Apple
+keyboards' device names, and the function apple_is_non_apple_keyboard()
+to identify and create exception for them.
 
-Fixes: 06c0444290ce ("mm/filemap.c: generic_file_buffered_read() now uses find_get_pages_contig")
-Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+Signed-off-by: Hilton Chain <hako@ultrarare.space>
 ---
- mm/filemap.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/mm/filemap.c b/mm/filemap.c
-index 9daeaab36081..0b776e504d35 100644
---- a/mm/filemap.c
-+++ b/mm/filemap.c
-@@ -2728,10 +2728,11 @@ ssize_t filemap_read(struct kiocb *iocb, struct iov_iter *iter,
- 				flush_dcache_folio(folio);
+V4 -> V5: Add Varmilo keyboards' name "AONE" to the exception list
+V3 -> V4: Remove unnecessary strlen()
+
+ drivers/hid/hid-apple.c | 34 +++++++++++++++++++++++++++++-----
+ 1 file changed, 29 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/hid/hid-apple.c b/drivers/hid/hid-apple.c
+index 42a568902f49..7fbde58e1219 100644
+--- a/drivers/hid/hid-apple.c
++++ b/drivers/hid/hid-apple.c
+@@ -36,7 +36,7 @@
+ #define APPLE_NUMLOCK_EMULATION	BIT(8)
+ #define APPLE_RDESC_BATTERY	BIT(9)
+ #define APPLE_BACKLIGHT_CTL	BIT(10)
+-#define APPLE_IS_KEYCHRON	BIT(11)
++#define APPLE_IS_NON_APPLE	BIT(11)
  
- 			copied = copy_folio_to_iter(folio, offset, bytes, iter);
--
--			already_read += copied;
--			iocb->ki_pos += copied;
--			ra->prev_pos = iocb->ki_pos;
-+			if (copied) {
-+				ra->prev_pos = iocb->ki_pos;
-+				already_read += copied;
-+				iocb->ki_pos += copied;
-+			}
+ #define APPLE_FLAG_FKEY		0x01
  
- 			if (copied < bytes) {
- 				error = -EFAULT;
+@@ -65,6 +65,10 @@ MODULE_PARM_DESC(swap_fn_leftctrl, "Swap the Fn and left Control keys. "
+ 		"(For people who want to keep PC keyboard muscle memory. "
+ 		"[0] = as-is, Mac layout, 1 = swapped, PC layout)");
+ 
++struct apple_non_apple_keyboard {
++	char *name;
++};
++
+ struct apple_sc_backlight {
+ 	struct led_classdev cdev;
+ 	struct hid_device *hdev;
+@@ -313,6 +317,26 @@ static const struct apple_key_translation swapped_fn_leftctrl_keys[] = {
+ 	{ }
+ };
+ 
++static const struct apple_non_apple_keyboard non_apple_keyboards[] = {
++	{ "SONiX USB DEVICE" },
++	{ "Keychron" },
++	{ "AONE" }
++};
++
++static bool apple_is_non_apple_keyboard(struct hid_device *hdev)
++{
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(non_apple_keyboards); i++) {
++		char *non_apple = non_apple_keyboards[i].name;
++
++		if (strncmp(hdev->name, non_apple, strlen(non_apple)) == 0)
++			return true;
++	}
++
++	return false;
++}
++
+ static inline void apple_setup_key_translation(struct input_dev *input,
+ 		const struct apple_key_translation *table)
+ {
+@@ -363,7 +387,7 @@ static int hidinput_apple_event(struct hid_device *hid, struct input_dev *input,
+ 	}
+ 
+ 	if (fnmode == 3) {
+-		real_fnmode = (asc->quirks & APPLE_IS_KEYCHRON) ? 2 : 1;
++		real_fnmode = (asc->quirks & APPLE_IS_NON_APPLE) ? 2 : 1;
+ 	} else {
+ 		real_fnmode = fnmode;
+ 	}
+@@ -669,9 +693,9 @@ static int apple_input_configured(struct hid_device *hdev,
+ 		asc->quirks &= ~APPLE_HAS_FN;
+ 	}
+ 
+-	if (strncmp(hdev->name, "Keychron", 8) == 0) {
+-		hid_info(hdev, "Keychron keyboard detected; function keys will default to fnmode=2 behavior\n");
+-		asc->quirks |= APPLE_IS_KEYCHRON;
++	if (apple_is_non_apple_keyboard(hdev)) {
++		hid_info(hdev, "Non-apple keyboard detected; function keys will default to fnmode=2 behavior\n");
++		asc->quirks |= APPLE_IS_NON_APPLE;
+ 	}
+ 
+ 	return 0;
+
+base-commit: d1dc87763f406d4e67caf16dbe438a5647692395
 -- 
-2.31.1
+2.36.1
 
