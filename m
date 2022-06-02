@@ -2,192 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F277CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 10:06:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0835C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 10:07:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233381AbiFBKGf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 06:06:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54844 "EHLO
+        id S233399AbiFBKHb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 06:07:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbiFBKGa (ORCPT
+        with ESMTP id S229437AbiFBKH3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 06:06:30 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF08C2ACB65;
-        Thu,  2 Jun 2022 03:06:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654164389; x=1685700389;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Tpy1h6rxcXVO9xLL8s23Z2+kWlBjSZ7Dkplh6lZNrSI=;
-  b=jxeztFlVDxqMPufxkg830hVNjbUK6n2pu2bCVpTW+4ZjnwTMGtuncTNf
-   GhFhKdapMrTPcaykZbhqoPtFy6ifQaNxjAimvSscRk2IU2zHb/5LXNs8R
-   KXGQUqjnEPPfwSAwSTzTruG0eWjGMWq7L/VDmlRPpYetsUJSi31N08r8t
-   TCQhoM0SnwtF5Qn5EDXWZ2LPqjyL9VpPQzdpacTjypZru2W6NX/ko+F1R
-   y4QutXyEscNSl0guHKcHPJIGj8RhBO+RMDaFdKXn8r+NmvEPkoIKwgxbL
-   PDufiz0VANk7uuXTK2wSqzeLVLtEoV3ID+R/OZmbDc+XyXdCjm8W2fwDf
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10365"; a="338946096"
-X-IronPort-AV: E=Sophos;i="5.91,270,1647327600"; 
-   d="scan'208";a="338946096"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2022 03:06:27 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,270,1647327600"; 
-   d="scan'208";a="582020563"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 02 Jun 2022 03:06:21 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nwhie-0004xf-QH;
-        Thu, 02 Jun 2022 10:06:20 +0000
-Date:   Thu, 2 Jun 2022 18:05:32 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     ChiaEn Wu <peterwu.pub@gmail.com>, lee.jones@linaro.org,
-        daniel.thompson@linaro.org, jingoohan1@gmail.com, pavel@ucw.cz,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        matthias.bgg@gmail.com, sre@kernel.org, chunfeng.yun@mediatek.com,
-        gregkh@linuxfoundation.org, jic23@kernel.org, lars@metafoo.de,
-        lgirdwood@gmail.com, broonie@kernel.org, linux@roeck-us.net,
-        heikki.krogerus@linux.intel.com, deller@gmx.de
-Cc:     kbuild-all@lists.01.org, cy_huang@richtek.com,
-        alice_chen@richtek.com, chiaen_wu@richtek.com,
-        peterwu.pub@gmail.com, dri-devel@lists.freedesktop.org,
-        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-iio@vger.kernel.org
-Subject: Re: [RESEND 13/14] leds: flashlight: mt6370: Add Mediatek MT6370
- flashlight support
-Message-ID: <202206021739.LZjU7zjg-lkp@intel.com>
-References: <20220531111900.19422-14-peterwu.pub@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220531111900.19422-14-peterwu.pub@gmail.com>
+        Thu, 2 Jun 2022 06:07:29 -0400
+Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E96391D05B9;
+        Thu,  2 Jun 2022 03:07:26 -0700 (PDT)
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 873F92014FE;
+        Thu,  2 Jun 2022 12:07:25 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 266212014FA;
+        Thu,  2 Jun 2022 12:07:25 +0200 (CEST)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id A7531180031F;
+        Thu,  2 Jun 2022 18:07:23 +0800 (+08)
+From:   Shengjiu Wang <shengjiu.wang@nxp.com>
+To:     vkoul@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
+        kernel@pengutronix.de, festevam@gmail.com, shengjiu.wang@gmail.com,
+        joy.zou@nxp.com, linux-imx@nxp.com, dmaengine@vger.kernel.org
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] dma: imx-sdma: Add FIFO offset support for multi FIFO script
+Date:   Thu,  2 Jun 2022 17:53:47 +0800
+Message-Id: <1654163627-30836-1-git-send-email-shengjiu.wang@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi ChiaEn,
+The peripheral may have several FIFOs, but some case just select
+some FIFOs from them for data transfer, which means FIFO0 and FIFO2
+may be selected. So add FIFO address offset support, 0 means all FIFOs
+are continuous, 1 means 1 word offset between FIFOs. All offset between
+FIFOs should be same.
 
-Thank you for the patch! Perhaps something to improve:
+Another option words_per_fifo means how many audio channel data copied
+to one FIFO one time, 0 means one channel per FIFO, 1 means 2 channels
+per FIFO.
 
-[auto build test WARNING on pavel-leds/for-next]
-[also build test WARNING on lee-mfd/for-mfd-next lee-backlight/for-backlight-next v5.18 next-20220602]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+If 'n_fifos_src =  4' and 'words_per_fifo = 1', it means the first two
+words(channels) fetch from FIFO0 and then jump to FIFO1 for next two words,
+and so on after the last FIFO3 fetched, roll back to FIFO0.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/ChiaEn-Wu/Add-Mediatek-MT6370-PMIC-support/20220531-211432
-base:   git://git.kernel.org/pub/scm/linux/kernel/git/pavel/linux-leds.git for-next
-config: nios2-allyesconfig (https://download.01.org/0day-ci/archive/20220602/202206021739.LZjU7zjg-lkp@intel.com/config)
-compiler: nios2-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/805a8af17c769562ec4b85e9b7d2669d004fe3a6
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review ChiaEn-Wu/Add-Mediatek-MT6370-PMIC-support/20220531-211432
-        git checkout 805a8af17c769562ec4b85e9b7d2669d004fe3a6
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=nios2 SHELL=/bin/bash drivers/gpu/drm/v3d/ drivers/leds/ sound/core/
+Signed-off-by: Joy Zou <joy.zou@nxp.com>
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+---
+ drivers/dma/imx-sdma.c      | 26 ++++++++++++++++++++++++--
+ include/linux/dma/imx-dma.h | 13 +++++++++++++
+ 2 files changed, 37 insertions(+), 2 deletions(-)
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   In file included from include/linux/device.h:15,
-                    from include/linux/leds.h:12,
-                    from include/linux/led-class-flash.h:11,
-                    from drivers/leds/flash/leds-mt6370-flash.c:8:
-   drivers/leds/flash/leds-mt6370-flash.c: In function 'mt6370_led_probe':
->> drivers/leds/flash/leds-mt6370-flash.c:591:17: warning: format '%lu' expects argument of type 'long unsigned int', but argument 3 has type 'size_t' {aka 'unsigned int'} [-Wformat=]
-     591 |                 "No child node or node count over max led number %lu\n", count);
-         |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/dev_printk.h:110:30: note: in definition of macro 'dev_printk_index_wrap'
-     110 |                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
-         |                              ^~~
-   include/linux/dev_printk.h:144:56: note: in expansion of macro 'dev_fmt'
-     144 |         dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
-         |                                                        ^~~~~~~
-   drivers/leds/flash/leds-mt6370-flash.c:590:17: note: in expansion of macro 'dev_err'
-     590 |                 dev_err(&pdev->dev,
-         |                 ^~~~~~~
-   drivers/leds/flash/leds-mt6370-flash.c:591:68: note: format string is defined here
-     591 |                 "No child node or node count over max led number %lu\n", count);
-         |                                                                  ~~^
-         |                                                                    |
-         |                                                                    long unsigned int
-         |                                                                  %u
-
-
-vim +591 drivers/leds/flash/leds-mt6370-flash.c
-
-   580	
-   581	static int mt6370_led_probe(struct platform_device *pdev)
-   582	{
-   583		struct mt6370_priv *priv;
-   584		struct fwnode_handle *child;
-   585		size_t count;
-   586		int i = 0, ret;
-   587	
-   588		count = device_get_child_node_count(&pdev->dev);
-   589		if (!count || count > MT6370_MAX_LEDS) {
-   590			dev_err(&pdev->dev,
- > 591			"No child node or node count over max led number %lu\n", count);
-   592			return -EINVAL;
-   593		}
-   594	
-   595		priv = devm_kzalloc(&pdev->dev, struct_size(priv, leds, count),
-   596				    GFP_KERNEL);
-   597		if (!priv)
-   598			return -ENOMEM;
-   599	
-   600		priv->leds_count = count;
-   601		priv->dev = &pdev->dev;
-   602		mutex_init(&priv->lock);
-   603	
-   604		priv->regmap = dev_get_regmap(pdev->dev.parent, NULL);
-   605		if (!priv->regmap) {
-   606			dev_err(&pdev->dev, "Failed to get parent regmap\n");
-   607			return -ENODEV;
-   608		}
-   609	
-   610		device_for_each_child_node(&pdev->dev, child) {
-   611			struct mt6370_led *led = priv->leds + i;
-   612			struct led_init_data init_data = { .fwnode = child, };
-   613	
-   614			led->priv = priv;
-   615			ret = mt6370_init_common_properties(led, &init_data);
-   616			if (ret)
-   617				goto out_flash_release;
-   618	
-   619			ret = mt6370_init_flash_properties(led, &init_data);
-   620	
-   621			if (ret)
-   622				goto out_flash_release;
-   623	
-   624			ret = mt6370_led_register(&pdev->dev, led, &init_data);
-   625			if (ret)
-   626				goto out_flash_release;
-   627	
-   628			i++;
-   629		}
-   630	
-   631		platform_set_drvdata(pdev, priv);
-   632		return 0;
-   633	
-   634	out_flash_release:
-   635		mt6370_v4l2_flash_release(priv);
-   636		return ret;
-   637	}
-   638	
-
+diff --git a/drivers/dma/imx-sdma.c b/drivers/dma/imx-sdma.c
+index 111beb7138e0..3c95719286bc 100644
+--- a/drivers/dma/imx-sdma.c
++++ b/drivers/dma/imx-sdma.c
+@@ -183,6 +183,8 @@
+ 				 BIT(DMA_DEV_TO_DEV))
+ 
+ #define SDMA_WATERMARK_LEVEL_N_FIFOS	GENMASK(15, 12)
++#define SDMA_WATERMARK_LEVEL_OFF_FIFOS  GENMASK(19, 16)
++#define SDMA_WATERMARK_LEVEL_WORDS_PER_FIFO   GENMASK(31, 28)
+ #define SDMA_WATERMARK_LEVEL_SW_DONE	BIT(23)
+ 
+ #define SDMA_DONE0_CONFIG_DONE_SEL	BIT(7)
+@@ -429,6 +431,9 @@ struct sdma_desc {
+  * @n_fifos_src:	number of source device fifos
+  * @n_fifos_dst:	number of destination device fifos
+  * @sw_done:		software done flag
++ * @off_fifos_src:	offset for source device FIFOs
++ * @off_fifos_dst:	offset for destination device FIFOs
++ * @words_per_fifo:	copy number of words one time for one FIFO
+  */
+ struct sdma_channel {
+ 	struct virt_dma_chan		vc;
+@@ -456,6 +461,9 @@ struct sdma_channel {
+ 	bool				is_ram_script;
+ 	unsigned int			n_fifos_src;
+ 	unsigned int			n_fifos_dst;
++	unsigned int			off_fifos_src;
++	unsigned int			off_fifos_dst;
++	unsigned int			words_per_fifo;
+ 	bool				sw_done;
+ };
+ 
+@@ -1245,17 +1253,28 @@ static void sdma_set_watermarklevel_for_p2p(struct sdma_channel *sdmac)
+ static void sdma_set_watermarklevel_for_sais(struct sdma_channel *sdmac)
+ {
+ 	unsigned int n_fifos;
++	unsigned int off_fifos;
++	unsigned int words_per_fifo;
+ 
+ 	if (sdmac->sw_done)
+ 		sdmac->watermark_level |= SDMA_WATERMARK_LEVEL_SW_DONE;
+ 
+-	if (sdmac->direction == DMA_DEV_TO_MEM)
++	if (sdmac->direction == DMA_DEV_TO_MEM) {
+ 		n_fifos = sdmac->n_fifos_src;
+-	else
++		off_fifos = sdmac->off_fifos_src;
++	} else {
+ 		n_fifos = sdmac->n_fifos_dst;
++		off_fifos = sdmac->off_fifos_dst;
++	}
++
++	words_per_fifo = sdmac->words_per_fifo;
+ 
+ 	sdmac->watermark_level |=
+ 			FIELD_PREP(SDMA_WATERMARK_LEVEL_N_FIFOS, n_fifos);
++	sdmac->watermark_level |=
++			FIELD_PREP(SDMA_WATERMARK_LEVEL_OFF_FIFOS, off_fifos);
++	sdmac->watermark_level |=
++			FIELD_PREP(SDMA_WATERMARK_LEVEL_WORDS_PER_FIFO, (words_per_fifo - 1));
+ }
+ 
+ static int sdma_config_channel(struct dma_chan *chan)
+@@ -1769,6 +1788,9 @@ static int sdma_config(struct dma_chan *chan,
+ 		}
+ 		sdmac->n_fifos_src = sdmacfg->n_fifos_src;
+ 		sdmac->n_fifos_dst = sdmacfg->n_fifos_dst;
++		sdmac->off_fifos_src = sdmacfg->off_fifos_src;
++		sdmac->off_fifos_dst = sdmacfg->off_fifos_dst;
++		sdmac->words_per_fifo = sdmacfg->words_per_fifo;
+ 		sdmac->sw_done = sdmacfg->sw_done;
+ 	}
+ 
+diff --git a/include/linux/dma/imx-dma.h b/include/linux/dma/imx-dma.h
+index 8887762360d4..0c739d571956 100644
+--- a/include/linux/dma/imx-dma.h
++++ b/include/linux/dma/imx-dma.h
+@@ -70,6 +70,16 @@ static inline int imx_dma_is_general_purpose(struct dma_chan *chan)
+  * struct sdma_peripheral_config - SDMA config for audio
+  * @n_fifos_src: Number of FIFOs for recording
+  * @n_fifos_dst: Number of FIFOs for playback
++ * @off_fifos_src: FIFO address offset for recording, 0 means all FIFOs are
++ *                 continuous, 1 means 1 word offset between FIFOs. All offset
++ *                 between FIFOs should be same.
++ * @off_fifos_dst: FIFO address offset for playback
++ * @words_per_fifo: numbers of words per FIFO fetch/fill, 0 means
++ *                  one channel per FIFO, 1 means 2 channels per FIFO..
++ *                  If 'n_fifos_src =  4' and 'words_per_fifo = 1', it
++ *                  means the first two words(channels) fetch from FIFO0
++ *                  and then jump to FIFO1 for next two words, and so on
++ *                  after the last FIFO3 fetched, roll back to FIFO0.
+  * @sw_done: Use software done. Needed for PDM (micfil)
+  *
+  * Some i.MX Audio devices (SAI, micfil) have multiple successive FIFO
+@@ -82,6 +92,9 @@ static inline int imx_dma_is_general_purpose(struct dma_chan *chan)
+ struct sdma_peripheral_config {
+ 	int n_fifos_src;
+ 	int n_fifos_dst;
++	int off_fifos_src;
++	int off_fifos_dst;
++	int words_per_fifo;
+ 	bool sw_done;
+ };
+ 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.17.1
+
