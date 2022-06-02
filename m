@@ -2,101 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 145D3C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 18:19:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21604C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 18:20:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238102AbiFBST1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 14:19:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43596 "EHLO
+        id S238158AbiFBSUa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 14:20:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237942AbiFBSSg (ORCPT
+        with ESMTP id S237991AbiFBSUU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 14:18:36 -0400
-Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AF7C4DF72;
-        Thu,  2 Jun 2022 11:18:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
-        Message-Id:Date:Cc:To:From:content-disposition;
-        bh=qjZ29o7Y3KN8lwDRKnmcdg214dtZaqqcSvISJsWCuxQ=; b=qbIkX+VN/QQoAVl9e95sxZMpT4
-        cH+t/p8xYexkSyKew/yqGsLKPtgfXl5d2oDaNb6LJXwJtsb9boAw8BqXooSiZ2ljR4vYBg1SOGoZ8
-        zmzYmaOAg9J33g2lWYfTrlYamtutSoJ1c0ijGYaGKqKMb9r0dVsqNCP/3NL6Yz/ZTI/pJhV0i4SGk
-        msuM5go/eQxJz1JN7NsgD0VQniZ2pOUm6yWe9WtWAAZa5Gm/hM8NRSdc9zBEfLZo37ZPwZzT6GVlj
-        suK6pqZxP0gXfMVgFgVyn1EGUuhhzwoDGRa5A+hrRRPw5t3HEpdvDpvEVwCoji3Uxz57xiQB/XNwc
-        KZZg86SA==;
-Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
-        by ale.deltatee.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <gunthorp@deltatee.com>)
-        id 1nwpOo-00EPmW-Ir; Thu, 02 Jun 2022 12:18:23 -0600
-Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim 4.94.2)
-        (envelope-from <gunthorp@deltatee.com>)
-        id 1nwpOm-000DDV-Dz; Thu, 02 Jun 2022 12:18:20 -0600
-From:   Logan Gunthorpe <logang@deltatee.com>
-To:     linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org,
-        Song Liu <song@kernel.org>
-Cc:     Christoph Hellwig <hch@infradead.org>,
-        Donald Buczek <buczek@molgen.mpg.de>,
-        Guoqing Jiang <guoqing.jiang@linux.dev>,
-        Xiao Ni <xni@redhat.com>, Stephen Bates <sbates@raithlin.com>,
-        Martin Oliveira <Martin.Oliveira@eideticom.com>,
-        David Sloan <David.Sloan@eideticom.com>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Christoph Hellwig <hch@lst.de>
-Date:   Thu,  2 Jun 2022 12:18:13 -0600
-Message-Id: <20220602181818.50729-8-logang@deltatee.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220602181818.50729-1-logang@deltatee.com>
-References: <20220602181818.50729-1-logang@deltatee.com>
+        Thu, 2 Jun 2022 14:20:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B171E5DD32;
+        Thu,  2 Jun 2022 11:20:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A1B1616F9;
+        Thu,  2 Jun 2022 18:20:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8E11DC34114;
+        Thu,  2 Jun 2022 18:20:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654194014;
+        bh=aKofY/xii58Ay5t+eF5YX3hdOSJaq5bVkJH0FJWL58I=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=McC1kwoOT0LAQdbQKyEAsr3Ke8BjvnMABZ8Xjgo4oInbmx0HniAiD4t6/m2tMG4es
+         V/dilRUwGPXB2VL6hyim0nKfiKpkvmbq1EF8WumWDN6SOber7M9awdrb+4FP9YiWMO
+         6xbEFNRkqQSITEmJUbcQLaKlmVvE2fC3+djA3okXre5krYMc+bvrEzktXfDxw3t0fX
+         5aJtuy2YsP19+ARXPauDi9Iyu22tAlNlhQtxMTS3ZEVSOse8vXV9Bt3eAckwHQrGlw
+         +heeqB97twnrEmv7pxj/Y36K64wKm3tUMlirYYRFcCuCmP8N4X2aVxh7sUiZGU66cY
+         KrpC2YTrsS9Kw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 712DFF03953;
+        Thu,  2 Jun 2022 18:20:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 172.16.1.31
-X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org, song@kernel.org, hch@infradead.org, buczek@molgen.mpg.de, guoqing.jiang@linux.dev, xni@redhat.com, sbates@raithlin.com, Martin.Oliveira@eideticom.com, David.Sloan@eideticom.com, logang@deltatee.com, hch@lst.de
-X-SA-Exim-Mail-From: gunthorp@deltatee.com
-Subject: [PATCH v3 07/11] md/raid5-cache: Annotate pslot with __rcu notation
-X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
+Subject: Re: [net-next 1/1] stmmac: intel: Add RPL-P PCI ID
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165419401446.24492.827425543522994299.git-patchwork-notify@kernel.org>
+Date:   Thu, 02 Jun 2022 18:20:14 +0000
+References: <20220602073507.3955721-1-michael.wei.hong.sit@intel.com>
+In-Reply-To: <20220602073507.3955721-1-michael.wei.hong.sit@intel.com>
+To:     Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, mcoquelin.stm32@gmail.com,
+        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        edumazet@google.com, pabeni@redhat.com,
+        vee.khee.wong@linux.intel.com, weifeng.voon@intel.com,
+        tee.min.tan@intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-radix_tree_lookup_slot() and radix_tree_replace_slot() API expect the
-slot returned and looked up to be marked with __rcu. Otherwise
-sparse warnings are generated:
+Hello:
 
-  drivers/md/raid5-cache.c:2939:23: warning: incorrect type in
-			assignment (different address spaces)
-  drivers/md/raid5-cache.c:2939:23:    expected void **pslot
-  drivers/md/raid5-cache.c:2939:23:    got void [noderef] __rcu **
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
----
- drivers/md/raid5-cache.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+On Thu,  2 Jun 2022 15:35:07 +0800 you wrote:
+> Add PCI ID for Ethernet TSN Controller on RPL-P.
+> 
+> Signed-off-by: Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
+> ---
+>  drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c | 2 ++
+>  1 file changed, 2 insertions(+)
 
-diff --git a/drivers/md/raid5-cache.c b/drivers/md/raid5-cache.c
-index d6461d4814ab..15cab59adfcf 100644
---- a/drivers/md/raid5-cache.c
-+++ b/drivers/md/raid5-cache.c
-@@ -2637,7 +2637,7 @@ int r5c_try_caching_write(struct r5conf *conf,
- 	int i;
- 	struct r5dev *dev;
- 	int to_cache = 0;
--	void **pslot;
-+	void __rcu **pslot;
- 	sector_t tree_index;
- 	int ret;
- 	uintptr_t refcount;
-@@ -2804,7 +2804,7 @@ void r5c_finish_stripe_write_out(struct r5conf *conf,
- 	int i;
- 	int do_wakeup = 0;
- 	sector_t tree_index;
--	void **pslot;
-+	void __rcu **pslot;
- 	uintptr_t refcount;
- 
- 	if (!log || !test_bit(R5_InJournal, &sh->dev[sh->pd_idx].flags))
+Here is the summary with links:
+  - [net-next,1/1] stmmac: intel: Add RPL-P PCI ID
+    https://git.kernel.org/netdev/net/c/83450bbafebd
+
+You are awesome, thank you!
 -- 
-2.30.2
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
