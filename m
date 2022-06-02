@@ -2,136 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02B1CC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 06:07:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F95EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 06:08:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230387AbiFBGHZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 02:07:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44204 "EHLO
+        id S230348AbiFBGIK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 02:08:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230348AbiFBGHS (ORCPT
+        with ESMTP id S230403AbiFBGII (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 02:07:18 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37BA4C8BDB;
-        Wed,  1 Jun 2022 23:07:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1654150028; x=1685686028;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=fACQvi/i8TUwWPnJfsD9SOnQn1pBxmzqzJNVcJqEbc4=;
-  b=CDG+3f54QN+9VXH0fuJZnRrZ4TLoypuSXcA6hl4phzNe9bh6qZ5YpgaG
-   3o4I5xE6iRWDLTHb6MvH7R90HfXIKPFTBcIgz5/0Uiq3zZ9o6m6P6VM1F
-   CLOWJfKLndvamCYfGgxz4eSsQ3m+r7cBVheMfi4FMP6HPbatolgpTIj2C
-   I=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 01 Jun 2022 23:07:08 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 23:07:07 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 1 Jun 2022 23:07:07 -0700
-Received: from hu-pkondeti-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 1 Jun 2022 23:07:01 -0700
-Date:   Thu, 2 Jun 2022 11:36:57 +0530
-From:   Pavan Kondeti <quic_pkondeti@quicinc.com>
-To:     Krishna Kurapati <quic_kriskura@quicinc.com>
-CC:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Doug Anderson <dianders@chromium.org>,
-        "Matthias Kaehlcke" <mka@chromium.org>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        <devicetree@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-usb@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-pm@vger.kernel.org>, <quic_pkondeti@quicinc.com>,
-        <quic_ppratap@quicinc.com>, <quic_vpulyala@quicinc.com>,
-        Sandeep Maheswaram <quic_c_sanm@quicinc.com>
-Subject: Re: [PATCH v19 2/5] usb: dwc3: core: Host wake up support from
- system suspend
-Message-ID: <20220602060657.GD20979@hu-pkondeti-hyd.qualcomm.com>
-References: <1654139515-8177-1-git-send-email-quic_kriskura@quicinc.com>
- <1654139515-8177-3-git-send-email-quic_kriskura@quicinc.com>
+        Thu, 2 Jun 2022 02:08:08 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B9C9147828
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 23:08:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654150087; x=1685686087;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=FGpXmAX/PMi+Jou3AXg4JhK9EmyKVV1NzWJ2qKBKYJc=;
+  b=OuRXo0ZZrKS1vHDxs/GMxjkCwBCwzFaBHOb7nzFs/fnkuzgyQqRnBKE5
+   vEcCv8n1bC7yXmmOjW/RH8Zi3ITbUObrX6rZS8U1jfLtgU8NspWLkLbVX
+   h+GHLN4SKfCW0rQTO+2AurzsE/ThAl8d8QajeLyPRLRxnoU/YNGMduaZu
+   50/PDhrzzE82enEjhqSf3XS3KFcp9r3beyF9ixJHzR1y3v5VnDcNVKyg2
+   eNION1SxFAHH3pqXTyHJIqnf/Tu4EvoVqj3VEVt+8UQtaVrEAzvWVmSPP
+   pCLc5pFNhPfMFJF0SyAV8FEBOx5c0/mj7SC9XegoQlTnLQvuN7gyj3ytx
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10365"; a="275562310"
+X-IronPort-AV: E=Sophos;i="5.91,270,1647327600"; 
+   d="scan'208";a="275562310"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 23:08:06 -0700
+X-IronPort-AV: E=Sophos;i="5.91,270,1647327600"; 
+   d="scan'208";a="606670183"
+Received: from yanqingl-mobl1.ccr.corp.intel.com ([10.254.212.10])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 23:08:02 -0700
+Message-ID: <352ae5f408b6d7d4d3d820d68e2f2c6b494e95e1.camel@intel.com>
+Subject: Re: [RFC PATCH v4 1/7] mm/demotion: Add support for explicit memory
+ tiers
+From:   Ying Huang <ying.huang@intel.com>
+To:     "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        linux-mm@kvack.org, akpm@linux-foundation.org
+Cc:     Greg Thelen <gthelen@google.com>, Yang Shi <shy828301@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Tim C Chen <tim.c.chen@intel.com>,
+        Brice Goglin <brice.goglin@gmail.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hesham Almatary <hesham.almatary@huawei.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Jagdish Gediya <jvgediya@linux.ibm.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        David Rientjes <rientjes@google.com>
+Date:   Thu, 02 Jun 2022 14:07:59 +0800
+In-Reply-To: <20220527122528.129445-2-aneesh.kumar@linux.ibm.com>
+References: <CAAPL-u-dFp7PwPH6DfbYdnY8xaGsHz3tRQ0CPGVkiqURvdN8=A@mail.gmail.com>
+         <20220527122528.129445-1-aneesh.kumar@linux.ibm.com>
+         <20220527122528.129445-2-aneesh.kumar@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <1654139515-8177-3-git-send-email-quic_kriskura@quicinc.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Krishna,
+On Fri, 2022-05-27 at 17:55 +0530, Aneesh Kumar K.V wrote:
+> From: Jagdish Gediya <jvgediya@linux.ibm.com>
+> 
+> In the current kernel, memory tiers are defined implicitly via a
+> demotion path relationship between NUMA nodes, which is created
+> during the kernel initialization and updated when a NUMA node is
+> hot-added or hot-removed.  The current implementation puts all
+> nodes with CPU into the top tier, and builds the tier hierarchy
+> tier-by-tier by establishing the per-node demotion targets based
+> on the distances between nodes.
+> 
+> This current memory tier kernel interface needs to be improved for
+> several important use cases,
+> 
+> The current tier initialization code always initializes
+> each memory-only NUMA node into a lower tier.  But a memory-only
+> NUMA node may have a high performance memory device (e.g. a DRAM
+> device attached via CXL.mem or a DRAM-backed memory-only node on
+> a virtual machine) and should be put into a higher tier.
+> 
+> The current tier hierarchy always puts CPU nodes into the top
+> tier. But on a system with HBM or GPU devices, the
+> memory-only NUMA nodes mapping these devices should be in the
+> top tier, and DRAM nodes with CPUs are better to be placed into the
+> next lower tier.
+> 
+> With current kernel higher tier node can only be demoted to selected nodes on the
+> next lower tier as defined by the demotion path, not any other
+> node from any lower tier.  This strict, hard-coded demotion order
+> does not work in all use cases (e.g. some use cases may want to
+> allow cross-socket demotion to another node in the same demotion
+> tier as a fallback when the preferred demotion node is out of
+> space), This demotion order is also inconsistent with the page
+> allocation fallback order when all the nodes in a higher tier are
+> out of space: The page allocation can fall back to any node from
+> any lower tier, whereas the demotion order doesn't allow that.
+> 
+> The current kernel also don't provide any interfaces for the
+> userspace to learn about the memory tier hierarchy in order to
+> optimize its memory allocations.
+> 
+> This patch series address the above by defining memory tiers explicitly.
+> 
+> This patch adds below sysfs interface which is read-only and
+> can be used to read nodes available in specific tier.
+> 
+> /sys/devices/system/memtier/memtierN/nodelist
+> 
+> Tier 0 is the highest tier, while tier MAX_MEMORY_TIERS - 1 is the
+> lowest tier. The absolute value of a tier id number has no specific
+> meaning. what matters is the relative order of the tier id numbers.
+> 
+> All the tiered memory code is guarded by CONFIG_TIERED_MEMORY.
+> Default number of memory tiers are MAX_MEMORY_TIERS(3). All the
+> nodes are by default assigned to DEFAULT_MEMORY_TIER(1).
+> 
+> Default memory tier can be read from,
+> /sys/devices/system/memtier/default_tier
+> 
+> Max memory tier can be read from,
+> /sys/devices/system/memtier/max_tiers
+> 
+> This patch implements the RFC spec sent by Wei Xu <weixugc@google.com> at [1].
+> 
+> [1] https://lore.kernel.org/linux-mm/CAAPL-u-DGLcKRVDnChN9ZhxPkfxQvz9Sb93kVoX_4J2oiJSkUw@mail.gmail.com/
+> 
+> Signed-off-by: Jagdish Gediya <jvgediya@linux.ibm.com>
+> Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
 
-On Thu, Jun 02, 2022 at 08:41:52AM +0530, Krishna Kurapati wrote:
-> From: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
-> 
-> Check wakeup-source property for dwc3 core node to set the
-> wakeup capability. Drop the device_init_wakeup call from
-> runtime suspend and resume.
-> 
-> If the dwc3 is wakeup capable, don't power down the USB PHY(s).
-> The glue drivers are expected to take care of configuring the
-> additional wakeup settings if needed based on the dwc3 wakeup
-> capability status. In some SOC designs, powering off the PHY is
-> resulting in higher leakage, so this patch save power on such boards.
-> 
-> Signed-off-by: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
-> Signed-off-by: Krishna Kurapati <quic_kriskura@quicinc.com>
-> Reviewed-by: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
-> ---
->  drivers/usb/dwc3/core.c | 10 +++-------
->  1 file changed, 3 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
-> index e027c04..c9d7fe3 100644
-> --- a/drivers/usb/dwc3/core.c
-> +++ b/drivers/usb/dwc3/core.c
-> @@ -1787,6 +1787,7 @@ static int dwc3_probe(struct platform_device *pdev)
->  
->  	platform_set_drvdata(pdev, dwc);
->  	dwc3_cache_hwparams(dwc);
-> +	device_init_wakeup(&pdev->dev, of_property_read_bool(dev->of_node, "wakeup-source"));
->  
->  	spin_lock_init(&dwc->lock);
->  	mutex_init(&dwc->mutex);
-> @@ -1948,7 +1949,7 @@ static int dwc3_suspend_common(struct dwc3 *dwc, pm_message_t msg)
->  		dwc3_core_exit(dwc);
->  		break;
->  	case DWC3_GCTL_PRTCAP_HOST:
-> -		if (!PMSG_IS_AUTO(msg)) {
-> +		if (!PMSG_IS_AUTO(msg) && !device_can_wakeup(dwc->dev)) {
->  			dwc3_core_exit(dwc);
->  			break;
->  		}
-> @@ -2009,12 +2010,11 @@ static int dwc3_resume_common(struct dwc3 *dwc, pm_message_t msg)
->  		spin_unlock_irqrestore(&dwc->lock, flags);
->  		break;
->  	case DWC3_GCTL_PRTCAP_HOST:
-> -		if (!PMSG_IS_AUTO(msg)) {
-> +		if (!PMSG_IS_AUTO(msg) && !device_can_wakeup(dwc->dev)) {
->  			ret = dwc3_core_init_for_resume(dwc);
->  			if (ret)
->  				return ret;
->  			dwc3_set_prtcap(dwc, DWC3_GCTL_PRTCAP_HOST);
-> -			break;
->  		}
+IMHO, we should change the kernel internal implementation firstly, then
+implement the kerne/user space interface.  That is, make memory tier
+explicit inside kernel, then expose it to user space.
 
-We should break here for the case the device does not support wakeup and
-PM transition is system suspend. See the suspend block above where we break
-correctly.
+Best Regards,
+Huang, Ying
 
-Thanks,
-Pavan
+
+[snip]
+
