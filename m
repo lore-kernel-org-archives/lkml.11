@@ -2,97 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D881C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 13:34:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59976C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 13:35:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235378AbiFBNew (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 09:34:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45908 "EHLO
+        id S235408AbiFBNfR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 09:35:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235384AbiFBNer (ORCPT
+        with ESMTP id S235383AbiFBNfN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 09:34:47 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E944938DA1
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 06:34:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654176883;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=8EHhCCIbi1O6ehGedFb4ihf8BQ4dVN2ahlxeyANEwXA=;
-        b=c/2VOoohc7R5yqKRSZDD65nhQomcuJM7aBghR7KAQZbP1fe1QfzEdbrwDAZwm0E4KHaPHO
-        AeotdK0ZqOdaeVvsvDj4tZJAkPSXyjozDSNJ7hFfOptzsaqPkKS+Y0aGM+vBOmQBl67UJV
-        LUDv58uJ+5SIxS9XHPQy2S7SZ1ECeOE=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-148-GtfZqvBWPJuaLDuGP2d4FA-1; Thu, 02 Jun 2022 09:34:39 -0400
-X-MC-Unique: GtfZqvBWPJuaLDuGP2d4FA-1
-Received: by mail-ed1-f71.google.com with SMTP id j4-20020aa7ca44000000b0042dd12a7bc5so3457899edt.13
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 06:34:39 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=8EHhCCIbi1O6ehGedFb4ihf8BQ4dVN2ahlxeyANEwXA=;
-        b=5Xd5b/1qA1po5S1Z+iq0lhIAGsd83+J9OCJx6Mjj59GgbFpSl5qtwQqnKHUkY4e8Lj
-         Gmn/Ndy6atYcKRVCj44CWuugCLevg4qYvI+WxV3holYGabuKAOEIbiLNCQKskLLdksic
-         WOKD1bpzM+6JJ2/MetDJadsarVrhfQPCrypzb2e1S2ume06DR4LwL4bfZjbzBu9828IE
-         gUycz1mh8KQIcTDzpNOZ3JM9KlszXjVmOU5sXDLMYSa23lyeL07aRSS+0qI2S8dxVy/J
-         96VXE2DAVXdur31VYJecW+bE23VowNhkKVFOOIpr42tdqQqhN4YPqWTQ2DkuN4DKLKR3
-         ASKA==
-X-Gm-Message-State: AOAM533iGngjVXwWYI0UY9IyefJvolDag72YXvhOIkkR87u633vKqL38
-        NuaVHX08F1FAQuoMaTZ3tWGBJhpHyiaW++A+NBCzyYOOnHvebIw5ZkQilo3ZF+lGBNzYM86aKL/
-        DBBO5QzTO1ftoDL6Sjn62dsV47/mBCk0m05CT+7Z2gSv7SjJKoREQXj6pBnY0xKAyzgsVOB4Ku7
-        tq
-X-Received: by 2002:a17:906:dc8e:b0:6ff:2995:992d with SMTP id cs14-20020a170906dc8e00b006ff2995992dmr4253990ejc.725.1654176878722;
-        Thu, 02 Jun 2022 06:34:38 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxVVVt/VANOJ8pLYC9/ALH1B9r2B5L9mg5D0LUHwnfbREv3zL6CbUU/H1ejf6YOpPd/ZqgI8g==
-X-Received: by 2002:a17:906:dc8e:b0:6ff:2995:992d with SMTP id cs14-20020a170906dc8e00b006ff2995992dmr4253962ejc.725.1654176878440;
-        Thu, 02 Jun 2022 06:34:38 -0700 (PDT)
-Received: from fedora (nat-wifi.fi.muni.cz. [147.251.43.9])
-        by smtp.gmail.com with ESMTPSA id l15-20020a17090615cf00b006f3ef214dd9sm1748457ejd.63.2022.06.02.06.34.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Jun 2022 06:34:38 -0700 (PDT)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] KVM: selftests: Make hyperv_clock selftest more stable
-In-Reply-To: <YpeOkx0gkINeKFuz@google.com>
-References: <20220601144322.1968742-1-vkuznets@redhat.com>
- <YpeOkx0gkINeKFuz@google.com>
-Date:   Thu, 02 Jun 2022 15:34:37 +0200
-Message-ID: <87ee07nq8i.fsf@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+        Thu, 2 Jun 2022 09:35:13 -0400
+Received: from azure-sdnproxy-1.icoremail.net (azure-sdnproxy.icoremail.net [52.237.72.81])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 37DDD4C790;
+        Thu,  2 Jun 2022 06:35:11 -0700 (PDT)
+Received: from ubuntu.localdomain (unknown [106.117.80.109])
+        by mail-app3 (Coremail) with SMTP id cC_KCgCXn08uvJhiAyNhAQ--.19784S2;
+        Thu, 02 Jun 2022 21:33:45 +0800 (CST)
+From:   Duoming Zhou <duoming@zju.edu.cn>
+To:     linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     amitkarwar@gmail.com, ganapathi017@gmail.com,
+        sharvari.harisangam@nxp.com, huxinming820@gmail.com,
+        kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        gregkh@linuxfoundation.org, johannes@sipsolutions.net,
+        rafael@kernel.org, Duoming Zhou <duoming@zju.edu.cn>
+Subject: [PATCH v4 0/2] Remove extra param of dev_coredumpv and fix bugs
+Date:   Thu,  2 Jun 2022 21:33:32 +0800
+Message-Id: <cover.1654175941.git.duoming@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: cC_KCgCXn08uvJhiAyNhAQ--.19784S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7ZFW8JFyDtw13CF1kuF1fXrb_yoW8XF1fpF
+        48Gas3ZryfKr4DCay8Ja1xCa45J3WfWF9F9rZ3Z34rW3WfAF1rJr1Y9FyFkrn0vFW8ta4Y
+        qF13tr13GF9agFDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvC14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
+        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
+        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
+        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2
+        Y2ka0xkIwI1lc2xSY4AK67AK6ry8MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r
+        1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CE
+        b7AF67AKxVW8ZVWrXwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0x
+        vE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAI
+        cVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2Kf
+        nxnUUI43ZEXa7VUjHGQDUUUUU==
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgkJAVZdtaAX3gBis2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sean Christopherson <seanjc@google.com> writes:
+The first patch removes the extra gfp_t param of dev_coredumpv.
+The second patch fix sleep in atomic context bugs of mwifiex
+caused by dev_coredumpv.
 
-> On Wed, Jun 01, 2022, Vitaly Kuznetsov wrote:
->> hyperv_clock doesn't always give a stable test result, especially with
->> AMD CPUs. The test compares Hyper-V MSR clocksource (acquired either
->> with rdmsr() from within the guest or KVM_GET_MSRS from the host)
->> against rdtsc(). To increase the accuracy, increase the measured delay
->> (done with nop loop) by two orders of magnitude and take the mean rdtsc()
->> value before and after rdmsr()/KVM_GET_MSRS.
->
-> Rather than "fixing" the test by reducing the impact of noise, can we first try
-> to reduce the noise itself?  E.g. pin the test to a single CPU, redo the measurement
-> if the test is interrupted (/proc/interrupts?), etc...  Bonus points if that can
-> be implemented as a helper or pair of helpers so that other tests that want to
-> measure latency/time don't need to reinvent the wheel.
+Duoming Zhou (2):
+  devcoredump: remove the useless gfp_t parameter in dev_coredumpv
+  mwifiex: fix sleep in atomic context bugs caused by dev_coredumpv
 
-While I'm not certain task migration to another CPU was always the
-problem here (maybe the measured interval is too short anyway), I agree
-these are good ideas, I'll look into them, thanks!
+ drivers/base/devcoredump.c                             |  6 ++----
+ drivers/bluetooth/btmrvl_sdio.c                        |  2 +-
+ drivers/bluetooth/hci_qca.c                            |  2 +-
+ drivers/gpu/drm/etnaviv/etnaviv_dump.c                 |  2 +-
+ drivers/media/platform/qcom/venus/core.c               |  2 +-
+ drivers/net/can/spi/mcp251xfd/mcp251xfd-dump.c         |  2 +-
+ drivers/net/wireless/ath/ath10k/coredump.c             |  2 +-
+ drivers/net/wireless/ath/wil6210/wil_crash_dump.c      |  2 +-
+ .../net/wireless/broadcom/brcm80211/brcmfmac/debug.c   |  2 +-
+ drivers/net/wireless/marvell/mwifiex/init.c            | 10 ++++++----
+ drivers/net/wireless/marvell/mwifiex/main.c            |  3 +--
+ drivers/net/wireless/marvell/mwifiex/main.h            |  2 +-
+ drivers/net/wireless/marvell/mwifiex/sta_event.c       |  6 +++---
+ drivers/net/wireless/mediatek/mt76/mt7615/mac.c        |  3 +--
+ drivers/net/wireless/mediatek/mt76/mt7921/mac.c        |  3 +--
+ drivers/net/wireless/realtek/rtw88/main.c              |  2 +-
+ drivers/net/wireless/realtek/rtw89/ser.c               |  2 +-
+ drivers/remoteproc/qcom_q6v5_mss.c                     |  2 +-
+ drivers/remoteproc/remoteproc_coredump.c               |  4 ++--
+ include/linux/devcoredump.h                            |  5 ++---
+ sound/soc/intel/catpt/dsp.c                            |  2 +-
+ 21 files changed, 31 insertions(+), 35 deletions(-)
 
 -- 
-Vitaly
+2.17.1
 
