@@ -2,97 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41068C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 14:38:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53641C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 14:38:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236013AbiFBOiG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 10:38:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42986 "EHLO
+        id S236080AbiFBOiT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 10:38:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236002AbiFBOh5 (ORCPT
+        with ESMTP id S236002AbiFBOiI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 10:37:57 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B0AC30F77
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 07:37:56 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id u4so1950834pgk.11
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 07:37:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Sk/LpREl6lCpYUK3sh4dhIYv+NwXzY+EQFNtou9uNgg=;
-        b=WU//QHTddMEmbobKV3WmcaFVCVlqESjL4yadeBcxJG2Ehcb0sSYTsZ2ImwxNeLk/vm
-         MlQdDacFExr4Y4YHDdLlFOOS1UjdqOIrJFDkP/uhF4qxxtDHANzfd/1htrEsoDczNBt9
-         pbsUknttci1Qm1XuPwq7iten0RYvQ3EgZAPklHaWN5NWPnYBt1zpZrUUMCnLDduM4fQZ
-         Jf+eiPYLSvXYm/5oFexTJemCClME2J4GAt69BjH4gRvnso9TSvpmG5pJdtSKY1ajWgPO
-         24aLoQGMyZ221R2i8b0wtiAv/IeG1ozi7UfMDcsGOIeD7POBBFykhNSQ7/+AHwBJdikp
-         NLMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Sk/LpREl6lCpYUK3sh4dhIYv+NwXzY+EQFNtou9uNgg=;
-        b=jVV0mxBf7jPFdk1DcptK7KGo6jh7lH+vrcZaxmrdybSLE1DzmkyCjaUlZ6p49HnlKy
-         9ew1rO5Mdy1j5mSZvaGkBJUic9DtJ/PcaONf2cPdLGsgLr7lBeqUyruiiegZquz9QEzA
-         +p8JAnig9MC/xCPFBUUfFTAgCzrJhcoOqCZbihlcQsJmFDm5YdM65gcXjnhiWYSZeLe4
-         6fv97wVGSFRUP2GinnikJy85Nk8mMG5T0h3lD851JaX7RYQVyXMsnbKWl6JawjEpmygJ
-         1KlxYXFxY3dXPxu9YT5utqOO9nwpEgiyir0fSv3iBWV5vKd8HQWWyVQU8e0hoUZ3d10q
-         JVig==
-X-Gm-Message-State: AOAM532R77pngTaguTt2fvK0PxXp1HO54V7sMu+Cfw0iAD6/OIO0yI1G
-        mc6wfHqZqO9ZB5YLHSAdTDg/nQ==
-X-Google-Smtp-Source: ABdhPJylye22XZAN19kga/OK9TT4aEC7VNrMVwD8tJrhsly5C9WmEfLmW7j0si2yIeXqk24ffGKw0Q==
-X-Received: by 2002:a63:f955:0:b0:3fc:cf92:cd26 with SMTP id q21-20020a63f955000000b003fccf92cd26mr4494997pgk.137.1654180675640;
-        Thu, 02 Jun 2022 07:37:55 -0700 (PDT)
-Received: from [192.168.254.36] ([50.39.160.154])
-        by smtp.gmail.com with ESMTPSA id z14-20020a17090a170e00b001df239bab14sm3440275pjd.46.2022.06.02.07.37.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 02 Jun 2022 07:37:54 -0700 (PDT)
-Message-ID: <41265f4d-45b4-a3a6-e0c0-5460d2a06377@linaro.org>
-Date:   Thu, 2 Jun 2022 07:37:53 -0700
+        Thu, 2 Jun 2022 10:38:08 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3CD81248CD;
+        Thu,  2 Jun 2022 07:38:06 -0700 (PDT)
+Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LDT5r2P5yz67bVY;
+        Thu,  2 Jun 2022 22:33:36 +0800 (CST)
+Received: from roberto-ThinkStation-P620.huawei.com (10.204.63.22) by
+ fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 2 Jun 2022 16:38:04 +0200
+From:   Roberto Sassu <roberto.sassu@huawei.com>
+To:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <kpsingh@kernel.org>
+CC:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Roberto Sassu <roberto.sassu@huawei.com>
+Subject: [PATCH v2 1/9] libbpf: Introduce bpf_map_get_fd_by_id_flags()
+Date:   Thu, 2 Jun 2022 16:37:40 +0200
+Message-ID: <20220602143748.673971-2-roberto.sassu@huawei.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220602143748.673971-1-roberto.sassu@huawei.com>
+References: <20220602143748.673971-1-roberto.sassu@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v4] bpf: Fix KASAN use-after-free Read in
- compute_effective_progs
-Content-Language: en-US
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        linux- stable <stable@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        syzbot+f264bffdfbd5614f3bb2@syzkaller.appspotmail.com
-References: <CAEf4BzY-p13huoqo6N7LJRVVj8rcjPeP3Cp=KDX4N2x9BkC9Zw@mail.gmail.com>
- <20220517180420.87954-1-tadeusz.struk@linaro.org>
- <7949d722-86e8-8122-e607-4b09944b76ae@linaro.org>
- <CAEf4BzaD1Z6uOZwbquPYWB0_Z0+CkEKiXQ6zS2imiSHpTgX3pg@mail.gmail.com>
-From:   Tadeusz Struk <tadeusz.struk@linaro.org>
-In-Reply-To: <CAEf4BzaD1Z6uOZwbquPYWB0_Z0+CkEKiXQ6zS2imiSHpTgX3pg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.204.63.22]
+X-ClientProxiedBy: lhreml754-chm.china.huawei.com (10.201.108.204) To
+ fraeml714-chm.china.huawei.com (10.206.15.33)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Andrii,
-On 5/23/22 15:47, Andrii Nakryiko wrote:
->> Hi Andrii,
->> Do you have any more feedback? Does it look better to you now?
-> Hi, this is on my TODO list, but I need a bit more focused time to
-> think all this through and I haven't managed to get it in last week.
-> I'm worried about the percpu_ref_is_zero(&desc->bpf.refcnt) portion
-> and whether it can cause some skew in the calculated array index, I
-> need to look at this a bit more in depth. Sorry for the delay.
+Introduce bpf_map_get_fd_by_id_flags(), to let a caller specify the open
+flags needed for the operation. This could make an operation succeed, if
+access to a map is restricted (i.e. it allows only certain operations).
 
-Did you get a chance to look at this yet?
+Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
+---
+ tools/lib/bpf/bpf.c      | 8 +++++++-
+ tools/lib/bpf/bpf.h      | 1 +
+ tools/lib/bpf/libbpf.map | 1 +
+ 3 files changed, 9 insertions(+), 1 deletion(-)
 
+diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
+index 240186aac8e6..33bac2006043 100644
+--- a/tools/lib/bpf/bpf.c
++++ b/tools/lib/bpf/bpf.c
+@@ -1047,18 +1047,24 @@ int bpf_prog_get_fd_by_id(__u32 id)
+ 	return libbpf_err_errno(fd);
+ }
+ 
+-int bpf_map_get_fd_by_id(__u32 id)
++int bpf_map_get_fd_by_id_flags(__u32 id, __u32 flags)
+ {
+ 	union bpf_attr attr;
+ 	int fd;
+ 
+ 	memset(&attr, 0, sizeof(attr));
+ 	attr.map_id = id;
++	attr.open_flags = flags;
+ 
+ 	fd = sys_bpf_fd(BPF_MAP_GET_FD_BY_ID, &attr, sizeof(attr));
+ 	return libbpf_err_errno(fd);
+ }
+ 
++int bpf_map_get_fd_by_id(__u32 id)
++{
++	return bpf_map_get_fd_by_id_flags(id, 0);
++}
++
+ int bpf_btf_get_fd_by_id(__u32 id)
+ {
+ 	union bpf_attr attr;
+diff --git a/tools/lib/bpf/bpf.h b/tools/lib/bpf/bpf.h
+index cabc03703e29..20e4c852362d 100644
+--- a/tools/lib/bpf/bpf.h
++++ b/tools/lib/bpf/bpf.h
+@@ -438,6 +438,7 @@ LIBBPF_API int bpf_map_get_next_id(__u32 start_id, __u32 *next_id);
+ LIBBPF_API int bpf_btf_get_next_id(__u32 start_id, __u32 *next_id);
+ LIBBPF_API int bpf_link_get_next_id(__u32 start_id, __u32 *next_id);
+ LIBBPF_API int bpf_prog_get_fd_by_id(__u32 id);
++LIBBPF_API int bpf_map_get_fd_by_id_flags(__u32 id, __u32 flags);
+ LIBBPF_API int bpf_map_get_fd_by_id(__u32 id);
+ LIBBPF_API int bpf_btf_get_fd_by_id(__u32 id);
+ LIBBPF_API int bpf_link_get_fd_by_id(__u32 id);
+diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
+index 38e284ff057d..019278e66836 100644
+--- a/tools/lib/bpf/libbpf.map
++++ b/tools/lib/bpf/libbpf.map
+@@ -466,6 +466,7 @@ LIBBPF_1.0.0 {
+ 		libbpf_bpf_link_type_str;
+ 		libbpf_bpf_map_type_str;
+ 		libbpf_bpf_prog_type_str;
++		bpf_map_get_fd_by_id_flags;
+ 
+ 	local: *;
+ };
 -- 
-Thanks,
-Tadeusz
+2.25.1
+
