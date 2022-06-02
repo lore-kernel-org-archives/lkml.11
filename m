@@ -2,90 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 549D2C43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 14:38:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F5B4C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 14:38:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236123AbiFBOii (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 10:38:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44872 "EHLO
+        id S236028AbiFBOin (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 10:38:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236039AbiFBOiP (ORCPT
+        with ESMTP id S236025AbiFBOiO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 10:38:15 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A9952823D0
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 07:38:10 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id q12-20020a17090a304c00b001e2d4fb0eb4so9561946pjl.4
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 07:38:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
-        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Z/YG4PipnTkB7kFCLB9Ko0aJKnsghVne2YT8UWY752k=;
-        b=bud6KC+IEJkA6UiWdb0XWgCPZFOyuGnbI0JcrvTAcs7MVHNMHwAeHO4gVI6VuyOJOA
-         jBeWE0tjfbvr1sWtTHrQ5Pc/lY32vpbdscy1jntHUk8iRt9GspfMxKUwjBVts+q6X7aR
-         v87q9vJUEsBtElB+uDT2VH6ujaeGT+QRyw29VwBL/yfKHcfAaZaG7WjA31P3HQTQA04U
-         uqcJ8VFRO4e2Axal/SPHOuqcsS6JCaxkY9jKoXVpqccy3piFY7XCtu8jcom17rxRANck
-         0Ul7hwSuXbslkUtrhF+CWWY7IXgcKjYGHlhLeLxKHYV/IUqSL47F4p/1egWE/ObhS+kG
-         pW9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
-         :mime-version:content-transfer-encoding;
-        bh=Z/YG4PipnTkB7kFCLB9Ko0aJKnsghVne2YT8UWY752k=;
-        b=zklje4oAVbiAGF2Vu6WRUiJdmupzTKfhN+5+HFr2DsbUWkvCcu9N4PEi4VzB1szD3C
-         XZKZ5SG5gQTMzVBe0s/LolWASCUj34bjWOIuNA4lfjFSZ4y/lPqktM85CqkdAer3bn4r
-         gBr04uCM5jq2zA8rROa70cVznSVck7z79UBUKgN8WwzuX0gJ475gZWTe+vekuEQ0JJP6
-         +7xrX4PLF4b/ltP3ThxHMratrvNJQSYCRFwJ32EJOA41Q8JIxSQ/njeFbuvQYzRavzhl
-         OQWXp+0qtWdVbuOC2m3WgYhZTPUGHpPnS0qfNf3jdhFjGP8pm27OpugYqphOeDckmw+Y
-         HnOQ==
-X-Gm-Message-State: AOAM531ykuhpaRyyy6kiR2nBlW74bw4wD+c1qY5Ga6CYcT/VBlBS6Lk9
-        IVSy1mDWZXPidBFMfpcfDnvRlg==
-X-Google-Smtp-Source: ABdhPJxcsCyYB+lxTTfZ4DtkTxkL02+rhEC1XISCYE5I4g2r9qLwMTwqvhSmR6VRmrWdwKMzixf47w==
-X-Received: by 2002:a17:902:9f96:b0:163:dc33:6b72 with SMTP id g22-20020a1709029f9600b00163dc336b72mr5360865plq.34.1654180690018;
-        Thu, 02 Jun 2022 07:38:10 -0700 (PDT)
-Received: from localhost (76-210-143-223.lightspeed.sntcca.sbcglobal.net. [76.210.143.223])
-        by smtp.gmail.com with ESMTPSA id l12-20020a170903004c00b00161929fb1adsm3569827pla.54.2022.06.02.07.38.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Jun 2022 07:38:09 -0700 (PDT)
-Date:   Thu, 02 Jun 2022 07:38:09 -0700 (PDT)
-X-Google-Original-Date: Thu, 02 Jun 2022 07:38:02 PDT (-0700)
-Subject:     Re: [PATCH] dt-bindings: net: adin: Escape a trailing ":"
-In-Reply-To: <20220602142917.GA2254348-robh@kernel.org>
-CC:     kuba@kernel.org, michael.hennerich@analog.com, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com,
-        krzysztof.kozlowski+dt@linaro.org, alexandru.ardelean@analog.com,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux@rivosinc.com
-From:   Palmer Dabbelt <palmer@rivosinc.com>
-To:     Rob Herring <robh@kernel.org>
-Message-ID: <mhng-d5bd6ca0-1237-49bd-b55c-18fb483bfa98@palmer-mbp2014>
-Mime-Version: 1.0 (MHng)
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        Thu, 2 Jun 2022 10:38:14 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34AFE1A8E29;
+        Thu,  2 Jun 2022 07:38:08 -0700 (PDT)
+Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LDT761sbfz67sRl;
+        Thu,  2 Jun 2022 22:34:42 +0800 (CST)
+Received: from roberto-ThinkStation-P620.huawei.com (10.204.63.22) by
+ fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 2 Jun 2022 16:38:05 +0200
+From:   Roberto Sassu <roberto.sassu@huawei.com>
+To:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <kpsingh@kernel.org>
+CC:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Roberto Sassu <roberto.sassu@huawei.com>
+Subject: [PATCH v2 3/9] bpftool: Add flags parameter to open_obj_pinned_any() and open_obj_pinned()
+Date:   Thu, 2 Jun 2022 16:37:42 +0200
+Message-ID: <20220602143748.673971-4-roberto.sassu@huawei.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220602143748.673971-1-roberto.sassu@huawei.com>
+References: <20220602143748.673971-1-roberto.sassu@huawei.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.204.63.22]
+X-ClientProxiedBy: lhreml754-chm.china.huawei.com (10.201.108.204) To
+ fraeml714-chm.china.huawei.com (10.206.15.33)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 02 Jun 2022 07:29:17 PDT (-0700), Rob Herring wrote:
-> On Wed, Jun 01, 2022 at 06:28:09PM -0700, Palmer Dabbelt wrote:
->> From: Palmer Dabbelt <palmer@rivosinc.com>
->>
->> 1f77204e11f8 ("dt-bindings: net: adin: document phy clock output
->> properties") added a line with a ":" at the end, which is tripping up my
->> attempts to run the DT schema checks due to this being invalid YAML
->> syntax.  I get a schema check failure with the following error
->>
->>     ruamel.yaml.scanner.ScannerError: mapping values are not allowed in this context
->>
->> This just escapes the line in question, so it can parse.
->>
->> Fixes: 1f77204e11f8 ("dt-bindings: net: adin: document phy clock output properties")
->> Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
->> ---
->>  Documentation/devicetree/bindings/net/adi,adin.yaml | 3 ++-
->>  1 file changed, 2 insertions(+), 1 deletion(-)
->
-> Already have a fix queued in netdev.
+Add the flags parameter to open_obj_pinned_any() and open_obj_pinned(), so
+that it is possible to specify the right permissions when obtaining a file
+descriptor from a pinned object.
 
-OK, thanks!
+By default, the value passed to those functions is zero, so that there is
+no change in the current behavior.
+
+Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
+---
+ tools/bpf/bpftool/common.c | 15 ++++++++-------
+ tools/bpf/bpftool/link.c   |  2 +-
+ tools/bpf/bpftool/main.h   |  5 +++--
+ 3 files changed, 12 insertions(+), 10 deletions(-)
+
+diff --git a/tools/bpf/bpftool/common.c b/tools/bpf/bpftool/common.c
+index a45b42ee8ab0..88e5e1900270 100644
+--- a/tools/bpf/bpftool/common.c
++++ b/tools/bpf/bpftool/common.c
+@@ -118,7 +118,7 @@ int mount_tracefs(const char *target)
+ 	return err;
+ }
+ 
+-int open_obj_pinned(const char *path, bool quiet)
++int open_obj_pinned(const char *path, bool quiet, __u32 flags)
+ {
+ 	char *pname;
+ 	int fd = -1;
+@@ -130,7 +130,7 @@ int open_obj_pinned(const char *path, bool quiet)
+ 		goto out_ret;
+ 	}
+ 
+-	fd = bpf_obj_get(pname);
++	fd = bpf_obj_get_flags(pname, flags);
+ 	if (fd < 0) {
+ 		if (!quiet)
+ 			p_err("bpf obj get (%s): %s", pname,
+@@ -146,12 +146,13 @@ int open_obj_pinned(const char *path, bool quiet)
+ 	return fd;
+ }
+ 
+-int open_obj_pinned_any(const char *path, enum bpf_obj_type exp_type)
++int open_obj_pinned_any(const char *path, enum bpf_obj_type exp_type,
++			__u32 flags)
+ {
+ 	enum bpf_obj_type type;
+ 	int fd;
+ 
+-	fd = open_obj_pinned(path, false);
++	fd = open_obj_pinned(path, false, flags);
+ 	if (fd < 0)
+ 		return -1;
+ 
+@@ -400,7 +401,7 @@ static int do_build_table_cb(const char *fpath, const struct stat *sb,
+ 	if (typeflag != FTW_F)
+ 		goto out_ret;
+ 
+-	fd = open_obj_pinned(fpath, true);
++	fd = open_obj_pinned(fpath, true, 0);
+ 	if (fd < 0)
+ 		goto out_ret;
+ 
+@@ -761,7 +762,7 @@ int prog_parse_fds(int *argc, char ***argv, int **fds)
+ 		path = **argv;
+ 		NEXT_ARGP();
+ 
+-		(*fds)[0] = open_obj_pinned_any(path, BPF_OBJ_PROG);
++		(*fds)[0] = open_obj_pinned_any(path, BPF_OBJ_PROG, 0);
+ 		if ((*fds)[0] < 0)
+ 			return -1;
+ 		return 1;
+@@ -898,7 +899,7 @@ int map_parse_fds(int *argc, char ***argv, int **fds)
+ 		path = **argv;
+ 		NEXT_ARGP();
+ 
+-		(*fds)[0] = open_obj_pinned_any(path, BPF_OBJ_MAP);
++		(*fds)[0] = open_obj_pinned_any(path, BPF_OBJ_MAP, 0);
+ 		if ((*fds)[0] < 0)
+ 			return -1;
+ 		return 1;
+diff --git a/tools/bpf/bpftool/link.c b/tools/bpf/bpftool/link.c
+index 7a20931c3250..04447ad9b3b3 100644
+--- a/tools/bpf/bpftool/link.c
++++ b/tools/bpf/bpftool/link.c
+@@ -44,7 +44,7 @@ static int link_parse_fd(int *argc, char ***argv)
+ 		path = **argv;
+ 		NEXT_ARGP();
+ 
+-		return open_obj_pinned_any(path, BPF_OBJ_LINK);
++		return open_obj_pinned_any(path, BPF_OBJ_LINK, 0);
+ 	}
+ 
+ 	p_err("expected 'id' or 'pinned', got: '%s'?", **argv);
+diff --git a/tools/bpf/bpftool/main.h b/tools/bpf/bpftool/main.h
+index 6c311f47147e..3f6c03afb2f8 100644
+--- a/tools/bpf/bpftool/main.h
++++ b/tools/bpf/bpftool/main.h
+@@ -141,8 +141,9 @@ void get_prog_full_name(const struct bpf_prog_info *prog_info, int prog_fd,
+ int get_fd_type(int fd);
+ const char *get_fd_type_name(enum bpf_obj_type type);
+ char *get_fdinfo(int fd, const char *key);
+-int open_obj_pinned(const char *path, bool quiet);
+-int open_obj_pinned_any(const char *path, enum bpf_obj_type exp_type);
++int open_obj_pinned(const char *path, bool quiet, __u32 flags);
++int open_obj_pinned_any(const char *path, enum bpf_obj_type exp_type,
++			__u32 flags);
+ int mount_bpffs_for_pin(const char *name);
+ int do_pin_any(int argc, char **argv, int (*get_fd_by_id)(int *, char ***));
+ int do_pin_fd(int fd, const char *name);
+-- 
+2.25.1
+
