@@ -2,136 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 450BBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 13:11:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EB98C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 13:14:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235262AbiFBNLt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 09:11:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36534 "EHLO
+        id S235265AbiFBNOd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 09:14:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235253AbiFBNLr (ORCPT
+        with ESMTP id S233534AbiFBNO2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 09:11:47 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2491261B;
-        Thu,  2 Jun 2022 06:11:44 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id q1so9876217ejz.9;
-        Thu, 02 Jun 2022 06:11:44 -0700 (PDT)
+        Thu, 2 Jun 2022 09:14:28 -0400
+Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 922CEEB0
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 06:14:27 -0700 (PDT)
+Received: by mail-il1-x12e.google.com with SMTP id s1so3400963ilj.0
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 06:14:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=brdaE36/5F/x/iFbu9swQ3VSiPLNbwgh4yvLlRE8Z1E=;
-        b=eOCRyscO4MNtj6wvnml7Zc1hrYWUsNZ/DuBeA/QEPeuekHpa/ErxgiRIQ4TmD4aQPE
-         tXVIvAu4Tx8dHZJ8XH24aSNlZAlXTea3aqXDHax+X0XY1f2dgzWUm/J+vkCPHj2YWTZT
-         7pMHJqOE+aPX4T1C1r7JNGdZM86eysEjqv+JfQRRrEY+FWKaSc6csyo66mTVbI6GJ7a4
-         i56hj+8qR0orJAx7Gk/9Bkk4M4+7YnDEcWYclUjVPPMHmwHQdWIZOtrkOep5Dt/cWCcY
-         vnjM8t7Qay5p5CFY3hXvi2cG+upSFedlC8fzAU3NG1xpvrYJgkfzWffbKbIm28cJwNcI
-         xW9A==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sgLg/AKbyDLXa17x68nO4wD5tM3TzhU72GY+ii+nIYw=;
+        b=M/WKw0pgr28e9f4TCf+3US/EEL+xYB2Og+ra97BHVbcKps3ispv/i06yZHWX6HITMn
+         GuWN5ybp07+KSKBAmLnC6ChVpTXiHh5Byp+MDEqkug4+JCokhxTj9VdUwlC7Sejssr/r
+         oVU8EgBtKxR9S8NSlefu1+JRdoiq/KAsrcF4X9DYFot/BZXVqRpPaBrWVm4K2kYPW3us
+         wn0WNHW/9m/V8RsaqEEOeG+Nq/Iq3bYhz4G2uppznh/gUvGD0LnkmF01TuyIm27eoKmm
+         D28KjsVVVqRvOicWvrZqnaak2ws8pPHj1xqA3UbJze1CNvsslGqsoJwls8K5MAf7tDuJ
+         9nyw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=brdaE36/5F/x/iFbu9swQ3VSiPLNbwgh4yvLlRE8Z1E=;
-        b=5OrXuJrmnX9fO/wpp36ogl6EzB7Xw3n+jSvTXaY6V5jOXyA8Nwr4TAKTwf32cl7Liv
-         lPaOaPZEuVPhJNyM4aMef51chogC9kFZU/Xk5F9hjTvqddYGlsIVgIv4bLRgV3Yt+MVM
-         4sB+wo1MJhCjN2bcGni1Qt97lJEYF4E/gzDoKsUUbc4mtpEW3T44tu7bAUSns18rQI8v
-         fKh/uozoGJyIAZxbMnf19bdadAWw4TkmN3+y9woVJ97JZ/JDDn7rPALttn09eAILq+lo
-         k2rFE3TapTrBrp4csx1OzdG7LAgYFUDz1GoAALhwwVRMOK0UtyGTfkxXowhUs69Wr9QS
-         yHOQ==
-X-Gm-Message-State: AOAM530j59O6b5xfZ9jnTYBG1JN4u9ZbXEXtQT/9ii652wADSdaFepad
-        Yi5tqXzuov9vtvPh3ETFG7DFV+1exq6VpQ==
-X-Google-Smtp-Source: ABdhPJwb1PXK3C05Q+IbSCjlHCNOYKk5ouCm0zAf96gJWoSbkQkjb+jDbt+9XqiaURRGi8j7OouuHw==
-X-Received: by 2002:a17:907:3f91:b0:6fe:8af0:4b2c with SMTP id hr17-20020a1709073f9100b006fe8af04b2cmr4390682ejc.220.1654175502888;
-        Thu, 02 Jun 2022 06:11:42 -0700 (PDT)
-Received: from kwango.redhat.com (ip-89-102-68-162.net.upcbroadband.cz. [89.102.68.162])
-        by smtp.gmail.com with ESMTPSA id j17-20020aa7ca51000000b0042a9fcd7c73sm2390181edt.46.2022.06.02.06.11.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Jun 2022 06:11:42 -0700 (PDT)
-From:   Ilya Dryomov <idryomov@gmail.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [GIT PULL] Ceph updates for 5.19-rc1
-Date:   Thu,  2 Jun 2022 15:11:31 +0200
-Message-Id: <20220602131131.22117-1-idryomov@gmail.com>
-X-Mailer: git-send-email 2.19.2
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sgLg/AKbyDLXa17x68nO4wD5tM3TzhU72GY+ii+nIYw=;
+        b=C/LBvg7FZ+GeFz34lY4Grz08TpXOLDiGFJdDzEG4+7sjc8CP5yV61Ygxyy16GFoAvO
+         9vmC6nTjcGyUnb9WWpUc/ZifDi0KCB0OdvdjgyS6YHJu37cF00dz3MHEdyFBYjFwZFqj
+         wxMAbGvmlgv7tW2ok6rMLv9nn30T1ePZUXTvdQquvzC8SteCTpMs6cO8Izhp6ZaEa1nX
+         ljW7FRWuuzBU2VqxK7ydXu7CLaF0ywfyeyN0Ln8LGE+rHIyNFKhVyv32w5CKsNrvXf8j
+         rxRFfCtnrhNVZbp8SA+03OQ6a8nJ3g5AUsBkWzZrsIw5e1CH3jgg4nBR1IU0nE8h3nJK
+         wf0g==
+X-Gm-Message-State: AOAM531H0Bddu8gPiF4feQrw0n5WIXZgoMGeLhtXM5D2Cl47nrD5Fidd
+        AH5IFd3TVOeMjzluVFdHXuKNHwBt9w/IvtnrYUDfexh54c2koIsf
+X-Google-Smtp-Source: ABdhPJy0FI+rxQz9nAWhZwndcFs2t7KOXbUPQnWiUtcloIPqI9PXi/qlrq50anIaDsEEDd86Bz/RA1Qm+q3pFTEO6cA=
+X-Received: by 2002:a92:d7ce:0:b0:2cf:d004:10e2 with SMTP id
+ g14-20020a92d7ce000000b002cfd00410e2mr3137913ilq.193.1654175666981; Thu, 02
+ Jun 2022 06:14:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220531115942.1686812-1-chenhuacai@loongson.cn>
+ <e7cf33a170d0b4e98e53744f60dbf922@kernel.org> <CAAhV-H6ZoqSty=yaAUPMg1QTamfwuYODB_mxf_o=HCJ1boawQg@mail.gmail.com>
+ <11542d9318062155ae5dfaafc7b14bb6@kernel.org>
+In-Reply-To: <11542d9318062155ae5dfaafc7b14bb6@kernel.org>
+From:   Huacai Chen <chenhuacai@gmail.com>
+Date:   Thu, 2 Jun 2022 21:14:15 +0800
+Message-ID: <CAAhV-H6vdw2FoPBHLjTFv2iNHnbeJ8ccE2oxCqZL71fNnY6AqA@mail.gmail.com>
+Subject: Re: [PATCH 1/2] irqchip: Adjust Kconfig for Loongson
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     Huacai Chen <chenhuacai@loongson.cn>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Xuefeng Li <lixuefeng@loongson.cn>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+Hi, Marc,
 
-The following changes since commit 4b0986a3613c92f4ec1bdc7f60ec66fea135991f:
+On Thu, Jun 2, 2022 at 7:35 PM Marc Zyngier <maz@kernel.org> wrote:
+>
+> On 2022-05-31 16:53, Huacai Chen wrote:
+> > Hi, Marc,
+> >
+> > On Tue, May 31, 2022 at 8:52 PM Marc Zyngier <maz@kernel.org> wrote:
+> >>
+> >> On 2022-05-31 12:59, Huacai Chen wrote:
+> >> > We are preparing to add new Loongson (based on LoongArch, not
+> >> > compatible
+> >> > with old MIPS-based Loongson) support.
+> >>
+> >> Please drop this blurb from all your patches. It adds zero
+> >> information.
+> > OK, will be removed.
+> >
+> >>
+> >> > HTVEC will be shared by both old
+> >> > and new Loongson processors, so we adjust its description. HTPIC is
+> >> > only
+> >> > used by MIPS-based Loongson, so we add a MIPS dependency. PCH_PIC and
+> >> > PCH_MSI will have some arch-specific code, so we remove the
+> >> > COMPILE_TEST
+> >> > dependency to avoid build warnings.
+> >> >
+> >> > Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
+> >>
+> >> No cover letter, no indication of what this applies on, no mention
+> >> of how this relates to the ongoing irqchip review.
+> >>
+> >> What do you want me to do with this?
+> > Sorry about the confusion; as suggested by you and Arnd, these two
+> > patches
+> > are the minimal changes required on irqchip's side to make the port
+> > build,
+> > without introducing any non-reviewed pieces of code. I originally
+> > wanted to
+> > send the patches then quickly reply you in the asm-generic thread, but
+> > unfortunately I lost Internet connectivity at my site until you have
+> > replied.
+> >
+> > You are knowledgeable, and have taught me much; I owe you many thanks.
+> > However, as my native language is not English, I realize I may sound
+> > impolite
+> > or inappropriate from time to time, making some of you unhappy.
+> > (Actually I
+> > had to ask Xuerui to translate this reply for me, in case I get
+> > something
+> > wrong again.) I'll try to improve in the future and I hope you'll
+> > understand.
+>
+> No worries. English isn't my native language either, and I somehow
+> developed
+> a thick skin when it comes to perceived attitude. So please don't
+> apologise,
+> and keep working with us.
+Thanks for your understanding.
 
-  Linux 5.18 (2022-05-22 09:52:31 -1000)
+Sorry for bothering you again, but I've stripped down the irqchip
+patches originally
+posted at [1] even more, as can be seen in the latest submission (v14) that I've
+CC-ed you; I'd like to get Acked-by from you for the 2 patches, to hopefully get
+the port PR sent shortly.
 
-are available in the Git repository at:
+In addition, as the timing is rather tight by now, if you don't want to give out
+the Acked-by for any reason, would you please explain a little bit in a quick
+reply? So that I can arrange for things inside Loongson in advance if the port
+isn't going to appear in v5.19.
 
-  https://github.com/ceph/ceph-client.git tags/ceph-for-5.19-rc1
+[1]: https://lore.kernel.org/lkml/20220531163236.2109556-1-chenhuacai@loongson.cn/
 
-for you to fetch changes up to af7dc8e5124daf017ebc85c8ea97212e1e2e62fe:
+Thanks again,
 
-  MAINTAINERS: move myself from ceph "Maintainer" to "Reviewer" (2022-05-25 20:45:14 +0200)
+Huacai
 
-----------------------------------------------------------------
-A big pile of assorted fixes and improvements for the filesystem with
-nothing in particular standing out, except perhaps that the fact that
-the MDS never really maintained atime was made official and thus it's
-no longer updated on the client either.
-
-We also have a MAINTAINERS update: Jeff is transitioning his filesystem
-maintainership duties to Xiubo.
-
-----------------------------------------------------------------
-Colin Ian King (1):
-      ceph: remove redundant variable ino
-
-Guo Zhengkui (1):
-      libceph: use swap() macro instead of taking tmp variable
-
-Jakob Koschel (3):
-      rbd: replace usage of found with dedicated list iterator variable
-      ceph: use dedicated list iterator variable
-      ceph: replace usage of found with dedicated list iterator variable
-
-Jeff Layton (1):
-      MAINTAINERS: move myself from ceph "Maintainer" to "Reviewer"
-
-Luis Henriques (2):
-      ceph: fix statfs for subdir mounts
-      ceph: fix decoding of client session messages flags
-
-Venky Shankar (1):
-      ceph: allow ceph.dir.rctime xattr to be updatable
-
-Xiubo Li (14):
-      ceph: remove unused CEPH_MDS_LEASE_RELEASE related code
-      ceph: stop forwarding the request when exceeding 256 times
-      ceph: stop retrying the request when exceeding 256 times
-      ceph: update the dlease for the hashed dentry when removing
-      ceph: no need to invalidate the fscache twice
-      ceph: fix statx AT_STATX_DONT_SYNC vs AT_STATX_FORCE_SYNC check
-      ceph: rename unsafe_request_wait()
-      ceph: flush the mdlog for filesystem sync
-      ceph: disable updating the atime since cephfs won't maintain it
-      ceph: try to choose the auth MDS if possible for getattr
-      ceph: redirty the page for writepage on failure
-      ceph: fix possible deadlock when holding Fwb to get inline_data
-      ceph: try to queue a writeback if revoking fails
-      ceph: switch TASK_INTERRUPTIBLE to TASK_KILLABLE
-
- MAINTAINERS             |   4 +-
- drivers/block/rbd.c     |  13 +++---
- fs/ceph/addr.c          |  42 ++++++++++-------
- fs/ceph/caps.c          |  75 +++++++++++++++++++-----------
- fs/ceph/inode.c         |  35 ++++++++++++--
- fs/ceph/mds_client.c    | 121 +++++++++++++++++++++++++++++++++++++-----------
- fs/ceph/mds_client.h    |   2 +-
- fs/ceph/quota.c         |  19 ++++----
- fs/ceph/super.c         |   1 +
- fs/ceph/super.h         |  29 ++++++++++--
- fs/ceph/xattr.c         |  10 +++-
- net/ceph/crush/mapper.c |   5 +-
- 12 files changed, 253 insertions(+), 103 deletions(-)
+>
+> Thanks,
+>
+>          M.
+> --
+> Jazz is not dead. It just smells funny...
