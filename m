@@ -2,140 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3E6BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 04:53:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C135C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 05:07:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229724AbiFBExA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 00:53:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42252 "EHLO
+        id S229906AbiFBFHG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 01:07:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229867AbiFBEwm (ORCPT
+        with ESMTP id S229539AbiFBFHE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 00:52:42 -0400
-Received: from nksmu.kylinos.cn (mailgw.kylinos.cn [123.150.8.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 949B555B0
-        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 21:52:40 -0700 (PDT)
-X-UUID: c5b39320cda94d40b717a0897b88f1fd-20220602
-X-GW-Reason: 13103
-X-Policy-Incident: 5pS25Lu25Lq66LaF6L+HMTDkurrpnIDopoHlrqHmoLg=
-X-Content-Feature: ica/max.line-size 100
-        audit/email.address 2
-        meta/cnt.alert 1
-X-CPASD-INFO: cbbbc0d484424a0a9583bbd036ec801d@rLKcgpBikmRkVHZ-g6R7m1lmaGOSjoR
-        _dXCFk2ZgXYSVhH5xTWJsXVKBfG5QZWNdYVN_eGpQYl9gZFB5i3-XblBgXoZgUZB3sqScgpRelA==
-X-CLOUD-ID: cbbbc0d484424a0a9583bbd036ec801d
-X-CPASD-SUMMARY: SIP:-1,APTIP:-2.0,KEY:0.0,FROMBLOCK:1,OB:0.0,URL:-5,TVAL:186.
-        0,ESV:0.0,ECOM:-5.0,ML:0.0,FD:0.0,CUTS:305.0,IP:-2.0,MAL:-5.0,PHF:-5.0,PHC:-5
-        .0,SPF:4.0,EDMS:-5,IPLABEL:4480.0,FROMTO:0,AD:0,FFOB:0.0,CFOB:1.0,SPC:0,SIG:-
-        5,AUF:12,DUF:42068,ACD:302,DCD:404,SL:0,EISP:0,AG:0,CFC:0.802,CFSR:0.031,UAT:
-        0,RAF:0,IMG:-5.0,DFA:0,DTA:0,IBL:-2.0,ADI:-5,SBL:0,REDM:0,REIP:0,ESB:0,ATTNUM
-        :0,EAF:0,CID:-5.0,VERSION:2.3.17
-X-CPASD-ID: c5b39320cda94d40b717a0897b88f1fd-20220602
-X-CPASD-BLOCK: 1000
-X-CPASD-STAGE: 1
-X-UUID: c5b39320cda94d40b717a0897b88f1fd-20220602
-X-User: huangbing@kylinos.cn
-Received: from localhost.localdomain [(116.128.244.169)] by nksmu.kylinos.cn
-        (envelope-from <huangbing@kylinos.cn>)
-        (Generic MTA)
-        with ESMTP id 2121234482; Thu, 02 Jun 2022 11:10:52 +0800
-From:   Bing Huang <huangbing@kylinos.cn>
-To:     peterz@infradead.org, dietmar.eggemann@arm.com
-Cc:     brauner@kernel.org, bristot@redhat.com, bsegall@google.com,
-        juri.lelli@redhat.com, linux-kernel@vger.kernel.org,
-        mgorman@suse.de, mingo@redhat.com, rostedt@goodmis.org,
-        vincent.guittot@linaro.org
-Subject: [PATCH v3] sched/fair: static cpumasks for load balance
-Date:   Thu,  2 Jun 2022 11:07:53 +0800
-Message-Id: <20220602030753.399566-1-huangbing@kylinos.cn>
-X-Mailer: git-send-email 2.25.1
+        Thu, 2 Jun 2022 01:07:04 -0400
+Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5950EBC8A
+        for <linux-kernel@vger.kernel.org>; Wed,  1 Jun 2022 22:07:00 -0700 (PDT)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1654146416;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=SCBnvwHlKpwI3ER7b6V0rjnJzAjOrcaxxPRFAdzr+/8=;
+        b=Wqew7a2yEOyPVrNX8SfcrVfbJq2orOlXM/nzLrt3Ryv+vT9tST+pgV0NgHoQvCIWDZjSWS
+        iCCFmVMbsi26tS2jSGe9W2lwLl80Sop0b4lYLjNztTVZmVNul2atyE9mL+zcs9PlmlzwVP
+        SdnKokjCsV+7B52H7zulystM7Pht1Aw=
+From:   Naoya Horiguchi <naoya.horiguchi@linux.dev>
+To:     linux-mm@kvack.org
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        David Hildenbrand <david@redhat.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Liu Shixin <liushixin2@huawei.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Naoya Horiguchi <naoya.horiguchi@nec.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v1 0/5] mm, hwpoison: enable 1GB hugepage support
+Date:   Thu,  2 Jun 2022 14:06:26 +0900
+Message-Id: <20220602050631.771414-1-naoya.horiguchi@linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The both cpu mask load_balance_mask and select_idle_mask just only used
-in fair.c, but allocation in core.c in CONFIG_CPUMASK_OFFSTACK=y case,
-and global via declare per cpu variations. More or less, it looks wired.
+Hi,
 
-Co-developed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
-Signed-off-by: Bing Huang <huangbing@kylinos.cn>
+This patchset enables memory error handling on 1GB hugepage.
+
+"Save raw error page" patch (1/4 of patchset [1]) is necessary, so it's
+included in this series (the remaining part of hotplug related things are
+still in progress).  Patch 2/5 solves issues in a corner case of hugepage
+handling, which might not be the main target of this patchset, but slightly
+related.  It was posted separately [2] but depends on 1/5, so I group them
+together.
+
+Patch 3/5 to 5/5 are main part of this series and fix a small issue about
+handling 1GB hugepage, which I hope will be workable.
+
+[1]: https://lore.kernel.org/linux-mm/20220427042841.678351-1-naoya.horiguchi@linux.dev/T/#u
+
+[2]: https://lore.kernel.org/linux-mm/20220511151955.3951352-1-naoya.horiguchi@linux.dev/T/
+
+Please let me know if you have any suggestions and comments.
+
+Thanks,
+Naoya Horiguchi
 ---
+Summary:
 
- v1->v2:
-   move load_balance_mask and select_idle_mask allocation from 
-   sched_init() to init_sched_fair_class()
- v2->v3: 
-   fixup by Dietmar Eggemann <dietmar.eggemann@arm.com>
+Naoya Horiguchi (5):
+      mm, hwpoison, hugetlb: introduce SUBPAGE_INDEX_HWPOISON to save raw error page
+      mm,hwpoison: set PG_hwpoison for busy hugetlb pages
+      mm, hwpoison: make __page_handle_poison returns int
+      mm, hwpoison: skip raw hwpoison page in freeing 1GB hugepage
+      mm, hwpoison: enable memory error handling on 1GB hugepage
 
- kernel/sched/core.c | 11 -----------
- kernel/sched/fair.c | 13 +++++++++++--
- 2 files changed, 11 insertions(+), 13 deletions(-)
-
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 696c6490bd5b..707df2aeebf8 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -9503,9 +9503,6 @@ LIST_HEAD(task_groups);
- static struct kmem_cache *task_group_cache __read_mostly;
- #endif
- 
--DECLARE_PER_CPU(cpumask_var_t, load_balance_mask);
--DECLARE_PER_CPU(cpumask_var_t, select_idle_mask);
--
- void __init sched_init(void)
- {
- 	unsigned long ptr = 0;
-@@ -9549,14 +9546,6 @@ void __init sched_init(void)
- 
- #endif /* CONFIG_RT_GROUP_SCHED */
- 	}
--#ifdef CONFIG_CPUMASK_OFFSTACK
--	for_each_possible_cpu(i) {
--		per_cpu(load_balance_mask, i) = (cpumask_var_t)kzalloc_node(
--			cpumask_size(), GFP_KERNEL, cpu_to_node(i));
--		per_cpu(select_idle_mask, i) = (cpumask_var_t)kzalloc_node(
--			cpumask_size(), GFP_KERNEL, cpu_to_node(i));
--	}
--#endif /* CONFIG_CPUMASK_OFFSTACK */
- 
- 	init_rt_bandwidth(&def_rt_bandwidth, global_rt_period(), global_rt_runtime());
- 
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 8c5b74f66bd3..310b6f52a7df 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -5843,8 +5843,8 @@ static void dequeue_task_fair(struct rq *rq, struct task_struct *p, int flags)
- #ifdef CONFIG_SMP
- 
- /* Working cpumask for: load_balance, load_balance_newidle. */
--DEFINE_PER_CPU(cpumask_var_t, load_balance_mask);
--DEFINE_PER_CPU(cpumask_var_t, select_idle_mask);
-+static DEFINE_PER_CPU(cpumask_var_t, load_balance_mask);
-+static DEFINE_PER_CPU(cpumask_var_t, select_idle_mask);
- 
- #ifdef CONFIG_NO_HZ_COMMON
- 
-@@ -11841,6 +11841,15 @@ void show_numa_stats(struct task_struct *p, struct seq_file *m)
- __init void init_sched_fair_class(void)
- {
- #ifdef CONFIG_SMP
-+	int i;
-+
-+	for_each_possible_cpu(i) {
-+		zalloc_cpumask_var_node(&per_cpu(load_balance_mask, i),
-+								GFP_KERNEL, cpu_to_node(i));
-+		zalloc_cpumask_var_node(&per_cpu(select_idle_mask, i),
-+								GFP_KERNEL, cpu_to_node(i));
-+	}
-+
- 	open_softirq(SCHED_SOFTIRQ, run_rebalance_domains);
- 
- #ifdef CONFIG_NO_HZ_COMMON
--- 
-2.25.1
-
-
-No virus found
-		Checked by Hillstone Network AntiVirus
+ include/linux/hugetlb.h | 24 ++++++++++++++++++++++++
+ include/linux/mm.h      |  2 +-
+ include/ras/ras_event.h |  1 -
+ mm/hugetlb.c            |  9 +++++++++
+ mm/memory-failure.c     | 48 +++++++++++++++++++++---------------------------
+ 5 files changed, 55 insertions(+), 29 deletions(-)
