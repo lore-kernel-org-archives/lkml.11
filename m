@@ -2,395 +2,335 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D83DAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 12:03:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3284C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 12:03:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234623AbiFBMDh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 08:03:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49378 "EHLO
+        id S234691AbiFBMDl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 08:03:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232729AbiFBMDb (ORCPT
+        with ESMTP id S234754AbiFBMDh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 08:03:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 040981007;
-        Thu,  2 Jun 2022 05:03:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 875AF616F8;
-        Thu,  2 Jun 2022 12:03:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DB1EC385A5;
-        Thu,  2 Jun 2022 12:03:24 +0000 (UTC)
-From:   Huacai Chen <chenhuacai@loongson.cn>
-To:     Arnd Bergmann <arnd@arndb.de>, Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Airlie <airlied@linux.ie>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-arch@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Huacai Chen <chenhuacai@gmail.com>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Huacai Chen <chenhuacai@loongson.cn>,
-        WANG Xuerui <git@xen0n.name>
-Subject: [PATCH V14 19/24] LoongArch: Add some library functions
-Date:   Thu,  2 Jun 2022 19:51:36 +0800
-Message-Id: <20220602115141.3962749-20-chenhuacai@loongson.cn>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220602115141.3962749-1-chenhuacai@loongson.cn>
-References: <20220602115141.3962749-1-chenhuacai@loongson.cn>
+        Thu, 2 Jun 2022 08:03:37 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDE2D38AF
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 05:03:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654171415; x=1685707415;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=q9mkvTh5S60FjSe5FSqb32kkfol5w3Mp5LDwfwTITAA=;
+  b=LidAJ8KXUiuRpHqxRDkjvwZ36zowPZavTQppzaB/Gdazu+dnDlcOe4kZ
+   1aZy9zoX9B1zJXgz8tSjyDaI1p6NfxaQM62jawDXjnWjUfG5xs6fJmGNI
+   3SEkIphrHZo1dPG6ikplMZnW4EJJI1Iidkq00gt5Smtty7AJdksXbnF8O
+   pPY/h63rC245jEVeclR/Ha5R7IKJ1QtJqOimsNq5YvOEcoDo+db1cM/jA
+   07cBuMNd8Z2IroGEqTfi3FExTo9PxAgoQFgvTswOwkt3oEWqE/mcQp0Tu
+   hVCF6QCYKRuqeuoo/VKJHt2JaKkRSfeiOyiMzR+DruPWlVC+2EBa6WDBP
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10365"; a="276001297"
+X-IronPort-AV: E=Sophos;i="5.91,271,1647327600"; 
+   d="scan'208";a="276001297"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2022 05:03:27 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,271,1647327600"; 
+   d="scan'208";a="707537769"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 02 Jun 2022 05:03:25 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nwjXw-00052v-95;
+        Thu, 02 Jun 2022 12:03:24 +0000
+Date:   Thu, 2 Jun 2022 20:02:23 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [arm-integrator:kernel-in-vmalloc-v5.18-rc1 20/31]
+ arch/hexagon/include/asm/page.h:131:9: error: use of undeclared identifier
+ 'PAGE_OFFSET'
+Message-ID: <202206021932.SvXQtG2F-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add some library functions for LoongArch, including: delay, memset,
-memcpy, memmove, copy_user, strncpy_user, strnlen_user and tlb dump
-functions.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git kernel-in-vmalloc-v5.18-rc1
+head:   9083f89a58302e92fad7f144986e307db2350aad
+commit: 591e0e614af53ee26dec3179fb3e6e028cecd386 [20/31] Hexagon: Make virt_to_pfn() a static inline
+config: hexagon-randconfig-r041-20220531 (https://download.01.org/0day-ci/archive/20220602/202206021932.SvXQtG2F-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project b364c76683f8ef241025a9556300778c07b590c2)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git/commit/?id=591e0e614af53ee26dec3179fb3e6e028cecd386
+        git remote add arm-integrator https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git
+        git fetch --no-tags arm-integrator kernel-in-vmalloc-v5.18-rc1
+        git checkout 591e0e614af53ee26dec3179fb3e6e028cecd386
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/power/supply/
 
-Reviewed-by: WANG Xuerui <git@xen0n.name>
-Reviewed-by: Jiaxun Yang <jiaxun.yang@flygoat.com>
-Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
----
- arch/loongarch/include/asm/delay.h  |  26 +++++++
- arch/loongarch/include/asm/string.h |  12 +++
- arch/loongarch/lib/clear_user.S     |  43 +++++++++++
- arch/loongarch/lib/copy_user.S      |  47 ++++++++++++
- arch/loongarch/lib/delay.c          |  43 +++++++++++
- arch/loongarch/lib/dump_tlb.c       | 111 ++++++++++++++++++++++++++++
- 6 files changed, 282 insertions(+)
- create mode 100644 arch/loongarch/include/asm/delay.h
- create mode 100644 arch/loongarch/include/asm/string.h
- create mode 100644 arch/loongarch/lib/clear_user.S
- create mode 100644 arch/loongarch/lib/copy_user.S
- create mode 100644 arch/loongarch/lib/delay.c
- create mode 100644 arch/loongarch/lib/dump_tlb.c
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-diff --git a/arch/loongarch/include/asm/delay.h b/arch/loongarch/include/asm/delay.h
-new file mode 100644
-index 000000000000..36d775191310
---- /dev/null
-+++ b/arch/loongarch/include/asm/delay.h
-@@ -0,0 +1,26 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
-+ */
-+#ifndef _ASM_DELAY_H
-+#define _ASM_DELAY_H
-+
-+#include <linux/param.h>
-+
-+extern void __delay(unsigned long cycles);
-+extern void __ndelay(unsigned long ns);
-+extern void __udelay(unsigned long us);
-+
-+#define ndelay(ns) __ndelay(ns)
-+#define udelay(us) __udelay(us)
-+
-+/* make sure "usecs *= ..." in udelay do not overflow. */
-+#if HZ >= 1000
-+#define MAX_UDELAY_MS	1
-+#elif HZ <= 200
-+#define MAX_UDELAY_MS	5
-+#else
-+#define MAX_UDELAY_MS	(1000 / HZ)
-+#endif
-+
-+#endif /* _ASM_DELAY_H */
-diff --git a/arch/loongarch/include/asm/string.h b/arch/loongarch/include/asm/string.h
-new file mode 100644
-index 000000000000..b07e60ded957
---- /dev/null
-+++ b/arch/loongarch/include/asm/string.h
-@@ -0,0 +1,12 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
-+ */
-+#ifndef _ASM_STRING_H
-+#define _ASM_STRING_H
-+
-+extern void *memset(void *__s, int __c, size_t __count);
-+extern void *memcpy(void *__to, __const__ void *__from, size_t __n);
-+extern void *memmove(void *__dest, __const__ void *__src, size_t __n);
-+
-+#endif /* _ASM_STRING_H */
-diff --git a/arch/loongarch/lib/clear_user.S b/arch/loongarch/lib/clear_user.S
-new file mode 100644
-index 000000000000..25d9be5fbb19
---- /dev/null
-+++ b/arch/loongarch/lib/clear_user.S
-@@ -0,0 +1,43 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
-+ */
-+
-+#include <asm/asm.h>
-+#include <asm/asmmacro.h>
-+#include <asm/export.h>
-+#include <asm/regdef.h>
-+
-+.macro fixup_ex from, to, offset, fix
-+.if \fix
-+	.section .fixup, "ax"
-+\to:	addi.d	a0, a1, \offset
-+	jr	ra
-+	.previous
-+.endif
-+	.section __ex_table, "a"
-+	PTR	\from\()b, \to\()b
-+	.previous
-+.endm
-+
-+/*
-+ * unsigned long __clear_user(void *addr, size_t size)
-+ *
-+ * a0: addr
-+ * a1: size
-+ */
-+SYM_FUNC_START(__clear_user)
-+	beqz	a1, 2f
-+
-+1:	st.b	zero, a0, 0
-+	addi.d	a0, a0, 1
-+	addi.d	a1, a1, -1
-+	bgt	a1, zero, 1b
-+
-+2:	move	a0, a1
-+	jr	ra
-+
-+	fixup_ex 1, 3, 0, 1
-+SYM_FUNC_END(__clear_user)
-+
-+EXPORT_SYMBOL(__clear_user)
-diff --git a/arch/loongarch/lib/copy_user.S b/arch/loongarch/lib/copy_user.S
-new file mode 100644
-index 000000000000..9ae507f851b5
---- /dev/null
-+++ b/arch/loongarch/lib/copy_user.S
-@@ -0,0 +1,47 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
-+ */
-+
-+#include <asm/asm.h>
-+#include <asm/asmmacro.h>
-+#include <asm/export.h>
-+#include <asm/regdef.h>
-+
-+.macro fixup_ex from, to, offset, fix
-+.if \fix
-+	.section .fixup, "ax"
-+\to:	addi.d	a0, a2, \offset
-+	jr	ra
-+	.previous
-+.endif
-+	.section __ex_table, "a"
-+	PTR	\from\()b, \to\()b
-+	.previous
-+.endm
-+
-+/*
-+ * unsigned long __copy_user(void *to, const void *from, size_t n)
-+ *
-+ * a0: to
-+ * a1: from
-+ * a2: n
-+ */
-+SYM_FUNC_START(__copy_user)
-+	beqz	a2, 3f
-+
-+1:	ld.b	t0, a1, 0
-+2:	st.b	t0, a0, 0
-+	addi.d	a0, a0, 1
-+	addi.d	a1, a1, 1
-+	addi.d	a2, a2, -1
-+	bgt	a2, zero, 1b
-+
-+3:	move	a0, a2
-+	jr	ra
-+
-+	fixup_ex 1, 4, 0, 1
-+	fixup_ex 2, 4, 0, 0
-+SYM_FUNC_END(__copy_user)
-+
-+EXPORT_SYMBOL(__copy_user)
-diff --git a/arch/loongarch/lib/delay.c b/arch/loongarch/lib/delay.c
-new file mode 100644
-index 000000000000..5d856694fcfe
---- /dev/null
-+++ b/arch/loongarch/lib/delay.c
-@@ -0,0 +1,43 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
-+ */
-+#include <linux/delay.h>
-+#include <linux/export.h>
-+#include <linux/smp.h>
-+#include <linux/timex.h>
-+
-+#include <asm/compiler.h>
-+#include <asm/processor.h>
-+
-+void __delay(unsigned long cycles)
-+{
-+	u64 t0 = get_cycles();
-+
-+	while ((unsigned long)(get_cycles() - t0) < cycles)
-+		cpu_relax();
-+}
-+EXPORT_SYMBOL(__delay);
-+
-+/*
-+ * Division by multiplication: you don't have to worry about
-+ * loss of precision.
-+ *
-+ * Use only for very small delays ( < 1 msec).	Should probably use a
-+ * lookup table, really, as the multiplications take much too long with
-+ * short delays.  This is a "reasonable" implementation, though (and the
-+ * first constant multiplications gets optimized away if the delay is
-+ * a constant)
-+ */
-+
-+void __udelay(unsigned long us)
-+{
-+	__delay((us * 0x000010c7ull * HZ * lpj_fine) >> 32);
-+}
-+EXPORT_SYMBOL(__udelay);
-+
-+void __ndelay(unsigned long ns)
-+{
-+	__delay((ns * 0x00000005ull * HZ * lpj_fine) >> 32);
-+}
-+EXPORT_SYMBOL(__ndelay);
-diff --git a/arch/loongarch/lib/dump_tlb.c b/arch/loongarch/lib/dump_tlb.c
-new file mode 100644
-index 000000000000..cda2c6bc7f09
---- /dev/null
-+++ b/arch/loongarch/lib/dump_tlb.c
-@@ -0,0 +1,111 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
-+ *
-+ * Derived from MIPS:
-+ * Copyright (C) 1994, 1995 by Waldorf Electronics, written by Ralf Baechle.
-+ * Copyright (C) 1999 by Silicon Graphics, Inc.
-+ */
-+#include <linux/kernel.h>
-+#include <linux/mm.h>
-+
-+#include <asm/loongarch.h>
-+#include <asm/page.h>
-+#include <asm/pgtable.h>
-+#include <asm/tlb.h>
-+
-+void dump_tlb_regs(void)
-+{
-+	const int field = 2 * sizeof(unsigned long);
-+
-+	pr_info("Index    : %0x\n", read_csr_tlbidx());
-+	pr_info("PageSize : %0x\n", read_csr_pagesize());
-+	pr_info("EntryHi  : %0*llx\n", field, read_csr_entryhi());
-+	pr_info("EntryLo0 : %0*llx\n", field, read_csr_entrylo0());
-+	pr_info("EntryLo1 : %0*llx\n", field, read_csr_entrylo1());
-+}
-+
-+static void dump_tlb(int first, int last)
-+{
-+	unsigned long s_entryhi, entryhi, asid;
-+	unsigned long long entrylo0, entrylo1, pa;
-+	unsigned int index;
-+	unsigned int s_index, s_asid;
-+	unsigned int pagesize, c0, c1, i;
-+	unsigned long asidmask = cpu_asid_mask(&current_cpu_data);
-+	int pwidth = 11;
-+	int vwidth = 11;
-+	int asidwidth = DIV_ROUND_UP(ilog2(asidmask) + 1, 4);
-+
-+	s_entryhi = read_csr_entryhi();
-+	s_index = read_csr_tlbidx();
-+	s_asid = read_csr_asid();
-+
-+	for (i = first; i <= last; i++) {
-+		write_csr_index(i);
-+		tlb_read();
-+		pagesize = read_csr_pagesize();
-+		entryhi	 = read_csr_entryhi();
-+		entrylo0 = read_csr_entrylo0();
-+		entrylo1 = read_csr_entrylo1();
-+		index = read_csr_tlbidx();
-+		asid = read_csr_asid();
-+
-+		/* EHINV bit marks entire entry as invalid */
-+		if (index & CSR_TLBIDX_EHINV)
-+			continue;
-+		/*
-+		 * ASID takes effect in absence of G (global) bit.
-+		 */
-+		if (!((entrylo0 | entrylo1) & ENTRYLO_G) &&
-+		    asid != s_asid)
-+			continue;
-+
-+		/*
-+		 * Only print entries in use
-+		 */
-+		pr_info("Index: %2d pgsize=%x ", i, (1 << pagesize));
-+
-+		c0 = (entrylo0 & ENTRYLO_C) >> ENTRYLO_C_SHIFT;
-+		c1 = (entrylo1 & ENTRYLO_C) >> ENTRYLO_C_SHIFT;
-+
-+		pr_cont("va=%0*lx asid=%0*lx",
-+			vwidth, (entryhi & ~0x1fffUL), asidwidth, asid & asidmask);
-+
-+		/* NR/NX are in awkward places, so mask them off separately */
-+		pa = entrylo0 & ~(ENTRYLO_NR | ENTRYLO_NX);
-+		pa = pa & PAGE_MASK;
-+		pr_cont("\n\t[");
-+		pr_cont("ri=%d xi=%d ",
-+			(entrylo0 & ENTRYLO_NR) ? 1 : 0,
-+			(entrylo0 & ENTRYLO_NX) ? 1 : 0);
-+		pr_cont("pa=%0*llx c=%d d=%d v=%d g=%d plv=%lld] [",
-+			pwidth, pa, c0,
-+			(entrylo0 & ENTRYLO_D) ? 1 : 0,
-+			(entrylo0 & ENTRYLO_V) ? 1 : 0,
-+			(entrylo0 & ENTRYLO_G) ? 1 : 0,
-+			(entrylo0 & ENTRYLO_PLV) >> ENTRYLO_PLV_SHIFT);
-+		/* NR/NX are in awkward places, so mask them off separately */
-+		pa = entrylo1 & ~(ENTRYLO_NR | ENTRYLO_NX);
-+		pa = pa & PAGE_MASK;
-+		pr_cont("ri=%d xi=%d ",
-+			(entrylo1 & ENTRYLO_NR) ? 1 : 0,
-+			(entrylo1 & ENTRYLO_NX) ? 1 : 0);
-+		pr_cont("pa=%0*llx c=%d d=%d v=%d g=%d plv=%lld]\n",
-+			pwidth, pa, c1,
-+			(entrylo1 & ENTRYLO_D) ? 1 : 0,
-+			(entrylo1 & ENTRYLO_V) ? 1 : 0,
-+			(entrylo1 & ENTRYLO_G) ? 1 : 0,
-+			(entrylo1 & ENTRYLO_PLV) >> ENTRYLO_PLV_SHIFT);
-+	}
-+	pr_info("\n");
-+
-+	write_csr_entryhi(s_entryhi);
-+	write_csr_tlbidx(s_index);
-+	write_csr_asid(s_asid);
-+}
-+
-+void dump_tlb_all(void)
-+{
-+	dump_tlb(0, current_cpu_data.tlbsize - 1);
-+}
+All errors (new ones prefixed by >>):
+
+   In file included from drivers/power/supply/ds2760_battery.c:22:
+   In file included from include/linux/module.h:14:
+   In file included from include/linux/buildid.h:5:
+   In file included from include/linux/mm_types.h:5:
+   In file included from include/linux/mm_types_task.h:16:
+>> arch/hexagon/include/asm/page.h:131:9: error: use of undeclared identifier 'PAGE_OFFSET'
+           return __pa(kaddr) >> PAGE_SHIFT;
+                  ^
+   arch/hexagon/include/asm/page.h:86:39: note: expanded from macro '__pa'
+   #define __pa(x) ((unsigned long)(x) - PAGE_OFFSET + PHYS_OFFSET)
+                                         ^
+>> arch/hexagon/include/asm/page.h:131:9: error: use of undeclared identifier 'PHYS_OFFSET'
+   arch/hexagon/include/asm/page.h:86:53: note: expanded from macro '__pa'
+   #define __pa(x) ((unsigned long)(x) - PAGE_OFFSET + PHYS_OFFSET)
+                                                       ^
+   In file included from drivers/power/supply/ds2760_battery.c:30:
+   In file included from include/linux/suspend.h:5:
+   In file included from include/linux/swap.h:9:
+   In file included from include/linux/memcontrol.h:13:
+   In file included from include/linux/cgroup.h:17:
+   In file included from include/linux/fs.h:33:
+   In file included from include/linux/percpu-rwsem.h:7:
+   In file included from include/linux/rcuwait.h:6:
+   In file included from include/linux/sched/signal.h:6:
+   include/linux/signal.h:97:11: warning: array index 3 is past the end of the array (which contains 2 elements) [-Warray-bounds]
+                   return (set->sig[3] | set->sig[2] |
+                           ^        ~
+   include/uapi/asm-generic/signal.h:62:2: note: array 'sig' declared here
+           unsigned long sig[_NSIG_WORDS];
+           ^
+   In file included from drivers/power/supply/ds2760_battery.c:30:
+   In file included from include/linux/suspend.h:5:
+   In file included from include/linux/swap.h:9:
+   In file included from include/linux/memcontrol.h:13:
+   In file included from include/linux/cgroup.h:17:
+   In file included from include/linux/fs.h:33:
+   In file included from include/linux/percpu-rwsem.h:7:
+   In file included from include/linux/rcuwait.h:6:
+   In file included from include/linux/sched/signal.h:6:
+   include/linux/signal.h:97:25: warning: array index 2 is past the end of the array (which contains 2 elements) [-Warray-bounds]
+                   return (set->sig[3] | set->sig[2] |
+                                         ^        ~
+   include/uapi/asm-generic/signal.h:62:2: note: array 'sig' declared here
+           unsigned long sig[_NSIG_WORDS];
+           ^
+   In file included from drivers/power/supply/ds2760_battery.c:30:
+   In file included from include/linux/suspend.h:5:
+   In file included from include/linux/swap.h:9:
+   In file included from include/linux/memcontrol.h:13:
+   In file included from include/linux/cgroup.h:17:
+   In file included from include/linux/fs.h:33:
+   In file included from include/linux/percpu-rwsem.h:7:
+   In file included from include/linux/rcuwait.h:6:
+   In file included from include/linux/sched/signal.h:6:
+   include/linux/signal.h:113:11: warning: array index 3 is past the end of the array (which contains 2 elements) [-Warray-bounds]
+                   return  (set1->sig[3] == set2->sig[3]) &&
+                            ^         ~
+   include/uapi/asm-generic/signal.h:62:2: note: array 'sig' declared here
+           unsigned long sig[_NSIG_WORDS];
+           ^
+   In file included from drivers/power/supply/ds2760_battery.c:30:
+   In file included from include/linux/suspend.h:5:
+   In file included from include/linux/swap.h:9:
+   In file included from include/linux/memcontrol.h:13:
+   In file included from include/linux/cgroup.h:17:
+   In file included from include/linux/fs.h:33:
+   In file included from include/linux/percpu-rwsem.h:7:
+   In file included from include/linux/rcuwait.h:6:
+   In file included from include/linux/sched/signal.h:6:
+   include/linux/signal.h:113:27: warning: array index 3 is past the end of the array (which contains 2 elements) [-Warray-bounds]
+                   return  (set1->sig[3] == set2->sig[3]) &&
+                                            ^         ~
+   include/uapi/asm-generic/signal.h:62:2: note: array 'sig' declared here
+           unsigned long sig[_NSIG_WORDS];
+           ^
+   In file included from drivers/power/supply/ds2760_battery.c:30:
+   In file included from include/linux/suspend.h:5:
+   In file included from include/linux/swap.h:9:
+   In file included from include/linux/memcontrol.h:13:
+   In file included from include/linux/cgroup.h:17:
+   In file included from include/linux/fs.h:33:
+   In file included from include/linux/percpu-rwsem.h:7:
+   In file included from include/linux/rcuwait.h:6:
+   In file included from include/linux/sched/signal.h:6:
+   include/linux/signal.h:114:5: warning: array index 2 is past the end of the array (which contains 2 elements) [-Warray-bounds]
+                           (set1->sig[2] == set2->sig[2]) &&
+                            ^         ~
+   include/uapi/asm-generic/signal.h:62:2: note: array 'sig' declared here
+           unsigned long sig[_NSIG_WORDS];
+           ^
+   In file included from drivers/power/supply/ds2760_battery.c:30:
+   In file included from include/linux/suspend.h:5:
+   In file included from include/linux/swap.h:9:
+   In file included from include/linux/memcontrol.h:13:
+   In file included from include/linux/cgroup.h:17:
+   In file included from include/linux/fs.h:33:
+   In file included from include/linux/percpu-rwsem.h:7:
+   In file included from include/linux/rcuwait.h:6:
+   In file included from include/linux/sched/signal.h:6:
+   include/linux/signal.h:114:21: warning: array index 2 is past the end of the array (which contains 2 elements) [-Warray-bounds]
+                           (set1->sig[2] == set2->sig[2]) &&
+                                            ^         ~
+   include/uapi/asm-generic/signal.h:62:2: note: array 'sig' declared here
+           unsigned long sig[_NSIG_WORDS];
+           ^
+   In file included from drivers/power/supply/ds2760_battery.c:30:
+   In file included from include/linux/suspend.h:5:
+   In file included from include/linux/swap.h:9:
+   In file included from include/linux/memcontrol.h:13:
+   In file included from include/linux/cgroup.h:17:
+   In file included from include/linux/fs.h:33:
+   In file included from include/linux/percpu-rwsem.h:7:
+--
+   In file included from drivers/power/supply/ds2780_battery.c:12:
+   In file included from include/linux/module.h:14:
+   In file included from include/linux/buildid.h:5:
+   In file included from include/linux/mm_types.h:5:
+   In file included from include/linux/mm_types_task.h:16:
+>> arch/hexagon/include/asm/page.h:131:9: error: use of undeclared identifier 'PAGE_OFFSET'
+           return __pa(kaddr) >> PAGE_SHIFT;
+                  ^
+   arch/hexagon/include/asm/page.h:86:39: note: expanded from macro '__pa'
+   #define __pa(x) ((unsigned long)(x) - PAGE_OFFSET + PHYS_OFFSET)
+                                         ^
+>> arch/hexagon/include/asm/page.h:131:9: error: use of undeclared identifier 'PHYS_OFFSET'
+   arch/hexagon/include/asm/page.h:86:53: note: expanded from macro '__pa'
+   #define __pa(x) ((unsigned long)(x) - PAGE_OFFSET + PHYS_OFFSET)
+                                                       ^
+   2 errors generated.
+--
+   In file included from drivers/power/supply/twl4030_charger.c:12:
+   In file included from include/linux/module.h:14:
+   In file included from include/linux/buildid.h:5:
+   In file included from include/linux/mm_types.h:5:
+   In file included from include/linux/mm_types_task.h:16:
+>> arch/hexagon/include/asm/page.h:131:9: error: use of undeclared identifier 'PAGE_OFFSET'
+           return __pa(kaddr) >> PAGE_SHIFT;
+                  ^
+   arch/hexagon/include/asm/page.h:86:39: note: expanded from macro '__pa'
+   #define __pa(x) ((unsigned long)(x) - PAGE_OFFSET + PHYS_OFFSET)
+                                         ^
+>> arch/hexagon/include/asm/page.h:131:9: error: use of undeclared identifier 'PHYS_OFFSET'
+   arch/hexagon/include/asm/page.h:86:53: note: expanded from macro '__pa'
+   #define __pa(x) ((unsigned long)(x) - PAGE_OFFSET + PHYS_OFFSET)
+                                                       ^
+   In file included from drivers/power/supply/twl4030_charger.c:17:
+   In file included from include/linux/mfd/twl.h:15:
+   In file included from include/linux/input/matrix_keypad.h:6:
+   In file included from include/linux/input.h:20:
+   In file included from include/linux/fs.h:33:
+   In file included from include/linux/percpu-rwsem.h:7:
+   In file included from include/linux/rcuwait.h:6:
+   In file included from include/linux/sched/signal.h:6:
+   include/linux/signal.h:97:11: warning: array index 3 is past the end of the array (which contains 2 elements) [-Warray-bounds]
+                   return (set->sig[3] | set->sig[2] |
+                           ^        ~
+   include/uapi/asm-generic/signal.h:62:2: note: array 'sig' declared here
+           unsigned long sig[_NSIG_WORDS];
+           ^
+   In file included from drivers/power/supply/twl4030_charger.c:17:
+   In file included from include/linux/mfd/twl.h:15:
+   In file included from include/linux/input/matrix_keypad.h:6:
+   In file included from include/linux/input.h:20:
+   In file included from include/linux/fs.h:33:
+   In file included from include/linux/percpu-rwsem.h:7:
+   In file included from include/linux/rcuwait.h:6:
+   In file included from include/linux/sched/signal.h:6:
+   include/linux/signal.h:97:25: warning: array index 2 is past the end of the array (which contains 2 elements) [-Warray-bounds]
+                   return (set->sig[3] | set->sig[2] |
+                                         ^        ~
+   include/uapi/asm-generic/signal.h:62:2: note: array 'sig' declared here
+           unsigned long sig[_NSIG_WORDS];
+           ^
+   In file included from drivers/power/supply/twl4030_charger.c:17:
+   In file included from include/linux/mfd/twl.h:15:
+   In file included from include/linux/input/matrix_keypad.h:6:
+   In file included from include/linux/input.h:20:
+   In file included from include/linux/fs.h:33:
+   In file included from include/linux/percpu-rwsem.h:7:
+   In file included from include/linux/rcuwait.h:6:
+   In file included from include/linux/sched/signal.h:6:
+   include/linux/signal.h:113:11: warning: array index 3 is past the end of the array (which contains 2 elements) [-Warray-bounds]
+                   return  (set1->sig[3] == set2->sig[3]) &&
+                            ^         ~
+   include/uapi/asm-generic/signal.h:62:2: note: array 'sig' declared here
+           unsigned long sig[_NSIG_WORDS];
+           ^
+   In file included from drivers/power/supply/twl4030_charger.c:17:
+   In file included from include/linux/mfd/twl.h:15:
+   In file included from include/linux/input/matrix_keypad.h:6:
+   In file included from include/linux/input.h:20:
+   In file included from include/linux/fs.h:33:
+   In file included from include/linux/percpu-rwsem.h:7:
+   In file included from include/linux/rcuwait.h:6:
+   In file included from include/linux/sched/signal.h:6:
+   include/linux/signal.h:113:27: warning: array index 3 is past the end of the array (which contains 2 elements) [-Warray-bounds]
+                   return  (set1->sig[3] == set2->sig[3]) &&
+                                            ^         ~
+   include/uapi/asm-generic/signal.h:62:2: note: array 'sig' declared here
+           unsigned long sig[_NSIG_WORDS];
+           ^
+   In file included from drivers/power/supply/twl4030_charger.c:17:
+   In file included from include/linux/mfd/twl.h:15:
+   In file included from include/linux/input/matrix_keypad.h:6:
+   In file included from include/linux/input.h:20:
+   In file included from include/linux/fs.h:33:
+   In file included from include/linux/percpu-rwsem.h:7:
+   In file included from include/linux/rcuwait.h:6:
+   In file included from include/linux/sched/signal.h:6:
+   include/linux/signal.h:114:5: warning: array index 2 is past the end of the array (which contains 2 elements) [-Warray-bounds]
+                           (set1->sig[2] == set2->sig[2]) &&
+                            ^         ~
+   include/uapi/asm-generic/signal.h:62:2: note: array 'sig' declared here
+           unsigned long sig[_NSIG_WORDS];
+           ^
+   In file included from drivers/power/supply/twl4030_charger.c:17:
+   In file included from include/linux/mfd/twl.h:15:
+   In file included from include/linux/input/matrix_keypad.h:6:
+   In file included from include/linux/input.h:20:
+   In file included from include/linux/fs.h:33:
+   In file included from include/linux/percpu-rwsem.h:7:
+   In file included from include/linux/rcuwait.h:6:
+   In file included from include/linux/sched/signal.h:6:
+   include/linux/signal.h:114:21: warning: array index 2 is past the end of the array (which contains 2 elements) [-Warray-bounds]
+                           (set1->sig[2] == set2->sig[2]) &&
+                                            ^         ~
+   include/uapi/asm-generic/signal.h:62:2: note: array 'sig' declared here
+           unsigned long sig[_NSIG_WORDS];
+           ^
+   In file included from drivers/power/supply/twl4030_charger.c:17:
+   In file included from include/linux/mfd/twl.h:15:
+   In file included from include/linux/input/matrix_keypad.h:6:
+   In file included from include/linux/input.h:20:
+   In file included from include/linux/fs.h:33:
+   In file included from include/linux/percpu-rwsem.h:7:
+   In file included from include/linux/rcuwait.h:6:
+   In file included from include/linux/sched/signal.h:6:
+   include/linux/signal.h:156:1: warning: array index 3 is past the end of the array (which contains 2 elements) [-Warray-bounds]
+   _SIG_SET_BINOP(sigorsets, _sig_or)
+   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/signal.h:137:8: note: expanded from macro '_SIG_SET_BINOP'
+                   a3 = a->sig[3]; a2 = a->sig[2];                         \
+
+
+vim +/PAGE_OFFSET +131 arch/hexagon/include/asm/page.h
+
+   128	
+   129	static inline unsigned long virt_to_pfn(const void *kaddr)
+   130	{
+ > 131		return __pa(kaddr) >> PAGE_SHIFT;
+   132	}
+   133	
+
 -- 
-2.27.0
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
