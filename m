@@ -2,119 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 876A7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 07:48:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12037C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 07:49:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231904AbiFBHsa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 03:48:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33398 "EHLO
+        id S231913AbiFBHtE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 03:49:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231519AbiFBHs1 (ORCPT
+        with ESMTP id S231519AbiFBHtD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 03:48:27 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01C051E4B73
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 00:48:24 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id x5so103431edi.2
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 00:48:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=C12bw2A3CHzAUpNuzzn6m1oe/ljWC5uGF40ieL0miec=;
-        b=c23FZNn3/bgRdRrIZiM+hV6SnxMmFq/Y9AfC9nSlI/d2+4TUVKcysKJsv5steIko2k
-         IvH/PdjZXkV6xXTBidJTiTq8gzV+g2OKMM9zOEImD037x3t4Ey/nfLtJj9laCudpiuT4
-         U62u8mJAVH18ZoErYArpi0gj2XvBwoJy2l7nU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=C12bw2A3CHzAUpNuzzn6m1oe/ljWC5uGF40ieL0miec=;
-        b=di3vlseIauWcDtfTWTY9K/4UQPZsL9SkwfkhZH6NhKbCRfIYRGL4cSMvpbqMjCUAcb
-         987qmt86wLncGMCCDEnNtVvC/tpqDkhaWBNQ7+p5/MmuVVrebIAhgCobXVcRHZCLumhx
-         TsRL/Sr+pUs6Dcw02z1DaW357BFd0lTAwuS8Sv47c71KuhkEYgCaRVknd4V+CPq+D2aS
-         HOqtejjpjVgJQFAgKmtv6yKpQH2WIpuPUozVUyZY0TN5B8v2REFeuuJ1K5qR/a0fyUpx
-         DIwIQ0KTjZ98eOkH/sQqdqplWoAyD9t1h1l3h/39OpmGYLUQJ+Elz88rbCrpdFVJgSxc
-         QETw==
-X-Gm-Message-State: AOAM531LYTmUOsR+4qmgR0Hv0I2UJxmOcJ4I6cVqMzYaITqVzT4b02N5
-        2YUY4JemolgEV5xNjGzpo+Vv5oKSXkUDP1C1eSp26A==
-X-Google-Smtp-Source: ABdhPJxqp0Nxz6J6DoU+O15+uzvAOSxUtw8bcGb5LDcaau3YVt8AzcCopzleJr/PEA6I1rhTJZSaltGdDwWHodAISPk=
-X-Received: by 2002:a05:6402:350a:b0:42d:d605:36eb with SMTP id
- b10-20020a056402350a00b0042dd60536ebmr3809144edd.99.1654156103448; Thu, 02
- Jun 2022 00:48:23 -0700 (PDT)
+        Thu, 2 Jun 2022 03:49:03 -0400
+X-Greylist: delayed 465 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 02 Jun 2022 00:49:01 PDT
+Received: from nzprivatebroker.com (unknown [103.153.182.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADF881F58BD
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 00:49:01 -0700 (PDT)
+Received: from nzprivatebroker.com (unknown [84.38.130.211])
+        by nzprivatebroker.com (Postfix) with ESMTPSA id C63C667A2A2
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 07:41:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nzprivatebroker.com;
+        s=default; t=1654155675;
+        bh=V+WJa7FqUhmSi9HEWeivHQW0m61lw/9Lr1NsWXLZSjs=; h=From:To:Subject;
+        b=Cdr0vXGzEzbOR03xmGxaL1qYIQuPiZ0UCX9TqyiaqlFXxvZ2YGtttEdrBs7lyTdz6
+         RLnRNQjzz2fujXMC/zMwYQ5pgedt+4Vuhnk+qQ1o4V3/LkJ+Tyw+a2Tq2G/TkmU52+
+         HCjOt4/9dC3qgDtULHZjoxrBSCmgka9rfVMF7WiQ=
+Authentication-Results: nzprivatebroker.com;
+        spf=pass (sender IP is 84.38.130.211) smtp.mailfrom=notification@nzprivatebroker.com smtp.helo=nzprivatebroker.com
+Received-SPF: pass (nzprivatebroker.com: connection is authenticated)
+Reply-To: admin@alqaboscapital.com
+From:   "Mr. N Zaid" <notification@nzprivatebroker.com>
+To:     linux-kernel@vger.kernel.org
+Subject: Attention Please! (Investor's passage)
+Date:   02 Jun 2022 10:41:14 +0300
+Message-ID: <20220602104114.92C34A5F3B86B205@nzprivatebroker.com>
 MIME-Version: 1.0
-References: <20220504115501.3490-1-rex-bc.chen@mediatek.com>
-In-Reply-To: <20220504115501.3490-1-rex-bc.chen@mediatek.com>
-From:   Chen-Yu Tsai <wenst@chromium.org>
-Date:   Thu, 2 Jun 2022 15:48:12 +0800
-Message-ID: <CAGXv+5E9s3c0j501fHZxhwsHSeK0vG+GEqLMhtZMvtvC=+etjQ@mail.gmail.com>
-Subject: Re: [PATCH v2 0/3] Support MediaTek devapc for MT8186
-To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, matthias.bgg@gmail.com
-Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        runyang.chen@mediatek.com, linux-mediatek@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain;
+        charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+X-PPP-Message-ID: <165415567560.1402451.1445107578609574215@nzprivatebroker.com>
+X-PPP-Vhost: nzprivatebroker.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 4, 2022 at 7:55 PM Rex-BC Chen <rex-bc.chen@mediatek.com> wrote:
->
-> This series is for supporting devapc implementation in MT8186.
->
-> V2:
-> - Add a patch to separate register offsets from mtk_devapc_data.
->
-> V1:
-> - Add dt-binding and add devapc data for MT8186.
->
-> Rex-BC Chen (3):
->   dt-bindings: soc: mediatek: devapc: Add bindings for MT8186
->   soc: mediatek: devapc: Separate register offsets from mtk_devapc_data
->   soc: mediatek: devapc: Add support for MT8186
+Greeting,
 
-Applied this on next-20220602 (with a few fixes for other section mismatch
-errors), booted and got:
+My name is Mr. N. Zaid, I am interested in having a business=20
+discussion with you, Please let me know if you are open for=20
+discussion. 
 
-[    1.948483] mtk-devapc 10207000.devapc: Read Violation
-[    1.948488] mtk-devapc 10207000.devapc: Bus ID:0x100, Dom ID:0x0,
-Vio Addr:0x13000000
-[    1.948520] mtk-devapc 10207000.devapc: Read Violation
-[    1.948523] mtk-devapc 10207000.devapc: Bus ID:0x200, Dom ID:0x0,
-Vio Addr:0x140001a0
-[    1.948537] mtk-devapc 10207000.devapc: Read Violation
-[    1.948540] mtk-devapc 10207000.devapc: Bus ID:0x200, Dom ID:0x0,
-Vio Addr:0x140001a0
-[    1.948555] mtk-devapc 10207000.devapc: Read Violation
-[    1.948558] mtk-devapc 10207000.devapc: Bus ID:0x200, Dom ID:0x0,
-Vio Addr:0x14000100
-[    1.948573] mtk-devapc 10207000.devapc: Read Violation
-[    1.948576] mtk-devapc 10207000.devapc: Bus ID:0x200, Dom ID:0x0,
-Vio Addr:0x14000100
-[    1.948590] mtk-devapc 10207000.devapc: Read Violation
-[    1.948593] mtk-devapc 10207000.devapc: Bus ID:0x200, Dom ID:0x0,
-Vio Addr:0x14000100
-[    1.948607] mtk-devapc 10207000.devapc: Read Violation
-[    1.948610] mtk-devapc 10207000.devapc: Bus ID:0x200, Dom ID:0x0,
-Vio Addr:0x14000100
-[    1.948624] mtk-devapc 10207000.devapc: Read Violation
-[    1.948627] mtk-devapc 10207000.devapc: Bus ID:0x200, Dom ID:0x0,
-Vio Addr:0x14000100
+Regards, 
 
-during the boot process. So I think this works well. Manually reading a
-known secure address also triggers it:
-
-root@hayato:~# busybox devmem 0x1000e000
-0x00000000
-[  135.069121] mtk-devapc 10207000.devapc: Read Violation
-[  135.069132] mtk-devapc 10207000.devapc: Bus ID:0x482, Dom ID:0x0,
-Vio Addr:0x1000e000
-
-So,
-
-Tested-by: Chen-Yu Tsai <wenst@chromium.org>
-
-BTW, looks like MT8186 support in mainline is shaping up real good.
-SCP firmware is still missing, so video codec stuff won't work.
+Mr. N Zaid
