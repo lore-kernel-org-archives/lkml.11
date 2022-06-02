@@ -2,85 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91976C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 20:19:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 662B9C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 20:21:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238548AbiFBUTH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 16:19:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36342 "EHLO
+        id S238877AbiFBUVB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 16:21:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238154AbiFBUS1 (ORCPT
+        with ESMTP id S236784AbiFBUUx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 16:18:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 42AABF2E
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 13:18:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654201102;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=m6zy4gylOAiT2S0vmAiXock9a3C8kfyAtNE7kTj9V6A=;
-        b=Cc7PkMx6QdtBEn9UbkumZpU72racPAS828pvkYbL8I/NFsEPluvZf6mhD854kNeVkX5USb
-        W7yQflZyU/iHmPgCJiz26So7TW2smwBg3hO9/8FXA03hqUe36SVBBlrXrcgQ1LajEjgDWZ
-        wgDranuVNncjpSBJArPdg/LBpAGMFfw=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-169-7Tf9A5f1Pxe92-hXKqPAPg-1; Thu, 02 Jun 2022 16:18:21 -0400
-X-MC-Unique: 7Tf9A5f1Pxe92-hXKqPAPg-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 943D985A5BC;
-        Thu,  2 Jun 2022 20:18:20 +0000 (UTC)
-Received: from emerald.redhat.com (unknown [10.22.34.8])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 39F99414A7E7;
-        Thu,  2 Jun 2022 20:18:20 +0000 (UTC)
-From:   Lyude Paul <lyude@redhat.com>
-To:     dri-devel@lists.freedesktop.org
-Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Wayne Lin <Wayne.Lin@amd.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Bhawanpreet Lakha <Bhawanpreet.Lakha@amd.com>,
-        Rajkumar Subbiah <rsubbia@codeaurora.org>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH 3/3] drm/dp_mst: Get rid of old comment in drm_atomic_get_mst_topology_state docs
-Date:   Thu,  2 Jun 2022 16:17:57 -0400
-Message-Id: <20220602201757.30431-4-lyude@redhat.com>
-In-Reply-To: <20220602201757.30431-1-lyude@redhat.com>
-References: <20220602201757.30431-1-lyude@redhat.com>
+        Thu, 2 Jun 2022 16:20:53 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9CCBEB1;
+        Thu,  2 Jun 2022 13:20:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654201251; x=1685737251;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=JwdZ+aUhBkAHVprboLx4+/JjEUNbZt0Zm07qXGPgYis=;
+  b=hnkIKpelo0e8syX2zXGayAdVJ+iKc4/yINFYQ8tLYL2xQ/g8l83ifI1+
+   aG8hIzEk1UJbrLz2CxM7/Zlr8JBthpk9RWuYiiQIHVSDoX5Dw37FTLkEc
+   8NJ+0pFVQt1z34LPXjLHWNrqg4o2faPeMZ3vg2R3EZ6yrEshJgmhdbJlk
+   0UArqg6VmgQCuxUWfZykEjBI+CgkEJa7/5ohNit8ht5MjIbmq3a3slGkw
+   nZo371jbPrpg2uqwcRtRdI4krFiFAgghvvYjeQvAyjcwBy2Un1eB9qZom
+   vWufyYKvmiS4/dnT6Ohyiq3zXR51GnzjpseZzy6BTAxMuEyf0PEW9joxq
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10366"; a="301439827"
+X-IronPort-AV: E=Sophos;i="5.91,272,1647327600"; 
+   d="scan'208";a="301439827"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2022 13:20:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,272,1647327600"; 
+   d="scan'208";a="646155381"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 02 Jun 2022 13:20:49 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nwrJI-0005Pw-UJ;
+        Thu, 02 Jun 2022 20:20:48 +0000
+Date:   Fri, 3 Jun 2022 04:20:37 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Daniel Lezcano <daniel.lezcano@linaro.org>, rafael@kernel.org
+Cc:     kbuild-all@lists.01.org, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, quic_manafm@quicinc.com,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>
+Subject: Re: [PATCH 2/3] thermal/debugfs: Add debugfs information
+Message-ID: <202206030425.4QFicgCF-lkp@intel.com>
+References: <20220601151441.9128-2-daniel.lezcano@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220601151441.9128-2-daniel.lezcano@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We don't actually care about connection_mutex here anymore, so let's get
-rid of the comment mentioning it in this function's kdocs.
+Hi Daniel,
 
-Signed-off-by: Lyude Paul <lyude@redhat.com>
----
- drivers/gpu/drm/display/drm_dp_mst_topology.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+I love your patch! Perhaps something to improve:
 
-diff --git a/drivers/gpu/drm/display/drm_dp_mst_topology.c b/drivers/gpu/drm/display/drm_dp_mst_topology.c
-index d6e595b95f07..9f96132a5d74 100644
---- a/drivers/gpu/drm/display/drm_dp_mst_topology.c
-+++ b/drivers/gpu/drm/display/drm_dp_mst_topology.c
-@@ -5458,8 +5458,7 @@ EXPORT_SYMBOL(drm_dp_mst_topology_state_funcs);
-  *
-  * This function wraps drm_atomic_get_priv_obj_state() passing in the MST atomic
-  * state vtable so that the private object state returned is that of a MST
-- * topology object. Also, drm_atomic_get_private_obj_state() expects the caller
-- * to care of the locking, so warn if don't hold the connection_mutex.
-+ * topology object.
-  *
-  * RETURNS:
-  *
+[auto build test WARNING on rafael-pm/thermal]
+[also build test WARNING on v5.18 next-20220602]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Daniel-Lezcano/thermal-core-Encapsulate-the-set_cur_state-function/20220601-231733
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git thermal
+config: i386-randconfig-s001 (https://download.01.org/0day-ci/archive/20220603/202206030425.4QFicgCF-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-1) 11.3.0
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.4-14-g5a0004b5-dirty
+        # https://github.com/intel-lab-lkp/linux/commit/04c295f7e8b49af742179609949736f6f056b49c
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Daniel-Lezcano/thermal-core-Encapsulate-the-set_cur_state-function/20220601-231733
+        git checkout 04c295f7e8b49af742179609949736f6f056b49c
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+
+sparse warnings: (new ones prefixed by >>)
+   drivers/thermal/thermal_core.c: note: in included file (through drivers/thermal/thermal_core.h):
+>> drivers/thermal/thermal_debugfs.h:11:40: sparse: sparse: marked inline, but without a definition
+
+vim +11 drivers/thermal/thermal_debugfs.h
+
+     2	
+     3	#ifdef CONFIG_THERMAL_DEBUGFS
+     4	void thermal_debugfs_init(void);
+     5	void thermal_debugfs_cdev_register(struct thermal_cooling_device *cdev);
+     6	void thermal_debugfs_cdev_unregister(struct thermal_cooling_device *cdev);
+     7	void thermal_debugfs_tz_register(struct thermal_zone_device *tz);
+     8	void thermal_debugfs_tz_unregister(struct thermal_zone_device *tz);
+     9	void thermal_debugfs_cdev_transition(struct thermal_cooling_device *cdev, int state);
+    10	#else
+  > 11	static inline void thermal_debugfs_init(void);
+
 -- 
-2.35.3
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
