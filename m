@@ -2,87 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E716DC43334
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 11:48:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4EC4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 11:49:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234316AbiFBLsc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 07:48:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41170 "EHLO
+        id S234401AbiFBLtP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 07:49:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233488AbiFBLs1 (ORCPT
+        with ESMTP id S233722AbiFBLs5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 07:48:27 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52AC7299791
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 04:48:24 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id fu3so7972658ejc.7
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 04:48:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=shtQh66+bKE1caS4jMSRSwf+vIlH6pzW/iS7K92y5Eg=;
-        b=dc99xUHQThcX6ryKAYXNpafER9Kk4IqWJ4hIN06w5R5rjWA84E5p4P72DZDYGBswsI
-         kl3C21BvdXefH2LnJlT8rU/+JezOsqjRAd7tVk97vXLFhMeDIOIeP+/Hp1s8R6ceOle7
-         uJyWHNIybbL9JlE7dlJkzTO14TjU88UJAYcAbnV1SoMbJUDCi4gpZvk1mcW9ONfryXbq
-         ORVmAj8kEwf7k8Tdd5l7Rqpt5iQBFZoY0eQzfumt+hDyJ4nLrjHN3GpDX20gJiG5a5se
-         RMEgmqvFaNz8hsnSvQNIVgD2JYnNez5HZ+pn120+o00MrgoJA0GpTygS1KP0PIywXThn
-         JVpw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=shtQh66+bKE1caS4jMSRSwf+vIlH6pzW/iS7K92y5Eg=;
-        b=GqmwsCza0Zdw6p4uFvughnUwr+NWLrjnJL+rcQB0yl7MSoepSQLYIzy3QT5bkp3tGV
-         ZOiW1qVexerlZ6rzAIitP1W12DyWNnLZKPSaM22klTNykj1A8IAd2udQ1Ioweg7lWfRI
-         kf7rbWJkirX8oKYnBWC7N6CPYLmqecgWCut2BAIHPlIuxTfE7Gp4U2CP7O79Z5eu7+dh
-         ZYZSU77PtRhm2Le+1fpzPbhl9fzLwuqfmYclLH7bqXRwVep/blH0nKqUPf8ku/nla6zs
-         OAOd7Se+f184pGBlm9SriOg+uOFZ7GVnbwhEJ6KQuEvIp10OLmCQ6SORphpkpLZ33lYM
-         lfTw==
-X-Gm-Message-State: AOAM531yXvH+mJJdvE70l7q9uA84t/W1hii6ifixmkOHzi7Ivbr6Owtk
-        JQddQzQeZCHxT4wKSG+v0fQN9i4MiAL7JLKJ
-X-Google-Smtp-Source: ABdhPJxtzQcCHEhLjniV51EOj16IsDhDJgdLjg8JxuGS0HDjPnelZO6FqkSKvw60weMLoHwb6tlJqQ==
-X-Received: by 2002:a17:906:12d3:b0:6f5:18a2:176d with SMTP id l19-20020a17090612d300b006f518a2176dmr3728521ejb.474.1654170502863;
-        Thu, 02 Jun 2022 04:48:22 -0700 (PDT)
-Received: from [192.168.0.181] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id c18-20020a056402101200b0042dc6e250e3sm2329738edu.81.2022.06.02.04.48.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 02 Jun 2022 04:48:22 -0700 (PDT)
-Message-ID: <cb8c7e28-dfef-78e2-c97c-11b9dee02fed@linaro.org>
-Date:   Thu, 2 Jun 2022 13:48:21 +0200
+        Thu, 2 Jun 2022 07:48:57 -0400
+Received: from meesny.iki.fi (meesny.iki.fi [IPv6:2001:67c:2b0:1c1::201])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 358212B1D42;
+        Thu,  2 Jun 2022 04:48:54 -0700 (PDT)
+Received: from localhost (91-154-92-55.elisa-laajakaista.fi [91.154.92.55])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: sakkinen)
+        by meesny.iki.fi (Postfix) with ESMTPSA id B102C20050;
+        Thu,  2 Jun 2022 14:48:51 +0300 (EEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi; s=meesny;
+        t=1654170531;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=tl5Jw+UulbKqEMtgUT3K2V354kKV5SSHEf74OZxYd5E=;
+        b=gVIvyyFheZVOW68udFbl3Qpp9M7jjcbWm9FiuKuldUA0wBr/wcvKOh6oKSlm0FoFCrGc0G
+        lsOlYPhv+Htk32XWaDLY8BMfz1Jnnqwv08tgZW6pNc7J1LCWEyUaQoUcrTB+nmUKwkfWEj
+        JxvXIkollSXLISgj1FALNvEyep0VQpE=
+Date:   Thu, 2 Jun 2022 14:47:02 +0300
+From:   Jarkko Sakkinen <jarkko.sakkinen@iki.fi>
+To:     Brijesh Singh <brijesh.singh@amd.com>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-coco@lists.linux.dev, linux-mm@kvack.org,
+        linux-crypto@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Dov Murik <dovmurik@linux.ibm.com>,
+        Tobin Feldman-Fitzthum <tobin@ibm.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Michael Roth <michael.roth@amd.com>,
+        Vlastimil Babka <vbabka@suse.cz>, tony.luck@intel.com,
+        npmccallum@redhat.com, brijesh.ksingh@gmail.com
+Subject: Re: [PATCH Part2 RFC v4 04/40] x86/sev: Add the host SEV-SNP
+ initialization support
+Message-ID: <YpijNgA9ZJFOwF8k@kernel.org>
+References: <20210707183616.5620-1-brijesh.singh@amd.com>
+ <20210707183616.5620-5-brijesh.singh@amd.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 1/3] dt-bindings: interconnect: Update email address
-Content-Language: en-US
-To:     Sibi Sankar <quic_sibis@quicinc.com>, bjorn.andersson@linaro.org
-Cc:     agross@kernel.org, djakov@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, p.zabel@pengutronix.de,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, devicetree@vger.kernel.org
-References: <1654130923-18722-1-git-send-email-quic_sibis@quicinc.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <1654130923-18722-1-git-send-email-quic_sibis@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210707183616.5620-5-brijesh.singh@amd.com>
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi;
+        s=meesny; t=1654170531;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=tl5Jw+UulbKqEMtgUT3K2V354kKV5SSHEf74OZxYd5E=;
+        b=ePgDehaSBHMbAUeRp95u13p4p8R22l6vqZ0Y7PeMjozqI0sCl7tMMSg7fa+Rj8EsK12Dq9
+        Q7NAMreqVW2DSqoiku0beXey8bOa/CKisFZf3su1o1Em6zHYFfxJIU+ZuM+wjtgiMaLuei
+        EBgApVVinLsgcmdA6hz+r0XtTmGpcfw=
+ARC-Authentication-Results: i=1;
+        ORIGINATING;
+        auth=pass smtp.auth=sakkinen smtp.mailfrom=jarkko.sakkinen@iki.fi
+ARC-Seal: i=1; s=meesny; d=iki.fi; t=1654170531; a=rsa-sha256; cv=none;
+        b=LC1JwZgfmfj/q89WJnmLomXZ9I33E8D3pncYsBCxYXrtbfkGKulazshKvHVgPXgYyOeUvZ
+        oWMRAL0kUm5nnedlv5afvZAt1bUMzvZNHXZE7+RfG1jmq5cNNtqWJfwl2OhNbt7c2V12yD
+        aaXkQguiVODIdoopJVtYpj7pyRE7tp8=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 02/06/2022 02:48, Sibi Sankar wrote:
-> Update email address to the quicinc.com domain.
+On Wed, Jul 07, 2021 at 01:35:40PM -0500, Brijesh Singh wrote:
+> The memory integrity guarantees of SEV-SNP are enforced through a new
+> structure called the Reverse Map Table (RMP). The RMP is a single data
+> structure shared across the system that contains one entry for every 4K
+> page of DRAM that may be used by SEV-SNP VMs. The goal of RMP is to
+> track the owner of each page of memory. Pages of memory can be owned by
+> the hypervisor, owned by a specific VM or owned by the AMD-SP. See APM2
+> section 15.36.3 for more detail on RMP.
 > 
-> Signed-off-by: Sibi Sankar <quic_sibis@quicinc.com>
-> ---
->  Documentation/devicetree/bindings/interconnect/qcom,osm-l3.yaml | 2 +-
+> The RMP table is used to enforce access control to memory. The table itself
+> is not directly writable by the software. New CPU instructions (RMPUPDATE,
+> PVALIDATE, RMPADJUST) are used to manipulate the RMP entries.
 
-Thanks for updating the email addresses. All three patches should be
-rather squashed to one (and taken by Rob for example), it's quite a
-churn. Anyway:
+What's the point of throwing out a set of opcodes, if there's
+no explanation what they do?
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
-
-Best regards,
-Krzysztof
+BR, Jarkko
