@@ -2,163 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19989C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 19:35:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C308C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  2 Jun 2022 19:37:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238673AbiFBTft (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 15:35:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50912 "EHLO
+        id S238694AbiFBTht (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 15:37:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238647AbiFBTfq (ORCPT
+        with ESMTP id S238679AbiFBThq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 15:35:46 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C83C27CF0
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 12:35:44 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id n10so5760246pjh.5
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 12:35:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=cx/w23z3LclUVeD0RGwvqrmhkO0x9NOq8RLmyjTtPOM=;
-        b=lYVfR+YOq3qnx85Svvnsb2n7uiC27e2K2siHC/xyiklXI2m0N0FdTE4teMxk2RBxmm
-         8ifjjL4B7GGGUjzg261ufFGrAeYN06AC7Np+7rv8QsII/6wMLAcdEcIEGvhQIdMewr4M
-         kojvmoOEF9+Nen9ZvBM5a4t7oP6Ly0/7s5G6E=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=cx/w23z3LclUVeD0RGwvqrmhkO0x9NOq8RLmyjTtPOM=;
-        b=z8iUUox0HcTFsn2C8BTg7A3THW0ZFg6xhJ/bkqt1TCi888RLxCHT+jZKKqW0uDiuY2
-         /IYqXaZ6bJEqDq/qVbKsz2C/EJyj+dcvaUqr7aGPuxjLu9xfnsI/NxHM7BdywamyUt8z
-         kYMK/BJaURzl7BueVm7wMn+UdH2tHfNp/LMZeD9itZ9ARlDHX0pcRqQwfNLsZFXXeqPm
-         D+FSYwu3x1Qnjj/pW/D86WkWbiLiTaWwM2bd/1YP91KsDz+sXG+6mTZ2J6iu+iArDL82
-         LuQVIZ+GzQ265xr5H+01yy9pc48tpcx1wbo2iLpvB23nFaE93ulMtEWv1sSKx70fmApj
-         tbfQ==
-X-Gm-Message-State: AOAM5327ZuoCTOzUhjTN2f95hoGb5QdZA1zzA/DtD/Gy7i5P6aFa+eyb
-        4fE5bcP1rKKPjPXukqnR4HVyhA==
-X-Google-Smtp-Source: ABdhPJxE722AkWZmxdhlAA/lfEu+HZH5UVTLDBfMV3ZCHmXDg3l6lmRd50aXEJM5XF73P7Xl/H8gLA==
-X-Received: by 2002:a17:902:ed53:b0:166:3e43:7522 with SMTP id y19-20020a170902ed5300b001663e437522mr5530822plb.170.1654198543994;
-        Thu, 02 Jun 2022 12:35:43 -0700 (PDT)
-Received: from localhost ([2620:15c:11a:202:51d0:66d6:2fb5:b395])
-        by smtp.gmail.com with UTF8SMTPSA id m12-20020a170902d18c00b001616e19537esm3809964plb.213.2022.06.02.12.35.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 02 Jun 2022 12:35:43 -0700 (PDT)
-Date:   Thu, 2 Jun 2022 12:35:42 -0700
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Krishna Kurapati <quic_kriskura@quicinc.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Doug Anderson <dianders@chromium.org>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, quic_pkondeti@quicinc.com,
-        quic_ppratap@quicinc.com, quic_vpulyala@quicinc.com,
-        Sandeep Maheswaram <quic_c_sanm@quicinc.com>
-Subject: Re: [PATCH v20 2/5] usb: dwc3: core: Host wake up support from
- system suspend
-Message-ID: <YpkRDi2m7cLaKYEf@google.com>
-References: <1654158277-12921-1-git-send-email-quic_kriskura@quicinc.com>
- <1654158277-12921-3-git-send-email-quic_kriskura@quicinc.com>
+        Thu, 2 Jun 2022 15:37:46 -0400
+Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A85172E692
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 12:37:45 -0700 (PDT)
+Received: from ipservice-092-217-081-045.092.217.pools.vodafone-ip.de ([92.217.81.45] helo=martin-debian-2.paytec.ch)
+        by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <martin@kaiser.cx>)
+        id 1nwqdW-0003py-Ne; Thu, 02 Jun 2022 21:37:38 +0200
+From:   Martin Kaiser <martin@kaiser.cx>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Michael Straube <straube.linux@gmail.com>,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Martin Kaiser <martin@kaiser.cx>
+Subject: [PATCH 00/11] staging: r8188eu: continue the cleanup of issue_action_BA
+Date:   Thu,  2 Jun 2022 21:37:15 +0200
+Message-Id: <20220602193726.280922-1-martin@kaiser.cx>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <1654158277-12921-3-git-send-email-quic_kriskura@quicinc.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Krishna,
+Simplify the code to send the addba response and the delba message. Use
+ieee80211 helpers if possible.
 
-with this version I see xHCI errors on my SC7180 based system, like
-these:
+This series should be applied after the "start cleaning up
+issue_action_BA" series.
 
-[   65.352605] xhci-hcd xhci-hcd.13.auto: xHC error in resume, USBSTS 0x401, Reinit
+Martin Kaiser (11):
+  staging: r8188eu: use mgmt to set resp dialog token
+  staging: r8188eu: use mgmt to set the addba resp status
+  staging: r8188eu: use mgmt to set the addba resp timeout
+  staging: r8188eu: use ieee80211 to set addba resp capabilities
+  staging: r8188eu: calculate the addba response length
+  staging: r8188eu: use mgmt to set the delba reason code
+  staging: r8188eu: use mgmt to set delba params
+  staging: r8188eu: clarify the contents of the delba params
+  staging: r8188eu: calculate the delba length
+  staging: r8188eu: remove the pframe variable
+  staging: r8188eu: use u8, u16 in issue_action_BA prototype
 
-[  101.307155] xhci-hcd xhci-hcd.13.auto: WARN: xHC CMD_RUN timeout
+ drivers/staging/r8188eu/core/rtw_mlme_ext.c   | 51 +++++++------------
+ .../staging/r8188eu/include/rtw_mlme_ext.h    |  3 +-
+ 2 files changed, 18 insertions(+), 36 deletions(-)
 
-After resume a downstream hub isn't enumerated again.
+-- 
+2.30.2
 
-So far I didn't see those with v13, but I aso saw the first error with
-v16.
-
-I can do some more digging next week.
-
-On Thu, Jun 02, 2022 at 01:54:34PM +0530, Krishna Kurapati wrote:
-> From: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
-> 
-> Check wakeup-source property for dwc3 core node to set the
-> wakeup capability. Drop the device_init_wakeup call from
-> runtime suspend and resume.
-> 
-> If the dwc3 is wakeup capable, don't power down the USB PHY(s).
-> The glue drivers are expected to take care of configuring the
-> additional wakeup settings if needed based on the dwc3 wakeup
-> capability status. In some SOC designs, powering off the PHY is
-> resulting in higher leakage, so this patch save power on such boards.
-> 
-> Signed-off-by: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
-> Signed-off-by: Krishna Kurapati <quic_kriskura@quicinc.com>
-> Reviewed-by: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
-> ---
->  drivers/usb/dwc3/core.c | 9 +++------
->  1 file changed, 3 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
-> index e027c04..b99d3c2 100644
-> --- a/drivers/usb/dwc3/core.c
-> +++ b/drivers/usb/dwc3/core.c
-> @@ -1787,6 +1787,7 @@ static int dwc3_probe(struct platform_device *pdev)
->  
->  	platform_set_drvdata(pdev, dwc);
->  	dwc3_cache_hwparams(dwc);
-> +	device_init_wakeup(&pdev->dev, of_property_read_bool(dev->of_node, "wakeup-source"));
->  
->  	spin_lock_init(&dwc->lock);
->  	mutex_init(&dwc->mutex);
-> @@ -1948,7 +1949,7 @@ static int dwc3_suspend_common(struct dwc3 *dwc, pm_message_t msg)
->  		dwc3_core_exit(dwc);
->  		break;
->  	case DWC3_GCTL_PRTCAP_HOST:
-> -		if (!PMSG_IS_AUTO(msg)) {
-> +		if (!PMSG_IS_AUTO(msg) && !device_can_wakeup(dwc->dev)) {
->  			dwc3_core_exit(dwc);
->  			break;
->  		}
-> @@ -2009,7 +2010,7 @@ static int dwc3_resume_common(struct dwc3 *dwc, pm_message_t msg)
->  		spin_unlock_irqrestore(&dwc->lock, flags);
->  		break;
->  	case DWC3_GCTL_PRTCAP_HOST:
-> -		if (!PMSG_IS_AUTO(msg)) {
-> +		if (!PMSG_IS_AUTO(msg) && !device_can_wakeup(dwc->dev)) {
->  			ret = dwc3_core_init_for_resume(dwc);
->  			if (ret)
->  				return ret;
-> @@ -2086,8 +2087,6 @@ static int dwc3_runtime_suspend(struct device *dev)
->  	if (ret)
->  		return ret;
->  
-> -	device_init_wakeup(dev, true);
-> -
->  	return 0;
->  }
->  
-> @@ -2096,8 +2095,6 @@ static int dwc3_runtime_resume(struct device *dev)
->  	struct dwc3     *dwc = dev_get_drvdata(dev);
->  	int		ret;
->  
-> -	device_init_wakeup(dev, false);
-> -
->  	ret = dwc3_resume_common(dwc, PMSG_AUTO_RESUME);
->  	if (ret)
->  		return ret;
-> -- 
-> 2.7.4
-> 
