@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DCA3CCA47E
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:00:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8180CCA47C
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:00:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346333AbiFCSAN (ORCPT
+        id S1346229AbiFCSAB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:00:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58230 "EHLO
+        Fri, 3 Jun 2022 14:00:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346815AbiFCRvc (ORCPT
+        with ESMTP id S1346709AbiFCRv1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:51:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 817F557B00;
-        Fri,  3 Jun 2022 10:49:28 -0700 (PDT)
+        Fri, 3 Jun 2022 13:51:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35D7954686;
+        Fri,  3 Jun 2022 10:49:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E2391B82419;
-        Fri,  3 Jun 2022 17:49:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 495DEC385B8;
-        Fri,  3 Jun 2022 17:49:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 625D760EE9;
+        Fri,  3 Jun 2022 17:49:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5021EC3411D;
+        Fri,  3 Jun 2022 17:49:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278565;
-        bh=TIS2GoTaI2/zpFafNEpWpq5sRvOtRLPlkLlhchtllhE=;
+        s=korg; t=1654278556;
+        bh=GBMWw5YIL4CtdnTTC7cdooXOb1zCbcApFTrIwNej5P0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E6Oz771+h058gH4BVniw3drqvTvpvd3Cw7vUhIXYqaEktyxq9BWzXCmVaiHaqSVdi
-         NGQONY3J/ZB+oTG//wqJDHTgloX0hdYqY37Pag5gum479eNtAOArwYL/rysCfHFRlm
-         VfiQ+vZL4pgGhiflW74opXMrYp3HJhmpbLfb5TOI=
+        b=r/k1x0G/h/nyRvYdlzUadzPG5EeGDxE3mea+gckrQnVwDZD/N3Bv/7Dtn3ftOwAQp
+         IsH2jviXGqvwyNUg/lIp5Eipr/XnhGMtKxF2D+WU+miQpQsvmENoplNMsF8SG0YRKx
+         PxpuK+n1WJzXXGJ9d9/esOot/pRnGH93ktMXkywE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nicolai Stange <nstange@suse.de>,
-        =?UTF-8?q?Stephan=20M=C3=BCller?= <smueller@chronox.de>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.15 20/66] crypto: drbg - prepare for more fine-grained tracking of seeding state
-Date:   Fri,  3 Jun 2022 19:43:00 +0200
-Message-Id: <20220603173821.247230562@linuxfoundation.org>
+        stable@vger.kernel.org, Yuezhang Mo <Yuezhang.Mo@sony.com>,
+        Andy Wu <Andy.Wu@sony.com>,
+        Aoyama Wataru <wataru.aoyama@sony.com>,
+        Daniel Palmer <daniel.palmer@sony.com>,
+        Sungjong Seo <sj1557.seo@samsung.com>,
+        Namjae Jeon <linkinjeon@kernel.org>
+Subject: [PATCH 5.15 18/66] exfat: fix referencing wrong parent directory information after renaming
+Date:   Fri,  3 Jun 2022 19:42:58 +0200
+Message-Id: <20220603173821.189285919@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.663747061@linuxfoundation.org>
 References: <20220603173820.663747061@linuxfoundation.org>
@@ -51,136 +53,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolai Stange <nstange@suse.de>
+From: Yuezhang Mo <Yuezhang.Mo@sony.com>
 
-commit ce8ce31b2c5c8b18667784b8c515650c65d57b4e upstream.
+commit d8dad2588addd1d861ce19e7df3b702330f0c7e3 upstream.
 
-There are two different randomness sources the DRBGs are getting seeded
-from, namely the jitterentropy source (if enabled) and get_random_bytes().
-At initial DRBG seeding time during boot, the latter might not have
-collected sufficient entropy for seeding itself yet and thus, the DRBG
-implementation schedules a reseed work from a random_ready_callback once
-that has happened. This is particularly important for the !->pr DRBG
-instances, for which (almost) no further reseeds are getting triggered
-during their lifetime.
+During renaming, the parent directory information maybe
+updated. But the file/directory still references to the
+old parent directory information.
 
-Because collecting data from the jitterentropy source is a rather expensive
-operation, the aforementioned asynchronously scheduled reseed work
-restricts itself to get_random_bytes() only. That is, it in some sense
-amends the initial DRBG seed derived from jitterentropy output at full
-(estimated) entropy with fresh randomness obtained from get_random_bytes()
-once that has been seeded with sufficient entropy itself.
+This bug will cause 2 problems.
 
-With the advent of rng_is_initialized(), there is no real need for doing
-the reseed operation from an asynchronously scheduled work anymore and a
-subsequent patch will make it synchronous by moving it next to related
-logic already present in drbg_generate().
+(1) The renamed file can not be written.
 
-However, for tracking whether a full reseed including the jitterentropy
-source is required or a "partial" reseed involving only get_random_bytes()
-would be sufficient already, the boolean struct drbg_state's ->seeded
-member must become a tristate value.
+    [10768.175172] exFAT-fs (sda1): error, failed to bmap (inode : 7afd50e4 iblock : 0, err : -5)
+    [10768.184285] exFAT-fs (sda1): Filesystem has been set read-only
+    ash: write error: Input/output error
 
-Prepare for this by introducing the new enum drbg_seed_state and change
-struct drbg_state's ->seeded member's type from bool to that type.
+(2) Some dentries of the renamed file/directory are not set
+    to deleted after removing the file/directory.
 
-For facilitating review, enum drbg_seed_state is made to only contain
-two members corresponding to the former ->seeded values of false and true
-resp. at this point: DRBG_SEED_STATE_UNSEEDED and DRBG_SEED_STATE_FULL. A
-third one for tracking the intermediate state of "seeded from jitterentropy
-only" will be introduced with a subsequent patch.
+exfat_update_parent_info() is a workaround for the wrong parent
+directory information being used after renaming. Now that bug is
+fixed, this is no longer needed, so remove it.
 
-There is no change in behaviour at this point.
-
-Signed-off-by: Nicolai Stange <nstange@suse.de>
-Reviewed-by: Stephan Müller <smueller@chronox.de>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Fixes: 5f2aa075070c ("exfat: add inode operations")
+Cc: stable@vger.kernel.org # v5.7+
+Signed-off-by: Yuezhang Mo <Yuezhang.Mo@sony.com>
+Reviewed-by: Andy Wu <Andy.Wu@sony.com>
+Reviewed-by: Aoyama Wataru <wataru.aoyama@sony.com>
+Reviewed-by: Daniel Palmer <daniel.palmer@sony.com>
+Reviewed-by: Sungjong Seo <sj1557.seo@samsung.com>
+Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- crypto/drbg.c         |   19 ++++++++++---------
- include/crypto/drbg.h |    7 ++++++-
- 2 files changed, 16 insertions(+), 10 deletions(-)
+ fs/exfat/namei.c |   27 +--------------------------
+ 1 file changed, 1 insertion(+), 26 deletions(-)
 
---- a/crypto/drbg.c
-+++ b/crypto/drbg.c
-@@ -1043,7 +1043,7 @@ static inline int __drbg_seed(struct drb
- 	if (ret)
- 		return ret;
+--- a/fs/exfat/namei.c
++++ b/fs/exfat/namei.c
+@@ -1069,6 +1069,7 @@ static int exfat_rename_file(struct inod
  
--	drbg->seeded = true;
-+	drbg->seeded = DRBG_SEED_STATE_FULL;
- 	/* 10.1.1.2 / 10.1.1.3 step 5 */
- 	drbg->reseed_ctr = 1;
+ 		exfat_remove_entries(inode, p_dir, oldentry, 0,
+ 			num_old_entries);
++		ei->dir = *p_dir;
+ 		ei->entry = newentry;
+ 	} else {
+ 		if (exfat_get_entry_type(epold) == TYPE_FILE) {
+@@ -1159,28 +1160,6 @@ static int exfat_move_file(struct inode
+ 	return 0;
+ }
  
-@@ -1088,14 +1088,14 @@ static void drbg_async_seed(struct work_
- 	if (ret)
- 		goto unlock;
+-static void exfat_update_parent_info(struct exfat_inode_info *ei,
+-		struct inode *parent_inode)
+-{
+-	struct exfat_sb_info *sbi = EXFAT_SB(parent_inode->i_sb);
+-	struct exfat_inode_info *parent_ei = EXFAT_I(parent_inode);
+-	loff_t parent_isize = i_size_read(parent_inode);
+-
+-	/*
+-	 * the problem that struct exfat_inode_info caches wrong parent info.
+-	 *
+-	 * because of flag-mismatch of ei->dir,
+-	 * there is abnormal traversing cluster chain.
+-	 */
+-	if (unlikely(parent_ei->flags != ei->dir.flags ||
+-		     parent_isize != EXFAT_CLU_TO_B(ei->dir.size, sbi) ||
+-		     parent_ei->start_clu != ei->dir.dir)) {
+-		exfat_chain_set(&ei->dir, parent_ei->start_clu,
+-			EXFAT_B_TO_CLU_ROUND_UP(parent_isize, sbi),
+-			parent_ei->flags);
+-	}
+-}
+-
+ /* rename or move a old file into a new file */
+ static int __exfat_rename(struct inode *old_parent_inode,
+ 		struct exfat_inode_info *ei, struct inode *new_parent_inode,
+@@ -1211,8 +1190,6 @@ static int __exfat_rename(struct inode *
+ 		return -ENOENT;
+ 	}
  
--	/* Set seeded to false so that if __drbg_seed fails the
--	 * next generate call will trigger a reseed.
-+	/* Reset ->seeded so that if __drbg_seed fails the next
-+	 * generate call will trigger a reseed.
- 	 */
--	drbg->seeded = false;
-+	drbg->seeded = DRBG_SEED_STATE_UNSEEDED;
+-	exfat_update_parent_info(ei, old_parent_inode);
+-
+ 	exfat_chain_dup(&olddir, &ei->dir);
+ 	dentry = ei->entry;
  
- 	__drbg_seed(drbg, &seedlist, true);
+@@ -1233,8 +1210,6 @@ static int __exfat_rename(struct inode *
+ 			goto out;
+ 		}
  
--	if (drbg->seeded)
-+	if (drbg->seeded == DRBG_SEED_STATE_FULL)
- 		drbg->reseed_threshold = drbg_max_requests(drbg);
- 
- unlock:
-@@ -1386,13 +1386,14 @@ static int drbg_generate(struct drbg_sta
- 	 * here. The spec is a bit convoluted here, we make it simpler.
- 	 */
- 	if (drbg->reseed_threshold < drbg->reseed_ctr)
--		drbg->seeded = false;
-+		drbg->seeded = DRBG_SEED_STATE_UNSEEDED;
- 
--	if (drbg->pr || !drbg->seeded) {
-+	if (drbg->pr || drbg->seeded == DRBG_SEED_STATE_UNSEEDED) {
- 		pr_devel("DRBG: reseeding before generation (prediction "
- 			 "resistance: %s, state %s)\n",
- 			 drbg->pr ? "true" : "false",
--			 drbg->seeded ? "seeded" : "unseeded");
-+			 (drbg->seeded ==  DRBG_SEED_STATE_FULL ?
-+			  "seeded" : "unseeded"));
- 		/* 9.3.1 steps 7.1 through 7.3 */
- 		len = drbg_seed(drbg, addtl, true);
- 		if (len)
-@@ -1577,7 +1578,7 @@ static int drbg_instantiate(struct drbg_
- 	if (!drbg->core) {
- 		drbg->core = &drbg_cores[coreref];
- 		drbg->pr = pr;
--		drbg->seeded = false;
-+		drbg->seeded = DRBG_SEED_STATE_UNSEEDED;
- 		drbg->reseed_threshold = drbg_max_requests(drbg);
- 
- 		ret = drbg_alloc_state(drbg);
---- a/include/crypto/drbg.h
-+++ b/include/crypto/drbg.h
-@@ -105,6 +105,11 @@ struct drbg_test_data {
- 	struct drbg_string *testentropy; /* TEST PARAMETER: test entropy */
- };
- 
-+enum drbg_seed_state {
-+	DRBG_SEED_STATE_UNSEEDED,
-+	DRBG_SEED_STATE_FULL,
-+};
-+
- struct drbg_state {
- 	struct mutex drbg_mutex;	/* lock around DRBG */
- 	unsigned char *V;	/* internal state 10.1.1.1 1a) */
-@@ -127,7 +132,7 @@ struct drbg_state {
- 	struct crypto_wait ctr_wait;		/* CTR mode async wait obj */
- 	struct scatterlist sg_in, sg_out;	/* CTR mode SGLs */
- 
--	bool seeded;		/* DRBG fully seeded? */
-+	enum drbg_seed_state seeded;		/* DRBG fully seeded? */
- 	bool pr;		/* Prediction resistance enabled? */
- 	bool fips_primed;	/* Continuous test primed? */
- 	unsigned char *prev;	/* FIPS 140-2 continuous test value */
+-		exfat_update_parent_info(new_ei, new_parent_inode);
+-
+ 		p_dir = &(new_ei->dir);
+ 		new_entry = new_ei->entry;
+ 		ep = exfat_get_dentry(sb, p_dir, new_entry, &new_bh, NULL);
 
 
