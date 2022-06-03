@@ -2,85 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE322C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 19:02:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EDEDC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 19:06:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347916AbiFCTCE (ORCPT
+        id S1347956AbiFCTGg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 15:02:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48060 "EHLO
+        Fri, 3 Jun 2022 15:06:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348708AbiFCTAB (ORCPT
+        with ESMTP id S1348938AbiFCTFW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 15:00:01 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13E2329833;
-        Fri,  3 Jun 2022 12:00:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 6C987CE24B8;
-        Fri,  3 Jun 2022 18:59:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E77CCC385B8;
-        Fri,  3 Jun 2022 18:59:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654282797;
-        bh=wNoOUeH436EM5Q4+ipBC6tMdcUFPQYmnJuswlasQq7s=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SoILe+FIL2S6KalxEeHmls5fUj88pDOTWr2GlXkpmPjl5+15cM4zJMc0RwCu3qH/3
-         QQIsotDeOWea8wAWWgNZGA2Vzz1rv8wKxyj8Bdude0azly82ePzu51lJpXZ85CTweI
-         5elR6Htm+9ahYC0czwCImx/nIgkILwiaxVRL1ZsjkUpbVFCexeLFzuZh0MQspNLkZU
-         lZqEetTJ1+ZuY7yIHo9e6rIAXwzXdJ9Fpo38wEB64ZorajI8T/uAg3brpJGvrtmK1S
-         9+R5sPRSMtfyS0q7/Bd4Qu8OuFPKFEVvuoLnNskg6SQZH0Mhg8PZhX9aGOINHxAEoV
-         iKbEjktYZcC/g==
-Date:   Fri, 3 Jun 2022 11:59:56 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Chen Lin <chen45464546@163.com>, Felix Fietkau <nbd@nbd.name>,
-        john@phrozen.org, sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
-        David Miller <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-mediatek@lists.infradead.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        Alexander Duyck <alexander.duyck@gmail.com>
-Subject: Re: [PATCH v2] net: ethernet: mtk_eth_soc: fix misuse of mem alloc
- interface netdev[napi]_alloc_frag
-Message-ID: <20220603115956.6ad82a53@kernel.org>
-In-Reply-To: <CANn89iKiyh36ULH4PCXF4c8sBdh9WLksMoMcmQwipZYWCzBkMA@mail.gmail.com>
-References: <2997c5b0-3611-5e00-466c-b2966f09f067@nbd.name>
-        <1654245968-8067-1-git-send-email-chen45464546@163.com>
-        <CANn89iKiyh36ULH4PCXF4c8sBdh9WLksMoMcmQwipZYWCzBkMA@mail.gmail.com>
+        Fri, 3 Jun 2022 15:05:22 -0400
+Received: from mo4-p02-ob.smtp.rzone.de (mo4-p02-ob.smtp.rzone.de [85.215.255.83])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAE5030F78;
+        Fri,  3 Jun 2022 12:05:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1654282936;
+    s=strato-dkim-0002; d=gerhold.net;
+    h=In-Reply-To:References:Message-ID:Subject:Cc:To:From:Date:Cc:Date:
+    From:Subject:Sender;
+    bh=GN32FHxgQcHqH2ucXhtQRiGh0eXPPIP92mFkqoNojOw=;
+    b=NcenauWPTPMC//K3fNo54K+j79IWwc/2lRt9IAjn+ZA7EAehD9f3toPwur/SByZyy1
+    dN6bYMCufLOg74gkUBgzuT8y9dR6jGT3N+NkWVGq9bxLphd3F+rzEslD7OqhmdidPGYf
+    hmtgzlmxcU++3t9NYqydQx96VEKWKeIIde3J8k33yb2RByQySh69paiY4rMSHchvDPkT
+    jxGADZIjyJegCYGD8zslD3KDuTMkoosndUoq/2WTK6lYW+wBhYP3AP9XHv+xAMN7eXZ5
+    HR7n0BdbIKsTxa0OzB1uAnm5EcBUOc2VMRooHHyDdNA6QG9Fx4+5Hjse3qfRnzisRqAM
+    Z5TQ==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVOQ/OcYgojyw4j34+u267FZF9PwpcNKLVrKw7/aY="
+X-RZG-CLASS-ID: mo00
+Received: from gerhold.net
+    by smtp.strato.de (RZmta 47.45.0 AUTH)
+    with ESMTPSA id 9056edy53J2Fwnt
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Fri, 3 Jun 2022 21:02:15 +0200 (CEST)
+Date:   Fri, 3 Jun 2022 21:02:14 +0200
+From:   Stephan Gerhold <stephan@gerhold.net>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Amit Pundir <amit.pundir@linaro.org>,
+        Trilok Soni <quic_tsoni@quicinc.com>,
+        Rob Clark <robdclark@gmail.com>,
+        Caleb Connolly <caleb@connolly.tech>
+Subject: Re: [PATCH 4/4] arm64: dts: qcom: sdm845-oneplus: split
+ qcom,board-id into tuples
+Message-ID: <Yppatj7KuQLPdDW1@gerhold.net>
+References: <20220529202629.47588-1-krzysztof.kozlowski@linaro.org>
+ <20220529202629.47588-5-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220529202629.47588-5-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 3 Jun 2022 10:25:16 -0700 Eric Dumazet wrote:
-> >                         goto release_desc;
-> > @@ -1914,7 +1923,16 @@ static int mtk_rx_alloc(struct mtk_eth *eth, int ring_no, int rx_flag)
-> >                 return -ENOMEM;
-> >
-> >         for (i = 0; i < rx_dma_size; i++) {
-> > -               ring->data[i] = netdev_alloc_frag(ring->frag_size);  
-> 
-> Note aside, calling netdev_alloc_frag() in a loop like that is adding
-> GFP_ATOMIC pressure.
-> 
-> mtk_rx_alloc() being in process context, using GFP_KERNEL allocations
-> would be less aggressive and
-> have more chances to succeed.
-> 
-> We probably should offer a generic helper. This could be used from
-> driver/net/tun.c and others.
++Cc Caleb Connolly <caleb@connolly.tech>
 
-Do cases where netdev_alloc_frag() is not run from a process context
-from to your mind? My feeling is that the prevailing pattern is what
-this driver does, which is netdev_alloc_frag() at startup / open and
-napi_alloc_frag() from the datapath. So maybe we can even spare the
-detail in the API and have napi_alloc_frag() assume GFP_KERNEL by
-default?
+On Sun, May 29, 2022 at 10:26:29PM +0200, Krzysztof Kozlowski wrote:
+> The qcom,board-id is an uint32 matrix, so a list of tuples.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+>  arch/arm64/boot/dts/qcom/sdm845-oneplus-enchilada.dts | 2 +-
+>  arch/arm64/boot/dts/qcom/sdm845-oneplus-fajita.dts    | 2 +-
+>  2 files changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/arm64/boot/dts/qcom/sdm845-oneplus-enchilada.dts b/arch/arm64/boot/dts/qcom/sdm845-oneplus-enchilada.dts
+> index bf2cf92e8976..8897a2f4cfe3 100644
+> --- a/arch/arm64/boot/dts/qcom/sdm845-oneplus-enchilada.dts
+> +++ b/arch/arm64/boot/dts/qcom/sdm845-oneplus-enchilada.dts
+> @@ -12,7 +12,7 @@ / {
+>  	compatible = "oneplus,enchilada", "qcom,sdm845";
+>  	chassis-type = "handset";
+>  	qcom,msm-id = <0x141 0x20001>;
+> -	qcom,board-id = <8 0 17819 22>;
+> +	qcom,board-id = <8 0>, <17819 22>;
+
+FWIW: While it's just a cosmetic change this is a bit misleading in my
+opinion. Having two tuples suggests this should be interpreted as:
+
+"This device tree is suitable for two different boards:
+ board-id = <8 0> (aka sdm845-mtp, a standard qcom reference board)
+ OR, alternatively: board-id = <17819 22>"
+
+Since this device tree is clearly not meant for sdm845-mtp one could now
+argue that the <8 0> could be removed, and only the second tuple covers
+the actual device. It might be worth a try (maybe Caleb can try?), but
+I suspect the bootloader will not accept that...
+
+I think the bootloader from OPPO/OnePlus is actually looking for
+quadruples instead of tuples on this board. I have seen similar hacks on
+several other OPPO devices as well. They usually add their project ID
+(here: 17819) somewhere and look for that in the bootloader.
+
+In this case maybe adding a short comment would be sufficient, just to
+make it more obvious that this doesn't actually follow the binding
+documentation.
+
+But this kind of brings up the question if it's worth making any
+constraints in the DT schema at all, if some of the device trees
+can not follow it.
+
+For example, older OPPO bootloaders actually look for triples instead,
+e.g.: (This is from a real device!)
+	qcom,board-id = <8 0 15009>;
+
+So maybe it's just a matter of time until someone tries to add a DT
+with a format that cannot be changed cosmetically to fit the DT schema...
+
+Stephan
