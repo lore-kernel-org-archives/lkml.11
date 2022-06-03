@@ -2,148 +2,309 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 086E3C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:59:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 291A5C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:59:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346045AbiFCR7N (ORCPT
+        id S1346155AbiFCR7T (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:59:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44722 "EHLO
+        Fri, 3 Jun 2022 13:59:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345637AbiFCRuE (ORCPT
+        with ESMTP id S1346024AbiFCRul (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:50:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9596583B3;
-        Fri,  3 Jun 2022 10:46:10 -0700 (PDT)
+        Fri, 3 Jun 2022 13:50:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A13B45403B;
+        Fri,  3 Jun 2022 10:46:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5F145B8241E;
-        Fri,  3 Jun 2022 17:46:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1A95C385A9;
-        Fri,  3 Jun 2022 17:46:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3C40DB82435;
+        Fri,  3 Jun 2022 17:46:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67ED8C3411C;
+        Fri,  3 Jun 2022 17:46:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278368;
-        bh=QdzVgy+7LC1eSGiAnX9qGElIAQugWzv77O5yVZ37v+c=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xjxDRedMc5sdIo2SsxXLkKVdbt2/d0aKJ2lyD2vE4VcngsbNYXQmAROxcKYStH1yJ
-         1N+bBL1tgofsrVQe0Wa1nZr8ifrang2Iuj+dkwIRlxjG6T95I1YtMPLK4MBxf09s/W
-         1jRgo0RQWr+FZUc9xT8dUQaFBQqAtytvIFm7lcCc=
+        s=korg; t=1654278415;
+        bh=PX8mr3eZ+Q52m4unIrWUH22XGTjYUpmbql69Qqof9/o=;
+        h=From:To:Cc:Subject:Date:From;
+        b=elWFhwMhrOktDWSxZCs1kUkIYPl909h7IMqc/8rwPvpSdN0AkFS+qiOMGYjVsNDDE
+         j+CGiof7kjHwdqi5UR9pvTn38LWXY9Gb693u2Cf+xyzobUe/5MsrkNdoXxdWY3Qbif
+         1tgCTyxiwcYxNubATx4G/utV542bYQEPqdT+DhJ4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        zdi-disclosures@trendmicro.com
-Subject: [PATCH 5.10 10/53] pipe: Fix missing lock in pipe_resize_ring()
-Date:   Fri,  3 Jun 2022 19:42:55 +0200
-Message-Id: <20220603173819.020461179@linuxfoundation.org>
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Subject: [PATCH 5.10 00/53] 5.10.120-rc1 review
+Date:   Fri,  3 Jun 2022 19:42:45 +0200
+Message-Id: <20220603173818.716010877@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220603173818.716010877@linuxfoundation.org>
-References: <20220603173818.716010877@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.120-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-5.10.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 5.10.120-rc1
+X-KernelTest-Deadline: 2022-06-05T17:38+00:00
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+This is the start of the stable review cycle for the 5.10.120 release.
+There are 53 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-commit 189b0ddc245139af81198d1a3637cac74f96e13a upstream.
+Responses should be made by Sun, 05 Jun 2022 17:38:05 +0000.
+Anything received after that time might be too late.
 
-pipe_resize_ring() needs to take the pipe->rd_wait.lock spinlock to
-prevent post_one_notification() from trying to insert into the ring
-whilst the ring is being replaced.
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.120-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
+and the diffstat can be found below.
 
-The occupancy check must be done after the lock is taken, and the lock
-must be taken after the new ring is allocated.
+thanks,
 
-The bug can lead to an oops looking something like:
+greg k-h
 
- BUG: KASAN: use-after-free in post_one_notification.isra.0+0x62e/0x840
- Read of size 4 at addr ffff88801cc72a70 by task poc/27196
- ...
- Call Trace:
-  post_one_notification.isra.0+0x62e/0x840
-  __post_watch_notification+0x3b7/0x650
-  key_create_or_update+0xb8b/0xd20
-  __do_sys_add_key+0x175/0x340
-  __x64_sys_add_key+0xbe/0x140
-  do_syscall_64+0x5c/0xc0
-  entry_SYSCALL_64_after_hwframe+0x44/0xae
+-------------
+Pseudo-Shortlog of commits:
 
-Reported by Selim Enes Karaduman @Enesdex working with Trend Micro Zero
-Day Initiative.
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 5.10.120-rc1
 
-Fixes: c73be61cede5 ("pipe: Add general notification queue support")
-Reported-by: zdi-disclosures@trendmicro.com # ZDI-CAN-17291
-Signed-off-by: David Howells <dhowells@redhat.com>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- fs/pipe.c |   31 ++++++++++++++++++-------------
- 1 file changed, 18 insertions(+), 13 deletions(-)
+Liu Jian <liujian56@huawei.com>
+    bpf: Enlarge offset check value to INT_MAX in bpf_skb_{load,store}_bytes
 
---- a/fs/pipe.c
-+++ b/fs/pipe.c
-@@ -1244,30 +1244,33 @@ unsigned int round_pipe_size(unsigned lo
- 
- /*
-  * Resize the pipe ring to a number of slots.
-+ *
-+ * Note the pipe can be reduced in capacity, but only if the current
-+ * occupancy doesn't exceed nr_slots; if it does, EBUSY will be
-+ * returned instead.
-  */
- int pipe_resize_ring(struct pipe_inode_info *pipe, unsigned int nr_slots)
- {
- 	struct pipe_buffer *bufs;
- 	unsigned int head, tail, mask, n;
- 
--	/*
--	 * We can shrink the pipe, if arg is greater than the ring occupancy.
--	 * Since we don't expect a lot of shrink+grow operations, just free and
--	 * allocate again like we would do for growing.  If the pipe currently
--	 * contains more buffers than arg, then return busy.
--	 */
--	mask = pipe->ring_size - 1;
--	head = pipe->head;
--	tail = pipe->tail;
--	n = pipe_occupancy(pipe->head, pipe->tail);
--	if (nr_slots < n)
--		return -EBUSY;
--
- 	bufs = kcalloc(nr_slots, sizeof(*bufs),
- 		       GFP_KERNEL_ACCOUNT | __GFP_NOWARN);
- 	if (unlikely(!bufs))
- 		return -ENOMEM;
- 
-+	spin_lock_irq(&pipe->rd_wait.lock);
-+	mask = pipe->ring_size - 1;
-+	head = pipe->head;
-+	tail = pipe->tail;
-+
-+	n = pipe_occupancy(head, tail);
-+	if (nr_slots < n) {
-+		spin_unlock_irq(&pipe->rd_wait.lock);
-+		kfree(bufs);
-+		return -EBUSY;
-+	}
-+
- 	/*
- 	 * The pipe array wraps around, so just start the new one at zero
- 	 * and adjust the indices.
-@@ -1299,6 +1302,8 @@ int pipe_resize_ring(struct pipe_inode_i
- 	pipe->tail = tail;
- 	pipe->head = head;
- 
-+	spin_unlock_irq(&pipe->rd_wait.lock);
-+
- 	/* This might have made more room for writers */
- 	wake_up_interruptible(&pipe->wr_wait);
- 	return 0;
+Yuntao Wang <ytcoode@gmail.com>
+    bpf: Fix potential array overflow in bpf_trampoline_get_progs()
+
+Chuck Lever <chuck.lever@oracle.com>
+    NFSD: Fix possible sleep during nfsd4_release_lockowner()
+
+Trond Myklebust <trond.myklebust@hammerspace.com>
+    NFS: Memory allocation failures are not server fatal errors
+
+Akira Yokosawa <akiyks@gmail.com>
+    docs: submitting-patches: Fix crossref to 'The canonical patch format'
+
+Xiu Jianfeng <xiujianfeng@huawei.com>
+    tpm: ibmvtpm: Correct the return value in tpm_ibmvtpm_probe()
+
+Stefan Mahnke-Hartmann <stefan.mahnke-hartmann@infineon.com>
+    tpm: Fix buffer access in tpm2_get_tpm_pt()
+
+Tao Jin <tao-j@outlook.com>
+    HID: multitouch: add quirks to enable Lenovo X12 trackpoint
+
+Marek Maślanka <mm@semihalf.com>
+    HID: multitouch: Add support for Google Whiskers Touchpad
+
+Mariusz Tkaczyk <mariusz.tkaczyk@linux.intel.com>
+    raid5: introduce MD_BROKEN
+
+Sarthak Kukreti <sarthakkukreti@google.com>
+    dm verity: set DM_TARGET_IMMUTABLE feature flag
+
+Mikulas Patocka <mpatocka@redhat.com>
+    dm stats: add cond_resched when looping over entries
+
+Mikulas Patocka <mpatocka@redhat.com>
+    dm crypt: make printing of the key constant-time
+
+Dan Carpenter <dan.carpenter@oracle.com>
+    dm integrity: fix error code in dm_integrity_ctr()
+
+Jonathan Bakker <xc-racer2@live.ca>
+    ARM: dts: s5pv210: Correct interrupt name for bluetooth in Aries
+
+Steven Rostedt <rostedt@goodmis.org>
+    Bluetooth: hci_qca: Use del_timer_sync() before freeing
+
+Sultan Alsawaf <sultan@kerneltoast.com>
+    zsmalloc: fix races between asynchronous zspage free and page migration
+
+Vitaly Chikunov <vt@altlinux.org>
+    crypto: ecrdsa - Fix incorrect use of vli_cmp
+
+Fabio Estevam <festevam@denx.de>
+    crypto: caam - fix i.MX6SX entropy delay value
+
+Sean Christopherson <seanjc@google.com>
+    KVM: x86: avoid calling x86 emulator without a decoded instruction
+
+Paolo Bonzini <pbonzini@redhat.com>
+    x86, kvm: use correct GFP flags for preemption disabled
+
+Sean Christopherson <seanjc@google.com>
+    x86/kvm: Alloc dummy async #PF token outside of raw spinlock
+
+Xiaomeng Tong <xiam0nd.tong@gmail.com>
+    KVM: PPC: Book3S HV: fix incorrect NULL check on list iterator
+
+Florian Westphal <fw@strlen.de>
+    netfilter: conntrack: re-fetch conntrack after insertion
+
+Pablo Neira Ayuso <pablo@netfilter.org>
+    netfilter: nf_tables: sanitize nft_set_desc_concat_parse()
+
+Nicolai Stange <nstange@suse.de>
+    crypto: drbg - make reseeding from get_random_bytes() synchronous
+
+Nicolai Stange <nstange@suse.de>
+    crypto: drbg - move dynamic ->reseed_threshold adjustments to __drbg_seed()
+
+Nicolai Stange <nstange@suse.de>
+    crypto: drbg - track whether DRBG was seeded with !rng_is_initialized()
+
+Nicolai Stange <nstange@suse.de>
+    crypto: drbg - prepare for more fine-grained tracking of seeding state
+
+Justin M. Forbes <jforbes@fedoraproject.org>
+    lib/crypto: add prompts back to crypto libraries
+
+Yuezhang Mo <Yuezhang.Mo@sony.com>
+    exfat: fix referencing wrong parent directory information after renaming
+
+Tadeusz Struk <tadeusz.struk@linaro.org>
+    exfat: check if cluster num is valid
+
+Gustavo A. R. Silva <gustavoars@kernel.org>
+    drm/i915: Fix -Wstringop-overflow warning in call to intel_read_wm_latency()
+
+Dave Chinner <dchinner@redhat.com>
+    xfs: Fix CIL throttle hang when CIL space used going backwards
+
+Darrick J. Wong <darrick.wong@oracle.com>
+    xfs: fix an ABBA deadlock in xfs_rename
+
+Darrick J. Wong <darrick.wong@oracle.com>
+    xfs: fix the forward progress assertion in xfs_iwalk_run_callbacks
+
+Kaixu Xia <kaixuxia@tencent.com>
+    xfs: show the proper user quota options
+
+Darrick J. Wong <darrick.wong@oracle.com>
+    xfs: detect overflows in bmbt records
+
+Alex Elder <elder@linaro.org>
+    net: ipa: compute proper aggregation limit
+
+Pavel Begunkov <asml.silence@gmail.com>
+    io_uring: fix using under-expanded iters
+
+Pavel Begunkov <asml.silence@gmail.com>
+    io_uring: don't re-import iovecs from callbacks
+
+Stephen Brennan <stephen.s.brennan@oracle.com>
+    assoc_array: Fix BUG_ON during garbage collect
+
+Miri Korenblit <miriam.rachel.korenblit@intel.com>
+    cfg80211: set custom regdomain after wiphy registration
+
+David Howells <dhowells@redhat.com>
+    pipe: Fix missing lock in pipe_resize_ring()
+
+Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+    pipe: make poll_usage boolean and annotate its access
+
+Pablo Neira Ayuso <pablo@netfilter.org>
+    netfilter: nf_tables: disallow non-stateful expression in sets earlier
+
+Piyush Malgujar <pmalgujar@marvell.com>
+    drivers: i2c: thunderx: Allow driver to work with ACPI defined TWSI controllers
+
+Mika Westerberg <mika.westerberg@linux.intel.com>
+    i2c: ismt: Provide a DMA buffer for Interrupt Cause Logging
+
+Joel Stanley <joel@jms.id.au>
+    net: ftgmac100: Disable hardware checksum on AST2600
+
+Lin Ma <linma@zju.edu.cn>
+    nfc: pn533: Fix buggy cleanup order
+
+Thomas Bartschies <thomas.bartschies@cvk.de>
+    net: af_key: check encryption module availability consistency
+
+Al Viro <viro@zeniv.linux.org.uk>
+    percpu_ref_init(): clean ->percpu_count_ref on failure
+
+IotaHydrae <writeforever@foxmail.com>
+    pinctrl: sunxi: fix f1c100s uart2 function
+
+
+-------------
+
+Diffstat:
+
+ Documentation/process/submitting-patches.rst  |   2 +-
+ Makefile                                      |   4 +-
+ arch/arm/boot/dts/s5pv210-aries.dtsi          |   2 +-
+ arch/powerpc/kvm/book3s_hv_uvmem.c            |   8 +-
+ arch/x86/kernel/kvm.c                         |  41 ++++++----
+ arch/x86/kvm/x86.c                            |  31 +++++---
+ crypto/Kconfig                                |   2 -
+ crypto/drbg.c                                 | 110 +++++++++++---------------
+ crypto/ecrdsa.c                               |   8 +-
+ drivers/bluetooth/hci_qca.c                   |   4 +-
+ drivers/char/random.c                         |   2 -
+ drivers/char/tpm/tpm2-cmd.c                   |  11 ++-
+ drivers/char/tpm/tpm_ibmvtpm.c                |   1 +
+ drivers/crypto/caam/ctrl.c                    |  18 +++++
+ drivers/gpu/drm/i915/intel_pm.c               |   2 +-
+ drivers/hid/hid-ids.h                         |   1 +
+ drivers/hid/hid-multitouch.c                  |   9 +++
+ drivers/i2c/busses/i2c-ismt.c                 |  14 ++++
+ drivers/i2c/busses/i2c-thunderx-pcidrv.c      |   1 +
+ drivers/md/dm-crypt.c                         |  14 +++-
+ drivers/md/dm-integrity.c                     |   2 -
+ drivers/md/dm-stats.c                         |   8 ++
+ drivers/md/dm-verity-target.c                 |   1 +
+ drivers/md/raid5.c                            |  47 ++++++-----
+ drivers/net/ethernet/faraday/ftgmac100.c      |   5 ++
+ drivers/net/ipa/ipa_endpoint.c                |   4 +-
+ drivers/nfc/pn533/pn533.c                     |   5 +-
+ drivers/pinctrl/sunxi/pinctrl-suniv-f1c100s.c |   2 +-
+ fs/exfat/balloc.c                             |   8 +-
+ fs/exfat/exfat_fs.h                           |   8 ++
+ fs/exfat/fatent.c                             |   8 --
+ fs/exfat/namei.c                              |  27 +------
+ fs/io_uring.c                                 |  47 ++---------
+ fs/nfs/internal.h                             |   1 +
+ fs/nfsd/nfs4state.c                           |  12 +--
+ fs/pipe.c                                     |  33 ++++----
+ fs/xfs/libxfs/xfs_bmap.c                      |   5 ++
+ fs/xfs/libxfs/xfs_dir2.h                      |   2 -
+ fs/xfs/libxfs/xfs_dir2_sf.c                   |   2 +-
+ fs/xfs/xfs_buf_item.c                         |  37 +++++----
+ fs/xfs/xfs_inode.c                            |  42 ++++++----
+ fs/xfs/xfs_inode_item.c                       |  14 ++++
+ fs/xfs/xfs_iwalk.c                            |   2 +-
+ fs/xfs/xfs_log_cil.c                          |  22 ++++--
+ fs/xfs/xfs_super.c                            |  10 ++-
+ include/crypto/drbg.h                         |  10 ++-
+ include/linux/pipe_fs_i.h                     |   2 +-
+ include/net/netfilter/nf_conntrack_core.h     |   7 +-
+ kernel/bpf/trampoline.c                       |  18 +++--
+ lib/Kconfig                                   |   2 +
+ lib/assoc_array.c                             |   8 ++
+ lib/crypto/Kconfig                            |  17 ++--
+ lib/percpu-refcount.c                         |   1 +
+ mm/zsmalloc.c                                 |  37 ++++++++-
+ net/core/filter.c                             |   4 +-
+ net/key/af_key.c                              |   6 +-
+ net/netfilter/nf_tables_api.c                 |  36 ++++++---
+ net/wireless/core.c                           |   8 +-
+ net/wireless/reg.c                            |   1 +
+ 59 files changed, 461 insertions(+), 335 deletions(-)
 
 
