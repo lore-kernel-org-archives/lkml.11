@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D675C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:59:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B944CC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:59:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234941AbiFCR7t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:59:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58106 "EHLO
+        id S1346046AbiFCR7y (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 13:59:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346326AbiFCRvE (ORCPT
+        with ESMTP id S1346579AbiFCRvS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:51:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6AEA54019;
-        Fri,  3 Jun 2022 10:47:35 -0700 (PDT)
+        Fri, 3 Jun 2022 13:51:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2013157124;
+        Fri,  3 Jun 2022 10:48:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 83445B82419;
-        Fri,  3 Jun 2022 17:47:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D48E5C385A9;
-        Fri,  3 Jun 2022 17:47:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D54960F7F;
+        Fri,  3 Jun 2022 17:48:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E306C385A9;
+        Fri,  3 Jun 2022 17:48:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278453;
-        bh=xKYIY3b+6DACVG9OJ+6g0WzZhtJPvFTJ0v8snVh1XI8=;
+        s=korg; t=1654278520;
+        bh=bA32dH1FbReMD6dkPhjw3sLV/3rPluZTJVYOKOMlN8s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k+Y1O9J9xxi0HESonAXfwB5J3fbzSwEs+NEKdFZhq+pzoKFvwbhptQWZXdxOELm2G
-         BD2xzANDdHmOGoe/wOOo6DfB82MinPjsWUIkUfkqc2xVH9sVmceH0XBdraR6WcNIrp
-         m57SWJgmptP2rPm/V5wrVeDzPw3LQtElxuKpq4Fw=
+        b=GAitTYYF9rQVDpo/S80ToYmBR3CmU9IkzFJaORvKjNu2ZMzEitYmHN6cTq+ajVhsi
+         4liNF9P0PIiGBMX1gHmkRZSy3s/i/JnDt26H6H8Oeqpz+Vz+/QAeZd2aQxm64feOcW
+         XYtitBy+lPTg+FbEWNu4V+bCPhyVhsaMr1NswyuE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dave Chinner <dchinner@redhat.com>,
-        Brian Foster <bfoster@redhat.com>,
-        Chandan Babu R <chandanrlinux@gmail.com>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        Allison Henderson <allison.henderson@oracle.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Donald Buczek <buczek@molgen.mpg.de>
-Subject: [PATCH 5.10 20/53] xfs: Fix CIL throttle hang when CIL space used going backwards
-Date:   Fri,  3 Jun 2022 19:43:05 +0200
-Message-Id: <20220603173819.311191622@linuxfoundation.org>
+        stable@vger.kernel.org, Nicolai Stange <nstange@suse.de>,
+        =?UTF-8?q?Stephan=20M=C3=BCller?= <smueller@chronox.de>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.10 26/53] crypto: drbg - track whether DRBG was seeded with !rng_is_initialized()
+Date:   Fri,  3 Jun 2022 19:43:11 +0200
+Message-Id: <20220603173819.486438097@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173818.716010877@linuxfoundation.org>
 References: <20220603173818.716010877@linuxfoundation.org>
@@ -53,256 +51,131 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Chinner <dchinner@redhat.com>
+From: Nicolai Stange <nstange@suse.de>
 
-commit 19f4e7cc819771812a7f527d7897c2deffbf7a00 upstream.
+commit 2bcd25443868aa8863779a6ebc6c9319633025d2 upstream.
 
-A hang with tasks stuck on the CIL hard throttle was reported and
-largely diagnosed by Donald Buczek, who discovered that it was a
-result of the CIL context space usage decrementing in committed
-transactions once the hard throttle limit had been hit and processes
-were already blocked.  This resulted in the CIL push not waking up
-those waiters because the CIL context was no longer over the hard
-throttle limit.
+Currently, the DRBG implementation schedules asynchronous works from
+random_ready_callbacks for reseeding the DRBG instances with output from
+get_random_bytes() once the latter has sufficient entropy available.
 
-The surprising aspect of this was the CIL space usage going
-backwards regularly enough to trigger this situation. Assumptions
-had been made in design that the relogging process would only
-increase the size of the objects in the CIL, and so that space would
-only increase.
+However, as the get_random_bytes() initialization state can get queried by
+means of rng_is_initialized() now, there is no real need for this
+asynchronous reseeding logic anymore and it's better to keep things simple
+by doing it synchronously when needed instead, i.e. from drbg_generate()
+once rng_is_initialized() has flipped to true.
 
-This change and commit message fixes the issue and documents the
-result of an audit of the triggers that can cause the CIL space to
-go backwards, how large the backwards steps tend to be, the
-frequency in which they occur, and what the impact on the CIL
-accounting code is.
+Of course, for this to work, drbg_generate() would need some means by which
+it can tell whether or not rng_is_initialized() has flipped to true since
+the last seeding from get_random_bytes(). Or equivalently, whether or not
+the last seed from get_random_bytes() has happened when
+rng_is_initialized() was still evaluating to false.
 
-Even though the CIL ctx->space_used can go backwards, it will only
-do so if the log item is already logged to the CIL and contains a
-space reservation for it's entire logged state. This is tracked by
-the shadow buffer state on the log item. If the item is not
-previously logged in the CIL it has no shadow buffer nor log vector,
-and hence the entire size of the logged item copied to the log
-vector is accounted to the CIL space usage. i.e.  it will always go
-up in this case.
+As it currently stands, enum drbg_seed_state allows for the representation
+of two different DRBG seeding states: DRBG_SEED_STATE_UNSEEDED and
+DRBG_SEED_STATE_FULL. The former makes drbg_generate() to invoke a full
+reseeding operation involving both, the rather expensive jitterentropy as
+well as the get_random_bytes() randomness sources. The DRBG_SEED_STATE_FULL
+state on the other hand implies that no reseeding at all is required for a
+!->pr DRBG variant.
 
-If the item has a log vector (i.e. already in the CIL) and the size
-decreases, then the existing log vector will be overwritten and the
-space usage will go down. This is the only condition where the space
-usage reduces, and it can only occur when an item is already tracked
-in the CIL. Hence we are safe from CIL space usage underruns as a
-result of log items decreasing in size when they are relogged.
+Introduce the new DRBG_SEED_STATE_PARTIAL state to enum drbg_seed_state for
+representing the condition that a DRBG was being seeded when
+rng_is_initialized() had still been false. In particular, this new state
+implies that
+- the given DRBG instance has been fully seeded from the jitterentropy
+  source (if enabled)
+- and drbg_generate() is supposed to reseed from get_random_bytes()
+  *only* once rng_is_initialized() turns to true.
 
-Typically this reduction in CIL usage occurs from metadata blocks
-being free, such as when a btree block merge occurs or a directory
-enter/xattr entry is removed and the da-tree is reduced in size.
-This generally results in a reduction in size of around a single
-block in the CIL, but also tends to increase the number of log
-vectors because the parent and sibling nodes in the tree needs to be
-updated when a btree block is removed. If a multi-level merge
-occurs, then we see reduction in size of 2+ blocks, but again the
-log vector count goes up.
+Up to now, the __drbg_seed() helper used to set the given DRBG instance's
+->seeded state to constant DRBG_SEED_STATE_FULL. Introduce a new argument
+allowing for the specification of the to be written ->seeded value instead.
+Make the first of its two callers, drbg_seed(), determine the appropriate
+value based on rng_is_initialized(). The remaining caller,
+drbg_async_seed(), is known to get invoked only once rng_is_initialized()
+is true, hence let it pass constant DRBG_SEED_STATE_FULL for the new
+argument to __drbg_seed().
 
-The other vector is inode fork size changes, which only log the
-current size of the fork and ignore the previously logged size when
-the fork is relogged. Hence if we are removing items from the inode
-fork (dir/xattr removal in shortform, extent record removal in
-extent form, etc) the relogged size of the inode for can decrease.
+There is no change in behaviour, except for that the pr_devel() in
+drbg_generate() would now report "unseeded" for ->pr DRBG instances which
+had last been seeded when rng_is_initialized() was still evaluating to
+false.
 
-No other log items can decrease in size either because they are a
-fixed size (e.g. dquots) or they cannot be relogged (e.g. relogging
-an intent actually creates a new intent log item and doesn't relog
-the old item at all.) Hence the only two vectors for CIL context
-size reduction are relogging inode forks and marking buffers active
-in the CIL as stale.
-
-Long story short: the majority of the code does the right thing and
-handles the reduction in log item size correctly, and only the CIL
-hard throttle implementation is problematic and needs fixing. This
-patch makes that fix, as well as adds comments in the log item code
-that result in items shrinking in size when they are relogged as a
-clear reminder that this can and does happen frequently.
-
-The throttle fix is based upon the change Donald proposed, though it
-goes further to ensure that once the throttle is activated, it
-captures all tasks until the CIL push issues a wakeup, regardless of
-whether the CIL space used has gone back under the throttle
-threshold.
-
-This ensures that we prevent tasks reducing the CIL slightly under
-the throttle threshold and then making more changes that push it
-well over the throttle limit. This is acheived by checking if the
-throttle wait queue is already active as a condition of throttling.
-Hence once we start throttling, we continue to apply the throttle
-until the CIL context push wakes everything on the wait queue.
-
-We can use waitqueue_active() for the waitqueue manipulations and
-checks as they are all done under the ctx->xc_push_lock. Hence the
-waitqueue has external serialisation and we can safely peek inside
-the wait queue without holding the internal waitqueue locks.
-
-Many thanks to Donald for his diagnostic and analysis work to
-isolate the cause of this hang.
-
-Reported-and-tested-by: Donald Buczek <buczek@molgen.mpg.de>
-Signed-off-by: Dave Chinner <dchinner@redhat.com>
-Reviewed-by: Brian Foster <bfoster@redhat.com>
-Reviewed-by: Chandan Babu R <chandanrlinux@gmail.com>
-Reviewed-by: Darrick J. Wong <djwong@kernel.org>
-Reviewed-by: Allison Henderson <allison.henderson@oracle.com>
-Signed-off-by: Darrick J. Wong <djwong@kernel.org>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Nicolai Stange <nstange@suse.de>
+Reviewed-by: Stephan Müller <smueller@chronox.de>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/xfs/xfs_buf_item.c   |   37 ++++++++++++++++++-------------------
- fs/xfs/xfs_inode_item.c |   14 ++++++++++++++
- fs/xfs/xfs_log_cil.c    |   22 +++++++++++++++++-----
- 3 files changed, 49 insertions(+), 24 deletions(-)
+ crypto/drbg.c         |   12 ++++++++----
+ include/crypto/drbg.h |    1 +
+ 2 files changed, 9 insertions(+), 4 deletions(-)
 
---- a/fs/xfs/xfs_buf_item.c
-+++ b/fs/xfs/xfs_buf_item.c
-@@ -56,14 +56,12 @@ xfs_buf_log_format_size(
- }
+--- a/crypto/drbg.c
++++ b/crypto/drbg.c
+@@ -1035,14 +1035,14 @@ static const struct drbg_state_ops drbg_
+  ******************************************************************/
  
- /*
-- * This returns the number of log iovecs needed to log the
-- * given buf log item.
-+ * Return the number of log iovecs and space needed to log the given buf log
-+ * item segment.
-  *
-- * It calculates this as 1 iovec for the buf log format structure
-- * and 1 for each stretch of non-contiguous chunks to be logged.
-- * Contiguous chunks are logged in a single iovec.
-- *
-- * If the XFS_BLI_STALE flag has been set, then log nothing.
-+ * It calculates this as 1 iovec for the buf log format structure and 1 for each
-+ * stretch of non-contiguous chunks to be logged.  Contiguous chunks are logged
-+ * in a single iovec.
-  */
- STATIC void
- xfs_buf_item_size_segment(
-@@ -119,11 +117,8 @@ xfs_buf_item_size_segment(
- }
+ static inline int __drbg_seed(struct drbg_state *drbg, struct list_head *seed,
+-			      int reseed)
++			      int reseed, enum drbg_seed_state new_seed_state)
+ {
+ 	int ret = drbg->d_ops->update(drbg, seed, reseed);
  
- /*
-- * This returns the number of log iovecs needed to log the given buf log item.
-- *
-- * It calculates this as 1 iovec for the buf log format structure and 1 for each
-- * stretch of non-contiguous chunks to be logged.  Contiguous chunks are logged
-- * in a single iovec.
-+ * Return the number of log iovecs and space needed to log the given buf log
-+ * item.
-  *
-  * Discontiguous buffers need a format structure per region that is being
-  * logged. This makes the changes in the buffer appear to log recovery as though
-@@ -133,7 +128,11 @@ xfs_buf_item_size_segment(
-  * what ends up on disk.
-  *
-  * If the XFS_BLI_STALE flag has been set, then log nothing but the buf log
-- * format structures.
-+ * format structures. If the item has previously been logged and has dirty
-+ * regions, we do not relog them in stale buffers. This has the effect of
-+ * reducing the size of the relogged item by the amount of dirty data tracked
-+ * by the log item. This can result in the committing transaction reducing the
-+ * amount of space being consumed by the CIL.
-  */
- STATIC void
- xfs_buf_item_size(
-@@ -147,9 +146,9 @@ xfs_buf_item_size(
- 	ASSERT(atomic_read(&bip->bli_refcount) > 0);
- 	if (bip->bli_flags & XFS_BLI_STALE) {
- 		/*
--		 * The buffer is stale, so all we need to log
--		 * is the buf log format structure with the
--		 * cancel flag in it.
-+		 * The buffer is stale, so all we need to log is the buf log
-+		 * format structure with the cancel flag in it as we are never
-+		 * going to replay the changes tracked in the log item.
- 		 */
- 		trace_xfs_buf_item_size_stale(bip);
- 		ASSERT(bip->__bli_format.blf_flags & XFS_BLF_CANCEL);
-@@ -164,9 +163,9 @@ xfs_buf_item_size(
+ 	if (ret)
+ 		return ret;
  
- 	if (bip->bli_flags & XFS_BLI_ORDERED) {
- 		/*
--		 * The buffer has been logged just to order it.
--		 * It is not being included in the transaction
--		 * commit, so no vectors are used at all.
-+		 * The buffer has been logged just to order it. It is not being
-+		 * included in the transaction commit, so no vectors are used at
-+		 * all.
- 		 */
- 		trace_xfs_buf_item_size_ordered(bip);
- 		*nvecs = XFS_LOG_VEC_ORDERED;
---- a/fs/xfs/xfs_inode_item.c
-+++ b/fs/xfs/xfs_inode_item.c
-@@ -28,6 +28,20 @@ static inline struct xfs_inode_log_item
- 	return container_of(lip, struct xfs_inode_log_item, ili_item);
- }
+-	drbg->seeded = DRBG_SEED_STATE_FULL;
++	drbg->seeded = new_seed_state;
+ 	/* 10.1.1.2 / 10.1.1.3 step 5 */
+ 	drbg->reseed_ctr = 1;
  
-+/*
-+ * The logged size of an inode fork is always the current size of the inode
-+ * fork. This means that when an inode fork is relogged, the size of the logged
-+ * region is determined by the current state, not the combination of the
-+ * previously logged state + the current state. This is different relogging
-+ * behaviour to most other log items which will retain the size of the
-+ * previously logged changes when smaller regions are relogged.
-+ *
-+ * Hence operations that remove data from the inode fork (e.g. shortform
-+ * dir/attr remove, extent form extent removal, etc), the size of the relogged
-+ * inode gets -smaller- rather than stays the same size as the previously logged
-+ * size and this can result in the committing transaction reducing the amount of
-+ * space being consumed by the CIL.
-+ */
- STATIC void
- xfs_inode_item_data_fork_size(
- 	struct xfs_inode_log_item *iip,
---- a/fs/xfs/xfs_log_cil.c
-+++ b/fs/xfs/xfs_log_cil.c
-@@ -668,9 +668,14 @@ xlog_cil_push_work(
- 	ASSERT(push_seq <= ctx->sequence);
- 
- 	/*
--	 * Wake up any background push waiters now this context is being pushed.
-+	 * As we are about to switch to a new, empty CIL context, we no longer
-+	 * need to throttle tasks on CIL space overruns. Wake any waiters that
-+	 * the hard push throttle may have caught so they can start committing
-+	 * to the new context. The ctx->xc_push_lock provides the serialisation
-+	 * necessary for safely using the lockless waitqueue_active() check in
-+	 * this context.
+@@ -1092,7 +1092,7 @@ static void drbg_async_seed(struct work_
  	 */
--	if (ctx->space_used >= XLOG_CIL_BLOCKING_SPACE_LIMIT(log))
-+	if (waitqueue_active(&cil->xc_push_wait))
- 		wake_up_all(&cil->xc_push_wait);
+ 	drbg->seeded = DRBG_SEED_STATE_UNSEEDED;
  
- 	/*
-@@ -907,7 +912,7 @@ xlog_cil_push_background(
- 	ASSERT(!list_empty(&cil->xc_cil));
+-	__drbg_seed(drbg, &seedlist, true);
++	__drbg_seed(drbg, &seedlist, true, DRBG_SEED_STATE_FULL);
  
- 	/*
--	 * don't do a background push if we haven't used up all the
-+	 * Don't do a background push if we haven't used up all the
- 	 * space available yet.
- 	 */
- 	if (cil->xc_ctx->space_used < XLOG_CIL_SPACE_LIMIT(log)) {
-@@ -931,9 +936,16 @@ xlog_cil_push_background(
+ 	if (drbg->seeded == DRBG_SEED_STATE_FULL)
+ 		drbg->reseed_threshold = drbg_max_requests(drbg);
+@@ -1122,6 +1122,7 @@ static int drbg_seed(struct drbg_state *
+ 	unsigned int entropylen = drbg_sec_strength(drbg->core->flags);
+ 	struct drbg_string data1;
+ 	LIST_HEAD(seedlist);
++	enum drbg_seed_state new_seed_state = DRBG_SEED_STATE_FULL;
  
- 	/*
- 	 * If we are well over the space limit, throttle the work that is being
--	 * done until the push work on this context has begun.
-+	 * done until the push work on this context has begun. Enforce the hard
-+	 * throttle on all transaction commits once it has been activated, even
-+	 * if the committing transactions have resulted in the space usage
-+	 * dipping back down under the hard limit.
-+	 *
-+	 * The ctx->xc_push_lock provides the serialisation necessary for safely
-+	 * using the lockless waitqueue_active() check in this context.
- 	 */
--	if (cil->xc_ctx->space_used >= XLOG_CIL_BLOCKING_SPACE_LIMIT(log)) {
-+	if (cil->xc_ctx->space_used >= XLOG_CIL_BLOCKING_SPACE_LIMIT(log) ||
-+	    waitqueue_active(&cil->xc_push_wait)) {
- 		trace_xfs_log_cil_wait(log, cil->xc_ctx->ticket);
- 		ASSERT(cil->xc_ctx->space_used < log->l_logsize);
- 		xlog_wait(&cil->xc_push_wait, &cil->xc_push_lock);
+ 	/* 9.1 / 9.2 / 9.3.1 step 3 */
+ 	if (pers && pers->len > (drbg_max_addtl(drbg))) {
+@@ -1149,6 +1150,9 @@ static int drbg_seed(struct drbg_state *
+ 		BUG_ON((entropylen * 2) > sizeof(entropy));
+ 
+ 		/* Get seed from in-kernel /dev/urandom */
++		if (!rng_is_initialized())
++			new_seed_state = DRBG_SEED_STATE_PARTIAL;
++
+ 		ret = drbg_get_random_bytes(drbg, entropy, entropylen);
+ 		if (ret)
+ 			goto out;
+@@ -1205,7 +1209,7 @@ static int drbg_seed(struct drbg_state *
+ 		memset(drbg->C, 0, drbg_statelen(drbg));
+ 	}
+ 
+-	ret = __drbg_seed(drbg, &seedlist, reseed);
++	ret = __drbg_seed(drbg, &seedlist, reseed, new_seed_state);
+ 
+ out:
+ 	memzero_explicit(entropy, entropylen * 2);
+--- a/include/crypto/drbg.h
++++ b/include/crypto/drbg.h
+@@ -107,6 +107,7 @@ struct drbg_test_data {
+ 
+ enum drbg_seed_state {
+ 	DRBG_SEED_STATE_UNSEEDED,
++	DRBG_SEED_STATE_PARTIAL, /* Seeded with !rng_is_initialized() */
+ 	DRBG_SEED_STATE_FULL,
+ };
+ 
 
 
