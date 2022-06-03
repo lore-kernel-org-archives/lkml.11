@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F2FBC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:03:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD072C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:03:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346467AbiFCSDG (ORCPT
+        id S1345023AbiFCSDO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:03:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58142 "EHLO
+        Fri, 3 Jun 2022 14:03:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347263AbiFCRwK (ORCPT
+        with ESMTP id S1347252AbiFCRwK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 3 Jun 2022 13:52:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AD6AE53;
-        Fri,  3 Jun 2022 10:51:48 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9351E10C6;
+        Fri,  3 Jun 2022 10:51:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AC64B60F7F;
-        Fri,  3 Jun 2022 17:51:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A28FAC385A9;
-        Fri,  3 Jun 2022 17:51:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5544BB82419;
+        Fri,  3 Jun 2022 17:51:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B189EC385A9;
+        Fri,  3 Jun 2022 17:51:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278707;
-        bh=0K5voZzLyc+xuScdTQ/pYb/ZRAHzPncbwaYY8Xc9DiI=;
+        s=korg; t=1654278688;
+        bh=mB+SpYiPRzPhBV13Cg9C1SHpOxcek38O6FyT0T08+1c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KYyrxSjC3lqspTKNZXq5mraVMaRLO4ZTf57TQUfdaojcrr53n38IgJTVdm3wczcMo
-         r2jAb2Knzi+JjLyIqF6OliGH7YYpd9A18JvFDNgudnpCGcCSx1nRhJMWSFkkFfVHX2
-         JlyF5XoFxmY/YvyHYNPyUXDFCU7GvB2wh00cpNzA=
+        b=CsfyqCh0Th0z3gfOMqIyXkQhBEUksFbQ7VnHDqaOARIYUtmcgfr2efiNf8+4edHFx
+         3fZAAdbmUtTjGZCNyGGkf993xFMkAc/BXQieYhnIHymQDeaZSOCkYTm4EM0cObCw5c
+         STvitLqlB1YDZrnROsqlplDWn2Qmp9WSi7qVwelQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hao Luo <haoluo@google.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: [PATCH 5.15 66/66] bpf: Check PTR_TO_MEM | MEM_RDONLY in check_helper_mem_access
-Date:   Fri,  3 Jun 2022 19:43:46 +0200
-Message-Id: <20220603173822.559821958@linuxfoundation.org>
+        stable@vger.kernel.org, Dai Ngo <dai.ngo@oracle.com>,
+        Chuck Lever <chuck.lever@oracle.com>
+Subject: [PATCH 5.15 61/66] NFSD: Fix possible sleep during nfsd4_release_lockowner()
+Date:   Fri,  3 Jun 2022 19:43:41 +0200
+Message-Id: <20220603173822.419864488@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.663747061@linuxfoundation.org>
 References: <20220603173820.663747061@linuxfoundation.org>
@@ -50,66 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+From: Chuck Lever <chuck.lever@oracle.com>
 
-commit 97e6d7dab1ca4648821c790a2b7913d6d5d549db upstream.
+commit ce3c4ad7f4ce5db7b4f08a1e237d8dd94b39180b upstream.
 
-The commit being fixed was aiming to disallow users from incorrectly
-obtaining writable pointer to memory that is only meant to be read. This
-is enforced now using a MEM_RDONLY flag.
+nfsd4_release_lockowner() holds clp->cl_lock when it calls
+check_for_locks(). However, check_for_locks() calls nfsd_file_get()
+/ nfsd_file_put() to access the backing inode's flc_posix list, and
+nfsd_file_put() can sleep if the inode was recently removed.
 
-For instance, in case of global percpu variables, when the BTF type is
-not struct (e.g. bpf_prog_active), the verifier marks register type as
-PTR_TO_MEM | MEM_RDONLY from bpf_this_cpu_ptr or bpf_per_cpu_ptr
-helpers. However, when passing such pointer to kfunc, global funcs, or
-BPF helpers, in check_helper_mem_access, there is no expectation
-MEM_RDONLY flag will be set, hence it is checked as pointer to writable
-memory. Later, verifier sets up argument type of global func as
-PTR_TO_MEM | PTR_MAYBE_NULL, so user can use a global func to get around
-the limitations imposed by this flag.
+Let's instead rely on the stateowner's reference count to gate
+whether the release is permitted. This should be a reliable
+indication of locks-in-use since file lock operations and
+->lm_get_owner take appropriate references, which are released
+appropriately when file locks are removed.
 
-This check will also cover global non-percpu variables that may be
-introduced in kernel BTF in future.
-
-Also, we update the log message for PTR_TO_BUF case to be similar to
-PTR_TO_MEM case, so that the reason for error is clear to user.
-
-Fixes: 34d3a78c681e ("bpf: Make per_cpu_ptr return rdonly PTR_TO_MEM.")
-Reviewed-by: Hao Luo <haoluo@google.com>
-Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Link: https://lore.kernel.org/r/20220319080827.73251-3-memxor@gmail.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Reported-by: Dai Ngo <dai.ngo@oracle.com>
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Cc: stable@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/bpf/verifier.c |   12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ fs/nfsd/nfs4state.c |   12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
 
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -4602,13 +4602,23 @@ static int check_helper_mem_access(struc
- 		return check_map_access(env, regno, reg->off, access_size,
- 					zero_size_allowed);
- 	case PTR_TO_MEM:
-+		if (type_is_rdonly_mem(reg->type)) {
-+			if (meta && meta->raw_mode) {
-+				verbose(env, "R%d cannot write into %s\n", regno,
-+					reg_type_str(env, reg->type));
-+				return -EACCES;
-+			}
-+		}
- 		return check_mem_region_access(env, regno, reg->off,
- 					       access_size, reg->mem_size,
- 					       zero_size_allowed);
- 	case PTR_TO_BUF:
- 		if (type_is_rdonly_mem(reg->type)) {
--			if (meta && meta->raw_mode)
-+			if (meta && meta->raw_mode) {
-+				verbose(env, "R%d cannot write into %s\n", regno,
-+					reg_type_str(env, reg->type));
- 				return -EACCES;
-+			}
+--- a/fs/nfsd/nfs4state.c
++++ b/fs/nfsd/nfs4state.c
+@@ -7299,16 +7299,12 @@ nfsd4_release_lockowner(struct svc_rqst
+ 		if (sop->so_is_open_owner || !same_owner_str(sop, owner))
+ 			continue;
  
- 			buf_info = "rdonly";
- 			max_access = &env->prog->aux->max_rdonly_access;
+-		/* see if there are still any locks associated with it */
+-		lo = lockowner(sop);
+-		list_for_each_entry(stp, &sop->so_stateids, st_perstateowner) {
+-			if (check_for_locks(stp->st_stid.sc_file, lo)) {
+-				status = nfserr_locks_held;
+-				spin_unlock(&clp->cl_lock);
+-				return status;
+-			}
++		if (atomic_read(&sop->so_count) != 1) {
++			spin_unlock(&clp->cl_lock);
++			return nfserr_locks_held;
+ 		}
+ 
++		lo = lockowner(sop);
+ 		nfs4_get_stateowner(sop);
+ 		break;
+ 	}
 
 
