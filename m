@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5B14C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:01:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D80BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:01:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346105AbiFCSBo (ORCPT
+        id S1346443AbiFCSBu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:01:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58040 "EHLO
+        Fri, 3 Jun 2022 14:01:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347223AbiFCRwI (ORCPT
+        with ESMTP id S1347200AbiFCRwG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:52:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE1ADB82;
-        Fri,  3 Jun 2022 10:50:49 -0700 (PDT)
+        Fri, 3 Jun 2022 13:52:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4514C58381;
+        Fri,  3 Jun 2022 10:50:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7A751B823B0;
-        Fri,  3 Jun 2022 17:50:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3775C385B8;
-        Fri,  3 Jun 2022 17:50:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D15EF60EE9;
+        Fri,  3 Jun 2022 17:50:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1C12C385B8;
+        Fri,  3 Jun 2022 17:50:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278647;
-        bh=py7W3K5TMchg50vXQHrYE7WTrD96cuiq7L66aU9VY4s=;
+        s=korg; t=1654278623;
+        bh=yOdRLf0u+MxednDA4kOxzZaL4Ws4fqMSR0OzLc5pqPE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kj6Y+ndUlti7M4i9DLGljlmxq8c1XgtlXNkOzlOooVx8jV5FhS9ZBxiTAw6qfcr+d
-         LMwLsYZEreTdgdHQK6mDYO2TPAQet3NQrMwI5F+5d1CJoNA8B676z1oizQZ9G4X7Dx
-         42KhmnElGzBL9qqt+cJwAJAXeCI6Bui0E02GrpK0=
+        b=z8Pl6P3qSdX7KZISAjtzovqhLCk8YqYPPNILp/qzJf6PDryG3Eb3TXawQxZmhxlma
+         IawkjbeWXGSW545RLVPgFOHWkzfi8MpcXA5siL24fdsmdwOwy7+yIq80V7EFnhEaeZ
+         ma5G/p0W6AShhY2Leg1AJ2NSV/b1DWLSllugokIw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marek Maslanka <mm@semihalf.com>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Jiri Kosina <jkosina@suse.cz>
-Subject: [PATCH 5.15 48/66] HID: multitouch: Add support for Google Whiskers Touchpad
-Date:   Fri,  3 Jun 2022 19:43:28 +0200
-Message-Id: <20220603173822.054005560@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        "From: Andy Shevchenko" <andriy.shevchenko@linux.intel.com>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 08/66] i2c: ismt: Provide a DMA buffer for Interrupt Cause Logging
+Date:   Fri,  3 Jun 2022 19:42:48 +0200
+Message-Id: <20220603173820.906833130@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.663747061@linuxfoundation.org>
 References: <20220603173820.663747061@linuxfoundation.org>
@@ -50,33 +51,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Maślanka <mm@semihalf.com>
+From: Mika Westerberg <mika.westerberg@linux.intel.com>
 
-commit 1d07cef7fd7599450b3d03e1915efc2a96e1f03f upstream.
+[ Upstream commit 17a0f3acdc6ec8b89ad40f6e22165a4beee25663 ]
 
-The Google Whiskers touchpad does not work properly with the default
-multitouch configuration. Instead, use the same configuration as Google
-Rose.
+Before sending a MSI the hardware writes information pertinent to the
+interrupt cause to a memory location pointed by SMTICL register. This
+memory holds three double words where the least significant bit tells
+whether the interrupt cause of master/target/error is valid. The driver
+does not use this but we need to set it up because otherwise it will
+perform DMA write to the default address (0) and this will cause an
+IOMMU fault such as below:
 
-Signed-off-by: Marek Maslanka <mm@semihalf.com>
-Acked-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+  DMAR: DRHD: handling fault status reg 2
+  DMAR: [DMA Write] Request device [00:12.0] PASID ffffffff fault addr 0
+        [fault reason 05] PTE Write access is not set
+
+To prevent this from happening, provide a proper DMA buffer for this
+that then gets mapped by the IOMMU accordingly.
+
+Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Reviewed-by: From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/hid-multitouch.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/i2c/busses/i2c-ismt.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
---- a/drivers/hid/hid-multitouch.c
-+++ b/drivers/hid/hid-multitouch.c
-@@ -2176,6 +2176,9 @@ static const struct hid_device_id mt_dev
- 	{ .driver_data = MT_CLS_GOOGLE,
- 		HID_DEVICE(HID_BUS_ANY, HID_GROUP_ANY, USB_VENDOR_ID_GOOGLE,
- 			USB_DEVICE_ID_GOOGLE_TOUCH_ROSE) },
-+	{ .driver_data = MT_CLS_GOOGLE,
-+		HID_DEVICE(BUS_USB, HID_GROUP_MULTITOUCH_WIN_8, USB_VENDOR_ID_GOOGLE,
-+			USB_DEVICE_ID_GOOGLE_WHISKERS) },
+diff --git a/drivers/i2c/busses/i2c-ismt.c b/drivers/i2c/busses/i2c-ismt.c
+index a6187cbec2c9..af2c240e064e 100644
+--- a/drivers/i2c/busses/i2c-ismt.c
++++ b/drivers/i2c/busses/i2c-ismt.c
+@@ -82,6 +82,7 @@
  
- 	/* Generic MT device */
- 	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_MULTITOUCH, HID_ANY_ID, HID_ANY_ID) },
+ #define ISMT_DESC_ENTRIES	2	/* number of descriptor entries */
+ #define ISMT_MAX_RETRIES	3	/* number of SMBus retries to attempt */
++#define ISMT_LOG_ENTRIES	3	/* number of interrupt cause log entries */
+ 
+ /* Hardware Descriptor Constants - Control Field */
+ #define ISMT_DESC_CWRL	0x01	/* Command/Write Length */
+@@ -175,6 +176,8 @@ struct ismt_priv {
+ 	u8 head;				/* ring buffer head pointer */
+ 	struct completion cmp;			/* interrupt completion */
+ 	u8 buffer[I2C_SMBUS_BLOCK_MAX + 16];	/* temp R/W data buffer */
++	dma_addr_t log_dma;
++	u32 *log;
+ };
+ 
+ static const struct pci_device_id ismt_ids[] = {
+@@ -411,6 +414,9 @@ static int ismt_access(struct i2c_adapter *adap, u16 addr,
+ 	memset(desc, 0, sizeof(struct ismt_desc));
+ 	desc->tgtaddr_rw = ISMT_DESC_ADDR_RW(addr, read_write);
+ 
++	/* Always clear the log entries */
++	memset(priv->log, 0, ISMT_LOG_ENTRIES * sizeof(u32));
++
+ 	/* Initialize common control bits */
+ 	if (likely(pci_dev_msi_enabled(priv->pci_dev)))
+ 		desc->control = ISMT_DESC_INT | ISMT_DESC_FAIR;
+@@ -708,6 +714,8 @@ static void ismt_hw_init(struct ismt_priv *priv)
+ 	/* initialize the Master Descriptor Base Address (MDBA) */
+ 	writeq(priv->io_rng_dma, priv->smba + ISMT_MSTR_MDBA);
+ 
++	writeq(priv->log_dma, priv->smba + ISMT_GR_SMTICL);
++
+ 	/* initialize the Master Control Register (MCTRL) */
+ 	writel(ISMT_MCTRL_MEIE, priv->smba + ISMT_MSTR_MCTRL);
+ 
+@@ -795,6 +803,12 @@ static int ismt_dev_init(struct ismt_priv *priv)
+ 	priv->head = 0;
+ 	init_completion(&priv->cmp);
+ 
++	priv->log = dmam_alloc_coherent(&priv->pci_dev->dev,
++					ISMT_LOG_ENTRIES * sizeof(u32),
++					&priv->log_dma, GFP_KERNEL);
++	if (!priv->log)
++		return -ENOMEM;
++
+ 	return 0;
+ }
+ 
+-- 
+2.35.1
+
 
 
