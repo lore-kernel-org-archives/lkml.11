@@ -2,180 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5B84C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:23:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59C98C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:23:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344380AbiFCRXP (ORCPT
+        id S1344397AbiFCRXa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:23:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35386 "EHLO
+        Fri, 3 Jun 2022 13:23:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344375AbiFCRXM (ORCPT
+        with ESMTP id S1344392AbiFCRX2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:23:12 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 337F8527FE
-        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 10:23:11 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id DD22621B35;
-        Fri,  3 Jun 2022 17:23:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1654276989; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=UPMomr3jzTc6gcXGmXLj0Br1avJ9TWeGe+quz6nhksE=;
-        b=FBr3uWFAKiPnWWIx3Sz21Y7eogyRuw9PoWzwr8WfvYbPxJow5GJMnecyM/pc0R44W6V6Gz
-        QxKjWjmn6ABSboCJXUfW4iQlX9jFhrr6gOk55o7jWFcuEZ5Yy5xvKoy+W+FFq3AL2YFtlF
-        tHla8nIB5bLCxav9bxojI+Tb5PNOgvM=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1654276989;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=UPMomr3jzTc6gcXGmXLj0Br1avJ9TWeGe+quz6nhksE=;
-        b=+K8MayvxFlWvSJh6B29VGb2H61gLR5nPEhIBFCa7Jcd/FtkpELUMxeP0PDiCo6WMKU2ZTR
-        NeVpGzIhAktMvHBg==
-Received: from lion.mk-sys.cz (unknown [10.100.200.14])
+        Fri, 3 Jun 2022 13:23:28 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B212552B03;
+        Fri,  3 Jun 2022 10:23:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id C2BB42C141;
-        Fri,  3 Jun 2022 17:23:09 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 9D17D60426; Fri,  3 Jun 2022 19:23:09 +0200 (CEST)
-Date:   Fri, 3 Jun 2022 19:23:09 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Alex Deucher <alexdeucher@gmail.com>
-Cc:     "Yang, Philip" <Philip.Yang@amd.com>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: (REGRESSION bisected) Re: amdgpu errors (VM fault / GPU fault
- detected) with 5.19 merge window snapshots
-Message-ID: <20220603172309.kq47e4kyopz2qqi3@lion.mk-sys.cz>
-References: <20220527090039.pdrazo5e6mwgo3d3@lion.mk-sys.cz>
- <20220527124459.mfo4tjdsjohamsvy@lion.mk-sys.cz>
- <CADnq5_Pr-FKfhuXT9DR2rYD=dMfD=+Dfev+CO-xeaPGnhwSQaA@mail.gmail.com>
- <20220602142254.2ck7dw7u3xlzdnt2@lion.mk-sys.cz>
- <CADnq5_MiQKX4JA-3xbxGYXKHpJqD0Px1NYSiL6yPeTwseoNVGg@mail.gmail.com>
+        by sin.source.kernel.org (Postfix) with ESMTPS id F2B87CE234C;
+        Fri,  3 Jun 2022 17:23:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8D75C385A9;
+        Fri,  3 Jun 2022 17:23:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654277004;
+        bh=IC0b4j9tRA7J2kGa80DzPEvWME4w+UNjiMU0VqZZJJc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Wlep1SZv7MhpG4ewG6PDQwTxXox7R54NkMKwVTHUs9F/YpWxQSMrNcBhb5qR7fWKi
+         tC/KpeNV2nL1DA91vvJra1NnfUUa0wTqIa6K1nfkChUrcsybLGFucsvmPt57rNNxTE
+         l2j73b8UPWVfT1KJz6Npk7ZlnR2NhOE9qz56PzoGgWr77t+sKWNObUpHzK0piB1JpF
+         ubYhfiNTfoSafXa3wU9dJWfYK40KR8iYrXMMOKOvaNrpC2bo5oj5zzll0isNkCzgqx
+         3T1t6C6Hyj8YipCj69a/hCr7TWaFxaXQE46FIBwKJ3VUBKLbWH1nB8nAGhq/jN961Z
+         P06aZ/rk3o+Fw==
+Date:   Fri, 3 Jun 2022 18:32:24 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+        Michal Simek <michal.simek@xilinx.com>
+Subject: Re: [PATCH v1 1/2] iio: adc: xilinx-xadc: Make use of device
+ properties
+Message-ID: <20220603183224.540b3808@jic23-huawei>
+In-Reply-To: <20220531141118.64540-1-andriy.shevchenko@linux.intel.com>
+References: <20220531141118.64540-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="mcayuoy6vmkfigea"
-Content-Disposition: inline
-In-Reply-To: <CADnq5_MiQKX4JA-3xbxGYXKHpJqD0Px1NYSiL6yPeTwseoNVGg@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, 31 May 2022 17:11:17 +0300
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
---mcayuoy6vmkfigea
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> Convert the module to be property provider agnostic and allow
+> it to be used on non-OF platforms.
+> 
+> Add mod_devicetable.h include.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-On Fri, Jun 03, 2022 at 11:49:31AM -0400, Alex Deucher wrote:
-> On Thu, Jun 2, 2022 at 10:22 AM Michal Kubecek <mkubecek@suse.cz> wrote:
-> >
-> > On Thu, Jun 02, 2022 at 09:58:22AM -0400, Alex Deucher wrote:
-> > > On Fri, May 27, 2022 at 8:58 AM Michal Kubecek <mkubecek@suse.cz> wro=
-te:
-> > > > On Fri, May 27, 2022 at 11:00:39AM +0200, Michal Kubecek wrote:
-> > > > > Hello,
-> > > > >
-> > > > > while testing 5.19 merge window snapshots (commits babf0bb978e3 a=
-nd
-> > > > > 7e284070abe5), I keep getting errors like below. I have not seen =
-them
-> > > > > with 5.18 final or older.
-> > > > >
-> > > > > -----------------------------------------------------------------=
--------
-> > > > > [  247.150333] gmc_v8_0_process_interrupt: 46 callbacks suppressed
-> > > > > [  247.150336] amdgpu 0000:0c:00.0: amdgpu: GPU fault detected: 1=
-47 0x00020802 for process firefox pid 6101 thread firefox:cs0 pid 6116
-> > > > > [  247.150339] amdgpu 0000:0c:00.0: amdgpu:   VM_CONTEXT1_PROTECT=
-ION_FAULT_ADDR   0x00107800
-> > > > > [  247.150340] amdgpu 0000:0c:00.0: amdgpu:   VM_CONTEXT1_PROTECT=
-ION_FAULT_STATUS 0x0D008002
-> > > > > [  247.150341] amdgpu 0000:0c:00.0: amdgpu: VM fault (0x02, vmid =
-6, pasid 32780) at page 1079296, write from 'TC2' (0x54433200) (8)
-> > > > [...]
-> > > > > [  249.925909] amdgpu 0000:0c:00.0: amdgpu: IH ring buffer overfl=
-ow (0x000844C0, 0x00004A00, 0x000044D0)
-> > > > > [  250.434986] [drm] Fence fallback timer expired on ring sdma0
-> > > > > [  466.621568] gmc_v8_0_process_interrupt: 122 callbacks suppress=
-ed
-> > > > [...]
-> > > > > -----------------------------------------------------------------=
--------
-> > > > >
-> > > > > There does not seem to be any apparent immediate problem with gra=
-phics
-> > > > > but when running commit babf0bb978e3, there seemed to be a notice=
-able
-> > > > > lag in some operations, e.g. when moving a window or repainting l=
-arge
-> > > > > part of the terminal window in konsole (no idea if it's related).
-> > > > >
-> > > > > My GPU is Radeon Pro WX 2100 (1002:6995). What other information =
-should
-> > > > > I collect to help debugging the issue?
-> > > >
-> > > > Bisected to commit 5255e146c99a ("drm/amdgpu: rework TLB flushing").
-> > > > There seem to be later commits depending on it so I did not test
-> > > > a revert on top of current mainline.
-> > > >
-> > > > I should also mention that most commits tested as "bad" during the
-> > > > bisect did behave much worse than current mainline (errors starting=
- as
-> > > > early as with sddm, visibly damaged screen content, sometimes even
-> > > > crashes). But all of them issued messages similar to those above in=
-to
-> > > > kernel log.
-> > >
-> > > Can you verify that the kernel you tested has this patch:
-> > > https://cgit.freedesktop.org/drm/drm/commit/?id=3D5be323562c6a699d384=
-30bc068a3fd192be8ed0d
-> >
-> > Yes, both of them:
-> >
-> > mike@lion:~/work/git/kernel-upstream> git merge-base --is-ancestor 5be3=
-23562c6a babf0bb978e3 && echo yes
-> > yes
-> >
-> > (7e284070abe5 is a later mainline snapshot so it also contains
-> > 5be323562c6a)
-> >
-> > But it's likely that commit 5be323562c6a fixed most of the problem and
-> > only some corner case was left as most bisect steps had many more error
-> > messages and some even crashed before I was able to even log into KDE.
-> > Compared to that, the mainline snapshots show much fewer errors, no
-> > distorted picture and no crash; on the other hand, applications like
-> > firefox or stellarium seem to trigger the errors quite consistently.
->=20
-> This patch should help:
-> https://patchwork.freedesktop.org/patch/488258/
+These both seem good to me, but as the driver is fairly actively maintained,
+I'll let this one sit on the list for a while so others can take a look.
 
-It seems to help, I'm running a kernel built with this patch on top of
-mainline commit 50fd82b3a9a9 (current head) and I haven't seen any
-errors yet. I'll give it some more time and report back.
+Whilst it 'seems' unlikely anyone will ever use this driver with other firmware
+I am keen to reduce the number of of-specific drivers in IIO just to avoid
+any chance of cut and paste.
 
-Michal
+Who knows, I'm trying to run an aspeed-i2c driver with ACPI at the moment
+because it's handy for a emulated setup, so maybe the same will one day happen
+with this device :)  Weirder things have happened.
 
---mcayuoy6vmkfigea
-Content-Type: application/pgp-signature; name="signature.asc"
+Jonathan
 
------BEGIN PGP SIGNATURE-----
 
-iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmKaQ3cACgkQ538sG/LR
-dpXmCggAgQk48eQZJOBICUS7Vy2W1l+t7ZkV3KeG6iHfiKv3N6XaxdgeXZPDCHmU
-ER4fq6lc6jqj+kvFqumeyPt3lDjuo60t8GqM/Ba80ZTKLTAj2boaw8j9M0O9gi4m
-mLrzXmYIFpRLBiw0OJt7bNfevxU7eKwLO6SPORKm/L8HTUD+InurJdmVxkiBEHTo
-xkYsFjEoOLPmGyIWOls+hGkzz9/LdwlBWWsgU2vpPs0Fr8xtyu7AaTP0uR5nxi2n
-LZQzGG/FBR3pk4cEkcA0/2mJtJdJl/zDS8aL15z4x9Fv3geug6kAEFwkklW2MVe5
-hB1FjEBmS1dBQvGPlSjgNA4ktoW0wQ==
-=LYI5
------END PGP SIGNATURE-----
+> ---
+>  drivers/iio/adc/xilinx-xadc-core.c | 39 ++++++++++++------------------
+>  1 file changed, 16 insertions(+), 23 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
+> index 823c8e5f9809..e883f95f0cda 100644
+> --- a/drivers/iio/adc/xilinx-xadc-core.c
+> +++ b/drivers/iio/adc/xilinx-xadc-core.c
+> @@ -17,10 +17,11 @@
+>  #include <linux/interrupt.h>
+>  #include <linux/io.h>
+>  #include <linux/kernel.h>
+> +#include <linux/mod_devicetable.h>
+>  #include <linux/module.h>
+> -#include <linux/of.h>
+>  #include <linux/overflow.h>
+>  #include <linux/platform_device.h>
+> +#include <linux/property.h>
+>  #include <linux/slab.h>
+>  #include <linux/sysfs.h>
+>  
+> @@ -1182,14 +1183,13 @@ static const struct of_device_id xadc_of_match_table[] = {
+>  };
+>  MODULE_DEVICE_TABLE(of, xadc_of_match_table);
+>  
+> -static int xadc_parse_dt(struct iio_dev *indio_dev, struct device_node *np,
+> -	unsigned int *conf, int irq)
+> +static int xadc_parse_dt(struct iio_dev *indio_dev, unsigned int *conf, int irq)
+>  {
+>  	struct device *dev = indio_dev->dev.parent;
+>  	struct xadc *xadc = iio_priv(indio_dev);
+>  	const struct iio_chan_spec *channel_templates;
+>  	struct iio_chan_spec *channels, *chan;
+> -	struct device_node *chan_node, *child;
+> +	struct fwnode_handle *chan_node, *child;
+>  	unsigned int max_channels;
+>  	unsigned int num_channels;
+>  	const char *external_mux;
+> @@ -1200,7 +1200,7 @@ static int xadc_parse_dt(struct iio_dev *indio_dev, struct device_node *np,
+>  
+>  	*conf = 0;
+>  
+> -	ret = of_property_read_string(np, "xlnx,external-mux", &external_mux);
+> +	ret = device_property_read_string(dev, "xlnx,external-mux", &external_mux);
+>  	if (ret < 0 || strcasecmp(external_mux, "none") == 0)
+>  		xadc->external_mux_mode = XADC_EXTERNAL_MUX_NONE;
+>  	else if (strcasecmp(external_mux, "single") == 0)
+> @@ -1211,8 +1211,7 @@ static int xadc_parse_dt(struct iio_dev *indio_dev, struct device_node *np,
+>  		return -EINVAL;
+>  
+>  	if (xadc->external_mux_mode != XADC_EXTERNAL_MUX_NONE) {
+> -		ret = of_property_read_u32(np, "xlnx,external-mux-channel",
+> -					&ext_mux_chan);
+> +		ret = device_property_read_u32(dev, "xlnx,external-mux-channel", &ext_mux_chan);
+>  		if (ret < 0)
+>  			return ret;
+>  
+> @@ -1247,19 +1246,19 @@ static int xadc_parse_dt(struct iio_dev *indio_dev, struct device_node *np,
+>  	num_channels = 9;
+>  	chan = &channels[9];
+>  
+> -	chan_node = of_get_child_by_name(np, "xlnx,channels");
+> +	chan_node = device_get_named_child_node(dev, "xlnx,channels");
+>  	if (chan_node) {
+> -		for_each_child_of_node(chan_node, child) {
+> +		fwnode_for_each_child_node(chan_node, child) {
+>  			if (num_channels >= max_channels) {
+> -				of_node_put(child);
+> +				fwnode_handle_put(child);
+>  				break;
+>  			}
+>  
+> -			ret = of_property_read_u32(child, "reg", &reg);
+> +			ret = fwnode_property_read_u32(child, "reg", &reg);
+>  			if (ret || reg > 16)
+>  				continue;
+>  
+> -			if (of_property_read_bool(child, "xlnx,bipolar"))
+> +			if (fwnode_property_read_bool(child, "xlnx,bipolar"))
+>  				chan->scan_type.sign = 's';
+>  
+>  			if (reg == 0) {
+> @@ -1273,7 +1272,7 @@ static int xadc_parse_dt(struct iio_dev *indio_dev, struct device_node *np,
+>  			chan++;
+>  		}
+>  	}
+> -	of_node_put(chan_node);
+> +	fwnode_handle_put(chan_node);
+>  
+>  	/* No IRQ => no events */
+>  	if (irq <= 0) {
+> @@ -1316,7 +1315,6 @@ static void xadc_cancel_delayed_work(void *data)
+>  static int xadc_probe(struct platform_device *pdev)
+>  {
+>  	struct device *dev = &pdev->dev;
+> -	const struct of_device_id *id;
+>  	const struct xadc_ops *ops;
+>  	struct iio_dev *indio_dev;
+>  	unsigned int bipolar_mask;
+> @@ -1326,15 +1324,10 @@ static int xadc_probe(struct platform_device *pdev)
+>  	int irq;
+>  	int i;
+>  
+> -	if (!dev->of_node)
+> -		return -ENODEV;
+> -
+> -	id = of_match_node(xadc_of_match_table, dev->of_node);
+> -	if (!id)
+> +	ops = device_get_match_data(dev);
+> +	if (!ops)
+>  		return -EINVAL;
+>  
+> -	ops = id->data;
+> -
+>  	irq = platform_get_irq_optional(pdev, 0);
+>  	if (irq < 0 &&
+>  	    (irq != -ENXIO || !(ops->flags & XADC_FLAGS_IRQ_OPTIONAL)))
+> @@ -1345,7 +1338,7 @@ static int xadc_probe(struct platform_device *pdev)
+>  		return -ENOMEM;
+>  
+>  	xadc = iio_priv(indio_dev);
+> -	xadc->ops = id->data;
+> +	xadc->ops = ops;
+>  	init_completion(&xadc->completion);
+>  	mutex_init(&xadc->mutex);
+>  	spin_lock_init(&xadc->lock);
+> @@ -1359,7 +1352,7 @@ static int xadc_probe(struct platform_device *pdev)
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+>  	indio_dev->info = &xadc_info;
+>  
+> -	ret = xadc_parse_dt(indio_dev, dev->of_node, &conf0, irq);
+> +	ret = xadc_parse_dt(indio_dev, &conf0, irq);
+>  	if (ret)
+>  		return ret;
+>  
 
---mcayuoy6vmkfigea--
