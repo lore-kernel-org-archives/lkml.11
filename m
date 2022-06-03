@@ -2,100 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE4DDC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 19:55:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66755CCA473
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 19:57:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349353AbiFCTzX (ORCPT
+        id S1349354AbiFCT5q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 15:55:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48404 "EHLO
+        Fri, 3 Jun 2022 15:57:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240471AbiFCTzV (ORCPT
+        with ESMTP id S243107AbiFCT5n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 15:55:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBC3B2CDC7;
-        Fri,  3 Jun 2022 12:55:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 158CDB8247D;
-        Fri,  3 Jun 2022 19:55:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F29AC385B8;
-        Fri,  3 Jun 2022 19:55:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654286117;
-        bh=y8aYnaYwz4+KId5P5OeplEKVGDbn7Zzq1Ft2dBsCh3U=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=iJTbyezmQ9eaEmyTuFD/fY5KA7hnnJLhI6ELaf5GmGUBoWBMVo0pv5BPLbO7WWFIw
-         UzuXhT6QzCyOXM0pKRjilJLdOausogus+uE3VRNA1SmOqcJK/NKbq+mRtU/3+VZdZi
-         n3VQ08ZtKeHb7nRjnnzMCeVcnY+BF5769Cd3itj8hGfbfmjXjZHIblzdgkzqE1c0D7
-         JL1lbbXSZRLhejRq/7n2MV6joHNfRVPE4J8/Myjec5UgQUbKLxZr6TMKeK+EHGaGvj
-         k7ieV3fxfbn8gh6oZZ0N5p/n4ECiwIsLOzq5di0JI8lJGJUwyi4FjFvNGDfCYsyxhp
-         VAyhQ9kiriIcQ==
-Date:   Fri, 3 Jun 2022 12:55:16 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Chen Lin <chen45464546@163.com>, Felix Fietkau <nbd@nbd.name>,
-        john@phrozen.org, sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
-        David Miller <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-mediatek@lists.infradead.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        Alexander Duyck <alexander.duyck@gmail.com>
-Subject: Re: [PATCH v2] net: ethernet: mtk_eth_soc: fix misuse of mem alloc
- interface netdev[napi]_alloc_frag
-Message-ID: <20220603125516.52353a4a@kernel.org>
-In-Reply-To: <CANn89i+dW+paaybeDkkC0XxYM+Mv_AOnbi6GSLtTgAv9L=TX7Q@mail.gmail.com>
-References: <2997c5b0-3611-5e00-466c-b2966f09f067@nbd.name>
-        <1654245968-8067-1-git-send-email-chen45464546@163.com>
-        <CANn89iKiyh36ULH4PCXF4c8sBdh9WLksMoMcmQwipZYWCzBkMA@mail.gmail.com>
-        <20220603115956.6ad82a53@kernel.org>
-        <CANn89i+dW+paaybeDkkC0XxYM+Mv_AOnbi6GSLtTgAv9L=TX7Q@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Fri, 3 Jun 2022 15:57:43 -0400
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A20391EED6
+        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 12:57:42 -0700 (PDT)
+Received: by mail-pl1-x64a.google.com with SMTP id x1-20020a170902ec8100b0016634ff72a4so3789810plg.15
+        for <linux-kernel@vger.kernel.org>; Fri, 03 Jun 2022 12:57:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=yw5oLDxPzA4x8GiT50xzenS9433El8aksuU2kCWJ5pk=;
+        b=dlp/8I89YhGs2GWgPG5LnOxa8u3bZx25ZgFP34Y/NU/We4cto1TBikJ/iU4HC+xorT
+         V/oOkMpMzwOcS4l3IIBMN/rjnX+NhwDcXXTGlH3Difj8Sgr2tYgZNaExYJZs5PEanU+e
+         cS/ex2huFpe3TJoCa72Qykd6SQ4vAEEVPg9P3C6rr5/SuTwIGnhs6KUPintnhIr3AnKM
+         qUAgflPjChyZxocbm4AjZjv6pVYa6JuO8oj+/nmJ3oXEfzwclIvonTApEfLdsFshhXNT
+         UT4w4lFYLaRUnMRxrnisa+RsQwqHBSUJfQGfuHPdvhn9R8Gfqj3tADInlsosGXbqgHzE
+         DnWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=yw5oLDxPzA4x8GiT50xzenS9433El8aksuU2kCWJ5pk=;
+        b=h6ceSeM2/cmEx3usJ1g9aPl4FE90f740t6AQmZAO1yKT5ZecMlwHqN4QqipSe0tY6F
+         Osca/0n5gcIom/BVxnQ69M6Csq9NjjGpuZLUYOIpveBjwtCKwNEdXU29dCYH24HdPaed
+         seavoCM+eywqes93x/lC37dVw8qj55VT4lduSdqdA07SSlxW5G/qZXC/QiwMl5FyJf0k
+         5yE+QTDPFdC1Z290VyNi9bu3oeWRwlmjpnXju965jVrDCDLR6NWiNajl+CqLDA+ZOcOv
+         jVeUqEt0ax74be7Iq1l2C/KvDgBqsd5vpavKxIQsxK/PafcNiPUju7ZUYUNOFSNY+PaA
+         wyXA==
+X-Gm-Message-State: AOAM533qy/gN0IqGAQBP1lusk6G57rWva+KNLHHR4HKEsC5vHk4EMqf4
+        yeByCVGhCk4NQ7q3JglpPNMYRMMOMR9hLw==
+X-Google-Smtp-Source: ABdhPJzoCnFcZNnBxHclYQ934OCjRTdYAMEtGWA0FpDhfRN90AK7GJ6mLI9IbMQnvkNZZC1VRFDNz87aTBEskw==
+X-Received: from dlatypov.svl.corp.google.com ([2620:15c:2cd:202:9ff0:c6ec:46df:8f8a])
+ (user=dlatypov job=sendgmr) by 2002:a05:6a00:114b:b0:4f7:915:3ec3 with SMTP
+ id b11-20020a056a00114b00b004f709153ec3mr12029785pfm.8.1654286262084; Fri, 03
+ Jun 2022 12:57:42 -0700 (PDT)
+Date:   Fri,  3 Jun 2022 12:56:25 -0700
+In-Reply-To: <20220603195626.121922-1-dlatypov@google.com>
+Message-Id: <20220603195626.121922-2-dlatypov@google.com>
+Mime-Version: 1.0
+References: <20220603195626.121922-1-dlatypov@google.com>
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+Subject: [PATCH 2/3] Documentation: kunit: move mention of --jobs flag lower
+From:   Daniel Latypov <dlatypov@google.com>
+To:     brendanhiggins@google.com, davidgow@google.com
+Cc:     linux-kernel@vger.kernel.org, kunit-dev@googlegroups.com,
+        corbet@lwn.net, linux-doc@vger.kernel.org,
+        Daniel Latypov <dlatypov@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 3 Jun 2022 12:11:43 -0700 Eric Dumazet wrote:
-> Yes, we only have to review callers and change the documentation and
-> implementation.
-> 
-> The confusion/overhead/generalization came with :
-> 
-> commit 7ba7aeabbaba484347cc98fbe9045769ca0d118d
-> Author: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> Date:   Fri Jun 7 21:20:34 2019 +0200
-> 
->     net: Don't disable interrupts in napi_alloc_frag()
-> 
->     netdev_alloc_frag() can be used from any context and is used by NAPI
->     and non-NAPI drivers. Non-NAPI drivers use it in interrupt context
->     and NAPI drivers use it during initial allocation (->ndo_open() or
->     ->ndo_change_mtu()). Some NAPI drivers share the same function for the  
->     initial allocation and the allocation in their NAPI callback.
-> 
->     The interrupts are disabled in order to ensure locked access from every
->     context to `netdev_alloc_cache'.
-> 
->     Let netdev_alloc_frag() check if interrupts are disabled. If they are,
->     use `netdev_alloc_cache' otherwise disable BH and invoke
->     __napi_alloc_frag() for the allocation. The IRQ check is cheaper
->     compared to disabling & enabling interrupts and memory allocation with
->     disabled interrupts does not work on -RT.
+Commit ad659ccb5412 ("kunit: tool: Default --jobs to number of CPUs")
+changed the --jobs flag from a hard-coded value of 8 to basically
+`nproc`.
 
-Hm, should have looked at the code. Were you thinking of adding a
-helper which would replace both netdev_ and napi_ variants and DTRT
-internally?
+Therefore, most users should probably not need to bother to tweak this
+flag. Having it near the top of the page is more noise than anything.
 
-An option for getting GFP_KERNEL in there would be having an rtnl frag
-cache. Users who need frags on the reconfig path should be under rtnl,
-they can call rtnl_alloc_frag(), which can use GFP_KERNEL internally.
-Otherwise the GFP_KERNEL frag cache would need to be protected by
-another mutex, I presume. Pre-allocating memory before using the napi
-cache seems hard.
+Signed-off-by: Daniel Latypov <dlatypov@google.com>
+---
+ Documentation/dev-tools/kunit/run_wrapper.rst | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/Documentation/dev-tools/kunit/run_wrapper.rst b/Documentation/dev-tools/kunit/run_wrapper.rst
+index 653985ce9cae..1fccf2e099f7 100644
+--- a/Documentation/dev-tools/kunit/run_wrapper.rst
++++ b/Documentation/dev-tools/kunit/run_wrapper.rst
+@@ -30,10 +30,9 @@ We may want to use the following options:
+ 
+ .. code-block::
+ 
+-	./tools/testing/kunit/kunit.py run --timeout=30 --jobs=`nproc --all
++	./tools/testing/kunit/kunit.py run --timeout=30
+ 
+ - ``--timeout`` sets a maximum amount of time for tests to run.
+-- ``--jobs`` sets the number of threads to build the kernel.
+ 
+ kunit_tool will generate a ``.kunitconfig`` with a default
+ configuration, if no other ``.kunitconfig`` file exists
+@@ -237,6 +236,9 @@ command line arguments:
+   compiling a kernel (using ``build`` or ``run`` commands). For example:
+   to enable compiler warnings, we can pass ``--make_options W=1``.
+ 
++- ``--jobs``: The ``-j`` argument to ``make`` when building the kernel.
++  Defaults to the same value as ``nproc``.
++
+ - ``--alltests``: Builds a UML kernel with all config options enabled
+   using ``make allyesconfig``. This allows us to run as many tests as
+   possible.
+-- 
+2.36.1.255.ge46751e96f-goog
+
