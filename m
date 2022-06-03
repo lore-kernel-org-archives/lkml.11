@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFD34CCA491
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:16:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E81CCCA480
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:16:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346133AbiFCSQv (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:16:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36418 "EHLO
+        id S243429AbiFCSQ4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 14:16:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347009AbiFCSFe (ORCPT
+        with ESMTP id S1347012AbiFCSFe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 3 Jun 2022 14:05:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F1E45A598;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EA3B5A593;
         Fri,  3 Jun 2022 10:58:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DC58561653;
-        Fri,  3 Jun 2022 17:57:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF672C385A9;
-        Fri,  3 Jun 2022 17:57:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E7DA7615DE;
+        Fri,  3 Jun 2022 17:57:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD8DDC385B8;
+        Fri,  3 Jun 2022 17:57:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654279061;
-        bh=M2d9iS/i0OY0KVXBVPir97YtU4ReZeixnC1Ob7/0Aok=;
+        s=korg; t=1654279058;
+        bh=9TzOxzYF8eQz/bXIO0PdNTDxg8YV9WqOGd1aYO4rg/k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EiwhaCFVSa184u/qrT2jcHHejk3dpf6+ie0ivQhNF0xMfnxLlfBVOQc8BuY76zJOY
-         g03nnXV0nMs8DbnYuVeG9vwgcuPH1kQ+x4vIHdTw986h+rcYoiATECvBp+wUSfgZpX
-         pKqbUmTOzT6XnpE1sCcX5Z8CQiia2MulWYYMjm2A=
+        b=OCil8AJRxSGbAiw4GlZWq5LW0wKaVaaUQEwdpuwEqWhPaNPv2W0QK8nNCxLM9eRDK
+         YVwh23v1PR5NH/w3NZ/7wb5St16tQcNiuc/0CQpJL7rZo1RkUz+D8VzT7QVWf9GlUh
+         UeDHUK+cqlEUMNAFvDxi39W8zvsLAgOXE8V12s9g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        syzbot+a4087e40b9c13aad7892@syzkaller.appspotmail.com,
-        Tadeusz Struk <tadeusz.struk@linaro.org>,
-        Sungjong Seo <sj1557.seo@samsung.com>,
-        Namjae Jeon <linkinjeon@kernel.org>
-Subject: [PATCH 5.18 08/67] exfat: check if cluster num is valid
-Date:   Fri,  3 Jun 2022 19:43:09 +0200
-Message-Id: <20220603173820.972203402@linuxfoundation.org>
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Subject: [PATCH 5.18 07/67] drm/i915: Fix -Wstringop-overflow warning in call to intel_read_wm_latency()
+Date:   Fri,  3 Jun 2022 19:43:08 +0200
+Message-Id: <20220603173820.944138268@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.731531504@linuxfoundation.org>
 References: <20220603173820.731531504@linuxfoundation.org>
@@ -52,104 +48,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tadeusz Struk <tadeusz.struk@linaro.org>
+From: Gustavo A. R. Silva <gustavoars@kernel.org>
 
-commit 64ba4b15e5c045f8b746c6da5fc9be9a6b00b61d upstream.
+commit 336feb502a715909a8136eb6a62a83d7268a353b upstream.
 
-Syzbot reported slab-out-of-bounds read in exfat_clear_bitmap.
-This was triggered by reproducer calling truncute with size 0,
-which causes the following trace:
+Fix the following -Wstringop-overflow warnings when building with GCC-11:
 
-BUG: KASAN: slab-out-of-bounds in exfat_clear_bitmap+0x147/0x490 fs/exfat/balloc.c:174
-Read of size 8 at addr ffff888115aa9508 by task syz-executor251/365
+drivers/gpu/drm/i915/intel_pm.c:3106:9: warning: ‘intel_read_wm_latency’ accessing 16 bytes in a region of size 10 [-Wstringop-overflow=]
+ 3106 |         intel_read_wm_latency(dev_priv, dev_priv->wm.pri_latency);
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/gpu/drm/i915/intel_pm.c:3106:9: note: referencing argument 2 of type ‘u16 *’ {aka ‘short unsigned int *’}
+drivers/gpu/drm/i915/intel_pm.c:2861:13: note: in a call to function ‘intel_read_wm_latency’
+ 2861 | static void intel_read_wm_latency(struct drm_i915_private *dev_priv,
+      |             ^~~~~~~~~~~~~~~~~~~~~
 
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack_lvl+0x1e2/0x24b lib/dump_stack.c:118
- print_address_description+0x81/0x3c0 mm/kasan/report.c:233
- __kasan_report mm/kasan/report.c:419 [inline]
- kasan_report+0x1a4/0x1f0 mm/kasan/report.c:436
- __asan_report_load8_noabort+0x14/0x20 mm/kasan/report_generic.c:309
- exfat_clear_bitmap+0x147/0x490 fs/exfat/balloc.c:174
- exfat_free_cluster+0x25a/0x4a0 fs/exfat/fatent.c:181
- __exfat_truncate+0x99e/0xe00 fs/exfat/file.c:217
- exfat_truncate+0x11b/0x4f0 fs/exfat/file.c:243
- exfat_setattr+0xa03/0xd40 fs/exfat/file.c:339
- notify_change+0xb76/0xe10 fs/attr.c:336
- do_truncate+0x1ea/0x2d0 fs/open.c:65
+by removing the over-specified array size from the argument declarations.
 
-Move the is_valid_cluster() helper from fatent.c to a common
-header to make it reusable in other *.c files. And add is_valid_cluster()
-to validate if cluster number is within valid range in exfat_clear_bitmap()
-and exfat_set_bitmap().
+It seems that this code is actually safe because the size of the
+array depends on the hardware generation, and the function checks
+for that.
 
-Link: https://syzkaller.appspot.com/bug?id=50381fc73821ecae743b8cf24b4c9a04776f767c
-Reported-by: syzbot+a4087e40b9c13aad7892@syzkaller.appspotmail.com
-Fixes: 1e49a94cf707 ("exfat: add bitmap operations")
-Cc: stable@vger.kernel.org # v5.7+
-Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
-Reviewed-by: Sungjong Seo <sj1557.seo@samsung.com>
-Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
+Notice that wm can be an array of 5 elements:
+drivers/gpu/drm/i915/intel_pm.c:3109:   intel_read_wm_latency(dev_priv, dev_priv->wm.pri_latency);
+
+or an array of 8 elements:
+drivers/gpu/drm/i915/intel_pm.c:3131:   intel_read_wm_latency(dev_priv, dev_priv->wm.skl_latency);
+
+and the compiler legitimately complains about that.
+
+This helps with the ongoing efforts to globally enable
+-Wstringop-overflow.
+
+Link: https://github.com/KSPP/linux/issues/181
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/exfat/balloc.c   |    8 ++++++--
- fs/exfat/exfat_fs.h |    6 ++++++
- fs/exfat/fatent.c   |    6 ------
- 3 files changed, 12 insertions(+), 8 deletions(-)
+ drivers/gpu/drm/i915/intel_pm.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/exfat/balloc.c
-+++ b/fs/exfat/balloc.c
-@@ -148,7 +148,9 @@ int exfat_set_bitmap(struct inode *inode
- 	struct super_block *sb = inode->i_sb;
- 	struct exfat_sb_info *sbi = EXFAT_SB(sb);
- 
--	WARN_ON(clu < EXFAT_FIRST_CLUSTER);
-+	if (!is_valid_cluster(sbi, clu))
-+		return -EINVAL;
-+
- 	ent_idx = CLUSTER_TO_BITMAP_ENT(clu);
- 	i = BITMAP_OFFSET_SECTOR_INDEX(sb, ent_idx);
- 	b = BITMAP_OFFSET_BIT_IN_SECTOR(sb, ent_idx);
-@@ -166,7 +168,9 @@ void exfat_clear_bitmap(struct inode *in
- 	struct exfat_sb_info *sbi = EXFAT_SB(sb);
- 	struct exfat_mount_options *opts = &sbi->options;
- 
--	WARN_ON(clu < EXFAT_FIRST_CLUSTER);
-+	if (!is_valid_cluster(sbi, clu))
-+		return;
-+
- 	ent_idx = CLUSTER_TO_BITMAP_ENT(clu);
- 	i = BITMAP_OFFSET_SECTOR_INDEX(sb, ent_idx);
- 	b = BITMAP_OFFSET_BIT_IN_SECTOR(sb, ent_idx);
---- a/fs/exfat/exfat_fs.h
-+++ b/fs/exfat/exfat_fs.h
-@@ -381,6 +381,12 @@ static inline int exfat_sector_to_cluste
- 		EXFAT_RESERVED_CLUSTERS;
+--- a/drivers/gpu/drm/i915/intel_pm.c
++++ b/drivers/gpu/drm/i915/intel_pm.c
+@@ -2859,7 +2859,7 @@ static void ilk_compute_wm_level(const s
  }
  
-+static inline bool is_valid_cluster(struct exfat_sb_info *sbi,
-+		unsigned int clus)
-+{
-+	return clus >= EXFAT_FIRST_CLUSTER && clus < sbi->num_clusters;
-+}
-+
- /* super.c */
- int exfat_set_volume_dirty(struct super_block *sb);
- int exfat_clear_volume_dirty(struct super_block *sb);
---- a/fs/exfat/fatent.c
-+++ b/fs/exfat/fatent.c
-@@ -81,12 +81,6 @@ int exfat_ent_set(struct super_block *sb
- 	return 0;
- }
- 
--static inline bool is_valid_cluster(struct exfat_sb_info *sbi,
--		unsigned int clus)
--{
--	return clus >= EXFAT_FIRST_CLUSTER && clus < sbi->num_clusters;
--}
--
- int exfat_ent_get(struct super_block *sb, unsigned int loc,
- 		unsigned int *content)
+ static void intel_read_wm_latency(struct drm_i915_private *dev_priv,
+-				  u16 wm[8])
++				  u16 wm[])
  {
+ 	struct intel_uncore *uncore = &dev_priv->uncore;
+ 
 
 
