@@ -2,629 +2,639 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8174AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 07:17:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23B10C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 07:19:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241894AbiFCHRz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 03:17:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46760 "EHLO
+        id S241956AbiFCHTa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 03:19:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229546AbiFCHRw (ORCPT
+        with ESMTP id S229546AbiFCHT0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 03:17:52 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90FF7220C6;
-        Fri,  3 Jun 2022 00:17:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1654240667; x=1685776667;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=mVdata3CQ9U57UCSKFKmRRXNt83/NQ01Klygpq2WnYU=;
-  b=stL2QymJS9z1vmk/wqSeCaE9YDK46Luvj40z7edLZXaYlhgdvQC+UEK6
-   hFRoxz+OGemRheAu7Y2QsFjJPaAXyHEa5T214WizWuNJlvy7jtwxOTsbM
-   2k7h5AW94snq8m717umiQBLyqkvQrrjtdpPJeXVYErXx9BD2kufqAPvi/
-   +lsBpXQThWsHDlwSxZ5LClKZzcPSUL8C7z7QP/9vyI8xhOwf/B1KzCDwg
-   +Ma8ntH4SgIJsjgGwiHfKCZrN1+NlE5NpiHrwcDiKur9QtMWHedJ3GLfJ
-   WyYQ2TSrgs2Fdxz8mScFtnBfZhLMnv3vxw74V62Pou4s7dfG9T3Lo8BdS
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.91,273,1647327600"; 
-   d="scan'208";a="166942644"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 03 Jun 2022 00:17:46 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 3 Jun 2022 00:17:46 -0700
-Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Fri, 3 Jun 2022 00:17:44 -0700
-From:   Conor Dooley <conor.dooley@microchip.com>
-To:     <wsa@kernel.org>, <linux-i2c@vger.kernel.org>
-CC:     <ben.dooks@codethink.co.uk>, <linux-kernel@vger.kernel.org>,
-        <linux-riscv@lists.infradead.org>, <daire.mcnamara@microchip.com>,
-        <conor.dooley@microchip.com>
-Subject: [PATCH v5] i2c: add support for microchip fpga i2c controllers
-Date:   Fri, 3 Jun 2022 08:16:02 +0100
-Message-ID: <20220603071601.1849562-1-conor.dooley@microchip.com>
-X-Mailer: git-send-email 2.36.1
+        Fri, 3 Jun 2022 03:19:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A30736E14;
+        Fri,  3 Jun 2022 00:19:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 08CFA6188D;
+        Fri,  3 Jun 2022 07:19:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A12A9C385A9;
+        Fri,  3 Jun 2022 07:19:16 +0000 (UTC)
+From:   Huacai Chen <chenhuacai@loongson.cn>
+To:     Arnd Bergmann <arnd@arndb.de>, Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Airlie <airlied@linux.ie>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-arch@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
+        Yanteng Si <siyanteng@loongson.cn>,
+        Huacai Chen <chenhuacai@gmail.com>,
+        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Huacai Chen <chenhuacai@loongson.cn>
+Subject: [PATCH V15 00/24] arch: Add basic LoongArch support
+Date:   Fri,  3 Jun 2022 15:20:29 +0800
+Message-Id: <20220603072053.35005-1-chenhuacai@loongson.cn>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add Microchip CoreI2C i2c controller support. This driver supports the
-"hard" i2c controller on the Microchip PolarFire SoC & the basic feature
-set for "soft" i2c controller implemtations in the FPGA fabric.
+LoongArch is a new RISC ISA, which is a bit like MIPS or RISC-V.
+LoongArch includes a reduced 32-bit version (LA32R), a standard 32-bit
+version (LA32S) and a 64-bit version (LA64). LoongArch use ACPI as its
+boot protocol LoongArch-specific interrupt controllers (similar to APIC)
+are already added in the next revision of ACPI Specification (current
+revision is 6.4).
 
-Co-developed-by: Daire McNamara <daire.mcnamara@microchip.com>
-Signed-off-by: Daire McNamara <daire.mcnamara@microchip.com>
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
----
-Changes from v4:
-- reset the controller on xfer timeout
-- sort the headers alphabetically
+This patchset is adding basic LoongArch support in mainline kernel, we
+can see a complete snapshot here:
+https://github.com/loongson/linux/tree/loongarch-next
+https://git.kernel.org/pub/scm/linux/kernel/git/chenhuacai/linux-loongson.git/log/?h=loongarch-next
 
-Changes from v3:
-- update members in struct doc comment
-- move mchp_corei2c_transfer in its caller
-- change msg_len to a u16
-- remove unused variable msg_read
-- use adapater.timeout for completion
-- dont use last_byte goto
-- remove block on zero length messages
-  (the hardware can do them, was a carryover from the baremetal driver)
-- probe:
-  - drop unneeded initialisation
-  - use ret not val
-  - explain shared irq
-  - disallow 0 bus_clock_rate
-  - include base in device name
-  - dropped the duplicate "microchip" in the registered print
-    (its in driver.name)
+Cross-compile tool chain to build kernel:
+https://github.com/loongson/build-tools/releases/download/2021.12.21/loongarch64-clfs-2022-03-03-cross-tools-gcc-glibc.tar.xz
 
-Changes from v2:
-- Fixed whitespace in defines that I removed accidentally
+A CLFS-based Linux distro:
+https://github.com/loongson/build-tools/releases/download/2021.12.21/loongarch64-clfs-system-2022-03-03.tar.bz2
 
-Changes from v1:
-- Use byte write and read functions
-- Return IRQ_NONE and don't warn if not this drivers interrupt
-- Add a clk_disable_unprepare to avoid leaking a clock in the probe
----
- drivers/i2c/busses/Kconfig              |  11 +
- drivers/i2c/busses/Makefile             |   1 +
- drivers/i2c/busses/i2c-microchip-core.c | 486 ++++++++++++++++++++++++
- 3 files changed, 498 insertions(+)
- create mode 100644 drivers/i2c/busses/i2c-microchip-core.c
+Open-source tool chain which is under review (Binutils and Gcc are already upstream):
+https://github.com/loongson/binutils-gdb/tree/upstream_v3.1
+https://github.com/loongson/gcc/tree/loongarch_upstream_v6.3
+https://github.com/loongson/glibc/tree/loongarch_2_35_dev_v2.2
 
-diff --git a/drivers/i2c/busses/Kconfig b/drivers/i2c/busses/Kconfig
-index a1bae59208e3..3d4d8e0e9de7 100644
---- a/drivers/i2c/busses/Kconfig
-+++ b/drivers/i2c/busses/Kconfig
-@@ -781,6 +781,17 @@ config I2C_MESON
- 	  If you say yes to this option, support will be included for the
- 	  I2C interface on the Amlogic Meson family of SoCs.
+Loongson and LoongArch documentations:
+https://github.com/loongson/LoongArch-Documentation
+
+LoongArch-specific interrupt controllers:
+https://mantis.uefi.org/mantis/view.php?id=2203
+https://mantis.uefi.org/mantis/view.php?id=2313
+
+V1 -> V2:
+1, Add documentation patches;
+2, Restore copyright statements;
+3, Split the big header patch;
+4, Cleanup signal-related headers;
+5, Cleanup incomplete 32-bit support;
+6, Move the major PCI work to drivers/pci;
+7, Rework Loongson64 platform support;
+8, Rework lpj and __udelay()/__ndelay();
+9, Rework page table layout config options;
+10, Rework syscall/exception/interrupt with generic entry framework;
+11, Simplify the VDSO/VSYSCALL implementation;
+12, Use generic I/O access macros and functions;
+13, Remove unaligned access emulation at present;
+14, Keep clocksource code in arch since it is the "native clocksource";
+15, Some other minor fixes and improvements.
+
+V2 -> V3:
+1, Rebased on 5.15-rc1;
+2, Cleanup PCI code on V2;
+3, Support multiple msi domain;
+4, Support cacheable ioremap();
+5, Use irq stack for interrupt handling;
+6, Adjust struct ucontext and rt_sigframe;
+7, Some other minor fixes and improvements.
+
+V3 -> V4:
+1, Rebased on 5.15-rc3;
+2, Rework SMP support and remove legacy IPI;
+3, Rework signal support and remove loongarch_abi;
+4, Simplify phys_to_dma() and dma_to_phys();
+5, Remove unused sys_mmap2() implementation;
+6, Remove unused strncpy_user.S and strnlen_user.S; 
+7, Some other minor fixes and improvements.
+
+V4 -> V5:
+1, Rebased on 5.15-rc4;
+2, Fix a _PAGE_CHG_MASK bug;
+3, Fix vdso_base() calculation;
+4, Adjust syscall and ptrace code;
+5, Use generic bitops implementation;
+6, Avoid syscall restart handling in sys_rt_sigreturn();
+7, Update commit messages.
+
+V5 -> V6:
+1, Rebased on 5.17-rc4;
+2, Use GENERIC_IRQ_MIGRATION;
+3, Improve sigcontext definition; 
+4, Improve numa_default_distance(); 
+5, Increse MINSIGSTKSZ and SIGSTKSZ;
+6, Restruct pt_regs and user_pt_regs;
+7, Fix a corner case of protection_map;
+8, Fix some corner cases of system calls;
+9, Separate module region and vmalloc region;
+10, Rename registers to match official documents.
+
+V6 -> V7:
+1, Rebased on 5.17-rc6;
+2, Refactor do_page_fault();
+3, Adjust memblock initialization;
+4, Use -mstrict-align to build kernel;
+5, Reimplement elf_read_implies_exec() as other archs;
+6, Some other minor fixes and improvements.
+
+V7 -> V8:
+1, Rebased on 5.17-rc8;
+2, Remove useless abidefs.h;
+3, Remove useless HAVE_ARCH_NODEDATA_EXTENSION;
+4, Fix and simplify uaccess.h;
+5, Fix bugs after pt_regs restruction;
+6, Use generic copy_from_user_page()/copy_to_user_page();
+7, Some other minor fixes and improvements.
+
+V8 -> V9:
+1, Rebased on 5.18-rc4;
+2, Fix 4-level page tables;
+3, Always use 16KB kernel stack;
+4, Add efistub and zboot support;
+5, Remove useless HAVE_FUTEX_CMPXCHG;
+6, Optimize module machanism for size;
+7, Define copy_user_page() to avoid build errors;
+8, Some other minor fixes and improvements.
+
+V9 -> V10:
+1, Rebased on 5.18-rc6;
+2, Use generic efi stub;
+3, Use generic string library;
+4, Use generic ticket spinlock;
+5, Use more meaningful macro naming;
+6, Remove the zboot patch;
+7, Fix commit message and documentations;
+8, Some other minor fixes and improvements.
+
+V10 -> V11:
+1, Rebased on asm-generic tree;
+2, Fix fpreg macros definition;
+3, Fix ELF ABI macros definition;
+4, Fix magic number definition in efi header;
+5, Remove unneeded swab.h, bitfield.h and rtc.c;
+6, Remove __ARCH_WANT_NEW_STAT (glibc need update);
+7, Improve documents as WANG Xuerui suggested;
+8, Some other minor fixes and improvements.
+
+V11 -> V12:
+1, Rebased on mainline;
+2, Remove ACPI, PCI and IRQCHIP dependency;
+3, Remove unneeded register_gop_device();
+4, Fix show_code() and __arch_get_hw_counter();
+5, Add a MAINTAINERS entry;
+6, Rewrite documents as WANG Xuerui suggested;
+7, Some other small adjustment.
+
+V12 -> V13:
+1, Remove kernel_version string in efistub;
+2, Remove the boardinfo knob in /sys/firmware/efi;
+3, Improve documents as Bagas Sanjaya suggested.
+
+V13 -> V14:
+1, Add some missing Cc;
+2, Add a comment for EFI_RT_VIRTUAL_LIMIT definition.
+
+V14 -> V15:
+1, Remove EFISTUB for now, since the design detail need further discussion.
  
-+config I2C_MICROCHIP_CORE
-+	tristate "Microchip FPGA I2C controller"
-+	depends on SOC_MICROCHIP_POLARFIRE || COMPILE_TEST
-+	depends on OF
-+	help
-+	  If you say yes to this option, support will be included for the
-+	  I2C interface on Microchip FPGAs.
-+
-+	  This driver can also be built as a module. If so, the module will be
-+	  called i2c-microchip-core.
-+
- config I2C_MPC
- 	tristate "MPC107/824x/85xx/512x/52xx/83xx/86xx"
- 	depends on PPC
-diff --git a/drivers/i2c/busses/Makefile b/drivers/i2c/busses/Makefile
-index 479f60e4ee3d..75869b189e43 100644
---- a/drivers/i2c/busses/Makefile
-+++ b/drivers/i2c/busses/Makefile
-@@ -78,6 +78,7 @@ obj-$(CONFIG_I2C_JZ4780)	+= i2c-jz4780.o
- obj-$(CONFIG_I2C_KEMPLD)	+= i2c-kempld.o
- obj-$(CONFIG_I2C_LPC2K)		+= i2c-lpc2k.o
- obj-$(CONFIG_I2C_MESON)		+= i2c-meson.o
-+obj-$(CONFIG_I2C_MICROCHIP_CORE)	+= i2c-microchip-core.o
- obj-$(CONFIG_I2C_MPC)		+= i2c-mpc.o
- obj-$(CONFIG_I2C_MT65XX)	+= i2c-mt65xx.o
- obj-$(CONFIG_I2C_MT7621)	+= i2c-mt7621.o
-diff --git a/drivers/i2c/busses/i2c-microchip-core.c b/drivers/i2c/busses/i2c-microchip-core.c
-new file mode 100644
-index 000000000000..6da8e9735c83
---- /dev/null
-+++ b/drivers/i2c/busses/i2c-microchip-core.c
-@@ -0,0 +1,486 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Microchip CoreI2C I2C controller driver
-+ *
-+ * Copyright (c) 2018 - 2022 Microchip Corporation. All rights reserved.
-+ *
-+ * Author: Daire McNamara <daire.mcnamara@microchip.com>
-+ * Author: Conor Dooley <conor.dooley@microchip.com>
-+ */
-+#include <linux/clk.h>
-+#include <linux/clkdev.h>
-+#include <linux/err.h>
-+#include <linux/i2c.h>
-+#include <linux/iopoll.h>
-+#include <linux/interrupt.h>
-+#include <linux/module.h>
-+#include <linux/io.h>
-+#include <linux/kernel.h>
-+#include <linux/platform_device.h>
-+
-+#define MICROCHIP_I2C_TIMEOUT (msecs_to_jiffies(1000))
-+
-+#define CORE_I2C_CTRL	(0x00)
-+#define  CTRL_CR0	BIT(0)
-+#define  CTRL_CR1	BIT(1)
-+#define  CTRL_AA	BIT(2)
-+#define  CTRL_SI	BIT(3)
-+#define  CTRL_STO	BIT(4)
-+#define  CTRL_STA	BIT(5)
-+#define  CTRL_ENS1	BIT(6)
-+#define  CTRL_CR2	BIT(7)
-+
-+#define STATUS_BUS_ERROR			(0x00)
-+#define STATUS_M_START_SENT			(0x08)
-+#define STATUS_M_REPEATED_START_SENT		(0x10)
-+#define STATUS_M_SLAW_ACK			(0x18)
-+#define STATUS_M_SLAW_NACK			(0x20)
-+#define STATUS_M_TX_DATA_ACK			(0x28)
-+#define STATUS_M_TX_DATA_NACK			(0x30)
-+#define STATUS_M_ARB_LOST			(0x38)
-+#define STATUS_M_SLAR_ACK			(0x40)
-+#define STATUS_M_SLAR_NACK			(0x48)
-+#define STATUS_M_RX_DATA_ACKED			(0x50)
-+#define STATUS_M_RX_DATA_NACKED			(0x58)
-+#define STATUS_S_SLAW_ACKED			(0x60)
-+#define STATUS_S_ARB_LOST_SLAW_ACKED		(0x68)
-+#define STATUS_S_GENERAL_CALL_ACKED		(0x70)
-+#define STATUS_S_ARB_LOST_GENERAL_CALL_ACKED	(0x78)
-+#define STATUS_S_RX_DATA_ACKED			(0x80)
-+#define STATUS_S_RX_DATA_NACKED			(0x88)
-+#define STATUS_S_GENERAL_CALL_RX_DATA_ACKED	(0x90)
-+#define STATUS_S_GENERAL_CALL_RX_DATA_NACKED	(0x98)
-+#define STATUS_S_RX_STOP			(0xA0)
-+#define STATUS_S_SLAR_ACKED			(0xA8)
-+#define STATUS_S_ARB_LOST_SLAR_ACKED		(0xB0)
-+#define STATUS_S_TX_DATA_ACK			(0xB8)
-+#define STATUS_S_TX_DATA_NACK			(0xC0)
-+#define STATUS_LAST_DATA_ACK			(0xC8)
-+#define STATUS_M_SMB_MASTER_RESET		(0xD0)
-+#define STATUS_S_SCL_LOW_TIMEOUT		(0xD8) /* 25 ms */
-+#define STATUS_NO_STATE_INFO			(0xF8)
-+
-+#define CORE_I2C_STATUS		(0x04)
-+#define CORE_I2C_DATA		(0x08)
-+#define WRITE_BIT		(0x0)
-+#define READ_BIT		(0x1)
-+#define SLAVE_ADDR_SHIFT	(1)
-+#define CORE_I2C_SLAVE0_ADDR	(0x0c)
-+#define GENERAL_CALL_BIT	(0x0)
-+#define CORE_I2C_SMBUS		(0x10)
-+#define SMBALERT_INT_ENB	(0x0)
-+#define SMBSUS_INT_ENB		(0x1)
-+#define SMBUS_ENB		(0x2)
-+#define SMBALERT_NI_STATUS	(0x3)
-+#define SMBALERT_NO_CTRL	(0x4)
-+#define SMBSUS_NI_STATUS	(0x5)
-+#define SMBSUS_NO_CTRL		(0x6)
-+#define SMBUS_RESET		(0x7)
-+#define CORE_I2C_FREQ		(0x14)
-+#define CORE_I2C_GLITCHREG	(0x18)
-+#define CORE_I2C_SLAVE1_ADDR	(0x1c)
-+
-+#define PCLK_DIV_960	(CTRL_CR2)
-+#define PCLK_DIV_256	(0)
-+#define PCLK_DIV_224	(CTRL_CR0)
-+#define PCLK_DIV_192	(CTRL_CR1)
-+#define PCLK_DIV_160	(CTRL_CR0 | CTRL_CR1)
-+#define PCLK_DIV_120	(CTRL_CR0 | CTRL_CR2)
-+#define PCLK_DIV_60	(CTRL_CR1 | CTRL_CR2)
-+#define BCLK_DIV_8	(CTRL_CR0 | CTRL_CR1 | CTRL_CR2)
-+#define CLK_MASK	(CTRL_CR0 | CTRL_CR1 | CTRL_CR2)
-+
-+/**
-+ * struct mchp_corei2c_dev - Microchip CoreI2C device private data
-+ *
-+ * @base:		pointer to register struct
-+ * @dev:		device reference
-+ * @i2c_clk:		clock reference for i2c input clock
-+ * @buf:		pointer to msg buffer for easier use
-+ * @msg_complete:	xfer completion object
-+ * @adapter:		core i2c abstraction
-+ * @lock:		spinlock for IRQ synchronization
-+ * @msg_err:		error code for completed message
-+ * @bus_clk_rate:	current i2c bus clock rate
-+ * @isr_status:		cached copy of local ISR status
-+ * @msg_len:		number of bytes transferred in msg
-+ * @addr:		address of the current slave
-+ */
-+struct mchp_corei2c_dev {
-+	void __iomem *base;
-+	struct device *dev;
-+	struct clk *i2c_clk;
-+	u8 *buf;
-+	struct completion msg_complete;
-+	struct i2c_adapter adapter;
-+	spinlock_t lock; /* IRQ synchronization */
-+	int msg_err;
-+	u32 bus_clk_rate;
-+	u32 isr_status;
-+	u16 msg_len;
-+	u8 addr;
-+};
-+
-+static void mchp_corei2c_core_disable(struct mchp_corei2c_dev *idev)
-+{
-+	u8 ctrl = readb(idev->base + CORE_I2C_CTRL);
-+
-+	ctrl &= ~CTRL_ENS1;
-+	writeb(ctrl, idev->base + CORE_I2C_CTRL);
-+}
-+
-+static void mchp_corei2c_core_enable(struct mchp_corei2c_dev *idev)
-+{
-+	u8 ctrl = readb(idev->base + CORE_I2C_CTRL);
-+
-+	ctrl |= CTRL_ENS1;
-+	writeb(ctrl, idev->base + CORE_I2C_CTRL);
-+}
-+
-+static void mchp_corei2c_reset(struct mchp_corei2c_dev *idev)
-+{
-+	mchp_corei2c_core_disable(idev);
-+	mchp_corei2c_core_enable(idev);
-+}
-+
-+static inline void mchp_corei2c_stop(struct mchp_corei2c_dev *idev)
-+{
-+	u8 ctrl = readb(idev->base + CORE_I2C_CTRL);
-+
-+	ctrl |= CTRL_STO;
-+	writeb(ctrl, idev->base + CORE_I2C_CTRL);
-+}
-+
-+static inline int mchp_corei2c_set_divisor(u32 rate,
-+					   struct mchp_corei2c_dev *idev)
-+{
-+	u8 clkval, ctrl;
-+
-+	if (rate >= 960)
-+		clkval = PCLK_DIV_960;
-+	else if (rate >= 256)
-+		clkval = PCLK_DIV_256;
-+	else if (rate >= 224)
-+		clkval = PCLK_DIV_224;
-+	else if (rate >= 192)
-+		clkval = PCLK_DIV_192;
-+	else if (rate >= 160)
-+		clkval = PCLK_DIV_160;
-+	else if (rate >= 120)
-+		clkval = PCLK_DIV_120;
-+	else if (rate >= 60)
-+		clkval = PCLK_DIV_60;
-+	else if (rate >= 8)
-+		clkval = BCLK_DIV_8;
-+	else
-+		return -EINVAL;
-+
-+	ctrl = readb(idev->base + CORE_I2C_CTRL);
-+	ctrl &= ~CLK_MASK;
-+	ctrl |= clkval;
-+	writeb(ctrl, idev->base + CORE_I2C_CTRL);
-+
-+	ctrl = readb(idev->base + CORE_I2C_CTRL);
-+	if ((ctrl & CLK_MASK) != clkval)
-+		return -EIO;
-+
-+	return 0;
-+}
-+
-+static int mchp_corei2c_init(struct mchp_corei2c_dev *idev)
-+{
-+	u32 clk_rate = clk_get_rate(idev->i2c_clk);
-+	u32 divisor = clk_rate / idev->bus_clk_rate;
-+	int ret;
-+
-+	ret = mchp_corei2c_set_divisor(divisor, idev);
-+	if (ret)
-+		return ret;
-+
-+	mchp_corei2c_reset(idev);
-+
-+	return 0;
-+}
-+
-+static void mchp_corei2c_empty_rx(struct mchp_corei2c_dev *idev)
-+{
-+	u8 ctrl;
-+
-+	if (idev->msg_len > 0) {
-+		*idev->buf++ = readb(idev->base + CORE_I2C_DATA);
-+		idev->msg_len--;
-+	}
-+
-+	if (idev->msg_len == 0) {
-+		ctrl = readb(idev->base + CORE_I2C_CTRL);
-+		ctrl &= ~CTRL_AA;
-+		writeb(ctrl, idev->base + CORE_I2C_CTRL);
-+	}
-+}
-+
-+static int mchp_corei2c_fill_tx(struct mchp_corei2c_dev *idev)
-+{
-+	if (idev->msg_len > 0)
-+		writeb(*idev->buf++, idev->base + CORE_I2C_DATA);
-+	idev->msg_len--;
-+
-+	return 0;
-+}
-+
-+static irqreturn_t mchp_corei2c_handle_isr(struct mchp_corei2c_dev *idev)
-+{
-+	u32 status = idev->isr_status;
-+	u8 ctrl;
-+	bool last_byte = false, finished = false;
-+
-+	if (!idev->buf)
-+		return IRQ_NONE;
-+
-+	switch (status) {
-+	case STATUS_M_START_SENT:
-+	case STATUS_M_REPEATED_START_SENT:
-+		ctrl = readb(idev->base + CORE_I2C_CTRL);
-+		ctrl &= ~CTRL_STA;
-+		writeb(idev->addr, idev->base + CORE_I2C_DATA);
-+		writeb(ctrl, idev->base + CORE_I2C_CTRL);
-+		if (idev->msg_len <= 0)
-+			finished = true;
-+		break;
-+	case STATUS_M_ARB_LOST:
-+		idev->msg_err = -EAGAIN;
-+		finished = true;
-+		break;
-+	case STATUS_M_SLAW_ACK:
-+	case STATUS_M_TX_DATA_ACK:
-+		if (idev->msg_len > 0)
-+			mchp_corei2c_fill_tx(idev);
-+		else
-+			last_byte = true;
-+		break;
-+	case STATUS_M_TX_DATA_NACK:
-+	case STATUS_M_SLAR_NACK:
-+	case STATUS_M_SLAW_NACK:
-+		idev->msg_err = -ENXIO;
-+		last_byte = true;
-+		break;
-+	case STATUS_M_SLAR_ACK:
-+		ctrl = readb(idev->base + CORE_I2C_CTRL);
-+		if (idev->msg_len == 1u) {
-+			ctrl &= ~CTRL_AA;
-+			writeb(ctrl, idev->base + CORE_I2C_CTRL);
-+		} else {
-+			ctrl |= CTRL_AA;
-+			writeb(ctrl, idev->base + CORE_I2C_CTRL);
-+		}
-+		if (idev->msg_len < 1u)
-+			last_byte = true;
-+		break;
-+	case STATUS_M_RX_DATA_ACKED:
-+		mchp_corei2c_empty_rx(idev);
-+		break;
-+	case STATUS_M_RX_DATA_NACKED:
-+		mchp_corei2c_empty_rx(idev);
-+		if (idev->msg_len == 0)
-+			last_byte = true;
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	/* On the last byte to be transmitted, send STOP */
-+	if (last_byte)
-+		mchp_corei2c_stop(idev);
-+
-+	if (last_byte || finished)
-+		complete(&idev->msg_complete);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static irqreturn_t mchp_corei2c_isr(int irq, void *_dev)
-+{
-+	struct mchp_corei2c_dev *idev = _dev;
-+	irqreturn_t ret = IRQ_NONE;
-+	u8 ctrl;
-+
-+	ctrl = readb(idev->base + CORE_I2C_CTRL);
-+	if (ctrl & CTRL_SI) {
-+		idev->isr_status = readb(idev->base + CORE_I2C_STATUS);
-+		ret = mchp_corei2c_handle_isr(idev);
-+	}
-+
-+	ctrl = readb(idev->base + CORE_I2C_CTRL);
-+	ctrl &= ~CTRL_SI;
-+	writeb(ctrl, idev->base + CORE_I2C_CTRL);
-+
-+	return ret;
-+}
-+
-+static int mchp_corei2c_xfer_msg(struct mchp_corei2c_dev *idev,
-+				 struct i2c_msg *msg)
-+{
-+	u8 ctrl;
-+	unsigned long time_left;
-+
-+	idev->addr = i2c_8bit_addr_from_msg(msg);
-+	idev->msg_len = msg->len;
-+	idev->buf = msg->buf;
-+	idev->msg_err = 0;
-+
-+	reinit_completion(&idev->msg_complete);
-+
-+	mchp_corei2c_core_enable(idev);
-+
-+	ctrl = readb(idev->base + CORE_I2C_CTRL);
-+	ctrl |= CTRL_STA;
-+	writeb(ctrl, idev->base + CORE_I2C_CTRL);
-+
-+	time_left = wait_for_completion_timeout(&idev->msg_complete,
-+						idev->adapter.timeout);
-+	if (!time_left)
-+		return -ETIMEDOUT;
-+
-+	return idev->msg_err;
-+}
-+
-+static int mchp_corei2c_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs,
-+			     int num)
-+{
-+	struct mchp_corei2c_dev *idev = i2c_get_adapdata(adap);
-+	int i, ret;
-+
-+	for (i = 0; i < num; i++) {
-+		ret = mchp_corei2c_xfer_msg(idev, msgs++);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	return num;
-+}
-+
-+static u32 mchp_corei2c_func(struct i2c_adapter *adap)
-+{
-+	return I2C_FUNC_I2C | I2C_FUNC_SMBUS_EMUL;
-+}
-+
-+static const struct i2c_algorithm mchp_corei2c_algo = {
-+	.master_xfer = mchp_corei2c_xfer,
-+	.functionality = mchp_corei2c_func,
-+};
-+
-+static int mchp_corei2c_probe(struct platform_device *pdev)
-+{
-+	struct mchp_corei2c_dev *idev;
-+	struct resource *res;
-+	int irq, ret;
-+
-+	idev = devm_kzalloc(&pdev->dev, sizeof(*idev), GFP_KERNEL);
-+	if (!idev)
-+		return -ENOMEM;
-+
-+	idev->base = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
-+	if (IS_ERR(idev->base))
-+		return PTR_ERR(idev->base);
-+
-+	irq = platform_get_irq(pdev, 0);
-+	if (irq < 0)
-+		return dev_err_probe(&pdev->dev, irq,
-+				     "missing interrupt resource\n");
-+
-+	idev->i2c_clk = devm_clk_get(&pdev->dev, NULL);
-+	if (IS_ERR(idev->i2c_clk))
-+		return dev_err_probe(&pdev->dev, PTR_ERR(idev->i2c_clk),
-+				     "missing clock\n");
-+
-+	idev->dev = &pdev->dev;
-+	init_completion(&idev->msg_complete);
-+	spin_lock_init(&idev->lock);
-+
-+	ret = device_property_read_u32(idev->dev, "clock-frequency",
-+				       &idev->bus_clk_rate);
-+	if (ret || !idev->bus_clk_rate) {
-+		dev_info(&pdev->dev, "default to 100kHz\n");
-+		idev->bus_clk_rate = 100000;
-+	}
-+
-+	if (idev->bus_clk_rate > 400000)
-+		return dev_err_probe(&pdev->dev, -EINVAL,
-+				     "clock-frequency too high: %d\n",
-+				     idev->bus_clk_rate);
-+
-+	/*
-+	 * This driver supports both the hard peripherals & soft FPGA cores.
-+	 * The hard peripherals do not have shared IRQs, but we don't have
-+	 * control over what way the interrupts are wired for the soft cores.
-+	 */
-+	ret = devm_request_irq(&pdev->dev, irq, mchp_corei2c_isr, IRQF_SHARED,
-+			       pdev->name, idev);
-+	if (ret)
-+		return dev_err_probe(&pdev->dev, ret,
-+				     "failed to claim irq %d\n", irq);
-+
-+	ret = clk_prepare_enable(idev->i2c_clk);
-+	if (ret)
-+		return dev_err_probe(&pdev->dev, ret,
-+				     "failed to enable clock\n");
-+
-+	ret = mchp_corei2c_init(idev);
-+	if (ret) {
-+		clk_disable_unprepare(idev->i2c_clk);
-+		return dev_err_probe(&pdev->dev, ret, "failed to program clock divider\n");
-+	}
-+
-+	i2c_set_adapdata(&idev->adapter, idev);
-+	snprintf(idev->adapter.name, sizeof(idev->adapter.name),
-+		 "Microchip I2C hw bus at %08lx", (unsigned long)res->start);
-+	idev->adapter.owner = THIS_MODULE;
-+	idev->adapter.algo = &mchp_corei2c_algo;
-+	idev->adapter.dev.parent = &pdev->dev;
-+	idev->adapter.dev.of_node = pdev->dev.of_node;
-+	idev->adapter.timeout = MICROCHIP_I2C_TIMEOUT;
-+
-+	platform_set_drvdata(pdev, idev);
-+
-+	ret = i2c_add_adapter(&idev->adapter);
-+	if (ret) {
-+		clk_disable_unprepare(idev->i2c_clk);
-+		return ret;
-+	}
-+
-+	dev_info(&pdev->dev, "registered CoreI2C bus driver\n");
-+
-+	return 0;
-+}
-+
-+static int mchp_corei2c_remove(struct platform_device *pdev)
-+{
-+	struct mchp_corei2c_dev *idev = platform_get_drvdata(pdev);
-+
-+	clk_disable_unprepare(idev->i2c_clk);
-+	i2c_del_adapter(&idev->adapter);
-+
-+	return 0;
-+}
-+
-+static const struct of_device_id mchp_corei2c_of_match[] = {
-+	{ .compatible = "microchip,mpfs-i2c" },
-+	{ .compatible = "microchip,corei2c-rtl-v7" },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, mchp_corei2c_of_match);
-+
-+static struct platform_driver mchp_corei2c_driver = {
-+	.probe = mchp_corei2c_probe,
-+	.remove = mchp_corei2c_remove,
-+	.driver = {
-+		.name = "microchip-corei2c",
-+		.of_match_table = mchp_corei2c_of_match,
-+	},
-+};
-+
-+module_platform_driver(mchp_corei2c_driver);
-+
-+MODULE_DESCRIPTION("Microchip CoreI2C bus driver");
-+MODULE_AUTHOR("Daire McNamara <daire.mcnamara@microchip.com>");
-+MODULE_AUTHOR("Conor Dooley <conor.dooley@microchip.com>");
-+MODULE_LICENSE("GPL");
--- 
-2.36.1
+Huacai Chen(24):
+ irqchip: Adjust Kconfig for Loongson.
+ irqchip/loongson-liointc: Fix build error for LoongArch. 
+ Documentation: LoongArch: Add basic documentations.
+ Documentation/zh_CN: Add basic LoongArch documentations.
+ LoongArch: Add elf-related definitions.
+ LoongArch: Add writecombine support for drm.
+ LoongArch: Add build infrastructure.
+ LoongArch: Add CPU definition headers.
+ LoongArch: Add atomic/locking headers.
+ LoongArch: Add other common headers.
+ LoongArch: Add boot and setup routines.
+ LoongArch: Add exception/interrupt handling. 
+ LoongArch: Add process management.
+ LoongArch: Add memory management.
+ LoongArch: Add system call support.
+ LoongArch: Add signal handling support.
+ LoongArch: Add elf and module support.
+ LoongArch: Add misc common routines.
+ LoongArch: Add some library functions.
+ LoongArch: Add PCI controller support.
+ LoongArch: Add VDSO and VSYSCALL support.
+ LoongArch: Add multi-processor (SMP) support.
+ LoongArch: Add Non-Uniform Memory Access (NUMA) support.
+ LoongArch: Add Loongson-3 default config file.
+
+Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
+---
+ Documentation/arch.rst                             |    1 +
+ Documentation/loongarch/features.rst               |    3 +
+ Documentation/loongarch/index.rst                  |   21 +
+ Documentation/loongarch/introduction.rst           |  387 +++++
+ Documentation/loongarch/irq-chip-model.rst         |  168 +++
+ Documentation/translations/zh_CN/index.rst         |    1 +
+ .../translations/zh_CN/loongarch/features.rst      |    8 +
+ .../translations/zh_CN/loongarch/index.rst         |   26 +
+ .../translations/zh_CN/loongarch/introduction.rst  |  351 +++++
+ .../zh_CN/loongarch/irq-chip-model.rst             |  167 +++
+ MAINTAINERS                                        |   10 +
+ arch/loongarch/Kbuild                              |    6 +
+ arch/loongarch/Kconfig                             |  447 ++++++
+ arch/loongarch/Kconfig.debug                       |    0
+ arch/loongarch/Makefile                            |  105 ++
+ arch/loongarch/boot/.gitignore                     |    2 +
+ arch/loongarch/boot/Makefile                       |   20 +
+ arch/loongarch/boot/dts/Makefile                   |    4 +
+ arch/loongarch/configs/loongson3_defconfig         |  771 ++++++++++
+ arch/loongarch/include/asm/Kbuild                  |   30 +
+ arch/loongarch/include/asm/acenv.h                 |   18 +
+ arch/loongarch/include/asm/acpi.h                  |   38 +
+ arch/loongarch/include/asm/addrspace.h             |  112 ++
+ arch/loongarch/include/asm/asm-offsets.h           |    5 +
+ arch/loongarch/include/asm/asm-prototypes.h        |    7 +
+ arch/loongarch/include/asm/asm.h                   |  191 +++
+ arch/loongarch/include/asm/asmmacro.h              |  289 ++++
+ arch/loongarch/include/asm/atomic.h                |  362 +++++
+ arch/loongarch/include/asm/barrier.h               |  159 ++
+ arch/loongarch/include/asm/bitops.h                |   33 +
+ arch/loongarch/include/asm/bitrev.h                |   34 +
+ arch/loongarch/include/asm/bootinfo.h              |   43 +
+ arch/loongarch/include/asm/branch.h                |   21 +
+ arch/loongarch/include/asm/bug.h                   |   23 +
+ arch/loongarch/include/asm/cache.h                 |   13 +
+ arch/loongarch/include/asm/cacheflush.h            |   80 ++
+ arch/loongarch/include/asm/cacheops.h              |   37 +
+ arch/loongarch/include/asm/clocksource.h           |   12 +
+ arch/loongarch/include/asm/cmpxchg.h               |  123 ++
+ arch/loongarch/include/asm/compiler.h              |   15 +
+ arch/loongarch/include/asm/cpu-features.h          |   73 +
+ arch/loongarch/include/asm/cpu-info.h              |  116 ++
+ arch/loongarch/include/asm/cpu.h                   |  127 ++
+ arch/loongarch/include/asm/cpufeature.h            |   24 +
+ arch/loongarch/include/asm/delay.h                 |   26 +
+ arch/loongarch/include/asm/dma-direct.h            |   11 +
+ arch/loongarch/include/asm/dmi.h                   |   24 +
+ arch/loongarch/include/asm/efi.h                   |   41 +
+ arch/loongarch/include/asm/elf.h                   |  301 ++++
+ arch/loongarch/include/asm/entry-common.h          |   13 +
+ arch/loongarch/include/asm/exec.h                  |   10 +
+ arch/loongarch/include/asm/fb.h                    |   23 +
+ arch/loongarch/include/asm/fixmap.h                |   13 +
+ arch/loongarch/include/asm/fpregdef.h              |   53 +
+ arch/loongarch/include/asm/fpu.h                   |  129 ++
+ arch/loongarch/include/asm/futex.h                 |  108 ++
+ arch/loongarch/include/asm/hardirq.h               |   26 +
+ arch/loongarch/include/asm/hugetlb.h               |   83 ++
+ arch/loongarch/include/asm/hw_irq.h                |   17 +
+ arch/loongarch/include/asm/idle.h                  |    9 +
+ arch/loongarch/include/asm/inst.h                  |  117 ++
+ arch/loongarch/include/asm/io.h                    |  129 ++
+ arch/loongarch/include/asm/irq.h                   |  132 ++
+ arch/loongarch/include/asm/irq_regs.h              |   27 +
+ arch/loongarch/include/asm/irqflags.h              |   78 +
+ arch/loongarch/include/asm/kdebug.h                |   23 +
+ arch/loongarch/include/asm/linkage.h               |   36 +
+ arch/loongarch/include/asm/local.h                 |  138 ++
+ arch/loongarch/include/asm/loongarch.h             | 1516 ++++++++++++++++++++
+ arch/loongarch/include/asm/loongson.h              |  153 ++
+ arch/loongarch/include/asm/mmu.h                   |   16 +
+ arch/loongarch/include/asm/mmu_context.h           |  152 ++
+ arch/loongarch/include/asm/mmzone.h                |   18 +
+ arch/loongarch/include/asm/module.h                |   80 ++
+ arch/loongarch/include/asm/module.lds.h            |    7 +
+ arch/loongarch/include/asm/numa.h                  |   69 +
+ arch/loongarch/include/asm/page.h                  |  115 ++
+ arch/loongarch/include/asm/percpu.h                |  214 +++
+ arch/loongarch/include/asm/perf_event.h            |   10 +
+ arch/loongarch/include/asm/pgalloc.h               |  103 ++
+ arch/loongarch/include/asm/pgtable-bits.h          |  131 ++
+ arch/loongarch/include/asm/pgtable.h               |  565 ++++++++
+ arch/loongarch/include/asm/prefetch.h              |   29 +
+ arch/loongarch/include/asm/processor.h             |  209 +++
+ arch/loongarch/include/asm/ptrace.h                |  152 ++
+ arch/loongarch/include/asm/reboot.h                |   10 +
+ arch/loongarch/include/asm/regdef.h                |   41 +
+ arch/loongarch/include/asm/seccomp.h               |   20 +
+ arch/loongarch/include/asm/serial.h                |   11 +
+ arch/loongarch/include/asm/setup.h                 |   21 +
+ arch/loongarch/include/asm/shmparam.h              |   12 +
+ arch/loongarch/include/asm/smp.h                   |  124 ++
+ arch/loongarch/include/asm/sparsemem.h             |   23 +
+ arch/loongarch/include/asm/stackframe.h            |  219 +++
+ arch/loongarch/include/asm/stacktrace.h            |   74 +
+ arch/loongarch/include/asm/string.h                |   12 +
+ arch/loongarch/include/asm/switch_to.h             |   37 +
+ arch/loongarch/include/asm/syscall.h               |   74 +
+ arch/loongarch/include/asm/thread_info.h           |  106 ++
+ arch/loongarch/include/asm/time.h                  |   50 +
+ arch/loongarch/include/asm/timex.h                 |   33 +
+ arch/loongarch/include/asm/tlb.h                   |  180 +++
+ arch/loongarch/include/asm/tlbflush.h              |   48 +
+ arch/loongarch/include/asm/topology.h              |   41 +
+ arch/loongarch/include/asm/types.h                 |   19 +
+ arch/loongarch/include/asm/uaccess.h               |  269 ++++
+ arch/loongarch/include/asm/unistd.h                |   11 +
+ arch/loongarch/include/asm/vdso.h                  |   38 +
+ arch/loongarch/include/asm/vdso/clocksource.h      |    8 +
+ arch/loongarch/include/asm/vdso/gettimeofday.h     |   99 ++
+ arch/loongarch/include/asm/vdso/processor.h        |   14 +
+ arch/loongarch/include/asm/vdso/vdso.h             |   30 +
+ arch/loongarch/include/asm/vdso/vsyscall.h         |   27 +
+ arch/loongarch/include/asm/vermagic.h              |   19 +
+ arch/loongarch/include/asm/vmalloc.h               |    4 +
+ arch/loongarch/include/uapi/asm/Kbuild             |    2 +
+ arch/loongarch/include/uapi/asm/auxvec.h           |   17 +
+ arch/loongarch/include/uapi/asm/bitsperlong.h      |    9 +
+ arch/loongarch/include/uapi/asm/break.h            |   23 +
+ arch/loongarch/include/uapi/asm/byteorder.h        |   13 +
+ arch/loongarch/include/uapi/asm/hwcap.h            |   20 +
+ arch/loongarch/include/uapi/asm/ptrace.h           |   52 +
+ arch/loongarch/include/uapi/asm/reg.h              |   59 +
+ arch/loongarch/include/uapi/asm/sigcontext.h       |   44 +
+ arch/loongarch/include/uapi/asm/signal.h           |   13 +
+ arch/loongarch/include/uapi/asm/ucontext.h         |   35 +
+ arch/loongarch/include/uapi/asm/unistd.h           |    5 +
+ arch/loongarch/kernel/.gitignore                   |    2 +
+ arch/loongarch/kernel/Makefile                     |   25 +
+ arch/loongarch/kernel/access-helper.h              |   13 +
+ arch/loongarch/kernel/acpi.c                       |  333 +++++
+ arch/loongarch/kernel/asm-offsets.c                |  264 ++++
+ arch/loongarch/kernel/cacheinfo.c                  |  122 ++
+ arch/loongarch/kernel/cpu-probe.c                  |  292 ++++
+ arch/loongarch/kernel/dma.c                        |   40 +
+ arch/loongarch/kernel/efi-header.S                 |  104 ++
+ arch/loongarch/kernel/efi.c                        |  226 +++
+ arch/loongarch/kernel/elf.c                        |   30 +
+ arch/loongarch/kernel/entry.S                      |   89 ++
+ arch/loongarch/kernel/env.c                        |   70 +
+ arch/loongarch/kernel/fpu.S                        |  261 ++++
+ arch/loongarch/kernel/genex.S                      |   95 ++
+ arch/loongarch/kernel/head.S                       |  129 ++
+ arch/loongarch/kernel/idle.c                       |   16 +
+ arch/loongarch/kernel/image-vars.h                 |   29 +
+ arch/loongarch/kernel/inst.c                       |   40 +
+ arch/loongarch/kernel/io.c                         |   94 ++
+ arch/loongarch/kernel/irq.c                        |   88 ++
+ arch/loongarch/kernel/mem.c                        |   64 +
+ arch/loongarch/kernel/module-sections.c            |  121 ++
+ arch/loongarch/kernel/module.c                     |  375 +++++
+ arch/loongarch/kernel/numa.c                       |  466 ++++++
+ arch/loongarch/kernel/proc.c                       |  127 ++
+ arch/loongarch/kernel/process.c                    |  267 ++++
+ arch/loongarch/kernel/ptrace.c                     |  431 ++++++
+ arch/loongarch/kernel/reset.c                      |  102 ++
+ arch/loongarch/kernel/setup.c                      |  374 +++++
+ arch/loongarch/kernel/signal.c                     |  566 ++++++++
+ arch/loongarch/kernel/smp.c                        |  751 ++++++++++
+ arch/loongarch/kernel/switch.S                     |   35 +
+ arch/loongarch/kernel/syscall.c                    |   63 +
+ arch/loongarch/kernel/time.c                       |  214 +++
+ arch/loongarch/kernel/topology.c                   |   52 +
+ arch/loongarch/kernel/traps.c                      |  725 ++++++++++
+ arch/loongarch/kernel/vdso.c                       |  138 ++
+ arch/loongarch/kernel/vmlinux.lds.S                |  121 ++
+ arch/loongarch/lib/Makefile                        |    6 +
+ arch/loongarch/lib/clear_user.S                    |   43 +
+ arch/loongarch/lib/copy_user.S                     |   47 +
+ arch/loongarch/lib/delay.c                         |   43 +
+ arch/loongarch/lib/dump_tlb.c                      |  111 ++
+ arch/loongarch/mm/Makefile                         |    9 +
+ arch/loongarch/mm/cache.c                          |  141 ++
+ arch/loongarch/mm/extable.c                        |   22 +
+ arch/loongarch/mm/fault.c                          |  261 ++++
+ arch/loongarch/mm/hugetlbpage.c                    |   87 ++
+ arch/loongarch/mm/init.c                           |  178 +++
+ arch/loongarch/mm/ioremap.c                        |   27 +
+ arch/loongarch/mm/maccess.c                        |   10 +
+ arch/loongarch/mm/mmap.c                           |  125 ++
+ arch/loongarch/mm/page.S                           |   84 ++
+ arch/loongarch/mm/pgtable.c                        |  130 ++
+ arch/loongarch/mm/tlb.c                            |  305 ++++
+ arch/loongarch/mm/tlbex.S                          |  546 +++++++
+ arch/loongarch/pci/Makefile                        |    7 +
+ arch/loongarch/vdso/.gitignore                     |    2 +
+ arch/loongarch/vdso/Makefile                       |   96 ++
+ arch/loongarch/vdso/elf.S                          |   15 +
+ arch/loongarch/vdso/gen_vdso_offsets.sh            |   13 +
+ arch/loongarch/vdso/sigreturn.S                    |   24 +
+ arch/loongarch/vdso/vdso.S                         |   22 +
+ arch/loongarch/vdso/vdso.lds.S                     |   72 +
+ arch/loongarch/vdso/vgettimeofday.c                |   25 +
+ drivers/firmware/efi/Kconfig                       |    2 +-
+ drivers/firmware/efi/libstub/Makefile              |   10 +
+ drivers/firmware/efi/libstub/efi-stub-helper.c     |    2 +-
+ drivers/firmware/efi/libstub/efi-stub.c            |    2 +-
+ drivers/firmware/efi/libstub/loongarch-stub.c      |   88 ++
+ drivers/gpu/drm/drm_vm.c                           |    2 +-
+ drivers/gpu/drm/ttm/ttm_module.c                   |    2 +-
+ drivers/irqchip/Kconfig                            |    6 +-
+ drivers/irqchip/irq-loongson-liointc.c             |    6 +-
+ include/drm/drm_cache.h                            |    8 +
+ include/linux/cpuhotplug.h                         |    1 +
+ include/linux/efi.h                                |    1 +
+ include/linux/pe.h                                 |    2 +
+ include/uapi/linux/audit.h                         |    2 +
+ include/uapi/linux/elf-em.h                        |    1 +
+ include/uapi/linux/elf.h                           |    5 +
+ include/uapi/linux/kexec.h                         |    1 +
+ scripts/sorttable.c                                |    5 +
+ scripts/subarch.include                            |    2 +-
+ tools/include/uapi/asm/bitsperlong.h               |    2 +
+ 213 files changed, 21500 insertions(+), 10 deletions(-)
+ create mode 100644 Documentation/loongarch/features.rst
+ create mode 100644 Documentation/loongarch/index.rst
+ create mode 100644 Documentation/loongarch/introduction.rst
+ create mode 100644 Documentation/loongarch/irq-chip-model.rst
+ create mode 100644 Documentation/translations/zh_CN/loongarch/features.rst
+ create mode 100644 Documentation/translations/zh_CN/loongarch/index.rst
+ create mode 100644 Documentation/translations/zh_CN/loongarch/introduction.rst
+ create mode 100644 Documentation/translations/zh_CN/loongarch/irq-chip-model.rst
+ create mode 100644 arch/loongarch/Kbuild
+ create mode 100644 arch/loongarch/Kconfig
+ create mode 100644 arch/loongarch/Kconfig.debug
+ create mode 100644 arch/loongarch/Makefile
+ create mode 100644 arch/loongarch/boot/.gitignore
+ create mode 100644 arch/loongarch/boot/Makefile
+ create mode 100644 arch/loongarch/boot/dts/Makefile
+ create mode 100644 arch/loongarch/configs/loongson3_defconfig
+ create mode 100644 arch/loongarch/include/asm/Kbuild
+ create mode 100644 arch/loongarch/include/asm/acenv.h
+ create mode 100644 arch/loongarch/include/asm/acpi.h
+ create mode 100644 arch/loongarch/include/asm/addrspace.h
+ create mode 100644 arch/loongarch/include/asm/asm-offsets.h
+ create mode 100644 arch/loongarch/include/asm/asm-prototypes.h
+ create mode 100644 arch/loongarch/include/asm/asm.h
+ create mode 100644 arch/loongarch/include/asm/asmmacro.h
+ create mode 100644 arch/loongarch/include/asm/atomic.h
+ create mode 100644 arch/loongarch/include/asm/barrier.h
+ create mode 100644 arch/loongarch/include/asm/bitops.h
+ create mode 100644 arch/loongarch/include/asm/bitrev.h
+ create mode 100644 arch/loongarch/include/asm/bootinfo.h
+ create mode 100644 arch/loongarch/include/asm/branch.h
+ create mode 100644 arch/loongarch/include/asm/bug.h
+ create mode 100644 arch/loongarch/include/asm/cache.h
+ create mode 100644 arch/loongarch/include/asm/cacheflush.h
+ create mode 100644 arch/loongarch/include/asm/cacheops.h
+ create mode 100644 arch/loongarch/include/asm/clocksource.h
+ create mode 100644 arch/loongarch/include/asm/cmpxchg.h
+ create mode 100644 arch/loongarch/include/asm/compiler.h
+ create mode 100644 arch/loongarch/include/asm/cpu-features.h
+ create mode 100644 arch/loongarch/include/asm/cpu-info.h
+ create mode 100644 arch/loongarch/include/asm/cpu.h
+ create mode 100644 arch/loongarch/include/asm/cpufeature.h
+ create mode 100644 arch/loongarch/include/asm/delay.h
+ create mode 100644 arch/loongarch/include/asm/dma-direct.h
+ create mode 100644 arch/loongarch/include/asm/dmi.h
+ create mode 100644 arch/loongarch/include/asm/efi.h
+ create mode 100644 arch/loongarch/include/asm/elf.h
+ create mode 100644 arch/loongarch/include/asm/entry-common.h
+ create mode 100644 arch/loongarch/include/asm/exec.h
+ create mode 100644 arch/loongarch/include/asm/fb.h
+ create mode 100644 arch/loongarch/include/asm/fixmap.h
+ create mode 100644 arch/loongarch/include/asm/fpregdef.h
+ create mode 100644 arch/loongarch/include/asm/fpu.h
+ create mode 100644 arch/loongarch/include/asm/futex.h
+ create mode 100644 arch/loongarch/include/asm/hardirq.h
+ create mode 100644 arch/loongarch/include/asm/hugetlb.h
+ create mode 100644 arch/loongarch/include/asm/hw_irq.h
+ create mode 100644 arch/loongarch/include/asm/idle.h
+ create mode 100644 arch/loongarch/include/asm/inst.h
+ create mode 100644 arch/loongarch/include/asm/io.h
+ create mode 100644 arch/loongarch/include/asm/irq.h
+ create mode 100644 arch/loongarch/include/asm/irq_regs.h
+ create mode 100644 arch/loongarch/include/asm/irqflags.h
+ create mode 100644 arch/loongarch/include/asm/kdebug.h
+ create mode 100644 arch/loongarch/include/asm/linkage.h
+ create mode 100644 arch/loongarch/include/asm/local.h
+ create mode 100644 arch/loongarch/include/asm/loongarch.h
+ create mode 100644 arch/loongarch/include/asm/loongson.h
+ create mode 100644 arch/loongarch/include/asm/mmu.h
+ create mode 100644 arch/loongarch/include/asm/mmu_context.h
+ create mode 100644 arch/loongarch/include/asm/mmzone.h
+ create mode 100644 arch/loongarch/include/asm/module.h
+ create mode 100644 arch/loongarch/include/asm/module.lds.h
+ create mode 100644 arch/loongarch/include/asm/numa.h
+ create mode 100644 arch/loongarch/include/asm/page.h
+ create mode 100644 arch/loongarch/include/asm/percpu.h
+ create mode 100644 arch/loongarch/include/asm/perf_event.h
+ create mode 100644 arch/loongarch/include/asm/pgalloc.h
+ create mode 100644 arch/loongarch/include/asm/pgtable-bits.h
+ create mode 100644 arch/loongarch/include/asm/pgtable.h
+ create mode 100644 arch/loongarch/include/asm/prefetch.h
+ create mode 100644 arch/loongarch/include/asm/processor.h
+ create mode 100644 arch/loongarch/include/asm/ptrace.h
+ create mode 100644 arch/loongarch/include/asm/reboot.h
+ create mode 100644 arch/loongarch/include/asm/regdef.h
+ create mode 100644 arch/loongarch/include/asm/seccomp.h
+ create mode 100644 arch/loongarch/include/asm/serial.h
+ create mode 100644 arch/loongarch/include/asm/setup.h
+ create mode 100644 arch/loongarch/include/asm/shmparam.h
+ create mode 100644 arch/loongarch/include/asm/smp.h
+ create mode 100644 arch/loongarch/include/asm/sparsemem.h
+ create mode 100644 arch/loongarch/include/asm/stackframe.h
+ create mode 100644 arch/loongarch/include/asm/stacktrace.h
+ create mode 100644 arch/loongarch/include/asm/string.h
+ create mode 100644 arch/loongarch/include/asm/switch_to.h
+ create mode 100644 arch/loongarch/include/asm/syscall.h
+ create mode 100644 arch/loongarch/include/asm/thread_info.h
+ create mode 100644 arch/loongarch/include/asm/time.h
+ create mode 100644 arch/loongarch/include/asm/timex.h
+ create mode 100644 arch/loongarch/include/asm/tlb.h
+ create mode 100644 arch/loongarch/include/asm/tlbflush.h
+ create mode 100644 arch/loongarch/include/asm/topology.h
+ create mode 100644 arch/loongarch/include/asm/types.h
+ create mode 100644 arch/loongarch/include/asm/uaccess.h
+ create mode 100644 arch/loongarch/include/asm/unistd.h
+ create mode 100644 arch/loongarch/include/asm/vdso.h
+ create mode 100644 arch/loongarch/include/asm/vdso/clocksource.h
+ create mode 100644 arch/loongarch/include/asm/vdso/gettimeofday.h
+ create mode 100644 arch/loongarch/include/asm/vdso/processor.h
+ create mode 100644 arch/loongarch/include/asm/vdso/vdso.h
+ create mode 100644 arch/loongarch/include/asm/vdso/vsyscall.h
+ create mode 100644 arch/loongarch/include/asm/vermagic.h
+ create mode 100644 arch/loongarch/include/asm/vmalloc.h
+ create mode 100644 arch/loongarch/include/uapi/asm/Kbuild
+ create mode 100644 arch/loongarch/include/uapi/asm/auxvec.h
+ create mode 100644 arch/loongarch/include/uapi/asm/bitsperlong.h
+ create mode 100644 arch/loongarch/include/uapi/asm/break.h
+ create mode 100644 arch/loongarch/include/uapi/asm/byteorder.h
+ create mode 100644 arch/loongarch/include/uapi/asm/hwcap.h
+ create mode 100644 arch/loongarch/include/uapi/asm/ptrace.h
+ create mode 100644 arch/loongarch/include/uapi/asm/reg.h
+ create mode 100644 arch/loongarch/include/uapi/asm/sigcontext.h
+ create mode 100644 arch/loongarch/include/uapi/asm/signal.h
+ create mode 100644 arch/loongarch/include/uapi/asm/ucontext.h
+ create mode 100644 arch/loongarch/include/uapi/asm/unistd.h
+ create mode 100644 arch/loongarch/kernel/.gitignore
+ create mode 100644 arch/loongarch/kernel/Makefile
+ create mode 100644 arch/loongarch/kernel/access-helper.h
+ create mode 100644 arch/loongarch/kernel/acpi.c
+ create mode 100644 arch/loongarch/kernel/asm-offsets.c
+ create mode 100644 arch/loongarch/kernel/cacheinfo.c
+ create mode 100644 arch/loongarch/kernel/cpu-probe.c
+ create mode 100644 arch/loongarch/kernel/dma.c
+ create mode 100644 arch/loongarch/kernel/efi-header.S
+ create mode 100644 arch/loongarch/kernel/efi.c
+ create mode 100644 arch/loongarch/kernel/elf.c
+ create mode 100644 arch/loongarch/kernel/entry.S
+ create mode 100644 arch/loongarch/kernel/env.c
+ create mode 100644 arch/loongarch/kernel/fpu.S
+ create mode 100644 arch/loongarch/kernel/genex.S
+ create mode 100644 arch/loongarch/kernel/head.S
+ create mode 100644 arch/loongarch/kernel/idle.c
+ create mode 100644 arch/loongarch/kernel/image-vars.h
+ create mode 100644 arch/loongarch/kernel/inst.c
+ create mode 100644 arch/loongarch/kernel/io.c
+ create mode 100644 arch/loongarch/kernel/irq.c
+ create mode 100644 arch/loongarch/kernel/mem.c
+ create mode 100644 arch/loongarch/kernel/module-sections.c
+ create mode 100644 arch/loongarch/kernel/module.c
+ create mode 100644 arch/loongarch/kernel/numa.c
+ create mode 100644 arch/loongarch/kernel/proc.c
+ create mode 100644 arch/loongarch/kernel/process.c
+ create mode 100644 arch/loongarch/kernel/ptrace.c
+ create mode 100644 arch/loongarch/kernel/reset.c
+ create mode 100644 arch/loongarch/kernel/setup.c
+ create mode 100644 arch/loongarch/kernel/signal.c
+ create mode 100644 arch/loongarch/kernel/smp.c
+ create mode 100644 arch/loongarch/kernel/switch.S
+ create mode 100644 arch/loongarch/kernel/syscall.c
+ create mode 100644 arch/loongarch/kernel/time.c
+ create mode 100644 arch/loongarch/kernel/topology.c
+ create mode 100644 arch/loongarch/kernel/traps.c
+ create mode 100644 arch/loongarch/kernel/vdso.c
+ create mode 100644 arch/loongarch/kernel/vmlinux.lds.S
+ create mode 100644 arch/loongarch/lib/Makefile
+ create mode 100644 arch/loongarch/lib/clear_user.S
+ create mode 100644 arch/loongarch/lib/copy_user.S
+ create mode 100644 arch/loongarch/lib/delay.c
+ create mode 100644 arch/loongarch/lib/dump_tlb.c
+ create mode 100644 arch/loongarch/mm/Makefile
+ create mode 100644 arch/loongarch/mm/cache.c
+ create mode 100644 arch/loongarch/mm/extable.c
+ create mode 100644 arch/loongarch/mm/fault.c
+ create mode 100644 arch/loongarch/mm/hugetlbpage.c
+ create mode 100644 arch/loongarch/mm/init.c
+ create mode 100644 arch/loongarch/mm/ioremap.c
+ create mode 100644 arch/loongarch/mm/maccess.c
+ create mode 100644 arch/loongarch/mm/mmap.c
+ create mode 100644 arch/loongarch/mm/page.S
+ create mode 100644 arch/loongarch/mm/pgtable.c
+ create mode 100644 arch/loongarch/mm/tlb.c
+ create mode 100644 arch/loongarch/mm/tlbex.S
+ create mode 100644 arch/loongarch/pci/Makefile
+ create mode 100644 arch/loongarch/vdso/.gitignore
+ create mode 100644 arch/loongarch/vdso/Makefile
+ create mode 100644 arch/loongarch/vdso/elf.S
+ create mode 100755 arch/loongarch/vdso/gen_vdso_offsets.sh
+ create mode 100644 arch/loongarch/vdso/sigreturn.S
+ create mode 100644 arch/loongarch/vdso/vdso.S
+ create mode 100644 arch/loongarch/vdso/vdso.lds.S
+ create mode 100644 arch/loongarch/vdso/vgettimeofday.c
+ create mode 100644 drivers/firmware/efi/libstub/loongarch-stub.c
+--
+2.27.0
 
