@@ -2,58 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB257C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 01:01:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEB92C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 01:01:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237476AbiFCBBo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 21:01:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49318 "EHLO
+        id S239709AbiFCBBq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 21:01:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240660AbiFCAtk (ORCPT
+        with ESMTP id S240719AbiFCAsh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 20:49:40 -0400
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A39F423BF0
+        Thu, 2 Jun 2022 20:48:37 -0400
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4143E20BC6
         for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:47:03 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id y1-20020a17090a390100b001e66bb0fcefso3258656pjb.0
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:47:03 -0700 (PDT)
+Received: by mail-pl1-x649.google.com with SMTP id i8-20020a170902c94800b0016517194819so3359255pla.7
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:47:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=UZ39FwqPuZSwzhKmIpJpQ529gOFccXb7mEmumiCcntE=;
-        b=qmsPw6+cATPxvN7VKqvjg2HNvYBMfDisXruYDZCP1ExEA9KU7j8DzSoAnTeqZN/KT5
-         CH+/sCCbcW6O5PlOPp8+QfhmHOudc7A/z7zixhmDVG8OeM+U1r7Igj0L5bTrEp2+iWKe
-         Ul/BGxTaQV1oGidDpr8FGb9BZRYFX6Ax4SFK0NJaS12FJbxJ3+f8bse2/RYAZJ0JVlWi
-         wnrCSyMFHolf3CBCcfToZvpB3skj/jr5PARSD6+v/CXRtGIHOyTS0uw8CUTC/TXnK/Z6
-         1198MpZr8OZyTI7qWIz3DL0cFwWeYKrSLxa1I35OMHFq70fKpYOyY7NJLieIWd/zXhGG
-         6cgg==
+        bh=hdFyPWZi0ai17pbodYXg7vj/r9AKBRzYNtm6bYFX3dw=;
+        b=koKlrfu+kFaLqmk6swDwBDY7pYy61KO/1h5fyD6UCFuwb3mzt0oWDlYcLL8kRJGc8b
+         90Qxw7zwPYhdkNv9XseJhYhsKNQPmgIOFary1q1IuoUFYXv+oYIpDXeVfr2Q/KgwmQoy
+         dhDIP0ziYm4y+fDQIrGNI+CFwC7mFtU0yFneEMzFEFqTBKNPxjTXL7mEpzYK0ZewYVN2
+         MbPgYc/DBbesPW6spgHetX+tw4N4hr/pBt5whZvFKbBkjgq5/s5fLAJ/QyS0cU9YS0u0
+         vSWwcaIOrdJYf1vAKIv8AIPOYc4ox7f4k5g9D78P0QXiXoGBqx1elRBp9X6ttyCSk+Xv
+         ogsA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=UZ39FwqPuZSwzhKmIpJpQ529gOFccXb7mEmumiCcntE=;
-        b=ffJbldec6f2+iGb+LW5t1EdBH95fypKA3sW0brJPVsDN851noPaempj0ep65MZ14If
-         K/bvGAfqHlV9mSm5QOyJWFJzom2rrxPFLfs3XSoqaTHQDoDi/s+jiACqAJo2DVasACeh
-         VzGkltnViGDDhFMVGY7h01MnRy1wDpm0wxZkLspXVu0p9GXnHc2jc6exsw8sIIMpbSTb
-         6MPkLh/t8b4jNm50F5pDjsRBR8sOd3d0tjhYsjDIvX6jtetX+ATkNdOf5zDFdeHKMWOY
-         juYF8WPSq1+E0aczAeNEJkH52T5VHuOur9ADVZU5302TMbp95B4bIQxeZCxSJVIYofgF
-         5LPg==
-X-Gm-Message-State: AOAM531M3NjPXCsfX87mKCnh5fatNqHPBD2K/zwkUHG34FBwL2tsE0nY
-        KOwYx8GIYCLzAlPqBDP5XghUPLP/bi0=
-X-Google-Smtp-Source: ABdhPJxfDVcVqvcYU69U83ovg0EbI6neC7aNWV8nTeap+CSPzCrBdfD6xCbaWjVSqIAywXTYICbwjuRo3lM=
+        bh=hdFyPWZi0ai17pbodYXg7vj/r9AKBRzYNtm6bYFX3dw=;
+        b=iQpWt/+pbiPZ+kDx5c3rXJlmv64KaG1T+L09xtNrmhad6EnMZrFvPu/2bEbQ+R1ewX
+         qk0vu3pXtXlrvqWK429DMGCTX/B3E9x2XvnLNu2MK7dEq2o46WBd9+obWYY3vtBYgbBt
+         ZB1XdaIHv+0rxOcYqTTlQ+mLKD9/xvpyGfyoYMMDFXlwzTXvAs19Jj6grRsmub4FS+1O
+         yQwKKGXpV7F6t++QInlYE/WDB/lOYeY8wLD5pQRTk6Jud1wJSlxQXb/qQKiqj93/1i/R
+         kWg4D/KWFcqufOyBNiilApyKx1tpzWWoEs4t0DkmwmIrkHk5S7RLpPVwn1Eq+9ocYZGI
+         wHKA==
+X-Gm-Message-State: AOAM530bMOyOhvfAPf/KrcIz00VD8MzMhw8PWCp+Na67wGCduZsa1cGo
+        HrAzrry6rcjPbwnXWePlWC9WglWIc9M=
+X-Google-Smtp-Source: ABdhPJwR7XfuNqWR0Id/AqJcevxNjb2zPVz7bScoF6P9w77H1tpOEY9S02I9azhdW8nRpzbGF086KrfDJ7Q=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a05:6a00:b85:b0:51b:bd9b:869 with SMTP id
- g5-20020a056a000b8500b0051bbd9b0869mr7817160pfj.31.1654217211690; Thu, 02 Jun
- 2022 17:46:51 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a62:d45e:0:b0:51b:4d60:cda4 with SMTP id
+ u30-20020a62d45e000000b0051b4d60cda4mr7686562pfl.17.1654217221863; Thu, 02
+ Jun 2022 17:47:01 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri,  3 Jun 2022 00:42:55 +0000
+Date:   Fri,  3 Jun 2022 00:43:01 +0000
 In-Reply-To: <20220603004331.1523888-1-seanjc@google.com>
-Message-Id: <20220603004331.1523888-109-seanjc@google.com>
+Message-Id: <20220603004331.1523888-115-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220603004331.1523888-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v2 108/144] KVM: selftests: Convert arch_timer away from VCPU_ID
+Subject: [PATCH v2 114/144] KVM: selftests: Convert hypercalls test away from vm_create_default()
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     kvm@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
@@ -66,174 +66,173 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert arch_timer to use vm_create_with_vcpus() and pass around a
-'struct kvm_vcpu' object instead of requiring that the index into the
-array of vCPUs for a given vCPU is also the ID of the vCPU
+Use a combination of vm_create(), vm_create_with_vcpus(), and
+    vm_vcpu_add() to convert vgic_init from vm_create_default_with_vcpus(),
+    and away from referncing vCPUs by ID.
+
+Thus continues the march toward total annihilation of "default" helpers.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../selftests/kvm/aarch64/arch_timer.c        | 62 ++++++++-----------
- 1 file changed, 27 insertions(+), 35 deletions(-)
+ .../selftests/kvm/aarch64/hypercalls.c        | 51 +++++++++----------
+ 1 file changed, 24 insertions(+), 27 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/aarch64/arch_timer.c b/tools/testing/selftests/kvm/aarch64/arch_timer.c
-index f04ca07c7f14..a873d9adc558 100644
---- a/tools/testing/selftests/kvm/aarch64/arch_timer.c
-+++ b/tools/testing/selftests/kvm/aarch64/arch_timer.c
-@@ -76,13 +76,8 @@ struct test_vcpu_shared_data {
- 	uint64_t xcnt;
- };
+diff --git a/tools/testing/selftests/kvm/aarch64/hypercalls.c b/tools/testing/selftests/kvm/aarch64/hypercalls.c
+index 44ca840e8219..fefa39dc9bc8 100644
+--- a/tools/testing/selftests/kvm/aarch64/hypercalls.c
++++ b/tools/testing/selftests/kvm/aarch64/hypercalls.c
+@@ -150,23 +150,19 @@ struct st_time {
+ #define STEAL_TIME_SIZE		((sizeof(struct st_time) + 63) & ~63)
+ #define ST_GPA_BASE		(1 << 30)
  
--struct test_vcpu {
--	uint32_t vcpuid;
--	pthread_t pt_vcpu_run;
--	struct kvm_vm *vm;
--};
--
--static struct test_vcpu test_vcpu[KVM_MAX_VCPUS];
-+static struct kvm_vcpu *vcpus[KVM_MAX_VCPUS];
-+static pthread_t pt_vcpu_run[KVM_MAX_VCPUS];
- static struct test_vcpu_shared_data vcpu_shared_data[KVM_MAX_VCPUS];
- 
- static int vtimer_irq, ptimer_irq;
-@@ -217,20 +212,20 @@ static void guest_code(void)
- 
- static void *test_vcpu_run(void *arg)
+-static void steal_time_init(struct kvm_vm *vm)
++static void steal_time_init(struct kvm_vcpu *vcpu)
  {
-+	unsigned int vcpu_idx = (unsigned long)arg;
- 	struct ucall uc;
--	struct test_vcpu *vcpu = arg;
-+	struct kvm_vcpu *vcpu = vcpus[vcpu_idx];
- 	struct kvm_vm *vm = vcpu->vm;
--	uint32_t vcpuid = vcpu->vcpuid;
--	struct test_vcpu_shared_data *shared_data = &vcpu_shared_data[vcpuid];
-+	struct test_vcpu_shared_data *shared_data = &vcpu_shared_data[vcpu_idx];
+ 	uint64_t st_ipa = (ulong)ST_GPA_BASE;
+ 	unsigned int gpages;
+-	struct kvm_device_attr dev = {
+-		.group = KVM_ARM_VCPU_PVTIME_CTRL,
+-		.attr = KVM_ARM_VCPU_PVTIME_IPA,
+-		.addr = (uint64_t)&st_ipa,
+-	};
  
--	vcpu_run(vm, vcpuid);
-+	vcpu_run(vm, vcpu->id);
+ 	gpages = vm_calc_num_guest_pages(VM_MODE_DEFAULT, STEAL_TIME_SIZE);
+-	vm_userspace_mem_region_add(vm, VM_MEM_SRC_ANONYMOUS, ST_GPA_BASE, 1, gpages, 0);
++	vm_userspace_mem_region_add(vcpu->vm, VM_MEM_SRC_ANONYMOUS, ST_GPA_BASE, 1, gpages, 0);
  
- 	/* Currently, any exit from guest is an indication of completion */
- 	pthread_mutex_lock(&vcpu_done_map_lock);
--	set_bit(vcpuid, vcpu_done_map);
-+	set_bit(vcpu_idx, vcpu_done_map);
- 	pthread_mutex_unlock(&vcpu_done_map_lock);
- 
--	switch (get_ucall(vm, vcpuid, &uc)) {
-+	switch (get_ucall(vm, vcpu->id, &uc)) {
- 	case UCALL_SYNC:
- 	case UCALL_DONE:
- 		break;
-@@ -238,7 +233,7 @@ static void *test_vcpu_run(void *arg)
- 		sync_global_from_guest(vm, *shared_data);
- 		TEST_FAIL("%s at %s:%ld\n\tvalues: %lu, %lu; %lu, vcpu: %u; stage: %u; iter: %u",
- 			(const char *)uc.args[0], __FILE__, uc.args[1],
--			uc.args[2], uc.args[3], uc.args[4], vcpuid,
-+			uc.args[2], uc.args[3], uc.args[4], vcpu_idx,
- 			shared_data->guest_stage, shared_data->nr_iter);
- 		break;
- 	default:
-@@ -265,7 +260,7 @@ static uint32_t test_get_pcpu(void)
- 	return pcpu;
+-	vcpu_ioctl(vm, 0, KVM_SET_DEVICE_ATTR, &dev);
++	vcpu_device_attr_set(vcpu->vm, vcpu->id, KVM_ARM_VCPU_PVTIME_CTRL,
++			     KVM_ARM_VCPU_PVTIME_IPA, &st_ipa);
  }
  
--static int test_migrate_vcpu(struct test_vcpu *vcpu)
-+static int test_migrate_vcpu(unsigned int vcpu_idx)
+-static void test_fw_regs_before_vm_start(struct kvm_vm *vm)
++static void test_fw_regs_before_vm_start(struct kvm_vcpu *vcpu)
  {
- 	int ret;
- 	cpu_set_t cpuset;
-@@ -274,15 +269,15 @@ static int test_migrate_vcpu(struct test_vcpu *vcpu)
- 	CPU_ZERO(&cpuset);
- 	CPU_SET(new_pcpu, &cpuset);
- 
--	pr_debug("Migrating vCPU: %u to pCPU: %u\n", vcpu->vcpuid, new_pcpu);
-+	pr_debug("Migrating vCPU: %u to pCPU: %u\n", vcpu_idx, new_pcpu);
- 
--	ret = pthread_setaffinity_np(vcpu->pt_vcpu_run,
--					sizeof(cpuset), &cpuset);
-+	ret = pthread_setaffinity_np(pt_vcpu_run[vcpu_idx],
-+				     sizeof(cpuset), &cpuset);
- 
- 	/* Allow the error where the vCPU thread is already finished */
- 	TEST_ASSERT(ret == 0 || ret == ESRCH,
--			"Failed to migrate the vCPU:%u to pCPU: %u; ret: %d\n",
--			vcpu->vcpuid, new_pcpu, ret);
-+		    "Failed to migrate the vCPU:%u to pCPU: %u; ret: %d\n",
-+		    vcpu_idx, new_pcpu, ret);
- 
- 	return ret;
- }
-@@ -305,7 +300,7 @@ static void *test_vcpu_migration(void *arg)
- 				continue;
- 			}
- 
--			test_migrate_vcpu(&test_vcpu[i]);
-+			test_migrate_vcpu(i);
- 		}
- 	} while (test_args.nr_vcpus != n_done);
- 
-@@ -314,16 +309,17 @@ static void *test_vcpu_migration(void *arg)
- 
- static void test_run(struct kvm_vm *vm)
- {
--	int i, ret;
- 	pthread_t pt_vcpu_migration;
-+	unsigned int i;
-+	int ret;
- 
- 	pthread_mutex_init(&vcpu_done_map_lock, NULL);
- 	vcpu_done_map = bitmap_zalloc(test_args.nr_vcpus);
- 	TEST_ASSERT(vcpu_done_map, "Failed to allocate vcpu done bitmap\n");
- 
--	for (i = 0; i < test_args.nr_vcpus; i++) {
--		ret = pthread_create(&test_vcpu[i].pt_vcpu_run, NULL,
--				test_vcpu_run, &test_vcpu[i]);
-+	for (i = 0; i < (unsigned long)test_args.nr_vcpus; i++) {
-+		ret = pthread_create(&pt_vcpu_run[i], NULL, test_vcpu_run,
-+				     (void *)(unsigned long)i);
- 		TEST_ASSERT(!ret, "Failed to create vCPU-%d pthread\n", i);
- 	}
- 
-@@ -338,7 +334,7 @@ static void test_run(struct kvm_vm *vm)
- 
- 
- 	for (i = 0; i < test_args.nr_vcpus; i++)
--		pthread_join(test_vcpu[i].pt_vcpu_run, NULL);
-+		pthread_join(pt_vcpu_run[i], NULL);
- 
- 	if (test_args.migration_freq_ms)
- 		pthread_join(pt_vcpu_migration, NULL);
-@@ -349,9 +345,9 @@ static void test_run(struct kvm_vm *vm)
- static void test_init_timer_irq(struct kvm_vm *vm)
- {
- 	/* Timer initid should be same for all the vCPUs, so query only vCPU-0 */
--	vcpu_device_attr_get(vm, 0, KVM_ARM_VCPU_TIMER_CTRL,
-+	vcpu_device_attr_get(vm, vcpus[0]->id, KVM_ARM_VCPU_TIMER_CTRL,
- 			     KVM_ARM_VCPU_TIMER_IRQ_PTIMER, &ptimer_irq);
--	vcpu_device_attr_get(vm, 0, KVM_ARM_VCPU_TIMER_CTRL,
-+	vcpu_device_attr_get(vm, vcpus[0]->id, KVM_ARM_VCPU_TIMER_CTRL,
- 			     KVM_ARM_VCPU_TIMER_IRQ_VTIMER, &vtimer_irq);
- 
- 	sync_global_to_guest(vm, ptimer_irq);
-@@ -368,17 +364,13 @@ static struct kvm_vm *test_vm_create(void)
+ 	uint64_t val;
  	unsigned int i;
- 	int nr_vcpus = test_args.nr_vcpus;
+@@ -176,18 +172,18 @@ static void test_fw_regs_before_vm_start(struct kvm_vm *vm)
+ 		const struct kvm_fw_reg_info *reg_info = &fw_reg_info[i];
  
--	vm = vm_create_default_with_vcpus(nr_vcpus, 0, 0, guest_code, NULL);
-+	vm = vm_create_with_vcpus(nr_vcpus, guest_code, vcpus);
+ 		/* First 'read' should be an upper limit of the features supported */
+-		vcpu_get_reg(vm, 0, reg_info->reg, &val);
++		vcpu_get_reg(vcpu->vm, vcpu->id, reg_info->reg, &val);
+ 		TEST_ASSERT(val == FW_REG_ULIMIT_VAL(reg_info->max_feat_bit),
+ 			"Expected all the features to be set for reg: 0x%lx; expected: 0x%lx; read: 0x%lx\n",
+ 			reg_info->reg, FW_REG_ULIMIT_VAL(reg_info->max_feat_bit), val);
  
- 	vm_init_descriptor_tables(vm);
- 	vm_install_exception_handler(vm, VECTOR_IRQ_CURRENT, guest_irq_handler);
+ 		/* Test a 'write' by disabling all the features of the register map */
+-		ret = __vcpu_set_reg(vm, 0, reg_info->reg, 0);
++		ret = __vcpu_set_reg(vcpu->vm, vcpu->id, reg_info->reg, 0);
+ 		TEST_ASSERT(ret == 0,
+ 			"Failed to clear all the features of reg: 0x%lx; ret: %d\n",
+ 			reg_info->reg, errno);
  
--	for (i = 0; i < nr_vcpus; i++) {
--		vcpu_init_descriptor_tables(vm, i);
--
--		test_vcpu[i].vcpuid = i;
--		test_vcpu[i].vm = vm;
--	}
-+	for (i = 0; i < nr_vcpus; i++)
-+		vcpu_init_descriptor_tables(vm, vcpus[i]->id);
+-		vcpu_get_reg(vm, 0, reg_info->reg, &val);
++		vcpu_get_reg(vcpu->vm, vcpu->id, reg_info->reg, &val);
+ 		TEST_ASSERT(val == 0,
+ 			"Expected all the features to be cleared for reg: 0x%lx\n", reg_info->reg);
+ 
+@@ -196,7 +192,7 @@ static void test_fw_regs_before_vm_start(struct kvm_vm *vm)
+ 		 * Avoid this check if all the bits are occupied.
+ 		 */
+ 		if (reg_info->max_feat_bit < 63) {
+-			ret = __vcpu_set_reg(vm, 0, reg_info->reg, BIT(reg_info->max_feat_bit + 1));
++			ret = __vcpu_set_reg(vcpu->vm, vcpu->id, reg_info->reg, BIT(reg_info->max_feat_bit + 1));
+ 			TEST_ASSERT(ret != 0 && errno == EINVAL,
+ 			"Unexpected behavior or return value (%d) while setting an unsupported feature for reg: 0x%lx\n",
+ 			errno, reg_info->reg);
+@@ -204,7 +200,7 @@ static void test_fw_regs_before_vm_start(struct kvm_vm *vm)
+ 	}
+ }
+ 
+-static void test_fw_regs_after_vm_start(struct kvm_vm *vm)
++static void test_fw_regs_after_vm_start(struct kvm_vcpu *vcpu)
+ {
+ 	uint64_t val;
+ 	unsigned int i;
+@@ -217,7 +213,7 @@ static void test_fw_regs_after_vm_start(struct kvm_vm *vm)
+ 		 * Before starting the VM, the test clears all the bits.
+ 		 * Check if that's still the case.
+ 		 */
+-		vcpu_get_reg(vm, 0, reg_info->reg, &val);
++		vcpu_get_reg(vcpu->vm, vcpu->id, reg_info->reg, &val);
+ 		TEST_ASSERT(val == 0,
+ 			"Expected all the features to be cleared for reg: 0x%lx\n",
+ 			reg_info->reg);
+@@ -227,26 +223,26 @@ static void test_fw_regs_after_vm_start(struct kvm_vm *vm)
+ 		 * the registers and should return EBUSY. Set the registers and check for
+ 		 * the expected errno.
+ 		 */
+-		ret = __vcpu_set_reg(vm, 0, reg_info->reg, FW_REG_ULIMIT_VAL(reg_info->max_feat_bit));
++		ret = __vcpu_set_reg(vcpu->vm, vcpu->id, reg_info->reg, FW_REG_ULIMIT_VAL(reg_info->max_feat_bit));
+ 		TEST_ASSERT(ret != 0 && errno == EBUSY,
+ 		"Unexpected behavior or return value (%d) while setting a feature while VM is running for reg: 0x%lx\n",
+ 		errno, reg_info->reg);
+ 	}
+ }
+ 
+-static struct kvm_vm *test_vm_create(void)
++static struct kvm_vm *test_vm_create(struct kvm_vcpu **vcpu)
+ {
+ 	struct kvm_vm *vm;
+ 
+-	vm = vm_create_default(0, 0, guest_code);
++	vm = vm_create_with_one_vcpu(vcpu, guest_code);
  
  	ucall_init(vm, NULL);
- 	test_init_timer_irq(vm);
+-	steal_time_init(vm);
++	steal_time_init(*vcpu);
+ 
+ 	return vm;
+ }
+ 
+-static void test_guest_stage(struct kvm_vm **vm)
++static void test_guest_stage(struct kvm_vm **vm, struct kvm_vcpu **vcpu)
+ {
+ 	int prev_stage = stage;
+ 
+@@ -258,12 +254,12 @@ static void test_guest_stage(struct kvm_vm **vm)
+ 
+ 	switch (prev_stage) {
+ 	case TEST_STAGE_REG_IFACE:
+-		test_fw_regs_after_vm_start(*vm);
++		test_fw_regs_after_vm_start(*vcpu);
+ 		break;
+ 	case TEST_STAGE_HVC_IFACE_FEAT_DISABLED:
+ 		/* Start a new VM so that all the features are now enabled by default */
+ 		kvm_vm_free(*vm);
+-		*vm = test_vm_create();
++		*vm = test_vm_create(vcpu);
+ 		break;
+ 	case TEST_STAGE_HVC_IFACE_FEAT_ENABLED:
+ 	case TEST_STAGE_HVC_IFACE_FALSE_INFO:
+@@ -275,20 +271,21 @@ static void test_guest_stage(struct kvm_vm **vm)
+ 
+ static void test_run(void)
+ {
++	struct kvm_vcpu *vcpu;
+ 	struct kvm_vm *vm;
+ 	struct ucall uc;
+ 	bool guest_done = false;
+ 
+-	vm = test_vm_create();
++	vm = test_vm_create(&vcpu);
+ 
+-	test_fw_regs_before_vm_start(vm);
++	test_fw_regs_before_vm_start(vcpu);
+ 
+ 	while (!guest_done) {
+-		vcpu_run(vm, 0);
++		vcpu_run(vcpu->vm, vcpu->id);
+ 
+-		switch (get_ucall(vm, 0, &uc)) {
++		switch (get_ucall(vcpu->vm, vcpu->id, &uc)) {
+ 		case UCALL_SYNC:
+-			test_guest_stage(&vm);
++			test_guest_stage(&vm, &vcpu);
+ 			break;
+ 		case UCALL_DONE:
+ 			guest_done = true;
 -- 
 2.36.1.255.ge46751e96f-goog
 
