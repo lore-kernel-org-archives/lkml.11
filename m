@@ -2,99 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D7E0CCA473
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 10:28:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C906CC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 10:29:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243568AbiFCK2N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 06:28:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36924 "EHLO
+        id S243647AbiFCK3G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 06:29:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237693AbiFCK2L (ORCPT
+        with ESMTP id S243618AbiFCK26 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 06:28:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16BB5E01E;
-        Fri,  3 Jun 2022 03:28:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A718C60C8C;
-        Fri,  3 Jun 2022 10:28:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B19D1C385A9;
-        Fri,  3 Jun 2022 10:28:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654252089;
-        bh=hZ5cSwyo7EzHMEbyT4ghAzT5Uo6NhCs7zRE3Q+mOoHA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=sGYVoWmDur/WytEsZLyZOXTpZDnKsTCPjRSA3X3MABPU2G3ZuUJhjuF5Sss0XT0tv
-         SpXFdH1w/NgmGX5ICFTumTPXFKmAqOXvFUPCj6voDq4Ux4eFlP0zqdOM7jq1QB72SD
-         Xta+NHZAMG8SCY6Vp/KAiUJNImWQKHr3PB0fkuRmn8mFIf1apLlB+PuA8vV3Py5joX
-         8b1ku6PzU1t+P0SC4C1oFykm56lPu+JIU4M7OEwwLNX3Ll74W7J3bDIVsSbZkBf2B/
-         WjYy20I57Vb+kYsxvP7Pptsq3O1ytiEm1AGWWAD6q0JVXecGEWQ2A6q4jhqwqp49yf
-         Ee0KoffGrfjSA==
-Date:   Fri, 3 Jun 2022 12:28:06 +0200
-From:   Mark Brown <broonie@kernel.org>
-To:     Pavel Machek <pavel@ucw.cz>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        theflamefire89@gmail.com, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Subject: Re: [PATCH 4.9 34/48] ASoC: ops: Reject out of bounds values in
- snd_soc_put_volsw_sx()
-Message-ID: <YpniNuBDbv/RRY/2@sirena.org.uk>
-References: <20220207103752.341184175@linuxfoundation.org>
- <20220207103753.450763414@linuxfoundation.org>
- <20220603100613.GA26825@duo.ucw.cz>
+        Fri, 3 Jun 2022 06:28:58 -0400
+Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92D22366B2
+        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 03:28:57 -0700 (PDT)
+Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-30c1b401711so77838427b3.2
+        for <linux-kernel@vger.kernel.org>; Fri, 03 Jun 2022 03:28:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dC0gx01b2aNajXfhT3RxUnH0OHK3FMPo/gpngxGlMwo=;
+        b=oG7zOFP1DbQh6Bo8e9Qpq/xhX0tcm0Z686SDBT7H504JhHxqE3dnOrHBJ6SB/2HSK4
+         twuSJO1lPcK5rLD3Hh+gKG0l3jtSoA8EYExYCLiyANJoCWRY1XSu31iiJqtN8JeP4jR5
+         KeCcRWNG8k0cKAwK+B8C+LiKyAUIyY35Rc2HDoJNL490sEJzAybFKJGosi2vB+5kM2fb
+         CkFMly+sSSmDyfTmzvsm3PvJr8kwCzkRW05trOUye05ZR8AscObGzjpJwvBL/YOzAVbN
+         0mw8bc8FHPkItci37uxaWwIcZPeZfUqrdb+ftP4a7ZovA0miQgbeVm9d2jAyuRTdKt0d
+         Do2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dC0gx01b2aNajXfhT3RxUnH0OHK3FMPo/gpngxGlMwo=;
+        b=rsdBviTGntqOdiRzXZoVDEA2HjwRG5Pm89bIzIAYMNgfGAXIFVGcfLki2ziyw1zlQI
+         BrowX/4WBt6cfh2/n7diTw/ueLy/KnVG6/qgpHUqqoMBH1fatBHOedny+ERDSDQDwjpj
+         NNOeNJNBefD8EwE465O2VWfcWE4QerhDrk3ngCBFlrbsFbTk4aYMAgR6guOHoQ+N2hqe
+         hVXQOi+zDONS7nFalbpk9D5K/dGbHiEIuBygIecQyrgdO6WHpXe+8iQob4xGbKn0O0Zo
+         5ZPdw/ztk+AIW0K2odi0YcDbhJdVD+aChrmGBTAAYTb7swnxGTeJK21NoCvzMRSAb1Zy
+         GCqg==
+X-Gm-Message-State: AOAM530e3fU46l/mDGXT0PrIu24s12h7/8HAZJSrHIvlrBE6vwqgN+ss
+        tKIDd5UOSMiAshHVjJ0OjfvsXjIjZdcy/fHdfj2ufQ==
+X-Google-Smtp-Source: ABdhPJxdb0406KtQA0ekY0TlTv81qQUxI5O/FyeeUoVHX8/Ot2ByU9RnuJwh7E4wA3eNsSCbGkhyW44rUkeitrBqRsM=
+X-Received: by 2002:a0d:e246:0:b0:30c:5e77:7104 with SMTP id
+ l67-20020a0de246000000b0030c5e777104mr10997642ywe.448.1654252136425; Fri, 03
+ Jun 2022 03:28:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ZJvHfhMxfZ0Ue3YX"
-Content-Disposition: inline
-In-Reply-To: <20220603100613.GA26825@duo.ucw.cz>
-X-Cookie: May your camel be as swift as the wind.
+References: <1654079415-26217-1-git-send-email-quic_srivasam@quicinc.com> <1654079415-26217-3-git-send-email-quic_srivasam@quicinc.com>
+In-Reply-To: <1654079415-26217-3-git-send-email-quic_srivasam@quicinc.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Fri, 3 Jun 2022 12:28:45 +0200
+Message-ID: <CACRpkdYQW7WByaGoSFKT91OwRao_jJdCAbL0pUuj3vdS6TdkQg@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] pinctrl: qcom: sc7280: Add lpi pinctrl variant
+ data for adsp based targets
+To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org, lgirdwood@gmail.com,
+        broonie@kernel.org, robh+dt@kernel.org, quic_plai@quicinc.com,
+        bgoswami@quicinc.com, perex@perex.cz, tiwai@suse.com,
+        srinivas.kandagatla@linaro.org, quic_rohkumar@quicinc.com,
+        linux-arm-msm@vger.kernel.org, alsa-devel@alsa-project.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        swboyd@chromium.org, judyhsiao@chromium.org,
+        linux-gpio@vger.kernel.org,
+        Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, Jun 1, 2022 at 12:30 PM Srinivasa Rao Mandadapu
+<quic_srivasam@quicinc.com> wrote:
 
---ZJvHfhMxfZ0Ue3YX
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+So one way to just use a propert and avoid more compatible strings:
 
-On Fri, Jun 03, 2022 at 12:06:13PM +0200, Pavel Machek wrote:
+> Add compatible string and lpi pinctrl variant data structure for adsp
+> enabled sc7280 platforms.
+> This variant data structure rnd compatible name required for
+> distingushing ADSP based platforms and ADSP bypass platforms.
+> In case of ADSP enabled platforms, where audio is routed through ADSP
+> macro and decodec GDSC Switches are triggered as clocks by pinctrl
+> driver and ADSP firmware controls them. So It's mandatory to enable
+> them in ADSP based solutions.
+> In case of ADSP bypass platforms clock voting is optional as these macro
+> and dcodec GDSC switches are maintained as power domains and operated from
+> lpass clock drivers.
+>
+> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> ---
+>  drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c | 14 ++++++++++++++
+>  1 file changed, 14 insertions(+)
+>
+> diff --git a/drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c b/drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c
+> index 2add9a4..c9e85d9 100644
+> --- a/drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c
+> +++ b/drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c
+> @@ -134,6 +134,16 @@ static const struct lpi_function sc7280_functions[] = {
+>         LPI_FUNCTION(wsa_swr_data),
+>  };
+>
+> +static const struct lpi_pinctrl_variant_data sc7280_adsp_lpi_data = {
 
-> We are getting reports that this commit breaks audio on some
-> phones... and indeed it looks like "+ min" is missing in first condition:
+Remove static and export this struct in drivers/pinctrl/qcom/pinctrl-lpass-lpi.h
 
-> https://github.com/baunilla/android_kernel_xiaomi_rosy/commit/969b9d366c1=
-e9564e173aea325ec544dcd7804ff
+> +       .pins = sc7280_lpi_pins,
+> +       .npins = ARRAY_SIZE(sc7280_lpi_pins),
+> +       .groups = sc7280_groups,
+> +       .ngroups = ARRAY_SIZE(sc7280_groups),
+> +       .functions = sc7280_functions,
+> +       .nfunctions = ARRAY_SIZE(sc7280_functions),
+> +       .is_clk_optional = false,
+> +};
 
-> 	val =3D ucontrol->value.integer.value[0];
-> -=EF=BF=BC	if (mc->platform_max && val > mc->platform_max)
-> +=EF=BF=BC	if (mc->platform_max && ((int)val + min) > mc->platform_max)
-> =EF=BF=BC		return -EINVAL;
 
-> What needs to be done to get this fixed?
+>  static const struct lpi_pinctrl_variant_data sc7280_lpi_data = {
+>         .pins = sc7280_lpi_pins,
+>         .npins = ARRAY_SIZE(sc7280_lpi_pins),
+> @@ -149,6 +159,10 @@ static const struct of_device_id lpi_pinctrl_of_match[] = {
+>                .compatible = "qcom,sc7280-lpass-lpi-pinctrl",
+>                .data = &sc7280_lpi_data,
+>         },
+> +       {
+> +               .compatible = "qcom,sc7280-lpass-adsp-lpi-pinctrl",
+> +               .data = &sc7280_adsp_lpi_data,
+> +       },
 
-The downstream kernel platform_max configuration should really be
-using the user visible value, not a direct register value.  Note
-that some of the Qualcomm vendor trees have modifictions to the
-semantics of some of the controls which cause issues, and partly
-due to this confusion there should be some fixes for their
-upstream drivers coming soon.
+Drop this and instead add some code in the probe()
+in drivers/pinctrl/qcom/pinctrl-lpass-lpi.c
+lines:
 
---ZJvHfhMxfZ0Ue3YX
-Content-Type: application/pgp-signature; name="signature.asc"
+if (of_device_is_compatible(np, "qcom,sc7280-lpass-lpi-pinctrl") &&
+of_property_read_bool(np, "qcom,adsp-mode))
+     data = &sc7280_adsp_lpi_data;
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKZ4jYACgkQJNaLcl1U
-h9CkYQf/b0ZSozDl7hMZY7oH/qdRK7mLBPjQiF/bXToFEqAI4NTsylsVqfzjjuGe
-tL+aOQsDxIgWT60U5Q3CXBpTfZbVQkC6IvahCNc4rIrna8QFdIIKr0spxqj0Rsqj
-SZXXP9rrDzNVrxrR6o2X5ot8dc3y+OG88YrNmbY7J9o4SFbwEkp2cf4456GNemrB
-7DDCosap+5bi4SmPuH3jH4Yh4ma9IEGWsVXOdN3qTB4hmytFQXZI8lLLXtcPMoHK
-uxSiR2MvgTNa24TkfhZtjY1iVQLF/Ys7KAcNVDXj31StkGfBNMBixo/S1UGhMVmX
-h05BHpJEqiS3l9sWdYofqAB2mx/2yA==
-=LPQb
------END PGP SIGNATURE-----
-
---ZJvHfhMxfZ0Ue3YX--
+Yours,
+Linus Walleij
