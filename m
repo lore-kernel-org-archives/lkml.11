@@ -2,106 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E20AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 15:04:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CB11C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 15:04:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245322AbiFCPET (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 11:04:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41660 "EHLO
+        id S245324AbiFCPEx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 11:04:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245315AbiFCPER (ORCPT
+        with ESMTP id S244661AbiFCPEv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 11:04:17 -0400
+        Fri, 3 Jun 2022 11:04:51 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C19764D0;
-        Fri,  3 Jun 2022 08:04:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE27C64D8
+        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 08:04:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E4B00617FF;
-        Fri,  3 Jun 2022 15:04:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7011BC34114;
-        Fri,  3 Jun 2022 15:04:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A91B616F9
+        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 15:04:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD885C385A9;
+        Fri,  3 Jun 2022 15:04:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654268655;
-        bh=TfgOQQnio1Gq32hbniybR4SGAc81jw6qQ5iLxj317Zw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=UlyEZNmeolP0ezSHCY2rR/CuZaNustyIj+Lb2cH3kzLD1ke4IL3zOGIEky2tm36nM
-         u4fgYK/H3g7YIMETzQH5pTNozxHZOmsyv3MbwXH81EMaB+QAeBFVWrJnVVWpOQBbSJ
-         vTTeu3i9s5eTQ3HLDVJGQxpWvQPbx2daITuae/WTFoAtkLE6RQ22CoxMLYwrClmFl4
-         BZe3egIxrK003JazP0RQ9FrRjMep9jeNLqkCjKnFxiMJY8nlI5rW9A8hQ0ds3v0rv8
-         Z1cZFxJNex0h6ImV/U8a6WxjcgBSmzjEvJ1SylcNKAD9jf5TmW9Kjk1f3szap45HNP
-         6AyZkBVWxyEZg==
-Date:   Fri, 3 Jun 2022 16:13:14 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Liam Beguin <liambeguin@gmail.com>
-Cc:     rdunlap@infradead.org, peda@axentia.se, masahiroy@kernel.org,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/1] iio: test: fix missing MODULE_LICENSE for
- IIO_RESCALE=m
-Message-ID: <20220603161314.041643be@jic23-huawei>
-In-Reply-To: <20220601142138.3331278-1-liambeguin@gmail.com>
-References: <20220601142138.3331278-1-liambeguin@gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        s=k20201202; t=1654268690;
+        bh=lwutLgb9SNOCxmpQkrrPjmYr91eeRNJxGbGYmZ6+CXI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=iaB3A9y22XEAuVmr8z1+mkmxwgdlJPj0cehin/oAo7lAZv+VKBCFWL6miUtnf8ujs
+         Mtdej2X1gwAEl38iXH9+AuFF+C7Sa6BJUJdvxNssnVqYekx4lsJ6eIN2b4knXyaLUS
+         MtlOcShlpCOOc6Azq1vbrbrx0H0hM7Mxy3Qegud69oF/SEh7/9pFYj4QBJWGyCN5QV
+         56F7gZUJSLjWHeD0XIpYiYLH9O59TR0ysJ6lJdlLzP6ziUNsrNQXuG3anlCo7+CFqp
+         jCpgAI9MGBTBujBasmglF4ZtdtN8dmpeX7X0vqLrZu5X6N3ETvCA8GRx+K2h6fEBbd
+         csNNWDlVwAi8g==
+From:   Josh Poimboeuf <jpoimboe@kernel.org>
+To:     x86@kernel.org
+Cc:     linux-kernel@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH v2] x86/ftrace: Remove OBJECT_FILES_NON_STANDARD usage
+Date:   Fri,  3 Jun 2022 08:04:44 -0700
+Message-Id: <b7a7a42fe306aca37826043dac89e113a1acdbac.1654268610.git.jpoimboe@kernel.org>
+X-Mailer: git-send-email 2.34.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed,  1 Jun 2022 10:21:38 -0400
-Liam Beguin <liambeguin@gmail.com> wrote:
+The file-wide OBJECT_FILES_NON_STANDARD annotation is used with
+CONFIG_FRAME_POINTER to tell objtool to skip the entire file when frame
+pointers are enabled.  However that annotation is now deprecated because
+it doesn't work with IBT, where objtool runs on vmlinux.o instead of
+individual translation units.
 
-> When IIO_RESCALE_KUNIT_TEST=y and IIO_RESCALE=m,
-> drivers/iio/afe/iio-rescale.o is built twice causing the
-> MODULE_LICENSE() to be lost, as shown by:
-> 
-> 	ERROR: modpost: missing MODULE_LICENSE() in drivers/iio/afe/iio-rescale.o
-> 
-> Rework the build configuration to have the dependency specified in the
-> Kconfig.
-> 
-> Reported-by: Randy Dunlap <rdunlap@infradead.org>
-> Fixes: 8e74a48d17d5 ("iio: test: add basic tests for the iio-rescale driver")
-> Signed-off-by: Liam Beguin <liambeguin@gmail.com>
-> Acked-by: Randy Dunlap <rdunlap@infradead.org>
-> Tested-by: Randy Dunlap <rdunlap@infradead.org>
-> Reviewed-by: Masahiro Yamada <masahiroy@kernel.org>
-Applied to the fixes-togreg branch of iio.git.
+Instead, use more fine-grained function-specific annotations:
 
-Thanks all for chasing this down and coming up with a resolution.
+- The 'save_mcount_regs' macro does funny things with the frame pointer.
+  Use STACK_FRAME_NON_STANDARD_FP to tell objtool to ignore the
+  functions using it.
 
-Jonathan
+- The return_to_handler() "function" isn't actually a callable function.
+  Instead of being called, it's returned to.  The real return address
+  isn't on the stack, so unwinding is already doomed no matter which
+  unwinder is used.  So just remove the STT_FUNC annotation, telling
+  objtool to ignore it.  That also removes the implicit
+  ANNOTATE_NOENDBR, which now needs to be made explicit.
 
-> ---
->  drivers/iio/test/Kconfig  | 2 +-
->  drivers/iio/test/Makefile | 2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iio/test/Kconfig b/drivers/iio/test/Kconfig
-> index 56ca0ad7e77a..4c66c3f18c34 100644
-> --- a/drivers/iio/test/Kconfig
-> +++ b/drivers/iio/test/Kconfig
-> @@ -6,7 +6,7 @@
->  # Keep in alphabetical order
->  config IIO_RESCALE_KUNIT_TEST
->  	bool "Test IIO rescale conversion functions"
-> -	depends on KUNIT=y && !IIO_RESCALE
-> +	depends on KUNIT=y && IIO_RESCALE=y
->  	default KUNIT_ALL_TESTS
->  	help
->  	  If you want to run tests on the iio-rescale code say Y here.
-> diff --git a/drivers/iio/test/Makefile b/drivers/iio/test/Makefile
-> index f15ae0a6394f..880360f8d02c 100644
-> --- a/drivers/iio/test/Makefile
-> +++ b/drivers/iio/test/Makefile
-> @@ -4,6 +4,6 @@
->  #
->  
->  # Keep in alphabetical order
-> -obj-$(CONFIG_IIO_RESCALE_KUNIT_TEST) += iio-test-rescale.o ../afe/iio-rescale.o
-> +obj-$(CONFIG_IIO_RESCALE_KUNIT_TEST) += iio-test-rescale.o
->  obj-$(CONFIG_IIO_TEST_FORMAT) += iio-test-format.o
->  CFLAGS_iio-test-format.o += $(DISABLE_STRUCTLEAK_PLUGIN)
+Fixes the following warning:
+
+  vmlinux.o: warning: objtool: __fentry__+0x16: return with modified stack frame
+
+Fixes: ed53a0d97192 ("x86/alternative: Use .ibt_endbr_seal to seal indirect calls")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
+---
+v2:
+- fix return_to_handler()
+
+ arch/x86/kernel/Makefile      |  4 ----
+ arch/x86/kernel/ftrace_64.S   | 11 ++++++++---
+ include/linux/objtool.h       |  6 ++++++
+ tools/include/linux/objtool.h |  6 ++++++
+ 4 files changed, 20 insertions(+), 7 deletions(-)
+
+diff --git a/arch/x86/kernel/Makefile b/arch/x86/kernel/Makefile
+index 03364dc40d8d..4c8b6ae802ac 100644
+--- a/arch/x86/kernel/Makefile
++++ b/arch/x86/kernel/Makefile
+@@ -36,10 +36,6 @@ KCSAN_SANITIZE := n
+ 
+ OBJECT_FILES_NON_STANDARD_test_nx.o			:= y
+ 
+-ifdef CONFIG_FRAME_POINTER
+-OBJECT_FILES_NON_STANDARD_ftrace_$(BITS).o		:= y
+-endif
+-
+ # If instrumentation of this dir is enabled, boot hangs during first second.
+ # Probably could be more selective here, but note that files related to irqs,
+ # boot, dumpstack/stacktrace, etc are either non-interesting or can lead to
+diff --git a/arch/x86/kernel/ftrace_64.S b/arch/x86/kernel/ftrace_64.S
+index 4ec13608d3c6..dfeb227de561 100644
+--- a/arch/x86/kernel/ftrace_64.S
++++ b/arch/x86/kernel/ftrace_64.S
+@@ -175,6 +175,7 @@ SYM_INNER_LABEL(ftrace_caller_end, SYM_L_GLOBAL)
+ 
+ 	jmp ftrace_epilogue
+ SYM_FUNC_END(ftrace_caller);
++STACK_FRAME_NON_STANDARD_FP(ftrace_caller)
+ 
+ SYM_FUNC_START(ftrace_epilogue)
+ /*
+@@ -282,6 +283,7 @@ SYM_INNER_LABEL(ftrace_regs_caller_end, SYM_L_GLOBAL)
+ 	jmp	ftrace_epilogue
+ 
+ SYM_FUNC_END(ftrace_regs_caller)
++STACK_FRAME_NON_STANDARD_FP(ftrace_regs_caller)
+ 
+ 
+ #else /* ! CONFIG_DYNAMIC_FTRACE */
+@@ -311,10 +313,14 @@ trace:
+ 	jmp ftrace_stub
+ SYM_FUNC_END(__fentry__)
+ EXPORT_SYMBOL(__fentry__)
++STACK_FRAME_NON_STANDARD_FP(__fentry__)
++
+ #endif /* CONFIG_DYNAMIC_FTRACE */
+ 
+ #ifdef CONFIG_FUNCTION_GRAPH_TRACER
+-SYM_FUNC_START(return_to_handler)
++SYM_CODE_START(return_to_handler)
++	UNWIND_HINT_EMPTY
++	ANNOTATE_NOENDBR
+ 	subq  $16, %rsp
+ 
+ 	/* Save the return values */
+@@ -339,7 +345,6 @@ SYM_FUNC_START(return_to_handler)
+ 	int3
+ .Ldo_rop:
+ 	mov %rdi, (%rsp)
+-	UNWIND_HINT_FUNC
+ 	RET
+-SYM_FUNC_END(return_to_handler)
++SYM_CODE_END(return_to_handler)
+ #endif
+diff --git a/include/linux/objtool.h b/include/linux/objtool.h
+index 6491fa8fba6d..15b940ec1eac 100644
+--- a/include/linux/objtool.h
++++ b/include/linux/objtool.h
+@@ -143,6 +143,12 @@ struct unwind_hint {
+ 	.popsection
+ .endm
+ 
++.macro STACK_FRAME_NON_STANDARD_FP func:req
++#ifdef CONFIG_FRAME_POINTER
++	STACK_FRAME_NON_STANDARD \func
++#endif
++.endm
++
+ .macro ANNOTATE_NOENDBR
+ .Lhere_\@:
+ 	.pushsection .discard.noendbr
+diff --git a/tools/include/linux/objtool.h b/tools/include/linux/objtool.h
+index 6491fa8fba6d..15b940ec1eac 100644
+--- a/tools/include/linux/objtool.h
++++ b/tools/include/linux/objtool.h
+@@ -143,6 +143,12 @@ struct unwind_hint {
+ 	.popsection
+ .endm
+ 
++.macro STACK_FRAME_NON_STANDARD_FP func:req
++#ifdef CONFIG_FRAME_POINTER
++	STACK_FRAME_NON_STANDARD \func
++#endif
++.endm
++
+ .macro ANNOTATE_NOENDBR
+ .Lhere_\@:
+ 	.pushsection .discard.noendbr
+-- 
+2.34.3
 
