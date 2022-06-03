@@ -2,42 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC014C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00C03CCA47C
 	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:11:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347975AbiFCSLT (ORCPT
+        id S1347565AbiFCSLC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:11:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47584 "EHLO
+        Fri, 3 Jun 2022 14:11:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345976AbiFCR5k (ORCPT
+        with ESMTP id S1345966AbiFCR6H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:57:40 -0400
+        Fri, 3 Jun 2022 13:58:07 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A57255711D;
-        Fri,  3 Jun 2022 10:54:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21FA527152;
+        Fri,  3 Jun 2022 10:54:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 541E8B82419;
-        Fri,  3 Jun 2022 17:54:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BCA4C385B8;
-        Fri,  3 Jun 2022 17:54:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A9006B823B0;
+        Fri,  3 Jun 2022 17:54:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B14ECC385B8;
+        Fri,  3 Jun 2022 17:54:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278856;
-        bh=/EyG57P4jtW4RHdb3WPUV5f8lPpG5g2cOM8KMHmq+5w=;
+        s=korg; t=1654278874;
+        bh=EPBHgmukQQ2kavRRx6NFY8j/vcnjOWl5lgESjAPm9W8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w1JNmrvgleN9IFkvB28aBUzmfRPL8ob4uItcBEsN9D0CTrlalQxxrPta9nqJXq4b5
-         G2Uxjy/eMMNRrsn7sqOr9VraLfAntJOIInQZPgGu7sRnEpmv3D4AwIKJ4fkp1r5MFZ
-         8o3sQ9wZTIczu1T388cP0Z7nT34dh2V8wjDK9/cI=
+        b=inUrWPpSPYFZEpZgCPwgLbwP6QP3dUj+OdRyiGVsWfxyMaDbYfAS8VAGyOaCgIbx3
+         DkSCkGDpiFCy1fh3LTCr2CX1tA5NTAeoB6eMnLULcDGrCA9RcAxxF1XQNHVu+pFBDg
+         33oYrJlIOdRLNytnAPiBYWGxp3Z5M2zULEDGoLgo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jonathan Bakker <xc-racer2@live.ca>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 5.17 48/75] ARM: dts: s5pv210: Correct interrupt name for bluetooth in Aries
-Date:   Fri,  3 Jun 2022 19:43:32 +0200
-Message-Id: <20220603173823.109844229@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        syzbot+1631f09646bc214d2e76@syzkaller.appspotmail.com,
+        Namjae Jeon <linkinjeon@kernel.org>,
+        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Kari Argillander <kari.argillander@stargateuniverse.net>,
+        Matthew Wilcox <willy@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.17 54/75] fs/ntfs3: validate BOOT sectors_per_clusters
+Date:   Fri,  3 Jun 2022 19:43:38 +0200
+Message-Id: <20220603173823.273872316@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173821.749019262@linuxfoundation.org>
 References: <20220603173821.749019262@linuxfoundation.org>
@@ -49,33 +55,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Bakker <xc-racer2@live.ca>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-commit 3f5e3d3a8b895c8a11da8b0063ba2022dd9e2045 upstream.
+commit a3b774342fa752a5290c0de36375289dfcf4a260 upstream.
 
-Correct the name of the bluetooth interrupt from host-wake to
-host-wakeup.
+When the NTFS BOOT sectors_per_clusters field is > 0x80, it represents a
+shift value.  Make sure that the shift value is not too large before using
+it (NTFS max cluster size is 2MB).  Return -EVINVAL if it too large.
 
-Fixes: 1c65b6184441b ("ARM: dts: s5pv210: Correct BCM4329 bluetooth node")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Jonathan Bakker <xc-racer2@live.ca>
-Link: https://lore.kernel.org/r/CY4PR04MB0567495CFCBDC8D408D44199CB1C9@CY4PR04MB0567.namprd04.prod.outlook.com
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+This prevents negative shift values and shift values that are larger than
+the field size.
+
+Prevents this UBSAN error:
+
+ UBSAN: shift-out-of-bounds in ../fs/ntfs3/super.c:673:16
+ shift exponent -192 is negative
+
+Link: https://lkml.kernel.org/r/20220502175342.20296-1-rdunlap@infradead.org
+Fixes: 82cae269cfa9 ("fs/ntfs3: Add initialization of super block")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: syzbot+1631f09646bc214d2e76@syzkaller.appspotmail.com
+Reviewed-by: Namjae Jeon <linkinjeon@kernel.org>
+Cc: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+Cc: Alexander Viro <viro@zeniv.linux.org.uk>
+Cc: Kari Argillander <kari.argillander@stargateuniverse.net>
+Cc: Namjae Jeon <linkinjeon@kernel.org>
+Cc: Matthew Wilcox <willy@infradead.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/s5pv210-aries.dtsi |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/ntfs3/super.c |   10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
---- a/arch/arm/boot/dts/s5pv210-aries.dtsi
-+++ b/arch/arm/boot/dts/s5pv210-aries.dtsi
-@@ -895,7 +895,7 @@
- 		device-wakeup-gpios = <&gpg3 4 GPIO_ACTIVE_HIGH>;
- 		interrupt-parent = <&gph2>;
- 		interrupts = <5 IRQ_TYPE_LEVEL_HIGH>;
--		interrupt-names = "host-wake";
-+		interrupt-names = "host-wakeup";
- 	};
- };
+--- a/fs/ntfs3/super.c
++++ b/fs/ntfs3/super.c
+@@ -668,9 +668,11 @@ static u32 format_size_gb(const u64 byte
+ 
+ static u32 true_sectors_per_clst(const struct NTFS_BOOT *boot)
+ {
+-	return boot->sectors_per_clusters <= 0x80
+-		       ? boot->sectors_per_clusters
+-		       : (1u << (0 - boot->sectors_per_clusters));
++	if (boot->sectors_per_clusters <= 0x80)
++		return boot->sectors_per_clusters;
++	if (boot->sectors_per_clusters >= 0xf4) /* limit shift to 2MB max */
++		return 1U << (0 - boot->sectors_per_clusters);
++	return -EINVAL;
+ }
+ 
+ /*
+@@ -713,6 +715,8 @@ static int ntfs_init_from_boot(struct su
+ 
+ 	/* cluster size: 512, 1K, 2K, 4K, ... 2M */
+ 	sct_per_clst = true_sectors_per_clst(boot);
++	if ((int)sct_per_clst < 0)
++		goto out;
+ 	if (!is_power_of_2(sct_per_clst))
+ 		goto out;
  
 
 
