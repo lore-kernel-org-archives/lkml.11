@@ -2,83 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A647CCA473
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:51:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 038A6C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:54:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349032AbiFCSu7 (ORCPT
+        id S1348326AbiFCSye (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:50:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53254 "EHLO
+        Fri, 3 Jun 2022 14:54:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349134AbiFCSuL (ORCPT
+        with ESMTP id S1348295AbiFCSyb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 14:50:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD09027FF0;
-        Fri,  3 Jun 2022 11:50:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9CD7A619C2;
-        Fri,  3 Jun 2022 18:50:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 030BCC385B8;
-        Fri,  3 Jun 2022 18:50:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654282210;
-        bh=bOriYyJek/0gWTzeUpshNdx4hLR6hEcL+erxtFQ1q6Q=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=Evqa9V+gShN4CKTki1Qc95yc8OQ6s9PLcauHwWuQWN/qHkuUNZ3Ib2o0b29gwpynZ
-         FRgXrSMXOhDap47vgkuQWBTzhhSlqdXRt/x0Mm2Q7px6ynj/GTJtEY2YI8lCMm0foC
-         tCzxlmZLw9mQEMDl6Ck+F4hfp9+VRvbgfh+AG/b1ERk5aKSf0lA34orC2kL0heSbP1
-         KSyyYSWbqd8GlD1k7CqRTvyLLEhZbKDqDUFqCXaJU3Zqven3aHo0fD3BqHSRRQ0IbI
-         Wvb9n5mPF5ea0BrsoYqVv8cJ4usD9SvY/gvd0zrWD7kgkOyV3Ja5WW7Y3ZE+OzLFsv
-         SHtKdUIA0I91g==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E093BF03953;
-        Fri,  3 Jun 2022 18:50:09 +0000 (UTC)
-Subject: Re: [GIT PULL] vhost,virtio,vdpa: features, fixes, cleanups
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220602161124-mutt-send-email-mst@kernel.org>
-References: <20220602161124-mutt-send-email-mst@kernel.org>
-X-PR-Tracked-List-Id: <netdev.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220602161124-mutt-send-email-mst@kernel.org>
-X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
-X-PR-Tracked-Commit-Id: bd8bb9aed56b1814784a975e2dfea12a9adcee92
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 6e5f6a86915d65210e90acac0402e6f37e21fc7b
-Message-Id: <165428220991.10974.157104839485276628.pr-tracker-bot@kernel.org>
-Date:   Fri, 03 Jun 2022 18:50:09 +0000
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        arbn@yandex-team.com, arei.gonglei@huawei.com,
-        christophe.jaillet@wanadoo.fr, cohuck@redhat.com,
-        dan.carpenter@oracle.com, dinechin@redhat.com, elic@nvidia.com,
-        eperezma@redhat.com, gautam.dawar@xilinx.com, gdawar@xilinx.com,
-        helei.sig11@bytedance.com, jasowang@redhat.com,
-        lingshan.zhu@intel.com, linux-s390@vger.kernel.org,
-        liuke94@huawei.com, lkp@intel.com, lulu@redhat.com, maz@kernel.org,
-        michael.christie@oracle.com, mst@redhat.com, muriloo@linux.ibm.com,
-        oberpar@linux.ibm.com, pasic@linux.ibm.com, paulmck@kernel.org,
-        peterz@infradead.org, pizhenwei@bytedance.com, sgarzare@redhat.com,
-        solomonbstoner@protonmail.ch, stable@vger.kernel.org,
-        suwan.kim027@gmail.com, tglx@linutronix.de, vneethv@linux.ibm.com,
-        xianting.tian@linux.alibaba.com, zheyuma97@gmail.com
+        Fri, 3 Jun 2022 14:54:31 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A55CE289AD;
+        Fri,  3 Jun 2022 11:54:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1654282470; x=1685818470;
+  h=message-id:date:mime-version:subject:from:to:cc:
+   references:in-reply-to:content-transfer-encoding;
+  bh=+bJH935PB5pfQJUgE5Lu1i5hWq8Cu1nLmIvkALLizzI=;
+  b=D6tN55dFGcSREaxNbr547kk6a62H48RVUS6RV/k/tYP3LqOc6/SrLkJO
+   p/wvbdCr+2YS//o8c8ULAaMz1E6kYftbORGgYe5uiIyXGK9mK+bUvCbJA
+   EXDEX9Wo5gD3ecrazM/hV+sYm+upVgN26vy+L86YvE6NvmYOxa8seQedw
+   g=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 03 Jun 2022 11:54:30 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2022 11:54:30 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Fri, 3 Jun 2022 11:54:30 -0700
+Received: from [10.216.1.37] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 3 Jun 2022
+ 11:54:26 -0700
+Message-ID: <f525c352-d995-0589-584f-0e9acf419f80@quicinc.com>
+Date:   Sat, 4 Jun 2022 00:24:23 +0530
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [V4] serial: core: Do stop_rx in suspend path for console if
+ console_suspend is disabled
+Content-Language: en-CA
+From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+To:     Marek Szyprowski <m.szyprowski@samsung.com>,
+        <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <quic_msavaliy@quicinc.com>, <dianders@chromium.org>,
+        <mka@chromium.org>, <swboyd@chromium.org>
+References: <1652692810-31148-1-git-send-email-quic_vnivarth@quicinc.com>
+ <bf7eec57-6ad6-2c1a-ea61-0e1d06fc77f5@samsung.com>
+ <CGME20220524115408eucas1p1ddda7aae4db0a65a7d67d6f8c59d404b@eucas1p1.samsung.com>
+ <3866c083-0064-ac9a-4587-91a83946525d@samsung.com>
+ <ff029402-f90c-096a-7366-b58f53555ace@quicinc.com>
+ <fb44af37-daf7-974d-95fe-1a6c2cdab676@samsung.com>
+ <cb802fb1-d0b8-68af-1c04-f73bc1beca77@quicinc.com>
+In-Reply-To: <cb802fb1-d0b8-68af-1c04-f73bc1beca77@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Thu, 2 Jun 2022 16:11:24 -0400:
+Hi,
 
-> https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/6e5f6a86915d65210e90acac0402e6f37e21fc7b
+On 6/2/2022 9:12 PM, Vijaya Krishna Nivarthi wrote:
+> Hi,
+>
+>
+> On 6/2/2022 3:55 AM, Marek Szyprowski wrote:
+>> Hi,
+>>
+>> On 01.06.2022 13:24, Vijaya Krishna Nivarthi wrote:
+>>> On 5/24/2022 5:24 PM, Marek Szyprowski wrote:
+>>>> On 23.05.2022 23:32, Marek Szyprowski wrote:
+>>>>> Hi,
+>>>>>
+>>>>> On 16.05.2022 11:20, Vijaya Krishna Nivarthi wrote:
+>>>>>> For the case of console_suspend disabled, if back to back
+>>>>>> suspend/resume
+>>>>>> test is executed, at the end of test, sometimes console would
+>>>>>> appear to
+>>>>>> be frozen not responding to input. This would happen because, during
+>>>>>> resume, rx transactions can come in before system is ready,
+>>>>>> malfunction
+>>>>>> of rx happens in turn resulting in console appearing to be stuck.
+>>>>>>
+>>>>>> Do a stop_rx in suspend sequence to prevent this.
+>>>>>>
+>>>>>> Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+>>>>>> ---
+>>>>>> v4: moved the change to serial core to apply for all drivers
+>>>>>> v3: swapped the order of conditions to be more human readable
+>>>>>> v2: restricted patch to contain only stop_rx in suspend sequence
+>>>>>> v1: intial patch contained 2 additional unrelated changes in 
+>>>>>> vicinity
+>>>>>> ---
+>>>>> This patch landed recently in linux-next as commit c9d2325cdb92
+>>>>> ("serial: core: Do stop_rx in suspend path for console if
+>>>>> console_suspend is disabled").
+>>>>>
+>>>>> Unfortunately it breaks console operation on my test systems after
+>>>>> system suspend/resume cycle if 'no_console_suspend' kernel parameter
+>>>>> is present. System properly resumes from suspend, the console 
+>>>>> displays
+>>>>> all the messages and even command line prompt, but then doesn't react
+>>>>> on any input. If I remove the 'no_console_suspend' parameter, the
+>>>>> console is again operational after system suspend/resume cycle. 
+>>>>> Before
+>>>>> this patch it worked fine regardless the 'no_console_suspend'
+>>>>> parameter.
+>>>>>
+>>>>> If this matters, the test system is ARM 32bit Samsung 
+>>>>> Exynos5422-based
+>>>>> Odroid XU3lite board.
+>>>> One more information. This issue can be easily reproduced with 
+>>>> QEMU. It
+>>>> happens both on ARM 32bit and ARM 64bit QEMU's 'virt' machines when
+>>>> 'no_console_suspend' is added to kernel's cmdline.
+>>>>
+>>> Ideally, as comments indicate, the set_termios should have done
+>>> stop_rx at begin and start_rx at end to take care of this issue.
+>>>
+>>> This is probably missing in your driver. Can we check if this can be
+>>> fixed?
+>> Sure, just point me what need to be added in amba-pl011.c and
+>> samsung_tty.c. I've briefly compared the suspend/resume paths of those
+>> drivers with other drivers and I don't see anything missing there.
+>>
+>>> OR other option is
+>>>
+>>> Add a start_rx in uart_resume_port after call to set_termios to handle
+>>> this scenario for other drivers.
 
-Thank you!
+Since start_rx is not exposed it doesn't seem like we will be able to 
+handle it in core.
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+In your drivers, Can we add a call to stop_rx at begin of set_termios 
+and then undo it at end?
+
+That would ensure that set_termios functionality is unaffected while 
+fixing the broken cases?
+
+If that's not an option we will have to go back to a previous version of 
+limiting the change to qcom driver.
+
+Thank you.
+
+>>>
+>>> Please let me know if there are any concerns for this options.
+>> IMHO this looks like an issue that affects lots of drivers and it should
+>> be handled in the core.
+>
+> Sure, we will look into both aspects and get back as soon as possible.
+>
+> Thank you.
+>
+>>
+>>   > ...
+>>
+>> Best regards
