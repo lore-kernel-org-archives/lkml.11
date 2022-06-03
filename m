@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1089CC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:11:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A00F4C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:11:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346076AbiFCSJ7 (ORCPT
+        id S1346953AbiFCSKH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:09:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60166 "EHLO
+        Fri, 3 Jun 2022 14:10:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241008AbiFCR4f (ORCPT
+        with ESMTP id S1345941AbiFCR53 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:56:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00FB456766;
-        Fri,  3 Jun 2022 10:53:52 -0700 (PDT)
+        Fri, 3 Jun 2022 13:57:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1975356FA8;
+        Fri,  3 Jun 2022 10:54:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 89DF561255;
-        Fri,  3 Jun 2022 17:53:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 896B8C36AE2;
-        Fri,  3 Jun 2022 17:53:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 892D1B82189;
+        Fri,  3 Jun 2022 17:54:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F20D1C3411C;
+        Fri,  3 Jun 2022 17:54:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278832;
-        bh=sQ0GPSl5NoQwPN9POfGGNsMy+Sxch4CTIxQGvcHIVJU=;
+        s=korg; t=1654278844;
+        bh=k8dwY4UsBqEZIeUNq0npNOB1aRN/HTu4O5GznizTuIE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R//gbOLlwURquQb98PwvE3qBJVfq4anxUcQo9JWBsNM3nFRs8m05VM/OZi+g/KuK1
-         gnm/aHK9Sr7mffDj3hYrol+b8uvrC81mn6S9J5p8L4lflsL+/WGlesCbACP3Z78b6X
-         PZY787AvgBNSAWn5YR2KyBHidAkAXiVF0S2KvqNg=
+        b=cmSgraSSxNd+/ZN97azoujqnJGFmTBcL+SY7jl3tFuPz0Tn63ebJ/+rcMhX/Aqrc8
+         JRrs6nZrIQ/wPU3RtbnBk/xFKIwOR+gb3MNV3Ef6JWGb4Zi26zvCibpkDf8kgy9ScM
+         /WfWau2Rn24dWLNFBtx7z/gBlqRysxmj7wR0DDWQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vitaly Chikunov <vt@altlinux.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Subject: [PATCH 5.17 41/75] crypto: ecrdsa - Fix incorrect use of vli_cmp
-Date:   Fri,  3 Jun 2022 19:43:25 +0200
-Message-Id: <20220603173822.911441981@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Andr=C3=A9=20Kapelrud?= <a.kapelrud@gmail.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.17 45/75] ALSA: usb-audio: Add missing ep_idx in fixed EP quirks
+Date:   Fri,  3 Jun 2022 19:43:29 +0200
+Message-Id: <20220603173823.025868917@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173821.749019262@linuxfoundation.org>
 References: <20220603173821.749019262@linuxfoundation.org>
@@ -49,51 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vitaly Chikunov <vt@altlinux.org>
+From: Takashi Iwai <tiwai@suse.de>
 
-commit 7cc7ab73f83ee6d50dc9536bc3355495d8600fad upstream.
+commit 7b0efea4baf02f5e2f89e5f9b75ef891571b45f1 upstream.
 
-Correctly compare values that shall be greater-or-equal and not just
-greater.
+The quirk entry for Focusrite Saffire 6 had no proper ep_idx for the
+capture endpoint, and this confused the driver, resulting in the
+broken sound.  This patch adds the missing ep_idx in the entry.
 
-Fixes: 0d7a78643f69 ("crypto: ecrdsa - add EC-RDSA (GOST 34.10) algorithm")
+While we are at it, a couple of other entries (for Digidesign MBox and
+MOTU MicroBook II) seem to have the same problem, and those are
+covered as well.
+
+Fixes: bf6313a0ff76 ("ALSA: usb-audio: Refactor endpoint management")
+Reported-by: André Kapelrud <a.kapelrud@gmail.com>
 Cc: <stable@vger.kernel.org>
-Signed-off-by: Vitaly Chikunov <vt@altlinux.org>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Link: https://lore.kernel.org/r/20220521065325.426-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- crypto/ecrdsa.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ sound/usb/quirks-table.h |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/crypto/ecrdsa.c
-+++ b/crypto/ecrdsa.c
-@@ -113,15 +113,15 @@ static int ecrdsa_verify(struct akcipher
- 
- 	/* Step 1: verify that 0 < r < q, 0 < s < q */
- 	if (vli_is_zero(r, ndigits) ||
--	    vli_cmp(r, ctx->curve->n, ndigits) == 1 ||
-+	    vli_cmp(r, ctx->curve->n, ndigits) >= 0 ||
- 	    vli_is_zero(s, ndigits) ||
--	    vli_cmp(s, ctx->curve->n, ndigits) == 1)
-+	    vli_cmp(s, ctx->curve->n, ndigits) >= 0)
- 		return -EKEYREJECTED;
- 
- 	/* Step 2: calculate hash (h) of the message (passed as input) */
- 	/* Step 3: calculate e = h \mod q */
- 	vli_from_le64(e, digest, ndigits);
--	if (vli_cmp(e, ctx->curve->n, ndigits) == 1)
-+	if (vli_cmp(e, ctx->curve->n, ndigits) >= 0)
- 		vli_sub(e, e, ctx->curve->n, ndigits);
- 	if (vli_is_zero(e, ndigits))
- 		e[0] = 1;
-@@ -137,7 +137,7 @@ static int ecrdsa_verify(struct akcipher
- 	/* Step 6: calculate point C = z_1P + z_2Q, and R = x_c \mod q */
- 	ecc_point_mult_shamir(&cc, z1, &ctx->curve->g, z2, &ctx->pub_key,
- 			      ctx->curve);
--	if (vli_cmp(cc.x, ctx->curve->n, ndigits) == 1)
-+	if (vli_cmp(cc.x, ctx->curve->n, ndigits) >= 0)
- 		vli_sub(cc.x, cc.x, ctx->curve->n, ndigits);
- 
- 	/* Step 7: if R == r signature is valid */
+--- a/sound/usb/quirks-table.h
++++ b/sound/usb/quirks-table.h
+@@ -2672,6 +2672,7 @@ YAMAHA_DEVICE(0x7010, "UB99"),
+ 					.altset_idx = 1,
+ 					.attributes = 0,
+ 					.endpoint = 0x82,
++					.ep_idx = 1,
+ 					.ep_attr = USB_ENDPOINT_XFER_ISOC,
+ 					.datainterval = 1,
+ 					.maxpacksize = 0x0126,
+@@ -2875,6 +2876,7 @@ YAMAHA_DEVICE(0x7010, "UB99"),
+ 					.altset_idx = 1,
+ 					.attributes = 0x4,
+ 					.endpoint = 0x81,
++					.ep_idx = 1,
+ 					.ep_attr = USB_ENDPOINT_XFER_ISOC |
+ 						USB_ENDPOINT_SYNC_ASYNC,
+ 					.maxpacksize = 0x130,
+@@ -3391,6 +3393,7 @@ YAMAHA_DEVICE(0x7010, "UB99"),
+ 					.altset_idx = 1,
+ 					.attributes = 0,
+ 					.endpoint = 0x03,
++					.ep_idx = 1,
+ 					.rates = SNDRV_PCM_RATE_96000,
+ 					.ep_attr = USB_ENDPOINT_XFER_ISOC |
+ 						   USB_ENDPOINT_SYNC_ASYNC,
 
 
