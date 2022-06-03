@@ -2,135 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAA86CCA473
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 15:50:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26316C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 15:51:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231779AbiFCPuZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 11:50:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46538 "EHLO
+        id S232893AbiFCPv5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 11:51:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343588AbiFCPtz (ORCPT
+        with ESMTP id S245670AbiFCPvy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 11:49:55 -0400
-Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0DC2515B3
-        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 08:49:43 -0700 (PDT)
-Received: by mail-ot1-x32a.google.com with SMTP id l9-20020a056830268900b006054381dd35so5811855otu.4
-        for <linux-kernel@vger.kernel.org>; Fri, 03 Jun 2022 08:49:43 -0700 (PDT)
+        Fri, 3 Jun 2022 11:51:54 -0400
+Received: from mail-oa1-x2d.google.com (mail-oa1-x2d.google.com [IPv6:2001:4860:4864:20::2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E075964D5;
+        Fri,  3 Jun 2022 08:51:51 -0700 (PDT)
+Received: by mail-oa1-x2d.google.com with SMTP id 586e51a60fabf-f2e0a41009so11095828fac.6;
+        Fri, 03 Jun 2022 08:51:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/9WBFLi2GZ/Ui4GpH9tULtj9LEgcGT39WehBSO1WgzQ=;
-        b=HEUAXsna5ZmSt0hJfuqV4f5D85h+f7wPyDldmxerUEzbCUP/OG/paIqlzAoySvKeaX
-         SIwilD6gZCvRVOBgAiv6GINcQ62p8PX5DuVPoOn35OEQFCmsntOS/RP6/DSiP6HzKvnz
-         KQDYVwTmYWC0hcQmTYfskxUHLjDVhbLbi7rq7Z5JERaKRgMVEsWkU5tQYsCZFktp0Hq4
-         Pv2dl+wx1j4nKLHpq/SBK+Q442HyVo3wK/Jx3mzQtCQj7MVzAGN7mM5NyvQCgjeLK8rv
-         fhTbFgNwg9K1WmzDDQFjZhZLtR8NU+r+NSaFPMBUoGP/zMX6DKKXnj/oCXnhFXHdD4BJ
-         0J7w==
+        h=sender:message-id:date:mime-version:user-agent:content-language:to
+         :cc:references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=UYOlwffmM58R+CDON6dZUZP/KSj/6r4KIPXsM0u8ZmE=;
+        b=VOgs41OGnu8/HEni6b0RedGYYv75pBW6zF+P0KDI5RcRj1cWWmOmOXpL4o7uIZg8Ua
+         QjoIaeR+tYQBm3ZqqKHvkIdPFagZqoAgR5VZVxD+1ifgGRslX0tq+RKtOk6l58HjcVAY
+         yRY4eSbU1MJF0QirSGuOissb8c+8SMbEmUFN+ibu/b3SarDIzH7MH3u5nVtwjxsaolP/
+         3lG3uC2X/BOoaHekWOLIpkcU4zD3WM6vNU0W3E/9eJNoaxBBNvyFSZd1STi5JMr33ZdW
+         FVKs8O/DZxtH+Og5Z0KjPYXCXVCdZ9vzGribcZZXmUvHUsdY/HDrOeSN1WCoegoDg7cK
+         x+Iw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/9WBFLi2GZ/Ui4GpH9tULtj9LEgcGT39WehBSO1WgzQ=;
-        b=woqZj6kb1wOyEYXl5kAAv/8qWLmheVXKHql1aX+PDKqgUQzgvPAUDFqeLVALzBG9AJ
-         EEsPs1T8xNfe0rsI289Ig/d61w5tp3ZMFSw9Ok/JKjwL1iJJOXiEx/pbACjcnjCcRx5A
-         NkLpYRa07hrbZGsGGQEeA0b3DOO9LHWvzjI3r1bdvngPH5Lt83zeme2hcRtLE0Icc8Fa
-         38bgRmlYiP6T0mHXH3YKPZjWvtzqbG+FRYgbyM8+MhuwMPkRRX/7C1CZcFl8Oi6AeHKP
-         nCoVK0no8Saan30wlR1QusYI9C9gkuv4GzroqJXPNuC9lzHJPW1gJFjG5FnSKLwWHkXW
-         pL0A==
-X-Gm-Message-State: AOAM531R2Exk3o++/c3Kue6YCk7+jRuLDkys6+W9aXfDW79j/4igPMrd
-        WwKpHBhXEeVhj+Av1WZn3GRYCKPDXs7gsRH326RS5wlZbwM=
-X-Google-Smtp-Source: ABdhPJxTFtSaEphADyaZrC3fHSPoD2jCLj9MJgYqmbfqzpp1ApK9lENRCw5aqbmmwF8PM1IEsWByk+YB87sXDhurQl4=
-X-Received: by 2002:a9d:6b98:0:b0:60b:c54:e22b with SMTP id
- b24-20020a9d6b98000000b0060b0c54e22bmr4445740otq.357.1654271382892; Fri, 03
- Jun 2022 08:49:42 -0700 (PDT)
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=UYOlwffmM58R+CDON6dZUZP/KSj/6r4KIPXsM0u8ZmE=;
+        b=vrtwjv3UczBhPMz30UHSWCKmwwbPWAAhLPkkzdk3z2xN8E1q/YPldWyAuVSkhdDq+a
+         P2H7xtlQ3M5+4rOSF8p7jzafKTFmEzrWWto4hVhFXbjm3t2SX0sWE7775/hZHV83J6se
+         G23aFhjifEB1eQblN8WzB8qk++C1Sc4JGm7XlHUOlf0F3js3MIHuTwgYH2Jjt8bUzmHk
+         U2dpY5FRSOW/qNIik1F4PVzoZz1yE1hmKyxsEsJvqm+HvE7R+hq+McVDO+ZKr2UEDl+2
+         1Ai3NAq69zBJ4lDLEPRmFdUD8U2hO3vHnonh/84Q5gkNS8MJKH2elxzPMNx+V24g59Nk
+         uW5g==
+X-Gm-Message-State: AOAM5315D/L2ztgXAXVn1pvLwOE43jrKalpUqxqzFn8L+60hIIxwCYlP
+        wGOgyVnJetTL7B7DYkumUz0=
+X-Google-Smtp-Source: ABdhPJyrbh4+IGQTeLvGWmCulWznMsQdwLukWxlI2auunsMm3k4bLydWUbx2fg2chKsyxFGrBI72VQ==
+X-Received: by 2002:a05:6870:e8c1:b0:f3:1b5b:f277 with SMTP id r1-20020a056870e8c100b000f31b5bf277mr5853755oan.187.1654271511173;
+        Fri, 03 Jun 2022 08:51:51 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id j12-20020a9d190c000000b0060b2972b503sm2156275ota.64.2022.06.03.08.51.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 03 Jun 2022 08:51:50 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <e669408a-727d-c1f8-cb91-05e950ec2881@roeck-us.net>
+Date:   Fri, 3 Jun 2022 08:51:48 -0700
 MIME-Version: 1.0
-References: <20220527090039.pdrazo5e6mwgo3d3@lion.mk-sys.cz>
- <20220527124459.mfo4tjdsjohamsvy@lion.mk-sys.cz> <CADnq5_Pr-FKfhuXT9DR2rYD=dMfD=+Dfev+CO-xeaPGnhwSQaA@mail.gmail.com>
- <20220602142254.2ck7dw7u3xlzdnt2@lion.mk-sys.cz>
-In-Reply-To: <20220602142254.2ck7dw7u3xlzdnt2@lion.mk-sys.cz>
-From:   Alex Deucher <alexdeucher@gmail.com>
-Date:   Fri, 3 Jun 2022 11:49:31 -0400
-Message-ID: <CADnq5_MiQKX4JA-3xbxGYXKHpJqD0Px1NYSiL6yPeTwseoNVGg@mail.gmail.com>
-Subject: Re: (REGRESSION bisected) Re: amdgpu errors (VM fault / GPU fault
- detected) with 5.19 merge window snapshots
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     "Yang, Philip" <Philip.Yang@amd.com>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Content-Language: en-US
+To:     "Hawkins, Nick" <nick.hawkins@hpe.com>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        "Verdun, Jean-Marie" <verdun@hpe.com>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        "linux-watchdog@vger.kernel.org" <linux-watchdog@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "torvalds@linux-foundation.org" <torvalds@linux-foundation.org>
+References: <YpncSXSTTyKGprLi@debian>
+ <10f49cf3-3f92-e5e2-d69a-77c37f12a1fe@roeck-us.net>
+ <DM4PR84MB19274BAD84AE7497C663F70C88A19@DM4PR84MB1927.NAMPRD84.PROD.OUTLOOK.COM>
+From:   Guenter Roeck <linux@roeck-us.net>
+Subject: Re: mainline build failure due to 6b47441bed49 ("watchdog: hpe-wdt:
+ Introduce HPE GXP Watchdog")
+In-Reply-To: <DM4PR84MB19274BAD84AE7497C663F70C88A19@DM4PR84MB1927.NAMPRD84.PROD.OUTLOOK.COM>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 2, 2022 at 10:22 AM Michal Kubecek <mkubecek@suse.cz> wrote:
->
-> On Thu, Jun 02, 2022 at 09:58:22AM -0400, Alex Deucher wrote:
-> > On Fri, May 27, 2022 at 8:58 AM Michal Kubecek <mkubecek@suse.cz> wrote:
-> > > On Fri, May 27, 2022 at 11:00:39AM +0200, Michal Kubecek wrote:
-> > > > Hello,
-> > > >
-> > > > while testing 5.19 merge window snapshots (commits babf0bb978e3 and
-> > > > 7e284070abe5), I keep getting errors like below. I have not seen them
-> > > > with 5.18 final or older.
-> > > >
-> > > > ------------------------------------------------------------------------
-> > > > [  247.150333] gmc_v8_0_process_interrupt: 46 callbacks suppressed
-> > > > [  247.150336] amdgpu 0000:0c:00.0: amdgpu: GPU fault detected: 147 0x00020802 for process firefox pid 6101 thread firefox:cs0 pid 6116
-> > > > [  247.150339] amdgpu 0000:0c:00.0: amdgpu:   VM_CONTEXT1_PROTECTION_FAULT_ADDR   0x00107800
-> > > > [  247.150340] amdgpu 0000:0c:00.0: amdgpu:   VM_CONTEXT1_PROTECTION_FAULT_STATUS 0x0D008002
-> > > > [  247.150341] amdgpu 0000:0c:00.0: amdgpu: VM fault (0x02, vmid 6, pasid 32780) at page 1079296, write from 'TC2' (0x54433200) (8)
-> > > [...]
-> > > > [  249.925909] amdgpu 0000:0c:00.0: amdgpu: IH ring buffer overflow (0x000844C0, 0x00004A00, 0x000044D0)
-> > > > [  250.434986] [drm] Fence fallback timer expired on ring sdma0
-> > > > [  466.621568] gmc_v8_0_process_interrupt: 122 callbacks suppressed
-> > > [...]
-> > > > ------------------------------------------------------------------------
-> > > >
-> > > > There does not seem to be any apparent immediate problem with graphics
-> > > > but when running commit babf0bb978e3, there seemed to be a noticeable
-> > > > lag in some operations, e.g. when moving a window or repainting large
-> > > > part of the terminal window in konsole (no idea if it's related).
-> > > >
-> > > > My GPU is Radeon Pro WX 2100 (1002:6995). What other information should
-> > > > I collect to help debugging the issue?
-> > >
-> > > Bisected to commit 5255e146c99a ("drm/amdgpu: rework TLB flushing").
-> > > There seem to be later commits depending on it so I did not test
-> > > a revert on top of current mainline.
-> > >
-> > > I should also mention that most commits tested as "bad" during the
-> > > bisect did behave much worse than current mainline (errors starting as
-> > > early as with sddm, visibly damaged screen content, sometimes even
-> > > crashes). But all of them issued messages similar to those above into
-> > > kernel log.
-> >
-> > Can you verify that the kernel you tested has this patch:
-> > https://cgit.freedesktop.org/drm/drm/commit/?id=5be323562c6a699d38430bc068a3fd192be8ed0d
->
-> Yes, both of them:
->
-> mike@lion:~/work/git/kernel-upstream> git merge-base --is-ancestor 5be323562c6a babf0bb978e3 && echo yes
-> yes
->
-> (7e284070abe5 is a later mainline snapshot so it also contains
-> 5be323562c6a)
->
-> But it's likely that commit 5be323562c6a fixed most of the problem and
-> only some corner case was left as most bisect steps had many more error
-> messages and some even crashed before I was able to even log into KDE.
-> Compared to that, the mainline snapshots show much fewer errors, no
-> distorted picture and no crash; on the other hand, applications like
-> firefox or stellarium seem to trigger the errors quite consistently.
+On 6/3/22 08:29, Hawkins, Nick wrote:
+>> I sent a patch fixing the problem a minute ago.
+> 
+> Thank you for correcting this. I had the compiler set to W=1, is there another option I should be using to catch errors like this?
+> 
 
-This patch should help:
-https://patchwork.freedesktop.org/patch/488258/
+arm:allmodconfig reproduces the problem. I had seen it as well,
+which is why I sent a fix. The key is to enable -Werror
+(CONFIG_WERROR=y), not W=1.
 
-Alex
-
->
-> Michal
+Guenter
