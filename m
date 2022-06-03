@@ -2,172 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD9CBC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 10:10:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B55C9CCA473
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 10:13:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243487AbiFCKKx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 06:10:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46258 "EHLO
+        id S242356AbiFCKNg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 06:13:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243393AbiFCKKi (ORCPT
+        with ESMTP id S232918AbiFCKNb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 06:10:38 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6B4523B3FB
-        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 03:10:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654251025;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=VJfV/hotJTL7ZePv0RbAazmYZHrUQpKxi4Jb173Q20w=;
-        b=Owgufx5oHAQ/94ZPzQ3GtGh6WRkfhSgqE6A54U/HjhLhBkX7/4QFtfjf7xduIxd33sRLIR
-        WXdqXH95X0XE2IVbpYahZSypcViks9jcqVEszAjgad8DWPiGIFGCAvyiqM+g4jJ0IZ3RkK
-        TFXQiIyu7BzUZBkZVVJxvTsYGiOTyJw=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-619-y528ceswNBifW8e9WJwpEQ-1; Fri, 03 Jun 2022 06:10:21 -0400
-X-MC-Unique: y528ceswNBifW8e9WJwpEQ-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4ABF038005D1;
-        Fri,  3 Jun 2022 10:10:09 +0000 (UTC)
-Received: from eperezma.remote.csb (unknown [10.40.192.190])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 39019492C3B;
-        Fri,  3 Jun 2022 10:10:04 +0000 (UTC)
-From:   =?UTF-8?q?Eugenio=20P=C3=A9rez?= <eperezma@redhat.com>
-To:     kvm@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        virtualization@lists.linux-foundation.org
-Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Longpeng <longpeng2@huawei.com>,
-        Stefano Garzarella <sgarzare@redhat.com>, dinang@xilinx.com,
-        Piotr.Uminski@intel.com, martinpo@xilinx.com, tanuj.kamde@amd.com,
-        Parav Pandit <parav@nvidia.com>,
-        Zhang Min <zhang.min9@zte.com.cn>, habetsm.xilinx@gmail.com,
-        Zhu Lingshan <lingshan.zhu@intel.com>, lulu@redhat.com,
-        hanand@xilinx.com, martinh@xilinx.com,
-        Si-Wei Liu <si-wei.liu@oracle.com>, gautam.dawar@amd.com,
-        Xie Yongji <xieyongji@bytedance.com>, ecree.xilinx@gmail.com,
-        pabloc@xilinx.com, lvivier@redhat.com, Eli Cohen <elic@nvidia.com>,
-        Wu Zongyong <wuzongyong@linux.alibaba.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Subject: [PATCH v5 3/4] vhost-vdpa: uAPI to suspend the device
-Date:   Fri,  3 Jun 2022 12:09:43 +0200
-Message-Id: <20220603100944.871727-4-eperezma@redhat.com>
-In-Reply-To: <20220603100944.871727-1-eperezma@redhat.com>
-References: <20220603100944.871727-1-eperezma@redhat.com>
+        Fri, 3 Jun 2022 06:13:31 -0400
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C29013B03F
+        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 03:13:30 -0700 (PDT)
+Received: by mail-yb1-xb34.google.com with SMTP id e184so12895553ybf.8
+        for <linux-kernel@vger.kernel.org>; Fri, 03 Jun 2022 03:13:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=94ZegRhkYg/saXV+SmkOjrIFO68BuJxSlLGLu4NRWgI=;
+        b=cWnKkwPusG0TKPrwdSeL9GfiK9qV2jq8XHQI841ZQi14sBambMQZLS563NvaLZElf2
+         75115UwtrmhkAHVhZHmiunsBxqODjE2sgZG5RZUUttFd/XjwT9ELF81y1MF+VjPTBsXy
+         Ecc+OxP4Ug9Nkq1KWYx7PsS/8LdlHSvr8pmzuBVF4JJSNw/zCKM/57awLBnHtRJH+URJ
+         ivbdaF8SKbVQFRj++AP6rq74w+ppYkrOD3IrIlaZnu3m6qTtGWAs0bfx8BngaVgPvKTf
+         vdUOkox69Qac8HsvfBibu1f9UhbH8lmh5VamMeFlCaOhbP7O16w6ZyMfyL8EpGm81ssR
+         AiRw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=94ZegRhkYg/saXV+SmkOjrIFO68BuJxSlLGLu4NRWgI=;
+        b=fZ3rw4NZmbxREwSfVFwEtHI7FMVsZDOcKvypieMMhuv08bO0dGzbztaRGElpoIE+7O
+         RPAZy7m3XFJUuuOvrf7u79fpAHCzKZvhGWVaya4cB8oVxvlguXQwfhKc2qipYAmQ0KH5
+         vrRQpc/nFW0xZ/l5cSXwiGW5W3AyICY4ds7MPNPrjGq6xY61Nm8RQ/yPtbPw33tTWm1K
+         JvrH4HrXU9LYiEt7O21X0EUKjGy+YaeoSJIcZRHnEolrVLy/BBFXgndQCPNhCGJXizlV
+         W2jrTt4879eezsLagm00WWzGuv7gBgCrNOG6i4HRJ8WcYq/dxJTPaKwppbA8SkfxNeMI
+         nKqQ==
+X-Gm-Message-State: AOAM531cQ9Ockidwqw9A/CCmVRc4qzNuZad+JSNIODQn/kTqtUClh13P
+        c/1A0EomKVeAa1ifsak4s5m4oWQCM4mRWgveQbQRXQ==
+X-Google-Smtp-Source: ABdhPJw/KRcAuBS5Qsp7lOCZIpBhbUKTpsBgops20ECaxi3YO08dKdMkgM9KLeB4ACdlmuIwzLo5Lgpc34BZ5v0Gd3Y=
+X-Received: by 2002:a5b:302:0:b0:64b:a20a:fcd9 with SMTP id
+ j2-20020a5b0302000000b0064ba20afcd9mr10098240ybp.492.1654251210044; Fri, 03
+ Jun 2022 03:13:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+References: <1650508019-22554-1-git-send-email-baihaowen@meizu.com>
+In-Reply-To: <1650508019-22554-1-git-send-email-baihaowen@meizu.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Fri, 3 Jun 2022 12:13:18 +0200
+Message-ID: <CACRpkdZPZ5fNxt3=LCT4YRcnH5wNw+i50dde_eQGynzK0FCXFw@mail.gmail.com>
+Subject: Re: [PATCH] pinctrl: aspeed: Fix potential NULL dereference in aspeed_pinmux_set_mux()
+To:     Haowen Bai <baihaowen@meizu.com>
+Cc:     Andrew Jeffery <andrew@aj.id.au>, Joel Stanley <joel@jms.id.au>,
+        linux-aspeed@lists.ozlabs.org, openbmc@lists.ozlabs.org,
+        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The ioctl adds support for suspending the device from userspace.
+On Thu, Apr 21, 2022 at 4:28 AM Haowen Bai <baihaowen@meizu.com> wrote:
 
-This is a must before getting virtqueue indexes (base) for live migration,
-since the device could modify them after userland gets them. There are
-individual ways to perform that action for some devices
-(VHOST_NET_SET_BACKEND, VHOST_VSOCK_SET_RUNNING, ...) but there was no
-way to perform it for any vhost device (and, in particular, vhost-vdpa).
+> pdesc could be null but still dereference pdesc->name and it will lead to
+> a null pointer access. So we move a null check before dereference.
+>
+> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
 
-After a successful return of ioctl with suspend = 1, the device must not
-process more virtqueue descriptors, and it must not send any config
-interrupt. The device can answer to read or writes of config fields as
-if it were not suspended. In particular, writing to "queue_enable" with
-a value of 1 will not make the device start processing buffers of the
-virtqueue until the device is resumed (suspend = 0).
+Patch applied, sorry for missing it!
 
-After a successful return of ioctl with suspend = 0, the device will
-start processing data of the virtqueues if other expected conditions are
-met (queue is enabled, DRIVER_OK has already been set to status, etc.)
-If not, the device should be in the same state as if no call to suspend
-callback with suspend = 1 has been performed.
-
-Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
----
- drivers/vhost/vdpa.c       | 31 +++++++++++++++++++++++++++++++
- include/uapi/linux/vhost.h | 14 ++++++++++++++
- 2 files changed, 45 insertions(+)
-
-diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-index f4b492526c6f8..cb47c10bbf471 100644
---- a/drivers/vhost/vdpa.c
-+++ b/drivers/vhost/vdpa.c
-@@ -478,6 +478,34 @@ static long vhost_vdpa_get_vqs_count(struct vhost_vdpa *v, u32 __user *argp)
- 	return 0;
- }
- 
-+/* After a successful return of ioctl with suspend = 1, the device must not
-+ * process more virtqueue descriptors, and it must not send any config
-+ * interrupt. The device can answer to read or writes of config fields as if it
-+ * were not suspended. In particular, writing to "queue_enable" with a value of
-+ * 1 will not make the device start processing buffers of the virtqueue until
-+ * the device is resumed (suspend = 0).
-+ *
-+ * After a successful return of ioctl with suspend = 0, the device will start
-+ * processing data of the virtqueues if other expected conditions are met
-+ * (queue is enabled, DRIVER_OK has already been set to status, etc.) If not,
-+ * the device should be in the same state as if no call to suspend callback
-+ * with suspend = 1 has been performed.
-+ */
-+static long vhost_vdpa_suspend(struct vhost_vdpa *v, u32 __user *argp)
-+{
-+	struct vdpa_device *vdpa = v->vdpa;
-+	const struct vdpa_config_ops *ops = vdpa->config;
-+	int suspend;
-+
-+	if (!ops->suspend)
-+		return -EOPNOTSUPP;
-+
-+	if (copy_from_user(&suspend, argp, sizeof(suspend)))
-+		return -EFAULT;
-+
-+	return ops->suspend(vdpa, suspend);
-+}
-+
- static long vhost_vdpa_vring_ioctl(struct vhost_vdpa *v, unsigned int cmd,
- 				   void __user *argp)
- {
-@@ -652,6 +680,9 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
- 	case VHOST_VDPA_GET_VQS_COUNT:
- 		r = vhost_vdpa_get_vqs_count(v, argp);
- 		break;
-+	case VHOST_VDPA_SUSPEND:
-+		r = vhost_vdpa_suspend(v, argp);
-+		break;
- 	default:
- 		r = vhost_dev_ioctl(&v->vdev, cmd, argp);
- 		if (r == -ENOIOCTLCMD)
-diff --git a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h
-index cab645d4a6455..6d9f451631557 100644
---- a/include/uapi/linux/vhost.h
-+++ b/include/uapi/linux/vhost.h
-@@ -171,4 +171,18 @@
- #define VHOST_VDPA_SET_GROUP_ASID	_IOW(VHOST_VIRTIO, 0x7C, \
- 					     struct vhost_vring_state)
- 
-+/* Suspend or resume a device so it does not process virtqueue requests anymore
-+ *
-+ * After the return of ioctl with suspend != 0, the device must finish any
-+ * pending operations like in flight requests. It must also preserve all the
-+ * necessary state (the virtqueue vring base plus the possible device specific
-+ * states) that is required for restoring in the future. The device must not
-+ * change its configuration after that point.
-+ *
-+ * After the return of ioctl with suspend == 0, the device can continue
-+ * processing buffers as long as typical conditions are met (vq is enabled,
-+ * DRIVER_OK status bit is enabled, etc).
-+ */
-+#define VHOST_VDPA_SUSPEND		_IOW(VHOST_VIRTIO, 0x7D, int)
-+
- #endif
--- 
-2.31.1
-
+Yours,
+Linus Walleij
