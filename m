@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AF2EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:04:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 965A8C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:04:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346363AbiFCSET (ORCPT
+        id S1346552AbiFCSEZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:04:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58244 "EHLO
+        Fri, 3 Jun 2022 14:04:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347256AbiFCRwK (ORCPT
+        with ESMTP id S1347267AbiFCRwK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 3 Jun 2022 13:52:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E40FAA469;
-        Fri,  3 Jun 2022 10:51:19 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC92812AAC;
+        Fri,  3 Jun 2022 10:51:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 823B760EE9;
-        Fri,  3 Jun 2022 17:51:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 950EAC385A9;
-        Fri,  3 Jun 2022 17:51:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 73F7EB82189;
+        Fri,  3 Jun 2022 17:51:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A565EC385B8;
+        Fri,  3 Jun 2022 17:51:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278679;
-        bh=x5kV3Z+YxJqaxbkJ5fOTbYmq3aXHfxYboSUuniNqq7c=;
+        s=korg; t=1654278710;
+        bh=k8dwY4UsBqEZIeUNq0npNOB1aRN/HTu4O5GznizTuIE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rbOzVWFVStBCbI440evV/eWVd7vbH9ek2tT3r8ffF7CYl4f6r6t4EkigQxNpQWH37
-         jS1grldjbV7UQLvg7H2fKt1ETFCYI51818bwCoMMjuorDCH33+W0XYfhOz1L++u9ga
-         bgUg+GM1KaHXaEy9t6726P5ukCFwiUgKhbGHY1wA=
+        b=olCYCKnAmKbKRQrp4JbJ/RcMfMHq2bfsV52Szyv2OPGkf/VA3yXZKbfF3nWAIvhCE
+         zsHJc5PLrkCD5MydxrvnGnnGwZOePnolN53Lkj5fVg297W821LCry8rM3QMy5sN6iy
+         aBz4lwdf4GfXr/ibLA8PevDSCBxlePtM0m++yGRo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiu Jianfeng <xiujianfeng@huawei.com>,
-        Stefan Berger <stefanb@linux.ibm.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>
-Subject: [PATCH 5.15 58/66] tpm: ibmvtpm: Correct the return value in tpm_ibmvtpm_probe()
-Date:   Fri,  3 Jun 2022 19:43:38 +0200
-Message-Id: <20220603173822.334457186@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Andr=C3=A9=20Kapelrud?= <a.kapelrud@gmail.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.15 38/66] ALSA: usb-audio: Add missing ep_idx in fixed EP quirks
+Date:   Fri,  3 Jun 2022 19:43:18 +0200
+Message-Id: <20220603173821.775056441@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.663747061@linuxfoundation.org>
 References: <20220603173820.663747061@linuxfoundation.org>
@@ -50,32 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiu Jianfeng <xiujianfeng@huawei.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-commit d0dc1a7100f19121f6e7450f9cdda11926aa3838 upstream.
+commit 7b0efea4baf02f5e2f89e5f9b75ef891571b45f1 upstream.
 
-Currently it returns zero when CRQ response timed out, it should return
-an error code instead.
+The quirk entry for Focusrite Saffire 6 had no proper ep_idx for the
+capture endpoint, and this confused the driver, resulting in the
+broken sound.  This patch adds the missing ep_idx in the entry.
 
-Fixes: d8d74ea3c002 ("tpm: ibmvtpm: Wait for buffer to be set before proceeding")
-Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
-Reviewed-by: Stefan Berger <stefanb@linux.ibm.com>
-Acked-by: Jarkko Sakkinen <jarkko@kernel.org>
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+While we are at it, a couple of other entries (for Digidesign MBox and
+MOTU MicroBook II) seem to have the same problem, and those are
+covered as well.
+
+Fixes: bf6313a0ff76 ("ALSA: usb-audio: Refactor endpoint management")
+Reported-by: André Kapelrud <a.kapelrud@gmail.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220521065325.426-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/tpm/tpm_ibmvtpm.c |    1 +
- 1 file changed, 1 insertion(+)
+ sound/usb/quirks-table.h |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/char/tpm/tpm_ibmvtpm.c
-+++ b/drivers/char/tpm/tpm_ibmvtpm.c
-@@ -681,6 +681,7 @@ static int tpm_ibmvtpm_probe(struct vio_
- 	if (!wait_event_timeout(ibmvtpm->crq_queue.wq,
- 				ibmvtpm->rtce_buf != NULL,
- 				HZ)) {
-+		rc = -ENODEV;
- 		dev_err(dev, "CRQ response timed out\n");
- 		goto init_irq_cleanup;
- 	}
+--- a/sound/usb/quirks-table.h
++++ b/sound/usb/quirks-table.h
+@@ -2672,6 +2672,7 @@ YAMAHA_DEVICE(0x7010, "UB99"),
+ 					.altset_idx = 1,
+ 					.attributes = 0,
+ 					.endpoint = 0x82,
++					.ep_idx = 1,
+ 					.ep_attr = USB_ENDPOINT_XFER_ISOC,
+ 					.datainterval = 1,
+ 					.maxpacksize = 0x0126,
+@@ -2875,6 +2876,7 @@ YAMAHA_DEVICE(0x7010, "UB99"),
+ 					.altset_idx = 1,
+ 					.attributes = 0x4,
+ 					.endpoint = 0x81,
++					.ep_idx = 1,
+ 					.ep_attr = USB_ENDPOINT_XFER_ISOC |
+ 						USB_ENDPOINT_SYNC_ASYNC,
+ 					.maxpacksize = 0x130,
+@@ -3391,6 +3393,7 @@ YAMAHA_DEVICE(0x7010, "UB99"),
+ 					.altset_idx = 1,
+ 					.attributes = 0,
+ 					.endpoint = 0x03,
++					.ep_idx = 1,
+ 					.rates = SNDRV_PCM_RATE_96000,
+ 					.ep_attr = USB_ENDPOINT_XFER_ISOC |
+ 						   USB_ENDPOINT_SYNC_ASYNC,
 
 
