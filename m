@@ -2,48 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12FCECCA473
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:57:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DBB7C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:57:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345862AbiFCR5e (ORCPT
+        id S1345879AbiFCR5i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:57:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58234 "EHLO
+        Fri, 3 Jun 2022 13:57:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346598AbiFCRvT (ORCPT
+        with ESMTP id S1346665AbiFCRvZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:51:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1851153A65;
-        Fri,  3 Jun 2022 10:48:50 -0700 (PDT)
+        Fri, 3 Jun 2022 13:51:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A8515418F;
+        Fri,  3 Jun 2022 10:49:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 85AFD60F3E;
-        Fri,  3 Jun 2022 17:48:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 863FBC341C0;
-        Fri,  3 Jun 2022 17:48:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CFAF9B8241E;
+        Fri,  3 Jun 2022 17:49:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28899C385A9;
+        Fri,  3 Jun 2022 17:49:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278529;
-        bh=6Cm8N7iGoLf4zRP7xWJkH3JlP5PHe89qcww/m1kqHZs=;
+        s=korg; t=1654278541;
+        bh=Lsl4MGIj+lFgH3ZgJ+tEmOVp6Tpf+jsCIrpUeJnyOnc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=McYZb4N2/b1HzDu20A5iztWCVMDqgiXGNo2NRmfkbX1Q9zB68SKjrLuQH7EK2WKTx
-         6Zo8YHEy6gGd9TbJupZhAgfIf+vOPjOlye5THhgqmC0DNV7dAlnwPiyyknF2Fw55Jc
-         3UdwQANuCgKXxs4OPE5YkS0u4E/wKDoHXZIxe+FM=
+        b=pVaUuKpeLNRf41/hnxvQ0i/KTsc2GlfT6bWKOQs59Iip7cfR0nLPlBEgYME/5jb/F
+         D2/H3HoeXdJQITk4IkqvXOiwoV40S6/UWc2WVYs0Vv74AbkJgKYuAki6MlVvNkq4hA
+         faMHqE2dlwkK1OulGbQd5+kfwG7xBg5IyGAXLaq4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Forest Crossman <cyrozap@gmail.com>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 01/66] ALSA: usb-audio: Dont get sample rate for MCT Trigger 5 USB-to-HDMI
-Date:   Fri,  3 Jun 2022 19:42:41 +0200
-Message-Id: <20220603173820.709252634@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        Alexander Duyck <alexander.h.duyck@intel.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        "Soheil Hassas Yeganeh" <soheil@google.com>,
+        "Sridhar Samudrala" <sridhar.samudrala@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.15 13/66] pipe: make poll_usage boolean and annotate its access
+Date:   Fri,  3 Jun 2022 19:42:53 +0200
+Message-Id: <20220603173821.046674861@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.663747061@linuxfoundation.org>
 References: <20220603173820.663747061@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -51,36 +55,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Forest Crossman <cyrozap@gmail.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
 
-[ Upstream commit d7be213849232a2accb219d537edf056d29186b4 ]
+commit f485922d8fe4e44f6d52a5bb95a603b7c65554bb upstream.
 
-This device doesn't support reading the sample rate, so we need to apply
-this quirk to avoid a 15-second delay waiting for three timeouts.
+Patch series "Fix data-races around epoll reported by KCSAN."
 
-Signed-off-by: Forest Crossman <cyrozap@gmail.com>
-Link: https://lore.kernel.org/r/20220504002444.114011-2-cyrozap@gmail.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This series suppresses a false positive KCSAN's message and fixes a real
+data-race.
+
+
+This patch (of 2):
+
+pipe_poll() runs locklessly and assigns 1 to poll_usage.  Once poll_usage
+is set to 1, it never changes in other places.  However, concurrent writes
+of a value trigger KCSAN, so let's make KCSAN happy.
+
+BUG: KCSAN: data-race in pipe_poll / pipe_poll
+
+write to 0xffff8880042f6678 of 4 bytes by task 174 on cpu 3:
+ pipe_poll (fs/pipe.c:656)
+ ep_item_poll.isra.0 (./include/linux/poll.h:88 fs/eventpoll.c:853)
+ do_epoll_wait (fs/eventpoll.c:1692 fs/eventpoll.c:1806 fs/eventpoll.c:2234)
+ __x64_sys_epoll_wait (fs/eventpoll.c:2246 fs/eventpoll.c:2241 fs/eventpoll.c:2241)
+ do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80)
+ entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:113)
+
+write to 0xffff8880042f6678 of 4 bytes by task 177 on cpu 1:
+ pipe_poll (fs/pipe.c:656)
+ ep_item_poll.isra.0 (./include/linux/poll.h:88 fs/eventpoll.c:853)
+ do_epoll_wait (fs/eventpoll.c:1692 fs/eventpoll.c:1806 fs/eventpoll.c:2234)
+ __x64_sys_epoll_wait (fs/eventpoll.c:2246 fs/eventpoll.c:2241 fs/eventpoll.c:2241)
+ do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80)
+ entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:113)
+
+Reported by Kernel Concurrency Sanitizer on:
+CPU: 1 PID: 177 Comm: epoll_race Not tainted 5.17.0-58927-gf443e374ae13 #6
+Hardware name: Red Hat KVM, BIOS 1.11.0-2.amzn2 04/01/2014
+
+Link: https://lkml.kernel.org/r/20220322002653.33865-1-kuniyu@amazon.co.jp
+Link: https://lkml.kernel.org/r/20220322002653.33865-2-kuniyu@amazon.co.jp
+Fixes: 3b844826b6c6 ("pipe: avoid unnecessary EPOLLET wakeups under normal loads")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+Cc: Alexander Duyck <alexander.h.duyck@intel.com>
+Cc: Al Viro <viro@zeniv.linux.org.uk>
+Cc: Davidlohr Bueso <dave@stgolabs.net>
+Cc: Kuniyuki Iwashima <kuni1840@gmail.com>
+Cc: "Soheil Hassas Yeganeh" <soheil@google.com>
+Cc: "Sridhar Samudrala" <sridhar.samudrala@intel.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/usb/quirks.c | 2 ++
- 1 file changed, 2 insertions(+)
+ fs/pipe.c                 |    2 +-
+ include/linux/pipe_fs_i.h |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/usb/quirks.c b/sound/usb/quirks.c
-index ab9f3da49941..fbbe59054c3f 100644
---- a/sound/usb/quirks.c
-+++ b/sound/usb/quirks.c
-@@ -1822,6 +1822,8 @@ static const struct usb_audio_quirk_flags_table quirk_flags_table[] = {
- 		   QUIRK_FLAG_IGNORE_CTL_ERROR),
- 	DEVICE_FLG(0x06f8, 0xd002, /* Hercules DJ Console (Macintosh Edition) */
- 		   QUIRK_FLAG_IGNORE_CTL_ERROR),
-+	DEVICE_FLG(0x0711, 0x5800, /* MCT Trigger 5 USB-to-HDMI */
-+		   QUIRK_FLAG_GET_SAMPLE_RATE),
- 	DEVICE_FLG(0x074d, 0x3553, /* Outlaw RR2150 (Micronas UAC3553B) */
- 		   QUIRK_FLAG_GET_SAMPLE_RATE),
- 	DEVICE_FLG(0x08bb, 0x2702, /* LineX FM Transmitter */
--- 
-2.35.1
-
+--- a/fs/pipe.c
++++ b/fs/pipe.c
+@@ -652,7 +652,7 @@ pipe_poll(struct file *filp, poll_table
+ 	unsigned int head, tail;
+ 
+ 	/* Epoll has some historical nasty semantics, this enables them */
+-	pipe->poll_usage = 1;
++	WRITE_ONCE(pipe->poll_usage, true);
+ 
+ 	/*
+ 	 * Reading pipe state only -- no need for acquiring the semaphore.
+--- a/include/linux/pipe_fs_i.h
++++ b/include/linux/pipe_fs_i.h
+@@ -71,7 +71,7 @@ struct pipe_inode_info {
+ 	unsigned int files;
+ 	unsigned int r_counter;
+ 	unsigned int w_counter;
+-	unsigned int poll_usage;
++	bool poll_usage;
+ 	struct page *tmp_page;
+ 	struct fasync_struct *fasync_readers;
+ 	struct fasync_struct *fasync_writers;
 
 
