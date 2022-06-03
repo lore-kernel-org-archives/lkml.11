@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A72DCCA483
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:00:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC7F5C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:00:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346631AbiFCSA2 (ORCPT
+        id S1346712AbiFCSAb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:00:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58344 "EHLO
+        Fri, 3 Jun 2022 14:00:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347219AbiFCRwI (ORCPT
+        with ESMTP id S1347102AbiFCRv5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:52:08 -0400
+        Fri, 3 Jun 2022 13:51:57 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AA63562DA;
-        Fri,  3 Jun 2022 10:50:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CCB457B16;
+        Fri,  3 Jun 2022 10:50:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DB9FC60EE9;
-        Fri,  3 Jun 2022 17:50:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E75FDC3411C;
-        Fri,  3 Jun 2022 17:50:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F7D760A0F;
+        Fri,  3 Jun 2022 17:50:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FF17C385A9;
+        Fri,  3 Jun 2022 17:50:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278632;
-        bh=sQ0GPSl5NoQwPN9POfGGNsMy+Sxch4CTIxQGvcHIVJU=;
+        s=korg; t=1654278603;
+        bh=8KN7L+80h1MHPhss4GQUQaL93QCH/hlkREk2DlXPkyI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uNVmtlsI96A2wYZ40DU+Fu95l8C8eENXStboWnRUCz6hUHomfdAO4CncSQ0WEhN7r
-         nxWsKZCsFx+UikUYP4tKKnMB5krM0yM4VE0+qwsVcliIXcXlfLyUylvSBD2K4E0kLM
-         YvLdPUaNX0Z7fGRycTcG8Iuv/wGEFPUgFyy4ky1s=
+        b=hcxZdG4+d/uqaXZqdAndOTdpD9oYhDmzdkvCvlGE2cIoT3xh2TYOtJC5+Z+c3xD/P
+         1Yy2cgacGX4dMKPhp3npZlt3Q3m/QUQaKsKLqmHK7ReRrSOb6hn67ygWfCMkZgU5EJ
+         l3jKOh+8+zsnRUmlxq1pOREo05Gj/QpY+Vt5cgGA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vitaly Chikunov <vt@altlinux.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Subject: [PATCH 5.15 35/66] crypto: ecrdsa - Fix incorrect use of vli_cmp
-Date:   Fri,  3 Jun 2022 19:43:15 +0200
-Message-Id: <20220603173821.665178127@linuxfoundation.org>
+        stable@vger.kernel.org, Qiuhao Li <qiuhao@sysec.org>,
+        Gaoning Pan <pgn@zju.edu.cn>, Yongkang Jia <kangel@zju.edu.cn>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.15 31/66] KVM: x86: avoid calling x86 emulator without a decoded instruction
+Date:   Fri,  3 Jun 2022 19:43:11 +0200
+Message-Id: <20220603173821.553626389@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.663747061@linuxfoundation.org>
 References: <20220603173820.663747061@linuxfoundation.org>
@@ -49,51 +51,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vitaly Chikunov <vt@altlinux.org>
+From: Sean Christopherson <seanjc@google.com>
 
-commit 7cc7ab73f83ee6d50dc9536bc3355495d8600fad upstream.
+commit fee060cd52d69c114b62d1a2948ea9648b5131f9 upstream.
 
-Correctly compare values that shall be greater-or-equal and not just
-greater.
+Whenever x86_decode_emulated_instruction() detects a breakpoint, it
+returns the value that kvm_vcpu_check_breakpoint() writes into its
+pass-by-reference second argument.  Unfortunately this is completely
+bogus because the expected outcome of x86_decode_emulated_instruction
+is an EMULATION_* value.
 
-Fixes: 0d7a78643f69 ("crypto: ecrdsa - add EC-RDSA (GOST 34.10) algorithm")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Vitaly Chikunov <vt@altlinux.org>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Then, if kvm_vcpu_check_breakpoint() does "*r = 0" (corresponding to
+a KVM_EXIT_DEBUG userspace exit), it is misunderstood as EMULATION_OK
+and x86_emulate_instruction() is called without having decoded the
+instruction.  This causes various havoc from running with a stale
+emulation context.
+
+The fix is to move the call to kvm_vcpu_check_breakpoint() where it was
+before commit 4aa2691dcbd3 ("KVM: x86: Factor out x86 instruction
+emulation with decoding") introduced x86_decode_emulated_instruction().
+The other caller of the function does not need breakpoint checks,
+because it is invoked as part of a vmexit and the processor has already
+checked those before executing the instruction that #GP'd.
+
+This fixes CVE-2022-1852.
+
+Reported-by: Qiuhao Li <qiuhao@sysec.org>
+Reported-by: Gaoning Pan <pgn@zju.edu.cn>
+Reported-by: Yongkang Jia <kangel@zju.edu.cn>
+Fixes: 4aa2691dcbd3 ("KVM: x86: Factor out x86 instruction emulation with decoding")
+Cc: stable@vger.kernel.org
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220311032801.3467418-2-seanjc@google.com>
+[Rewrote commit message according to Qiuhao's report, since a patch
+ already existed to fix the bug. - Paolo]
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- crypto/ecrdsa.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ arch/x86/kvm/x86.c |   31 +++++++++++++++++++------------
+ 1 file changed, 19 insertions(+), 12 deletions(-)
 
---- a/crypto/ecrdsa.c
-+++ b/crypto/ecrdsa.c
-@@ -113,15 +113,15 @@ static int ecrdsa_verify(struct akcipher
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -7846,7 +7846,7 @@ int kvm_skip_emulated_instruction(struct
+ }
+ EXPORT_SYMBOL_GPL(kvm_skip_emulated_instruction);
  
- 	/* Step 1: verify that 0 < r < q, 0 < s < q */
- 	if (vli_is_zero(r, ndigits) ||
--	    vli_cmp(r, ctx->curve->n, ndigits) == 1 ||
-+	    vli_cmp(r, ctx->curve->n, ndigits) >= 0 ||
- 	    vli_is_zero(s, ndigits) ||
--	    vli_cmp(s, ctx->curve->n, ndigits) == 1)
-+	    vli_cmp(s, ctx->curve->n, ndigits) >= 0)
- 		return -EKEYREJECTED;
+-static bool kvm_vcpu_check_breakpoint(struct kvm_vcpu *vcpu, int *r)
++static bool kvm_vcpu_check_code_breakpoint(struct kvm_vcpu *vcpu, int *r)
+ {
+ 	if (unlikely(vcpu->guest_debug & KVM_GUESTDBG_USE_HW_BP) &&
+ 	    (vcpu->arch.guest_debug_dr7 & DR7_BP_EN_MASK)) {
+@@ -7915,25 +7915,23 @@ static bool is_vmware_backdoor_opcode(st
+ }
  
- 	/* Step 2: calculate hash (h) of the message (passed as input) */
- 	/* Step 3: calculate e = h \mod q */
- 	vli_from_le64(e, digest, ndigits);
--	if (vli_cmp(e, ctx->curve->n, ndigits) == 1)
-+	if (vli_cmp(e, ctx->curve->n, ndigits) >= 0)
- 		vli_sub(e, e, ctx->curve->n, ndigits);
- 	if (vli_is_zero(e, ndigits))
- 		e[0] = 1;
-@@ -137,7 +137,7 @@ static int ecrdsa_verify(struct akcipher
- 	/* Step 6: calculate point C = z_1P + z_2Q, and R = x_c \mod q */
- 	ecc_point_mult_shamir(&cc, z1, &ctx->curve->g, z2, &ctx->pub_key,
- 			      ctx->curve);
--	if (vli_cmp(cc.x, ctx->curve->n, ndigits) == 1)
-+	if (vli_cmp(cc.x, ctx->curve->n, ndigits) >= 0)
- 		vli_sub(cc.x, cc.x, ctx->curve->n, ndigits);
+ /*
+- * Decode to be emulated instruction. Return EMULATION_OK if success.
++ * Decode an instruction for emulation.  The caller is responsible for handling
++ * code breakpoints.  Note, manually detecting code breakpoints is unnecessary
++ * (and wrong) when emulating on an intercepted fault-like exception[*], as
++ * code breakpoints have higher priority and thus have already been done by
++ * hardware.
++ *
++ * [*] Except #MC, which is higher priority, but KVM should never emulate in
++ *     response to a machine check.
+  */
+ int x86_decode_emulated_instruction(struct kvm_vcpu *vcpu, int emulation_type,
+ 				    void *insn, int insn_len)
+ {
+-	int r = EMULATION_OK;
+ 	struct x86_emulate_ctxt *ctxt = vcpu->arch.emulate_ctxt;
++	int r;
  
- 	/* Step 7: if R == r signature is valid */
+ 	init_emulate_ctxt(vcpu);
+ 
+-	/*
+-	 * We will reenter on the same instruction since we do not set
+-	 * complete_userspace_io. This does not handle watchpoints yet,
+-	 * those would be handled in the emulate_ops.
+-	 */
+-	if (!(emulation_type & EMULTYPE_SKIP) &&
+-	    kvm_vcpu_check_breakpoint(vcpu, &r))
+-		return r;
+-
+ 	r = x86_decode_insn(ctxt, insn, insn_len, emulation_type);
+ 
+ 	trace_kvm_emulate_insn_start(vcpu);
+@@ -7966,6 +7964,15 @@ int x86_emulate_instruction(struct kvm_v
+ 	if (!(emulation_type & EMULTYPE_NO_DECODE)) {
+ 		kvm_clear_exception_queue(vcpu);
+ 
++		/*
++		 * Return immediately if RIP hits a code breakpoint, such #DBs
++		 * are fault-like and are higher priority than any faults on
++		 * the code fetch itself.
++		 */
++		if (!(emulation_type & EMULTYPE_SKIP) &&
++		    kvm_vcpu_check_code_breakpoint(vcpu, &r))
++			return r;
++
+ 		r = x86_decode_emulated_instruction(vcpu, emulation_type,
+ 						    insn, insn_len);
+ 		if (r != EMULATION_OK)  {
 
 
