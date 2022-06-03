@@ -2,50 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC983CCA473
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:53:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28327C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:53:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345611AbiFCRxh (ORCPT
+        id S1343605AbiFCRxm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:53:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46560 "EHLO
+        Fri, 3 Jun 2022 13:53:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345621AbiFCRuD (ORCPT
+        with ESMTP id S1345680AbiFCRuF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:50:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB9D4583A8;
-        Fri,  3 Jun 2022 10:46:07 -0700 (PDT)
+        Fri, 3 Jun 2022 13:50:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 349CA580FF;
+        Fri,  3 Jun 2022 10:46:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 63AC4B82430;
-        Fri,  3 Jun 2022 17:46:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3222C385A9;
-        Fri,  3 Jun 2022 17:46:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6805AB82419;
+        Fri,  3 Jun 2022 17:46:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2E0DC385A9;
+        Fri,  3 Jun 2022 17:46:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278365;
-        bh=+8/rSL0dktqyZfvWABToCYxgk0Wct5z+yxpZFfy6gak=;
+        s=korg; t=1654278371;
+        bh=6Ppkon/hC2eAj/T1dzUhBA7Eve7f37CkXZaPIG8Z9Sc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zJ/NNyNU/7l2cmiYZuIfTHFcVsKspw4e+c7V2mcpT18KBr14Sh9JVt3w2EJUerTnh
-         559KHU80WwuzuQghDUQLMxwylpY0eBG7KCQhPibiwzjy20i5WOPe1uAWR6HU9oowfE
-         ee3gK5nHXJB81eiHYZsLe41PTR4BfGMPjd5ou37g=
+        b=ppz38QBJVFyVu4Wy/z/+k8prCoKerIqCiUJ9alXQVYNAEOLWl3mIq23kEAIEuW7PY
+         N2d0gYBI+PNkG7EQLz43im5OzQfrnOA/2Gwh59RxcH18TAJRbFTXB9xSLYKzdIvdoD
+         PjYM1qPU8mu4FB7tzerQYSnSmmKExA2WWMmjR1BA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, IotaHydrae <writeforever@foxmail.com>,
-        Andre Przywara <andre.przywara@arm.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 01/53] pinctrl: sunxi: fix f1c100s uart2 function
-Date:   Fri,  3 Jun 2022 19:42:46 +0200
-Message-Id: <20220603173818.760924525@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Miri Korenblit <miriam.rachel.korenblit@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Johannes Berg <johannes.berg@intel.com>
+Subject: [PATCH 5.10 11/53] cfg80211: set custom regdomain after wiphy registration
+Date:   Fri,  3 Jun 2022 19:42:56 +0200
+Message-Id: <20220603173819.050098450@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173818.716010877@linuxfoundation.org>
 References: <20220603173818.716010877@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -53,45 +51,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: IotaHydrae <writeforever@foxmail.com>
+From: Miri Korenblit <miriam.rachel.korenblit@intel.com>
 
-[ Upstream commit fa8785e5931367e2b43f2c507f26bcf3e281c0ca ]
+commit 1b7b3ac8ff3317cdcf07a1c413de9bdb68019c2b upstream.
 
-Change suniv f1c100s pinctrl,PD14 multiplexing function lvds1 to uart2
+We used to set regulatory info before the registration of
+the device and then the regulatory info didn't get set, because
+the device isn't registered so there isn't a device to set the
+regulatory info for. So set the regulatory info after the device
+registration.
+Call reg_process_self_managed_hints() once again after the device
+registration because it does nothing before it.
 
-When the pin PD13 and PD14 is setting up to uart2 function in dts,
-there's an error occurred:
-1c20800.pinctrl: unsupported function uart2 on pin PD14
-
-Because 'uart2' is not any one multiplexing option of PD14,
-and pinctrl don't know how to configure it.
-
-So change the pin PD14 lvds1 function to uart2.
-
-Signed-off-by: IotaHydrae <writeforever@foxmail.com>
-Reviewed-by: Andre Przywara <andre.przywara@arm.com>
-Link: https://lore.kernel.org/r/tencent_70C1308DDA794C81CAEF389049055BACEC09@qq.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Miri Korenblit <miriam.rachel.korenblit@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20210618133832.c96eadcffe80.I86799c2c866b5610b4cf91115c21d8ceb525c5aa@changeid
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pinctrl/sunxi/pinctrl-suniv-f1c100s.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/wireless/core.c |    8 ++++----
+ net/wireless/reg.c  |    1 +
+ 2 files changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/pinctrl/sunxi/pinctrl-suniv-f1c100s.c b/drivers/pinctrl/sunxi/pinctrl-suniv-f1c100s.c
-index 2801ca706273..68a5b627fb9b 100644
---- a/drivers/pinctrl/sunxi/pinctrl-suniv-f1c100s.c
-+++ b/drivers/pinctrl/sunxi/pinctrl-suniv-f1c100s.c
-@@ -204,7 +204,7 @@ static const struct sunxi_desc_pin suniv_f1c100s_pins[] = {
- 		  SUNXI_FUNCTION(0x0, "gpio_in"),
- 		  SUNXI_FUNCTION(0x1, "gpio_out"),
- 		  SUNXI_FUNCTION(0x2, "lcd"),		/* D20 */
--		  SUNXI_FUNCTION(0x3, "lvds1"),		/* RX */
-+		  SUNXI_FUNCTION(0x3, "uart2"),		/* RX */
- 		  SUNXI_FUNCTION_IRQ_BANK(0x6, 0, 14)),
- 	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 15),
- 		  SUNXI_FUNCTION(0x0, "gpio_in"),
--- 
-2.35.1
-
+--- a/net/wireless/core.c
++++ b/net/wireless/core.c
+@@ -5,7 +5,7 @@
+  * Copyright 2006-2010		Johannes Berg <johannes@sipsolutions.net>
+  * Copyright 2013-2014  Intel Mobile Communications GmbH
+  * Copyright 2015-2017	Intel Deutschland GmbH
+- * Copyright (C) 2018-2020 Intel Corporation
++ * Copyright (C) 2018-2021 Intel Corporation
+  */
+ 
+ #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+@@ -918,9 +918,6 @@ int wiphy_register(struct wiphy *wiphy)
+ 		return res;
+ 	}
+ 
+-	/* set up regulatory info */
+-	wiphy_regulatory_register(wiphy);
+-
+ 	list_add_rcu(&rdev->list, &cfg80211_rdev_list);
+ 	cfg80211_rdev_list_generation++;
+ 
+@@ -931,6 +928,9 @@ int wiphy_register(struct wiphy *wiphy)
+ 	cfg80211_debugfs_rdev_add(rdev);
+ 	nl80211_notify_wiphy(rdev, NL80211_CMD_NEW_WIPHY);
+ 
++	/* set up regulatory info */
++	wiphy_regulatory_register(wiphy);
++
+ 	if (wiphy->regulatory_flags & REGULATORY_CUSTOM_REG) {
+ 		struct regulatory_request request;
+ 
+--- a/net/wireless/reg.c
++++ b/net/wireless/reg.c
+@@ -4001,6 +4001,7 @@ void wiphy_regulatory_register(struct wi
+ 
+ 	wiphy_update_regulatory(wiphy, lr->initiator);
+ 	wiphy_all_share_dfs_chan_state(wiphy);
++	reg_process_self_managed_hints();
+ }
+ 
+ void wiphy_regulatory_deregister(struct wiphy *wiphy)
 
 
