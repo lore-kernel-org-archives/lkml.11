@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19AD2CCA473
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:42:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF3D7C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:42:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344654AbiFCRmb (ORCPT
+        id S1344876AbiFCRmg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:42:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56768 "EHLO
+        Fri, 3 Jun 2022 13:42:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344756AbiFCRlz (ORCPT
+        with ESMTP id S1344644AbiFCRl5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:41:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EE6B53A51;
-        Fri,  3 Jun 2022 10:41:15 -0700 (PDT)
+        Fri, 3 Jun 2022 13:41:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C473B54027;
+        Fri,  3 Jun 2022 10:41:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A975361B00;
-        Fri,  3 Jun 2022 17:41:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9955BC385A9;
-        Fri,  3 Jun 2022 17:41:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1FF99B8242D;
+        Fri,  3 Jun 2022 17:41:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A3C9C385A9;
+        Fri,  3 Jun 2022 17:41:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278074;
-        bh=nEEt0MjSOfaKM23Di3zdTZzjV4Q96cjTsIQFdDcNp/8=;
+        s=korg; t=1654278079;
+        bh=NtzRiktix8jeRbEZOojHE8GwvkEJds2YxrmN8m2tScc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E5gKrqq7HPbZxESwJQPR2fsnAHre+aQgy3g4fG24Ufyk0uf6J3Dz/8xShx2hQZc5+
-         2lG6/9mShwFMbcubmTnwg0NS+hWwNlnlpiOI738FNJ5/7BsWLaXMTbOKU48hnfzIjr
-         z0Zd20snTy2Ted0gMWLkrjBtyTJCW9Jht4SYonwg=
+        b=vmvNuQC4gDi9+68l4Ij59T6cN8T9VEYQg2+nirhtIy7P3adcB01wx+e8b0DblI/NU
+         92gOR0DPmxhcw40c2p87qdpot1LZEnMuMBQU7oW1IOmvnLbDk5Tqu/9ZzV8GFNt/Rq
+         XTrveGVI0GaM2s0vRM2/NxOv2AyTupivdc8tFgHg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Mikulas Patocka <mpatocka@redhat.com>,
+        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
         Mike Snitzer <snitzer@kernel.org>
-Subject: [PATCH 4.14 16/23] dm integrity: fix error code in dm_integrity_ctr()
-Date:   Fri,  3 Jun 2022 19:39:43 +0200
-Message-Id: <20220603173814.856716104@linuxfoundation.org>
+Subject: [PATCH 4.14 18/23] dm stats: add cond_resched when looping over entries
+Date:   Fri,  3 Jun 2022 19:39:45 +0200
+Message-Id: <20220603173814.915207602@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173814.362515009@linuxfoundation.org>
 References: <20220603173814.362515009@linuxfoundation.org>
@@ -50,37 +49,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Mikulas Patocka <mpatocka@redhat.com>
 
-commit d3f2a14b8906df913cb04a706367b012db94a6e8 upstream.
+commit bfe2b0146c4d0230b68f5c71a64380ff8d361f8b upstream.
 
-The "r" variable shadows an earlier "r" that has function scope.  It
-means that we accidentally return success instead of an error code.
-Smatch has a warning for this:
+dm-stats can be used with a very large number of entries (it is only
+limited by 1/4 of total system memory), so add rescheduling points to
+the loops that iterate over the entries.
 
-	drivers/md/dm-integrity.c:4503 dm_integrity_ctr()
-	warn: missing error code 'r'
-
-Fixes: 7eada909bfd7 ("dm: add integrity target")
 Cc: stable@vger.kernel.org
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reviewed-by: Mikulas Patocka <mpatocka@redhat.com>
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
 Signed-off-by: Mike Snitzer <snitzer@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/dm-integrity.c |    2 --
- 1 file changed, 2 deletions(-)
+ drivers/md/dm-stats.c |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
---- a/drivers/md/dm-integrity.c
-+++ b/drivers/md/dm-integrity.c
-@@ -3156,8 +3156,6 @@ static int dm_integrity_ctr(struct dm_ta
+--- a/drivers/md/dm-stats.c
++++ b/drivers/md/dm-stats.c
+@@ -224,6 +224,7 @@ void dm_stats_cleanup(struct dm_stats *s
+ 				       atomic_read(&shared->in_flight[READ]),
+ 				       atomic_read(&shared->in_flight[WRITE]));
+ 			}
++			cond_resched();
+ 		}
+ 		dm_stat_free(&s->rcu_head);
+ 	}
+@@ -312,6 +313,7 @@ static int dm_stats_create(struct dm_sta
+ 	for (ni = 0; ni < n_entries; ni++) {
+ 		atomic_set(&s->stat_shared[ni].in_flight[READ], 0);
+ 		atomic_set(&s->stat_shared[ni].in_flight[WRITE], 0);
++		cond_resched();
  	}
  
- 	if (should_write_sb) {
--		int r;
--
- 		init_journal(ic, 0, ic->journal_sections, 0);
- 		r = dm_integrity_failed(ic);
- 		if (unlikely(r)) {
+ 	if (s->n_histogram_entries) {
+@@ -324,6 +326,7 @@ static int dm_stats_create(struct dm_sta
+ 		for (ni = 0; ni < n_entries; ni++) {
+ 			s->stat_shared[ni].tmp.histogram = hi;
+ 			hi += s->n_histogram_entries + 1;
++			cond_resched();
+ 		}
+ 	}
+ 
+@@ -344,6 +347,7 @@ static int dm_stats_create(struct dm_sta
+ 			for (ni = 0; ni < n_entries; ni++) {
+ 				p[ni].histogram = hi;
+ 				hi += s->n_histogram_entries + 1;
++				cond_resched();
+ 			}
+ 		}
+ 	}
+@@ -473,6 +477,7 @@ static int dm_stats_list(struct dm_stats
+ 			}
+ 			DMEMIT("\n");
+ 		}
++		cond_resched();
+ 	}
+ 	mutex_unlock(&stats->mutex);
+ 
+@@ -749,6 +754,7 @@ static void __dm_stat_clear(struct dm_st
+ 				local_irq_enable();
+ 			}
+ 		}
++		cond_resched();
+ 	}
+ }
+ 
+@@ -864,6 +870,8 @@ static int dm_stats_print(struct dm_stat
+ 
+ 		if (unlikely(sz + 1 >= maxlen))
+ 			goto buffer_overflow;
++
++		cond_resched();
+ 	}
+ 
+ 	if (clear)
 
 
