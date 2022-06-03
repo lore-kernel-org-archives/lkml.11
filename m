@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 898FAC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77E15CCA47C
 	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:07:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348100AbiFCSGi (ORCPT
+        id S1348046AbiFCSGg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:06:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60408 "EHLO
+        Fri, 3 Jun 2022 14:06:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345580AbiFCRyY (ORCPT
+        with ESMTP id S1345563AbiFCRyS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:54:24 -0400
+        Fri, 3 Jun 2022 13:54:18 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F5A331518;
-        Fri,  3 Jun 2022 10:52:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32B0C2A730;
+        Fri,  3 Jun 2022 10:52:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 05D5161255;
-        Fri,  3 Jun 2022 17:52:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13D76C385A9;
-        Fri,  3 Jun 2022 17:52:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E18561244;
+        Fri,  3 Jun 2022 17:52:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 395A3C385B8;
+        Fri,  3 Jun 2022 17:52:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278759;
-        bh=iGBBStVTAl4oKKtotsVtuXy7Kc48haBI5YYBY5E0+qs=;
+        s=korg; t=1654278756;
+        bh=6vq5ZPUa7dZjMfqV76WFz9nRr50JLE/6zI0Y9s9xcII=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xa9/6viA4MemMedbqsGDmaXkhF5HeT/QOouqR96hzbmRwnmEOz5xdrM1UJSGjq3VN
-         tDXnRR4VHAErHRdAIBtNMv5KVjucmjTK3PRg7Flf3UgTHjb0OjhiHXsHUGZRhJ9Eb1
-         wmtv7RrRFYQvGOBjlmK8Ls9yyLV7mn+5aREh9O5U=
+        b=Q2EWUFe1x0rhQ5cEZAn7aKa6UcR4Zj1st6BRMYrz2YUU2b14v8APn0iuY1nEDGzN3
+         Mqi/7KFS2zizz8ZvuyXIKzWPsmfLwgnwKnHy68FqCitn0tDhyfw71hECK00UHM4JhY
+         Gqz0dJi+DsNaGldDyX0CtcmmtfiQo05CpMUJ3u3w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Gabriele Mazzotta <gabriele.mzt@gmail.com>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 02/75] ALSA: hda/realtek: Add quirk for Dell Latitude 7520
-Date:   Fri,  3 Jun 2022 19:42:46 +0200
-Message-Id: <20220603173821.820340826@linuxfoundation.org>
+        stable@vger.kernel.org, Alex Elder <elder@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.17 17/75] net: ipa: compute proper aggregation limit
+Date:   Fri,  3 Jun 2022 19:43:01 +0200
+Message-Id: <20220603173822.238798419@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173821.749019262@linuxfoundation.org>
 References: <20220603173821.749019262@linuxfoundation.org>
@@ -49,105 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gabriele Mazzotta <gabriele.mzt@gmail.com>
+From: Alex Elder <elder@linaro.org>
 
-[ Upstream commit 1efcdd9c1f34f5a6590bc9ac5471e562fb011386 ]
+commit c5794097b269f15961ed78f7f27b50e51766dec9 upstream.
 
-The driver is currently using ALC269_FIXUP_DELL4_MIC_NO_PRESENCE for
-the Latitude 7520, but this fixup chain has some issues:
+The aggregation byte limit for an endpoint is currently computed
+based on the endpoint's receive buffer size.
 
- - The internal mic is really loud and the recorded audio is distorted
-   at "standard" audio levels.
+However, some bytes at the front of each receive buffer are reserved
+on the assumption that--as with SKBs--it might be useful to insert
+data (such as headers) before what lands in the buffer.
 
- - There are pop noises at system startup and when plugging/unplugging
-   headphone jacks.
+The aggregation byte limit currently doesn't take into account that
+reserved space, and as a result, aggregation could require space
+past that which is available in the buffer.
 
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215885
-Signed-off-by: Gabriele Mazzotta <gabriele.mzt@gmail.com>
-Link: https://lore.kernel.org/r/20220501124237.4667-1-gabriele.mzt@gmail.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fix this by reducing the size used to compute the aggregation byte
+limit by the NET_SKB_PAD offset reserved for each receive buffer.
+
+Signed-off-by: Alex Elder <elder@linaro.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_realtek.c | 43 +++++++++++++++++++++++++++++++++++
- 1 file changed, 43 insertions(+)
+ drivers/net/ipa/ipa_endpoint.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index e38acdbe1a3b..cc3cf65ad5b9 100644
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -6773,6 +6773,41 @@ static void alc256_fixup_mic_no_presence_and_resume(struct hda_codec *codec,
- 	}
- }
+--- a/drivers/net/ipa/ipa_endpoint.c
++++ b/drivers/net/ipa/ipa_endpoint.c
+@@ -723,13 +723,15 @@ static void ipa_endpoint_init_aggr(struc
  
-+static void alc_fixup_dell4_mic_no_presence_quiet(struct hda_codec *codec,
-+						  const struct hda_fixup *fix,
-+						  int action)
-+{
-+	struct alc_spec *spec = codec->spec;
-+	struct hda_input_mux *imux = &spec->gen.input_mux;
-+	int i;
-+
-+	alc269_fixup_limit_int_mic_boost(codec, fix, action);
-+
-+	switch (action) {
-+	case HDA_FIXUP_ACT_PRE_PROBE:
-+		/**
-+		 * Set the vref of pin 0x19 (Headset Mic) and pin 0x1b (Headphone Mic)
-+		 * to Hi-Z to avoid pop noises at startup and when plugging and
-+		 * unplugging headphones.
-+		 */
-+		snd_hda_codec_set_pin_target(codec, 0x19, PIN_VREFHIZ);
-+		snd_hda_codec_set_pin_target(codec, 0x1b, PIN_VREFHIZ);
-+		break;
-+	case HDA_FIXUP_ACT_PROBE:
-+		/**
-+		 * Make the internal mic (0x12) the default input source to
-+		 * prevent pop noises on cold boot.
-+		 */
-+		for (i = 0; i < imux->num_items; i++) {
-+			if (spec->gen.imux_pins[i] == 0x12) {
-+				spec->gen.cur_mux[0] = i;
-+				break;
-+			}
-+		}
-+		break;
-+	}
-+}
-+
- enum {
- 	ALC269_FIXUP_GPIO2,
- 	ALC269_FIXUP_SONY_VAIO,
-@@ -6814,6 +6849,7 @@ enum {
- 	ALC269_FIXUP_DELL2_MIC_NO_PRESENCE,
- 	ALC269_FIXUP_DELL3_MIC_NO_PRESENCE,
- 	ALC269_FIXUP_DELL4_MIC_NO_PRESENCE,
-+	ALC269_FIXUP_DELL4_MIC_NO_PRESENCE_QUIET,
- 	ALC269_FIXUP_HEADSET_MODE,
- 	ALC269_FIXUP_HEADSET_MODE_NO_HP_MIC,
- 	ALC269_FIXUP_ASPIRE_HEADSET_MIC,
-@@ -8770,6 +8806,12 @@ static const struct hda_fixup alc269_fixups[] = {
- 		.chained = true,
- 		.chain_id = ALC285_FIXUP_HP_MUTE_LED,
- 	},
-+	[ALC269_FIXUP_DELL4_MIC_NO_PRESENCE_QUIET] = {
-+		.type = HDA_FIXUP_FUNC,
-+		.v.func = alc_fixup_dell4_mic_no_presence_quiet,
-+		.chained = true,
-+		.chain_id = ALC269_FIXUP_DELL4_MIC_NO_PRESENCE,
-+	},
- };
+ 	if (endpoint->data->aggregation) {
+ 		if (!endpoint->toward_ipa) {
++			u32 buffer_size;
+ 			bool close_eof;
+ 			u32 limit;
  
- static const struct snd_pci_quirk alc269_fixup_tbl[] = {
-@@ -8860,6 +8902,7 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
- 	SND_PCI_QUIRK(0x1028, 0x09bf, "Dell Precision", ALC233_FIXUP_ASUS_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1028, 0x0a2e, "Dell", ALC236_FIXUP_DELL_AIO_HEADSET_MIC),
- 	SND_PCI_QUIRK(0x1028, 0x0a30, "Dell", ALC236_FIXUP_DELL_AIO_HEADSET_MIC),
-+	SND_PCI_QUIRK(0x1028, 0x0a38, "Dell Latitude 7520", ALC269_FIXUP_DELL4_MIC_NO_PRESENCE_QUIET),
- 	SND_PCI_QUIRK(0x1028, 0x0a58, "Dell", ALC255_FIXUP_DELL_HEADSET_MIC),
- 	SND_PCI_QUIRK(0x1028, 0x0a61, "Dell XPS 15 9510", ALC289_FIXUP_DUAL_SPK),
- 	SND_PCI_QUIRK(0x1028, 0x0a62, "Dell Precision 5560", ALC289_FIXUP_DUAL_SPK),
--- 
-2.35.1
-
+ 			val |= u32_encode_bits(IPA_ENABLE_AGGR, AGGR_EN_FMASK);
+ 			val |= u32_encode_bits(IPA_GENERIC, AGGR_TYPE_FMASK);
+ 
+-			limit = ipa_aggr_size_kb(IPA_RX_BUFFER_SIZE);
++			buffer_size = IPA_RX_BUFFER_SIZE - NET_SKB_PAD;
++			limit = ipa_aggr_size_kb(buffer_size);
+ 			val |= aggr_byte_limit_encoded(version, limit);
+ 
+ 			limit = IPA_AGGR_TIME_LIMIT;
 
 
