@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21C1AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:02:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0087AC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:02:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346294AbiFCSCo (ORCPT
+        id S1346325AbiFCSCu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:02:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58162 "EHLO
+        Fri, 3 Jun 2022 14:02:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347262AbiFCRwK (ORCPT
+        with ESMTP id S1347258AbiFCRwK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 3 Jun 2022 13:52:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AF16E3F;
-        Fri,  3 Jun 2022 10:51:46 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1543EA478;
+        Fri,  3 Jun 2022 10:51:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3F326B82189;
-        Fri,  3 Jun 2022 17:51:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91C88C385A9;
-        Fri,  3 Jun 2022 17:51:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A552760EE9;
+        Fri,  3 Jun 2022 17:51:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6EF0C385B8;
+        Fri,  3 Jun 2022 17:51:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278704;
-        bh=r/EVGuixxhLyn4hbt87fKDBBAPp8TGSvK5WszfHhZ5Y=;
+        s=korg; t=1654278685;
+        bh=iVhxgBee0090K+JMRIMNDvagDEz2fQsj8dQrdToLUgg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=itooazSEeiYbbUDMiRc5f0WingTZUOTxIfSuk8nCAwVDF3QFz6nALfi6+pGbopemd
-         nsu+1rddJhplQwvmtLA8qPYQ3OR6qJREV/83xXrxeDCY/GC8weZzyln6UBfFjf21Aa
-         MK0Wuf+G6pqmt9/oCj7Ekiwxr8YTEc4KaEvwth0A=
+        b=O4VfgkhrELevKR3zonCy0ElKPG/UkSEOLPh2X1JcNtEqX0BY1HvkVL5oeUTqNXbqW
+         YCuBJMG4UVSIMMsi6vVlmuWMvXb7UOPfXC8JCPSxwMfjD7/0POdyDtuBcTiNkS9+oW
+         Ny+t4ON1ArcqxC5rHpYik3GybWY21jfQqSnejof4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: [PATCH 5.15 65/66] bpf: Reject writes for PTR_TO_MAP_KEY in check_helper_mem_access
-Date:   Fri,  3 Jun 2022 19:43:45 +0200
-Message-Id: <20220603173822.532138272@linuxfoundation.org>
+        stable@vger.kernel.org, Olga Kornievskaia <aglo@umich.edu>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>
+Subject: [PATCH 5.15 60/66] NFS: Memory allocation failures are not server fatal errors
+Date:   Fri,  3 Jun 2022 19:43:40 +0200
+Message-Id: <20220603173822.391111019@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.663747061@linuxfoundation.org>
 References: <20220603173820.663747061@linuxfoundation.org>
@@ -49,36 +50,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-commit 7b3552d3f9f6897851fc453b5131a967167e43c2 upstream.
+commit 452284407c18d8a522c3039339b1860afa0025a8 upstream.
 
-It is not permitted to write to PTR_TO_MAP_KEY, but the current code in
-check_helper_mem_access would allow for it, reject this case as well, as
-helpers taking ARG_PTR_TO_UNINIT_MEM also take PTR_TO_MAP_KEY.
+We need to filter out ENOMEM in nfs_error_is_fatal_on_server(), because
+running out of memory on our client is not a server error.
 
-Fixes: 69c087ba6225 ("bpf: Add bpf_for_each_map_elem() helper")
-Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Link: https://lore.kernel.org/r/20220319080827.73251-4-memxor@gmail.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Reported-by: Olga Kornievskaia <aglo@umich.edu>
+Fixes: 2dc23afffbca ("NFS: ENOMEM should also be a fatal error.")
+Cc: stable@vger.kernel.org
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/bpf/verifier.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ fs/nfs/internal.h |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -4587,6 +4587,11 @@ static int check_helper_mem_access(struc
- 		return check_packet_access(env, regno, reg->off, access_size,
- 					   zero_size_allowed);
- 	case PTR_TO_MAP_KEY:
-+		if (meta && meta->raw_mode) {
-+			verbose(env, "R%d cannot write into %s\n", regno,
-+				reg_type_str(env, reg->type));
-+			return -EACCES;
-+		}
- 		return check_mem_region_access(env, regno, reg->off, access_size,
- 					       reg->map_ptr->key_size, false);
- 	case PTR_TO_MAP_VALUE:
+--- a/fs/nfs/internal.h
++++ b/fs/nfs/internal.h
+@@ -834,6 +834,7 @@ static inline bool nfs_error_is_fatal_on
+ 	case 0:
+ 	case -ERESTARTSYS:
+ 	case -EINTR:
++	case -ENOMEM:
+ 		return false;
+ 	}
+ 	return nfs_error_is_fatal(err);
 
 
