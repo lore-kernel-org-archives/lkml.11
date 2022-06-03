@@ -2,58 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 671ABC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 00:49:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFB8AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 00:53:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237726AbiFCAte (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 20:49:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48002 "EHLO
+        id S239079AbiFCAtt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 20:49:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240164AbiFCAo4 (ORCPT
+        with ESMTP id S240196AbiFCApC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 20:44:56 -0400
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B60D344CC
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:44:54 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id c14-20020a17090a1d0e00b001e328238e7eso3403556pjd.4
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:44:54 -0700 (PDT)
+        Thu, 2 Jun 2022 20:45:02 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CB10344DC
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:45:01 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id z16-20020a17090a015000b001dbc8da29a1so3397954pje.7
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:45:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=hnhNz3Ofe6LEPVXH+Amyp+XINRrzOMpsHHCdOeUGVmg=;
-        b=kTTX6shv/RmLvPSjjFRuP0FKoEB6fBja5N2hjLlvRl9c4lVLzxZHmFC3V1+jOAwAUH
-         y3OHKXroMxXps81s19DFEZa4UCkblB0rWVyo5MEL2YE1IT7o7478ZsDpaAFlwxcywCa1
-         L7sRfI+w+lhmd9Z3WDoOTfRX+48xPt3tX3bJ0iG4jSn25uyP79YJ6LxtIpKCrrXk5jTy
-         Ut2Z/S47K9RezDu/W+b5981Ahi67oIouC/sCNjpUE4STwLt8yhyg8D0Xl564af1IZFgz
-         lFFNA8bfrz7Vu7uWax1JLzE0uWb13xLgneXbWIJeBtAVEpqVlTD2oPOx19RNx6KF/Pty
-         pNbw==
+        bh=gIPvcmUhN4Q/tzt8VkoAiW7RJdbdD7hzLHuZ6TYurvI=;
+        b=hXGNCWjCV9ArfJclpReO6CN0EfYjGd/HFztxZF0DwWjo64J9VSrZuuUiQaqmfF29TU
+         2ULIWtoVVt6l8JI1LO1LjHtiAySbCujkN2oa/eGw9KeATdr8CfRi9DhndJ5I205FFROP
+         x1BXIIvwS0tHzgQVcgdvvN0MLQa0/Qpi3ZH6ny/cbLQwqAxqg/4MszsHyp5HPKBtgnyb
+         T93d96Z/hklXfq7M2E22uwX1ccRRz7vY8mc6KF6rEdpqkJ37niG0oc4QE7jbUylt9ke1
+         FgXrAg+GK0F2kAv/YgHUUZDp6KFN5kpD5sCwIoY9PvrlQ/xJjOW5RAh41d6Y67VX2oQh
+         jt1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=hnhNz3Ofe6LEPVXH+Amyp+XINRrzOMpsHHCdOeUGVmg=;
-        b=OYfBlAJBCtxYKCXKhZoG+Rog3aYcTQpYjuhq8rwyqc3KdZn3+mti8FpsvQnC5pM9Ey
-         KlWetjR7dmcRSov5YhYRLbmqwvBxJw1K2V65PZnN+OA+fJdTYnjQD7UjxCoUGkQJcnCE
-         9bbKOW6vrOFKnNS1a87DtOusZDi+R3d2wtVKa/Ov7nVkQ/x48W3VoG+CZ4i8RKar0hqV
-         NMWIRoOjqY8dN4eSaVwaiDyc15ktH8Ep9jrcpzmvk2keO6YFcJLYBz8uYzXkvmpehsTC
-         LWXzp0DM/zcDXbXdwaSUlhgfYn6QkpSWQ/ZGRUUaoxmgoH58NunKsNQbGkABZY3+anj6
-         stKQ==
-X-Gm-Message-State: AOAM533F8uuRYFXVrtAiaihEkC3P8jinzK1/G5mWS6vHMBOGkwlIyeh4
-        NUN5Gqa8ckKWyz77TXC8tdQhHhtW+GE=
-X-Google-Smtp-Source: ABdhPJw8pu/Nf51rsweJnU5stWxffZj9igryX7G6VP1K81DCh4dmzRq0Q5Szzb/vxWxRDLUWN9nTXEEobUg=
+        bh=gIPvcmUhN4Q/tzt8VkoAiW7RJdbdD7hzLHuZ6TYurvI=;
+        b=ugX0O4KfiEjoXHcMnuRE8wv7Yqs7bikC217xbdNvc2Y7OYQd14fQHcqC0diFdMVwUF
+         WaXRTvvU0mwRkiC38GNCMCLyEAGD/gzn8/FyZgHyJ55QtoKnmzAqtqmHxVKo8yYgBNIH
+         gtAhgxNCfAadunCGpf1d4/nsJ5Jhja0kQxPTogDL8qfBmnUvZyfv0qg4aAfIfRv005W0
+         bexXN6FdpSqHvFt1WXhyEb99LFIEkEUzkPpE58pVbdAvjnJRamaflrRXmoYnwqMKeri0
+         NF2kVGE5tDHOibQftI3g5+uamE+TGAYiJy6MI0Ncb7RTw7RsNB5trO54Z+JuFScWnS29
+         CauA==
+X-Gm-Message-State: AOAM531O45e0tyKIgp1kdrpGme2TdzRZC5vBfovWgV8U2rQRfHdBeSLH
+        bNQDhlee92YKo7gZBVRhB4ntsAiro84=
+X-Google-Smtp-Source: ABdhPJzlEcxgEJY0LiZLnfAB+K6R9S2gsAR+967w4GZSOquG1ccyEJ80loHO+3oRWjbJr9Bvz1aRsZSGqb4=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a65:6250:0:b0:3c6:8a09:249 with SMTP id
- q16-20020a656250000000b003c68a090249mr6575731pgv.389.1654217094111; Thu, 02
- Jun 2022 17:44:54 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a05:6a00:1a91:b0:518:7bca:d095 with SMTP id
+ e17-20020a056a001a9100b005187bcad095mr64694374pfv.13.1654217101129; Thu, 02
+ Jun 2022 17:45:01 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri,  3 Jun 2022 00:41:49 +0000
+Date:   Fri,  3 Jun 2022 00:41:53 +0000
 In-Reply-To: <20220603004331.1523888-1-seanjc@google.com>
-Message-Id: <20220603004331.1523888-43-seanjc@google.com>
+Message-Id: <20220603004331.1523888-47-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220603004331.1523888-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v2 042/144] KVM: selftests: Use vm_create_without_vcpus() in psci_test
+Subject: [PATCH v2 046/144] KVM: selftests: Rename xAPIC state test's vcpu struct
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     kvm@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
@@ -66,28 +66,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use vm_create_without_vcpus() instead of open coding a rough equivalent
-in psci_test.
+Rename xapic_state_test's kvm_vcpu struct to xapic_vcpu to avoid a
+collision when the common 'struct vcpu' is renamed to 'struct kvm_vcpu'
+in a future patch.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- tools/testing/selftests/kvm/aarch64/psci_test.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ tools/testing/selftests/kvm/x86_64/xapic_state_test.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/aarch64/psci_test.c b/tools/testing/selftests/kvm/aarch64/psci_test.c
-index 1485d0b05b66..c9b82c0cc8d5 100644
---- a/tools/testing/selftests/kvm/aarch64/psci_test.c
-+++ b/tools/testing/selftests/kvm/aarch64/psci_test.c
-@@ -78,8 +78,7 @@ static struct kvm_vm *setup_vm(void *guest_code)
- 	struct kvm_vcpu_init init;
- 	struct kvm_vm *vm;
+diff --git a/tools/testing/selftests/kvm/x86_64/xapic_state_test.c b/tools/testing/selftests/kvm/x86_64/xapic_state_test.c
+index 0792334ba243..9d8393b6ec75 100644
+--- a/tools/testing/selftests/kvm/x86_64/xapic_state_test.c
++++ b/tools/testing/selftests/kvm/x86_64/xapic_state_test.c
+@@ -11,7 +11,7 @@
+ #include "processor.h"
+ #include "test_util.h"
  
--	vm = vm_create(DEFAULT_GUEST_PHY_PAGES);
--	kvm_vm_elf_load(vm, program_invocation_name);
-+	vm = vm_create_without_vcpus(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES);
- 	ucall_init(vm, NULL);
+-struct kvm_vcpu {
++struct xapic_vcpu {
+ 	uint32_t id;
+ 	bool is_x2apic;
+ };
+@@ -47,7 +47,7 @@ static void x2apic_guest_code(void)
+ 	} while (1);
+ }
  
- 	vm_ioctl(vm, KVM_ARM_PREFERRED_TARGET, &init);
+-static void ____test_icr(struct kvm_vm *vm, struct kvm_vcpu *vcpu, uint64_t val)
++static void ____test_icr(struct kvm_vm *vm, struct xapic_vcpu *vcpu, uint64_t val)
+ {
+ 	struct kvm_lapic_state xapic;
+ 	struct ucall uc;
+@@ -75,13 +75,13 @@ static void ____test_icr(struct kvm_vm *vm, struct kvm_vcpu *vcpu, uint64_t val)
+ 	ASSERT_EQ(icr, val & ~APIC_ICR_BUSY);
+ }
+ 
+-static void __test_icr(struct kvm_vm *vm, struct kvm_vcpu *vcpu, uint64_t val)
++static void __test_icr(struct kvm_vm *vm, struct xapic_vcpu *vcpu, uint64_t val)
+ {
+ 	____test_icr(vm, vcpu, val | APIC_ICR_BUSY);
+ 	____test_icr(vm, vcpu, val & ~(u64)APIC_ICR_BUSY);
+ }
+ 
+-static void test_icr(struct kvm_vm *vm, struct kvm_vcpu *vcpu)
++static void test_icr(struct kvm_vm *vm, struct xapic_vcpu *vcpu)
+ {
+ 	uint64_t icr, i, j;
+ 
+@@ -116,7 +116,7 @@ static void test_icr(struct kvm_vm *vm, struct kvm_vcpu *vcpu)
+ 
+ int main(int argc, char *argv[])
+ {
+-	struct kvm_vcpu vcpu = {
++	struct xapic_vcpu vcpu = {
+ 		.id = 0,
+ 		.is_x2apic = true,
+ 	};
 -- 
 2.36.1.255.ge46751e96f-goog
 
