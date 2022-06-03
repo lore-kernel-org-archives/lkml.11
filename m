@@ -2,55 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5DDCC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:17:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05A3FC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:17:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344332AbiFCRR0 (ORCPT
+        id S1344347AbiFCRRd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:17:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45028 "EHLO
+        Fri, 3 Jun 2022 13:17:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238989AbiFCRRZ (ORCPT
+        with ESMTP id S1344314AbiFCRRa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:17:25 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BE0C52511;
-        Fri,  3 Jun 2022 10:17:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=nBx/NbU4HXIOKAcGrEAiFD5zI7/ONKNqMop28OvDkIw=; b=I04kpGV5e0ITx/ywVzkXX+jlwh
-        36Fko0jxoKN9eTovUrASkrAhhDzvQhMQ539r3r6hjRtjzJ/mpCIYVG6C0Py5NEbc4IqUpj8Ak/5Sp
-        e1pRvQeFeFkOHMV8pT+zvbsmgu2ihS0bnuexJHnG+17jvN3tyqHuEd9XKGHPT9BSXNx4HNO5mYwy5
-        K3sNY/O5d0tEVLBhitErxiUgb1Qn/GBgt41jk3HPjSnJO0ag4b3AIrGWNHvjbjzN/+85DBIO39nfr
-        E5yZIH2xypOGdm3SlujzAQpX7Jnd7/gtXDQtYjOIHIs70Z2B6kyN9w9gz6/RTUY3uOUiOJgVfUie8
-        Gu+TJblw==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nxAvK-0081lU-FM; Fri, 03 Jun 2022 17:17:22 +0000
-Date:   Fri, 3 Jun 2022 18:17:22 +0100
-From:   Matthew Wilcox <willy@infradead.org>
+        Fri, 3 Jun 2022 13:17:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81B9852B05;
+        Fri,  3 Jun 2022 10:17:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F0A6861A91;
+        Fri,  3 Jun 2022 17:17:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD596C385B8;
+        Fri,  3 Jun 2022 17:17:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654276648;
+        bh=25W8vm1WR/xlJug3mdevOmNy9GipHwHhqTX4oo5o8Lo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=oSNaJW2ph29l1IqDszjEUzTPPnWLFCgcEl5UcGTo2DZNM6jLQLYG1BI5FiIVK6Jkn
+         HaSYPERhS76bCLotVOgii5sFp8KTL+1Dmke0YxeIbpvBzRY55sRQ+Ozf8bUIlq+J7i
+         MJUBiUMFUj+Hmi7WorZ3KajlirTpL2enviCl3NuiVGaGpleqIdwUstAe28UF6Ldx/r
+         V1kjgBflys5lnkzbm5Kp+sGCTqSz0D9ZD58M/7zzLpA4we8EzjU1FcW1zpRIUphZBG
+         R9+oW3Mc0la5vM0wV5mCU9ckgmmAXoA9V7pI/RHVmbCIbZWoEpXJbsit1XKtOQWW3a
+         GIfOe6x3Sc8dQ==
+Date:   Fri, 3 Jun 2022 18:26:28 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH v1 1/1] xarray: Replace kernel.h with the necessary
- inclusions
-Message-ID: <YppCIr4qM3lVYi8N@casper.infradead.org>
-References: <20220603171153.48928-1-andriy.shevchenko@linux.intel.com>
+Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        =?UTF-8?B?QW5kcsOp?= Gustavo Nakagomi Lopez <andregnl@usp.br>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Vladimir Zapolskiy <vz@mleia.com>
+Subject: Re: [PATCH v1 1/1] iio: adc: lpc18xx_adc: Switch from of headers to
+ mod_devicetable.h
+Message-ID: <20220603182628.36f3a170@jic23-huawei>
+In-Reply-To: <20220531212218.72189-1-andriy.shevchenko@linux.intel.com>
+References: <20220531212218.72189-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220603171153.48928-1-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 03, 2022 at 08:11:53PM +0300, Andy Shevchenko wrote:
-> When kernel.h is used in the headers it adds a lot into dependency hell,
-> especially when there are circular dependencies are involved.
+On Wed,  1 Jun 2022 00:22:18 +0300
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+
+> There is nothing directly using of specific interfaces in this driver,
+> so lets not include the headers.
 > 
-> Replace kernel.h inclusion with the list of what is really being used.
+> While at it, drop dependency to OF, which currently makes no sense.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Applied
+> ---
+>  drivers/iio/adc/Kconfig       | 2 +-
+>  drivers/iio/adc/lpc18xx_adc.c | 3 +--
+>  2 files changed, 2 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 448ae243cd31..b9e913e25a5d 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -562,7 +562,7 @@ config LP8788_ADC
+>  config LPC18XX_ADC
+>  	tristate "NXP LPC18xx ADC driver"
+>  	depends on ARCH_LPC18XX || COMPILE_TEST
+> -	depends on OF && HAS_IOMEM
+> +	depends on HAS_IOMEM
+>  	help
+>  	  Say yes here to build support for NXP LPC18XX ADC.
+>  
+> diff --git a/drivers/iio/adc/lpc18xx_adc.c b/drivers/iio/adc/lpc18xx_adc.c
+> index ae9c9384f23e..42e6cd6fa6f7 100644
+> --- a/drivers/iio/adc/lpc18xx_adc.c
+> +++ b/drivers/iio/adc/lpc18xx_adc.c
+> @@ -17,10 +17,9 @@
+>  #include <linux/iio/driver.h>
+>  #include <linux/io.h>
+>  #include <linux/iopoll.h>
+> +#include <linux/mod_devicetable.h>
+>  #include <linux/module.h>
+>  #include <linux/mutex.h>
+> -#include <linux/of.h>
+> -#include <linux/of_device.h>
+>  #include <linux/platform_device.h>
+>  #include <linux/regulator/consumer.h>
+>  
 
-Thanks.  Can you fix the test suite too?
-
-(cd tools/testing/radix-tree; make)
