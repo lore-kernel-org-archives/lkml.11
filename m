@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 056C2CCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CF1ECCA481
 	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:07:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346831AbiFCSFW (ORCPT
+        id S1347010AbiFCSFe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:05:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58138 "EHLO
+        Fri, 3 Jun 2022 14:05:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345463AbiFCRwl (ORCPT
+        with ESMTP id S1345501AbiFCRxD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:52:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A71D51A827;
-        Fri,  3 Jun 2022 10:52:23 -0700 (PDT)
+        Fri, 3 Jun 2022 13:53:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1833D1F624;
+        Fri,  3 Jun 2022 10:52:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EC2C7B82433;
-        Fri,  3 Jun 2022 17:52:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3ECE7C385A9;
-        Fri,  3 Jun 2022 17:52:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7411460F7F;
+        Fri,  3 Jun 2022 17:52:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 693AEC385B8;
+        Fri,  3 Jun 2022 17:52:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278740;
-        bh=vDKShUhCqzjc8Sf6bpgAp7e22LI592LUlHmvwrPh4rM=;
+        s=korg; t=1654278743;
+        bh=K6tYsH8bSgs3PfSjUaakxOh0TLf3zeJAhtERYiKfyYg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RDxzjbwJ0EwzZux4HdFCBVhCrPhzS9Nk5e8ACkqy6Czd6cbQo5i87cvh7bR+LZ+Ef
-         hgak6sm8f2uBttiK0stYIP05N1BWyyhv+wkVAp4i23+oKjU7hOGMDtOYUhzM56t8pj
-         TSMqmzCAd8lYFRqOInZ8UucSyb9ZkvLgHYFosdz0=
+        b=m65Z/RwzF2D+ojxP/aDMAJY6kqAGddAJf8P6tTfTqYKeIFPLk1Ojkb7I3v5kRqdhm
+         1ivq8nc0D/aAMxDNrBReOAxc7G7dzKmYJT4fq/rkmHQeVnH3IPzVqbL1CmyD2Om86o
+         SEd5sde/vWfkZjchRx7cMQp/YAj/k9IooGaSLZlI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
-        Aaron Adams <edg-e@nccgroup.com>
-Subject: [PATCH 5.17 12/75] netfilter: nf_tables: disallow non-stateful expression in sets earlier
-Date:   Fri,  3 Jun 2022 19:42:56 +0200
-Message-Id: <20220603173822.097170931@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Zheyu Ma <zheyuma97@gmail.com>
+Subject: [PATCH 5.17 13/75] i2c: ismt: prevent memory corruption in ismt_access()
+Date:   Fri,  3 Jun 2022 19:42:57 +0200
+Message-Id: <20220603173822.125311085@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173821.749019262@linuxfoundation.org>
 References: <20220603173821.749019262@linuxfoundation.org>
@@ -49,98 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit 520778042ccca019f3ffa136dd0ca565c486cedd upstream.
+commit 690b2549b19563ec5ad53e5c82f6a944d910086e upstream.
 
-Since 3e135cd499bf ("netfilter: nft_dynset: dynamic stateful expression
-instantiation"), it is possible to attach stateful expressions to set
-elements.
+The "data->block[0]" variable comes from the user and is a number
+between 0-255.  It needs to be capped to prevent writing beyond the end
+of dma_buffer[].
 
-cd5125d8f518 ("netfilter: nf_tables: split set destruction in deactivate
-and destroy phase") introduces conditional destruction on the object to
-accomodate transaction semantics.
-
-nft_expr_init() calls expr->ops->init() first, then check for
-NFT_STATEFUL_EXPR, this stills allows to initialize a non-stateful
-lookup expressions which points to a set, which might lead to UAF since
-the set is not properly detached from the set->binding for this case.
-Anyway, this combination is non-sense from nf_tables perspective.
-
-This patch fixes this problem by checking for NFT_STATEFUL_EXPR before
-expr->ops->init() is called.
-
-The reporter provides a KASAN splat and a poc reproducer (similar to
-those autogenerated by syzbot to report use-after-free errors). It is
-unknown to me if they are using syzbot or if they use similar automated
-tool to locate the bug that they are reporting.
-
-For the record, this is the KASAN splat.
-
-[   85.431824] ==================================================================
-[   85.432901] BUG: KASAN: use-after-free in nf_tables_bind_set+0x81b/0xa20
-[   85.433825] Write of size 8 at addr ffff8880286f0e98 by task poc/776
-[   85.434756]
-[   85.434999] CPU: 1 PID: 776 Comm: poc Tainted: G        W         5.18.0+ #2
-[   85.436023] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
-
-Fixes: 0b2d8a7b638b ("netfilter: nf_tables: add helper functions for expression handling")
-Reported-and-tested-by: Aaron Adams <edg-e@nccgroup.com>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: 5e9a97b1f449 ("i2c: ismt: Adding support for I2C_SMBUS_BLOCK_PROC_CALL")
+Reported-and-tested-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nf_tables_api.c |   19 ++++++++++---------
- 1 file changed, 10 insertions(+), 9 deletions(-)
+ drivers/i2c/busses/i2c-ismt.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -2794,27 +2794,31 @@ static struct nft_expr *nft_expr_init(co
+--- a/drivers/i2c/busses/i2c-ismt.c
++++ b/drivers/i2c/busses/i2c-ismt.c
+@@ -528,6 +528,9 @@ static int ismt_access(struct i2c_adapte
  
- 	err = nf_tables_expr_parse(ctx, nla, &expr_info);
- 	if (err < 0)
--		goto err1;
-+		goto err_expr_parse;
+ 	case I2C_SMBUS_BLOCK_PROC_CALL:
+ 		dev_dbg(dev, "I2C_SMBUS_BLOCK_PROC_CALL\n");
++		if (data->block[0] > I2C_SMBUS_BLOCK_MAX)
++			return -EINVAL;
 +
-+	err = -EOPNOTSUPP;
-+	if (!(expr_info.ops->type->flags & NFT_EXPR_STATEFUL))
-+		goto err_expr_stateful;
- 
- 	err = -ENOMEM;
- 	expr = kzalloc(expr_info.ops->size, GFP_KERNEL);
- 	if (expr == NULL)
--		goto err2;
-+		goto err_expr_stateful;
- 
- 	err = nf_tables_newexpr(ctx, &expr_info, expr);
- 	if (err < 0)
--		goto err3;
-+		goto err_expr_new;
- 
- 	return expr;
--err3:
-+err_expr_new:
- 	kfree(expr);
--err2:
-+err_expr_stateful:
- 	owner = expr_info.ops->type->owner;
- 	if (expr_info.ops->type->release_ops)
- 		expr_info.ops->type->release_ops(expr_info.ops);
- 
- 	module_put(owner);
--err1:
-+err_expr_parse:
- 	return ERR_PTR(err);
- }
- 
-@@ -5334,9 +5338,6 @@ struct nft_expr *nft_set_elem_expr_alloc
- 		return expr;
- 
- 	err = -EOPNOTSUPP;
--	if (!(expr->ops->type->flags & NFT_EXPR_STATEFUL))
--		goto err_set_elem_expr;
--
- 	if (expr->ops->type->flags & NFT_EXPR_GC) {
- 		if (set->flags & NFT_SET_TIMEOUT)
- 			goto err_set_elem_expr;
+ 		dma_size = I2C_SMBUS_BLOCK_MAX;
+ 		desc->tgtaddr_rw = ISMT_DESC_ADDR_RW(addr, 1);
+ 		desc->wr_len_cmd = data->block[0] + 1;
 
 
