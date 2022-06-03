@@ -2,58 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F6BEC43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E973CCA47B
 	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 00:45:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240172AbiFCAo6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 20:44:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46886 "EHLO
+        id S240189AbiFCApA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 20:45:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239968AbiFCAoB (ORCPT
+        with ESMTP id S239996AbiFCAoD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 20:44:01 -0400
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A737344E2
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:43:51 -0700 (PDT)
-Received: by mail-pg1-x549.google.com with SMTP id 84-20020a630057000000b003f9caa5bccfso3047879pga.9
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:43:51 -0700 (PDT)
+        Thu, 2 Jun 2022 20:44:03 -0400
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 294CD34640
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:43:55 -0700 (PDT)
+Received: by mail-pl1-x649.google.com with SMTP id s2-20020a17090302c200b00158ea215fa2so3488355plk.3
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:43:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=vbfQAA+Ul0i6NiTUD66eDcmWOeT2Ff4k3bH2oNqGk+o=;
-        b=fW2QsczCpHi98YpW1zOXzGYTv5ENYw2myDpPqijbCTy0emWh94ZJG4nW9M9sxxqbum
-         LNy+X0g1Jybvh6Ub6IEYEECWVjouqZBk69GHkDTkGX9iRxdmTQ6RJud7RsvuZFOHilGO
-         q4QI4rwqML4aJInGwF7r8DCZGa1OJ488FXdJe47viQaMHTLMFrL/8HdJPREUWPqU15pR
-         HWRfc6sTgJ2kEfJCLr9Xn3pOm+pqRKnK5EDwPgDmP9zxXYvssJKCGAFfZN6AyTAKI2LT
-         hWMzZ0WiN147EsrIgCrNUvRpcZRzMc8v1HNvZyjM1wDP1pN+fQJksZXAiugL0eNLNVgX
-         EXVA==
+        bh=W6JhbVFxQhSfE2oBmj3ibrg8WXfAqBzUMGf+K0KJSzY=;
+        b=prAe5vYIf3Ry91F9BTSC4Sd5C/CPcper7nauQlMhi1YFeseisjaYWVDEQksfhROoVR
+         ihvo7pWzfSdGp7qpuJoXU+XtTspJ7ARmvznENmWoFexKH5VVomCLmmTYY+C5maCkCBLO
+         LxrptDoNrymn+w3FpKDcmuK8yXZOFVhvUz/btcOtjJy/1OtMrg+kJ+i0CR++W7AO28U4
+         2wx1V5XhiJGW+Ha3EzHyKeIPgDd7r2fQFTpdwq2fgZT6bizTwa2dY/gJ78SfHvTeis91
+         8aXrWREpvxAlz4cOh0+7slwzWbJ2ILgZSwXeFftB/SzgKIMDz9jzoT7WMu1Mex+BqimI
+         dZ8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=vbfQAA+Ul0i6NiTUD66eDcmWOeT2Ff4k3bH2oNqGk+o=;
-        b=QqTMnjRxDculhTFe+Ww26Zs5N8HHSbGq/vvGZjKS2jS/0RIsW8rF9cNR1/hQqRvScz
-         beY87RNBm3ZDQNGmP/zqI7mFNa7jAqiJzw1ZKVEqL+7+Hp6NIvbEyhyrXA8p66ZHowW6
-         oeVdkWTxO0XQar3k1r3TgUn1yzZ+LFdGgc/JQFCYMLyH80Cy/TYOZ4wcHYJ1oMYZ+kzR
-         53iMVHgaxeuD1E6IP++0YxKBpR1dJ9Y/IZvjx0m4ug+tVApMGJtpWrmJS6QupK8D4/mY
-         dSqi9kepZM7yCq+6JPaPW42L2H9BZ1bsfVKJumkqL62pGGraBNZH/cQjrYgMDljK9YaM
-         8F/w==
-X-Gm-Message-State: AOAM531jjY6ZHQOaEVpqMmBj28iR2vYnn5ClSbhBkcRn5Y7pK9efiPJM
-        4QeCpqaWFuGbBqRiQTgZx60WqhTTq34=
-X-Google-Smtp-Source: ABdhPJzfqkYAWuIO+biovAPb20/l2OueSYCjolNp67orX6mbvrYDZz7S5lhAUewuIUv5KkfU0wCv3pd9NGI=
+        bh=W6JhbVFxQhSfE2oBmj3ibrg8WXfAqBzUMGf+K0KJSzY=;
+        b=tQ5EvqA0v3PvkFp9JZUvyoJ++A3VVpMUoELNfgofAAE6wBPj/kGbFEhaNBeUBEgXwL
+         FH0qErdiwqgRrfhuCOa6eLuTNViT8JLNOzSODA+ryOcHc1aTzQb6JKwMkZMvn+RB8nbz
+         COyOid6gAL165xWFlDuQjgpuNJZAu1Jwf6sIsA6RTH0cQHnbqxb/f5qSAuPY+FGOoS/C
+         ia4iIjqR/Ao9qor16TerCy+JByuOrFw3/KNR0QrFPmxTHutiSbAzlwQI8deXEy1Ggm8d
+         d2rVEo+rZHWqXyuioIzqMpnUO8wS2R+dzsV+knH5slUUHH540Y4HaAQymX6Mv+mVprmV
+         bGmg==
+X-Gm-Message-State: AOAM532KyDpHTLxnZR5chlVmfzE50ZcNfJNyVzJ4j2NZg3Q1VNzJbwxf
+        HTmOWRMO9wT2ROVBuYBF/U5SrYBkwbk=
+X-Google-Smtp-Source: ABdhPJy4R6SNgApFtMJwx9+DiK1sNArMQg6zi0NCIKm8DjGGIdUOCOEiug7CU4QSS/xoMS7JgvJlAYW2vvk=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:903:11c9:b0:154:be2d:eb9 with SMTP id
- q9-20020a17090311c900b00154be2d0eb9mr7463291plh.91.1654217031170; Thu, 02 Jun
- 2022 17:43:51 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:902:ce8a:b0:161:8622:891e with SMTP id
+ f10-20020a170902ce8a00b001618622891emr7451724plg.41.1654217034580; Thu, 02
+ Jun 2022 17:43:54 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri,  3 Jun 2022 00:41:15 +0000
+Date:   Fri,  3 Jun 2022 00:41:17 +0000
 In-Reply-To: <20220603004331.1523888-1-seanjc@google.com>
-Message-Id: <20220603004331.1523888-9-seanjc@google.com>
+Message-Id: <20220603004331.1523888-11-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220603004331.1523888-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v2 008/144] KVM: selftests: Drop @mode from common vm_create() helper
+Subject: [PATCH v2 010/144] KVM: sefltests: Use vcpu_ioctl() and
+ __vcpu_ioctl() helpers
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     kvm@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
@@ -66,317 +67,751 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Drop @mode from vm_create() and have it use VM_MODE_DEFAULT.  Add and use
-an inner helper, __vm_create(), to service the handful of tests that want
-something other than VM_MODE_DEFAULT.
+Use the recently introduced vCPU-specific ioctl() helpers instead of
+open coding calls to ioctl() just to pretty print the ioctl name.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../selftests/kvm/aarch64/get-reg-list.c      |  2 +-
- .../testing/selftests/kvm/aarch64/psci_test.c |  2 +-
- .../selftests/kvm/aarch64/vcpu_width_config.c |  6 +--
- tools/testing/selftests/kvm/dirty_log_test.c  |  2 +-
- .../selftests/kvm/hardware_disable_test.c     |  2 +-
- .../selftests/kvm/include/kvm_util_base.h     |  3 +-
- .../selftests/kvm/kvm_binary_stats_test.c     |  3 +-
- .../selftests/kvm/kvm_create_max_vcpus.c      |  2 +-
- tools/testing/selftests/kvm/lib/kvm_util.c    | 42 ++++++++++---------
- .../selftests/kvm/set_memory_region_test.c    |  4 +-
- .../kvm/x86_64/max_vcpuid_cap_test.c          |  2 +-
- .../selftests/kvm/x86_64/set_boot_cpu_id.c    |  2 +-
- .../selftests/kvm/x86_64/set_sregs_test.c     |  2 +-
- .../selftests/kvm/x86_64/sev_migrate_tests.c  |  8 ++--
- 14 files changed, 42 insertions(+), 40 deletions(-)
+ .../selftests/kvm/include/kvm_util_base.h     | 142 ++++++---
+ .../selftests/kvm/include/x86_64/processor.h  |  28 +-
+ .../selftests/kvm/kvm_binary_stats_test.c     |   6 +-
+ tools/testing/selftests/kvm/lib/kvm_util.c    | 286 +-----------------
+ .../selftests/kvm/lib/x86_64/processor.c      | 112 +------
+ 5 files changed, 135 insertions(+), 439 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/aarch64/get-reg-list.c b/tools/testing/selftests/kvm/aarch64/get-reg-list.c
-index 441c98ffb812..ecfb773ec41e 100644
---- a/tools/testing/selftests/kvm/aarch64/get-reg-list.c
-+++ b/tools/testing/selftests/kvm/aarch64/get-reg-list.c
-@@ -416,7 +416,7 @@ static void run_test(struct vcpu_config *c)
- 
- 	check_supported(c);
- 
--	vm = vm_create(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES);
-+	vm = vm_create(DEFAULT_GUEST_PHY_PAGES);
- 	prepare_vcpu_init(c, &init);
- 	aarch64_vcpu_add_default(vm, 0, &init, NULL);
- 	finalize_vcpu(vm, 0, c);
-diff --git a/tools/testing/selftests/kvm/aarch64/psci_test.c b/tools/testing/selftests/kvm/aarch64/psci_test.c
-index de3b5e176d04..024a84064f1f 100644
---- a/tools/testing/selftests/kvm/aarch64/psci_test.c
-+++ b/tools/testing/selftests/kvm/aarch64/psci_test.c
-@@ -78,7 +78,7 @@ static struct kvm_vm *setup_vm(void *guest_code)
- 	struct kvm_vcpu_init init;
- 	struct kvm_vm *vm;
- 
--	vm = vm_create(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES);
-+	vm = vm_create(DEFAULT_GUEST_PHY_PAGES);
- 	kvm_vm_elf_load(vm, program_invocation_name);
- 	ucall_init(vm, NULL);
- 
-diff --git a/tools/testing/selftests/kvm/aarch64/vcpu_width_config.c b/tools/testing/selftests/kvm/aarch64/vcpu_width_config.c
-index 271fa90e53fd..4145c28a245a 100644
---- a/tools/testing/selftests/kvm/aarch64/vcpu_width_config.c
-+++ b/tools/testing/selftests/kvm/aarch64/vcpu_width_config.c
-@@ -24,7 +24,7 @@ static int add_init_2vcpus(struct kvm_vcpu_init *init1,
- 	struct kvm_vm *vm;
- 	int ret;
- 
--	vm = vm_create(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES);
-+	vm = vm_create(DEFAULT_GUEST_PHY_PAGES);
- 
- 	vm_vcpu_add(vm, 0);
- 	ret = __vcpu_ioctl(vm, 0, KVM_ARM_VCPU_INIT, init1);
-@@ -49,7 +49,7 @@ static int add_2vcpus_init_2vcpus(struct kvm_vcpu_init *init1,
- 	struct kvm_vm *vm;
- 	int ret;
- 
--	vm = vm_create(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES);
-+	vm = vm_create(DEFAULT_GUEST_PHY_PAGES);
- 
- 	vm_vcpu_add(vm, 0);
- 	vm_vcpu_add(vm, 1);
-@@ -86,7 +86,7 @@ int main(void)
- 	}
- 
- 	/* Get the preferred target type and copy that to init2 for later use */
--	vm = vm_create(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES);
-+	vm = vm_create(DEFAULT_GUEST_PHY_PAGES);
- 	vm_ioctl(vm, KVM_ARM_PREFERRED_TARGET, &init1);
- 	kvm_vm_free(vm);
- 	init2 = init1;
-diff --git a/tools/testing/selftests/kvm/dirty_log_test.c b/tools/testing/selftests/kvm/dirty_log_test.c
-index 11bf606e3165..01c01d40201f 100644
---- a/tools/testing/selftests/kvm/dirty_log_test.c
-+++ b/tools/testing/selftests/kvm/dirty_log_test.c
-@@ -679,7 +679,7 @@ static struct kvm_vm *create_vm(enum vm_guest_mode mode, uint32_t vcpuid,
- 
- 	pr_info("Testing guest mode: %s\n", vm_guest_mode_string(mode));
- 
--	vm = vm_create(mode, DEFAULT_GUEST_PHY_PAGES + extra_pg_pages);
-+	vm = __vm_create(mode, DEFAULT_GUEST_PHY_PAGES + extra_pg_pages);
- 	kvm_vm_elf_load(vm, program_invocation_name);
- #ifdef __x86_64__
- 	vm_create_irqchip(vm);
-diff --git a/tools/testing/selftests/kvm/hardware_disable_test.c b/tools/testing/selftests/kvm/hardware_disable_test.c
-index 1c9e2295c75b..81ba8645772a 100644
---- a/tools/testing/selftests/kvm/hardware_disable_test.c
-+++ b/tools/testing/selftests/kvm/hardware_disable_test.c
-@@ -104,7 +104,7 @@ static void run_test(uint32_t run)
- 	for (i = 0; i < VCPU_NUM; i++)
- 		CPU_SET(i, &cpu_set);
- 
--	vm = vm_create(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES);
-+	vm = vm_create(DEFAULT_GUEST_PHY_PAGES);
- 	kvm_vm_elf_load(vm, program_invocation_name);
- 	vm_create_irqchip(vm);
- 
 diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
-index 00f3103dc85e..f6984b0c3816 100644
+index 314d971c1f06..4f18f03c537f 100644
 --- a/tools/testing/selftests/kvm/include/kvm_util_base.h
 +++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
-@@ -110,7 +110,8 @@ int vcpu_enable_cap(struct kvm_vm *vm, uint32_t vcpu_id,
+@@ -105,8 +105,6 @@ int open_kvm_dev_path_or_exit(void);
+ int kvm_check_cap(long cap);
+ int vm_check_cap(struct kvm_vm *vm, long cap);
+ int vm_enable_cap(struct kvm_vm *vm, struct kvm_enable_cap *cap);
+-int vcpu_enable_cap(struct kvm_vm *vm, uint32_t vcpu_id,
+-		    struct kvm_enable_cap *cap);
  void vm_enable_dirty_ring(struct kvm_vm *vm, uint32_t ring_size);
  const char *vm_guest_mode_string(uint32_t i);
  
--struct kvm_vm *vm_create(enum vm_guest_mode mode, uint64_t phy_pages);
-+struct kvm_vm *__vm_create(enum vm_guest_mode mode, uint64_t phy_pages);
-+struct kvm_vm *vm_create(uint64_t phy_pages);
- void kvm_vm_free(struct kvm_vm *vmp);
- void kvm_vm_restart(struct kvm_vm *vmp);
- void kvm_vm_release(struct kvm_vm *vmp);
+@@ -212,13 +210,112 @@ void vcpu_run(struct kvm_vm *vm, uint32_t vcpuid);
+ int _vcpu_run(struct kvm_vm *vm, uint32_t vcpuid);
+ int vcpu_get_fd(struct kvm_vm *vm, uint32_t vcpuid);
+ void vcpu_run_complete_io(struct kvm_vm *vm, uint32_t vcpuid);
+-void vcpu_set_guest_debug(struct kvm_vm *vm, uint32_t vcpuid,
+-			  struct kvm_guest_debug *debug);
+-void vcpu_set_mp_state(struct kvm_vm *vm, uint32_t vcpuid,
+-		       struct kvm_mp_state *mp_state);
+ struct kvm_reg_list *vcpu_get_reg_list(struct kvm_vm *vm, uint32_t vcpuid);
+-void vcpu_regs_get(struct kvm_vm *vm, uint32_t vcpuid, struct kvm_regs *regs);
+-void vcpu_regs_set(struct kvm_vm *vm, uint32_t vcpuid, struct kvm_regs *regs);
++
++static inline void vcpu_enable_cap(struct kvm_vm *vm, uint32_t vcpu_id,
++				   struct kvm_enable_cap *cap)
++{
++	vcpu_ioctl(vm, vcpu_id, KVM_ENABLE_CAP, cap);
++}
++
++static inline void vcpu_set_guest_debug(struct kvm_vm *vm, uint32_t vcpuid,
++					struct kvm_guest_debug *debug)
++{
++	vcpu_ioctl(vm, vcpuid, KVM_SET_GUEST_DEBUG, debug);
++}
++
++static inline void vcpu_set_mp_state(struct kvm_vm *vm, uint32_t vcpuid,
++				     struct kvm_mp_state *mp_state)
++{
++	vcpu_ioctl(vm, vcpuid, KVM_SET_MP_STATE, mp_state);
++}
++
++static inline void vcpu_regs_get(struct kvm_vm *vm, uint32_t vcpuid,
++				 struct kvm_regs *regs)
++{
++	vcpu_ioctl(vm, vcpuid, KVM_GET_REGS, regs);
++}
++
++static inline void vcpu_regs_set(struct kvm_vm *vm, uint32_t vcpuid,
++				 struct kvm_regs *regs)
++{
++	vcpu_ioctl(vm, vcpuid, KVM_SET_REGS, regs);
++}
++static inline void vcpu_sregs_get(struct kvm_vm *vm, uint32_t vcpuid,
++				  struct kvm_sregs *sregs)
++{
++	vcpu_ioctl(vm, vcpuid, KVM_GET_SREGS, sregs);
++
++}
++static inline void vcpu_sregs_set(struct kvm_vm *vm, uint32_t vcpuid,
++				  struct kvm_sregs *sregs)
++{
++	vcpu_ioctl(vm, vcpuid, KVM_SET_SREGS, sregs);
++}
++static inline int _vcpu_sregs_set(struct kvm_vm *vm, uint32_t vcpuid,
++				  struct kvm_sregs *sregs)
++{
++	return __vcpu_ioctl(vm, vcpuid, KVM_SET_SREGS, sregs);
++}
++static inline void vcpu_fpu_get(struct kvm_vm *vm, uint32_t vcpuid,
++				struct kvm_fpu *fpu)
++{
++	vcpu_ioctl(vm, vcpuid, KVM_GET_FPU, fpu);
++}
++static inline void vcpu_fpu_set(struct kvm_vm *vm, uint32_t vcpuid,
++				struct kvm_fpu *fpu)
++{
++	vcpu_ioctl(vm, vcpuid, KVM_SET_FPU, fpu);
++}
++static inline void vcpu_get_reg(struct kvm_vm *vm, uint32_t vcpuid,
++				struct kvm_one_reg *reg)
++{
++	vcpu_ioctl(vm, vcpuid, KVM_GET_ONE_REG, reg);
++}
++static inline void vcpu_set_reg(struct kvm_vm *vm, uint32_t vcpuid,
++				struct kvm_one_reg *reg)
++{
++	vcpu_ioctl(vm, vcpuid, KVM_SET_ONE_REG, reg);
++}
++#ifdef __KVM_HAVE_VCPU_EVENTS
++static inline void vcpu_events_get(struct kvm_vm *vm, uint32_t vcpuid,
++				   struct kvm_vcpu_events *events)
++{
++	vcpu_ioctl(vm, vcpuid, KVM_GET_VCPU_EVENTS, events);
++}
++static inline void vcpu_events_set(struct kvm_vm *vm, uint32_t vcpuid,
++				   struct kvm_vcpu_events *events)
++{
++	vcpu_ioctl(vm, vcpuid, KVM_SET_VCPU_EVENTS, events);
++}
++#endif
++#ifdef __x86_64__
++static inline void vcpu_nested_state_get(struct kvm_vm *vm, uint32_t vcpuid,
++					 struct kvm_nested_state *state)
++{
++	vcpu_ioctl(vm, vcpuid, KVM_GET_NESTED_STATE, state);
++}
++static inline int __vcpu_nested_state_set(struct kvm_vm *vm, uint32_t vcpuid,
++					  struct kvm_nested_state *state)
++{
++	return __vcpu_ioctl(vm, vcpuid, KVM_SET_NESTED_STATE, state);
++}
++
++static inline void vcpu_nested_state_set(struct kvm_vm *vm, uint32_t vcpuid,
++					 struct kvm_nested_state *state)
++{
++	vcpu_ioctl(vm, vcpuid, KVM_SET_NESTED_STATE, state);
++}
++#endif
++static inline int vcpu_get_stats_fd(struct kvm_vm *vm, uint32_t vcpuid)
++{
++	int fd = __vcpu_ioctl(vm, vcpuid, KVM_GET_STATS_FD, NULL);
++
++	TEST_ASSERT(fd >= 0, KVM_IOCTL_ERROR(KVM_GET_STATS_FD, fd));
++	return fd;
++}
++
++void *vcpu_map_dirty_ring(struct kvm_vm *vm, uint32_t vcpuid);
+ 
+ /*
+  * VM VCPU Args Set
+@@ -240,34 +337,6 @@ void vcpu_regs_set(struct kvm_vm *vm, uint32_t vcpuid, struct kvm_regs *regs);
+  */
+ void vcpu_args_set(struct kvm_vm *vm, uint32_t vcpuid, unsigned int num, ...);
+ 
+-void vcpu_sregs_get(struct kvm_vm *vm, uint32_t vcpuid,
+-		    struct kvm_sregs *sregs);
+-void vcpu_sregs_set(struct kvm_vm *vm, uint32_t vcpuid,
+-		    struct kvm_sregs *sregs);
+-int _vcpu_sregs_set(struct kvm_vm *vm, uint32_t vcpuid,
+-		    struct kvm_sregs *sregs);
+-void vcpu_fpu_get(struct kvm_vm *vm, uint32_t vcpuid,
+-		  struct kvm_fpu *fpu);
+-void vcpu_fpu_set(struct kvm_vm *vm, uint32_t vcpuid,
+-		  struct kvm_fpu *fpu);
+-void vcpu_get_reg(struct kvm_vm *vm, uint32_t vcpuid, struct kvm_one_reg *reg);
+-void vcpu_set_reg(struct kvm_vm *vm, uint32_t vcpuid, struct kvm_one_reg *reg);
+-#ifdef __KVM_HAVE_VCPU_EVENTS
+-void vcpu_events_get(struct kvm_vm *vm, uint32_t vcpuid,
+-		     struct kvm_vcpu_events *events);
+-void vcpu_events_set(struct kvm_vm *vm, uint32_t vcpuid,
+-		     struct kvm_vcpu_events *events);
+-#endif
+-#ifdef __x86_64__
+-void vcpu_nested_state_get(struct kvm_vm *vm, uint32_t vcpuid,
+-			   struct kvm_nested_state *state);
+-int __vcpu_nested_state_set(struct kvm_vm *vm, uint32_t vcpuid,
+-			    struct kvm_nested_state *state);
+-void vcpu_nested_state_set(struct kvm_vm *vm, uint32_t vcpuid,
+-			   struct kvm_nested_state *state);
+-#endif
+-void *vcpu_map_dirty_ring(struct kvm_vm *vm, uint32_t vcpuid);
+-
+ int _kvm_device_check_attr(int dev_fd, uint32_t group, uint64_t attr);
+ int kvm_device_check_attr(int dev_fd, uint32_t group, uint64_t attr);
+ int _kvm_create_device(struct kvm_vm *vm, uint64_t type, bool test, int *fd);
+@@ -406,7 +475,6 @@ kvm_userspace_memory_region_find(struct kvm_vm *vm, uint64_t start,
+ void assert_on_unhandled_exception(struct kvm_vm *vm, uint32_t vcpuid);
+ 
+ int vm_get_stats_fd(struct kvm_vm *vm);
+-int vcpu_get_stats_fd(struct kvm_vm *vm, uint32_t vcpuid);
+ 
+ uint32_t guest_get_vcpuid(void);
+ 
+diff --git a/tools/testing/selftests/kvm/include/x86_64/processor.h b/tools/testing/selftests/kvm/include/x86_64/processor.h
+index 4fd870f37b9e..6fbbe28a0f39 100644
+--- a/tools/testing/selftests/kvm/include/x86_64/processor.h
++++ b/tools/testing/selftests/kvm/include/x86_64/processor.h
+@@ -430,12 +430,19 @@ void kvm_x86_state_cleanup(struct kvm_x86_state *state);
+ struct kvm_msr_list *kvm_get_msr_index_list(void);
+ uint64_t kvm_get_feature_msr(uint64_t msr_index);
+ struct kvm_cpuid2 *kvm_get_supported_cpuid(void);
+-
+ struct kvm_cpuid2 *vcpu_get_cpuid(struct kvm_vm *vm, uint32_t vcpuid);
+-int __vcpu_set_cpuid(struct kvm_vm *vm, uint32_t vcpuid,
+-		     struct kvm_cpuid2 *cpuid);
+-void vcpu_set_cpuid(struct kvm_vm *vm, uint32_t vcpuid,
+-		    struct kvm_cpuid2 *cpuid);
++
++static inline int __vcpu_set_cpuid(struct kvm_vm *vm, uint32_t vcpuid,
++				   struct kvm_cpuid2 *cpuid)
++{
++	return __vcpu_ioctl(vm, vcpuid, KVM_SET_CPUID2, cpuid);
++}
++
++static inline void vcpu_set_cpuid(struct kvm_vm *vm, uint32_t vcpuid,
++				  struct kvm_cpuid2 *cpuid)
++{
++	vcpu_ioctl(vm, vcpuid, KVM_SET_CPUID2, cpuid);
++}
+ 
+ struct kvm_cpuid_entry2 *
+ kvm_get_supported_cpuid_index(uint32_t function, uint32_t index);
+@@ -449,8 +456,15 @@ kvm_get_supported_cpuid_entry(uint32_t function)
+ uint64_t vcpu_get_msr(struct kvm_vm *vm, uint32_t vcpuid, uint64_t msr_index);
+ int _vcpu_set_msr(struct kvm_vm *vm, uint32_t vcpuid, uint64_t msr_index,
+ 		  uint64_t msr_value);
+-void vcpu_set_msr(struct kvm_vm *vm, uint32_t vcpuid, uint64_t msr_index,
+-	  	  uint64_t msr_value);
++
++static inline void vcpu_set_msr(struct kvm_vm *vm, uint32_t vcpuid,
++				uint64_t msr_index, uint64_t msr_value)
++{
++	int r = _vcpu_set_msr(vm, vcpuid, msr_index, msr_value);
++
++	TEST_ASSERT(r == 1, KVM_IOCTL_ERROR(KVM_SET_MSRS, r));
++}
++
+ 
+ uint32_t kvm_get_cpuid_max_basic(void);
+ uint32_t kvm_get_cpuid_max_extended(void);
 diff --git a/tools/testing/selftests/kvm/kvm_binary_stats_test.c b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-index 6217f4630e6c..4b149b383678 100644
+index 4b149b383678..bab8b49b52da 100644
 --- a/tools/testing/selftests/kvm/kvm_binary_stats_test.c
 +++ b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-@@ -229,8 +229,7 @@ int main(int argc, char *argv[])
- 	vms = malloc(sizeof(vms[0]) * max_vm);
- 	TEST_ASSERT(vms, "Allocate memory for storing VM pointers");
- 	for (i = 0; i < max_vm; ++i) {
--		vms[i] = vm_create(VM_MODE_DEFAULT,
--				DEFAULT_GUEST_PHY_PAGES);
-+		vms[i] = vm_create(DEFAULT_GUEST_PHY_PAGES);
- 		for (j = 0; j < max_vcpu; ++j)
- 			vm_vcpu_add(vms[i], j);
- 	}
-diff --git a/tools/testing/selftests/kvm/kvm_create_max_vcpus.c b/tools/testing/selftests/kvm/kvm_create_max_vcpus.c
-index bb69b75eac23..9de5e1376c49 100644
---- a/tools/testing/selftests/kvm/kvm_create_max_vcpus.c
-+++ b/tools/testing/selftests/kvm/kvm_create_max_vcpus.c
-@@ -28,7 +28,7 @@ void test_vcpu_creation(int first_vcpu_id, int num_vcpus)
- 	pr_info("Testing creating %d vCPUs, with IDs %d...%d.\n",
- 		num_vcpus, first_vcpu_id, first_vcpu_id + num_vcpus - 1);
+@@ -178,11 +178,7 @@ static void vm_stats_test(struct kvm_vm *vm)
  
--	vm = vm_create(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES);
-+	vm = vm_create(DEFAULT_GUEST_PHY_PAGES);
+ static void vcpu_stats_test(struct kvm_vm *vm, int vcpu_id)
+ {
+-	int stats_fd;
+-
+-	/* Get fd for VCPU stats */
+-	stats_fd = vcpu_get_stats_fd(vm, vcpu_id);
+-	TEST_ASSERT(stats_fd >= 0, "Get VCPU stats fd");
++	int stats_fd = vcpu_get_stats_fd(vm, vcpu_id);
  
- 	for (i = first_vcpu_id; i < first_vcpu_id + num_vcpus; i++)
- 		/* This asserts that the vCPU was created. */
+ 	stats_test(stats_fd);
+ 	close(stats_fd);
 diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
-index fdcaf74b5959..bab4ab297fcc 100644
+index 7b339f98070b..7ac4516d764c 100644
 --- a/tools/testing/selftests/kvm/lib/kvm_util.c
 +++ b/tools/testing/selftests/kvm/lib/kvm_util.c
-@@ -234,25 +234,7 @@ const struct vm_guest_mode_params vm_guest_mode_params[] = {
- _Static_assert(sizeof(vm_guest_mode_params)/sizeof(struct vm_guest_mode_params) == NUM_VM_MODES,
- 	       "Missing new mode params?");
+@@ -135,34 +135,6 @@ int vm_enable_cap(struct kvm_vm *vm, struct kvm_enable_cap *cap)
+ 	return ret;
+ }
  
--/*
-- * VM Create
+-/* VCPU Enable Capability
 - *
 - * Input Args:
-- *   mode - VM Mode (e.g. VM_MODE_P52V48_4K)
-- *   phy_pages - Physical memory pages
+- *   vm - Virtual Machine
+- *   vcpu_id - VCPU
+- *   cap - Capability
 - *
 - * Output Args: None
 - *
-- * Return:
-- *   Pointer to opaque structure that describes the created VM.
+- * Return: On success, 0. On failure a TEST_ASSERT failure is produced.
 - *
-- * Creates a VM with the mode specified by mode (e.g. VM_MODE_P52V48_4K).
-- * When phy_pages is non-zero, a memory region of phy_pages physical pages
-- * is created and mapped starting at guest physical address 0.  The file
-- * descriptor to control the created VM is created with the permissions
-- * given by perm (e.g. O_RDWR).
+- * Enables a capability (KVM_CAP_*) on the VCPU.
 - */
--struct kvm_vm *vm_create(enum vm_guest_mode mode, uint64_t phy_pages)
-+struct kvm_vm *__vm_create(enum vm_guest_mode mode, uint64_t phy_pages)
+-int vcpu_enable_cap(struct kvm_vm *vm, uint32_t vcpu_id,
+-		    struct kvm_enable_cap *cap)
+-{
+-	struct vcpu *vcpu = vcpu_find(vm, vcpu_id);
+-	int r;
+-
+-	TEST_ASSERT(vcpu, "cannot find vcpu %d", vcpu_id);
+-
+-	r = ioctl(vcpu->fd, KVM_ENABLE_CAP, cap);
+-	TEST_ASSERT(!r, "KVM_ENABLE_CAP vCPU ioctl failed,\n"
+-			"  rc: %i, errno: %i", r, errno);
+-
+-	return r;
+-}
+-
+ void vm_enable_dirty_ring(struct kvm_vm *vm, uint32_t ring_size)
  {
- 	struct kvm_vm *vm;
- 
-@@ -361,11 +343,31 @@ struct kvm_vm *vm_create(enum vm_guest_mode mode, uint64_t phy_pages)
- 	return vm;
+ 	struct kvm_enable_cap cap = { 0 };
+@@ -1619,8 +1591,8 @@ struct kvm_run *vcpu_state(struct kvm_vm *vm, uint32_t vcpuid)
+ void vcpu_run(struct kvm_vm *vm, uint32_t vcpuid)
+ {
+ 	int ret = _vcpu_run(vm, vcpuid);
+-	TEST_ASSERT(ret == 0, "KVM_RUN IOCTL failed, "
+-		"rc: %i errno: %i", ret, errno);
++
++	TEST_ASSERT(!ret, KVM_IOCTL_ERROR(KVM_RUN, ret));
  }
  
-+/*
-+ * VM Create
-+ *
-+ * Input Args:
-+ *   phy_pages - Physical memory pages
-+ *
-+ * Output Args: None
-+ *
-+ * Return:
-+ *   Pointer to opaque structure that describes the created VM.
-+ *
-+ * Creates a VM with the default physical/virtual address widths and page size.
-+ * When phy_pages is non-zero, a memory region of phy_pages physical pages
-+ * is created and mapped starting at guest physical address 0.
-+ */
-+struct kvm_vm *vm_create(uint64_t phy_pages)
-+{
-+	return __vm_create(VM_MODE_DEFAULT, phy_pages);
-+}
-+
- struct kvm_vm *vm_create_without_vcpus(enum vm_guest_mode mode, uint64_t pages)
+ int _vcpu_run(struct kvm_vm *vm, uint32_t vcpuid)
+@@ -1663,43 +1635,6 @@ void vcpu_run_complete_io(struct kvm_vm *vm, uint32_t vcpuid)
+ 		    ret, errno);
+ }
+ 
+-void vcpu_set_guest_debug(struct kvm_vm *vm, uint32_t vcpuid,
+-			  struct kvm_guest_debug *debug)
+-{
+-	struct vcpu *vcpu = vcpu_find(vm, vcpuid);
+-	int ret = ioctl(vcpu->fd, KVM_SET_GUEST_DEBUG, debug);
+-
+-	TEST_ASSERT(ret == 0, "KVM_SET_GUEST_DEBUG failed: %d", ret);
+-}
+-
+-/*
+- * VM VCPU Set MP State
+- *
+- * Input Args:
+- *   vm - Virtual Machine
+- *   vcpuid - VCPU ID
+- *   mp_state - mp_state to be set
+- *
+- * Output Args: None
+- *
+- * Return: None
+- *
+- * Sets the MP state of the VCPU given by vcpuid, to the state given
+- * by mp_state.
+- */
+-void vcpu_set_mp_state(struct kvm_vm *vm, uint32_t vcpuid,
+-		       struct kvm_mp_state *mp_state)
+-{
+-	struct vcpu *vcpu = vcpu_find(vm, vcpuid);
+-	int ret;
+-
+-	TEST_ASSERT(vcpu != NULL, "vcpu not found, vcpuid: %u", vcpuid);
+-
+-	ret = ioctl(vcpu->fd, KVM_SET_MP_STATE, mp_state);
+-	TEST_ASSERT(ret == 0, "KVM_SET_MP_STATE IOCTL failed, "
+-		"rc: %i errno: %i", ret, errno);
+-}
+-
+ /*
+  * VM VCPU Get Reg List
+  *
+@@ -1729,216 +1664,6 @@ struct kvm_reg_list *vcpu_get_reg_list(struct kvm_vm *vm, uint32_t vcpuid)
+ 	return reg_list;
+ }
+ 
+-/*
+- * VM VCPU Regs Get
+- *
+- * Input Args:
+- *   vm - Virtual Machine
+- *   vcpuid - VCPU ID
+- *
+- * Output Args:
+- *   regs - current state of VCPU regs
+- *
+- * Return: None
+- *
+- * Obtains the current register state for the VCPU specified by vcpuid
+- * and stores it at the location given by regs.
+- */
+-void vcpu_regs_get(struct kvm_vm *vm, uint32_t vcpuid, struct kvm_regs *regs)
+-{
+-	struct vcpu *vcpu = vcpu_find(vm, vcpuid);
+-	int ret;
+-
+-	TEST_ASSERT(vcpu != NULL, "vcpu not found, vcpuid: %u", vcpuid);
+-
+-	ret = ioctl(vcpu->fd, KVM_GET_REGS, regs);
+-	TEST_ASSERT(ret == 0, "KVM_GET_REGS failed, rc: %i errno: %i",
+-		ret, errno);
+-}
+-
+-/*
+- * VM VCPU Regs Set
+- *
+- * Input Args:
+- *   vm - Virtual Machine
+- *   vcpuid - VCPU ID
+- *   regs - Values to set VCPU regs to
+- *
+- * Output Args: None
+- *
+- * Return: None
+- *
+- * Sets the regs of the VCPU specified by vcpuid to the values
+- * given by regs.
+- */
+-void vcpu_regs_set(struct kvm_vm *vm, uint32_t vcpuid, struct kvm_regs *regs)
+-{
+-	struct vcpu *vcpu = vcpu_find(vm, vcpuid);
+-	int ret;
+-
+-	TEST_ASSERT(vcpu != NULL, "vcpu not found, vcpuid: %u", vcpuid);
+-
+-	ret = ioctl(vcpu->fd, KVM_SET_REGS, regs);
+-	TEST_ASSERT(ret == 0, "KVM_SET_REGS failed, rc: %i errno: %i",
+-		ret, errno);
+-}
+-
+-#ifdef __KVM_HAVE_VCPU_EVENTS
+-void vcpu_events_get(struct kvm_vm *vm, uint32_t vcpuid,
+-		     struct kvm_vcpu_events *events)
+-{
+-	struct vcpu *vcpu = vcpu_find(vm, vcpuid);
+-	int ret;
+-
+-	TEST_ASSERT(vcpu != NULL, "vcpu not found, vcpuid: %u", vcpuid);
+-
+-	ret = ioctl(vcpu->fd, KVM_GET_VCPU_EVENTS, events);
+-	TEST_ASSERT(ret == 0, "KVM_GET_VCPU_EVENTS, failed, rc: %i errno: %i",
+-		ret, errno);
+-}
+-
+-void vcpu_events_set(struct kvm_vm *vm, uint32_t vcpuid,
+-		     struct kvm_vcpu_events *events)
+-{
+-	struct vcpu *vcpu = vcpu_find(vm, vcpuid);
+-	int ret;
+-
+-	TEST_ASSERT(vcpu != NULL, "vcpu not found, vcpuid: %u", vcpuid);
+-
+-	ret = ioctl(vcpu->fd, KVM_SET_VCPU_EVENTS, events);
+-	TEST_ASSERT(ret == 0, "KVM_SET_VCPU_EVENTS, failed, rc: %i errno: %i",
+-		ret, errno);
+-}
+-#endif
+-
+-#ifdef __x86_64__
+-void vcpu_nested_state_get(struct kvm_vm *vm, uint32_t vcpuid,
+-			   struct kvm_nested_state *state)
+-{
+-	struct vcpu *vcpu = vcpu_find(vm, vcpuid);
+-	int ret;
+-
+-	TEST_ASSERT(vcpu != NULL, "vcpu not found, vcpuid: %u", vcpuid);
+-
+-	ret = ioctl(vcpu->fd, KVM_GET_NESTED_STATE, state);
+-	TEST_ASSERT(ret == 0,
+-		"KVM_SET_NESTED_STATE failed, ret: %i errno: %i",
+-		ret, errno);
+-}
+-
+-int __vcpu_nested_state_set(struct kvm_vm *vm, uint32_t vcpuid,
+-			    struct kvm_nested_state *state)
+-{
+-	struct vcpu *vcpu = vcpu_find(vm, vcpuid);
+-
+-	TEST_ASSERT(vcpu != NULL, "vcpu not found, vcpuid: %u", vcpuid);
+-
+-	return ioctl(vcpu->fd, KVM_SET_NESTED_STATE, state);
+-}
+-
+-void vcpu_nested_state_set(struct kvm_vm *vm, uint32_t vcpuid,
+-			   struct kvm_nested_state *state)
+-{
+-	int ret = __vcpu_nested_state_set(vm, vcpuid, state);
+-
+-	TEST_ASSERT(!ret, "KVM_SET_NESTED_STATE failed, ret: %i errno: %i", ret, errno);
+-}
+-#endif
+-
+-/*
+- * VM VCPU System Regs Get
+- *
+- * Input Args:
+- *   vm - Virtual Machine
+- *   vcpuid - VCPU ID
+- *
+- * Output Args:
+- *   sregs - current state of VCPU system regs
+- *
+- * Return: None
+- *
+- * Obtains the current system register state for the VCPU specified by
+- * vcpuid and stores it at the location given by sregs.
+- */
+-void vcpu_sregs_get(struct kvm_vm *vm, uint32_t vcpuid, struct kvm_sregs *sregs)
+-{
+-	struct vcpu *vcpu = vcpu_find(vm, vcpuid);
+-	int ret;
+-
+-	TEST_ASSERT(vcpu != NULL, "vcpu not found, vcpuid: %u", vcpuid);
+-
+-	ret = ioctl(vcpu->fd, KVM_GET_SREGS, sregs);
+-	TEST_ASSERT(ret == 0, "KVM_GET_SREGS failed, rc: %i errno: %i",
+-		ret, errno);
+-}
+-
+-/*
+- * VM VCPU System Regs Set
+- *
+- * Input Args:
+- *   vm - Virtual Machine
+- *   vcpuid - VCPU ID
+- *   sregs - Values to set VCPU system regs to
+- *
+- * Output Args: None
+- *
+- * Return: None
+- *
+- * Sets the system regs of the VCPU specified by vcpuid to the values
+- * given by sregs.
+- */
+-void vcpu_sregs_set(struct kvm_vm *vm, uint32_t vcpuid, struct kvm_sregs *sregs)
+-{
+-	int ret = _vcpu_sregs_set(vm, vcpuid, sregs);
+-	TEST_ASSERT(ret == 0, "KVM_SET_SREGS IOCTL failed, "
+-		"rc: %i errno: %i", ret, errno);
+-}
+-
+-int _vcpu_sregs_set(struct kvm_vm *vm, uint32_t vcpuid, struct kvm_sregs *sregs)
+-{
+-	struct vcpu *vcpu = vcpu_find(vm, vcpuid);
+-
+-	TEST_ASSERT(vcpu != NULL, "vcpu not found, vcpuid: %u", vcpuid);
+-
+-	return ioctl(vcpu->fd, KVM_SET_SREGS, sregs);
+-}
+-
+-void vcpu_fpu_get(struct kvm_vm *vm, uint32_t vcpuid, struct kvm_fpu *fpu)
+-{
+-	int ret;
+-
+-	ret = __vcpu_ioctl(vm, vcpuid, KVM_GET_FPU, fpu);
+-	TEST_ASSERT(ret == 0, "KVM_GET_FPU failed, rc: %i errno: %i (%s)",
+-		    ret, errno, strerror(errno));
+-}
+-
+-void vcpu_fpu_set(struct kvm_vm *vm, uint32_t vcpuid, struct kvm_fpu *fpu)
+-{
+-	int ret;
+-
+-	ret = __vcpu_ioctl(vm, vcpuid, KVM_SET_FPU, fpu);
+-	TEST_ASSERT(ret == 0, "KVM_SET_FPU failed, rc: %i errno: %i (%s)",
+-		    ret, errno, strerror(errno));
+-}
+-
+-void vcpu_get_reg(struct kvm_vm *vm, uint32_t vcpuid, struct kvm_one_reg *reg)
+-{
+-	int ret;
+-
+-	ret = __vcpu_ioctl(vm, vcpuid, KVM_GET_ONE_REG, reg);
+-	TEST_ASSERT(ret == 0, "KVM_GET_ONE_REG failed, rc: %i errno: %i (%s)",
+-		    ret, errno, strerror(errno));
+-}
+-
+-void vcpu_set_reg(struct kvm_vm *vm, uint32_t vcpuid, struct kvm_one_reg *reg)
+-{
+-	int ret;
+-
+-	ret = __vcpu_ioctl(vm, vcpuid, KVM_SET_ONE_REG, reg);
+-	TEST_ASSERT(ret == 0, "KVM_SET_ONE_REG failed, rc: %i errno: %i (%s)",
+-		    ret, errno, strerror(errno));
+-}
+-
+ int __vcpu_ioctl(struct kvm_vm *vm, uint32_t vcpuid,
+ 		 unsigned long cmd, void *arg)
  {
- 	struct kvm_vm *vm;
+@@ -2534,10 +2259,3 @@ int vm_get_stats_fd(struct kvm_vm *vm)
+ {
+ 	return ioctl(vm->fd, KVM_GET_STATS_FD, NULL);
+ }
+-
+-int vcpu_get_stats_fd(struct kvm_vm *vm, uint32_t vcpuid)
+-{
+-	struct vcpu *vcpu = vcpu_find(vm, vcpuid);
+-
+-	return ioctl(vcpu->fd, KVM_GET_STATS_FD, NULL);
+-}
+diff --git a/tools/testing/selftests/kvm/lib/x86_64/processor.c b/tools/testing/selftests/kvm/lib/x86_64/processor.c
+index 33ea5e9955d9..27c40b5ab01d 100644
+--- a/tools/testing/selftests/kvm/lib/x86_64/processor.c
++++ b/tools/testing/selftests/kvm/lib/x86_64/processor.c
+@@ -803,18 +803,15 @@ uint64_t kvm_get_feature_msr(uint64_t msr_index)
+  */
+ struct kvm_cpuid2 *vcpu_get_cpuid(struct kvm_vm *vm, uint32_t vcpuid)
+ {
+-	struct vcpu *vcpu = vcpu_find(vm, vcpuid);
+ 	struct kvm_cpuid2 *cpuid;
+ 	int max_ent;
+ 	int rc = -1;
  
--	vm = vm_create(mode, pages);
-+	vm = __vm_create(mode, pages);
+-	TEST_ASSERT(vcpu != NULL, "vcpu not found, vcpuid: %u", vcpuid);
+-
+ 	cpuid = allocate_kvm_cpuid2();
+ 	max_ent = cpuid->nent;
  
- 	kvm_vm_elf_load(vm, program_invocation_name);
+ 	for (cpuid->nent = 1; cpuid->nent <= max_ent; cpuid->nent++) {
+-		rc = ioctl(vcpu->fd, KVM_GET_CPUID2, cpuid);
++		rc = __vcpu_ioctl(vm, vcpuid, KVM_GET_CPUID2, cpuid);
+ 		if (!rc)
+ 			break;
  
-diff --git a/tools/testing/selftests/kvm/set_memory_region_test.c b/tools/testing/selftests/kvm/set_memory_region_test.c
-index d97cfd6866c3..89b13f23c3ac 100644
---- a/tools/testing/selftests/kvm/set_memory_region_test.c
-+++ b/tools/testing/selftests/kvm/set_memory_region_test.c
-@@ -314,7 +314,7 @@ static void test_zero_memory_regions(void)
+@@ -823,9 +820,7 @@ struct kvm_cpuid2 *vcpu_get_cpuid(struct kvm_vm *vm, uint32_t vcpuid)
+ 			    rc, errno);
+ 	}
  
- 	pr_info("Testing KVM_RUN with zero added memory regions\n");
+-	TEST_ASSERT(rc == 0, "KVM_GET_CPUID2 failed, rc: %i errno: %i",
+-		    rc, errno);
+-
++	TEST_ASSERT(!rc, KVM_IOCTL_ERROR(KVM_GET_CPUID2, rc));
+ 	return cpuid;
+ }
  
--	vm = vm_create(VM_MODE_DEFAULT, 0);
-+	vm = vm_create(0);
- 	vm_vcpu_add(vm, VCPU_ID);
+@@ -863,132 +858,37 @@ kvm_get_supported_cpuid_index(uint32_t function, uint32_t index)
+ 	return entry;
+ }
  
- 	TEST_ASSERT(!ioctl(vm_get_fd(vm), KVM_SET_NR_MMU_PAGES, 64),
-@@ -354,7 +354,7 @@ static void test_add_max_memory_regions(void)
- 		    "KVM_CAP_NR_MEMSLOTS should be greater than 0");
- 	pr_info("Allowed number of memory slots: %i\n", max_mem_slots);
+-
+-int __vcpu_set_cpuid(struct kvm_vm *vm, uint32_t vcpuid,
+-		     struct kvm_cpuid2 *cpuid)
+-{
+-	struct vcpu *vcpu = vcpu_find(vm, vcpuid);
+-
+-	TEST_ASSERT(vcpu != NULL, "vcpu not found, vcpuid: %u", vcpuid);
+-
+-	return ioctl(vcpu->fd, KVM_SET_CPUID2, cpuid);
+-}
+-
+-/*
+- * VM VCPU CPUID Set
+- *
+- * Input Args:
+- *   vm - Virtual Machine
+- *   vcpuid - VCPU id
+- *   cpuid - The CPUID values to set.
+- *
+- * Output Args: None
+- *
+- * Return: void
+- *
+- * Set the VCPU's CPUID.
+- */
+-void vcpu_set_cpuid(struct kvm_vm *vm,
+-		uint32_t vcpuid, struct kvm_cpuid2 *cpuid)
+-{
+-	int rc;
+-
+-	rc = __vcpu_set_cpuid(vm, vcpuid, cpuid);
+-	TEST_ASSERT(rc == 0, "KVM_SET_CPUID2 failed, rc: %i errno: %i",
+-		    rc, errno);
+-
+-}
+-
+-/*
+- * VCPU Get MSR
+- *
+- * Input Args:
+- *   vm - Virtual Machine
+- *   vcpuid - VCPU ID
+- *   msr_index - Index of MSR
+- *
+- * Output Args: None
+- *
+- * Return: On success, value of the MSR. On failure a TEST_ASSERT is produced.
+- *
+- * Get value of MSR for VCPU.
+- */
+ uint64_t vcpu_get_msr(struct kvm_vm *vm, uint32_t vcpuid, uint64_t msr_index)
+ {
+-	struct vcpu *vcpu = vcpu_find(vm, vcpuid);
+ 	struct {
+ 		struct kvm_msrs header;
+ 		struct kvm_msr_entry entry;
+ 	} buffer = {};
+ 	int r;
  
--	vm = vm_create(VM_MODE_DEFAULT, 0);
-+	vm = vm_create(0);
+-	TEST_ASSERT(vcpu != NULL, "vcpu not found, vcpuid: %u", vcpuid);
+ 	buffer.header.nmsrs = 1;
+ 	buffer.entry.index = msr_index;
+-	r = ioctl(vcpu->fd, KVM_GET_MSRS, &buffer.header);
+-	TEST_ASSERT(r == 1, "KVM_GET_MSRS IOCTL failed,\n"
+-		"  rc: %i errno: %i", r, errno);
++
++	r = __vcpu_ioctl(vm, vcpuid, KVM_GET_MSRS, &buffer.header);
++	TEST_ASSERT(r == 1, KVM_IOCTL_ERROR(KVM_GET_MSRS, r));
  
- 	/* Check it can be added memory slots up to the maximum allowed */
- 	pr_info("Adding slots 0..%i, each memory region with %dK size\n",
-diff --git a/tools/testing/selftests/kvm/x86_64/max_vcpuid_cap_test.c b/tools/testing/selftests/kvm/x86_64/max_vcpuid_cap_test.c
-index 28cc316c5dbe..e83afd4bb4cf 100644
---- a/tools/testing/selftests/kvm/x86_64/max_vcpuid_cap_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/max_vcpuid_cap_test.c
-@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
- 	struct kvm_enable_cap cap = { 0 };
- 	int ret;
+ 	return buffer.entry.data;
+ }
  
--	vm = vm_create(VM_MODE_DEFAULT, 0);
-+	vm = vm_create(0);
+-/*
+- * _VCPU Set MSR
+- *
+- * Input Args:
+- *   vm - Virtual Machine
+- *   vcpuid - VCPU ID
+- *   msr_index - Index of MSR
+- *   msr_value - New value of MSR
+- *
+- * Output Args: None
+- *
+- * Return: The result of KVM_SET_MSRS.
+- *
+- * Sets the value of an MSR for the given VCPU.
+- */
+ int _vcpu_set_msr(struct kvm_vm *vm, uint32_t vcpuid, uint64_t msr_index,
+ 		  uint64_t msr_value)
+ {
+-	struct vcpu *vcpu = vcpu_find(vm, vcpuid);
+ 	struct {
+ 		struct kvm_msrs header;
+ 		struct kvm_msr_entry entry;
+ 	} buffer = {};
+-	int r;
  
- 	/* Get KVM_CAP_MAX_VCPU_ID cap supported in KVM */
- 	ret = vm_check_cap(vm, KVM_CAP_MAX_VCPU_ID);
-diff --git a/tools/testing/selftests/kvm/x86_64/set_boot_cpu_id.c b/tools/testing/selftests/kvm/x86_64/set_boot_cpu_id.c
-index ee3d058a9fe1..b4da92ddc1c6 100644
---- a/tools/testing/selftests/kvm/x86_64/set_boot_cpu_id.c
-+++ b/tools/testing/selftests/kvm/x86_64/set_boot_cpu_id.c
-@@ -88,7 +88,7 @@ static struct kvm_vm *create_vm(void)
- 	uint64_t pages = DEFAULT_GUEST_PHY_PAGES + vcpu_pages + extra_pg_pages;
+-	TEST_ASSERT(vcpu != NULL, "vcpu not found, vcpuid: %u", vcpuid);
+ 	memset(&buffer, 0, sizeof(buffer));
+ 	buffer.header.nmsrs = 1;
+ 	buffer.entry.index = msr_index;
+ 	buffer.entry.data = msr_value;
+-	r = ioctl(vcpu->fd, KVM_SET_MSRS, &buffer.header);
+-	return r;
+-}
  
- 	pages = vm_adjust_num_guest_pages(VM_MODE_DEFAULT, pages);
--	vm = vm_create(VM_MODE_DEFAULT, pages);
-+	vm = vm_create(pages);
+-/*
+- * VCPU Set MSR
+- *
+- * Input Args:
+- *   vm - Virtual Machine
+- *   vcpuid - VCPU ID
+- *   msr_index - Index of MSR
+- *   msr_value - New value of MSR
+- *
+- * Output Args: None
+- *
+- * Return: On success, nothing. On failure a TEST_ASSERT is produced.
+- *
+- * Set value of MSR for VCPU.
+- */
+-void vcpu_set_msr(struct kvm_vm *vm, uint32_t vcpuid, uint64_t msr_index,
+-	uint64_t msr_value)
+-{
+-	int r;
+-
+-	r = _vcpu_set_msr(vm, vcpuid, msr_index, msr_value);
+-	TEST_ASSERT(r == 1, "KVM_SET_MSRS IOCTL failed,\n"
+-		"  rc: %i errno: %i", r, errno);
++	return __vcpu_ioctl(vm, vcpuid, KVM_SET_MSRS, &buffer.header);
+ }
  
- 	kvm_vm_elf_load(vm, program_invocation_name);
- 	vm_create_irqchip(vm);
-diff --git a/tools/testing/selftests/kvm/x86_64/set_sregs_test.c b/tools/testing/selftests/kvm/x86_64/set_sregs_test.c
-index 44711ab735c3..4dc7fd925023 100644
---- a/tools/testing/selftests/kvm/x86_64/set_sregs_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/set_sregs_test.c
-@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
- 	 * use it to verify all supported CR4 bits can be set prior to defining
- 	 * the vCPU model, i.e. without doing KVM_SET_CPUID2.
- 	 */
--	vm = vm_create(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES);
-+	vm = vm_create(DEFAULT_GUEST_PHY_PAGES);
- 	vm_vcpu_add(vm, VCPU_ID);
- 
- 	vcpu_sregs_get(vm, VCPU_ID, &sregs);
-diff --git a/tools/testing/selftests/kvm/x86_64/sev_migrate_tests.c b/tools/testing/selftests/kvm/x86_64/sev_migrate_tests.c
-index b0c052443c44..7424bec5ae23 100644
---- a/tools/testing/selftests/kvm/x86_64/sev_migrate_tests.c
-+++ b/tools/testing/selftests/kvm/x86_64/sev_migrate_tests.c
-@@ -54,7 +54,7 @@ static struct kvm_vm *sev_vm_create(bool es)
- 	struct kvm_sev_launch_start start = { 0 };
- 	int i;
- 
--	vm = vm_create(VM_MODE_DEFAULT, 0);
-+	vm = vm_create(0);
- 	sev_ioctl(vm->fd, es ? KVM_SEV_ES_INIT : KVM_SEV_INIT, NULL);
- 	for (i = 0; i < NR_MIGRATE_TEST_VCPUS; ++i)
- 		vm_vcpu_add(vm, i);
-@@ -71,7 +71,7 @@ static struct kvm_vm *aux_vm_create(bool with_vcpus)
- 	struct kvm_vm *vm;
- 	int i;
- 
--	vm = vm_create(VM_MODE_DEFAULT, 0);
-+	vm = vm_create(0);
- 	if (!with_vcpus)
- 		return vm;
- 
-@@ -174,7 +174,7 @@ static void test_sev_migrate_parameters(void)
- 		*sev_es_vm_no_vmsa;
- 	int ret;
- 
--	vm_no_vcpu = vm_create(VM_MODE_DEFAULT, 0);
-+	vm_no_vcpu = vm_create(0);
- 	vm_no_sev = aux_vm_create(true);
- 	ret = __sev_migrate_from(vm_no_vcpu->fd, vm_no_sev->fd);
- 	TEST_ASSERT(ret == -1 && errno == EINVAL,
-@@ -186,7 +186,7 @@ static void test_sev_migrate_parameters(void)
- 
- 	sev_vm = sev_vm_create(/* es= */ false);
- 	sev_es_vm = sev_vm_create(/* es= */ true);
--	sev_es_vm_no_vmsa = vm_create(VM_MODE_DEFAULT, 0);
-+	sev_es_vm_no_vmsa = vm_create(0);
- 	sev_ioctl(sev_es_vm_no_vmsa->fd, KVM_SEV_ES_INIT, NULL);
- 	vm_vcpu_add(sev_es_vm_no_vmsa, 1);
- 
+ void vcpu_args_set(struct kvm_vm *vm, uint32_t vcpuid, unsigned int num, ...)
 -- 
 2.36.1.255.ge46751e96f-goog
 
