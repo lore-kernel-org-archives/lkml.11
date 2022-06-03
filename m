@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5F33C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:08:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC0E1C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:08:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346690AbiFCSIf (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:08:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59898 "EHLO
+        id S245266AbiFCSIl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 14:08:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346058AbiFCRzh (ORCPT
+        with ESMTP id S1346074AbiFCRzj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:55:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17A17562C0;
-        Fri,  3 Jun 2022 10:53:32 -0700 (PDT)
+        Fri, 3 Jun 2022 13:55:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C08EE562E9;
+        Fri,  3 Jun 2022 10:53:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A43FB612DA;
-        Fri,  3 Jun 2022 17:53:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6155CC385A9;
-        Fri,  3 Jun 2022 17:53:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7A3A5B82419;
+        Fri,  3 Jun 2022 17:53:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDB51C3411C;
+        Fri,  3 Jun 2022 17:53:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278811;
-        bh=/eMut8KRqjz6hw7B+wNoTdvbDTPFtvbpZT8C4Ofec78=;
+        s=korg; t=1654278814;
+        bh=QSqdrBXq5Smm/co4R3m8i5KuO0M2hHfHRZtBXITNQCY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fLZb4f6i3zZNIFg4n4MhFpeujIau/iTmQ1g9jYgaQ43Uz0/lQaX7LoSU61Untd7fh
-         Y5I+qj44la9GQ7gJSlkvAZgaR5qH8qwp6SlzzoyEiJg2m/3M1rWEsC0YIc8HvhYX6q
-         GHVMK0PtPekb/PuN7BmZlKHzPgyhX7fICLWHSSb0=
+        b=gqd4pHKtJJN282t39dxWBZ9qAUnF8Ax25URYuQKcESNViEe0XVhouSwLXOhn8wu4k
+         Hr6N14lf7K/uQpzf4X9OwZPn/boj87TxZ6qlE6gcxMuJYJGkHT3be3CGhVCzaMHH0Y
+         gY9tY4SYF4FEFBolW4E64M+2Q8DCg5T+l3GMz/tI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxim Levitsky <mlevitsk@redhat.com>,
+        stable@vger.kernel.org, Yanfei Xu <yanfei.xu@intel.com>,
         Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.17 35/75] KVM: x86: avoid loading a vCPU after .vm_destroy was called
-Date:   Fri,  3 Jun 2022 19:43:19 +0200
-Message-Id: <20220603173822.741407952@linuxfoundation.org>
+Subject: [PATCH 5.17 36/75] KVM: x86: Fix the intel_pt PMI handling wrongly considered from guest
+Date:   Fri,  3 Jun 2022 19:43:20 +0200
+Message-Id: <20220603173822.770199379@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173821.749019262@linuxfoundation.org>
 References: <20220603173821.749019262@linuxfoundation.org>
@@ -49,63 +48,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxim Levitsky <mlevitsk@redhat.com>
+From: Yanfei Xu <yanfei.xu@intel.com>
 
-commit 6fcee03df6a1a3101a77344be37bb85c6142d56c upstream.
+commit ffd1925a596ce68bed7d81c61cb64bc35f788a9d upstream.
 
-This can cause various unexpected issues, since VM is partially
-destroyed at that point.
+When kernel handles the vm-exit caused by external interrupts and NMI,
+it always sets kvm_intr_type to tell if it's dealing an IRQ or NMI. For
+the PMI scenario, it could be IRQ or NMI.
 
-For example when AVIC is enabled, this causes avic_vcpu_load to
-access physical id page entry which is already freed by .vm_destroy.
+However, intel_pt PMIs are only generated for HARDWARE perf events, and
+HARDWARE events are always configured to generate NMIs.  Use
+kvm_handling_nmi_from_guest() to precisely identify if the intel_pt PMI
+came from the guest; this avoids false positives if an intel_pt PMI/NMI
+arrives while the host is handling an unrelated IRQ VM-Exit.
 
-Fixes: 8221c1370056 ("svm: Manage vcpu load/unload when enable AVIC")
+Fixes: db215756ae59 ("KVM: x86: More precisely identify NMI from guest when handling PMI")
+Signed-off-by: Yanfei Xu <yanfei.xu@intel.com>
+Message-Id: <20220523140821.1345605-1-yanfei.xu@intel.com>
 Cc: stable@vger.kernel.org
-Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
-Message-Id: <20220322172449.235575-2-mlevitsk@redhat.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/x86.c |   10 +++-------
- 1 file changed, 3 insertions(+), 7 deletions(-)
+ arch/x86/kvm/vmx/vmx.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -11655,20 +11655,15 @@ static void kvm_unload_vcpu_mmu(struct k
- 	vcpu_put(vcpu);
- }
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -7858,7 +7858,7 @@ static unsigned int vmx_handle_intel_pt_
+ 	struct kvm_vcpu *vcpu = kvm_get_running_vcpu();
  
--static void kvm_free_vcpus(struct kvm *kvm)
-+static void kvm_unload_vcpu_mmus(struct kvm *kvm)
- {
- 	unsigned long i;
- 	struct kvm_vcpu *vcpu;
+ 	/* '0' on failure so that the !PT case can use a RET0 static call. */
+-	if (!kvm_arch_pmi_in_guest(vcpu))
++	if (!vcpu || !kvm_handling_nmi_from_guest(vcpu))
+ 		return 0;
  
--	/*
--	 * Unpin any mmu pages first.
--	 */
- 	kvm_for_each_vcpu(i, vcpu, kvm) {
- 		kvm_clear_async_pf_completion_queue(vcpu);
- 		kvm_unload_vcpu_mmu(vcpu);
- 	}
--
--	kvm_destroy_vcpus(kvm);
- }
- 
- void kvm_arch_sync_events(struct kvm *kvm)
-@@ -11774,11 +11769,12 @@ void kvm_arch_destroy_vm(struct kvm *kvm
- 		__x86_set_memory_region(kvm, TSS_PRIVATE_MEMSLOT, 0, 0);
- 		mutex_unlock(&kvm->slots_lock);
- 	}
-+	kvm_unload_vcpu_mmus(kvm);
- 	static_call_cond(kvm_x86_vm_destroy)(kvm);
- 	kvm_free_msr_filter(srcu_dereference_check(kvm->arch.msr_filter, &kvm->srcu, 1));
- 	kvm_pic_destroy(kvm);
- 	kvm_ioapic_destroy(kvm);
--	kvm_free_vcpus(kvm);
-+	kvm_destroy_vcpus(kvm);
- 	kvfree(rcu_dereference_check(kvm->arch.apic_map, 1));
- 	kfree(srcu_dereference_check(kvm->arch.pmu_event_filter, &kvm->srcu, 1));
- 	kvm_mmu_uninit_vm(kvm);
+ 	kvm_make_request(KVM_REQ_PMI, vcpu);
 
 
