@@ -2,58 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 832DCCCA481
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 00:54:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C26CCCA487
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 00:54:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240876AbiFCAuO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 20:50:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48168 "EHLO
+        id S241150AbiFCAu1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 20:50:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240214AbiFCApG (ORCPT
+        with ESMTP id S240163AbiFCAo4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 20:45:06 -0400
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E05422517
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:45:05 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id k92-20020a17090a4ce500b001e69e8a98a4so933891pjh.3
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:45:05 -0700 (PDT)
+        Thu, 2 Jun 2022 20:44:56 -0400
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20D4837A8F
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:44:53 -0700 (PDT)
+Received: by mail-pg1-x549.google.com with SMTP id g129-20020a636b87000000b003fd1deac6ebso135299pgc.23
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:44:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=t58xAAwB/ZnbYiHOUPJlMzJFx0EquVUcWcCWAkpdW/o=;
-        b=BOfHWQq3Vor6mvg5pg6jhgJoW7+h8pcII5sT2DuQGjbM35rmwmvbDfDzB4bTjgmNaA
-         ewrCxzlCvbZTtmiAW8wuAx4oqDKdubfORpDUNlAPuoKtgJuYruNWdggZ2m07YwFF2Ayi
-         6UdUpla7XN33/wGE8id7NrgKwlh0QWVe/c4g0fJRNQqbhRyqROXDeb4unIdOpQLM3+fa
-         be2C3zfx38VuiRRJ4Mf80WhssqyksN6+9gg3BuYl/mKtBArEuAQf5c1WmR/DO33ONpxx
-         2D0KQPRHjFJykUI+LJ3vlMyhonmHY+zsGq5V8zoSbLyY6vR6HAMRybQPzVcqvS/x91jS
-         J/vQ==
+        bh=7A8GiPLt6EoF/z44Q/QbLAgMh/pfSDViGpWaAyP0lNo=;
+        b=B1KfeW2a9/1TfkltckkoZ60LPG+bawSDqzkpC489MqN1H8fWcdo5nFZJzzK4cmQ8l/
+         hKDM9nR3vfGYS9nNw/J8+JwhOjn6BIYTb+uu7nM90EfN8s+RETfp0Atr7zD8PQpXd2T9
+         /s+rYdvuPEDo/qWZoUJIHtEGNUbpKVNIj3kIDiOrJtNfr8mzD9HaKGG/dH7J32EAfs/6
+         ujGbGYjJONRdCwkqLLpZsdBa+GBtSMvWBqQ8PDLk987uYfxcvX085Edv0dTB0CbTbLHe
+         zADgKWxBEPNvk4jg98bcmtD+0r2+SO4IkFkAsRGDs0ixUQCx9zrwWkAyBSQB6O1TcgqS
+         WafA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=t58xAAwB/ZnbYiHOUPJlMzJFx0EquVUcWcCWAkpdW/o=;
-        b=cUCTpn3tTgHZuSKgtlAc6cl5rJtsVn74gDjGdSiBQcdAJzf4ZbP6CH5TvaBtpsOL23
-         Ad2HKhdtRyRoGDHig/+t3rZ83taIcfGhyn/pXm7A3JtItZKgJrM4bppmlyyptiQLvE6L
-         jfJ+LJGgqZnGt8zN0lCey+SeoC/5qXXjYi/GKr7B1VOB2iEgIFqul8eHzJC/OI5Zf9jg
-         H2KK2aOHh+x9Hl8pfCmFlhOjjq8UAowQJX8JMsThbz/1c7/wDKIpYeMt9/sOM3UG5q/x
-         ZxcEhXca5ZC1AzSlDunyu5/yWouEFSYiyLQb00hRv/PNdulhqpjM+SHGdwXoLKHb6YVG
-         QCaQ==
-X-Gm-Message-State: AOAM530SOK6hVKoDsrQCHL2sO8yAb41oGmo+0CbJFd7qF+w2cEGaeYsS
-        iN3o0U2nZh3jc+SHyVUiK6brRc4XYhA=
-X-Google-Smtp-Source: ABdhPJzQAhuFQefdny7WM7T7++3j+UHAQQOnvnYp3xh9aylN+U/KL1oYOcsqIY50vfWeite0nwrzeWOVLEs=
+        bh=7A8GiPLt6EoF/z44Q/QbLAgMh/pfSDViGpWaAyP0lNo=;
+        b=3GjhEKjioaPQbEmvNrHAieomk3cRd9AJkSYcYh+1davoaqRDLk1aE7vw6KcEMKUSka
+         bA4XLp/YyqqRIkmyJPApv7EVwozY0w9WsUEC1Z/2g4u7Bp0H3Lb84xVdl6H41WTan0Lr
+         QLF3vwzN8w3DBp7xb6ZdUG0iTgdeHl8Rj47aVl16OQMrOoA1MUJnSCTnWPtiSlbBNGm3
+         6MST0b3ibGeztgDjP3vEC4KlVNpeYujJM402AkzRRfwHJTfBCvbneEXX7ccE2cDBaafx
+         SMHhLIwstUeFb/MURPJ9BmXZTsFipTaf0fSnaoINSN7Bwh8X9ApvHGl4aukEi0UonDbB
+         ADnw==
+X-Gm-Message-State: AOAM533poUDuiJXqR4eCZQpvi/JdKfN1gXdtksCBRx3rcHFsPK8txOxF
+        MeVt3+px/WS/cK9ibZvD6pau2Ic4KYs=
+X-Google-Smtp-Source: ABdhPJyqULkt9W5iKgiGsrs4OX7xQlTTQ/jv+FTiHMuIzKb8AbQnx5geegletFi/oRSJteP8T4rrDu0rwFE=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
  (user=seanjc job=sendgmr) by 2002:a17:90a:249:b0:1e0:a8a3:3c6c with SMTP id
- t9-20020a17090a024900b001e0a8a33c6cmr307302pje.0.1654217104430; Thu, 02 Jun
- 2022 17:45:04 -0700 (PDT)
+ t9-20020a17090a024900b001e0a8a33c6cmr307297pje.0.1654217092129; Thu, 02 Jun
+ 2022 17:44:52 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri,  3 Jun 2022 00:41:55 +0000
+Date:   Fri,  3 Jun 2022 00:41:48 +0000
 In-Reply-To: <20220603004331.1523888-1-seanjc@google.com>
-Message-Id: <20220603004331.1523888-49-seanjc@google.com>
+Message-Id: <20220603004331.1523888-42-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220603004331.1523888-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v2 048/144] KVM: selftests: Rename 'struct vcpu' to 'struct kvm_vcpu'
+Subject: [PATCH v2 041/144] KVM: selftests: Use vm_create_without_vcpus() in hardware_disable_test
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     kvm@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
@@ -66,216 +66,29 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rename 'struct vcpu' to 'struct kvm_vcpu' to align with 'struct kvm_vm'
-in the selftest, and to give readers a hint that the struct is specific
-to KVM.
+Use vm_create_without_vcpus() instead of open coding a rough equivalent
+in hardware_disable_test.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../selftests/kvm/include/kvm_util_base.h     | 11 +++---
- tools/testing/selftests/kvm/lib/kvm_util.c    | 36 +++++++++----------
- .../selftests/kvm/lib/s390x/processor.c       |  2 +-
- 3 files changed, 24 insertions(+), 25 deletions(-)
+ tools/testing/selftests/kvm/hardware_disable_test.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
-index b83c3327d0e4..d2c7fb391fc7 100644
---- a/tools/testing/selftests/kvm/include/kvm_util_base.h
-+++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
-@@ -16,6 +16,7 @@
- #include <linux/kvm.h>
- #include "linux/rbtree.h"
+diff --git a/tools/testing/selftests/kvm/hardware_disable_test.c b/tools/testing/selftests/kvm/hardware_disable_test.c
+index 81ba8645772a..32837207fe4e 100644
+--- a/tools/testing/selftests/kvm/hardware_disable_test.c
++++ b/tools/testing/selftests/kvm/hardware_disable_test.c
+@@ -104,9 +104,7 @@ static void run_test(uint32_t run)
+ 	for (i = 0; i < VCPU_NUM; i++)
+ 		CPU_SET(i, &cpu_set);
  
-+
- #include <sys/ioctl.h>
+-	vm = vm_create(DEFAULT_GUEST_PHY_PAGES);
+-	kvm_vm_elf_load(vm, program_invocation_name);
+-	vm_create_irqchip(vm);
++	vm  = vm_create_without_vcpus(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES);
  
- #include "sparsebit.h"
-@@ -43,7 +44,7 @@ struct userspace_mem_region {
- 	struct hlist_node slot_node;
- };
- 
--struct vcpu {
-+struct kvm_vcpu {
- 	struct list_head list;
- 	uint32_t id;
- 	int fd;
-@@ -92,7 +93,7 @@ struct kvm_vm {
- 			continue;			\
- 		else
- 
--struct vcpu *vcpu_get(struct kvm_vm *vm, uint32_t vcpuid);
-+struct kvm_vcpu *vcpu_get(struct kvm_vm *vm, uint32_t vcpuid);
- 
- /*
-  * Virtual Translation Tables Dump
-@@ -644,17 +645,17 @@ struct kvm_vm *vm_create_with_vcpus(enum vm_guest_mode mode, uint32_t nr_vcpus,
-  * Create a VM with a single vCPU with reasonable defaults and @extra_mem_pages
-  * additional pages of guest memory.  Returns the VM and vCPU (via out param).
-  */
--struct kvm_vm *__vm_create_with_one_vcpu(struct vcpu **vcpu,
-+struct kvm_vm *__vm_create_with_one_vcpu(struct kvm_vcpu **vcpu,
- 					 uint64_t extra_mem_pages,
- 					 void *guest_code);
- 
--static inline struct kvm_vm *vm_create_with_one_vcpu(struct vcpu **vcpu,
-+static inline struct kvm_vm *vm_create_with_one_vcpu(struct kvm_vcpu **vcpu,
- 						     void *guest_code)
- {
- 	return __vm_create_with_one_vcpu(vcpu, 0, guest_code);
- }
- 
--struct vcpu *vm_recreate_with_one_vcpu(struct kvm_vm *vm);
-+struct kvm_vcpu *vm_recreate_with_one_vcpu(struct kvm_vm *vm);
- 
- /*
-  * Adds a vCPU with reasonable defaults (e.g. a stack)
-diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
-index aca9ebffdc0e..99d6c5a8659e 100644
---- a/tools/testing/selftests/kvm/lib/kvm_util.c
-+++ b/tools/testing/selftests/kvm/lib/kvm_util.c
-@@ -349,7 +349,7 @@ struct kvm_vm *vm_create_default(uint32_t vcpuid, uint64_t extra_mem_pages,
- 					    (uint32_t []){ vcpuid });
- }
- 
--struct kvm_vm *__vm_create_with_one_vcpu(struct vcpu **vcpu,
-+struct kvm_vm *__vm_create_with_one_vcpu(struct kvm_vcpu **vcpu,
- 					 uint64_t extra_mem_pages,
- 					 void *guest_code)
- {
-@@ -393,7 +393,7 @@ void kvm_vm_restart(struct kvm_vm *vmp)
- 	}
- }
- 
--struct vcpu *vm_recreate_with_one_vcpu(struct kvm_vm *vm)
-+struct kvm_vcpu *vm_recreate_with_one_vcpu(struct kvm_vm *vm)
- {
- 	kvm_vm_restart(vm);
- 
-@@ -472,23 +472,23 @@ kvm_userspace_memory_region_find(struct kvm_vm *vm, uint64_t start,
- 	return &region->region;
- }
- 
--static struct vcpu *vcpu_find(struct kvm_vm *vm, uint32_t vcpuid)
-+static struct kvm_vcpu *vcpu_find(struct kvm_vm *vm, uint32_t vcpu_id)
- {
--	struct vcpu *vcpu;
-+	struct kvm_vcpu *vcpu;
- 
- 	list_for_each_entry(vcpu, &vm->vcpus, list) {
--		if (vcpu->id == vcpuid)
-+		if (vcpu->id == vcpu_id)
- 			return vcpu;
- 	}
- 
- 	return NULL;
- }
- 
--struct vcpu *vcpu_get(struct kvm_vm *vm, uint32_t vcpuid)
-+struct kvm_vcpu *vcpu_get(struct kvm_vm *vm, uint32_t vcpu_id)
- {
--	struct vcpu *vcpu = vcpu_find(vm, vcpuid);
-+	struct kvm_vcpu *vcpu = vcpu_find(vm, vcpu_id);
- 
--	TEST_ASSERT(vcpu, "vCPU %d does not exist", vcpuid);
-+	TEST_ASSERT(vcpu, "vCPU %d does not exist", vcpu_id);
- 	return vcpu;
- }
- 
-@@ -504,7 +504,7 @@ struct vcpu *vcpu_get(struct kvm_vm *vm, uint32_t vcpuid)
-  *
-  * Removes a vCPU from a VM and frees its resources.
-  */
--static void vm_vcpu_rm(struct kvm_vm *vm, struct vcpu *vcpu)
-+static void vm_vcpu_rm(struct kvm_vm *vm, struct kvm_vcpu *vcpu)
- {
- 	int ret;
- 
-@@ -526,7 +526,7 @@ static void vm_vcpu_rm(struct kvm_vm *vm, struct vcpu *vcpu)
- 
- void kvm_vm_release(struct kvm_vm *vmp)
- {
--	struct vcpu *vcpu, *tmp;
-+	struct kvm_vcpu *vcpu, *tmp;
- 	int ret;
- 
- 	list_for_each_entry_safe(vcpu, tmp, &vmp->vcpus, list)
-@@ -1078,7 +1078,7 @@ static int vcpu_mmap_sz(void)
-  */
- void vm_vcpu_add(struct kvm_vm *vm, uint32_t vcpuid)
- {
--	struct vcpu *vcpu;
-+	struct kvm_vcpu *vcpu;
- 
- 	/* Confirm a vcpu with the specified id doesn't already exist. */
- 	TEST_ASSERT(!vcpu_find(vm, vcpuid), "vCPU%d already exists\n", vcpuid);
-@@ -1452,7 +1452,7 @@ void vm_create_irqchip(struct kvm_vm *vm)
-  */
- struct kvm_run *vcpu_state(struct kvm_vm *vm, uint32_t vcpuid)
- {
--	struct vcpu *vcpu = vcpu_get(vm, vcpuid);
-+	struct kvm_vcpu *vcpu = vcpu_get(vm, vcpuid);
- 
- 	return vcpu->run;
- }
-@@ -1493,7 +1493,7 @@ int _vcpu_run(struct kvm_vm *vm, uint32_t vcpuid)
- 
- void vcpu_run_complete_io(struct kvm_vm *vm, uint32_t vcpuid)
- {
--	struct vcpu *vcpu = vcpu_get(vm, vcpuid);
-+	struct kvm_vcpu *vcpu = vcpu_get(vm, vcpuid);
- 	int ret;
- 
- 	vcpu->run->immediate_exit = 1;
-@@ -1537,7 +1537,7 @@ struct kvm_reg_list *vcpu_get_reg_list(struct kvm_vm *vm, uint32_t vcpuid)
- int __vcpu_ioctl(struct kvm_vm *vm, uint32_t vcpuid,
- 		 unsigned long cmd, void *arg)
- {
--	struct vcpu *vcpu = vcpu_get(vm, vcpuid);
-+	struct kvm_vcpu *vcpu = vcpu_get(vm, vcpuid);
- 
- 	return ioctl(vcpu->fd, cmd, arg);
- }
-@@ -1552,7 +1552,7 @@ void _vcpu_ioctl(struct kvm_vm *vm, uint32_t vcpuid, unsigned long cmd,
- 
- void *vcpu_map_dirty_ring(struct kvm_vm *vm, uint32_t vcpuid)
- {
--	struct vcpu *vcpu = vcpu_get(vm, vcpuid);
-+	struct kvm_vcpu *vcpu = vcpu_get(vm, vcpuid);
- 	uint32_t size = vm->dirty_ring_size;
- 
- 	TEST_ASSERT(size > 0, "Should enable dirty ring first");
-@@ -1684,9 +1684,7 @@ void vcpu_device_attr_set(struct kvm_vm *vm, uint32_t vcpuid, uint32_t group,
- int __vcpu_has_device_attr(struct kvm_vm *vm, uint32_t vcpuid, uint32_t group,
- 			  uint64_t attr)
- {
--	struct vcpu *vcpu = vcpu_get(vm, vcpuid);
--
--	return __kvm_has_device_attr(vcpu->fd, group, attr);
-+	return __kvm_has_device_attr(vcpu_get(vm, vcpuid)->fd, group, attr);
- }
- 
- /*
-@@ -1779,7 +1777,7 @@ void vm_dump(FILE *stream, struct kvm_vm *vm, uint8_t indent)
- {
- 	int ctr;
- 	struct userspace_mem_region *region;
--	struct vcpu *vcpu;
-+	struct kvm_vcpu *vcpu;
- 
- 	fprintf(stream, "%*smode: 0x%x\n", indent, "", vm->mode);
- 	fprintf(stream, "%*sfd: %i\n", indent, "", vm->fd);
-diff --git a/tools/testing/selftests/kvm/lib/s390x/processor.c b/tools/testing/selftests/kvm/lib/s390x/processor.c
-index df9d9650d916..aec15ca9d887 100644
---- a/tools/testing/selftests/kvm/lib/s390x/processor.c
-+++ b/tools/testing/selftests/kvm/lib/s390x/processor.c
-@@ -207,7 +207,7 @@ void vcpu_args_set(struct kvm_vm *vm, uint32_t vcpuid, unsigned int num, ...)
- 
- void vcpu_dump(FILE *stream, struct kvm_vm *vm, uint32_t vcpuid, uint8_t indent)
- {
--	struct vcpu *vcpu = vcpu_get(vm, vcpuid);
-+	struct kvm_vcpu *vcpu = vcpu_get(vm, vcpuid);
- 
- 	fprintf(stream, "%*spstate: psw: 0x%.16llx:0x%.16llx\n",
- 		indent, "", vcpu->run->psw_mask, vcpu->run->psw_addr);
+ 	pr_debug("%s: [%d] start vcpus\n", __func__, run);
+ 	for (i = 0; i < VCPU_NUM; ++i) {
 -- 
 2.36.1.255.ge46751e96f-goog
 
