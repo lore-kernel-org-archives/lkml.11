@@ -2,118 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 620F4CCA47C
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:02:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ACA5CCA47C
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:02:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346260AbiFCSC3 (ORCPT
+        id S1346186AbiFCSCf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:02:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58152 "EHLO
+        Fri, 3 Jun 2022 14:02:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347244AbiFCRwK (ORCPT
+        with ESMTP id S1347254AbiFCRwK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 3 Jun 2022 13:52:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE14C6447;
-        Fri,  3 Jun 2022 10:51:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 60D72B82419;
-        Fri,  3 Jun 2022 17:51:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95C12C385A9;
-        Fri,  3 Jun 2022 17:51:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278670;
-        bh=Cd2X9X9D1pUtLT7Y22U/EmbcPT8vW5ZoQ885p5Z6CdU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IL56xaMX4vBATDXb5YNy7SfNGubanyD8zImDwk30NWqzuBe0gwcsokPQM5QRFqT3U
-         gB1dS4/IsVPMyjvydHozwgLQXdTKvnPk87dPMauS9J7kaEYEKBEw84F1lVMHbS/m4h
-         Q6bMJ6wS3ruoMlKspwCzswCRx+T3WZ1UBcUXqjpU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
-        Jacopo Mondi <jacopo@jmondi.org>,
-        Daniele Alessandrelli <daniele.alessandrelli@intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>
-Subject: [PATCH 5.15 55/66] media: i2c: imx412: Fix reset GPIO polarity
-Date:   Fri,  3 Jun 2022 19:43:35 +0200
-Message-Id: <20220603173822.250099138@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220603173820.663747061@linuxfoundation.org>
-References: <20220603173820.663747061@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B1B51159
+        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 10:51:32 -0700 (PDT)
+Received: from in01.mta.xmission.com ([166.70.13.51]:37448)
+        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nxBSN-00GgKJ-0w; Fri, 03 Jun 2022 11:51:31 -0600
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:42808 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nxBSL-000zwa-Va; Fri, 03 Jun 2022 11:51:30 -0600
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     <linux-kernel@vger.kernel.org>
+References: <87v8th7i58.fsf@email.froward.int.ebiederm.org>
+Date:   Fri, 03 Jun 2022 12:51:23 -0500
+In-Reply-To: <87v8th7i58.fsf@email.froward.int.ebiederm.org> (Eric
+        W. Biederman's message of "Fri, 03 Jun 2022 12:48:19 -0500")
+Message-ID: <87mtet7i04.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-XM-SPF: eid=1nxBSL-000zwa-Va;;;mid=<87mtet7i04.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
+X-XM-AID: U2FsdGVkX18fPrEmiIrn/0HI7pFDWas7OHiyQuUxNu0=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: [GIT PULL v2] kthread cleanups for v5.19
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
 
-commit bb25f071fc92d3d227178a45853347c7b3b45a6b upstream.
+Linus,
 
-The imx412/imx577 sensor has a reset line that is active low not active
-high. Currently the logic for this is inverted.
+Please pull the kthread-cleanups-for-v5.19 tag from the git tree:
 
-The right way to define the reset line is to declare it active low in the
-DTS and invert the logic currently contained in the driver.
+  git://git.kernel.org/pub/scm/linux/kernel/git/ebiederm/user-namespace.git kthread-cleanups-for-v5.19
+  HEAD: 31cae1eaae4fd65095ad6a3659db467bc3c2599e sched,signal,ptrace: Rework TASK_TRACED, TASK_STOPPED state
 
-The DTS should represent the hardware does i.e. reset is active low.
-So:
-+               reset-gpios = <&tlmm 78 GPIO_ACTIVE_LOW>;
-not:
--               reset-gpios = <&tlmm 78 GPIO_ACTIVE_HIGH>;
+This set of changes updates init and user mode helper tasks to be
+ordinary user mode tasks.
 
-I was a bit reticent about changing this logic since I thought it might
-negatively impact @intel.com users. Googling a bit though I believe this
-sensor is used on "Keem Bay" which is clearly a DTS based system and is not
-upstream yet.
+In commit 40966e316f86 ("kthread: Ensure struct kthread is present for
+all kthreads") caused init and the user mode helper threads that call
+kernel_execve to have struct kthread allocated for them.  This struct
+kthread going away during execve in turned made a use after free of
+struct kthread possible.
 
-Fixes: 9214e86c0cc1 ("media: i2c: Add imx412 camera sensor driver")
-Cc: stable@vger.kernel.org
-Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Reviewed-by: Jacopo Mondi <jacopo@jmondi.org>
-Reviewed-by: Daniele Alessandrelli <daniele.alessandrelli@intel.com>
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/media/i2c/imx412.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+The commit 343f4c49f243 ("kthread: Don't allocate kthread_struct for
+init and umh") is enough to fix the use after free and is simple enough
+to be backportable.
 
---- a/drivers/media/i2c/imx412.c
-+++ b/drivers/media/i2c/imx412.c
-@@ -1011,7 +1011,7 @@ static int imx412_power_on(struct device
- 	struct imx412 *imx412 = to_imx412(sd);
- 	int ret;
- 
--	gpiod_set_value_cansleep(imx412->reset_gpio, 1);
-+	gpiod_set_value_cansleep(imx412->reset_gpio, 0);
- 
- 	ret = clk_prepare_enable(imx412->inclk);
- 	if (ret) {
-@@ -1024,7 +1024,7 @@ static int imx412_power_on(struct device
- 	return 0;
- 
- error_reset:
--	gpiod_set_value_cansleep(imx412->reset_gpio, 0);
-+	gpiod_set_value_cansleep(imx412->reset_gpio, 1);
- 
- 	return ret;
- }
-@@ -1040,7 +1040,7 @@ static int imx412_power_off(struct devic
- 	struct v4l2_subdev *sd = dev_get_drvdata(dev);
- 	struct imx412 *imx412 = to_imx412(sd);
- 
--	gpiod_set_value_cansleep(imx412->reset_gpio, 0);
-+	gpiod_set_value_cansleep(imx412->reset_gpio, 1);
- 
- 	clk_disable_unprepare(imx412->inclk);
- 
+The rest of the changes pass struct kernel_clone_args to clean things
+up and cause the code to make sense.
 
+In making init and the user mode helpers tasks purely user mode tasks
+I ran into two complications.  The function task_tick_numa was
+detecting tasks without an mm by testing for the presence of
+PF_KTHREAD.  The initramfs code in populate_initrd_image was using
+flush_delayed_fput to ensuere the closing of all it's file descriptors
+was complete, and flush_delayed_fput does not work in a userspace thread.
 
+I have looked and looked and more complications and in my code review
+I have not found any, and neither has anyone else with the code sitting
+in linux-next.
+
+Link: https://lkml.kernel.org/r/87mtfu4up3.fsf@email.froward.int.ebiederm.org
+
+Eric W. Biederman (8):
+      kthread: Don't allocate kthread_struct for init and umh
+      fork: Pass struct kernel_clone_args into copy_thread
+      fork: Explicity test for idle tasks in copy_thread
+      fork: Generalize PF_IO_WORKER handling
+      init: Deal with the init process being a user mode process
+      fork: Explicitly set PF_KTHREAD
+      fork: Stop allowing kthreads to call execve
+      sched: Update task_tick_numa to ignore tasks without an mm
+
+ arch/alpha/kernel/process.c      | 13 ++++++------
+ arch/arc/kernel/process.c        | 13 ++++++------
+ arch/arm/kernel/process.c        | 12 ++++++-----
+ arch/arm64/kernel/process.c      | 12 ++++++-----
+ arch/csky/kernel/process.c       | 15 ++++++-------
+ arch/h8300/kernel/process.c      | 10 ++++-----
+ arch/hexagon/kernel/process.c    | 12 ++++++-----
+ arch/ia64/kernel/process.c       | 15 +++++++------
+ arch/m68k/kernel/process.c       | 12 ++++++-----
+ arch/microblaze/kernel/process.c | 12 ++++++-----
+ arch/mips/kernel/process.c       | 13 ++++++------
+ arch/nios2/kernel/process.c      | 12 ++++++-----
+ arch/openrisc/kernel/process.c   | 12 ++++++-----
+ arch/parisc/kernel/process.c     | 18 +++++++++-------
+ arch/powerpc/kernel/process.c    | 15 +++++++------
+ arch/riscv/kernel/process.c      | 12 ++++++-----
+ arch/s390/kernel/process.c       | 12 ++++++-----
+ arch/sh/kernel/process_32.c      | 12 ++++++-----
+ arch/sparc/kernel/process_32.c   | 12 ++++++-----
+ arch/sparc/kernel/process_64.c   | 12 ++++++-----
+ arch/um/kernel/process.c         | 15 +++++++------
+ arch/x86/include/asm/fpu/sched.h |  2 +-
+ arch/x86/include/asm/switch_to.h |  8 +++----
+ arch/x86/kernel/fpu/core.c       |  4 ++--
+ arch/x86/kernel/process.c        | 18 +++++++++-------
+ arch/xtensa/kernel/process.c     | 17 ++++++++-------
+ fs/exec.c                        |  8 ++++---
+ include/linux/sched/task.h       |  8 +++++--
+ init/initramfs.c                 |  2 ++
+ init/main.c                      |  2 +-
+ kernel/fork.c                    | 46 +++++++++++++++++++++++++++++++++-------
+ kernel/sched/fair.c              |  2 +-
+ kernel/umh.c                     |  6 +++---
+ 33 files changed, 234 insertions(+), 160 deletions(-)
+
+Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+
+p.s.  My apologies for this coming in so late.  The code has been ready
+just everyone in my house has been sick since the start of the merge window.
+
+p.p.s.  Resent as I left out which tag to pull when I sent this a minute
+ago.
