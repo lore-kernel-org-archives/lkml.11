@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D08DDCCA480
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:07:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42E22CCA482
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:07:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348231AbiFCSGq (ORCPT
+        id S1348310AbiFCSGu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:06:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58296 "EHLO
+        Fri, 3 Jun 2022 14:06:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345741AbiFCRy2 (ORCPT
+        with ESMTP id S1345847AbiFCRzL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:54:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C3F633EB2;
-        Fri,  3 Jun 2022 10:52:46 -0700 (PDT)
+        Fri, 3 Jun 2022 13:55:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A3CE44A11;
+        Fri,  3 Jun 2022 10:53:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ED10F60F3B;
-        Fri,  3 Jun 2022 17:52:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04CE7C385A9;
-        Fri,  3 Jun 2022 17:52:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D787EB82189;
+        Fri,  3 Jun 2022 17:52:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E326C385A9;
+        Fri,  3 Jun 2022 17:52:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278765;
-        bh=+8/rSL0dktqyZfvWABToCYxgk0Wct5z+yxpZFfy6gak=;
+        s=korg; t=1654278777;
+        bh=wHaTodtD45mZ8oITybG8g60oCCAN8kY0JNM8000sTLE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pOem2PW8i0GduILGpXR6cOrBF2IRh88plcy5O3lPvIocyOwjKlNIGlm55zomaChsf
-         d1HliemQ5gOfGcPwSBa7PhfqJVTXOihFn8TiADSWUOoy6KDuZyRcvUrNVbJZL1QRWK
-         I4E2XxCmWVkgJCy5rBOUgvdHYGxVP9MC9L/AhRms=
+        b=1aG9pRkjuAelzvipGcq8YUYZJd3Mca3rYgty1mMaKl8vwRIa1ZiXBlvuohEm+4Nm/
+         mWAFWYH426UJi7ls3JLUAMt+f5fFiyv3Xiim9qjb5Ehg40ej29KPHuVZ9RNMmPYA2h
+         mgg4oGlqsa6pSw3kPpFZ3GyEz9WFAtr+b6dhRbbQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, IotaHydrae <writeforever@foxmail.com>,
-        Andre Przywara <andre.przywara@arm.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org, Lin Ma <linma@zju.edu.cn>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 04/75] pinctrl: sunxi: fix f1c100s uart2 function
-Date:   Fri,  3 Jun 2022 19:42:48 +0200
-Message-Id: <20220603173821.875678889@linuxfoundation.org>
+Subject: [PATCH 5.17 08/75] nfc: pn533: Fix buggy cleanup order
+Date:   Fri,  3 Jun 2022 19:42:52 +0200
+Message-Id: <20220603173821.986074977@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173821.749019262@linuxfoundation.org>
 References: <20220603173821.749019262@linuxfoundation.org>
@@ -51,43 +50,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: IotaHydrae <writeforever@foxmail.com>
+From: Lin Ma <linma@zju.edu.cn>
 
-[ Upstream commit fa8785e5931367e2b43f2c507f26bcf3e281c0ca ]
+[ Upstream commit b8cedb7093b2d1394cae9b86494cba4b62d3a30a ]
 
-Change suniv f1c100s pinctrl,PD14 multiplexing function lvds1 to uart2
+When removing the pn533 device (i2c or USB), there is a logic error. The
+original code first cancels the worker (flush_delayed_work) and then
+destroys the workqueue (destroy_workqueue), leaving the timer the last
+one to be deleted (del_timer). This result in a possible race condition
+in a multi-core preempt-able kernel. That is, if the cleanup
+(pn53x_common_clean) is concurrently run with the timer handler
+(pn533_listen_mode_timer), the timer can queue the poll_work to the
+already destroyed workqueue, causing use-after-free.
 
-When the pin PD13 and PD14 is setting up to uart2 function in dts,
-there's an error occurred:
-1c20800.pinctrl: unsupported function uart2 on pin PD14
+This patch reorder the cleanup: it uses the del_timer_sync to make sure
+the handler is finished before the routine will destroy the workqueue.
+Note that the timer cannot be activated by the worker again.
 
-Because 'uart2' is not any one multiplexing option of PD14,
-and pinctrl don't know how to configure it.
+static void pn533_wq_poll(struct work_struct *work)
+...
+ rc = pn533_send_poll_frame(dev);
+ if (rc)
+   return;
 
-So change the pin PD14 lvds1 function to uart2.
+ if (cur_mod->len == 0 && dev->poll_mod_count > 1)
+   mod_timer(&dev->listen_timer, ...);
 
-Signed-off-by: IotaHydrae <writeforever@foxmail.com>
-Reviewed-by: Andre Przywara <andre.przywara@arm.com>
-Link: https://lore.kernel.org/r/tencent_70C1308DDA794C81CAEF389049055BACEC09@qq.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+That is, the mod_timer can be called only when pn533_send_poll_frame()
+returns no error, which is impossible because the device is detaching
+and the lower driver should return ENODEV code.
+
+Signed-off-by: Lin Ma <linma@zju.edu.cn>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/sunxi/pinctrl-suniv-f1c100s.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/nfc/pn533/pn533.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pinctrl/sunxi/pinctrl-suniv-f1c100s.c b/drivers/pinctrl/sunxi/pinctrl-suniv-f1c100s.c
-index 2801ca706273..68a5b627fb9b 100644
---- a/drivers/pinctrl/sunxi/pinctrl-suniv-f1c100s.c
-+++ b/drivers/pinctrl/sunxi/pinctrl-suniv-f1c100s.c
-@@ -204,7 +204,7 @@ static const struct sunxi_desc_pin suniv_f1c100s_pins[] = {
- 		  SUNXI_FUNCTION(0x0, "gpio_in"),
- 		  SUNXI_FUNCTION(0x1, "gpio_out"),
- 		  SUNXI_FUNCTION(0x2, "lcd"),		/* D20 */
--		  SUNXI_FUNCTION(0x3, "lvds1"),		/* RX */
-+		  SUNXI_FUNCTION(0x3, "uart2"),		/* RX */
- 		  SUNXI_FUNCTION_IRQ_BANK(0x6, 0, 14)),
- 	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 15),
- 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+diff --git a/drivers/nfc/pn533/pn533.c b/drivers/nfc/pn533/pn533.c
+index a491db46e3bd..d9f6367b9993 100644
+--- a/drivers/nfc/pn533/pn533.c
++++ b/drivers/nfc/pn533/pn533.c
+@@ -2787,13 +2787,14 @@ void pn53x_common_clean(struct pn533 *priv)
+ {
+ 	struct pn533_cmd *cmd, *n;
+ 
++	/* delete the timer before cleanup the worker */
++	del_timer_sync(&priv->listen_timer);
++
+ 	flush_delayed_work(&priv->poll_work);
+ 	destroy_workqueue(priv->wq);
+ 
+ 	skb_queue_purge(&priv->resp_q);
+ 
+-	del_timer(&priv->listen_timer);
+-
+ 	list_for_each_entry_safe(cmd, n, &priv->cmd_queue, queue) {
+ 		list_del(&cmd->queue);
+ 		kfree(cmd);
 -- 
 2.35.1
 
