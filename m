@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A226EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:03:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F2FBC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:03:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346318AbiFCSDA (ORCPT
+        id S1346467AbiFCSDG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:03:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58428 "EHLO
+        Fri, 3 Jun 2022 14:03:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347261AbiFCRwK (ORCPT
+        with ESMTP id S1347263AbiFCRwK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 3 Jun 2022 13:52:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DBE9B48E;
-        Fri,  3 Jun 2022 10:51:40 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AD6AE53;
+        Fri,  3 Jun 2022 10:51:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E2770B82419;
-        Fri,  3 Jun 2022 17:51:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23348C385A9;
-        Fri,  3 Jun 2022 17:51:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AC64B60F7F;
+        Fri,  3 Jun 2022 17:51:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A28FAC385A9;
+        Fri,  3 Jun 2022 17:51:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278697;
-        bh=u3IpJg7f52QEmZoiTs+geEPRmnLMhe+3HVFYgwUxjcA=;
+        s=korg; t=1654278707;
+        bh=0K5voZzLyc+xuScdTQ/pYb/ZRAHzPncbwaYY8Xc9DiI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hCd/MzFWqOlhokl60z4HvVU0yO5QWcVXR0dbscJAdiT1HfLDu+eGfYnKMwGxZ46I+
-         cHTNsEk5iw5O999Jd1IpeuZaAftUO4XqLDUW6rQP8375u0+Uzup75YcX+1fGFAE73p
-         Pn9Dyem6r+BKFWCBZmyF8k9bpy4w0tPbc6B9bBTI=
+        b=KYyrxSjC3lqspTKNZXq5mraVMaRLO4ZTf57TQUfdaojcrr53n38IgJTVdm3wczcMo
+         r2jAb2Knzi+JjLyIqF6OliGH7YYpd9A18JvFDNgudnpCGcCSx1nRhJMWSFkkFfVHX2
+         JlyF5XoFxmY/YvyHYNPyUXDFCU7GvB2wh00cpNzA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
-        Maris Abele <maris7abele@gmail.com>
-Subject: [PATCH 5.15 37/66] ALSA: usb-audio: Workaround for clock setup on TEAC devices
-Date:   Fri,  3 Jun 2022 19:43:17 +0200
-Message-Id: <20220603173821.742820192@linuxfoundation.org>
+        stable@vger.kernel.org, Hao Luo <haoluo@google.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Subject: [PATCH 5.15 66/66] bpf: Check PTR_TO_MEM | MEM_RDONLY in check_helper_mem_access
+Date:   Fri,  3 Jun 2022 19:43:46 +0200
+Message-Id: <20220603173822.559821958@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.663747061@linuxfoundation.org>
 References: <20220603173820.663747061@linuxfoundation.org>
@@ -49,55 +50,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 
-commit 5ce0b06ae5e69e23142e73c5c3c0260e9f2ccb4b upstream.
+commit 97e6d7dab1ca4648821c790a2b7913d6d5d549db upstream.
 
-Maris reported that TEAC UD-501 (0644:8043) doesn't work with the
-typical "clock source 41 is not valid, cannot use" errors on the
-recent kernels.  The currently known workaround so far is to restore
-(partially) what we've done unconditionally at the clock setup;
-namely, re-setup the USB interface immediately after the clock is
-changed.  This patch re-introduces the behavior conditionally for TEAC
-devices.
+The commit being fixed was aiming to disallow users from incorrectly
+obtaining writable pointer to memory that is only meant to be read. This
+is enforced now using a MEM_RDONLY flag.
 
-Further notes:
-- The USB interface shall be set later in
-  snd_usb_endpoint_configure(), but this seems to be too late.
-- Even calling  usb_set_interface() right after
-  sne_usb_init_sample_rate() doesn't help; so this must be related
-  with the clock validation, too.
-- The device may still spew the "clock source 41 is not valid" error
-  at the first clock setup.  This seems happening at the very first
-  try of clock setup, but it disappears at later attempts.
-  The error is likely harmless because the driver retries the clock
-  setup (such an error is more or less expected on some devices).
+For instance, in case of global percpu variables, when the BTF type is
+not struct (e.g. bpf_prog_active), the verifier marks register type as
+PTR_TO_MEM | MEM_RDONLY from bpf_this_cpu_ptr or bpf_per_cpu_ptr
+helpers. However, when passing such pointer to kfunc, global funcs, or
+BPF helpers, in check_helper_mem_access, there is no expectation
+MEM_RDONLY flag will be set, hence it is checked as pointer to writable
+memory. Later, verifier sets up argument type of global func as
+PTR_TO_MEM | PTR_MAYBE_NULL, so user can use a global func to get around
+the limitations imposed by this flag.
 
-Fixes: bf6313a0ff76 ("ALSA: usb-audio: Refactor endpoint management")
-Reported-and-tested-by: Maris Abele <maris7abele@gmail.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220521064627.29292-1-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+This check will also cover global non-percpu variables that may be
+introduced in kernel BTF in future.
+
+Also, we update the log message for PTR_TO_BUF case to be similar to
+PTR_TO_MEM case, so that the reason for error is clear to user.
+
+Fixes: 34d3a78c681e ("bpf: Make per_cpu_ptr return rdonly PTR_TO_MEM.")
+Reviewed-by: Hao Luo <haoluo@google.com>
+Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Link: https://lore.kernel.org/r/20220319080827.73251-3-memxor@gmail.com
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/usb/clock.c |    7 +++++++
- 1 file changed, 7 insertions(+)
+ kernel/bpf/verifier.c |   12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
---- a/sound/usb/clock.c
-+++ b/sound/usb/clock.c
-@@ -572,6 +572,13 @@ static int set_sample_rate_v2v3(struct s
- 		/* continue processing */
- 	}
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -4602,13 +4602,23 @@ static int check_helper_mem_access(struc
+ 		return check_map_access(env, regno, reg->off, access_size,
+ 					zero_size_allowed);
+ 	case PTR_TO_MEM:
++		if (type_is_rdonly_mem(reg->type)) {
++			if (meta && meta->raw_mode) {
++				verbose(env, "R%d cannot write into %s\n", regno,
++					reg_type_str(env, reg->type));
++				return -EACCES;
++			}
++		}
+ 		return check_mem_region_access(env, regno, reg->off,
+ 					       access_size, reg->mem_size,
+ 					       zero_size_allowed);
+ 	case PTR_TO_BUF:
+ 		if (type_is_rdonly_mem(reg->type)) {
+-			if (meta && meta->raw_mode)
++			if (meta && meta->raw_mode) {
++				verbose(env, "R%d cannot write into %s\n", regno,
++					reg_type_str(env, reg->type));
+ 				return -EACCES;
++			}
  
-+	/* FIXME - TEAC devices require the immediate interface setup */
-+	if (rate != prev_rate && USB_ID_VENDOR(chip->usb_id) == 0x0644) {
-+		usb_set_interface(chip->dev, fmt->iface, fmt->altsetting);
-+		if (chip->quirk_flags & QUIRK_FLAG_IFACE_DELAY)
-+			msleep(50);
-+	}
-+
- validation:
- 	/* validate clock after rate change */
- 	if (!uac_clock_source_is_valid(chip, fmt, clock))
+ 			buf_info = "rdonly";
+ 			max_access = &env->prog->aux->max_rdonly_access;
 
 
