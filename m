@@ -2,59 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7BA3CCA47F
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 00:54:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D0BDCCA480
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 00:54:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242453AbiFCAxF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 20:53:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47880 "EHLO
+        id S242510AbiFCAxZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 20:53:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240103AbiFCAoy (ORCPT
+        with ESMTP id S240250AbiFCApm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 20:44:54 -0400
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FC02344DB
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:44:37 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id y1-20020a17090a390100b001e66bb0fcefso3255482pjb.0
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:44:37 -0700 (PDT)
+        Thu, 2 Jun 2022 20:45:42 -0400
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 981E7344E3
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:45:30 -0700 (PDT)
+Received: by mail-pl1-x64a.google.com with SMTP id h10-20020a170902f54a00b00166449db7f8so1559856plf.9
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:45:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=bT79LH/T6E4n1fLTC+jwsUR41xuHEOgcpCNU/PDapbY=;
-        b=GFoSj2C5Zv8Iq17dJiZu0q96Wl1Suh9vXG1Ut7AlMixIeK1F0UzHlF2AMMQzmZMF4w
-         moG70On5GwqpQXllDJIlBdObfNaQx3Ebw4JBcSiZ2sj+TvORlzUvGm4yGnKSn15SlD4Y
-         27k3KNmWyfqts6J86I5ogHdSaFtrsZZjFF2Wj53EZANp4ZacxElrUVi+XB+ZU64YttoI
-         PVrpfCUHj9xD2HSa+xpvn/A+r2Fldf9OYqQ/jFXTOoxp54bEf7RLk1jxElvlY9IH9rTf
-         xqmZBNAgJFUduxLihydvjLTn7FzKRcZVBIq7/cr/bFzAXvQnVohzGTfGY1oVQYpqAPhz
-         TVzA==
+        bh=ZbJ0xN+LxZLXwNiuy5k0J6YWPhyRZK+kAps4sumczB4=;
+        b=I68RlAutQvs+zo+uOlcw0DANUn6dsBjDuNP++WHZj7JYxdctpwXxpE3b45oDatEQVX
+         12aalQJ4mneq1jR5GYW4RV7Dkx9S8iQVCd0prnYnnmrhe+GLy/SNtwG1rZ5ribS3/PJh
+         otG9RufalY5MPN6ra2vNGg6mGT4reB0aZ5LbrRM4ANDyBR9oH/yZqD7sWN5jJwoTwKfj
+         HmR9j1Sulz4WtMGximW5MktxTkeUywgXfH6MaRQhyG4FIFpOmoCd6+RVBiSDIipPe77j
+         9fb+FGZwm2iTKWuGH2BRAoj/i+vY7e8BssaQ7uiUKVNVGOuYS0gGTgGvr69ILrEjmTQL
+         Xk5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=bT79LH/T6E4n1fLTC+jwsUR41xuHEOgcpCNU/PDapbY=;
-        b=pUopRmMIcEPaVweA+Vihu3OnZynljPO6+xPhku2oWc9JmZW4WW8afxGDhP3qU7dnWO
-         IFSOu4/08YbgjgEjnOx8RUoyiDGOkgA98l3pfmXNLpZgxVgw8VmP+angSHsDzk8JlpIc
-         Pb41TbFLPZv/OdG/+uHehl0rRIktO6170bbc8c8P0Eo7S0O+87yN8/2B59PznWzBa/Yq
-         0Gc+orCuCveUGZtj29Tmblv0eZ7QBgwThzq3vU5l1OwKyQoSDE0NpPeu6wOLazmUhUPO
-         ZvPP4nQwdyRL0oxZTdIERPV4DQ8jYmKzhCFjoFZmozVlPPZLkMERLvlgtQHdjDVglueh
-         ibrQ==
-X-Gm-Message-State: AOAM5311Lqr87SRUmR+isEul2ZDDLh5iouM9E3AbpkLtkM2MKpcQugd7
-        Omg/AQmXOPuEQwYORGxedBxLnau9s5s=
-X-Google-Smtp-Source: ABdhPJwVtPAXAcemPWEZpF8OkCe5Rhfl4bMfj3eoGH3W5yBUgiJaIUPKbTXCE4sgrHzW0vBUSqSQpa7dv9s=
+        bh=ZbJ0xN+LxZLXwNiuy5k0J6YWPhyRZK+kAps4sumczB4=;
+        b=o/TYGZf2WtIhLMfRj5A+NnFvrE/D5157OzgAGBZLOE0jzlt+S10b4HSlGlrHKGBjCH
+         Zi1cHfkOa6w76/4cfdyvmhMkrKcU7jKTw+GGxumg0asiPkuJH9p6SexlsOAUKHOlF3cw
+         SvUBa+dHIBgXjpIOtzyDWyq64KcVw9u6tvqdpoOF9+wjbu3xlimTa75vSbPh702/L4Vj
+         2cVF4WLtszEZL5a/Lcn+4m0RGuEzUd9xLpr9dM5dPutQeEXIL5ZYrPgEPCL7+dy8r0eN
+         86kQjB0pTg4K64xwwed+hYY9wXKENt8dTy1kv5mQUzts0qpyfGUqu4/7jn6nDIA1j2cZ
+         G7Lw==
+X-Gm-Message-State: AOAM530+dMPemYe++fr62jC8PQWlhX9PXjEwLl5UhXM1gxVRTfRFnWST
+        8xqsZsH/8EH+P+xQYWvNlXR0KRXc6ks=
+X-Google-Smtp-Source: ABdhPJx4mARyVOLC45eqy/Ae0cGI5Yhmu7SGNtpXEiiGktDWVWlKjgDtsL4EnTPn6Lujx3BuG9q5dUVTD+0=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:902:c951:b0:163:efad:406d with SMTP id
- i17-20020a170902c95100b00163efad406dmr7642474pla.55.1654217076668; Thu, 02
- Jun 2022 17:44:36 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a05:6a00:1145:b0:4f6:3ebc:a79b with SMTP id
+ b5-20020a056a00114500b004f63ebca79bmr7729203pfm.41.1654217130218; Thu, 02 Jun
+ 2022 17:45:30 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri,  3 Jun 2022 00:41:40 +0000
+Date:   Fri,  3 Jun 2022 00:42:09 +0000
 In-Reply-To: <20220603004331.1523888-1-seanjc@google.com>
-Message-Id: <20220603004331.1523888-34-seanjc@google.com>
+Message-Id: <20220603004331.1523888-63-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220603004331.1523888-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v2 033/144] KVM: selftests: Harden and comment XSS /
- KVM_SET_MSRS interaction
+Subject: [PATCH v2 062/144] KVM: selftests: Convert svm_vmcall_test away from VCPU_ID
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     kvm@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
@@ -67,33 +66,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Assert that KVM_SET_MSRS returns '0' or '1' when setting XSS to a
-non-zero value.  The ioctl() itself should "succeed", its only the
-setting of the XSS MSR that should fail/fault.
+Convert svm_vmcall_test to use vm_create_with_one_vcpu() and pass around
+a 'struct kvm_vcpu' object instead of using a global VCPU_ID.  Note, this
+is a "functional" change in the sense that the test now creates a vCPU
+with vcpu_id==0 instead of vcpu_id==5.  The non-zero VCPU_ID was 100%
+arbitrary and added little to no validation coverage.  If testing
+non-zero vCPU IDs is desirable for generic tests, that can be done in the
+future by tweaking the VM creation helpers.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- tools/testing/selftests/kvm/x86_64/xss_msr_test.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ .../selftests/kvm/x86_64/svm_vmcall_test.c       | 16 +++++++---------
+ 1 file changed, 7 insertions(+), 9 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/x86_64/xss_msr_test.c b/tools/testing/selftests/kvm/x86_64/xss_msr_test.c
-index 7bd15f8a805c..a6abcb559e7c 100644
---- a/tools/testing/selftests/kvm/x86_64/xss_msr_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/xss_msr_test.c
-@@ -53,7 +53,12 @@ int main(int argc, char *argv[])
- 	for (i = 0; i < MSR_BITS; ++i) {
- 		r = _vcpu_set_msr(vm, VCPU_ID, MSR_IA32_XSS, 1ull << i);
+diff --git a/tools/testing/selftests/kvm/x86_64/svm_vmcall_test.c b/tools/testing/selftests/kvm/x86_64/svm_vmcall_test.c
+index be2ca157485b..15e389a7cd31 100644
+--- a/tools/testing/selftests/kvm/x86_64/svm_vmcall_test.c
++++ b/tools/testing/selftests/kvm/x86_64/svm_vmcall_test.c
+@@ -12,10 +12,6 @@
+ #include "processor.h"
+ #include "svm_util.h"
  
--		TEST_ASSERT(r == 0 || xss_in_msr_list,
-+		/*
-+		 * Setting a list of MSRs returns the entry that "faulted", or
-+		 * the last entry +1 if all MSRs were successfully written.
-+		 */
-+		TEST_ASSERT(!r || r == 1, KVM_IOCTL_ERROR(KVM_SET_MSRS, r));
-+		TEST_ASSERT(r != 1 || xss_in_msr_list,
- 			    "IA32_XSS was able to be set, but was not in save/restore list");
- 	}
+-#define VCPU_ID		5
+-
+-static struct kvm_vm *vm;
+-
+ static void l2_guest_code(struct svm_test_data *svm)
+ {
+ 	__asm__ __volatile__("vmcall");
+@@ -39,26 +35,28 @@ static void l1_guest_code(struct svm_test_data *svm)
  
+ int main(int argc, char *argv[])
+ {
++	struct kvm_vcpu *vcpu;
+ 	vm_vaddr_t svm_gva;
++	struct kvm_vm *vm;
+ 
+ 	nested_svm_check_supported();
+ 
+-	vm = vm_create_default(VCPU_ID, 0, (void *) l1_guest_code);
++	vm = vm_create_with_one_vcpu(&vcpu, l1_guest_code);
+ 
+ 	vcpu_alloc_svm(vm, &svm_gva);
+-	vcpu_args_set(vm, VCPU_ID, 1, svm_gva);
++	vcpu_args_set(vm, vcpu->id, 1, svm_gva);
+ 
+ 	for (;;) {
+-		volatile struct kvm_run *run = vcpu_state(vm, VCPU_ID);
++		volatile struct kvm_run *run = vcpu->run;
+ 		struct ucall uc;
+ 
+-		vcpu_run(vm, VCPU_ID);
++		vcpu_run(vm, vcpu->id);
+ 		TEST_ASSERT(run->exit_reason == KVM_EXIT_IO,
+ 			    "Got exit_reason other than KVM_EXIT_IO: %u (%s)\n",
+ 			    run->exit_reason,
+ 			    exit_reason_str(run->exit_reason));
+ 
+-		switch (get_ucall(vm, VCPU_ID, &uc)) {
++		switch (get_ucall(vm, vcpu->id, &uc)) {
+ 		case UCALL_ABORT:
+ 			TEST_FAIL("%s", (const char *)uc.args[0]);
+ 			/* NOT REACHED */
 -- 
 2.36.1.255.ge46751e96f-goog
 
