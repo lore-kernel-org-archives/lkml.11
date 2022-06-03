@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68357CCA47E
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:55:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B892DC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:55:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343794AbiFCRzo (ORCPT
+        id S1345554AbiFCRzy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:55:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44708 "EHLO
+        Fri, 3 Jun 2022 13:55:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346103AbiFCRus (ORCPT
+        with ESMTP id S1346140AbiFCRut (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:50:48 -0400
+        Fri, 3 Jun 2022 13:50:49 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EBF759BAF;
-        Fri,  3 Jun 2022 10:47:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84E0559BA1;
+        Fri,  3 Jun 2022 10:47:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 66A6C60C3D;
-        Fri,  3 Jun 2022 17:47:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECBD8C385A9;
-        Fri,  3 Jun 2022 17:47:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C82C60A54;
+        Fri,  3 Jun 2022 17:47:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB60BC385A9;
+        Fri,  3 Jun 2022 17:47:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278428;
-        bh=7yMpx/p4JIbj1RxSrsvc4F7sy+yL65SQaQLr9b7p4J4=;
+        s=korg; t=1654278425;
+        bh=liVSteoCj2Tuco0mXW8SxqR0o1L93a4IevrYkT04wk8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZU0YgQ8ylEEj8vMI1DlAEdglLFn2EKU7Z3L1O4DKzC3hqJ1VlD9a+leC7PNIgG/FZ
-         nF+fnPgNBmybb+PNm7XgWatQP4cJbLcBLKaZPLtcbZLS2CcLRxTloSikpsY7LHH+j3
-         olUCFkGoyJqGX3N2D84x+h5zBiZmgBYyVS8JhoVw=
+        b=bBwv3Y8NBCQXXcD6sKyFMN9e1njcH46wtY6TpjbKW16dzVnXHAYFBjJLApSFW4Aei
+         Zuhw2SOuX32o99Nz8XoncDAU1Klm8LL8y/G4jZRjTmuiPSmSGRwoL5eDBkTWgo67B3
+         ZJvaZ6q7tyHkyZJ8ey5HW0BU5jJ3oKvnCziyOld4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+793a590957d9c1b96620@syzkaller.appspotmail.com,
+        stable@vger.kernel.org, zhangziming.zzm@antgroup.com,
+        Stefano Brivio <sbrivio@redhat.com>,
         Florian Westphal <fw@strlen.de>,
         Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.10 30/53] netfilter: conntrack: re-fetch conntrack after insertion
-Date:   Fri,  3 Jun 2022 19:43:15 +0200
-Message-Id: <20220603173819.600692184@linuxfoundation.org>
+Subject: [PATCH 5.10 29/53] netfilter: nf_tables: sanitize nft_set_desc_concat_parse()
+Date:   Fri,  3 Jun 2022 19:43:14 +0200
+Message-Id: <20220603173819.571904847@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173818.716010877@linuxfoundation.org>
 References: <20220603173818.716010877@linuxfoundation.org>
@@ -51,43 +51,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-commit 56b14ecec97f39118bf85c9ac2438c5a949509ed upstream.
+commit fecf31ee395b0295f2d7260aa29946b7605f7c85 upstream.
 
-In case the conntrack is clashing, insertion can free skb->_nfct and
-set skb->_nfct to the already-confirmed entry.
+Add several sanity checks for nft_set_desc_concat_parse():
 
-This wasn't found before because the conntrack entry and the extension
-space used to free'd after an rcu grace period, plus the race needs
-events enabled to trigger.
+- validate desc->field_count not larger than desc->field_len array.
+- field length cannot be larger than desc->field_len (ie. U8_MAX)
+- total length of the concatenation cannot be larger than register array.
 
-Reported-by: <syzbot+793a590957d9c1b96620@syzkaller.appspotmail.com>
-Fixes: 71d8c47fc653 ("netfilter: conntrack: introduce clash resolution on insertion race")
-Fixes: 2ad9d7747c10 ("netfilter: conntrack: free extension area immediately")
+Joint work with Florian Westphal.
+
+Fixes: f3a2181e16f1 ("netfilter: nf_tables: Support for sets with multiple ranged fields")
+Reported-by: <zhangziming.zzm@antgroup.com>
+Reviewed-by: Stefano Brivio <sbrivio@redhat.com>
 Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/netfilter/nf_conntrack_core.h |    7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ net/netfilter/nf_tables_api.c |   17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
---- a/include/net/netfilter/nf_conntrack_core.h
-+++ b/include/net/netfilter/nf_conntrack_core.h
-@@ -59,8 +59,13 @@ static inline int nf_conntrack_confirm(s
- 	int ret = NF_ACCEPT;
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -4051,6 +4051,9 @@ static int nft_set_desc_concat_parse(con
+ 	u32 len;
+ 	int err;
  
- 	if (ct) {
--		if (!nf_ct_is_confirmed(ct))
-+		if (!nf_ct_is_confirmed(ct)) {
- 			ret = __nf_conntrack_confirm(skb);
++	if (desc->field_count >= ARRAY_SIZE(desc->field_len))
++		return -E2BIG;
 +
-+			if (ret == NF_ACCEPT)
-+				ct = (struct nf_conn *)skb_nfct(skb);
-+		}
-+
- 		if (likely(ret == NF_ACCEPT))
- 			nf_ct_deliver_cached_events(ct);
+ 	err = nla_parse_nested_deprecated(tb, NFTA_SET_FIELD_MAX, attr,
+ 					  nft_concat_policy, NULL);
+ 	if (err < 0)
+@@ -4060,9 +4063,8 @@ static int nft_set_desc_concat_parse(con
+ 		return -EINVAL;
+ 
+ 	len = ntohl(nla_get_be32(tb[NFTA_SET_FIELD_LEN]));
+-
+-	if (len * BITS_PER_BYTE / 32 > NFT_REG32_COUNT)
+-		return -E2BIG;
++	if (!len || len > U8_MAX)
++		return -EINVAL;
+ 
+ 	desc->field_len[desc->field_count++] = len;
+ 
+@@ -4073,7 +4075,8 @@ static int nft_set_desc_concat(struct nf
+ 			       const struct nlattr *nla)
+ {
+ 	struct nlattr *attr;
+-	int rem, err;
++	u32 num_regs = 0;
++	int rem, err, i;
+ 
+ 	nla_for_each_nested(attr, nla, rem) {
+ 		if (nla_type(attr) != NFTA_LIST_ELEM)
+@@ -4084,6 +4087,12 @@ static int nft_set_desc_concat(struct nf
+ 			return err;
  	}
+ 
++	for (i = 0; i < desc->field_count; i++)
++		num_regs += DIV_ROUND_UP(desc->field_len[i], sizeof(u32));
++
++	if (num_regs > NFT_REG32_COUNT)
++		return -E2BIG;
++
+ 	return 0;
+ }
+ 
 
 
