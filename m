@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD803CCA480
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:53:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 746DDCCA47C
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:53:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345362AbiFCRxX (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:53:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44936 "EHLO
+        id S244653AbiFCRx2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 13:53:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345474AbiFCRtu (ORCPT
+        with ESMTP id S1345379AbiFCRsz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:49:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9A9356216;
-        Fri,  3 Jun 2022 10:45:51 -0700 (PDT)
+        Fri, 3 Jun 2022 13:48:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E98155523B;
+        Fri,  3 Jun 2022 10:45:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A20260C47;
-        Fri,  3 Jun 2022 17:45:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 885ECC385A9;
-        Fri,  3 Jun 2022 17:45:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A6D21B82435;
+        Fri,  3 Jun 2022 17:45:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 197E8C385A9;
+        Fri,  3 Jun 2022 17:45:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278350;
-        bh=BzfC/E5W1JA+c9kXAqd5dIf01JrtHZXYXprhMh+nHuI=;
+        s=korg; t=1654278341;
+        bh=+8/rSL0dktqyZfvWABToCYxgk0Wct5z+yxpZFfy6gak=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jiD1skAjr+myAkKXLuzuQahvGoWqqiq3Frmt8aQ69c7rXvAjkKp0PRfrpw4xrssaz
-         TH0Fmr5VXUW+9ZY3ieG3ZQVuVAJLkGMIMeMFObZt/7Nfn8QJ2DLRzaZ077mAsxW/PI
-         Pp4nj5vL3tmnAz9AzUuAvXaWg2mrnMVkqKKEDPQs=
+        b=nIIxnuG0XPIsjGoqLbBJnOPu0z/HducjIYpHWMU2nn0KVJ67MDdnll/fbAAEEWUi3
+         3t15U0+GR2yfBWZEjcmUVjguvrozc9yp3xCzVxi5kHSTA2Awrs/Fc/CvPDkh7NEauO
+         XpcBs6S5YtRfleAuHsKzjralnRhoWO2MwQDJ7uV8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        "From: Andy Shevchenko" <andriy.shevchenko@linux.intel.com>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 14/34] i2c: ismt: Provide a DMA buffer for Interrupt Cause Logging
-Date:   Fri,  3 Jun 2022 19:43:10 +0200
-Message-Id: <20220603173816.410177422@linuxfoundation.org>
+        stable@vger.kernel.org, IotaHydrae <writeforever@foxmail.com>,
+        Andre Przywara <andre.przywara@arm.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 11/34] pinctrl: sunxi: fix f1c100s uart2 function
+Date:   Fri,  3 Jun 2022 19:43:07 +0200
+Message-Id: <20220603173816.325039941@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173815.990072516@linuxfoundation.org>
 References: <20220603173815.990072516@linuxfoundation.org>
@@ -51,86 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mika Westerberg <mika.westerberg@linux.intel.com>
+From: IotaHydrae <writeforever@foxmail.com>
 
-[ Upstream commit 17a0f3acdc6ec8b89ad40f6e22165a4beee25663 ]
+[ Upstream commit fa8785e5931367e2b43f2c507f26bcf3e281c0ca ]
 
-Before sending a MSI the hardware writes information pertinent to the
-interrupt cause to a memory location pointed by SMTICL register. This
-memory holds three double words where the least significant bit tells
-whether the interrupt cause of master/target/error is valid. The driver
-does not use this but we need to set it up because otherwise it will
-perform DMA write to the default address (0) and this will cause an
-IOMMU fault such as below:
+Change suniv f1c100s pinctrl,PD14 multiplexing function lvds1 to uart2
 
-  DMAR: DRHD: handling fault status reg 2
-  DMAR: [DMA Write] Request device [00:12.0] PASID ffffffff fault addr 0
-        [fault reason 05] PTE Write access is not set
+When the pin PD13 and PD14 is setting up to uart2 function in dts,
+there's an error occurred:
+1c20800.pinctrl: unsupported function uart2 on pin PD14
 
-To prevent this from happening, provide a proper DMA buffer for this
-that then gets mapped by the IOMMU accordingly.
+Because 'uart2' is not any one multiplexing option of PD14,
+and pinctrl don't know how to configure it.
 
-Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-Reviewed-by: From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+So change the pin PD14 lvds1 function to uart2.
+
+Signed-off-by: IotaHydrae <writeforever@foxmail.com>
+Reviewed-by: Andre Przywara <andre.przywara@arm.com>
+Link: https://lore.kernel.org/r/tencent_70C1308DDA794C81CAEF389049055BACEC09@qq.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-ismt.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/pinctrl/sunxi/pinctrl-suniv-f1c100s.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/i2c/busses/i2c-ismt.c b/drivers/i2c/busses/i2c-ismt.c
-index 2f95e25a10f7..53325419ec13 100644
---- a/drivers/i2c/busses/i2c-ismt.c
-+++ b/drivers/i2c/busses/i2c-ismt.c
-@@ -81,6 +81,7 @@
- 
- #define ISMT_DESC_ENTRIES	2	/* number of descriptor entries */
- #define ISMT_MAX_RETRIES	3	/* number of SMBus retries to attempt */
-+#define ISMT_LOG_ENTRIES	3	/* number of interrupt cause log entries */
- 
- /* Hardware Descriptor Constants - Control Field */
- #define ISMT_DESC_CWRL	0x01	/* Command/Write Length */
-@@ -174,6 +175,8 @@ struct ismt_priv {
- 	u8 head;				/* ring buffer head pointer */
- 	struct completion cmp;			/* interrupt completion */
- 	u8 buffer[I2C_SMBUS_BLOCK_MAX + 16];	/* temp R/W data buffer */
-+	dma_addr_t log_dma;
-+	u32 *log;
- };
- 
- /**
-@@ -408,6 +411,9 @@ static int ismt_access(struct i2c_adapter *adap, u16 addr,
- 	memset(desc, 0, sizeof(struct ismt_desc));
- 	desc->tgtaddr_rw = ISMT_DESC_ADDR_RW(addr, read_write);
- 
-+	/* Always clear the log entries */
-+	memset(priv->log, 0, ISMT_LOG_ENTRIES * sizeof(u32));
-+
- 	/* Initialize common control bits */
- 	if (likely(pci_dev_msi_enabled(priv->pci_dev)))
- 		desc->control = ISMT_DESC_INT | ISMT_DESC_FAIR;
-@@ -697,6 +703,8 @@ static void ismt_hw_init(struct ismt_priv *priv)
- 	/* initialize the Master Descriptor Base Address (MDBA) */
- 	writeq(priv->io_rng_dma, priv->smba + ISMT_MSTR_MDBA);
- 
-+	writeq(priv->log_dma, priv->smba + ISMT_GR_SMTICL);
-+
- 	/* initialize the Master Control Register (MCTRL) */
- 	writel(ISMT_MCTRL_MEIE, priv->smba + ISMT_MSTR_MCTRL);
- 
-@@ -784,6 +792,12 @@ static int ismt_dev_init(struct ismt_priv *priv)
- 	priv->head = 0;
- 	init_completion(&priv->cmp);
- 
-+	priv->log = dmam_alloc_coherent(&priv->pci_dev->dev,
-+					ISMT_LOG_ENTRIES * sizeof(u32),
-+					&priv->log_dma, GFP_KERNEL);
-+	if (!priv->log)
-+		return -ENOMEM;
-+
- 	return 0;
- }
- 
+diff --git a/drivers/pinctrl/sunxi/pinctrl-suniv-f1c100s.c b/drivers/pinctrl/sunxi/pinctrl-suniv-f1c100s.c
+index 2801ca706273..68a5b627fb9b 100644
+--- a/drivers/pinctrl/sunxi/pinctrl-suniv-f1c100s.c
++++ b/drivers/pinctrl/sunxi/pinctrl-suniv-f1c100s.c
+@@ -204,7 +204,7 @@ static const struct sunxi_desc_pin suniv_f1c100s_pins[] = {
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+ 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+ 		  SUNXI_FUNCTION(0x2, "lcd"),		/* D20 */
+-		  SUNXI_FUNCTION(0x3, "lvds1"),		/* RX */
++		  SUNXI_FUNCTION(0x3, "uart2"),		/* RX */
+ 		  SUNXI_FUNCTION_IRQ_BANK(0x6, 0, 14)),
+ 	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 15),
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
 -- 
 2.35.1
 
