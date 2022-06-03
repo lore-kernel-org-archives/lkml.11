@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D80BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:01:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D55DC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:02:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346443AbiFCSBu (ORCPT
+        id S1346119AbiFCSB5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:01:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58378 "EHLO
+        Fri, 3 Jun 2022 14:01:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347200AbiFCRwG (ORCPT
+        with ESMTP id S1347243AbiFCRwK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:52:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4514C58381;
-        Fri,  3 Jun 2022 10:50:24 -0700 (PDT)
+        Fri, 3 Jun 2022 13:52:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FF9565B0;
+        Fri,  3 Jun 2022 10:51:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D15EF60EE9;
-        Fri,  3 Jun 2022 17:50:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1C12C385B8;
-        Fri,  3 Jun 2022 17:50:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C09C560EE9;
+        Fri,  3 Jun 2022 17:51:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD0F1C385A9;
+        Fri,  3 Jun 2022 17:51:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278623;
-        bh=yOdRLf0u+MxednDA4kOxzZaL4Ws4fqMSR0OzLc5pqPE=;
+        s=korg; t=1654278667;
+        bh=DdcTsahpMA3mopHeABHUdvpDhh4i1FgDJdxIWWBmhHc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z8Pl6P3qSdX7KZISAjtzovqhLCk8YqYPPNILp/qzJf6PDryG3Eb3TXawQxZmhxlma
-         IawkjbeWXGSW545RLVPgFOHWkzfi8MpcXA5siL24fdsmdwOwy7+yIq80V7EFnhEaeZ
-         ma5G/p0W6AShhY2Leg1AJ2NSV/b1DWLSllugokIw=
+        b=gphYyYLtbjedEeryDiSVeIGtXqFf2Jyi/7oA3Bk9ljne8tttOjOw1R4je7C4seUdF
+         4Mw3CHsZlyQ6p7GYZ4aXlrIYQqu60RWo+xz796qG9BAW7swYts1MKqmc+VSbL9Dj8L
+         au/RVVUhhdpEb7JuKMXdi9eaV2qIrE0nm3D53E9E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        "From: Andy Shevchenko" <andriy.shevchenko@linux.intel.com>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 08/66] i2c: ismt: Provide a DMA buffer for Interrupt Cause Logging
-Date:   Fri,  3 Jun 2022 19:42:48 +0200
-Message-Id: <20220603173820.906833130@linuxfoundation.org>
+        stable@vger.kernel.org, Dave Hansen <dave.hansen@linux.intel.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Haitao Huang <haitao.huang@intel.com>
+Subject: [PATCH 5.15 54/66] x86/sgx: Ensure no data in PCMD page after truncate
+Date:   Fri,  3 Jun 2022 19:43:34 +0200
+Message-Id: <20220603173822.222435530@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.663747061@linuxfoundation.org>
 References: <20220603173820.663747061@linuxfoundation.org>
@@ -51,88 +51,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mika Westerberg <mika.westerberg@linux.intel.com>
+From: Reinette Chatre <reinette.chatre@intel.com>
 
-[ Upstream commit 17a0f3acdc6ec8b89ad40f6e22165a4beee25663 ]
+commit e3a3bbe3e99de73043a1d32d36cf4d211dc58c7e upstream.
 
-Before sending a MSI the hardware writes information pertinent to the
-interrupt cause to a memory location pointed by SMTICL register. This
-memory holds three double words where the least significant bit tells
-whether the interrupt cause of master/target/error is valid. The driver
-does not use this but we need to set it up because otherwise it will
-perform DMA write to the default address (0) and this will cause an
-IOMMU fault such as below:
+A PCMD (Paging Crypto MetaData) page contains the PCMD
+structures of enclave pages that have been encrypted and
+moved to the shmem backing store. When all enclave pages
+sharing a PCMD page are loaded in the enclave, there is no
+need for the PCMD page and it can be truncated from the
+backing store.
 
-  DMAR: DRHD: handling fault status reg 2
-  DMAR: [DMA Write] Request device [00:12.0] PASID ffffffff fault addr 0
-        [fault reason 05] PTE Write access is not set
+A few issues appeared around the truncation of PCMD pages. The
+known issues have been addressed but the PCMD handling code could
+be made more robust by loudly complaining if any new issue appears
+in this area.
 
-To prevent this from happening, provide a proper DMA buffer for this
-that then gets mapped by the IOMMU accordingly.
+Add a check that will complain with a warning if the PCMD page is not
+actually empty after it has been truncated. There should never be data
+in the PCMD page at this point since it is was just checked to be empty
+and truncated with enclave mutex held and is updated with the
+enclave mutex held.
 
-Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-Reviewed-by: From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
+Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
+Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+Tested-by: Haitao Huang <haitao.huang@intel.com>
+Link: https://lkml.kernel.org/r/6495120fed43fafc1496d09dd23df922b9a32709.1652389823.git.reinette.chatre@intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/i2c/busses/i2c-ismt.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ arch/x86/kernel/cpu/sgx/encl.c |   10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/i2c/busses/i2c-ismt.c b/drivers/i2c/busses/i2c-ismt.c
-index a6187cbec2c9..af2c240e064e 100644
---- a/drivers/i2c/busses/i2c-ismt.c
-+++ b/drivers/i2c/busses/i2c-ismt.c
-@@ -82,6 +82,7 @@
+--- a/arch/x86/kernel/cpu/sgx/encl.c
++++ b/arch/x86/kernel/cpu/sgx/encl.c
+@@ -187,12 +187,20 @@ static int __sgx_encl_eldu(struct sgx_en
+ 	kunmap_atomic(pcmd_page);
+ 	kunmap_atomic((void *)(unsigned long)pginfo.contents);
  
- #define ISMT_DESC_ENTRIES	2	/* number of descriptor entries */
- #define ISMT_MAX_RETRIES	3	/* number of SMBus retries to attempt */
-+#define ISMT_LOG_ENTRIES	3	/* number of interrupt cause log entries */
++	get_page(b.pcmd);
+ 	sgx_encl_put_backing(&b);
  
- /* Hardware Descriptor Constants - Control Field */
- #define ISMT_DESC_CWRL	0x01	/* Command/Write Length */
-@@ -175,6 +176,8 @@ struct ismt_priv {
- 	u8 head;				/* ring buffer head pointer */
- 	struct completion cmp;			/* interrupt completion */
- 	u8 buffer[I2C_SMBUS_BLOCK_MAX + 16];	/* temp R/W data buffer */
-+	dma_addr_t log_dma;
-+	u32 *log;
- };
+ 	sgx_encl_truncate_backing_page(encl, page_index);
  
- static const struct pci_device_id ismt_ids[] = {
-@@ -411,6 +414,9 @@ static int ismt_access(struct i2c_adapter *adap, u16 addr,
- 	memset(desc, 0, sizeof(struct ismt_desc));
- 	desc->tgtaddr_rw = ISMT_DESC_ADDR_RW(addr, read_write);
- 
-+	/* Always clear the log entries */
-+	memset(priv->log, 0, ISMT_LOG_ENTRIES * sizeof(u32));
+-	if (pcmd_page_empty && !reclaimer_writing_to_pcmd(encl, pcmd_first_page))
++	if (pcmd_page_empty && !reclaimer_writing_to_pcmd(encl, pcmd_first_page)) {
+ 		sgx_encl_truncate_backing_page(encl, PFN_DOWN(page_pcmd_off));
++		pcmd_page = kmap_atomic(b.pcmd);
++		if (memchr_inv(pcmd_page, 0, PAGE_SIZE))
++			pr_warn("PCMD page not empty after truncate.\n");
++		kunmap_atomic(pcmd_page);
++	}
 +
- 	/* Initialize common control bits */
- 	if (likely(pci_dev_msi_enabled(priv->pci_dev)))
- 		desc->control = ISMT_DESC_INT | ISMT_DESC_FAIR;
-@@ -708,6 +714,8 @@ static void ismt_hw_init(struct ismt_priv *priv)
- 	/* initialize the Master Descriptor Base Address (MDBA) */
- 	writeq(priv->io_rng_dma, priv->smba + ISMT_MSTR_MDBA);
++	put_page(b.pcmd);
  
-+	writeq(priv->log_dma, priv->smba + ISMT_GR_SMTICL);
-+
- 	/* initialize the Master Control Register (MCTRL) */
- 	writel(ISMT_MCTRL_MEIE, priv->smba + ISMT_MSTR_MCTRL);
- 
-@@ -795,6 +803,12 @@ static int ismt_dev_init(struct ismt_priv *priv)
- 	priv->head = 0;
- 	init_completion(&priv->cmp);
- 
-+	priv->log = dmam_alloc_coherent(&priv->pci_dev->dev,
-+					ISMT_LOG_ENTRIES * sizeof(u32),
-+					&priv->log_dma, GFP_KERNEL);
-+	if (!priv->log)
-+		return -ENOMEM;
-+
- 	return 0;
+ 	return ret;
  }
- 
--- 
-2.35.1
-
 
 
