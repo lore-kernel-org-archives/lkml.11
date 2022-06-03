@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8999ACCA48D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E5C6CCA489
 	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:16:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348256AbiFCSQc (ORCPT
+        id S1348142AbiFCSQX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:16:32 -0400
+        Fri, 3 Jun 2022 14:16:23 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238830AbiFCSEz (ORCPT
+        with ESMTP id S1346102AbiFCSBk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 14:04:55 -0400
+        Fri, 3 Jun 2022 14:01:40 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CE2A57111;
-        Fri,  3 Jun 2022 10:58:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D95304A906;
+        Fri,  3 Jun 2022 10:57:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1C080B8241D;
-        Fri,  3 Jun 2022 17:57:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BB87C385A9;
-        Fri,  3 Jun 2022 17:57:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E7F38B8241E;
+        Fri,  3 Jun 2022 17:56:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F6B7C385A9;
+        Fri,  3 Jun 2022 17:56:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654279027;
-        bh=tSQXz/ZFbI2pYTh4TigjjrPwJuuXCKdaX9A7q3dypck=;
+        s=korg; t=1654279018;
+        bh=visI1TTHwmCqbAwL6UAvfvNG1u2FwYk4D+zDUFCK6Sc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CIqgM5bzOWqa5VptNCzQD9VdXr45N0olLKqaLNocTIOjNiB5rq6sSiMWCntiJ63Gv
-         0t5f6Nh2t+FjF4/QWuJdJVA4dAJXuDcgo9GmERTksHIhDuPA1PQDlqQhz07O+zr/Z8
-         Ko8USy7XCVE1K8lmrZG0L0luQUeEboqpkbL8G7m0=
+        b=EEH0YNuEdLVBssrhhbFCr5rqdcryulFM1vz0YfY4NkeF9JlReHJ8rIsp3Z5wlwh6M
+         TTu7PSxVRQBT0TdWVUDMe4UJssQ8qjJ9nSdOcmQlY5etXmexusyQVgGvOnoScWoYmj
+         ltKR5YbQwwj09I14+mjfuuDauhgZZgZ2XbbhD2Pw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fabio Estevam <festevam@denx.de>,
-        =?UTF-8?q?Horia=20Geant=C4=83?= <horia.geanta@nxp.com>,
-        Vabhav Sharma <vabhav.sharma@nxp.com>,
-        Gaurav Jain <gaurav.jain@nxp.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Subject: [PATCH 5.18 29/67] crypto: caam - fix i.MX6SX entropy delay value
-Date:   Fri,  3 Jun 2022 19:43:30 +0200
-Message-Id: <20220603173821.563313170@linuxfoundation.org>
+        stable@vger.kernel.org, Chenyi Qiang <chenyi.qiang@intel.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.18 26/67] KVM: x86: Drop WARNs that assert a triple fault never "escapes" from L2
+Date:   Fri,  3 Jun 2022 19:43:27 +0200
+Message-Id: <20220603173821.478797713@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.731531504@linuxfoundation.org>
 References: <20220603173820.731531504@linuxfoundation.org>
@@ -52,82 +50,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabio Estevam <festevam@denx.de>
+From: Sean Christopherson <seanjc@google.com>
 
-commit 4ee4cdad368a26de3967f2975806a9ee2fa245df upstream.
+commit 45846661d10422ce9e22da21f8277540b29eca22 upstream.
 
-Since commit 358ba762d9f1 ("crypto: caam - enable prediction resistance
-in HRWNG") the following CAAM errors can be seen on i.MX6SX:
+Remove WARNs that sanity check that KVM never lets a triple fault for L2
+escape and incorrectly end up in L1.  In normal operation, the sanity
+check is perfectly valid, but it incorrectly assumes that it's impossible
+for userspace to induce KVM_REQ_TRIPLE_FAULT without bouncing through
+KVM_RUN (which guarantees kvm_check_nested_state() will see and handle
+the triple fault).
 
-caam_jr 2101000.jr: 20003c5b: CCB: desc idx 60: RNG: Hardware error
-hwrng: no data available
+The WARN can currently be triggered if userspace injects a machine check
+while L2 is active and CR4.MCE=0.  And a future fix to allow save/restore
+of KVM_REQ_TRIPLE_FAULT, e.g. so that a synthesized triple fault isn't
+lost on migration, will make it trivially easy for userspace to trigger
+the WARN.
 
-This error is due to an incorrect entropy delay for i.MX6SX.
+Clearing KVM_REQ_TRIPLE_FAULT when forcibly leaving guest mode is
+tempting, but wrong, especially if/when the request is saved/restored,
+e.g. if userspace restores events (including a triple fault) and then
+restores nested state (which may forcibly leave guest mode).  Ignoring
+the fact that KVM doesn't currently provide the necessary APIs, it's
+userspace's responsibility to manage pending events during save/restore.
 
-Fix it by increasing the minimum entropy delay for i.MX6SX
-as done in U-Boot:
-https://patchwork.ozlabs.org/project/uboot/patch/20220415111049.2565744-1-gaurav.jain@nxp.com/
+  ------------[ cut here ]------------
+  WARNING: CPU: 7 PID: 1399 at arch/x86/kvm/vmx/nested.c:4522 nested_vmx_vmexit+0x7fe/0xd90 [kvm_intel]
+  Modules linked in: kvm_intel kvm irqbypass
+  CPU: 7 PID: 1399 Comm: state_test Not tainted 5.17.0-rc3+ #808
+  Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 0.0.0 02/06/2015
+  RIP: 0010:nested_vmx_vmexit+0x7fe/0xd90 [kvm_intel]
+  Call Trace:
+   <TASK>
+   vmx_leave_nested+0x30/0x40 [kvm_intel]
+   vmx_set_nested_state+0xca/0x3e0 [kvm_intel]
+   kvm_arch_vcpu_ioctl+0xf49/0x13e0 [kvm]
+   kvm_vcpu_ioctl+0x4b9/0x660 [kvm]
+   __x64_sys_ioctl+0x83/0xb0
+   do_syscall_64+0x3b/0xc0
+   entry_SYSCALL_64_after_hwframe+0x44/0xae
+   </TASK>
+  ---[ end trace 0000000000000000 ]---
 
-As explained in the U-Boot patch:
-
-"RNG self tests are run to determine the correct entropy delay.
-Such tests are executed with different voltages and temperatures to identify
-the worst case value for the entropy delay. For i.MX6SX, it was determined
-that after adding a margin value of 1000 the minimum entropy delay should be
-at least 12000."
-
-Cc: <stable@vger.kernel.org>
-Fixes: 358ba762d9f1 ("crypto: caam - enable prediction resistance in HRWNG")
-Signed-off-by: Fabio Estevam <festevam@denx.de>
-Reviewed-by: Horia Geantă <horia.geanta@nxp.com>
-Reviewed-by: Vabhav Sharma <vabhav.sharma@nxp.com>
-Reviewed-by: Gaurav Jain <gaurav.jain@nxp.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Fixes: cb6a32c2b877 ("KVM: x86: Handle triple fault in L2 without killing L1")
+Cc: stable@vger.kernel.org
+Cc: Chenyi Qiang <chenyi.qiang@intel.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220407002315.78092-2-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/crypto/caam/ctrl.c |   18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ arch/x86/kvm/svm/nested.c |    3 ---
+ arch/x86/kvm/vmx/nested.c |    3 ---
+ 2 files changed, 6 deletions(-)
 
---- a/drivers/crypto/caam/ctrl.c
-+++ b/drivers/crypto/caam/ctrl.c
-@@ -609,6 +609,13 @@ static bool check_version(struct fsl_mc_
- }
- #endif
+--- a/arch/x86/kvm/svm/nested.c
++++ b/arch/x86/kvm/svm/nested.c
+@@ -819,9 +819,6 @@ int nested_svm_vmexit(struct vcpu_svm *s
+ 	struct kvm_host_map map;
+ 	int rc;
  
-+static bool needs_entropy_delay_adjustment(void)
-+{
-+	if (of_machine_is_compatible("fsl,imx6sx"))
-+		return true;
-+	return false;
-+}
-+
- /* Probe routine for CAAM top (controller) level */
- static int caam_probe(struct platform_device *pdev)
- {
-@@ -855,6 +862,8 @@ static int caam_probe(struct platform_de
- 			 * Also, if a handle was instantiated, do not change
- 			 * the TRNG parameters.
- 			 */
-+			if (needs_entropy_delay_adjustment())
-+				ent_delay = 12000;
- 			if (!(ctrlpriv->rng4_sh_init || inst_handles)) {
- 				dev_info(dev,
- 					 "Entropy delay = %u\n",
-@@ -871,6 +880,15 @@ static int caam_probe(struct platform_de
- 			 */
- 			ret = instantiate_rng(dev, inst_handles,
- 					      gen_sk);
-+			/*
-+			 * Entropy delay is determined via TRNG characterization.
-+			 * TRNG characterization is run across different voltages
-+			 * and temperatures.
-+			 * If worst case value for ent_dly is identified,
-+			 * the loop can be skipped for that platform.
-+			 */
-+			if (needs_entropy_delay_adjustment())
-+				break;
- 			if (ret == -EAGAIN)
- 				/*
- 				 * if here, the loop will rerun,
+-	/* Triple faults in L2 should never escape. */
+-	WARN_ON_ONCE(kvm_check_request(KVM_REQ_TRIPLE_FAULT, vcpu));
+-
+ 	rc = kvm_vcpu_map(vcpu, gpa_to_gfn(svm->nested.vmcb12_gpa), &map);
+ 	if (rc) {
+ 		if (rc == -EINVAL)
+--- a/arch/x86/kvm/vmx/nested.c
++++ b/arch/x86/kvm/vmx/nested.c
+@@ -4518,9 +4518,6 @@ void nested_vmx_vmexit(struct kvm_vcpu *
+ 	/* trying to cancel vmlaunch/vmresume is a bug */
+ 	WARN_ON_ONCE(vmx->nested.nested_run_pending);
+ 
+-	/* Similarly, triple faults in L2 should never escape. */
+-	WARN_ON_ONCE(kvm_check_request(KVM_REQ_TRIPLE_FAULT, vcpu));
+-
+ 	if (kvm_check_request(KVM_REQ_GET_NESTED_STATE_PAGES, vcpu)) {
+ 		/*
+ 		 * KVM_REQ_GET_NESTED_STATE_PAGES is also used to map
 
 
