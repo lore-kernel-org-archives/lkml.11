@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBA4FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:14:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EBD8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:14:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346411AbiFCSOe (ORCPT
+        id S1346652AbiFCSOh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:14:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48530 "EHLO
+        Fri, 3 Jun 2022 14:14:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346374AbiFCSAP (ORCPT
+        with ESMTP id S1346405AbiFCSAQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 14:00:15 -0400
+        Fri, 3 Jun 2022 14:00:16 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2E0B583BA;
-        Fri,  3 Jun 2022 10:56:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3782F1EC40;
+        Fri,  3 Jun 2022 10:56:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C73C6147E;
-        Fri,  3 Jun 2022 17:56:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DB71C385A9;
-        Fri,  3 Jun 2022 17:56:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3ED7E611F3;
+        Fri,  3 Jun 2022 17:56:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44CBAC385A9;
+        Fri,  3 Jun 2022 17:56:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278978;
-        bh=+jKGu2m+qotB5j1a1TjLLakeDpMh01+5nUzTVxMt6Vo=;
+        s=korg; t=1654278981;
+        bh=/I0H1cTNR3cP4rD9VlAwUtycmZ5bvrx8pk2QdsQql5M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yRuprK4N0uW9KA91MoS6frGxWtvLNGq9+Q/mYRIDBWxLZa6GOlErNDtFuCsiKffKJ
-         pGPouzKVL4rRnlcNRzJ/6vPFDW/7FP8K1GxNETEo4wG3dYvd5rb2P5V1Emj7rpRBtx
-         2Verpy9UzV4VccgoS66b/61G+LxJcGvs3Cpw34r0=
+        b=M+PgaI4iRscPhOX0FZ4nv1DXOpLTfRZeAq1AKaeODYR0HrChf+LYDUrPHGQETdJZy
+         t01M9I9wt3pZwXKpzxX5i6b5ASzxvFYL94PDZBtgYzJccaZ9JCpKUiefxNgE5QqErG
+         ip4xsd+WjqWO7nB5nfAgQFUUrmnygp+0AevqIQ6o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+793a590957d9c1b96620@syzkaller.appspotmail.com,
-        Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.18 14/67] netfilter: conntrack: re-fetch conntrack after insertion
-Date:   Fri,  3 Jun 2022 19:43:15 +0200
-Message-Id: <20220603173821.142120889@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.18 15/67] KVM: PPC: Book3S HV: fix incorrect NULL check on list iterator
+Date:   Fri,  3 Jun 2022 19:43:16 +0200
+Message-Id: <20220603173821.170861468@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.731531504@linuxfoundation.org>
 References: <20220603173820.731531504@linuxfoundation.org>
@@ -51,43 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-commit 56b14ecec97f39118bf85c9ac2438c5a949509ed upstream.
+commit 300981abddcb13f8f06ad58f52358b53a8096775 upstream.
 
-In case the conntrack is clashing, insertion can free skb->_nfct and
-set skb->_nfct to the already-confirmed entry.
+The bug is here:
+	if (!p)
+                return ret;
 
-This wasn't found before because the conntrack entry and the extension
-space used to free'd after an rcu grace period, plus the race needs
-events enabled to trigger.
+The list iterator value 'p' will *always* be set and non-NULL by
+list_for_each_entry(), so it is incorrect to assume that the iterator
+value will be NULL if the list is empty or no element is found.
 
-Reported-by: <syzbot+793a590957d9c1b96620@syzkaller.appspotmail.com>
-Fixes: 71d8c47fc653 ("netfilter: conntrack: introduce clash resolution on insertion race")
-Fixes: 2ad9d7747c10 ("netfilter: conntrack: free extension area immediately")
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+To fix the bug, Use a new value 'iter' as the list iterator, while use
+the old value 'p' as a dedicated variable to point to the found element.
+
+Fixes: dfaa973ae960 ("KVM: PPC: Book3S HV: In H_SVM_INIT_DONE, migrate remaining normal-GFNs to secure-GFNs")
+Cc: stable@vger.kernel.org # v5.9+
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220414062103.8153-1-xiam0nd.tong@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/netfilter/nf_conntrack_core.h |    7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ arch/powerpc/kvm/book3s_hv_uvmem.c |    8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
---- a/include/net/netfilter/nf_conntrack_core.h
-+++ b/include/net/netfilter/nf_conntrack_core.h
-@@ -58,8 +58,13 @@ static inline int nf_conntrack_confirm(s
- 	int ret = NF_ACCEPT;
+--- a/arch/powerpc/kvm/book3s_hv_uvmem.c
++++ b/arch/powerpc/kvm/book3s_hv_uvmem.c
+@@ -361,13 +361,15 @@ static bool kvmppc_gfn_is_uvmem_pfn(unsi
+ static bool kvmppc_next_nontransitioned_gfn(const struct kvm_memory_slot *memslot,
+ 		struct kvm *kvm, unsigned long *gfn)
+ {
+-	struct kvmppc_uvmem_slot *p;
++	struct kvmppc_uvmem_slot *p = NULL, *iter;
+ 	bool ret = false;
+ 	unsigned long i;
  
- 	if (ct) {
--		if (!nf_ct_is_confirmed(ct))
-+		if (!nf_ct_is_confirmed(ct)) {
- 			ret = __nf_conntrack_confirm(skb);
-+
-+			if (ret == NF_ACCEPT)
-+				ct = (struct nf_conn *)skb_nfct(skb);
+-	list_for_each_entry(p, &kvm->arch.uvmem_pfns, list)
+-		if (*gfn >= p->base_pfn && *gfn < p->base_pfn + p->nr_pfns)
++	list_for_each_entry(iter, &kvm->arch.uvmem_pfns, list)
++		if (*gfn >= iter->base_pfn && *gfn < iter->base_pfn + iter->nr_pfns) {
++			p = iter;
+ 			break;
 +		}
-+
- 		if (likely(ret == NF_ACCEPT))
- 			nf_ct_deliver_cached_events(ct);
- 	}
+ 	if (!p)
+ 		return ret;
+ 	/*
 
 
