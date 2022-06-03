@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01D70C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:46:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 290F9C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:46:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345227AbiFCRqO (ORCPT
+        id S1344587AbiFCRqS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:46:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56864 "EHLO
+        Fri, 3 Jun 2022 13:46:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345382AbiFCRpI (ORCPT
+        with ESMTP id S1345419AbiFCRpU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:45:08 -0400
+        Fri, 3 Jun 2022 13:45:20 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B7E25620A;
-        Fri,  3 Jun 2022 10:43:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B386A562C9;
+        Fri,  3 Jun 2022 10:43:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5FC02B82433;
-        Fri,  3 Jun 2022 17:43:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99A7BC385A9;
-        Fri,  3 Jun 2022 17:43:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 36E7FB823B0;
+        Fri,  3 Jun 2022 17:43:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92322C385A9;
+        Fri,  3 Jun 2022 17:43:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278185;
-        bh=dGYmpab8lZhl/x+ohPdCjH5/Ov/gj3SWugFpxDrtFZs=;
+        s=korg; t=1654278188;
+        bh=iPOD9cBIGaL31sCMFKggP2a5oP8aJPGCy6oGbeLLb/8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WXsXa0K4anJtisSvaak7jt/K3IXByIuDNZ5KKBPB6Sd0U3DBeVnzI2Wu0IaEbfSNQ
-         a4wo7/pA5kXpdriBnI78LVOWMVvS8j5L1V3hwf8p8ai0MIrJ/tnJF9t1pTexyhFcMa
-         qRus3cFGMQUSCOuZPz854wApQyrjq7Nr7xeU81pw=
+        b=1WYb1BAiIGfoHnQfvsod98HiC+S8SSTh0m6Y8aFmdjjwCfvafa6rbI+3tJrq7Dc75
+         zZIPdEhxU/CbSMnDTtUWAL9OV57CQpkmBZhbY+pD63eM2P0lmXK9EF33Myk8B0U9sM
+         +QbfHhZso/Jl6xSoG43ies8sjJ5+EkGVAwh9DnYQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liu Jian <liujian56@huawei.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Song Liu <songliubraving@fb.com>
-Subject: [PATCH 4.19 30/30] bpf: Enlarge offset check value to INT_MAX in bpf_skb_{load,store}_bytes
-Date:   Fri,  3 Jun 2022 19:39:58 +0200
-Message-Id: <20220603173815.976549226@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Sarthak Kukreti <sarthakkukreti@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Mike Snitzer <snitzer@kernel.org>
+Subject: [PATCH 4.19 24/30] dm verity: set DM_TARGET_IMMUTABLE feature flag
+Date:   Fri,  3 Jun 2022 19:39:52 +0200
+Message-Id: <20220603173815.803602103@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173815.088143764@linuxfoundation.org>
 References: <20220603173815.088143764@linuxfoundation.org>
@@ -50,44 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liu Jian <liujian56@huawei.com>
+From: Sarthak Kukreti <sarthakkukreti@google.com>
 
-commit 45969b4152c1752089351cd6836a42a566d49bcf upstream.
+commit 4caae58406f8ceb741603eee460d79bacca9b1b5 upstream.
 
-The data length of skb frags + frag_list may be greater than 0xffff, and
-skb_header_pointer can not handle negative offset. So, here INT_MAX is used
-to check the validity of offset. Add the same change to the related function
-skb_store_bytes.
+The device-mapper framework provides a mechanism to mark targets as
+immutable (and hence fail table reloads that try to change the target
+type). Add the DM_TARGET_IMMUTABLE flag to the dm-verity target's
+feature flags to prevent switching the verity target with a different
+target type.
 
-Fixes: 05c74e5e53f6 ("bpf: add bpf_skb_load_bytes helper")
-Signed-off-by: Liu Jian <liujian56@huawei.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Song Liu <songliubraving@fb.com>
-Link: https://lore.kernel.org/bpf/20220416105801.88708-2-liujian56@huawei.com
+Fixes: a4ffc152198e ("dm: add verity target")
+Cc: stable@vger.kernel.org
+Signed-off-by: Sarthak Kukreti <sarthakkukreti@google.com>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Mike Snitzer <snitzer@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/core/filter.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/md/dm-verity-target.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -1666,7 +1666,7 @@ BPF_CALL_5(bpf_skb_store_bytes, struct s
+--- a/drivers/md/dm-verity-target.c
++++ b/drivers/md/dm-verity-target.c
+@@ -1176,6 +1176,7 @@ bad:
  
- 	if (unlikely(flags & ~(BPF_F_RECOMPUTE_CSUM | BPF_F_INVALIDATE_HASH)))
- 		return -EINVAL;
--	if (unlikely(offset > 0xffff))
-+	if (unlikely(offset > INT_MAX))
- 		return -EFAULT;
- 	if (unlikely(bpf_try_make_writable(skb, offset + len)))
- 		return -EFAULT;
-@@ -1701,7 +1701,7 @@ BPF_CALL_4(bpf_skb_load_bytes, const str
- {
- 	void *ptr;
- 
--	if (unlikely(offset > 0xffff))
-+	if (unlikely(offset > INT_MAX))
- 		goto err_clear;
- 
- 	ptr = skb_header_pointer(skb, offset, len, to);
+ static struct target_type verity_target = {
+ 	.name		= "verity",
++	.features	= DM_TARGET_IMMUTABLE,
+ 	.version	= {1, 4, 0},
+ 	.module		= THIS_MODULE,
+ 	.ctr		= verity_ctr,
 
 
