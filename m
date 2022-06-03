@@ -2,132 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B39EBCCA47C
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 15:18:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CC58C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 15:20:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245271AbiFCPSV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 11:18:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47836 "EHLO
+        id S245440AbiFCPUl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 11:20:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245418AbiFCPSP (ORCPT
+        with ESMTP id S245437AbiFCPUg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 11:18:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADAD5377F6;
-        Fri,  3 Jun 2022 08:18:14 -0700 (PDT)
+        Fri, 3 Jun 2022 11:20:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC353506DA;
+        Fri,  3 Jun 2022 08:20:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 46F9E6188C;
-        Fri,  3 Jun 2022 15:18:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C738C385A9;
-        Fri,  3 Jun 2022 15:18:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 61FC161889;
+        Fri,  3 Jun 2022 15:20:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15397C385A9;
+        Fri,  3 Jun 2022 15:20:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654269493;
-        bh=hNClHbaX1+sQTSTaqXz+J1yCu27oIJqVaL4omZjeK54=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=b2oMiBOgWYmBEBlRga7OxxbRP3UqrCmg7Mq59zca+0d1GCzca1kUhd1lQU+R70V3V
-         54C4wxC2K1r0fb7JJnr1xZ91UQi1ctXyjwji+HThBdXPrzYlgStnmssRXiT+NcAz3m
-         anrotYH3mum+sJGPZNl6lxkqQX46h9gAEXjwLuyASa1hssTp3P1dfJdVWmd52AWL0O
-         5TS6ytnQHF+Abx5MMUbIcdh64OpojqM3OMAXt/svzSwjf1cCjIqrUsW7jkcd2CAKaC
-         RdIr4JlQwkjxpmKkh9haIYWjFZTwuA3AF0maoRCKAWRXBtmF21Pd9xhz1qT6/Nxp+O
-         TLaH9b9b9qpQg==
-Date:   Fri, 3 Jun 2022 20:48:06 +0530
-From:   Manivannan Sadhasivam <mani@kernel.org>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-mtd@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 0/2] Add support for unprotected spare data page
-Message-ID: <20220603151806.GB26696@thinkpad>
-References: <20220519190112.6344-1-ansuelsmth@gmail.com>
+        s=k20201202; t=1654269633;
+        bh=JRwtXeAAKkEjKJCXj/qjul5ZdfRH3VbHm2x/qf+JZLs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=F1FGdibcZgL16P5fANhB0tQPDR7Z6NyWv5G3ifuh3zaeQUfKb3VFxrTDf/PPM+Hxi
+         UJ5V6/yfQHsnTqe9W/CYoYQhrFoJsRXKGrD2S3TYaLeY++OaMYH8uZ4djdOtdPB3uq
+         DBqEwMXlqWdkOOKicILUVr9oEhrwlUFnE3JbP+tmSuFgMEy1rkyOxdZ19CLTjDjRMR
+         1nzbsVwDmbxx19cnCW77uWlo0zpzBNNcjJQfYKeQXdNymF2i6bM/4wDRiWh9JZbuaA
+         3fjcMxeQYLcq1GhpcY6lShQhCbdOFAFjmuWwz1B26lv02vN+qfbGvYun05z0+eVPDQ
+         Wv2W9NQ57ebTw==
+Date:   Fri, 3 Jun 2022 16:29:34 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Miaoqian Lin <linmq006@gmail.com>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: adi-axi-adc: Fix refcount leak in
+ adi_axi_adc_attach_client
+Message-ID: <20220603162934.7e6b0783@jic23-huawei>
+In-Reply-To: <20220524074517.45268-1-linmq006@gmail.com>
+References: <20220524074517.45268-1-linmq006@gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220519190112.6344-1-ansuelsmth@gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 19, 2022 at 09:01:10PM +0200, Ansuel Smith wrote:
-> Some background about this.
-> On original qsdk ipq8064 based firmware there was a big separation from
-> boot partition and user partition. With boot partition we refer to
-> partition used to init the router (bootloader, spm firmware and other
-> internal stuff) With user partition we refer to linux partition and data
-> partition not used to init the router.
-> When someone had to write to these boot partition a special mode was
-> needed, to switch the nand driver to this special configuration.
-> 
-> Upstream version of the nandc driver totally dropped this and the result
-> is that if someone try to read data from these partition a CRC warning
-> is printed and if someone try to write that (if for example someone
-> wants to replace the bootloader) result is a broken system as the data
-> is badly written.
-> 
+On Tue, 24 May 2022 11:45:17 +0400
+Miaoqian Lin <linmq006@gmail.com> wrote:
 
-Can you please point me to the downstream/vendor driver that has this
-implementation?
+> of_parse_phandle() returns a node pointer with refcount
+> incremented, we should use of_node_put() on it when not need anymore.
+> Add missing of_node_put() to avoid refcount leak.
+> 
+> Fixes: ef04070692a2 ("iio: adc: adi-axi-adc: add support for AXI ADC IP core")
+> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+
+Looks 'obviously correct to me' so applied to the fixes togreg branch of iio.git
+and marked for stable.
+
+Great if anyone more familiar with this driver than me has a chance
+to take a quick look though.
 
 Thanks,
-Mani
 
-> This series comes to fix this.
-> 
-> A user can declare offset and size of these special partition using the
-> qcom,boot-pages binding.
-> 
-> An initial implementation of this assumed that the boot-pages started
-> from the start of the nand but we discover that some device have backup
-> of these special partition and we can have situation where we have this
-> partition scheme
-> - APPSBL (require special mode)
-> - APPSBLENV (doesn't require special mode)
-> - ART
-> - APPSBLBK (back of APPSBL require special mode)
-> - APPSBLENVBK (back of APPSBLENV doesn't require special mode)
-> With this configuration we need to declare sparse boot page and we can't
-> assume boot-pages always starts from the start of the nand.
-> 
-> A user can use this form to declare sparse boot pages
-> qcom,boot-pages = <0x0 0x0c80000 0x0c80000 0x0500000>;
-> 
-> The driver internally will parse this array, convert it to nand pages
-> and check internally on every read/write if this special configuration
-> should used for that page or the normal one.
-> 
-> The reason for all of this is that qcom FOR SOME REASON, disable ECC for
-> spare data only for these boot partition and we need to reflect this
-> special configuration to mute these warning and to permit actually
-> writing to these pages.
-> 
-> v4:
-> - Fix wrong compatible set for boot-pages (ipq8074 instead of ipq806x)
-> v3:
-> - Fix typo in Docmunetation commit desription
-> - Add items description for uint32-matrix
-> v2:
-> - Add fixes from Krzysztof in Documentation
-> 
-> Ansuel Smith (2):
->   mtd: nand: raw: qcom_nandc: add support for unprotected spare data
->     pages
->   dt-bindings: mtd: qcom_nandc: document qcom,boot-pages binding
-> 
->  .../devicetree/bindings/mtd/qcom,nandc.yaml   |  26 +++
->  drivers/mtd/nand/raw/qcom_nandc.c             | 148 +++++++++++++++++-
->  2 files changed, 169 insertions(+), 5 deletions(-)
-> 
-> -- 
-> 2.34.1
-> 
+Jonathan
 
--- 
-மணிவண்ணன் சதாசிவம்
+> ---
+>  drivers/iio/adc/adi-axi-adc.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/iio/adc/adi-axi-adc.c b/drivers/iio/adc/adi-axi-adc.c
+> index a73e3c2d212f..a9e655e69eaa 100644
+> --- a/drivers/iio/adc/adi-axi-adc.c
+> +++ b/drivers/iio/adc/adi-axi-adc.c
+> @@ -322,16 +322,19 @@ static struct adi_axi_adc_client *adi_axi_adc_attach_client(struct device *dev)
+>  
+>  		if (!try_module_get(cl->dev->driver->owner)) {
+>  			mutex_unlock(&registered_clients_lock);
+> +			of_node_put(cln);
+>  			return ERR_PTR(-ENODEV);
+>  		}
+>  
+>  		get_device(cl->dev);
+>  		cl->info = info;
+>  		mutex_unlock(&registered_clients_lock);
+> +		of_node_put(cln);
+>  		return cl;
+>  	}
+>  
+>  	mutex_unlock(&registered_clients_lock);
+> +	of_node_put(cln);
+>  
+>  	return ERR_PTR(-EPROBE_DEFER);
+>  }
+
