@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E92EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:41:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01420C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:42:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344884AbiFCRl4 (ORCPT
+        id S1344597AbiFCRmE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:41:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57690 "EHLO
+        Fri, 3 Jun 2022 13:42:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344847AbiFCRlM (ORCPT
+        with ESMTP id S1344618AbiFCRlX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:41:12 -0400
+        Fri, 3 Jun 2022 13:41:23 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A80453E15;
-        Fri,  3 Jun 2022 10:40:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 923D453E2C;
+        Fri,  3 Jun 2022 10:40:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 18A3C61AFE;
-        Fri,  3 Jun 2022 17:40:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E7A3C385B8;
-        Fri,  3 Jun 2022 17:40:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 30E6561B00;
+        Fri,  3 Jun 2022 17:40:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26D71C385A9;
+        Fri,  3 Jun 2022 17:40:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278055;
-        bh=DZ/F7hfto6+zZNrsEDnnEnfL6SgqUExG+EhCpoew7Y8=;
+        s=korg; t=1654278058;
+        bh=PQnNo4qjHa38rWy1F+GxoQE+4yWWYf8kdz4fnLlJYmc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kIX1UJtaWGGgKvsg6MtCPut/5WFE1mh9emK1oYuNhHSLID0iV6gm+jk/1OWRCrWgX
-         6/XQlTdZrg/MAgN7ObFyIHEAAUOeBA1PietGg0LclySRCWYSIZjj4LpIlzRMlKkLNk
-         MGmk9QSlFJ4fcTCX/X7kgxtGrVChSXTjWp+LNKi4=
+        b=ih8wB8O4PniPnw6jlKwI8P+dnG4v+GgVFw/k0q0YKlkXtrtb41MecHzdgVIN138WZ
+         T4Fyn5AAURMkGaI+3W0Hk2xXfh8iKaJUUlPOeNfY4npfk0MojHqmC/mYIlVD0bk5V2
+         k5RCOqM1QQwQv/DB7fH6GDcb5TUyEeUJTXYpFTnE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Wilder <wilder@us.ibm.com>,
-        Dylan Hung <dylan_hung@aspeedtech.com>,
-        Joel Stanley <joel@jms.id.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 08/23] net: ftgmac100: Disable hardware checksum on AST2600
-Date:   Fri,  3 Jun 2022 19:39:35 +0200
-Message-Id: <20220603173814.619431272@linuxfoundation.org>
+        stable@vger.kernel.org, Szymon Balcerak <sbalcerak@marvell.com>,
+        Piyush Malgujar <pmalgujar@marvell.com>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 09/23] drivers: i2c: thunderx: Allow driver to work with ACPI defined TWSI controllers
+Date:   Fri,  3 Jun 2022 19:39:36 +0200
+Message-Id: <20220603173814.649059852@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173814.362515009@linuxfoundation.org>
 References: <20220603173814.362515009@linuxfoundation.org>
@@ -52,90 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joel Stanley <joel@jms.id.au>
+From: Piyush Malgujar <pmalgujar@marvell.com>
 
-[ Upstream commit 6fd45e79e8b93b8d22fb8fe22c32fbad7e9190bd ]
+[ Upstream commit 03a35bc856ddc09f2cc1f4701adecfbf3b464cb3 ]
 
-The AST2600 when using the i210 NIC over NC-SI has been observed to
-produce incorrect checksum results with specific MTU values. This was
-first observed when sending data across a long distance set of networks.
+Due to i2c->adap.dev.fwnode not being set, ACPI_COMPANION() wasn't properly
+found for TWSI controllers.
 
-On a local network, the following test was performed using a 1MB file of
-random data.
-
-On the receiver run this script:
-
- #!/bin/bash
- while [ 1 ]; do
-        # Zero the stats
-        nstat -r  > /dev/null
-        nc -l 9899 > test-file
-        # Check for checksum errors
-        TcpInCsumErrors=$(nstat | grep TcpInCsumErrors)
-        if [ -z "$TcpInCsumErrors" ]; then
-                echo No TcpInCsumErrors
-        else
-                echo TcpInCsumErrors = $TcpInCsumErrors
-        fi
- done
-
-On an AST2600 system:
-
- # nc <IP of  receiver host> 9899 < test-file
-
-The test was repeated with various MTU values:
-
- # ip link set mtu 1410 dev eth0
-
-The observed results:
-
- 1500 - good
- 1434 - bad
- 1400 - good
- 1410 - bad
- 1420 - good
-
-The test was repeated after disabling tx checksumming:
-
- # ethtool -K eth0 tx-checksumming off
-
-And all MTU values tested resulted in transfers without error.
-
-An issue with the driver cannot be ruled out, however there has been no
-bug discovered so far.
-
-David has done the work to take the original bug report of slow data
-transfer between long distance connections and triaged it down to this
-test case.
-
-The vendor suspects this this is a hardware issue when using NC-SI. The
-fixes line refers to the patch that introduced AST2600 support.
-
-Reported-by: David Wilder <wilder@us.ibm.com>
-Reviewed-by: Dylan Hung <dylan_hung@aspeedtech.com>
-Signed-off-by: Joel Stanley <joel@jms.id.au>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Szymon Balcerak <sbalcerak@marvell.com>
+Signed-off-by: Piyush Malgujar <pmalgujar@marvell.com>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/faraday/ftgmac100.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/i2c/busses/i2c-thunderx-pcidrv.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/faraday/ftgmac100.c b/drivers/net/ethernet/faraday/ftgmac100.c
-index f35c5dbe54ee..a1caca6accf3 100644
---- a/drivers/net/ethernet/faraday/ftgmac100.c
-+++ b/drivers/net/ethernet/faraday/ftgmac100.c
-@@ -1845,6 +1845,11 @@ static int ftgmac100_probe(struct platform_device *pdev)
- 	/* AST2400  doesn't have working HW checksum generation */
- 	if (np && (of_device_is_compatible(np, "aspeed,ast2400-mac")))
- 		netdev->hw_features &= ~NETIF_F_HW_CSUM;
-+
-+	/* AST2600 tx checksum with NCSI is broken */
-+	if (priv->use_ncsi && of_device_is_compatible(np, "aspeed,ast2600-mac"))
-+		netdev->hw_features &= ~NETIF_F_HW_CSUM;
-+
- 	if (np && of_get_property(np, "no-hw-checksum", NULL))
- 		netdev->hw_features &= ~(NETIF_F_HW_CSUM | NETIF_F_RXCSUM);
- 	netdev->features |= netdev->hw_features;
+diff --git a/drivers/i2c/busses/i2c-thunderx-pcidrv.c b/drivers/i2c/busses/i2c-thunderx-pcidrv.c
+index df0976f4432a..4f0456fe8691 100644
+--- a/drivers/i2c/busses/i2c-thunderx-pcidrv.c
++++ b/drivers/i2c/busses/i2c-thunderx-pcidrv.c
+@@ -215,6 +215,7 @@ static int thunder_i2c_probe_pci(struct pci_dev *pdev,
+ 	i2c->adap.bus_recovery_info = &octeon_i2c_recovery_info;
+ 	i2c->adap.dev.parent = dev;
+ 	i2c->adap.dev.of_node = pdev->dev.of_node;
++	i2c->adap.dev.fwnode = dev->fwnode;
+ 	snprintf(i2c->adap.name, sizeof(i2c->adap.name),
+ 		 "Cavium ThunderX i2c adapter at %s", dev_name(dev));
+ 	i2c_set_adapdata(&i2c->adap, i2c);
 -- 
 2.35.1
 
