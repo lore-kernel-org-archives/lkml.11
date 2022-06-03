@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9164EC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:45:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82386CCA47E
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:45:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345078AbiFCRox (ORCPT
+        id S1344838AbiFCRpY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:44:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57686 "EHLO
+        Fri, 3 Jun 2022 13:45:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344838AbiFCRn6 (ORCPT
+        with ESMTP id S1345126AbiFCRoj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:43:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8BAC54036;
-        Fri,  3 Jun 2022 10:42:26 -0700 (PDT)
+        Fri, 3 Jun 2022 13:44:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F254D55203;
+        Fri,  3 Jun 2022 10:42:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5FD6A61B01;
-        Fri,  3 Jun 2022 17:42:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4576BC36AE5;
-        Fri,  3 Jun 2022 17:42:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C2F92B8242D;
+        Fri,  3 Jun 2022 17:42:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D47AC385A9;
+        Fri,  3 Jun 2022 17:42:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278145;
-        bh=GLAym5QDd84vfdwkI3wAoy6957Q/5/Y62Zd7C3u27Jk=;
+        s=korg; t=1654278154;
+        bh=yojwAR4GeocO+V0acQYXPAOcPk/e68dRzRXpL5OJFns=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ktcSZbIQdYF80HK79LiSc5zZI+j0ICjGVWa4LAnw0bJoYp2xWYAaMEfWxc0nW7ZUf
-         pZeRy8npw5b5xWLWi9EzgD1cFeYWzD1Z/NV7MozMviBrsB+T134OlmGHRfszLN4pIF
-         KeHuyhm+Bvtn3eOxkQBymdi5+goYlbkuwIi577Ls=
+        b=eZ3eo7bx5ky5onfl1dUg9rdFnyZ17nSFNbFefMjoDnopUCUuKy28Qnfnfjx5u5Ryf
+         zf2gGj6wLqb2rmD9ik9rrIXblx56uCsuFEVejNFH/d0EZwox+7+JJnj8JcfET2lyW9
+         cY7EbObEGKVLdto+shB0Cy9Tr7slXV7gjOcbYTPk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        David Dworken <ddworken@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Stefan Ghinea <stefan.ghinea@windriver.com>
-Subject: [PATCH 4.19 03/30] tcp: change source port randomizarion at connect() time
-Date:   Fri,  3 Jun 2022 19:39:31 +0200
-Message-Id: <20220603173815.192639169@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Veronika Kabatova <vkabatov@redhat.com>,
+        Aristeu Rozanski <aris@redhat.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        dann frazier <dann.frazier@canonical.com>
+Subject: [PATCH 4.19 06/30] ACPI: sysfs: Fix BERT error region memory mapping
+Date:   Fri,  3 Jun 2022 19:39:34 +0200
+Message-Id: <20220603173815.280377951@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173815.088143764@linuxfoundation.org>
 References: <20220603173815.088143764@linuxfoundation.org>
@@ -52,98 +54,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
 
-commit 190cc82489f46f9d88e73c81a47e14f80a791e1a upstream.
+commit 1bbc21785b7336619fb6a67f1fff5afdaf229acc upstream.
 
-RFC 6056 (Recommendations for Transport-Protocol Port Randomization)
-provides good summary of why source selection needs extra care.
+Currently the sysfs interface maps the BERT error region as "memory"
+(through acpi_os_map_memory()) in order to copy the error records into
+memory buffers through memory operations (eg memory_read_from_buffer()).
 
-David Dworken reminded us that linux implements Algorithm 3
-as described in RFC 6056 3.3.3
+The OS system cannot detect whether the BERT error region is part of
+system RAM or it is "device memory" (eg BMC memory) and therefore it
+cannot detect which memory attributes the bus to memory support (and
+corresponding kernel mapping, unless firmware provides the required
+information).
 
-Quoting David :
-   In the context of the web, this creates an interesting info leak where
-   websites can count how many TCP connections a user's computer is
-   establishing over time. For example, this allows a website to count
-   exactly how many subresources a third party website loaded.
-   This also allows:
-   - Distinguishing between different users behind a VPN based on
-       distinct source port ranges.
-   - Tracking users over time across multiple networks.
-   - Covert communication channels between different browsers/browser
-       profiles running on the same computer
-   - Tracking what applications are running on a computer based on
-       the pattern of how fast source ports are getting incremented.
+The acpi_os_map_memory() arch backend implementation determines the
+mapping attributes. On arm64, if the BERT error region is not present in
+the EFI memory map, the error region is mapped as device-nGnRnE; this
+triggers alignment faults since memcpy unaligned accesses are not
+allowed in device-nGnRnE regions.
 
-Section 3.3.4 describes an enhancement, that reduces
-attackers ability to use the basic information currently
-stored into the shared 'u32 hint'.
+The ACPI sysfs code cannot therefore map by default the BERT error
+region with memory semantics but should use a safer default.
 
-This change also decreases collision rate when
-multiple applications need to connect() to
-different destinations.
+Change the sysfs code to map the BERT error region as MMIO (through
+acpi_os_map_iomem()) and use the memcpy_fromio() interface to read the
+error region into the kernel buffer.
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: David Dworken <ddworken@google.com>
-Cc: Willem de Bruijn <willemb@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-[SG: Adjusted context]
-Signed-off-by: Stefan Ghinea <stefan.ghinea@windriver.com>
+Link: https://lore.kernel.org/linux-arm-kernel/31ffe8fc-f5ee-2858-26c5-0fd8bdd68702@arm.com
+Link: https://lore.kernel.org/linux-acpi/CAJZ5v0g+OVbhuUUDrLUCfX_mVqY_e8ubgLTU98=jfjTeb4t+Pw@mail.gmail.com
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Tested-by: Veronika Kabatova <vkabatov@redhat.com>
+Tested-by: Aristeu Rozanski <aris@redhat.com>
+Acked-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Cc: dann frazier <dann.frazier@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/inet_hashtables.c |   20 +++++++++++++++++---
- 1 file changed, 17 insertions(+), 3 deletions(-)
+ drivers/acpi/sysfs.c |   25 ++++++++++++++++++-------
+ 1 file changed, 18 insertions(+), 7 deletions(-)
 
---- a/net/ipv4/inet_hashtables.c
-+++ b/net/ipv4/inet_hashtables.c
-@@ -714,6 +714,17 @@ unlock:
+--- a/drivers/acpi/sysfs.c
++++ b/drivers/acpi/sysfs.c
+@@ -438,19 +438,30 @@ static ssize_t acpi_data_show(struct fil
+ 			      loff_t offset, size_t count)
+ {
+ 	struct acpi_data_attr *data_attr;
+-	void *base;
+-	ssize_t rc;
++	void __iomem *base;
++	ssize_t size;
+ 
+ 	data_attr = container_of(bin_attr, struct acpi_data_attr, attr);
++	size = data_attr->attr.size;
+ 
+-	base = acpi_os_map_memory(data_attr->addr, data_attr->attr.size);
++	if (offset < 0)
++		return -EINVAL;
++
++	if (offset >= size)
++		return 0;
++
++	if (count > size - offset)
++		count = size - offset;
++
++	base = acpi_os_map_iomem(data_attr->addr, size);
+ 	if (!base)
+ 		return -ENOMEM;
+-	rc = memory_read_from_buffer(buf, count, &offset, base,
+-				     data_attr->attr.size);
+-	acpi_os_unmap_memory(base, data_attr->attr.size);
+ 
+-	return rc;
++	memcpy_fromio(buf, base + offset, count);
++
++	acpi_os_unmap_iomem(base, size);
++
++	return count;
  }
- EXPORT_SYMBOL_GPL(inet_unhash);
  
-+/* RFC 6056 3.3.4.  Algorithm 4: Double-Hash Port Selection Algorithm
-+ * Note that we use 32bit integers (vs RFC 'short integers')
-+ * because 2^16 is not a multiple of num_ephemeral and this
-+ * property might be used by clever attacker.
-+ * RFC claims using TABLE_LENGTH=10 buckets gives an improvement,
-+ * we use 256 instead to really give more isolation and
-+ * privacy, this only consumes 1 KB of kernel memory.
-+ */
-+#define INET_TABLE_PERTURB_SHIFT 8
-+static u32 table_perturb[1 << INET_TABLE_PERTURB_SHIFT];
-+
- int __inet_hash_connect(struct inet_timewait_death_row *death_row,
- 		struct sock *sk, u32 port_offset,
- 		int (*check_established)(struct inet_timewait_death_row *,
-@@ -727,7 +738,7 @@ int __inet_hash_connect(struct inet_time
- 	struct inet_bind_bucket *tb;
- 	u32 remaining, offset;
- 	int ret, i, low, high;
--	static u32 hint;
-+	u32 index;
- 
- 	if (port) {
- 		head = &hinfo->bhash[inet_bhashfn(net, port,
-@@ -752,7 +763,10 @@ int __inet_hash_connect(struct inet_time
- 	if (likely(remaining > 1))
- 		remaining &= ~1U;
- 
--	offset = (hint + port_offset) % remaining;
-+	net_get_random_once(table_perturb, sizeof(table_perturb));
-+	index = hash_32(port_offset, INET_TABLE_PERTURB_SHIFT);
-+
-+	offset = (READ_ONCE(table_perturb[index]) + port_offset) % remaining;
- 	/* In first pass we try ports of @low parity.
- 	 * inet_csk_get_port() does the opposite choice.
- 	 */
-@@ -805,7 +819,7 @@ next_port:
- 	return -EADDRNOTAVAIL;
- 
- ok:
--	hint += i + 2;
-+	WRITE_ONCE(table_perturb[index], READ_ONCE(table_perturb[index]) + i + 2);
- 
- 	/* Head lock still held and bh's disabled */
- 	inet_bind_hash(sk, tb, port);
+ static int acpi_bert_data_init(void *th, struct acpi_data_attr *data_attr)
 
 
