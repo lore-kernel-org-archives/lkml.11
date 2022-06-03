@@ -2,58 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 528EDC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 00:44:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F539C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 00:44:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238499AbiFCAoA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 20:44:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46566 "EHLO
+        id S239990AbiFCAoF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 20:44:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239915AbiFCAnn (ORCPT
+        with ESMTP id S239927AbiFCAnp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 20:43:43 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D87222517
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:43:41 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id e5-20020a255005000000b0065cb3669fe9so5600657ybb.0
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:43:41 -0700 (PDT)
+        Thu, 2 Jun 2022 20:43:45 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0A42344D4
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:43:44 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id nn14-20020a17090b38ce00b001e00df82de8so6409093pjb.1
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:43:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=wX/P+I0PRT/FmLuKfIiWzz4JYduTHcEOvgTKpRq6UvI=;
-        b=ohGfmhNoBW/gE6jRNf0MXcnIOq1BnZuWfAoAaD+ubq9T5WfQumj38VOZn3zDju7uuv
-         ikPnnwQR6COPlsfjWThFXvtwZJSgrRIoPLvN188nCZFF6Cf7U523IDVu5L5v+71pgXpf
-         Npki5bhhOGYw6DTAoNZSH1tkMy4H9BOh4sV4I0LiXaP96P0b5GEBx2gfqWdezOP98M3n
-         1yC/+1zZxsQt5V5e2mR6pnXE7c5hpvTLCR/W/TEc/FGrhn//GOuv+zGRZ36x+aeM0NFw
-         NfYNxYNxRqmlCVA61GLgexMaYEFrb5zRWmbjn24fsmLCsQhzHHWss/7zCfGRZna1wXqm
-         E+gA==
+        bh=ulJggE6LhTR+16Vtkph2cEVy2a+ANo/coZcby2aJbGE=;
+        b=SARr3Yrp/NFPUl9skOlX3RHfpOAWZhBuwbwrslMgUBPAHtnRp5Caw+Q/hHmieJ74s9
+         shPVTAB2wSEOjzdT710CzRzAKYd63QRV9VRoRGmx94bRUSYLLLoDr8R6HGQo3W59MEJt
+         9IWJx54IFKcqPdWPUrrG3UNp5z9nvBD45x8JWAKpbznxVYE7m6EsRDU234McMD+9cUfN
+         e353gQoT9s08/gq2+ZCujkQ2oh0Xvy0Wr/dobe7nPKgOJ99fbn7fZ8Xa22/ZlrXz3sBS
+         vgy4bSpH7mu778h6turQOx0NQKfDCPug8WlPDK4XdwQGXVdRobEa1ooJ5/4HYYPA23mr
+         YRkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=wX/P+I0PRT/FmLuKfIiWzz4JYduTHcEOvgTKpRq6UvI=;
-        b=Pt6TZ43b3lzUDvoZWlSD2zwIuGG7u/s3KDZTbC3vhH62N0fb54uuWGnmXky1Z5D5DA
-         odd+WX9lPNXVrBGDIn/P6FfF4dmfKhAhYKmsP6An11C3ghmYbOry7my1FFuhWitcdY9/
-         m0nMo+RszVZxlu9rPA4LGTTfyC+xVrSxizIqyrdIr9tduE7tyk9q2rErGXcbh+odKuH4
-         GCcJlDnfpYIwlZepQpo553f+I56jR+jXUkuPd7OClv3oqZmc3TcQpRhEMMiq04kuqndX
-         h1o7o6lXfCa8zyAHqMSF2httt+Bd6GLzcRPKN4XCxnOo9xWfB9Tj/FllDp5UbdSpuQeW
-         xShw==
-X-Gm-Message-State: AOAM530kpEru3h2oCJfnvokelWEq65tMBd2Xj9xCO7y3sWR/FjiXcXZ1
-        n0DDIIM9U2KncQLo+hIDF9H5JqYpmg8=
-X-Google-Smtp-Source: ABdhPJxjGduPcX+/AqwEDSijp3oxgmIpIdd99OYZPvci++iHCcAWUoD30JjcDXOao0HxI6mslc7hN3RC9UI=
+        bh=ulJggE6LhTR+16Vtkph2cEVy2a+ANo/coZcby2aJbGE=;
+        b=iKjtjaqSRb8KSf3MGyyYC75K+RlAirq2KH2xFh8tXfonjtwn87y+AFECmRQiq7Vosx
+         uwJtHLtWIKsTziDckdsxLqDSjV0wvCPlXZjtz1gRRcSvNzlusI2Bg+CVZHKwE/3PNLPh
+         qAVE7x9+CIkVg3yfkM/cLTj39PfbrKuzaRyviHV4MPWBOlb4aexNOXAm/qcprFkVEDbQ
+         a2MW8jqi0XFDOt1iwK4TEd3NLYO+Vdo43xnRIhyhFnRtZUGWJOEeNXijfkApO0kLBdw7
+         9rOp5z64qZXZiciGXnx+0HVQQ17mu+MOBR2ZnaoCklNHBCnYjiIYbBklbPe3yEu+Po+R
+         8mVw==
+X-Gm-Message-State: AOAM5316aRwECHoki7fsPtEqpoXC6/nMInIL8Nvnbg4sf5R8OaA4q2Vg
+        e1uFSRm7UJfj6J/kbyObklg2grFfmSk=
+X-Google-Smtp-Source: ABdhPJxF7YjHolpL9Nr4LGBBw5yquGD3KuzHOjpscMeGmzJC85pLAWv19iRBw2P1y+AMloJ4YweYHtAjnKc=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a81:2188:0:b0:2f5:1b53:9141 with SMTP id
- h130-20020a812188000000b002f51b539141mr8715333ywh.504.1654217020677; Thu, 02
- Jun 2022 17:43:40 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:902:ce02:b0:151:a86d:dc2b with SMTP id
+ k2-20020a170902ce0200b00151a86ddc2bmr7674812plg.57.1654217024150; Thu, 02 Jun
+ 2022 17:43:44 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri,  3 Jun 2022 00:41:09 +0000
+Date:   Fri,  3 Jun 2022 00:41:11 +0000
 In-Reply-To: <20220603004331.1523888-1-seanjc@google.com>
-Message-Id: <20220603004331.1523888-3-seanjc@google.com>
+Message-Id: <20220603004331.1523888-5-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220603004331.1523888-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v2 002/144] KVM: selftests: Fix buggy-but-benign check in test_v3_new_redist_regions()
+Subject: [PATCH v2 004/144] KVM: selftests: Drop stale declarations from kvm_util_base.h
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     kvm@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
@@ -66,34 +66,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update 'ret' with the return value of _kvm_device_access() prior to
-asserting that ret is non-zero.  In the current code base, the flaw is
-benign as 'ret' is guaranteed to be -EBUSY from the previous run_vcpu(),
-which also means that errno==EBUSY prior to _kvm_device_access(), thus
-the "errno == EFAULT" part of the assert means that a false negative is
-impossible (unless the kernel is being truly mean and spuriously setting
-errno=EFAULT while returning success).
+Drop declarations for allocate_kvm_dirty_log() and vm_create_device(),
+which no longer have implementations.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- tools/testing/selftests/kvm/aarch64/vgic_init.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ tools/testing/selftests/kvm/include/kvm_util_base.h | 5 -----
+ 1 file changed, 5 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/aarch64/vgic_init.c b/tools/testing/selftests/kvm/aarch64/vgic_init.c
-index 34379c98d2f4..0f046e3e953d 100644
---- a/tools/testing/selftests/kvm/aarch64/vgic_init.c
-+++ b/tools/testing/selftests/kvm/aarch64/vgic_init.c
-@@ -381,8 +381,8 @@ static void test_v3_new_redist_regions(void)
- 	v = vm_gic_create_with_vcpus(KVM_DEV_TYPE_ARM_VGIC_V3, NR_VCPUS);
- 	subtest_v3_redist_regions(&v);
+diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
+index 92cef0ffb19e..47b77ebda6a3 100644
+--- a/tools/testing/selftests/kvm/include/kvm_util_base.h
++++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
+@@ -381,11 +381,6 @@ struct kvm_userspace_memory_region *
+ kvm_userspace_memory_region_find(struct kvm_vm *vm, uint64_t start,
+ 				 uint64_t end);
  
--	_kvm_device_access(v.gic_fd, KVM_DEV_ARM_VGIC_GRP_ADDR,
--			  KVM_VGIC_V3_ADDR_TYPE_REDIST_REGION, dummy, true);
-+	ret = _kvm_device_access(v.gic_fd, KVM_DEV_ARM_VGIC_GRP_ADDR,
-+				 KVM_VGIC_V3_ADDR_TYPE_REDIST_REGION, dummy, true);
- 	TEST_ASSERT(ret && errno == EFAULT,
- 		    "register a third region allowing to cover the 4 vcpus");
- 
+-struct kvm_dirty_log *
+-allocate_kvm_dirty_log(struct kvm_userspace_memory_region *region);
+-
+-int vm_create_device(struct kvm_vm *vm, struct kvm_create_device *cd);
+-
+ #define sync_global_to_guest(vm, g) ({				\
+ 	typeof(g) *_p = addr_gva2hva(vm, (vm_vaddr_t)&(g));	\
+ 	memcpy(_p, &(g), sizeof(g));				\
 -- 
 2.36.1.255.ge46751e96f-goog
 
