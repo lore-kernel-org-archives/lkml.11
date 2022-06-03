@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08C5BCCA48E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D072CCA48D
 	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 00:54:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242625AbiFCAxw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 20:53:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48762 "EHLO
+        id S240154AbiFCAyK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 20:54:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233165AbiFCApp (ORCPT
+        with ESMTP id S240230AbiFCApr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 20:45:45 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AD9F37A3B
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:45:40 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id b6-20020a252e46000000b0065d5168f3f0so5506632ybn.21
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:45:40 -0700 (PDT)
+        Thu, 2 Jun 2022 20:45:47 -0400
+Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B99C6344F6
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:45:46 -0700 (PDT)
+Received: by mail-pf1-x449.google.com with SMTP id j23-20020aa78017000000b005180c6e4ef2so3488472pfi.12
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:45:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=p5UnJnS91vtMeaDHfsKiSMs+oHMFzkeSZWyIST+FoDs=;
-        b=MCzDWUUIyEucNE3hHClXNVFR+5T16668b/7sJY354niuYd9tJ+pJGguoP/lsDm+DIv
-         PvVDe5NMToy4SVCDeJayojCjQMadqJGRpUx0TEwUCy3hAm1XNQT3GNLjZ9bIEJPeHc5r
-         5ja27gOz3o+2HyeyyE7VXqq4VGOm+/gH7SGyPLtSlB14ZPyqnRd6/S9DdpgnojeQa9v7
-         6gymSZFmDi/PWFvEMtStOpSTl6BEMZfDFFP0Gw8uyljHq1tIiZegIaY12IOxIXtcSe5Z
-         NvqFT6G+fWK9abnplIW+IjENrgrfCcTJKwqOHhSBf9TIY67rO5qVueYN3tpt5UJ08o14
-         p3JQ==
+        bh=8VTDN8kUgX/CTxSlXR8a6F78HmGtCBAZAqm9YtQdysQ=;
+        b=Z4JQYNSPiXKMkTcHWJi6X9AQRjgwTHpuiKPXCO8XIqgSdq3RT2aVAPdwcqqFF5+EZ7
+         jS6qjgXPdTYOFAAQS8nWgmT2r374GGHQj+T3t9SqJCgQ6FnfIKDNQNBh1AgSs8l1822N
+         ADnH7aysGVXufWsSStgt4wFr518covfbBD0svb84PPnoBYnOsXZxsrQloB5YSMUk6fAp
+         jTnNxY4tTeeKrDpD4BNZJCW0FA6KI7C6hdTiPL2G3/bz2DSluRgBYeB6i3gLEXQX4Dsj
+         35/UxB3tMrAZR1ydGOWp5CDWrC+PVaD02Drs2HAjlPQxWsduGkVjVQinPJv1sKh3XvhH
+         C8jA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=p5UnJnS91vtMeaDHfsKiSMs+oHMFzkeSZWyIST+FoDs=;
-        b=Hb+EyXmaap5YWbItni0sxJHWhPKJqRwlv0ALQhLo+J4dgKJr9a4TIgD5UuXfRD/KRk
-         ZLK4MnjCc3TispnhFBtLbUyeJmOpgh6fjgllfCKwlJYK97LX/qWZxmgIH3Ok4fT+MHjT
-         F3PBof2fv3EnSr0wiPr/e/Uc4NioaHtgeFZw1zbwTapdWm2403QTNNxzYnRbc7Vh9eSR
-         fyHoQaJGtFWE5LEKjFCGoU68xghxDIcJR+1j4MU3m4M+OVzuETM4FJjErngWdYzgyV7e
-         H5DVqBB8AWGYbyqP+pXmga3oHcKCTCmx97amGmHSrbx66Cn6mxtmfqWSzCSHLDZr22El
-         LwOw==
-X-Gm-Message-State: AOAM530P9/fWhWgDIVOH2fZQLAfkLNWIzLmWaEj97cjc5oZXWDem4uyV
-        1Nxwme6nbqyyaCUgA3FCI5QJmctn/Ek=
-X-Google-Smtp-Source: ABdhPJwXM6K3Fp/k6RSfRwXWNXYpy2b/QfQ/DRwi7K/ni2ZE5YgEHkLLhGWffJlbhFMAoZiM5HNlCvorPh0=
+        bh=8VTDN8kUgX/CTxSlXR8a6F78HmGtCBAZAqm9YtQdysQ=;
+        b=JOPqyrZX7+OXhqQSGfy+V4EATxboO73v/FGqNf+f+3ZpVJblEq0bRlgH1ylXsrTRWe
+         nlPoW+2oJfwi4vQN13mJJDGAOz/d+uf9Wlioj4Rejv/C5ug7ZBnewWfbNhAgP0dtt69x
+         IvckCNLbdiYdjd64/jJoNf/16H6Y7emsEIdGrY2PPFjOYBIH4cC62ht47AVfPDzSkRyQ
+         XCkYEMqJRZbfRNKcfJuQ7fMUaJ9erNxXqoYcV0dZPAyf7Jpe7/rmBPwd5OwLZO8e1BST
+         K9Bh/VujNA2CdfCbuv12tIow//zSFX/HI7IQXmawRNLB/LK4z/6e7X6WSaOgBUIxvtnB
+         IaEA==
+X-Gm-Message-State: AOAM531bSfYWl18O+qf9i5JGZ/TLetaxHbxpA2qVQ0Z+ndRoFvn2oehZ
+        /+EbNPYKlsYwySsztZ6Td8bFnC792eM=
+X-Google-Smtp-Source: ABdhPJxbwhAP6T1NPRgJBVvqIfDOWJj7K2wdc4rhn4Fq1FWQ9QdDsNO6pLlI/Wz3u1ENyqfhW9Tx0DvLJ5U=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a05:6902:154b:b0:65d:2be4:cfa2 with SMTP id
- r11-20020a056902154b00b0065d2be4cfa2mr8875709ybu.236.1654217139425; Thu, 02
- Jun 2022 17:45:39 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:aa7:88d2:0:b0:50a:cf7d:6ff1 with SMTP id
+ k18-20020aa788d2000000b0050acf7d6ff1mr7869004pff.67.1654217146237; Thu, 02
+ Jun 2022 17:45:46 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri,  3 Jun 2022 00:42:14 +0000
+Date:   Fri,  3 Jun 2022 00:42:18 +0000
 In-Reply-To: <20220603004331.1523888-1-seanjc@google.com>
-Message-Id: <20220603004331.1523888-68-seanjc@google.com>
+Message-Id: <20220603004331.1523888-72-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220603004331.1523888-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v2 067/144] KVM: selftests: Convert vmx_nested_tsc_scaling_test
- away from VCPU_ID
+Subject: [PATCH v2 071/144] KVM: selftests: Convert vmx_apic_access_test away
+ from VCPU_ID
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     kvm@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
@@ -67,72 +67,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert vmx_nested_tsc_scaling_test to use vm_create_with_one_vcpu() and
-pass around a 'struct kvm_vcpu' object instead of using a global VCPU_ID.
+Convert vmx_apic_access_test to use vm_create_with_one_vcpu() and pass
+around a 'struct kvm_vcpu' object instead of using a global VCPU_ID.
+
+Opportunistically make the "vm" variable local, it is unused outside of
+main().
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../kvm/x86_64/vmx_nested_tsc_scaling_test.c   | 18 ++++++++----------
+ .../kvm/x86_64/vmx_apic_access_test.c          | 18 ++++++++----------
  1 file changed, 8 insertions(+), 10 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/x86_64/vmx_nested_tsc_scaling_test.c b/tools/testing/selftests/kvm/x86_64/vmx_nested_tsc_scaling_test.c
-index c35ada9f7f9c..c9cb29f06244 100644
---- a/tools/testing/selftests/kvm/x86_64/vmx_nested_tsc_scaling_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/vmx_nested_tsc_scaling_test.c
-@@ -15,9 +15,6 @@
- #include "vmx.h"
+diff --git a/tools/testing/selftests/kvm/x86_64/vmx_apic_access_test.c b/tools/testing/selftests/kvm/x86_64/vmx_apic_access_test.c
+index d438c4d3228a..10f9c86029e6 100644
+--- a/tools/testing/selftests/kvm/x86_64/vmx_apic_access_test.c
++++ b/tools/testing/selftests/kvm/x86_64/vmx_apic_access_test.c
+@@ -28,11 +28,6 @@
+ 
  #include "kselftest.h"
  
+-#define VCPU_ID		0
 -
--#define VCPU_ID 0
+-/* The virtual machine object. */
+-static struct kvm_vm *vm;
 -
- /* L2 is scaled up (from L1's perspective) by this factor */
- #define L2_SCALE_FACTOR 4ULL
- 
-@@ -150,6 +147,7 @@ static void stable_tsc_check_supported(void)
- 
- int main(int argc, char *argv[])
+ static void l2_guest_code(void)
  {
-+	struct kvm_vcpu *vcpu;
- 	struct kvm_vm *vm;
- 	vm_vaddr_t vmx_pages_gva;
+ 	/* Exit to L1 */
+@@ -84,9 +79,12 @@ int main(int argc, char *argv[])
+ 	struct vmx_pages *vmx;
+ 	bool done = false;
  
-@@ -182,28 +180,28 @@ int main(int argc, char *argv[])
- 	l0_tsc_freq = tsc_end - tsc_start;
- 	printf("real TSC frequency is around: %"PRIu64"\n", l0_tsc_freq);
++	struct kvm_vcpu *vcpu;
++	struct kvm_vm *vm;
++
+ 	nested_vmx_check_supported();
  
 -	vm = vm_create_default(VCPU_ID, 0, (void *) l1_guest_code);
 +	vm = vm_create_with_one_vcpu(&vcpu, l1_guest_code);
- 	vcpu_alloc_vmx(vm, &vmx_pages_gva);
--	vcpu_args_set(vm, VCPU_ID, 1, vmx_pages_gva);
-+	vcpu_args_set(vm, vcpu->id, 1, vmx_pages_gva);
  
--	tsc_khz = __vcpu_ioctl(vm, VCPU_ID, KVM_GET_TSC_KHZ, NULL);
-+	tsc_khz = __vcpu_ioctl(vm, vcpu->id, KVM_GET_TSC_KHZ, NULL);
- 	TEST_ASSERT(tsc_khz != -1, "vcpu ioctl KVM_GET_TSC_KHZ failed");
+ 	kvm_get_cpu_address_width(&paddr_width, &vaddr_width);
+ 	high_gpa = (1ul << paddr_width) - getpagesize();
+@@ -97,13 +95,13 @@ int main(int argc, char *argv[])
  
- 	/* scale down L1's TSC frequency */
--	vcpu_ioctl(vm, VCPU_ID, KVM_SET_TSC_KHZ,
-+	vcpu_ioctl(vm, vcpu->id, KVM_SET_TSC_KHZ,
- 		  (void *) (tsc_khz / l1_scale_factor));
+ 	vmx = vcpu_alloc_vmx(vm, &vmx_pages_gva);
+ 	prepare_virtualize_apic_accesses(vmx, vm);
+-	vcpu_args_set(vm, VCPU_ID, 2, vmx_pages_gva, high_gpa);
++	vcpu_args_set(vm, vcpu->id, 2, vmx_pages_gva, high_gpa);
  
- 	for (;;) {
+ 	while (!done) {
 -		volatile struct kvm_run *run = vcpu_state(vm, VCPU_ID);
 +		volatile struct kvm_run *run = vcpu->run;
  		struct ucall uc;
  
 -		vcpu_run(vm, VCPU_ID);
 +		vcpu_run(vm, vcpu->id);
- 		TEST_ASSERT(run->exit_reason == KVM_EXIT_IO,
- 			    "Got exit_reason other than KVM_EXIT_IO: %u (%s)\n",
+ 		if (apic_access_addr == high_gpa) {
+ 			TEST_ASSERT(run->exit_reason ==
+ 				    KVM_EXIT_INTERNAL_ERROR,
+@@ -121,7 +119,7 @@ int main(int argc, char *argv[])
  			    run->exit_reason,
  			    exit_reason_str(run->exit_reason));
  
 -		switch (get_ucall(vm, VCPU_ID, &uc)) {
 +		switch (get_ucall(vm, vcpu->id, &uc)) {
  		case UCALL_ABORT:
- 			TEST_FAIL("%s", (const char *) uc.args[0]);
- 		case UCALL_SYNC:
+ 			TEST_FAIL("%s at %s:%ld", (const char *)uc.args[0],
+ 				  __FILE__, uc.args[1]);
 -- 
 2.36.1.255.ge46751e96f-goog
 
