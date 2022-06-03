@@ -2,93 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A3F9CCA473
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 15:38:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9F5BCCA47C
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 15:42:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245590AbiFCPiX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 11:38:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33776 "EHLO
+        id S245606AbiFCPmM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 11:42:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239078AbiFCPiU (ORCPT
+        with ESMTP id S242335AbiFCPmK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 11:38:20 -0400
-Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 936742B26B
-        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 08:38:19 -0700 (PDT)
-Received: by mail-qv1-xf36.google.com with SMTP id v5so5796710qvs.10
-        for <linux-kernel@vger.kernel.org>; Fri, 03 Jun 2022 08:38:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=SJXhCrUR8OTVpnLcTOK6eseLDr1ev0Qsg1uNsb9nbv8=;
-        b=Q3903lNQQOni7+M4c5ncDu0HLSUQTxvb297A868WBL3HKMBPQ9Vxh/IhIjiQX1r4Mf
-         oyPtz/NaYgx9vPorrhxthWs8nTd6jQem8/d8QfACSCYmw293IQT2yN0P/EWNdgruyhFq
-         lyiiTi+D0Udva2DO+r+itdpjfySDS4zPtxkSO5vNvipNuYnCsF7uECI0JMrsC4i6qpjG
-         t5X6fC3832TP1X39Rj60D7oR6+/p9kggMlLea+C5PdyeOkXxzW274DDdPpsUZo82YHIa
-         JFFvkH1sXQQxu2WphhiDNw8+u+F7dY6Bqc6KZ4bckG21U9BdPPBK7xWAyUe2m3/sxgjq
-         f53g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=SJXhCrUR8OTVpnLcTOK6eseLDr1ev0Qsg1uNsb9nbv8=;
-        b=F+X6M3yAYOkklPEBbTOS+zD5h60fXUX+8LxJlG9wfXO0LHRkIBafvn8O8ryFkVPwJ0
-         +tQnu4bJpZuDzp05Xe/Q20VPvXHLMmKAJYmDJdCDhqs9/ICFn+OCOZl8SyJncJP5kqMT
-         g8nhE0j9zkFsrAyYid4aod0aUdVM5CLXed9IlA4uThNSOOH9EYbVXcGTUplrTzG3AjLB
-         P2hQCFucq8veLYokZrqa61auEuL2NkIYfHZlEcZgp2cc3MV8feN60fB8eQKo80vkeybR
-         ro869koRkulilLIJVx2Ax8DReMDXo5exjqSj83gABw4NVzw6GvadZ0ptSV8mFPHcinTT
-         M7Lg==
-X-Gm-Message-State: AOAM530bvBzaLYP+I+iRsMLcr0xkrGjR0z6uPfUfQuHKKRrifXrPiloA
-        vzFOueU/URpt6rhArFNBxiZOR7uI3TMm9A==
-X-Google-Smtp-Source: ABdhPJxdZQ9/SUfZZTAwPP0SSmcim7n4j2UV2gr4nbRDnef4WqhMGWV2G4k+wJYZM/q3KcMDiuC8dg==
-X-Received: by 2002:a0c:df8c:0:b0:465:d376:1ec0 with SMTP id w12-20020a0cdf8c000000b00465d3761ec0mr7369798qvl.97.1654270698608;
-        Fri, 03 Jun 2022 08:38:18 -0700 (PDT)
-Received: from localhost ([2620:10d:c091:480::1:1d66])
-        by smtp.gmail.com with ESMTPSA id y184-20020a37afc1000000b0069fc13ce225sm5204351qke.86.2022.06.03.08.38.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Jun 2022 08:38:17 -0700 (PDT)
-Date:   Fri, 3 Jun 2022 11:38:16 -0400
-From:   Johannes Weiner <hannes@cmpxchg.org>
-To:     Qi Zheng <zhengqi.arch@bytedance.com>
-Cc:     mhocko@kernel.org, roman.gushchin@linux.dev, shakeelb@google.com,
-        songmuchun@bytedance.com, akpm@linux-foundation.org,
-        corbet@lwn.net, linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org
-Subject: Re: [PATCH] mm: memcontrol: separate
- {pgscan,pgsteal}_{kswapd,direct} items in memory.stat of cgroup v2
-Message-ID: <Ypoq6KLItUWsOq+E@cmpxchg.org>
-References: <20220603070423.10025-1-zhengqi.arch@bytedance.com>
+        Fri, 3 Jun 2022 11:42:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B49B46241;
+        Fri,  3 Jun 2022 08:42:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 50225618CD;
+        Fri,  3 Jun 2022 15:42:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90173C385A9;
+        Fri,  3 Jun 2022 15:42:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654270927;
+        bh=uFt38kXWvTTdnaN2oP0GGgGo2/Cw36q2/icUr1V3lKo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=dJ+Ti4C0KVap4cUeztpqDfBH+7Guhimexya1pTrneKuxTIlHilQHmaPbkvFb7wSue
+         otbJhlmUQPqTomW8uWpzhMwboZF1BOTWsW5MGujz9/ZwSu2GQ26gOnS1Cgky/0jABZ
+         xASzRfrKhXQd1E6X8Zx8BIeC80YEebgsCG340vKSBB+Buc+uWnInKgZ8WEvPzC3rt8
+         zPFcwGo5ok9R9Nt9O/ixe04M0U2TTtVsm+bX0HCV0rQWDVqCHwcBp927s+wWlhR44M
+         r0udqBAhpk+Fnsj0ATYQLl8DlFjvurZvEkzJTDZVlv38mHQ5xXyRvHsbO1dS/hpC5N
+         hqA6yFTDHvtjw==
+Date:   Fri, 3 Jun 2022 16:51:06 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
+Cc:     lars@metafoo.de, mchehab+huawei@kernel.org, ardeleanalex@gmail.com,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        robh+dt@kernel.org, mike.looijmans@topic.nl,
+        devicetree@vger.kernel.org, thomas.haemmerle@leica-geosystems.com
+Subject: Re: [PATCH V5 0/6] iio: accel: bmi088: support BMI085 BMI090L
+Message-ID: <20220603165106.78f13761@jic23-huawei>
+In-Reply-To: <20220526133359.2261928-1-Qing-wu.Li@leica-geosystems.com.cn>
+References: <20220526133359.2261928-1-Qing-wu.Li@leica-geosystems.com.cn>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220603070423.10025-1-zhengqi.arch@bytedance.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 03, 2022 at 03:04:23PM +0800, Qi Zheng wrote:
-> There are already statistics of {pgscan,pgsteal}_kswapd and
-> {pgscan,pgsteal}_direct of memcg event here, but now the sum
-> of the two is displayed in memory.stat of cgroup v2.
-> 
-> In order to obtain more accurate information during monitoring
-> and debugging, and to align with the display in /proc/vmstat,
-> it better to display {pgscan,pgsteal}_kswapd and
-> {pgscan,pgsteal}_direct separately.
-> 
-> Moreover, after this modification, all memcg events can be
-> printed with a combination of vm_event_name() and memcg_events().
-> This allows us to create an array to traverse and print, which
-> reduces redundant seq_buf_printf() codes.
-> 
-> Signed-off-by: Qi Zheng <zhengqi.arch@bytedance.com>
+On Thu, 26 May 2022 13:33:53 +0000
+LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn> wrote:
 
-Sounds good to me. We inititally didn't do it because /proc/vmstat has
-the breakdown to understand global reclaim behavior, and cgroup
-reclaim doesn't have a kswapd. But it's nice to stay consistent, it's
-helpful to understand if certain cgroups have a higher share of direct
-global reclaim (GFP_TRANSHUGE* for example), and we very much do want
-kswapd per cgroup down the line (we've had it in production for ages).
+> Modified the units after application of scale from 100*m/s^2 to m/s^2,
+> since the units in the ABI documents are m/s^2.
+> Add supports for the BMI085 accelerometer.
+> Add supports for the BMI090L accelerometer.
+> Make it possible to config scales.
+> 
+> Change in v5: 
+> - Fix the issue of 'undeclared function FIELD_GET'
+>   Reported-by: kernel test robot <lkp@intel.com>
 
-Acked-by: Johannes Weiner <hannes@cmpxchg.org>
+I've applied this series to the togreg branch of iio.git and pushed
+out as testing.
+
+Note I can rebase that tree still (and will do anyway to move to
+rc1 or so once available) so we can resolve that question of
+whether Datasheet is a tag or not in parallel with letting 0-day
+see if it can find anything else we missed.
+
+Thanks,
+
+Jonathan
+
+> 
+> 
+> LI Qingwu (6):
+>   iio: accel: bmi088: Modified the scale calculate
+>   iio: accel: bmi088: Make it possible to config scales
+>   iio: accel: bmi088: modified the device name
+>   iio: accel: bmi088: Add support for bmi085 accel
+>   iio: accel: bmi088: Add support for bmi090l accel
+>   dt-bindings: iio: accel: Add bmi085 and bmi090l bindings
+> 
+>  .../bindings/iio/accel/bosch,bmi088.yaml      |  2 +
+>  drivers/iio/accel/bmi088-accel-core.c         | 97 +++++++++++++++----
+>  drivers/iio/accel/bmi088-accel-spi.c          | 17 +++-
+>  drivers/iio/accel/bmi088-accel.h              |  9 +-
+>  4 files changed, 101 insertions(+), 24 deletions(-)
+> 
+
