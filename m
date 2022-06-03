@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 416B0C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:45:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A217BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:45:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344422AbiFCRpm (ORCPT
+        id S1345136AbiFCRpp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:45:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56576 "EHLO
+        Fri, 3 Jun 2022 13:45:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345218AbiFCRo7 (ORCPT
+        with ESMTP id S1345255AbiFCRpB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:44:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2F4F541BE;
-        Fri,  3 Jun 2022 10:42:52 -0700 (PDT)
+        Fri, 3 Jun 2022 13:45:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0896855494;
+        Fri,  3 Jun 2022 10:42:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 22AB6B823B2;
-        Fri,  3 Jun 2022 17:42:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 806A5C385A9;
-        Fri,  3 Jun 2022 17:42:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 77A6A61B23;
+        Fri,  3 Jun 2022 17:42:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 644EEC3411C;
+        Fri,  3 Jun 2022 17:42:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278169;
-        bh=Mg4NSLqASYLz2NkcNUshPvAmULIjDMQGVNjUmfUpja4=;
+        s=korg; t=1654278175;
+        bh=5DLh3zfwqkuKS/K1n4AvAGFzOB5krvK1ROtUZvkNdoI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YrcuJER0JIKfHZuIEszByAb1bPEnozMYPMSDaHsu53I4t8BdOkBknXfnEbZfU8U3E
-         Ooy2nChmERDsPhnwOhN0na65l1nScw60PwFcomnVMSmUbFJ+k6DSDKCo2gvibEg/sS
-         eepgTdF11n18m3cQTg17N688lLT1WbY1ik2iYRtg=
+        b=e1mlHhhzyqIXc7aSclwZK0H3nnZ0qufPC6E59XuRb45+15ulS3iByKD8XOz2/3PMB
+         suIB4Pfjst+x3BkJfU1TvnCBK6G/iF7r/VRP2bfTuut2/2zjz+iFE+BEw9FBooAMqJ
+         QhOGjKV7+9+WmearcWOupL91Pm43Mwz1Ku49ypnQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marek Maslanka <mm@semihalf.com>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Jiri Kosina <jkosina@suse.cz>
-Subject: [PATCH 4.19 25/30] HID: multitouch: Add support for Google Whiskers Touchpad
-Date:   Fri,  3 Jun 2022 19:39:53 +0200
-Message-Id: <20220603173815.832413670@linuxfoundation.org>
+        stable@vger.kernel.org, Xiu Jianfeng <xiujianfeng@huawei.com>,
+        Stefan Berger <stefanb@linux.ibm.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>
+Subject: [PATCH 4.19 27/30] tpm: ibmvtpm: Correct the return value in tpm_ibmvtpm_probe()
+Date:   Fri,  3 Jun 2022 19:39:55 +0200
+Message-Id: <20220603173815.889423770@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173815.088143764@linuxfoundation.org>
 References: <20220603173815.088143764@linuxfoundation.org>
@@ -50,33 +50,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Maślanka <mm@semihalf.com>
+From: Xiu Jianfeng <xiujianfeng@huawei.com>
 
-commit 1d07cef7fd7599450b3d03e1915efc2a96e1f03f upstream.
+commit d0dc1a7100f19121f6e7450f9cdda11926aa3838 upstream.
 
-The Google Whiskers touchpad does not work properly with the default
-multitouch configuration. Instead, use the same configuration as Google
-Rose.
+Currently it returns zero when CRQ response timed out, it should return
+an error code instead.
 
-Signed-off-by: Marek Maslanka <mm@semihalf.com>
-Acked-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Fixes: d8d74ea3c002 ("tpm: ibmvtpm: Wait for buffer to be set before proceeding")
+Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
+Reviewed-by: Stefan Berger <stefanb@linux.ibm.com>
+Acked-by: Jarkko Sakkinen <jarkko@kernel.org>
+Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hid/hid-multitouch.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/char/tpm/tpm_ibmvtpm.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/hid/hid-multitouch.c
-+++ b/drivers/hid/hid-multitouch.c
-@@ -2111,6 +2111,9 @@ static const struct hid_device_id mt_dev
- 	{ .driver_data = MT_CLS_GOOGLE,
- 		HID_DEVICE(HID_BUS_ANY, HID_GROUP_ANY, USB_VENDOR_ID_GOOGLE,
- 			USB_DEVICE_ID_GOOGLE_TOUCH_ROSE) },
-+	{ .driver_data = MT_CLS_GOOGLE,
-+		HID_DEVICE(BUS_USB, HID_GROUP_MULTITOUCH_WIN_8, USB_VENDOR_ID_GOOGLE,
-+			USB_DEVICE_ID_GOOGLE_WHISKERS) },
- 
- 	/* Generic MT device */
- 	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_MULTITOUCH, HID_ANY_ID, HID_ANY_ID) },
+--- a/drivers/char/tpm/tpm_ibmvtpm.c
++++ b/drivers/char/tpm/tpm_ibmvtpm.c
+@@ -692,6 +692,7 @@ static int tpm_ibmvtpm_probe(struct vio_
+ 	if (!wait_event_timeout(ibmvtpm->crq_queue.wq,
+ 				ibmvtpm->rtce_buf != NULL,
+ 				HZ)) {
++		rc = -ENODEV;
+ 		dev_err(dev, "CRQ response timed out\n");
+ 		goto init_irq_cleanup;
+ 	}
 
 
