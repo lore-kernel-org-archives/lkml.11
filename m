@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4646C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:19:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE76FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:19:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346320AbiFCSTS (ORCPT
+        id S1347091AbiFCSTX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:19:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47032 "EHLO
+        Fri, 3 Jun 2022 14:19:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348331AbiFCSGv (ORCPT
+        with ESMTP id S1346967AbiFCSFc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 14:06:51 -0400
+        Fri, 3 Jun 2022 14:05:32 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E65933A32;
-        Fri,  3 Jun 2022 11:00:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DC705A2F2;
+        Fri,  3 Jun 2022 10:58:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C37F961244;
-        Fri,  3 Jun 2022 17:59:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1775C341C0;
-        Fri,  3 Jun 2022 17:59:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A5DA3615C8;
+        Fri,  3 Jun 2022 17:57:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A721DC385A9;
+        Fri,  3 Jun 2022 17:57:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654279167;
-        bh=LQ4GAiIPoecpW2UvZsPu+mR5D6ND/oIWgjWyJt1PfTM=;
+        s=korg; t=1654279055;
+        bh=0Hxm7VfHN0KwafIDjex29HGSMuWAetdQhX0hc5y9oEE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g1OgZjPE0j2HNLvcET7k9d5tD3sp7tD9L1yx/rFj7BoLJD5t38U9ef+HZT7fuKZy0
-         Kxivmg+waij3ic4Mz4dPRGBzL24LLlHs/j3Ef6gTZBVsYDQCDhqBjG3QrGR8HgIRkZ
-         Lns7GgtUXMIJETqSx1a4yKyu8dINKh5Edx9/Z7+g=
+        b=V9iRsgKhHgLkhf+0SZEzfYibmLNiv8fC6uaKUxySttsL+PyHshgVanOYcdLcxqth2
+         nd5AHWPRWuUNbQ0O5bZZa9X3MFmIp/ilgkE6PQ2RWjf4YpFQlTa/92vA7QZeJX8o6f
+         OegFcpIkwbZnip3qiRY1mUfN70ybcamrj6hCoKv0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marek Maslanka <mm@semihalf.com>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Jiri Kosina <jkosina@suse.cz>
-Subject: [PATCH 5.18 45/67] HID: multitouch: Add support for Google Whiskers Touchpad
-Date:   Fri,  3 Jun 2022 19:43:46 +0200
-Message-Id: <20220603173822.028442636@linuxfoundation.org>
+        stable@vger.kernel.org, Alex Elder <elder@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.18 06/67] net: ipa: compute proper aggregation limit
+Date:   Fri,  3 Jun 2022 19:43:07 +0200
+Message-Id: <20220603173820.916586811@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.731531504@linuxfoundation.org>
 References: <20220603173820.731531504@linuxfoundation.org>
@@ -50,33 +49,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Maślanka <mm@semihalf.com>
+From: Alex Elder <elder@linaro.org>
 
-commit 1d07cef7fd7599450b3d03e1915efc2a96e1f03f upstream.
+commit c5794097b269f15961ed78f7f27b50e51766dec9 upstream.
 
-The Google Whiskers touchpad does not work properly with the default
-multitouch configuration. Instead, use the same configuration as Google
-Rose.
+The aggregation byte limit for an endpoint is currently computed
+based on the endpoint's receive buffer size.
 
-Signed-off-by: Marek Maslanka <mm@semihalf.com>
-Acked-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+However, some bytes at the front of each receive buffer are reserved
+on the assumption that--as with SKBs--it might be useful to insert
+data (such as headers) before what lands in the buffer.
+
+The aggregation byte limit currently doesn't take into account that
+reserved space, and as a result, aggregation could require space
+past that which is available in the buffer.
+
+Fix this by reducing the size used to compute the aggregation byte
+limit by the NET_SKB_PAD offset reserved for each receive buffer.
+
+Signed-off-by: Alex Elder <elder@linaro.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hid/hid-multitouch.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ipa/ipa_endpoint.c |    9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
---- a/drivers/hid/hid-multitouch.c
-+++ b/drivers/hid/hid-multitouch.c
-@@ -2178,6 +2178,9 @@ static const struct hid_device_id mt_dev
- 	{ .driver_data = MT_CLS_GOOGLE,
- 		HID_DEVICE(HID_BUS_ANY, HID_GROUP_ANY, USB_VENDOR_ID_GOOGLE,
- 			USB_DEVICE_ID_GOOGLE_TOUCH_ROSE) },
-+	{ .driver_data = MT_CLS_GOOGLE,
-+		HID_DEVICE(BUS_USB, HID_GROUP_MULTITOUCH_WIN_8, USB_VENDOR_ID_GOOGLE,
-+			USB_DEVICE_ID_GOOGLE_WHISKERS) },
+--- a/drivers/net/ipa/ipa_endpoint.c
++++ b/drivers/net/ipa/ipa_endpoint.c
+@@ -130,9 +130,10 @@ static bool ipa_endpoint_data_valid_one(
+ 		 */
+ 		if (data->endpoint.config.aggregation) {
+ 			limit += SZ_1K * aggr_byte_limit_max(ipa->version);
+-			if (buffer_size > limit) {
++			if (buffer_size - NET_SKB_PAD > limit) {
+ 				dev_err(dev, "RX buffer size too large for aggregated RX endpoint %u (%u > %u)\n",
+-					data->endpoint_id, buffer_size, limit);
++					data->endpoint_id,
++					buffer_size - NET_SKB_PAD, limit);
  
- 	/* Generic MT device */
- 	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_MULTITOUCH, HID_ANY_ID, HID_ANY_ID) },
+ 				return false;
+ 			}
+@@ -739,6 +740,7 @@ static void ipa_endpoint_init_aggr(struc
+ 	if (endpoint->data->aggregation) {
+ 		if (!endpoint->toward_ipa) {
+ 			const struct ipa_endpoint_rx_data *rx_data;
++			u32 buffer_size;
+ 			bool close_eof;
+ 			u32 limit;
+ 
+@@ -746,7 +748,8 @@ static void ipa_endpoint_init_aggr(struc
+ 			val |= u32_encode_bits(IPA_ENABLE_AGGR, AGGR_EN_FMASK);
+ 			val |= u32_encode_bits(IPA_GENERIC, AGGR_TYPE_FMASK);
+ 
+-			limit = ipa_aggr_size_kb(rx_data->buffer_size);
++			buffer_size = rx_data->buffer_size;
++			limit = ipa_aggr_size_kb(buffer_size - NET_SKB_PAD);
+ 			val |= aggr_byte_limit_encoded(version, limit);
+ 
+ 			limit = IPA_AGGR_TIME_LIMIT;
 
 
