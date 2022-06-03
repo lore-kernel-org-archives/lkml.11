@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42E22CCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FFFBCCA484
 	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:07:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348310AbiFCSGu (ORCPT
+        id S1348456AbiFCSHP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:06:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58124 "EHLO
+        Fri, 3 Jun 2022 14:07:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345847AbiFCRzL (ORCPT
+        with ESMTP id S1345953AbiFCRza (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:55:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A3CE44A11;
-        Fri,  3 Jun 2022 10:53:00 -0700 (PDT)
+        Fri, 3 Jun 2022 13:55:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8C6D65C8;
+        Fri,  3 Jun 2022 10:53:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D787EB82189;
-        Fri,  3 Jun 2022 17:52:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E326C385A9;
-        Fri,  3 Jun 2022 17:52:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 748AB612EA;
+        Fri,  3 Jun 2022 17:53:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 832D4C385A9;
+        Fri,  3 Jun 2022 17:53:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278777;
-        bh=wHaTodtD45mZ8oITybG8g60oCCAN8kY0JNM8000sTLE=;
+        s=korg; t=1654278786;
+        bh=C5arwU05RqA1ctL2UY79lqz2JT3jbYppZjc/zSBAfIc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1aG9pRkjuAelzvipGcq8YUYZJd3Mca3rYgty1mMaKl8vwRIa1ZiXBlvuohEm+4Nm/
-         mWAFWYH426UJi7ls3JLUAMt+f5fFiyv3Xiim9qjb5Ehg40ej29KPHuVZ9RNMmPYA2h
-         mgg4oGlqsa6pSw3kPpFZ3GyEz9WFAtr+b6dhRbbQ=
+        b=TPhsYbPtOIYj6OEJYNyzqRVlwoocFzio7hpCmr44uknYDPkOGhKUXZ1CFpQUR0I1J
+         30i143PlcwabYRPzayzy2chjMGOPqEvgoTF6dH57z+Y6v0nCk+Ae9zNaYEUEO5rrve
+         VpcKJrJNuOrzY0eUX30F4ozYPoAbmXAUlC0yTpkU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lin Ma <linma@zju.edu.cn>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 08/75] nfc: pn533: Fix buggy cleanup order
-Date:   Fri,  3 Jun 2022 19:42:52 +0200
-Message-Id: <20220603173821.986074977@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+a4087e40b9c13aad7892@syzkaller.appspotmail.com,
+        Tadeusz Struk <tadeusz.struk@linaro.org>,
+        Sungjong Seo <sj1557.seo@samsung.com>,
+        Namjae Jeon <linkinjeon@kernel.org>
+Subject: [PATCH 5.17 19/75] exfat: check if cluster num is valid
+Date:   Fri,  3 Jun 2022 19:43:03 +0200
+Message-Id: <20220603173822.293395249@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173821.749019262@linuxfoundation.org>
 References: <20220603173821.749019262@linuxfoundation.org>
@@ -50,66 +52,104 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lin Ma <linma@zju.edu.cn>
+From: Tadeusz Struk <tadeusz.struk@linaro.org>
 
-[ Upstream commit b8cedb7093b2d1394cae9b86494cba4b62d3a30a ]
+commit 64ba4b15e5c045f8b746c6da5fc9be9a6b00b61d upstream.
 
-When removing the pn533 device (i2c or USB), there is a logic error. The
-original code first cancels the worker (flush_delayed_work) and then
-destroys the workqueue (destroy_workqueue), leaving the timer the last
-one to be deleted (del_timer). This result in a possible race condition
-in a multi-core preempt-able kernel. That is, if the cleanup
-(pn53x_common_clean) is concurrently run with the timer handler
-(pn533_listen_mode_timer), the timer can queue the poll_work to the
-already destroyed workqueue, causing use-after-free.
+Syzbot reported slab-out-of-bounds read in exfat_clear_bitmap.
+This was triggered by reproducer calling truncute with size 0,
+which causes the following trace:
 
-This patch reorder the cleanup: it uses the del_timer_sync to make sure
-the handler is finished before the routine will destroy the workqueue.
-Note that the timer cannot be activated by the worker again.
+BUG: KASAN: slab-out-of-bounds in exfat_clear_bitmap+0x147/0x490 fs/exfat/balloc.c:174
+Read of size 8 at addr ffff888115aa9508 by task syz-executor251/365
 
-static void pn533_wq_poll(struct work_struct *work)
-...
- rc = pn533_send_poll_frame(dev);
- if (rc)
-   return;
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack_lvl+0x1e2/0x24b lib/dump_stack.c:118
+ print_address_description+0x81/0x3c0 mm/kasan/report.c:233
+ __kasan_report mm/kasan/report.c:419 [inline]
+ kasan_report+0x1a4/0x1f0 mm/kasan/report.c:436
+ __asan_report_load8_noabort+0x14/0x20 mm/kasan/report_generic.c:309
+ exfat_clear_bitmap+0x147/0x490 fs/exfat/balloc.c:174
+ exfat_free_cluster+0x25a/0x4a0 fs/exfat/fatent.c:181
+ __exfat_truncate+0x99e/0xe00 fs/exfat/file.c:217
+ exfat_truncate+0x11b/0x4f0 fs/exfat/file.c:243
+ exfat_setattr+0xa03/0xd40 fs/exfat/file.c:339
+ notify_change+0xb76/0xe10 fs/attr.c:336
+ do_truncate+0x1ea/0x2d0 fs/open.c:65
 
- if (cur_mod->len == 0 && dev->poll_mod_count > 1)
-   mod_timer(&dev->listen_timer, ...);
+Move the is_valid_cluster() helper from fatent.c to a common
+header to make it reusable in other *.c files. And add is_valid_cluster()
+to validate if cluster number is within valid range in exfat_clear_bitmap()
+and exfat_set_bitmap().
 
-That is, the mod_timer can be called only when pn533_send_poll_frame()
-returns no error, which is impossible because the device is detaching
-and the lower driver should return ENODEV code.
-
-Signed-off-by: Lin Ma <linma@zju.edu.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://syzkaller.appspot.com/bug?id=50381fc73821ecae743b8cf24b4c9a04776f767c
+Reported-by: syzbot+a4087e40b9c13aad7892@syzkaller.appspotmail.com
+Fixes: 1e49a94cf707 ("exfat: add bitmap operations")
+Cc: stable@vger.kernel.org # v5.7+
+Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
+Reviewed-by: Sungjong Seo <sj1557.seo@samsung.com>
+Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/nfc/pn533/pn533.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ fs/exfat/balloc.c   |    8 ++++++--
+ fs/exfat/exfat_fs.h |    6 ++++++
+ fs/exfat/fatent.c   |    6 ------
+ 3 files changed, 12 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/nfc/pn533/pn533.c b/drivers/nfc/pn533/pn533.c
-index a491db46e3bd..d9f6367b9993 100644
---- a/drivers/nfc/pn533/pn533.c
-+++ b/drivers/nfc/pn533/pn533.c
-@@ -2787,13 +2787,14 @@ void pn53x_common_clean(struct pn533 *priv)
- {
- 	struct pn533_cmd *cmd, *n;
+--- a/fs/exfat/balloc.c
++++ b/fs/exfat/balloc.c
+@@ -148,7 +148,9 @@ int exfat_set_bitmap(struct inode *inode
+ 	struct super_block *sb = inode->i_sb;
+ 	struct exfat_sb_info *sbi = EXFAT_SB(sb);
  
-+	/* delete the timer before cleanup the worker */
-+	del_timer_sync(&priv->listen_timer);
+-	WARN_ON(clu < EXFAT_FIRST_CLUSTER);
++	if (!is_valid_cluster(sbi, clu))
++		return -EINVAL;
 +
- 	flush_delayed_work(&priv->poll_work);
- 	destroy_workqueue(priv->wq);
+ 	ent_idx = CLUSTER_TO_BITMAP_ENT(clu);
+ 	i = BITMAP_OFFSET_SECTOR_INDEX(sb, ent_idx);
+ 	b = BITMAP_OFFSET_BIT_IN_SECTOR(sb, ent_idx);
+@@ -166,7 +168,9 @@ void exfat_clear_bitmap(struct inode *in
+ 	struct exfat_sb_info *sbi = EXFAT_SB(sb);
+ 	struct exfat_mount_options *opts = &sbi->options;
  
- 	skb_queue_purge(&priv->resp_q);
+-	WARN_ON(clu < EXFAT_FIRST_CLUSTER);
++	if (!is_valid_cluster(sbi, clu))
++		return;
++
+ 	ent_idx = CLUSTER_TO_BITMAP_ENT(clu);
+ 	i = BITMAP_OFFSET_SECTOR_INDEX(sb, ent_idx);
+ 	b = BITMAP_OFFSET_BIT_IN_SECTOR(sb, ent_idx);
+--- a/fs/exfat/exfat_fs.h
++++ b/fs/exfat/exfat_fs.h
+@@ -380,6 +380,12 @@ static inline int exfat_sector_to_cluste
+ 		EXFAT_RESERVED_CLUSTERS;
+ }
  
--	del_timer(&priv->listen_timer);
++static inline bool is_valid_cluster(struct exfat_sb_info *sbi,
++		unsigned int clus)
++{
++	return clus >= EXFAT_FIRST_CLUSTER && clus < sbi->num_clusters;
++}
++
+ /* super.c */
+ int exfat_set_volume_dirty(struct super_block *sb);
+ int exfat_clear_volume_dirty(struct super_block *sb);
+--- a/fs/exfat/fatent.c
++++ b/fs/exfat/fatent.c
+@@ -81,12 +81,6 @@ int exfat_ent_set(struct super_block *sb
+ 	return 0;
+ }
+ 
+-static inline bool is_valid_cluster(struct exfat_sb_info *sbi,
+-		unsigned int clus)
+-{
+-	return clus >= EXFAT_FIRST_CLUSTER && clus < sbi->num_clusters;
+-}
 -
- 	list_for_each_entry_safe(cmd, n, &priv->cmd_queue, queue) {
- 		list_del(&cmd->queue);
- 		kfree(cmd);
--- 
-2.35.1
-
+ int exfat_ent_get(struct super_block *sb, unsigned int loc,
+ 		unsigned int *content)
+ {
 
 
