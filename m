@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CF50C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C88AC433EF
 	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:21:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347543AbiFCSUo (ORCPT
+        id S1347521AbiFCSUi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:20:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44984 "EHLO
+        Fri, 3 Jun 2022 14:20:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347238AbiFCSFp (ORCPT
+        with ESMTP id S1347240AbiFCSFp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 3 Jun 2022 14:05:45 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7EA55B3CE;
-        Fri,  3 Jun 2022 10:58:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A1975B3D0;
+        Fri,  3 Jun 2022 10:58:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8F9A4B82439;
-        Fri,  3 Jun 2022 17:57:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3FDCC36AF6;
-        Fri,  3 Jun 2022 17:57:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ADD60B82369;
+        Fri,  3 Jun 2022 17:58:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E01CC385A9;
+        Fri,  3 Jun 2022 17:58:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654279074;
-        bh=tfgjU31NPL+z9713wFziaUtlFoPM/QCEwzK8ujtven8=;
+        s=korg; t=1654279120;
+        bh=Oa5o1RCQiC5uRTYQc+Azy0NH1P+Xp8hXfM1Ky8tfAaQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g5DaVsjK3n/xgcMrkgHjGQUGkRz33JML5l/hz2I56QOYPFLRAsbjvc82kcZfyoenR
-         dzdJpFOH2+qf+lWobQ3ue38x2wM5UwwAS+1jzxor7xzkkPoRQ8T8Ee451QlO8+00Jp
-         DZzIqH54YiCeK/kt08ttRqNzGRVS/DnkzNuLN3hQ=
+        b=HSjQrbmeeRglxaMsEPM2iC/k9gMOYpScm7woLAGPFS42JCaXN5i3UX5+KY4I3RMVY
+         rCH8nrImIMRS3kR1S1gHSvecVWfI1qkEkOV7zuA5SYsLG8TMx8b5lpy3ijHzpscRPL
+         KIKgiQ6p4sHAm7ycovq7z1bsgOgVQq55PAjw8ITA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <eric.dumazet@gmail.com>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
-        Marcel Holtmann <marcel@holtmann.org>
-Subject: [PATCH 5.18 37/67] Bluetooth: hci_qca: Use del_timer_sync() before freeing
-Date:   Fri,  3 Jun 2022 19:43:38 +0200
-Message-Id: <20220603173821.805225818@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Song Liu <song@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Subject: [PATCH 5.18 59/67] bpf: Fill new bpf_prog_pack with illegal instructions
+Date:   Fri,  3 Jun 2022 19:44:00 +0200
+Message-Id: <20220603173822.420985539@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.731531504@linuxfoundation.org>
 References: <20220603173820.731531504@linuxfoundation.org>
@@ -50,44 +51,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Rostedt <rostedt@goodmis.org>
+From: Song Liu <song@kernel.org>
 
-commit 72ef98445aca568a81c2da050532500a8345ad3a upstream.
+commit d88bb5eed04ce50cc20e7f9282977841728be798 upstream.
 
-While looking at a crash report on a timer list being corrupted, which
-usually happens when a timer is freed while still active. This is
-commonly triggered by code calling del_timer() instead of
-del_timer_sync() just before freeing.
+bpf_prog_pack enables sharing huge pages among multiple BPF programs.
+These pages are marked as executable before the JIT engine fill it with
+BPF programs. To make these pages safe, fill the hole bpf_prog_pack with
+illegal instructions before making it executable.
 
-One possible culprit is the hci_qca driver, which does exactly that.
-
-Eric mentioned that wake_retrans_timer could be rearmed via the work
-queue, so also move the destruction of the work queue before
-del_timer_sync().
-
-Cc: Eric Dumazet <eric.dumazet@gmail.com>
-Cc: stable@vger.kernel.org
-Fixes: 0ff252c1976da ("Bluetooth: hciuart: Add support QCA chipset for UART")
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Fixes: 57631054fae6 ("bpf: Introduce bpf_prog_pack allocator")
+Fixes: 33c9805860e5 ("bpf: Introduce bpf_jit_binary_pack_[alloc|finalize|free]")
+Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Song Liu <song@kernel.org>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/bpf/20220520235758.1858153-2-song@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/bluetooth/hci_qca.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ kernel/bpf/core.c |   10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
---- a/drivers/bluetooth/hci_qca.c
-+++ b/drivers/bluetooth/hci_qca.c
-@@ -696,9 +696,9 @@ static int qca_close(struct hci_uart *hu
- 	skb_queue_purge(&qca->tx_wait_q);
- 	skb_queue_purge(&qca->txq);
- 	skb_queue_purge(&qca->rx_memdump_q);
--	del_timer(&qca->tx_idle_timer);
--	del_timer(&qca->wake_retrans_timer);
- 	destroy_workqueue(qca->workqueue);
-+	del_timer_sync(&qca->tx_idle_timer);
-+	del_timer_sync(&qca->wake_retrans_timer);
- 	qca->hu = NULL;
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -873,7 +873,7 @@ static size_t select_bpf_prog_pack_size(
+ 	return size;
+ }
  
- 	kfree_skb(qca->rx_skb);
+-static struct bpf_prog_pack *alloc_new_pack(void)
++static struct bpf_prog_pack *alloc_new_pack(bpf_jit_fill_hole_t bpf_fill_ill_insns)
+ {
+ 	struct bpf_prog_pack *pack;
+ 
+@@ -886,6 +886,7 @@ static struct bpf_prog_pack *alloc_new_p
+ 		kfree(pack);
+ 		return NULL;
+ 	}
++	bpf_fill_ill_insns(pack->ptr, bpf_prog_pack_size);
+ 	bitmap_zero(pack->bitmap, bpf_prog_pack_size / BPF_PROG_CHUNK_SIZE);
+ 	list_add_tail(&pack->list, &pack_list);
+ 
+@@ -895,7 +896,7 @@ static struct bpf_prog_pack *alloc_new_p
+ 	return pack;
+ }
+ 
+-static void *bpf_prog_pack_alloc(u32 size)
++static void *bpf_prog_pack_alloc(u32 size, bpf_jit_fill_hole_t bpf_fill_ill_insns)
+ {
+ 	unsigned int nbits = BPF_PROG_SIZE_TO_NBITS(size);
+ 	struct bpf_prog_pack *pack;
+@@ -910,6 +911,7 @@ static void *bpf_prog_pack_alloc(u32 siz
+ 		size = round_up(size, PAGE_SIZE);
+ 		ptr = module_alloc(size);
+ 		if (ptr) {
++			bpf_fill_ill_insns(ptr, size);
+ 			set_vm_flush_reset_perms(ptr);
+ 			set_memory_ro((unsigned long)ptr, size / PAGE_SIZE);
+ 			set_memory_x((unsigned long)ptr, size / PAGE_SIZE);
+@@ -923,7 +925,7 @@ static void *bpf_prog_pack_alloc(u32 siz
+ 			goto found_free_area;
+ 	}
+ 
+-	pack = alloc_new_pack();
++	pack = alloc_new_pack(bpf_fill_ill_insns);
+ 	if (!pack)
+ 		goto out;
+ 
+@@ -1102,7 +1104,7 @@ bpf_jit_binary_pack_alloc(unsigned int p
+ 
+ 	if (bpf_jit_charge_modmem(size))
+ 		return NULL;
+-	ro_header = bpf_prog_pack_alloc(size);
++	ro_header = bpf_prog_pack_alloc(size, bpf_fill_ill_insns);
+ 	if (!ro_header) {
+ 		bpf_jit_uncharge_modmem(size);
+ 		return NULL;
 
 
