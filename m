@@ -2,58 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9999DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 00:57:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A495ECCA47B
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 00:58:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239146AbiFCA5u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 20:57:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49282 "EHLO
+        id S240817AbiFCA54 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 20:57:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240339AbiFCAqP (ORCPT
+        with ESMTP id S240346AbiFCAqQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 20:46:15 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D929537A12
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:45:55 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id i17-20020a259d11000000b0064cd3084085so5600569ybp.9
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:45:55 -0700 (PDT)
+        Thu, 2 Jun 2022 20:46:16 -0400
+Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D003A34642
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:45:59 -0700 (PDT)
+Received: by mail-pg1-x54a.google.com with SMTP id 72-20020a63014b000000b003fce454aaf2so1346338pgb.6
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:45:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=dtKn/1s6u0G58r1neb2YaJY76UbcP9qLfe4/PWDPKHo=;
-        b=QFictB3WUVf3oY4ZmSCgbstv+sdSwlhQ5B7U1hGi/9zuadjzT1Xx5n94oX/koHEYlZ
-         whqOnKEMmeHpb4hcvnVhgWQOusinfN3KSiYJDrhaJbEOQ9wSIZC/6KjuB0I/699VoHB5
-         KK1MOWomPfMYVg1R2GpYOvsjiJ9IVSBvFQU6qNPm+LmQMxtTXonntAVFirhDscxJfrtf
-         gOf0BK2IebQJWInCgl+LoJaDHrlOK8bprkJIbE5jrI8bpsODzivg9QKgRbSIU/Ukx1N9
-         nJy0fnWfTs4modFsPpor1iW9aqdvO8LQOfb9Dy+HLuegZy3UImsKZLHjPlLSSrYoLKYL
-         at4g==
+        bh=V6Qblx5lgVdv7/tV21pVO2NtMRka/tCwNSFbm8VV6yE=;
+        b=R00heZFqrMSzNiiaEXBl9wdBZTmxrtlRD6RwP+t09rGRfCiFSVgtBk7RW7uW7Q8f36
+         TUs3PeW1vlO2g6UEqK2NYjvLlJD4kFf6q4DCZ3fieSBrpP02a9JjMXja1Hw8vzHm4TOS
+         9/bzW88qmcHL35bPUi/Kjgp5di12OUL3/NHFWtK9p9wgEOIc/QoaNPUgIcZH4g00Q0DK
+         8RjPmI8qvUxC8IIYhcDfavPW0UYNLvlg7iZIgZojv8VZb35uFyfhL4nHbDCWDU/GrRvm
+         xs/6r8Y/PagwDU3eshsAkRX/TwATxp8/ELjJ7M1CF8gKZ++9kc23wU4HG5XYQIMOF8bh
+         t1Pg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=dtKn/1s6u0G58r1neb2YaJY76UbcP9qLfe4/PWDPKHo=;
-        b=wEV4C8RFz465/RFsSe2i9yoeO5prtnt9ldEetqpwtRc297YDBM+7+4bB2hONHFt0Gg
-         SUJ0cCyf1+SXluWstt/n2rnv+NiIJ5n1ro47bBCgiuvA8zYkuyk+c5ZyAlx2CF4ZPOmU
-         lGcwJ27gPsDB2gokZi49N7ZN7OYvnQEUsUi7yeUMr4TBv7KsFAvDd6dhMSA1jXzIFWPi
-         +725bhA29I54t+KDjXvEAidvlUqVGC00MVK8qvXYWPlj7XCholJ3i44aidmOeZmZmu+B
-         OYuqVTtMk/8/FCjlLwy3ul4nmEdXdF/H5d154b8oVV6EUVdqACyMB3GBCia0n+YcFZ1F
-         oMDw==
-X-Gm-Message-State: AOAM532MTdH43g368YoUmtxLQGERnr6gAMQbFoUtjnOX1qQYLjAIZeBO
-        YWKzrll+wfGiaVwoFL80+Ow0ZAtPor8=
-X-Google-Smtp-Source: ABdhPJxHTnxlNfUb+1pMM1jvfC18BkySL94v0dyAd23wbuLKDoSwUam9Q8WUem1lRxG9QhNBAZv+X37cFUs=
+        bh=V6Qblx5lgVdv7/tV21pVO2NtMRka/tCwNSFbm8VV6yE=;
+        b=AOu7hl+Xb9Hzg6gvVpYpT80m+Qde0ajTDm+hbXy5myxVrnUfYyE0zW9m2/TO0mRUzD
+         GQaCTOBU4UX1aX5PzQbKFgWHHJl44DR1wz7wIn0QA2jLx8f/J5MFM2FQmOOJfMUierE4
+         KuGBE8/kwQzSiY+LtM5jZtdYEUumbIGp0ww4NAOOnC36yc+ejwJG/1Lz2RidVv0rVTB/
+         4Ii6D09OR0h250cZb/DDkdBYjMT7YyCNfOLkQ5w5HEvGxjCO0J4MNGXdi0sn9it8QPeP
+         UtEF7kSn6ZyEpLM9Ey5qKCqO7YH6RyxOg+1IK8vf5P0PvQG9mMGWKS3cluP5UlC8qA/W
+         jzvA==
+X-Gm-Message-State: AOAM530vOVd3VhhBU56gKZCvtNdAbJFN5JAvpw/KJ74BvaWVUwMXrKIr
+        /zsPKZs0OEKXxzIo71KP8cYC+ors1As=
+X-Google-Smtp-Source: ABdhPJyhDwHVK1l2HyYJvdBbuN1ekPDgGWL89/uE/lWKIDd/weJnZTzpjcsjSCP+LHeigcwFL/YROXsqhsw=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a25:5f50:0:b0:65c:bf1d:25fa with SMTP id
- h16-20020a255f50000000b0065cbf1d25famr8919268ybm.60.1654217155121; Thu, 02
- Jun 2022 17:45:55 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a63:f5e:0:b0:3fd:23e1:e086 with SMTP id
+ 30-20020a630f5e000000b003fd23e1e086mr616477pgp.61.1654217159294; Thu, 02 Jun
+ 2022 17:45:59 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri,  3 Jun 2022 00:42:23 +0000
+Date:   Fri,  3 Jun 2022 00:42:25 +0000
 In-Reply-To: <20220603004331.1523888-1-seanjc@google.com>
-Message-Id: <20220603004331.1523888-77-seanjc@google.com>
+Message-Id: <20220603004331.1523888-79-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220603004331.1523888-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v2 076/144] KVM: selftests: Convert hyperv_svm_test away from VCPU_ID
+Subject: [PATCH v2 078/144] KVM: selftests: Convert hyperv_clock away from VCPU_ID
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     kvm@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
@@ -66,55 +66,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert hyperv_svm_test to use vm_create_with_one_vcpu() and pass around a
-'struct kvm_vcpu' object instead of using a global VCPU_ID.  Note, this is
-a "functional" change in the sense that the test now creates a vCPU with
-vcpu_id==0 instead of vcpu_id==1.  The non-zero VCPU_ID was 100% arbitrary
-and added little to no validation coverage.  If testing non-zero vCPU IDs
-is desirable for generic tests, that can be done in the future by tweaking
-the VM creation helpers.
+Convert hyperv_clock to use vm_create_with_one_vcpu() and pass around a
+'struct kvm_vcpu' object instead of using a global VCPU_ID.
 
-Opportunistically use vcpu_run() instead of _vcpu_run(), the test expects
-KVM_RUN to succeed.
+Opportunistically use vcpu_run() instead of _vcpu_run() with an open
+coded assert that KVM_RUN succeeded.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../testing/selftests/kvm/x86_64/hyperv_svm_test.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ .../selftests/kvm/x86_64/hyperv_clock.c       | 25 +++++++++----------
+ 1 file changed, 12 insertions(+), 13 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/x86_64/hyperv_svm_test.c b/tools/testing/selftests/kvm/x86_64/hyperv_svm_test.c
-index 994b33fd8724..b6a749f5c766 100644
---- a/tools/testing/selftests/kvm/x86_64/hyperv_svm_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/hyperv_svm_test.c
-@@ -21,7 +21,6 @@
- #include "svm_util.h"
- #include "hyperv.h"
+diff --git a/tools/testing/selftests/kvm/x86_64/hyperv_clock.c b/tools/testing/selftests/kvm/x86_64/hyperv_clock.c
+index e0b2bb1339b1..43584ddc4de0 100644
+--- a/tools/testing/selftests/kvm/x86_64/hyperv_clock.c
++++ b/tools/testing/selftests/kvm/x86_64/hyperv_clock.c
+@@ -171,22 +171,20 @@ static void guest_main(struct ms_hyperv_tsc_page *tsc_page, vm_paddr_t tsc_page_
+ 	GUEST_DONE();
+ }
  
--#define VCPU_ID		1
- #define L2_GUEST_STACK_SIZE 256
- 
- struct hv_enlightenments {
-@@ -122,6 +121,7 @@ int main(int argc, char *argv[])
+-#define VCPU_ID 0
+-
+-static void host_check_tsc_msr_rdtsc(struct kvm_vm *vm)
++static void host_check_tsc_msr_rdtsc(struct kvm_vcpu *vcpu)
  {
- 	vm_vaddr_t nested_gva = 0;
+ 	u64 tsc_freq, r1, r2, t1, t2;
+ 	s64 delta_ns;
  
+-	tsc_freq = vcpu_get_msr(vm, VCPU_ID, HV_X64_MSR_TSC_FREQUENCY);
++	tsc_freq = vcpu_get_msr(vcpu->vm, vcpu->id, HV_X64_MSR_TSC_FREQUENCY);
+ 	TEST_ASSERT(tsc_freq > 0, "TSC frequency must be nonzero");
+ 
+ 	/* First, check MSR-based clocksource */
+ 	r1 = rdtsc();
+-	t1 = vcpu_get_msr(vm, VCPU_ID, HV_X64_MSR_TIME_REF_COUNT);
++	t1 = vcpu_get_msr(vcpu->vm, vcpu->id, HV_X64_MSR_TIME_REF_COUNT);
+ 	nop_loop();
+ 	r2 = rdtsc();
+-	t2 = vcpu_get_msr(vm, VCPU_ID, HV_X64_MSR_TIME_REF_COUNT);
++	t2 = vcpu_get_msr(vcpu->vm, vcpu->id, HV_X64_MSR_TIME_REF_COUNT);
+ 
+ 	TEST_ASSERT(t2 > t1, "Time reference MSR is not monotonic (%ld <= %ld)", t1, t2);
+ 
+@@ -203,33 +201,34 @@ static void host_check_tsc_msr_rdtsc(struct kvm_vm *vm)
+ 
+ int main(void)
+ {
 +	struct kvm_vcpu *vcpu;
  	struct kvm_vm *vm;
  	struct kvm_run *run;
  	struct ucall uc;
-@@ -132,20 +132,20 @@ int main(int argc, char *argv[])
- 		exit(KSFT_SKIP);
- 	}
- 	/* Create VM */
--	vm = vm_create_default(VCPU_ID, 0, guest_code);
--	vcpu_set_hv_cpuid(vm, VCPU_ID);
+ 	vm_vaddr_t tsc_page_gva;
+ 	int stage;
+ 
+-	vm = vm_create_default(VCPU_ID, 0, guest_main);
 -	run = vcpu_state(vm, VCPU_ID);
-+	vm = vm_create_with_one_vcpu(&vcpu, guest_code);
-+	vcpu_set_hv_cpuid(vm, vcpu->id);
++	vm = vm_create_with_one_vcpu(&vcpu, guest_main);
 +	run = vcpu->run;
- 	vcpu_alloc_svm(vm, &nested_gva);
--	vcpu_args_set(vm, VCPU_ID, 1, nested_gva);
-+	vcpu_args_set(vm, vcpu->id, 1, nested_gva);
+ 
+-	vcpu_set_hv_cpuid(vm, VCPU_ID);
++	vcpu_set_hv_cpuid(vm, vcpu->id);
+ 
+ 	tsc_page_gva = vm_vaddr_alloc_page(vm);
+ 	memset(addr_gva2hva(vm, tsc_page_gva), 0x0, getpagesize());
+ 	TEST_ASSERT((addr_gva2gpa(vm, tsc_page_gva) & (getpagesize() - 1)) == 0,
+ 		"TSC page has to be page aligned\n");
+-	vcpu_args_set(vm, VCPU_ID, 2, tsc_page_gva, addr_gva2gpa(vm, tsc_page_gva));
++	vcpu_args_set(vm, vcpu->id, 2, tsc_page_gva, addr_gva2gpa(vm, tsc_page_gva));
+ 
+-	host_check_tsc_msr_rdtsc(vm);
++	host_check_tsc_msr_rdtsc(vcpu);
  
  	for (stage = 1;; stage++) {
 -		_vcpu_run(vm, VCPU_ID);
