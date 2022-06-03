@@ -2,48 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDA96CCA47E
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:21:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A87F7C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:21:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347683AbiFCSVB (ORCPT
+        id S1347793AbiFCSVK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:21:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47106 "EHLO
+        Fri, 3 Jun 2022 14:21:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347033AbiFCSFf (ORCPT
+        with ESMTP id S1348048AbiFCSQM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 14:05:35 -0400
+        Fri, 3 Jun 2022 14:16:12 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F4B05A59B;
-        Fri,  3 Jun 2022 10:58:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A635662CEB;
+        Fri,  3 Jun 2022 11:03:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1E525B82436;
-        Fri,  3 Jun 2022 17:57:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 625DCC385A9;
-        Fri,  3 Jun 2022 17:57:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 09E7DB82435;
+        Fri,  3 Jun 2022 17:58:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38258C385A9;
+        Fri,  3 Jun 2022 17:58:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654279033;
-        bh=3UL3x2f2WyP8DSvLWX62I8m/JkJuzbJBFvpyHQs11YU=;
+        s=korg; t=1654279123;
+        bh=sO/fkfrAJ5blRicrhVjpzLcwBfyTi7/AnGJfvCfo6Hs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Zz3hAYvK6zI/+slKwbrZHkT+uTVJTqlDQrK3RZcglhbev6fif0gLGijjuKRoYUQ7L
-         EltNwT6FZ4bakOpJ24yzBZndEC/t59qUx35zs9dkPKFBhHzaosBTcxydhNBc0ryVgd
-         aF855MD7kHtZ92taLw4stzZ5J2k7MDbz6Xx+r5HE=
+        b=MRcBTePm7ERn55Dq8+oe8MSZeUlwSjKF40P06u3f7NxCX23VuC5E3NJ7D+XXa8RtD
+         ie1bi1KI6GUmabxpqwpkIgb+FcLAHCwvBpbMHbCkmWqCTihkiM6G8wSgbxPmcaSXxB
+         hW2FNEMjUlwU8vQWwo6jXYfcmdT5fFPsEzS+fSdo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        Alexander Duyck <alexander.h.duyck@intel.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        "Soheil Hassas Yeganeh" <soheil@google.com>,
-        "Sridhar Samudrala" <sridhar.samudrala@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.18 04/67] pipe: make poll_usage boolean and annotate its access
-Date:   Fri,  3 Jun 2022 19:43:05 +0200
-Message-Id: <20220603173820.860166986@linuxfoundation.org>
+        stable@vger.kernel.org, Yuntao Wang <ytcoode@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Subject: [PATCH 5.18 60/67] bpf: Fix potential array overflow in bpf_trampoline_get_progs()
+Date:   Fri,  3 Jun 2022 19:44:01 +0200
+Message-Id: <20220603173822.448594205@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.731531504@linuxfoundation.org>
 References: <20220603173820.731531504@linuxfoundation.org>
@@ -55,82 +49,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+From: Yuntao Wang <ytcoode@gmail.com>
 
-commit f485922d8fe4e44f6d52a5bb95a603b7c65554bb upstream.
+commit a2aa95b71c9bbec793b5c5fa50f0a80d882b3e8d upstream.
 
-Patch series "Fix data-races around epoll reported by KCSAN."
+The cnt value in the 'cnt >= BPF_MAX_TRAMP_PROGS' check does not
+include BPF_TRAMP_MODIFY_RETURN bpf programs, so the number of
+the attached BPF_TRAMP_MODIFY_RETURN bpf programs in a trampoline
+can exceed BPF_MAX_TRAMP_PROGS.
 
-This series suppresses a false positive KCSAN's message and fixes a real
-data-race.
+When this happens, the assignment '*progs++ = aux->prog' in
+bpf_trampoline_get_progs() will cause progs array overflow as the
+progs field in the bpf_tramp_progs struct can only hold at most
+BPF_MAX_TRAMP_PROGS bpf programs.
 
-
-This patch (of 2):
-
-pipe_poll() runs locklessly and assigns 1 to poll_usage.  Once poll_usage
-is set to 1, it never changes in other places.  However, concurrent writes
-of a value trigger KCSAN, so let's make KCSAN happy.
-
-BUG: KCSAN: data-race in pipe_poll / pipe_poll
-
-write to 0xffff8880042f6678 of 4 bytes by task 174 on cpu 3:
- pipe_poll (fs/pipe.c:656)
- ep_item_poll.isra.0 (./include/linux/poll.h:88 fs/eventpoll.c:853)
- do_epoll_wait (fs/eventpoll.c:1692 fs/eventpoll.c:1806 fs/eventpoll.c:2234)
- __x64_sys_epoll_wait (fs/eventpoll.c:2246 fs/eventpoll.c:2241 fs/eventpoll.c:2241)
- do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80)
- entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:113)
-
-write to 0xffff8880042f6678 of 4 bytes by task 177 on cpu 1:
- pipe_poll (fs/pipe.c:656)
- ep_item_poll.isra.0 (./include/linux/poll.h:88 fs/eventpoll.c:853)
- do_epoll_wait (fs/eventpoll.c:1692 fs/eventpoll.c:1806 fs/eventpoll.c:2234)
- __x64_sys_epoll_wait (fs/eventpoll.c:2246 fs/eventpoll.c:2241 fs/eventpoll.c:2241)
- do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80)
- entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:113)
-
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 1 PID: 177 Comm: epoll_race Not tainted 5.17.0-58927-gf443e374ae13 #6
-Hardware name: Red Hat KVM, BIOS 1.11.0-2.amzn2 04/01/2014
-
-Link: https://lkml.kernel.org/r/20220322002653.33865-1-kuniyu@amazon.co.jp
-Link: https://lkml.kernel.org/r/20220322002653.33865-2-kuniyu@amazon.co.jp
-Fixes: 3b844826b6c6 ("pipe: avoid unnecessary EPOLLET wakeups under normal loads")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-Cc: Alexander Duyck <alexander.h.duyck@intel.com>
-Cc: Al Viro <viro@zeniv.linux.org.uk>
-Cc: Davidlohr Bueso <dave@stgolabs.net>
-Cc: Kuniyuki Iwashima <kuni1840@gmail.com>
-Cc: "Soheil Hassas Yeganeh" <soheil@google.com>
-Cc: "Sridhar Samudrala" <sridhar.samudrala@intel.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Fixes: 88fd9e5352fe ("bpf: Refactor trampoline update code")
+Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
+Link: https://lore.kernel.org/r/20220430130803.210624-1-ytcoode@gmail.com
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/pipe.c                 |    2 +-
- include/linux/pipe_fs_i.h |    2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ kernel/bpf/trampoline.c |   18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
---- a/fs/pipe.c
-+++ b/fs/pipe.c
-@@ -653,7 +653,7 @@ pipe_poll(struct file *filp, poll_table
- 	unsigned int head, tail;
+--- a/kernel/bpf/trampoline.c
++++ b/kernel/bpf/trampoline.c
+@@ -411,7 +411,7 @@ int bpf_trampoline_link_prog(struct bpf_
+ {
+ 	enum bpf_tramp_prog_type kind;
+ 	int err = 0;
+-	int cnt;
++	int cnt = 0, i;
  
- 	/* Epoll has some historical nasty semantics, this enables them */
--	pipe->poll_usage = 1;
-+	WRITE_ONCE(pipe->poll_usage, true);
+ 	kind = bpf_attach_type_to_tramp(prog);
+ 	mutex_lock(&tr->mutex);
+@@ -422,7 +422,10 @@ int bpf_trampoline_link_prog(struct bpf_
+ 		err = -EBUSY;
+ 		goto out;
+ 	}
+-	cnt = tr->progs_cnt[BPF_TRAMP_FENTRY] + tr->progs_cnt[BPF_TRAMP_FEXIT];
++
++	for (i = 0; i < BPF_TRAMP_MAX; i++)
++		cnt += tr->progs_cnt[i];
++
+ 	if (kind == BPF_TRAMP_REPLACE) {
+ 		/* Cannot attach extension if fentry/fexit are in use. */
+ 		if (cnt) {
+@@ -500,16 +503,19 @@ out:
  
- 	/*
- 	 * Reading pipe state only -- no need for acquiring the semaphore.
---- a/include/linux/pipe_fs_i.h
-+++ b/include/linux/pipe_fs_i.h
-@@ -71,7 +71,7 @@ struct pipe_inode_info {
- 	unsigned int files;
- 	unsigned int r_counter;
- 	unsigned int w_counter;
--	unsigned int poll_usage;
-+	bool poll_usage;
- 	struct page *tmp_page;
- 	struct fasync_struct *fasync_readers;
- 	struct fasync_struct *fasync_writers;
+ void bpf_trampoline_put(struct bpf_trampoline *tr)
+ {
++	int i;
++
+ 	if (!tr)
+ 		return;
+ 	mutex_lock(&trampoline_mutex);
+ 	if (!refcount_dec_and_test(&tr->refcnt))
+ 		goto out;
+ 	WARN_ON_ONCE(mutex_is_locked(&tr->mutex));
+-	if (WARN_ON_ONCE(!hlist_empty(&tr->progs_hlist[BPF_TRAMP_FENTRY])))
+-		goto out;
+-	if (WARN_ON_ONCE(!hlist_empty(&tr->progs_hlist[BPF_TRAMP_FEXIT])))
+-		goto out;
++
++	for (i = 0; i < BPF_TRAMP_MAX; i++)
++		if (WARN_ON_ONCE(!hlist_empty(&tr->progs_hlist[i])))
++			goto out;
++
+ 	/* This code will be executed even when the last bpf_tramp_image
+ 	 * is alive. All progs are detached from the trampoline and the
+ 	 * trampoline image is patched with jmp into epilogue to skip
 
 
