@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01FBCCCA473
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3583CCCA47C
 	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:21:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347219AbiFCSUI (ORCPT
+        id S1347387AbiFCSUQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:20:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40992 "EHLO
+        Fri, 3 Jun 2022 14:20:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347801AbiFCSGS (ORCPT
+        with ESMTP id S1347653AbiFCSGL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 14:06:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BF3D5D5CD;
-        Fri,  3 Jun 2022 10:59:24 -0700 (PDT)
+        Fri, 3 Jun 2022 14:06:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C193F5C679;
+        Fri,  3 Jun 2022 10:59:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 68E21615E5;
-        Fri,  3 Jun 2022 17:58:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 642E2C385A9;
-        Fri,  3 Jun 2022 17:58:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A461561555;
+        Fri,  3 Jun 2022 17:58:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B006EC385A9;
+        Fri,  3 Jun 2022 17:58:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654279126;
-        bh=4qTz1o5Y1+SqJrvnr8q5XVJw1rkEY0oLUtfdFOURr8A=;
+        s=korg; t=1654279111;
+        bh=AcfFm/yHcxVrDDYCPrsFv0Wa5KiA0w+LkOopDm5lkzY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uAK016Byp+ScOQuO2eal9dYnqHNZ+DtYDKWSi7SINslFOxQfjf1BelEy4ZWVTkgvI
-         B7XumuRK+EuGfEucL8IG9+I7mBECFskSM8YYkzqebzagv/djW2bWf9HT73dqbroZDb
-         ffvwBRxbB+PUBqiCA1Sw0iRbm8VGi7u0Kt2aZOhY=
+        b=VeomguvyjrWmSJWH8HdjpzKN+Q2fCOIrEcCFJt9ElV30tNRdhddlvcF5lmtDgvYRh
+         eRM/hoQeLGbwkPCh/zWI8LrZ1Rcpst2Bx5+3SckWHxZwsDe+UItSKqEK9vbbdmF/ds
+         hj+0QNLLQNPnSAWM77RXX5/Kwj4KAPRa6y58HBi4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>
-Subject: [PATCH 5.18 61/67] bpf: Fix combination of jit blinding and pointers to bpf subprogs.
-Date:   Fri,  3 Jun 2022 19:44:02 +0200
-Message-Id: <20220603173822.476439161@linuxfoundation.org>
+        stable@vger.kernel.org, Akira Yokosawa <akiyks@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>
+Subject: [PATCH 5.18 56/67] docs: submitting-patches: Fix crossref to The canonical patch format
+Date:   Fri,  3 Jun 2022 19:43:57 +0200
+Message-Id: <20220603173822.337596431@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.731531504@linuxfoundation.org>
 References: <20220603173820.731531504@linuxfoundation.org>
@@ -51,62 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexei Starovoitov <ast@kernel.org>
+From: Akira Yokosawa <akiyks@gmail.com>
 
-commit 4b6313cf99b0d51b49aeaea98ec76ca8161ecb80 upstream.
+commit 6d5aa418b3bd42cdccc36e94ee199af423ef7c84 upstream.
 
-The combination of jit blinding and pointers to bpf subprogs causes:
-[   36.989548] BUG: unable to handle page fault for address: 0000000100000001
-[   36.990342] #PF: supervisor instruction fetch in kernel mode
-[   36.990968] #PF: error_code(0x0010) - not-present page
-[   36.994859] RIP: 0010:0x100000001
-[   36.995209] Code: Unable to access opcode bytes at RIP 0xffffffd7.
-[   37.004091] Call Trace:
-[   37.004351]  <TASK>
-[   37.004576]  ? bpf_loop+0x4d/0x70
-[   37.004932]  ? bpf_prog_3899083f75e4c5de_F+0xe3/0x13b
+The reference to `explicit_in_reply_to` is pointless as when the
+reference was added in the form of "#15" [1], Section 15) was "The
+canonical patch format".
+The reference of "#15" had not been properly updated in a couple of
+reorganizations during the plain-text SubmittingPatches era.
 
-The jit blinding logic didn't recognize that ld_imm64 with an address
-of bpf subprogram is a special instruction and proceeded to randomize it.
-By itself it wouldn't have been an issue, but jit_subprogs() logic
-relies on two step process to JIT all subprogs and then JIT them
-again when addresses of all subprogs are known.
-Blinding process in the first JIT phase caused second JIT to miss
-adjustment of special ld_imm64.
+Fix it by using `the_canonical_patch_format`.
 
-Fix this issue by ignoring special ld_imm64 instructions that don't have
-user controlled constants and shouldn't be blinded.
+[1]: 2ae19acaa50a ("Documentation: Add "how to write a good patch summary" to SubmittingPatches")
 
-Fixes: 69c087ba6225 ("bpf: Add bpf_for_each_map_elem() helper")
-Reported-by: Andrii Nakryiko <andrii@kernel.org>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
-Acked-by: Martin KaFai Lau <kafai@fb.com>
-Link: https://lore.kernel.org/bpf/20220513011025.13344-1-alexei.starovoitov@gmail.com
+Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
+Fixes: 5903019b2a5e ("Documentation/SubmittingPatches: convert it to ReST markup")
+Fixes: 9b2c76777acc ("Documentation/SubmittingPatches: enrich the Sphinx output")
+Cc: Jonathan Corbet <corbet@lwn.net>
+Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc: stable@vger.kernel.org # v4.9+
+Link: https://lore.kernel.org/r/64e105a5-50be-23f2-6cae-903a2ea98e18@gmail.com
+Signed-off-by: Jonathan Corbet <corbet@lwn.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/bpf/core.c |   10 ++++++++++
- 1 file changed, 10 insertions(+)
+ Documentation/process/submitting-patches.rst |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -1436,6 +1436,16 @@ struct bpf_prog *bpf_jit_blind_constants
- 	insn = clone->insnsi;
+--- a/Documentation/process/submitting-patches.rst
++++ b/Documentation/process/submitting-patches.rst
+@@ -77,7 +77,7 @@ as you intend it to.
  
- 	for (i = 0; i < insn_cnt; i++, insn++) {
-+		if (bpf_pseudo_func(insn)) {
-+			/* ld_imm64 with an address of bpf subprog is not
-+			 * a user controlled constant. Don't randomize it,
-+			 * since it will conflict with jit_subprogs() logic.
-+			 */
-+			insn++;
-+			i++;
-+			continue;
-+		}
-+
- 		/* We temporarily need to hold the original ld64 insn
- 		 * so that we can still access the first part in the
- 		 * second blinding run.
+ The maintainer will thank you if you write your patch description in a
+ form which can be easily pulled into Linux's source code management
+-system, ``git``, as a "commit log".  See :ref:`explicit_in_reply_to`.
++system, ``git``, as a "commit log".  See :ref:`the_canonical_patch_format`.
+ 
+ Solve only one problem per patch.  If your description starts to get
+ long, that's a sign that you probably need to split up your patch.
 
 
