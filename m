@@ -2,97 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 994D2C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 16:03:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B439C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 16:09:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343613AbiFCQDi (ORCPT
+        id S1343616AbiFCQI5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 12:03:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48672 "EHLO
+        Fri, 3 Jun 2022 12:08:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343612AbiFCQDf (ORCPT
+        with ESMTP id S231268AbiFCQIz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 12:03:35 -0400
-Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id ACBE237BCC
-        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 09:03:33 -0700 (PDT)
-Received: (qmail 305407 invoked by uid 1000); 3 Jun 2022 12:03:32 -0400
-Date:   Fri, 3 Jun 2022 12:03:32 -0400
-From:   Alan Stern <stern@rowland.harvard.edu>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        syzbot <syzbot+dd3c97de244683533381@syzkaller.appspotmail.com>,
-        hdanton@sina.com, lenb@kernel.org, linux-acpi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, rafael.j.wysocki@intel.com,
-        rafael@kernel.org, rjw@rjwysocki.net,
-        syzkaller-bugs@googlegroups.com, linux-usb@vger.kernel.org
-Subject: Re: [syzbot] general protection fault in __device_attach
-Message-ID: <Ypow1LRZ3Hau36ci@rowland.harvard.edu>
-References: <000000000000bb7f1c05da29b601@google.com>
- <00000000000010b7d305e08837c8@google.com>
- <YpnqpMYcokTwCB6u@smile.fi.intel.com>
- <Ypor265BTdnmgwpM@rowland.harvard.edu>
- <YpouRmanvCQeKA3S@kroah.com>
+        Fri, 3 Jun 2022 12:08:55 -0400
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BD80248E0
+        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 09:08:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=DnXGC9zGk6AHc3dQ89SCaTJ6SAAcYXn6TdgTRzNMnTA=; b=aR1yHJl82/rGjfq4KPHKC15bfD
+        9Nt2NWPj066c+3Fo1v4xn/5Co1dYLFz3QjMyoXj7dOC1jDV8i4PeZ9PMpd1iyxzrbXX78oNFvma7O
+        EUHASTKFbAYc0rJlzmzNLNXfOzpga3Znx2Qi7gPQv5Za5Uvw1N+PXzqWAxKvWyyObvy6qbLCOZ+xh
+        gtDfJIeUZx9htDrHIJ7hNojiWIomUSVBqIbW62pUsVTbD1S06xZ1kR4Q9g8ecYz+QvYjXHLvsW9+0
+        ZtYI6M8U0qG2NQiZIt8wWBJ0C8/QmshEoKLDy7icPAwbS094ROAOQ7WYC14tDucMRDyxm32EKzNu2
+        cOgRFERA==;
+Received: from [177.83.209.223] (helo=[192.168.0.110])
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
+        id 1nx9qU-009U3C-5E; Fri, 03 Jun 2022 18:08:18 +0200
+Message-ID: <11da326a-1cb8-46f5-d084-ae543e872ea6@igalia.com>
+Date:   Fri, 3 Jun 2022 13:07:50 -0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YpouRmanvCQeKA3S@kroah.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v2 0/3] x86/crash: Fix double NMI shootdown bug
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org
+Cc:     "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+References: <20220518001647.1291448-1-seanjc@google.com>
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+In-Reply-To: <20220518001647.1291448-1-seanjc@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 03, 2022 at 05:52:38PM +0200, Greg KH wrote:
-> On Fri, Jun 03, 2022 at 11:42:19AM -0400, Alan Stern wrote:
-> > On Fri, Jun 03, 2022 at 02:04:04PM +0300, Andy Shevchenko wrote:
-> > > On Fri, Jun 03, 2022 at 03:02:07AM -0700, syzbot wrote:
-> > > > syzbot has bisected this issue to:
-> > > > 
-> > > > commit a9c4cf299f5f79d5016c8a9646fa1fc49381a8c1
-> > > > Author: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > > > Date:   Fri Jun 18 13:41:27 2021 +0000
-> > > > 
-> > > >     ACPI: sysfs: Use __ATTR_RO() and __ATTR_RW() macros
-> > > 
-> > > Hmm... It's not obvious at all how this change can alter the behaviour so
-> > > drastically. device_add() is called from USB core with intf->dev.name == NULL
-> > > by some reason. A-ha, seems like fault injector, which looks like
-> > > 
-> > > 	dev_set_name(&intf->dev, "%d-%s:%d.%d", dev->bus->busnum,
-> > > 		     dev->devpath, configuration, ifnum);
-> > > 
-> > > missed the return code check.
-> > > 
-> > > But I'm not familiar with that code at all, adding Linux USB ML and Alan.
-> > 
-> > I can't see any connection between this bug and acpi/sysfs.c.  Is it a 
-> > bad bisection?
-> > 
-> > It looks like you're right about dev_set_name() failing.  In fact, the 
-> > kernel appears to be littered with calls to that routine which do not 
-> > check the return code (the entire subtree below drivers/usb/ contains 
-> > only _one_ call that does check the return code!).  The function doesn't 
-> > have any __must_check annotation, and its kerneldoc doesn't mention the 
-> > return code or the possibility of a failure.
-> > 
-> > Apparently the assumption is that if dev_set_name() fails then 
-> > device_add() later on will also fail, and the problem will be detected 
-> > then.
-> > 
-> > So now what should happen when device_add() for an interface fails in 
-> > usb_set_configuration()?
-> 
-> But how can that really fail on a real system?
-> 
-> Is this just due to error-injection stuff?  If so, I'm really loath to
-> rework the world for something that can never happen in real life.
-> 
-> Or is this a real syzbot-found-with-reproducer issue?
+Hi Sean / Thomas, was this merged anywhere? I just checked and seems it
+didn't reach mainline...patch 01 is especially relevant, IMHO.
 
-Aren't there quite a few reasons why device_add() might fail?  (Although 
-most of them probably are memory allocation errors...)
+Thanks in advance,
 
-Basically, you have to make up your mind.  If a function can fail, you 
-should be prepared to handle the failure.  If it can't fail, there's no 
-point in even checking the return code.
 
-Alan Stern
+Guilherme
