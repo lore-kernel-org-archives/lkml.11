@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4A4BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:01:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AACC8CCA47C
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:01:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345775AbiFCSBQ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:01:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58596 "EHLO
+        id S243480AbiFCSB2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 14:01:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347226AbiFCRwI (ORCPT
+        with ESMTP id S1347225AbiFCRwI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 3 Jun 2022 13:52:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48ED7F25;
-        Fri,  3 Jun 2022 10:50:55 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F41B562E9;
+        Fri,  3 Jun 2022 10:50:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0BAFDB823B0;
-        Fri,  3 Jun 2022 17:50:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 677A7C385A9;
-        Fri,  3 Jun 2022 17:50:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B723A60EE9;
+        Fri,  3 Jun 2022 17:50:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEF9FC385B8;
+        Fri,  3 Jun 2022 17:50:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278652;
-        bh=0prqloLrALboBqYx7GfVhCOuXhFihqnnhoizcnn15Pc=;
+        s=korg; t=1654278635;
+        bh=8Zu7MjpXWW9lQAoYnVgd0XW5X1hTwM+Sak8w4dzHC0g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Lo/x2PSzYmImbEn+IGYQwxaCQyDiPB4HA6nCecSe7VA91IuvWs6oQuewqCYXQMu26
-         fSlpCLmZRvR6plPajG8S023X/ySIK1zWMvSHJhlIgZkqpjLZxw6wzJr3hKM/t+w/bs
-         85JirLI7qBU75kkyZ7FO+e0iKiAANjgoKy5kMjqw=
+        b=XcqYFcU0ojKGcqyT5+TpFfyVBO/1y1LNYbqX6D5OpnRErYwb5dGpFN93ecCbLxX+h
+         HFG2+7DTA21k0q11YX9ztwhjfLmLUzKECits3g/1Mrq4g9TUo1PIiPUo/Anuk2PPhD
+         Hm4yqf9VSa25qFoqwSTsiYPl33qmTK8F11jwnFsE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dave Hansen <dave.hansen@linux.intel.com>,
-        Reinette Chatre <reinette.chatre@intel.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Haitao Huang <haitao.huang@intel.com>
-Subject: [PATCH 5.15 50/66] x86/sgx: Disconnect backing page references from dirty status
-Date:   Fri,  3 Jun 2022 19:43:30 +0200
-Message-Id: <20220603173822.111314857@linuxfoundation.org>
+        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        Mike Snitzer <snitzer@kernel.org>
+Subject: [PATCH 5.15 44/66] dm stats: add cond_resched when looping over entries
+Date:   Fri,  3 Jun 2022 19:43:24 +0200
+Message-Id: <20220603173821.942579769@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.663747061@linuxfoundation.org>
 References: <20220603173820.663747061@linuxfoundation.org>
@@ -51,165 +48,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Reinette Chatre <reinette.chatre@intel.com>
+From: Mikulas Patocka <mpatocka@redhat.com>
 
-commit 6bd429643cc265e94a9d19839c771bcc5d008fa8 upstream.
+commit bfe2b0146c4d0230b68f5c71a64380ff8d361f8b upstream.
 
-SGX uses shmem backing storage to store encrypted enclave pages
-and their crypto metadata when enclave pages are moved out of
-enclave memory. Two shmem backing storage pages are associated with
-each enclave page - one backing page to contain the encrypted
-enclave page data and one backing page (shared by a few
-enclave pages) to contain the crypto metadata used by the
-processor to verify the enclave page when it is loaded back into
-the enclave.
-
-sgx_encl_put_backing() is used to release references to the
-backing storage and, optionally, mark both backing store pages
-as dirty.
-
-Managing references and dirty status together in this way results
-in both backing store pages marked as dirty, even if only one of
-the backing store pages are changed.
-
-Additionally, waiting until the page reference is dropped to set
-the page dirty risks a race with the page fault handler that
-may load outdated data into the enclave when a page is faulted
-right after it is reclaimed.
-
-Consider what happens if the reclaimer writes a page to the backing
-store and the page is immediately faulted back, before the reclaimer
-is able to set the dirty bit of the page:
-
-sgx_reclaim_pages() {                    sgx_vma_fault() {
-  ...
-  sgx_encl_get_backing();
-  ...                                      ...
-  sgx_reclaimer_write() {
-    mutex_lock(&encl->lock);
-    /* Write data to backing store */
-    mutex_unlock(&encl->lock);
-  }
-                                           mutex_lock(&encl->lock);
-                                           __sgx_encl_eldu() {
-                                             ...
-                                             /*
-                                              * Enclave backing store
-                                              * page not released
-                                              * nor marked dirty -
-                                              * contents may not be
-                                              * up to date.
-                                              */
-                                              sgx_encl_get_backing();
-                                              ...
-                                              /*
-                                               * Enclave data restored
-                                               * from backing store
-                                               * and PCMD pages that
-                                               * are not up to date.
-                                               * ENCLS[ELDU] faults
-                                               * because of MAC or PCMD
-                                               * checking failure.
-                                               */
-                                               sgx_encl_put_backing();
-                                            }
-                                            ...
-  /* set page dirty */
-  sgx_encl_put_backing();
-  ...
-                                            mutex_unlock(&encl->lock);
-}                                        }
-
-Remove the option to sgx_encl_put_backing() to set the backing
-pages as dirty and set the needed pages as dirty right after
-receiving important data while enclave mutex is held. This ensures that
-the page fault handler can get up to date data from a page and prepares
-the code for a following change where only one of the backing pages
-need to be marked as dirty.
+dm-stats can be used with a very large number of entries (it is only
+limited by 1/4 of total system memory), so add rescheduling points to
+the loops that iterate over the entries.
 
 Cc: stable@vger.kernel.org
-Fixes: 1728ab54b4be ("x86/sgx: Add a page reclaimer")
-Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
-Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
-Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-Tested-by: Haitao Huang <haitao.huang@intel.com>
-Link: https://lore.kernel.org/linux-sgx/8922e48f-6646-c7cc-6393-7c78dcf23d23@intel.com/
-Link: https://lkml.kernel.org/r/fa9f98986923f43e72ef4c6702a50b2a0b3c42e3.1652389823.git.reinette.chatre@intel.com
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Signed-off-by: Mike Snitzer <snitzer@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/cpu/sgx/encl.c |   10 ++--------
- arch/x86/kernel/cpu/sgx/encl.h |    2 +-
- arch/x86/kernel/cpu/sgx/main.c |    6 ++++--
- 3 files changed, 7 insertions(+), 11 deletions(-)
+ drivers/md/dm-stats.c |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
---- a/arch/x86/kernel/cpu/sgx/encl.c
-+++ b/arch/x86/kernel/cpu/sgx/encl.c
-@@ -94,7 +94,7 @@ static int __sgx_encl_eldu(struct sgx_en
- 	kunmap_atomic(pcmd_page);
- 	kunmap_atomic((void *)(unsigned long)pginfo.contents);
- 
--	sgx_encl_put_backing(&b, false);
-+	sgx_encl_put_backing(&b);
- 
- 	sgx_encl_truncate_backing_page(encl, page_index);
- 
-@@ -645,15 +645,9 @@ int sgx_encl_get_backing(struct sgx_encl
- /**
-  * sgx_encl_put_backing() - Unpin the backing storage
-  * @backing:	data for accessing backing storage for the page
-- * @do_write:	mark pages dirty
-  */
--void sgx_encl_put_backing(struct sgx_backing *backing, bool do_write)
-+void sgx_encl_put_backing(struct sgx_backing *backing)
- {
--	if (do_write) {
--		set_page_dirty(backing->pcmd);
--		set_page_dirty(backing->contents);
--	}
--
- 	put_page(backing->pcmd);
- 	put_page(backing->contents);
- }
---- a/arch/x86/kernel/cpu/sgx/encl.h
-+++ b/arch/x86/kernel/cpu/sgx/encl.h
-@@ -107,7 +107,7 @@ void sgx_encl_release(struct kref *ref);
- int sgx_encl_mm_add(struct sgx_encl *encl, struct mm_struct *mm);
- int sgx_encl_get_backing(struct sgx_encl *encl, unsigned long page_index,
- 			 struct sgx_backing *backing);
--void sgx_encl_put_backing(struct sgx_backing *backing, bool do_write);
-+void sgx_encl_put_backing(struct sgx_backing *backing);
- int sgx_encl_test_and_clear_young(struct mm_struct *mm,
- 				  struct sgx_encl_page *page);
- 
---- a/arch/x86/kernel/cpu/sgx/main.c
-+++ b/arch/x86/kernel/cpu/sgx/main.c
-@@ -170,6 +170,8 @@ static int __sgx_encl_ewb(struct sgx_epc
- 			  backing->pcmd_offset;
- 
- 	ret = __ewb(&pginfo, sgx_get_epc_virt_addr(epc_page), va_slot);
-+	set_page_dirty(backing->pcmd);
-+	set_page_dirty(backing->contents);
- 
- 	kunmap_atomic((void *)(unsigned long)(pginfo.metadata -
- 					      backing->pcmd_offset));
-@@ -299,7 +301,7 @@ static void sgx_reclaimer_write(struct s
- 		sgx_encl_free_epc_page(encl->secs.epc_page);
- 		encl->secs.epc_page = NULL;
- 
--		sgx_encl_put_backing(&secs_backing, true);
-+		sgx_encl_put_backing(&secs_backing);
+--- a/drivers/md/dm-stats.c
++++ b/drivers/md/dm-stats.c
+@@ -225,6 +225,7 @@ void dm_stats_cleanup(struct dm_stats *s
+ 				       atomic_read(&shared->in_flight[READ]),
+ 				       atomic_read(&shared->in_flight[WRITE]));
+ 			}
++			cond_resched();
+ 		}
+ 		dm_stat_free(&s->rcu_head);
+ 	}
+@@ -330,6 +331,7 @@ static int dm_stats_create(struct dm_sta
+ 	for (ni = 0; ni < n_entries; ni++) {
+ 		atomic_set(&s->stat_shared[ni].in_flight[READ], 0);
+ 		atomic_set(&s->stat_shared[ni].in_flight[WRITE], 0);
++		cond_resched();
  	}
  
- out:
-@@ -392,7 +394,7 @@ skip:
+ 	if (s->n_histogram_entries) {
+@@ -342,6 +344,7 @@ static int dm_stats_create(struct dm_sta
+ 		for (ni = 0; ni < n_entries; ni++) {
+ 			s->stat_shared[ni].tmp.histogram = hi;
+ 			hi += s->n_histogram_entries + 1;
++			cond_resched();
+ 		}
+ 	}
  
- 		encl_page = epc_page->owner;
- 		sgx_reclaimer_write(epc_page, &backing[i]);
--		sgx_encl_put_backing(&backing[i], true);
-+		sgx_encl_put_backing(&backing[i]);
+@@ -362,6 +365,7 @@ static int dm_stats_create(struct dm_sta
+ 			for (ni = 0; ni < n_entries; ni++) {
+ 				p[ni].histogram = hi;
+ 				hi += s->n_histogram_entries + 1;
++				cond_resched();
+ 			}
+ 		}
+ 	}
+@@ -497,6 +501,7 @@ static int dm_stats_list(struct dm_stats
+ 			}
+ 			DMEMIT("\n");
+ 		}
++		cond_resched();
+ 	}
+ 	mutex_unlock(&stats->mutex);
  
- 		kref_put(&encl_page->encl->refcount, sgx_encl_release);
- 		epc_page->flags &= ~SGX_EPC_PAGE_RECLAIMER_TRACKED;
+@@ -774,6 +779,7 @@ static void __dm_stat_clear(struct dm_st
+ 				local_irq_enable();
+ 			}
+ 		}
++		cond_resched();
+ 	}
+ }
+ 
+@@ -889,6 +895,8 @@ static int dm_stats_print(struct dm_stat
+ 
+ 		if (unlikely(sz + 1 >= maxlen))
+ 			goto buffer_overflow;
++
++		cond_resched();
+ 	}
+ 
+ 	if (clear)
 
 
