@@ -2,58 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88321CCA481
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9881CCCA480
 	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 01:01:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241773AbiFCBBC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 21:01:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49312 "EHLO
+        id S241796AbiFCBBF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 21:01:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241051AbiFCAuW (ORCPT
+        with ESMTP id S240989AbiFCAuT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 20:50:22 -0400
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07C622D1CA
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:47:32 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id j15-20020a17090a738f00b001e345e429d2so3542767pjg.0
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:47:32 -0700 (PDT)
+        Thu, 2 Jun 2022 20:50:19 -0400
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA6822AC42
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:47:26 -0700 (PDT)
+Received: by mail-pg1-x549.google.com with SMTP id h11-20020a65638b000000b003fad8e1cc9bso3059819pgv.2
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:47:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=83uHdjveTV9JqF8Qzu1gLbAMw/PFt6x8USvDY99Vle0=;
-        b=aJnxC0JYG1QHPuRXcIx9kJd3MMrm58q4iVFryuMfGAsmCOv3S+3IGtZiDhb/6HYrBY
-         0zAUzbOWd0MSVHNMaz/mrja/yWNHaMKD+l92I4bGaTv+CIcDA0Ew/SH1t1CevhcCzdc0
-         BTRLW3dYgjIIV/OtMZ+ARhyI+VFG3/NqdvCHTjvEhSKh0Mtl/uu1eY0H6gUtfL5x5Uly
-         hGFNxK36VBMczD58Qwy3e9nhi3VofST5QmtG94eD7VQiffzsPqYeX8tCKY64YqFGiKfx
-         kCU2XIfLf1yU9od7mc8oTh03uOO+7xU0p6ySJlrdQmijN2dQkyouB972L0UsXqjizFIO
-         2Qvg==
+        bh=Wtonz2gVngJJ7uBzze/lIY09PrVFKGL47X53rXdkK9o=;
+        b=Hx+Rm1WelzvlxMNiDL6jH7bDcZTEuPRkFSt1167ZacFemHaqp5eIyk/eOV/aJODyNU
+         3+RiPMtEf8NcNsqJVh49NQxDGwwODAhK2RLDCl6sh/K9bPg9UKwHvEwrEFonC1fFOoi5
+         OJq+nNeIA3tQvfOBVnke5UkawsWBSQdhUolkS/VB6WNYwtRcParvmLPFb9RjtJeToYn7
+         4dV3SsUIfpGzhMNmcJfwUemH4TrOfEEo2p9FaTMHtuR0IDiq1f8UuX8zM9zjcQMAp6dX
+         w7apUSve9mHBwh0lpNoEI8YV8BqXGPQK7ZeqNAKbQQecBdY3hyWmw6KSplMx+RvyRd0x
+         muEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=83uHdjveTV9JqF8Qzu1gLbAMw/PFt6x8USvDY99Vle0=;
-        b=kxP2ZqTzi+z16vFGxZYCfmOO4/hnHlK9iRBtbNHJyxbARaETtsOCHG1RV7KvNUoGef
-         2I9j0Xd+H1ZCZNmpCmB2I9tqioKJRcKD8iKv5g++fjxGS0AJOdusf2A+nS0CCLN0ApRr
-         yjZEKDvqRG67QX+p8YYlKzqNTzrg8gfsBMd2kcEojHnzGu5w8LXlUlh1t6SO+kqjl1gW
-         +ZZDQVlmFRIuz/P0H9jVShXerCXU3DvlFU+nvRHcCCpxph0hrsilYVq99RPWj3txADOj
-         hCfKlYftagl/T0DKYv4Q0GvXDhAjRdZmWBY5E0kskRDluyHLuD6/LnBrqsaXxE0Fln4B
-         31dw==
-X-Gm-Message-State: AOAM530ZQFwfWAQsLtOcn61ltPLtDUH8QDReL+hMuaHQMQgKkryR4sYW
-        z0zISboKvAyVY9A+I2tjyrQjdIQIvdk=
-X-Google-Smtp-Source: ABdhPJwTS6GnZOGxbbEaHTJrMcq3BHfSnkzCF+mGK6UPUtc0wNgiNnwgyfPyzlu5P2+u5T3RiztlsdgAuiM=
+        bh=Wtonz2gVngJJ7uBzze/lIY09PrVFKGL47X53rXdkK9o=;
+        b=r/othIAzcKf2r22M9hfH6KCRElVD9BJawMzP+rF4EKrhbcVGgU8pPXoNwlXHDcDLtl
+         OuMor7epzI2g80on1Y40/xU8oSF+28n6jH2u2TGATRZIGSWiGCdYePH9XWXTBYtakQW3
+         DhapwTk0YWuA+ly+awUW/dsYksHex0CH3XxFE8V4b5TFGPJORqM/KVmUDY7mWCyAJk3Z
+         dkzLjeQsz64d2BC9SQoDVDmFe44rlNBsu0DUoc6YaD/MYXwywfjSHH173Imd6bAxdxTz
+         GhlDlgA6XUKLUrSiw0AuXGnIY+pBOzHeGW/tWrBTu2PEyaLC+FEAN1L/N2TyT+TCW5Zo
+         1hTw==
+X-Gm-Message-State: AOAM531gDtoax2hJzkA0ks4j5Hb3WTrG0nOhQF13XxL6/+q7XQc8OZ0c
+        6A+Jrp/uMvkioHRZdzRJtJlc4ZcGhQQ=
+X-Google-Smtp-Source: ABdhPJwJlWPDHIZqX4XN9J4HUUqVAcAeCBxORebV4fuCyTaja1dn1sXZGHtPO1fiZrDqgNVm8V81m+YST+4=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:902:e54e:b0:162:4b8b:f2be with SMTP id
- n14-20020a170902e54e00b001624b8bf2bemr7673424plf.5.1654217251570; Thu, 02 Jun
- 2022 17:47:31 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:902:7b8b:b0:166:332f:2490 with SMTP id
+ w11-20020a1709027b8b00b00166332f2490mr7497118pll.68.1654217245801; Thu, 02
+ Jun 2022 17:47:25 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri,  3 Jun 2022 00:43:17 +0000
+Date:   Fri,  3 Jun 2022 00:43:14 +0000
 In-Reply-To: <20220603004331.1523888-1-seanjc@google.com>
-Message-Id: <20220603004331.1523888-131-seanjc@google.com>
+Message-Id: <20220603004331.1523888-128-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220603004331.1523888-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v2 130/144] KVM: selftests: Remove vcpu_get() usage from dirty_log_test
+Subject: [PATCH v2 127/144] KVM: selftests: Convert get-reg-list away from its "VCPU_ID"
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     kvm@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
@@ -66,49 +66,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Grab the vCPU from vm_vcpu_add() directly instead of doing vcpu_get()
-after the fact.  This will allow removing vcpu_get() entirely.
+Track the vCPU's 'struct kvm_vcpu' object in get-reg-list instead of
+hardcoding '0' everywhere.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- tools/testing/selftests/kvm/dirty_log_test.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ tools/testing/selftests/kvm/aarch64/get-reg-list.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/dirty_log_test.c b/tools/testing/selftests/kvm/dirty_log_test.c
-index 1a5c01c65044..5db56140a995 100644
---- a/tools/testing/selftests/kvm/dirty_log_test.c
-+++ b/tools/testing/selftests/kvm/dirty_log_test.c
-@@ -665,7 +665,7 @@ static void vm_dirty_log_verify(enum vm_guest_mode mode, unsigned long *bmap)
- 	}
- }
- 
--static struct kvm_vm *create_vm(enum vm_guest_mode mode, uint32_t vcpuid,
-+static struct kvm_vm *create_vm(enum vm_guest_mode mode, struct kvm_vcpu **vcpu,
- 				uint64_t extra_mem_pages, void *guest_code)
- {
+diff --git a/tools/testing/selftests/kvm/aarch64/get-reg-list.c b/tools/testing/selftests/kvm/aarch64/get-reg-list.c
+index e004afc29387..04950b10e083 100644
+--- a/tools/testing/selftests/kvm/aarch64/get-reg-list.c
++++ b/tools/testing/selftests/kvm/aarch64/get-reg-list.c
+@@ -411,6 +411,7 @@ static void run_test(struct vcpu_config *c)
+ 	struct kvm_vcpu_init init = { .target = -1, };
+ 	int new_regs = 0, missing_regs = 0, i, n;
+ 	int failed_get = 0, failed_set = 0, failed_reject = 0;
++	struct kvm_vcpu *vcpu;
  	struct kvm_vm *vm;
-@@ -676,7 +676,7 @@ static struct kvm_vm *create_vm(enum vm_guest_mode mode, uint32_t vcpuid,
- 	vm = __vm_create(mode, DEFAULT_GUEST_PHY_PAGES + extra_pg_pages);
+ 	struct reg_sublist *s;
  
- 	log_mode_create_vm_done(vm);
--	vm_vcpu_add(vm, vcpuid, guest_code);
-+	*vcpu = vm_vcpu_add(vm, 0, guest_code);
- 	return vm;
- }
+@@ -418,10 +419,10 @@ static void run_test(struct vcpu_config *c)
  
-@@ -710,10 +710,8 @@ static void run_test(enum vm_guest_mode mode, void *arg)
- 	 * (e.g., 64K page size guest will need even less memory for
- 	 * page tables).
- 	 */
--	vm = create_vm(mode, 0,
--		       2ul << (DIRTY_MEM_BITS - PAGE_SHIFT_4K),
--		       guest_code);
--	vcpu = vcpu_get(vm, 0);
-+	vm = create_vm(mode, &vcpu,
-+		       2ul << (DIRTY_MEM_BITS - PAGE_SHIFT_4K), guest_code);
+ 	vm = vm_create_barebones();
+ 	prepare_vcpu_init(c, &init);
+-	aarch64_vcpu_add(vm, 0, &init, NULL);
+-	finalize_vcpu(vm, 0, c);
++	vcpu = aarch64_vcpu_add(vm, 0, &init, NULL);
++	finalize_vcpu(vm, vcpu->id, c);
  
- 	guest_page_size = vm_get_page_size(vm);
- 	/*
+-	reg_list = vcpu_get_reg_list(vm, 0);
++	reg_list = vcpu_get_reg_list(vm, vcpu->id);
+ 
+ 	if (fixup_core_regs)
+ 		core_reg_fixup();
+@@ -457,7 +458,7 @@ static void run_test(struct vcpu_config *c)
+ 		bool reject_reg = false;
+ 		int ret;
+ 
+-		ret = __vcpu_get_reg(vm, 0, reg_list->reg[i], &addr);
++		ret = __vcpu_get_reg(vm, vcpu->id, reg_list->reg[i], &addr);
+ 		if (ret) {
+ 			printf("%s: Failed to get ", config_name(c));
+ 			print_reg(c, reg.id);
+@@ -469,7 +470,7 @@ static void run_test(struct vcpu_config *c)
+ 		for_each_sublist(c, s) {
+ 			if (s->rejects_set && find_reg(s->rejects_set, s->rejects_set_n, reg.id)) {
+ 				reject_reg = true;
+-				ret = __vcpu_ioctl(vm, 0, KVM_SET_ONE_REG, &reg);
++				ret = __vcpu_ioctl(vm, vcpu->id, KVM_SET_ONE_REG, &reg);
+ 				if (ret != -1 || errno != EPERM) {
+ 					printf("%s: Failed to reject (ret=%d, errno=%d) ", config_name(c), ret, errno);
+ 					print_reg(c, reg.id);
+@@ -481,7 +482,7 @@ static void run_test(struct vcpu_config *c)
+ 		}
+ 
+ 		if (!reject_reg) {
+-			ret = __vcpu_ioctl(vm, 0, KVM_SET_ONE_REG, &reg);
++			ret = __vcpu_ioctl(vm, vcpu->id, KVM_SET_ONE_REG, &reg);
+ 			if (ret) {
+ 				printf("%s: Failed to set ", config_name(c));
+ 				print_reg(c, reg.id);
 -- 
 2.36.1.255.ge46751e96f-goog
 
