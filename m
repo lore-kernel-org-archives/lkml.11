@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C370C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:58:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A57E9C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:58:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346050AbiFCR6N (ORCPT
+        id S1345970AbiFCR6R (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:58:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46532 "EHLO
+        Fri, 3 Jun 2022 13:58:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346857AbiFCRvd (ORCPT
+        with ESMTP id S1346851AbiFCRvd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 3 Jun 2022 13:51:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46E975A156;
-        Fri,  3 Jun 2022 10:49:33 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED7285A14E;
+        Fri,  3 Jun 2022 10:49:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F3E460F3E;
-        Fri,  3 Jun 2022 17:49:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77C8EC385A9;
-        Fri,  3 Jun 2022 17:49:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E8256B8241D;
+        Fri,  3 Jun 2022 17:49:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D5E6C385A9;
+        Fri,  3 Jun 2022 17:49:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278572;
-        bh=mIDAvWxdB6qqu9n87Qx4+I7DdbEph4ufuQK535negPs=;
+        s=korg; t=1654278568;
+        bh=wMXW1oBXczTkWZkB6PBlZvnK8EWYustjA0G0yHzI99c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m0Y+R7YoKbh5zV9B4gfQTwR1z8XcPhtDroeB1lrzctoLlDrVQE+8K5V2n6lMSHqv6
-         3OKFQk7TWPe36n8B0yFWxe6mp2rulbfPZ91J6ON3lVYSpQ87sgJi7Ns0Q74mEhka4a
-         uohjK5K7sB3EpWZd+5G9jqEQ9Q9parREs4iWB3Jg=
+        b=GK1sqUbB0bkrFB7AVskfutpAd0YiHKlzEGgunCSAQvEiwZA6atmWL4dUbhW20n9Id
+         1Ci0ImlOYeMjEa8jrNQwOPQd1aDpb4O9E3D3GAitQgyqZ0g1rQqTKZXKZSoxMXX5BX
+         tIHlXSNYX9X+zdQ9bfuM2oMdB+Ycnu9OKIY08p/w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         =?UTF-8?q?Stephan=20M=C3=BCller?= <smueller@chronox.de>,
         Herbert Xu <herbert@gondor.apana.org.au>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.15 22/66] crypto: drbg - move dynamic ->reseed_threshold adjustments to __drbg_seed()
-Date:   Fri,  3 Jun 2022 19:43:02 +0200
-Message-Id: <20220603173821.302120799@linuxfoundation.org>
+Subject: [PATCH 5.15 21/66] crypto: drbg - track whether DRBG was seeded with !rng_is_initialized()
+Date:   Fri,  3 Jun 2022 19:43:01 +0200
+Message-Id: <20220603173821.274689389@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.663747061@linuxfoundation.org>
 References: <20220603173820.663747061@linuxfoundation.org>
@@ -53,43 +53,54 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Nicolai Stange <nstange@suse.de>
 
-commit 262d83a4290c331cd4f617a457408bdb82fbb738 upstream.
+commit 2bcd25443868aa8863779a6ebc6c9319633025d2 upstream.
 
-Since commit 42ea507fae1a ("crypto: drbg - reseed often if seedsource is
-degraded"), the maximum seed lifetime represented by ->reseed_threshold
-gets temporarily lowered if the get_random_bytes() source cannot provide
-sufficient entropy yet, as is common during boot, and restored back to
-the original value again once that has changed.
+Currently, the DRBG implementation schedules asynchronous works from
+random_ready_callbacks for reseeding the DRBG instances with output from
+get_random_bytes() once the latter has sufficient entropy available.
 
-More specifically, if the add_random_ready_callback() invoked from
-drbg_prepare_hrng() in the course of DRBG instantiation does not return
--EALREADY, that is, if get_random_bytes() has not been fully initialized
-at this point yet, drbg_prepare_hrng() will lower ->reseed_threshold
-to a value of 50. The drbg_async_seed() scheduled from said
-random_ready_callback will eventually restore the original value.
+However, as the get_random_bytes() initialization state can get queried by
+means of rng_is_initialized() now, there is no real need for this
+asynchronous reseeding logic anymore and it's better to keep things simple
+by doing it synchronously when needed instead, i.e. from drbg_generate()
+once rng_is_initialized() has flipped to true.
 
-A future patch will replace the random_ready_callback based notification
-mechanism and thus, there will be no add_random_ready_callback() return
-value anymore which could get compared to -EALREADY.
+Of course, for this to work, drbg_generate() would need some means by which
+it can tell whether or not rng_is_initialized() has flipped to true since
+the last seeding from get_random_bytes(). Or equivalently, whether or not
+the last seed from get_random_bytes() has happened when
+rng_is_initialized() was still evaluating to false.
 
-However, there's __drbg_seed() which gets invoked in the course of both,
-the DRBG instantiation as well as the eventual reseeding from
-get_random_bytes() in aforementioned drbg_async_seed(), if any. Moreover,
-it knows about the get_random_bytes() initialization state by the time the
-seed data had been obtained from it: the new_seed_state argument introduced
-with the previous patch would get set to DRBG_SEED_STATE_PARTIAL in case
-get_random_bytes() had not been fully initialized yet and to
-DRBG_SEED_STATE_FULL otherwise. Thus, __drbg_seed() provides a convenient
-alternative for managing that ->reseed_threshold lowering and restoring at
-a central place.
+As it currently stands, enum drbg_seed_state allows for the representation
+of two different DRBG seeding states: DRBG_SEED_STATE_UNSEEDED and
+DRBG_SEED_STATE_FULL. The former makes drbg_generate() to invoke a full
+reseeding operation involving both, the rather expensive jitterentropy as
+well as the get_random_bytes() randomness sources. The DRBG_SEED_STATE_FULL
+state on the other hand implies that no reseeding at all is required for a
+!->pr DRBG variant.
 
-Move all ->reseed_threshold adjustment code from drbg_prepare_hrng() and
-drbg_async_seed() respectively to __drbg_seed(). Make __drbg_seed()
-lower the ->reseed_threshold to 50 in case its new_seed_state argument
-equals DRBG_SEED_STATE_PARTIAL and let it restore the original value
-otherwise.
+Introduce the new DRBG_SEED_STATE_PARTIAL state to enum drbg_seed_state for
+representing the condition that a DRBG was being seeded when
+rng_is_initialized() had still been false. In particular, this new state
+implies that
+- the given DRBG instance has been fully seeded from the jitterentropy
+  source (if enabled)
+- and drbg_generate() is supposed to reseed from get_random_bytes()
+  *only* once rng_is_initialized() turns to true.
 
-There is no change in behaviour.
+Up to now, the __drbg_seed() helper used to set the given DRBG instance's
+->seeded state to constant DRBG_SEED_STATE_FULL. Introduce a new argument
+allowing for the specification of the to be written ->seeded value instead.
+Make the first of its two callers, drbg_seed(), determine the appropriate
+value based on rng_is_initialized(). The remaining caller,
+drbg_async_seed(), is known to get invoked only once rng_is_initialized()
+is true, hence let it pass constant DRBG_SEED_STATE_FULL for the new
+argument to __drbg_seed().
+
+There is no change in behaviour, except for that the pr_devel() in
+drbg_generate() would now report "unseeded" for ->pr DRBG instances which
+had last been seeded when rng_is_initialized() was still evaluating to
+false.
 
 Signed-off-by: Nicolai Stange <nstange@suse.de>
 Reviewed-by: Stephan Müller <smueller@chronox.de>
@@ -97,61 +108,74 @@ Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- crypto/drbg.c |   30 +++++++++++++++++++++---------
- 1 file changed, 21 insertions(+), 9 deletions(-)
+ crypto/drbg.c         |   12 ++++++++----
+ include/crypto/drbg.h |    1 +
+ 2 files changed, 9 insertions(+), 4 deletions(-)
 
 --- a/crypto/drbg.c
 +++ b/crypto/drbg.c
-@@ -1047,6 +1047,27 @@ static inline int __drbg_seed(struct drb
+@@ -1036,14 +1036,14 @@ static const struct drbg_state_ops drbg_
+  ******************************************************************/
+ 
+ static inline int __drbg_seed(struct drbg_state *drbg, struct list_head *seed,
+-			      int reseed)
++			      int reseed, enum drbg_seed_state new_seed_state)
+ {
+ 	int ret = drbg->d_ops->update(drbg, seed, reseed);
+ 
+ 	if (ret)
+ 		return ret;
+ 
+-	drbg->seeded = DRBG_SEED_STATE_FULL;
++	drbg->seeded = new_seed_state;
  	/* 10.1.1.2 / 10.1.1.3 step 5 */
  	drbg->reseed_ctr = 1;
  
-+	switch (drbg->seeded) {
-+	case DRBG_SEED_STATE_UNSEEDED:
-+		/* Impossible, but handle it to silence compiler warnings. */
-+		fallthrough;
-+	case DRBG_SEED_STATE_PARTIAL:
-+		/*
-+		 * Require frequent reseeds until the seed source is
-+		 * fully initialized.
-+		 */
-+		drbg->reseed_threshold = 50;
-+		break;
+@@ -1093,7 +1093,7 @@ static void drbg_async_seed(struct work_
+ 	 */
+ 	drbg->seeded = DRBG_SEED_STATE_UNSEEDED;
+ 
+-	__drbg_seed(drbg, &seedlist, true);
++	__drbg_seed(drbg, &seedlist, true, DRBG_SEED_STATE_FULL);
+ 
+ 	if (drbg->seeded == DRBG_SEED_STATE_FULL)
+ 		drbg->reseed_threshold = drbg_max_requests(drbg);
+@@ -1123,6 +1123,7 @@ static int drbg_seed(struct drbg_state *
+ 	unsigned int entropylen = drbg_sec_strength(drbg->core->flags);
+ 	struct drbg_string data1;
+ 	LIST_HEAD(seedlist);
++	enum drbg_seed_state new_seed_state = DRBG_SEED_STATE_FULL;
+ 
+ 	/* 9.1 / 9.2 / 9.3.1 step 3 */
+ 	if (pers && pers->len > (drbg_max_addtl(drbg))) {
+@@ -1150,6 +1151,9 @@ static int drbg_seed(struct drbg_state *
+ 		BUG_ON((entropylen * 2) > sizeof(entropy));
+ 
+ 		/* Get seed from in-kernel /dev/urandom */
++		if (!rng_is_initialized())
++			new_seed_state = DRBG_SEED_STATE_PARTIAL;
 +
-+	case DRBG_SEED_STATE_FULL:
-+		/*
-+		 * Seed source has become fully initialized, frequent
-+		 * reseeds no longer required.
-+		 */
-+		drbg->reseed_threshold = drbg_max_requests(drbg);
-+		break;
-+	}
-+
- 	return ret;
- }
- 
-@@ -1095,9 +1116,6 @@ static void drbg_async_seed(struct work_
- 
- 	__drbg_seed(drbg, &seedlist, true, DRBG_SEED_STATE_FULL);
- 
--	if (drbg->seeded == DRBG_SEED_STATE_FULL)
--		drbg->reseed_threshold = drbg_max_requests(drbg);
--
- unlock:
- 	mutex_unlock(&drbg->drbg_mutex);
- 
-@@ -1533,12 +1551,6 @@ static int drbg_prepare_hrng(struct drbg
- 		return err;
+ 		ret = drbg_get_random_bytes(drbg, entropy, entropylen);
+ 		if (ret)
+ 			goto out;
+@@ -1206,7 +1210,7 @@ static int drbg_seed(struct drbg_state *
+ 		memset(drbg->C, 0, drbg_statelen(drbg));
  	}
  
--	/*
--	 * Require frequent reseeds until the seed source is fully
--	 * initialized.
--	 */
--	drbg->reseed_threshold = 50;
--
- 	return err;
- }
+-	ret = __drbg_seed(drbg, &seedlist, reseed);
++	ret = __drbg_seed(drbg, &seedlist, reseed, new_seed_state);
+ 
+ out:
+ 	memzero_explicit(entropy, entropylen * 2);
+--- a/include/crypto/drbg.h
++++ b/include/crypto/drbg.h
+@@ -107,6 +107,7 @@ struct drbg_test_data {
+ 
+ enum drbg_seed_state {
+ 	DRBG_SEED_STATE_UNSEEDED,
++	DRBG_SEED_STATE_PARTIAL, /* Seeded with !rng_is_initialized() */
+ 	DRBG_SEED_STATE_FULL,
+ };
  
 
 
