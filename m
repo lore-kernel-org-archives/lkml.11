@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D650BC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:21:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14BA1CCA47E
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:21:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347194AbiFCSUE (ORCPT
+        id S1347331AbiFCSUO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:20:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40990 "EHLO
+        Fri, 3 Jun 2022 14:20:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347834AbiFCSGT (ORCPT
+        with ESMTP id S1347691AbiFCSGN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 14:06:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 281595D677;
-        Fri,  3 Jun 2022 10:59:29 -0700 (PDT)
+        Fri, 3 Jun 2022 14:06:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC2DF5C86C;
+        Fri,  3 Jun 2022 10:59:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 19AEBB82438;
-        Fri,  3 Jun 2022 17:59:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86795C3411C;
-        Fri,  3 Jun 2022 17:59:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A66C56164C;
+        Fri,  3 Jun 2022 17:58:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D4B5C385A9;
+        Fri,  3 Jun 2022 17:58:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654279148;
-        bh=nPcxQpf1ssmDisQFOLeXmXkRO9v1ounJGsftVl69TWI=;
+        s=korg; t=1654279099;
+        bh=1dDCelCnd3TDU/oKMdf68Nki42Ch/uDP9y6NwwQdRnE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KZcKconOqpCxwv8w1gmarcjo4bt1MEmAaIT5AleTVroMLC78ByapCu1ItJwJVfKiX
-         u1hLVQj01SE1RwoAyr/hMymUQeNwkB7vIeRtZOITp+FN+wOxDBoiMewJ9qRa11PcMT
-         5e/ulgasDr8BxIUu2iPehiBRUULAXSGnw2+bSuGg=
+        b=VY4bn7d9vWGEZ7if+ACqPsiTLaxO3l0P6SKnNKwpr+S4vfkigU6/j0y5CGSHYbW58
+         p+rbb4TrtpG45WloK2KBXDQIMyRMPz5FR3d1UjKv4EPnGYjgiFGOIvPCmxezXDd1Nq
+         3xKCFfVT7WpJBdPd+WcyIEHiddL2ZajAIVVQeA1E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: [PATCH 5.18 67/67] bpf: Do write access check for kfunc and global func
-Date:   Fri,  3 Jun 2022 19:44:08 +0200
-Message-Id: <20220603173822.641516438@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
+        Jacopo Mondi <jacopo@jmondi.org>,
+        Daniele Alessandrelli <daniele.alessandrelli@intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>
+Subject: [PATCH 5.18 53/67] media: i2c: imx412: Fix power_off ordering
+Date:   Fri,  3 Jun 2022 19:43:54 +0200
+Message-Id: <20220603173822.255099637@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.731531504@linuxfoundation.org>
 References: <20220603173820.731531504@linuxfoundation.org>
@@ -49,113 +53,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
 
-commit be77354a3d7ebd4897ee18eca26dca6df9224c76 upstream.
+commit 9a199694c6a1519522ec73a4571f68abe9f13d5d upstream.
 
-When passing pointer to some map value to kfunc or global func, in
-verifier we are passing meta as NULL to various functions, which uses
-meta->raw_mode to check whether memory is being written to. Since some
-kfunc or global funcs may also write to memory pointers they receive as
-arguments, we must check for write access to memory. E.g. in some case
-map may be read only and this will be missed by current checks.
+The enable path does
+- gpio
+- clock
 
-However meta->raw_mode allows for uninitialized memory (e.g. on stack),
-since there is not enough info available through BTF, we must perform
-one call for read access (raw_mode = false), and one for write access
-(raw_mode = true).
+The disable path does
+- gpio
+- clock
 
-Fixes: e5069b9c23b3 ("bpf: Support pointers in global func args")
-Fixes: d583691c47dc ("bpf: Introduce mem, size argument pair support for kfunc")
-Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Link: https://lore.kernel.org/r/20220319080827.73251-2-memxor@gmail.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Fix the order on the power-off path so that power-off and power-on have the
+same ordering for clock and gpio.
+
+Fixes: 9214e86c0cc1 ("media: i2c: Add imx412 camera sensor driver")
+Cc: stable@vger.kernel.org
+Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+Reviewed-by: Jacopo Mondi <jacopo@jmondi.org>
+Reviewed-by: Daniele Alessandrelli <daniele.alessandrelli@intel.com>
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/bpf/verifier.c |   44 +++++++++++++++++++++++++++++---------------
- 1 file changed, 29 insertions(+), 15 deletions(-)
+ drivers/media/i2c/imx412.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -4934,8 +4934,7 @@ static int check_mem_size_reg(struct bpf
- 	 * out. Only upper bounds can be learned because retval is an
- 	 * int type and negative retvals are allowed.
- 	 */
--	if (meta)
--		meta->msize_max_value = reg->umax_value;
-+	meta->msize_max_value = reg->umax_value;
+--- a/drivers/media/i2c/imx412.c
++++ b/drivers/media/i2c/imx412.c
+@@ -1040,10 +1040,10 @@ static int imx412_power_off(struct devic
+ 	struct v4l2_subdev *sd = dev_get_drvdata(dev);
+ 	struct imx412 *imx412 = to_imx412(sd);
  
- 	/* The register is SCALAR_VALUE; the access check
- 	 * happens using its boundaries.
-@@ -4978,24 +4977,33 @@ static int check_mem_size_reg(struct bpf
- int check_mem_reg(struct bpf_verifier_env *env, struct bpf_reg_state *reg,
- 		   u32 regno, u32 mem_size)
- {
-+	bool may_be_null = type_may_be_null(reg->type);
-+	struct bpf_reg_state saved_reg;
-+	struct bpf_call_arg_meta meta;
-+	int err;
-+
- 	if (register_is_null(reg))
- 		return 0;
- 
--	if (type_may_be_null(reg->type)) {
--		/* Assuming that the register contains a value check if the memory
--		 * access is safe. Temporarily save and restore the register's state as
--		 * the conversion shouldn't be visible to a caller.
--		 */
--		const struct bpf_reg_state saved_reg = *reg;
--		int rv;
+-	gpiod_set_value_cansleep(imx412->reset_gpio, 1);
 -
-+	memset(&meta, 0, sizeof(meta));
-+	/* Assuming that the register contains a value check if the memory
-+	 * access is safe. Temporarily save and restore the register's state as
-+	 * the conversion shouldn't be visible to a caller.
-+	 */
-+	if (may_be_null) {
-+		saved_reg = *reg;
- 		mark_ptr_not_null_reg(reg);
--		rv = check_helper_mem_access(env, regno, mem_size, true, NULL);
--		*reg = saved_reg;
--		return rv;
- 	}
+ 	clk_disable_unprepare(imx412->inclk);
  
--	return check_helper_mem_access(env, regno, mem_size, true, NULL);
-+	err = check_helper_mem_access(env, regno, mem_size, true, &meta);
-+	/* Check access for BPF_WRITE */
-+	meta.raw_mode = true;
-+	err = err ?: check_helper_mem_access(env, regno, mem_size, true, &meta);
++	gpiod_set_value_cansleep(imx412->reset_gpio, 1);
 +
-+	if (may_be_null)
-+		*reg = saved_reg;
-+
-+	return err;
+ 	return 0;
  }
  
- int check_kfunc_mem_size_reg(struct bpf_verifier_env *env, struct bpf_reg_state *reg,
-@@ -5004,16 +5012,22 @@ int check_kfunc_mem_size_reg(struct bpf_
- 	struct bpf_reg_state *mem_reg = &cur_regs(env)[regno - 1];
- 	bool may_be_null = type_may_be_null(mem_reg->type);
- 	struct bpf_reg_state saved_reg;
-+	struct bpf_call_arg_meta meta;
- 	int err;
- 
- 	WARN_ON_ONCE(regno < BPF_REG_2 || regno > BPF_REG_5);
- 
-+	memset(&meta, 0, sizeof(meta));
-+
- 	if (may_be_null) {
- 		saved_reg = *mem_reg;
- 		mark_ptr_not_null_reg(mem_reg);
- 	}
- 
--	err = check_mem_size_reg(env, reg, regno, true, NULL);
-+	err = check_mem_size_reg(env, reg, regno, true, &meta);
-+	/* Check access for BPF_WRITE */
-+	meta.raw_mode = true;
-+	err = err ?: check_mem_size_reg(env, reg, regno, true, &meta);
- 
- 	if (may_be_null)
- 		*mem_reg = saved_reg;
 
 
