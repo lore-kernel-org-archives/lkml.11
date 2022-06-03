@@ -2,115 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29047C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 19:07:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3ABA1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 19:07:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345544AbiFCTGr (ORCPT
+        id S1347985AbiFCTHg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 15:06:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32976 "EHLO
+        Fri, 3 Jun 2022 15:07:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348914AbiFCTFS (ORCPT
+        with ESMTP id S240321AbiFCTHT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 15:05:18 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07D5B30F78;
-        Fri,  3 Jun 2022 12:05:17 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id u3so11537323wrg.3;
-        Fri, 03 Jun 2022 12:05:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=H4l6l2+LqiOAH0dZelhPsMXnUGKfvd85Zt0GdanrYgo=;
-        b=M5hnMb4CuBoUZpZeyvJDSxPSJ9OKj9E4VW0RDQ2aQNYV7/RnjpzNdxWpaAyjvTKLN7
-         USHIBU9qf22PFo4NgZ3humWSzMGISiVv666dwxX3rlb1OOQWksEomMKRWukUL8apazlR
-         KPRl8LyO4WQvhm1CENAZKFlWqsr57FK+YpRv8gANAz0miyCko1XScotlwE5dcACPUjfe
-         9ILTCLGcaiWkQnQKFPXGMXNhJ8VnJoaqLUVgj3Noyr/Nn/1Gwl39ikS/rpTENK5LT5Oj
-         Ns9gvKC20I9JCkCW9/rOxDFfwvRmis//ni+8mACpmwP/3+PIp+Tx5vJr5bZTvKHqhUKJ
-         hSkA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=H4l6l2+LqiOAH0dZelhPsMXnUGKfvd85Zt0GdanrYgo=;
-        b=684s/57T8w+PVvG2fCdCRpuSHHHJZFck9Fm2uFCxsT/9eydB7IRE6wK4p6ejhEfIct
-         T76B40dcfR/lIxnvb/XSlvVda7F4IywZSqjs3YmQjxs3yzMo20cLbZe6BAbGryamNWJS
-         aCjMNhT5zXq9BCjCjk1j3yEq9h9tEgN45VtjptznDdI4ByLslM64qT2XvFk/uj/AzSEI
-         Q5AZ6myQ0q4p5v90YWSxij92HSUkphQXpwC+V8700cQsh1LXDiX693Ns3K4RNDUHScgU
-         R91y48fFHnYaKU9rshIJHw4lJ9udTtWKk0IMlAlfkCdnMfXOXiDOzRAufFyRNiKgiNcA
-         xVAg==
-X-Gm-Message-State: AOAM533p/KDnI2In+qznO0t0hVozHcqqUbYYoGNAjTC3lpzjXPqvCxBV
-        7y/+w5ktaPWLjdITXUiY/mkTu/+Boho=
-X-Google-Smtp-Source: ABdhPJyenvVHsJ92MUvPmQJQfRXhRzsHiPrPAS0MBFnshuaYBPsmApjEVhnJsiJ+UARO477OXI92lA==
-X-Received: by 2002:a5d:6348:0:b0:213:3a8e:e75d with SMTP id b8-20020a5d6348000000b002133a8ee75dmr7758317wrw.55.1654283115278;
-        Fri, 03 Jun 2022 12:05:15 -0700 (PDT)
-Received: from debby ([2a01:e0a:a6d:a8d0:7ff4:8f61:5574:9f95])
-        by smtp.gmail.com with ESMTPSA id d12-20020a5d4f8c000000b00210346cd0b7sm8059568wru.101.2022.06.03.12.05.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Jun 2022 12:05:14 -0700 (PDT)
-From:   Romain Perier <romain.perier@gmail.com>
-To:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
-        Daniel Palmer <daniel@0x0f.com>,
-        Romain Perier <romain.perier@gmail.com>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH RESEND v5 0/1] ARM: mstar: cpupll
-Date:   Fri,  3 Jun 2022 21:05:08 +0200
-Message-Id: <20220603190509.45986-1-romain.perier@gmail.com>
-X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Fri, 3 Jun 2022 15:07:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A31B4186E5
+        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 12:07:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 41C2A619FC
+        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 19:07:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A9F83C385A9;
+        Fri,  3 Jun 2022 19:07:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654283224;
+        bh=WpiLtqhXgrMBixYqrAKOPvPBLebRiMoe1sed0VHn8+4=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=uR2jzhjbVAPuG6k6uHsA9b+xs8n7jLBJf2mhVbTTE/qBwU2H7mC6pkacQDHqzRG9t
+         fyB63G2mRlL9D63GZ7hWced0t235xDbrNFKPDlbeYreTij8KJVw6U9Dc60G2hEukx8
+         ZnQVStD66G2y3OkTA8chFRlD8noGB36fF2zeJNYlMtLlGzTyUQSMQ6GpNAUxT1/bky
+         Q2EwgOds1j3kQBmzO13PI0Mx/G9PvPgWXEqpI97q6tDa0tQbgqqudGMgKqwQrJLgaV
+         YCX7jZ4VHRw1/lA/KpBh2vS20LFYyLQO3tYot2SAbiPFKofL7FAsLC/OVLapmoELk/
+         EPKHQ28IIP9aA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 98729F0394E;
+        Fri,  3 Jun 2022 19:07:04 +0000 (UTC)
+Subject: Re: [GIT PULL] Driver core changes for 5.19-rc1
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <YpnwZ/Q5yTKRDBOD@kroah.com>
+References: <YpnwZ/Q5yTKRDBOD@kroah.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <YpnwZ/Q5yTKRDBOD@kroah.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core.git tags/driver-core-5.19-rc1
+X-PR-Tracked-Commit-Id: b232b02bf3c205b13a26dcec08e53baddd8e59ed
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 500a434fc593f1fdb274c0e6fe09a0b9c0711a4b
+Message-Id: <165428322461.25509.5264419923913572572.pr-tracker-bot@kernel.org>
+Date:   Fri, 03 Jun 2022 19:07:04 +0000
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Saravana Kannan <saravanak@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is a resend of the remaining patches of this series. I have kept
-the cover letter in order to do not loose context of the previous series.
+The pull request you sent on Fri, 3 Jun 2022 13:28:39 +0200:
 
-This series adds a basic driver for the PLL that generates
-the cpu clock on MStar/SigmaStar ARMv7 SoCs.
+> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core.git tags/driver-core-5.19-rc1
 
-Unfortunately there isn't much documentation for this thing
-so there are few magic values and guesses.
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/500a434fc593f1fdb274c0e6fe09a0b9c0711a4b
 
-This needs to come after the MPLL DT changes.
-
-Changes since v4:
-- Removed merged patches (dt-bindings documentation and dt-bindings)
-- Rebased onto 5.19
-
-Changes since v3:
-- Added Reviewed-by on Daniel's patches
-- Removed "[PATCH v3 8/9] ARM: mstar: Add OPP table for mercury5"
-
-Changes since v2:
-- Re-ordered Kconfig by name
-- Re-ordered includes alphabetically and removed useless ones
-- Used timeout for cpu_relax
-- Returned DIV_ROUND_DOWN_ULL() directly in
-  msc313_cpupll_frequencyforreg()
-- Returned DIV_ROUND_DOWN_ULL() directly in
-  msc313_cpupll_regforfrequecy()
-- Reduced the number of lines for msc313_cpupll_of_match
-- Removed CLK_IS_CRITICAL
-
-Changes since v1:
-- Re-worked the series and ensure that 'make dt_binding_check' passes.
-  The required commit is merged now, so it is okay.
-- Fixed coding style issues in the driver and makes check_patch.pl happy
-- Added one more commit for extending the opp_table for infinity2m.
-
-
-Daniel Palmer (1):
-  clk: mstar: msc313 cpupll clk driver
-
- drivers/clk/mstar/Kconfig             |   8 +
- drivers/clk/mstar/Makefile            |   2 +-
- drivers/clk/mstar/clk-msc313-cpupll.c | 221 ++++++++++++++++++++++++++
- 3 files changed, 230 insertions(+), 1 deletion(-)
- create mode 100644 drivers/clk/mstar/clk-msc313-cpupll.c
+Thank you!
 
 -- 
-2.35.1
-
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
