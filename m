@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80CD3C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:52:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9558DC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:52:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231362AbiFCRwU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:52:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46420 "EHLO
+        id S1345404AbiFCRw3 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 13:52:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345325AbiFCRss (ORCPT
+        with ESMTP id S1345389AbiFCRsu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:48:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77E2854684;
-        Fri,  3 Jun 2022 10:45:32 -0700 (PDT)
+        Fri, 3 Jun 2022 13:48:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E046C0C;
+        Fri,  3 Jun 2022 10:45:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0A886B82189;
-        Fri,  3 Jun 2022 17:45:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6840EC385A9;
-        Fri,  3 Jun 2022 17:45:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5737360A52;
+        Fri,  3 Jun 2022 17:45:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55C42C385A9;
+        Fri,  3 Jun 2022 17:45:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278329;
-        bh=feL5DhGpFr9fOQ+CVlQslnoobzfhYmtKXTcaAR7THEI=;
+        s=korg; t=1654278332;
+        bh=sfPesHts5NEETGJlacjo7cJ3lGQkFq0c+AHqqGjnCjA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SYPCZ5+9y/g3/Yj233yH0AjuZCvctGhChGIGr4bsjzs8qOXreEd9C1EXeApwkOBja
-         sxTlUc28ifGeIQ3zty69IfDc1v6JWuO2sajftkcHPgra5ExjGd1wh+R3NXG0ty8IXh
-         Fv2osr5MJHvEOaL2qC4WXILCHUv3A6J9AUXpcQLA=
+        b=NLNF20dP4bXydS6BTyLjBsdNZQFccNjr1XpZecKmXNhAoYlULmx8xUKAuVfPAEq7d
+         O6cAlign9KW5lYcusRKH0zU1Lgd4PWRF1Yn99TVcknDPne5V8aXxNqO/90k4QwG2se
+         WCeguCXFiNM43aLCaLrCbaj/UpPVulbrvX77Do7g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Akira Yokosawa <akiyks@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>
-Subject: [PATCH 5.4 31/34] docs: submitting-patches: Fix crossref to The canonical patch format
-Date:   Fri,  3 Jun 2022 19:43:27 +0200
-Message-Id: <20220603173817.085758905@linuxfoundation.org>
+        stable@vger.kernel.org, Olga Kornievskaia <aglo@umich.edu>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>
+Subject: [PATCH 5.4 32/34] NFS: Memory allocation failures are not server fatal errors
+Date:   Fri,  3 Jun 2022 19:43:28 +0200
+Message-Id: <20220603173817.114480083@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173815.990072516@linuxfoundation.org>
 References: <20220603173815.990072516@linuxfoundation.org>
@@ -49,43 +50,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Akira Yokosawa <akiyks@gmail.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-commit 6d5aa418b3bd42cdccc36e94ee199af423ef7c84 upstream.
+commit 452284407c18d8a522c3039339b1860afa0025a8 upstream.
 
-The reference to `explicit_in_reply_to` is pointless as when the
-reference was added in the form of "#15" [1], Section 15) was "The
-canonical patch format".
-The reference of "#15" had not been properly updated in a couple of
-reorganizations during the plain-text SubmittingPatches era.
+We need to filter out ENOMEM in nfs_error_is_fatal_on_server(), because
+running out of memory on our client is not a server error.
 
-Fix it by using `the_canonical_patch_format`.
-
-[1]: 2ae19acaa50a ("Documentation: Add "how to write a good patch summary" to SubmittingPatches")
-
-Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
-Fixes: 5903019b2a5e ("Documentation/SubmittingPatches: convert it to ReST markup")
-Fixes: 9b2c76777acc ("Documentation/SubmittingPatches: enrich the Sphinx output")
-Cc: Jonathan Corbet <corbet@lwn.net>
-Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc: stable@vger.kernel.org # v4.9+
-Link: https://lore.kernel.org/r/64e105a5-50be-23f2-6cae-903a2ea98e18@gmail.com
-Signed-off-by: Jonathan Corbet <corbet@lwn.net>
+Reported-by: Olga Kornievskaia <aglo@umich.edu>
+Fixes: 2dc23afffbca ("NFS: ENOMEM should also be a fatal error.")
+Cc: stable@vger.kernel.org
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/process/submitting-patches.rst |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/nfs/internal.h |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/Documentation/process/submitting-patches.rst
-+++ b/Documentation/process/submitting-patches.rst
-@@ -133,7 +133,7 @@ as you intend it to.
- 
- The maintainer will thank you if you write your patch description in a
- form which can be easily pulled into Linux's source code management
--system, ``git``, as a "commit log".  See :ref:`explicit_in_reply_to`.
-+system, ``git``, as a "commit log".  See :ref:`the_canonical_patch_format`.
- 
- Solve only one problem per patch.  If your description starts to get
- long, that's a sign that you probably need to split up your patch.
+--- a/fs/nfs/internal.h
++++ b/fs/nfs/internal.h
+@@ -775,6 +775,7 @@ static inline bool nfs_error_is_fatal_on
+ 	case 0:
+ 	case -ERESTARTSYS:
+ 	case -EINTR:
++	case -ENOMEM:
+ 		return false;
+ 	}
+ 	return nfs_error_is_fatal(err);
 
 
