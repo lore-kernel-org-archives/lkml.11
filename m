@@ -2,76 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34495C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 19:19:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 373CEC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 19:21:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345772AbiFCTTb (ORCPT
+        id S1345855AbiFCTVN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 15:19:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34810 "EHLO
+        Fri, 3 Jun 2022 15:21:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231744AbiFCTT3 (ORCPT
+        with ESMTP id S231741AbiFCTVI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 15:19:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 861113CA63;
-        Fri,  3 Jun 2022 12:19:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3B383B82474;
-        Fri,  3 Jun 2022 19:19:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C400AC385A9;
-        Fri,  3 Jun 2022 19:19:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654283966;
-        bh=8nKJf9dOTOAH1uAklFxKClj2mI73t1XJ/PQeizBDHM8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=tgihMoLTfzeHQ+1HZqxv4d6k9no+96GjzYbAj0tPcZvnzJfcvMz7jWzvfvhFRX9gE
-         YiXzKZ0DJmSl9+ajox91qmY5kkPOEFr4LgOmjcsz9uBJjpsjW/Br3VIFauF8SgvbaD
-         httMGU59qGweYgNfQg0xtrF97rmaxEmUZvjb5/juHvPVNhOIEaAWoaojmHAxD/P9eq
-         WXVmTVGQCmE0+5xHXDTyrfo4/ujeMwBWDUqrlzJ9gSDHbAylK5IYzN9Q5ktwbBSjIW
-         9LSa1k3LqzOSkyMGEsmOEgnI5ldLYBm3JAdIfNeRa8zUQvNGXeMT5hp3p1Bn3CYD14
-         +ES/shabXbXbg==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id D88EC4096F; Fri,  3 Jun 2022 21:19:22 +0200 (CEST)
-Date:   Fri, 3 Jun 2022 21:19:22 +0200
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Leo Yan <leo.yan@linaro.org>
-Cc:     James Clark <james.clark@arm.com>,
-        German Gomez <german.gomez@arm.com>,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>
-Subject: Re: [PATCH] perf test arm-spe: Check if perf-record hangs when
- recording workload with forks
-Message-ID: <Yppeus3KIdICeSxf@kernel.org>
-References: <20220228165655.3920-1-german.gomez@arm.com>
- <95ede14c-8dc2-d285-9f5b-8d6ee6797f00@arm.com>
- <20220527063821.GB829807@leoy-ThinkPad-X240s>
+        Fri, 3 Jun 2022 15:21:08 -0400
+Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53C3749CBC
+        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 12:21:06 -0700 (PDT)
+Received: from in01.mta.xmission.com ([166.70.13.51]:40554)
+        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nxCr2-00HJnH-Hh; Fri, 03 Jun 2022 13:21:04 -0600
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:47998 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nxCr1-001Dcz-Am; Fri, 03 Jun 2022 13:21:04 -0600
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     <linux-kernel@vger.kernel.org>, Oleg Nesterov <oleg@redhat.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>
+Date:   Fri, 03 Jun 2022 14:20:38 -0500
+Message-ID: <87bkv97dvd.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220527063821.GB829807@leoy-ThinkPad-X240s>
-X-Url:  http://acmel.wordpress.com
+Content-Type: text/plain
+X-XM-SPF: eid=1nxCr1-001Dcz-Am;;;mid=<87bkv97dvd.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
+X-XM-AID: U2FsdGVkX19Er4ajgHLfRA6qKXcVH31u8naeoWdWm5o=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: [GIT PULL] 
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Fri, May 27, 2022 at 02:38:21PM +0800, Leo Yan escreveu:
-> On Fri, May 13, 2022 at 02:03:52PM +0100, James Clark wrote:
-> > On 28/02/2022 16:56, German Gomez wrote:
-> > > Signed-off-by: German Gomez <german.gomez@arm.com>
 
-> > Reviewed-by: James Clark <james.clark@arm.com>
+Linus,
 
-> Thanks for review and popping up this patch, James.  LGTM:
+Please pull the ptrace_stop-cleanup-for-v5.19 tag from the git tree:
 
-> Reviewed-by: Leo Yan <leo.yan@linaro.org>
+  git://git.kernel.org/pub/scm/linux/kernel/git/ebiederm/user-namespace.git ptrace_stop-cleanup-for-v5.19
+  HEAD: 31cae1eaae4fd65095ad6a3659db467bc3c2599e sched,signal,ptrace: Rework TASK_TRACED, TASK_STOPPED state
 
-Thanks, applied.
+While looking at the ptrace problems with PREEMPT_RT and the problems
+of Peter Zijlstra was encountering with ptrace in his freezer rewrite
+I identified some cleanups to ptrace_stop that make sense on their own
+and move make resolving the other problems much simpler.
 
-- Arnaldo
+The biggest issue is the habbit of the ptrace code to change task->__state
+from the tracer to suppress TASK_WAKEKILL from waking up the tracee.  No
+other code in the kernel does that and it is straight forward to update
+signal_wake_up and friends to make that unnecessary.
 
+Peter's task freezer sets frozen tasks to a new state TASK_FROZEN and
+then it stores them by calling "wake_up_state(t, TASK_FROZEN)" relying
+on the fact that all stopped states except the special stop states can
+tolerate spurious wake up and recover their state.
+
+The state of stopped and traced tasked is changed to be stored in
+task->jobctl as well as in task->__state.  This makes it possible for
+the freezer to recover tasks in these special states, as well as
+serving as a general cleanup.  With a little more work in that
+direction I believe TASK_STOPPED can learn to tolerate spurious wake
+ups and become an ordinary stop state.
+
+The TASK_TRACED state has to remain a special state as the registers for
+a process are only reliably available when the process is stopped in
+the scheduler.  Fundamentally ptrace needs acess to the saved
+register values of a task.
+
+There are bunch of semi-random ptrace related cleanups that were found
+while looking at these issues.
+
+One cleanup that deserves to be called out is from commit 57b6de08b5f6
+("ptrace: Admit ptrace_stop can generate spuriuos SIGTRAPs").  This
+makes a change that is technically user space visible, in the handling
+of what happens to a tracee when a tracer dies unexpectedly.
+According to our testing and our understanding of userspace nothing
+cares that spurious SIGTRAPs can be generated in that case.
+
+The entire discussion can be found at:
+  https://lkml.kernel.org/r/87a6bv6dl6.fsf_-_@email.froward.int.ebiederm.org
+
+Eric W. Biederman (11):
+      signal: Rename send_signal send_signal_locked
+      signal: Replace __group_send_sig_info with send_signal_locked
+      ptrace/um: Replace PT_DTRACE with TIF_SINGLESTEP
+      ptrace/xtensa: Replace PT_SINGLESTEP with TIF_SINGLESTEP
+      ptrace: Remove arch_ptrace_attach
+      signal: Use lockdep_assert_held instead of assert_spin_locked
+      ptrace: Reimplement PTRACE_KILL by always sending SIGKILL
+      ptrace: Document that wait_task_inactive can't fail
+      ptrace: Admit ptrace_stop can generate spuriuos SIGTRAPs
+      ptrace: Don't change __state
+      ptrace: Always take siglock in ptrace_resume
+
+Peter Zijlstra (1):
+      sched,signal,ptrace: Rework TASK_TRACED, TASK_STOPPED state
+
+ arch/ia64/include/asm/ptrace.h    |   4 --
+ arch/ia64/kernel/ptrace.c         |  57 ----------------
+ arch/um/include/asm/thread_info.h |   2 +
+ arch/um/kernel/exec.c             |   2 +-
+ arch/um/kernel/process.c          |   2 +-
+ arch/um/kernel/ptrace.c           |   8 +--
+ arch/um/kernel/signal.c           |   4 +-
+ arch/x86/kernel/step.c            |   3 +-
+ arch/xtensa/kernel/ptrace.c       |   4 +-
+ arch/xtensa/kernel/signal.c       |   4 +-
+ drivers/tty/tty_jobctrl.c         |   4 +-
+ include/linux/ptrace.h            |   7 --
+ include/linux/sched.h             |  10 ++-
+ include/linux/sched/jobctl.h      |   8 +++
+ include/linux/sched/signal.h      |  20 ++++--
+ include/linux/signal.h            |   3 +-
+ kernel/ptrace.c                   |  87 ++++++++---------------
+ kernel/sched/core.c               |   5 +-
+ kernel/signal.c                   | 140 +++++++++++++++++---------------------
+ kernel/time/posix-cpu-timers.c    |   6 +-
+ 20 files changed, 140 insertions(+), 240 deletions(-)
+
+Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+
+p.s.  My apologies this is coming in so late, everyone in my house has
+been sick.
