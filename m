@@ -2,48 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16A2CCCA480
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A46ECCA485
 	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:55:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345780AbiFCRy4 (ORCPT
+        id S1345800AbiFCRzE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:54:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44364 "EHLO
+        Fri, 3 Jun 2022 13:55:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345975AbiFCRui (ORCPT
+        with ESMTP id S1346054AbiFCRun (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:50:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B510DECE;
-        Fri,  3 Jun 2022 10:46:54 -0700 (PDT)
+        Fri, 3 Jun 2022 13:50:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5642759957;
+        Fri,  3 Jun 2022 10:47:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AF730604EF;
-        Fri,  3 Jun 2022 17:46:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6CEDC385A9;
-        Fri,  3 Jun 2022 17:46:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9FF19B82189;
+        Fri,  3 Jun 2022 17:47:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1B43C385B8;
+        Fri,  3 Jun 2022 17:46:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278413;
-        bh=Lsl4MGIj+lFgH3ZgJ+tEmOVp6Tpf+jsCIrpUeJnyOnc=;
+        s=korg; t=1654278419;
+        bh=UOFBYAakdIJ+1sH6HasaLcTD8QNltxa0AK81YZwjH1k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mahsqZlrfDNO74CTk91BrnrQoRUD4i/BKqkmB4FXNPo2PPFYHk8WSf+AkMzf2u2LS
-         jkE6cu7nUXpYt4xaW8DBWgAFtN97qh4q6ERFlOx4vKB8WMWZgbXIxEQWyXGpXZjp4h
-         RThMTPBy9aPE4e2BmXM73N71HVDYf03jRA64bh2M=
+        b=mr9cHeCAucvQdvof/ykmbvcPlN76/OCkQVAcu4viy6NKZ7RXOPZ3EoVdrXEvqkjEY
+         I7h00aBMudMEJHmX4NOSu+tDcEzlkcQnN5uqP7cZB5zL6bDd+1J1NsyLTr0gxwFwpt
+         nFx+G6Umg6cGSyPrNRtpLppDXxoRSn0KodIJmwOE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        Alexander Duyck <alexander.h.duyck@intel.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        "Soheil Hassas Yeganeh" <soheil@google.com>,
-        "Sridhar Samudrala" <sridhar.samudrala@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.10 09/53] pipe: make poll_usage boolean and annotate its access
-Date:   Fri,  3 Jun 2022 19:42:54 +0200
-Message-Id: <20220603173818.990315783@linuxfoundation.org>
+        stable@vger.kernel.org, wenli xie <wlxie7296@gmail.com>,
+        "Darrick J. Wong" <darrick.wong@oracle.com>,
+        Brian Foster <bfoster@redhat.com>,
+        Amir Goldstein <amir73il@gmail.com>
+Subject: [PATCH 5.10 19/53] xfs: fix an ABBA deadlock in xfs_rename
+Date:   Fri,  3 Jun 2022 19:43:04 +0200
+Message-Id: <20220603173819.282169316@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173818.716010877@linuxfoundation.org>
 References: <20220603173818.716010877@linuxfoundation.org>
@@ -55,82 +51,123 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+From: "Darrick J. Wong" <darrick.wong@oracle.com>
 
-commit f485922d8fe4e44f6d52a5bb95a603b7c65554bb upstream.
+commit 6da1b4b1ab36d80a3994fd4811c8381de10af604 upstream.
 
-Patch series "Fix data-races around epoll reported by KCSAN."
+When overlayfs is running on top of xfs and the user unlinks a file in
+the overlay, overlayfs will create a whiteout inode and ask xfs to
+"rename" the whiteout file atop the one being unlinked.  If the file
+being unlinked loses its one nlink, we then have to put the inode on the
+unlinked list.
 
-This series suppresses a false positive KCSAN's message and fixes a real
-data-race.
+This requires us to grab the AGI buffer of the whiteout inode to take it
+off the unlinked list (which is where whiteouts are created) and to grab
+the AGI buffer of the file being deleted.  If the whiteout was created
+in a higher numbered AG than the file being deleted, we'll lock the AGIs
+in the wrong order and deadlock.
 
+Therefore, grab all the AGI locks we think we'll need ahead of time, and
+in order of increasing AG number per the locking rules.
 
-This patch (of 2):
-
-pipe_poll() runs locklessly and assigns 1 to poll_usage.  Once poll_usage
-is set to 1, it never changes in other places.  However, concurrent writes
-of a value trigger KCSAN, so let's make KCSAN happy.
-
-BUG: KCSAN: data-race in pipe_poll / pipe_poll
-
-write to 0xffff8880042f6678 of 4 bytes by task 174 on cpu 3:
- pipe_poll (fs/pipe.c:656)
- ep_item_poll.isra.0 (./include/linux/poll.h:88 fs/eventpoll.c:853)
- do_epoll_wait (fs/eventpoll.c:1692 fs/eventpoll.c:1806 fs/eventpoll.c:2234)
- __x64_sys_epoll_wait (fs/eventpoll.c:2246 fs/eventpoll.c:2241 fs/eventpoll.c:2241)
- do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80)
- entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:113)
-
-write to 0xffff8880042f6678 of 4 bytes by task 177 on cpu 1:
- pipe_poll (fs/pipe.c:656)
- ep_item_poll.isra.0 (./include/linux/poll.h:88 fs/eventpoll.c:853)
- do_epoll_wait (fs/eventpoll.c:1692 fs/eventpoll.c:1806 fs/eventpoll.c:2234)
- __x64_sys_epoll_wait (fs/eventpoll.c:2246 fs/eventpoll.c:2241 fs/eventpoll.c:2241)
- do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80)
- entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:113)
-
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 1 PID: 177 Comm: epoll_race Not tainted 5.17.0-58927-gf443e374ae13 #6
-Hardware name: Red Hat KVM, BIOS 1.11.0-2.amzn2 04/01/2014
-
-Link: https://lkml.kernel.org/r/20220322002653.33865-1-kuniyu@amazon.co.jp
-Link: https://lkml.kernel.org/r/20220322002653.33865-2-kuniyu@amazon.co.jp
-Fixes: 3b844826b6c6 ("pipe: avoid unnecessary EPOLLET wakeups under normal loads")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-Cc: Alexander Duyck <alexander.h.duyck@intel.com>
-Cc: Al Viro <viro@zeniv.linux.org.uk>
-Cc: Davidlohr Bueso <dave@stgolabs.net>
-Cc: Kuniyuki Iwashima <kuni1840@gmail.com>
-Cc: "Soheil Hassas Yeganeh" <soheil@google.com>
-Cc: "Sridhar Samudrala" <sridhar.samudrala@intel.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Reported-by: wenli xie <wlxie7296@gmail.com>
+Fixes: 93597ae8dac0 ("xfs: Fix deadlock between AGI and AGF when target_ip exists in xfs_rename()")
+Signed-off-by: Darrick J. Wong <darrick.wong@oracle.com>
+Reviewed-by: Brian Foster <bfoster@redhat.com>
+Signed-off-by: Amir Goldstein <amir73il@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/pipe.c                 |    2 +-
- include/linux/pipe_fs_i.h |    2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ fs/xfs/libxfs/xfs_dir2.h    |    2 --
+ fs/xfs/libxfs/xfs_dir2_sf.c |    2 +-
+ fs/xfs/xfs_inode.c          |   42 +++++++++++++++++++++++++-----------------
+ 3 files changed, 26 insertions(+), 20 deletions(-)
 
---- a/fs/pipe.c
-+++ b/fs/pipe.c
-@@ -652,7 +652,7 @@ pipe_poll(struct file *filp, poll_table
- 	unsigned int head, tail;
- 
- 	/* Epoll has some historical nasty semantics, this enables them */
--	pipe->poll_usage = 1;
-+	WRITE_ONCE(pipe->poll_usage, true);
+--- a/fs/xfs/libxfs/xfs_dir2.h
++++ b/fs/xfs/libxfs/xfs_dir2.h
+@@ -47,8 +47,6 @@ extern int xfs_dir_lookup(struct xfs_tra
+ extern int xfs_dir_removename(struct xfs_trans *tp, struct xfs_inode *dp,
+ 				struct xfs_name *name, xfs_ino_t ino,
+ 				xfs_extlen_t tot);
+-extern bool xfs_dir2_sf_replace_needblock(struct xfs_inode *dp,
+-				xfs_ino_t inum);
+ extern int xfs_dir_replace(struct xfs_trans *tp, struct xfs_inode *dp,
+ 				struct xfs_name *name, xfs_ino_t inum,
+ 				xfs_extlen_t tot);
+--- a/fs/xfs/libxfs/xfs_dir2_sf.c
++++ b/fs/xfs/libxfs/xfs_dir2_sf.c
+@@ -1018,7 +1018,7 @@ xfs_dir2_sf_removename(
+ /*
+  * Check whether the sf dir replace operation need more blocks.
+  */
+-bool
++static bool
+ xfs_dir2_sf_replace_needblock(
+ 	struct xfs_inode	*dp,
+ 	xfs_ino_t		inum)
+--- a/fs/xfs/xfs_inode.c
++++ b/fs/xfs/xfs_inode.c
+@@ -3152,7 +3152,7 @@ xfs_rename(
+ 	struct xfs_trans	*tp;
+ 	struct xfs_inode	*wip = NULL;		/* whiteout inode */
+ 	struct xfs_inode	*inodes[__XFS_SORT_INODES];
+-	struct xfs_buf		*agibp;
++	int			i;
+ 	int			num_inodes = __XFS_SORT_INODES;
+ 	bool			new_parent = (src_dp != target_dp);
+ 	bool			src_is_directory = S_ISDIR(VFS_I(src_ip)->i_mode);
+@@ -3266,6 +3266,30 @@ xfs_rename(
+ 	}
  
  	/*
- 	 * Reading pipe state only -- no need for acquiring the semaphore.
---- a/include/linux/pipe_fs_i.h
-+++ b/include/linux/pipe_fs_i.h
-@@ -71,7 +71,7 @@ struct pipe_inode_info {
- 	unsigned int files;
- 	unsigned int r_counter;
- 	unsigned int w_counter;
--	unsigned int poll_usage;
-+	bool poll_usage;
- 	struct page *tmp_page;
- 	struct fasync_struct *fasync_readers;
- 	struct fasync_struct *fasync_writers;
++	 * Lock the AGI buffers we need to handle bumping the nlink of the
++	 * whiteout inode off the unlinked list and to handle dropping the
++	 * nlink of the target inode.  Per locking order rules, do this in
++	 * increasing AG order and before directory block allocation tries to
++	 * grab AGFs because we grab AGIs before AGFs.
++	 *
++	 * The (vfs) caller must ensure that if src is a directory then
++	 * target_ip is either null or an empty directory.
++	 */
++	for (i = 0; i < num_inodes && inodes[i] != NULL; i++) {
++		if (inodes[i] == wip ||
++		    (inodes[i] == target_ip &&
++		     (VFS_I(target_ip)->i_nlink == 1 || src_is_directory))) {
++			struct xfs_buf	*bp;
++			xfs_agnumber_t	agno;
++
++			agno = XFS_INO_TO_AGNO(mp, inodes[i]->i_ino);
++			error = xfs_read_agi(mp, tp, agno, &bp);
++			if (error)
++				goto out_trans_cancel;
++		}
++	}
++
++	/*
+ 	 * Directory entry creation below may acquire the AGF. Remove
+ 	 * the whiteout from the unlinked list first to preserve correct
+ 	 * AGI/AGF locking order. This dirties the transaction so failures
+@@ -3317,22 +3341,6 @@ xfs_rename(
+ 		 * In case there is already an entry with the same
+ 		 * name at the destination directory, remove it first.
+ 		 */
+-
+-		/*
+-		 * Check whether the replace operation will need to allocate
+-		 * blocks.  This happens when the shortform directory lacks
+-		 * space and we have to convert it to a block format directory.
+-		 * When more blocks are necessary, we must lock the AGI first
+-		 * to preserve locking order (AGI -> AGF).
+-		 */
+-		if (xfs_dir2_sf_replace_needblock(target_dp, src_ip->i_ino)) {
+-			error = xfs_read_agi(mp, tp,
+-					XFS_INO_TO_AGNO(mp, target_ip->i_ino),
+-					&agibp);
+-			if (error)
+-				goto out_trans_cancel;
+-		}
+-
+ 		error = xfs_dir_replace(tp, target_dp, target_name,
+ 					src_ip->i_ino, spaceres);
+ 		if (error)
 
 
