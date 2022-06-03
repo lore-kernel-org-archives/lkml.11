@@ -2,141 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 148C7C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 15:03:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E20AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 15:04:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245309AbiFCPDW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 11:03:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37046 "EHLO
+        id S245322AbiFCPET (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 11:04:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238431AbiFCPDU (ORCPT
+        with ESMTP id S245315AbiFCPER (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 11:03:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD6D464D8
-        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 08:03:19 -0700 (PDT)
+        Fri, 3 Jun 2022 11:04:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C19764D0;
+        Fri,  3 Jun 2022 08:04:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6B5ABB82345
-        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 15:03:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57D53C385A9;
-        Fri,  3 Jun 2022 15:03:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E4B00617FF;
+        Fri,  3 Jun 2022 15:04:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7011BC34114;
+        Fri,  3 Jun 2022 15:04:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654268597;
-        bh=KJA7norXveckb626KwhiBUG0LTnBlZk25DMASuaqYgQ=;
+        s=k20201202; t=1654268655;
+        bh=TfgOQQnio1Gq32hbniybR4SGAc81jw6qQ5iLxj317Zw=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=fwK53WQoXp8iCJXzGTIv1dXnd+NmM+ofk7tapEFrgysbFrmI3F1601g6iKwkWBOj9
-         +iGFHoSauxyf8vx4KHM0kxfT0cH9hyPqJVqm9uZONeBdjbt9zZcq1aUACEIV0g8KQg
-         EobxoP4QaRHXzqbxCAZX6hjP7wmenTmKWFsSOmzz0/Wt7cQr3boqLvd9ofkoWyGzCe
-         iQJp9UE9lDHSdDuoHDBStSvjnVEUyX0i5f7ZLE7cIOdtvy9rNR1ldahjpKipnuuWKP
-         Ic3jRObOVGVAyKB25SUKNdq96vza3FZ7ypyjPKPlrKOyCzAdoByQSoTaAGfUkf/5qm
-         zpIZCeutFlAyw==
-Date:   Sat, 4 Jun 2022 00:03:12 +0900
-From:   Masami Hiramatsu (Google) <mhiramat@kernel.org>
-To:     Chuang <nashuiliang@gmail.com>
-Cc:     Jingren Zhou <zhoujingren@didiglobal.com>,
-        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] kprobes: Rollback kprobe flags on failed arm_kprobe
-Message-Id: <20220604000312.69f42c92e932152da256c2bb@kernel.org>
-In-Reply-To: <20220602073259.25669-1-nashuiliang@gmail.com>
-References: <20220602073259.25669-1-nashuiliang@gmail.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
+        b=UlyEZNmeolP0ezSHCY2rR/CuZaNustyIj+Lb2cH3kzLD1ke4IL3zOGIEky2tm36nM
+         u4fgYK/H3g7YIMETzQH5pTNozxHZOmsyv3MbwXH81EMaB+QAeBFVWrJnVVWpOQBbSJ
+         vTTeu3i9s5eTQ3HLDVJGQxpWvQPbx2daITuae/WTFoAtkLE6RQ22CoxMLYwrClmFl4
+         BZe3egIxrK003JazP0RQ9FrRjMep9jeNLqkCjKnFxiMJY8nlI5rW9A8hQ0ds3v0rv8
+         Z1cZFxJNex0h6ImV/U8a6WxjcgBSmzjEvJ1SylcNKAD9jf5TmW9Kjk1f3szap45HNP
+         6AyZkBVWxyEZg==
+Date:   Fri, 3 Jun 2022 16:13:14 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Liam Beguin <liambeguin@gmail.com>
+Cc:     rdunlap@infradead.org, peda@axentia.se, masahiroy@kernel.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 1/1] iio: test: fix missing MODULE_LICENSE for
+ IIO_RESCALE=m
+Message-ID: <20220603161314.041643be@jic23-huawei>
+In-Reply-To: <20220601142138.3331278-1-liambeguin@gmail.com>
+References: <20220601142138.3331278-1-liambeguin@gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Chuang,
+On Wed,  1 Jun 2022 10:21:38 -0400
+Liam Beguin <liambeguin@gmail.com> wrote:
 
-On Thu,  2 Jun 2022 15:32:59 +0800
-Chuang <nashuiliang@gmail.com> wrote:
-
-> From: Chuang Wang <nashuiliang@gmail.com>
+> When IIO_RESCALE_KUNIT_TEST=y and IIO_RESCALE=m,
+> drivers/iio/afe/iio-rescale.o is built twice causing the
+> MODULE_LICENSE() to be lost, as shown by:
 > 
-> In aggrprobe scenes, if arm_kprobe() returns an error(e.g. livepatch and
-> kprobe are using the same function X), kprobe flags, while has been
-> modified to ~KPROBE_FLAG_DISABLED, is not rollled back.
+> 	ERROR: modpost: missing MODULE_LICENSE() in drivers/iio/afe/iio-rescale.o
 > 
-> Then, __disable_kprobe() will be failed in __unregister_kprobe_top(),
-> the kprobe list will be not removed from aggrprobe, memory leaks or
-> illegal pointers will be caused.
+> Rework the build configuration to have the dependency specified in the
+> Kconfig.
 > 
-> WARN disarm_kprobe:
->  Failed to disarm kprobe-ftrace at 00000000c729fdbc (-2)
->  RIP: 0010:disarm_kprobe+0xcc/0x110
->  Call Trace:
->   __disable_kprobe+0x78/0x90
->   __unregister_kprobe_top+0x13/0x1b0
->   ? _cond_resched+0x15/0x30
->   unregister_kprobes+0x32/0x80
->   unregister_kprobe+0x1a/0x20
-> 
-> Illegal Pointers:
->  BUG: unable to handle kernel paging request at 0000000000656369
->  RIP: 0010:__get_valid_kprobe+0x69/0x90
->  Call Trace:
->   register_kprobe+0x30/0x60
->   __register_trace_kprobe.part.7+0x8b/0xc0
->   create_local_trace_kprobe+0xd2/0x130
->   perf_kprobe_init+0x83/0xd0
+> Reported-by: Randy Dunlap <rdunlap@infradead.org>
+> Fixes: 8e74a48d17d5 ("iio: test: add basic tests for the iio-rescale driver")
+> Signed-off-by: Liam Beguin <liambeguin@gmail.com>
+> Acked-by: Randy Dunlap <rdunlap@infradead.org>
+> Tested-by: Randy Dunlap <rdunlap@infradead.org>
+> Reviewed-by: Masahiro Yamada <masahiroy@kernel.org>
+Applied to the fixes-togreg branch of iio.git.
 
-Oops, thanks for reporting!
- 
-> Signed-off-by: Chuang Wang <nashuiliang@gmail.com>
-> Signed-off-by: Jingren Zhou <zhoujingren@didiglobal.com>
+Thanks all for chasing this down and coming up with a resolution.
 
-This should go to stable, so add below tag. (No need to CC to stable)
-
-Fixes: 12310e343755 ("kprobes: Propagate error from arm_kprobe_ftrace()")
-Cc: stable@vger.kernel.org
-
-And could you also update this patch as below?
+Jonathan
 
 > ---
->  kernel/kprobes.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
+>  drivers/iio/test/Kconfig  | 2 +-
+>  drivers/iio/test/Makefile | 2 +-
+>  2 files changed, 2 insertions(+), 2 deletions(-)
 > 
-> diff --git a/kernel/kprobes.c b/kernel/kprobes.c
-> index f214f8c088ed..96c75e23113c 100644
-> --- a/kernel/kprobes.c
-> +++ b/kernel/kprobes.c
-> @@ -2422,8 +2422,10 @@ int enable_kprobe(struct kprobe *kp)
->  	if (!kprobes_all_disarmed && kprobe_disabled(p)) {
->  		p->flags &= ~KPROBE_FLAG_DISABLED;
->  		ret = arm_kprobe(p);
-> -		if (ret)
-> +		if (ret) {
->  			p->flags |= KPROBE_FLAG_DISABLED;
+> diff --git a/drivers/iio/test/Kconfig b/drivers/iio/test/Kconfig
+> index 56ca0ad7e77a..4c66c3f18c34 100644
+> --- a/drivers/iio/test/Kconfig
+> +++ b/drivers/iio/test/Kconfig
+> @@ -6,7 +6,7 @@
+>  # Keep in alphabetical order
+>  config IIO_RESCALE_KUNIT_TEST
+>  	bool "Test IIO rescale conversion functions"
+> -	depends on KUNIT=y && !IIO_RESCALE
+> +	depends on KUNIT=y && IIO_RESCALE=y
+>  	default KUNIT_ALL_TESTS
+>  	help
+>  	  If you want to run tests on the iio-rescale code say Y here.
+> diff --git a/drivers/iio/test/Makefile b/drivers/iio/test/Makefile
+> index f15ae0a6394f..880360f8d02c 100644
+> --- a/drivers/iio/test/Makefile
+> +++ b/drivers/iio/test/Makefile
+> @@ -4,6 +4,6 @@
+>  #
+>  
+>  # Keep in alphabetical order
+> -obj-$(CONFIG_IIO_RESCALE_KUNIT_TEST) += iio-test-rescale.o ../afe/iio-rescale.o
+> +obj-$(CONFIG_IIO_RESCALE_KUNIT_TEST) += iio-test-rescale.o
+>  obj-$(CONFIG_IIO_TEST_FORMAT) += iio-test-format.o
+>  CFLAGS_iio-test-format.o += $(DISABLE_STRUCTLEAK_PLUGIN)
 
-Here, can you add a check?
-
-	if (p != kp) 
-
-> +			kp->flags |= KPROBE_FLAG_DISABLED;
-
-Thus is is clear that this is corresponding to
----
-        if (p != kp)
-                kp->flags &= ~KPROBE_FLAG_DISABLED;
----
-
-Thank you,
-
-> +		}
->  	}
->  out:
->  	mutex_unlock(&kprobe_mutex);
-> -- 
-> 2.34.1
-> 
-
-
--- 
-Masami Hiramatsu (Google) <mhiramat@kernel.org>
