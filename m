@@ -2,118 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A59ACC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 15:15:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6317DC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 15:18:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245421AbiFCPPE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 11:15:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41172 "EHLO
+        id S245424AbiFCPSJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 11:18:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245403AbiFCPO4 (ORCPT
+        with ESMTP id S245271AbiFCPSG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 11:14:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FB16506C1;
-        Fri,  3 Jun 2022 08:14:55 -0700 (PDT)
+        Fri, 3 Jun 2022 11:18:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0D6319FB8
+        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 08:18:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E0FE66186D;
-        Fri,  3 Jun 2022 15:14:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBD19C385B8;
-        Fri,  3 Jun 2022 15:14:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 891F96186E
+        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 15:18:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF833C34115
+        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 15:18:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654269294;
-        bh=kCDqKxgSBW1zW4hSfO+3ZljVtjIYIRBqdB6IPefPA2g=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=GOfyERozHdsiH3+V20TajRS8VF+rK3pLspYPXYlV/wXnoOuBYCgvA5j6gRtfucZz5
-         5KNnZLXdh/CkU9CySG++EblXbebLNNLKOV8exqcXG1s6dMYhCEG9A3Ym6FJZKcBsMd
-         ElTzgdH7DMmopE0HAyhuGmyl3tHBlggJ0sZtmemeDT4vt0E/wfTSr1uX3Uq5P6a1Pi
-         qaygK9qyntxv2KPdHyxmTThxj+h/0sQQHfWoE1/Oqev1rDSgI3l2X3JBatFKiA9ZqZ
-         L5C6thelnCEVAdfrDUf6RbqMeByJEU5C6Ot9yLL2JekOf/GWf+7X++aM+YoXh1t07g
-         Hm2Dq9kp3Fnqg==
-Date:   Fri, 3 Jun 2022 16:23:51 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Markuss Broks <markuss.broks@gmail.com>
-Cc:     linux-kernel@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@somainline.org>,
-        Song Qiang <songqiang1304521@gmail.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Subject: Re: [PATCH v5 0/5] Add support for ToF sensor on Yoshino platform
-Message-ID: <20220603162351.69056bdf@jic23-huawei>
-In-Reply-To: <20220523175344.5845-1-markuss.broks@gmail.com>
-References: <20220523175344.5845-1-markuss.broks@gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        s=k20201202; t=1654269484;
+        bh=J1pDyR8eqx/9pW9pkfsdPhUb4bYf5TmuT1AOJn9bTjY=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=cqY3JDYyfeK51Ep9QPS31Tyz0Yre8ksTz2L4JNU/J6heN1kLOsV/2lXZig8JrdWUD
+         2qxT/21boHVrh3Ib1aX9AaTGITOP8hKd6PlhImQ8XhKfEhA1mGUKkJr6Z8is/1Xmnh
+         yi/+YkjIXo6oprcMWKAvk97huJktmjdFhTTN7tYOqepXXN1Y1SEUDCR+dmBD1ZngZJ
+         ucM7yMn60muDh+XPaBvmbl/bGXSJeX4Diw1XEOkiFlGW217u577sGGWICmPiZmgnb1
+         p4sWuo4LddmcfGFkf9vDENerMDEk9MsyEIbz5GH3pPxcKCIygmZVAakV1P7Q6SQZhy
+         zi5XhCMOZLIMw==
+Received: by mail-yb1-f170.google.com with SMTP id t31so14282584ybi.2
+        for <linux-kernel@vger.kernel.org>; Fri, 03 Jun 2022 08:18:04 -0700 (PDT)
+X-Gm-Message-State: AOAM532K77N75fjZOCLFKJN6n3U+8zUUG9RgQV6L2XM0ca4WHMyRn8fz
+        tT8QxD7pS152vvck+/jKspH3vy3O5/OcSNA3VG7XMw==
+X-Google-Smtp-Source: ABdhPJy3JiwtKeNNkUGb33j2HBwLWYDoqpp0Fr2u5FckeBuipR8QlfF8/Lc33zca/1upjX/eBRBTREYGX8PnaEGZ2Hg=
+X-Received: by 2002:a5b:c12:0:b0:662:af24:c27c with SMTP id
+ f18-20020a5b0c12000000b00662af24c27cmr2530844ybq.158.1654269483929; Fri, 03
+ Jun 2022 08:18:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20220525132115.896698-1-roberto.sassu@huawei.com>
+ <20220525132115.896698-2-roberto.sassu@huawei.com> <CACYkzJ7L-fE740t91amu4uiDA5dnDMU1D+c0vhb-sFHyQK08kA@mail.gmail.com>
+ <89db5543066f4dccbfebd78ed3c025e7@huawei.com>
+In-Reply-To: <89db5543066f4dccbfebd78ed3c025e7@huawei.com>
+From:   KP Singh <kpsingh@kernel.org>
+Date:   Fri, 3 Jun 2022 17:17:53 +0200
+X-Gmail-Original-Message-ID: <CACYkzJ4uD_k6sDktVaxkE_1QtSphZm+Rhjk4wrMm71LcmWRJ0w@mail.gmail.com>
+Message-ID: <CACYkzJ4uD_k6sDktVaxkE_1QtSphZm+Rhjk4wrMm71LcmWRJ0w@mail.gmail.com>
+Subject: Re: [PATCH 1/3] bpf: Add BPF_F_VERIFY_ELEM to require signature
+ verification on map values
+To:     Roberto Sassu <roberto.sassu@huawei.com>
+Cc:     "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 23 May 2022 20:53:39 +0300
-Markuss Broks <markuss.broks@gmail.com> wrote:
+On Fri, Jun 3, 2022 at 3:11 PM Roberto Sassu <roberto.sassu@huawei.com> wrote:
+>
+> > From: KP Singh [mailto:kpsingh@kernel.org]
+> > Sent: Friday, June 3, 2022 2:08 PM
+> > On Wed, May 25, 2022 at 3:21 PM Roberto Sassu <roberto.sassu@huawei.com>
+> > wrote:
+> > >
+> > > In some cases, it is desirable to ensure that a map contains data from
+> > > authenticated sources, for example if map data are used for making security
+> > > decisions.
+> >
+> > I am guessing this comes from the discussion we had about digilim.
+> > I remember we discussed a BPF helper that could verify signatures.
+> > Why would that approach not work?
+>
+> The main reason is that signature verification can be done also
+> for non-sleepable hooks. For example, one is fexit/array_map_update_elem.
 
-> This series adds support for the ToF proximity sensor installed on
-> Yoshino devices. As part of this series, support handling the reset
-> GPIO and VDD supply by the VL53L0X driver. Also stop hardcoding the
-> interrupt type, since on Yoshino devices it seems that edge triggering
-> doesn't work properly.
-> 
-> Tested on Sony Xperia XZ1 (poplar).
-> 
-> Cc: Konrad Dybcio <konrad.dybcio@somainline.org>
-> Cc: Marijn Suijten <marijn.suijten@somainline.org>
-> Cc: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
-Patches 1-4 applied to the togreg branch of iio.git.
+For your use-case, why is it not possible to hook the LSM hook "bpf"
+i.e security_bpf and then check if there is a MAP_UPDATE_ELEM operation?
 
-Note I plan to rebase that tree after the char-misc (and hence IIO tree)
-has been merged with mainline, so for now it is only pushed out as testing
-so that 0-day can see if it can find anything we missed.
+>
+> Currently the helper in patch 2 just returns the size of verified data.
+> With an additional parameter, it could also be used as a helper for
+> signature verification by any eBPF programs.
+>
 
-Thanks,
+Your bpf_map_verify_value_sig hard codes the type of signature
+(bpf_map_verify_value_sig as verify_pkcs7_signature)
+its implementation. This is not extensible.
 
-Jonathan
+What we discussed was an extensible helper that can be used for
+different signature types.
 
-> 
-> v2:
-> - Fix a nasty issue: turns out grouping the pinctrl makes it not apply,
-> which was the main cause of edge interrupts not working correctly and
-> having to use level interrupts, which caused a large amount of false
-> detections.
-> - handle the irq type more gracefully: if it's not provided, default
-> to falling edge, but if it's provided, then use the provided one.
-> v3:
-> - add irq.h header (forgot to commit)
-> - reword commit message (already initialized -> pre-initialized)
-> v4:
-> - reorder powering on and power off action (Jonathan)
-> - sort pinctrls by GPIO number (Konrad)
-> v5:
-> - "This patch adds..." -> "Add ..." (Krzysztof)
-> 
-> Markuss Broks (5):
->   dt-bindings: proximity: vl53l0x: Document optional supply and GPIO
->     properties
->   proximity: vl53l0x: Get interrupt type from DT
->   proximity: vl53l0x: Handle the VDD regulator
->   proximity: vl53l0x: Handle the reset GPIO
->   arm64: dts: qcom: msm8998-xperia: Introduce ToF sensor support
-> 
->  .../bindings/iio/proximity/st,vl53l0x.yaml    |  5 ++
->  .../dts/qcom/msm8998-sony-xperia-yoshino.dtsi | 34 +++++++++++++
->  drivers/iio/proximity/vl53l0x-i2c.c           | 50 ++++++++++++++++++-
->  3 files changed, 88 insertions(+), 1 deletion(-)
-> 
+> To be honest, I like more the idea of a map flag, as it is more
+> clear that signature verification is being done. Otherwise,
+> we would need to infer it from the eBPF program code.
+>
+> Thanks
+>
+> Roberto
+>
+> HUAWEI TECHNOLOGIES Duesseldorf GmbH, HRB 56063
+> Managing Director: Li Peng, Yang Xi, Li He
+>
+> > > Such restriction is achieved by verifying the signature of map values, at
+> > > the time those values are added to the map with the bpf() system call (more
+> > > specifically, when the commands passed to bpf() are BPF_MAP_UPDATE_ELEM
+> > or
+> > > BPF_MAP_UPDATE_BATCH). Mmappable maps are not allowed in this case.
+> > >
+> > > Signature verification is initially done with keys in the primary and
+> > > secondary kernel keyrings, similarly to kernel modules. This allows system
+> > > owners to enforce a system-wide policy based on the keys they trust.
+> > > Support for additional keyrings could be added later, based on use case
+> > > needs.
+> > >
+> > > Signature verification is done only for those maps for which the new map
+> > > flag BPF_F_VERIFY_ELEM is set. When the flag is set, the kernel expects map
+> > > values to be in the following format:
+> > >
+> > > +-------------------------------+---------------+-----+-----------------+
+> > > | verified data+sig size (be32) | verified data | sig | unverified data |
+> > > +-------------------------------+---------------+-----+-----------------+
+> > >
+> > > where sig is a module-style appended signature as generated by the
+> > > sign-file tool. The verified data+sig size (in big endian) must be
+> > > explicitly provided (it is not generated by sign-file), as it cannot be
+> > > determined in other ways (currently, the map value size is fixed). It can
+> > > be obtained from the size of the file created by sign-file.
+> > >
+> > > Introduce the new map flag BPF_F_VERIFY_ELEM, and additionally call the
+> > new
+> > > function bpf_map_verify_value_sig() from bpf_map_update_value() if the flag
+> > > is set. bpf_map_verify_value_sig(), declared as global for a new helper, is
+> > > basically equivalent to mod_verify_sig(). It additionally does the marker
+> > > check, that for kernel modules is done in module_sig_check(), and the
+> > > parsing of the verified data+sig size.
+> > >
+> > > Currently, enable the usage of the flag only for the array map. Support for
+> > > more map types can be added later.
+> > >
+> > > Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
+> > > ---
 
+[...]
+
+> > > +                                            NULL, NULL);
+> > > +               if (ret < 0)
+> > > +                       return ret;
+> > > +       }
+> > > +
+> > > +       return modlen;
+> > > +}
+> > > +EXPORT_SYMBOL_GPL(bpf_map_verify_value_sig);
+> > >
+> > >  #define BPF_MAP_UPDATE_ELEM_LAST_FIELD flags
+> > >
+> > > diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+> > > index f4009dbdf62d..a8e7803d2593 100644
+> > > --- a/tools/include/uapi/linux/bpf.h
+> > > +++ b/tools/include/uapi/linux/bpf.h
+> > > @@ -1226,6 +1226,9 @@ enum {
+> > >
+> > >  /* Create a map that is suitable to be an inner map with dynamic max entries
+> > */
+> > >         BPF_F_INNER_MAP         = (1U << 12),
+> > > +
+> > > +/* Verify map value (fmt: ver data+sig size(be32), ver data, sig, unver data) */
+> > > +       BPF_F_VERIFY_ELEM       = (1U << 13)
+> > >  };
+> > >
+> > >  /* Flags for BPF_PROG_QUERY. */
+> > > --
+> > > 2.25.1
+> > >
