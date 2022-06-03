@@ -2,121 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E60B2CCA473
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 11:04:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 347CDC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 11:08:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243918AbiFCLEp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 07:04:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51500 "EHLO
+        id S234609AbiFCLIp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 07:08:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237380AbiFCLEn (ORCPT
+        with ESMTP id S229563AbiFCLIj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 07:04:43 -0400
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53B1F3BFB4
-        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 04:04:42 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id h62-20020a1c2141000000b0039aa4d054e2so6177598wmh.1
-        for <linux-kernel@vger.kernel.org>; Fri, 03 Jun 2022 04:04:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=ExK+DYLUUomIg3mRJoq7EumeoyhrwGwm615hpYO0lXQ=;
-        b=K19PSH3lwY1yW8Us7aXC4yemQGjRs8tmgABDOI0vD1UaDVhaH/YnOt4TU0pQtq9eTw
-         fApFgN1kibEtjP25egxeZs1kpnOQIoxViM6OsebgTbVTljxbUhODUhk8QZINAYXoUjF0
-         yN6YF1mqAoVnHgWpelghaiVa7DLUlNd5j2TKIvc7CdXWlh/Q4+s8lsoZDftzXn605iiJ
-         LJEfnK/vRSQdUoyQkiByR6M/kGfadO9onx4Bi27AMDPQ0lB5CVx992UzbvzdK/w1d6jw
-         iYsD2DwWOaeTfUz6/rZdNt4Dv1qd3Z0QH4qcfHc/Zk+Hi/Pqh4cc/SYy17mb3beo+aFu
-         Mv2g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ExK+DYLUUomIg3mRJoq7EumeoyhrwGwm615hpYO0lXQ=;
-        b=MjWcvyn9qd5t4ylzUiJ8tM0T868I2/jHQdVoXp4fTbDS6R9QJbar8VcZDjCa+HRUwM
-         JXSLE08PmG3O9VTxTGC+rtjmUc+XDGj/v2c1h1NnBVkuV4z3yquZ/B7LXKdDn3DF9/Ig
-         vb5X7vVoO1EK24IirvkO0xnCmzJa5tG7OHCv0gOfG6SLxXO6sIAdMyjGS1lma5Khhrs+
-         OSc5wRK2XyfYyshNer7n9gBDLNj/PjQY7G2/44xsvSTehXkR1vH81G9OS9JaOfGNJcxt
-         4fCMuS+4yaD74T+cGmbKPVm1j5/X7/4cPmuvm17Upu+rYrI/kftsM1fiOnCTe0Qv49UU
-         BBCw==
-X-Gm-Message-State: AOAM531iTvSW3e2xC1JBxhWfjlcPCo8ngy5nZDXRDteb5BUNKpc6Wegs
-        cjkEaA7Qjl7EamjiTXihmSV98A==
-X-Google-Smtp-Source: ABdhPJwp2zagP6UI2fFhVdDyk5de0gUKb9cOw6NpGThJLza8s+4ag0BrvmVlDKzxY3wiX3nST3JQbg==
-X-Received: by 2002:a05:600c:4f93:b0:399:e654:4481 with SMTP id n19-20020a05600c4f9300b00399e6544481mr28194292wmq.164.1654254280711;
-        Fri, 03 Jun 2022 04:04:40 -0700 (PDT)
-Received: from [192.168.1.41] (static-176-182-171-101.ncc.abo.bbox.fr. [176.182.171.101])
-        by smtp.googlemail.com with ESMTPSA id h24-20020adfa4d8000000b0020d0a57af5esm7152854wrb.79.2022.06.03.04.04.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 03 Jun 2022 04:04:40 -0700 (PDT)
-Message-ID: <0ca654c0-d7b4-b955-7e9b-542452659694@linaro.org>
-Date:   Fri, 3 Jun 2022 13:04:39 +0200
+        Fri, 3 Jun 2022 07:08:39 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E66E93BFB8;
+        Fri,  3 Jun 2022 04:08:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654254517; x=1685790517;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=QPNgQ2od7l/+/tdrZY8laHxgx7ge6gu2BOh+jIuNMAA=;
+  b=WvIlskhSYDt854viZTb51M5+zT+hi/90XZFPySPp34lzcBclIpvOhLmN
+   oUl/wpx9CHQ44VNfkbXfpJyXvshvfShkS8DXjbudajX5E83s2D031hlOC
+   QUselFdXPYZI8+pzgGd8c46YOWnWPD6Z1reWhbocI+mFnfDN73xxOITJD
+   nWLuVatIq9v69DD5pyzRbMu4w1Lfswx+tRVjLd0UGb0rGJy/Wt5FXoI/I
+   fqzmHQunSLsJmUNK51uMqam5f8kZ/dBwjoRBbyla7ZLzLUmR8sxufNtPi
+   wuz4dkTeYIqc3rPPCuUaIi6bAZh90foM/xHpyDgXaE6Dbq3e8utBAUAjB
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10366"; a="275967159"
+X-IronPort-AV: E=Sophos;i="5.91,274,1647327600"; 
+   d="scan'208";a="275967159"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2022 04:08:37 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,274,1647327600"; 
+   d="scan'208";a="707985886"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.135])
+  by orsmga004.jf.intel.com with ESMTP; 03 Jun 2022 04:08:35 -0700
+Date:   Fri, 3 Jun 2022 19:00:46 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     tien.sung.ang@intel.com
+Cc:     hao.wu@intel.com, linux-fpga@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mdf@kernel.org, trix@redhat.com,
+        dinh.nguyen@intel.com
+Subject: Re: [PATCH v2] fpga: altera-cvp: allow interrupt to continue next
+ time
+Message-ID: <20220603110046.GC238410@yilunxu-OptiPlex-7050>
+References: <20220528120503.GB175058@yilunxu-OptiPlex-7050>
+ <20220601014027.2547481-1-tien.sung.ang@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 3/3] thermal/sysfs: Remove cooling device sysfs statistics
-Content-Language: en-US
-To:     Todd Kjos <tkjos@google.com>, Lukasz Luba <lukasz.luba@arm.com>
-Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        rafael@kernel.org, quic_manafm@quicinc.com,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>, Wei Wang <wvw@google.com>
-References: <20220601151441.9128-1-daniel.lezcano@linaro.org>
- <20220601151441.9128-3-daniel.lezcano@linaro.org>
- <be8395e3-98d7-7a8f-7153-c491b22d4463@arm.com>
- <cb35e356-bc90-2a67-6983-1a4c3a0ea62d@linaro.org>
- <eada018c-b857-7946-ae4b-2532e6866a45@arm.com>
- <CAHRSSEz9ExOgvByycztKYf1ncxCKeoy3uHuyQcnUC1r5nujc2w@mail.gmail.com>
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-In-Reply-To: <CAHRSSEz9ExOgvByycztKYf1ncxCKeoy3uHuyQcnUC1r5nujc2w@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220601014027.2547481-1-tien.sung.ang@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-Hi Todd,
-
-[adding Wei]
-
-On 02/06/2022 21:02, Todd Kjos wrote:
-> On Thu, Jun 2, 2022 at 2:16 AM Lukasz Luba <lukasz.luba@arm.com> wrote:
-
-[ ... ]
-
->> I see, it makes sense. Let's see if Todd and Android folks don't
->> use this thermal sysfs stats, so we could remove them.
+On Wed, Jun 01, 2022 at 09:40:27AM +0800, tien.sung.ang@intel.com wrote:
+> From: Dinh Nguyen <dinh.nguyen@intel.com>
 > 
-> Android HALs do use the thermal sysfs stats. debugfs isn't a viable
-> replacement since debugfs must not be mounted during normal operation.
+> The main objective of this change is to perform error handling
+> if the CvP firmware becomes unresponsive. The error_path flow
+> resets the CvP mode and HIP_CLK_SEL bit.
+> 
+> CFG_READY signal/bit may time-out due to firmware not responding
+> within the given time-out. This time varies due to numerous
+> factors like size of bitstream and others.
+> This time-out error may or may not impact the result of the CvP
+> previous transactions. The CvP driver shall then, respond with
+> EAGAIN instead Time out error.
+> 
+> Signed-off-by: Dinh Nguyen <dinh.nguyen@intel.com>
+> Signed-off-by: Ang Tien Sung <tien.sung.ang@intel.com>
+> ---
+> 
+> changelog v2:
+> * Amend the commit message
+> 
+> ---
+>  drivers/fpga/altera-cvp.c | 14 +++++++++++++-
+>  1 file changed, 13 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/fpga/altera-cvp.c b/drivers/fpga/altera-cvp.c
+> index 4ffb9da537d8..d74ff63c61e8 100644
+> --- a/drivers/fpga/altera-cvp.c
+> +++ b/drivers/fpga/altera-cvp.c
+> @@ -309,10 +309,22 @@ static int altera_cvp_teardown(struct fpga_manager *mgr,
+>  	/* STEP 15 - poll CVP_CONFIG_READY bit for 0 with 10us timeout */
+>  	ret = altera_cvp_wait_status(conf, VSE_CVP_STATUS_CFG_RDY, 0,
+>  				     conf->priv->poll_time_us);
+> -	if (ret)
+> +	if (ret) {
+>  		dev_err(&mgr->dev, "CFG_RDY == 0 timeout\n");
+> +		goto error_path;
 
-Thanks for your answer.
+I assume the error handling is specific to CFG_RDY timeout, is it? Then it
+could be embedded in this code block.
 
-I'm curious, what is the purpose of getting the statistics, especially 
-the transitions stats from normal operation?
+And also the -EAGAIN ret, please only return it in this code block.
 
-There were some complains about systems having a high number of cooling 
-devices with a lot of states. The state transitions are represented as a 
-matrix and result in up to hundred of megabytes of memory wasted.
+Usually the goto error path is for common fail out.
 
-Moreover, sysfs being limited a page size, the output is often truncated.
+> +	}
+>  
+>  	return ret;
+> +
+> +error_path:
+> +	/* reset CVP_MODE and HIP_CLK_SEL bit */
+> +	altera_read_config_dword(conf, VSE_CVP_MODE_CTRL, &val);
+> +	val &= ~VSE_CVP_MODE_CTRL_HIP_CLK_SEL;
+> +	val &= ~VSE_CVP_MODE_CTRL_CVP_MODE;
+> +	altera_write_config_dword(conf, VSE_CVP_MODE_CTRL, val);
+> +
+> +	return -EAGAIN;
 
-As it is automatically enabled for GKI, this waste of memory which is 
-not negligible for system with low memory can not be avoided.
+Please still specify the reason for -EAGAIN rather than timeout.
 
-I went through the thermal HAL but did not find an usage of these 
-statistics, do you have a pointer to the code using them ?
+Thanks,
+Yilun
 
-Thanks
-
-   -- Daniel
-
-
-
--- 
-<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
-
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
+> +
+>  }
+>  
+>  static int altera_cvp_write_init(struct fpga_manager *mgr,
+> -- 
+> 2.25.1
