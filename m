@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD34CC3F2D4
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71C68CCA495
 	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 00:54:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242298AbiFCAwm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 20:52:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48168 "EHLO
+        id S241843AbiFCAv1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 20:51:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240115AbiFCApV (ORCPT
+        with ESMTP id S240117AbiFCAoy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 20:45:21 -0400
-Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35AB534642
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:45:14 -0700 (PDT)
-Received: by mail-pf1-x449.google.com with SMTP id z67-20020a626546000000b0051bbb66c1bdso2717164pfb.0
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:45:14 -0700 (PDT)
+        Thu, 2 Jun 2022 20:44:54 -0400
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14BCC34642
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:44:39 -0700 (PDT)
+Received: by mail-pg1-x549.google.com with SMTP id f9-20020a636a09000000b003c61848e622so3067583pgc.0
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:44:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=+oPASWeuU3hUXSHHGwTAX+AwNGMqvMpQnDYcauVC88g=;
-        b=aj/VS9rYLAELO9VzDinP5b6wMBn+rIvp+yXI/U7HeJ0fNjcRXaG7lyXigFssnwyU7K
-         h9QIczE6M9HxUVoUvuhT+T9Ie66vMaTJ60b86OedMv3ET7XKRUWh3GUmFVDkmWlR8L2v
-         9Yr6MTtm6fzUrVH4Ry8wxPzmGlFWPJVmN6mkUQKEkty1zLYctJnj1wLjxuDCVkDdwlKI
-         NjqEANCLc4o9c6yzpIRPXxEjcAtdMviHfBymR71whgVQdjeN1OCPe8mNFc2b1+NbxY5l
-         H9qINqgMjzP5AVoCbKDARGxUWznxe6p4c8Lj7ynz01q+WNRFt8qQ2TF+uEyQ2aHgrdUN
-         s4CA==
+        bh=/TXk1YTRDqd6XE4qU0TsZKT5BH5jUZR26Th7i6gBUIY=;
+        b=nWGJfYnheUtAx43bAsTy5YZCtvTlmYUdB49GpmRkYkIE4oCZU7/JBgM7GwVYfSMQbL
+         oxW/hH/d9dCYLAX/DQs7ZwrzUCdjNydUNxZel/YXexmmbDkPSLLTo265VgRgAc9DRfgR
+         otW2Rzm44uhNv4P2tBSsd18ZQcmDCIqD5xWD4xJO06kRnc6ttsYzD3UClrPksYqQLLd3
+         d4c6hJzA9XSewlv3Vm1N7VTTeFkyr9O6A7OT1qNMzX1GXI7uemTa0/lhEdsRx+ASOPKC
+         BCpaBd2eBhH+uz3uAoRUrKvNIev3Rh8Tbclsh7wdabUvLZDGFrW9UGms82ZLAWbSqURz
+         rahQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=+oPASWeuU3hUXSHHGwTAX+AwNGMqvMpQnDYcauVC88g=;
-        b=N8z1FD2V7qqEwZwGfPCg8j7xuhXDVWk2P8o78nayiOYsQj5/vNx+pO3uhvJGTY4PKh
-         WXQgFkFrNr8YyHX9qP2G5R1GXTV/6nbSqgD9wsZ7z69lv8ox8arGcgp4e44SkpwItAQC
-         eDoddo6uWPT3FHtgIGEw9KS+1dMpOobBvYfVogPXBOdnK+gEWyvtBmCxLejso6p07pnQ
-         gcZYalz6Iwto1pyXp/A+TNrwzT7l7QSz/uW7CEf4fzZvJJHKF7VA76GpvY3n/JptKYNG
-         a5s2/HVNZpFzmZ6mTpgceHMfvoTDSl1d8k1y81/FMsZhx25rQPUKobqHni989MXxAdVB
-         9fyw==
-X-Gm-Message-State: AOAM533lZ70KYmXzgBdRhAilVFBnU7q7mPyhatDutQZsWIGI1NETdJEt
-        N3vJITTHgj/3UPjq9MdjmHTltdSFJ44=
-X-Google-Smtp-Source: ABdhPJy5wc0NNleg/ScIV/2JjbKLzyv1ivroioi4hwAipX9/EXBVV4qRjFNi+lysqMQ25q6GcJW9KJeJDh0=
+        bh=/TXk1YTRDqd6XE4qU0TsZKT5BH5jUZR26Th7i6gBUIY=;
+        b=Ucv6WfkNUAiKRb8zcFrlWizYsY3/tFLLqhTBncxUJRCH7SI6AxVAZ5yO7oQcIovQRv
+         SxoJpkRozqB1srRJ/UVx7aa0Q/vDri267RqTDLi8cEoyasLbxPz+bVcygG0tOfxWMr4f
+         OS8g6oUDUmN/we367I34jsSseobmSsZWj7OP1tB+Z3olc0uqAIh3Bel/q7htjTvmESRm
+         8rNPm8j4oglrkKOswqMuIhz033UMXGfDT8zpcabzAcC/W/UHA+xRgv5JWEhuoBF2P4RU
+         D5KM9uRJ4Nue7dxb+cSeRq8VlJYpCRRqFnUGC3vPmfoGI49Rb8gGeuMwLVbOq4t8Xlp6
+         EU2A==
+X-Gm-Message-State: AOAM531TChJz2fQwyeJop7wEq/StPv01KQ3h/xq9F4panNASGfaBPYRp
+        sINZGKLvP8vAv+qqdenK1DQDuEVbMHo=
+X-Google-Smtp-Source: ABdhPJx9Saru2iwqOGwzfMvOAQnA0xm+CesrE+6/QMr3FB0oyyBsHP7NGKTdaETxUiMOL1ir4EPYFz4ChWU=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a05:6a00:1249:b0:518:c338:d4de with SMTP id
- u9-20020a056a00124900b00518c338d4demr7846952pfi.14.1654217113696; Thu, 02 Jun
- 2022 17:45:13 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:903:2488:b0:163:b2c0:7efe with SMTP id
+ p8-20020a170903248800b00163b2c07efemr7454231plw.164.1654217078523; Thu, 02
+ Jun 2022 17:44:38 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri,  3 Jun 2022 00:42:00 +0000
+Date:   Fri,  3 Jun 2022 00:41:41 +0000
 In-Reply-To: <20220603004331.1523888-1-seanjc@google.com>
-Message-Id: <20220603004331.1523888-54-seanjc@google.com>
+Message-Id: <20220603004331.1523888-35-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220603004331.1523888-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v2 053/144] KVM: selftests: Convert vmx_preemption_timer_test
- away from VCPU_ID
+Subject: [PATCH v2 034/144] KVM: selftests: Dedup MSR index list helpers,
+ simplify dedicated test
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     kvm@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
@@ -67,102 +67,231 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert vmx_preemption_timer_test to use vm_create_with_one_vcpu() and
-pass around a 'struct kvm_vcpu' object instead of using a global VCPU_ID.
-Note, this is a "functional" change in the sense that the test now
-creates a vCPU with vcpu_id==0 instead of vcpu_id==5.  The non-zero
-VCPU_ID was 100% arbitrary and added little to no validation coverage.
-If testing non-zero vCPU IDs is desirable for generic tests, that can be
-done in the future by tweaking the VM creation helpers.
-
-Opportunistically use vcpu_run() instead of _vcpu_run(), the test expects
-KVM_RUN to succeed.
+Consolidate the helper for retrieving the list of save/restore MSRs and
+the list of feature MSRs, and use the common helpers in the related
+get_msr_index_features test.  Switching to the common helpers eliminates
+the testcase that KVM returns the same -E2BIG result if the input number
+of MSRs is '1' versus '0', but considered that testcase isn't very
+interesting, e.g. '0' and '1' are equally arbitrary, and certainly not
+worth the additional code.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../kvm/x86_64/vmx_preemption_timer_test.c    | 30 +++++++++----------
- 1 file changed, 15 insertions(+), 15 deletions(-)
+ .../selftests/kvm/include/x86_64/processor.h  |   1 +
+ .../selftests/kvm/lib/x86_64/processor.c      |  39 ++++--
+ .../kvm/x86_64/get_msr_index_features.c       | 112 +++---------------
+ 3 files changed, 46 insertions(+), 106 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/x86_64/vmx_preemption_timer_test.c b/tools/testing/selftests/kvm/x86_64/vmx_preemption_timer_test.c
-index f5b4ae914131..168adc5b2272 100644
---- a/tools/testing/selftests/kvm/x86_64/vmx_preemption_timer_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/vmx_preemption_timer_test.c
-@@ -22,7 +22,6 @@
+diff --git a/tools/testing/selftests/kvm/include/x86_64/processor.h b/tools/testing/selftests/kvm/include/x86_64/processor.h
+index afc55f561a2c..e4268432cfe8 100644
+--- a/tools/testing/selftests/kvm/include/x86_64/processor.h
++++ b/tools/testing/selftests/kvm/include/x86_64/processor.h
+@@ -428,6 +428,7 @@ void vcpu_load_state(struct kvm_vm *vm, uint32_t vcpuid,
+ void kvm_x86_state_cleanup(struct kvm_x86_state *state);
+ 
+ const struct kvm_msr_list *kvm_get_msr_index_list(void);
++const struct kvm_msr_list *kvm_get_feature_msr_index_list(void);
+ bool kvm_msr_is_in_save_restore_list(uint32_t msr_index);
+ uint64_t kvm_get_feature_msr(uint64_t msr_index);
+ 
+diff --git a/tools/testing/selftests/kvm/lib/x86_64/processor.c b/tools/testing/selftests/kvm/lib/x86_64/processor.c
+index 5d161d0b8a0c..a6c35f269013 100644
+--- a/tools/testing/selftests/kvm/lib/x86_64/processor.c
++++ b/tools/testing/selftests/kvm/lib/x86_64/processor.c
+@@ -892,19 +892,20 @@ void vcpu_dump(FILE *stream, struct kvm_vm *vm, uint32_t vcpuid, uint8_t indent)
+ 	sregs_dump(stream, &sregs, indent + 4);
+ }
+ 
+-const struct kvm_msr_list *kvm_get_msr_index_list(void)
++static struct kvm_msr_list *__kvm_get_msr_index_list(bool feature_msrs)
+ {
+-	static struct kvm_msr_list *list;
++	struct kvm_msr_list *list;
+ 	struct kvm_msr_list nmsrs;
+ 	int kvm_fd, r;
+ 
+-	if (list)
+-		return list;
+-
+ 	kvm_fd = open_kvm_dev_path_or_exit();
+ 
+ 	nmsrs.nmsrs = 0;
+-	r = __kvm_ioctl(kvm_fd, KVM_GET_MSR_INDEX_LIST, &nmsrs);
++	if (!feature_msrs)
++		r = __kvm_ioctl(kvm_fd, KVM_GET_MSR_INDEX_LIST, &nmsrs);
++	else
++		r = __kvm_ioctl(kvm_fd, KVM_GET_MSR_FEATURE_INDEX_LIST, &nmsrs);
++
+ 	TEST_ASSERT(r == -1 && errno == E2BIG,
+ 		    "Expected -E2BIG, got rc: %i errno: %i (%s)",
+ 		    r, errno, strerror(errno));
+@@ -913,15 +914,37 @@ const struct kvm_msr_list *kvm_get_msr_index_list(void)
+ 	TEST_ASSERT(list, "-ENOMEM when allocating MSR index list");
+ 	list->nmsrs = nmsrs.nmsrs;
+ 
+-	kvm_ioctl(kvm_fd, KVM_GET_MSR_INDEX_LIST, list);
++	if (!feature_msrs)
++		kvm_ioctl(kvm_fd, KVM_GET_MSR_INDEX_LIST, list);
++	else
++		kvm_ioctl(kvm_fd, KVM_GET_MSR_FEATURE_INDEX_LIST, list);
+ 	close(kvm_fd);
+ 
+ 	TEST_ASSERT(list->nmsrs == nmsrs.nmsrs,
+-		    "Number of save/restore MSRs changed, was %d, now %d",
++		    "Number of MSRs in list changed, was %d, now %d",
+ 		    nmsrs.nmsrs, list->nmsrs);
+ 	return list;
+ }
+ 
++const struct kvm_msr_list *kvm_get_msr_index_list(void)
++{
++	static const struct kvm_msr_list *list;
++
++	if (!list)
++		list = __kvm_get_msr_index_list(false);
++	return list;
++}
++
++
++const struct kvm_msr_list *kvm_get_feature_msr_index_list(void)
++{
++	static const struct kvm_msr_list *list;
++
++	if (!list)
++		list = __kvm_get_msr_index_list(true);
++	return list;
++}
++
+ bool kvm_msr_is_in_save_restore_list(uint32_t msr_index)
+ {
+ 	const struct kvm_msr_list *list = kvm_get_msr_index_list();
+diff --git a/tools/testing/selftests/kvm/x86_64/get_msr_index_features.c b/tools/testing/selftests/kvm/x86_64/get_msr_index_features.c
+index 4ef60adbe108..1e366fdfe7be 100644
+--- a/tools/testing/selftests/kvm/x86_64/get_msr_index_features.c
++++ b/tools/testing/selftests/kvm/x86_64/get_msr_index_features.c
+@@ -15,108 +15,24 @@
+ #include "kvm_util.h"
  #include "processor.h"
- #include "vmx.h"
  
--#define VCPU_ID		5
- #define PREEMPTION_TIMER_VALUE			100000000ull
- #define PREEMPTION_TIMER_VALUE_THRESHOLD1	 80000000ull
- 
-@@ -159,6 +158,7 @@ int main(int argc, char *argv[])
- 	struct kvm_regs regs1, regs2;
- 	struct kvm_vm *vm;
- 	struct kvm_run *run;
-+	struct kvm_vcpu *vcpu;
- 	struct kvm_x86_state *state;
- 	struct ucall uc;
- 	int stage;
-@@ -175,22 +175,22 @@ int main(int argc, char *argv[])
+-static int kvm_num_index_msrs(int kvm_fd, int nmsrs)
++int main(int argc, char *argv[])
+ {
+-	struct kvm_msr_list *list;
+-	int r;
+-
+-	list = malloc(sizeof(*list) + nmsrs * sizeof(list->indices[0]));
+-	list->nmsrs = nmsrs;
+-	r = ioctl(kvm_fd, KVM_GET_MSR_INDEX_LIST, list);
+-	TEST_ASSERT(r == -1 && errno == E2BIG,
+-				"Unexpected result from KVM_GET_MSR_INDEX_LIST probe, r: %i",
+-				r);
+-
+-	r = list->nmsrs;
+-	free(list);
+-	return r;
+-}
+-
+-static void test_get_msr_index(void)
+-{
+-	int old_res, res, kvm_fd;
+-	struct kvm_msr_list *list;
+-
+-	kvm_fd = open_kvm_dev_path_or_exit();
+-
+-	old_res = kvm_num_index_msrs(kvm_fd, 0);
+-	TEST_ASSERT(old_res != 0, "Expecting nmsrs to be > 0");
+-
+-	if (old_res != 1) {
+-		res = kvm_num_index_msrs(kvm_fd, 1);
+-		TEST_ASSERT(res > 1, "Expecting nmsrs to be > 1");
+-		TEST_ASSERT(res == old_res, "Expecting nmsrs to be identical");
+-	}
+-
+-	list = malloc(sizeof(*list) + old_res * sizeof(list->indices[0]));
+-	list->nmsrs = old_res;
+-	kvm_ioctl(kvm_fd, KVM_GET_MSR_INDEX_LIST, list);
+-
+-	TEST_ASSERT(list->nmsrs == old_res, "Expecting nmsrs to be identical");
+-	free(list);
+-
+-	close(kvm_fd);
+-}
+-
+-static int kvm_num_feature_msrs(int kvm_fd, int nmsrs)
+-{
+-	struct kvm_msr_list *list;
+-	int r;
+-
+-	list = malloc(sizeof(*list) + nmsrs * sizeof(list->indices[0]));
+-	list->nmsrs = nmsrs;
+-	r = __kvm_ioctl(kvm_fd, KVM_GET_MSR_FEATURE_INDEX_LIST, list);
+-	TEST_ASSERT(r == -1 && errno == E2BIG,
+-		"Unexpected result from KVM_GET_MSR_FEATURE_INDEX_LIST probe, r: %i",
+-				r);
+-
+-	r = list->nmsrs;
+-	free(list);
+-	return r;
+-}
+-
+-struct kvm_msr_list *kvm_get_msr_feature_list(int kvm_fd, int nmsrs)
+-{
+-	struct kvm_msr_list *list;
+-
+-	list = malloc(sizeof(*list) + nmsrs * sizeof(list->indices[0]));
+-	list->nmsrs = nmsrs;
+-	kvm_ioctl(kvm_fd, KVM_GET_MSR_FEATURE_INDEX_LIST, list);
+-
+-	return list;
+-}
+-
+-static void test_get_msr_feature(void)
+-{
+-	int res, old_res, i, kvm_fd;
+-	struct kvm_msr_list *feature_list;
+-
+-	kvm_fd = open_kvm_dev_path_or_exit();
+-
+-	old_res = kvm_num_feature_msrs(kvm_fd, 0);
+-	TEST_ASSERT(old_res != 0, "Expecting nmsrs to be > 0");
+-
+-	if (old_res != 1) {
+-		res = kvm_num_feature_msrs(kvm_fd, 1);
+-		TEST_ASSERT(res > 1, "Expecting nmsrs to be > 1");
+-		TEST_ASSERT(res == old_res, "Expecting nmsrs to be identical");
++	const struct kvm_msr_list *feature_list;
++	int i;
++
++	/*
++	 * Skip the entire test if MSR_FEATURES isn't supported, other tests
++	 * will cover the "regular" list of MSRs, the coverage here is purely
++	 * opportunistic and not interesting on its own.
++	 */
++	if (!kvm_check_cap(KVM_CAP_GET_MSR_FEATURES)) {
++		print_skip("KVM_CAP_GET_MSR_FEATURES not supported");
++		exit(KSFT_SKIP);
  	}
  
- 	/* Create VM */
--	vm = vm_create_default(VCPU_ID, 0, guest_code);
--	run = vcpu_state(vm, VCPU_ID);
-+	vm = vm_create_with_one_vcpu(&vcpu, guest_code);
-+	run = vcpu->run;
+-	feature_list = kvm_get_msr_feature_list(kvm_fd, old_res);
+-	TEST_ASSERT(old_res == feature_list->nmsrs,
+-				"Unmatching number of msr indexes");
++	(void)kvm_get_msr_index_list();
  
--	vcpu_regs_get(vm, VCPU_ID, &regs1);
-+	vcpu_regs_get(vm, vcpu->id, &regs1);
- 
- 	vcpu_alloc_vmx(vm, &vmx_pages_gva);
--	vcpu_args_set(vm, VCPU_ID, 1, vmx_pages_gva);
-+	vcpu_args_set(vm, vcpu->id, 1, vmx_pages_gva);
- 
- 	for (stage = 1;; stage++) {
--		_vcpu_run(vm, VCPU_ID);
-+		vcpu_run(vm, vcpu->id);
- 		TEST_ASSERT(run->exit_reason == KVM_EXIT_IO,
- 			    "Stage %d: unexpected exit reason: %u (%s),\n",
- 			    stage, run->exit_reason,
- 			    exit_reason_str(run->exit_reason));
- 
--		switch (get_ucall(vm, VCPU_ID, &uc)) {
-+		switch (get_ucall(vm, vcpu->id, &uc)) {
- 		case UCALL_ABORT:
- 			TEST_FAIL("%s at %s:%ld", (const char *)uc.args[0],
- 				  __FILE__, uc.args[1]);
-@@ -232,22 +232,22 @@ int main(int argc, char *argv[])
- 				stage, uc.args[4], uc.args[5]);
- 		}
- 
--		state = vcpu_save_state(vm, VCPU_ID);
-+		state = vcpu_save_state(vm, vcpu->id);
- 		memset(&regs1, 0, sizeof(regs1));
--		vcpu_regs_get(vm, VCPU_ID, &regs1);
-+		vcpu_regs_get(vm, vcpu->id, &regs1);
- 
- 		kvm_vm_release(vm);
- 
- 		/* Restore state in a new VM.  */
--		kvm_vm_restart(vm);
--		vm_vcpu_add(vm, VCPU_ID);
--		vcpu_set_cpuid(vm, VCPU_ID, kvm_get_supported_cpuid());
--		vcpu_load_state(vm, VCPU_ID, state);
--		run = vcpu_state(vm, VCPU_ID);
-+		vcpu = vm_recreate_with_one_vcpu(vm);
-+
-+		vcpu_set_cpuid(vm, vcpu->id, kvm_get_supported_cpuid());
-+		vcpu_load_state(vm, vcpu->id, state);
-+		run = vcpu->run;
- 		kvm_x86_state_cleanup(state);
- 
- 		memset(&regs2, 0, sizeof(regs2));
--		vcpu_regs_get(vm, VCPU_ID, &regs2);
-+		vcpu_regs_get(vm, vcpu->id, &regs2);
- 		TEST_ASSERT(!memcmp(&regs1, &regs2, sizeof(regs2)),
- 			    "Unexpected register values after vcpu_load_state; rdi: %lx rsi: %lx",
- 			    (ulong) regs2.rdi, (ulong) regs2.rsi);
++	feature_list = kvm_get_feature_msr_index_list();
+ 	for (i = 0; i < feature_list->nmsrs; i++)
+ 		kvm_get_feature_msr(feature_list->indices[i]);
+-
+-	free(feature_list);
+-	close(kvm_fd);
+-}
+-
+-int main(int argc, char *argv[])
+-{
+-	if (kvm_check_cap(KVM_CAP_GET_MSR_FEATURES))
+-		test_get_msr_feature();
+-
+-	test_get_msr_index();
+ }
 -- 
 2.36.1.255.ge46751e96f-goog
 
