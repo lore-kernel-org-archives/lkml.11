@@ -2,129 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FB59CCA473
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 12:47:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE452C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 12:47:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244363AbiFCMrb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 08:47:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43430 "EHLO
+        id S244408AbiFCMri (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 08:47:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244381AbiFCMr3 (ORCPT
+        with ESMTP id S244389AbiFCMre (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 08:47:29 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D615626B
-        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 05:47:27 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id e2so10308178wrc.1
-        for <linux-kernel@vger.kernel.org>; Fri, 03 Jun 2022 05:47:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=ernKh7q0koX2BgfmbtKyvN+sg+w6Vr7ESQoRzLB3iMc=;
-        b=JRjI1YhO3OMnpJqoPgRm8jo8atjsJf/awv7LDrMgBEmraIDVecraxoyzrdvif7TeZv
-         p/rpk5pKcsMRxcL06Z/8LLrLgqe4K9iEfIVst1W+y3URe9T7WIzz+DgjaKI7lgsx1E5Y
-         IdJkC5eXVEctg7X5aiZ0lFomxlxG1mhz1Z0W9Gyjb1TscH+ZW69wlO8wwo/bpqQzInIn
-         9m6rMB/aSHVKrcy1L0k4ZBmauPmWGWZfIRSULDQ751gFI1T+eUZmWEBiRMcFNV7XJtA1
-         ew4P+TNEBUC7L1NdTzDDvB3tlmRTtGc1idpKzCRnzEw1GMTE9JIhT5Lq9zi2f/3ToMmH
-         EukA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=ernKh7q0koX2BgfmbtKyvN+sg+w6Vr7ESQoRzLB3iMc=;
-        b=MwYusyx6NtVd45UytIeICVrWdFqgZve6wxfH0wXy+jZNUr3kItMxGW1okinE3tBJMR
-         xwZkQw7fh72GfNQ9tbR932ifprmyFvgeNEaa39c6hJpsKGOB0qQmX/fyajtUq9DH5y4v
-         h9a0XXJgwC9hjBz9Fgit+A/7wbD6qxPlieObCMStLxuxt7r6W8cODxDDDBKHe8IgR/n1
-         f4NlfeUVr3dDNlnU8a13ku/mbY0wlqjofNfgdN71IK3ENdpouga/B7Kmj7WB/FusWiQR
-         kh81ZCROsUxojRO/Y7uBUL72NoGzGB+K7xeUOyhQHLpDejE6/43UoXu987fudBAMTa3+
-         e/lA==
-X-Gm-Message-State: AOAM533/Vj9gP2aOg2TQeaRxD7eHzm3rKUGkG+o8JTXk3Tqr+f145dQ5
-        e9OwiBJfMWT6kLNtaWoGX13Mbkcx8meiZrLLrWFSNw==
-X-Google-Smtp-Source: ABdhPJzA3MAsqbhrglKAnMzFv+rkvY0j8WZELmwPb8U9af72b+nK0qRcTfi5bQ7VIe9dd3ua7OB3k8UPZqsTk16C9i4=
-X-Received: by 2002:a5d:6481:0:b0:20f:ed13:f28d with SMTP id
- o1-20020a5d6481000000b0020fed13f28dmr7965679wri.719.1654260444757; Fri, 03
- Jun 2022 05:47:24 -0700 (PDT)
+        Fri, 3 Jun 2022 08:47:34 -0400
+Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E31EBC81
+        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 05:47:32 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by lithops.sigma-star.at (Postfix) with ESMTP id 57095609B3C1;
+        Fri,  3 Jun 2022 14:47:31 +0200 (CEST)
+Received: from lithops.sigma-star.at ([127.0.0.1])
+        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id zgza6Iw92Vaj; Fri,  3 Jun 2022 14:47:31 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by lithops.sigma-star.at (Postfix) with ESMTP id 087F2609B3C2;
+        Fri,  3 Jun 2022 14:47:31 +0200 (CEST)
+Received: from lithops.sigma-star.at ([127.0.0.1])
+        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id cfWZlBJTWb8r; Fri,  3 Jun 2022 14:47:30 +0200 (CEST)
+Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
+        by lithops.sigma-star.at (Postfix) with ESMTP id DEAC7609B3C1;
+        Fri,  3 Jun 2022 14:47:30 +0200 (CEST)
+Date:   Fri, 3 Jun 2022 14:47:30 +0200 (CEST)
+From:   Richard Weinberger <richard@nod.at>
+To:     torvalds <torvalds@linux-foundation.org>
+Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-um <linux-um@lists.infradead.org>
+Message-ID: <1471475855.130153.1654260450880.JavaMail.zimbra@nod.at>
+Subject: [GIT PULL] UML updates for v5.19-rc1
 MIME-Version: 1.0
-From:   Michael Schaller <misch@google.com>
-Date:   Fri, 3 Jun 2022 14:46:48 +0200
-Message-ID: <CALt099JajMVCwHgdRdRSF1uhNC=EO+tTq4T4Bg8QDwUO3uX83w@mail.gmail.com>
-Subject: New partition on loop device doesn't appear in /dev anymore with
- kernel 5.17.0 and newer (repro script included)
-To:     axboe@kernel.dk
-Cc:     hch@lst.de, linux-block@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: multipart/mixed; boundary="0000000000002d888805e08a8672"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [195.201.40.130]
+X-Mailer: Zimbra 8.8.12_GA_3807 (ZimbraWebClient - FF97 (Linux)/8.8.12_GA_3809)
+Thread-Index: 3VceN5utQRUfs6JID6rD6pLjE6sKbQ==
+Thread-Topic: UML updates for v5.19-rc1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---0000000000002d888805e08a8672
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Linus,
 
-Dear maintainer,
+The following changes since commit 42226c989789d8da4af1de0c31070c96726d990c:
 
-Since kernel 5.17.0 it appears that creating a partition on a loop
-device doesn't automatically create the corresponding /dev/loop#p#
-entry anymore. We rolled back to kernel 5.16.18, which doesn't have
-this issue. I also tested kernel 5.18.1 and it is affected as well.
+  Linux 5.18-rc7 (2022-05-15 18:08:58 -0700)
 
-I've attached repro.sh, which is a Bash script that reproduces the
-issue (tested on Debian testing). The script only requires standard
-Linux tools (including GNU Parted). The script creates a raw disk
-image file (sparse), associates the file with a loop device and
-partitions the loop device so that it only contains an ESP. At this
-point there should be a /dev/loop#p1 entry so that the following
-mkfs.vfat can create the filesystem for the ESP. However on kernel
-5.17.0 and newer /dev/loop#p1 isn't created and mkfs.vfat fails with
-"No such file or directory". Furthermore on kernel 5.17.0 and newer we
-see the following error in the kernel log: "I/O error, dev loop#,
-sector 32640 op 0x0:(READ) flags 0x80700 phys_seg 1 prio class 0"
+are available in the Git repository at:
 
-I also did a kernel bisect against the vanilla stable kernels and that
-revealed commit 1ebe2e5f9d68e94c524aba876f27b945669a7879 as the first
-problematic commit. I've cc'ed the commit author as well.
+  git://git.kernel.org/pub/scm/linux/kernel/git/rw/uml.git tags/for-linus-5.19-rc1
 
-This issue is also tracked on the Debian side with
-https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=3D1012298.
+for you to fetch changes up to 2a4a62a14be1947fa945c5c11ebf67326381a568:
 
-Best,
+  um: Fix out-of-bounds read in LDT setup (2022-05-27 09:03:41 +0200)
 
-Michael Schaller
-Site Reliability Engineer - Software Engineer
-misch@google.com
+----------------------------------------------------------------
+This pull request contains the following changes for UML:
 
-Google Germany GmbH
-Erika-Mann-Stra=C3=9Fe 33
-80636 M=C3=BCnchen
+- Various cleanups and fixes: xterm, serial line, time travel
+- Set ARCH_HAS_GCOV_PROFILE_ALL
 
-Gesch=C3=A4ftsf=C3=BChrer: Paul Manicle, Liana Sebastian
-Registergericht und -nummer: Hamburg, HRB 86891
-Sitz der Gesellschaft: Hamburg
+----------------------------------------------------------------
+Johannes Berg (6):
+      um: xterm: Make default terminal emulator configurable
+      um: daemon: Make default socket configurable
+      um: Use asm-generic/dma-mapping.h
+      um: line: Use separate IRQs per line
+      um: virtio_uml: Fix broken device handling in time-travel
+      um: chan_user: Fix winch_tramp() return value
 
---0000000000002d888805e08a8672
-Content-Type: application/x-shellscript; name="repro.sh"
-Content-Disposition: attachment; filename="repro.sh"
-Content-Transfer-Encoding: base64
-Content-ID: <f_l3yfw9qh0>
-X-Attachment-Id: f_l3yfw9qh0
+Vincent Whitchurch (2):
+      um: Enable ARCH_HAS_GCOV_PROFILE_ALL
+      um: Fix out-of-bounds read in LDT setup
 
-IyEvYmluL2Jhc2gKCnNldCAtZXgKCmlmIFtbICIke0VVSUR9IiAhPSAwIF1dOyB0aGVuCiAgPiYy
-IGVjaG8gInJvb3QgcmlnaHRzIHJlcXVpcmVkIgogIGV4aXQgMgpmaQoKaW1nPScvdG1wL3Jhdy5p
-bWcnICAjIFJhdyBkaXNrIGltYWdlIGZpbGUuCmRldj0nJyAgIyBMb29wIGRldmljZSBhc3NvY2lh
-dGVkIHdpdGggdGhlIHJhdyBkaXNrIGltYWdlIGZpbGUuCgpmdW5jdGlvbiBjbGVhbnVwIHsKICBz
-ZXQgK2UKICBybSAtcmYgIiR7cmVzfSIKICBybSAtZiAiJHtjZmd9IgogIGlmIFsgLW4gIiR7ZGV2
-fSIgXTsgdGhlbgogICAgIyBGcmVlIGxvb3AgZGV2aWNlLgogICAgbG9zZXR1cCAtLWRldGFjaCAi
-JHtkZXZ9IgogIGZpCiAgcm0gLWYgIiR7aW1nfSIKfQp0cmFwIGNsZWFudXAgRVhJVAoKIyBDcmVh
-dGUgc3BhcnNlIGZpbGUgZm9yIGEgcmF3IGRpc2sgaW1hZ2UuCmRkIGlmPS9kZXYvemVybyBzdGF0
-dXM9bm9uZSBvZj0iJHtpbWd9IiBicz0xIGNvdW50PTAgc2Vlaz0xNk1pQgoKIyBBc3NvY2lhdGUg
-YSBsb29wIGRldmljZSB3aXRoIHRoZSByYXcgZGlzayBpbWFnZS4KbG9zZXR1cCAtLWZpbmQgIiR7
-aW1nfSIKCiMgR2V0IHRoZSBhc3NvY2lhdGVkIGxvb3AgZGV2aWNlLgpkZXY9JChsb3NldHVwIC0t
-YXNzb2NpYXRlZCAiJHtpbWd9IiB8IGN1dCAtZCAnOicgLWYgMSkKaWYgWyAteiAiJHtkZXZ9IiBd
-OyB0aGVuCiAgPiYyIGVjaG8gJ2ZhaWxlZCB0byBmaW5kIGFzc29jaWF0ZWQgbG9vcCBkZXZpY2Un
-CiAgZXhpdCAxCmZpCgojIENyZWF0ZSBHUFQgcGFydGl0aW9uIHRhYmxlIHdpdGggYW4gRVNQLgpw
-YXJ0ZWQgLXMgIiR7ZGV2fSIgbWtsYWJlbCBncHQKcGFydGVkIC1zICIke2Rldn0iIG1rcGFydCBw
-cmltYXJ5ICJmYXQzMiIgMU1pQiAxMDAlCnBhcnRlZCAtcyAiJHtkZXZ9IiBzZXQgMSBib290IG9u
-CnBhcnRwcm9iZSAiJHtkZXZ9IiAgIyBGb3IgZ29vZCBtZWFzdXJlIGJ1dCBub3QgbmVlZGVkIG9u
-IGtlcm5lbCA1LjE2Cm1rZnMudmZhdCAgIiR7ZGV2fXAxIiAgIyBUaGlzIGNvbW1hbmQgZmFpbHMg
-d2l0aCBrZXJuZWwgNS4xNwo=
---0000000000002d888805e08a8672--
+ arch/um/Kconfig                 |  1 +
+ arch/um/drivers/Kconfig         | 15 +++++++++++++++
+ arch/um/drivers/Makefile        |  2 ++
+ arch/um/drivers/chan_kern.c     | 10 +++++-----
+ arch/um/drivers/chan_user.c     |  9 +++++----
+ arch/um/drivers/daemon_kern.c   |  2 +-
+ arch/um/drivers/line.c          | 22 +++++++++++++---------
+ arch/um/drivers/line.h          |  4 ++--
+ arch/um/drivers/ssl.c           |  2 --
+ arch/um/drivers/stdio_console.c |  2 --
+ arch/um/drivers/virtio_uml.c    | 33 +++++++++++++++++++++++----------
+ arch/um/drivers/xterm.c         |  7 ++++---
+ arch/um/include/asm/Kbuild      |  1 +
+ arch/um/include/asm/irq.h       | 22 +++++++++-------------
+ arch/x86/um/ldt.c               |  6 ++++--
+ 15 files changed, 85 insertions(+), 53 deletions(-)
