@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B22FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:56:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 745ECCCA47C
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:56:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345838AbiFCR4i (ORCPT
+        id S1345886AbiFCR4p (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:56:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46566 "EHLO
+        Fri, 3 Jun 2022 13:56:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346431AbiFCRvK (ORCPT
+        with ESMTP id S1346422AbiFCRvJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:51:10 -0400
+        Fri, 3 Jun 2022 13:51:09 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2F8B53A73;
-        Fri,  3 Jun 2022 10:48:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7550F53726;
+        Fri,  3 Jun 2022 10:48:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6502B60EE9;
-        Fri,  3 Jun 2022 17:48:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B597C385B8;
-        Fri,  3 Jun 2022 17:48:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 112DF60F3B;
+        Fri,  3 Jun 2022 17:48:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F35C2C385A9;
+        Fri,  3 Jun 2022 17:48:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278489;
-        bh=t2iku9VsGb3Gnb7+FcVhBaBUkyqnTKlCN7xRRtn7nVw=;
+        s=korg; t=1654278486;
+        bh=gdpuj4BS15+mxIcnIpId4JL7JAXR0GkknTGFgebL6Zc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=caxM0skyVyLeF56lD7qbX6u/BhwDbRITveH0BKuDGcl+qAQYqC85XB7pKHIwE+t4z
-         gPV5NDoEfkqNH7WhlgIOX5Jyzts1sd2adM/Nd3Dicl2b4iVtY+vWciVzaJBUk3IENt
-         O++K7KjgGSS4zzFvk0uV9hgO9JhdTU1USfxC8Sdg=
+        b=KLlSZ04NARNLGJRHnV+EvnjiBUTD3nLo4s+22NtuHB+G7bTjTk/0UbPYK4UHJcLGJ
+         ExAXib+B17y5CHMw0FmfCMAh7p8x4gXmFfRlGHYEZCP9hKoS6+E21Xmo3F94HdnC+o
+         fQn0PBaWnP/ybcx4voE6iBFXlSrcEP6l1WbC9ZlM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiu Jianfeng <xiujianfeng@huawei.com>,
-        Stefan Berger <stefanb@linux.ibm.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>
-Subject: [PATCH 5.10 48/53] tpm: ibmvtpm: Correct the return value in tpm_ibmvtpm_probe()
-Date:   Fri,  3 Jun 2022 19:43:33 +0200
-Message-Id: <20220603173820.116053243@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Subject: [PATCH 5.10 21/53] drm/i915: Fix -Wstringop-overflow warning in call to intel_read_wm_latency()
+Date:   Fri,  3 Jun 2022 19:43:06 +0200
+Message-Id: <20220603173819.341399118@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173818.716010877@linuxfoundation.org>
 References: <20220603173818.716010877@linuxfoundation.org>
@@ -50,32 +49,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiu Jianfeng <xiujianfeng@huawei.com>
+From: Gustavo A. R. Silva <gustavoars@kernel.org>
 
-commit d0dc1a7100f19121f6e7450f9cdda11926aa3838 upstream.
+commit 336feb502a715909a8136eb6a62a83d7268a353b upstream.
 
-Currently it returns zero when CRQ response timed out, it should return
-an error code instead.
+Fix the following -Wstringop-overflow warnings when building with GCC-11:
 
-Fixes: d8d74ea3c002 ("tpm: ibmvtpm: Wait for buffer to be set before proceeding")
-Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
-Reviewed-by: Stefan Berger <stefanb@linux.ibm.com>
-Acked-by: Jarkko Sakkinen <jarkko@kernel.org>
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+drivers/gpu/drm/i915/intel_pm.c:3106:9: warning: ‘intel_read_wm_latency’ accessing 16 bytes in a region of size 10 [-Wstringop-overflow=]
+ 3106 |         intel_read_wm_latency(dev_priv, dev_priv->wm.pri_latency);
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/gpu/drm/i915/intel_pm.c:3106:9: note: referencing argument 2 of type ‘u16 *’ {aka ‘short unsigned int *’}
+drivers/gpu/drm/i915/intel_pm.c:2861:13: note: in a call to function ‘intel_read_wm_latency’
+ 2861 | static void intel_read_wm_latency(struct drm_i915_private *dev_priv,
+      |             ^~~~~~~~~~~~~~~~~~~~~
+
+by removing the over-specified array size from the argument declarations.
+
+It seems that this code is actually safe because the size of the
+array depends on the hardware generation, and the function checks
+for that.
+
+Notice that wm can be an array of 5 elements:
+drivers/gpu/drm/i915/intel_pm.c:3109:   intel_read_wm_latency(dev_priv, dev_priv->wm.pri_latency);
+
+or an array of 8 elements:
+drivers/gpu/drm/i915/intel_pm.c:3131:   intel_read_wm_latency(dev_priv, dev_priv->wm.skl_latency);
+
+and the compiler legitimately complains about that.
+
+This helps with the ongoing efforts to globally enable
+-Wstringop-overflow.
+
+Link: https://github.com/KSPP/linux/issues/181
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/tpm/tpm_ibmvtpm.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/i915/intel_pm.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/char/tpm/tpm_ibmvtpm.c
-+++ b/drivers/char/tpm/tpm_ibmvtpm.c
-@@ -683,6 +683,7 @@ static int tpm_ibmvtpm_probe(struct vio_
- 	if (!wait_event_timeout(ibmvtpm->crq_queue.wq,
- 				ibmvtpm->rtce_buf != NULL,
- 				HZ)) {
-+		rc = -ENODEV;
- 		dev_err(dev, "CRQ response timed out\n");
- 		goto init_irq_cleanup;
- 	}
+--- a/drivers/gpu/drm/i915/intel_pm.c
++++ b/drivers/gpu/drm/i915/intel_pm.c
+@@ -2846,7 +2846,7 @@ static void ilk_compute_wm_level(const s
+ }
+ 
+ static void intel_read_wm_latency(struct drm_i915_private *dev_priv,
+-				  u16 wm[8])
++				  u16 wm[])
+ {
+ 	struct intel_uncore *uncore = &dev_priv->uncore;
+ 
 
 
