@@ -2,58 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43E0BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 00:58:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EC57C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 00:58:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236088AbiFCA6L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 20:58:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49042 "EHLO
+        id S240855AbiFCA6P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 20:58:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240312AbiFCAqA (ORCPT
+        with ESMTP id S240602AbiFCAra (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 20:46:00 -0400
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E88483465F
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:45:51 -0700 (PDT)
-Received: by mail-pj1-x1049.google.com with SMTP id oa9-20020a17090b1bc900b001e67bbd7f83so2631978pjb.4
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:45:51 -0700 (PDT)
+        Thu, 2 Jun 2022 20:47:30 -0400
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B1388E
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:46:45 -0700 (PDT)
+Received: by mail-pl1-x649.google.com with SMTP id n8-20020a170902d2c800b001663868e2c2so2328289plc.21
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:46:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=nBXYPby3wQYMmU1zAC8L3BCfmsSbMK1J9bnjhYnJ/Uo=;
-        b=ArelePAV/cTNiUXUf/fFsGGo9+O34PfITXBAJjg5iwhReaNo1hGGJrpdaZB07DuyGS
-         ZsvbPG1nyx7zu4Dng3ICKBPqpL8iEthA2+96EbozaCQCRyIeDAlUvjE+65hrqCygLnyK
-         P9mifMDmsp/9UtTKoR3DiajiZpZJTpKMqddnNmUYW4xJQnu1zuTcpfP3+ZgwAvkpH8Uq
-         Ilr1w+R7wOeQDtyx7qLG1/dL/mpC3yC8uFsFNiqWxDabLkfWEyEPVVg/xVYi50shpMVv
-         0eDP0HO/pAnNVn4cr8QuFQcPcSIuybCcpih6mo7xkCb/66oDlgdE62EeRT5GzYn68HZV
-         IzxA==
+        bh=caX/Iwva7KZjPf9D4zGbZUtTlsxAdWPspT3KNS02YNc=;
+        b=iqN4A3YbUmgT9VeFBFw9qZJ/KLrlJwkaMoXIGyH1AbPVxkzbiyO5/di/EdcdkT+wID
+         zjGUV4PQLtBZyOBWeVek0rI1fhpp127fhXnYlqKe7PFnEEib3IcB+YJQdcMG2PhzxBF7
+         eLPgeNaRLvmPq3ebhnp3RneDSskuipXsE7BtWclW9E48SqGJqVV98HMu04SD2nnlLUm7
+         z1cYq5buYfKII2e2clWOIKO1tuQ9YySx8f/zJk0jcSd727BgW5asrWQvmjztPJl1lNt4
+         pgya/QaVr6a8KQLKOFZlyAf8eIbxsPRAY1lKHIS/25dqGueuu4CiPF9014a7qe/5bmjf
+         He6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=nBXYPby3wQYMmU1zAC8L3BCfmsSbMK1J9bnjhYnJ/Uo=;
-        b=cPH1m7DZSclSmwxlalKB4i2szFz4u0j1D2F189P+Y8BbZYtWmEWh1sN1qUT4bRCZ/M
-         YdW0FBi5kBttximPxolzqJrRVnSsy5en0FvWwvdjwhgNtLvLuXZWVu2cZLSfsTuwwVkT
-         9VVdOaCblEVeqTpAYgzr3OvokrycwF9oVdYlWBFBY9NRpv2wP+2yhYs+jWySkcDij19l
-         WBKFVq4NMRFR9llZx0B+fq1guR2nbSq9E2KdU3Ofgp6jxbcFIDDvabkf4ar05e28T7i0
-         z1wpd+7Rr/IJyIfAFN5KXE5n8vRvM9Vkuq4eWU0aAXbD/BFSIEb4Ir08BBB2pTeKF2gx
-         TCpg==
-X-Gm-Message-State: AOAM532YGJ+ybGCwsfJIAVsljfP6XiZPvr9E0QM7R7/1eplhaN4oXk/H
-        C5X5j/7JUOBSslkFJZxiSrTD+oT5fYU=
-X-Google-Smtp-Source: ABdhPJwNJhjR1hacn4P3CyUig+xVNDD54GBx0sqPkoH+gcx2WhsJ7jcqBljDKzixLxShwZF9fhKv7EDE+HI=
+        bh=caX/Iwva7KZjPf9D4zGbZUtTlsxAdWPspT3KNS02YNc=;
+        b=eJ/RPjrpiqVJJWLTWG425TR6F8ur3sv8AkojpZEP2/Bihmuw+jZFXcyAOtDf0RZKBz
+         cs7f82fEYm1Af0t7pqe/f3OOoDxqkUuIf/ktDEz14CPNPCWDl4dHoSgW/0xZcsb8bMHM
+         mots6w92/n9VACOIL8D0s40wIRkWTfJcE0RTBwhkVDFCHEH9gVRa552i1pojkaypqKHc
+         tjRVDSf84IXVgVNZ6EJoGyMTIWUzIjIpbRpd1Q1kZfhwmgrgPlnM6bBBKIjTbLxTS5Ax
+         Sy9ijXsLdwp00q0LBVEQ0vX7qO79jXyuBMMX7Ef0cwLfMYwSOp/tDUGT97PRsoq/8kVT
+         0Jyg==
+X-Gm-Message-State: AOAM5304kFnju9Tbc20uB+MQFclI8zzIR3BJQ9cB3wa6k8Hj9rNd2UPI
+        JC6uZ1z0djPSCrcp8+WxRepsodsuC5o=
+X-Google-Smtp-Source: ABdhPJyCTa+Fvtw58OYPuRxxwE4mQD/9HU8NkhcWBLMv1zyCAc7pwvK8LE+HwoUeNjvv0AaQkHN0tM1lxN8=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:903:246:b0:153:84fe:a9b0 with SMTP id
- j6-20020a170903024600b0015384fea9b0mr7568191plh.163.1654217151393; Thu, 02
- Jun 2022 17:45:51 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a05:6a00:84c:b0:519:1f69:2224 with SMTP id
+ q12-20020a056a00084c00b005191f692224mr7659832pfk.13.1654217204466; Thu, 02
+ Jun 2022 17:46:44 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri,  3 Jun 2022 00:42:21 +0000
+Date:   Fri,  3 Jun 2022 00:42:51 +0000
 In-Reply-To: <20220603004331.1523888-1-seanjc@google.com>
-Message-Id: <20220603004331.1523888-75-seanjc@google.com>
+Message-Id: <20220603004331.1523888-105-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220603004331.1523888-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v2 074/144] KVM: selftests: Convert tsc_msrs_test away from VCPU_ID
+Subject: [PATCH v2 104/144] KVM: selftests: Convert psci_test away from VCPU_ID
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     kvm@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
@@ -66,130 +66,145 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert tsc_msrs_test to use vm_create_with_one_vcpu() and pass around a
-'struct kvm_vcpu' object instead of using a global VCPU_ID.
+Pass around 'struct kvm_vcpu' objects in psci_test instead of relying on
+global VCPU_IDs.  Ideally, the test wouldn't have to manually create
+vCPUs and thus care about vCPU IDs, but it's not the end of the world and
+avoiding that behavior isn't guaranteed to be a net positive (an attempt
+at macro shenanigans did not go very well).
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../selftests/kvm/x86_64/tsc_msrs_test.c      | 35 +++++++++----------
- 1 file changed, 16 insertions(+), 19 deletions(-)
+ .../testing/selftests/kvm/aarch64/psci_test.c | 50 +++++++++----------
+ 1 file changed, 25 insertions(+), 25 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/x86_64/tsc_msrs_test.c b/tools/testing/selftests/kvm/x86_64/tsc_msrs_test.c
-index a426078b16a3..3b7bf660eced 100644
---- a/tools/testing/selftests/kvm/x86_64/tsc_msrs_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/tsc_msrs_test.c
-@@ -9,14 +9,12 @@
- #include "kvm_util.h"
+diff --git a/tools/testing/selftests/kvm/aarch64/psci_test.c b/tools/testing/selftests/kvm/aarch64/psci_test.c
+index 347cb5c130e2..d9695a939cc9 100644
+--- a/tools/testing/selftests/kvm/aarch64/psci_test.c
++++ b/tools/testing/selftests/kvm/aarch64/psci_test.c
+@@ -17,9 +17,6 @@
  #include "processor.h"
+ #include "test_util.h"
  
--#define VCPU_ID 0
+-#define VCPU_ID_SOURCE 0
+-#define VCPU_ID_TARGET 1
 -
- #define UNITY                  (1ull << 30)
- #define HOST_ADJUST            (UNITY * 64)
- #define GUEST_STEP             (UNITY * 4)
- #define ROUND(x)               ((x + UNITY / 2) & -UNITY)
- #define rounded_rdmsr(x)       ROUND(rdmsr(x))
--#define rounded_host_rdmsr(x)  ROUND(vcpu_get_msr(vm, 0, x))
-+#define rounded_host_rdmsr(x)  ROUND(vcpu_get_msr(vm, vcpu->id, x))
+ #define CPU_ON_ENTRY_ADDR 0xfeedf00dul
+ #define CPU_ON_CONTEXT_ID 0xdeadc0deul
  
- static void guest_code(void)
- {
-@@ -66,15 +64,13 @@ static void guest_code(void)
- 	GUEST_DONE();
+@@ -64,16 +61,17 @@ static uint64_t psci_features(uint32_t func_id)
+ 	return res.a0;
  }
  
--static void run_vcpu(struct kvm_vm *vm, uint32_t vcpuid, int stage)
-+static void run_vcpu(struct kvm_vcpu *vcpu, int stage)
+-static void vcpu_power_off(struct kvm_vm *vm, uint32_t vcpuid)
++static void vcpu_power_off(struct kvm_vcpu *vcpu)
+ {
+ 	struct kvm_mp_state mp_state = {
+ 		.mp_state = KVM_MP_STATE_STOPPED,
+ 	};
+ 
+-	vcpu_mp_state_set(vm, vcpuid, &mp_state);
++	vcpu_mp_state_set(vcpu->vm, vcpu->id, &mp_state);
+ }
+ 
+-static struct kvm_vm *setup_vm(void *guest_code)
++static struct kvm_vm *setup_vm(void *guest_code, struct kvm_vcpu **source,
++			       struct kvm_vcpu **target)
+ {
+ 	struct kvm_vcpu_init init;
+ 	struct kvm_vm *vm;
+@@ -84,28 +82,28 @@ static struct kvm_vm *setup_vm(void *guest_code)
+ 	vm_ioctl(vm, KVM_ARM_PREFERRED_TARGET, &init);
+ 	init.features[0] |= (1 << KVM_ARM_VCPU_PSCI_0_2);
+ 
+-	aarch64_vcpu_add(vm, VCPU_ID_SOURCE, &init, guest_code);
+-	aarch64_vcpu_add(vm, VCPU_ID_TARGET, &init, guest_code);
++	*source = aarch64_vcpu_add(vm, 0, &init, guest_code);
++	*target = aarch64_vcpu_add(vm, 1, &init, guest_code);
+ 
+ 	return vm;
+ }
+ 
+-static void enter_guest(struct kvm_vm *vm, uint32_t vcpuid)
++static void enter_guest(struct kvm_vcpu *vcpu)
  {
  	struct ucall uc;
  
--	vcpu_args_set(vm, vcpuid, 1, vcpuid);
+-	vcpu_run(vm, vcpuid);
+-	if (get_ucall(vm, vcpuid, &uc) == UCALL_ABORT)
 +	vcpu_run(vcpu->vm, vcpu->id);
- 
--	vcpu_ioctl(vm, vcpuid, KVM_RUN, NULL);
--
--	switch (get_ucall(vm, vcpuid, &uc)) {
-+	switch (get_ucall(vcpu->vm, vcpu->id, &uc)) {
- 	case UCALL_SYNC:
- 		TEST_ASSERT(!strcmp((const char *)uc.args[0], "hello") &&
- 			    uc.args[1] == stage + 1, "Stage %d: Unexpected register values vmexit, got %lx",
-@@ -88,29 +84,30 @@ static void run_vcpu(struct kvm_vm *vm, uint32_t vcpuid, int stage)
- 			    __FILE__, uc.args[1], uc.args[2], uc.args[3]);
- 	default:
- 		TEST_ASSERT(false, "Unexpected exit: %s",
--			    exit_reason_str(vcpu_state(vm, vcpuid)->exit_reason));
-+			    exit_reason_str(vcpu->run->exit_reason));
- 	}
++	if (get_ucall(vcpu->vm, vcpu->id, &uc) == UCALL_ABORT)
+ 		TEST_FAIL("%s at %s:%ld", (const char *)uc.args[0], __FILE__,
+ 			  uc.args[1]);
  }
  
- int main(void)
+-static void assert_vcpu_reset(struct kvm_vm *vm, uint32_t vcpuid)
++static void assert_vcpu_reset(struct kvm_vcpu *vcpu)
  {
-+	struct kvm_vcpu *vcpu;
+ 	uint64_t obs_pc, obs_x0;
+ 
+-	get_reg(vm, vcpuid, ARM64_CORE_REG(regs.pc), &obs_pc);
+-	get_reg(vm, vcpuid, ARM64_CORE_REG(regs.regs[0]), &obs_x0);
++	get_reg(vcpu->vm, vcpu->id, ARM64_CORE_REG(regs.pc), &obs_pc);
++	get_reg(vcpu->vm, vcpu->id, ARM64_CORE_REG(regs.regs[0]), &obs_x0);
+ 
+ 	TEST_ASSERT(obs_pc == CPU_ON_ENTRY_ADDR,
+ 		    "unexpected target cpu pc: %lx (expected: %lx)",
+@@ -133,25 +131,26 @@ static void guest_test_cpu_on(uint64_t target_cpu)
+ 
+ static void host_test_cpu_on(void)
+ {
++	struct kvm_vcpu *source, *target;
+ 	uint64_t target_mpidr;
  	struct kvm_vm *vm;
- 	uint64_t val;
+ 	struct ucall uc;
  
--	vm = vm_create_default(VCPU_ID, 0, guest_code);
-+	vm = vm_create_with_one_vcpu(&vcpu, guest_code);
+-	vm = setup_vm(guest_test_cpu_on);
++	vm = setup_vm(guest_test_cpu_on, &source, &target);
  
- 	val = 0;
- 	ASSERT_EQ(rounded_host_rdmsr(MSR_IA32_TSC), val);
- 	ASSERT_EQ(rounded_host_rdmsr(MSR_IA32_TSC_ADJUST), val);
- 
- 	/* Guest: writes to MSR_IA32_TSC affect both MSRs.  */
--	run_vcpu(vm, VCPU_ID, 1);
-+	run_vcpu(vcpu, 1);
- 	val = 1ull * GUEST_STEP;
- 	ASSERT_EQ(rounded_host_rdmsr(MSR_IA32_TSC), val);
- 	ASSERT_EQ(rounded_host_rdmsr(MSR_IA32_TSC_ADJUST), val);
- 
- 	/* Guest: writes to MSR_IA32_TSC_ADJUST affect both MSRs.  */
--	run_vcpu(vm, VCPU_ID, 2);
-+	run_vcpu(vcpu, 2);
- 	val = 2ull * GUEST_STEP;
- 	ASSERT_EQ(rounded_host_rdmsr(MSR_IA32_TSC), val);
- 	ASSERT_EQ(rounded_host_rdmsr(MSR_IA32_TSC_ADJUST), val);
-@@ -119,18 +116,18 @@ int main(void)
- 	 * Host: writes to MSR_IA32_TSC set the host-side offset
- 	 * and therefore do not change MSR_IA32_TSC_ADJUST.
+ 	/*
+ 	 * make sure the target is already off when executing the test.
  	 */
--	vcpu_set_msr(vm, 0, MSR_IA32_TSC, HOST_ADJUST + val);
-+	vcpu_set_msr(vm, vcpu->id, MSR_IA32_TSC, HOST_ADJUST + val);
- 	ASSERT_EQ(rounded_host_rdmsr(MSR_IA32_TSC), HOST_ADJUST + val);
- 	ASSERT_EQ(rounded_host_rdmsr(MSR_IA32_TSC_ADJUST), val);
--	run_vcpu(vm, VCPU_ID, 3);
-+	run_vcpu(vcpu, 3);
+-	vcpu_power_off(vm, VCPU_ID_TARGET);
++	vcpu_power_off(target);
  
- 	/* Host: writes to MSR_IA32_TSC_ADJUST do not modify the TSC.  */
--	vcpu_set_msr(vm, 0, MSR_IA32_TSC_ADJUST, UNITY * 123456);
-+	vcpu_set_msr(vm, vcpu->id, MSR_IA32_TSC_ADJUST, UNITY * 123456);
- 	ASSERT_EQ(rounded_host_rdmsr(MSR_IA32_TSC), HOST_ADJUST + val);
--	ASSERT_EQ(vcpu_get_msr(vm, 0, MSR_IA32_TSC_ADJUST), UNITY * 123456);
-+	ASSERT_EQ(vcpu_get_msr(vm, vcpu->id, MSR_IA32_TSC_ADJUST), UNITY * 123456);
+-	get_reg(vm, VCPU_ID_TARGET, KVM_ARM64_SYS_REG(SYS_MPIDR_EL1), &target_mpidr);
+-	vcpu_args_set(vm, VCPU_ID_SOURCE, 1, target_mpidr & MPIDR_HWID_BITMASK);
+-	enter_guest(vm, VCPU_ID_SOURCE);
++	get_reg(vm, target->id, KVM_ARM64_SYS_REG(SYS_MPIDR_EL1), &target_mpidr);
++	vcpu_args_set(vm, source->id, 1, target_mpidr & MPIDR_HWID_BITMASK);
++	enter_guest(source);
  
- 	/* Restore previous value.  */
--	vcpu_set_msr(vm, 0, MSR_IA32_TSC_ADJUST, val);
-+	vcpu_set_msr(vm, vcpu->id, MSR_IA32_TSC_ADJUST, val);
- 	ASSERT_EQ(rounded_host_rdmsr(MSR_IA32_TSC), HOST_ADJUST + val);
- 	ASSERT_EQ(rounded_host_rdmsr(MSR_IA32_TSC_ADJUST), val);
+-	if (get_ucall(vm, VCPU_ID_SOURCE, &uc) != UCALL_DONE)
++	if (get_ucall(vm, source->id, &uc) != UCALL_DONE)
+ 		TEST_FAIL("Unhandled ucall: %lu", uc.cmd);
  
-@@ -138,7 +135,7 @@ int main(void)
- 	 * Guest: writes to MSR_IA32_TSC_ADJUST do not destroy the
- 	 * host-side offset and affect both MSRs.
- 	 */
--	run_vcpu(vm, VCPU_ID, 4);
-+	run_vcpu(vcpu, 4);
- 	val = 3ull * GUEST_STEP;
- 	ASSERT_EQ(rounded_host_rdmsr(MSR_IA32_TSC), HOST_ADJUST + val);
- 	ASSERT_EQ(rounded_host_rdmsr(MSR_IA32_TSC_ADJUST), val);
-@@ -147,7 +144,7 @@ int main(void)
- 	 * Guest: writes to MSR_IA32_TSC affect both MSRs, so the host-side
- 	 * offset is now visible in MSR_IA32_TSC_ADJUST.
- 	 */
--	run_vcpu(vm, VCPU_ID, 5);
-+	run_vcpu(vcpu, 5);
- 	val = 4ull * GUEST_STEP;
- 	ASSERT_EQ(rounded_host_rdmsr(MSR_IA32_TSC), val);
- 	ASSERT_EQ(rounded_host_rdmsr(MSR_IA32_TSC_ADJUST), val - HOST_ADJUST);
+-	assert_vcpu_reset(vm, VCPU_ID_TARGET);
++	assert_vcpu_reset(target);
+ 	kvm_vm_free(vm);
+ }
+ 
+@@ -169,16 +168,17 @@ static void guest_test_system_suspend(void)
+ 
+ static void host_test_system_suspend(void)
+ {
++	struct kvm_vcpu *source, *target;
+ 	struct kvm_run *run;
+ 	struct kvm_vm *vm;
+ 
+-	vm = setup_vm(guest_test_system_suspend);
++	vm = setup_vm(guest_test_system_suspend, &source, &target);
+ 	vm_enable_cap(vm, KVM_CAP_ARM_SYSTEM_SUSPEND, 0);
+ 
+-	vcpu_power_off(vm, VCPU_ID_TARGET);
+-	run = vcpu_state(vm, VCPU_ID_SOURCE);
++	vcpu_power_off(target);
++	run = source->run;
+ 
+-	enter_guest(vm, VCPU_ID_SOURCE);
++	enter_guest(source);
+ 
+ 	TEST_ASSERT(run->exit_reason == KVM_EXIT_SYSTEM_EVENT,
+ 		    "Unhandled exit reason: %u (%s)",
 -- 
 2.36.1.255.ge46751e96f-goog
 
