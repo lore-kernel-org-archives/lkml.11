@@ -2,48 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9F93C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:01:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4A4BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:01:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346330AbiFCSBG (ORCPT
+        id S1345775AbiFCSBQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:01:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58138 "EHLO
+        Fri, 3 Jun 2022 14:01:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347228AbiFCRwI (ORCPT
+        with ESMTP id S1347226AbiFCRwI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 3 Jun 2022 13:52:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDBA7B54;
-        Fri,  3 Jun 2022 10:50:46 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48ED7F25;
+        Fri,  3 Jun 2022 10:50:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 979F7B82189;
-        Fri,  3 Jun 2022 17:50:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1F54C385A9;
-        Fri,  3 Jun 2022 17:50:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0BAFDB823B0;
+        Fri,  3 Jun 2022 17:50:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 677A7C385A9;
+        Fri,  3 Jun 2022 17:50:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278644;
-        bh=EPBHgmukQQ2kavRRx6NFY8j/vcnjOWl5lgESjAPm9W8=;
+        s=korg; t=1654278652;
+        bh=0prqloLrALboBqYx7GfVhCOuXhFihqnnhoizcnn15Pc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U4t7hFXaFvOoLuUOsdcZ2cZ6R001qTr6TsRXR1o+mi9a6rjFrrYg9vkD8wF3zLL2I
-         cTBW1TPqXLxJ5H8EYDRO1dUJEujKeCwCiTa0Ffb2uun531xGrSzfSuHUUkrLBOLMsZ
-         GBr7DsLBNtwgxQkQ8OTYAP7n/60FqOMEytmf59k0=
+        b=Lo/x2PSzYmImbEn+IGYQwxaCQyDiPB4HA6nCecSe7VA91IuvWs6oQuewqCYXQMu26
+         fSlpCLmZRvR6plPajG8S023X/ySIK1zWMvSHJhlIgZkqpjLZxw6wzJr3hKM/t+w/bs
+         85JirLI7qBU75kkyZ7FO+e0iKiAANjgoKy5kMjqw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        syzbot+1631f09646bc214d2e76@syzkaller.appspotmail.com,
-        Namjae Jeon <linkinjeon@kernel.org>,
-        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Kari Argillander <kari.argillander@stargateuniverse.net>,
-        Matthew Wilcox <willy@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.15 47/66] fs/ntfs3: validate BOOT sectors_per_clusters
-Date:   Fri,  3 Jun 2022 19:43:27 +0200
-Message-Id: <20220603173822.025720768@linuxfoundation.org>
+        stable@vger.kernel.org, Dave Hansen <dave.hansen@linux.intel.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Haitao Huang <haitao.huang@intel.com>
+Subject: [PATCH 5.15 50/66] x86/sgx: Disconnect backing page references from dirty status
+Date:   Fri,  3 Jun 2022 19:43:30 +0200
+Message-Id: <20220603173822.111314857@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.663747061@linuxfoundation.org>
 References: <20220603173820.663747061@linuxfoundation.org>
@@ -55,63 +51,165 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Reinette Chatre <reinette.chatre@intel.com>
 
-commit a3b774342fa752a5290c0de36375289dfcf4a260 upstream.
+commit 6bd429643cc265e94a9d19839c771bcc5d008fa8 upstream.
 
-When the NTFS BOOT sectors_per_clusters field is > 0x80, it represents a
-shift value.  Make sure that the shift value is not too large before using
-it (NTFS max cluster size is 2MB).  Return -EVINVAL if it too large.
+SGX uses shmem backing storage to store encrypted enclave pages
+and their crypto metadata when enclave pages are moved out of
+enclave memory. Two shmem backing storage pages are associated with
+each enclave page - one backing page to contain the encrypted
+enclave page data and one backing page (shared by a few
+enclave pages) to contain the crypto metadata used by the
+processor to verify the enclave page when it is loaded back into
+the enclave.
 
-This prevents negative shift values and shift values that are larger than
-the field size.
+sgx_encl_put_backing() is used to release references to the
+backing storage and, optionally, mark both backing store pages
+as dirty.
 
-Prevents this UBSAN error:
+Managing references and dirty status together in this way results
+in both backing store pages marked as dirty, even if only one of
+the backing store pages are changed.
 
- UBSAN: shift-out-of-bounds in ../fs/ntfs3/super.c:673:16
- shift exponent -192 is negative
+Additionally, waiting until the page reference is dropped to set
+the page dirty risks a race with the page fault handler that
+may load outdated data into the enclave when a page is faulted
+right after it is reclaimed.
 
-Link: https://lkml.kernel.org/r/20220502175342.20296-1-rdunlap@infradead.org
-Fixes: 82cae269cfa9 ("fs/ntfs3: Add initialization of super block")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: syzbot+1631f09646bc214d2e76@syzkaller.appspotmail.com
-Reviewed-by: Namjae Jeon <linkinjeon@kernel.org>
-Cc: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
-Cc: Alexander Viro <viro@zeniv.linux.org.uk>
-Cc: Kari Argillander <kari.argillander@stargateuniverse.net>
-Cc: Namjae Jeon <linkinjeon@kernel.org>
-Cc: Matthew Wilcox <willy@infradead.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Consider what happens if the reclaimer writes a page to the backing
+store and the page is immediately faulted back, before the reclaimer
+is able to set the dirty bit of the page:
+
+sgx_reclaim_pages() {                    sgx_vma_fault() {
+  ...
+  sgx_encl_get_backing();
+  ...                                      ...
+  sgx_reclaimer_write() {
+    mutex_lock(&encl->lock);
+    /* Write data to backing store */
+    mutex_unlock(&encl->lock);
+  }
+                                           mutex_lock(&encl->lock);
+                                           __sgx_encl_eldu() {
+                                             ...
+                                             /*
+                                              * Enclave backing store
+                                              * page not released
+                                              * nor marked dirty -
+                                              * contents may not be
+                                              * up to date.
+                                              */
+                                              sgx_encl_get_backing();
+                                              ...
+                                              /*
+                                               * Enclave data restored
+                                               * from backing store
+                                               * and PCMD pages that
+                                               * are not up to date.
+                                               * ENCLS[ELDU] faults
+                                               * because of MAC or PCMD
+                                               * checking failure.
+                                               */
+                                               sgx_encl_put_backing();
+                                            }
+                                            ...
+  /* set page dirty */
+  sgx_encl_put_backing();
+  ...
+                                            mutex_unlock(&encl->lock);
+}                                        }
+
+Remove the option to sgx_encl_put_backing() to set the backing
+pages as dirty and set the needed pages as dirty right after
+receiving important data while enclave mutex is held. This ensures that
+the page fault handler can get up to date data from a page and prepares
+the code for a following change where only one of the backing pages
+need to be marked as dirty.
+
+Cc: stable@vger.kernel.org
+Fixes: 1728ab54b4be ("x86/sgx: Add a page reclaimer")
+Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
+Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
+Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+Tested-by: Haitao Huang <haitao.huang@intel.com>
+Link: https://lore.kernel.org/linux-sgx/8922e48f-6646-c7cc-6393-7c78dcf23d23@intel.com/
+Link: https://lkml.kernel.org/r/fa9f98986923f43e72ef4c6702a50b2a0b3c42e3.1652389823.git.reinette.chatre@intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ntfs3/super.c |   10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ arch/x86/kernel/cpu/sgx/encl.c |   10 ++--------
+ arch/x86/kernel/cpu/sgx/encl.h |    2 +-
+ arch/x86/kernel/cpu/sgx/main.c |    6 ++++--
+ 3 files changed, 7 insertions(+), 11 deletions(-)
 
---- a/fs/ntfs3/super.c
-+++ b/fs/ntfs3/super.c
-@@ -668,9 +668,11 @@ static u32 format_size_gb(const u64 byte
+--- a/arch/x86/kernel/cpu/sgx/encl.c
++++ b/arch/x86/kernel/cpu/sgx/encl.c
+@@ -94,7 +94,7 @@ static int __sgx_encl_eldu(struct sgx_en
+ 	kunmap_atomic(pcmd_page);
+ 	kunmap_atomic((void *)(unsigned long)pginfo.contents);
  
- static u32 true_sectors_per_clst(const struct NTFS_BOOT *boot)
+-	sgx_encl_put_backing(&b, false);
++	sgx_encl_put_backing(&b);
+ 
+ 	sgx_encl_truncate_backing_page(encl, page_index);
+ 
+@@ -645,15 +645,9 @@ int sgx_encl_get_backing(struct sgx_encl
+ /**
+  * sgx_encl_put_backing() - Unpin the backing storage
+  * @backing:	data for accessing backing storage for the page
+- * @do_write:	mark pages dirty
+  */
+-void sgx_encl_put_backing(struct sgx_backing *backing, bool do_write)
++void sgx_encl_put_backing(struct sgx_backing *backing)
  {
--	return boot->sectors_per_clusters <= 0x80
--		       ? boot->sectors_per_clusters
--		       : (1u << (0 - boot->sectors_per_clusters));
-+	if (boot->sectors_per_clusters <= 0x80)
-+		return boot->sectors_per_clusters;
-+	if (boot->sectors_per_clusters >= 0xf4) /* limit shift to 2MB max */
-+		return 1U << (0 - boot->sectors_per_clusters);
-+	return -EINVAL;
+-	if (do_write) {
+-		set_page_dirty(backing->pcmd);
+-		set_page_dirty(backing->contents);
+-	}
+-
+ 	put_page(backing->pcmd);
+ 	put_page(backing->contents);
  }
+--- a/arch/x86/kernel/cpu/sgx/encl.h
++++ b/arch/x86/kernel/cpu/sgx/encl.h
+@@ -107,7 +107,7 @@ void sgx_encl_release(struct kref *ref);
+ int sgx_encl_mm_add(struct sgx_encl *encl, struct mm_struct *mm);
+ int sgx_encl_get_backing(struct sgx_encl *encl, unsigned long page_index,
+ 			 struct sgx_backing *backing);
+-void sgx_encl_put_backing(struct sgx_backing *backing, bool do_write);
++void sgx_encl_put_backing(struct sgx_backing *backing);
+ int sgx_encl_test_and_clear_young(struct mm_struct *mm,
+ 				  struct sgx_encl_page *page);
  
- /*
-@@ -713,6 +715,8 @@ static int ntfs_init_from_boot(struct su
+--- a/arch/x86/kernel/cpu/sgx/main.c
++++ b/arch/x86/kernel/cpu/sgx/main.c
+@@ -170,6 +170,8 @@ static int __sgx_encl_ewb(struct sgx_epc
+ 			  backing->pcmd_offset;
  
- 	/* cluster size: 512, 1K, 2K, 4K, ... 2M */
- 	sct_per_clst = true_sectors_per_clst(boot);
-+	if ((int)sct_per_clst < 0)
-+		goto out;
- 	if (!is_power_of_2(sct_per_clst))
- 		goto out;
+ 	ret = __ewb(&pginfo, sgx_get_epc_virt_addr(epc_page), va_slot);
++	set_page_dirty(backing->pcmd);
++	set_page_dirty(backing->contents);
  
+ 	kunmap_atomic((void *)(unsigned long)(pginfo.metadata -
+ 					      backing->pcmd_offset));
+@@ -299,7 +301,7 @@ static void sgx_reclaimer_write(struct s
+ 		sgx_encl_free_epc_page(encl->secs.epc_page);
+ 		encl->secs.epc_page = NULL;
+ 
+-		sgx_encl_put_backing(&secs_backing, true);
++		sgx_encl_put_backing(&secs_backing);
+ 	}
+ 
+ out:
+@@ -392,7 +394,7 @@ skip:
+ 
+ 		encl_page = epc_page->owner;
+ 		sgx_reclaimer_write(epc_page, &backing[i]);
+-		sgx_encl_put_backing(&backing[i], true);
++		sgx_encl_put_backing(&backing[i]);
+ 
+ 		kref_put(&encl_page->encl->refcount, sgx_encl_release);
+ 		epc_page->flags &= ~SGX_EPC_PAGE_RECLAIMER_TRACKED;
 
 
