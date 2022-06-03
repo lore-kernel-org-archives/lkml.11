@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CF1ECCA481
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:07:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9286CCA47E
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:07:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347010AbiFCSFe (ORCPT
+        id S1346815AbiFCSFR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:05:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58248 "EHLO
+        Fri, 3 Jun 2022 14:05:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345501AbiFCRxD (ORCPT
+        with ESMTP id S1346588AbiFCRvS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:53:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1833D1F624;
-        Fri,  3 Jun 2022 10:52:25 -0700 (PDT)
+        Fri, 3 Jun 2022 13:51:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE8B457136;
+        Fri,  3 Jun 2022 10:48:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7411460F7F;
-        Fri,  3 Jun 2022 17:52:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 693AEC385B8;
-        Fri,  3 Jun 2022 17:52:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6AF42B82433;
+        Fri,  3 Jun 2022 17:48:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3FD8C385A9;
+        Fri,  3 Jun 2022 17:48:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278743;
-        bh=K6tYsH8bSgs3PfSjUaakxOh0TLf3zeJAhtERYiKfyYg=;
+        s=korg; t=1654278523;
+        bh=5472PgeiF25eTzaG8Pxt7MVzcW+2xzwpBTW6xW3eu1U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m65Z/RwzF2D+ojxP/aDMAJY6kqAGddAJf8P6tTfTqYKeIFPLk1Ojkb7I3v5kRqdhm
-         1ivq8nc0D/aAMxDNrBReOAxc7G7dzKmYJT4fq/rkmHQeVnH3IPzVqbL1CmyD2Om86o
-         SEd5sde/vWfkZjchRx7cMQp/YAj/k9IooGaSLZlI=
+        b=2oEyj6HP1SEm52fZwWU1Bxgwn+lXT434WV2+0CfJn1o8Ds9wlrbF+6y8+KKJ/4fXi
+         arPN/3/qTVnXtcc3X+5u3dTGoD+vhdhIMaen2JtC2DxDvqwCFBjfmK2F1D0Ca98QfV
+         29UbQc0CThYCOXmJfDWUgrpQr1xceLQa7Jt2gQYg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Zheyu Ma <zheyuma97@gmail.com>
-Subject: [PATCH 5.17 13/75] i2c: ismt: prevent memory corruption in ismt_access()
-Date:   Fri,  3 Jun 2022 19:42:57 +0200
-Message-Id: <20220603173822.125311085@linuxfoundation.org>
+        stable@vger.kernel.org, Nicolai Stange <nstange@suse.de>,
+        =?UTF-8?q?Stephan=20M=C3=BCller?= <smueller@chronox.de>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.10 27/53] crypto: drbg - move dynamic ->reseed_threshold adjustments to __drbg_seed()
+Date:   Fri,  3 Jun 2022 19:43:12 +0200
+Message-Id: <20220603173819.514319812@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220603173821.749019262@linuxfoundation.org>
-References: <20220603173821.749019262@linuxfoundation.org>
+In-Reply-To: <20220603173818.716010877@linuxfoundation.org>
+References: <20220603173818.716010877@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,35 +51,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Nicolai Stange <nstange@suse.de>
 
-commit 690b2549b19563ec5ad53e5c82f6a944d910086e upstream.
+commit 262d83a4290c331cd4f617a457408bdb82fbb738 upstream.
 
-The "data->block[0]" variable comes from the user and is a number
-between 0-255.  It needs to be capped to prevent writing beyond the end
-of dma_buffer[].
+Since commit 42ea507fae1a ("crypto: drbg - reseed often if seedsource is
+degraded"), the maximum seed lifetime represented by ->reseed_threshold
+gets temporarily lowered if the get_random_bytes() source cannot provide
+sufficient entropy yet, as is common during boot, and restored back to
+the original value again once that has changed.
 
-Fixes: 5e9a97b1f449 ("i2c: ismt: Adding support for I2C_SMBUS_BLOCK_PROC_CALL")
-Reported-and-tested-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+More specifically, if the add_random_ready_callback() invoked from
+drbg_prepare_hrng() in the course of DRBG instantiation does not return
+-EALREADY, that is, if get_random_bytes() has not been fully initialized
+at this point yet, drbg_prepare_hrng() will lower ->reseed_threshold
+to a value of 50. The drbg_async_seed() scheduled from said
+random_ready_callback will eventually restore the original value.
+
+A future patch will replace the random_ready_callback based notification
+mechanism and thus, there will be no add_random_ready_callback() return
+value anymore which could get compared to -EALREADY.
+
+However, there's __drbg_seed() which gets invoked in the course of both,
+the DRBG instantiation as well as the eventual reseeding from
+get_random_bytes() in aforementioned drbg_async_seed(), if any. Moreover,
+it knows about the get_random_bytes() initialization state by the time the
+seed data had been obtained from it: the new_seed_state argument introduced
+with the previous patch would get set to DRBG_SEED_STATE_PARTIAL in case
+get_random_bytes() had not been fully initialized yet and to
+DRBG_SEED_STATE_FULL otherwise. Thus, __drbg_seed() provides a convenient
+alternative for managing that ->reseed_threshold lowering and restoring at
+a central place.
+
+Move all ->reseed_threshold adjustment code from drbg_prepare_hrng() and
+drbg_async_seed() respectively to __drbg_seed(). Make __drbg_seed()
+lower the ->reseed_threshold to 50 in case its new_seed_state argument
+equals DRBG_SEED_STATE_PARTIAL and let it restore the original value
+otherwise.
+
+There is no change in behaviour.
+
+Signed-off-by: Nicolai Stange <nstange@suse.de>
+Reviewed-by: Stephan Müller <smueller@chronox.de>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/i2c/busses/i2c-ismt.c |    3 +++
- 1 file changed, 3 insertions(+)
+ crypto/drbg.c |   30 +++++++++++++++++++++---------
+ 1 file changed, 21 insertions(+), 9 deletions(-)
 
---- a/drivers/i2c/busses/i2c-ismt.c
-+++ b/drivers/i2c/busses/i2c-ismt.c
-@@ -528,6 +528,9 @@ static int ismt_access(struct i2c_adapte
+--- a/crypto/drbg.c
++++ b/crypto/drbg.c
+@@ -1046,6 +1046,27 @@ static inline int __drbg_seed(struct drb
+ 	/* 10.1.1.2 / 10.1.1.3 step 5 */
+ 	drbg->reseed_ctr = 1;
  
- 	case I2C_SMBUS_BLOCK_PROC_CALL:
- 		dev_dbg(dev, "I2C_SMBUS_BLOCK_PROC_CALL\n");
-+		if (data->block[0] > I2C_SMBUS_BLOCK_MAX)
-+			return -EINVAL;
++	switch (drbg->seeded) {
++	case DRBG_SEED_STATE_UNSEEDED:
++		/* Impossible, but handle it to silence compiler warnings. */
++		fallthrough;
++	case DRBG_SEED_STATE_PARTIAL:
++		/*
++		 * Require frequent reseeds until the seed source is
++		 * fully initialized.
++		 */
++		drbg->reseed_threshold = 50;
++		break;
 +
- 		dma_size = I2C_SMBUS_BLOCK_MAX;
- 		desc->tgtaddr_rw = ISMT_DESC_ADDR_RW(addr, 1);
- 		desc->wr_len_cmd = data->block[0] + 1;
++	case DRBG_SEED_STATE_FULL:
++		/*
++		 * Seed source has become fully initialized, frequent
++		 * reseeds no longer required.
++		 */
++		drbg->reseed_threshold = drbg_max_requests(drbg);
++		break;
++	}
++
+ 	return ret;
+ }
+ 
+@@ -1094,9 +1115,6 @@ static void drbg_async_seed(struct work_
+ 
+ 	__drbg_seed(drbg, &seedlist, true, DRBG_SEED_STATE_FULL);
+ 
+-	if (drbg->seeded == DRBG_SEED_STATE_FULL)
+-		drbg->reseed_threshold = drbg_max_requests(drbg);
+-
+ unlock:
+ 	mutex_unlock(&drbg->drbg_mutex);
+ 
+@@ -1532,12 +1550,6 @@ static int drbg_prepare_hrng(struct drbg
+ 		return err;
+ 	}
+ 
+-	/*
+-	 * Require frequent reseeds until the seed source is fully
+-	 * initialized.
+-	 */
+-	drbg->reseed_threshold = 50;
+-
+ 	return err;
+ }
+ 
 
 
