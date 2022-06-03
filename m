@@ -2,58 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B03CC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 00:59:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B88CC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 01:01:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239573AbiFCA7o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 20:59:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51960 "EHLO
+        id S240940AbiFCA7x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 20:59:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241044AbiFCAuW (ORCPT
+        with ESMTP id S241216AbiFCAu3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 20:50:22 -0400
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72DEA2BB1B
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:47:30 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id d12-20020a17090a628c00b001dcd2efca39so3410342pjj.2
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:47:30 -0700 (PDT)
+        Thu, 2 Jun 2022 20:50:29 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98C0531DFC
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:47:44 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id c14-20020a17090a1d0e00b001e328238e7eso3406519pjd.4
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:47:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=DKAdsy+CbhbQu5idsYWabteAUIKVcNwzF/4fJTm3POU=;
-        b=FGno/y0zjLWs12Taz6KbePN8m9c144rgOp20f5jhnuKd70pSSeW+5LHzDzA9QNhbDK
-         wYGBrC8yYQynrn4wSs6j4O0iBbv/UG7JNyGNQM59ALZICqoHpM2jC3e5BPAH6beIxuXY
-         CT3mGhrmwIOqmJhJ+G/c6leHQ/qjFU5URgTGSLUV3BtaMjxxAH6M9fJ1TYfuV0fNasdH
-         hXRIuUD3dN6FpVLCWRtUIkJjCYy4XEkS8LYaruS+pz23nllOk3K5ZsEyHBea+aGopUrN
-         1P0EJm225VLUNMOneXHtD8F77F5avW58sCopdvZMGKKqM6xrEaFlzXlqi3mKcIc2xG9m
-         ZEgQ==
+        bh=JJS7EyD4erb5GYrLtMTUJ302sBwmrMBdLGpv7BVItVo=;
+        b=Iy4M77D5zRQ+X7yvDk85qz8ddQRERn6/M+k9sn27vjJcwWJh7DebcVqtZpcMrfLVON
+         5W2ltZlycjbKAoMr0wATB45LUg05Jt62ZC676Nl4NK6ZqyScUy9qE9osGplFy3LqIzZq
+         2yxp6978qZThNFMXRh0RGzNkCVnj/IeFVCcIcmctoM5BzQHltT8EDq6fKbB53tRgbvol
+         o2n1gUJ8c1csFB+JHAa6+k9KMgiOO6Dk2+vKviukqe8Jx6p1MTZg/VfSbyAGzDFeXmsM
+         vV1BS9R6jDJNjYLTkPAaAnhvNXUC9eRyTJFG12wJHJ2/b7QRYJ9h7J9E+5d8ADWN54td
+         Cleg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=DKAdsy+CbhbQu5idsYWabteAUIKVcNwzF/4fJTm3POU=;
-        b=EZ7caE3ODGr4NJul+6ifefVLR42s9iuEHYpWdIuAHmBr1ttW5SsDvaQCDM4zO/ss4W
-         ejp42V0F4TK/hFfSapRpHbwHNHPKRmAZFDrXI/KnIu27zgpvR2ejtC7Z4dTbzwffPYZp
-         gvYbDFydinwXX9H9Lqz3qLwAVZFJeCGQDrJ2hPepZg/qojY0SWKMEQCNdf1xwV+yVWx6
-         J3wUQhnGA9cqG71Okb7o/BdX+TxoAZ/Kn6oa6ea068iIstoICQNiJx01MO0SfzEqpBZs
-         3SWGlBrBydAkybPrKvRQJB3DawKjseKee7PpkTODqY0I/X93K1ayZVs1VbOA/8jPytsw
-         VZPA==
-X-Gm-Message-State: AOAM530jTrsN1Ax04rkR6bAG02p09840Xf84lgGZ3DtHAzJexPNtK30L
-        Wo31pbx0NJk/rpX8+HKGySKZjSYCE6Y=
-X-Google-Smtp-Source: ABdhPJxae9DqBW/W2fOFOGwcmGTuIhm7PePm2k8oFnbO+zZVyH/np/0gy0x+Z0AuQTMQ2TUTGOfE+Nsikzw=
+        bh=JJS7EyD4erb5GYrLtMTUJ302sBwmrMBdLGpv7BVItVo=;
+        b=VT9U8n2smuvUVsV7pwhboqFY+zJlGJkePJuChbucwC0QoOY7kjtAKMZwmVSJkut+Em
+         QERQmCue7w/rcWJZwZHdTV43O+795LNzOtRa8nd9Vy5+R46scDkEpUu0r8Ci8JfUnebM
+         n0ViOcWU/3agOFcFH4j7GngXB+D87vg7DzdWhAms5+9tisyKkaNO6hGC4sXiupp7oHwJ
+         fW+q9qR5oVh22GNZ6Rksvx4T07mtcH3w9Q5rQE5des0fjSyurDs9hn+lhkgQbSnLuvyp
+         S/UP5DEXNt7AEhyrhk+bcZpCmBd1nzE3T8v7CL6amZE8JUpIgZmjxtfCp0AJS33l5+aW
+         wQZA==
+X-Gm-Message-State: AOAM530XWN75MNiLX+sJ57W2ABjft/juUUx3xHseU49ES3OvGNThm6Zx
+        r8h06jf2Vx5nLWrDRy1TpLG3su+gdqo=
+X-Google-Smtp-Source: ABdhPJzkRCWLATITIrZNUBGBs99gDKC9Rn8oUIHOLFvODyewCXSjBhlrPBIOm5jgxnMx83sI+JoY9sBiABU=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:90a:249:b0:1e0:a8a3:3c6c with SMTP id
- t9-20020a17090a024900b001e0a8a33c6cmr307330pje.0.1654217247683; Thu, 02 Jun
- 2022 17:47:27 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:90b:4a4c:b0:1e3:3ad6:a5bd with SMTP id
+ lb12-20020a17090b4a4c00b001e33ad6a5bdmr8065127pjb.172.1654217260658; Thu, 02
+ Jun 2022 17:47:40 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri,  3 Jun 2022 00:43:15 +0000
+Date:   Fri,  3 Jun 2022 00:43:22 +0000
 In-Reply-To: <20220603004331.1523888-1-seanjc@google.com>
-Message-Id: <20220603004331.1523888-129-seanjc@google.com>
+Message-Id: <20220603004331.1523888-136-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220603004331.1523888-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v2 128/144] KVM: selftests: Stop hardcoding vCPU IDs in vcpu_width_config
+Subject: [PATCH v2 135/144] KVM: selftests: Open code and drop 'struct kvm_vm' accessors
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     kvm@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
@@ -66,154 +66,235 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In preparation for taking a vCPU pointer in vCPU-scoped functions, grab
-the vCPU(s) created by __vm_vcpu_add() and use the ID from the vCPU
-object instead of hardcoding the ID in ioctl() invocations.
-
-Rename init1/init2 => init0/init1 to avoid having odd/confusing code
-where vcpu0 consumes init1 and vcpu1 consumes init2.
-
-Note, this change could easily be done when the functions are converted
-in the future, and/or the vcpu{0,1} vs. init{1,2} discrepancy could be
-ignored, but then there would be no opportunity to poke fun at the
-1-based counting scheme.
+Drop a variety of 'struct kvm_vm' accessors that wrap a single variable
+now that tests can simply reference the variable directly.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../selftests/kvm/aarch64/vcpu_width_config.c | 60 ++++++++++---------
- 1 file changed, 31 insertions(+), 29 deletions(-)
+ .../selftests/kvm/dirty_log_perf_test.c       |  2 +-
+ tools/testing/selftests/kvm/dirty_log_test.c  |  9 +++----
+ .../selftests/kvm/include/kvm_util_base.h     |  6 -----
+ .../selftests/kvm/kvm_page_table_test.c       |  2 +-
+ tools/testing/selftests/kvm/lib/kvm_util.c    | 25 -------------------
+ .../selftests/kvm/lib/perf_test_util.c        |  7 +++---
+ .../selftests/kvm/max_guest_memory_test.c     | 11 ++++----
+ .../kvm/memslot_modification_stress_test.c    |  2 +-
+ .../selftests/kvm/x86_64/hyperv_cpuid.c       |  2 +-
+ 9 files changed, 16 insertions(+), 50 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/aarch64/vcpu_width_config.c b/tools/testing/selftests/kvm/aarch64/vcpu_width_config.c
-index 1dd856a58f5d..e4e66632f05c 100644
---- a/tools/testing/selftests/kvm/aarch64/vcpu_width_config.c
-+++ b/tools/testing/selftests/kvm/aarch64/vcpu_width_config.c
-@@ -15,24 +15,25 @@
+diff --git a/tools/testing/selftests/kvm/dirty_log_perf_test.c b/tools/testing/selftests/kvm/dirty_log_perf_test.c
+index ca896da12e41..ed6d58fd1155 100644
+--- a/tools/testing/selftests/kvm/dirty_log_perf_test.c
++++ b/tools/testing/selftests/kvm/dirty_log_perf_test.c
+@@ -221,7 +221,7 @@ static void run_test(enum vm_guest_mode mode, void *arg)
  
+ 	perf_test_set_wr_fract(vm, p->wr_fract);
  
- /*
-- * Add a vCPU, run KVM_ARM_VCPU_INIT with @init1, and then
-- * add another vCPU, and run KVM_ARM_VCPU_INIT with @init2.
-+ * Add a vCPU, run KVM_ARM_VCPU_INIT with @init0, and then
-+ * add another vCPU, and run KVM_ARM_VCPU_INIT with @init1.
-  */
--static int add_init_2vcpus(struct kvm_vcpu_init *init1,
--			   struct kvm_vcpu_init *init2)
-+static int add_init_2vcpus(struct kvm_vcpu_init *init0,
-+			   struct kvm_vcpu_init *init1)
- {
-+	struct kvm_vcpu *vcpu0, *vcpu1;
- 	struct kvm_vm *vm;
- 	int ret;
+-	guest_num_pages = (nr_vcpus * guest_percpu_mem_size) >> vm_get_page_shift(vm);
++	guest_num_pages = (nr_vcpus * guest_percpu_mem_size) >> vm->page_shift;
+ 	guest_num_pages = vm_adjust_num_guest_pages(mode, guest_num_pages);
+ 	host_num_pages = vm_num_host_pages(mode, guest_num_pages);
+ 	pages_per_slot = host_num_pages / p->slots;
+diff --git a/tools/testing/selftests/kvm/dirty_log_test.c b/tools/testing/selftests/kvm/dirty_log_test.c
+index 906e893375df..ca584b9bf5c0 100644
+--- a/tools/testing/selftests/kvm/dirty_log_test.c
++++ b/tools/testing/selftests/kvm/dirty_log_test.c
+@@ -713,21 +713,20 @@ static void run_test(enum vm_guest_mode mode, void *arg)
+ 	vm = create_vm(mode, &vcpu,
+ 		       2ul << (DIRTY_MEM_BITS - PAGE_SHIFT_4K), guest_code);
  
- 	vm = vm_create_barebones();
+-	guest_page_size = vm_get_page_size(vm);
++	guest_page_size = vm->page_size;
+ 	/*
+ 	 * A little more than 1G of guest page sized pages.  Cover the
+ 	 * case where the size is not aligned to 64 pages.
+ 	 */
+-	guest_num_pages = (1ul << (DIRTY_MEM_BITS -
+-				   vm_get_page_shift(vm))) + 3;
++	guest_num_pages = (1ul << (DIRTY_MEM_BITS - vm->page_shift)) + 3;
+ 	guest_num_pages = vm_adjust_num_guest_pages(mode, guest_num_pages);
  
--	__vm_vcpu_add(vm, 0);
--	ret = __vcpu_ioctl(vm, 0, KVM_ARM_VCPU_INIT, init1);
-+	vcpu0 = __vm_vcpu_add(vm, 0);
-+	ret = __vcpu_ioctl(vm, vcpu0->id, KVM_ARM_VCPU_INIT, init0);
- 	if (ret)
- 		goto free_exit;
+ 	host_page_size = getpagesize();
+ 	host_num_pages = vm_num_host_pages(mode, guest_num_pages);
  
--	__vm_vcpu_add(vm, 1);
--	ret = __vcpu_ioctl(vm, 1, KVM_ARM_VCPU_INIT, init2);
-+	vcpu1 = __vm_vcpu_add(vm, 1);
-+	ret = __vcpu_ioctl(vm, vcpu1->id, KVM_ARM_VCPU_INIT, init1);
+ 	if (!p->phys_offset) {
+-		guest_test_phys_mem = (vm_get_max_gfn(vm) -
+-				       guest_num_pages) * guest_page_size;
++		guest_test_phys_mem = (vm->max_gfn - guest_num_pages) *
++				      guest_page_size;
+ 		guest_test_phys_mem = align_down(guest_test_phys_mem, host_page_size);
+ 	} else {
+ 		guest_test_phys_mem = p->phys_offset;
+diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
+index 5741a999aca1..45f536f99399 100644
+--- a/tools/testing/selftests/kvm/include/kvm_util_base.h
++++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
+@@ -592,13 +592,7 @@ static inline struct kvm_vm *vm_create_with_one_vcpu(struct kvm_vcpu **vcpu,
  
- free_exit:
- 	kvm_vm_free(vm);
-@@ -40,25 +41,26 @@ static int add_init_2vcpus(struct kvm_vcpu_init *init1,
+ struct kvm_vcpu *vm_recreate_with_one_vcpu(struct kvm_vm *vm);
+ 
+-unsigned int vm_get_page_size(struct kvm_vm *vm);
+-unsigned int vm_get_page_shift(struct kvm_vm *vm);
+ unsigned long vm_compute_max_gfn(struct kvm_vm *vm);
+-uint64_t vm_get_max_gfn(struct kvm_vm *vm);
+-int vm_get_kvm_fd(struct kvm_vm *vm);
+-int vm_get_fd(struct kvm_vm *vm);
+-
+ unsigned int vm_calc_num_guest_pages(enum vm_guest_mode mode, size_t size);
+ unsigned int vm_num_host_pages(enum vm_guest_mode mode, unsigned int num_guest_pages);
+ unsigned int vm_num_guest_pages(enum vm_guest_mode mode, unsigned int num_host_pages);
+diff --git a/tools/testing/selftests/kvm/kvm_page_table_test.c b/tools/testing/selftests/kvm/kvm_page_table_test.c
+index 8706ae358444..0f8792aa0366 100644
+--- a/tools/testing/selftests/kvm/kvm_page_table_test.c
++++ b/tools/testing/selftests/kvm/kvm_page_table_test.c
+@@ -260,7 +260,7 @@ static struct kvm_vm *pre_init_before_test(enum vm_guest_mode mode, void *arg)
+ 
+ 	/* Align down GPA of the testing memslot */
+ 	if (!p->phys_offset)
+-		guest_test_phys_mem = (vm_get_max_gfn(vm) - guest_num_pages) *
++		guest_test_phys_mem = (vm->max_gfn - guest_num_pages) *
+ 				       guest_page_size;
+ 	else
+ 		guest_test_phys_mem = p->phys_offset;
+diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
+index 2d69ac86d3fb..855ea3dbf8f1 100644
+--- a/tools/testing/selftests/kvm/lib/kvm_util.c
++++ b/tools/testing/selftests/kvm/lib/kvm_util.c
+@@ -1827,36 +1827,11 @@ void *addr_gva2hva(struct kvm_vm *vm, vm_vaddr_t gva)
+ 	return addr_gpa2hva(vm, addr_gva2gpa(vm, gva));
  }
  
- /*
-- * Add two vCPUs, then run KVM_ARM_VCPU_INIT for one vCPU with @init1,
-- * and run KVM_ARM_VCPU_INIT for another vCPU with @init2.
-+ * Add two vCPUs, then run KVM_ARM_VCPU_INIT for one vCPU with @init0,
-+ * and run KVM_ARM_VCPU_INIT for another vCPU with @init1.
-  */
--static int add_2vcpus_init_2vcpus(struct kvm_vcpu_init *init1,
--				  struct kvm_vcpu_init *init2)
-+static int add_2vcpus_init_2vcpus(struct kvm_vcpu_init *init0,
-+				  struct kvm_vcpu_init *init1)
+-unsigned int vm_get_page_size(struct kvm_vm *vm)
+-{
+-	return vm->page_size;
+-}
+-
+-unsigned int vm_get_page_shift(struct kvm_vm *vm)
+-{
+-	return vm->page_shift;
+-}
+-
+ unsigned long __attribute__((weak)) vm_compute_max_gfn(struct kvm_vm *vm)
  {
-+	struct kvm_vcpu *vcpu0, *vcpu1;
- 	struct kvm_vm *vm;
- 	int ret;
+ 	return ((1ULL << vm->pa_bits) >> vm->page_shift) - 1;
+ }
  
- 	vm = vm_create_barebones();
+-uint64_t vm_get_max_gfn(struct kvm_vm *vm)
+-{
+-	return vm->max_gfn;
+-}
+-
+-int vm_get_kvm_fd(struct kvm_vm *vm)
+-{
+-	return vm->kvm_fd;
+-}
+-
+-int vm_get_fd(struct kvm_vm *vm)
+-{
+-	return vm->fd;
+-}
+-
+ static unsigned int vm_calc_num_pages(unsigned int num_pages,
+ 				      unsigned int page_shift,
+ 				      unsigned int new_page_shift,
+diff --git a/tools/testing/selftests/kvm/lib/perf_test_util.c b/tools/testing/selftests/kvm/lib/perf_test_util.c
+index 7faed18f7719..f62d773eb29c 100644
+--- a/tools/testing/selftests/kvm/lib/perf_test_util.c
++++ b/tools/testing/selftests/kvm/lib/perf_test_util.c
+@@ -153,14 +153,13 @@ struct kvm_vm *perf_test_create_vm(enum vm_guest_mode mode, int nr_vcpus,
+ 	 * If there should be more memory in the guest test region than there
+ 	 * can be pages in the guest, it will definitely cause problems.
+ 	 */
+-	TEST_ASSERT(guest_num_pages < vm_get_max_gfn(vm),
++	TEST_ASSERT(guest_num_pages < vm->max_gfn,
+ 		    "Requested more guest memory than address space allows.\n"
+ 		    "    guest pages: %" PRIx64 " max gfn: %" PRIx64
+ 		    " nr_vcpus: %d wss: %" PRIx64 "]\n",
+-		    guest_num_pages, vm_get_max_gfn(vm), nr_vcpus,
+-		    vcpu_memory_bytes);
++		    guest_num_pages, vm->max_gfn, nr_vcpus, vcpu_memory_bytes);
  
--	__vm_vcpu_add(vm, 0);
--	__vm_vcpu_add(vm, 1);
-+	vcpu0 = __vm_vcpu_add(vm, 0);
-+	vcpu1 = __vm_vcpu_add(vm, 1);
+-	pta->gpa = (vm_get_max_gfn(vm) - guest_num_pages) * pta->guest_page_size;
++	pta->gpa = (vm->max_gfn - guest_num_pages) * pta->guest_page_size;
+ 	pta->gpa = align_down(pta->gpa, backing_src_pagesz);
+ #ifdef __s390x__
+ 	/* Align to 1M (segment size) */
+diff --git a/tools/testing/selftests/kvm/max_guest_memory_test.c b/tools/testing/selftests/kvm/max_guest_memory_test.c
+index 2391d071b395..be5c632c2fd2 100644
+--- a/tools/testing/selftests/kvm/max_guest_memory_test.c
++++ b/tools/testing/selftests/kvm/max_guest_memory_test.c
+@@ -65,8 +65,7 @@ static void *vcpu_worker(void *data)
+ 	struct kvm_sregs sregs;
+ 	struct kvm_regs regs;
  
--	ret = __vcpu_ioctl(vm, 0, KVM_ARM_VCPU_INIT, init1);
-+	ret = __vcpu_ioctl(vm, vcpu0->id, KVM_ARM_VCPU_INIT, init0);
- 	if (ret)
- 		goto free_exit;
+-	vcpu_args_set(vcpu, 3, info->start_gpa, info->end_gpa,
+-		      vm_get_page_size(vm));
++	vcpu_args_set(vcpu, 3, info->start_gpa, info->end_gpa, vm->page_size);
  
--	ret = __vcpu_ioctl(vm, 1, KVM_ARM_VCPU_INIT, init2);
-+	ret = __vcpu_ioctl(vm, vcpu1->id, KVM_ARM_VCPU_INIT, init1);
+ 	/* Snapshot regs before the first run. */
+ 	vcpu_regs_get(vcpu, &regs);
+@@ -104,7 +103,7 @@ static pthread_t *spawn_workers(struct kvm_vm *vm, struct kvm_vcpu **vcpus,
+ 	TEST_ASSERT(info, "Failed to allocate vCPU gpa ranges");
  
- free_exit:
- 	kvm_vm_free(vm);
-@@ -76,7 +78,7 @@ static int add_2vcpus_init_2vcpus(struct kvm_vcpu_init *init1,
-  */
- int main(void)
- {
--	struct kvm_vcpu_init init1, init2;
-+	struct kvm_vcpu_init init0, init1;
- 	struct kvm_vm *vm;
- 	int ret;
+ 	nr_bytes = ((end_gpa - start_gpa) / nr_vcpus) &
+-			~((uint64_t)vm_get_page_size(vm) - 1);
++			~((uint64_t)vm->page_size - 1);
+ 	TEST_ASSERT(nr_bytes, "C'mon, no way you have %d CPUs", nr_vcpus);
  
-@@ -85,36 +87,36 @@ int main(void)
- 		exit(KSFT_SKIP);
+ 	for (i = 0, gpa = start_gpa; i < nr_vcpus; i++, gpa += nr_bytes) {
+@@ -220,7 +219,7 @@ int main(int argc, char *argv[])
+ 
+ 	vm = vm_create_with_vcpus(nr_vcpus, guest_code, vcpus);
+ 
+-	max_gpa = vm_get_max_gfn(vm) << vm_get_page_shift(vm);
++	max_gpa = vm->max_gfn << vm->page_shift;
+ 	TEST_ASSERT(max_gpa > (4 * slot_size), "MAXPHYADDR <4gb ");
+ 
+ 	fd = kvm_memfd_alloc(slot_size, hugepages);
+@@ -230,7 +229,7 @@ int main(int argc, char *argv[])
+ 	TEST_ASSERT(!madvise(mem, slot_size, MADV_NOHUGEPAGE), "madvise() failed");
+ 
+ 	/* Pre-fault the memory to avoid taking mmap_sem on guest page faults. */
+-	for (i = 0; i < slot_size; i += vm_get_page_size(vm))
++	for (i = 0; i < slot_size; i += vm->page_size)
+ 		((uint8_t *)mem)[i] = 0xaa;
+ 
+ 	gpa = 0;
+@@ -249,7 +248,7 @@ int main(int argc, char *argv[])
+ 		for (i = 0; i < slot_size; i += size_1gb)
+ 			__virt_pg_map(vm, gpa + i, gpa + i, X86_PAGE_SIZE_1G);
+ #else
+-		for (i = 0; i < slot_size; i += vm_get_page_size(vm))
++		for (i = 0; i < slot_size; i += vm->page_size)
+ 			virt_pg_map(vm, gpa + i, gpa + i);
+ #endif
  	}
+diff --git a/tools/testing/selftests/kvm/memslot_modification_stress_test.c b/tools/testing/selftests/kvm/memslot_modification_stress_test.c
+index 1f9036cdcaa9..6ee7e1dde404 100644
+--- a/tools/testing/selftests/kvm/memslot_modification_stress_test.c
++++ b/tools/testing/selftests/kvm/memslot_modification_stress_test.c
+@@ -75,7 +75,7 @@ static void add_remove_memslot(struct kvm_vm *vm, useconds_t delay,
+ 	 * Add the dummy memslot just below the perf_test_util memslot, which is
+ 	 * at the top of the guest physical address space.
+ 	 */
+-	gpa = perf_test_args.gpa - pages * vm_get_page_size(vm);
++	gpa = perf_test_args.gpa - pages * vm->page_size;
  
--	/* Get the preferred target type and copy that to init2 for later use */
-+	/* Get the preferred target type and copy that to init1 for later use */
- 	vm = vm_create_barebones();
--	vm_ioctl(vm, KVM_ARM_PREFERRED_TARGET, &init1);
-+	vm_ioctl(vm, KVM_ARM_PREFERRED_TARGET, &init0);
- 	kvm_vm_free(vm);
--	init2 = init1;
-+	init1 = init0;
+ 	for (i = 0; i < nr_modifications; i++) {
+ 		usleep(delay);
+diff --git a/tools/testing/selftests/kvm/x86_64/hyperv_cpuid.c b/tools/testing/selftests/kvm/x86_64/hyperv_cpuid.c
+index af13c48f0f30..6df5a6356181 100644
+--- a/tools/testing/selftests/kvm/x86_64/hyperv_cpuid.c
++++ b/tools/testing/selftests/kvm/x86_64/hyperv_cpuid.c
+@@ -121,7 +121,7 @@ void test_hv_cpuid_e2big(struct kvm_vm *vm, struct kvm_vcpu *vcpu)
+ 	if (vcpu)
+ 		ret = __vcpu_ioctl(vcpu, KVM_GET_SUPPORTED_HV_CPUID, &cpuid);
+ 	else
+-		ret = __kvm_ioctl(vm_get_kvm_fd(vm), KVM_GET_SUPPORTED_HV_CPUID, &cpuid);
++		ret = __kvm_ioctl(vm->kvm_fd, KVM_GET_SUPPORTED_HV_CPUID, &cpuid);
  
- 	/* Test with 64bit vCPUs */
--	ret = add_init_2vcpus(&init1, &init1);
-+	ret = add_init_2vcpus(&init0, &init0);
- 	TEST_ASSERT(ret == 0,
- 		    "Configuring 64bit EL1 vCPUs failed unexpectedly");
--	ret = add_2vcpus_init_2vcpus(&init1, &init1);
-+	ret = add_2vcpus_init_2vcpus(&init0, &init0);
- 	TEST_ASSERT(ret == 0,
- 		    "Configuring 64bit EL1 vCPUs failed unexpectedly");
- 
- 	/* Test with 32bit vCPUs */
--	init1.features[0] = (1 << KVM_ARM_VCPU_EL1_32BIT);
--	ret = add_init_2vcpus(&init1, &init1);
-+	init0.features[0] = (1 << KVM_ARM_VCPU_EL1_32BIT);
-+	ret = add_init_2vcpus(&init0, &init0);
- 	TEST_ASSERT(ret == 0,
- 		    "Configuring 32bit EL1 vCPUs failed unexpectedly");
--	ret = add_2vcpus_init_2vcpus(&init1, &init1);
-+	ret = add_2vcpus_init_2vcpus(&init0, &init0);
- 	TEST_ASSERT(ret == 0,
- 		    "Configuring 32bit EL1 vCPUs failed unexpectedly");
- 
- 	/* Test with mixed-width vCPUs  */
--	init1.features[0] = 0;
--	init2.features[0] = (1 << KVM_ARM_VCPU_EL1_32BIT);
--	ret = add_init_2vcpus(&init1, &init2);
-+	init0.features[0] = 0;
-+	init1.features[0] = (1 << KVM_ARM_VCPU_EL1_32BIT);
-+	ret = add_init_2vcpus(&init0, &init1);
- 	TEST_ASSERT(ret != 0,
- 		    "Configuring mixed-width vCPUs worked unexpectedly");
--	ret = add_2vcpus_init_2vcpus(&init1, &init2);
-+	ret = add_2vcpus_init_2vcpus(&init0, &init1);
- 	TEST_ASSERT(ret != 0,
- 		    "Configuring mixed-width vCPUs worked unexpectedly");
- 
+ 	TEST_ASSERT(ret == -1 && errno == E2BIG,
+ 		    "%s KVM_GET_SUPPORTED_HV_CPUID didn't fail with -E2BIG when"
 -- 
 2.36.1.255.ge46751e96f-goog
 
