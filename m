@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7929C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 00:58:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F988C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 00:58:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237395AbiFCA6n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 20:58:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48784 "EHLO
+        id S240894AbiFCA6r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 20:58:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240609AbiFCAra (ORCPT
+        with ESMTP id S240300AbiFCAp7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 20:47:30 -0400
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5467818A
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:46:46 -0700 (PDT)
-Received: by mail-pg1-x54a.google.com with SMTP id 35-20020a631563000000b003fc09751ce5so3042248pgv.10
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:46:46 -0700 (PDT)
+        Thu, 2 Jun 2022 20:45:59 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ADC8344F8
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:45:48 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id 70-20020a250249000000b0065cbf886b23so5588739ybc.8
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:45:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=OD3/Ff0FEeZAS0nqwH4UPNx13i1cw9+dfKCyUGzw+1A=;
-        b=A6IjW4Pfge5ajq8p3D8iO4s/jIIfmuvg3Sn4+SjXCaB5+gWwXD7VO+0vdGoivWV9JA
-         WuneV+tji8pY/MzwSeqnqlvW4yMazzYwRKV/LfCUmu5MaSnEGLUJJu2LV8vpoDqihzAo
-         oHVasHJzeVlpi8Gg6eMd6A8yD1AWHjwXkNEIpbW9bXKylYYcp2H3GgSm+bpMjZqr69vA
-         eUbFGiyfkZEZwMHbZSdbaI1RQaDEkTreGx8JEqoidiAgALxLT6aTtVzshoOYJP8Y5PZn
-         3G322aPQ8zDWRMA8YnNkt5MRSvJ8uic/iV0GrHh5uw7kiGR4eoZt6YT6tmBLNCQpIL5O
-         lwaw==
+        bh=fOaDAx5wEYsGYxLsjok3SDFHhvLRfvCG3DXiFSvtghw=;
+        b=ruaydMSVsUj/WLNhc4x7cSlIvqea/vc0r1rU7dEjcV0gabHzDzsisnl1HILhxY0Cst
+         a4NOeY+hr2ClDpahLVopNz5sFvnum5c19KqRLEjSfEmAxp4F21GttBv9U/ww2bwiOxYw
+         KHy+b0lGEYJUjSQ9WSHw9NVFJjVg7jYcrAi9yMLObivjnjQp8xQVV5QC0mvBiJJ+xl/V
+         26peBvx7Dwafg53bC5xVXIOZD0wtwbwSzsIpcxuEH+7ACqKQvwaE9fRFosHPjDTxnK3M
+         mnJoDqFn0F8yGJoEYL559v0USRpUh/KTvdPusxNGrehfLPaXVuYalT7sWYnY6IlLrhpP
+         SzcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=OD3/Ff0FEeZAS0nqwH4UPNx13i1cw9+dfKCyUGzw+1A=;
-        b=lppmQGeGaUECe1aKqbvsilGvGcId7AU4An0TpECXQdhn9149bvz8R40GEGEwms7HFA
-         lsKd6Qpw9AnL0iw4d2+znvYNFfM+IhJl6XN/+PYeHHtgVGcUReWPxV5mN+nUDaGx617O
-         riA69e2qZkI3a/lj/H5ksmjnREIyVzI8vRnyLn0XOAvjEFC7yr7ljp7MTdB45KMqMVyi
-         Wx4tPDCk93Ka9BlBd4FAjXz2xia3kTJ37mWtiNmcdEu1NJTz99WUYYFLT75X/ZaroTBM
-         fw2c1AsqoDX3ElA8+BwcZoYBOYLy3vLl5ifZvtVhjsm2Ag9MvVnUrqbe6/paUhAikVZg
-         5SJQ==
-X-Gm-Message-State: AOAM53394XfjznerXgUtE2ZgeXtzYKFftCIJZOzpyF6aopcbUa5vhGq1
-        IXEdACeZs+FqfWE4AY0xiUJY60+w498=
-X-Google-Smtp-Source: ABdhPJyWijgiTatf76rt3yvRFdLsJqaNYW3ya6aIl8/vQSQLcvJi9/vklY+ebYDoFT6lm/HFHuoCslvmYnA=
+        bh=fOaDAx5wEYsGYxLsjok3SDFHhvLRfvCG3DXiFSvtghw=;
+        b=W4lHM4OWhOGqmVUzNtM6UBD9TlEcwcpCC+1sqYs9FR+wFq3p5tvIuUhIWRLrIJBTJH
+         F+bVSZKZsKrwD8MVhq1QkA2I+mJ6ibE1T3m3nqA1cX7I5+HwkTZyGZ8wy+CyIX8PecbL
+         ZsKulaVCktMUQ7gzoagjNISTFjwJWDrpwITs00j5+A0RwRnMJxUEu8LBHmuXc2H5+L/M
+         t0T7pAo0sBxgDBx7NR3I0QY9jR+oC9RIlktEIqMBbFuO6vSrme7Y73Uhgclp3lMQYFZs
+         L4QQMjt33EUHjN7QGjJfx4jPx6o/H5OYgkGAwji+uhXRcLj1/nKi37DYrNtogNicjI2H
+         wENQ==
+X-Gm-Message-State: AOAM533Tfx+tbjNwXl47M+nOamIhrO/7+pkSfGb8mfRcNQAMINV3TSkp
+        tYtxDCtJp11LMDsXo9KrTZ8M23LBFh0=
+X-Google-Smtp-Source: ABdhPJzQBP7i0UejbUDOEJ/PIUIna2iliySKvnSejjQJynq46nXDzpSmSDHkFEnoUjHwe36cqbrwarHmUHE=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:90a:249:b0:1e0:a8a3:3c6c with SMTP id
- t9-20020a17090a024900b001e0a8a33c6cmr307322pje.0.1654217206143; Thu, 02 Jun
- 2022 17:46:46 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a81:5212:0:b0:30c:1a1e:45ac with SMTP id
+ g18-20020a815212000000b0030c1a1e45acmr8889806ywb.93.1654217147796; Thu, 02
+ Jun 2022 17:45:47 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri,  3 Jun 2022 00:42:52 +0000
+Date:   Fri,  3 Jun 2022 00:42:19 +0000
 In-Reply-To: <20220603004331.1523888-1-seanjc@google.com>
-Message-Id: <20220603004331.1523888-106-seanjc@google.com>
+Message-Id: <20220603004331.1523888-73-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220603004331.1523888-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v2 105/144] KVM: selftests: Convert hardware_disable_test to
- pass around vCPU objects
+Subject: [PATCH v2 072/144] KVM: selftests: Convert userspace_msr_exit_test
+ away from VCPU_ID
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     kvm@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
@@ -67,79 +67,353 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Pass around 'struct kvm_vcpu' objects in hardware_disable_test instead of
-the VM+vcpu_id (called "index" by the test).
+Convert userspace_msr_exit_test to use vm_create_with_one_vcpu() and pass
+around a 'struct kvm_vcpu' object instead of using a global VCPU_ID.
+Note, this is a "functional" change in the sense that the test now
+creates a vCPU with vcpu_id==0 instead of vcpu_id==1.  The non-zero
+VCPU_ID was 100% arbitrary and added little to no validation coverage.
+If testing non-zero vCPU IDs is desirable for generic tests, that can be
+done in the future by tweaking the VM creation helpers.
+
+Opportunistically use vcpu_run() instead of _vcpu_run() with an open
+coded assert that KVM_RUN succeeded.  Fix minor coding style violations
+too.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../selftests/kvm/hardware_disable_test.c     | 25 ++++++-------------
- 1 file changed, 8 insertions(+), 17 deletions(-)
+ .../kvm/x86_64/userspace_msr_exit_test.c      | 156 ++++++++----------
+ 1 file changed, 72 insertions(+), 84 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/hardware_disable_test.c b/tools/testing/selftests/kvm/hardware_disable_test.c
-index 31f6d408419f..b522610f0ba4 100644
---- a/tools/testing/selftests/kvm/hardware_disable_test.c
-+++ b/tools/testing/selftests/kvm/hardware_disable_test.c
-@@ -27,12 +27,6 @@
+diff --git a/tools/testing/selftests/kvm/x86_64/userspace_msr_exit_test.c b/tools/testing/selftests/kvm/x86_64/userspace_msr_exit_test.c
+index 23e9292580c9..a0d35e578b25 100644
+--- a/tools/testing/selftests/kvm/x86_64/userspace_msr_exit_test.c
++++ b/tools/testing/selftests/kvm/x86_64/userspace_msr_exit_test.c
+@@ -17,7 +17,6 @@
+ #define KVM_FEP_LENGTH 5
+ static int fep_available = 1;
  
- sem_t *sem;
+-#define VCPU_ID	      1
+ #define MSR_NON_EXISTENT 0x474f4f00
  
--/* Arguments for the pthreads */
--struct payload {
--	struct kvm_vm *vm;
--	uint32_t index;
--};
--
- static void guest_code(void)
- {
- 	for (;;)
-@@ -42,14 +36,14 @@ static void guest_code(void)
- 
- static void *run_vcpu(void *arg)
- {
--	struct payload *payload = (struct payload *)arg;
--	struct kvm_run *state = vcpu_state(payload->vm, payload->index);
-+	struct kvm_vcpu *vcpu = arg;
-+	struct kvm_run *run = vcpu->run;
- 
--	vcpu_run(payload->vm, payload->index);
-+	vcpu_run(vcpu->vm, vcpu->id);
- 
- 	TEST_ASSERT(false, "%s: exited with reason %d: %s\n",
--		    __func__, state->exit_reason,
--		    exit_reason_str(state->exit_reason));
-+		    __func__, run->exit_reason,
-+		    exit_reason_str(run->exit_reason));
- 	pthread_exit(NULL);
+ static u64 deny_bits = 0;
+@@ -395,31 +394,22 @@ static void guest_ud_handler(struct ex_regs *regs)
+ 	regs->rip += KVM_FEP_LENGTH;
  }
  
-@@ -92,11 +86,11 @@ static inline void check_join(pthread_t thread, void **retval)
+-static void run_guest(struct kvm_vm *vm)
++static void check_for_guest_assert(struct kvm_vcpu *vcpu)
+ {
+-	int rc;
+-
+-	rc = _vcpu_run(vm, VCPU_ID);
+-	TEST_ASSERT(rc == 0, "vcpu_run failed: %d\n", rc);
+-}
+-
+-static void check_for_guest_assert(struct kvm_vm *vm)
+-{
+-	struct kvm_run *run = vcpu_state(vm, VCPU_ID);
+ 	struct ucall uc;
  
- static void run_test(uint32_t run)
+-	if (run->exit_reason == KVM_EXIT_IO &&
+-		get_ucall(vm, VCPU_ID, &uc) == UCALL_ABORT) {
+-			TEST_FAIL("%s at %s:%ld", (const char *)uc.args[0],
+-				__FILE__, uc.args[1]);
++	if (vcpu->run->exit_reason == KVM_EXIT_IO &&
++	    get_ucall(vcpu->vm, vcpu->id, &uc) == UCALL_ABORT) {
++		TEST_FAIL("%s at %s:%ld",
++			  (const char *)uc.args[0], __FILE__, uc.args[1]);
+ 	}
+ }
+ 
+-static void process_rdmsr(struct kvm_vm *vm, uint32_t msr_index)
++static void process_rdmsr(struct kvm_vcpu *vcpu, uint32_t msr_index)
+ {
+-	struct kvm_run *run = vcpu_state(vm, VCPU_ID);
++	struct kvm_run *run = vcpu->run;
+ 
+-	check_for_guest_assert(vm);
++	check_for_guest_assert(vcpu);
+ 
+ 	TEST_ASSERT(run->exit_reason == KVM_EXIT_X86_RDMSR,
+ 		    "Unexpected exit reason: %u (%s),\n",
+@@ -450,11 +440,11 @@ static void process_rdmsr(struct kvm_vm *vm, uint32_t msr_index)
+ 	}
+ }
+ 
+-static void process_wrmsr(struct kvm_vm *vm, uint32_t msr_index)
++static void process_wrmsr(struct kvm_vcpu *vcpu, uint32_t msr_index)
+ {
+-	struct kvm_run *run = vcpu_state(vm, VCPU_ID);
++	struct kvm_run *run = vcpu->run;
+ 
+-	check_for_guest_assert(vm);
++	check_for_guest_assert(vcpu);
+ 
+ 	TEST_ASSERT(run->exit_reason == KVM_EXIT_X86_WRMSR,
+ 		    "Unexpected exit reason: %u (%s),\n",
+@@ -481,43 +471,43 @@ static void process_wrmsr(struct kvm_vm *vm, uint32_t msr_index)
+ 	}
+ }
+ 
+-static void process_ucall_done(struct kvm_vm *vm)
++static void process_ucall_done(struct kvm_vcpu *vcpu)
+ {
+-	struct kvm_run *run = vcpu_state(vm, VCPU_ID);
++	struct kvm_run *run = vcpu->run;
+ 	struct ucall uc;
+ 
+-	check_for_guest_assert(vm);
++	check_for_guest_assert(vcpu);
+ 
+ 	TEST_ASSERT(run->exit_reason == KVM_EXIT_IO,
+ 		    "Unexpected exit reason: %u (%s)",
+ 		    run->exit_reason,
+ 		    exit_reason_str(run->exit_reason));
+ 
+-	TEST_ASSERT(get_ucall(vm, VCPU_ID, &uc) == UCALL_DONE,
++	TEST_ASSERT(get_ucall(vcpu->vm, vcpu->id, &uc) == UCALL_DONE,
+ 		    "Unexpected ucall command: %lu, expected UCALL_DONE (%d)",
+ 		    uc.cmd, UCALL_DONE);
+ }
+ 
+-static uint64_t process_ucall(struct kvm_vm *vm)
++static uint64_t process_ucall(struct kvm_vcpu *vcpu)
+ {
+-	struct kvm_run *run = vcpu_state(vm, VCPU_ID);
++	struct kvm_run *run = vcpu->run;
+ 	struct ucall uc = {};
+ 
+-	check_for_guest_assert(vm);
++	check_for_guest_assert(vcpu);
+ 
+ 	TEST_ASSERT(run->exit_reason == KVM_EXIT_IO,
+ 		    "Unexpected exit reason: %u (%s)",
+ 		    run->exit_reason,
+ 		    exit_reason_str(run->exit_reason));
+ 
+-	switch (get_ucall(vm, VCPU_ID, &uc)) {
++	switch (get_ucall(vcpu->vm, vcpu->id, &uc)) {
+ 	case UCALL_SYNC:
+ 		break;
+ 	case UCALL_ABORT:
+-		check_for_guest_assert(vm);
++		check_for_guest_assert(vcpu);
+ 		break;
+ 	case UCALL_DONE:
+-		process_ucall_done(vm);
++		process_ucall_done(vcpu);
+ 		break;
+ 	default:
+ 		TEST_ASSERT(false, "Unexpected ucall");
+@@ -526,38 +516,39 @@ static uint64_t process_ucall(struct kvm_vm *vm)
+ 	return uc.cmd;
+ }
+ 
+-static void run_guest_then_process_rdmsr(struct kvm_vm *vm, uint32_t msr_index)
++static void run_guest_then_process_rdmsr(struct kvm_vcpu *vcpu,
++					 uint32_t msr_index)
+ {
+-	run_guest(vm);
+-	process_rdmsr(vm, msr_index);
++	vcpu_run(vcpu->vm, vcpu->id);
++	process_rdmsr(vcpu, msr_index);
+ }
+ 
+-static void run_guest_then_process_wrmsr(struct kvm_vm *vm, uint32_t msr_index)
++static void run_guest_then_process_wrmsr(struct kvm_vcpu *vcpu,
++					 uint32_t msr_index)
+ {
+-	run_guest(vm);
+-	process_wrmsr(vm, msr_index);
++	vcpu_run(vcpu->vm, vcpu->id);
++	process_wrmsr(vcpu, msr_index);
+ }
+ 
+-static uint64_t run_guest_then_process_ucall(struct kvm_vm *vm)
++static uint64_t run_guest_then_process_ucall(struct kvm_vcpu *vcpu)
+ {
+-	run_guest(vm);
+-	return process_ucall(vm);
++	vcpu_run(vcpu->vm, vcpu->id);
++	return process_ucall(vcpu);
+ }
+ 
+-static void run_guest_then_process_ucall_done(struct kvm_vm *vm)
++static void run_guest_then_process_ucall_done(struct kvm_vcpu *vcpu)
+ {
+-	run_guest(vm);
+-	process_ucall_done(vm);
++	vcpu_run(vcpu->vm, vcpu->id);
++	process_ucall_done(vcpu);
+ }
+ 
+ static void test_msr_filter_allow(void)
  {
 +	struct kvm_vcpu *vcpu;
  	struct kvm_vm *vm;
- 	cpu_set_t cpu_set;
- 	pthread_t threads[VCPU_NUM];
- 	pthread_t throw_away;
--	struct payload payloads[VCPU_NUM];
- 	void *b;
- 	uint32_t i, j;
+ 	int rc;
  
-@@ -108,12 +102,9 @@ static void run_test(uint32_t run)
+-	/* Create VM */
+-	vm = vm_create_default(VCPU_ID, 0, guest_code_filter_allow);
+-	vcpu_set_cpuid(vm, VCPU_ID, kvm_get_supported_cpuid());
++	vm = vm_create_with_one_vcpu(&vcpu, guest_code_filter_allow);
  
- 	pr_debug("%s: [%d] start vcpus\n", __func__, run);
- 	for (i = 0; i < VCPU_NUM; ++i) {
--		vm_vcpu_add(vm, i, guest_code);
--		payloads[i].vm = vm;
--		payloads[i].index = i;
-+		vcpu = vm_vcpu_add(vm, i, guest_code);
+ 	rc = kvm_check_cap(KVM_CAP_X86_USER_SPACE_MSR);
+ 	TEST_ASSERT(rc, "KVM_CAP_X86_USER_SPACE_MSR is available");
+@@ -569,43 +560,43 @@ static void test_msr_filter_allow(void)
+ 	vm_ioctl(vm, KVM_X86_SET_MSR_FILTER, &filter_allow);
  
--		check_create_thread(&threads[i], NULL, run_vcpu,
--				    (void *)&payloads[i]);
-+		check_create_thread(&threads[i], NULL, run_vcpu, vcpu);
- 		check_set_affinity(threads[i], &cpu_set);
+ 	vm_init_descriptor_tables(vm);
+-	vcpu_init_descriptor_tables(vm, VCPU_ID);
++	vcpu_init_descriptor_tables(vm, vcpu->id);
  
- 		for (j = 0; j < SLEEPING_THREAD_NUM; ++j) {
+ 	vm_install_exception_handler(vm, GP_VECTOR, guest_gp_handler);
+ 
+ 	/* Process guest code userspace exits. */
+-	run_guest_then_process_rdmsr(vm, MSR_IA32_XSS);
+-	run_guest_then_process_wrmsr(vm, MSR_IA32_XSS);
+-	run_guest_then_process_wrmsr(vm, MSR_IA32_XSS);
++	run_guest_then_process_rdmsr(vcpu, MSR_IA32_XSS);
++	run_guest_then_process_wrmsr(vcpu, MSR_IA32_XSS);
++	run_guest_then_process_wrmsr(vcpu, MSR_IA32_XSS);
+ 
+-	run_guest_then_process_rdmsr(vm, MSR_IA32_FLUSH_CMD);
+-	run_guest_then_process_wrmsr(vm, MSR_IA32_FLUSH_CMD);
+-	run_guest_then_process_wrmsr(vm, MSR_IA32_FLUSH_CMD);
++	run_guest_then_process_rdmsr(vcpu, MSR_IA32_FLUSH_CMD);
++	run_guest_then_process_wrmsr(vcpu, MSR_IA32_FLUSH_CMD);
++	run_guest_then_process_wrmsr(vcpu, MSR_IA32_FLUSH_CMD);
+ 
+-	run_guest_then_process_wrmsr(vm, MSR_NON_EXISTENT);
+-	run_guest_then_process_rdmsr(vm, MSR_NON_EXISTENT);
++	run_guest_then_process_wrmsr(vcpu, MSR_NON_EXISTENT);
++	run_guest_then_process_rdmsr(vcpu, MSR_NON_EXISTENT);
+ 
+ 	vm_install_exception_handler(vm, UD_VECTOR, guest_ud_handler);
+-	run_guest(vm);
++	vcpu_run(vm, vcpu->id);
+ 	vm_install_exception_handler(vm, UD_VECTOR, NULL);
+ 
+-	if (process_ucall(vm) != UCALL_DONE) {
++	if (process_ucall(vcpu) != UCALL_DONE) {
+ 		vm_install_exception_handler(vm, GP_VECTOR, guest_fep_gp_handler);
+ 
+ 		/* Process emulated rdmsr and wrmsr instructions. */
+-		run_guest_then_process_rdmsr(vm, MSR_IA32_XSS);
+-		run_guest_then_process_wrmsr(vm, MSR_IA32_XSS);
+-		run_guest_then_process_wrmsr(vm, MSR_IA32_XSS);
++		run_guest_then_process_rdmsr(vcpu, MSR_IA32_XSS);
++		run_guest_then_process_wrmsr(vcpu, MSR_IA32_XSS);
++		run_guest_then_process_wrmsr(vcpu, MSR_IA32_XSS);
+ 
+-		run_guest_then_process_rdmsr(vm, MSR_IA32_FLUSH_CMD);
+-		run_guest_then_process_wrmsr(vm, MSR_IA32_FLUSH_CMD);
+-		run_guest_then_process_wrmsr(vm, MSR_IA32_FLUSH_CMD);
++		run_guest_then_process_rdmsr(vcpu, MSR_IA32_FLUSH_CMD);
++		run_guest_then_process_wrmsr(vcpu, MSR_IA32_FLUSH_CMD);
++		run_guest_then_process_wrmsr(vcpu, MSR_IA32_FLUSH_CMD);
+ 
+-		run_guest_then_process_wrmsr(vm, MSR_NON_EXISTENT);
+-		run_guest_then_process_rdmsr(vm, MSR_NON_EXISTENT);
++		run_guest_then_process_wrmsr(vcpu, MSR_NON_EXISTENT);
++		run_guest_then_process_rdmsr(vcpu, MSR_NON_EXISTENT);
+ 
+ 		/* Confirm the guest completed without issues. */
+-		run_guest_then_process_ucall_done(vm);
++		run_guest_then_process_ucall_done(vcpu);
+ 	} else {
+ 		printf("To run the instruction emulated tests set the module parameter 'kvm.force_emulation_prefix=1'\n");
+ 	}
+@@ -613,16 +604,16 @@ static void test_msr_filter_allow(void)
+ 	kvm_vm_free(vm);
+ }
+ 
+-static int handle_ucall(struct kvm_vm *vm)
++static int handle_ucall(struct kvm_vcpu *vcpu)
+ {
+ 	struct ucall uc;
+ 
+-	switch (get_ucall(vm, VCPU_ID, &uc)) {
++	switch (get_ucall(vcpu->vm, vcpu->id, &uc)) {
+ 	case UCALL_ABORT:
+ 		TEST_FAIL("Guest assertion not met");
+ 		break;
+ 	case UCALL_SYNC:
+-		vm_ioctl(vm, KVM_X86_SET_MSR_FILTER, &no_filter_deny);
++		vm_ioctl(vcpu->vm, KVM_X86_SET_MSR_FILTER, &no_filter_deny);
+ 		break;
+ 	case UCALL_DONE:
+ 		return 1;
+@@ -672,14 +663,13 @@ static void handle_wrmsr(struct kvm_run *run)
+ 
+ static void test_msr_filter_deny(void)
+ {
++	struct kvm_vcpu *vcpu;
+ 	struct kvm_vm *vm;
+ 	struct kvm_run *run;
+ 	int rc;
+ 
+-	/* Create VM */
+-	vm = vm_create_default(VCPU_ID, 0, guest_code_filter_deny);
+-	vcpu_set_cpuid(vm, VCPU_ID, kvm_get_supported_cpuid());
+-	run = vcpu_state(vm, VCPU_ID);
++	vm = vm_create_with_one_vcpu(&vcpu, guest_code_filter_deny);
++	run = vcpu->run;
+ 
+ 	rc = kvm_check_cap(KVM_CAP_X86_USER_SPACE_MSR);
+ 	TEST_ASSERT(rc, "KVM_CAP_X86_USER_SPACE_MSR is available");
+@@ -694,9 +684,7 @@ static void test_msr_filter_deny(void)
+ 	vm_ioctl(vm, KVM_X86_SET_MSR_FILTER, &filter_deny);
+ 
+ 	while (1) {
+-		rc = _vcpu_run(vm, VCPU_ID);
+-
+-		TEST_ASSERT(rc == 0, "vcpu_run failed: %d\n", rc);
++		vcpu_run(vm, vcpu->id);
+ 
+ 		switch (run->exit_reason) {
+ 		case KVM_EXIT_X86_RDMSR:
+@@ -706,7 +694,7 @@ static void test_msr_filter_deny(void)
+ 			handle_wrmsr(run);
+ 			break;
+ 		case KVM_EXIT_IO:
+-			if (handle_ucall(vm))
++			if (handle_ucall(vcpu))
+ 				goto done;
+ 			break;
+ 		}
+@@ -722,12 +710,11 @@ static void test_msr_filter_deny(void)
+ 
+ static void test_msr_permission_bitmap(void)
+ {
++	struct kvm_vcpu *vcpu;
+ 	struct kvm_vm *vm;
+ 	int rc;
+ 
+-	/* Create VM */
+-	vm = vm_create_default(VCPU_ID, 0, guest_code_permission_bitmap);
+-	vcpu_set_cpuid(vm, VCPU_ID, kvm_get_supported_cpuid());
++	vm = vm_create_with_one_vcpu(&vcpu, guest_code_permission_bitmap);
+ 
+ 	rc = kvm_check_cap(KVM_CAP_X86_USER_SPACE_MSR);
+ 	TEST_ASSERT(rc, "KVM_CAP_X86_USER_SPACE_MSR is available");
+@@ -737,11 +724,12 @@ static void test_msr_permission_bitmap(void)
+ 	TEST_ASSERT(rc, "KVM_CAP_X86_MSR_FILTER is available");
+ 
+ 	vm_ioctl(vm, KVM_X86_SET_MSR_FILTER, &filter_fs);
+-	run_guest_then_process_rdmsr(vm, MSR_FS_BASE);
+-	TEST_ASSERT(run_guest_then_process_ucall(vm) == UCALL_SYNC, "Expected ucall state to be UCALL_SYNC.");
++	run_guest_then_process_rdmsr(vcpu, MSR_FS_BASE);
++	TEST_ASSERT(run_guest_then_process_ucall(vcpu) == UCALL_SYNC,
++		    "Expected ucall state to be UCALL_SYNC.");
+ 	vm_ioctl(vm, KVM_X86_SET_MSR_FILTER, &filter_gs);
+-	run_guest_then_process_rdmsr(vm, MSR_GS_BASE);
+-	run_guest_then_process_ucall_done(vm);
++	run_guest_then_process_rdmsr(vcpu, MSR_GS_BASE);
++	run_guest_then_process_ucall_done(vcpu);
+ 
+ 	kvm_vm_free(vm);
+ }
 -- 
 2.36.1.255.ge46751e96f-goog
 
