@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 746DDCCA47C
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:53:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17DD3CCA473
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:53:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244653AbiFCRx2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:53:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45574 "EHLO
+        id S1345459AbiFCRxf (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 13:53:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345379AbiFCRsz (ORCPT
+        with ESMTP id S1345602AbiFCRuC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:48:55 -0400
+        Fri, 3 Jun 2022 13:50:02 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E98155523B;
-        Fri,  3 Jun 2022 10:45:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A925258391;
+        Fri,  3 Jun 2022 10:46:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A6D21B82435;
-        Fri,  3 Jun 2022 17:45:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 197E8C385A9;
-        Fri,  3 Jun 2022 17:45:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 59D62B8243A;
+        Fri,  3 Jun 2022 17:46:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFE27C385A9;
+        Fri,  3 Jun 2022 17:46:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278341;
-        bh=+8/rSL0dktqyZfvWABToCYxgk0Wct5z+yxpZFfy6gak=;
+        s=korg; t=1654278362;
+        bh=JK1DF1VgNAq4TDyPSFj/H5fnS9OR7dFiNc1Idiqfw2Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nIIxnuG0XPIsjGoqLbBJnOPu0z/HducjIYpHWMU2nn0KVJ67MDdnll/fbAAEEWUi3
-         3t15U0+GR2yfBWZEjcmUVjguvrozc9yp3xCzVxi5kHSTA2Awrs/Fc/CvPDkh7NEauO
-         XpcBs6S5YtRfleAuHsKzjralnRhoWO2MwQDJ7uV8=
+        b=Qg9HsXlk9LQRb6sViR/Bf/atwLDeo9W9UUYU+FWAlkpVwmyC9JjNlt4GyiP8cU8E6
+         WcN+QuV3QzESLyfZkmtWLnLE8r9/E442Epcs2wsddEjkeVbFA6EIcvMuF2Hlo1xau1
+         xg+CmQTWU1Ki0ik7qEGDlXdnl3f+T7U8Uz/5PFWo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, IotaHydrae <writeforever@foxmail.com>,
-        Andre Przywara <andre.przywara@arm.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 11/34] pinctrl: sunxi: fix f1c100s uart2 function
-Date:   Fri,  3 Jun 2022 19:43:07 +0200
-Message-Id: <20220603173816.325039941@linuxfoundation.org>
+        stable@vger.kernel.org, Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Mark-PK Tsai <mark-pk.tsai@mediatek.com>
+Subject: [PATCH 5.4 08/34] media: vim2m: initialize the media device earlier
+Date:   Fri,  3 Jun 2022 19:43:04 +0200
+Message-Id: <20220603173816.239438872@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173815.990072516@linuxfoundation.org>
 References: <20220603173815.990072516@linuxfoundation.org>
@@ -50,45 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: IotaHydrae <writeforever@foxmail.com>
+From: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 
-[ Upstream commit fa8785e5931367e2b43f2c507f26bcf3e281c0ca ]
+commit 1a28dce222a6ece725689ad58c0cf4a1b48894f4 upstream.
 
-Change suniv f1c100s pinctrl,PD14 multiplexing function lvds1 to uart2
+Before the video device node is registered, the v4l2_dev.mdev
+pointer must be set in order to correctly associate the video
+device with the media device. Move the initialization of the
+media device up.
 
-When the pin PD13 and PD14 is setting up to uart2 function in dts,
-there's an error occurred:
-1c20800.pinctrl: unsupported function uart2 on pin PD14
-
-Because 'uart2' is not any one multiplexing option of PD14,
-and pinctrl don't know how to configure it.
-
-So change the pin PD14 lvds1 function to uart2.
-
-Signed-off-by: IotaHydrae <writeforever@foxmail.com>
-Reviewed-by: Andre Przywara <andre.przywara@arm.com>
-Link: https://lore.kernel.org/r/tencent_70C1308DDA794C81CAEF389049055BACEC09@qq.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Mark-PK Tsai <mark-pk.tsai@mediatek.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pinctrl/sunxi/pinctrl-suniv-f1c100s.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/media/platform/vim2m.c |   14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/pinctrl/sunxi/pinctrl-suniv-f1c100s.c b/drivers/pinctrl/sunxi/pinctrl-suniv-f1c100s.c
-index 2801ca706273..68a5b627fb9b 100644
---- a/drivers/pinctrl/sunxi/pinctrl-suniv-f1c100s.c
-+++ b/drivers/pinctrl/sunxi/pinctrl-suniv-f1c100s.c
-@@ -204,7 +204,7 @@ static const struct sunxi_desc_pin suniv_f1c100s_pins[] = {
- 		  SUNXI_FUNCTION(0x0, "gpio_in"),
- 		  SUNXI_FUNCTION(0x1, "gpio_out"),
- 		  SUNXI_FUNCTION(0x2, "lcd"),		/* D20 */
--		  SUNXI_FUNCTION(0x3, "lvds1"),		/* RX */
-+		  SUNXI_FUNCTION(0x3, "uart2"),		/* RX */
- 		  SUNXI_FUNCTION_IRQ_BANK(0x6, 0, 14)),
- 	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 15),
- 		  SUNXI_FUNCTION(0x0, "gpio_in"),
--- 
-2.35.1
-
+--- a/drivers/media/platform/vim2m.c
++++ b/drivers/media/platform/vim2m.c
+@@ -1347,12 +1347,6 @@ static int vim2m_probe(struct platform_d
+ 		goto error_dev;
+ 	}
+ 
+-	ret = video_register_device(vfd, VFL_TYPE_GRABBER, 0);
+-	if (ret) {
+-		v4l2_err(&dev->v4l2_dev, "Failed to register video device\n");
+-		goto error_m2m;
+-	}
+-
+ #ifdef CONFIG_MEDIA_CONTROLLER
+ 	dev->mdev.dev = &pdev->dev;
+ 	strscpy(dev->mdev.model, "vim2m", sizeof(dev->mdev.model));
+@@ -1361,7 +1355,15 @@ static int vim2m_probe(struct platform_d
+ 	media_device_init(&dev->mdev);
+ 	dev->mdev.ops = &m2m_media_ops;
+ 	dev->v4l2_dev.mdev = &dev->mdev;
++#endif
+ 
++	ret = video_register_device(vfd, VFL_TYPE_GRABBER, 0);
++	if (ret) {
++		v4l2_err(&dev->v4l2_dev, "Failed to register video device\n");
++		goto error_m2m;
++	}
++
++#ifdef CONFIG_MEDIA_CONTROLLER
+ 	ret = v4l2_m2m_register_media_controller(dev->m2m_dev, vfd,
+ 						 MEDIA_ENT_F_PROC_VIDEO_SCALER);
+ 	if (ret) {
 
 
