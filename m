@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8180CCA47C
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:00:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 538D0CCA480
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:00:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346229AbiFCSAB (ORCPT
+        id S1346509AbiFCSAW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:00:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58298 "EHLO
+        Fri, 3 Jun 2022 14:00:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346709AbiFCRv1 (ORCPT
+        with ESMTP id S1347199AbiFCRwG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:51:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35D7954686;
-        Fri,  3 Jun 2022 10:49:18 -0700 (PDT)
+        Fri, 3 Jun 2022 13:52:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81421580FB;
+        Fri,  3 Jun 2022 10:50:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 625D760EE9;
-        Fri,  3 Jun 2022 17:49:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5021EC3411D;
-        Fri,  3 Jun 2022 17:49:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E1E660F38;
+        Fri,  3 Jun 2022 17:50:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28A55C385A9;
+        Fri,  3 Jun 2022 17:50:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278556;
-        bh=GBMWw5YIL4CtdnTTC7cdooXOb1zCbcApFTrIwNej5P0=;
+        s=korg; t=1654278617;
+        bh=jHyM+b8du+a0HmzbYBcvIzJ3XESf7qdxLXW4V9tafjk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r/k1x0G/h/nyRvYdlzUadzPG5EeGDxE3mea+gckrQnVwDZD/N3Bv/7Dtn3ftOwAQp
-         IsH2jviXGqvwyNUg/lIp5Eipr/XnhGMtKxF2D+WU+miQpQsvmENoplNMsF8SG0YRKx
-         PxpuK+n1WJzXXGJ9d9/esOot/pRnGH93ktMXkywE=
+        b=dv8C97drc2hx3SG2X8abSEg3MRSaksqd5Z1wVHc0l+ITD3ZVicez29FRydzIQTBJ/
+         bGgdKpPdl+z7+veJBcIr73jzsoDL9cFReOyLTagxa01Du8un3EGTSfueDHwygj7jwd
+         uCjNGDXntTfynAtoRYAx6VfBoxxXIkWxXbv3SuQw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yuezhang Mo <Yuezhang.Mo@sony.com>,
-        Andy Wu <Andy.Wu@sony.com>,
-        Aoyama Wataru <wataru.aoyama@sony.com>,
-        Daniel Palmer <daniel.palmer@sony.com>,
-        Sungjong Seo <sj1557.seo@samsung.com>,
-        Namjae Jeon <linkinjeon@kernel.org>
-Subject: [PATCH 5.15 18/66] exfat: fix referencing wrong parent directory information after renaming
-Date:   Fri,  3 Jun 2022 19:42:58 +0200
-Message-Id: <20220603173821.189285919@linuxfoundation.org>
+        stable@vger.kernel.org, Lin Ma <linma@zju.edu.cn>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 06/66] nfc: pn533: Fix buggy cleanup order
+Date:   Fri,  3 Jun 2022 19:42:46 +0200
+Message-Id: <20220603173820.850495224@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.663747061@linuxfoundation.org>
 References: <20220603173820.663747061@linuxfoundation.org>
@@ -53,98 +50,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yuezhang Mo <Yuezhang.Mo@sony.com>
+From: Lin Ma <linma@zju.edu.cn>
 
-commit d8dad2588addd1d861ce19e7df3b702330f0c7e3 upstream.
+[ Upstream commit b8cedb7093b2d1394cae9b86494cba4b62d3a30a ]
 
-During renaming, the parent directory information maybe
-updated. But the file/directory still references to the
-old parent directory information.
+When removing the pn533 device (i2c or USB), there is a logic error. The
+original code first cancels the worker (flush_delayed_work) and then
+destroys the workqueue (destroy_workqueue), leaving the timer the last
+one to be deleted (del_timer). This result in a possible race condition
+in a multi-core preempt-able kernel. That is, if the cleanup
+(pn53x_common_clean) is concurrently run with the timer handler
+(pn533_listen_mode_timer), the timer can queue the poll_work to the
+already destroyed workqueue, causing use-after-free.
 
-This bug will cause 2 problems.
+This patch reorder the cleanup: it uses the del_timer_sync to make sure
+the handler is finished before the routine will destroy the workqueue.
+Note that the timer cannot be activated by the worker again.
 
-(1) The renamed file can not be written.
+static void pn533_wq_poll(struct work_struct *work)
+...
+ rc = pn533_send_poll_frame(dev);
+ if (rc)
+   return;
 
-    [10768.175172] exFAT-fs (sda1): error, failed to bmap (inode : 7afd50e4 iblock : 0, err : -5)
-    [10768.184285] exFAT-fs (sda1): Filesystem has been set read-only
-    ash: write error: Input/output error
+ if (cur_mod->len == 0 && dev->poll_mod_count > 1)
+   mod_timer(&dev->listen_timer, ...);
 
-(2) Some dentries of the renamed file/directory are not set
-    to deleted after removing the file/directory.
+That is, the mod_timer can be called only when pn533_send_poll_frame()
+returns no error, which is impossible because the device is detaching
+and the lower driver should return ENODEV code.
 
-exfat_update_parent_info() is a workaround for the wrong parent
-directory information being used after renaming. Now that bug is
-fixed, this is no longer needed, so remove it.
-
-Fixes: 5f2aa075070c ("exfat: add inode operations")
-Cc: stable@vger.kernel.org # v5.7+
-Signed-off-by: Yuezhang Mo <Yuezhang.Mo@sony.com>
-Reviewed-by: Andy Wu <Andy.Wu@sony.com>
-Reviewed-by: Aoyama Wataru <wataru.aoyama@sony.com>
-Reviewed-by: Daniel Palmer <daniel.palmer@sony.com>
-Reviewed-by: Sungjong Seo <sj1557.seo@samsung.com>
-Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Lin Ma <linma@zju.edu.cn>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/exfat/namei.c |   27 +--------------------------
- 1 file changed, 1 insertion(+), 26 deletions(-)
+ drivers/nfc/pn533/pn533.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/fs/exfat/namei.c
-+++ b/fs/exfat/namei.c
-@@ -1069,6 +1069,7 @@ static int exfat_rename_file(struct inod
+diff --git a/drivers/nfc/pn533/pn533.c b/drivers/nfc/pn533/pn533.c
+index d32aec0c334f..6dc0af63440f 100644
+--- a/drivers/nfc/pn533/pn533.c
++++ b/drivers/nfc/pn533/pn533.c
+@@ -2789,13 +2789,14 @@ void pn53x_common_clean(struct pn533 *priv)
+ {
+ 	struct pn533_cmd *cmd, *n;
  
- 		exfat_remove_entries(inode, p_dir, oldentry, 0,
- 			num_old_entries);
-+		ei->dir = *p_dir;
- 		ei->entry = newentry;
- 	} else {
- 		if (exfat_get_entry_type(epold) == TYPE_FILE) {
-@@ -1159,28 +1160,6 @@ static int exfat_move_file(struct inode
- 	return 0;
- }
++	/* delete the timer before cleanup the worker */
++	del_timer_sync(&priv->listen_timer);
++
+ 	flush_delayed_work(&priv->poll_work);
+ 	destroy_workqueue(priv->wq);
  
--static void exfat_update_parent_info(struct exfat_inode_info *ei,
--		struct inode *parent_inode)
--{
--	struct exfat_sb_info *sbi = EXFAT_SB(parent_inode->i_sb);
--	struct exfat_inode_info *parent_ei = EXFAT_I(parent_inode);
--	loff_t parent_isize = i_size_read(parent_inode);
+ 	skb_queue_purge(&priv->resp_q);
+ 
+-	del_timer(&priv->listen_timer);
 -
--	/*
--	 * the problem that struct exfat_inode_info caches wrong parent info.
--	 *
--	 * because of flag-mismatch of ei->dir,
--	 * there is abnormal traversing cluster chain.
--	 */
--	if (unlikely(parent_ei->flags != ei->dir.flags ||
--		     parent_isize != EXFAT_CLU_TO_B(ei->dir.size, sbi) ||
--		     parent_ei->start_clu != ei->dir.dir)) {
--		exfat_chain_set(&ei->dir, parent_ei->start_clu,
--			EXFAT_B_TO_CLU_ROUND_UP(parent_isize, sbi),
--			parent_ei->flags);
--	}
--}
--
- /* rename or move a old file into a new file */
- static int __exfat_rename(struct inode *old_parent_inode,
- 		struct exfat_inode_info *ei, struct inode *new_parent_inode,
-@@ -1211,8 +1190,6 @@ static int __exfat_rename(struct inode *
- 		return -ENOENT;
- 	}
- 
--	exfat_update_parent_info(ei, old_parent_inode);
--
- 	exfat_chain_dup(&olddir, &ei->dir);
- 	dentry = ei->entry;
- 
-@@ -1233,8 +1210,6 @@ static int __exfat_rename(struct inode *
- 			goto out;
- 		}
- 
--		exfat_update_parent_info(new_ei, new_parent_inode);
--
- 		p_dir = &(new_ei->dir);
- 		new_entry = new_ei->entry;
- 		ep = exfat_get_dentry(sb, p_dir, new_entry, &new_bh, NULL);
+ 	list_for_each_entry_safe(cmd, n, &priv->cmd_queue, queue) {
+ 		list_del(&cmd->queue);
+ 		kfree(cmd);
+-- 
+2.35.1
+
 
 
