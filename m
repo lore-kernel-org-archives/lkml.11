@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BC9FC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:44:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0260FC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:44:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344950AbiFCRoe (ORCPT
+        id S1345114AbiFCRoh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:44:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57698 "EHLO
+        Fri, 3 Jun 2022 13:44:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345043AbiFCRnm (ORCPT
+        with ESMTP id S1344885AbiFCRnt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:43:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 971F454F9E;
-        Fri,  3 Jun 2022 10:42:12 -0700 (PDT)
+        Fri, 3 Jun 2022 13:43:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3982253A4E;
+        Fri,  3 Jun 2022 10:42:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5C393B8242E;
-        Fri,  3 Jun 2022 17:42:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC996C385A9;
-        Fri,  3 Jun 2022 17:42:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F18EFB82189;
+        Fri,  3 Jun 2022 17:42:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61E3CC385A9;
+        Fri,  3 Jun 2022 17:42:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278128;
-        bh=+jKGu2m+qotB5j1a1TjLLakeDpMh01+5nUzTVxMt6Vo=;
+        s=korg; t=1654278136;
+        bh=TAFoB58GkJgcHsUaPVkQbIny7KMUv+5ZQHx316qJw2Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L/0DKgXut34P+/LrimPoK0NvSKq1aUQE6A5GKIYPEVZDx8elOz3D9I9jKp20rP0bM
-         lwSxPCNA86ukGROp+FRbu1grtjA3KMbi74uNNp5+Wk/+05FZj+NJW6aJ0GKIb1ufWt
-         imhL2LK8JZ/T7pEoupUmeWT3+PzQ5pDEibR4GhCQ=
+        b=1D9ckzg6Io4T1eeSskFq7rpzQdVbH0mh32mwTq08vT6uagU6lF04Wt2wO88x5XnCw
+         oQxty0lAgTC0H6BW/sTqAZfBd442IxcnUnccPF3iusrdNVXKrr3QZUSoaVgh9KX1NV
+         9uuVgP7nveSZ0wUlHf1zdZNXPYZ+6qzWZZ72m9Ww=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+793a590957d9c1b96620@syzkaller.appspotmail.com,
-        Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 4.19 19/30] netfilter: conntrack: re-fetch conntrack after insertion
-Date:   Fri,  3 Jun 2022 19:39:47 +0200
-Message-Id: <20220603173815.661040365@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Mikulas Patocka <mpatocka@redhat.com>,
+        Mike Snitzer <snitzer@kernel.org>
+Subject: [PATCH 4.19 21/30] dm integrity: fix error code in dm_integrity_ctr()
+Date:   Fri,  3 Jun 2022 19:39:49 +0200
+Message-Id: <20220603173815.718723788@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173815.088143764@linuxfoundation.org>
 References: <20220603173815.088143764@linuxfoundation.org>
@@ -51,43 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit 56b14ecec97f39118bf85c9ac2438c5a949509ed upstream.
+commit d3f2a14b8906df913cb04a706367b012db94a6e8 upstream.
 
-In case the conntrack is clashing, insertion can free skb->_nfct and
-set skb->_nfct to the already-confirmed entry.
+The "r" variable shadows an earlier "r" that has function scope.  It
+means that we accidentally return success instead of an error code.
+Smatch has a warning for this:
 
-This wasn't found before because the conntrack entry and the extension
-space used to free'd after an rcu grace period, plus the race needs
-events enabled to trigger.
+	drivers/md/dm-integrity.c:4503 dm_integrity_ctr()
+	warn: missing error code 'r'
 
-Reported-by: <syzbot+793a590957d9c1b96620@syzkaller.appspotmail.com>
-Fixes: 71d8c47fc653 ("netfilter: conntrack: introduce clash resolution on insertion race")
-Fixes: 2ad9d7747c10 ("netfilter: conntrack: free extension area immediately")
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: 7eada909bfd7 ("dm: add integrity target")
+Cc: stable@vger.kernel.org
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reviewed-by: Mikulas Patocka <mpatocka@redhat.com>
+Signed-off-by: Mike Snitzer <snitzer@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/netfilter/nf_conntrack_core.h |    7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/md/dm-integrity.c |    2 --
+ 1 file changed, 2 deletions(-)
 
---- a/include/net/netfilter/nf_conntrack_core.h
-+++ b/include/net/netfilter/nf_conntrack_core.h
-@@ -58,8 +58,13 @@ static inline int nf_conntrack_confirm(s
- 	int ret = NF_ACCEPT;
- 
- 	if (ct) {
--		if (!nf_ct_is_confirmed(ct))
-+		if (!nf_ct_is_confirmed(ct)) {
- 			ret = __nf_conntrack_confirm(skb);
-+
-+			if (ret == NF_ACCEPT)
-+				ct = (struct nf_conn *)skb_nfct(skb);
-+		}
-+
- 		if (likely(ret == NF_ACCEPT))
- 			nf_ct_deliver_cached_events(ct);
+--- a/drivers/md/dm-integrity.c
++++ b/drivers/md/dm-integrity.c
+@@ -3565,8 +3565,6 @@ try_smaller_buffer:
  	}
+ 
+ 	if (should_write_sb) {
+-		int r;
+-
+ 		init_journal(ic, 0, ic->journal_sections, 0);
+ 		r = dm_integrity_failed(ic);
+ 		if (unlikely(r)) {
 
 
