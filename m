@@ -2,58 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED331CCA480
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 00:56:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66281CCA484
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 00:56:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240511AbiFCAzR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 20:55:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49438 "EHLO
+        id S241142AbiFCAzi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 20:55:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240479AbiFCArQ (ORCPT
+        with ESMTP id S240462AbiFCArQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 2 Jun 2022 20:47:16 -0400
-Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91D2837AB6
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:46:18 -0700 (PDT)
-Received: by mail-pl1-x649.google.com with SMTP id e18-20020a170902ef5200b0016153d857a6so3485150plx.5
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:46:18 -0700 (PDT)
+Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4306037AA0
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:46:13 -0700 (PDT)
+Received: by mail-pg1-x54a.google.com with SMTP id b9-20020a656689000000b003f672946300so3036320pgw.16
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:46:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=amHid4K7CeXzL2Cd0HrBIVoj06G0AcSIfRzEhS9x9Vo=;
-        b=fqMVOzdSDB5o+Yy3MqLyLTS1VAuJsuiWmVMAcVC2A9ur/ssxIlekilpahr3az0N1Sd
-         3cUTKq5WFYSQZHAKHOStN2xpVJRt2rJy0o6FhxIwvxAgqJmpwCkNHq9IQpexLCGzro2c
-         cUk2d6uYPsjmyHUO16Gq+Zl6Jgk6LHatTZyphgZkypxY+k/bhiQLCOCDWkO9zhdhjfE7
-         KGasqNnodvI7mtaIvniC6G5kr3JyWr/JP8FfvDhAETtMEMiEt86T2Zl3Y8+wLyTq0Mrx
-         l6/CztzSf0yl+aN1W3mYZUE2YUxQFZ0GipYg8z3H9gUR/gWmoLU+kJl48j7lUjpmxYCH
-         Nz3Q==
+        bh=HmflTn0VQze0qjz7C+f73GctVnhrRk2ICC14i+42toA=;
+        b=WpOIATv6ZgMsXPILGbEqyjwgojnOEWiNdxMeVMXyLvz7ZCT60TjV7GGZ6wOpM0Fj+z
+         do8t1d+xYQSUYl7xpPl4LE1Es0UGOYxBaGdCSzCyUQqTzPbLDh77FeakUf77cP6DbLiy
+         8s7T11NZZjLbrmusiJhGDy0X91k2H6XudUx4yq/kKF97fsazv7D5SrbHlqVPIboKe1kZ
+         TcsX2R/XIQbaKBp6qBPdXTCyZR9hlV/GV5Ap06/xDIImeSxtuk+ugaTrL685ZoC9fEU8
+         RENDaGRYfuUWq9zzcZJpVwxrqC1UwnegnhOgPUFrexe22ULpQozT4apstyTZA2dugDtK
+         9UyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=amHid4K7CeXzL2Cd0HrBIVoj06G0AcSIfRzEhS9x9Vo=;
-        b=7TtKytFyylF99tVmP+X61l2MRZfuUUcbsMsaeiih9/6oM6UXzDlwTm0fomDENG4NU4
-         dwgQeSOkNv6cQQJuBNQ5zHZaiIT3VF9dfBOxwbhDFirlwQZJ4hyxblzAhVoE6d475Tf4
-         mIRlaPPo9DauFjHDghucd4b36AIMFb6u6KBlidFioKovdKJPXOAcO5ANmHDZsssGbp1U
-         yptd44vhirBYa/HeJV3zr0O/ZQfPLeu8+gp3MuDBLgE7hEhBO8PADrm0uX4NSwC4AevC
-         GzT/4EKw7N+icx/Cgah2e/FCTPtbbt3ZNp6FEBkq4SZjKfzlEN5tfBkeP5ck4OFx0qVW
-         ZWlw==
-X-Gm-Message-State: AOAM531Lvcocx/XmQqNwk7TZjF56oL9/IZQQb5ROf3xUkFDGJWvFI9h5
-        hGvgy4PlAQgMm05XFOgXG258AHO4G18=
-X-Google-Smtp-Source: ABdhPJzlkFDShxy7YeHDixEpEdzxg8e0KPSS1wQinqqhLFWF7Sa4M902WiEQR0Ygw/aeT9vsZNZo3xejH/Q=
+        bh=HmflTn0VQze0qjz7C+f73GctVnhrRk2ICC14i+42toA=;
+        b=CYhxEjWRkb/0HoopnQ6Igmw/OrMMsZHDf+nh0gp5ewrSj0ntCLrds8v4k9wPR9iYKe
+         c4LGeuaj2UWCNfANvzJL1OIm6EPR0b8JmSBeLd09HILhPGWnasaqacJ7N8XhYe5mUZIE
+         yB2J6X5nCmV20BZ/iuXLfO5vGcU0qI9mHPanJtQwg0Lo3ccszpsbQdpN9+EsWPCH+4Vy
+         9UzXUy3IW1KfYfobdbKCOaQxHwydvnDeZx1ZxLhv+czZoHXtKv6ry0jL6lXJIwt2URSJ
+         xGfcI7YCfd5uZ1e+AsvPMnWUQBVbWI/TXOPmweJbbRaoo2N8rX6am1Z5hfb0lS62F9Ob
+         YWog==
+X-Gm-Message-State: AOAM532qDbcs6uq9hbTm2b9R532rx7oujcWQxIFLQd/zvb8bxKmb+XEf
+        9/pKaUejPHCZPMXcKAc+XKfZBFSNakE=
+X-Google-Smtp-Source: ABdhPJyhlHExZ/NG+G+gYiQrVxDrefRUoP/yWN+pv+AR//5iG5zARzRUBH/cOLzshbWV+i7ACnIM14Jwuzg=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:902:ba88:b0:164:1b2d:61b5 with SMTP id
- k8-20020a170902ba8800b001641b2d61b5mr7665933pls.27.1654217177988; Thu, 02 Jun
- 2022 17:46:17 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a05:6a00:1a11:b0:512:6f59:f5cf with SMTP id
+ g17-20020a056a001a1100b005126f59f5cfmr7758804pfv.45.1654217172776; Thu, 02
+ Jun 2022 17:46:12 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri,  3 Jun 2022 00:42:36 +0000
+Date:   Fri,  3 Jun 2022 00:42:33 +0000
 In-Reply-To: <20220603004331.1523888-1-seanjc@google.com>
-Message-Id: <20220603004331.1523888-90-seanjc@google.com>
+Message-Id: <20220603004331.1523888-87-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220603004331.1523888-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v2 089/144] KVM: selftests: Convert xen_shinfo_test away from VCPU_ID
+Subject: [PATCH v2 086/144] KVM: selftests: Convert userspace_io_test away
+ from VCPU_ID
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     kvm@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
@@ -66,277 +67,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert xen_shinfo_test to use vm_create_with_one_vcpu() and pass around a
-'struct kvm_vcpu' object instead of using a global VCPU_ID.  Note, this is
-a "functional" change in the sense that the test now creates a vCPU with
-vcpu_id==0 instead of vcpu_id==5.  The non-zero VCPU_ID was 100% arbitrary
-and added little to no validation coverage.  If testing non-zero vCPU IDs
-is desirable for generic tests, that can be done in the future by tweaking
-the VM creation helpers.
+Convert userspace_io_test to use vm_create_with_one_vcpu() and pass around
+a 'struct kvm_vcpu' object instead of using a global VCPU_ID.  Note,
+this is a "functional" change in the sense that the test now creates a vCPU
+with vcpu_id==0 instead of vcpu_id==1.  The non-zero VCPU_ID was 100%
+arbitrary and added little to no validation coverage.  If testing non-zero
+vCPU IDs is desirable for generic tests, that can be done in the future by
+tweaking the VM creation helpers.
+
+Opportunistically use vcpu_run() instead of _vcpu_run() with an open
+coded assert that KVM_RUN succeeded.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../selftests/kvm/x86_64/xen_shinfo_test.c    | 62 +++++++++----------
- 1 file changed, 30 insertions(+), 32 deletions(-)
+ .../selftests/kvm/x86_64/userspace_io_test.c   | 18 +++++++-----------
+ 1 file changed, 7 insertions(+), 11 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/x86_64/xen_shinfo_test.c b/tools/testing/selftests/kvm/x86_64/xen_shinfo_test.c
-index 7a51bb648fbb..5c0abaf0eb60 100644
---- a/tools/testing/selftests/kvm/x86_64/xen_shinfo_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/xen_shinfo_test.c
-@@ -18,8 +18,6 @@
+diff --git a/tools/testing/selftests/kvm/x86_64/userspace_io_test.c b/tools/testing/selftests/kvm/x86_64/userspace_io_test.c
+index e4bef2e05686..0ba774ed6476 100644
+--- a/tools/testing/selftests/kvm/x86_64/userspace_io_test.c
++++ b/tools/testing/selftests/kvm/x86_64/userspace_io_test.c
+@@ -10,8 +10,6 @@
+ #include "kvm_util.h"
+ #include "processor.h"
  
- #include <sys/eventfd.h>
- 
--#define VCPU_ID		5
+-#define VCPU_ID			1
 -
- #define SHINFO_REGION_GVA	0xc0000000ULL
- #define SHINFO_REGION_GPA	0xc0000000ULL
- #define SHINFO_REGION_SLOT	10
-@@ -42,8 +40,6 @@
- #define EVTCHN_TEST2 66
- #define EVTCHN_TIMER 13
- 
--static struct kvm_vm *vm;
--
- #define XEN_HYPERCALL_MSR	0x40000000
- 
- #define MIN_STEAL_TIME		50000
-@@ -344,19 +340,22 @@ static int cmp_timespec(struct timespec *a, struct timespec *b)
- 	else
- 		return 0;
- }
--struct vcpu_info *vinfo;
-+
-+static struct vcpu_info *vinfo;
-+static struct kvm_vcpu *vcpu;
- 
- static void handle_alrm(int sig)
+ static void guest_ins_port80(uint8_t *buffer, unsigned int count)
  {
- 	if (vinfo)
- 		printf("evtchn_upcall_pending 0x%x\n", vinfo->evtchn_upcall_pending);
--	vcpu_dump(stdout, vm, VCPU_ID, 0);
-+	vcpu_dump(stdout, vcpu->vm, vcpu->id, 0);
- 	TEST_FAIL("IRQ delivery timed out");
- }
+ 	unsigned long end;
+@@ -52,31 +50,29 @@ static void guest_code(void)
  
  int main(int argc, char *argv[])
  {
- 	struct timespec min_ts, max_ts, vm_ts;
-+	struct kvm_vm *vm;
- 	bool verbose;
++	struct kvm_vcpu *vcpu;
+ 	struct kvm_regs regs;
+ 	struct kvm_run *run;
+ 	struct kvm_vm *vm;
+ 	struct ucall uc;
+-	int rc;
  
- 	verbose = argc > 1 && (!strncmp(argv[1], "-v", 3) ||
-@@ -374,8 +373,7 @@ int main(int argc, char *argv[])
+ 	/* Tell stdout not to buffer its content */
+ 	setbuf(stdout, NULL);
  
- 	clock_gettime(CLOCK_REALTIME, &min_ts);
- 
--	vm = vm_create_default(VCPU_ID, 0, (void *) guest_code);
--	vcpu_set_cpuid(vm, VCPU_ID, kvm_get_supported_cpuid());
+-	/* Create VM */
+-	vm = vm_create_default(VCPU_ID, 0, guest_code);
+-	run = vcpu_state(vm, VCPU_ID);
 +	vm = vm_create_with_one_vcpu(&vcpu, guest_code);
++	run = vcpu->run;
  
- 	/* Map a region for the shared_info page */
- 	vm_userspace_mem_region_add(vm, VM_MEM_SRC_ANONYMOUS,
-@@ -425,13 +423,13 @@ int main(int argc, char *argv[])
- 		.type = KVM_XEN_VCPU_ATTR_TYPE_VCPU_INFO,
- 		.u.gpa = VCPU_INFO_ADDR,
- 	};
--	vcpu_ioctl(vm, VCPU_ID, KVM_XEN_VCPU_SET_ATTR, &vi);
-+	vcpu_ioctl(vm, vcpu->id, KVM_XEN_VCPU_SET_ATTR, &vi);
+ 	memset(&regs, 0, sizeof(regs));
  
- 	struct kvm_xen_vcpu_attr pvclock = {
- 		.type = KVM_XEN_VCPU_ATTR_TYPE_VCPU_TIME_INFO,
- 		.u.gpa = PVTIME_ADDR,
- 	};
--	vcpu_ioctl(vm, VCPU_ID, KVM_XEN_VCPU_SET_ATTR, &pvclock);
-+	vcpu_ioctl(vm, vcpu->id, KVM_XEN_VCPU_SET_ATTR, &pvclock);
- 
- 	struct kvm_xen_hvm_attr vec = {
- 		.type = KVM_XEN_ATTR_TYPE_UPCALL_VECTOR,
-@@ -440,7 +438,7 @@ int main(int argc, char *argv[])
- 	vm_ioctl(vm, KVM_XEN_HVM_SET_ATTR, &vec);
- 
- 	vm_init_descriptor_tables(vm);
--	vcpu_init_descriptor_tables(vm, VCPU_ID);
-+	vcpu_init_descriptor_tables(vm, vcpu->id);
- 	vm_install_exception_handler(vm, EVTCHN_VECTOR, evtchn_handler);
- 
- 	if (do_runstate_tests) {
-@@ -448,7 +446,7 @@ int main(int argc, char *argv[])
- 			.type = KVM_XEN_VCPU_ATTR_TYPE_RUNSTATE_ADDR,
- 			.u.gpa = RUNSTATE_ADDR,
- 		};
--		vcpu_ioctl(vm, VCPU_ID, KVM_XEN_VCPU_SET_ATTR, &st);
-+		vcpu_ioctl(vm, vcpu->id, KVM_XEN_VCPU_SET_ATTR, &st);
- 	}
- 
- 	int irq_fd[2] = { -1, -1 };
-@@ -468,13 +466,13 @@ int main(int argc, char *argv[])
- 		irq_routes.entries[0].gsi = 32;
- 		irq_routes.entries[0].type = KVM_IRQ_ROUTING_XEN_EVTCHN;
- 		irq_routes.entries[0].u.xen_evtchn.port = EVTCHN_TEST1;
--		irq_routes.entries[0].u.xen_evtchn.vcpu = VCPU_ID;
-+		irq_routes.entries[0].u.xen_evtchn.vcpu = vcpu->id;
- 		irq_routes.entries[0].u.xen_evtchn.priority = KVM_IRQ_ROUTING_XEN_EVTCHN_PRIO_2LEVEL;
- 
- 		irq_routes.entries[1].gsi = 33;
- 		irq_routes.entries[1].type = KVM_IRQ_ROUTING_XEN_EVTCHN;
- 		irq_routes.entries[1].u.xen_evtchn.port = EVTCHN_TEST2;
--		irq_routes.entries[1].u.xen_evtchn.vcpu = VCPU_ID;
-+		irq_routes.entries[1].u.xen_evtchn.vcpu = vcpu->id;
- 		irq_routes.entries[1].u.xen_evtchn.priority = KVM_IRQ_ROUTING_XEN_EVTCHN_PRIO_2LEVEL;
- 
- 		vm_ioctl(vm, KVM_SET_GSI_ROUTING, &irq_routes);
-@@ -508,14 +506,14 @@ int main(int argc, char *argv[])
- 			.u.evtchn.type = EVTCHNSTAT_interdomain,
- 			.u.evtchn.flags = 0,
- 			.u.evtchn.deliver.port.port = EVTCHN_TEST1,
--			.u.evtchn.deliver.port.vcpu = VCPU_ID + 1,
-+			.u.evtchn.deliver.port.vcpu = vcpu->id + 1,
- 			.u.evtchn.deliver.port.priority = KVM_IRQ_ROUTING_XEN_EVTCHN_PRIO_2LEVEL,
- 		};
- 		vm_ioctl(vm, KVM_XEN_HVM_SET_ATTR, &inj);
- 
- 		/* Test migration to a different vCPU */
- 		inj.u.evtchn.flags = KVM_XEN_EVTCHN_UPDATE;
--		inj.u.evtchn.deliver.port.vcpu = VCPU_ID;
-+		inj.u.evtchn.deliver.port.vcpu = vcpu->id;
- 		vm_ioctl(vm, KVM_XEN_HVM_SET_ATTR, &inj);
- 
- 		inj.u.evtchn.send_port = 197;
-@@ -524,7 +522,7 @@ int main(int argc, char *argv[])
- 		inj.u.evtchn.flags = 0;
- 		vm_ioctl(vm, KVM_XEN_HVM_SET_ATTR, &inj);
- 
--		vcpu_ioctl(vm, VCPU_ID, KVM_XEN_VCPU_SET_ATTR, &tmr);
-+		vcpu_ioctl(vm, vcpu->id, KVM_XEN_VCPU_SET_ATTR, &tmr);
- 	}
- 	vinfo = addr_gpa2hva(vm, VCPU_INFO_VADDR);
- 	vinfo->evtchn_upcall_pending = 0;
-@@ -535,17 +533,17 @@ int main(int argc, char *argv[])
- 	bool evtchn_irq_expected = false;
- 
- 	for (;;) {
--		volatile struct kvm_run *run = vcpu_state(vm, VCPU_ID);
-+		volatile struct kvm_run *run = vcpu->run;
- 		struct ucall uc;
- 
--		vcpu_run(vm, VCPU_ID);
+ 	while (1) {
+-		rc = _vcpu_run(vm, VCPU_ID);
 +		vcpu_run(vm, vcpu->id);
  
+-		TEST_ASSERT(rc == 0, "vcpu_run failed: %d\n", rc);
  		TEST_ASSERT(run->exit_reason == KVM_EXIT_IO,
- 			    "Got exit_reason other than KVM_EXIT_IO: %u (%s)\n",
+ 			    "Unexpected exit reason: %u (%s),\n",
  			    run->exit_reason,
  			    exit_reason_str(run->exit_reason));
  
--		switch (get_ucall(vm, VCPU_ID, &uc)) {
-+		switch (get_ucall(vm, vcpu->id, &uc)) {
- 		case UCALL_ABORT:
- 			TEST_FAIL("%s", (const char *)uc.args[0]);
- 			/* NOT REACHED */
-@@ -574,7 +572,7 @@ int main(int argc, char *argv[])
- 					printf("Testing runstate %s\n", runstate_names[uc.args[1]]);
- 				rst.type = KVM_XEN_VCPU_ATTR_TYPE_RUNSTATE_CURRENT;
- 				rst.u.runstate.state = uc.args[1];
--				vcpu_ioctl(vm, VCPU_ID, KVM_XEN_VCPU_SET_ATTR, &rst);
-+				vcpu_ioctl(vm, vcpu->id, KVM_XEN_VCPU_SET_ATTR, &rst);
- 				break;
+-		if (get_ucall(vm, VCPU_ID, &uc))
++		if (get_ucall(vm, vcpu->id, &uc))
+ 			break;
  
- 			case 4:
-@@ -589,7 +587,7 @@ int main(int argc, char *argv[])
- 					0x6b6b - rs->time[RUNSTATE_offline];
- 				rst.u.runstate.time_runnable = -rst.u.runstate.time_blocked -
- 					rst.u.runstate.time_offline;
--				vcpu_ioctl(vm, VCPU_ID, KVM_XEN_VCPU_SET_ATTR, &rst);
-+				vcpu_ioctl(vm, vcpu->id, KVM_XEN_VCPU_SET_ATTR, &rst);
- 				break;
+ 		TEST_ASSERT(run->io.port == 0x80,
+@@ -89,13 +85,13 @@ int main(int argc, char *argv[])
+ 		 * scope from a testing perspective as it's not ABI in any way,
+ 		 * i.e. it really is abusing internal KVM knowledge.
+ 		 */
+-		vcpu_regs_get(vm, VCPU_ID, &regs);
++		vcpu_regs_get(vm, vcpu->id, &regs);
+ 		if (regs.rcx == 2)
+ 			regs.rcx = 1;
+ 		if (regs.rcx == 3)
+ 			regs.rcx = 8192;
+ 		memset((void *)run + run->io.data_offset, 0xaa, 4096);
+-		vcpu_regs_set(vm, VCPU_ID, &regs);
++		vcpu_regs_set(vm, vcpu->id, &regs);
+ 	}
  
- 			case 5:
-@@ -601,7 +599,7 @@ int main(int argc, char *argv[])
- 				rst.u.runstate.state_entry_time = 0x6b6b + 0x5a;
- 				rst.u.runstate.time_blocked = 0x6b6b;
- 				rst.u.runstate.time_offline = 0x5a;
--				vcpu_ioctl(vm, VCPU_ID, KVM_XEN_VCPU_SET_ATTR, &rst);
-+				vcpu_ioctl(vm, vcpu->id, KVM_XEN_VCPU_SET_ATTR, &rst);
- 				break;
- 
- 			case 6:
-@@ -660,7 +658,7 @@ int main(int argc, char *argv[])
- 
- 				struct kvm_irq_routing_xen_evtchn e;
- 				e.port = EVTCHN_TEST2;
--				e.vcpu = VCPU_ID;
-+				e.vcpu = vcpu->id;
- 				e.priority = KVM_IRQ_ROUTING_XEN_EVTCHN_PRIO_2LEVEL;
- 
- 				vm_ioctl(vm, KVM_XEN_HVM_EVTCHN_SEND, &e);
-@@ -702,7 +700,7 @@ int main(int argc, char *argv[])
- 			case 14:
- 				memset(&tmr, 0, sizeof(tmr));
- 				tmr.type = KVM_XEN_VCPU_ATTR_TYPE_TIMER;
--				vcpu_ioctl(vm, VCPU_ID, KVM_XEN_VCPU_GET_ATTR, &tmr);
-+				vcpu_ioctl(vm, vcpu->id, KVM_XEN_VCPU_GET_ATTR, &tmr);
- 				TEST_ASSERT(tmr.u.timer.port == EVTCHN_TIMER,
- 					    "Timer port not returned");
- 				TEST_ASSERT(tmr.u.timer.priority == KVM_IRQ_ROUTING_XEN_EVTCHN_PRIO_2LEVEL,
-@@ -722,7 +720,7 @@ int main(int argc, char *argv[])
- 					printf("Testing restored oneshot timer\n");
- 
- 				tmr.u.timer.expires_ns = rs->state_entry_time + 100000000,
--				vcpu_ioctl(vm, VCPU_ID, KVM_XEN_VCPU_SET_ATTR, &tmr);
-+				vcpu_ioctl(vm, vcpu->id, KVM_XEN_VCPU_SET_ATTR, &tmr);
- 				evtchn_irq_expected = true;
- 				alarm(1);
- 				break;
-@@ -749,7 +747,7 @@ int main(int argc, char *argv[])
- 					printf("Testing SCHEDOP_poll wake on masked event\n");
- 
- 				tmr.u.timer.expires_ns = rs->state_entry_time + 100000000,
--				vcpu_ioctl(vm, VCPU_ID, KVM_XEN_VCPU_SET_ATTR, &tmr);
-+				vcpu_ioctl(vm, vcpu->id, KVM_XEN_VCPU_SET_ATTR, &tmr);
- 				alarm(1);
- 				break;
- 
-@@ -760,11 +758,11 @@ int main(int argc, char *argv[])
- 
- 				evtchn_irq_expected = true;
- 				tmr.u.timer.expires_ns = rs->state_entry_time + 100000000;
--				vcpu_ioctl(vm, VCPU_ID, KVM_XEN_VCPU_SET_ATTR, &tmr);
-+				vcpu_ioctl(vm, vcpu->id, KVM_XEN_VCPU_SET_ATTR, &tmr);
- 
- 				/* Read it back and check the pending time is reported correctly */
- 				tmr.u.timer.expires_ns = 0;
--				vcpu_ioctl(vm, VCPU_ID, KVM_XEN_VCPU_GET_ATTR, &tmr);
-+				vcpu_ioctl(vm, vcpu->id, KVM_XEN_VCPU_GET_ATTR, &tmr);
- 				TEST_ASSERT(tmr.u.timer.expires_ns == rs->state_entry_time + 100000000,
- 					    "Timer not reported pending");
- 				alarm(1);
-@@ -774,7 +772,7 @@ int main(int argc, char *argv[])
- 				TEST_ASSERT(!evtchn_irq_expected,
- 					    "Expected event channel IRQ but it didn't happen");
- 				/* Read timer and check it is no longer pending */
--				vcpu_ioctl(vm, VCPU_ID, KVM_XEN_VCPU_GET_ATTR, &tmr);
-+				vcpu_ioctl(vm, vcpu->id, KVM_XEN_VCPU_GET_ATTR, &tmr);
- 				TEST_ASSERT(!tmr.u.timer.expires_ns, "Timer still reported pending");
- 
- 				shinfo->evtchn_pending[0] = 0;
-@@ -783,7 +781,7 @@ int main(int argc, char *argv[])
- 
- 				evtchn_irq_expected = true;
- 				tmr.u.timer.expires_ns = rs->state_entry_time - 100000000ULL;
--				vcpu_ioctl(vm, VCPU_ID, KVM_XEN_VCPU_SET_ATTR, &tmr);
-+				vcpu_ioctl(vm, vcpu->id, KVM_XEN_VCPU_SET_ATTR, &tmr);
- 				alarm(1);
- 				break;
- 
-@@ -853,7 +851,7 @@ int main(int argc, char *argv[])
- 		struct kvm_xen_vcpu_attr rst = {
- 			.type = KVM_XEN_VCPU_ATTR_TYPE_RUNSTATE_DATA,
- 		};
--		vcpu_ioctl(vm, VCPU_ID, KVM_XEN_VCPU_GET_ATTR, &rst);
-+		vcpu_ioctl(vm, vcpu->id, KVM_XEN_VCPU_GET_ATTR, &rst);
- 
- 		if (verbose) {
- 			printf("Runstate: %s(%d), entry %" PRIu64 " ns\n",
+ 	switch (uc.cmd) {
 -- 
 2.36.1.255.ge46751e96f-goog
 
