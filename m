@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EB84C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:08:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2FD1C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:09:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346747AbiFCSIu (ORCPT
+        id S1346885AbiFCSI6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:08:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58130 "EHLO
+        Fri, 3 Jun 2022 14:08:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346076AbiFCRzj (ORCPT
+        with ESMTP id S1345733AbiFCR4R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:55:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37209562F3;
-        Fri,  3 Jun 2022 10:53:38 -0700 (PDT)
+        Fri, 3 Jun 2022 13:56:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9F6C56423;
+        Fri,  3 Jun 2022 10:53:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C4F1C61244;
-        Fri,  3 Jun 2022 17:53:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6B7EC385A9;
-        Fri,  3 Jun 2022 17:53:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 76E79B82419;
+        Fri,  3 Jun 2022 17:53:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDF54C385A9;
+        Fri,  3 Jun 2022 17:53:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278817;
-        bh=CHmgGFpsuDekL9gLWFmcxOCEDhBVsTKgnNsfGL5LnfI=;
+        s=korg; t=1654278820;
+        bh=Ig21DrWcYMhGZvJLpvkh2ETAM6uWDNlNzd6CvlZgm+g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TukBTrZXhnSFffHwoWuD3m72sxyOdz8ODuVpOJkA90LW8dSqTK0EKN4Ygvnk7VQA8
-         CNJXR5mJHDp8d71B3k1x7e2KDeX6Tk1kfEL7mote41wHP+kZgzMT37cYQoh5DPtx4F
-         WMMGxOjWmXL7fYCa855b7u6nRWAwOtlczXlmEhk8=
+        b=KPbSnEDvXCI4dMy5FXWpOsJzX68G3ftFjSvsBd4Z+dw7/dPLA0TF+JwGOIkkm61Q8
+         1w0tmWyCUHFgE1VUrIc1pYi7pgiA3m13m3JCUnoY6D/aOG8LgtC6jzRdYWmW+8ti8H
+         /csEx4tbO9XpMf0Xkyp9fuOYLn5oVfbGbSP4ELF0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chenyi Qiang <chenyi.qiang@intel.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.17 37/75] KVM: x86: Drop WARNs that assert a triple fault never "escapes" from L2
-Date:   Fri,  3 Jun 2022 19:43:21 +0200
-Message-Id: <20220603173822.797923186@linuxfoundation.org>
+        stable@vger.kernel.org, Yuezhang Mo <Yuezhang.Mo@sony.com>,
+        Andy Wu <Andy.Wu@sony.com>,
+        Aoyama Wataru <wataru.aoyama@sony.com>,
+        Daniel Palmer <daniel.palmer@sony.com>,
+        Sungjong Seo <sj1557.seo@samsung.com>,
+        Namjae Jeon <linkinjeon@kernel.org>
+Subject: [PATCH 5.17 20/75] exfat: fix referencing wrong parent directory information after renaming
+Date:   Fri,  3 Jun 2022 19:43:04 +0200
+Message-Id: <20220603173822.321388602@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173821.749019262@linuxfoundation.org>
 References: <20220603173821.749019262@linuxfoundation.org>
@@ -50,83 +53,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Yuezhang Mo <Yuezhang.Mo@sony.com>
 
-commit 45846661d10422ce9e22da21f8277540b29eca22 upstream.
+commit d8dad2588addd1d861ce19e7df3b702330f0c7e3 upstream.
 
-Remove WARNs that sanity check that KVM never lets a triple fault for L2
-escape and incorrectly end up in L1.  In normal operation, the sanity
-check is perfectly valid, but it incorrectly assumes that it's impossible
-for userspace to induce KVM_REQ_TRIPLE_FAULT without bouncing through
-KVM_RUN (which guarantees kvm_check_nested_state() will see and handle
-the triple fault).
+During renaming, the parent directory information maybe
+updated. But the file/directory still references to the
+old parent directory information.
 
-The WARN can currently be triggered if userspace injects a machine check
-while L2 is active and CR4.MCE=0.  And a future fix to allow save/restore
-of KVM_REQ_TRIPLE_FAULT, e.g. so that a synthesized triple fault isn't
-lost on migration, will make it trivially easy for userspace to trigger
-the WARN.
+This bug will cause 2 problems.
 
-Clearing KVM_REQ_TRIPLE_FAULT when forcibly leaving guest mode is
-tempting, but wrong, especially if/when the request is saved/restored,
-e.g. if userspace restores events (including a triple fault) and then
-restores nested state (which may forcibly leave guest mode).  Ignoring
-the fact that KVM doesn't currently provide the necessary APIs, it's
-userspace's responsibility to manage pending events during save/restore.
+(1) The renamed file can not be written.
 
-  ------------[ cut here ]------------
-  WARNING: CPU: 7 PID: 1399 at arch/x86/kvm/vmx/nested.c:4522 nested_vmx_vmexit+0x7fe/0xd90 [kvm_intel]
-  Modules linked in: kvm_intel kvm irqbypass
-  CPU: 7 PID: 1399 Comm: state_test Not tainted 5.17.0-rc3+ #808
-  Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 0.0.0 02/06/2015
-  RIP: 0010:nested_vmx_vmexit+0x7fe/0xd90 [kvm_intel]
-  Call Trace:
-   <TASK>
-   vmx_leave_nested+0x30/0x40 [kvm_intel]
-   vmx_set_nested_state+0xca/0x3e0 [kvm_intel]
-   kvm_arch_vcpu_ioctl+0xf49/0x13e0 [kvm]
-   kvm_vcpu_ioctl+0x4b9/0x660 [kvm]
-   __x64_sys_ioctl+0x83/0xb0
-   do_syscall_64+0x3b/0xc0
-   entry_SYSCALL_64_after_hwframe+0x44/0xae
-   </TASK>
-  ---[ end trace 0000000000000000 ]---
+    [10768.175172] exFAT-fs (sda1): error, failed to bmap (inode : 7afd50e4 iblock : 0, err : -5)
+    [10768.184285] exFAT-fs (sda1): Filesystem has been set read-only
+    ash: write error: Input/output error
 
-Fixes: cb6a32c2b877 ("KVM: x86: Handle triple fault in L2 without killing L1")
-Cc: stable@vger.kernel.org
-Cc: Chenyi Qiang <chenyi.qiang@intel.com>
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220407002315.78092-2-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+(2) Some dentries of the renamed file/directory are not set
+    to deleted after removing the file/directory.
+
+exfat_update_parent_info() is a workaround for the wrong parent
+directory information being used after renaming. Now that bug is
+fixed, this is no longer needed, so remove it.
+
+Fixes: 5f2aa075070c ("exfat: add inode operations")
+Cc: stable@vger.kernel.org # v5.7+
+Signed-off-by: Yuezhang Mo <Yuezhang.Mo@sony.com>
+Reviewed-by: Andy Wu <Andy.Wu@sony.com>
+Reviewed-by: Aoyama Wataru <wataru.aoyama@sony.com>
+Reviewed-by: Daniel Palmer <daniel.palmer@sony.com>
+Reviewed-by: Sungjong Seo <sj1557.seo@samsung.com>
+Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/svm/nested.c |    3 ---
- arch/x86/kvm/vmx/nested.c |    3 ---
- 2 files changed, 6 deletions(-)
+ fs/exfat/namei.c |   27 +--------------------------
+ 1 file changed, 1 insertion(+), 26 deletions(-)
 
---- a/arch/x86/kvm/svm/nested.c
-+++ b/arch/x86/kvm/svm/nested.c
-@@ -790,9 +790,6 @@ int nested_svm_vmexit(struct vcpu_svm *s
- 	struct kvm_host_map map;
- 	int rc;
+--- a/fs/exfat/namei.c
++++ b/fs/exfat/namei.c
+@@ -1062,6 +1062,7 @@ static int exfat_rename_file(struct inod
  
--	/* Triple faults in L2 should never escape. */
--	WARN_ON_ONCE(kvm_check_request(KVM_REQ_TRIPLE_FAULT, vcpu));
--
- 	rc = kvm_vcpu_map(vcpu, gpa_to_gfn(svm->nested.vmcb12_gpa), &map);
- 	if (rc) {
- 		if (rc == -EINVAL)
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -4518,9 +4518,6 @@ void nested_vmx_vmexit(struct kvm_vcpu *
- 	/* trying to cancel vmlaunch/vmresume is a bug */
- 	WARN_ON_ONCE(vmx->nested.nested_run_pending);
+ 		exfat_remove_entries(inode, p_dir, oldentry, 0,
+ 			num_old_entries);
++		ei->dir = *p_dir;
+ 		ei->entry = newentry;
+ 	} else {
+ 		if (exfat_get_entry_type(epold) == TYPE_FILE) {
+@@ -1149,28 +1150,6 @@ static int exfat_move_file(struct inode
+ 	return 0;
+ }
  
--	/* Similarly, triple faults in L2 should never escape. */
--	WARN_ON_ONCE(kvm_check_request(KVM_REQ_TRIPLE_FAULT, vcpu));
+-static void exfat_update_parent_info(struct exfat_inode_info *ei,
+-		struct inode *parent_inode)
+-{
+-	struct exfat_sb_info *sbi = EXFAT_SB(parent_inode->i_sb);
+-	struct exfat_inode_info *parent_ei = EXFAT_I(parent_inode);
+-	loff_t parent_isize = i_size_read(parent_inode);
 -
- 	if (kvm_check_request(KVM_REQ_GET_NESTED_STATE_PAGES, vcpu)) {
- 		/*
- 		 * KVM_REQ_GET_NESTED_STATE_PAGES is also used to map
+-	/*
+-	 * the problem that struct exfat_inode_info caches wrong parent info.
+-	 *
+-	 * because of flag-mismatch of ei->dir,
+-	 * there is abnormal traversing cluster chain.
+-	 */
+-	if (unlikely(parent_ei->flags != ei->dir.flags ||
+-		     parent_isize != EXFAT_CLU_TO_B(ei->dir.size, sbi) ||
+-		     parent_ei->start_clu != ei->dir.dir)) {
+-		exfat_chain_set(&ei->dir, parent_ei->start_clu,
+-			EXFAT_B_TO_CLU_ROUND_UP(parent_isize, sbi),
+-			parent_ei->flags);
+-	}
+-}
+-
+ /* rename or move a old file into a new file */
+ static int __exfat_rename(struct inode *old_parent_inode,
+ 		struct exfat_inode_info *ei, struct inode *new_parent_inode,
+@@ -1201,8 +1180,6 @@ static int __exfat_rename(struct inode *
+ 		return -ENOENT;
+ 	}
+ 
+-	exfat_update_parent_info(ei, old_parent_inode);
+-
+ 	exfat_chain_dup(&olddir, &ei->dir);
+ 	dentry = ei->entry;
+ 
+@@ -1223,8 +1200,6 @@ static int __exfat_rename(struct inode *
+ 			goto out;
+ 		}
+ 
+-		exfat_update_parent_info(new_ei, new_parent_inode);
+-
+ 		p_dir = &(new_ei->dir);
+ 		new_entry = new_ei->entry;
+ 		ep = exfat_get_dentry(sb, p_dir, new_entry, &new_bh);
 
 
