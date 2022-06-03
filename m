@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19690C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:02:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A226EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:03:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345867AbiFCSCz (ORCPT
+        id S1346318AbiFCSDA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:02:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57860 "EHLO
+        Fri, 3 Jun 2022 14:03:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347260AbiFCRwK (ORCPT
+        with ESMTP id S1347261AbiFCRwK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 3 Jun 2022 13:52:10 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6387FB4B1;
-        Fri,  3 Jun 2022 10:51:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DBE9B48E;
+        Fri,  3 Jun 2022 10:51:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 130F7B823B0;
-        Fri,  3 Jun 2022 17:51:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35EDEC385A9;
-        Fri,  3 Jun 2022 17:51:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E2770B82419;
+        Fri,  3 Jun 2022 17:51:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23348C385A9;
+        Fri,  3 Jun 2022 17:51:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278700;
-        bh=XJM0lwkShHlP+CUihjc1TOUi9hlvEuV01oCFVztSbGk=;
+        s=korg; t=1654278697;
+        bh=u3IpJg7f52QEmZoiTs+geEPRmnLMhe+3HVFYgwUxjcA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wMXfogTYIEkrBIpQOQFajR/hpTtNIvx82JLjha8m7m6dz48RJU/pV+FRJ2OE6s+Gs
-         ol9WwoI0N+F17JmfoEZ8stpK/BU27vX1QUZCgyfFdPYR072r44j2dRLWVHGyqNPtQU
-         FVr/15rxET1h+7qGoXM2PXHSZqlqz6D7YeEFCCBc=
+        b=hCd/MzFWqOlhokl60z4HvVU0yO5QWcVXR0dbscJAdiT1HfLDu+eGfYnKMwGxZ46I+
+         cHTNsEk5iw5O999Jd1IpeuZaAftUO4XqLDUW6rQP8375u0+Uzup75YcX+1fGFAE73p
+         Pn9Dyem6r+BKFWCBZmyF8k9bpy4w0tPbc6B9bBTI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yuntao Wang <ytcoode@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Subject: [PATCH 5.15 64/66] bpf: Fix excessive memory allocation in stack_map_alloc()
-Date:   Fri,  3 Jun 2022 19:43:44 +0200
-Message-Id: <20220603173822.504836401@linuxfoundation.org>
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
+        Maris Abele <maris7abele@gmail.com>
+Subject: [PATCH 5.15 37/66] ALSA: usb-audio: Workaround for clock setup on TEAC devices
+Date:   Fri,  3 Jun 2022 19:43:17 +0200
+Message-Id: <20220603173821.742820192@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.663747061@linuxfoundation.org>
 References: <20220603173820.663747061@linuxfoundation.org>
@@ -49,43 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yuntao Wang <ytcoode@gmail.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-commit b45043192b3e481304062938a6561da2ceea46a6 upstream.
+commit 5ce0b06ae5e69e23142e73c5c3c0260e9f2ccb4b upstream.
 
-The 'n_buckets * (value_size + sizeof(struct stack_map_bucket))' part of the
-allocated memory for 'smap' is never used after the memlock accounting was
-removed, thus get rid of it.
+Maris reported that TEAC UD-501 (0644:8043) doesn't work with the
+typical "clock source 41 is not valid, cannot use" errors on the
+recent kernels.  The currently known workaround so far is to restore
+(partially) what we've done unconditionally at the clock setup;
+namely, re-setup the USB interface immediately after the clock is
+changed.  This patch re-introduces the behavior conditionally for TEAC
+devices.
 
-[ Note, Daniel:
+Further notes:
+- The USB interface shall be set later in
+  snd_usb_endpoint_configure(), but this seems to be too late.
+- Even calling  usb_set_interface() right after
+  sne_usb_init_sample_rate() doesn't help; so this must be related
+  with the clock validation, too.
+- The device may still spew the "clock source 41 is not valid" error
+  at the first clock setup.  This seems happening at the very first
+  try of clock setup, but it disappears at later attempts.
+  The error is likely harmless because the driver retries the clock
+  setup (such an error is more or less expected on some devices).
 
-Commit b936ca643ade ("bpf: rework memlock-based memory accounting for maps")
-moved `cost += n_buckets * (value_size + sizeof(struct stack_map_bucket))`
-up and therefore before the bpf_map_area_alloc() allocation, sigh. In a later
-step commit c85d69135a91 ("bpf: move memory size checks to bpf_map_charge_init()"),
-and the overflow checks of `cost >= U32_MAX - PAGE_SIZE` moved into
-bpf_map_charge_init(). And then 370868107bf6 ("bpf: Eliminate rlimit-based
-memory accounting for stackmap maps") finally removed the bpf_map_charge_init().
-Anyway, the original code did the allocation same way as /after/ this fix. ]
-
-Fixes: b936ca643ade ("bpf: rework memlock-based memory accounting for maps")
-Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/bpf/20220407130423.798386-1-ytcoode@gmail.com
+Fixes: bf6313a0ff76 ("ALSA: usb-audio: Refactor endpoint management")
+Reported-and-tested-by: Maris Abele <maris7abele@gmail.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220521064627.29292-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/bpf/stackmap.c |    1 -
- 1 file changed, 1 deletion(-)
+ sound/usb/clock.c |    7 +++++++
+ 1 file changed, 7 insertions(+)
 
---- a/kernel/bpf/stackmap.c
-+++ b/kernel/bpf/stackmap.c
-@@ -119,7 +119,6 @@ static struct bpf_map *stack_map_alloc(u
- 		return ERR_PTR(-E2BIG);
+--- a/sound/usb/clock.c
++++ b/sound/usb/clock.c
+@@ -572,6 +572,13 @@ static int set_sample_rate_v2v3(struct s
+ 		/* continue processing */
+ 	}
  
- 	cost = n_buckets * sizeof(struct stack_map_bucket *) + sizeof(*smap);
--	cost += n_buckets * (value_size + sizeof(struct stack_map_bucket));
- 	smap = bpf_map_area_alloc(cost, bpf_map_attr_numa_node(attr));
- 	if (!smap)
- 		return ERR_PTR(-ENOMEM);
++	/* FIXME - TEAC devices require the immediate interface setup */
++	if (rate != prev_rate && USB_ID_VENDOR(chip->usb_id) == 0x0644) {
++		usb_set_interface(chip->dev, fmt->iface, fmt->altsetting);
++		if (chip->quirk_flags & QUIRK_FLAG_IFACE_DELAY)
++			msleep(50);
++	}
++
+ validation:
+ 	/* validate clock after rate change */
+ 	if (!uac_clock_source_is_valid(chip, fmt, clock))
 
 
