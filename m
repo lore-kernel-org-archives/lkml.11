@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2DF5C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:19:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0384C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:21:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347022AbiFCSTz (ORCPT
+        id S1347152AbiFCST7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:19:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45308 "EHLO
+        Fri, 3 Jun 2022 14:19:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348027AbiFCSGe (ORCPT
+        with ESMTP id S1348005AbiFCSGd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 14:06:34 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E1C15DBF0;
-        Fri,  3 Jun 2022 10:59:41 -0700 (PDT)
+        Fri, 3 Jun 2022 14:06:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1D6C5DBE6;
+        Fri,  3 Jun 2022 10:59:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 68B31CE2491;
-        Fri,  3 Jun 2022 17:58:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E235C385A9;
-        Fri,  3 Jun 2022 17:58:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 71911B82430;
+        Fri,  3 Jun 2022 17:58:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E428C385A9;
+        Fri,  3 Jun 2022 17:58:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654279136;
-        bh=OjwbpKNPDfe7GTw3ryhR0CVtFhv3cYyjK+edEN1nmDE=;
+        s=korg; t=1654279130;
+        bh=kN0AN2TNyRTIymjPqzTViSmge+OvDBcFe42A1QKtWv8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J2YG4QfCZYhO072rxNEHT0l77w/IqsfcywRY/TqfTwBFWNAIzjnaX4b1aL/bakUX7
-         Gqwbd3WWlOqR7nDkAugqtAfXLW33Gs5s6LkvO0DS0DLoXBrxu83xsk1F6YKdCBk8g1
-         b0wbs7uiZxQTJAL6j5IYFc8g50YtLv9gGkqtRFz0=
+        b=iJM3eu1659Fhu9NOSdnHhQHkL4U1KYiBR7ioyGnpMlLNHDYWa0kdF1pBL0ijFZcTF
+         sp+D1t97gXOq0gElgpqz46D23Jw6mTZZhL60dpAnPj8xN5UE1yrNAqC0fsVmBTGlHC
+         5vnMFwsiS82iHz80jx9r5SSjIjM6rW+KZuZdoQBw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yuntao Wang <ytcoode@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Subject: [PATCH 5.18 64/67] bpf: Fix excessive memory allocation in stack_map_alloc()
-Date:   Fri,  3 Jun 2022 19:44:05 +0200
-Message-Id: <20220603173822.558677557@linuxfoundation.org>
+        stable@vger.kernel.org, Liu Jian <liujian56@huawei.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Song Liu <songliubraving@fb.com>
+Subject: [PATCH 5.18 62/67] bpf: Enlarge offset check value to INT_MAX in bpf_skb_{load,store}_bytes
+Date:   Fri,  3 Jun 2022 19:44:03 +0200
+Message-Id: <20220603173822.503895809@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.731531504@linuxfoundation.org>
 References: <20220603173820.731531504@linuxfoundation.org>
@@ -49,43 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yuntao Wang <ytcoode@gmail.com>
+From: Liu Jian <liujian56@huawei.com>
 
-commit b45043192b3e481304062938a6561da2ceea46a6 upstream.
+commit 45969b4152c1752089351cd6836a42a566d49bcf upstream.
 
-The 'n_buckets * (value_size + sizeof(struct stack_map_bucket))' part of the
-allocated memory for 'smap' is never used after the memlock accounting was
-removed, thus get rid of it.
+The data length of skb frags + frag_list may be greater than 0xffff, and
+skb_header_pointer can not handle negative offset. So, here INT_MAX is used
+to check the validity of offset. Add the same change to the related function
+skb_store_bytes.
 
-[ Note, Daniel:
-
-Commit b936ca643ade ("bpf: rework memlock-based memory accounting for maps")
-moved `cost += n_buckets * (value_size + sizeof(struct stack_map_bucket))`
-up and therefore before the bpf_map_area_alloc() allocation, sigh. In a later
-step commit c85d69135a91 ("bpf: move memory size checks to bpf_map_charge_init()"),
-and the overflow checks of `cost >= U32_MAX - PAGE_SIZE` moved into
-bpf_map_charge_init(). And then 370868107bf6 ("bpf: Eliminate rlimit-based
-memory accounting for stackmap maps") finally removed the bpf_map_charge_init().
-Anyway, the original code did the allocation same way as /after/ this fix. ]
-
-Fixes: b936ca643ade ("bpf: rework memlock-based memory accounting for maps")
-Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
+Fixes: 05c74e5e53f6 ("bpf: add bpf_skb_load_bytes helper")
+Signed-off-by: Liu Jian <liujian56@huawei.com>
 Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/bpf/20220407130423.798386-1-ytcoode@gmail.com
+Acked-by: Song Liu <songliubraving@fb.com>
+Link: https://lore.kernel.org/bpf/20220416105801.88708-2-liujian56@huawei.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/bpf/stackmap.c |    1 -
- 1 file changed, 1 deletion(-)
+ net/core/filter.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/kernel/bpf/stackmap.c
-+++ b/kernel/bpf/stackmap.c
-@@ -100,7 +100,6 @@ static struct bpf_map *stack_map_alloc(u
- 		return ERR_PTR(-E2BIG);
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -1687,7 +1687,7 @@ BPF_CALL_5(bpf_skb_store_bytes, struct s
  
- 	cost = n_buckets * sizeof(struct stack_map_bucket *) + sizeof(*smap);
--	cost += n_buckets * (value_size + sizeof(struct stack_map_bucket));
- 	smap = bpf_map_area_alloc(cost, bpf_map_attr_numa_node(attr));
- 	if (!smap)
- 		return ERR_PTR(-ENOMEM);
+ 	if (unlikely(flags & ~(BPF_F_RECOMPUTE_CSUM | BPF_F_INVALIDATE_HASH)))
+ 		return -EINVAL;
+-	if (unlikely(offset > 0xffff))
++	if (unlikely(offset > INT_MAX))
+ 		return -EFAULT;
+ 	if (unlikely(bpf_try_make_writable(skb, offset + len)))
+ 		return -EFAULT;
+@@ -1722,7 +1722,7 @@ BPF_CALL_4(bpf_skb_load_bytes, const str
+ {
+ 	void *ptr;
+ 
+-	if (unlikely(offset > 0xffff))
++	if (unlikely(offset > INT_MAX))
+ 		goto err_clear;
+ 
+ 	ptr = skb_header_pointer(skb, offset, len, to);
 
 
