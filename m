@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1861CCCA48A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9116FCCA489
 	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:07:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347640AbiFCSGL (ORCPT
+        id S1347731AbiFCSGO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:06:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46572 "EHLO
+        Fri, 3 Jun 2022 14:06:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346343AbiFCRvG (ORCPT
+        with ESMTP id S1346337AbiFCRvF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:51:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 064A054BCD;
-        Fri,  3 Jun 2022 10:47:42 -0700 (PDT)
+        Fri, 3 Jun 2022 13:51:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CCA0544E8;
+        Fri,  3 Jun 2022 10:47:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B25E0B82189;
-        Fri,  3 Jun 2022 17:47:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07CE0C385A9;
-        Fri,  3 Jun 2022 17:47:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B3C12B82189;
+        Fri,  3 Jun 2022 17:47:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F23E8C385A9;
+        Fri,  3 Jun 2022 17:47:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278459;
-        bh=40Dw1jN3ldvZgbMeHGnjn/t9svfNtIvS+9qMXPFOHNc=;
+        s=korg; t=1654278456;
+        bh=BVFr+pAZdwYA4VJCP8WE7tfQLDjYn0csV1UYSw2SV0o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SQya78MlU0wu7LbWDhutTnASZq08De7xJLN7sAR37N7yX9drSEeVGM8UlWQg/1yeg
-         fSwDsxJ+gwsiDZ3ax27jFEsaR8mh+Z6schqYCjN14LJHJHDR2GaFNdNciTrmU5RtSA
-         l+HpIp85eeT15T7vutL45JcIIYKdXJA1VXAvAHDE=
+        b=Ta791vTtSp0YeimrYbWtzds9Arftdvj6zZjM64MWT1acZt5S0mBLhpvTQvO8K0RTK
+         ltEcaGLdqAYJU5M6wZYSws4q2TKa9FM+eGXV3v+f+ZeFUd92bdlPNcFR2gIsc7cPBg
+         9ierXPfRYvsfr6i5EmIU4To8oKf2ULBuysfYtT1w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jonathan Bakker <xc-racer2@live.ca>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 5.10 39/53] ARM: dts: s5pv210: Correct interrupt name for bluetooth in Aries
-Date:   Fri,  3 Jun 2022 19:43:24 +0200
-Message-Id: <20220603173819.858782061@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <eric.dumazet@gmail.com>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        Marcel Holtmann <marcel@holtmann.org>
+Subject: [PATCH 5.10 38/53] Bluetooth: hci_qca: Use del_timer_sync() before freeing
+Date:   Fri,  3 Jun 2022 19:43:23 +0200
+Message-Id: <20220603173819.829448877@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173818.716010877@linuxfoundation.org>
 References: <20220603173818.716010877@linuxfoundation.org>
@@ -49,33 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Bakker <xc-racer2@live.ca>
+From: Steven Rostedt <rostedt@goodmis.org>
 
-commit 3f5e3d3a8b895c8a11da8b0063ba2022dd9e2045 upstream.
+commit 72ef98445aca568a81c2da050532500a8345ad3a upstream.
 
-Correct the name of the bluetooth interrupt from host-wake to
-host-wakeup.
+While looking at a crash report on a timer list being corrupted, which
+usually happens when a timer is freed while still active. This is
+commonly triggered by code calling del_timer() instead of
+del_timer_sync() just before freeing.
 
-Fixes: 1c65b6184441b ("ARM: dts: s5pv210: Correct BCM4329 bluetooth node")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Jonathan Bakker <xc-racer2@live.ca>
-Link: https://lore.kernel.org/r/CY4PR04MB0567495CFCBDC8D408D44199CB1C9@CY4PR04MB0567.namprd04.prod.outlook.com
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+One possible culprit is the hci_qca driver, which does exactly that.
+
+Eric mentioned that wake_retrans_timer could be rearmed via the work
+queue, so also move the destruction of the work queue before
+del_timer_sync().
+
+Cc: Eric Dumazet <eric.dumazet@gmail.com>
+Cc: stable@vger.kernel.org
+Fixes: 0ff252c1976da ("Bluetooth: hciuart: Add support QCA chipset for UART")
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/s5pv210-aries.dtsi |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/bluetooth/hci_qca.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/arch/arm/boot/dts/s5pv210-aries.dtsi
-+++ b/arch/arm/boot/dts/s5pv210-aries.dtsi
-@@ -896,7 +896,7 @@
- 		device-wakeup-gpios = <&gpg3 4 GPIO_ACTIVE_HIGH>;
- 		interrupt-parent = <&gph2>;
- 		interrupts = <5 IRQ_TYPE_LEVEL_HIGH>;
--		interrupt-names = "host-wake";
-+		interrupt-names = "host-wakeup";
- 	};
- };
+--- a/drivers/bluetooth/hci_qca.c
++++ b/drivers/bluetooth/hci_qca.c
+@@ -689,9 +689,9 @@ static int qca_close(struct hci_uart *hu
+ 	skb_queue_purge(&qca->tx_wait_q);
+ 	skb_queue_purge(&qca->txq);
+ 	skb_queue_purge(&qca->rx_memdump_q);
+-	del_timer(&qca->tx_idle_timer);
+-	del_timer(&qca->wake_retrans_timer);
+ 	destroy_workqueue(qca->workqueue);
++	del_timer_sync(&qca->tx_idle_timer);
++	del_timer_sync(&qca->wake_retrans_timer);
+ 	qca->hu = NULL;
  
+ 	kfree_skb(qca->rx_skb);
 
 
