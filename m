@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 294E3CCA473
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:41:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61279C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:41:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344710AbiFCRk5 (ORCPT
+        id S1344764AbiFCRlC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:40:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56034 "EHLO
+        Fri, 3 Jun 2022 13:41:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344662AbiFCRkT (ORCPT
+        with ESMTP id S1344560AbiFCRjx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:40:19 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EBC553702;
-        Fri,  3 Jun 2022 10:40:17 -0700 (PDT)
+        Fri, 3 Jun 2022 13:39:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA7FC532D2;
+        Fri,  3 Jun 2022 10:39:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 55EE5CE247C;
-        Fri,  3 Jun 2022 17:40:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 309F4C385A9;
-        Fri,  3 Jun 2022 17:40:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8AD2EB8241D;
+        Fri,  3 Jun 2022 17:39:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2D51C385B8;
+        Fri,  3 Jun 2022 17:39:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278014;
-        bh=Hk3/f2nNv92H8r0dP39kp+bBvl8z1V6g6xqfAm88exk=;
+        s=korg; t=1654277990;
+        bh=BR1Eg9ikP8Kopx7lvdTr9OW2tBskvDe+1UFi5ke+cVc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hBdsJFp0Jg3aHyjBwvzgYa6uzenDsWxvsslncRRkcReGNm62oGcJMxNFGQMJ/18H3
-         /VKfTFabyXseaOoNl8p1GABlDYwLi7YcsZzCZLjIW/zPr9vBCjjCf+eMvE+Y1oIhDX
-         iUiHnc9vIGr0OcXf3V1mVr2YaqUeHiS9wgKGafgI=
+        b=NOYbDHtZFETTZ66/6/OboZJVxWJt5WwviEl5745kUrRwJhrdzJA0sMBdsD1NKgqpd
+         IrV8kkJTzb6rFaEyuQyqsNk5SEU8PtrGC7yfQa3wG4/p3J2gOcI5+lM7d7droEy5fi
+         vdPUhhyxgRtlMyZEv9ukLsqBUiFXHEeCEo+LzHoE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Milan Broz <gmazyland@gmail.com>,
-        Mike Snitzer <snitzer@kernel.org>
-Subject: [PATCH 4.9 07/12] dm crypt: make printing of the key constant-time
-Date:   Fri,  3 Jun 2022 19:39:33 +0200
-Message-Id: <20220603173812.742968160@linuxfoundation.org>
+        stable@vger.kernel.org, Xiu Jianfeng <xiujianfeng@huawei.com>,
+        Stefan Berger <stefanb@linux.ibm.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>
+Subject: [PATCH 4.9 10/12] tpm: ibmvtpm: Correct the return value in tpm_ibmvtpm_probe()
+Date:   Fri,  3 Jun 2022 19:39:36 +0200
+Message-Id: <20220603173812.829670788@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173812.524184588@linuxfoundation.org>
 References: <20220603173812.524184588@linuxfoundation.org>
@@ -50,59 +50,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Xiu Jianfeng <xiujianfeng@huawei.com>
 
-commit 567dd8f34560fa221a6343729474536aa7ede4fd upstream.
+commit d0dc1a7100f19121f6e7450f9cdda11926aa3838 upstream.
 
-The device mapper dm-crypt target is using scnprintf("%02x", cc->key[i]) to
-report the current key to userspace. However, this is not a constant-time
-operation and it may leak information about the key via timing, via cache
-access patterns or via the branch predictor.
+Currently it returns zero when CRQ response timed out, it should return
+an error code instead.
 
-Change dm-crypt's key printing to use "%c" instead of "%02x". Also
-introduce hex2asc() that carefully avoids any branching or memory
-accesses when converting a number in the range 0 ... 15 to an ascii
-character.
-
-Cc: stable@vger.kernel.org
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Tested-by: Milan Broz <gmazyland@gmail.com>
-Signed-off-by: Mike Snitzer <snitzer@kernel.org>
+Fixes: d8d74ea3c002 ("tpm: ibmvtpm: Wait for buffer to be set before proceeding")
+Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
+Reviewed-by: Stefan Berger <stefanb@linux.ibm.com>
+Acked-by: Jarkko Sakkinen <jarkko@kernel.org>
+Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/dm-crypt.c |   15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
+ drivers/char/tpm/tpm_ibmvtpm.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/md/dm-crypt.c
-+++ b/drivers/md/dm-crypt.c
-@@ -1943,6 +1943,11 @@ static int crypt_map(struct dm_target *t
- 	return DM_MAPIO_SUBMITTED;
- }
- 
-+static char hex2asc(unsigned char c)
-+{
-+	return c + '0' + ((unsigned)(9 - c) >> 4 & 0x27);
-+}
-+
- static void crypt_status(struct dm_target *ti, status_type_t type,
- 			 unsigned status_flags, char *result, unsigned maxlen)
- {
-@@ -1958,10 +1963,12 @@ static void crypt_status(struct dm_targe
- 	case STATUSTYPE_TABLE:
- 		DMEMIT("%s ", cc->cipher_string);
- 
--		if (cc->key_size > 0)
--			for (i = 0; i < cc->key_size; i++)
--				DMEMIT("%02x", cc->key[i]);
--		else
-+		if (cc->key_size > 0) {
-+			for (i = 0; i < cc->key_size; i++) {
-+				DMEMIT("%c%c", hex2asc(cc->key[i] >> 4),
-+				       hex2asc(cc->key[i] & 0xf));
-+			}
-+		} else
- 			DMEMIT("-");
- 
- 		DMEMIT(" %llu %s %llu", (unsigned long long)cc->iv_offset,
+--- a/drivers/char/tpm/tpm_ibmvtpm.c
++++ b/drivers/char/tpm/tpm_ibmvtpm.c
+@@ -653,6 +653,7 @@ static int tpm_ibmvtpm_probe(struct vio_
+ 	if (!wait_event_timeout(ibmvtpm->crq_queue.wq,
+ 				ibmvtpm->rtce_buf != NULL,
+ 				HZ)) {
++		rc = -ENODEV;
+ 		dev_err(dev, "CRQ response timed out\n");
+ 		goto init_irq_cleanup;
+ 	}
 
 
