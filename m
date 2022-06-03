@@ -2,111 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBBFBC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 05:05:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC753C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 05:09:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239721AbiFCFFM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 01:05:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44550 "EHLO
+        id S239750AbiFCFJt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 01:09:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236793AbiFCFFH (ORCPT
+        with ESMTP id S233341AbiFCFJr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 01:05:07 -0400
-Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E1663917E;
-        Thu,  2 Jun 2022 22:05:06 -0700 (PDT)
-Received: by mail-il1-x12c.google.com with SMTP id v7so4975835ilo.3;
-        Thu, 02 Jun 2022 22:05:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=V69MdHZeArGR1p037iUfHw/ib1Y8p6jjj2w/lS/WKCY=;
-        b=O4+rsuFI4q2IP6f0kZluT+02DEU246uyHHow4FVb0J3mZ+w6QZ+L7adWYcZDUgcl5h
-         ZgrPzh0NN0iMHRsEC2ODXobnG7acV3TpCPOYVhV4E3iXgCHyHO8Puarr70+u0JVBSyuU
-         5SICaERPcmUqM6txeFYpwKgbZ1yvAxCmKUane++nAtjUEmuJzH1kdiICFhgJNWnulMh/
-         qZG2hcyJLrI/ewZXcjabuyZ81SjHoCpWfExTG+TuSKpF4E/84130KgexiwgtXMxb2H2I
-         GsG9qinfM6Mq25TgGzrzD6fEJBtFqoq67uWejWJuQntFiY3TqYjPqwr9WOIjuzAcErAI
-         dWmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=V69MdHZeArGR1p037iUfHw/ib1Y8p6jjj2w/lS/WKCY=;
-        b=Y1Ce6HyFfwm5cxdHczRxM+Ief9Wh+ucykyNduhgMVSirvmcX2NegqHEDXwHicQgzU2
-         uXsYOZusCvENmHE35T9cdbFlk94+9fD+mA8HC8+aMLcUAwImfMsJINi3JZcjQmSLgW0Q
-         VV4QY3WBm0luxWc21skUYKS/HTVKbLQvZnnqjhv0hRXHYXVbFu47qrW3nF1CiOwsUdia
-         PoSNS/T60hKKYcmJuGUx+Lo2RNz3zEuTAPicXOP1mtHXKTQcQKAwogqhF4kZDja5trRa
-         V2/Kk4/tJGt7sg4z7i1TQibWqHPstFx8YryubikNIzF334EQGV3foZ0m/4Q2j0zmm+6k
-         wAqA==
-X-Gm-Message-State: AOAM532Vgct46uLL5rmNVo16vzUsOQs2bWRCilAEJf2wmpCR/26x6Veb
-        4ews4AE6hOabUd21tsS5OWNjWlteea8fLXPrEnY=
-X-Google-Smtp-Source: ABdhPJx1Q2URPgzhZwqCBR98Ngqy/AKTQqxQ6EdjLoGuIhPccdjI8x/MzaUCZEQPUAIOTsazaOTNjHjF1YNkqi5X4ww=
-X-Received: by 2002:a02:6014:0:b0:331:57b2:8a3a with SMTP id
- i20-20020a026014000000b0033157b28a3amr4683275jac.169.1654232705473; Thu, 02
- Jun 2022 22:05:05 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220602115141.3962749-1-chenhuacai@loongson.cn>
- <20220602115141.3962749-2-chenhuacai@loongson.cn> <e68000bf-a271-d1f2-56a5-a9ddce2bbb7c@infradead.org>
-In-Reply-To: <e68000bf-a271-d1f2-56a5-a9ddce2bbb7c@infradead.org>
-From:   Huacai Chen <chenhuacai@gmail.com>
-Date:   Fri, 3 Jun 2022 13:04:55 +0800
-Message-ID: <CAAhV-H4MhHvXMTXN==z2xonfWEtcW8CiBrwnOEznKGira8Yw=g@mail.gmail.com>
-Subject: Re: [PATCH V14 01/24] irqchip: Adjust Kconfig for Loongson
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     Huacai Chen <chenhuacai@loongson.cn>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Airlie <airlied@linux.ie>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Marc Zyngier <maz@kernel.org>, WANG Xuerui <git@xen0n.name>
-Content-Type: text/plain; charset="UTF-8"
+        Fri, 3 Jun 2022 01:09:47 -0400
+Received: from atl4mhfb02.myregisteredsite.com (atl4mhfb02.myregisteredsite.com [209.17.115.118])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52CBC32049
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 22:09:43 -0700 (PDT)
+Received: from jax4mhob10.registeredsite.com (jax4mhob10.myregisteredsite.com [64.69.218.90])
+        by atl4mhfb02.myregisteredsite.com (8.14.4/8.14.4) with ESMTP id 25359eJZ023257
+        for <linux-kernel@vger.kernel.org>; Fri, 3 Jun 2022 01:09:41 -0400
+Received: from mailpod.hostingplatform.com ([10.30.71.205])
+        by jax4mhob10.registeredsite.com (8.14.4/8.14.4) with ESMTP id 25359caL013339
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL)
+        for <linux-kernel@vger.kernel.org>; Fri, 3 Jun 2022 01:09:38 -0400
+Received: (qmail 16473 invoked by uid 0); 3 Jun 2022 05:09:38 -0000
+X-TCPREMOTEIP: 204.168.181.193
+X-Authenticated-UID: mike@milosoftware.com
+Received: from unknown (HELO phenom.domain?not?set.invalid) (mike@milosoftware.com@204.168.181.193)
+  by 0 with ESMTPA; 3 Jun 2022 05:09:37 -0000
+From:   Mike Looijmans <mike.looijmans@topic.nl>
+To:     linux-input@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, dmitry.torokhov@gmail.com,
+        john@metanate.com, geert+renesas@glider.be,
+        Mike Looijmans <mike.looijmans@topic.nl>
+Subject: [PATCH v2 1/2] Input: st1232 - Support power supply regulators
+Date:   Fri,  3 Jun 2022 07:09:35 +0200
+Message-Id: <20220603050935.5984-1-mike.looijmans@topic.nl>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Randy,
+Add support for the VDD and IOVDD power supply inputs. This allows the
+chip to share its supplies with other components (e.g. panel) and manage
+them.
 
-On Fri, Jun 3, 2022 at 12:34 AM Randy Dunlap <rdunlap@infradead.org> wrote:
->
-> Hi,
->
-> On 6/2/22 04:51, Huacai Chen wrote:
-> > diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
-> > index 44fb8843e80e..1cb3967fe798 100644
-> > --- a/drivers/irqchip/Kconfig
-> > +++ b/drivers/irqchip/Kconfig
-> > @@ -557,7 +557,7 @@ config LOONGSON_LIOINTC
-> >
-> >  config LOONGSON_HTPIC
-> >       bool "Loongson3 HyperTransport PIC Controller"
-> > -     depends on MACH_LOONGSON64
-> > +     depends on (MACH_LOONGSON64 && MIPS)
->
-> If you ever have another patch version, please drop the unnecessary left and
-> right parentheses above.
-OK, thanks, I will do that.
+Signed-off-by: Mike Looijmans <mike.looijmans@topic.nl>
+---
+v2: Split devicetree and code parts
 
-Huacai
->
->         depends on MACH_LOONGSON64 && MIPS
->
-> >       default y
-> >       select IRQ_DOMAIN
-> >       select GENERIC_IRQ_CHIP
->
-> thanks.
-> --
-> ~Randy
+ drivers/input/touchscreen/st1232.c | 54 +++++++++++++++++++++++++-----
+ 1 file changed, 46 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/input/touchscreen/st1232.c b/drivers/input/touchscreen/st1232.c
+index e38ba3e4f183..d9c9f6f1f11a 100644
+--- a/drivers/input/touchscreen/st1232.c
++++ b/drivers/input/touchscreen/st1232.c
+@@ -44,6 +44,11 @@
+ #define REG_XY_COORDINATES	0x12
+ #define ST_TS_MAX_FINGERS	10
+ 
++enum st1232_regulators {
++	ST1232_REGULATOR_VDD,
++	ST1232_REGULATOR_IOVDD,
++};
++
+ struct st_chip_info {
+ 	bool	have_z;
+ 	u16	max_area;
+@@ -56,6 +61,7 @@ struct st1232_ts_data {
+ 	struct touchscreen_properties prop;
+ 	struct dev_pm_qos_request low_latency_req;
+ 	struct gpio_desc *reset_gpio;
++	struct regulator_bulk_data regulators[2];
+ 	const struct st_chip_info *chip_info;
+ 	int read_buf_len;
+ 	u8 *read_buf;
+@@ -197,17 +203,36 @@ static irqreturn_t st1232_ts_irq_handler(int irq, void *dev_id)
+ 	return IRQ_HANDLED;
+ }
+ 
+-static void st1232_ts_power(struct st1232_ts_data *ts, bool poweron)
++static int st1232_ts_power_on(struct st1232_ts_data *ts)
++{
++	int err;
++
++	err = regulator_bulk_enable(ARRAY_SIZE(ts->regulators), ts->regulators);
++	if (err)
++		return err;
++
++	usleep_range(5000, 6000);
++
++	if (ts->reset_gpio)
++		gpiod_set_value_cansleep(ts->reset_gpio, 0);
++
++	return 0;
++}
++
++static void st1232_ts_power_off(struct st1232_ts_data *ts)
+ {
+ 	if (ts->reset_gpio)
+-		gpiod_set_value_cansleep(ts->reset_gpio, !poweron);
++		gpiod_set_value_cansleep(ts->reset_gpio, 1);
++	usleep_range(100, 150);
++	regulator_bulk_disable(ARRAY_SIZE(ts->regulators), ts->regulators);
+ }
+ 
+-static void st1232_ts_power_off(void *data)
++static void st1232_ts_power_off_action(void *data)
+ {
+-	st1232_ts_power(data, false);
++	st1232_ts_power_off(data);
+ }
+ 
++
+ static const struct st_chip_info st1232_chip_info = {
+ 	.have_z		= true,
+ 	.max_area	= 0xff,
+@@ -266,6 +291,14 @@ static int st1232_ts_probe(struct i2c_client *client,
+ 	ts->client = client;
+ 	ts->input_dev = input_dev;
+ 
++	ts->regulators[ST1232_REGULATOR_VDD].supply = "vdd";
++	ts->regulators[ST1232_REGULATOR_IOVDD].supply = "iovdd";
++	error = devm_regulator_bulk_get(&client->dev,
++					ARRAY_SIZE(ts->regulators),
++					ts->regulators);
++	if (error)
++		return error;
++
+ 	ts->reset_gpio = devm_gpiod_get_optional(&client->dev, NULL,
+ 						 GPIOD_OUT_HIGH);
+ 	if (IS_ERR(ts->reset_gpio)) {
+@@ -275,9 +308,14 @@ static int st1232_ts_probe(struct i2c_client *client,
+ 		return error;
+ 	}
+ 
+-	st1232_ts_power(ts, true);
++	error = st1232_ts_power_on(ts);
++	if (error) {
++		dev_err(&client->dev, "Failed to power on: %d\n", error);
++		return error;
++	}
+ 
+-	error = devm_add_action_or_reset(&client->dev, st1232_ts_power_off, ts);
++	error = devm_add_action_or_reset(&client->dev,
++					 st1232_ts_power_off_action, ts);
+ 	if (error) {
+ 		dev_err(&client->dev,
+ 			"Failed to install power off action: %d\n", error);
+@@ -348,7 +386,7 @@ static int __maybe_unused st1232_ts_suspend(struct device *dev)
+ 	disable_irq(client->irq);
+ 
+ 	if (!device_may_wakeup(&client->dev))
+-		st1232_ts_power(ts, false);
++		st1232_ts_power_off(ts);
+ 
+ 	return 0;
+ }
+@@ -359,7 +397,7 @@ static int __maybe_unused st1232_ts_resume(struct device *dev)
+ 	struct st1232_ts_data *ts = i2c_get_clientdata(client);
+ 
+ 	if (!device_may_wakeup(&client->dev))
+-		st1232_ts_power(ts, true);
++		st1232_ts_power_on(ts);
+ 
+ 	enable_irq(client->irq);
+ 
+-- 
+2.17.1
+
