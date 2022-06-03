@@ -2,144 +2,264 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C24CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 11:49:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 304BFC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 11:52:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244093AbiFCLtF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 07:49:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44452 "EHLO
+        id S244106AbiFCLwI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 07:52:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235135AbiFCLtD (ORCPT
+        with ESMTP id S241403AbiFCLwF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 07:49:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B980381B4;
-        Fri,  3 Jun 2022 04:49:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Fri, 3 Jun 2022 07:52:05 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 398D114023;
+        Fri,  3 Jun 2022 04:52:01 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B7A63B822CE;
-        Fri,  3 Jun 2022 11:49:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A2A1C34115;
-        Fri,  3 Jun 2022 11:48:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654256939;
-        bh=X8VUkQQIsdul5nRaZx8jcDZ3dHSCnETsIvwz4JcA9+k=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=HnKVQW64OQEMmE4jBWCM0wy4/jCMxwqwsZN98sUAe1Zkqa8+xEaRBx5BUWRDRapvQ
-         mwIPh5JKkkUclWhIPENdgDy84xtaUizMtHO7psKhzVY5+66dy27EzPmBWB3Jho46fp
-         jBgTGP2or2Lj+RXKqRK4tN6Q6rSSMwHyD67N2QEx2yp0j2jy5QfBf+OCHhyiosMBPn
-         9QfFj5d44xnxpz2l+VHmyh+tmeTPaqPdQ9yCRfvRn1TmGBXgqteBe+g/oxcgmJcHQ2
-         6oWpS2r5jLJUsIwQh5ZMlVP1vMFtD7Vl8pW7tI3iI1MLp0AfoxlAy3eN6iq+L0DzCh
-         PmMWtDMyOFisw==
-Received: by mail-oa1-f43.google.com with SMTP id 586e51a60fabf-e5e433d66dso10275139fac.5;
-        Fri, 03 Jun 2022 04:48:59 -0700 (PDT)
-X-Gm-Message-State: AOAM532xjGCNId7cXPqc/SSS8NNCrEchQDGb0kSZFN/at8yQ1rmV2K9p
-        LEUcTkkoZNuIkCv2lAtI0ig5fDpOyZwTA95TCDc=
-X-Google-Smtp-Source: ABdhPJw05wRHg99uYpgtAnCv/XqNeM0d/Ebfy5iJ9wfQPaCKtcJTDHMiG8UneinMTluS1Utm3DjYuPp5l621EaDHkR8=
-X-Received: by 2002:a05:6871:5c8:b0:f3:3c1c:126f with SMTP id
- v8-20020a05687105c800b000f33c1c126fmr5452735oan.126.1654256938205; Fri, 03
- Jun 2022 04:48:58 -0700 (PDT)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 62F8B1F91A;
+        Fri,  3 Jun 2022 11:52:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1654257120; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ui33Z+w/TviDBdC6KsyMWh/zxsx5gyUAC0B+pWMln6Q=;
+        b=qpRtqP65XH8ivCc1L9Nl099CU5P38dAZjunHdMmuCnBmRtVu3aSRy8dJf2+2IU31sVapGo
+        4iNrn477TafTZ4sGturQumsMciZf+GWbc+v/GO2OItQmgAn99ACxb5Y+7jU45lGkbIjN3N
+        oiEG4Z5EwG4ROIdutDNWgfL7Rcs8UhM=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1654257120;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ui33Z+w/TviDBdC6KsyMWh/zxsx5gyUAC0B+pWMln6Q=;
+        b=RwJhyeaecUH5Q000ZNdiA2XMrvdxcBaN8bGjVcysY/AmCTxNmxvmlGNdOewoisKfJblQe7
+        pNoQTiWfXE9XCRAQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id EDEF813AA2;
+        Fri,  3 Jun 2022 11:51:59 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id e0saN9/1mWLQTAAAMHmgww
+        (envelope-from <lhenriques@suse.de>); Fri, 03 Jun 2022 11:51:59 +0000
+Received: from localhost (brahms.olymp [local])
+        by brahms.olymp (OpenSMTPD) with ESMTPA id 6470e32b;
+        Fri, 3 Jun 2022 11:52:40 +0000 (UTC)
+From:   =?utf-8?Q?Lu=C3=ADs_Henriques?= <lhenriques@suse.de>
+To:     Xiubo Li <xiubli@redhat.com>
+Cc:     Jeff Layton <jlayton@kernel.org>,
+        Ilya Dryomov <idryomov@gmail.com>,
+        Gregory Farnum <gfarnum@redhat.com>,
+        ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH v4] ceph: prevent a client from exceeding the MDS
+ maximum xattr size
+References: <20220602143652.28244-1-lhenriques@suse.de>
+        <b89ca6a2-4332-b4db-2a40-ae3b00ebdf35@redhat.com>
+Date:   Fri, 03 Jun 2022 12:52:40 +0100
+In-Reply-To: <b89ca6a2-4332-b4db-2a40-ae3b00ebdf35@redhat.com> (Xiubo Li's
+        message of "Fri, 3 Jun 2022 19:29:55 +0800")
+Message-ID: <87zgiu2cc7.fsf@brahms.olymp>
 MIME-Version: 1.0
-References: <20220603072053.35005-1-chenhuacai@loongson.cn>
- <20220603072053.35005-12-chenhuacai@loongson.cn> <4213df91-c762-ae56-f08d-8c925759fa63@xen0n.name>
- <CAK8P3a2mW7KmgxqWsaf76Q4V++B+0e6bH=tb4w4cA0XkZYuSLA@mail.gmail.com> <fcdbe7bd-bb4a-fc50-a96d-c2dd1456bc9b@xen0n.name>
-In-Reply-To: <fcdbe7bd-bb4a-fc50-a96d-c2dd1456bc9b@xen0n.name>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Fri, 3 Jun 2022 13:48:45 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXENy9Wf4EtNp7F+RHfF2WaUXsaXsMJVCVAXc4i_-nH=VA@mail.gmail.com>
-Message-ID: <CAMj1kXENy9Wf4EtNp7F+RHfF2WaUXsaXsMJVCVAXc4i_-nH=VA@mail.gmail.com>
-Subject: Re: [PATCH V15 11/24] LoongArch: Add boot and setup routines
-To:     WANG Xuerui <kernel@xen0n.name>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Huacai Chen <chenhuacai@loongson.cn>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Airlie <airlied@linux.ie>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Huacai Chen <chenhuacai@gmail.com>,
-        Guo Ren <guoren@kernel.org>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        linux-efi <linux-efi@vger.kernel.org>,
-        WANG Xuerui <git@xen0n.name>, Yun Liu <liuyun@loongson.cn>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 3 Jun 2022 at 12:37, WANG Xuerui <kernel@xen0n.name> wrote:
+Xiubo Li <xiubli@redhat.com> writes:
+
+> On 6/2/22 10:36 PM, Lu=C3=ADs Henriques wrote:
+>> The MDS tries to enforce a limit on the total key/values in extended
+>> attributes.  However, this limit is enforced only if doing a synchronous
+>> operation (MDS_OP_SETXATTR) -- if we're buffering the xattrs, the MDS
+>> doesn't have a chance to enforce these limits.
+>>
+>> This patch adds support for decoding the xattrs maximum size setting tha=
+t is
+>> distributed in the mdsmap.  Then, when setting an xattr, the kernel clie=
+nt
+>> will revert to do a synchronous operation if that maximum size is exceed=
+ed.
+>>
+>> While there, fix a dout() that would trigger a printk warning:
+>>
+>> [   98.718078] ------------[ cut here ]------------
+>> [   98.719012] precision 65536 too large
+>> [   98.719039] WARNING: CPU: 1 PID: 3755 at lib/vsprintf.c:2703 vsnprint=
+f+0x5e3/0x600
+>> ...
+>>
+>> URL: https://tracker.ceph.com/issues/55725
+>> Signed-off-by: Lu=C3=ADs Henriques <lhenriques@suse.de>
+>> ---
+>>   fs/ceph/mdsmap.c            | 28 ++++++++++++++++++++++++----
+>>   fs/ceph/xattr.c             | 12 ++++++++----
+>>   include/linux/ceph/mdsmap.h |  1 +
+>>   3 files changed, 33 insertions(+), 8 deletions(-)
+>>
+>> * Changes since v3
+>>
+>> As per Xiubo review:
+>>    - Always force a (sync) SETXATTR Op when connecting to an old cluster
+>>    - use '>' instead of '>=3D'
+>> Also fixed the warning detected by 0day.
+>>
+>> * Changes since v2
+>>
+>> Well, a lot has changed since v2!  Now the xattr max value setting is
+>> obtained through the mdsmap, which needs to be decoded, and the feature
+>> that was used in the previous revision was dropped.  The drawback is that
+>> the MDS isn't unable to know in advance if a client is aware of this xat=
+tr
+>> max value.
+>>
+>> * Changes since v1
+>>
+>> Added support for new feature bit to get the MDS max_xattr_pairs_size
+>> setting.
+>>
+>> Also note that this patch relies on a patch that hasn't been merged yet
+>> ("ceph: use correct index when encoding client supported features"),
+>> otherwise the new feature bit won't be correctly encoded.
+>>
+>> diff --git a/fs/ceph/mdsmap.c b/fs/ceph/mdsmap.c
+>> index 30387733765d..c6ce83a48175 100644
+>> --- a/fs/ceph/mdsmap.c
+>> +++ b/fs/ceph/mdsmap.c
+>> @@ -13,6 +13,12 @@
+>>     #include "super.h"
+>>   +/*
+>> + * Maximum size of xattrs the MDS can handle per inode by default.  This
+>> + * includes the attribute name and 4+4 bytes for the key/value sizes.
+>> + */
+>> +#define MDS_MAX_XATTR_SIZE (1<<16) /* 64K */
 >
-> On 6/3/22 18:02, Arnd Bergmann wrote:
-> > On Fri, Jun 3, 2022 at 11:27 AM WANG Xuerui <kernel@xen0n.name> wrote:
-> >> On 6/3/22 15:20, Huacai Chen wrote:
-> >>> Add basic boot, setup and reset routines for LoongArch. Now, LoongArch
-> >>> machines use UEFI-based firmware. The firmware passes configuration
-> >>> information to the kernel via ACPI and DMI/SMBIOS.
-> >>>
-> >>> Currently an existing interface between the kernel and the bootloader
-> >>> is implemented. Kernel gets 2 values from the bootloader, passed in
-> >>> registers a0 and a1; a0 is an "EFI boot flag" distinguishing UEFI and
-> >>> non-UEFI firmware, while a1 is a pointer to an FDT with systable,
-> >>> memmap, cmdline and initrd information.
-> >>>
-> >>> The standard UEFI boot protocol (EFISTUB) will be added later.
-> >>>
-> >>> Cc: linux-efi@vger.kernel.org
-> >>> Cc: Ard Biesheuvel <ardb@kernel.org>
-> >>> Reviewed-by: WANG Xuerui <git@xen0n.name>
-> >>> Reviewed-by: Jiaxun Yang <jiaxun.yang@flygoat.com>
-> >>> Co-developed-by: Yun Liu <liuyun@loongson.cn>
-> >>> Signed-off-by: Yun Liu <liuyun@loongson.cn>
-> >>> Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
-> >> Would you please look at this patch, which has all the arch-independent
-> >> changes backed out, and Ack if it is fit for mainlining?
-> >>
-> >> I communicated a little with Huacai about the approach for supporting
-> >> alternative boot protocols down the road, and we agreed to carry the
-> >> respective changes downstream. And if needs truly arise for modifying
-> >> common EFI logic, we can do so in a non-rushed manner later.
-> >>
-> >> For the current status of the code, apparently it just accepts the
-> >> standard efistub-shape FDT pointer from (whatever booting the image),
-> >> and everything onwards are fully using the common code without
-> >> modification as you can see from the diffstat. I rebased my BPI support
-> >> patch on top of this (basically translating Loongson BPI data structures
-> >> into the expected FDT form), and can confirm the boot can progress to
-> >> the same point as before -- indeed the SVAM changes etc. are not
-> >> necessary for a working system, and the code remains working.
-> > I'm a bit lost here: Does this mean the v15 version is back to the old
-> > pre-efistub interface and allows booting with existing firmware, or
-> > is it now left out completely? I still see a kernel_entry() function
-> > in head.S, and I see references to loongson_sysconf, but I don't
-> > see if that is what gets passed in from the bootloader.
-> It's not the same interface as in some of the very early revisions; the
-> earlier versions relied on "struct bootparamsinterface" or BPI, while
-> it's the same FDT-based interface to initialize EFI from, as in
-> arch/arm64 and arch/riscv I believe. No Loongson-specific things remain now.
+> This macro makes no sense anymore, right ?
 
-OK, excellent.
+Ah, yeah.  That's still leftovers from the previous version.
 
-> >
-> > I really want to make sure that without the EFI stub, there is no
-> > other way to boot the kernel that would have to get maintained
-> > in the long run.
-> Yeah this is the case right now. No LoongArch bootloader that I know of
-> can prepare the EFI stub-shaped FDT that the current code expects, and I
-> don't know of any future Loongson plan to do that either (Loongson's
-> previous in-house efforts all looked something different). So it's
-> pretty safe to say the current code wouldn't get frozen once mainlined.
+> I will merge this patch by removing this then.
 
-The use of DT is part of the internal stub <-> kernel ABI, and if
-LoongArch does not make use of DT otherwise, I could well imagine
-changing this down the road.
+Thanks!  Also... maybe you could also fix the (embarrassing) issue
+detected by 0day that I _tried_ to fix but failed (see below).
 
-I'll send out some RFC patches for review after the merge window closes.
+> -- Xiubo
+>
+>
+>> +
+>>   #define CEPH_MDS_IS_READY(i, ignore_laggy) \
+>>   	(m->m_info[i].state > 0 && ignore_laggy ? true : !m->m_info[i].laggy)
+>>   @@ -352,12 +358,10 @@ struct ceph_mdsmap *ceph_mdsmap_decode(void **p,=
+ void
+>> *end, bool msgr2)
+>>   		__decode_and_drop_type(p, end, u8, bad_ext);
+>>   	}
+>>   	if (mdsmap_ev >=3D 8) {
+>> -		u32 name_len;
+>>   		/* enabled */
+>>   		ceph_decode_8_safe(p, end, m->m_enabled, bad_ext);
+>> -		ceph_decode_32_safe(p, end, name_len, bad_ext);
+>> -		ceph_decode_need(p, end, name_len, bad_ext);
+>> -		*p +=3D name_len;
+>> +		/* fs_name */
+>> +		ceph_decode_skip_string(p, end, bad_ext);
+>>   	}
+>>   	/* damaged */
+>>   	if (mdsmap_ev >=3D 9) {
+>> @@ -370,6 +374,22 @@ struct ceph_mdsmap *ceph_mdsmap_decode(void **p, vo=
+id *end, bool msgr2)
+>>   	} else {
+>>   		m->m_damaged =3D false;
+>>   	}
+>> +	if (mdsmap_ev >=3D 17) {
+>> +		/* balancer */
+>> +		ceph_decode_skip_string(p, end, bad_ext);
+>> +		/* standby_count_wanted */
+>> +		ceph_decode_skip_32(p, end, bad_ext);
+>> +		/* old_max_mds */
+>> +		ceph_decode_skip_32(p, end, bad_ext);
+>> +		/* min_compat_client */
+>> +		ceph_decode_skip_8(p, end, bad_ext);
+>> +		/* required_client_features */
+>> +		ceph_decode_skip_set(p, end, 64, bad_ext);
+>> +		ceph_decode_64_safe(p, end, m->m_max_xattr_size, bad_ext);
+>> +	} else {
+>> +		/* This forces the usage of the (sync) SETXATTR Op */
+>> +		m->m_max_xattr_size =3D 0;
+>> +	}
+>>   bad_ext:
+>>   	dout("mdsmap_decode m_enabled: %d, m_damaged: %d, m_num_laggy: %d\n",
+>>   	     !!m->m_enabled, !!m->m_damaged, m->m_num_laggy);
+>> diff --git a/fs/ceph/xattr.c b/fs/ceph/xattr.c
+>> index 8c2dc2c762a4..1be415e9220b 100644
+>> --- a/fs/ceph/xattr.c
+>> +++ b/fs/ceph/xattr.c
+>> @@ -1086,7 +1086,7 @@ static int ceph_sync_setxattr(struct inode *inode,=
+ const char *name,
+>>   			flags |=3D CEPH_XATTR_REMOVE;
+>>   	}
+>>   -	dout("setxattr value=3D%.*s\n", (int)size, value);
+>> +	dout("setxattr value size: %lu\n", size);
+
+This should be "%zu" and not "%lu".  I'm OK sending v5 to fix these 2
+issues if you prefer.
+
+[ And then there's also the MDS-side which hasn't been merged yet.  But
+  this patch is probably worth in itself as it will change the client
+  behavior to do the sync operation. ]
+
+Cheers,
+--=20
+Lu=C3=ADs
+
+>>     	/* do request */
+>>   	req =3D ceph_mdsc_create_request(mdsc, op, USE_AUTH_MDS);
+>> @@ -1184,8 +1184,14 @@ int __ceph_setxattr(struct inode *inode, const ch=
+ar *name,
+>>   	spin_lock(&ci->i_ceph_lock);
+>>   retry:
+>>   	issued =3D __ceph_caps_issued(ci, NULL);
+>> -	if (ci->i_xattrs.version =3D=3D 0 || !(issued & CEPH_CAP_XATTR_EXCL))
+>> +	required_blob_size =3D __get_required_blob_size(ci, name_len, val_len);
+>> +	if ((ci->i_xattrs.version =3D=3D 0) || !(issued & CEPH_CAP_XATTR_EXCL)=
+ ||
+>> +	    (required_blob_size > mdsc->mdsmap->m_max_xattr_size)) {
+>> +		dout("%s do sync setxattr: version: %llu size: %d max: %llu\n",
+>> +		     __func__, ci->i_xattrs.version, required_blob_size,
+>> +		     mdsc->mdsmap->m_max_xattr_size);
+>>   		goto do_sync;
+>> +	}
+>>     	if (!lock_snap_rwsem && !ci->i_head_snapc) {
+>>   		lock_snap_rwsem =3D true;
+>> @@ -1201,8 +1207,6 @@ int __ceph_setxattr(struct inode *inode, const cha=
+r *name,
+>>   	     ceph_cap_string(issued));
+>>   	__build_xattrs(inode);
+>>   -	required_blob_size =3D __get_required_blob_size(ci, name_len, val_le=
+n);
+>> -
+>>   	if (!ci->i_xattrs.prealloc_blob ||
+>>   	    required_blob_size > ci->i_xattrs.prealloc_blob->alloc_len) {
+>>   		struct ceph_buffer *blob;
+>> diff --git a/include/linux/ceph/mdsmap.h b/include/linux/ceph/mdsmap.h
+>> index 523fd0452856..4c3e0648dc27 100644
+>> --- a/include/linux/ceph/mdsmap.h
+>> +++ b/include/linux/ceph/mdsmap.h
+>> @@ -25,6 +25,7 @@ struct ceph_mdsmap {
+>>   	u32 m_session_timeout;          /* seconds */
+>>   	u32 m_session_autoclose;        /* seconds */
+>>   	u64 m_max_file_size;
+>> +	u64 m_max_xattr_size;		/* maximum size for xattrs blob */
+>>   	u32 m_max_mds;			/* expected up:active mds number */
+>>   	u32 m_num_active_mds;		/* actual up:active mds number */
+>>   	u32 possible_max_rank;		/* possible max rank index */
+>>
+>
+
