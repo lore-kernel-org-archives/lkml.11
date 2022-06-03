@@ -2,59 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66281CCA484
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4524CCCA483
 	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 00:56:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241142AbiFCAzi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 20:55:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48782 "EHLO
+        id S241069AbiFCAzY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 20:55:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240462AbiFCArQ (ORCPT
+        with ESMTP id S240481AbiFCArQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 2 Jun 2022 20:47:16 -0400
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4306037AA0
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:46:13 -0700 (PDT)
-Received: by mail-pg1-x54a.google.com with SMTP id b9-20020a656689000000b003f672946300so3036320pgw.16
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:46:13 -0700 (PDT)
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDA3C37AB1
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:46:20 -0700 (PDT)
+Received: by mail-pl1-x64a.google.com with SMTP id n8-20020a170903110800b001636d9ff4f8so3482159plh.11
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:46:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=HmflTn0VQze0qjz7C+f73GctVnhrRk2ICC14i+42toA=;
-        b=WpOIATv6ZgMsXPILGbEqyjwgojnOEWiNdxMeVMXyLvz7ZCT60TjV7GGZ6wOpM0Fj+z
-         do8t1d+xYQSUYl7xpPl4LE1Es0UGOYxBaGdCSzCyUQqTzPbLDh77FeakUf77cP6DbLiy
-         8s7T11NZZjLbrmusiJhGDy0X91k2H6XudUx4yq/kKF97fsazv7D5SrbHlqVPIboKe1kZ
-         TcsX2R/XIQbaKBp6qBPdXTCyZR9hlV/GV5Ap06/xDIImeSxtuk+ugaTrL685ZoC9fEU8
-         RENDaGRYfuUWq9zzcZJpVwxrqC1UwnegnhOgPUFrexe22ULpQozT4apstyTZA2dugDtK
-         9UyQ==
+        bh=CDG0Dqql0smjKxVHjhP7E2fId6LbaVT+ZKrP8G595LI=;
+        b=lZPStq/q39E0gbEm18tiwJMx8Ded2JvdcBry6TyFOy/ryZJWOjTcZ2lgqop85bOQFG
+         2bjaHoCMv5ZxSpxzhfzSNgR+J93R1NGrYT6IQB/IhZAJPQHNg1Cy++HoksT/Ii00LBVa
+         Si7X+WafczJ1bsAQBm2P0NX0PTqsgnOS7OZ9I/UFTFPj2aFlScqj8zWRiFsAlQqazSGG
+         dP0EfzSubjVDr9qewrAxxCV71e8fMHSMUJCVfPlH+cdDBFbc8e7x/PuUEgiQo8EvSC3l
+         EIZPWvre1U1Y9Q97nQ/s2ZBak5bqPU5QBPB/K2+PlojkTn2uwUvuPTn9b7IqXx0oue/Q
+         jF8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=HmflTn0VQze0qjz7C+f73GctVnhrRk2ICC14i+42toA=;
-        b=CYhxEjWRkb/0HoopnQ6Igmw/OrMMsZHDf+nh0gp5ewrSj0ntCLrds8v4k9wPR9iYKe
-         c4LGeuaj2UWCNfANvzJL1OIm6EPR0b8JmSBeLd09HILhPGWnasaqacJ7N8XhYe5mUZIE
-         yB2J6X5nCmV20BZ/iuXLfO5vGcU0qI9mHPanJtQwg0Lo3ccszpsbQdpN9+EsWPCH+4Vy
-         9UzXUy3IW1KfYfobdbKCOaQxHwydvnDeZx1ZxLhv+czZoHXtKv6ry0jL6lXJIwt2URSJ
-         xGfcI7YCfd5uZ1e+AsvPMnWUQBVbWI/TXOPmweJbbRaoo2N8rX6am1Z5hfb0lS62F9Ob
-         YWog==
-X-Gm-Message-State: AOAM532qDbcs6uq9hbTm2b9R532rx7oujcWQxIFLQd/zvb8bxKmb+XEf
-        9/pKaUejPHCZPMXcKAc+XKfZBFSNakE=
-X-Google-Smtp-Source: ABdhPJyhlHExZ/NG+G+gYiQrVxDrefRUoP/yWN+pv+AR//5iG5zARzRUBH/cOLzshbWV+i7ACnIM14Jwuzg=
+        bh=CDG0Dqql0smjKxVHjhP7E2fId6LbaVT+ZKrP8G595LI=;
+        b=7pYP+rOuySP4ejab3JH7MFkmmRHcA0HNDQG7GLnFukxVLJ9LgGLPbp3mPT6GdvsnVh
+         aKTw3vRfx2lt4JNa+9OtmTswGAfhuv+J97wpbHf79hU6FNJOZOcR6kSqt7uOzu0YEj+3
+         IPzCD0uvLPSAAoHcL7JHLDfc5xoNhA/6nsGCnknVOPcyrwKDEfJmbNE13nnhX+IyX/DG
+         O5fX0VDk3vsMNnWLE8Tn5VzpGwhy4PKEvnKwQoCLsC0/SOHQKbPY8j30vE9LcLCDsamD
+         fl8nPY+Szs7vVG77ZHxhE287LSwnuxbQhmVdjBNfkIzPhAjA+cOBmE/dbiqmz35XQddA
+         tKEw==
+X-Gm-Message-State: AOAM532hkQwtENJxFqahXGTVm7Nvdu7gMxDmcrq4yZ9bRm5dxs20xUwj
+        mnQL6xgec0RYYbfji9sMaqjISKaQapQ=
+X-Google-Smtp-Source: ABdhPJz8TTOWujrLx+6Z8bVI33qd+9KUF9zLVfnp6OsoxHnBG7R1MNHjorTJWj0IRZ6zhL8r0xnU+TLgs/0=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a05:6a00:1a11:b0:512:6f59:f5cf with SMTP id
- g17-20020a056a001a1100b005126f59f5cfmr7758804pfv.45.1654217172776; Thu, 02
- Jun 2022 17:46:12 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:90a:178f:b0:1e3:3ba:c185 with SMTP id
+ q15-20020a17090a178f00b001e303bac185mr305582pja.1.1654217179810; Thu, 02 Jun
+ 2022 17:46:19 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri,  3 Jun 2022 00:42:33 +0000
+Date:   Fri,  3 Jun 2022 00:42:37 +0000
 In-Reply-To: <20220603004331.1523888-1-seanjc@google.com>
-Message-Id: <20220603004331.1523888-87-seanjc@google.com>
+Message-Id: <20220603004331.1523888-91-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220603004331.1523888-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v2 086/144] KVM: selftests: Convert userspace_io_test away
- from VCPU_ID
+Subject: [PATCH v2 090/144] KVM: selftests: Convert dirty_log_test away from VCPU_ID
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     kvm@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
@@ -67,88 +66,224 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert userspace_io_test to use vm_create_with_one_vcpu() and pass around
-a 'struct kvm_vcpu' object instead of using a global VCPU_ID.  Note,
-this is a "functional" change in the sense that the test now creates a vCPU
-with vcpu_id==0 instead of vcpu_id==1.  The non-zero VCPU_ID was 100%
-arbitrary and added little to no validation coverage.  If testing non-zero
-vCPU IDs is desirable for generic tests, that can be done in the future by
-tweaking the VM creation helpers.
+Convert dirty_log_test to pass around a 'struct kvm_vcpu' object instead
+of using a global VCPU_ID.  Note, this is a "functional" change in the
+sense that the test now creates a vCPU with vcpu_id==0 instead of
+vcpu_id==5.  The non-zero VCPU_ID was 100% arbitrary and added little to
+no validation coverage.  If testing non-zero vCPU IDs is desirable for
+generic tests, that can be done in the future by tweaking the VM creation
+helpers.
 
-Opportunistically use vcpu_run() instead of _vcpu_run() with an open
-coded assert that KVM_RUN succeeded.
+The test still hardcodes usage of vcpu_id==0, but only for a few lines.
+That wart will be removed in the not-too-distant future.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../selftests/kvm/x86_64/userspace_io_test.c   | 18 +++++++-----------
- 1 file changed, 7 insertions(+), 11 deletions(-)
+ tools/testing/selftests/kvm/dirty_log_test.c | 59 ++++++++++----------
+ 1 file changed, 30 insertions(+), 29 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/x86_64/userspace_io_test.c b/tools/testing/selftests/kvm/x86_64/userspace_io_test.c
-index e4bef2e05686..0ba774ed6476 100644
---- a/tools/testing/selftests/kvm/x86_64/userspace_io_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/userspace_io_test.c
-@@ -10,8 +10,6 @@
- #include "kvm_util.h"
+diff --git a/tools/testing/selftests/kvm/dirty_log_test.c b/tools/testing/selftests/kvm/dirty_log_test.c
+index cf426a8ae816..23e0c727e375 100644
+--- a/tools/testing/selftests/kvm/dirty_log_test.c
++++ b/tools/testing/selftests/kvm/dirty_log_test.c
+@@ -23,8 +23,6 @@
+ #include "guest_modes.h"
  #include "processor.h"
  
--#define VCPU_ID			1
+-#define VCPU_ID				1
 -
- static void guest_ins_port80(uint8_t *buffer, unsigned int count)
+ /* The memory slot index to track dirty pages */
+ #define TEST_MEM_SLOT_INDEX		1
+ 
+@@ -226,17 +224,17 @@ static void clear_log_create_vm_done(struct kvm_vm *vm)
+ 	vm_enable_cap(vm, KVM_CAP_MANUAL_DIRTY_LOG_PROTECT2, manual_caps);
+ }
+ 
+-static void dirty_log_collect_dirty_pages(struct kvm_vm *vm, int slot,
++static void dirty_log_collect_dirty_pages(struct kvm_vcpu *vcpu, int slot,
+ 					  void *bitmap, uint32_t num_pages)
  {
- 	unsigned long end;
-@@ -52,31 +50,29 @@ static void guest_code(void)
+-	kvm_vm_get_dirty_log(vm, slot, bitmap);
++	kvm_vm_get_dirty_log(vcpu->vm, slot, bitmap);
+ }
  
- int main(int argc, char *argv[])
+-static void clear_log_collect_dirty_pages(struct kvm_vm *vm, int slot,
++static void clear_log_collect_dirty_pages(struct kvm_vcpu *vcpu, int slot,
+ 					  void *bitmap, uint32_t num_pages)
  {
-+	struct kvm_vcpu *vcpu;
- 	struct kvm_regs regs;
- 	struct kvm_run *run;
- 	struct kvm_vm *vm;
- 	struct ucall uc;
--	int rc;
+-	kvm_vm_get_dirty_log(vm, slot, bitmap);
+-	kvm_vm_clear_dirty_log(vm, slot, bitmap, 0, num_pages);
++	kvm_vm_get_dirty_log(vcpu->vm, slot, bitmap);
++	kvm_vm_clear_dirty_log(vcpu->vm, slot, bitmap, 0, num_pages);
+ }
  
- 	/* Tell stdout not to buffer its content */
- 	setbuf(stdout, NULL);
+ /* Should only be called after a GUEST_SYNC */
+@@ -250,14 +248,14 @@ static void vcpu_handle_sync_stop(void)
+ 	}
+ }
  
--	/* Create VM */
--	vm = vm_create_default(VCPU_ID, 0, guest_code);
--	run = vcpu_state(vm, VCPU_ID);
-+	vm = vm_create_with_one_vcpu(&vcpu, guest_code);
-+	run = vcpu->run;
+-static void default_after_vcpu_run(struct kvm_vm *vm, int ret, int err)
++static void default_after_vcpu_run(struct kvm_vcpu *vcpu, int ret, int err)
+ {
+-	struct kvm_run *run = vcpu_state(vm, VCPU_ID);
++	struct kvm_run *run = vcpu->run;
  
- 	memset(&regs, 0, sizeof(regs));
+ 	TEST_ASSERT(ret == 0 || (ret == -1 && err == EINTR),
+ 		    "vcpu run failed: errno=%d", err);
  
- 	while (1) {
--		rc = _vcpu_run(vm, VCPU_ID);
-+		vcpu_run(vm, vcpu->id);
+-	TEST_ASSERT(get_ucall(vm, VCPU_ID, NULL) == UCALL_SYNC,
++	TEST_ASSERT(get_ucall(vcpu->vm, vcpu->id, NULL) == UCALL_SYNC,
+ 		    "Invalid guest sync status: exit_reason=%s\n",
+ 		    exit_reason_str(run->exit_reason));
  
--		TEST_ASSERT(rc == 0, "vcpu_run failed: %d\n", rc);
- 		TEST_ASSERT(run->exit_reason == KVM_EXIT_IO,
- 			    "Unexpected exit reason: %u (%s),\n",
- 			    run->exit_reason,
- 			    exit_reason_str(run->exit_reason));
+@@ -328,7 +326,7 @@ static void dirty_ring_continue_vcpu(void)
+ 	sem_post(&sem_vcpu_cont);
+ }
  
--		if (get_ucall(vm, VCPU_ID, &uc))
-+		if (get_ucall(vm, vcpu->id, &uc))
- 			break;
- 
- 		TEST_ASSERT(run->io.port == 0x80,
-@@ -89,13 +85,13 @@ int main(int argc, char *argv[])
- 		 * scope from a testing perspective as it's not ABI in any way,
- 		 * i.e. it really is abusing internal KVM knowledge.
- 		 */
--		vcpu_regs_get(vm, VCPU_ID, &regs);
-+		vcpu_regs_get(vm, vcpu->id, &regs);
- 		if (regs.rcx == 2)
- 			regs.rcx = 1;
- 		if (regs.rcx == 3)
- 			regs.rcx = 8192;
- 		memset((void *)run + run->io.data_offset, 0xaa, 4096);
--		vcpu_regs_set(vm, VCPU_ID, &regs);
-+		vcpu_regs_set(vm, vcpu->id, &regs);
+-static void dirty_ring_collect_dirty_pages(struct kvm_vm *vm, int slot,
++static void dirty_ring_collect_dirty_pages(struct kvm_vcpu *vcpu, int slot,
+ 					   void *bitmap, uint32_t num_pages)
+ {
+ 	/* We only have one vcpu */
+@@ -348,10 +346,10 @@ static void dirty_ring_collect_dirty_pages(struct kvm_vm *vm, int slot,
  	}
  
- 	switch (uc.cmd) {
+ 	/* Only have one vcpu */
+-	count = dirty_ring_collect_one(vcpu_map_dirty_ring(vm, VCPU_ID),
++	count = dirty_ring_collect_one(vcpu_map_dirty_ring(vcpu->vm, vcpu->id),
+ 				       slot, bitmap, num_pages, &fetch_index);
+ 
+-	cleared = kvm_vm_reset_dirty_ring(vm);
++	cleared = kvm_vm_reset_dirty_ring(vcpu->vm);
+ 
+ 	/* Cleared pages should be the same as collected */
+ 	TEST_ASSERT(cleared == count, "Reset dirty pages (%u) mismatch "
+@@ -366,12 +364,12 @@ static void dirty_ring_collect_dirty_pages(struct kvm_vm *vm, int slot,
+ 	pr_info("Iteration %ld collected %u pages\n", iteration, count);
+ }
+ 
+-static void dirty_ring_after_vcpu_run(struct kvm_vm *vm, int ret, int err)
++static void dirty_ring_after_vcpu_run(struct kvm_vcpu *vcpu, int ret, int err)
+ {
+-	struct kvm_run *run = vcpu_state(vm, VCPU_ID);
++	struct kvm_run *run = vcpu->run;
+ 
+ 	/* A ucall-sync or ring-full event is allowed */
+-	if (get_ucall(vm, VCPU_ID, NULL) == UCALL_SYNC) {
++	if (get_ucall(vcpu->vm, vcpu->id, NULL) == UCALL_SYNC) {
+ 		/* We should allow this to continue */
+ 		;
+ 	} else if (run->exit_reason == KVM_EXIT_DIRTY_RING_FULL ||
+@@ -405,10 +403,10 @@ struct log_mode {
+ 	/* Hook when the vm creation is done (before vcpu creation) */
+ 	void (*create_vm_done)(struct kvm_vm *vm);
+ 	/* Hook to collect the dirty pages into the bitmap provided */
+-	void (*collect_dirty_pages) (struct kvm_vm *vm, int slot,
++	void (*collect_dirty_pages) (struct kvm_vcpu *vcpu, int slot,
+ 				     void *bitmap, uint32_t num_pages);
+ 	/* Hook to call when after each vcpu run */
+-	void (*after_vcpu_run)(struct kvm_vm *vm, int ret, int err);
++	void (*after_vcpu_run)(struct kvm_vcpu *vcpu, int ret, int err);
+ 	void (*before_vcpu_join) (void);
+ } log_modes[LOG_MODE_NUM] = {
+ 	{
+@@ -470,22 +468,22 @@ static void log_mode_create_vm_done(struct kvm_vm *vm)
+ 		mode->create_vm_done(vm);
+ }
+ 
+-static void log_mode_collect_dirty_pages(struct kvm_vm *vm, int slot,
++static void log_mode_collect_dirty_pages(struct kvm_vcpu *vcpu, int slot,
+ 					 void *bitmap, uint32_t num_pages)
+ {
+ 	struct log_mode *mode = &log_modes[host_log_mode];
+ 
+ 	TEST_ASSERT(mode->collect_dirty_pages != NULL,
+ 		    "collect_dirty_pages() is required for any log mode!");
+-	mode->collect_dirty_pages(vm, slot, bitmap, num_pages);
++	mode->collect_dirty_pages(vcpu, slot, bitmap, num_pages);
+ }
+ 
+-static void log_mode_after_vcpu_run(struct kvm_vm *vm, int ret, int err)
++static void log_mode_after_vcpu_run(struct kvm_vcpu *vcpu, int ret, int err)
+ {
+ 	struct log_mode *mode = &log_modes[host_log_mode];
+ 
+ 	if (mode->after_vcpu_run)
+-		mode->after_vcpu_run(vm, ret, err);
++		mode->after_vcpu_run(vcpu, ret, err);
+ }
+ 
+ static void log_mode_before_vcpu_join(void)
+@@ -507,7 +505,8 @@ static void generate_random_array(uint64_t *guest_array, uint64_t size)
+ static void *vcpu_worker(void *data)
+ {
+ 	int ret;
+-	struct kvm_vm *vm = data;
++	struct kvm_vcpu *vcpu = data;
++	struct kvm_vm *vm = vcpu->vm;
+ 	uint64_t *guest_array;
+ 	uint64_t pages_count = 0;
+ 	struct kvm_signal_mask *sigmask = alloca(offsetof(struct kvm_signal_mask, sigset)
+@@ -522,7 +521,7 @@ static void *vcpu_worker(void *data)
+ 	sigmask->len = 8;
+ 	pthread_sigmask(0, NULL, sigset);
+ 	sigdelset(sigset, SIG_IPI);
+-	vcpu_ioctl(vm, VCPU_ID, KVM_SET_SIGNAL_MASK, sigmask);
++	vcpu_ioctl(vm, vcpu->id, KVM_SET_SIGNAL_MASK, sigmask);
+ 
+ 	sigemptyset(sigset);
+ 	sigaddset(sigset, SIG_IPI);
+@@ -534,13 +533,13 @@ static void *vcpu_worker(void *data)
+ 		generate_random_array(guest_array, TEST_PAGES_PER_LOOP);
+ 		pages_count += TEST_PAGES_PER_LOOP;
+ 		/* Let the guest dirty the random pages */
+-		ret = __vcpu_run(vm, VCPU_ID);
++		ret = __vcpu_run(vm, vcpu->id);
+ 		if (ret == -1 && errno == EINTR) {
+ 			int sig = -1;
+ 			sigwait(sigset, &sig);
+ 			assert(sig == SIG_IPI);
+ 		}
+-		log_mode_after_vcpu_run(vm, ret, errno);
++		log_mode_after_vcpu_run(vcpu, ret, errno);
+ 	}
+ 
+ 	pr_info("Dirtied %"PRIu64" pages\n", pages_count);
+@@ -693,6 +692,7 @@ struct test_params {
+ static void run_test(enum vm_guest_mode mode, void *arg)
+ {
+ 	struct test_params *p = arg;
++	struct kvm_vcpu *vcpu;
+ 	struct kvm_vm *vm;
+ 	unsigned long *bmap;
+ 
+@@ -710,9 +710,10 @@ static void run_test(enum vm_guest_mode mode, void *arg)
+ 	 * (e.g., 64K page size guest will need even less memory for
+ 	 * page tables).
+ 	 */
+-	vm = create_vm(mode, VCPU_ID,
++	vm = create_vm(mode, 0,
+ 		       2ul << (DIRTY_MEM_BITS - PAGE_SHIFT_4K),
+ 		       guest_code);
++	vcpu = vcpu_get(vm, 0);
+ 
+ 	guest_page_size = vm_get_page_size(vm);
+ 	/*
+@@ -773,12 +774,12 @@ static void run_test(enum vm_guest_mode mode, void *arg)
+ 	host_clear_count = 0;
+ 	host_track_next_count = 0;
+ 
+-	pthread_create(&vcpu_thread, NULL, vcpu_worker, vm);
++	pthread_create(&vcpu_thread, NULL, vcpu_worker, vcpu);
+ 
+ 	while (iteration < p->iterations) {
+ 		/* Give the vcpu thread some time to dirty some pages */
+ 		usleep(p->interval * 1000);
+-		log_mode_collect_dirty_pages(vm, TEST_MEM_SLOT_INDEX,
++		log_mode_collect_dirty_pages(vcpu, TEST_MEM_SLOT_INDEX,
+ 					     bmap, host_num_pages);
+ 
+ 		/*
 -- 
 2.36.1.255.ge46751e96f-goog
 
