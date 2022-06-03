@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A46ECCA485
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:55:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68357CCA47E
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:55:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345800AbiFCRzE (ORCPT
+        id S1343794AbiFCRzo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:55:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57800 "EHLO
+        Fri, 3 Jun 2022 13:55:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346054AbiFCRun (ORCPT
+        with ESMTP id S1346103AbiFCRus (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:50:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5642759957;
-        Fri,  3 Jun 2022 10:47:02 -0700 (PDT)
+        Fri, 3 Jun 2022 13:50:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EBF759BAF;
+        Fri,  3 Jun 2022 10:47:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9FF19B82189;
-        Fri,  3 Jun 2022 17:47:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1B43C385B8;
-        Fri,  3 Jun 2022 17:46:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 66A6C60C3D;
+        Fri,  3 Jun 2022 17:47:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECBD8C385A9;
+        Fri,  3 Jun 2022 17:47:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278419;
-        bh=UOFBYAakdIJ+1sH6HasaLcTD8QNltxa0AK81YZwjH1k=;
+        s=korg; t=1654278428;
+        bh=7yMpx/p4JIbj1RxSrsvc4F7sy+yL65SQaQLr9b7p4J4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mr9cHeCAucvQdvof/ykmbvcPlN76/OCkQVAcu4viy6NKZ7RXOPZ3EoVdrXEvqkjEY
-         I7h00aBMudMEJHmX4NOSu+tDcEzlkcQnN5uqP7cZB5zL6bDd+1J1NsyLTr0gxwFwpt
-         nFx+G6Umg6cGSyPrNRtpLppDXxoRSn0KodIJmwOE=
+        b=ZU0YgQ8ylEEj8vMI1DlAEdglLFn2EKU7Z3L1O4DKzC3hqJ1VlD9a+leC7PNIgG/FZ
+         nF+fnPgNBmybb+PNm7XgWatQP4cJbLcBLKaZPLtcbZLS2CcLRxTloSikpsY7LHH+j3
+         olUCFkGoyJqGX3N2D84x+h5zBiZmgBYyVS8JhoVw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, wenli xie <wlxie7296@gmail.com>,
-        "Darrick J. Wong" <darrick.wong@oracle.com>,
-        Brian Foster <bfoster@redhat.com>,
-        Amir Goldstein <amir73il@gmail.com>
-Subject: [PATCH 5.10 19/53] xfs: fix an ABBA deadlock in xfs_rename
-Date:   Fri,  3 Jun 2022 19:43:04 +0200
-Message-Id: <20220603173819.282169316@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+793a590957d9c1b96620@syzkaller.appspotmail.com,
+        Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: [PATCH 5.10 30/53] netfilter: conntrack: re-fetch conntrack after insertion
+Date:   Fri,  3 Jun 2022 19:43:15 +0200
+Message-Id: <20220603173819.600692184@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173818.716010877@linuxfoundation.org>
 References: <20220603173818.716010877@linuxfoundation.org>
@@ -51,123 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Darrick J. Wong" <darrick.wong@oracle.com>
+From: Florian Westphal <fw@strlen.de>
 
-commit 6da1b4b1ab36d80a3994fd4811c8381de10af604 upstream.
+commit 56b14ecec97f39118bf85c9ac2438c5a949509ed upstream.
 
-When overlayfs is running on top of xfs and the user unlinks a file in
-the overlay, overlayfs will create a whiteout inode and ask xfs to
-"rename" the whiteout file atop the one being unlinked.  If the file
-being unlinked loses its one nlink, we then have to put the inode on the
-unlinked list.
+In case the conntrack is clashing, insertion can free skb->_nfct and
+set skb->_nfct to the already-confirmed entry.
 
-This requires us to grab the AGI buffer of the whiteout inode to take it
-off the unlinked list (which is where whiteouts are created) and to grab
-the AGI buffer of the file being deleted.  If the whiteout was created
-in a higher numbered AG than the file being deleted, we'll lock the AGIs
-in the wrong order and deadlock.
+This wasn't found before because the conntrack entry and the extension
+space used to free'd after an rcu grace period, plus the race needs
+events enabled to trigger.
 
-Therefore, grab all the AGI locks we think we'll need ahead of time, and
-in order of increasing AG number per the locking rules.
-
-Reported-by: wenli xie <wlxie7296@gmail.com>
-Fixes: 93597ae8dac0 ("xfs: Fix deadlock between AGI and AGF when target_ip exists in xfs_rename()")
-Signed-off-by: Darrick J. Wong <darrick.wong@oracle.com>
-Reviewed-by: Brian Foster <bfoster@redhat.com>
-Signed-off-by: Amir Goldstein <amir73il@gmail.com>
+Reported-by: <syzbot+793a590957d9c1b96620@syzkaller.appspotmail.com>
+Fixes: 71d8c47fc653 ("netfilter: conntrack: introduce clash resolution on insertion race")
+Fixes: 2ad9d7747c10 ("netfilter: conntrack: free extension area immediately")
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/xfs/libxfs/xfs_dir2.h    |    2 --
- fs/xfs/libxfs/xfs_dir2_sf.c |    2 +-
- fs/xfs/xfs_inode.c          |   42 +++++++++++++++++++++++++-----------------
- 3 files changed, 26 insertions(+), 20 deletions(-)
+ include/net/netfilter/nf_conntrack_core.h |    7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
---- a/fs/xfs/libxfs/xfs_dir2.h
-+++ b/fs/xfs/libxfs/xfs_dir2.h
-@@ -47,8 +47,6 @@ extern int xfs_dir_lookup(struct xfs_tra
- extern int xfs_dir_removename(struct xfs_trans *tp, struct xfs_inode *dp,
- 				struct xfs_name *name, xfs_ino_t ino,
- 				xfs_extlen_t tot);
--extern bool xfs_dir2_sf_replace_needblock(struct xfs_inode *dp,
--				xfs_ino_t inum);
- extern int xfs_dir_replace(struct xfs_trans *tp, struct xfs_inode *dp,
- 				struct xfs_name *name, xfs_ino_t inum,
- 				xfs_extlen_t tot);
---- a/fs/xfs/libxfs/xfs_dir2_sf.c
-+++ b/fs/xfs/libxfs/xfs_dir2_sf.c
-@@ -1018,7 +1018,7 @@ xfs_dir2_sf_removename(
- /*
-  * Check whether the sf dir replace operation need more blocks.
-  */
--bool
-+static bool
- xfs_dir2_sf_replace_needblock(
- 	struct xfs_inode	*dp,
- 	xfs_ino_t		inum)
---- a/fs/xfs/xfs_inode.c
-+++ b/fs/xfs/xfs_inode.c
-@@ -3152,7 +3152,7 @@ xfs_rename(
- 	struct xfs_trans	*tp;
- 	struct xfs_inode	*wip = NULL;		/* whiteout inode */
- 	struct xfs_inode	*inodes[__XFS_SORT_INODES];
--	struct xfs_buf		*agibp;
-+	int			i;
- 	int			num_inodes = __XFS_SORT_INODES;
- 	bool			new_parent = (src_dp != target_dp);
- 	bool			src_is_directory = S_ISDIR(VFS_I(src_ip)->i_mode);
-@@ -3266,6 +3266,30 @@ xfs_rename(
- 	}
+--- a/include/net/netfilter/nf_conntrack_core.h
++++ b/include/net/netfilter/nf_conntrack_core.h
+@@ -59,8 +59,13 @@ static inline int nf_conntrack_confirm(s
+ 	int ret = NF_ACCEPT;
  
- 	/*
-+	 * Lock the AGI buffers we need to handle bumping the nlink of the
-+	 * whiteout inode off the unlinked list and to handle dropping the
-+	 * nlink of the target inode.  Per locking order rules, do this in
-+	 * increasing AG order and before directory block allocation tries to
-+	 * grab AGFs because we grab AGIs before AGFs.
-+	 *
-+	 * The (vfs) caller must ensure that if src is a directory then
-+	 * target_ip is either null or an empty directory.
-+	 */
-+	for (i = 0; i < num_inodes && inodes[i] != NULL; i++) {
-+		if (inodes[i] == wip ||
-+		    (inodes[i] == target_ip &&
-+		     (VFS_I(target_ip)->i_nlink == 1 || src_is_directory))) {
-+			struct xfs_buf	*bp;
-+			xfs_agnumber_t	agno;
+ 	if (ct) {
+-		if (!nf_ct_is_confirmed(ct))
++		if (!nf_ct_is_confirmed(ct)) {
+ 			ret = __nf_conntrack_confirm(skb);
 +
-+			agno = XFS_INO_TO_AGNO(mp, inodes[i]->i_ino);
-+			error = xfs_read_agi(mp, tp, agno, &bp);
-+			if (error)
-+				goto out_trans_cancel;
++			if (ret == NF_ACCEPT)
++				ct = (struct nf_conn *)skb_nfct(skb);
 +		}
-+	}
 +
-+	/*
- 	 * Directory entry creation below may acquire the AGF. Remove
- 	 * the whiteout from the unlinked list first to preserve correct
- 	 * AGI/AGF locking order. This dirties the transaction so failures
-@@ -3317,22 +3341,6 @@ xfs_rename(
- 		 * In case there is already an entry with the same
- 		 * name at the destination directory, remove it first.
- 		 */
--
--		/*
--		 * Check whether the replace operation will need to allocate
--		 * blocks.  This happens when the shortform directory lacks
--		 * space and we have to convert it to a block format directory.
--		 * When more blocks are necessary, we must lock the AGI first
--		 * to preserve locking order (AGI -> AGF).
--		 */
--		if (xfs_dir2_sf_replace_needblock(target_dp, src_ip->i_ino)) {
--			error = xfs_read_agi(mp, tp,
--					XFS_INO_TO_AGNO(mp, target_ip->i_ino),
--					&agibp);
--			if (error)
--				goto out_trans_cancel;
--		}
--
- 		error = xfs_dir_replace(tp, target_dp, target_name,
- 					src_ip->i_ino, spaceres);
- 		if (error)
+ 		if (likely(ret == NF_ACCEPT))
+ 			nf_ct_deliver_cached_events(ct);
+ 	}
 
 
