@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42C04C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:56:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B034ACCA480
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:56:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343788AbiFCR4I (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:56:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44920 "EHLO
+        id S241354AbiFCR4S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 13:56:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345815AbiFCRu1 (ORCPT
+        with ESMTP id S1346249AbiFCRuy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:50:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8E4F590BE;
-        Fri,  3 Jun 2022 10:46:22 -0700 (PDT)
+        Fri, 3 Jun 2022 13:50:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E5395A0A6;
+        Fri,  3 Jun 2022 10:47:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 60FE7B82430;
-        Fri,  3 Jun 2022 17:46:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C92DC385A9;
-        Fri,  3 Jun 2022 17:46:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C0F2B604EF;
+        Fri,  3 Jun 2022 17:47:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCD91C385B8;
+        Fri,  3 Jun 2022 17:47:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278380;
-        bh=EZhGGfDHtywe2gnNldpG1wtwGHl1pTHgN+kbhnSDUkA=;
+        s=korg; t=1654278438;
+        bh=HgO/YYUBUaikVJTuqzSnhSDHKguXOeaqQnh/CGNBQlo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eFQvZLegxb7+4d4sPSHdw2Ve3AGz9Wbhq7rVH6EEcN1YkM25dqNWyhyvsjKJ6w8H8
-         Kcjy1YUErzGzjm1A9sIaiX2ZfmKxv1WG1GVjFdbQBKe3Hl+j1DcpQKVomn8otE+JaU
-         WrsF774pm6FQ7u1lTlcOhXEprP1dQ4NO4j0DFd0Y=
+        b=u/tl/xCVUs9hBRTAjQhpLrxgh0fGYmYJO/LvNSjN/kkgCZbA4Z7d4zDM6Nh9/KoiS
+         fvmm52hbaZhGjaNV85p0GRHTL+jA6DF0+QasuVJnyOJ6QaIdQgUa8uc9D9UlzI6qaW
+         f4KZ9CLyxVjI/qpmMZXQ50NXfRCqshdyZEx3pVCk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH 5.10 14/53] io_uring: fix using under-expanded iters
-Date:   Fri,  3 Jun 2022 19:42:59 +0200
-Message-Id: <20220603173819.137177057@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.10 33/53] x86, kvm: use correct GFP flags for preemption disabled
+Date:   Fri,  3 Jun 2022 19:43:18 +0200
+Message-Id: <20220603173819.687439393@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173818.716010877@linuxfoundation.org>
 References: <20220603173818.716010877@linuxfoundation.org>
@@ -48,77 +48,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Begunkov <asml.silence@gmail.com>
+From: Paolo Bonzini <pbonzini@redhat.com>
 
-[ upstream commit cd65869512ab5668a5d16f789bc4da1319c435c4 ]
+commit baec4f5a018fe2d708fc1022330dba04b38b5fe3 upstream.
 
-The issue was first described and addressed in
-89c2b3b7491820 ("io_uring: reexpand under-reexpanded iters"), but
-shortly after reimplemented as.
-cd65869512ab56 ("io_uring: use iov_iter state save/restore helpers").
+Commit ddd7ed842627 ("x86/kvm: Alloc dummy async #PF token outside of
+raw spinlock") leads to the following Smatch static checker warning:
 
-Here we follow the approach from the second patch but without in-callback
-resubmissions, fixups for not yet supported in 5.10 short read retries
-and replacing iov_iter_state with iter copies to not pull even more
-dependencies, and because it's just much simpler.
+	arch/x86/kernel/kvm.c:212 kvm_async_pf_task_wake()
+	warn: sleeping in atomic context
 
-Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+arch/x86/kernel/kvm.c
+    202         raw_spin_lock(&b->lock);
+    203         n = _find_apf_task(b, token);
+    204         if (!n) {
+    205                 /*
+    206                  * Async #PF not yet handled, add a dummy entry for the token.
+    207                  * Allocating the token must be down outside of the raw lock
+    208                  * as the allocator is preemptible on PREEMPT_RT kernels.
+    209                  */
+    210                 if (!dummy) {
+    211                         raw_spin_unlock(&b->lock);
+--> 212                         dummy = kzalloc(sizeof(*dummy), GFP_KERNEL);
+                                                                ^^^^^^^^^^
+Smatch thinks the caller has preempt disabled.  The `smdb.py preempt
+kvm_async_pf_task_wake` output call tree is:
+
+sysvec_kvm_asyncpf_interrupt() <- disables preempt
+-> __sysvec_kvm_asyncpf_interrupt()
+   -> kvm_async_pf_task_wake()
+
+The caller is this:
+
+arch/x86/kernel/kvm.c
+   290        DEFINE_IDTENTRY_SYSVEC(sysvec_kvm_asyncpf_interrupt)
+   291        {
+   292                struct pt_regs *old_regs = set_irq_regs(regs);
+   293                u32 token;
+   294
+   295                ack_APIC_irq();
+   296
+   297                inc_irq_stat(irq_hv_callback_count);
+   298
+   299                if (__this_cpu_read(apf_reason.enabled)) {
+   300                        token = __this_cpu_read(apf_reason.token);
+   301                        kvm_async_pf_task_wake(token);
+   302                        __this_cpu_write(apf_reason.token, 0);
+   303                        wrmsrl(MSR_KVM_ASYNC_PF_ACK, 1);
+   304                }
+   305
+   306                set_irq_regs(old_regs);
+   307        }
+
+The DEFINE_IDTENTRY_SYSVEC() is a wrapper that calls this function
+from the call_on_irqstack_cond().  It's inside the call_on_irqstack_cond()
+where preempt is disabled (unless it's already disabled).  The
+irq_enter/exit_rcu() functions disable/enable preempt.
+
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/io_uring.c |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ arch/x86/kernel/kvm.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -3389,6 +3389,7 @@ static int io_read(struct io_kiocb *req,
- 	struct iovec inline_vecs[UIO_FASTIOV], *iovec = inline_vecs;
- 	struct kiocb *kiocb = &req->rw.kiocb;
- 	struct iov_iter __iter, *iter = &__iter;
-+	struct iov_iter iter_cp;
- 	struct io_async_rw *rw = req->async_data;
- 	ssize_t io_size, ret, ret2;
- 	bool no_async;
-@@ -3399,6 +3400,7 @@ static int io_read(struct io_kiocb *req,
- 	ret = io_import_iovec(READ, req, &iovec, iter, !force_nonblock);
- 	if (ret < 0)
- 		return ret;
-+	iter_cp = *iter;
- 	io_size = iov_iter_count(iter);
- 	req->result = io_size;
- 	ret = 0;
-@@ -3434,7 +3436,7 @@ static int io_read(struct io_kiocb *req,
- 		if (req->file->f_flags & O_NONBLOCK)
- 			goto done;
- 		/* some cases will consume bytes even on error returns */
--		iov_iter_revert(iter, io_size - iov_iter_count(iter));
-+		*iter = iter_cp;
- 		ret = 0;
- 		goto copy_iov;
- 	} else if (ret < 0) {
-@@ -3517,6 +3519,7 @@ static int io_write(struct io_kiocb *req
- 	struct iovec inline_vecs[UIO_FASTIOV], *iovec = inline_vecs;
- 	struct kiocb *kiocb = &req->rw.kiocb;
- 	struct iov_iter __iter, *iter = &__iter;
-+	struct iov_iter iter_cp;
- 	struct io_async_rw *rw = req->async_data;
- 	ssize_t ret, ret2, io_size;
+--- a/arch/x86/kernel/kvm.c
++++ b/arch/x86/kernel/kvm.c
+@@ -206,7 +206,7 @@ again:
+ 		 */
+ 		if (!dummy) {
+ 			raw_spin_unlock(&b->lock);
+-			dummy = kzalloc(sizeof(*dummy), GFP_KERNEL);
++			dummy = kzalloc(sizeof(*dummy), GFP_ATOMIC);
  
-@@ -3526,6 +3529,7 @@ static int io_write(struct io_kiocb *req
- 	ret = io_import_iovec(WRITE, req, &iovec, iter, !force_nonblock);
- 	if (ret < 0)
- 		return ret;
-+	iter_cp = *iter;
- 	io_size = iov_iter_count(iter);
- 	req->result = io_size;
- 
-@@ -3587,7 +3591,7 @@ done:
- 	} else {
- copy_iov:
- 		/* some cases will consume bytes even on error returns */
--		iov_iter_revert(iter, io_size - iov_iter_count(iter));
-+		*iter = iter_cp;
- 		ret = io_setup_async_rw(req, iovec, inline_vecs, iter, false);
- 		if (!ret)
- 			return -EAGAIN;
+ 			/*
+ 			 * Continue looping on allocation failure, eventually
 
 
