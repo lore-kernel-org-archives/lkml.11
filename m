@@ -2,227 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31675CCA473
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 14:53:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4ED1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 14:53:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245208AbiFCOxU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 10:53:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33150 "EHLO
+        id S245215AbiFCOx3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 10:53:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230375AbiFCOxS (ORCPT
+        with ESMTP id S245210AbiFCOx0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 10:53:18 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB66E36E29
-        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 07:53:16 -0700 (PDT)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 253DoeFj009820;
-        Fri, 3 Jun 2022 14:53:06 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=ZsyfiaSF8s1Rdnxxm8UOnRJxjQ5WWAHBRYLJbTV2KKE=;
- b=IrULW35fM4Lq0CR3+xfjmVGxdPjLHbybBrMthk2+Vw5OsQA8of+D5WR/qJ0ITcSnH9ev
- TMbuVA/ASw9IFJVJkmrgGSCYo1Z2FIN8aIVrFHgXwCIA6aM81UvVv7cgSydDhj+UUBGk
- ELnSdWWKQwctREGUquU0/vZJPSP0BqiUj9J6ZqF5kPervcFkmskHefgi+zhqgh6pCju6
- r5UErWR9KoergSJ33JhdsBDJF+OU8pppQm+pYULDgkZag71xgVSow2/hy3ScKqHGH8Xp
- FjX87klmVfl/d9uVwRGP+FlYitDJWCVziEBRO0XCrtHbUj+c3ZjIGOCGrAaQsQDCZzui mQ== 
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gfkhu1a3a-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 03 Jun 2022 14:53:06 +0000
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 253EpSQ0000399;
-        Fri, 3 Jun 2022 14:53:04 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma02fra.de.ibm.com with ESMTP id 3gbcc6ehtj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 03 Jun 2022 14:53:04 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 253Er2kP35258734
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 3 Jun 2022 14:53:02 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 521B44C052;
-        Fri,  3 Jun 2022 14:53:02 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DA58A4C04A;
-        Fri,  3 Jun 2022 14:53:01 +0000 (GMT)
-Received: from sig-9-145-190-168.de.ibm.com (unknown [9.145.190.168])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri,  3 Jun 2022 14:53:01 +0000 (GMT)
-Message-ID: <984986721d6d0a7e8ffeb90a8fd6103772eab286.camel@linux.ibm.com>
-Subject: Re: [PATCH v2 0/9] Add dynamic iommu backed bounce buffers
-From:   Niklas Schnelle <schnelle@linux.ibm.com>
-To:     David Stevens <stevensd@chromium.org>
-Cc:     Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        iommu@lists.linux-foundation.org, Will Deacon <will@kernel.org>,
-        Christoph Hellwig <hch@lst.de>
-Date:   Fri, 03 Jun 2022 16:53:01 +0200
-In-Reply-To: <CAD=HUj62m_P53nr-Zz4bO4Bsn_tgauWX3a28MgRgsB2xShB4Hg@mail.gmail.com>
-References: <20210806103423.3341285-1-stevensd@google.com>
-         <48f72bbddb099b474d7917ff0e7c14a271d31350.camel@linux.ibm.com>
-         <CAD=HUj62m_P53nr-Zz4bO4Bsn_tgauWX3a28MgRgsB2xShB4Hg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-Mime-Version: 1.0
+        Fri, 3 Jun 2022 10:53:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9965536E29;
+        Fri,  3 Jun 2022 07:53:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 54D49B82353;
+        Fri,  3 Jun 2022 14:53:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0635C34115;
+        Fri,  3 Jun 2022 14:53:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654268003;
+        bh=RGs1KTCePcSrsr1+5HQQpGae3Pc4JtwnBu3hdoIvrOY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=WyGYjYddMk07o8bazntYbtCK4zbeCa7DEFE/TCozDMhF03Fe4kU8LPm3p5kSO9WSj
+         t3nk+MJHJEX0Yv2UYRgLUFBV3Hc84R61uyURYdZ3/eSIkFLkP6KKBi0TSTllFLd7JP
+         +2teddVxCFSl8S/YtwTHoTophTXWrIyq2O/Ug1pjO3cnW67rIVdln312x0G470x0UX
+         002zGcinS6p0imEfVb1ZI5xg2WnTpGyqcQGluIwWrbIwPXAZEWaRdvrWw/TLm8tfnw
+         Zp6/LuokL19/fMx0waN2xmdGuMl2dvo+KCy8Hpm+Ilj2IfHgr+e519ywVOgM2cn78o
+         PHgMnTz8aZq5g==
+Date:   Fri, 3 Jun 2022 16:02:22 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Yongzhi Liu <lyz_cs@pku.edu.cn>
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org, lars@metafoo.de,
+        svarbanov@mm-sol.com, iivanov@mm-sol.com,
+        jonathan.cameron@huawei.com, linux-arm-msm@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        fuyq@stu.pku.edu.cn
+Subject: Re: [PATCH v4] iio: vadc: Fix potential dereference of NULL pointer
+Message-ID: <20220603160222.1ad6ef49@jic23-huawei>
+In-Reply-To: <1653238427-73587-1-git-send-email-lyz_cs@pku.edu.cn>
+References: <20220522120109.7ead18a7@jic23-huawei>
+        <1653238427-73587-1-git-send-email-lyz_cs@pku.edu.cn>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: NTOsrkM3_fGrBKP6mHPHeAfGwvaD4LdK
-X-Proofpoint-GUID: NTOsrkM3_fGrBKP6mHPHeAfGwvaD4LdK
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
- definitions=2022-06-03_05,2022-06-03_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 phishscore=0
- adultscore=0 clxscore=1015 suspectscore=0 bulkscore=0 malwarescore=0
- mlxlogscore=999 priorityscore=1501 lowpriorityscore=0 spamscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206030062
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-05-27 at 10:25 +0900, David Stevens wrote:
-> On Tue, May 24, 2022 at 9:27 PM Niklas Schnelle <schnelle@linux.ibm.com> wrote:
-> > On Fri, 2021-08-06 at 19:34 +0900, David Stevens wrote:
-> > > From: David Stevens <stevensd@chromium.org>
-> > > 
-> > > This patch series adds support for per-domain dynamic pools of iommu
-> > > bounce buffers to the dma-iommu API. This allows iommu mappings to be
-> > > reused while still maintaining strict iommu protection.
-> > > 
-> > > This bounce buffer support is used to add a new config option that, when
-> > > enabled, causes all non-direct streaming mappings below a configurable
-> > > size to go through the bounce buffers. This serves as an optimization on
-> > > systems where manipulating iommu mappings is very expensive. For
-> > > example, virtio-iommu operations in a guest on a linux host require a
-> > > vmexit, involvement the VMM, and a VFIO syscall. For relatively small
-> > > DMA operations, memcpy can be significantly faster.
-> > > 
-> > > As a performance comparison, on a device with an i5-10210U, I ran fio
-> > > with a VFIO passthrough NVMe drive and virtio-iommu with '--direct=1
-> > > --rw=read --ioengine=libaio --iodepth=64' and block sizes 4k, 16k, 64k,
-> > > and 128k. Test throughput increased by 2.8x, 4.7x, 3.6x, and 3.6x. Time
-> > > spent in iommu_dma_unmap_(page|sg) per GB processed decreased by 97%,
-> > > 94%, 90%, and 87%. Time spent in iommu_dma_map_(page|sg) decreased
-> > > by >99%, as bounce buffers don't require syncing here in the read case.
-> > > Running with multiple jobs doesn't serve as a useful performance
-> > > comparison because virtio-iommu and vfio_iommu_type1 both have big
-> > > locks that significantly limit mulithreaded DMA performance.
-> > > 
-> > > These pooled bounce buffers are also used for subgranule mappings with
-> > > untrusted devices, replacing the single use bounce buffers used
-> > > currently. The biggest difference here is that the new implementation
-> > > maps a whole sglist using a single bounce buffer. The new implementation
-> > > does not support using bounce buffers for only some segments of the
-> > > sglist, so it may require more copying. However, the current
-> > > implementation requires per-segment iommu map/unmap operations for all
-> > > untrusted sglist mappings (fully aligned sglists included). On a
-> > > i5-10210U laptop with the internal NVMe drive made to appear untrusted,
-> > > fio --direct=1 --rw=read --ioengine=libaio --iodepth=64 --bs=64k showed
-> > > a statistically significant decrease in CPU load from 2.28% -> 2.17%
-> > > with the new iommu bounce buffer optimization enabled.
-> > > 
-> > > Each domain's buffer pool is split into multiple power-of-2 size
-> > > classes. Each class allocates a fixed number of buffer slot metadata. A
-> > > large iova range is allocated, and each slot is assigned an iova from
-> > > the range. This allows the iova to be easily mapped back to the slot,
-> > > and allows the critical section of most pool operations to be constant
-> > > time. The one exception is finding a cached buffer to reuse. These are
-> > > only separated according to R/W permissions - the use of other
-> > > permissions such as IOMMU_PRIV may require a linear search through the
-> > > cache. However, these other permissions are rare and likely exhibit high
-> > > locality, so the should not be a bottleneck in practice.
-> > > 
-> > > Since untrusted devices may require bounce buffers, each domain has a
-> > > fallback rbtree to manage single use buffers. This may be necessary if a
-> > > very large number of DMA operations are simultaneously in-flight, or for
-> > > very large individual DMA operations.
-> > > 
-> > > This patch set does not use swiotlb. There are two primary ways in which
-> > > swiotlb isn't compatible with per-domain buffer pools. First, swiotlb
-> > > allocates buffers to be compatible with a single device, whereas
-> > > per-domain buffer pools don't handle that during buffer allocation as a
-> > > single buffer may end up being used by multiple devices. Second, swiotlb
-> > > allocation establishes the original to bounce buffer mapping, which
-> > > again doesn't work if buffers can be reused. Effectively the only code
-> > > that can be shared between the two use cases is allocating slots from
-> > > the swiotlb's memory. However, given that we're going to be allocating
-> > > memory for use with an iommu, allocating memory from a block of memory
-> > > explicitly set aside to deal with a lack of iommu seems kind of
-> > > contradictory. At best there might be a small performance improvement if
-> > > wiotlb allocation is faster than regular page allocation, but buffer
-> > > allocation isn't on the hot path anyway.
-> > > 
-> > > Not using the swiotlb has the benefit that memory doesn't have to be
-> > > preallocated. Instead, bounce buffers consume memory only for in-flight
-> > > dma transactions (ignoring temporarily cached buffers), which is the
-> > > smallest amount possible. This makes it easier to use bounce buffers as
-> > > an optimization on systems with large numbers of devices or in
-> > > situations where devices are unknown, since it is not necessary to try
-> > > to tune how much memory needs to be set aside to achieve good
-> > > performance without costing too much memory.
-> > > 
-> > > Finally, this series adds a new DMA_ATTR_PERSISTENT_STREAMING flag. This
-> > > is meant to address devices which create long lived streaming mappings
-> > > but manage CPU cache coherency without using the dma_sync_* APIs.
-> > > Currently, these devices don't function properly with swiotlb=force. The
-> > > new flag is used to bypass bounce buffers so such devices will function
-> > > when the new bounce buffer optimization is enabled. The flag is added to
-> > > the i915 driver, which creates such mappings. It can also be added to
-> > > various dma-buf implementations as an optimization, although that is not
-> > > done here.
-> > > 
-> > > v1 -> v2:
-> > >  - Replace existing untrusted bounce buffers with new bounce
-> > >    buffer pools. This includes significant rework to account for
-> > >    untrusted bounce buffers being required instead of an
-> > >    optimization.
-> > >  - Add flag for persistent streaming mappings.
-> > > 
-> > 
-> > Hi David,
-> > 
-> > I'm currently looking into converting s390 from our custom IOMMU based
-> > DMA API implementation to using dma-iommu.c. We're always using an
-> > IOMMU for PCI devices even when doing pass-through to guests (under
-> > both the KVM and z/VM hypervisors). In this case I/O TLB flushes, which
-> > we use to do the shadowing of the guest I/O translations, are
-> > relatively expensive I'm thus very interested in your work. I've tried
-> > rebasing it on v5.18 and got it to compile but didn't get DMA to work
-> > though it seems to partially work as I don't get probe failures unlike
-> > with a completely broken DMA API. Since I might have very well screwed
-> > up the rebase and my DMA API conversion is experimental too I was
-> > wondering if you're still working on this and might have a current
-> > version I could experiment with?
+On Sun, 22 May 2022 09:53:47 -0700
+Yongzhi Liu <lyz_cs@pku.edu.cn> wrote:
+
+> The return value of vadc_get_channel() needs to be checked to
+> avoid use of NULL pointer. vadc_do_conversion() already provides
+> error prints in at least some of it's error paths. Thus it is
+> reasonable to add the null pointer check on prop and drop the
+> extra reporting in vadc_measure_ref_points().
 > 
-> Unfortunately I don't have anything more recent to share. I've come
-> across some performance issues caused by pathological usage patterns
-> in internal usage, but I haven't seen any correctness issues. I'm
-> hoping that I'll be able to address the performance issues and send a
-> rebased series within the next month or so.
+> Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
+
+Hi
+
+Biggest remaining thing is squashing
+ret = -ENODEV;
+return ret;
+
+into the shorter
+return -ENODEV;
+
+
+> ---
+>  drivers/iio/adc/qcom-spmi-vadc.c | 38 ++++++++++++++++++++++++++++----------
+>  1 file changed, 28 insertions(+), 10 deletions(-)
 > 
-> It's definitely possible that this series has some bugs. I've tested
-> it on a range of chromebooks and their various hardware and drivers,
-> but that's still all relatively normal x86_64/arm64. If your hardware
-> is more particular about its DMA, this series might be missing
-> something.
-> 
-> -David
+> diff --git a/drivers/iio/adc/qcom-spmi-vadc.c b/drivers/iio/adc/qcom-spmi-vadc.c
+> index 34202ba..43a52b1 100644
+> --- a/drivers/iio/adc/qcom-spmi-vadc.c
+> +++ b/drivers/iio/adc/qcom-spmi-vadc.c
+> @@ -358,22 +358,33 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
+>  	vadc->graph[VADC_CALIB_ABSOLUTE].dx = VADC_ABSOLUTE_RANGE_UV;
+>  
+>  	prop = vadc_get_channel(vadc, VADC_REF_1250MV);
+> +	if (!prop) {
+> +		dev_err(vadc->dev, "Please define 1.25V channel\n");
+Probably makes more sense to have the error as 
+"No 1.25V channel found\n");
+
+It's not obvious to anyone getting this error what 'define' might mean
+without them looking at the code, so I'd rather we just said what had
+gone wrong rather offering incomplete advice.
+
+> +		ret = -ENODEV;
+
+Don't bother assigning a variable just to return it in the next line.
+
+return -ENODEV;
+
+> +		return ret;
+> +	}
+>  	ret = vadc_do_conversion(vadc, prop, &read_1);
+>  	if (ret)
+> -		goto err;
+> +		return ret;
+>  
+>  	/* Try with buffered 625mV channel first */
+>  	prop = vadc_get_channel(vadc, VADC_SPARE1);
+> -	if (!prop)
+> +	if (!prop) {
+>  		prop = vadc_get_channel(vadc, VADC_REF_625MV);
+> +		if (!prop) {
+> +			dev_err(vadc->dev, "Please define 0.625V channel\n");
+"No 0.625V channel found\n"
+> +			ret = -ENODEV;
+
+return -ENODEV;
+
+> +			return ret;
+> +		}
+> +	}
+>  
+>  	ret = vadc_do_conversion(vadc, prop, &read_2);
+>  	if (ret)
+> -		goto err;
+> +		return ret;
+>  
+>  	if (read_1 == read_2) {
+>  		ret = -EINVAL;
+> -		goto err;
+> +		return ret;
+>  	}
+>  
+>  	vadc->graph[VADC_CALIB_ABSOLUTE].dy = read_1 - read_2;
+> @@ -381,25 +392,32 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
+>  
+>  	/* Ratiometric calibration */
+>  	prop = vadc_get_channel(vadc, VADC_VDD_VADC);
+> +	if (!prop) {
+> +		dev_err(vadc->dev, "Please define VDD channel\n");
+
+"No VDD channel found\n"
+
+> +		ret = -ENODEV;
+> +		return ret;
+> +	}
+>  	ret = vadc_do_conversion(vadc, prop, &read_1);
+>  	if (ret)
+> -		goto err;
+> +		return ret;
+>  
+>  	prop = vadc_get_channel(vadc, VADC_GND_REF);
+> +	if (!prop) {
+> +		dev_err(vadc->dev, "Please define GND channel\n");
+
+"No GND channel found\n"
+
+> +		ret = -ENODEV;
+> +		return ret;
+
+return -ENODEV;
+
+> +	}
+>  	ret = vadc_do_conversion(vadc, prop, &read_2);
+>  	if (ret)
+> -		goto err;
+> +		return ret;
+>  
+>  	if (read_1 == read_2) {
+>  		ret = -EINVAL;
+> -		goto err;
+> +		return ret;
+
+return -ENODEV;
+
+>  	}
+>  
+>  	vadc->graph[VADC_CALIB_RATIOMETRIC].dy = read_1 - read_2;
+>  	vadc->graph[VADC_CALIB_RATIOMETRIC].gnd = read_2;
+> -err:
+> -	if (ret)
+> -		dev_err(vadc->dev, "measure reference points failed\n");
+>  
+>  	return ret;
+
+Can't get here with anything other than ret == 0 so
+	return 0;
+to make that explicit.
 
 
-Hi David,
-
-Thanks for the answer. The only unusual thing about our DMA is that we
-only do 64 bit DMA and IOVAs are always >2^32. I don't think I
-triggered a bug in your code though, rather I think I made some mistake
-in the rebase onto 5.18 as some of the APIs changed a bit. I'm out next
-week but may try it again and possibly just test on x86_64 if it
-doesn't work on s390. If you have anything new I'd be interested to
-hear of course. Also could you say anything more about the pathological
-usage patterns?
-
-Thanks,
-Niklas
+>  }
 
