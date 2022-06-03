@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B644ECCA47C
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:16:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13400CCA481
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:16:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346987AbiFCSPI (ORCPT
+        id S1347124AbiFCSPW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:15:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51096 "EHLO
+        Fri, 3 Jun 2022 14:15:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346748AbiFCSAd (ORCPT
+        with ESMTP id S1346808AbiFCSAf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 14:00:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 886512BFD;
-        Fri,  3 Jun 2022 10:56:53 -0700 (PDT)
+        Fri, 3 Jun 2022 14:00:35 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4922712631;
+        Fri,  3 Jun 2022 10:56:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E857615E3;
-        Fri,  3 Jun 2022 17:56:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 208C8C385A9;
-        Fri,  3 Jun 2022 17:56:51 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 0C043CE233B;
+        Fri,  3 Jun 2022 17:56:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F41EC385A9;
+        Fri,  3 Jun 2022 17:56:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654279012;
-        bh=SF7E+IPj5PcsCtp+gwrO4WkiOXIbDQbJq8FCHx19T88=;
+        s=korg; t=1654279006;
+        bh=TQMi84fPYBbRRevC3hnf7QvIdSkLuhB46VbI3kQbPvg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Rbx6Hs9J+Foht+GZaZ9aX3Y72ntjVkNkZLiEAYbrMOkreie+z0TLXbrfdkeXKgTmV
-         7vpCzgaL1i5GRx0jx/zxK0oWhBib4KJJ7N1Q/up1khlXHqhMWmcYSG+FGOhgRxF9Ff
-         iOELkUfywVK/UMrpJrECe+KyKA7HUKp9sBR5AyYo=
+        b=gRtcUx1ffKSdECKDabZ86nJy5TUp56Rg6wsCx7jhW7zfuhKj2F79LHdPQki+TcUqu
+         hivRIgkpoZoAhFIIZMV3tDecL0p2w9uQwfHGiryDZwIg8eXvkhFtLwRjQustkqpPX+
+         lyhiZ1R/6zS2wqlRyVCNyG395U97rB9qQxZEqb1Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Maxim Levitsky <mlevitsk@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
         Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.18 24/67] KVM: x86: avoid loading a vCPU after .vm_destroy was called
-Date:   Fri,  3 Jun 2022 19:43:25 +0200
-Message-Id: <20220603173821.422587327@linuxfoundation.org>
+Subject: [PATCH 5.18 22/67] KVM: x86: fix typo in __try_cmpxchg_user causing non-atomicness
+Date:   Fri,  3 Jun 2022 19:43:23 +0200
+Message-Id: <20220603173821.365331799@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.731531504@linuxfoundation.org>
 References: <20220603173820.731531504@linuxfoundation.org>
@@ -51,61 +53,33 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Maxim Levitsky <mlevitsk@redhat.com>
 
-commit 6fcee03df6a1a3101a77344be37bb85c6142d56c upstream.
+commit 33fbe6befa622c082f7d417896832856814bdde0 upstream.
 
-This can cause various unexpected issues, since VM is partially
-destroyed at that point.
+This shows up as a TDP MMU leak when running nested.  Non-working cmpxchg on L0
+relies makes L1 install two different shadow pages under same spte, and one of
+them is leaked.
 
-For example when AVIC is enabled, this causes avic_vcpu_load to
-access physical id page entry which is already freed by .vm_destroy.
-
-Fixes: 8221c1370056 ("svm: Manage vcpu load/unload when enable AVIC")
-Cc: stable@vger.kernel.org
+Fixes: 1c2361f667f36 ("KVM: x86: Use __try_cmpxchg_user() to emulate atomic accesses")
 Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
-Message-Id: <20220322172449.235575-2-mlevitsk@redhat.com>
+Message-Id: <20220512101420.306759-1-mlevitsk@redhat.com>
+Reviewed-by: Sean Christopherson <seanjc@google.com>
+Reviewed-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/x86.c |   10 +++-------
- 1 file changed, 3 insertions(+), 7 deletions(-)
+ arch/x86/kvm/x86.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 --- a/arch/x86/kvm/x86.c
 +++ b/arch/x86/kvm/x86.c
-@@ -11747,20 +11747,15 @@ static void kvm_unload_vcpu_mmu(struct k
- 	vcpu_put(vcpu);
- }
+@@ -7268,7 +7268,7 @@ static int emulator_cmpxchg_emulated(str
+ 		goto emul_write;
  
--static void kvm_free_vcpus(struct kvm *kvm)
-+static void kvm_unload_vcpu_mmus(struct kvm *kvm)
- {
- 	unsigned long i;
- 	struct kvm_vcpu *vcpu;
+ 	hva = kvm_vcpu_gfn_to_hva(vcpu, gpa_to_gfn(gpa));
+-	if (kvm_is_error_hva(addr))
++	if (kvm_is_error_hva(hva))
+ 		goto emul_write;
  
--	/*
--	 * Unpin any mmu pages first.
--	 */
- 	kvm_for_each_vcpu(i, vcpu, kvm) {
- 		kvm_clear_async_pf_completion_queue(vcpu);
- 		kvm_unload_vcpu_mmu(vcpu);
- 	}
--
--	kvm_destroy_vcpus(kvm);
- }
- 
- void kvm_arch_sync_events(struct kvm *kvm)
-@@ -11866,11 +11861,12 @@ void kvm_arch_destroy_vm(struct kvm *kvm
- 		__x86_set_memory_region(kvm, TSS_PRIVATE_MEMSLOT, 0, 0);
- 		mutex_unlock(&kvm->slots_lock);
- 	}
-+	kvm_unload_vcpu_mmus(kvm);
- 	static_call_cond(kvm_x86_vm_destroy)(kvm);
- 	kvm_free_msr_filter(srcu_dereference_check(kvm->arch.msr_filter, &kvm->srcu, 1));
- 	kvm_pic_destroy(kvm);
- 	kvm_ioapic_destroy(kvm);
--	kvm_free_vcpus(kvm);
-+	kvm_destroy_vcpus(kvm);
- 	kvfree(rcu_dereference_check(kvm->arch.apic_map, 1));
- 	kfree(srcu_dereference_check(kvm->arch.pmu_event_filter, &kvm->srcu, 1));
- 	kvm_mmu_uninit_vm(kvm);
+ 	hva += offset_in_page(gpa);
 
 
