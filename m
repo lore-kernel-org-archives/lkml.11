@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77083C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:58:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5E9DC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:58:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346072AbiFCR6m (ORCPT
+        id S1346078AbiFCR6q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:58:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57826 "EHLO
+        Fri, 3 Jun 2022 13:58:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346999AbiFCRvt (ORCPT
+        with ESMTP id S1347038AbiFCRvv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:51:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CF601023;
-        Fri,  3 Jun 2022 10:49:56 -0700 (PDT)
+        Fri, 3 Jun 2022 13:51:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FEAB554AA;
+        Fri,  3 Jun 2022 10:49:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DDBD0B8241E;
-        Fri,  3 Jun 2022 17:49:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32D8BC385A9;
-        Fri,  3 Jun 2022 17:49:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 16EF2B82189;
+        Fri,  3 Jun 2022 17:49:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43D7BC385A9;
+        Fri,  3 Jun 2022 17:49:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278593;
-        bh=4CV2YYdOdmtQY/EHPZAR8SenSGDXz6x4jpKV19cuIKQ=;
+        s=korg; t=1654278596;
+        bh=cBNge5pbPFNpjc3yYWweALItim0uRV+wmebu8g7bA2c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bqhNK/7uTqP2rLGIkVVDDRUtVZtL8dDgxHcol9rexwS3Ne1ORODOmZMKBDvvTGb6z
-         6zNYOQvniI0bJp9WhFRdiFZLRmb0PAcf95UtcfPKmpB0Mu5xB0hkLakEj3dU1vRgmP
-         IYqWhMsN9eFvB+Ebi3x/RntjIwheTOB/6ZPiiBww=
+        b=BxfzQk0DjF6l982A3cFNjv59cYTco406zLUmJhOSySZvURPiPZMrheuHe8Nczl8sJ
+         Dhi/L/edIFQRBzQPVedCsG6ya9XGcMkURQwoeo5Bu5fUB6BJiWbinpITDKL9FHRWTS
+         vbRPnVcKozPSIERR+aNO7NlmUI20WcQ8fFIl5OaM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yajun Deng <yajun.deng@linux.dev>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.15 29/66] x86/kvm: Alloc dummy async #PF token outside of raw spinlock
-Date:   Fri,  3 Jun 2022 19:43:09 +0200
-Message-Id: <20220603173821.498239266@linuxfoundation.org>
+        stable@vger.kernel.org, Will Deacon <will@kernel.org>,
+        Quentin Perret <qperret@google.com>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 03/66] KVM: arm64: Dont hypercall before EL2 init
+Date:   Fri,  3 Jun 2022 19:42:43 +0200
+Message-Id: <20220603173820.766976339@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.663747061@linuxfoundation.org>
 References: <20220603173820.663747061@linuxfoundation.org>
@@ -50,91 +50,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Quentin Perret <qperret@google.com>
 
-commit 0547758a6de3cc71a0cfdd031a3621a30db6a68b upstream.
+[ Upstream commit 2e40316753ee552fb598e8da8ca0d20a04e67453 ]
 
-Drop the raw spinlock in kvm_async_pf_task_wake() before allocating the
-the dummy async #PF token, the allocator is preemptible on PREEMPT_RT
-kernels and must not be called from truly atomic contexts.
+Will reported the following splat when running with Protected KVM
+enabled:
 
-Opportunistically document why it's ok to loop on allocation failure,
-i.e. why the function won't get stuck in an infinite loop.
+[    2.427181] ------------[ cut here ]------------
+[    2.427668] WARNING: CPU: 3 PID: 1 at arch/arm64/kvm/mmu.c:489 __create_hyp_private_mapping+0x118/0x1ac
+[    2.428424] Modules linked in:
+[    2.429040] CPU: 3 PID: 1 Comm: swapper/0 Not tainted 5.18.0-rc2-00084-g8635adc4efc7 #1
+[    2.429589] Hardware name: QEMU QEMU Virtual Machine, BIOS 0.0.0 02/06/2015
+[    2.430286] pstate: 80000005 (Nzcv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[    2.430734] pc : __create_hyp_private_mapping+0x118/0x1ac
+[    2.431091] lr : create_hyp_exec_mappings+0x40/0x80
+[    2.431377] sp : ffff80000803baf0
+[    2.431597] x29: ffff80000803bb00 x28: 0000000000000000 x27: 0000000000000000
+[    2.432156] x26: 0000000000000000 x25: 0000000000000000 x24: 0000000000000000
+[    2.432561] x23: ffffcd96c343b000 x22: 0000000000000000 x21: ffff80000803bb40
+[    2.433004] x20: 0000000000000004 x19: 0000000000001800 x18: 0000000000000000
+[    2.433343] x17: 0003e68cf7efdd70 x16: 0000000000000004 x15: fffffc81f602a2c8
+[    2.434053] x14: ffffdf8380000000 x13: ffffcd9573200000 x12: ffffcd96c343b000
+[    2.434401] x11: 0000000000000004 x10: ffffcd96c1738000 x9 : 0000000000000004
+[    2.434812] x8 : ffff80000803bb40 x7 : 7f7f7f7f7f7f7f7f x6 : 544f422effff306b
+[    2.435136] x5 : 000000008020001e x4 : ffff207d80a88c00 x3 : 0000000000000005
+[    2.435480] x2 : 0000000000001800 x1 : 000000014f4ab800 x0 : 000000000badca11
+[    2.436149] Call trace:
+[    2.436600]  __create_hyp_private_mapping+0x118/0x1ac
+[    2.437576]  create_hyp_exec_mappings+0x40/0x80
+[    2.438180]  kvm_init_vector_slots+0x180/0x194
+[    2.458941]  kvm_arch_init+0x80/0x274
+[    2.459220]  kvm_init+0x48/0x354
+[    2.459416]  arm_init+0x20/0x2c
+[    2.459601]  do_one_initcall+0xbc/0x238
+[    2.459809]  do_initcall_level+0x94/0xb4
+[    2.460043]  do_initcalls+0x54/0x94
+[    2.460228]  do_basic_setup+0x1c/0x28
+[    2.460407]  kernel_init_freeable+0x110/0x178
+[    2.460610]  kernel_init+0x20/0x1a0
+[    2.460817]  ret_from_fork+0x10/0x20
+[    2.461274] ---[ end trace 0000000000000000 ]---
 
-Reported-by: Yajun Deng <yajun.deng@linux.dev>
-Cc: stable@vger.kernel.org
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Indeed, the Protected KVM mode promotes __create_hyp_private_mapping()
+to a hypercall as EL1 no longer has access to the hypervisor's stage-1
+page-table. However, the call from kvm_init_vector_slots() happens after
+pKVM has been initialized on the primary CPU, but before it has been
+initialized on secondaries. As such, if the KVM initcall procedure is
+migrated from one CPU to another in this window, the hypercall may end up
+running on a CPU for which EL2 has not been initialized.
+
+Fortunately, the pKVM hypervisor doesn't rely on the host to re-map the
+vectors in the private range, so the hypercall in question is in fact
+superfluous. Skip it when pKVM is enabled.
+
+Reported-by: Will Deacon <will@kernel.org>
+Signed-off-by: Quentin Perret <qperret@google.com>
+[maz: simplified the checks slightly]
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220513092607.35233-1-qperret@google.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/kvm.c |   41 +++++++++++++++++++++++++++--------------
- 1 file changed, 27 insertions(+), 14 deletions(-)
+ arch/arm64/kvm/arm.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/arch/x86/kernel/kvm.c
-+++ b/arch/x86/kernel/kvm.c
-@@ -188,7 +188,7 @@ void kvm_async_pf_task_wake(u32 token)
- {
- 	u32 key = hash_32(token, KVM_TASK_SLEEP_HASHBITS);
- 	struct kvm_task_sleep_head *b = &async_pf_sleepers[key];
--	struct kvm_task_sleep_node *n;
-+	struct kvm_task_sleep_node *n, *dummy = NULL;
+diff --git a/arch/arm64/kvm/arm.c b/arch/arm64/kvm/arm.c
+index 0b2f684cd8ca..a30c036577a3 100644
+--- a/arch/arm64/kvm/arm.c
++++ b/arch/arm64/kvm/arm.c
+@@ -1458,7 +1458,8 @@ static int kvm_init_vector_slots(void)
+ 	base = kern_hyp_va(kvm_ksym_ref(__bp_harden_hyp_vecs));
+ 	kvm_init_vector_slot(base, HYP_VECTOR_SPECTRE_DIRECT);
  
- 	if (token == ~0) {
- 		apf_task_wake_all();
-@@ -200,28 +200,41 @@ again:
- 	n = _find_apf_task(b, token);
- 	if (!n) {
- 		/*
--		 * async PF was not yet handled.
--		 * Add dummy entry for the token.
-+		 * Async #PF not yet handled, add a dummy entry for the token.
-+		 * Allocating the token must be down outside of the raw lock
-+		 * as the allocator is preemptible on PREEMPT_RT kernels.
- 		 */
--		n = kzalloc(sizeof(*n), GFP_ATOMIC);
--		if (!n) {
-+		if (!dummy) {
-+			raw_spin_unlock(&b->lock);
-+			dummy = kzalloc(sizeof(*dummy), GFP_KERNEL);
-+
- 			/*
--			 * Allocation failed! Busy wait while other cpu
--			 * handles async PF.
-+			 * Continue looping on allocation failure, eventually
-+			 * the async #PF will be handled and allocating a new
-+			 * node will be unnecessary.
-+			 */
-+			if (!dummy)
-+				cpu_relax();
-+
-+			/*
-+			 * Recheck for async #PF completion before enqueueing
-+			 * the dummy token to avoid duplicate list entries.
- 			 */
--			raw_spin_unlock(&b->lock);
--			cpu_relax();
- 			goto again;
- 		}
--		n->token = token;
--		n->cpu = smp_processor_id();
--		init_swait_queue_head(&n->wq);
--		hlist_add_head(&n->link, &b->list);
-+		dummy->token = token;
-+		dummy->cpu = smp_processor_id();
-+		init_swait_queue_head(&dummy->wq);
-+		hlist_add_head(&dummy->link, &b->list);
-+		dummy = NULL;
- 	} else {
- 		apf_task_wake_one(n);
- 	}
- 	raw_spin_unlock(&b->lock);
--	return;
-+
-+	/* A dummy token might be allocated and ultimately not used.  */
-+	if (dummy)
-+		kfree(dummy);
- }
- EXPORT_SYMBOL_GPL(kvm_async_pf_task_wake);
- 
+-	if (kvm_system_needs_idmapped_vectors() && !has_vhe()) {
++	if (kvm_system_needs_idmapped_vectors() &&
++	    !is_protected_kvm_enabled()) {
+ 		err = create_hyp_exec_mappings(__pa_symbol(__bp_harden_hyp_vecs),
+ 					       __BP_HARDEN_HYP_VECS_SZ, &base);
+ 		if (err)
+-- 
+2.35.1
+
 
 
