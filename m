@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C707C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:01:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5B14C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:01:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346398AbiFCSBg (ORCPT
+        id S1346105AbiFCSBo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:01:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58352 "EHLO
+        Fri, 3 Jun 2022 14:01:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347221AbiFCRwI (ORCPT
+        with ESMTP id S1347223AbiFCRwI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 3 Jun 2022 13:52:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F187580DB;
-        Fri,  3 Jun 2022 10:50:27 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE1ADB82;
+        Fri,  3 Jun 2022 10:50:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 08DBC60A0F;
-        Fri,  3 Jun 2022 17:50:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8068C385A9;
-        Fri,  3 Jun 2022 17:50:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7A751B823B0;
+        Fri,  3 Jun 2022 17:50:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3775C385B8;
+        Fri,  3 Jun 2022 17:50:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278626;
-        bh=UIvOGU9ezNqd/V+eh1/mLYA2MyU4xUyFduSUC7Zg0Ms=;
+        s=korg; t=1654278647;
+        bh=py7W3K5TMchg50vXQHrYE7WTrD96cuiq7L66aU9VY4s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZZXld4oAunwq6rx9uTuWWhBfDDSJLsJ7FHEwF8l4YfUe4rMPtSapxzLnqlGMBe1Jf
-         yT7wXLocq957D7z6r4OASjq9I+MdFW7FVS44R8LT1GJVqA7IOEZNSza1kfU3YetvZM
-         17KIJu4I6VZv6J/V4SToYUScKjNTYU/tNxv87w80=
+        b=kj6Y+ndUlti7M4i9DLGljlmxq8c1XgtlXNkOzlOooVx8jV5FhS9ZBxiTAw6qfcr+d
+         LMwLsYZEreTdgdHQK6mDYO2TPAQet3NQrMwI5F+5d1CJoNA8B676z1oizQZ9G4X7Dx
+         42KhmnElGzBL9qqt+cJwAJAXeCI6Bui0E02GrpK0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Szymon Balcerak <sbalcerak@marvell.com>,
-        Piyush Malgujar <pmalgujar@marvell.com>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 09/66] drivers: i2c: thunderx: Allow driver to work with ACPI defined TWSI controllers
-Date:   Fri,  3 Jun 2022 19:42:49 +0200
-Message-Id: <20220603173820.934599215@linuxfoundation.org>
+        stable@vger.kernel.org, Marek Maslanka <mm@semihalf.com>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Jiri Kosina <jkosina@suse.cz>
+Subject: [PATCH 5.15 48/66] HID: multitouch: Add support for Google Whiskers Touchpad
+Date:   Fri,  3 Jun 2022 19:43:28 +0200
+Message-Id: <20220603173822.054005560@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.663747061@linuxfoundation.org>
 References: <20220603173820.663747061@linuxfoundation.org>
@@ -50,35 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Piyush Malgujar <pmalgujar@marvell.com>
+From: Marek Maślanka <mm@semihalf.com>
 
-[ Upstream commit 03a35bc856ddc09f2cc1f4701adecfbf3b464cb3 ]
+commit 1d07cef7fd7599450b3d03e1915efc2a96e1f03f upstream.
 
-Due to i2c->adap.dev.fwnode not being set, ACPI_COMPANION() wasn't properly
-found for TWSI controllers.
+The Google Whiskers touchpad does not work properly with the default
+multitouch configuration. Instead, use the same configuration as Google
+Rose.
 
-Signed-off-by: Szymon Balcerak <sbalcerak@marvell.com>
-Signed-off-by: Piyush Malgujar <pmalgujar@marvell.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Marek Maslanka <mm@semihalf.com>
+Acked-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/i2c/busses/i2c-thunderx-pcidrv.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/hid/hid-multitouch.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/i2c/busses/i2c-thunderx-pcidrv.c b/drivers/i2c/busses/i2c-thunderx-pcidrv.c
-index 12c90aa0900e..a77cd86fe75e 100644
---- a/drivers/i2c/busses/i2c-thunderx-pcidrv.c
-+++ b/drivers/i2c/busses/i2c-thunderx-pcidrv.c
-@@ -213,6 +213,7 @@ static int thunder_i2c_probe_pci(struct pci_dev *pdev,
- 	i2c->adap.bus_recovery_info = &octeon_i2c_recovery_info;
- 	i2c->adap.dev.parent = dev;
- 	i2c->adap.dev.of_node = pdev->dev.of_node;
-+	i2c->adap.dev.fwnode = dev->fwnode;
- 	snprintf(i2c->adap.name, sizeof(i2c->adap.name),
- 		 "Cavium ThunderX i2c adapter at %s", dev_name(dev));
- 	i2c_set_adapdata(&i2c->adap, i2c);
--- 
-2.35.1
-
+--- a/drivers/hid/hid-multitouch.c
++++ b/drivers/hid/hid-multitouch.c
+@@ -2176,6 +2176,9 @@ static const struct hid_device_id mt_dev
+ 	{ .driver_data = MT_CLS_GOOGLE,
+ 		HID_DEVICE(HID_BUS_ANY, HID_GROUP_ANY, USB_VENDOR_ID_GOOGLE,
+ 			USB_DEVICE_ID_GOOGLE_TOUCH_ROSE) },
++	{ .driver_data = MT_CLS_GOOGLE,
++		HID_DEVICE(BUS_USB, HID_GROUP_MULTITOUCH_WIN_8, USB_VENDOR_ID_GOOGLE,
++			USB_DEVICE_ID_GOOGLE_WHISKERS) },
+ 
+ 	/* Generic MT device */
+ 	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_MULTITOUCH, HID_ANY_ID, HID_ANY_ID) },
 
 
