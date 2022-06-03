@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 409C0C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:57:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12FCECCA473
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:57:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345933AbiFCR52 (ORCPT
+        id S1345862AbiFCR5e (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:57:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58124 "EHLO
+        Fri, 3 Jun 2022 13:57:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346561AbiFCRvR (ORCPT
+        with ESMTP id S1346598AbiFCRvT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:51:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 864465520E;
-        Fri,  3 Jun 2022 10:48:36 -0700 (PDT)
+        Fri, 3 Jun 2022 13:51:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1851153A65;
+        Fri,  3 Jun 2022 10:48:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 494D8B8241D;
-        Fri,  3 Jun 2022 17:48:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9546FC385A9;
-        Fri,  3 Jun 2022 17:48:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 85AFD60F3E;
+        Fri,  3 Jun 2022 17:48:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 863FBC341C0;
+        Fri,  3 Jun 2022 17:48:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278514;
-        bh=UJYQLVdpOQK+wV5KF+SBi3wrp+2pt2j7/nnYiN29v3U=;
+        s=korg; t=1654278529;
+        bh=6Cm8N7iGoLf4zRP7xWJkH3JlP5PHe89qcww/m1kqHZs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=moQ5wZpeqw4KKNs7aGM1MeNSDpfthuKG8heYj3sLPTjG86QGwyL/ukKMgtX9yUNj1
-         fjnB5O7ikbs98RieOfQSf6cqCtmM/HTJgRdN4C2HHqlzxBLufovxcdEuY7PtCSS4Dt
-         LzmFI4ptCU/RKJTKFYlpP8dBvFT/fZsqF/YKeKe0=
+        b=McYZb4N2/b1HzDu20A5iztWCVMDqgiXGNo2NRmfkbX1Q9zB68SKjrLuQH7EK2WKTx
+         6Zo8YHEy6gGd9TbJupZhAgfIf+vOPjOlye5THhgqmC0DNV7dAlnwPiyyknF2Fw55Jc
+         3UdwQANuCgKXxs4OPE5YkS0u4E/wKDoHXZIxe+FM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Herbert Xu <herbert@gondor.apana.org.au>,
-        linux-crypto@vger.kernel.org,
-        "Justin M. Forbes" <jforbes@fedoraproject.org>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.10 24/53] lib/crypto: add prompts back to crypto libraries
-Date:   Fri,  3 Jun 2022 19:43:09 +0200
-Message-Id: <20220603173819.429401098@linuxfoundation.org>
+        stable@vger.kernel.org, Forest Crossman <cyrozap@gmail.com>,
+        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 01/66] ALSA: usb-audio: Dont get sample rate for MCT Trigger 5 USB-to-HDMI
+Date:   Fri,  3 Jun 2022 19:42:41 +0200
+Message-Id: <20220603173820.709252634@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220603173818.716010877@linuxfoundation.org>
-References: <20220603173818.716010877@linuxfoundation.org>
+In-Reply-To: <20220603173820.663747061@linuxfoundation.org>
+References: <20220603173820.663747061@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -51,112 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Justin M. Forbes" <jforbes@fedoraproject.org>
+From: Forest Crossman <cyrozap@gmail.com>
 
-commit e56e18985596617ae426ed5997fb2e737cffb58b upstream.
+[ Upstream commit d7be213849232a2accb219d537edf056d29186b4 ]
 
-Commit 6048fdcc5f269 ("lib/crypto: blake2s: include as built-in") took
-away a number of prompt texts from other crypto libraries. This makes
-values flip from built-in to module when oldconfig runs, and causes
-problems when these crypto libs need to be built in for thingslike
-BIG_KEYS.
+This device doesn't support reading the sample rate, so we need to apply
+this quirk to avoid a 15-second delay waiting for three timeouts.
 
-Fixes: 6048fdcc5f269 ("lib/crypto: blake2s: include as built-in")
-Cc: Herbert Xu <herbert@gondor.apana.org.au>
-Cc: linux-crypto@vger.kernel.org
-Signed-off-by: Justin M. Forbes <jforbes@fedoraproject.org>
-[Jason: - moved menu into submenu of lib/ instead of root menu
-        - fixed chacha sub-dependencies for CONFIG_CRYPTO]
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Forest Crossman <cyrozap@gmail.com>
+Link: https://lore.kernel.org/r/20220504002444.114011-2-cyrozap@gmail.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- crypto/Kconfig     |    2 --
- lib/Kconfig        |    2 ++
- lib/crypto/Kconfig |   17 ++++++++++++-----
- 3 files changed, 14 insertions(+), 7 deletions(-)
+ sound/usb/quirks.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/crypto/Kconfig
-+++ b/crypto/Kconfig
-@@ -1941,5 +1941,3 @@ source "crypto/asymmetric_keys/Kconfig"
- source "certs/Kconfig"
- 
- endif	# if CRYPTO
--
--source "lib/crypto/Kconfig"
---- a/lib/Kconfig
-+++ b/lib/Kconfig
-@@ -101,6 +101,8 @@ config INDIRECT_PIO
- 
- 	  When in doubt, say N.
- 
-+source "lib/crypto/Kconfig"
-+
- config CRC_CCITT
- 	tristate "CRC-CCITT functions"
- 	help
---- a/lib/crypto/Kconfig
-+++ b/lib/crypto/Kconfig
-@@ -1,5 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0
- 
-+menu "Crypto library routines"
-+
- config CRYPTO_LIB_AES
- 	tristate
- 
-@@ -31,7 +33,7 @@ config CRYPTO_ARCH_HAVE_LIB_CHACHA
- 
- config CRYPTO_LIB_CHACHA_GENERIC
- 	tristate
--	select CRYPTO_ALGAPI
-+	select XOR_BLOCKS
- 	help
- 	  This symbol can be depended upon by arch implementations of the
- 	  ChaCha library interface that require the generic code as a
-@@ -40,7 +42,8 @@ config CRYPTO_LIB_CHACHA_GENERIC
- 	  of CRYPTO_LIB_CHACHA.
- 
- config CRYPTO_LIB_CHACHA
--	tristate
-+	tristate "ChaCha library interface"
-+	depends on CRYPTO
- 	depends on CRYPTO_ARCH_HAVE_LIB_CHACHA || !CRYPTO_ARCH_HAVE_LIB_CHACHA
- 	select CRYPTO_LIB_CHACHA_GENERIC if CRYPTO_ARCH_HAVE_LIB_CHACHA=n
- 	help
-@@ -65,7 +68,7 @@ config CRYPTO_LIB_CURVE25519_GENERIC
- 	  of CRYPTO_LIB_CURVE25519.
- 
- config CRYPTO_LIB_CURVE25519
--	tristate
-+	tristate "Curve25519 scalar multiplication library"
- 	depends on CRYPTO_ARCH_HAVE_LIB_CURVE25519 || !CRYPTO_ARCH_HAVE_LIB_CURVE25519
- 	select CRYPTO_LIB_CURVE25519_GENERIC if CRYPTO_ARCH_HAVE_LIB_CURVE25519=n
- 	help
-@@ -100,7 +103,7 @@ config CRYPTO_LIB_POLY1305_GENERIC
- 	  of CRYPTO_LIB_POLY1305.
- 
- config CRYPTO_LIB_POLY1305
--	tristate
-+	tristate "Poly1305 library interface"
- 	depends on CRYPTO_ARCH_HAVE_LIB_POLY1305 || !CRYPTO_ARCH_HAVE_LIB_POLY1305
- 	select CRYPTO_LIB_POLY1305_GENERIC if CRYPTO_ARCH_HAVE_LIB_POLY1305=n
- 	help
-@@ -109,11 +112,15 @@ config CRYPTO_LIB_POLY1305
- 	  is available and enabled.
- 
- config CRYPTO_LIB_CHACHA20POLY1305
--	tristate
-+	tristate "ChaCha20-Poly1305 AEAD support (8-byte nonce library version)"
- 	depends on CRYPTO_ARCH_HAVE_LIB_CHACHA || !CRYPTO_ARCH_HAVE_LIB_CHACHA
- 	depends on CRYPTO_ARCH_HAVE_LIB_POLY1305 || !CRYPTO_ARCH_HAVE_LIB_POLY1305
-+	depends on CRYPTO
- 	select CRYPTO_LIB_CHACHA
- 	select CRYPTO_LIB_POLY1305
-+	select CRYPTO_ALGAPI
- 
- config CRYPTO_LIB_SHA256
- 	tristate
-+
-+endmenu
+diff --git a/sound/usb/quirks.c b/sound/usb/quirks.c
+index ab9f3da49941..fbbe59054c3f 100644
+--- a/sound/usb/quirks.c
++++ b/sound/usb/quirks.c
+@@ -1822,6 +1822,8 @@ static const struct usb_audio_quirk_flags_table quirk_flags_table[] = {
+ 		   QUIRK_FLAG_IGNORE_CTL_ERROR),
+ 	DEVICE_FLG(0x06f8, 0xd002, /* Hercules DJ Console (Macintosh Edition) */
+ 		   QUIRK_FLAG_IGNORE_CTL_ERROR),
++	DEVICE_FLG(0x0711, 0x5800, /* MCT Trigger 5 USB-to-HDMI */
++		   QUIRK_FLAG_GET_SAMPLE_RATE),
+ 	DEVICE_FLG(0x074d, 0x3553, /* Outlaw RR2150 (Micronas UAC3553B) */
+ 		   QUIRK_FLAG_GET_SAMPLE_RATE),
+ 	DEVICE_FLG(0x08bb, 0x2702, /* LineX FM Transmitter */
+-- 
+2.35.1
+
 
 
