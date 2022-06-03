@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D609CCA48B
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:16:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5647CCA47C
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:16:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348321AbiFCSQf (ORCPT
+        id S1348550AbiFCSQr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:16:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46466 "EHLO
+        Fri, 3 Jun 2022 14:16:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346320AbiFCSEz (ORCPT
+        with ESMTP id S1346880AbiFCSF3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 14:04:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00E135712F;
-        Fri,  3 Jun 2022 10:58:02 -0700 (PDT)
+        Fri, 3 Jun 2022 14:05:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DA5D5A17B;
+        Fri,  3 Jun 2022 10:58:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 366A5B82189;
-        Fri,  3 Jun 2022 17:57:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96FB2C385B8;
-        Fri,  3 Jun 2022 17:57:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 136A1B82433;
+        Fri,  3 Jun 2022 17:57:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73379C385A9;
+        Fri,  3 Jun 2022 17:57:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654279025;
-        bh=wTV5cVFc5rKLzg7MqcEFuVDlN6PsOXkUdWpdiX9W7qI=;
+        s=korg; t=1654279039;
+        bh=GKoL9+gfFzoAe2lfmV6JssBgfwtDzDbaPLiAC/jmV64=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XLDvkMc/Bq4S5SvdIZCQ4GpGJxuUhdFFKrMHdTxTokL/G9HZ3MYKRK1sJgtt60Hga
-         qMJbc6vmDaov765QYnsRTe9GuHHCMkffsGFlDxaBte99WHRXu9oPUiOb+44u9MaiUM
-         gZUT/veLR3/hG1A/vChceoU2IRHPbeyU4ugirBtM=
+        b=gcwTQmEpBRCOmMJxa+664THpcdA8DF1rjdZQUKmRgCvsLgvdpjTvxZ0OGn8jdiSCL
+         nxu10jtphQlGsJF7DtDjT2lDFa6ElC4lCbz0UWziDJpOtg9vMUsiK0j0J6HOHhmGAc
+         FtF8ryvMBPoirCkoMYIYCJ0OTLJSVtptZZrm7KBk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andy Nguyen <theflow@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Peter Gonda <pgonda@google.com>, kvm@vger.kernel.org,
-        Ashish Kalra <ashish.kalra@amd.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.18 28/67] KVM: SVM: Use kzalloc for sev ioctl interfaces to prevent kernel data leak
-Date:   Fri,  3 Jun 2022 19:43:29 +0200
-Message-Id: <20220603173821.535586563@linuxfoundation.org>
+        stable@vger.kernel.org, Sultan Alsawaf <sultan@kerneltoast.com>,
+        Minchan Kim <minchan@kernel.org>,
+        Nitin Gupta <ngupta@vflare.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.18 32/67] zsmalloc: fix races between asynchronous zspage free and page migration
+Date:   Fri,  3 Jun 2022 19:43:33 +0200
+Message-Id: <20220603173821.646368850@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.731531504@linuxfoundation.org>
 References: <20220603173820.731531504@linuxfoundation.org>
@@ -52,88 +52,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ashish Kalra <ashish.kalra@amd.com>
+From: Sultan Alsawaf <sultan@kerneltoast.com>
 
-commit d22d2474e3953996f03528b84b7f52cc26a39403 upstream.
+commit 2505a981114dcb715f8977b8433f7540854851d8 upstream.
 
-For some sev ioctl interfaces, the length parameter that is passed maybe
-less than or equal to SEV_FW_BLOB_MAX_SIZE, but larger than the data
-that PSP firmware returns. In this case, kmalloc will allocate memory
-that is the size of the input rather than the size of the data.
-Since PSP firmware doesn't fully overwrite the allocated buffer, these
-sev ioctl interface may return uninitialized kernel slab memory.
+The asynchronous zspage free worker tries to lock a zspage's entire page
+list without defending against page migration.  Since pages which haven't
+yet been locked can concurrently migrate off the zspage page list while
+lock_zspage() churns away, lock_zspage() can suffer from a few different
+lethal races.
 
-Reported-by: Andy Nguyen <theflow@google.com>
-Suggested-by: David Rientjes <rientjes@google.com>
-Suggested-by: Peter Gonda <pgonda@google.com>
-Cc: kvm@vger.kernel.org
-Cc: stable@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Fixes: eaf78265a4ab3 ("KVM: SVM: Move SEV code to separate file")
-Fixes: 2c07ded06427d ("KVM: SVM: add support for SEV attestation command")
-Fixes: 4cfdd47d6d95a ("KVM: SVM: Add KVM_SEV SEND_START command")
-Fixes: d3d1af85e2c75 ("KVM: SVM: Add KVM_SEND_UPDATE_DATA command")
-Fixes: eba04b20e4861 ("KVM: x86: Account a variety of miscellaneous allocations")
-Signed-off-by: Ashish Kalra <ashish.kalra@amd.com>
-Reviewed-by: Peter Gonda <pgonda@google.com>
-Message-Id: <20220516154310.3685678-1-Ashish.Kalra@amd.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+It can lock a page which no longer belongs to the zspage and unsafely
+dereference page_private(), it can unsafely dereference a torn pointer to
+the next page (since there's a data race), and it can observe a spurious
+NULL pointer to the next page and thus not lock all of the zspage's pages
+(since a single page migration will reconstruct the entire page list, and
+create_page_chain() unconditionally zeroes out each list pointer in the
+process).
+
+Fix the races by using migrate_read_lock() in lock_zspage() to synchronize
+with page migration.
+
+Link: https://lkml.kernel.org/r/20220509024703.243847-1-sultan@kerneltoast.com
+Fixes: 77ff465799c602 ("zsmalloc: zs_page_migrate: skip unnecessary loops but not return -EBUSY if zspage is not inuse")
+Signed-off-by: Sultan Alsawaf <sultan@kerneltoast.com>
+Acked-by: Minchan Kim <minchan@kernel.org>
+Cc: Nitin Gupta <ngupta@vflare.org>
+Cc: Sergey Senozhatsky <senozhatsky@chromium.org>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/svm/sev.c |   12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ mm/zsmalloc.c |   37 +++++++++++++++++++++++++++++++++----
+ 1 file changed, 33 insertions(+), 4 deletions(-)
 
---- a/arch/x86/kvm/svm/sev.c
-+++ b/arch/x86/kvm/svm/sev.c
-@@ -688,7 +688,7 @@ static int sev_launch_measure(struct kvm
- 		if (params.len > SEV_FW_BLOB_MAX_SIZE)
- 			return -EINVAL;
+--- a/mm/zsmalloc.c
++++ b/mm/zsmalloc.c
+@@ -1718,11 +1718,40 @@ static enum fullness_group putback_zspag
+  */
+ static void lock_zspage(struct zspage *zspage)
+ {
+-	struct page *page = get_first_page(zspage);
++	struct page *curr_page, *page;
  
--		blob = kmalloc(params.len, GFP_KERNEL_ACCOUNT);
-+		blob = kzalloc(params.len, GFP_KERNEL_ACCOUNT);
- 		if (!blob)
- 			return -ENOMEM;
+-	do {
+-		lock_page(page);
+-	} while ((page = get_next_page(page)) != NULL);
++	/*
++	 * Pages we haven't locked yet can be migrated off the list while we're
++	 * trying to lock them, so we need to be careful and only attempt to
++	 * lock each page under migrate_read_lock(). Otherwise, the page we lock
++	 * may no longer belong to the zspage. This means that we may wait for
++	 * the wrong page to unlock, so we must take a reference to the page
++	 * prior to waiting for it to unlock outside migrate_read_lock().
++	 */
++	while (1) {
++		migrate_read_lock(zspage);
++		page = get_first_page(zspage);
++		if (trylock_page(page))
++			break;
++		get_page(page);
++		migrate_read_unlock(zspage);
++		wait_on_page_locked(page);
++		put_page(page);
++	}
++
++	curr_page = page;
++	while ((page = get_next_page(curr_page))) {
++		if (trylock_page(page)) {
++			curr_page = page;
++		} else {
++			get_page(page);
++			migrate_read_unlock(zspage);
++			wait_on_page_locked(page);
++			put_page(page);
++			migrate_read_lock(zspage);
++		}
++	}
++	migrate_read_unlock(zspage);
+ }
  
-@@ -808,7 +808,7 @@ static int __sev_dbg_decrypt_user(struct
- 	if (!IS_ALIGNED(dst_paddr, 16) ||
- 	    !IS_ALIGNED(paddr,     16) ||
- 	    !IS_ALIGNED(size,      16)) {
--		tpage = (void *)alloc_page(GFP_KERNEL);
-+		tpage = (void *)alloc_page(GFP_KERNEL | __GFP_ZERO);
- 		if (!tpage)
- 			return -ENOMEM;
- 
-@@ -1094,7 +1094,7 @@ static int sev_get_attestation_report(st
- 		if (params.len > SEV_FW_BLOB_MAX_SIZE)
- 			return -EINVAL;
- 
--		blob = kmalloc(params.len, GFP_KERNEL_ACCOUNT);
-+		blob = kzalloc(params.len, GFP_KERNEL_ACCOUNT);
- 		if (!blob)
- 			return -ENOMEM;
- 
-@@ -1176,7 +1176,7 @@ static int sev_send_start(struct kvm *kv
- 		return -EINVAL;
- 
- 	/* allocate the memory to hold the session data blob */
--	session_data = kmalloc(params.session_len, GFP_KERNEL_ACCOUNT);
-+	session_data = kzalloc(params.session_len, GFP_KERNEL_ACCOUNT);
- 	if (!session_data)
- 		return -ENOMEM;
- 
-@@ -1300,11 +1300,11 @@ static int sev_send_update_data(struct k
- 
- 	/* allocate memory for header and transport buffer */
- 	ret = -ENOMEM;
--	hdr = kmalloc(params.hdr_len, GFP_KERNEL_ACCOUNT);
-+	hdr = kzalloc(params.hdr_len, GFP_KERNEL_ACCOUNT);
- 	if (!hdr)
- 		goto e_unpin;
- 
--	trans_data = kmalloc(params.trans_len, GFP_KERNEL_ACCOUNT);
-+	trans_data = kzalloc(params.trans_len, GFP_KERNEL_ACCOUNT);
- 	if (!trans_data)
- 		goto e_free_hdr;
- 
+ static int zs_init_fs_context(struct fs_context *fc)
 
 
