@@ -2,94 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9F5BCCA47C
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 15:42:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CD02C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 15:42:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245606AbiFCPmM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 11:42:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42098 "EHLO
+        id S245626AbiFCPm0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 11:42:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242335AbiFCPmK (ORCPT
+        with ESMTP id S245625AbiFCPmX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 11:42:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B49B46241;
-        Fri,  3 Jun 2022 08:42:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 50225618CD;
-        Fri,  3 Jun 2022 15:42:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90173C385A9;
-        Fri,  3 Jun 2022 15:42:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654270927;
-        bh=uFt38kXWvTTdnaN2oP0GGgGo2/Cw36q2/icUr1V3lKo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=dJ+Ti4C0KVap4cUeztpqDfBH+7Guhimexya1pTrneKuxTIlHilQHmaPbkvFb7wSue
-         otbJhlmUQPqTomW8uWpzhMwboZF1BOTWsW5MGujz9/ZwSu2GQ26gOnS1Cgky/0jABZ
-         xASzRfrKhXQd1E6X8Zx8BIeC80YEebgsCG340vKSBB+Buc+uWnInKgZ8WEvPzC3rt8
-         zPFcwGo5ok9R9Nt9O/ixe04M0U2TTtVsm+bX0HCV0rQWDVqCHwcBp927s+wWlhR44M
-         r0udqBAhpk+Fnsj0ATYQLl8DlFjvurZvEkzJTDZVlv38mHQ5xXyRvHsbO1dS/hpC5N
-         hqA6yFTDHvtjw==
-Date:   Fri, 3 Jun 2022 16:51:06 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
-Cc:     lars@metafoo.de, mchehab+huawei@kernel.org, ardeleanalex@gmail.com,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        robh+dt@kernel.org, mike.looijmans@topic.nl,
-        devicetree@vger.kernel.org, thomas.haemmerle@leica-geosystems.com
-Subject: Re: [PATCH V5 0/6] iio: accel: bmi088: support BMI085 BMI090L
-Message-ID: <20220603165106.78f13761@jic23-huawei>
-In-Reply-To: <20220526133359.2261928-1-Qing-wu.Li@leica-geosystems.com.cn>
-References: <20220526133359.2261928-1-Qing-wu.Li@leica-geosystems.com.cn>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Fri, 3 Jun 2022 11:42:23 -0400
+Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 779769FD9
+        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 08:42:19 -0700 (PDT)
+Received: (qmail 304861 invoked by uid 1000); 3 Jun 2022 11:42:19 -0400
+Date:   Fri, 3 Jun 2022 11:42:19 -0400
+From:   Alan Stern <stern@rowland.harvard.edu>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     syzbot <syzbot+dd3c97de244683533381@syzkaller.appspotmail.com>,
+        gregkh@linuxfoundation.org, hdanton@sina.com, lenb@kernel.org,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        rafael.j.wysocki@intel.com, rafael@kernel.org, rjw@rjwysocki.net,
+        syzkaller-bugs@googlegroups.com, linux-usb@vger.kernel.org
+Subject: Re: [syzbot] general protection fault in __device_attach
+Message-ID: <Ypor265BTdnmgwpM@rowland.harvard.edu>
+References: <000000000000bb7f1c05da29b601@google.com>
+ <00000000000010b7d305e08837c8@google.com>
+ <YpnqpMYcokTwCB6u@smile.fi.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YpnqpMYcokTwCB6u@smile.fi.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 26 May 2022 13:33:53 +0000
-LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn> wrote:
-
-> Modified the units after application of scale from 100*m/s^2 to m/s^2,
-> since the units in the ABI documents are m/s^2.
-> Add supports for the BMI085 accelerometer.
-> Add supports for the BMI090L accelerometer.
-> Make it possible to config scales.
+On Fri, Jun 03, 2022 at 02:04:04PM +0300, Andy Shevchenko wrote:
+> On Fri, Jun 03, 2022 at 03:02:07AM -0700, syzbot wrote:
+> > syzbot has bisected this issue to:
+> > 
+> > commit a9c4cf299f5f79d5016c8a9646fa1fc49381a8c1
+> > Author: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > Date:   Fri Jun 18 13:41:27 2021 +0000
+> > 
+> >     ACPI: sysfs: Use __ATTR_RO() and __ATTR_RW() macros
 > 
-> Change in v5: 
-> - Fix the issue of 'undeclared function FIELD_GET'
->   Reported-by: kernel test robot <lkp@intel.com>
-
-I've applied this series to the togreg branch of iio.git and pushed
-out as testing.
-
-Note I can rebase that tree still (and will do anyway to move to
-rc1 or so once available) so we can resolve that question of
-whether Datasheet is a tag or not in parallel with letting 0-day
-see if it can find anything else we missed.
-
-Thanks,
-
-Jonathan
-
+> Hmm... It's not obvious at all how this change can alter the behaviour so
+> drastically. device_add() is called from USB core with intf->dev.name == NULL
+> by some reason. A-ha, seems like fault injector, which looks like
 > 
+> 	dev_set_name(&intf->dev, "%d-%s:%d.%d", dev->bus->busnum,
+> 		     dev->devpath, configuration, ifnum);
 > 
-> LI Qingwu (6):
->   iio: accel: bmi088: Modified the scale calculate
->   iio: accel: bmi088: Make it possible to config scales
->   iio: accel: bmi088: modified the device name
->   iio: accel: bmi088: Add support for bmi085 accel
->   iio: accel: bmi088: Add support for bmi090l accel
->   dt-bindings: iio: accel: Add bmi085 and bmi090l bindings
+> missed the return code check.
 > 
->  .../bindings/iio/accel/bosch,bmi088.yaml      |  2 +
->  drivers/iio/accel/bmi088-accel-core.c         | 97 +++++++++++++++----
->  drivers/iio/accel/bmi088-accel-spi.c          | 17 +++-
->  drivers/iio/accel/bmi088-accel.h              |  9 +-
->  4 files changed, 101 insertions(+), 24 deletions(-)
-> 
+> But I'm not familiar with that code at all, adding Linux USB ML and Alan.
 
+I can't see any connection between this bug and acpi/sysfs.c.  Is it a 
+bad bisection?
+
+It looks like you're right about dev_set_name() failing.  In fact, the 
+kernel appears to be littered with calls to that routine which do not 
+check the return code (the entire subtree below drivers/usb/ contains 
+only _one_ call that does check the return code!).  The function doesn't 
+have any __must_check annotation, and its kerneldoc doesn't mention the 
+return code or the possibility of a failure.
+
+Apparently the assumption is that if dev_set_name() fails then 
+device_add() later on will also fail, and the problem will be detected 
+then.
+
+So now what should happen when device_add() for an interface fails in 
+usb_set_configuration()?  I guess the interface should be deleted; 
+otherwise we have the possibility that people might still try to access 
+it via usbfs, as in the syzbot test run.  Same goes for the 
+of_device_is_available() check.
+
+Fixing that will be a little painful.  Right now there are plenty of 
+places in the USB core that aren't prepared to cope with a non-existent 
+interface.
+
+Alan Stern
