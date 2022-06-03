@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71C68CCA495
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCAAFCCA499
 	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 00:54:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241843AbiFCAv1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 20:51:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47944 "EHLO
+        id S242219AbiFCAwf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 20:52:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240117AbiFCAoy (ORCPT
+        with ESMTP id S239724AbiFCApZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 20:44:54 -0400
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14BCC34642
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:44:39 -0700 (PDT)
-Received: by mail-pg1-x549.google.com with SMTP id f9-20020a636a09000000b003c61848e622so3067583pgc.0
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:44:39 -0700 (PDT)
+        Thu, 2 Jun 2022 20:45:25 -0400
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E273A33887
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:45:23 -0700 (PDT)
+Received: by mail-pl1-x64a.google.com with SMTP id y4-20020a17090322c400b001637287812bso3476441plg.6
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:45:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=/TXk1YTRDqd6XE4qU0TsZKT5BH5jUZR26Th7i6gBUIY=;
-        b=nWGJfYnheUtAx43bAsTy5YZCtvTlmYUdB49GpmRkYkIE4oCZU7/JBgM7GwVYfSMQbL
-         oxW/hH/d9dCYLAX/DQs7ZwrzUCdjNydUNxZel/YXexmmbDkPSLLTo265VgRgAc9DRfgR
-         otW2Rzm44uhNv4P2tBSsd18ZQcmDCIqD5xWD4xJO06kRnc6ttsYzD3UClrPksYqQLLd3
-         d4c6hJzA9XSewlv3Vm1N7VTTeFkyr9O6A7OT1qNMzX1GXI7uemTa0/lhEdsRx+ASOPKC
-         BCpaBd2eBhH+uz3uAoRUrKvNIev3Rh8Tbclsh7wdabUvLZDGFrW9UGms82ZLAWbSqURz
-         rahQ==
+        bh=O7b+a25lx0Dbw99w/vnZbZi9/Zb3kUTB3wWOPwdGJDs=;
+        b=NHOEiCUsn4p0ioi9Q7YZkrH/GQwQ8jBWkp136Qdw1qi18fUHfVBKdgc4asAKll1ioW
+         ytmoZEXEmBGv+GLyGl9wMKeokb30OnU3WOEaLwQyYdLE/yT3pi83d60NeR/MtQKK26qW
+         hXVMysMXqjKMGqScEeaY1R4vXeQKngHDcbUuhF/2fy5Aeu1ulSzDeEL6QAoRBtwq6QER
+         8E/lOtEFVnkLFviVwnWg0ecbG9OPmzmNk9Kzyq4bHKNZlWzBQic+zrC8UAYadBTXzK6+
+         YAdwA6J0w4GMH3rdHgNaoCyTIXa2N5JLw4fg6q6SnGN8mlAZ4m2HHdkBwSQRZpe3pMlF
+         ZKbg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=/TXk1YTRDqd6XE4qU0TsZKT5BH5jUZR26Th7i6gBUIY=;
-        b=Ucv6WfkNUAiKRb8zcFrlWizYsY3/tFLLqhTBncxUJRCH7SI6AxVAZ5yO7oQcIovQRv
-         SxoJpkRozqB1srRJ/UVx7aa0Q/vDri267RqTDLi8cEoyasLbxPz+bVcygG0tOfxWMr4f
-         OS8g6oUDUmN/we367I34jsSseobmSsZWj7OP1tB+Z3olc0uqAIh3Bel/q7htjTvmESRm
-         8rNPm8j4oglrkKOswqMuIhz033UMXGfDT8zpcabzAcC/W/UHA+xRgv5JWEhuoBF2P4RU
-         D5KM9uRJ4Nue7dxb+cSeRq8VlJYpCRRqFnUGC3vPmfoGI49Rb8gGeuMwLVbOq4t8Xlp6
-         EU2A==
-X-Gm-Message-State: AOAM531TChJz2fQwyeJop7wEq/StPv01KQ3h/xq9F4panNASGfaBPYRp
-        sINZGKLvP8vAv+qqdenK1DQDuEVbMHo=
-X-Google-Smtp-Source: ABdhPJx9Saru2iwqOGwzfMvOAQnA0xm+CesrE+6/QMr3FB0oyyBsHP7NGKTdaETxUiMOL1ir4EPYFz4ChWU=
+        bh=O7b+a25lx0Dbw99w/vnZbZi9/Zb3kUTB3wWOPwdGJDs=;
+        b=SGnLmqJUx3KP2f1q2eqpXcwfMwSH5kxHGGETOTDaA/eQztxEDM5pX5IqQ7ExlFq7Mb
+         c/C42EZR7l6Kg2FfZ3XuBf3enO2GMHLGKCyHfHjJFLMD39jl0gf/HgvX+gP0KSXlBAov
+         5tCn2mmFNh428iNBKHzaHodiJWD8OEaGAe5PlCSq48TjKoH2oHrP92Nss0LcWftuzdKI
+         LxOJErm9ckOB4U79lfv37R7Ff+I6T1jFUf5Y5Qyp0BmbJtO3aLu6cKSJSOJOCjDH9yXi
+         4cG8L4EWZvrpSCoTJxHr3yc8bHnxVFdWs16DStThPsOnHGuvSNYjh6ne1LoADkTMsZBA
+         wRgQ==
+X-Gm-Message-State: AOAM533myYGCPiw3fmS17Z+JJqzeyxvPA6AFFoHct5cbcNI5eS/AJI8j
+        QbIaptxSkRZX8Emq5WFwULaQOAuAFLA=
+X-Google-Smtp-Source: ABdhPJx/UdgkafMBhagNizkk91xi3dNlem8ME6TVAJYYFreebQzjj74/4KkoADX+c8XPRbHLjs3dwGXM4b8=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:903:2488:b0:163:b2c0:7efe with SMTP id
- p8-20020a170903248800b00163b2c07efemr7454231plw.164.1654217078523; Thu, 02
- Jun 2022 17:44:38 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a05:6a00:10cc:b0:506:e0:d6c3 with SMTP id
+ d12-20020a056a0010cc00b0050600e0d6c3mr7810323pfu.33.1654217123385; Thu, 02
+ Jun 2022 17:45:23 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri,  3 Jun 2022 00:41:41 +0000
+Date:   Fri,  3 Jun 2022 00:42:05 +0000
 In-Reply-To: <20220603004331.1523888-1-seanjc@google.com>
-Message-Id: <20220603004331.1523888-35-seanjc@google.com>
+Message-Id: <20220603004331.1523888-59-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220603004331.1523888-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v2 034/144] KVM: selftests: Dedup MSR index list helpers,
- simplify dedicated test
+Subject: [PATCH v2 058/144] KVM: selftests: Convert pmu_event_filter_test away
+ from VCPU_ID
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     kvm@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
@@ -67,231 +67,212 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Consolidate the helper for retrieving the list of save/restore MSRs and
-the list of feature MSRs, and use the common helpers in the related
-get_msr_index_features test.  Switching to the common helpers eliminates
-the testcase that KVM returns the same -E2BIG result if the input number
-of MSRs is '1' versus '0', but considered that testcase isn't very
-interesting, e.g. '0' and '1' are equally arbitrary, and certainly not
-worth the additional code.
+Convert pmu_event_filter_test to use vm_create_with_one_vcpu() and pass
+around a 'struct kvm_vcpu' object instead of using a global VCPU_ID.
+Rename run_vm_to_sync() to run_vcpu_to_sync() accordingly.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../selftests/kvm/include/x86_64/processor.h  |   1 +
- .../selftests/kvm/lib/x86_64/processor.c      |  39 ++++--
- .../kvm/x86_64/get_msr_index_features.c       | 112 +++---------------
- 3 files changed, 46 insertions(+), 106 deletions(-)
+ .../kvm/x86_64/pmu_event_filter_test.c        | 69 ++++++++++---------
+ 1 file changed, 36 insertions(+), 33 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/include/x86_64/processor.h b/tools/testing/selftests/kvm/include/x86_64/processor.h
-index afc55f561a2c..e4268432cfe8 100644
---- a/tools/testing/selftests/kvm/include/x86_64/processor.h
-+++ b/tools/testing/selftests/kvm/include/x86_64/processor.h
-@@ -428,6 +428,7 @@ void vcpu_load_state(struct kvm_vm *vm, uint32_t vcpuid,
- void kvm_x86_state_cleanup(struct kvm_x86_state *state);
+diff --git a/tools/testing/selftests/kvm/x86_64/pmu_event_filter_test.c b/tools/testing/selftests/kvm/x86_64/pmu_event_filter_test.c
+index 640b1a1ab3df..96455ec6ea48 100644
+--- a/tools/testing/selftests/kvm/x86_64/pmu_event_filter_test.c
++++ b/tools/testing/selftests/kvm/x86_64/pmu_event_filter_test.c
+@@ -49,7 +49,6 @@ union cpuid10_ebx {
+ /* Oddly, this isn't in perf_event.h. */
+ #define ARCH_PERFMON_BRANCHES_RETIRED		5
  
- const struct kvm_msr_list *kvm_get_msr_index_list(void);
-+const struct kvm_msr_list *kvm_get_feature_msr_index_list(void);
- bool kvm_msr_is_in_save_restore_list(uint32_t msr_index);
- uint64_t kvm_get_feature_msr(uint64_t msr_index);
+-#define VCPU_ID 0
+ #define NUM_BRANCHES 42
  
-diff --git a/tools/testing/selftests/kvm/lib/x86_64/processor.c b/tools/testing/selftests/kvm/lib/x86_64/processor.c
-index 5d161d0b8a0c..a6c35f269013 100644
---- a/tools/testing/selftests/kvm/lib/x86_64/processor.c
-+++ b/tools/testing/selftests/kvm/lib/x86_64/processor.c
-@@ -892,19 +892,20 @@ void vcpu_dump(FILE *stream, struct kvm_vm *vm, uint32_t vcpuid, uint8_t indent)
- 	sregs_dump(stream, &sregs, indent + 4);
+ /*
+@@ -173,17 +172,17 @@ static void amd_guest_code(void)
+  * Run the VM to the next GUEST_SYNC(value), and return the value passed
+  * to the sync. Any other exit from the guest is fatal.
+  */
+-static uint64_t run_vm_to_sync(struct kvm_vm *vm)
++static uint64_t run_vcpu_to_sync(struct kvm_vcpu *vcpu)
+ {
+-	struct kvm_run *run = vcpu_state(vm, VCPU_ID);
++	struct kvm_run *run = vcpu->run;
+ 	struct ucall uc;
+ 
+-	vcpu_run(vm, VCPU_ID);
++	vcpu_run(vcpu->vm, vcpu->id);
+ 	TEST_ASSERT(run->exit_reason == KVM_EXIT_IO,
+ 		    "Exit_reason other than KVM_EXIT_IO: %u (%s)\n",
+ 		    run->exit_reason,
+ 		    exit_reason_str(run->exit_reason));
+-	get_ucall(vm, VCPU_ID, &uc);
++	get_ucall(vcpu->vm, vcpu->id, &uc);
+ 	TEST_ASSERT(uc.cmd == UCALL_SYNC,
+ 		    "Received ucall other than UCALL_SYNC: %lu", uc.cmd);
+ 	return uc.args[1];
+@@ -197,13 +196,13 @@ static uint64_t run_vm_to_sync(struct kvm_vm *vm)
+  * a sanity check and then GUEST_SYNC(success). In the case of failure,
+  * the behavior of the guest on resumption is undefined.
+  */
+-static bool sanity_check_pmu(struct kvm_vm *vm)
++static bool sanity_check_pmu(struct kvm_vcpu *vcpu)
+ {
+ 	bool success;
+ 
+-	vm_install_exception_handler(vm, GP_VECTOR, guest_gp_handler);
+-	success = run_vm_to_sync(vm);
+-	vm_install_exception_handler(vm, GP_VECTOR, NULL);
++	vm_install_exception_handler(vcpu->vm, GP_VECTOR, guest_gp_handler);
++	success = run_vcpu_to_sync(vcpu);
++	vm_install_exception_handler(vcpu->vm, GP_VECTOR, NULL);
+ 
+ 	return success;
+ }
+@@ -254,9 +253,9 @@ static struct kvm_pmu_event_filter *remove_event(struct kvm_pmu_event_filter *f,
+ 	return f;
  }
  
--const struct kvm_msr_list *kvm_get_msr_index_list(void)
-+static struct kvm_msr_list *__kvm_get_msr_index_list(bool feature_msrs)
+-static void test_without_filter(struct kvm_vm *vm)
++static void test_without_filter(struct kvm_vcpu *vcpu)
  {
--	static struct kvm_msr_list *list;
-+	struct kvm_msr_list *list;
- 	struct kvm_msr_list nmsrs;
- 	int kvm_fd, r;
+-	uint64_t count = run_vm_to_sync(vm);
++	uint64_t count = run_vcpu_to_sync(vcpu);
  
--	if (list)
--		return list;
--
- 	kvm_fd = open_kvm_dev_path_or_exit();
- 
- 	nmsrs.nmsrs = 0;
--	r = __kvm_ioctl(kvm_fd, KVM_GET_MSR_INDEX_LIST, &nmsrs);
-+	if (!feature_msrs)
-+		r = __kvm_ioctl(kvm_fd, KVM_GET_MSR_INDEX_LIST, &nmsrs);
-+	else
-+		r = __kvm_ioctl(kvm_fd, KVM_GET_MSR_FEATURE_INDEX_LIST, &nmsrs);
-+
- 	TEST_ASSERT(r == -1 && errno == E2BIG,
- 		    "Expected -E2BIG, got rc: %i errno: %i (%s)",
- 		    r, errno, strerror(errno));
-@@ -913,15 +914,37 @@ const struct kvm_msr_list *kvm_get_msr_index_list(void)
- 	TEST_ASSERT(list, "-ENOMEM when allocating MSR index list");
- 	list->nmsrs = nmsrs.nmsrs;
- 
--	kvm_ioctl(kvm_fd, KVM_GET_MSR_INDEX_LIST, list);
-+	if (!feature_msrs)
-+		kvm_ioctl(kvm_fd, KVM_GET_MSR_INDEX_LIST, list);
-+	else
-+		kvm_ioctl(kvm_fd, KVM_GET_MSR_FEATURE_INDEX_LIST, list);
- 	close(kvm_fd);
- 
- 	TEST_ASSERT(list->nmsrs == nmsrs.nmsrs,
--		    "Number of save/restore MSRs changed, was %d, now %d",
-+		    "Number of MSRs in list changed, was %d, now %d",
- 		    nmsrs.nmsrs, list->nmsrs);
- 	return list;
+ 	if (count != NUM_BRANCHES)
+ 		pr_info("%s: Branch instructions retired = %lu (expected %u)\n",
+@@ -264,17 +263,17 @@ static void test_without_filter(struct kvm_vm *vm)
+ 	TEST_ASSERT(count, "Allowed PMU event is not counting");
  }
  
-+const struct kvm_msr_list *kvm_get_msr_index_list(void)
-+{
-+	static const struct kvm_msr_list *list;
-+
-+	if (!list)
-+		list = __kvm_get_msr_index_list(false);
-+	return list;
-+}
-+
-+
-+const struct kvm_msr_list *kvm_get_feature_msr_index_list(void)
-+{
-+	static const struct kvm_msr_list *list;
-+
-+	if (!list)
-+		list = __kvm_get_msr_index_list(true);
-+	return list;
-+}
-+
- bool kvm_msr_is_in_save_restore_list(uint32_t msr_index)
+-static uint64_t test_with_filter(struct kvm_vm *vm,
++static uint64_t test_with_filter(struct kvm_vcpu *vcpu,
+ 				 struct kvm_pmu_event_filter *f)
  {
- 	const struct kvm_msr_list *list = kvm_get_msr_index_list();
-diff --git a/tools/testing/selftests/kvm/x86_64/get_msr_index_features.c b/tools/testing/selftests/kvm/x86_64/get_msr_index_features.c
-index 4ef60adbe108..1e366fdfe7be 100644
---- a/tools/testing/selftests/kvm/x86_64/get_msr_index_features.c
-+++ b/tools/testing/selftests/kvm/x86_64/get_msr_index_features.c
-@@ -15,108 +15,24 @@
- #include "kvm_util.h"
- #include "processor.h"
+-	vm_ioctl(vm, KVM_SET_PMU_EVENT_FILTER, (void *)f);
+-	return run_vm_to_sync(vm);
++	vm_ioctl(vcpu->vm, KVM_SET_PMU_EVENT_FILTER, (void *)f);
++	return run_vcpu_to_sync(vcpu);
+ }
  
--static int kvm_num_index_msrs(int kvm_fd, int nmsrs)
-+int main(int argc, char *argv[])
+-static void test_member_deny_list(struct kvm_vm *vm)
++static void test_member_deny_list(struct kvm_vcpu *vcpu)
  {
--	struct kvm_msr_list *list;
--	int r;
--
--	list = malloc(sizeof(*list) + nmsrs * sizeof(list->indices[0]));
--	list->nmsrs = nmsrs;
--	r = ioctl(kvm_fd, KVM_GET_MSR_INDEX_LIST, list);
--	TEST_ASSERT(r == -1 && errno == E2BIG,
--				"Unexpected result from KVM_GET_MSR_INDEX_LIST probe, r: %i",
--				r);
--
--	r = list->nmsrs;
--	free(list);
--	return r;
--}
--
--static void test_get_msr_index(void)
--{
--	int old_res, res, kvm_fd;
--	struct kvm_msr_list *list;
--
--	kvm_fd = open_kvm_dev_path_or_exit();
--
--	old_res = kvm_num_index_msrs(kvm_fd, 0);
--	TEST_ASSERT(old_res != 0, "Expecting nmsrs to be > 0");
--
--	if (old_res != 1) {
--		res = kvm_num_index_msrs(kvm_fd, 1);
--		TEST_ASSERT(res > 1, "Expecting nmsrs to be > 1");
--		TEST_ASSERT(res == old_res, "Expecting nmsrs to be identical");
--	}
--
--	list = malloc(sizeof(*list) + old_res * sizeof(list->indices[0]));
--	list->nmsrs = old_res;
--	kvm_ioctl(kvm_fd, KVM_GET_MSR_INDEX_LIST, list);
--
--	TEST_ASSERT(list->nmsrs == old_res, "Expecting nmsrs to be identical");
--	free(list);
--
--	close(kvm_fd);
--}
--
--static int kvm_num_feature_msrs(int kvm_fd, int nmsrs)
--{
--	struct kvm_msr_list *list;
--	int r;
--
--	list = malloc(sizeof(*list) + nmsrs * sizeof(list->indices[0]));
--	list->nmsrs = nmsrs;
--	r = __kvm_ioctl(kvm_fd, KVM_GET_MSR_FEATURE_INDEX_LIST, list);
--	TEST_ASSERT(r == -1 && errno == E2BIG,
--		"Unexpected result from KVM_GET_MSR_FEATURE_INDEX_LIST probe, r: %i",
--				r);
--
--	r = list->nmsrs;
--	free(list);
--	return r;
--}
--
--struct kvm_msr_list *kvm_get_msr_feature_list(int kvm_fd, int nmsrs)
--{
--	struct kvm_msr_list *list;
--
--	list = malloc(sizeof(*list) + nmsrs * sizeof(list->indices[0]));
--	list->nmsrs = nmsrs;
--	kvm_ioctl(kvm_fd, KVM_GET_MSR_FEATURE_INDEX_LIST, list);
--
--	return list;
--}
--
--static void test_get_msr_feature(void)
--{
--	int res, old_res, i, kvm_fd;
--	struct kvm_msr_list *feature_list;
--
--	kvm_fd = open_kvm_dev_path_or_exit();
--
--	old_res = kvm_num_feature_msrs(kvm_fd, 0);
--	TEST_ASSERT(old_res != 0, "Expecting nmsrs to be > 0");
--
--	if (old_res != 1) {
--		res = kvm_num_feature_msrs(kvm_fd, 1);
--		TEST_ASSERT(res > 1, "Expecting nmsrs to be > 1");
--		TEST_ASSERT(res == old_res, "Expecting nmsrs to be identical");
-+	const struct kvm_msr_list *feature_list;
-+	int i;
+ 	struct kvm_pmu_event_filter *f = event_filter(KVM_PMU_EVENT_DENY);
+-	uint64_t count = test_with_filter(vm, f);
++	uint64_t count = test_with_filter(vcpu, f);
+ 
+ 	free(f);
+ 	if (count)
+@@ -283,10 +282,10 @@ static void test_member_deny_list(struct kvm_vm *vm)
+ 	TEST_ASSERT(!count, "Disallowed PMU Event is counting");
+ }
+ 
+-static void test_member_allow_list(struct kvm_vm *vm)
++static void test_member_allow_list(struct kvm_vcpu *vcpu)
+ {
+ 	struct kvm_pmu_event_filter *f = event_filter(KVM_PMU_EVENT_ALLOW);
+-	uint64_t count = test_with_filter(vm, f);
++	uint64_t count = test_with_filter(vcpu, f);
+ 
+ 	free(f);
+ 	if (count != NUM_BRANCHES)
+@@ -295,14 +294,14 @@ static void test_member_allow_list(struct kvm_vm *vm)
+ 	TEST_ASSERT(count, "Allowed PMU event is not counting");
+ }
+ 
+-static void test_not_member_deny_list(struct kvm_vm *vm)
++static void test_not_member_deny_list(struct kvm_vcpu *vcpu)
+ {
+ 	struct kvm_pmu_event_filter *f = event_filter(KVM_PMU_EVENT_DENY);
+ 	uint64_t count;
+ 
+ 	remove_event(f, INTEL_BR_RETIRED);
+ 	remove_event(f, AMD_ZEN_BR_RETIRED);
+-	count = test_with_filter(vm, f);
++	count = test_with_filter(vcpu, f);
+ 	free(f);
+ 	if (count != NUM_BRANCHES)
+ 		pr_info("%s: Branch instructions retired = %lu (expected %u)\n",
+@@ -310,14 +309,14 @@ static void test_not_member_deny_list(struct kvm_vm *vm)
+ 	TEST_ASSERT(count, "Allowed PMU event is not counting");
+ }
+ 
+-static void test_not_member_allow_list(struct kvm_vm *vm)
++static void test_not_member_allow_list(struct kvm_vcpu *vcpu)
+ {
+ 	struct kvm_pmu_event_filter *f = event_filter(KVM_PMU_EVENT_ALLOW);
+ 	uint64_t count;
+ 
+ 	remove_event(f, INTEL_BR_RETIRED);
+ 	remove_event(f, AMD_ZEN_BR_RETIRED);
+-	count = test_with_filter(vm, f);
++	count = test_with_filter(vcpu, f);
+ 	free(f);
+ 	if (count)
+ 		pr_info("%s: Branch instructions retired = %lu (expected 0)\n",
+@@ -332,6 +331,7 @@ static void test_not_member_allow_list(struct kvm_vm *vm)
+  */
+ static void test_pmu_config_disable(void (*guest_code)(void))
+ {
++	struct kvm_vcpu *vcpu;
+ 	int r;
+ 	struct kvm_vm *vm;
+ 
+@@ -343,11 +343,13 @@ static void test_pmu_config_disable(void (*guest_code)(void))
+ 
+ 	vm_enable_cap(vm, KVM_CAP_PMU_CAPABILITY, KVM_PMU_CAP_DISABLE);
+ 
+-	vm_vcpu_add_default(vm, VCPU_ID, guest_code);
++	vm_vcpu_add_default(vm, 0, guest_code);
+ 	vm_init_descriptor_tables(vm);
+-	vcpu_init_descriptor_tables(vm, VCPU_ID);
+ 
+-	TEST_ASSERT(!sanity_check_pmu(vm),
++	vcpu = vcpu_get(vm, 0);
++	vcpu_init_descriptor_tables(vm, vcpu->id);
 +
-+	/*
-+	 * Skip the entire test if MSR_FEATURES isn't supported, other tests
-+	 * will cover the "regular" list of MSRs, the coverage here is purely
-+	 * opportunistic and not interesting on its own.
-+	 */
-+	if (!kvm_check_cap(KVM_CAP_GET_MSR_FEATURES)) {
-+		print_skip("KVM_CAP_GET_MSR_FEATURES not supported");
-+		exit(KSFT_SKIP);
++	TEST_ASSERT(!sanity_check_pmu(vcpu),
+ 		    "Guest should not be able to use disabled PMU.");
+ 
+ 	kvm_vm_free(vm);
+@@ -418,6 +420,7 @@ static bool use_amd_pmu(void)
+ int main(int argc, char *argv[])
+ {
+ 	void (*guest_code)(void) = NULL;
++	struct kvm_vcpu *vcpu;
+ 	struct kvm_vm *vm;
+ 	int r;
+ 
+@@ -440,21 +443,21 @@ int main(int argc, char *argv[])
+ 		exit(KSFT_SKIP);
  	}
  
--	feature_list = kvm_get_msr_feature_list(kvm_fd, old_res);
--	TEST_ASSERT(old_res == feature_list->nmsrs,
--				"Unmatching number of msr indexes");
-+	(void)kvm_get_msr_index_list();
+-	vm = vm_create_default(VCPU_ID, 0, guest_code);
++	vm = vm_create_with_one_vcpu(&vcpu, guest_code);
  
-+	feature_list = kvm_get_feature_msr_index_list();
- 	for (i = 0; i < feature_list->nmsrs; i++)
- 		kvm_get_feature_msr(feature_list->indices[i]);
--
--	free(feature_list);
--	close(kvm_fd);
--}
--
--int main(int argc, char *argv[])
--{
--	if (kvm_check_cap(KVM_CAP_GET_MSR_FEATURES))
--		test_get_msr_feature();
--
--	test_get_msr_index();
- }
+ 	vm_init_descriptor_tables(vm);
+-	vcpu_init_descriptor_tables(vm, VCPU_ID);
++	vcpu_init_descriptor_tables(vm, vcpu->id);
+ 
+-	if (!sanity_check_pmu(vm)) {
++	if (!sanity_check_pmu(vcpu)) {
+ 		print_skip("Guest PMU is not functional");
+ 		exit(KSFT_SKIP);
+ 	}
+ 
+-	test_without_filter(vm);
+-	test_member_deny_list(vm);
+-	test_member_allow_list(vm);
+-	test_not_member_deny_list(vm);
+-	test_not_member_allow_list(vm);
++	test_without_filter(vcpu);
++	test_member_deny_list(vcpu);
++	test_member_allow_list(vcpu);
++	test_not_member_deny_list(vcpu);
++	test_not_member_allow_list(vcpu);
+ 
+ 	kvm_vm_free(vm);
+ 
 -- 
 2.36.1.255.ge46751e96f-goog
 
