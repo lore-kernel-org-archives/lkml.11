@@ -2,126 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23D58C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 19:53:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EEF4CCA473
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 19:54:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346474AbiFCTxJ (ORCPT
+        id S1347382AbiFCTyp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 15:53:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44430 "EHLO
+        Fri, 3 Jun 2022 15:54:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346038AbiFCTxH (ORCPT
+        with ESMTP id S240471AbiFCTyk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 15:53:07 -0400
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BF461AD86
-        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 12:53:05 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id c5-20020a1c3505000000b0038e37907b5bso6896375wma.0
-        for <linux-kernel@vger.kernel.org>; Fri, 03 Jun 2022 12:53:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=75r9OCRaKxDbstDb8Q6rmHNx4VG7/Ol3FIsxmmQpCKE=;
-        b=OFS10OD5jepWzQUQgDwqO+/YoB6ZmGdD0wKjnuqRWMntCfyc/zl6FJU7+8IfeQ28pE
-         xXfqBHZknnzrk9L1ttKK0MWceb5jWsOOQGLBa0wl39d8rGlcGwBUk2ZanvmgXNAtJyZr
-         60Sf9V22ufhliS6cH9dvm+s6oX7B+irq5RWBwlaMWJ4Xko5YT9bz2OEzwuwSJ7i+fw0Z
-         HR7HtVHJFw3Nj/n/X/vSCH6u1nQYW0Y81pb2f61wqTFPRYwQMCGNLv7vUeDBbRKT3Ig5
-         +QjBWVhxJyQFtQQtDtDUdoy97HliJNHK5A1yPoWyiD/mzBH/EmKmZkHNRagT44RS6jjS
-         ZZEw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=75r9OCRaKxDbstDb8Q6rmHNx4VG7/Ol3FIsxmmQpCKE=;
-        b=v3uc/8kzypeg3marMVh+cmB7Tm/mFNfQSVX05NvPZRO0lbgmheOg1e4TCCy2RWZgqJ
-         V1c/Llw34/yB0Ng99WLIiLerrxlywnFBigu8Qazjsn28B3/ywq5ox/jC++bpYyNL+W+l
-         97UBEt0IO3QX26hnDnl/wxfu8TvhBfU/zMbxtmbVs34RsbA/qQiuQR0Dwg8URTmdMj3M
-         Xp16Nf2mk0fu1yYSfKqSlyMWmEuBa1i0TjVKyXGOkgY6bOYiWppV2c9zE24DJpUqROr8
-         gbtpFT2IEIB9VjknhCa0J14t+KspfdcbYZbpGB6mN7DAjC4f6XnlbY57a0kq/xYcTTGZ
-         kwfQ==
-X-Gm-Message-State: AOAM531DzHPEZJyaWAUv6E12SJA/YoScN/HNfQixvVNHdrVZgtX9fakV
-        GT0GN+YMk8s4VxFI5IXn3GYXaldIOQFyaDl8BBjvMA==
-X-Google-Smtp-Source: ABdhPJwuIVg8jNRLLKtimZoxTZU6/bvcyWF6n4woePM0h8xaQiqgd73SV9wNp6ELv1Q5jfaQTtZvszkc2RZLgXb8uqY=
-X-Received: by 2002:a05:600c:3788:b0:39c:3a20:a50e with SMTP id
- o8-20020a05600c378800b0039c3a20a50emr6019549wmr.196.1654285983632; Fri, 03
- Jun 2022 12:53:03 -0700 (PDT)
+        Fri, 3 Jun 2022 15:54:40 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A53801D30E;
+        Fri,  3 Jun 2022 12:54:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654286077; x=1685822077;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=CaFO/iXD7sRcghcUSPnu+r4c0rV8FNtB7V9ExAVELc0=;
+  b=i1GCS2U2FXVhcjTOdvYv/CuebLdMmb2/uhBePB9vILb8VMZYEA/f/Rrv
+   IKVmkSOLkXlu3JO+q8aiVGKDQ4t3bTCLLRVF0PupokI2s3UA+Z8Qp8LZy
+   OSYiXDleCIstuWkoSr8Y3vS4iQVZ1ImMFa1guiS19V6pe0bZZuqkEYwv6
+   L14HoDPgNl/GsyljwVQgPb9Qr1pqPG1cmCNISwA6oaqYFUNePpijrS+Uw
+   McOVdIpgyYEfDtVyxsxAq1ZPaAJSlZK6WAoeOSw95wQ7E8zQvgg9L0u9W
+   S1wYNZsnra33fqXsVmxMMP0eeFdMte69UFWknTQaI7i3pxG+KWGdlJUJP
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10367"; a="258416711"
+X-IronPort-AV: E=Sophos;i="5.91,275,1647327600"; 
+   d="scan'208";a="258416711"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2022 12:54:37 -0700
+X-IronPort-AV: E=Sophos;i="5.91,275,1647327600"; 
+   d="scan'208";a="563953452"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2022 12:54:36 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nxDNR-000SlB-9z;
+        Fri, 03 Jun 2022 22:54:33 +0300
+Date:   Fri, 3 Jun 2022 22:54:33 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH v1 1/1] xarray: Replace kernel.h with the necessary
+ inclusions
+Message-ID: <Yppm+dpvOGjy7nlf@smile.fi.intel.com>
+References: <20220603171153.48928-1-andriy.shevchenko@linux.intel.com>
+ <YppCIr4qM3lVYi8N@casper.infradead.org>
 MIME-Version: 1.0
-References: <20220520012133.1217211-1-yosryahmed@google.com>
- <20220520012133.1217211-6-yosryahmed@google.com> <20220603162339.GA25043@blackbody.suse.cz>
-In-Reply-To: <20220603162339.GA25043@blackbody.suse.cz>
-From:   Yosry Ahmed <yosryahmed@google.com>
-Date:   Fri, 3 Jun 2022 12:52:27 -0700
-Message-ID: <CAJD7tkYwU5dW9Oof+pC81R9Bi-F=-EuiXpTn+HDeqbhTOTCcuw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v1 5/5] bpf: add a selftest for cgroup
- hierarchical stats collection
-To:     =?UTF-8?Q?Michal_Koutn=C3=BD?= <mkoutny@suse.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Michal Hocko <mhocko@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Greg Thelen <gthelen@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Cgroups <cgroups@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YppCIr4qM3lVYi8N@casper.infradead.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thanks for taking a look at this!
+On Fri, Jun 03, 2022 at 06:17:22PM +0100, Matthew Wilcox wrote:
+> On Fri, Jun 03, 2022 at 08:11:53PM +0300, Andy Shevchenko wrote:
+> > When kernel.h is used in the headers it adds a lot into dependency hell,
+> > especially when there are circular dependencies are involved.
+> > 
+> > Replace kernel.h inclusion with the list of what is really being used.
+> 
+> Thanks.  Can you fix the test suite too?
+> 
+> (cd tools/testing/radix-tree; make)
 
-On Fri, Jun 3, 2022 at 9:23 AM Michal Koutn=C3=BD <mkoutny@suse.com> wrote:
->
-> On Fri, May 20, 2022 at 01:21:33AM +0000, Yosry Ahmed <yosryahmed@google.=
-com> wrote:
-> > +#define CGROUP_PATH(p, n) {.name =3D #n, .path =3D #p"/"#n}
-> > +
-> > +static struct {
-> > +     const char *name, *path;
->
-> Please unify the order of path and name with the macro (slightly
-> confusing ;-).
+Works for me. Anything special I should try?
 
-Totally agree, will do.
 
->
-> > +SEC("tp_btf/mm_vmscan_memcg_reclaim_end")
-> > +int BPF_PROG(vmscan_end, struct lruvec *lruvec, struct scan_control *s=
-c)
-> > +{
-> > [...]
-> > +     struct cgroup *cgrp =3D task_memcg(current);
-> > [...]
-> > +     /* cgrp may not have memory controller enabled */
-> > +     if (!cgrp)
-> > +             return 0;
->
-> Yes, the controller may not be enabled (for a cgroup).
-> Just noting that the task_memcg() implementation will fall back to
-> root_mem_cgroup in such a case (or nearest ancestor), you may want to
-> use cgroup_ss_mask() for proper detection.
+-- 
+With Best Regards,
+Andy Shevchenko
 
-Good catch. I get confused between cgrp->subsys and
-task->cgroups->subsys sometimes because of different fallback
-behavior. IIUC cgrp->subsys should have NULL if the memory controller
-is not enabled (no nearest ancestor fallback), and hence I can use
-memory_subsys_enabled() that I defined just above task_memcg() to test
-for this (I have no idea why I am not already using it here). Is my
-understanding correct?
 
->
-> Regards,
-> Michal
