@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1189C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:11:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DFF7CCA473
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:11:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347472AbiFCSK5 (ORCPT
+        id S1347657AbiFCSLF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:10:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50484 "EHLO
+        Fri, 3 Jun 2022 14:11:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346000AbiFCR5m (ORCPT
+        with ESMTP id S1345967AbiFCR6H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:57:42 -0400
+        Fri, 3 Jun 2022 13:58:07 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B850222A9;
-        Fri,  3 Jun 2022 10:54:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6292326124;
+        Fri,  3 Jun 2022 10:54:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AD310612EC;
-        Fri,  3 Jun 2022 17:54:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB2B0C36AE5;
-        Fri,  3 Jun 2022 17:54:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F362B615CE;
+        Fri,  3 Jun 2022 17:54:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAEC7C385A9;
+        Fri,  3 Jun 2022 17:54:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278865;
-        bh=8Zu7MjpXWW9lQAoYnVgd0XW5X1hTwM+Sak8w4dzHC0g=;
+        s=korg; t=1654278877;
+        bh=LQ4GAiIPoecpW2UvZsPu+mR5D6ND/oIWgjWyJt1PfTM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oX9A5t3WYH7nY1NVVd6snG7eFg3jY4o7NvJBA9tCLaMUNWcKbisfGpYArKW6StkL3
-         oQhyw0+doG8bJ47vOhB7eKceqed5jdtNiI5jKBK86lDS89EVemiVCugDgRYbtuWKtC
-         jp6Ydcz7niCmlwbogA9FYmCnA+1Gam4Go5ifVXn8=
+        b=OAwx/ZaEeS1NorZF9eJs90ewYOsg/dWziRMUCuLMMJf4CMOHI+yRNCD0GbC1PJqyz
+         TUpUzxtPgibUnW60stNwPB+1DNMTxbGTeEZr0j/wrlU1YbJIFZU2iV73UgsB/zgwoe
+         XyDACsqKOV3wYXIrI6RVReBenr9wpxNbBNA54F/0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Mike Snitzer <snitzer@kernel.org>
-Subject: [PATCH 5.17 51/75] dm stats: add cond_resched when looping over entries
-Date:   Fri,  3 Jun 2022 19:43:35 +0200
-Message-Id: <20220603173823.191843068@linuxfoundation.org>
+        stable@vger.kernel.org, Marek Maslanka <mm@semihalf.com>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Jiri Kosina <jkosina@suse.cz>
+Subject: [PATCH 5.17 55/75] HID: multitouch: Add support for Google Whiskers Touchpad
+Date:   Fri,  3 Jun 2022 19:43:39 +0200
+Message-Id: <20220603173823.301141156@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173821.749019262@linuxfoundation.org>
 References: <20220603173821.749019262@linuxfoundation.org>
@@ -49,80 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Marek Maślanka <mm@semihalf.com>
 
-commit bfe2b0146c4d0230b68f5c71a64380ff8d361f8b upstream.
+commit 1d07cef7fd7599450b3d03e1915efc2a96e1f03f upstream.
 
-dm-stats can be used with a very large number of entries (it is only
-limited by 1/4 of total system memory), so add rescheduling points to
-the loops that iterate over the entries.
+The Google Whiskers touchpad does not work properly with the default
+multitouch configuration. Instead, use the same configuration as Google
+Rose.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Mike Snitzer <snitzer@kernel.org>
+Signed-off-by: Marek Maslanka <mm@semihalf.com>
+Acked-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/dm-stats.c |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/hid/hid-multitouch.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/md/dm-stats.c
-+++ b/drivers/md/dm-stats.c
-@@ -225,6 +225,7 @@ void dm_stats_cleanup(struct dm_stats *s
- 				       atomic_read(&shared->in_flight[READ]),
- 				       atomic_read(&shared->in_flight[WRITE]));
- 			}
-+			cond_resched();
- 		}
- 		dm_stat_free(&s->rcu_head);
- 	}
-@@ -330,6 +331,7 @@ static int dm_stats_create(struct dm_sta
- 	for (ni = 0; ni < n_entries; ni++) {
- 		atomic_set(&s->stat_shared[ni].in_flight[READ], 0);
- 		atomic_set(&s->stat_shared[ni].in_flight[WRITE], 0);
-+		cond_resched();
- 	}
+--- a/drivers/hid/hid-multitouch.c
++++ b/drivers/hid/hid-multitouch.c
+@@ -2178,6 +2178,9 @@ static const struct hid_device_id mt_dev
+ 	{ .driver_data = MT_CLS_GOOGLE,
+ 		HID_DEVICE(HID_BUS_ANY, HID_GROUP_ANY, USB_VENDOR_ID_GOOGLE,
+ 			USB_DEVICE_ID_GOOGLE_TOUCH_ROSE) },
++	{ .driver_data = MT_CLS_GOOGLE,
++		HID_DEVICE(BUS_USB, HID_GROUP_MULTITOUCH_WIN_8, USB_VENDOR_ID_GOOGLE,
++			USB_DEVICE_ID_GOOGLE_WHISKERS) },
  
- 	if (s->n_histogram_entries) {
-@@ -342,6 +344,7 @@ static int dm_stats_create(struct dm_sta
- 		for (ni = 0; ni < n_entries; ni++) {
- 			s->stat_shared[ni].tmp.histogram = hi;
- 			hi += s->n_histogram_entries + 1;
-+			cond_resched();
- 		}
- 	}
- 
-@@ -362,6 +365,7 @@ static int dm_stats_create(struct dm_sta
- 			for (ni = 0; ni < n_entries; ni++) {
- 				p[ni].histogram = hi;
- 				hi += s->n_histogram_entries + 1;
-+				cond_resched();
- 			}
- 		}
- 	}
-@@ -497,6 +501,7 @@ static int dm_stats_list(struct dm_stats
- 			}
- 			DMEMIT("\n");
- 		}
-+		cond_resched();
- 	}
- 	mutex_unlock(&stats->mutex);
- 
-@@ -774,6 +779,7 @@ static void __dm_stat_clear(struct dm_st
- 				local_irq_enable();
- 			}
- 		}
-+		cond_resched();
- 	}
- }
- 
-@@ -889,6 +895,8 @@ static int dm_stats_print(struct dm_stat
- 
- 		if (unlikely(sz + 1 >= maxlen))
- 			goto buffer_overflow;
-+
-+		cond_resched();
- 	}
- 
- 	if (clear)
+ 	/* Generic MT device */
+ 	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_MULTITOUCH, HID_ANY_ID, HID_ANY_ID) },
 
 
