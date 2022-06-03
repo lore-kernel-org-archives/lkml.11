@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A11B7C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:02:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21C1AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:02:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245160AbiFCSCj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:02:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58232 "EHLO
+        id S1346294AbiFCSCo (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 14:02:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347257AbiFCRwK (ORCPT
+        with ESMTP id S1347262AbiFCRwK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 3 Jun 2022 13:52:10 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C19F3B1FB;
-        Fri,  3 Jun 2022 10:51:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AF16E3F;
+        Fri,  3 Jun 2022 10:51:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 849C3B823B0;
-        Fri,  3 Jun 2022 17:51:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E36A1C385A9;
-        Fri,  3 Jun 2022 17:51:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3F326B82189;
+        Fri,  3 Jun 2022 17:51:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91C88C385A9;
+        Fri,  3 Jun 2022 17:51:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278694;
-        bh=szD02mP4YgUH+qF/S0nQ5Cv3/j6NNflP7nUmREGze1E=;
+        s=korg; t=1654278704;
+        bh=r/EVGuixxhLyn4hbt87fKDBBAPp8TGSvK5WszfHhZ5Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sJMuBc6U1U39ozEuEkFlIAtZNSTNAApYouot8GoKzMNRIy7hJHuFt/ekQn05Kvb/T
-         ZVefy2TZqRAtY6yusR6o8AlhhsjW0FKgvkREkcV47oDxq5ukjLYvdm6hj+uo/duGVy
-         bRFJkoYL6HIPrVRqNnirFPl1IuDNmYCoJHFlSNkE=
+        b=itooazSEeiYbbUDMiRc5f0WingTZUOTxIfSuk8nCAwVDF3QFz6nALfi6+pGbopemd
+         nsu+1rddJhplQwvmtLA8qPYQ3OR6qJREV/83xXrxeDCY/GC8weZzyln6UBfFjf21Aa
+         MK0Wuf+G6pqmt9/oCj7Ekiwxr8YTEc4KaEvwth0A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liu Jian <liujian56@huawei.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Song Liu <songliubraving@fb.com>
-Subject: [PATCH 5.15 63/66] bpf: Enlarge offset check value to INT_MAX in bpf_skb_{load,store}_bytes
-Date:   Fri,  3 Jun 2022 19:43:43 +0200
-Message-Id: <20220603173822.476005225@linuxfoundation.org>
+        stable@vger.kernel.org, Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Subject: [PATCH 5.15 65/66] bpf: Reject writes for PTR_TO_MAP_KEY in check_helper_mem_access
+Date:   Fri,  3 Jun 2022 19:43:45 +0200
+Message-Id: <20220603173822.532138272@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.663747061@linuxfoundation.org>
 References: <20220603173820.663747061@linuxfoundation.org>
@@ -49,44 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liu Jian <liujian56@huawei.com>
+From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 
-commit 45969b4152c1752089351cd6836a42a566d49bcf upstream.
+commit 7b3552d3f9f6897851fc453b5131a967167e43c2 upstream.
 
-The data length of skb frags + frag_list may be greater than 0xffff, and
-skb_header_pointer can not handle negative offset. So, here INT_MAX is used
-to check the validity of offset. Add the same change to the related function
-skb_store_bytes.
+It is not permitted to write to PTR_TO_MAP_KEY, but the current code in
+check_helper_mem_access would allow for it, reject this case as well, as
+helpers taking ARG_PTR_TO_UNINIT_MEM also take PTR_TO_MAP_KEY.
 
-Fixes: 05c74e5e53f6 ("bpf: add bpf_skb_load_bytes helper")
-Signed-off-by: Liu Jian <liujian56@huawei.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Song Liu <songliubraving@fb.com>
-Link: https://lore.kernel.org/bpf/20220416105801.88708-2-liujian56@huawei.com
+Fixes: 69c087ba6225 ("bpf: Add bpf_for_each_map_elem() helper")
+Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Link: https://lore.kernel.org/r/20220319080827.73251-4-memxor@gmail.com
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/core/filter.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ kernel/bpf/verifier.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -1688,7 +1688,7 @@ BPF_CALL_5(bpf_skb_store_bytes, struct s
- 
- 	if (unlikely(flags & ~(BPF_F_RECOMPUTE_CSUM | BPF_F_INVALIDATE_HASH)))
- 		return -EINVAL;
--	if (unlikely(offset > 0xffff))
-+	if (unlikely(offset > INT_MAX))
- 		return -EFAULT;
- 	if (unlikely(bpf_try_make_writable(skb, offset + len)))
- 		return -EFAULT;
-@@ -1723,7 +1723,7 @@ BPF_CALL_4(bpf_skb_load_bytes, const str
- {
- 	void *ptr;
- 
--	if (unlikely(offset > 0xffff))
-+	if (unlikely(offset > INT_MAX))
- 		goto err_clear;
- 
- 	ptr = skb_header_pointer(skb, offset, len, to);
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -4587,6 +4587,11 @@ static int check_helper_mem_access(struc
+ 		return check_packet_access(env, regno, reg->off, access_size,
+ 					   zero_size_allowed);
+ 	case PTR_TO_MAP_KEY:
++		if (meta && meta->raw_mode) {
++			verbose(env, "R%d cannot write into %s\n", regno,
++				reg_type_str(env, reg->type));
++			return -EACCES;
++		}
+ 		return check_mem_region_access(env, regno, reg->off, access_size,
+ 					       reg->map_ptr->key_size, false);
+ 	case PTR_TO_MAP_VALUE:
 
 
