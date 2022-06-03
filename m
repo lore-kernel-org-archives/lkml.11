@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DEFBCCA48A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEB8FCCA48B
 	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:00:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346570AbiFCSAZ (ORCPT
+        id S1347137AbiFCSA4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:00:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58038 "EHLO
+        Fri, 3 Jun 2022 14:00:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347163AbiFCRwE (ORCPT
+        with ESMTP id S1347232AbiFCRwI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:52:04 -0400
+        Fri, 3 Jun 2022 13:52:08 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC9C3580CC;
-        Fri,  3 Jun 2022 10:50:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A74DF25FA;
+        Fri,  3 Jun 2022 10:50:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 48D3460EE9;
-        Fri,  3 Jun 2022 17:50:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59AD4C385A9;
-        Fri,  3 Jun 2022 17:50:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4406C60EE9;
+        Fri,  3 Jun 2022 17:50:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F9B4C385A9;
+        Fri,  3 Jun 2022 17:50:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278608;
-        bh=g5yfTco7inUmJg9Rw/AeKnYQZPpNl5xGBDN2emXMj14=;
+        s=korg; t=1654278655;
+        bh=jRGYaec2MuAtdgELoc6FWEItHG4GgkCI+meBt12+l9A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2dVKdtEUMsopahMf0vRrldFiRl1Ctyax9Iz7EE7fMjaZFpJEf1edPGM4mR+BCTQzw
-         FgNk+QwgKPnBdUgJWEGxWp/MAzk8eYzc49vhyK1e9UUP1HF5m+Eaifdd9+mXordwkd
-         1AnHrlyhcrNRnKM+GuJdyWbbH7uZ0WrjlJpZyZd4=
+        b=huf/d0mrMZjmxejAXFrzwsdzw9KCrRDMF3P8EHgOUxUWRWMXSN29r8vm0jzRzGNFr
+         inCUyQqK5MbaFE8lZf6QlQoZSAu0wSUjfsJjk2zPMt+J2pln/2U8R5UDPtBwdzpAmg
+         Bp4x94ldttO95iy4BjWGiULYon0xztoW8mxFMfQA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andy Nguyen <theflow@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Peter Gonda <pgonda@google.com>, kvm@vger.kernel.org,
-        Ashish Kalra <ashish.kalra@amd.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.15 33/66] KVM: SVM: Use kzalloc for sev ioctl interfaces to prevent kernel data leak
-Date:   Fri,  3 Jun 2022 19:43:13 +0200
-Message-Id: <20220603173821.609177091@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Haitao Huang <haitao.huang@intel.com>
+Subject: [PATCH 5.15 51/66] x86/sgx: Mark PCMD page as dirty when modifying contents
+Date:   Fri,  3 Jun 2022 19:43:31 +0200
+Message-Id: <20220603173822.139892667@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.663747061@linuxfoundation.org>
 References: <20220603173820.663747061@linuxfoundation.org>
@@ -52,88 +52,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ashish Kalra <ashish.kalra@amd.com>
+From: Reinette Chatre <reinette.chatre@intel.com>
 
-commit d22d2474e3953996f03528b84b7f52cc26a39403 upstream.
+commit 2154e1c11b7080aa19f47160bd26b6f39bbd7824 upstream.
 
-For some sev ioctl interfaces, the length parameter that is passed maybe
-less than or equal to SEV_FW_BLOB_MAX_SIZE, but larger than the data
-that PSP firmware returns. In this case, kmalloc will allocate memory
-that is the size of the input rather than the size of the data.
-Since PSP firmware doesn't fully overwrite the allocated buffer, these
-sev ioctl interface may return uninitialized kernel slab memory.
+Recent commit 08999b2489b4 ("x86/sgx: Free backing memory
+after faulting the enclave page") expanded __sgx_encl_eldu()
+to clear an enclave page's PCMD (Paging Crypto MetaData)
+from the PCMD page in the backing store after the enclave
+page is restored to the enclave.
 
-Reported-by: Andy Nguyen <theflow@google.com>
-Suggested-by: David Rientjes <rientjes@google.com>
-Suggested-by: Peter Gonda <pgonda@google.com>
-Cc: kvm@vger.kernel.org
+Since the PCMD page in the backing store is modified the page
+should be marked as dirty to ensure the modified data is retained.
+
 Cc: stable@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Fixes: eaf78265a4ab3 ("KVM: SVM: Move SEV code to separate file")
-Fixes: 2c07ded06427d ("KVM: SVM: add support for SEV attestation command")
-Fixes: 4cfdd47d6d95a ("KVM: SVM: Add KVM_SEV SEND_START command")
-Fixes: d3d1af85e2c75 ("KVM: SVM: Add KVM_SEND_UPDATE_DATA command")
-Fixes: eba04b20e4861 ("KVM: x86: Account a variety of miscellaneous allocations")
-Signed-off-by: Ashish Kalra <ashish.kalra@amd.com>
-Reviewed-by: Peter Gonda <pgonda@google.com>
-Message-Id: <20220516154310.3685678-1-Ashish.Kalra@amd.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Fixes: 08999b2489b4 ("x86/sgx: Free backing memory after faulting the enclave page")
+Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
+Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+Tested-by: Haitao Huang <haitao.huang@intel.com>
+Link: https://lkml.kernel.org/r/00cd2ac480db01058d112e347b32599c1a806bc4.1652389823.git.reinette.chatre@intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/svm/sev.c |   12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ arch/x86/kernel/cpu/sgx/encl.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/arch/x86/kvm/svm/sev.c
-+++ b/arch/x86/kvm/svm/sev.c
-@@ -676,7 +676,7 @@ static int sev_launch_measure(struct kvm
- 		if (params.len > SEV_FW_BLOB_MAX_SIZE)
- 			return -EINVAL;
+--- a/arch/x86/kernel/cpu/sgx/encl.c
++++ b/arch/x86/kernel/cpu/sgx/encl.c
+@@ -84,6 +84,7 @@ static int __sgx_encl_eldu(struct sgx_en
+ 	}
  
--		blob = kmalloc(params.len, GFP_KERNEL_ACCOUNT);
-+		blob = kzalloc(params.len, GFP_KERNEL_ACCOUNT);
- 		if (!blob)
- 			return -ENOMEM;
+ 	memset(pcmd_page + b.pcmd_offset, 0, sizeof(struct sgx_pcmd));
++	set_page_dirty(b.pcmd);
  
-@@ -796,7 +796,7 @@ static int __sev_dbg_decrypt_user(struct
- 	if (!IS_ALIGNED(dst_paddr, 16) ||
- 	    !IS_ALIGNED(paddr,     16) ||
- 	    !IS_ALIGNED(size,      16)) {
--		tpage = (void *)alloc_page(GFP_KERNEL);
-+		tpage = (void *)alloc_page(GFP_KERNEL | __GFP_ZERO);
- 		if (!tpage)
- 			return -ENOMEM;
- 
-@@ -1082,7 +1082,7 @@ static int sev_get_attestation_report(st
- 		if (params.len > SEV_FW_BLOB_MAX_SIZE)
- 			return -EINVAL;
- 
--		blob = kmalloc(params.len, GFP_KERNEL_ACCOUNT);
-+		blob = kzalloc(params.len, GFP_KERNEL_ACCOUNT);
- 		if (!blob)
- 			return -ENOMEM;
- 
-@@ -1164,7 +1164,7 @@ static int sev_send_start(struct kvm *kv
- 		return -EINVAL;
- 
- 	/* allocate the memory to hold the session data blob */
--	session_data = kmalloc(params.session_len, GFP_KERNEL_ACCOUNT);
-+	session_data = kzalloc(params.session_len, GFP_KERNEL_ACCOUNT);
- 	if (!session_data)
- 		return -ENOMEM;
- 
-@@ -1288,11 +1288,11 @@ static int sev_send_update_data(struct k
- 
- 	/* allocate memory for header and transport buffer */
- 	ret = -ENOMEM;
--	hdr = kmalloc(params.hdr_len, GFP_KERNEL_ACCOUNT);
-+	hdr = kzalloc(params.hdr_len, GFP_KERNEL_ACCOUNT);
- 	if (!hdr)
- 		goto e_unpin;
- 
--	trans_data = kmalloc(params.trans_len, GFP_KERNEL_ACCOUNT);
-+	trans_data = kzalloc(params.trans_len, GFP_KERNEL_ACCOUNT);
- 	if (!trans_data)
- 		goto e_free_hdr;
- 
+ 	/*
+ 	 * The area for the PCMD in the page was zeroed above.  Check if the
 
 
