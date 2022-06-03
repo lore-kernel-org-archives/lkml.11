@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5647CCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C76ACCA473
 	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:16:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348550AbiFCSQr (ORCPT
+        id S1348396AbiFCSQi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:16:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40996 "EHLO
+        Fri, 3 Jun 2022 14:16:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346880AbiFCSF3 (ORCPT
+        with ESMTP id S1346729AbiFCSFH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 14:05:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DA5D5A17B;
-        Fri,  3 Jun 2022 10:58:17 -0700 (PDT)
+        Fri, 3 Jun 2022 14:05:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4352122B2C;
+        Fri,  3 Jun 2022 10:58:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 136A1B82433;
-        Fri,  3 Jun 2022 17:57:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73379C385A9;
-        Fri,  3 Jun 2022 17:57:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 83F12615E3;
+        Fri,  3 Jun 2022 17:57:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75AF5C385B8;
+        Fri,  3 Jun 2022 17:57:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654279039;
-        bh=GKoL9+gfFzoAe2lfmV6JssBgfwtDzDbaPLiAC/jmV64=;
+        s=korg; t=1654279048;
+        bh=k8dwY4UsBqEZIeUNq0npNOB1aRN/HTu4O5GznizTuIE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gcwTQmEpBRCOmMJxa+664THpcdA8DF1rjdZQUKmRgCvsLgvdpjTvxZ0OGn8jdiSCL
-         nxu10jtphQlGsJF7DtDjT2lDFa6ElC4lCbz0UWziDJpOtg9vMUsiK0j0J6HOHhmGAc
-         FtF8ryvMBPoirCkoMYIYCJ0OTLJSVtptZZrm7KBk=
+        b=RXNmc5cVJZwLxupz1V1v7oLjo3Zcjc8ZhVFD90F27bedTjopSsZvOb2+vU0bjXItM
+         KeiodrPY4Qu06JR4UAxi7pee6rcw+jfQy9+/iLgBIjq8ST16kcV1VIAK+MBdgoL6iO
+         kTT3kzGgIZRds5tepgEgq7yGsTt9pSHEgbuU+J3I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sultan Alsawaf <sultan@kerneltoast.com>,
-        Minchan Kim <minchan@kernel.org>,
-        Nitin Gupta <ngupta@vflare.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.18 32/67] zsmalloc: fix races between asynchronous zspage free and page migration
-Date:   Fri,  3 Jun 2022 19:43:33 +0200
-Message-Id: <20220603173821.646368850@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Andr=C3=A9=20Kapelrud?= <a.kapelrud@gmail.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.18 35/67] ALSA: usb-audio: Add missing ep_idx in fixed EP quirks
+Date:   Fri,  3 Jun 2022 19:43:36 +0200
+Message-Id: <20220603173821.742858262@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.731531504@linuxfoundation.org>
 References: <20220603173820.731531504@linuxfoundation.org>
@@ -52,86 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sultan Alsawaf <sultan@kerneltoast.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-commit 2505a981114dcb715f8977b8433f7540854851d8 upstream.
+commit 7b0efea4baf02f5e2f89e5f9b75ef891571b45f1 upstream.
 
-The asynchronous zspage free worker tries to lock a zspage's entire page
-list without defending against page migration.  Since pages which haven't
-yet been locked can concurrently migrate off the zspage page list while
-lock_zspage() churns away, lock_zspage() can suffer from a few different
-lethal races.
+The quirk entry for Focusrite Saffire 6 had no proper ep_idx for the
+capture endpoint, and this confused the driver, resulting in the
+broken sound.  This patch adds the missing ep_idx in the entry.
 
-It can lock a page which no longer belongs to the zspage and unsafely
-dereference page_private(), it can unsafely dereference a torn pointer to
-the next page (since there's a data race), and it can observe a spurious
-NULL pointer to the next page and thus not lock all of the zspage's pages
-(since a single page migration will reconstruct the entire page list, and
-create_page_chain() unconditionally zeroes out each list pointer in the
-process).
+While we are at it, a couple of other entries (for Digidesign MBox and
+MOTU MicroBook II) seem to have the same problem, and those are
+covered as well.
 
-Fix the races by using migrate_read_lock() in lock_zspage() to synchronize
-with page migration.
-
-Link: https://lkml.kernel.org/r/20220509024703.243847-1-sultan@kerneltoast.com
-Fixes: 77ff465799c602 ("zsmalloc: zs_page_migrate: skip unnecessary loops but not return -EBUSY if zspage is not inuse")
-Signed-off-by: Sultan Alsawaf <sultan@kerneltoast.com>
-Acked-by: Minchan Kim <minchan@kernel.org>
-Cc: Nitin Gupta <ngupta@vflare.org>
-Cc: Sergey Senozhatsky <senozhatsky@chromium.org>
+Fixes: bf6313a0ff76 ("ALSA: usb-audio: Refactor endpoint management")
+Reported-by: André Kapelrud <a.kapelrud@gmail.com>
 Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Link: https://lore.kernel.org/r/20220521065325.426-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/zsmalloc.c |   37 +++++++++++++++++++++++++++++++++----
- 1 file changed, 33 insertions(+), 4 deletions(-)
+ sound/usb/quirks-table.h |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/mm/zsmalloc.c
-+++ b/mm/zsmalloc.c
-@@ -1718,11 +1718,40 @@ static enum fullness_group putback_zspag
-  */
- static void lock_zspage(struct zspage *zspage)
- {
--	struct page *page = get_first_page(zspage);
-+	struct page *curr_page, *page;
- 
--	do {
--		lock_page(page);
--	} while ((page = get_next_page(page)) != NULL);
-+	/*
-+	 * Pages we haven't locked yet can be migrated off the list while we're
-+	 * trying to lock them, so we need to be careful and only attempt to
-+	 * lock each page under migrate_read_lock(). Otherwise, the page we lock
-+	 * may no longer belong to the zspage. This means that we may wait for
-+	 * the wrong page to unlock, so we must take a reference to the page
-+	 * prior to waiting for it to unlock outside migrate_read_lock().
-+	 */
-+	while (1) {
-+		migrate_read_lock(zspage);
-+		page = get_first_page(zspage);
-+		if (trylock_page(page))
-+			break;
-+		get_page(page);
-+		migrate_read_unlock(zspage);
-+		wait_on_page_locked(page);
-+		put_page(page);
-+	}
-+
-+	curr_page = page;
-+	while ((page = get_next_page(curr_page))) {
-+		if (trylock_page(page)) {
-+			curr_page = page;
-+		} else {
-+			get_page(page);
-+			migrate_read_unlock(zspage);
-+			wait_on_page_locked(page);
-+			put_page(page);
-+			migrate_read_lock(zspage);
-+		}
-+	}
-+	migrate_read_unlock(zspage);
- }
- 
- static int zs_init_fs_context(struct fs_context *fc)
+--- a/sound/usb/quirks-table.h
++++ b/sound/usb/quirks-table.h
+@@ -2672,6 +2672,7 @@ YAMAHA_DEVICE(0x7010, "UB99"),
+ 					.altset_idx = 1,
+ 					.attributes = 0,
+ 					.endpoint = 0x82,
++					.ep_idx = 1,
+ 					.ep_attr = USB_ENDPOINT_XFER_ISOC,
+ 					.datainterval = 1,
+ 					.maxpacksize = 0x0126,
+@@ -2875,6 +2876,7 @@ YAMAHA_DEVICE(0x7010, "UB99"),
+ 					.altset_idx = 1,
+ 					.attributes = 0x4,
+ 					.endpoint = 0x81,
++					.ep_idx = 1,
+ 					.ep_attr = USB_ENDPOINT_XFER_ISOC |
+ 						USB_ENDPOINT_SYNC_ASYNC,
+ 					.maxpacksize = 0x130,
+@@ -3391,6 +3393,7 @@ YAMAHA_DEVICE(0x7010, "UB99"),
+ 					.altset_idx = 1,
+ 					.attributes = 0,
+ 					.endpoint = 0x03,
++					.ep_idx = 1,
+ 					.rates = SNDRV_PCM_RATE_96000,
+ 					.ep_attr = USB_ENDPOINT_XFER_ISOC |
+ 						   USB_ENDPOINT_SYNC_ASYNC,
 
 
