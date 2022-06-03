@@ -2,192 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99152C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 15:10:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1782FC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 15:11:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245341AbiFCPK1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 11:10:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56164 "EHLO
+        id S245352AbiFCPLX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 11:11:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230486AbiFCPKZ (ORCPT
+        with ESMTP id S230486AbiFCPLV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 11:10:25 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EDC7393FD
-        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 08:10:25 -0700 (PDT)
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 253Dvmeu039165;
-        Fri, 3 Jun 2022 15:10:01 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=g7jUFWBxlvBEqq1quOiCvFi96EvwCZUtaqf3egOZBgw=;
- b=R8iOlcOVS7fJjcbdzbv19n3ZO6onF0ufsfiUeyDTkVl0BBLBSUMGj3lxrk3RRWOyKsMV
- FoxqD7FcwSGhPtzRPoltucsByWGfozqaYdgBk+2clXwWqyCVOfmfkpJQVPhlh2LJI8CW
- SRbZ+qk9HTHtYkyznoExKJtDt09s80AuFgNEHkMdKmJgPh/gPXi5FDq4lcvM54tPIXy+
- yOwKfIWqXGqlR/abeash4Wgb11w73cEUzFaXlTAcY5AAX5o/k/F+yEP/TUKunULDJBMv
- td+RZ9qk6ZWU+8TpqaunIRk1pzSPCGo0EG0Yeo8RKWnA43j2o/fHDdanazFmPdW12Rvz WQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gfkn69df9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 03 Jun 2022 15:10:00 +0000
-Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 253F8QTZ039849;
-        Fri, 3 Jun 2022 15:10:00 GMT
-Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gfkn69def-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 03 Jun 2022 15:10:00 +0000
-Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
-        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 253F6DCq014972;
-        Fri, 3 Jun 2022 15:09:57 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma03fra.de.ibm.com with ESMTP id 3gbc97xhxj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 03 Jun 2022 15:09:57 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 253F9t8L38207904
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 3 Jun 2022 15:09:55 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 213C242042;
-        Fri,  3 Jun 2022 15:09:55 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A6BA342041;
-        Fri,  3 Jun 2022 15:09:49 +0000 (GMT)
-Received: from [9.43.93.173] (unknown [9.43.93.173])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri,  3 Jun 2022 15:09:49 +0000 (GMT)
-Message-ID: <046c373a-f30b-091d-47a1-e28bfb7e9394@linux.ibm.com>
-Date:   Fri, 3 Jun 2022 20:39:47 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [RFC PATCH v4 7/7] mm/demotion: Demote pages according to
- allocation fallback order
-Content-Language: en-US
-To:     Ying Huang <ying.huang@intel.com>, linux-mm@kvack.org,
-        akpm@linux-foundation.org
-Cc:     Greg Thelen <gthelen@google.com>, Yang Shi <shy828301@gmail.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Tim C Chen <tim.c.chen@intel.com>,
-        Brice Goglin <brice.goglin@gmail.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hesham Almatary <hesham.almatary@huawei.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Jagdish Gediya <jvgediya@linux.ibm.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        David Rientjes <rientjes@google.com>
-References: <CAAPL-u-dFp7PwPH6DfbYdnY8xaGsHz3tRQ0CPGVkiqURvdN8=A@mail.gmail.com>
- <20220527122528.129445-1-aneesh.kumar@linux.ibm.com>
- <20220527122528.129445-8-aneesh.kumar@linux.ibm.com>
- <b102d5773bffd6391283773044f756e810c1f044.camel@intel.com>
-From:   Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>
-In-Reply-To: <b102d5773bffd6391283773044f756e810c1f044.camel@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 8x6etQlFsFBiMkGXOAXlYGd_HIYEx0EX
-X-Proofpoint-GUID: vXFrfR2MtraSKq6ABD5k3wf9zz8ThVPu
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Fri, 3 Jun 2022 11:11:21 -0400
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E833393FD
+        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 08:11:16 -0700 (PDT)
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20220603151111euoutp01e62be51b86be8b4b13987ef91c4cddec~1JPSo_1D42909329093euoutp01e
+        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 15:11:11 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20220603151111euoutp01e62be51b86be8b4b13987ef91c4cddec~1JPSo_1D42909329093euoutp01e
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1654269071;
+        bh=v2T37rlFE2CMfUMl+duH71R/RYEVVTZdUzJd8Rr66Tc=;
+        h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+        b=GY2/yeamdC6ZFH3LHjP6rs56BDHoz5cBuwl7xaBIkWxvBtxs6GpFy+4fnkDTvhyN7
+         NICmcrsaFfO2kKvj20sMl9gCUWwLH6ZiVSRg3gRkwlS3zm3YOv4R4qSEBciofxKgbp
+         8EzSF5WexMYs7moqyq7I1qEGwnm2ACSa2cDxc4OE=
+Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+        20220603151110eucas1p2e503daf8d171b7e73149b01ed6f6a863~1JPSOnn_31666116661eucas1p2S;
+        Fri,  3 Jun 2022 15:11:10 +0000 (GMT)
+Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
+        eusmges3new.samsung.com (EUCPMTA) with SMTP id 76.AE.09580.E842A926; Fri,  3
+        Jun 2022 16:11:10 +0100 (BST)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+        20220603151110eucas1p2b4bd47b123dd88c446e4784b51c775a0~1JPRwXiV-1666116661eucas1p2R;
+        Fri,  3 Jun 2022 15:11:10 +0000 (GMT)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+        eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220603151110eusmtrp135dcfa5d2e20640cad9eef52705832df~1JPRu861_2050820508eusmtrp1R;
+        Fri,  3 Jun 2022 15:11:10 +0000 (GMT)
+X-AuditID: cbfec7f5-9adff7000000256c-62-629a248ed1a1
+Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
+        eusmgms2.samsung.com (EUCPMTA) with SMTP id 39.C7.09038.E842A926; Fri,  3
+        Jun 2022 16:11:10 +0100 (BST)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+        eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+        20220603151109eusmtip1fca24cf6d9e43528f30e443154081c84~1JPRH_Hwf3034830348eusmtip1V;
+        Fri,  3 Jun 2022 15:11:09 +0000 (GMT)
+Message-ID: <b4c3d09b-5d7e-83b0-348e-7f5d367bc96e@samsung.com>
+Date:   Fri, 3 Jun 2022 17:11:10 +0200
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
- definitions=2022-06-03_05,2022-06-03_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
- priorityscore=1501 bulkscore=0 impostorscore=0 phishscore=0 adultscore=0
- clxscore=1015 mlxlogscore=999 lowpriorityscore=0 mlxscore=0 spamscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206030067
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0)
+        Gecko/20100101 Thunderbird/91.9.1
+Subject: Re: [PATCH v4 3/3] squashfs: implement readahead
+Content-Language: en-US
+To:     Hsin-Yi Wang <hsinyi@chromium.org>
+Cc:     Matthew Wilcox <willy@infradead.org>,
+        Phillip Lougher <phillip@squashfs.org.uk>,
+        Xiongwei Song <Xiongwei.Song@windriver.com>,
+        Zheng Liang <zhengliang6@huawei.com>,
+        Zhang Yi <yi.zhang@huawei.com>, Hou Tao <houtao1@huawei.com>,
+        Miao Xie <miaoxie@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "linux-mm @ kvack . org" <linux-mm@kvack.org>,
+        "squashfs-devel @ lists . sourceforge . net" 
+        <squashfs-devel@lists.sourceforge.net>,
+        linux-kernel@vger.kernel.org
+From:   Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <CAJMQK-jDwchHokDZw7k24rGdy7OeUmiVWUCfxBiu1E1dZwuy2Q@mail.gmail.com>
+Content-Transfer-Encoding: 7bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrOKsWRmVeSWpSXmKPExsWy7djP87p9KrOSDL4vN7GYs34Nm8WmQ2/Y
+        LCa0bme2uLxrDpvFvTX/WS06Vt5jtTjas5nN4uqueovfP4Din3a9Z7W49u4Mm8X3B5uZHHg8
+        ZjdcZPFoOfKW1WPzCi2PTZ8msXucmPGbxWP3gs9MHlO+Pmf2+LxJzmP9lq1MAZxRXDYpqTmZ
+        ZalF+nYJXBnrdr9hKXgkUtF1dBpLA+NywS5GTg4JAROJu3O2sXQxcnEICaxglHh5aAEzSEJI
+        4AujRN/OAojEZ0aJ7X0v2WE6dt98yQqRWM4osWnfE3YI5yOjRNOf70wgVbwCdhK/Jl4Bs1kE
+        VCReXtsKFReUODnzCQuILSqQJDF/WysriC0sYCnxYNdysNXMAuISt57MB6sXEVCTmHrpL9h9
+        zAJ3mCXmndkF1swmYCjR9baLDcTmFAiU+A/0OkSzvMT2t3OYQRokBGZzSrzYdowJ4m4XiZ1X
+        1rNC2MISr45vgfpHRuL05B6goRxAdr7E3xnGEOEKiWuv1zBD2NYSd879YgMpYRbQlFi/Sx8i
+        7CixfvlnJohOPokbbwUhLuCTmLRtOjNEmFeio00IolpNYtbxdXA7D164xDyBUWkWUqDMQvL8
+        LCS/zELYu4CRZRWjeGppcW56arFxXmq5XnFibnFpXrpecn7uJkZgWjv97/jXHYwrXn3UO8TI
+        xMF4iFGCg1lJhLds3swkId6UxMqq1KL8+KLSnNTiQ4zSHCxK4rzJmRsShQTSE0tSs1NTC1KL
+        YLJMHJxSDUy9q7msVa5cnat/fWmHekr9QsaXRw7abljwy/hHpaT7TMsf7/fdmSCY0J3n7NBQ
+        orDHrOQq37eWcla+dT8CPYM1py15ypi+06E9V8vgYvvcjuCznY6n1nIsfy6Vs2L+nHma0hcd
+        NI62fU/mPeITa3awp9RUR6p6VZtdmsXMZb92p33sNJtQrh0QefOT9RbBpzV9rgdnLHizPmFl
+        /rS6PrssjuOPVoZIbPW/p3yS/63Rh11OrKduRx+coir3PqD63q6YXccutB4Sm1FxfFmlflfP
+        74dXPn0+N2lRQ97t3ZzitgujXKsCvwVrpy+eznynIkvc98z+0FMb75e2NFow3zS59nRif9qV
+        yS4rNH8zd+1UYinOSDTUYi4qTgQAD58gLNoDAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrLIsWRmVeSWpSXmKPExsVy+t/xu7p9KrOSDHYdFLaYs34Nm8WmQ2/Y
+        LCa0bme2uLxrDpvFvTX/WS06Vt5jtTjas5nN4uqueovfP4Din3a9Z7W49u4Mm8X3B5uZHHg8
+        ZjdcZPFoOfKW1WPzCi2PTZ8msXucmPGbxWP3gs9MHlO+Pmf2+LxJzmP9lq1MAZxRejZF+aUl
+        qQoZ+cUltkrRhhZGeoaWFnpGJpZ6hsbmsVZGpkr6djYpqTmZZalF+nYJehnrdr9hKXgkUtF1
+        dBpLA+NywS5GTg4JAROJ3TdfsnYxcnEICSxllFgy/RQzREJG4uS0BlYIW1jiz7UuNoii94wS
+        b2c0ghXxCthJ/Jp4hQnEZhFQkXh5bSsTRFxQ4uTMJywgtqhAksS8vasZQWxhAUuJB7uWg/Uy
+        C4hL3HoyH6xeREBNYuqlvywgC5gFHjBLfNi3F+qkWcwSH6/uYAOpYhMwlOh62wVmcwoESvwH
+        hgjEJDOJrq1djBC2vMT2t3OYJzAKzUJyyCwkC2chaZmFpGUBI8sqRpHU0uLc9NxiI73ixNzi
+        0rx0veT83E2MwHjeduznlh2MK1991DvEyMTBeIhRgoNZSYS3bN7MJCHelMTKqtSi/Pii0pzU
+        4kOMpsDQmMgsJZqcD0woeSXxhmYGpoYmZpYGppZmxkrivJ4FHYlCAumJJanZqakFqUUwfUwc
+        nFINTPM5vJR5t095+kbp5DXGfc3hzIonmddWnBf3fsoXIX9736Ll81+usj+5a43NxIPWMhzd
+        Ex3vNfg7WM8oPJVnramkc1F15+u1S1QkY1malK8tPyZw7+2VavdV8mXccd9rQnO/hVXsXftw
+        oolNUNoMRb/U9Lcbdws5x/i89GNY1zJ5gd4jZb/q48/yXpYH9b1YrMtpLLxG4aotX+ob01Nn
+        ZDpu/1OS2Gz4euF1swsK/3anqba9WvFWOXdJOatITHPCCfVTjmFbH1UccAno85jzKe8934Iv
+        M4yv2M5ZX3pl++mSA2ydycIztx/KsjSS5GznYfv3i2XnfjY9I6ez/VxzDuvuXzzDQ0JMjlFi
+        /junGCWW4oxEQy3mouJEAFtENKBwAwAA
+X-CMS-MailID: 20220603151110eucas1p2b4bd47b123dd88c446e4784b51c775a0
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20220603125421eucas1p17da286a3e7f2d4759aa4c7639dd62f75
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20220603125421eucas1p17da286a3e7f2d4759aa4c7639dd62f75
+References: <20220601103922.1338320-1-hsinyi@chromium.org>
+        <20220601103922.1338320-4-hsinyi@chromium.org>
+        <CGME20220603125421eucas1p17da286a3e7f2d4759aa4c7639dd62f75@eucas1p1.samsung.com>
+        <c017d992-2746-045b-47c8-c5b9c3025f1a@samsung.com>
+        <YpoFnROxAwdSScuV@casper.infradead.org>
+        <90b228ea-1b0e-d2e8-62be-9ad5802dcce7@samsung.com>
+        <CAJMQK-jDwchHokDZw7k24rGdy7OeUmiVWUCfxBiu1E1dZwuy2Q@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/2/22 1:05 PM, Ying Huang wrote:
-> On Fri, 2022-05-27 at 17:55 +0530, Aneesh Kumar K.V wrote:
->> From: Jagdish Gediya <jvgediya@linux.ibm.com>
+Hi,
+
+On 03.06.2022 16:55, Hsin-Yi Wang wrote:
+> On Fri, Jun 3, 2022 at 10:10 PM Marek Szyprowski
+> <m.szyprowski@samsung.com> wrote:
+>> On 03.06.2022 14:59, Matthew Wilcox wrote:
+>>> On Fri, Jun 03, 2022 at 02:54:21PM +0200, Marek Szyprowski wrote:
+>>>> On 01.06.2022 12:39, Hsin-Yi Wang wrote:
+>>>>> Implement readahead callback for squashfs. It will read datablocks
+>>>>> which cover pages in readahead request. For a few cases it will
+>>>>> not mark page as uptodate, including:
+>>>>> - file end is 0.
+>>>>> - zero filled blocks.
+>>>>> - current batch of pages isn't in the same datablock or not enough in a
+>>>>>      datablock.
+>>>>> - decompressor error.
+>>>>> Otherwise pages will be marked as uptodate. The unhandled pages will be
+>>>>> updated by readpage later.
+>>>>>
+>>>>> Suggested-by: Matthew Wilcox <willy@infradead.org>
+>>>>> Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
+>>>>> Reported-by: Matthew Wilcox <willy@infradead.org>
+>>>>> Reported-by: Phillip Lougher <phillip@squashfs.org.uk>
+>>>>> Reported-by: Xiongwei Song <Xiongwei.Song@windriver.com>
+>>>>> ---
+>>>> This patch landed recently in linux-next as commit 95f7a26191de
+>>>> ("squashfs: implement readahead"). I've noticed that it causes serious
+>>>> issues on my test systems (various ARM 32bit and 64bit based boards).
+>>>> The easiest way to observe is udev timeout 'waiting for /dev to be fully
+>>>> populated' and prolonged booting time. I'm using squashfs for deploying
+>>>> kernel modules via initrd. Reverting aeefca9dfae7 & 95f7a26191deon on
+>>>> top of the next-20220603 fixes the issue.
+>>> How large are these files?  Just a few kilobytes?
+>> Yes, they are small, most of them are smaller than 16KB, some about
+>> 128KB and a few about 256KB. I've sent a detailed list in private mail.
 >>
->> currently, a higher tier node can only be demoted to selected
->> nodes on the next lower tier as defined by the demotion path,
->> not any other node from any lower tier.  This strict, hard-coded
->> demotion order does not work in all use cases (e.g. some use cases
->> may want to allow cross-socket demotion to another node in the same
->> demotion tier as a fallback when the preferred demotion node is out
->> of space). This demotion order is also inconsistent with the page
->> allocation fallback order when all the nodes in a higher tier are
->> out of space: The page allocation can fall back to any node from any
->> lower tier, whereas the demotion order doesn't allow that currently.
->>
->> This patch adds support to get all the allowed demotion targets mask
->> for node, also demote_page_list() function is modified to utilize this
->> allowed node mask by filling it in migration_target_control structure
->> before passing it to migrate_pages().
+> Hi Marek,
 >
+> Are there any obvious squashfs errors in dmesg? Did you enable
+> CONFIG_SQUASHFS_FILE_DIRECT or CONFIG_SQUASHFS_FILE_CACHE?
 
-...
+Here are related config entries from my .config:
 
->>    * Take pages on @demote_list and attempt to demote them to
->>    * another node.  Pages which are not demoted are left on
->> @@ -1481,6 +1464,19 @@ static unsigned int demote_page_list(struct list_head *demote_pages,
->>   {
->>   	int target_nid = next_demotion_node(pgdat->node_id);
->>   	unsigned int nr_succeeded;
->> +	nodemask_t allowed_mask;
->> +
->> +	struct migration_target_control mtc = {
->> +		/*
->> +		 * Allocate from 'node', or fail quickly and quietly.
->> +		 * When this happens, 'page' will likely just be discarded
->> +		 * instead of migrated.
->> +		 */
->> +		.gfp_mask = (GFP_HIGHUSER_MOVABLE & ~__GFP_RECLAIM) | __GFP_NOWARN |
->> +			__GFP_NOMEMALLOC | GFP_NOWAIT,
->> +		.nid = target_nid,
->> +		.nmask = &allowed_mask
->> +	};
-> 
-> IMHO, we should try to allocate from preferred node firstly (which will
-> kick kswapd of the preferred node if necessary).  If failed, we will
-> fallback to all allowed node.
-> 
-> As we discussed as follows,
-> 
-> https://lore.kernel.org/lkml/69f2d063a15f8c4afb4688af7b7890f32af55391.camel@intel.com/
-> 
-> That is, something like below,
-> 
-> static struct page *alloc_demote_page(struct page *page, unsigned long node)
-> {
-> 	struct page *page;
-> 	nodemask_t allowed_mask;
-> 	struct migration_target_control mtc = {
-> 		/*
-> 		 * Allocate from 'node', or fail quickly and quietly.
-> 		 * When this happens, 'page' will likely just be discarded
-> 		 * instead of migrated.
-> 		 */
-> 		.gfp_mask = (GFP_HIGHUSER_MOVABLE & ~__GFP_RECLAIM) |
-> 			    __GFP_THISNODE  | __GFP_NOWARN |
-> 			    __GFP_NOMEMALLOC | GFP_NOWAIT,
-> 		.nid = node
-> 	};
-> 
-> 	page = alloc_migration_target(page, (unsigned long)&mtc);
-> 	if (page)
-> 		return page;
-> 
-> 	mtc.gfp_mask &= ~__GFP_THISNODE;
-> 	mtc.nmask = &allowed_mask;
-> 
-> 	return alloc_migration_target(page, (unsigned long)&mtc);
-> }
+CONFIG_SQUASHFS=y
+CONFIG_SQUASHFS_FILE_CACHE=y
+# CONFIG_SQUASHFS_FILE_DIRECT is not set
+CONFIG_SQUASHFS_DECOMP_SINGLE=y
+# CONFIG_SQUASHFS_DECOMP_MULTI is not set
+# CONFIG_SQUASHFS_DECOMP_MULTI_PERCPU is not set
+# CONFIG_SQUASHFS_XATTR is not set
+CONFIG_SQUASHFS_ZLIB=y
+# CONFIG_SQUASHFS_LZ4 is not set
+CONFIG_SQUASHFS_LZO=y
+CONFIG_SQUASHFS_XZ=y
+# CONFIG_SQUASHFS_ZSTD is not set
+# CONFIG_SQUASHFS_4K_DEVBLK_SIZE is not set
+# CONFIG_SQUASHFS_EMBEDDED is not set
+CONFIG_SQUASHFS_FRAGMENT_CACHE_SIZE=3
 
-I skipped doing this in v5 because I was not sure this is really what we 
-want. I guess we can do this as part of the change that is going to 
-introduce the usage of memory policy for the allocation?
+(I've used standard ARM 32bit multi_v7_defconfig)
 
--aneesh
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
+
