@@ -2,69 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27651C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:50:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A647CCA473
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:51:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348027AbiFCSuw (ORCPT
+        id S1349032AbiFCSu7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:50:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54636 "EHLO
+        Fri, 3 Jun 2022 14:50:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347504AbiFCSuZ (ORCPT
+        with ESMTP id S1349134AbiFCSuL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 14:50:25 -0400
+        Fri, 3 Jun 2022 14:50:11 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3599E286D4;
-        Fri,  3 Jun 2022 11:50:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD09027FF0;
+        Fri,  3 Jun 2022 11:50:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EE9AB619D7;
-        Fri,  3 Jun 2022 18:50:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C0F25C36AE7;
-        Fri,  3 Jun 2022 18:50:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9CD7A619C2;
+        Fri,  3 Jun 2022 18:50:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 030BCC385B8;
+        Fri,  3 Jun 2022 18:50:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654282222;
-        bh=8NA296whxbQALTbAWWKlmrmJRhvlT+x4uPyIF3dF4wc=;
+        s=k20201202; t=1654282210;
+        bh=bOriYyJek/0gWTzeUpshNdx4hLR6hEcL+erxtFQ1q6Q=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=ZmEYysEzgm2xSoqAFBs98usJbIYqwIauQufGl88AHq4KxBH+zco4UYiIo5jx8HfRQ
-         Wm9STDt31Xu+hwO+R5KHecHWrsHZAYlGDh7tjJitY4N6STzE68eksDD+/cjhIZZYNa
-         bY9LNWpcmazIuQ3MobvjjamfM5Jd2Wo0w6Scgf2Waze8R9SKfV9xy+YpKv93Ob0P6b
-         GZIpiDnOtRqKE1XXaaqm0lGjqJJC9oz3yQDIJhHHsRPXAfRUt+0+C2tL/yNJitHwH0
-         8sf+5MMImhK21d08isGE9Gm8nT5vIugJYWHKVfcbEekcC0NiFaeQ7jlwudU27aC1Zd
-         SJ0XaBq0sHpYA==
+        b=Evqa9V+gShN4CKTki1Qc95yc8OQ6s9PLcauHwWuQWN/qHkuUNZ3Ib2o0b29gwpynZ
+         FRgXrSMXOhDap47vgkuQWBTzhhSlqdXRt/x0Mm2Q7px6ynj/GTJtEY2YI8lCMm0foC
+         tCzxlmZLw9mQEMDl6Ck+F4hfp9+VRvbgfh+AG/b1ERk5aKSf0lA34orC2kL0heSbP1
+         KSyyYSWbqd8GlD1k7CqRTvyLLEhZbKDqDUFqCXaJU3Zqven3aHo0fD3BqHSRRQ0IbI
+         Wvb9n5mPF5ea0BrsoYqVv8cJ4usD9SvY/gvd0zrWD7kgkOyV3Ja5WW7Y3ZE+OzLFsv
+         SHtKdUIA0I91g==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AD01FF03950;
-        Fri,  3 Jun 2022 18:50:22 +0000 (UTC)
-Subject: Re: [GIT PULL] TTY/Serial driver updates for 5.19-rc1
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E093BF03953;
+        Fri,  3 Jun 2022 18:50:09 +0000 (UTC)
+Subject: Re: [GIT PULL] vhost,virtio,vdpa: features, fixes, cleanups
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <Ypng7xL2s6mAlODi@kroah.com>
-References: <Ypng7xL2s6mAlODi@kroah.com>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <Ypng7xL2s6mAlODi@kroah.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.19-rc1
-X-PR-Tracked-Commit-Id: 25e02ba60f0fbe65ba07553b5b2b8867726273c4
+In-Reply-To: <20220602161124-mutt-send-email-mst@kernel.org>
+References: <20220602161124-mutt-send-email-mst@kernel.org>
+X-PR-Tracked-List-Id: <netdev.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20220602161124-mutt-send-email-mst@kernel.org>
+X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
+X-PR-Tracked-Commit-Id: bd8bb9aed56b1814784a975e2dfea12a9adcee92
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 932c2989b59008e530ffcc7c7e6ef507a28b28ca
-Message-Id: <165428222269.10974.5910556569757197227.pr-tracker-bot@kernel.org>
-Date:   Fri, 03 Jun 2022 18:50:22 +0000
-To:     Greg KH <gregkh@linuxfoundation.org>
+X-PR-Merge-Commit-Id: 6e5f6a86915d65210e90acac0402e6f37e21fc7b
+Message-Id: <165428220991.10974.157104839485276628.pr-tracker-bot@kernel.org>
+Date:   Fri, 03 Jun 2022 18:50:09 +0000
+To:     "Michael S. Tsirkin" <mst@redhat.com>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Jiri Slaby <jslaby@suse.cz>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        arbn@yandex-team.com, arei.gonglei@huawei.com,
+        christophe.jaillet@wanadoo.fr, cohuck@redhat.com,
+        dan.carpenter@oracle.com, dinechin@redhat.com, elic@nvidia.com,
+        eperezma@redhat.com, gautam.dawar@xilinx.com, gdawar@xilinx.com,
+        helei.sig11@bytedance.com, jasowang@redhat.com,
+        lingshan.zhu@intel.com, linux-s390@vger.kernel.org,
+        liuke94@huawei.com, lkp@intel.com, lulu@redhat.com, maz@kernel.org,
+        michael.christie@oracle.com, mst@redhat.com, muriloo@linux.ibm.com,
+        oberpar@linux.ibm.com, pasic@linux.ibm.com, paulmck@kernel.org,
+        peterz@infradead.org, pizhenwei@bytedance.com, sgarzare@redhat.com,
+        solomonbstoner@protonmail.ch, stable@vger.kernel.org,
+        suwan.kim027@gmail.com, tglx@linutronix.de, vneethv@linux.ibm.com,
+        xianting.tian@linux.alibaba.com, zheyuma97@gmail.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Fri, 3 Jun 2022 12:22:39 +0200:
+The pull request you sent on Thu, 2 Jun 2022 16:11:24 -0400:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.19-rc1
+> https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/932c2989b59008e530ffcc7c7e6ef507a28b28ca
+https://git.kernel.org/torvalds/c/6e5f6a86915d65210e90acac0402e6f37e21fc7b
 
 Thank you!
 
