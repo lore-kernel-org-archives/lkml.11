@@ -2,277 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E5DBC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 16:36:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C72AFC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 16:36:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344022AbiFCQgJ (ORCPT
+        id S1343996AbiFCQgk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 12:36:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51010 "EHLO
+        Fri, 3 Jun 2022 12:36:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343968AbiFCQfw (ORCPT
+        with ESMTP id S242947AbiFCQgi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 12:35:52 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B160D2CDFF;
-        Fri,  3 Jun 2022 09:35:49 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id n28so10865933edb.9;
-        Fri, 03 Jun 2022 09:35:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ehXZdnyYhQGdFWJC4VGnIHkQy4QBmtpZ6LdmrEF0kKs=;
-        b=K+WAfwU/ngrjgvC2OP5zpGacNsUc/k/WvO2zX9AsWAq0WG4hgiPbpROPoEZWaB/Hl0
-         SyYiXHMJ1IMf37UGRk7w25J6H082YxYGD8usNPc2ZizIfy7g5UCxiS3ZR5AI8ybRhl+h
-         MskLOIiMapwzluUhrWCvMPFKMMKZA4zzhh0B4Vwchm9hPBF8v4n3bI0oUkBxivIUna1h
-         x9RITpAVIIc+S7pvd9hjUYu+Q40xo03vBbC26R9ckZVRbuEQiqIFa6mgj9xcm8pm19d5
-         Wobl7EYgvoQ7aA3nphMtkmeJBg1frxNCp0t4ILvkceIMkcg/HBIf2rHzoxsEEJHZ3X3A
-         NRtg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ehXZdnyYhQGdFWJC4VGnIHkQy4QBmtpZ6LdmrEF0kKs=;
-        b=GGk6yzajhbGFntumYTlE6EkfbwFUFQGjs5JKQi+a5Jno4HO1PEmWl2sJh2Yi9zftRS
-         1vuILqmi9eRtlSPAwVjHvldCX/pcAl9mJBaYGgXxsZMiZ2A18BkKvJ6orYrJG+tDAUJI
-         1bL6xeXixUGAtHA26cUDjRSRw+vZHCLoGIT2xIt4pNOct2HZfzpNuM111JkUwrjr5dQs
-         1m6sPp/52sD0MZqamE4leNAADI82zhqDgpQ5BisqXgE6GLdbHU+XAzP4+5dzyFIB5srN
-         OHIGwdrhBzXm8xsIG7VbQKkJjkvmWP2DiQaB4fnZQwog+g3P3/MCr49bqdgln7CWvA/o
-         J6QA==
-X-Gm-Message-State: AOAM531Z9Wm8RKYxPC5uhKr3ExmVihwMaxNSGClXPf941hR6uDeVXizu
-        eSNbQN1O63MAUSOct5AvC48=
-X-Google-Smtp-Source: ABdhPJwir3sPXB/4KhHIbARo7v439Y/LK1tCuHGIf2ZJnNdNJNvHo/x3d80XUZleYQGtthQOTcBYUg==
-X-Received: by 2002:a05:6402:1e92:b0:42d:dc34:e233 with SMTP id f18-20020a0564021e9200b0042ddc34e233mr11965467edf.386.1654274148266;
-        Fri, 03 Jun 2022 09:35:48 -0700 (PDT)
-Received: from debian.home (81-204-249-205.fixed.kpn.net. [81.204.249.205])
-        by smtp.gmail.com with ESMTPSA id n13-20020a056402060d00b0042dd630eb2csm4106189edv.96.2022.06.03.09.35.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Jun 2022 09:35:47 -0700 (PDT)
-From:   Johan Jonker <jbx6244@gmail.com>
-To:     heiko@sntech.de
-Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 3/3] ARM: dts: rockchip: restyle emac nodes
-Date:   Fri,  3 Jun 2022 18:35:39 +0200
-Message-Id: <20220603163539.537-3-jbx6244@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220603163539.537-1-jbx6244@gmail.com>
-References: <20220603163539.537-1-jbx6244@gmail.com>
+        Fri, 3 Jun 2022 12:36:38 -0400
+Received: from conssluserg-04.nifty.com (conssluserg-04.nifty.com [210.131.2.83])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AD9D33EB3;
+        Fri,  3 Jun 2022 09:36:37 -0700 (PDT)
+Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181]) (authenticated)
+        by conssluserg-04.nifty.com with ESMTP id 253Ga570012954;
+        Sat, 4 Jun 2022 01:36:05 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-04.nifty.com 253Ga570012954
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1654274165;
+        bh=y9/o8slDJ+sIhWwDON3kj1DgvkXcnvtnKrUDQ3BsCBs=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=prFLXjsoYgB7ijohnFW7p4Yq1bBZ3k3ioYTFI59MUD8cdROQY9ONC+UQM/Tw3F7Fd
+         SJ8Tz3BhZwNF5h9ydAkBX0tyes5AbKGSIGay8g8gOZnblLNbT2t85FNtUk5kh2/FJk
+         z5xC0J304vBxEbogqnCJxZqQbfq8YuUOlpWJapfn200ufoRR6ks7VLOCtggPSZ0Wrr
+         1jrOIS5YWDErf+DPCIw7KHO2Da22FNnkZrRrALpI0WEAYAQJmn8oZlYPYfDeotmwFc
+         1yZrJpCIlHzc6N+H4GP/Hry+9ZO0MGPrruk66X5GuUd7wgqrQjuSgSoXy4/L1rpY22
+         5gkmi1GUap0IQ==
+X-Nifty-SrcIP: [209.85.214.181]
+Received: by mail-pl1-f181.google.com with SMTP id o6so2109589plg.2;
+        Fri, 03 Jun 2022 09:36:05 -0700 (PDT)
+X-Gm-Message-State: AOAM533KFlllEZsLeTnQ5wT/zFIlQz3j+VWKdrs69Mf2kO/mLMksdmDE
+        46obM2PyorfsKvxLYpEWxkTN4v5J1GXbfjDDWbs=
+X-Google-Smtp-Source: ABdhPJxHTWnsHRa1laYe16TntCcCFe6eXBafdiRH0+z/EC8W7Chtcst5x0RGUQyP1BdiYs+nb+7DHDQtOr1vohmT2OY=
+X-Received: by 2002:a17:902:9887:b0:151:6e1c:7082 with SMTP id
+ s7-20020a170902988700b001516e1c7082mr10697850plp.162.1654274164458; Fri, 03
+ Jun 2022 09:36:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220603093852.13818-1-schspa@gmail.com>
+In-Reply-To: <20220603093852.13818-1-schspa@gmail.com>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Sat, 4 Jun 2022 01:35:27 +0900
+X-Gmail-Original-Message-ID: <CAK7LNAS6JWgrjFiCHpj=ZMHVM-xddCQgOVWv0N_-YxL+v1f4=g@mail.gmail.com>
+Message-ID: <CAK7LNAS6JWgrjFiCHpj=ZMHVM-xddCQgOVWv0N_-YxL+v1f4=g@mail.gmail.com>
+Subject: Re: [PATCH] kbuild: Allow to select bash in a modified environment
+To:     Schspa Shi <schspa@gmail.com>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The emac_rockchip.txt file is converted to YAML.
-Phy nodes are now a subnode of mdio, so restyle
-the emac nodes of rk3036/rk3066/rk3188.
+On Fri, Jun 3, 2022 at 6:39 PM Schspa Shi <schspa@gmail.com> wrote:
+>
+> This fixes the build error when the system has a default bash version
+> which is too old to support associative array variables.
+>
+> The build error log as fellowing:
+> linux/scripts/check-local-export: line 11: declare: -A: invalid option
+> declare: usage: declare [-afFirtx] [-p] [name[=value] ...]
+>
+> Signed-off-by: Schspa Shi <schspa@gmail.com>
+> ---
 
-Signed-off-by: Johan Jonker <jbx6244@gmail.com>
----
 
-Changed V2:
-  use phy
----
- arch/arm/boot/dts/rk3036-evb.dts        | 16 ++++++++++------
- arch/arm/boot/dts/rk3036-kylin.dts      | 16 ++++++++++------
- arch/arm/boot/dts/rk3036.dtsi           |  2 --
- arch/arm/boot/dts/rk3066a-marsboard.dts | 17 ++++++++++-------
- arch/arm/boot/dts/rk3066a-rayeager.dts  | 15 ++++++++++-----
- arch/arm/boot/dts/rk3188-radxarock.dts  | 19 +++++++++++--------
- arch/arm/boot/dts/rk3xxx.dtsi           |  2 --
- 7 files changed, 51 insertions(+), 36 deletions(-)
+Applied to linux-kbuild. Thanks.
 
-diff --git a/arch/arm/boot/dts/rk3036-evb.dts b/arch/arm/boot/dts/rk3036-evb.dts
-index 2a7e6624e..9fd4d9db9 100644
---- a/arch/arm/boot/dts/rk3036-evb.dts
-+++ b/arch/arm/boot/dts/rk3036-evb.dts
-@@ -15,16 +15,20 @@
- };
- 
- &emac {
--	pinctrl-names = "default";
--	pinctrl-0 = <&emac_xfer>, <&emac_mdio>;
- 	phy = <&phy0>;
--	phy-reset-gpios = <&gpio2 RK_PC6 GPIO_ACTIVE_LOW>; /* PHY_RST */
- 	phy-reset-duration = <10>; /* millisecond */
--
-+	phy-reset-gpios = <&gpio2 RK_PC6 GPIO_ACTIVE_LOW>; /* PHY_RST */
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&emac_xfer>, <&emac_mdio>;
- 	status = "okay";
- 
--	phy0: ethernet-phy@0 {
--		reg = <0>;
-+	mdio {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		phy0: ethernet-phy@0 {
-+			reg = <0>;
-+		};
- 	};
- };
- 
-diff --git a/arch/arm/boot/dts/rk3036-kylin.dts b/arch/arm/boot/dts/rk3036-kylin.dts
-index e817eba8c..67e1e0413 100644
---- a/arch/arm/boot/dts/rk3036-kylin.dts
-+++ b/arch/arm/boot/dts/rk3036-kylin.dts
-@@ -80,16 +80,20 @@
- };
- 
- &emac {
--	pinctrl-names = "default";
--	pinctrl-0 = <&emac_xfer>, <&emac_mdio>;
- 	phy = <&phy0>;
--	phy-reset-gpios = <&gpio2 RK_PC6 GPIO_ACTIVE_LOW>; /* PHY_RST */
- 	phy-reset-duration = <10>; /* millisecond */
--
-+	phy-reset-gpios = <&gpio2 RK_PC6 GPIO_ACTIVE_LOW>; /* PHY_RST */
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&emac_xfer>, <&emac_mdio>;
- 	status = "okay";
- 
--	phy0: ethernet-phy@0 {
--		reg = <0>;
-+	mdio {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		phy0: ethernet-phy@0 {
-+			reg = <0>;
-+		};
- 	};
- };
- 
-diff --git a/arch/arm/boot/dts/rk3036.dtsi b/arch/arm/boot/dts/rk3036.dtsi
-index e240b89b0..78686fc72 100644
---- a/arch/arm/boot/dts/rk3036.dtsi
-+++ b/arch/arm/boot/dts/rk3036.dtsi
-@@ -228,8 +228,6 @@
- 		compatible = "rockchip,rk3036-emac";
- 		reg = <0x10200000 0x4000>;
- 		interrupts = <GIC_SPI 8 IRQ_TYPE_LEVEL_HIGH>;
--		#address-cells = <1>;
--		#size-cells = <0>;
- 		rockchip,grf = <&grf>;
- 		clocks = <&cru HCLK_MAC>, <&cru SCLK_MACREF>, <&cru SCLK_MAC>;
- 		clock-names = "hclk", "macref", "macclk";
-diff --git a/arch/arm/boot/dts/rk3066a-marsboard.dts b/arch/arm/boot/dts/rk3066a-marsboard.dts
-index a66d915aa..8beecd628 100644
---- a/arch/arm/boot/dts/rk3066a-marsboard.dts
-+++ b/arch/arm/boot/dts/rk3066a-marsboard.dts
-@@ -150,18 +150,21 @@
- #include "tps65910.dtsi"
- 
- &emac {
--	status = "okay";
--
- 	phy = <&phy0>;
- 	phy-supply = <&vcc_rmii>;
--
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&emac_xfer>, <&emac_mdio>, <&phy_int>;
-+	status = "okay";
-+
-+	mdio {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
- 
--	phy0: ethernet-phy@0 {
--		reg = <0>;
--		interrupt-parent = <&gpio1>;
--		interrupts = <RK_PD2 IRQ_TYPE_LEVEL_LOW>;
-+		phy0: ethernet-phy@0 {
-+			reg = <0>;
-+			interrupt-parent = <&gpio1>;
-+			interrupts = <RK_PD2 IRQ_TYPE_LEVEL_LOW>;
-+		};
- 	};
- };
- 
-diff --git a/arch/arm/boot/dts/rk3066a-rayeager.dts b/arch/arm/boot/dts/rk3066a-rayeager.dts
-index 12b2e59ae..9aeef36ca 100644
---- a/arch/arm/boot/dts/rk3066a-rayeager.dts
-+++ b/arch/arm/boot/dts/rk3066a-rayeager.dts
-@@ -142,15 +142,20 @@
- };
- 
- &emac {
--	pinctrl-names = "default";
--	pinctrl-0 = <&emac_xfer>, <&emac_mdio>, <&rmii_rst>;
- 	phy = <&phy0>;
- 	phy-supply = <&vcc_rmii>;
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&emac_xfer>, <&emac_mdio>, <&rmii_rst>;
- 	status = "okay";
- 
--	phy0: ethernet-phy@0 {
--		reg = <0>;
--		reset-gpios = <&gpio1 RK_PD6 GPIO_ACTIVE_LOW>;
-+	mdio {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		phy0: ethernet-phy@0 {
-+			reg = <0>;
-+			reset-gpios = <&gpio1 RK_PD6 GPIO_ACTIVE_LOW>;
-+		};
- 	};
- };
- 
-diff --git a/arch/arm/boot/dts/rk3188-radxarock.dts b/arch/arm/boot/dts/rk3188-radxarock.dts
-index 36c0945f4..bb0942d3e 100644
---- a/arch/arm/boot/dts/rk3188-radxarock.dts
-+++ b/arch/arm/boot/dts/rk3188-radxarock.dts
-@@ -126,18 +126,21 @@
- };
- 
- &emac {
--	status = "okay";
--
-+	phy = <&phy0>;
-+	phy-supply = <&vcc_rmii>;
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&emac_xfer>, <&emac_mdio>, <&phy_int>;
-+	status = "okay";
- 
--	phy = <&phy0>;
--	phy-supply = <&vcc_rmii>;
-+	mdio {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
- 
--	phy0: ethernet-phy@0 {
--		reg = <0>;
--		interrupt-parent = <&gpio3>;
--		interrupts = <RK_PD2 IRQ_TYPE_LEVEL_LOW>;
-+		phy0: ethernet-phy@0 {
-+			reg = <0>;
-+			interrupt-parent = <&gpio3>;
-+			interrupts = <RK_PD2 IRQ_TYPE_LEVEL_LOW>;
-+		};
- 	};
- };
- 
-diff --git a/arch/arm/boot/dts/rk3xxx.dtsi b/arch/arm/boot/dts/rk3xxx.dtsi
-index 616a828e0..bf285091a 100644
---- a/arch/arm/boot/dts/rk3xxx.dtsi
-+++ b/arch/arm/boot/dts/rk3xxx.dtsi
-@@ -186,8 +186,6 @@
- 		compatible = "snps,arc-emac";
- 		reg = <0x10204000 0x3c>;
- 		interrupts = <GIC_SPI 19 IRQ_TYPE_LEVEL_HIGH>;
--		#address-cells = <1>;
--		#size-cells = <0>;
- 
- 		rockchip,grf = <&grf>;
- 
+
+>  scripts/check-local-export | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/scripts/check-local-export b/scripts/check-local-export
+> index 017119d89cd2..2defd0bf3552 100755
+> --- a/scripts/check-local-export
+> +++ b/scripts/check-local-export
+> @@ -1,4 +1,4 @@
+> -#!/bin/bash
+> +#!/usr/bin/env bash
+>  # SPDX-License-Identifier: GPL-2.0-only
+>  #
+>  # Copyright (C) 2022 Masahiro Yamada <masahiroy@kernel.org>
+> --
+> 2.24.3 (Apple Git-128)
+>
+
+
 -- 
-2.20.1
-
+Best Regards
+Masahiro Yamada
