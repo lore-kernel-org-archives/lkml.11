@@ -2,78 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABC54C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:19:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E714FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:21:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242190AbiFCRTs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:19:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56082 "EHLO
+        id S1344353AbiFCRVP (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 13:21:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234443AbiFCRTq (ORCPT
+        with ESMTP id S239109AbiFCRVO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:19:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B999952536;
-        Fri,  3 Jun 2022 10:19:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5336861A7F;
-        Fri,  3 Jun 2022 17:19:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08C5CC385B8;
-        Fri,  3 Jun 2022 17:19:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654276783;
-        bh=yZaP5JwNf7HCqFEG529ib9QFmep3oDKSCc6iCmQJhj4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=fguOluzXlQQFZcg2tjsK3W1T8Txt+PLLyICgZn5MfU+mqerRyRvS/d7L9bEGOpJKl
-         upWNZGJxXZTtz4MPl2uSgmPFDP/UGYb3iVXF3w8UWdfLb3rIcQV/1Tmt1CNd2CyzRB
-         lqXShkJlMs/58+2Rg0O49hwaJb/mE/FuhquuIKh1Kz9cytrMhU98eOrzNCivnssEZ7
-         CXVpyYC+JTlRjYH29wRiUqkVOnFsk/m4lUZxhG/iW1fEne4UQI6m5JD6SyDxEhbFx7
-         /9kmjzJGzLX+HVZ5p8sfJ5gIn/89xVXYvlyCMAWVPE/HAf/AuMzCtmaAsD024TyD43
-         eyc8Upe2M0cXA==
-Date:   Fri, 3 Jun 2022 18:28:44 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>
-Subject: Re: [PATCH v1 1/1] iio: dac: ad5592r: Get rid of OF specifics
-Message-ID: <20220603182844.23da48f2@jic23-huawei>
-In-Reply-To: <20220531135320.63096-1-andriy.shevchenko@linux.intel.com>
-References: <20220531135320.63096-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Fri, 3 Jun 2022 13:21:14 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4D6252536
+        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 10:21:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654276870; x=1685812870;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=vIiK49QJMGH4Ib8ni1/aaFpvDGucIOFDdBdBnD3oc/8=;
+  b=lk4aTWUkE2UJ+VT+EerTRo4WE1JKICdx4lGKTSd9wIE7J3Kcbp5JtGkk
+   aVbAREtO+JoG8/vlJPqQek7L7GL4Y5Tik4uaE7uSfuVqcFvtbU5wuLpls
+   yWL6T9yiAK2x6DKfYRU2/pvy1iHzaBry4TnDc/bneObwRKTya+bpJN6tp
+   82Oi9TxVNXoqgcHt4ZMsF2o5ky2z4BdlVGIs24I4gMdA9XWGNRjVTyeOm
+   AUNm6oFjPz9GtqpW6Josunn9E42CpiEhpCIi6FoyZw196i3YaAKeZNp84
+   eHiSg9Kkciw7SXFObPnyg+gAPLNTVylNVenF4PE7kYE5kBFk0sgeU6S9X
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10367"; a="258386608"
+X-IronPort-AV: E=Sophos;i="5.91,275,1647327600"; 
+   d="scan'208";a="258386608"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2022 10:21:10 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,275,1647327600"; 
+   d="scan'208";a="708113744"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga004.jf.intel.com with ESMTP; 03 Jun 2022 10:21:08 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 8B894F8; Fri,  3 Jun 2022 20:21:11 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
+        linux-kernel@vger.kernel.org
+Cc:     Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH v1 1/1] kernel.h: Move sysfs related macro to sysfs.h
+Date:   Fri,  3 Jun 2022 20:21:01 +0300
+Message-Id: <20220603172101.49950-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 31 May 2022 16:53:20 +0300
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+As stated in the comment of VERIFY_OCTAL_PERMISSIONS() it's related to sysfs.
+Move it to the corresponding header.
 
-> Use dev_fwnode() instead of direct OF node dereference when checking
-> for regulator API error code.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Applied
-> ---
->  drivers/iio/dac/ad5592r-base.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/dac/ad5592r-base.c b/drivers/iio/dac/ad5592r-base.c
-> index 4434c1b2a322..7a9b5fc1e579 100644
-> --- a/drivers/iio/dac/ad5592r-base.c
-> +++ b/drivers/iio/dac/ad5592r-base.c
-> @@ -603,7 +603,7 @@ int ad5592r_probe(struct device *dev, const char *name,
->  
->  	st->reg = devm_regulator_get_optional(dev, "vref");
->  	if (IS_ERR(st->reg)) {
-> -		if ((PTR_ERR(st->reg) != -ENODEV) && dev->of_node)
-> +		if ((PTR_ERR(st->reg) != -ENODEV) && dev_fwnode(dev))
->  			return PTR_ERR(st->reg);
->  
->  		st->reg = NULL;
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ include/linux/kernel.h | 12 ------------
+ include/linux/sysfs.h  | 13 +++++++++++++
+ 2 files changed, 13 insertions(+), 12 deletions(-)
+
+diff --git a/include/linux/kernel.h b/include/linux/kernel.h
+index 239e36248980..1934a77d2c84 100644
+--- a/include/linux/kernel.h
++++ b/include/linux/kernel.h
+@@ -489,16 +489,4 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
+ # define REBUILD_DUE_TO_FTRACE_MCOUNT_RECORD
+ #endif
+ 
+-/* Permissions on a sysfs file: you didn't miss the 0 prefix did you? */
+-#define VERIFY_OCTAL_PERMISSIONS(perms)						\
+-	(BUILD_BUG_ON_ZERO((perms) < 0) +					\
+-	 BUILD_BUG_ON_ZERO((perms) > 0777) +					\
+-	 /* USER_READABLE >= GROUP_READABLE >= OTHER_READABLE */		\
+-	 BUILD_BUG_ON_ZERO((((perms) >> 6) & 4) < (((perms) >> 3) & 4)) +	\
+-	 BUILD_BUG_ON_ZERO((((perms) >> 3) & 4) < ((perms) & 4)) +		\
+-	 /* USER_WRITABLE >= GROUP_WRITABLE */					\
+-	 BUILD_BUG_ON_ZERO((((perms) >> 6) & 2) < (((perms) >> 3) & 2)) +	\
+-	 /* OTHER_WRITABLE?  Generally considered a bad idea. */		\
+-	 BUILD_BUG_ON_ZERO((perms) & 2) +					\
+-	 (perms))
+ #endif
+diff --git a/include/linux/sysfs.h b/include/linux/sysfs.h
+index e3f1e8ac1f85..10c9e731c250 100644
+--- a/include/linux/sysfs.h
++++ b/include/linux/sysfs.h
+@@ -98,6 +98,19 @@ struct attribute_group {
+ 
+ #define SYSFS_PREALLOC 010000
+ 
++/* Permissions on a sysfs file: you didn't miss the 0 prefix did you? */
++#define VERIFY_OCTAL_PERMISSIONS(perms)						\
++	(BUILD_BUG_ON_ZERO((perms) < 0) +					\
++	 BUILD_BUG_ON_ZERO((perms) > 0777) +					\
++	 /* USER_READABLE >= GROUP_READABLE >= OTHER_READABLE */		\
++	 BUILD_BUG_ON_ZERO((((perms) >> 6) & 4) < (((perms) >> 3) & 4)) +	\
++	 BUILD_BUG_ON_ZERO((((perms) >> 3) & 4) < ((perms) & 4)) +		\
++	 /* USER_WRITABLE >= GROUP_WRITABLE */					\
++	 BUILD_BUG_ON_ZERO((((perms) >> 6) & 2) < (((perms) >> 3) & 2)) +	\
++	 /* OTHER_WRITABLE?  Generally considered a bad idea. */		\
++	 BUILD_BUG_ON_ZERO((perms) & 2) +					\
++	 (perms))
++
+ #define __ATTR(_name, _mode, _show, _store) {				\
+ 	.attr = {.name = __stringify(_name),				\
+ 		 .mode = VERIFY_OCTAL_PERMISSIONS(_mode) },		\
+-- 
+2.35.1
 
