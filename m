@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 885DECCA494
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 617CECCA493
 	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 00:54:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241953AbiFCAvm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 20:51:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48476 "EHLO
+        id S241723AbiFCAvX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 20:51:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240157AbiFCApX (ORCPT
+        with ESMTP id S240134AbiFCAoz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 20:45:23 -0400
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15C8534647
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:45:20 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id k92-20020a17090a4ce500b001e69e8a98a4so933891pjh.3
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:45:20 -0700 (PDT)
+        Thu, 2 Jun 2022 20:44:55 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0193737A12
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:44:40 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id ob5-20020a17090b390500b001e2f03294a7so6391460pjb.8
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:44:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=DSBUnWw8fWEElXYGBjXrm88wUvjgXnsj+86R4SkOT0s=;
-        b=L+KTRQvkc5WtE0n1dHRlE0Oz69S8WphDnarPbKpfUKLrwfStXEsCflOdIzYVv93Gbr
-         cuj3yRWTBkCBVkFdl/eboc88X4F5WL2f7vMUVRGUXYd0PXXjOWj5yRCG/5Aab8ALZ374
-         IwJB4T/n78wLajQwj0YBn95HkgV0mFrnLdTU2RNaPCfIKhTHu48ClVWeIMzzgI7Fz05P
-         GwLGGr43MuZ7ercC7DqpO9dP4wJ892SI8Pf1uXEDYnTOwytoeaRcOEGGFv34DoslO8iS
-         WcwyOSxKcjlJlt9re2J9oL/9hPe675W9Zrms7CxVqJ6hHoH4aifYHg3xoJVQz4QHcs1o
-         WYUw==
+        bh=u1IgrS502o6DaNoA2228GMoWiPrKqkjMnHgUvFiLMQ8=;
+        b=WMeD7TT4HAy7DZ12Jd0IR3/ER65DJfhCCfFr0y+EXS9bS9hxIlItQcv3/ZT+wvfPIb
+         WT1t0BUUxAZKmhGjW6aqiX903SpYYuPqwMghwaoRqJG/XxU9/fp3YIzTF4bB184Eb4cN
+         Bv0EkAyiNQIdDWV2icV/Uhgdk2RyhJFYp82Jsay4a4AzOXfaRCl/z4bKSShp52POROhv
+         Qu1BqbOXJA8uaWVAJeewwYgMNCy4Y3vmkuTL/teXDhFVBYp07jAkuxEoRDbHTlwY5JFx
+         Ykf0k1eTKcu8wPzkpiCYCczRkGXRW0g1MIr+NWjYNEx7NjwK1De1MhYkbEJiWW6JL7Jk
+         WiJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=DSBUnWw8fWEElXYGBjXrm88wUvjgXnsj+86R4SkOT0s=;
-        b=QCCEPqTfC7fpEMd4lNTClRfp+0L2jakMzokkJOpfE3JDu8ELpOqjfIRYq3tkCd5zh6
-         AaajE9zfGifE75/i48JGBblQ+qBkux7NVWjaydRA+6HzUOmSSgbBEQTYLZ5fcwGxHwEv
-         k63PhJdqbt06Fj05JB4g1+DCFK0PB+Fb9PSKuzxDIveBsSjuYC+pOg19T/kUElBcufep
-         3HVgvXZWS1VnOqzM4nuCGXNT6LU8nTrfdiSWCvtI42O0jSGtZeOxuhEGVnQjQvwbvp02
-         lO3O0uLDRo5ELuQFEcPi2MflNkL+GlnU0+b/VzpDQ6/TxC4mG+AYsBw5bnQhvkSmune6
-         a5hw==
-X-Gm-Message-State: AOAM5307QAi/8YMsooVKxJ/1LgdSN4A/sDvoczoqPWtczH+pSPJl3rPe
-        x87B9pDiG2GF7vNqYVAUvQ/nXJGzUNI=
-X-Google-Smtp-Source: ABdhPJxlKuvS5/8eTnTynHN7LMIefNnT056jHuTG8dyjeFayb3K2IOLSjn1g3mfNi/tkZGMEwKuZNpfmyiY=
+        bh=u1IgrS502o6DaNoA2228GMoWiPrKqkjMnHgUvFiLMQ8=;
+        b=csAuWsOone/p9kzwbDb5Jr4FfJdnYdVOIc3iuumtjHCBRLShdwbsdtH20T0ZqbU88K
+         V7llLuyMqbSda660GBVLcqf5zNWic7TWkfnZ5pz+eo7tos0CTyas0m1VaYrx6Nda2a2U
+         aZwEt8IznjG75ZY5RMXsxsbZKwRKQ1i9jv0z1DI8sluBzbA/U92jMUbQm2nXEfotqvQ8
+         zF1PrhxlXv6Il77cFAEQMM4ku++xVrWm2KWLNPIzqBIoin+ULkzHcorieKpD49jOyuLY
+         iBSPV00ZDo40Ufgz2YZ8r9N4XFI/hU6u4zrnSDGx4BZX6/zXjDul86DcfhugHmaDIYb0
+         TVhQ==
+X-Gm-Message-State: AOAM533tsESJbpE5l+hyuuvVWskKhedPR+nIsnf/od4hMWkjR+mSqbg4
+        sTPt/CgRZFznlU08ekMB/x98x6Ec9ZY=
+X-Google-Smtp-Source: ABdhPJzLHTRTXmbyaRPugggbXGP4hYk4nxHkvVjrWJvbcKD+d9AGltsmbr1NqMUqCDOblmlVxqVOsbEhOEA=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a05:6a00:10cc:b0:506:e0:d6c3 with SMTP id
- d12-20020a056a0010cc00b0050600e0d6c3mr7810109pfu.33.1654217119681; Thu, 02
- Jun 2022 17:45:19 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:902:d54b:b0:164:bf9:3e1e with SMTP id
+ z11-20020a170902d54b00b001640bf93e1emr7800481plf.58.1654217080298; Thu, 02
+ Jun 2022 17:44:40 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri,  3 Jun 2022 00:42:03 +0000
+Date:   Fri,  3 Jun 2022 00:41:42 +0000
 In-Reply-To: <20220603004331.1523888-1-seanjc@google.com>
-Message-Id: <20220603004331.1523888-57-seanjc@google.com>
+Message-Id: <20220603004331.1523888-36-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220603004331.1523888-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v2 056/144] KVM: selftests: Convert vmx_tsc_adjust_test away
- from VCPU_ID
+Subject: [PATCH v2 035/144] KVM: selftests: Rename MP_STATE and GUEST_DEBUG
+ helpers for consistency
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     kvm@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
@@ -67,65 +67,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert vmx_tsc_adjust_test to use vm_create_with_one_vcpu() and pass
-around a 'struct kvm_vcpu' object instead of using a global VCPU_ID.
-Note, this is a "functional" change in the sense that the test now
-creates a vCPU with vcpu_id==0 instead of vcpu_id==5.  The non-zero
-VCPU_ID was 100% arbitrary and added little to no validation coverage.
-If testing non-zero vCPU IDs is desirable for generic tests, that can be
-done in the future by tweaking the VM creation helpers.
+Move the get/set part of the MP_STATE and GUEST_DEBUG helpers to the end
+to align with the many other ioctl() wrappers/helpers.  Note, this is not
+an endorsement of the predominant style, the goal is purely to provide
+consistency in the selftests.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../selftests/kvm/x86_64/vmx_tsc_adjust_test.c      | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ tools/testing/selftests/kvm/aarch64/psci_test.c          | 2 +-
+ tools/testing/selftests/kvm/include/kvm_util_base.h      | 9 +++++++--
+ tools/testing/selftests/kvm/lib/x86_64/processor.c       | 2 +-
+ tools/testing/selftests/kvm/x86_64/debug_regs.c          | 2 +-
+ .../selftests/kvm/x86_64/svm_nested_soft_inject_test.c   | 2 +-
+ 5 files changed, 11 insertions(+), 6 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/x86_64/vmx_tsc_adjust_test.c b/tools/testing/selftests/kvm/x86_64/vmx_tsc_adjust_test.c
-index 19b35c607dc6..29699d7c16c3 100644
---- a/tools/testing/selftests/kvm/x86_64/vmx_tsc_adjust_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/vmx_tsc_adjust_test.c
-@@ -32,8 +32,6 @@
- #define MSR_IA32_TSC_ADJUST 0x3b
- #endif
+diff --git a/tools/testing/selftests/kvm/aarch64/psci_test.c b/tools/testing/selftests/kvm/aarch64/psci_test.c
+index 1a351f3f443d..1485d0b05b66 100644
+--- a/tools/testing/selftests/kvm/aarch64/psci_test.c
++++ b/tools/testing/selftests/kvm/aarch64/psci_test.c
+@@ -70,7 +70,7 @@ static void vcpu_power_off(struct kvm_vm *vm, uint32_t vcpuid)
+ 		.mp_state = KVM_MP_STATE_STOPPED,
+ 	};
  
--#define VCPU_ID		5
--
- #define TSC_ADJUST_VALUE (1ll << 32)
- #define TSC_OFFSET_VALUE -(1ll << 48)
+-	vcpu_set_mp_state(vm, vcpuid, &mp_state);
++	vcpu_mp_state_set(vm, vcpuid, &mp_state);
+ }
  
-@@ -127,26 +125,27 @@ static void report(int64_t val)
- int main(int argc, char *argv[])
+ static struct kvm_vm *setup_vm(void *guest_code)
+diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
+index c9d94c9f2031..edbbbbe4cd5d 100644
+--- a/tools/testing/selftests/kvm/include/kvm_util_base.h
++++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
+@@ -374,13 +374,18 @@ static inline void vcpu_enable_cap(struct kvm_vm *vm, uint32_t vcpu_id,
+ 	vcpu_ioctl(vm, vcpu_id, KVM_ENABLE_CAP, &enable_cap);
+ }
+ 
+-static inline void vcpu_set_guest_debug(struct kvm_vm *vm, uint32_t vcpuid,
++static inline void vcpu_guest_debug_set(struct kvm_vm *vm, uint32_t vcpuid,
+ 					struct kvm_guest_debug *debug)
  {
- 	vm_vaddr_t vmx_pages_gva;
-+	struct kvm_vcpu *vcpu;
+ 	vcpu_ioctl(vm, vcpuid, KVM_SET_GUEST_DEBUG, debug);
+ }
  
- 	nested_vmx_check_supported();
+-static inline void vcpu_set_mp_state(struct kvm_vm *vm, uint32_t vcpuid,
++static inline void vcpu_mp_state_get(struct kvm_vm *vm, uint32_t vcpuid,
++				     struct kvm_mp_state *mp_state)
++{
++	vcpu_ioctl(vm, vcpuid, KVM_GET_MP_STATE, mp_state);
++}
++static inline void vcpu_mp_state_set(struct kvm_vm *vm, uint32_t vcpuid,
+ 				     struct kvm_mp_state *mp_state)
+ {
+ 	vcpu_ioctl(vm, vcpuid, KVM_SET_MP_STATE, mp_state);
+diff --git a/tools/testing/selftests/kvm/lib/x86_64/processor.c b/tools/testing/selftests/kvm/lib/x86_64/processor.c
+index a6c35f269013..9268537f9bd7 100644
+--- a/tools/testing/selftests/kvm/lib/x86_64/processor.c
++++ b/tools/testing/selftests/kvm/lib/x86_64/processor.c
+@@ -655,7 +655,7 @@ void vm_vcpu_add_default(struct kvm_vm *vm, uint32_t vcpuid, void *guest_code)
  
--	vm = vm_create_default(VCPU_ID, 0, (void *) l1_guest_code);
-+	vm = vm_create_with_one_vcpu(&vcpu, (void *) l1_guest_code);
+ 	/* Setup the MP state */
+ 	mp_state.mp_state = 0;
+-	vcpu_set_mp_state(vm, vcpuid, &mp_state);
++	vcpu_mp_state_set(vm, vcpuid, &mp_state);
+ }
  
- 	/* Allocate VMX pages and shared descriptors (vmx_pages). */
- 	vcpu_alloc_vmx(vm, &vmx_pages_gva);
--	vcpu_args_set(vm, VCPU_ID, 1, vmx_pages_gva);
-+	vcpu_args_set(vm, vcpu->id, 1, vmx_pages_gva);
+ /*
+diff --git a/tools/testing/selftests/kvm/x86_64/debug_regs.c b/tools/testing/selftests/kvm/x86_64/debug_regs.c
+index 5f078db1bcba..f726645bb9c3 100644
+--- a/tools/testing/selftests/kvm/x86_64/debug_regs.c
++++ b/tools/testing/selftests/kvm/x86_64/debug_regs.c
+@@ -67,7 +67,7 @@ static void guest_code(void)
+ }
  
- 	for (;;) {
--		volatile struct kvm_run *run = vcpu_state(vm, VCPU_ID);
-+		volatile struct kvm_run *run = vcpu->run;
- 		struct ucall uc;
+ #define  CLEAR_DEBUG()  memset(&debug, 0, sizeof(debug))
+-#define  APPLY_DEBUG()  vcpu_set_guest_debug(vm, VCPU_ID, &debug)
++#define  APPLY_DEBUG()  vcpu_guest_debug_set(vm, VCPU_ID, &debug)
+ #define  CAST_TO_RIP(v)  ((unsigned long long)&(v))
+ #define  SET_RIP(v)  do {				\
+ 		vcpu_regs_get(vm, VCPU_ID, &regs);	\
+diff --git a/tools/testing/selftests/kvm/x86_64/svm_nested_soft_inject_test.c b/tools/testing/selftests/kvm/x86_64/svm_nested_soft_inject_test.c
+index 18061677154f..f834b9a1a7fa 100644
+--- a/tools/testing/selftests/kvm/x86_64/svm_nested_soft_inject_test.c
++++ b/tools/testing/selftests/kvm/x86_64/svm_nested_soft_inject_test.c
+@@ -166,7 +166,7 @@ static void run_test(bool is_nmi)
+ 	vcpu_args_set(vm, VCPU_ID, 3, svm_gva, (uint64_t)is_nmi, (uint64_t)idt_alt_vm);
  
--		vcpu_run(vm, VCPU_ID);
-+		vcpu_run(vm, vcpu->id);
- 		TEST_ASSERT(run->exit_reason == KVM_EXIT_IO,
- 			    "Got exit_reason other than KVM_EXIT_IO: %u (%s)\n",
- 			    run->exit_reason,
- 			    exit_reason_str(run->exit_reason));
+ 	memset(&debug, 0, sizeof(debug));
+-	vcpu_set_guest_debug(vm, VCPU_ID, &debug);
++	vcpu_guest_debug_set(vm, VCPU_ID, &debug);
  
--		switch (get_ucall(vm, VCPU_ID, &uc)) {
-+		switch (get_ucall(vm, vcpu->id, &uc)) {
- 		case UCALL_ABORT:
- 			TEST_FAIL("%s", (const char *)uc.args[0]);
- 			/* NOT REACHED */
+ 	struct kvm_run *run = vcpu_state(vm, VCPU_ID);
+ 	struct ucall uc;
 -- 
 2.36.1.255.ge46751e96f-goog
 
