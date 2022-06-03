@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1E3ECCA473
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC014C43334
 	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:11:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348057AbiFCSLW (ORCPT
+        id S1347975AbiFCSLT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:11:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49314 "EHLO
+        Fri, 3 Jun 2022 14:11:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346022AbiFCR6J (ORCPT
+        with ESMTP id S1345976AbiFCR5k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:58:09 -0400
+        Fri, 3 Jun 2022 13:57:40 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FE4857998;
-        Fri,  3 Jun 2022 10:54:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A57255711D;
+        Fri,  3 Jun 2022 10:54:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8F3FAB82189;
-        Fri,  3 Jun 2022 17:54:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2B12C385A9;
-        Fri,  3 Jun 2022 17:54:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 541E8B82419;
+        Fri,  3 Jun 2022 17:54:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BCA4C385B8;
+        Fri,  3 Jun 2022 17:54:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278880;
-        bh=vTWiCd2qo69ZjfuxwNlgeer11jVQIY4xgUWXfDmgCgk=;
+        s=korg; t=1654278856;
+        bh=/EyG57P4jtW4RHdb3WPUV5f8lPpG5g2cOM8KMHmq+5w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Vlm3RsqqJ94sJV0/CpPy4wwg16Kmf86MTd+lZpx+/BZ6jhZEbXcmZH9D4hYHByMRO
-         ANRXgTkQ0oxOT3NapkQ3lPf84x7ypnb4GyuW9mAvvwThB4xZDfBoBmAyY7Ygu7l6+g
-         OWXmb4gx/gn4gd39Yq+R/b0i/9Wc0O8JSagadUzY=
+        b=w1JNmrvgleN9IFkvB28aBUzmfRPL8ob4uItcBEsN9D0CTrlalQxxrPta9nqJXq4b5
+         G2Uxjy/eMMNRrsn7sqOr9VraLfAntJOIInQZPgGu7sRnEpmv3D4AwIKJ4fkp1r5MFZ
+         8o3sQ9wZTIczu1T388cP0Z7nT34dh2V8wjDK9/cI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tao Jin <tao-j@outlook.com>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Subject: [PATCH 5.17 56/75] HID: multitouch: add quirks to enable Lenovo X12 trackpoint
-Date:   Fri,  3 Jun 2022 19:43:40 +0200
-Message-Id: <20220603173823.328601324@linuxfoundation.org>
+        stable@vger.kernel.org, Jonathan Bakker <xc-racer2@live.ca>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 5.17 48/75] ARM: dts: s5pv210: Correct interrupt name for bluetooth in Aries
+Date:   Fri,  3 Jun 2022 19:43:32 +0200
+Message-Id: <20220603173823.109844229@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173821.749019262@linuxfoundation.org>
 References: <20220603173821.749019262@linuxfoundation.org>
@@ -49,50 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tao Jin <tao-j@outlook.com>
+From: Jonathan Bakker <xc-racer2@live.ca>
 
-commit 95cd2cdc88c755dcd0a58b951faeb77742c733a4 upstream.
+commit 3f5e3d3a8b895c8a11da8b0063ba2022dd9e2045 upstream.
 
-This applies the similar quirks used by previous generation devices
-such as X1 tablet for X12 tablet, so that the trackpoint and buttons
-can work.
+Correct the name of the bluetooth interrupt from host-wake to
+host-wakeup.
 
-This patch was applied and tested working on 5.17.1 .
-
-Cc: stable@vger.kernel.org # 5.8+ given that it relies on 40d5bb87377a
-Signed-off-by: Tao Jin <tao-j@outlook.com>
-Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Link: https://lore.kernel.org/r/CO6PR03MB6241CB276FCDC7F4CEDC34F6E1E29@CO6PR03MB6241.namprd03.prod.outlook.com
+Fixes: 1c65b6184441b ("ARM: dts: s5pv210: Correct BCM4329 bluetooth node")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Jonathan Bakker <xc-racer2@live.ca>
+Link: https://lore.kernel.org/r/CY4PR04MB0567495CFCBDC8D408D44199CB1C9@CY4PR04MB0567.namprd04.prod.outlook.com
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hid/hid-ids.h        |    1 +
- drivers/hid/hid-multitouch.c |    6 ++++++
- 2 files changed, 7 insertions(+)
+ arch/arm/boot/dts/s5pv210-aries.dtsi |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/hid/hid-ids.h
-+++ b/drivers/hid/hid-ids.h
-@@ -760,6 +760,7 @@
- #define USB_DEVICE_ID_LENOVO_X1_COVER	0x6085
- #define USB_DEVICE_ID_LENOVO_X1_TAB	0x60a3
- #define USB_DEVICE_ID_LENOVO_X1_TAB3	0x60b5
-+#define USB_DEVICE_ID_LENOVO_X12_TAB	0x60fe
- #define USB_DEVICE_ID_LENOVO_OPTICAL_USB_MOUSE_600E	0x600e
- #define USB_DEVICE_ID_LENOVO_PIXART_USB_MOUSE_608D	0x608d
- #define USB_DEVICE_ID_LENOVO_PIXART_USB_MOUSE_6019	0x6019
---- a/drivers/hid/hid-multitouch.c
-+++ b/drivers/hid/hid-multitouch.c
-@@ -2034,6 +2034,12 @@ static const struct hid_device_id mt_dev
- 			   USB_VENDOR_ID_LENOVO,
- 			   USB_DEVICE_ID_LENOVO_X1_TAB3) },
+--- a/arch/arm/boot/dts/s5pv210-aries.dtsi
++++ b/arch/arm/boot/dts/s5pv210-aries.dtsi
+@@ -895,7 +895,7 @@
+ 		device-wakeup-gpios = <&gpg3 4 GPIO_ACTIVE_HIGH>;
+ 		interrupt-parent = <&gph2>;
+ 		interrupts = <5 IRQ_TYPE_LEVEL_HIGH>;
+-		interrupt-names = "host-wake";
++		interrupt-names = "host-wakeup";
+ 	};
+ };
  
-+	/* Lenovo X12 TAB Gen 1 */
-+	{ .driver_data = MT_CLS_WIN_8_FORCE_MULTI_INPUT,
-+		HID_DEVICE(BUS_USB, HID_GROUP_MULTITOUCH_WIN_8,
-+			   USB_VENDOR_ID_LENOVO,
-+			   USB_DEVICE_ID_LENOVO_X12_TAB) },
-+
- 	/* MosArt panels */
- 	{ .driver_data = MT_CLS_CONFIDENCE_MINUS_ONE,
- 		MT_USB_DEVICE(USB_VENDOR_ID_ASUS,
 
 
