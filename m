@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBB51C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:48:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CB22C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:48:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345205AbiFCRse (ORCPT
+        id S1345276AbiFCRsg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:48:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44708 "EHLO
+        Fri, 3 Jun 2022 13:48:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345186AbiFCRsH (ORCPT
+        with ESMTP id S1345305AbiFCRsH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 3 Jun 2022 13:48:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0069253B5F;
-        Fri,  3 Jun 2022 10:44:42 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEF1357B04;
+        Fri,  3 Jun 2022 10:44:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B0951B82435;
-        Fri,  3 Jun 2022 17:44:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB3B3C385A9;
-        Fri,  3 Jun 2022 17:44:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B3BD61AD7;
+        Fri,  3 Jun 2022 17:44:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43F64C385A9;
+        Fri,  3 Jun 2022 17:44:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278280;
-        bh=eWjvNjzueHkRt9//1aAFhyP98DhCROAeyazCCvxs2UA=;
+        s=korg; t=1654278276;
+        bh=Cx8j6TGNcfOGltVh+shM90sXuC6xABAuTb/pYwuK17Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M3rAhdjlZib/uceFill+PWvjnm6oNqSCP5TA+JpkG0w9w8XhpcPo3THkp9SKjNECR
-         oTQEdGozk8TXENWDxGFQMh/sRjBN/zW84pwBhWM+nFZfe+bJg+mrm9+90/1vOFswI3
-         nVJv8Fr146U8jMBK52c6ClIngXR9lxaiiWEJk6wY=
+        b=pdCAdSsW5XTKkN+Y1ds2ZnHEZu+zDa5e0K/Uhtl/ikeH/VH94EoWc0+i+68ITqdcV
+         yyPtFFySYXW6lTKocvD4ORK+awp1hZ7azMqW4zrd7Nd4mlEqGYTP61SolyBsw9Ailj
+         7mmEu9DI7fhgypKpek8WQ0kV7F9cD2CG6ZOVAR0o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Mark-PK Tsai <mark-pk.tsai@mediatek.com>
-Subject: [PATCH 5.4 07/34] media: vim2m: Register video device after setting up internals
-Date:   Fri,  3 Jun 2022 19:43:03 +0200
-Message-Id: <20220603173816.210307047@linuxfoundation.org>
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Moshe Kol <moshe.kol@mail.huji.ac.il>,
+        Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
+        Amit Klein <aksecurity@gmail.com>,
+        Eric Dumazet <edumazet@google.com>, Willy Tarreau <w@1wt.eu>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Stefan Ghinea <stefan.ghinea@windriver.com>
+Subject: [PATCH 5.4 06/34] secure_seq: use the 64 bits of the siphash for port offset calculation
+Date:   Fri,  3 Jun 2022 19:43:02 +0200
+Message-Id: <20220603173816.180109481@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173815.990072516@linuxfoundation.org>
 References: <20220603173815.990072516@linuxfoundation.org>
@@ -52,76 +54,139 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sakari Ailus <sakari.ailus@linux.intel.com>
+From: Willy Tarreau <w@1wt.eu>
 
-commit cf7f34777a5b4100a3a44ff95f3d949c62892bdd upstream.
+commit b2d057560b8107c633b39aabe517ff9d93f285e3 upstream.
 
-Prevent NULL (or close to NULL) pointer dereference in various places by
-registering the video device only when the V4L2 m2m framework has been set
-up.
+SipHash replaced MD5 in secure_ipv{4,6}_port_ephemeral() via commit
+7cd23e5300c1 ("secure_seq: use SipHash in place of MD5"), but the output
+remained truncated to 32-bit only. In order to exploit more bits from the
+hash, let's make the functions return the full 64-bit of siphash_3u32().
+We also make sure the port offset calculation in __inet_hash_connect()
+remains done on 32-bit to avoid the need for div_u64_rem() and an extra
+cost on 32-bit systems.
 
-Fixes: commit 96d8eab5d0a1 ("V4L/DVB: [v5,2/2] v4l: Add a mem-to-mem videobuf framework test device")
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Signed-off-by: Mark-PK Tsai <mark-pk.tsai@mediatek.com>
+Cc: Jason A. Donenfeld <Jason@zx2c4.com>
+Cc: Moshe Kol <moshe.kol@mail.huji.ac.il>
+Cc: Yossi Gilad <yossi.gilad@mail.huji.ac.il>
+Cc: Amit Klein <aksecurity@gmail.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Willy Tarreau <w@1wt.eu>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+[SG: Adjusted context]
+Signed-off-by: Stefan Ghinea <stefan.ghinea@windriver.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/platform/vim2m.c |   20 +++++++++++---------
- 1 file changed, 11 insertions(+), 9 deletions(-)
+ include/net/inet_hashtables.h |    2 +-
+ include/net/secure_seq.h      |    4 ++--
+ net/core/secure_seq.c         |    4 ++--
+ net/ipv4/inet_hashtables.c    |   10 ++++++----
+ net/ipv6/inet6_hashtables.c   |    4 ++--
+ 5 files changed, 13 insertions(+), 11 deletions(-)
 
---- a/drivers/media/platform/vim2m.c
-+++ b/drivers/media/platform/vim2m.c
-@@ -1333,12 +1333,6 @@ static int vim2m_probe(struct platform_d
- 	vfd->lock = &dev->dev_mutex;
- 	vfd->v4l2_dev = &dev->v4l2_dev;
+--- a/include/net/inet_hashtables.h
++++ b/include/net/inet_hashtables.h
+@@ -420,7 +420,7 @@ static inline void sk_rcv_saddr_set(stru
+ }
  
--	ret = video_register_device(vfd, VFL_TYPE_GRABBER, 0);
--	if (ret) {
--		v4l2_err(&dev->v4l2_dev, "Failed to register video device\n");
--		goto error_v4l2;
--	}
--
- 	video_set_drvdata(vfd, dev);
- 	v4l2_info(&dev->v4l2_dev,
- 		  "Device registered as /dev/video%d\n", vfd->num);
-@@ -1353,6 +1347,12 @@ static int vim2m_probe(struct platform_d
- 		goto error_dev;
- 	}
+ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+-			struct sock *sk, u32 port_offset,
++			struct sock *sk, u64 port_offset,
+ 			int (*check_established)(struct inet_timewait_death_row *,
+ 						 struct sock *, __u16,
+ 						 struct inet_timewait_sock **));
+--- a/include/net/secure_seq.h
++++ b/include/net/secure_seq.h
+@@ -4,8 +4,8 @@
  
-+	ret = video_register_device(vfd, VFL_TYPE_GRABBER, 0);
-+	if (ret) {
-+		v4l2_err(&dev->v4l2_dev, "Failed to register video device\n");
-+		goto error_m2m;
-+	}
+ #include <linux/types.h>
+ 
+-u32 secure_ipv4_port_ephemeral(__be32 saddr, __be32 daddr, __be16 dport);
+-u32 secure_ipv6_port_ephemeral(const __be32 *saddr, const __be32 *daddr,
++u64 secure_ipv4_port_ephemeral(__be32 saddr, __be32 daddr, __be16 dport);
++u64 secure_ipv6_port_ephemeral(const __be32 *saddr, const __be32 *daddr,
+ 			       __be16 dport);
+ u32 secure_tcp_seq(__be32 saddr, __be32 daddr,
+ 		   __be16 sport, __be16 dport);
+--- a/net/core/secure_seq.c
++++ b/net/core/secure_seq.c
+@@ -97,7 +97,7 @@ u32 secure_tcpv6_seq(const __be32 *saddr
+ }
+ EXPORT_SYMBOL(secure_tcpv6_seq);
+ 
+-u32 secure_ipv6_port_ephemeral(const __be32 *saddr, const __be32 *daddr,
++u64 secure_ipv6_port_ephemeral(const __be32 *saddr, const __be32 *daddr,
+ 			       __be16 dport)
+ {
+ 	const struct {
+@@ -147,7 +147,7 @@ u32 secure_tcp_seq(__be32 saddr, __be32
+ }
+ EXPORT_SYMBOL_GPL(secure_tcp_seq);
+ 
+-u32 secure_ipv4_port_ephemeral(__be32 saddr, __be32 daddr, __be16 dport)
++u64 secure_ipv4_port_ephemeral(__be32 saddr, __be32 daddr, __be16 dport)
+ {
+ 	net_secret_init();
+ 	return siphash_4u32((__force u32)saddr, (__force u32)daddr,
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -464,7 +464,7 @@ not_unique:
+ 	return -EADDRNOTAVAIL;
+ }
+ 
+-static u32 inet_sk_port_offset(const struct sock *sk)
++static u64 inet_sk_port_offset(const struct sock *sk)
+ {
+ 	const struct inet_sock *inet = inet_sk(sk);
+ 
+@@ -683,7 +683,7 @@ EXPORT_SYMBOL_GPL(inet_unhash);
+ static u32 table_perturb[1 << INET_TABLE_PERTURB_SHIFT];
+ 
+ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+-		struct sock *sk, u32 port_offset,
++		struct sock *sk, u64 port_offset,
+ 		int (*check_established)(struct inet_timewait_death_row *,
+ 			struct sock *, __u16, struct inet_timewait_sock **))
+ {
+@@ -726,7 +726,9 @@ int __inet_hash_connect(struct inet_time
+ 	net_get_random_once(table_perturb, sizeof(table_perturb));
+ 	index = hash_32(port_offset, INET_TABLE_PERTURB_SHIFT);
+ 
+-	offset = (READ_ONCE(table_perturb[index]) + port_offset) % remaining;
++	offset = READ_ONCE(table_perturb[index]) + port_offset;
++	offset %= remaining;
 +
- #ifdef CONFIG_MEDIA_CONTROLLER
- 	dev->mdev.dev = &pdev->dev;
- 	strscpy(dev->mdev.model, "vim2m", sizeof(dev->mdev.model));
-@@ -1366,7 +1366,7 @@ static int vim2m_probe(struct platform_d
- 						 MEDIA_ENT_F_PROC_VIDEO_SCALER);
- 	if (ret) {
- 		v4l2_err(&dev->v4l2_dev, "Failed to init mem2mem media controller\n");
--		goto error_dev;
-+		goto error_v4l2;
- 	}
+ 	/* In first pass we try ports of @low parity.
+ 	 * inet_csk_get_port() does the opposite choice.
+ 	 */
+@@ -803,7 +805,7 @@ ok:
+ int inet_hash_connect(struct inet_timewait_death_row *death_row,
+ 		      struct sock *sk)
+ {
+-	u32 port_offset = 0;
++	u64 port_offset = 0;
  
- 	ret = media_device_register(&dev->mdev);
-@@ -1381,11 +1381,13 @@ static int vim2m_probe(struct platform_d
- error_m2m_mc:
- 	v4l2_m2m_unregister_media_controller(dev->m2m_dev);
- #endif
--error_dev:
-+error_v4l2:
- 	video_unregister_device(&dev->vfd);
- 	/* vim2m_device_release called by video_unregister_device to release various objects */
- 	return ret;
--error_v4l2:
-+error_m2m:
-+	v4l2_m2m_release(dev->m2m_dev);
-+error_dev:
- 	v4l2_device_unregister(&dev->v4l2_dev);
- error_free:
- 	kfree(dev);
+ 	if (!inet_sk(sk)->inet_num)
+ 		port_offset = inet_sk_port_offset(sk);
+--- a/net/ipv6/inet6_hashtables.c
++++ b/net/ipv6/inet6_hashtables.c
+@@ -262,7 +262,7 @@ not_unique:
+ 	return -EADDRNOTAVAIL;
+ }
+ 
+-static u32 inet6_sk_port_offset(const struct sock *sk)
++static u64 inet6_sk_port_offset(const struct sock *sk)
+ {
+ 	const struct inet_sock *inet = inet_sk(sk);
+ 
+@@ -274,7 +274,7 @@ static u32 inet6_sk_port_offset(const st
+ int inet6_hash_connect(struct inet_timewait_death_row *death_row,
+ 		       struct sock *sk)
+ {
+-	u32 port_offset = 0;
++	u64 port_offset = 0;
+ 
+ 	if (!inet_sk(sk)->inet_num)
+ 		port_offset = inet6_sk_port_offset(sk);
 
 
