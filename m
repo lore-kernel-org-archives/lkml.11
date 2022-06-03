@@ -2,131 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F7D6C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:35:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A88F3CCA473
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:36:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347653AbiFCSfn (ORCPT
+        id S1343767AbiFCSgE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:35:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51326 "EHLO
+        Fri, 3 Jun 2022 14:36:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345278AbiFCSff (ORCPT
+        with ESMTP id S1345434AbiFCSfm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 14:35:35 -0400
-X-Greylist: delayed 121 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 03 Jun 2022 11:23:39 PDT
-Received: from mo4-p02-ob.smtp.rzone.de (mo4-p02-ob.smtp.rzone.de [85.215.255.80])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8723A9CC86;
-        Fri,  3 Jun 2022 11:23:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1654280429;
-    s=strato-dkim-0002; d=gerhold.net;
-    h=In-Reply-To:References:Message-ID:Subject:Cc:To:From:Date:Cc:Date:
-    From:Subject:Sender;
-    bh=jRzE700Iwk6JPnFC1XF3JnNELKmhJQ9Ut8G4hkkDJF0=;
-    b=p7RNxjyiSayvHYPh3pHVP+T7P4Hcsn75gGJxiD5ywUMsVEPqBfsrMCiR1C47cvRHPG
-    nCbifbauhHQMWv0vrZkk64YAzDa03TPeK2zI1an99Cd6KVmM/Cwh3yx+l5wlGoFPB+lz
-    JbiBdHH/mpVYGdbK2X+pXmeZ7ppmt1PpMOwCSuLRj4L2foo2vDkQeuR4nBDvczVknpiH
-    AYkEkOrGQ5yGk/JBTbx1GPRF89BaoAAqffAxeBBjPB1r3TGn9B/gVXvtqqy4P8X6gMPH
-    4/lRQ2MNTugVRSf8sTtvJtdeAkOVKpSVSbKKHkQk+2s8mclCSZ+3hjx0ZdP0EAMuvw8b
-    zUFw==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVOQ/OcYgojyw4j34+u267FZF9PwpcNKLVrKw7/aY="
-X-RZG-CLASS-ID: mo00
-Received: from gerhold.net
-    by smtp.strato.de (RZmta 47.45.0 AUTH)
-    with ESMTPSA id 9056edy53IKTwlV
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Fri, 3 Jun 2022 20:20:29 +0200 (CEST)
-Date:   Fri, 3 Jun 2022 20:20:28 +0200
-From:   Stephan Gerhold <stephan@gerhold.net>
-To:     Alexander Martinz <amartinz@shiftphones.com>
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Caleb Connolly <caleb@connolly.tech>,
-        Dylan Van Assche <me@dylanvanassche.be>
-Subject: Re: [PATCH 1/2] ASoC: codecs: tfa989x: Add support for tfa9890
-Message-ID: <YppQ7BiqlBDMNsuc@gerhold.net>
-References: <20220602164504.261361-1-amartinz@shiftphones.com>
+        Fri, 3 Jun 2022 14:35:42 -0400
+Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C37523190D;
+        Fri,  3 Jun 2022 11:26:31 -0700 (PDT)
+Date:   Fri, 3 Jun 2022 11:26:24 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1654280789;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=6P5lQp7f1U6MO1nhpEo5fz8dqgLk7uC+qLCjNkbqKlk=;
+        b=kJT9JFrPbx/E8af9vqV3vzJQ6fXdHUE3mDvehEEMY+MuQPB36/c3xrUq+gxk/NxA8PtD6A
+        PGVevMn3UXxXer7tyzQ2QtToYQuWZGrHJkE214vC/LRtDwzi7B2yUZhJOiO/lxTyamY3Um
+        +So9hpmTUwJ7udfeQkRmftxFvmbKyhI=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Roman Gushchin <roman.gushchin@linux.dev>
+To:     Qi Zheng <zhengqi.arch@bytedance.com>
+Cc:     mhocko@kernel.org, hannes@cmpxchg.org, shakeelb@google.com,
+        songmuchun@bytedance.com, akpm@linux-foundation.org,
+        corbet@lwn.net, linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org
+Subject: Re: [PATCH] mm: memcontrol: separate
+ {pgscan,pgsteal}_{kswapd,direct} items in memory.stat of cgroup v2
+Message-ID: <YppSUNH31v6IdPUM@carbon>
+References: <20220603070423.10025-1-zhengqi.arch@bytedance.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220602164504.261361-1-amartinz@shiftphones.com>
+In-Reply-To: <20220603070423.10025-1-zhengqi.arch@bytedance.com>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 02, 2022 at 06:45:03PM +0200, Alexander Martinz wrote:
-> The initialization sequence is taken from the version provided
-> by the supplier [1].
+On Fri, Jun 03, 2022 at 03:04:23PM +0800, Qi Zheng wrote:
+> There are already statistics of {pgscan,pgsteal}_kswapd and
+> {pgscan,pgsteal}_direct of memcg event here, but now the sum
+> of the two is displayed in memory.stat of cgroup v2.
 > 
-> This allows speakers using the TFA9890 amplifier to work, which are
-> used by various mobile phones such as the SHIFT6mq.
+> In order to obtain more accurate information during monitoring
+> and debugging, and to align with the display in /proc/vmstat,
+> it better to display {pgscan,pgsteal}_kswapd and
+> {pgscan,pgsteal}_direct separately.
 > 
-> [1]: https://source.codeaurora.org/external/mas/tfa98xx/tree/src/tfa_init.c?id=d2cd12931fbc48df988b62931fb9960d4e9dc05d#n1827
+> Moreover, after this modification, all memcg events can be
+> printed with a combination of vm_event_name() and memcg_events().
+> This allows us to create an array to traverse and print, which
+> reduces redundant seq_buf_printf() codes.
 > 
-> Signed-off-by: Alexander Martinz <amartinz@shiftphones.com>
-> ---
->  sound/soc/codecs/tfa989x.c | 30 ++++++++++++++++++++++++++++++
->  1 file changed, 30 insertions(+)
-> 
-> diff --git a/sound/soc/codecs/tfa989x.c b/sound/soc/codecs/tfa989x.c
-> index dc86852752c5..8ab2656de750 100644
-> --- a/sound/soc/codecs/tfa989x.c
-> +++ b/sound/soc/codecs/tfa989x.c
-...
-> @@ -188,6 +190,33 @@ static struct snd_soc_dai_driver tfa989x_dai = {
->  	.ops = &tfa989x_dai_ops,
->  };
->  
-> +static int tfa9890_init(struct regmap *regmap)
-> +{
-> +	int ret;
-> +
-> +	/* unhide keys to allow updating them */
+> Signed-off-by: Qi Zheng <zhengqi.arch@bytedance.com>
 
-Nitpick: I think the magic number is the "key" to hide/unhide certain
-*registers*. This comment implies that you are hiding *keys*.
-
-Maybe just write something like
-
-	/* temporarily allow access to hidden registers */
-	...
-	/* hide registers again */
-
-With that fixed, feel free to add my
-
-Reviewed-by: Stephan Gerhold <stephan@gerhold.net>
+Acked-by: Roman Gushchin <roman.gushchin@linux.dev>
 
 Thanks!
-Stephan
-
-> +	ret = regmap_write(regmap, TFA989X_HIDE_UNHIDE_KEY, 0x5a6b);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/* update PLL registers */
-> +	ret = regmap_set_bits(regmap, 0x59, 0x3);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/* hide keys again */
-> +	ret = regmap_write(regmap, TFA989X_HIDE_UNHIDE_KEY, 0x0000);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return regmap_write(regmap, TFA989X_CURRENTSENSE2, 0x7BE1);
-> +}
-> +
-> +static const struct tfa989x_rev tfa9890_rev = {
-> +	.rev	= TFA9890_REVISION,
-> +	.init	= tfa9890_init,
-> +};
-> +
-k
