@@ -2,185 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12745C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:42:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E40DAC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:42:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344865AbiFCRmZ (ORCPT
+        id S1344926AbiFCRm1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:42:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56888 "EHLO
+        Fri, 3 Jun 2022 13:42:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344796AbiFCRl0 (ORCPT
+        with ESMTP id S1344855AbiFCRly (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:41:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CF1253E17;
-        Fri,  3 Jun 2022 10:41:02 -0700 (PDT)
+        Fri, 3 Jun 2022 13:41:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09E5D5372C;
+        Fri,  3 Jun 2022 10:41:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C01161AFE;
-        Fri,  3 Jun 2022 17:41:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A61FC385A9;
-        Fri,  3 Jun 2022 17:41:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4051361AFB;
+        Fri,  3 Jun 2022 17:41:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 469CBC385B8;
+        Fri,  3 Jun 2022 17:41:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278061;
-        bh=yS4otYUU0vFSReqi1ObCJpiy+XwQ2dmOb6zQ0qGQZvo=;
-        h=From:To:Cc:Subject:Date:From;
-        b=iIo+33Xyi/KM0ELST/6JSgIjoyKM0CC0FGVcaui0qFXQ/Ol1W5B6RVyET3uYYSQdE
-         mWnYu3NvYeboNuP6s8VxynqdJaflrTW57W0w0rUDKXxwgil9SwCbxidEML0Hkq5ygT
-         M2okPgEuSe97rohGAk2fbuCqiZPd+xgnEjGHQ2JY=
+        s=korg; t=1654278070;
+        bh=IsxHG8ttFcdvmopn3+fk/7LmtauGr8BOoVZrHnUy7wM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Q3mzKnY+ztin/AOrTwBympWhCzrlqLZ2KKcDizVRqfOxGLjwyviJT8+kGenaxrBKq
+         apBt3Pbqes/LAasnstEdJxgCDlniXo7BjN9wIaektf63RrhDyPLmD/bIl8SSuIr91x
+         qriFIF7ZcRAtM/4RFC6oZ+Osm4J7r+ixk3ctJCOQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: [PATCH 4.14 00/23] 4.14.282-rc1 review
-Date:   Fri,  3 Jun 2022 19:39:27 +0200
-Message-Id: <20220603173814.362515009@linuxfoundation.org>
+        stable@vger.kernel.org, Sultan Alsawaf <sultan@kerneltoast.com>,
+        Minchan Kim <minchan@kernel.org>,
+        Nitin Gupta <ngupta@vflare.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 4.14 15/23] zsmalloc: fix races between asynchronous zspage free and page migration
+Date:   Fri,  3 Jun 2022 19:39:42 +0200
+Message-Id: <20220603173814.827592240@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-MIME-Version: 1.0
+In-Reply-To: <20220603173814.362515009@linuxfoundation.org>
+References: <20220603173814.362515009@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.14.282-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-4.14.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 4.14.282-rc1
-X-KernelTest-Deadline: 2022-06-05T17:38+00:00
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 4.14.282 release.
-There are 23 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
+From: Sultan Alsawaf <sultan@kerneltoast.com>
 
-Responses should be made by Sun, 05 Jun 2022 17:38:05 +0000.
-Anything received after that time might be too late.
+commit 2505a981114dcb715f8977b8433f7540854851d8 upstream.
 
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.14.282-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.14.y
-and the diffstat can be found below.
+The asynchronous zspage free worker tries to lock a zspage's entire page
+list without defending against page migration.  Since pages which haven't
+yet been locked can concurrently migrate off the zspage page list while
+lock_zspage() churns away, lock_zspage() can suffer from a few different
+lethal races.
 
-thanks,
+It can lock a page which no longer belongs to the zspage and unsafely
+dereference page_private(), it can unsafely dereference a torn pointer to
+the next page (since there's a data race), and it can observe a spurious
+NULL pointer to the next page and thus not lock all of the zspage's pages
+(since a single page migration will reconstruct the entire page list, and
+create_page_chain() unconditionally zeroes out each list pointer in the
+process).
 
-greg k-h
+Fix the races by using migrate_read_lock() in lock_zspage() to synchronize
+with page migration.
 
--------------
-Pseudo-Shortlog of commits:
+Link: https://lkml.kernel.org/r/20220509024703.243847-1-sultan@kerneltoast.com
+Fixes: 77ff465799c602 ("zsmalloc: zs_page_migrate: skip unnecessary loops but not return -EBUSY if zspage is not inuse")
+Signed-off-by: Sultan Alsawaf <sultan@kerneltoast.com>
+Acked-by: Minchan Kim <minchan@kernel.org>
+Cc: Nitin Gupta <ngupta@vflare.org>
+Cc: Sergey Senozhatsky <senozhatsky@chromium.org>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ mm/zsmalloc.c |   37 +++++++++++++++++++++++++++++++++----
+ 1 file changed, 33 insertions(+), 4 deletions(-)
 
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 4.14.282-rc1
-
-Liu Jian <liujian56@huawei.com>
-    bpf: Enlarge offset check value to INT_MAX in bpf_skb_{load,store}_bytes
-
-Chuck Lever <chuck.lever@oracle.com>
-    NFSD: Fix possible sleep during nfsd4_release_lockowner()
-
-Akira Yokosawa <akiyks@gmail.com>
-    docs: submitting-patches: Fix crossref to 'The canonical patch format'
-
-Xiu Jianfeng <xiujianfeng@huawei.com>
-    tpm: ibmvtpm: Correct the return value in tpm_ibmvtpm_probe()
-
-Sarthak Kukreti <sarthakkukreti@google.com>
-    dm verity: set DM_TARGET_IMMUTABLE feature flag
-
-Mikulas Patocka <mpatocka@redhat.com>
-    dm stats: add cond_resched when looping over entries
-
-Mikulas Patocka <mpatocka@redhat.com>
-    dm crypt: make printing of the key constant-time
-
-Dan Carpenter <dan.carpenter@oracle.com>
-    dm integrity: fix error code in dm_integrity_ctr()
-
-Sultan Alsawaf <sultan@kerneltoast.com>
-    zsmalloc: fix races between asynchronous zspage free and page migration
-
-Florian Westphal <fw@strlen.de>
-    netfilter: conntrack: re-fetch conntrack after insertion
-
-Kees Cook <keescook@chromium.org>
-    exec: Force single empty string when argv is empty
-
-Haimin Zhang <tcs.kernel@gmail.com>
-    block-map: add __GFP_ZERO flag for alloc_page in function bio_copy_kern
-
-Gustavo A. R. Silva <gustavoars@kernel.org>
-    drm/i915: Fix -Wstringop-overflow warning in call to intel_read_wm_latency()
-
-Stephen Brennan <stephen.s.brennan@oracle.com>
-    assoc_array: Fix BUG_ON during garbage collect
-
-Piyush Malgujar <pmalgujar@marvell.com>
-    drivers: i2c: thunderx: Allow driver to work with ACPI defined TWSI controllers
-
-Joel Stanley <joel@jms.id.au>
-    net: ftgmac100: Disable hardware checksum on AST2600
-
-Thomas Bartschies <thomas.bartschies@cvk.de>
-    net: af_key: check encryption module availability consistency
-
-Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-    ACPI: sysfs: Fix BERT error region memory mapping
-
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-    ACPI: sysfs: Make sparse happy about address space in use
-
-Willy Tarreau <w@1wt.eu>
-    secure_seq: use the 64 bits of the siphash for port offset calculation
-
-Eric Dumazet <edumazet@google.com>
-    tcp: change source port randomizarion at connect() time
-
-Denis Efremov (Oracle) <efremov@linux.com>
-    staging: rtl8723bs: prevent ->Ssid overflow in rtw_wx_set_scan()
-
-Thomas Gleixner <tglx@linutronix.de>
-    x86/pci/xen: Disable PCI/MSI[-X] masking for XEN_HVM guests
-
-
--------------
-
-Diffstat:
-
- Documentation/process/submitting-patches.rst   |  2 +-
- Makefile                                       |  4 +--
- arch/x86/pci/xen.c                             |  5 ++++
- block/bio.c                                    |  2 +-
- drivers/acpi/sysfs.c                           | 23 +++++++++++-----
- drivers/char/tpm/tpm_ibmvtpm.c                 |  1 +
- drivers/gpu/drm/i915/intel_pm.c                |  2 +-
- drivers/i2c/busses/i2c-thunderx-pcidrv.c       |  1 +
- drivers/md/dm-crypt.c                          | 14 +++++++---
- drivers/md/dm-integrity.c                      |  2 --
- drivers/md/dm-stats.c                          |  8 ++++++
- drivers/md/dm-verity-target.c                  |  1 +
- drivers/net/ethernet/faraday/ftgmac100.c       |  5 ++++
- drivers/staging/rtl8723bs/os_dep/ioctl_linux.c |  6 +++--
- fs/exec.c                                      | 17 ++++++++++++
- fs/nfsd/nfs4state.c                            | 12 +++------
- include/net/inet_hashtables.h                  |  2 +-
- include/net/netfilter/nf_conntrack_core.h      |  7 ++++-
- include/net/secure_seq.h                       |  4 +--
- lib/assoc_array.c                              |  8 ++++++
- mm/zsmalloc.c                                  | 37 +++++++++++++++++++++++---
- net/core/filter.c                              |  4 +--
- net/core/secure_seq.c                          |  4 +--
- net/ipv4/inet_hashtables.c                     | 28 ++++++++++++++-----
- net/ipv6/inet6_hashtables.c                    |  4 +--
- net/key/af_key.c                               |  6 ++---
- 26 files changed, 160 insertions(+), 49 deletions(-)
+--- a/mm/zsmalloc.c
++++ b/mm/zsmalloc.c
+@@ -952,11 +952,40 @@ static void reset_page(struct page *page
+  */
+ void lock_zspage(struct zspage *zspage)
+ {
+-	struct page *page = get_first_page(zspage);
++	struct page *curr_page, *page;
+ 
+-	do {
+-		lock_page(page);
+-	} while ((page = get_next_page(page)) != NULL);
++	/*
++	 * Pages we haven't locked yet can be migrated off the list while we're
++	 * trying to lock them, so we need to be careful and only attempt to
++	 * lock each page under migrate_read_lock(). Otherwise, the page we lock
++	 * may no longer belong to the zspage. This means that we may wait for
++	 * the wrong page to unlock, so we must take a reference to the page
++	 * prior to waiting for it to unlock outside migrate_read_lock().
++	 */
++	while (1) {
++		migrate_read_lock(zspage);
++		page = get_first_page(zspage);
++		if (trylock_page(page))
++			break;
++		get_page(page);
++		migrate_read_unlock(zspage);
++		wait_on_page_locked(page);
++		put_page(page);
++	}
++
++	curr_page = page;
++	while ((page = get_next_page(curr_page))) {
++		if (trylock_page(page)) {
++			curr_page = page;
++		} else {
++			get_page(page);
++			migrate_read_unlock(zspage);
++			wait_on_page_locked(page);
++			put_page(page);
++			migrate_read_lock(zspage);
++		}
++	}
++	migrate_read_unlock(zspage);
+ }
+ 
+ int trylock_zspage(struct zspage *zspage)
 
 
