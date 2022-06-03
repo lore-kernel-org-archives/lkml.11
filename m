@@ -2,237 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D9E9C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:35:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BB2EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:37:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244909AbiFCRfX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:35:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41142 "EHLO
+        id S239546AbiFCRhs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 13:37:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344523AbiFCRfT (ORCPT
+        with ESMTP id S232282AbiFCRhp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:35:19 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69C3652E67
-        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 10:35:16 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id q12-20020a17090a304c00b001e2d4fb0eb4so12588447pjl.4
-        for <linux-kernel@vger.kernel.org>; Fri, 03 Jun 2022 10:35:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wsGkporiWQeNHg4v1skX8MmfnPHmZ0ni6U0Bq1ri7HA=;
-        b=a1sktZ6PwTtJdZaiQGYWK4MxHPhEr3vs5B0FyLaZOmVggg3/BzW2lFLLjb4vdmZ2CM
-         5tdYsRV4Tl1/efkLpIahk9F3SmrQ5a9wS/pdsPXgydC6nU6Aq+3QE1TAZjfLTiGszZJP
-         wWHnm8d+dE53knPFb08NqEB0r1WGlH+WTqimSxLxIUH9Co088ymYV3G03+rGClHdUdLD
-         1VUHbZUkzEzNAdMDaY7zwRX0M1bCniqdHONnnQn3TCRwa/eTtQrTEPFkfZZ3Vb+9u42t
-         Jnt6wzCrwFif404LEePDQmE5XXMq3Ly9WbIA1zCToHxYzdXKwCXsPqlzpQPM+YkmOoWQ
-         fAEw==
+        Fri, 3 Jun 2022 13:37:45 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9FF2450B11
+        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 10:37:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654277863;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=0aUCBdDLRZgXZUTdZmjGfl1wafgZ6gf3pWlYAS6s0rQ=;
+        b=FIuKj2qsB99FY6HenwnZHX6SZQNpZgNhiM7rconN7fNcIjkPISQ01bFFQG2If7xbT2dah6
+        dXF33OcNh+luz+z7saY59xZjFfZ3xLWQrEfwWjNwjqiD8urAXNeko7i4qpcVYf087dGc8H
+        6/B1PA5hfrJ9qs2i3iJV1tq1rpUKfp0=
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com
+ [209.85.166.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-58-I2qUrBrkMMGjlJJFsoNiiw-1; Fri, 03 Jun 2022 13:37:42 -0400
+X-MC-Unique: I2qUrBrkMMGjlJJFsoNiiw-1
+Received: by mail-il1-f199.google.com with SMTP id r9-20020a92cd89000000b002d16798b3cfso6659909ilb.22
+        for <linux-kernel@vger.kernel.org>; Fri, 03 Jun 2022 10:37:42 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wsGkporiWQeNHg4v1skX8MmfnPHmZ0ni6U0Bq1ri7HA=;
-        b=0iy3+4hokxk/NuwUesH3amiONdR0L9akRLScFIvmjbxAhzbJh4zn5U5WqtPF1t1g8s
-         LDnVjwR7ygATUxgRTPotJGd6w8pm4ei11JFrKKHDvCBiYADpgr569eIqPovunrDo3NWj
-         kJ/2kBXgY1GaQhztkz56waJU11nHwFGS5j8yQ67vh3l1buTuqNHoAOvCMiT2t8CUP1Tl
-         nhynsdkiz1xZY2BLFE+j0F0Cby40kMUA8IE6bNLuva/8enxrbeyf0CJBNID+yl5ad8ZO
-         vluiVjRduj59fo7JEeG/tPin6860wFKekWgx/J2RXUMeO2rKcyRayDLX8UFIA2uIMkJ9
-         PocQ==
-X-Gm-Message-State: AOAM5337j+cWZFtbk2Jif27/7RQuMHbcjnIKShNTYuqJSxl+F4lcFea2
-        01sGZC4FHLsTHNd2+zaMCBbhAw==
-X-Google-Smtp-Source: ABdhPJx88jfqJGvlh85IKtdIkpIo1pu4gJb5NXPiJ/0S9jrCIk/XxyxIGjdKNFq7q+cF1hUVJ66yCQ==
-X-Received: by 2002:a17:902:d2d1:b0:167:4c33:d5d3 with SMTP id n17-20020a170902d2d100b001674c33d5d3mr3799752plc.81.1654277715866;
-        Fri, 03 Jun 2022 10:35:15 -0700 (PDT)
-Received: from localhost.localdomain ([50.39.160.154])
-        by smtp.gmail.com with ESMTPSA id x17-20020a056a000bd100b0051be1b4cfb5sm1730265pfu.5.2022.06.03.10.35.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Jun 2022 10:35:15 -0700 (PDT)
-From:   Tadeusz Struk <tadeusz.struk@linaro.org>
-To:     Tejun Heo <tj@kernel.org>
-Cc:     Tadeusz Struk <tadeusz.struk@linaro.org>,
-        Michal Koutny <mkoutny@suse.com>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, cgroups@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        stable@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzbot+e42ae441c3b10acf9e9d@syzkaller.appspotmail.com
-Subject: [PATCH] cgroup: serialize css kill and release paths
-Date:   Fri,  3 Jun 2022 10:34:55 -0700
-Message-Id: <20220603173455.441537-1-tadeusz.struk@linaro.org>
-X-Mailer: git-send-email 2.36.1
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=0aUCBdDLRZgXZUTdZmjGfl1wafgZ6gf3pWlYAS6s0rQ=;
+        b=mPuirnpch4WhD7HvFBmk9h0Sw4GiepdJeFFwnfIriR10VMFgTEArGbcz/Oplx7M9up
+         A5q36r8O2LJxL/uetg7ZX0B3LdTr10zIHbspGfryS8YGVF0UpEB+2CI6DjpThu1SlfUk
+         U5k4Nfh0/8GYA1UEepInhaE4/PggYNYOzvyDG65NZ68hJbKvV2qwAt9je8wls2VUh9og
+         dmF+H9k+W2Pu9kW8vfEOFRRo3MlgauxF0coABzstV+F3djQ3G3iEQrmH2VpDt2odw9BM
+         ILFXz4r4M+Em4V013vhqoc27VBwdDk1MsKTt1YhTzq9aKo/wNh9AxhS6dfWtbvkMTIQW
+         pDGg==
+X-Gm-Message-State: AOAM531KccRcH8tWkLUXppoTZ11n/X0cEnQCNleQ09TKSbZ8rL5/Iggp
+        sdsnDbcT8+YeQJWfMPPpaFWxZxjmdA2ueb8je1vCrxUCmNXkLR9AcVcUYDosBUtbZ5lhmyHvLAt
+        Pv4V1HHhI7eKa/2G4JFvGcSTD5MWllrTTCE1yGb8PYP5ecWajcWIvwCVQJA4TzqoJJ6OkP1EPXg
+        ==
+X-Received: by 2002:a02:ce8b:0:b0:331:6050:6171 with SMTP id y11-20020a02ce8b000000b0033160506171mr6014972jaq.319.1654277861443;
+        Fri, 03 Jun 2022 10:37:41 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxT5yNyOJqrMirvzChd6Jq1GY7aquh0xWawRy0pwsachq+SjLrMtUXFuDfeFTAii6nzxub+Mw==
+X-Received: by 2002:a02:ce8b:0:b0:331:6050:6171 with SMTP id y11-20020a02ce8b000000b0033160506171mr6014940jaq.319.1654277860823;
+        Fri, 03 Jun 2022 10:37:40 -0700 (PDT)
+Received: from localhost.localdomain (cpec09435e3e0ee-cmc09435e3e0ec.cpe.net.cable.rogers.com. [99.241.198.116])
+        by smtp.gmail.com with ESMTPSA id g23-20020a02bb97000000b0032e1e0ac289sm2791117jan.8.2022.06.03.10.37.39
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Fri, 03 Jun 2022 10:37:40 -0700 (PDT)
+From:   Peter Xu <peterx@redhat.com>
+To:     linux-kernel@vger.kernel.org, linux-man@vger.kernel.org,
+        linux-mm@kvack.org
+Cc:     Michael Kerrisk <mtk.manpages@gmail.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Alejandro Colomar <alx.manpages@gmail.com>,
+        Nadav Amit <nadav.amit@gmail.com>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>, peterx@redhat.com
+Subject: [PATCH v2 1/2] userfaultfd.2: Add section for UFFD_USER_MODE_ONLY
+Date:   Fri,  3 Jun 2022 13:37:35 -0400
+Message-Id: <20220603173736.62581-2-peterx@redhat.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220603173736.62581-1-peterx@redhat.com>
+References: <20220603173736.62581-1-peterx@redhat.com>
 MIME-Version: 1.0
+Content-type: text/plain
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Syzbot found a corrupted list bug scenario that can be triggered from
-cgroup_subtree_control_write(cgrp). The reproduces writes to
-cgroup.subtree_control file, which invokes:
-cgroup_apply_control_enable()->css_create()->css_populate_dir(), which
-then fails with a fault injected -ENOMEM.
-In such scenario the css_killed_work_fn will be en-queued via
-cgroup_apply_control_disable(cgrp)->kill_css(css), and bail out to
-cgroup_kn_unlock(). Then cgroup_kn_unlock() will call:
-cgroup_put(cgrp)->css_put(&cgrp->self), which will try to enqueue
-css_release_work_fn for the same css instance, causing a list_add
-corruption bug, as can be seen in the syzkaller report [1].
+Add a paragraph for UFFD_USER_MODE_ONLY flag that was introduced in
+Linux 5.11.
 
-Fix this by synchronizing the css ref_kill and css_release jobs.
-css_release() function will check if the css_killed_work_fn() has been
-scheduled for the css and only en-queue the css_release_work_fn()
-if css_killed_work_fn wasn't already en-queued. Otherwise css_release() will
-set the CSS_REL_LATER flag for that css. This will cause the css_release_work_fn()
-work to be executed after css_killed_work_fn() is finished.
-
-Two scc flags have been introduced to implement this serialization mechanizm:
-
- * CSS_KILL_ENQED, which will be set when css_killed_work_fn() is en-queued, and
- * CSS_REL_LATER, which, if set, will cause the css_release_work_fn() to be
-   scheduled after the css_killed_work_fn is finished.
-
-There is also a new lock, which will protect the integrity of the css flags.
-
-[1] https://syzkaller.appspot.com/bug?id=e26e54d6eac9d9fb50b221ec3e4627b327465dbd
-
-Cc: Tejun Heo <tj@kernel.org>
-Cc: Michal Koutny <mkoutny@suse.com>
-Cc: Zefan Li <lizefan.x@bytedance.com>
-Cc: Johannes Weiner <hannes@cmpxchg.org>
-Cc: Christian Brauner <brauner@kernel.org>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Andrii Nakryiko <andrii@kernel.org>
-Cc: Martin KaFai Lau <kafai@fb.com>
-Cc: Song Liu <songliubraving@fb.com>
-Cc: Yonghong Song <yhs@fb.com>
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: KP Singh <kpsingh@kernel.org>
-Cc: <cgroups@vger.kernel.org>
-Cc: <netdev@vger.kernel.org>
-Cc: <bpf@vger.kernel.org>
-Cc: <stable@vger.kernel.org>
-Cc: <linux-kernel@vger.kernel.org>
-
-Reported-and-tested-by: syzbot+e42ae441c3b10acf9e9d@syzkaller.appspotmail.com
-Fixes: 8f36aaec9c92 ("cgroup: Use rcu_work instead of explicit rcu and work item")
-Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
+Signed-off-by: Peter Xu <peterx@redhat.com>
 ---
- include/linux/cgroup-defs.h |  4 ++++
- kernel/cgroup/cgroup.c      | 35 ++++++++++++++++++++++++++++++++---
- 2 files changed, 36 insertions(+), 3 deletions(-)
+ man2/userfaultfd.2 | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/cgroup-defs.h b/include/linux/cgroup-defs.h
-index 1bfcfb1af352..8dc8b4edb242 100644
---- a/include/linux/cgroup-defs.h
-+++ b/include/linux/cgroup-defs.h
-@@ -53,6 +53,8 @@ enum {
- 	CSS_RELEASED	= (1 << 2), /* refcnt reached zero, released */
- 	CSS_VISIBLE	= (1 << 3), /* css is visible to userland */
- 	CSS_DYING	= (1 << 4), /* css is dying */
-+	CSS_KILL_ENQED	= (1 << 5), /* kill work enqueued for the css */
-+	CSS_REL_LATER	= (1 << 6), /* release needs to be done after kill */
- };
- 
- /* bits in struct cgroup flags field */
-@@ -162,6 +164,8 @@ struct cgroup_subsys_state {
- 	 */
- 	int id;
- 
-+	/* lock to protect flags */
-+	spinlock_t lock;
- 	unsigned int flags;
- 
- 	/*
-diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
-index 1779ccddb734..a0ceead4b390 100644
---- a/kernel/cgroup/cgroup.c
-+++ b/kernel/cgroup/cgroup.c
-@@ -5210,8 +5210,23 @@ static void css_release(struct percpu_ref *ref)
- 	struct cgroup_subsys_state *css =
- 		container_of(ref, struct cgroup_subsys_state, refcnt);
- 
--	INIT_WORK(&css->destroy_work, css_release_work_fn);
--	queue_work(cgroup_destroy_wq, &css->destroy_work);
-+	spin_lock_bh(&css->lock);
-+
-+	/*
-+	 * Check if the css_killed_work_fn work has been scheduled for this
-+	 * css and enqueue css_release_work_fn only if it wasn't.
-+	 * Otherwise set the CSS_REL_LATER flag, which will cause
-+	 * release to be enqueued after css_killed_work_fn is finished.
-+	 * This is to prevent list corruption by en-queuing two instance
-+	 * of the same work struct on the same WQ, namely cgroup_destroy_wq.
-+	 */
-+	if (!(css->flags & CSS_KILL_ENQED)) {
-+		INIT_WORK(&css->destroy_work, css_release_work_fn);
-+		queue_work(cgroup_destroy_wq, &css->destroy_work);
-+	} else {
-+		css->flags |= CSS_REL_LATER;
-+	}
-+	spin_unlock_bh(&css->lock);
- }
- 
- static void init_and_link_css(struct cgroup_subsys_state *css,
-@@ -5230,6 +5245,7 @@ static void init_and_link_css(struct cgroup_subsys_state *css,
- 	INIT_LIST_HEAD(&css->rstat_css_node);
- 	css->serial_nr = css_serial_nr_next++;
- 	atomic_set(&css->online_cnt, 0);
-+	spin_lock_init(&css->lock);
- 
- 	if (cgroup_parent(cgrp)) {
- 		css->parent = cgroup_css(cgroup_parent(cgrp), ss);
-@@ -5545,10 +5561,12 @@ int cgroup_mkdir(struct kernfs_node *parent_kn, const char *name, umode_t mode)
-  */
- static void css_killed_work_fn(struct work_struct *work)
- {
--	struct cgroup_subsys_state *css =
-+	struct cgroup_subsys_state *css_killed, *css =
- 		container_of(work, struct cgroup_subsys_state, destroy_work);
- 
- 	mutex_lock(&cgroup_mutex);
-+	css_killed = css;
-+	css_killed->flags &= ~CSS_KILL_ENQED;
- 
- 	do {
- 		offline_css(css);
-@@ -5557,6 +5575,14 @@ static void css_killed_work_fn(struct work_struct *work)
- 		css = css->parent;
- 	} while (css && atomic_dec_and_test(&css->online_cnt));
- 
-+	spin_lock_bh(&css->lock);
-+	if (css_killed->flags & CSS_REL_LATER) {
-+		/* If css_release work was delayed for the css enqueue it now. */
-+		INIT_WORK(&css_killed->destroy_work, css_release_work_fn);
-+		queue_work(cgroup_destroy_wq, &css_killed->destroy_work);
-+		css_killed->flags &= ~CSS_REL_LATER;
-+	}
-+	spin_unlock_bh(&css->lock);
- 	mutex_unlock(&cgroup_mutex);
- }
- 
-@@ -5566,10 +5592,13 @@ static void css_killed_ref_fn(struct percpu_ref *ref)
- 	struct cgroup_subsys_state *css =
- 		container_of(ref, struct cgroup_subsys_state, refcnt);
- 
-+	spin_lock_bh(&css->lock);
- 	if (atomic_dec_and_test(&css->online_cnt)) {
-+		css->flags |= CSS_KILL_ENQED;
- 		INIT_WORK(&css->destroy_work, css_killed_work_fn);
- 		queue_work(cgroup_destroy_wq, &css->destroy_work);
- 	}
-+	spin_unlock_bh(&css->lock);
- }
- 
- /**
+diff --git a/man2/userfaultfd.2 b/man2/userfaultfd.2
+index 93dca009f..6b9412aaf 100644
+--- a/man2/userfaultfd.2
++++ b/man2/userfaultfd.2
+@@ -12,8 +12,9 @@ Standard C library
+ .RI ( libc ", " \-lc )
+ .SH SYNOPSIS
+ .nf
+-.BR "#include <fcntl.h>" "            /* Definition of " O_* " constants */"
+-.BR "#include <sys/syscall.h>" "      /* Definition of " SYS_* " constants */"
++.BR "#include <fcntl.h>" "             /* Definition of " O_* " constants */"
++.BR "#include <sys/syscall.h>" "       /* Definition of " SYS_* " constants */"
++.BR "#include <linux/userfaultfd.h>" " /* Definition of " UFFD_* " constants */"
+ .B #include <unistd.h>
+ .PP
+ .BI "int syscall(SYS_userfaultfd, int " flags );
+@@ -59,6 +60,15 @@ See the description of the
+ .B O_NONBLOCK
+ flag in
+ .BR open (2).
++.TP
++.B UFFD_USER_MODE_ONLY
++This is an userfaultfd specific flag that was introduced since Linux 5.11.
++When set, the userfaultfd object will only be able to handle page faults
++originated from the userspace on the registered regions.
++When a kernel originated fault was triggered on the registered range with
++this userfaultfd, a
++.B SIGBUS
++signal will be delivered.
+ .PP
+ When the last file descriptor referring to a userfaultfd object is closed,
+ all memory ranges that were registered with the object are unregistered
 -- 
-2.36.1
+2.32.0
+
