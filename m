@@ -2,58 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 249EEC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 00:46:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1545C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 00:46:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240361AbiFCAqV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 20:46:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47504 "EHLO
+        id S240381AbiFCAqZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 20:46:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240000AbiFCAod (ORCPT
+        with ESMTP id S240026AbiFCAoW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 20:44:33 -0400
-Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9542B344D6
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:44:31 -0700 (PDT)
-Received: by mail-pf1-x44a.google.com with SMTP id t1-20020a62ea01000000b0051be221a3ebso117037pfh.17
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:44:31 -0700 (PDT)
+        Thu, 2 Jun 2022 20:44:22 -0400
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DA3D344F6
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:44:12 -0700 (PDT)
+Received: by mail-pl1-x649.google.com with SMTP id c4-20020a170902c2c400b0015f16fb4a54so3464809pla.22
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:44:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=oQCFxAMCy4Jw3XIpLJBHS6CjwFdvmqncc8xgI0mkXvE=;
-        b=cb+u0MrvY0qwG6yYIcajRJxDjinOHBOnxIj9/C3BQTYNbiiYPTEUcwH7HJstTeOXBG
-         rgcITQi7lKuW/VCIetZmctjuEhh9swe3EXBEAOn8xX2d399IYUiu+j+VUIOh6laT8NS2
-         ets/zk81mg14ujWW9DCOfD7U2GRm/x7gTq+UoOp7S/FEfsK0kjDEEXHAhf6kZdXfBuLT
-         mPTBPxwFCOkQasXg5QfD8v1mE2X2Uhii3rh6XzJdKmaOGT/fP3vquhZsJUyBp1L0x5C5
-         bSrmtk5T4+ZlZ1aF6oaP9yfgxqaxXDxJerIBNJg6ZfJvzrqix1lIbN/8T/hHG4+yu8mI
-         e4KQ==
+        bh=Tb5TEdt+uXDSL4SoIzZZFsxwZQPMR2JHTQw9ksqwQts=;
+        b=pJrqvp20adHQPHwxo67IrBL6Ni2dd8QcTANk5X7fy/+VvSeosGEB9JVrjMTdMfncZd
+         LHeLK/Z+hPmM2PC2dtvom4/9K/ElgYxycRPtYfhgU0o7xMme6A/X1PPz30F9rGKk0ACV
+         0nhvHwnGhljMHW88UlLNxtmE4cACxtxZ9KMi+jj+z93ZM3zg91ziQ9Hj5p9pjRAK7gDH
+         zHA5fUli1JgX2XbyrF0A5bQ88KFhcI7mfEg6GfSShptRNjPHh7tU8RsG9Ly5J0W5/enm
+         mO7ZCt2flqB7ZQFZyAitnsIPw0Y0vEqEIh746X6suO9r4SLwRgwqvscozkteBGo5clZ6
+         R4tw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=oQCFxAMCy4Jw3XIpLJBHS6CjwFdvmqncc8xgI0mkXvE=;
-        b=FSNgiy4SswSwIWXd93K9B/16t5dNGMRM6V7d6tOfZH0NHM0L7tq15cAqrtg/Oi1BhL
-         JynlveZyfIOcYNY/91mquvt3fTnM9JtqOEKiN81ERgkbho4lPLE0tlaRNdOBAcvY/eWK
-         FF23WWKjMYEnJSZnf4GzkdJfzu8kK9OzUGZ/3PFq4kIRRYvx3Bn4EZMz/UeXNecyWao6
-         cXxK4UtlGJSa/DnaA3/H3wrnxTv/YiQwYd+eQf2rpiqynCt/lZTi8rfJWUxHKPCSCO6x
-         rmLubHyjoIu/CKvt9DpzP+t/SrYu9LwSbClwnyiNxY/SgyQD7G2FuLnMgUnw1tKlcgke
-         Rx0Q==
-X-Gm-Message-State: AOAM530IYI1ZdWtfESTyH/PbkFK708uwWydt/PQOHt/BDIP3aAwVf0IM
-        AkIpMK9t971+fvJpNe7gMyK2vrDtEKs=
-X-Google-Smtp-Source: ABdhPJz62ez6a8c0vVlCM4g19P81v5zbKvAwgB2uHKL7aZeKCHPT+5kmBsl7qS4t0jo3TclNosUHB0ORW60=
+        bh=Tb5TEdt+uXDSL4SoIzZZFsxwZQPMR2JHTQw9ksqwQts=;
+        b=VFNz7KTMUQ1C+rXeK4mHOOFJNL7+R/DKbqCxQs6OyYm2NnQQj32DwWyKMdAyWe/McT
+         uOdyPEPk6HNIx8+/QqLqPQaJreRMZuTA3H+Z0bKlrZqzcCh4YuV2SNMPON6fNg/t/T/8
+         4uObddEVaJXJ+DETP4foNFIOhQ/qiGUIMN+OWfgdxoM71KQWlviQGVUpT6YRsQGtaaa8
+         hxnyD6EIFugDFmk5wLgNT2JqsDZETJgIUI3e9z8zckj2paBeDr1Ix0mFUW+6He2FrSOb
+         4XhzI6/YiKCiXJuasOe4z2xUm9D7Un/BdF687bYjQLn41gBn8snpHUPS//E0NMBVrBTC
+         Ld0Q==
+X-Gm-Message-State: AOAM532YR3BO21oM+cDcAOuNVsVt7K3nlVtRfsrJklcg3dJYcNl+4s0c
+        S35tXSYXUlstBPflUZyVfn7QmS58NSI=
+X-Google-Smtp-Source: ABdhPJzIw3yAqKK0Db9aZAs5dBKRwwzsmcWWK4AOkJUdNw7i4athrd2iUcoQdf6yvQdLXDnCqIBYu9xyHlM=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:90b:20d4:b0:1e2:fadf:3f09 with SMTP id
- ju20-20020a17090b20d400b001e2fadf3f09mr8183139pjb.236.1654217071073; Thu, 02
- Jun 2022 17:44:31 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:903:246:b0:153:84fe:a9b0 with SMTP id
+ j6-20020a170903024600b0015384fea9b0mr7562370plh.163.1654217051960; Thu, 02
+ Jun 2022 17:44:11 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri,  3 Jun 2022 00:41:37 +0000
+Date:   Fri,  3 Jun 2022 00:41:27 +0000
 In-Reply-To: <20220603004331.1523888-1-seanjc@google.com>
-Message-Id: <20220603004331.1523888-31-seanjc@google.com>
+Message-Id: <20220603004331.1523888-21-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220603004331.1523888-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v2 030/144] KVM: selftests: Consolidate KVM_ENABLE_CAP usage
+Subject: [PATCH v2 020/144] KVM: selftests: Make x86-64's register dump
+ helpers static
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     kvm@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
@@ -66,321 +67,128 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add __vm_enable_cap() and use it for negative tests that expect
-KVM_ENABLE_CAP to fail.  Opportunistically clean up the MAX_VCPU_ID test
-error messages.
+Make regs_dump() and sregs_dump() static, they're only implemented by
+x86 and only used internally.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../selftests/kvm/include/kvm_util_base.h     |  4 +
- tools/testing/selftests/kvm/lib/x86_64/vmx.c  |  2 +-
- .../kvm/x86_64/max_vcpuid_cap_test.c          | 19 ++---
- .../selftests/kvm/x86_64/sev_migrate_tests.c  | 78 +++++++++----------
- 4 files changed, 52 insertions(+), 51 deletions(-)
+ .../selftests/kvm/lib/kvm_util_internal.h     | 34 ------------------
+ .../selftests/kvm/lib/x86_64/processor.c      | 36 ++-----------------
+ 2 files changed, 2 insertions(+), 68 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
-index 2e1453cb0511..f0afc1dce8ba 100644
---- a/tools/testing/selftests/kvm/include/kvm_util_base.h
-+++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
-@@ -231,6 +231,10 @@ static inline int vm_check_cap(struct kvm_vm *vm, long cap)
- 	return ret;
- }
+diff --git a/tools/testing/selftests/kvm/lib/kvm_util_internal.h b/tools/testing/selftests/kvm/lib/kvm_util_internal.h
+index 0c7c44499129..544b90df2f80 100644
+--- a/tools/testing/selftests/kvm/lib/kvm_util_internal.h
++++ b/tools/testing/selftests/kvm/lib/kvm_util_internal.h
+@@ -88,40 +88,6 @@ struct vcpu *vcpu_get(struct kvm_vm *vm, uint32_t vcpuid);
+  */
+ void virt_dump(FILE *stream, struct kvm_vm *vm, uint8_t indent);
  
-+static inline int __vm_enable_cap(struct kvm_vm *vm, struct kvm_enable_cap *cap)
-+{
-+	return __vm_ioctl(vm, KVM_ENABLE_CAP, cap);
-+}
- static inline void vm_enable_cap(struct kvm_vm *vm, struct kvm_enable_cap *cap)
+-/*
+- * Register Dump
+- *
+- * Input Args:
+- *   stream - Output FILE stream
+- *   regs   - Registers
+- *   indent - Left margin indent amount
+- *
+- * Output Args: None
+- *
+- * Return: None
+- *
+- * Dumps the state of the registers given by @regs, to the FILE stream
+- * given by @stream.
+- */
+-void regs_dump(FILE *stream, struct kvm_regs *regs, uint8_t indent);
+-
+-/*
+- * System Register Dump
+- *
+- * Input Args:
+- *   stream - Output FILE stream
+- *   sregs  - System registers
+- *   indent - Left margin indent amount
+- *
+- * Output Args: None
+- *
+- * Return: None
+- *
+- * Dumps the state of the system registers given by @sregs, to the FILE stream
+- * given by @stream.
+- */
+-void sregs_dump(FILE *stream, struct kvm_sregs *sregs, uint8_t indent);
+-
+ struct userspace_mem_region *
+ memslot2region(struct kvm_vm *vm, uint32_t memslot);
+ 
+diff --git a/tools/testing/selftests/kvm/lib/x86_64/processor.c b/tools/testing/selftests/kvm/lib/x86_64/processor.c
+index 6113cf6bb238..93726d8cac44 100644
+--- a/tools/testing/selftests/kvm/lib/x86_64/processor.c
++++ b/tools/testing/selftests/kvm/lib/x86_64/processor.c
+@@ -19,8 +19,7 @@
+ 
+ vm_vaddr_t exception_handlers;
+ 
+-void regs_dump(FILE *stream, struct kvm_regs *regs,
+-	       uint8_t indent)
++static void regs_dump(FILE *stream, struct kvm_regs *regs, uint8_t indent)
  {
- 	vm_ioctl(vm, KVM_ENABLE_CAP, cap);
-diff --git a/tools/testing/selftests/kvm/lib/x86_64/vmx.c b/tools/testing/selftests/kvm/lib/x86_64/vmx.c
-index 0d42aa821833..14a9a0fd2e50 100644
---- a/tools/testing/selftests/kvm/lib/x86_64/vmx.c
-+++ b/tools/testing/selftests/kvm/lib/x86_64/vmx.c
-@@ -51,7 +51,7 @@ int vcpu_enable_evmcs(struct kvm_vm *vm, int vcpu_id)
- 		 .args[0] = (unsigned long)&evmcs_ver
- 	};
- 
--	vcpu_ioctl(vm, vcpu_id, KVM_ENABLE_CAP, &enable_evmcs_cap);
-+	vcpu_enable_cap(vm, vcpu_id, &enable_evmcs_cap);
- 
- 	/* KVM should return supported EVMCS version range */
- 	TEST_ASSERT(((evmcs_ver >> 8) >= (evmcs_ver & 0xff)) &&
-diff --git a/tools/testing/selftests/kvm/x86_64/max_vcpuid_cap_test.c b/tools/testing/selftests/kvm/x86_64/max_vcpuid_cap_test.c
-index 419fbdc51246..c6fd36a31c8c 100644
---- a/tools/testing/selftests/kvm/x86_64/max_vcpuid_cap_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/max_vcpuid_cap_test.c
-@@ -25,28 +25,25 @@ int main(int argc, char *argv[])
- 	/* Try to set KVM_CAP_MAX_VCPU_ID beyond KVM cap */
- 	cap.cap = KVM_CAP_MAX_VCPU_ID;
- 	cap.args[0] = ret + 1;
--	ret = ioctl(vm->fd, KVM_ENABLE_CAP, &cap);
-+	ret = __vm_enable_cap(vm, &cap);
- 	TEST_ASSERT(ret < 0,
--		    "Unexpected success to enable KVM_CAP_MAX_VCPU_ID"
--		    "beyond KVM cap!\n");
-+		    "Setting KVM_CAP_MAX_VCPU_ID beyond KVM cap should fail");
- 
- 	/* Set KVM_CAP_MAX_VCPU_ID */
- 	cap.cap = KVM_CAP_MAX_VCPU_ID;
- 	cap.args[0] = MAX_VCPU_ID;
--	ret = ioctl(vm->fd, KVM_ENABLE_CAP, &cap);
--	TEST_ASSERT(ret == 0,
--		    "Unexpected failure to enable KVM_CAP_MAX_VCPU_ID!\n");
-+	vm_enable_cap(vm, &cap);
-+
- 
- 	/* Try to set KVM_CAP_MAX_VCPU_ID again */
- 	cap.args[0] = MAX_VCPU_ID + 1;
--	ret = ioctl(vm->fd, KVM_ENABLE_CAP, &cap);
-+	ret = __vm_enable_cap(vm, &cap);
- 	TEST_ASSERT(ret < 0,
--		    "Unexpected success to enable KVM_CAP_MAX_VCPU_ID again\n");
-+		    "Setting KVM_CAP_MAX_VCPU_ID multiple times should fail");
- 
- 	/* Create vCPU with id beyond KVM_CAP_MAX_VCPU_ID cap*/
--	ret = ioctl(vm->fd, KVM_CREATE_VCPU, MAX_VCPU_ID);
--	TEST_ASSERT(ret < 0,
--		    "Unexpected success in creating a vCPU with VCPU ID out of range\n");
-+	ret = __vm_ioctl(vm, KVM_CREATE_VCPU, (void *)MAX_VCPU_ID);
-+	TEST_ASSERT(ret < 0, "Creating vCPU with ID > MAX_VCPU_ID should fail");
- 
- 	kvm_vm_free(vm);
- 	return 0;
-diff --git a/tools/testing/selftests/kvm/x86_64/sev_migrate_tests.c b/tools/testing/selftests/kvm/x86_64/sev_migrate_tests.c
-index 5b565aa11e32..f127f2fccca6 100644
---- a/tools/testing/selftests/kvm/x86_64/sev_migrate_tests.c
-+++ b/tools/testing/selftests/kvm/x86_64/sev_migrate_tests.c
-@@ -80,22 +80,22 @@ static struct kvm_vm *aux_vm_create(bool with_vcpus)
- 	return vm;
+ 	fprintf(stream, "%*srax: 0x%.16llx rbx: 0x%.16llx "
+ 		"rcx: 0x%.16llx rdx: 0x%.16llx\n",
+@@ -43,21 +42,6 @@ void regs_dump(FILE *stream, struct kvm_regs *regs,
+ 		regs->rip, regs->rflags);
  }
  
--static int __sev_migrate_from(int dst_fd, int src_fd)
-+static int __sev_migrate_from(struct kvm_vm *dst, struct kvm_vm *src)
+-/*
+- * Segment Dump
+- *
+- * Input Args:
+- *   stream  - Output FILE stream
+- *   segment - KVM segment
+- *   indent  - Left margin indent amount
+- *
+- * Output Args: None
+- *
+- * Return: None
+- *
+- * Dumps the state of the KVM segment given by @segment, to the FILE stream
+- * given by @stream.
+- */
+ static void segment_dump(FILE *stream, struct kvm_segment *segment,
+ 			 uint8_t indent)
  {
- 	struct kvm_enable_cap cap = {
- 		.cap = KVM_CAP_VM_MOVE_ENC_CONTEXT_FROM,
--		.args = { src_fd }
-+		.args = { src->fd }
- 	};
- 
--	return ioctl(dst_fd, KVM_ENABLE_CAP, &cap);
-+	return __vm_enable_cap(dst, &cap);
+@@ -75,21 +59,6 @@ static void segment_dump(FILE *stream, struct kvm_segment *segment,
+ 		segment->unusable, segment->padding);
  }
  
- 
--static void sev_migrate_from(int dst_fd, int src_fd)
-+static void sev_migrate_from(struct kvm_vm *dst, struct kvm_vm *src)
+-/*
+- * dtable Dump
+- *
+- * Input Args:
+- *   stream - Output FILE stream
+- *   dtable - KVM dtable
+- *   indent - Left margin indent amount
+- *
+- * Output Args: None
+- *
+- * Return: None
+- *
+- * Dumps the state of the KVM dtable given by @dtable, to the FILE stream
+- * given by @stream.
+- */
+ static void dtable_dump(FILE *stream, struct kvm_dtable *dtable,
+ 			uint8_t indent)
  {
- 	int ret;
- 
--	ret = __sev_migrate_from(dst_fd, src_fd);
-+	ret = __sev_migrate_from(dst, src);
- 	TEST_ASSERT(!ret, "Migration failed, ret: %d, errno: %d\n", ret, errno);
+@@ -99,8 +68,7 @@ static void dtable_dump(FILE *stream, struct kvm_dtable *dtable,
+ 		dtable->padding[0], dtable->padding[1], dtable->padding[2]);
  }
  
-@@ -110,13 +110,13 @@ static void test_sev_migrate_from(bool es)
- 		dst_vms[i] = aux_vm_create(true);
- 
- 	/* Initial migration from the src to the first dst. */
--	sev_migrate_from(dst_vms[0]->fd, src_vm->fd);
-+	sev_migrate_from(dst_vms[0], src_vm);
- 
- 	for (i = 1; i < NR_MIGRATE_TEST_VMS; i++)
--		sev_migrate_from(dst_vms[i]->fd, dst_vms[i - 1]->fd);
-+		sev_migrate_from(dst_vms[i], dst_vms[i - 1]);
- 
- 	/* Migrate the guest back to the original VM. */
--	ret = __sev_migrate_from(src_vm->fd, dst_vms[NR_MIGRATE_TEST_VMS - 1]->fd);
-+	ret = __sev_migrate_from(src_vm, dst_vms[NR_MIGRATE_TEST_VMS - 1]);
- 	TEST_ASSERT(ret == -1 && errno == EIO,
- 		    "VM that was migrated from should be dead. ret %d, errno: %d\n", ret,
- 		    errno);
-@@ -128,7 +128,7 @@ static void test_sev_migrate_from(bool es)
- 
- struct locking_thread_input {
- 	struct kvm_vm *vm;
--	int source_fds[NR_LOCK_TESTING_THREADS];
-+	struct kvm_vm *source_vms[NR_LOCK_TESTING_THREADS];
- };
- 
- static void *locking_test_thread(void *arg)
-@@ -138,7 +138,7 @@ static void *locking_test_thread(void *arg)
- 
- 	for (i = 0; i < NR_LOCK_TESTING_ITERATIONS; ++i) {
- 		j = i % NR_LOCK_TESTING_THREADS;
--		__sev_migrate_from(input->vm->fd, input->source_fds[j]);
-+		__sev_migrate_from(input->vm, input->source_vms[j]);
- 	}
- 
- 	return NULL;
-@@ -152,11 +152,11 @@ static void test_sev_migrate_locking(void)
- 
- 	for (i = 0; i < NR_LOCK_TESTING_THREADS; ++i) {
- 		input[i].vm = sev_vm_create(/* es= */ false);
--		input[0].source_fds[i] = input[i].vm->fd;
-+		input[0].source_vms[i] = input[i].vm;
- 	}
- 	for (i = 1; i < NR_LOCK_TESTING_THREADS; ++i)
--		memcpy(input[i].source_fds, input[0].source_fds,
--		       sizeof(input[i].source_fds));
-+		memcpy(input[i].source_vms, input[0].source_vms,
-+		       sizeof(input[i].source_vms));
- 
- 	for (i = 0; i < NR_LOCK_TESTING_THREADS; ++i)
- 		pthread_create(&pt[i], NULL, locking_test_thread, &input[i]);
-@@ -175,7 +175,7 @@ static void test_sev_migrate_parameters(void)
- 
- 	vm_no_vcpu = vm_create(0);
- 	vm_no_sev = aux_vm_create(true);
--	ret = __sev_migrate_from(vm_no_vcpu->fd, vm_no_sev->fd);
-+	ret = __sev_migrate_from(vm_no_vcpu, vm_no_sev);
- 	TEST_ASSERT(ret == -1 && errno == EINVAL,
- 		    "Migrations require SEV enabled. ret %d, errno: %d\n", ret,
- 		    errno);
-@@ -189,25 +189,25 @@ static void test_sev_migrate_parameters(void)
- 	sev_ioctl(sev_es_vm_no_vmsa->fd, KVM_SEV_ES_INIT, NULL);
- 	vm_vcpu_add(sev_es_vm_no_vmsa, 1);
- 
--	ret = __sev_migrate_from(sev_vm->fd, sev_es_vm->fd);
-+	ret = __sev_migrate_from(sev_vm, sev_es_vm);
- 	TEST_ASSERT(
- 		ret == -1 && errno == EINVAL,
- 		"Should not be able migrate to SEV enabled VM. ret: %d, errno: %d\n",
- 		ret, errno);
- 
--	ret = __sev_migrate_from(sev_es_vm->fd, sev_vm->fd);
-+	ret = __sev_migrate_from(sev_es_vm, sev_vm);
- 	TEST_ASSERT(
- 		ret == -1 && errno == EINVAL,
- 		"Should not be able migrate to SEV-ES enabled VM. ret: %d, errno: %d\n",
- 		ret, errno);
- 
--	ret = __sev_migrate_from(vm_no_vcpu->fd, sev_es_vm->fd);
-+	ret = __sev_migrate_from(vm_no_vcpu, sev_es_vm);
- 	TEST_ASSERT(
- 		ret == -1 && errno == EINVAL,
- 		"SEV-ES migrations require same number of vCPUS. ret: %d, errno: %d\n",
- 		ret, errno);
- 
--	ret = __sev_migrate_from(vm_no_vcpu->fd, sev_es_vm_no_vmsa->fd);
-+	ret = __sev_migrate_from(vm_no_vcpu, sev_es_vm_no_vmsa);
- 	TEST_ASSERT(
- 		ret == -1 && errno == EINVAL,
- 		"SEV-ES migrations require UPDATE_VMSA. ret %d, errno: %d\n",
-@@ -221,22 +221,22 @@ static void test_sev_migrate_parameters(void)
- 	kvm_vm_free(vm_no_sev);
- }
- 
--static int __sev_mirror_create(int dst_fd, int src_fd)
-+static int __sev_mirror_create(struct kvm_vm *dst, struct kvm_vm *src)
+-void sregs_dump(FILE *stream, struct kvm_sregs *sregs,
+-		uint8_t indent)
++static void sregs_dump(FILE *stream, struct kvm_sregs *sregs, uint8_t indent)
  {
- 	struct kvm_enable_cap cap = {
- 		.cap = KVM_CAP_VM_COPY_ENC_CONTEXT_FROM,
--		.args = { src_fd }
-+		.args = { src->fd }
- 	};
+ 	unsigned int i;
  
--	return ioctl(dst_fd, KVM_ENABLE_CAP, &cap);
-+	return __vm_enable_cap(dst, &cap);
- }
- 
- 
--static void sev_mirror_create(int dst_fd, int src_fd)
-+static void sev_mirror_create(struct kvm_vm *dst, struct kvm_vm *src)
- {
- 	int ret;
- 
--	ret = __sev_mirror_create(dst_fd, src_fd);
-+	ret = __sev_mirror_create(dst, src);
- 	TEST_ASSERT(!ret, "Copying context failed, ret: %d, errno: %d\n", ret, errno);
- }
- 
-@@ -284,7 +284,7 @@ static void test_sev_mirror(bool es)
- 	src_vm = sev_vm_create(es);
- 	dst_vm = aux_vm_create(false);
- 
--	sev_mirror_create(dst_vm->fd, src_vm->fd);
-+	sev_mirror_create(dst_vm, src_vm);
- 
- 	/* Check that we can complete creation of the mirror VM.  */
- 	for (i = 0; i < NR_MIGRATE_TEST_VCPUS; ++i)
-@@ -308,18 +308,18 @@ static void test_sev_mirror_parameters(void)
- 	vm_with_vcpu = aux_vm_create(true);
- 	vm_no_vcpu = aux_vm_create(false);
- 
--	ret = __sev_mirror_create(sev_vm->fd, sev_vm->fd);
-+	ret = __sev_mirror_create(sev_vm, sev_vm);
- 	TEST_ASSERT(
- 		ret == -1 && errno == EINVAL,
- 		"Should not be able copy context to self. ret: %d, errno: %d\n",
- 		ret, errno);
- 
--	ret = __sev_mirror_create(vm_no_vcpu->fd, vm_with_vcpu->fd);
-+	ret = __sev_mirror_create(vm_no_vcpu, vm_with_vcpu);
- 	TEST_ASSERT(ret == -1 && errno == EINVAL,
- 		    "Copy context requires SEV enabled. ret %d, errno: %d\n", ret,
- 		    errno);
- 
--	ret = __sev_mirror_create(vm_with_vcpu->fd, sev_vm->fd);
-+	ret = __sev_mirror_create(vm_with_vcpu, sev_vm);
- 	TEST_ASSERT(
- 		ret == -1 && errno == EINVAL,
- 		"SEV copy context requires no vCPUS on the destination. ret: %d, errno: %d\n",
-@@ -329,13 +329,13 @@ static void test_sev_mirror_parameters(void)
- 		goto out;
- 
- 	sev_es_vm = sev_vm_create(/* es= */ true);
--	ret = __sev_mirror_create(sev_vm->fd, sev_es_vm->fd);
-+	ret = __sev_mirror_create(sev_vm, sev_es_vm);
- 	TEST_ASSERT(
- 		ret == -1 && errno == EINVAL,
- 		"Should not be able copy context to SEV enabled VM. ret: %d, errno: %d\n",
- 		ret, errno);
- 
--	ret = __sev_mirror_create(sev_es_vm->fd, sev_vm->fd);
-+	ret = __sev_mirror_create(sev_es_vm, sev_vm);
- 	TEST_ASSERT(
- 		ret == -1 && errno == EINVAL,
- 		"Should not be able copy context to SEV-ES enabled VM. ret: %d, errno: %d\n",
-@@ -363,16 +363,16 @@ static void test_sev_move_copy(void)
- 	dst2_mirror_vm = aux_vm_create(false);
- 	dst3_mirror_vm = aux_vm_create(false);
- 
--	sev_mirror_create(mirror_vm->fd, sev_vm->fd);
-+	sev_mirror_create(mirror_vm, sev_vm);
- 
--	sev_migrate_from(dst_mirror_vm->fd, mirror_vm->fd);
--	sev_migrate_from(dst_vm->fd, sev_vm->fd);
-+	sev_migrate_from(dst_mirror_vm, mirror_vm);
-+	sev_migrate_from(dst_vm, sev_vm);
- 
--	sev_migrate_from(dst2_vm->fd, dst_vm->fd);
--	sev_migrate_from(dst2_mirror_vm->fd, dst_mirror_vm->fd);
-+	sev_migrate_from(dst2_vm, dst_vm);
-+	sev_migrate_from(dst2_mirror_vm, dst_mirror_vm);
- 
--	sev_migrate_from(dst3_mirror_vm->fd, dst2_mirror_vm->fd);
--	sev_migrate_from(dst3_vm->fd, dst2_vm->fd);
-+	sev_migrate_from(dst3_mirror_vm, dst2_mirror_vm);
-+	sev_migrate_from(dst3_vm, dst2_vm);
- 
- 	kvm_vm_free(dst_vm);
- 	kvm_vm_free(sev_vm);
-@@ -392,10 +392,10 @@ static void test_sev_move_copy(void)
- 	mirror_vm = aux_vm_create(false);
- 	dst_mirror_vm = aux_vm_create(false);
- 
--	sev_mirror_create(mirror_vm->fd, sev_vm->fd);
-+	sev_mirror_create(mirror_vm, sev_vm);
- 
--	sev_migrate_from(dst_mirror_vm->fd, mirror_vm->fd);
--	sev_migrate_from(dst_vm->fd, sev_vm->fd);
-+	sev_migrate_from(dst_mirror_vm, mirror_vm);
-+	sev_migrate_from(dst_vm, sev_vm);
- 
- 	kvm_vm_free(mirror_vm);
- 	kvm_vm_free(dst_mirror_vm);
 -- 
 2.36.1.255.ge46751e96f-goog
 
