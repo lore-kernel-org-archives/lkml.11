@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEF62C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:58:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A24FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:59:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346029AbiFCR64 (ORCPT
+        id S1346036AbiFCR7C (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:58:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58166 "EHLO
+        Fri, 3 Jun 2022 13:59:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347176AbiFCRwG (ORCPT
+        with ESMTP id S1344991AbiFCRs4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:52:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90AAB580E5;
-        Fri,  3 Jun 2022 10:50:14 -0700 (PDT)
+        Fri, 3 Jun 2022 13:48:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5076855359;
+        Fri,  3 Jun 2022 10:45:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 22EBDB82433;
-        Fri,  3 Jun 2022 17:50:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52F8AC385A9;
-        Fri,  3 Jun 2022 17:50:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B52A260C47;
+        Fri,  3 Jun 2022 17:45:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6F31C385B8;
+        Fri,  3 Jun 2022 17:45:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278611;
-        bh=003EFPVAWAtkcipXIjXUvRz6XdQ5O2kKi9sJjDH1Xkc=;
+        s=korg; t=1654278344;
+        bh=MFTKNe6w2Me8NT2WM3LGHJPXBnG8b7aPudi9BrSnwjE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u+euc7qb4kO6+d5rhIiWOKX8hskIem9ANEPGXo3i3LBBLCKvdu2B4368kCgam91oy
-         aww8iAPuXl3CpWhKI0rB1idv69OLgIX5sDSfyePGYqfhOTRa2nfSjf3lCgOR7SmQvk
-         nmiJliLhd0G9BIQthbRnHLtBumDrEnVTGjaXnk2s=
+        b=dOmZjO8aPE0znGPYM0Q2rtcySQnxnW/bYxYjEpzWmZsLMhk3QqXmNHpj0wP4LZ2fB
+         wgzjeWiCJnHcleEcUQLxhxHxQfisByeTatY9IpvNEyeissxv/X2sIUvnKcfx2wrkgc
+         n66ywdmLk8/Vs+gPjNTeJYRZeh0C5gfxw1P/3kOw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        syzbot+5b1e53987f858500ec00@syzkaller.appspotmail.com,
-        Al Viro <viro@zeniv.linux.org.uk>,
+        Thomas Bartschies <thomas.bartschies@cvk.de>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 04/66] percpu_ref_init(): clean ->percpu_count_ref on failure
-Date:   Fri,  3 Jun 2022 19:42:44 +0200
-Message-Id: <20220603173820.795000062@linuxfoundation.org>
+Subject: [PATCH 5.4 12/34] net: af_key: check encryption module availability consistency
+Date:   Fri,  3 Jun 2022 19:43:08 +0200
+Message-Id: <20220603173816.353260373@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220603173820.663747061@linuxfoundation.org>
-References: <20220603173820.663747061@linuxfoundation.org>
+In-Reply-To: <20220603173815.990072516@linuxfoundation.org>
+References: <20220603173815.990072516@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,39 +51,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Al Viro <viro@zeniv.linux.org.uk>
+From: Thomas Bartschies <thomas.bartschies@cvk.de>
 
-[ Upstream commit a91714312eb16f9ecd1f7f8b3efe1380075f28d4 ]
+[ Upstream commit 015c44d7bff3f44d569716117becd570c179ca32 ]
 
-That way percpu_ref_exit() is safe after failing percpu_ref_init().
-At least one user (cgroup_create()) had a double-free that way;
-there might be other similar bugs.  Easier to fix in percpu_ref_init(),
-rather than playing whack-a-mole in sloppy users...
+Since the recent introduction supporting the SM3 and SM4 hash algos for IPsec, the kernel
+produces invalid pfkey acquire messages, when these encryption modules are disabled. This
+happens because the availability of the algos wasn't checked in all necessary functions.
+This patch adds these checks.
 
-Usual symptoms look like a messed refcounting in one of subsystems
-that use percpu allocations (might be percpu-refcount, might be
-something else).  Having refcounts for two different objects share
-memory is Not Nice(tm)...
-
-Reported-by: syzbot+5b1e53987f858500ec00@syzkaller.appspotmail.com
-Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: Thomas Bartschies <thomas.bartschies@cvk.de>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/percpu-refcount.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/key/af_key.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/lib/percpu-refcount.c b/lib/percpu-refcount.c
-index af9302141bcf..e5c5315da274 100644
---- a/lib/percpu-refcount.c
-+++ b/lib/percpu-refcount.c
-@@ -76,6 +76,7 @@ int percpu_ref_init(struct percpu_ref *ref, percpu_ref_func_t *release,
- 	data = kzalloc(sizeof(*ref->data), gfp);
- 	if (!data) {
- 		free_percpu((void __percpu *)ref->percpu_count_ptr);
-+		ref->percpu_count_ptr = 0;
- 		return -ENOMEM;
+diff --git a/net/key/af_key.c b/net/key/af_key.c
+index f67d3ba72c49..dd064d5eff6e 100644
+--- a/net/key/af_key.c
++++ b/net/key/af_key.c
+@@ -2904,7 +2904,7 @@ static int count_ah_combs(const struct xfrm_tmpl *t)
+ 			break;
+ 		if (!aalg->pfkey_supported)
+ 			continue;
+-		if (aalg_tmpl_set(t, aalg))
++		if (aalg_tmpl_set(t, aalg) && aalg->available)
+ 			sz += sizeof(struct sadb_comb);
  	}
+ 	return sz + sizeof(struct sadb_prop);
+@@ -2922,7 +2922,7 @@ static int count_esp_combs(const struct xfrm_tmpl *t)
+ 		if (!ealg->pfkey_supported)
+ 			continue;
  
+-		if (!(ealg_tmpl_set(t, ealg)))
++		if (!(ealg_tmpl_set(t, ealg) && ealg->available))
+ 			continue;
+ 
+ 		for (k = 1; ; k++) {
+@@ -2933,7 +2933,7 @@ static int count_esp_combs(const struct xfrm_tmpl *t)
+ 			if (!aalg->pfkey_supported)
+ 				continue;
+ 
+-			if (aalg_tmpl_set(t, aalg))
++			if (aalg_tmpl_set(t, aalg) && aalg->available)
+ 				sz += sizeof(struct sadb_comb);
+ 		}
+ 	}
 -- 
 2.35.1
 
