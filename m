@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32877C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:07:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0EF5CCA473
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:07:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346498AbiFCSHv (ORCPT
+        id S1345563AbiFCSH5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:07:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58248 "EHLO
+        Fri, 3 Jun 2022 14:07:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346033AbiFCRzg (ORCPT
+        with ESMTP id S1346043AbiFCRzg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 3 Jun 2022 13:55:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 989BB55497;
-        Fri,  3 Jun 2022 10:53:21 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BBC65620C;
+        Fri,  3 Jun 2022 10:53:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2BDA4B823B0;
-        Fri,  3 Jun 2022 17:53:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BBCBC385A9;
-        Fri,  3 Jun 2022 17:53:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 152EBB8243B;
+        Fri,  3 Jun 2022 17:53:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68440C3411C;
+        Fri,  3 Jun 2022 17:53:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278798;
-        bh=lNOmLlFQuyuci5IwSKVo0uhTC3PXQ5cfKd6PwOA3j3o=;
+        s=korg; t=1654278804;
+        bh=kgqN5rwIDCeVjEAF+gvv5dRtQa8+RRbgixTMFtHq6b8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CyGjxtbKVM/PjMuPVVMytneSnuQCz7Kif70oBvbqTZHUTBo4dq/WaZD58Ybg2dyBi
-         Peif68umGbveho6ydZJURm3JouDwV7Gf3swF/16bhMs4/yiOA4GxWSa8JBNxL0HFxK
-         CQxDdG1wElUGiWMICc6DBC5eYRj2q+oysz4OMNsw=
+        b=fd25tbcAjDWF/BcvGhxh9Ezr8uPryrmx5/uf3av9NwsH6cHt7y1hp7yvLrwZyR3li
+         4P5fjv1TEP0EtdhxKQhTGPh64uIuukM1umdeOafbz175YdF0hexIsINbTaVwoJFbKD
+         Ugd6HEbwp8yi78wt4XjBYj8sXlECqFwWB6y32B8o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tadeusz Struk <tadeusz.struk@linaro.org>,
-        syzbot+6cde2282daa792c49ab8@syzkaller.appspotmail.com,
+        stable@vger.kernel.org, Maxim Levitsky <mlevitsk@redhat.com>,
         Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
         Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.17 31/75] KVM: x86: Use __try_cmpxchg_user() to update guest PTE A/D bits
-Date:   Fri,  3 Jun 2022 19:43:15 +0200
-Message-Id: <20220603173822.630027131@linuxfoundation.org>
+Subject: [PATCH 5.17 33/75] KVM: x86: fix typo in __try_cmpxchg_user causing non-atomicness
+Date:   Fri,  3 Jun 2022 19:43:17 +0200
+Message-Id: <20220603173822.685520453@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173821.749019262@linuxfoundation.org>
 References: <20220603173821.749019262@linuxfoundation.org>
@@ -51,84 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Maxim Levitsky <mlevitsk@redhat.com>
 
-commit f122dfe4476890d60b8c679128cd2259ec96a24c upstream.
+commit 33fbe6befa622c082f7d417896832856814bdde0 upstream.
 
-Use the recently introduced __try_cmpxchg_user() to update guest PTE A/D
-bits instead of mapping the PTE into kernel address space.  The VM_PFNMAP
-path is broken as it assumes that vm_pgoff is the base pfn of the mapped
-VMA range, which is conceptually wrong as vm_pgoff is the offset relative
-to the file and has nothing to do with the pfn.  The horrific hack worked
-for the original use case (backing guest memory with /dev/mem), but leads
-to accessing "random" pfns for pretty much any other VM_PFNMAP case.
+This shows up as a TDP MMU leak when running nested.  Non-working cmpxchg on L0
+relies makes L1 install two different shadow pages under same spte, and one of
+them is leaked.
 
-Fixes: bd53cb35a3e9 ("X86/KVM: Handle PFNs outside of kernel reach when touching GPTEs")
-Debugged-by: Tadeusz Struk <tadeusz.struk@linaro.org>
-Tested-by: Tadeusz Struk <tadeusz.struk@linaro.org>
-Reported-by: syzbot+6cde2282daa792c49ab8@syzkaller.appspotmail.com
-Cc: stable@vger.kernel.org
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220202004945.2540433-4-seanjc@google.com>
+Fixes: 1c2361f667f36 ("KVM: x86: Use __try_cmpxchg_user() to emulate atomic accesses")
+Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
+Message-Id: <20220512101420.306759-1-mlevitsk@redhat.com>
+Reviewed-by: Sean Christopherson <seanjc@google.com>
+Reviewed-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/mmu/paging_tmpl.h |   38 +-------------------------------------
- 1 file changed, 1 insertion(+), 37 deletions(-)
+ arch/x86/kvm/x86.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/x86/kvm/mmu/paging_tmpl.h
-+++ b/arch/x86/kvm/mmu/paging_tmpl.h
-@@ -144,42 +144,6 @@ static bool FNAME(is_rsvd_bits_set)(stru
- 	       FNAME(is_bad_mt_xwr)(&mmu->guest_rsvd_check, gpte);
- }
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -7207,7 +7207,7 @@ static int emulator_cmpxchg_emulated(str
+ 		goto emul_write;
  
--static int FNAME(cmpxchg_gpte)(struct kvm_vcpu *vcpu, struct kvm_mmu *mmu,
--			       pt_element_t __user *ptep_user, unsigned index,
--			       pt_element_t orig_pte, pt_element_t new_pte)
--{
--	signed char r;
--
--	if (!user_access_begin(ptep_user, sizeof(pt_element_t)))
--		return -EFAULT;
--
--#ifdef CMPXCHG
--	asm volatile("1:" LOCK_PREFIX CMPXCHG " %[new], %[ptr]\n"
--		     "setnz %b[r]\n"
--		     "2:"
--		     _ASM_EXTABLE_TYPE_REG(1b, 2b, EX_TYPE_EFAULT_REG, %k[r])
--		     : [ptr] "+m" (*ptep_user),
--		       [old] "+a" (orig_pte),
--		       [r] "=q" (r)
--		     : [new] "r" (new_pte)
--		     : "memory");
--#else
--	asm volatile("1:" LOCK_PREFIX "cmpxchg8b %[ptr]\n"
--		     "setnz %b[r]\n"
--		     "2:"
--		     _ASM_EXTABLE_TYPE_REG(1b, 2b, EX_TYPE_EFAULT_REG, %k[r])
--		     : [ptr] "+m" (*ptep_user),
--		       [old] "+A" (orig_pte),
--		       [r] "=q" (r)
--		     : [new_lo] "b" ((u32)new_pte),
--		       [new_hi] "c" ((u32)(new_pte >> 32))
--		     : "memory");
--#endif
--
--	user_access_end();
--	return r;
--}
--
- static bool FNAME(prefetch_invalid_gpte)(struct kvm_vcpu *vcpu,
- 				  struct kvm_mmu_page *sp, u64 *spte,
- 				  u64 gpte)
-@@ -278,7 +242,7 @@ static int FNAME(update_accessed_dirty_b
- 		if (unlikely(!walker->pte_writable[level - 1]))
- 			continue;
+ 	hva = kvm_vcpu_gfn_to_hva(vcpu, gpa_to_gfn(gpa));
+-	if (kvm_is_error_hva(addr))
++	if (kvm_is_error_hva(hva))
+ 		goto emul_write;
  
--		ret = FNAME(cmpxchg_gpte)(vcpu, mmu, ptep_user, index, orig_pte, pte);
-+		ret = __try_cmpxchg_user(ptep_user, &orig_pte, pte, fault);
- 		if (ret)
- 			return ret;
- 
+ 	hva += offset_in_page(gpa);
 
 
