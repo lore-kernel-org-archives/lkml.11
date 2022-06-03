@@ -2,110 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D765C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 09:48:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DA46CCA473
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 09:50:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243205AbiFCJsO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 05:48:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44992 "EHLO
+        id S243227AbiFCJt5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 05:49:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243182AbiFCJsM (ORCPT
+        with ESMTP id S243071AbiFCJty (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 05:48:12 -0400
-Received: from mailbox.box.xen0n.name (mail.xen0n.name [115.28.160.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B191613D1F;
-        Fri,  3 Jun 2022 02:48:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xen0n.name; s=mail;
-        t=1654249686; bh=yrg9on8zb+NApRYtS5qBL8mX8F/7jBwdIdZxHyDYbOg=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=jRWyTZmCNV/pqzL9Eg+ZxwLUSRI9QggIjDRMCfMrbky0lqSLxFkJtfEZUGVyyUYRg
-         89X1nwC1YAmllYkpH0RvCQ201k1hKMjSdHc0Op5LLuhNnls78FnzObQU7HsVRJeXBr
-         tQ2czc6m7bTnTxGA7okwYgtWi3dI1Urc/giRlB1M=
-Received: from [192.168.9.172] (unknown [101.88.28.48])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by mailbox.box.xen0n.name (Postfix) with ESMTPSA id EB0F560104;
-        Fri,  3 Jun 2022 17:48:05 +0800 (CST)
-Message-ID: <f7b53d2b-759c-bc5b-e2ed-a251b879f450@xen0n.name>
-Date:   Fri, 3 Jun 2022 17:48:05 +0800
+        Fri, 3 Jun 2022 05:49:54 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8B021D32A
+        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 02:49:52 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id o10so9452017edi.1
+        for <linux-kernel@vger.kernel.org>; Fri, 03 Jun 2022 02:49:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hcskUL/YxKVHi0SJFnrMIlY4WGD3EyAiKigPR2KkRlY=;
+        b=KmcNPkMHLYTQ2u4xOEzuAGzAw2BxerOp2EFO6RYMwuwAmhs9YMA9jiTMXFjdrn8B0T
+         g2xc+bEd3wnfdop23wye+enxPlHLsaOhEcT1CqK5u1aOj7Cz93J2d/af8r++8M5vBBT+
+         hHb6OsaFUEn/2XlkOA3e34pI0VN8UZwE99OBT2EkiQaULud/eHPWMH5umlI00c22ovGW
+         MEqJ/zQXCVu5OmAJiO7udpON2xZmTfItLSe/khzE7N2ne4e4kF9B1lGPoynXMrxVsZwb
+         Xik/WNi5QCCD3WfyV63eW3BewDT7q4lGVUY7+nVzVeFizOY4ircRhWHdrjTiRt5zn14H
+         qPbw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hcskUL/YxKVHi0SJFnrMIlY4WGD3EyAiKigPR2KkRlY=;
+        b=6sqoosVpH70f7zwW2XTewMirmdgV16vwuhmpVLMFl1rJLMi+wp32CBfS54r2k59UMa
+         IF3x1sH5hu5wuCC+FAmbPz3PVSPLGTCNVLu12cdUFFPj3iIKannu0kmOHEG88fzYSIDg
+         SBuqzhChmqxnR0ZG46qKmkmCusLaI7u8JDUdoXBZawI4eTZVmUh4YaAZZ2M7bzYZVVoN
+         hCIxHEcPmoslF1imtALvA6UfR89haJng04uY7/MYGhSWAPHosf/EpA+xLI6XiTHZg3rC
+         EDhyyPYKg5qviczUKgQEgEPflqTohryesfgo9UmgAxnFeNzHDV9BNjjGJY9KPu1H/9Uw
+         BMQA==
+X-Gm-Message-State: AOAM531EEhCEjbxFuw7zmbab1RDxKeVFqwt9Dxj52kx+kojm96NkUord
+        0iJsQNAAQu3k6++4dE8mjThZNQ==
+X-Google-Smtp-Source: ABdhPJw1mLgVG5DL3JieRuG/BBYBbsC2SOMvJFC0jlKl5g39mhNigbnuF55FhOi7YLa8lAqCj3fVKA==
+X-Received: by 2002:aa7:d758:0:b0:42d:b3ca:d647 with SMTP id a24-20020aa7d758000000b0042db3cad647mr9837164eds.63.1654249791585;
+        Fri, 03 Jun 2022 02:49:51 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id y22-20020aa7ca16000000b0042dcbc3f302sm3669561eds.36.2022.06.03.02.49.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 03 Jun 2022 02:49:51 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Ulf Hansson <ulf.hansson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Jaehoon Chung <jh80.chung@samsung.com>,
+        linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 0/3] mmc: samsung,exynos-dw-mshc: convert to dtschema
+Date:   Fri,  3 Jun 2022 11:49:43 +0200
+Message-Id: <20220603094946.509919-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:103.0) Gecko/20100101
- Thunderbird/103.0a1
-Subject: Re: Steps forward for the LoongArch UEFI bringup patch? (was: Re:
- [PATCH V14 11/24] LoongArch: Add boot and setup routines)
-Content-Language: en-US
-To:     Xi Ruoyao <xry111@xry111.site>, WANG Xuerui <kernel@xen0n.name>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Huacai Chen <chenhuacai@loongson.cn>
-Cc:     linux-arch@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Huacai Chen <chenhuacai@gmail.com>,
-        Guo Ren <guoren@kernel.org>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        linux-efi@vger.kernel.org, WANG Xuerui <git@xen0n.name>,
-        Yun Liu <liuyun@loongson.cn>, Jonathan Corbet <corbet@lwn.net>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Airlie <airlied@linux.ie>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-References: <20220602115141.3962749-1-chenhuacai@loongson.cn>
- <20220602115141.3962749-12-chenhuacai@loongson.cn>
- <d88ede74-b7a5-e568-1863-107c6c7f5fe0@xen0n.name>
- <dab96b787bef91240c719ea1a100396350135f99.camel@xry111.site>
-From:   WANG Xuerui <kernel@xen0n.name>
-In-Reply-To: <dab96b787bef91240c719ea1a100396350135f99.camel@xry111.site>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/3/22 17:32, Xi Ruoyao wrote:
-> On Thu, 2022-06-02 at 22:09 +0800, WANG Xuerui wrote:
->
->> For this, I don't know if Huacai should really just leave those
->> modification in the downstream fork to keep the upstream Linux clean of
->> such hacks, because to some degree dealing with such notoriety is life,
->> it seems to me. I think at this point Huacai would cooperate and tweak
->> the patch to get rid of the SVAM and other nonstandard bits as much as
->> possible, and I'll help him where necessary too.
-> To me any new firmware for PC-like platforms should implement UEFI.  For
-> embedded platforms device tree support will be added later.
->
-> For those guys impossible or unwilling to upgrade the firmware, it may
-> be possible to implement a compatibility layer and the booting procedure
-> will be like:
->
-> old firmware -> bootloongarch.efi -> customized u-boot -> bootloongarch64.efi (grub) -> efi stub (kernel)
->                  --------- compatibility layer --------    ^^^^^^^^ normal UEFI compatible stuff ^^^^^^^^^
->
-> new firmware -> bootloongarch64.efi (grub) -> efi stub (kernel)
->
-> The old firmware route would be similar to the booting procedure of
-> Asahi Linux.  I think this can be implemented because it's already
-> implemented on M1 even while Apple is almost completely uncooperative.
+Hi,
 
-This is a bit off-topic (we're basically hurrying up to get the port 
-into v5.19-rc1 and discussing ways to achieve that), but yeah 
-definitely. I've had the same idea right after knowing the LoongArch 
-firmware would also have "new-world" variant, then I contacted some 
-firmware engineers working on LoongArch boards, I think they agreed on 
-the approach overall.
+I will take the DTS patches via Samsung SoC.  The MMC dt-bindings patch
+probably via MMC or Rob's tree.
 
-However, making the kernel itself capable of booting on both BPI and 
-new-world UEFI firmware flavors may have its merits after all; one 
-scenario I could come up with is that user reboots and upgrades their 
-firmware, *before* updating their old-world kernel, and bang! system 
-soft-bricked. All such cases involve old-world distros that already 
-deviate a little bit from vanilla upstream code, so such BPI support 
-needn't be mainlined for avoiding this scenario.
+Best regards,
+Krzysztof
 
->
-> Just my 2 cents. I know almost nothing about booting.
-That's fine, we all know nothing in the beginning ;-)
+Krzysztof Kozlowski (3):
+  ARM: dts: exynos: align MMC node name with dtschema
+  arm64: dts: exynos: align MMC node name with dtschema
+  dt-bindings: mmc: samsung,exynos-dw-mshc: convert to dtschema
+
+ .../bindings/mmc/exynos-dw-mshc.txt           |  94 ----------
+ .../bindings/mmc/samsung,exynos-dw-mshc.yaml  | 162 ++++++++++++++++++
+ arch/arm/boot/dts/exynos3250.dtsi             |   6 +-
+ arch/arm64/boot/dts/exynos/exynos5433.dtsi    |   6 +-
+ 4 files changed, 168 insertions(+), 100 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/mmc/exynos-dw-mshc.txt
+ create mode 100644 Documentation/devicetree/bindings/mmc/samsung,exynos-dw-mshc.yaml
+
+-- 
+2.34.1
+
