@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 592F9CCA480
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70844CCA483
 	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:21:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347459AbiFCSU3 (ORCPT
+        id S1347496AbiFCSUe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:20:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47106 "EHLO
+        Fri, 3 Jun 2022 14:20:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347572AbiFCSGI (ORCPT
+        with ESMTP id S1347361AbiFCSF4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 14:06:08 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4218D5C351;
-        Fri,  3 Jun 2022 10:59:06 -0700 (PDT)
+        Fri, 3 Jun 2022 14:05:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D1C85B89C;
+        Fri,  3 Jun 2022 10:58:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 99045CE233B;
-        Fri,  3 Jun 2022 17:58:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AACDAC385A9;
-        Fri,  3 Jun 2022 17:58:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1135061659;
+        Fri,  3 Jun 2022 17:57:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04811C385A9;
+        Fri,  3 Jun 2022 17:57:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654279102;
-        bh=yyrGhqI8IVeC53hKFu4TYqVuzOZWCA2X3vdF+q2ZsDc=;
+        s=korg; t=1654279067;
+        bh=/5ETmfWm2uhKWwgWPbY3yLxXWCxaJ5ZGh8hkglP8XMM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xBb7aRenJSYO8Yw6b0fgkLMyFeoxtRTYB6V/fRWe+WXR6kZMnnIuVUWqLk7MmSabI
-         8yi7Ja5qyuyoP9vtzStjpi2Hr8hda3th+33KqdoZE6Zj4qc33MgMU4k/QNSRFKJBtu
-         erkvSA3+TY2qqEfkhomZCGBlbZp/+b5CJcQiCuNM=
+        b=W5KIEmeSBJjsv1LO6uA8T4Bsbwenm4h0ZJhr1PL/nglQPPBaWHETdXKCoQd5Mshod
+         RpdGEwwptaQQcrQA4wfQ6VqK8wNuyXWsewMKpiZjIpz7IvVFa/F61YmIeHEr9xSEjz
+         BGMHRvdJQtP7mpmuYqFR72SUpkO1QSxZJ3ksFcf0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Stefan Mahnke-Hartmann <stefan.mahnke-hartmann@infineon.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>
-Subject: [PATCH 5.18 54/67] tpm: Fix buffer access in tpm2_get_tpm_pt()
-Date:   Fri,  3 Jun 2022 19:43:55 +0200
-Message-Id: <20220603173822.282732143@linuxfoundation.org>
+        stable@vger.kernel.org, Phil Sutter <phil@nwl.cc>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: [PATCH 5.18 10/67] netfilter: nft_limit: Clone packet limits cost value
+Date:   Fri,  3 Jun 2022 19:43:11 +0200
+Message-Id: <20220603173821.029370451@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.731531504@linuxfoundation.org>
 References: <20220603173820.731531504@linuxfoundation.org>
@@ -50,46 +49,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Mahnke-Hartmann <stefan.mahnke-hartmann@infineon.com>
+From: Phil Sutter <phil@nwl.cc>
 
-commit e57b2523bd37e6434f4e64c7a685e3715ad21e9a upstream.
+commit 558254b0b602b8605d7246a10cfeb584b1fcabfc upstream.
 
-Under certain conditions uninitialized memory will be accessed.
-As described by TCG Trusted Platform Module Library Specification,
-rev. 1.59 (Part 3: Commands), if a TPM2_GetCapability is received,
-requesting a capability, the TPM in field upgrade mode may return a
-zero length list.
-Check the property count in tpm2_get_tpm_pt().
+When cloning a packet-based limit expression, copy the cost value as
+well. Otherwise the new limit is not functional anymore.
 
-Fixes: 2ab3241161b3 ("tpm: migrate tpm2_get_tpm_pt() to use struct tpm_buf")
-Cc: stable@vger.kernel.org
-Signed-off-by: Stefan Mahnke-Hartmann <stefan.mahnke-hartmann@infineon.com>
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+Fixes: 3b9e2ea6c11bf ("netfilter: nft_limit: move stateful fields out of expression data")
+Signed-off-by: Phil Sutter <phil@nwl.cc>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/tpm/tpm2-cmd.c |   11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ net/netfilter/nft_limit.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/char/tpm/tpm2-cmd.c
-+++ b/drivers/char/tpm/tpm2-cmd.c
-@@ -400,7 +400,16 @@ ssize_t tpm2_get_tpm_pt(struct tpm_chip
- 	if (!rc) {
- 		out = (struct tpm2_get_cap_out *)
- 			&buf.data[TPM_HEADER_SIZE];
--		*value = be32_to_cpu(out->value);
-+		/*
-+		 * To prevent failing boot up of some systems, Infineon TPM2.0
-+		 * returns SUCCESS on TPM2_Startup in field upgrade mode. Also
-+		 * the TPM2_Getcapability command returns a zero length list
-+		 * in field upgrade mode.
-+		 */
-+		if (be32_to_cpu(out->property_cnt) > 0)
-+			*value = be32_to_cpu(out->value);
-+		else
-+			rc = -ENODATA;
- 	}
- 	tpm_buf_destroy(&buf);
- 	return rc;
+--- a/net/netfilter/nft_limit.c
++++ b/net/netfilter/nft_limit.c
+@@ -213,6 +213,8 @@ static int nft_limit_pkts_clone(struct n
+ 	struct nft_limit_priv_pkts *priv_dst = nft_expr_priv(dst);
+ 	struct nft_limit_priv_pkts *priv_src = nft_expr_priv(src);
+ 
++	priv_dst->cost = priv_src->cost;
++
+ 	return nft_limit_clone(&priv_dst->limit, &priv_src->limit);
+ }
+ 
 
 
