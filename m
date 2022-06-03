@@ -2,58 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CBF2C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 00:57:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F3B9C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 00:57:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240689AbiFCA5g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 20:57:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48874 "EHLO
+        id S238557AbiFCA5n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 20:57:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240369AbiFCAqW (ORCPT
+        with ESMTP id S240344AbiFCAqQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 20:46:22 -0400
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCDA037A82
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:46:04 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id c11-20020a17090a4d0b00b001e4e081d525so3930831pjg.7
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:46:04 -0700 (PDT)
+        Thu, 2 Jun 2022 20:46:16 -0400
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ECA137A2C
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:45:57 -0700 (PDT)
+Received: by mail-pl1-x649.google.com with SMTP id y4-20020a17090322c400b001637287812bso3477110plg.6
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:45:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=3AZUimij95bjf5gYvdhkHvlv855AKXpvwM8ZUYLyhNw=;
-        b=XlZnkRi3t2vy0ZLpDkMjujVnZSo15I0e/Gv1KpGadfeMGgPTXnJXBq3iBVVXQLkGuP
-         fsq4CCy3VjhV4Z6UDOES4Y1SX9s0p7hpWTo636PxSjKAOa6KhKZBR46WZey2LVIQzMn/
-         kEU4U8ERfRzV/ds31rN9KHsjsdJK8oMrGoXxl+rSRKikuEnZCRpBqG681u8GRiN18p0g
-         oafoX92Z8gTL5v5BVf2TOOIFRMGOAXGCExh5HWiIOisY9nn4jZPDxRYUFO7zKY+QFw4n
-         4p0lsKOsEWShjbjGoqbXmHn/73gZYb+9//jKPCFjkjJVG5uiKRL78XeOx8irsOp38Pc6
-         B/NQ==
+        bh=G0hCkDdDsVnTgIh6oVbF9iCXoBGfRnJfQdip0diLa0s=;
+        b=Nkq5jgxMtOToKTu53KCADLaarHmSYIQe6nj2MrPb00R6dZk+rc2RmtQDTvW+Fc1unT
+         9phEiobYSiipxhUad0+WR5DPzaKFZZQv1q3raIbYvCAOMM7kzAY78zJapDvGiP3hWifZ
+         L7onxnH1UpPZZjzX4pd/bfLKHeGt1VoW12jUNX0OQ4Csp4N7Hv6ftRWA7HhAWkW2RUVG
+         l+iFpY8KxGSp6pbwNDIDPh7Dc1zqckeRQ2yRdsiZiGlmsuA+amvRNcZ5noPR6v1gyu+w
+         xeUO41DG0zhW/LBNWDfH+F+M1VlSOCdpG99KPr5f6T17L9w9LGLz0TUdyLWjP0swiIHN
+         NrBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=3AZUimij95bjf5gYvdhkHvlv855AKXpvwM8ZUYLyhNw=;
-        b=mXmQiSKR2CTFhbxqT6VDv1ZXTV2O2YGbcjRFRHP4bDmC+O3YBeaT2AD9cjje+EWlzj
-         ZjenDjlKolBx2hA12sLdhpV4Jr7PvsmPs23tYmPW3+XpmKvXe3F2NEgWpEYHBydknL2p
-         E2W2vZMU7c8TRVEQJlAqlD1R+hebAhpC/MKvWxCb5VXh6GAXfd1vIjaYVuxgY0gBN3yN
-         XywZclcYky4x2R5pRulUCQsNOa/gji+9j3N6TrMpSwX/kviZgJeTrLQe3M7j4j99gvGL
-         DfNiM+fSi6AP7+93KYUs246RkFmkog37SWODw/eEi220KvkHZDqDkfQ/+RgD7w87IwYe
-         Mi4Q==
-X-Gm-Message-State: AOAM533roz4zOEJ8aswuX6pR0PZdC5uJ2YClSqV8OaKVIhpN4pHtf3+9
-        YaPT++IECHuDDat3DV4tMiwhiaYKsME=
-X-Google-Smtp-Source: ABdhPJywo4t07QOnGV8De5DPRS6yc/ynoS0+G/CTgjCWibvygcU9t5bQWHkMVrrFHnqeODnM9tLPeTUoCYw=
+        bh=G0hCkDdDsVnTgIh6oVbF9iCXoBGfRnJfQdip0diLa0s=;
+        b=IpzO5nfE7N5s/1pB0VRf+zOHXjA6VQugMWN3qtDn+tMVCJpbSklrUYENBSoEbmY1dH
+         AUH64x9Uk+qdnnOnOkzX6TiiAarLD5VfstWGTs8Prf5pK84CPgE46lU05hdi6yAkfmqm
+         OFEHc99oVBcq8oH1a0C5zO2+tPp8B8Rvzpv4nflGinYZOFtUa2mv03n1r6Z07bcH08/6
+         4tGTKuLYVRIlbd58pA+vfNMq1YAJc/agjcI3TFLu4PXi7RuDQIEjdPu4x1Dsr6rS8nZ2
+         56L56Q11gqmZaSkDdUmkJniL3uU9GgdESha8Sz7uYMNxt/0VJNDfPmH1+hnbXVLvv/dm
+         gupw==
+X-Gm-Message-State: AOAM532u/dfexB9nuImx3HbcbhpAxKLUU2z9dstAqeQy4lqoeR2mXluZ
+        pGOHAbGBrYAQEc+U5b2qF4XYr3EsK5k=
+X-Google-Smtp-Source: ABdhPJxmQLULqMpSQEhKMEKzc1sbA+GeCdqMy40AVLfJXgC6Psx7/CgzGZpirQxbUQmVVAxF29CraEzmf+8=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:902:e34b:b0:166:342f:82c6 with SMTP id
- p11-20020a170902e34b00b00166342f82c6mr7456216plc.29.1654217164436; Thu, 02
- Jun 2022 17:46:04 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:903:2312:b0:163:daf7:83a9 with SMTP id
+ d18-20020a170903231200b00163daf783a9mr7634037plh.160.1654217156879; Thu, 02
+ Jun 2022 17:45:56 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri,  3 Jun 2022 00:42:28 +0000
+Date:   Fri,  3 Jun 2022 00:42:24 +0000
 In-Reply-To: <20220603004331.1523888-1-seanjc@google.com>
-Message-Id: <20220603004331.1523888-82-seanjc@google.com>
+Message-Id: <20220603004331.1523888-78-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220603004331.1523888-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v2 081/144] KVM: selftests: Convert debug_regs away from VCPU_ID
+Subject: [PATCH v2 077/144] KVM: selftests: Convert hyperv_features away from VCPU_ID
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     kvm@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
@@ -66,160 +66,192 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert debug_regs to use vm_create_with_one_vcpu() and pass around a
-'struct kvm_vcpu' object instead of using a global VCPU_ID.
+Convert hyperv_features to use vm_create_with_one_vcpu() and pass around
+a 'struct kvm_vcpu' object instead of using a global VCPU_ID.
 
-Opportunstically drop the CLEAR_DEBUG/APPLY_DEBUG macros as they only
-obfuscate the code, e.g. operating on local variables not "passed" to the
-macro is all kinds of confusing.
+Opportunistically use vcpu_run() instead of _vcpu_run() with an open
+coded assert that KVM_RUN succeeded.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../testing/selftests/kvm/x86_64/debug_regs.c | 53 +++++++++----------
- 1 file changed, 25 insertions(+), 28 deletions(-)
+ .../selftests/kvm/x86_64/hyperv_features.c    | 51 +++++++++----------
+ 1 file changed, 25 insertions(+), 26 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/x86_64/debug_regs.c b/tools/testing/selftests/kvm/x86_64/debug_regs.c
-index f726645bb9c3..182d71c6d13a 100644
---- a/tools/testing/selftests/kvm/x86_64/debug_regs.c
-+++ b/tools/testing/selftests/kvm/x86_64/debug_regs.c
-@@ -10,8 +10,6 @@
+diff --git a/tools/testing/selftests/kvm/x86_64/hyperv_features.c b/tools/testing/selftests/kvm/x86_64/hyperv_features.c
+index 7ff6e4d70333..d0bd9d5e8a99 100644
+--- a/tools/testing/selftests/kvm/x86_64/hyperv_features.c
++++ b/tools/testing/selftests/kvm/x86_64/hyperv_features.c
+@@ -13,7 +13,6 @@
  #include "processor.h"
- #include "apic.h"
+ #include "hyperv.h"
  
 -#define VCPU_ID 0
--
- #define DR6_BD		(1 << 13)
- #define DR7_GD		(1 << 13)
+ #define LINUX_OS_ID ((u64)0x8100 << 48)
  
-@@ -66,13 +64,11 @@ static void guest_code(void)
+ extern unsigned char rdmsr_start;
+@@ -151,7 +150,7 @@ static void guest_hcall(vm_vaddr_t pgs_gpa, struct hcall_data *hcall)
  	GUEST_DONE();
  }
  
--#define  CLEAR_DEBUG()  memset(&debug, 0, sizeof(debug))
--#define  APPLY_DEBUG()  vcpu_guest_debug_set(vm, VCPU_ID, &debug)
- #define  CAST_TO_RIP(v)  ((unsigned long long)&(v))
- #define  SET_RIP(v)  do {				\
--		vcpu_regs_get(vm, VCPU_ID, &regs);	\
-+		vcpu_regs_get(vm, vcpu->id, &regs);	\
- 		regs.rip = (v);				\
--		vcpu_regs_set(vm, VCPU_ID, &regs);	\
-+		vcpu_regs_set(vm, vcpu->id, &regs);	\
- 	} while (0)
- #define  MOVE_RIP(v)  SET_RIP(regs.rip + (v));
+-static void hv_set_cpuid(struct kvm_vm *vm, struct kvm_cpuid2 *cpuid,
++static void hv_set_cpuid(struct kvm_vcpu *vcpu, struct kvm_cpuid2 *cpuid,
+ 			 struct kvm_cpuid_entry2 *feat,
+ 			 struct kvm_cpuid_entry2 *recomm,
+ 			 struct kvm_cpuid_entry2 *dbg)
+@@ -162,15 +161,16 @@ static void hv_set_cpuid(struct kvm_vm *vm, struct kvm_cpuid2 *cpuid,
+ 		    "failed to set HYPERV_CPUID_ENLIGHTMENT_INFO leaf");
+ 	TEST_ASSERT(set_cpuid(cpuid, dbg),
+ 		    "failed to set HYPERV_CPUID_SYNDBG_PLATFORM_CAPABILITIES leaf");
+-	vcpu_set_cpuid(vm, VCPU_ID, cpuid);
++	vcpu_set_cpuid(vcpu->vm, vcpu->id, cpuid);
+ }
  
-@@ -80,6 +76,7 @@ int main(void)
+ static void guest_test_msrs_access(void)
  {
- 	struct kvm_guest_debug debug;
- 	unsigned long long target_dr6, target_rip;
 +	struct kvm_vcpu *vcpu;
- 	struct kvm_regs regs;
  	struct kvm_run *run;
  	struct kvm_vm *vm;
-@@ -101,14 +98,14 @@ int main(void)
- 		return 0;
- 	}
+ 	struct ucall uc;
+-	int stage = 0, r;
++	int stage = 0;
+ 	struct kvm_cpuid_entry2 feat = {
+ 		.function = HYPERV_CPUID_FEATURES
+ 	};
+@@ -185,24 +185,24 @@ static void guest_test_msrs_access(void)
+ 	struct msr_data *msr;
  
--	vm = vm_create_default(VCPU_ID, 0, guest_code);
--	run = vcpu_state(vm, VCPU_ID);
-+	vm = vm_create_with_one_vcpu(&vcpu, guest_code);
-+	run = vcpu->run;
+ 	while (true) {
+-		vm = vm_create_default(VCPU_ID, 0, guest_msr);
++		vm = vm_create_with_one_vcpu(&vcpu, guest_msr);
  
- 	/* Test software BPs - int3 */
--	CLEAR_DEBUG();
-+	memset(&debug, 0, sizeof(debug));
- 	debug.control = KVM_GUESTDBG_ENABLE | KVM_GUESTDBG_USE_SW_BP;
--	APPLY_DEBUG();
--	vcpu_run(vm, VCPU_ID);
-+	vcpu_guest_debug_set(vm, vcpu->id, &debug);
-+	vcpu_run(vm, vcpu->id);
- 	TEST_ASSERT(run->exit_reason == KVM_EXIT_DEBUG &&
- 		    run->debug.arch.exception == BP_VECTOR &&
- 		    run->debug.arch.pc == CAST_TO_RIP(sw_bp),
-@@ -119,12 +116,12 @@ int main(void)
+ 		msr_gva = vm_vaddr_alloc_page(vm);
+ 		memset(addr_gva2hva(vm, msr_gva), 0x0, getpagesize());
+ 		msr = addr_gva2hva(vm, msr_gva);
  
- 	/* Test instruction HW BP over DR[0-3] */
- 	for (i = 0; i < 4; i++) {
--		CLEAR_DEBUG();
-+		memset(&debug, 0, sizeof(debug));
- 		debug.control = KVM_GUESTDBG_ENABLE | KVM_GUESTDBG_USE_HW_BP;
- 		debug.arch.debugreg[i] = CAST_TO_RIP(hw_bp);
- 		debug.arch.debugreg[7] = 0x400 | (1UL << (2*i+1));
--		APPLY_DEBUG();
--		vcpu_run(vm, VCPU_ID);
-+		vcpu_guest_debug_set(vm, vcpu->id, &debug);
+-		vcpu_args_set(vm, VCPU_ID, 1, msr_gva);
+-		vcpu_enable_cap(vm, VCPU_ID, KVM_CAP_HYPERV_ENFORCE_CPUID, 1);
++		vcpu_args_set(vm, vcpu->id, 1, msr_gva);
++		vcpu_enable_cap(vm, vcpu->id, KVM_CAP_HYPERV_ENFORCE_CPUID, 1);
+ 
+-		vcpu_set_hv_cpuid(vm, VCPU_ID);
++		vcpu_set_hv_cpuid(vm, vcpu->id);
+ 
+ 		best = kvm_get_supported_hv_cpuid();
+ 
+ 		vm_init_descriptor_tables(vm);
+-		vcpu_init_descriptor_tables(vm, VCPU_ID);
++		vcpu_init_descriptor_tables(vm, vcpu->id);
+ 		vm_install_exception_handler(vm, GP_VECTOR, guest_gp_handler);
+ 
+-		run = vcpu_state(vm, VCPU_ID);
++		run = vcpu->run;
+ 
+ 		switch (stage) {
+ 		case 0:
+@@ -333,7 +333,7 @@ static void guest_test_msrs_access(void)
+ 			 * Remains unavailable even with KVM_CAP_HYPERV_SYNIC2
+ 			 * capability enabled and guest visible CPUID bit unset.
+ 			 */
+-			vcpu_enable_cap(vm, VCPU_ID, KVM_CAP_HYPERV_SYNIC2, 0);
++			vcpu_enable_cap(vm, vcpu->id, KVM_CAP_HYPERV_SYNIC2, 0);
+ 			break;
+ 		case 22:
+ 			feat.eax |= HV_MSR_SYNIC_AVAILABLE;
+@@ -463,7 +463,7 @@ static void guest_test_msrs_access(void)
+ 			break;
+ 		}
+ 
+-		hv_set_cpuid(vm, best, &feat, &recomm, &dbg);
++		hv_set_cpuid(vcpu, best, &feat, &recomm, &dbg);
+ 
+ 		if (msr->idx)
+ 			pr_debug("Stage %d: testing msr: 0x%x for %s\n", stage,
+@@ -471,13 +471,12 @@ static void guest_test_msrs_access(void)
+ 		else
+ 			pr_debug("Stage %d: finish\n", stage);
+ 
+-		r = _vcpu_run(vm, VCPU_ID);
+-		TEST_ASSERT(!r, "vcpu_run failed: %d\n", r);
 +		vcpu_run(vm, vcpu->id);
- 		target_dr6 = 0xffff0ff0 | (1UL << i);
- 		TEST_ASSERT(run->exit_reason == KVM_EXIT_DEBUG &&
- 			    run->debug.arch.exception == DB_VECTOR &&
-@@ -141,13 +138,13 @@ int main(void)
+ 		TEST_ASSERT(run->exit_reason == KVM_EXIT_IO,
+ 			    "unexpected exit reason: %u (%s)",
+ 			    run->exit_reason, exit_reason_str(run->exit_reason));
  
- 	/* Test data access HW BP over DR[0-3] */
- 	for (i = 0; i < 4; i++) {
--		CLEAR_DEBUG();
-+		memset(&debug, 0, sizeof(debug));
- 		debug.control = KVM_GUESTDBG_ENABLE | KVM_GUESTDBG_USE_HW_BP;
- 		debug.arch.debugreg[i] = CAST_TO_RIP(guest_value);
- 		debug.arch.debugreg[7] = 0x00000400 | (1UL << (2*i+1)) |
- 		    (0x000d0000UL << (4*i));
--		APPLY_DEBUG();
--		vcpu_run(vm, VCPU_ID);
-+		vcpu_guest_debug_set(vm, vcpu->id, &debug);
+-		switch (get_ucall(vm, VCPU_ID, &uc)) {
++		switch (get_ucall(vm, vcpu->id, &uc)) {
+ 		case UCALL_SYNC:
+ 			TEST_ASSERT(uc.args[1] == 0,
+ 				    "Unexpected stage: %ld (0 expected)\n",
+@@ -498,10 +497,11 @@ static void guest_test_msrs_access(void)
+ 
+ static void guest_test_hcalls_access(void)
+ {
++	struct kvm_vcpu *vcpu;
+ 	struct kvm_run *run;
+ 	struct kvm_vm *vm;
+ 	struct ucall uc;
+-	int stage = 0, r;
++	int stage = 0;
+ 	struct kvm_cpuid_entry2 feat = {
+ 		.function = HYPERV_CPUID_FEATURES,
+ 		.eax = HV_MSR_HYPERCALL_AVAILABLE
+@@ -517,10 +517,10 @@ static void guest_test_hcalls_access(void)
+ 	struct kvm_cpuid2 *best;
+ 
+ 	while (true) {
+-		vm = vm_create_default(VCPU_ID, 0, guest_hcall);
++		vm = vm_create_with_one_vcpu(&vcpu, guest_hcall);
+ 
+ 		vm_init_descriptor_tables(vm);
+-		vcpu_init_descriptor_tables(vm, VCPU_ID);
++		vcpu_init_descriptor_tables(vm, vcpu->id);
+ 		vm_install_exception_handler(vm, UD_VECTOR, guest_ud_handler);
+ 
+ 		/* Hypercall input/output */
+@@ -531,14 +531,14 @@ static void guest_test_hcalls_access(void)
+ 		hcall_params = vm_vaddr_alloc_page(vm);
+ 		memset(addr_gva2hva(vm, hcall_params), 0x0, getpagesize());
+ 
+-		vcpu_args_set(vm, VCPU_ID, 2, addr_gva2gpa(vm, hcall_page), hcall_params);
+-		vcpu_enable_cap(vm, VCPU_ID, KVM_CAP_HYPERV_ENFORCE_CPUID, 1);
++		vcpu_args_set(vm, vcpu->id, 2, addr_gva2gpa(vm, hcall_page), hcall_params);
++		vcpu_enable_cap(vm, vcpu->id, KVM_CAP_HYPERV_ENFORCE_CPUID, 1);
+ 
+-		vcpu_set_hv_cpuid(vm, VCPU_ID);
++		vcpu_set_hv_cpuid(vm, vcpu->id);
+ 
+ 		best = kvm_get_supported_hv_cpuid();
+ 
+-		run = vcpu_state(vm, VCPU_ID);
++		run = vcpu->run;
+ 
+ 		switch (stage) {
+ 		case 0:
+@@ -633,7 +633,7 @@ static void guest_test_hcalls_access(void)
+ 			break;
+ 		}
+ 
+-		hv_set_cpuid(vm, best, &feat, &recomm, &dbg);
++		hv_set_cpuid(vcpu, best, &feat, &recomm, &dbg);
+ 
+ 		if (hcall->control)
+ 			pr_debug("Stage %d: testing hcall: 0x%lx\n", stage,
+@@ -641,13 +641,12 @@ static void guest_test_hcalls_access(void)
+ 		else
+ 			pr_debug("Stage %d: finish\n", stage);
+ 
+-		r = _vcpu_run(vm, VCPU_ID);
+-		TEST_ASSERT(!r, "vcpu_run failed: %d\n", r);
 +		vcpu_run(vm, vcpu->id);
- 		target_dr6 = 0xffff0ff0 | (1UL << i);
- 		TEST_ASSERT(run->exit_reason == KVM_EXIT_DEBUG &&
- 			    run->debug.arch.exception == DB_VECTOR &&
-@@ -167,15 +164,15 @@ int main(void)
- 	/* Test single step */
- 	target_rip = CAST_TO_RIP(ss_start);
- 	target_dr6 = 0xffff4ff0ULL;
--	vcpu_regs_get(vm, VCPU_ID, &regs);
-+	vcpu_regs_get(vm, vcpu->id, &regs);
- 	for (i = 0; i < (sizeof(ss_size) / sizeof(ss_size[0])); i++) {
- 		target_rip += ss_size[i];
--		CLEAR_DEBUG();
-+		memset(&debug, 0, sizeof(debug));
- 		debug.control = KVM_GUESTDBG_ENABLE | KVM_GUESTDBG_SINGLESTEP |
- 				KVM_GUESTDBG_BLOCKIRQ;
- 		debug.arch.debugreg[7] = 0x00000400;
--		APPLY_DEBUG();
--		vcpu_run(vm, VCPU_ID);
-+		vcpu_guest_debug_set(vm, vcpu->id, &debug);
-+		vcpu_run(vm, vcpu->id);
- 		TEST_ASSERT(run->exit_reason == KVM_EXIT_DEBUG &&
- 			    run->debug.arch.exception == DB_VECTOR &&
- 			    run->debug.arch.pc == target_rip &&
-@@ -188,11 +185,11 @@ int main(void)
- 	}
+ 		TEST_ASSERT(run->exit_reason == KVM_EXIT_IO,
+ 			    "unexpected exit reason: %u (%s)",
+ 			    run->exit_reason, exit_reason_str(run->exit_reason));
  
- 	/* Finally test global disable */
--	CLEAR_DEBUG();
-+	memset(&debug, 0, sizeof(debug));
- 	debug.control = KVM_GUESTDBG_ENABLE | KVM_GUESTDBG_USE_HW_BP;
- 	debug.arch.debugreg[7] = 0x400 | DR7_GD;
--	APPLY_DEBUG();
--	vcpu_run(vm, VCPU_ID);
-+	vcpu_guest_debug_set(vm, vcpu->id, &debug);
-+	vcpu_run(vm, vcpu->id);
- 	target_dr6 = 0xffff0ff0 | DR6_BD;
- 	TEST_ASSERT(run->exit_reason == KVM_EXIT_DEBUG &&
- 		    run->debug.arch.exception == DB_VECTOR &&
-@@ -205,12 +202,12 @@ int main(void)
- 			    target_dr6);
- 
- 	/* Disable all debug controls, run to the end */
--	CLEAR_DEBUG();
--	APPLY_DEBUG();
-+	memset(&debug, 0, sizeof(debug));
-+	vcpu_guest_debug_set(vm, vcpu->id, &debug);
- 
--	vcpu_run(vm, VCPU_ID);
-+	vcpu_run(vm, vcpu->id);
- 	TEST_ASSERT(run->exit_reason == KVM_EXIT_IO, "KVM_EXIT_IO");
--	cmd = get_ucall(vm, VCPU_ID, &uc);
-+	cmd = get_ucall(vm, vcpu->id, &uc);
- 	TEST_ASSERT(cmd == UCALL_DONE, "UCALL_DONE");
- 
- 	kvm_vm_free(vm);
+-		switch (get_ucall(vm, VCPU_ID, &uc)) {
++		switch (get_ucall(vm, vcpu->id, &uc)) {
+ 		case UCALL_SYNC:
+ 			TEST_ASSERT(uc.args[1] == 0,
+ 				    "Unexpected stage: %ld (0 expected)\n",
 -- 
 2.36.1.255.ge46751e96f-goog
 
