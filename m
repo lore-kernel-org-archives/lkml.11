@@ -2,98 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE452C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 12:47:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D896C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 12:48:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244408AbiFCMri (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 08:47:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43762 "EHLO
+        id S244413AbiFCMsQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 08:48:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244389AbiFCMre (ORCPT
+        with ESMTP id S236718AbiFCMsO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 08:47:34 -0400
-Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E31EBC81
-        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 05:47:32 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by lithops.sigma-star.at (Postfix) with ESMTP id 57095609B3C1;
-        Fri,  3 Jun 2022 14:47:31 +0200 (CEST)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id zgza6Iw92Vaj; Fri,  3 Jun 2022 14:47:31 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by lithops.sigma-star.at (Postfix) with ESMTP id 087F2609B3C2;
-        Fri,  3 Jun 2022 14:47:31 +0200 (CEST)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id cfWZlBJTWb8r; Fri,  3 Jun 2022 14:47:30 +0200 (CEST)
-Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
-        by lithops.sigma-star.at (Postfix) with ESMTP id DEAC7609B3C1;
-        Fri,  3 Jun 2022 14:47:30 +0200 (CEST)
-Date:   Fri, 3 Jun 2022 14:47:30 +0200 (CEST)
-From:   Richard Weinberger <richard@nod.at>
-To:     torvalds <torvalds@linux-foundation.org>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-um <linux-um@lists.infradead.org>
-Message-ID: <1471475855.130153.1654260450880.JavaMail.zimbra@nod.at>
-Subject: [GIT PULL] UML updates for v5.19-rc1
+        Fri, 3 Jun 2022 08:48:14 -0400
+X-Greylist: delayed 1477 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 03 Jun 2022 05:48:10 PDT
+Received: from if35.nano.lv (m2-if35.nano.lv [85.31.97.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B3D3DFD1;
+        Fri,  3 Jun 2022 05:48:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=3a-alliance.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        MIME-Version:Date:Message-ID:Subject:Cc:From:To:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=BvXX60Q1GjUuVRCBAuhAlIuikIw7yhdZQWVAmf+wQXY=; b=pPbaM7KQbwM6aaQNmC0IQaJiLH
+        zkS59zFNfwUYEU6Q6LuUZT3KExfgiAyGfWeM3sCYkhINQ2ALru3vDkznufVAA/b3DNsa4IvQbAU2r
+        qETytlM4TyxcTOrZP7abaplU5z4UDPl1YkMf1NyNvk9Oi7E9S7OUMkaIp13KG2tKkQvE=;
+Received: from [46.109.159.121] (port=57530 helo=[192.168.1.241])
+        by if35.nano.lv with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.95)
+        (envelope-from <am@3a-alliance.com>)
+        id 1nx6Kt-006BUO-AX;
+        Fri, 03 Jun 2022 15:23:27 +0300
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        david.lebrun@uclouvain.be
+From:   Anton Makarov <am@3a-alliance.com>
+Cc:     regressions@lists.linux.dev, stable@vger.kernel.org
+Subject: [REGRESSION] net: SRv6 End.DT6 function is broken in VRF mode
+Message-ID: <7e315ff1-e172-16c3-44b5-0c83c4c92779@3a-alliance.com>
+Date:   Fri, 3 Jun 2022 15:23:26 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [195.201.40.130]
-X-Mailer: Zimbra 8.8.12_GA_3807 (ZimbraWebClient - FF97 (Linux)/8.8.12_GA_3809)
-Thread-Index: 3VceN5utQRUfs6JID6rD6pLjE6sKbQ==
-Thread-Topic: UML updates for v5.19-rc1
+Content-Language: en-US
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - if35.nano.lv
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - 3a-alliance.com
+X-Get-Message-Sender-Via: if35.nano.lv: authenticated_id: am@3a-alliance.com
+X-Authenticated-Sender: if35.nano.lv: am@3a-alliance.com
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Linus,
+#regzbot introduced: b9132c32e01976686efa26252cc246944a0d2cab
 
-The following changes since commit 42226c989789d8da4af1de0c31070c96726d990c:
+Hi All!
 
-  Linux 5.18-rc7 (2022-05-15 18:08:58 -0700)
+Seems there is a regression of SRv6 End.DT6 function in VRF mode. In the 
+following scenario packet is decapsulated successfully on vrf10 
+interface but not forwarded to vrf10's slave interface:
 
-are available in the Git repository at:
+ip netns exec r4 ip -6 nexthop add id 1004 encap seg6local action 
+End.DT6 vrftable 10 dev vrf10
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/rw/uml.git tags/for-linus-5.19-rc1
+ip netns exec r4 ip -6 route add fcff:0:4:200:: nhid 1004
 
-for you to fetch changes up to 2a4a62a14be1947fa945c5c11ebf67326381a568:
 
-  um: Fix out-of-bounds read in LDT setup (2022-05-27 09:03:41 +0200)
+In End.DT6 legacy mode everything works good:
 
-----------------------------------------------------------------
-This pull request contains the following changes for UML:
+ip netns exec r4 ip -6 nexthop add id 1004 encap seg6local action 
+End.DT6 table 10 dev vrf10
 
-- Various cleanups and fixes: xterm, serial line, time travel
-- Set ARCH_HAS_GCOV_PROFILE_ALL
+ip netns exec r4 ip -6 route add fcff:0:4:200:: nhid 1004
 
-----------------------------------------------------------------
-Johannes Berg (6):
-      um: xterm: Make default terminal emulator configurable
-      um: daemon: Make default socket configurable
-      um: Use asm-generic/dma-mapping.h
-      um: line: Use separate IRQs per line
-      um: virtio_uml: Fix broken device handling in time-travel
-      um: chan_user: Fix winch_tramp() return value
 
-Vincent Whitchurch (2):
-      um: Enable ARCH_HAS_GCOV_PROFILE_ALL
-      um: Fix out-of-bounds read in LDT setup
+The issue impacts even stable v5.18.1. Please help to fix it.
 
- arch/um/Kconfig                 |  1 +
- arch/um/drivers/Kconfig         | 15 +++++++++++++++
- arch/um/drivers/Makefile        |  2 ++
- arch/um/drivers/chan_kern.c     | 10 +++++-----
- arch/um/drivers/chan_user.c     |  9 +++++----
- arch/um/drivers/daemon_kern.c   |  2 +-
- arch/um/drivers/line.c          | 22 +++++++++++++---------
- arch/um/drivers/line.h          |  4 ++--
- arch/um/drivers/ssl.c           |  2 --
- arch/um/drivers/stdio_console.c |  2 --
- arch/um/drivers/virtio_uml.c    | 33 +++++++++++++++++++++++----------
- arch/um/drivers/xterm.c         |  7 ++++---
- arch/um/include/asm/Kbuild      |  1 +
- arch/um/include/asm/irq.h       | 22 +++++++++-------------
- arch/x86/um/ldt.c               |  6 ++++--
- 15 files changed, 85 insertions(+), 53 deletions(-)
+
+Thanks!
+
+Anton
+
+
