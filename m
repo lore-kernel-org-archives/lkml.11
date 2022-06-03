@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC0E1C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:08:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EB84C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:08:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245266AbiFCSIl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:08:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60154 "EHLO
+        id S1346747AbiFCSIu (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 14:08:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346074AbiFCRzj (ORCPT
+        with ESMTP id S1346076AbiFCRzj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 3 Jun 2022 13:55:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C08EE562E9;
-        Fri,  3 Jun 2022 10:53:36 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37209562F3;
+        Fri,  3 Jun 2022 10:53:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7A3A5B82419;
-        Fri,  3 Jun 2022 17:53:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDB51C3411C;
-        Fri,  3 Jun 2022 17:53:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C4F1C61244;
+        Fri,  3 Jun 2022 17:53:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6B7EC385A9;
+        Fri,  3 Jun 2022 17:53:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278814;
-        bh=QSqdrBXq5Smm/co4R3m8i5KuO0M2hHfHRZtBXITNQCY=;
+        s=korg; t=1654278817;
+        bh=CHmgGFpsuDekL9gLWFmcxOCEDhBVsTKgnNsfGL5LnfI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gqd4pHKtJJN282t39dxWBZ9qAUnF8Ax25URYuQKcESNViEe0XVhouSwLXOhn8wu4k
-         Hr6N14lf7K/uQpzf4X9OwZPn/boj87TxZ6qlE6gcxMuJYJGkHT3be3CGhVCzaMHH0Y
-         gY9tY4SYF4FEFBolW4E64M+2Q8DCg5T+l3GMz/tI=
+        b=TukBTrZXhnSFffHwoWuD3m72sxyOdz8ODuVpOJkA90LW8dSqTK0EKN4Ygvnk7VQA8
+         CNJXR5mJHDp8d71B3k1x7e2KDeX6Tk1kfEL7mote41wHP+kZgzMT37cYQoh5DPtx4F
+         WMMGxOjWmXL7fYCa855b7u6nRWAwOtlczXlmEhk8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yanfei Xu <yanfei.xu@intel.com>,
+        stable@vger.kernel.org, Chenyi Qiang <chenyi.qiang@intel.com>,
+        Sean Christopherson <seanjc@google.com>,
         Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.17 36/75] KVM: x86: Fix the intel_pt PMI handling wrongly considered from guest
-Date:   Fri,  3 Jun 2022 19:43:20 +0200
-Message-Id: <20220603173822.770199379@linuxfoundation.org>
+Subject: [PATCH 5.17 37/75] KVM: x86: Drop WARNs that assert a triple fault never "escapes" from L2
+Date:   Fri,  3 Jun 2022 19:43:21 +0200
+Message-Id: <20220603173822.797923186@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173821.749019262@linuxfoundation.org>
 References: <20220603173821.749019262@linuxfoundation.org>
@@ -48,40 +50,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yanfei Xu <yanfei.xu@intel.com>
+From: Sean Christopherson <seanjc@google.com>
 
-commit ffd1925a596ce68bed7d81c61cb64bc35f788a9d upstream.
+commit 45846661d10422ce9e22da21f8277540b29eca22 upstream.
 
-When kernel handles the vm-exit caused by external interrupts and NMI,
-it always sets kvm_intr_type to tell if it's dealing an IRQ or NMI. For
-the PMI scenario, it could be IRQ or NMI.
+Remove WARNs that sanity check that KVM never lets a triple fault for L2
+escape and incorrectly end up in L1.  In normal operation, the sanity
+check is perfectly valid, but it incorrectly assumes that it's impossible
+for userspace to induce KVM_REQ_TRIPLE_FAULT without bouncing through
+KVM_RUN (which guarantees kvm_check_nested_state() will see and handle
+the triple fault).
 
-However, intel_pt PMIs are only generated for HARDWARE perf events, and
-HARDWARE events are always configured to generate NMIs.  Use
-kvm_handling_nmi_from_guest() to precisely identify if the intel_pt PMI
-came from the guest; this avoids false positives if an intel_pt PMI/NMI
-arrives while the host is handling an unrelated IRQ VM-Exit.
+The WARN can currently be triggered if userspace injects a machine check
+while L2 is active and CR4.MCE=0.  And a future fix to allow save/restore
+of KVM_REQ_TRIPLE_FAULT, e.g. so that a synthesized triple fault isn't
+lost on migration, will make it trivially easy for userspace to trigger
+the WARN.
 
-Fixes: db215756ae59 ("KVM: x86: More precisely identify NMI from guest when handling PMI")
-Signed-off-by: Yanfei Xu <yanfei.xu@intel.com>
-Message-Id: <20220523140821.1345605-1-yanfei.xu@intel.com>
+Clearing KVM_REQ_TRIPLE_FAULT when forcibly leaving guest mode is
+tempting, but wrong, especially if/when the request is saved/restored,
+e.g. if userspace restores events (including a triple fault) and then
+restores nested state (which may forcibly leave guest mode).  Ignoring
+the fact that KVM doesn't currently provide the necessary APIs, it's
+userspace's responsibility to manage pending events during save/restore.
+
+  ------------[ cut here ]------------
+  WARNING: CPU: 7 PID: 1399 at arch/x86/kvm/vmx/nested.c:4522 nested_vmx_vmexit+0x7fe/0xd90 [kvm_intel]
+  Modules linked in: kvm_intel kvm irqbypass
+  CPU: 7 PID: 1399 Comm: state_test Not tainted 5.17.0-rc3+ #808
+  Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 0.0.0 02/06/2015
+  RIP: 0010:nested_vmx_vmexit+0x7fe/0xd90 [kvm_intel]
+  Call Trace:
+   <TASK>
+   vmx_leave_nested+0x30/0x40 [kvm_intel]
+   vmx_set_nested_state+0xca/0x3e0 [kvm_intel]
+   kvm_arch_vcpu_ioctl+0xf49/0x13e0 [kvm]
+   kvm_vcpu_ioctl+0x4b9/0x660 [kvm]
+   __x64_sys_ioctl+0x83/0xb0
+   do_syscall_64+0x3b/0xc0
+   entry_SYSCALL_64_after_hwframe+0x44/0xae
+   </TASK>
+  ---[ end trace 0000000000000000 ]---
+
+Fixes: cb6a32c2b877 ("KVM: x86: Handle triple fault in L2 without killing L1")
 Cc: stable@vger.kernel.org
+Cc: Chenyi Qiang <chenyi.qiang@intel.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220407002315.78092-2-seanjc@google.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/vmx/vmx.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kvm/svm/nested.c |    3 ---
+ arch/x86/kvm/vmx/nested.c |    3 ---
+ 2 files changed, 6 deletions(-)
 
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -7858,7 +7858,7 @@ static unsigned int vmx_handle_intel_pt_
- 	struct kvm_vcpu *vcpu = kvm_get_running_vcpu();
+--- a/arch/x86/kvm/svm/nested.c
++++ b/arch/x86/kvm/svm/nested.c
+@@ -790,9 +790,6 @@ int nested_svm_vmexit(struct vcpu_svm *s
+ 	struct kvm_host_map map;
+ 	int rc;
  
- 	/* '0' on failure so that the !PT case can use a RET0 static call. */
--	if (!kvm_arch_pmi_in_guest(vcpu))
-+	if (!vcpu || !kvm_handling_nmi_from_guest(vcpu))
- 		return 0;
+-	/* Triple faults in L2 should never escape. */
+-	WARN_ON_ONCE(kvm_check_request(KVM_REQ_TRIPLE_FAULT, vcpu));
+-
+ 	rc = kvm_vcpu_map(vcpu, gpa_to_gfn(svm->nested.vmcb12_gpa), &map);
+ 	if (rc) {
+ 		if (rc == -EINVAL)
+--- a/arch/x86/kvm/vmx/nested.c
++++ b/arch/x86/kvm/vmx/nested.c
+@@ -4518,9 +4518,6 @@ void nested_vmx_vmexit(struct kvm_vcpu *
+ 	/* trying to cancel vmlaunch/vmresume is a bug */
+ 	WARN_ON_ONCE(vmx->nested.nested_run_pending);
  
- 	kvm_make_request(KVM_REQ_PMI, vcpu);
+-	/* Similarly, triple faults in L2 should never escape. */
+-	WARN_ON_ONCE(kvm_check_request(KVM_REQ_TRIPLE_FAULT, vcpu));
+-
+ 	if (kvm_check_request(KVM_REQ_GET_NESTED_STATE_PAGES, vcpu)) {
+ 		/*
+ 		 * KVM_REQ_GET_NESTED_STATE_PAGES is also used to map
 
 
