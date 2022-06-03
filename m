@@ -2,234 +2,327 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBC6EC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 13:57:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF4DCC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 13:58:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244996AbiFCN5z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 09:57:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49390 "EHLO
+        id S245000AbiFCN6B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 09:58:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244934AbiFCN5F (ORCPT
+        with ESMTP id S244952AbiFCN5G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 09:57:05 -0400
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A598B9B;
-        Fri,  3 Jun 2022 06:56:52 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id n124-20020a1c2782000000b003972dfca96cso4378143wmn.4;
-        Fri, 03 Jun 2022 06:56:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=UGG9qpuiluHgCuaSHdjXJU7q47uAnSVrXsTe0fpRwjo=;
-        b=TK5I4/rEbEjManXzyp0DZFUihYTt477+gPq2aCb2wJ3iIg9B9MD5zWeK6tRKaPZH7d
-         RI60QIN5P/pltSuU0sdzEb60D8CNEXbtd5aHPbNAgKS39RoF3MxKvTGAl00YTxZKBlxz
-         5MJ2C/hL/LLbyUdD4qjonxTtSJI64wKPFqlZkxH7+XDRqYvS+PvD2pWnrQkpt+lK0GZ3
-         Hzzzli63UgBsoiAyVTlc2aIJYJpQyl3Jy4N2IwAfahnl7Yo8+uTZuR39dxNL1nuMxdUF
-         zmhzFZTNhrVeeQnibMc41IglcmT4gJhTWpoKx8yjFaM0i4J+gU3ZJbrsUdxJCn+YYpvp
-         h9ng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=UGG9qpuiluHgCuaSHdjXJU7q47uAnSVrXsTe0fpRwjo=;
-        b=wgC7lStVHHRXG0kFEqkUf7Zb9bCxWQFJ5FmcHMXr/RRp2djtn10z5zI1TCcICrqMs8
-         qrDwPDG8g9JuGLlXiFeXz+YsunFXHsjKfqzvxImwuHnOXOE1uI7sOs1OoNXrCT9hGyhr
-         olKgr3+XkkZEJsXXq8vV6ynxFbCwLv5mdmwufumG2E9i8VNyIzi2HIj2K3k31k3G4GyW
-         tWDdrbmMslGj9gTMVZFe/hNejuzH3GjHTvmf3+uA7meTF8eWrGqqXinAMxTuL+utalEM
-         47+c3Mrjj4XJoFaZuL1oIULESdLl26UkWY3Nql92EnfHXVT97IIOIkTGQ9WHSNmrho+h
-         Id7Q==
-X-Gm-Message-State: AOAM530l2fiZ+R+G8fDKg/XiHNlCqDIi92eCcvZPiKpdpQYThY0laA6b
-        NM3QffJbnNDu/YGYyfU1hxE=
-X-Google-Smtp-Source: ABdhPJzJSYCvK7Sp5Ya3TON/rcRsQZKRuE8TUjMqiWQGaLc8tr7VeC1fwjPiAulBRUgyvXuOmTWRyQ==
-X-Received: by 2002:a05:600c:a51:b0:397:8a4d:be15 with SMTP id c17-20020a05600c0a5100b003978a4dbe15mr8821671wmq.80.1654264612159;
-        Fri, 03 Jun 2022 06:56:52 -0700 (PDT)
-Received: from localhost (92.40.203.126.threembb.co.uk. [92.40.203.126])
-        by smtp.gmail.com with ESMTPSA id h7-20020a05600c414700b0039787538c9csm3670131wmm.20.2022.06.03.06.56.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Jun 2022 06:56:51 -0700 (PDT)
-From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-To:     linus.walleij@linaro.org, brgl@bgdev.pl, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, wens@csie.org, jic23@kernel.org,
-        lee.jones@linaro.org, sre@kernel.org, broonie@kernel.org,
-        gregkh@linuxfoundation.org, lgirdwood@gmail.com
-Cc:     lars@metafoo.de, rafael@kernel.org, linux-gpio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 09/10] power: supply: axp20x_usb_power: Add support for AXP192
-Date:   Fri,  3 Jun 2022 14:57:13 +0100
-Message-Id: <20220603135714.12007-10-aidanmacdonald.0x0@gmail.com>
-In-Reply-To: <20220603135714.12007-1-aidanmacdonald.0x0@gmail.com>
-References: <20220603135714.12007-1-aidanmacdonald.0x0@gmail.com>
+        Fri, 3 Jun 2022 09:57:06 -0400
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 146FBCC9
+        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 06:56:51 -0700 (PDT)
+Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2539FhGn004989;
+        Fri, 3 Jun 2022 15:56:25 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=selector1;
+ bh=zxXBZIxiiFU9jTGOLwVu6wmqjFEBW5aoI6bWAI0F5LU=;
+ b=MoK2Uli10VlY7rIqB4YzbPWTkoD9tZ9ClcT5R/bUlHWehXQIseiP4S6eOGuwY580t3f9
+ jvIa4aSRwQUI8znXxhh4LIHWR6UCOf5KeQU4Kou66QN0ySWhssXBFk0gNJYDJrDGHSjA
+ Lz2+X/52dK1Fs1RMYy6DN9W6nD3FSnANB+t2VQLPR/CIwPjwHhJi6roPtMgXpSAnSuik
+ /lTVKOrOwUK1BnPhdEoOlo+Lge6zum27A5yudTo2retXFcnDGm0hrT27nbU1Phs5M6kp
+ uB2lpmLmtx7dqeOLrpLIAm6vzSN/LDxyihKmI+hRAVv8e9iX+1yIcTsCfzE56zwnKYMQ yg== 
+Received: from beta.dmz-eu.st.com ([164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3gbc516e9c-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 03 Jun 2022 15:56:25 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 2831410007C;
+        Fri,  3 Jun 2022 15:47:03 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 9DF8B226FB3;
+        Fri,  3 Jun 2022 15:46:57 +0200 (CEST)
+Received: from localhost (10.75.127.48) by SHFDAG1NODE1.st.com (10.75.129.69)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Fri, 3 Jun
+ 2022 15:46:57 +0200
+From:   Yannick Fertre <yannick.fertre@foss.st.com>
+To:     Yannick Fertre <yannick.fertre@foss.st.com>,
+        Philippe Cornu <philippe.cornu@foss.st.com>,
+        Raphael Gallais-Pou <raphael.gallais-pou@foss.st.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        <dri-devel@lists.freedesktop.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] drm/stm: ltdc: update hardware error management
+Date:   Fri, 3 Jun 2022 15:46:54 +0200
+Message-ID: <20220603134654.594373-1-yannick.fertre@foss.st.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.48]
+X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-03_04,2022-06-03_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The AXP192 is mostly the same as the AXP202 but has a different
-current limit.
+The latest hardware version (0x40100) supports a hardware threshold
+register (aka FUTR) to trigger a fifo underrun interrupt.
+A software threshold has been implemented for other hardware versions.
+The threshold is set to 128 by default.
 
-Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+Signed-off-by: Yannick Fertre <yannick.fertre@foss.st.com>
 ---
- drivers/power/supply/axp20x_usb_power.c | 75 +++++++++++++++++++++++--
- 1 file changed, 70 insertions(+), 5 deletions(-)
+ drivers/gpu/drm/stm/ltdc.c | 90 ++++++++++++++++++++++++++++++--------
+ drivers/gpu/drm/stm/ltdc.h |  6 ++-
+ 2 files changed, 77 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/power/supply/axp20x_usb_power.c b/drivers/power/supply/axp20x_usb_power.c
-index a1e6d1d44808..e1266b8265bc 100644
---- a/drivers/power/supply/axp20x_usb_power.c
-+++ b/drivers/power/supply/axp20x_usb_power.c
-@@ -48,6 +48,9 @@
- #define AXP813_VBUS_CLIMIT_2000mA	2
- #define AXP813_VBUS_CLIMIT_2500mA	3
+diff --git a/drivers/gpu/drm/stm/ltdc.c b/drivers/gpu/drm/stm/ltdc.c
+index ff2075dd9474..42a3bd515477 100644
+--- a/drivers/gpu/drm/stm/ltdc.c
++++ b/drivers/gpu/drm/stm/ltdc.c
+@@ -162,16 +162,20 @@
+ #define BCCR_BCWHITE	GENMASK(23, 0)	/* Background Color WHITE */
  
-+#define AXP192_VBUS_CLIMIT_EN		BIT(1)
-+#define AXP192_VBUS_CLIMIT_100mA	BIT(0)
+ #define IER_LIE		BIT(0)		/* Line Interrupt Enable */
+-#define IER_FUIE	BIT(1)		/* Fifo Underrun Interrupt Enable */
++#define IER_FUWIE	BIT(1)		/* Fifo Underrun Warning Interrupt Enable */
+ #define IER_TERRIE	BIT(2)		/* Transfer ERRor Interrupt Enable */
+-#define IER_RRIE	BIT(3)		/* Register Reload Interrupt enable */
++#define IER_RRIE	BIT(3)		/* Register Reload Interrupt Enable */
++#define IER_FUEIE	BIT(6)		/* Fifo Underrun Error Interrupt Enable */
++#define IER_CRCIE	BIT(7)		/* CRC Error Interrupt Enable */
+ 
+ #define CPSR_CYPOS	GENMASK(15, 0)	/* Current Y position */
+ 
+ #define ISR_LIF		BIT(0)		/* Line Interrupt Flag */
+-#define ISR_FUIF	BIT(1)		/* Fifo Underrun Interrupt Flag */
++#define ISR_FUWIF	BIT(1)		/* Fifo Underrun Warning Interrupt Flag */
+ #define ISR_TERRIF	BIT(2)		/* Transfer ERRor Interrupt Flag */
+ #define ISR_RRIF	BIT(3)		/* Register Reload Interrupt Flag */
++#define ISR_FUEIF	BIT(6)		/* Fifo Underrun Error Interrupt Flag */
++#define ISR_CRCIF	BIT(7)		/* CRC Error Interrupt Flag */
+ 
+ #define EDCR_OCYEN	BIT(25)		/* Output Conversion to YCbCr 422: ENable */
+ #define EDCR_OCYSEL	BIT(26)		/* Output Conversion to YCbCr 422: SELection of the CCIR */
+@@ -231,6 +235,8 @@
+ 
+ #define NB_PF		8		/* Max nb of HW pixel format */
+ 
++#define FUT_DFT		128		/* Default value of fifo underrun threshold */
 +
- #define AXP20X_ADC_EN1_VBUS_CURR	BIT(2)
- #define AXP20X_ADC_EN1_VBUS_VOLT	BIT(3)
+ /*
+  * Skip the first value and the second in case CRC was enabled during
+  * the thread irq. This is to be sure CRC value is relevant for the
+@@ -711,12 +717,13 @@ static irqreturn_t ltdc_irq_thread(int irq, void *arg)
+ 			ltdc_irq_crc_handle(ldev, crtc);
+ 	}
  
-@@ -121,6 +124,24 @@ static void axp20x_usb_power_poll_vbus(struct work_struct *work)
- 		mod_delayed_work(system_power_efficient_wq, &power->vbus_detect, DEBOUNCE_TIME);
+-	/* Save FIFO Underrun & Transfer Error status */
+ 	mutex_lock(&ldev->err_lock);
+-	if (ldev->irq_status & ISR_FUIF)
+-		ldev->error_status |= ISR_FUIF;
+ 	if (ldev->irq_status & ISR_TERRIF)
+-		ldev->error_status |= ISR_TERRIF;
++		ldev->transfer_err++;
++	if (ldev->irq_status & ISR_FUEIF)
++		ldev->fifo_err++;
++	if (ldev->irq_status & ISR_FUWIF)
++		ldev->fifo_warn++;
+ 	mutex_unlock(&ldev->err_lock);
+ 
+ 	return IRQ_HANDLED;
+@@ -775,7 +782,7 @@ static void ltdc_crtc_atomic_enable(struct drm_crtc *crtc,
+ 	regmap_write(ldev->regmap, LTDC_BCCR, BCCR_BCBLACK);
+ 
+ 	/* Enable IRQ */
+-	regmap_set_bits(ldev->regmap, LTDC_IER, IER_RRIE | IER_FUIE | IER_TERRIE);
++	regmap_set_bits(ldev->regmap, LTDC_IER, IER_FUWIE | IER_FUEIE | IER_RRIE | IER_TERRIE);
+ 
+ 	/* Commit shadow registers = update planes at next vblank */
+ 	if (!ldev->caps.plane_reg_shadow)
+@@ -801,13 +808,20 @@ static void ltdc_crtc_atomic_disable(struct drm_crtc *crtc,
+ 				  LXCR_CLUTEN | LXCR_LEN, 0);
+ 
+ 	/* disable IRQ */
+-	regmap_clear_bits(ldev->regmap, LTDC_IER, IER_RRIE | IER_FUIE | IER_TERRIE);
++	regmap_clear_bits(ldev->regmap, LTDC_IER, IER_FUWIE | IER_FUEIE | IER_RRIE | IER_TERRIE);
+ 
+ 	/* immediately commit disable of layers before switching off LTDC */
+ 	if (!ldev->caps.plane_reg_shadow)
+ 		regmap_set_bits(ldev->regmap, LTDC_SRCR, SRCR_IMR);
+ 
+ 	pm_runtime_put_sync(ddev->dev);
++
++	/*  clear interrupt error counters */
++	mutex_lock(&ldev->err_lock);
++	ldev->transfer_err = 0;
++	ldev->fifo_err = 0;
++	ldev->fifo_warn = 0;
++	mutex_unlock(&ldev->err_lock);
  }
  
-+static int axp192_get_current_max(struct axp20x_usb_power *power, int *val)
-+{
-+	unsigned int v;
-+	int ret = regmap_read(power->regmap, AXP20X_VBUS_IPSOUT_MGMT, &v);
-+
-+	if (ret)
-+		return ret;
-+
-+	if (!(v & AXP192_VBUS_CLIMIT_EN))
-+		*val = -1;
-+	else if (v & AXP192_VBUS_CLIMIT_100mA)
-+		*val = 100000;
-+	else
-+		*val = 500000;
-+
-+	return 0;
-+}
-+
- static int axp20x_get_current_max(struct axp20x_usb_power *power, int *val)
- {
- 	unsigned int v;
-@@ -179,7 +200,7 @@ static int axp20x_usb_power_get_property(struct power_supply *psy,
- 	enum power_supply_property psp, union power_supply_propval *val)
- {
- 	struct axp20x_usb_power *power = power_supply_get_drvdata(psy);
--	unsigned int input, v;
-+	unsigned int input, v, reg;
- 	int ret;
- 
- 	switch (psp) {
-@@ -215,6 +236,8 @@ static int axp20x_usb_power_get_property(struct power_supply *psy,
- 	case POWER_SUPPLY_PROP_CURRENT_MAX:
- 		if (power->axp20x_id == AXP813_ID)
- 			return axp813_get_current_max(power, &val->intval);
-+		else if (power->axp20x_id == AXP192_ID)
-+			return axp192_get_current_max(power, &val->intval);
- 		return axp20x_get_current_max(power, &val->intval);
- 	case POWER_SUPPLY_PROP_CURRENT_NOW:
- 		if (IS_ENABLED(CONFIG_AXP20X_ADC)) {
-@@ -256,15 +279,26 @@ static int axp20x_usb_power_get_property(struct power_supply *psy,
- 
- 		val->intval = POWER_SUPPLY_HEALTH_GOOD;
- 
--		if (power->axp20x_id == AXP202_ID) {
--			ret = regmap_read(power->regmap,
--					  AXP20X_USB_OTG_STATUS, &v);
-+		switch (power->axp20x_id) {
-+		case AXP192_ID:
-+			/* Same layout as the AXP202, but different address */
-+			reg = AXP192_USB_OTG_STATUS;
-+			fallthrough;
-+
-+		case AXP202_ID:
-+			if (power->axp20x_id == AXP202_ID)
-+				reg = AXP20X_USB_OTG_STATUS;
-+
-+			ret = regmap_read(power->regmap, reg, &v);
- 			if (ret)
- 				return ret;
- 
- 			if (!(v & AXP20X_USB_STATUS_VBUS_VALID))
- 				val->intval =
- 					POWER_SUPPLY_HEALTH_UNSPEC_FAILURE;
-+
-+		default:
-+			break;
- 		}
- 		break;
- 	case POWER_SUPPLY_PROP_PRESENT:
-@@ -316,6 +350,24 @@ static int axp20x_usb_power_set_voltage_min(struct axp20x_usb_power *power,
- 	return -EINVAL;
+ #define CLK_TOLERANCE_HZ 50
+@@ -1168,6 +1182,18 @@ static int ltdc_crtc_verify_crc_source(struct drm_crtc *crtc,
+ 	return 0;
  }
  
-+static int axp192_usb_power_set_current_max(struct axp20x_usb_power *power,
-+					    int intval)
++static void ltdc_crtc_atomic_print_state(struct drm_printer *p,
++					 const struct drm_crtc_state *state)
 +{
-+	int val = AXP192_VBUS_CLIMIT_EN;
-+	const int mask = AXP192_VBUS_CLIMIT_EN | AXP192_VBUS_CLIMIT_100mA;
++	struct drm_crtc *crtc = state->crtc;
++	struct ltdc_device *ldev = crtc_to_ltdc(crtc);
 +
-+	switch (intval) {
-+	case 100000:
-+		val |= AXP192_VBUS_CLIMIT_100mA;
-+		fallthrough;
-+	case 500000:
-+		return regmap_update_bits(power->regmap,
-+					  AXP20X_VBUS_IPSOUT_MGMT, mask, val);
-+	default:
-+		return -EINVAL;
-+	}
++	drm_printf(p, "\ttransfer_error=%d\n", ldev->transfer_err);
++	drm_printf(p, "\tfifo_underrun_error=%d\n", ldev->fifo_err);
++	drm_printf(p, "\tfifo_underrun_warning=%d\n", ldev->fifo_warn);
++	drm_printf(p, "\tfifo_underrun_threshold=%d\n", ldev->fifo_threshold);
 +}
 +
- static int axp813_usb_power_set_current_max(struct axp20x_usb_power *power,
- 					    int intval)
- {
-@@ -383,6 +435,9 @@ static int axp20x_usb_power_set_property(struct power_supply *psy,
- 		if (power->axp20x_id == AXP813_ID)
- 			return axp813_usb_power_set_current_max(power,
- 								val->intval);
-+		else if (power->axp20x_id == AXP192_ID)
-+			return axp192_usb_power_set_current_max(power,
-+								val->intval);
- 		return axp20x_usb_power_set_current_max(power, val->intval);
- 
- 	default:
-@@ -468,6 +523,13 @@ struct axp_data {
- 	enum axp20x_variants		axp20x_id;
+ static const struct drm_crtc_funcs ltdc_crtc_funcs = {
+ 	.destroy = drm_crtc_cleanup,
+ 	.set_config = drm_atomic_helper_set_config,
+@@ -1178,6 +1204,7 @@ static const struct drm_crtc_funcs ltdc_crtc_funcs = {
+ 	.enable_vblank = ltdc_crtc_enable_vblank,
+ 	.disable_vblank = ltdc_crtc_disable_vblank,
+ 	.get_vblank_timestamp = drm_crtc_vblank_helper_get_vblank_timestamp,
++	.atomic_print_state = ltdc_crtc_atomic_print_state,
  };
  
-+static const struct axp_data axp192_data = {
-+	.power_desc	= &axp20x_usb_power_desc,
-+	.irq_names	= axp20x_irq_names,
-+	.num_irq_names	= ARRAY_SIZE(axp20x_irq_names),
-+	.axp20x_id	= AXP192_ID,
-+};
+ static const struct drm_crtc_funcs ltdc_crtc_with_crc_support_funcs = {
+@@ -1192,6 +1219,7 @@ static const struct drm_crtc_funcs ltdc_crtc_with_crc_support_funcs = {
+ 	.get_vblank_timestamp = drm_crtc_vblank_helper_get_vblank_timestamp,
+ 	.set_crc_source = ltdc_crtc_set_crc_source,
+ 	.verify_crc_source = ltdc_crtc_verify_crc_source,
++	.atomic_print_state = ltdc_crtc_atomic_print_state,
+ };
+ 
+ /*
+@@ -1452,13 +1480,21 @@ static void ltdc_plane_atomic_update(struct drm_plane *plane,
+ 	ldev->plane_fpsi[plane->index].counter++;
+ 
+ 	mutex_lock(&ldev->err_lock);
+-	if (ldev->error_status & ISR_FUIF) {
+-		DRM_WARN("ltdc fifo underrun: please verify display mode\n");
+-		ldev->error_status &= ~ISR_FUIF;
++	if (ldev->transfer_err) {
++		DRM_WARN("ltdc transfer error: %d\n", ldev->transfer_err);
++		ldev->transfer_err = 0;
+ 	}
+-	if (ldev->error_status & ISR_TERRIF) {
+-		DRM_WARN("ltdc transfer error\n");
+-		ldev->error_status &= ~ISR_TERRIF;
 +
- static const struct axp_data axp202_data = {
- 	.power_desc	= &axp20x_usb_power_desc,
- 	.irq_names	= axp20x_irq_names,
-@@ -600,7 +662,7 @@ static int axp20x_usb_power_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
++	if (ldev->caps.fifo_threshold) {
++		if (ldev->fifo_err) {
++			DRM_WARN("ltdc fifo underrun: please verify display mode\n");
++			ldev->fifo_err = 0;
++		}
++	} else {
++		if (ldev->fifo_warn >= ldev->fifo_threshold) {
++			DRM_WARN("ltdc fifo underrun: please verify display mode\n");
++			ldev->fifo_warn = 0;
++		}
+ 	}
+ 	mutex_unlock(&ldev->err_lock);
+ }
+@@ -1700,6 +1736,10 @@ static void ltdc_encoder_enable(struct drm_encoder *encoder)
  
--	if (power->axp20x_id == AXP202_ID) {
-+	if (power->axp20x_id == AXP192_ID || power->axp20x_id == AXP202_ID) {
- 		/* Enable vbus valid checking */
- 		ret = regmap_update_bits(power->regmap, AXP20X_VBUS_MON,
- 					 AXP20X_VBUS_MON_VBUS_VALID,
-@@ -659,6 +721,9 @@ static int axp20x_usb_power_probe(struct platform_device *pdev)
+ 	DRM_DEBUG_DRIVER("\n");
  
- static const struct of_device_id axp20x_usb_power_match[] = {
- 	{
-+		.compatible = "x-powers,axp192-usb-power-supply",
-+		.data = &axp192_data,
-+	}, {
- 		.compatible = "x-powers,axp202-usb-power-supply",
- 		.data = &axp202_data,
- 	}, {
++	/* set fifo underrun threshold register */
++	if (ldev->caps.fifo_threshold)
++		regmap_write(ldev->regmap, LTDC_FUT, ldev->fifo_threshold);
++
+ 	/* Enable LTDC */
+ 	regmap_set_bits(ldev->regmap, LTDC_GCR, GCR_LTDCEN);
+ }
+@@ -1801,6 +1841,7 @@ static int ltdc_get_caps(struct drm_device *ddev)
+ 		ldev->caps.crc = false;
+ 		ldev->caps.dynamic_zorder = false;
+ 		ldev->caps.plane_rotation = false;
++		ldev->caps.fifo_threshold = false;
+ 		break;
+ 	case HWVER_20101:
+ 		ldev->caps.layer_ofs = LAY_OFS_0;
+@@ -1818,6 +1859,7 @@ static int ltdc_get_caps(struct drm_device *ddev)
+ 		ldev->caps.crc = false;
+ 		ldev->caps.dynamic_zorder = false;
+ 		ldev->caps.plane_rotation = false;
++		ldev->caps.fifo_threshold = false;
+ 		break;
+ 	case HWVER_40100:
+ 		ldev->caps.layer_ofs = LAY_OFS_1;
+@@ -1835,6 +1877,7 @@ static int ltdc_get_caps(struct drm_device *ddev)
+ 		ldev->caps.crc = true;
+ 		ldev->caps.dynamic_zorder = true;
+ 		ldev->caps.plane_rotation = true;
++		ldev->caps.fifo_threshold = true;
+ 		break;
+ 	default:
+ 		return -ENODEV;
+@@ -1959,9 +2002,6 @@ int ltdc_load(struct drm_device *ddev)
+ 		goto err;
+ 	}
+ 
+-	/* Disable interrupts */
+-	regmap_clear_bits(ldev->regmap, LTDC_IER, IER_LIE | IER_RRIE | IER_FUIE | IER_TERRIE);
+-
+ 	ret = ltdc_get_caps(ddev);
+ 	if (ret) {
+ 		DRM_ERROR("hardware identifier (0x%08x) not supported!\n",
+@@ -1969,8 +2009,22 @@ int ltdc_load(struct drm_device *ddev)
+ 		goto err;
+ 	}
+ 
++	/* Disable interrupts */
++	if (ldev->caps.fifo_threshold)
++		regmap_clear_bits(ldev->regmap, LTDC_IER, IER_LIE | IER_RRIE | IER_FUWIE |
++				  IER_TERRIE);
++	else
++		regmap_clear_bits(ldev->regmap, LTDC_IER, IER_LIE | IER_RRIE | IER_FUWIE |
++				  IER_TERRIE | IER_FUEIE);
++
+ 	DRM_DEBUG_DRIVER("ltdc hw version 0x%08x\n", ldev->caps.hw_version);
+ 
++	/* initialize default value for fifo underrun threshold & clear interrupt error counters */
++	ldev->transfer_err = 0;
++	ldev->fifo_err = 0;
++	ldev->fifo_warn = 0;
++	ldev->fifo_threshold = FUT_DFT;
++
+ 	for (i = 0; i < ldev->caps.nb_irq; i++) {
+ 		irq = platform_get_irq(pdev, i);
+ 		if (irq < 0) {
+diff --git a/drivers/gpu/drm/stm/ltdc.h b/drivers/gpu/drm/stm/ltdc.h
+index 15139980d8ea..9d488043ffdb 100644
+--- a/drivers/gpu/drm/stm/ltdc.h
++++ b/drivers/gpu/drm/stm/ltdc.h
+@@ -30,6 +30,7 @@ struct ltdc_caps {
+ 	bool crc;		/* cyclic redundancy check supported */
+ 	bool dynamic_zorder;	/* dynamic z-order */
+ 	bool plane_rotation;	/* plane rotation */
++	bool fifo_threshold;	/* fifo underrun threshold supported */
+ };
+ 
+ #define LTDC_MAX_LAYER	4
+@@ -45,8 +46,11 @@ struct ltdc_device {
+ 	struct clk *pixel_clk;	/* lcd pixel clock */
+ 	struct mutex err_lock;	/* protecting error_status */
+ 	struct ltdc_caps caps;
+-	u32 error_status;
+ 	u32 irq_status;
++	u32 fifo_err;		/* fifo underrun error counter */
++	u32 fifo_warn;		/* fifo underrun warning counter */
++	u32 fifo_threshold;	/* fifo underrun threshold */
++	u32 transfer_err;	/* transfer error counter */
+ 	struct fps_info plane_fpsi[LTDC_MAX_LAYER];
+ 	struct drm_atomic_state *suspend_state;
+ 	int crc_skip_count;
 -- 
-2.35.1
+2.25.1
 
