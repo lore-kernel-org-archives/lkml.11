@@ -2,322 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0131FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 05:27:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D2B0C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 05:28:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240473AbiFCF1T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 01:27:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58938 "EHLO
+        id S240491AbiFCF2i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 01:28:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239345AbiFCF1N (ORCPT
+        with ESMTP id S230366AbiFCF2h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 01:27:13 -0400
-Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75DBF17E02;
-        Thu,  2 Jun 2022 22:27:11 -0700 (PDT)
-Received: by mail-il1-x12a.google.com with SMTP id f7so5022571ilr.5;
-        Thu, 02 Jun 2022 22:27:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=oGb27Ak0z2Rkt5N/UACfnN99nvmSQ69B5OG+/UGAQLM=;
-        b=qjUHwWtDO6aI7Fmssc++fi3v4jwxDc0kJYEk1vDRyhGSso7W1ZkZFSkqajhql3wNEA
-         M5hmNYlaxDWWcrdcotJ+aZvuYIgBgoNZnbJqss8yvTjzrr5UHsYCVWIbgQjNyjKS9yN6
-         XSKnbUokIFEYVUfpi3gmuc6AO5GGBQNmpL6wcya0hBiCkvePk92MFbN9gnDfCn2W3k4f
-         vq1rvXMWPW0B7BL7G933m6hgdw0D7VNfTLmJlN4fW75Y10i/xYRMQNCu97jekuzCDAqs
-         cca8vUxo3bCj1ChZ5wzKSgv4o3wQ5IImVCu8YJHpNeNh9fhcVjXcEIZZgSfmXv42OxgH
-         Ya/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=oGb27Ak0z2Rkt5N/UACfnN99nvmSQ69B5OG+/UGAQLM=;
-        b=dTclK/5SghxYRy4NUYOCYrqjwD6uMqX03rOGiV/knH9pbP6Yvpyl/T37LaNJ0GXEgR
-         cGr4KgLSvfKhAinDYdFyFDoLnV2d932BaPpHDuYvwK+OpHwUl1m0nFTZcs/hwp7/9wSK
-         MOE2r0caDKICCda8u+NoNrkE43TpdbGVzE17nlsJc/A4YaRKSykeMlixhkfskXUIFz6O
-         HguW8Wvl5oLiyl0iNvX0TruGLH7dDGb9Rpi4wP+q9XGxK7YSbPLBlXyuio10TNjFkxF6
-         BiNk1jqmL6ZIG2h/UG2P++u3xDoTkLg6HIzBU6enB64rB2VcxejymuP9HIJQnRm1ePWr
-         wNig==
-X-Gm-Message-State: AOAM532yI0k6vOVh1bV6dlaXV6jYbxqmLsOU+OeEIVjn/RuDOf2QcN2G
-        G7MiKlgA4dssPWdYqigs4FUyV1w71RxCJdELujM=
-X-Google-Smtp-Source: ABdhPJxTxG2jY7cybAXHG6BSEzYABkT93h++rypNIN3GXMjB+z1lq7/A/l4005ZP15S5fZveJqS40vrOm/RZYuEXguM=
-X-Received: by 2002:a05:6638:4407:b0:331:692c:1d5f with SMTP id
- bp7-20020a056638440700b00331692c1d5fmr3236731jab.208.1654234030909; Thu, 02
- Jun 2022 22:27:10 -0700 (PDT)
+        Fri, 3 Jun 2022 01:28:37 -0400
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2043.outbound.protection.outlook.com [40.107.243.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C8143819C;
+        Thu,  2 Jun 2022 22:28:35 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=FBxzxDMojYcsQDI65Ll5rrmpSBON77xJT4DQgoVwfQVCazlAnrIxplYAjb4gRFZDP37u3zT2n8cnmhzWZup+3kTude+lu4U/HkU/lWGy+Mis4NHk47jVNSFCjLvkXjLARIoku70S0XofXR64J9gpz6qBv71exKqysV029MiXGqQV4EqpC3KlXAurVMAbctJ7iCl+HCR/ldLAFYxbOq/wU/8gKV11Hfm5MC5e7gAr9j7iM9hhZN0NYU9J8rjoLMytDZB3OSXSTnDyvvpwmRRAsEo7GqUsUTIYuslcZeRJ4HW+kMts6Gb529SGVlBefcy3uB8hw7Sz9B+PQZoj2H+jfA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=NII/+76QUkKz3DGEpOp6TncNu8SXgxAtXq0Xr+emVRI=;
+ b=odgA6e3ll8eXXAQKsal0MqDuPoaoIDFPVzAl3k9iN1O3pGWiex+UVC6eDGlGkaZC497vosCm6CvqKcoUeYfuv02l7SffzzOZLwTPcyQ24ExY4g/t/YthfzAU8SFAGYq1pMtkM0d3AQ4CZuYS7IDJADBGgw7/eesQFFbOC4krp07iXZgV0CgZ5N0xSjWv2nAP7DoomUMMiLWSmCLoT0xObDFeUjnH7J77If3XbUhle1Z+xr4xN4PED4CdeDIjFSMuWP4OqY6sCj8SEDF0LySWFmSUO1bZMRT18buIY9eus8z24IcISkzUEOJKnagZZrlKmbc4kLJFwEICze0lJ9dNeQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NII/+76QUkKz3DGEpOp6TncNu8SXgxAtXq0Xr+emVRI=;
+ b=mjr21YhZjBzndaWh9aazE2VtIXQDa0wmV+vXDB7uymOe/Z6i1gs6+btWWjhfp3iHpYbW+oSX/uDpg/e1rBB87iA0rhdyN7g/x2hx28USsLNmOKQRAFeJ+oRru+yeTDfSp60RCgp6jR34yR7VLJO3Z6Kj8e6f2wC9gVJe+bLJdSU=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from PH7PR12MB6588.namprd12.prod.outlook.com (2603:10b6:510:210::10)
+ by CY4PR12MB1350.namprd12.prod.outlook.com (2603:10b6:903:41::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.17; Fri, 3 Jun
+ 2022 05:28:31 +0000
+Received: from PH7PR12MB6588.namprd12.prod.outlook.com
+ ([fe80::5044:b3eb:8442:fe92]) by PH7PR12MB6588.namprd12.prod.outlook.com
+ ([fe80::5044:b3eb:8442:fe92%9]) with mapi id 15.20.5314.013; Fri, 3 Jun 2022
+ 05:28:31 +0000
+Message-ID: <76f02f9c-139b-f26b-0cc6-6edc486f5244@amd.com>
+Date:   Fri, 3 Jun 2022 10:58:13 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH v5 1/8] perf record ibs: Warn about sampling period skew
+Content-Language: en-US
+To:     acme@kernel.org, namhyung@kernel.org
+Cc:     kan.liang@linux.intel.com, jolsa@kernel.org, irogers@google.com,
+        peterz@infradead.org, rrichter@amd.com, mingo@redhat.com,
+        mark.rutland@arm.com, tglx@linutronix.de, bp@alien8.de,
+        james.clark@arm.com, leo.yan@linaro.org, ak@linux.intel.com,
+        eranian@google.com, like.xu.linux@gmail.com, x86@kernel.org,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        sandipan.das@amd.com, ananth.narayan@amd.com, kim.phillips@amd.com,
+        santosh.shukla@amd.com, Ravi Bangoria <ravi.bangoria@amd.com>
+References: <CAM9d7ch2dtTjhSt9i96yr4JLEWy7EgNArRvSURE4h5gLL6=7EQ@mail.gmail.com>
+ <20220603051223.4272-1-ravi.bangoria@amd.com>
+From:   Ravi Bangoria <ravi.bangoria@amd.com>
+In-Reply-To: <20220603051223.4272-1-ravi.bangoria@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: PN3PR01CA0168.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:de::8) To PH7PR12MB6588.namprd12.prod.outlook.com
+ (2603:10b6:510:210::10)
 MIME-Version: 1.0
-References: <20220602115141.3962749-1-chenhuacai@loongson.cn>
- <20220602115141.3962749-4-chenhuacai@loongson.cn> <YplnruNz++gABlU0@debian.me>
-In-Reply-To: <YplnruNz++gABlU0@debian.me>
-From:   Huacai Chen <chenhuacai@gmail.com>
-Date:   Fri, 3 Jun 2022 13:27:00 +0800
-Message-ID: <CAAhV-H5Hi_gYvrO6DAGGA=OVExunCubNpDBdkRBxFxiP1APAKw@mail.gmail.com>
-Subject: Re: [PATCH V14 03/24] Documentation: LoongArch: Add basic documentations
-To:     Bagas Sanjaya <bagasdotme@gmail.com>
-Cc:     Huacai Chen <chenhuacai@loongson.cn>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Airlie <airlied@linux.ie>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        WANG Xuerui <git@xen0n.name>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ed1d793e-b82f-45fb-3b7f-08da4521e515
+X-MS-TrafficTypeDiagnostic: CY4PR12MB1350:EE_
+X-Microsoft-Antispam-PRVS: <CY4PR12MB1350FA842A9F6CD6AB7ECF47E0A19@CY4PR12MB1350.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: AzULvVNOnJ1HQkFqjrIMQlaf1iD3HEmSxfyCK47soV0jmRzED6afCA9C1enDQiBhtPYlI6cVhVnIzJRcMLvbgZuj+sKeJCgg2NQ/IfNXxzMBDUN27XbtRJEEfPEMEUnMyyhLYHUKuB78TeYUf609vTSPwfh7JOg8HY0t1x2o/qAkhMpxaFW0N45ItaP2qHP9pBOrMIQ3YP162miJqNtHdcMjtMDyxdGqCepxqTmictnO/AgXe+DD+BYHP/F1vTPmvMNIPw7CRC+8rr6d5vO5P+Km73Qt+EKI+/IczAZWp3NxMMJ9hCbTBkjnXCyqKIJP4LZxoNv06GOVJpYBuXu9Uy5kgf+mCJinvIf/lG8qC15fXHCbFk5A4ezQG6c7l4K9x307dfRHNFYXArntPtYtlyAtPZw4IJbH+cypHiX9IJNqrv1D+lLZ80Fo/jxs5All58ye/SfMotiY4LilzUXZF5qyGqIOFxFx6+jRP0JpynJJakYnNgaqsUfvP4nO1t8RgxB65O7OlsY4uruaG7XzSyXWhzaVYjK4KNmE8t9kHjJlEW6Rc9625bqwa9aoxn3af5/vJDrx5WaSUWSjC0+FMyO9Ky05pIkhmesrpVTDDhHGTtcfB0th/cxx/PQn07VlwpARlWQPgbTW3WsxHabemDAFWxHJhv1Vj2KHn8oxix0w60+CtC2zjLJe+ag7yKRKnJNYhsbwEOdSpb79w8NOCFSpKYiReadGfHFHnVDVEmk=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB6588.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(86362001)(7416002)(186003)(2616005)(26005)(6486002)(36756003)(8676002)(31686004)(6512007)(66556008)(66946007)(66476007)(316002)(53546011)(4326008)(31696002)(2906002)(44832011)(4744005)(508600001)(38100700002)(8936002)(5660300002)(6506007)(6666004)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ZHh3ak9YWjQzT0NXSlRlSkZpSG10NjUvN1hpSi9wOE42dHVzRit4R3NGcG9y?=
+ =?utf-8?B?YU9WNk1SUUpNWEptcm5nWkd3Y3FOZGZZUUdzR3dWK0IxS1ZQckxUUTJ6MXRV?=
+ =?utf-8?B?MHhxWTNndDViVVcxRUw1RTNpd1JmNkkyL2RCV2traTZ0SDRKV1dEeWZRZmYr?=
+ =?utf-8?B?cDNFR08vd2FqbnZEQ3dhVWdUU3hLN3pyTWR4WFk2b2paQStqa0R0TXROeW1F?=
+ =?utf-8?B?ckMyVE9LazFXRGpFUUpPVGhsZHdWLzJGczVqSlNxazA3eFNidDlvd0t2Vzdh?=
+ =?utf-8?B?N1hMVlZBYU1OUnVkS0RuU0JqbE1wSzVOZG1NSGNRZGxLcFVmd2RqNy9VNzJk?=
+ =?utf-8?B?bXNYc1FjbkVpOEtwUVozU1AvUEhVRUtJdFlRc1BvYU9hUWZUc3BWSDRmalBB?=
+ =?utf-8?B?M0dYVHZlUnpMaUdFaVo5bnZYZElzV3VRUjB1TkVGNGQ1SGJYd2ZIV3B1c1A3?=
+ =?utf-8?B?N2lFenRDQnRNWWtnLzU3R0NubjJ3aWNyT0phTk9FZzl2ZVdyR1paTitOaFk0?=
+ =?utf-8?B?YlQvYkhJek9SUG1Xc05wYmhWUVo5cGR1OFArMUVndGRXL2tXUGx6eTN6RHVv?=
+ =?utf-8?B?U3Ixa25laWZkNVBiLzdFbW01U01MMFR6UEQxRFdudWNKOUN2STNkM1VTdWZF?=
+ =?utf-8?B?Y002WVd0dU5wbEp3L3B2OEdwMG9HQys3TjUyZ3dKbnpVZVcwcEoxZlVEK0gw?=
+ =?utf-8?B?VVMzZUZiTTFXb3lRSzhhUHNuMExmRG5pRFoxL05pVlgyNitqM0lqVThHbzdU?=
+ =?utf-8?B?Y2xVNDBqNHY0UndQME1GN2JwUVkxeTR6TkFQMDJraGhHUXJ3cnRwTksyQ0Yy?=
+ =?utf-8?B?UWl5UE9zNnpRNmprNWpQRFBLT0N5Rlk0dndST0U5VEtmakFnS2RHUnJNSHBT?=
+ =?utf-8?B?N3BnMnFvWUlSbXZKQUhVQUJoMHc1QldXSWlkNHQ3dldrQUtwSGl5b21SN1R6?=
+ =?utf-8?B?bVlpcW0rQy9BaTRPcEplbjFJakg1ZWZPRlFpNWhZTEptalRnS3VNbGthTnNX?=
+ =?utf-8?B?TDF4MHY5aFMrVHRMQXUrTUN5ZzBXeERPWnducGpaVmVXVnozc1BLVmlsY1Vx?=
+ =?utf-8?B?RTlEQ0xUQURiOWJzdDdHR0VWRk9wRXBWWkkvOTIvb2FGbGxQN0pRZUtCemFM?=
+ =?utf-8?B?QnpXcjVpTGFkT25SWnBnaWlyeTBPNjBmMUF2ejVGcEVCR3kvSTFiaFV3ZU5w?=
+ =?utf-8?B?RDFvTS9aUHBzMGhiOHltRjYyOW9uT0QySTUwb1dzWXlGUUZJYktXQnRmNGVZ?=
+ =?utf-8?B?RFU5U2NXbHdoVXB5WWNjeGhRNlkwVlRKb2wvUlRBL3BxNU5GaVMwMVZieWZQ?=
+ =?utf-8?B?L1hzc2dIMklCZmRJMWY3b1JVYlAzcVdMUjBuN0NJemtOZkJwelJNUndzZEhi?=
+ =?utf-8?B?QWhxMFRZR2lwNWtTbGlnLzdXZVp4VlBNUmZBY2xpU1NqYStyOTJRRjd3Ynht?=
+ =?utf-8?B?Z2hkZmFUZjdURGJRMXFVaXBWSmxleERabVVkamUrbTBvcGFuSTZIVFkvaUc2?=
+ =?utf-8?B?UE5uN3BGWFMyWHhuN3labER0dHA5WHN6MGlTK2wzZnVnWVJJcXFwM1FkNm1v?=
+ =?utf-8?B?MGwxK2dwV1FFdWMzbWFkT01BR0lmYm4vclBmcDJGNnRsOWg1eVUxYk9uSlRT?=
+ =?utf-8?B?TjVUVFNqUnUxVm1lQXE5WXRHd0NORXVGT05QY0FuZzBzOHRVNndEek01aExp?=
+ =?utf-8?B?UXRCTmF1YTFQV2ZyMzFnQlJ5a3RBaUYwSGk0bWowRnBGdUJXdmpZb1J3Nmlr?=
+ =?utf-8?B?c3hSWHRhb01HK3YrN0htR2tEN2tHbFVEdU9qOEZMbDE0TnpFYTEvdmcyTUZ4?=
+ =?utf-8?B?cGs3MjBJZGhPdmhUa0lEcHpSKy9uSHVsSFFxVEhDVHRObHgzWVlNcWRBRHl3?=
+ =?utf-8?B?TkpLUlpFc2RMdEx6YkxtaVpwR0xCZzZRdTFxTnpQdlJndGQ3MGJDSTdBdTJP?=
+ =?utf-8?B?dHlHckpPeGpmYzhmSDhUNE9Xc2ZteExCV05rTDE0Yzg1OFdXd0xpMXNISlMz?=
+ =?utf-8?B?SHVOVTV0cCtUWlU1OFdHREhQMStNaDFZRzVHVmN0UURSY2ZtdEhCMDJoUHlZ?=
+ =?utf-8?B?ZXhXc2EyS2ppK1p1QjVOR0hYTWxZM1ZyZ2tmNTFNUlZteGRUcWxwSGxpck4y?=
+ =?utf-8?B?eXYvTjQ1LzE0am9TajU5SExvdktFdG43SnFKUlhJR2FBUS91ejhRaXB2SGUx?=
+ =?utf-8?B?M2VJcmU0WXUybCsxZ0E5dnRqcHMvd2hOcEh3ejFWVVFHcEgyRFp1aW5LYlVo?=
+ =?utf-8?B?djBLQWJ6YmpkQ0xyM2k2dTJhcUhnazA4bTJQbGx1dkQzNnowSVVzb21qTFNl?=
+ =?utf-8?B?MnlCZXRzTG43SXMyRmc2TmdNMlJIWjA3TEJRckp5RmZ4K0hyOHhqZz09?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ed1d793e-b82f-45fb-3b7f-08da4521e515
+X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB6588.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Jun 2022 05:28:31.0501
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: P0B1pXkcfSGcuXC5t6E7Ew1d0aS6Y7SWVNIzGIDghx9HZEnmh5dTiFMr/WfyXUAV6juUFOS9WyyN0LtVRepJKg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1350
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Bagas,
+On 03-Jun-22 10:42 AM, Ravi Bangoria wrote:
+>>> +       if (ibs_fetch_pmu && ibs_fetch_pmu->type == evsel_pmu->type) {
+>>> +               if (attr->config & (1ULL << 59)) {
+>>
+>> It'd be nice if we used a macro or something instead of the
+>> magic number.
+>>
+>>> +                       ibs_l3miss_warn();
+>>> +                       warned_once = 1;
+>>> +               }
+>>> +       } else if (ibs_op_pmu && ibs_op_pmu->type == evsel_pmu->type) {
+>>> +               if (attr->config & (1ULL << 16)) {
+>>
+>> Ditto.
+> 
+> Thanks for the review, Namhyung.
+> 
+> Arnaldo, Would you be able to squash below trivial patch into original
+> patch? Please let me know if you want me to respin the series instead.
 
-On Fri, Jun 3, 2022 at 9:45 AM Bagas Sanjaya <bagasdotme@gmail.com> wrote:
->
-> On Thu, Jun 02, 2022 at 07:51:20PM +0800, Huacai Chen wrote:
-> > +Legacy IRQ model
-> > +================
-> > +
-> > +In this model, IPI (Inter-Processor Interrupt) and CPU Local Timer interrupt go
-> > +to CPUINTC directly, CPU UARTS interrupts go to LIOINTC, while all other devices
-> > +interrupts go to PCH-PIC/PCH-LPC/PCH-MSI and gathered by HTVECINTC, and then go
-> > +to LIOINTC, and then CPUINTC.
-> > +
-> > + +---------------------------------------------+
-> > + |::                                           |
-> > + |                                             |
-> > + |    +-----+     +---------+     +-------+    |
-> > + |    | IPI | --> | CPUINTC | <-- | Timer |    |
-> > + |    +-----+     +---------+     +-------+    |
-> > + |                     ^                       |
-> > + |                     |                       |
-> > + |                +---------+     +-------+    |
-> > + |                | LIOINTC | <-- | UARTs |    |
-> > + |                +---------+     +-------+    |
-> > + |                     ^                       |
-> > + |                     |                       |
-> > + |               +-----------+                 |
-> > + |               | HTVECINTC |                 |
-> > + |               +-----------+                 |
-> > + |                ^         ^                  |
-> > + |                |         |                  |
-> > + |          +---------+ +---------+            |
-> > + |          | PCH-PIC | | PCH-MSI |            |
-> > + |          +---------+ +---------+            |
-> > + |            ^     ^           ^              |
-> > + |            |     |           |              |
-> > + |    +---------+ +---------+ +---------+      |
-> > + |    | PCH-LPC | | Devices | | Devices |      |
-> > + |    +---------+ +---------+ +---------+      |
-> > + |         ^                                   |
-> > + |         |                                   |
-> > + |    +---------+                              |
-> > + |    | Devices |                              |
-> > + |    +---------+                              |
-> > + |                                             |
-> > + |                                             |
-> > + +---------------------------------------------+
-> > +
-> > +Extended IRQ model
-> > +==================
-> > +
-> > +In this model, IPI (Inter-Processor Interrupt) and CPU Local Timer interrupt go
-> > +to CPUINTC directly, CPU UARTS interrupts go to LIOINTC, while all other devices
-> > +interrupts go to PCH-PIC/PCH-LPC/PCH-MSI and gathered by EIOINTC, and then go to
-> > +to CPUINTC directly.
-> > +
-> > + +--------------------------------------------------------+
-> > + |::                                                      |
-> > + |                                                        |
-> > + |         +-----+     +---------+     +-------+          |
-> > + |         | IPI | --> | CPUINTC | <-- | Timer |          |
-> > + |         +-----+     +---------+     +-------+          |
-> > + |                      ^       ^                         |
-> > + |                      |       |                         |
-> > + |               +---------+ +---------+     +-------+    |
-> > + |               | EIOINTC | | LIOINTC | <-- | UARTs |    |
-> > + |               +---------+ +---------+     +-------+    |
-> > + |                ^       ^                               |
-> > + |                |       |                               |
-> > + |         +---------+ +---------+                        |
-> > + |         | PCH-PIC | | PCH-MSI |                        |
-> > + |         +---------+ +---------+                        |
-> > + |           ^     ^           ^                          |
-> > + |           |     |           |                          |
-> > + |   +---------+ +---------+ +---------+                  |
-> > + |   | PCH-LPC | | Devices | | Devices |                  |
-> > + |   +---------+ +---------+ +---------+                  |
-> > + |        ^                                               |
-> > + |        |                                               |
-> > + |   +---------+                                          |
-> > + |   | Devices |                                          |
-> > + |   +---------+                                          |
-> > + |                                                        |
-> > + |                                                        |
-> > + +--------------------------------------------------------+
-> > +
->
-> I think for consistency with other diagrams in Documentation/, just use
-> literal code block, like:
->
-> diff --git a/Documentation/loongarch/irq-chip-model.rst b/Documentation/loongarch/irq-chip-model.rst
-> index 35c962991283ff..3cfd528021de05 100644
-> --- a/Documentation/loongarch/irq-chip-model.rst
-> +++ b/Documentation/loongarch/irq-chip-model.rst
-> @@ -24,40 +24,38 @@ to CPUINTC directly, CPU UARTS interrupts go to LIOINTC, while all other devices
->  interrupts go to PCH-PIC/PCH-LPC/PCH-MSI and gathered by HTVECINTC, and then go
->  to LIOINTC, and then CPUINTC.
->
-> - +---------------------------------------------+
-> - |::                                           |
-> - |                                             |
-> - |    +-----+     +---------+     +-------+    |
-> - |    | IPI | --> | CPUINTC | <-- | Timer |    |
-> - |    +-----+     +---------+     +-------+    |
-> - |                     ^                       |
-> - |                     |                       |
-> - |                +---------+     +-------+    |
-> - |                | LIOINTC | <-- | UARTs |    |
-> - |                +---------+     +-------+    |
-> - |                     ^                       |
-> - |                     |                       |
-> - |               +-----------+                 |
-> - |               | HTVECINTC |                 |
-> - |               +-----------+                 |
-> - |                ^         ^                  |
-> - |                |         |                  |
-> - |          +---------+ +---------+            |
-> - |          | PCH-PIC | | PCH-MSI |            |
-> - |          +---------+ +---------+            |
-> - |            ^     ^           ^              |
-> - |            |     |           |              |
-> - |    +---------+ +---------+ +---------+      |
-> - |    | PCH-LPC | | Devices | | Devices |      |
-> - |    +---------+ +---------+ +---------+      |
-> - |         ^                                   |
-> - |         |                                   |
-> - |    +---------+                              |
-> - |    | Devices |                              |
-> - |    +---------+                              |
-> - |                                             |
-> - |                                             |
-> - +---------------------------------------------+
-> + ::
-> +
-> +     +-----+     +---------+     +-------+
-> +     | IPI | --> | CPUINTC | <-- | Timer |
-> +     +-----+     +---------+     +-------+
-> +                      ^
-> +                      |
-> +                 +---------+     +-------+
-> +                 | LIOINTC | <-- | UARTs |
-> +                 +---------+     +-------+
-> +                      ^
-> +                      |
-> +                +-----------+
-> +                | HTVECINTC |
-> +                +-----------+
-> +                 ^         ^
-> +                 |         |
-> +           +---------+ +---------+
-> +           | PCH-PIC | | PCH-MSI |
-> +           +---------+ +---------+
-> +             ^     ^           ^
-> +             |     |           |
-> +     +---------+ +---------+ +---------+
-> +     | PCH-LPC | | Devices | | Devices |
-> +     +---------+ +---------+ +---------+
-> +          ^
-> +          |
-> +     +---------+
-> +     | Devices |
-> +     +---------+
-> +
-> +
->
->  Extended IRQ model
->  ==================
-> @@ -67,35 +65,33 @@ to CPUINTC directly, CPU UARTS interrupts go to LIOINTC, while all other devices
->  interrupts go to PCH-PIC/PCH-LPC/PCH-MSI and gathered by EIOINTC, and then go to
->  to CPUINTC directly.
->
-> - +--------------------------------------------------------+
-> - |::                                                      |
-> - |                                                        |
-> - |         +-----+     +---------+     +-------+          |
-> - |         | IPI | --> | CPUINTC | <-- | Timer |          |
-> - |         +-----+     +---------+     +-------+          |
-> - |                      ^       ^                         |
-> - |                      |       |                         |
-> - |               +---------+ +---------+     +-------+    |
-> - |               | EIOINTC | | LIOINTC | <-- | UARTs |    |
-> - |               +---------+ +---------+     +-------+    |
-> - |                ^       ^                               |
-> - |                |       |                               |
-> - |         +---------+ +---------+                        |
-> - |         | PCH-PIC | | PCH-MSI |                        |
-> - |         +---------+ +---------+                        |
-> - |           ^     ^           ^                          |
-> - |           |     |           |                          |
-> - |   +---------+ +---------+ +---------+                  |
-> - |   | PCH-LPC | | Devices | | Devices |                  |
-> - |   +---------+ +---------+ +---------+                  |
-> - |        ^                                               |
-> - |        |                                               |
-> - |   +---------+                                          |
-> - |   | Devices |                                          |
-> - |   +---------+                                          |
-> - |                                                        |
-> - |                                                        |
-> - +--------------------------------------------------------+
-> + ::
-> +
-> +          +-----+     +---------+     +-------+
-> +          | IPI | --> | CPUINTC | <-- | Timer |
-> +          +-----+     +---------+     +-------+
-> +                       ^       ^
-> +                       |       |
-> +                +---------+ +---------+     +-------+
-> +                | EIOINTC | | LIOINTC | <-- | UARTs |
-> +                +---------+ +---------+     +-------+
-> +                 ^       ^
-> +                 |       |
-> +          +---------+ +---------+
-> +          | PCH-PIC | | PCH-MSI |
-> +          +---------+ +---------+
-> +            ^     ^           ^
-> +            |     |           |
-> +    +---------+ +---------+ +---------+
-> +    | PCH-LPC | | Devices | | Devices |
-> +    +---------+ +---------+ +---------+
-> +         ^
-> +         |
-> +    +---------+
-> +    | Devices |
-> +    +---------+
-> +
-> +
->
->  ACPI-related definitions
->  ========================
->
-> Otherwise, htmldocs builds successfully without any new warnings related
-> to this patch series.
-Thank you for your testing. In my environment (sphinx_2.4.4), with or
-without the border both have no warnings. :)
-And I think these are more pretty if we keep the border, especially
-when formatted into PDF. How do you think?
+I'm planning to respin with asprintf() change. Sorry for the noise.
 
-Huacai
->
-> Tested-by: Bagas Sanjaya <bagasdotme@gmail.com>
->
-> --
-> An old man doll... just what I always wanted! - Clara
+Thanks,
+Ravi
