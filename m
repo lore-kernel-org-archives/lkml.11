@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D24FCCA481
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:11:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE9A4CCA47E
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:11:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347339AbiFCSKl (ORCPT
+        id S1347302AbiFCSKd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:10:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51712 "EHLO
+        Fri, 3 Jun 2022 14:10:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345960AbiFCR5i (ORCPT
+        with ESMTP id S1345955AbiFCR5c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:57:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0C5557120;
-        Fri,  3 Jun 2022 10:54:12 -0700 (PDT)
+        Fri, 3 Jun 2022 13:57:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D54EC57103;
+        Fri,  3 Jun 2022 10:54:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 61658B82419;
-        Fri,  3 Jun 2022 17:54:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFAC3C385B8;
-        Fri,  3 Jun 2022 17:54:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 77761B82419;
+        Fri,  3 Jun 2022 17:54:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3A82C385A9;
+        Fri,  3 Jun 2022 17:54:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278850;
-        bh=tfgjU31NPL+z9713wFziaUtlFoPM/QCEwzK8ujtven8=;
+        s=korg; t=1654278847;
+        bh=rsXX6yLeIHVO6O+swiWLs088Z3L8fZkQ83Rdgo4SA0M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oHqQAxjOhlJOENyTHYmQu4DXgNNqmfvifhO9o3O/I2CozMqWrQI4GVGmXPFFuz1bJ
-         xEGBGGZwmqxpSL0JqtGjUv99HesoYxOmC6vSZS95pebatldwSbz19sY9jFbhdYKL+g
-         MVMRx++GAMomNAbqYzUj24icopG8gX44KSEqqvCg=
+        b=Qpbum80npmMJ6T8JYQGk2+futFlhPZ+Ap25l401H8Q33yuD5oGzBBBGpxnMLYrwwg
+         nkCW5jJapioUhGSrycAQXLwzFRdDRCU3izOpPp6Y6MfkqKjML/vERzi6cI9jVOHV8g
+         rEzWkG9MZ3tt/bsj6JGCVfLSbUeL4Fyvi0bS4+Sg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <eric.dumazet@gmail.com>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
-        Marcel Holtmann <marcel@holtmann.org>
-Subject: [PATCH 5.17 47/75] Bluetooth: hci_qca: Use del_timer_sync() before freeing
-Date:   Fri,  3 Jun 2022 19:43:31 +0200
-Message-Id: <20220603173823.082263892@linuxfoundation.org>
+        stable@vger.kernel.org, Craig McLure <craig@mclure.net>,
+        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.17 46/75] ALSA: usb-audio: Configure sync endpoints before data
+Date:   Fri,  3 Jun 2022 19:43:30 +0200
+Message-Id: <20220603173823.053919630@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173821.749019262@linuxfoundation.org>
 References: <20220603173821.749019262@linuxfoundation.org>
@@ -50,44 +49,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Rostedt <rostedt@goodmis.org>
+From: Craig McLure <craig@mclure.net>
 
-commit 72ef98445aca568a81c2da050532500a8345ad3a upstream.
+commit 0e85a22d01dfe9ad9a9d9e87cd4a88acce1aad65 upstream.
 
-While looking at a crash report on a timer list being corrupted, which
-usually happens when a timer is freed while still active. This is
-commonly triggered by code calling del_timer() instead of
-del_timer_sync() just before freeing.
+Devices such as the TC-Helicon GoXLR require the sync endpoint to be
+configured in advance of the data endpoint in order for sound output
+to work.
 
-One possible culprit is the hci_qca driver, which does exactly that.
+This patch simply changes the ordering of EP configuration to resolve
+this.
 
-Eric mentioned that wake_retrans_timer could be rearmed via the work
-queue, so also move the destruction of the work queue before
-del_timer_sync().
-
-Cc: Eric Dumazet <eric.dumazet@gmail.com>
-Cc: stable@vger.kernel.org
-Fixes: 0ff252c1976da ("Bluetooth: hciuart: Add support QCA chipset for UART")
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Fixes: bf6313a0ff76 ("ALSA: usb-audio: Refactor endpoint management")
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215079
+Signed-off-by: Craig McLure <craig@mclure.net>
+Reviewed-by: Jaroslav Kysela <perex@perex.cz>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220524062115.25968-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/bluetooth/hci_qca.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ sound/usb/pcm.c |   17 +++++++++++------
+ 1 file changed, 11 insertions(+), 6 deletions(-)
 
---- a/drivers/bluetooth/hci_qca.c
-+++ b/drivers/bluetooth/hci_qca.c
-@@ -696,9 +696,9 @@ static int qca_close(struct hci_uart *hu
- 	skb_queue_purge(&qca->tx_wait_q);
- 	skb_queue_purge(&qca->txq);
- 	skb_queue_purge(&qca->rx_memdump_q);
--	del_timer(&qca->tx_idle_timer);
--	del_timer(&qca->wake_retrans_timer);
- 	destroy_workqueue(qca->workqueue);
-+	del_timer_sync(&qca->tx_idle_timer);
-+	del_timer_sync(&qca->wake_retrans_timer);
- 	qca->hu = NULL;
+--- a/sound/usb/pcm.c
++++ b/sound/usb/pcm.c
+@@ -439,16 +439,21 @@ static int configure_endpoints(struct sn
+ 		/* stop any running stream beforehand */
+ 		if (stop_endpoints(subs, false))
+ 			sync_pending_stops(subs);
++		if (subs->sync_endpoint) {
++			err = snd_usb_endpoint_configure(chip, subs->sync_endpoint);
++			if (err < 0)
++				return err;
++		}
+ 		err = snd_usb_endpoint_configure(chip, subs->data_endpoint);
+ 		if (err < 0)
+ 			return err;
+ 		snd_usb_set_format_quirk(subs, subs->cur_audiofmt);
+-	}
+-
+-	if (subs->sync_endpoint) {
+-		err = snd_usb_endpoint_configure(chip, subs->sync_endpoint);
+-		if (err < 0)
+-			return err;
++	} else {
++		if (subs->sync_endpoint) {
++			err = snd_usb_endpoint_configure(chip, subs->sync_endpoint);
++			if (err < 0)
++				return err;
++		}
+ 	}
  
- 	kfree_skb(qca->rx_skb);
+ 	return 0;
 
 
