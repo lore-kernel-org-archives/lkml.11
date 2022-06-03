@@ -2,134 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE5A3C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 16:09:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 689E4C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 16:10:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343629AbiFCQJV (ORCPT
+        id S1343643AbiFCQKG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 12:09:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38894 "EHLO
+        Fri, 3 Jun 2022 12:10:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231268AbiFCQJS (ORCPT
+        with ESMTP id S1343635AbiFCQJ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 12:09:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29D7E2C103;
-        Fri,  3 Jun 2022 09:09:17 -0700 (PDT)
+        Fri, 3 Jun 2022 12:09:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1441D2CCB6;
+        Fri,  3 Jun 2022 09:09:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B94A2618D9;
-        Fri,  3 Jun 2022 16:09:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF3E3C385B8;
-        Fri,  3 Jun 2022 16:09:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C9211B82371;
+        Fri,  3 Jun 2022 16:09:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7D5CC385A9;
+        Fri,  3 Jun 2022 16:09:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654272556;
-        bh=9XDqZH7lKMypp0xEWeC0uCWAmpLurZw7YA9gs7/cFME=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=lOnBJhZMF960+5MB1wXCaFBswhFih5K6XyC3STZC/40lQ414CeoIq03ECPFdsOekJ
-         i3iKetKWPwMOUDMiGL4YJKYtveSRD1A7UzFol1Wvgbc+vTxpwn7hWY0pdmL9bXjMD+
-         MFl/5yCcM1ktib7s8fHzW6hGzRdYQHinjXASR7mFYSMdboKI6ZG9oPfvYEz2kXZgPL
-         IdwZobgynLNeeduuBwwAHv4gAkNTqetRbhItA5f5SXzPsg15ldXaVHFowth0MeoXSJ
-         xcwcb6G+pCNsmBj8DmDHjd5OlP8KeKtYSSGBC6Le4VT2lmu4MInto7ZwONEqIgp5Ad
-         lehsaVkAJ/e3A==
-Date:   Fri, 3 Jun 2022 11:09:13 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Wangseok Lee <wangseok.lee@samsung.com>
-Cc:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
-        "kishon@ti.com" <kishon@ti.com>,
-        "vkoul@kernel.org" <vkoul@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "jesper.nilsson@axis.com" <jesper.nilsson@axis.com>,
-        "lars.persson@axis.com" <lars.persson@axis.com>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        "linux-phy@lists.infradead.org" <linux-phy@lists.infradead.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>,
-        "kw@linux.com" <kw@linux.com>,
-        "linux-arm-kernel@axis.com" <linux-arm-kernel@axis.com>,
-        "kernel@axis.com" <kernel@axis.com>,
-        Moon-Ki Jun <moonki.jun@samsung.com>,
-        Sang Min Kim <hypmean.kim@samsung.com>,
-        Dongjin Yang <dj76.yang@samsung.com>
-Subject: Re: [PATCH v2 5/5] MAINTAINERS: Add maintainer for Axis ARTPEC-8
- PCIe PHY driver
-Message-ID: <20220603160913.GA80202@bhelgaas>
+        s=k20201202; t=1654272593;
+        bh=ktWgG1/7y93sK7zzHW+CpS8gPfNRHYR0DXoQkI/lC3Y=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=t3cO7fofzPVq+NXJhff0m7x9HkyS8/55HU7dxXhlawdtoB57uEar4v/WBKUpn8unf
+         NIEKTi5yAER/6a2O1S+aVKpChPHbnDo/CmX9sUpwPOx4QvHvdL8GSQP+qRSzGRoZk4
+         icd1w14DGrz7R0MBJO7y9ncf08XOdZ+NyODKnrUyni61QKNvQ31eMlOgLyjT5ZOugZ
+         fhpgnlx0Y7vOXV5YIDh9XiLUcw77DBJDflNYCl6IvzygDT+ngCGlzkd7sLWuIL2UH3
+         pt1aMCE188Mc9QTyG5bViSUZsQ20gq46+3KWviT/nRUYyJV07hizrMo8jSRKk4bcFO
+         kCW1sKSp8jaYw==
+Date:   Fri, 3 Jun 2022 17:18:52 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        linux-amlogic <linux-amlogic@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>
+Subject: Re: [PATCH v2 3/3] iio: adc: meson_saradc: Use temporary variable
+ for struct device
+Message-ID: <20220603171852.1f4c727f@jic23-huawei>
+In-Reply-To: <CAHp75VcSFr+E7_woyw6jx7e9wCeFUUouV_7xJXYO26_y6=fwTQ@mail.gmail.com>
+References: <20220602114241.12601-1-andriy.shevchenko@linux.intel.com>
+        <20220602114241.12601-3-andriy.shevchenko@linux.intel.com>
+        <ad3af033-97f1-3aad-d082-c6ed56185b59@metafoo.de>
+        <CAHp75VcSFr+E7_woyw6jx7e9wCeFUUouV_7xJXYO26_y6=fwTQ@mail.gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220603024347epcms2p48d01596e10b251bec077581a6c609c48@epcms2p4>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In subject:
+On Thu, 2 Jun 2022 15:45:27 +0200
+Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
 
-  MAINTAINERS: Add Axis ARTPEC-8 PCIe PHY maintainers
-
-to put the important things first so they don't get chopped off by
-"git log --oneline" and similar.
-
-On Fri, Jun 03, 2022 at 11:43:47AM +0900, Wangseok Lee wrote:
-> Add maintainer for Axis ARTPEC-8 PCIe PHY.
+> On Thu, Jun 2, 2022 at 2:08 PM Lars-Peter Clausen <lars@metafoo.de> wrote:
+> > On 6/2/22 13:42, Andy Shevchenko wrote:  
 > 
-> Add Jesper Nilsson <jesper.nilsson@axis.com> and
-> Lars Persson <lars.persson@axis.com> as Maintainer for these files.
-
-s/Maintainer/maintainers/
-
-> ARTPEC-8 is the SoC platform of Axis Communications
-> and PCIe phy is designed based on Samsung PHY.
-
-s/phy/PHY/ to match other uses.
-
-Rewrap all of above to fill 75 columns.
-
-> Signed-off-by: Wangseok Lee <wangseok.lee@samsung.com>
-
-Obviously we'll look for acks from Jesper and Lars.
-
-Also would be good if Jesper explicitly acked the fact that his
-existing "PCIE DRIVER FOR AXIS ARTPEC" entry also matches the new
-pcie-artpec8.c driver:
-
-  PCIE DRIVER FOR AXIS ARTPEC
-  M:      Jesper Nilsson <jesper.nilsson@axis.com>
-  L:      linux-arm-kernel@axis.com
-  L:      linux-pci@vger.kernel.org
-  S:      Maintained
-  F:      Documentation/devicetree/bindings/pci/axis,artpec*
-  F:      drivers/pci/controller/dwc/*artpec*
-
-> ---
->  MAINTAINERS | 2 ++
->  1 file changed, 2 insertions(+)
+> ...
 > 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index d4d4aa2..cd6f75b 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -1864,12 +1864,14 @@ M:	Jesper Nilsson <jesper.nilsson@axis.com>
->  M:	Lars Persson <lars.persson@axis.com>
->  L:	linux-arm-kernel@axis.com
->  S:	Maintained
-> +F:	Documentation/devicetree/bindings/phy/axis,artpec8-pcie-phy.yaml
->  F:	Documentation/devicetree/bindings/pinctrl/axis,artpec6-pinctrl.txt
->  F:	arch/arm/boot/dts/artpec6*
->  F:	arch/arm/mach-artpec
->  F:	drivers/clk/axis
->  F:	drivers/crypto/axis
->  F:	drivers/mmc/host/usdhi6rol0.c
-> +F:	drivers/phy/artpec/phy-artpec*
->  F:	drivers/pinctrl/pinctrl-artpec*
->  
->  ARM/ASPEED I2C DRIVER
-> -- 
-> 2.9.5
+> > > -     priv->adc_clk = devm_clk_register(&indio_dev->dev, &priv->clk_gate.hw);
+> > > +     priv->adc_clk = devm_clk_register(idev, &priv->clk_gate.hw);  
+> >
+> > You are not changing anything here.  
 > 
-> -- 
-> linux-phy mailing list
-> linux-phy@lists.infradead.org
-> https://lists.infradead.org/mailman/listinfo/linux-phy
+> The scope of patch is supposed not to change the current behaviour :-)
+> 
+> > But we shouldn't be devm'ing on the
+> > IIO device. It will get freed eventually, but only when the last
+> > reference to the iio device has been dropped, which might be long after
+> > the platform device has been removed. devm'ing should happen on the
+> > platform_device's device. Might be worth fixing.  
+> 
+> Thanks for confirming my suspicions (as I mentioned to Martin, using
+> an IIO device there feels wrong).
+> I will add another patch to v3.
+> 
+
+I thought that the iio_dev ends up holding a reference to the platform
+device dev so the parent would only be released if the child had already been,
+but I may well be wrong on that. 
+
+Either way I don't mind it being tidied up.
+
+Jonathan
+
+
