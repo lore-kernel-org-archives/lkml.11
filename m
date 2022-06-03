@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50D09C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD34CC3F2D4
 	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 00:54:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241583AbiFCAvR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 20:51:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47880 "EHLO
+        id S242298AbiFCAwm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 20:52:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240133AbiFCAoz (ORCPT
+        with ESMTP id S240115AbiFCApV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 20:44:55 -0400
+        Thu, 2 Jun 2022 20:45:21 -0400
 Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EEDA37A2D
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:44:42 -0700 (PDT)
-Received: by mail-pf1-x449.google.com with SMTP id 18-20020a621512000000b0051b90b3a793so3492370pfv.8
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:44:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35AB534642
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:45:14 -0700 (PDT)
+Received: by mail-pf1-x449.google.com with SMTP id z67-20020a626546000000b0051bbb66c1bdso2717164pfb.0
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:45:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=nJYDyIQlf43tnO29QtGw5+/JwyZGgarjVqW9ae910lU=;
-        b=BhsHU27O0y5pb/oAsD9J6/+9IuGPasnzQt5aGw3tGq4kynzlPn2c6E6apW/lmB1UMu
-         S7P2pqNgaAaLH7apUAkEm7a+fc3HDXIHLROwWkQ9L3G0pc9VFxuaLj9z8tvHwvjWjQeA
-         oMHUU53QTppyztjJ/3KPo4JtnESJfdyTFzZyeSHj19d0si5pDLJAj35ZkeA8j7QBaADt
-         JYulzFT1HvNilCCsOrkwT17RdaAcA/nGQ3q+ZOl0caGz3hiyGM02MLInsrWT40Rf9c+f
-         ym+6By+oriXt7Hb+FwKQ7W6uYlWwG3oOhbEJcMaXtyKZMewX2cZ8NeviHmbTQ74labvZ
-         Ropg==
+        bh=+oPASWeuU3hUXSHHGwTAX+AwNGMqvMpQnDYcauVC88g=;
+        b=aj/VS9rYLAELO9VzDinP5b6wMBn+rIvp+yXI/U7HeJ0fNjcRXaG7lyXigFssnwyU7K
+         h9QIczE6M9HxUVoUvuhT+T9Ie66vMaTJ60b86OedMv3ET7XKRUWh3GUmFVDkmWlR8L2v
+         9Yr6MTtm6fzUrVH4Ry8wxPzmGlFWPJVmN6mkUQKEkty1zLYctJnj1wLjxuDCVkDdwlKI
+         NjqEANCLc4o9c6yzpIRPXxEjcAtdMviHfBymR71whgVQdjeN1OCPe8mNFc2b1+NbxY5l
+         H9qINqgMjzP5AVoCbKDARGxUWznxe6p4c8Lj7ynz01q+WNRFt8qQ2TF+uEyQ2aHgrdUN
+         s4CA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=nJYDyIQlf43tnO29QtGw5+/JwyZGgarjVqW9ae910lU=;
-        b=EifLKy92IU/J1950hK9PlYkyt2Zwo1XznW37oVnnvpcIq9ehjOEWK4Ce2zVXjJJol4
-         tiMZJPlJEIgK7jGF9N987uhI1LeVPSYFiVx8tGJtu9K+AEwdyAYRpO0JsnMwD+OZ30L1
-         XWpSyKjxs5QjRbC3zc0VvCyj2gcb9Rg8pZDRpyEPqHw+0d1tYzA4uiPhI0e08/8Ayap4
-         qdQG+9YER6D67IneTYAyyCVJe3EvqboRADtHURghMcXrF4NzLCemv9amE8afum/yRQjK
-         74nIEi/e6c+Vn0JCRPdZIEiW0cCSrmHEIraVNI+/bQq0oiuMsgLnCE9iON46FkVB/RiA
-         yRow==
-X-Gm-Message-State: AOAM530N9Q5gu4i2JTUU8C+IX9mfJ/bP2TSWXjcX//foyJuwETE+2ihz
-        DzmfO/jlLSyTyzAzb0iZi/GJ4gXpDbg=
-X-Google-Smtp-Source: ABdhPJxX+yxFeLnyVhqRi1E5gZaRVysi/pa49vkeW8EBzDi0YSpm8f9eLfRkfNI+M5WeReQz4F1qmdTgeEU=
+        bh=+oPASWeuU3hUXSHHGwTAX+AwNGMqvMpQnDYcauVC88g=;
+        b=N8z1FD2V7qqEwZwGfPCg8j7xuhXDVWk2P8o78nayiOYsQj5/vNx+pO3uhvJGTY4PKh
+         WXQgFkFrNr8YyHX9qP2G5R1GXTV/6nbSqgD9wsZ7z69lv8ox8arGcgp4e44SkpwItAQC
+         eDoddo6uWPT3FHtgIGEw9KS+1dMpOobBvYfVogPXBOdnK+gEWyvtBmCxLejso6p07pnQ
+         gcZYalz6Iwto1pyXp/A+TNrwzT7l7QSz/uW7CEf4fzZvJJHKF7VA76GpvY3n/JptKYNG
+         a5s2/HVNZpFzmZ6mTpgceHMfvoTDSl1d8k1y81/FMsZhx25rQPUKobqHni989MXxAdVB
+         9fyw==
+X-Gm-Message-State: AOAM533lZ70KYmXzgBdRhAilVFBnU7q7mPyhatDutQZsWIGI1NETdJEt
+        N3vJITTHgj/3UPjq9MdjmHTltdSFJ44=
+X-Google-Smtp-Source: ABdhPJy5wc0NNleg/ScIV/2JjbKLzyv1ivroioi4hwAipX9/EXBVV4qRjFNi+lysqMQ25q6GcJW9KJeJDh0=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:902:f688:b0:163:ee37:91c5 with SMTP id
- l8-20020a170902f68800b00163ee3791c5mr7812180plg.86.1654217082066; Thu, 02 Jun
- 2022 17:44:42 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a05:6a00:1249:b0:518:c338:d4de with SMTP id
+ u9-20020a056a00124900b00518c338d4demr7846952pfi.14.1654217113696; Thu, 02 Jun
+ 2022 17:45:13 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri,  3 Jun 2022 00:41:43 +0000
+Date:   Fri,  3 Jun 2022 00:42:00 +0000
 In-Reply-To: <20220603004331.1523888-1-seanjc@google.com>
-Message-Id: <20220603004331.1523888-37-seanjc@google.com>
+Message-Id: <20220603004331.1523888-54-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220603004331.1523888-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v2 036/144] KVM: selftest: Add proper helpers for x86-specific
- save/restore ioctls
+Subject: [PATCH v2 053/144] KVM: selftests: Convert vmx_preemption_timer_test
+ away from VCPU_ID
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     kvm@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
@@ -67,268 +67,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add helpers for the various one-off helpers used by x86's vCPU state
-save/restore helpers, and convert the other open coded ioctl()s to use
-existing helpers.
+Convert vmx_preemption_timer_test to use vm_create_with_one_vcpu() and
+pass around a 'struct kvm_vcpu' object instead of using a global VCPU_ID.
+Note, this is a "functional" change in the sense that the test now
+creates a vCPU with vcpu_id==0 instead of vcpu_id==5.  The non-zero
+VCPU_ID was 100% arbitrary and added little to no validation coverage.
+If testing non-zero vCPU IDs is desirable for generic tests, that can be
+done in the future by tweaking the VM creation helpers.
+
+Opportunistically use vcpu_run() instead of _vcpu_run(), the test expects
+KVM_RUN to succeed.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../selftests/kvm/include/x86_64/processor.h  |  54 ++++++++
- .../selftests/kvm/lib/x86_64/processor.c      | 126 +++++-------------
- 2 files changed, 91 insertions(+), 89 deletions(-)
+ .../kvm/x86_64/vmx_preemption_timer_test.c    | 30 +++++++++----------
+ 1 file changed, 15 insertions(+), 15 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/include/x86_64/processor.h b/tools/testing/selftests/kvm/include/x86_64/processor.h
-index e4268432cfe8..1d46d60bb480 100644
---- a/tools/testing/selftests/kvm/include/x86_64/processor.h
-+++ b/tools/testing/selftests/kvm/include/x86_64/processor.h
-@@ -432,6 +432,60 @@ const struct kvm_msr_list *kvm_get_feature_msr_index_list(void);
- bool kvm_msr_is_in_save_restore_list(uint32_t msr_index);
- uint64_t kvm_get_feature_msr(uint64_t msr_index);
+diff --git a/tools/testing/selftests/kvm/x86_64/vmx_preemption_timer_test.c b/tools/testing/selftests/kvm/x86_64/vmx_preemption_timer_test.c
+index f5b4ae914131..168adc5b2272 100644
+--- a/tools/testing/selftests/kvm/x86_64/vmx_preemption_timer_test.c
++++ b/tools/testing/selftests/kvm/x86_64/vmx_preemption_timer_test.c
+@@ -22,7 +22,6 @@
+ #include "processor.h"
+ #include "vmx.h"
  
-+static inline void vcpu_msrs_get(struct kvm_vm *vm, uint32_t vcpuid,
-+				 struct kvm_msrs *msrs)
-+{
-+	int r = __vcpu_ioctl(vm, vcpuid, KVM_GET_MSRS, msrs);
-+
-+	TEST_ASSERT(r == msrs->nmsrs,
-+		    "KVM_GET_MSRS failed, r: %i (failed on MSR %x)",
-+		    r, r < 0 || r >= msrs->nmsrs ? -1 : msrs->entries[r].index);
-+}
-+static inline void vcpu_msrs_set(struct kvm_vm *vm, uint32_t vcpuid,
-+				 struct kvm_msrs *msrs)
-+{
-+	int r = __vcpu_ioctl(vm, vcpuid, KVM_SET_MSRS, msrs);
-+
-+	TEST_ASSERT(r == msrs->nmsrs,
-+		    "KVM_GET_MSRS failed, r: %i (failed on MSR %x)",
-+		    r, r < 0 || r >= msrs->nmsrs ? -1 : msrs->entries[r].index);
-+}
-+static inline void vcpu_debugregs_get(struct kvm_vm *vm, uint32_t vcpuid,
-+				      struct kvm_debugregs *debugregs)
-+{
-+	vcpu_ioctl(vm, vcpuid, KVM_GET_DEBUGREGS, debugregs);
-+}
-+static inline void vcpu_debugregs_set(struct kvm_vm *vm, uint32_t vcpuid,
-+				      struct kvm_debugregs *debugregs)
-+{
-+	vcpu_ioctl(vm, vcpuid, KVM_SET_DEBUGREGS, debugregs);
-+}
-+static inline void vcpu_xsave_get(struct kvm_vm *vm, uint32_t vcpuid,
-+				  struct kvm_xsave *xsave)
-+{
-+	vcpu_ioctl(vm, vcpuid, KVM_GET_XSAVE, xsave);
-+}
-+static inline void vcpu_xsave2_get(struct kvm_vm *vm, uint32_t vcpuid,
-+				   struct kvm_xsave *xsave)
-+{
-+	vcpu_ioctl(vm, vcpuid, KVM_GET_XSAVE2, xsave);
-+}
-+static inline void vcpu_xsave_set(struct kvm_vm *vm, uint32_t vcpuid,
-+				  struct kvm_xsave *xsave)
-+{
-+	vcpu_ioctl(vm, vcpuid, KVM_SET_XSAVE, xsave);
-+}
-+static inline void vcpu_xcrs_get(struct kvm_vm *vm, uint32_t vcpuid,
-+				 struct kvm_xcrs *xcrs)
-+{
-+	vcpu_ioctl(vm, vcpuid, KVM_GET_XCRS, xcrs);
-+}
-+static inline void vcpu_xcrs_set(struct kvm_vm *vm, uint32_t vcpuid,
-+				 struct kvm_xcrs *xcrs)
-+{
-+	vcpu_ioctl(vm, vcpuid, KVM_SET_XCRS, xcrs);
-+}
-+
- struct kvm_cpuid2 *kvm_get_supported_cpuid(void);
- struct kvm_cpuid2 *vcpu_get_cpuid(struct kvm_vm *vm, uint32_t vcpuid);
+-#define VCPU_ID		5
+ #define PREEMPTION_TIMER_VALUE			100000000ull
+ #define PREEMPTION_TIMER_VALUE_THRESHOLD1	 80000000ull
  
-diff --git a/tools/testing/selftests/kvm/lib/x86_64/processor.c b/tools/testing/selftests/kvm/lib/x86_64/processor.c
-index 9268537f9bd7..5c92e96300c5 100644
---- a/tools/testing/selftests/kvm/lib/x86_64/processor.c
-+++ b/tools/testing/selftests/kvm/lib/x86_64/processor.c
-@@ -815,13 +815,11 @@ uint64_t vcpu_get_msr(struct kvm_vm *vm, uint32_t vcpuid, uint64_t msr_index)
- 		struct kvm_msrs header;
- 		struct kvm_msr_entry entry;
- 	} buffer = {};
--	int r;
- 
- 	buffer.header.nmsrs = 1;
- 	buffer.entry.index = msr_index;
- 
--	r = __vcpu_ioctl(vm, vcpuid, KVM_GET_MSRS, &buffer.header);
--	TEST_ASSERT(r == 1, KVM_IOCTL_ERROR(KVM_GET_MSRS, r));
-+	vcpu_msrs_get(vm, vcpuid, &buffer.header);
- 
- 	return buffer.entry.data;
- }
-@@ -958,28 +956,26 @@ bool kvm_msr_is_in_save_restore_list(uint32_t msr_index)
- 	return false;
- }
- 
--static int vcpu_save_xsave_state(struct kvm_vm *vm, struct vcpu *vcpu,
--				 struct kvm_x86_state *state)
-+static void vcpu_save_xsave_state(struct kvm_vm *vm, uint32_t vcpuid,
-+				  struct kvm_x86_state *state)
- {
--	int size;
-+	int size = vm_check_cap(vm, KVM_CAP_XSAVE2);
- 
--	size = vm_check_cap(vm, KVM_CAP_XSAVE2);
--	if (!size)
--		size = sizeof(struct kvm_xsave);
--
--	state->xsave = malloc(size);
--	if (size == sizeof(struct kvm_xsave))
--		return ioctl(vcpu->fd, KVM_GET_XSAVE, state->xsave);
--	else
--		return ioctl(vcpu->fd, KVM_GET_XSAVE2, state->xsave);
-+	if (size) {
-+		state->xsave = malloc(size);
-+		vcpu_xsave2_get(vm, vcpuid, state->xsave);
-+	} else {
-+		state->xsave = malloc(sizeof(struct kvm_xsave));
-+		vcpu_xsave_get(vm, vcpuid, state->xsave);
-+	}
- }
- 
- struct kvm_x86_state *vcpu_save_state(struct kvm_vm *vm, uint32_t vcpuid)
- {
- 	const struct kvm_msr_list *msr_list = kvm_get_msr_index_list();
--	struct vcpu *vcpu = vcpu_get(vm, vcpuid);
+@@ -159,6 +158,7 @@ int main(int argc, char *argv[])
+ 	struct kvm_regs regs1, regs2;
+ 	struct kvm_vm *vm;
+ 	struct kvm_run *run;
++	struct kvm_vcpu *vcpu;
  	struct kvm_x86_state *state;
--	int r, i;
-+	int i;
+ 	struct ucall uc;
+ 	int stage;
+@@ -175,22 +175,22 @@ int main(int argc, char *argv[])
+ 	}
+ 
+ 	/* Create VM */
+-	vm = vm_create_default(VCPU_ID, 0, guest_code);
+-	run = vcpu_state(vm, VCPU_ID);
++	vm = vm_create_with_one_vcpu(&vcpu, guest_code);
++	run = vcpu->run;
+ 
+-	vcpu_regs_get(vm, VCPU_ID, &regs1);
++	vcpu_regs_get(vm, vcpu->id, &regs1);
+ 
+ 	vcpu_alloc_vmx(vm, &vmx_pages_gva);
+-	vcpu_args_set(vm, VCPU_ID, 1, vmx_pages_gva);
++	vcpu_args_set(vm, vcpu->id, 1, vmx_pages_gva);
+ 
+ 	for (stage = 1;; stage++) {
+-		_vcpu_run(vm, VCPU_ID);
++		vcpu_run(vm, vcpu->id);
+ 		TEST_ASSERT(run->exit_reason == KVM_EXIT_IO,
+ 			    "Stage %d: unexpected exit reason: %u (%s),\n",
+ 			    stage, run->exit_reason,
+ 			    exit_reason_str(run->exit_reason));
+ 
+-		switch (get_ucall(vm, VCPU_ID, &uc)) {
++		switch (get_ucall(vm, vcpu->id, &uc)) {
+ 		case UCALL_ABORT:
+ 			TEST_FAIL("%s at %s:%ld", (const char *)uc.args[0],
+ 				  __FILE__, uc.args[1]);
+@@ -232,22 +232,22 @@ int main(int argc, char *argv[])
+ 				stage, uc.args[4], uc.args[5]);
+ 		}
+ 
+-		state = vcpu_save_state(vm, VCPU_ID);
++		state = vcpu_save_state(vm, vcpu->id);
+ 		memset(&regs1, 0, sizeof(regs1));
+-		vcpu_regs_get(vm, VCPU_ID, &regs1);
++		vcpu_regs_get(vm, vcpu->id, &regs1);
+ 
+ 		kvm_vm_release(vm);
+ 
+ 		/* Restore state in a new VM.  */
+-		kvm_vm_restart(vm);
+-		vm_vcpu_add(vm, VCPU_ID);
+-		vcpu_set_cpuid(vm, VCPU_ID, kvm_get_supported_cpuid());
+-		vcpu_load_state(vm, VCPU_ID, state);
+-		run = vcpu_state(vm, VCPU_ID);
++		vcpu = vm_recreate_with_one_vcpu(vm);
 +
- 	static int nested_size = -1;
++		vcpu_set_cpuid(vm, vcpu->id, kvm_get_supported_cpuid());
++		vcpu_load_state(vm, vcpu->id, state);
++		run = vcpu->run;
+ 		kvm_x86_state_cleanup(state);
  
- 	if (nested_size == -1) {
-@@ -998,102 +994,54 @@ struct kvm_x86_state *vcpu_save_state(struct kvm_vm *vm, uint32_t vcpuid)
- 	vcpu_run_complete_io(vm, vcpuid);
- 
- 	state = malloc(sizeof(*state) + msr_list->nmsrs * sizeof(state->msrs.entries[0]));
--	r = ioctl(vcpu->fd, KVM_GET_VCPU_EVENTS, &state->events);
--	TEST_ASSERT(r == 0, "Unexpected result from KVM_GET_VCPU_EVENTS, r: %i",
--		    r);
- 
--	r = ioctl(vcpu->fd, KVM_GET_MP_STATE, &state->mp_state);
--	TEST_ASSERT(r == 0, "Unexpected result from KVM_GET_MP_STATE, r: %i",
--		    r);
-+	vcpu_events_get(vm, vcpuid, &state->events);
-+	vcpu_mp_state_get(vm, vcpuid, &state->mp_state);
-+	vcpu_regs_get(vm, vcpuid, &state->regs);
-+	vcpu_save_xsave_state(vm, vcpuid, state);
- 
--	r = ioctl(vcpu->fd, KVM_GET_REGS, &state->regs);
--	TEST_ASSERT(r == 0, "Unexpected result from KVM_GET_REGS, r: %i",
--		    r);
-+	if (kvm_check_cap(KVM_CAP_XCRS))
-+		vcpu_xcrs_get(vm, vcpuid, &state->xcrs);
- 
--	r = vcpu_save_xsave_state(vm, vcpu, state);
--	TEST_ASSERT(r == 0, "Unexpected result from KVM_GET_XSAVE, r: %i",
--		    r);
--
--	if (kvm_check_cap(KVM_CAP_XCRS)) {
--		r = ioctl(vcpu->fd, KVM_GET_XCRS, &state->xcrs);
--		TEST_ASSERT(r == 0, "Unexpected result from KVM_GET_XCRS, r: %i",
--			    r);
--	}
--
--	r = ioctl(vcpu->fd, KVM_GET_SREGS, &state->sregs);
--	TEST_ASSERT(r == 0, "Unexpected result from KVM_GET_SREGS, r: %i",
--		    r);
-+	vcpu_sregs_get(vm, vcpuid, &state->sregs);
- 
- 	if (nested_size) {
- 		state->nested.size = sizeof(state->nested_);
--		r = ioctl(vcpu->fd, KVM_GET_NESTED_STATE, &state->nested);
--		TEST_ASSERT(r == 0, "Unexpected result from KVM_GET_NESTED_STATE, r: %i",
--			    r);
-+
-+		vcpu_nested_state_get(vm, vcpuid, &state->nested);
- 		TEST_ASSERT(state->nested.size <= nested_size,
- 			    "Nested state size too big, %i (KVM_CHECK_CAP gave %i)",
- 			    state->nested.size, nested_size);
--	} else
-+	} else {
- 		state->nested.size = 0;
-+	}
- 
- 	state->msrs.nmsrs = msr_list->nmsrs;
- 	for (i = 0; i < msr_list->nmsrs; i++)
- 		state->msrs.entries[i].index = msr_list->indices[i];
--	r = ioctl(vcpu->fd, KVM_GET_MSRS, &state->msrs);
--	TEST_ASSERT(r == msr_list->nmsrs, "Unexpected result from KVM_GET_MSRS, r: %i (failed MSR was 0x%x)",
--		    r, r == msr_list->nmsrs ? -1 : msr_list->indices[r]);
-+	vcpu_msrs_get(vm, vcpuid, &state->msrs);
- 
--	r = ioctl(vcpu->fd, KVM_GET_DEBUGREGS, &state->debugregs);
--	TEST_ASSERT(r == 0, "Unexpected result from KVM_GET_DEBUGREGS, r: %i",
--		    r);
-+	vcpu_debugregs_get(vm, vcpuid, &state->debugregs);
- 
- 	return state;
- }
- 
- void vcpu_load_state(struct kvm_vm *vm, uint32_t vcpuid, struct kvm_x86_state *state)
- {
--	struct vcpu *vcpu = vcpu_get(vm, vcpuid);
--	int r;
-+	vcpu_sregs_set(vm, vcpuid, &state->sregs);
-+	vcpu_msrs_set(vm, vcpuid, &state->msrs);
- 
--	r = ioctl(vcpu->fd, KVM_SET_SREGS, &state->sregs);
--	TEST_ASSERT(r == 0, "Unexpected result from KVM_SET_SREGS, r: %i",
--		    r);
-+	if (kvm_check_cap(KVM_CAP_XCRS))
-+		vcpu_xcrs_set(vm, vcpuid, &state->xcrs);
- 
--	r = ioctl(vcpu->fd, KVM_SET_MSRS, &state->msrs);
--	TEST_ASSERT(r == state->msrs.nmsrs,
--		"Unexpected result from KVM_SET_MSRS, r: %i (failed at %x)",
--		r, r == state->msrs.nmsrs ? -1 : state->msrs.entries[r].index);
-+	vcpu_xsave_set(vm, vcpuid,  state->xsave);
-+	vcpu_events_set(vm, vcpuid, &state->events);
-+	vcpu_mp_state_set(vm, vcpuid, &state->mp_state);
-+	vcpu_debugregs_set(vm, vcpuid, &state->debugregs);
-+	vcpu_regs_set(vm, vcpuid, &state->regs);
- 
--	if (kvm_check_cap(KVM_CAP_XCRS)) {
--		r = ioctl(vcpu->fd, KVM_SET_XCRS, &state->xcrs);
--		TEST_ASSERT(r == 0, "Unexpected result from KVM_SET_XCRS, r: %i",
--			    r);
--	}
--
--	r = ioctl(vcpu->fd, KVM_SET_XSAVE, state->xsave);
--	TEST_ASSERT(r == 0, "Unexpected result from KVM_SET_XSAVE, r: %i",
--		    r);
--
--	r = ioctl(vcpu->fd, KVM_SET_VCPU_EVENTS, &state->events);
--	TEST_ASSERT(r == 0, "Unexpected result from KVM_SET_VCPU_EVENTS, r: %i",
--		    r);
--
--	r = ioctl(vcpu->fd, KVM_SET_MP_STATE, &state->mp_state);
--	TEST_ASSERT(r == 0, "Unexpected result from KVM_SET_MP_STATE, r: %i",
--		    r);
--
--	r = ioctl(vcpu->fd, KVM_SET_DEBUGREGS, &state->debugregs);
--	TEST_ASSERT(r == 0, "Unexpected result from KVM_SET_DEBUGREGS, r: %i",
--		    r);
--
--	r = ioctl(vcpu->fd, KVM_SET_REGS, &state->regs);
--	TEST_ASSERT(r == 0, "Unexpected result from KVM_SET_REGS, r: %i",
--		    r);
--
--	if (state->nested.size) {
--		r = ioctl(vcpu->fd, KVM_SET_NESTED_STATE, &state->nested);
--		TEST_ASSERT(r == 0, "Unexpected result from KVM_SET_NESTED_STATE, r: %i",
--			    r);
--	}
-+	if (state->nested.size)
-+		vcpu_nested_state_set(vm, vcpuid, &state->nested);
- }
- 
- void kvm_x86_state_cleanup(struct kvm_x86_state *state)
+ 		memset(&regs2, 0, sizeof(regs2));
+-		vcpu_regs_get(vm, VCPU_ID, &regs2);
++		vcpu_regs_get(vm, vcpu->id, &regs2);
+ 		TEST_ASSERT(!memcmp(&regs1, &regs2, sizeof(regs2)),
+ 			    "Unexpected register values after vcpu_load_state; rdi: %lx rsi: %lx",
+ 			    (ulong) regs2.rdi, (ulong) regs2.rsi);
 -- 
 2.36.1.255.ge46751e96f-goog
 
