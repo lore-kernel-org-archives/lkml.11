@@ -2,134 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E510DC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:25:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD257C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:25:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344449AbiFCRYy (ORCPT
+        id S1344457AbiFCRZb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:24:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43266 "EHLO
+        Fri, 3 Jun 2022 13:25:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344439AbiFCRYv (ORCPT
+        with ESMTP id S1344443AbiFCRZa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:24:51 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 421A1527FE;
-        Fri,  3 Jun 2022 10:24:50 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 9EF15CE23F1;
-        Fri,  3 Jun 2022 17:24:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1ECD8C385B8;
-        Fri,  3 Jun 2022 17:24:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654277086;
-        bh=xfag6dKeQNQUdy4u9ec+mbnjJETjTFrRoo6U96kuMWw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=DRiOveNypFRpyQqmRX76utHPLIF3PYbCIConS60bj5XUOZJhCuC3OEwaL/FVH76L7
-         YCoucggBzfeKLEOxzXKpFLSp2saKP0BMtHOh1Oat5vvMW4tQhrAvyskIEziW+NpKVT
-         l6VzMqIyvrAjIhrj6vEP2GnydURJ5ovjfG5I4O7vEAYutes28CssM5u4/qVoE7s+aK
-         6PMb6hocpXvaI1bp7vihsUg+v9HyTIwyA9BGVqYdJK/uJlBz/mEj9CEW1Gk0sF/Nuo
-         L5StbbZFZXmVf3Kusbd68FIMNx5k/gnxCpL5xsh/5yP7MN33hYze1+FwmAzPSpTqt8
-         F2Q56aolN32xg==
-Date:   Fri, 3 Jun 2022 18:33:47 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-imx@nxp.com, Lars-Peter Clausen <lars@metafoo.de>,
-        Haibo Chen <haibo.chen@nxp.com>
-Subject: Re: [PATCH v1 1/1] iio: adc: vf610_adc: Make use of device
- properties
-Message-ID: <20220603183347.1122fd21@jic23-huawei>
-In-Reply-To: <20220531142353.64925-1-andriy.shevchenko@linux.intel.com>
-References: <20220531142353.64925-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Fri, 3 Jun 2022 13:25:30 -0400
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96C2C52B1C
+        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 10:25:28 -0700 (PDT)
+Received: by mail-yb1-xb2a.google.com with SMTP id z186so14888436ybz.3
+        for <linux-kernel@vger.kernel.org>; Fri, 03 Jun 2022 10:25:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9d7m1DB2JYorAFcfrJRCyYngv/Ipyhp23NdS37Fbtxg=;
+        b=URVQb1JkqaW1ZxUmYQ5sQlIodWx8/3heQ74G3ifWb6OpIziXlv8ER/kur16b8WoQp4
+         Lc75UyQ3wEz6iiXKQ8UhcNPavNi5XJQbcreWYMbvM5B1SvdDeRX2QhDybf7QiVx3ovoa
+         P9UtVL9f2yrR7ABjofsD/R/Wawv52H4VhdVBY2dYjjOPRr2oet+wr58sqTAgUHoYjoUb
+         QpvYsttsm2TqMFvOve3llhXgR+a3j2q2nJMOxhNJOScXi11csrk7F00sVwfpQAJ//JqB
+         un16nZdFbn+rv+2qfdYf+R1Xsx8fbDZo0yOXaVS9L05xFbaYKY8IaFxLUs5lR0uGl7zz
+         ZZhQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9d7m1DB2JYorAFcfrJRCyYngv/Ipyhp23NdS37Fbtxg=;
+        b=f1plc624e3s4p8/jnmtD63LhRLgZEDYrG+AdoOV8EoNSsUw7GhTqUXO3fE0Fe43x6y
+         NqV0BX1afdl2OtypyAY0fyGlrYDSnGLzJjFQ0RVyWF8+SJ91fzB5qRswsxYsfLBToN6R
+         fue3jLa0wda1AZI6ghtFSQWttZtnp5KXNuYoJLfENhAzOsKu7Iud4m68at7HV1tWG5Vt
+         Dr4atcMKDzwy7hkSjH/d7WJehBrA1D1eATsMXCeee8I/2bxSHYzB4oCBGz4xhfMKBiLv
+         /Zvg6S1VKjHnKnHfWqGPqUgrEmlnq7zsPrlnGfceKfcWNqWCdRWykq+copK0ZT0mTkvJ
+         ItSw==
+X-Gm-Message-State: AOAM531aYZXHulJ//ReBU7zQaY11vmFM5KPWRoLCJJ2YDWsMG0I2ANut
+        1kGqfvAKvcc4MWpUacmcRLalouvoqmdnj2GzggXAhg==
+X-Google-Smtp-Source: ABdhPJxf9t98itOGujrgic0ySJOm8xg1lh3ELD9RztTvYghZn9PWg0G/2n3G5/cLA3+ZqRARoLBWHk2qXYPDrLAVE04=
+X-Received: by 2002:a25:aa32:0:b0:65c:af6a:3502 with SMTP id
+ s47-20020a25aa32000000b0065caf6a3502mr12290545ybi.598.1654277127473; Fri, 03
+ Jun 2022 10:25:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <2997c5b0-3611-5e00-466c-b2966f09f067@nbd.name> <1654245968-8067-1-git-send-email-chen45464546@163.com>
+In-Reply-To: <1654245968-8067-1-git-send-email-chen45464546@163.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 3 Jun 2022 10:25:16 -0700
+Message-ID: <CANn89iKiyh36ULH4PCXF4c8sBdh9WLksMoMcmQwipZYWCzBkMA@mail.gmail.com>
+Subject: Re: [PATCH v2] net: ethernet: mtk_eth_soc: fix misuse of mem alloc
+ interface netdev[napi]_alloc_frag
+To:     Chen Lin <chen45464546@163.com>
+Cc:     Felix Fietkau <nbd@nbd.name>, Jakub Kicinski <kuba@kernel.org>,
+        john@phrozen.org, sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
+        David Miller <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-mediatek@lists.infradead.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Alexander Duyck <alexander.duyck@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 31 May 2022 17:23:53 +0300
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+On Fri, Jun 3, 2022 at 1:46 AM Chen Lin <chen45464546@163.com> wrote:
+>
+> When rx_flag == MTK_RX_FLAGS_HWLRO,
+> rx_data_len = MTK_MAX_LRO_RX_LENGTH(4096 * 3) > PAGE_SIZE.
+> netdev_alloc_frag is for alloction of page fragment only.
+> Reference to other drivers and Documentation/vm/page_frags.rst
+>
+> Branch to use alloc_pages when ring->frag_size > PAGE_SIZE.
+>
+> Signed-off-by: Chen Lin <chen45464546@163.com>
 
-> Convert the module to be property provider agnostic and allow
-> it to be used on non-OF platforms.
-> 
-> Add mod_devicetable.h include.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Applied,
+...
 
-J
-> ---
->  drivers/iio/adc/Kconfig     |  1 -
->  drivers/iio/adc/vf610_adc.c | 15 ++++++---------
->  2 files changed, 6 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 3b6a80786b51..448ae243cd31 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -1257,7 +1257,6 @@ config TWL6030_GPADC
->  
->  config VF610_ADC
->  	tristate "Freescale vf610 ADC driver"
-> -	depends on OF
->  	depends on HAS_IOMEM
->  	select IIO_BUFFER
->  	select IIO_TRIGGERED_BUFFER
-> diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
-> index c84293efc129..c6b16cf6e367 100644
-> --- a/drivers/iio/adc/vf610_adc.c
-> +++ b/drivers/iio/adc/vf610_adc.c
-> @@ -5,7 +5,9 @@
->   * Copyright 2013 Freescale Semiconductor, Inc.
->   */
->  
-> +#include <linux/mod_devicetable.h>
->  #include <linux/module.h>
-> +#include <linux/property.h>
->  #include <linux/platform_device.h>
->  #include <linux/interrupt.h>
->  #include <linux/delay.h>
-> @@ -14,10 +16,7 @@
->  #include <linux/io.h>
->  #include <linux/clk.h>
->  #include <linux/completion.h>
-> -#include <linux/of.h>
-> -#include <linux/of_irq.h>
->  #include <linux/regulator/consumer.h>
-> -#include <linux/of_platform.h>
->  #include <linux/err.h>
->  
->  #include <linux/iio/iio.h>
-> @@ -799,6 +798,7 @@ MODULE_DEVICE_TABLE(of, vf610_adc_match);
->  
->  static int vf610_adc_probe(struct platform_device *pdev)
->  {
-> +	struct device *dev = &pdev->dev;
->  	struct vf610_adc *info;
->  	struct iio_dev *indio_dev;
->  	int irq;
-> @@ -846,13 +846,10 @@ static int vf610_adc_probe(struct platform_device *pdev)
->  
->  	info->vref_uv = regulator_get_voltage(info->vref);
->  
-> -	of_property_read_u32_array(pdev->dev.of_node, "fsl,adck-max-frequency",
-> -			info->max_adck_rate, 3);
-> +	device_property_read_u32_array(dev, "fsl,adck-max-frequency", info->max_adck_rate, 3);
->  
-> -	ret = of_property_read_u32(pdev->dev.of_node, "min-sample-time",
-> -			&info->adc_feature.default_sample_time);
-> -	if (ret)
-> -		info->adc_feature.default_sample_time = DEFAULT_SAMPLE_TIME;
-> +	info->adc_feature.default_sample_time = DEFAULT_SAMPLE_TIME;
-> +	device_property_read_u32(dev, "min-sample-time", &info->adc_feature.default_sample_time);
->  
->  	platform_set_drvdata(pdev, indio_dev);
->  
+>                         goto release_desc;
+> @@ -1914,7 +1923,16 @@ static int mtk_rx_alloc(struct mtk_eth *eth, int ring_no, int rx_flag)
+>                 return -ENOMEM;
+>
+>         for (i = 0; i < rx_dma_size; i++) {
+> -               ring->data[i] = netdev_alloc_frag(ring->frag_size);
 
+Note aside, calling netdev_alloc_frag() in a loop like that is adding
+GFP_ATOMIC pressure.
+
+mtk_rx_alloc() being in process context, using GFP_KERNEL allocations
+would be less aggressive and
+have more chances to succeed.
+
+We probably should offer a generic helper. This could be used from
+driver/net/tun.c and others.
