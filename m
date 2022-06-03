@@ -2,58 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75296C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 00:43:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EF7FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 00:43:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239941AbiFCAns (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 20:43:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46532 "EHLO
+        id S239928AbiFCAny (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 20:43:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239905AbiFCAnk (ORCPT
+        with ESMTP id S239918AbiFCAnn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 20:43:40 -0400
-Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE430344CC
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:43:39 -0700 (PDT)
-Received: by mail-pl1-x64a.google.com with SMTP id z12-20020a170903018c00b001651395dcb8so3468678plg.12
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:43:39 -0700 (PDT)
+        Thu, 2 Jun 2022 20:43:43 -0400
+Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F014933887
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:43:42 -0700 (PDT)
+Received: by mail-pg1-x54a.google.com with SMTP id x16-20020a63f710000000b003f6082673afso3039787pgh.15
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:43:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=uBJGXJghPokaEwyj/cEInqgPIVHXmOKBiWBIFEM2HE8=;
-        b=SPT3bjMX3fn8/PM3Qzh/pG4k0Dz5u6r49wRmLSF5HvwEw8RVu6pMmjcXoJJuLdjSBY
-         mCwZPKi7I5WNiIwcyK1Rb1TA9mHbCaoADvmV3EXgObt40bdCS18bTOvLxhquEtrxRvwr
-         WnSeu9/2p5mWcW/3R4KLtUfSOwp2Klw9FvQu5+2FEV3YLDCu7nmjU+aqAeE8anP50kU2
-         0JAHsXQMUqgcRCeTzoOb17QDaRauCUWFxCmb/1mhaftvBM7M8jM0qcATSAiByk2YctUY
-         NUg4ftshZ53knC9m+pIxlhHnq/cR7UbKOpo6IobGUNeMfMOAmRh4ArxQWcNQyvxobsug
-         fb6g==
+        bh=5n2c/bNAwgFAvfU6CoWalYhox7GUhMiGZPzXVhSXkXM=;
+        b=G0uLfFZcUuPsl19sVR93iZbJ11T7hqXURRRV0pDNRgUt3yKRR5Vxbhb5xdN+8lEuWm
+         QwoG0JIiL+VDEvFd3i0/NNCXztPiEGErys0/u4agJD16+6SjqaKUEa4oY9SBBfyTqmDG
+         7WicQKsA1cUpx7HIToVurviIrbDDD9G2LddpaVSrqvLV6xLnzqOdA7sm5uHAkiYmxrw0
+         lg38DbRmY45bjq4wBzjTW73fwsBjTtxdKf4euBleSDcMrB51NtzrZaFkqNkEETKDrOEp
+         UlpAQZJ5R43D31e/TodebkWpq3T4UbvAN2ZPhUmgofaZ7NQd9DwtFpf8k+ZxYhVL8htC
+         JRJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=uBJGXJghPokaEwyj/cEInqgPIVHXmOKBiWBIFEM2HE8=;
-        b=sJE6oWd6YeqGj/8XMnOsvwS35/BtWhWDl0wCPTPupdpWJJ8fAsp36ryTnOZ/nLvgpE
-         D9tXUS5JYcKlnHybyzkBeT65EkMPtlf7OuCNtMn3pPDRaY8VCtA3tAfD8YzoaQCsuInP
-         QwDGdH3IpLAmk2j/3CARsV6CuEolu544I9P4CeJOkW/Z9X9PnXLUPMN1IyYOSkOs39LH
-         YIiv0dKnLc+JqzgKmFZSUje3qmOAK5oHz1IOIZ0zkrGs51FTD4JeSxCsB3KUq/OPpJLH
-         sAs1Z9ZpRBbIT+ZCEN7+gTKmUbEEoouNPvvycnsFnRcOmyCSIS0tLPLZ5TM01e6E8ntb
-         KMPg==
-X-Gm-Message-State: AOAM533Ao+p8jJXakM2Zkn/TaJyo9bQlUvw7UAaW9KE7A8NN4B3eGPnT
-        +Nb+lrlVdF+GZOPkJOnQTG8S8VvQ/XU=
-X-Google-Smtp-Source: ABdhPJzVihoLsJgs5GdDWHiehPJH5I0BkgDlQHt6TW97eJpcS3MryCANNqFocuOgczg3ov4E1YBaBrkP/nk=
+        bh=5n2c/bNAwgFAvfU6CoWalYhox7GUhMiGZPzXVhSXkXM=;
+        b=CSdQZGVYHO5gn3VNFTHEw/yGoFBHpm2oRrrkx3kENsWmQQv5c2bi4eZEMHi5BCFrXr
+         1Ym4jehzoDrscUGd5F85x3Vrt0hHBHJq9hdAVTBV5/QOdv/VhpZ+b1rCm8MPX8Ys6Jkf
+         qz7M4vZ2oSO7d8PJ8xPwQBKlv8SkqDpioLQ/gQxu4ntVrGEfNY7MaWEr3gGFk0bSqClR
+         M3caK534Lo17wC8dGYCYAfoyV0/KuZ7vb7Rc0W9m5/orK9xa7R5Wj+/NoL9a5mWiiuPw
+         cmZXuJM+wtWxl3lLTiMyh/OmqgU/8+7defWYFjPqiOBlcLZ9NOX0kSgNTa8COhflr/X6
+         WWlg==
+X-Gm-Message-State: AOAM532tXC7peaLfeLP1778qlNaihpZZaq3gQE0Z3WJVyRsNDeGxs4l7
+        FxNNYSl9WNkjDWD8H27u6SyWlWqU3Rk=
+X-Google-Smtp-Source: ABdhPJwW6+Sh+L/OQ/rp4QMwq/Rdk4aJjk37EogYWOqfZ9WjG7G4Dj+apcjHf/0kRCNGSg1f6yYEXNB7x2E=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:90a:249:b0:1e0:a8a3:3c6c with SMTP id
- t9-20020a17090a024900b001e0a8a33c6cmr307282pje.0.1654217018748; Thu, 02 Jun
- 2022 17:43:38 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:903:20f:b0:158:d86a:f473 with SMTP id
+ r15-20020a170903020f00b00158d86af473mr7727577plh.92.1654217022350; Thu, 02
+ Jun 2022 17:43:42 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri,  3 Jun 2022 00:41:08 +0000
+Date:   Fri,  3 Jun 2022 00:41:10 +0000
 In-Reply-To: <20220603004331.1523888-1-seanjc@google.com>
-Message-Id: <20220603004331.1523888-2-seanjc@google.com>
+Message-Id: <20220603004331.1523888-4-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220603004331.1523888-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v2 001/144] KVM: Fix references to non-existent KVM_CAP_TRIPLE_FAULT_EVENT
+Subject: [PATCH v2 003/144] KVM: selftests: Fix typo in vgic_init test
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     kvm@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
@@ -66,60 +66,26 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The x86-only KVM_CAP_TRIPLE_FAULT_EVENT was (appropriately) renamed to
-KVM_CAP_X86_TRIPLE_FAULT_EVENT when the patches were applied, but the
-docs and selftests got left behind.  Fix them.
+When iterating over vCPUs, invoke access_v3_redist_reg() on the "current"
+vCPU instead of vCPU0, which is presumably what was intended by iterating
+over all vCPUs.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- Documentation/virt/kvm/api.rst                              | 4 ++--
- .../testing/selftests/kvm/x86_64/triple_fault_event_test.c  | 6 +++---
- 2 files changed, 5 insertions(+), 5 deletions(-)
+ tools/testing/selftests/kvm/aarch64/vgic_init.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
-index 5ffdc37cf7ca..42a1984fafc8 100644
---- a/Documentation/virt/kvm/api.rst
-+++ b/Documentation/virt/kvm/api.rst
-@@ -1152,7 +1152,7 @@ The following bits are defined in the flags field:
+diff --git a/tools/testing/selftests/kvm/aarch64/vgic_init.c b/tools/testing/selftests/kvm/aarch64/vgic_init.c
+index 0f046e3e953d..5e3c26564192 100644
+--- a/tools/testing/selftests/kvm/aarch64/vgic_init.c
++++ b/tools/testing/selftests/kvm/aarch64/vgic_init.c
+@@ -426,7 +426,7 @@ static void test_v3_typer_accesses(void)
+ 			  KVM_DEV_ARM_VGIC_CTRL_INIT, NULL, true);
  
- - KVM_VCPUEVENT_VALID_TRIPLE_FAULT may be set to signal that the
-   triple_fault_pending field contains a valid state. This bit will
--  be set whenever KVM_CAP_TRIPLE_FAULT_EVENT is enabled.
-+  be set whenever KVM_CAP_X86_TRIPLE_FAULT_EVENT is enabled.
- 
- ARM64:
- ^^^^^^
-@@ -1249,7 +1249,7 @@ can be set in the flags field to signal that the
- exception_has_payload, exception_payload, and exception.pending fields
- contain a valid state and shall be written into the VCPU.
- 
--If KVM_CAP_TRIPLE_FAULT_EVENT is enabled, KVM_VCPUEVENT_VALID_TRIPLE_FAULT
-+If KVM_CAP_X86_TRIPLE_FAULT_EVENT is enabled, KVM_VCPUEVENT_VALID_TRIPLE_FAULT
- can be set in flags field to signal that the triple_fault field contains
- a valid state and shall be written into the VCPU.
- 
-diff --git a/tools/testing/selftests/kvm/x86_64/triple_fault_event_test.c b/tools/testing/selftests/kvm/x86_64/triple_fault_event_test.c
-index 6e1de0631ce9..66378140764d 100644
---- a/tools/testing/selftests/kvm/x86_64/triple_fault_event_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/triple_fault_event_test.c
-@@ -47,7 +47,7 @@ int main(void)
- 	struct ucall uc;
- 
- 	struct kvm_enable_cap cap = {
--		.cap = KVM_CAP_TRIPLE_FAULT_EVENT,
-+		.cap = KVM_CAP_X86_TRIPLE_FAULT_EVENT,
- 		.args = {1}
- 	};
- 
-@@ -56,8 +56,8 @@ int main(void)
- 		exit(KSFT_SKIP);
- 	}
- 
--	if (!kvm_check_cap(KVM_CAP_TRIPLE_FAULT_EVENT)) {
--		print_skip("KVM_CAP_TRIPLE_FAULT_EVENT not supported");
-+	if (!kvm_check_cap(KVM_CAP_X86_TRIPLE_FAULT_EVENT)) {
-+		print_skip("KVM_CAP_X86_TRIPLE_FAULT_EVENT not supported");
- 		exit(KSFT_SKIP);
+ 	for (i = 0; i < NR_VCPUS ; i++) {
+-		ret = access_v3_redist_reg(v.gic_fd, 0, GICR_TYPER, &val, false);
++		ret = access_v3_redist_reg(v.gic_fd, i, GICR_TYPER, &val, false);
+ 		TEST_ASSERT(!ret && !val, "read GICR_TYPER before rdist region setting");
  	}
  
 -- 
