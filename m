@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B0BCC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:57:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22FBDC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:58:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243330AbiFCR5v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:57:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46608 "EHLO
+        id S241065AbiFCR54 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 13:57:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346678AbiFCRv0 (ORCPT
+        with ESMTP id S1346700AbiFCRv1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:51:26 -0400
+        Fri, 3 Jun 2022 13:51:27 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBE9C57142;
-        Fri,  3 Jun 2022 10:49:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB834544D9;
+        Fri,  3 Jun 2022 10:49:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3276760F3E;
-        Fri,  3 Jun 2022 17:49:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 415FEC385A9;
-        Fri,  3 Jun 2022 17:49:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4AB8160F4E;
+        Fri,  3 Jun 2022 17:49:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B3FBC385A9;
+        Fri,  3 Jun 2022 17:49:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278547;
-        bh=utL4tx2DU7lDNCDqgGRF69/Bgz6BQ0QQnq+uQiKu+Ts=;
+        s=korg; t=1654278553;
+        bh=ANH8V7vwcVhdW15W3pPGiL3w0hAGuSIPd+qqSu0L72w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wnD8Ug9TBwCV2MpRomjiBKJfzEo5rCVe+o8Qa+IuAKamgrCtA7rZIa+4rG7Fs4XNC
-         hiT4xmM0gj1OemoFoz0NPFF1zw6XiY8BKhzW2IqjxGN3CYoUD+Gs3rdijhZyXxcUAP
-         yTzeX4+tWQgZnlrPVXi/9mG2v2qbMiujfXxCRNqs=
+        b=ZT2XqWWlNekzawtn7nLvsfJNuUvTJmKKK2PZbO0ekadarmzIqWma7xh3Xngr3kXY8
+         +ulyFicBtC4Mu6DXkvJWgBAKG0UZsrK4F4LDPIhQxgRK7LHowRf8NPKwY41nJmDpKm
+         uLtFq3EaBGkctYFNH2UChFWQtknuVI7SMe2k7jas=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alex Elder <elder@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 15/66] net: ipa: compute proper aggregation limit
-Date:   Fri,  3 Jun 2022 19:42:55 +0200
-Message-Id: <20220603173821.104884211@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+a4087e40b9c13aad7892@syzkaller.appspotmail.com,
+        Tadeusz Struk <tadeusz.struk@linaro.org>,
+        Sungjong Seo <sj1557.seo@samsung.com>,
+        Namjae Jeon <linkinjeon@kernel.org>
+Subject: [PATCH 5.15 17/66] exfat: check if cluster num is valid
+Date:   Fri,  3 Jun 2022 19:42:57 +0200
+Message-Id: <20220603173821.160226274@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.663747061@linuxfoundation.org>
 References: <20220603173820.663747061@linuxfoundation.org>
@@ -48,49 +51,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Elder <elder@linaro.org>
+From: Tadeusz Struk <tadeusz.struk@linaro.org>
 
-commit c5794097b269f15961ed78f7f27b50e51766dec9 upstream.
+commit 64ba4b15e5c045f8b746c6da5fc9be9a6b00b61d upstream.
 
-The aggregation byte limit for an endpoint is currently computed
-based on the endpoint's receive buffer size.
+Syzbot reported slab-out-of-bounds read in exfat_clear_bitmap.
+This was triggered by reproducer calling truncute with size 0,
+which causes the following trace:
 
-However, some bytes at the front of each receive buffer are reserved
-on the assumption that--as with SKBs--it might be useful to insert
-data (such as headers) before what lands in the buffer.
+BUG: KASAN: slab-out-of-bounds in exfat_clear_bitmap+0x147/0x490 fs/exfat/balloc.c:174
+Read of size 8 at addr ffff888115aa9508 by task syz-executor251/365
 
-The aggregation byte limit currently doesn't take into account that
-reserved space, and as a result, aggregation could require space
-past that which is available in the buffer.
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack_lvl+0x1e2/0x24b lib/dump_stack.c:118
+ print_address_description+0x81/0x3c0 mm/kasan/report.c:233
+ __kasan_report mm/kasan/report.c:419 [inline]
+ kasan_report+0x1a4/0x1f0 mm/kasan/report.c:436
+ __asan_report_load8_noabort+0x14/0x20 mm/kasan/report_generic.c:309
+ exfat_clear_bitmap+0x147/0x490 fs/exfat/balloc.c:174
+ exfat_free_cluster+0x25a/0x4a0 fs/exfat/fatent.c:181
+ __exfat_truncate+0x99e/0xe00 fs/exfat/file.c:217
+ exfat_truncate+0x11b/0x4f0 fs/exfat/file.c:243
+ exfat_setattr+0xa03/0xd40 fs/exfat/file.c:339
+ notify_change+0xb76/0xe10 fs/attr.c:336
+ do_truncate+0x1ea/0x2d0 fs/open.c:65
 
-Fix this by reducing the size used to compute the aggregation byte
-limit by the NET_SKB_PAD offset reserved for each receive buffer.
+Move the is_valid_cluster() helper from fatent.c to a common
+header to make it reusable in other *.c files. And add is_valid_cluster()
+to validate if cluster number is within valid range in exfat_clear_bitmap()
+and exfat_set_bitmap().
 
-Signed-off-by: Alex Elder <elder@linaro.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Link: https://syzkaller.appspot.com/bug?id=50381fc73821ecae743b8cf24b4c9a04776f767c
+Reported-by: syzbot+a4087e40b9c13aad7892@syzkaller.appspotmail.com
+Fixes: 1e49a94cf707 ("exfat: add bitmap operations")
+Cc: stable@vger.kernel.org # v5.7+
+Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
+Reviewed-by: Sungjong Seo <sj1557.seo@samsung.com>
+Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ipa/ipa_endpoint.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ fs/exfat/balloc.c   |    8 ++++++--
+ fs/exfat/exfat_fs.h |    8 ++++++++
+ fs/exfat/fatent.c   |    8 --------
+ 3 files changed, 14 insertions(+), 10 deletions(-)
 
---- a/drivers/net/ipa/ipa_endpoint.c
-+++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -722,13 +722,15 @@ static void ipa_endpoint_init_aggr(struc
+--- a/fs/exfat/balloc.c
++++ b/fs/exfat/balloc.c
+@@ -148,7 +148,9 @@ int exfat_set_bitmap(struct inode *inode
+ 	struct super_block *sb = inode->i_sb;
+ 	struct exfat_sb_info *sbi = EXFAT_SB(sb);
  
- 	if (endpoint->data->aggregation) {
- 		if (!endpoint->toward_ipa) {
-+			u32 buffer_size;
- 			bool close_eof;
- 			u32 limit;
+-	WARN_ON(clu < EXFAT_FIRST_CLUSTER);
++	if (!is_valid_cluster(sbi, clu))
++		return -EINVAL;
++
+ 	ent_idx = CLUSTER_TO_BITMAP_ENT(clu);
+ 	i = BITMAP_OFFSET_SECTOR_INDEX(sb, ent_idx);
+ 	b = BITMAP_OFFSET_BIT_IN_SECTOR(sb, ent_idx);
+@@ -166,7 +168,9 @@ void exfat_clear_bitmap(struct inode *in
+ 	struct exfat_sb_info *sbi = EXFAT_SB(sb);
+ 	struct exfat_mount_options *opts = &sbi->options;
  
- 			val |= u32_encode_bits(IPA_ENABLE_AGGR, AGGR_EN_FMASK);
- 			val |= u32_encode_bits(IPA_GENERIC, AGGR_TYPE_FMASK);
+-	WARN_ON(clu < EXFAT_FIRST_CLUSTER);
++	if (!is_valid_cluster(sbi, clu))
++		return;
++
+ 	ent_idx = CLUSTER_TO_BITMAP_ENT(clu);
+ 	i = BITMAP_OFFSET_SECTOR_INDEX(sb, ent_idx);
+ 	b = BITMAP_OFFSET_BIT_IN_SECTOR(sb, ent_idx);
+--- a/fs/exfat/exfat_fs.h
++++ b/fs/exfat/exfat_fs.h
+@@ -381,6 +381,14 @@ static inline int exfat_sector_to_cluste
+ 		EXFAT_RESERVED_CLUSTERS;
+ }
  
--			limit = ipa_aggr_size_kb(IPA_RX_BUFFER_SIZE);
-+			buffer_size = IPA_RX_BUFFER_SIZE - NET_SKB_PAD;
-+			limit = ipa_aggr_size_kb(buffer_size);
- 			val |= aggr_byte_limit_encoded(version, limit);
++static inline bool is_valid_cluster(struct exfat_sb_info *sbi,
++		unsigned int clus)
++{
++	if (clus < EXFAT_FIRST_CLUSTER || sbi->num_clusters <= clus)
++		return false;
++	return true;
++}
++
+ /* super.c */
+ int exfat_set_volume_dirty(struct super_block *sb);
+ int exfat_clear_volume_dirty(struct super_block *sb);
+--- a/fs/exfat/fatent.c
++++ b/fs/exfat/fatent.c
+@@ -81,14 +81,6 @@ int exfat_ent_set(struct super_block *sb
+ 	return 0;
+ }
  
- 			limit = IPA_AGGR_TIME_LIMIT;
+-static inline bool is_valid_cluster(struct exfat_sb_info *sbi,
+-		unsigned int clus)
+-{
+-	if (clus < EXFAT_FIRST_CLUSTER || sbi->num_clusters <= clus)
+-		return false;
+-	return true;
+-}
+-
+ int exfat_ent_get(struct super_block *sb, unsigned int loc,
+ 		unsigned int *content)
+ {
 
 
