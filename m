@@ -2,98 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BF9FC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 09:32:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1BBDC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 09:36:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243070AbiFCJc0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 05:32:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59230 "EHLO
+        id S243077AbiFCJgM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 05:36:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229792AbiFCJcW (ORCPT
+        with ESMTP id S238349AbiFCJgK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 05:32:22 -0400
-Received: from xry111.site (xry111.site [89.208.246.23])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 318C42B24E;
-        Fri,  3 Jun 2022 02:32:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xry111.site;
-        s=default; t=1654248735;
-        bh=L6vnBNt1rIQ4ybJ0twJCwhIdxM9LDIUngFwqwnJ0+zg=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=aA2vWSFARgbtMA6PZNK7yh2b1C4zoBwskJLD2/d8KUfXCx12jeBrzWeqzj6H1QyGO
-         G+1eHFUDZyexjmiak1ycPPoPa2ea61VluhH2k3Q8h2932b5iRxb2SQ9dBxaWzZ4nDc
-         LSpQ0WJnC00vkQ3vwhcvcnT1do1scpA4n6VCtumQ=
-Received: from localhost.localdomain (xry111.site [IPv6:2001:470:683e::1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature ECDSA (P-384) server-digest SHA384)
-        (Client did not present a certificate)
-        (Authenticated sender: xry111@xry111.site)
-        by xry111.site (Postfix) with ESMTPSA id E7EFD66830;
-        Fri,  3 Jun 2022 05:32:09 -0400 (EDT)
-Message-ID: <dab96b787bef91240c719ea1a100396350135f99.camel@xry111.site>
-Subject: Re: Steps forward for the LoongArch UEFI bringup patch? (was: Re:
- [PATCH V14 11/24] LoongArch: Add boot and setup routines)
-From:   Xi Ruoyao <xry111@xry111.site>
-To:     WANG Xuerui <kernel@xen0n.name>, Ard Biesheuvel <ardb@kernel.org>,
-        Huacai Chen <chenhuacai@loongson.cn>
-Cc:     linux-arch@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Huacai Chen <chenhuacai@gmail.com>,
-        Guo Ren <guoren@kernel.org>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        linux-efi@vger.kernel.org, WANG Xuerui <git@xen0n.name>,
-        Yun Liu <liuyun@loongson.cn>, Jonathan Corbet <corbet@lwn.net>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Airlie <airlied@linux.ie>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Fri, 03 Jun 2022 17:32:07 +0800
-In-Reply-To: <d88ede74-b7a5-e568-1863-107c6c7f5fe0@xen0n.name>
-References: <20220602115141.3962749-1-chenhuacai@loongson.cn>
-         <20220602115141.3962749-12-chenhuacai@loongson.cn>
-         <d88ede74-b7a5-e568-1863-107c6c7f5fe0@xen0n.name>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.2 
-MIME-Version: 1.0
+        Fri, 3 Jun 2022 05:36:10 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A9D32C66D;
+        Fri,  3 Jun 2022 02:36:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1654248968; x=1685784968;
+  h=from:to:cc:subject:date:message-id;
+  bh=rNtSLC5bGnyIBYdwXfdRCRjwAbc7RD6DLKsmw6WkyWA=;
+  b=dG7AG51hvPN8D2mGW/MBFDtSUASFTOygT+PuJFFbVwfecDzJYEd2qURU
+   efgQkNbCmMD8ZamDQAXHmj1zTLdhcMii40uH3e19b0aUmZSO7HQtbwGPG
+   xzaHbOlXZvn+D/l9YncU1PmakJjvAPKtD3W9kP3P5gsrAwM7WLfJo+kV7
+   M=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 03 Jun 2022 02:36:08 -0700
+X-QCInternal: smtphost
+Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 03 Jun 2022 02:36:06 -0700
+X-QCInternal: smtphost
+Received: from vpolimer-linux.qualcomm.com ([10.204.67.235])
+  by ironmsg01-blr.qualcomm.com with ESMTP; 03 Jun 2022 15:05:53 +0530
+Received: by vpolimer-linux.qualcomm.com (Postfix, from userid 463814)
+        id 0DBC73A46; Fri,  3 Jun 2022 15:05:52 +0530 (IST)
+From:   Vinod Polimera <quic_vpolimer@quicinc.com>
+To:     dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org
+Cc:     Vinod Polimera <quic_vpolimer@quicinc.com>,
+        linux-kernel@vger.kernel.org, robdclark@gmail.com,
+        dianders@chromium.org, vpolimer@quicinc.com, swboyd@chromium.org,
+        kalyant@quicinc.com, dmitry.baryshkov@linaro.org
+Subject: [v3] drm/msm/disp/dpu1: avoid clearing hw interrupts if hw_intr is null during drm uninit
+Date:   Fri,  3 Jun 2022 15:05:50 +0530
+Message-Id: <1654248950-17946-1-git-send-email-quic_vpolimer@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-06-02 at 22:09 +0800, WANG Xuerui wrote:
+If dp modeset init is failed due to panel being not ready and
+probe defers during drm bind, avoid clearing irqs and dereference
+hw_intr when hw_intr is null.
 
-> For this, I don't know if Huacai should really just leave those=20
-> modification in the downstream fork to keep the upstream Linux clean of=
-=20
-> such hacks, because to some degree dealing with such notoriety is life,=
-=20
-> it seems to me. I think at this point Huacai would cooperate and tweak
-> the patch to get rid of the SVAM and other nonstandard bits as much as
-> possible, and I'll help him where necessary too.
+BUG: Unable to handle kernel NULL pointer dereference at virtual address 0000000000000000
 
-To me any new firmware for PC-like platforms should implement UEFI.  For
-embedded platforms device tree support will be added later.
+Call trace:
+ dpu_core_irq_uninstall+0x50/0xb0
+ dpu_irq_uninstall+0x18/0x24
+ msm_drm_uninit+0xd8/0x16c
+ msm_drm_bind+0x580/0x5fc
+ try_to_bring_up_master+0x168/0x1c0
+ __component_add+0xb4/0x178
+ component_add+0x1c/0x28
+ dp_display_probe+0x38c/0x400
+ platform_probe+0xb0/0xd0
+ really_probe+0xcc/0x2c8
+ __driver_probe_device+0xbc/0xe8
+ driver_probe_device+0x48/0xf0
+ __device_attach_driver+0xa0/0xc8
+ bus_for_each_drv+0x8c/0xd8
+ __device_attach+0xc4/0x150
+ device_initial_probe+0x1c/0x28
 
-For those guys impossible or unwilling to upgrade the firmware, it may
-be possible to implement a compatibility layer and the booting procedure
-will be like:
+Changes in V2:
+- Update commit message and correct fixes tag.
 
-old firmware -> bootloongarch.efi -> customized u-boot -> bootloongarch64.e=
-fi (grub) -> efi stub (kernel)
-                --------- compatibility layer --------    ^^^^^^^^ normal U=
-EFI compatible stuff ^^^^^^^^^
+Changes in V3:
+- Misc changes in commit text.
 
-new firmware -> bootloongarch64.efi (grub) -> efi stub (kernel)
+Fixes: f25f656608e3 ("drm/msm/dpu: merge struct dpu_irq into struct dpu_hw_intr")
+Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+---
+ drivers/gpu/drm/msm/disp/dpu1/dpu_hw_interrupts.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-The old firmware route would be similar to the booting procedure of
-Asahi Linux.  I think this can be implemented because it's already
-implemented on M1 even while Apple is almost completely uncooperative.
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_interrupts.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_interrupts.c
+index c515b7c..ab28577 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_interrupts.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_interrupts.c
+@@ -599,6 +599,9 @@ void dpu_core_irq_uninstall(struct dpu_kms *dpu_kms)
+ {
+ 	int i;
+ 
++	if (!dpu_kms->hw_intr)
++		return;
++
+ 	pm_runtime_get_sync(&dpu_kms->pdev->dev);
+ 	for (i = 0; i < dpu_kms->hw_intr->total_irqs; i++)
+ 		if (!list_empty(&dpu_kms->hw_intr->irq_cb_tbl[i]))
+-- 
+2.7.4
 
-Just my 2 cents. I know almost nothing about booting.
---=20
-Xi Ruoyao <xry111@xry111.site>
-School of Aerospace Science and Technology, Xidian University
