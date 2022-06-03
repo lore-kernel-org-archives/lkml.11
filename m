@@ -2,215 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3675BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 05:11:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAEDAC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 05:14:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240220AbiFCFLd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 01:11:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53714 "EHLO
+        id S239763AbiFCFOA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 01:14:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239964AbiFCFLO (ORCPT
+        with ESMTP id S230288AbiFCFNt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 01:11:14 -0400
-X-Greylist: delayed 56223 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 02 Jun 2022 22:11:12 PDT
-Received: from zg8tmja5ljk3lje4ms43mwaa.icoremail.net (zg8tmja5ljk3lje4ms43mwaa.icoremail.net [209.97.181.73])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 5C540393C0;
-        Thu,  2 Jun 2022 22:11:12 -0700 (PDT)
-Received: from ubuntu.localdomain (unknown [106.117.80.109])
-        by mail-app4 (Coremail) with SMTP id cS_KCgCnieKRl5li3pgyAQ--.52150S4;
-        Fri, 03 Jun 2022 13:09:58 +0800 (CST)
-From:   Duoming Zhou <duoming@zju.edu.cn>
-To:     linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     amitkarwar@gmail.com, ganapathi017@gmail.com,
-        sharvari.harisangam@nxp.com, huxinming820@gmail.com,
-        kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        johannes@sipsolutions.net, gregkh@linuxfoundation.org,
-        rafael@kernel.org, Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH v5 2/2] mwifiex: fix sleep in atomic context bugs caused by dev_coredumpv
-Date:   Fri,  3 Jun 2022 13:09:35 +0800
-Message-Id: <54f886c2fce5948a8743b9de65d36ec3e8adfaf1.1654229964.git.duoming@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <cover.1654229964.git.duoming@zju.edu.cn>
-References: <cover.1654229964.git.duoming@zju.edu.cn>
-In-Reply-To: <cover.1654229964.git.duoming@zju.edu.cn>
-References: <cover.1654229964.git.duoming@zju.edu.cn>
-X-CM-TRANSID: cS_KCgCnieKRl5li3pgyAQ--.52150S4
-X-Coremail-Antispam: 1UD129KBjvJXoW3Jw4UCryrJFy3JFyfCFyrCrg_yoWxAFyrpw
-        s8GF95Cr48Zr1qkr48JF4kXFy5K3W0ka42kr1kZw1xuF4fCryxXFWUKryIgFs8XFs2va4a
-        vr4kXrnaka4UtaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUPG14x267AKxVWrJVCq3wAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87I2jVAFwI0_Jryl82xGYIkIc2
-        x26xkF7I0E14v26ryj6s0DM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2z4x0
-        Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j6F4UJw
-        A2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oVCq3wAS
-        0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2
-        IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0
-        Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628vn2kIc2
-        xKxwCY02Avz4vE14v_GrWl42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1l
-        x2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14
-        v26r4a6rW5MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IY
-        x2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87
-        Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIF
-        yTuYvjfUYBMKDUUUU
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAggKAVZdtaBKlgAasZ
+        Fri, 3 Jun 2022 01:13:49 -0400
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2058.outbound.protection.outlook.com [40.107.93.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 514C41DA7A;
+        Thu,  2 Jun 2022 22:13:47 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=oU0IbFAt2Sc1wdrCHXX2lI+VeaLmFi6U0OCgqhgay21oKlS/B+OgsQbCYyR5IJ6a3sQemPo2dlSwcV5xmvjWmEP47ducKFaZ6+oWT2geZpyTtBx27/OCtxQW/L90lb8Y0YCS1K5Oepx2Jo6I7PG6FakhxKI40XurxWDmdZhtlklcE+3/4kL9ILQw4GW60r2Vi/gUjJ577PilvmkMVhsa1hj6vbbbjnYFSPlVFht5bCPlfj3PkJZKeqwBhynPwdbvaabI5U07d6nwh9MRIbWuvOzl7FqIz/WSQtSIZcPH01BDT0Q1Ly2xiPaDNDETkWP/mu5IPi9w9J68JPXwvsvZvQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=cCyd8ZIJLcKWk0TbtLoDscbb+h8cqeOxP+E/I07hkAw=;
+ b=YExddUgKyxg8qtazxnf1mP4OVqNrAcq+4T8XPhUbxgih0VOg79FKPlQm0PRlVZ+xhyfhhXMzxZKX5vyRT7Yd7HjjycYOCBtqbr/e1RqAZDTQwzYZOgBXwsMBUkgWLrXi714PyvwnM5qjEpJ61RZEAcEnazXHK0DwDfS4BIJT/rrcfGhGUQlXR3qclkPppigDjyDPVsEr2py/heRujxjCNbFHSSosXcncuInZ4q+9QuBDHanG5BN7+S+iLsOxCoUfgN+OnbJwyFna4uvydza0RDdX9GM0WWvz3yReRjh69vm78X/Kscw51yZrr+UUUBGPcSFdE/ApHggoY11FD6rjiA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=cCyd8ZIJLcKWk0TbtLoDscbb+h8cqeOxP+E/I07hkAw=;
+ b=yN+UlLyJCymYFunc8hWHJqmrZX2rtrr7PLgiygURjHG7XRJhFZUQ0OKm2IQ2MP6V/NwLrxD7tqy4ul9UYSaTBXXrbA9L57ObSevtcx9jJlHbf5iCvzfG+CPmXw37MfMz7pvXussMsd1ACVY2S6paCGmti9JJlbvyzH2v5Kt1o74=
+Received: from DM6PR05CA0041.namprd05.prod.outlook.com (2603:10b6:5:335::10)
+ by CY4PR12MB1528.namprd12.prod.outlook.com (2603:10b6:910:6::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.16; Fri, 3 Jun
+ 2022 05:13:45 +0000
+Received: from DM6NAM11FT012.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:335:cafe::1b) by DM6PR05CA0041.outlook.office365.com
+ (2603:10b6:5:335::10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.12 via Frontend
+ Transport; Fri, 3 Jun 2022 05:13:45 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ DM6NAM11FT012.mail.protection.outlook.com (10.13.173.109) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5314.12 via Frontend Transport; Fri, 3 Jun 2022 05:13:44 +0000
+Received: from BLR-5CG113396H.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Fri, 3 Jun
+ 2022 00:13:29 -0500
+From:   Ravi Bangoria <ravi.bangoria@amd.com>
+To:     <acme@kernel.org>, <namhyung@kernel.org>
+CC:     <ravi.bangoria@amd.com>, <kan.liang@linux.intel.com>,
+        <jolsa@kernel.org>, <irogers@google.com>, <peterz@infradead.org>,
+        <rrichter@amd.com>, <mingo@redhat.com>, <mark.rutland@arm.com>,
+        <tglx@linutronix.de>, <bp@alien8.de>, <james.clark@arm.com>,
+        <leo.yan@linaro.org>, <ak@linux.intel.com>, <eranian@google.com>,
+        <like.xu.linux@gmail.com>, <x86@kernel.org>,
+        <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <sandipan.das@amd.com>, <ananth.narayan@amd.com>,
+        <kim.phillips@amd.com>, <santosh.shukla@amd.com>
+Subject: Re: [PATCH v5 1/8] perf record ibs: Warn about sampling period skew
+Date:   Fri, 3 Jun 2022 10:42:23 +0530
+Message-ID: <20220603051223.4272-1-ravi.bangoria@amd.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <CAM9d7ch2dtTjhSt9i96yr4JLEWy7EgNArRvSURE4h5gLL6=7EQ@mail.gmail.com>
+References: <CAM9d7ch2dtTjhSt9i96yr4JLEWy7EgNArRvSURE4h5gLL6=7EQ@mail.gmail.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f6fb3bb1-fa67-4974-3a1d-08da451fd528
+X-MS-TrafficTypeDiagnostic: CY4PR12MB1528:EE_
+X-Microsoft-Antispam-PRVS: <CY4PR12MB1528C4675695520780A762ACE0A19@CY4PR12MB1528.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 7a+CzKqZnPNL4rxGGPMJFfMP9KkqDiQQDEjFs47sSfYbTMrOsoXEW0/90zhS5mOqchfBHUi4VGH/5nXGjIrq/r10u+QtS0oNK7QF8bIJ+KPxhC2nqmDliaQ2uVaCpLGB4TC4RmRALOrGvOKaNAV6pIrknXO4luzXjwHH8FJAC90QfH4/cjAHtkDIprnWOL1oKdqTEZNsZdnpCYO31fQhDUKAeKKdva4LEbkGTr+54/ZNM2MY5jGq1xunlo7c1h0cE0F9tfsSgfhTZe1NvAKW4zYWCmZTixJIO+v0LuEH4SAPmiznszkCiduQpncCGORVtl8wC/lgJUe550ROBn+KkeXZPZ7pbGPwx6kBzvlgP5KHSHGKHZ5wjku+gSFngvl3ZsEnvZZHjDBi8jnlEWdaZzE+Rah6PJPLP6sXDKVt5CFyYhqTxP5L0hq/OjWUKA7DmLDygDmCnK8scT4Sk1qsKjRwSG1M75F8VYrgSZFqeHKr00VIZlQoI7zn4dinh1IgokArK6sg4S6NH6daFifg3RboMdFwRF43S7hqCMCoCLpzu37NNLzAio8Chu4JUtdQjGhFXCv+0LI54FCG+hop7cgf6MrUfQ9NZjL+OfbQHL+M3sFd0CuSzFOCjHXitsaZYqljNIuoZh2lnSghflwL5uqjlzj+f9fbupDKeeZPnWaQd4BMFViY8ihX+pmbYncz/3WTUrQTwJtPwCpKlKDNGg==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(16526019)(2906002)(44832011)(7416002)(36860700001)(1076003)(26005)(186003)(2616005)(508600001)(36756003)(7696005)(47076005)(336012)(426003)(6666004)(53546011)(83380400001)(316002)(54906003)(8676002)(82310400005)(4326008)(8936002)(86362001)(110136005)(5660300002)(70586007)(40460700003)(81166007)(356005)(70206006)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Jun 2022 05:13:44.7739
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: f6fb3bb1-fa67-4974-3a1d-08da451fd528
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT012.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1528
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are sleep in atomic context bugs when uploading device dump
-data in mwifiex. The root cause is that dev_coredumpv could not
-be used in atomic contexts, because it calls dev_set_name which
-include operations that may sleep. The call tree shows execution
-paths that could lead to bugs:
+>> +       if (ibs_fetch_pmu && ibs_fetch_pmu->type == evsel_pmu->type) {
+>> +               if (attr->config & (1ULL << 59)) {
+> 
+> It'd be nice if we used a macro or something instead of the
+> magic number.
+> 
+>> +                       ibs_l3miss_warn();
+>> +                       warned_once = 1;
+>> +               }
+>> +       } else if (ibs_op_pmu && ibs_op_pmu->type == evsel_pmu->type) {
+>> +               if (attr->config & (1ULL << 16)) {
+> 
+> Ditto.
 
-   (Interrupt context)
-fw_dump_timer_fn
-  mwifiex_upload_device_dump
-    dev_coredumpv(..., GFP_KERNEL)
-      dev_coredumpm()
-        kzalloc(sizeof(*devcd), gfp); //may sleep
-        dev_set_name
-          kobject_set_name_vargs
-            kvasprintf_const(GFP_KERNEL, ...); //may sleep
-            kstrdup(s, GFP_KERNEL); //may sleep
+Thanks for the review, Namhyung.
 
-The corresponding fail log is shown below:
+Arnaldo, Would you be able to squash below trivial patch into original
+patch? Please let me know if you want me to respin the series instead.
 
-[  135.275938] usb 1-1: == mwifiex dump information to /sys/class/devcoredump start
-[  135.281029] BUG: sleeping function called from invalid context at include/linux/sched/mm.h:265
-...
-[  135.293613] Call Trace:
-[  135.293613]  <IRQ>
-[  135.293613]  dump_stack_lvl+0x57/0x7d
-[  135.293613]  __might_resched.cold+0x138/0x173
-[  135.293613]  ? dev_coredumpm+0xca/0x2e0
-[  135.293613]  kmem_cache_alloc_trace+0x189/0x1f0
-[  135.293613]  ? devcd_match_failing+0x30/0x30
-[  135.293613]  dev_coredumpm+0xca/0x2e0
-[  135.293613]  ? devcd_freev+0x10/0x10
-[  135.293613]  dev_coredumpv+0x1c/0x20
-[  135.293613]  ? devcd_match_failing+0x30/0x30
-[  135.293613]  mwifiex_upload_device_dump+0x65/0xb0
-[  135.293613]  ? mwifiex_dnld_fw+0x1b0/0x1b0
-[  135.293613]  call_timer_fn+0x122/0x3d0
-[  135.293613]  ? msleep_interruptible+0xb0/0xb0
-[  135.293613]  ? lock_downgrade+0x3c0/0x3c0
-[  135.293613]  ? __next_timer_interrupt+0x13c/0x160
-[  135.293613]  ? lockdep_hardirqs_on_prepare+0xe/0x220
-[  135.293613]  ? mwifiex_dnld_fw+0x1b0/0x1b0
-[  135.293613]  __run_timers.part.0+0x3f8/0x540
-[  135.293613]  ? call_timer_fn+0x3d0/0x3d0
-[  135.293613]  ? arch_restore_msi_irqs+0x10/0x10
-[  135.293613]  ? lapic_next_event+0x31/0x40
-[  135.293613]  run_timer_softirq+0x4f/0xb0
-[  135.293613]  __do_softirq+0x1c2/0x651
-...
-[  135.293613] RIP: 0010:default_idle+0xb/0x10
-[  135.293613] RSP: 0018:ffff888006317e68 EFLAGS: 00000246
-[  135.293613] RAX: ffffffff82ad8d10 RBX: ffff888006301cc0 RCX: ffffffff82ac90e1
-[  135.293613] RDX: ffffed100d9ff1b4 RSI: ffffffff831ad140 RDI: ffffffff82ad8f20
-[  135.293613] RBP: 0000000000000003 R08: 0000000000000000 R09: ffff88806cff8d9b
-[  135.293613] R10: ffffed100d9ff1b3 R11: 0000000000000001 R12: ffffffff84593410
-[  135.293613] R13: 0000000000000000 R14: 0000000000000000 R15: 1ffff11000c62fd2
-...
-[  135.389205] usb 1-1: == mwifiex dump information to /sys/class/devcoredump end
+---><---
 
-This patch uses delayed work to replace timer and moves the operations
-that may sleep into a delayed work in order to mitigate bugs, it was
-tested on Marvell 88W8801 chip whose port is usb and the firmware is
-usb8801_uapsta.bin. The following is the result after using delayed
-work to replace timer.
+From 352228ee010b0782410e233233377d9484ea51bd Mon Sep 17 00:00:00 2001
+From: Ravi Bangoria <ravi.bangoria@amd.com>
+Date: Fri, 3 Jun 2022 10:19:01 +0530
+Subject: [PATCH] perf record ibs: Define macros for IBS L3MissOnly bits
 
-[  134.936453] usb 1-1: == mwifiex dump information to /sys/class/devcoredump start
-[  135.043344] usb 1-1: == mwifiex dump information to /sys/class/devcoredump end
+Instead of magic numbers use macros for IBS L3MissOnly bits.
 
-As we can see, there is no bug now.
-
-Fixes: f5ecd02a8b20 ("mwifiex: device dump support for usb interface")
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Signed-off-by: Ravi Bangoria <ravi.bangoria@amd.com>
 ---
-Changes in v5:
-  - Use delayed work to replace timer.
+ tools/perf/arch/x86/util/evsel.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
- drivers/net/wireless/marvell/mwifiex/init.c      | 10 ++++++----
- drivers/net/wireless/marvell/mwifiex/main.h      |  2 +-
- drivers/net/wireless/marvell/mwifiex/sta_event.c |  6 +++---
- 3 files changed, 10 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/net/wireless/marvell/mwifiex/init.c b/drivers/net/wireless/marvell/mwifiex/init.c
-index 88c72d1827a..3713f3e323f 100644
---- a/drivers/net/wireless/marvell/mwifiex/init.c
-+++ b/drivers/net/wireless/marvell/mwifiex/init.c
-@@ -63,9 +63,11 @@ static void wakeup_timer_fn(struct timer_list *t)
- 		adapter->if_ops.card_reset(adapter);
- }
+diff --git a/tools/perf/arch/x86/util/evsel.c b/tools/perf/arch/x86/util/evsel.c
+index fceb904902ab..53763e583804 100644
+--- a/tools/perf/arch/x86/util/evsel.c
++++ b/tools/perf/arch/x86/util/evsel.c
+@@ -7,6 +7,9 @@
+ #include "linux/string.h"
+ #include "util/debug.h"
  
--static void fw_dump_timer_fn(struct timer_list *t)
-+static void fw_dump_work(struct work_struct *work)
++#define IBS_FETCH_L3MISSONLY	(1ULL << 59)
++#define IBS_OP_L3MISSONLY	(1ULL << 16)
++
+ void arch_evsel__set_sample_weight(struct evsel *evsel)
  {
--	struct mwifiex_adapter *adapter = from_timer(adapter, t, devdump_timer);
-+	struct mwifiex_adapter *adapter = container_of(work,
-+					struct mwifiex_adapter,
-+					devdump_work.work);
+ 	evsel__set_sample_bit(evsel, WEIGHT_STRUCT);
+@@ -98,12 +101,12 @@ void arch__post_evsel_config(struct evsel *evsel, struct perf_event_attr *attr)
+ 	ibs_op_pmu = perf_pmu__find("ibs_op");
  
- 	mwifiex_upload_device_dump(adapter);
- }
-@@ -321,7 +323,7 @@ static void mwifiex_init_adapter(struct mwifiex_adapter *adapter)
- 	adapter->active_scan_triggered = false;
- 	timer_setup(&adapter->wakeup_timer, wakeup_timer_fn, 0);
- 	adapter->devdump_len = 0;
--	timer_setup(&adapter->devdump_timer, fw_dump_timer_fn, 0);
-+	INIT_DELAYED_WORK(&adapter->devdump_work, fw_dump_work);
- }
- 
- /*
-@@ -400,7 +402,7 @@ static void
- mwifiex_adapter_cleanup(struct mwifiex_adapter *adapter)
- {
- 	del_timer(&adapter->wakeup_timer);
--	del_timer_sync(&adapter->devdump_timer);
-+	cancel_delayed_work_sync(&adapter->devdump_work);
- 	mwifiex_cancel_all_pending_cmd(adapter);
- 	wake_up_interruptible(&adapter->cmd_wait_q.wait);
- 	wake_up_interruptible(&adapter->hs_activate_wait_q);
-diff --git a/drivers/net/wireless/marvell/mwifiex/main.h b/drivers/net/wireless/marvell/mwifiex/main.h
-index 332dd1c8db3..6530c6ee308 100644
---- a/drivers/net/wireless/marvell/mwifiex/main.h
-+++ b/drivers/net/wireless/marvell/mwifiex/main.h
-@@ -1055,7 +1055,7 @@ struct mwifiex_adapter {
- 	/* Device dump data/length */
- 	void *devdump_data;
- 	int devdump_len;
--	struct timer_list devdump_timer;
-+	struct delayed_work devdump_work;
- 
- 	bool ignore_btcoex_events;
- };
-diff --git a/drivers/net/wireless/marvell/mwifiex/sta_event.c b/drivers/net/wireless/marvell/mwifiex/sta_event.c
-index 7d42c5d2dbf..4d93386494c 100644
---- a/drivers/net/wireless/marvell/mwifiex/sta_event.c
-+++ b/drivers/net/wireless/marvell/mwifiex/sta_event.c
-@@ -623,8 +623,8 @@ mwifiex_fw_dump_info_event(struct mwifiex_private *priv,
- 		 * transmission event get lost, in this cornel case,
- 		 * user would still get partial of the dump.
- 		 */
--		mod_timer(&adapter->devdump_timer,
--			  jiffies + msecs_to_jiffies(MWIFIEX_TIMER_10S));
-+		schedule_delayed_work(&adapter->devdump_work,
-+				      msecs_to_jiffies(MWIFIEX_TIMER_10S));
- 	}
- 
- 	/* Overflow check */
-@@ -643,7 +643,7 @@ mwifiex_fw_dump_info_event(struct mwifiex_private *priv,
- 	return;
- 
- upload_dump:
--	del_timer_sync(&adapter->devdump_timer);
-+	cancel_delayed_work_sync(&adapter->devdump_work);
- 	mwifiex_upload_device_dump(adapter);
- }
- 
+ 	if (ibs_fetch_pmu && ibs_fetch_pmu->type == evsel_pmu->type) {
+-		if (attr->config & (1ULL << 59)) {
++		if (attr->config & IBS_FETCH_L3MISSONLY) {
+ 			ibs_l3miss_warn();
+ 			warned_once = 1;
+ 		}
+ 	} else if (ibs_op_pmu && ibs_op_pmu->type == evsel_pmu->type) {
+-		if (attr->config & (1ULL << 16)) {
++		if (attr->config & IBS_OP_L3MISSONLY) {
+ 			ibs_l3miss_warn();
+ 			warned_once = 1;
+ 		}
 -- 
-2.17.1
+2.31.1
 
