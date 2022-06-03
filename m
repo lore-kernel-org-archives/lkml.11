@@ -2,33 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4DEFC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:02:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 620F4CCA47C
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:02:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245070AbiFCSCQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:02:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58234 "EHLO
+        id S1346260AbiFCSC3 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 14:02:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347246AbiFCRwK (ORCPT
+        with ESMTP id S1347244AbiFCRwK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 3 Jun 2022 13:52:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0326365C4;
-        Fri,  3 Jun 2022 10:51:14 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE14C6447;
+        Fri,  3 Jun 2022 10:51:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9444560F38;
-        Fri,  3 Jun 2022 17:51:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B8DEC385A9;
-        Fri,  3 Jun 2022 17:51:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 60D72B82419;
+        Fri,  3 Jun 2022 17:51:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95C12C385A9;
+        Fri,  3 Jun 2022 17:51:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278673;
-        bh=1dDCelCnd3TDU/oKMdf68Nki42Ch/uDP9y6NwwQdRnE=;
+        s=korg; t=1654278670;
+        bh=Cd2X9X9D1pUtLT7Y22U/EmbcPT8vW5ZoQ885p5Z6CdU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hbDVJ2y3Vv8j+hX78abjryF9jRFC3347OqV++vVj9yJ6X+XVyDfev2Ur0y+H2ziTq
-         F047OeifHAwDYIGKBdZBad1sx3I2YmU37rDZAoOKTmtIQnBUU1PBgzRdmANUo1JsyJ
-         NUhkE2nmFH0p3Fbe8P9npCdXzRBeByOKnoUt51lM=
+        b=IL56xaMX4vBATDXb5YNy7SfNGubanyD8zImDwk30NWqzuBe0gwcsokPQM5QRFqT3U
+         gB1dS4/IsVPMyjvydHozwgLQXdTKvnPk87dPMauS9J7kaEYEKBEw84F1lVMHbS/m4h
+         Q6bMJ6wS3ruoMlKspwCzswCRx+T3WZ1UBcUXqjpU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -38,9 +39,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Daniele Alessandrelli <daniele.alessandrelli@intel.com>,
         Sakari Ailus <sakari.ailus@linux.intel.com>,
         Mauro Carvalho Chehab <mchehab@kernel.org>
-Subject: [PATCH 5.15 56/66] media: i2c: imx412: Fix power_off ordering
-Date:   Fri,  3 Jun 2022 19:43:36 +0200
-Message-Id: <20220603173822.277793913@linuxfoundation.org>
+Subject: [PATCH 5.15 55/66] media: i2c: imx412: Fix reset GPIO polarity
+Date:   Fri,  3 Jun 2022 19:43:35 +0200
+Message-Id: <20220603173822.250099138@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.663747061@linuxfoundation.org>
 References: <20220603173820.663747061@linuxfoundation.org>
@@ -54,18 +55,24 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
 
-commit 9a199694c6a1519522ec73a4571f68abe9f13d5d upstream.
+commit bb25f071fc92d3d227178a45853347c7b3b45a6b upstream.
 
-The enable path does
-- gpio
-- clock
+The imx412/imx577 sensor has a reset line that is active low not active
+high. Currently the logic for this is inverted.
 
-The disable path does
-- gpio
-- clock
+The right way to define the reset line is to declare it active low in the
+DTS and invert the logic currently contained in the driver.
 
-Fix the order on the power-off path so that power-off and power-on have the
-same ordering for clock and gpio.
+The DTS should represent the hardware does i.e. reset is active low.
+So:
++               reset-gpios = <&tlmm 78 GPIO_ACTIVE_LOW>;
+not:
+-               reset-gpios = <&tlmm 78 GPIO_ACTIVE_HIGH>;
+
+I was a bit reticent about changing this logic since I thought it might
+negatively impact @intel.com users. Googling a bit though I believe this
+sensor is used on "Keem Bay" which is clearly a DTS based system and is not
+upstream yet.
 
 Fixes: 9214e86c0cc1 ("media: i2c: Add imx412 camera sensor driver")
 Cc: stable@vger.kernel.org
@@ -76,23 +83,37 @@ Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/i2c/imx412.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/media/i2c/imx412.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 --- a/drivers/media/i2c/imx412.c
 +++ b/drivers/media/i2c/imx412.c
-@@ -1040,10 +1040,10 @@ static int imx412_power_off(struct devic
+@@ -1011,7 +1011,7 @@ static int imx412_power_on(struct device
+ 	struct imx412 *imx412 = to_imx412(sd);
+ 	int ret;
+ 
+-	gpiod_set_value_cansleep(imx412->reset_gpio, 1);
++	gpiod_set_value_cansleep(imx412->reset_gpio, 0);
+ 
+ 	ret = clk_prepare_enable(imx412->inclk);
+ 	if (ret) {
+@@ -1024,7 +1024,7 @@ static int imx412_power_on(struct device
+ 	return 0;
+ 
+ error_reset:
+-	gpiod_set_value_cansleep(imx412->reset_gpio, 0);
++	gpiod_set_value_cansleep(imx412->reset_gpio, 1);
+ 
+ 	return ret;
+ }
+@@ -1040,7 +1040,7 @@ static int imx412_power_off(struct devic
  	struct v4l2_subdev *sd = dev_get_drvdata(dev);
  	struct imx412 *imx412 = to_imx412(sd);
  
--	gpiod_set_value_cansleep(imx412->reset_gpio, 1);
--
- 	clk_disable_unprepare(imx412->inclk);
- 
+-	gpiod_set_value_cansleep(imx412->reset_gpio, 0);
 +	gpiod_set_value_cansleep(imx412->reset_gpio, 1);
-+
- 	return 0;
- }
+ 
+ 	clk_disable_unprepare(imx412->inclk);
  
 
 
