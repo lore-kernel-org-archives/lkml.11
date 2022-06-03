@@ -2,78 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C8E8C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 16:51:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9F84C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 16:51:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344111AbiFCQvE convert rfc822-to-8bit (ORCPT
+        id S1344115AbiFCQvH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 12:51:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53804 "EHLO
+        Fri, 3 Jun 2022 12:51:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344096AbiFCQvA (ORCPT
+        with ESMTP id S1344110AbiFCQvE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 12:51:00 -0400
-Received: from relay5.hostedemail.com (smtprelay0017.hostedemail.com [216.40.44.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CACD517FF
-        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 09:50:59 -0700 (PDT)
-Received: from omf03.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay08.hostedemail.com (Postfix) with ESMTP id 1A48621869;
-        Fri,  3 Jun 2022 16:50:58 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf03.hostedemail.com (Postfix) with ESMTPA id 6CCA66000F;
-        Fri,  3 Jun 2022 16:50:56 +0000 (UTC)
-Message-ID: <b59b922f96603468cbbe69b6359ec417083c526b.camel@perches.com>
-Subject: Re: [PATCH v1 1/2] wireless: ray_cs: Utilize strnlen() in
- parse_addr()
-From:   Joe Perches <joe@perches.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Date:   Fri, 03 Jun 2022 09:50:55 -0700
-In-Reply-To: <20220603164414.48436-1-andriy.shevchenko@linux.intel.com>
-References: <20220603164414.48436-1-andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.44.1-0ubuntu1 
+        Fri, 3 Jun 2022 12:51:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 255EB51E6F;
+        Fri,  3 Jun 2022 09:51:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A4BE061A0D;
+        Fri,  3 Jun 2022 16:51:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74E67C385A9;
+        Fri,  3 Jun 2022 16:51:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654275062;
+        bh=FISQJyDGqAIiZncrB7QK52qKdvl4ZQMyTlmFRLj8KtI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=is+T2s2vchI4uYG0K1GLeroJFnuAG3HvcIVuKuw/j+7YnEp5T50ldKdIMC0S01o/N
+         qPol1iNaq+5DbtzRJxnI4k0WSg7zKXaM7Mla0+0uvLHdvY0hEd4AdozsrBdo53deXX
+         1erDhnhiN39uuqtHuwU1H4Xl5Bcy2T7UzUZD0Y1/I0iT+X9Lmq8N/Ey6QVDGfzEyLM
+         9Ba6ZqK2vd6o/iShgxfV1Ds3HVHnE/airgScd7vIbqX/QL7lqj5AJ8j/UcVwwkaxfp
+         TXiqCQ8OTW15od+PKTUlzvEbGnOnizzT/5DZw6zBYrRRDuz8/bsd1qRIjEEiQ7YE6n
+         2ooPBCcqhjwgQ==
+Date:   Fri, 3 Jun 2022 18:00:02 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH v1 1/1] iio: adc: sd_adc_modulator: Drop dependency on
+ OF
+Message-ID: <20220603180002.5135a065@jic23-huawei>
+In-Reply-To: <20220530181706.3045-1-andriy.shevchenko@linux.intel.com>
+References: <20220530181706.3045-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-Stat-Signature: okcnk5cmofrjybgoo7ydqd64kod4ee87
-X-Rspamd-Server: rspamout06
-X-Rspamd-Queue-Id: 6CCA66000F
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX1/4xxsV2H8BDzNRFB1JaWin3vAilsfloO8=
-X-HE-Tag: 1654275056-704682
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-06-03 at 19:44 +0300, Andy Shevchenko wrote:
-> Instead of doing simple operations and using an additional variable on stack,
-> utilize strnlen() and reuse len variable.
-[]
-> diff --git a/drivers/net/wireless/ray_cs.c b/drivers/net/wireless/ray_cs.c
-[]
-> +	while (len > 0) {
-> +		if ((k = hex_to_bin(in_str[len--])) != -1)
->  			out[i] = k;
->  		else
->  			return 0;
+On Mon, 30 May 2022 21:17:06 +0300
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-could be reversed and unindented
-
+> Nothing in this driver depends on OF so drop the dependency
+> to remove the false impression such a dependency exists.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Applied
+> ---
+>  drivers/iio/adc/Kconfig | 1 -
+>  1 file changed, 1 deletion(-)
+> 
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index d0122b363ee8..3b6a80786b51 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -940,7 +940,6 @@ config SPEAR_ADC
 >  
-> -		if (j == 0)
-> +		if (len == 0)
->  			break;
-> -		if ((k = hex_to_bin(in_str[j--])) != -1)
-> +		if ((k = hex_to_bin(in_str[len--])) != -1)
->  			out[i] += k << 4;
->  		else
->  			return 0;
-
-and here
-
+>  config SD_ADC_MODULATOR
+>  	tristate "Generic sigma delta modulator"
+> -	depends on OF
+>  	select IIO_BUFFER
+>  	select IIO_TRIGGERED_BUFFER
+>  	help
 
