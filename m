@@ -2,211 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2075C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 15:11:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F869C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 15:12:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245366AbiFCPLg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 11:11:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57002 "EHLO
+        id S245376AbiFCPL5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 11:11:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245354AbiFCPLe (ORCPT
+        with ESMTP id S245362AbiFCPLw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 11:11:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FD65506C4;
-        Fri,  3 Jun 2022 08:11:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 57071B82359;
-        Fri,  3 Jun 2022 15:11:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9814EC385A9;
-        Fri,  3 Jun 2022 15:11:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654269090;
-        bh=prtQe0mqDshbUfvhhY5Wz4YhnC7CpDqr1UqcZBTJU0M=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=E2FwOiwTQSBSNmmrgyGTFQNEHYZIIc6srQpUMt+TgN99yinQuOC9sJfiHvxHj1NrN
-         9oOqavMqzrcNmEJkRKFrICftneUXpKdXaGxRcR5jx1t2qKMc2menxBOlT/1U5r7NsG
-         xOr3fi4k+Yb3ssAVlMo3Vo3zOGwicrCHHy8o/5mG4o3PSZfoRTTMEUXi9HRF1v9/mj
-         580/FZfvhnGYFzTELGemltU0I1hL5tfNjirkOf1yCVI5zVS+tX5oFWHry1H+QP1aCN
-         9AbUZDYOMuZFrtICz5UcLaNHeMsSMSauMkcKJTE/lls46JYe6E7IfpECXFL+r43QRE
-         JMVycKsRoc1IA==
-Date:   Fri, 3 Jun 2022 16:20:29 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Yongzhi Liu <lyz_cs@pku.edu.cn>
-Cc:     agross@kernel.org, bjorn.andersson@linaro.org, lars@metafoo.de,
-        svarbanov@mm-sol.com, iivanov@mm-sol.com,
-        jonathan.cameron@huawei.com, linux-arm-msm@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        fuyq@stu.pku.edu.cn
-Subject: Re: [PATCH v4] iio: vadc: Fix potential dereference of NULL pointer
-Message-ID: <20220603162029.6ed3c3b3@jic23-huawei>
-In-Reply-To: <20220603160222.1ad6ef49@jic23-huawei>
-References: <20220522120109.7ead18a7@jic23-huawei>
-        <1653238427-73587-1-git-send-email-lyz_cs@pku.edu.cn>
-        <20220603160222.1ad6ef49@jic23-huawei>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Fri, 3 Jun 2022 11:11:52 -0400
+Received: from mail-vs1-xe43.google.com (mail-vs1-xe43.google.com [IPv6:2607:f8b0:4864:20::e43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E211220
+        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 08:11:49 -0700 (PDT)
+Received: by mail-vs1-xe43.google.com with SMTP id f13so7632809vsp.1
+        for <linux-kernel@vger.kernel.org>; Fri, 03 Jun 2022 08:11:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GRR3/ZPTVsG03kPxvHaCWj5GOU1Fozuljr/KxjIdd24=;
+        b=RvB2Z7RxhhPnXx6cxqPf+5ToILBl1dmnnSMkH527a7AvoICiiK3yGW8rJlUAXElMtF
+         odcWYwMywrpaROkPhfs+3fa39YFpPOISBqdq7dp8syv+gDfGk60i4/WIVVIcULQGrEUh
+         qJ5YEbPabkqRpq3WMTljLMnruA9/2frjVJzQc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GRR3/ZPTVsG03kPxvHaCWj5GOU1Fozuljr/KxjIdd24=;
+        b=r53otJMNFhOMH22k5XGxrTjGArqtRHuLP1TEEBH/pP903HEHr6Gvai3/gVQBeRKj0T
+         KXkGOfk7lMMdi7n2acKzzAITn/P8gCvCtmmDfLiS1LgAZBTxTyG6a+O6GN+5Z/lQZ6ru
+         mrZ+RoxydEMxDJyOssZdMG1oJ1LUKE4SuIlE2HbJqQmwWKTvrcVWwTCl86Kj8iuuKqbu
+         zPlKoCJzF5qWv55eurYBazf9U3AGbA4i5UGxicsDDULpZ0TLgU2ivefE7JbxIfd0NGZU
+         Kes807bf3Hp+O5GP7VzVrhGiqM/GPL/9cF2NI8nWdZsrQi72YaIF10IJ+nzFtE1Y0frY
+         E0EQ==
+X-Gm-Message-State: AOAM531oVU/dmEKb3LbjlO49jHH3hLcYIZxEbGwf5haO0f0N445No+56
+        FO6bo7qoE5jxPHBVicjZmV3yBSgeR4tGEA==
+X-Google-Smtp-Source: ABdhPJwt8VWb+D8sgEFgUXrG9sHlEmsJ7GihAbDOPl0chbV5SEBFKch6zbVzgGT4X02nKVJLRtj+eQ==
+X-Received: by 2002:a67:b143:0:b0:337:8ce4:c2c3 with SMTP id z3-20020a67b143000000b003378ce4c2c3mr4391827vsl.53.1654269108388;
+        Fri, 03 Jun 2022 08:11:48 -0700 (PDT)
+Received: from mail-ua1-f49.google.com (mail-ua1-f49.google.com. [209.85.222.49])
+        by smtp.gmail.com with ESMTPSA id o72-20020a1f414b000000b0035c4f114a52sm981407vka.7.2022.06.03.08.11.47
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 03 Jun 2022 08:11:48 -0700 (PDT)
+Received: by mail-ua1-f49.google.com with SMTP id q1so2616132uao.1
+        for <linux-kernel@vger.kernel.org>; Fri, 03 Jun 2022 08:11:47 -0700 (PDT)
+X-Received: by 2002:ab0:3311:0:b0:369:1d82:99a5 with SMTP id
+ r17-20020ab03311000000b003691d8299a5mr17684734uao.33.1654269106779; Fri, 03
+ Jun 2022 08:11:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20220228202532.869740-1-briannorris@chromium.org>
+ <CA+ASDXNSThy7usMKkN22VBq2iyej7sCJ8CAmgnNvxDgZiMbukA@mail.gmail.com> <CA+ASDXMW14GqJUAogQ0=dVdamhTTGDzcMRv-8Cx-TaXShHxj+A@mail.gmail.com>
+In-Reply-To: <CA+ASDXMW14GqJUAogQ0=dVdamhTTGDzcMRv-8Cx-TaXShHxj+A@mail.gmail.com>
+From:   Sean Paul <seanpaul@chromium.org>
+Date:   Fri, 3 Jun 2022 11:11:09 -0400
+X-Gmail-Original-Message-ID: <CAOw6vb+myB0gB1kPvwuL+T1Ka10gDN5rGS2hW+UG+-+K2NGz_w@mail.gmail.com>
+Message-ID: <CAOw6vb+myB0gB1kPvwuL+T1Ka10gDN5rGS2hW+UG+-+K2NGz_w@mail.gmail.com>
+Subject: Re: [PATCH v2 0/2] drm/bridge: analogix_dp: Self-refresh state
+ machine fixes
+To:     Brian Norris <briannorris@chromium.org>
+Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Sean Paul <sean@poorly.run>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Linux Kernel <linux-kernel@vger.kernel.org>,
+        Liu Ying <victor.liu@oss.nxp.com>,
+        Doug Anderson <dianders@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 3 Jun 2022 16:02:22 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+On Mon, May 23, 2022 at 5:51 PM Brian Norris <briannorris@chromium.org> wrote:
+>
+> On Thu, Mar 10, 2022 at 3:50 PM Brian Norris <briannorris@chromium.org> wrote:
+> > On Mon, Feb 28, 2022 at 12:25 PM Brian Norris <briannorris@chromium.org> wrote:
+>
+> > Ping for review? Sean, perhaps? (You already reviewed this on the
+> > Chromium tracker.)
+>
+> Ping
 
-> On Sun, 22 May 2022 09:53:47 -0700
-> Yongzhi Liu <lyz_cs@pku.edu.cn> wrote:
-> 
-> > The return value of vadc_get_channel() needs to be checked to
-> > avoid use of NULL pointer. vadc_do_conversion() already provides
-> > error prints in at least some of it's error paths. Thus it is
-> > reasonable to add the null pointer check on prop and drop the
-> > extra reporting in vadc_measure_ref_points().
-> > 
-> > Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>  
-> 
-> Hi
-> 
-> Biggest remaining thing is squashing
-> ret = -ENODEV;
-> return ret;
-> 
-> into the shorter
-> return -ENODEV;
-> 
-One additional process thing I didn't mention before now as this is a
-single patch.
+Apologies for the delay. Please in future ping on irc/chat if you're
+waiting for review from me, my inbox is often neglected.
 
-Generally for IIO at least, don't send new versions in reply to old threads.
-The threads can get very deep and confusing, so I'd much rather a new thread
-for each version.
+The set still looks good to me,
 
-Thanks,
+Reviewed-by: Sean Paul <seanpaul@chromium.org>
 
-Jonathan
 
-> 
-> > ---
-> >  drivers/iio/adc/qcom-spmi-vadc.c | 38 ++++++++++++++++++++++++++++----------
-> >  1 file changed, 28 insertions(+), 10 deletions(-)
-> > 
-> > diff --git a/drivers/iio/adc/qcom-spmi-vadc.c b/drivers/iio/adc/qcom-spmi-vadc.c
-> > index 34202ba..43a52b1 100644
-> > --- a/drivers/iio/adc/qcom-spmi-vadc.c
-> > +++ b/drivers/iio/adc/qcom-spmi-vadc.c
-> > @@ -358,22 +358,33 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
-> >  	vadc->graph[VADC_CALIB_ABSOLUTE].dx = VADC_ABSOLUTE_RANGE_UV;
-> >  
-> >  	prop = vadc_get_channel(vadc, VADC_REF_1250MV);
-> > +	if (!prop) {
-> > +		dev_err(vadc->dev, "Please define 1.25V channel\n");  
-> Probably makes more sense to have the error as 
-> "No 1.25V channel found\n");
-> 
-> It's not obvious to anyone getting this error what 'define' might mean
-> without them looking at the code, so I'd rather we just said what had
-> gone wrong rather offering incomplete advice.
-> 
-> > +		ret = -ENODEV;  
-> 
-> Don't bother assigning a variable just to return it in the next line.
-> 
-> return -ENODEV;
-> 
-> > +		return ret;
-> > +	}
-> >  	ret = vadc_do_conversion(vadc, prop, &read_1);
-> >  	if (ret)
-> > -		goto err;
-> > +		return ret;
-> >  
-> >  	/* Try with buffered 625mV channel first */
-> >  	prop = vadc_get_channel(vadc, VADC_SPARE1);
-> > -	if (!prop)
-> > +	if (!prop) {
-> >  		prop = vadc_get_channel(vadc, VADC_REF_625MV);
-> > +		if (!prop) {
-> > +			dev_err(vadc->dev, "Please define 0.625V channel\n");  
-> "No 0.625V channel found\n"
-> > +			ret = -ENODEV;  
-> 
-> return -ENODEV;
-> 
-> > +			return ret;
-> > +		}
-> > +	}
-> >  
-> >  	ret = vadc_do_conversion(vadc, prop, &read_2);
-> >  	if (ret)
-> > -		goto err;
-> > +		return ret;
-> >  
-> >  	if (read_1 == read_2) {
-> >  		ret = -EINVAL;
-> > -		goto err;
-> > +		return ret;
-> >  	}
-> >  
-> >  	vadc->graph[VADC_CALIB_ABSOLUTE].dy = read_1 - read_2;
-> > @@ -381,25 +392,32 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
-> >  
-> >  	/* Ratiometric calibration */
-> >  	prop = vadc_get_channel(vadc, VADC_VDD_VADC);
-> > +	if (!prop) {
-> > +		dev_err(vadc->dev, "Please define VDD channel\n");  
-> 
-> "No VDD channel found\n"
-> 
-> > +		ret = -ENODEV;
-> > +		return ret;
-> > +	}
-> >  	ret = vadc_do_conversion(vadc, prop, &read_1);
-> >  	if (ret)
-> > -		goto err;
-> > +		return ret;
-> >  
-> >  	prop = vadc_get_channel(vadc, VADC_GND_REF);
-> > +	if (!prop) {
-> > +		dev_err(vadc->dev, "Please define GND channel\n");  
-> 
-> "No GND channel found\n"
-> 
-> > +		ret = -ENODEV;
-> > +		return ret;  
-> 
-> return -ENODEV;
-> 
-> > +	}
-> >  	ret = vadc_do_conversion(vadc, prop, &read_2);
-> >  	if (ret)
-> > -		goto err;
-> > +		return ret;
-> >  
-> >  	if (read_1 == read_2) {
-> >  		ret = -EINVAL;
-> > -		goto err;
-> > +		return ret;  
-> 
-> return -ENODEV;
-> 
-> >  	}
-> >  
-> >  	vadc->graph[VADC_CALIB_RATIOMETRIC].dy = read_1 - read_2;
-> >  	vadc->graph[VADC_CALIB_RATIOMETRIC].gnd = read_2;
-> > -err:
-> > -	if (ret)
-> > -		dev_err(vadc->dev, "measure reference points failed\n");
-> >  
-> >  	return ret;  
-> 
-> Can't get here with anything other than ret == 0 so
-> 	return 0;
-> to make that explicit.
-> 
-> 
-> >  }  
-> 
-
+Sean
