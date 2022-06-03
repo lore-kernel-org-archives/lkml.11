@@ -2,129 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0F0DC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 09:47:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D765C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 09:48:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243192AbiFCJrg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 05:47:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42078 "EHLO
+        id S243205AbiFCJsO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 05:48:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243178AbiFCJrW (ORCPT
+        with ESMTP id S243182AbiFCJsM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 05:47:22 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8A0913D55
-        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 02:47:15 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id n10so14901832ejk.5
-        for <linux-kernel@vger.kernel.org>; Fri, 03 Jun 2022 02:47:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fairphone.com; s=fair;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XmlvkluiSNMj24D7hJPq2KWkb3UetBzXUSitChCIpTg=;
-        b=RaqsjKpGbIoD8x44wAMevrMZhgC+gxnWT0bU2purC+/B0SEvyuWziiWNzzZQiDANlb
-         NL/SOkwOyYwSdhKUQLFosatZsxO0Z1mm701fBAXkXqQ+YLRGmXqMRg7cr7Fqgfn/FQ4G
-         Cx/d5mnDae60/QIGBwN13vBST2fv/231WUzkzD5zbuP3mquwvpPA6iCx0hvw/otlgrZB
-         pTsPP37CZ1LWuh1Y9nqvmaDG7xT4zezrllKvI+HYxgsQO8kA2ZLDWdxL5ULORQrUT7dd
-         ZoAm/LU6hGQ/UegRhUhh/erylJ1s9DTCfaHGq8v9oI+QNUGtC+W6/qnL2542z8065uCJ
-         9DBQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XmlvkluiSNMj24D7hJPq2KWkb3UetBzXUSitChCIpTg=;
-        b=h/cjbDyaLRFfaESauwZusG6tTEpOKuxinI9mSU+n3x5lvTRw934Z3dxmHFAkWneSrf
-         OOqywKn8WI0cNO694YWUQzSXnmetqIeldEBp+QGiUwdgDyJJksRcgPBBFrRB1BwDbjSb
-         OicWut543nen6QTZBxO1O6xNtf/2yhw0E5qNfC/NoogKX/wlDo70ceaKLt4anpdRLd1j
-         A2+XQBnpR8SXS6U/dxIRtfGf6zEOoZqxgbNPvgC8RgCB51zKS8jqUxJ/aLT+nvJONY5/
-         FlwbKrNSS1YUWB/nlRdN4+J1Q+K2NwzcMRaa96Tcl/SOBeYlTUs/RBbqZLC0ChEBgpVe
-         l6XA==
-X-Gm-Message-State: AOAM530jfCsRdnvBftHBOk3uPp6evg5tzsdOekvYX0GUH5qxNbfkmON3
-        /Ih1G5ufp+cnkv/57r5FyHFkeO1i+3er/g==
-X-Google-Smtp-Source: ABdhPJxu2JHMNp3Ryhwmps+2Sr90KjZ1hzGL9fUOJkh0TNMfX3qkXqH1irY9IA+R8Yq04ByvZ1ZEFA==
-X-Received: by 2002:a17:906:6a27:b0:708:1282:cbe9 with SMTP id qw39-20020a1709066a2700b007081282cbe9mr8052825ejc.186.1654249634363;
-        Fri, 03 Jun 2022 02:47:14 -0700 (PDT)
-Received: from otso.. (144-178-202-138.static.ef-service.nl. [144.178.202.138])
-        by smtp.gmail.com with ESMTPSA id a15-20020a170906274f00b006f3ef214e42sm2661009ejd.168.2022.06.03.02.47.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Jun 2022 02:47:13 -0700 (PDT)
-From:   Luca Weiss <luca.weiss@fairphone.com>
-To:     linux-arm-msm@vger.kernel.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Luca Weiss <luca.weiss@fairphone.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/2] arm64: dts: qcom: sdm845*: replace i2s reg with constant
-Date:   Fri,  3 Jun 2022 11:47:09 +0200
-Message-Id: <20220603094710.64591-1-luca.weiss@fairphone.com>
-X-Mailer: git-send-email 2.36.1
+        Fri, 3 Jun 2022 05:48:12 -0400
+Received: from mailbox.box.xen0n.name (mail.xen0n.name [115.28.160.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B191613D1F;
+        Fri,  3 Jun 2022 02:48:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xen0n.name; s=mail;
+        t=1654249686; bh=yrg9on8zb+NApRYtS5qBL8mX8F/7jBwdIdZxHyDYbOg=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=jRWyTZmCNV/pqzL9Eg+ZxwLUSRI9QggIjDRMCfMrbky0lqSLxFkJtfEZUGVyyUYRg
+         89X1nwC1YAmllYkpH0RvCQ201k1hKMjSdHc0Op5LLuhNnls78FnzObQU7HsVRJeXBr
+         tQ2czc6m7bTnTxGA7okwYgtWi3dI1Urc/giRlB1M=
+Received: from [192.168.9.172] (unknown [101.88.28.48])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by mailbox.box.xen0n.name (Postfix) with ESMTPSA id EB0F560104;
+        Fri,  3 Jun 2022 17:48:05 +0800 (CST)
+Message-ID: <f7b53d2b-759c-bc5b-e2ed-a251b879f450@xen0n.name>
+Date:   Fri, 3 Jun 2022 17:48:05 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:103.0) Gecko/20100101
+ Thunderbird/103.0a1
+Subject: Re: Steps forward for the LoongArch UEFI bringup patch? (was: Re:
+ [PATCH V14 11/24] LoongArch: Add boot and setup routines)
+Content-Language: en-US
+To:     Xi Ruoyao <xry111@xry111.site>, WANG Xuerui <kernel@xen0n.name>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Huacai Chen <chenhuacai@loongson.cn>
+Cc:     linux-arch@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
+        Yanteng Si <siyanteng@loongson.cn>,
+        Huacai Chen <chenhuacai@gmail.com>,
+        Guo Ren <guoren@kernel.org>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        linux-efi@vger.kernel.org, WANG Xuerui <git@xen0n.name>,
+        Yun Liu <liuyun@loongson.cn>, Jonathan Corbet <corbet@lwn.net>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Airlie <airlied@linux.ie>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+References: <20220602115141.3962749-1-chenhuacai@loongson.cn>
+ <20220602115141.3962749-12-chenhuacai@loongson.cn>
+ <d88ede74-b7a5-e568-1863-107c6c7f5fe0@xen0n.name>
+ <dab96b787bef91240c719ea1a100396350135f99.camel@xry111.site>
+From:   WANG Xuerui <kernel@xen0n.name>
+In-Reply-To: <dab96b787bef91240c719ea1a100396350135f99.camel@xry111.site>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make it easier to understand what the reg in those nodes is by using the
-constants provided by qcom,q6dsp-lpass-ports.h.
+On 6/3/22 17:32, Xi Ruoyao wrote:
+> On Thu, 2022-06-02 at 22:09 +0800, WANG Xuerui wrote:
+>
+>> For this, I don't know if Huacai should really just leave those
+>> modification in the downstream fork to keep the upstream Linux clean of
+>> such hacks, because to some degree dealing with such notoriety is life,
+>> it seems to me. I think at this point Huacai would cooperate and tweak
+>> the patch to get rid of the SVAM and other nonstandard bits as much as
+>> possible, and I'll help him where necessary too.
+> To me any new firmware for PC-like platforms should implement UEFI.  For
+> embedded platforms device tree support will be added later.
+>
+> For those guys impossible or unwilling to upgrade the firmware, it may
+> be possible to implement a compatibility layer and the booting procedure
+> will be like:
+>
+> old firmware -> bootloongarch.efi -> customized u-boot -> bootloongarch64.efi (grub) -> efi stub (kernel)
+>                  --------- compatibility layer --------    ^^^^^^^^ normal UEFI compatible stuff ^^^^^^^^^
+>
+> new firmware -> bootloongarch64.efi (grub) -> efi stub (kernel)
+>
+> The old firmware route would be similar to the booting procedure of
+> Asahi Linux.  I think this can be implemented because it's already
+> implemented on M1 even while Apple is almost completely uncooperative.
 
-Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
----
- arch/arm64/boot/dts/qcom/qrb5165-rb5.dts             | 4 ++--
- arch/arm64/boot/dts/qcom/sdm845-db845c.dts           | 2 +-
- arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts | 2 +-
- 3 files changed, 4 insertions(+), 4 deletions(-)
+This is a bit off-topic (we're basically hurrying up to get the port 
+into v5.19-rc1 and discussing ways to achieve that), but yeah 
+definitely. I've had the same idea right after knowing the LoongArch 
+firmware would also have "new-world" variant, then I contacted some 
+firmware engineers working on LoongArch boards, I think they agreed on 
+the approach overall.
 
-diff --git a/arch/arm64/boot/dts/qcom/qrb5165-rb5.dts b/arch/arm64/boot/dts/qcom/qrb5165-rb5.dts
-index 0e63f707b911..f627d6b7311b 100644
---- a/arch/arm64/boot/dts/qcom/qrb5165-rb5.dts
-+++ b/arch/arm64/boot/dts/qcom/qrb5165-rb5.dts
-@@ -830,7 +830,7 @@ &qupv3_id_2 {
- 
- &q6afedai {
- 	qi2s@16 {
--		reg = <16>;
-+		reg = <PRIMARY_MI2S_RX>;
- 		qcom,sd-lines = <0 1 2 3>;
- 	};
- };
-@@ -838,7 +838,7 @@ qi2s@16 {
- /* TERT I2S Uses 1 I2S SD Lines for audio on LT9611 HDMI Bridge */
- &q6afedai {
- 	qi2s@20 {
--		reg = <20>;
-+		reg = <TERTIARY_MI2S_RX>;
- 		qcom,sd-lines = <0>;
- 	};
- };
-diff --git a/arch/arm64/boot/dts/qcom/sdm845-db845c.dts b/arch/arm64/boot/dts/qcom/sdm845-db845c.dts
-index 194ebeb3259c..2fbb8b024646 100644
---- a/arch/arm64/boot/dts/qcom/sdm845-db845c.dts
-+++ b/arch/arm64/boot/dts/qcom/sdm845-db845c.dts
-@@ -609,7 +609,7 @@ resin {
- /* QUAT I2S Uses 4 I2S SD Lines for audio on LT9611 HDMI Bridge */
- &q6afedai {
- 	qi2s@22 {
--		reg = <22>;
-+		reg = <QUATERNARY_MI2S_RX>;
- 		qcom,sd-lines = <0 1 2 3>;
- 	};
- };
-diff --git a/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts b/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts
-index d88dc07205f7..7dd103d1ef6f 100644
---- a/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts
-+++ b/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts
-@@ -339,7 +339,7 @@ resin {
- /* QUAT I2S Uses 1 I2S SD Line for audio on TAS2559/60 amplifiers */
- &q6afedai {
- 	qi2s@22 {
--		reg = <22>;
-+		reg = <QUATERNARY_MI2S_RX>;
- 		qcom,sd-lines = <0>;
- 	};
- };
--- 
-2.36.1
+However, making the kernel itself capable of booting on both BPI and 
+new-world UEFI firmware flavors may have its merits after all; one 
+scenario I could come up with is that user reboots and upgrades their 
+firmware, *before* updating their old-world kernel, and bang! system 
+soft-bricked. All such cases involve old-world distros that already 
+deviate a little bit from vanilla upstream code, so such BPI support 
+needn't be mainlined for avoiding this scenario.
 
+>
+> Just my 2 cents. I know almost nothing about booting.
+That's fine, we all know nothing in the beginning ;-)
