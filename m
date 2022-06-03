@@ -2,91 +2,243 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BDE4C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:28:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9EF0C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:30:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243820AbiFCS2D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:28:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57408 "EHLO
+        id S1347342AbiFCSah (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 14:30:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347083AbiFCS1q (ORCPT
+        with ESMTP id S1347828AbiFCSaD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 14:27:46 -0400
-Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC51D5AA41;
-        Fri,  3 Jun 2022 11:10:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1654279610;
-    s=strato-dkim-0002; d=gerhold.net;
-    h=In-Reply-To:References:Message-ID:Subject:Cc:To:From:Date:Cc:Date:
-    From:Subject:Sender;
-    bh=W0zLWbkTHHDH0iI0Y3QB9pk4VW+9pPQV3k8LcemuFF4=;
-    b=pYJS6YCHpweybvsrVNZNXAsxkI5rzK4/zWclFd7weZ1Qnc/lPxo41Ty8ah4CMiEnOI
-    ZaPHFjKRNZ4oVB8CiYRc9XjC57ylnB2bYRrb6iKZsqu76UlB8bmEMFHEVs3+z34YHYl5
-    wvBtLcVMooMejLMjIGV1fW1TsinV6qGUatpYgYOaoYgvRD0rJTFI/btn0dV1AcpsCINp
-    nqhaBNya5zv3lbRF+0fAcEv5tqLowMkkC+y42Dze0EMuwnqZVT5staAMha6d8V3FxEdT
-    2AR6tBpKY5dZW5FbMgAj5aobTvtfhFCAQa48UcXu8NSx8U/HzhfAdky1u7F9FBrwwliO
-    3LiA==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVOQ/OcYgojyw4j34+u267FZF9PwpcNKLVrKw7/aY="
-X-RZG-CLASS-ID: mo00
-Received: from gerhold.net
-    by smtp.strato.de (RZmta 47.45.0 AUTH)
-    with ESMTPSA id 9056edy53I6nwkU
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Fri, 3 Jun 2022 20:06:49 +0200 (CEST)
-Date:   Fri, 3 Jun 2022 20:06:39 +0200
-From:   Stephan Gerhold <stephan@gerhold.net>
-To:     Alexander Martinz <amartinz@shiftphones.com>
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Caleb Connolly <caleb@connolly.tech>,
-        Dylan Van Assche <me@dylanvanassche.be>
-Subject: Re: [PATCH 2/2] ASoC: dt-bindings: nxp,tfa989x: Add tfa9890 support
-Message-ID: <YppNaL5r5EN3SUsU@gerhold.net>
-References: <20220602164504.261361-1-amartinz@shiftphones.com>
- <20220602164504.261361-2-amartinz@shiftphones.com>
+        Fri, 3 Jun 2022 14:30:03 -0400
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B6C27220C
+        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 11:13:41 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id u2so7739792pfc.2
+        for <linux-kernel@vger.kernel.org>; Fri, 03 Jun 2022 11:13:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=KMzrP1ZYW7q/TidHk4y7Aa/yx0iJcaya5gROyIWR4BM=;
+        b=SIwXH7tnxO54DrmpfWx37Dnzpuo94VKI4hgsLJaP4UwHqx2y2++HlfNfMVE+I2W/OA
+         DUcWVfaaS3FYE/N/cVWCzSVDG8dVCzDAgWFJIbqQ1j0VPI0piNoE9hSLj778PbA3UH6C
+         6gtRw0QFXRiEqGe1/XrP/ujAJQzyzpXfBnKUpojGztmXaIiEngCdDgiBWLk1xXxzdr0M
+         MMJ9NQpVcTv2f2MR5gCqrUzYHtZFH+Vrg6QFG9WvpHcbvevt8i8fho6MC5p+/6paQMc9
+         68coNPXUYF9IIDxSI8QlwNpmBrzAhtXGPCCfPUMjDEoKMo5g16cE/n016vt6Pe0PiiJu
+         +nrQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=KMzrP1ZYW7q/TidHk4y7Aa/yx0iJcaya5gROyIWR4BM=;
+        b=YAHrDrV8zT3exDxT9TatGPyUjFmbgie4DJVfYsgBZY6SY49wLY08muql1xnsl3yuP9
+         NNh/GlOL0zB0p9WTmXvJX29FOl8LYg3cMICPu1LVgy8yi7atYaa/CE2AqhrfwW2i39Jh
+         lzBZKWax5w+470QHkPi+UzBGfX8MA5oaqkmVtWJAw0mO62cTFHKk5Is2PvjP5QNfqkiy
+         38lKaxK2KwEIVYA4Dzjv1BsKjZ3OFakjGyA3KdkofreDbBAcmq8eOsGe0QDtevfLkQg9
+         yhUf+MeejpXT2H/SVaCKz20Xdnk7Ktzdei9T0gMrq1wfs/w0NB4fLAT9EaqEMvIAdpnq
+         DI3Q==
+X-Gm-Message-State: AOAM531A3baK5j02QD3d7SLGtBU1augIlpvfkWkn9oxQhSSAf1oCOGZQ
+        2DEeLR5PpbAcfs05uqKi00DKrw==
+X-Google-Smtp-Source: ABdhPJx6Fhx/k/G6F3rQ2T+mGOIPbpXrjtVEn/vidFgj5AVDqH7jNxEZNkDQfzwCOOGN+vAN2KhRAQ==
+X-Received: by 2002:a05:6a00:2396:b0:51b:de97:7efe with SMTP id f22-20020a056a00239600b0051bde977efemr5437281pfc.8.1654280014264;
+        Fri, 03 Jun 2022 11:13:34 -0700 (PDT)
+Received: from localhost.localdomain ([50.39.160.154])
+        by smtp.gmail.com with ESMTPSA id e8-20020a170902784800b001640ab19773sm5853198pln.58.2022.06.03.11.13.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 03 Jun 2022 11:13:33 -0700 (PDT)
+From:   Tadeusz Struk <tadeusz.struk@linaro.org>
+To:     Tejun Heo <tj@kernel.org>
+Cc:     Tadeusz Struk <tadeusz.struk@linaro.org>,
+        Michal Koutny <mkoutny@suse.com>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, cgroups@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        stable@vger.kernel.org, linux-kernel@vger.kernel.org,
+        syzbot+e42ae441c3b10acf9e9d@syzkaller.appspotmail.com
+Subject: [PATCH v2] cgroup: serialize css kill and release paths
+Date:   Fri,  3 Jun 2022 11:13:21 -0700
+Message-Id: <20220603181321.443716-1-tadeusz.struk@linaro.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220603173455.441537-1-tadeusz.struk@linaro.org>
+References: <20220603173455.441537-1-tadeusz.struk@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220602164504.261361-2-amartinz@shiftphones.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 02, 2022 at 06:45:04PM +0200, Alexander Martinz wrote:
-> Document TFA9890 binding for tfa989x.
-> 
-> Signed-off-by: Alexander Martinz <amartinz@shiftphones.com>
+Syzbot found a corrupted list bug scenario that can be triggered from
+cgroup_subtree_control_write(cgrp). The reproduces writes to
+cgroup.subtree_control file, which invokes:
+cgroup_apply_control_enable()->css_create()->css_populate_dir(), which
+then fails with a fault injected -ENOMEM.
+In such scenario the css_killed_work_fn will be en-queued via
+cgroup_apply_control_disable(cgrp)->kill_css(css), and bail out to
+cgroup_kn_unlock(). Then cgroup_kn_unlock() will call:
+cgroup_put(cgrp)->css_put(&cgrp->self), which will try to enqueue
+css_release_work_fn for the same css instance, causing a list_add
+corruption bug, as can be seen in the syzkaller report [1].
 
-The dt-bindings patch should usually come first in the patch series.
-Anyway, no need to resend just for that IMO:
+Fix this by synchronizing the css ref_kill and css_release jobs.
+css_release() function will check if the css_killed_work_fn() has been
+scheduled for the css and only en-queue the css_release_work_fn()
+if css_killed_work_fn wasn't already en-queued. Otherwise css_release() will
+set the CSS_REL_LATER flag for that css. This will cause the
+css_release_work_fn() work to be executed after css_killed_work_fn() is finished.
 
-Reviewed-by: Stephan Gerhold <stephan@gerhold.net>
+Two scc flags have been introduced to implement this serialization mechanizm:
 
-> ---
->  Documentation/devicetree/bindings/sound/nxp,tfa989x.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/sound/nxp,tfa989x.yaml b/Documentation/devicetree/bindings/sound/nxp,tfa989x.yaml
-> index b9b1dba40856..7f2e68ff6d34 100644
-> --- a/Documentation/devicetree/bindings/sound/nxp,tfa989x.yaml
-> +++ b/Documentation/devicetree/bindings/sound/nxp,tfa989x.yaml
-> @@ -15,6 +15,7 @@ allOf:
->  properties:
->    compatible:
->      enum:
-> +      - nxp,tfa9890
->        - nxp,tfa9895
->        - nxp,tfa9897
->  
-> -- 
-> 2.36.1
-> 
+ * CSS_KILL_ENQED, which will be set when css_killed_work_fn() is en-queued, and
+ * CSS_REL_LATER, which, if set, will cause the css_release_work_fn() to be
+   scheduled after the css_killed_work_fn is finished.
+
+There is also a new lock, which will protect the integrity of the css flags.
+
+[1] https://syzkaller.appspot.com/bug?id=e26e54d6eac9d9fb50b221ec3e4627b327465dbd
+
+Cc: Tejun Heo <tj@kernel.org>
+Cc: Michal Koutny<mkoutny@suse.com>
+Cc: Zefan Li <lizefan.x@bytedance.com>
+Cc: Johannes Weiner <hannes@cmpxchg.org>
+Cc: Christian Brauner <brauner@kernel.org>
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Andrii Nakryiko <andrii@kernel.org>
+Cc: Martin KaFai Lau <kafai@fb.com>
+Cc: Song Liu <songliubraving@fb.com>
+Cc: Yonghong Song <yhs@fb.com>
+Cc: John Fastabend <john.fastabend@gmail.com>
+Cc: KP Singh <kpsingh@kernel.org>
+Cc: <cgroups@vger.kernel.org>
+Cc: <netdev@vger.kernel.org>
+Cc: <bpf@vger.kernel.org>
+Cc: <stable@vger.kernel.org>
+Cc: <linux-kernel@vger.kernel.org>
+
+Reported-and-tested-by: syzbot+e42ae441c3b10acf9e9d@syzkaller.appspotmail.com
+Fixes: 8f36aaec9c92 ("cgroup: Use rcu_work instead of explicit rcu and work item")
+Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
+---
+v2: Use correct lock in css_killed_work_fn()
+---
+ include/linux/cgroup-defs.h |  4 ++++
+ kernel/cgroup/cgroup.c      | 35 ++++++++++++++++++++++++++++++++---
+ 2 files changed, 36 insertions(+), 3 deletions(-)
+
+diff --git a/include/linux/cgroup-defs.h b/include/linux/cgroup-defs.h
+index 1bfcfb1af352..8dc8b4edb242 100644
+--- a/include/linux/cgroup-defs.h
++++ b/include/linux/cgroup-defs.h
+@@ -53,6 +53,8 @@ enum {
+ 	CSS_RELEASED	= (1 << 2), /* refcnt reached zero, released */
+ 	CSS_VISIBLE	= (1 << 3), /* css is visible to userland */
+ 	CSS_DYING	= (1 << 4), /* css is dying */
++	CSS_KILL_ENQED	= (1 << 5), /* kill work enqueued for the css */
++	CSS_REL_LATER	= (1 << 6), /* release needs to be done after kill */
+ };
+ 
+ /* bits in struct cgroup flags field */
+@@ -162,6 +164,8 @@ struct cgroup_subsys_state {
+ 	 */
+ 	int id;
+ 
++	/* lock to protect flags */
++	spinlock_t lock;
+ 	unsigned int flags;
+ 
+ 	/*
+diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
+index 1779ccddb734..b1bbd438d426 100644
+--- a/kernel/cgroup/cgroup.c
++++ b/kernel/cgroup/cgroup.c
+@@ -5210,8 +5210,23 @@ static void css_release(struct percpu_ref *ref)
+ 	struct cgroup_subsys_state *css =
+ 		container_of(ref, struct cgroup_subsys_state, refcnt);
+ 
+-	INIT_WORK(&css->destroy_work, css_release_work_fn);
+-	queue_work(cgroup_destroy_wq, &css->destroy_work);
++	spin_lock_bh(&css->lock);
++
++	/*
++	 * Check if the css_killed_work_fn work has been scheduled for this
++	 * css and enqueue css_release_work_fn only if it wasn't.
++	 * Otherwise set the CSS_REL_LATER flag, which will cause
++	 * release to be enqueued after css_killed_work_fn is finished.
++	 * This is to prevent list corruption by en-queuing two instance
++	 * of the same work struct on the same WQ, namely cgroup_destroy_wq.
++	 */
++	if (!(css->flags & CSS_KILL_ENQED)) {
++		INIT_WORK(&css->destroy_work, css_release_work_fn);
++		queue_work(cgroup_destroy_wq, &css->destroy_work);
++	} else {
++		css->flags |= CSS_REL_LATER;
++	}
++	spin_unlock_bh(&css->lock);
+ }
+ 
+ static void init_and_link_css(struct cgroup_subsys_state *css,
+@@ -5230,6 +5245,7 @@ static void init_and_link_css(struct cgroup_subsys_state *css,
+ 	INIT_LIST_HEAD(&css->rstat_css_node);
+ 	css->serial_nr = css_serial_nr_next++;
+ 	atomic_set(&css->online_cnt, 0);
++	spin_lock_init(&css->lock);
+ 
+ 	if (cgroup_parent(cgrp)) {
+ 		css->parent = cgroup_css(cgroup_parent(cgrp), ss);
+@@ -5545,10 +5561,12 @@ int cgroup_mkdir(struct kernfs_node *parent_kn, const char *name, umode_t mode)
+  */
+ static void css_killed_work_fn(struct work_struct *work)
+ {
+-	struct cgroup_subsys_state *css =
++	struct cgroup_subsys_state *css_killed, *css =
+ 		container_of(work, struct cgroup_subsys_state, destroy_work);
+ 
+ 	mutex_lock(&cgroup_mutex);
++	css_killed = css;
++	css_killed->flags &= ~CSS_KILL_ENQED;
+ 
+ 	do {
+ 		offline_css(css);
+@@ -5557,6 +5575,14 @@ static void css_killed_work_fn(struct work_struct *work)
+ 		css = css->parent;
+ 	} while (css && atomic_dec_and_test(&css->online_cnt));
+ 
++	spin_lock_bh(&css_killed->lock);
++	if (css_killed->flags & CSS_REL_LATER) {
++		/* If css_release work was delayed for the css enqueue it now. */
++		INIT_WORK(&css_killed->destroy_work, css_release_work_fn);
++		queue_work(cgroup_destroy_wq, &css_killed->destroy_work);
++		css_killed->flags &= ~CSS_REL_LATER;
++	}
++	spin_unlock_bh(&css_killed->lock);
+ 	mutex_unlock(&cgroup_mutex);
+ }
+ 
+@@ -5566,10 +5592,13 @@ static void css_killed_ref_fn(struct percpu_ref *ref)
+ 	struct cgroup_subsys_state *css =
+ 		container_of(ref, struct cgroup_subsys_state, refcnt);
+ 
++	spin_lock_bh(&css->lock);
+ 	if (atomic_dec_and_test(&css->online_cnt)) {
++		css->flags |= CSS_KILL_ENQED;
+ 		INIT_WORK(&css->destroy_work, css_killed_work_fn);
+ 		queue_work(cgroup_destroy_wq, &css->destroy_work);
+ 	}
++	spin_unlock_bh(&css->lock);
+ }
+ 
+ /**
+-- 
+2.36.1
+
