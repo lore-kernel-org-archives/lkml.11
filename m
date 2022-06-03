@@ -2,62 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51AB9C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 13:44:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 123A0C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 13:45:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244809AbiFCNop (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 09:44:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47092 "EHLO
+        id S244773AbiFCNpB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 09:45:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244829AbiFCNod (ORCPT
+        with ESMTP id S244819AbiFCNor (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 09:44:33 -0400
+        Fri, 3 Jun 2022 09:44:47 -0400
 Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DAAB39690
-        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 06:44:30 -0700 (PDT)
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 253Cugre026540;
-        Fri, 3 Jun 2022 13:44:19 GMT
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01B933A5D6
+        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 06:44:45 -0700 (PDT)
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 253CFLgN002903;
+        Fri, 3 Jun 2022 13:44:37 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=pp1;
- bh=ZOQN208AaTMt4Y+rjYXoDEA9HvNVnabUjL2wDLR89+M=;
- b=SVwRTlydakEiEI2ExzaCjiQoCkbSDUJbzD0j/unXVRqXFXBRHUDGJUZxCVucIU27iRRT
- tWGPNpYzTDXSNYMBI8ySXFb/lw+4xmYpOSYhANF00fgiIkyg6DYPK7fDDZIQB7sfCGCO
- klc6fW7m1CsB65Pp3TUUDwh7r0axd8pThyKWDVrgcza207YDyDict+Nh6bBZjxmwSkPP
- GhTkBW8oFo/RccO3OciudbM0czOPgrPDFdPPOfc0WjXiPXhmOXVMlheE71BA0qUSvZ/T
- cuf1h/V19n8oRnbat1Ibvakw5EkQlHH3Qbrt76BIqDAQFKqzkz6RogjgnsEDNXnqzmFn wQ== 
+ bh=BUCn0BY2ZXsWri4dRdU95JjN/8kb3U+L/F9XlYqa2Bg=;
+ b=BVnWdjjulZzHbLLJyBuVL9VJJrL5p7elwwnZV1I9qfuEPb78HGwg8g7g0KD6NX1rarjq
+ 9qjNMLIwKb0RIrS5nNaHca8k78ZVCHLQ8UDKstvqXGXStThoW9crb6NyCYXUCVV/8bka
+ OB3d55aXErE9cfaAdwDxqTijwxoiRq/45WXA+FnJSVjE/rm44Pq50a/CU+MRsqjJyW90
+ YySszjPwPz0HZ1eP1MxJwKLzIzuE+XYxSSyCOeKXXdLaBzDqyeH3hQN0kkwc8Qs30sYY
+ eVN1TZCHKm0067GYxYT+DlTtyX1psgvifpxlXWehSaq3qrw5t95OfOlIfTfQo/dCdGXq zQ== 
 Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gfjrgrwnf-1
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gfgg8b99f-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 03 Jun 2022 13:44:19 +0000
-Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 253D0hf7010880;
-        Fri, 3 Jun 2022 13:44:18 GMT
-Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gfjrgrwn5-1
+        Fri, 03 Jun 2022 13:44:36 +0000
+Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 253Cwqok004481;
+        Fri, 3 Jun 2022 13:44:36 GMT
+Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gfgg8b996-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 03 Jun 2022 13:44:18 +0000
-Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
-        by ppma03dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 253DamLW010706;
-        Fri, 3 Jun 2022 13:44:17 GMT
-Received: from b01cxnp23032.gho.pok.ibm.com (b01cxnp23032.gho.pok.ibm.com [9.57.198.27])
-        by ppma03dal.us.ibm.com with ESMTP id 3gd3yn8t3n-1
+        Fri, 03 Jun 2022 13:44:36 +0000
+Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
+        by ppma04dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 253DaUVL027611;
+        Fri, 3 Jun 2022 13:44:35 GMT
+Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com [9.57.198.26])
+        by ppma04dal.us.ibm.com with ESMTP id 3gd4n68dq9-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 03 Jun 2022 13:44:17 +0000
+        Fri, 03 Jun 2022 13:44:35 +0000
 Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
-        by b01cxnp23032.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 253DiG6k17498544
+        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 253DiYHU9830668
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 3 Jun 2022 13:44:16 GMT
+        Fri, 3 Jun 2022 13:44:34 GMT
 Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9E96D112065;
-        Fri,  3 Jun 2022 13:44:16 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 190F0112063;
+        Fri,  3 Jun 2022 13:44:34 +0000 (GMT)
 Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C9920112063;
-        Fri,  3 Jun 2022 13:44:08 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 84AC2112062;
+        Fri,  3 Jun 2022 13:44:26 +0000 (GMT)
 Received: from skywalker.ibmuc.com (unknown [9.43.93.173])
         by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
-        Fri,  3 Jun 2022 13:44:08 +0000 (GMT)
+        Fri,  3 Jun 2022 13:44:26 +0000 (GMT)
 From:   "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
 To:     linux-mm@kvack.org, akpm@linux-foundation.org
 Cc:     Wei Xu <weixugc@google.com>, Huang Ying <ying.huang@intel.com>,
@@ -77,232 +77,166 @@ Cc:     Wei Xu <weixugc@google.com>, Huang Ying <ying.huang@intel.com>,
         Jagdish Gediya <jvgediya@linux.ibm.com>,
         Baolin Wang <baolin.wang@linux.alibaba.com>,
         David Rientjes <rientjes@google.com>,
-        "Aneesh Kumar K . V" <aneesh.kumar@linux.ibm.com>
-Subject: [PATCH v5 7/9] mm/demotion: Demote pages according to allocation fallback order
-Date:   Fri,  3 Jun 2022 19:12:35 +0530
-Message-Id: <20220603134237.131362-8-aneesh.kumar@linux.ibm.com>
+        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
+Subject: [PATCH v5 9/9] mm/demotion: Update node_is_toptier to work with memory tiers
+Date:   Fri,  3 Jun 2022 19:12:37 +0530
+Message-Id: <20220603134237.131362-10-aneesh.kumar@linux.ibm.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603134237.131362-1-aneesh.kumar@linux.ibm.com>
 References: <20220603134237.131362-1-aneesh.kumar@linux.ibm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: mX0Gsxn3vtIVcf4XO3jJ852AA3picwmx
-X-Proofpoint-GUID: B5_lxBaSxwSVGbsYsGyLNsySyo553IWv
+X-Proofpoint-ORIG-GUID: h6x5ag3c0QcohwVDA3Yn5j1SGQueDgDx
+X-Proofpoint-GUID: xxrlc1sSbC-F3CxfgTlo2b9hGvdng3ck
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
  definitions=2022-06-03_04,2022-06-03_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
- lowpriorityscore=0 phishscore=0 malwarescore=0 adultscore=0
- impostorscore=0 mlxscore=0 spamscore=0 priorityscore=1501 bulkscore=0
- mlxlogscore=999 suspectscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2204290000 definitions=main-2206030059
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ clxscore=1015 impostorscore=0 lowpriorityscore=0 malwarescore=0
+ bulkscore=0 mlxlogscore=999 mlxscore=0 adultscore=0 phishscore=0
+ suspectscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206030059
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jagdish Gediya <jvgediya@linux.ibm.com>
+With memory tiers support we can have memory on NUMA nodes
+in the top tier from which we want to avoid promotion tracking NUMA
+faults. Update node_is_toptier to work with memory tiers. To
+avoid taking locks, a nodemask is maintained for all demotion
+targets. All NUMA nodes are by default top tier nodes and as
+we add new lower memory tiers NUMA nodes get added to the
+demotion targets thereby moving them out of the top tier.
 
-currently, a higher tier node can only be demoted to selected
-nodes on the next lower tier as defined by the demotion path,
-not any other node from any lower tier.  This strict, hard-coded
-demotion order does not work in all use cases (e.g. some use cases
-may want to allow cross-socket demotion to another node in the same
-demotion tier as a fallback when the preferred demotion node is out
-of space). This demotion order is also inconsistent with the page
-allocation fallback order when all the nodes in a higher tier are
-out of space: The page allocation can fall back to any node from any
-lower tier, whereas the demotion order doesn't allow that currently.
-
-This patch adds support to get all the allowed demotion targets mask
-for node, also demote_page_list() function is modified to utilize this
-allowed node mask by filling it in migration_target_control structure
-before passing it to migrate_pages().
-
-Signed-off-by: Jagdish Gediya <jvgediya@linux.ibm.com>
 Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
 ---
- include/linux/memory-tiers.h |  5 ++++
- mm/memory-tiers.c            | 49 ++++++++++++++++++++++++++++++++++--
- mm/vmscan.c                  | 38 +++++++++++++---------------
- 3 files changed, 70 insertions(+), 22 deletions(-)
+ include/linux/memory-tiers.h | 16 ++++++++++++++++
+ include/linux/node.h         |  5 -----
+ mm/huge_memory.c             |  1 +
+ mm/memory-tiers.c            | 10 ++++++++++
+ mm/migrate.c                 |  1 +
+ mm/mprotect.c                |  1 +
+ 6 files changed, 29 insertions(+), 5 deletions(-)
 
 diff --git a/include/linux/memory-tiers.h b/include/linux/memory-tiers.h
-index 79bd8d26feb2..cd6e71f702ad 100644
+index cd6e71f702ad..32e0e6fabf02 100644
 --- a/include/linux/memory-tiers.h
 +++ b/include/linux/memory-tiers.h
-@@ -21,6 +21,7 @@ void node_remove_from_memory_tier(int node);
+@@ -16,12 +16,23 @@
+ #define MAX_MEMORY_TIERS  3
+ 
+ extern bool numa_demotion_enabled;
++extern nodemask_t demotion_target_mask;
+ int next_demotion_node(int node);
+ void node_remove_from_memory_tier(int node);
  int node_get_memory_tier_id(int node);
  int node_set_memory_tier(int node, int tier);
  int node_reset_memory_tier(int node, int tier);
-+void node_get_allowed_targets(int node, nodemask_t *targets);
+ void node_get_allowed_targets(int node, nodemask_t *targets);
++
++/*
++ * By default all nodes are top tiper. As we create new memory tiers
++ * we below top tiers we add them to NON_TOP_TIER state.
++ */
++static inline bool node_is_toptier(int node)
++{
++	return !node_isset(node, demotion_target_mask);
++}
++
  #else
  #define numa_demotion_enabled	false
  static inline int next_demotion_node(int node)
-@@ -28,6 +29,10 @@ static inline int next_demotion_node(int node)
- 	return NUMA_NO_NODE;
+@@ -33,6 +44,11 @@ static inline void node_get_allowed_targets(int node, nodemask_t *targets)
+ {
+ 	*targets = NODE_MASK_NONE;
  }
- 
-+static inline void node_get_allowed_targets(int node, nodemask_t *targets)
++
++static inline bool node_is_toptier(int node)
 +{
-+	*targets = NODE_MASK_NONE;
++	return true;
 +}
  #endif	/* CONFIG_TIERED_MEMORY */
  
  #endif
-diff --git a/mm/memory-tiers.c b/mm/memory-tiers.c
-index b4e72b672d4d..592d939ec28d 100644
---- a/mm/memory-tiers.c
-+++ b/mm/memory-tiers.c
-@@ -18,6 +18,7 @@ struct memory_tier {
+diff --git a/include/linux/node.h b/include/linux/node.h
+index 40d641a8bfb0..9ec680dd607f 100644
+--- a/include/linux/node.h
++++ b/include/linux/node.h
+@@ -185,9 +185,4 @@ static inline void register_hugetlbfs_with_node(node_registration_func_t reg,
  
- struct demotion_nodes {
- 	nodemask_t preferred;
-+	nodemask_t allowed;
- };
+ #define to_node(device) container_of(device, struct node, dev)
  
- #define to_memory_tier(device) container_of(device, struct memory_tier, dev)
-@@ -378,6 +379,25 @@ int node_set_memory_tier(int node, int tier)
- }
- EXPORT_SYMBOL_GPL(node_set_memory_tier);
- 
-+void node_get_allowed_targets(int node, nodemask_t *targets)
-+{
-+	/*
-+	 * node_demotion[] is updated without excluding this
-+	 * function from running.
-+	 *
-+	 * If any node is moving to lower tiers then modifications
-+	 * in node_demotion[] are still valid for this node, if any
-+	 * node is moving to higher tier then moving node may be
-+	 * used once for demotion which should be ok so rcu should
-+	 * be enough here.
-+	 */
-+	rcu_read_lock();
-+
-+	*targets = node_demotion[node].allowed;
-+
-+	rcu_read_unlock();
-+}
-+
- /**
-  * next_demotion_node() - Get the next node in the demotion path
-  * @node: The starting node to lookup the next node
-@@ -437,8 +457,10 @@ static void __disable_all_migrate_targets(void)
- {
- 	int node;
- 
--	for_each_node_mask(node, node_states[N_MEMORY])
-+	for_each_node_mask(node, node_states[N_MEMORY]) {
- 		node_demotion[node].preferred = NODE_MASK_NONE;
-+		node_demotion[node].allowed = NODE_MASK_NONE;
-+	}
- }
- 
- static void disable_all_migrate_targets(void)
-@@ -465,7 +487,7 @@ static void establish_migration_targets(void)
- 	struct demotion_nodes *nd;
- 	int target = NUMA_NO_NODE, node;
- 	int distance, best_distance;
--	nodemask_t used;
-+	nodemask_t used, allowed = NODE_MASK_NONE;
- 
- 	if (!node_demotion)
- 		return;
-@@ -511,6 +533,29 @@ static void establish_migration_targets(void)
- 			}
- 		} while (1);
- 	}
-+	/*
-+	 * Now build the allowed mask for each node collecting node mask from
-+	 * all memory tier below it. This allows us to fallback demotion page
-+	 * allocation to a set of nodes that is closer the above selected
-+	 * perferred node.
-+	 */
-+	list_for_each_entry(memtier, &memory_tiers, list)
-+		nodes_or(allowed, allowed, memtier->nodelist);
-+	/*
-+	 * Removes nodes not yet in N_MEMORY.
-+	 */
-+	nodes_and(allowed, node_states[N_MEMORY], allowed);
-+
-+	list_for_each_entry(memtier, &memory_tiers, list) {
-+		/*
-+		 * Keep removing current tier from allowed nodes,
-+		 * This will remove all nodes in current and above
-+		 * memory tier from the allowed mask.
-+		 */
-+		nodes_andnot(allowed, allowed, memtier->nodelist);
-+		for_each_node_mask(node, memtier->nodelist)
-+			node_demotion[node].allowed = allowed;
-+	}
- }
- 
- /*
-diff --git a/mm/vmscan.c b/mm/vmscan.c
-index 3a8f78277f99..d424b7af2f26 100644
---- a/mm/vmscan.c
-+++ b/mm/vmscan.c
-@@ -1460,23 +1460,6 @@ static void folio_check_dirty_writeback(struct folio *folio,
- 		mapping->a_ops->is_dirty_writeback(folio, dirty, writeback);
- }
- 
--static struct page *alloc_demote_page(struct page *page, unsigned long node)
+-static inline bool node_is_toptier(int node)
 -{
--	struct migration_target_control mtc = {
--		/*
--		 * Allocate from 'node', or fail quickly and quietly.
--		 * When this happens, 'page' will likely just be discarded
--		 * instead of migrated.
--		 */
--		.gfp_mask = (GFP_HIGHUSER_MOVABLE & ~__GFP_RECLAIM) |
--			    __GFP_THISNODE  | __GFP_NOWARN |
--			    __GFP_NOMEMALLOC | GFP_NOWAIT,
--		.nid = node
--	};
--
--	return alloc_migration_target(page, (unsigned long)&mtc);
+-	return node_state(node, N_CPU);
 -}
 -
+ #endif /* _LINUX_NODE_H_ */
+diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+index a77c78a2b6b5..294873d4be2b 100644
+--- a/mm/huge_memory.c
++++ b/mm/huge_memory.c
+@@ -35,6 +35,7 @@
+ #include <linux/numa.h>
+ #include <linux/page_owner.h>
+ #include <linux/sched/sysctl.h>
++#include <linux/memory-tiers.h>
+ 
+ #include <asm/tlb.h>
+ #include <asm/pgalloc.h>
+diff --git a/mm/memory-tiers.c b/mm/memory-tiers.c
+index 592d939ec28d..df8e9910165a 100644
+--- a/mm/memory-tiers.c
++++ b/mm/memory-tiers.c
+@@ -31,6 +31,7 @@ static struct bus_type memory_tier_subsys = {
+ static void establish_migration_targets(void);
+ static DEFINE_MUTEX(memory_tier_lock);
+ static LIST_HEAD(memory_tiers);
++nodemask_t demotion_target_mask;
+ 
  /*
-  * Take pages on @demote_list and attempt to demote them to
-  * another node.  Pages which are not demoted are left on
-@@ -1487,6 +1470,19 @@ static unsigned int demote_page_list(struct list_head *demote_pages,
- {
- 	int target_nid = next_demotion_node(pgdat->node_id);
- 	unsigned int nr_succeeded;
-+	nodemask_t allowed_mask;
-+
-+	struct migration_target_control mtc = {
-+		/*
-+		 * Allocate from 'node', or fail quickly and quietly.
-+		 * When this happens, 'page' will likely just be discarded
-+		 * instead of migrated.
-+		 */
-+		.gfp_mask = (GFP_HIGHUSER_MOVABLE & ~__GFP_RECLAIM) | __GFP_NOWARN |
-+			__GFP_NOMEMALLOC | GFP_NOWAIT,
-+		.nid = target_nid,
-+		.nmask = &allowed_mask
-+	};
+  * node_demotion[] examples:
+@@ -541,6 +542,15 @@ static void establish_migration_targets(void)
+ 	 */
+ 	list_for_each_entry(memtier, &memory_tiers, list)
+ 		nodes_or(allowed, allowed, memtier->nodelist);
++	/*
++	 * Add nodes to demotion target mask so that we can find
++	 * top tier easily.
++	 */
++	memtier = list_first_entry(&memory_tiers, struct memory_tier, list);
++	if (memtier)
++		nodes_andnot(demotion_target_mask, allowed, memtier->nodelist);
++	else
++		demotion_target_mask = NODE_MASK_NONE;
+ 	/*
+ 	 * Removes nodes not yet in N_MEMORY.
+ 	 */
+diff --git a/mm/migrate.c b/mm/migrate.c
+index 0b554625a219..78615c48fc0f 100644
+--- a/mm/migrate.c
++++ b/mm/migrate.c
+@@ -50,6 +50,7 @@
+ #include <linux/memory.h>
+ #include <linux/random.h>
+ #include <linux/sched/sysctl.h>
++#include <linux/memory-tiers.h>
  
- 	if (list_empty(demote_pages))
- 		return 0;
-@@ -1494,10 +1490,12 @@ static unsigned int demote_page_list(struct list_head *demote_pages,
- 	if (target_nid == NUMA_NO_NODE)
- 		return 0;
+ #include <asm/tlbflush.h>
  
-+	node_get_allowed_targets(pgdat->node_id, &allowed_mask);
-+
- 	/* Demotion ignores all cpuset and mempolicy settings */
--	migrate_pages(demote_pages, alloc_demote_page, NULL,
--			    target_nid, MIGRATE_ASYNC, MR_DEMOTION,
--			    &nr_succeeded);
-+	migrate_pages(demote_pages, alloc_migration_target, NULL,
-+		      (unsigned long)&mtc, MIGRATE_ASYNC, MR_DEMOTION,
-+		      &nr_succeeded);
- 
- 	if (current_is_kswapd())
- 		__count_vm_events(PGDEMOTE_KSWAPD, nr_succeeded);
+diff --git a/mm/mprotect.c b/mm/mprotect.c
+index ba5592655ee3..92a2fc0fa88b 100644
+--- a/mm/mprotect.c
++++ b/mm/mprotect.c
+@@ -31,6 +31,7 @@
+ #include <linux/pgtable.h>
+ #include <linux/sched/sysctl.h>
+ #include <linux/userfaultfd_k.h>
++#include <linux/memory-tiers.h>
+ #include <asm/cacheflush.h>
+ #include <asm/mmu_context.h>
+ #include <asm/tlbflush.h>
 -- 
 2.36.1
 
