@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59FDCCCA47C
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:53:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD803CCA480
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:53:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345572AbiFCRxP (ORCPT
+        id S1345362AbiFCRxX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:53:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44394 "EHLO
+        Fri, 3 Jun 2022 13:53:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345536AbiFCRt6 (ORCPT
+        with ESMTP id S1345474AbiFCRtu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:49:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37FEE580CF;
-        Fri,  3 Jun 2022 10:46:00 -0700 (PDT)
+        Fri, 3 Jun 2022 13:49:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9A9356216;
+        Fri,  3 Jun 2022 10:45:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BA66F60A57;
-        Fri,  3 Jun 2022 17:45:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA453C3411C;
-        Fri,  3 Jun 2022 17:45:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A20260C47;
+        Fri,  3 Jun 2022 17:45:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 885ECC385A9;
+        Fri,  3 Jun 2022 17:45:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278359;
-        bh=zfTUqo6GDEzMCKgCIFEddCEZjBTmFlj6lKUkd3eMTDw=;
+        s=korg; t=1654278350;
+        bh=BzfC/E5W1JA+c9kXAqd5dIf01JrtHZXYXprhMh+nHuI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cBX5oLD0325wlVWpKvDwVO+CWNF+eO5AxiZy15Ig42oKg9SrfIVJjTyuZ3aDBmqQO
-         E1UcNmEyLQu0DMHWxK+eww1cRnZNdLtvEn5+bjZOWgVEO+jDzmLr7UL7QXrgIxmnnW
-         ESKp3Ae0/bF2dx3DpLuOu16GhWKsWp5bcEnj3coY=
+        b=jiD1skAjr+myAkKXLuzuQahvGoWqqiq3Frmt8aQ69c7rXvAjkKp0PRfrpw4xrssaz
+         TH0Fmr5VXUW+9ZY3ieG3ZQVuVAJLkGMIMeMFObZt/7Nfn8QJ2DLRzaZ077mAsxW/PI
+         Pp4nj5vL3tmnAz9AzUuAvXaWg2mrnMVkqKKEDPQs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Miri Korenblit <miriam.rachel.korenblit@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Johannes Berg <johannes.berg@intel.com>
-Subject: [PATCH 5.4 17/34] cfg80211: set custom regdomain after wiphy registration
-Date:   Fri,  3 Jun 2022 19:43:13 +0200
-Message-Id: <20220603173816.495522053@linuxfoundation.org>
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        "From: Andy Shevchenko" <andriy.shevchenko@linux.intel.com>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 14/34] i2c: ismt: Provide a DMA buffer for Interrupt Cause Logging
+Date:   Fri,  3 Jun 2022 19:43:10 +0200
+Message-Id: <20220603173816.410177422@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173815.990072516@linuxfoundation.org>
 References: <20220603173815.990072516@linuxfoundation.org>
@@ -51,68 +51,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miri Korenblit <miriam.rachel.korenblit@intel.com>
+From: Mika Westerberg <mika.westerberg@linux.intel.com>
 
-commit 1b7b3ac8ff3317cdcf07a1c413de9bdb68019c2b upstream.
+[ Upstream commit 17a0f3acdc6ec8b89ad40f6e22165a4beee25663 ]
 
-We used to set regulatory info before the registration of
-the device and then the regulatory info didn't get set, because
-the device isn't registered so there isn't a device to set the
-regulatory info for. So set the regulatory info after the device
-registration.
-Call reg_process_self_managed_hints() once again after the device
-registration because it does nothing before it.
+Before sending a MSI the hardware writes information pertinent to the
+interrupt cause to a memory location pointed by SMTICL register. This
+memory holds three double words where the least significant bit tells
+whether the interrupt cause of master/target/error is valid. The driver
+does not use this but we need to set it up because otherwise it will
+perform DMA write to the default address (0) and this will cause an
+IOMMU fault such as below:
 
-Signed-off-by: Miri Korenblit <miriam.rachel.korenblit@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20210618133832.c96eadcffe80.I86799c2c866b5610b4cf91115c21d8ceb525c5aa@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+  DMAR: DRHD: handling fault status reg 2
+  DMAR: [DMA Write] Request device [00:12.0] PASID ffffffff fault addr 0
+        [fault reason 05] PTE Write access is not set
+
+To prevent this from happening, provide a proper DMA buffer for this
+that then gets mapped by the IOMMU accordingly.
+
+Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Reviewed-by: From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/wireless/core.c |    8 ++++----
- net/wireless/reg.c  |    1 +
- 2 files changed, 5 insertions(+), 4 deletions(-)
+ drivers/i2c/busses/i2c-ismt.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
---- a/net/wireless/core.c
-+++ b/net/wireless/core.c
-@@ -5,7 +5,7 @@
-  * Copyright 2006-2010		Johannes Berg <johannes@sipsolutions.net>
-  * Copyright 2013-2014  Intel Mobile Communications GmbH
-  * Copyright 2015-2017	Intel Deutschland GmbH
-- * Copyright (C) 2018-2019 Intel Corporation
-+ * Copyright (C) 2018-2021 Intel Corporation
-  */
+diff --git a/drivers/i2c/busses/i2c-ismt.c b/drivers/i2c/busses/i2c-ismt.c
+index 2f95e25a10f7..53325419ec13 100644
+--- a/drivers/i2c/busses/i2c-ismt.c
++++ b/drivers/i2c/busses/i2c-ismt.c
+@@ -81,6 +81,7 @@
  
- #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-@@ -891,9 +891,6 @@ int wiphy_register(struct wiphy *wiphy)
- 		return res;
- 	}
+ #define ISMT_DESC_ENTRIES	2	/* number of descriptor entries */
+ #define ISMT_MAX_RETRIES	3	/* number of SMBus retries to attempt */
++#define ISMT_LOG_ENTRIES	3	/* number of interrupt cause log entries */
  
--	/* set up regulatory info */
--	wiphy_regulatory_register(wiphy);
--
- 	list_add_rcu(&rdev->list, &cfg80211_rdev_list);
- 	cfg80211_rdev_list_generation++;
+ /* Hardware Descriptor Constants - Control Field */
+ #define ISMT_DESC_CWRL	0x01	/* Command/Write Length */
+@@ -174,6 +175,8 @@ struct ismt_priv {
+ 	u8 head;				/* ring buffer head pointer */
+ 	struct completion cmp;			/* interrupt completion */
+ 	u8 buffer[I2C_SMBUS_BLOCK_MAX + 16];	/* temp R/W data buffer */
++	dma_addr_t log_dma;
++	u32 *log;
+ };
  
-@@ -904,6 +901,9 @@ int wiphy_register(struct wiphy *wiphy)
- 	cfg80211_debugfs_rdev_add(rdev);
- 	nl80211_notify_wiphy(rdev, NL80211_CMD_NEW_WIPHY);
+ /**
+@@ -408,6 +411,9 @@ static int ismt_access(struct i2c_adapter *adap, u16 addr,
+ 	memset(desc, 0, sizeof(struct ismt_desc));
+ 	desc->tgtaddr_rw = ISMT_DESC_ADDR_RW(addr, read_write);
  
-+	/* set up regulatory info */
-+	wiphy_regulatory_register(wiphy);
++	/* Always clear the log entries */
++	memset(priv->log, 0, ISMT_LOG_ENTRIES * sizeof(u32));
 +
- 	if (wiphy->regulatory_flags & REGULATORY_CUSTOM_REG) {
- 		struct regulatory_request request;
+ 	/* Initialize common control bits */
+ 	if (likely(pci_dev_msi_enabled(priv->pci_dev)))
+ 		desc->control = ISMT_DESC_INT | ISMT_DESC_FAIR;
+@@ -697,6 +703,8 @@ static void ismt_hw_init(struct ismt_priv *priv)
+ 	/* initialize the Master Descriptor Base Address (MDBA) */
+ 	writeq(priv->io_rng_dma, priv->smba + ISMT_MSTR_MDBA);
  
---- a/net/wireless/reg.c
-+++ b/net/wireless/reg.c
-@@ -3790,6 +3790,7 @@ void wiphy_regulatory_register(struct wi
++	writeq(priv->log_dma, priv->smba + ISMT_GR_SMTICL);
++
+ 	/* initialize the Master Control Register (MCTRL) */
+ 	writel(ISMT_MCTRL_MEIE, priv->smba + ISMT_MSTR_MCTRL);
  
- 	wiphy_update_regulatory(wiphy, lr->initiator);
- 	wiphy_all_share_dfs_chan_state(wiphy);
-+	reg_process_self_managed_hints();
+@@ -784,6 +792,12 @@ static int ismt_dev_init(struct ismt_priv *priv)
+ 	priv->head = 0;
+ 	init_completion(&priv->cmp);
+ 
++	priv->log = dmam_alloc_coherent(&priv->pci_dev->dev,
++					ISMT_LOG_ENTRIES * sizeof(u32),
++					&priv->log_dma, GFP_KERNEL);
++	if (!priv->log)
++		return -ENOMEM;
++
+ 	return 0;
  }
  
- void wiphy_regulatory_deregister(struct wiphy *wiphy)
+-- 
+2.35.1
+
 
 
