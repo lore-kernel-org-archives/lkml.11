@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE939C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:44:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9164EC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:45:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345002AbiFCRop (ORCPT
+        id S1345078AbiFCRox (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:44:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57688 "EHLO
+        Fri, 3 Jun 2022 13:44:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345009AbiFCRn6 (ORCPT
+        with ESMTP id S1344838AbiFCRn6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 3 Jun 2022 13:43:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E87DA5402D;
-        Fri,  3 Jun 2022 10:42:25 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8BAC54036;
+        Fri,  3 Jun 2022 10:42:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E20B2B8242D;
-        Fri,  3 Jun 2022 17:42:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22E2AC3411C;
-        Fri,  3 Jun 2022 17:42:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5FD6A61B01;
+        Fri,  3 Jun 2022 17:42:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4576BC36AE5;
+        Fri,  3 Jun 2022 17:42:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278142;
-        bh=NnEyWjMihEvGC1ycsFdaXgQ+EWmAJe/cwgy1WOjErkM=;
+        s=korg; t=1654278145;
+        bh=GLAym5QDd84vfdwkI3wAoy6957Q/5/Y62Zd7C3u27Jk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cbHR+D7VaTTYf0IXKrNmwR1xxzeRH5vWhRKiFzRLitDLE6Z1GKmLbhLP7B09hPoA0
-         E2YV8ERIkoiIz8C95sivFFr0zrUCSxJnPHLB+khnM9B/Laji9G0Yhg1iclxqXd6wRn
-         fLxgz93zGGd3dVqW9rzFOSYgqJFEDklnK+0/jDx8=
+        b=ktcSZbIQdYF80HK79LiSc5zZI+j0ICjGVWa4LAnw0bJoYp2xWYAaMEfWxc0nW7ZUf
+         pZeRy8npw5b5xWLWi9EzgD1cFeYWzD1Z/NV7MozMviBrsB+T134OlmGHRfszLN4pIF
+         KeHuyhm+Bvtn3eOxkQBymdi5+goYlbkuwIi577Ls=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Mike Snitzer <snitzer@kernel.org>
-Subject: [PATCH 4.19 23/30] dm stats: add cond_resched when looping over entries
-Date:   Fri,  3 Jun 2022 19:39:51 +0200
-Message-Id: <20220603173815.775398641@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        David Dworken <ddworken@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Stefan Ghinea <stefan.ghinea@windriver.com>
+Subject: [PATCH 4.19 03/30] tcp: change source port randomizarion at connect() time
+Date:   Fri,  3 Jun 2022 19:39:31 +0200
+Message-Id: <20220603173815.192639169@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173815.088143764@linuxfoundation.org>
 References: <20220603173815.088143764@linuxfoundation.org>
@@ -49,80 +52,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Eric Dumazet <edumazet@google.com>
 
-commit bfe2b0146c4d0230b68f5c71a64380ff8d361f8b upstream.
+commit 190cc82489f46f9d88e73c81a47e14f80a791e1a upstream.
 
-dm-stats can be used with a very large number of entries (it is only
-limited by 1/4 of total system memory), so add rescheduling points to
-the loops that iterate over the entries.
+RFC 6056 (Recommendations for Transport-Protocol Port Randomization)
+provides good summary of why source selection needs extra care.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Mike Snitzer <snitzer@kernel.org>
+David Dworken reminded us that linux implements Algorithm 3
+as described in RFC 6056 3.3.3
+
+Quoting David :
+   In the context of the web, this creates an interesting info leak where
+   websites can count how many TCP connections a user's computer is
+   establishing over time. For example, this allows a website to count
+   exactly how many subresources a third party website loaded.
+   This also allows:
+   - Distinguishing between different users behind a VPN based on
+       distinct source port ranges.
+   - Tracking users over time across multiple networks.
+   - Covert communication channels between different browsers/browser
+       profiles running on the same computer
+   - Tracking what applications are running on a computer based on
+       the pattern of how fast source ports are getting incremented.
+
+Section 3.3.4 describes an enhancement, that reduces
+attackers ability to use the basic information currently
+stored into the shared 'u32 hint'.
+
+This change also decreases collision rate when
+multiple applications need to connect() to
+different destinations.
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: David Dworken <ddworken@google.com>
+Cc: Willem de Bruijn <willemb@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+[SG: Adjusted context]
+Signed-off-by: Stefan Ghinea <stefan.ghinea@windriver.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/dm-stats.c |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ net/ipv4/inet_hashtables.c |   20 +++++++++++++++++---
+ 1 file changed, 17 insertions(+), 3 deletions(-)
 
---- a/drivers/md/dm-stats.c
-+++ b/drivers/md/dm-stats.c
-@@ -224,6 +224,7 @@ void dm_stats_cleanup(struct dm_stats *s
- 				       atomic_read(&shared->in_flight[READ]),
- 				       atomic_read(&shared->in_flight[WRITE]));
- 			}
-+			cond_resched();
- 		}
- 		dm_stat_free(&s->rcu_head);
- 	}
-@@ -313,6 +314,7 @@ static int dm_stats_create(struct dm_sta
- 	for (ni = 0; ni < n_entries; ni++) {
- 		atomic_set(&s->stat_shared[ni].in_flight[READ], 0);
- 		atomic_set(&s->stat_shared[ni].in_flight[WRITE], 0);
-+		cond_resched();
- 	}
- 
- 	if (s->n_histogram_entries) {
-@@ -325,6 +327,7 @@ static int dm_stats_create(struct dm_sta
- 		for (ni = 0; ni < n_entries; ni++) {
- 			s->stat_shared[ni].tmp.histogram = hi;
- 			hi += s->n_histogram_entries + 1;
-+			cond_resched();
- 		}
- 	}
- 
-@@ -345,6 +348,7 @@ static int dm_stats_create(struct dm_sta
- 			for (ni = 0; ni < n_entries; ni++) {
- 				p[ni].histogram = hi;
- 				hi += s->n_histogram_entries + 1;
-+				cond_resched();
- 			}
- 		}
- 	}
-@@ -474,6 +478,7 @@ static int dm_stats_list(struct dm_stats
- 			}
- 			DMEMIT("\n");
- 		}
-+		cond_resched();
- 	}
- 	mutex_unlock(&stats->mutex);
- 
-@@ -750,6 +755,7 @@ static void __dm_stat_clear(struct dm_st
- 				local_irq_enable();
- 			}
- 		}
-+		cond_resched();
- 	}
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -714,6 +714,17 @@ unlock:
  }
+ EXPORT_SYMBOL_GPL(inet_unhash);
  
-@@ -865,6 +871,8 @@ static int dm_stats_print(struct dm_stat
- 
- 		if (unlikely(sz + 1 >= maxlen))
- 			goto buffer_overflow;
++/* RFC 6056 3.3.4.  Algorithm 4: Double-Hash Port Selection Algorithm
++ * Note that we use 32bit integers (vs RFC 'short integers')
++ * because 2^16 is not a multiple of num_ephemeral and this
++ * property might be used by clever attacker.
++ * RFC claims using TABLE_LENGTH=10 buckets gives an improvement,
++ * we use 256 instead to really give more isolation and
++ * privacy, this only consumes 1 KB of kernel memory.
++ */
++#define INET_TABLE_PERTURB_SHIFT 8
++static u32 table_perturb[1 << INET_TABLE_PERTURB_SHIFT];
 +
-+		cond_resched();
- 	}
+ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+ 		struct sock *sk, u32 port_offset,
+ 		int (*check_established)(struct inet_timewait_death_row *,
+@@ -727,7 +738,7 @@ int __inet_hash_connect(struct inet_time
+ 	struct inet_bind_bucket *tb;
+ 	u32 remaining, offset;
+ 	int ret, i, low, high;
+-	static u32 hint;
++	u32 index;
  
- 	if (clear)
+ 	if (port) {
+ 		head = &hinfo->bhash[inet_bhashfn(net, port,
+@@ -752,7 +763,10 @@ int __inet_hash_connect(struct inet_time
+ 	if (likely(remaining > 1))
+ 		remaining &= ~1U;
+ 
+-	offset = (hint + port_offset) % remaining;
++	net_get_random_once(table_perturb, sizeof(table_perturb));
++	index = hash_32(port_offset, INET_TABLE_PERTURB_SHIFT);
++
++	offset = (READ_ONCE(table_perturb[index]) + port_offset) % remaining;
+ 	/* In first pass we try ports of @low parity.
+ 	 * inet_csk_get_port() does the opposite choice.
+ 	 */
+@@ -805,7 +819,7 @@ next_port:
+ 	return -EADDRNOTAVAIL;
+ 
+ ok:
+-	hint += i + 2;
++	WRITE_ONCE(table_perturb[index], READ_ONCE(table_perturb[index]) + i + 2);
+ 
+ 	/* Head lock still held and bh's disabled */
+ 	inet_bind_hash(sk, tb, port);
 
 
