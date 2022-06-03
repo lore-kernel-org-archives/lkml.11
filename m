@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50D89C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:48:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8055AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:48:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345307AbiFCRsq (ORCPT
+        id S1345295AbiFCRsv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:48:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45970 "EHLO
+        Fri, 3 Jun 2022 13:48:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345258AbiFCRsD (ORCPT
+        with ESMTP id S242471AbiFCRsB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:48:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9400957994;
-        Fri,  3 Jun 2022 10:44:32 -0700 (PDT)
+        Fri, 3 Jun 2022 13:48:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF61657114;
+        Fri,  3 Jun 2022 10:44:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E5AC61B38;
-        Fri,  3 Jun 2022 17:44:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DD11C341C0;
-        Fri,  3 Jun 2022 17:44:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 83F13B82433;
+        Fri,  3 Jun 2022 17:44:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA81EC3411E;
+        Fri,  3 Jun 2022 17:44:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278271;
-        bh=atzWDr3Jf2Jp/XXbxcAVp3pEhbI+lZ1uviGA5cgwK2I=;
+        s=korg; t=1654278265;
+        bh=eAgeRX0XfrOtYG0LIdo5Tzi4tDG+++Ix0SbqivlBhe4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ojoOvXXQOGMPpUtr9h7PR/gXZTbEWNZA/XQ8t5ejMu62jMPCZl+81QL73i/B8gypy
-         E4zAkUMuxP1cnGKEgdYnVw+zIYziWlCkTBoAjwhqDHWI4H7X09uUR+R6I0hAsg9zJq
-         Bu/yuxo1cQ0tCYg9MP9A3uHG1HUR4L1bekzJfXT4=
+        b=IuGydQr+uF753CPS05b+kvUnygsd2mLb6FmiHXg0OoMmTngqsqRCJUfsn4Z/dGOZA
+         rxvc4vaMdpYGJpu8kSc+9qVNGBolGCwBPPTtZwNnxLkzSbAYaCWZO4hx50vWTpswUq
+         2cRFW11enJqDNYLl3nefN9gSMFg+gCL9PTN03BP0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dmitry Mastykin <dmastykin@astralinux.ru>,
-        Bastien Nocera <hadess@hadess.net>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Fabio Estevam <festevam@gmail.com>
-Subject: [PATCH 5.4 04/34] Input: goodix - fix spurious key release events
-Date:   Fri,  3 Jun 2022 19:43:00 +0200
-Message-Id: <20220603173816.122230068@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>,
+        Dusty Mabe <dustymabe@redhat.com>,
+        Salvatore Bonaccorso <carnil@debian.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Noah Meyerhans <noahm@debian.org>,
+        Noah Meyerhans <nmeyerha@amazon.com>
+Subject: [PATCH 5.4 02/34] x86/pci/xen: Disable PCI/MSI[-X] masking for XEN_HVM guests
+Date:   Fri,  3 Jun 2022 19:42:58 +0200
+Message-Id: <20220603173816.063706442@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173815.990072516@linuxfoundation.org>
 References: <20220603173815.990072516@linuxfoundation.org>
@@ -51,39 +54,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Mastykin <dmastykin@astralinux.ru>
+From: Thomas Gleixner <tglx@linutronix.de>
 
-commit 24ef83f6e31d20fc121a7cd732b04b498475fca3 upstream.
+commit 7e0815b3e09986d2fe651199363e135b9358132a upstream.
 
-The goodix panel sends spurious interrupts after a 'finger up' event,
-which always cause a timeout.
-We were exiting the interrupt handler by reporting touch_num == 0, but
-this was still processed as valid and caused the code to use the
-uninitialised point_data, creating spurious key release events.
+When a XEN_HVM guest uses the XEN PIRQ/Eventchannel mechanism, then
+PCI/MSI[-X] masking is solely controlled by the hypervisor, but contrary to
+XEN_PV guests this does not disable PCI/MSI[-X] masking in the PCI/MSI
+layer.
 
-Report an error from the interrupt handler so as to avoid processing
-invalid point_data further.
+This can lead to a situation where the PCI/MSI layer masks an MSI[-X]
+interrupt and the hypervisor grants the write despite the fact that it
+already requested the interrupt. As a consequence interrupt delivery on the
+affected device is not happening ever.
 
-Signed-off-by: Dmitry Mastykin <dmastykin@astralinux.ru>
-Reviewed-by: Bastien Nocera <hadess@hadess.net>
-Link: https://lore.kernel.org/r/20200316075302.3759-2-dmastykin@astralinux.ru
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc: Fabio Estevam <festevam@gmail.com>
+Set pci_msi_ignore_mask to prevent that like it's done for XEN_PV guests
+already.
+
+Fixes: 809f9267bbab ("xen: map MSIs into pirqs")
+Reported-by: Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>
+Reported-by: Dusty Mabe <dustymabe@redhat.com>
+Reported-by: Salvatore Bonaccorso <carnil@debian.org>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Tested-by: Noah Meyerhans <noahm@debian.org>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/87tuaduxj5.ffs@tglx
+[nmeyerha@amazon.com: backported to 5.4]
+Signed-off-by: Noah Meyerhans <nmeyerha@amazon.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/input/touchscreen/goodix.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/pci/xen.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/drivers/input/touchscreen/goodix.c
-+++ b/drivers/input/touchscreen/goodix.c
-@@ -335,7 +335,7 @@ static int goodix_ts_read_input_report(s
- 	 * The Goodix panel will send spurious interrupts after a
- 	 * 'finger up' event, which will always cause a timeout.
- 	 */
--	return 0;
-+	return -ENOMSG;
- }
+--- a/arch/x86/pci/xen.c
++++ b/arch/x86/pci/xen.c
+@@ -442,6 +442,11 @@ void __init xen_msi_init(void)
  
- static void goodix_ts_report_touch_8b(struct goodix_ts_data *ts, u8 *coor_data)
+ 	x86_msi.setup_msi_irqs = xen_hvm_setup_msi_irqs;
+ 	x86_msi.teardown_msi_irq = xen_teardown_msi_irq;
++	/*
++	 * With XEN PIRQ/Eventchannels in use PCI/MSI[-X] masking is solely
++	 * controlled by the hypervisor.
++	 */
++	pci_msi_ignore_mask = 1;
+ }
+ #endif
+ 
 
 
