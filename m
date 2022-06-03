@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0769C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:03:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 897B6C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:03:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345191AbiFCSDh (ORCPT
+        id S1346236AbiFCSDl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:03:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58106 "EHLO
+        Fri, 3 Jun 2022 14:03:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343777AbiFCRwP (ORCPT
+        with ESMTP id S1344868AbiFCRwS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:52:15 -0400
+        Fri, 3 Jun 2022 13:52:18 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A7F018365;
-        Fri,  3 Jun 2022 10:52:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A7E11A390;
+        Fri,  3 Jun 2022 10:52:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D900FB823B0;
-        Fri,  3 Jun 2022 17:52:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 464E1C385A9;
-        Fri,  3 Jun 2022 17:52:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D8F3BB82419;
+        Fri,  3 Jun 2022 17:52:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CE6FC385B8;
+        Fri,  3 Jun 2022 17:52:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278731;
-        bh=6Cm8N7iGoLf4zRP7xWJkH3JlP5PHe89qcww/m1kqHZs=;
+        s=korg; t=1654278734;
+        bh=g01vBZVStxAahFQTmtaV2HaIpT1FseCZakkCwgxe3N4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V/od30k6R1+iuSzzUfWZkWVPflj8Mhk3MHLJDdJxeuPYf/MzUTwOC9ab3poFRyoFk
-         e8Lw474Yri1pThF7U5hrX/o1OBTZ0mxb7kaQJ5FmpWXioz2FIFK33bHLAyzqzTFwBY
-         ZNAn4CJhab0hLRE0KmGE761Ox7uGj85j8YJHlnKE=
+        b=R7FvreJ92ZDLVEBhKorjEEX6xQYbEDTpNKY0+h6oyluzyvPfvA9shtkjNODjqSroX
+         WpRqQ4jZvyzDQrCsAi6gktaWkzTrgqvchm78Tyrp/+EyjOP/thOhH/Czo2sV7JCkgh
+         et+DJZuTmItLsOob3ep/xmjwRrMlBAMKSsFJnPv0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Forest Crossman <cyrozap@gmail.com>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 01/75] ALSA: usb-audio: Dont get sample rate for MCT Trigger 5 USB-to-HDMI
-Date:   Fri,  3 Jun 2022 19:42:45 +0200
-Message-Id: <20220603173821.792880987@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        "From: Andy Shevchenko" <andriy.shevchenko@linux.intel.com>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 10/75] i2c: ismt: Provide a DMA buffer for Interrupt Cause Logging
+Date:   Fri,  3 Jun 2022 19:42:54 +0200
+Message-Id: <20220603173822.041903257@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173821.749019262@linuxfoundation.org>
 References: <20220603173821.749019262@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -51,34 +51,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Forest Crossman <cyrozap@gmail.com>
+From: Mika Westerberg <mika.westerberg@linux.intel.com>
 
-[ Upstream commit d7be213849232a2accb219d537edf056d29186b4 ]
+[ Upstream commit 17a0f3acdc6ec8b89ad40f6e22165a4beee25663 ]
 
-This device doesn't support reading the sample rate, so we need to apply
-this quirk to avoid a 15-second delay waiting for three timeouts.
+Before sending a MSI the hardware writes information pertinent to the
+interrupt cause to a memory location pointed by SMTICL register. This
+memory holds three double words where the least significant bit tells
+whether the interrupt cause of master/target/error is valid. The driver
+does not use this but we need to set it up because otherwise it will
+perform DMA write to the default address (0) and this will cause an
+IOMMU fault such as below:
 
-Signed-off-by: Forest Crossman <cyrozap@gmail.com>
-Link: https://lore.kernel.org/r/20220504002444.114011-2-cyrozap@gmail.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+  DMAR: DRHD: handling fault status reg 2
+  DMAR: [DMA Write] Request device [00:12.0] PASID ffffffff fault addr 0
+        [fault reason 05] PTE Write access is not set
+
+To prevent this from happening, provide a proper DMA buffer for this
+that then gets mapped by the IOMMU accordingly.
+
+Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Reviewed-by: From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/usb/quirks.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/i2c/busses/i2c-ismt.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/sound/usb/quirks.c b/sound/usb/quirks.c
-index ab9f3da49941..fbbe59054c3f 100644
---- a/sound/usb/quirks.c
-+++ b/sound/usb/quirks.c
-@@ -1822,6 +1822,8 @@ static const struct usb_audio_quirk_flags_table quirk_flags_table[] = {
- 		   QUIRK_FLAG_IGNORE_CTL_ERROR),
- 	DEVICE_FLG(0x06f8, 0xd002, /* Hercules DJ Console (Macintosh Edition) */
- 		   QUIRK_FLAG_IGNORE_CTL_ERROR),
-+	DEVICE_FLG(0x0711, 0x5800, /* MCT Trigger 5 USB-to-HDMI */
-+		   QUIRK_FLAG_GET_SAMPLE_RATE),
- 	DEVICE_FLG(0x074d, 0x3553, /* Outlaw RR2150 (Micronas UAC3553B) */
- 		   QUIRK_FLAG_GET_SAMPLE_RATE),
- 	DEVICE_FLG(0x08bb, 0x2702, /* LineX FM Transmitter */
+diff --git a/drivers/i2c/busses/i2c-ismt.c b/drivers/i2c/busses/i2c-ismt.c
+index f4820fd3dc13..c01430ce103a 100644
+--- a/drivers/i2c/busses/i2c-ismt.c
++++ b/drivers/i2c/busses/i2c-ismt.c
+@@ -82,6 +82,7 @@
+ 
+ #define ISMT_DESC_ENTRIES	2	/* number of descriptor entries */
+ #define ISMT_MAX_RETRIES	3	/* number of SMBus retries to attempt */
++#define ISMT_LOG_ENTRIES	3	/* number of interrupt cause log entries */
+ 
+ /* Hardware Descriptor Constants - Control Field */
+ #define ISMT_DESC_CWRL	0x01	/* Command/Write Length */
+@@ -175,6 +176,8 @@ struct ismt_priv {
+ 	u8 head;				/* ring buffer head pointer */
+ 	struct completion cmp;			/* interrupt completion */
+ 	u8 buffer[I2C_SMBUS_BLOCK_MAX + 16];	/* temp R/W data buffer */
++	dma_addr_t log_dma;
++	u32 *log;
+ };
+ 
+ static const struct pci_device_id ismt_ids[] = {
+@@ -411,6 +414,9 @@ static int ismt_access(struct i2c_adapter *adap, u16 addr,
+ 	memset(desc, 0, sizeof(struct ismt_desc));
+ 	desc->tgtaddr_rw = ISMT_DESC_ADDR_RW(addr, read_write);
+ 
++	/* Always clear the log entries */
++	memset(priv->log, 0, ISMT_LOG_ENTRIES * sizeof(u32));
++
+ 	/* Initialize common control bits */
+ 	if (likely(pci_dev_msi_enabled(priv->pci_dev)))
+ 		desc->control = ISMT_DESC_INT | ISMT_DESC_FAIR;
+@@ -708,6 +714,8 @@ static void ismt_hw_init(struct ismt_priv *priv)
+ 	/* initialize the Master Descriptor Base Address (MDBA) */
+ 	writeq(priv->io_rng_dma, priv->smba + ISMT_MSTR_MDBA);
+ 
++	writeq(priv->log_dma, priv->smba + ISMT_GR_SMTICL);
++
+ 	/* initialize the Master Control Register (MCTRL) */
+ 	writel(ISMT_MCTRL_MEIE, priv->smba + ISMT_MSTR_MCTRL);
+ 
+@@ -795,6 +803,12 @@ static int ismt_dev_init(struct ismt_priv *priv)
+ 	priv->head = 0;
+ 	init_completion(&priv->cmp);
+ 
++	priv->log = dmam_alloc_coherent(&priv->pci_dev->dev,
++					ISMT_LOG_ENTRIES * sizeof(u32),
++					&priv->log_dma, GFP_KERNEL);
++	if (!priv->log)
++		return -ENOMEM;
++
+ 	return 0;
+ }
+ 
 -- 
 2.35.1
 
