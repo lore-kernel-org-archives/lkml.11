@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49658C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:45:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10830CCA47C
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:45:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345037AbiFCRp3 (ORCPT
+        id S1345084AbiFCRpf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:45:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56830 "EHLO
+        Fri, 3 Jun 2022 13:45:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345092AbiFCRoC (ORCPT
+        with ESMTP id S1344791AbiFCRoj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:44:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E64F5522D;
-        Fri,  3 Jun 2022 10:42:34 -0700 (PDT)
+        Fri, 3 Jun 2022 13:44:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1213D5534B;
+        Fri,  3 Jun 2022 10:42:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F3398B8242E;
-        Fri,  3 Jun 2022 17:42:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C795C385A9;
-        Fri,  3 Jun 2022 17:42:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6977B61B38;
+        Fri,  3 Jun 2022 17:42:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70291C385A9;
+        Fri,  3 Jun 2022 17:42:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278151;
-        bh=jN3i2LdxfYzhR0w/hB0nyLMKgMI6Tdxlrm4dOLX7fsg=;
+        s=korg; t=1654278157;
+        bh=F/0peBmLuxmM9kFRIm+u7NDg01nwTZbsksRv6qgOMnw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RHcXXRiZ0en+FlvnKlXB6WTsyqTsqW2lkoCJS/6Cqq2hVZWxbCuiCanUkp51jGKVK
-         Y1qApdBpHX1PjkMmZMJVbxSkC5IXd+SXWik0vEHFD6/mb+CpArQ810kcDrJpmjbEI+
-         PTcqCSujyQ8aZQh1q4yY6wWJE8qgT+7Ia/VWWA2o=
+        b=tXDsy+tWYKI+7giSoGGaTWWG+InJqzu+zTd3Wqc4Zk/yFvvP91om3h1dJB89U4ql7
+         fb8sTeCNK6sRnw9cewQimfKosPKozkKtqkU/Lm6IWvXmrJsIkgTb4up9ohZy8bGEPr
+         DE8/FzzW1Pad3/gInw5ZjIA4ENmJERWnAq1rgYDA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        dann frazier <dann.frazier@canonical.com>
-Subject: [PATCH 4.19 05/30] ACPI: sysfs: Make sparse happy about address space in use
-Date:   Fri,  3 Jun 2022 19:39:33 +0200
-Message-Id: <20220603173815.250557142@linuxfoundation.org>
+        Thomas Bartschies <thomas.bartschies@cvk.de>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 07/30] net: af_key: check encryption module availability consistency
+Date:   Fri,  3 Jun 2022 19:39:35 +0200
+Message-Id: <20220603173815.309144798@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173815.088143764@linuxfoundation.org>
 References: <20220603173815.088143764@linuxfoundation.org>
@@ -51,43 +51,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: Thomas Bartschies <thomas.bartschies@cvk.de>
 
-commit bdd56d7d8931e842775d2e5b93d426a8d1940e33 upstream.
+[ Upstream commit 015c44d7bff3f44d569716117becd570c179ca32 ]
 
-Sparse is not happy about address space in use in acpi_data_show():
+Since the recent introduction supporting the SM3 and SM4 hash algos for IPsec, the kernel
+produces invalid pfkey acquire messages, when these encryption modules are disabled. This
+happens because the availability of the algos wasn't checked in all necessary functions.
+This patch adds these checks.
 
-drivers/acpi/sysfs.c:428:14: warning: incorrect type in assignment (different address spaces)
-drivers/acpi/sysfs.c:428:14:    expected void [noderef] __iomem *base
-drivers/acpi/sysfs.c:428:14:    got void *
-drivers/acpi/sysfs.c:431:59: warning: incorrect type in argument 4 (different address spaces)
-drivers/acpi/sysfs.c:431:59:    expected void const *from
-drivers/acpi/sysfs.c:431:59:    got void [noderef] __iomem *base
-drivers/acpi/sysfs.c:433:30: warning: incorrect type in argument 1 (different address spaces)
-drivers/acpi/sysfs.c:433:30:    expected void *logical_address
-drivers/acpi/sysfs.c:433:30:    got void [noderef] __iomem *base
-
-Indeed, acpi_os_map_memory() returns a void pointer with dropped specific
-address space. Hence, we don't need to carry out __iomem in acpi_data_show().
-
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Cc: dann frazier <dann.frazier@canonical.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Thomas Bartschies <thomas.bartschies@cvk.de>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/sysfs.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/key/af_key.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/acpi/sysfs.c
-+++ b/drivers/acpi/sysfs.c
-@@ -438,7 +438,7 @@ static ssize_t acpi_data_show(struct fil
- 			      loff_t offset, size_t count)
- {
- 	struct acpi_data_attr *data_attr;
--	void __iomem *base;
-+	void *base;
- 	ssize_t rc;
+diff --git a/net/key/af_key.c b/net/key/af_key.c
+index 170960ef7e36..1bbb6ec89ff3 100644
+--- a/net/key/af_key.c
++++ b/net/key/af_key.c
+@@ -2910,7 +2910,7 @@ static int count_ah_combs(const struct xfrm_tmpl *t)
+ 			break;
+ 		if (!aalg->pfkey_supported)
+ 			continue;
+-		if (aalg_tmpl_set(t, aalg))
++		if (aalg_tmpl_set(t, aalg) && aalg->available)
+ 			sz += sizeof(struct sadb_comb);
+ 	}
+ 	return sz + sizeof(struct sadb_prop);
+@@ -2928,7 +2928,7 @@ static int count_esp_combs(const struct xfrm_tmpl *t)
+ 		if (!ealg->pfkey_supported)
+ 			continue;
  
- 	data_attr = container_of(bin_attr, struct acpi_data_attr, attr);
+-		if (!(ealg_tmpl_set(t, ealg)))
++		if (!(ealg_tmpl_set(t, ealg) && ealg->available))
+ 			continue;
+ 
+ 		for (k = 1; ; k++) {
+@@ -2939,7 +2939,7 @@ static int count_esp_combs(const struct xfrm_tmpl *t)
+ 			if (!aalg->pfkey_supported)
+ 				continue;
+ 
+-			if (aalg_tmpl_set(t, aalg))
++			if (aalg_tmpl_set(t, aalg) && aalg->available)
+ 				sz += sizeof(struct sadb_comb);
+ 		}
+ 	}
+-- 
+2.35.1
+
 
 
