@@ -2,202 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDB2BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 19:48:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE838C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 19:48:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349331AbiFCTsF (ORCPT
+        id S1349343AbiFCTsZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 15:48:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36542 "EHLO
+        Fri, 3 Jun 2022 15:48:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346359AbiFCTsA (ORCPT
+        with ESMTP id S1349338AbiFCTsX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 15:48:00 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E1B439816
-        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 12:47:57 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id k16so11649380wrg.7
-        for <linux-kernel@vger.kernel.org>; Fri, 03 Jun 2022 12:47:57 -0700 (PDT)
+        Fri, 3 Jun 2022 15:48:23 -0400
+Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFE9D3C4A5
+        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 12:48:21 -0700 (PDT)
+Received: by mail-oi1-x22e.google.com with SMTP id r65so11663422oia.9
+        for <linux-kernel@vger.kernel.org>; Fri, 03 Jun 2022 12:48:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=hf1EFIN8wN+xApR8nEDafV6Gk+3OhHAa3jEidZPGbZc=;
-        b=aJaJKzikO5eDUXLYlMQkk6J6ILhL4sZRwmdyNqH6PYP4ohOC3rv2SReqmGB+rPOMht
-         UOTzIp/VT5biwIqC4/FBcLg7lAVXWRiWICMvTdYhef17p6hAvhgAInRBrZtQmSNe9CJH
-         ercSOALRJYh6tZ9fKPlywKZ2m+om0hNFSS/+/hncGejPHNHrEGJzr9ECZomqL6Pfxamm
-         omnr65p7WOu7Up/+h/xzezS5g4dCBQjCyfIZbaTeUmErBqsIuS2BdhnsxTi962FailTo
-         Ijf7seLLuPuA5VJch61OS5Fol22qULKemAVREwRoiQ0L/Oo225JKSi8kRW/U+CjUCa8B
-         TiRg==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=rJbGYhPXmdmUU1rpXgtZOZ0rbYPtaMUluT7u34YQc+k=;
+        b=PSeX+ah8/CcVYWIDXHZiwoxmikkzzleZuTKtu1nyI7D4XtdImvvJg+1CqNwc8P/Ucr
+         etZM4CvbDM+plWXxztuWX5RweH+J6/uIRkQca5QI5AO5xoPb/1h7neru94RakSCTa7q+
+         R5+HllauQoLdpXm/bBo4CeemmcRv+JjW0CvUlgaekwBRXpeHnxpYfQTnmHZ6u91ZuaCd
+         1FvzcB++ewCtQPr1M/ZK1YVmtDeUtvsYdHZJPv9hBsULK7U/6j5Xhl2MiSYzvCf7rkfO
+         U0M0gNEtIa3cnUVXfZPQFKI3e4rXnLFsRqe5kdt9f0Sl+DRPxi7JNrrlFSFoBh2Fw18H
+         hpBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=hf1EFIN8wN+xApR8nEDafV6Gk+3OhHAa3jEidZPGbZc=;
-        b=xQhJfavi8L6iDgAOa95O7xCBUHJCI+D29+kkIBkU4qerfMnI/npG0ZtWOD3q/OGx9W
-         kxPEbYkNoefJt7Dz8Zuz2FY6pZysWBKzJKp+pUi8u+GTSK1X07k/d2PkLsZAPDUmVZle
-         EqSCZLWcvGlq3nJZi7sn8wlDugEpWXuIbfqjiJd368TUGs0+2Dq6b7xPa/Z95UrHDHv0
-         OntEv3yuWA/We56Fq9hto9fsF9+xntQZNmuMQnODgT8fuNtqYChIgi7ivyaj021Z5VYD
-         x2dWOR5jGixw5SugbpZ/OcA291lbf4VmFR+HO2f3Gazy6RG33M+AvLJ9BOprN0BNlQ+s
-         LdBQ==
-X-Gm-Message-State: AOAM533ffRBTEbiXrFNg7yC94i+muQigd3tPMonxqY3sha+15UlbfkQL
-        EVNmlAemgNIhyM98xfRaGPZIDetiYOm+EpA1YFT4ag==
-X-Google-Smtp-Source: ABdhPJwCCN88F2N/ZjqR5N+AF9zRTGhHD/9JuM1YLXYlwR3kMDIsYpeY7Kegy65OyUQUwNRW6n4OVzo6J/DAPZY7wL4=
-X-Received: by 2002:a05:6000:1541:b0:20f:f91a:2095 with SMTP id
- 1-20020a056000154100b0020ff91a2095mr9749227wry.80.1654285675634; Fri, 03 Jun
- 2022 12:47:55 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=rJbGYhPXmdmUU1rpXgtZOZ0rbYPtaMUluT7u34YQc+k=;
+        b=q8sxM8bpCgDZ19WrOooB6gmUsc+EfhWR12gWgPhKRzVpA3ztM3sif+wBtq2OeOgFY3
+         aozYwDjP+iekCQQHum2vswwsUFezGldj3R8JZeEc/xAFnOA/NrNNpb7IYcDMVdViHT/x
+         Hbrv3jK4d0z+9w6Ck4bzAu4svOrNfzp3ylwvIA6bxzJJE8zss17iSLcktX0+wAbxHGMH
+         iGHFpYexRSBgsoah1lhqVa1mE84GNhG9QCkVu61Whcs1Pf3N0NzV2vFxXStNKGnCTeIy
+         EVcj/ipD1mpvggGuXZRBd9L5aILxIASg5O7dIY0GSGmvvTW3RqmjkH6qiirYRUvJG69S
+         FYhQ==
+X-Gm-Message-State: AOAM531r9Xjt5gqABJiT7epSb4W8GfUGEHhr6AoXXCsBBsMmucup8L2E
+        XQlZSbLPgRYfNAMg0XvBUKI=
+X-Google-Smtp-Source: ABdhPJxPbCWTIlZ/CT+IBeY3+2mIvr0jjLC5rgqhmIypLj/PDbIrcdGE+GWki2Fw+2f2eRKVf673rw==
+X-Received: by 2002:aca:6c5:0:b0:325:5bce:bbc1 with SMTP id 188-20020aca06c5000000b003255bcebbc1mr22319697oig.221.1654285700984;
+        Fri, 03 Jun 2022 12:48:20 -0700 (PDT)
+Received: from localhost ([12.97.180.36])
+        by smtp.gmail.com with ESMTPSA id y37-20020a4a9828000000b0040e68c9dce6sm4177469ooi.31.2022.06.03.12.48.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 03 Jun 2022 12:48:20 -0700 (PDT)
+Date:   Fri, 3 Jun 2022 12:46:06 -0700
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Cc:     Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Subject: [GIT PULL] Bitmap patches for v5.19-rc1
+Message-ID: <Yppk/mN+KYTDkvz3@yury-laptop>
 MIME-Version: 1.0
-References: <20220520012133.1217211-1-yosryahmed@google.com> <20220603162247.GC16134@blackbody.suse.cz>
-In-Reply-To: <20220603162247.GC16134@blackbody.suse.cz>
-From:   Yosry Ahmed <yosryahmed@google.com>
-Date:   Fri, 3 Jun 2022 12:47:19 -0700
-Message-ID: <CAJD7tkbp9Tw4oGtxsnHQB+5VZHMFa4J0qvJGRyj3VuuQ4UPF=g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v1 0/5] bpf: rstat: cgroup hierarchical stats
-To:     =?UTF-8?Q?Michal_Koutn=C3=BD?= <mkoutny@suse.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Michal Hocko <mhocko@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Greg Thelen <gthelen@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Cgroups <cgroups@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 3, 2022 at 9:22 AM Michal Koutn=C3=BD <mkoutny@suse.com> wrote:
->
-> Hello Yosry et al.
->
-> This is an interesting piece of work, I'll add some questions and
-> comments.
->
-> On Fri, May 20, 2022 at 01:21:28AM +0000, Yosry Ahmed <yosryahmed@google.=
-com> wrote:
-> > This patch series allows for using bpf to collect hierarchical cgroup
-> > stats efficiently by integrating with the rstat framework. The rstat
-> > framework provides an efficient way to collect cgroup stats and
-> > propagate them through the cgroup hierarchy.
->
-> About the efficiency. Do you have any numbers or examples?
-> IIUC the idea is to utilize the cgroup's rstat subgraph of full tree
-> when flushing.
-> I was looking at your selftest example and the measuring hooks call
-> cgroup_rstat_updated() and they also allocate an entry bpf_map[cg_id].
-> The flush callback then looks up the cg_id for cgroups in the rstat
-> subgraph.
-> (I'm not familiar with bpf_map implementation or performance but I
-> imagine, you're potentially one step away from erasing bpf_map[cg_id] in
-> the flush callback.)
-> It seems to me that you're building a parallel structure (inside
-> bpf_map(s)) with similar purpose to the rstat subgraph.
->
-> So I wonder whether there remains any benefit of coupling this with
-> rstat?
+Hi Linus,
 
-Hi Michal,
+This is a shorter version of the original pull request for 5.19:
+https://lkml.org/lkml/2022/5/27/1096
+with all bitmap_weight_cmp() patches excluded.
 
-Thanks for taking a look at this!
+Please, pull.
 
-The bpf_map[cg_id] is not a similar structure to the rstat flush
-subgraph. This is where the stats are stored. These are long running
-numbers for (virtually) all cgroups on the system, they do not get
-allocated every time we call cgroup_rstat_updated(), only the first
-time. They are actually not erased at all in the whole selftest
-(except when the map is deleted at the end). In a production
-environment, we might have "setup" and "destroy" bpf programs that run
-when cgroups are created/destroyed, and allocate/delete these map
-entries then, to avoid the overhead in the first stat update/flush if
-necessary.
+Thanks,
+Yury
 
-The only reason I didn't do this in the demo selftest is because it
-was complex/long enough as-is, and for the purposes of showcasing and
-testing it seemed enough to allocate entries on demand on the first
-stat update. I can add a comment about this in the selftest if you
-think it's not obvious.
+The following changes since commit ce522ba9ef7e2d9fb22a39eb3371c0c64e2a433e:
 
-In short, think of these bpf maps as equivalents to "struct
-memcg_vmstats" and "struct memcg_vmstats_percpu" in the memory
-controller. They are just containers to store the stats in, they do
-not have any subgraph structure and they have no use beyond storing
-percpu and total stats.
+  Linux 5.18-rc2 (2022-04-10 14:21:36 -1000)
 
-I run small microbenchmarks that are not worth posting, they compared
-the latency of bpf stats collection vs. in-kernel code that adds stats
-to struct memcg_vmstats[_percpu] and flushes them accordingly, the
-difference was marginal. If the map lookups are deemed expensive and a
-bottleneck in the future, I have some ideas about improving that. We
-can rewrite the cgroup storage map to use the generic bpf local
-storage code, and have it be accessible from all programs by a cgroup
-key (like task_storage for e.g.) rather than only programs attached to
-that cgroup. However, this discussion is a tangent here.
+are available in the Git repository at:
 
->
->
-> Also, I'd expect the custom-processed data are useful in the
-> structured form (within bpf_maps) but then there's the cgroup iter thing
-> that takes available data and "flattens" them into text files.
-> I see this was discussed in subthreads already so it's not necessary to
-> return to it. IIUC you somehow intend to provide the custom info via the
-> text files. If that's true, I'd include that in the next cover message
-> (the purpose of the iterator).
+  git@github.com:/norov/linux.git tags/bitmap-for-5.19-rc1
 
-The main reason for this is to provide data in a similar fashion to
-cgroupfs, in text file per-cgroup. I will include this clearly in the
-next cover message. You can always not use the cgroup_iter and access
-the data directly from bpf maps.
+for you to fetch changes up to 0dfe54071d7c828a02917b595456bfde1afdddc9:
 
->
->
-> > * The second patch adds cgroup_rstat_updated() and cgorup_rstat_flush()
-> > kfuncs, to allow bpf stat collectors and readers to communicate with rs=
-tat.
->
-> kfunc means that it can be just called from any BPF program?
-> (I'm thinking of an unprivileged user who issues cgroup_rstat_updated()
-> deep down in the hierarchy repeatedly just to "spam" the rstat subgraph
-> (which slows down flushers above). Arguably, this can be done already
-> e.g. by causing certain MM events, so I'd like to just clarify if this
-> can be a new source of such arbitrary updates.)
+  nodemask: Fix return values to be unsigned (2022-06-03 06:52:58 -0700)
 
-AFAIK loading bpf programs requires a privileged user, so someone has
-to approve such a program. Am I missing something?
+----------------------------------------------------------------
+Bitmap patches for 5.19-rc1
 
->
-> > * The third patch is actually v2 of a previously submitted patch [1]
-> > by Hao Luo. We agreed that it fits better as a part of this series. It
-> > introduces cgroup_iter programs that can dump stats for cgroups to
-> > userspace.
-> > v1 - > v2:
-> > - Getting the cgroup's reference at the time at attaching, instead of
-> >   at the time when iterating. (Yonghong) (context [1])
->
-> I noticed you take the reference to cgroup, that's fine.
-> But the demo program also accesses via RCU pointers
-> (memory_subsys_enabled():cgroup->subsys).
-> Again, my BPF ignorance here, does the iterator framework somehow take
-> care of RCU locks?
+This series includes the following patchsets:
+ - bitmap: optimize bitmap_weight() usage (w/o bitmap_weight_cmp), from me;
+ - lib/bitmap.c make bitmap_print_bitmask_to_buf parseable, from Mauro
+   Carvalho Chehab;
+ - include/linux/find: Fix documentation, from Anna-Maria Behnsen;
+ - bitmap: fix conversion from/to fix-sized arrays, from me;
+ - bitmap: Fix return values to be unsigned, from Kees Cook.
 
-bpf_iter_run_prog() is used to run bpf iterator programs, and it grabs
-rcu read lock before doing so. So AFAICT we are good on that front.
+It has been in linux-next for at least a week with no problems.
 
-Thanks a lot for this great discussion!
+----------------------------------------------------------------
+Anna-Maria Behnsen (1):
+      include/linux/find: Fix documentation
 
->
->
-> Thanks,
-> Michal
+Kees Cook (2):
+      bitmap: Fix return values to be unsigned
+      nodemask: Fix return values to be unsigned
+
+Mauro Carvalho Chehab (1):
+      lib/bitmap.c make bitmap_print_bitmask_to_buf parseable
+
+Yury Norov (27):
+      net: dsa: don't use bitmap_weight() in b53_arl_read()
+      net: systemport: don't use bitmap_weight() in bcm_sysport_rule_set()
+      net: mellanox: fix open-coded for_each_set_bit()
+      iio: fix opencoded for_each_set_bit()
+      qed: rework qed_rdma_bmap_free()
+      KVM: x86: replace bitmap_weight with bitmap_empty where appropriate
+      octeontx2-pf: replace bitmap_weight with bitmap_empty where appropriate
+      qed: replace bitmap_weight with bitmap_empty in qed_roce_stop()
+      risc-v: replace bitmap_weight with bitmap_empty in riscv_fill_hwcap()
+      arch/alpha: replace cpumask_weight with cpumask_empty where appropriate
+      arch/ia64: replace cpumask_weight with cpumask_empty where appropriate
+      arch/x86: replace cpumask_weight with cpumask_empty where appropriate
+      drm/i915/pmu: replace cpumask_weight with cpumask_empty where appropriate
+      irq: mips: replace cpumask_weight with cpumask_empty where appropriate
+      genirq/affinity: replace cpumask_weight with cpumask_empty where appropriate
+      clocksource: replace cpumask_weight with cpumask_empty in clocksource.c
+      mm/vmstat: replace cpumask_weight with cpumask_empty where appropriate
+      arch/x86: replace nodes_weight with nodes_empty where appropriate
+      MAINTAINERS: add cpumask and nodemask files to BITMAP_API
+      lib/bitmap: extend comment for bitmap_(from,to)_arr32()
+      lib: add bitmap_{from,to}_arr64
+      lib/bitmap: add test for bitmap_{from,to}_arr64
+      KVM: s390: replace bitmap_copy with bitmap_{from,to}_arr64 where appropriate
+      drm/amd/pm: use bitmap_{from,to}_arr32 where appropriate
+      ia64: cleanup remove_siblinginfo()
+      KVM: x86: hyper-v: fix type of valid_bank_mask
+      KVM: x86: hyper-v: replace bitmap_weight() with hweight64()
+
+ MAINTAINERS                                        |   4 +
+ arch/alpha/kernel/process.c                        |   2 +-
+ arch/ia64/kernel/setup.c                           |   2 +-
+ arch/ia64/kernel/smpboot.c                         |   4 -
+ arch/riscv/kernel/cpufeature.c                     |   7 +-
+ arch/s390/kvm/kvm-s390.c                           |  10 +-
+ arch/x86/kernel/cpu/resctrl/rdtgroup.c             |  14 +--
+ arch/x86/kvm/hyperv.c                              |  14 +--
+ arch/x86/mm/amdtopology.c                          |   2 +-
+ arch/x86/mm/mmio-mod.c                             |   2 +-
+ arch/x86/mm/numa_emulation.c                       |   4 +-
+ arch/x86/platform/uv/uv_nmi.c                      |   2 +-
+ drivers/gpu/drm/amd/pm/swsmu/smu11/smu_v11_0.c     |   2 +-
+ drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c     |   2 +-
+ drivers/gpu/drm/i915/i915_pmu.c                    |   2 +-
+ drivers/iio/dummy/iio_simple_dummy_buffer.c        |  48 ++++-----
+ drivers/irqchip/irq-bcm6345-l1.c                   |   2 +-
+ drivers/net/dsa/b53/b53_common.c                   |   6 +-
+ drivers/net/ethernet/broadcom/bcmsysport.c         |   6 +-
+ .../ethernet/marvell/octeontx2/nic/otx2_flows.c    |   4 +-
+ .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   |   2 +-
+ drivers/net/ethernet/mellanox/mlx4/cmd.c           |  23 ++--
+ drivers/net/ethernet/qlogic/qed/qed_rdma.c         |  45 +++-----
+ drivers/net/ethernet/qlogic/qed/qed_roce.c         |   2 +-
+ include/linux/bitmap.h                             |  56 ++++++----
+ include/linux/find.h                               |   6 +-
+ include/linux/nodemask.h                           |  38 +++----
+ kernel/irq/affinity.c                              |   2 +-
+ kernel/time/clocksource.c                          |   2 +-
+ lib/bitmap.c                                       | 117 ++++++++++++++++-----
+ lib/nodemask.c                                     |   4 +-
+ lib/test_bitmap.c                                  |  25 +++++
+ mm/vmstat.c                                        |   4 +-
+ tools/include/linux/bitmap.h                       |  17 +--
+ tools/lib/bitmap.c                                 |  20 ++--
+ 35 files changed, 279 insertions(+), 223 deletions(-)
