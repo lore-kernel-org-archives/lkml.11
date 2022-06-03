@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23391C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:19:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4646C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:19:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243620AbiFCSTN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:19:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45276 "EHLO
+        id S1346320AbiFCSTS (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 14:19:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348160AbiFCSGm (ORCPT
+        with ESMTP id S1348331AbiFCSGv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 14:06:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2FF8580ED;
-        Fri,  3 Jun 2022 10:59:54 -0700 (PDT)
+        Fri, 3 Jun 2022 14:06:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E65933A32;
+        Fri,  3 Jun 2022 11:00:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 28831B82369;
-        Fri,  3 Jun 2022 17:59:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E9C2C385A9;
-        Fri,  3 Jun 2022 17:59:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C37F961244;
+        Fri,  3 Jun 2022 17:59:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1775C341C0;
+        Fri,  3 Jun 2022 17:59:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654279145;
-        bh=o55eYgmVhHvolPaEPQyRiu/SsiwcIdehGA0DAyJ0Ytw=;
+        s=korg; t=1654279167;
+        bh=LQ4GAiIPoecpW2UvZsPu+mR5D6ND/oIWgjWyJt1PfTM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MSo/r6lklyO2rrJNMUSXsLSfJtd9u2hvqi2vKXurpnuWrC3l6Wggfr8e03BCaXOa2
-         8pBU9+9XCdhhGrOX//gS5dhJlP7syyI2owDvo3RpzODnjQiHO64h3Opxj2gdeSwzTp
-         ExXEAf6Xo9qB1aEDcH2+rX4q6lecXajd+n0dkDtI=
+        b=g1OgZjPE0j2HNLvcET7k9d5tD3sp7tD9L1yx/rFj7BoLJD5t38U9ef+HZT7fuKZy0
+         Kxivmg+waij3ic4Mz4dPRGBzL24LLlHs/j3Ef6gTZBVsYDQCDhqBjG3QrGR8HgIRkZ
+         Lns7GgtUXMIJETqSx1a4yKyu8dINKh5Edx9/Z7+g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hao Luo <haoluo@google.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: [PATCH 5.18 66/67] bpf: Check PTR_TO_MEM | MEM_RDONLY in check_helper_mem_access
-Date:   Fri,  3 Jun 2022 19:44:07 +0200
-Message-Id: <20220603173822.614061520@linuxfoundation.org>
+        stable@vger.kernel.org, Marek Maslanka <mm@semihalf.com>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Jiri Kosina <jkosina@suse.cz>
+Subject: [PATCH 5.18 45/67] HID: multitouch: Add support for Google Whiskers Touchpad
+Date:   Fri,  3 Jun 2022 19:43:46 +0200
+Message-Id: <20220603173822.028442636@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.731531504@linuxfoundation.org>
 References: <20220603173820.731531504@linuxfoundation.org>
@@ -49,66 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+From: Marek Maślanka <mm@semihalf.com>
 
-commit 97e6d7dab1ca4648821c790a2b7913d6d5d549db upstream.
+commit 1d07cef7fd7599450b3d03e1915efc2a96e1f03f upstream.
 
-The commit being fixed was aiming to disallow users from incorrectly
-obtaining writable pointer to memory that is only meant to be read. This
-is enforced now using a MEM_RDONLY flag.
+The Google Whiskers touchpad does not work properly with the default
+multitouch configuration. Instead, use the same configuration as Google
+Rose.
 
-For instance, in case of global percpu variables, when the BTF type is
-not struct (e.g. bpf_prog_active), the verifier marks register type as
-PTR_TO_MEM | MEM_RDONLY from bpf_this_cpu_ptr or bpf_per_cpu_ptr
-helpers. However, when passing such pointer to kfunc, global funcs, or
-BPF helpers, in check_helper_mem_access, there is no expectation
-MEM_RDONLY flag will be set, hence it is checked as pointer to writable
-memory. Later, verifier sets up argument type of global func as
-PTR_TO_MEM | PTR_MAYBE_NULL, so user can use a global func to get around
-the limitations imposed by this flag.
-
-This check will also cover global non-percpu variables that may be
-introduced in kernel BTF in future.
-
-Also, we update the log message for PTR_TO_BUF case to be similar to
-PTR_TO_MEM case, so that the reason for error is clear to user.
-
-Fixes: 34d3a78c681e ("bpf: Make per_cpu_ptr return rdonly PTR_TO_MEM.")
-Reviewed-by: Hao Luo <haoluo@google.com>
-Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Link: https://lore.kernel.org/r/20220319080827.73251-3-memxor@gmail.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Marek Maslanka <mm@semihalf.com>
+Acked-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/bpf/verifier.c |   12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ drivers/hid/hid-multitouch.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -4876,13 +4876,23 @@ static int check_helper_mem_access(struc
- 		return check_map_access(env, regno, reg->off, access_size,
- 					zero_size_allowed);
- 	case PTR_TO_MEM:
-+		if (type_is_rdonly_mem(reg->type)) {
-+			if (meta && meta->raw_mode) {
-+				verbose(env, "R%d cannot write into %s\n", regno,
-+					reg_type_str(env, reg->type));
-+				return -EACCES;
-+			}
-+		}
- 		return check_mem_region_access(env, regno, reg->off,
- 					       access_size, reg->mem_size,
- 					       zero_size_allowed);
- 	case PTR_TO_BUF:
- 		if (type_is_rdonly_mem(reg->type)) {
--			if (meta && meta->raw_mode)
-+			if (meta && meta->raw_mode) {
-+				verbose(env, "R%d cannot write into %s\n", regno,
-+					reg_type_str(env, reg->type));
- 				return -EACCES;
-+			}
+--- a/drivers/hid/hid-multitouch.c
++++ b/drivers/hid/hid-multitouch.c
+@@ -2178,6 +2178,9 @@ static const struct hid_device_id mt_dev
+ 	{ .driver_data = MT_CLS_GOOGLE,
+ 		HID_DEVICE(HID_BUS_ANY, HID_GROUP_ANY, USB_VENDOR_ID_GOOGLE,
+ 			USB_DEVICE_ID_GOOGLE_TOUCH_ROSE) },
++	{ .driver_data = MT_CLS_GOOGLE,
++		HID_DEVICE(BUS_USB, HID_GROUP_MULTITOUCH_WIN_8, USB_VENDOR_ID_GOOGLE,
++			USB_DEVICE_ID_GOOGLE_WHISKERS) },
  
- 			max_access = &env->prog->aux->max_rdonly_access;
- 		} else {
+ 	/* Generic MT device */
+ 	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_MULTITOUCH, HID_ANY_ID, HID_ANY_ID) },
 
 
