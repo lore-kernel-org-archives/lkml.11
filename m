@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1073CCA473
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:58:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A88EAC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:58:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345950AbiFCR6E (ORCPT
+        id S1345968AbiFCR6I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:58:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46560 "EHLO
+        Fri, 3 Jun 2022 13:58:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346751AbiFCRv3 (ORCPT
+        with ESMTP id S1346752AbiFCRv3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 3 Jun 2022 13:51:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68A635715E;
-        Fri,  3 Jun 2022 10:49:22 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D4705798D;
+        Fri,  3 Jun 2022 10:49:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CDE78B8241D;
-        Fri,  3 Jun 2022 17:49:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 319C1C385A9;
-        Fri,  3 Jun 2022 17:49:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 474A560F3E;
+        Fri,  3 Jun 2022 17:49:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 412DDC385B8;
+        Fri,  3 Jun 2022 17:49:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278559;
-        bh=ygwq7yfFRXP9bKkF4D16aTkBxZUxyK/GL3hNi2M+PPk=;
+        s=korg; t=1654278562;
+        bh=+8/rSL0dktqyZfvWABToCYxgk0Wct5z+yxpZFfy6gak=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VmxlhS1U+0k0mMK0G9bMr8K4jxCwBUpokRALtNDv+6jmJrU0OTZSfPR4Cjl4Q2oai
-         6JVcqbpQk2nxSSmH5gH3WSGdlZKrFih5IQdJQxcgugDxcJAfUZ+d4tyK9wnUn8DLCe
-         gfY8WoUb77yLbxUptG07y5k0qbGZlgFwnFPNEMFk=
+        b=FwhH0zzWRRDj3Bp1eo7IjrJT7KDRKDZ6+JkhSzoGszROzvnC8S85aGiPeTOKxonjJ
+         RH9BGimiM04iZxu0tzjZ/ircNtxg8AD/7IV2FT8UztY/hHwiBw9/IP4+IcSjAz7agH
+         CpvHcJXYWgqR4FQsz4OtK/oz3YPkY4cv5DsPZ0QY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Herbert Xu <herbert@gondor.apana.org.au>,
-        linux-crypto@vger.kernel.org,
-        "Justin M. Forbes" <jforbes@fedoraproject.org>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.15 19/66] lib/crypto: add prompts back to crypto libraries
-Date:   Fri,  3 Jun 2022 19:42:59 +0200
-Message-Id: <20220603173821.218500114@linuxfoundation.org>
+        stable@vger.kernel.org, IotaHydrae <writeforever@foxmail.com>,
+        Andre Przywara <andre.przywara@arm.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 02/66] pinctrl: sunxi: fix f1c100s uart2 function
+Date:   Fri,  3 Jun 2022 19:42:42 +0200
+Message-Id: <20220603173820.738267020@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.663747061@linuxfoundation.org>
 References: <20220603173820.663747061@linuxfoundation.org>
@@ -51,115 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Justin M. Forbes" <jforbes@fedoraproject.org>
+From: IotaHydrae <writeforever@foxmail.com>
 
-commit e56e18985596617ae426ed5997fb2e737cffb58b upstream.
+[ Upstream commit fa8785e5931367e2b43f2c507f26bcf3e281c0ca ]
 
-Commit 6048fdcc5f269 ("lib/crypto: blake2s: include as built-in") took
-away a number of prompt texts from other crypto libraries. This makes
-values flip from built-in to module when oldconfig runs, and causes
-problems when these crypto libs need to be built in for thingslike
-BIG_KEYS.
+Change suniv f1c100s pinctrl,PD14 multiplexing function lvds1 to uart2
 
-Fixes: 6048fdcc5f269 ("lib/crypto: blake2s: include as built-in")
-Cc: Herbert Xu <herbert@gondor.apana.org.au>
-Cc: linux-crypto@vger.kernel.org
-Signed-off-by: Justin M. Forbes <jforbes@fedoraproject.org>
-[Jason: - moved menu into submenu of lib/ instead of root menu
-        - fixed chacha sub-dependencies for CONFIG_CRYPTO]
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+When the pin PD13 and PD14 is setting up to uart2 function in dts,
+there's an error occurred:
+1c20800.pinctrl: unsupported function uart2 on pin PD14
+
+Because 'uart2' is not any one multiplexing option of PD14,
+and pinctrl don't know how to configure it.
+
+So change the pin PD14 lvds1 function to uart2.
+
+Signed-off-by: IotaHydrae <writeforever@foxmail.com>
+Reviewed-by: Andre Przywara <andre.przywara@arm.com>
+Link: https://lore.kernel.org/r/tencent_70C1308DDA794C81CAEF389049055BACEC09@qq.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- crypto/Kconfig     |    2 --
- lib/Kconfig        |    2 ++
- lib/crypto/Kconfig |   17 ++++++++++++-----
- 3 files changed, 14 insertions(+), 7 deletions(-)
+ drivers/pinctrl/sunxi/pinctrl-suniv-f1c100s.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/crypto/Kconfig
-+++ b/crypto/Kconfig
-@@ -1924,5 +1924,3 @@ source "crypto/asymmetric_keys/Kconfig"
- source "certs/Kconfig"
- 
- endif	# if CRYPTO
--
--source "lib/crypto/Kconfig"
---- a/lib/Kconfig
-+++ b/lib/Kconfig
-@@ -121,6 +121,8 @@ config INDIRECT_IOMEM_FALLBACK
- 	  mmio accesses when the IO memory address is not a registered
- 	  emulated region.
- 
-+source "lib/crypto/Kconfig"
-+
- config CRC_CCITT
- 	tristate "CRC-CCITT functions"
- 	help
---- a/lib/crypto/Kconfig
-+++ b/lib/crypto/Kconfig
-@@ -1,5 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0
- 
-+menu "Crypto library routines"
-+
- config CRYPTO_LIB_AES
- 	tristate
- 
-@@ -31,7 +33,7 @@ config CRYPTO_ARCH_HAVE_LIB_CHACHA
- 
- config CRYPTO_LIB_CHACHA_GENERIC
- 	tristate
--	select CRYPTO_ALGAPI
-+	select XOR_BLOCKS
- 	help
- 	  This symbol can be depended upon by arch implementations of the
- 	  ChaCha library interface that require the generic code as a
-@@ -40,7 +42,8 @@ config CRYPTO_LIB_CHACHA_GENERIC
- 	  of CRYPTO_LIB_CHACHA.
- 
- config CRYPTO_LIB_CHACHA
--	tristate
-+	tristate "ChaCha library interface"
-+	depends on CRYPTO
- 	depends on CRYPTO_ARCH_HAVE_LIB_CHACHA || !CRYPTO_ARCH_HAVE_LIB_CHACHA
- 	select CRYPTO_LIB_CHACHA_GENERIC if CRYPTO_ARCH_HAVE_LIB_CHACHA=n
- 	help
-@@ -65,7 +68,7 @@ config CRYPTO_LIB_CURVE25519_GENERIC
- 	  of CRYPTO_LIB_CURVE25519.
- 
- config CRYPTO_LIB_CURVE25519
--	tristate
-+	tristate "Curve25519 scalar multiplication library"
- 	depends on CRYPTO_ARCH_HAVE_LIB_CURVE25519 || !CRYPTO_ARCH_HAVE_LIB_CURVE25519
- 	select CRYPTO_LIB_CURVE25519_GENERIC if CRYPTO_ARCH_HAVE_LIB_CURVE25519=n
- 	help
-@@ -100,7 +103,7 @@ config CRYPTO_LIB_POLY1305_GENERIC
- 	  of CRYPTO_LIB_POLY1305.
- 
- config CRYPTO_LIB_POLY1305
--	tristate
-+	tristate "Poly1305 library interface"
- 	depends on CRYPTO_ARCH_HAVE_LIB_POLY1305 || !CRYPTO_ARCH_HAVE_LIB_POLY1305
- 	select CRYPTO_LIB_POLY1305_GENERIC if CRYPTO_ARCH_HAVE_LIB_POLY1305=n
- 	help
-@@ -109,14 +112,18 @@ config CRYPTO_LIB_POLY1305
- 	  is available and enabled.
- 
- config CRYPTO_LIB_CHACHA20POLY1305
--	tristate
-+	tristate "ChaCha20-Poly1305 AEAD support (8-byte nonce library version)"
- 	depends on CRYPTO_ARCH_HAVE_LIB_CHACHA || !CRYPTO_ARCH_HAVE_LIB_CHACHA
- 	depends on CRYPTO_ARCH_HAVE_LIB_POLY1305 || !CRYPTO_ARCH_HAVE_LIB_POLY1305
-+	depends on CRYPTO
- 	select CRYPTO_LIB_CHACHA
- 	select CRYPTO_LIB_POLY1305
-+	select CRYPTO_ALGAPI
- 
- config CRYPTO_LIB_SHA256
- 	tristate
- 
- config CRYPTO_LIB_SM4
- 	tristate
-+
-+endmenu
+diff --git a/drivers/pinctrl/sunxi/pinctrl-suniv-f1c100s.c b/drivers/pinctrl/sunxi/pinctrl-suniv-f1c100s.c
+index 2801ca706273..68a5b627fb9b 100644
+--- a/drivers/pinctrl/sunxi/pinctrl-suniv-f1c100s.c
++++ b/drivers/pinctrl/sunxi/pinctrl-suniv-f1c100s.c
+@@ -204,7 +204,7 @@ static const struct sunxi_desc_pin suniv_f1c100s_pins[] = {
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+ 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+ 		  SUNXI_FUNCTION(0x2, "lcd"),		/* D20 */
+-		  SUNXI_FUNCTION(0x3, "lvds1"),		/* RX */
++		  SUNXI_FUNCTION(0x3, "uart2"),		/* RX */
+ 		  SUNXI_FUNCTION_IRQ_BANK(0x6, 0, 14)),
+ 	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 15),
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+-- 
+2.35.1
+
 
 
