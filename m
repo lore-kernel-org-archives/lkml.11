@@ -2,86 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D1A7C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 04:59:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBBFBC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 05:05:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239498AbiFCE7V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 00:59:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60118 "EHLO
+        id S239721AbiFCFFM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 01:05:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239407AbiFCE7T (ORCPT
+        with ESMTP id S236793AbiFCFFH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 00:59:19 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D888038BC7
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 21:59:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654232356; x=1685768356;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=XflJj+AVkb5ATVJNtxqgULNANQfV/2C+BCIyozBLS3o=;
-  b=J11wGRpBLvwq4UdFswcbWm3PoEE6t/TDNgxzZHZm+qzh3CXDVZi/28w2
-   fohUsdq0lCMi8G9kaF+7YPMsdep5Jx1CRTwmyplUS8QQSJTmeTUQkHQAM
-   7Oo5FPpNoZMwwyflR3LCP3OYVtbryV6sVbsNXtDoiym9j48G1NiVQf63z
-   KYq6AoLhLmkU5hkUHkXEv8OdBFTujsfBLbXIM+Pq4bNjwJ0KMG4aO02Lf
-   Qx+Zifw3I3KwIimsIb+eI62p1RNk6LWLoZvpiF2clvFscM9vBPrMBG/e6
-   Hf32ep3MtrCVqSHOFIJfgbkNQX5oh9DF9gSVewn3+DjWRlvl1DGrDvukP
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10366"; a="339213146"
-X-IronPort-AV: E=Sophos;i="5.91,273,1647327600"; 
-   d="scan'208";a="339213146"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2022 21:59:16 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,273,1647327600"; 
-   d="scan'208";a="646315933"
-Received: from unknown (HELO localhost.localdomain) ([10.226.216.117])
-  by fmsmga004.fm.intel.com with ESMTP; 02 Jun 2022 21:59:14 -0700
-From:   kah.jing.lee@intel.com
-To:     gregkh@linuxfoundation.org
-Cc:     arnd@arndb.de, dinguyen@kernel.org, kah.jing.lee@intel.com,
-        lftan@altera.com, linux-kernel@vger.kernel.org,
-        tien.sung.ang@intel.com
-Subject: Re: [PATCH 1/2] drivers: misc: intel_sysid: Add sysid from arch to drivers
-Date:   Fri,  3 Jun 2022 12:57:33 +0800
-Message-Id: <20220603045732.3073983-1-kah.jing.lee@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <YpkaTFywg+GkPElr@kroah.com>
-References: <YpkaTFywg+GkPElr@kroah.com>
+        Fri, 3 Jun 2022 01:05:07 -0400
+Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E1663917E;
+        Thu,  2 Jun 2022 22:05:06 -0700 (PDT)
+Received: by mail-il1-x12c.google.com with SMTP id v7so4975835ilo.3;
+        Thu, 02 Jun 2022 22:05:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=V69MdHZeArGR1p037iUfHw/ib1Y8p6jjj2w/lS/WKCY=;
+        b=O4+rsuFI4q2IP6f0kZluT+02DEU246uyHHow4FVb0J3mZ+w6QZ+L7adWYcZDUgcl5h
+         ZgrPzh0NN0iMHRsEC2ODXobnG7acV3TpCPOYVhV4E3iXgCHyHO8Puarr70+u0JVBSyuU
+         5SICaERPcmUqM6txeFYpwKgbZ1yvAxCmKUane++nAtjUEmuJzH1kdiICFhgJNWnulMh/
+         qZG2hcyJLrI/ewZXcjabuyZ81SjHoCpWfExTG+TuSKpF4E/84130KgexiwgtXMxb2H2I
+         GsG9qinfM6Mq25TgGzrzD6fEJBtFqoq67uWejWJuQntFiY3TqYjPqwr9WOIjuzAcErAI
+         dWmA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=V69MdHZeArGR1p037iUfHw/ib1Y8p6jjj2w/lS/WKCY=;
+        b=Y1Ce6HyFfwm5cxdHczRxM+Ief9Wh+ucykyNduhgMVSirvmcX2NegqHEDXwHicQgzU2
+         uXsYOZusCvENmHE35T9cdbFlk94+9fD+mA8HC8+aMLcUAwImfMsJINi3JZcjQmSLgW0Q
+         VV4QY3WBm0luxWc21skUYKS/HTVKbLQvZnnqjhv0hRXHYXVbFu47qrW3nF1CiOwsUdia
+         PoSNS/T60hKKYcmJuGUx+Lo2RNz3zEuTAPicXOP1mtHXKTQcQKAwogqhF4kZDja5trRa
+         V2/Kk4/tJGt7sg4z7i1TQibWqHPstFx8YryubikNIzF334EQGV3foZ0m/4Q2j0zmm+6k
+         wAqA==
+X-Gm-Message-State: AOAM532Vgct46uLL5rmNVo16vzUsOQs2bWRCilAEJf2wmpCR/26x6Veb
+        4ews4AE6hOabUd21tsS5OWNjWlteea8fLXPrEnY=
+X-Google-Smtp-Source: ABdhPJx1Q2URPgzhZwqCBR98Ngqy/AKTQqxQ6EdjLoGuIhPccdjI8x/MzaUCZEQPUAIOTsazaOTNjHjF1YNkqi5X4ww=
+X-Received: by 2002:a02:6014:0:b0:331:57b2:8a3a with SMTP id
+ i20-20020a026014000000b0033157b28a3amr4683275jac.169.1654232705473; Thu, 02
+ Jun 2022 22:05:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220602115141.3962749-1-chenhuacai@loongson.cn>
+ <20220602115141.3962749-2-chenhuacai@loongson.cn> <e68000bf-a271-d1f2-56a5-a9ddce2bbb7c@infradead.org>
+In-Reply-To: <e68000bf-a271-d1f2-56a5-a9ddce2bbb7c@infradead.org>
+From:   Huacai Chen <chenhuacai@gmail.com>
+Date:   Fri, 3 Jun 2022 13:04:55 +0800
+Message-ID: <CAAhV-H4MhHvXMTXN==z2xonfWEtcW8CiBrwnOEznKGira8Yw=g@mail.gmail.com>
+Subject: Re: [PATCH V14 01/24] irqchip: Adjust Kconfig for Loongson
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     Huacai Chen <chenhuacai@loongson.cn>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Airlie <airlied@linux.ie>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Xuefeng Li <lixuefeng@loongson.cn>,
+        Yanteng Si <siyanteng@loongson.cn>,
+        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Marc Zyngier <maz@kernel.org>, WANG Xuerui <git@xen0n.name>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kah Jing Lee <kah.jing.lee@intel.com>
+Hi, Randy,
 
-> On Thu, Jun 02, 2022 at 08:22:13PM +0800, kah.jing.lee@intel.com wrote:
-> > From: Kah Jing Lee <kah.jing.lee@intel.com>
-> > 
-> > Add sysid driver. The Altera(Intel) Sysid component is generally part of an
-> > FPGA design. The component can be hotplugged when the FPGA is reconfigured.
-> > This patch fixes the driver to support the component being hotplugged.
-> > 
-> > Usage:
-> >   cat /sys/bus/platform/devices/soc:base_fpga_region/
-> > 		soc:base_fpga_region:fpga_pr_region0/[addr.sysid]/sysid/id
-> >   cat /sys/bus/platform/devices/soc:base_fpga_region/
-> > 		soc:base_fpga_region:fpga_pr_region0/[addr.sysid]/sysid/timestamp
-> > 
-> > Signed-off-by: Ley Foon Tan <lftan@altera.com>
-> > Signed-off-by: Kah Jing Lee <kah.jing.lee@intel.com>
+On Fri, Jun 3, 2022 at 12:34 AM Randy Dunlap <rdunlap@infradead.org> wrote:
 >
-> Please work with the Intel open source group as there are some internal
-> Intel requirements that you have not met here in order to be able to
-> submit a patch for external people to review.  I'll refrain from
-> reviewing or even considering this to be able to be accepted this until
-> that happens.
+> Hi,
+>
+> On 6/2/22 04:51, Huacai Chen wrote:
+> > diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
+> > index 44fb8843e80e..1cb3967fe798 100644
+> > --- a/drivers/irqchip/Kconfig
+> > +++ b/drivers/irqchip/Kconfig
+> > @@ -557,7 +557,7 @@ config LOONGSON_LIOINTC
+> >
+> >  config LOONGSON_HTPIC
+> >       bool "Loongson3 HyperTransport PIC Controller"
+> > -     depends on MACH_LOONGSON64
+> > +     depends on (MACH_LOONGSON64 && MIPS)
+>
+> If you ever have another patch version, please drop the unnecessary left and
+> right parentheses above.
+OK, thanks, I will do that.
 
-Will update the license header and commit message, and resent.
-Thanks for pointing out =).
-
-> good luck!
-> 
-> greg k-h
+Huacai
+>
+>         depends on MACH_LOONGSON64 && MIPS
+>
+> >       default y
+> >       select IRQ_DOMAIN
+> >       select GENERIC_IRQ_CHIP
+>
+> thanks.
+> --
+> ~Randy
