@@ -2,59 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED1F9CCA482
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 00:54:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E63ACCA488
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 00:54:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241017AbiFCAuW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 20:50:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48106 "EHLO
+        id S241287AbiFCAuf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 20:50:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240192AbiFCApA (ORCPT
+        with ESMTP id S240217AbiFCApI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 20:45:00 -0400
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E65DE33887
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:44:59 -0700 (PDT)
-Received: by mail-pg1-x54a.google.com with SMTP id 35-20020a631563000000b003fc09751ce5so3041070pgv.10
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:44:59 -0700 (PDT)
+        Thu, 2 Jun 2022 20:45:08 -0400
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EFB033887
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:45:07 -0700 (PDT)
+Received: by mail-pl1-x64a.google.com with SMTP id h10-20020a170902f54a00b00166449db7f8so1559856plf.9
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:45:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=OtnB0qk+iHL7LWZoC6KIC/IWoBaMp3LgvsGvrwpciTI=;
-        b=SM5hZsOCJnjzjmKXvwwuoO5XQ+Tb91+teZOF/lDAtfmI/lpiVFFiivLkMA1forFpem
-         HMP3B3y/tNyKbkK0FJ3m0J4eLvIz3ccNt7t4FYCj1ba7+NuS6TMjP0R6x9cXXPcu4jYf
-         +uvg5OvR7N+vFk59BM2TqGjzUAcaW42atTHlUo1NRRBf2VFcA60LuMPwzxPyI/NU8IIa
-         HFnaNINKGsWb3UFQucBFxuqvvhQsGz0an+odi09ifwWgnJeiS0FHFEtSFmbAadqJbsI8
-         OnRHCoGNGAHiUT1JdsaR9guR0WgnHFr+HhzLK5vveMdwwfCRz6y2UbHtsuOfrMGvXCJg
-         DaoQ==
+        bh=i7TyyG/pheXHSCAMN2TUl4WUF9LIX1YQpLdcH3B6/rg=;
+        b=eJHqEVN5MVelv00NchUI0BZIRKsIQEv+Gq5cslmQpY1sO4avZyHI3M7BGccJ4bc2v1
+         uF2dHcPQ5MyodQd9CXrbG5uM3Ox4lGFumLtbQvHC6RwQGOY1NBa12/UAnm8piJVm7KaY
+         UXPMv5N1VuxcsE0aMrjRjlhYsuFuTdzcc1GfWt2QNUZ3FauIW5IhIgBSMAFShkYrlXS+
+         qoF+E6r+YqUpk+FhMgXmV5bOoIbO7579xy9C86hUmv05OZuf4O6SNbWv2g8jN82dnsQf
+         khWPyTKs6wLo1jMEAmr2eCUu44cQXo6FHEYWFJ3ZUB/735moyDSrttQWG92u4iEZEjoX
+         ON+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=OtnB0qk+iHL7LWZoC6KIC/IWoBaMp3LgvsGvrwpciTI=;
-        b=lDx/Bd7j49gsvjipGhBkCHPnHEgudhKDxh3vHL9Tpr0vxn9sU6HaD1O4iH53yfd5NT
-         fKm6gbCIc91xaggihyjR0fc0J08DmiQ58pkk10z7rCFOPqrpqF/3aZEjMnb0tumdu5GV
-         IeyE8hDqIyD0WTqnPB2m9m/pXtVqIjYbNVxYryqUx/TTegE1khUmwgyGuYpPW6Tqkl3U
-         GhV/5kbfra4+Yr1YgbnnLUQxDenzjJUlw7I5qTILhbWwnCaWhpMJDXr6Smmj/n5daig1
-         ZARTP+4CJM8iDba8HMtHKswk2uO7PRXlaUAHChd2e6OoAwebSRskEJ+4kUKpIztoM8Rd
-         G0hg==
-X-Gm-Message-State: AOAM533tab0SwmrTrGXGRn306bT7LoxQ9MAqgxkEs+m1J3URr9jpMsHJ
-        FOeNy0ZP/C0zXW+CI7UsrvbVnoJGIRE=
-X-Google-Smtp-Source: ABdhPJz5PHPfFJRawUL9QMmJ/p/TLAMrjh+Ke3TEZk/Ktj9HOT8z4NC6EhfF1CehkKlF2+tE0gqokaAcQ5c=
+        bh=i7TyyG/pheXHSCAMN2TUl4WUF9LIX1YQpLdcH3B6/rg=;
+        b=FXcyGk+V3ak3pCQn5z2GhVh0M20yXV/kF5/Gm15Np6Qplaj8+wtGZV26k45KKmPtNk
+         gH1TlEbbL0I1Z1f3v1pm++yKsBVgG6YLQSO6cTU/gdjTeVtXrMGn8rFIA+/WEaEUyozQ
+         rdHj11fd8Pr2ddKEiin89OPmlwRwYAQhwl3eSTnpswxkD0svuiUl7keBaSsNCX2GdurV
+         J5EY7vyyoNoTN9m98iA0NiulPYNFjjpYAMmY91bPfinrK05wT367jIoy8CEevXySCyoX
+         skcZj+lc3c5J5vvg86YHzrRibU7E5MRC8nkowJJw4egzlnJUBxXFJcA6hBU/+bhLppzN
+         pZ9w==
+X-Gm-Message-State: AOAM533oUJmU/nXdyBzvJqS+m+8w/yuqpGfGYfEOWOliBBoumHxcWyYd
+        O6QDKqg+xzvQhLM1wWXyFDkheZ7zCfE=
+X-Google-Smtp-Source: ABdhPJzgBie8tvjnKymUCzbRf0t4xAGfUMFR246RyJ+7kX0YkbRNxZRAdC7zg2eT+LI69mCB8QeX0/AJNcI=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a05:6a00:2396:b0:51b:3ee1:e46e with SMTP id
- f22-20020a056a00239600b0051b3ee1e46emr7862959pfc.17.1654217099317; Thu, 02
- Jun 2022 17:44:59 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:902:9891:b0:166:496a:b44d with SMTP id
+ s17-20020a170902989100b00166496ab44dmr3892350plp.13.1654217106370; Thu, 02
+ Jun 2022 17:45:06 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri,  3 Jun 2022 00:41:52 +0000
+Date:   Fri,  3 Jun 2022 00:41:56 +0000
 In-Reply-To: <20220603004331.1523888-1-seanjc@google.com>
-Message-Id: <20220603004331.1523888-46-seanjc@google.com>
+Message-Id: <20220603004331.1523888-50-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220603004331.1523888-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v2 045/144] KVM: selftests: Make vm_create() a wrapper that
- specifies VM_MODE_DEFAULT
+Subject: [PATCH v2 049/144] KVM: selftests: Return the created vCPU from vm_vcpu_add()
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     kvm@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
@@ -67,185 +66,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add ____vm_create() to be the innermost helper, and turn vm_create() into
-a wrapper the specifies VM_MODE_DEFAULT.  Most of the vm_create() callers
-just want the default mode, or more accurately, don't care about the mode.
+Return the created vCPU from vm_vcpu_add() so that callers don't need to
+manually retrieve the vCPU that was just added.  Opportunistically drop
+the "heavy" function comment, it adds a lot of lines of "code" but not
+much value, e.g. it's pretty obvious that @vm is a virtual machine...
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../testing/selftests/kvm/aarch64/psci_test.c  |  2 +-
- tools/testing/selftests/kvm/dirty_log_test.c   |  2 +-
- .../selftests/kvm/hardware_disable_test.c      |  2 +-
- .../selftests/kvm/include/kvm_util_base.h      | 18 +++++++++++++-----
- tools/testing/selftests/kvm/lib/kvm_util.c     | 16 ++++++++--------
- .../kvm/x86_64/pmu_event_filter_test.c         |  2 +-
- .../selftests/kvm/x86_64/set_boot_cpu_id.c     |  2 +-
- 7 files changed, 26 insertions(+), 18 deletions(-)
+ .../selftests/kvm/include/kvm_util_base.h     |  2 +-
+ tools/testing/selftests/kvm/lib/kvm_util.c    | 27 +++++++------------
+ 2 files changed, 10 insertions(+), 19 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/aarch64/psci_test.c b/tools/testing/selftests/kvm/aarch64/psci_test.c
-index ffa0cdc0ab3d..fa4e6c3343d7 100644
---- a/tools/testing/selftests/kvm/aarch64/psci_test.c
-+++ b/tools/testing/selftests/kvm/aarch64/psci_test.c
-@@ -78,7 +78,7 @@ static struct kvm_vm *setup_vm(void *guest_code)
- 	struct kvm_vcpu_init init;
- 	struct kvm_vm *vm;
- 
--	vm = vm_create(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES);
-+	vm = vm_create(DEFAULT_GUEST_PHY_PAGES);
- 	ucall_init(vm, NULL);
- 
- 	vm_ioctl(vm, KVM_ARM_PREFERRED_TARGET, &init);
-diff --git a/tools/testing/selftests/kvm/dirty_log_test.c b/tools/testing/selftests/kvm/dirty_log_test.c
-index b921d0b45647..cf426a8ae816 100644
---- a/tools/testing/selftests/kvm/dirty_log_test.c
-+++ b/tools/testing/selftests/kvm/dirty_log_test.c
-@@ -674,7 +674,7 @@ static struct kvm_vm *create_vm(enum vm_guest_mode mode, uint32_t vcpuid,
- 
- 	pr_info("Testing guest mode: %s\n", vm_guest_mode_string(mode));
- 
--	vm = vm_create(mode, DEFAULT_GUEST_PHY_PAGES + extra_pg_pages);
-+	vm = __vm_create(mode, DEFAULT_GUEST_PHY_PAGES + extra_pg_pages);
- 
- 	log_mode_create_vm_done(vm);
- 	vm_vcpu_add_default(vm, vcpuid, guest_code);
-diff --git a/tools/testing/selftests/kvm/hardware_disable_test.c b/tools/testing/selftests/kvm/hardware_disable_test.c
-index 299862a85b8d..ccbbf8783e2d 100644
---- a/tools/testing/selftests/kvm/hardware_disable_test.c
-+++ b/tools/testing/selftests/kvm/hardware_disable_test.c
-@@ -104,7 +104,7 @@ static void run_test(uint32_t run)
- 	for (i = 0; i < VCPU_NUM; i++)
- 		CPU_SET(i, &cpu_set);
- 
--	vm  = vm_create(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES);
-+	vm  = vm_create(DEFAULT_GUEST_PHY_PAGES);
- 
- 	pr_debug("%s: [%d] start vcpus\n", __func__, run);
- 	for (i = 0; i < VCPU_NUM; ++i) {
 diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
-index b09ef551d61b..6418b1c04bc0 100644
+index d2c7fb391fc7..fbc54e920383 100644
 --- a/tools/testing/selftests/kvm/include/kvm_util_base.h
 +++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
-@@ -247,7 +247,6 @@ static inline void vm_enable_cap(struct kvm_vm *vm, uint32_t cap, uint64_t arg0)
- void vm_enable_dirty_ring(struct kvm_vm *vm, uint32_t ring_size);
- const char *vm_guest_mode_string(uint32_t i);
- 
--struct kvm_vm *__vm_create(enum vm_guest_mode mode, uint64_t phy_pages);
- void kvm_vm_free(struct kvm_vm *vmp);
- void kvm_vm_restart(struct kvm_vm *vmp);
- void kvm_vm_release(struct kvm_vm *vmp);
-@@ -595,9 +594,21 @@ vm_paddr_t vm_phy_pages_alloc(struct kvm_vm *vm, size_t num,
- 			      vm_paddr_t paddr_min, uint32_t memslot);
- vm_paddr_t vm_alloc_page_table(struct kvm_vm *vm);
- 
-+/*
-+ * ____vm_create() does KVM_CREATE_VM and little else.  __vm_create() also
-+ * loads the test binary into guest memory and creates an IRQ chip (x86 only).
-+ */
-+struct kvm_vm *____vm_create(enum vm_guest_mode mode, uint64_t nr_pages);
-+struct kvm_vm *__vm_create(enum vm_guest_mode mode, uint64_t nr_pages);
-+
- static inline struct kvm_vm *vm_create_barebones(void)
- {
--	return __vm_create(VM_MODE_DEFAULT, 0);
-+	return ____vm_create(VM_MODE_DEFAULT, 0);
-+}
-+
-+static inline struct kvm_vm *vm_create(uint64_t nr_pages)
-+{
-+	return __vm_create(VM_MODE_DEFAULT, nr_pages);
- }
- 
- /*
-@@ -629,9 +640,6 @@ struct kvm_vm *vm_create_with_vcpus(enum vm_guest_mode mode, uint32_t nr_vcpus,
- 				    uint32_t num_percpu_pages, void *guest_code,
- 				    uint32_t vcpuids[]);
- 
--/* Create a default VM without any vcpus. */
--struct kvm_vm *vm_create(enum vm_guest_mode mode, uint64_t pages);
--
- /*
-  * Create a VM with a single vCPU with reasonable defaults and @extra_mem_pages
-  * additional pages of guest memory.  Returns the VM and vCPU (via out param).
+@@ -324,7 +324,7 @@ void vm_userspace_mem_region_add(struct kvm_vm *vm,
+ void vm_mem_region_set_flags(struct kvm_vm *vm, uint32_t slot, uint32_t flags);
+ void vm_mem_region_move(struct kvm_vm *vm, uint32_t slot, uint64_t new_gpa);
+ void vm_mem_region_delete(struct kvm_vm *vm, uint32_t slot);
+-void vm_vcpu_add(struct kvm_vm *vm, uint32_t vcpuid);
++struct kvm_vcpu *vm_vcpu_add(struct kvm_vm *vm, uint32_t vcpuid);
+ vm_vaddr_t vm_vaddr_alloc(struct kvm_vm *vm, size_t sz, vm_vaddr_t vaddr_min);
+ vm_vaddr_t vm_vaddr_alloc_pages(struct kvm_vm *vm, int nr_pages);
+ vm_vaddr_t vm_vaddr_alloc_page(struct kvm_vm *vm);
 diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
-index 227b306b6efe..76ac1c50c3e7 100644
+index 99d6c5a8659e..8348fa19690a 100644
 --- a/tools/testing/selftests/kvm/lib/kvm_util.c
 +++ b/tools/testing/selftests/kvm/lib/kvm_util.c
-@@ -149,12 +149,12 @@ const struct vm_guest_mode_params vm_guest_mode_params[] = {
- _Static_assert(sizeof(vm_guest_mode_params)/sizeof(struct vm_guest_mode_params) == NUM_VM_MODES,
- 	       "Missing new mode params?");
- 
--struct kvm_vm *__vm_create(enum vm_guest_mode mode, uint64_t phy_pages)
-+struct kvm_vm *____vm_create(enum vm_guest_mode mode, uint64_t nr_pages)
+@@ -397,8 +397,7 @@ struct kvm_vcpu *vm_recreate_with_one_vcpu(struct kvm_vm *vm)
  {
- 	struct kvm_vm *vm;
+ 	kvm_vm_restart(vm);
  
- 	pr_debug("%s: mode='%s' pages='%ld'\n", __func__,
--		 vm_guest_mode_string(mode), phy_pages);
-+		 vm_guest_mode_string(mode), nr_pages);
- 
- 	vm = calloc(1, sizeof(*vm));
- 	TEST_ASSERT(vm != NULL, "Insufficient Memory");
-@@ -251,20 +251,20 @@ struct kvm_vm *__vm_create(enum vm_guest_mode mode, uint64_t phy_pages)
- 
- 	/* Allocate and setup memory for guest. */
- 	vm->vpages_mapped = sparsebit_alloc();
--	if (phy_pages != 0)
-+	if (nr_pages != 0)
- 		vm_userspace_mem_region_add(vm, VM_MEM_SRC_ANONYMOUS,
--					    0, 0, phy_pages, 0);
-+					    0, 0, nr_pages, 0);
- 
- 	return vm;
+-	vm_vcpu_add(vm, 0);
+-	return vcpu_get(vm, 0);
++	return vm_vcpu_add(vm, 0);
  }
  
--struct kvm_vm *vm_create(enum vm_guest_mode mode, uint64_t pages)
-+struct kvm_vm *__vm_create(enum vm_guest_mode mode, uint64_t nr_pages)
- {
- 	struct kvm_vm *vm;
- 
--	pages = vm_adjust_num_guest_pages(VM_MODE_DEFAULT, pages);
-+	nr_pages = vm_adjust_num_guest_pages(VM_MODE_DEFAULT, nr_pages);
- 
--	vm = __vm_create(mode, pages);
-+	vm = ____vm_create(mode, nr_pages);
- 
- 	kvm_vm_elf_load(vm, program_invocation_name);
- 
-@@ -323,7 +323,7 @@ struct kvm_vm *vm_create_with_vcpus(enum vm_guest_mode mode, uint32_t nr_vcpus,
- 		    "nr_vcpus = %d too large for host, max-vcpus = %d",
- 		    nr_vcpus, kvm_check_cap(KVM_CAP_MAX_VCPUS));
- 
--	vm = vm_create(mode, pages);
-+	vm = __vm_create(mode, pages);
- 
- 	for (i = 0; i < nr_vcpus; ++i) {
- 		uint32_t vcpuid = vcpuids ? vcpuids[i] : i;
-diff --git a/tools/testing/selftests/kvm/x86_64/pmu_event_filter_test.c b/tools/testing/selftests/kvm/x86_64/pmu_event_filter_test.c
-index 7eb325466fbc..640b1a1ab3df 100644
---- a/tools/testing/selftests/kvm/x86_64/pmu_event_filter_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/pmu_event_filter_test.c
-@@ -339,7 +339,7 @@ static void test_pmu_config_disable(void (*guest_code)(void))
- 	if (!(r & KVM_PMU_CAP_DISABLE))
- 		return;
- 
--	vm = vm_create(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES);
-+	vm = vm_create(DEFAULT_GUEST_PHY_PAGES);
- 
- 	vm_enable_cap(vm, KVM_CAP_PMU_CAPABILITY, KVM_PMU_CAP_DISABLE);
- 
-diff --git a/tools/testing/selftests/kvm/x86_64/set_boot_cpu_id.c b/tools/testing/selftests/kvm/x86_64/set_boot_cpu_id.c
-index 6bc13cf17220..9ba3cd4e7f20 100644
---- a/tools/testing/selftests/kvm/x86_64/set_boot_cpu_id.c
-+++ b/tools/testing/selftests/kvm/x86_64/set_boot_cpu_id.c
-@@ -86,7 +86,7 @@ static struct kvm_vm *create_vm(void)
- 	uint64_t extra_pg_pages = vcpu_pages / PTES_PER_MIN_PAGE * N_VCPU;
- 	uint64_t pages = DEFAULT_GUEST_PHY_PAGES + vcpu_pages + extra_pg_pages;
- 
--	return vm_create(VM_MODE_DEFAULT, pages);
-+	return vm_create(pages);
+ /*
+@@ -1063,33 +1062,23 @@ static int vcpu_mmap_sz(void)
  }
  
- static void add_x86_vcpu(struct kvm_vm *vm, uint32_t vcpuid, bool bsp_code)
+ /*
+- * VM VCPU Add
+- *
+- * Input Args:
+- *   vm - Virtual Machine
+- *   vcpuid - VCPU ID
+- *
+- * Output Args: None
+- *
+- * Return: None
+- *
+- * Adds a virtual CPU to the VM specified by vm with the ID given by vcpuid.
+- * No additional VCPU setup is done.
++ * Adds a virtual CPU to the VM specified by vm with the ID given by vcpu_id.
++ * No additional vCPU setup is done.  Returns the vCPU.
+  */
+-void vm_vcpu_add(struct kvm_vm *vm, uint32_t vcpuid)
++struct kvm_vcpu *vm_vcpu_add(struct kvm_vm *vm, uint32_t vcpu_id)
+ {
+ 	struct kvm_vcpu *vcpu;
+ 
+ 	/* Confirm a vcpu with the specified id doesn't already exist. */
+-	TEST_ASSERT(!vcpu_find(vm, vcpuid), "vCPU%d already exists\n", vcpuid);
++	TEST_ASSERT(!vcpu_find(vm, vcpu_id), "vCPU%d already exists\n", vcpu_id);
+ 
+ 	/* Allocate and initialize new vcpu structure. */
+ 	vcpu = calloc(1, sizeof(*vcpu));
+ 	TEST_ASSERT(vcpu != NULL, "Insufficient Memory");
+ 
+ 	vcpu->vm = vm;
+-	vcpu->id = vcpuid;
+-	vcpu->fd = __vm_ioctl(vm, KVM_CREATE_VCPU, (void *)(unsigned long)vcpuid);
++	vcpu->id = vcpu_id;
++	vcpu->fd = __vm_ioctl(vm, KVM_CREATE_VCPU, (void *)(unsigned long)vcpu_id);
+ 	TEST_ASSERT(vcpu->fd >= 0, KVM_IOCTL_ERROR(KVM_CREATE_VCPU, vcpu->fd));
+ 
+ 	TEST_ASSERT(vcpu_mmap_sz() >= sizeof(*vcpu->run), "vcpu mmap size "
+@@ -1102,6 +1091,8 @@ void vm_vcpu_add(struct kvm_vm *vm, uint32_t vcpuid)
+ 
+ 	/* Add to linked-list of VCPUs. */
+ 	list_add(&vcpu->list, &vm->vcpus);
++
++	return vcpu;
+ }
+ 
+ /*
 -- 
 2.36.1.255.ge46751e96f-goog
 
