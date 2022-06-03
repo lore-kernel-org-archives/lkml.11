@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DA64C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:14:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23FF1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:14:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231340AbiFCSOm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:14:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47812 "EHLO
+        id S1346531AbiFCSOq (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 14:14:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346435AbiFCSAR (ORCPT
+        with ESMTP id S1346478AbiFCSAV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 14:00:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 125B558E55;
-        Fri,  3 Jun 2022 10:56:26 -0700 (PDT)
+        Fri, 3 Jun 2022 14:00:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 677A658E65;
+        Fri,  3 Jun 2022 10:56:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 863906147E;
-        Fri,  3 Jun 2022 17:56:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 760DDC385B8;
-        Fri,  3 Jun 2022 17:56:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 182FBB82419;
+        Fri,  3 Jun 2022 17:56:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80237C385A9;
+        Fri,  3 Jun 2022 17:56:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278984;
-        bh=4s/qfcd7m36IGhRpyGgRTOHB6EW2VRul4AL6adni7zI=;
+        s=korg; t=1654278990;
+        bh=+eAbAqVQE5DVCKFhG3e268Ipd7JndauGDdwdIiUaX2A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g8rKOks9ARihWwoIMGzT0Av5nQilYwO0tVw4of3hBJuqqHrsNP8mpcxcrZncuTRrd
-         iusKVatUolkK+/ErrjgMjNa6MwybGH0JHVD8eq8TTitYfMkqZHmL6risbqnrHHz0b1
-         JPVUvFNhOwZv70X39d9ezSFBrV1uSN9GkinDgPow=
+        b=nPamqwUuNS9UOIalxowFi83gBfQxE+VLDSXkLvmo38Fu0QDldtbKtkVxQ59PkS73m
+         T7tElu/KpD5LyHAD2777pWFbMG22O0cLlTFds+Ua/YyNcuwFufV2yAZecY/gQUsnGz
+         VcP6YQGs2XFMUX9vNhr2eZ9EFlDnqVnwAZ36VXgQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zdenek Kaspar <zkaspar82@gmail.com>,
-        "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>,
-        Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
-        Sean Christopherson <seanjc@google.com>
-Subject: [PATCH 5.18 16/67] x86/fpu: KVM: Set the base guest FPU uABI size to sizeof(struct kvm_xsave)
-Date:   Fri,  3 Jun 2022 19:43:17 +0200
-Message-Id: <20220603173821.199192719@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.18 18/67] x86, kvm: use correct GFP flags for preemption disabled
+Date:   Fri,  3 Jun 2022 19:43:19 +0200
+Message-Id: <20220603173821.254695331@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.731531504@linuxfoundation.org>
 References: <20220603173820.731531504@linuxfoundation.org>
@@ -50,113 +49,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Paolo Bonzini <pbonzini@redhat.com>
 
-commit d187ba5312307d51818beafaad87d28a7d939adf upstream.
+commit baec4f5a018fe2d708fc1022330dba04b38b5fe3 upstream.
 
-Set the starting uABI size of KVM's guest FPU to 'struct kvm_xsave',
-i.e. to KVM's historical uABI size.  When saving FPU state for usersapce,
-KVM (well, now the FPU) sets the FP+SSE bits in the XSAVE header even if
-the host doesn't support XSAVE.  Setting the XSAVE header allows the VM
-to be migrated to a host that does support XSAVE without the new host
-having to handle FPU state that may or may not be compatible with XSAVE.
+Commit ddd7ed842627 ("x86/kvm: Alloc dummy async #PF token outside of
+raw spinlock") leads to the following Smatch static checker warning:
 
-Setting the uABI size to the host's default size results in out-of-bounds
-writes (setting the FP+SSE bits) and data corruption (that is thankfully
-caught by KASAN) when running on hosts without XSAVE, e.g. on Core2 CPUs.
+	arch/x86/kernel/kvm.c:212 kvm_async_pf_task_wake()
+	warn: sleeping in atomic context
 
-WARN if the default size is larger than KVM's historical uABI size; all
-features that can push the FPU size beyond the historical size must be
-opt-in.
+arch/x86/kernel/kvm.c
+    202         raw_spin_lock(&b->lock);
+    203         n = _find_apf_task(b, token);
+    204         if (!n) {
+    205                 /*
+    206                  * Async #PF not yet handled, add a dummy entry for the token.
+    207                  * Allocating the token must be down outside of the raw lock
+    208                  * as the allocator is preemptible on PREEMPT_RT kernels.
+    209                  */
+    210                 if (!dummy) {
+    211                         raw_spin_unlock(&b->lock);
+--> 212                         dummy = kzalloc(sizeof(*dummy), GFP_KERNEL);
+                                                                ^^^^^^^^^^
+Smatch thinks the caller has preempt disabled.  The `smdb.py preempt
+kvm_async_pf_task_wake` output call tree is:
 
-  ==================================================================
-  BUG: KASAN: slab-out-of-bounds in fpu_copy_uabi_to_guest_fpstate+0x86/0x130
-  Read of size 8 at addr ffff888011e33a00 by task qemu-build/681
-  CPU: 1 PID: 681 Comm: qemu-build Not tainted 5.18.0-rc5-KASAN-amd64 #1
-  Hardware name:  /DG35EC, BIOS ECG3510M.86A.0118.2010.0113.1426 01/13/2010
-  Call Trace:
-   <TASK>
-   dump_stack_lvl+0x34/0x45
-   print_report.cold+0x45/0x575
-   kasan_report+0x9b/0xd0
-   fpu_copy_uabi_to_guest_fpstate+0x86/0x130
-   kvm_arch_vcpu_ioctl+0x72a/0x1c50 [kvm]
-   kvm_vcpu_ioctl+0x47f/0x7b0 [kvm]
-   __x64_sys_ioctl+0x5de/0xc90
-   do_syscall_64+0x31/0x50
-   entry_SYSCALL_64_after_hwframe+0x44/0xae
-   </TASK>
-  Allocated by task 0:
-  (stack is not available)
-  The buggy address belongs to the object at ffff888011e33800
-   which belongs to the cache kmalloc-512 of size 512
-  The buggy address is located 0 bytes to the right of
-   512-byte region [ffff888011e33800, ffff888011e33a00)
-  The buggy address belongs to the physical page:
-  page:0000000089cd4adb refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x11e30
-  head:0000000089cd4adb order:2 compound_mapcount:0 compound_pincount:0
-  flags: 0x4000000000010200(slab|head|zone=1)
-  raw: 4000000000010200 dead000000000100 dead000000000122 ffff888001041c80
-  raw: 0000000000000000 0000000080100010 00000001ffffffff 0000000000000000
-  page dumped because: kasan: bad access detected
-  Memory state around the buggy address:
-   ffff888011e33900: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-   ffff888011e33980: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  >ffff888011e33a00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-                     ^
-   ffff888011e33a80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-   ffff888011e33b00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-  ==================================================================
-  Disabling lock debugging due to kernel taint
+sysvec_kvm_asyncpf_interrupt() <- disables preempt
+-> __sysvec_kvm_asyncpf_interrupt()
+   -> kvm_async_pf_task_wake()
 
-Fixes: be50b2065dfa ("kvm: x86: Add support for getting/setting expanded xstate buffer")
-Fixes: c60427dd50ba ("x86/fpu: Add uabi_size to guest_fpu")
-Reported-by: Zdenek Kaspar <zkaspar82@gmail.com>
-Cc: Maciej S. Szmigiero <mail@maciej.szmigiero.name>
-Cc: Paolo Bonzini <pbonzini@redhat.com>
-Cc: kvm@vger.kernel.org
+The caller is this:
+
+arch/x86/kernel/kvm.c
+   290        DEFINE_IDTENTRY_SYSVEC(sysvec_kvm_asyncpf_interrupt)
+   291        {
+   292                struct pt_regs *old_regs = set_irq_regs(regs);
+   293                u32 token;
+   294
+   295                ack_APIC_irq();
+   296
+   297                inc_irq_stat(irq_hv_callback_count);
+   298
+   299                if (__this_cpu_read(apf_reason.enabled)) {
+   300                        token = __this_cpu_read(apf_reason.token);
+   301                        kvm_async_pf_task_wake(token);
+   302                        __this_cpu_write(apf_reason.token, 0);
+   303                        wrmsrl(MSR_KVM_ASYNC_PF_ACK, 1);
+   304                }
+   305
+   306                set_irq_regs(old_regs);
+   307        }
+
+The DEFINE_IDTENTRY_SYSVEC() is a wrapper that calls this function
+from the call_on_irqstack_cond().  It's inside the call_on_irqstack_cond()
+where preempt is disabled (unless it's already disabled).  The
+irq_enter/exit_rcu() functions disable/enable preempt.
+
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
 Cc: stable@vger.kernel.org
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Tested-by: Zdenek Kaspar <zkaspar82@gmail.com>
-Message-Id: <20220504001219.983513-1-seanjc@google.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/fpu/core.c |   17 ++++++++++++++++-
- 1 file changed, 16 insertions(+), 1 deletion(-)
+ arch/x86/kernel/kvm.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/x86/kernel/fpu/core.c
-+++ b/arch/x86/kernel/fpu/core.c
-@@ -14,6 +14,8 @@
- #include <asm/traps.h>
- #include <asm/irq_regs.h>
+--- a/arch/x86/kernel/kvm.c
++++ b/arch/x86/kernel/kvm.c
+@@ -209,7 +209,7 @@ again:
+ 		 */
+ 		if (!dummy) {
+ 			raw_spin_unlock(&b->lock);
+-			dummy = kzalloc(sizeof(*dummy), GFP_KERNEL);
++			dummy = kzalloc(sizeof(*dummy), GFP_ATOMIC);
  
-+#include <uapi/asm/kvm.h>
-+
- #include <linux/hardirq.h>
- #include <linux/pkeys.h>
- #include <linux/vmalloc.h>
-@@ -232,7 +234,20 @@ bool fpu_alloc_guest_fpstate(struct fpu_
- 	gfpu->fpstate		= fpstate;
- 	gfpu->xfeatures		= fpu_user_cfg.default_features;
- 	gfpu->perm		= fpu_user_cfg.default_features;
--	gfpu->uabi_size		= fpu_user_cfg.default_size;
-+
-+	/*
-+	 * KVM sets the FP+SSE bits in the XSAVE header when copying FPU state
-+	 * to userspace, even when XSAVE is unsupported, so that restoring FPU
-+	 * state on a different CPU that does support XSAVE can cleanly load
-+	 * the incoming state using its natural XSAVE.  In other words, KVM's
-+	 * uABI size may be larger than this host's default size.  Conversely,
-+	 * the default size should never be larger than KVM's base uABI size;
-+	 * all features that can expand the uABI size must be opt-in.
-+	 */
-+	gfpu->uabi_size		= sizeof(struct kvm_xsave);
-+	if (WARN_ON_ONCE(fpu_user_cfg.default_size > gfpu->uabi_size))
-+		gfpu->uabi_size = fpu_user_cfg.default_size;
-+
- 	fpu_init_guest_permissions(gfpu);
- 
- 	return true;
+ 			/*
+ 			 * Continue looping on allocation failure, eventually
 
 
