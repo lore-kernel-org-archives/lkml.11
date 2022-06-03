@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A799FC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:18:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8E6BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:18:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242954AbiFCSSy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:18:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39992 "EHLO
+        id S243754AbiFCSRt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 14:17:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347900AbiFCSG1 (ORCPT
+        with ESMTP id S1347611AbiFCSGK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 14:06:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CED905D5F8;
-        Fri,  3 Jun 2022 10:59:25 -0700 (PDT)
+        Fri, 3 Jun 2022 14:06:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 537A75C36A;
+        Fri,  3 Jun 2022 10:59:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F3D09B82189;
-        Fri,  3 Jun 2022 17:59:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BAA8C385B8;
-        Fri,  3 Jun 2022 17:58:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9956B6165B;
+        Fri,  3 Jun 2022 17:58:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C409C3411F;
+        Fri,  3 Jun 2022 17:58:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654279139;
-        bh=jylEjt/kulbTS7GurMgB9K2xH/8vWaxgWIIDnWNp0L8=;
+        s=korg; t=1654279096;
+        bh=Cd2X9X9D1pUtLT7Y22U/EmbcPT8vW5ZoQ885p5Z6CdU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GFqMcWw0VZtKRFds+RBdbUt+Ny7HnlVKzxlunQ1Hqx3ZJyeXfjvkiqzl1WYHYrXYA
-         2GPzqus93laXOFvQE094xrDxwd74Rks2JGPcgYIEXeNCsm/ECAkAbrXWTmsGIDtv3X
-         XUDXGzwbRi/BHu8PMXHPO/6rpf9d2wSbLTFclxkI=
+        b=x2v4lypfoo81qMJ7lOOa01X7x0YqUvcL/6htIuitQWLc7W/xwFc/Ps/xBs68otxvb
+         LazbucnFvA4ahJ3srDIHcErCDbPAfWqAKvLwmVygQZOklwcec0/1veCaP1QcfOBhiT
+         tdLH5ARYzGM/QlJmkH1Z3BXi6+bcup1ZUaBUfGGw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: [PATCH 5.18 65/67] bpf: Reject writes for PTR_TO_MAP_KEY in check_helper_mem_access
-Date:   Fri,  3 Jun 2022 19:44:06 +0200
-Message-Id: <20220603173822.586723850@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
+        Jacopo Mondi <jacopo@jmondi.org>,
+        Daniele Alessandrelli <daniele.alessandrelli@intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>
+Subject: [PATCH 5.18 52/67] media: i2c: imx412: Fix reset GPIO polarity
+Date:   Fri,  3 Jun 2022 19:43:53 +0200
+Message-Id: <20220603173822.227553579@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.731531504@linuxfoundation.org>
 References: <20220603173820.731531504@linuxfoundation.org>
@@ -48,36 +52,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
 
-commit 7b3552d3f9f6897851fc453b5131a967167e43c2 upstream.
+commit bb25f071fc92d3d227178a45853347c7b3b45a6b upstream.
 
-It is not permitted to write to PTR_TO_MAP_KEY, but the current code in
-check_helper_mem_access would allow for it, reject this case as well, as
-helpers taking ARG_PTR_TO_UNINIT_MEM also take PTR_TO_MAP_KEY.
+The imx412/imx577 sensor has a reset line that is active low not active
+high. Currently the logic for this is inverted.
 
-Fixes: 69c087ba6225 ("bpf: Add bpf_for_each_map_elem() helper")
-Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Link: https://lore.kernel.org/r/20220319080827.73251-4-memxor@gmail.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+The right way to define the reset line is to declare it active low in the
+DTS and invert the logic currently contained in the driver.
+
+The DTS should represent the hardware does i.e. reset is active low.
+So:
++               reset-gpios = <&tlmm 78 GPIO_ACTIVE_LOW>;
+not:
+-               reset-gpios = <&tlmm 78 GPIO_ACTIVE_HIGH>;
+
+I was a bit reticent about changing this logic since I thought it might
+negatively impact @intel.com users. Googling a bit though I believe this
+sensor is used on "Keem Bay" which is clearly a DTS based system and is not
+upstream yet.
+
+Fixes: 9214e86c0cc1 ("media: i2c: Add imx412 camera sensor driver")
+Cc: stable@vger.kernel.org
+Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+Reviewed-by: Jacopo Mondi <jacopo@jmondi.org>
+Reviewed-by: Daniele Alessandrelli <daniele.alessandrelli@intel.com>
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/bpf/verifier.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/media/i2c/imx412.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -4861,6 +4861,11 @@ static int check_helper_mem_access(struc
- 		return check_packet_access(env, regno, reg->off, access_size,
- 					   zero_size_allowed);
- 	case PTR_TO_MAP_KEY:
-+		if (meta && meta->raw_mode) {
-+			verbose(env, "R%d cannot write into %s\n", regno,
-+				reg_type_str(env, reg->type));
-+			return -EACCES;
-+		}
- 		return check_mem_region_access(env, regno, reg->off, access_size,
- 					       reg->map_ptr->key_size, false);
- 	case PTR_TO_MAP_VALUE:
+--- a/drivers/media/i2c/imx412.c
++++ b/drivers/media/i2c/imx412.c
+@@ -1011,7 +1011,7 @@ static int imx412_power_on(struct device
+ 	struct imx412 *imx412 = to_imx412(sd);
+ 	int ret;
+ 
+-	gpiod_set_value_cansleep(imx412->reset_gpio, 1);
++	gpiod_set_value_cansleep(imx412->reset_gpio, 0);
+ 
+ 	ret = clk_prepare_enable(imx412->inclk);
+ 	if (ret) {
+@@ -1024,7 +1024,7 @@ static int imx412_power_on(struct device
+ 	return 0;
+ 
+ error_reset:
+-	gpiod_set_value_cansleep(imx412->reset_gpio, 0);
++	gpiod_set_value_cansleep(imx412->reset_gpio, 1);
+ 
+ 	return ret;
+ }
+@@ -1040,7 +1040,7 @@ static int imx412_power_off(struct devic
+ 	struct v4l2_subdev *sd = dev_get_drvdata(dev);
+ 	struct imx412 *imx412 = to_imx412(sd);
+ 
+-	gpiod_set_value_cansleep(imx412->reset_gpio, 0);
++	gpiod_set_value_cansleep(imx412->reset_gpio, 1);
+ 
+ 	clk_disable_unprepare(imx412->inclk);
+ 
 
 
