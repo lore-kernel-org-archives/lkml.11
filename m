@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20EACCCA484
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 01:01:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA15BCCA482
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 01:01:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241618AbiFCBAf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 21:00:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54918 "EHLO
+        id S241554AbiFCBAY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 21:00:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241250AbiFCAub (ORCPT
+        with ESMTP id S241361AbiFCAvD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 20:50:31 -0400
-Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 024BC2FE56
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:47:38 -0700 (PDT)
-Received: by mail-pl1-x649.google.com with SMTP id y4-20020a17090322c400b001637287812bso3479141plg.6
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:47:38 -0700 (PDT)
+        Thu, 2 Jun 2022 20:51:03 -0400
+Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 427893120C
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:47:50 -0700 (PDT)
+Received: by mail-pj1-x104a.google.com with SMTP id 92-20020a17090a09e500b001d917022847so3532245pjo.1
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:47:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=BrjMyn6UOGwtIz7DDGBy5Pr7ixuSSx4pzqxP/WjUvpg=;
-        b=ls4moDLUsT44nSRyZwv+GbGgLQmDufXHa/fMAqmFfeHCkhU3T63EaZq6nq+SGpeAPD
-         3FQImgJFIEGzWuCAKYdLLJ/or38qceUZn22OzSBotbLwLtAb1q9IQXZ2AAl0kVe4w/9I
-         Wgdj6AGpYV6xg60tABhHeC4pUiI9UJCsaS7PC5rzJtwBlZHUg8vrymN2rWgTY+YilXG2
-         iAPQXuXvrd2fyf4hDOcVmtYcSVoIKldxC73ODI8kpbWMFbKBCYdtlFypraHtFZHWhCrg
-         sLlgFXVc4+ZnDLSYhen7uGiViE5RknfYM5mjocDmAROxYL2H5bgUYvLssw+zzTMMqhYc
-         s1LA==
+        bh=1ZvG+5/wZpUAC90uvh+akjpkSn0i92RxKUjEYWBqrYg=;
+        b=sgScZDk5zVz4fw/BQVRlIJp5pQMk8dEkokKERscif59Eeqo3a6F4CqAk8JFLmpiHXF
+         NHc/CFk6Z91YX0RCXgwFA8DvuUXxo4BmnP2DVk9neuEVzKIHslb2VVPqW2bNUcEIZMNY
+         fJGJxnwGEAYHk+i4RUGq/8ZZebxz6jVwF2ClNhu/0paTnTcwMBboxJ7n+iVMP1cg1ju+
+         1lX6HdYzH89D18KqzgJDDkNluwHnLe0iGV0u5cujXLbWt9Btb1vgqP2A6bA1FE+OD0a0
+         pZ1WAWeRnWW+L5TUiibIQsIPs7zZNQXIF/WRk1mXFLAqkDFbwvq6veSJXeCn41Q4+pS1
+         0fVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=BrjMyn6UOGwtIz7DDGBy5Pr7ixuSSx4pzqxP/WjUvpg=;
-        b=ry+N4SDkZHTYy7krQmQL71valfhJa43KUg/1XL1CmtmPaGmEypRKeXbRqTMzACHvMS
-         QzI1F2uy0byUPkMacLnFr5T16UtTsDrGYix364SR/rDrqmCsXOhNUISFZJXxc9H/Cvmb
-         Df3LCQKfnmY+zUGaSepSttcMnJvOsPE1xXCW4zfVflDpEY8RKbV0s/+IwhWeNKlIEKwN
-         DkC/eZAapizg/UAVu2pik+cqEM/pqC6Dla2DVeVycIraZIhv7EO+F2XROTW36J0X29uz
-         3dqMEU6FZHGWgxRfgzlUJuheXhNCdn9N/hDx3Ex7yeX03dY2GvOdPadQ3mT6LrFmQPCb
-         qZcg==
-X-Gm-Message-State: AOAM5336zBiHp71v2oqqAr6s5uMN2h9PBKNVLVzi4cDDQmXaPf+13ZJ+
-        E0qH5bv/JLt0GZ0kdp8bs9+Srsajlys=
-X-Google-Smtp-Source: ABdhPJz4fBpNAWEDph89ezfjs34+rAvq9PrcFCLjqp23S+Xf4PXagSLiQP9GrUfjN/n9pHc475T1OJvN8Qo=
+        bh=1ZvG+5/wZpUAC90uvh+akjpkSn0i92RxKUjEYWBqrYg=;
+        b=Ot/HI+og77OXxyVcgBB3le274u+iGQWYhgru1YQlK5zRRliDHjmQpZphY5z757OdXc
+         s+qu0OqJnXA5ST4OB+9gxnnCI1+7MdeznNEaX5R92BKaQ/49FWLb5hYG69NLmKm7tDbH
+         R9AfiLZ73C5ECVh6l52Yi60EWwus8qIA7AT1iD5q9OrchxZkQvDNhjgDrQ0LOaJqz115
+         4Qvv6TSlH/4MK213UlXhyW52RB91h1UoOi1twdeYula+EiEgUnlIXHJAS8jLBsy8fvda
+         nAjtE7sImM7XxdBLM+7MqZ6BhS4xC4qDmHPoGJ2eNcjFRknhMRPf4MGxBv4ZHbheHBi7
+         +pjQ==
+X-Gm-Message-State: AOAM5333LixjnUi7FbLP6za3LS+GWoI0LzJ2JKC4G6MtiYoDqG0PnOeg
+        TsYfWlS1JTm5qHM2uhbcMkK7RRv4qFI=
+X-Google-Smtp-Source: ABdhPJyVF7MsShOiUhLdM3RTFRisaQrEeNwNutLK3YJNPYJsVvtsN8aAT0rvcmwqun9joKQpqnheHRRFj90=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:90a:249:b0:1e0:a8a3:3c6c with SMTP id
- t9-20020a17090a024900b001e0a8a33c6cmr307332pje.0.1654217256913; Thu, 02 Jun
- 2022 17:47:36 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:902:6907:b0:162:1237:42df with SMTP id
+ j7-20020a170902690700b00162123742dfmr7622482plk.157.1654217269184; Thu, 02
+ Jun 2022 17:47:49 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri,  3 Jun 2022 00:43:20 +0000
+Date:   Fri,  3 Jun 2022 00:43:27 +0000
 In-Reply-To: <20220603004331.1523888-1-seanjc@google.com>
-Message-Id: <20220603004331.1523888-134-seanjc@google.com>
+Message-Id: <20220603004331.1523888-141-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220603004331.1523888-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v2 133/144] KVM: selftests: Drop vcpu_get(), rename
- vcpu_find() => vcpu_exists()
+Subject: [PATCH v2 140/144] KVM: selftests: Drop DEFAULT_GUEST_PHY_PAGES, open
+ code the magic number
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     kvm@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
@@ -67,88 +67,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Drop vcpu_get() and rename vcpu_find() to vcpu_exists() to make it that
-much harder for a test to give meaning to a vCPU ID.  I.e. force tests to
-capture a vCPU when the vCPU is created.
+Remove DEFAULT_GUEST_PHY_PAGES and open code the magic number (with a
+comment) in vm_nr_pages_required().  Exposing DEFAULT_GUEST_PHY_PAGES to
+tests was a symptom of the VM creation APIs not cleanly supporting tests
+that create runnable vCPUs, but can't do so immediately.  Now that tests
+don't have to manually compute the amount of memory needed for basic
+operation, make it harder for tests to do things that should be handled
+by the framework, i.e. force developers to improve the framework instead
+of hacking around flaws in individual tests.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../selftests/kvm/include/kvm_util_base.h     |  2 --
- tools/testing/selftests/kvm/lib/kvm_util.c    | 34 +++++++------------
- 2 files changed, 13 insertions(+), 23 deletions(-)
+ tools/testing/selftests/kvm/include/kvm_util_base.h | 1 -
+ tools/testing/selftests/kvm/lib/kvm_util.c          | 8 +++++++-
+ 2 files changed, 7 insertions(+), 2 deletions(-)
 
 diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
-index 640634bdba9a..2da9db060378 100644
+index db9c00a7af4e..1c762988ab9c 100644
 --- a/tools/testing/selftests/kvm/include/kvm_util_base.h
 +++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
-@@ -93,8 +93,6 @@ struct kvm_vm {
- 			continue;			\
- 		else
+@@ -100,7 +100,6 @@ memslot2region(struct kvm_vm *vm, uint32_t memslot);
+ #define KVM_UTIL_MIN_VADDR		0x2000
+ #define KVM_GUEST_PAGE_TABLE_MIN_PADDR	0x180000
  
--struct kvm_vcpu *vcpu_get(struct kvm_vm *vm, uint32_t vcpu_id);
--
- struct userspace_mem_region *
- memslot2region(struct kvm_vm *vm, uint32_t memslot);
+-#define DEFAULT_GUEST_PHY_PAGES		512
+ #define DEFAULT_GUEST_STACK_VADDR_MIN	0xab6000
+ #define DEFAULT_STACK_PGS		5
  
 diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
-index e08e89174610..8775d7ab39c8 100644
+index 494bce490344..2dcd83a03cc2 100644
 --- a/tools/testing/selftests/kvm/lib/kvm_util.c
 +++ b/tools/testing/selftests/kvm/lib/kvm_util.c
-@@ -459,26 +459,6 @@ kvm_userspace_memory_region_find(struct kvm_vm *vm, uint64_t start,
- 	return &region->region;
- }
+@@ -270,7 +270,13 @@ static uint64_t vm_nr_pages_required(uint32_t nr_runnable_vcpus,
+ 		    "nr_vcpus = %d too large for host, max-vcpus = %d",
+ 		    nr_runnable_vcpus, kvm_check_cap(KVM_CAP_MAX_VCPUS));
  
--static struct kvm_vcpu *vcpu_find(struct kvm_vm *vm, uint32_t vcpu_id)
--{
--	struct kvm_vcpu *vcpu;
--
--	list_for_each_entry(vcpu, &vm->vcpus, list) {
--		if (vcpu->id == vcpu_id)
--			return vcpu;
--	}
--
--	return NULL;
--}
--
--struct kvm_vcpu *vcpu_get(struct kvm_vm *vm, uint32_t vcpu_id)
--{
--	struct kvm_vcpu *vcpu = vcpu_find(vm, vcpu_id);
--
--	TEST_ASSERT(vcpu, "vCPU %d does not exist", vcpu_id);
--	return vcpu;
--}
--
- /*
-  * VM VCPU Remove
-  *
-@@ -1049,6 +1029,18 @@ static int vcpu_mmap_sz(void)
- 	return ret;
- }
- 
-+static bool vcpu_exists(struct kvm_vm *vm, uint32_t vcpu_id)
-+{
-+	struct kvm_vcpu *vcpu;
+-	nr_pages = DEFAULT_GUEST_PHY_PAGES;
++	/*
++	 * Arbitrarily allocate 512 pages (2mb when page size is 4kb) for the
++	 * test code and other per-VM assets that will be loaded into memslot0.
++	 */
++	nr_pages = 512;
 +
-+	list_for_each_entry(vcpu, &vm->vcpus, list) {
-+		if (vcpu->id == vcpu_id)
-+			return true;
-+	}
-+
-+	return false;
-+}
-+
- /*
-  * Adds a virtual CPU to the VM specified by vm with the ID given by vcpu_id.
-  * No additional vCPU setup is done.  Returns the vCPU.
-@@ -1058,7 +1050,7 @@ struct kvm_vcpu *__vm_vcpu_add(struct kvm_vm *vm, uint32_t vcpu_id)
- 	struct kvm_vcpu *vcpu;
++	/* Account for the per-vCPU stacks on behalf of the test. */
+ 	nr_pages += nr_runnable_vcpus * DEFAULT_STACK_PGS;
  
- 	/* Confirm a vcpu with the specified id doesn't already exist. */
--	TEST_ASSERT(!vcpu_find(vm, vcpu_id), "vCPU%d already exists\n", vcpu_id);
-+	TEST_ASSERT(!vcpu_exists(vm, vcpu_id), "vCPU%d already exists\n", vcpu_id);
- 
- 	/* Allocate and initialize new vcpu structure. */
- 	vcpu = calloc(1, sizeof(*vcpu));
+ 	/*
 -- 
 2.36.1.255.ge46751e96f-goog
 
