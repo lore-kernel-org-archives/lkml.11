@@ -2,140 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AC29CCA473
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:59:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AE04C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:59:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345926AbiFCR7Y (ORCPT
+        id S1345956AbiFCR7a (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:59:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46536 "EHLO
+        Fri, 3 Jun 2022 13:59:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346187AbiFCRuw (ORCPT
+        with ESMTP id S1346215AbiFCRux (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:50:52 -0400
-Received: from mail-oi1-f179.google.com (mail-oi1-f179.google.com [209.85.167.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8496E59B9A;
-        Fri,  3 Jun 2022 10:47:04 -0700 (PDT)
-Received: by mail-oi1-f179.google.com with SMTP id l84so11260453oif.10;
-        Fri, 03 Jun 2022 10:47:04 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=2zNlEw4nB85sh8if2viVb9BSHeHyHaqpaxepxW9M49M=;
-        b=n/gYscpI0b0i2GFJW8a0murd+LopJSmF2fxDB/3r+h40mmHna8acD5BLAAkvLL204t
-         aDOc0HSkLu2YiCJyJkd1bcsUOEnRTjqi8vdEMke+tI3BHRnOrJu685d4zKT2meQ8lZFh
-         VQlghYgDd6OLlnvmFBJ7bCBpGXbALSNyjqhQk3elnglmHv1cq+f56uk23gg4RM81F4dX
-         G/DiwwYAT5pwb7t6ZYZ3BqU1Qk8mP/iYpInaM3Gan30kfkz1NM/9BAwLsmTAsP1FALJq
-         V047PEzWszc3PuyyJ1D7qwTMbSFeI9+hE9Hlpnne3U4A+B95BvdOnAGrQk8osE6n5XWE
-         o12g==
-X-Gm-Message-State: AOAM533Xs6K0xP+3XhYuCkXgIHgga7cunXjhdiTFSqykvNo+bX7d6+h8
-        ujkN8tRfPjUiZHk3MvXQ2Q==
-X-Google-Smtp-Source: ABdhPJxAYuZBWa+RaA5nnGfbWpx8vAvZW4aD7zx8iDtmxRLOh8cfZs6aYlLqiB+Qiwa1fO9LsX5GQw==
-X-Received: by 2002:a05:6808:120a:b0:322:3447:2d7a with SMTP id a10-20020a056808120a00b0032234472d7amr21382071oil.40.1654278423517;
-        Fri, 03 Jun 2022 10:47:03 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id u1-20020a056808000100b00325cda1ff9esm4254032oic.29.2022.06.03.10.47.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Jun 2022 10:47:03 -0700 (PDT)
-Received: (nullmailer pid 617346 invoked by uid 1000);
-        Fri, 03 Jun 2022 17:47:02 -0000
-Date:   Fri, 3 Jun 2022 12:47:02 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Frank Rowand <frowand.list@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: [GIT PULL] Devicetree fixes for v5.19, part 1
-Message-ID: <20220603174702.GA614240-robh@kernel.org>
+        Fri, 3 Jun 2022 13:50:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C18905A08F;
+        Fri,  3 Jun 2022 10:47:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 336C6B823B0;
+        Fri,  3 Jun 2022 17:47:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A13AC385A9;
+        Fri,  3 Jun 2022 17:47:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654278432;
+        bh=64b60f8+CF+lQiNlhXAdnNtTZB8o0DTFOS04/xU40G4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=SrFetdNMGXc/S0IJNfpbEkCPtE5Ap/DPzVKD1i8Jcg/ebbsdohjJ5C93w44h+NF1G
+         eMHQ5cKE4Y8lJeF8W8ip67KJVO0mZANW5xjmFKJcKK0+nxroDl2pLDgZ66ram+NK6l
+         4t2vuSFnC5GlO/F6y5Z/GXamk7AcLRTe1Tx1b6Lw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.10 31/53] KVM: PPC: Book3S HV: fix incorrect NULL check on list iterator
+Date:   Fri,  3 Jun 2022 19:43:16 +0200
+Message-Id: <20220603173819.628510060@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220603173818.716010877@linuxfoundation.org>
+References: <20220603173818.716010877@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Linus,
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-Please pull DT fixes for 5.19-rc.
+commit 300981abddcb13f8f06ad58f52358b53a8096775 upstream.
 
-Rob
+The bug is here:
+	if (!p)
+                return ret;
+
+The list iterator value 'p' will *always* be set and non-NULL by
+list_for_each_entry(), so it is incorrect to assume that the iterator
+value will be NULL if the list is empty or no element is found.
+
+To fix the bug, Use a new value 'iter' as the list iterator, while use
+the old value 'p' as a dedicated variable to point to the found element.
+
+Fixes: dfaa973ae960 ("KVM: PPC: Book3S HV: In H_SVM_INIT_DONE, migrate remaining normal-GFNs to secure-GFNs")
+Cc: stable@vger.kernel.org # v5.9+
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220414062103.8153-1-xiam0nd.tong@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/powerpc/kvm/book3s_hv_uvmem.c |    8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+--- a/arch/powerpc/kvm/book3s_hv_uvmem.c
++++ b/arch/powerpc/kvm/book3s_hv_uvmem.c
+@@ -359,13 +359,15 @@ static bool kvmppc_gfn_is_uvmem_pfn(unsi
+ static bool kvmppc_next_nontransitioned_gfn(const struct kvm_memory_slot *memslot,
+ 		struct kvm *kvm, unsigned long *gfn)
+ {
+-	struct kvmppc_uvmem_slot *p;
++	struct kvmppc_uvmem_slot *p = NULL, *iter;
+ 	bool ret = false;
+ 	unsigned long i;
+ 
+-	list_for_each_entry(p, &kvm->arch.uvmem_pfns, list)
+-		if (*gfn >= p->base_pfn && *gfn < p->base_pfn + p->nr_pfns)
++	list_for_each_entry(iter, &kvm->arch.uvmem_pfns, list)
++		if (*gfn >= iter->base_pfn && *gfn < iter->base_pfn + iter->nr_pfns) {
++			p = iter;
+ 			break;
++		}
+ 	if (!p)
+ 		return ret;
+ 	/*
 
 
-The following changes since commit 8ab2afa23bd197df47819a87f0265c0ac95c5b6a:
-
-  Merge tag 'for-5.19/fbdev-1' of git://git.kernel.org/pub/scm/linux/kernel/git/deller/linux-fbdev (2022-05-30 12:46:49 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git tags/devicetree-fixes-for-5.19-1
-
-for you to fetch changes up to 987cf300e76d30b1bdad88d2a662b948ead6fb21:
-
-  dt-bindings: mtd: spi-nand: Add spi-peripheral-props.yaml reference (2022-06-03 11:56:27 -0500)
-
-----------------------------------------------------------------
-Devicetree fixes for v5.19-rc:
-
-- Fixes for unevaluatedProperties warnings. These were missed to due to
-  a bug in dtschema which is now fixed. The changes involve either
-  adding missing properties or removing spurious properties from
-  examples.
-
-- Update several Qualcomm binding maintainer email addresses
-
-- Fix typo in imx8mp-media-blk-ctrl example
-
-- Fix fixed string pattern in qcom,smd
-
-- Correct the order of 'reg' entries in Xilinx PCI binding
-
-----------------------------------------------------------------
-Bharat Kumar Gogada (1):
-      dt-bindings: PCI: xilinx-cpm: Fix reg property order
-
-Jeffrey Hugo (1):
-      dt-bindings: clock: Update my email address
-
-Krzysztof Kozlowski (1):
-      dt-bindings: soc: qcom,smd: do not use pattern for simple rpm-requests string
-
-Laurent Pinchart (1):
-      dt-bindings: soc: imx8mp-media-blk-ctrl: Fix DT example
-
-Rob Herring (7):
-      dt-bindings: usb: snps,dwc3: Add missing 'dma-coherent' property
-      dt-bindings: PCI: socionext,uniphier-pcie: Add missing child interrupt controller
-      dt-bindings: net: Fix unevaluatedProperties warnings in examples
-      dt-bindings: PCI: apple: Add missing 'power-domains' property
-      dt-bindings: net/dsa: Add spi-peripheral-props.yaml references
-      dt-bindings: memory-controllers: ingenic: Split out child node properties
-      dt-bindings: mtd: spi-nand: Add spi-peripheral-props.yaml reference
-
-Sibi Sankar (1):
-      dt-bindings: Update Sibi Sankar's email address
-
- .../devicetree/bindings/clock/qcom,mmcc.yaml       |   2 +-
- .../bindings/interconnect/qcom,osm-l3.yaml         |   2 +-
- .../ingenic,nemc-peripherals.yaml                  |  46 +++++++++
- .../bindings/memory-controllers/ingenic,nemc.yaml  |  32 ------
- .../devicetree/bindings/mtd/ingenic,nand.yaml      |   1 +
- .../devicetree/bindings/mtd/spi-nand.yaml          |   1 +
- .../devicetree/bindings/net/cdns,macb.yaml         |   1 -
- .../devicetree/bindings/net/dsa/brcm,b53.yaml      | 115 ++++++++++++---------
- .../devicetree/bindings/net/dsa/microchip,ksz.yaml |   1 +
- .../devicetree/bindings/net/dsa/nxp,sja1105.yaml   |   1 +
- .../devicetree/bindings/net/dsa/realtek.yaml       |   1 +
- .../devicetree/bindings/net/mediatek,net.yaml      |   3 +
- .../devicetree/bindings/net/mediatek-dwmac.yaml    |   3 +
- .../bindings/net/wireless/mediatek,mt76.yaml       |   2 +-
- .../devicetree/bindings/pci/apple,pcie.yaml        |   5 +-
- .../bindings/pci/socionext,uniphier-pcie.yaml      |  23 ++++-
- .../devicetree/bindings/pci/xilinx-versal-cpm.yaml |  10 +-
- .../devicetree/bindings/reset/qcom,aoss-reset.yaml |   2 +-
- .../devicetree/bindings/reset/qcom,pdc-global.yaml |   2 +-
- .../soc/imx/fsl,imx8mp-media-blk-ctrl.yaml         |   2 +-
- .../devicetree/bindings/soc/qcom/qcom,smd.yaml     |   4 +-
- .../devicetree/bindings/usb/snps,dwc3.yaml         |   2 +
- 22 files changed, 162 insertions(+), 99 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/memory-controllers/ingenic,nemc-peripherals.yaml
