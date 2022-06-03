@@ -2,100 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99A5ACCA481
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 15:15:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A59ACC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 15:15:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245407AbiFCPPA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 11:15:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41174 "EHLO
+        id S245421AbiFCPPE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 11:15:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245404AbiFCPO4 (ORCPT
+        with ESMTP id S245403AbiFCPO4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 3 Jun 2022 11:14:56 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A1C21506C3
-        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 08:14:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654269294;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=KSS+WlIjCzxfASZfHJ/pG+nFg5xuEcmHlF7DakY9wuE=;
-        b=gHFBJplnId2Pu9seQbG6osjLAfccv+oXcIKOZcCq+/cdQm7bTRpTuo1yOnZko7XG/3UiYg
-        U/HSoBgodrd8ZquWzwkHt9j5VL4L5lzgDoYMv8unUZbCERucDQ+3jvPbK7jaCGUXV9d/yy
-        bGm/do55U3d9i2Jq0x/PuJnajgMDXLw=
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
- [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-538-DfWlx9j2MGyvOdrt085YMg-1; Fri, 03 Jun 2022 11:14:53 -0400
-X-MC-Unique: DfWlx9j2MGyvOdrt085YMg-1
-Received: by mail-qv1-f71.google.com with SMTP id x17-20020a0cfe11000000b004645917e45cso5458209qvr.4
-        for <linux-kernel@vger.kernel.org>; Fri, 03 Jun 2022 08:14:53 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=KSS+WlIjCzxfASZfHJ/pG+nFg5xuEcmHlF7DakY9wuE=;
-        b=LMVwwYMPdgumKQUy88ktwllrNRu5/bGm2+GHMGnlCsYOdb0CrDm0n6TYE78NwPmyvF
-         3Hw6QOm13gAfhDIMsMhxkvu0B1TUUOy6cQgOA+B1Jz/sb5u5IbV2Wxd+dlRsCmZZ6aaN
-         /qJaqWjnzExmbSq8iplLpFummeNe72WMpOINCou5cF/8GXKJ+1SPLUVkRKrgWNWwDWAd
-         w57H3/q8FnXlIu7r/Y0slP9iD323NqtEb/Bo+ksLDt6fJkgyXWpXUVoQ0Z7N0EG7khCF
-         INX7yFj07yURheNMiklYzINPigiPC4GXJojctpNVXD04sTfDolsr1d5h6X2L2ikMzyy0
-         HYoA==
-X-Gm-Message-State: AOAM5316FcTpsybZ8ad8XNG0P+cjyjBWeTKGuPqDzTmsi5K6ZIk6zI57
-        UG/ZtcNk6Aa9UDCkMNDx+mbRxTABoAqhnE2TyRG/37Z8DY3kGVvy3UMaZouJk7W3M/ornBtg1Mn
-        4m3LbiXREGQPhAQ5+osHNFINn
-X-Received: by 2002:a05:620a:1445:b0:6a3:9f13:7f10 with SMTP id i5-20020a05620a144500b006a39f137f10mr6753071qkl.736.1654269293268;
-        Fri, 03 Jun 2022 08:14:53 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzYV+OzB2BFz+1kTFY3RgS+1hrEcN6pQQortBLwObPtwEpeMeMFxrV3fG5J5vUdP1DDnfWMew==
-X-Received: by 2002:a05:620a:1445:b0:6a3:9f13:7f10 with SMTP id i5-20020a05620a144500b006a39f137f10mr6753042qkl.736.1654269292985;
-        Fri, 03 Jun 2022 08:14:52 -0700 (PDT)
-Received: from xps13 (c-98-239-145-235.hsd1.wv.comcast.net. [98.239.145.235])
-        by smtp.gmail.com with ESMTPSA id m28-20020a05620a215c00b006a03cbb1323sm5009016qkm.65.2022.06.03.08.14.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Jun 2022 08:14:52 -0700 (PDT)
-Date:   Fri, 3 Jun 2022 11:14:51 -0400
-From:   Brian Masney <bmasney@redhat.com>
-To:     Konrad Dybcio <konrad.dybcio@somainline.org>
-Cc:     ~postmarketos/upstreaming@lists.sr.ht,
-        linux-arm-msm@vger.kernel.org, bjorn.andersson@linaro.org,
-        linux-arm-kernel@lists.infradead.org,
-        iommu@lists.linux-foundation.org, martin.botka@somainline.org,
-        angelogioacchino.delregno@somainline.org,
-        marijn.suijten@somainline.org, jamipkettunen@somainline.org,
-        Rob Clark <robdclark@gmail.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 5/6] iommu/qcom: Index contexts by asid number to allow
- asid 0
-Message-ID: <Ypola4mBuQ6zDLcz@xps13>
-References: <20220527212901.29268-1-konrad.dybcio@somainline.org>
- <20220527212901.29268-6-konrad.dybcio@somainline.org>
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FB16506C1;
+        Fri,  3 Jun 2022 08:14:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E0FE66186D;
+        Fri,  3 Jun 2022 15:14:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBD19C385B8;
+        Fri,  3 Jun 2022 15:14:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654269294;
+        bh=kCDqKxgSBW1zW4hSfO+3ZljVtjIYIRBqdB6IPefPA2g=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=GOfyERozHdsiH3+V20TajRS8VF+rK3pLspYPXYlV/wXnoOuBYCgvA5j6gRtfucZz5
+         5KNnZLXdh/CkU9CySG++EblXbebLNNLKOV8exqcXG1s6dMYhCEG9A3Ym6FJZKcBsMd
+         ElTzgdH7DMmopE0HAyhuGmyl3tHBlggJ0sZtmemeDT4vt0E/wfTSr1uX3Uq5P6a1Pi
+         qaygK9qyntxv2KPdHyxmTThxj+h/0sQQHfWoE1/Oqev1rDSgI3l2X3JBatFKiA9ZqZ
+         L5C6thelnCEVAdfrDUf6RbqMeByJEU5C6Ot9yLL2JekOf/GWf+7X++aM+YoXh1t07g
+         Hm2Dq9kp3Fnqg==
+Date:   Fri, 3 Jun 2022 16:23:51 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Markuss Broks <markuss.broks@gmail.com>
+Cc:     linux-kernel@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Song Qiang <songqiang1304521@gmail.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH v5 0/5] Add support for ToF sensor on Yoshino platform
+Message-ID: <20220603162351.69056bdf@jic23-huawei>
+In-Reply-To: <20220523175344.5845-1-markuss.broks@gmail.com>
+References: <20220523175344.5845-1-markuss.broks@gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220527212901.29268-6-konrad.dybcio@somainline.org>
-User-Agent: Mutt/2.2.1 (2022-02-19)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 27, 2022 at 11:29:00PM +0200, Konrad Dybcio wrote:
-> From: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
-> 
-> This driver was indexing the contexts by asid-1, which is probably
-> done under the assumption that the first ASID is always 1.
-> 
-> Unfortunately this is not entirely true: at least in the MSM8956
-> and MSM8976 GPU IOMMU, the gpu_user context's ASID number is zero.
-> To allow using an asid number of zero, stop indexing the contexts
-> by asid-1 and rather index them by asid.
-> 
-> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
-> Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
-> Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+On Mon, 23 May 2022 20:53:39 +0300
+Markuss Broks <markuss.broks@gmail.com> wrote:
 
-msm8974 will need this as well.
+> This series adds support for the ToF proximity sensor installed on
+> Yoshino devices. As part of this series, support handling the reset
+> GPIO and VDD supply by the VL53L0X driver. Also stop hardcoding the
+> interrupt type, since on Yoshino devices it seems that edge triggering
+> doesn't work properly.
+> 
+> Tested on Sony Xperia XZ1 (poplar).
+> 
+> Cc: Konrad Dybcio <konrad.dybcio@somainline.org>
+> Cc: Marijn Suijten <marijn.suijten@somainline.org>
+> Cc: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
+Patches 1-4 applied to the togreg branch of iio.git.
 
-Reviewed-by: Brian Masney <bmasney@redhat.com>
+Note I plan to rebase that tree after the char-misc (and hence IIO tree)
+has been merged with mainline, so for now it is only pushed out as testing
+so that 0-day can see if it can find anything we missed.
+
+Thanks,
+
+Jonathan
+
+> 
+> v2:
+> - Fix a nasty issue: turns out grouping the pinctrl makes it not apply,
+> which was the main cause of edge interrupts not working correctly and
+> having to use level interrupts, which caused a large amount of false
+> detections.
+> - handle the irq type more gracefully: if it's not provided, default
+> to falling edge, but if it's provided, then use the provided one.
+> v3:
+> - add irq.h header (forgot to commit)
+> - reword commit message (already initialized -> pre-initialized)
+> v4:
+> - reorder powering on and power off action (Jonathan)
+> - sort pinctrls by GPIO number (Konrad)
+> v5:
+> - "This patch adds..." -> "Add ..." (Krzysztof)
+> 
+> Markuss Broks (5):
+>   dt-bindings: proximity: vl53l0x: Document optional supply and GPIO
+>     properties
+>   proximity: vl53l0x: Get interrupt type from DT
+>   proximity: vl53l0x: Handle the VDD regulator
+>   proximity: vl53l0x: Handle the reset GPIO
+>   arm64: dts: qcom: msm8998-xperia: Introduce ToF sensor support
+> 
+>  .../bindings/iio/proximity/st,vl53l0x.yaml    |  5 ++
+>  .../dts/qcom/msm8998-sony-xperia-yoshino.dtsi | 34 +++++++++++++
+>  drivers/iio/proximity/vl53l0x-i2c.c           | 50 ++++++++++++++++++-
+>  3 files changed, 88 insertions(+), 1 deletion(-)
+> 
 
