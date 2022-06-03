@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DFF7CCA473
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23ADCCCA480
 	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:11:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347657AbiFCSLF (ORCPT
+        id S1347798AbiFCSLJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:11:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47584 "EHLO
+        Fri, 3 Jun 2022 14:11:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345967AbiFCR6H (ORCPT
+        with ESMTP id S1346013AbiFCR5n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:58:07 -0400
+        Fri, 3 Jun 2022 13:57:43 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6292326124;
-        Fri,  3 Jun 2022 10:54:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29C1121E18;
+        Fri,  3 Jun 2022 10:54:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F362B615CE;
-        Fri,  3 Jun 2022 17:54:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAEC7C385A9;
-        Fri,  3 Jun 2022 17:54:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AF32C6158B;
+        Fri,  3 Jun 2022 17:54:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4E72C385A9;
+        Fri,  3 Jun 2022 17:54:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278877;
-        bh=LQ4GAiIPoecpW2UvZsPu+mR5D6ND/oIWgjWyJt1PfTM=;
+        s=korg; t=1654278868;
+        bh=TNIMVPaeLJ/QcWDFFqjeA42a5Y4yMf8PXuFOQY86fbU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OAwx/ZaEeS1NorZF9eJs90ewYOsg/dWziRMUCuLMMJf4CMOHI+yRNCD0GbC1PJqyz
-         TUpUzxtPgibUnW60stNwPB+1DNMTxbGTeEZr0j/wrlU1YbJIFZU2iV73UgsB/zgwoe
-         XyDACsqKOV3wYXIrI6RVReBenr9wpxNbBNA54F/0=
+        b=pPlBTu14eOcMnzTvjYxwdlLzmdK1uPLAIwNJ4V1p8fKCZRXqcp/qaZ1GLktrudbz9
+         DIvQWoOV4oYvHBtKHsxTVuwY9fTZoXmwYA7Nm3LXGrjKl4NjIEufmxwDM2TX1E7tKK
+         NyPn4DMeW3nSB/vfgBKRbtDT3IfcVW0wNX/ejTgg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marek Maslanka <mm@semihalf.com>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Jiri Kosina <jkosina@suse.cz>
-Subject: [PATCH 5.17 55/75] HID: multitouch: Add support for Google Whiskers Touchpad
-Date:   Fri,  3 Jun 2022 19:43:39 +0200
-Message-Id: <20220603173823.301141156@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Sarthak Kukreti <sarthakkukreti@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Mike Snitzer <snitzer@kernel.org>
+Subject: [PATCH 5.17 52/75] dm verity: set DM_TARGET_IMMUTABLE feature flag
+Date:   Fri,  3 Jun 2022 19:43:36 +0200
+Message-Id: <20220603173823.219396965@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173821.749019262@linuxfoundation.org>
 References: <20220603173821.749019262@linuxfoundation.org>
@@ -50,33 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Maślanka <mm@semihalf.com>
+From: Sarthak Kukreti <sarthakkukreti@google.com>
 
-commit 1d07cef7fd7599450b3d03e1915efc2a96e1f03f upstream.
+commit 4caae58406f8ceb741603eee460d79bacca9b1b5 upstream.
 
-The Google Whiskers touchpad does not work properly with the default
-multitouch configuration. Instead, use the same configuration as Google
-Rose.
+The device-mapper framework provides a mechanism to mark targets as
+immutable (and hence fail table reloads that try to change the target
+type). Add the DM_TARGET_IMMUTABLE flag to the dm-verity target's
+feature flags to prevent switching the verity target with a different
+target type.
 
-Signed-off-by: Marek Maslanka <mm@semihalf.com>
-Acked-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Fixes: a4ffc152198e ("dm: add verity target")
+Cc: stable@vger.kernel.org
+Signed-off-by: Sarthak Kukreti <sarthakkukreti@google.com>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Mike Snitzer <snitzer@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hid/hid-multitouch.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/md/dm-verity-target.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/hid/hid-multitouch.c
-+++ b/drivers/hid/hid-multitouch.c
-@@ -2178,6 +2178,9 @@ static const struct hid_device_id mt_dev
- 	{ .driver_data = MT_CLS_GOOGLE,
- 		HID_DEVICE(HID_BUS_ANY, HID_GROUP_ANY, USB_VENDOR_ID_GOOGLE,
- 			USB_DEVICE_ID_GOOGLE_TOUCH_ROSE) },
-+	{ .driver_data = MT_CLS_GOOGLE,
-+		HID_DEVICE(BUS_USB, HID_GROUP_MULTITOUCH_WIN_8, USB_VENDOR_ID_GOOGLE,
-+			USB_DEVICE_ID_GOOGLE_WHISKERS) },
+--- a/drivers/md/dm-verity-target.c
++++ b/drivers/md/dm-verity-target.c
+@@ -1312,6 +1312,7 @@ bad:
  
- 	/* Generic MT device */
- 	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_MULTITOUCH, HID_ANY_ID, HID_ANY_ID) },
+ static struct target_type verity_target = {
+ 	.name		= "verity",
++	.features	= DM_TARGET_IMMUTABLE,
+ 	.version	= {1, 8, 0},
+ 	.module		= THIS_MODULE,
+ 	.ctr		= verity_ctr,
 
 
