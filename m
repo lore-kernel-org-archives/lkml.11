@@ -2,42 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36F23CCA47C
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:41:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF89DC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:41:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344620AbiFCRlU (ORCPT
+        id S1344772AbiFCRlY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:41:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56486 "EHLO
+        Fri, 3 Jun 2022 13:41:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344656AbiFCRkj (ORCPT
+        with ESMTP id S1344768AbiFCRlG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:40:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A9B653710;
-        Fri,  3 Jun 2022 10:40:38 -0700 (PDT)
+        Fri, 3 Jun 2022 13:41:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6778C53A5C;
+        Fri,  3 Jun 2022 10:40:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CC67A61AFD;
-        Fri,  3 Jun 2022 17:40:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5912C385B8;
-        Fri,  3 Jun 2022 17:40:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A0276B82432;
+        Fri,  3 Jun 2022 17:40:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDD77C385A9;
+        Fri,  3 Jun 2022 17:40:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278037;
-        bh=1I/4W29KUrH7k9H2Eyl8gUJVNfzH6A8M+djqcTF92tg=;
+        s=korg; t=1654278043;
+        bh=sN7wRxbdbo9D8Yq5WNQYC5GLQgZO7z+fJyeL/zVH8sU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1/xOkgrC0mgNNWsNWmgaDjr0mTyaPz/PtpEl6N0zpAEDJBo04d8V/n1/e4ewpQPNE
-         Q/o20V7pMe63dFlcJbr1tVnXiw+pezPtJxe2AtMyJDSL9cQbNTR5jrfsNO9fdJpKPs
-         tGxzX4BA+/EXaVRh0YecG3UrlI5ccHpL1Q4Js+bw=
+        b=SGFxvmWsawjoPC+rWMmlYnhYzVzCyC1McIlJUX/zCOLnyYpBfZBcuoNPOJVDba0gC
+         EgR4THwCAopYI8CScr1Oh4q1UmDhszGJJ9h0qh9b/YJXWh4vW48XEvkEpowHt7v5WC
+         NJiHUJHtvuFOcz3jwy7gsqeyc2C5MGGtyMPEG8RY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Denis Efremov (Oracle)" <efremov@linux.com>
-Subject: [PATCH 4.14 02/23] staging: rtl8723bs: prevent ->Ssid overflow in rtw_wx_set_scan()
-Date:   Fri,  3 Jun 2022 19:39:29 +0200
-Message-Id: <20220603173814.439377698@linuxfoundation.org>
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Moshe Kol <moshe.kol@mail.huji.ac.il>,
+        Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
+        Amit Klein <aksecurity@gmail.com>,
+        Eric Dumazet <edumazet@google.com>, Willy Tarreau <w@1wt.eu>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Stefan Ghinea <stefan.ghinea@windriver.com>
+Subject: [PATCH 4.14 04/23] secure_seq: use the 64 bits of the siphash for port offset calculation
+Date:   Fri,  3 Jun 2022 19:39:31 +0200
+Message-Id: <20220603173814.498717948@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173814.362515009@linuxfoundation.org>
 References: <20220603173814.362515009@linuxfoundation.org>
@@ -49,34 +54,139 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Denis Efremov (Oracle)" <efremov@linux.com>
+From: Willy Tarreau <w@1wt.eu>
 
-This code has a check to prevent read overflow but it needs another
-check to prevent writing beyond the end of the ->Ssid[] array.
+commit b2d057560b8107c633b39aabe517ff9d93f285e3 upstream.
 
-Fixes: 554c0a3abf21 ("staging: Add rtl8723bs sdio wifi driver")
-Cc: stable <stable@vger.kernel.org>
-Signed-off-by: Denis Efremov (Oracle) <efremov@linux.com>
+SipHash replaced MD5 in secure_ipv{4,6}_port_ephemeral() via commit
+7cd23e5300c1 ("secure_seq: use SipHash in place of MD5"), but the output
+remained truncated to 32-bit only. In order to exploit more bits from the
+hash, let's make the functions return the full 64-bit of siphash_3u32().
+We also make sure the port offset calculation in __inet_hash_connect()
+remains done on 32-bit to avoid the need for div_u64_rem() and an extra
+cost on 32-bit systems.
+
+Cc: Jason A. Donenfeld <Jason@zx2c4.com>
+Cc: Moshe Kol <moshe.kol@mail.huji.ac.il>
+Cc: Yossi Gilad <yossi.gilad@mail.huji.ac.il>
+Cc: Amit Klein <aksecurity@gmail.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Willy Tarreau <w@1wt.eu>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+[SG: Adjusted context]
+Signed-off-by: Stefan Ghinea <stefan.ghinea@windriver.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/staging/rtl8723bs/os_dep/ioctl_linux.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ include/net/inet_hashtables.h |    2 +-
+ include/net/secure_seq.h      |    4 ++--
+ net/core/secure_seq.c         |    4 ++--
+ net/ipv4/inet_hashtables.c    |   10 ++++++----
+ net/ipv6/inet6_hashtables.c   |    4 ++--
+ 5 files changed, 13 insertions(+), 11 deletions(-)
 
---- a/drivers/staging/rtl8723bs/os_dep/ioctl_linux.c
-+++ b/drivers/staging/rtl8723bs/os_dep/ioctl_linux.c
-@@ -1438,9 +1438,11 @@ static int rtw_wx_set_scan(struct net_de
+--- a/include/net/inet_hashtables.h
++++ b/include/net/inet_hashtables.h
+@@ -390,7 +390,7 @@ static inline void sk_rcv_saddr_set(stru
+ }
  
- 					sec_len = *(pos++); len-= 1;
+ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+-			struct sock *sk, u32 port_offset,
++			struct sock *sk, u64 port_offset,
+ 			int (*check_established)(struct inet_timewait_death_row *,
+ 						 struct sock *, __u16,
+ 						 struct inet_timewait_sock **));
+--- a/include/net/secure_seq.h
++++ b/include/net/secure_seq.h
+@@ -4,8 +4,8 @@
  
--					if (sec_len>0 && sec_len<=len) {
-+					if (sec_len > 0 &&
-+					    sec_len <= len &&
-+					    sec_len <= 32) {
- 						ssid[ssid_index].SsidLength = sec_len;
--						memcpy(ssid[ssid_index].Ssid, pos, ssid[ssid_index].SsidLength);
-+						memcpy(ssid[ssid_index].Ssid, pos, sec_len);
- 						/* DBG_871X("%s COMBO_SCAN with specific ssid:%s, %d\n", __func__ */
- 						/* 	, ssid[ssid_index].Ssid, ssid[ssid_index].SsidLength); */
- 						ssid_index++;
+ #include <linux/types.h>
+ 
+-u32 secure_ipv4_port_ephemeral(__be32 saddr, __be32 daddr, __be16 dport);
+-u32 secure_ipv6_port_ephemeral(const __be32 *saddr, const __be32 *daddr,
++u64 secure_ipv4_port_ephemeral(__be32 saddr, __be32 daddr, __be16 dport);
++u64 secure_ipv6_port_ephemeral(const __be32 *saddr, const __be32 *daddr,
+ 			       __be16 dport);
+ u32 secure_tcp_seq(__be32 saddr, __be32 daddr,
+ 		   __be16 sport, __be16 dport);
+--- a/net/core/secure_seq.c
++++ b/net/core/secure_seq.c
+@@ -96,7 +96,7 @@ u32 secure_tcpv6_seq(const __be32 *saddr
+ }
+ EXPORT_SYMBOL(secure_tcpv6_seq);
+ 
+-u32 secure_ipv6_port_ephemeral(const __be32 *saddr, const __be32 *daddr,
++u64 secure_ipv6_port_ephemeral(const __be32 *saddr, const __be32 *daddr,
+ 			       __be16 dport)
+ {
+ 	const struct {
+@@ -145,7 +145,7 @@ u32 secure_tcp_seq(__be32 saddr, __be32
+ 	return seq_scale(hash);
+ }
+ 
+-u32 secure_ipv4_port_ephemeral(__be32 saddr, __be32 daddr, __be16 dport)
++u64 secure_ipv4_port_ephemeral(__be32 saddr, __be32 daddr, __be16 dport)
+ {
+ 	net_secret_init();
+ 	return siphash_4u32((__force u32)saddr, (__force u32)daddr,
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -389,7 +389,7 @@ not_unique:
+ 	return -EADDRNOTAVAIL;
+ }
+ 
+-static u32 inet_sk_port_offset(const struct sock *sk)
++static u64 inet_sk_port_offset(const struct sock *sk)
+ {
+ 	const struct inet_sock *inet = inet_sk(sk);
+ 
+@@ -599,7 +599,7 @@ EXPORT_SYMBOL_GPL(inet_unhash);
+ static u32 table_perturb[1 << INET_TABLE_PERTURB_SHIFT];
+ 
+ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+-		struct sock *sk, u32 port_offset,
++		struct sock *sk, u64 port_offset,
+ 		int (*check_established)(struct inet_timewait_death_row *,
+ 			struct sock *, __u16, struct inet_timewait_sock **))
+ {
+@@ -639,7 +639,9 @@ int __inet_hash_connect(struct inet_time
+ 	net_get_random_once(table_perturb, sizeof(table_perturb));
+ 	index = hash_32(port_offset, INET_TABLE_PERTURB_SHIFT);
+ 
+-	offset = (READ_ONCE(table_perturb[index]) + port_offset) % remaining;
++	offset = READ_ONCE(table_perturb[index]) + port_offset;
++	offset %= remaining;
++
+ 	/* In first pass we try ports of @low parity.
+ 	 * inet_csk_get_port() does the opposite choice.
+ 	 */
+@@ -715,7 +717,7 @@ ok:
+ int inet_hash_connect(struct inet_timewait_death_row *death_row,
+ 		      struct sock *sk)
+ {
+-	u32 port_offset = 0;
++	u64 port_offset = 0;
+ 
+ 	if (!inet_sk(sk)->inet_num)
+ 		port_offset = inet_sk_port_offset(sk);
+--- a/net/ipv6/inet6_hashtables.c
++++ b/net/ipv6/inet6_hashtables.c
+@@ -248,7 +248,7 @@ not_unique:
+ 	return -EADDRNOTAVAIL;
+ }
+ 
+-static u32 inet6_sk_port_offset(const struct sock *sk)
++static u64 inet6_sk_port_offset(const struct sock *sk)
+ {
+ 	const struct inet_sock *inet = inet_sk(sk);
+ 
+@@ -260,7 +260,7 @@ static u32 inet6_sk_port_offset(const st
+ int inet6_hash_connect(struct inet_timewait_death_row *death_row,
+ 		       struct sock *sk)
+ {
+-	u32 port_offset = 0;
++	u64 port_offset = 0;
+ 
+ 	if (!inet_sk(sk)->inet_num)
+ 		port_offset = inet6_sk_port_offset(sk);
 
 
