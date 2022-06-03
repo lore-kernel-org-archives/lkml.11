@@ -2,78 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E0A9C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:28:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01381C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:29:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344479AbiFCR2z (ORCPT
+        id S1344498AbiFCR3O (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:28:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53116 "EHLO
+        Fri, 3 Jun 2022 13:29:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235576AbiFCR2x (ORCPT
+        with ESMTP id S1344486AbiFCR3H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:28:53 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50EE41F627;
-        Fri,  3 Jun 2022 10:28:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654277332; x=1685813332;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=wLTeXAoeUUyhIsn/tZNjxHo1eP+7orIJezeKvINLa2Y=;
-  b=TF38aOPWljVl9gVptNqffHzwNYln/IyddnclFhjssEJeM2ZOZUZZ7nNi
-   kSTOK1P9oZo45YQtK2WuNxFlGTr5lzja69Zve+jf6d6vyH4G/pYYKeJe5
-   qSmGepl5R9+UEt2blPYcIBU4WGuQ5HLpt27wZzhcoiGcGjtOtGZKTBGho
-   5EvjP/sFfCL6jEYneF4skm2aqAYuAkm53jLNiAWDjBm+KyadcumprhuzI
-   VKeDRrUSben8vUQAyL+7B53ldp5SoreUozandWLx8I1d1UZ9qw+8t0nId
-   f4osccBl6aiRcDohavWAQg334pqN4evyaUWdtnLN9dcufv2oDO8MnGFnw
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10367"; a="273868600"
-X-IronPort-AV: E=Sophos;i="5.91,275,1647327600"; 
-   d="scan'208";a="273868600"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2022 10:28:51 -0700
-X-IronPort-AV: E=Sophos;i="5.91,275,1647327600"; 
-   d="scan'208";a="553428640"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2022 10:28:43 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nxB69-000Sdg-8Z;
-        Fri, 03 Jun 2022 20:28:33 +0300
-Date:   Fri, 3 Jun 2022 20:28:33 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Dipen Patel <dipenp@nvidia.com>
-Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>, thierry.reding@gmail.com
-Subject: Re: [PATCH v1 1/1] gpiolib: cdev: Fix kernel doc for struct line
-Message-ID: <YppEwbZSad/pRdUv@smile.fi.intel.com>
-References: <20220520164726.60638-1-andriy.shevchenko@linux.intel.com>
- <d796b54d-7559-f9ff-bb4b-4e75a707db2d@nvidia.com>
- <YppEqYTZyWaulKjI@smile.fi.intel.com>
+        Fri, 3 Jun 2022 13:29:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0173E38DBD;
+        Fri,  3 Jun 2022 10:29:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8B1A2B823C9;
+        Fri,  3 Jun 2022 17:29:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4C01C385A9;
+        Fri,  3 Jun 2022 17:29:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654277343;
+        bh=9I/JzgnnhecK1A0NSKc0eP0dYZJolAgiz4yQ8AYt4Sg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=YNMP77UouuYCdoLbBJHk3zL7lY6HHaor8vsQ0iFWPeUYfxrW94vjVIyI64vhYZPhm
+         8hI7N4GtPaXEYYEod1cZn8aO7o7JnX4nJe2iK2TMBdpFGP/dWg/07KuY553CaggLwo
+         jD0ijLF9RMa/aFkWIuY0OVoM56wsAzOae/A23UE92AvYWr+B/Tgb3bIg3pgcf/hsEt
+         6y7JWgB5acZkWdKJfdV8Bo8ylnAsD7ukpqp+4CBDHedQUBljjTHPcFN0NfSmpPN2BL
+         MgTqTAhC4PkJUri0oIw04lIa0+Dnq2C0GjOMw+H+WAfJSO6BmwViG4VtP7o09E2tvE
+         6xPYMxe3QNedQ==
+Date:   Fri, 3 Jun 2022 18:38:03 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Tomas Melin <tomas.melin@vaisala.com>
+Cc:     LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>, lars@metafoo.de,
+        robh+dt@kernel.org, andy.shevchenko@gmail.com,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        thomas.haemmerle@leica-geosystems.com, linux-iio@vger.kernel.org
+Subject: Re: [PATCH V9 0/5] iio: accel: sca3300: add compatible for scl3300
+Message-ID: <20220603183803.2d7b0c4f@jic23-huawei>
+In-Reply-To: <ffdd68af-a6ec-5a10-f4b8-56678285861f@vaisala.com>
+References: <20220529061853.3044893-1-Qing-wu.Li@leica-geosystems.com.cn>
+        <ffdd68af-a6ec-5a10-f4b8-56678285861f@vaisala.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YppEqYTZyWaulKjI@smile.fi.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 03, 2022 at 08:28:09PM +0300, Andy Shevchenko wrote:
-> On Fri, May 20, 2022 at 10:10:49AM -0700, Dipen Patel wrote:
-> > Acked-by: Dipen Patel <dipenp@nvidia.com>
+On Mon, 30 May 2022 12:58:59 +0300
+Tomas Melin <tomas.melin@vaisala.com> wrote:
+
+> On 29/05/2022 09:18, LI Qingwu wrote:
+> > The current driver support sca3300 only, modified to support SCL3300.
+> > Verified with SCL3300 on IMX8MM.
+> > 
+> > SCL3300 is a three-axis accelerometer sensor with angle output, 
+> > the change adds the support of scl3300 and inclination data output.
+> > 
+> > 
+> > Changes in v9: 
+> >  - Rename angle to angle_supported.
+> >  - Delete reg_val &= GENMASK(1, 0), it's redundant.
+> >  - Fix typo of comments.
+> > 
+> > 
+> > LI Qingwu (5):
+> >   dt-bindings: iio: accel: sca3300: Document murata,scl3300
+> >   iio: accel: sca3300: add define for temp channel for reuse.
+> >   iio: accel: sca3300: modified to support multi chips
+> >   iio: accel: sca3300: Add support for SCL3300
+> >   iio: accel: sca3300: Add inclination channels
+> > 
+> >  .../bindings/iio/accel/murata,sca3300.yaml    |   1 +
+> >  drivers/iio/accel/sca3300.c                   | 323 +++++++++++++++---
+> >  2 files changed, 269 insertions(+), 55 deletions(-)
+> >   
 > 
-> Thanks!
-> 
-> Bart, this can be applied, I think.
+> Reviewed-by: Tomas Melin <tomas.melin@vaisala.com>
 
-Or do you want it in my PR?
+Series applied to the togreg branch of iio.git and pushed out for now as
+testing to let 0-day see if it can find anything we missed.
 
--- 
-With Best Regards,
-Andy Shevchenko
+Thanks,
 
-
+Jonathan
