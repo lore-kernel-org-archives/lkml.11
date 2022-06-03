@@ -2,189 +2,211 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1782FC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 15:11:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2075C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 15:11:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245352AbiFCPLX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 11:11:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56786 "EHLO
+        id S245366AbiFCPLg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 11:11:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230486AbiFCPLV (ORCPT
+        with ESMTP id S245354AbiFCPLe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 11:11:21 -0400
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E833393FD
-        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 08:11:16 -0700 (PDT)
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20220603151111euoutp01e62be51b86be8b4b13987ef91c4cddec~1JPSo_1D42909329093euoutp01e
-        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 15:11:11 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20220603151111euoutp01e62be51b86be8b4b13987ef91c4cddec~1JPSo_1D42909329093euoutp01e
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1654269071;
-        bh=v2T37rlFE2CMfUMl+duH71R/RYEVVTZdUzJd8Rr66Tc=;
-        h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-        b=GY2/yeamdC6ZFH3LHjP6rs56BDHoz5cBuwl7xaBIkWxvBtxs6GpFy+4fnkDTvhyN7
-         NICmcrsaFfO2kKvj20sMl9gCUWwLH6ZiVSRg3gRkwlS3zm3YOv4R4qSEBciofxKgbp
-         8EzSF5WexMYs7moqyq7I1qEGwnm2ACSa2cDxc4OE=
-Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-        20220603151110eucas1p2e503daf8d171b7e73149b01ed6f6a863~1JPSOnn_31666116661eucas1p2S;
-        Fri,  3 Jun 2022 15:11:10 +0000 (GMT)
-Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
-        eusmges3new.samsung.com (EUCPMTA) with SMTP id 76.AE.09580.E842A926; Fri,  3
-        Jun 2022 16:11:10 +0100 (BST)
-Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-        20220603151110eucas1p2b4bd47b123dd88c446e4784b51c775a0~1JPRwXiV-1666116661eucas1p2R;
-        Fri,  3 Jun 2022 15:11:10 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
-        eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220603151110eusmtrp135dcfa5d2e20640cad9eef52705832df~1JPRu861_2050820508eusmtrp1R;
-        Fri,  3 Jun 2022 15:11:10 +0000 (GMT)
-X-AuditID: cbfec7f5-9adff7000000256c-62-629a248ed1a1
-Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
-        eusmgms2.samsung.com (EUCPMTA) with SMTP id 39.C7.09038.E842A926; Fri,  3
-        Jun 2022 16:11:10 +0100 (BST)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-        eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20220603151109eusmtip1fca24cf6d9e43528f30e443154081c84~1JPRH_Hwf3034830348eusmtip1V;
-        Fri,  3 Jun 2022 15:11:09 +0000 (GMT)
-Message-ID: <b4c3d09b-5d7e-83b0-348e-7f5d367bc96e@samsung.com>
-Date:   Fri, 3 Jun 2022 17:11:10 +0200
+        Fri, 3 Jun 2022 11:11:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FD65506C4;
+        Fri,  3 Jun 2022 08:11:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 57071B82359;
+        Fri,  3 Jun 2022 15:11:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9814EC385A9;
+        Fri,  3 Jun 2022 15:11:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654269090;
+        bh=prtQe0mqDshbUfvhhY5Wz4YhnC7CpDqr1UqcZBTJU0M=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=E2FwOiwTQSBSNmmrgyGTFQNEHYZIIc6srQpUMt+TgN99yinQuOC9sJfiHvxHj1NrN
+         9oOqavMqzrcNmEJkRKFrICftneUXpKdXaGxRcR5jx1t2qKMc2menxBOlT/1U5r7NsG
+         xOr3fi4k+Yb3ssAVlMo3Vo3zOGwicrCHHy8o/5mG4o3PSZfoRTTMEUXi9HRF1v9/mj
+         580/FZfvhnGYFzTELGemltU0I1hL5tfNjirkOf1yCVI5zVS+tX5oFWHry1H+QP1aCN
+         9AbUZDYOMuZFrtICz5UcLaNHeMsSMSauMkcKJTE/lls46JYe6E7IfpECXFL+r43QRE
+         JMVycKsRoc1IA==
+Date:   Fri, 3 Jun 2022 16:20:29 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Yongzhi Liu <lyz_cs@pku.edu.cn>
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org, lars@metafoo.de,
+        svarbanov@mm-sol.com, iivanov@mm-sol.com,
+        jonathan.cameron@huawei.com, linux-arm-msm@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        fuyq@stu.pku.edu.cn
+Subject: Re: [PATCH v4] iio: vadc: Fix potential dereference of NULL pointer
+Message-ID: <20220603162029.6ed3c3b3@jic23-huawei>
+In-Reply-To: <20220603160222.1ad6ef49@jic23-huawei>
+References: <20220522120109.7ead18a7@jic23-huawei>
+        <1653238427-73587-1-git-send-email-lyz_cs@pku.edu.cn>
+        <20220603160222.1ad6ef49@jic23-huawei>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0)
-        Gecko/20100101 Thunderbird/91.9.1
-Subject: Re: [PATCH v4 3/3] squashfs: implement readahead
-Content-Language: en-US
-To:     Hsin-Yi Wang <hsinyi@chromium.org>
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        Phillip Lougher <phillip@squashfs.org.uk>,
-        Xiongwei Song <Xiongwei.Song@windriver.com>,
-        Zheng Liang <zhengliang6@huawei.com>,
-        Zhang Yi <yi.zhang@huawei.com>, Hou Tao <houtao1@huawei.com>,
-        Miao Xie <miaoxie@huawei.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "linux-mm @ kvack . org" <linux-mm@kvack.org>,
-        "squashfs-devel @ lists . sourceforge . net" 
-        <squashfs-devel@lists.sourceforge.net>,
-        linux-kernel@vger.kernel.org
-From:   Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <CAJMQK-jDwchHokDZw7k24rGdy7OeUmiVWUCfxBiu1E1dZwuy2Q@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrOKsWRmVeSWpSXmKPExsWy7djP87p9KrOSDL4vN7GYs34Nm8WmQ2/Y
-        LCa0bme2uLxrDpvFvTX/WS06Vt5jtTjas5nN4uqueovfP4Din3a9Z7W49u4Mm8X3B5uZHHg8
-        ZjdcZPFoOfKW1WPzCi2PTZ8msXucmPGbxWP3gs9MHlO+Pmf2+LxJzmP9lq1MAZxRXDYpqTmZ
-        ZalF+nYJXBnrdr9hKXgkUtF1dBpLA+NywS5GTg4JAROJu3O2sXQxcnEICaxglHh5aAEzSEJI
-        4AujRN/OAojEZ0aJ7X0v2WE6dt98yQqRWM4osWnfE3YI5yOjRNOf70wgVbwCdhK/Jl4Bs1kE
-        VCReXtsKFReUODnzCQuILSqQJDF/WysriC0sYCnxYNdysNXMAuISt57MB6sXEVCTmHrpL9h9
-        zAJ3mCXmndkF1swmYCjR9baLDcTmFAiU+A/0OkSzvMT2t3OYQRokBGZzSrzYdowJ4m4XiZ1X
-        1rNC2MISr45vgfpHRuL05B6goRxAdr7E3xnGEOEKiWuv1zBD2NYSd879YgMpYRbQlFi/Sx8i
-        7CixfvlnJohOPokbbwUhLuCTmLRtOjNEmFeio00IolpNYtbxdXA7D164xDyBUWkWUqDMQvL8
-        LCS/zELYu4CRZRWjeGppcW56arFxXmq5XnFibnFpXrpecn7uJkZgWjv97/jXHYwrXn3UO8TI
-        xMF4iFGCg1lJhLds3swkId6UxMqq1KL8+KLSnNTiQ4zSHCxK4rzJmRsShQTSE0tSs1NTC1KL
-        YLJMHJxSDUy9q7msVa5cnat/fWmHekr9QsaXRw7abljwy/hHpaT7TMsf7/fdmSCY0J3n7NBQ
-        orDHrOQq37eWcla+dT8CPYM1py15ypi+06E9V8vgYvvcjuCznY6n1nIsfy6Vs2L+nHma0hcd
-        NI62fU/mPeITa3awp9RUR6p6VZtdmsXMZb92p33sNJtQrh0QefOT9RbBpzV9rgdnLHizPmFl
-        /rS6PrssjuOPVoZIbPW/p3yS/63Rh11OrKduRx+coir3PqD63q6YXccutB4Sm1FxfFmlflfP
-        74dXPn0+N2lRQ97t3ZzitgujXKsCvwVrpy+eznynIkvc98z+0FMb75e2NFow3zS59nRif9qV
-        yS4rNH8zd+1UYinOSDTUYi4qTgQAD58gLNoDAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrLIsWRmVeSWpSXmKPExsVy+t/xu7p9KrOSDHYdFLaYs34Nm8WmQ2/Y
-        LCa0bme2uLxrDpvFvTX/WS06Vt5jtTjas5nN4uqueovfP4Din3a9Z7W49u4Mm8X3B5uZHHg8
-        ZjdcZPFoOfKW1WPzCi2PTZ8msXucmPGbxWP3gs9MHlO+Pmf2+LxJzmP9lq1MAZxRejZF+aUl
-        qQoZ+cUltkrRhhZGeoaWFnpGJpZ6hsbmsVZGpkr6djYpqTmZZalF+nYJehnrdr9hKXgkUtF1
-        dBpLA+NywS5GTg4JAROJ3TdfsnYxcnEICSxllFgy/RQzREJG4uS0BlYIW1jiz7UuNoii94wS
-        b2c0ghXxCthJ/Jp4hQnEZhFQkXh5bSsTRFxQ4uTMJywgtqhAksS8vasZQWxhAUuJB7uWg/Uy
-        C4hL3HoyH6xeREBNYuqlvywgC5gFHjBLfNi3F+qkWcwSH6/uYAOpYhMwlOh62wVmcwoESvwH
-        hgjEJDOJrq1djBC2vMT2t3OYJzAKzUJyyCwkC2chaZmFpGUBI8sqRpHU0uLc9NxiI73ixNzi
-        0rx0veT83E2MwHjeduznlh2MK1991DvEyMTBeIhRgoNZSYS3bN7MJCHelMTKqtSi/Pii0pzU
-        4kOMpsDQmMgsJZqcD0woeSXxhmYGpoYmZpYGppZmxkrivJ4FHYlCAumJJanZqakFqUUwfUwc
-        nFINTPM5vJR5t095+kbp5DXGfc3hzIonmddWnBf3fsoXIX9736Ll81+usj+5a43NxIPWMhzd
-        Ex3vNfg7WM8oPJVnramkc1F15+u1S1QkY1malK8tPyZw7+2VavdV8mXccd9rQnO/hVXsXftw
-        oolNUNoMRb/U9Lcbdws5x/i89GNY1zJ5gd4jZb/q48/yXpYH9b1YrMtpLLxG4aotX+ob01Nn
-        ZDpu/1OS2Gz4euF1swsK/3anqba9WvFWOXdJOatITHPCCfVTjmFbH1UccAno85jzKe8934Iv
-        M4yv2M5ZX3pl++mSA2ydycIztx/KsjSS5GznYfv3i2XnfjY9I6ez/VxzDuvuXzzDQ0JMjlFi
-        /junGCWW4oxEQy3mouJEAFtENKBwAwAA
-X-CMS-MailID: 20220603151110eucas1p2b4bd47b123dd88c446e4784b51c775a0
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20220603125421eucas1p17da286a3e7f2d4759aa4c7639dd62f75
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20220603125421eucas1p17da286a3e7f2d4759aa4c7639dd62f75
-References: <20220601103922.1338320-1-hsinyi@chromium.org>
-        <20220601103922.1338320-4-hsinyi@chromium.org>
-        <CGME20220603125421eucas1p17da286a3e7f2d4759aa4c7639dd62f75@eucas1p1.samsung.com>
-        <c017d992-2746-045b-47c8-c5b9c3025f1a@samsung.com>
-        <YpoFnROxAwdSScuV@casper.infradead.org>
-        <90b228ea-1b0e-d2e8-62be-9ad5802dcce7@samsung.com>
-        <CAJMQK-jDwchHokDZw7k24rGdy7OeUmiVWUCfxBiu1E1dZwuy2Q@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Fri, 3 Jun 2022 16:02:22 +0100
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-On 03.06.2022 16:55, Hsin-Yi Wang wrote:
-> On Fri, Jun 3, 2022 at 10:10 PM Marek Szyprowski
-> <m.szyprowski@samsung.com> wrote:
->> On 03.06.2022 14:59, Matthew Wilcox wrote:
->>> On Fri, Jun 03, 2022 at 02:54:21PM +0200, Marek Szyprowski wrote:
->>>> On 01.06.2022 12:39, Hsin-Yi Wang wrote:
->>>>> Implement readahead callback for squashfs. It will read datablocks
->>>>> which cover pages in readahead request. For a few cases it will
->>>>> not mark page as uptodate, including:
->>>>> - file end is 0.
->>>>> - zero filled blocks.
->>>>> - current batch of pages isn't in the same datablock or not enough in a
->>>>>      datablock.
->>>>> - decompressor error.
->>>>> Otherwise pages will be marked as uptodate. The unhandled pages will be
->>>>> updated by readpage later.
->>>>>
->>>>> Suggested-by: Matthew Wilcox <willy@infradead.org>
->>>>> Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
->>>>> Reported-by: Matthew Wilcox <willy@infradead.org>
->>>>> Reported-by: Phillip Lougher <phillip@squashfs.org.uk>
->>>>> Reported-by: Xiongwei Song <Xiongwei.Song@windriver.com>
->>>>> ---
->>>> This patch landed recently in linux-next as commit 95f7a26191de
->>>> ("squashfs: implement readahead"). I've noticed that it causes serious
->>>> issues on my test systems (various ARM 32bit and 64bit based boards).
->>>> The easiest way to observe is udev timeout 'waiting for /dev to be fully
->>>> populated' and prolonged booting time. I'm using squashfs for deploying
->>>> kernel modules via initrd. Reverting aeefca9dfae7 & 95f7a26191deon on
->>>> top of the next-20220603 fixes the issue.
->>> How large are these files?  Just a few kilobytes?
->> Yes, they are small, most of them are smaller than 16KB, some about
->> 128KB and a few about 256KB. I've sent a detailed list in private mail.
->>
-> Hi Marek,
->
-> Are there any obvious squashfs errors in dmesg? Did you enable
-> CONFIG_SQUASHFS_FILE_DIRECT or CONFIG_SQUASHFS_FILE_CACHE?
+> On Sun, 22 May 2022 09:53:47 -0700
+> Yongzhi Liu <lyz_cs@pku.edu.cn> wrote:
+> 
+> > The return value of vadc_get_channel() needs to be checked to
+> > avoid use of NULL pointer. vadc_do_conversion() already provides
+> > error prints in at least some of it's error paths. Thus it is
+> > reasonable to add the null pointer check on prop and drop the
+> > extra reporting in vadc_measure_ref_points().
+> > 
+> > Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>  
+> 
+> Hi
+> 
+> Biggest remaining thing is squashing
+> ret = -ENODEV;
+> return ret;
+> 
+> into the shorter
+> return -ENODEV;
+> 
+One additional process thing I didn't mention before now as this is a
+single patch.
 
-Here are related config entries from my .config:
+Generally for IIO at least, don't send new versions in reply to old threads.
+The threads can get very deep and confusing, so I'd much rather a new thread
+for each version.
 
-CONFIG_SQUASHFS=y
-CONFIG_SQUASHFS_FILE_CACHE=y
-# CONFIG_SQUASHFS_FILE_DIRECT is not set
-CONFIG_SQUASHFS_DECOMP_SINGLE=y
-# CONFIG_SQUASHFS_DECOMP_MULTI is not set
-# CONFIG_SQUASHFS_DECOMP_MULTI_PERCPU is not set
-# CONFIG_SQUASHFS_XATTR is not set
-CONFIG_SQUASHFS_ZLIB=y
-# CONFIG_SQUASHFS_LZ4 is not set
-CONFIG_SQUASHFS_LZO=y
-CONFIG_SQUASHFS_XZ=y
-# CONFIG_SQUASHFS_ZSTD is not set
-# CONFIG_SQUASHFS_4K_DEVBLK_SIZE is not set
-# CONFIG_SQUASHFS_EMBEDDED is not set
-CONFIG_SQUASHFS_FRAGMENT_CACHE_SIZE=3
+Thanks,
 
-(I've used standard ARM 32bit multi_v7_defconfig)
+Jonathan
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+> 
+> > ---
+> >  drivers/iio/adc/qcom-spmi-vadc.c | 38 ++++++++++++++++++++++++++++----------
+> >  1 file changed, 28 insertions(+), 10 deletions(-)
+> > 
+> > diff --git a/drivers/iio/adc/qcom-spmi-vadc.c b/drivers/iio/adc/qcom-spmi-vadc.c
+> > index 34202ba..43a52b1 100644
+> > --- a/drivers/iio/adc/qcom-spmi-vadc.c
+> > +++ b/drivers/iio/adc/qcom-spmi-vadc.c
+> > @@ -358,22 +358,33 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
+> >  	vadc->graph[VADC_CALIB_ABSOLUTE].dx = VADC_ABSOLUTE_RANGE_UV;
+> >  
+> >  	prop = vadc_get_channel(vadc, VADC_REF_1250MV);
+> > +	if (!prop) {
+> > +		dev_err(vadc->dev, "Please define 1.25V channel\n");  
+> Probably makes more sense to have the error as 
+> "No 1.25V channel found\n");
+> 
+> It's not obvious to anyone getting this error what 'define' might mean
+> without them looking at the code, so I'd rather we just said what had
+> gone wrong rather offering incomplete advice.
+> 
+> > +		ret = -ENODEV;  
+> 
+> Don't bother assigning a variable just to return it in the next line.
+> 
+> return -ENODEV;
+> 
+> > +		return ret;
+> > +	}
+> >  	ret = vadc_do_conversion(vadc, prop, &read_1);
+> >  	if (ret)
+> > -		goto err;
+> > +		return ret;
+> >  
+> >  	/* Try with buffered 625mV channel first */
+> >  	prop = vadc_get_channel(vadc, VADC_SPARE1);
+> > -	if (!prop)
+> > +	if (!prop) {
+> >  		prop = vadc_get_channel(vadc, VADC_REF_625MV);
+> > +		if (!prop) {
+> > +			dev_err(vadc->dev, "Please define 0.625V channel\n");  
+> "No 0.625V channel found\n"
+> > +			ret = -ENODEV;  
+> 
+> return -ENODEV;
+> 
+> > +			return ret;
+> > +		}
+> > +	}
+> >  
+> >  	ret = vadc_do_conversion(vadc, prop, &read_2);
+> >  	if (ret)
+> > -		goto err;
+> > +		return ret;
+> >  
+> >  	if (read_1 == read_2) {
+> >  		ret = -EINVAL;
+> > -		goto err;
+> > +		return ret;
+> >  	}
+> >  
+> >  	vadc->graph[VADC_CALIB_ABSOLUTE].dy = read_1 - read_2;
+> > @@ -381,25 +392,32 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
+> >  
+> >  	/* Ratiometric calibration */
+> >  	prop = vadc_get_channel(vadc, VADC_VDD_VADC);
+> > +	if (!prop) {
+> > +		dev_err(vadc->dev, "Please define VDD channel\n");  
+> 
+> "No VDD channel found\n"
+> 
+> > +		ret = -ENODEV;
+> > +		return ret;
+> > +	}
+> >  	ret = vadc_do_conversion(vadc, prop, &read_1);
+> >  	if (ret)
+> > -		goto err;
+> > +		return ret;
+> >  
+> >  	prop = vadc_get_channel(vadc, VADC_GND_REF);
+> > +	if (!prop) {
+> > +		dev_err(vadc->dev, "Please define GND channel\n");  
+> 
+> "No GND channel found\n"
+> 
+> > +		ret = -ENODEV;
+> > +		return ret;  
+> 
+> return -ENODEV;
+> 
+> > +	}
+> >  	ret = vadc_do_conversion(vadc, prop, &read_2);
+> >  	if (ret)
+> > -		goto err;
+> > +		return ret;
+> >  
+> >  	if (read_1 == read_2) {
+> >  		ret = -EINVAL;
+> > -		goto err;
+> > +		return ret;  
+> 
+> return -ENODEV;
+> 
+> >  	}
+> >  
+> >  	vadc->graph[VADC_CALIB_RATIOMETRIC].dy = read_1 - read_2;
+> >  	vadc->graph[VADC_CALIB_RATIOMETRIC].gnd = read_2;
+> > -err:
+> > -	if (ret)
+> > -		dev_err(vadc->dev, "measure reference points failed\n");
+> >  
+> >  	return ret;  
+> 
+> Can't get here with anything other than ret == 0 so
+> 	return 0;
+> to make that explicit.
+> 
+> 
+> >  }  
+> 
 
