@@ -2,83 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D35B0C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 04:54:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 849A3CCA47E
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 04:57:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238842AbiFCEyf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 00:54:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48290 "EHLO
+        id S239327AbiFCE5z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 00:57:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231318AbiFCEye (ORCPT
+        with ESMTP id S231318AbiFCE5w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 00:54:34 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 446B05FE6
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 21:54:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654232073; x=1685768073;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=928aeSsrAOgDgltZ98A47/FGkn0S4P24ur/iSUQl09E=;
-  b=HYMyHhAQybW4NxZ+Nc8Zt9gVoI7nTqM42tiCKGqC4Rzn5+gh9wOYYAiV
-   UqrsDYFE5bXVuekO5VmUbnqsk0tSTqhRhWAHPLg3Dw70Lexxzl73GW3hm
-   5h5ZSq6Xk9IRNl8cw/jD5h5egJsq06U+xiQb+NKNzCWNP7HPdns5/kRvw
-   1UZ8bGFxRnCwWWkF0saRSTtzGOF6yLBq5qOjMiuNIvi9iB5RZ3+tzCU+J
-   ZYVYsts0rMu/9iJqy+ckRATj+V0yPx+f0YG0cPGlfIuQS+0ofZ3K3Cura
-   +WHptzS72hccRV5rZY+aYG3FAQw78fddLfGrtciRj9xEhquJvgYRckACo
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10366"; a="336822459"
-X-IronPort-AV: E=Sophos;i="5.91,273,1647327600"; 
-   d="scan'208";a="336822459"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2022 21:54:32 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,273,1647327600"; 
-   d="scan'208";a="905313425"
-Received: from unknown (HELO localhost.localdomain) ([10.226.216.117])
-  by fmsmga005.fm.intel.com with ESMTP; 02 Jun 2022 21:54:30 -0700
-From:   kah.jing.lee@intel.com
-To:     rdunlap@infradead.org
-Cc:     arnd@arndb.de, dinguyen@kernel.org, gregkh@linuxfoundation.org,
-        kah.jing.lee@intel.com, lftan@altera.com,
-        linux-kernel@vger.kernel.org, tien.sung.ang@intel.com
-Subject: Re: [PATCH 1/2] drivers: misc: intel_sysid: Add sysid from arch to drivers
-Date:   Fri,  3 Jun 2022 12:52:57 +0800
-Message-Id: <20220603045255.3073882-1-kah.jing.lee@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <4e2ef3c7-f329-eeaf-f330-3da2b30b0b7a@infradead.org>
-References: <4e2ef3c7-f329-eeaf-f330-3da2b30b0b7a@infradead.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Fri, 3 Jun 2022 00:57:52 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 031C421831
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 21:57:50 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-30c9a01d1c5so59694827b3.11
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 21:57:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=MEQmxhdhzj6Wva0dy8UFtG14viIsjIrwd9QZHTnb4Sg=;
+        b=WhkX3pc6B1nQlpibT1FYCsRiyGAaNvybNGGpmlm4CoUsKd3Wlca7WK5LjY5Z/KOsDs
+         sdb/q6pSoMbrvKG6pr9gVgnRCEXycNiRCTZmrdiv1j+fIFZ3thVdebsjQ2mPTxKtTKZb
+         wD+n0UaX57U6Ht3D61rYEIUV9p0fionYn2lmaYEbbjmbAL1FNBQb36bbvk0x95WWjkrE
+         Cg1Ja4E0ue3ND3QaNDiRKi3O0frT587ZQ/LOdDa1bdLjoDRJQiISUvQjXPbKvHgJkZVD
+         yA36QkodwQEPa3xec6pEe21dQnQ6GK8NERN1N4TOdvGvGf/Ka8wYO4dWy3xieJQmF8wB
+         hAdg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=MEQmxhdhzj6Wva0dy8UFtG14viIsjIrwd9QZHTnb4Sg=;
+        b=yopLFbQc+9rncnm6mYYQlYApuNfqEEWSsI/4TN/SY8XQHcvQYItL+m0LjnKTqVbh4w
+         mown58Y7M8dM/6xfizG+8ZrWlSwnfRHloMtTm5nz0Zv5kTilQKJea/8OVBTzmGeGmwTE
+         1fSDUDcd7xmpjnhhODwGugTO5M9o7FWt3ECcC7aHMKyWlnMl97bqy/hpxbDJFpsXSc2x
+         1iCeR0UOH+0XgR61nopBfb8YQSQpJzpPgWNuszWz3Gl02f1jHAkEquGFXKD0Q5zAeW1I
+         pQzR4PJm8wP7HG0/KTZG3lNiFnTZ70+E/PE93GMIpgw5BlejhMKTt0gdeeNQI9qtyr8B
+         7exw==
+X-Gm-Message-State: AOAM531mwmaMxNRCDPxYSsi1oye4s56iSsLJoDTSAzgtuO44oHPG/9j9
+        fMfcR16L9t5bTAE2v6Lp8gjbghnXTmXk
+X-Google-Smtp-Source: ABdhPJxC68EAiBGvASOaIPffKNdFKZ0ETYvIPGwdmpWXvlMj0PsDeresPRUqm2vz4oret+2Hq1YldMxgGydC
+X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:7125:61ca:dfbf:5f0b])
+ (user=irogers job=sendgmr) by 2002:a25:bd8b:0:b0:657:8392:55c3 with SMTP id
+ f11-20020a25bd8b000000b00657839255c3mr9130007ybh.452.1654232269215; Thu, 02
+ Jun 2022 21:57:49 -0700 (PDT)
+Date:   Thu,  2 Jun 2022 21:57:44 -0700
+Message-Id: <20220603045744.2815559-1-irogers@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+Subject: [PATCH] perf docs: Correct typo of event_sources
+From:   Ian Rogers <irogers@google.com>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
+        Ian Rogers <irogers@google.com>,
+        Sandipan Das <sandipan.das@amd.com>,
+        German Gomez <german.gomez@arm.com>,
+        Alyssa Ross <hi@alyssa.is>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Like Xu <likexu@tencent.com>,
+        Joshua Martinez <joshuamart@google.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Kevin Nomura <nomurak@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kah Jing Lee <kah.jing.lee@intel.com>
+The sysfs directory is called event_source.
 
-> On 6/2/22 05:22, kah.jing.lee@intel.com wrote:
-> > diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
-> > index 41d2bb0ae23a..a31489cc092c 100644
-> > --- a/drivers/misc/Kconfig
-> > +++ b/drivers/misc/Kconfig
-> > @@ -483,6 +483,15 @@ config OPEN_DICE
-> >  
-> >  	  If unsure, say N.
-> >  
-> > +config INTEL_SYSID
-> > +	tristate "Intel System ID"
-> > +	help
-> > +	  This enables Intel System ID soft core driver.
-> > +	  Say Y here if you want to build a driver for Intel System ID driver.
+Reported-by: Kevin Nomura <nomurak@google.com>
+Signed-off-by: Ian Rogers <irogers@google.com>
+---
+ tools/perf/Documentation/perf-record.txt | 2 +-
+ tools/perf/Documentation/perf-stat.txt   | 2 +-
+ tools/perf/Documentation/perf-top.txt    | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-> Probably drop the last (redundant)                                     driver
-Updated =)
+diff --git a/tools/perf/Documentation/perf-record.txt b/tools/perf/Documentation/perf-record.txt
+index b4e9ef7edfef..cf8ad50f3de1 100644
+--- a/tools/perf/Documentation/perf-record.txt
++++ b/tools/perf/Documentation/perf-record.txt
+@@ -33,7 +33,7 @@ OPTIONS
+         - a raw PMU event in the form of rN where N is a hexadecimal value
+           that represents the raw register encoding with the layout of the
+           event control registers as described by entries in
+-          /sys/bus/event_sources/devices/cpu/format/*.
++          /sys/bus/event_source/devices/cpu/format/*.
+ 
+         - a symbolic or raw PMU event followed by an optional colon
+ 	  and a list of event modifiers, e.g., cpu-cycles:p.  See the
+diff --git a/tools/perf/Documentation/perf-stat.txt b/tools/perf/Documentation/perf-stat.txt
+index 8d1cde00b8d6..d8a33f4a47c5 100644
+--- a/tools/perf/Documentation/perf-stat.txt
++++ b/tools/perf/Documentation/perf-stat.txt
+@@ -39,7 +39,7 @@ report::
+ 	- a raw PMU event in the form of rN where N is a hexadecimal value
+ 	  that represents the raw register encoding with the layout of the
+ 	  event control registers as described by entries in
+-	  /sys/bus/event_sources/devices/cpu/format/*.
++	  /sys/bus/event_source/devices/cpu/format/*.
+ 
+         - a symbolic or raw PMU event followed by an optional colon
+ 	  and a list of event modifiers, e.g., cpu-cycles:p.  See the
+diff --git a/tools/perf/Documentation/perf-top.txt b/tools/perf/Documentation/perf-top.txt
+index cac3dfbee7d8..c1fdba26bf53 100644
+--- a/tools/perf/Documentation/perf-top.txt
++++ b/tools/perf/Documentation/perf-top.txt
+@@ -41,7 +41,7 @@ Default is to monitor all CPUS.
+ 	(use 'perf list' to list all events) or a raw PMU event in the form
+ 	of rN where N is a hexadecimal value that represents the raw register
+ 	encoding with the layout of the event control registers as described
+-	by entries in /sys/bus/event_sources/devices/cpu/format/*.
++	by entries in /sys/bus/event_source/devices/cpu/format/*.
+ 
+ -E <entries>::
+ --entries=<entries>::
+-- 
+2.36.1.255.ge46751e96f-goog
 
-> > +
-> > +	  To compile this driver as a module, choose M here: the
-> > +	  module will be called intel_sysid. If unsure, say N here.
-> > +
-
-> -- 
-> ~Randy
