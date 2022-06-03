@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77E15CCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4378CCA47E
 	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:07:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348046AbiFCSGg (ORCPT
+        id S1348165AbiFCSGm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:06:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58036 "EHLO
+        Fri, 3 Jun 2022 14:06:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345563AbiFCRyS (ORCPT
+        with ESMTP id S1345742AbiFCRy2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:54:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32B0C2A730;
-        Fri,  3 Jun 2022 10:52:37 -0700 (PDT)
+        Fri, 3 Jun 2022 13:54:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 281E433A2F;
+        Fri,  3 Jun 2022 10:52:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E18561244;
-        Fri,  3 Jun 2022 17:52:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 395A3C385B8;
-        Fri,  3 Jun 2022 17:52:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 958F3B82419;
+        Fri,  3 Jun 2022 17:52:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D8AFC385B8;
+        Fri,  3 Jun 2022 17:52:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278756;
-        bh=6vq5ZPUa7dZjMfqV76WFz9nRr50JLE/6zI0Y9s9xcII=;
+        s=korg; t=1654278762;
+        bh=5cbWmyR2IMGGz9IkAFETxg/3SAjZQPfP2Nwg2heSXwA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q2EWUFe1x0rhQ5cEZAn7aKa6UcR4Zj1st6BRMYrz2YUU2b14v8APn0iuY1nEDGzN3
-         Mqi/7KFS2zizz8ZvuyXIKzWPsmfLwgnwKnHy68FqCitn0tDhyfw71hECK00UHM4JhY
-         Gqz0dJi+DsNaGldDyX0CtcmmtfiQo05CpMUJ3u3w=
+        b=1vEMr9KmvmSGlv1pfYHFKT6CN+fQZxqBypVl0825nFRfYFvZ0Tne7+Jzaad7WuAL1
+         5ZNQh1bXMi4CYWqGurnXgB+NAlWBssEWRNI7W68FFskMbFaLA4NVZiA4Q5/T6bWSea
+         YvlmGvy7ZBqNDovXivrJ0FN+LTIDyyUaOeTnMyqo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alex Elder <elder@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.17 17/75] net: ipa: compute proper aggregation limit
-Date:   Fri,  3 Jun 2022 19:43:01 +0200
-Message-Id: <20220603173822.238798419@linuxfoundation.org>
+        stable@vger.kernel.org, "Dustin L. Howett" <dustin@howett.net>,
+        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 03/75] ALSA: hda/realtek: Add quirk for the Framework Laptop
+Date:   Fri,  3 Jun 2022 19:42:47 +0200
+Message-Id: <20220603173821.847934703@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173821.749019262@linuxfoundation.org>
 References: <20220603173821.749019262@linuxfoundation.org>
@@ -49,49 +49,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Elder <elder@linaro.org>
+From: Dustin L. Howett <dustin@howett.net>
 
-commit c5794097b269f15961ed78f7f27b50e51766dec9 upstream.
+[ Upstream commit 309d7363ca3d9fcdb92ff2d958be14d7e8707f68 ]
 
-The aggregation byte limit for an endpoint is currently computed
-based on the endpoint's receive buffer size.
+Some board revisions of the Framework Laptop have an ALC295 with a
+disconnected or faulty headset mic presence detect.
 
-However, some bytes at the front of each receive buffer are reserved
-on the assumption that--as with SKBs--it might be useful to insert
-data (such as headers) before what lands in the buffer.
+The "dell-headset-multi" fixup addresses this issue, but also enables an
+inoperative "Headphone Mic" input device whenever a headset is
+connected.
 
-The aggregation byte limit currently doesn't take into account that
-reserved space, and as a result, aggregation could require space
-past that which is available in the buffer.
+Adding a new quirk chain specific to the Framework Laptop resolves this
+issue. The one introduced here is based on the System76 "no headphone
+mic" quirk chain.
 
-Fix this by reducing the size used to compute the aggregation byte
-limit by the NET_SKB_PAD offset reserved for each receive buffer.
+The VID:PID f111:0001 have been allocated to Framework Computer for this
+board revision.
 
-Signed-off-by: Alex Elder <elder@linaro.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Revision history:
+- v2: Moved to a custom quirk chain to suppress the "Headphone Mic"
+  pincfg.
+
+Signed-off-by: Dustin L. Howett <dustin@howett.net>
+Link: https://lore.kernel.org/r/20220511010759.3554-1-dustin@howett.net
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ipa/ipa_endpoint.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ sound/pci/hda/patch_realtek.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
---- a/drivers/net/ipa/ipa_endpoint.c
-+++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -723,13 +723,15 @@ static void ipa_endpoint_init_aggr(struc
+diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
+index cc3cf65ad5b9..53d1586b71ec 100644
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -7036,6 +7036,7 @@ enum {
+ 	ALC287_FIXUP_LEGION_16ACHG6,
+ 	ALC287_FIXUP_CS35L41_I2C_2,
+ 	ALC285_FIXUP_HP_SPEAKERS_MICMUTE_LED,
++	ALC295_FIXUP_FRAMEWORK_LAPTOP_MIC_NO_PRESENCE,
+ };
  
- 	if (endpoint->data->aggregation) {
- 		if (!endpoint->toward_ipa) {
-+			u32 buffer_size;
- 			bool close_eof;
- 			u32 limit;
+ static const struct hda_fixup alc269_fixups[] = {
+@@ -8812,6 +8813,15 @@ static const struct hda_fixup alc269_fixups[] = {
+ 		.chained = true,
+ 		.chain_id = ALC269_FIXUP_DELL4_MIC_NO_PRESENCE,
+ 	},
++	[ALC295_FIXUP_FRAMEWORK_LAPTOP_MIC_NO_PRESENCE] = {
++		.type = HDA_FIXUP_PINS,
++		.v.pins = (const struct hda_pintbl[]) {
++			{ 0x19, 0x02a1112c }, /* use as headset mic, without its own jack detect */
++			{ }
++		},
++		.chained = true,
++		.chain_id = ALC269_FIXUP_HEADSET_MODE_NO_HP_MIC
++	},
+ };
  
- 			val |= u32_encode_bits(IPA_ENABLE_AGGR, AGGR_EN_FMASK);
- 			val |= u32_encode_bits(IPA_GENERIC, AGGR_TYPE_FMASK);
+ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
+@@ -9292,6 +9302,7 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
+ 	SND_PCI_QUIRK(0x8086, 0x2074, "Intel NUC 8", ALC233_FIXUP_INTEL_NUC8_DMIC),
+ 	SND_PCI_QUIRK(0x8086, 0x2080, "Intel NUC 8 Rugged", ALC256_FIXUP_INTEL_NUC8_RUGGED),
+ 	SND_PCI_QUIRK(0x8086, 0x2081, "Intel NUC 10", ALC256_FIXUP_INTEL_NUC10),
++	SND_PCI_QUIRK(0xf111, 0x0001, "Framework Laptop", ALC295_FIXUP_FRAMEWORK_LAPTOP_MIC_NO_PRESENCE),
  
--			limit = ipa_aggr_size_kb(IPA_RX_BUFFER_SIZE);
-+			buffer_size = IPA_RX_BUFFER_SIZE - NET_SKB_PAD;
-+			limit = ipa_aggr_size_kb(buffer_size);
- 			val |= aggr_byte_limit_encoded(version, limit);
- 
- 			limit = IPA_AGGR_TIME_LIMIT;
+ #if 0
+ 	/* Below is a quirk table taken from the old code.
+-- 
+2.35.1
+
 
 
