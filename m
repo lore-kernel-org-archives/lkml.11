@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C08FECCA473
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:44:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70829CCA473
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:44:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345094AbiFCRoC (ORCPT
+        id S1344739AbiFCRoH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:44:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56986 "EHLO
+        Fri, 3 Jun 2022 13:44:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345020AbiFCRnj (ORCPT
+        with ESMTP id S1344972AbiFCRnC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:43:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DF7854BED;
-        Fri,  3 Jun 2022 10:42:05 -0700 (PDT)
+        Fri, 3 Jun 2022 13:43:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D678E546AE;
+        Fri,  3 Jun 2022 10:41:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 49EF0B8241E;
-        Fri,  3 Jun 2022 17:42:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4C0FC385A9;
-        Fri,  3 Jun 2022 17:42:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 25C5CB8241E;
+        Fri,  3 Jun 2022 17:41:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93361C385B8;
+        Fri,  3 Jun 2022 17:41:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278122;
-        bh=0alvOT1vkFZ0mVurB7FvRHC52wHIVzspOCufxHyjTq8=;
+        s=korg; t=1654278107;
+        bh=LsH1HqDV5pyLfd2g9MkJXXWym+3MpMynBu8bh8SGuwA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bU8WqOAVmj0ODDfgr+X3uHyPLk3NyMYFHKPzTG0Nb8PTZ+Nz3RGDmINyAdAITEV9H
-         0wl4aa3He7J6JPM3KsdkA+pce+w7qllytOXoROSgYVKxd0+5e9X83vGnHdghqm44D8
-         RGT5HP4w4aU6+QReTKkofprys9Ww+I3LSCVtnhMc=
+        b=C/9gjiqf/D2Y4DlKBs1FpPYT/04XRh+xSuO8/BTbV7ByxvDIafaHpYTinpdIwlvzc
+         QZeua///RQXKKHmBnOO5QauAPIn76/QZVwggBdgBDit2V99w4oDZ1krOBtvHUg1BKo
+         N9lUcrIciwRB3c2caNZeqIS6Hfbmxn4YTB8AnZi0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Haimin Zhang <tcs.kernel@gmail.com>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
-        Dragos-Marian Panait <dragos.panait@windriver.com>
-Subject: [PATCH 4.19 17/30] block-map: add __GFP_ZERO flag for alloc_page in function bio_copy_kern
-Date:   Fri,  3 Jun 2022 19:39:45 +0200
-Message-Id: <20220603173815.603005664@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Miri Korenblit <miriam.rachel.korenblit@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Johannes Berg <johannes.berg@intel.com>
+Subject: [PATCH 4.19 12/30] cfg80211: set custom regdomain after wiphy registration
+Date:   Fri,  3 Jun 2022 19:39:40 +0200
+Message-Id: <20220603173815.455299058@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173815.088143764@linuxfoundation.org>
 References: <20220603173815.088143764@linuxfoundation.org>
@@ -51,35 +51,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haimin Zhang <tcs.kernel@gmail.com>
+From: Miri Korenblit <miriam.rachel.korenblit@intel.com>
 
-commit cc8f7fe1f5eab010191aa4570f27641876fa1267 upstream.
+commit 1b7b3ac8ff3317cdcf07a1c413de9bdb68019c2b upstream.
 
-Add __GFP_ZERO flag for alloc_page in function bio_copy_kern to initialize
-the buffer of a bio.
+We used to set regulatory info before the registration of
+the device and then the regulatory info didn't get set, because
+the device isn't registered so there isn't a device to set the
+regulatory info for. So set the regulatory info after the device
+registration.
+Call reg_process_self_managed_hints() once again after the device
+registration because it does nothing before it.
 
-Signed-off-by: Haimin Zhang <tcs.kernel@gmail.com>
-Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220216084038.15635-1-tcs.kernel@gmail.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-[DP: Backported to 4.19: Manually added __GFP_ZERO flag]
-Signed-off-by: Dragos-Marian Panait <dragos.panait@windriver.com>
+Signed-off-by: Miri Korenblit <miriam.rachel.korenblit@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20210618133832.c96eadcffe80.I86799c2c866b5610b4cf91115c21d8ceb525c5aa@changeid
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- block/bio.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/wireless/core.c |    7 ++++---
+ net/wireless/reg.c  |    1 +
+ 2 files changed, 5 insertions(+), 3 deletions(-)
 
---- a/block/bio.c
-+++ b/block/bio.c
-@@ -1528,7 +1528,7 @@ struct bio *bio_copy_kern(struct request
- 		if (bytes > len)
- 			bytes = len;
+--- a/net/wireless/core.c
++++ b/net/wireless/core.c
+@@ -4,6 +4,7 @@
+  * Copyright 2006-2010		Johannes Berg <johannes@sipsolutions.net>
+  * Copyright 2013-2014  Intel Mobile Communications GmbH
+  * Copyright 2015-2017	Intel Deutschland GmbH
++ * Copyright (C) 2018-2021 Intel Corporation
+  */
  
--		page = alloc_page(q->bounce_gfp | gfp_mask);
-+		page = alloc_page(q->bounce_gfp | __GFP_ZERO | gfp_mask);
- 		if (!page)
- 			goto cleanup;
+ #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+@@ -835,9 +836,6 @@ int wiphy_register(struct wiphy *wiphy)
+ 		return res;
+ 	}
  
+-	/* set up regulatory info */
+-	wiphy_regulatory_register(wiphy);
+-
+ 	list_add_rcu(&rdev->list, &cfg80211_rdev_list);
+ 	cfg80211_rdev_list_generation++;
+ 
+@@ -851,6 +849,9 @@ int wiphy_register(struct wiphy *wiphy)
+ 	cfg80211_debugfs_rdev_add(rdev);
+ 	nl80211_notify_wiphy(rdev, NL80211_CMD_NEW_WIPHY);
+ 
++	/* set up regulatory info */
++	wiphy_regulatory_register(wiphy);
++
+ 	if (wiphy->regulatory_flags & REGULATORY_CUSTOM_REG) {
+ 		struct regulatory_request request;
+ 
+--- a/net/wireless/reg.c
++++ b/net/wireless/reg.c
+@@ -3756,6 +3756,7 @@ void wiphy_regulatory_register(struct wi
+ 
+ 	wiphy_update_regulatory(wiphy, lr->initiator);
+ 	wiphy_all_share_dfs_chan_state(wiphy);
++	reg_process_self_managed_hints();
+ }
+ 
+ void wiphy_regulatory_deregister(struct wiphy *wiphy)
 
 
