@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7FEFC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:12:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76FB5C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:12:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345583AbiFCSME (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:12:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51710 "EHLO
+        id S241353AbiFCSMM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 14:12:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346051AbiFCR6N (ORCPT
+        with ESMTP id S1346007AbiFCR6l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:58:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BAC431514;
-        Fri,  3 Jun 2022 10:54:52 -0700 (PDT)
+        Fri, 3 Jun 2022 13:58:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76F9257B38;
+        Fri,  3 Jun 2022 10:55:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C736CB82189;
-        Fri,  3 Jun 2022 17:54:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24286C36AE5;
-        Fri,  3 Jun 2022 17:54:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E14AE60F3B;
+        Fri,  3 Jun 2022 17:54:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C612FC385B8;
+        Fri,  3 Jun 2022 17:54:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278889;
-        bh=jRGYaec2MuAtdgELoc6FWEItHG4GgkCI+meBt12+l9A=;
+        s=korg; t=1654278899;
+        bh=DdcTsahpMA3mopHeABHUdvpDhh4i1FgDJdxIWWBmhHc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q98jS7uPafWVOtlUmjjNlNwPN4zBFemDR8u7Vy2DvarbCeEd5zbVgQtb2IhwngR31
-         ef4M1+I6nhTDn2EM19GBsZ8PXlnYyuTGyYKek8462aBlAJKpEUPTiVec6QJSDlh8zZ
-         btK8r6VNbuYJhUsxrpMQPBLLnTD8Ndzl7iFzZcyY=
+        b=vZgLPkrP0FhHUROa6LBCGAzts1dAK3y1h7N6weXw705E0qOVAet/QbQsY8AdKO3v5
+         X0aYM547Eyi+0z/GoG2h9JD6yy3uALmyTGRti93MiXPkiMB2L1TlSpc7bADJBZ0wfZ
+         /8tDHKMRui/7J2rAkUzL3FzVTHgkc8vD2le7tUH4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
+        stable@vger.kernel.org, Dave Hansen <dave.hansen@linux.intel.com>,
         Reinette Chatre <reinette.chatre@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
         Jarkko Sakkinen <jarkko@kernel.org>,
         Haitao Huang <haitao.huang@intel.com>
-Subject: [PATCH 5.17 58/75] x86/sgx: Mark PCMD page as dirty when modifying contents
-Date:   Fri,  3 Jun 2022 19:43:42 +0200
-Message-Id: <20220603173823.383714410@linuxfoundation.org>
+Subject: [PATCH 5.17 61/75] x86/sgx: Ensure no data in PCMD page after truncate
+Date:   Fri,  3 Jun 2022 19:43:45 +0200
+Message-Id: <20220603173823.466662540@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173821.749019262@linuxfoundation.org>
 References: <20220603173821.749019262@linuxfoundation.org>
@@ -54,38 +52,60 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Reinette Chatre <reinette.chatre@intel.com>
 
-commit 2154e1c11b7080aa19f47160bd26b6f39bbd7824 upstream.
+commit e3a3bbe3e99de73043a1d32d36cf4d211dc58c7e upstream.
 
-Recent commit 08999b2489b4 ("x86/sgx: Free backing memory
-after faulting the enclave page") expanded __sgx_encl_eldu()
-to clear an enclave page's PCMD (Paging Crypto MetaData)
-from the PCMD page in the backing store after the enclave
-page is restored to the enclave.
+A PCMD (Paging Crypto MetaData) page contains the PCMD
+structures of enclave pages that have been encrypted and
+moved to the shmem backing store. When all enclave pages
+sharing a PCMD page are loaded in the enclave, there is no
+need for the PCMD page and it can be truncated from the
+backing store.
 
-Since the PCMD page in the backing store is modified the page
-should be marked as dirty to ensure the modified data is retained.
+A few issues appeared around the truncation of PCMD pages. The
+known issues have been addressed but the PCMD handling code could
+be made more robust by loudly complaining if any new issue appears
+in this area.
 
-Cc: stable@vger.kernel.org
-Fixes: 08999b2489b4 ("x86/sgx: Free backing memory after faulting the enclave page")
+Add a check that will complain with a warning if the PCMD page is not
+actually empty after it has been truncated. There should never be data
+in the PCMD page at this point since it is was just checked to be empty
+and truncated with enclave mutex held and is updated with the
+enclave mutex held.
+
+Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
 Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
 Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
 Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
 Tested-by: Haitao Huang <haitao.huang@intel.com>
-Link: https://lkml.kernel.org/r/00cd2ac480db01058d112e347b32599c1a806bc4.1652389823.git.reinette.chatre@intel.com
+Link: https://lkml.kernel.org/r/6495120fed43fafc1496d09dd23df922b9a32709.1652389823.git.reinette.chatre@intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/cpu/sgx/encl.c |    1 +
- 1 file changed, 1 insertion(+)
+ arch/x86/kernel/cpu/sgx/encl.c |   10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
 --- a/arch/x86/kernel/cpu/sgx/encl.c
 +++ b/arch/x86/kernel/cpu/sgx/encl.c
-@@ -84,6 +84,7 @@ static int __sgx_encl_eldu(struct sgx_en
- 	}
+@@ -187,12 +187,20 @@ static int __sgx_encl_eldu(struct sgx_en
+ 	kunmap_atomic(pcmd_page);
+ 	kunmap_atomic((void *)(unsigned long)pginfo.contents);
  
- 	memset(pcmd_page + b.pcmd_offset, 0, sizeof(struct sgx_pcmd));
-+	set_page_dirty(b.pcmd);
++	get_page(b.pcmd);
+ 	sgx_encl_put_backing(&b);
  
- 	/*
- 	 * The area for the PCMD in the page was zeroed above.  Check if the
+ 	sgx_encl_truncate_backing_page(encl, page_index);
+ 
+-	if (pcmd_page_empty && !reclaimer_writing_to_pcmd(encl, pcmd_first_page))
++	if (pcmd_page_empty && !reclaimer_writing_to_pcmd(encl, pcmd_first_page)) {
+ 		sgx_encl_truncate_backing_page(encl, PFN_DOWN(page_pcmd_off));
++		pcmd_page = kmap_atomic(b.pcmd);
++		if (memchr_inv(pcmd_page, 0, PAGE_SIZE))
++			pr_warn("PCMD page not empty after truncate.\n");
++		kunmap_atomic(pcmd_page);
++	}
++
++	put_page(b.pcmd);
+ 
+ 	return ret;
+ }
 
 
