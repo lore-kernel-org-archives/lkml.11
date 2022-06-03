@@ -2,93 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0D1CC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 20:23:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89927C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 20:24:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346334AbiFCUXK (ORCPT
+        id S1346955AbiFCUYa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 16:23:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52364 "EHLO
+        Fri, 3 Jun 2022 16:24:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240755AbiFCUXJ (ORCPT
+        with ESMTP id S240755AbiFCUY0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 16:23:09 -0400
-X-Greylist: delayed 484 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 03 Jun 2022 13:23:07 PDT
-Received: from mail.tpi.com (mail.tpi.com [50.126.108.186])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 998B743AE6;
-        Fri,  3 Jun 2022 13:23:07 -0700 (PDT)
-Received: from sushi.tpi.com (sushi.tpi.com [10.0.0.212])
-        by mail.tpi.com (Postfix) with ESMTPA id 55DBD47EC7EC;
-        Fri,  3 Jun 2022 13:15:01 -0700 (PDT)
-From:   Dean Gehnert <deang@tpi.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Dean Gehnert <deang@tpi.com>, Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
-        stable@vger.kernel.org
-Subject: [PATCH] ASoC: topology: Avoid card NULL deref in snd_soc_tplg_component_remove()
-Date:   Fri,  3 Jun 2022 13:14:25 -0700
-Message-Id: <20220603201425.2590-1-deang@tpi.com>
-X-Mailer: git-send-email 2.17.1
+        Fri, 3 Jun 2022 16:24:26 -0400
+Received: from mail-oi1-f172.google.com (mail-oi1-f172.google.com [209.85.167.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3B4843EC3;
+        Fri,  3 Jun 2022 13:24:25 -0700 (PDT)
+Received: by mail-oi1-f172.google.com with SMTP id s8so6539374oib.6;
+        Fri, 03 Jun 2022 13:24:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=LpgNDBdoP6t/KspsiFUK1Wc3xwi9X5pe8MvB3spUO50=;
+        b=xwLlazTijK4XX0oMev7nH79/8YriEUyxOouWex/Va5Io9PmpX7jMJEZQ4DPfeUJQ6c
+         E65uBSvZzInR4/bIFQI0lCrl10LybJR6++ukfXB8GlOcRZ4KHXReUxuC7FCgb5FTB6ky
+         iHAUN+Jzya1atQH9nCSr5Whws6Hxtwb/RUOuxQwkRf+amj4BdzsFzo58VH1aX6OthQym
+         ld/SFjWyb/ffvZFxrQZwMyjF2Wm31dZmw+pcX/bWeEtmu6rhKn6nno2Jg5cXlL/pCXXh
+         yu25iVIyG/4qyMcaJcvIa8OmB09ba5YP2PwE/56vUCrFnfVp7Wcyr1qcqbMGuiZJFmZv
+         J/Ng==
+X-Gm-Message-State: AOAM530iwmmGBQQo6DL9Ajb/T/wxIduUKa1/FOr6KcTOhByb5WFJYEzZ
+        9cRuIILtxfJn5efe1kFtEg==
+X-Google-Smtp-Source: ABdhPJyAyekreTTcq3AklohCDOmKQVGg8+La0qAOOFzpP42Wl6yg4YtE9wkVWK6Zz4dB/w01fJ63Zg==
+X-Received: by 2002:a05:6808:2002:b0:32e:5e09:5201 with SMTP id q2-20020a056808200200b0032e5e095201mr1449575oiw.91.1654287864839;
+        Fri, 03 Jun 2022 13:24:24 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id r26-20020a4ad4da000000b0041b5d2f3c92sm536552oos.24.2022.06.03.13.24.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 03 Jun 2022 13:24:24 -0700 (PDT)
+Received: (nullmailer pid 846852 invoked by uid 1000);
+        Fri, 03 Jun 2022 20:24:22 -0000
+Date:   Fri, 3 Jun 2022 15:24:22 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
+Cc:     Daniel Henrique Barboza <danielhb413@gmail.com>,
+        Laurent Dufour <ldufour@linux.ibm.com>,
+        David Gibson <david@gibson.dropbear.id.au>,
+        Lizhi Hou <lizhi.hou@xilinx.com>,
+        Steen Hegelund <steen.hegelund@microchip.com>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Allan Nielsen <allan.nielsen@microchip.com>,
+        David Hildenbrand <david@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        devicetree@vger.kernel.org, Paul Mackerras <paulus@samba.org>,
+        Bjorn Helgaas <helgaas@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Ohhoon Kwon <ohoono.kwon@samsung.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Nathan Lynch <nathanl@linux.ibm.com>
+Subject: Re: [PATCH v2 1/4] of: constify of_property_check_flags() prop
+ argument
+Message-ID: <20220603202422.GA845694-robh@kernel.org>
+References: <20220601081801.348571-1-clement.leger@bootlin.com>
+ <20220601081801.348571-2-clement.leger@bootlin.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220601081801.348571-2-clement.leger@bootlin.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Don't deference card in comp->card->snd_card before checking for NULL card.
+On Wed, 01 Jun 2022 10:17:58 +0200, Clément Léger wrote:
+> This argument is not modified and thus can be set as const.
+> 
+> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+> ---
+>  include/linux/of.h | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+> 
 
-During the unloading of ASoC kernel modules, there is a kernel oops in
-snd_soc_tplg_component_remove() that happens because comp->card is set to
-NULL in soc_cleanup_component().
-
-Cc: Liam Girdwood <lgirdwood@gmail.com>
-Cc: Mark Brown <broonie@kernel.org>
-Cc: Jaroslav Kysela <perex@perex.cz>
-Cc: Takashi Iwai <tiwai@suse.com>
-Cc: alsa-devel@alsa-project.org
-Cc: linux-kernel@vger.kernel.org
-Cc: stable@vger.kernel.org
-Fixes: 7e567b5ae063 ("ASoC: topology: Add missing rwsem around snd_ctl_remove() calls")
-Signed-off-by: Dean Gehnert <deang@tpi.com>
----
- sound/soc/soc-topology.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
-
-diff --git a/sound/soc/soc-topology.c b/sound/soc/soc-topology.c
-index 3f9d314fba16..cf0efe1147c2 100644
---- a/sound/soc/soc-topology.c
-+++ b/sound/soc/soc-topology.c
-@@ -2613,15 +2613,18 @@ EXPORT_SYMBOL_GPL(snd_soc_tplg_component_load);
- /* remove dynamic controls from the component driver */
- int snd_soc_tplg_component_remove(struct snd_soc_component *comp)
- {
--	struct snd_card *card = comp->card->snd_card;
-+	struct snd_card *card;
- 	struct snd_soc_dobj *dobj, *next_dobj;
- 	int pass;
- 
- 	/* process the header types from end to start */
- 	for (pass = SOC_TPLG_PASS_END; pass >= SOC_TPLG_PASS_START; pass--) {
- 
-+		card = (comp->card) ? comp->card->snd_card : NULL;
-+
- 		/* remove mixer controls */
--		down_write(&card->controls_rwsem);
-+		if (card)
-+			down_write(&card->controls_rwsem);
- 		list_for_each_entry_safe(dobj, next_dobj, &comp->dobj_list,
- 			list) {
- 
-@@ -2660,7 +2663,8 @@ int snd_soc_tplg_component_remove(struct snd_soc_component *comp)
- 				break;
- 			}
- 		}
--		up_write(&card->controls_rwsem);
-+		if (card)
-+			up_write(&card->controls_rwsem);
- 	}
- 
- 	/* let caller know if FW can be freed when no objects are left */
--- 
-2.17.1
-
+As this looks independent of the rest of the series, applied, thanks!
