@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8E6BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:18:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B763CC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:19:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243754AbiFCSRt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:17:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56430 "EHLO
+        id S230426AbiFCSTD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 14:19:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347611AbiFCSGK (ORCPT
+        with ESMTP id S1348054AbiFCSGg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 14:06:10 -0400
+        Fri, 3 Jun 2022 14:06:36 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 537A75C36A;
-        Fri,  3 Jun 2022 10:59:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E75715DBCC;
+        Fri,  3 Jun 2022 10:59:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9956B6165B;
-        Fri,  3 Jun 2022 17:58:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C409C3411F;
-        Fri,  3 Jun 2022 17:58:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E2BC3615D3;
+        Fri,  3 Jun 2022 17:59:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA56DC385A9;
+        Fri,  3 Jun 2022 17:59:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654279096;
-        bh=Cd2X9X9D1pUtLT7Y22U/EmbcPT8vW5ZoQ885p5Z6CdU=;
+        s=korg; t=1654279170;
+        bh=rsXX6yLeIHVO6O+swiWLs088Z3L8fZkQ83Rdgo4SA0M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x2v4lypfoo81qMJ7lOOa01X7x0YqUvcL/6htIuitQWLc7W/xwFc/Ps/xBs68otxvb
-         LazbucnFvA4ahJ3srDIHcErCDbPAfWqAKvLwmVygQZOklwcec0/1veCaP1QcfOBhiT
-         tdLH5ARYzGM/QlJmkH1Z3BXi6+bcup1ZUaBUfGGw=
+        b=QFKXIQx1Ua/JRtkZ3tqrr7yao/B5s7ZRUTSZsSbS46QNyADWT5UDvak2SvgDTGiSl
+         mAVFaTqFpS/tjvGQd8ZqkQNgI8YXOj7q9UtnH+niZRFxmrX0vniaIyn1iGY7wSy3H2
+         0QzcBKucLw1asICGWq6NYrnJ/KT1Wg+RV01gPz7s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
-        Jacopo Mondi <jacopo@jmondi.org>,
-        Daniele Alessandrelli <daniele.alessandrelli@intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>
-Subject: [PATCH 5.18 52/67] media: i2c: imx412: Fix reset GPIO polarity
-Date:   Fri,  3 Jun 2022 19:43:53 +0200
-Message-Id: <20220603173822.227553579@linuxfoundation.org>
+        stable@vger.kernel.org, Craig McLure <craig@mclure.net>,
+        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.18 36/67] ALSA: usb-audio: Configure sync endpoints before data
+Date:   Fri,  3 Jun 2022 19:43:37 +0200
+Message-Id: <20220603173821.777889348@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.731531504@linuxfoundation.org>
 References: <20220603173820.731531504@linuxfoundation.org>
@@ -52,67 +48,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+From: Craig McLure <craig@mclure.net>
 
-commit bb25f071fc92d3d227178a45853347c7b3b45a6b upstream.
+commit 0e85a22d01dfe9ad9a9d9e87cd4a88acce1aad65 upstream.
 
-The imx412/imx577 sensor has a reset line that is active low not active
-high. Currently the logic for this is inverted.
+Devices such as the TC-Helicon GoXLR require the sync endpoint to be
+configured in advance of the data endpoint in order for sound output
+to work.
 
-The right way to define the reset line is to declare it active low in the
-DTS and invert the logic currently contained in the driver.
+This patch simply changes the ordering of EP configuration to resolve
+this.
 
-The DTS should represent the hardware does i.e. reset is active low.
-So:
-+               reset-gpios = <&tlmm 78 GPIO_ACTIVE_LOW>;
-not:
--               reset-gpios = <&tlmm 78 GPIO_ACTIVE_HIGH>;
-
-I was a bit reticent about changing this logic since I thought it might
-negatively impact @intel.com users. Googling a bit though I believe this
-sensor is used on "Keem Bay" which is clearly a DTS based system and is not
-upstream yet.
-
-Fixes: 9214e86c0cc1 ("media: i2c: Add imx412 camera sensor driver")
-Cc: stable@vger.kernel.org
-Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Reviewed-by: Jacopo Mondi <jacopo@jmondi.org>
-Reviewed-by: Daniele Alessandrelli <daniele.alessandrelli@intel.com>
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes: bf6313a0ff76 ("ALSA: usb-audio: Refactor endpoint management")
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215079
+Signed-off-by: Craig McLure <craig@mclure.net>
+Reviewed-by: Jaroslav Kysela <perex@perex.cz>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220524062115.25968-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/i2c/imx412.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ sound/usb/pcm.c |   17 +++++++++++------
+ 1 file changed, 11 insertions(+), 6 deletions(-)
 
---- a/drivers/media/i2c/imx412.c
-+++ b/drivers/media/i2c/imx412.c
-@@ -1011,7 +1011,7 @@ static int imx412_power_on(struct device
- 	struct imx412 *imx412 = to_imx412(sd);
- 	int ret;
+--- a/sound/usb/pcm.c
++++ b/sound/usb/pcm.c
+@@ -439,16 +439,21 @@ static int configure_endpoints(struct sn
+ 		/* stop any running stream beforehand */
+ 		if (stop_endpoints(subs, false))
+ 			sync_pending_stops(subs);
++		if (subs->sync_endpoint) {
++			err = snd_usb_endpoint_configure(chip, subs->sync_endpoint);
++			if (err < 0)
++				return err;
++		}
+ 		err = snd_usb_endpoint_configure(chip, subs->data_endpoint);
+ 		if (err < 0)
+ 			return err;
+ 		snd_usb_set_format_quirk(subs, subs->cur_audiofmt);
+-	}
+-
+-	if (subs->sync_endpoint) {
+-		err = snd_usb_endpoint_configure(chip, subs->sync_endpoint);
+-		if (err < 0)
+-			return err;
++	} else {
++		if (subs->sync_endpoint) {
++			err = snd_usb_endpoint_configure(chip, subs->sync_endpoint);
++			if (err < 0)
++				return err;
++		}
+ 	}
  
--	gpiod_set_value_cansleep(imx412->reset_gpio, 1);
-+	gpiod_set_value_cansleep(imx412->reset_gpio, 0);
- 
- 	ret = clk_prepare_enable(imx412->inclk);
- 	if (ret) {
-@@ -1024,7 +1024,7 @@ static int imx412_power_on(struct device
  	return 0;
- 
- error_reset:
--	gpiod_set_value_cansleep(imx412->reset_gpio, 0);
-+	gpiod_set_value_cansleep(imx412->reset_gpio, 1);
- 
- 	return ret;
- }
-@@ -1040,7 +1040,7 @@ static int imx412_power_off(struct devic
- 	struct v4l2_subdev *sd = dev_get_drvdata(dev);
- 	struct imx412 *imx412 = to_imx412(sd);
- 
--	gpiod_set_value_cansleep(imx412->reset_gpio, 0);
-+	gpiod_set_value_cansleep(imx412->reset_gpio, 1);
- 
- 	clk_disable_unprepare(imx412->inclk);
- 
 
 
