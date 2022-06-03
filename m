@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D995EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:13:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75372C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:13:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346798AbiFCSNm (ORCPT
+        id S1346821AbiFCSNs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:13:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51278 "EHLO
+        Fri, 3 Jun 2022 14:13:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346202AbiFCR7t (ORCPT
+        with ESMTP id S1346106AbiFCR7x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:59:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 932A434B88;
-        Fri,  3 Jun 2022 10:55:37 -0700 (PDT)
+        Fri, 3 Jun 2022 13:59:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AA7A34B87;
+        Fri,  3 Jun 2022 10:55:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 448C8B82419;
-        Fri,  3 Jun 2022 17:55:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94C42C385A9;
-        Fri,  3 Jun 2022 17:55:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D1576611F3;
+        Fri,  3 Jun 2022 17:55:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADFC2C385A9;
+        Fri,  3 Jun 2022 17:55:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278934;
-        bh=yyrGhqI8IVeC53hKFu4TYqVuzOZWCA2X3vdF+q2ZsDc=;
+        s=korg; t=1654278938;
+        bh=x5kV3Z+YxJqaxbkJ5fOTbYmq3aXHfxYboSUuniNqq7c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jG+R3pla5xAeEmdcmSvnci4c29O6fAOreNq8cMsPZkEoJCPnk/dQU5JtoTNkZF//c
-         vd/r/zgkeiMxQsPaDopHDHfp5I9bO3mF8eciBcQxjIkYnoXVXwuYmZjtZ1zxbT/Cew
-         K0Hp6cwEVPlc/xMyyeVnRPVFjNF/FO/MKnuahh9c=
+        b=SRoP0Nwd3Yy3kpVwIAcKZ9igbADyy5rcjAeulXFiOuphNJpGvdG3mR5Tzc7HEuBpM
+         M2/wu8tFqEunjDfL/N51i7dfCjzEgj4Znj08RBTOeY3PCHN5//BE3Soph2YxKEgebt
+         WatsxfZB9PNPzFjAkzi7xr0TZhstzxjMf8kDO4ao=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Stefan Mahnke-Hartmann <stefan.mahnke-hartmann@infineon.com>,
+        stable@vger.kernel.org, Xiu Jianfeng <xiujianfeng@huawei.com>,
+        Stefan Berger <stefanb@linux.ibm.com>,
         Jarkko Sakkinen <jarkko@kernel.org>
-Subject: [PATCH 5.17 64/75] tpm: Fix buffer access in tpm2_get_tpm_pt()
-Date:   Fri,  3 Jun 2022 19:43:48 +0200
-Message-Id: <20220603173823.549375593@linuxfoundation.org>
+Subject: [PATCH 5.17 65/75] tpm: ibmvtpm: Correct the return value in tpm_ibmvtpm_probe()
+Date:   Fri,  3 Jun 2022 19:43:49 +0200
+Message-Id: <20220603173823.576669772@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173821.749019262@linuxfoundation.org>
 References: <20220603173821.749019262@linuxfoundation.org>
@@ -50,46 +50,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Mahnke-Hartmann <stefan.mahnke-hartmann@infineon.com>
+From: Xiu Jianfeng <xiujianfeng@huawei.com>
 
-commit e57b2523bd37e6434f4e64c7a685e3715ad21e9a upstream.
+commit d0dc1a7100f19121f6e7450f9cdda11926aa3838 upstream.
 
-Under certain conditions uninitialized memory will be accessed.
-As described by TCG Trusted Platform Module Library Specification,
-rev. 1.59 (Part 3: Commands), if a TPM2_GetCapability is received,
-requesting a capability, the TPM in field upgrade mode may return a
-zero length list.
-Check the property count in tpm2_get_tpm_pt().
+Currently it returns zero when CRQ response timed out, it should return
+an error code instead.
 
-Fixes: 2ab3241161b3 ("tpm: migrate tpm2_get_tpm_pt() to use struct tpm_buf")
-Cc: stable@vger.kernel.org
-Signed-off-by: Stefan Mahnke-Hartmann <stefan.mahnke-hartmann@infineon.com>
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+Fixes: d8d74ea3c002 ("tpm: ibmvtpm: Wait for buffer to be set before proceeding")
+Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
+Reviewed-by: Stefan Berger <stefanb@linux.ibm.com>
+Acked-by: Jarkko Sakkinen <jarkko@kernel.org>
 Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/tpm/tpm2-cmd.c |   11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ drivers/char/tpm/tpm_ibmvtpm.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/char/tpm/tpm2-cmd.c
-+++ b/drivers/char/tpm/tpm2-cmd.c
-@@ -400,7 +400,16 @@ ssize_t tpm2_get_tpm_pt(struct tpm_chip
- 	if (!rc) {
- 		out = (struct tpm2_get_cap_out *)
- 			&buf.data[TPM_HEADER_SIZE];
--		*value = be32_to_cpu(out->value);
-+		/*
-+		 * To prevent failing boot up of some systems, Infineon TPM2.0
-+		 * returns SUCCESS on TPM2_Startup in field upgrade mode. Also
-+		 * the TPM2_Getcapability command returns a zero length list
-+		 * in field upgrade mode.
-+		 */
-+		if (be32_to_cpu(out->property_cnt) > 0)
-+			*value = be32_to_cpu(out->value);
-+		else
-+			rc = -ENODATA;
+--- a/drivers/char/tpm/tpm_ibmvtpm.c
++++ b/drivers/char/tpm/tpm_ibmvtpm.c
+@@ -681,6 +681,7 @@ static int tpm_ibmvtpm_probe(struct vio_
+ 	if (!wait_event_timeout(ibmvtpm->crq_queue.wq,
+ 				ibmvtpm->rtce_buf != NULL,
+ 				HZ)) {
++		rc = -ENODEV;
+ 		dev_err(dev, "CRQ response timed out\n");
+ 		goto init_irq_cleanup;
  	}
- 	tpm_buf_destroy(&buf);
- 	return rc;
 
 
