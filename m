@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9324C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:42:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6ABDC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:42:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344677AbiFCRmK (ORCPT
+        id S1344778AbiFCRmR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:42:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56948 "EHLO
+        Fri, 3 Jun 2022 13:42:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344660AbiFCRld (ORCPT
+        with ESMTP id S1344832AbiFCRlw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:41:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C44854020;
-        Fri,  3 Jun 2022 10:41:06 -0700 (PDT)
+        Fri, 3 Jun 2022 13:41:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B406853710;
+        Fri,  3 Jun 2022 10:41:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 755C361B01;
-        Fri,  3 Jun 2022 17:41:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64DB3C385A9;
-        Fri,  3 Jun 2022 17:41:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 285E6B8241E;
+        Fri,  3 Jun 2022 17:41:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70706C385A9;
+        Fri,  3 Jun 2022 17:41:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278064;
-        bh=NrqR3APVfQTFn18O8kTbv5kSSR7EgdJGvzMmKqheoAE=;
+        s=korg; t=1654278067;
+        bh=BH80/xrWi3HHDzmncsNTp32aPsRHWdcdKFT71F8XLJM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rFicIFX+K4C+/uyw81xSFfkg+cs5hLoQPnGEd+dNXAOWYQ/nzUh1qvh2D9O6C0FNB
-         Hpv9a/PtFgix0b2lWR5lHy7TSNCquZcvvc52neJ3jvvAB9egHvrJJeb4c9zyKAhnEW
-         pg5mUM+/C/8FD+N9e9vbligOIyem8Qd3+2s3UGaU=
+        b=tlOKGkySvNO8ZEoItxDVtR9ShZqZ+VEAVPqTY+tkwWCMAfod2J0E8HwdTmPPR116o
+         qvkVH+cI/oJcNca4N1Ou1+r4ddOKfFkFDDePLZRuU8DIwSTr1GyZhYSnLznLuE0jW6
+         +q3KUGGHHAwWwjN999RfohrBYTx6ikTDCBAEkwhg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+793a590957d9c1b96620@syzkaller.appspotmail.com,
-        Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 4.14 14/23] netfilter: conntrack: re-fetch conntrack after insertion
-Date:   Fri,  3 Jun 2022 19:39:41 +0200
-Message-Id: <20220603173814.799160490@linuxfoundation.org>
+        stable@vger.kernel.org, Liu Jian <liujian56@huawei.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Song Liu <songliubraving@fb.com>
+Subject: [PATCH 4.14 23/23] bpf: Enlarge offset check value to INT_MAX in bpf_skb_{load,store}_bytes
+Date:   Fri,  3 Jun 2022 19:39:50 +0200
+Message-Id: <20220603173815.063242055@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173814.362515009@linuxfoundation.org>
 References: <20220603173814.362515009@linuxfoundation.org>
@@ -51,43 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Liu Jian <liujian56@huawei.com>
 
-commit 56b14ecec97f39118bf85c9ac2438c5a949509ed upstream.
+commit 45969b4152c1752089351cd6836a42a566d49bcf upstream.
 
-In case the conntrack is clashing, insertion can free skb->_nfct and
-set skb->_nfct to the already-confirmed entry.
+The data length of skb frags + frag_list may be greater than 0xffff, and
+skb_header_pointer can not handle negative offset. So, here INT_MAX is used
+to check the validity of offset. Add the same change to the related function
+skb_store_bytes.
 
-This wasn't found before because the conntrack entry and the extension
-space used to free'd after an rcu grace period, plus the race needs
-events enabled to trigger.
-
-Reported-by: <syzbot+793a590957d9c1b96620@syzkaller.appspotmail.com>
-Fixes: 71d8c47fc653 ("netfilter: conntrack: introduce clash resolution on insertion race")
-Fixes: 2ad9d7747c10 ("netfilter: conntrack: free extension area immediately")
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: 05c74e5e53f6 ("bpf: add bpf_skb_load_bytes helper")
+Signed-off-by: Liu Jian <liujian56@huawei.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Song Liu <songliubraving@fb.com>
+Link: https://lore.kernel.org/bpf/20220416105801.88708-2-liujian56@huawei.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/netfilter/nf_conntrack_core.h |    7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ net/core/filter.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/include/net/netfilter/nf_conntrack_core.h
-+++ b/include/net/netfilter/nf_conntrack_core.h
-@@ -67,8 +67,13 @@ static inline int nf_conntrack_confirm(s
- 	int ret = NF_ACCEPT;
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -1443,7 +1443,7 @@ BPF_CALL_5(bpf_skb_store_bytes, struct s
  
- 	if (ct) {
--		if (!nf_ct_is_confirmed(ct))
-+		if (!nf_ct_is_confirmed(ct)) {
- 			ret = __nf_conntrack_confirm(skb);
-+
-+			if (ret == NF_ACCEPT)
-+				ct = (struct nf_conn *)skb_nfct(skb);
-+		}
-+
- 		if (likely(ret == NF_ACCEPT))
- 			nf_ct_deliver_cached_events(ct);
- 	}
+ 	if (unlikely(flags & ~(BPF_F_RECOMPUTE_CSUM | BPF_F_INVALIDATE_HASH)))
+ 		return -EINVAL;
+-	if (unlikely(offset > 0xffff))
++	if (unlikely(offset > INT_MAX))
+ 		return -EFAULT;
+ 	if (unlikely(bpf_try_make_writable(skb, offset + len)))
+ 		return -EFAULT;
+@@ -1478,7 +1478,7 @@ BPF_CALL_4(bpf_skb_load_bytes, const str
+ {
+ 	void *ptr;
+ 
+-	if (unlikely(offset > 0xffff))
++	if (unlikely(offset > INT_MAX))
+ 		goto err_clear;
+ 
+ 	ptr = skb_header_pointer(skb, offset, len, to);
 
 
