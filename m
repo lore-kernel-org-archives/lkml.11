@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88AB1C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:19:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23391C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:19:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347055AbiFCSTJ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:19:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56430 "EHLO
+        id S243620AbiFCSTN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 14:19:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348132AbiFCSGk (ORCPT
+        with ESMTP id S1348160AbiFCSGm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 14:06:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6B625E746;
-        Fri,  3 Jun 2022 10:59:51 -0700 (PDT)
+        Fri, 3 Jun 2022 14:06:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2FF8580ED;
+        Fri,  3 Jun 2022 10:59:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 871AAB8241E;
-        Fri,  3 Jun 2022 17:59:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBB68C385A9;
-        Fri,  3 Jun 2022 17:59:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 28831B82369;
+        Fri,  3 Jun 2022 17:59:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E9C2C385A9;
+        Fri,  3 Jun 2022 17:59:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654279158;
-        bh=TNIMVPaeLJ/QcWDFFqjeA42a5Y4yMf8PXuFOQY86fbU=;
+        s=korg; t=1654279145;
+        bh=o55eYgmVhHvolPaEPQyRiu/SsiwcIdehGA0DAyJ0Ytw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i6+UPWMV0+kiUfEI3zi4JMm560h9Xm/IjmKkM9L4mEv6iroeaJ76n0d985SZ+GUQs
-         gXt1EmK29hjO83WiKWw5whnvlDiLxBI5WrUkOWYxnxUPovcRmaevsyWnP66wZ64AuT
-         2o47gun5VmVvZT2VbR/s5MDIej0+aBozaq2EUj4Q=
+        b=MSo/r6lklyO2rrJNMUSXsLSfJtd9u2hvqi2vKXurpnuWrC3l6Wggfr8e03BCaXOa2
+         8pBU9+9XCdhhGrOX//gS5dhJlP7syyI2owDvo3RpzODnjQiHO64h3Opxj2gdeSwzTp
+         ExXEAf6Xo9qB1aEDcH2+rX4q6lecXajd+n0dkDtI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sarthak Kukreti <sarthakkukreti@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Mike Snitzer <snitzer@kernel.org>
-Subject: [PATCH 5.18 42/67] dm verity: set DM_TARGET_IMMUTABLE feature flag
-Date:   Fri,  3 Jun 2022 19:43:43 +0200
-Message-Id: <20220603173821.944489394@linuxfoundation.org>
+        stable@vger.kernel.org, Hao Luo <haoluo@google.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Subject: [PATCH 5.18 66/67] bpf: Check PTR_TO_MEM | MEM_RDONLY in check_helper_mem_access
+Date:   Fri,  3 Jun 2022 19:44:07 +0200
+Message-Id: <20220603173822.614061520@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.731531504@linuxfoundation.org>
 References: <20220603173820.731531504@linuxfoundation.org>
@@ -51,35 +49,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sarthak Kukreti <sarthakkukreti@google.com>
+From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 
-commit 4caae58406f8ceb741603eee460d79bacca9b1b5 upstream.
+commit 97e6d7dab1ca4648821c790a2b7913d6d5d549db upstream.
 
-The device-mapper framework provides a mechanism to mark targets as
-immutable (and hence fail table reloads that try to change the target
-type). Add the DM_TARGET_IMMUTABLE flag to the dm-verity target's
-feature flags to prevent switching the verity target with a different
-target type.
+The commit being fixed was aiming to disallow users from incorrectly
+obtaining writable pointer to memory that is only meant to be read. This
+is enforced now using a MEM_RDONLY flag.
 
-Fixes: a4ffc152198e ("dm: add verity target")
-Cc: stable@vger.kernel.org
-Signed-off-by: Sarthak Kukreti <sarthakkukreti@google.com>
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: Mike Snitzer <snitzer@kernel.org>
+For instance, in case of global percpu variables, when the BTF type is
+not struct (e.g. bpf_prog_active), the verifier marks register type as
+PTR_TO_MEM | MEM_RDONLY from bpf_this_cpu_ptr or bpf_per_cpu_ptr
+helpers. However, when passing such pointer to kfunc, global funcs, or
+BPF helpers, in check_helper_mem_access, there is no expectation
+MEM_RDONLY flag will be set, hence it is checked as pointer to writable
+memory. Later, verifier sets up argument type of global func as
+PTR_TO_MEM | PTR_MAYBE_NULL, so user can use a global func to get around
+the limitations imposed by this flag.
+
+This check will also cover global non-percpu variables that may be
+introduced in kernel BTF in future.
+
+Also, we update the log message for PTR_TO_BUF case to be similar to
+PTR_TO_MEM case, so that the reason for error is clear to user.
+
+Fixes: 34d3a78c681e ("bpf: Make per_cpu_ptr return rdonly PTR_TO_MEM.")
+Reviewed-by: Hao Luo <haoluo@google.com>
+Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Link: https://lore.kernel.org/r/20220319080827.73251-3-memxor@gmail.com
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/dm-verity-target.c |    1 +
- 1 file changed, 1 insertion(+)
+ kernel/bpf/verifier.c |   12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
---- a/drivers/md/dm-verity-target.c
-+++ b/drivers/md/dm-verity-target.c
-@@ -1312,6 +1312,7 @@ bad:
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -4876,13 +4876,23 @@ static int check_helper_mem_access(struc
+ 		return check_map_access(env, regno, reg->off, access_size,
+ 					zero_size_allowed);
+ 	case PTR_TO_MEM:
++		if (type_is_rdonly_mem(reg->type)) {
++			if (meta && meta->raw_mode) {
++				verbose(env, "R%d cannot write into %s\n", regno,
++					reg_type_str(env, reg->type));
++				return -EACCES;
++			}
++		}
+ 		return check_mem_region_access(env, regno, reg->off,
+ 					       access_size, reg->mem_size,
+ 					       zero_size_allowed);
+ 	case PTR_TO_BUF:
+ 		if (type_is_rdonly_mem(reg->type)) {
+-			if (meta && meta->raw_mode)
++			if (meta && meta->raw_mode) {
++				verbose(env, "R%d cannot write into %s\n", regno,
++					reg_type_str(env, reg->type));
+ 				return -EACCES;
++			}
  
- static struct target_type verity_target = {
- 	.name		= "verity",
-+	.features	= DM_TARGET_IMMUTABLE,
- 	.version	= {1, 8, 0},
- 	.module		= THIS_MODULE,
- 	.ctr		= verity_ctr,
+ 			max_access = &env->prog->aux->max_rdonly_access;
+ 		} else {
 
 
