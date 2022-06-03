@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96C8BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:21:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C74ACCA473
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:22:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347710AbiFCSVD (ORCPT
+        id S1348005AbiFCSVw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:21:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36556 "EHLO
+        Fri, 3 Jun 2022 14:21:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346935AbiFCSFb (ORCPT
+        with ESMTP id S1347757AbiFCSP6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 14:05:31 -0400
+        Fri, 3 Jun 2022 14:15:58 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6D1C5713A;
-        Fri,  3 Jun 2022 10:58:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42B5C61621;
+        Fri,  3 Jun 2022 11:03:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D9B461555;
-        Fri,  3 Jun 2022 17:57:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F527C385A9;
-        Fri,  3 Jun 2022 17:57:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 63ADA61663;
+        Fri,  3 Jun 2022 17:58:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57285C3411D;
+        Fri,  3 Jun 2022 17:58:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654279030;
-        bh=sQ0GPSl5NoQwPN9POfGGNsMy+Sxch4CTIxQGvcHIVJU=;
+        s=korg; t=1654279086;
+        bh=h63YL1mZsMLVcspF3UHcpRh8yN21n3CyTPYJb1ZQRIg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d8QglLYaP7lLjnWrtvETevHqI7ugDa11zvYxCcTdkFthbziZEFq9OzAwTuNo/QvgE
-         LAKQw4yIVZHGEleaOU4SWPj0va8wfPz1xvv/1RE+z9aGhCO5Ea+QvhHW/t/Hg1dnpp
-         dz9zFPe+twF6d2Pn2wy51RrxUAaPVp2qGG336XQQ=
+        b=t6gYtk1N5WEV0nyLhGi4HEVhImaYtmRwvT8KhwRwMBz4p/s8Hb1TMCEMJb0jHc0S2
+         y+3+rROhcxQI0iZuDZYoBLcAoFzunXJsKVyR4qlpgFJ4JUwHymhf4uyI2REQ7uXQKh
+         dGW57/l0OElfUSIa/wPpZ8KYot8F7rx45gTrNd48=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vitaly Chikunov <vt@altlinux.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Subject: [PATCH 5.18 30/67] crypto: ecrdsa - Fix incorrect use of vli_cmp
-Date:   Fri,  3 Jun 2022 19:43:31 +0200
-Message-Id: <20220603173821.590743078@linuxfoundation.org>
+        stable@vger.kernel.org, Haitao Huang <haitao.huang@intel.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>
+Subject: [PATCH 5.18 49/67] x86/sgx: Obtain backing storage page with enclave mutex held
+Date:   Fri,  3 Jun 2022 19:43:50 +0200
+Message-Id: <20220603173822.141858221@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.731531504@linuxfoundation.org>
 References: <20220603173820.731531504@linuxfoundation.org>
@@ -49,51 +51,131 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vitaly Chikunov <vt@altlinux.org>
+From: Reinette Chatre <reinette.chatre@intel.com>
 
-commit 7cc7ab73f83ee6d50dc9536bc3355495d8600fad upstream.
+commit 0e4e729a830c1e7f31d3b3fbf8feb355a402b117 upstream.
 
-Correctly compare values that shall be greater-or-equal and not just
-greater.
+Haitao reported encountering a WARN triggered by the ENCLS[ELDU]
+instruction faulting with a #GP.
 
-Fixes: 0d7a78643f69 ("crypto: ecrdsa - add EC-RDSA (GOST 34.10) algorithm")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Vitaly Chikunov <vt@altlinux.org>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+The WARN is encountered when the reclaimer evicts a range of
+pages from the enclave when the same pages are faulted back
+right away.
+
+The SGX backing storage is accessed on two paths: when there
+are insufficient free pages in the EPC the reclaimer works
+to move enclave pages to the backing storage and as enclaves
+access pages that have been moved to the backing storage
+they are retrieved from there as part of page fault handling.
+
+An oversubscribed SGX system will often run the reclaimer and
+page fault handler concurrently and needs to ensure that the
+backing store is accessed safely between the reclaimer and
+the page fault handler. This is not the case because the
+reclaimer accesses the backing store without the enclave mutex
+while the page fault handler accesses the backing store with
+the enclave mutex.
+
+Consider the scenario where a page is faulted while a page sharing
+a PCMD page with the faulted page is being reclaimed. The
+consequence is a race between the reclaimer and page fault
+handler, the reclaimer attempting to access a PCMD at the
+same time it is truncated by the page fault handler. This
+could result in lost PCMD data. Data may still be
+lost if the reclaimer wins the race, this is addressed in
+the following patch.
+
+The reclaimer accesses pages from the backing storage without
+holding the enclave mutex and runs the risk of concurrently
+accessing the backing storage with the page fault handler that
+does access the backing storage with the enclave mutex held.
+
+In the scenario below a PCMD page is truncated from the backing
+store after all its pages have been loaded in to the enclave
+at the same time the PCMD page is loaded from the backing store
+when one of its pages are reclaimed:
+
+sgx_reclaim_pages() {              sgx_vma_fault() {
+                                     ...
+                                     mutex_lock(&encl->lock);
+                                     ...
+                                     __sgx_encl_eldu() {
+                                       ...
+                                       if (pcmd_page_empty) {
+/*
+ * EPC page being reclaimed              /*
+ * shares a PCMD page with an             * PCMD page truncated
+ * enclave page that is being             * while requested from
+ * faulted in.                            * reclaimer.
+ */                                       */
+sgx_encl_get_backing()  <---------->      sgx_encl_truncate_backing_page()
+                                        }
+                                       mutex_unlock(&encl->lock);
+}                                    }
+
+In this scenario there is a race between the reclaimer and the page fault
+handler when the reclaimer attempts to get access to the same PCMD page
+that is being truncated. This could result in the reclaimer writing to
+the PCMD page that is then truncated, causing the PCMD data to be lost,
+or in a new PCMD page being allocated. The lost PCMD data may still occur
+after protecting the backing store access with the mutex - this is fixed
+in the next patch. By ensuring the backing store is accessed with the mutex
+held the enclave page state can be made accurate with the
+SGX_ENCL_PAGE_BEING_RECLAIMED flag accurately reflecting that a page
+is in the process of being reclaimed.
+
+Consistently protect the reclaimer's backing store access with the
+enclave's mutex to ensure that it can safely run concurrently with the
+page fault handler.
+
+Cc: stable@vger.kernel.org
+Fixes: 1728ab54b4be ("x86/sgx: Add a page reclaimer")
+Reported-by: Haitao Huang <haitao.huang@intel.com>
+Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
+Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+Tested-by: Jarkko Sakkinen <jarkko@kernel.org>
+Tested-by: Haitao Huang <haitao.huang@intel.com>
+Link: https://lkml.kernel.org/r/fa2e04c561a8555bfe1f4e7adc37d60efc77387b.1652389823.git.reinette.chatre@intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- crypto/ecrdsa.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ arch/x86/kernel/cpu/sgx/main.c |    9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
---- a/crypto/ecrdsa.c
-+++ b/crypto/ecrdsa.c
-@@ -113,15 +113,15 @@ static int ecrdsa_verify(struct akcipher
+--- a/arch/x86/kernel/cpu/sgx/main.c
++++ b/arch/x86/kernel/cpu/sgx/main.c
+@@ -310,6 +310,7 @@ static void sgx_reclaimer_write(struct s
+ 	sgx_encl_ewb(epc_page, backing);
+ 	encl_page->epc_page = NULL;
+ 	encl->secs_child_cnt--;
++	sgx_encl_put_backing(backing);
  
- 	/* Step 1: verify that 0 < r < q, 0 < s < q */
- 	if (vli_is_zero(r, ndigits) ||
--	    vli_cmp(r, ctx->curve->n, ndigits) == 1 ||
-+	    vli_cmp(r, ctx->curve->n, ndigits) >= 0 ||
- 	    vli_is_zero(s, ndigits) ||
--	    vli_cmp(s, ctx->curve->n, ndigits) == 1)
-+	    vli_cmp(s, ctx->curve->n, ndigits) >= 0)
- 		return -EKEYREJECTED;
+ 	if (!encl->secs_child_cnt && test_bit(SGX_ENCL_INITIALIZED, &encl->flags)) {
+ 		ret = sgx_encl_get_backing(encl, PFN_DOWN(encl->size),
+@@ -381,11 +382,14 @@ static void sgx_reclaim_pages(void)
+ 			goto skip;
  
- 	/* Step 2: calculate hash (h) of the message (passed as input) */
- 	/* Step 3: calculate e = h \mod q */
- 	vli_from_le64(e, digest, ndigits);
--	if (vli_cmp(e, ctx->curve->n, ndigits) == 1)
-+	if (vli_cmp(e, ctx->curve->n, ndigits) >= 0)
- 		vli_sub(e, e, ctx->curve->n, ndigits);
- 	if (vli_is_zero(e, ndigits))
- 		e[0] = 1;
-@@ -137,7 +137,7 @@ static int ecrdsa_verify(struct akcipher
- 	/* Step 6: calculate point C = z_1P + z_2Q, and R = x_c \mod q */
- 	ecc_point_mult_shamir(&cc, z1, &ctx->curve->g, z2, &ctx->pub_key,
- 			      ctx->curve);
--	if (vli_cmp(cc.x, ctx->curve->n, ndigits) == 1)
-+	if (vli_cmp(cc.x, ctx->curve->n, ndigits) >= 0)
- 		vli_sub(cc.x, cc.x, ctx->curve->n, ndigits);
+ 		page_index = PFN_DOWN(encl_page->desc - encl_page->encl->base);
++
++		mutex_lock(&encl_page->encl->lock);
+ 		ret = sgx_encl_get_backing(encl_page->encl, page_index, &backing[i]);
+-		if (ret)
++		if (ret) {
++			mutex_unlock(&encl_page->encl->lock);
+ 			goto skip;
++		}
  
- 	/* Step 7: if R == r signature is valid */
+-		mutex_lock(&encl_page->encl->lock);
+ 		encl_page->desc |= SGX_ENCL_PAGE_BEING_RECLAIMED;
+ 		mutex_unlock(&encl_page->encl->lock);
+ 		continue;
+@@ -413,7 +417,6 @@ skip:
+ 
+ 		encl_page = epc_page->owner;
+ 		sgx_reclaimer_write(epc_page, &backing[i]);
+-		sgx_encl_put_backing(&backing[i]);
+ 
+ 		kref_put(&encl_page->encl->refcount, sgx_encl_release);
+ 		epc_page->flags &= ~SGX_EPC_PAGE_RECLAIMER_TRACKED;
 
 
