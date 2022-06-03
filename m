@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B8E6CCA486
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DEFBCCA48A
 	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:00:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347071AbiFCSAx (ORCPT
+        id S1346570AbiFCSAZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:00:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58296 "EHLO
+        Fri, 3 Jun 2022 14:00:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347238AbiFCRwK (ORCPT
+        with ESMTP id S1347163AbiFCRwE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:52:10 -0400
+        Fri, 3 Jun 2022 13:52:04 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7FB9267F;
-        Fri,  3 Jun 2022 10:50:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC9C3580CC;
+        Fri,  3 Jun 2022 10:50:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 43CEF60F38;
-        Fri,  3 Jun 2022 17:50:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A93EC385A9;
-        Fri,  3 Jun 2022 17:50:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 48D3460EE9;
+        Fri,  3 Jun 2022 17:50:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59AD4C385A9;
+        Fri,  3 Jun 2022 17:50:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278658;
-        bh=mZknYQHj+Cdjluyp0jB4qVFI4izZ1I3mhdKnzaqlxis=;
+        s=korg; t=1654278608;
+        bh=g5yfTco7inUmJg9Rw/AeKnYQZPpNl5xGBDN2emXMj14=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fkgZ9vGD8yNr0h7Nfsig8SsTD//6dUssXbgkm7lPwZjMVAaUzou0+7xsgXI+wNBom
-         JDrCUDpMLQoJZ92xJF6EjqcRdOdksNGr40fcKW9Fwo+IIueY06Sn6BMAbcJk8oXLS/
-         +ERAlmVqD5wBExuNDihncVZ6eZxFQLkgbMPChyuI=
+        b=2dVKdtEUMsopahMf0vRrldFiRl1Ctyax9Iz7EE7fMjaZFpJEf1edPGM4mR+BCTQzw
+         FgNk+QwgKPnBdUgJWEGxWp/MAzk8eYzc49vhyK1e9UUP1HF5m+Eaifdd9+mXordwkd
+         1AnHrlyhcrNRnKM+GuJdyWbbH7uZ0WrjlJpZyZd4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Haitao Huang <haitao.huang@intel.com>,
-        Reinette Chatre <reinette.chatre@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>
-Subject: [PATCH 5.15 52/66] x86/sgx: Obtain backing storage page with enclave mutex held
-Date:   Fri,  3 Jun 2022 19:43:32 +0200
-Message-Id: <20220603173822.167472373@linuxfoundation.org>
+        stable@vger.kernel.org, Andy Nguyen <theflow@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Peter Gonda <pgonda@google.com>, kvm@vger.kernel.org,
+        Ashish Kalra <ashish.kalra@amd.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.15 33/66] KVM: SVM: Use kzalloc for sev ioctl interfaces to prevent kernel data leak
+Date:   Fri,  3 Jun 2022 19:43:13 +0200
+Message-Id: <20220603173821.609177091@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.663747061@linuxfoundation.org>
 References: <20220603173820.663747061@linuxfoundation.org>
@@ -51,131 +52,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Reinette Chatre <reinette.chatre@intel.com>
+From: Ashish Kalra <ashish.kalra@amd.com>
 
-commit 0e4e729a830c1e7f31d3b3fbf8feb355a402b117 upstream.
+commit d22d2474e3953996f03528b84b7f52cc26a39403 upstream.
 
-Haitao reported encountering a WARN triggered by the ENCLS[ELDU]
-instruction faulting with a #GP.
+For some sev ioctl interfaces, the length parameter that is passed maybe
+less than or equal to SEV_FW_BLOB_MAX_SIZE, but larger than the data
+that PSP firmware returns. In this case, kmalloc will allocate memory
+that is the size of the input rather than the size of the data.
+Since PSP firmware doesn't fully overwrite the allocated buffer, these
+sev ioctl interface may return uninitialized kernel slab memory.
 
-The WARN is encountered when the reclaimer evicts a range of
-pages from the enclave when the same pages are faulted back
-right away.
-
-The SGX backing storage is accessed on two paths: when there
-are insufficient free pages in the EPC the reclaimer works
-to move enclave pages to the backing storage and as enclaves
-access pages that have been moved to the backing storage
-they are retrieved from there as part of page fault handling.
-
-An oversubscribed SGX system will often run the reclaimer and
-page fault handler concurrently and needs to ensure that the
-backing store is accessed safely between the reclaimer and
-the page fault handler. This is not the case because the
-reclaimer accesses the backing store without the enclave mutex
-while the page fault handler accesses the backing store with
-the enclave mutex.
-
-Consider the scenario where a page is faulted while a page sharing
-a PCMD page with the faulted page is being reclaimed. The
-consequence is a race between the reclaimer and page fault
-handler, the reclaimer attempting to access a PCMD at the
-same time it is truncated by the page fault handler. This
-could result in lost PCMD data. Data may still be
-lost if the reclaimer wins the race, this is addressed in
-the following patch.
-
-The reclaimer accesses pages from the backing storage without
-holding the enclave mutex and runs the risk of concurrently
-accessing the backing storage with the page fault handler that
-does access the backing storage with the enclave mutex held.
-
-In the scenario below a PCMD page is truncated from the backing
-store after all its pages have been loaded in to the enclave
-at the same time the PCMD page is loaded from the backing store
-when one of its pages are reclaimed:
-
-sgx_reclaim_pages() {              sgx_vma_fault() {
-                                     ...
-                                     mutex_lock(&encl->lock);
-                                     ...
-                                     __sgx_encl_eldu() {
-                                       ...
-                                       if (pcmd_page_empty) {
-/*
- * EPC page being reclaimed              /*
- * shares a PCMD page with an             * PCMD page truncated
- * enclave page that is being             * while requested from
- * faulted in.                            * reclaimer.
- */                                       */
-sgx_encl_get_backing()  <---------->      sgx_encl_truncate_backing_page()
-                                        }
-                                       mutex_unlock(&encl->lock);
-}                                    }
-
-In this scenario there is a race between the reclaimer and the page fault
-handler when the reclaimer attempts to get access to the same PCMD page
-that is being truncated. This could result in the reclaimer writing to
-the PCMD page that is then truncated, causing the PCMD data to be lost,
-or in a new PCMD page being allocated. The lost PCMD data may still occur
-after protecting the backing store access with the mutex - this is fixed
-in the next patch. By ensuring the backing store is accessed with the mutex
-held the enclave page state can be made accurate with the
-SGX_ENCL_PAGE_BEING_RECLAIMED flag accurately reflecting that a page
-is in the process of being reclaimed.
-
-Consistently protect the reclaimer's backing store access with the
-enclave's mutex to ensure that it can safely run concurrently with the
-page fault handler.
-
+Reported-by: Andy Nguyen <theflow@google.com>
+Suggested-by: David Rientjes <rientjes@google.com>
+Suggested-by: Peter Gonda <pgonda@google.com>
+Cc: kvm@vger.kernel.org
 Cc: stable@vger.kernel.org
-Fixes: 1728ab54b4be ("x86/sgx: Add a page reclaimer")
-Reported-by: Haitao Huang <haitao.huang@intel.com>
-Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
-Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-Tested-by: Jarkko Sakkinen <jarkko@kernel.org>
-Tested-by: Haitao Huang <haitao.huang@intel.com>
-Link: https://lkml.kernel.org/r/fa2e04c561a8555bfe1f4e7adc37d60efc77387b.1652389823.git.reinette.chatre@intel.com
+Cc: linux-kernel@vger.kernel.org
+Fixes: eaf78265a4ab3 ("KVM: SVM: Move SEV code to separate file")
+Fixes: 2c07ded06427d ("KVM: SVM: add support for SEV attestation command")
+Fixes: 4cfdd47d6d95a ("KVM: SVM: Add KVM_SEV SEND_START command")
+Fixes: d3d1af85e2c75 ("KVM: SVM: Add KVM_SEND_UPDATE_DATA command")
+Fixes: eba04b20e4861 ("KVM: x86: Account a variety of miscellaneous allocations")
+Signed-off-by: Ashish Kalra <ashish.kalra@amd.com>
+Reviewed-by: Peter Gonda <pgonda@google.com>
+Message-Id: <20220516154310.3685678-1-Ashish.Kalra@amd.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/cpu/sgx/main.c |    9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ arch/x86/kvm/svm/sev.c |   12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
---- a/arch/x86/kernel/cpu/sgx/main.c
-+++ b/arch/x86/kernel/cpu/sgx/main.c
-@@ -289,6 +289,7 @@ static void sgx_reclaimer_write(struct s
- 	sgx_encl_ewb(epc_page, backing);
- 	encl_page->epc_page = NULL;
- 	encl->secs_child_cnt--;
-+	sgx_encl_put_backing(backing);
+--- a/arch/x86/kvm/svm/sev.c
++++ b/arch/x86/kvm/svm/sev.c
+@@ -676,7 +676,7 @@ static int sev_launch_measure(struct kvm
+ 		if (params.len > SEV_FW_BLOB_MAX_SIZE)
+ 			return -EINVAL;
  
- 	if (!encl->secs_child_cnt && test_bit(SGX_ENCL_INITIALIZED, &encl->flags)) {
- 		ret = sgx_encl_get_backing(encl, PFN_DOWN(encl->size),
-@@ -362,11 +363,14 @@ static void sgx_reclaim_pages(void)
- 			goto skip;
+-		blob = kmalloc(params.len, GFP_KERNEL_ACCOUNT);
++		blob = kzalloc(params.len, GFP_KERNEL_ACCOUNT);
+ 		if (!blob)
+ 			return -ENOMEM;
  
- 		page_index = PFN_DOWN(encl_page->desc - encl_page->encl->base);
-+
-+		mutex_lock(&encl_page->encl->lock);
- 		ret = sgx_encl_get_backing(encl_page->encl, page_index, &backing[i]);
--		if (ret)
-+		if (ret) {
-+			mutex_unlock(&encl_page->encl->lock);
- 			goto skip;
-+		}
+@@ -796,7 +796,7 @@ static int __sev_dbg_decrypt_user(struct
+ 	if (!IS_ALIGNED(dst_paddr, 16) ||
+ 	    !IS_ALIGNED(paddr,     16) ||
+ 	    !IS_ALIGNED(size,      16)) {
+-		tpage = (void *)alloc_page(GFP_KERNEL);
++		tpage = (void *)alloc_page(GFP_KERNEL | __GFP_ZERO);
+ 		if (!tpage)
+ 			return -ENOMEM;
  
--		mutex_lock(&encl_page->encl->lock);
- 		encl_page->desc |= SGX_ENCL_PAGE_BEING_RECLAIMED;
- 		mutex_unlock(&encl_page->encl->lock);
- 		continue;
-@@ -394,7 +398,6 @@ skip:
+@@ -1082,7 +1082,7 @@ static int sev_get_attestation_report(st
+ 		if (params.len > SEV_FW_BLOB_MAX_SIZE)
+ 			return -EINVAL;
  
- 		encl_page = epc_page->owner;
- 		sgx_reclaimer_write(epc_page, &backing[i]);
--		sgx_encl_put_backing(&backing[i]);
+-		blob = kmalloc(params.len, GFP_KERNEL_ACCOUNT);
++		blob = kzalloc(params.len, GFP_KERNEL_ACCOUNT);
+ 		if (!blob)
+ 			return -ENOMEM;
  
- 		kref_put(&encl_page->encl->refcount, sgx_encl_release);
- 		epc_page->flags &= ~SGX_EPC_PAGE_RECLAIMER_TRACKED;
+@@ -1164,7 +1164,7 @@ static int sev_send_start(struct kvm *kv
+ 		return -EINVAL;
+ 
+ 	/* allocate the memory to hold the session data blob */
+-	session_data = kmalloc(params.session_len, GFP_KERNEL_ACCOUNT);
++	session_data = kzalloc(params.session_len, GFP_KERNEL_ACCOUNT);
+ 	if (!session_data)
+ 		return -ENOMEM;
+ 
+@@ -1288,11 +1288,11 @@ static int sev_send_update_data(struct k
+ 
+ 	/* allocate memory for header and transport buffer */
+ 	ret = -ENOMEM;
+-	hdr = kmalloc(params.hdr_len, GFP_KERNEL_ACCOUNT);
++	hdr = kzalloc(params.hdr_len, GFP_KERNEL_ACCOUNT);
+ 	if (!hdr)
+ 		goto e_unpin;
+ 
+-	trans_data = kmalloc(params.trans_len, GFP_KERNEL_ACCOUNT);
++	trans_data = kzalloc(params.trans_len, GFP_KERNEL_ACCOUNT);
+ 	if (!trans_data)
+ 		goto e_free_hdr;
+ 
 
 
