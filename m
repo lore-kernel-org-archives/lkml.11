@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B005CCA483
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:16:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E62F3CCA480
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:16:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347399AbiFCSPl (ORCPT
+        id S1347089AbiFCSPS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:15:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48504 "EHLO
+        Fri, 3 Jun 2022 14:15:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346462AbiFCSAU (ORCPT
+        with ESMTP id S1346554AbiFCSAY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 14:00:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9787058E62;
-        Fri,  3 Jun 2022 10:56:30 -0700 (PDT)
+        Fri, 3 Jun 2022 14:00:24 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 500F4590BD;
+        Fri,  3 Jun 2022 10:56:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 37ADDB82369;
-        Fri,  3 Jun 2022 17:56:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 904DFC3411D;
-        Fri,  3 Jun 2022 17:56:27 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C0698CE248F;
+        Fri,  3 Jun 2022 17:56:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79278C385A9;
+        Fri,  3 Jun 2022 17:56:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278988;
-        bh=27qRdN9GYw3QvnqkwODMdfeM7nT6M1uBHq5TeeLhpEs=;
+        s=korg; t=1654278994;
+        bh=Zw+tzMWJeAL7D7qrKt21Tx1qu3X28E6qnGNHc4bQWyc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hyF6EdNmW3C8Y1keFd14Q/lX747yyvcKwmvDlyo1bpjBnBcWlIDTZKbXIk5sFttTL
-         dVN7XpX1T5C30/zqSF7Tk6QasXQfqEBKmoj/9FrcDtjzpwVn0dt3HgEcQ/TfH3vMcg
-         GYq8itlex3FxjpprseKHcq6sB6Kbp/mnjp70LZGI=
+        b=UKgSoDqxlppZhfI25XW7Xb9yBbazfiYORv+/U99Xq+hQCv+7y9gxQ5/Ygc+HzGYi+
+         3jAFhmlOAhjvV/TW0MeUVf89iUjEceCg0+nvyQh5GQq33v0tx270aDP3pcfioo90Gp
+         s8ObDqZXYusdDC6Qrm5KU5UnbB1Gtg1YX2b83sx8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yajun Deng <yajun.deng@linux.dev>,
+        stable@vger.kernel.org,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Sean Christopherson <seanjc@google.com>,
         Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.18 17/67] x86/kvm: Alloc dummy async #PF token outside of raw spinlock
-Date:   Fri,  3 Jun 2022 19:43:18 +0200
-Message-Id: <20220603173821.226881426@linuxfoundation.org>
+Subject: [PATCH 5.18 19/67] x86/uaccess: Implement macros for CMPXCHG on user addresses
+Date:   Fri,  3 Jun 2022 19:43:20 +0200
+Message-Id: <20220603173821.282670906@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.731531504@linuxfoundation.org>
 References: <20220603173820.731531504@linuxfoundation.org>
@@ -50,91 +51,191 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-commit 0547758a6de3cc71a0cfdd031a3621a30db6a68b upstream.
+commit 989b5db215a2f22f89d730b607b071d964780f10 upstream.
 
-Drop the raw spinlock in kvm_async_pf_task_wake() before allocating the
-the dummy async #PF token, the allocator is preemptible on PREEMPT_RT
-kernels and must not be called from truly atomic contexts.
+Add support for CMPXCHG loops on userspace addresses.  Provide both an
+"unsafe" version for tight loops that do their own uaccess begin/end, as
+well as a "safe" version for use cases where the CMPXCHG is not buried in
+a loop, e.g. KVM will resume the guest instead of looping when emulation
+of a guest atomic accesses fails the CMPXCHG.
 
-Opportunistically document why it's ok to loop on allocation failure,
-i.e. why the function won't get stuck in an infinite loop.
+Provide 8-byte versions for 32-bit kernels so that KVM can do CMPXCHG on
+guest PAE PTEs, which are accessed via userspace addresses.
 
-Reported-by: Yajun Deng <yajun.deng@linux.dev>
+Guard the asm_volatile_goto() variation with CC_HAS_ASM_GOTO_TIED_OUTPUT,
+the "+m" constraint fails on some compilers that otherwise support
+CC_HAS_ASM_GOTO_OUTPUT.
+
 Cc: stable@vger.kernel.org
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Co-developed-by: Sean Christopherson <seanjc@google.com>
 Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220202004945.2540433-3-seanjc@google.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/kvm.c |   41 +++++++++++++++++++++++++++--------------
- 1 file changed, 27 insertions(+), 14 deletions(-)
+ arch/x86/include/asm/uaccess.h |  142 +++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 142 insertions(+)
 
---- a/arch/x86/kernel/kvm.c
-+++ b/arch/x86/kernel/kvm.c
-@@ -191,7 +191,7 @@ void kvm_async_pf_task_wake(u32 token)
- {
- 	u32 key = hash_32(token, KVM_TASK_SLEEP_HASHBITS);
- 	struct kvm_task_sleep_head *b = &async_pf_sleepers[key];
--	struct kvm_task_sleep_node *n;
-+	struct kvm_task_sleep_node *n, *dummy = NULL;
+--- a/arch/x86/include/asm/uaccess.h
++++ b/arch/x86/include/asm/uaccess.h
+@@ -382,6 +382,103 @@ do {									\
  
- 	if (token == ~0) {
- 		apf_task_wake_all();
-@@ -203,28 +203,41 @@ again:
- 	n = _find_apf_task(b, token);
- 	if (!n) {
- 		/*
--		 * async PF was not yet handled.
--		 * Add dummy entry for the token.
-+		 * Async #PF not yet handled, add a dummy entry for the token.
-+		 * Allocating the token must be down outside of the raw lock
-+		 * as the allocator is preemptible on PREEMPT_RT kernels.
- 		 */
--		n = kzalloc(sizeof(*n), GFP_ATOMIC);
--		if (!n) {
-+		if (!dummy) {
-+			raw_spin_unlock(&b->lock);
-+			dummy = kzalloc(sizeof(*dummy), GFP_KERNEL);
-+
- 			/*
--			 * Allocation failed! Busy wait while other cpu
--			 * handles async PF.
-+			 * Continue looping on allocation failure, eventually
-+			 * the async #PF will be handled and allocating a new
-+			 * node will be unnecessary.
-+			 */
-+			if (!dummy)
-+				cpu_relax();
-+
-+			/*
-+			 * Recheck for async #PF completion before enqueueing
-+			 * the dummy token to avoid duplicate list entries.
- 			 */
--			raw_spin_unlock(&b->lock);
--			cpu_relax();
- 			goto again;
- 		}
--		n->token = token;
--		n->cpu = smp_processor_id();
--		init_swait_queue_head(&n->wq);
--		hlist_add_head(&n->link, &b->list);
-+		dummy->token = token;
-+		dummy->cpu = smp_processor_id();
-+		init_swait_queue_head(&dummy->wq);
-+		hlist_add_head(&dummy->link, &b->list);
-+		dummy = NULL;
- 	} else {
- 		apf_task_wake_one(n);
- 	}
- 	raw_spin_unlock(&b->lock);
--	return;
-+
-+	/* A dummy token might be allocated and ultimately not used.  */
-+	if (dummy)
-+		kfree(dummy);
- }
- EXPORT_SYMBOL_GPL(kvm_async_pf_task_wake);
+ #endif // CONFIG_CC_HAS_ASM_GOTO_OUTPUT
  
++#ifdef CONFIG_CC_HAS_ASM_GOTO_TIED_OUTPUT
++#define __try_cmpxchg_user_asm(itype, ltype, _ptr, _pold, _new, label)	({ \
++	bool success;							\
++	__typeof__(_ptr) _old = (__typeof__(_ptr))(_pold);		\
++	__typeof__(*(_ptr)) __old = *_old;				\
++	__typeof__(*(_ptr)) __new = (_new);				\
++	asm_volatile_goto("\n"						\
++		     "1: " LOCK_PREFIX "cmpxchg"itype" %[new], %[ptr]\n"\
++		     _ASM_EXTABLE_UA(1b, %l[label])			\
++		     : CC_OUT(z) (success),				\
++		       [ptr] "+m" (*_ptr),				\
++		       [old] "+a" (__old)				\
++		     : [new] ltype (__new)				\
++		     : "memory"						\
++		     : label);						\
++	if (unlikely(!success))						\
++		*_old = __old;						\
++	likely(success);					})
++
++#ifdef CONFIG_X86_32
++#define __try_cmpxchg64_user_asm(_ptr, _pold, _new, label)	({	\
++	bool success;							\
++	__typeof__(_ptr) _old = (__typeof__(_ptr))(_pold);		\
++	__typeof__(*(_ptr)) __old = *_old;				\
++	__typeof__(*(_ptr)) __new = (_new);				\
++	asm_volatile_goto("\n"						\
++		     "1: " LOCK_PREFIX "cmpxchg8b %[ptr]\n"		\
++		     _ASM_EXTABLE_UA(1b, %l[label])			\
++		     : CC_OUT(z) (success),				\
++		       "+A" (__old),					\
++		       [ptr] "+m" (*_ptr)				\
++		     : "b" ((u32)__new),				\
++		       "c" ((u32)((u64)__new >> 32))			\
++		     : "memory"						\
++		     : label);						\
++	if (unlikely(!success))						\
++		*_old = __old;						\
++	likely(success);					})
++#endif // CONFIG_X86_32
++#else  // !CONFIG_CC_HAS_ASM_GOTO_TIED_OUTPUT
++#define __try_cmpxchg_user_asm(itype, ltype, _ptr, _pold, _new, label)	({ \
++	int __err = 0;							\
++	bool success;							\
++	__typeof__(_ptr) _old = (__typeof__(_ptr))(_pold);		\
++	__typeof__(*(_ptr)) __old = *_old;				\
++	__typeof__(*(_ptr)) __new = (_new);				\
++	asm volatile("\n"						\
++		     "1: " LOCK_PREFIX "cmpxchg"itype" %[new], %[ptr]\n"\
++		     CC_SET(z)						\
++		     "2:\n"						\
++		     _ASM_EXTABLE_TYPE_REG(1b, 2b, EX_TYPE_EFAULT_REG,	\
++					   %[errout])			\
++		     : CC_OUT(z) (success),				\
++		       [errout] "+r" (__err),				\
++		       [ptr] "+m" (*_ptr),				\
++		       [old] "+a" (__old)				\
++		     : [new] ltype (__new)				\
++		     : "memory", "cc");					\
++	if (unlikely(__err))						\
++		goto label;						\
++	if (unlikely(!success))						\
++		*_old = __old;						\
++	likely(success);					})
++
++#ifdef CONFIG_X86_32
++/*
++ * Unlike the normal CMPXCHG, hardcode ECX for both success/fail and error.
++ * There are only six GPRs available and four (EAX, EBX, ECX, and EDX) are
++ * hardcoded by CMPXCHG8B, leaving only ESI and EDI.  If the compiler uses
++ * both ESI and EDI for the memory operand, compilation will fail if the error
++ * is an input+output as there will be no register available for input.
++ */
++#define __try_cmpxchg64_user_asm(_ptr, _pold, _new, label)	({	\
++	int __result;							\
++	__typeof__(_ptr) _old = (__typeof__(_ptr))(_pold);		\
++	__typeof__(*(_ptr)) __old = *_old;				\
++	__typeof__(*(_ptr)) __new = (_new);				\
++	asm volatile("\n"						\
++		     "1: " LOCK_PREFIX "cmpxchg8b %[ptr]\n"		\
++		     "mov $0, %%ecx\n\t"				\
++		     "setz %%cl\n"					\
++		     "2:\n"						\
++		     _ASM_EXTABLE_TYPE_REG(1b, 2b, EX_TYPE_EFAULT_REG, %%ecx) \
++		     : [result]"=c" (__result),				\
++		       "+A" (__old),					\
++		       [ptr] "+m" (*_ptr)				\
++		     : "b" ((u32)__new),				\
++		       "c" ((u32)((u64)__new >> 32))			\
++		     : "memory", "cc");					\
++	if (unlikely(__result < 0))					\
++		goto label;						\
++	if (unlikely(!__result))					\
++		*_old = __old;						\
++	likely(__result);					})
++#endif // CONFIG_X86_32
++#endif // CONFIG_CC_HAS_ASM_GOTO_TIED_OUTPUT
++
+ /* FIXME: this hack is definitely wrong -AK */
+ struct __large_struct { unsigned long buf[100]; };
+ #define __m(x) (*(struct __large_struct __user *)(x))
+@@ -474,6 +571,51 @@ do {										\
+ } while (0)
+ #endif // CONFIG_CC_HAS_ASM_GOTO_OUTPUT
+ 
++extern void __try_cmpxchg_user_wrong_size(void);
++
++#ifndef CONFIG_X86_32
++#define __try_cmpxchg64_user_asm(_ptr, _oldp, _nval, _label)		\
++	__try_cmpxchg_user_asm("q", "r", (_ptr), (_oldp), (_nval), _label)
++#endif
++
++/*
++ * Force the pointer to u<size> to match the size expected by the asm helper.
++ * clang/LLVM compiles all cases and only discards the unused paths after
++ * processing errors, which breaks i386 if the pointer is an 8-byte value.
++ */
++#define unsafe_try_cmpxchg_user(_ptr, _oldp, _nval, _label) ({			\
++	bool __ret;								\
++	__chk_user_ptr(_ptr);							\
++	switch (sizeof(*(_ptr))) {						\
++	case 1:	__ret = __try_cmpxchg_user_asm("b", "q",			\
++					       (__force u8 *)(_ptr), (_oldp),	\
++					       (_nval), _label);		\
++		break;								\
++	case 2:	__ret = __try_cmpxchg_user_asm("w", "r",			\
++					       (__force u16 *)(_ptr), (_oldp),	\
++					       (_nval), _label);		\
++		break;								\
++	case 4:	__ret = __try_cmpxchg_user_asm("l", "r",			\
++					       (__force u32 *)(_ptr), (_oldp),	\
++					       (_nval), _label);		\
++		break;								\
++	case 8:	__ret = __try_cmpxchg64_user_asm((__force u64 *)(_ptr), (_oldp),\
++						 (_nval), _label);		\
++		break;								\
++	default: __try_cmpxchg_user_wrong_size();				\
++	}									\
++	__ret;						})
++
++/* "Returns" 0 on success, 1 on failure, -EFAULT if the access faults. */
++#define __try_cmpxchg_user(_ptr, _oldp, _nval, _label)	({		\
++	int __ret = -EFAULT;						\
++	__uaccess_begin_nospec();					\
++	__ret = !unsafe_try_cmpxchg_user(_ptr, _oldp, _nval, _label);	\
++_label:									\
++	__uaccess_end();						\
++	__ret;								\
++							})
++
+ /*
+  * We want the unsafe accessors to always be inlined and use
+  * the error labels - thus the macro games.
 
 
