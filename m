@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 343C4CCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B005CCA483
 	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:16:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347159AbiFCSP3 (ORCPT
+        id S1347399AbiFCSPl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:15:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47082 "EHLO
+        Fri, 3 Jun 2022 14:15:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346656AbiFCSA2 (ORCPT
+        with ESMTP id S1346462AbiFCSAU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 14:00:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B267DBD6;
-        Fri,  3 Jun 2022 10:56:44 -0700 (PDT)
+        Fri, 3 Jun 2022 14:00:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9787058E62;
+        Fri,  3 Jun 2022 10:56:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 297EA61555;
-        Fri,  3 Jun 2022 17:56:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BC69C385A9;
-        Fri,  3 Jun 2022 17:56:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 37ADDB82369;
+        Fri,  3 Jun 2022 17:56:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 904DFC3411D;
+        Fri,  3 Jun 2022 17:56:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654279003;
-        bh=TbpKUtNHnEOzZffoMTxedrzce7IA7XzbzevMWJ2iUtU=;
+        s=korg; t=1654278988;
+        bh=27qRdN9GYw3QvnqkwODMdfeM7nT6M1uBHq5TeeLhpEs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o42VDqv6e+jZy6WGJbIbMx60d/GNnaOCLTGv7trtwQl2tSNENDQstXN0cUjPKj3m+
-         YDImadZllGFwSMlcj71RD31G/+coFKTrRXEhEuMGV4rPf1ewqah0AYgi2kemEFqY5+
-         /otmqNBeksZhWbGfekXPWt8mxTBNNmtF/ani4RVY=
+        b=hyF6EdNmW3C8Y1keFd14Q/lX747yyvcKwmvDlyo1bpjBnBcWlIDTZKbXIk5sFttTL
+         dVN7XpX1T5C30/zqSF7Tk6QasXQfqEBKmoj/9FrcDtjzpwVn0dt3HgEcQ/TfH3vMcg
+         GYq8itlex3FxjpprseKHcq6sB6Kbp/mnjp70LZGI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        stable@vger.kernel.org, Yajun Deng <yajun.deng@linux.dev>,
+        Sean Christopherson <seanjc@google.com>,
         Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.18 21/67] KVM: x86: Use __try_cmpxchg_user() to emulate atomic accesses
-Date:   Fri,  3 Jun 2022 19:43:22 +0200
-Message-Id: <20220603173821.337659871@linuxfoundation.org>
+Subject: [PATCH 5.18 17/67] x86/kvm: Alloc dummy async #PF token outside of raw spinlock
+Date:   Fri,  3 Jun 2022 19:43:18 +0200
+Message-Id: <20220603173821.226881426@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.731531504@linuxfoundation.org>
 References: <20220603173820.731531504@linuxfoundation.org>
@@ -51,101 +52,89 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Sean Christopherson <seanjc@google.com>
 
-commit 1c2361f667f3648855ceae25f1332c18413fdb9f upstream.
+commit 0547758a6de3cc71a0cfdd031a3621a30db6a68b upstream.
 
-Use the recently introduce __try_cmpxchg_user() to emulate atomic guest
-accesses via the associated userspace address instead of mapping the
-backing pfn into kernel address space.  Using kvm_vcpu_map() is unsafe as
-it does not coordinate with KVM's mmu_notifier to ensure the hva=>pfn
-translation isn't changed/unmapped in the memremap() path, i.e. when
-there's no struct page and thus no elevated refcount.
+Drop the raw spinlock in kvm_async_pf_task_wake() before allocating the
+the dummy async #PF token, the allocator is preemptible on PREEMPT_RT
+kernels and must not be called from truly atomic contexts.
 
-Fixes: 42e35f8072c3 ("KVM/X86: Use kvm_vcpu_map in emulator_cmpxchg_emulated")
+Opportunistically document why it's ok to loop on allocation failure,
+i.e. why the function won't get stuck in an infinite loop.
+
+Reported-by: Yajun Deng <yajun.deng@linux.dev>
 Cc: stable@vger.kernel.org
 Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220202004945.2540433-5-seanjc@google.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/x86.c |   35 ++++++++++++++---------------------
- 1 file changed, 14 insertions(+), 21 deletions(-)
+ arch/x86/kernel/kvm.c |   41 +++++++++++++++++++++++++++--------------
+ 1 file changed, 27 insertions(+), 14 deletions(-)
 
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -7229,15 +7229,8 @@ static int emulator_write_emulated(struc
- 				   exception, &write_emultor);
- }
- 
--#define CMPXCHG_TYPE(t, ptr, old, new) \
--	(cmpxchg((t *)(ptr), *(t *)(old), *(t *)(new)) == *(t *)(old))
--
--#ifdef CONFIG_X86_64
--#  define CMPXCHG64(ptr, old, new) CMPXCHG_TYPE(u64, ptr, old, new)
--#else
--#  define CMPXCHG64(ptr, old, new) \
--	(cmpxchg64((u64 *)(ptr), *(u64 *)(old), *(u64 *)(new)) == *(u64 *)(old))
--#endif
-+#define emulator_try_cmpxchg_user(t, ptr, old, new) \
-+	(__try_cmpxchg_user((t __user *)(ptr), (t *)(old), *(t *)(new), efault ## t))
- 
- static int emulator_cmpxchg_emulated(struct x86_emulate_ctxt *ctxt,
- 				     unsigned long addr,
-@@ -7246,12 +7239,11 @@ static int emulator_cmpxchg_emulated(str
- 				     unsigned int bytes,
- 				     struct x86_exception *exception)
+--- a/arch/x86/kernel/kvm.c
++++ b/arch/x86/kernel/kvm.c
+@@ -191,7 +191,7 @@ void kvm_async_pf_task_wake(u32 token)
  {
--	struct kvm_host_map map;
- 	struct kvm_vcpu *vcpu = emul_to_vcpu(ctxt);
- 	u64 page_line_mask;
-+	unsigned long hva;
- 	gpa_t gpa;
--	char *kaddr;
--	bool exchanged;
-+	int r;
+ 	u32 key = hash_32(token, KVM_TASK_SLEEP_HASHBITS);
+ 	struct kvm_task_sleep_head *b = &async_pf_sleepers[key];
+-	struct kvm_task_sleep_node *n;
++	struct kvm_task_sleep_node *n, *dummy = NULL;
  
- 	/* guests cmpxchg8b have to be emulated atomically */
- 	if (bytes > 8 || (bytes & (bytes - 1)))
-@@ -7275,31 +7267,32 @@ static int emulator_cmpxchg_emulated(str
- 	if (((gpa + bytes - 1) & page_line_mask) != (gpa & page_line_mask))
- 		goto emul_write;
- 
--	if (kvm_vcpu_map(vcpu, gpa_to_gfn(gpa), &map))
-+	hva = kvm_vcpu_gfn_to_hva(vcpu, gpa_to_gfn(gpa));
-+	if (kvm_is_error_hva(addr))
- 		goto emul_write;
- 
--	kaddr = map.hva + offset_in_page(gpa);
-+	hva += offset_in_page(gpa);
- 
- 	switch (bytes) {
- 	case 1:
--		exchanged = CMPXCHG_TYPE(u8, kaddr, old, new);
-+		r = emulator_try_cmpxchg_user(u8, hva, old, new);
- 		break;
- 	case 2:
--		exchanged = CMPXCHG_TYPE(u16, kaddr, old, new);
-+		r = emulator_try_cmpxchg_user(u16, hva, old, new);
- 		break;
- 	case 4:
--		exchanged = CMPXCHG_TYPE(u32, kaddr, old, new);
-+		r = emulator_try_cmpxchg_user(u32, hva, old, new);
- 		break;
- 	case 8:
--		exchanged = CMPXCHG64(kaddr, old, new);
-+		r = emulator_try_cmpxchg_user(u64, hva, old, new);
- 		break;
- 	default:
- 		BUG();
+ 	if (token == ~0) {
+ 		apf_task_wake_all();
+@@ -203,28 +203,41 @@ again:
+ 	n = _find_apf_task(b, token);
+ 	if (!n) {
+ 		/*
+-		 * async PF was not yet handled.
+-		 * Add dummy entry for the token.
++		 * Async #PF not yet handled, add a dummy entry for the token.
++		 * Allocating the token must be down outside of the raw lock
++		 * as the allocator is preemptible on PREEMPT_RT kernels.
+ 		 */
+-		n = kzalloc(sizeof(*n), GFP_ATOMIC);
+-		if (!n) {
++		if (!dummy) {
++			raw_spin_unlock(&b->lock);
++			dummy = kzalloc(sizeof(*dummy), GFP_KERNEL);
++
+ 			/*
+-			 * Allocation failed! Busy wait while other cpu
+-			 * handles async PF.
++			 * Continue looping on allocation failure, eventually
++			 * the async #PF will be handled and allocating a new
++			 * node will be unnecessary.
++			 */
++			if (!dummy)
++				cpu_relax();
++
++			/*
++			 * Recheck for async #PF completion before enqueueing
++			 * the dummy token to avoid duplicate list entries.
+ 			 */
+-			raw_spin_unlock(&b->lock);
+-			cpu_relax();
+ 			goto again;
+ 		}
+-		n->token = token;
+-		n->cpu = smp_processor_id();
+-		init_swait_queue_head(&n->wq);
+-		hlist_add_head(&n->link, &b->list);
++		dummy->token = token;
++		dummy->cpu = smp_processor_id();
++		init_swait_queue_head(&dummy->wq);
++		hlist_add_head(&dummy->link, &b->list);
++		dummy = NULL;
+ 	} else {
+ 		apf_task_wake_one(n);
  	}
+ 	raw_spin_unlock(&b->lock);
+-	return;
++
++	/* A dummy token might be allocated and ultimately not used.  */
++	if (dummy)
++		kfree(dummy);
+ }
+ EXPORT_SYMBOL_GPL(kvm_async_pf_task_wake);
  
--	kvm_vcpu_unmap(vcpu, &map, true);
--
--	if (!exchanged)
-+	if (r < 0)
-+		goto emul_write;
-+	if (r)
- 		return X86EMUL_CMPXCHG_FAILED;
- 
- 	kvm_page_track_write(vcpu, gpa, new, bytes);
 
 
