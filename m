@@ -2,42 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4378CCA47E
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:07:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CF1FCCA48D
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:07:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348165AbiFCSGm (ORCPT
+        id S1347990AbiFCSGd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:06:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58138 "EHLO
+        Fri, 3 Jun 2022 14:06:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345742AbiFCRy2 (ORCPT
+        with ESMTP id S1345396AbiFCRxY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:54:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 281E433A2F;
-        Fri,  3 Jun 2022 10:52:45 -0700 (PDT)
+        Fri, 3 Jun 2022 13:53:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57B5723174;
+        Fri,  3 Jun 2022 10:52:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 958F3B82419;
-        Fri,  3 Jun 2022 17:52:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D8AFC385B8;
-        Fri,  3 Jun 2022 17:52:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 99C24B82189;
+        Fri,  3 Jun 2022 17:52:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8071BC385A9;
+        Fri,  3 Jun 2022 17:52:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278762;
-        bh=5cbWmyR2IMGGz9IkAFETxg/3SAjZQPfP2Nwg2heSXwA=;
+        s=korg; t=1654278750;
+        bh=3UL3x2f2WyP8DSvLWX62I8m/JkJuzbJBFvpyHQs11YU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1vEMr9KmvmSGlv1pfYHFKT6CN+fQZxqBypVl0825nFRfYFvZ0Tne7+Jzaad7WuAL1
-         5ZNQh1bXMi4CYWqGurnXgB+NAlWBssEWRNI7W68FFskMbFaLA4NVZiA4Q5/T6bWSea
-         YvlmGvy7ZBqNDovXivrJ0FN+LTIDyyUaOeTnMyqo=
+        b=nDrXwBVUndLlPWZLSf+1MDJLRuLB8hCChN9KSblJUfYjsjJsK2WYTd/nUJ0PjQuai
+         NMpVhzJAYirpm/sIL/ZNijppv2DRylHJ9Z4BG4MVJwJJf/rdC1wiQdorMGZF5VJvS/
+         rlIuszrYI2mGTn9YrjO6tcm5b+IVndBg3Qb3i098=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Dustin L. Howett" <dustin@howett.net>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 03/75] ALSA: hda/realtek: Add quirk for the Framework Laptop
-Date:   Fri,  3 Jun 2022 19:42:47 +0200
-Message-Id: <20220603173821.847934703@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        Alexander Duyck <alexander.h.duyck@intel.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        "Soheil Hassas Yeganeh" <soheil@google.com>,
+        "Sridhar Samudrala" <sridhar.samudrala@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.17 15/75] pipe: make poll_usage boolean and annotate its access
+Date:   Fri,  3 Jun 2022 19:42:59 +0200
+Message-Id: <20220603173822.181504981@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173821.749019262@linuxfoundation.org>
 References: <20220603173821.749019262@linuxfoundation.org>
@@ -49,74 +55,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dustin L. Howett <dustin@howett.net>
+From: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
 
-[ Upstream commit 309d7363ca3d9fcdb92ff2d958be14d7e8707f68 ]
+commit f485922d8fe4e44f6d52a5bb95a603b7c65554bb upstream.
 
-Some board revisions of the Framework Laptop have an ALC295 with a
-disconnected or faulty headset mic presence detect.
+Patch series "Fix data-races around epoll reported by KCSAN."
 
-The "dell-headset-multi" fixup addresses this issue, but also enables an
-inoperative "Headphone Mic" input device whenever a headset is
-connected.
+This series suppresses a false positive KCSAN's message and fixes a real
+data-race.
 
-Adding a new quirk chain specific to the Framework Laptop resolves this
-issue. The one introduced here is based on the System76 "no headphone
-mic" quirk chain.
 
-The VID:PID f111:0001 have been allocated to Framework Computer for this
-board revision.
+This patch (of 2):
 
-Revision history:
-- v2: Moved to a custom quirk chain to suppress the "Headphone Mic"
-  pincfg.
+pipe_poll() runs locklessly and assigns 1 to poll_usage.  Once poll_usage
+is set to 1, it never changes in other places.  However, concurrent writes
+of a value trigger KCSAN, so let's make KCSAN happy.
 
-Signed-off-by: Dustin L. Howett <dustin@howett.net>
-Link: https://lore.kernel.org/r/20220511010759.3554-1-dustin@howett.net
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+BUG: KCSAN: data-race in pipe_poll / pipe_poll
+
+write to 0xffff8880042f6678 of 4 bytes by task 174 on cpu 3:
+ pipe_poll (fs/pipe.c:656)
+ ep_item_poll.isra.0 (./include/linux/poll.h:88 fs/eventpoll.c:853)
+ do_epoll_wait (fs/eventpoll.c:1692 fs/eventpoll.c:1806 fs/eventpoll.c:2234)
+ __x64_sys_epoll_wait (fs/eventpoll.c:2246 fs/eventpoll.c:2241 fs/eventpoll.c:2241)
+ do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80)
+ entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:113)
+
+write to 0xffff8880042f6678 of 4 bytes by task 177 on cpu 1:
+ pipe_poll (fs/pipe.c:656)
+ ep_item_poll.isra.0 (./include/linux/poll.h:88 fs/eventpoll.c:853)
+ do_epoll_wait (fs/eventpoll.c:1692 fs/eventpoll.c:1806 fs/eventpoll.c:2234)
+ __x64_sys_epoll_wait (fs/eventpoll.c:2246 fs/eventpoll.c:2241 fs/eventpoll.c:2241)
+ do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80)
+ entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:113)
+
+Reported by Kernel Concurrency Sanitizer on:
+CPU: 1 PID: 177 Comm: epoll_race Not tainted 5.17.0-58927-gf443e374ae13 #6
+Hardware name: Red Hat KVM, BIOS 1.11.0-2.amzn2 04/01/2014
+
+Link: https://lkml.kernel.org/r/20220322002653.33865-1-kuniyu@amazon.co.jp
+Link: https://lkml.kernel.org/r/20220322002653.33865-2-kuniyu@amazon.co.jp
+Fixes: 3b844826b6c6 ("pipe: avoid unnecessary EPOLLET wakeups under normal loads")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+Cc: Alexander Duyck <alexander.h.duyck@intel.com>
+Cc: Al Viro <viro@zeniv.linux.org.uk>
+Cc: Davidlohr Bueso <dave@stgolabs.net>
+Cc: Kuniyuki Iwashima <kuni1840@gmail.com>
+Cc: "Soheil Hassas Yeganeh" <soheil@google.com>
+Cc: "Sridhar Samudrala" <sridhar.samudrala@intel.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_realtek.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ fs/pipe.c                 |    2 +-
+ include/linux/pipe_fs_i.h |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index cc3cf65ad5b9..53d1586b71ec 100644
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -7036,6 +7036,7 @@ enum {
- 	ALC287_FIXUP_LEGION_16ACHG6,
- 	ALC287_FIXUP_CS35L41_I2C_2,
- 	ALC285_FIXUP_HP_SPEAKERS_MICMUTE_LED,
-+	ALC295_FIXUP_FRAMEWORK_LAPTOP_MIC_NO_PRESENCE,
- };
+--- a/fs/pipe.c
++++ b/fs/pipe.c
+@@ -653,7 +653,7 @@ pipe_poll(struct file *filp, poll_table
+ 	unsigned int head, tail;
  
- static const struct hda_fixup alc269_fixups[] = {
-@@ -8812,6 +8813,15 @@ static const struct hda_fixup alc269_fixups[] = {
- 		.chained = true,
- 		.chain_id = ALC269_FIXUP_DELL4_MIC_NO_PRESENCE,
- 	},
-+	[ALC295_FIXUP_FRAMEWORK_LAPTOP_MIC_NO_PRESENCE] = {
-+		.type = HDA_FIXUP_PINS,
-+		.v.pins = (const struct hda_pintbl[]) {
-+			{ 0x19, 0x02a1112c }, /* use as headset mic, without its own jack detect */
-+			{ }
-+		},
-+		.chained = true,
-+		.chain_id = ALC269_FIXUP_HEADSET_MODE_NO_HP_MIC
-+	},
- };
+ 	/* Epoll has some historical nasty semantics, this enables them */
+-	pipe->poll_usage = 1;
++	WRITE_ONCE(pipe->poll_usage, true);
  
- static const struct snd_pci_quirk alc269_fixup_tbl[] = {
-@@ -9292,6 +9302,7 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
- 	SND_PCI_QUIRK(0x8086, 0x2074, "Intel NUC 8", ALC233_FIXUP_INTEL_NUC8_DMIC),
- 	SND_PCI_QUIRK(0x8086, 0x2080, "Intel NUC 8 Rugged", ALC256_FIXUP_INTEL_NUC8_RUGGED),
- 	SND_PCI_QUIRK(0x8086, 0x2081, "Intel NUC 10", ALC256_FIXUP_INTEL_NUC10),
-+	SND_PCI_QUIRK(0xf111, 0x0001, "Framework Laptop", ALC295_FIXUP_FRAMEWORK_LAPTOP_MIC_NO_PRESENCE),
- 
- #if 0
- 	/* Below is a quirk table taken from the old code.
--- 
-2.35.1
-
+ 	/*
+ 	 * Reading pipe state only -- no need for acquiring the semaphore.
+--- a/include/linux/pipe_fs_i.h
++++ b/include/linux/pipe_fs_i.h
+@@ -71,7 +71,7 @@ struct pipe_inode_info {
+ 	unsigned int files;
+ 	unsigned int r_counter;
+ 	unsigned int w_counter;
+-	unsigned int poll_usage;
++	bool poll_usage;
+ 	struct page *tmp_page;
+ 	struct fasync_struct *fasync_readers;
+ 	struct fasync_struct *fasync_writers;
 
 
