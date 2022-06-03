@@ -2,143 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65EE2C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:10:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29C7AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:11:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343969AbiFCRKb (ORCPT
+        id S1344260AbiFCRLM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:10:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52576 "EHLO
+        Fri, 3 Jun 2022 13:11:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230480AbiFCRK0 (ORCPT
+        with ESMTP id S230480AbiFCRLK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:10:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 869CE5251B;
-        Fri,  3 Jun 2022 10:10:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0B46BB823AB;
-        Fri,  3 Jun 2022 17:10:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C2A6C385B8;
-        Fri,  3 Jun 2022 17:10:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654276222;
-        bh=Yhb8OPp1sSwZzVcLGVjDxYrN0vlwebO9faHuTNWhG4o=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=pJUj26xM3omq1XfJzae2/kNYP0GNrKZJAlX6qQvFkoORdgX2jatgBaZhjITDetyo4
-         6Ho3r8JCZNDTqYqTywpriBv1enouc70JPjw/sYrT7zAqOY3+TbCZUGrBVxnV0twFzb
-         vBFIAuE6Owl4SCoC0jyhKAh0Wkj62wDDrGkEYuY9ZHlH2kkn5YxDGMdMJ4lJ4ZJtOM
-         8FilAtIOaatwJZHh8x0+lYlCL4U9MemxvnRqpNaXZGP17ucBaA6OSj8utHuAIdF2Zq
-         mOVjuiYHKrUQzkdqfZZndqYO3gcqFcQLMxn6f/bbPrMbEy5YxC7w8yXCWqyVB3lzQC
-         zN8eYoz/vFcNw==
-Date:   Fri, 3 Jun 2022 18:19:17 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     ChiaEn Wu <peterwu.pub@gmail.com>
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        lee.jones@linaro.org, daniel.thompson@linaro.org,
-        jingoohan1@gmail.com, pavel@ucw.cz, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
-        sre@kernel.org, chunfeng.yun@mediatek.com,
-        gregkh@linuxfoundation.org, lars@metafoo.de, lgirdwood@gmail.com,
-        broonie@kernel.org, linux@roeck-us.net,
-        heikki.krogerus@linux.intel.com, deller@gmx.de,
-        ChiYuan Huang <cy_huang@richtek.com>, alice_chen@richtek.com,
-        chiaen_wu@richtek.com, dri-devel@lists.freedesktop.org,
-        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-fbdev@vger.kernel.org
-Subject: Re: [RESEND 10/14] iio: adc: mt6370: Add Mediatek MT6370 support
-Message-ID: <20220603181917.3f737913@jic23-huawei>
-In-Reply-To: <CABtFH5Lg43EXS7juhXQ2wQFZzkpD7YB8rM6UFT=U9BDOKcbaNw@mail.gmail.com>
-References: <20220531111900.19422-1-peterwu.pub@gmail.com>
-        <20220531111900.19422-11-peterwu.pub@gmail.com>
-        <20220531142102.00007df0@Huawei.com>
-        <CABtFH5Lg43EXS7juhXQ2wQFZzkpD7YB8rM6UFT=U9BDOKcbaNw@mail.gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Fri, 3 Jun 2022 13:11:10 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9E71B842;
+        Fri,  3 Jun 2022 10:11:09 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id q26so810533wra.1;
+        Fri, 03 Jun 2022 10:11:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to;
+        bh=fRgAh9J+c4jC08uZIjr2kYb768T1tZJ/nb/Oa3hwP7c=;
+        b=crjJbS8WoGLij/bLFL/Nzsd81KSJtrINJrTvItv49P2SRolieRROmBigQVsGisyVG0
+         HGbQvF1wru2Fbgx1Up60UQJpZIAwKNJTou9V35+fSjDEeV8iZ6lntOyLl0XbGUFeZqB+
+         QInwkamUhRLy/ocVypiU+AWTIC9q/JjFDS07c8WyupLEvLHkCatu+4cEWK2UCo6kFAdp
+         q7mqn4iuqWMjj+/r2RH/YuLXIVPZiWzz1SWTPwx5DTz6KF657l1G1XcStJs7evp/CDoO
+         hfZPSvoKDMOcZOZq6nXmdn/zbwY+QDdjjb/GcuPa0tqGNjxdTxrCOU/RsSMGThb35Y5G
+         eXgA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to;
+        bh=fRgAh9J+c4jC08uZIjr2kYb768T1tZJ/nb/Oa3hwP7c=;
+        b=52ek1Qfe38Y/0P9WSVk/lDe+ZFGREfzFGAfEDk6UiY3AirFjNhqb0eSAQZilgA1tqE
+         0mr9AqLK5NhUZ8ak7UVAzctA/FdONwdTR4t1nnBTKPF2JRbGQghWTthPreaFZrafAcXE
+         loZlqDP245LlEz2fQSfPNB3iMkcVGmLoIaehOdZS2m5BcjooJH4R2iRHHMlAIz01su0R
+         GbxSkZkr+7VFaCSVyXjuEA9Pa6KIFz4w6bCB4MBMgqqqHGA3zq/izhD0bLycGWaPWoyN
+         LSUUcRb8vNjRB4TKApOTDpsD+5GVUGh2WfOMw73OCGMw6vKtvjC2uH2t/+ZT6vlbCZxd
+         5Fmw==
+X-Gm-Message-State: AOAM5330wcmGGsudXTP34kFrvl8hH6kJy59x+uijQBpcQp4dPZp43nxV
+        a/TnTdPcZuhgZtNoqRf3/Fs=
+X-Google-Smtp-Source: ABdhPJyRl8yQRV3zL7FJAxD2z2vGOI8zsKa70FXhZIrYKkFfjuq0kVrfAAsKJ37AJb4NgULVZHU7Sw==
+X-Received: by 2002:adf:d1c6:0:b0:20f:c7dc:8466 with SMTP id b6-20020adfd1c6000000b0020fc7dc8466mr8906508wrd.43.1654276268474;
+        Fri, 03 Jun 2022 10:11:08 -0700 (PDT)
+Received: from [192.168.0.160] ([170.253.36.171])
+        by smtp.gmail.com with ESMTPSA id j3-20020a5d4643000000b002103a7c5c91sm7628089wrs.43.2022.06.03.10.11.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 03 Jun 2022 10:11:07 -0700 (PDT)
+Message-ID: <ce05bd8d-087d-cfa8-6aca-02fd1f3aebb7@gmail.com>
+Date:   Fri, 3 Jun 2022 19:11:05 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH 1/2] userfaultfd.2: Add section for UFFD_USER_MODE_ONLY
+Content-Language: en-US
+To:     Peter Xu <peterx@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-man@vger.kernel.org, linux-mm@kvack.org
+Cc:     Axel Rasmussen <axelrasmussen@google.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Nadav Amit <nadav.amit@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+References: <20220531011157.46868-1-peterx@redhat.com>
+ <20220531011157.46868-2-peterx@redhat.com>
+From:   Alejandro Colomar <alx.manpages@gmail.com>
+In-Reply-To: <20220531011157.46868-2-peterx@redhat.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------JWowZshMgmYd5lniQsWsnDAD"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> >  
-> > > +
-> > > +#define MT6370_AICR_400MA            0x6
-> > > +#define MT6370_ICHG_500MA            0x4
-> > > +#define MT6370_ICHG_900MA            0x8
-> > > +
-> > > +#define ADC_CONV_TIME_US             35000
-> > > +#define ADC_CONV_POLLING_TIME                1000
-> > > +
-> > > +struct mt6370_adc_data {
-> > > +     struct device *dev;
-> > > +     struct regmap *regmap;
-> > > +     struct mutex lock;  
-> >
-> > All locks need documentation.  What is the scope of the lock?
-> > Looks like it protects device state when doing setup, wait for read, read
-> > cycles.  
-> 
-> This mutex lock is for preventing the different adc channel from being
-> read at the same time.
-> So, if I just change its name to adc_chan_lock or adc_lock and add the
-> comment for this mutex lock, does this change meet your requirement
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------JWowZshMgmYd5lniQsWsnDAD
+Content-Type: multipart/mixed; boundary="------------0U42xYdKBOm0yFeiwgYZ8D7l";
+ protected-headers="v1"
+From: Alejandro Colomar <alx.manpages@gmail.com>
+To: Peter Xu <peterx@redhat.com>, linux-kernel@vger.kernel.org,
+ linux-man@vger.kernel.org, linux-mm@kvack.org
+Cc: Axel Rasmussen <axelrasmussen@google.com>,
+ Andrea Arcangeli <aarcange@redhat.com>, Nadav Amit <nadav.amit@gmail.com>,
+ Andrew Morton <akpm@linux-foundation.org>
+Message-ID: <ce05bd8d-087d-cfa8-6aca-02fd1f3aebb7@gmail.com>
+Subject: Re: [PATCH 1/2] userfaultfd.2: Add section for UFFD_USER_MODE_ONLY
+References: <20220531011157.46868-1-peterx@redhat.com>
+ <20220531011157.46868-2-peterx@redhat.com>
+In-Reply-To: <20220531011157.46868-2-peterx@redhat.com>
 
-Yes
+--------------0U42xYdKBOm0yFeiwgYZ8D7l
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-> 
-> >  
-> > > +};
-> > > +
-> > > +static int mt6370_adc_read_scale(struct mt6370_adc_data *priv,
-> > > +                              int chan, int *val1, int *val2)
-> > > +{
-> > > +     unsigned int reg_val;
-> > > +     int ret;
-> > > +
-> > > +     switch (chan) {
-> > > +     case MT6370_CHAN_VBAT:
-> > > +     case MT6370_CHAN_VSYS:
-> > > +     case MT6370_CHAN_CHG_VDDP:
-> > > +             *val1 = 5000;  
-> >
-> > This seems very large.  Voltages are in millivolts
-> > as per Documentation/ABI/testing/sysfs-bus-iio
-> > and this means each step is 5 volts.
-> >
-> > So value in mv is currently 5 * _raw
-> >  
-> 
-> OK, I got it. Also, I will add the ABI file in the next version. Thanks!
-Only add ABI documentation for anything non-standard.
+SGkgUGV0ZXIsDQoNCk9uIDUvMzEvMjIgMDM6MTEsIFBldGVyIFh1IHdyb3RlOg0KPiBBZGQg
+YSBwYXJhZ3JhcGggZm9yIFVGRkRfVVNFUl9NT0RFX09OTFkgZmxhZyB0aGF0IHdhcyBpbnRy
+b2R1Y2VkIGluDQo+IExpbnV4IDUuMTEuDQo+IA0KPiBTaWduZWQtb2ZmLWJ5OiBQZXRlciBY
+dSA8cGV0ZXJ4QHJlZGhhdC5jb20+DQoNClNlZSBzb21lIG1pbm9yIGNvbW1lbnRzIGJlbG93
+Lg0KDQpDaGVlcnMsDQoNCkFsZXgNCg0KPiAtLS0NCj4gICBtYW4yL3VzZXJmYXVsdGZkLjIg
+fCAxNCArKysrKysrKysrKystLQ0KPiAgIDEgZmlsZSBjaGFuZ2VkLCAxMiBpbnNlcnRpb25z
+KCspLCAyIGRlbGV0aW9ucygtKQ0KPiANCj4gZGlmZiAtLWdpdCBhL21hbjIvdXNlcmZhdWx0
+ZmQuMiBiL21hbjIvdXNlcmZhdWx0ZmQuMg0KPiBpbmRleCBjZWU3YzAxZDIuLjA5MjhhNzZk
+MiAxMDA2NDQNCj4gLS0tIGEvbWFuMi91c2VyZmF1bHRmZC4yDQo+ICsrKyBiL21hbjIvdXNl
+cmZhdWx0ZmQuMg0KPiBAQCAtMjksOCArMjksOSBAQA0KPiAgIHVzZXJmYXVsdGZkIFwtIGNy
+ZWF0ZSBhIGZpbGUgZGVzY3JpcHRvciBmb3IgaGFuZGxpbmcgcGFnZSBmYXVsdHMgaW4gdXNl
+ciBzcGFjZQ0KPiAgIC5TSCBTWU5PUFNJUw0KPiAgIC5uZg0KPiAtLkJSICIjaW5jbHVkZSA8
+ZmNudGwuaD4iICIgICAgICAgICAgICAvKiBEZWZpbml0aW9uIG9mICIgT18qICIgY29uc3Rh
+bnRzICovIg0KPiAtLkJSICIjaW5jbHVkZSA8c3lzL3N5c2NhbGwuaD4iICIgICAgICAvKiBE
+ZWZpbml0aW9uIG9mICIgU1lTXyogIiBjb25zdGFudHMgKi8iDQo+ICsuQlIgIiNpbmNsdWRl
+IDxmY250bC5oPiIgIiAgICAgICAgICAgICAvKiBEZWZpbml0aW9uIG9mICIgT18qICIgY29u
+c3RhbnRzICovIg0KPiArLkJSICIjaW5jbHVkZSA8c3lzL3N5c2NhbGwuaD4iICIgICAgICAg
+LyogRGVmaW5pdGlvbiBvZiAiIFNZU18qICIgY29uc3RhbnRzICovIg0KPiArLkJSICIjaW5j
+bHVkZSA8bGludXgvdXNlcmZhdWx0ZmQuaD4iICIgLyogRGVmaW5pdGlvbiBvZiAiIFVGRkRf
+KiAiIGNvbnN0YW50cyAqLyINCj4gICAuQiAjaW5jbHVkZSA8dW5pc3RkLmg+DQo+ICAgLlBQ
+DQo+ICAgLkJJICJpbnQgc3lzY2FsbChTWVNfdXNlcmZhdWx0ZmQsIGludCAiIGZsYWdzICk7
+DQo+IEBAIC03Niw2ICs3NywxNSBAQCBTZWUgdGhlIGRlc2NyaXB0aW9uIG9mIHRoZQ0KPiAg
+IC5CUiBPX05PTkJMT0NLDQo+ICAgZmxhZyBpbg0KPiAgIC5CUiBvcGVuICgyKS4NCj4gKy5U
+UA0KPiArLkJSIFVGRkRfVVNFUl9NT0RFX09OTFkNCg0KDQpzL0JSL0IvDQoNCnNlZSBncm9m
+Zl9tYW4oNyk6DQoNClsNCglbLi4uXQ0KDQogICAgICAgIC5CIFt0ZXh0XQ0KICAgICAgICAg
+ICAgICAgU2V0IHRleHQgaW4gYm9sZC4gIElmIHRoZSBtYWNybyBpcyBnaXZlbiBubyAgYXJn
+deKAkA0KICAgICAgICAgICAgICAgbWVudHMsICB0aGUgIHRleHQgb2YgdGhlIG5leHQgaW5w
+dXQgbGluZSBpcyBzZXQgaW4NCiAgICAgICAgICAgICAgIGJvbGQuDQoNCglbLi4uXQ0KDQog
+ICAgICAgIC5CUiBib2xk4oCQdGV4dCByb21hbuKAkHRleHQgLi4uDQogICAgICAgICAgICAg
+ICBTZXQgZWFjaCBhcmd1bWVudCBpbiBib2xkIGFuZCByb21hbiwgYWx0ZXJuYXRlbHkuDQpd
+DQoNCj4gK1RoaXMgaXMgYW4gdXNlcmZhdWx0ZmQgc3BlY2lmaWMgZmxhZyB0aGF0IHdhcyBp
+bnRyb2R1Y2VkIHNpbmNlIExpbnV4IDUuMTEuDQo+ICtXaGVuIHNldCwgdGhlIHVzZXJmYXVs
+dGZkIG9iamVjdCB3aWxsIG9ubHkgYmUgYWJsZSB0byBoYW5kbGUgcGFnZSBmYXVsdHMNCj4g
+K29yaWdpbmF0ZWQgZnJvbSB0aGUgdXNlcnNwYWNlIG9uIHRoZSByZWdpc3RlcmVkIHJlZ2lv
+bnMuDQo+ICtXaGVuIGEga2VybmVsIG9yaWdpbmF0ZWQgZmF1bHQgd2FzIHRyaWdnZXJlZCBv
+biB0aGUgcmVnaXN0ZXJlZCByYW5nZSB3aXRoDQo+ICt0aGlzIHVzZXJmYXVsdGZkLCBhDQo+
+ICsuQlIgU0lHQlVTDQoNCnMvQlIvQi8NCg0KPiArc2lnbmFsIHdpbGwgYmUgZGVsaXZlcmVk
+Lg0KPiAgIC5QUA0KPiAgIFdoZW4gdGhlIGxhc3QgZmlsZSBkZXNjcmlwdG9yIHJlZmVycmlu
+ZyB0byBhIHVzZXJmYXVsdGZkIG9iamVjdCBpcyBjbG9zZWQsDQo+ICAgYWxsIG1lbW9yeSBy
+YW5nZXMgdGhhdCB3ZXJlIHJlZ2lzdGVyZWQgd2l0aCB0aGUgb2JqZWN0IGFyZSB1bnJlZ2lz
+dGVyZWQNCg0KLS0gDQpBbGVqYW5kcm8gQ29sb21hcg0KPGh0dHA6Ly93d3cuYWxlamFuZHJv
+LWNvbG9tYXIuZXMvPg0K
 
-The documentation scripts really don't like repeats!
+--------------0U42xYdKBOm0yFeiwgYZ8D7l--
 
-> 
-> > > +static const char * const mt6370_channel_labels[MT6370_CHAN_MAX] = {  
-> >
-> > Perhaps define an enum with which to index this and the chan spec
-> > and hence ensure they end up matching.
-> >  [vbusdiv5] = "vbusdiv5", etc
-> >  
-> 
-> Do you mean that I can refine this const char array to the following array??
-> 
-> static const char * const mt6370_channel_labels[MT6370_CHAN_MAX] = {
->     [MT6370_CHAN_VBUSDIV5] =  "vbusdiv5",
->     [MT6370_CHAN_VBUSDIV2] =  "vbusdiv2",
->     ...
->     ...
->     [MT6370_CHAN_TEMP_JC] =  "temp_jc",
-> };
+--------------JWowZshMgmYd5lniQsWsnDAD
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
 
-Yes
+-----BEGIN PGP SIGNATURE-----
 
-thanks,
+iQIzBAEBCgAdFiEE6jqH8KTroDDkXfJAnowa+77/2zIFAmKaQKkACgkQnowa+77/
+2zIg6Q/+N9zRypAYrL2ekgAA+dd3ddjtfgtwoqh6y+pIg25ukaFt5sCVtsZa42CG
+cShBf/T+4k3OYpNYGylNPBBPsW60dpgn7F3ZVw8oA1EG7+R8fn079BTrmzKE6Eb/
+lQ1vJCfEeHIRc3S1g/2dngjXP0c5IuJNT/uIqmRg3hPhZxuT2SVSPD/DpuAD9u/U
+lRCUoqLyKmqQMAZE87wNXyEoaKSg/Nuo2NlqfCDgDsrvvipkluk0zprv12qVezlW
+7t8mJkgrX8gKNiuEz4I1ORhk5m2bmhR6BNGgmgFPXPN7hNgtYyXPrNq86wepC8Zt
+HuJpoD8CLmM4rx9FBSx6W3oTNUMKSlbvFz72qjO6rW4OwRhHKbrgOg2URqggEphJ
+oG2XW90e13UJnlkujyvmk4KlhxbMtFE/JcksLBp1Aw9GN/o4UNQCpDSv5xLoscy/
+297y/k/oIqDRR8A1pwx77wYDik0eiDKd6QAqXU9z3ChZAS2kQw7l9IbQur1er1Pu
+dIvl//EYri7aytBC72S3FwvNjOFVBe0YtjiDvr/4G2ia611DOnJf3lrxkNBa6SW5
+eCwXfMfFv0SO8TMRSkbAJaY+iZwmGUVkzl0LTb8lG+FjQnTaCuArtYM6hiqKu7hs
+B45lR5meM/zv9ImkWVh0JdD276QsPKU9GzNDdM80a9jhd2ETBpw=
+=oyqT
+-----END PGP SIGNATURE-----
 
-Jonathan
+--------------JWowZshMgmYd5lniQsWsnDAD--
