@@ -2,164 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7190DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 15:44:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18B0DC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 15:47:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245627AbiFCPoA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 11:44:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50746 "EHLO
+        id S245645AbiFCPrY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 11:47:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231160AbiFCPn4 (ORCPT
+        with ESMTP id S245610AbiFCPrW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 11:43:56 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12FAC6241;
-        Fri,  3 Jun 2022 08:43:53 -0700 (PDT)
-Received: from fraeml707-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LF6WC5jGqz67yLV;
-        Fri,  3 Jun 2022 23:39:19 +0800 (CST)
-Received: from fraeml714-chm.china.huawei.com (10.206.15.33) by
- fraeml707-chm.china.huawei.com (10.206.15.35) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 3 Jun 2022 17:43:51 +0200
-Received: from fraeml714-chm.china.huawei.com ([10.206.15.33]) by
- fraeml714-chm.china.huawei.com ([10.206.15.33]) with mapi id 15.01.2375.024;
- Fri, 3 Jun 2022 17:43:51 +0200
-From:   Roberto Sassu <roberto.sassu@huawei.com>
-To:     KP Singh <kpsingh@kernel.org>
-CC:     "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 1/3] bpf: Add BPF_F_VERIFY_ELEM to require signature
- verification on map values
-Thread-Topic: [PATCH 1/3] bpf: Add BPF_F_VERIFY_ELEM to require signature
- verification on map values
-Thread-Index: AQHYcDpckKyFNQT2PU2oWx8V6Vr5oK09gwmAgAAxm2CAAAOQgIAAJWng
-Date:   Fri, 3 Jun 2022 15:43:51 +0000
-Message-ID: <cfaafb3af5be40ec80f14e134a5702cf@huawei.com>
-References: <20220525132115.896698-1-roberto.sassu@huawei.com>
- <20220525132115.896698-2-roberto.sassu@huawei.com>
- <CACYkzJ7L-fE740t91amu4uiDA5dnDMU1D+c0vhb-sFHyQK08kA@mail.gmail.com>
- <89db5543066f4dccbfebd78ed3c025e7@huawei.com>
- <CACYkzJ4uD_k6sDktVaxkE_1QtSphZm+Rhjk4wrMm71LcmWRJ0w@mail.gmail.com>
-In-Reply-To: <CACYkzJ4uD_k6sDktVaxkE_1QtSphZm+Rhjk4wrMm71LcmWRJ0w@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.204.63.21]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Fri, 3 Jun 2022 11:47:22 -0400
+Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDD07201A2;
+        Fri,  3 Jun 2022 08:47:21 -0700 (PDT)
+Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-30ec2aa3b6cso86223427b3.11;
+        Fri, 03 Jun 2022 08:47:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/rpR+ysTG3r/oi1euOdZz8SzpGxkF/hmbsauLKYdP7M=;
+        b=j8ZnU74uAZ6D4PTcz0R6xcRPZMVDV8xfs5gVpnCQ6CesHfOkQDe66XxCuvKfSh4iEX
+         N6mLXP92d2JjbWn9UdwWXdA50w0AI1WOCDG64KjH8GMVwGGLPoCPbXJgyxLz/XMJi/Uu
+         HNBD3fiXZV1JvbRNjOaY1JwGSYVf6MhvvExqfxuwDWPV6qInk4kuOsAAAgRRkR9Toklm
+         MNfg3sHEVHYby5WuSoDGfjMKh2/bWBoBr5LR3SqMOCmmdmXIenMCpiQ/TY4xDK7f4vfq
+         i/vU1rDsXyLxIUx6fvfgKgb0thIDs3LP8uCwAv1WChdgH2h9PwmjYor0+0pxHND1JY6t
+         vObg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/rpR+ysTG3r/oi1euOdZz8SzpGxkF/hmbsauLKYdP7M=;
+        b=IqGK73z0NcnEYx1hG20tmAtH6FnNCPsh48dfT16Bv9RhfjfqUi6dIIGgQJ/KeblbCZ
+         rTgF8L2zPAPnBb/1RlUzq5UHe4mlAJV4TMckhhZ6n0gZchE7irb0VrD20yZKhpdDK82z
+         mN3RwvMyQijaA1cUr6ir/y5Pyn3Tzz7cFL26TuaDT+WFPsmVUBpIE5rxDnJ65Xwvm6pB
+         5naRzTGpvKAzOuf76yHEi2KPh9Puu4UyR/pAboILJJlMQ9U9rOutbc9uVnOve0vrAb0/
+         u/ygdEH6xRUwEfnyOMeGqSdlVJVvHofPLTGCE1eVocGTgitRXdz40iIReTQWG0nDDEug
+         /Qvw==
+X-Gm-Message-State: AOAM53179q1k6LYbltLArOd5uxbK+q09qQYblg8iyN5WP2k9NImBD6lw
+        OMZcYV8t5TQ3vuBJ2Tt3rJBYFI53rNLXNE1+p5uRl+8M8ga1rA==
+X-Google-Smtp-Source: ABdhPJxxXAx4EKwCBga0uvTSPyC88Uc7cl+nSZjuc/BNL4mNAvKEvMHLlipFiizZqMB9qbAPEsZogJnu9cIWgunuEsw=
+X-Received: by 2002:a81:60c6:0:b0:30f:ea59:10c7 with SMTP id
+ u189-20020a8160c6000000b0030fea5910c7mr9504447ywb.78.1654271241188; Fri, 03
+ Jun 2022 08:47:21 -0700 (PDT)
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+References: <20220602213544.68273-1-max@enpas.org> <CAMZ6RqLLn3tE6kPd+yyHURsbBU_jVKN=u4=YvhZVyAf_NyRqCQ@mail.gmail.com>
+In-Reply-To: <CAMZ6RqLLn3tE6kPd+yyHURsbBU_jVKN=u4=YvhZVyAf_NyRqCQ@mail.gmail.com>
+From:   Vincent Mailhol <vincent.mailhol@gmail.com>
+Date:   Sat, 4 Jun 2022 00:47:10 +0900
+Message-ID: <CAMZ6RqKM7Z3GzO6vKyWf7D1z=HvJBN2QaZz1==LBsEJKjz=Qag@mail.gmail.com>
+Subject: Re: [PATCH v7] can, tty: can327 CAN/ldisc driver for ELM327 based
+ OBD-II adapters
+To:     Max Staudt <max@enpas.org>
+Cc:     Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-can@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Oliver Neukum <oneukum@suse.com>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PiBGcm9tOiBLUCBTaW5naCBbbWFpbHRvOmtwc2luZ2hAa2VybmVsLm9yZ10NCj4gU2VudDogRnJp
-ZGF5LCBKdW5lIDMsIDIwMjIgNToxOCBQTQ0KPiBPbiBGcmksIEp1biAzLCAyMDIyIGF0IDM6MTEg
-UE0gUm9iZXJ0byBTYXNzdSA8cm9iZXJ0by5zYXNzdUBodWF3ZWkuY29tPg0KPiB3cm90ZToNCj4g
-Pg0KPiA+ID4gRnJvbTogS1AgU2luZ2ggW21haWx0bzprcHNpbmdoQGtlcm5lbC5vcmddDQo+ID4g
-PiBTZW50OiBGcmlkYXksIEp1bmUgMywgMjAyMiAyOjA4IFBNDQo+ID4gPiBPbiBXZWQsIE1heSAy
-NSwgMjAyMiBhdCAzOjIxIFBNIFJvYmVydG8gU2Fzc3UNCj4gPHJvYmVydG8uc2Fzc3VAaHVhd2Vp
-LmNvbT4NCj4gPiA+IHdyb3RlOg0KPiA+ID4gPg0KPiA+ID4gPiBJbiBzb21lIGNhc2VzLCBpdCBp
-cyBkZXNpcmFibGUgdG8gZW5zdXJlIHRoYXQgYSBtYXAgY29udGFpbnMgZGF0YSBmcm9tDQo+ID4g
-PiA+IGF1dGhlbnRpY2F0ZWQgc291cmNlcywgZm9yIGV4YW1wbGUgaWYgbWFwIGRhdGEgYXJlIHVz
-ZWQgZm9yIG1ha2luZw0KPiBzZWN1cml0eQ0KPiA+ID4gPiBkZWNpc2lvbnMuDQo+ID4gPg0KPiA+
-ID4gSSBhbSBndWVzc2luZyB0aGlzIGNvbWVzIGZyb20gdGhlIGRpc2N1c3Npb24gd2UgaGFkIGFi
-b3V0IGRpZ2lsaW0uDQo+ID4gPiBJIHJlbWVtYmVyIHdlIGRpc2N1c3NlZCBhIEJQRiBoZWxwZXIg
-dGhhdCBjb3VsZCB2ZXJpZnkgc2lnbmF0dXJlcy4NCj4gPiA+IFdoeSB3b3VsZCB0aGF0IGFwcHJv
-YWNoIG5vdCB3b3JrPw0KPiA+DQo+ID4gVGhlIG1haW4gcmVhc29uIGlzIHRoYXQgc2lnbmF0dXJl
-IHZlcmlmaWNhdGlvbiBjYW4gYmUgZG9uZSBhbHNvDQo+ID4gZm9yIG5vbi1zbGVlcGFibGUgaG9v
-a3MuIEZvciBleGFtcGxlLCBvbmUgaXMgZmV4aXQvYXJyYXlfbWFwX3VwZGF0ZV9lbGVtLg0KPiAN
-Cj4gRm9yIHlvdXIgdXNlLWNhc2UsIHdoeSBpcyBpdCBub3QgcG9zc2libGUgdG8gaG9vayB0aGUg
-TFNNIGhvb2sgImJwZiINCj4gaS5lIHNlY3VyaXR5X2JwZiBhbmQgdGhlbiBjaGVjayBpZiB0aGVy
-ZSBpcyBhIE1BUF9VUERBVEVfRUxFTSBvcGVyYXRpb24/DQoNCkl0IHdvdWxkIHJlcXVpcmUgdGhl
-IGZvbGxvd2luZzogYSBuZXcgaGVscGVyIHRvIGNvbXBhcmUgdGhlIHVzZXIgc3BhY2UNCmZkIHdp
-dGggdGhlIGFkZHJlc3Mgb2YgdGhlIG1hcCBpbiB0aGUgZUJQRiBwcm9ncmFtOyBjb3B5IGRhdGEg
-ZnJvbQ0KdXNlciBzcGFjZSB0byBrZXJuZWwgc3BhY2UgKHZlcmlmeV9wa2NzN19zaWduYXR1cmVJ
-KCkgZXhwZWN0cyBrZXJuZWwNCm1lbW9yeSkuIFRoYXQgY29weSB3b3VsZCBoYXBwZW4gdHdpY2Uu
-DQoNCj4gPiBDdXJyZW50bHkgdGhlIGhlbHBlciBpbiBwYXRjaCAyIGp1c3QgcmV0dXJucyB0aGUg
-c2l6ZSBvZiB2ZXJpZmllZCBkYXRhLg0KPiA+IFdpdGggYW4gYWRkaXRpb25hbCBwYXJhbWV0ZXIs
-IGl0IGNvdWxkIGFsc28gYmUgdXNlZCBhcyBhIGhlbHBlciBmb3INCj4gPiBzaWduYXR1cmUgdmVy
-aWZpY2F0aW9uIGJ5IGFueSBlQlBGIHByb2dyYW1zLg0KPiA+DQo+IA0KPiBZb3VyIGJwZl9tYXBf
-dmVyaWZ5X3ZhbHVlX3NpZyBoYXJkIGNvZGVzIHRoZSB0eXBlIG9mIHNpZ25hdHVyZQ0KPiAoYnBm
-X21hcF92ZXJpZnlfdmFsdWVfc2lnIGFzIHZlcmlmeV9wa2NzN19zaWduYXR1cmUpDQo+IGl0cyBp
-bXBsZW1lbnRhdGlvbi4gVGhpcyBpcyBub3QgZXh0ZW5zaWJsZS4NCg0KSXQgaXMgaGFyZGNvZGVk
-IG5vdywgYnV0IGl0IHdvdWxkbid0IGlmIHRoZXJlIGFyZSBtb3JlIHZlcmlmaWNhdGlvbg0KZnVu
-Y3Rpb25zLiBGb3IgZXhhbXBsZSwgaWYgJ2lkX3R5cGUnIG9mIG1vZHVsZV9zaWduYXR1cmUgaXMg
-c2V0DQp0byBQS0VZX0lEX1BHUCwgYnBmX21hcF92ZXJpZnlfdmFsdWVfc2lnKCkgd291bGQgY2Fs
-bA0KdmVyaWZ5X3BncF9zaWduYXR1cmUoKSAoYXNzdW1pbmcgdGhhdCBzdXBwb3J0IGZvciBQR1Ag
-a2V5cyBhbmQNCnNpZ25hdHVyZXMgaXMgYWRkZWQgdG8gdGhlIGtlcm5lbCkuDQoNClJvYmVydG8N
-Cg0KSFVBV0VJIFRFQ0hOT0xPR0lFUyBEdWVzc2VsZG9yZiBHbWJILCBIUkIgNTYwNjMNCk1hbmFn
-aW5nIERpcmVjdG9yOiBMaSBQZW5nLCBZYW5nIFhpLCBMaSBIZQ0KDQo+IFdoYXQgd2UgZGlzY3Vz
-c2VkIHdhcyBhbiBleHRlbnNpYmxlIGhlbHBlciB0aGF0IGNhbiBiZSB1c2VkIGZvcg0KPiBkaWZm
-ZXJlbnQgc2lnbmF0dXJlIHR5cGVzLg0KPiANCj4gPiBUbyBiZSBob25lc3QsIEkgbGlrZSBtb3Jl
-IHRoZSBpZGVhIG9mIGEgbWFwIGZsYWcsIGFzIGl0IGlzIG1vcmUNCj4gPiBjbGVhciB0aGF0IHNp
-Z25hdHVyZSB2ZXJpZmljYXRpb24gaXMgYmVpbmcgZG9uZS4gT3RoZXJ3aXNlLA0KPiA+IHdlIHdv
-dWxkIG5lZWQgdG8gaW5mZXIgaXQgZnJvbSB0aGUgZUJQRiBwcm9ncmFtIGNvZGUuDQo+ID4NCj4g
-PiBUaGFua3MNCj4gPg0KPiA+IFJvYmVydG8NCj4gPg0KPiA+IEhVQVdFSSBURUNITk9MT0dJRVMg
-RHVlc3NlbGRvcmYgR21iSCwgSFJCIDU2MDYzDQo+ID4gTWFuYWdpbmcgRGlyZWN0b3I6IExpIFBl
-bmcsIFlhbmcgWGksIExpIEhlDQo+ID4NCj4gPiA+ID4gU3VjaCByZXN0cmljdGlvbiBpcyBhY2hp
-ZXZlZCBieSB2ZXJpZnlpbmcgdGhlIHNpZ25hdHVyZSBvZiBtYXAgdmFsdWVzLCBhdA0KPiA+ID4g
-PiB0aGUgdGltZSB0aG9zZSB2YWx1ZXMgYXJlIGFkZGVkIHRvIHRoZSBtYXAgd2l0aCB0aGUgYnBm
-KCkgc3lzdGVtIGNhbGwNCj4gKG1vcmUNCj4gPiA+ID4gc3BlY2lmaWNhbGx5LCB3aGVuIHRoZSBj
-b21tYW5kcyBwYXNzZWQgdG8gYnBmKCkgYXJlDQo+IEJQRl9NQVBfVVBEQVRFX0VMRU0NCj4gPiA+
-IG9yDQo+ID4gPiA+IEJQRl9NQVBfVVBEQVRFX0JBVENIKS4gTW1hcHBhYmxlIG1hcHMgYXJlIG5v
-dCBhbGxvd2VkIGluIHRoaXMNCj4gY2FzZS4NCj4gPiA+ID4NCj4gPiA+ID4gU2lnbmF0dXJlIHZl
-cmlmaWNhdGlvbiBpcyBpbml0aWFsbHkgZG9uZSB3aXRoIGtleXMgaW4gdGhlIHByaW1hcnkgYW5k
-DQo+ID4gPiA+IHNlY29uZGFyeSBrZXJuZWwga2V5cmluZ3MsIHNpbWlsYXJseSB0byBrZXJuZWwg
-bW9kdWxlcy4gVGhpcyBhbGxvd3Mgc3lzdGVtDQo+ID4gPiA+IG93bmVycyB0byBlbmZvcmNlIGEg
-c3lzdGVtLXdpZGUgcG9saWN5IGJhc2VkIG9uIHRoZSBrZXlzIHRoZXkgdHJ1c3QuDQo+ID4gPiA+
-IFN1cHBvcnQgZm9yIGFkZGl0aW9uYWwga2V5cmluZ3MgY291bGQgYmUgYWRkZWQgbGF0ZXIsIGJh
-c2VkIG9uIHVzZSBjYXNlDQo+ID4gPiA+IG5lZWRzLg0KPiA+ID4gPg0KPiA+ID4gPiBTaWduYXR1
-cmUgdmVyaWZpY2F0aW9uIGlzIGRvbmUgb25seSBmb3IgdGhvc2UgbWFwcyBmb3Igd2hpY2ggdGhl
-IG5ldyBtYXANCj4gPiA+ID4gZmxhZyBCUEZfRl9WRVJJRllfRUxFTSBpcyBzZXQuIFdoZW4gdGhl
-IGZsYWcgaXMgc2V0LCB0aGUga2VybmVsIGV4cGVjdHMNCj4gbWFwDQo+ID4gPiA+IHZhbHVlcyB0
-byBiZSBpbiB0aGUgZm9sbG93aW5nIGZvcm1hdDoNCj4gPiA+ID4NCj4gPiA+ID4gKy0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0rLS0tLS0tLS0tLS0tLS0tKy0tLS0tKy0tLS0tLS0tLS0t
-LS0tLS0tKw0KPiA+ID4gPiB8IHZlcmlmaWVkIGRhdGErc2lnIHNpemUgKGJlMzIpIHwgdmVyaWZp
-ZWQgZGF0YSB8IHNpZyB8IHVudmVyaWZpZWQgZGF0YSB8DQo+ID4gPiA+ICstLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tKy0tLS0tLS0tLS0tLS0tLSstLS0tLSstLS0tLS0tLS0tLS0tLS0t
-LSsNCj4gPiA+ID4NCj4gPiA+ID4gd2hlcmUgc2lnIGlzIGEgbW9kdWxlLXN0eWxlIGFwcGVuZGVk
-IHNpZ25hdHVyZSBhcyBnZW5lcmF0ZWQgYnkgdGhlDQo+ID4gPiA+IHNpZ24tZmlsZSB0b29sLiBU
-aGUgdmVyaWZpZWQgZGF0YStzaWcgc2l6ZSAoaW4gYmlnIGVuZGlhbikgbXVzdCBiZQ0KPiA+ID4g
-PiBleHBsaWNpdGx5IHByb3ZpZGVkIChpdCBpcyBub3QgZ2VuZXJhdGVkIGJ5IHNpZ24tZmlsZSks
-IGFzIGl0IGNhbm5vdCBiZQ0KPiA+ID4gPiBkZXRlcm1pbmVkIGluIG90aGVyIHdheXMgKGN1cnJl
-bnRseSwgdGhlIG1hcCB2YWx1ZSBzaXplIGlzIGZpeGVkKS4gSXQgY2FuDQo+ID4gPiA+IGJlIG9i
-dGFpbmVkIGZyb20gdGhlIHNpemUgb2YgdGhlIGZpbGUgY3JlYXRlZCBieSBzaWduLWZpbGUuDQo+
-ID4gPiA+DQo+ID4gPiA+IEludHJvZHVjZSB0aGUgbmV3IG1hcCBmbGFnIEJQRl9GX1ZFUklGWV9F
-TEVNLCBhbmQgYWRkaXRpb25hbGx5IGNhbGwgdGhlDQo+ID4gPiBuZXcNCj4gPiA+ID4gZnVuY3Rp
-b24gYnBmX21hcF92ZXJpZnlfdmFsdWVfc2lnKCkgZnJvbSBicGZfbWFwX3VwZGF0ZV92YWx1ZSgp
-IGlmIHRoZQ0KPiBmbGFnDQo+ID4gPiA+IGlzIHNldC4gYnBmX21hcF92ZXJpZnlfdmFsdWVfc2ln
-KCksIGRlY2xhcmVkIGFzIGdsb2JhbCBmb3IgYSBuZXcgaGVscGVyLCBpcw0KPiA+ID4gPiBiYXNp
-Y2FsbHkgZXF1aXZhbGVudCB0byBtb2RfdmVyaWZ5X3NpZygpLiBJdCBhZGRpdGlvbmFsbHkgZG9l
-cyB0aGUgbWFya2VyDQo+ID4gPiA+IGNoZWNrLCB0aGF0IGZvciBrZXJuZWwgbW9kdWxlcyBpcyBk
-b25lIGluIG1vZHVsZV9zaWdfY2hlY2soKSwgYW5kIHRoZQ0KPiA+ID4gPiBwYXJzaW5nIG9mIHRo
-ZSB2ZXJpZmllZCBkYXRhK3NpZyBzaXplLg0KPiA+ID4gPg0KPiA+ID4gPiBDdXJyZW50bHksIGVu
-YWJsZSB0aGUgdXNhZ2Ugb2YgdGhlIGZsYWcgb25seSBmb3IgdGhlIGFycmF5IG1hcC4gU3VwcG9y
-dCBmb3INCj4gPiA+ID4gbW9yZSBtYXAgdHlwZXMgY2FuIGJlIGFkZGVkIGxhdGVyLg0KPiA+ID4g
-Pg0KPiA+ID4gPiBTaWduZWQtb2ZmLWJ5OiBSb2JlcnRvIFNhc3N1IDxyb2JlcnRvLnNhc3N1QGh1
-YXdlaS5jb20+DQo+ID4gPiA+IC0tLQ0KPiANCj4gWy4uLl0NCj4gDQo+ID4gPiA+ICsgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIE5VTEwsIE5VTEwpOw0KPiA+ID4g
-PiArICAgICAgICAgICAgICAgaWYgKHJldCA8IDApDQo+ID4gPiA+ICsgICAgICAgICAgICAgICAg
-ICAgICAgIHJldHVybiByZXQ7DQo+ID4gPiA+ICsgICAgICAgfQ0KPiA+ID4gPiArDQo+ID4gPiA+
-ICsgICAgICAgcmV0dXJuIG1vZGxlbjsNCj4gPiA+ID4gK30NCj4gPiA+ID4gK0VYUE9SVF9TWU1C
-T0xfR1BMKGJwZl9tYXBfdmVyaWZ5X3ZhbHVlX3NpZyk7DQo+ID4gPiA+DQo+ID4gPiA+ICAjZGVm
-aW5lIEJQRl9NQVBfVVBEQVRFX0VMRU1fTEFTVF9GSUVMRCBmbGFncw0KPiA+ID4gPg0KPiA+ID4g
-PiBkaWZmIC0tZ2l0IGEvdG9vbHMvaW5jbHVkZS91YXBpL2xpbnV4L2JwZi5oIGIvdG9vbHMvaW5j
-bHVkZS91YXBpL2xpbnV4L2JwZi5oDQo+ID4gPiA+IGluZGV4IGY0MDA5ZGJkZjYyZC4uYThlNzgw
-M2QyNTkzIDEwMDY0NA0KPiA+ID4gPiAtLS0gYS90b29scy9pbmNsdWRlL3VhcGkvbGludXgvYnBm
-LmgNCj4gPiA+ID4gKysrIGIvdG9vbHMvaW5jbHVkZS91YXBpL2xpbnV4L2JwZi5oDQo+ID4gPiA+
-IEBAIC0xMjI2LDYgKzEyMjYsOSBAQCBlbnVtIHsNCj4gPiA+ID4NCj4gPiA+ID4gIC8qIENyZWF0
-ZSBhIG1hcCB0aGF0IGlzIHN1aXRhYmxlIHRvIGJlIGFuIGlubmVyIG1hcCB3aXRoIGR5bmFtaWMg
-bWF4DQo+IGVudHJpZXMNCj4gPiA+ICovDQo+ID4gPiA+ICAgICAgICAgQlBGX0ZfSU5ORVJfTUFQ
-ICAgICAgICAgPSAoMVUgPDwgMTIpLA0KPiA+ID4gPiArDQo+ID4gPiA+ICsvKiBWZXJpZnkgbWFw
-IHZhbHVlIChmbXQ6IHZlciBkYXRhK3NpZyBzaXplKGJlMzIpLCB2ZXIgZGF0YSwgc2lnLCB1bnZl
-cg0KPiBkYXRhKSAqLw0KPiA+ID4gPiArICAgICAgIEJQRl9GX1ZFUklGWV9FTEVNICAgICAgID0g
-KDFVIDw8IDEzKQ0KPiA+ID4gPiAgfTsNCj4gPiA+ID4NCj4gPiA+ID4gIC8qIEZsYWdzIGZvciBC
-UEZfUFJPR19RVUVSWS4gKi8NCj4gPiA+ID4gLS0NCj4gPiA+ID4gMi4yNS4xDQo+ID4gPiA+DQo=
+On Sat. 4 June 2022 at 00:12, Vincent Mailhol <vincent.mailhol@gmail.com> wrote:
+> Hi Max,
+>
+> I gave a final deep look into your driver. I found a few things which
+> went through the cracks of my previous reviews. But overall, it start
+> to look good. Well done and looking forward for the v8.
+>
+> On Fri. 3 June 2022 at 06:36, Max Staudt <max@enpas.org> wrote:
+> > This is the can327 driver. It does a surprisingly good job at turning
+> > ELM327 based OBD-II interfaces into cheap CAN interfaces for simple
+> > homebrew projects.
+> >
+> > Please see the included documentation for details and limitations:
+> > Documentation/networking/device_drivers/can/can327.rst
+> >
+> > Cc: linux-can <linux-can@vger.kernel.org>
+> > Signed-off-by: Max Staudt <max@enpas.org>
+> > ---
+[...]
+> > diff --git a/drivers/net/can/can327.c b/drivers/net/can/can327.c
+> > new file mode 100644
+> > index 000000000000..e29031ad825d
+> > --- /dev/null
+> > +++ b/drivers/net/can/can327.c
+> > @@ -0,0 +1,1158 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +/* ELM327 based CAN interface driver (tty line discipline)
+> > + *
+> > + * This driver started as a derivative of linux/drivers/net/can/slcan.c
+> > + * and my thanks go to the original authors for their inspiration.
+> > + *
+> > + * can327.c Author : Max Staudt <max-linux@enpas.org>
+> > + * slcan.c Author  : Oliver Hartkopp <socketcan@hartkopp.net>
+> > + * slip.c Authors  : Laurence Culhane <loz@holmes.demon.co.uk>
+> > + *                   Fred N. van Kempen <waltje@uwalt.nl.mugnet.org>
+> > + */
+> > +
+> > +#define pr_fmt(fmt) "can327: " fmt
+> > +
+> > +#include <linux/init.h>
+> > +#include <linux/module.h>
+> > +#include <linux/moduleparam.h>
+>
+> linux/moduleparam.h is not needed, right? Please make sure to clean up
+> unused headers.
+>
+> > +
+> > +#include <linux/atomic.h>
+> > +#include <linux/bitops.h>
+> > +#include <linux/ctype.h>
+> > +#include <linux/delay.h>
+> > +#include <linux/errno.h>
+> > +#include <linux/if_ether.h>
+> > +#include <linux/kernel.h>
+> > +#include <linux/list.h>
+> > +#include <linux/lockdep.h>
+> > +#include <linux/netdevice.h>
+> > +#include <linux/skbuff.h>
+> > +#include <linux/spinlock.h>
+> > +#include <linux/string.h>
+> > +#include <linux/tty.h>
+> > +#include <linux/tty_ldisc.h>
+> > +#include <linux/workqueue.h>
+> > +
+> > +#include <uapi/linux/tty.h>
+> > +
+> > +#include <linux/can.h>
+> > +#include <linux/can/dev.h>
+> > +#include <linux/can/error.h>
+> > +#include <linux/can/led.h>
+>
+> Rebase on net-next (or can-next) and remove CAN LED. c.f.:
+> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=6c1e423a3c84953edcf91ff03ab97829b287184a
+>
+> > +#include <linux/can/rx-offload.h>
+> > +
+> > +#define ELM327_NAPI_WEIGHT 4
+> > +
+> > +#define ELM327_SIZE_RXBUF 224
+> > +#define ELM327_SIZE_TXBUF 32
+> > +
+> > +#define ELM327_CAN_CONFIG_SEND_SFF           0x8000
+> > +#define ELM327_CAN_CONFIG_VARIABLE_DLC       0x4000
+> > +#define ELM327_CAN_CONFIG_RECV_BOTH_SFF_EFF  0x2000
+> > +#define ELM327_CAN_CONFIG_BAUDRATE_MULT_8_7  0x1000
+
+This ELM327_CAN_CONFIG_BAUDRATE_MULT_8_7 macro is not used.
+
+> > +#define ELM327_DUMMY_CHAR 'y'
+> > +#define ELM327_DUMMY_STRING "y"
+> > +#define ELM327_READY_CHAR '>'
+
+
+Yours sincerely,
+Vincent Mailhol
