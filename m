@@ -2,123 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5015C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 16:12:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CADCC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 16:12:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343652AbiFCQMI (ORCPT
+        id S1343664AbiFCQMX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 12:12:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44616 "EHLO
+        Fri, 3 Jun 2022 12:12:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241329AbiFCQMA (ORCPT
+        with ESMTP id S1343659AbiFCQMU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 12:12:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 240546321;
-        Fri,  3 Jun 2022 09:11:59 -0700 (PDT)
+        Fri, 3 Jun 2022 12:12:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF3CC24591;
+        Fri,  3 Jun 2022 09:12:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AF4236191F;
-        Fri,  3 Jun 2022 16:11:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C9BBC385A9;
-        Fri,  3 Jun 2022 16:11:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654272718;
-        bh=pMAquZRWJKPNlVH2ye9fOwoe2HsXk9LPsyHcmv+q2eg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Yq12Z1YKdyF+KDBOfSAv/zzvCTXh9uopIQmmVFTgElhGi+wjQFL/FmUZKn9mJITPM
-         R1EON+5R9lfk3xq5Wf4A88Iuio40orIUKoS7N6O1SBLuZN7HQLvoOcPSiF17UeOyl0
-         0ovvvmmNtEWjsgtwyQjNvRRYwK+s2RVpwH62EDDs=
-Date:   Fri, 3 Jun 2022 18:11:55 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Alan Stern <stern@rowland.harvard.edu>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        syzbot <syzbot+dd3c97de244683533381@syzkaller.appspotmail.com>,
-        hdanton@sina.com, lenb@kernel.org, linux-acpi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, rafael.j.wysocki@intel.com,
-        rafael@kernel.org, rjw@rjwysocki.net,
-        syzkaller-bugs@googlegroups.com, linux-usb@vger.kernel.org
-Subject: Re: [syzbot] general protection fault in __device_attach
-Message-ID: <Ypoyy/stICFdHauR@kroah.com>
-References: <000000000000bb7f1c05da29b601@google.com>
- <00000000000010b7d305e08837c8@google.com>
- <YpnqpMYcokTwCB6u@smile.fi.intel.com>
- <Ypor265BTdnmgwpM@rowland.harvard.edu>
- <YpouRmanvCQeKA3S@kroah.com>
- <Ypow1LRZ3Hau36ci@rowland.harvard.edu>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3765D61988;
+        Fri,  3 Jun 2022 16:12:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3980C385A9;
+        Fri,  3 Jun 2022 16:12:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654272737;
+        bh=O9M5jqdylfIYfPPpysrTSvpb5Slsp0Ov8SEYrUNJiRs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=KQVT60gjcauzcYjwva9tzOpQ2w+i89jrkPNenFv4Y74edbsCMOv5m50Ec+jofIe6c
+         C+EqPf6Wd3vnsieZ/Pj72WbHbtO8ihiv/EcpJaRbpkB0gwr2vdde1wEzgaSkkO7kWI
+         U1ZXQjPAAzB3ZfvBZp3sdsRAf+PUn9shAuYbCmnvdPzmWIZu8nO/z8+jRdxvnLqHXS
+         0l9fy9HXF4CPmfmAPCluDMT7BySyzznnWyM3jXzsNjHORYgGJ2P6vjq3ZRY+rU0lqk
+         xfiWFz79f+EI8EyMMyihqFD0APlz6dfM/abhxLHRhYVy4w+6P01L1/3Ew+ftJQjmKe
+         wiOfUL8KR8bLA==
+Date:   Fri, 3 Jun 2022 17:21:17 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: Re: [PATCH v3 2/6] iio: adc: meson_saradc: Align messages to be
+ with physical device prefix
+Message-ID: <20220603172117.792ce869@jic23-huawei>
+In-Reply-To: <20220603100004.70336-2-andriy.shevchenko@linux.intel.com>
+References: <20220603100004.70336-1-andriy.shevchenko@linux.intel.com>
+        <20220603100004.70336-2-andriy.shevchenko@linux.intel.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ypow1LRZ3Hau36ci@rowland.harvard.edu>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 03, 2022 at 12:03:32PM -0400, Alan Stern wrote:
-> On Fri, Jun 03, 2022 at 05:52:38PM +0200, Greg KH wrote:
-> > On Fri, Jun 03, 2022 at 11:42:19AM -0400, Alan Stern wrote:
-> > > On Fri, Jun 03, 2022 at 02:04:04PM +0300, Andy Shevchenko wrote:
-> > > > On Fri, Jun 03, 2022 at 03:02:07AM -0700, syzbot wrote:
-> > > > > syzbot has bisected this issue to:
-> > > > > 
-> > > > > commit a9c4cf299f5f79d5016c8a9646fa1fc49381a8c1
-> > > > > Author: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > > > > Date:   Fri Jun 18 13:41:27 2021 +0000
-> > > > > 
-> > > > >     ACPI: sysfs: Use __ATTR_RO() and __ATTR_RW() macros
-> > > > 
-> > > > Hmm... It's not obvious at all how this change can alter the behaviour so
-> > > > drastically. device_add() is called from USB core with intf->dev.name == NULL
-> > > > by some reason. A-ha, seems like fault injector, which looks like
-> > > > 
-> > > > 	dev_set_name(&intf->dev, "%d-%s:%d.%d", dev->bus->busnum,
-> > > > 		     dev->devpath, configuration, ifnum);
-> > > > 
-> > > > missed the return code check.
-> > > > 
-> > > > But I'm not familiar with that code at all, adding Linux USB ML and Alan.
-> > > 
-> > > I can't see any connection between this bug and acpi/sysfs.c.  Is it a 
-> > > bad bisection?
-> > > 
-> > > It looks like you're right about dev_set_name() failing.  In fact, the 
-> > > kernel appears to be littered with calls to that routine which do not 
-> > > check the return code (the entire subtree below drivers/usb/ contains 
-> > > only _one_ call that does check the return code!).  The function doesn't 
-> > > have any __must_check annotation, and its kerneldoc doesn't mention the 
-> > > return code or the possibility of a failure.
-> > > 
-> > > Apparently the assumption is that if dev_set_name() fails then 
-> > > device_add() later on will also fail, and the problem will be detected 
-> > > then.
-> > > 
-> > > So now what should happen when device_add() for an interface fails in 
-> > > usb_set_configuration()?
-> > 
-> > But how can that really fail on a real system?
-> > 
-> > Is this just due to error-injection stuff?  If so, I'm really loath to
-> > rework the world for something that can never happen in real life.
-> > 
-> > Or is this a real syzbot-found-with-reproducer issue?
+On Fri,  3 Jun 2022 13:00:00 +0300
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+
+> Align messages to be printed with the physical device prefix as it's done
+> everywhere else in this driver.
 > 
-> Aren't there quite a few reasons why device_add() might fail?  (Although 
-> most of them probably are memory allocation errors...)
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Here I'm fine with the use of the parent as can only happen after all
+the setup is done, so it's obvious the parent will be assigned
+(some might argue it is obvious in the previous patch, but I had to check
+as I couldn't remember when we set it :)
 
-I was thinking of the dev_set_name() issue further back in the call
-chain.
+Anyhow, LGTM. 
+> ---
+> v3: new patch (inspired by previous change)
+>  drivers/iio/adc/meson_saradc.c | 7 +++----
+>  1 file changed, 3 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
+> index 4fe6b997cd03..658047370db0 100644
+> --- a/drivers/iio/adc/meson_saradc.c
+> +++ b/drivers/iio/adc/meson_saradc.c
+> @@ -345,6 +345,7 @@ static int meson_sar_adc_read_raw_sample(struct iio_dev *indio_dev,
+>  					 int *val)
+>  {
+>  	struct meson_sar_adc_priv *priv = iio_priv(indio_dev);
+> +	struct device *dev = indio_dev->dev.parent;
+>  	int regval, fifo_chan, fifo_val, count;
+>  
+>  	if (!wait_for_completion_timeout(&priv->done,
+> @@ -353,16 +354,14 @@ static int meson_sar_adc_read_raw_sample(struct iio_dev *indio_dev,
+>  
+>  	count = meson_sar_adc_get_fifo_count(indio_dev);
+>  	if (count != 1) {
+> -		dev_err(&indio_dev->dev,
+> -			"ADC FIFO has %d element(s) instead of one\n", count);
+> +		dev_err(dev, "ADC FIFO has %d element(s) instead of one\n", count);
+>  		return -EINVAL;
+>  	}
+>  
+>  	regmap_read(priv->regmap, MESON_SAR_ADC_FIFO_RD, &regval);
+>  	fifo_chan = FIELD_GET(MESON_SAR_ADC_FIFO_RD_CHAN_ID_MASK, regval);
+>  	if (fifo_chan != chan->address) {
+> -		dev_err(&indio_dev->dev,
+> -			"ADC FIFO entry belongs to channel %d instead of %lu\n",
+> +		dev_err(dev, "ADC FIFO entry belongs to channel %d instead of %lu\n",
+>  			fifo_chan, chan->address);
+>  		return -EINVAL;
+>  	}
 
-> Basically, you have to make up your mind.  If a function can fail, you 
-> should be prepared to handle the failure.  If it can't fail, there's no 
-> point in even checking the return code.
-
-True, ok, we should unwind the mess.  I'll try to look at it after the
-merge window...
-
-But again, is this a "real and able to be triggered from userspace"
-problem, or just fault-injection-induced?
-
-thanks,
-
-greg k-h
