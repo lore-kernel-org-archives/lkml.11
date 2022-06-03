@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12D04C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:43:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AA79CCA47C
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:43:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344965AbiFCRnY (ORCPT
+        id S1345026AbiFCRnm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:43:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56918 "EHLO
+        Fri, 3 Jun 2022 13:43:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344941AbiFCRmo (ORCPT
+        with ESMTP id S1344979AbiFCRnD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:42:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90229544F1;
-        Fri,  3 Jun 2022 10:41:42 -0700 (PDT)
+        Fri, 3 Jun 2022 13:43:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FEED9FF0;
+        Fri,  3 Jun 2022 10:41:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 99F8161B11;
-        Fri,  3 Jun 2022 17:41:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1BB5C385B8;
-        Fri,  3 Jun 2022 17:41:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3BDC3B82430;
+        Fri,  3 Jun 2022 17:41:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3DACC385A9;
+        Fri,  3 Jun 2022 17:41:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278101;
-        bh=1+z+sNbxT56SjlBQgUUIv3b78tcRXKNXzlTy+NZVN0c=;
+        s=korg; t=1654278110;
+        bh=A588RVeDhK4NjzENZtV/3VQJOtZ/Cs2rL2WkvM7y+xQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dXHpDBJjd1CO1thxF7VW6NmOE7x/7EzzhqlLNa68DKiTnPl9U4STuOCZ8y3Ga49hN
-         ILI5Nbl3pSNQVrndGHWi22sdlu4eLqMLvzNbeXT9bzPYDYn6ujOD9uAiqqAUeCe9EG
-         d6iyjLXRIpzqiEe/BrQOy3yKjblZWVWItLgE5mHk=
+        b=1PAs3IzBoEoYu9tMcNX7Sy4In/1krj+3JA1jLl7MvyamURsMwCc8TO1HleQ+Yp3ZX
+         M4qZPMizDMmCjqQbJABsOGWEzn8uqayxfAiJQJXC7OizHWVHdp5oqz43HMIPMhv0gR
+         tiW7bh9QPASpuQ+dzgKgntQPMh25mEfKp4dcIsk0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Szymon Balcerak <sbalcerak@marvell.com>,
-        Piyush Malgujar <pmalgujar@marvell.com>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 10/30] drivers: i2c: thunderx: Allow driver to work with ACPI defined TWSI controllers
-Date:   Fri,  3 Jun 2022 19:39:38 +0200
-Message-Id: <20220603173815.396728920@linuxfoundation.org>
+        stable@vger.kernel.org, Ben Hutchings <ben@decadent.org.uk>,
+        Salvatore Bonaccorso <carnil@debian.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        linux-trace-devel@vger.kernel.org,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        =?UTF-8?q?Daniel=20D=C3=ADaz?= <daniel.diaz@linaro.org>
+Subject: [PATCH 4.19 13/30] libtraceevent: Fix build with binutils 2.35
+Date:   Fri,  3 Jun 2022 19:39:41 +0200
+Message-Id: <20220603173815.484246154@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173815.088143764@linuxfoundation.org>
 References: <20220603173815.088143764@linuxfoundation.org>
@@ -50,35 +53,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Piyush Malgujar <pmalgujar@marvell.com>
+From: Ben Hutchings <ben@decadent.org.uk>
 
-[ Upstream commit 03a35bc856ddc09f2cc1f4701adecfbf3b464cb3 ]
+[ Upstream commit 39efdd94e314336f4acbac4c07e0f37bdc3bef71 ]
 
-Due to i2c->adap.dev.fwnode not being set, ACPI_COMPANION() wasn't properly
-found for TWSI controllers.
+In binutils 2.35, 'nm -D' changed to show symbol versions along with
+symbol names, with the usual @@ separator.  When generating
+libtraceevent-dynamic-list we need just the names, so strip off the
+version suffix if present.
 
-Signed-off-by: Szymon Balcerak <sbalcerak@marvell.com>
-Signed-off-by: Piyush Malgujar <pmalgujar@marvell.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
+Tested-by: Salvatore Bonaccorso <carnil@debian.org>
+Reviewed-by: Steven Rostedt <rostedt@goodmis.org>
+Cc: linux-trace-devel@vger.kernel.org
+Cc: stable@vger.kernel.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Daniel Díaz <daniel.diaz@linaro.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/i2c/busses/i2c-thunderx-pcidrv.c | 1 +
- 1 file changed, 1 insertion(+)
+ tools/lib/traceevent/Makefile |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/i2c/busses/i2c-thunderx-pcidrv.c b/drivers/i2c/busses/i2c-thunderx-pcidrv.c
-index 19f8eec38717..107aeb8b54da 100644
---- a/drivers/i2c/busses/i2c-thunderx-pcidrv.c
-+++ b/drivers/i2c/busses/i2c-thunderx-pcidrv.c
-@@ -208,6 +208,7 @@ static int thunder_i2c_probe_pci(struct pci_dev *pdev,
- 	i2c->adap.bus_recovery_info = &octeon_i2c_recovery_info;
- 	i2c->adap.dev.parent = dev;
- 	i2c->adap.dev.of_node = pdev->dev.of_node;
-+	i2c->adap.dev.fwnode = dev->fwnode;
- 	snprintf(i2c->adap.name, sizeof(i2c->adap.name),
- 		 "Cavium ThunderX i2c adapter at %s", dev_name(dev));
- 	i2c_set_adapdata(&i2c->adap, i2c);
--- 
-2.35.1
-
+--- a/tools/lib/traceevent/Makefile
++++ b/tools/lib/traceevent/Makefile
+@@ -263,7 +263,7 @@ define do_generate_dynamic_list_file
+ 	xargs echo "U w W" | tr 'w ' 'W\n' | sort -u | xargs echo`;\
+ 	if [ "$$symbol_type" = "U W" ];then				\
+ 		(echo '{';						\
+-		$(NM) -u -D $1 | awk 'NF>1 {print "\t"$$2";"}' | sort -u;\
++		$(NM) -u -D $1 | awk 'NF>1 {sub("@.*", "", $$2); print "\t"$$2";"}' | sort -u;\
+ 		echo '};';						\
+ 		) > $2;							\
+ 	else								\
 
 
