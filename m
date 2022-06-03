@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 419E0C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:04:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B72D6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:04:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346587AbiFCSEn (ORCPT
+        id S1346601AbiFCSEq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:04:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58332 "EHLO
+        Fri, 3 Jun 2022 14:04:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346953AbiFCRvp (ORCPT
+        with ESMTP id S1346895AbiFCRvm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:51:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C67F35A2EE;
-        Fri,  3 Jun 2022 10:49:51 -0700 (PDT)
+        Fri, 3 Jun 2022 13:51:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA05F5A2C0;
+        Fri,  3 Jun 2022 10:49:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 490A660F70;
-        Fri,  3 Jun 2022 17:49:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39A03C385A9;
-        Fri,  3 Jun 2022 17:49:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 60F2BB8241D;
+        Fri,  3 Jun 2022 17:49:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC04CC385A9;
+        Fri,  3 Jun 2022 17:49:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278590;
-        bh=cFrmnNl9L7po2P5cc20mN8UGOG2sPnDsfXvs7hKmLbA=;
+        s=korg; t=1654278578;
+        bh=3pOtbOQ8N6t6Rw8X0QXHDepYORdmz7gTCpQzOAuGKFw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R8lJlQfWSgPXi+yWFdnlYAOUHG+qcLVcGHcyBM/D13kbAGn5sckBYn/ld7Y3UMs3p
-         /s98MvRt9FmCGR2BBHcADnGLKyWzJv9/nbYAx+wcjoGqsn/wp4CSjpjfy4TH9/0NtD
-         Msuun90VT9BR/ai7ypMXY7w8eZQ34VWGqCS1h7k4=
+        b=Xm6i/q4Vejn9VTe96rfn4svdWLV1V2Wq/9LUWvyyPEa/UV+dIK571ZOwBbPePjNJU
+         hK9EJQmNnJgSrU4BhTZXteY8Wpuj9y2FpbVE+Id/hdlal4q8HTSmgtJuTTqpIj7nId
+         yVFKJJN/vyrlzNi2yFSP5sUYnNgNjQCZ9MFHN0oM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.15 28/66] KVM: PPC: Book3S HV: fix incorrect NULL check on list iterator
-Date:   Fri,  3 Jun 2022 19:43:08 +0200
-Message-Id: <20220603173821.469405318@linuxfoundation.org>
+        stable@vger.kernel.org, zhangziming.zzm@antgroup.com,
+        Stefano Brivio <sbrivio@redhat.com>,
+        Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: [PATCH 5.15 24/66] netfilter: nf_tables: sanitize nft_set_desc_concat_parse()
+Date:   Fri,  3 Jun 2022 19:43:04 +0200
+Message-Id: <20220603173821.358045008@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.663747061@linuxfoundation.org>
 References: <20220603173820.663747061@linuxfoundation.org>
@@ -49,51 +51,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-commit 300981abddcb13f8f06ad58f52358b53a8096775 upstream.
+commit fecf31ee395b0295f2d7260aa29946b7605f7c85 upstream.
 
-The bug is here:
-	if (!p)
-                return ret;
+Add several sanity checks for nft_set_desc_concat_parse():
 
-The list iterator value 'p' will *always* be set and non-NULL by
-list_for_each_entry(), so it is incorrect to assume that the iterator
-value will be NULL if the list is empty or no element is found.
+- validate desc->field_count not larger than desc->field_len array.
+- field length cannot be larger than desc->field_len (ie. U8_MAX)
+- total length of the concatenation cannot be larger than register array.
 
-To fix the bug, Use a new value 'iter' as the list iterator, while use
-the old value 'p' as a dedicated variable to point to the found element.
+Joint work with Florian Westphal.
 
-Fixes: dfaa973ae960 ("KVM: PPC: Book3S HV: In H_SVM_INIT_DONE, migrate remaining normal-GFNs to secure-GFNs")
-Cc: stable@vger.kernel.org # v5.9+
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220414062103.8153-1-xiam0nd.tong@gmail.com
+Fixes: f3a2181e16f1 ("netfilter: nf_tables: Support for sets with multiple ranged fields")
+Reported-by: <zhangziming.zzm@antgroup.com>
+Reviewed-by: Stefano Brivio <sbrivio@redhat.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/kvm/book3s_hv_uvmem.c |    8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ net/netfilter/nf_tables_api.c |   17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
---- a/arch/powerpc/kvm/book3s_hv_uvmem.c
-+++ b/arch/powerpc/kvm/book3s_hv_uvmem.c
-@@ -360,13 +360,15 @@ static bool kvmppc_gfn_is_uvmem_pfn(unsi
- static bool kvmppc_next_nontransitioned_gfn(const struct kvm_memory_slot *memslot,
- 		struct kvm *kvm, unsigned long *gfn)
- {
--	struct kvmppc_uvmem_slot *p;
-+	struct kvmppc_uvmem_slot *p = NULL, *iter;
- 	bool ret = false;
- 	unsigned long i;
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -4151,6 +4151,9 @@ static int nft_set_desc_concat_parse(con
+ 	u32 len;
+ 	int err;
  
--	list_for_each_entry(p, &kvm->arch.uvmem_pfns, list)
--		if (*gfn >= p->base_pfn && *gfn < p->base_pfn + p->nr_pfns)
-+	list_for_each_entry(iter, &kvm->arch.uvmem_pfns, list)
-+		if (*gfn >= iter->base_pfn && *gfn < iter->base_pfn + iter->nr_pfns) {
-+			p = iter;
- 			break;
-+		}
- 	if (!p)
- 		return ret;
- 	/*
++	if (desc->field_count >= ARRAY_SIZE(desc->field_len))
++		return -E2BIG;
++
+ 	err = nla_parse_nested_deprecated(tb, NFTA_SET_FIELD_MAX, attr,
+ 					  nft_concat_policy, NULL);
+ 	if (err < 0)
+@@ -4160,9 +4163,8 @@ static int nft_set_desc_concat_parse(con
+ 		return -EINVAL;
+ 
+ 	len = ntohl(nla_get_be32(tb[NFTA_SET_FIELD_LEN]));
+-
+-	if (len * BITS_PER_BYTE / 32 > NFT_REG32_COUNT)
+-		return -E2BIG;
++	if (!len || len > U8_MAX)
++		return -EINVAL;
+ 
+ 	desc->field_len[desc->field_count++] = len;
+ 
+@@ -4173,7 +4175,8 @@ static int nft_set_desc_concat(struct nf
+ 			       const struct nlattr *nla)
+ {
+ 	struct nlattr *attr;
+-	int rem, err;
++	u32 num_regs = 0;
++	int rem, err, i;
+ 
+ 	nla_for_each_nested(attr, nla, rem) {
+ 		if (nla_type(attr) != NFTA_LIST_ELEM)
+@@ -4184,6 +4187,12 @@ static int nft_set_desc_concat(struct nf
+ 			return err;
+ 	}
+ 
++	for (i = 0; i < desc->field_count; i++)
++		num_regs += DIV_ROUND_UP(desc->field_len[i], sizeof(u32));
++
++	if (num_regs > NFT_REG32_COUNT)
++		return -E2BIG;
++
+ 	return 0;
+ }
+ 
 
 
