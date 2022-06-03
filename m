@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAC9FCCA47C
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:57:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57D51C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:57:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244576AbiFCR5D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:57:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45562 "EHLO
+        id S1345904AbiFCR5J (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 13:57:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346481AbiFCRvN (ORCPT
+        with ESMTP id S1346493AbiFCRvN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 3 Jun 2022 13:51:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D051454FB7;
-        Fri,  3 Jun 2022 10:48:24 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DDDA5401D;
+        Fri,  3 Jun 2022 10:48:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 773D9B82189;
-        Fri,  3 Jun 2022 17:48:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA2BFC3411C;
-        Fri,  3 Jun 2022 17:48:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BB3EC604EF;
+        Fri,  3 Jun 2022 17:48:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBE43C385B8;
+        Fri,  3 Jun 2022 17:48:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278502;
-        bh=dqFrCjkKesUQuBXwMi30MVJWQe5C7sFAW1S0r0P/XyE=;
+        s=korg; t=1654278505;
+        bh=kN0AN2TNyRTIymjPqzTViSmge+OvDBcFe42A1QKtWv8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RpfZ1dWCbJ8E0e6MA3nqzkRpLM3Afr4n3JHJt89rPw3YBn/umaQe2MrmayzGunhRw
-         UtvdvUYIRh7nl9x+zJdgsVYsK3+kXP3Eh+AJ/mVqHWbYEI/BQ1H3BJPRqc0qeuLmGI
-         /ganWLEOKYc3HvUgc4wz2+iyy/Txtf2vHRVGE8Uw=
+        b=h259kxfL0y/1tng/akEao4zN33LBygStLc/I0vkMq34DkpcJ9PRV2nfyNxBw1tRG5
+         cTpwX0Rj9wO6+p/Nb+LWRuC04RjUdF1HN/RZ5gYyQZY+5ipr9eX82Tao9o4nqC6s+2
+         HCADGxmm07eFFb+NZPvUnEk4jaVvjsZDd+tkR8x4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yuntao Wang <ytcoode@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: [PATCH 5.10 52/53] bpf: Fix potential array overflow in bpf_trampoline_get_progs()
-Date:   Fri,  3 Jun 2022 19:43:37 +0200
-Message-Id: <20220603173820.230531699@linuxfoundation.org>
+        stable@vger.kernel.org, Liu Jian <liujian56@huawei.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Song Liu <songliubraving@fb.com>
+Subject: [PATCH 5.10 53/53] bpf: Enlarge offset check value to INT_MAX in bpf_skb_{load,store}_bytes
+Date:   Fri,  3 Jun 2022 19:43:38 +0200
+Message-Id: <20220603173820.259753943@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173818.716010877@linuxfoundation.org>
 References: <20220603173818.716010877@linuxfoundation.org>
@@ -48,75 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yuntao Wang <ytcoode@gmail.com>
+From: Liu Jian <liujian56@huawei.com>
 
-commit a2aa95b71c9bbec793b5c5fa50f0a80d882b3e8d upstream.
+commit 45969b4152c1752089351cd6836a42a566d49bcf upstream.
 
-The cnt value in the 'cnt >= BPF_MAX_TRAMP_PROGS' check does not
-include BPF_TRAMP_MODIFY_RETURN bpf programs, so the number of
-the attached BPF_TRAMP_MODIFY_RETURN bpf programs in a trampoline
-can exceed BPF_MAX_TRAMP_PROGS.
+The data length of skb frags + frag_list may be greater than 0xffff, and
+skb_header_pointer can not handle negative offset. So, here INT_MAX is used
+to check the validity of offset. Add the same change to the related function
+skb_store_bytes.
 
-When this happens, the assignment '*progs++ = aux->prog' in
-bpf_trampoline_get_progs() will cause progs array overflow as the
-progs field in the bpf_tramp_progs struct can only hold at most
-BPF_MAX_TRAMP_PROGS bpf programs.
-
-Fixes: 88fd9e5352fe ("bpf: Refactor trampoline update code")
-Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
-Link: https://lore.kernel.org/r/20220430130803.210624-1-ytcoode@gmail.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Fixes: 05c74e5e53f6 ("bpf: add bpf_skb_load_bytes helper")
+Signed-off-by: Liu Jian <liujian56@huawei.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Song Liu <songliubraving@fb.com>
+Link: https://lore.kernel.org/bpf/20220416105801.88708-2-liujian56@huawei.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/bpf/trampoline.c |   18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+ net/core/filter.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/kernel/bpf/trampoline.c
-+++ b/kernel/bpf/trampoline.c
-@@ -378,7 +378,7 @@ int bpf_trampoline_link_prog(struct bpf_
- {
- 	enum bpf_tramp_prog_type kind;
- 	int err = 0;
--	int cnt;
-+	int cnt = 0, i;
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -1687,7 +1687,7 @@ BPF_CALL_5(bpf_skb_store_bytes, struct s
  
- 	kind = bpf_attach_type_to_tramp(prog);
- 	mutex_lock(&tr->mutex);
-@@ -389,7 +389,10 @@ int bpf_trampoline_link_prog(struct bpf_
- 		err = -EBUSY;
- 		goto out;
- 	}
--	cnt = tr->progs_cnt[BPF_TRAMP_FENTRY] + tr->progs_cnt[BPF_TRAMP_FEXIT];
-+
-+	for (i = 0; i < BPF_TRAMP_MAX; i++)
-+		cnt += tr->progs_cnt[i];
-+
- 	if (kind == BPF_TRAMP_REPLACE) {
- 		/* Cannot attach extension if fentry/fexit are in use. */
- 		if (cnt) {
-@@ -467,16 +470,19 @@ out:
- 
- void bpf_trampoline_put(struct bpf_trampoline *tr)
+ 	if (unlikely(flags & ~(BPF_F_RECOMPUTE_CSUM | BPF_F_INVALIDATE_HASH)))
+ 		return -EINVAL;
+-	if (unlikely(offset > 0xffff))
++	if (unlikely(offset > INT_MAX))
+ 		return -EFAULT;
+ 	if (unlikely(bpf_try_make_writable(skb, offset + len)))
+ 		return -EFAULT;
+@@ -1722,7 +1722,7 @@ BPF_CALL_4(bpf_skb_load_bytes, const str
  {
-+	int i;
-+
- 	if (!tr)
- 		return;
- 	mutex_lock(&trampoline_mutex);
- 	if (!refcount_dec_and_test(&tr->refcnt))
- 		goto out;
- 	WARN_ON_ONCE(mutex_is_locked(&tr->mutex));
--	if (WARN_ON_ONCE(!hlist_empty(&tr->progs_hlist[BPF_TRAMP_FENTRY])))
--		goto out;
--	if (WARN_ON_ONCE(!hlist_empty(&tr->progs_hlist[BPF_TRAMP_FEXIT])))
--		goto out;
-+
-+	for (i = 0; i < BPF_TRAMP_MAX; i++)
-+		if (WARN_ON_ONCE(!hlist_empty(&tr->progs_hlist[i])))
-+			goto out;
-+
- 	/* This code will be executed even when the last bpf_tramp_image
- 	 * is alive. All progs are detached from the trampoline and the
- 	 * trampoline image is patched with jmp into epilogue to skip
+ 	void *ptr;
+ 
+-	if (unlikely(offset > 0xffff))
++	if (unlikely(offset > INT_MAX))
+ 		goto err_clear;
+ 
+ 	ptr = skb_header_pointer(skb, offset, len, to);
 
 
