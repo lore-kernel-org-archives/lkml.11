@@ -2,58 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0D30C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 00:48:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D634CCA47B
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 00:48:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240530AbiFCAr7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 20:47:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46950 "EHLO
+        id S235695AbiFCAsP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 20:48:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240005AbiFCAoD (ORCPT
+        with ESMTP id S240061AbiFCAox (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 20:44:03 -0400
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1515537A28
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:44:00 -0700 (PDT)
-Received: by mail-pg1-x54a.google.com with SMTP id a23-20020a656557000000b003fa608197b9so3046868pgw.8
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:44:00 -0700 (PDT)
+        Thu, 2 Jun 2022 20:44:53 -0400
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E2FB344D7
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:44:35 -0700 (PDT)
+Received: by mail-pl1-x649.google.com with SMTP id n8-20020a170903110800b001636d9ff4f8so3480000plh.11
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:44:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=MJVn8lgVKxvVraUGQdIqlR3qlBQ10uhP3yXGydsZbkA=;
-        b=h41HAfLJixbFx0lWwxUXPX0fWFVDWWf3TDfX5ng8Jv57JSORyI8+ZbGdgxk5Qyr0oT
-         iNL/1/hSNgXOO/B5gfK8B28rP93y+Kod+oa4D94mBBY95QjlzSDRRUMRUkfB4sHGbTsJ
-         eTWI4QFwY3tM0rnC0VjGpV596gg4Ja+9JWP97ZRz0PLN2mPGYywWcHonP2kZlZSrb7Xe
-         WryTnZhmTMFhJvfT9PXxNYnAEo2D/3wuPj5uF4iFW/3ZzSXxlfSyu6h0Xdk/0OwvXSVK
-         EJHk/GA3LupFh0jVl/LxZRDJH5iUpnV4HnSJt/utr/BxnXOngQImapwcDpqiptJ28BRt
-         LDUA==
+        bh=GAQ5rtYY2/SIzOaV7udbyKc/0bACGVyEmjMH97mKxMg=;
+        b=BQlq45lzwFoBRQriXmAnNEAhaKGIO1RR+vgdA3r1AmD7PwFn1XaVAeScOss3Wt6jD5
+         9ncdMwLbcg3MEnEzWqSBZJBMy65veAAxPneVBpf/m618vECk4U9QS0VYSD/08Kl3eH+1
+         0rs9/OdSGwzPev7wYbsCL+Zx02R0rVxVcrBa1Lrz1neCw7vY/RjtlnVMUBS65Kx/9X9/
+         ZA2moSJYmmMkF2WuRxkaw2cO7qWNYK9GUXraquoHhbMABB9UKcFV8CNwCkB8rPQDmCBE
+         Ae/0TvWLG0vH/Ks1ZcsuRb0JdXy0Ns6WPrabMX6qy2+oiHM18A8qk47qm2AmAzK0whc0
+         Gryg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=MJVn8lgVKxvVraUGQdIqlR3qlBQ10uhP3yXGydsZbkA=;
-        b=rbDE6ILFmDGm7/pGgzRdZTWlW8GF7AREDMUZKzKhUjg0orxSzWhny1nFhJ7KJUYRdf
-         0YMc5WZmiK35j/UYjxglsHdjH4a16gSMttUUa7ZwGFdeta5zZUkvGeSCSivUlC96v5OP
-         TSLwmG/dkS9Qb9nKNJ/G3RkRO2aYKU6huPpcBY2QpOd0SpcaYH4Q/2qyD1U4mJXSqIS5
-         kyMN6Dofw0eO4LE0m/VEvpxFH3bDsFRJecc/krJMSKPLtdOD3YWSaOhuLzlkZbjxUbj0
-         MO6dexhzW9k2X4D+hRuQVSsi+nrh0luUiRWr+htLtbeCa9Hjm/cmkrg3oBH5IgMGChts
-         OHBg==
-X-Gm-Message-State: AOAM531FNS3scGBSSrD30HWPL9cnZ5kWoyq2oRKU5F6uI2ITOyy8cO3s
-        K4TJLaXPmG4PZR8SqozbtSVljAiupWs=
-X-Google-Smtp-Source: ABdhPJxwF/uWAoXaSjvBRKiURJu1bgq1NlCZH3n26JoqeD0U6eqjh92J+lNNV9Q7Zl1EI1VrVOnPiVNGwpo=
+        bh=GAQ5rtYY2/SIzOaV7udbyKc/0bACGVyEmjMH97mKxMg=;
+        b=gZPe8KQLRqdNSf0RDXWoXNXqVsKcKkYHK8fqCWHVh0AkjzxJG3VPxNmA8qYe4xgtB+
+         QqXZZEiTzWA/yxxe+kX/3QkeXjTciictumrk07yyf/uMsEt1oRtYFWVYwL9hT7pWZAfe
+         zOc6v+jPLz806YgiD1hPviMCZwEK0WuLBUVpzy6v6aXRBhKKDd8jWQMDL8D9y8IhZVLQ
+         9dSZAieNu2NYB1re3FrEbwNfYidEDSjiTYUv1Bd6RyxQP4/bkYygC7RW/v2Cp4y2/1+W
+         qVhKe9XeCzzhgygoDOnS5P4FaapI9qqtFjhiXAltw1kV3EC/gtdYGpkHRNgokLGOdUgA
+         //mA==
+X-Gm-Message-State: AOAM5333Nl6tzrKIa9SOlFzufLW3AHiUnN/+37pseEgZ191W2PWVRSgd
+        rKBw9JchRPS6Yf3mAkPvWCo73hygfkI=
+X-Google-Smtp-Source: ABdhPJz8NwL6LdQD4GHjiWp5kcSNph8/fOPGHUsCFHYwPKucittVsr5C/domjE+h4MH3pppfG06TuGSUlD8=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:90b:4b82:b0:1e6:7853:c004 with SMTP id
- lr2-20020a17090b4b8200b001e67853c004mr8914781pjb.136.1654217039534; Thu, 02
- Jun 2022 17:43:59 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a63:6886:0:b0:3fb:fc21:7945 with SMTP id
+ d128-20020a636886000000b003fbfc217945mr6678247pgc.120.1654217074837; Thu, 02
+ Jun 2022 17:44:34 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri,  3 Jun 2022 00:41:20 +0000
+Date:   Fri,  3 Jun 2022 00:41:39 +0000
 In-Reply-To: <20220603004331.1523888-1-seanjc@google.com>
-Message-Id: <20220603004331.1523888-14-seanjc@google.com>
+Message-Id: <20220603004331.1523888-33-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220603004331.1523888-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v2 013/144] KVM: selftests: Remove vcpu_get_fd()
+Subject: [PATCH v2 032/144] KVM: selftests: Cache list of MSRs to save/restore
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     kvm@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
@@ -66,48 +66,233 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Drop vcpu_get_fd(), it no longer has any users, and really should not
-exist as the framework has failed if tests need to manually operate on
-a vCPU fd.
+Cache the list of MSRs to save restore, mostly to justify not freeing the
+list in the caller, which simplifies consumption of the list.
+
+Opportunistically move the XSS test's so called is_supported_msr() to
+common code as kvm_msr_is_in_save_restore_list().  The XSS is "supported"
+by KVM, it's simply not in the save/restore list because KVM doesn't yet
+allow a non-zero value.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- tools/testing/selftests/kvm/include/kvm_util_base.h | 1 -
- tools/testing/selftests/kvm/lib/kvm_util.c          | 9 ---------
- 2 files changed, 10 deletions(-)
+ .../selftests/kvm/include/x86_64/processor.h  |  4 +-
+ .../selftests/kvm/lib/x86_64/processor.c      | 83 +++++++++----------
+ .../selftests/kvm/x86_64/xss_msr_test.c       | 27 ++----
+ 3 files changed, 46 insertions(+), 68 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
-index 6b7a5297053e..c2dfc4341b31 100644
---- a/tools/testing/selftests/kvm/include/kvm_util_base.h
-+++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
-@@ -214,7 +214,6 @@ static inline int __vcpu_run(struct kvm_vm *vm, uint32_t vcpuid)
- 	return __vcpu_ioctl(vm, vcpuid, KVM_RUN, NULL);
+diff --git a/tools/testing/selftests/kvm/include/x86_64/processor.h b/tools/testing/selftests/kvm/include/x86_64/processor.h
+index 6fbbe28a0f39..afc55f561a2c 100644
+--- a/tools/testing/selftests/kvm/include/x86_64/processor.h
++++ b/tools/testing/selftests/kvm/include/x86_64/processor.h
+@@ -427,8 +427,10 @@ void vcpu_load_state(struct kvm_vm *vm, uint32_t vcpuid,
+ 		     struct kvm_x86_state *state);
+ void kvm_x86_state_cleanup(struct kvm_x86_state *state);
+ 
+-struct kvm_msr_list *kvm_get_msr_index_list(void);
++const struct kvm_msr_list *kvm_get_msr_index_list(void);
++bool kvm_msr_is_in_save_restore_list(uint32_t msr_index);
+ uint64_t kvm_get_feature_msr(uint64_t msr_index);
++
+ struct kvm_cpuid2 *kvm_get_supported_cpuid(void);
+ struct kvm_cpuid2 *vcpu_get_cpuid(struct kvm_vm *vm, uint32_t vcpuid);
+ 
+diff --git a/tools/testing/selftests/kvm/lib/x86_64/processor.c b/tools/testing/selftests/kvm/lib/x86_64/processor.c
+index 1e3d68bdfc7d..5d161d0b8a0c 100644
+--- a/tools/testing/selftests/kvm/lib/x86_64/processor.c
++++ b/tools/testing/selftests/kvm/lib/x86_64/processor.c
+@@ -720,18 +720,6 @@ struct kvm_cpuid2 *kvm_get_supported_cpuid(void)
+ 	return cpuid;
  }
  
--int vcpu_get_fd(struct kvm_vm *vm, uint32_t vcpuid);
- void vcpu_run_complete_io(struct kvm_vm *vm, uint32_t vcpuid);
- struct kvm_reg_list *vcpu_get_reg_list(struct kvm_vm *vm, uint32_t vcpuid);
- 
-diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
-index 45895c9ca35a..73123b9d9625 100644
---- a/tools/testing/selftests/kvm/lib/kvm_util.c
-+++ b/tools/testing/selftests/kvm/lib/kvm_util.c
-@@ -1608,15 +1608,6 @@ int _vcpu_run(struct kvm_vm *vm, uint32_t vcpuid)
- 	return rc;
+-/*
+- * KVM Get MSR
+- *
+- * Input Args:
+- *   msr_index - Index of MSR
+- *
+- * Output Args: None
+- *
+- * Return: On success, value of the MSR. On failure a TEST_ASSERT is produced.
+- *
+- * Get value of MSR for VCPU.
+- */
+ uint64_t kvm_get_feature_msr(uint64_t msr_index)
+ {
+ 	struct {
+@@ -904,40 +892,49 @@ void vcpu_dump(FILE *stream, struct kvm_vm *vm, uint32_t vcpuid, uint8_t indent)
+ 	sregs_dump(stream, &sregs, indent + 4);
  }
  
--int vcpu_get_fd(struct kvm_vm *vm, uint32_t vcpuid)
+-static int kvm_get_num_msrs_fd(int kvm_fd)
++const struct kvm_msr_list *kvm_get_msr_index_list(void)
+ {
++	static struct kvm_msr_list *list;
+ 	struct kvm_msr_list nmsrs;
+-	int r;
++	int kvm_fd, r;
++
++	if (list)
++		return list;
++
++	kvm_fd = open_kvm_dev_path_or_exit();
+ 
+ 	nmsrs.nmsrs = 0;
+ 	r = __kvm_ioctl(kvm_fd, KVM_GET_MSR_INDEX_LIST, &nmsrs);
+ 	TEST_ASSERT(r == -1 && errno == E2BIG,
+-		    "Unexpected result from KVM_GET_MSR_INDEX_LIST probe, r: %i", r);
++		    "Expected -E2BIG, got rc: %i errno: %i (%s)",
++		    r, errno, strerror(errno));
+ 
+-	return nmsrs.nmsrs;
+-}
++	list = malloc(sizeof(*list) + nmsrs.nmsrs * sizeof(list->indices[0]));
++	TEST_ASSERT(list, "-ENOMEM when allocating MSR index list");
++	list->nmsrs = nmsrs.nmsrs;
+ 
+-static int kvm_get_num_msrs(struct kvm_vm *vm)
 -{
--	struct vcpu *vcpu = vcpu_find(vm, vcpuid);
--
--	TEST_ASSERT(vcpu != NULL, "vcpu not found, vcpuid: %u", vcpuid);
--
--	return vcpu->fd;
+-	return kvm_get_num_msrs_fd(vm->kvm_fd);
 -}
 -
- void vcpu_run_complete_io(struct kvm_vm *vm, uint32_t vcpuid)
+-struct kvm_msr_list *kvm_get_msr_index_list(void)
+-{
+-	struct kvm_msr_list *list;
+-	int nmsrs, kvm_fd;
+-
+-	kvm_fd = open_kvm_dev_path_or_exit();
+-
+-	nmsrs = kvm_get_num_msrs_fd(kvm_fd);
+-	list = malloc(sizeof(*list) + nmsrs * sizeof(list->indices[0]));
+-	list->nmsrs = nmsrs;
+ 	kvm_ioctl(kvm_fd, KVM_GET_MSR_INDEX_LIST, list);
+ 	close(kvm_fd);
+ 
++	TEST_ASSERT(list->nmsrs == nmsrs.nmsrs,
++		    "Number of save/restore MSRs changed, was %d, now %d",
++		    nmsrs.nmsrs, list->nmsrs);
+ 	return list;
+ }
+ 
++bool kvm_msr_is_in_save_restore_list(uint32_t msr_index)
++{
++	const struct kvm_msr_list *list = kvm_get_msr_index_list();
++	int i;
++
++	for (i = 0; i < list->nmsrs; ++i) {
++		if (list->indices[i] == msr_index)
++			return true;
++	}
++
++	return false;
++}
++
+ static int vcpu_save_xsave_state(struct kvm_vm *vm, struct vcpu *vcpu,
+ 				 struct kvm_x86_state *state)
  {
- 	struct vcpu *vcpu = vcpu_find(vm, vcpuid);
+@@ -956,10 +953,10 @@ static int vcpu_save_xsave_state(struct kvm_vm *vm, struct vcpu *vcpu,
+ 
+ struct kvm_x86_state *vcpu_save_state(struct kvm_vm *vm, uint32_t vcpuid)
+ {
++	const struct kvm_msr_list *msr_list = kvm_get_msr_index_list();
+ 	struct vcpu *vcpu = vcpu_get(vm, vcpuid);
+-	struct kvm_msr_list *list;
+ 	struct kvm_x86_state *state;
+-	int nmsrs, r, i;
++	int r, i;
+ 	static int nested_size = -1;
+ 
+ 	if (nested_size == -1) {
+@@ -977,12 +974,7 @@ struct kvm_x86_state *vcpu_save_state(struct kvm_vm *vm, uint32_t vcpuid)
+ 	 */
+ 	vcpu_run_complete_io(vm, vcpuid);
+ 
+-	nmsrs = kvm_get_num_msrs(vm);
+-	list = malloc(sizeof(*list) + nmsrs * sizeof(list->indices[0]));
+-	list->nmsrs = nmsrs;
+-	kvm_ioctl(vm->kvm_fd, KVM_GET_MSR_INDEX_LIST, list);
+-
+-	state = malloc(sizeof(*state) + nmsrs * sizeof(state->msrs.entries[0]));
++	state = malloc(sizeof(*state) + msr_list->nmsrs * sizeof(state->msrs.entries[0]));
+ 	r = ioctl(vcpu->fd, KVM_GET_VCPU_EVENTS, &state->events);
+ 	TEST_ASSERT(r == 0, "Unexpected result from KVM_GET_VCPU_EVENTS, r: %i",
+ 		    r);
+@@ -1020,18 +1012,17 @@ struct kvm_x86_state *vcpu_save_state(struct kvm_vm *vm, uint32_t vcpuid)
+ 	} else
+ 		state->nested.size = 0;
+ 
+-	state->msrs.nmsrs = nmsrs;
+-	for (i = 0; i < nmsrs; i++)
+-		state->msrs.entries[i].index = list->indices[i];
++	state->msrs.nmsrs = msr_list->nmsrs;
++	for (i = 0; i < msr_list->nmsrs; i++)
++		state->msrs.entries[i].index = msr_list->indices[i];
+ 	r = ioctl(vcpu->fd, KVM_GET_MSRS, &state->msrs);
+-	TEST_ASSERT(r == nmsrs, "Unexpected result from KVM_GET_MSRS, r: %i (failed MSR was 0x%x)",
+-		    r, r == nmsrs ? -1 : list->indices[r]);
++	TEST_ASSERT(r == msr_list->nmsrs, "Unexpected result from KVM_GET_MSRS, r: %i (failed MSR was 0x%x)",
++		    r, r == msr_list->nmsrs ? -1 : msr_list->indices[r]);
+ 
+ 	r = ioctl(vcpu->fd, KVM_GET_DEBUGREGS, &state->debugregs);
+ 	TEST_ASSERT(r == 0, "Unexpected result from KVM_GET_DEBUGREGS, r: %i",
+ 		    r);
+ 
+-	free(list);
+ 	return state;
+ }
+ 
+diff --git a/tools/testing/selftests/kvm/x86_64/xss_msr_test.c b/tools/testing/selftests/kvm/x86_64/xss_msr_test.c
+index 3529376747c2..7bd15f8a805c 100644
+--- a/tools/testing/selftests/kvm/x86_64/xss_msr_test.c
++++ b/tools/testing/selftests/kvm/x86_64/xss_msr_test.c
+@@ -17,28 +17,11 @@
+ 
+ #define X86_FEATURE_XSAVES	(1<<3)
+ 
+-bool is_supported_msr(u32 msr_index)
+-{
+-	struct kvm_msr_list *list;
+-	bool found = false;
+-	int i;
+-
+-	list = kvm_get_msr_index_list();
+-	for (i = 0; i < list->nmsrs; ++i) {
+-		if (list->indices[i] == msr_index) {
+-			found = true;
+-			break;
+-		}
+-	}
+-
+-	free(list);
+-	return found;
+-}
+-
+ int main(int argc, char *argv[])
+ {
+ 	struct kvm_cpuid_entry2 *entry;
+ 	bool xss_supported = false;
++	bool xss_in_msr_list;
+ 	struct kvm_vm *vm;
+ 	uint64_t xss_val;
+ 	int i, r;
+@@ -64,12 +47,14 @@ int main(int argc, char *argv[])
+ 	 * At present, KVM only supports a guest IA32_XSS value of 0. Verify
+ 	 * that trying to set the guest IA32_XSS to an unsupported value fails.
+ 	 * Also, in the future when a non-zero value succeeds check that
+-	 * IA32_XSS is in the KVM_GET_MSR_INDEX_LIST.
++	 * IA32_XSS is in the list of MSRs to save/restore.
+ 	 */
++	xss_in_msr_list = kvm_msr_is_in_save_restore_list(MSR_IA32_XSS);
+ 	for (i = 0; i < MSR_BITS; ++i) {
+ 		r = _vcpu_set_msr(vm, VCPU_ID, MSR_IA32_XSS, 1ull << i);
+-		TEST_ASSERT(r == 0 || is_supported_msr(MSR_IA32_XSS),
+-			    "IA32_XSS was able to be set, but was not found in KVM_GET_MSR_INDEX_LIST.\n");
++
++		TEST_ASSERT(r == 0 || xss_in_msr_list,
++			    "IA32_XSS was able to be set, but was not in save/restore list");
+ 	}
+ 
+ 	kvm_vm_free(vm);
 -- 
 2.36.1.255.ge46751e96f-goog
 
