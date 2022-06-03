@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 398E9CCA47E
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:11:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1E3ECCA473
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:11:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347888AbiFCSLQ (ORCPT
+        id S1348057AbiFCSLW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:11:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50708 "EHLO
+        Fri, 3 Jun 2022 14:11:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345998AbiFCR5m (ORCPT
+        with ESMTP id S1346022AbiFCR6J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:57:42 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B23A222A5;
-        Fri,  3 Jun 2022 10:54:25 -0700 (PDT)
+        Fri, 3 Jun 2022 13:58:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FE4857998;
+        Fri,  3 Jun 2022 10:54:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C8884CE247C;
-        Fri,  3 Jun 2022 17:54:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93E5AC385A9;
-        Fri,  3 Jun 2022 17:54:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8F3FAB82189;
+        Fri,  3 Jun 2022 17:54:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2B12C385A9;
+        Fri,  3 Jun 2022 17:54:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278862;
-        bh=CrskhCGudGloMsjS6L0WZPfEK9Z6nD6+NYPtc/n9nTA=;
+        s=korg; t=1654278880;
+        bh=vTWiCd2qo69ZjfuxwNlgeer11jVQIY4xgUWXfDmgCgk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UxAvskvl9ucuTj8Tompsh9LcHdRlSht+DXi1D2IAckZoEGnjeNn8Wu52J9m7+Q5ZR
-         ESyFxhxaP1EpFEmXWepIPBM++cB4i5t4tpxs6Bp4Cb6htlXqHjrPrri/qtnqAH0T1E
-         BCXeM+Jh01h8bI65aQpEfyokrBQ4kVRIB1hKvlh4=
+        b=Vlm3RsqqJ94sJV0/CpPy4wwg16Kmf86MTd+lZpx+/BZ6jhZEbXcmZH9D4hYHByMRO
+         ANRXgTkQ0oxOT3NapkQ3lPf84x7ypnb4GyuW9mAvvwThB4xZDfBoBmAyY7Ygu7l6+g
+         OWXmb4gx/gn4gd39Yq+R/b0i/9Wc0O8JSagadUzY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Milan Broz <gmazyland@gmail.com>,
-        Mike Snitzer <snitzer@kernel.org>
-Subject: [PATCH 5.17 50/75] dm crypt: make printing of the key constant-time
-Date:   Fri,  3 Jun 2022 19:43:34 +0200
-Message-Id: <20220603173823.164330819@linuxfoundation.org>
+        stable@vger.kernel.org, Tao Jin <tao-j@outlook.com>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Subject: [PATCH 5.17 56/75] HID: multitouch: add quirks to enable Lenovo X12 trackpoint
+Date:   Fri,  3 Jun 2022 19:43:40 +0200
+Message-Id: <20220603173823.328601324@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173821.749019262@linuxfoundation.org>
 References: <20220603173821.749019262@linuxfoundation.org>
@@ -50,58 +49,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Tao Jin <tao-j@outlook.com>
 
-commit 567dd8f34560fa221a6343729474536aa7ede4fd upstream.
+commit 95cd2cdc88c755dcd0a58b951faeb77742c733a4 upstream.
 
-The device mapper dm-crypt target is using scnprintf("%02x", cc->key[i]) to
-report the current key to userspace. However, this is not a constant-time
-operation and it may leak information about the key via timing, via cache
-access patterns or via the branch predictor.
+This applies the similar quirks used by previous generation devices
+such as X1 tablet for X12 tablet, so that the trackpoint and buttons
+can work.
 
-Change dm-crypt's key printing to use "%c" instead of "%02x". Also
-introduce hex2asc() that carefully avoids any branching or memory
-accesses when converting a number in the range 0 ... 15 to an ascii
-character.
+This patch was applied and tested working on 5.17.1 .
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Tested-by: Milan Broz <gmazyland@gmail.com>
-Signed-off-by: Mike Snitzer <snitzer@kernel.org>
+Cc: stable@vger.kernel.org # 5.8+ given that it relies on 40d5bb87377a
+Signed-off-by: Tao Jin <tao-j@outlook.com>
+Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Link: https://lore.kernel.org/r/CO6PR03MB6241CB276FCDC7F4CEDC34F6E1E29@CO6PR03MB6241.namprd03.prod.outlook.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/dm-crypt.c |   14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ drivers/hid/hid-ids.h        |    1 +
+ drivers/hid/hid-multitouch.c |    6 ++++++
+ 2 files changed, 7 insertions(+)
 
---- a/drivers/md/dm-crypt.c
-+++ b/drivers/md/dm-crypt.c
-@@ -3449,6 +3449,11 @@ static int crypt_map(struct dm_target *t
- 	return DM_MAPIO_SUBMITTED;
- }
+--- a/drivers/hid/hid-ids.h
++++ b/drivers/hid/hid-ids.h
+@@ -760,6 +760,7 @@
+ #define USB_DEVICE_ID_LENOVO_X1_COVER	0x6085
+ #define USB_DEVICE_ID_LENOVO_X1_TAB	0x60a3
+ #define USB_DEVICE_ID_LENOVO_X1_TAB3	0x60b5
++#define USB_DEVICE_ID_LENOVO_X12_TAB	0x60fe
+ #define USB_DEVICE_ID_LENOVO_OPTICAL_USB_MOUSE_600E	0x600e
+ #define USB_DEVICE_ID_LENOVO_PIXART_USB_MOUSE_608D	0x608d
+ #define USB_DEVICE_ID_LENOVO_PIXART_USB_MOUSE_6019	0x6019
+--- a/drivers/hid/hid-multitouch.c
++++ b/drivers/hid/hid-multitouch.c
+@@ -2034,6 +2034,12 @@ static const struct hid_device_id mt_dev
+ 			   USB_VENDOR_ID_LENOVO,
+ 			   USB_DEVICE_ID_LENOVO_X1_TAB3) },
  
-+static char hex2asc(unsigned char c)
-+{
-+	return c + '0' + ((unsigned)(9 - c) >> 4 & 0x27);
-+}
++	/* Lenovo X12 TAB Gen 1 */
++	{ .driver_data = MT_CLS_WIN_8_FORCE_MULTI_INPUT,
++		HID_DEVICE(BUS_USB, HID_GROUP_MULTITOUCH_WIN_8,
++			   USB_VENDOR_ID_LENOVO,
++			   USB_DEVICE_ID_LENOVO_X12_TAB) },
 +
- static void crypt_status(struct dm_target *ti, status_type_t type,
- 			 unsigned status_flags, char *result, unsigned maxlen)
- {
-@@ -3467,9 +3472,12 @@ static void crypt_status(struct dm_targe
- 		if (cc->key_size > 0) {
- 			if (cc->key_string)
- 				DMEMIT(":%u:%s", cc->key_size, cc->key_string);
--			else
--				for (i = 0; i < cc->key_size; i++)
--					DMEMIT("%02x", cc->key[i]);
-+			else {
-+				for (i = 0; i < cc->key_size; i++) {
-+					DMEMIT("%c%c", hex2asc(cc->key[i] >> 4),
-+					       hex2asc(cc->key[i] & 0xf));
-+				}
-+			}
- 		} else
- 			DMEMIT("-");
- 
+ 	/* MosArt panels */
+ 	{ .driver_data = MT_CLS_CONFIDENCE_MINUS_ONE,
+ 		MT_USB_DEVICE(USB_VENDOR_ID_ASUS,
 
 
