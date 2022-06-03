@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 897B6C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:03:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4747C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:03:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346236AbiFCSDl (ORCPT
+        id S1346346AbiFCSDr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:03:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59868 "EHLO
+        Fri, 3 Jun 2022 14:03:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344868AbiFCRwS (ORCPT
+        with ESMTP id S1347278AbiFCRwM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:52:18 -0400
+        Fri, 3 Jun 2022 13:52:12 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A7E11A390;
-        Fri,  3 Jun 2022 10:52:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE323167F2;
+        Fri,  3 Jun 2022 10:52:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D8F3BB82419;
-        Fri,  3 Jun 2022 17:52:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CE6FC385B8;
-        Fri,  3 Jun 2022 17:52:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A2B5CB8241D;
+        Fri,  3 Jun 2022 17:52:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F08CEC385A9;
+        Fri,  3 Jun 2022 17:52:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278734;
-        bh=g01vBZVStxAahFQTmtaV2HaIpT1FseCZakkCwgxe3N4=;
+        s=korg; t=1654278728;
+        bh=tSQXz/ZFbI2pYTh4TigjjrPwJuuXCKdaX9A7q3dypck=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R7FvreJ92ZDLVEBhKorjEEX6xQYbEDTpNKY0+h6oyluzyvPfvA9shtkjNODjqSroX
-         WpRqQ4jZvyzDQrCsAi6gktaWkzTrgqvchm78Tyrp/+EyjOP/thOhH/Czo2sV7JCkgh
-         et+DJZuTmItLsOob3ep/xmjwRrMlBAMKSsFJnPv0=
+        b=sE7lE9Y/Byeitk28kV0m5CxmgRS+dy7Ql5GMXlAs/w/RYonMdLubsw2dOsQXfDCUD
+         oMlR5QoyjkQqY1MqOhKFRYwz3EH7ciJl/GO6h3JLsR1iE3pKnzPgqfzc58kp/2mssN
+         iRo+1RTCjh5dLGk6eFaIT15354QGGlU/I9Su9Thw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        "From: Andy Shevchenko" <andriy.shevchenko@linux.intel.com>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 10/75] i2c: ismt: Provide a DMA buffer for Interrupt Cause Logging
-Date:   Fri,  3 Jun 2022 19:42:54 +0200
-Message-Id: <20220603173822.041903257@linuxfoundation.org>
+        stable@vger.kernel.org, Fabio Estevam <festevam@denx.de>,
+        =?UTF-8?q?Horia=20Geant=C4=83?= <horia.geanta@nxp.com>,
+        Vabhav Sharma <vabhav.sharma@nxp.com>,
+        Gaurav Jain <gaurav.jain@nxp.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Subject: [PATCH 5.15 34/66] crypto: caam - fix i.MX6SX entropy delay value
+Date:   Fri,  3 Jun 2022 19:43:14 +0200
+Message-Id: <20220603173821.637268293@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220603173821.749019262@linuxfoundation.org>
-References: <20220603173821.749019262@linuxfoundation.org>
+In-Reply-To: <20220603173820.663747061@linuxfoundation.org>
+References: <20220603173820.663747061@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,88 +52,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mika Westerberg <mika.westerberg@linux.intel.com>
+From: Fabio Estevam <festevam@denx.de>
 
-[ Upstream commit 17a0f3acdc6ec8b89ad40f6e22165a4beee25663 ]
+commit 4ee4cdad368a26de3967f2975806a9ee2fa245df upstream.
 
-Before sending a MSI the hardware writes information pertinent to the
-interrupt cause to a memory location pointed by SMTICL register. This
-memory holds three double words where the least significant bit tells
-whether the interrupt cause of master/target/error is valid. The driver
-does not use this but we need to set it up because otherwise it will
-perform DMA write to the default address (0) and this will cause an
-IOMMU fault such as below:
+Since commit 358ba762d9f1 ("crypto: caam - enable prediction resistance
+in HRWNG") the following CAAM errors can be seen on i.MX6SX:
 
-  DMAR: DRHD: handling fault status reg 2
-  DMAR: [DMA Write] Request device [00:12.0] PASID ffffffff fault addr 0
-        [fault reason 05] PTE Write access is not set
+caam_jr 2101000.jr: 20003c5b: CCB: desc idx 60: RNG: Hardware error
+hwrng: no data available
 
-To prevent this from happening, provide a proper DMA buffer for this
-that then gets mapped by the IOMMU accordingly.
+This error is due to an incorrect entropy delay for i.MX6SX.
 
-Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-Reviewed-by: From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fix it by increasing the minimum entropy delay for i.MX6SX
+as done in U-Boot:
+https://patchwork.ozlabs.org/project/uboot/patch/20220415111049.2565744-1-gaurav.jain@nxp.com/
+
+As explained in the U-Boot patch:
+
+"RNG self tests are run to determine the correct entropy delay.
+Such tests are executed with different voltages and temperatures to identify
+the worst case value for the entropy delay. For i.MX6SX, it was determined
+that after adding a margin value of 1000 the minimum entropy delay should be
+at least 12000."
+
+Cc: <stable@vger.kernel.org>
+Fixes: 358ba762d9f1 ("crypto: caam - enable prediction resistance in HRWNG")
+Signed-off-by: Fabio Estevam <festevam@denx.de>
+Reviewed-by: Horia Geantă <horia.geanta@nxp.com>
+Reviewed-by: Vabhav Sharma <vabhav.sharma@nxp.com>
+Reviewed-by: Gaurav Jain <gaurav.jain@nxp.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/i2c/busses/i2c-ismt.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/crypto/caam/ctrl.c |   18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-diff --git a/drivers/i2c/busses/i2c-ismt.c b/drivers/i2c/busses/i2c-ismt.c
-index f4820fd3dc13..c01430ce103a 100644
---- a/drivers/i2c/busses/i2c-ismt.c
-+++ b/drivers/i2c/busses/i2c-ismt.c
-@@ -82,6 +82,7 @@
- 
- #define ISMT_DESC_ENTRIES	2	/* number of descriptor entries */
- #define ISMT_MAX_RETRIES	3	/* number of SMBus retries to attempt */
-+#define ISMT_LOG_ENTRIES	3	/* number of interrupt cause log entries */
- 
- /* Hardware Descriptor Constants - Control Field */
- #define ISMT_DESC_CWRL	0x01	/* Command/Write Length */
-@@ -175,6 +176,8 @@ struct ismt_priv {
- 	u8 head;				/* ring buffer head pointer */
- 	struct completion cmp;			/* interrupt completion */
- 	u8 buffer[I2C_SMBUS_BLOCK_MAX + 16];	/* temp R/W data buffer */
-+	dma_addr_t log_dma;
-+	u32 *log;
- };
- 
- static const struct pci_device_id ismt_ids[] = {
-@@ -411,6 +414,9 @@ static int ismt_access(struct i2c_adapter *adap, u16 addr,
- 	memset(desc, 0, sizeof(struct ismt_desc));
- 	desc->tgtaddr_rw = ISMT_DESC_ADDR_RW(addr, read_write);
- 
-+	/* Always clear the log entries */
-+	memset(priv->log, 0, ISMT_LOG_ENTRIES * sizeof(u32));
-+
- 	/* Initialize common control bits */
- 	if (likely(pci_dev_msi_enabled(priv->pci_dev)))
- 		desc->control = ISMT_DESC_INT | ISMT_DESC_FAIR;
-@@ -708,6 +714,8 @@ static void ismt_hw_init(struct ismt_priv *priv)
- 	/* initialize the Master Descriptor Base Address (MDBA) */
- 	writeq(priv->io_rng_dma, priv->smba + ISMT_MSTR_MDBA);
- 
-+	writeq(priv->log_dma, priv->smba + ISMT_GR_SMTICL);
-+
- 	/* initialize the Master Control Register (MCTRL) */
- 	writel(ISMT_MCTRL_MEIE, priv->smba + ISMT_MSTR_MCTRL);
- 
-@@ -795,6 +803,12 @@ static int ismt_dev_init(struct ismt_priv *priv)
- 	priv->head = 0;
- 	init_completion(&priv->cmp);
- 
-+	priv->log = dmam_alloc_coherent(&priv->pci_dev->dev,
-+					ISMT_LOG_ENTRIES * sizeof(u32),
-+					&priv->log_dma, GFP_KERNEL);
-+	if (!priv->log)
-+		return -ENOMEM;
-+
- 	return 0;
+--- a/drivers/crypto/caam/ctrl.c
++++ b/drivers/crypto/caam/ctrl.c
+@@ -609,6 +609,13 @@ static bool check_version(struct fsl_mc_
  }
+ #endif
  
--- 
-2.35.1
-
++static bool needs_entropy_delay_adjustment(void)
++{
++	if (of_machine_is_compatible("fsl,imx6sx"))
++		return true;
++	return false;
++}
++
+ /* Probe routine for CAAM top (controller) level */
+ static int caam_probe(struct platform_device *pdev)
+ {
+@@ -855,6 +862,8 @@ static int caam_probe(struct platform_de
+ 			 * Also, if a handle was instantiated, do not change
+ 			 * the TRNG parameters.
+ 			 */
++			if (needs_entropy_delay_adjustment())
++				ent_delay = 12000;
+ 			if (!(ctrlpriv->rng4_sh_init || inst_handles)) {
+ 				dev_info(dev,
+ 					 "Entropy delay = %u\n",
+@@ -871,6 +880,15 @@ static int caam_probe(struct platform_de
+ 			 */
+ 			ret = instantiate_rng(dev, inst_handles,
+ 					      gen_sk);
++			/*
++			 * Entropy delay is determined via TRNG characterization.
++			 * TRNG characterization is run across different voltages
++			 * and temperatures.
++			 * If worst case value for ent_dly is identified,
++			 * the loop can be skipped for that platform.
++			 */
++			if (needs_entropy_delay_adjustment())
++				break;
+ 			if (ret == -EAGAIN)
+ 				/*
+ 				 * if here, the loop will rerun,
 
 
