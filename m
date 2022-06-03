@@ -2,101 +2,254 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC9E6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 14:14:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69C95CCA473
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 14:16:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245076AbiFCOOm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 10:14:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47154 "EHLO
+        id S238882AbiFCOQZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 10:16:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240024AbiFCOOi (ORCPT
+        with ESMTP id S240024AbiFCOQW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 10:14:38 -0400
-Received: from mailbox.box.xen0n.name (mail.xen0n.name [115.28.160.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 347A13EBB6;
-        Fri,  3 Jun 2022 07:14:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xen0n.name; s=mail;
-        t=1654265671; bh=othfUBeCgIWwvNgS19Qxvk9oJwBpnSgFLwDEof8nHew=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=J6p4vJWMqJaB2TgUXZNx3DVsQZyOks2t08tu3ZxCfAPZt9esFy9b9XdnjQm1Fs9/f
-         hDlcVQmB2CMwXsk2LQIwgbVWWULZ5BJoeJpIJ9K4wtkooQx7h8sEv3DQ9owIIsPOmH
-         0jwwcMUMynWlWVk96KQbQLZkH2tuQxy7x979ggrY=
-Received: from [192.168.9.172] (unknown [101.88.28.48])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mailbox.box.xen0n.name (Postfix) with ESMTPSA id EA95760104;
-        Fri,  3 Jun 2022 22:14:30 +0800 (CST)
-Message-ID: <e78940bc-9be2-2fe7-026f-9e64a1416c9f@xen0n.name>
-Date:   Fri, 3 Jun 2022 22:14:30 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:103.0) Gecko/20100101
- Thunderbird/103.0a1
-Subject: Re: [PATCH V15 10/24] LoongArch: Add other common headers
-Content-Language: en-US
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Arnd Bergmann <arnd@arndb.de>
-Cc:     Huacai Chen <chenhuacai@loongson.cn>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
+        Fri, 3 Jun 2022 10:16:22 -0400
+Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 092A142A1C;
+        Fri,  3 Jun 2022 07:16:12 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.west.internal (Postfix) with ESMTP id 4A8AE3200913;
+        Fri,  3 Jun 2022 10:16:10 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Fri, 03 Jun 2022 10:16:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm3; t=1654265769; x=
+        1654352169; bh=fk3KX5eSyLHN90n0U5LITdHGtIoEddiGyI/EAYeYiBU=; b=G
+        Y9BwdDOeLIcpH2chXWkgAUEKKo1tZ13DzfKkoJv9KQ+BGpE3U4V1LdKo+bbCRdFy
+        ApSud+sXjgDyje8bHqlEy/bO582UkIvySO/g5BkaNlJqvlmspV1EMLnw/KFAXRS7
+        v3dlZW8ScytrPJzDHAIx6tjzMA8SxvqWa/HP/V6bGz1i54L58ifSautV/AlkN5C9
+        EKhW3Y8jq4jbbNeYHetQuw//PlnRMY1wnSKJ8UcPI2Cjlo74Z0CZ2b2OuT/RoO8X
+        nXCxuAPbXq+LFW0LtugExbXDCrv4FV6VlwYdJRuvcCoU1UmWI4x/kycdnroJFBTd
+        rIXfQzYdU626Bl5b6RN4g==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:feedback-id:feedback-id:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1654265769; x=
+        1654352169; bh=fk3KX5eSyLHN90n0U5LITdHGtIoEddiGyI/EAYeYiBU=; b=j
+        dH41LTNHJ5KwV22Kwf+k1jUA/bAMwYnctp+JuaJ3VcnAUQIT0G8cYeD+MIk9zEm/
+        +raGeo7KA7rpBuG+fU886W1leyQm+xkvYFCcsfwBSzmbBk5dGm6eqar3n3/R7ANC
+        GLNpm4IvFK/Bh0z7S3gQiZvG7pTjaR5F+1sIxIZtYsbzyZS3Poe65EWD7OVvy19u
+        PGyTbKTpeQ7xvCTya2bRnMiYTLC6BPJL7VR/shJzOqFSlJ6JjgkWOcvl/hPBp0Mv
+        PERo+q/bDe/vF70CIOXwpnKyye+WYsFxcXQMqBcAY0UplUDYonmCm5UU4fgC2W3u
+        YDceXm35zxpMk4eiTVGbg==
+X-ME-Sender: <xms:qBeaYq58L_DeEqQay66g6TW9QIuCXtCxG2cKhIg7X3oqysYKQcqZ1Q>
+    <xme:qBeaYj6GmgoZ_yBjDjOC7NI1g_JScgZW2CoPGfvjsT3Z4vuirYHqDIw9z5ivBpAoJ
+    6zevkFSn93jAzLbp9A>
+X-ME-Received: <xmr:qBeaYpc079RBM1yuOidLe5q0VbVgjGrGFl0XkZPZlg-7onHWXUrFJCj6S4Ct>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrleeigdejvdcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvvefukfhfgggtugfgjgesthhqredttddtvdenucfhrhhomhepofgrgihi
+    mhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrg
+    htthgvrhhnpeetgfelgefggeekkefggfeludeiudffjeffgeevveekjedukedtudeuteef
+    teefgfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    hmrgigihhmvgestggvrhhnohdrthgvtghh
+X-ME-Proxy: <xmx:qBeaYnJ6MEVrz3t6Ho1T1PT0lQ52_zqXEMOzntbikcrMocls6DXBdA>
+    <xmx:qBeaYuJSAv3hVBs7qN2s4pzzd5vgbHRRyIldiBnhGWLkiqiHuvnXXw>
+    <xmx:qBeaYozysrWZnD2m1ZZKWvSMxVLtoJLMaC32wmhukaZ-XFElPQqTBg>
+    <xmx:qReaYghwdN-8LNUgsvnZgSa8g1wdQKEm1aVKd93Dnr7-7FtgPYXjeg>
+Feedback-ID: i8771445c:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
+ 3 Jun 2022 10:16:08 -0400 (EDT)
+Date:   Fri, 3 Jun 2022 16:16:06 +0200
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Doug Anderson <dianders@chromium.org>
+Cc:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Philip Chen <philipchen@chromium.org>,
+        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
         David Airlie <airlied@linux.ie>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Huacai Chen <chenhuacai@gmail.com>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        WANG Xuerui <git@xen0n.name>
-References: <20220603072053.35005-1-chenhuacai@loongson.cn>
- <20220603072053.35005-11-chenhuacai@loongson.cn> <YpoPZjJ/Adfu3uH9@zx2c4.com>
- <CAK8P3a0iASLd768imA8pG32Cc2RsqG8-ZyN+Obcg+PksVj1FJg@mail.gmail.com>
- <YpoURwkAbqRlr7Yi@zx2c4.com>
-From:   WANG Xuerui <kernel@xen0n.name>
-In-Reply-To: <YpoURwkAbqRlr7Yi@zx2c4.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 3/4] drm/bridge: Add devm_drm_bridge_add()
+Message-ID: <20220603141606.vapkfwfj7ixefmev@penduick>
+References: <20220510192944.2408515-1-dianders@chromium.org>
+ <20220510122726.v3.3.Iba4b9bf6c7a1ee5ea2835ad7bd5eaf84d7688520@changeid>
+ <20220521091751.opeiqbmc5c2okdq6@houat>
+ <CAD=FV=Wea0LT5umK4Xg87cDikim+dSuyLndfydO3_DnTujZr9Q@mail.gmail.com>
+ <CAD=FV=XqJuPHxm7HYMvyHBL_zC-BBA_f0MBsZX-jHt7Pk9ngsQ@mail.gmail.com>
+ <20220603082139.sfdxb5ndwpvlhklh@penduick>
+ <CAA8EJpqrw63K_xxJjawLjEqP-05eUD-k6dy21162hcq7q07jgQ@mail.gmail.com>
+ <CAD=FV=XbNe+9Cf-jWwFPAR0a1qqjdKaQdtiREKLB8sHYTh_4OQ@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <CAD=FV=XbNe+9Cf-jWwFPAR0a1qqjdKaQdtiREKLB8sHYTh_4OQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/3/22 22:01, Jason A. Donenfeld wrote:
-> Hi Arnd,
->
-> On Fri, Jun 03, 2022 at 03:55:27PM +0200, Arnd Bergmann wrote:
->> On Fri, Jun 3, 2022 at 3:40 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
->>> On Fri, Jun 03, 2022 at 03:20:39PM +0800, Huacai Chen wrote:
->>>> diff --git a/arch/loongarch/include/asm/timex.h b/arch/loongarch/include/asm/timex.h
->>> "Currently only used on SMP for scheduling" isn't quite correct. It's
->>> also used by random_get_entropy(). And anything else that uses
->>> get_cycles() for, e.g., benchmarking, might use it too.
->>>
->>> You wrote also, "we know that all SMP capable CPUs have cycle counters",
->>> so if I gather from this statement that some !SMP CPUs don't have a
->>> cycle counter, though some do. If that's a correct supposition, then
->>> you may need to rewrite this file to be something like:
->> The file is based on the mips version that deals with a variety of
->> implementations
->> and has the same comment.
->>
->> I assume the loongarch chips all behave the same way here, and won't need
->> a special case for non-SMP.
-> Oh good. In that case, the code is fine and I suppose the comment could
-> just be removed.
+On Fri, Jun 03, 2022 at 06:52:05AM -0700, Doug Anderson wrote:
+> On Fri, Jun 3, 2022 at 3:19 AM Dmitry Baryshkov
+> <dmitry.baryshkov@linaro.org> wrote:
+> > On Fri, 3 Jun 2022 at 11:21, Maxime Ripard <maxime@cerno.tech> wrote:
+> > >
+> > > On Tue, May 31, 2022 at 02:06:34PM -0700, Doug Anderson wrote:
+> > > > On Mon, May 23, 2022 at 10:00 AM Doug Anderson <dianders@chromium.o=
+rg> wrote:
+> > > > > On Sat, May 21, 2022 at 2:17 AM Maxime Ripard <maxime@cerno.tech>=
+ wrote:
+> > > > > > On Tue, May 10, 2022 at 12:29:43PM -0700, Douglas Anderson wrot=
+e:
+> > > > > > > This adds a devm managed version of drm_bridge_add(). Like ot=
+her
+> > > > > > > "devm" function listed in drm_bridge.h, this function takes an
+> > > > > > > explicit "dev" to use for the lifetime management. A few note=
+s:
+> > > > > > > * In general we have a "struct device" for bridges that makes=
+ a good
+> > > > > > >   candidate for where the lifetime matches exactly what we wa=
+nt.
+> > > > > > > * The "bridge->dev->dev" device appears to be the encoder
+> > > > > > >   device. That's not the right device to use for lifetime man=
+agement.
+> > > > > > >
+> > > > > > > Suggested-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> > > > > > > Signed-off-by: Douglas Anderson <dianders@chromium.org>
+> > > > > >
+> > > > > > If we are to introduce more managed helpers, I think it'd be wi=
+ser to
+> > > > > > introduce them as DRM-managed, and not device managed.
+> > > > > >
+> > > > > > Otherwise, you'll end up in a weird state when a device has bee=
+n removed
+> > > > > > but the DRM device is still around.
+> > > > >
+> > > > > I'm kinda confused. In this case there is no DRM device for the b=
+ridge
+> > > > > and, as per my CL description, "bridge-dev->dev" appears to be the
+> > > > > encoder device. I wasn't personally involved in discussions about=
+ it,
+> > > > > but I was under the impression that this was expected / normal. T=
+hus
+> > > > > we can't make this DRM-managed.
+> > > >
+> > > > Since I didn't hear a reply,
+> > >
+> > > Gah, I replied but it looks like somehow it never reached the ML...
+> > >
+> > > Here was my original reply:
+> > >
+> > > > > > This adds a devm managed version of drm_bridge_add(). Like other
+> > > > > > "devm" function listed in drm_bridge.h, this function takes an
+> > > > > > explicit "dev" to use for the lifetime management. A few notes:
+> > > > > > * In general we have a "struct device" for bridges that makes a=
+ good
+> > > > > >   candidate for where the lifetime matches exactly what we want.
+> > > > > > * The "bridge->dev->dev" device appears to be the encoder
+> > > > > >   device. That's not the right device to use for lifetime manag=
+ement.
+> > > > > >
+> > > > > > Suggested-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> > > > > > Signed-off-by: Douglas Anderson <dianders@chromium.org>
+> > > > >
+> > > > > If we are to introduce more managed helpers, I think it'd be wise=
+r to
+> > > > > introduce them as DRM-managed, and not device managed.
+> > > > >
+> > > > > Otherwise, you'll end up in a weird state when a device has been =
+removed
+> > > > > but the DRM device is still around.
+> > > >=3D20
+> > > > I'm kinda confused. In this case there is no DRM device for the bri=
+dge
+> > > > and, as per my CL description, "bridge-dev->dev" appears to be the
+> > > > encoder device.
+> > >
+> > > bridge->dev seems right though?
+> > >
+> > > > I wasn't personally involved in discussions about it, but I was und=
+er
+> > > > the impression that this was expected / normal. Thus we can't make
+> > > > this DRM-managed.
+> > >
+> > > Still, I don't think devm is the right solution to this either.
+> > >
+> > > The underlying issue is two-fold:
+> > >
+> > >   - Encoders can have a pointer to a bridge through of_drm_find_bridge
+> > >     or similar. However, bridges are traditionally tied to their devi=
+ce
+> > >     lifetime (by calling drm_bridge_add in probe, and drm_bridge_remo=
+ve
+> > >     in remove). Encoders will typically be tied to the DRM device
+> > >     however, and that one sticks around until the last application
+> > >     closes it. We can thus very easily end up with a dangling pointer,
+> > >     and a use-after-free.
+> > >
+> > >   - It's not the case yet, but it doesn't seem far fetch to expose
+> > >     properties of bridges to the userspace. In that case, the userspa=
+ce
+> > >     would be likely to still hold references to objects that aren't
+> > >     there anymore when the bridge is gone.
+> > >
+> > > The first is obviously a larger concern, but if we can find a solution
+> > > that would accomodate the second it would be great.
+> > >
+> > > As far as I can see, we should fix in two steps:
+> > >
+> > >   - in drm_bridge_attach, we should add a device-managed call that wi=
+ll
+> > >     unregister the main DRM device. We don't allow to probe the main =
+DRM
+> > >     device when the bridge isn't there yet in most case, so it makes
+> > >     sense to remove it once the bridge is no longer there as well.
+> >
+> > The problem is that I do not see a good way to unregister the main DRM
+> > device outside of it's driver code.
+> >
+> > >
+> > >   - When the DRM device is removed, have the core cleanup any bridge
+> > >     registered. That will remove the need to have drm_bridge_remove in
+> > >     the first place.
+> > >
+> > > > I'll assume that my response addressed your concerns. Assuming I get
+> > > > reviews for the other two patches in this series I'll plan to land
+> > > > this with Dmitry's review.
+> > >
+> > > I still don't think it's a good idea to merge it. It gives an illusion
+> > > of being safe, but it's really far from it.
+> >
+> > It is more of removing the boilerplate code spread over all the
+> > drivers rather than about particular safety.
+> >
+> > I'd propose to land devm_drm_bridge_add (and deprecate calling
+> > drm_bridge_remove from the bridge driver at some point) and work on
+> > the whole drm_device <-> drm_bridge problem in the meantime.
+>=20
+> At this point it has been landed in drm-misc-next as per my response
+> to the cover letter. If need be we can revert it and rework the ps8640
+> driver to stop using it but it wouldn't change the lifetime of the
+> bridge. I'm not going to rework the bridge lifetime rules here. If
+> nothing else it seems like having the devm function at least would
+> make it obvious which drivers need to be fixed whenever the bridge
+> lifetime problem gets solved.
 
-In addition, the rdtime family of instructions is in fact guaranteed to 
-be available on LoongArch; LoongArch's subsets all contain them, even 
-the 32-bit "Primary" subset intended for university teaching -- they 
-provide the rdtimeh.w and rdtimel.w pair of instructions that access the 
-same 64-bit counter. So I think the comments are probably just leftovers 
-from a very early port; the LoongArch development started way before it 
-was publicized.
+Not really, no. The issue exists whether or not the driver would be
+using devm. Anyway, what's done is done.
 
-And yes, the comment block re get_cycles usage can be removed altogether.
+Could you please ping earlier than a few minutes before applying the
+patch next time though? We could have easily prevented that situation.
 
+Maxime
