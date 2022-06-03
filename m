@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DE61C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 07:02:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5E9CC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 07:02:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241774AbiFCHCa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 03:02:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43156 "EHLO
+        id S242230AbiFCHCj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 03:02:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242340AbiFCHBm (ORCPT
+        with ESMTP id S242314AbiFCHBj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 03:01:42 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E08E73914B
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 23:59:30 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id j10so11155951lfe.12
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 23:59:30 -0700 (PDT)
+        Fri, 3 Jun 2022 03:01:39 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EBB8E080
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 23:59:29 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id h23so11206908lfe.4
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 23:59:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=semihalf.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=cxT3KDDIuP0W5p/TaOOy3SJFNBVULLGo5ttCHUhyJ/0=;
-        b=qMhv3GRM38nJp0iMW7/Gk0VA7jUEvTUNhvx5Du9L6srVhHzf8oyfJSN3u14OoG36bc
-         z3DJ3LvkTtW9usWKeMGmDCQy/F9QJMQ8XXBnjQALMAOuJ2/1gWnPUOg8XRxBVvH7GzTh
-         Vh4gEuqUVnNrPfl+qK3OxK2nAJNbokKG++IQOwrzz+JdARp7Dxv7xu8Qdv0lvJRoh3kB
-         u0ibqHpucV2Gp3CUQjsjrqhOwppPI1XJyJwbem7eIyLSHdfiZOpKpXzrs/l6QRTvraoo
-         lVujhnmphDh83r7ljd0dNTJyAErExao7mOpMBYqn95n5hhgqN+NWOBGI9Qz1eauEkJNi
-         7+Ag==
+        bh=y5fnCbT6pV3770HPEOFrw72v0s1ib7hyazGd68SatYM=;
+        b=TKhiCnK1kmZG/fpGFFJ3Ape86OiOt3cDgpibzXpc9d9/wULO6w12oD7N2h9UQahDcQ
+         PE3AxwGstUR+jILm2MUKibZU+BdC03oP0Jn76pzGlJJGl7mfJJveZ50FcA/Z50F12NEX
+         9QzeZzKWKbvRdzkbSW5xFy05E9I2ilYkeVeCfV3kVxitozLPk2SR+15F7jpuodMul0ZR
+         QCePMmuELZxfPC+zCts0S2PrC3qXcyfM7Q17mcuVQIyT4wswNlrOP6L0QSbxDIULUTFO
+         qeHQE2/gWWYagitik8vzCYWtoX9kKWXibxzl+ti6Rx2wKaqWSxetpC6Ddl91lb9vT7CA
+         IGVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=cxT3KDDIuP0W5p/TaOOy3SJFNBVULLGo5ttCHUhyJ/0=;
-        b=f3bez9jR7KQ7f6gHbLfPG2daOuPztigst9RJ/788h6bXUuFzh/JGYDsWeLhwev3NBk
-         MKed56hWtEyCqZczvjx4Pk+07svwihGOUas/NuFvGBFFF/59i5n8pBucJSFFb1uK7rAU
-         /CQrRfxdcM1ks9SYsPtU2of+Af99lIf7CU3XeKvWb692BnAsk7r/h1QJPtCSEMV2aSFp
-         rbi6I60nDVDf27IKCcfKDgvT0cbvatp9k15McuSwcYYxoHaQEsj6BT+4/eIGkIN2h88m
-         GCcZsLgNd5qEOEoQF/ygq9QbxqHfmCOAfeOAMiWZ8gbc/sucBBlDbNlIFJ7MM97fuc4b
-         Ceig==
-X-Gm-Message-State: AOAM5321FAEV6ncaX2EZbTDZgj1ooRPkXfSLZ3p+PJKsWxQ08epcguPd
-        bAOm67moxGOFch6vLmBaWLXxkA==
-X-Google-Smtp-Source: ABdhPJweB1ZHcShDaaZlkRucmwAHJ8LEVtnvQo+YMFFfDYwIsXgYKrOnRDLWVSdlkhHdUvF7/9xrKQ==
-X-Received: by 2002:a05:6512:228f:b0:478:735c:caab with SMTP id f15-20020a056512228f00b00478735ccaabmr5866521lfu.83.1654239570280;
-        Thu, 02 Jun 2022 23:59:30 -0700 (PDT)
+        bh=y5fnCbT6pV3770HPEOFrw72v0s1ib7hyazGd68SatYM=;
+        b=rCRKYL6MbMb9tbdd8m7bIzbzvRSwxiWzwptDjGswLXzSrXUCLyTDpUTmSsBZ2DW1im
+         5mPdwem9FoVI5hQJ3wF5VcWUtN3n6BFElS6DSiFvdx6P7uNZhDTCydiasBfX619eNLu2
+         A78l50rcdFfvzwSDy0Yb4DSIPp8NOTNJP8RvanBrWgvPCCfHZ0Yu3WlSKvflpJaxiyT3
+         05QPElXQ0JLGWfLWdI9nW3TvJ66LPQzZfYcvpPaG1isHG+/58hIRWWDo4tBspn/+E136
+         zyFiXN2FaxB+6gA8D3YoYY2YQgs4VJnxpxDpls0Qw9zU7HJ/rL+1lZsgA1qLDnaig0s4
+         5nXg==
+X-Gm-Message-State: AOAM5334AuevbKBOvl8Ic4muj8ShOxdlGuUvAYA8YiSd/udlKLshuEwN
+        4Ab6dZVkYmZRA4DddvowCsjPiQ==
+X-Google-Smtp-Source: ABdhPJwCvwZXoPjUzhLVY2GSbh466VVUaxaedPyI7Z4tX0Z+7YioNtOJ2w5lhGjPcVto6vX0U3pxXA==
+X-Received: by 2002:a05:6512:3f9a:b0:478:1:6ad with SMTP id x26-20020a0565123f9a00b00478000106admr5972890lfa.558.1654239567411;
+        Thu, 02 Jun 2022 23:59:27 -0700 (PDT)
 Received: from panikiel.roam.corp.google.com (staticline-31-182-204-250.toya.net.pl. [31.182.204.250])
-        by smtp.gmail.com with ESMTPSA id b8-20020ac247e8000000b004786321c697sm1056447lfp.138.2022.06.02.23.59.29
+        by smtp.gmail.com with ESMTPSA id b8-20020ac247e8000000b004786321c697sm1056447lfp.138.2022.06.02.23.59.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Jun 2022 23:59:29 -0700 (PDT)
+        Thu, 02 Jun 2022 23:59:27 -0700 (PDT)
 From:   =?UTF-8?q?Pawe=C5=82=20Anikiel?= <pan@semihalf.com>
 To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
         dinguyen@kernel.org
@@ -55,9 +55,9 @@ Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, amstan@chromium.org,
         upstream@semihalf.com,
         =?UTF-8?q?Pawe=C5=82=20Anikiel?= <pan@semihalf.com>
-Subject: [PATCH v3 5/5] dt-bindings: altera: Add Chameleon v3 board
-Date:   Fri,  3 Jun 2022 08:58:16 +0200
-Message-Id: <20220603065816.87952-6-pan@semihalf.com>
+Subject: [PATCH v3 3/5] ARM: dts: socfpga: Add atsha204a node to Mercury+ AA1 dts
+Date:   Fri,  3 Jun 2022 08:58:14 +0200
+Message-Id: <20220603065816.87952-4-pan@semihalf.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
 In-Reply-To: <20220603065816.87952-1-pan@semihalf.com>
 References: <20220603065816.87952-1-pan@semihalf.com>
@@ -68,32 +68,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add Mercury+ AA1 boards category, together with the Chameleon v3 board.
+Add atsha204a node to Mercury+ AA1 dts
 
 Signed-off-by: Paweł Anikiel <pan@semihalf.com>
 ---
- Documentation/devicetree/bindings/arm/altera.yaml | 8 ++++++++
+ arch/arm/boot/dts/socfpga_arria10_mercury_aa1.dtsi | 8 ++++++++
  1 file changed, 8 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/arm/altera.yaml b/Documentation/devicetree/bindings/arm/altera.yaml
-index 5e2017c0a051..4a08c082dbdb 100644
---- a/Documentation/devicetree/bindings/arm/altera.yaml
-+++ b/Documentation/devicetree/bindings/arm/altera.yaml
-@@ -29,6 +29,14 @@ properties:
-           - const: altr,socfpga-arria10
-           - const: altr,socfpga
+diff --git a/arch/arm/boot/dts/socfpga_arria10_mercury_aa1.dtsi b/arch/arm/boot/dts/socfpga_arria10_mercury_aa1.dtsi
+index b0d20101cd00..ad7cd14de6b6 100644
+--- a/arch/arm/boot/dts/socfpga_arria10_mercury_aa1.dtsi
++++ b/arch/arm/boot/dts/socfpga_arria10_mercury_aa1.dtsi
+@@ -1,4 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright 2022 Google LLC
++ */
  
-+      - description: Mercury+ AA1 boards
-+        items:
-+          - enum:
-+              - google,chameleon-v3
-+          - const: enclustra,mercury-aa1
-+          - const: altr,socfpga-arria10
-+          - const: altr,socfpga
+ #include "socfpga_arria10.dtsi"
+ 
+@@ -54,6 +57,11 @@ phy3: ethernet-phy@3 {
+ };
+ 
+ &i2c1 {
++	atsha204a: crypto@64 {
++		compatible = "atmel,atsha204a";
++		reg = <0x64>;
++	};
 +
-       - description: Cyclone 5 boards
-         items:
-           - enum:
+ 	isl12022: isl12022@6f {
+ 		compatible = "isil,isl12022";
+ 		reg = <0x6f>;
 -- 
 2.36.1.255.ge46751e96f-goog
 
