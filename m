@@ -2,59 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACEE7CCA496
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 00:54:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88F94CCA47D
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 00:54:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242007AbiFCAwR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 20:52:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48298 "EHLO
+        id S242397AbiFCAwt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 20:52:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240152AbiFCApX (ORCPT
+        with ESMTP id S240067AbiFCApO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 20:45:23 -0400
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65E9E37A12
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:45:18 -0700 (PDT)
-Received: by mail-pg1-x54a.google.com with SMTP id 72-20020a63014b000000b003fce454aaf2so1345666pgb.6
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:45:18 -0700 (PDT)
+        Thu, 2 Jun 2022 20:45:14 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A478E34640
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:45:12 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id s22-20020a252d56000000b0065d1ef35f9dso5596157ybe.5
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:45:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=yZxYSAtr71xlvrBZchZzB3lcdsCHEIIU+PCjxQzzr8U=;
-        b=OBrLDXkWQUqAgmml2hBx1L2GpPfV4TPaH8cHlwuKTbhE/VyW3X+etNpJOY08kyDYPm
-         123Wg3TQveeVTUrqZ3mZ+dWcEmK8RlppvQC2HAhWPjGFRh8KDcLD1C0zvqbY3nE5Ohbi
-         cLiETGNe4atI1L+iufukw/V3JPsQbQMts9lmWW4Cv6UkkOLurO4G7Exu8C7wp0AklAJF
-         sVO42rd+qfZsM6PGMVrfXH32Cnr8YUIAaSYTdpgjDgfBd2xzmIWRc2hYp4LX44Ds56xZ
-         ii0Na01SNPfUqP/l2h6tyugI0JRrrjfuqNdeXa+CWG5pDSmgjbqJcLoK7MkR+UuLXZWo
-         BJFw==
+        bh=als6e8A1gJJA6StJM06gRZped3Uc2Gml0Vwsts95sPQ=;
+        b=n0gbISWg06Ll7cuaZEHv3NE802KrXOPB9IbonBpGqY2sjwmCRrmNmEviPeI3tIg0nE
+         5T0v7im6tbDuDlu3tdddA8nLiqQPjeRRiLoc4+f1pUnK0Ds+nZUsBD5fyjP8oliiJoiz
+         oUavzRLEz1vDG1dkHE+KR+BG7IVxLS9yA8jczkUY+sOQhWis7G1n8oU91IkNg9Qy+vf3
+         VKSojUY87vc2Okri+YEZGSQntbfpgjCOdP91Wg2cjObL1LE6SZzE0C3FybK1gkkSrOwV
+         409Z3XJ55ZGq2q15OzAl3mXM2KRW51IxgUGjhi/2VgyrBMxBzI7AHWfgUJGWkTyKMIm5
+         nKxA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=yZxYSAtr71xlvrBZchZzB3lcdsCHEIIU+PCjxQzzr8U=;
-        b=BITy7thb950WfJjmSES/SBCHzdURXq6CWjeEdsc8xTENHmEK+c+t/mIAdyTQjTXyPc
-         pjl1YeKlfk7Ka09RQyU997ar33ZGXpHeMvuGIQ6ikVq8aOGCOgPW/OPQftOCEw+MsPNA
-         RX1Sqgj7rp0i712FSCI7hrhiBuknEi9x9UxWK3NmwQS8L+OItMbBPmsbmCJhTCa7SZ5+
-         Qs/sMMchC8x7Nr+QTDCOcSK21zlzPvCuQzSv6ze4WEx21n/0t0GP/GYwYz7FxA+PJiW9
-         TgoBLAdz/MFH3qt1vyjfhC8LGu//mLw2oCweLLk7Sqdw7z5cOrveT1BCWhwmfZhIXv5M
-         royg==
-X-Gm-Message-State: AOAM532/xwXgatf5WmNXUygu1FhoL5Fr12/+A5SBEUI7kPXeDXUvSHN6
-        0UlpmD6BSXpZ1OTGwmTdLVkOrRzg4hA=
-X-Google-Smtp-Source: ABdhPJx/eK3s/uqeInxR0Ve5kl02JEIy5ylAfcaJ4D9AiWRV/kdwOk/tdDQe73mdtQ3zSiPl1tXTy57lfU4=
+        bh=als6e8A1gJJA6StJM06gRZped3Uc2Gml0Vwsts95sPQ=;
+        b=JiQd1KONkNm7YbuWjKaQ0NcxeYcNy4ghLxnE6n+TC579FSKRvpLJcoDAkGZYc+tTWp
+         Vdd2J0ouPL9bhJ0UwxWqj/KAZwJcOvP6Jmx1efqPsuClLQtBFsTM1tC2XqAaT3A1IA/k
+         vTnFqmKmwnt/ns5txaoPGpHADyf6TaVA9i5JRD8NS4ZcnGQxd0dpmw42c3AmYbROg/h7
+         Xs0PU1P0CIxn5aYIb/dZY7HS02TVbfG1R4eX4fEtDksFTt1YkxZqrZh5gQaNyn3aj3PR
+         Hmrmv0ckduy5LHI5tO/+jMea75CxrmDRnqmli42ABuDXS3jV0Ih7vkUUzL8E6lRPclFC
+         QyBw==
+X-Gm-Message-State: AOAM5329nTlFwnD5YUPSOnIpVHWBiql6ao4t+TvUO0WLEmPFkokG4TMP
+        eFJunGvyR995D7jFWBj9X12ZHUQoD/s=
+X-Google-Smtp-Source: ABdhPJzXS2wVpq8MBsuw34ft2UUYN2PlEvadhYWO+OTpI7RJCToBCOFWNBbWN1kgRIBQm4sWFkEqhV+rHzc=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a05:6a00:1acb:b0:518:986c:a7c4 with SMTP id
- f11-20020a056a001acb00b00518986ca7c4mr7746619pfv.2.1654217117892; Thu, 02 Jun
- 2022 17:45:17 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a5b:907:0:b0:65c:b38b:5378 with SMTP id
+ a7-20020a5b0907000000b0065cb38b5378mr8096585ybq.331.1654217111825; Thu, 02
+ Jun 2022 17:45:11 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri,  3 Jun 2022 00:42:02 +0000
+Date:   Fri,  3 Jun 2022 00:41:59 +0000
 In-Reply-To: <20220603004331.1523888-1-seanjc@google.com>
-Message-Id: <20220603004331.1523888-56-seanjc@google.com>
+Message-Id: <20220603004331.1523888-53-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220603004331.1523888-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v2 055/144] KVM: selftests: Convert vmx_set_nested_state_test
- away from VCPU_ID
+Subject: [PATCH v2 052/144] KVM: selftests: Convert xss_msr_test away from VCPU_ID
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     kvm@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
@@ -67,310 +66,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert vmx_set_nested_state_test to use vm_create_with_one_vcpu() and
-pass around a 'struct kvm_vcpu' object instead of using a global VCPU_ID.
-Note, this is a "functional" change in the sense that the test now
-creates a vCPU with vcpu_id==0 instead of vcpu_id==5.  The non-zero
-VCPU_ID was 100% arbitrary and added little to no validation coverage.
-If testing non-zero vCPU IDs is desirable for generic tests, that can be
-done in the future by tweaking the VM creation helpers.
+Convert xss_msr_test to use vm_create_with_one_vcpu() and pass around a
+'struct kvm_vcpu' object instead of using a global VCPU_ID.  Note, this
+is a "functional" change in the sense that the test now creates a vCPU
+with vcpu_id==0 instead of vcpu_id==1.  The non-zero VCPU_ID was 100%
+arbitrary and added little to no validation coverage.  If testing
+non-zero vCPU IDs is desirable for generic tests, that can be done in the
+future by tweaking the VM creation helpers.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../kvm/x86_64/vmx_set_nested_state_test.c    | 86 +++++++++----------
- 1 file changed, 43 insertions(+), 43 deletions(-)
+ tools/testing/selftests/kvm/x86_64/xss_msr_test.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/x86_64/vmx_set_nested_state_test.c b/tools/testing/selftests/kvm/x86_64/vmx_set_nested_state_test.c
-index af3b60eb35ec..de38f0e68153 100644
---- a/tools/testing/selftests/kvm/x86_64/vmx_set_nested_state_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/vmx_set_nested_state_test.c
-@@ -23,38 +23,37 @@
-  * changes this should be updated.
-  */
- #define VMCS12_REVISION 0x11e57ed0
--#define VCPU_ID 5
+diff --git a/tools/testing/selftests/kvm/x86_64/xss_msr_test.c b/tools/testing/selftests/kvm/x86_64/xss_msr_test.c
+index a6abcb559e7c..a89d49ae79a6 100644
+--- a/tools/testing/selftests/kvm/x86_64/xss_msr_test.c
++++ b/tools/testing/selftests/kvm/x86_64/xss_msr_test.c
+@@ -12,7 +12,6 @@
+ #include "kvm_util.h"
+ #include "vmx.h"
  
- bool have_evmcs;
+-#define VCPU_ID	      1
+ #define MSR_BITS      64
  
--void test_nested_state(struct kvm_vm *vm, struct kvm_nested_state *state)
-+void test_nested_state(struct kvm_vcpu *vcpu, struct kvm_nested_state *state)
- {
--	vcpu_nested_state_set(vm, VCPU_ID, state);
-+	vcpu_nested_state_set(vcpu->vm, vcpu->id, state);
- }
- 
--void test_nested_state_expect_errno(struct kvm_vm *vm,
-+void test_nested_state_expect_errno(struct kvm_vcpu *vcpu,
- 				    struct kvm_nested_state *state,
- 				    int expected_errno)
- {
- 	int rv;
- 
--	rv = __vcpu_nested_state_set(vm, VCPU_ID, state);
-+	rv = __vcpu_nested_state_set(vcpu->vm, vcpu->id, state);
- 	TEST_ASSERT(rv == -1 && errno == expected_errno,
- 		"Expected %s (%d) from vcpu_nested_state_set but got rv: %i errno: %s (%d)",
- 		strerror(expected_errno), expected_errno, rv, strerror(errno),
- 		errno);
- }
- 
--void test_nested_state_expect_einval(struct kvm_vm *vm,
-+void test_nested_state_expect_einval(struct kvm_vcpu *vcpu,
- 				     struct kvm_nested_state *state)
- {
--	test_nested_state_expect_errno(vm, state, EINVAL);
-+	test_nested_state_expect_errno(vcpu, state, EINVAL);
- }
- 
--void test_nested_state_expect_efault(struct kvm_vm *vm,
-+void test_nested_state_expect_efault(struct kvm_vcpu *vcpu,
- 				     struct kvm_nested_state *state)
- {
--	test_nested_state_expect_errno(vm, state, EFAULT);
-+	test_nested_state_expect_errno(vcpu, state, EFAULT);
- }
- 
- void set_revision_id_for_vmcs12(struct kvm_nested_state *state,
-@@ -86,7 +85,7 @@ void set_default_vmx_state(struct kvm_nested_state *state, int size)
- 	set_revision_id_for_vmcs12(state, VMCS12_REVISION);
- }
- 
--void test_vmx_nested_state(struct kvm_vm *vm)
-+void test_vmx_nested_state(struct kvm_vcpu *vcpu)
- {
- 	/* Add a page for VMCS12. */
- 	const int state_sz = sizeof(struct kvm_nested_state) + getpagesize();
-@@ -96,14 +95,14 @@ void test_vmx_nested_state(struct kvm_vm *vm)
- 	/* The format must be set to 0. 0 for VMX, 1 for SVM. */
- 	set_default_vmx_state(state, state_sz);
- 	state->format = 1;
--	test_nested_state_expect_einval(vm, state);
-+	test_nested_state_expect_einval(vcpu, state);
- 
- 	/*
- 	 * We cannot virtualize anything if the guest does not have VMX
- 	 * enabled.
- 	 */
- 	set_default_vmx_state(state, state_sz);
--	test_nested_state_expect_einval(vm, state);
-+	test_nested_state_expect_einval(vcpu, state);
- 
- 	/*
- 	 * We cannot virtualize anything if the guest does not have VMX
-@@ -112,17 +111,17 @@ void test_vmx_nested_state(struct kvm_vm *vm)
- 	 */
- 	set_default_vmx_state(state, state_sz);
- 	state->hdr.vmx.vmxon_pa = -1ull;
--	test_nested_state_expect_einval(vm, state);
-+	test_nested_state_expect_einval(vcpu, state);
- 
- 	state->hdr.vmx.vmcs12_pa = -1ull;
- 	state->flags = KVM_STATE_NESTED_EVMCS;
--	test_nested_state_expect_einval(vm, state);
-+	test_nested_state_expect_einval(vcpu, state);
- 
- 	state->flags = 0;
--	test_nested_state(vm, state);
-+	test_nested_state(vcpu, state);
- 
- 	/* Enable VMX in the guest CPUID. */
--	vcpu_set_cpuid(vm, VCPU_ID, kvm_get_supported_cpuid());
-+	vcpu_set_cpuid(vcpu->vm, vcpu->id, kvm_get_supported_cpuid());
- 
- 	/*
- 	 * Setting vmxon_pa == -1ull and vmcs_pa == -1ull exits early without
-@@ -133,34 +132,34 @@ void test_vmx_nested_state(struct kvm_vm *vm)
- 	set_default_vmx_state(state, state_sz);
- 	state->hdr.vmx.vmxon_pa = -1ull;
- 	state->hdr.vmx.vmcs12_pa = -1ull;
--	test_nested_state_expect_einval(vm, state);
-+	test_nested_state_expect_einval(vcpu, state);
- 
- 	state->flags &= KVM_STATE_NESTED_EVMCS;
- 	if (have_evmcs) {
--		test_nested_state_expect_einval(vm, state);
--		vcpu_enable_evmcs(vm, VCPU_ID);
-+		test_nested_state_expect_einval(vcpu, state);
-+		vcpu_enable_evmcs(vcpu->vm, vcpu->id);
- 	}
--	test_nested_state(vm, state);
-+	test_nested_state(vcpu, state);
- 
- 	/* It is invalid to have vmxon_pa == -1ull and SMM flags non-zero. */
- 	state->hdr.vmx.smm.flags = 1;
--	test_nested_state_expect_einval(vm, state);
-+	test_nested_state_expect_einval(vcpu, state);
- 
- 	/* Invalid flags are rejected. */
- 	set_default_vmx_state(state, state_sz);
- 	state->hdr.vmx.flags = ~0;
--	test_nested_state_expect_einval(vm, state);
-+	test_nested_state_expect_einval(vcpu, state);
- 
- 	/* It is invalid to have vmxon_pa == -1ull and vmcs_pa != -1ull. */
- 	set_default_vmx_state(state, state_sz);
- 	state->hdr.vmx.vmxon_pa = -1ull;
- 	state->flags = 0;
--	test_nested_state_expect_einval(vm, state);
-+	test_nested_state_expect_einval(vcpu, state);
- 
- 	/* It is invalid to have vmxon_pa set to a non-page aligned address. */
- 	set_default_vmx_state(state, state_sz);
- 	state->hdr.vmx.vmxon_pa = 1;
--	test_nested_state_expect_einval(vm, state);
-+	test_nested_state_expect_einval(vcpu, state);
- 
- 	/*
- 	 * It is invalid to have KVM_STATE_NESTED_SMM_GUEST_MODE and
-@@ -170,7 +169,7 @@ void test_vmx_nested_state(struct kvm_vm *vm)
- 	state->flags = KVM_STATE_NESTED_GUEST_MODE  |
- 		      KVM_STATE_NESTED_RUN_PENDING;
- 	state->hdr.vmx.smm.flags = KVM_STATE_NESTED_SMM_GUEST_MODE;
--	test_nested_state_expect_einval(vm, state);
-+	test_nested_state_expect_einval(vcpu, state);
- 
- 	/*
- 	 * It is invalid to have any of the SMM flags set besides:
-@@ -180,13 +179,13 @@ void test_vmx_nested_state(struct kvm_vm *vm)
- 	set_default_vmx_state(state, state_sz);
- 	state->hdr.vmx.smm.flags = ~(KVM_STATE_NESTED_SMM_GUEST_MODE |
- 				KVM_STATE_NESTED_SMM_VMXON);
--	test_nested_state_expect_einval(vm, state);
-+	test_nested_state_expect_einval(vcpu, state);
- 
- 	/* Outside SMM, SMM flags must be zero. */
- 	set_default_vmx_state(state, state_sz);
- 	state->flags = 0;
- 	state->hdr.vmx.smm.flags = KVM_STATE_NESTED_SMM_GUEST_MODE;
--	test_nested_state_expect_einval(vm, state);
-+	test_nested_state_expect_einval(vcpu, state);
- 
- 	/*
- 	 * Size must be large enough to fit kvm_nested_state and vmcs12
-@@ -195,13 +194,13 @@ void test_vmx_nested_state(struct kvm_vm *vm)
- 	set_default_vmx_state(state, state_sz);
- 	state->size = sizeof(*state);
- 	state->flags = 0;
--	test_nested_state_expect_einval(vm, state);
-+	test_nested_state_expect_einval(vcpu, state);
- 
- 	set_default_vmx_state(state, state_sz);
- 	state->size = sizeof(*state);
- 	state->flags = 0;
- 	state->hdr.vmx.vmcs12_pa = -1;
--	test_nested_state(vm, state);
-+	test_nested_state(vcpu, state);
- 
- 	/*
- 	 * KVM_SET_NESTED_STATE succeeds with invalid VMCS
-@@ -209,7 +208,7 @@ void test_vmx_nested_state(struct kvm_vm *vm)
- 	 */
- 	set_default_vmx_state(state, state_sz);
- 	state->flags = 0;
--	test_nested_state(vm, state);
-+	test_nested_state(vcpu, state);
- 
- 	/* Invalid flags are rejected, even if no VMCS loaded. */
- 	set_default_vmx_state(state, state_sz);
-@@ -217,13 +216,13 @@ void test_vmx_nested_state(struct kvm_vm *vm)
- 	state->flags = 0;
- 	state->hdr.vmx.vmcs12_pa = -1;
- 	state->hdr.vmx.flags = ~0;
--	test_nested_state_expect_einval(vm, state);
-+	test_nested_state_expect_einval(vcpu, state);
- 
- 	/* vmxon_pa cannot be the same address as vmcs_pa. */
- 	set_default_vmx_state(state, state_sz);
- 	state->hdr.vmx.vmxon_pa = 0;
- 	state->hdr.vmx.vmcs12_pa = 0;
--	test_nested_state_expect_einval(vm, state);
-+	test_nested_state_expect_einval(vcpu, state);
- 
- 	/*
- 	 * Test that if we leave nesting the state reflects that when we get
-@@ -233,8 +232,8 @@ void test_vmx_nested_state(struct kvm_vm *vm)
- 	state->hdr.vmx.vmxon_pa = -1ull;
- 	state->hdr.vmx.vmcs12_pa = -1ull;
- 	state->flags = 0;
--	test_nested_state(vm, state);
--	vcpu_nested_state_get(vm, VCPU_ID, state);
-+	test_nested_state(vcpu, state);
-+	vcpu_nested_state_get(vcpu->vm, vcpu->id, state);
- 	TEST_ASSERT(state->size >= sizeof(*state) && state->size <= state_sz,
- 		    "Size must be between %ld and %d.  The size returned was %d.",
- 		    sizeof(*state), state_sz, state->size);
-@@ -244,7 +243,7 @@ void test_vmx_nested_state(struct kvm_vm *vm)
- 	free(state);
- }
- 
--void disable_vmx(struct kvm_vm *vm)
-+void disable_vmx(struct kvm_vcpu *vcpu)
- {
- 	struct kvm_cpuid2 *cpuid = kvm_get_supported_cpuid();
- 	int i;
-@@ -256,7 +255,7 @@ void disable_vmx(struct kvm_vm *vm)
- 	TEST_ASSERT(i != cpuid->nent, "CPUID function 1 not found");
- 
- 	cpuid->entries[i].ecx &= ~CPUID_VMX;
--	vcpu_set_cpuid(vm, VCPU_ID, cpuid);
-+	vcpu_set_cpuid(vcpu->vm, vcpu->id, cpuid);
- 	cpuid->entries[i].ecx |= CPUID_VMX;
- }
- 
-@@ -264,6 +263,7 @@ int main(int argc, char *argv[])
- {
+ #define X86_FEATURE_XSAVES	(1<<3)
+@@ -23,11 +22,12 @@ int main(int argc, char *argv[])
+ 	bool xss_supported = false;
+ 	bool xss_in_msr_list;
  	struct kvm_vm *vm;
- 	struct kvm_nested_state state;
 +	struct kvm_vcpu *vcpu;
+ 	uint64_t xss_val;
+ 	int i, r;
  
- 	have_evmcs = kvm_check_cap(KVM_CAP_HYPERV_ENLIGHTENED_VMCS);
- 
-@@ -278,20 +278,20 @@ int main(int argc, char *argv[])
- 	 */
- 	nested_vmx_check_supported();
- 
+ 	/* Create VM */
 -	vm = vm_create_default(VCPU_ID, 0, 0);
 +	vm = vm_create_with_one_vcpu(&vcpu, NULL);
  
+ 	if (kvm_get_cpuid_max_basic() >= 0xd) {
+ 		entry = kvm_get_supported_cpuid_index(0xd, 1);
+@@ -38,11 +38,12 @@ int main(int argc, char *argv[])
+ 		exit(KSFT_SKIP);
+ 	}
+ 
+-	xss_val = vcpu_get_msr(vm, VCPU_ID, MSR_IA32_XSS);
++	xss_val = vcpu_get_msr(vm, vcpu->id, MSR_IA32_XSS);
+ 	TEST_ASSERT(xss_val == 0,
+ 		    "MSR_IA32_XSS should be initialized to zero\n");
+ 
+-	vcpu_set_msr(vm, VCPU_ID, MSR_IA32_XSS, xss_val);
++	vcpu_set_msr(vm, vcpu->id, MSR_IA32_XSS, xss_val);
++
  	/*
- 	 * First run tests with VMX disabled to check error handling.
+ 	 * At present, KVM only supports a guest IA32_XSS value of 0. Verify
+ 	 * that trying to set the guest IA32_XSS to an unsupported value fails.
+@@ -51,7 +52,7 @@ int main(int argc, char *argv[])
  	 */
--	disable_vmx(vm);
-+	disable_vmx(vcpu);
+ 	xss_in_msr_list = kvm_msr_is_in_save_restore_list(MSR_IA32_XSS);
+ 	for (i = 0; i < MSR_BITS; ++i) {
+-		r = _vcpu_set_msr(vm, VCPU_ID, MSR_IA32_XSS, 1ull << i);
++		r = _vcpu_set_msr(vm, vcpu->id, MSR_IA32_XSS, 1ull << i);
  
- 	/* Passing a NULL kvm_nested_state causes a EFAULT. */
--	test_nested_state_expect_efault(vm, NULL);
-+	test_nested_state_expect_efault(vcpu, NULL);
- 
- 	/* 'size' cannot be smaller than sizeof(kvm_nested_state). */
- 	set_default_state(&state);
- 	state.size = 0;
--	test_nested_state_expect_einval(vm, &state);
-+	test_nested_state_expect_einval(vcpu, &state);
- 
- 	/*
- 	 * Setting the flags 0xf fails the flags check.  The only flags that
-@@ -302,7 +302,7 @@ int main(int argc, char *argv[])
- 	 */
- 	set_default_state(&state);
- 	state.flags = 0xf;
--	test_nested_state_expect_einval(vm, &state);
-+	test_nested_state_expect_einval(vcpu, &state);
- 
- 	/*
- 	 * If KVM_STATE_NESTED_RUN_PENDING is set then
-@@ -310,9 +310,9 @@ int main(int argc, char *argv[])
- 	 */
- 	set_default_state(&state);
- 	state.flags = KVM_STATE_NESTED_RUN_PENDING;
--	test_nested_state_expect_einval(vm, &state);
-+	test_nested_state_expect_einval(vcpu, &state);
- 
--	test_vmx_nested_state(vm);
-+	test_vmx_nested_state(vcpu);
- 
- 	kvm_vm_free(vm);
- 	return 0;
+ 		/*
+ 		 * Setting a list of MSRs returns the entry that "faulted", or
 -- 
 2.36.1.255.ge46751e96f-goog
 
