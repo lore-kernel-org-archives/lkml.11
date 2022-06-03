@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82386CCA47E
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:45:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49658C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:45:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344838AbiFCRpY (ORCPT
+        id S1345037AbiFCRp3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:45:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56552 "EHLO
+        Fri, 3 Jun 2022 13:45:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345126AbiFCRoj (ORCPT
+        with ESMTP id S1345092AbiFCRoC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:44:39 -0400
+        Fri, 3 Jun 2022 13:44:02 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F254D55203;
-        Fri,  3 Jun 2022 10:42:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E64F5522D;
+        Fri,  3 Jun 2022 10:42:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C2F92B8242D;
-        Fri,  3 Jun 2022 17:42:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D47AC385A9;
-        Fri,  3 Jun 2022 17:42:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F3398B8242E;
+        Fri,  3 Jun 2022 17:42:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C795C385A9;
+        Fri,  3 Jun 2022 17:42:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278154;
-        bh=yojwAR4GeocO+V0acQYXPAOcPk/e68dRzRXpL5OJFns=;
+        s=korg; t=1654278151;
+        bh=jN3i2LdxfYzhR0w/hB0nyLMKgMI6Tdxlrm4dOLX7fsg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eZ3eo7bx5ky5onfl1dUg9rdFnyZ17nSFNbFefMjoDnopUCUuKy28Qnfnfjx5u5Ryf
-         zf2gGj6wLqb2rmD9ik9rrIXblx56uCsuFEVejNFH/d0EZwox+7+JJnj8JcfET2lyW9
-         cY7EbObEGKVLdto+shB0Cy9Tr7slXV7gjOcbYTPk=
+        b=RHcXXRiZ0en+FlvnKlXB6WTsyqTsqW2lkoCJS/6Cqq2hVZWxbCuiCanUkp51jGKVK
+         Y1qApdBpHX1PjkMmZMJVbxSkC5IXd+SXWik0vEHFD6/mb+CpArQ810kcDrJpmjbEI+
+         PTcqCSujyQ8aZQh1q4yY6wWJE8qgT+7Ia/VWWA2o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Veronika Kabatova <vkabatov@redhat.com>,
-        Aristeu Rozanski <aris@redhat.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         dann frazier <dann.frazier@canonical.com>
-Subject: [PATCH 4.19 06/30] ACPI: sysfs: Fix BERT error region memory mapping
-Date:   Fri,  3 Jun 2022 19:39:34 +0200
-Message-Id: <20220603173815.280377951@linuxfoundation.org>
+Subject: [PATCH 4.19 05/30] ACPI: sysfs: Make sparse happy about address space in use
+Date:   Fri,  3 Jun 2022 19:39:33 +0200
+Message-Id: <20220603173815.250557142@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173815.088143764@linuxfoundation.org>
 References: <20220603173815.088143764@linuxfoundation.org>
@@ -54,85 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-commit 1bbc21785b7336619fb6a67f1fff5afdaf229acc upstream.
+commit bdd56d7d8931e842775d2e5b93d426a8d1940e33 upstream.
 
-Currently the sysfs interface maps the BERT error region as "memory"
-(through acpi_os_map_memory()) in order to copy the error records into
-memory buffers through memory operations (eg memory_read_from_buffer()).
+Sparse is not happy about address space in use in acpi_data_show():
 
-The OS system cannot detect whether the BERT error region is part of
-system RAM or it is "device memory" (eg BMC memory) and therefore it
-cannot detect which memory attributes the bus to memory support (and
-corresponding kernel mapping, unless firmware provides the required
-information).
+drivers/acpi/sysfs.c:428:14: warning: incorrect type in assignment (different address spaces)
+drivers/acpi/sysfs.c:428:14:    expected void [noderef] __iomem *base
+drivers/acpi/sysfs.c:428:14:    got void *
+drivers/acpi/sysfs.c:431:59: warning: incorrect type in argument 4 (different address spaces)
+drivers/acpi/sysfs.c:431:59:    expected void const *from
+drivers/acpi/sysfs.c:431:59:    got void [noderef] __iomem *base
+drivers/acpi/sysfs.c:433:30: warning: incorrect type in argument 1 (different address spaces)
+drivers/acpi/sysfs.c:433:30:    expected void *logical_address
+drivers/acpi/sysfs.c:433:30:    got void [noderef] __iomem *base
 
-The acpi_os_map_memory() arch backend implementation determines the
-mapping attributes. On arm64, if the BERT error region is not present in
-the EFI memory map, the error region is mapped as device-nGnRnE; this
-triggers alignment faults since memcpy unaligned accesses are not
-allowed in device-nGnRnE regions.
+Indeed, acpi_os_map_memory() returns a void pointer with dropped specific
+address space. Hence, we don't need to carry out __iomem in acpi_data_show().
 
-The ACPI sysfs code cannot therefore map by default the BERT error
-region with memory semantics but should use a safer default.
-
-Change the sysfs code to map the BERT error region as MMIO (through
-acpi_os_map_iomem()) and use the memcpy_fromio() interface to read the
-error region into the kernel buffer.
-
-Link: https://lore.kernel.org/linux-arm-kernel/31ffe8fc-f5ee-2858-26c5-0fd8bdd68702@arm.com
-Link: https://lore.kernel.org/linux-acpi/CAJZ5v0g+OVbhuUUDrLUCfX_mVqY_e8ubgLTU98=jfjTeb4t+Pw@mail.gmail.com
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Tested-by: Veronika Kabatova <vkabatov@redhat.com>
-Tested-by: Aristeu Rozanski <aris@redhat.com>
-Acked-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Cc: dann frazier <dann.frazier@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/acpi/sysfs.c |   25 ++++++++++++++++++-------
- 1 file changed, 18 insertions(+), 7 deletions(-)
+ drivers/acpi/sysfs.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 --- a/drivers/acpi/sysfs.c
 +++ b/drivers/acpi/sysfs.c
-@@ -438,19 +438,30 @@ static ssize_t acpi_data_show(struct fil
+@@ -438,7 +438,7 @@ static ssize_t acpi_data_show(struct fil
  			      loff_t offset, size_t count)
  {
  	struct acpi_data_attr *data_attr;
--	void *base;
--	ssize_t rc;
-+	void __iomem *base;
-+	ssize_t size;
+-	void __iomem *base;
++	void *base;
+ 	ssize_t rc;
  
  	data_attr = container_of(bin_attr, struct acpi_data_attr, attr);
-+	size = data_attr->attr.size;
- 
--	base = acpi_os_map_memory(data_attr->addr, data_attr->attr.size);
-+	if (offset < 0)
-+		return -EINVAL;
-+
-+	if (offset >= size)
-+		return 0;
-+
-+	if (count > size - offset)
-+		count = size - offset;
-+
-+	base = acpi_os_map_iomem(data_attr->addr, size);
- 	if (!base)
- 		return -ENOMEM;
--	rc = memory_read_from_buffer(buf, count, &offset, base,
--				     data_attr->attr.size);
--	acpi_os_unmap_memory(base, data_attr->attr.size);
- 
--	return rc;
-+	memcpy_fromio(buf, base + offset, count);
-+
-+	acpi_os_unmap_iomem(base, size);
-+
-+	return count;
- }
- 
- static int acpi_bert_data_init(void *th, struct acpi_data_attr *data_attr)
 
 
