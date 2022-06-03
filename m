@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD763CCA48F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFD34CCA491
 	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:16:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347196AbiFCSPe (ORCPT
+        id S1346133AbiFCSQv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:15:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51060 "EHLO
+        Fri, 3 Jun 2022 14:16:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346597AbiFCSA0 (ORCPT
+        with ESMTP id S1347009AbiFCSFe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 14:00:26 -0400
+        Fri, 3 Jun 2022 14:05:34 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9F7E59322;
-        Fri,  3 Jun 2022 10:56:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F1E45A598;
+        Fri,  3 Jun 2022 10:58:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C26CD615DE;
-        Fri,  3 Jun 2022 17:56:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B71F8C385A9;
-        Fri,  3 Jun 2022 17:56:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DC58561653;
+        Fri,  3 Jun 2022 17:57:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF672C385A9;
+        Fri,  3 Jun 2022 17:57:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654279000;
-        bh=YWUFwpqGOmVXmiw7aGglaLnf0+DjQhPIXhsvaJzq574=;
+        s=korg; t=1654279061;
+        bh=M2d9iS/i0OY0KVXBVPir97YtU4ReZeixnC1Ob7/0Aok=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FC//Ktoeldo3W9M4U8YakPmiID9VdFWdFRNoTEKmmK6yfpxFnLuv3jKS8ZFkthkLe
-         A3xxsQES4wsunO3gWuKp99lc3e0mX4hyK4JpAUkw8YnJB/yWNWbTe72xdIlTNfStLN
-         tfYHcjBkoxgeMrnmk8YRKT5fMdwOcCZN6flfQDfk=
+        b=EiwhaCFVSa184u/qrT2jcHHejk3dpf6+ie0ivQhNF0xMfnxLlfBVOQc8BuY76zJOY
+         g03nnXV0nMs8DbnYuVeG9vwgcuPH1kQ+x4vIHdTw986h+rcYoiATECvBp+wUSfgZpX
+         pKqbUmTOzT6XnpE1sCcX5Z8CQiia2MulWYYMjm2A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Stephen Brennan <stephen.s.brennan@oracle.com>,
-        David Howells <dhowells@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        keyrings@vger.kernel.org, Jarkko Sakkinen <jarkko@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.18 03/67] assoc_array: Fix BUG_ON during garbage collect
-Date:   Fri,  3 Jun 2022 19:43:04 +0200
-Message-Id: <20220603173820.831718616@linuxfoundation.org>
+        syzbot+a4087e40b9c13aad7892@syzkaller.appspotmail.com,
+        Tadeusz Struk <tadeusz.struk@linaro.org>,
+        Sungjong Seo <sj1557.seo@samsung.com>,
+        Namjae Jeon <linkinjeon@kernel.org>
+Subject: [PATCH 5.18 08/67] exfat: check if cluster num is valid
+Date:   Fri,  3 Jun 2022 19:43:09 +0200
+Message-Id: <20220603173820.972203402@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.731531504@linuxfoundation.org>
 References: <20220603173820.731531504@linuxfoundation.org>
@@ -53,163 +52,104 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephen Brennan <stephen.s.brennan@oracle.com>
+From: Tadeusz Struk <tadeusz.struk@linaro.org>
 
-commit d1dc87763f406d4e67caf16dbe438a5647692395 upstream.
+commit 64ba4b15e5c045f8b746c6da5fc9be9a6b00b61d upstream.
 
-A rare BUG_ON triggered in assoc_array_gc:
+Syzbot reported slab-out-of-bounds read in exfat_clear_bitmap.
+This was triggered by reproducer calling truncute with size 0,
+which causes the following trace:
 
-    [3430308.818153] kernel BUG at lib/assoc_array.c:1609!
+BUG: KASAN: slab-out-of-bounds in exfat_clear_bitmap+0x147/0x490 fs/exfat/balloc.c:174
+Read of size 8 at addr ffff888115aa9508 by task syz-executor251/365
 
-Which corresponded to the statement currently at line 1593 upstream:
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack_lvl+0x1e2/0x24b lib/dump_stack.c:118
+ print_address_description+0x81/0x3c0 mm/kasan/report.c:233
+ __kasan_report mm/kasan/report.c:419 [inline]
+ kasan_report+0x1a4/0x1f0 mm/kasan/report.c:436
+ __asan_report_load8_noabort+0x14/0x20 mm/kasan/report_generic.c:309
+ exfat_clear_bitmap+0x147/0x490 fs/exfat/balloc.c:174
+ exfat_free_cluster+0x25a/0x4a0 fs/exfat/fatent.c:181
+ __exfat_truncate+0x99e/0xe00 fs/exfat/file.c:217
+ exfat_truncate+0x11b/0x4f0 fs/exfat/file.c:243
+ exfat_setattr+0xa03/0xd40 fs/exfat/file.c:339
+ notify_change+0xb76/0xe10 fs/attr.c:336
+ do_truncate+0x1ea/0x2d0 fs/open.c:65
 
-    BUG_ON(assoc_array_ptr_is_meta(p));
+Move the is_valid_cluster() helper from fatent.c to a common
+header to make it reusable in other *.c files. And add is_valid_cluster()
+to validate if cluster number is within valid range in exfat_clear_bitmap()
+and exfat_set_bitmap().
 
-Using the data from the core dump, I was able to generate a userspace
-reproducer[1] and determine the cause of the bug.
-
-[1]: https://github.com/brenns10/kernel_stuff/tree/master/assoc_array_gc
-
-After running the iterator on the entire branch, an internal tree node
-looked like the following:
-
-    NODE (nr_leaves_on_branch: 3)
-      SLOT [0] NODE (2 leaves)
-      SLOT [1] NODE (1 leaf)
-      SLOT [2..f] NODE (empty)
-
-In the userspace reproducer, the pr_devel output when compressing this
-node was:
-
-    -- compress node 0x5607cc089380 --
-    free=0, leaves=0
-    [0] retain node 2/1 [nx 0]
-    [1] fold node 1/1 [nx 0]
-    [2] fold node 0/1 [nx 2]
-    [3] fold node 0/2 [nx 2]
-    [4] fold node 0/3 [nx 2]
-    [5] fold node 0/4 [nx 2]
-    [6] fold node 0/5 [nx 2]
-    [7] fold node 0/6 [nx 2]
-    [8] fold node 0/7 [nx 2]
-    [9] fold node 0/8 [nx 2]
-    [10] fold node 0/9 [nx 2]
-    [11] fold node 0/10 [nx 2]
-    [12] fold node 0/11 [nx 2]
-    [13] fold node 0/12 [nx 2]
-    [14] fold node 0/13 [nx 2]
-    [15] fold node 0/14 [nx 2]
-    after: 3
-
-At slot 0, an internal node with 2 leaves could not be folded into the
-node, because there was only one available slot (slot 0). Thus, the
-internal node was retained. At slot 1, the node had one leaf, and was
-able to be folded in successfully. The remaining nodes had no leaves,
-and so were removed. By the end of the compression stage, there were 14
-free slots, and only 3 leaf nodes. The tree was ascended and then its
-parent node was compressed. When this node was seen, it could not be
-folded, due to the internal node it contained.
-
-The invariant for compression in this function is: whenever
-nr_leaves_on_branch < ASSOC_ARRAY_FAN_OUT, the node should contain all
-leaf nodes. The compression step currently cannot guarantee this, given
-the corner case shown above.
-
-To fix this issue, retry compression whenever we have retained a node,
-and yet nr_leaves_on_branch < ASSOC_ARRAY_FAN_OUT. This second
-compression will then allow the node in slot 1 to be folded in,
-satisfying the invariant. Below is the output of the reproducer once the
-fix is applied:
-
-    -- compress node 0x560e9c562380 --
-    free=0, leaves=0
-    [0] retain node 2/1 [nx 0]
-    [1] fold node 1/1 [nx 0]
-    [2] fold node 0/1 [nx 2]
-    [3] fold node 0/2 [nx 2]
-    [4] fold node 0/3 [nx 2]
-    [5] fold node 0/4 [nx 2]
-    [6] fold node 0/5 [nx 2]
-    [7] fold node 0/6 [nx 2]
-    [8] fold node 0/7 [nx 2]
-    [9] fold node 0/8 [nx 2]
-    [10] fold node 0/9 [nx 2]
-    [11] fold node 0/10 [nx 2]
-    [12] fold node 0/11 [nx 2]
-    [13] fold node 0/12 [nx 2]
-    [14] fold node 0/13 [nx 2]
-    [15] fold node 0/14 [nx 2]
-    internal nodes remain despite enough space, retrying
-    -- compress node 0x560e9c562380 --
-    free=14, leaves=1
-    [0] fold node 2/15 [nx 0]
-    after: 3
-
-Changes
-=======
-DH:
- - Use false instead of 0.
- - Reorder the inserted lines in a couple of places to put retained before
-   next_slot.
-
-ver #2)
- - Fix typo in pr_devel, correct comparison to "<="
-
-Fixes: 3cb989501c26 ("Add a generic associative array implementation.")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Stephen Brennan <stephen.s.brennan@oracle.com>
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Andrew Morton <akpm@linux-foundation.org>
-cc: keyrings@vger.kernel.org
-Link: https://lore.kernel.org/r/20220511225517.407935-1-stephen.s.brennan@oracle.com/ # v1
-Link: https://lore.kernel.org/r/20220512215045.489140-1-stephen.s.brennan@oracle.com/ # v2
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Link: https://syzkaller.appspot.com/bug?id=50381fc73821ecae743b8cf24b4c9a04776f767c
+Reported-by: syzbot+a4087e40b9c13aad7892@syzkaller.appspotmail.com
+Fixes: 1e49a94cf707 ("exfat: add bitmap operations")
+Cc: stable@vger.kernel.org # v5.7+
+Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
+Reviewed-by: Sungjong Seo <sj1557.seo@samsung.com>
+Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- lib/assoc_array.c |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ fs/exfat/balloc.c   |    8 ++++++--
+ fs/exfat/exfat_fs.h |    6 ++++++
+ fs/exfat/fatent.c   |    6 ------
+ 3 files changed, 12 insertions(+), 8 deletions(-)
 
---- a/lib/assoc_array.c
-+++ b/lib/assoc_array.c
-@@ -1461,6 +1461,7 @@ int assoc_array_gc(struct assoc_array *a
- 	struct assoc_array_ptr *cursor, *ptr;
- 	struct assoc_array_ptr *new_root, *new_parent, **new_ptr_pp;
- 	unsigned long nr_leaves_on_tree;
-+	bool retained;
- 	int keylen, slot, nr_free, next_slot, i;
+--- a/fs/exfat/balloc.c
++++ b/fs/exfat/balloc.c
+@@ -148,7 +148,9 @@ int exfat_set_bitmap(struct inode *inode
+ 	struct super_block *sb = inode->i_sb;
+ 	struct exfat_sb_info *sbi = EXFAT_SB(sb);
  
- 	pr_devel("-->%s()\n", __func__);
-@@ -1536,6 +1537,7 @@ continue_node:
- 		goto descend;
- 	}
+-	WARN_ON(clu < EXFAT_FIRST_CLUSTER);
++	if (!is_valid_cluster(sbi, clu))
++		return -EINVAL;
++
+ 	ent_idx = CLUSTER_TO_BITMAP_ENT(clu);
+ 	i = BITMAP_OFFSET_SECTOR_INDEX(sb, ent_idx);
+ 	b = BITMAP_OFFSET_BIT_IN_SECTOR(sb, ent_idx);
+@@ -166,7 +168,9 @@ void exfat_clear_bitmap(struct inode *in
+ 	struct exfat_sb_info *sbi = EXFAT_SB(sb);
+ 	struct exfat_mount_options *opts = &sbi->options;
  
-+retry_compress:
- 	pr_devel("-- compress node %p --\n", new_n);
+-	WARN_ON(clu < EXFAT_FIRST_CLUSTER);
++	if (!is_valid_cluster(sbi, clu))
++		return;
++
+ 	ent_idx = CLUSTER_TO_BITMAP_ENT(clu);
+ 	i = BITMAP_OFFSET_SECTOR_INDEX(sb, ent_idx);
+ 	b = BITMAP_OFFSET_BIT_IN_SECTOR(sb, ent_idx);
+--- a/fs/exfat/exfat_fs.h
++++ b/fs/exfat/exfat_fs.h
+@@ -381,6 +381,12 @@ static inline int exfat_sector_to_cluste
+ 		EXFAT_RESERVED_CLUSTERS;
+ }
  
- 	/* Count up the number of empty slots in this node and work out the
-@@ -1553,6 +1555,7 @@ continue_node:
- 	pr_devel("free=%d, leaves=%lu\n", nr_free, new_n->nr_leaves_on_branch);
++static inline bool is_valid_cluster(struct exfat_sb_info *sbi,
++		unsigned int clus)
++{
++	return clus >= EXFAT_FIRST_CLUSTER && clus < sbi->num_clusters;
++}
++
+ /* super.c */
+ int exfat_set_volume_dirty(struct super_block *sb);
+ int exfat_clear_volume_dirty(struct super_block *sb);
+--- a/fs/exfat/fatent.c
++++ b/fs/exfat/fatent.c
+@@ -81,12 +81,6 @@ int exfat_ent_set(struct super_block *sb
+ 	return 0;
+ }
  
- 	/* See what we can fold in */
-+	retained = false;
- 	next_slot = 0;
- 	for (slot = 0; slot < ASSOC_ARRAY_FAN_OUT; slot++) {
- 		struct assoc_array_shortcut *s;
-@@ -1602,9 +1605,14 @@ continue_node:
- 			pr_devel("[%d] retain node %lu/%d [nx %d]\n",
- 				 slot, child->nr_leaves_on_branch, nr_free + 1,
- 				 next_slot);
-+			retained = true;
- 		}
- 	}
- 
-+	if (retained && new_n->nr_leaves_on_branch <= ASSOC_ARRAY_FAN_OUT) {
-+		pr_devel("internal nodes remain despite enough space, retrying\n");
-+		goto retry_compress;
-+	}
- 	pr_devel("after: %lu\n", new_n->nr_leaves_on_branch);
- 
- 	nr_leaves_on_tree = new_n->nr_leaves_on_branch;
+-static inline bool is_valid_cluster(struct exfat_sb_info *sbi,
+-		unsigned int clus)
+-{
+-	return clus >= EXFAT_FIRST_CLUSTER && clus < sbi->num_clusters;
+-}
+-
+ int exfat_ent_get(struct super_block *sb, unsigned int loc,
+ 		unsigned int *content)
+ {
 
 
