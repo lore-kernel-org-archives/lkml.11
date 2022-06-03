@@ -2,139 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBA59CCA473
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:39:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E27A5C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:40:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344606AbiFCRj5 (ORCPT
+        id S1344547AbiFCRkB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:39:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55180 "EHLO
+        Fri, 3 Jun 2022 13:40:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344555AbiFCRju (ORCPT
+        with ESMTP id S1344605AbiFCRj5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:39:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12E175130C;
-        Fri,  3 Jun 2022 10:39:48 -0700 (PDT)
+        Fri, 3 Jun 2022 13:39:57 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D33D352E73;
+        Fri,  3 Jun 2022 10:39:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D0D7EB8242D;
-        Fri,  3 Jun 2022 17:39:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01F46C385A9;
-        Fri,  3 Jun 2022 17:39:44 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 428D8CE248B;
+        Fri,  3 Jun 2022 17:39:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18E59C385A9;
+        Fri,  3 Jun 2022 17:39:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654277985;
-        bh=p2GCzAWlx5WHS4kzHaXiA38/lzpnnEAGGZP3L0BolXc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=AkWGb6Kv0Cw7bPN73WRytyAPYAq2O052evcdbRNR0R+oiJGo2dyvJYNe/6CJziMVO
-         MdcnTTfjVYyvCuxAoaYMzhq2E8tnOFrxc3aTRsJeJjOh/zwkX9xUCycD1zDlIKPtdT
-         Tpo60wn+MqsVfl9a4MqhW+FLOUvDzDbSMA7uO+kw=
+        s=korg; t=1654277993;
+        bh=K2UcJs8lyn/XvERkGKZD//vrM/SfylPMMZ3TvOo2daQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=lC9pkglABQcGKetw4IVDhK6WTYPovLSbKHPqKVCw0NiSM6LDGKp0PMLSrVoTHBaTa
+         l1VmFhdflYsFz0nl+S5pZzOP47sMWWHkvO68Am1rk2DHsGqKRyb1c44/HK0trbLiZe
+         4WgpPHE3rY6WvD0klRxN/ZdJUyk3llom/5WcNEa0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: [PATCH 4.9 00/12] 4.9.317-rc1 review
-Date:   Fri,  3 Jun 2022 19:39:26 +0200
-Message-Id: <20220603173812.524184588@linuxfoundation.org>
+        stable@vger.kernel.org, Dai Ngo <dai.ngo@oracle.com>,
+        Chuck Lever <chuck.lever@oracle.com>
+Subject: [PATCH 4.9 11/12] NFSD: Fix possible sleep during nfsd4_release_lockowner()
+Date:   Fri,  3 Jun 2022 19:39:37 +0200
+Message-Id: <20220603173812.858812832@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-MIME-Version: 1.0
+In-Reply-To: <20220603173812.524184588@linuxfoundation.org>
+References: <20220603173812.524184588@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.317-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-4.9.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 4.9.317-rc1
-X-KernelTest-Deadline: 2022-06-05T17:38+00:00
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 4.9.317 release.
-There are 12 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
+From: Chuck Lever <chuck.lever@oracle.com>
 
-Responses should be made by Sun, 05 Jun 2022 17:38:05 +0000.
-Anything received after that time might be too late.
+commit ce3c4ad7f4ce5db7b4f08a1e237d8dd94b39180b upstream.
 
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.317-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.9.y
-and the diffstat can be found below.
+nfsd4_release_lockowner() holds clp->cl_lock when it calls
+check_for_locks(). However, check_for_locks() calls nfsd_file_get()
+/ nfsd_file_put() to access the backing inode's flc_posix list, and
+nfsd_file_put() can sleep if the inode was recently removed.
 
-thanks,
+Let's instead rely on the stateowner's reference count to gate
+whether the release is permitted. This should be a reliable
+indication of locks-in-use since file lock operations and
+->lm_get_owner take appropriate references, which are released
+appropriately when file locks are removed.
 
-greg k-h
+Reported-by: Dai Ngo <dai.ngo@oracle.com>
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/nfsd/nfs4state.c |   12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
 
--------------
-Pseudo-Shortlog of commits:
-
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 4.9.317-rc1
-
-Liu Jian <liujian56@huawei.com>
-    bpf: Enlarge offset check value to INT_MAX in bpf_skb_{load,store}_bytes
-
-Chuck Lever <chuck.lever@oracle.com>
-    NFSD: Fix possible sleep during nfsd4_release_lockowner()
-
-Xiu Jianfeng <xiujianfeng@huawei.com>
-    tpm: ibmvtpm: Correct the return value in tpm_ibmvtpm_probe()
-
-Sarthak Kukreti <sarthakkukreti@google.com>
-    dm verity: set DM_TARGET_IMMUTABLE feature flag
-
-Mikulas Patocka <mpatocka@redhat.com>
-    dm stats: add cond_resched when looping over entries
-
-Mikulas Patocka <mpatocka@redhat.com>
-    dm crypt: make printing of the key constant-time
-
-Kees Cook <keescook@chromium.org>
-    exec: Force single empty string when argv is empty
-
-Haimin Zhang <tcs.kernel@gmail.com>
-    block-map: add __GFP_ZERO flag for alloc_page in function bio_copy_kern
-
-Gustavo A. R. Silva <gustavoars@kernel.org>
-    drm/i915: Fix -Wstringop-overflow warning in call to intel_read_wm_latency()
-
-Stephen Brennan <stephen.s.brennan@oracle.com>
-    assoc_array: Fix BUG_ON during garbage collect
-
-Piyush Malgujar <pmalgujar@marvell.com>
-    drivers: i2c: thunderx: Allow driver to work with ACPI defined TWSI controllers
-
-Thomas Bartschies <thomas.bartschies@cvk.de>
-    net: af_key: check encryption module availability consistency
-
-
--------------
-
-Diffstat:
-
- Makefile                                 |  4 ++--
- block/bio.c                              |  2 +-
- drivers/char/tpm/tpm_ibmvtpm.c           |  1 +
- drivers/gpu/drm/i915/intel_pm.c          |  2 +-
- drivers/i2c/busses/i2c-thunderx-pcidrv.c |  1 +
- drivers/md/dm-crypt.c                    | 15 +++++++++++----
- drivers/md/dm-stats.c                    |  8 ++++++++
- drivers/md/dm-verity-target.c            |  1 +
- fs/exec.c                                | 17 +++++++++++++++++
- fs/nfsd/nfs4state.c                      | 12 ++++--------
- lib/assoc_array.c                        |  8 ++++++++
- net/core/filter.c                        |  4 ++--
- net/key/af_key.c                         |  6 +++---
- 13 files changed, 60 insertions(+), 21 deletions(-)
+--- a/fs/nfsd/nfs4state.c
++++ b/fs/nfsd/nfs4state.c
+@@ -6342,16 +6342,12 @@ nfsd4_release_lockowner(struct svc_rqst
+ 		if (sop->so_is_open_owner || !same_owner_str(sop, owner))
+ 			continue;
+ 
+-		/* see if there are still any locks associated with it */
+-		lo = lockowner(sop);
+-		list_for_each_entry(stp, &sop->so_stateids, st_perstateowner) {
+-			if (check_for_locks(stp->st_stid.sc_file, lo)) {
+-				status = nfserr_locks_held;
+-				spin_unlock(&clp->cl_lock);
+-				return status;
+-			}
++		if (atomic_read(&sop->so_count) != 1) {
++			spin_unlock(&clp->cl_lock);
++			return nfserr_locks_held;
+ 		}
+ 
++		lo = lockowner(sop);
+ 		nfs4_get_stateowner(sop);
+ 		break;
+ 	}
 
 
