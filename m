@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFE98CCA485
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDD39CCA488
 	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:07:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347373AbiFCSF5 (ORCPT
+        id S1347447AbiFCSGA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:05:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57836 "EHLO
+        Fri, 3 Jun 2022 14:06:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346382AbiFCRvH (ORCPT
+        with ESMTP id S1346361AbiFCRvG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:51:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EA4454BEE;
-        Fri,  3 Jun 2022 10:47:54 -0700 (PDT)
+        Fri, 3 Jun 2022 13:51:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A101854BFC;
+        Fri,  3 Jun 2022 10:47:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F1EBBB82419;
-        Fri,  3 Jun 2022 17:47:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 455AFC385A9;
-        Fri,  3 Jun 2022 17:47:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2B4EE604EF;
+        Fri,  3 Jun 2022 17:47:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F8A7C385B8;
+        Fri,  3 Jun 2022 17:47:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278471;
-        bh=Q8CnHLsLepW4XKMWQD92Z0o3evO6/YHu3TkLR5iToKo=;
+        s=korg; t=1654278468;
+        bh=NnEyWjMihEvGC1ycsFdaXgQ+EWmAJe/cwgy1WOjErkM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cnETZ8Mz7P4DY+Dvr+1WDDa64W+4Cn+C3AYWTI9SkoLOx3TWoN10dJhLem3KrTAJ1
-         6pxZrodxmmBy2MSoLl4zHE8XGR9+/M0L1RbcEUaUiroY0nhAGMDeLaoWpDsmoTfX9k
-         XAjdpCzWi3oBGAAK/X0j8D323fSD9jh0VoBCHxI0=
+        b=IyBYEftoQoio5Z1QwBioYoH6ychr6yVSXGY8SFPwA4FpBep0BSHbrsSB1P41ibZKV
+         IMzmMVzn/ic1E4ixT9fU1TJTTiNvrc8WWn2Vhue3IvkPWPrMTf6hpNeypSI1qGlQnn
+         W4h8OSeW4y9q72n86EBAp7749JbCET1KWnW5ck7M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sarthak Kukreti <sarthakkukreti@google.com>,
-        Kees Cook <keescook@chromium.org>,
+        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
         Mike Snitzer <snitzer@kernel.org>
-Subject: [PATCH 5.10 43/53] dm verity: set DM_TARGET_IMMUTABLE feature flag
-Date:   Fri,  3 Jun 2022 19:43:28 +0200
-Message-Id: <20220603173819.973095357@linuxfoundation.org>
+Subject: [PATCH 5.10 42/53] dm stats: add cond_resched when looping over entries
+Date:   Fri,  3 Jun 2022 19:43:27 +0200
+Message-Id: <20220603173819.944245381@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173818.716010877@linuxfoundation.org>
 References: <20220603173818.716010877@linuxfoundation.org>
@@ -51,35 +49,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sarthak Kukreti <sarthakkukreti@google.com>
+From: Mikulas Patocka <mpatocka@redhat.com>
 
-commit 4caae58406f8ceb741603eee460d79bacca9b1b5 upstream.
+commit bfe2b0146c4d0230b68f5c71a64380ff8d361f8b upstream.
 
-The device-mapper framework provides a mechanism to mark targets as
-immutable (and hence fail table reloads that try to change the target
-type). Add the DM_TARGET_IMMUTABLE flag to the dm-verity target's
-feature flags to prevent switching the verity target with a different
-target type.
+dm-stats can be used with a very large number of entries (it is only
+limited by 1/4 of total system memory), so add rescheduling points to
+the loops that iterate over the entries.
 
-Fixes: a4ffc152198e ("dm: add verity target")
 Cc: stable@vger.kernel.org
-Signed-off-by: Sarthak Kukreti <sarthakkukreti@google.com>
-Reviewed-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
 Signed-off-by: Mike Snitzer <snitzer@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/dm-verity-target.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/md/dm-stats.c |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
---- a/drivers/md/dm-verity-target.c
-+++ b/drivers/md/dm-verity-target.c
-@@ -1242,6 +1242,7 @@ bad:
+--- a/drivers/md/dm-stats.c
++++ b/drivers/md/dm-stats.c
+@@ -224,6 +224,7 @@ void dm_stats_cleanup(struct dm_stats *s
+ 				       atomic_read(&shared->in_flight[READ]),
+ 				       atomic_read(&shared->in_flight[WRITE]));
+ 			}
++			cond_resched();
+ 		}
+ 		dm_stat_free(&s->rcu_head);
+ 	}
+@@ -313,6 +314,7 @@ static int dm_stats_create(struct dm_sta
+ 	for (ni = 0; ni < n_entries; ni++) {
+ 		atomic_set(&s->stat_shared[ni].in_flight[READ], 0);
+ 		atomic_set(&s->stat_shared[ni].in_flight[WRITE], 0);
++		cond_resched();
+ 	}
  
- static struct target_type verity_target = {
- 	.name		= "verity",
-+	.features	= DM_TARGET_IMMUTABLE,
- 	.version	= {1, 7, 0},
- 	.module		= THIS_MODULE,
- 	.ctr		= verity_ctr,
+ 	if (s->n_histogram_entries) {
+@@ -325,6 +327,7 @@ static int dm_stats_create(struct dm_sta
+ 		for (ni = 0; ni < n_entries; ni++) {
+ 			s->stat_shared[ni].tmp.histogram = hi;
+ 			hi += s->n_histogram_entries + 1;
++			cond_resched();
+ 		}
+ 	}
+ 
+@@ -345,6 +348,7 @@ static int dm_stats_create(struct dm_sta
+ 			for (ni = 0; ni < n_entries; ni++) {
+ 				p[ni].histogram = hi;
+ 				hi += s->n_histogram_entries + 1;
++				cond_resched();
+ 			}
+ 		}
+ 	}
+@@ -474,6 +478,7 @@ static int dm_stats_list(struct dm_stats
+ 			}
+ 			DMEMIT("\n");
+ 		}
++		cond_resched();
+ 	}
+ 	mutex_unlock(&stats->mutex);
+ 
+@@ -750,6 +755,7 @@ static void __dm_stat_clear(struct dm_st
+ 				local_irq_enable();
+ 			}
+ 		}
++		cond_resched();
+ 	}
+ }
+ 
+@@ -865,6 +871,8 @@ static int dm_stats_print(struct dm_stat
+ 
+ 		if (unlikely(sz + 1 >= maxlen))
+ 			goto buffer_overflow;
++
++		cond_resched();
+ 	}
+ 
+ 	if (clear)
 
 
