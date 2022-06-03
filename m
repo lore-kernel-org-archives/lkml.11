@@ -2,166 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92CB9CCA473
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 16:42:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5B48C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 16:43:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344018AbiFCQmc (ORCPT
+        id S1344037AbiFCQnz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 12:42:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35780 "EHLO
+        Fri, 3 Jun 2022 12:43:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344016AbiFCQm2 (ORCPT
+        with ESMTP id S237520AbiFCQnw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 12:42:28 -0400
-Received: from conssluserg-05.nifty.com (conssluserg-05.nifty.com [210.131.2.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4603C20F59;
-        Fri,  3 Jun 2022 09:42:24 -0700 (PDT)
-Received: from mail-pj1-f41.google.com (mail-pj1-f41.google.com [209.85.216.41]) (authenticated)
-        by conssluserg-05.nifty.com with ESMTP id 253GgCmp011652;
-        Sat, 4 Jun 2022 01:42:12 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-05.nifty.com 253GgCmp011652
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1654274532;
-        bh=yeHGROGgbK4ZtRP+aoNmEv3uwEdHyworLe+EdpnLaBU=;
-        h=From:Date:Subject:To:Cc:From;
-        b=zyRdKRiYx5cNZ4ObzshnjPL8qhVw/KWy1FgTTeWLXepbfA07VLVV+IuiW868k1ZTn
-         6Xfc6BDq4Dv09Qx2/DTvQ4aAoswbPXXNpSPPh7V8g+lXxGy+fe95oqMHm2CW9onW0A
-         L8h3Gtfqpm/8g7ro3vKRgfj5TkpbYJ28HO31IG1YmWbzFxbMOzvHw66khRiMK3XiQa
-         AIF8EGDiysSt4CettB9tenSWdu3nwu3WBlzt95fKfVW6TCNWBlqCq8je72fM2TLoUB
-         cxBbOcNtZSOkICSsjftK7fCOiUX4W/2z2PEWCdTezJdsarlN1TN5iiDnLKnhbNWPwU
-         YLcLeyLWliDUw==
-X-Nifty-SrcIP: [209.85.216.41]
-Received: by mail-pj1-f41.google.com with SMTP id mh16-20020a17090b4ad000b001e8313301f1so1364522pjb.1;
-        Fri, 03 Jun 2022 09:42:12 -0700 (PDT)
-X-Gm-Message-State: AOAM531namLTXVMkdXjMO7iyQbgFz0B3N4TMv07RW3q8MHkV0UBPqwi7
-        i4mjZbISYrpiWa6QbXqniRfpDkAXBkZYHvgN4XQ=
-X-Google-Smtp-Source: ABdhPJxHo6VZqqWkDO+TDZ4O9ktUO8dFFGtstq27pXaTfQ1g9JAElmHPT8dkuyO8E7sOYpBCzMeCAZd4Vqf8N3XrffM=
-X-Received: by 2002:a17:902:f687:b0:167:58bb:c43f with SMTP id
- l7-20020a170902f68700b0016758bbc43fmr1121607plg.136.1654274531556; Fri, 03
- Jun 2022 09:42:11 -0700 (PDT)
+        Fri, 3 Jun 2022 12:43:52 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9298344A3A;
+        Fri,  3 Jun 2022 09:43:51 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id e24so7793380pjt.0;
+        Fri, 03 Jun 2022 09:43:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=AuAWb6wr3U5ZYzaZw4rE0IYBApAjbR2PJcAEHrA6+Iw=;
+        b=d4yPnqqouR+ytAC2ZLVf52Yaw+X8gPBlmY1beiTtGuLwGwauvdx9u5LHWz4oQq58/4
+         Jp4J6AWnlTDoT2R8kjmWa9bNPbo5BK/hTuIo3K4t793jeeMQfJ5zX0heoq6oGJ1sg4qI
+         YP/QinIXgi9f/0pS0IeJaqC+bxC34V0wwFFBRctuORurCvPudaC18UJifSmHd2JcgKn/
+         IYLXu2R3Scqdk813CvVMH1KHnE83ur+ECuvLQok76ybwzMU0gIVT8kDZrZqyCumnWqTq
+         wd1mgbefK+HdoLIVD/v5/egrUs4CxRr7PAl3cwlJ6EMO7hynV796ealb9MDvtRKMa8mO
+         Y7tA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=AuAWb6wr3U5ZYzaZw4rE0IYBApAjbR2PJcAEHrA6+Iw=;
+        b=anKXf8+qiVbHL/HdiksDjw0d732K/PWX+wPlarwDdgJHcxyPmqBV4DQ/6c43BtJRF3
+         51zXmUfBHPTSzNktcjxqwAwSmRCtOs4MAkNEQPns3JuGd6YiSjp3sPxvhcB9QizyRTDU
+         ag2wTgmLCwJFiQ7r6o4PPAXwlkb241bFYQaibIFYzfw2CvQtFo2V/jME5sjuDf/JJB7H
+         eJjh8fGGbiNa+B3TN/1KweQGOd7CuF3J89wbLDmmumUkHKfW6ggrIymc9uqk9JW0fyHg
+         d0w4iN5WkGpe/HnKPren52AThFT/qe+vNiJfqWgr8IyvaOb3bHoZ88M6tNwVUbZXDecs
+         +05Q==
+X-Gm-Message-State: AOAM530TqrnoxG3uZZLFQQR4eOAKFgjWtLfnLUrRj0zeofmqEqSCcBJ9
+        ht4yFw5yG1FaKlrtM0Z4+MA=
+X-Google-Smtp-Source: ABdhPJwlE088p+kcNsgtfPkbTvErk1jixHRTtRD603m5NWJwVpEWF5hI71dDVBkOTGz7MsiCxLestA==
+X-Received: by 2002:a17:90b:3b4c:b0:1e0:3354:5e5d with SMTP id ot12-20020a17090b3b4c00b001e033545e5dmr47077808pjb.239.1654274630956;
+        Fri, 03 Jun 2022 09:43:50 -0700 (PDT)
+Received: from google.com ([2620:15c:202:201:aea8:f22c:dcaf:b60e])
+        by smtp.gmail.com with ESMTPSA id x12-20020a170902a38c00b00163b2c46ef1sm5550337pla.222.2022.06.03.09.43.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 03 Jun 2022 09:43:50 -0700 (PDT)
+Date:   Fri, 3 Jun 2022 09:43:47 -0700
+From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-input@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Stefan Hansson <newbie13xd@gmail.com>,
+        Andreas Kemnade <andreas@kemnade.info>
+Subject: Re: [RFC PATCH 2/2] dt-bindings: input: gpio-keys: document label
+ and autorepeat properties
+Message-ID: <Ypo6Q8/SuPGxp/ac@google.com>
+References: <20220603101601.542054-1-krzysztof.kozlowski@linaro.org>
+ <20220603101601.542054-3-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Sat, 4 Jun 2022 01:41:35 +0900
-X-Gmail-Original-Message-ID: <CAK7LNATHyNjCaK+agk=DOTR8sPaOP9kBvS_xYaBUHfF+5Fzftg@mail.gmail.com>
-Message-ID: <CAK7LNATHyNjCaK+agk=DOTR8sPaOP9kBvS_xYaBUHfF+5Fzftg@mail.gmail.com>
-Subject: [GIT PULL] More Kbuild updates for v5.19-rc1
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220603101601.542054-3-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+On Fri, Jun 03, 2022 at 12:16:01PM +0200, Krzysztof Kozlowski wrote:
+> The original text bindings documented "autorepeat" and "label"
+> properties (in the device node, beside the nodes with keys).
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+>  Documentation/devicetree/bindings/input/gpio-keys.yaml | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/input/gpio-keys.yaml b/Documentation/devicetree/bindings/input/gpio-keys.yaml
+> index 49d388dc8d78..b1c910a5e233 100644
+> --- a/Documentation/devicetree/bindings/input/gpio-keys.yaml
+> +++ b/Documentation/devicetree/bindings/input/gpio-keys.yaml
+> @@ -15,6 +15,14 @@ properties:
+>        - gpio-keys
+>        - gpio-keys-polled
+>  
+> +  autorepeat:
+> +    type: boolean
+> +    description:
+> +      Enable operating system (not hardware) key auto repeat feature.
 
-Please pull some more Kbuild updates for v5.19-rc1.
+Should we refer to the generic input device property here instead (one
+on described in input.yaml)?
+
 Thanks.
 
-
-
-
-The following changes since commit 7e284070abe53d448517b80493863595af4ab5f0:
-
-  Merge tag 'for-5.19/dm-changes' of
-git://git.kernel.org/pub/scm/linux/kernel/git/device-mapper/linux-dm
-(2022-05-26 21:13:45 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/masahiroy/linux-kbuild.git
-tags/kbuild-v5.19-2
-
-for you to fetch changes up to 37447c4c4735ea34c7388217da2f4c160b4366ca:
-
-  scripts: objdiff: fix stale comments about .tmp_objdiff (2022-06-04
-01:30:10 +0900)
-
-----------------------------------------------------------------
-Kbuild updates for v5.19 (2nd)
-
- - Fix build regressions for parisc, csky, nios2, openrisc
-
- - Simplify module builds for CONFIG_LTO_CLANG and CONFIG_X86_KERNEL_IBT
-
- - Remove arch/parisc/nm, which was presumably a workaround for old tools
-
- - Check the odd combination of EXPORT_SYMBOL and 'static' precisely
-
- - Make external module builds robust against "too long argument error"
-
- - Fix modpost to detect EXPORT_SYMBOL marked as __init or__exit
-   (This uncovered a couple of potential issues of exported symbols)
-
- - Support j, k keys for moving the cursor in nconfig
-
-----------------------------------------------------------------
-Alexander Lobakin (1):
-      modpost: fix removing numeric suffixes
-
-Isak Ellmer (1):
-      scripts: kconfig: nconf: make nconfig accept jk keybindings
-
-Jing Leng (1):
-      kbuild: Fix include path in scripts/Makefile.modpost
-
-Masahiro Yamada (22):
-      modpost: fix undefined behavior of is_arm_mapping_symbol()
-      modpost: remove the unused argument of check_sec_ref()
-      modpost: reuse ARRAY_SIZE() macro for section_mismatch()
-      modpost: squash if...else-if in find_elf_symbol2()
-      kbuild: replace $(if A,A,B) with $(or A,B) in scripts/Makefile.modpost
-      kbuild: do not try to parse *.cmd files for objects provided by compiler
-      kbuild: replace $(linked-object) with CONFIG options
-      kbuild: do not create *.prelink.o for Clang LTO or IBT
-      parisc: remove arch/parisc/nm
-      kbuild: check static EXPORT_SYMBOL* by script instead of modpost
-      kbuild: make built-in.a rule robust against too long argument error
-      kbuild: make *.mod rule robust against too long argument error
-      kbuild: add cmd_and_savecmd macro
-      kbuild: rebuild multi-object modules when objtool is updated
-      kbuild: remove redundant cleanups in scripts/link-vmlinux.sh
-      kbuild: clean .tmp_* pattern by make clean
-      kbuild: move vmlinux.o link to scripts/Makefile.vmlinux_o
-      kbuild: factor out the common objtool arguments
-      modpost: fix section mismatch check for exported init/exit sections
-      modpost: simplify mod->name allocation
-      modpost: use fnmatch() to simplify match()
-      scripts: objdiff: fix stale comments about .tmp_objdiff
-
-Schspa Shi (1):
-      kbuild: Allow to select bash in a modified environment
-
-Yuntao Wang (1):
-      scripts/kallsyms: update usage message of the kallsyms program
-
- Makefile                   |   4 +-
- arch/parisc/Makefile       |   1 -
- arch/parisc/nm             |   6 ---
- scripts/Kbuild.include     |  10 ++++-
- scripts/Makefile.build     | 110
-++++++++++++++++++----------------------------------
- scripts/Makefile.lib       |  31 ++++++++++++---
- scripts/Makefile.modfinal  |   5 +--
- scripts/Makefile.modpost   |  12 ++----
- scripts/Makefile.vmlinux_o |  87 ++++++++++++++++++++++++++++++++++++++++++
- scripts/check-local-export |  65 +++++++++++++++++++++++++++++++
- scripts/kallsyms.c         |   2 +-
- scripts/kconfig/nconf.c    |   8 +++-
- scripts/link-vmlinux.sh    | 126
-+++++-------------------------------------------------------
- scripts/mod/file2alias.c   |   2 -
- scripts/mod/modpost.c      | 163
-++++++++++++++++++------------------------------------------------------------
- scripts/mod/modpost.h      |   3 ++
- scripts/objdiff            |   6 +--
- 17 files changed, 290 insertions(+), 351 deletions(-)
- delete mode 100644 arch/parisc/nm
- create mode 100644 scripts/Makefile.vmlinux_o
- create mode 100755 scripts/check-local-export
-
-
 -- 
-Best Regards
-Masahiro Yamada
+Dmitry
