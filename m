@@ -2,92 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57D51C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:57:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8874C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:57:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345904AbiFCR5J (ORCPT
+        id S1345913AbiFCR5M (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:57:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57836 "EHLO
+        Fri, 3 Jun 2022 13:57:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346493AbiFCRvN (ORCPT
+        with ESMTP id S1346528AbiFCRvP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:51:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DDDA5401D;
-        Fri,  3 Jun 2022 10:48:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BB3EC604EF;
-        Fri,  3 Jun 2022 17:48:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBE43C385B8;
-        Fri,  3 Jun 2022 17:48:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278505;
-        bh=kN0AN2TNyRTIymjPqzTViSmge+OvDBcFe42A1QKtWv8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h259kxfL0y/1tng/akEao4zN33LBygStLc/I0vkMq34DkpcJ9PRV2nfyNxBw1tRG5
-         cTpwX0Rj9wO6+p/Nb+LWRuC04RjUdF1HN/RZ5gYyQZY+5ipr9eX82Tao9o4nqC6s+2
-         HCADGxmm07eFFb+NZPvUnEk4jaVvjsZDd+tkR8x4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liu Jian <liujian56@huawei.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Song Liu <songliubraving@fb.com>
-Subject: [PATCH 5.10 53/53] bpf: Enlarge offset check value to INT_MAX in bpf_skb_{load,store}_bytes
-Date:   Fri,  3 Jun 2022 19:43:38 +0200
-Message-Id: <20220603173820.259753943@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220603173818.716010877@linuxfoundation.org>
-References: <20220603173818.716010877@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Fri, 3 Jun 2022 13:51:15 -0400
+Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1C9656FAA
+        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 10:48:28 -0700 (PDT)
+Received: from in01.mta.xmission.com ([166.70.13.51]:36402)
+        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nxBPP-00Gg1P-0c; Fri, 03 Jun 2022 11:48:27 -0600
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:42780 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nxBPN-000zSt-Ka; Fri, 03 Jun 2022 11:48:26 -0600
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     <linux-kernel@vger.kernel.org>
+Date:   Fri, 03 Jun 2022 12:48:19 -0500
+Message-ID: <87v8th7i58.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-XM-SPF: eid=1nxBPN-000zSt-Ka;;;mid=<87v8th7i58.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
+X-XM-AID: U2FsdGVkX19mNLrrPBZ5vfWVQCM18ArZKaY0/4+5EE8=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: [GIT PULL] kthread cleanups for v5.19
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liu Jian <liujian56@huawei.com>
 
-commit 45969b4152c1752089351cd6836a42a566d49bcf upstream.
+This set of changes updates init and user mode helper tasks to be
+ordinary user mode tasks.
 
-The data length of skb frags + frag_list may be greater than 0xffff, and
-skb_header_pointer can not handle negative offset. So, here INT_MAX is used
-to check the validity of offset. Add the same change to the related function
-skb_store_bytes.
+In commit 40966e316f86 ("kthread: Ensure struct kthread is present for
+all kthreads") caused init and the user mode helper threads that call
+kernel_execve to have struct kthread allocated for them.  This struct
+kthread going away during execve in turned made a use after free of
+struct kthread possible.
 
-Fixes: 05c74e5e53f6 ("bpf: add bpf_skb_load_bytes helper")
-Signed-off-by: Liu Jian <liujian56@huawei.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Song Liu <songliubraving@fb.com>
-Link: https://lore.kernel.org/bpf/20220416105801.88708-2-liujian56@huawei.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- net/core/filter.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+The commit 343f4c49f243 ("kthread: Don't allocate kthread_struct for
+init and umh") is enough to fix the use after free and is simple enough
+to be backportable.
 
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -1687,7 +1687,7 @@ BPF_CALL_5(bpf_skb_store_bytes, struct s
- 
- 	if (unlikely(flags & ~(BPF_F_RECOMPUTE_CSUM | BPF_F_INVALIDATE_HASH)))
- 		return -EINVAL;
--	if (unlikely(offset > 0xffff))
-+	if (unlikely(offset > INT_MAX))
- 		return -EFAULT;
- 	if (unlikely(bpf_try_make_writable(skb, offset + len)))
- 		return -EFAULT;
-@@ -1722,7 +1722,7 @@ BPF_CALL_4(bpf_skb_load_bytes, const str
- {
- 	void *ptr;
- 
--	if (unlikely(offset > 0xffff))
-+	if (unlikely(offset > INT_MAX))
- 		goto err_clear;
- 
- 	ptr = skb_header_pointer(skb, offset, len, to);
+The rest of the changes pass struct kernel_clone_args to clean things
+up and cause the code to make sense.
 
+In making init and the user mode helpers tasks purely user mode tasks
+I ran into two complications.  The function task_tick_numa was
+detecting tasks without an mm by testing for the presence of
+PF_KTHREAD.  The initramfs code in populate_initrd_image was using
+flush_delayed_fput to ensuere the closing of all it's file descriptors
+was complete, and flush_delayed_fput does not work in a userspace thread.
 
+I have looked and looked and more complications and in my code review
+I have not found any, and neither has anyone else with the code sitting
+in linux-next.
+
+Link: https://lkml.kernel.org/r/87mtfu4up3.fsf@email.froward.int.ebiederm.org
+
+Eric W. Biederman (8):
+      kthread: Don't allocate kthread_struct for init and umh
+      fork: Pass struct kernel_clone_args into copy_thread
+      fork: Explicity test for idle tasks in copy_thread
+      fork: Generalize PF_IO_WORKER handling
+      init: Deal with the init process being a user mode process
+      fork: Explicitly set PF_KTHREAD
+      fork: Stop allowing kthreads to call execve
+      sched: Update task_tick_numa to ignore tasks without an mm
+
+ arch/alpha/kernel/process.c      | 13 ++++++------
+ arch/arc/kernel/process.c        | 13 ++++++------
+ arch/arm/kernel/process.c        | 12 ++++++-----
+ arch/arm64/kernel/process.c      | 12 ++++++-----
+ arch/csky/kernel/process.c       | 15 ++++++-------
+ arch/h8300/kernel/process.c      | 10 ++++-----
+ arch/hexagon/kernel/process.c    | 12 ++++++-----
+ arch/ia64/kernel/process.c       | 15 +++++++------
+ arch/m68k/kernel/process.c       | 12 ++++++-----
+ arch/microblaze/kernel/process.c | 12 ++++++-----
+ arch/mips/kernel/process.c       | 13 ++++++------
+ arch/nios2/kernel/process.c      | 12 ++++++-----
+ arch/openrisc/kernel/process.c   | 12 ++++++-----
+ arch/parisc/kernel/process.c     | 18 +++++++++-------
+ arch/powerpc/kernel/process.c    | 15 +++++++------
+ arch/riscv/kernel/process.c      | 12 ++++++-----
+ arch/s390/kernel/process.c       | 12 ++++++-----
+ arch/sh/kernel/process_32.c      | 12 ++++++-----
+ arch/sparc/kernel/process_32.c   | 12 ++++++-----
+ arch/sparc/kernel/process_64.c   | 12 ++++++-----
+ arch/um/kernel/process.c         | 15 +++++++------
+ arch/x86/include/asm/fpu/sched.h |  2 +-
+ arch/x86/include/asm/switch_to.h |  8 +++----
+ arch/x86/kernel/fpu/core.c       |  4 ++--
+ arch/x86/kernel/process.c        | 18 +++++++++-------
+ arch/xtensa/kernel/process.c     | 17 ++++++++-------
+ fs/exec.c                        |  8 ++++---
+ include/linux/sched/task.h       |  8 +++++--
+ init/initramfs.c                 |  2 ++
+ init/main.c                      |  2 +-
+ kernel/fork.c                    | 46 +++++++++++++++++++++++++++++++++-------
+ kernel/sched/fair.c              |  2 +-
+ kernel/umh.c                     |  6 +++---
+ 33 files changed, 234 insertions(+), 160 deletions(-)
+
+Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+
+p.s.  My apologies for this coming in so late.  The code has been ready
+just everyone in my house has been sick since the start of the merge window.
