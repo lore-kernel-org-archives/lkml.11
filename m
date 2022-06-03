@@ -2,161 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4E49C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 16:32:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87DE3C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 16:33:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343982AbiFCQcj (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 12:32:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44234 "EHLO
+        id S243413AbiFCQdw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 12:33:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243276AbiFCQcY (ORCPT
+        with ESMTP id S241971AbiFCQdt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 12:32:24 -0400
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD8CA38DA1;
-        Fri,  3 Jun 2022 09:32:20 -0700 (PDT)
-Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 253GIYpt004994;
-        Fri, 3 Jun 2022 18:32:03 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=selector1;
- bh=XYfsgN0Fz1IFWhCX2F/Bh12FPK+Ortq56BmKZ6Jz8Bs=;
- b=7ch4VNH4Y7lUZrcXNyRXs+6zPKADMCtk3xau0A+z5WNye7tIlw6lgqCeHZtOnxClyhFZ
- Sb7JFK74azX4V7ZrreI6AESR2cYhuNtV5ztIAyHl6C7TkbsyWtQtcHhk0FgCk9LzJt8G
- klyD+f1jhDj1Z2fwwCO7zydHJZYlj0Dsvc+hanCH70l4jlRFXQDjeJefDpjqcVU5dgDB
- McMqQAdDn/Aa0ArVPzTmPxNtVu9p3EiWL1OxxeqPQBMx//Zrk0U6Vi1o5z3+uk0sVoEm
- 5zs/Jj6CFek/Rl/2l5qEPzXDfEQQWUJT/DGQSbdlUYs/QwLK4ZYbvRICWrI0bfZnJewv 0Q== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3gbc5174sy-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 03 Jun 2022 18:32:03 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 6585E10002A;
-        Fri,  3 Jun 2022 18:32:01 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id D57C0231533;
-        Fri,  3 Jun 2022 18:32:01 +0200 (CEST)
-Received: from localhost (10.75.127.48) by SHFDAG1NODE2.st.com (10.75.129.70)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Fri, 3 Jun
- 2022 18:32:01 +0200
-From:   Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>
-CC:     <linux-remoteproc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        Rob Herring <robh@kernel.org>, Christoph Hellwig <hch@lst.de>,
-        Stefano Stabellini <stefanos@xilinx.com>,
-        Bruce Ashfield <bruce.ashfield@xilinx.com>,
-        <arnaud.pouliquen@foss.st.com>
-Subject: [PATCH v6 0/4] remoteproc: restructure the remoteproc VirtIO device
-Date:   Fri, 3 Jun 2022 18:31:54 +0200
-Message-ID: <20220603163158.612513-1-arnaud.pouliquen@foss.st.com>
-X-Mailer: git-send-email 2.24.3
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.48]
-X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE2.st.com
- (10.75.129.70)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
- definitions=2022-06-03_05,2022-06-03_01,2022-02-23_01
+        Fri, 3 Jun 2022 12:33:49 -0400
+Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B4592A730
+        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 09:33:48 -0700 (PDT)
+Received: by mail-qv1-xf31.google.com with SMTP id c12so5937072qvr.3
+        for <linux-kernel@vger.kernel.org>; Fri, 03 Jun 2022 09:33:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
+        h=date:subject:cc:from:to:message-id;
+        bh=jmS9+muNRBp2jnRn4fOY2N20O9KfoqE+IiDXN9dcqrM=;
+        b=UHz9NCtym8NegjyXl7gyK9SuR5nldXoPINn+bRik9fh0SLL8K7UIwOH6LBLp5myTpk
+         wnTskz3ocPTRLxh6cr5Ez6O074AUwgNuQHlGM4IxmHw1EJkYPidUpxcJ7EFN73SBb0m7
+         KI9SNvVlphbGJehjOnZq6i3fjGEEarEg2d8jhkRURC50UC82WfxWay63Kw7hx0RVHGfk
+         2hMMV8I4mFIzT0QLHoTV6nRLh1GwCj95qpv7QZw4PcyPGKA6mJuVLx0qQmr+aJJJ6NEQ
+         D60xd395cd2tQEE3INfQPRxFeZNh9AolJykywXzh4qcvhsbegc4UUZhic9rn15QbyI4g
+         Aajw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:subject:cc:from:to:message-id;
+        bh=jmS9+muNRBp2jnRn4fOY2N20O9KfoqE+IiDXN9dcqrM=;
+        b=gAEu2a/oH1cnFSkZOnz2PL6Aun2hRC8qbkr/kBuPZNKLdO1Qnf8jNJGZXrbiXhLTb9
+         QVFUl7nzgAahvBgEptHAFLPI6jtP7R5zqymBftEqRNGKkHzzKP8VSRLczBT505fH1Esd
+         EzSjQyCLjhsn0PE1Mof6W6pzAjBiVp8ymwH5ffH9uz+tQzEo240v++0jjzdN7w1yMkl1
+         5Ye3aE6gi6PArKR8QZA8csrV4WjworByj1OL1kramrUd6uO3G9G5L2r4H6bZq6eN+OYM
+         LIqk5/5V0YTLmC3feSqTLewFZ9n3se4WNaJsJPOS6dKEzQlKX+lf1ZwEPVTly3tKP1Ou
+         wBeQ==
+X-Gm-Message-State: AOAM530PiUlfuGAREnJ+ECLiMSFRQup4AdZ1CB2Hz+5vj07sMURkSnHK
+        kxJnE3xWorMNRJsPKKAK1DtciT7dRUB/ew==
+X-Google-Smtp-Source: ABdhPJxZoE4jsbVPqtWPd5lko6Oa2FLNbG7wszeizLjMbpm+bug1FMywcdicUra99nZiJ1WeMZZDIw==
+X-Received: by 2002:ad4:46ae:0:b0:467:db1b:f38b with SMTP id br14-20020ad446ae000000b00467db1bf38bmr4091953qvb.57.1654274027125;
+        Fri, 03 Jun 2022 09:33:47 -0700 (PDT)
+Received: from localhost ([12.3.194.138])
+        by smtp.gmail.com with ESMTPSA id h9-20020ac85e09000000b002f93c5444e3sm5481315qtx.52.2022.06.03.09.33.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 03 Jun 2022 09:33:46 -0700 (PDT)
+Date:   Fri, 03 Jun 2022 09:33:46 -0700 (PDT)
+X-Google-Original-Date: Fri, 03 Jun 2022 09:33:44 PDT (-0700)
+Subject: [GIT PULL] RISC-V Patches for the 5.19 Merge Window, Part 2
+CC:         linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+From:   Palmer Dabbelt <palmer@rivosinc.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Message-ID: <mhng-98b420ef-9b28-4e40-971e-7275b8f7c6e8@palmer-ri-x1c9>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-1) Update from V5 [1]:
+merged tag 'riscv-for-linus-5.19-mw0'
+The following changes since commit 35b51afd23c98e2f055ac563aca36173a12588b9:
 
-Updates based on Mathieu's comments.
-Updates are listed in the commit message of each patch.
+  Merge tag 'riscv-for-linus-5.19-mw0' of git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux (2022-05-31 14:10:54 -0700)
 
-[1] https://lkml.org/lkml/2022/4/6/597
+are available in the Git repository at:
 
-2) Patchset description:
+  git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git tags/riscv-for-linus-5.19-mw2
 
-This series is a part of the work initiated a long time ago in 
-the series "remoteproc: Decorelate virtio from core"[2]
+for you to fetch changes up to 61114e734ccb804bc12561ab4020745e02c468c2:
 
-Objective of the work:
-- Update the remoteproc VirtIO device creation (use platform device)
-- Allow to declare remoteproc VirtIO device in DT
-    - declare resources associated to a remote proc VirtIO
-    - declare a list of VirtIO supported by the platform.
-- Prepare the enhancement to more VirtIO devices (e.g I2C, audio, video, ...).
-  For instance be able to declare a I2C device in a virtio-i2C node.
-- Keep the legacy working!
-- Try to improve the picture about concerns reported by Christoph Hellwing [3][4]
+  riscv: Move alternative length validation into subsection (2022-06-02 15:55:22 -0700)
 
-[2] https://lkml.org/lkml/2020/4/16/1817
-[3] https://lkml.org/lkml/2021/6/23/607
-[4] https://patchwork.kernel.org/project/linux-remoteproc/patch/AOKowLclCbOCKxyiJ71WeNyuAAj2q8EUtxrXbyky5E@cp7-web-042.plabs.ch/
+----------------------------------------------------------------
+RISC-V Patches for the 5.19 Merge Window, Part 2
 
-In term of device tree this would result in such hierarchy (stm32mp1 example with 2 virtio RPMSG):
+This is mostly some DT updates, but also a handful of cleanups and some
+fixes.  The most user-visible of those are:
 
-	m4_rproc: m4@10000000 {
-		compatible = "st,stm32mp1-m4";
-		reg = <0x10000000 0x40000>,
-		      <0x30000000 0x40000>,
-		      <0x38000000 0x10000>;
-        memory-region = <&retram>, <&mcuram>,<&mcuram2>;
-        mboxes = <&ipcc 2>, <&ipcc 3>;
-        mbox-names = "shutdown", "detach";
-        status = "okay";
+* A device tree for the Sundance Polarberry, along with a handful of
+  fixes and clenups to the PolarFire SOC device trees and bindings.
+* The memfd_secret syscall number is now visible to userspace,
+* Some improvements to the vm layout dump, which really should have
+  followed shortly after the sv48 patches but I missed.
 
-        #address-cells = <1>;
-        #size-cells = <0>;
-        
-        vdev@0 {
-		compatible = "rproc-virtio";
-		reg = <0>;
-		virtio,id = <7>;  /* RPMSG */
-		memory-region = <&vdev0vring0>, <&vdev0vring1>, <&vdev0buffer>;
-		mboxes = <&ipcc 0>, <&ipcc 1>;
-		mbox-names = "vq0", "vq1";
-		status = "okay";
-        };
+----------------------------------------------------------------
+Alexandre Ghiti (3):
+      Documentation: riscv: Add sv48 description to VM layout
+      riscv: Initialize thread pointer before calling C functions
+      riscv: Improve virtual kernel memory layout dump
 
-        vdev@1 {
-		compatible = "rproc-virtio";
-		reg = <1>;
-		virtio,id = <7>;  /*RPMSG */
-		memory-region = <&vdev1vring0>, <&vdev1vring1>, <&vdev1buffer>;
-		mboxes = <&ipcc 4>, <&ipcc 5>;
-		mbox-names = "vq0", "vq1";
-		status = "okay";
-        };
-};
+Conor Dooley (10):
+      riscv: dts: microchip: remove icicle memory clocks
+      riscv: dts: microchip: move sysctrlr out of soc bus
+      riscv: dts: microchip: remove soc vendor from filenames
+      dt-bindings: riscv: microchip: document icicle reference design
+      riscv: dts: microchip: make the fabric dtsi board specific
+      dt-bindings: vendor-prefixes: add Sundance DSP
+      dt-bindings: riscv: microchip: add polarberry compatible string
+      riscv: dts: microchip: add the sundance polarberry
+      riscv: microchip: icicle: readability fixes
+      riscv: dts: icicle: sort nodes alphabetically
 
-I have divided the work in 4 steps to simplify the review, This series implements only
-the step 1:
-step 1:  redefine the remoteproc VirtIO device as a platform device
-  - migrate rvdev management in remoteproc virtio.c,
-  - create a remotproc virtio config ( can be disabled for platform that not use VirtIO IPC.
-step 2: add possibility to declare and probe a VirtIO sub node
-  - VirtIO bindings declaration,
-  - multi DT VirtIO devices support,
-  - introduction of a remote proc virtio bind device mechanism ,
-=> https://github.com/arnopo/linux/commits/step2-virtio-in-DT
-step 3: Add memory declaration in VirtIO subnode
-=> https://github.com/arnopo/linux/commits/step3-virtio-memories
-step 4: Add mailbox declaration in VirtIO subnode
-=> https://github.com/arnopo/linux/commits/step4-virtio-mailboxes
+Jisheng Zhang (1):
+      riscv: mm: init: make pt_ops_set_[early|late|fixmap] static
 
-Arnaud Pouliquen (4):
-  remoteproc: core: Introduce rproc_rvdev_add_device function
-  remoteproc: core: Introduce rproc_add_rvdev function
-  remoteproc: Move rproc_vdev management to remoteproc_virtio.c
-  remoteproc: virtio: Create platform device for the remoteproc_virtio
+Masahiro Yamada (1):
+      riscv: move errata/ and kvm/ builds to arch/riscv/Kbuild
 
- drivers/remoteproc/remoteproc_core.c     | 153 +++---------------
- drivers/remoteproc/remoteproc_internal.h |  23 ++-
- drivers/remoteproc/remoteproc_virtio.c   | 188 ++++++++++++++++++++---
- include/linux/remoteproc.h               |   6 +-
- 4 files changed, 209 insertions(+), 161 deletions(-)
+Nathan Chancellor (1):
+      riscv: Move alternative length validation into subsection
 
--- 
-2.24.3
+Palmer Dabbelt (2):
+      RISC-V: PolarFire SoC Device Tree Updates
+      RISC-V: Only default to spinwait on SBI-0.1 and M-mode
 
+Samuel Holland (1):
+      riscv: Fix irq_work when SMP is disabled
+
+Tobias Klauser (1):
+      riscv: Wire up memfd_secret in UAPI header
+
+Xianting Tian (1):
+      RISC-V: Mark IORESOURCE_EXCLUSIVE for reserved mem instead of IORESOURCE_BUSY
+
+ .../devicetree/bindings/riscv/microchip.yaml       |   2 +
+ .../devicetree/bindings/vendor-prefixes.yaml       |   2 +
+ Documentation/riscv/vm-layout.rst                  |  36 +++++++
+ arch/riscv/Kbuild                                  |   2 +
+ arch/riscv/Kconfig                                 |   8 +-
+ arch/riscv/Makefile                                |   3 -
+ arch/riscv/boot/dts/microchip/Makefile             |   3 +-
+ ...pfs-fabric.dtsi => mpfs-icicle-kit-fabric.dtsi} |   2 +
+ ...hip-mpfs-icicle-kit.dts => mpfs-icicle-kit.dts} | 105 +++++++++++----------
+ .../boot/dts/microchip/mpfs-polarberry-fabric.dtsi |  16 ++++
+ arch/riscv/boot/dts/microchip/mpfs-polarberry.dts  |  99 +++++++++++++++++++
+ .../microchip/{microchip-mpfs.dtsi => mpfs.dtsi}   |  11 +--
+ arch/riscv/include/asm/alternative-macros.h        |   4 +-
+ arch/riscv/include/asm/irq_work.h                  |   2 +-
+ arch/riscv/include/asm/unistd.h                    |   1 -
+ arch/riscv/include/uapi/asm/unistd.h               |   1 +
+ arch/riscv/kernel/head.S                           |   1 +
+ arch/riscv/kernel/setup.c                          |   4 +-
+ arch/riscv/mm/init.c                               |  72 ++++++++++----
+ 19 files changed, 287 insertions(+), 87 deletions(-)
+ rename arch/riscv/boot/dts/microchip/{microchip-mpfs-fabric.dtsi => mpfs-icicle-kit-fabric.dtsi} (91%)
+ rename arch/riscv/boot/dts/microchip/{microchip-mpfs-icicle-kit.dts => mpfs-icicle-kit.dts} (95%)
+ create mode 100644 arch/riscv/boot/dts/microchip/mpfs-polarberry-fabric.dtsi
+ create mode 100644 arch/riscv/boot/dts/microchip/mpfs-polarberry.dts
+ rename arch/riscv/boot/dts/microchip/{microchip-mpfs.dtsi => mpfs.dtsi} (98%)
