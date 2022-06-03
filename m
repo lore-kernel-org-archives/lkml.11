@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FC0FC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:16:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6D45CCA473
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:16:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346872AbiFCSO5 (ORCPT
+        id S1347063AbiFCSPO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:14:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50352 "EHLO
+        Fri, 3 Jun 2022 14:15:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346581AbiFCSA0 (ORCPT
+        with ESMTP id S1346972AbiFCSAs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 14:00:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 154B55908E;
-        Fri,  3 Jun 2022 10:56:39 -0700 (PDT)
+        Fri, 3 Jun 2022 14:00:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5EBBA468;
+        Fri,  3 Jun 2022 10:57:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4834BB82369;
-        Fri,  3 Jun 2022 17:56:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FC97C385A9;
-        Fri,  3 Jun 2022 17:56:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D312AB82419;
+        Fri,  3 Jun 2022 17:56:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4994BC385B8;
+        Fri,  3 Jun 2022 17:56:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278997;
-        bh=lNOmLlFQuyuci5IwSKVo0uhTC3PXQ5cfKd6PwOA3j3o=;
+        s=korg; t=1654279015;
+        bh=9zj7v1rHX8IEL130KgzECn4tAv637z1ax2CPmS3v65I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gxtxVgro5XsC1ADaMS7hAUJVUYi12BcG7o0HIWiMPVQKXHdvXoEnhmm3mwJt5eyU1
-         rQg4FfVJyIzx/I5gfGa2kekbfZzd53+emrECgS0ND7sT1AG5rBSrlSjkVWYIHOOs7N
-         2MLwO71322nSpHWo6vHAQ2ZjQNRc+jJHnrcfx+2E=
+        b=W1Mafr2YmEeaca2aYxNNDowY1WRYnqwLjCttqoVxHLx90n00hP2gKaa93IVm4pLIX
+         8z5a29VuADlvo3ObyeWxkTeilUoXFh1c0TqDWRgZ4z8tagszR/NeONaD4wFay4+9t9
+         4HcG/4cU578KAMOS7Xz8QGxgyrPGRhcCHSDgdAhA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tadeusz Struk <tadeusz.struk@linaro.org>,
-        syzbot+6cde2282daa792c49ab8@syzkaller.appspotmail.com,
-        Sean Christopherson <seanjc@google.com>,
+        stable@vger.kernel.org, Yanfei Xu <yanfei.xu@intel.com>,
         Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.18 20/67] KVM: x86: Use __try_cmpxchg_user() to update guest PTE A/D bits
-Date:   Fri,  3 Jun 2022 19:43:21 +0200
-Message-Id: <20220603173821.309910746@linuxfoundation.org>
+Subject: [PATCH 5.18 25/67] KVM: x86: Fix the intel_pt PMI handling wrongly considered from guest
+Date:   Fri,  3 Jun 2022 19:43:26 +0200
+Message-Id: <20220603173821.450667939@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.731531504@linuxfoundation.org>
 References: <20220603173820.731531504@linuxfoundation.org>
@@ -51,84 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Yanfei Xu <yanfei.xu@intel.com>
 
-commit f122dfe4476890d60b8c679128cd2259ec96a24c upstream.
+commit ffd1925a596ce68bed7d81c61cb64bc35f788a9d upstream.
 
-Use the recently introduced __try_cmpxchg_user() to update guest PTE A/D
-bits instead of mapping the PTE into kernel address space.  The VM_PFNMAP
-path is broken as it assumes that vm_pgoff is the base pfn of the mapped
-VMA range, which is conceptually wrong as vm_pgoff is the offset relative
-to the file and has nothing to do with the pfn.  The horrific hack worked
-for the original use case (backing guest memory with /dev/mem), but leads
-to accessing "random" pfns for pretty much any other VM_PFNMAP case.
+When kernel handles the vm-exit caused by external interrupts and NMI,
+it always sets kvm_intr_type to tell if it's dealing an IRQ or NMI. For
+the PMI scenario, it could be IRQ or NMI.
 
-Fixes: bd53cb35a3e9 ("X86/KVM: Handle PFNs outside of kernel reach when touching GPTEs")
-Debugged-by: Tadeusz Struk <tadeusz.struk@linaro.org>
-Tested-by: Tadeusz Struk <tadeusz.struk@linaro.org>
-Reported-by: syzbot+6cde2282daa792c49ab8@syzkaller.appspotmail.com
+However, intel_pt PMIs are only generated for HARDWARE perf events, and
+HARDWARE events are always configured to generate NMIs.  Use
+kvm_handling_nmi_from_guest() to precisely identify if the intel_pt PMI
+came from the guest; this avoids false positives if an intel_pt PMI/NMI
+arrives while the host is handling an unrelated IRQ VM-Exit.
+
+Fixes: db215756ae59 ("KVM: x86: More precisely identify NMI from guest when handling PMI")
+Signed-off-by: Yanfei Xu <yanfei.xu@intel.com>
+Message-Id: <20220523140821.1345605-1-yanfei.xu@intel.com>
 Cc: stable@vger.kernel.org
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220202004945.2540433-4-seanjc@google.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/mmu/paging_tmpl.h |   38 +-------------------------------------
- 1 file changed, 1 insertion(+), 37 deletions(-)
+ arch/x86/kvm/vmx/vmx.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/x86/kvm/mmu/paging_tmpl.h
-+++ b/arch/x86/kvm/mmu/paging_tmpl.h
-@@ -144,42 +144,6 @@ static bool FNAME(is_rsvd_bits_set)(stru
- 	       FNAME(is_bad_mt_xwr)(&mmu->guest_rsvd_check, gpte);
- }
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -7856,7 +7856,7 @@ static unsigned int vmx_handle_intel_pt_
+ 	struct kvm_vcpu *vcpu = kvm_get_running_vcpu();
  
--static int FNAME(cmpxchg_gpte)(struct kvm_vcpu *vcpu, struct kvm_mmu *mmu,
--			       pt_element_t __user *ptep_user, unsigned index,
--			       pt_element_t orig_pte, pt_element_t new_pte)
--{
--	signed char r;
--
--	if (!user_access_begin(ptep_user, sizeof(pt_element_t)))
--		return -EFAULT;
--
--#ifdef CMPXCHG
--	asm volatile("1:" LOCK_PREFIX CMPXCHG " %[new], %[ptr]\n"
--		     "setnz %b[r]\n"
--		     "2:"
--		     _ASM_EXTABLE_TYPE_REG(1b, 2b, EX_TYPE_EFAULT_REG, %k[r])
--		     : [ptr] "+m" (*ptep_user),
--		       [old] "+a" (orig_pte),
--		       [r] "=q" (r)
--		     : [new] "r" (new_pte)
--		     : "memory");
--#else
--	asm volatile("1:" LOCK_PREFIX "cmpxchg8b %[ptr]\n"
--		     "setnz %b[r]\n"
--		     "2:"
--		     _ASM_EXTABLE_TYPE_REG(1b, 2b, EX_TYPE_EFAULT_REG, %k[r])
--		     : [ptr] "+m" (*ptep_user),
--		       [old] "+A" (orig_pte),
--		       [r] "=q" (r)
--		     : [new_lo] "b" ((u32)new_pte),
--		       [new_hi] "c" ((u32)(new_pte >> 32))
--		     : "memory");
--#endif
--
--	user_access_end();
--	return r;
--}
--
- static bool FNAME(prefetch_invalid_gpte)(struct kvm_vcpu *vcpu,
- 				  struct kvm_mmu_page *sp, u64 *spte,
- 				  u64 gpte)
-@@ -278,7 +242,7 @@ static int FNAME(update_accessed_dirty_b
- 		if (unlikely(!walker->pte_writable[level - 1]))
- 			continue;
+ 	/* '0' on failure so that the !PT case can use a RET0 static call. */
+-	if (!kvm_arch_pmi_in_guest(vcpu))
++	if (!vcpu || !kvm_handling_nmi_from_guest(vcpu))
+ 		return 0;
  
--		ret = FNAME(cmpxchg_gpte)(vcpu, mmu, ptep_user, index, orig_pte, pte);
-+		ret = __try_cmpxchg_user(ptep_user, &orig_pte, pte, fault);
- 		if (ret)
- 			return ret;
- 
+ 	kvm_make_request(KVM_REQ_PMI, vcpu);
 
 
