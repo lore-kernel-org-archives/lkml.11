@@ -2,124 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B747EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:37:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 901E8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:39:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344550AbiFCRhz (ORCPT
+        id S1344553AbiFCRjs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:37:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46064 "EHLO
+        Fri, 3 Jun 2022 13:39:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344523AbiFCRhr (ORCPT
+        with ESMTP id S1343573AbiFCRjq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:37:47 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0420B50B11
-        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 10:37:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654277865;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=bvNdDteJSKV8nPr70UjTL9Ga0ysM0wiU173XEAoRmEg=;
-        b=KVN5llUSTKGfOYwgLQOT/k3UPuUs0mFWw5O0GBLZ2DY4thENsp57vN2Y4wjPwFufZFqp0v
-        /EV/aIygvIyLSn2HYNbp2ygbjeccnFbBihznmwxj5DWmPyZYDpr6wBTteSfM2OH5yEVBkl
-        tImYFuAqUusD9FXE0s3PbI3W95XmN88=
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com
- [209.85.166.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-384-odD---04Op-DaA8-FLzXhg-1; Fri, 03 Jun 2022 13:37:44 -0400
-X-MC-Unique: odD---04Op-DaA8-FLzXhg-1
-Received: by mail-il1-f199.google.com with SMTP id a3-20020a924443000000b002d1bc79da14so6672744ilm.15
-        for <linux-kernel@vger.kernel.org>; Fri, 03 Jun 2022 10:37:44 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=bvNdDteJSKV8nPr70UjTL9Ga0ysM0wiU173XEAoRmEg=;
-        b=0iGWt7ohEcK/DUylY1UJtp+K2lu4QQSYvACIa8gpq6pD06xy1jvTyJNQ6y9wiDjwM8
-         cPesifqZhduousxBivqAnW0oFKD7VwZyqxRI1BLmiomoEDqGli9joY9IgEQyQdM8iocQ
-         MYLhml8JsZrwZqKtZ7syjAsI91JOMelsKuwp9OO312UF3CRCyhgBTtQl+bxgIpOptgqa
-         DMOy5iA6cAgTJmjXTYjgEIJdTwUUOUunqhGcR5p/WOeJ6S79GJJXjZW8uQXy+KMWyqsq
-         8ZigxamjHufCWx2D08faZs3IIi4L8KJFj7D2lqk9spLQraTuzyMXF1nVVcGD1ExJQ+Qc
-         h6Ig==
-X-Gm-Message-State: AOAM532cb7IRXYRDlKyQt8+LDATpTTjQMva4td1h/ME2JaBI59lUXcfv
-        n/qm3YhrKX535ALvDIu8wZJ6oXoDEEihP384eQhsqQWZWxeZZvr4/NlpqNz5DJ/sYcozHGuh4CF
-        lzBet9Ec1vNQMbHRb9Twbx1JYN/dSVCVjZmlob9T41uwsC4zkUfwPe1smZCqaoPn4zfHTpViLlQ
-        ==
-X-Received: by 2002:a05:6e02:1c42:b0:2d1:aaac:ecc2 with SMTP id d2-20020a056e021c4200b002d1aaacecc2mr6160215ilg.128.1654277862994;
-        Fri, 03 Jun 2022 10:37:42 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxD6QpwDL7Wd5u30b73amnDkQf+0XrVGTTVTW2Zv3Vw4x28t8LPwaKvFl/gRzlApcqbp9Utcw==
-X-Received: by 2002:a05:6e02:1c42:b0:2d1:aaac:ecc2 with SMTP id d2-20020a056e021c4200b002d1aaacecc2mr6160200ilg.128.1654277862717;
-        Fri, 03 Jun 2022 10:37:42 -0700 (PDT)
-Received: from localhost.localdomain (cpec09435e3e0ee-cmc09435e3e0ec.cpe.net.cable.rogers.com. [99.241.198.116])
-        by smtp.gmail.com with ESMTPSA id g23-20020a02bb97000000b0032e1e0ac289sm2791117jan.8.2022.06.03.10.37.40
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Fri, 03 Jun 2022 10:37:42 -0700 (PDT)
-From:   Peter Xu <peterx@redhat.com>
-To:     linux-kernel@vger.kernel.org, linux-man@vger.kernel.org,
-        linux-mm@kvack.org
-Cc:     Michael Kerrisk <mtk.manpages@gmail.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Alejandro Colomar <alx.manpages@gmail.com>,
-        Nadav Amit <nadav.amit@gmail.com>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>, peterx@redhat.com
-Subject: [PATCH v2 2/2] userfaultfd.2: Update on write-protection support
-Date:   Fri,  3 Jun 2022 13:37:36 -0400
-Message-Id: <20220603173736.62581-3-peterx@redhat.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220603173736.62581-1-peterx@redhat.com>
-References: <20220603173736.62581-1-peterx@redhat.com>
+        Fri, 3 Jun 2022 13:39:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71CD15130C;
+        Fri,  3 Jun 2022 10:39:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 11CBFB8241D;
+        Fri,  3 Jun 2022 17:39:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0029BC385B8;
+        Fri,  3 Jun 2022 17:39:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654277982;
+        bh=AV9DVa9fzpZL+XXAkhzFaiq2wJMsBMzKbynklE/2+UY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=SD9sJzIU8NR7v8twWqDgsAZ+TxK1vA1BX/46SZ8XQVVcMV+rb1FXbh9ogEPT7Yacn
+         QrKYWKGUjtiGiVP0DaUez2Wxps+RjYk/zM79cGpPzyze0I1tUwWg+VpjBy61yv5vEQ
+         Rs4lBXd8lkUXE/Zh/KiwC8hcuATGOeW4ZGmVM9wc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Thomas Bartschies <thomas.bartschies@cvk.de>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 01/12] net: af_key: check encryption module availability consistency
+Date:   Fri,  3 Jun 2022 19:39:27 +0200
+Message-Id: <20220603173812.568108883@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220603173812.524184588@linuxfoundation.org>
+References: <20220603173812.524184588@linuxfoundation.org>
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
-Content-type: text/plain
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The shmem/hugetlbfs memory types are supported for write-protection
-messages very lately.  Update the man page to reflect that.
+From: Thomas Bartschies <thomas.bartschies@cvk.de>
 
-Signed-off-by: Peter Xu <peterx@redhat.com>
+[ Upstream commit 015c44d7bff3f44d569716117becd570c179ca32 ]
+
+Since the recent introduction supporting the SM3 and SM4 hash algos for IPsec, the kernel
+produces invalid pfkey acquire messages, when these encryption modules are disabled. This
+happens because the availability of the algos wasn't checked in all necessary functions.
+This patch adds these checks.
+
+Signed-off-by: Thomas Bartschies <thomas.bartschies@cvk.de>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- man2/userfaultfd.2 | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ net/key/af_key.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/man2/userfaultfd.2 b/man2/userfaultfd.2
-index 6b9412aaf..9b5ec0358 100644
---- a/man2/userfaultfd.2
-+++ b/man2/userfaultfd.2
-@@ -270,13 +270,18 @@ Since Linux 4.11,
- userfaultfd can be also used with hugetlbfs and shared memory mappings.
- .\"
- .SS Userfaultfd write-protect mode (since 5.7)
--Since Linux 5.7, userfaultfd supports write-protect mode.
-+Since Linux 5.7, userfaultfd supports write-protect mode for anonymous memory.
- The user needs to first check availability of this feature using
- .B UFFDIO_API
- ioctl against the feature bit
- .B UFFD_FEATURE_PAGEFAULT_FLAG_WP
- before using this feature.
- .PP
-+Since Linux 5.19, the write-protection mode was also supported on shmem and hugetlbfs
-+memory types.
-+It can be detected with the feature bit
-+.BR UFFD_FEATURE_WP_HUGETLBFS_SHMEM .
-+.PP
- To register with userfaultfd write-protect mode, the user needs to initiate the
- .B UFFDIO_REGISTER
- ioctl with mode
-@@ -327,8 +332,6 @@ ioctl, whose
- should have the flag
- .B UFFDIO_WRITEPROTECT_MODE_WP
- cleared upon the faulted page or range.
--.PP
--Write-protect mode supports only private anonymous memory.
- .\"
- .SS Userfaultfd minor fault mode (since 5.13)
- Since Linux 5.13,
+diff --git a/net/key/af_key.c b/net/key/af_key.c
+index 776f94ecbfe6..d5dc614af2f9 100644
+--- a/net/key/af_key.c
++++ b/net/key/af_key.c
+@@ -2935,7 +2935,7 @@ static int count_ah_combs(const struct xfrm_tmpl *t)
+ 			break;
+ 		if (!aalg->pfkey_supported)
+ 			continue;
+-		if (aalg_tmpl_set(t, aalg))
++		if (aalg_tmpl_set(t, aalg) && aalg->available)
+ 			sz += sizeof(struct sadb_comb);
+ 	}
+ 	return sz + sizeof(struct sadb_prop);
+@@ -2953,7 +2953,7 @@ static int count_esp_combs(const struct xfrm_tmpl *t)
+ 		if (!ealg->pfkey_supported)
+ 			continue;
+ 
+-		if (!(ealg_tmpl_set(t, ealg)))
++		if (!(ealg_tmpl_set(t, ealg) && ealg->available))
+ 			continue;
+ 
+ 		for (k = 1; ; k++) {
+@@ -2964,7 +2964,7 @@ static int count_esp_combs(const struct xfrm_tmpl *t)
+ 			if (!aalg->pfkey_supported)
+ 				continue;
+ 
+-			if (aalg_tmpl_set(t, aalg))
++			if (aalg_tmpl_set(t, aalg) && aalg->available)
+ 				sz += sizeof(struct sadb_comb);
+ 		}
+ 	}
 -- 
-2.32.0
+2.35.1
+
+
 
