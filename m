@@ -2,59 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 868F5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 00:45:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A752EC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 00:45:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240129AbiFCApP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 20:45:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46928 "EHLO
+        id S229777AbiFCApX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 20:45:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239997AbiFCAoD (ORCPT
+        with ESMTP id S239964AbiFCAoV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 20:44:03 -0400
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6717337A19
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:43:58 -0700 (PDT)
-Received: by mail-pg1-x549.google.com with SMTP id i9-20020a632209000000b003facc62e253so3048324pgi.11
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:43:58 -0700 (PDT)
+        Thu, 2 Jun 2022 20:44:21 -0400
+Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4DB3344E6
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:44:08 -0700 (PDT)
+Received: by mail-pf1-x44a.google.com with SMTP id j25-20020aa78d19000000b0051bb0c362a5so3480699pfe.19
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:44:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=6TqR2TtIAFDMyHtwdQ6ENJHifFWcPp2E/NJNAkiSnxY=;
-        b=rZo71jz3I3CHllW5m5dbKxPzI1pahTR9DNVlag83m6Pe4XBUeASe+SZzMU+ciNtnPB
-         vRd+DaUa5qB/4JZWvhlp4awSpPgP8dAXrS+gA3hI7C94HkfWuZovsblQc6nck67ouwXu
-         g2HdrIfPNqLLoCdz8GmF1dtWRcMcF5gUvArVKfC+4LeIX5187lG9KKDStS51RZqI3BCD
-         tu15Q7ZB1O6xnrrqp0ed9DLJJ8F+h6/RIZq5tI1LAOblgqurGWg25wH1ZCF2Ut3IaNOO
-         xGr3RL/ZGbPPbdJv+rjrIXwq/R/wQCD37vPbF3M2jvCrvP3IT5AWMZat/uT8Jl3mw+WR
-         A6Sg==
+        bh=QYfBZhfEoxcJclTEblxPGQpJYzp1UV5q8tCK6+roE/8=;
+        b=blkwkAJiFLQpO5lTvGJ0fd8MlLTj7DRKa2ciDUdUjjeocEdjh1CujZmGi3eQvhB9/0
+         03KmLYLj/VbLhFVCyokMtxcK9FtPEYsFAed3qw/ZYuFHr/iQDq7kUVTQjmkuSQ5awre1
+         VndiOzUP8fwCOHkZljMN5XDMmWh7UFWhdJYDFRKMTYw+EptAGfs1aWoFed9IhyAgtbQJ
+         S92TXZTVOlp9+Giv+2/io2Sydw+Hx12FJQieNlF3hdHqNTLtI8/if+Volt4SF+hOviRh
+         0gz/D9Sy6ZR3iThenp0yYC7+UaLyAOuu1kMaD6mIebsRbBLN+y76V+jqI/uJz70tZkOR
+         Nb1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=6TqR2TtIAFDMyHtwdQ6ENJHifFWcPp2E/NJNAkiSnxY=;
-        b=a3y3IxFEzTBnqcBn4xuvRM6buzKzJ5lmSWC830U5cxLfn76Dm4wwu7AiG0oSJYm/6V
-         Xdm2/n8d8UVpaGmak17UFBg649KYKZgiJAoLvmUptjxxl8MnYfM4RIZ5taVDGsStDk5F
-         xKq515Trqno/kUkcPqT5+XTANgyX6Cr3OHXETyqrtriQnpeL9ykGeC7+Qfgiv8oLSLN+
-         87FndzWY/DHumXRH9gKyxtGdE7Jb9ZwpFTZ8rl+0lb896hra/WOgTpaw6ZU75myWTxvR
-         fxBcbh96+EGk1k7s4LYKoIzsgGK5y5+48YItW5FzlLe42Pqm8tmuXwsHiKWjxgzP3KQ6
-         iRhA==
-X-Gm-Message-State: AOAM532z9iK6GAmdiPeONvH4FRJr/LEbrgZDMNlwxAXhADmX2LAvumSh
-        KXrb4XwgT98cugQZGG0KYN9o49iF17U=
-X-Google-Smtp-Source: ABdhPJz/dR2aPeg6ELGl/oGUTP9IRPOfyOKM8EWXAZUO3HGRY3QyZtgvPshueIfkhUrHPXkgdF/bWDBeMiA=
+        bh=QYfBZhfEoxcJclTEblxPGQpJYzp1UV5q8tCK6+roE/8=;
+        b=DfHhJ/rXPQUbQoLjX7NLBxrR9MOGF1oJl7KPcrQk+Z1O3abwsCcFj8B/+4bg5FipaS
+         jRVPC/+KAnxg+xOcV8ZAJ5SQIv47gG6hCrqvM27YcsffTEnxdvgiy7tA7L//VYjzA/cQ
+         uSg4NItz0xTj4eiStaI/+7ajQIfmcf/6C96DjoM267PGEQHz7tpNKFU4D8tLnt3LKQ8P
+         L5ga1SGnJ9RBMbgntH5EI2UFpc30qj6QEfbiZyu3AyJt1mAAtcEXQ+pjKvmE83JJxKtl
+         MUFwBQfvMZq5NuVn1//vUka4mLBSgcHXPThv4AxbSkUDBJbbzm0iaSJeru6Khj3gPTGn
+         VenQ==
+X-Gm-Message-State: AOAM533W7G2turOsg63qN5aXQvGvpOMUeqOI4vn7FbVVFqFQ/JvqZhwp
+        hQjer7TtgRwqqluXKZF24+99mP0XX/I=
+X-Google-Smtp-Source: ABdhPJyrGnwfof7h5GshLqPWCtDr100oxkl5tjjdVjCpQ0Hpd6yKmHeUV76RE8Np+HCadQKpn+quIAfWhjc=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:903:18a:b0:166:ba97:8b19 with SMTP id
- z10-20020a170903018a00b00166ba978b19mr2371326plg.62.1654217037855; Thu, 02
- Jun 2022 17:43:57 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a05:6a00:2311:b0:4e1:52bf:e466 with SMTP id
+ h17-20020a056a00231100b004e152bfe466mr17323401pfh.77.1654217048323; Thu, 02
+ Jun 2022 17:44:08 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri,  3 Jun 2022 00:41:19 +0000
+Date:   Fri,  3 Jun 2022 00:41:25 +0000
 In-Reply-To: <20220603004331.1523888-1-seanjc@google.com>
-Message-Id: <20220603004331.1523888-13-seanjc@google.com>
+Message-Id: <20220603004331.1523888-19-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220603004331.1523888-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v2 012/144] KVM: selftests: Use vcpu_access_device_attr() in
- arm64 code
+Subject: [PATCH v2 018/144] KVM: selftests: Use kvm_ioctl() helpers
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     kvm@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
@@ -67,36 +66,264 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use vcpu_access_device_attr() in arm's arch_timer test instead of
-manually retrieving the vCPU's fd.  This will allow dropping vcpu_get_fd()
-in a future patch.
+Use the recently introduced KVM-specific ioctl() helpers instead of open
+coding calls to ioctl() just to pretty print the ioctl name.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- tools/testing/selftests/kvm/aarch64/arch_timer.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ .../selftests/kvm/lib/aarch64/processor.c     |  4 +--
+ tools/testing/selftests/kvm/lib/guest_modes.c |  2 +-
+ tools/testing/selftests/kvm/lib/kvm_util.c    | 13 +++----
+ .../selftests/kvm/lib/x86_64/processor.c      | 34 ++++++-------------
+ .../kvm/x86_64/get_msr_index_features.c       | 16 +++------
+ .../selftests/kvm/x86_64/mmio_warning_test.c  |  6 ++--
+ 6 files changed, 26 insertions(+), 49 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/aarch64/arch_timer.c b/tools/testing/selftests/kvm/aarch64/arch_timer.c
-index 3b940a101bc0..f55c4c20d8b3 100644
---- a/tools/testing/selftests/kvm/aarch64/arch_timer.c
-+++ b/tools/testing/selftests/kvm/aarch64/arch_timer.c
-@@ -349,12 +349,10 @@ static void test_run(struct kvm_vm *vm)
- static void test_init_timer_irq(struct kvm_vm *vm)
- {
- 	/* Timer initid should be same for all the vCPUs, so query only vCPU-0 */
--	int vcpu0_fd = vcpu_get_fd(vm, 0);
--
--	kvm_device_access(vcpu0_fd, KVM_ARM_VCPU_TIMER_CTRL,
--			KVM_ARM_VCPU_TIMER_IRQ_PTIMER, &ptimer_irq, false);
--	kvm_device_access(vcpu0_fd, KVM_ARM_VCPU_TIMER_CTRL,
--			KVM_ARM_VCPU_TIMER_IRQ_VTIMER, &vtimer_irq, false);
-+	vcpu_access_device_attr(vm, 0, KVM_ARM_VCPU_TIMER_CTRL,
-+				KVM_ARM_VCPU_TIMER_IRQ_PTIMER, &ptimer_irq, false);
-+	vcpu_access_device_attr(vm, 0, KVM_ARM_VCPU_TIMER_CTRL,
-+				KVM_ARM_VCPU_TIMER_IRQ_VTIMER, &vtimer_irq, false);
+diff --git a/tools/testing/selftests/kvm/lib/aarch64/processor.c b/tools/testing/selftests/kvm/lib/aarch64/processor.c
+index 6a041289fa80..d28cc12cea1d 100644
+--- a/tools/testing/selftests/kvm/lib/aarch64/processor.c
++++ b/tools/testing/selftests/kvm/lib/aarch64/processor.c
+@@ -469,8 +469,8 @@ void aarch64_get_supported_page_sizes(uint32_t ipa,
+ 	};
  
- 	sync_global_to_guest(vm, ptimer_irq);
- 	sync_global_to_guest(vm, vtimer_irq);
+ 	kvm_fd = open_kvm_dev_path_or_exit();
+-	vm_fd = ioctl(kvm_fd, KVM_CREATE_VM, ipa);
+-	TEST_ASSERT(vm_fd >= 0, "Can't create VM");
++	vm_fd = __kvm_ioctl(kvm_fd, KVM_CREATE_VM, ipa);
++	TEST_ASSERT(vm_fd >= 0, KVM_IOCTL_ERROR(KVM_CREATE_VM, vm_fd));
+ 
+ 	vcpu_fd = ioctl(vm_fd, KVM_CREATE_VCPU, 0);
+ 	TEST_ASSERT(vcpu_fd >= 0, "Can't create vcpu");
+diff --git a/tools/testing/selftests/kvm/lib/guest_modes.c b/tools/testing/selftests/kvm/lib/guest_modes.c
+index 8784013b747c..9ab27b4169bf 100644
+--- a/tools/testing/selftests/kvm/lib/guest_modes.c
++++ b/tools/testing/selftests/kvm/lib/guest_modes.c
+@@ -65,7 +65,7 @@ void guest_modes_append_default(void)
+ 		struct kvm_s390_vm_cpu_processor info;
+ 
+ 		kvm_fd = open_kvm_dev_path_or_exit();
+-		vm_fd = ioctl(kvm_fd, KVM_CREATE_VM, 0);
++		vm_fd = __kvm_ioctl(kvm_fd, KVM_CREATE_VM, 0);
+ 		kvm_device_access(vm_fd, KVM_S390_VM_CPU_MODEL,
+ 				  KVM_S390_VM_CPU_PROCESSOR, &info, false);
+ 		close(vm_fd);
+diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
+index ac8faf072288..4d2748e8428a 100644
+--- a/tools/testing/selftests/kvm/lib/kvm_util.c
++++ b/tools/testing/selftests/kvm/lib/kvm_util.c
+@@ -76,9 +76,8 @@ int kvm_check_cap(long cap)
+ 	int kvm_fd;
+ 
+ 	kvm_fd = open_kvm_dev_path_or_exit();
+-	ret = ioctl(kvm_fd, KVM_CHECK_EXTENSION, cap);
+-	TEST_ASSERT(ret >= 0, "KVM_CHECK_EXTENSION IOCTL failed,\n"
+-		"  rc: %i errno: %i", ret, errno);
++	ret = __kvm_ioctl(kvm_fd, KVM_CHECK_EXTENSION, cap);
++	TEST_ASSERT(ret >= 0, KVM_IOCTL_ERROR(KVM_CHECK_EXTENSION, ret));
+ 
+ 	close(kvm_fd);
+ 
+@@ -104,9 +103,8 @@ static void vm_open(struct kvm_vm *vm)
+ 		exit(KSFT_SKIP);
+ 	}
+ 
+-	vm->fd = ioctl(vm->kvm_fd, KVM_CREATE_VM, vm->type);
+-	TEST_ASSERT(vm->fd >= 0, "KVM_CREATE_VM ioctl failed, "
+-		"rc: %i errno: %i", vm->fd, errno);
++	vm->fd = __kvm_ioctl(vm->kvm_fd, KVM_CREATE_VM, vm->type);
++	TEST_ASSERT(vm->fd >= 0, KVM_IOCTL_ERROR(KVM_CREATE_VM, vm->fd));
+ }
+ 
+ const char *vm_guest_mode_string(uint32_t i)
+@@ -1070,8 +1068,7 @@ static int vcpu_mmap_sz(void)
+ 
+ 	ret = ioctl(dev_fd, KVM_GET_VCPU_MMAP_SIZE, NULL);
+ 	TEST_ASSERT(ret >= sizeof(struct kvm_run),
+-		"%s KVM_GET_VCPU_MMAP_SIZE ioctl failed, rc: %i errno: %i",
+-		__func__, ret, errno);
++		    KVM_IOCTL_ERROR(KVM_GET_VCPU_MMAP_SIZE, ret));
+ 
+ 	close(dev_fd);
+ 
+diff --git a/tools/testing/selftests/kvm/lib/x86_64/processor.c b/tools/testing/selftests/kvm/lib/x86_64/processor.c
+index bd9d1b63b848..6113cf6bb238 100644
+--- a/tools/testing/selftests/kvm/lib/x86_64/processor.c
++++ b/tools/testing/selftests/kvm/lib/x86_64/processor.c
+@@ -639,7 +639,7 @@ void vm_xsave_req_perm(int bit)
+ 	};
+ 
+ 	kvm_fd = open_kvm_dev_path_or_exit();
+-	rc = ioctl(kvm_fd, KVM_GET_DEVICE_ATTR, &attr);
++	rc = __kvm_ioctl(kvm_fd, KVM_GET_DEVICE_ATTR, &attr);
+ 	close(kvm_fd);
+ 	if (rc == -1 && (errno == ENXIO || errno == EINVAL))
+ 		exit(KSFT_SKIP);
+@@ -739,7 +739,6 @@ static struct kvm_cpuid2 *allocate_kvm_cpuid2(void)
+ struct kvm_cpuid2 *kvm_get_supported_cpuid(void)
+ {
+ 	static struct kvm_cpuid2 *cpuid;
+-	int ret;
+ 	int kvm_fd;
+ 
+ 	if (cpuid)
+@@ -748,9 +747,7 @@ struct kvm_cpuid2 *kvm_get_supported_cpuid(void)
+ 	cpuid = allocate_kvm_cpuid2();
+ 	kvm_fd = open_kvm_dev_path_or_exit();
+ 
+-	ret = ioctl(kvm_fd, KVM_GET_SUPPORTED_CPUID, cpuid);
+-	TEST_ASSERT(ret == 0, "KVM_GET_SUPPORTED_CPUID failed %d %d\n",
+-		    ret, errno);
++	kvm_ioctl(kvm_fd, KVM_GET_SUPPORTED_CPUID, cpuid);
+ 
+ 	close(kvm_fd);
+ 	return cpuid;
+@@ -780,9 +777,8 @@ uint64_t kvm_get_feature_msr(uint64_t msr_index)
+ 	buffer.entry.index = msr_index;
+ 	kvm_fd = open_kvm_dev_path_or_exit();
+ 
+-	r = ioctl(kvm_fd, KVM_GET_MSRS, &buffer.header);
+-	TEST_ASSERT(r == 1, "KVM_GET_MSRS IOCTL failed,\n"
+-		"  rc: %i errno: %i", r, errno);
++	r = __kvm_ioctl(kvm_fd, KVM_GET_MSRS, &buffer.header);
++	TEST_ASSERT(r == 1, KVM_IOCTL_ERROR(KVM_GET_MSRS, r));
+ 
+ 	close(kvm_fd);
+ 	return buffer.entry.data;
+@@ -947,9 +943,9 @@ static int kvm_get_num_msrs_fd(int kvm_fd)
+ 	int r;
+ 
+ 	nmsrs.nmsrs = 0;
+-	r = ioctl(kvm_fd, KVM_GET_MSR_INDEX_LIST, &nmsrs);
+-	TEST_ASSERT(r == -1 && errno == E2BIG, "Unexpected result from KVM_GET_MSR_INDEX_LIST probe, r: %i",
+-		r);
++	r = __kvm_ioctl(kvm_fd, KVM_GET_MSR_INDEX_LIST, &nmsrs);
++	TEST_ASSERT(r == -1 && errno == E2BIG,
++		    "Unexpected result from KVM_GET_MSR_INDEX_LIST probe, r: %i", r);
+ 
+ 	return nmsrs.nmsrs;
+ }
+@@ -962,19 +958,16 @@ static int kvm_get_num_msrs(struct kvm_vm *vm)
+ struct kvm_msr_list *kvm_get_msr_index_list(void)
+ {
+ 	struct kvm_msr_list *list;
+-	int nmsrs, r, kvm_fd;
++	int nmsrs, kvm_fd;
+ 
+ 	kvm_fd = open_kvm_dev_path_or_exit();
+ 
+ 	nmsrs = kvm_get_num_msrs_fd(kvm_fd);
+ 	list = malloc(sizeof(*list) + nmsrs * sizeof(list->indices[0]));
+ 	list->nmsrs = nmsrs;
+-	r = ioctl(kvm_fd, KVM_GET_MSR_INDEX_LIST, list);
++	kvm_ioctl(kvm_fd, KVM_GET_MSR_INDEX_LIST, list);
+ 	close(kvm_fd);
+ 
+-	TEST_ASSERT(r == 0, "Unexpected result from KVM_GET_MSR_INDEX_LIST, r: %i",
+-		r);
+-
+ 	return list;
+ }
+ 
+@@ -1020,9 +1013,7 @@ struct kvm_x86_state *vcpu_save_state(struct kvm_vm *vm, uint32_t vcpuid)
+ 	nmsrs = kvm_get_num_msrs(vm);
+ 	list = malloc(sizeof(*list) + nmsrs * sizeof(list->indices[0]));
+ 	list->nmsrs = nmsrs;
+-	r = ioctl(vm->kvm_fd, KVM_GET_MSR_INDEX_LIST, list);
+-	TEST_ASSERT(r == 0, "Unexpected result from KVM_GET_MSR_INDEX_LIST, r: %i",
+-		    r);
++	kvm_ioctl(vm->kvm_fd, KVM_GET_MSR_INDEX_LIST, list);
+ 
+ 	state = malloc(sizeof(*state) + nmsrs * sizeof(state->msrs.entries[0]));
+ 	r = ioctl(vcpu->fd, KVM_GET_VCPU_EVENTS, &state->events);
+@@ -1330,7 +1321,6 @@ uint64_t kvm_hypercall(uint64_t nr, uint64_t a0, uint64_t a1, uint64_t a2,
+ struct kvm_cpuid2 *kvm_get_supported_hv_cpuid(void)
+ {
+ 	static struct kvm_cpuid2 *cpuid;
+-	int ret;
+ 	int kvm_fd;
+ 
+ 	if (cpuid)
+@@ -1339,9 +1329,7 @@ struct kvm_cpuid2 *kvm_get_supported_hv_cpuid(void)
+ 	cpuid = allocate_kvm_cpuid2();
+ 	kvm_fd = open_kvm_dev_path_or_exit();
+ 
+-	ret = ioctl(kvm_fd, KVM_GET_SUPPORTED_HV_CPUID, cpuid);
+-	TEST_ASSERT(ret == 0, "KVM_GET_SUPPORTED_HV_CPUID failed %d %d\n",
+-		    ret, errno);
++	kvm_ioctl(kvm_fd, KVM_GET_SUPPORTED_HV_CPUID, cpuid);
+ 
+ 	close(kvm_fd);
+ 	return cpuid;
+diff --git a/tools/testing/selftests/kvm/x86_64/get_msr_index_features.c b/tools/testing/selftests/kvm/x86_64/get_msr_index_features.c
+index 8aed0db1331d..4ef60adbe108 100644
+--- a/tools/testing/selftests/kvm/x86_64/get_msr_index_features.c
++++ b/tools/testing/selftests/kvm/x86_64/get_msr_index_features.c
+@@ -34,7 +34,7 @@ static int kvm_num_index_msrs(int kvm_fd, int nmsrs)
+ 
+ static void test_get_msr_index(void)
+ {
+-	int old_res, res, kvm_fd, r;
++	int old_res, res, kvm_fd;
+ 	struct kvm_msr_list *list;
+ 
+ 	kvm_fd = open_kvm_dev_path_or_exit();
+@@ -50,11 +50,8 @@ static void test_get_msr_index(void)
+ 
+ 	list = malloc(sizeof(*list) + old_res * sizeof(list->indices[0]));
+ 	list->nmsrs = old_res;
+-	r = ioctl(kvm_fd, KVM_GET_MSR_INDEX_LIST, list);
++	kvm_ioctl(kvm_fd, KVM_GET_MSR_INDEX_LIST, list);
+ 
+-	TEST_ASSERT(r == 0,
+-		    "Unexpected result from KVM_GET_MSR_FEATURE_INDEX_LIST, r: %i",
+-		    r);
+ 	TEST_ASSERT(list->nmsrs == old_res, "Expecting nmsrs to be identical");
+ 	free(list);
+ 
+@@ -68,7 +65,7 @@ static int kvm_num_feature_msrs(int kvm_fd, int nmsrs)
+ 
+ 	list = malloc(sizeof(*list) + nmsrs * sizeof(list->indices[0]));
+ 	list->nmsrs = nmsrs;
+-	r = ioctl(kvm_fd, KVM_GET_MSR_FEATURE_INDEX_LIST, list);
++	r = __kvm_ioctl(kvm_fd, KVM_GET_MSR_FEATURE_INDEX_LIST, list);
+ 	TEST_ASSERT(r == -1 && errno == E2BIG,
+ 		"Unexpected result from KVM_GET_MSR_FEATURE_INDEX_LIST probe, r: %i",
+ 				r);
+@@ -81,15 +78,10 @@ static int kvm_num_feature_msrs(int kvm_fd, int nmsrs)
+ struct kvm_msr_list *kvm_get_msr_feature_list(int kvm_fd, int nmsrs)
+ {
+ 	struct kvm_msr_list *list;
+-	int r;
+ 
+ 	list = malloc(sizeof(*list) + nmsrs * sizeof(list->indices[0]));
+ 	list->nmsrs = nmsrs;
+-	r = ioctl(kvm_fd, KVM_GET_MSR_FEATURE_INDEX_LIST, list);
+-
+-	TEST_ASSERT(r == 0,
+-		"Unexpected result from KVM_GET_MSR_FEATURE_INDEX_LIST, r: %i",
+-		r);
++	kvm_ioctl(kvm_fd, KVM_GET_MSR_FEATURE_INDEX_LIST, list);
+ 
+ 	return list;
+ }
+diff --git a/tools/testing/selftests/kvm/x86_64/mmio_warning_test.c b/tools/testing/selftests/kvm/x86_64/mmio_warning_test.c
+index 9f55ccd169a1..31ae837fedb1 100644
+--- a/tools/testing/selftests/kvm/x86_64/mmio_warning_test.c
++++ b/tools/testing/selftests/kvm/x86_64/mmio_warning_test.c
+@@ -59,10 +59,10 @@ void test(void)
+ 
+ 	kvm = open("/dev/kvm", O_RDWR);
+ 	TEST_ASSERT(kvm != -1, "failed to open /dev/kvm");
+-	kvmvm = ioctl(kvm, KVM_CREATE_VM, 0);
+-	TEST_ASSERT(kvmvm != -1, "KVM_CREATE_VM failed");
++	kvmvm = __kvm_ioctl(kvm, KVM_CREATE_VM, 0);
++	TEST_ASSERT(kvmvm > 0, KVM_IOCTL_ERROR(KVM_CREATE_VM, kvmvm));
+ 	kvmcpu = ioctl(kvmvm, KVM_CREATE_VCPU, 0);
+-	TEST_ASSERT(kvmcpu != -1, "KVM_CREATE_VCPU failed");
++	TEST_ASSERT(kvmcpu != -1, KVM_IOCTL_ERROR(KVM_CREATE_VCPU, kvmcpu));
+ 	run = (struct kvm_run *)mmap(0, 4096, PROT_READ|PROT_WRITE, MAP_SHARED,
+ 				    kvmcpu, 0);
+ 	tc.kvmcpu = kvmcpu;
 -- 
 2.36.1.255.ge46751e96f-goog
 
