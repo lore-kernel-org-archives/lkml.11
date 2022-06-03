@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9558DC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:52:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E313FCCA47C
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:52:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345404AbiFCRw3 (ORCPT
+        id S1345419AbiFCRwh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:52:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46606 "EHLO
+        Fri, 3 Jun 2022 13:52:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345389AbiFCRsu (ORCPT
+        with ESMTP id S1345391AbiFCRsu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 3 Jun 2022 13:48:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E046C0C;
-        Fri,  3 Jun 2022 10:45:34 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0203F55227;
+        Fri,  3 Jun 2022 10:45:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5737360A52;
-        Fri,  3 Jun 2022 17:45:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55C42C385A9;
-        Fri,  3 Jun 2022 17:45:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E2D2604EF;
+        Fri,  3 Jun 2022 17:45:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58B36C385B8;
+        Fri,  3 Jun 2022 17:45:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278332;
-        bh=sfPesHts5NEETGJlacjo7cJ3lGQkFq0c+AHqqGjnCjA=;
+        s=korg; t=1654278335;
+        bh=aRK5mDGZGC7naJL9YgFD6E9gV4OjjB5dfajnjI3ZvRI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NLNF20dP4bXydS6BTyLjBsdNZQFccNjr1XpZecKmXNhAoYlULmx8xUKAuVfPAEq7d
-         O6cAlign9KW5lYcusRKH0zU1Lgd4PWRF1Yn99TVcknDPne5V8aXxNqO/90k4QwG2se
-         WCeguCXFiNM43aLCaLrCbaj/UpPVulbrvX77Do7g=
+        b=Vlo3XtAAp+dVXHhYeMtJ+cZpvl+6gaPUa8RQT3T6MfXbfPxZuWSKhd8ZZeSFZ8lpk
+         Mr9zerOzA5Rt74VDGKJ1AH4VK5QeZ/7/QGiM68rvwnXAHzt7xyPw/ZZY0bVWTYmdJj
+         B93mmNaGTfdHNXgers2ogJRb5aIGiTeFJQX4sndo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Olga Kornievskaia <aglo@umich.edu>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>
-Subject: [PATCH 5.4 32/34] NFS: Memory allocation failures are not server fatal errors
-Date:   Fri,  3 Jun 2022 19:43:28 +0200
-Message-Id: <20220603173817.114480083@linuxfoundation.org>
+        stable@vger.kernel.org, Dai Ngo <dai.ngo@oracle.com>,
+        Chuck Lever <chuck.lever@oracle.com>
+Subject: [PATCH 5.4 33/34] NFSD: Fix possible sleep during nfsd4_release_lockowner()
+Date:   Fri,  3 Jun 2022 19:43:29 +0200
+Message-Id: <20220603173817.144471150@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173815.990072516@linuxfoundation.org>
 References: <20220603173815.990072516@linuxfoundation.org>
@@ -50,32 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Chuck Lever <chuck.lever@oracle.com>
 
-commit 452284407c18d8a522c3039339b1860afa0025a8 upstream.
+commit ce3c4ad7f4ce5db7b4f08a1e237d8dd94b39180b upstream.
 
-We need to filter out ENOMEM in nfs_error_is_fatal_on_server(), because
-running out of memory on our client is not a server error.
+nfsd4_release_lockowner() holds clp->cl_lock when it calls
+check_for_locks(). However, check_for_locks() calls nfsd_file_get()
+/ nfsd_file_put() to access the backing inode's flc_posix list, and
+nfsd_file_put() can sleep if the inode was recently removed.
 
-Reported-by: Olga Kornievskaia <aglo@umich.edu>
-Fixes: 2dc23afffbca ("NFS: ENOMEM should also be a fatal error.")
+Let's instead rely on the stateowner's reference count to gate
+whether the release is permitted. This should be a reliable
+indication of locks-in-use since file lock operations and
+->lm_get_owner take appropriate references, which are released
+appropriately when file locks are removed.
+
+Reported-by: Dai Ngo <dai.ngo@oracle.com>
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 Cc: stable@vger.kernel.org
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfs/internal.h |    1 +
- 1 file changed, 1 insertion(+)
+ fs/nfsd/nfs4state.c |   12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
 
---- a/fs/nfs/internal.h
-+++ b/fs/nfs/internal.h
-@@ -775,6 +775,7 @@ static inline bool nfs_error_is_fatal_on
- 	case 0:
- 	case -ERESTARTSYS:
- 	case -EINTR:
-+	case -ENOMEM:
- 		return false;
+--- a/fs/nfsd/nfs4state.c
++++ b/fs/nfsd/nfs4state.c
+@@ -6894,16 +6894,12 @@ nfsd4_release_lockowner(struct svc_rqst
+ 		if (sop->so_is_open_owner || !same_owner_str(sop, owner))
+ 			continue;
+ 
+-		/* see if there are still any locks associated with it */
+-		lo = lockowner(sop);
+-		list_for_each_entry(stp, &sop->so_stateids, st_perstateowner) {
+-			if (check_for_locks(stp->st_stid.sc_file, lo)) {
+-				status = nfserr_locks_held;
+-				spin_unlock(&clp->cl_lock);
+-				return status;
+-			}
++		if (atomic_read(&sop->so_count) != 1) {
++			spin_unlock(&clp->cl_lock);
++			return nfserr_locks_held;
+ 		}
+ 
++		lo = lockowner(sop);
+ 		nfs4_get_stateowner(sop);
+ 		break;
  	}
- 	return nfs_error_is_fatal(err);
 
 
