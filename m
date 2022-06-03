@@ -2,64 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A03BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 12:45:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 537A6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 12:47:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244378AbiFCMoz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 08:44:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40540 "EHLO
+        id S244227AbiFCMrS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 08:47:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241456AbiFCMox (ORCPT
+        with ESMTP id S229634AbiFCMrO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 08:44:53 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E759B3A5EB
-        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 05:44:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=prHzuJSdGpXr6LjPnJTEpBNy5odArLyBYR2PLFVZaIM=; b=nNv1FpDeC/fFG0CJOJCWZ+P397
-        4zUtZVcvttb8/mnnEHWzmbrMbhPB0X0OxVPwS1Ya6QHS3YIo+QvL0n5uPH/hMaYdlOxOlEzEClyJ2
-        y+p8YmqIgQkW8+mygDdL26+KVmZydN5xBiqt0QY/pzrjjT3o6WWYim0SAOvO5tfo7E5kKPF7CwW4z
-        8fiegG1fkthos8v9G1bqDslNFUyL/tgQbfvCSVe1lPv/GwuUGFucf6pxG6i8VAG3ZTCEQSanvzJLN
-        1xL458Ulx70RperxceADPp1+95D3dVTsDgdaCbJfrFUlR1FO49hQhbKn16ckmjwaI+2lG7CE4irRU
-        Th6aodcw==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nx6fU-007tzV-OM; Fri, 03 Jun 2022 12:44:44 +0000
-Date:   Fri, 3 Jun 2022 13:44:44 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Alistair Popple <apopple@nvidia.com>
-Cc:     akpm@linux-foundation.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mm/filemap.c: Update comments in filemap_fault()
-Message-ID: <YpoCPIdsDrBLdIsV@casper.infradead.org>
-References: <20220603071233.2296100-1-apopple@nvidia.com>
+        Fri, 3 Jun 2022 08:47:14 -0400
+Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2505D5F41
+        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 05:47:11 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by lithops.sigma-star.at (Postfix) with ESMTP id 51AF4609B3C1;
+        Fri,  3 Jun 2022 14:47:09 +0200 (CEST)
+Received: from lithops.sigma-star.at ([127.0.0.1])
+        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id CPGJgO34VG6Q; Fri,  3 Jun 2022 14:47:08 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by lithops.sigma-star.at (Postfix) with ESMTP id C2DD5609B3C2;
+        Fri,  3 Jun 2022 14:47:08 +0200 (CEST)
+Received: from lithops.sigma-star.at ([127.0.0.1])
+        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id PlKBWE2AaC1S; Fri,  3 Jun 2022 14:47:08 +0200 (CEST)
+Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
+        by lithops.sigma-star.at (Postfix) with ESMTP id 994E7609B3C1;
+        Fri,  3 Jun 2022 14:47:08 +0200 (CEST)
+Date:   Fri, 3 Jun 2022 14:47:08 +0200 (CEST)
+From:   Richard Weinberger <richard@nod.at>
+To:     torvalds <torvalds@linux-foundation.org>
+Cc:     linux-mtd <linux-mtd@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Message-ID: <735024820.130152.1654260428562.JavaMail.zimbra@nod.at>
+Subject: [GIT PULL] JFFS2, UBI and UBIFS updates for v5.19-rc1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220603071233.2296100-1-apopple@nvidia.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [195.201.40.130]
+X-Mailer: Zimbra 8.8.12_GA_3807 (ZimbraWebClient - FF97 (Linux)/8.8.12_GA_3809)
+Thread-Index: 1D42N45nL6ShMgyGtxZkZMfsOi2J+w==
+Thread-Topic: JFFS2, UBI and UBIFS updates for v5.19-rc1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 03, 2022 at 05:12:33PM +1000, Alistair Popple wrote:
-> +++ b/mm/filemap.c
-> @@ -3168,8 +3168,9 @@ vm_fault_t filemap_fault(struct vm_fault *vmf)
->  	VM_BUG_ON_FOLIO(!folio_contains(folio, index), folio);
->  
->  	/*
-> -	 * We have a locked page in the page cache, now we need to check
-> -	 * that it's up-to-date. If not, it is going to be due to an error.
-> +	 * We have a locked page in the page cache. Check that it's up-to-date.
-> +	 * If not it is because there was no page in the page cache (only likely
-> +	 * in the case of MADV_RANDOM) or due to error.
+Linus,
 
-The comment is correct, but the code is buggy!
+The following changes since commit 42226c989789d8da4af1de0c31070c96726d990c:
 
-We should be calling page_cache_ra_order() in do_sync_mmap_readahead(),
-even if VM_RAND_READ is set (or !ra_pages, or mmap_miss is high).
-At least for one page.  That would allow us to drop the FGP_FOR_MMAP
-flag as page_cache_ra_order() will instantiate a folio for us.
+  Linux 5.18-rc7 (2022-05-15 18:08:58 -0700)
 
-Do you want to write that patch or should I do it?
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/rw/ubifs.git tags/for-linus-5.19-rc1
+
+for you to fetch changes up to 8c03a1c21d72210f81cb369cc528e3fde4b45411:
+
+  ubi: ubi_create_volume: Fix use-after-free when volume creation failed (2022-05-27 16:49:41 +0200)
+
+----------------------------------------------------------------
+This pull request contains fixes for JFFS2, UBI and UBIFS
+
+JFFS2:
+        - Fixes for a memory leak
+
+UBI:
+        - Fixes for fastmap (UAF, high CPU usage)
+
+UBIFS:
+        - Minor cleanups
+
+----------------------------------------------------------------
+Baokun Li (1):
+      jffs2: fix memory leak in jffs2_do_fill_super
+
+Haowen Bai (2):
+      jffs2: Use kzalloc instead of kmalloc/memset
+      ubifs: Use NULL instead of using plain integer as pointer
+
+Minghao Chi (1):
+      ubifs: Simplify the return expression of run_gc()
+
+Zhihao Cheng (3):
+      ubi: fastmap: Fix high cpu usage of ubi_bgt by making sure wl_pool not empty
+      ubi: fastmap: Check wl_pool for free peb before wear leveling
+      ubi: ubi_create_volume: Fix use-after-free when volume creation failed
+
+ drivers/mtd/ubi/fastmap-wl.c | 121 +++++++++++++++++++++++++++++++++++--------
+ drivers/mtd/ubi/fastmap.c    |  11 ----
+ drivers/mtd/ubi/ubi.h        |   4 +-
+ drivers/mtd/ubi/vmt.c        |   1 -
+ drivers/mtd/ubi/wl.c         |  33 ++++++++----
+ drivers/mtd/ubi/wl.h         |   2 +
+ fs/jffs2/erase.c             |   6 +--
+ fs/jffs2/fs.c                |   1 +
+ fs/ubifs/budget.c            |   7 +--
+ fs/ubifs/xattr.c             |   2 +-
+ 10 files changed, 129 insertions(+), 59 deletions(-)
