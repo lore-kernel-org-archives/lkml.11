@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C0D7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:14:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB7F6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:14:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240365AbiFCSOX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:14:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51212 "EHLO
+        id S1346326AbiFCSO2 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 14:14:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346326AbiFCSAM (ORCPT
+        with ESMTP id S1346366AbiFCSAP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 14:00:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11980580FB;
-        Fri,  3 Jun 2022 10:56:12 -0700 (PDT)
+        Fri, 3 Jun 2022 14:00:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D695583B0;
+        Fri,  3 Jun 2022 10:56:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AD5A2B82189;
-        Fri,  3 Jun 2022 17:56:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04A3EC385A9;
-        Fri,  3 Jun 2022 17:56:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1AD0AB82419;
+        Fri,  3 Jun 2022 17:56:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AFC9C385A9;
+        Fri,  3 Jun 2022 17:56:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278969;
-        bh=aoUjbgcq58r/JunbedBzWXG5Q2u5FFyKsXE1IlujZss=;
+        s=korg; t=1654278975;
+        bh=2cOlQ4KYOO/RdVnxta68xpDZTkPgvpT6wROgQ21+BnY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=By2NfNdrHNUfeXeQRmeokeUANEvVk1XIOwqWIhQGYnDqc0AhSEFN9AOCHk7vsS1+J
-         PPDLkJVxiV/CUGe2zKILlTyT1Bjp3djjc1po+SIy69k6WZD5EoW23meWTZfk6YY3Z+
-         IA58uKwLlyf+PIUGIFG7919Q6FTapkl0YQjTaW7E=
+        b=R96LBe1PYju7/oHLv54DcwTqxzoDkgQK5YUWnxnq+C2LKnabiLrf5IdBZDTKIdhoJ
+         COUeLsOrOxdfUa1B8xPqERvAscvw2cgkeOdTrF9A5cRKNf80TegEptUZPTV/vaTPed
+         hriCh+gMtHLcXfp4vgfaxOu7p6/tXq6EuMBz1500=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, zhangziming.zzm@antgroup.com,
-        Stefano Brivio <sbrivio@redhat.com>,
-        Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.18 11/67] netfilter: nf_tables: sanitize nft_set_desc_concat_parse()
-Date:   Fri,  3 Jun 2022 19:43:12 +0200
-Message-Id: <20220603173821.057219025@linuxfoundation.org>
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: [PATCH 5.18 13/67] netfilter: nf_tables: double hook unregistration in netns path
+Date:   Fri,  3 Jun 2022 19:43:14 +0200
+Message-Id: <20220603173821.113350962@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.731531504@linuxfoundation.org>
 References: <20220603173820.731531504@linuxfoundation.org>
@@ -52,72 +50,135 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-commit fecf31ee395b0295f2d7260aa29946b7605f7c85 upstream.
+commit f9a43007d3f7ba76d5e7f9421094f00f2ef202f8 upstream.
 
-Add several sanity checks for nft_set_desc_concat_parse():
+__nft_release_hooks() is called from pre_netns exit path which
+unregisters the hooks, then the NETDEV_UNREGISTER event is triggered
+which unregisters the hooks again.
 
-- validate desc->field_count not larger than desc->field_len array.
-- field length cannot be larger than desc->field_len (ie. U8_MAX)
-- total length of the concatenation cannot be larger than register array.
+[  565.221461] WARNING: CPU: 18 PID: 193 at net/netfilter/core.c:495 __nf_unregister_net_hook+0x247/0x270
+[...]
+[  565.246890] CPU: 18 PID: 193 Comm: kworker/u64:1 Tainted: G            E     5.18.0-rc7+ #27
+[  565.253682] Workqueue: netns cleanup_net
+[  565.257059] RIP: 0010:__nf_unregister_net_hook+0x247/0x270
+[...]
+[  565.297120] Call Trace:
+[  565.300900]  <TASK>
+[  565.304683]  nf_tables_flowtable_event+0x16a/0x220 [nf_tables]
+[  565.308518]  raw_notifier_call_chain+0x63/0x80
+[  565.312386]  unregister_netdevice_many+0x54f/0xb50
 
-Joint work with Florian Westphal.
+Unregister and destroy netdev hook from netns pre_exit via kfree_rcu
+so the NETDEV_UNREGISTER path see unregistered hooks.
 
-Fixes: f3a2181e16f1 ("netfilter: nf_tables: Support for sets with multiple ranged fields")
-Reported-by: <zhangziming.zzm@antgroup.com>
-Reviewed-by: Stefano Brivio <sbrivio@redhat.com>
-Signed-off-by: Florian Westphal <fw@strlen.de>
+Fixes: 767d1216bff8 ("netfilter: nftables: fix possible UAF over chains from packet path in netns")
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nf_tables_api.c |   17 +++++++++++++----
- 1 file changed, 13 insertions(+), 4 deletions(-)
+ net/netfilter/nf_tables_api.c |   54 +++++++++++++++++++++++++++++++-----------
+ 1 file changed, 41 insertions(+), 13 deletions(-)
 
 --- a/net/netfilter/nf_tables_api.c
 +++ b/net/netfilter/nf_tables_api.c
-@@ -4246,6 +4246,9 @@ static int nft_set_desc_concat_parse(con
- 	u32 len;
- 	int err;
- 
-+	if (desc->field_count >= ARRAY_SIZE(desc->field_len))
-+		return -E2BIG;
-+
- 	err = nla_parse_nested_deprecated(tb, NFTA_SET_FIELD_MAX, attr,
- 					  nft_concat_policy, NULL);
- 	if (err < 0)
-@@ -4255,9 +4258,8 @@ static int nft_set_desc_concat_parse(con
- 		return -EINVAL;
- 
- 	len = ntohl(nla_get_be32(tb[NFTA_SET_FIELD_LEN]));
--
--	if (len * BITS_PER_BYTE / 32 > NFT_REG32_COUNT)
--		return -E2BIG;
-+	if (!len || len > U8_MAX)
-+		return -EINVAL;
- 
- 	desc->field_len[desc->field_count++] = len;
- 
-@@ -4268,7 +4270,8 @@ static int nft_set_desc_concat(struct nf
- 			       const struct nlattr *nla)
- {
- 	struct nlattr *attr;
--	int rem, err;
-+	u32 num_regs = 0;
-+	int rem, err, i;
- 
- 	nla_for_each_nested(attr, nla, rem) {
- 		if (nla_type(attr) != NFTA_LIST_ELEM)
-@@ -4279,6 +4282,12 @@ static int nft_set_desc_concat(struct nf
- 			return err;
- 	}
- 
-+	for (i = 0; i < desc->field_count; i++)
-+		num_regs += DIV_ROUND_UP(desc->field_len[i], sizeof(u32));
-+
-+	if (num_regs > NFT_REG32_COUNT)
-+		return -E2BIG;
-+
- 	return 0;
+@@ -222,12 +222,18 @@ err_register:
  }
  
+ static void nft_netdev_unregister_hooks(struct net *net,
+-					struct list_head *hook_list)
++					struct list_head *hook_list,
++					bool release_netdev)
+ {
+-	struct nft_hook *hook;
++	struct nft_hook *hook, *next;
+ 
+-	list_for_each_entry(hook, hook_list, list)
++	list_for_each_entry_safe(hook, next, hook_list, list) {
+ 		nf_unregister_net_hook(net, &hook->ops);
++		if (release_netdev) {
++			list_del(&hook->list);
++			kfree_rcu(hook, rcu);
++		}
++	}
+ }
+ 
+ static int nf_tables_register_hook(struct net *net,
+@@ -253,9 +259,10 @@ static int nf_tables_register_hook(struc
+ 	return nf_register_net_hook(net, &basechain->ops);
+ }
+ 
+-static void nf_tables_unregister_hook(struct net *net,
+-				      const struct nft_table *table,
+-				      struct nft_chain *chain)
++static void __nf_tables_unregister_hook(struct net *net,
++					const struct nft_table *table,
++					struct nft_chain *chain,
++					bool release_netdev)
+ {
+ 	struct nft_base_chain *basechain;
+ 	const struct nf_hook_ops *ops;
+@@ -270,11 +277,19 @@ static void nf_tables_unregister_hook(st
+ 		return basechain->type->ops_unregister(net, ops);
+ 
+ 	if (nft_base_chain_netdev(table->family, basechain->ops.hooknum))
+-		nft_netdev_unregister_hooks(net, &basechain->hook_list);
++		nft_netdev_unregister_hooks(net, &basechain->hook_list,
++					    release_netdev);
+ 	else
+ 		nf_unregister_net_hook(net, &basechain->ops);
+ }
+ 
++static void nf_tables_unregister_hook(struct net *net,
++				      const struct nft_table *table,
++				      struct nft_chain *chain)
++{
++	return __nf_tables_unregister_hook(net, table, chain, false);
++}
++
+ static void nft_trans_commit_list_add_tail(struct net *net, struct nft_trans *trans)
+ {
+ 	struct nftables_pernet *nft_net = nft_pernet(net);
+@@ -7301,13 +7316,25 @@ static void nft_unregister_flowtable_hoo
+ 				    FLOW_BLOCK_UNBIND);
+ }
+ 
+-static void nft_unregister_flowtable_net_hooks(struct net *net,
+-					       struct list_head *hook_list)
++static void __nft_unregister_flowtable_net_hooks(struct net *net,
++						 struct list_head *hook_list,
++					         bool release_netdev)
+ {
+-	struct nft_hook *hook;
++	struct nft_hook *hook, *next;
+ 
+-	list_for_each_entry(hook, hook_list, list)
++	list_for_each_entry_safe(hook, next, hook_list, list) {
+ 		nf_unregister_net_hook(net, &hook->ops);
++		if (release_netdev) {
++			list_del(&hook->list);
++			kfree_rcu(hook);
++		}
++	}
++}
++
++static void nft_unregister_flowtable_net_hooks(struct net *net,
++					       struct list_head *hook_list)
++{
++	__nft_unregister_flowtable_net_hooks(net, hook_list, false);
+ }
+ 
+ static int nft_register_flowtable_net_hooks(struct net *net,
+@@ -9751,9 +9778,10 @@ static void __nft_release_hook(struct ne
+ 	struct nft_chain *chain;
+ 
+ 	list_for_each_entry(chain, &table->chains, list)
+-		nf_tables_unregister_hook(net, table, chain);
++		__nf_tables_unregister_hook(net, table, chain, true);
+ 	list_for_each_entry(flowtable, &table->flowtables, list)
+-		nft_unregister_flowtable_net_hooks(net, &flowtable->hook_list);
++		__nft_unregister_flowtable_net_hooks(net, &flowtable->hook_list,
++						     true);
+ }
+ 
+ static void __nft_release_hooks(struct net *net)
 
 
