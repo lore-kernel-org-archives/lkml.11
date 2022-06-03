@@ -2,185 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18646C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 14:17:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D01DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 14:20:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245108AbiFCORF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 10:17:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53206 "EHLO
+        id S230339AbiFCOUL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 10:20:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245103AbiFCOQs (ORCPT
+        with ESMTP id S240024AbiFCOTw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 10:16:48 -0400
-Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5774843ED4
-        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 07:16:40 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id 3A7B45C0191;
-        Fri,  3 Jun 2022 10:16:38 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute2.internal (MEProxy); Fri, 03 Jun 2022 10:16:38 -0400
+        Fri, 3 Jun 2022 10:19:52 -0400
+Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4463048304
+        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 07:19:49 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.west.internal (Postfix) with ESMTP id 5F3913200903;
+        Fri,  3 Jun 2022 10:19:47 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Fri, 03 Jun 2022 10:19:48 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm3; t=1654265986; x=
+        1654352386; bh=pgoZiSnqzAty0gGUl5sg2b1gr+4y+ok52CSZUbELnhs=; b=s
+        aD5VBvbWjH/db2z8oHPTUNAOcujnTSV9jgaaQCTKU/lI6S9I8nGS9VkV0uriJb3H
+        lU5B8QwFz75okTIFfUu8b6CqrR3QOIKas0Ie/gtJae5KlPn4H+GLmz3f2KettEhC
+        U0TTOmiBYWN7r/dygmyWbENX/Re+u5cjoKt8t4Y+XoyulAlJgW6QmCo2bsWW01kk
+        f4rOUgbxyIn8FCmbYPYin0N2i9daK7X3P4qDtfg4QrhVMHiaOJlwxay9sHpJKP97
+        n6tz4Q4CvIK+JKvzWzG7hiF9Eu5itQrJj7K4QKALyVTqTqE7InhxxxxoRUI6btj+
+        SVyPrXh05MF2+RKm8m7wA==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        tom-fitzhenry.me.uk; h=cc:cc:content-transfer-encoding:date:date
-        :from:from:in-reply-to:message-id:mime-version:reply-to:sender
-        :subject:subject:to:to; s=fm1; t=1654265798; x=1654352198; bh=II
-        WE5U6MXchK3j3NJSoRc0MYsk5Fq/1S6HmxMUVoUno=; b=FbkmV9JU9AUbhMtWSb
-        WwogkiB7pxrJcdymU0W/iQ8HQhi061Wz63JMRnlzTRse+5PXaWpTYxW8g1rkwfSq
-        UR+jbMKb8GSZaJiv4vyvXPKHdfvAuMl8UGnnYTSKhuNx4nmFFrZKrcwYnEPOYTYv
-        JJuj/vqORGq+RwHxq7L1mk35gKTdlimF/IpTrD3q5ZgwqSv2N2qBpYgVT09fbfek
-        QLZ2W3ZyQUMc4/J5L24Av0n5YlYaLQti+3Iw1jv+BUfByKw5kQ7uEBBJAYKWuxdJ
-        Ox7PHBmMV4uRu154WiT5PsSCODB2z3F2thp4fwmaEAwQcw+kxdsvGWJy/lDSGqYl
-        5/iw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:message-id
-        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
-        1654265798; x=1654352198; bh=IIWE5U6MXchK3j3NJSoRc0MYsk5Fq/1S6Hm
-        xMUVoUno=; b=B6X2uvCWHQ1kybbGOcjJTB+5rjQJTZKuN+Uga6cwY1QysVoamaW
-        W9G9GDLCq1/11g1cUdRfbGGiQwOxX88IKkAetxOXd8s4mlkAmSNQSv7RAq3uUvu6
-        h0gg7jS22f0uEN+DuiO2XGXP66Xr8ObSPLH9frwnMnV7tlT4DDv64tXBS5kzlBle
-        CMTunB3gAEokJBfpZgTYor649acaBiIyX6eP8NnukbhoREdnyAk2C6p8UpUCDIyi
-        ZSlRGLx4Rpohu0wZU+QhlXL2bz/BdMV+TcMJTJpWBVGrllG6W4jWCff7+dPYn0II
-        DlUu4qEEonWMRABz06Mu06J/rrmh0sMf2Zw==
-X-ME-Sender: <xms:xReaYm_8QM6dWWqsKpTDYBnqxSkUy422UwChOBdOhr6S2B3bRR2h9g>
-    <xme:xReaYmtRwXS5WVrrfgOfX3NU9ireTtmch7arjiSvHSuJYj7IVBDSYyrMORboEFmr7
-    0cMsAKscoDwRN-Eqg>
-X-ME-Received: <xmr:xReaYsAkejWFugfeiShPK0jbyAzBhWJfgDbU6PaXQcuc45bINvoJs4XYy5yxRfC8uTBWvh4cX5wR79CBCtvEKgUy8vmxlTXl_jY>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrleeigdejvdcutefuodetggdotefrodftvf
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:feedback-id:feedback-id:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1654265986; x=
+        1654352386; bh=pgoZiSnqzAty0gGUl5sg2b1gr+4y+ok52CSZUbELnhs=; b=m
+        STwklVkTq53ZdBXcFpxGYQlAzb7GEIkGYNgU1g/iSlmXfqHRidn1wOUIu50qzC8r
+        z+MzGukeeIgtz8xTuK8aicpnkhOFy3SFYa1Q3/5BXdesp0i2M/cdI6art1c39dFC
+        s0TgI/1/p+A4Zp/2yeEv35XF25NbySOQ+bnzNxwQ3ml6sM81AZxEyvrYfA2XDj2T
+        TOcZbB4f5oLUo78+nEQ9lVEBFD1h7fQS4vzkc/Maj6kUQYgFnPK5NOU8vaYBjLSK
+        KzeCK9yIsukI1EnKGaQ6UqMZiQZdF/iyE4ndGwHj378EfKisifvPvx9on4/OwLAU
+        gWig2cWfKn7cOwgpKn7uQ==
+X-ME-Sender: <xms:gRiaYqz2b-6jK6fVgUAFH5tYyZoLAZ1Qa7lCN2jMc_L6xM9hV3sj5A>
+    <xme:gRiaYmSr0PPrPQxIIoUvGfWb5zTKGuYOrRVGrc0-5PdINBk9oBgbh39_VEAW94VYV
+    tNZBsZDiUUwTdT7kR4>
+X-ME-Received: <xmr:gRiaYsUpZfkLy95TMBHlV_kGTZkQXlx245HgZDNPdXoJP76cxADc81sJfy-x>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrleeigdejfecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefhvfevufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefvohhmucfhihht
-    iihhvghnrhihuceothhomhesthhomhdqfhhithiihhgvnhhrhidrmhgvrdhukheqnecugg
-    ftrfgrthhtvghrnhepffekheegkeehveehveetgfevuefggfeiveevueetheehgeegffeh
-    hefhudeilefhnecuffhomhgrihhnpehpihhnvgeigedrohhrghdpghhithhhuhgsrdgtoh
-    hmpdhkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhep
-    mhgrihhlfhhrohhmpehtohhmsehtohhmqdhfihhtiihhvghnrhihrdhmvgdruhhk
-X-ME-Proxy: <xmx:xReaYueR6SdbPPSEDWA8mt6ZCoj9iIRHtJ7txjVJH7lVAym2HYRWgQ>
-    <xmx:xReaYrNtwObnG0GAOeeuDqdiem1aaEpOZrjsLDwBtyuL6MYcMxfi1Q>
-    <xmx:xReaYokjaP6mhi86YU-3n-6qrbuXK4kh71r-AGQe4PfzXSogP3LiWA>
-    <xmx:xheaYokqYiH7yuAkwWuV7tlifNzR5-d2BMEbnvgsLYJEaZ57CbeD_Q>
-Feedback-ID: iefc945ae:Fastmail
+    fjughrpeffhffvvefukfhfgggtugfgjgesthhqredttddtjeenucfhrhhomhepofgrgihi
+    mhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrg
+    htthgvrhhnpeefhfejveejfefgfedtudetvdfgleethefgvdevueelhedtheejteeuheeh
+    geeikeenucffohhmrghinhepghhithhhuhgsrdgtohhmnecuvehluhhsthgvrhfuihiivg
+    eptdenucfrrghrrghmpehmrghilhhfrhhomhepmhgrgihimhgvsegtvghrnhhordhtvggt
+    hh
+X-ME-Proxy: <xmx:gRiaYggzGbB8-kfUsokcQrt3Iq4tg2npzWMmna9lRrXJwfLegnaiRA>
+    <xmx:gRiaYsCuN9a1lOnv0bnzn-PfJx5-JQutnJ_pxBONZ4CiwkxPvXMyCA>
+    <xmx:gRiaYhKEnFaVUIxDYykDH7nqOEbuHdHk2S2BHb2KHhWbJiJfDo85EQ>
+    <xmx:ghiaYsslgSXOzPaQBvGXUzAjIygdybVm31i7lgAVX1RoWY9-lMCuCA>
+Feedback-ID: i8771445c:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 3 Jun 2022 10:16:34 -0400 (EDT)
-From:   Tom Fitzhenry <tom@tom-fitzhenry.me.uk>
-To:     Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        Michael Walle <michael@walle.cc>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>
-Cc:     Tom Fitzhenry <tom@tom-fitzhenry.me.uk>,
-        linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org
-Subject: [PATCH v2] mtd: spi-nor: siliconkaiser: add support for sk25lp128
-Date:   Sat,  4 Jun 2022 00:16:03 +1000
-Message-Id: <20220603141603.145777-1-tom@tom-fitzhenry.me.uk>
-X-Mailer: git-send-email 2.36.0
+ 3 Jun 2022 10:19:45 -0400 (EDT)
+Date:   Fri, 3 Jun 2022 16:19:37 +0200
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Roman Stratiienko <r.stratiienko@gmail.com>
+Cc:     wens@csie.org,
+        Jernej =?utf-8?Q?=C5=A0krabec?= <jernej.skrabec@gmail.com>,
+        airlied@linux.ie, Daniel Vetter <daniel@ffwll.ch>,
+        Samuel Holland <samuel@sholland.org>,
+        dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org, megi@xff.cz
+Subject: Re: [PATCH] drm/sun4i: sun8i: Add the ability to keep scaler enabled
+ for VI layer
+Message-ID: <20220603141937.modhvsqa3urmpcxr@penduick>
+References: <20220602180118.66170-1-r.stratiienko@gmail.com>
+ <20220603082416.ukohug3mwzu43csu@penduick>
+ <CAGphcdkPJ57bkw4nxuSnk0TD1RGW5j9M-A0ek6t1rDnMY2PS8Q@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <CAGphcdkPJ57bkw4nxuSnk0TD1RGW5j9M-A0ek6t1rDnMY2PS8Q@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for the siliconkaiser sk25lp128 chip.
+On Fri, Jun 03, 2022 at 11:57:35AM +0300, Roman Stratiienko wrote:
+> Hi Maxime,
+>=20
+> =D0=BF=D1=82, 3 =D0=B8=D1=8E=D0=BD. 2022 =D0=B3. =D0=B2 11:24, Maxime Rip=
+ard <maxime@cerno.tech>:
+> >
+> > Hi,
+> >
+> > On Thu, Jun 02, 2022 at 06:01:18PM +0000, Roman Stratiienko wrote:
+> > > According to DE2.0/DE3.0 manual VI scaler enable register is double
+> > > buffered, but de facto it doesn't, or the hardware has the shadow
+> > > register latching issues which causes single-frame picture corruption
+> > > after changing the state of scaler enable register.
+> > >
+> > > Allow the user to keep the scaler always enabled, preventing the UI
+> > > glitches on the transition from scaled to unscaled state.
+> > >
+> > > NOTE:
+> > > UI layer scaler has more registers with double-buffering issue and ca=
+n't
+> > > be workarounded in the same manner.
+> > >
+> > > You may find a python test and a demo video for this issue at [1]
+> > >
+> > > [1]: https://github.com/GloDroid/glodroid_tests/issues/4
+> >
+> > Please describe the issue entirely here. The commit log must be self-su=
+fficient.
+>=20
+> Commit message already states "single-frame picture corruption after
+> changing the state of scaler enable register", therefore I find it
+> already self-sufficient
+>=20
+> Also I find demo videos and link to tests useful for the followers to
+> go further with investigation.
 
-This is the flash chip used in the PinePhone Pro[0], found by physical
-inspection of the board.[1]
+Until a couple of years, where that URL isn't valid anymore and it's just u=
+seless.
 
-I cannot find a datasheet, but this chip supports SFDP.
+> If you have something specific in mind when asking to enhance the
+> commit message please say it.
 
-This patch depends on SNOR_ID3().[2]
+What sequence of events trigger the issue, what issue it triggers and
+why your solution addresses it would be nice
 
-Tested done: checked that the Pinephone Pro boots when a ROM is written to
-/dev/mtdblock0.
+> > > Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
+> > > ---
+> > >  drivers/gpu/drm/sun4i/sun8i_mixer.c    | 12 ++++++++++++
+> > >  drivers/gpu/drm/sun4i/sun8i_vi_layer.c |  4 +++-
+> > >  2 files changed, 15 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.c b/drivers/gpu/drm/su=
+n4i/sun8i_mixer.c
+> > > index 71ab0a00b4de..15cad0330f66 100644
+> > > --- a/drivers/gpu/drm/sun4i/sun8i_mixer.c
+> > > +++ b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+> > > @@ -27,6 +27,18 @@
+> > >  #include "sun8i_vi_layer.h"
+> > >  #include "sunxi_engine.h"
+> > >
+> > > +/* According to DE2.0/DE3.0 manual VI scaler enable register is doub=
+le
+> > > + * buffered, but de facto it doesn't, or the hardware has the shadow
+> > > + * register latching issues which causes single-frame picture corrup=
+tion
+> > > + * after changing the state of scaler enable register.
+> > > + * Allow the user to keep the scaler always enabled, preventing the =
+UI
+> > > + * glitches on the transition from scaled to unscaled state.
+> > > + */
+> > > +int sun8i_vi_keep_scaler_enabled;
+> > > +MODULE_PARM_DESC(keep_vi_scaler_enabled,
+> > > +              "Keep VI scaler enabled (1 =3D enabled, 0 =3D disabled=
+ (default))");
+> > > +module_param_named(keep_vi_scaler_enabled, sun8i_vi_keep_scaler_enab=
+led, int, 0644);
+> > > +
+> >
+> > It's not clear to me why we would want to make that a parameter?
+> >
+> >1 If it never works, we should fix it once and for all and not allow a b=
+roken setup at all.
+>=20
+> It's a hardware issue and can be fixed only within the hardware.
+>=20
+> Current patch is a workaround that if enabled can cause increased
+> power consumption for existing users. Therefore I think it is better
+> to give existing distro-maintainers a chance to test it prior to
+> delivery.
 
-$ xxd -p /sys/bus/spi/devices/spi0.0/spi-nor/sfdp
-53464450060101ff00060110300000ff9d05010380000002ffffffffffff
-ffffffffffffffffffffffffffffffffffffe520f9ffffffff0744eb086b
-083b80bbfeffffffffff00ffffff44eb0c200f5210d800ff234ac90082d8
-11c7cccd68467a757a75f7a2d55c4a422cfff030c080ffffffffffffffff
-ffffffffffffffff501950169cf9c0648fecffff
-$ md5sum /sys/bus/spi/devices/spi0.0/spi-nor/sfdp
-de4d6be54e479d60859b0ca8a0ee9216
-/sys/bus/spi/devices/spi0.0/spi-nor/sfdp
-$ cat /sys/bus/spi/devices/spi0.0/spi-nor/jedec_id
-257018
-$ cat /sys/bus/spi/devices/spi0.0/spi-nor/partname
-sk25lp128
-$ cat /sys/bus/spi/devices/spi0.0/spi-nor/manufacturer
-siliconkaiser
+Except distro-maintainers are likely never going to notice that flag
+exists in the first place, won't be using it and thus the issue will
+remain.
 
-0. https://wiki.pine64.org/wiki/PinePhone_Pro#Specifications
-1. Thanks to https://github.com/Biktorgj for finding that.
-2. https://lore.kernel.org/all/20220510140232.3519184-1-michael@walle.cc/
-
-Link: https://lore.kernel.org/all/28d3925a-983a-fcb8-19af-6e6baf892d53@tom-fitzhenry.me.uk/
-Signed-off-by: Tom Fitzhenry <tom@tom-fitzhenry.me.uk>
----
- drivers/mtd/spi-nor/Makefile        |  1 +
- drivers/mtd/spi-nor/core.c          |  1 +
- drivers/mtd/spi-nor/core.h          |  1 +
- drivers/mtd/spi-nor/siliconkaiser.c | 15 +++++++++++++++
- 4 files changed, 18 insertions(+)
- create mode 100644 drivers/mtd/spi-nor/siliconkaiser.c
-
-diff --git a/drivers/mtd/spi-nor/Makefile b/drivers/mtd/spi-nor/Makefile
-index e347b435a038..314ac7773369 100644
---- a/drivers/mtd/spi-nor/Makefile
-+++ b/drivers/mtd/spi-nor/Makefile
-@@ -12,6 +12,7 @@ spi-nor-objs			+= intel.o
- spi-nor-objs			+= issi.o
- spi-nor-objs			+= macronix.o
- spi-nor-objs			+= micron-st.o
-+spi-nor-objs			+= siliconkaiser.o
- spi-nor-objs			+= spansion.o
- spi-nor-objs			+= sst.o
- spi-nor-objs			+= winbond.o
-diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
-index fdde80d9f388..e542d3009915 100644
---- a/drivers/mtd/spi-nor/core.c
-+++ b/drivers/mtd/spi-nor/core.c
-@@ -1624,6 +1624,7 @@ static const struct spi_nor_manufacturer *manufacturers[] = {
- 	&spi_nor_issi,
- 	&spi_nor_macronix,
- 	&spi_nor_micron,
-+	&spi_nor_siliconkaiser,
- 	&spi_nor_st,
- 	&spi_nor_spansion,
- 	&spi_nor_sst,
-diff --git a/drivers/mtd/spi-nor/core.h b/drivers/mtd/spi-nor/core.h
-index 87183cff3251..8997099f6c5e 100644
---- a/drivers/mtd/spi-nor/core.h
-+++ b/drivers/mtd/spi-nor/core.h
-@@ -625,6 +625,7 @@ extern const struct spi_nor_manufacturer spi_nor_intel;
- extern const struct spi_nor_manufacturer spi_nor_issi;
- extern const struct spi_nor_manufacturer spi_nor_macronix;
- extern const struct spi_nor_manufacturer spi_nor_micron;
-+extern const struct spi_nor_manufacturer spi_nor_siliconkaiser;
- extern const struct spi_nor_manufacturer spi_nor_st;
- extern const struct spi_nor_manufacturer spi_nor_spansion;
- extern const struct spi_nor_manufacturer spi_nor_sst;
-diff --git a/drivers/mtd/spi-nor/siliconkaiser.c b/drivers/mtd/spi-nor/siliconkaiser.c
-new file mode 100644
-index 000000000000..c3ca157244b8
---- /dev/null
-+++ b/drivers/mtd/spi-nor/siliconkaiser.c
-@@ -0,0 +1,15 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <linux/mtd/spi-nor.h>
-+
-+#include "core.h"
-+
-+static const struct flash_info siliconkaiser_nor_parts[] = {
-+	{ "sk25lp128", SNOR_ID3(0x257018) },
-+};
-+
-+const struct spi_nor_manufacturer spi_nor_siliconkaiser = {
-+	.name = "siliconkaiser",
-+	.parts = siliconkaiser_nor_parts,
-+	.nparts = ARRAY_SIZE(siliconkaiser_nor_parts),
-+};
--- 
-2.36.0
-
+Maxime
