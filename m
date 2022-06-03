@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 404C3C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:18:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46C8CC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:18:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343844AbiFCSSL (ORCPT
+        id S1346000AbiFCSST (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:18:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44904 "EHLO
+        Fri, 3 Jun 2022 14:18:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347619AbiFCSGK (ORCPT
+        with ESMTP id S1347621AbiFCSGK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 3 Jun 2022 14:06:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAA725C648;
-        Fri,  3 Jun 2022 10:59:10 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5C6A5C668;
+        Fri,  3 Jun 2022 10:59:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7293BB82419;
-        Fri,  3 Jun 2022 17:58:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADBBCC385A9;
-        Fri,  3 Jun 2022 17:58:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 97ED161244;
+        Fri,  3 Jun 2022 17:59:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 966C9C385A9;
+        Fri,  3 Jun 2022 17:59:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654279114;
-        bh=XNeBLSYMPSQjPWmzLH3dmNef5spnlWweGemETuSTW7o=;
+        s=korg; t=1654279152;
+        bh=zNBriAybDk2IYMCrYLDMQmf+Q0OdY4Eg8wnW7cnhBSw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TFygasQSINCaWjc8gHWztbbXmDnjgfHy+Tz0i0mwWANwzQL0dsRDzzS1L+wgTpfGt
-         loFphZRh5XiofsCodEnBg1VBUsyjWXlR8BW6xWA0YdsV46slEW8k6byiGAUZgOWxAu
-         oV04FM6RKGg1yQxoR6TdR56+sEhR6n2iyNsXUlps=
+        b=TYRd9Wj9k8Yit1iGwy9nXhhCLNOvwSqoI6v90trB1aSzGXYlA80tQPzY4BKkbiL2B
+         Fv+FbtIfk5yevSN/OV+/0+g4wzzAftWn0yVXKSy/+7kTOUCVgbL5CZPFgGSSaXAgmU
+         /4izC0y+1DYt4+o8pnWvJp6iruTnoRk3Q679ezj8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Olga Kornievskaia <aglo@umich.edu>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>
-Subject: [PATCH 5.18 57/67] NFS: Memory allocation failures are not server fatal errors
-Date:   Fri,  3 Jun 2022 19:43:58 +0200
-Message-Id: <20220603173822.365946973@linuxfoundation.org>
+        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        Milan Broz <gmazyland@gmail.com>,
+        Mike Snitzer <snitzer@kernel.org>
+Subject: [PATCH 5.18 40/67] dm crypt: make printing of the key constant-time
+Date:   Fri,  3 Jun 2022 19:43:41 +0200
+Message-Id: <20220603173821.888219448@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.731531504@linuxfoundation.org>
 References: <20220603173820.731531504@linuxfoundation.org>
@@ -50,32 +50,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Mikulas Patocka <mpatocka@redhat.com>
 
-commit 452284407c18d8a522c3039339b1860afa0025a8 upstream.
+commit 567dd8f34560fa221a6343729474536aa7ede4fd upstream.
 
-We need to filter out ENOMEM in nfs_error_is_fatal_on_server(), because
-running out of memory on our client is not a server error.
+The device mapper dm-crypt target is using scnprintf("%02x", cc->key[i]) to
+report the current key to userspace. However, this is not a constant-time
+operation and it may leak information about the key via timing, via cache
+access patterns or via the branch predictor.
 
-Reported-by: Olga Kornievskaia <aglo@umich.edu>
-Fixes: 2dc23afffbca ("NFS: ENOMEM should also be a fatal error.")
+Change dm-crypt's key printing to use "%c" instead of "%02x". Also
+introduce hex2asc() that carefully avoids any branching or memory
+accesses when converting a number in the range 0 ... 15 to an ascii
+character.
+
 Cc: stable@vger.kernel.org
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Tested-by: Milan Broz <gmazyland@gmail.com>
+Signed-off-by: Mike Snitzer <snitzer@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfs/internal.h |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/md/dm-crypt.c |   14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
---- a/fs/nfs/internal.h
-+++ b/fs/nfs/internal.h
-@@ -841,6 +841,7 @@ static inline bool nfs_error_is_fatal_on
- 	case 0:
- 	case -ERESTARTSYS:
- 	case -EINTR:
-+	case -ENOMEM:
- 		return false;
- 	}
- 	return nfs_error_is_fatal(err);
+--- a/drivers/md/dm-crypt.c
++++ b/drivers/md/dm-crypt.c
+@@ -3439,6 +3439,11 @@ static int crypt_map(struct dm_target *t
+ 	return DM_MAPIO_SUBMITTED;
+ }
+ 
++static char hex2asc(unsigned char c)
++{
++	return c + '0' + ((unsigned)(9 - c) >> 4 & 0x27);
++}
++
+ static void crypt_status(struct dm_target *ti, status_type_t type,
+ 			 unsigned status_flags, char *result, unsigned maxlen)
+ {
+@@ -3457,9 +3462,12 @@ static void crypt_status(struct dm_targe
+ 		if (cc->key_size > 0) {
+ 			if (cc->key_string)
+ 				DMEMIT(":%u:%s", cc->key_size, cc->key_string);
+-			else
+-				for (i = 0; i < cc->key_size; i++)
+-					DMEMIT("%02x", cc->key[i]);
++			else {
++				for (i = 0; i < cc->key_size; i++) {
++					DMEMIT("%c%c", hex2asc(cc->key[i] >> 4),
++					       hex2asc(cc->key[i] & 0xf));
++				}
++			}
+ 		} else
+ 			DMEMIT("-");
+ 
 
 
