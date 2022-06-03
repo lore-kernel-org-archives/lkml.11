@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A88EAC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:58:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C370C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:58:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345968AbiFCR6I (ORCPT
+        id S1346050AbiFCR6N (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:58:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58274 "EHLO
+        Fri, 3 Jun 2022 13:58:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346752AbiFCRv3 (ORCPT
+        with ESMTP id S1346857AbiFCRvd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:51:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D4705798D;
-        Fri,  3 Jun 2022 10:49:23 -0700 (PDT)
+        Fri, 3 Jun 2022 13:51:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46E975A156;
+        Fri,  3 Jun 2022 10:49:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 474A560F3E;
-        Fri,  3 Jun 2022 17:49:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 412DDC385B8;
-        Fri,  3 Jun 2022 17:49:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F3E460F3E;
+        Fri,  3 Jun 2022 17:49:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77C8EC385A9;
+        Fri,  3 Jun 2022 17:49:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278562;
-        bh=+8/rSL0dktqyZfvWABToCYxgk0Wct5z+yxpZFfy6gak=;
+        s=korg; t=1654278572;
+        bh=mIDAvWxdB6qqu9n87Qx4+I7DdbEph4ufuQK535negPs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FwhH0zzWRRDj3Bp1eo7IjrJT7KDRKDZ6+JkhSzoGszROzvnC8S85aGiPeTOKxonjJ
-         RH9BGimiM04iZxu0tzjZ/ircNtxg8AD/7IV2FT8UztY/hHwiBw9/IP4+IcSjAz7agH
-         CpvHcJXYWgqR4FQsz4OtK/oz3YPkY4cv5DsPZ0QY=
+        b=m0Y+R7YoKbh5zV9B4gfQTwR1z8XcPhtDroeB1lrzctoLlDrVQE+8K5V2n6lMSHqv6
+         3OKFQk7TWPe36n8B0yFWxe6mp2rulbfPZ91J6ON3lVYSpQ87sgJi7Ns0Q74mEhka4a
+         uohjK5K7sB3EpWZd+5G9jqEQ9Q9parREs4iWB3Jg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, IotaHydrae <writeforever@foxmail.com>,
-        Andre Przywara <andre.przywara@arm.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 02/66] pinctrl: sunxi: fix f1c100s uart2 function
-Date:   Fri,  3 Jun 2022 19:42:42 +0200
-Message-Id: <20220603173820.738267020@linuxfoundation.org>
+        stable@vger.kernel.org, Nicolai Stange <nstange@suse.de>,
+        =?UTF-8?q?Stephan=20M=C3=BCller?= <smueller@chronox.de>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.15 22/66] crypto: drbg - move dynamic ->reseed_threshold adjustments to __drbg_seed()
+Date:   Fri,  3 Jun 2022 19:43:02 +0200
+Message-Id: <20220603173821.302120799@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.663747061@linuxfoundation.org>
 References: <20220603173820.663747061@linuxfoundation.org>
@@ -51,45 +51,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: IotaHydrae <writeforever@foxmail.com>
+From: Nicolai Stange <nstange@suse.de>
 
-[ Upstream commit fa8785e5931367e2b43f2c507f26bcf3e281c0ca ]
+commit 262d83a4290c331cd4f617a457408bdb82fbb738 upstream.
 
-Change suniv f1c100s pinctrl,PD14 multiplexing function lvds1 to uart2
+Since commit 42ea507fae1a ("crypto: drbg - reseed often if seedsource is
+degraded"), the maximum seed lifetime represented by ->reseed_threshold
+gets temporarily lowered if the get_random_bytes() source cannot provide
+sufficient entropy yet, as is common during boot, and restored back to
+the original value again once that has changed.
 
-When the pin PD13 and PD14 is setting up to uart2 function in dts,
-there's an error occurred:
-1c20800.pinctrl: unsupported function uart2 on pin PD14
+More specifically, if the add_random_ready_callback() invoked from
+drbg_prepare_hrng() in the course of DRBG instantiation does not return
+-EALREADY, that is, if get_random_bytes() has not been fully initialized
+at this point yet, drbg_prepare_hrng() will lower ->reseed_threshold
+to a value of 50. The drbg_async_seed() scheduled from said
+random_ready_callback will eventually restore the original value.
 
-Because 'uart2' is not any one multiplexing option of PD14,
-and pinctrl don't know how to configure it.
+A future patch will replace the random_ready_callback based notification
+mechanism and thus, there will be no add_random_ready_callback() return
+value anymore which could get compared to -EALREADY.
 
-So change the pin PD14 lvds1 function to uart2.
+However, there's __drbg_seed() which gets invoked in the course of both,
+the DRBG instantiation as well as the eventual reseeding from
+get_random_bytes() in aforementioned drbg_async_seed(), if any. Moreover,
+it knows about the get_random_bytes() initialization state by the time the
+seed data had been obtained from it: the new_seed_state argument introduced
+with the previous patch would get set to DRBG_SEED_STATE_PARTIAL in case
+get_random_bytes() had not been fully initialized yet and to
+DRBG_SEED_STATE_FULL otherwise. Thus, __drbg_seed() provides a convenient
+alternative for managing that ->reseed_threshold lowering and restoring at
+a central place.
 
-Signed-off-by: IotaHydrae <writeforever@foxmail.com>
-Reviewed-by: Andre Przywara <andre.przywara@arm.com>
-Link: https://lore.kernel.org/r/tencent_70C1308DDA794C81CAEF389049055BACEC09@qq.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Move all ->reseed_threshold adjustment code from drbg_prepare_hrng() and
+drbg_async_seed() respectively to __drbg_seed(). Make __drbg_seed()
+lower the ->reseed_threshold to 50 in case its new_seed_state argument
+equals DRBG_SEED_STATE_PARTIAL and let it restore the original value
+otherwise.
+
+There is no change in behaviour.
+
+Signed-off-by: Nicolai Stange <nstange@suse.de>
+Reviewed-by: Stephan Müller <smueller@chronox.de>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pinctrl/sunxi/pinctrl-suniv-f1c100s.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ crypto/drbg.c |   30 +++++++++++++++++++++---------
+ 1 file changed, 21 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/pinctrl/sunxi/pinctrl-suniv-f1c100s.c b/drivers/pinctrl/sunxi/pinctrl-suniv-f1c100s.c
-index 2801ca706273..68a5b627fb9b 100644
---- a/drivers/pinctrl/sunxi/pinctrl-suniv-f1c100s.c
-+++ b/drivers/pinctrl/sunxi/pinctrl-suniv-f1c100s.c
-@@ -204,7 +204,7 @@ static const struct sunxi_desc_pin suniv_f1c100s_pins[] = {
- 		  SUNXI_FUNCTION(0x0, "gpio_in"),
- 		  SUNXI_FUNCTION(0x1, "gpio_out"),
- 		  SUNXI_FUNCTION(0x2, "lcd"),		/* D20 */
--		  SUNXI_FUNCTION(0x3, "lvds1"),		/* RX */
-+		  SUNXI_FUNCTION(0x3, "uart2"),		/* RX */
- 		  SUNXI_FUNCTION_IRQ_BANK(0x6, 0, 14)),
- 	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 15),
- 		  SUNXI_FUNCTION(0x0, "gpio_in"),
--- 
-2.35.1
-
+--- a/crypto/drbg.c
++++ b/crypto/drbg.c
+@@ -1047,6 +1047,27 @@ static inline int __drbg_seed(struct drb
+ 	/* 10.1.1.2 / 10.1.1.3 step 5 */
+ 	drbg->reseed_ctr = 1;
+ 
++	switch (drbg->seeded) {
++	case DRBG_SEED_STATE_UNSEEDED:
++		/* Impossible, but handle it to silence compiler warnings. */
++		fallthrough;
++	case DRBG_SEED_STATE_PARTIAL:
++		/*
++		 * Require frequent reseeds until the seed source is
++		 * fully initialized.
++		 */
++		drbg->reseed_threshold = 50;
++		break;
++
++	case DRBG_SEED_STATE_FULL:
++		/*
++		 * Seed source has become fully initialized, frequent
++		 * reseeds no longer required.
++		 */
++		drbg->reseed_threshold = drbg_max_requests(drbg);
++		break;
++	}
++
+ 	return ret;
+ }
+ 
+@@ -1095,9 +1116,6 @@ static void drbg_async_seed(struct work_
+ 
+ 	__drbg_seed(drbg, &seedlist, true, DRBG_SEED_STATE_FULL);
+ 
+-	if (drbg->seeded == DRBG_SEED_STATE_FULL)
+-		drbg->reseed_threshold = drbg_max_requests(drbg);
+-
+ unlock:
+ 	mutex_unlock(&drbg->drbg_mutex);
+ 
+@@ -1533,12 +1551,6 @@ static int drbg_prepare_hrng(struct drbg
+ 		return err;
+ 	}
+ 
+-	/*
+-	 * Require frequent reseeds until the seed source is fully
+-	 * initialized.
+-	 */
+-	drbg->reseed_threshold = 50;
+-
+ 	return err;
+ }
+ 
 
 
