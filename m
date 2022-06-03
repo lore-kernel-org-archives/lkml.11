@@ -2,125 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8874C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:57:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 864E3C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:57:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345913AbiFCR5M (ORCPT
+        id S1345871AbiFCR5Y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:57:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46474 "EHLO
+        Fri, 3 Jun 2022 13:57:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346528AbiFCRvP (ORCPT
+        with ESMTP id S1346545AbiFCRvQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:51:15 -0400
-Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1C9656FAA
-        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 10:48:28 -0700 (PDT)
-Received: from in01.mta.xmission.com ([166.70.13.51]:36402)
-        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nxBPP-00Gg1P-0c; Fri, 03 Jun 2022 11:48:27 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:42780 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nxBPN-000zSt-Ka; Fri, 03 Jun 2022 11:48:26 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     <linux-kernel@vger.kernel.org>
-Date:   Fri, 03 Jun 2022 12:48:19 -0500
-Message-ID: <87v8th7i58.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Fri, 3 Jun 2022 13:51:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC58C56F90;
+        Fri,  3 Jun 2022 10:48:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 98070B8241D;
+        Fri,  3 Jun 2022 17:48:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4342C385B8;
+        Fri,  3 Jun 2022 17:48:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654278508;
+        bh=0AmZgFQDiQC+4i1zT87EYUcy6yVZrjKk6HpDT42EJ8A=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=a91DguOprLUkEI6BYiaWGRebNEmK/Yup3ENG5RtWi2i0iTx7sCo6di4QW6Iq8Xyo5
+         AoXyoDmPQNjl4er9JujF/5tW17UnfkWkPwi9OYrPiwN7ZC8FIEXlXcI2yCkXUFk0GI
+         JQoxZHIBLiqJ2E0K/8k2jmrGNvq3c6HmDBVPSCT4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        syzbot+a4087e40b9c13aad7892@syzkaller.appspotmail.com,
+        Tadeusz Struk <tadeusz.struk@linaro.org>,
+        Sungjong Seo <sj1557.seo@samsung.com>,
+        Namjae Jeon <linkinjeon@kernel.org>
+Subject: [PATCH 5.10 22/53] exfat: check if cluster num is valid
+Date:   Fri,  3 Jun 2022 19:43:07 +0200
+Message-Id: <20220603173819.370000347@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220603173818.716010877@linuxfoundation.org>
+References: <20220603173818.716010877@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1nxBPN-000zSt-Ka;;;mid=<87v8th7i58.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX19mNLrrPBZ5vfWVQCM18ArZKaY0/4+5EE8=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: [GIT PULL] kthread cleanups for v5.19
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Tadeusz Struk <tadeusz.struk@linaro.org>
 
-This set of changes updates init and user mode helper tasks to be
-ordinary user mode tasks.
+commit 64ba4b15e5c045f8b746c6da5fc9be9a6b00b61d upstream.
 
-In commit 40966e316f86 ("kthread: Ensure struct kthread is present for
-all kthreads") caused init and the user mode helper threads that call
-kernel_execve to have struct kthread allocated for them.  This struct
-kthread going away during execve in turned made a use after free of
-struct kthread possible.
+Syzbot reported slab-out-of-bounds read in exfat_clear_bitmap.
+This was triggered by reproducer calling truncute with size 0,
+which causes the following trace:
 
-The commit 343f4c49f243 ("kthread: Don't allocate kthread_struct for
-init and umh") is enough to fix the use after free and is simple enough
-to be backportable.
+BUG: KASAN: slab-out-of-bounds in exfat_clear_bitmap+0x147/0x490 fs/exfat/balloc.c:174
+Read of size 8 at addr ffff888115aa9508 by task syz-executor251/365
 
-The rest of the changes pass struct kernel_clone_args to clean things
-up and cause the code to make sense.
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack_lvl+0x1e2/0x24b lib/dump_stack.c:118
+ print_address_description+0x81/0x3c0 mm/kasan/report.c:233
+ __kasan_report mm/kasan/report.c:419 [inline]
+ kasan_report+0x1a4/0x1f0 mm/kasan/report.c:436
+ __asan_report_load8_noabort+0x14/0x20 mm/kasan/report_generic.c:309
+ exfat_clear_bitmap+0x147/0x490 fs/exfat/balloc.c:174
+ exfat_free_cluster+0x25a/0x4a0 fs/exfat/fatent.c:181
+ __exfat_truncate+0x99e/0xe00 fs/exfat/file.c:217
+ exfat_truncate+0x11b/0x4f0 fs/exfat/file.c:243
+ exfat_setattr+0xa03/0xd40 fs/exfat/file.c:339
+ notify_change+0xb76/0xe10 fs/attr.c:336
+ do_truncate+0x1ea/0x2d0 fs/open.c:65
 
-In making init and the user mode helpers tasks purely user mode tasks
-I ran into two complications.  The function task_tick_numa was
-detecting tasks without an mm by testing for the presence of
-PF_KTHREAD.  The initramfs code in populate_initrd_image was using
-flush_delayed_fput to ensuere the closing of all it's file descriptors
-was complete, and flush_delayed_fput does not work in a userspace thread.
+Move the is_valid_cluster() helper from fatent.c to a common
+header to make it reusable in other *.c files. And add is_valid_cluster()
+to validate if cluster number is within valid range in exfat_clear_bitmap()
+and exfat_set_bitmap().
 
-I have looked and looked and more complications and in my code review
-I have not found any, and neither has anyone else with the code sitting
-in linux-next.
+Link: https://syzkaller.appspot.com/bug?id=50381fc73821ecae743b8cf24b4c9a04776f767c
+Reported-by: syzbot+a4087e40b9c13aad7892@syzkaller.appspotmail.com
+Fixes: 1e49a94cf707 ("exfat: add bitmap operations")
+Cc: stable@vger.kernel.org # v5.7+
+Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
+Reviewed-by: Sungjong Seo <sj1557.seo@samsung.com>
+Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/exfat/balloc.c   |    8 ++++++--
+ fs/exfat/exfat_fs.h |    8 ++++++++
+ fs/exfat/fatent.c   |    8 --------
+ 3 files changed, 14 insertions(+), 10 deletions(-)
 
-Link: https://lkml.kernel.org/r/87mtfu4up3.fsf@email.froward.int.ebiederm.org
+--- a/fs/exfat/balloc.c
++++ b/fs/exfat/balloc.c
+@@ -148,7 +148,9 @@ int exfat_set_bitmap(struct inode *inode
+ 	struct super_block *sb = inode->i_sb;
+ 	struct exfat_sb_info *sbi = EXFAT_SB(sb);
+ 
+-	WARN_ON(clu < EXFAT_FIRST_CLUSTER);
++	if (!is_valid_cluster(sbi, clu))
++		return -EINVAL;
++
+ 	ent_idx = CLUSTER_TO_BITMAP_ENT(clu);
+ 	i = BITMAP_OFFSET_SECTOR_INDEX(sb, ent_idx);
+ 	b = BITMAP_OFFSET_BIT_IN_SECTOR(sb, ent_idx);
+@@ -166,7 +168,9 @@ void exfat_clear_bitmap(struct inode *in
+ 	struct exfat_sb_info *sbi = EXFAT_SB(sb);
+ 	struct exfat_mount_options *opts = &sbi->options;
+ 
+-	WARN_ON(clu < EXFAT_FIRST_CLUSTER);
++	if (!is_valid_cluster(sbi, clu))
++		return;
++
+ 	ent_idx = CLUSTER_TO_BITMAP_ENT(clu);
+ 	i = BITMAP_OFFSET_SECTOR_INDEX(sb, ent_idx);
+ 	b = BITMAP_OFFSET_BIT_IN_SECTOR(sb, ent_idx);
+--- a/fs/exfat/exfat_fs.h
++++ b/fs/exfat/exfat_fs.h
+@@ -380,6 +380,14 @@ static inline int exfat_sector_to_cluste
+ 		EXFAT_RESERVED_CLUSTERS;
+ }
+ 
++static inline bool is_valid_cluster(struct exfat_sb_info *sbi,
++		unsigned int clus)
++{
++	if (clus < EXFAT_FIRST_CLUSTER || sbi->num_clusters <= clus)
++		return false;
++	return true;
++}
++
+ /* super.c */
+ int exfat_set_volume_dirty(struct super_block *sb);
+ int exfat_clear_volume_dirty(struct super_block *sb);
+--- a/fs/exfat/fatent.c
++++ b/fs/exfat/fatent.c
+@@ -81,14 +81,6 @@ int exfat_ent_set(struct super_block *sb
+ 	return 0;
+ }
+ 
+-static inline bool is_valid_cluster(struct exfat_sb_info *sbi,
+-		unsigned int clus)
+-{
+-	if (clus < EXFAT_FIRST_CLUSTER || sbi->num_clusters <= clus)
+-		return false;
+-	return true;
+-}
+-
+ int exfat_ent_get(struct super_block *sb, unsigned int loc,
+ 		unsigned int *content)
+ {
 
-Eric W. Biederman (8):
-      kthread: Don't allocate kthread_struct for init and umh
-      fork: Pass struct kernel_clone_args into copy_thread
-      fork: Explicity test for idle tasks in copy_thread
-      fork: Generalize PF_IO_WORKER handling
-      init: Deal with the init process being a user mode process
-      fork: Explicitly set PF_KTHREAD
-      fork: Stop allowing kthreads to call execve
-      sched: Update task_tick_numa to ignore tasks without an mm
 
- arch/alpha/kernel/process.c      | 13 ++++++------
- arch/arc/kernel/process.c        | 13 ++++++------
- arch/arm/kernel/process.c        | 12 ++++++-----
- arch/arm64/kernel/process.c      | 12 ++++++-----
- arch/csky/kernel/process.c       | 15 ++++++-------
- arch/h8300/kernel/process.c      | 10 ++++-----
- arch/hexagon/kernel/process.c    | 12 ++++++-----
- arch/ia64/kernel/process.c       | 15 +++++++------
- arch/m68k/kernel/process.c       | 12 ++++++-----
- arch/microblaze/kernel/process.c | 12 ++++++-----
- arch/mips/kernel/process.c       | 13 ++++++------
- arch/nios2/kernel/process.c      | 12 ++++++-----
- arch/openrisc/kernel/process.c   | 12 ++++++-----
- arch/parisc/kernel/process.c     | 18 +++++++++-------
- arch/powerpc/kernel/process.c    | 15 +++++++------
- arch/riscv/kernel/process.c      | 12 ++++++-----
- arch/s390/kernel/process.c       | 12 ++++++-----
- arch/sh/kernel/process_32.c      | 12 ++++++-----
- arch/sparc/kernel/process_32.c   | 12 ++++++-----
- arch/sparc/kernel/process_64.c   | 12 ++++++-----
- arch/um/kernel/process.c         | 15 +++++++------
- arch/x86/include/asm/fpu/sched.h |  2 +-
- arch/x86/include/asm/switch_to.h |  8 +++----
- arch/x86/kernel/fpu/core.c       |  4 ++--
- arch/x86/kernel/process.c        | 18 +++++++++-------
- arch/xtensa/kernel/process.c     | 17 ++++++++-------
- fs/exec.c                        |  8 ++++---
- include/linux/sched/task.h       |  8 +++++--
- init/initramfs.c                 |  2 ++
- init/main.c                      |  2 +-
- kernel/fork.c                    | 46 +++++++++++++++++++++++++++++++++-------
- kernel/sched/fair.c              |  2 +-
- kernel/umh.c                     |  6 +++---
- 33 files changed, 234 insertions(+), 160 deletions(-)
-
-Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
-
-p.s.  My apologies for this coming in so late.  The code has been ready
-just everyone in my house has been sick since the start of the merge window.
