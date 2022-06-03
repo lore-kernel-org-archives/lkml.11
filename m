@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 534E2CCA473
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:40:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 294E3CCA473
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:41:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344751AbiFCRky (ORCPT
+        id S1344710AbiFCRk5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:40:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56124 "EHLO
+        Fri, 3 Jun 2022 13:40:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236861AbiFCRkV (ORCPT
+        with ESMTP id S1344662AbiFCRkT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:40:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F3535371B;
-        Fri,  3 Jun 2022 10:40:20 -0700 (PDT)
+        Fri, 3 Jun 2022 13:40:19 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EBC553702;
+        Fri,  3 Jun 2022 10:40:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BD70AB8242F;
-        Fri,  3 Jun 2022 17:40:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C6FBC385B8;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 55EE5CE247C;
         Fri,  3 Jun 2022 17:40:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 309F4C385A9;
+        Fri,  3 Jun 2022 17:40:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278017;
-        bh=Osm3N9ED8aEgFeCh/544mUnrHvCIblxB68cGxirIdOQ=;
+        s=korg; t=1654278014;
+        bh=Hk3/f2nNv92H8r0dP39kp+bBvl8z1V6g6xqfAm88exk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mhM8n9Qr8fO30/0iR4FL6qd/By1HcXPTBRgA+dInYG2+OWMJCcZeivnkA/P8cfCKG
-         gCBWQZnPNZyWCWEmJQJ9JdX1o0K32bGwWDVIOtTkfLi4GN6cQfeHiVG0PKW8own5cb
-         d2lix6H2islS1fWnawVRN3hkZsBeRG2s8pwfpyS4=
+        b=hBdsJFp0Jg3aHyjBwvzgYa6uzenDsWxvsslncRRkcReGNm62oGcJMxNFGQMJ/18H3
+         /VKfTFabyXseaOoNl8p1GABlDYwLi7YcsZzCZLjIW/zPr9vBCjjCf+eMvE+Y1oIhDX
+         iUiHnc9vIGr0OcXf3V1mVr2YaqUeHiS9wgKGafgI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        Milan Broz <gmazyland@gmail.com>,
         Mike Snitzer <snitzer@kernel.org>
-Subject: [PATCH 4.9 08/12] dm stats: add cond_resched when looping over entries
-Date:   Fri,  3 Jun 2022 19:39:34 +0200
-Message-Id: <20220603173812.772452531@linuxfoundation.org>
+Subject: [PATCH 4.9 07/12] dm crypt: make printing of the key constant-time
+Date:   Fri,  3 Jun 2022 19:39:33 +0200
+Message-Id: <20220603173812.742968160@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173812.524184588@linuxfoundation.org>
 References: <20220603173812.524184588@linuxfoundation.org>
@@ -51,78 +52,57 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Mikulas Patocka <mpatocka@redhat.com>
 
-commit bfe2b0146c4d0230b68f5c71a64380ff8d361f8b upstream.
+commit 567dd8f34560fa221a6343729474536aa7ede4fd upstream.
 
-dm-stats can be used with a very large number of entries (it is only
-limited by 1/4 of total system memory), so add rescheduling points to
-the loops that iterate over the entries.
+The device mapper dm-crypt target is using scnprintf("%02x", cc->key[i]) to
+report the current key to userspace. However, this is not a constant-time
+operation and it may leak information about the key via timing, via cache
+access patterns or via the branch predictor.
+
+Change dm-crypt's key printing to use "%c" instead of "%02x". Also
+introduce hex2asc() that carefully avoids any branching or memory
+accesses when converting a number in the range 0 ... 15 to an ascii
+character.
 
 Cc: stable@vger.kernel.org
 Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Tested-by: Milan Broz <gmazyland@gmail.com>
 Signed-off-by: Mike Snitzer <snitzer@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/dm-stats.c |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/md/dm-crypt.c |   15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
 
---- a/drivers/md/dm-stats.c
-+++ b/drivers/md/dm-stats.c
-@@ -228,6 +228,7 @@ void dm_stats_cleanup(struct dm_stats *s
- 				       atomic_read(&shared->in_flight[READ]),
- 				       atomic_read(&shared->in_flight[WRITE]));
- 			}
-+			cond_resched();
- 		}
- 		dm_stat_free(&s->rcu_head);
- 	}
-@@ -316,6 +317,7 @@ static int dm_stats_create(struct dm_sta
- 	for (ni = 0; ni < n_entries; ni++) {
- 		atomic_set(&s->stat_shared[ni].in_flight[READ], 0);
- 		atomic_set(&s->stat_shared[ni].in_flight[WRITE], 0);
-+		cond_resched();
- 	}
- 
- 	if (s->n_histogram_entries) {
-@@ -328,6 +330,7 @@ static int dm_stats_create(struct dm_sta
- 		for (ni = 0; ni < n_entries; ni++) {
- 			s->stat_shared[ni].tmp.histogram = hi;
- 			hi += s->n_histogram_entries + 1;
-+			cond_resched();
- 		}
- 	}
- 
-@@ -348,6 +351,7 @@ static int dm_stats_create(struct dm_sta
- 			for (ni = 0; ni < n_entries; ni++) {
- 				p[ni].histogram = hi;
- 				hi += s->n_histogram_entries + 1;
-+				cond_resched();
- 			}
- 		}
- 	}
-@@ -477,6 +481,7 @@ static int dm_stats_list(struct dm_stats
- 			}
- 			DMEMIT("\n");
- 		}
-+		cond_resched();
- 	}
- 	mutex_unlock(&stats->mutex);
- 
-@@ -753,6 +758,7 @@ static void __dm_stat_clear(struct dm_st
- 				local_irq_enable();
- 			}
- 		}
-+		cond_resched();
- 	}
+--- a/drivers/md/dm-crypt.c
++++ b/drivers/md/dm-crypt.c
+@@ -1943,6 +1943,11 @@ static int crypt_map(struct dm_target *t
+ 	return DM_MAPIO_SUBMITTED;
  }
  
-@@ -868,6 +874,8 @@ static int dm_stats_print(struct dm_stat
- 
- 		if (unlikely(sz + 1 >= maxlen))
- 			goto buffer_overflow;
++static char hex2asc(unsigned char c)
++{
++	return c + '0' + ((unsigned)(9 - c) >> 4 & 0x27);
++}
 +
-+		cond_resched();
- 	}
+ static void crypt_status(struct dm_target *ti, status_type_t type,
+ 			 unsigned status_flags, char *result, unsigned maxlen)
+ {
+@@ -1958,10 +1963,12 @@ static void crypt_status(struct dm_targe
+ 	case STATUSTYPE_TABLE:
+ 		DMEMIT("%s ", cc->cipher_string);
  
- 	if (clear)
+-		if (cc->key_size > 0)
+-			for (i = 0; i < cc->key_size; i++)
+-				DMEMIT("%02x", cc->key[i]);
+-		else
++		if (cc->key_size > 0) {
++			for (i = 0; i < cc->key_size; i++) {
++				DMEMIT("%c%c", hex2asc(cc->key[i] >> 4),
++				       hex2asc(cc->key[i] & 0xf));
++			}
++		} else
+ 			DMEMIT("-");
+ 
+ 		DMEMIT(" %llu %s %llu", (unsigned long long)cc->iv_offset,
 
 
