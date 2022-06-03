@@ -2,91 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01381C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:29:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B70F9C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:34:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344498AbiFCR3O (ORCPT
+        id S1344496AbiFCReI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:29:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54212 "EHLO
+        Fri, 3 Jun 2022 13:34:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344486AbiFCR3H (ORCPT
+        with ESMTP id S231367AbiFCReG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:29:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0173E38DBD;
-        Fri,  3 Jun 2022 10:29:06 -0700 (PDT)
+        Fri, 3 Jun 2022 13:34:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D77852B17
+        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 10:34:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8B1A2B823C9;
-        Fri,  3 Jun 2022 17:29:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4C01C385A9;
-        Fri,  3 Jun 2022 17:29:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654277343;
-        bh=9I/JzgnnhecK1A0NSKc0eP0dYZJolAgiz4yQ8AYt4Sg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=YNMP77UouuYCdoLbBJHk3zL7lY6HHaor8vsQ0iFWPeUYfxrW94vjVIyI64vhYZPhm
-         8hI7N4GtPaXEYYEod1cZn8aO7o7JnX4nJe2iK2TMBdpFGP/dWg/07KuY553CaggLwo
-         jD0ijLF9RMa/aFkWIuY0OVoM56wsAzOae/A23UE92AvYWr+B/Tgb3bIg3pgcf/hsEt
-         6y7JWgB5acZkWdKJfdV8Bo8ylnAsD7ukpqp+4CBDHedQUBljjTHPcFN0NfSmpPN2BL
-         MgTqTAhC4PkJUri0oIw04lIa0+Dnq2C0GjOMw+H+WAfJSO6BmwViG4VtP7o09E2tvE
-         6xPYMxe3QNedQ==
-Date:   Fri, 3 Jun 2022 18:38:03 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Tomas Melin <tomas.melin@vaisala.com>
-Cc:     LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>, lars@metafoo.de,
-        robh+dt@kernel.org, andy.shevchenko@gmail.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        thomas.haemmerle@leica-geosystems.com, linux-iio@vger.kernel.org
-Subject: Re: [PATCH V9 0/5] iio: accel: sca3300: add compatible for scl3300
-Message-ID: <20220603183803.2d7b0c4f@jic23-huawei>
-In-Reply-To: <ffdd68af-a6ec-5a10-f4b8-56678285861f@vaisala.com>
-References: <20220529061853.3044893-1-Qing-wu.Li@leica-geosystems.com.cn>
-        <ffdd68af-a6ec-5a10-f4b8-56678285861f@vaisala.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 38FFD61AA3
+        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 17:34:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 342AAC385A9;
+        Fri,  3 Jun 2022 17:34:03 +0000 (UTC)
+Date:   Fri, 3 Jun 2022 18:33:59 +0100
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Will Deacon <will@kernel.org>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Ard Biesheuvel <ardb@kernel.org>
+Subject: [GIT PULL] arm64 fixes for 5.19-rc1
+Message-ID: <YppGB+DX5lGjlBEq@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 30 May 2022 12:58:59 +0300
-Tomas Melin <tomas.melin@vaisala.com> wrote:
+Hi Linus,
 
-> On 29/05/2022 09:18, LI Qingwu wrote:
-> > The current driver support sca3300 only, modified to support SCL3300.
-> > Verified with SCL3300 on IMX8MM.
-> > 
-> > SCL3300 is a three-axis accelerometer sensor with angle output, 
-> > the change adds the support of scl3300 and inclination data output.
-> > 
-> > 
-> > Changes in v9: 
-> >  - Rename angle to angle_supported.
-> >  - Delete reg_val &= GENMASK(1, 0), it's redundant.
-> >  - Fix typo of comments.
-> > 
-> > 
-> > LI Qingwu (5):
-> >   dt-bindings: iio: accel: sca3300: Document murata,scl3300
-> >   iio: accel: sca3300: add define for temp channel for reuse.
-> >   iio: accel: sca3300: modified to support multi chips
-> >   iio: accel: sca3300: Add support for SCL3300
-> >   iio: accel: sca3300: Add inclination channels
-> > 
-> >  .../bindings/iio/accel/murata,sca3300.yaml    |   1 +
-> >  drivers/iio/accel/sca3300.c                   | 323 +++++++++++++++---
-> >  2 files changed, 269 insertions(+), 55 deletions(-)
-> >   
-> 
-> Reviewed-by: Tomas Melin <tomas.melin@vaisala.com>
+Please pull the arm64 fixes below. Most of issues addressed were
+introduced during this merging window. Thanks.
 
-Series applied to the togreg branch of iio.git and pushed out for now as
-testing to let 0-day see if it can find anything we missed.
+The following changes since commit 0616ea3f1b93a99264d84f3d002ae117f6526b62:
 
-Thanks,
+  Merge branch 'for-next/esr-elx-64-bit' into for-next/core (2022-05-20 18:51:54 +0100)
 
-Jonathan
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux tags/arm64-fixes
+
+for you to fetch changes up to 78c09c0f4df89fabdcfb3e5e53d3196cf67f64ef:
+
+  kselftest/arm64: signal: Skip SVE signal test if not enough VLs supported (2022-06-02 20:29:17 +0100)
+
+----------------------------------------------------------------
+arm64 fixes for 5.19-rc1:
+
+- Initialise jump labels before setup_machine_fdt(), needed by commit
+  f5bda35fba61 ("random: use static branch for crng_ready()").
+
+- Sparse warnings: missing prototype, incorrect __user annotation.
+
+- Skip SVE kselftest if not sufficient vector lengths supported.
+
+----------------------------------------------------------------
+Catalin Marinas (1):
+      arm64: Remove the __user annotation for the restore_za_context() argument
+
+Chengming Zhou (1):
+      ftrace/fgraph: fix increased missing-prototypes warnings
+
+Cristian Marussi (1):
+      kselftest/arm64: signal: Skip SVE signal test if not enough VLs supported
+
+Stephen Boyd (1):
+      arm64: Initialize jump labels before setup_machine_fdt()
+
+Xiang wangx (1):
+      arm64: hibernate: Fix syntax errors in comments
+
+ arch/arm64/kernel/hibernate.c                                      | 2 +-
+ arch/arm64/kernel/setup.c                                          | 7 ++++---
+ arch/arm64/kernel/signal.c                                         | 2 +-
+ kernel/trace/fgraph.c                                              | 2 ++
+ .../arm64/signal/testcases/fake_sigreturn_sve_change_vl.c          | 2 ++
+ 5 files changed, 10 insertions(+), 5 deletions(-)
+
+-- 
+Catalin
