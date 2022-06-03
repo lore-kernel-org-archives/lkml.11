@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C94CC43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 00:47:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F742CCA47B
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 00:47:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240411AbiFCArD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 2 Jun 2022 20:47:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46904 "EHLO
+        id S240423AbiFCArM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 2 Jun 2022 20:47:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240025AbiFCAoW (ORCPT
+        with ESMTP id S240017AbiFCAoI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 2 Jun 2022 20:44:22 -0400
-Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D53034642
-        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:44:10 -0700 (PDT)
-Received: by mail-pl1-x649.google.com with SMTP id e18-20020a170902ef5200b0016153d857a6so3482151plx.5
-        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:44:10 -0700 (PDT)
+        Thu, 2 Jun 2022 20:44:08 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EC82344E4
+        for <linux-kernel@vger.kernel.org>; Thu,  2 Jun 2022 17:44:07 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id oa9-20020a17090b1bc900b001e67bbd7f83so2629907pjb.4
+        for <linux-kernel@vger.kernel.org>; Thu, 02 Jun 2022 17:44:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=z2cEfu0JRqcMR1VMftZYgii1CU/WQEu9toALTxwauhM=;
-        b=IzY+jZ0l6fP0SgDIumYhA90ZPdv80niNGfUJk8krrmePdJ2laUevr1COX65r+OZnlR
-         UwaaNjd95ns/Hlvx5TkAShO/e7OC9pyOaGlV8aOx2XpFAu0Sxy56IFfI6hj9MS9GyLpx
-         vwHhD5cdmiPGOGRhz+fPBEmlys5Ss45GiULqyVGEHPwKGQuBXhA3qMZY0udA7sKd9B/M
-         x1dBj5X7dc3jbKJjsA0dqSVOv7sncBn+GET/HGtGgdOS4wC9csvCGhhK5SRJNWKD0IoE
-         CWJAseFuhjdk6DrC2x8rVZPR3Rmxy4WGIHD6IJY/8MOZI0DShFWJAQcrlK7+MUuoEcw/
-         MaRA==
+        bh=Oi80sezCk7gxJZoW0ux8DSw87sfFjgySpbytwAP1Yiw=;
+        b=Jgs/uoLQLZPA+XzAKH/oLm1DACsirv130BnIyfuPtZBTM4MZrMZFbwPa7qP3UZufY3
+         qRaywPZky147jh1jsU/dT706qaPC8Ctmn1gz8rfWIGWAJXCB2sAWQdXliCdtkFSmLjFH
+         h5Msbe/lJ12ia0Ol8rPQgDcPtMsotWD81gT02C+Kv5Yw6wIMu67RAH9thizCZxF75L8D
+         2s7ewy4sXa2+wyfYXJDJrSjr+9sojn6sw7E8cQp3cPOz2aUB8ALIjiva3JgM7WXEpsKf
+         aJ3AW9uF1sG2piXfvLnGE05OqiL4sAVZzKy5V/2LPJI8DTwXO57Ws8HB21ZreCEt25aY
+         +tnA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=z2cEfu0JRqcMR1VMftZYgii1CU/WQEu9toALTxwauhM=;
-        b=uJ4g2F/6ekJbUfho7dUAIVz5rYs3fCRjvaM8QyzBHB5eSAfUXTNWvaEGe7XSJMSP/T
-         sj40SmBhgKjTvYj3ukzgcN5pafrYlroPu4F0qlNRzLKsIB+QMuPpiToR4PcXn03hbDuk
-         lzEB1BxPwPI/pLPFDbMuQJvZXhvOC7cTnBX4lbLVTwbVC1YyjXasWQOpSNStITOBuhiP
-         H33Nq/EYvdRHRxsoV6X6kPhsT9byXDnFFwkCRq88P2qwsy/OkWFwmaExwKV7EXL+KJV+
-         U0bVKWgrh2lRIWDpS/SEUaqxoei+cNnEb+Ge9ssQIQ/HyCB6YyZK9gAIps3oj7sp7SqA
-         0VVg==
-X-Gm-Message-State: AOAM533U0YhHAJEiPo3gpRD28A4QgObvtmdeqSacENjMRiXFX1iBGJrp
-        kBFxPTr7YgBWU38IpZLCn2HcRCec7j8=
-X-Google-Smtp-Source: ABdhPJxkDUKvx2lW87RChG9yzMFCbvFQOMHosawraMfumsXbMDyt1eytRZB6A7o/g8PgfEkTk7YqboK5yLA=
+        bh=Oi80sezCk7gxJZoW0ux8DSw87sfFjgySpbytwAP1Yiw=;
+        b=nw+rpRPw0UcjyUAmLPLfgUM2QedQMI9gbQCriOvAZKZSo9uXnOYBDIf1p1ohhJjX+M
+         UzhTQD2lKPJ3oVQAd5c4Z2Cwv1YlVpZ0QPk5W5PJa321h3XKrQ35RVY1cwHrIsYjIxfc
+         iLVsBE9BFrrXlE9WtuZoDfsAH//ULa6uvcbQKdHCjxUPbZdlxoGbBvM1CWqowmTnL/lN
+         evv++l+EpLZNLjzpuzAlrsVToYhO+uqaZSgqfoaHh7LkHAXYHp8BbNXhJ1xcIhPE3Hsd
+         D2J5Trv4NZnAyfB9osPPwisQojnnlO+/naoJ3Q6TSnz6PdWlHiFYl2VLeYk2Fw6Er3j0
+         mxDQ==
+X-Gm-Message-State: AOAM533aWa8QA0nA0m7jUVhbI5/hEdhtGa4eSCL1BYMkyOwF4hOFna9G
+        2GJ/WutKGktwk74rfkdMusOjAYfVN1Q=
+X-Google-Smtp-Source: ABdhPJxOwQyOENK2eLXEWE7gAKLoVv0yFZUF+Yp1uVnmfLyhreaRluoSd7OPMOjugXIGGV2dszUanAfZVDw=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:903:186:b0:161:f394:3e75 with SMTP id
- z6-20020a170903018600b00161f3943e75mr7552389plg.113.1654217050066; Thu, 02
- Jun 2022 17:44:10 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:902:778e:b0:162:2cf7:28be with SMTP id
+ o14-20020a170902778e00b001622cf728bemr7550680pll.0.1654217046554; Thu, 02 Jun
+ 2022 17:44:06 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri,  3 Jun 2022 00:41:26 +0000
+Date:   Fri,  3 Jun 2022 00:41:24 +0000
 In-Reply-To: <20220603004331.1523888-1-seanjc@google.com>
-Message-Id: <20220603004331.1523888-20-seanjc@google.com>
+Message-Id: <20220603004331.1523888-18-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220603004331.1523888-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v2 019/144] KVM: selftests: Use __KVM_SYSCALL_ERROR() to
- handle non-KVM syscall errors
+Subject: [PATCH v2 017/144] KVM: selftests: Make kvm_ioctl() a wrapper to
+ pretty print ioctl name
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     kvm@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
@@ -67,174 +67,116 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use __KVM_SYSCALL_ERROR() to report and pretty print non-KVM syscall and
-ioctl errors, e.g. for mmap(), munmap(), uffd ioctls, etc...
+Make kvm_ioctl() a macro wrapper and print the _name_ of the ioctl on
+failure instead of the number.
+
+Deliberately do not use __stringify(), as that will expand the ioctl all
+the way down to its numerical sequence, again the intent is to print the
+name of the macro.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../testing/selftests/kvm/aarch64/vgic_irq.c  |  5 ++-
- .../selftests/kvm/demand_paging_test.c        | 12 +++----
- tools/testing/selftests/kvm/lib/kvm_util.c    | 34 ++++++++-----------
- 3 files changed, 22 insertions(+), 29 deletions(-)
+ .../selftests/kvm/include/kvm_util_base.h     | 16 ++++++++--
+ tools/testing/selftests/kvm/lib/kvm_util.c    | 31 +++----------------
+ .../selftests/kvm/x86_64/hyperv_cpuid.c       |  2 +-
+ 3 files changed, 20 insertions(+), 29 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/aarch64/vgic_irq.c b/tools/testing/selftests/kvm/aarch64/vgic_irq.c
-index 554ca649d470..87e41895b385 100644
---- a/tools/testing/selftests/kvm/aarch64/vgic_irq.c
-+++ b/tools/testing/selftests/kvm/aarch64/vgic_irq.c
-@@ -630,8 +630,7 @@ static void kvm_routing_and_irqfd_check(struct kvm_vm *vm,
+diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
+index 1ccb91103e74..f5bfdf0b4548 100644
+--- a/tools/testing/selftests/kvm/include/kvm_util_base.h
++++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
+@@ -110,8 +110,19 @@ int kvm_check_cap(long cap);
+ #define __KVM_IOCTL_ERROR(_name, _ret)	__KVM_SYSCALL_ERROR(_name, _ret)
+ #define KVM_IOCTL_ERROR(_ioctl, _ret) __KVM_IOCTL_ERROR(#_ioctl, _ret)
  
- 	for (f = 0, i = intid; i < (uint64_t)intid + num; i++, f++) {
- 		fd[f] = eventfd(0, 0);
--		TEST_ASSERT(fd[f] != -1,
--			"eventfd failed, errno: %i\n", errno);
-+		TEST_ASSERT(fd[f] != -1, __KVM_SYSCALL_ERROR("eventfd()", fd[f]));
- 	}
+-int __kvm_ioctl(struct kvm_vm *vm, unsigned long cmd, void *arg);
+-void kvm_ioctl(struct kvm_vm *vm, unsigned long cmd, void *arg);
++#define __kvm_ioctl(kvm_fd, cmd, arg) \
++	ioctl(kvm_fd, cmd, arg)
++
++static inline void _kvm_ioctl(int kvm_fd, unsigned long cmd, const char *name,
++			      void *arg)
++{
++	int ret = __kvm_ioctl(kvm_fd, cmd, arg);
++
++	TEST_ASSERT(!ret, __KVM_IOCTL_ERROR(name, ret));
++}
++
++#define kvm_ioctl(kvm_fd, cmd, arg) \
++	_kvm_ioctl(kvm_fd, cmd, #cmd, arg)
  
- 	for (f = 0, i = intid; i < (uint64_t)intid + num; i++, f++) {
-@@ -647,7 +646,7 @@ static void kvm_routing_and_irqfd_check(struct kvm_vm *vm,
- 		val = 1;
- 		ret = write(fd[f], &val, sizeof(uint64_t));
- 		TEST_ASSERT(ret == sizeof(uint64_t),
--			"Write to KVM_IRQFD failed with ret: %d\n", ret);
-+			    __KVM_SYSCALL_ERROR("write()", ret));
- 	}
+ int __vm_ioctl(struct kvm_vm *vm, unsigned long cmd, void *arg);
+ void _vm_ioctl(struct kvm_vm *vm, unsigned long cmd, const char *name, void *arg);
+@@ -492,6 +503,7 @@ unsigned int vm_get_page_size(struct kvm_vm *vm);
+ unsigned int vm_get_page_shift(struct kvm_vm *vm);
+ unsigned long vm_compute_max_gfn(struct kvm_vm *vm);
+ uint64_t vm_get_max_gfn(struct kvm_vm *vm);
++int vm_get_kvm_fd(struct kvm_vm *vm);
+ int vm_get_fd(struct kvm_vm *vm);
  
- 	for (f = 0, i = intid; i < (uint64_t)intid + num; i++, f++)
-diff --git a/tools/testing/selftests/kvm/demand_paging_test.c b/tools/testing/selftests/kvm/demand_paging_test.c
-index 6a719d065599..d8db0a37e973 100644
---- a/tools/testing/selftests/kvm/demand_paging_test.c
-+++ b/tools/testing/selftests/kvm/demand_paging_test.c
-@@ -223,6 +223,7 @@ static void setup_demand_paging(struct kvm_vm *vm,
- 	struct uffdio_api uffdio_api;
- 	struct uffdio_register uffdio_register;
- 	uint64_t expected_ioctls = ((uint64_t) 1) << _UFFDIO_COPY;
-+	int ret;
- 
- 	PER_PAGE_DEBUG("Userfaultfd %s mode, faults resolved with %s\n",
- 		       is_minor ? "MINOR" : "MISSING",
-@@ -242,19 +243,18 @@ static void setup_demand_paging(struct kvm_vm *vm,
- 	}
- 
- 	uffd = syscall(__NR_userfaultfd, O_CLOEXEC | O_NONBLOCK);
--	TEST_ASSERT(uffd >= 0, "uffd creation failed, errno: %d", errno);
-+	TEST_ASSERT(uffd >= 0, __KVM_SYSCALL_ERROR("userfaultfd()", uffd));
- 
- 	uffdio_api.api = UFFD_API;
- 	uffdio_api.features = 0;
--	TEST_ASSERT(ioctl(uffd, UFFDIO_API, &uffdio_api) != -1,
--		    "ioctl UFFDIO_API failed: %" PRIu64,
--		    (uint64_t)uffdio_api.api);
-+	ret = ioctl(uffd, UFFDIO_API, &uffdio_api);
-+	TEST_ASSERT(ret != -1, __KVM_SYSCALL_ERROR("UFFDIO_API", ret));
- 
- 	uffdio_register.range.start = (uint64_t)hva;
- 	uffdio_register.range.len = len;
- 	uffdio_register.mode = uffd_mode;
--	TEST_ASSERT(ioctl(uffd, UFFDIO_REGISTER, &uffdio_register) != -1,
--		    "ioctl UFFDIO_REGISTER failed");
-+	ret = ioctl(uffd, UFFDIO_REGISTER, &uffdio_register);
-+	TEST_ASSERT(ret != -1, __KVM_SYSCALL_ERROR("UFFDIO_REGISTER", ret));
- 	TEST_ASSERT((uffdio_register.ioctls & expected_ioctls) ==
- 		    expected_ioctls, "missing userfaultfd ioctls");
- 
+ unsigned int vm_calc_num_guest_pages(enum vm_guest_mode mode, size_t size);
 diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
-index 4d2748e8428a..c7df8ba04ec5 100644
+index 339d524a0399..ac8faf072288 100644
 --- a/tools/testing/selftests/kvm/lib/kvm_util.c
 +++ b/tools/testing/selftests/kvm/lib/kvm_util.c
-@@ -517,17 +517,15 @@ static void vm_vcpu_rm(struct kvm_vm *vm, struct vcpu *vcpu)
+@@ -1616,32 +1616,6 @@ void _vm_ioctl(struct kvm_vm *vm, unsigned long cmd, const char *name, void *arg
+ 	TEST_ASSERT(!ret, __KVM_IOCTL_ERROR(name, ret));
+ }
  
- 	if (vcpu->dirty_gfns) {
- 		ret = munmap(vcpu->dirty_gfns, vm->dirty_ring_size);
--		TEST_ASSERT(ret == 0, "munmap of VCPU dirty ring failed, "
--			    "rc: %i errno: %i", ret, errno);
-+		TEST_ASSERT(!ret, __KVM_SYSCALL_ERROR("munmap()", ret));
- 		vcpu->dirty_gfns = NULL;
- 	}
+-/*
+- * KVM system ioctl
+- *
+- * Input Args:
+- *   vm - Virtual Machine
+- *   cmd - Ioctl number
+- *   arg - Argument to pass to the ioctl
+- *
+- * Return: None
+- *
+- * Issues an arbitrary ioctl on a KVM fd.
+- */
+-void kvm_ioctl(struct kvm_vm *vm, unsigned long cmd, void *arg)
+-{
+-	int ret;
+-
+-	ret = ioctl(vm->kvm_fd, cmd, arg);
+-	TEST_ASSERT(ret == 0, "KVM ioctl %lu failed, rc: %i errno: %i (%s)",
+-		cmd, ret, errno, strerror(errno));
+-}
+-
+-int __kvm_ioctl(struct kvm_vm *vm, unsigned long cmd, void *arg)
+-{
+-	return ioctl(vm->kvm_fd, cmd, arg);
+-}
+-
+ /*
+  * Device Ioctl
+  */
+@@ -2074,6 +2048,11 @@ uint64_t vm_get_max_gfn(struct kvm_vm *vm)
+ 	return vm->max_gfn;
+ }
  
- 	ret = munmap(vcpu->state, vcpu_mmap_sz());
--	TEST_ASSERT(ret == 0, "munmap of VCPU fd failed, rc: %i "
--		"errno: %i", ret, errno);
-+	TEST_ASSERT(!ret, __KVM_SYSCALL_ERROR("munmap()", ret));
++int vm_get_kvm_fd(struct kvm_vm *vm)
++{
++	return vm->kvm_fd;
++}
 +
- 	ret = close(vcpu->fd);
--	TEST_ASSERT(ret == 0, "Close of VCPU fd failed, rc: %i "
--		"errno: %i", ret, errno);
-+	TEST_ASSERT(!ret,  __KVM_SYSCALL_ERROR("close()", ret));
+ int vm_get_fd(struct kvm_vm *vm)
+ {
+ 	return vm->fd;
+diff --git a/tools/testing/selftests/kvm/x86_64/hyperv_cpuid.c b/tools/testing/selftests/kvm/x86_64/hyperv_cpuid.c
+index 7e45a3df8f98..896e1e7c1df7 100644
+--- a/tools/testing/selftests/kvm/x86_64/hyperv_cpuid.c
++++ b/tools/testing/selftests/kvm/x86_64/hyperv_cpuid.c
+@@ -123,7 +123,7 @@ void test_hv_cpuid_e2big(struct kvm_vm *vm, bool system)
+ 	if (!system)
+ 		ret = __vcpu_ioctl(vm, VCPU_ID, KVM_GET_SUPPORTED_HV_CPUID, &cpuid);
+ 	else
+-		ret = __kvm_ioctl(vm, KVM_GET_SUPPORTED_HV_CPUID, &cpuid);
++		ret = __kvm_ioctl(vm_get_kvm_fd(vm), KVM_GET_SUPPORTED_HV_CPUID, &cpuid);
  
- 	list_del(&vcpu->list);
- 	free(vcpu);
-@@ -542,12 +540,10 @@ void kvm_vm_release(struct kvm_vm *vmp)
- 		vm_vcpu_rm(vmp, vcpu);
- 
- 	ret = close(vmp->fd);
--	TEST_ASSERT(ret == 0, "Close of vm fd failed,\n"
--		"  vmp->fd: %i rc: %i errno: %i", vmp->fd, ret, errno);
-+	TEST_ASSERT(!ret,  __KVM_SYSCALL_ERROR("close()", ret));
- 
- 	ret = close(vmp->kvm_fd);
--	TEST_ASSERT(ret == 0, "Close of /dev/kvm fd failed,\n"
--		"  vmp->kvm_fd: %i rc: %i errno: %i", vmp->kvm_fd, ret, errno);
-+	TEST_ASSERT(!ret,  __KVM_SYSCALL_ERROR("close()", ret));
- }
- 
- static void __vm_mem_region_delete(struct kvm_vm *vm,
-@@ -567,7 +563,7 @@ static void __vm_mem_region_delete(struct kvm_vm *vm,
- 
- 	sparsebit_free(&region->unused_phy_pages);
- 	ret = munmap(region->mmap_start, region->mmap_size);
--	TEST_ASSERT(ret == 0, "munmap failed, rc: %i errno: %i", ret, errno);
-+	TEST_ASSERT(!ret, __KVM_SYSCALL_ERROR("munmap()", ret));
- 
- 	free(region);
- }
-@@ -607,14 +603,13 @@ int kvm_memfd_alloc(size_t size, bool hugepages)
- 		memfd_flags |= MFD_HUGETLB;
- 
- 	fd = memfd_create("kvm_selftest", memfd_flags);
--	TEST_ASSERT(fd != -1, "memfd_create() failed, errno: %i (%s)",
--		    errno, strerror(errno));
-+	TEST_ASSERT(fd != -1, __KVM_SYSCALL_ERROR("memfd_create()", fd));
- 
- 	r = ftruncate(fd, size);
--	TEST_ASSERT(!r, "ftruncate() failed, errno: %i (%s)", errno, strerror(errno));
-+	TEST_ASSERT(!r, __KVM_SYSCALL_ERROR("ftruncate()", r));
- 
- 	r = fallocate(fd, FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE, 0, size);
--	TEST_ASSERT(!r, "fallocate() failed, errno: %i (%s)", errno, strerror(errno));
-+	TEST_ASSERT(!r, __KVM_SYSCALL_ERROR("fallocate()", r));
- 
- 	return fd;
- }
-@@ -880,8 +875,7 @@ void vm_userspace_mem_region_add(struct kvm_vm *vm,
- 				  vm_mem_backing_src_alias(src_type)->flag,
- 				  region->fd, 0);
- 	TEST_ASSERT(region->mmap_start != MAP_FAILED,
--		    "test_malloc failed, mmap_start: %p errno: %i",
--		    region->mmap_start, errno);
-+		    __KVM_SYSCALL_ERROR("mmap()", (int)(unsigned long)MAP_FAILED));
- 
- 	TEST_ASSERT(!is_backing_src_hugetlb(src_type) ||
- 		    region->mmap_start == align_ptr_up(region->mmap_start, backing_src_pagesz),
-@@ -929,7 +923,7 @@ void vm_userspace_mem_region_add(struct kvm_vm *vm,
- 					  vm_mem_backing_src_alias(src_type)->flag,
- 					  region->fd, 0);
- 		TEST_ASSERT(region->mmap_alias != MAP_FAILED,
--			    "mmap of alias failed, errno: %i", errno);
-+			    __KVM_SYSCALL_ERROR("mmap()",  (int)(unsigned long)MAP_FAILED));
- 
- 		/* Align host alias address */
- 		region->host_alias = align_ptr_up(region->mmap_alias, alignment);
-@@ -1115,8 +1109,8 @@ void vm_vcpu_add(struct kvm_vm *vm, uint32_t vcpuid)
- 		vcpu_mmap_sz(), sizeof(*vcpu->state));
- 	vcpu->state = (struct kvm_run *) mmap(NULL, vcpu_mmap_sz(),
- 		PROT_READ | PROT_WRITE, MAP_SHARED, vcpu->fd, 0);
--	TEST_ASSERT(vcpu->state != MAP_FAILED, "mmap vcpu_state failed, "
--		"vcpu id: %u errno: %i", vcpuid, errno);
-+	TEST_ASSERT(vcpu->state != MAP_FAILED,
-+		    __KVM_SYSCALL_ERROR("mmap()", (int)(unsigned long)MAP_FAILED));
- 
- 	/* Add to linked-list of VCPUs. */
- 	list_add(&vcpu->list, &vm->vcpus);
+ 	TEST_ASSERT(ret == -1 && errno == E2BIG,
+ 		    "%s KVM_GET_SUPPORTED_HV_CPUID didn't fail with -E2BIG when"
 -- 
 2.36.1.255.ge46751e96f-goog
 
