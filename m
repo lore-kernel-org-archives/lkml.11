@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 780DFC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:03:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C097EC43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:04:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346502AbiFCSDz (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:03:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58332 "EHLO
+        id S235509AbiFCSEE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 14:04:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347274AbiFCRwL (ORCPT
+        with ESMTP id S1347271AbiFCRwL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 3 Jun 2022 13:52:11 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9B1F15703;
-        Fri,  3 Jun 2022 10:52:02 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D525C15827;
+        Fri,  3 Jun 2022 10:52:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 92C1DCE247C;
-        Fri,  3 Jun 2022 17:52:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E13DC385A9;
-        Fri,  3 Jun 2022 17:51:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 942A6B82419;
+        Fri,  3 Jun 2022 17:52:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8E93C385B8;
+        Fri,  3 Jun 2022 17:52:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278719;
-        bh=/EyG57P4jtW4RHdb3WPUV5f8lPpG5g2cOM8KMHmq+5w=;
+        s=korg; t=1654278722;
+        bh=o2LDBO1b8iC0wppgbfky3VEsUppuRsfLKRLQ/QY0Rq4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PyvNMzbqsFmvp6q52Sk5FBIWuMIT3pcOiVwtaUdBPM25EfEF4eYA0aGj0DD3vlzBU
-         eCbgKkhsNCzAThg6kr+GWrLFWTz35Fw6CPotwq3qHbrV3wDVDNfiDfx/SrNUrVJqrb
-         QIaqLgsWZXMApUk4zw6Ns2B+Oj5+g1IM6K1Pm+2Y=
+        b=lTHiS+P9cMABSI8lTg/Qt3eSm/Mh7x1rKvAwFx+O7e9iDKZhqPbsP8NWt0IKQpAyu
+         zei09popk0qU7RaUoPkdX7wknScJrdjx1eYN4g37mEuC/SneZsOZr5SVzPhjfgJipt
+         yB+9rNYjrEJjdMTeU7BqdJEx98fkqNpkFQHmB+Vs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jonathan Bakker <xc-racer2@live.ca>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 5.15 41/66] ARM: dts: s5pv210: Correct interrupt name for bluetooth in Aries
-Date:   Fri,  3 Jun 2022 19:43:21 +0200
-Message-Id: <20220603173821.858530708@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Mikulas Patocka <mpatocka@redhat.com>,
+        Mike Snitzer <snitzer@kernel.org>
+Subject: [PATCH 5.15 42/66] dm integrity: fix error code in dm_integrity_ctr()
+Date:   Fri,  3 Jun 2022 19:43:22 +0200
+Message-Id: <20220603173821.886142555@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173820.663747061@linuxfoundation.org>
 References: <20220603173820.663747061@linuxfoundation.org>
@@ -49,33 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Bakker <xc-racer2@live.ca>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit 3f5e3d3a8b895c8a11da8b0063ba2022dd9e2045 upstream.
+commit d3f2a14b8906df913cb04a706367b012db94a6e8 upstream.
 
-Correct the name of the bluetooth interrupt from host-wake to
-host-wakeup.
+The "r" variable shadows an earlier "r" that has function scope.  It
+means that we accidentally return success instead of an error code.
+Smatch has a warning for this:
 
-Fixes: 1c65b6184441b ("ARM: dts: s5pv210: Correct BCM4329 bluetooth node")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Jonathan Bakker <xc-racer2@live.ca>
-Link: https://lore.kernel.org/r/CY4PR04MB0567495CFCBDC8D408D44199CB1C9@CY4PR04MB0567.namprd04.prod.outlook.com
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+	drivers/md/dm-integrity.c:4503 dm_integrity_ctr()
+	warn: missing error code 'r'
+
+Fixes: 7eada909bfd7 ("dm: add integrity target")
+Cc: stable@vger.kernel.org
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reviewed-by: Mikulas Patocka <mpatocka@redhat.com>
+Signed-off-by: Mike Snitzer <snitzer@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/s5pv210-aries.dtsi |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/md/dm-integrity.c |    2 --
+ 1 file changed, 2 deletions(-)
 
---- a/arch/arm/boot/dts/s5pv210-aries.dtsi
-+++ b/arch/arm/boot/dts/s5pv210-aries.dtsi
-@@ -895,7 +895,7 @@
- 		device-wakeup-gpios = <&gpg3 4 GPIO_ACTIVE_HIGH>;
- 		interrupt-parent = <&gph2>;
- 		interrupts = <5 IRQ_TYPE_LEVEL_HIGH>;
--		interrupt-names = "host-wake";
-+		interrupt-names = "host-wakeup";
- 	};
- };
+--- a/drivers/md/dm-integrity.c
++++ b/drivers/md/dm-integrity.c
+@@ -4478,8 +4478,6 @@ try_smaller_buffer:
+ 	}
  
+ 	if (should_write_sb) {
+-		int r;
+-
+ 		init_journal(ic, 0, ic->journal_sections, 0);
+ 		r = dm_integrity_failed(ic);
+ 		if (unlikely(r)) {
 
 
