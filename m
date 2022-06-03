@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CC8EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:42:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A3A3C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:42:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344863AbiFCRmt (ORCPT
+        id S1344912AbiFCRmx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:42:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57382 "EHLO
+        Fri, 3 Jun 2022 13:42:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344897AbiFCRl6 (ORCPT
+        with ESMTP id S1344801AbiFCRmI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:41:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39F8E53A66;
-        Fri,  3 Jun 2022 10:41:24 -0700 (PDT)
+        Fri, 3 Jun 2022 13:42:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB09F53A79;
+        Fri,  3 Jun 2022 10:41:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 935CB61B00;
-        Fri,  3 Jun 2022 17:41:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D942C385A9;
-        Fri,  3 Jun 2022 17:41:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 42582B8241E;
+        Fri,  3 Jun 2022 17:41:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97AB4C385B8;
+        Fri,  3 Jun 2022 17:41:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278083;
-        bh=SNi0esmcOt+osBhcDREYjYRuCny0Bw5N6A5oulrF3Mo=;
+        s=korg; t=1654278086;
+        bh=5DLh3zfwqkuKS/K1n4AvAGFzOB5krvK1ROtUZvkNdoI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=htcfgWiuFj57+5iyuK1S56ioyfzxJgNELoeUOJYpQfuhpb+ofwqvrVMyA40D23hsX
-         xxmmoCQzRAPKC7ylQi0CvRB+fS59ycN16l2P2soxNrHlEt3z92U8c8amkclg47oKCs
-         XBUOmpsai1ICZXAFepyr5jycYUrXcGk4bVC0Y0PE=
+        b=FC4bWCNvWYoP6zcb12VGP/HM1Gtyj/LFusqdLmagxg5YK6phPCTQhfV0db39bFK7D
+         T9SulEH9c2cXF0H4Mcv1r1NP6rhEg61YL8fLT84daW++2Py3HBUPgfs9hzHeEb2ZSp
+         Z8MjoY+/hK5RqmbZWyRO4W2MCYNL7DSF63X4IHAY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sarthak Kukreti <sarthakkukreti@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Mike Snitzer <snitzer@kernel.org>
-Subject: [PATCH 4.14 19/23] dm verity: set DM_TARGET_IMMUTABLE feature flag
-Date:   Fri,  3 Jun 2022 19:39:46 +0200
-Message-Id: <20220603173814.944801303@linuxfoundation.org>
+        stable@vger.kernel.org, Xiu Jianfeng <xiujianfeng@huawei.com>,
+        Stefan Berger <stefanb@linux.ibm.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>
+Subject: [PATCH 4.14 20/23] tpm: ibmvtpm: Correct the return value in tpm_ibmvtpm_probe()
+Date:   Fri,  3 Jun 2022 19:39:47 +0200
+Message-Id: <20220603173814.974445103@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173814.362515009@linuxfoundation.org>
 References: <20220603173814.362515009@linuxfoundation.org>
@@ -51,35 +50,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sarthak Kukreti <sarthakkukreti@google.com>
+From: Xiu Jianfeng <xiujianfeng@huawei.com>
 
-commit 4caae58406f8ceb741603eee460d79bacca9b1b5 upstream.
+commit d0dc1a7100f19121f6e7450f9cdda11926aa3838 upstream.
 
-The device-mapper framework provides a mechanism to mark targets as
-immutable (and hence fail table reloads that try to change the target
-type). Add the DM_TARGET_IMMUTABLE flag to the dm-verity target's
-feature flags to prevent switching the verity target with a different
-target type.
+Currently it returns zero when CRQ response timed out, it should return
+an error code instead.
 
-Fixes: a4ffc152198e ("dm: add verity target")
-Cc: stable@vger.kernel.org
-Signed-off-by: Sarthak Kukreti <sarthakkukreti@google.com>
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: Mike Snitzer <snitzer@kernel.org>
+Fixes: d8d74ea3c002 ("tpm: ibmvtpm: Wait for buffer to be set before proceeding")
+Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
+Reviewed-by: Stefan Berger <stefanb@linux.ibm.com>
+Acked-by: Jarkko Sakkinen <jarkko@kernel.org>
+Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/dm-verity-target.c |    1 +
+ drivers/char/tpm/tpm_ibmvtpm.c |    1 +
  1 file changed, 1 insertion(+)
 
---- a/drivers/md/dm-verity-target.c
-+++ b/drivers/md/dm-verity-target.c
-@@ -1163,6 +1163,7 @@ bad:
- 
- static struct target_type verity_target = {
- 	.name		= "verity",
-+	.features	= DM_TARGET_IMMUTABLE,
- 	.version	= {1, 3, 0},
- 	.module		= THIS_MODULE,
- 	.ctr		= verity_ctr,
+--- a/drivers/char/tpm/tpm_ibmvtpm.c
++++ b/drivers/char/tpm/tpm_ibmvtpm.c
+@@ -692,6 +692,7 @@ static int tpm_ibmvtpm_probe(struct vio_
+ 	if (!wait_event_timeout(ibmvtpm->crq_queue.wq,
+ 				ibmvtpm->rtce_buf != NULL,
+ 				HZ)) {
++		rc = -ENODEV;
+ 		dev_err(dev, "CRQ response timed out\n");
+ 		goto init_irq_cleanup;
+ 	}
 
 
