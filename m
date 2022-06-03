@@ -2,161 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0732C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 16:14:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B1D4C43334
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 16:16:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343704AbiFCQOL (ORCPT
+        id S1343755AbiFCQQh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 12:14:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54830 "EHLO
+        Fri, 3 Jun 2022 12:16:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343694AbiFCQOJ (ORCPT
+        with ESMTP id S1343748AbiFCQQg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 12:14:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3515B5132A;
-        Fri,  3 Jun 2022 09:14:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C6DDB6198C;
-        Fri,  3 Jun 2022 16:14:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E53D9C385B8;
-        Fri,  3 Jun 2022 16:14:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654272847;
-        bh=Pf4UcvShu0d5b4Z8DwPTXDYV1z+qP0sFlyeLVxRBXSo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=d1OoTOg/qodrgQrJAE2Sh+7Yi37UqzTpHqqhe5NEpoX6lVZLpQxDx+scr8cz4Yw8h
-         xLmm5362E0JEgJz0Qic0zMGX77hVWEwt9C0cU9yoABidKs145CZhecnZOULysPIjOB
-         ughLCrsomLoOSfeYI3Upx2RKdq7Lb1vmZetbH2cEYjd217Sj4O/IIvP0DW+Jgj+96h
-         1LPSkG3ftX+L3FWTZNF2duJbbhJ1NkN6FhB/XZ+2zOCcWTjBvuoxPo4wmyERnzcvKK
-         bDCwsCuvzx1XstuTResiKIXutY/9YSt8bKgktDnu5P1yyoFwF1HMIyCN3JNWo33lCe
-         ZG6apUliTWlig==
-Date:   Fri, 3 Jun 2022 17:23:07 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: Re: [PATCH v3 1/6] iio: adc: meson_saradc: Don't attach managed
- resource to IIO device object
-Message-ID: <20220603172307.5d2f3c52@jic23-huawei>
-In-Reply-To: <20220603170612.561edfbf@jic23-huawei>
-References: <20220603100004.70336-1-andriy.shevchenko@linux.intel.com>
-        <20220603170612.561edfbf@jic23-huawei>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Fri, 3 Jun 2022 12:16:36 -0400
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5638C5131B
+        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 09:16:35 -0700 (PDT)
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 253APJP3032493;
+        Fri, 3 Jun 2022 18:16:26 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=selector1;
+ bh=esRmuGz2cJsfoYb9TIZ6o0uvypoiD4hREUU9U1UPAV8=;
+ b=GoIALEZtoB86GiWfMEnBKdh1U/gToutTFpxHG4HboEw/4sfuxV/WSYMskEiF8Ms4BcqG
+ 6/kiWAz8JyV4wkB/65g4ub0FBsiU/KlBW5wASpGX2cBPE9CGvxVJ9T9SA4wwkz+M8chR
+ ARShNw9o4n282GxA+5CVRoRZj8GBPwhefJJL4kj10xvZ+rlmeCU+VR3kGe7VLN21iHtj
+ Yis96bLQuga1s72WJv1VSsuV3VVyhHe/5pIukgnh3DyQ/ai6Jm2jQgcbIWaDee9yyL4K
+ wqQxWeOSzS9Yx/lEsQbQ0j4sGPebrPyZdRd5eelsnaRIM4t1sbu3pCv79n+Ap+zFHZ2C zw== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3get03rqcx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 03 Jun 2022 18:16:26 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 43C9B1000EF;
+        Fri,  3 Jun 2022 15:43:04 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 58695226FAF;
+        Fri,  3 Jun 2022 15:42:56 +0200 (CEST)
+Received: from localhost (10.75.127.51) by SHFDAG1NODE1.st.com (10.75.129.69)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Fri, 3 Jun
+ 2022 15:42:56 +0200
+From:   Yannick Fertre <yannick.fertre@foss.st.com>
+To:     Yannick Fertre <yannick.fertre@foss.st.com>,
+        Philippe Cornu <philippe.cornu@foss.st.com>,
+        Raphael Gallais-Pou <raphael.gallais-pou@foss.st.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        <dri-devel@lists.freedesktop.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] drm/stm: ltdc: remove error message about scaling
+Date:   Fri, 3 Jun 2022 15:42:50 +0200
+Message-ID: <20220603134250.592408-1-yannick.fertre@foss.st.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.51]
+X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-03_05,2022-06-03_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 3 Jun 2022 17:06:12 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+Remove error message about scaling & replace it by a debug
+message to avoid too much error.
 
-> On Fri,  3 Jun 2022 12:59:59 +0300
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> 
-> > It feels wrong and actually inconsistent to attach managed resources
-> > to the IIO device object, which is child of the physical device object.
-> > The rest of the ->probe() calls do that against physical device.
-> > 
-> > Resolve this by reassigning managed resources to the physical device object.
-> > 
-> > Fixes: 3adbf3427330 ("iio: adc: add a driver for the SAR ADC found in Amlogic Meson SoCs")
-> > Suggested-by: Lars-Peter Clausen <lars@metafoo.de>
-> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>  
-> Hi Andy,
-> 
-> This has come up a few times in the past (and we elected to not clean it up
-> at the time, though it wasn't a decision to never do so!)
-> 
-> It would definitely be wrong if we had another driver binding against
-> the resulting created device (funnily enough I reported a bug on a driver
-> doing just that earlier this week), but in this case it's harmless because the
-> the tear down will occur with a put_device() ultimately calling device_release()
-> and devres_release_all()
-> 
-> https://elixir.bootlin.com/linux/latest/source/drivers/base/core.c#L2211
-> 
-> Has a comment that covers this case (more or less).
-> "
-> 	 * Some platform devices are driven without driver attached
-> 	 * and managed resources may have been acquired.  Make sure
-> 	 * all resources are released.
-> "
-> 
-> Now, I definitely agree with your statement that it's a bit inconsistent to
-> do this, just not the fixes tag.
-> 
-> One other suggestion below.
-> 
-> 
-> > ---
-> > v3: new fix-patch
-> >  drivers/iio/adc/meson_saradc.c | 12 +++++-------
-> >  1 file changed, 5 insertions(+), 7 deletions(-)
-> > 
-> > diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
-> > index 62cc6fb0ef85..4fe6b997cd03 100644
-> > --- a/drivers/iio/adc/meson_saradc.c
-> > +++ b/drivers/iio/adc/meson_saradc.c
-> > @@ -650,11 +650,11 @@ static int meson_sar_adc_clk_init(struct iio_dev *indio_dev,
-> >  				  void __iomem *base)
-> >  {
-> >  	struct meson_sar_adc_priv *priv = iio_priv(indio_dev);
-> > +	struct device *dev = indio_dev->dev.parent;  
-> 
-> I'd slightly prefer the device was passed in explicitly to this function rather
-> than using the parent assignment which feels a little fragile. 
+Signed-off-by: Yannick Fertre <yannick.fertre@foss.st.com>
+---
+ drivers/gpu/drm/stm/ltdc.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Meh, ignore this. I see from one of the later patches, the driver is already
-making the assumption this is set in other calls, so we aren't making anything
-worse with this change.
-
-Jonathan
-
-> 
-> 
-> >  	struct clk_init_data init;
-> >  	const char *clk_parents[1];
-> >  
-> > -	init.name = devm_kasprintf(&indio_dev->dev, GFP_KERNEL, "%s#adc_div",
-> > -				   dev_name(indio_dev->dev.parent));
-> > +	init.name = devm_kasprintf(dev, GFP_KERNEL, "%s#adc_div", dev_name(dev));
-> >  	if (!init.name)
-> >  		return -ENOMEM;
-> >  
-> > @@ -670,13 +670,11 @@ static int meson_sar_adc_clk_init(struct iio_dev *indio_dev,
-> >  	priv->clk_div.hw.init = &init;
-> >  	priv->clk_div.flags = 0;
-> >  
-> > -	priv->adc_div_clk = devm_clk_register(&indio_dev->dev,
-> > -					      &priv->clk_div.hw);
-> > +	priv->adc_div_clk = devm_clk_register(dev, &priv->clk_div.hw);
-> >  	if (WARN_ON(IS_ERR(priv->adc_div_clk)))
-> >  		return PTR_ERR(priv->adc_div_clk);
-> >  
-> > -	init.name = devm_kasprintf(&indio_dev->dev, GFP_KERNEL, "%s#adc_en",
-> > -				   dev_name(indio_dev->dev.parent));
-> > +	init.name = devm_kasprintf(dev, GFP_KERNEL, "%s#adc_en", dev_name(dev));
-> >  	if (!init.name)
-> >  		return -ENOMEM;
-> >  
-> > @@ -690,7 +688,7 @@ static int meson_sar_adc_clk_init(struct iio_dev *indio_dev,
-> >  	priv->clk_gate.bit_idx = __ffs(MESON_SAR_ADC_REG3_CLK_EN);
-> >  	priv->clk_gate.hw.init = &init;
-> >  
-> > -	priv->adc_clk = devm_clk_register(&indio_dev->dev, &priv->clk_gate.hw);
-> > +	priv->adc_clk = devm_clk_register(dev, &priv->clk_gate.hw);
-> >  	if (WARN_ON(IS_ERR(priv->adc_clk)))
-> >  		return PTR_ERR(priv->adc_clk);
-> >    
-> 
+diff --git a/drivers/gpu/drm/stm/ltdc.c b/drivers/gpu/drm/stm/ltdc.c
+index eeefc3260c07..a4098aaff243 100644
+--- a/drivers/gpu/drm/stm/ltdc.c
++++ b/drivers/gpu/drm/stm/ltdc.c
+@@ -1215,7 +1215,8 @@ static int ltdc_plane_atomic_check(struct drm_plane *plane,
+ 
+ 	/* Reject scaling */
+ 	if (src_w != new_plane_state->crtc_w || src_h != new_plane_state->crtc_h) {
+-		DRM_ERROR("Scaling is not supported");
++		DRM_DEBUG_DRIVER("Scaling is not supported");
++
+ 		return -EINVAL;
+ 	}
+ 
+-- 
+2.25.1
 
