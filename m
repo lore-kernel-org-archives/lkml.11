@@ -2,143 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE373C43334
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 10:00:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8927C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 10:02:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243340AbiFCKAq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 06:00:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46830 "EHLO
+        id S243309AbiFCKCQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 06:02:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243301AbiFCKAM (ORCPT
+        with ESMTP id S242870AbiFCKCK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 06:00:12 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70DDB3AA52;
-        Fri,  3 Jun 2022 03:00:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654250411; x=1685786411;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=T0fsSIU29EuhBbM0LUaUeCq/SxCSD2R+0n5JMdHNevI=;
-  b=iAmzbBd2jcC0zu3LPuI1pUAzyZaHn91E6Zs7ZTDlySOJ5HNywUehlsYl
-   IOGqvoyau0KEXw4bUA3XZqLUIFimqX4/0hDHe+VvlXYERmCBfbOIp6vAP
-   YzN7XizFiTbwYOby5DiB4uHliHrzlm04Kq7njaeIH8M7aCzLOHVYam+FY
-   P9cH8tGsEBGb7lCHDa2c0ftwTcfuV2a6pgUMr27I4zYiiWu0WGz2khSJK
-   dKuSKe0TaBsvUUCnzy6oacM3NP3sOrnCJE9aypwZf8Uwfb5qiE3aUWUIf
-   S4573KqEj4C1BuinltFwHxl8rUD8yqi/vbPDPflNqaQ61MEe7rm4VonfX
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10366"; a="336872180"
-X-IronPort-AV: E=Sophos;i="5.91,274,1647327600"; 
-   d="scan'208";a="336872180"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2022 03:00:11 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,274,1647327600"; 
-   d="scan'208";a="613215278"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga001.jf.intel.com with ESMTP; 03 Jun 2022 03:00:08 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 4ACC5D99; Fri,  3 Jun 2022 13:00:07 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [RFC PATCH v3 6/6] iio: adc: meson_saradc: Use regmap_read_poll_timeout() for busy wait
-Date:   Fri,  3 Jun 2022 13:00:04 +0300
-Message-Id: <20220603100004.70336-6-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220603100004.70336-1-andriy.shevchenko@linux.intel.com>
-References: <20220603100004.70336-1-andriy.shevchenko@linux.intel.com>
+        Fri, 3 Jun 2022 06:02:10 -0400
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 971E05F8B
+        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 03:02:08 -0700 (PDT)
+Received: by mail-il1-f200.google.com with SMTP id x5-20020a923005000000b002d1a91c4d13so5430423ile.4
+        for <linux-kernel@vger.kernel.org>; Fri, 03 Jun 2022 03:02:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=CETyWVHu7ACjpSUlEO+0eiI0hfJXIrRX6DzyX/3YTu4=;
+        b=Oe4sYwo2qPtwn1V2CqVNj5cilLfL4RIAjfRhhdWEL0jJ3wTFMpnSYf8sUNGmAohv3o
+         yQ6FPARXi2sCJSxgbYjA5w/adWNBv/vtLL8KOTdFVza4bwhYhqzZuT1da5ZAKq/e1rQw
+         Ggop+Xs726WxwxNbzdzm3X9GUdrwTmMnxdk+eaN51F/mHzV2zOg5aDPpp0dDthUaYTnd
+         Z3Fa7hhxp3RUIxHMkaQejArOo7VsBNhCA33lPcvyTpH3gFvdKiA4sJedbvtHH8427GHA
+         6V6+VMnLGc5gx5rUEs15420+5eZUa0FRUDDuFBMNCS1GU+Mm1RoDl95OiyC107C5VgBW
+         Z9Wg==
+X-Gm-Message-State: AOAM530ujZJcSkiaGBeQR5sMsrTZP4eS22+jUC74ujuNPHdKscO77984
+        2ca3mQRJ8XpUDzFUPWQZX1Pw29qUwk8KV7tPxlZgK0dhrwoO
+X-Google-Smtp-Source: ABdhPJzbSJVbRANJ4lX5DaQExVRaf/aESQ7vPiixhdBT1+wC8VMM8xNu/cX8tmXqyxgNCDxCmiEyLOkFSxd21nQbl7YGufSdIA/D
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6638:d01:b0:330:cdea:7084 with SMTP id
+ q1-20020a0566380d0100b00330cdea7084mr5405003jaj.117.1654250527568; Fri, 03
+ Jun 2022 03:02:07 -0700 (PDT)
+Date:   Fri, 03 Jun 2022 03:02:07 -0700
+In-Reply-To: <000000000000bb7f1c05da29b601@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000010b7d305e08837c8@google.com>
+Subject: Re: [syzbot] general protection fault in __device_attach
+From:   syzbot <syzbot+dd3c97de244683533381@syzkaller.appspotmail.com>
+To:     andriy.shevchenko@linux.intel.com, gregkh@linuxfoundation.org,
+        hdanton@sina.com, lenb@kernel.org, linux-acpi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, rafael.j.wysocki@intel.com,
+        rafael@kernel.org, rjw@rjwysocki.net,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Simplify busy wait stages by using regmap_read_poll_timeout().
+syzbot has bisected this issue to:
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
-v3: new patch, but RFC, not always the read_poll_timeout() can be used, would
-    be nice to have it tested.
+commit a9c4cf299f5f79d5016c8a9646fa1fc49381a8c1
+Author: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Date:   Fri Jun 18 13:41:27 2021 +0000
 
- drivers/iio/adc/meson_saradc.c | 31 +++++++++++++------------------
- 1 file changed, 13 insertions(+), 18 deletions(-)
+    ACPI: sysfs: Use __ATTR_RO() and __ATTR_RW() macros
 
-diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
-index c100f933c12e..c18be3c519af 100644
---- a/drivers/iio/adc/meson_saradc.c
-+++ b/drivers/iio/adc/meson_saradc.c
-@@ -322,22 +322,17 @@ static int meson_sar_adc_calib_val(struct iio_dev *indio_dev, int val)
- static int meson_sar_adc_wait_busy_clear(struct iio_dev *indio_dev)
- {
- 	struct meson_sar_adc_priv *priv = iio_priv(indio_dev);
--	int regval, timeout = 10000;
-+	int val;
- 
- 	/*
- 	 * NOTE: we need a small delay before reading the status, otherwise
- 	 * the sample engine may not have started internally (which would
- 	 * seem to us that sampling is already finished).
- 	 */
--	do {
--		udelay(1);
--		regmap_read(priv->regmap, MESON_SAR_ADC_REG0, &regval);
--	} while (FIELD_GET(MESON_SAR_ADC_REG0_BUSY_MASK, regval) && timeout--);
--
--	if (timeout < 0)
--		return -ETIMEDOUT;
--
--	return 0;
-+	udelay(1);
-+	return regmap_read_poll_timeout_atomic(priv->regmap, MESON_SAR_ADC_REG0, val,
-+					       !FIELD_GET(MESON_SAR_ADC_REG0_BUSY_MASK, val),
-+					       1, 10000);
- }
- 
- static int meson_sar_adc_read_raw_sample(struct iio_dev *indio_dev,
-@@ -489,7 +484,7 @@ static void meson_sar_adc_stop_sample_engine(struct iio_dev *indio_dev)
- static int meson_sar_adc_lock(struct iio_dev *indio_dev)
- {
- 	struct meson_sar_adc_priv *priv = iio_priv(indio_dev);
--	int val, timeout = 10000;
-+	int val, ret;
- 
- 	mutex_lock(&indio_dev->mlock);
- 
-@@ -499,18 +494,18 @@ static int meson_sar_adc_lock(struct iio_dev *indio_dev)
- 				   MESON_SAR_ADC_DELAY_KERNEL_BUSY,
- 				   MESON_SAR_ADC_DELAY_KERNEL_BUSY);
- 
-+		udelay(1);
-+
- 		/*
- 		 * wait until BL30 releases it's lock (so we can use the SAR
- 		 * ADC)
- 		 */
--		do {
--			udelay(1);
--			regmap_read(priv->regmap, MESON_SAR_ADC_DELAY, &val);
--		} while (val & MESON_SAR_ADC_DELAY_BL30_BUSY && timeout--);
--
--		if (timeout < 0) {
-+		ret = regmap_read_poll_timeout_atomic(priv->regmap, MESON_SAR_ADC_DELAY, val,
-+						      !(val & MESON_SAR_ADC_DELAY_BL30_BUSY),
-+						      1, 10000);
-+		if (ret) {
- 			mutex_unlock(&indio_dev->mlock);
--			return -ETIMEDOUT;
-+			return ret;
- 		}
- 	}
- 
--- 
-2.35.1
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1040b80df00000
+start commit:   d1dc87763f40 assoc_array: Fix BUG_ON during garbage collect
+git tree:       upstream
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=1240b80df00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=1440b80df00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=c51cd24814bb5665
+dashboard link: https://syzkaller.appspot.com/bug?extid=dd3c97de244683533381
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15613e2bf00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15c90adbf00000
 
+Reported-by: syzbot+dd3c97de244683533381@syzkaller.appspotmail.com
+Fixes: a9c4cf299f5f ("ACPI: sysfs: Use __ATTR_RO() and __ATTR_RW() macros")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
