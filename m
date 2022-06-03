@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F91FCCA484
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70650CCA483
 	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 18:07:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347167AbiFCSFl (ORCPT
+        id S1347223AbiFCSFo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 14:05:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45650 "EHLO
+        Fri, 3 Jun 2022 14:05:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346411AbiFCRvJ (ORCPT
+        with ESMTP id S1346397AbiFCRvI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:51:09 -0400
+        Fri, 3 Jun 2022 13:51:08 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E286B56C02;
-        Fri,  3 Jun 2022 10:48:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD0FF54FB1;
+        Fri,  3 Jun 2022 10:47:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A6037B82419;
-        Fri,  3 Jun 2022 17:48:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 030B8C385A9;
-        Fri,  3 Jun 2022 17:47:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A2E2DB823B0;
+        Fri,  3 Jun 2022 17:47:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13F13C385A9;
+        Fri,  3 Jun 2022 17:47:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278480;
-        bh=ZIcsYjUnDHt/ILT8b0MIPsTKDV+xT9yctyXLcf5DodE=;
+        s=korg; t=1654278477;
+        bh=y3BGFbSmlIT+4iN4zliES5xE1cfw7pDm2wu+KvDfUCk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZBCZYn6ePKNJV7xphVwby3jrQ25BoDRVaonMZft4pqCbFJd2HsaIm8mS5Z03ZasGm
-         gSjm0G4qrfDUnQzVio4HV7baKLoD44SwjnB/fhnCgqoV8lI23r2CRJrGFfwiAHAems
-         owaoJxvqLiMEBnWhcSRGs8o7DWXR0QP6eFCWdXRM=
+        b=coxV+srzzOZcimK2rFpwtf1K6DcTA3AJAJ8al+NWQ/HUjB7FkbtFXH+/F2S16N4h6
+         siJcc+4nD8XQIWAHCJYWajGO9z9syDfjeS1+rsAH94S0KP9W2xxD1B/lbnJI4DX1PO
+         x86zIYRk+tiRY8mQH8hiGCDcI/28ZXUHWTSQsYoc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tao Jin <tao-j@outlook.com>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Subject: [PATCH 5.10 46/53] HID: multitouch: add quirks to enable Lenovo X12 trackpoint
-Date:   Fri,  3 Jun 2022 19:43:31 +0200
-Message-Id: <20220603173820.057457416@linuxfoundation.org>
+        stable@vger.kernel.org, Marek Maslanka <mm@semihalf.com>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Jiri Kosina <jkosina@suse.cz>
+Subject: [PATCH 5.10 45/53] HID: multitouch: Add support for Google Whiskers Touchpad
+Date:   Fri,  3 Jun 2022 19:43:30 +0200
+Message-Id: <20220603173820.029926088@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173818.716010877@linuxfoundation.org>
 References: <20220603173818.716010877@linuxfoundation.org>
@@ -49,50 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tao Jin <tao-j@outlook.com>
+From: Marek Maślanka <mm@semihalf.com>
 
-commit 95cd2cdc88c755dcd0a58b951faeb77742c733a4 upstream.
+commit 1d07cef7fd7599450b3d03e1915efc2a96e1f03f upstream.
 
-This applies the similar quirks used by previous generation devices
-such as X1 tablet for X12 tablet, so that the trackpoint and buttons
-can work.
+The Google Whiskers touchpad does not work properly with the default
+multitouch configuration. Instead, use the same configuration as Google
+Rose.
 
-This patch was applied and tested working on 5.17.1 .
-
-Cc: stable@vger.kernel.org # 5.8+ given that it relies on 40d5bb87377a
-Signed-off-by: Tao Jin <tao-j@outlook.com>
-Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Link: https://lore.kernel.org/r/CO6PR03MB6241CB276FCDC7F4CEDC34F6E1E29@CO6PR03MB6241.namprd03.prod.outlook.com
+Signed-off-by: Marek Maslanka <mm@semihalf.com>
+Acked-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hid/hid-ids.h        |    1 +
- drivers/hid/hid-multitouch.c |    6 ++++++
- 2 files changed, 7 insertions(+)
+ drivers/hid/hid-multitouch.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/hid/hid-ids.h
-+++ b/drivers/hid/hid-ids.h
-@@ -743,6 +743,7 @@
- #define USB_DEVICE_ID_LENOVO_X1_COVER	0x6085
- #define USB_DEVICE_ID_LENOVO_X1_TAB	0x60a3
- #define USB_DEVICE_ID_LENOVO_X1_TAB3	0x60b5
-+#define USB_DEVICE_ID_LENOVO_X12_TAB	0x60fe
- #define USB_DEVICE_ID_LENOVO_OPTICAL_USB_MOUSE_600E	0x600e
- #define USB_DEVICE_ID_LENOVO_PIXART_USB_MOUSE_608D	0x608d
- #define USB_DEVICE_ID_LENOVO_PIXART_USB_MOUSE_6019	0x6019
 --- a/drivers/hid/hid-multitouch.c
 +++ b/drivers/hid/hid-multitouch.c
-@@ -1990,6 +1990,12 @@ static const struct hid_device_id mt_dev
- 			   USB_VENDOR_ID_LENOVO,
- 			   USB_DEVICE_ID_LENOVO_X1_TAB3) },
+@@ -2129,6 +2129,9 @@ static const struct hid_device_id mt_dev
+ 	{ .driver_data = MT_CLS_GOOGLE,
+ 		HID_DEVICE(HID_BUS_ANY, HID_GROUP_ANY, USB_VENDOR_ID_GOOGLE,
+ 			USB_DEVICE_ID_GOOGLE_TOUCH_ROSE) },
++	{ .driver_data = MT_CLS_GOOGLE,
++		HID_DEVICE(BUS_USB, HID_GROUP_MULTITOUCH_WIN_8, USB_VENDOR_ID_GOOGLE,
++			USB_DEVICE_ID_GOOGLE_WHISKERS) },
  
-+	/* Lenovo X12 TAB Gen 1 */
-+	{ .driver_data = MT_CLS_WIN_8_FORCE_MULTI_INPUT,
-+		HID_DEVICE(BUS_USB, HID_GROUP_MULTITOUCH_WIN_8,
-+			   USB_VENDOR_ID_LENOVO,
-+			   USB_DEVICE_ID_LENOVO_X12_TAB) },
-+
- 	/* MosArt panels */
- 	{ .driver_data = MT_CLS_CONFIDENCE_MINUS_ONE,
- 		MT_USB_DEVICE(USB_VENDOR_ID_ASUS,
+ 	/* Generic MT device */
+ 	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_MULTITOUCH, HID_ANY_ID, HID_ANY_ID) },
 
 
