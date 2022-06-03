@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3620C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:43:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3562EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  3 Jun 2022 17:44:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237127AbiFCRnx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 13:43:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56010 "EHLO
+        id S1344998AbiFCRn6 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 13:43:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344995AbiFCRnR (ORCPT
+        with ESMTP id S240604AbiFCRni (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 13:43:17 -0400
+        Fri, 3 Jun 2022 13:43:38 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82C4B532EC;
-        Fri,  3 Jun 2022 10:41:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B00554019;
+        Fri,  3 Jun 2022 10:42:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B0F8161B0F;
-        Fri,  3 Jun 2022 17:41:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C02ADC3411D;
-        Fri,  3 Jun 2022 17:41:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 97E3961AFD;
+        Fri,  3 Jun 2022 17:41:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7735C385A9;
+        Fri,  3 Jun 2022 17:41:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654278116;
-        bh=4pC3B+B9HGnfVRgy18c8/h6OnNw9NHaafYHGd+R1Q6E=;
+        s=korg; t=1654278119;
+        bh=lD/i58mJ1mzC0KR7f+afWNEDoc7pInkWcARBKYxsdxQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1PUHDNFAowmaT05rQNUUiaRXj5GUE+C8D2qJ33sUjfL/TMVpQ8DExa6EOUhDWn61l
-         E1KXx9xNtfVocQxj32H2ZVFXPJ4oL7chlpsnDS7e2koLI0hCrbXuwkObC/lE+w2AoG
-         jOGzJOV9V9HL9d/M7H2P6bS4eZaF3I0RdJi8GuvI=
+        b=AUue1vL/BQpj1XszhTlwhozgFGlVOE7B32QtHefLOI9/cmXzmMysskx6WZ1Wk6s/f
+         TNipghOMy3PXK2IZLWubRiXaepGlV4mwqTN65l7kLuvB4uLDXKk0qzpvN0FyaXTJcz
+         vk62u1tGwdzKf7OfDUK+d4s1uw8GQQKGZyDiMh0o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiri Olsa <jolsa@kernel.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        =?UTF-8?q?Daniel=20D=C3=ADaz?= <daniel.diaz@linaro.org>
-Subject: [PATCH 4.19 15/30] perf tests bp_account: Make global variable static
-Date:   Fri,  3 Jun 2022 19:39:43 +0200
-Message-Id: <20220603173815.543846863@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Subject: [PATCH 4.19 16/30] drm/i915: Fix -Wstringop-overflow warning in call to intel_read_wm_latency()
+Date:   Fri,  3 Jun 2022 19:39:44 +0200
+Message-Id: <20220603173815.574880171@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220603173815.088143764@linuxfoundation.org>
 References: <20220603173815.088143764@linuxfoundation.org>
@@ -51,41 +49,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnaldo Carvalho de Melo <acme@redhat.com>
+From: Gustavo A. R. Silva <gustavoars@kernel.org>
 
-[ Upstream commit cff20b3151ccab690715cb6cf0f5da5cccb32adf ]
+commit 336feb502a715909a8136eb6a62a83d7268a353b upstream.
 
-To fix the build with newer gccs, that without this patch exit with:
+Fix the following -Wstringop-overflow warnings when building with GCC-11:
 
-    LD       /tmp/build/perf/tests/perf-in.o
-  ld: /tmp/build/perf/tests/bp_account.o:/git/perf/tools/perf/tests/bp_account.c:22: multiple definition of `the_var'; /tmp/build/perf/tests/bp_signal.o:/git/perf/tools/perf/tests/bp_signal.c:38: first defined here
-  make[4]: *** [/git/perf/tools/build/Makefile.build:145: /tmp/build/perf/tests/perf-in.o] Error 1
+drivers/gpu/drm/i915/intel_pm.c:3106:9: warning: ‘intel_read_wm_latency’ accessing 16 bytes in a region of size 10 [-Wstringop-overflow=]
+ 3106 |         intel_read_wm_latency(dev_priv, dev_priv->wm.pri_latency);
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/gpu/drm/i915/intel_pm.c:3106:9: note: referencing argument 2 of type ‘u16 *’ {aka ‘short unsigned int *’}
+drivers/gpu/drm/i915/intel_pm.c:2861:13: note: in a call to function ‘intel_read_wm_latency’
+ 2861 | static void intel_read_wm_latency(struct drm_i915_private *dev_priv,
+      |             ^~~~~~~~~~~~~~~~~~~~~
 
-First noticed in fedora:rawhide/32 with:
+by removing the over-specified array size from the argument declarations.
 
-  [perfbuilder@a5ff49d6e6e4 ~]$ gcc --version
-  gcc (GCC) 10.0.1 20200216 (Red Hat 10.0.1-0.8)
+It seems that this code is actually safe because the size of the
+array depends on the hardware generation, and the function checks
+for that.
 
-Reported-by: Jiri Olsa <jolsa@kernel.org>
-Cc: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
-Signed-off-by: Daniel Díaz <daniel.diaz@linaro.org>
+Notice that wm can be an array of 5 elements:
+drivers/gpu/drm/i915/intel_pm.c:3109:   intel_read_wm_latency(dev_priv, dev_priv->wm.pri_latency);
+
+or an array of 8 elements:
+drivers/gpu/drm/i915/intel_pm.c:3131:   intel_read_wm_latency(dev_priv, dev_priv->wm.skl_latency);
+
+and the compiler legitimately complains about that.
+
+This helps with the ongoing efforts to globally enable
+-Wstringop-overflow.
+
+Link: https://github.com/KSPP/linux/issues/181
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/perf/tests/bp_account.c |    2 +-
+ drivers/gpu/drm/i915/intel_pm.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/tools/perf/tests/bp_account.c
-+++ b/tools/perf/tests/bp_account.c
-@@ -22,7 +22,7 @@
- #include "perf.h"
- #include "cloexec.h"
+--- a/drivers/gpu/drm/i915/intel_pm.c
++++ b/drivers/gpu/drm/i915/intel_pm.c
+@@ -2814,7 +2814,7 @@ hsw_compute_linetime_wm(const struct int
+ }
  
--volatile long the_var;
-+static volatile long the_var;
- 
- static noinline int test_function(void)
+ static void intel_read_wm_latency(struct drm_i915_private *dev_priv,
+-				  uint16_t wm[8])
++				  uint16_t wm[])
  {
+ 	if (INTEL_GEN(dev_priv) >= 9) {
+ 		uint32_t val;
 
 
