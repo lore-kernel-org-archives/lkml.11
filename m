@@ -2,122 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33AD8C43334
-	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 13:57:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80CC0CCA477
+	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 14:01:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236723AbiFDN5F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 4 Jun 2022 09:57:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46220 "EHLO
+        id S234362AbiFDOBy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 4 Jun 2022 10:01:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236972AbiFDN4n (ORCPT
+        with ESMTP id S231318AbiFDOBw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 4 Jun 2022 09:56:43 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B952650E33
-        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 06:56:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654351001; x=1685887001;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=IBULINJaGy6M9HxKHXNr6wkab0MKcoPGV6i+u2nC4Zo=;
-  b=T+IVE3bTEFtiVwVriPSWC0M932ZaKf32QpDzd6IlfCcEHdbrMOwObh7G
-   dAtw93ylfyc0p/QYDBrDPA2mazSdaZU4vJhFsk5cAxrCZvzf1fkFD8lXs
-   xY++DjKWRLSEPGaPdbnow3GfXWl3wPe8CsvmBjpRTRJqhi2iTmXb/kW27
-   r8N3TfpvGpUAVMLa18MFvJscQ4PS0ueoW7b30shphBYc1r5+YFb7q4vOK
-   A4977KUKvSmX6J1toi+0TpED3MVGY/BXRN4RTdViD2paoRSRpkgG1fEgs
-   RIqz8j/DzDm/6wzqDGvJG1Q2Tm70Ijere9ib/Hp5OKy9ydl3xKWF/Fhei
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10368"; a="301814660"
-X-IronPort-AV: E=Sophos;i="5.91,277,1647327600"; 
-   d="scan'208";a="301814660"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2022 06:56:41 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,277,1647327600"; 
-   d="scan'208";a="668842957"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 04 Jun 2022 06:56:39 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nxUGc-000Avn-J8;
-        Sat, 04 Jun 2022 13:56:38 +0000
-Date:   Sat, 4 Jun 2022 21:55:44 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Shiyang Ruan <ruansy.fnst@fujitsu.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Miaohe Lin <linmiaohe@huawei.com>
-Subject: [akpm-mm:mm-unstable 168/180] mm/memory-failure.c:1740:7: error:
- call to undeclared function 'mf_generic_kill_procs'; ISO C99 and later do
- not support implicit function declarations
-Message-ID: <202206042127.sGqAcR3f-lkp@intel.com>
+        Sat, 4 Jun 2022 10:01:52 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B99E43616C
+        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 07:01:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654351308;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=OfcPj+cwztaLSei0IVYo5rrELt9/llylwn3d2kpTpuU=;
+        b=btNou6lVTgWQ2lLFx9ySjW0ndwNAKKIqvUoLPOpRDUStuRgmzc3yKx3gUq4ywiZAjk0IO4
+        +RM9NaN/CI2rz/wx59ebkVOjkATMRT8iFM3EDBYKYrxP2vQfBzaZK1FeFMctYs+XhIlkKM
+        cAWxgM6M9fvMrG7nGOZXtIxcSjV70XA=
+Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
+ [209.85.167.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-54-felbLr0vNxWj6WmzSmzdbA-1; Sat, 04 Jun 2022 10:01:47 -0400
+X-MC-Unique: felbLr0vNxWj6WmzSmzdbA-1
+Received: by mail-lf1-f71.google.com with SMTP id bu3-20020a056512168300b0047791fb1d68so5469227lfb.23
+        for <linux-kernel@vger.kernel.org>; Sat, 04 Jun 2022 07:01:47 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=OfcPj+cwztaLSei0IVYo5rrELt9/llylwn3d2kpTpuU=;
+        b=Ed+2MtcQvNT9vj/fDNYynwkMSZWK9o/baWTYIrZrJYeii95SQ5ECuhDcWRwRWuPAcp
+         5Esx0Vg3WGgwwTePNvdsPXLAGOgNy9Fnlbavcknjd1AiPODfu/hlImiA9zLwVON5wUfo
+         0abg0KZr/oHShjFYz35p8YwiMmZs7HDGL6E08BiGMf1zURwi+zZLcrlXIiear+Kbs/w8
+         NVdBW3FVG1nxBCtSOwDeWKmp0ConGsggdySsMKae6X1P0HbdZ8bPoeHCfJvrk1i4fHAj
+         B6vk4mHzibjz3B07FaPJiGjQ8m+JNSGL9u29+cU0hH0p7zMjkFcMCNP8Fd0KS4kFv5tC
+         APzQ==
+X-Gm-Message-State: AOAM533WYWREU7S0MX05Ck2FGYiVFmGX7LnB3M4EJqRyBmZGm+WJfSVK
+        5XaF6ea5VvxxYiROJb0T+b2pA1rqyvGKUL7j88qv/4dYMfL7Ith8H6U1CHamTfbWL64/RgUy4yw
+        GsAP73LdiX7+nUTAFEcPhVu3C
+X-Received: by 2002:a05:6512:1092:b0:478:689e:a8dc with SMTP id j18-20020a056512109200b00478689ea8dcmr10185936lfg.33.1654351305892;
+        Sat, 04 Jun 2022 07:01:45 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxT3qpmanR4n7brU/292+Dw3t7QHTij6GV5mvwsw5m9yfdSwNADAz3WPl+vnnFOK77YoYVY3g==
+X-Received: by 2002:a05:6512:1092:b0:478:689e:a8dc with SMTP id j18-20020a056512109200b00478689ea8dcmr10185915lfg.33.1654351305600;
+        Sat, 04 Jun 2022 07:01:45 -0700 (PDT)
+Received: from [10.101.1.23] (ip-185-104-137-32.ptr.icomera.net. [185.104.137.32])
+        by smtp.gmail.com with ESMTPSA id u26-20020ac248ba000000b00478fa47592asm2102110lfg.141.2022.06.04.07.01.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 04 Jun 2022 07:01:44 -0700 (PDT)
+Message-ID: <d01f87e0-66fa-e727-f08d-347e0f0853de@redhat.com>
+Date:   Sat, 4 Jun 2022 16:01:41 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH] Input: soc_button_array - also add Lenovo Yoga Tablet2
+ 1051F to dmi_use_low_level_irq
+Content-Language: en-US
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Marius Hoch <mail@mariushoch.de>
+Cc:     linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220603120246.3065-1-mail@mariushoch.de>
+ <YpqMMmIH6Rr0RbeP@google.com>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <YpqMMmIH6Rr0RbeP@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git mm-unstable
-head:   f06e3c5104126b9a6660b58f29619b53bfa33b2b
-commit: 92eb33ec5ea377357ff8087197209cbfbf40dbf9 [168/180] mm: factor helpers for memory_failure_dev_pagemap
-config: x86_64-randconfig-a014 (https://download.01.org/0day-ci/archive/20220604/202206042127.sGqAcR3f-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project b364c76683f8ef241025a9556300778c07b590c2)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git/commit/?id=92eb33ec5ea377357ff8087197209cbfbf40dbf9
-        git remote add akpm-mm https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git
-        git fetch --no-tags akpm-mm mm-unstable
-        git checkout 92eb33ec5ea377357ff8087197209cbfbf40dbf9
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+Hi,
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+On 6/4/22 00:33, Dmitry Torokhov wrote:
+> On Fri, Jun 03, 2022 at 02:02:46PM +0200, Marius Hoch wrote:
+>> Commit 223f61b8c5ad ("Input: soc_button_array - add Lenovo Yoga Tablet2
+>> 1051L to the dmi_use_low_level_irq list") added the 1051L to this list
+>> already, but the same problem applies to the 1051F. As there are no
+>> further 1051 variants (just the F/L), we can just DMI match 1051.
+>>
+>> Tested on a Lenovo Yoga Tablet2 1051F: Without this patch the
+>> home-button stops working after a wakeup from suspend.
+>>
+>> Signed-off-by: Marius Hoch <mail@mariushoch.de>
+> 
+> Adding Hans for his input...
 
-All errors (new ones prefixed by >>):
+This patch is obviously correct the F/L postfix just differs between
+wiFi vs LTE, not sure if I already knew this when I wrote this patch
+(and did not think things through) or if it is knowledge which I
+gathered later, anyway:
 
->> mm/memory-failure.c:1740:7: error: call to undeclared function 'mf_generic_kill_procs'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-           rc = mf_generic_kill_procs(pfn, flags, pgmap);
-                ^
-   1 error generated.
+Thanks, patch looks good to me:
+
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+
+Regards,
+
+Hans
 
 
-vim +/mf_generic_kill_procs +1740 mm/memory-failure.c
 
-  1723	
-  1724	static int memory_failure_dev_pagemap(unsigned long pfn, int flags,
-  1725			struct dev_pagemap *pgmap)
-  1726	{
-  1727		struct page *page = pfn_to_page(pfn);
-  1728		int rc = -ENXIO;
-  1729	
-  1730		if (flags & MF_COUNT_INCREASED)
-  1731			/*
-  1732			 * Drop the extra refcount in case we come from madvise().
-  1733			 */
-  1734			put_page(page);
-  1735	
-  1736		/* device metadata space is not recoverable */
-  1737		if (!pgmap_pfn_valid(pgmap, pfn))
-  1738			goto out;
-  1739	
-> 1740		rc = mf_generic_kill_procs(pfn, flags, pgmap);
-  1741	out:
-  1742		/* drop pgmap ref acquired in caller */
-  1743		put_dev_pagemap(pgmap);
-  1744		action_result(pfn, MF_MSG_DAX, rc ? MF_FAILED : MF_RECOVERED);
-  1745		return rc;
-  1746	}
-  1747	
+> 
+>> ---
+>>  drivers/input/misc/soc_button_array.c | 4 ++--
+>>  1 file changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/input/misc/soc_button_array.c b/drivers/input/misc/soc_button_array.c
+>> index cbb1599a520e..480476121c01 100644
+>> --- a/drivers/input/misc/soc_button_array.c
+>> +++ b/drivers/input/misc/soc_button_array.c
+>> @@ -85,13 +85,13 @@ static const struct dmi_system_id dmi_use_low_level_irq[] = {
+>>  	},
+>>  	{
+>>  		/*
+>> -		 * Lenovo Yoga Tab2 1051L, something messes with the home-button
+>> +		 * Lenovo Yoga Tab2 1051F/1051L, something messes with the home-button
+>>  		 * IRQ settings, leading to a non working home-button.
+>>  		 */
+>>  		.matches = {
+>>  			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
+>>  			DMI_MATCH(DMI_PRODUCT_NAME, "60073"),
+>> -			DMI_MATCH(DMI_PRODUCT_VERSION, "1051L"),
+>> +			DMI_MATCH(DMI_PRODUCT_VERSION, "1051"),
+>>  		},
+>>  	},
+>>  	{} /* Terminating entry */
+>> -- 
+>> 2.36.1
+>>
+> 
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
