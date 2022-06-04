@@ -2,103 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9910C43334
-	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 16:40:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1CE9C43334
+	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 16:41:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238678AbiFDQka (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 4 Jun 2022 12:40:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47942 "EHLO
+        id S238763AbiFDQlM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 4 Jun 2022 12:41:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231301AbiFDQkZ (ORCPT
+        with ESMTP id S238785AbiFDQlF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 4 Jun 2022 12:40:25 -0400
-X-Greylist: delayed 2622 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 04 Jun 2022 09:40:20 PDT
-Received: from outgoing12.flk.host-h.net (outgoing12.flk.host-h.net [188.40.208.242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 074E64F9D1;
-        Sat,  4 Jun 2022 09:40:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=risingedge.co.za; s=xneelo; h=Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From:reply-to:sender:bcc:in-reply-to:references
-        :content-type; bh=Ouuq/2x8flfBkWWM3iJ0UXEE0GwTm71ML+wgFSoBGq8=; b=QUQtxPrWcbV
-        y9Xe9l14+7nxL6BEbvW0LF0VVxswEr1ogHqoYK74WbMMI6ftRnFtMeFXVKa52FIYFMiKMvjwYEFWW
-        r9th580LjPjlIL39USAeQqzSZeBQyvzTTdD1Ej7OwqzbUrZWZwnY7X2JrMJaoUnoOolxd2fr96nNL
-        AD7bcQA4XoS2/nQJ/u3ER4pPHFI1wO9qEzVpCYS3ON2gXI734B77Bnb2zuDitBhCYzzHNFjZErq+D
-        IWSy0ctagp8E4MA7iOujURvLWoH0Q3jV4tTpf/XgGqv+fYW+sVkTLD6F+CRTGeCsqPeo5Zx0GH+5+
-        ZJS1KSQjYJKkghSiIxHVP+A==;
-Received: from www31.flk1.host-h.net ([188.40.1.173])
-        by antispam3-flk1.host-h.net with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <justin.swartz@risingedge.co.za>)
-        id 1nxW8f-0001N8-7l; Sat, 04 Jun 2022 17:56:35 +0200
-Received: from 8ta-249-1-228.telkomadsl.co.za ([102.249.1.228] helo=localhost.localdomain)
-        by www31.flk1.host-h.net with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <justin.swartz@risingedge.co.za>)
-        id 1nxW8d-0006Fa-NV; Sat, 04 Jun 2022 17:56:32 +0200
-From:   Justin Swartz <justin.swartz@risingedge.co.za>
-Cc:     Justin Swartz <justin.swartz@risingedge.co.za>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jonathan Corbet <corbet@lwn.net>, linux-usb@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] docs: usb: fix literal block marker in usbmon verification example
-Date:   Sat,  4 Jun 2022 17:54:31 +0200
-Message-Id: <20220604155431.23246-1-justin.swartz@risingedge.co.za>
-X-Mailer: git-send-email 2.30.2
+        Sat, 4 Jun 2022 12:41:05 -0400
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E045E4F9EF
+        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 09:41:00 -0700 (PDT)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-2f83983782fso108849917b3.6
+        for <linux-kernel@vger.kernel.org>; Sat, 04 Jun 2022 09:41:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=W34zkTcAGXMCI+JYzK3DXat6suzXaOqaAFFGw9mj4EI=;
+        b=zhtV/uN5ODIHUpVFbr2+YjzGJPKoATO59r27UZFDVstqIYGhKQMrtx2+gCsTUlVSr/
+         /y7R6Fyy33eFPz8AqsYWkNiV3PTb/NV3dYznmpuK9gqSUzzCWBWF51GKMWKKGvjRChUX
+         qLzM/rwQfkU6riBCC4n4120f34pjVQnKU/1V6Y7A9IRBmHAPnaJBwpZ7ockeF29gX3Ou
+         Vv6xmX1McEUbGFePYajUCCiaEspFpR8cHW2PqU4X2Qq4Apll4Htqg0OR1Jko6cLSrXv/
+         mUnqM9lS2LG9TwMTtm215Du5VRBU1I7Yk00cHWyDRQPhPvGp4J9UCs4i65RhcvnG/3d0
+         syeA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=W34zkTcAGXMCI+JYzK3DXat6suzXaOqaAFFGw9mj4EI=;
+        b=SLB2gyApf8RQr2Tynh+gY6yDTaS7OjLFGwYuR67BOFZnb5Rf5gg7+8DRXVeI4U5+0U
+         hGQQRvdB1f1swoc5d5e0jTBBVr6/bmmmqB89Blkx4XjDcotTNjpWz1yome3te7yw/qBK
+         YyfHBF0LLuxJIIVjDIpqPVrjGwmI8h4miGi8PvcVu9Fm1UNqfc8qcd5/+PXJ81P5ZLRP
+         Qd3xACiHBACjAVUw/TxbTQcAaI1Ov4ApEAF3O5bh1st0FOVauxx+aW91QGr4KTMJMYR7
+         xzMX/3qqUd+eAgwJ202VJ4sEc+JWk+RbZRvqhf+IWkIeb7BTDmLgMMeQnIErvIDf36C2
+         4sUw==
+X-Gm-Message-State: AOAM532Q68qt0ENycGiyJro4HS64c75Yh0zvBspXjrsnpPJ0sdjubQZ5
+        QZdE2JSgsoZFB6BC52FbIhmFrx0f/nXoHTthNkMNTQ==
+X-Google-Smtp-Source: ABdhPJyEp6zlhFtYLvUw8xR94hLkxEz9OazTl40HzB2Aw544cSnfZXqh1Q4u4Z3i5daY9y0zrI6Wf9VGmIjw46c7Rj0=
+X-Received: by 2002:a81:1a43:0:b0:30c:78b1:f23d with SMTP id
+ a64-20020a811a43000000b0030c78b1f23dmr17352064ywa.166.1654360859976; Sat, 04
+ Jun 2022 09:40:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: justin.swartz@risingedge.co.za
-X-Virus-Scanned: Clear
-X-Originating-IP: 188.40.1.173
-X-SpamExperts-Domain: risingedge.co.za
-X-SpamExperts-Username: 
-Authentication-Results: host-h.net; auth=pass (login) smtp.auth=@risingedge.co.za
-X-SpamExperts-Outgoing-Class: ham
-X-SpamExperts-Outgoing-Evidence: Combined (0.08)
-X-Recommended-Action: accept
-X-Filter-ID: Pt3MvcO5N4iKaDQ5O6lkdGlMVN6RH8bjRMzItlySaT82YxiG3cFkeaozVsb5Y251PUtbdvnXkggZ
- 3YnVId/Y5jcf0yeVQAvfjHznO7+bT5w1OL79HMxE022P+rQy8YAdcSeERs4TOTnIH1kc1IWc5cqv
- NIMzTsl2qXZAml/tmiq3wL2Y4F0412ezGCyTUPanTItOOFNNjY132/lViGIyGqLI4OY9HO9H+Fx9
- YIm3grPYonhfr99jXBd3p8VVa7wrtuUNWnipPNRiS8q/FrUUyhjJsJREzyUqebdx9PH+DyXnx8ye
- plRO3sLIqUlSH7OGrAhi2aay48NyXBwK776ImabmLbFYYN3/5dv5lrtQLYZCqSlK5qRCEdvOvbYJ
- im3HHIQnXkm8F0KVRQVUwKh0zQWyZ67BVZNsblNG3e9c5Awq1buObycMKAhCcQU7LIjZWBnaet7l
- 8u1IaVoSD7d+Eo3hB7oSHLSzN/CB4wk1cFv1mcInHpUATLx0UN3ao+NXpg1nW4rYJEVR3zSUL4GK
- dNscpwp/WvsW9rkYlRi0DfpKO5QbxpQ97mDfOGVGuYDXzQ6WZJ8UgaMCryZlVIAiHjTVsvdwQtuz
- vJLCXpRXoS3aG/w4HzP8aLtmk5ibSBsf0vPcm60p8kIPTs72y1m7lCGwfqeNO0Vta0QHISXmTwX0
- UIfM1ruawjHM1OLDVV66JbExfL0DNiQSnaITrUCp5NqW+IuA05DGXjIjSPSUiMleY9PlOy/65RmT
- Rr4ei8OATlfri1sIm2TE4+eOrLPislxELZ/g1BglKBRvaJQd7xr74O4hBSz/kkmPgL+fgIguDmiQ
- iLrHPBwZStlwK9Qctw7OLmyubbvqIytQWIC1S+KOOj1Jcto7+pOU/BQuyJBzjt5fkffMOpXRwnoJ
- Yo591MNH89VcUVG/rHffeuRCUcMRFZ4oobg8BBg3Jq+ntzj07hLgnebh+IgqOGSsQlliML7mmfvv
- H8AAJ10/M6mmfXi3REW5XOZTEp8Dyz7eS3cSxMmnhan7ld5Btj8YCzmgH1FfEoXm0/FPF8PR0w36
- 3lkeywGwPwXGvAKiJ5L9oQVFvqNfQiza3x4QvdmobTpnOiGSptvtgY8/SMqO9OohIts7jnxJ2JWr
- eVnk3yKNG42yi8l2R9lD/HojO/FRiY6gTWKrLjRFuOfsv9pIlKVsvXMUU4onvk6Td4Wqgmy49Btn
- G0XDK9jy+ML0pcfvwpalZQ==
-X-Report-Abuse-To: spam@antispammaster.host-h.net
-To:     unlisted-recipients:; (no To-header on input)
+References: <20220603173821.749019262@linuxfoundation.org>
+In-Reply-To: <20220603173821.749019262@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Sat, 4 Jun 2022 22:10:48 +0530
+Message-ID: <CA+G9fYvFvMZvogpf6WwKA0Eb-4y2x7wwJ72=5pVsSDTFu8xiXQ@mail.gmail.com>
+Subject: Re: [PATCH 5.17 00/75] 5.17.13-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The "Verify that bus sockets are present" example was not properly
-formatted due to a typo in the literal block marker.
+On Fri, 3 Jun 2022 at 23:23, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 5.17.13 release.
+> There are 75 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Sun, 05 Jun 2022 17:38:05 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
+5.17.13-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-5.17.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-Signed-off-by: Justin Swartz <justin.swartz@risingedge.co.za>
----
- Documentation/usb/usbmon.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Results from Linaro=E2=80=99s test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-diff --git a/Documentation/usb/usbmon.rst b/Documentation/usb/usbmon.rst
-index b0bd51080..6d5ec1e62 100644
---- a/Documentation/usb/usbmon.rst
-+++ b/Documentation/usb/usbmon.rst
-@@ -42,7 +42,7 @@ if usbmon is built into the kernel::
- 	# modprobe usbmon
- 	#
- 
--Verify that bus sockets are present:
-+Verify that bus sockets are present::
- 
- 	# ls /sys/kernel/debug/usb/usbmon
- 	0s  0u  1s  1t  1u  2s  2t  2u  3s  3t  3u  4s  4t  4u
--- 
-2.30.2
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
+## Build
+* kernel: 5.17.13-rc1
+* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
+* git branch: linux-5.17.y
+* git commit: 30200667e823559c51baeb2bd95c14b144cd8e5c
+* git describe: v5.17.11-188-g30200667e823
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.17.y/build/v5.17=
+.11-188-g30200667e823
+
+## Test Regressions (compared to v5.17.11-112-g118948632858)
+No test regressions found.
+
+## Metric Regressions (compared to v5.17.11-112-g118948632858)
+No metric regressions found.
+
+## Test Fixes (compared to v5.17.11-112-g118948632858)
+No test fixes found.
+
+## Metric Fixes (compared to v5.17.11-112-g118948632858)
+No metric fixes found.
+
+## Test result summary
+total: 135943, pass: 122628, fail: 435, skip: 12050, xfail: 830
+
+## Build Summary
+* arc: 10 total, 10 passed, 0 failed
+* arm: 314 total, 314 passed, 0 failed
+* arm64: 58 total, 58 passed, 0 failed
+* i386: 52 total, 49 passed, 3 failed
+* mips: 37 total, 37 passed, 0 failed
+* parisc: 12 total, 12 passed, 0 failed
+* powerpc: 54 total, 54 passed, 0 failed
+* riscv: 22 total, 22 passed, 0 failed
+* s390: 21 total, 21 passed, 0 failed
+* sh: 24 total, 24 passed, 0 failed
+* sparc: 12 total, 12 passed, 0 failed
+* x86_64: 56 total, 55 passed, 1 failed
+
+## Test suites summary
+* fwts
+* kunit
+* kvm-unit-tests
+* libgpiod
+* libhugetlbfs
+* log-parser-boot
+* log-parser-test
+* ltp-cap_bounds
+* ltp-cap_bounds-tests
+* ltp-commands
+* ltp-commands-tests
+* ltp-containers
+* ltp-containers-tests
+* ltp-controllers-tests
+* ltp-cpuhotplug-tests
+* ltp-crypto
+* ltp-crypto-tests
+* ltp-cve-tests
+* ltp-dio-tests
+* ltp-fcntl-locktests
+* ltp-fcntl-locktests-tests
+* ltp-filecaps
+* ltp-filecaps-tests
+* ltp-fs
+* ltp-fs-tests
+* ltp-fs_bind
+* ltp-fs_bind-tests
+* ltp-fs_perms_simple
+* ltp-fs_perms_simple-tests
+* ltp-fsx
+* ltp-fsx-tests
+* ltp-hugetlb
+* ltp-hugetlb-tests
+* ltp-io
+* ltp-io-tests
+* ltp-ipc
+* ltp-ipc-tests
+* ltp-math-tests
+* ltp-mm-tests
+* ltp-nptl
+* ltp-nptl-tests
+* ltp-open-posix-tests
+* ltp-pty
+* ltp-pty-tests
+* ltp-sched-tests
+* ltp-securebits
+* ltp-securebits-tests
+* ltp-syscalls-tests
+* ltp-tracing-tests
+* network-basic-tests
+* packetdrill
+* perf
+* rcutorture
+* ssuite
+* v4l2-compliance
+* vdso
+
+--
+Linaro LKFT
+https://lkft.linaro.org
