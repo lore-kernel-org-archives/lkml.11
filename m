@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92430C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 19:32:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9E20C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 19:32:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240806AbiFDTcK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 4 Jun 2022 15:32:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48184 "EHLO
+        id S240562AbiFDTcP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 4 Jun 2022 15:32:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240482AbiFDTbi (ORCPT
+        with ESMTP id S240536AbiFDTbj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 4 Jun 2022 15:31:38 -0400
-Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F0AD4F9EB
-        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 12:31:12 -0700 (PDT)
-Received: by mail-qt1-x835.google.com with SMTP id hh4so7943020qtb.10
-        for <linux-kernel@vger.kernel.org>; Sat, 04 Jun 2022 12:31:12 -0700 (PDT)
+        Sat, 4 Jun 2022 15:31:39 -0400
+Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B5484F9DF
+        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 12:31:16 -0700 (PDT)
+Received: by mail-qk1-x72e.google.com with SMTP id c144so5882473qkg.11
+        for <linux-kernel@vger.kernel.org>; Sat, 04 Jun 2022 12:31:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Oaee6fU7FBLwhgu5DdJadkLE5G6WCsZxuaTAFXkUXZI=;
-        b=ldYVpBXcFsh7cLhB7OmnC/+yw36roh8l6muIrrxyF+nORq7ggbBRiSYZOXlJmR8qzY
-         MmNK2vdmdZaWiOH1+6g1UINWT7Q6rrwoEB8VHJs4r7rVwvVTy3ukdqwBCcGbxeDrIrEi
-         pTWBDzZPpt6/CSvocm+uBXbwZcvMT1gS7nerlsKqStpeK4U+i4s+PaL6r+qKbBWOrxR+
-         bpww57Y1OMaSOo2hHfFjpQoJ3kGXSM8a+KycVx5a+WBE26j1vWsPu3opwxfjlJ0QTBJj
-         uI1ZAEM6WfQHj8jQEExGF84ythD4GacqkzlCTdEHCThdfnFR7jJtrXChb+KT2ROd66tb
-         9vaA==
+        bh=Pf/FzfiFeov0TvwCq8OTCWTHUawuSdyfQ/gNqM6PjUQ=;
+        b=Tp1wo/ZA2SnFuK5A4UnbUfj64gtGhb0gbb64GWpIAcagfJfF5IH0+tH1uilDeoXUfX
+         PzZqlrtQRWDZ30E8MYMBkG+sLxciu/HfrwelqrPWS76y29Bi4lH6VcIY4c29OaeWRmXp
+         e2EeoJNgLP9blMhLQdwaFpXku1pYbg4d6uTE2LaS4ncXrOpRCFhzpaEMW4PpnwWjyJmo
+         wuwD+CuD+LusMeO+24rydrDhoG9tD9ae8sk/PhsvOwGXN4OBWZh9RwHUTNuhzD1J0u28
+         gdiZJsq+d2eztF/eVUENzF6wa8d2aK+kKes0cnqmWjJCCJgJLCd8WhUkGC5sed8Ci5Oe
+         qsJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Oaee6fU7FBLwhgu5DdJadkLE5G6WCsZxuaTAFXkUXZI=;
-        b=W5rK2sz/3Z8ro4D+6hoXt51KDX0Kt0/6IjkVPFk324XABcU2Rgdkhyti7jtXMbJ0pt
-         8mBDI9klKRUa4XdQITM6l6Hh2IdFg8V/w7oFxYxFDKqoSBUN+QIb9TNLZ+S3quv3MWkh
-         cAEdr17b/XmwS4vQl/ef2EDFCvnrf/ru0ei3jILl3OEHPghTq8Q5ZVGntwTWc9P5wixq
-         TJbFqRjaBD4wv0cI3j6zxRKoDx0wCvjiSkYBva72qT08Xv5VenLLIqKCq+kxTbsVGq5O
-         fQ1o5GqrRKB4Ib1fC0nF1J85vIJVKqHsPqA4+4ufrACxfEeHTIBFKjxYPBFCmxLkOz03
-         HrEA==
-X-Gm-Message-State: AOAM531Rfs4eTBIV9Xhq79vMqN3nS+W6P4N8uZfatRl8RxhdpXfqNSaz
-        X4H7Zbz5RvFhbt8X62iZWGk5meuLXpED
-X-Google-Smtp-Source: ABdhPJwPHepZk81dDDSxhA4FdxgP9+w2OaM0lH4d5XT8SOwNIWueCqz+T5/0KZ6r2nLyF+teXIMLvw==
-X-Received: by 2002:a05:622a:1705:b0:2ff:9bd1:f760 with SMTP id h5-20020a05622a170500b002ff9bd1f760mr12578426qtk.573.1654371070825;
-        Sat, 04 Jun 2022 12:31:10 -0700 (PDT)
+        bh=Pf/FzfiFeov0TvwCq8OTCWTHUawuSdyfQ/gNqM6PjUQ=;
+        b=2FoleXmjJIkhchAZCMUmM0ieo3/+JT/nl6Q4vPSVLaCM/Gzf44XssaWty4JZyx2f0h
+         CHTM3JOW23+c7yWg8iANaMHlphQxTFJfX0a1oJ2ylfnF6d0TuGAP9g7JLosp2Th4wn9s
+         SIhR7UxUFC4jpxU9oSXrfzxr7Q4JZF5sHr0zr0i7DH5v/slce8MDrhuqv6VOHuCq/onA
+         WC2GwR9k7ntRlTJzksHTNtXgyBxF2wCkm2Jhy28BsZHKoeVEa84j9Q99AP3roLmFWli5
+         aU8hCJmYapW9AVBcs6ReQr1jByJsMRymCNpkMg9eP2jpn7dkEXEuEecp97rNAxZSoTe9
+         TtTg==
+X-Gm-Message-State: AOAM530xIAj+vm3oYxmEbgr6dYxVMmPzeqzrJNiLbtWCmN9AU478ja5U
+        VWdv5B68qXq0BDZ+o5uptiEbim45KcCx
+X-Google-Smtp-Source: ABdhPJzs8MC4G60VN3BYLJKVipa/+cKuKEJ8EV/K4ImNKi99R+/OG5w2PvvftTUqbF8oaoMR8/CfrA==
+X-Received: by 2002:a37:e304:0:b0:6a6:a784:6276 with SMTP id y4-20020a37e304000000b006a6a7846276mr5009907qki.778.1654371075318;
+        Sat, 04 Jun 2022 12:31:15 -0700 (PDT)
 Received: from moria.home.lan (c-73-219-103-14.hsd1.vt.comcast.net. [73.219.103.14])
-        by smtp.gmail.com with ESMTPSA id o17-20020ac84291000000b00304defdb1b3sm3537426qtl.85.2022.06.04.12.31.09
+        by smtp.gmail.com with ESMTPSA id o17-20020ac84291000000b00304defdb1b3sm3537426qtl.85.2022.06.04.12.31.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 04 Jun 2022 12:31:10 -0700 (PDT)
+        Sat, 04 Jun 2022 12:31:14 -0700 (PDT)
 From:   Kent Overstreet <kent.overstreet@gmail.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Kent Overstreet <kent.overstreet@gmail.com>, pmladek@suse.com,
         rostedt@goodmis.org
-Subject: [PATCH v3 14/33] vsprintf: Start consolidating printf_spec handling
-Date:   Sat,  4 Jun 2022 15:30:23 -0400
-Message-Id: <20220604193042.1674951-15-kent.overstreet@gmail.com>
+Subject: [PATCH v3 17/33] vsprintf: Refactor ip_addr_string()
+Date:   Sat,  4 Jun 2022 15:30:26 -0400
+Message-Id: <20220604193042.1674951-18-kent.overstreet@gmail.com>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220604193042.1674951-1-kent.overstreet@gmail.com>
 References: <20220604193042.1674951-1-kent.overstreet@gmail.com>
@@ -64,717 +64,241 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-printf_spec is right now something of a mess - it's a grab-bag of state
-that's interpreted inconsistently by different code, and it's scattered
-throughout vsprintf.c.
+ - We're attempting to consolidate printf_spec and format string
+   handling in the top level vpr_buf(), this changes ip_addr_string() to
+   not take printf_spec
 
-We'd like to get it out of the pretty-printers, and have it be solely
-the responsibility of vsprintf()/vpr_buf(), the code that parses and
-handles format strings.
-
-Most of the code that uses printf_spec is only using it for a minimum &
-maximum field width - that can be done at the toplevel by checking how
-much we just printed, and padding or truncating it as necessary. This
-patch takes those "simple" uses of printf_spec and moves them as far up
-the call stack as possible.
-
-This patch also renames some helpers and creates new ones that don't
-take printf_spec:
- - do_width_precision: new helper that handles with/precision of
-   printf_spec
- - error_string		-> error_string_spec
- - check_pointer	-> check_pointer_spec
- - string		-> string_spec
-
-Next patches will be reducing/eliminating uses of the *_spec versions.
+ - With the new printbuf helpers there's no need to use a separate stack
+   allocated buffer, so this patch deletes it.
 
 Signed-off-by: Kent Overstreet <kent.overstreet@gmail.com>
 ---
- lib/vsprintf.c | 245 ++++++++++++++++++++++++++++---------------------
- 1 file changed, 138 insertions(+), 107 deletions(-)
+ lib/vsprintf.c | 114 ++++++++++++++++---------------------------------
+ 1 file changed, 37 insertions(+), 77 deletions(-)
 
 diff --git a/lib/vsprintf.c b/lib/vsprintf.c
-index 7b49a998d3..863040fdaa 100644
+index 49565e0dc4..964e00b6a2 100644
 --- a/lib/vsprintf.c
 +++ b/lib/vsprintf.c
-@@ -617,6 +617,19 @@ void widen_string(struct printbuf *out, int n,
- 		prt_chars(out, ' ', spaces);
- }
- 
-+static void do_width_precision(struct printbuf *out, unsigned prev_pos,
-+			       struct printf_spec spec)
-+{
-+	unsigned n = out->pos - prev_pos;
-+
-+	if (n > spec.precision) {
-+		out->pos -= n - spec.precision;
-+		n = spec.precision;
-+	}
-+
-+	widen_string(out, n, spec);
-+}
-+
- /* Handle string from a well known address. */
- static void string_nocheck(struct printbuf *out,
- 			   const char *s,
-@@ -649,7 +662,7 @@ static void err_ptr(struct printbuf *out, void *ptr,
- }
- 
- /* Be careful: error messages must fit into the given buffer. */
--static void error_string(struct printbuf *out, const char *s,
-+static void error_string_spec(struct printbuf *out, const char *s,
- 			 struct printf_spec spec)
- {
- 	/*
-@@ -679,7 +692,7 @@ static const char *check_pointer_msg(const void *ptr)
- 	return NULL;
- }
- 
--static int check_pointer(struct printbuf *out,
-+static int check_pointer_spec(struct printbuf *out,
- 			 const void *ptr,
- 			 struct printf_spec spec)
- {
-@@ -687,7 +700,7 @@ static int check_pointer(struct printbuf *out,
- 
- 	err_msg = check_pointer_msg(ptr);
- 	if (err_msg) {
--		error_string(out, err_msg, spec);
-+		error_string_spec(out, err_msg, spec);
- 		return -EFAULT;
- 	}
- 
-@@ -695,16 +708,47 @@ static int check_pointer(struct printbuf *out,
+@@ -1301,13 +1301,13 @@ void mac_address_string(struct printbuf *out, u8 *addr,
  }
  
  static noinline_for_stack
--void string(struct printbuf *out,
-+void string_spec(struct printbuf *out,
- 	    const char *s,
- 	    struct printf_spec spec)
+-void ip4_string(struct printbuf *out,
+-		const u8 *addr, const char *fmt)
++void ip4_string(struct printbuf *out, const u8 *addr, const char *fmt)
  {
--	if (check_pointer(out, s, spec))
-+	if (check_pointer_spec(out, s, spec))
- 		return;
+-	int i;
+-	bool leading_zeros = (fmt[0] == 'i');
+-	int index;
+-	int step;
++	struct printf_spec spec = default_dec_spec;
++	int i, index, step;
++
++	if (fmt[0] == 'i')
++		spec.precision = 3;
  
- 	string_nocheck(out, s, spec);
- }
- 
-+static void error_string(struct printbuf *out, const char *s)
-+{
-+	/*
-+	 * Hard limit to avoid a completely insane messages. It actually
-+	 * works pretty well because most error messages are in
-+	 * the many pointer format modifiers.
-+	 */
-+	prt_bytes(out, s, min(strlen(s), 2 * sizeof(void *)));
-+}
-+
-+static int check_pointer(struct printbuf *out, const void *ptr)
-+{
-+	const char *err_msg;
-+
-+	err_msg = check_pointer_msg(ptr);
-+	if (err_msg) {
-+		error_string(out, err_msg);
-+		return -EFAULT;
-+	}
-+
-+	return 0;
-+}
-+
-+static void string(struct printbuf *out, const char *s)
-+{
-+	if (check_pointer(out, s))
-+		return;
-+
-+	prt_str(out, s);
-+}
-+
- static void pointer_string(struct printbuf *out,
- 			   const void *ptr,
- 			   struct printf_spec spec)
-@@ -830,7 +874,7 @@ static void ptr_to_id(struct printbuf *out,
- 	if (ret) {
- 		spec.field_width = 2 * sizeof(ptr);
- 		/* string length must be less than default_width */
--		return error_string(out, str, spec);
-+		return error_string_spec(out, str, spec);
+ 	switch (fmt[2]) {
+ 	case 'h':
+@@ -1331,19 +1331,9 @@ void ip4_string(struct printbuf *out,
+ 		break;
  	}
- 
- 	pointer_string(out, (const void *)hashval, spec);
-@@ -871,7 +915,7 @@ void restricted_pointer(struct printbuf *out,
- 		if (in_irq() || in_serving_softirq() || in_nmi()) {
- 			if (spec.field_width == -1)
- 				spec.field_width = 2 * sizeof(ptr);
--			return error_string(out, "pK-error", spec);
-+			return error_string_spec(out, "pK-error", spec);
- 		}
- 
- 		/*
-@@ -901,14 +945,12 @@ void restricted_pointer(struct printbuf *out,
- }
- 
- static noinline_for_stack
--void dentry_name(struct printbuf *out,
--		 const struct dentry *d, struct printf_spec spec,
-+void dentry_name(struct printbuf *out, const struct dentry *d,
- 		 const char *fmt)
- {
--	const char *array[4], *s;
-+	const char *array[4];
- 	const struct dentry *p;
--	int depth;
--	int i, n;
-+	int i, depth;
- 
- 	switch (fmt[1]) {
- 		case '2': case '3': case '4':
-@@ -920,7 +962,7 @@ void dentry_name(struct printbuf *out,
- 
- 	rcu_read_lock();
- 	for (i = 0; i < depth; i++, d = p) {
--		if (check_pointer(out, d, spec)) {
-+		if (check_pointer(out, d)) {
- 			rcu_read_unlock();
- 			return;
- 		}
-@@ -934,56 +976,46 @@ void dentry_name(struct printbuf *out,
- 			break;
- 		}
- 	}
--	s = array[--i];
--	for (n = 0; n != spec.precision; n++) {
--		char c = *s++;
--		if (!c) {
--			if (!i)
--				break;
--			c = '/';
--			s = array[--i];
+ 	for (i = 0; i < 4; i++) {
+-		char temp[4] __aligned(2);	/* hold each IP quad in reverse order */
+-		int digits = put_dec_trunc8(temp, addr[index]) - temp;
+-		if (leading_zeros) {
+-			if (digits < 3)
+-				prt_char(out, '0');
+-			if (digits < 2)
+-				prt_char(out, '0');
 -		}
--		prt_char(out, c);
-+	while (1) {
-+		prt_str(out, array[--i]);
-+		if (!i)
-+			break;
-+		prt_char(out, '/');
+-		/* reverse the digits in the quad */
+-		while (digits--)
+-			prt_char(out, temp[digits]);
+-		if (i < 3)
++		if (i)
+ 			prt_char(out, '.');
++		number(out, addr[index], spec);
+ 		index += step;
  	}
- 	rcu_read_unlock();
+ }
+@@ -1426,8 +1416,6 @@ void ip6_compressed_string(struct printbuf *out, const char *addr)
+ 			__prt_char(out, ':');
+ 		ip4_string(out, &in6.s6_addr[12], "I4");
+ 	}
 -
--	widen_string(out, n, spec);
+-	printbuf_nul_terminate(out);
  }
  
  static noinline_for_stack
--void file_dentry_name(struct printbuf *out,
--		      const struct file *f,
--		      struct printf_spec spec, const char *fmt)
-+void file_dentry_name(struct printbuf *out, const struct file *f,
-+		      const char *fmt)
- {
--	if (check_pointer(out, f, spec))
-+	if (check_pointer(out, f))
- 		return;
- 
--	return dentry_name(out, f->f_path.dentry, spec, fmt);
-+	return dentry_name(out, f->f_path.dentry, fmt);
- }
- #ifdef CONFIG_BLOCK
- static noinline_for_stack
--void bdev_name(struct printbuf *out,
--	       struct block_device *bdev,
--	       struct printf_spec spec, const char *fmt)
-+void bdev_name(struct printbuf *out, struct block_device *bdev)
- {
- 	struct gendisk *hd;
- 
--	if (check_pointer(out, bdev, spec))
-+	if (check_pointer(out, bdev))
- 		return;
- 
- 	hd = bdev->bd_disk;
--	string(out, hd->disk_name, spec);
-+	string(out, hd->disk_name);
- 	if (bdev->bd_partno) {
- 		if (isdigit(hd->disk_name[strlen(hd->disk_name)-1]))
- 			prt_char(out, 'p');
--		number(out, bdev->bd_partno, spec);
-+		prt_u64(out, bdev->bd_partno);
- 	}
- }
- #endif
+@@ -1445,41 +1433,20 @@ void ip6_string(struct printbuf *out, const char *addr, const char *fmt)
  
  static noinline_for_stack
- void symbol_string(struct printbuf *out, void *ptr,
--		   struct printf_spec spec, const char *fmt)
-+		   const char *fmt)
+ void ip6_addr_string(struct printbuf *out, const u8 *addr,
+-		     struct printf_spec spec, const char *fmt)
++		     const char *fmt)
  {
- 	unsigned long value;
- #ifdef CONFIG_KALLSYMS
-@@ -1006,17 +1038,12 @@ void symbol_string(struct printbuf *out, void *ptr,
+-	char ip6_addr_buf[sizeof("xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:255.255.255.255")];
+-	struct printbuf ip6_addr = PRINTBUF_EXTERN(ip6_addr_buf, sizeof(ip6_addr_buf));
+-
+ 	if (fmt[0] == 'I' && fmt[2] == 'c')
+-		ip6_compressed_string(&ip6_addr, addr);
++		ip6_compressed_string(out, addr);
  	else
- 		sprint_symbol_no_offset(sym, value);
- 
--	string_nocheck(out, sym, spec);
-+	prt_str(out, sym);
- #else
- 	special_hex_number(out, value, sizeof(void *));
- #endif
+-		ip6_string(&ip6_addr, addr, fmt);
+-
+-	string_nocheck(out, ip6_addr_buf, spec);
+-}
+-
+-static noinline_for_stack
+-void ip4_addr_string(struct printbuf *out, const u8 *addr,
+-		     struct printf_spec spec, const char *fmt)
+-{
+-	char ip4_addr_buf[sizeof("255.255.255.255")];
+-	struct printbuf ip4_addr = PRINTBUF_EXTERN(ip4_addr_buf, sizeof(ip4_addr_buf));
+-
+-	ip4_string(&ip4_addr, addr, fmt);
+-
+-	string_nocheck(out, ip4_addr_buf, spec);
++		ip6_string(out, addr, fmt);
  }
  
--static const struct printf_spec default_str_spec = {
--	.field_width = -1,
--	.precision = -1,
--};
+ static noinline_for_stack
+ void ip6_addr_string_sa(struct printbuf *out,
+ 			const struct sockaddr_in6 *sa,
+-			struct printf_spec spec, const char *fmt)
++			const char *fmt)
+ {
+ 	bool have_p = false, have_s = false, have_f = false, have_c = false;
+-	char ip6_addr_buf[sizeof("[xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:255.255.255.255]") +
+-		sizeof(":12345") + sizeof("/123456789") +
+-		sizeof("%1234567890")];
+-	struct printbuf ip6_addr = PRINTBUF_EXTERN(ip6_addr_buf, sizeof(ip6_addr_buf));
+ 	const u8 *addr = (const u8 *) &sa->sin6_addr;
+ 	char fmt6[2] = { fmt[0], '6' };
+ 
+@@ -1502,41 +1469,35 @@ void ip6_addr_string_sa(struct printbuf *out,
+ 	}
+ 
+ 	if (have_p || have_s || have_f)
+-		prt_char(&ip6_addr, '[');
++		prt_char(out, '[');
+ 
+ 	if (fmt6[0] == 'I' && have_c)
+-		ip6_compressed_string(&ip6_addr, addr);
++		ip6_compressed_string(out, addr);
+ 	else
+-		ip6_string(&ip6_addr, addr, fmt6);
++		ip6_string(out, addr, fmt6);
+ 
+ 	if (have_p || have_s || have_f)
+-		prt_char(&ip6_addr, ']');
++		prt_char(out, ']');
+ 
+ 	if (have_p) {
+-		prt_char(&ip6_addr, ':');
+-		number(&ip6_addr, ntohs(sa->sin6_port), spec);
++		prt_char(out, ':');
++		prt_u64(out, ntohs(sa->sin6_port));
+ 	}
+ 	if (have_f) {
+-		prt_char(&ip6_addr, '/');
+-		number(&ip6_addr, ntohl(sa->sin6_flowinfo &
+-					IPV6_FLOWINFO_MASK), spec);
++		prt_char(out, '/');
++		prt_u64(out, ntohl(sa->sin6_flowinfo & IPV6_FLOWINFO_MASK));
+ 	}
+ 	if (have_s) {
+-		prt_char(&ip6_addr, '%');
+-		number(&ip6_addr, sa->sin6_scope_id, spec);
++		prt_char(out, '%');
++		prt_u64(out, sa->sin6_scope_id);
+ 	}
 -
- static const struct printf_spec default_flag_spec = {
- 	.base = 16,
- 	.precision = -1,
-@@ -1075,7 +1102,7 @@ void resource_string(struct printbuf *out, struct resource *res,
- 	int decode = (fmt[0] == 'R') ? 1 : 0;
- 	const struct printf_spec *specp;
+-	string_nocheck(out, ip6_addr_buf, spec);
+ }
  
--	if (check_pointer(out, res, spec))
-+	if (check_pointer_spec(out, res, spec))
- 		return;
+ static noinline_for_stack
+-void ip4_addr_string_sa(struct printbuf *out,
+-			const struct sockaddr_in *sa,
+-			struct printf_spec spec, const char *fmt)
++void ip4_addr_string_sa(struct printbuf *out, const struct sockaddr_in *sa,
++			const char *fmt)
+ {
+ 	bool have_p = false;
+-	char ip4_addr_buf[sizeof("255.255.255.255") + sizeof(":12345")];
+-	struct printbuf ip4_addr = PRINTBUF_EXTERN(ip4_addr_buf, sizeof(ip4_addr_buf));
+ 	const u8 *addr = (const u8 *) &sa->sin_addr.s_addr;
+ 	char fmt4[3] = { fmt[0], '4', 0 };
  
- 	prt_char(&sym, '[');
-@@ -1139,7 +1166,7 @@ void hex_string(struct printbuf *out, u8 *addr,
- 		/* nothing to print */
- 		return;
+@@ -1555,29 +1516,27 @@ void ip4_addr_string_sa(struct printbuf *out,
+ 		}
+ 	}
  
--	if (check_pointer(out, addr, spec))
-+	if (check_pointer_spec(out, addr, spec))
- 		return;
+-	ip4_string(&ip4_addr, addr, fmt4);
++	ip4_string(out, addr, fmt4);
+ 	if (have_p) {
+-		prt_char(&ip4_addr, ':');
+-		number(&ip4_addr, ntohs(sa->sin_port), spec);
++		prt_char(out, ':');
++		prt_u64(out, ntohs(sa->sin_port));
+ 	}
+-
+-	string_nocheck(out, ip4_addr_buf, spec);
+ }
  
- 	switch (fmt[1]) {
-@@ -1180,7 +1207,7 @@ void bitmap_string(struct printbuf *out, unsigned long *bitmap,
- 	int i, chunksz;
- 	bool first = true;
- 
--	if (check_pointer(out, bitmap, spec))
-+	if (check_pointer_spec(out, bitmap, spec))
- 		return;
- 
- 	/* reused to print numbers */
-@@ -1219,7 +1246,7 @@ void bitmap_list_string(struct printbuf *out, unsigned long *bitmap,
- 	bool first = true;
- 	int rbot, rtop;
- 
--	if (check_pointer(out, bitmap, spec))
-+	if (check_pointer_spec(out, bitmap, spec))
- 		return ;
- 
- 	for_each_set_bitrange(rbot, rtop, bitmap, nr_bits) {
-@@ -1246,7 +1273,7 @@ void mac_address_string(struct printbuf *out, u8 *addr,
- 	char separator;
- 	bool reversed = false;
- 
--	if (check_pointer(out, addr, spec))
-+	if (check_pointer_spec(out, addr, spec))
- 		return;
- 
- 	switch (fmt[1]) {
-@@ -1547,7 +1574,7 @@ void ip_addr_string(struct printbuf *out, const void *ptr,
+ static noinline_for_stack
+ void ip_addr_string(struct printbuf *out, const void *ptr,
+-		    struct printf_spec spec, const char *fmt)
++		    const char *fmt)
  {
  	char *err_fmt_msg;
  
--	if (check_pointer(out, ptr, spec))
-+	if (check_pointer_spec(out, ptr, spec))
+-	if (check_pointer_spec(out, ptr, spec))
++	if (check_pointer(out, ptr))
  		return;
  
  	switch (fmt[1]) {
-@@ -1568,12 +1595,12 @@ void ip_addr_string(struct printbuf *out, const void *ptr,
+ 	case '6':
+-		return ip6_addr_string(out, ptr, spec, fmt);
++		return ip6_addr_string(out, ptr, fmt);
+ 	case '4':
+-		return ip4_addr_string(out, ptr, spec, fmt);
++		return ip4_string(out, ptr, fmt);
+ 	case 'S': {
+ 		const union {
+ 			struct sockaddr		raw;
+@@ -1587,16 +1546,16 @@ void ip_addr_string(struct printbuf *out, const void *ptr,
+ 
+ 		switch (sa->raw.sa_family) {
+ 		case AF_INET:
+-			return ip4_addr_string_sa(out, &sa->v4, spec, fmt);
++			return ip4_addr_string_sa(out, &sa->v4, fmt);
  		case AF_INET6:
- 			return ip6_addr_string_sa(out, &sa->v6, spec, fmt);
+-			return ip6_addr_string_sa(out, &sa->v6, spec, fmt);
++			return ip6_addr_string_sa(out, &sa->v6, fmt);
  		default:
--			return error_string(out, "(einval)", spec);
-+			return error_string_spec(out, "(einval)", spec);
+-			return error_string_spec(out, "(einval)", spec);
++			return error_string(out, "(einval)");
  		}}
  	}
  
  	err_fmt_msg = fmt[0] == 'i' ? "(%pi?)" : "(%pI?)";
--	return error_string(out, err_fmt_msg, spec);
-+	return error_string_spec(out, err_fmt_msg, spec);
+-	return error_string_spec(out, err_fmt_msg, spec);
++	error_string(out, err_fmt_msg);
  }
  
  static noinline_for_stack
-@@ -1588,7 +1615,7 @@ void escaped_string(struct printbuf *out, u8 *addr,
- 	if (spec.field_width == 0)
- 		return;				/* nothing to print */
- 
--	if (check_pointer(out, addr, spec))
-+	if (check_pointer_spec(out, addr, spec))
- 		return;
- 
- 	do {
-@@ -1633,7 +1660,7 @@ static void va_format(struct printbuf *out,
- {
- 	va_list va;
- 
--	if (check_pointer(out, va_fmt, spec))
-+	if (check_pointer_spec(out, va_fmt, spec))
- 		return;
- 
- 	va_copy(va, *va_fmt->va);
-@@ -1642,16 +1669,13 @@ static void va_format(struct printbuf *out,
- }
- 
- static noinline_for_stack
--void uuid_string(struct printbuf *out, const u8 *addr,
--		 struct printf_spec spec, const char *fmt)
-+void uuid_string(struct printbuf *out, const u8 *addr, const char *fmt)
- {
--	char uuid_buf[UUID_STRING_LEN + 1];
--	struct printbuf uuid = PRINTBUF_EXTERN(uuid_buf, sizeof(uuid_buf));
- 	int i;
- 	const u8 *index = uuid_index;
- 	bool uc = false;
- 
--	if (check_pointer(out, addr, spec))
-+	if (check_pointer(out, addr))
- 		return;
- 
- 	switch (*(++fmt)) {
-@@ -1668,30 +1692,28 @@ void uuid_string(struct printbuf *out, const u8 *addr,
- 
- 	for (i = 0; i < 16; i++) {
- 		if (uc)
--			prt_hex_byte_upper(&uuid, addr[index[i]]);
-+			prt_hex_byte_upper(out, addr[index[i]]);
- 		else
--			prt_hex_byte(&uuid, addr[index[i]]);
-+			prt_hex_byte(out, addr[index[i]]);
- 		switch (i) {
- 		case 3:
- 		case 5:
- 		case 7:
- 		case 9:
--			prt_char(&uuid, '-');
-+			prt_char(out, '-');
- 			break;
- 		}
- 	}
--
--	string_nocheck(out, uuid_buf, spec);
- }
- 
- static noinline_for_stack
- void netdev_bits(struct printbuf *out, const void *addr,
--		 struct printf_spec spec,  const char *fmt)
-+		 const char *fmt)
- {
- 	unsigned long long num;
- 	int size;
- 
--	if (check_pointer(out, addr, spec))
-+	if (check_pointer(out, addr))
- 		return;
- 
- 	switch (fmt[1]) {
-@@ -1701,7 +1723,7 @@ void netdev_bits(struct printbuf *out, const void *addr,
- 		special_hex_number(out, num, size);
- 		break;
- 	default:
--		error_string(out, "(%pN?)", spec);
-+		error_string(out, "(%pN?)");
- 		break;
- 	}
- }
-@@ -1716,9 +1738,9 @@ void fourcc_string(struct printbuf *out, const u32 *fourcc,
- 	u32 orig, val;
- 
- 	if (fmt[1] != 'c' || fmt[2] != 'c')
--		return error_string(out, "(%p4?)", spec);
-+		return error_string_spec(out, "(%p4?)", spec);
- 
--	if (check_pointer(out, fourcc, spec))
-+	if (check_pointer_spec(out, fourcc, spec))
- 		return;
- 
- 	orig = get_unaligned(fourcc);
-@@ -1739,17 +1761,17 @@ void fourcc_string(struct printbuf *out, const u32 *fourcc,
- 	special_hex_number(&output, orig, sizeof(u32));
- 	prt_char(&output, ')');
- 
--	string(out, output_buf, spec);
-+	string_spec(out, output_buf, spec);
- }
- 
- static noinline_for_stack
- void address_val(struct printbuf *out, const void *addr,
--		 struct printf_spec spec, const char *fmt)
-+		 const char *fmt)
- {
- 	unsigned long long num;
- 	int size;
- 
--	if (check_pointer(out, addr, spec))
-+	if (check_pointer(out, addr))
- 		return;
- 
- 	switch (fmt[1]) {
-@@ -1800,7 +1822,7 @@ void rtc_str(struct printbuf *out, const struct rtc_time *tm,
- 	bool found = true;
- 	int count = 2;
- 
--	if (check_pointer(out, tm, spec))
-+	if (check_pointer_spec(out, tm, spec))
- 		return;
- 
- 	switch (fmt[count]) {
-@@ -1870,7 +1892,7 @@ void time_and_date(struct printbuf *out,
- 	case 'T':
- 		return time64_str(out, *(const time64_t *)ptr, spec, fmt);
- 	default:
--		return error_string(out, "(%pt?)", spec);
-+		return error_string_spec(out, "(%pt?)", spec);
- 	}
- }
- 
-@@ -1879,16 +1901,16 @@ void clock(struct printbuf *out, struct clk *clk,
- 	   struct printf_spec spec, const char *fmt)
- {
- 	if (!IS_ENABLED(CONFIG_HAVE_CLK))
--		return error_string(out, "(%pC?)", spec);
-+		return error_string_spec(out, "(%pC?)", spec);
- 
--	if (check_pointer(out, clk, spec))
-+	if (check_pointer_spec(out, clk, spec))
- 		return;
- 
- 	switch (fmt[1]) {
- 	case 'n':
- 	default:
- #ifdef CONFIG_COMMON_CLK
--		return string(out, __clk_get_name(clk), spec);
-+		return string_spec(out, __clk_get_name(clk), spec);
- #else
- 		return ptr_to_id(out, clk, spec);
- #endif
-@@ -1906,7 +1928,7 @@ void format_flags(struct printbuf *out, unsigned long flags,
- 		if ((flags & mask) != mask)
- 			continue;
- 
--		string(out, names->name, default_str_spec);
-+		string(out, names->name);
- 
- 		flags &= ~mask;
- 		if (flags)
-@@ -1964,7 +1986,7 @@ void format_page_flags(struct printbuf *out, unsigned long flags)
- 		if (append)
- 			prt_char(out, '|');
- 
--		string(out, pff[i].name, default_str_spec);
-+		string(out, pff[i].name);
- 		prt_char(out, '=');
- 		number(out, (flags >> pff[i].shift) & pff[i].mask, *pff[i].spec);
- 
-@@ -1980,7 +2002,7 @@ void flags_string(struct printbuf *out, void *flags_ptr,
- 	unsigned long flags;
- 	const struct trace_print_flags *names;
- 
--	if (check_pointer(out, flags_ptr, spec))
-+	if (check_pointer_spec(out, flags_ptr, spec))
- 		return;
- 
- 	switch (fmt[1]) {
-@@ -1995,7 +2017,7 @@ void flags_string(struct printbuf *out, void *flags_ptr,
- 		names = gfpflag_names;
- 		break;
- 	default:
--		return error_string(out, "(%pG?)", spec);
-+		return error_string_spec(out, "(%pG?)", spec);
- 	}
- 
- 	return format_flags(out, flags, names);
-@@ -2012,10 +2034,8 @@ void fwnode_full_name_string(struct printbuf *out,
- 		struct fwnode_handle *__fwnode =
- 			fwnode_get_nth_parent(fwnode, depth);
- 
--		string(out, fwnode_get_name_prefix(__fwnode),
--		       default_str_spec);
--		string(out, fwnode_get_name(__fwnode),
--		       default_str_spec);
-+		string(out, fwnode_get_name_prefix(__fwnode));
-+		string(out, fwnode_get_name(__fwnode));
- 
- 		fwnode_handle_put(__fwnode);
- 	}
-@@ -2036,12 +2056,12 @@ void device_node_string(struct printbuf *out, struct device_node *dn,
- 	str_spec.field_width = -1;
- 
- 	if (fmt[0] != 'F')
--		return error_string(out, "(%pO?)", spec);
-+		return error_string_spec(out, "(%pO?)", spec);
- 
- 	if (!IS_ENABLED(CONFIG_OF))
--		return error_string(out, "(%pOF?)", spec);
-+		return error_string_spec(out, "(%pOF?)", spec);
- 
--	if (check_pointer(out, dn, spec))
-+	if (check_pointer_spec(out, dn, spec))
- 		return;
- 
- 	/* simple case without anything any more format specifiers */
-@@ -2062,7 +2082,7 @@ void device_node_string(struct printbuf *out, struct device_node *dn,
- 			p = fwnode_get_name(of_fwnode_handle(dn));
- 			precision = str_spec.precision;
- 			str_spec.precision = strchrnul(p, '@') - p;
--			string(out, p, str_spec);
-+			string_spec(out, p, str_spec);
- 			str_spec.precision = precision;
- 			break;
- 		case 'p':	/* phandle */
-@@ -2072,7 +2092,7 @@ void device_node_string(struct printbuf *out, struct device_node *dn,
- 			p = fwnode_get_name(of_fwnode_handle(dn));
- 			if (!p[1])
- 				p = "/";
--			string(out, p, str_spec);
-+			string_spec(out, p, str_spec);
- 			break;
- 		case 'F':	/* flags */
- 			tbuf[0] = of_node_check_flag(dn, OF_DYNAMIC) ? 'D' : '-';
-@@ -2082,18 +2102,18 @@ void device_node_string(struct printbuf *out, struct device_node *dn,
- 			tbuf[4] = 0;
- 			string_nocheck(out, tbuf, str_spec);
- 			break;
--		case 'c':	/* major compatible string */
-+		case 'c':	/* major compatible string_spec */
- 			ret = of_property_read_string(dn, "compatible", &p);
- 			if (!ret)
--				string(out, p, str_spec);
-+				string_spec(out, p, str_spec);
- 			break;
--		case 'C':	/* full compatible string */
-+		case 'C':	/* full compatible string_spec */
- 			has_mult = false;
- 			of_property_for_each_string(dn, "compatible", prop, p) {
- 				if (has_mult)
- 					string_nocheck(out, ",", str_spec);
- 				string_nocheck(out, "\"", str_spec);
--				string(out, p, str_spec);
-+				string_spec(out, p, str_spec);
- 				string_nocheck(out, "\"", str_spec);
- 
- 				has_mult = true;
-@@ -2118,16 +2138,16 @@ void fwnode_string(struct printbuf *out,
- 	str_spec.field_width = -1;
- 
- 	if (*fmt != 'w')
--		return error_string(out, "(%pf?)", spec);
-+		return error_string_spec(out, "(%pf?)", spec);
- 
--	if (check_pointer(out, fwnode, spec))
-+	if (check_pointer_spec(out, fwnode, spec))
- 		return;
- 
- 	fmt++;
- 
- 	switch (*fmt) {
- 	case 'P':	/* name */
--		string(out, fwnode_get_name(fwnode), str_spec);
-+		string_spec(out, fwnode_get_name(fwnode), str_spec);
- 		break;
- 	case 'f':	/* full_name */
- 	default:
-@@ -2294,13 +2314,16 @@ static noinline_for_stack
- void pointer(struct printbuf *out, const char *fmt,
- 	     void *ptr, struct printf_spec spec)
- {
-+	unsigned prev_pos = out->pos;
-+
- 	switch (*fmt) {
- 	case 'S':
- 	case 's':
- 		ptr = dereference_symbol_descriptor(ptr);
- 		fallthrough;
- 	case 'B':
--		return symbol_string(out, ptr, spec, fmt);
-+		symbol_string(out, ptr, fmt);
+@@ -2343,7 +2302,8 @@ void pointer(struct printbuf *out, const char *fmt,
+ 					 * 4:	001.002.003.004
+ 					 * 6:   000102...0f
+ 					 */
+-		return ip_addr_string(out, ptr, spec, fmt);
++		ip_addr_string(out, ptr, fmt);
 +		return do_width_precision(out, prev_pos, spec);
- 	case 'R':
- 	case 'r':
- 		return resource_string(out, ptr, spec, fmt);
-@@ -2331,28 +2354,34 @@ void pointer(struct printbuf *out, const char *fmt,
  	case 'E':
  		return escaped_string(out, ptr, spec, fmt);
  	case 'U':
--		return uuid_string(out, ptr, spec, fmt);
-+		uuid_string(out, ptr, fmt);
-+		return do_width_precision(out, prev_pos, spec);
- 	case 'V':
- 		return va_format(out, ptr, spec, fmt);
- 	case 'K':
- 		return restricted_pointer(out, ptr, spec);
- 	case 'N':
--		return netdev_bits(out, ptr, spec, fmt);
-+		netdev_bits(out, ptr, fmt);
-+		return do_width_precision(out, prev_pos, spec);
- 	case '4':
- 		return fourcc_string(out, ptr, spec, fmt);
- 	case 'a':
--		return address_val(out, ptr, spec, fmt);
-+		address_val(out, ptr, fmt);
-+		return do_width_precision(out, prev_pos, spec);
- 	case 'd':
--		return dentry_name(out, ptr, spec, fmt);
-+		dentry_name(out, ptr, fmt);
-+		return do_width_precision(out, prev_pos, spec);
- 	case 't':
- 		return time_and_date(out, ptr, spec, fmt);
- 	case 'C':
- 		return clock(out, ptr, spec, fmt);
- 	case 'D':
--		return file_dentry_name(out, ptr, spec, fmt);
-+		file_dentry_name(out, ptr, fmt);
-+		return do_width_precision(out, prev_pos, spec);
- #ifdef CONFIG_BLOCK
- 	case 'g':
--		return bdev_name(out, ptr, spec, fmt);
-+		bdev_name(out, ptr);
-+		return do_width_precision(out, prev_pos, spec);
- #endif
- 
- 	case 'G':
-@@ -2372,9 +2401,9 @@ void pointer(struct printbuf *out, const char *fmt,
- 	case 'k':
- 		switch (fmt[1]) {
- 		case 's':
--			return string(out, ptr, spec);
-+			return string_spec(out, ptr, spec);
- 		default:
--			return error_string(out, "(einval)", spec);
-+			return error_string_spec(out, "(einval)", spec);
- 		}
- 	default:
- 		return default_pointer(out, ptr, spec);
-@@ -2675,6 +2704,7 @@ void prt_vprintf(struct printbuf *out, const char *fmt, va_list args)
- 
- 	while (*fmt) {
- 		const char *old_fmt = fmt;
-+		unsigned prev_pos = out->pos;
- 		int read = format_decode(fmt, &spec);
- 
- 		fmt += read;
-@@ -2704,7 +2734,8 @@ void prt_vprintf(struct printbuf *out, const char *fmt, va_list args)
- 			break;
- 
- 		case FORMAT_TYPE_STR:
--			string(out, va_arg(args, char *), spec);
-+			string(out, va_arg(args, char *));
-+			do_width_precision(out, prev_pos, spec);
- 			break;
- 
- 		case FORMAT_TYPE_PTR:
-@@ -3197,7 +3228,7 @@ void prt_bstrprintf(struct printbuf *out, const char *fmt, const u32 *bin_buf)
- 		case FORMAT_TYPE_STR: {
- 			const char *str_arg = args;
- 			args += strlen(str_arg) + 1;
--			string(out, (char *)str_arg, spec);
-+			string_spec(out, (char *)str_arg, spec);
- 			break;
- 		}
- 
 -- 
 2.36.0
 
