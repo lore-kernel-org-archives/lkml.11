@@ -2,114 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DB69C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 14:56:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21F39C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 14:57:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237207AbiFDO4i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 4 Jun 2022 10:56:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54650 "EHLO
+        id S237252AbiFDO5I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 4 Jun 2022 10:57:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237111AbiFDO4c (ORCPT
+        with ESMTP id S237156AbiFDO5B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 4 Jun 2022 10:56:32 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4E462A27C
-        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 07:56:31 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id y19so21031443ejq.6
-        for <linux-kernel@vger.kernel.org>; Sat, 04 Jun 2022 07:56:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=OkZxJ2cbCpkeb5OXZiKnIfcDHtHJrUFww95s/52sWJ0=;
-        b=K69wEjVC//qiDh3hGolwibjsDmWfuZtDlhCw1gUM+vgcMHGiTN358z4j6tpkFhWBdS
-         aXqvRd4hGKJ6vmZlDQQZNeCFcaJ13O4ivp8glLuoPcVzRdZJrXKP9psgJ1mJI13vN/Oh
-         vzjIljf4cattDEz3rvmkFz7EPcP+NiDbFfu4eW5fm58GBNu1ctnj2lJQToCAq2Xj7aDI
-         2YX81+CLMOVfWKioJ9+tcdE2KfU80GikvxA7W8A7A5XKUZCJ6Secr4KT1VXcfTQebVCf
-         2QzLjjkJsfsgUWpAF063hqarAm55WQnIzXqgXs7hDjzIlDIsB44XthVs0varKLLL3fJB
-         yWZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=OkZxJ2cbCpkeb5OXZiKnIfcDHtHJrUFww95s/52sWJ0=;
-        b=ZepoWFtHoWXSn32sZhWR4TsGVV7nWoCdIzJfxCleqPCSkJt76cKhGtqGas/2mvPZE1
-         gVIvHAIBKHZc37kWb7bjnJESFAzPTIRxzbM/RIE5Ti4NNwNF7qkObhjEjz8tEOhuFG6Z
-         yPUWNOYfx6hT2H3HWHdsvEZrapnl2gOffmuKJGpV3A7gaW5IJSwkHgKymdcUeMwlPCKD
-         0pPcidPT3RDl3iqRg/mXTqDl2KEfSKSJ06z4VTcBdB9bU/jfXJ5Ikz9QTzAo315riYt/
-         7lJn2tivDqXQWydlAQBf5GbqAVQLG1vOsuVHJYxqnUOS34gfdKVxFc6qNoqoA58m63H5
-         GESA==
-X-Gm-Message-State: AOAM533qDvDDEz192mAbUCAAZ0QdEMnU++K8f5t6AyNs3qxLg2R9mRD1
-        5LCpyM8tDS9yCPHIOKRs2ccirtUdCoM=
-X-Google-Smtp-Source: ABdhPJxSm1iyQxSYlrfS3IQoHmQcacY4V5aG1T8pVfRezCjOqX7S1AYtm5f9/VizTD3iKPA9l5gRCw==
-X-Received: by 2002:a17:907:8a1f:b0:6fe:f4fc:750f with SMTP id sc31-20020a1709078a1f00b006fef4fc750fmr13127964ejc.399.1654354590414;
-        Sat, 04 Jun 2022 07:56:30 -0700 (PDT)
-Received: from fedora.robimarko.hr (cpe-94-253-165-43.zg.cable.xnet.hr. [94.253.165.43])
-        by smtp.googlemail.com with ESMTPSA id j15-20020a170906430f00b006f3ef214dc7sm4175960ejm.45.2022.06.04.07.56.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 04 Jun 2022 07:56:29 -0700 (PDT)
-From:   Robert Marko <robimarko@gmail.com>
-To:     sravanhome@gmail.com, lgirdwood@gmail.com, broonie@kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Robert Marko <robimarko@gmail.com>
-Subject: [PATCH 3/3] regulator: mp5416: add support for MP5496
-Date:   Sat,  4 Jun 2022 16:56:24 +0200
-Message-Id: <20220604145624.47326-3-robimarko@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220604145624.47326-1-robimarko@gmail.com>
-References: <20220604145624.47326-1-robimarko@gmail.com>
+        Sat, 4 Jun 2022 10:57:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A2D9DA6;
+        Sat,  4 Jun 2022 07:56:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DF5AF60C69;
+        Sat,  4 Jun 2022 14:56:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47D4AC385B8;
+        Sat,  4 Jun 2022 14:56:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654354616;
+        bh=PqOK2jmzrzVvd+pTI4tgoob/fXORaJiue7+8OoRS5pk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=XhayD6p1Ooemd6YWWsDEc5bEvfCn7D87xjowDh5kSIZX/vWxPU3lavYe76DfH1aQZ
+         ukHRIZMEe0uCCfhtp70XHwsCHYzfy22iRwWrODw68qBFKMC7KbUM8vi643UkE+W0Dj
+         VBTi5KTQ5zcWWjvHJWnR2b3YJ3HGPgn9vAuP5J3wup9MEKIJr0QtgHQM4JqTuAJKb0
+         E/nnN4kN6f+e7VJ+LX4nO1KoNb+6XD22EdmXq1WAbjp3bAWMrD2+fwWiwtobry0fsk
+         hIXSKFrfv5IIdW0dCz/DUW8hji6eteErHP3pF5BZqLmQmOEgBEbMwOHMEMz0MUO3zy
+         up+Na8mHA2Vhg==
+Date:   Sat, 4 Jun 2022 16:05:57 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Paul Cercueil <paul@crapouillou.net>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Eugen Hristev <eugen.hristev@microchip.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>
+Subject: Re: [PATCH 2/2] iio: at91-sama5d2: Limit requested watermark value
+ to hwfifo size
+Message-ID: <20220604160557.1e82077e@jic23-huawei>
+In-Reply-To: <20220122170447.68f35cfa@jic23-huawei>
+References: <20220117102512.31725-1-paul@crapouillou.net>
+        <20220117102512.31725-2-paul@crapouillou.net>
+        <20220122170447.68f35cfa@jic23-huawei>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-MP5496 is the updated version of MP5416 with the only difference being
-that now all Buck regulators have the same 0.6-2.1875V range with a 12.5mV
-step.
+On Sat, 22 Jan 2022 17:04:47 +0000
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-Signed-off-by: Robert Marko <robimarko@gmail.com>
----
- drivers/regulator/mp5416.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+> On Mon, 17 Jan 2022 10:25:12 +0000
+> Paul Cercueil <paul@crapouillou.net> wrote:
+> 
+> > Instead of returning an error if the watermark value is too high, which
+> > the core will silently ignore anyway, limit the value to the hardware
+> > FIFO size; a lower-than-requested value is still better than using the
+> > default, which is usually 1.  
+> 
+> There is another potential error condition in this function which will
+> also be ignored by the core.
+> 
+> As such whilst I agree this is a sensible thing to do in this
+> particular case I think we should also be handling the error in the core.
+> 
+> I think it would be better to clean that up at the same time
+> as these improvements - particularly as I'd guess you have a convenient
+> test setup to check the error unwind is correct?
 
-diff --git a/drivers/regulator/mp5416.c b/drivers/regulator/mp5416.c
-index 011a825570ea..71e20e8d78ac 100644
---- a/drivers/regulator/mp5416.c
-+++ b/drivers/regulator/mp5416.c
-@@ -175,6 +175,17 @@ static struct regulator_desc mp5416_regulators_desc[MP5416_MAX_REGULATORS] = {
- 	MP5416LDO("ldo4", 4, BIT(1)),
- };
- 
-+static struct regulator_desc mp5496_regulators_desc[MP5416_MAX_REGULATORS] = {
-+	MP5416BUCK("buck1", 1, mp5416_I_limits1, MP5416_REG_CTL1, BIT(0), 1),
-+	MP5416BUCK("buck2", 2, mp5416_I_limits2, MP5416_REG_CTL1, BIT(1), 1),
-+	MP5416BUCK("buck3", 3, mp5416_I_limits1, MP5416_REG_CTL1, BIT(2), 1),
-+	MP5416BUCK("buck4", 4, mp5416_I_limits2, MP5416_REG_CTL2, BIT(5), 1),
-+	MP5416LDO("ldo1", 1, BIT(4)),
-+	MP5416LDO("ldo2", 2, BIT(3)),
-+	MP5416LDO("ldo3", 3, BIT(2)),
-+	MP5416LDO("ldo4", 4, BIT(1)),
-+};
-+
- static int mp5416_i2c_probe(struct i2c_client *client)
- {
- 	struct device *dev = &client->dev;
-@@ -212,12 +223,14 @@ static int mp5416_i2c_probe(struct i2c_client *client)
- 
- static const struct of_device_id mp5416_of_match[] = {
- 	{ .compatible = "mps,mp5416", .data = &mp5416_regulators_desc },
-+	{ .compatible = "mps,mp5496", .data = &mp5496_regulators_desc },
- 	{},
- };
- MODULE_DEVICE_TABLE(of, mp5416_of_match);
- 
- static const struct i2c_device_id mp5416_id[] = {
- 	{ "mp5416", },
-+	{ "mp5496", },
- 	{ },
- };
- MODULE_DEVICE_TABLE(i2c, mp5416_id);
--- 
-2.36.1
+Hi Paul,
+
+I was trawling through patchwork and realised this one is stalled.
+
+Thoughts on the above?
+
+Thanks,
+
+Jonathan
+
+> 
+> Thanks,
+> 
+> Jonathan
+> 
+> > 
+> > Cc: Eugen Hristev <eugen.hristev@microchip.com>
+> > Cc: Nicolas Ferre <nicolas.ferre@microchip.com>
+> > Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
+> > Cc: Ludovic Desroches <ludovic.desroches@microchip.com>
+> > Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+> > ---
+> >  drivers/iio/adc/at91-sama5d2_adc.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
+> > index 854b1f81d807..5cc84f4a17bb 100644
+> > --- a/drivers/iio/adc/at91-sama5d2_adc.c
+> > +++ b/drivers/iio/adc/at91-sama5d2_adc.c
+> > @@ -1752,7 +1752,7 @@ static int at91_adc_set_watermark(struct iio_dev *indio_dev, unsigned int val)
+> >  	int ret;
+> >  
+> >  	if (val > AT91_HWFIFO_MAX_SIZE)
+> > -		return -EINVAL;
+> > +		val = AT91_HWFIFO_MAX_SIZE;
+> >  
+> >  	if (!st->selected_trig->hw_trig) {
+> >  		dev_dbg(&indio_dev->dev, "we need hw trigger for DMA\n");  
+> 
 
