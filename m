@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55A88C43334
-	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 19:32:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C12ACC43334
+	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 19:32:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240454AbiFDTb5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 4 Jun 2022 15:31:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48160 "EHLO
+        id S240497AbiFDTcE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 4 Jun 2022 15:32:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240140AbiFDTbi (ORCPT
+        with ESMTP id S240463AbiFDTbi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 4 Jun 2022 15:31:38 -0400
-Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E79034F9D2
-        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 12:31:10 -0700 (PDT)
-Received: by mail-qt1-x831.google.com with SMTP id t21so935157qtw.11
-        for <linux-kernel@vger.kernel.org>; Sat, 04 Jun 2022 12:31:10 -0700 (PDT)
+Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C52E4F9FB
+        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 12:31:13 -0700 (PDT)
+Received: by mail-qk1-x72a.google.com with SMTP id k6so5324321qkf.4
+        for <linux-kernel@vger.kernel.org>; Sat, 04 Jun 2022 12:31:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Shg77HnyMQRXbMxMOH7fDju/B6P367xm3FEJBtf2/5I=;
-        b=ZHiSfBqPf0mmbm6Cwm8a5Stmx8hor2CW8L2no7YFJT+21lVu1KlVat/aaUe3DDYjH/
-         y4u/TFZndKUExogSMANFNdRkkv5S1EAcSEHdbgHQVDsQUT/Ei7aDabv4lcnV/1CUHJIl
-         CbSGFxkKVgXnqltp5pM4Ld1WfhRNwHyDq0FVChR4oMeLklKEqtCf9rFv4ko3NNv+vF9E
-         Pz5Ggg0J0GrzUmaZhWcITVVjxszp2JyiHvsNw5NXivNPNOAYYRu6FSxvytF3c/1enH02
-         akpVa+IoaPLG3KOtR63Vr9o0+hXnsRUh1/os5CusE6GXQrYUbv6SlnJIOEPh62PINNho
-         yuhQ==
+        bh=8ZR3vpiR15jc25rT55XN+a9EgF+ZdSJRDIqigHrDnho=;
+        b=Ax0TRUqWFqBQoDAa5BEt61bnAuF6Ed67k7TQfNLCysxCWPwEUuHJADW/dZVquOmELO
+         M0YWX8DDPs0OMKpku7Ur655CIHt81ED3P1UOOGRUeTe1I02cB+hYv4EwRQrUsai49zUO
+         Pmj9febU5I2VYRsTtF6sleaJaYntU1fK5Lpjk1bSdDuqvfbn3O3RQoP3JjX2RqbIJGwh
+         Tlu3KnWVUpkMz/5qkQ7Nv2LdOTyT72jeWRQLQuI6uydqjz9UQZoV1w/I+JSPDKkkCRDx
+         7Fao6awNZECbqzJNaP/U9f3eECWtgypdnQ2ICozXAsWCr3Q52drhMkO6olzQlXcCu+Xq
+         cZaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Shg77HnyMQRXbMxMOH7fDju/B6P367xm3FEJBtf2/5I=;
-        b=bleMMShbgtvPHrqnChmxlnJ+zG3yDrybCqvMOStmHq+gmyLdxDf3dbHz8VHXgWoFUZ
-         hDtdicrW6qdppkgnfw17u/OXEhyygtjbb7Ywkr/LmpEUqb3aNrzjrUV2yS5bbYI3XiSc
-         zd+Z2ZyPIvGmWnRNPtpV4DUste8djri9v4J8wxbLlpoRegd2wMynSuhPjmK8v9DW4lE6
-         djk6vQEfNgmVo7gtKMyvvoEEdw8R7bB0dKReilPUPRXuQZp4aYbYS+VwyHFEUnzv/hOj
-         ibHUzisQXwkF/64iSftZLFnslffQCq61dAV7trtFr6/TobbskynEnDd+Q/ki7u//dBHr
-         jTsA==
-X-Gm-Message-State: AOAM530/voVDP3LfGwJGrkoQ2e1FdTeoYECKBSBpQHkMyXGPKeMBu7sg
-        W6Zz8F1tk4qiy6WpuBG+0FKX5+uM6dLA
-X-Google-Smtp-Source: ABdhPJyzxSOaiZXqgR7A3Pvq5x7fwHa5M9fdlhhr43aSTMgZOyRTaxT0Q4mwINIAHOZXvFKNHwLA8w==
-X-Received: by 2002:ac8:578f:0:b0:2f9:317a:bd25 with SMTP id v15-20020ac8578f000000b002f9317abd25mr12802150qta.456.1654371069357;
-        Sat, 04 Jun 2022 12:31:09 -0700 (PDT)
+        bh=8ZR3vpiR15jc25rT55XN+a9EgF+ZdSJRDIqigHrDnho=;
+        b=f3QIFx55Bpkm9ySzd22EPM4GgOYFizFutZC8sGIuQM2dD6+IWlqd8CxA3FHrFrF1Gp
+         WwgAk1pfBo2YdS7REbySa2KqazFn9m1ihnDZ9kCwdj2mgfY/J2E4LqQn7+2sNE6teybb
+         enXMtf5Ey0EqTWw2Zcnc118UM82B3FBrRw4T+G/nWXZySN/MKq4UmyrvVZHHAOvBrYF0
+         zmqY5pF24xybiDpyjpcssDKGb3B6J5xmIlvHgHGz2yv/g3JGl0eEPjMbqOxE5Bsg62pP
+         Z36WhYPoo9bAChVzxpd8gB1ZSfc0PlZIZEPzV71H2ZUGtjqZYixElB37jmyBXY/xoER1
+         PShw==
+X-Gm-Message-State: AOAM530B64D5A/0CaG8UIOajyJHYZCNxAZSe/hLovlzfcxYm9GefmKWV
+        cpVkkkVu38vF7dgsu4DFfeqEkwHTtEYu
+X-Google-Smtp-Source: ABdhPJyQPhTMjSqi97ahdwhDFjNJRE/3k8WyZKzM35WBcYJXHsCoozDbFPH5AQ99VPWww1VIWCG6Vw==
+X-Received: by 2002:a05:620a:b42:b0:6a6:ab7a:8d0d with SMTP id x2-20020a05620a0b4200b006a6ab7a8d0dmr3335289qkg.515.1654371072323;
+        Sat, 04 Jun 2022 12:31:12 -0700 (PDT)
 Received: from moria.home.lan (c-73-219-103-14.hsd1.vt.comcast.net. [73.219.103.14])
-        by smtp.gmail.com with ESMTPSA id o17-20020ac84291000000b00304defdb1b3sm3537426qtl.85.2022.06.04.12.31.07
+        by smtp.gmail.com with ESMTPSA id o17-20020ac84291000000b00304defdb1b3sm3537426qtl.85.2022.06.04.12.31.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 04 Jun 2022 12:31:08 -0700 (PDT)
+        Sat, 04 Jun 2022 12:31:11 -0700 (PDT)
 From:   Kent Overstreet <kent.overstreet@gmail.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Kent Overstreet <kent.overstreet@gmail.com>, pmladek@suse.com,
         rostedt@goodmis.org
-Subject: [PATCH v3 13/33] test_printf: Drop requirement that sprintf not write past nul
-Date:   Sat,  4 Jun 2022 15:30:22 -0400
-Message-Id: <20220604193042.1674951-14-kent.overstreet@gmail.com>
+Subject: [PATCH v3 15/33] vsprintf: Refactor resource_string()
+Date:   Sat,  4 Jun 2022 15:30:24 -0400
+Message-Id: <20220604193042.1674951-16-kent.overstreet@gmail.com>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220604193042.1674951-1-kent.overstreet@gmail.com>
 References: <20220604193042.1674951-1-kent.overstreet@gmail.com>
@@ -64,43 +64,126 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The current test code checks that sprintf never writes past the
-terminating nul. This is a rather strange requirement, completely
-separate from writing past the end of the buffer, which of course we
-can't do: writing anywhere to the buffer passed to snprintf, within size
-of course, should be perfectly fine.
+Two changes:
+ - We're attempting to consolidate printf_spec and format string
+   handling in the top level vpr_buf(), this changes resource_string to
+   not take printf_spec
 
-Since this check has no documentation as to where it comes from or what
-depends on it, and it's getting in the way of further refactoring
-(printf_spec handling is right now scattered massively throughout the
-code, and we'd like to consolidate it) - delete it.
-
-Also, many current pretty-printers building up their output on the
-stack, and then copy it to the actual output buffer - by eliminating
-this requirement we can kill those extra buffers.
+ - With the new printbuf helpers there's no need to use a separate stack
+   allocated buffer, so this patch deletes it.
 
 Signed-off-by: Kent Overstreet <kent.overstreet@gmail.com>
 ---
- lib/test_printf.c | 6 ------
- 1 file changed, 6 deletions(-)
+ lib/vsprintf.c | 51 ++++++++++++++++++++++++--------------------------
+ 1 file changed, 24 insertions(+), 27 deletions(-)
 
-diff --git a/lib/test_printf.c b/lib/test_printf.c
-index ff833870f5..a702dd5dc0 100644
---- a/lib/test_printf.c
-+++ b/lib/test_printf.c
-@@ -78,12 +78,6 @@ do_test(int bufsize, const char *expect, int elen,
- 		return 1;
- 	}
+diff --git a/lib/vsprintf.c b/lib/vsprintf.c
+index 863040fdaa..4256b1d3a5 100644
+--- a/lib/vsprintf.c
++++ b/lib/vsprintf.c
+@@ -1057,7 +1057,7 @@ static const struct printf_spec default_dec_spec = {
  
--	if (memchr_inv(test_buffer + written + 1, FILL_CHAR, BUF_SIZE + PAD_SIZE - (written + 1))) {
--		pr_warn("vsnprintf(buf, %d, \"%s\", ...) wrote beyond the nul-terminator\n",
--			bufsize, fmt);
--		return 1;
--	}
--
- 	if (memcmp(test_buffer, expect, written)) {
- 		pr_warn("vsnprintf(buf, %d, \"%s\", ...) wrote '%s', expected '%.*s'\n",
- 			bufsize, fmt, test_buffer, written, expect);
+ static noinline_for_stack
+ void resource_string(struct printbuf *out, struct resource *res,
+-		     struct printf_spec spec, const char *fmt)
++		     int decode)
+ {
+ #ifndef IO_RSRC_PRINTK_SIZE
+ #define IO_RSRC_PRINTK_SIZE	6
+@@ -1096,62 +1096,58 @@ void resource_string(struct printbuf *out, struct resource *res,
+ #define FLAG_BUF_SIZE		(2 * sizeof(res->flags))
+ #define DECODED_BUF_SIZE	sizeof("[mem - 64bit pref window disabled]")
+ #define RAW_BUF_SIZE		sizeof("[mem - flags 0x]")
+-	char sym_buf[max(2*RSRC_BUF_SIZE + DECODED_BUF_SIZE,
+-		     2*RSRC_BUF_SIZE + FLAG_BUF_SIZE + RAW_BUF_SIZE)];
+-	struct printbuf sym = PRINTBUF_EXTERN(sym_buf, sizeof(sym_buf));
+-	int decode = (fmt[0] == 'R') ? 1 : 0;
+ 	const struct printf_spec *specp;
+ 
+-	if (check_pointer_spec(out, res, spec))
++	if (check_pointer(out, res))
+ 		return;
+ 
+-	prt_char(&sym, '[');
++	prt_char(out, '[');
+ 	if (res->flags & IORESOURCE_IO) {
+-		string_nocheck(&sym, "io  ", str_spec);
++		string_nocheck(out, "io  ", str_spec);
+ 		specp = &io_spec;
+ 	} else if (res->flags & IORESOURCE_MEM) {
+-		string_nocheck(&sym, "mem ", str_spec);
++		string_nocheck(out, "mem ", str_spec);
+ 		specp = &mem_spec;
+ 	} else if (res->flags & IORESOURCE_IRQ) {
+-		string_nocheck(&sym, "irq ", str_spec);
++		string_nocheck(out, "irq ", str_spec);
+ 		specp = &default_dec_spec;
+ 	} else if (res->flags & IORESOURCE_DMA) {
+-		string_nocheck(&sym, "dma ", str_spec);
++		string_nocheck(out, "dma ", str_spec);
+ 		specp = &default_dec_spec;
+ 	} else if (res->flags & IORESOURCE_BUS) {
+-		string_nocheck(&sym, "bus ", str_spec);
++		string_nocheck(out, "bus ", str_spec);
+ 		specp = &bus_spec;
+ 	} else {
+-		string_nocheck(&sym, "??? ", str_spec);
++		string_nocheck(out, "??? ", str_spec);
+ 		specp = &mem_spec;
+ 		decode = 0;
+ 	}
+ 	if (decode && res->flags & IORESOURCE_UNSET) {
+-		string_nocheck(&sym, "size ", str_spec);
+-		number(&sym, resource_size(res), *specp);
++		string_nocheck(out, "size ", str_spec);
++		number(out, resource_size(res), *specp);
+ 	} else {
+-		number(&sym, res->start, *specp);
++		number(out, res->start, *specp);
+ 		if (res->start != res->end) {
+-			prt_char(&sym, '-');
+-			number(&sym, res->end, *specp);
++			prt_char(out, '-');
++			number(out, res->end, *specp);
+ 		}
+ 	}
+ 	if (decode) {
+ 		if (res->flags & IORESOURCE_MEM_64)
+-			string_nocheck(&sym, " 64bit", str_spec);
++			string_nocheck(out, " 64bit", str_spec);
+ 		if (res->flags & IORESOURCE_PREFETCH)
+-			string_nocheck(&sym, " pref", str_spec);
++			string_nocheck(out, " pref", str_spec);
+ 		if (res->flags & IORESOURCE_WINDOW)
+-			string_nocheck(&sym, " window", str_spec);
++			string_nocheck(out, " window", str_spec);
+ 		if (res->flags & IORESOURCE_DISABLED)
+-			string_nocheck(&sym, " disabled", str_spec);
++			string_nocheck(out, " disabled", str_spec);
+ 	} else {
+-		string_nocheck(&sym, " flags ", str_spec);
+-		number(&sym, res->flags, default_flag_spec);
++		string_nocheck(out, " flags ", str_spec);
++		number(out, res->flags, default_flag_spec);
+ 	}
+-	prt_char(&sym, ']');
++	prt_char(out, ']');
+ 
+-	string_nocheck(out, sym_buf, spec);
++	printbuf_nul_terminate(out);
+ }
+ 
+ static noinline_for_stack
+@@ -2326,7 +2322,8 @@ void pointer(struct printbuf *out, const char *fmt,
+ 		return do_width_precision(out, prev_pos, spec);
+ 	case 'R':
+ 	case 'r':
+-		return resource_string(out, ptr, spec, fmt);
++		resource_string(out, ptr, fmt[0] == 'R');
++		return do_width_precision(out, prev_pos, spec);
+ 	case 'h':
+ 		return hex_string(out, ptr, spec, fmt);
+ 	case 'b':
 -- 
 2.36.0
 
