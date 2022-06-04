@@ -2,137 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4EFDC43334
-	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 17:40:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B24EC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 18:31:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239277AbiFDRjz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 4 Jun 2022 13:39:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42060 "EHLO
+        id S239296AbiFDSbn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 4 Jun 2022 14:31:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236212AbiFDRjy (ORCPT
+        with ESMTP id S229790AbiFDSbl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 4 Jun 2022 13:39:54 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D12B138D9D
-        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 10:39:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654364390; x=1685900390;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=fw58+DLuVveflhvtJyRFgJ7M82oNU8uKvexxbDIxiWU=;
-  b=NiReMtrIdkjoW32pUpvo4/ZEA13mgsEuQMC5jbRHCZjHkQg/wOMjMC6u
-   svR2lyqlGxVawzz4+6Xk356JhEPqkFwjLQl9X/9KHIkNo04s9b8V7x58x
-   4MiRRRzfx0tU+6gaz5SXQSzPnQ3KPW/4EX/FosDzH0EuMacYVcKm2OugH
-   PJN/GFCIOR+9V2L8xQsCzfJk09QuRdhYPJGw4nT6Pc/BldKEWfBVhZwrY
-   zvqS+p4JMm+sG6bAB6XDvzdCWQS+mhdrG1R7gTO9huEOKcJyXPEhZE60l
-   4RqJWSEOYKfqZRjEoj9z6Fyh4OHs3uUPsOOJ356X4tAOq2VMYC6pKLgRz
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10368"; a="339530743"
-X-IronPort-AV: E=Sophos;i="5.91,277,1647327600"; 
-   d="scan'208";a="339530743"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2022 10:39:50 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,277,1647327600"; 
-   d="scan'208";a="531444736"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 04 Jun 2022 10:39:48 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nxXka-000B5l-6K;
-        Sat, 04 Jun 2022 17:39:48 +0000
-Date:   Sun, 5 Jun 2022 01:39:44 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Michael Ellerman <mpe@ellerman.id.au>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: arch/powerpc/mm/book3s64/radix_tlb.c:418:20: error: unused function
- '_tlbie_pid_lpid'
-Message-ID: <202206050116.iF1fFubY-lkp@intel.com>
+        Sat, 4 Jun 2022 14:31:41 -0400
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9557D2CDD1
+        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 11:31:38 -0700 (PDT)
+Received: by mail-yb1-xb31.google.com with SMTP id v22so19042364ybd.5
+        for <linux-kernel@vger.kernel.org>; Sat, 04 Jun 2022 11:31:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=b7Wzo4q6WiidWVfF6tif0mL6TBctH+VSiUVjalEqAqc=;
+        b=XH8F4GRaPg4EKgzniBiglO9cLqDFXkKaM3tgKQT1ltHGLvTfB3ZMDu6LoYq9Pv9fP3
+         w0IfSYbzMiCTj+kOttc40mX+CNQAhejs3faso+Q3SHyOF6xBb+X9Hde8bFiZ7a5e6XcO
+         eZTdGkw1ktpzMP4UxydNUHiBvdoQJw+I6rrPd4muBc9kb3YV0d9G5+qE68fp196jR6P8
+         UbrtgCVXrdjV/uoe4GDWxjdvdFMYcUtHjKh/wRyCKR3l5+o/IvjgEPkxUTrfFZAgcbu3
+         WSsv6RPidzH34cZdSBKUNA7VGlwjOnziSRqXO7xfVhiMIG9p64/SV0JKBwtSCbe1913Y
+         3+Tg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=b7Wzo4q6WiidWVfF6tif0mL6TBctH+VSiUVjalEqAqc=;
+        b=B7Kp/+Pt+kmE9LkiR4tCa3KCRZDpJVS6bnnLqzOFA+3Uyyx5w9WNNS92zco0ENhQhw
+         VIJQciq2N7bFYpM4tI8YtatO+MrWufnw9lLz6V23To7p9ZCpjd2RLEJiQBdPDr8VkP8L
+         bFFTdJCBnSeu9Td+y4kDmyeiI/CZvgR6bYESvSVnvmIW533289qtDeC0z5kcQHbiQJj1
+         U7UVDYaIJDaqeI/dljWDDBsfMfc3/huz0flz+bMgGTznCrXWVse3XDWuzA4I0QyAXELC
+         fRpHokvlnlL3CzfbMOc9IgcF/xU5EnNYeFpZiroO/PuY9gldivf+WnFityNh5XaI5CBv
+         hMMw==
+X-Gm-Message-State: AOAM532oKGFy5hTSWPpnuusEKGFf9PwbYSN7EbGe7uh9OgTDQORfdPj2
+        YHc67fZRMXB6HaLyErSVQV2K0YI2568wDrJc8S/75Q==
+X-Google-Smtp-Source: ABdhPJzQLOiMhCIK0I8VZPo0aIc9wUXIcGROMra2UfpHRcDBFbp4npiMCJlbVSrBk3Q/TENSLjwexYqpzO/eA6WTNn0=
+X-Received: by 2002:a25:4705:0:b0:65d:43f8:5652 with SMTP id
+ u5-20020a254705000000b0065d43f85652mr16213201yba.389.1654367497556; Sat, 04
+ Jun 2022 11:31:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220603173815.088143764@linuxfoundation.org>
+In-Reply-To: <20220603173815.088143764@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Sun, 5 Jun 2022 00:01:25 +0530
+Message-ID: <CA+G9fYvdXrmRCbGC1RFqv_-Kx4y6QSK3fz0AxBHPR1bCmLTLnA@mail.gmail.com>
+Subject: Re: [PATCH 4.19 00/30] 4.19.246-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Michael,
+On Fri, 3 Jun 2022 at 23:12, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 4.19.246 release.
+> There are 30 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Sun, 05 Jun 2022 17:38:05 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-=
+4.19.246-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-4.19.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-FYI, the error/warning still remains.
+Results from Linaro=E2=80=99s test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   032dcf09e2bf7c822be25b4abef7a6c913870d98
-commit: a736143afd036f2078fe19435b16fd55abc789a9 Merge branch 'topic/ppc-kvm' into next
-date:   12 months ago
-config: powerpc64-buildonly-randconfig-r006-20220604 (https://download.01.org/0day-ci/archive/20220605/202206050116.iF1fFubY-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0a90b72c432d70aae035727ece4ba80ce820f381)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install powerpc64 cross compiling tool for clang build
-        # apt-get install binutils-powerpc64le-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=a736143afd036f2078fe19435b16fd55abc789a9
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout a736143afd036f2078fe19435b16fd55abc789a9
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash arch/powerpc/mm/book3s64/
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+## Build
+* kernel: 4.19.246-rc1
+* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
+* git branch: linux-4.19.y
+* git commit: 8d1c6d3581bb07a2ea5e34376791884a79ff4114
+* git describe: v4.19.245-31-g8d1c6d3581bb
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-4.19.y/build/v4.19=
+.245-31-g8d1c6d3581bb
 
-All errors (new ones prefixed by >>):
+## Test Regressions (compared to v4.19.245)
+No test regressions found.
 
->> arch/powerpc/mm/book3s64/radix_tlb.c:418:20: error: unused function '_tlbie_pid_lpid' [-Werror,-Wunused-function]
-   static inline void _tlbie_pid_lpid(unsigned long pid, unsigned long lpid,
-                      ^
->> arch/powerpc/mm/book3s64/radix_tlb.c:662:20: error: unused function '_tlbie_va_range_lpid' [-Werror,-Wunused-function]
-   static inline void _tlbie_va_range_lpid(unsigned long start, unsigned long end,
-                      ^
-   2 errors generated.
+## Metric Regressions (compared to v4.19.245)
+No metric regressions found.
 
+## Test Fixes (compared to v4.19.245)
+No test fixes found.
 
-vim +/_tlbie_pid_lpid +418 arch/powerpc/mm/book3s64/radix_tlb.c
+## Metric Fixes (compared to v4.19.245)
+No metric fixes found.
 
-1a472c9dba6b96 arch/powerpc/mm/tlb-radix.c          Aneesh Kumar K.V 2016-04-29  417  
-f0c6fbbb90504f arch/powerpc/mm/book3s64/radix_tlb.c Bharata B Rao    2021-06-21 @418  static inline void _tlbie_pid_lpid(unsigned long pid, unsigned long lpid,
-f0c6fbbb90504f arch/powerpc/mm/book3s64/radix_tlb.c Bharata B Rao    2021-06-21  419  				   unsigned long ric)
-f0c6fbbb90504f arch/powerpc/mm/book3s64/radix_tlb.c Bharata B Rao    2021-06-21  420  {
-f0c6fbbb90504f arch/powerpc/mm/book3s64/radix_tlb.c Bharata B Rao    2021-06-21  421  	asm volatile("ptesync" : : : "memory");
-f0c6fbbb90504f arch/powerpc/mm/book3s64/radix_tlb.c Bharata B Rao    2021-06-21  422  
-f0c6fbbb90504f arch/powerpc/mm/book3s64/radix_tlb.c Bharata B Rao    2021-06-21  423  	/*
-f0c6fbbb90504f arch/powerpc/mm/book3s64/radix_tlb.c Bharata B Rao    2021-06-21  424  	 * Workaround the fact that the "ric" argument to __tlbie_pid
-f0c6fbbb90504f arch/powerpc/mm/book3s64/radix_tlb.c Bharata B Rao    2021-06-21  425  	 * must be a compile-time contraint to match the "i" constraint
-f0c6fbbb90504f arch/powerpc/mm/book3s64/radix_tlb.c Bharata B Rao    2021-06-21  426  	 * in the asm statement.
-f0c6fbbb90504f arch/powerpc/mm/book3s64/radix_tlb.c Bharata B Rao    2021-06-21  427  	 */
-f0c6fbbb90504f arch/powerpc/mm/book3s64/radix_tlb.c Bharata B Rao    2021-06-21  428  	switch (ric) {
-f0c6fbbb90504f arch/powerpc/mm/book3s64/radix_tlb.c Bharata B Rao    2021-06-21  429  	case RIC_FLUSH_TLB:
-f0c6fbbb90504f arch/powerpc/mm/book3s64/radix_tlb.c Bharata B Rao    2021-06-21  430  		__tlbie_pid_lpid(pid, lpid, RIC_FLUSH_TLB);
-f0c6fbbb90504f arch/powerpc/mm/book3s64/radix_tlb.c Bharata B Rao    2021-06-21  431  		fixup_tlbie_pid_lpid(pid, lpid);
-f0c6fbbb90504f arch/powerpc/mm/book3s64/radix_tlb.c Bharata B Rao    2021-06-21  432  		break;
-f0c6fbbb90504f arch/powerpc/mm/book3s64/radix_tlb.c Bharata B Rao    2021-06-21  433  	case RIC_FLUSH_PWC:
-f0c6fbbb90504f arch/powerpc/mm/book3s64/radix_tlb.c Bharata B Rao    2021-06-21  434  		__tlbie_pid_lpid(pid, lpid, RIC_FLUSH_PWC);
-f0c6fbbb90504f arch/powerpc/mm/book3s64/radix_tlb.c Bharata B Rao    2021-06-21  435  		break;
-f0c6fbbb90504f arch/powerpc/mm/book3s64/radix_tlb.c Bharata B Rao    2021-06-21  436  	case RIC_FLUSH_ALL:
-f0c6fbbb90504f arch/powerpc/mm/book3s64/radix_tlb.c Bharata B Rao    2021-06-21  437  	default:
-f0c6fbbb90504f arch/powerpc/mm/book3s64/radix_tlb.c Bharata B Rao    2021-06-21  438  		__tlbie_pid_lpid(pid, lpid, RIC_FLUSH_ALL);
-f0c6fbbb90504f arch/powerpc/mm/book3s64/radix_tlb.c Bharata B Rao    2021-06-21  439  		fixup_tlbie_pid_lpid(pid, lpid);
-f0c6fbbb90504f arch/powerpc/mm/book3s64/radix_tlb.c Bharata B Rao    2021-06-21  440  	}
-f0c6fbbb90504f arch/powerpc/mm/book3s64/radix_tlb.c Bharata B Rao    2021-06-21  441  	asm volatile("eieio; tlbsync; ptesync" : : : "memory");
-f0c6fbbb90504f arch/powerpc/mm/book3s64/radix_tlb.c Bharata B Rao    2021-06-21  442  }
-2275d7b5754a57 arch/powerpc/mm/book3s64/radix_tlb.c Nicholas Piggin  2019-09-03  443  struct tlbiel_pid {
-2275d7b5754a57 arch/powerpc/mm/book3s64/radix_tlb.c Nicholas Piggin  2019-09-03  444  	unsigned long pid;
-2275d7b5754a57 arch/powerpc/mm/book3s64/radix_tlb.c Nicholas Piggin  2019-09-03  445  	unsigned long ric;
-2275d7b5754a57 arch/powerpc/mm/book3s64/radix_tlb.c Nicholas Piggin  2019-09-03  446  };
-2275d7b5754a57 arch/powerpc/mm/book3s64/radix_tlb.c Nicholas Piggin  2019-09-03  447  
+## Test result summary
+total: 110351, pass: 98212, fail: 225, skip: 10998, xfail: 916
 
-:::::: The code at line 418 was first introduced by commit
-:::::: f0c6fbbb90504fb7e9dbf0865463d3c2b4de49e5 KVM: PPC: Book3S HV: Add support for H_RPT_INVALIDATE
+## Build Summary
+* arc: 10 total, 10 passed, 0 failed
+* arm: 296 total, 290 passed, 6 failed
+* arm64: 56 total, 54 passed, 2 failed
+* i386: 27 total, 23 passed, 4 failed
+* mips: 27 total, 27 passed, 0 failed
+* parisc: 12 total, 12 passed, 0 failed
+* powerpc: 55 total, 54 passed, 1 failed
+* s390: 12 total, 12 passed, 0 failed
+* sh: 24 total, 24 passed, 0 failed
+* sparc: 12 total, 12 passed, 0 failed
+* x86_64: 53 total, 51 passed, 2 failed
 
-:::::: TO: Bharata B Rao <bharata@linux.ibm.com>
-:::::: CC: Michael Ellerman <mpe@ellerman.id.au>
+## Test suites summary
+* fwts
+* igt-gpu-tools
+* kunit
+* kvm-unit-tests
+* libhugetlbfs
+* log-parser-boot
+* log-parser-test
+* ltp-cap_bounds
+* ltp-cap_bounds-tests
+* ltp-commands
+* ltp-commands-tests
+* ltp-containers
+* ltp-containers-tests
+* ltp-controllers-tests
+* ltp-cpuhotplug-tests
+* ltp-crypto
+* ltp-crypto-tests
+* ltp-cve-tests
+* ltp-dio-tests
+* ltp-fcntl-locktests
+* ltp-fcntl-locktests-tests
+* ltp-filecaps
+* ltp-filecaps-tests
+* ltp-fs
+* ltp-fs-tests
+* ltp-fs_bind
+* ltp-fs_bind-tests
+* ltp-fs_perms_simple
+* ltp-fs_perms_simple-tests
+* ltp-fsx
+* ltp-fsx-tests
+* ltp-hugetlb
+* ltp-hugetlb-tests
+* ltp-io
+* ltp-io-tests
+* ltp-ipc
+* ltp-ipc-tests
+* ltp-math-tests
+* ltp-mm-tests
+* ltp-nptl
+* ltp-nptl-tests
+* ltp-open-posix-tests
+* ltp-pty
+* ltp-pty-tests
+* ltp-sched-tests
+* ltp-securebits
+* ltp-securebits-tests
+* ltp-syscalls-tests
+* ltp-tracing-tests
+* network-basic-tests
+* packetdrill
+* rcutorture
+* ssuite
+* v4l2-compliance
+* vdso
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+--
+Linaro LKFT
+https://lkft.linaro.org
