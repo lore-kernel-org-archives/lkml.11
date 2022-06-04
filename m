@@ -2,60 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05C82C43334
-	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 01:22:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E72E3C43334
+	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 01:22:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350212AbiFDBWn (ORCPT
+        id S1350097AbiFDBWv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 21:22:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60864 "EHLO
+        Fri, 3 Jun 2022 21:22:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350115AbiFDBWR (ORCPT
+        with ESMTP id S1350138AbiFDBWS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 21:22:17 -0400
-Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCD7456771
-        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 18:21:40 -0700 (PDT)
-Received: by mail-pf1-x44a.google.com with SMTP id j23-20020aa78017000000b005180c6e4ef2so4710010pfi.12
-        for <linux-kernel@vger.kernel.org>; Fri, 03 Jun 2022 18:21:40 -0700 (PDT)
+        Fri, 3 Jun 2022 21:22:18 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CB7A5A080
+        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 18:21:43 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id 85-20020a250358000000b0065b9b24987aso8218762ybd.4
+        for <linux-kernel@vger.kernel.org>; Fri, 03 Jun 2022 18:21:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=Vy11JEwxDol9yQABs4uZhD4BvSA+Z1desEZgyJ4yEtQ=;
-        b=aDZjX+PI5EStIvuZnD6AeuIEtDn0K15jv1n9s425Z/XP24yXpXu4jn7lWOooIO/n8r
-         5DKDTUf92SxVFCU8BZAajz9rSi+tMZ9MrkWRltJ0oZwB1kvf8frh41tafEj1Nq6AC/dk
-         WaVx3K0U0wD1B7ZYXYMUtP+f41O9M0WVCA+5qg1NQtay3KdnTnVKLw3/L4yNISa0OGHK
-         v3FYDHFIGuYAASAnudgDAdQZ6xqIh9yyCdjUkSuq7kkQnPiE0jLWhAmR+dTm+2DBr+Kq
-         Y5wV/0m7vMLNlVteRGGSI/U/P3tiMlwGJWeDztpXvxbptehRyh9zeDm5toiDeeht6aHW
-         HDZw==
+        bh=2nzbG4tOFbNPVrwFNrAhbiBqvXzlQFgyph9XzwhODew=;
+        b=JyPTO7S9D1Qyxfuxm2wrOYMchzpd60OlVQByfMkAGcam3znmhaD3zoczzLDVVr0C9S
+         qoSNGV6v/IemASXnU8UqOVKWoq4VVVYnurAkfT2nI23amuPpsBE3aVKnr/ouZZZlo0Cb
+         U6cfLAR7fPcYOxLUXzXyfpMAYHSIan/Q2eDbLDFWk5PHr48VMy7aKnbR++YuZkKHLsKH
+         31CWtiqMFuWTFO6m72mhZiqNNfej02HaffOHgBrxNu/jvFd9NqZol6SO3V58GLKdjNtn
+         MGhP9Z14TfdJ9Hw/uLCryOdyalO3M5pZgeLCJg4VBemR1DiJWXWeVKmJtMWIjsqcTeP8
+         Ztiw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=Vy11JEwxDol9yQABs4uZhD4BvSA+Z1desEZgyJ4yEtQ=;
-        b=WCa9oOREXCPWPgKKNOTc6RdCM58UMojPZ8o8EwoQd5h6xQF1ikwQVH3eetM1+L48Bt
-         78m/RCgZZ6Ooa0V+VTNZnKNqVKR4fQNpZ2SRhbAffSgExAHsE+OgFJBSjygOTNINdB2e
-         KqlhF1Eat0/Um8tKcm3+jBQgOQdDOTSbrRMqPfGbbaqr56h2jGWJGwo6zlzYkt6QdPqO
-         otCFims2fOXdOIIVTsLQ35E+b9K2hgVcpL1wamfivtcXJjGLGcvAEbGeHb6nR6bWtI02
-         sCsYIn9GM1O2d7qqKX8TCw+gPC8KPrLTLw5ds49pAQrADXBQGtsd7L6+YJGPs+y9Kz4p
-         zfTA==
-X-Gm-Message-State: AOAM532/x7WWS9XrUipdvejQ7n+IrNQZrE3CF4sk5yNUjsWVdB05ahAx
-        thlvkEB9u1SxFGKtxss6AHmT/n8tugw=
-X-Google-Smtp-Source: ABdhPJwfWI7j5d/X8xCz5NqbiIFJDxY9H895jE9GkwASlCmqB2nwKTHmG66Glb8OWebvZ6a4IRXsPvj/TSA=
+        bh=2nzbG4tOFbNPVrwFNrAhbiBqvXzlQFgyph9XzwhODew=;
+        b=eloef7cNA7paQpUP1uGhYcxc4AdEm1SEt8/BQU58a/dBgrSfGF+uB5AXc0Zbd4s5rH
+         85NMseqY6z0oxWFyCMCPZ+u5RqgjVNOB3R5DJqto2AwdGkXp6CNpPcuxWuG07JIJL5Zm
+         STYB+6uEVqsFBV3lg6VXBiEN6Uz+GIwERbrm5EgPvWfMmgHq8poCA7ACg461cYdYNsqu
+         ukCdpeFxYocPmYp+gVCNd/dgo0dr7sU2I083zkyIBhREnDyUwxNzfckMyoRK5ojK06Pk
+         PxNcjtM3zIMUcJ3OSORa1sLZ9JYOXVCsgtYKkxzsi2UujUdhWwn2opupFXw9Fyz2TJEy
+         O4UA==
+X-Gm-Message-State: AOAM530mk2Pft/2aa4lH0txONhtZ3fcjOLeLjYc4YGgdACi9pUh5F6vp
+        NcaLt2dz9xJ0mDAxK/bA3SEcwvERbnA=
+X-Google-Smtp-Source: ABdhPJz+dJP7G5HiCv9u07R08uVr6zUs40URy8kUmDodPyb9db0BanFmrMqLJBXE1jWDg/Czhir0IYXPJBs=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a62:f806:0:b0:51b:6ea0:43cd with SMTP id
- d6-20020a62f806000000b0051b6ea043cdmr12794825pfh.28.1654305686771; Fri, 03
- Jun 2022 18:21:26 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a05:6902:100d:b0:660:514a:8787 with SMTP id
+ w13-20020a056902100d00b00660514a8787mr11183750ybt.583.1654305690058; Fri, 03
+ Jun 2022 18:21:30 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Sat,  4 Jun 2022 01:20:31 +0000
+Date:   Sat,  4 Jun 2022 01:20:33 +0000
 In-Reply-To: <20220604012058.1972195-1-seanjc@google.com>
-Message-Id: <20220604012058.1972195-16-seanjc@google.com>
+Message-Id: <20220604012058.1972195-18-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220604012058.1972195-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH 15/42] KVM: selftests: Use kvm_cpu_has() for nSVM soft INT
- injection test
+Subject: [PATCH 17/42] KVM: selftests: Split out kvm_cpuid2_size() from allocate_kvm_cpuid2()
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     kvm@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
@@ -66,51 +65,162 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use kvm_cpu_has() to query for NRIPS support instead of open coding
-equivalent functionality using kvm_get_supported_cpuid_entry().
+Split out the computation of the effective size of a kvm_cpuid2 struct
+from allocate_kvm_cpuid2(), and modify both to take an arbitrary number
+of entries.  Future commits will add caching of a vCPU's CPUID model, and
+will (a) be able to precisely size the entries array, and (b) will need
+to know the effective size of the struct in order to copy to/from the
+cache.
+
+Expose the helpers so that the Hyper-V Features test can use them in the
+(somewhat distant) future.  The Hyper-V test very, very subtly relies on
+propagating CPUID info across vCPU instances, and will need to make a
+copy of the previous vCPU's CPUID information when it switches to using
+the per-vCPU cache.  Alternatively, KVM could provide helpers to
+duplicate and/or copy a kvm_cpuid2 instance, but each is literally a
+single line of code if the helpers are exposed, and it's not like the
+size of kvm_cpuid2 is secret knowledge.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- tools/testing/selftests/kvm/include/x86_64/processor.h     | 3 ---
- .../selftests/kvm/x86_64/svm_nested_soft_inject_test.c     | 7 ++-----
- 2 files changed, 2 insertions(+), 8 deletions(-)
+ .../selftests/kvm/include/x86_64/processor.h  | 23 +++++++++
+ .../selftests/kvm/lib/x86_64/processor.c      | 48 +++----------------
+ 2 files changed, 30 insertions(+), 41 deletions(-)
 
 diff --git a/tools/testing/selftests/kvm/include/x86_64/processor.h b/tools/testing/selftests/kvm/include/x86_64/processor.h
-index 4701798736cf..f4345961d447 100644
+index f4345961d447..6b6a72693289 100644
 --- a/tools/testing/selftests/kvm/include/x86_64/processor.h
 +++ b/tools/testing/selftests/kvm/include/x86_64/processor.h
-@@ -162,9 +162,6 @@ struct kvm_x86_cpu_feature {
- #define CPUID_XSAVE		(1ul << 26)
- #define CPUID_OSXSAVE		(1ul << 27)
+@@ -593,6 +593,29 @@ static inline bool kvm_cpu_has(struct kvm_x86_cpu_feature feature)
+ 	return kvm_cpuid_has(kvm_get_supported_cpuid(), feature);
+ }
  
--/* CPUID.0x8000_000A.EDX */
--#define CPUID_NRIPS		BIT(3)
++static inline size_t kvm_cpuid2_size(int nr_entries)
++{
++	return sizeof(struct kvm_cpuid2) +
++	       sizeof(struct kvm_cpuid_entry2) * nr_entries;
++}
++
++/*
++ * Allocate a "struct kvm_cpuid2* instance, with the 0-length arrary of
++ * entries sized to hold @nr_entries.  The caller is responsible for freeing
++ * the struct.
++ */
++static inline struct kvm_cpuid2 *allocate_kvm_cpuid2(int nr_entries)
++{
++	struct kvm_cpuid2 *cpuid;
++
++	cpuid = malloc(kvm_cpuid2_size(nr_entries));
++	TEST_ASSERT(cpuid, "-ENOMEM when allocating kvm_cpuid2");
++
++	cpuid->nent = nr_entries;
++
++	return cpuid;
++}
++
+ struct kvm_cpuid2 *vcpu_get_cpuid(struct kvm_vcpu *vcpu);
+ 
+ static inline int __vcpu_set_cpuid(struct kvm_vcpu *vcpu,
+diff --git a/tools/testing/selftests/kvm/lib/x86_64/processor.c b/tools/testing/selftests/kvm/lib/x86_64/processor.c
+index e60afab6b88f..05eac8134119 100644
+--- a/tools/testing/selftests/kvm/lib/x86_64/processor.c
++++ b/tools/testing/selftests/kvm/lib/x86_64/processor.c
+@@ -16,6 +16,8 @@
+ #define DEFAULT_CODE_SELECTOR 0x8
+ #define DEFAULT_DATA_SELECTOR 0x10
+ 
++#define MAX_NR_CPUID_ENTRIES 100
++
+ vm_vaddr_t exception_handlers;
+ 
+ static void regs_dump(FILE *stream, struct kvm_regs *regs, uint8_t indent)
+@@ -673,40 +675,6 @@ struct kvm_vcpu *vm_arch_vcpu_recreate(struct kvm_vm *vm, uint32_t vcpu_id)
+ 	return vcpu;
+ }
+ 
+-/*
+- * Allocate an instance of struct kvm_cpuid2
+- *
+- * Input Args: None
+- *
+- * Output Args: None
+- *
+- * Return: A pointer to the allocated struct. The caller is responsible
+- * for freeing this struct.
+- *
+- * Since kvm_cpuid2 uses a 0-length array to allow a the size of the
+- * array to be decided at allocation time, allocation is slightly
+- * complicated. This function uses a reasonable default length for
+- * the array and performs the appropriate allocation.
+- */
+-static struct kvm_cpuid2 *allocate_kvm_cpuid2(void)
+-{
+-	struct kvm_cpuid2 *cpuid;
+-	int nent = 100;
+-	size_t size;
 -
- /* Page table bitfield declarations */
- #define PTE_PRESENT_MASK        BIT_ULL(0)
- #define PTE_WRITABLE_MASK       BIT_ULL(1)
-diff --git a/tools/testing/selftests/kvm/x86_64/svm_nested_soft_inject_test.c b/tools/testing/selftests/kvm/x86_64/svm_nested_soft_inject_test.c
-index 3c21b997fe3a..edf7f2378c76 100644
---- a/tools/testing/selftests/kvm/x86_64/svm_nested_soft_inject_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/svm_nested_soft_inject_test.c
-@@ -195,16 +195,13 @@ static void run_test(bool is_nmi)
+-	size = sizeof(*cpuid);
+-	size += nent * sizeof(struct kvm_cpuid_entry2);
+-	cpuid = malloc(size);
+-	if (!cpuid) {
+-		perror("malloc");
+-		abort();
+-	}
+-
+-	cpuid->nent = nent;
+-
+-	return cpuid;
+-}
+-
+ /*
+  * KVM Supported CPUID Get
+  *
+@@ -726,7 +694,7 @@ struct kvm_cpuid2 *kvm_get_supported_cpuid(void)
+ 	if (cpuid)
+ 		return cpuid;
  
- int main(int argc, char *argv[])
+-	cpuid = allocate_kvm_cpuid2();
++	cpuid = allocate_kvm_cpuid2(MAX_NR_CPUID_ENTRIES);
+ 	kvm_fd = open_kvm_dev_path_or_exit();
+ 
+ 	kvm_ioctl(kvm_fd, KVM_GET_SUPPORTED_CPUID, cpuid);
+@@ -782,7 +750,7 @@ struct kvm_cpuid2 *vcpu_get_cpuid(struct kvm_vcpu *vcpu)
+ 	int max_ent;
+ 	int rc = -1;
+ 
+-	cpuid = allocate_kvm_cpuid2();
++	cpuid = allocate_kvm_cpuid2(MAX_NR_CPUID_ENTRIES);
+ 	max_ent = cpuid->nent;
+ 
+ 	for (cpuid->nent = 1; cpuid->nent <= max_ent; cpuid->nent++) {
+@@ -1279,7 +1247,7 @@ struct kvm_cpuid2 *kvm_get_supported_hv_cpuid(void)
+ 	if (cpuid)
+ 		return cpuid;
+ 
+-	cpuid = allocate_kvm_cpuid2();
++	cpuid = allocate_kvm_cpuid2(MAX_NR_CPUID_ENTRIES);
+ 	kvm_fd = open_kvm_dev_path_or_exit();
+ 
+ 	kvm_ioctl(kvm_fd, KVM_GET_SUPPORTED_HV_CPUID, cpuid);
+@@ -1298,9 +1266,7 @@ void vcpu_set_hv_cpuid(struct kvm_vcpu *vcpu)
+ 		cpuid_sys = kvm_get_supported_cpuid();
+ 		cpuid_hv = kvm_get_supported_hv_cpuid();
+ 
+-		cpuid_full = malloc(sizeof(*cpuid_full) +
+-				    (cpuid_sys->nent + cpuid_hv->nent) *
+-				    sizeof(struct kvm_cpuid_entry2));
++		cpuid_full = allocate_kvm_cpuid2(cpuid_sys->nent + cpuid_hv->nent);
+ 		if (!cpuid_full) {
+ 			perror("malloc");
+ 			abort();
+@@ -1327,7 +1293,7 @@ struct kvm_cpuid2 *vcpu_get_supported_hv_cpuid(struct kvm_vcpu *vcpu)
  {
--	struct kvm_cpuid_entry2 *cpuid;
--
- 	/* Tell stdout not to buffer its content */
- 	setbuf(stdout, NULL);
+ 	static struct kvm_cpuid2 *cpuid;
  
- 	TEST_REQUIRE(kvm_cpu_has(X86_FEATURE_SVM));
+-	cpuid = allocate_kvm_cpuid2();
++	cpuid = allocate_kvm_cpuid2(MAX_NR_CPUID_ENTRIES);
  
--	cpuid = kvm_get_supported_cpuid_entry(0x8000000a);
--	TEST_ASSERT(cpuid->edx & CPUID_NRIPS,
--		    "KVM with nSVM is supposed to unconditionally advertise nRIP Save\n");
-+	TEST_ASSERT(kvm_cpu_has(X86_FEATURE_NRIPS),
-+		    "KVM with nSVM is supposed to unconditionally advertise nRIP Save");
- 
- 	atomic_init(&nmi_stage, 0);
+ 	vcpu_ioctl(vcpu, KVM_GET_SUPPORTED_HV_CPUID, cpuid);
  
 -- 
 2.36.1.255.ge46751e96f-goog
