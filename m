@@ -2,79 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B945C43334
-	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 23:28:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2735BC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 23:30:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242412AbiFDX2D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 4 Jun 2022 19:28:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53624 "EHLO
+        id S242447AbiFDXaX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 4 Jun 2022 19:30:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239285AbiFDX2B (ORCPT
+        with ESMTP id S239285AbiFDXaT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 4 Jun 2022 19:28:01 -0400
-X-Greylist: delayed 399 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 04 Jun 2022 16:27:58 PDT
-Received: from mx4.wp.pl (mx4.wp.pl [212.77.101.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 434D16335
-        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 16:27:57 -0700 (PDT)
-Received: (wp-smtpd smtp.wp.pl 29735 invoked from network); 5 Jun 2022 01:21:15 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
-          t=1654384875; bh=5+W5QwKb/oQX3qx4qTmH9nnksYIviH9DLf7qcI6p+I4=;
-          h=From:To:Cc:Subject;
-          b=j8hqzrP72hAJlb7TCjGwOg1IZmDqVtSorra1v5zKeDL0XHuFSWUhJzSeJZoI2V0wp
-           uCaI/KuWelwwoll3GBpOdDuTA4gsDh8lblhmGORrSEldlBx0Ym3dbl05MUQeQwvUzh
-           4Kb6J8BTLZ6i/rHwtK6DPctGEs4IV8zVQYXgyrAQ=
-Received: from public-gprs207966.centertel.pl (HELO mocarz) (deweloper@wp.pl@[46.134.151.159])
-          (envelope-sender <deweloper@wp.pl>)
-          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
-          for <deweloper@wp.pl>; 5 Jun 2022 01:21:15 +0200
-Date:   Sun, 5 Jun 2022 01:21:14 +0200
-From:   Aleksander Mazur <deweloper@wp.pl>
-To:     Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>
-Cc:     Aleksander Mazur <deweloper@wp.pl>, linux-hwmon@vger.kernel.org,
+        Sat, 4 Jun 2022 19:30:19 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB0D636160
+        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 16:30:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654385418; x=1685921418;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=ou//OEztOkJ2jsZ97LvUy6qaVpQz87MdVOYnT15DKnQ=;
+  b=ByuDfZ374SxaWcWGdYii291L2A/rm6iZiow0wtlhTFqiKib5ANCOTUoq
+   VOzZi7qy1l8Lpj1WSbsRPkH6iWrvlGvPQZqfyE8BFgv2jgchAwfWyX69B
+   p5U5OO5M+7SVf+3n8HCWrn8BvYMrVsQBtxy25WM2s8Hjs9LxJcWzFFW3D
+   SaypPlPEmts9hRP+vGOHSB6hra3DL/uo2b5BK9HenlpViY3oELJGUea5I
+   JFMKFWikQKAw6+hrrGLJLWmKASus7ugmoisZ0V1UeNIw5D6tVOVzApjHV
+   ImOgOCLQlms940QF1uqOoA4KNmKnMl15gACn75cpo/MnU9IKhYXdXCy1f
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10368"; a="256963429"
+X-IronPort-AV: E=Sophos;i="5.91,278,1647327600"; 
+   d="scan'208";a="256963429"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2022 16:30:18 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,278,1647327600"; 
+   d="scan'208";a="668963028"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 04 Jun 2022 16:30:17 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nxdDk-000BH1-Fj;
+        Sat, 04 Jun 2022 23:30:16 +0000
+Date:   Sun, 5 Jun 2022 07:30:14 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Darrick J. Wong" <djwong@kernel.org>
+Cc:     kbuild-all@lists.01.org,
+        "Darrick J. Wong" <darrick.wong@oracle.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] hwmon: (f71882fg) Add support for F71858AD (0x0903)
-Message-ID: <20220605012114.3d85a75a@mocarz>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
+Subject: [djwong-xfs:vectorized-scrub 177/401]
+ fs/xfs/libxfs/xfs_rmap.c:778:1: sparse: sparse: symbol
+ 'xfs_rmap_hooks_switch' was not declared. Should it be static?
+Message-ID: <202206050747.Rps0Thmj-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-WP-MailID: 937c5ef75b2e3d270d89436ace9fe1d1
-X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
-X-WP-SPAM: NO 000000A [gZM0]                               
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Treat F71858AD like F71858FG.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/djwong/xfs-linux.git vectorized-scrub
+head:   1fcd9cea011a657d62ee332d161966c1ec92ffd5
+commit: 016ce1fe7984026d32cf6388359a57175b609a11 [177/401] xfs: hook live rmap operations during a repair operation
+config: x86_64-randconfig-s021 (https://download.01.org/0day-ci/archive/20220605/202206050747.Rps0Thmj-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-1) 11.3.0
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.4-18-g56afb504-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/djwong/xfs-linux.git/commit/?id=016ce1fe7984026d32cf6388359a57175b609a11
+        git remote add djwong-xfs https://git.kernel.org/pub/scm/linux/kernel/git/djwong/xfs-linux.git
+        git fetch --no-tags djwong-xfs vectorized-scrub
+        git checkout 016ce1fe7984026d32cf6388359a57175b609a11
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=x86_64 SHELL=/bin/bash fs/xfs/
 
-Tested on Igel D220.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Signed-off-by: Aleksander Mazur <deweloper@wp.pl>
----
- drivers/hwmon/f71882fg.c | 2 ++
- 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/hwmon/f71882fg.c b/drivers/hwmon/f71882fg.c
-index 6830e029995d..19b6c643059a 100644
---- a/drivers/hwmon/f71882fg.c
-+++ b/drivers/hwmon/f71882fg.c
-@@ -49,6 +49,7 @@
- #define SIO_F81768D_ID		0x1210	/* Chipset ID */
- #define SIO_F81865_ID		0x0704	/* Chipset ID */
- #define SIO_F81866_ID		0x1010	/* Chipset ID */
-+#define SIO_F71858AD_ID		0x0903	/* Chipset ID */
- #define SIO_F81966_ID		0x1502	/* Chipset ID */
- 
- #define REGION_LENGTH		8
-@@ -2638,6 +2639,7 @@ static int __init f71882fg_find(int sioaddr, struct f71882fg_sio_data *sio_data)
- 		sio_data->type = f71808a;
- 		break;
- 	case SIO_F71858_ID:
-+	case SIO_F71858AD_ID:
- 		sio_data->type = f71858fg;
- 		break;
- 	case SIO_F71862_ID:
+sparse warnings: (new ones prefixed by >>)
+>> fs/xfs/libxfs/xfs_rmap.c:778:1: sparse: sparse: symbol 'xfs_rmap_hooks_switch' was not declared. Should it be static?
+
+Please review and possibly fold the followup patch.
+
 -- 
-2.36.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
