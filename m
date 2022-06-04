@@ -2,60 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3ED2AC43334
-	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 01:23:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FACFC43334
+	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 01:24:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350358AbiFDBXu (ORCPT
+        id S1350275AbiFDBX6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 21:23:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60586 "EHLO
+        Fri, 3 Jun 2022 21:23:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349745AbiFDBWy (ORCPT
+        with ESMTP id S1350226AbiFDBWw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 21:22:54 -0400
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3973220C6
-        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 18:22:03 -0700 (PDT)
-Received: by mail-pj1-x1049.google.com with SMTP id mh12-20020a17090b4acc00b001e32eb45751so8040140pjb.9
-        for <linux-kernel@vger.kernel.org>; Fri, 03 Jun 2022 18:22:03 -0700 (PDT)
+        Fri, 3 Jun 2022 21:22:52 -0400
+Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98C1E13F1E
+        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 18:22:01 -0700 (PDT)
+Received: by mail-pf1-x44a.google.com with SMTP id q12-20020a056a0002ac00b0051bb2e66c91so4583031pfs.4
+        for <linux-kernel@vger.kernel.org>; Fri, 03 Jun 2022 18:22:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=ZEoywqRe2jN83WxMzYeUPBo0DWYGkrwKbHoYsiazcV8=;
-        b=JskoIuph7Jqycq6MAN52MeAe6aR/QuA9Xl8V1F4UOWPpX7IsnjaYtMYkj4GRBZ6yBZ
-         j9b68ad+sTaT0tI7pY6ZvLWAlkX/ljRKlPQFaTGh8o1UGf977Lo8pfijykmMct0o7ZsI
-         pPofcVyuN9bvwuSdz8g1kzP6oyBJETOMnAGPmiMrDRSIrDS9DW7xIBTDUbYMtpJOJ/wK
-         Dv/b1AvkhsFeBj5dskON6W+CMqhlTrL7k55VwRLvRl7/9uVLiGHqTVHcUpD44uJIETlQ
-         7rRRwg7vBbTm3/SpZ5m4t3exMn34aQTU+AwffDSsvEc6X4NPW5R+ngjS/5vSwCbKpN3a
-         jftQ==
+        bh=C53+Egq7YgeyPc3n0sW99y912mVxgbiYdI3cg6bBp3Y=;
+        b=YQ35grmHKogo6yHynJeqazwUVXYivB7A7lM1euznZIPJ1nYUpn6qMs29JHsaZUK+WV
+         T6vYhuIYqNPDzlVfYWE3s/74hkO4+BzxGcmQfmAzje2XAIyB4ogYUQqlwkpvvmpiBSex
+         X2PNMeFVFxNvDWMiEMyAlh72iP6vhHi2IJnh6vMnyucF2UXwFJV0LjQ/jmmPOvyiAo7S
+         Q3+bmolDurEEG10vlRHMUQbbaJxVa9umVVewmZtXsNLPNOI2MTtFRKUsG1Up16e0SntQ
+         4NN2s0MBc2zDucN94t8hPVPXkcdMPRYU1zX4BMpztnJ1KcKbv2wOGwu8FJvfzqXtxAgw
+         Iqxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=ZEoywqRe2jN83WxMzYeUPBo0DWYGkrwKbHoYsiazcV8=;
-        b=7UMwBJ98NZaag9/cedOHhWjqNa1ERy8BkRvJv4Z/DiujdDvsEG5/3KSSsC1Vl+gxbY
-         fUnMYnxZQM1ql/siCLkaSgryNJee3i9Gobsw47CazaWDOavu2MI1JE22jI+BBlfYjXk+
-         42wmcKiY9bb5QGJbCmez/UZ78VwsK1XPaJXiYdaAfkUgWUDqadiPzDJUGMzGuS5SHwOI
-         9sgwdJ96sOJnRtv51+D4JBvkXEpIMBn3z6FzgdDe4MzppiQgQV8x8/GsY/xzlVHnzZ+M
-         YjoMUtBGCM1J695yfx/uGriqDpFdA7T/DzsIbcU/6fZmlQtEOjZDHPaChj1h0ZGHWC0k
-         o3iw==
-X-Gm-Message-State: AOAM531EPVwPzZqTiaP2x0R4P8vI9Zd7GWrHLBHfR/tnZVL7bjiQAYPh
-        ZRWLE2D9wnRs0+iKC04tSSzrW619xnM=
-X-Google-Smtp-Source: ABdhPJxBIAnhE84vnj3pmf7obhkXbiQgzGN6yzsHkN4FaCI2JiDwne0lN5S53YNIBOnUgnsYiUb33xBlzVs=
+        bh=C53+Egq7YgeyPc3n0sW99y912mVxgbiYdI3cg6bBp3Y=;
+        b=jr709kELSPuAU/C33a/K/acVcqJa88uoBzVuCVO57ZKhjPZt/rT8HcZBBcBJwT1sua
+         SWXz9kTJ1dAhm9Nbgqo4PIxK+8508l/HXZ2yi/+fliaAydvJIQgtqdqNr0A7NVxrzIMB
+         0zhktFzJLNN9zpnSzY2UosKrHeGfAiBxFWzgJawbDKZqVmC/s68SNOeP039ai2RZmvQv
+         oGRlC9h1HSgZxNYGoVb2DjHohr+V0y+Jzg/VnADcxD9HqLfV4dT8WD5hPqh0UDlXzSJS
+         Fom2JDKkPSL9bKJ3C3ANd7WLv/wHGGk+blHPXE5Q17zPfInd18Wnrsk+P/zaKNwdP9HR
+         ZwSg==
+X-Gm-Message-State: AOAM53344ojNpI2CuCbFnpMg7BHry0kUMIBAqxlLhn/fnrJipo6B76Lr
+        /AnyA/f9/svKQADnq/35QRr5kW4XowE=
+X-Google-Smtp-Source: ABdhPJwoVZ/DfpEUafi7wNXwlwv+xcp9j6CMW2CRh+7EtyfsPfWQBXF5IfKjniLizsErHWXtVP3JFE0v0Sk=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:902:d491:b0:164:d43:1a23 with SMTP id
- c17-20020a170902d49100b001640d431a23mr12888255plg.155.1654305709778; Fri, 03
- Jun 2022 18:21:49 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a63:1c5c:0:b0:3fc:109e:8386 with SMTP id
+ c28-20020a631c5c000000b003fc109e8386mr11290697pgm.133.1654305706289; Fri, 03
+ Jun 2022 18:21:46 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Sat,  4 Jun 2022 01:20:44 +0000
+Date:   Sat,  4 Jun 2022 01:20:42 +0000
 In-Reply-To: <20220604012058.1972195-1-seanjc@google.com>
-Message-Id: <20220604012058.1972195-29-seanjc@google.com>
+Message-Id: <20220604012058.1972195-27-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220604012058.1972195-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH 28/42] KVM: selftests: Use vcpu_{set,clear}_cpuid_feature() in
- nVMX state test
+Subject: [PATCH 26/42] KVM: selftests: Use vCPU's CPUID directly in Hyper-V test
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     kvm@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
@@ -66,73 +65,420 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use vcpu_{set,clear}_cpuid_feature() to toggle nested VMX support in the
-vCPU CPUID module in the nVMX state test.  Drop CPUID_VMX as there are
-no longer any users.
+Use the vCPU's persistent CPUID array directly when manipulating the set
+of exposed Hyper-V CPUID features.  Drop set_cpuid() to route all future
+modification through the vCPU helpers; the Hyper-V features test was the
+last user.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../selftests/kvm/include/x86_64/processor.h  |  1 -
- .../kvm/x86_64/vmx_set_nested_state_test.c    | 20 ++-----------------
- 2 files changed, 2 insertions(+), 19 deletions(-)
+ .../selftests/kvm/include/x86_64/processor.h  |   9 --
+ .../selftests/kvm/lib/x86_64/processor.c      |  18 ---
+ .../selftests/kvm/x86_64/hyperv_features.c    | 126 +++++++++---------
+ 3 files changed, 64 insertions(+), 89 deletions(-)
 
 diff --git a/tools/testing/selftests/kvm/include/x86_64/processor.h b/tools/testing/selftests/kvm/include/x86_64/processor.h
-index b9b3a19895aa..a1cac0b7d8b2 100644
+index 22e2eaf42360..b9b3a19895aa 100644
 --- a/tools/testing/selftests/kvm/include/x86_64/processor.h
 +++ b/tools/testing/selftests/kvm/include/x86_64/processor.h
-@@ -158,7 +158,6 @@ struct kvm_x86_cpu_feature {
- #define X86_FEATURE_KVM_MIGRATION_CONTROL	KVM_X86_CPU_FEATURE(0x40000001, 0, EAX, 17)
+@@ -727,15 +727,6 @@ uint64_t vm_get_page_table_entry(struct kvm_vm *vm, struct kvm_vcpu *vcpu,
+ void vm_set_page_table_entry(struct kvm_vm *vm, struct kvm_vcpu *vcpu,
+ 			     uint64_t vaddr, uint64_t pte);
  
- /* CPUID.1.ECX */
--#define CPUID_VMX		(1ul << 5)
- #define CPUID_XSAVE		(1ul << 26)
- #define CPUID_OSXSAVE		(1ul << 27)
+-/*
+- * set_cpuid() - overwrites a matching cpuid entry with the provided value.
+- *		 matches based on ent->function && ent->index. returns true
+- *		 if a match was found and successfully overwritten.
+- * @cpuid: the kvm cpuid list to modify.
+- * @ent: cpuid entry to insert
+- */
+-bool set_cpuid(struct kvm_cpuid2 *cpuid, struct kvm_cpuid_entry2 *ent);
+-
+ uint64_t kvm_hypercall(uint64_t nr, uint64_t a0, uint64_t a1, uint64_t a2,
+ 		       uint64_t a3);
  
-diff --git a/tools/testing/selftests/kvm/x86_64/vmx_set_nested_state_test.c b/tools/testing/selftests/kvm/x86_64/vmx_set_nested_state_test.c
-index 1cf78ec007f2..41ea7028a1f8 100644
---- a/tools/testing/selftests/kvm/x86_64/vmx_set_nested_state_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/vmx_set_nested_state_test.c
-@@ -121,7 +121,7 @@ void test_vmx_nested_state(struct kvm_vcpu *vcpu)
- 	test_nested_state(vcpu, state);
- 
- 	/* Enable VMX in the guest CPUID. */
--	vcpu_set_cpuid(vcpu);
-+	vcpu_set_cpuid_feature(vcpu, X86_FEATURE_VMX);
- 
- 	/*
- 	 * Setting vmxon_pa == -1ull and vmcs_pa == -1ull exits early without
-@@ -243,22 +243,6 @@ void test_vmx_nested_state(struct kvm_vcpu *vcpu)
- 	free(state);
+diff --git a/tools/testing/selftests/kvm/lib/x86_64/processor.c b/tools/testing/selftests/kvm/lib/x86_64/processor.c
+index 69239b3613f7..1812b14de3dd 100644
+--- a/tools/testing/selftests/kvm/lib/x86_64/processor.c
++++ b/tools/testing/selftests/kvm/lib/x86_64/processor.c
+@@ -1208,24 +1208,6 @@ struct kvm_cpuid_entry2 *get_cpuid_entry(struct kvm_cpuid2 *cpuid,
+ 	return NULL;
  }
  
--void disable_vmx(struct kvm_vcpu *vcpu)
+-bool set_cpuid(struct kvm_cpuid2 *cpuid,
+-	       struct kvm_cpuid_entry2 *ent)
 -{
--	struct kvm_cpuid2 *cpuid = vcpu->cpuid;
 -	int i;
 -
--	for (i = 0; i < cpuid->nent; ++i)
--		if (cpuid->entries[i].function == 1 &&
--		    cpuid->entries[i].index == 0)
--			break;
--	TEST_ASSERT(i != cpuid->nent, "CPUID function 1 not found");
+-	for (i = 0; i < cpuid->nent; i++) {
+-		struct kvm_cpuid_entry2 *cur = &cpuid->entries[i];
 -
--	cpuid->entries[i].ecx &= ~CPUID_VMX;
--	vcpu_set_cpuid(vcpu);
--	cpuid->entries[i].ecx |= CPUID_VMX;
+-		if (cur->function != ent->function || cur->index != ent->index)
+-			continue;
+-
+-		memcpy(cur, ent, sizeof(struct kvm_cpuid_entry2));
+-		return true;
+-	}
+-
+-	return false;
 -}
 -
- int main(int argc, char *argv[])
+ uint64_t kvm_hypercall(uint64_t nr, uint64_t a0, uint64_t a1, uint64_t a2,
+ 		       uint64_t a3)
  {
- 	struct kvm_vm *vm;
-@@ -280,7 +264,7 @@ int main(int argc, char *argv[])
- 	/*
- 	 * First run tests with VMX disabled to check error handling.
- 	 */
--	disable_vmx(vcpu);
-+	vcpu_clear_cpuid_feature(vcpu, X86_FEATURE_VMX);
+diff --git a/tools/testing/selftests/kvm/x86_64/hyperv_features.c b/tools/testing/selftests/kvm/x86_64/hyperv_features.c
+index f08f51bad68b..3d0df079496b 100644
+--- a/tools/testing/selftests/kvm/x86_64/hyperv_features.c
++++ b/tools/testing/selftests/kvm/x86_64/hyperv_features.c
+@@ -150,37 +150,28 @@ static void guest_hcall(vm_vaddr_t pgs_gpa, struct hcall_data *hcall)
+ 	GUEST_DONE();
+ }
  
- 	/* Passing a NULL kvm_nested_state causes a EFAULT. */
- 	test_nested_state_expect_efault(vcpu, NULL);
+-static void hv_set_cpuid(struct kvm_vcpu *vcpu, struct kvm_cpuid2 *cpuid,
+-			 struct kvm_cpuid_entry2 *feat,
+-			 struct kvm_cpuid_entry2 *recomm,
+-			 struct kvm_cpuid_entry2 *dbg)
++static void vcpu_reset_hv_cpuid(struct kvm_vcpu *vcpu)
+ {
+-	TEST_ASSERT(set_cpuid(cpuid, feat),
+-		    "failed to set KVM_CPUID_FEATURES leaf");
+-	TEST_ASSERT(set_cpuid(cpuid, recomm),
+-		    "failed to set HYPERV_CPUID_ENLIGHTMENT_INFO leaf");
+-	TEST_ASSERT(set_cpuid(cpuid, dbg),
+-		    "failed to set HYPERV_CPUID_SYNDBG_PLATFORM_CAPABILITIES leaf");
+-	vcpu_init_cpuid(vcpu, cpuid);
++	/*
++	 * Enable all supported Hyper-V features, then clear the leafs holding
++	 * the features that will be tested one by one.
++	 */
++	vcpu_set_hv_cpuid(vcpu);
++
++	vcpu_clear_cpuid_entry(vcpu, HYPERV_CPUID_FEATURES);
++	vcpu_clear_cpuid_entry(vcpu, HYPERV_CPUID_ENLIGHTMENT_INFO);
++	vcpu_clear_cpuid_entry(vcpu, HYPERV_CPUID_SYNDBG_PLATFORM_CAPABILITIES);
+ }
+ 
+ static void guest_test_msrs_access(void)
+ {
++	struct kvm_cpuid2 *prev_cpuid = NULL;
++	struct kvm_cpuid_entry2 *feat, *dbg;
+ 	struct kvm_vcpu *vcpu;
+ 	struct kvm_run *run;
+ 	struct kvm_vm *vm;
+ 	struct ucall uc;
+ 	int stage = 0;
+-	struct kvm_cpuid_entry2 feat = {
+-		.function = HYPERV_CPUID_FEATURES
+-	};
+-	struct kvm_cpuid_entry2 recomm = {
+-		.function = HYPERV_CPUID_ENLIGHTMENT_INFO
+-	};
+-	struct kvm_cpuid_entry2 dbg = {
+-		.function = HYPERV_CPUID_SYNDBG_PLATFORM_CAPABILITIES
+-	};
+-	struct kvm_cpuid2 *best;
+ 	vm_vaddr_t msr_gva;
+ 	struct msr_data *msr;
+ 
+@@ -194,9 +185,16 @@ static void guest_test_msrs_access(void)
+ 		vcpu_args_set(vcpu, 1, msr_gva);
+ 		vcpu_enable_cap(vcpu, KVM_CAP_HYPERV_ENFORCE_CPUID, 1);
+ 
+-		vcpu_set_hv_cpuid(vcpu);
++		if (!prev_cpuid) {
++			vcpu_reset_hv_cpuid(vcpu);
+ 
+-		best = kvm_get_supported_hv_cpuid();
++			prev_cpuid = allocate_kvm_cpuid2(vcpu->cpuid->nent);
++		} else {
++			vcpu_init_cpuid(vcpu, prev_cpuid);
++		}
++
++		feat = vcpu_get_cpuid_entry(vcpu, HYPERV_CPUID_FEATURES);
++		dbg = vcpu_get_cpuid_entry(vcpu, HYPERV_CPUID_SYNDBG_PLATFORM_CAPABILITIES);
+ 
+ 		vm_init_descriptor_tables(vm);
+ 		vcpu_init_descriptor_tables(vcpu);
+@@ -219,7 +217,7 @@ static void guest_test_msrs_access(void)
+ 			msr->available = 0;
+ 			break;
+ 		case 2:
+-			feat.eax |= HV_MSR_HYPERCALL_AVAILABLE;
++			feat->eax |= HV_MSR_HYPERCALL_AVAILABLE;
+ 			/*
+ 			 * HV_X64_MSR_GUEST_OS_ID has to be written first to make
+ 			 * HV_X64_MSR_HYPERCALL available.
+@@ -246,7 +244,7 @@ static void guest_test_msrs_access(void)
+ 			msr->available = 0;
+ 			break;
+ 		case 6:
+-			feat.eax |= HV_MSR_VP_RUNTIME_AVAILABLE;
++			feat->eax |= HV_MSR_VP_RUNTIME_AVAILABLE;
+ 			msr->write = 0;
+ 			msr->available = 1;
+ 			break;
+@@ -263,7 +261,7 @@ static void guest_test_msrs_access(void)
+ 			msr->available = 0;
+ 			break;
+ 		case 9:
+-			feat.eax |= HV_MSR_TIME_REF_COUNT_AVAILABLE;
++			feat->eax |= HV_MSR_TIME_REF_COUNT_AVAILABLE;
+ 			msr->write = 0;
+ 			msr->available = 1;
+ 			break;
+@@ -280,7 +278,7 @@ static void guest_test_msrs_access(void)
+ 			msr->available = 0;
+ 			break;
+ 		case 12:
+-			feat.eax |= HV_MSR_VP_INDEX_AVAILABLE;
++			feat->eax |= HV_MSR_VP_INDEX_AVAILABLE;
+ 			msr->write = 0;
+ 			msr->available = 1;
+ 			break;
+@@ -297,7 +295,7 @@ static void guest_test_msrs_access(void)
+ 			msr->available = 0;
+ 			break;
+ 		case 15:
+-			feat.eax |= HV_MSR_RESET_AVAILABLE;
++			feat->eax |= HV_MSR_RESET_AVAILABLE;
+ 			msr->write = 0;
+ 			msr->available = 1;
+ 			break;
+@@ -313,7 +311,7 @@ static void guest_test_msrs_access(void)
+ 			msr->available = 0;
+ 			break;
+ 		case 18:
+-			feat.eax |= HV_MSR_REFERENCE_TSC_AVAILABLE;
++			feat->eax |= HV_MSR_REFERENCE_TSC_AVAILABLE;
+ 			msr->write = 0;
+ 			msr->available = 1;
+ 			break;
+@@ -336,7 +334,7 @@ static void guest_test_msrs_access(void)
+ 			vcpu_enable_cap(vcpu, KVM_CAP_HYPERV_SYNIC2, 0);
+ 			break;
+ 		case 22:
+-			feat.eax |= HV_MSR_SYNIC_AVAILABLE;
++			feat->eax |= HV_MSR_SYNIC_AVAILABLE;
+ 			msr->write = 0;
+ 			msr->available = 1;
+ 			break;
+@@ -352,7 +350,7 @@ static void guest_test_msrs_access(void)
+ 			msr->available = 0;
+ 			break;
+ 		case 25:
+-			feat.eax |= HV_MSR_SYNTIMER_AVAILABLE;
++			feat->eax |= HV_MSR_SYNTIMER_AVAILABLE;
+ 			msr->write = 0;
+ 			msr->available = 1;
+ 			break;
+@@ -368,7 +366,7 @@ static void guest_test_msrs_access(void)
+ 			msr->available = 0;
+ 			break;
+ 		case 28:
+-			feat.edx |= HV_STIMER_DIRECT_MODE_AVAILABLE;
++			feat->edx |= HV_STIMER_DIRECT_MODE_AVAILABLE;
+ 			msr->available = 1;
+ 			break;
+ 
+@@ -378,7 +376,7 @@ static void guest_test_msrs_access(void)
+ 			msr->available = 0;
+ 			break;
+ 		case 30:
+-			feat.eax |= HV_MSR_APIC_ACCESS_AVAILABLE;
++			feat->eax |= HV_MSR_APIC_ACCESS_AVAILABLE;
+ 			msr->write = 1;
+ 			msr->write_val = 1;
+ 			msr->available = 1;
+@@ -390,7 +388,7 @@ static void guest_test_msrs_access(void)
+ 			msr->available = 0;
+ 			break;
+ 		case 32:
+-			feat.eax |= HV_ACCESS_FREQUENCY_MSRS;
++			feat->eax |= HV_ACCESS_FREQUENCY_MSRS;
+ 			msr->write = 0;
+ 			msr->available = 1;
+ 			break;
+@@ -407,7 +405,7 @@ static void guest_test_msrs_access(void)
+ 			msr->available = 0;
+ 			break;
+ 		case 35:
+-			feat.eax |= HV_ACCESS_REENLIGHTENMENT;
++			feat->eax |= HV_ACCESS_REENLIGHTENMENT;
+ 			msr->write = 0;
+ 			msr->available = 1;
+ 			break;
+@@ -430,7 +428,7 @@ static void guest_test_msrs_access(void)
+ 			msr->available = 0;
+ 			break;
+ 		case 39:
+-			feat.edx |= HV_FEATURE_GUEST_CRASH_MSR_AVAILABLE;
++			feat->edx |= HV_FEATURE_GUEST_CRASH_MSR_AVAILABLE;
+ 			msr->write = 0;
+ 			msr->available = 1;
+ 			break;
+@@ -446,8 +444,8 @@ static void guest_test_msrs_access(void)
+ 			msr->available = 0;
+ 			break;
+ 		case 42:
+-			feat.edx |= HV_FEATURE_DEBUG_MSRS_AVAILABLE;
+-			dbg.eax |= HV_X64_SYNDBG_CAP_ALLOW_KERNEL_DEBUGGING;
++			feat->edx |= HV_FEATURE_DEBUG_MSRS_AVAILABLE;
++			dbg->eax |= HV_X64_SYNDBG_CAP_ALLOW_KERNEL_DEBUGGING;
+ 			msr->write = 0;
+ 			msr->available = 1;
+ 			break;
+@@ -463,7 +461,9 @@ static void guest_test_msrs_access(void)
+ 			break;
+ 		}
+ 
+-		hv_set_cpuid(vcpu, best, &feat, &recomm, &dbg);
++		vcpu_set_cpuid(vcpu);
++
++		memcpy(prev_cpuid, vcpu->cpuid, kvm_cpuid2_size(vcpu->cpuid->nent));
+ 
+ 		if (msr->idx)
+ 			pr_debug("Stage %d: testing msr: 0x%x for %s\n", stage,
+@@ -497,24 +497,15 @@ static void guest_test_msrs_access(void)
+ 
+ static void guest_test_hcalls_access(void)
+ {
++	struct kvm_cpuid_entry2 *feat, *recomm, *dbg;
++	struct kvm_cpuid2 *prev_cpuid = NULL;
+ 	struct kvm_vcpu *vcpu;
+ 	struct kvm_run *run;
+ 	struct kvm_vm *vm;
+ 	struct ucall uc;
+ 	int stage = 0;
+-	struct kvm_cpuid_entry2 feat = {
+-		.function = HYPERV_CPUID_FEATURES,
+-		.eax = HV_MSR_HYPERCALL_AVAILABLE
+-	};
+-	struct kvm_cpuid_entry2 recomm = {
+-		.function = HYPERV_CPUID_ENLIGHTMENT_INFO
+-	};
+-	struct kvm_cpuid_entry2 dbg = {
+-		.function = HYPERV_CPUID_SYNDBG_PLATFORM_CAPABILITIES
+-	};
+ 	vm_vaddr_t hcall_page, hcall_params;
+ 	struct hcall_data *hcall;
+-	struct kvm_cpuid2 *best;
+ 
+ 	while (true) {
+ 		vm = vm_create_with_one_vcpu(&vcpu, guest_hcall);
+@@ -534,14 +525,23 @@ static void guest_test_hcalls_access(void)
+ 		vcpu_args_set(vcpu, 2, addr_gva2gpa(vm, hcall_page), hcall_params);
+ 		vcpu_enable_cap(vcpu, KVM_CAP_HYPERV_ENFORCE_CPUID, 1);
+ 
+-		vcpu_set_hv_cpuid(vcpu);
++		if (!prev_cpuid) {
++			vcpu_reset_hv_cpuid(vcpu);
+ 
+-		best = kvm_get_supported_hv_cpuid();
++			prev_cpuid = allocate_kvm_cpuid2(vcpu->cpuid->nent);
++		} else {
++			vcpu_init_cpuid(vcpu, prev_cpuid);
++		}
++
++		feat = vcpu_get_cpuid_entry(vcpu, HYPERV_CPUID_FEATURES);
++		recomm = vcpu_get_cpuid_entry(vcpu, HYPERV_CPUID_ENLIGHTMENT_INFO);
++		dbg = vcpu_get_cpuid_entry(vcpu, HYPERV_CPUID_SYNDBG_PLATFORM_CAPABILITIES);
+ 
+ 		run = vcpu->run;
+ 
+ 		switch (stage) {
+ 		case 0:
++			feat->eax |= HV_MSR_HYPERCALL_AVAILABLE;
+ 			hcall->control = 0xdeadbeef;
+ 			hcall->expect = HV_STATUS_INVALID_HYPERCALL_CODE;
+ 			break;
+@@ -551,7 +551,7 @@ static void guest_test_hcalls_access(void)
+ 			hcall->expect = HV_STATUS_ACCESS_DENIED;
+ 			break;
+ 		case 2:
+-			feat.ebx |= HV_POST_MESSAGES;
++			feat->ebx |= HV_POST_MESSAGES;
+ 			hcall->expect = HV_STATUS_INVALID_HYPERCALL_INPUT;
+ 			break;
+ 
+@@ -560,7 +560,7 @@ static void guest_test_hcalls_access(void)
+ 			hcall->expect = HV_STATUS_ACCESS_DENIED;
+ 			break;
+ 		case 4:
+-			feat.ebx |= HV_SIGNAL_EVENTS;
++			feat->ebx |= HV_SIGNAL_EVENTS;
+ 			hcall->expect = HV_STATUS_INVALID_HYPERCALL_INPUT;
+ 			break;
+ 
+@@ -569,11 +569,11 @@ static void guest_test_hcalls_access(void)
+ 			hcall->expect = HV_STATUS_INVALID_HYPERCALL_CODE;
+ 			break;
+ 		case 6:
+-			dbg.eax |= HV_X64_SYNDBG_CAP_ALLOW_KERNEL_DEBUGGING;
++			dbg->eax |= HV_X64_SYNDBG_CAP_ALLOW_KERNEL_DEBUGGING;
+ 			hcall->expect = HV_STATUS_ACCESS_DENIED;
+ 			break;
+ 		case 7:
+-			feat.ebx |= HV_DEBUGGING;
++			feat->ebx |= HV_DEBUGGING;
+ 			hcall->expect = HV_STATUS_OPERATION_DENIED;
+ 			break;
+ 
+@@ -582,7 +582,7 @@ static void guest_test_hcalls_access(void)
+ 			hcall->expect = HV_STATUS_ACCESS_DENIED;
+ 			break;
+ 		case 9:
+-			recomm.eax |= HV_X64_REMOTE_TLB_FLUSH_RECOMMENDED;
++			recomm->eax |= HV_X64_REMOTE_TLB_FLUSH_RECOMMENDED;
+ 			hcall->expect = HV_STATUS_SUCCESS;
+ 			break;
+ 		case 10:
+@@ -590,7 +590,7 @@ static void guest_test_hcalls_access(void)
+ 			hcall->expect = HV_STATUS_ACCESS_DENIED;
+ 			break;
+ 		case 11:
+-			recomm.eax |= HV_X64_EX_PROCESSOR_MASKS_RECOMMENDED;
++			recomm->eax |= HV_X64_EX_PROCESSOR_MASKS_RECOMMENDED;
+ 			hcall->expect = HV_STATUS_SUCCESS;
+ 			break;
+ 
+@@ -599,7 +599,7 @@ static void guest_test_hcalls_access(void)
+ 			hcall->expect = HV_STATUS_ACCESS_DENIED;
+ 			break;
+ 		case 13:
+-			recomm.eax |= HV_X64_CLUSTER_IPI_RECOMMENDED;
++			recomm->eax |= HV_X64_CLUSTER_IPI_RECOMMENDED;
+ 			hcall->expect = HV_STATUS_INVALID_HYPERCALL_INPUT;
+ 			break;
+ 		case 14:
+@@ -613,7 +613,7 @@ static void guest_test_hcalls_access(void)
+ 			hcall->expect = HV_STATUS_ACCESS_DENIED;
+ 			break;
+ 		case 16:
+-			recomm.ebx = 0xfff;
++			recomm->ebx = 0xfff;
+ 			hcall->expect = HV_STATUS_SUCCESS;
+ 			break;
+ 		case 17:
+@@ -622,7 +622,7 @@ static void guest_test_hcalls_access(void)
+ 			hcall->ud_expected = true;
+ 			break;
+ 		case 18:
+-			feat.edx |= HV_X64_HYPERCALL_XMM_INPUT_AVAILABLE;
++			feat->edx |= HV_X64_HYPERCALL_XMM_INPUT_AVAILABLE;
+ 			hcall->ud_expected = false;
+ 			hcall->expect = HV_STATUS_SUCCESS;
+ 			break;
+@@ -633,7 +633,9 @@ static void guest_test_hcalls_access(void)
+ 			break;
+ 		}
+ 
+-		hv_set_cpuid(vcpu, best, &feat, &recomm, &dbg);
++		vcpu_set_cpuid(vcpu);
++
++		memcpy(prev_cpuid, vcpu->cpuid, kvm_cpuid2_size(vcpu->cpuid->nent));
+ 
+ 		if (hcall->control)
+ 			pr_debug("Stage %d: testing hcall: 0x%lx\n", stage,
 -- 
 2.36.1.255.ge46751e96f-goog
 
