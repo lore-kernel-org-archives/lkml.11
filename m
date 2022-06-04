@@ -2,134 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FAE3C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 20:57:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F356FC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 20:58:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241548AbiFDU5r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 4 Jun 2022 16:57:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46808 "EHLO
+        id S241605AbiFDU65 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 4 Jun 2022 16:58:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231502AbiFDU5q (ORCPT
+        with ESMTP id S231502AbiFDU6z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 4 Jun 2022 16:57:46 -0400
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5C711408B;
-        Sat,  4 Jun 2022 13:57:44 -0700 (PDT)
-Received: by mail-lj1-x235.google.com with SMTP id y29so11922053ljd.7;
-        Sat, 04 Jun 2022 13:57:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:content-language:to
-         :references:from:subject:in-reply-to:content-transfer-encoding;
-        bh=Mjaa1gmx+OGviIUuZZFZ8twv+6L+3H6yheyEOcviWp4=;
-        b=NCONz+xeNP9xsKjr6JeYhXC+M/FcZ/aCzBLntTyLtwpdKBrweqrDS51emhQX1shQKA
-         0E8kkKJRjyxOXmGrkLTdXwynpI4aNrEmhSMvqEEg/T4bflHAu4zpdwGap3wPBBX3GCwg
-         nPCssSi/bfiOpk8FURXhBV/w6tvQkHh+XA+YAZB2rR0zeT6dBVveyc8k7M97Kkzdvsbw
-         dqGgoXoovhPU+QCutNaJtdxFMYtjE0tVcEUUATRiK5SzTpNTbBSREOxbvOJt+JEi7FkF
-         gV+NuQx8/TxprQyLMi3kW83Sm1o/2JbQNr6pxCIbq0noTP/Z0UOIdQ0lEky1va8RDoPU
-         IjAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:references:from:subject:in-reply-to
-         :content-transfer-encoding;
-        bh=Mjaa1gmx+OGviIUuZZFZ8twv+6L+3H6yheyEOcviWp4=;
-        b=Y2AuxQJEqTEn1iQ4TXaGl1fKH6YJ6QPmPziAUVdH3iXGihx5LUVs7d6t2UQ1JrPQag
-         20XFSzm28iVLIdOJmaFqQv99H9JDl+9fGLvGV/a2xveNhxUdyjJe9YMpdHR6mjYoiqcl
-         q1iF7xlZfjsmpzliUtW5t9pT9Gg8cmJ2Grg+qdxyLbO4VDJwRXYC3u+Bt7D1xCWrxGje
-         t3bSf0co77BlA/XG92Xi/5eDZvPy8V8sDaiuQZoahfuSiJSO9XdvMpVfvrFRI3yuVJaK
-         aR/xvUvh1OFy9OUQAta6CsBLMfNEE6S3JMBhITyh82lm7lTUZGxImp5aMyBc+6ZDgO5v
-         Eaww==
-X-Gm-Message-State: AOAM5303HFz363o5oDQvxzltyU9PFwSjwcEJMvmcav5FXV4MXu4HSkyU
-        YqK5GCa/y7lWWbYnwP3OqDU=
-X-Google-Smtp-Source: ABdhPJw3/kwLRVwOi4fb5ytfXb6Nt+ODldVUt3ffDj0jfNdYm9CGAy5xJ61snt90MKXBO04UoYDUTw==
-X-Received: by 2002:a2e:8081:0:b0:253:ce61:3c66 with SMTP id i1-20020a2e8081000000b00253ce613c66mr48707841ljg.98.1654376263155;
-        Sat, 04 Jun 2022 13:57:43 -0700 (PDT)
-Received: from [10.0.0.127] (91-159-150-230.elisa-laajakaista.fi. [91.159.150.230])
-        by smtp.gmail.com with ESMTPSA id k18-20020a192d12000000b0047920d89606sm614250lfj.187.2022.06.04.13.57.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 04 Jun 2022 13:57:42 -0700 (PDT)
-Message-ID: <a3a99b6a-70c7-5b6b-718f-44c4d957cdda@gmail.com>
-Date:   Sat, 4 Jun 2022 23:59:02 +0300
+        Sat, 4 Jun 2022 16:58:55 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B2F61408B
+        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 13:58:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654376334; x=1685912334;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=ZbzfPw3KEU8aEBadzUpmPpbs+lKGvDyOUyDE8IgRrE0=;
+  b=BcNBpLwHypX8dNZ1BjBnvpZwJbVEirikrXw8T/nyma5ADMU+6dPRNuH/
+   mSCnhWhzdDcisjENLmqRa4K1+xHrPvsnSCHltDQ1X5pMPKcN7joDpz9ZC
+   MZEiYO1163z46ORrmDse3AeJRxgDuFzMgkjvFHwPBlSbJ7F0smJNC9/1W
+   zo2Le1p2sjfmNaD8KSK1k+TBbQuwWMj9We2XunRis9Um0YN66RlVyy+fQ
+   CGnFQX4K2yqXtyLxcB/H40IjKBFE7h+TT6vUe/tk6tiXzUGoTwKvI4lGR
+   vxVlIwlg2k+mnauweGJJlOK6AN3vBLFxBWarzmflQTPPTW/J3JapCSISP
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10368"; a="275277365"
+X-IronPort-AV: E=Sophos;i="5.91,278,1647327600"; 
+   d="scan'208";a="275277365"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2022 13:58:54 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,278,1647327600"; 
+   d="scan'208";a="722235184"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 04 Jun 2022 13:58:52 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nxarE-000BCx-BO;
+        Sat, 04 Jun 2022 20:58:52 +0000
+Date:   Sun, 5 Jun 2022 04:58:07 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Kees Cook <keescook@chromium.org>
+Subject: arch/arm/boot/compressed/../../../../lib/xz/xz_dec_stream.c:393:28:
+ sparse: sparse: incorrect type in argument 1 (different base types)
+Message-ID: <202206050405.j880lgTy-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Content-Language: en-US
-To:     Miaoqian Lin <linmq006@gmail.com>, dave.jiang@intel.com,
-        Vinod Koul <vkoul@kernel.org>, dmaengine@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220601110013.55366-1-linmq006@gmail.com>
-From:   =?UTF-8?Q?P=c3=a9ter_Ujfalusi?= <peter.ujfalusi@gmail.com>
-Subject: Re: [PATCH v2] dmaengine: ti: Add missing put_device in
- ti_dra7_xbar_route_allocate
-In-Reply-To: <20220601110013.55366-1-linmq006@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   032dcf09e2bf7c822be25b4abef7a6c913870d98
+commit: 606b102876e3741851dfb09d53f3ee57f650a52c drm: fb_helper: fix CONFIG_FB dependency
+date:   8 months ago
+config: arm-randconfig-s031-20220605 (https://download.01.org/0day-ci/archive/20220605/202206050405.j880lgTy-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 11.3.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-18-g56afb504-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=606b102876e3741851dfb09d53f3ee57f650a52c
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 606b102876e3741851dfb09d53f3ee57f650a52c
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arm SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
 
-On 01/06/2022 14:00, Miaoqian Lin wrote:
-> of_find_device_by_node() takes reference, we should use put_device()
-> to release it when not need anymore.
+sparse warnings: (new ones prefixed by >>)
+   arch/arm/boot/compressed/decompress.c: note: in included file (through arch/arm/boot/compressed/../../../../lib/decompress_unxz.c):
+   include/linux/decompress/mm.h:31:30: sparse: sparse: symbol 'malloc_ptr' was not declared. Should it be static?
+   include/linux/decompress/mm.h:32:20: sparse: sparse: symbol 'malloc_count' was not declared. Should it be static?
+   arch/arm/boot/compressed/decompress.c: note: in included file (through arch/arm/boot/compressed/../../../../lib/decompress_unxz.c):
+   arch/arm/boot/compressed/decompress.c: note: in included file (through arch/arm/boot/compressed/../../../../lib/decompress_unxz.c):
+>> arch/arm/boot/compressed/../../../../lib/xz/xz_dec_stream.c:393:28: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected restricted __le32 const [usertype] *p @@     got unsigned int const [usertype] * @@
+   arch/arm/boot/compressed/../../../../lib/xz/xz_dec_stream.c:393:28: sparse:     expected restricted __le32 const [usertype] *p
+   arch/arm/boot/compressed/../../../../lib/xz/xz_dec_stream.c:393:28: sparse:     got unsigned int const [usertype] *
+   arch/arm/boot/compressed/../../../../lib/xz/xz_dec_stream.c:427:48: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected restricted __le32 const [usertype] *p @@     got unsigned int const [usertype] * @@
+   arch/arm/boot/compressed/../../../../lib/xz/xz_dec_stream.c:427:48: sparse:     expected restricted __le32 const [usertype] *p
+   arch/arm/boot/compressed/../../../../lib/xz/xz_dec_stream.c:427:48: sparse:     got unsigned int const [usertype] *
+   arch/arm/boot/compressed/../../../../lib/xz/xz_dec_stream.c:435:37: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected restricted __le32 const [usertype] *p @@     got unsigned int const [usertype] * @@
+   arch/arm/boot/compressed/../../../../lib/xz/xz_dec_stream.c:435:37: sparse:     expected restricted __le32 const [usertype] *p
+   arch/arm/boot/compressed/../../../../lib/xz/xz_dec_stream.c:435:37: sparse:     got unsigned int const [usertype] *
+   arch/arm/boot/compressed/../../../../lib/xz/xz_dec_stream.c:459:28: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected restricted __le32 const [usertype] *p @@     got unsigned int const [usertype] * @@
+   arch/arm/boot/compressed/../../../../lib/xz/xz_dec_stream.c:459:28: sparse:     expected restricted __le32 const [usertype] *p
+   arch/arm/boot/compressed/../../../../lib/xz/xz_dec_stream.c:459:28: sparse:     got unsigned int const [usertype] *
 
-adding a new label and using goto would be another option or even better?
+vim +393 arch/arm/boot/compressed/../../../../lib/xz/xz_dec_stream.c
 
-> Fixes: a074ae38f859 ("dmaengine: Add driver for TI DMA crossbar on DRA7x")
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-> ---
-> changes in v2:
-> - split v1 into two patches.
-> v1 link:
-> https://lore.kernel.org/r/20220512051815.11946-1-linmq006@gmail.com
-> ---
->  drivers/dma/ti/dma-crossbar.c | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
-> diff --git a/drivers/dma/ti/dma-crossbar.c b/drivers/dma/ti/dma-crossbar.c
-> index 71d24fc07c00..06da13b18a7b 100644
-> --- a/drivers/dma/ti/dma-crossbar.c
-> +++ b/drivers/dma/ti/dma-crossbar.c
-> @@ -245,6 +245,7 @@ static void *ti_dra7_xbar_route_allocate(struct of_phandle_args *dma_spec,
->  	if (dma_spec->args[0] >= xbar->xbar_requests) {
->  		dev_err(&pdev->dev, "Invalid XBAR request number: %d\n",
->  			dma_spec->args[0]);
-> +		put_device(&pdev->dev);
->  		return ERR_PTR(-EINVAL);
->  	}
->  
-> @@ -252,12 +253,14 @@ static void *ti_dra7_xbar_route_allocate(struct of_phandle_args *dma_spec,
->  	dma_spec->np = of_parse_phandle(ofdma->of_node, "dma-masters", 0);
->  	if (!dma_spec->np) {
->  		dev_err(&pdev->dev, "Can't get DMA master\n");
-> +		put_device(&pdev->dev);
->  		return ERR_PTR(-EINVAL);
->  	}
->  
->  	map = kzalloc(sizeof(*map), GFP_KERNEL);
->  	if (!map) {
->  		of_node_put(dma_spec->np);
-> +		put_device(&pdev->dev);
->  		return ERR_PTR(-ENOMEM);
->  	}
->  
-> @@ -268,6 +271,7 @@ static void *ti_dra7_xbar_route_allocate(struct of_phandle_args *dma_spec,
->  		mutex_unlock(&xbar->mutex);
->  		dev_err(&pdev->dev, "Run out of free DMA requests\n");
->  		kfree(map);
-> +		put_device(&pdev->dev);
+24fa0402a9b6a5 Lasse Collin 2011-01-12  385  
+24fa0402a9b6a5 Lasse Collin 2011-01-12  386  /* Decode the Stream Header field (the first 12 bytes of the .xz Stream). */
+24fa0402a9b6a5 Lasse Collin 2011-01-12  387  static enum xz_ret dec_stream_header(struct xz_dec *s)
+24fa0402a9b6a5 Lasse Collin 2011-01-12  388  {
+24fa0402a9b6a5 Lasse Collin 2011-01-12  389  	if (!memeq(s->temp.buf, HEADER_MAGIC, HEADER_MAGIC_SIZE))
+24fa0402a9b6a5 Lasse Collin 2011-01-12  390  		return XZ_FORMAT_ERROR;
+24fa0402a9b6a5 Lasse Collin 2011-01-12  391  
+24fa0402a9b6a5 Lasse Collin 2011-01-12  392  	if (xz_crc32(s->temp.buf + HEADER_MAGIC_SIZE, 2, 0)
+24fa0402a9b6a5 Lasse Collin 2011-01-12 @393  			!= get_le32(s->temp.buf + HEADER_MAGIC_SIZE + 2))
+24fa0402a9b6a5 Lasse Collin 2011-01-12  394  		return XZ_DATA_ERROR;
+24fa0402a9b6a5 Lasse Collin 2011-01-12  395  
+24fa0402a9b6a5 Lasse Collin 2011-01-12  396  	if (s->temp.buf[HEADER_MAGIC_SIZE] != 0)
+24fa0402a9b6a5 Lasse Collin 2011-01-12  397  		return XZ_OPTIONS_ERROR;
+24fa0402a9b6a5 Lasse Collin 2011-01-12  398  
+24fa0402a9b6a5 Lasse Collin 2011-01-12  399  	/*
+24fa0402a9b6a5 Lasse Collin 2011-01-12  400  	 * Of integrity checks, we support only none (Check ID = 0) and
+24fa0402a9b6a5 Lasse Collin 2011-01-12  401  	 * CRC32 (Check ID = 1). However, if XZ_DEC_ANY_CHECK is defined,
+24fa0402a9b6a5 Lasse Collin 2011-01-12  402  	 * we will accept other check types too, but then the check won't
+24fa0402a9b6a5 Lasse Collin 2011-01-12  403  	 * be verified and a warning (XZ_UNSUPPORTED_CHECK) will be given.
+24fa0402a9b6a5 Lasse Collin 2011-01-12  404  	 */
+24fa0402a9b6a5 Lasse Collin 2011-01-12  405  	s->check_type = s->temp.buf[HEADER_MAGIC_SIZE + 1];
+24fa0402a9b6a5 Lasse Collin 2011-01-12  406  
 
-this will not apply with the other patch going separately...
-Can you send a two patch series?
-While there, I would check if labels+goto would look better?
+:::::: The code at line 393 was first introduced by commit
+:::::: 24fa0402a9b6a537e87e38341e78b7da86486846 decompressors: add XZ decompressor module
 
-Thanks for finding these and fixing it!
-
->  		return ERR_PTR(-ENOMEM);
->  	}
->  	set_bit(map->xbar_out, xbar->dma_inuse);
+:::::: TO: Lasse Collin <lasse.collin@tukaani.org>
+:::::: CC: Linus Torvalds <torvalds@linux-foundation.org>
 
 -- 
-Péter
+0-DAY CI Kernel Test Service
+https://01.org/lkp
