@@ -2,59 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CB93C43334
-	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 19:33:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54F93C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 19:33:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240745AbiFDTdR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 4 Jun 2022 15:33:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48598 "EHLO
+        id S241061AbiFDTdZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 4 Jun 2022 15:33:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240377AbiFDTbu (ORCPT
+        with ESMTP id S240865AbiFDTbt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 4 Jun 2022 15:31:50 -0400
-Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 965755000D
+        Sat, 4 Jun 2022 15:31:49 -0400
+Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27FDD50448
         for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 12:31:36 -0700 (PDT)
-Received: by mail-qk1-x730.google.com with SMTP id 15so3180689qki.6
+Received: by mail-qk1-x729.google.com with SMTP id az35so1177947qkb.3
         for <linux-kernel@vger.kernel.org>; Sat, 04 Jun 2022 12:31:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=fodx0Hm16VmVFm0PyMZVCAbEC8HUDt/O+iPo+rO/H6Q=;
-        b=AwntglKrCvTp5pRtKOik5bb3woM0Nk0MJ0Kjn5Vp7MCHg/IlIypJb0KjiMOmwSIHqG
-         qhxqF5CKLCvgHcNbUu/S8lpjo2Qs66Y3WAKi1JmkzdtdMjcao08GtJlExfYcDU6M1pm3
-         /Ft3mJREzkRm7RK6SgHx5P8SVOEA6rUieXDjBmnSK737USig/wBMc9pRUjcJtr0Y3eFs
-         RD4IVuvPhoZyUkK1Lg+bxy+VNEFXYNNyh+BA5BpUPkOslmFxLEtc28HHoLpFlv2BK5B/
-         q6Ah6U/A/61zmvte8acSgboXWphCi8t9Q2PHM2gp15Nu89xXCTWH2/76nU2PP5MmYbBh
-         bTLg==
+        bh=HmYk1E0nlrVwRWwFSUC/a4yoPMG0X4XicsKq1hOz6KU=;
+        b=PJoje00985N6oGb/Y7bGsu79gRdWGwWmNVnvrX06a4qBWEHiGWQMqbbjrBD0FWF2C9
+         hSxat3cFEp6yEukLVpR44SfZoxpFuoy8AW0TgKufz1DdZL5g4kNAzKJx0SPBApiG7uu9
+         5iJ5dC8D+KXHkXvGpc8je01NDyf1w/bitToUoQPbJleWS5Aihp4Z6oeD3doWmT251/Cp
+         rh9gw83EVSkHrRClNO/OBunWbwOxu/mC3V+aooYZnVFQS+qMckTUvctDbOhw6s9TmWyO
+         II1dLerx3Cqsh6cZ78WG0pNY2U19ON3i0qzCmNq4qNtFUNIlU8RatEylhTfDZWObcyZz
+         JZvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=fodx0Hm16VmVFm0PyMZVCAbEC8HUDt/O+iPo+rO/H6Q=;
-        b=G0KEJka5K6pqRLbo0zaGn8qIyP8DvKsrTb8mHa50OhmaJ/5DU1WLz7LxYM8bpV/6RQ
-         TvpLoNYeo2Jc5pOiM2H6laU+l2fVJIXPkDCjxTy6z6PFE157E467zZ6asG+yCMNq0bJz
-         sXw1UYg2kkLNezez2JOTDG5vHvD3pM5/qzdDu+AEHng7y2QZ2h0y8qZaqKoAiINbeA5F
-         /ASZHEiFyiIkjE0x4THAva9xe1lXgPzRo1c/AqYkRunPu6KwdEG4ItGf6yQMoJUJOq/l
-         gQtv6wauZkg+gqQ/HH7uEBnGrs3hOW5hFx1bsotPY5+Oo5AcpY6lK5uZh3eDdF4ZqFjs
-         SjLA==
-X-Gm-Message-State: AOAM530cUDRMK31Ugd6sk0P7rYJyIJGKA6o8ighqANGQhaJee2DgEj8p
-        Kf9NmIr2IDEBmOkD9VkRRkxLZoDC3X4y
-X-Google-Smtp-Source: ABdhPJwcXnrXZ4c9txaRW21Tgmh57lB+ZAiPrKlf5hfjnlkde0VEiG4ln96Zywr61OEI9ZXhs05i5A==
-X-Received: by 2002:a05:620a:28c6:b0:6a5:7f03:4377 with SMTP id l6-20020a05620a28c600b006a57f034377mr11298646qkp.118.1654371095865;
-        Sat, 04 Jun 2022 12:31:35 -0700 (PDT)
+        bh=HmYk1E0nlrVwRWwFSUC/a4yoPMG0X4XicsKq1hOz6KU=;
+        b=drX+fwuhq8RLSL9bGneFPl/2UIBFihyc3nyoUgNs8Ikx5jIX1NbuLM2jjBBra3T6px
+         Mn7vKP73GXhiH4ur9bDpmZShgpi7uc9Wrr7AioIgGfKoAptPuf8zM/CNpKQe2pQoTttJ
+         ftyK2ZsoPDLPZ8Qn4YzisPA83XRL4buLuq+6YUKuVbllHp2k1Txcff+XO6isoT/mgWYV
+         b3ybm5OWPiK/fXInAxUdyM/T5lXXZZEgeULQHDWx/gWwENnMKMrbTccR/1iiohjsk/iz
+         ldRnYo1WVfY4s8IYSgEf8nOwDi6v6sIBzEUXDGfhszWEyHkRE6YKKqSzAoAxggRE+DZ4
+         UXSg==
+X-Gm-Message-State: AOAM533GsLZs8SP8iIfMOEoZecQsLUuZcWpYXfFxav1hASG+DBVCBxAZ
+        CFtwlxN/1VeHpwia+YqJn6/mHzn9rf1j
+X-Google-Smtp-Source: ABdhPJx+3SHYROOTVTOhx/1YUWQwQKfJsM6CjtyyJSI2BNjTj2VGslnIUXruGHfNZ1OR/0E4gZ8QFQ==
+X-Received: by 2002:a05:620a:2586:b0:680:f846:4708 with SMTP id x6-20020a05620a258600b00680f8464708mr10998237qko.654.1654371089527;
+        Sat, 04 Jun 2022 12:31:29 -0700 (PDT)
 Received: from moria.home.lan (c-73-219-103-14.hsd1.vt.comcast.net. [73.219.103.14])
-        by smtp.gmail.com with ESMTPSA id o17-20020ac84291000000b00304defdb1b3sm3537426qtl.85.2022.06.04.12.31.34
+        by smtp.gmail.com with ESMTPSA id o17-20020ac84291000000b00304defdb1b3sm3537426qtl.85.2022.06.04.12.31.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 04 Jun 2022 12:31:34 -0700 (PDT)
+        Sat, 04 Jun 2022 12:31:28 -0700 (PDT)
 From:   Kent Overstreet <kent.overstreet@gmail.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Kent Overstreet <kent.overstreet@gmail.com>, pmladek@suse.com,
-        rostedt@goodmis.org, Ingo Molnar <mingo@redhat.com>
-Subject: [PATCH v3 30/33] tracing: trace_events_synth: Convert to printbuf
-Date:   Sat,  4 Jun 2022 15:30:39 -0400
-Message-Id: <20220604193042.1674951-31-kent.overstreet@gmail.com>
+        rostedt@goodmis.org, Dan Williams <dan.j.williams@intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        nvdimm@lists.linux.dev
+Subject: [PATCH v3 26/33] tools/testing/nvdimm: Convert to printbuf
+Date:   Sat,  4 Jun 2022 15:30:35 -0400
+Message-Id: <20220604193042.1674951-27-kent.overstreet@gmail.com>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220604193042.1674951-1-kent.overstreet@gmail.com>
 References: <20220604193042.1674951-1-kent.overstreet@gmail.com>
@@ -64,87 +66,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This converts from seq_buf to printbuf
+This converts from seq_buf to printbuf. Here we're using printbuf with
+an external buffer, meaning it's a direct conversion.
 
 Signed-off-by: Kent Overstreet <kent.overstreet@gmail.com>
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Dan Williams <dan.j.williams@intel.com>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: nvdimm@lists.linux.dev
 ---
- kernel/trace/trace_events_synth.c | 30 ++++++++++++++----------------
- 1 file changed, 14 insertions(+), 16 deletions(-)
+ tools/testing/nvdimm/test/ndtest.c | 22 ++++++++++------------
+ 1 file changed, 10 insertions(+), 12 deletions(-)
 
-diff --git a/kernel/trace/trace_events_synth.c b/kernel/trace/trace_events_synth.c
-index 5e8c07aef0..627e0e45f0 100644
---- a/kernel/trace/trace_events_synth.c
-+++ b/kernel/trace/trace_events_synth.c
-@@ -5,13 +5,14 @@
-  * Copyright (C) 2015, 2020 Tom Zanussi <tom.zanussi@linux.intel.com>
-  */
- 
--#include <linux/module.h>
- #include <linux/kallsyms.h>
--#include <linux/security.h>
-+#include <linux/module.h>
- #include <linux/mutex.h>
+diff --git a/tools/testing/nvdimm/test/ndtest.c b/tools/testing/nvdimm/test/ndtest.c
+index 4d1a947367..a2097955da 100644
+--- a/tools/testing/nvdimm/test/ndtest.c
++++ b/tools/testing/nvdimm/test/ndtest.c
+@@ -12,7 +12,7 @@
+ #include <linux/ndctl.h>
+ #include <nd-core.h>
+ #include <linux/printk.h>
+-#include <linux/seq_buf.h>
 +#include <linux/printbuf.h>
-+#include <linux/rculist.h>
-+#include <linux/security.h>
- #include <linux/slab.h>
- #include <linux/stacktrace.h>
--#include <linux/rculist.h>
- #include <linux/tracefs.h>
  
- /* for gfp flag names */
-@@ -611,7 +612,7 @@ static struct synth_field *parse_synth_field(int argc, char **argv,
- 	const char *prefix = NULL, *field_type = argv[0], *field_name, *array;
- 	struct synth_field *field;
- 	int len, ret = -ENOMEM;
+ #include "../watermark.h"
+ #include "nfit_test.h"
+@@ -740,32 +740,30 @@ static ssize_t flags_show(struct device *dev,
+ {
+ 	struct nvdimm *nvdimm = to_nvdimm(dev);
+ 	struct ndtest_dimm *dimm = nvdimm_provider_data(nvdimm);
 -	struct seq_buf s;
-+	struct printbuf s;
- 	ssize_t size;
++	struct printbuf s = PRINTBUF_EXTERN(buf, PAGE_SIZE);
+ 	u64 flags;
  
- 	if (!strcmp(field_type, "unsigned")) {
-@@ -666,17 +667,15 @@ static struct synth_field *parse_synth_field(int argc, char **argv,
- 	if (!field->type)
- 		goto free;
+ 	flags = dimm->flags;
  
--	seq_buf_init(&s, field->type, len);
-+	s = PRINTBUF_EXTERN(field->type, len);
- 	if (prefix)
--		seq_buf_puts(&s, prefix);
--	seq_buf_puts(&s, field_type);
-+		prt_str(&s, prefix);
-+	prt_str(&s, field_type);
- 	if (array)
--		seq_buf_puts(&s, array);
--	if (WARN_ON_ONCE(!seq_buf_buffer_left(&s)))
-+		prt_str(&s, array);
-+	if (WARN_ON_ONCE(!printbuf_remaining(&s)))
- 		goto free;
+-	seq_buf_init(&s, buf, PAGE_SIZE);
+ 	if (flags & PAPR_PMEM_UNARMED_MASK)
+-		seq_buf_printf(&s, "not_armed ");
++		prt_printf(&s, "not_armed ");
  
--	s.buffer[s.len] = '\0';
+ 	if (flags & PAPR_PMEM_BAD_SHUTDOWN_MASK)
+-		seq_buf_printf(&s, "flush_fail ");
++		prt_printf(&s, "flush_fail ");
+ 
+ 	if (flags & PAPR_PMEM_BAD_RESTORE_MASK)
+-		seq_buf_printf(&s, "restore_fail ");
++		prt_printf(&s, "restore_fail ");
+ 
+ 	if (flags & PAPR_PMEM_SAVE_MASK)
+-		seq_buf_printf(&s, "save_fail ");
++		prt_printf(&s, "save_fail ");
+ 
+ 	if (flags & PAPR_PMEM_SMART_EVENT_MASK)
+-		seq_buf_printf(&s, "smart_notify ");
++		prt_printf(&s, "smart_notify ");
+ 
++	if (printbuf_written(&s))
++		prt_printf(&s, "\n");
+ 
+-	if (seq_buf_used(&s))
+-		seq_buf_printf(&s, "\n");
 -
- 	size = synth_field_size(field->type);
- 	if (size < 0) {
- 		if (array)
-@@ -694,13 +693,12 @@ static struct synth_field *parse_synth_field(int argc, char **argv,
- 			if (!type)
- 				goto free;
+-	return seq_buf_used(&s);
++	return printbuf_written(&s);
+ }
+ static DEVICE_ATTR_RO(flags);
  
--			seq_buf_init(&s, type, len);
--			seq_buf_puts(&s, "__data_loc ");
--			seq_buf_puts(&s, field->type);
-+			s = PRINTBUF_EXTERN(type, len);
-+			prt_str(&s, "__data_loc ");
-+			prt_str(&s, field->type);
- 
--			if (WARN_ON_ONCE(!seq_buf_buffer_left(&s)))
-+			if (WARN_ON_ONCE(!printbuf_remaining(&s)))
- 				goto free;
--			s.buffer[s.len] = '\0';
- 
- 			kfree(field->type);
- 			field->type = type;
 -- 
 2.36.0
 
