@@ -2,143 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86AD5C43334
-	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 10:36:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3615C43334
+	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 10:44:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235039AbiFDKgg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 4 Jun 2022 06:36:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60954 "EHLO
+        id S235076AbiFDKoK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 4 Jun 2022 06:44:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234648AbiFDKge (ORCPT
+        with ESMTP id S233970AbiFDKoI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 4 Jun 2022 06:36:34 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C54CD6419
-        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 03:36:32 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id s14so8533673plk.8
-        for <linux-kernel@vger.kernel.org>; Sat, 04 Jun 2022 03:36:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SEH07fYqSJ08iDaWsMMB7o1Uq89bLucsW0RAoCe+2J0=;
-        b=oQmg70J3mMdquSrusU9/30DsyMzAbDHg9VxhHbLmhtRneEGvnBIeqG7r7nce+E3WqX
-         GC4uVb8+z2QdfeXoGiVD6Qe/AnHAcpS962HrTq0K0IyLycZ/RKz+uZWOAijsAuXaQsZl
-         XysdRGShpLYRAn0XU3j6INOfZBFk+qIJ1CyAMaaQ8hVLR/QmmnxUR3phaPW/dXDwnAIC
-         W6l2QkGYQ5+yhCl/NsBMCw6wPVi7zc0nVabcddD2frJpuKOFIzHDeDnpn+8NkbRWOita
-         4G15ondkiHhd9vJxde/OPVSeYHbLl00GsZHGtN4jNNAUlEfezNWkjNgOZVYMAXL5r7Hr
-         30zA==
+        Sat, 4 Jun 2022 06:44:08 -0400
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C04844ECF9
+        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 03:44:07 -0700 (PDT)
+Received: by mail-il1-f197.google.com with SMTP id u8-20020a056e021a4800b002d3a5419d1bso8064929ilv.12
+        for <linux-kernel@vger.kernel.org>; Sat, 04 Jun 2022 03:44:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SEH07fYqSJ08iDaWsMMB7o1Uq89bLucsW0RAoCe+2J0=;
-        b=y4zwIBLXb+Lxqb2og0dN2vmK5qKPSPSGkO07tgsW7sVW0AsdIDbFHJoQ1xMQLMku0U
-         lb4faUlZLX3JymNQ1GTfla2OeptHcgnKrkO1xzEyPl0KkTavnsvu47Xd2qE7cCzJ5ILh
-         r8O4QJYfNorcf4O0R/QKsWWcbcP/t3A082JU6OiC3XDEHzRXW60QsfZyXEvDKR1kNSvP
-         fOUSC0hM7Yv7hz/cXgCCqDN2s6OVUdBc9Kcwk00rRWkKwbgydg11iMRsEJw8Z8Cmiz2F
-         HJjpN0MZTv6vzd6yAQfZRsfIvr5tG+JfEN24nUNrabz3sgGRgNBFGrKahh7UfVnBqerP
-         6+Xg==
-X-Gm-Message-State: AOAM530Yww3jYsNsxv9kNU5gvFAJaVh0HTRaLk0WXEv4jKkUUfvvIflb
-        8nEESBE41+U3pf5iiDJScQO4yiBVulFPLA==
-X-Google-Smtp-Source: ABdhPJxIUmt0ZMvrT4lHo4qSVtaDguY7+qyGD8IS1alf/zVQ9l1lLLUIO70mrXPK2W9XdXRoHi9C/A==
-X-Received: by 2002:a17:903:200c:b0:163:d4c3:f24f with SMTP id s12-20020a170903200c00b00163d4c3f24fmr14440511pla.78.1654338992291;
-        Sat, 04 Jun 2022 03:36:32 -0700 (PDT)
-Received: from always-x1.www.tendawifi.com ([139.177.225.233])
-        by smtp.gmail.com with ESMTPSA id s17-20020a170902c65100b0015ee60ef65bsm6815889pls.260.2022.06.04.03.36.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 04 Jun 2022 03:36:31 -0700 (PDT)
-From:   zhenwei pi <pizhenwei@bytedance.com>
-To:     pizhenwei@bytedance.com, naoya.horiguchi@nec.com,
-        akpm@linux-foundation.org
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] mm/memory-failure: don't allow to unpoison hw corrupted page
-Date:   Sat,  4 Jun 2022 18:32:29 +0800
-Message-Id: <20220604103229.3378591-1-pizhenwei@bytedance.com>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=Pb+NhBmE5Npow1DGAGKUfbYGPUdSzBEwQpAUOHLnXkc=;
+        b=bKkFhUkfLS7Gx0vl2oYEQoismqDUDmpO/pssR3ZbbyaTKKnIWwoRWpnRGgHjJ2vx9y
+         KGKfhJ9cOsAGZuWhm+lIdbODHBCqc05neZB7sovuIJGjt/ajTjvDzFtSYmvjRJFoHtov
+         j2y12gSqeLlWHjB8kBSoIHyfYc0WXAK3vaCWMDFXKKk1os9FQySAQkUtbifBLn1gmwK6
+         V4f3giic8ebJTALAzfnkV42OPInX5TQuqltsORjNrnW4ZxiGVCPZg2RZBK5u4ABedQZD
+         XKbFrCaAvc7mn7tNEx5luJhcQbo/lRmyMAFGZ2JvXXLpHXIOXV1vciZUd49AHpLV9cSP
+         lCGw==
+X-Gm-Message-State: AOAM5325DQEPzXMph3p6/Ftdv76cOATQvyUSyGbvvZqEWJpiFXyUQRcz
+        t1lVuEO9LoGGemTX+4Y0TQdmrlbM+Pb7j5vXK9H5xLi8vG8U
+X-Google-Smtp-Source: ABdhPJw7pZUHicYPaaOzk3dkGyS1mP6GYTRquBHQ03xiEzaVJkxpH0Hi8sALoDLWqCeqjQgZOoQlrRp+KDObtK59MTMueBHv+VkC
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a92:de0d:0:b0:2cd:6d7b:e12f with SMTP id
+ x13-20020a92de0d000000b002cd6d7be12fmr8113963ilm.179.1654339447106; Sat, 04
+ Jun 2022 03:44:07 -0700 (PDT)
+Date:   Sat, 04 Jun 2022 03:44:07 -0700
+In-Reply-To: <20220604082520.5635-1-hdanton@sina.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000015855305e09ceb23@google.com>
+Subject: Re: [syzbot] possible deadlock in j1939_sk_queue_drop_all
+From:   syzbot <syzbot+3bd970a1887812621b4c@syzkaller.appspotmail.com>
+To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently unpoison_memory(unsigned long pfn) is designed for soft
-poison(hwpoison-inject) only. Unpoisoning a hardware corrupted page
-puts page back buddy only, this leads BUG during accessing on the
-corrupted KPTE.
+Hello,
 
-Do not allow to unpoison hardware corrupted page in unpoison_memory()
-to avoid BUG like this:
+syzbot has tested the proposed patch and the reproducer did not trigger any issue:
 
- Unpoison: Software-unpoisoned page 0x61234
- BUG: unable to handle page fault for address: ffff888061234000
- #PF: supervisor write access in kernel mode
- #PF: error_code(0x0002) - not-present page
- PGD 2c01067 P4D 2c01067 PUD 107267063 PMD 10382b063 PTE 800fffff9edcb062
- Oops: 0002 [#1] PREEMPT SMP NOPTI
- CPU: 4 PID: 26551 Comm: stress Kdump: loaded Tainted: G   M       OE     5.18.0.bm.1-amd64 #7
- Hardware name: QEMU Standard PC (i440FX + PIIX, 1996) ...
- RIP: 0010:clear_page_erms+0x7/0x10
- Code: ...
- RSP: 0000:ffffc90001107bc8 EFLAGS: 00010246
- RAX: 0000000000000000 RBX: 0000000000000901 RCX: 0000000000001000
- RDX: ffffea0001848d00 RSI: ffffea0001848d40 RDI: ffff888061234000
- RBP: ffffea0001848d00 R08: 0000000000000901 R09: 0000000000001276
- R10: 0000000000000003 R11: 0000000000000000 R12: 0000000000000001
- R13: 0000000000000000 R14: 0000000000140dca R15: 0000000000000001
- FS:  00007fd8b2333740(0000) GS:ffff88813fd00000(0000) knlGS:0000000000000000
- CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
- CR2: ffff888061234000 CR3: 00000001023d2005 CR4: 0000000000770ee0
- DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
- DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
- PKRU: 55555554
- Call Trace:
-  <TASK>
-  prep_new_page+0x151/0x170
-  get_page_from_freelist+0xca0/0xe20
-  ? sysvec_apic_timer_interrupt+0xab/0xc0
-  ? asm_sysvec_apic_timer_interrupt+0x1b/0x20
-  __alloc_pages+0x17e/0x340
-  __folio_alloc+0x17/0x40
-  vma_alloc_folio+0x84/0x280
-  __handle_mm_fault+0x8d4/0xeb0
-  handle_mm_fault+0xd5/0x2a0
-  do_user_addr_fault+0x1d0/0x680
-  ? kvm_read_and_reset_apf_flags+0x3b/0x50
-  exc_page_fault+0x78/0x170
-  asm_exc_page_fault+0x27/0x30
+Reported-and-tested-by: syzbot+3bd970a1887812621b4c@syzkaller.appspotmail.com
 
-Signed-off-by: zhenwei pi <pizhenwei@bytedance.com>
----
- mm/memory-failure.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+Tested on:
 
-diff --git a/mm/memory-failure.c b/mm/memory-failure.c
-index b85661cbdc4a..ec49571924f4 100644
---- a/mm/memory-failure.c
-+++ b/mm/memory-failure.c
-@@ -2090,6 +2090,7 @@ int unpoison_memory(unsigned long pfn)
- {
- 	struct page *page;
- 	struct page *p;
-+	pte_t *kpte;
- 	int ret = -EBUSY;
- 	int freeit = 0;
- 	static DEFINE_RATELIMIT_STATE(unpoison_rs, DEFAULT_RATELIMIT_INTERVAL,
-@@ -2101,6 +2102,13 @@ int unpoison_memory(unsigned long pfn)
- 	p = pfn_to_page(pfn);
- 	page = compound_head(p);
- 
-+	kpte = virt_to_kpte((unsigned long)page_to_virt(p));
-+	if (kpte && !pte_present(*kpte)) {
-+		unpoison_pr_info("Unpoison: Page was hardware poisoned %#lx\n",
-+				 pfn, &unpoison_rs);
-+		return -EPERM;
-+	}
-+
- 	mutex_lock(&mf_mutex);
- 
- 	if (!PageHWPoison(p)) {
--- 
-2.20.1
+commit:         50fd82b3 Merge tag 'docs-5.19-2' of git://git.lwn.net/..
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+kernel config:  https://syzkaller.appspot.com/x/.config?x=fc5a30a131480a80
+dashboard link: https://syzkaller.appspot.com/bug?extid=3bd970a1887812621b4c
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=1785e693f00000
 
+Note: testing is done by a robot and is best-effort only.
