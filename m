@@ -2,144 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFA72CCA477
-	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 09:46:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AF3DCCA47F
+	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 09:46:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234273AbiFDJqq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 4 Jun 2022 05:46:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38726 "EHLO
+        id S234093AbiFDJnC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 4 Jun 2022 05:43:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234197AbiFDJqb (ORCPT
+        with ESMTP id S230351AbiFDJnA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 4 Jun 2022 05:46:31 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EC4E1C912
-        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 02:46:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654335991; x=1685871991;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=EnzYIGPT8V3M8JQKqotcWukqJZS3TOLYvVbtCoLTi/c=;
-  b=cnYXSrJbX6PBfnr3MT24X9yvxzzfIDkkT+v7uNemacvR0WLKBfR14xV3
-   eVB+d9jzdtnRbcRBYkm+ewWtJFV62I7luFMx8xMn7pPDc+siStKskP/MR
-   yZ0beNivzkLkszxL0K73tZhSw1xkL2SnA+gWuNQbMWgD6oxeUPDe45nPZ
-   V69riN2AsobXeYeMclBH4vvtPyAJtuLu5pwqSERxH+oJB0UZep5kWnjDr
-   Qj175MwzjpUEgQNpGlnHrPdQ9vSNZBs1GzwwC8EREJeupGieAw3oRWdhp
-   lWw5vO16KukpQx+ThhL1U2L1P1BpeKov/WQNDo+gd7FARcx/XufV4hPwy
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10367"; a="301794403"
-X-IronPort-AV: E=Sophos;i="5.91,277,1647327600"; 
-   d="scan'208";a="301794403"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2022 02:46:30 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,277,1647327600"; 
-   d="scan'208";a="757822366"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 04 Jun 2022 02:46:28 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nxQMW-000Abf-91;
-        Sat, 04 Jun 2022 09:46:28 +0000
-Date:   Sat, 4 Jun 2022 17:46:20 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Sean Christopherson <sean.j.christopherson@intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Borislav Petkov <bp@suse.de>, Kai Huang <kai.huang@intel.com>
-Subject: arch/x86/kernel/cpu/sgx/virt.c:295:36: sparse: sparse: cast removes
- address space '__user' of expression
-Message-ID: <202206041712.XoJv2ESx-lkp@intel.com>
+        Sat, 4 Jun 2022 05:43:00 -0400
+Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33C8D19F9D
+        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 02:42:57 -0700 (PDT)
+Received: by mail-io1-xd2a.google.com with SMTP id f4so7858692iov.2
+        for <linux-kernel@vger.kernel.org>; Sat, 04 Jun 2022 02:42:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=unzjzvfi9PrBQZfrjQ2iDmRQxsZtvSAfZhjP5fuk9Mc=;
+        b=PPQ2PINKv89eSRuXsNMTWrGuBW1KBti3kaS9DjJDXmELyPqkm6tD+GfOKje7/L9uO4
+         vlARQyB44pTmG8AA2dKoceJLx3GM62KEjS/tKBc0lw8lOtSxIAUoZOLHQv9FpGs3Uz01
+         GQ6K5LJyhxTHEJYlXVGCQx9q+wmp2p2AIYYVL2JX90ln57WV/1m43dTXMZ0If9z8NEyp
+         vq41oPTzt8Y2q8PXwHtM2yaz+gQ7eKDXoR2pkyk2IwQrLO5KgnO0yH7rb1VZE84y3Lnn
+         6dtW5YvDt/BE1s+HRVyRE7cADebazJAJt1t8VmaonH0cIDXN0PKIkOAMOnt+gth0tMCz
+         Nwaw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=unzjzvfi9PrBQZfrjQ2iDmRQxsZtvSAfZhjP5fuk9Mc=;
+        b=J6Cf/EhKvvTsL/y/xUtIT9OeFNEJO0VEQ8pQhNuydKOrhc4EaC3C0CYBeL/sUgWxPh
+         +WaGLLZj7XKua9yO0h0ynEHwoJ+xRs5Ghy3AcxPW79FIqHpoLRZJTWeJaTjyvtaOL4Vc
+         uxvgxwIYTHuE1moOFZOOiOsfX9FMZN8tScioNFgV5Q8HKNiB0KwzroSwyzceReDu1PBh
+         MiAxWcU/FaBtp6IxJwUYHgONCWQQJ23I/2naase36NqFx2DbWDErbPJn0/MUmC7ymysk
+         TysotPUEyLpZR5EQ8HqFmCAHOmKDapzh560EtlEK7Pa60hQ1kP39jZcOILRAQZ5fHbD2
+         cmsw==
+X-Gm-Message-State: AOAM531r09u4yZAcDetch0bSa2BUl5tEbP9+aTlKTHHsVCgS8OiQag3W
+        mLUZYVLLASOCEXkFtlD+sXA=
+X-Google-Smtp-Source: ABdhPJzUE4jXudX1ZhVhdU5GnFLPG9UR6NhWdSPqYNJ8qtwUtJKYyfN8HzWXRflxi//NrvJTryIALA==
+X-Received: by 2002:a05:6602:1585:b0:665:5f6a:9d7a with SMTP id e5-20020a056602158500b006655f6a9d7amr6639010iow.154.1654335776607;
+        Sat, 04 Jun 2022 02:42:56 -0700 (PDT)
+Received: from n2.us-central1-a.c.spheric-algebra-350919.internal (151.16.70.34.bc.googleusercontent.com. [34.70.16.151])
+        by smtp.gmail.com with ESMTPSA id r8-20020a02aa08000000b003314d1acddesm3498760jam.152.2022.06.04.02.42.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 04 Jun 2022 02:42:55 -0700 (PDT)
+Date:   Sat, 4 Jun 2022 09:42:54 +0000
+From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
+To:     sxwjean@me.com
+Cc:     cl@linux.com, penberg@kernel.org, rientjes@google.com,
+        iamjoonsoo.kim@lge.com, akpm@linux-foundation.org, vbabka@suse.cz,
+        roman.gushchin@linux.dev, songmuchun@bytedance.com,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Xiongwei Song <xiongwei.song@windriver.com>
+Subject: Re: [PATCH v2] mm/slub: Simplify __kmem_cache_alias()
+Message-ID: <YpspHqZM27DeEhNR@n2.us-central1-a.c.spheric-algebra-350919.internal>
+References: <20220603143555.41914-1-sxwjean@me.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220603143555.41914-1-sxwjean@me.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   032dcf09e2bf7c822be25b4abef7a6c913870d98
-commit: d155030b1e7c0e448aab22a803f7a71ea2e117d7 x86/sgx: Add helpers to expose ECREATE and EINIT to KVM
-date:   1 year, 2 months ago
-config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220604/202206041712.XoJv2ESx-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-1) 11.3.0
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.4-18-g56afb504-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=d155030b1e7c0e448aab22a803f7a71ea2e117d7
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout d155030b1e7c0e448aab22a803f7a71ea2e117d7
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/kernel/cpu/sgx/
+On Fri, Jun 03, 2022 at 10:35:55PM +0800, sxwjean@me.com wrote:
+> From: Xiongwei Song <xiongwei.song@windriver.com>
+> 
+> There is no need to do anything if sysfs_slab_alias() return nonzero
+> value after getting a mergeable cache.
+> 
+> Signed-off-by: Xiongwei Song <xiongwei.song@windriver.com>
+> Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+> ---
+> v2: Collect Reviewed-by tag from Muchun.
+> ---
+>  mm/slub.c | 8 +++-----
+>  1 file changed, 3 insertions(+), 5 deletions(-)
+> 
+> diff --git a/mm/slub.c b/mm/slub.c
+> index d8d5abf49f5f..9444277d669a 100644
+> --- a/mm/slub.c
+> +++ b/mm/slub.c
+> @@ -4861,6 +4861,9 @@ __kmem_cache_alias(const char *name, unsigned int size, unsigned int align,
+>  
+>  	s = find_mergeable(size, align, flags, name, ctor);
+>  	if (s) {
+> +		if (sysfs_slab_alias(s, name))
+> +			return NULL;
+> +
+>  		s->refcount++;
+>
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+I think we should not expose sysfs attributes before initializing
+what can be read via sysfs attribute (object_size).
 
+>  		/*
+> @@ -4869,11 +4872,6 @@ __kmem_cache_alias(const char *name, unsigned int size, unsigned int align,
+>  		 */
+>  		s->object_size = max(s->object_size, size);
 
-sparse warnings: (new ones prefixed by >>)
-   arch/x86/kernel/cpu/sgx/virt.c:59:13: sparse: sparse: incorrect type in assignment (different base types) @@     expected int [assigned] ret @@     got restricted vm_fault_t @@
-   arch/x86/kernel/cpu/sgx/virt.c:59:13: sparse:     expected int [assigned] ret
-   arch/x86/kernel/cpu/sgx/virt.c:59:13: sparse:     got restricted vm_fault_t
-   arch/x86/kernel/cpu/sgx/virt.c:60:20: sparse: sparse: restricted vm_fault_t degrades to integer
-   arch/x86/kernel/cpu/sgx/virt.c:95:35: sparse: sparse: symbol 'sgx_vepc_vm_ops' was not declared. Should it be static?
->> arch/x86/kernel/cpu/sgx/virt.c:295:36: sparse: sparse: cast removes address space '__user' of expression
-   arch/x86/kernel/cpu/sgx/virt.c:326:24: sparse: sparse: cast removes address space '__user' of expression
-   arch/x86/kernel/cpu/sgx/virt.c:326:43: sparse: sparse: cast removes address space '__user' of expression
-   arch/x86/kernel/cpu/sgx/virt.c:326:58: sparse: sparse: cast removes address space '__user' of expression
+this calculation should be done before sysfs_slab_alias().
 
-vim +/__user +295 arch/x86/kernel/cpu/sgx/virt.c
+Thanks,
+Hyeonggon
 
-   260	
-   261	/**
-   262	 * sgx_virt_ecreate() - Run ECREATE on behalf of guest
-   263	 * @pageinfo:	Pointer to PAGEINFO structure
-   264	 * @secs:	Userspace pointer to SECS page
-   265	 * @trapnr:	trap number injected to guest in case of ECREATE error
-   266	 *
-   267	 * Run ECREATE on behalf of guest after KVM traps ECREATE for the purpose
-   268	 * of enforcing policies of guest's enclaves, and return the trap number
-   269	 * which should be injected to guest in case of any ECREATE error.
-   270	 *
-   271	 * Return:
-   272	 * -  0:	ECREATE was successful.
-   273	 * - <0:	on error.
-   274	 */
-   275	int sgx_virt_ecreate(struct sgx_pageinfo *pageinfo, void __user *secs,
-   276			     int *trapnr)
-   277	{
-   278		int ret;
-   279	
-   280		/*
-   281		 * @secs is an untrusted, userspace-provided address.  It comes from
-   282		 * KVM and is assumed to be a valid pointer which points somewhere in
-   283		 * userspace.  This can fault and call SGX or other fault handlers when
-   284		 * userspace mapping @secs doesn't exist.
-   285		 *
-   286		 * Add a WARN() to make sure @secs is already valid userspace pointer
-   287		 * from caller (KVM), who should already have handled invalid pointer
-   288		 * case (for instance, made by malicious guest).  All other checks,
-   289		 * such as alignment of @secs, are deferred to ENCLS itself.
-   290		 */
-   291		if (WARN_ON_ONCE(!access_ok(secs, PAGE_SIZE)))
-   292			return -EINVAL;
-   293	
-   294		__uaccess_begin();
- > 295		ret = __ecreate(pageinfo, (void *)secs);
-   296		__uaccess_end();
-   297	
-   298		if (encls_faulted(ret)) {
-   299			*trapnr = ENCLS_TRAPNR(ret);
-   300			return -EFAULT;
-   301		}
-   302	
-   303		/* ECREATE doesn't return an error code, it faults or succeeds. */
-   304		WARN_ON_ONCE(ret);
-   305		return 0;
-   306	}
-   307	EXPORT_SYMBOL_GPL(sgx_virt_ecreate);
-   308	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+>  		s->inuse = max(s->inuse, ALIGN(size, sizeof(void *)));
+> -
+> -		if (sysfs_slab_alias(s, name)) {
+> -			s->refcount--;
+> -			s = NULL;
+> -		}
+>  	}
+>  
+>  	return s;
+> -- 
+> 2.30.2
+> 
