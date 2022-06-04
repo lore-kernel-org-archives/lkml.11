@@ -2,207 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1EE4CCA47F
-	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 19:44:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1820C43334
+	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 19:54:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240898AbiFDToG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 4 Jun 2022 15:44:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50822 "EHLO
+        id S240482AbiFDTvL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 4 Jun 2022 15:51:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240121AbiFDTn4 (ORCPT
+        with ESMTP id S236272AbiFDTvH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 4 Jun 2022 15:43:56 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D102E2CC9C
-        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 12:43:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654371834; x=1685907834;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=FLI1+m3xfotkSnfI4GG7ZfArwo0hf/nqdT/fj0Gxlrk=;
-  b=JpG7oXoukj7RB4YVKpCbrEF7/AuUatOaDf35jsoX36o3blHssLcP1/Hr
-   xdnIYZQo2i2zZAwSJGwweM4loOldr5kSK15Adbipnsgw9kbAYnAXHJc3Q
-   3cRTGUjZP3RyHakmu/aR7siJf6cD9kuJiz9X/fwSJpUsgm+aQmOXjHYDc
-   qeU7sYNlFpUCj2vokUtasLTUXAq4okXt5I8mVsq8xTvRZ5qweoOS5RSRg
-   5fu6leTSOHwJa+BFFyOaf+Bzd8vaIRw2y4s9gQayyM1SkF5EtC0aVgc4P
-   BNhEquPtPPn/mwWD1U+E8IlMDdi1TG1BlFOMPivrsJbQw5x/2Bg0qrv9Q
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10368"; a="276536100"
-X-IronPort-AV: E=Sophos;i="5.91,278,1647327600"; 
-   d="scan'208";a="276536100"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2022 12:43:53 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,278,1647327600"; 
-   d="scan'208";a="553804742"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 04 Jun 2022 12:43:51 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nxZgc-000BA9-S5;
-        Sat, 04 Jun 2022 19:43:50 +0000
-Date:   Sun, 5 Jun 2022 03:43:02 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>
-Subject: drivers/pci/controller/dwc/pcie-spear13xx.c:252:34: warning: unused
- variable 'spear13xx_pcie_of_match'
-Message-ID: <202206050312.ypRp8ryQ-lkp@intel.com>
+        Sat, 4 Jun 2022 15:51:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F1DD30565
+        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 12:51:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D8C961016
+        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 19:51:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C59A6C385B8;
+        Sat,  4 Jun 2022 19:51:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654372264;
+        bh=iQ//p9c/Jarv4oc2irqnX8yb/qL+olIDk7ZmaJFDVzU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=rGZUpulpWojW0NV2I0rfR8FwABz0mwJuzwrvy3E9SYeiLV8GxE3vMsOBxOF7lJVS8
+         /lYgQGuHFKZMBzzXoPG2IMa07+3V12DeV6Uf/xG4ojlV6fxpQ9QoBz1VBrhAsksxK/
+         MV8uDYBATHl0BN3YQ1V6SUokrTJEfkmzG3RcGUEb9Y0o1D7EKk5zDIhQJgDiaLsWfD
+         7QsW+YOEXidk0EsDjgFJe7D5viaV/SCl+1PTfrbS4P/K8qhGxzgFg1aqQhS+p1YUdj
+         25cwL9kA0McJgHRz7lGGdqdOXK6Mp76gQ1gGxiBHTyq612go2i+4rAcnMuTqxAyfOk
+         kO0zUJlbgBVeQ==
+From:   SeongJae Park <sj@kernel.org>
+To:     akpm@linux-foundation.org
+Cc:     tuhailong@gmail.com, gwhite@kupulau.com, damon@lists.linux.dev,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        bugzilla-daemon@kernel.org, SeongJae Park <sj@kernel.org>
+Subject: [PATCH] mm/damon/reclaim: schedule 'damon_reclaim_timer' only after 'system_wq' is initialized
+Date:   Sat,  4 Jun 2022 19:50:51 +0000
+Message-Id: <20220604195051.1589-1-sj@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220604192222.1488-1-sj@kernel.org>
+References: <20220604192222.1488-1-sj@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   032dcf09e2bf7c822be25b4abef7a6c913870d98
-commit: ea29b20a828511de3348334e529a3d046a180416 init/Kconfig: make COMPILE_TEST depend on HAS_IOMEM
-date:   1 year, 3 months ago
-config: s390-randconfig-c005-20220605 (https://download.01.org/0day-ci/archive/20220605/202206050312.ypRp8ryQ-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0a90b72c432d70aae035727ece4ba80ce820f381)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install s390 cross compiling tool for clang build
-        # apt-get install binutils-s390x-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=ea29b20a828511de3348334e529a3d046a180416
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout ea29b20a828511de3348334e529a3d046a180416
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash drivers/pci/controller/dwc/
+Commit 059342d1dd4e ("mm/damon/reclaim: fix the timer always stays
+active") made DAMON_RECLAIM's 'enabled' parameter store callback,
+'enabled_store()', to schedule 'damon_reclaim_timer'.  The scheduling
+uses 'system_wq', which is initialized in 'workqueue_init_early()'.  As
+kernel parameters parsing function ('parse_args()') is called before
+'workqueue_init_early()', 'enabled_store()' can be executed before
+'workqueue_init_early()' and end up accessing the uninitialized
+'system_wq'.  As a result, the booting hang[1].  This commit fixes the
+issue by checking if the initialization is done before scheduling the
+timer.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+[1] https://lkml.kernel.org/20220604192222.1488-1-sj@kernel.org/
 
-All warnings (new ones prefixed by >>):
+Fixes: 059342d1dd4e ("mm/damon/reclaim: fix the timer always stays active")
+Reported-by: Greg White <gwhite@kupulau.com>
+Signed-off-by: SeongJae Park <sj@kernel.org>
+---
+ mm/damon/reclaim.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-   #define __le32_to_cpu(x) __swab32((__force __u32)(__le32)(x))
-                                                             ^
-   include/uapi/linux/swab.h:119:21: note: expanded from macro '__swab32'
-           ___constant_swab32(x) :                 \
-                              ^
-   include/uapi/linux/swab.h:19:12: note: expanded from macro '___constant_swab32'
-           (((__u32)(x) & (__u32)0x000000ffUL) << 24) |            \
-                     ^
-   In file included from drivers/pci/controller/dwc/pcie-spear13xx.c:17:
-   In file included from include/linux/pci.h:39:
-   In file included from include/linux/io.h:13:
-   In file included from arch/s390/include/asm/io.h:80:
-   include/asm-generic/io.h:490:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
-                                                           ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/big_endian.h:34:59: note: expanded from macro '__le32_to_cpu'
-   #define __le32_to_cpu(x) __swab32((__force __u32)(__le32)(x))
-                                                             ^
-   include/uapi/linux/swab.h:119:21: note: expanded from macro '__swab32'
-           ___constant_swab32(x) :                 \
-                              ^
-   include/uapi/linux/swab.h:20:12: note: expanded from macro '___constant_swab32'
-           (((__u32)(x) & (__u32)0x0000ff00UL) <<  8) |            \
-                     ^
-   In file included from drivers/pci/controller/dwc/pcie-spear13xx.c:17:
-   In file included from include/linux/pci.h:39:
-   In file included from include/linux/io.h:13:
-   In file included from arch/s390/include/asm/io.h:80:
-   include/asm-generic/io.h:490:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
-                                                           ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/big_endian.h:34:59: note: expanded from macro '__le32_to_cpu'
-   #define __le32_to_cpu(x) __swab32((__force __u32)(__le32)(x))
-                                                             ^
-   include/uapi/linux/swab.h:119:21: note: expanded from macro '__swab32'
-           ___constant_swab32(x) :                 \
-                              ^
-   include/uapi/linux/swab.h:21:12: note: expanded from macro '___constant_swab32'
-           (((__u32)(x) & (__u32)0x00ff0000UL) >>  8) |            \
-                     ^
-   In file included from drivers/pci/controller/dwc/pcie-spear13xx.c:17:
-   In file included from include/linux/pci.h:39:
-   In file included from include/linux/io.h:13:
-   In file included from arch/s390/include/asm/io.h:80:
-   include/asm-generic/io.h:490:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
-                                                           ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/big_endian.h:34:59: note: expanded from macro '__le32_to_cpu'
-   #define __le32_to_cpu(x) __swab32((__force __u32)(__le32)(x))
-                                                             ^
-   include/uapi/linux/swab.h:119:21: note: expanded from macro '__swab32'
-           ___constant_swab32(x) :                 \
-                              ^
-   include/uapi/linux/swab.h:22:12: note: expanded from macro '___constant_swab32'
-           (((__u32)(x) & (__u32)0xff000000UL) >> 24)))
-                     ^
-   In file included from drivers/pci/controller/dwc/pcie-spear13xx.c:17:
-   In file included from include/linux/pci.h:39:
-   In file included from include/linux/io.h:13:
-   In file included from arch/s390/include/asm/io.h:80:
-   include/asm-generic/io.h:490:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
-                                                           ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/big_endian.h:34:59: note: expanded from macro '__le32_to_cpu'
-   #define __le32_to_cpu(x) __swab32((__force __u32)(__le32)(x))
-                                                             ^
-   include/uapi/linux/swab.h:120:12: note: expanded from macro '__swab32'
-           __fswab32(x))
-                     ^
-   In file included from drivers/pci/controller/dwc/pcie-spear13xx.c:17:
-   In file included from include/linux/pci.h:39:
-   In file included from include/linux/io.h:13:
-   In file included from arch/s390/include/asm/io.h:80:
-   include/asm-generic/io.h:501:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writeb(value, PCI_IOBASE + addr);
-                               ~~~~~~~~~~ ^
-   include/asm-generic/io.h:511:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
-                                                         ~~~~~~~~~~ ^
-   include/asm-generic/io.h:521:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
-                                                         ~~~~~~~~~~ ^
-   include/asm-generic/io.h:609:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           readsb(PCI_IOBASE + addr, buffer, count);
-                  ~~~~~~~~~~ ^
-   include/asm-generic/io.h:617:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           readsw(PCI_IOBASE + addr, buffer, count);
-                  ~~~~~~~~~~ ^
-   include/asm-generic/io.h:625:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           readsl(PCI_IOBASE + addr, buffer, count);
-                  ~~~~~~~~~~ ^
-   include/asm-generic/io.h:634:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           writesb(PCI_IOBASE + addr, buffer, count);
-                   ~~~~~~~~~~ ^
-   include/asm-generic/io.h:643:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           writesw(PCI_IOBASE + addr, buffer, count);
-                   ~~~~~~~~~~ ^
-   include/asm-generic/io.h:652:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           writesl(PCI_IOBASE + addr, buffer, count);
-                   ~~~~~~~~~~ ^
->> drivers/pci/controller/dwc/pcie-spear13xx.c:252:34: warning: unused variable 'spear13xx_pcie_of_match' [-Wunused-const-variable]
-   static const struct of_device_id spear13xx_pcie_of_match[] = {
-                                    ^
-   21 warnings generated.
-
-
-vim +/spear13xx_pcie_of_match +252 drivers/pci/controller/dwc/pcie-spear13xx.c
-
-51b66a6ce12570 drivers/pci/host/pcie-spear13xx.c Pratyush Anand 2014-02-11  251  
-51b66a6ce12570 drivers/pci/host/pcie-spear13xx.c Pratyush Anand 2014-02-11 @252  static const struct of_device_id spear13xx_pcie_of_match[] = {
-51b66a6ce12570 drivers/pci/host/pcie-spear13xx.c Pratyush Anand 2014-02-11  253  	{ .compatible = "st,spear1340-pcie", },
-51b66a6ce12570 drivers/pci/host/pcie-spear13xx.c Pratyush Anand 2014-02-11  254  	{},
-51b66a6ce12570 drivers/pci/host/pcie-spear13xx.c Pratyush Anand 2014-02-11  255  };
-51b66a6ce12570 drivers/pci/host/pcie-spear13xx.c Pratyush Anand 2014-02-11  256  
-
-:::::: The code at line 252 was first introduced by commit
-:::::: 51b66a6ce12570e5ee1a249c811f7f2d74814a43 PCI: spear: Add PCIe driver for ST Microelectronics SPEAr13xx
-
-:::::: TO: Pratyush Anand <pratyush.anand@st.com>
-:::::: CC: Viresh Kumar <viresh.kumar@linaro.org>
-
+diff --git a/mm/damon/reclaim.c b/mm/damon/reclaim.c
+index 8efbfb24f3a1..4b07c29effe9 100644
+--- a/mm/damon/reclaim.c
++++ b/mm/damon/reclaim.c
+@@ -374,6 +374,8 @@ static void damon_reclaim_timer_fn(struct work_struct *work)
+ }
+ static DECLARE_DELAYED_WORK(damon_reclaim_timer, damon_reclaim_timer_fn);
+ 
++static bool damon_reclaim_initialized;
++
+ static int enabled_store(const char *val,
+ 		const struct kernel_param *kp)
+ {
+@@ -382,6 +384,10 @@ static int enabled_store(const char *val,
+ 	if (rc < 0)
+ 		return rc;
+ 
++	/* system_wq might not initialized yet */
++	if (!damon_reclaim_initialized)
++		return rc;
++
+ 	if (enabled)
+ 		schedule_delayed_work(&damon_reclaim_timer, 0);
+ 
+@@ -449,6 +455,8 @@ static int __init damon_reclaim_init(void)
+ 	damon_add_target(ctx, target);
+ 
+ 	schedule_delayed_work(&damon_reclaim_timer, 0);
++
++	damon_reclaim_initialized = true;
+ 	return 0;
+ }
+ 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.25.1
+
