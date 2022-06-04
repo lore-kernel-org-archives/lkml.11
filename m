@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADEA3C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 19:32:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA22EC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 19:32:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240782AbiFDTcm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 4 Jun 2022 15:32:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48202 "EHLO
+        id S241107AbiFDTct (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 4 Jun 2022 15:32:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240233AbiFDTbi (ORCPT
+        with ESMTP id S239999AbiFDTbQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 4 Jun 2022 15:31:38 -0400
-Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CA994FC58
-        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 12:31:15 -0700 (PDT)
-Received: by mail-qt1-x833.google.com with SMTP id hf10so7949567qtb.7
-        for <linux-kernel@vger.kernel.org>; Sat, 04 Jun 2022 12:31:15 -0700 (PDT)
+        Sat, 4 Jun 2022 15:31:16 -0400
+Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FFB54F9CA
+        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 12:31:09 -0700 (PDT)
+Received: by mail-qt1-x831.google.com with SMTP id x18so5087404qtj.3
+        for <linux-kernel@vger.kernel.org>; Sat, 04 Jun 2022 12:31:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=wLK6+egkCovHKJVGrXsuX+1zu1r3Q9U94qYohBZ6ysU=;
-        b=lR2Ebc++yXYk7EIAmHmJt5oC4YtNu+3h345iAEZWGUlsZFxZRZoDsC5rIPph3bs2+o
-         ixOSAL+g8KhfZO90C8/7ng9xIALijDoK9MHNodU9XMK3/ktmBuGiStG0p3O82u4tfV3E
-         72AP2xSAmTmYzX8eQ98wiFS1gR7hatJfEINh/LLG8cFywqfEwi18J0eNvCOUlivM+/aY
-         rxePgeON72yT7caAuubDqu5LZM5f/cug0MvvAJViTHPCjQngeh+DAVbS0wyrtLO9zKqF
-         OPyfy1Gn9CbpDEmG6T1HXmFvuKiK/52x/T5gONrChfRXs+U5Aq6HLbXJFz6nMtV8Rue8
-         DO2w==
+        bh=UKaXBn5egCcerocp5DjNOYjWsbUcD3ATqXK/SNAzNqI=;
+        b=jYiKdFziiTb9X35fFfeHmFR0xAABNykPuIQamDtmiR4aAQ1VskyW18ppAUeCYWf7Zz
+         7Nll4jOA4jnmCDeQpGmUIjW1yCXER1xOHWQdjaI3HjyIfYU+OQaleXgee9nQLbUtzjqE
+         teRoTFWr2Ewtl+VtaaFxGwFN69M9pOavqp53tyuPpRxua8wmCdWnJ5WBHnQGcCtn7jbT
+         tL5C77Si7gAJRDgf0UyRaPDElzm7UR7DcA3n/84mvzGRsTGGctQsh+5+ntco3EX2pfRo
+         NUNV5/+PNjviDjT5iqcbVZu5sSCqRjfSrAjsWm8702Kzf5P7UnNXoMRnpTsyYkroyxtO
+         2Bgg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=wLK6+egkCovHKJVGrXsuX+1zu1r3Q9U94qYohBZ6ysU=;
-        b=T5HFdrGIUXsO5qd6dRCypBFnljHFY7U6qTu/Ui6n77IcjzIJWhfp7g8gTGHKCPWnau
-         rG5sMQW7NgQ++rZHHWcyAsnLOYIj8M4lJISpHWFHp7l08OHe8AwUzVtCXS0Iw++Ckb//
-         PxBONrX44sC+46TwYwqAMLTAaiAsBE2LvvoFplfFuN+UHTwRUf4bXfj2jFKVzMSqj2st
-         ljBMQZ3Uy4le5uV5MSz3auCoaUo95iGv1w3+6MMhdFdvRA3GblgHWi++/5hKBttRyNQe
-         QtmLVHiHydwwFOAFAc9JCqjkTL0yfgr3se+25cuPlOY7CXDrLUxT29iSWFNgNUM9voub
-         bkWQ==
-X-Gm-Message-State: AOAM533A+qs2aMgU0Off6x/eojs10Q5Id427P263yzXaGcKktgBTEElv
-        Gzbw57g+f9EEKlEFRQ8G7xf3C1Zs8R7S
-X-Google-Smtp-Source: ABdhPJwXUtbJlxmaOaBtF/AQ5yLrI1MHSSqCox5sjK8rNC+25X0is+ap4JMCAAqqXSlWabJ858cxaA==
-X-Received: by 2002:ac8:5c8e:0:b0:303:1a91:e435 with SMTP id r14-20020ac85c8e000000b003031a91e435mr12749544qta.15.1654371073712;
-        Sat, 04 Jun 2022 12:31:13 -0700 (PDT)
+        bh=UKaXBn5egCcerocp5DjNOYjWsbUcD3ATqXK/SNAzNqI=;
+        b=YYiFc8mxBh0wml4EmqcsLgMwIEnIJE88zz9Ui0DPChB687zi2TxTTtkc+nrEjOS45W
+         VXTeIgfeFjvk8ofC05PRzK9KPkZ6quqtyHjGa93I7MZaROmPDW1O4C8nmZC/x7wsg1iN
+         Ctd1f3nt376lyQJJE9MDszUxU+zU57okYa8PjyPHqF4CJZ7vdnGZsPMfNgKzSz+FWT58
+         S13zMtreN6IMi4aJHL/g3RZk903oXufB1htun8PXBg5aHxNBhGeuEuLKbNBwMnhhJ9hC
+         T0D6pZRx+u4iJxPnIqWLVqSPXlLkeQmROshNoGWZp93ljhtIHE3IvP/R6UOb5VDs+IR2
+         1yQQ==
+X-Gm-Message-State: AOAM531Bvbmut64oklu91Lgqc1o1ZYsEEncx+eyUvehfw7yButVeZwS+
+        NH1Kofa802TIup6dBzdXR3kkgUbHlpfH
+X-Google-Smtp-Source: ABdhPJyLsl0QEwOIzxkUnepGxjpzz7ATMHPEl9hA0vD6OQEK7CI5ib96Ws44vmpaMuFwuB+nl5d7+g==
+X-Received: by 2002:a05:622a:1ba5:b0:304:e906:c4e6 with SMTP id bp37-20020a05622a1ba500b00304e906c4e6mr1332432qtb.117.1654371067828;
+        Sat, 04 Jun 2022 12:31:07 -0700 (PDT)
 Received: from moria.home.lan (c-73-219-103-14.hsd1.vt.comcast.net. [73.219.103.14])
-        by smtp.gmail.com with ESMTPSA id o17-20020ac84291000000b00304defdb1b3sm3537426qtl.85.2022.06.04.12.31.12
+        by smtp.gmail.com with ESMTPSA id o17-20020ac84291000000b00304defdb1b3sm3537426qtl.85.2022.06.04.12.31.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 04 Jun 2022 12:31:13 -0700 (PDT)
+        Sat, 04 Jun 2022 12:31:07 -0700 (PDT)
 From:   Kent Overstreet <kent.overstreet@gmail.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Kent Overstreet <kent.overstreet@gmail.com>, pmladek@suse.com,
         rostedt@goodmis.org
-Subject: [PATCH v3 16/33] vsprintf: Refactor fourcc_string()
-Date:   Sat,  4 Jun 2022 15:30:25 -0400
-Message-Id: <20220604193042.1674951-17-kent.overstreet@gmail.com>
+Subject: [PATCH v3 12/33] vsprintf: prt_u64_minwidth(), prt_u64()
+Date:   Sat,  4 Jun 2022 15:30:21 -0400
+Message-Id: <20220604193042.1674951-13-kent.overstreet@gmail.com>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220604193042.1674951-1-kent.overstreet@gmail.com>
 References: <20220604193042.1674951-1-kent.overstreet@gmail.com>
@@ -64,79 +64,190 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
- - We're attempting to consolidate printf_spec and format string
-   handling in the top level vpr_buf(), this changes fourcc_string() to
-   not take printf_spec
-
- - With the new printbuf helpers there's no need to use a separate stack
-   allocated buffer, so this patch deletes it.
+This adds two new-style printbuf helpers for printing simple u64s, and
+converts num_to_str() to be a simple wrapper around prt_u64_minwidth().
 
 Signed-off-by: Kent Overstreet <kent.overstreet@gmail.com>
 ---
- lib/vsprintf.c | 27 ++++++++++++---------------
- 1 file changed, 12 insertions(+), 15 deletions(-)
+ include/linux/kernel.h |  4 +-
+ lib/vsprintf.c         | 94 ++++++++++++++++++++----------------------
+ 2 files changed, 48 insertions(+), 50 deletions(-)
 
+diff --git a/include/linux/kernel.h b/include/linux/kernel.h
+index 1906861ece..9ba5a53c6a 100644
+--- a/include/linux/kernel.h
++++ b/include/linux/kernel.h
+@@ -202,12 +202,14 @@ static inline void might_fault(void) { }
+ 
+ void do_exit(long error_code) __noreturn;
+ 
++struct printbuf;
++extern void prt_u64_minwidth(struct printbuf *out, u64 num, unsigned width);
++extern void prt_u64(struct printbuf *out, u64 num);
+ extern int num_to_str(char *buf, int size,
+ 		      unsigned long long num, unsigned int width);
+ 
+ /* lib/printf utilities */
+ 
+-struct printbuf;
+ extern __printf(2, 3) void prt_printf(struct printbuf *out, const char *fmt, ...);
+ extern __printf(2, 0) void prt_vprintf(struct printbuf *out, const char *fmt, va_list);
+ 
 diff --git a/lib/vsprintf.c b/lib/vsprintf.c
-index 4256b1d3a5..49565e0dc4 100644
+index 1c5ffc7f28..7b49a998d3 100644
 --- a/lib/vsprintf.c
 +++ b/lib/vsprintf.c
-@@ -1726,17 +1726,15 @@ void netdev_bits(struct printbuf *out, const void *addr,
+@@ -368,41 +368,51 @@ char *put_dec(char *buf, unsigned long long n)
  
- static noinline_for_stack
- void fourcc_string(struct printbuf *out, const u32 *fourcc,
--		   struct printf_spec spec, const char *fmt)
-+		   const char *fmt)
+ #endif
+ 
+-/*
+- * Convert passed number to decimal string.
+- * Returns the length of string.  On buffer overflow, returns 0.
+- *
+- * If speed is not important, use snprintf(). It's easy to read the code.
++/**
++ * prt_u64_minwidth - print a u64, in decimal, with zero padding
++ * @out: printbuf to output to
++ * @num: u64 to print
++ * @width: minimum width
+  */
+-int num_to_str(char *buf, int size, unsigned long long num, unsigned int width)
++void prt_u64_minwidth(struct printbuf *out, u64 num, unsigned width)
  {
--	char output_buf[sizeof("0123 little-endian (0x01234567)")];
--	struct printbuf output = PRINTBUF_EXTERN(output_buf, sizeof(output_buf));
- 	unsigned int i;
- 	u32 orig, val;
+ 	/* put_dec requires 2-byte alignment of the buffer. */
+ 	char tmp[sizeof(num) * 3] __aligned(2);
+-	int idx, len;
++	unsigned len = put_dec(tmp, num) - tmp;
  
- 	if (fmt[1] != 'c' || fmt[2] != 'c')
--		return error_string_spec(out, "(%p4?)", spec);
-+		return error_string(out, "(%p4?)");
+-	/* put_dec() may work incorrectly for num = 0 (generate "", not "0") */
+-	if (num <= 9) {
+-		tmp[0] = '0' + num;
+-		len = 1;
+-	} else {
+-		len = put_dec(tmp, num) - tmp;
+-	}
++	printbuf_make_room(out, max(len, width));
  
--	if (check_pointer_spec(out, fourcc, spec))
-+	if (check_pointer(out, fourcc))
- 		return;
+-	if (len > size || width > size)
+-		return 0;
++	if (width > len)
++		__prt_chars_reserved(out, '0', width - len);
  
- 	orig = get_unaligned(fourcc);
-@@ -1746,18 +1744,16 @@ void fourcc_string(struct printbuf *out, const u32 *fourcc,
- 		unsigned char c = val >> (i * 8);
+-	if (width > len) {
+-		width = width - len;
+-		for (idx = 0; idx < width; idx++)
+-			buf[idx] = ' ';
+-	} else {
+-		width = 0;
+-	}
++	while (len)
++		__prt_char_reserved(out, tmp[--len]);
++	printbuf_nul_terminate(out);
++}
  
- 		/* Print non-control ASCII characters as-is, dot otherwise */
--		prt_char(&output, isascii(c) && isprint(c) ? c : '.');
-+		prt_char(out, isascii(c) && isprint(c) ? c : '.');
- 	}
+-	for (idx = 0; idx < len; ++idx)
+-		buf[idx + width] = tmp[len - idx - 1];
++/**
++ * prt_u64 - print a simple u64, in decimal
++ * @out: printbuf to output to
++ * @num: u64 to print
++ */
++void prt_u64(struct printbuf *out, u64 num)
++{
++	prt_u64_minwidth(out, num, 0);
++}
  
--	prt_char(&output, ' ');
--	prt_str(&output, orig & BIT(31) ? "big-endian" : "little-endian");
+-	return len + width;
++/*
++ * Convert passed number to decimal string.
++ * Returns the length of string.  On buffer overflow, returns 0.
++ *
++ * Consider switching to printbufs and using prt_u64() or prt_u64_minwith()
++ * instead.
++ */
++int num_to_str(char *buf, int size, unsigned long long num, unsigned int width)
++{
++	struct printbuf out = PRINTBUF_EXTERN(buf, size);
++
++	prt_u64_minwidth(&out, num, width);
++	return out.pos;
+ }
+ 
+ #define SIGN	1		/* unsigned/signed, must be 1 */
+@@ -1018,20 +1028,6 @@ static const struct printf_spec default_dec_spec = {
+ 	.precision = -1,
+ };
+ 
+-static const struct printf_spec default_dec02_spec = {
+-	.base = 10,
+-	.field_width = 2,
+-	.precision = -1,
+-	.flags = ZEROPAD,
+-};
 -
--	prt_char(&output, ' ');
--	prt_char(&output, '(');
--	special_hex_number(&output, orig, sizeof(u32));
--	prt_char(&output, ')');
-+	prt_char(out, ' ');
-+	prt_str(out, orig & BIT(31) ? "big-endian" : "little-endian");
+-static const struct printf_spec default_dec04_spec = {
+-	.base = 10,
+-	.field_width = 4,
+-	.precision = -1,
+-	.flags = ZEROPAD,
+-};
+-
+ static noinline_for_stack
+ void resource_string(struct printbuf *out, struct resource *res,
+ 		     struct printf_spec spec, const char *fmt)
+@@ -1231,12 +1227,12 @@ void bitmap_list_string(struct printbuf *out, unsigned long *bitmap,
+ 			prt_char(out, ',');
+ 		first = false;
  
--	string_spec(out, output_buf, spec);
-+	prt_char(out, ' ');
-+	prt_char(out, '(');
-+	special_hex_number(out, orig, sizeof(u32));
-+	prt_char(out, ')');
+-		number(out, rbot, default_dec_spec);
++		prt_u64(out, rbot);
+ 		if (rtop == rbot + 1)
+ 			continue;
+ 
+ 		prt_char(out, '-');
+-		number(out, rtop - 1, default_dec_spec);
++		prt_u64(out, rtop - 1);
+ 	}
+ }
+ 
+@@ -1778,21 +1774,21 @@ void date_str(struct printbuf *out,
+ 	int year = tm->tm_year + (r ? 0 : 1900);
+ 	int mon = tm->tm_mon + (r ? 0 : 1);
+ 
+-	number(out, year, default_dec04_spec);
++	prt_u64_minwidth(out, year, 4);
+ 	prt_char(out, '-');
+-	number(out, mon, default_dec02_spec);
++	prt_u64_minwidth(out, mon, 2);
+ 	prt_char(out, '-');
+-	number(out, tm->tm_mday, default_dec02_spec);
++	prt_u64_minwidth(out, tm->tm_mday, 2);
  }
  
  static noinline_for_stack
-@@ -2361,7 +2357,8 @@ void pointer(struct printbuf *out, const char *fmt,
- 		netdev_bits(out, ptr, fmt);
- 		return do_width_precision(out, prev_pos, spec);
- 	case '4':
--		return fourcc_string(out, ptr, spec, fmt);
-+		fourcc_string(out, ptr, fmt);
-+		return do_width_precision(out, prev_pos, spec);
- 	case 'a':
- 		address_val(out, ptr, fmt);
- 		return do_width_precision(out, prev_pos, spec);
+ void time_str(struct printbuf *out, const struct rtc_time *tm, bool r)
+ {
+-	number(out, tm->tm_hour, default_dec02_spec);
++	prt_u64_minwidth(out, tm->tm_hour, 2);
+ 	prt_char(out, ':');
+-	number(out, tm->tm_min, default_dec02_spec);
++	prt_u64_minwidth(out, tm->tm_min, 2);
+ 	prt_char(out, ':');
+-	number(out, tm->tm_sec, default_dec02_spec);
++	prt_u64_minwidth(out, tm->tm_sec, 2);
+ }
+ 
+ static noinline_for_stack
+@@ -2070,7 +2066,7 @@ void device_node_string(struct printbuf *out, struct device_node *dn,
+ 			str_spec.precision = precision;
+ 			break;
+ 		case 'p':	/* phandle */
+-			number(out, (unsigned int)dn->phandle, default_dec_spec);
++			prt_u64(out, (unsigned int)dn->phandle);
+ 			break;
+ 		case 'P':	/* path-spec */
+ 			p = fwnode_get_name(of_fwnode_handle(dn));
 -- 
 2.36.0
 
