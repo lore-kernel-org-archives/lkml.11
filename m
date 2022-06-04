@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38C9AC43334
-	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 04:29:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24130C43334
+	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 04:30:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350552AbiFDE3w (ORCPT
+        id S1350570AbiFDEaI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 4 Jun 2022 00:29:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58172 "EHLO
+        Sat, 4 Jun 2022 00:30:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350531AbiFDE3k (ORCPT
+        with ESMTP id S1350586AbiFDE3u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 4 Jun 2022 00:29:40 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7993544DE
-        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 21:29:28 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id mh16-20020a17090b4ad000b001e8313301f1so2155674pjb.1
-        for <linux-kernel@vger.kernel.org>; Fri, 03 Jun 2022 21:29:28 -0700 (PDT)
+        Sat, 4 Jun 2022 00:29:50 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D5A659B99
+        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 21:29:40 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id u12-20020a17090a1d4c00b001df78c7c209so13562178pju.1
+        for <linux-kernel@vger.kernel.org>; Fri, 03 Jun 2022 21:29:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=wKXILwkRVdA3Fa6aqPRmJrL7mZPDO3MwqGuWltaS794=;
-        b=ZrMrMwxNoNF0zzyxwZDgysg7jGahVeGE+iX35PIPdmiZHQuLQPSCD2dwYqttdPyhjP
-         LS8HOl95nRarD3I1q40CBFOGFpyQF1HnOGJUYfmt9tf0/trGGgXRpdAEbdkHtWZ9dK8c
-         4ePr9RZeG8RsaZaRSmLPYIqZEbzlcpQGeC43SCEj1f3Ycl645cfIiWeRjfCUMamtjKtr
-         9yzd6SXtxBiihWFKC1q5sVx86zgmxhwWGaFtYbL5Nh5yqJIZ7X2wM/twI0j6k8e0pkF7
-         SsKJBoYIMJ3/FzLSBV7Um07NWAe/DaJ2yu96eC+Zf5jNjWNzd9J2mtxetOyjDxmVgaEZ
-         GNQg==
+        bh=3Qm66nfhudmwJA9iVinA9JP0NApAajjTf2BuY1M3OaI=;
+        b=kK5aeXkDtX7iX8griW86CyYEXdl/A0eEoOAH35kMiy8zC5YxZ13vkmUz41hNukiVED
+         mwOD/eHzHg/ydHq9EnMam14CC+qi74lZ5DT/BZLht4Ycg8oUmzkBZjyRvP10Zabr1bml
+         pM1ANKzvXgjiQFcGdB9yBK2kbxntk93fVC8L8EGzg5bWrtj+cW0HA62JIklUfPSZPpBY
+         JDX4X7ZtLv2ApTgr9o96CGNSHF9wrVPb++OYdBxWV9Af+auINOLjKL/8fwy9yJG6h9FN
+         qJlps4+jXViETOdDnbJUJNm1u+nf/wo2MAZWn914jK2uKqI6n0arJcJqgH+uKM8h8vhY
+         WiBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=wKXILwkRVdA3Fa6aqPRmJrL7mZPDO3MwqGuWltaS794=;
-        b=sbRbhVPqjGHi45j/g5bs+FvNbvgzNtwvMp2ZvwPF5lqs5rcxv90LYhxC93QVy9Md/N
-         fzzReOLYi8GEgDAm8rj04vdkMFypR/vF1sQ+YnXX8aDxbkBh/561uLaAf1qJPto707vu
-         RzuyRNV8VxdFv9OLWbJMXQSWojkf07aRVWlJudr6n9ZI4qOav2G26UdvY9BOwZAN4J6V
-         jYO0V4x7PQ7IM5EDlq5vSIiZmVtPXeBphmmu3TOYgxSuhydJNmkfF+j2IyLpLF1WqoMS
-         /38VTEx/yoQX9FOpiOuoyXUlMFTEOhu5BNR6Jg4020ZsPFoCuTXNc0kjMPlIOifi8gz5
-         +1ag==
-X-Gm-Message-State: AOAM533zH+4ljNP4g/4KxyY054Ed6FTVCjlUlnksR8NtrWQqW7++tnvP
-        gWes0qWDuglj1TqWCJ2IG9bxUQ==
-X-Google-Smtp-Source: ABdhPJwrfo/O3rcVKswOwm/BY0TFIFuj5/gOCyu21b7yZFXaclT6zOL9KrFQgfNXmNibPS1S5xKBLQ==
-X-Received: by 2002:a17:902:ee8d:b0:164:7dd:6cc6 with SMTP id a13-20020a170902ee8d00b0016407dd6cc6mr13858875pld.84.1654316968262;
-        Fri, 03 Jun 2022 21:29:28 -0700 (PDT)
+        bh=3Qm66nfhudmwJA9iVinA9JP0NApAajjTf2BuY1M3OaI=;
+        b=neT901zc9lGeQow4XaeVrEyUmYD683xVpH/VjTNlkeFpK9yCyryandXXplQve7rUHK
+         pqyOyBK2Tc7Ii5uckYsjQ2gacAfgmteoWqb6f4q2+j0BkwAXDnxo0I/pRtg3hnZBZ+g3
+         DD+HL0PsREvFDzprbNLLr7o3Jh8ps45gfkBGfK0ft5NDTW+EmujHCO72Eer+58PthxzQ
+         XDQZva4PIyXx6Cm2I9H6yNlVPTSRbqOrNUibNP5fJxW6i90AZ0KFBAS+awJb1ucnq+Dv
+         VXjDYHJ/YvAilvrhCAH0wHpQ/8nfnewNnVnmijS6L7V0yb0Oo2Tf0DEAwR4IMWT97hEp
+         caTA==
+X-Gm-Message-State: AOAM532eIz28uqh0gZNW+enYiEU7l2YGqROuUhDfrjC92wN7R8ddXl+u
+        Nr2xGwdoF2f4X2vayam73EaU+Q==
+X-Google-Smtp-Source: ABdhPJwhqQsWGwdhBIJ5vTo2aAtQciKAeP/FJizUt9b/VLhWNxzBpnmgnb4AcoR7NQR0tJzKw6Rx1A==
+X-Received: by 2002:a17:902:b694:b0:162:6ea:30 with SMTP id c20-20020a170902b69400b0016206ea0030mr13186546pls.95.1654316979740;
+        Fri, 03 Jun 2022 21:29:39 -0700 (PDT)
 Received: from leo-build-box.lan (ec2-54-67-95-58.us-west-1.compute.amazonaws.com. [54.67.95.58])
-        by smtp.gmail.com with ESMTPSA id w24-20020a1709027b9800b00163d4c3ffabsm6152916pll.304.2022.06.03.21.29.22
+        by smtp.gmail.com with ESMTPSA id w24-20020a1709027b9800b00163d4c3ffabsm6152916pll.304.2022.06.03.21.29.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Jun 2022 21:29:27 -0700 (PDT)
+        Fri, 03 Jun 2022 21:29:39 -0700 (PDT)
 From:   Leo Yan <leo.yan@linaro.org>
 To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
         Peter Zijlstra <peterz@infradead.org>,
@@ -66,9 +66,9 @@ To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
         linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org
 Cc:     Leo Yan <leo.yan@linaro.org>
-Subject: [PATCH v5 08/17] perf c2c: Add dimensions for peer load operations
-Date:   Sat,  4 Jun 2022 12:28:11 +0800
-Message-Id: <20220604042820.2270916-9-leo.yan@linaro.org>
+Subject: [PATCH v5 10/17] perf c2c: Add mean dimensions for peer operations
+Date:   Sat,  4 Jun 2022 12:28:13 +0800
+Message-Id: <20220604042820.2270916-11-leo.yan@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220604042820.2270916-1-leo.yan@linaro.org>
 References: <20220604042820.2270916-1-leo.yan@linaro.org>
@@ -78,73 +78,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds three dimensions for peer load operations of 'lcl_peer',
-'rmt_peer' and 'tot_peer'.  These three dimensions will be used in the
-shared data cache line table.
+This patch adds two dimensions for the mean value of peer operations.
 
 Signed-off-by: Leo Yan <leo.yan@linaro.org>
 Acked-by: Ian Rogers <irogers@google.com>
 Tested-by: Ali Saidi <alisaidi@amazon.com>
 Reviewed-by: Ali Saidi <alisaidi@amazon.com>
 ---
- tools/perf/builtin-c2c.c | 30 ++++++++++++++++++++++++++++++
- 1 file changed, 30 insertions(+)
+ tools/perf/builtin-c2c.c | 28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
 
 diff --git a/tools/perf/builtin-c2c.c b/tools/perf/builtin-c2c.c
-index 37bebeb6c11b..99c0c7307a4a 100644
+index dd47f068b8da..8dd9218a052f 100644
 --- a/tools/perf/builtin-c2c.c
 +++ b/tools/perf/builtin-c2c.c
-@@ -650,6 +650,9 @@ __f ## _cmp(struct perf_hpp_fmt *fmt __maybe_unused,			\
- 
- STAT_FN(rmt_hitm)
- STAT_FN(lcl_hitm)
-+STAT_FN(rmt_peer)
-+STAT_FN(lcl_peer)
-+STAT_FN(tot_peer)
- STAT_FN(store)
- STAT_FN(st_l1hit)
- STAT_FN(st_l1miss)
-@@ -1360,6 +1363,30 @@ static struct c2c_dimension dim_rmt_hitm = {
- 	.width		= 7,
+@@ -55,6 +55,8 @@ struct c2c_hists {
+ struct compute_stats {
+ 	struct stats		 lcl_hitm;
+ 	struct stats		 rmt_hitm;
++	struct stats		 lcl_peer;
++	struct stats		 rmt_peer;
+ 	struct stats		 load;
  };
  
-+static struct c2c_dimension dim_tot_peer = {
-+	.header		= HEADER_SPAN("------- Load Peer -------", "Total", 2),
-+	.name		= "tot_peer",
-+	.cmp		= tot_peer_cmp,
-+	.entry		= tot_peer_entry,
-+	.width		= 7,
+@@ -154,6 +156,8 @@ static void *c2c_he_zalloc(size_t size)
+ 
+ 	init_stats(&c2c_he->cstats.lcl_hitm);
+ 	init_stats(&c2c_he->cstats.rmt_hitm);
++	init_stats(&c2c_he->cstats.lcl_peer);
++	init_stats(&c2c_he->cstats.rmt_peer);
+ 	init_stats(&c2c_he->cstats.load);
+ 
+ 	return &c2c_he->he;
+@@ -253,6 +257,10 @@ static void compute_stats(struct c2c_hist_entry *c2c_he,
+ 		update_stats(&cstats->rmt_hitm, weight);
+ 	else if (stats->lcl_hitm)
+ 		update_stats(&cstats->lcl_hitm, weight);
++	else if (stats->rmt_peer)
++		update_stats(&cstats->rmt_peer, weight);
++	else if (stats->lcl_peer)
++		update_stats(&cstats->lcl_peer, weight);
+ 	else if (stats->load)
+ 		update_stats(&cstats->load, weight);
+ }
+@@ -1280,6 +1288,8 @@ __func(struct perf_hpp_fmt *fmt, struct perf_hpp *hpp, struct hist_entry *he)	\
+ MEAN_ENTRY(mean_rmt_entry,  rmt_hitm);
+ MEAN_ENTRY(mean_lcl_entry,  lcl_hitm);
+ MEAN_ENTRY(mean_load_entry, load);
++MEAN_ENTRY(mean_rmt_peer_entry, rmt_peer);
++MEAN_ENTRY(mean_lcl_peer_entry, lcl_peer);
+ 
+ static int
+ cpucnt_entry(struct perf_hpp_fmt *fmt, struct perf_hpp *hpp,
+@@ -1750,6 +1760,22 @@ static struct c2c_dimension dim_mean_load = {
+ 	.width		= 8,
+ };
+ 
++static struct c2c_dimension dim_mean_rmt_peer = {
++	.header		= HEADER_SPAN("---------- cycles ----------", "rmt peer", 2),
++	.name		= "mean_rmt_peer",
++	.cmp		= empty_cmp,
++	.entry		= mean_rmt_peer_entry,
++	.width		= 8,
 +};
 +
-+static struct c2c_dimension dim_lcl_peer = {
-+	.header		= HEADER_SPAN_LOW("Local"),
-+	.name		= "lcl_peer",
-+	.cmp		= lcl_peer_cmp,
-+	.entry		= lcl_peer_entry,
-+	.width		= 7,
++static struct c2c_dimension dim_mean_lcl_peer = {
++	.header		= HEADER_SPAN_LOW("lcl peer"),
++	.name		= "mean_lcl_peer",
++	.cmp		= empty_cmp,
++	.entry		= mean_lcl_peer_entry,
++	.width		= 8,
 +};
 +
-+static struct c2c_dimension dim_rmt_peer = {
-+	.header		= HEADER_SPAN_LOW("Remote"),
-+	.name		= "rmt_peer",
-+	.cmp		= rmt_peer_cmp,
-+	.entry		= rmt_peer_entry,
-+	.width		= 7,
-+};
-+
- static struct c2c_dimension dim_cl_rmt_hitm = {
- 	.header		= HEADER_SPAN("----- HITM -----", "Rmt", 1),
- 	.name		= "cl_rmt_hitm",
-@@ -1672,6 +1699,9 @@ static struct c2c_dimension *dimensions[] = {
- 	&dim_tot_hitm,
- 	&dim_lcl_hitm,
- 	&dim_rmt_hitm,
-+	&dim_tot_peer,
-+	&dim_lcl_peer,
-+	&dim_rmt_peer,
- 	&dim_cl_lcl_hitm,
- 	&dim_cl_rmt_hitm,
- 	&dim_tot_stores,
+ static struct c2c_dimension dim_cpucnt = {
+ 	.header		= HEADER_BOTH("cpu", "cnt"),
+ 	.name		= "cpucnt",
+@@ -1835,6 +1861,8 @@ static struct c2c_dimension *dimensions[] = {
+ 	&dim_node,
+ 	&dim_mean_rmt,
+ 	&dim_mean_lcl,
++	&dim_mean_rmt_peer,
++	&dim_mean_lcl_peer,
+ 	&dim_mean_load,
+ 	&dim_cpucnt,
+ 	&dim_srcline,
 -- 
 2.25.1
 
