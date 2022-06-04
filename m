@@ -2,210 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5E05C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 20:59:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC898C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 20:59:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241676AbiFDU7B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 4 Jun 2022 16:59:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52742 "EHLO
+        id S241693AbiFDU7M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 4 Jun 2022 16:59:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241584AbiFDU65 (ORCPT
+        with ESMTP id S241736AbiFDU7H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 4 Jun 2022 16:58:57 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD9FC140FD
-        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 13:58:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654376335; x=1685912335;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=alcl3p9MajAzhzqPbCbm+pdKG7LQBoXPfMN6XrVSj4Y=;
-  b=URV0A9IZSTW6XwxLGINF+SwiiesGk9NRYIPkn/p/cUxf4JR5VYnEQyWO
-   tW8HaTmeDxDDdjwFzXcAzoFYaA5eYaGeSXHNefrj8aGT9ko2ojJ+kxfte
-   FnYtV4K/tdgroMXO7nYNktoVTC9bcPMv6Bnd/bIlN7r4CWphYNFK5XTam
-   BmA3uFZzEuqdjryp54BWyrATQZwZr2vRdQ4Wtqlo3P/EeIBn1dRlP7Pmx
-   NgzAGHe27aPzyD5OEWECYPFBU2u0gG7brHgzbzDXlNR4O+uGZvUJIaR/Z
-   Xt+bw/VJ1D3qxEVzs3pwqy56YCbuLxSIXjwDuKvCNkwDwl4/ljqzOn8uL
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10368"; a="264155828"
-X-IronPort-AV: E=Sophos;i="5.91,278,1647327600"; 
-   d="scan'208";a="264155828"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2022 13:58:55 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,278,1647327600"; 
-   d="scan'208";a="708506088"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 04 Jun 2022 13:58:53 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nxarE-000BCv-Ak;
-        Sat, 04 Jun 2022 20:58:52 +0000
-Date:   Sun, 5 Jun 2022 04:58:05 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>
-Subject: drivers/input/touchscreen/sun4i-ts.c:392:34: warning: unused
- variable 'sun4i_ts_of_match'
-Message-ID: <202206050416.ksMtkpmV-lkp@intel.com>
+        Sat, 4 Jun 2022 16:59:07 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23BDD2DD7D
+        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 13:59:06 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id me5so21516185ejb.2
+        for <linux-kernel@vger.kernel.org>; Sat, 04 Jun 2022 13:59:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cbrEQUB+Zyw7O+8amBfM3+EQ1xFJmvp6idV/N1yDO5Q=;
+        b=DR6JLQBUlW6TeFrHbPNTHjl/bNSSCqd/TvAHeTrBSGSTdjt2PGWP1jVWpZeyjx8cfd
+         AkBcoT49q87tGoi2VkRcbKs4iL+cRMb0cleRuWrgkIJ+RWSaC3CouP74nuwQa9OsPW4P
+         OoLeajQHAxqfI4yromeBb40f78dyRk+QlG4Ak=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cbrEQUB+Zyw7O+8amBfM3+EQ1xFJmvp6idV/N1yDO5Q=;
+        b=3A7uZojVZuA9Buf/lqCexagYD8nWVwp7Y5W90muR1Yink/u80ng9XrJCXwTJlqR25M
+         gbaJIGDQv5dW/6cZB59rGCwNIi13ubUP5KvUqBWZp8dmzFGFP6mqjqt5aZnW1DDQGlSz
+         97gnlkoEb8aLgb1oQALXGHvzy9fUdbFFFWSdOpQpxTuAgrDmQnnazw/iD9nuAgIKNl/t
+         P4BzaGtMuuu7csHdvbq42cnHmRKH9ykZGJ2kiSvOdveZZUlewyzfZzNNjx9VwoDpra2r
+         8bsiIEEtv/WaHat+VxqX6d5WYgJ5SEKoOfB423u3fZqK0mxr/xjpQil1E/lq86BndZBI
+         twoA==
+X-Gm-Message-State: AOAM533+xXNBODtrf9thDZUISwjmK1dslmwK5Ti58gu4il8yWMbrdHAE
+        rs9dfJzkgc5SadRwvNJddBzGlIcSXAMZJpEj
+X-Google-Smtp-Source: ABdhPJxFBq9zGOHbeS0dc7fnfmz68PEQO+rIb0Fy/lgIZWmIPlqrjss7s6nZgk1vGhNbrXWhHOQQUQ==
+X-Received: by 2002:a17:907:1b07:b0:6fe:2cbc:15c5 with SMTP id mp7-20020a1709071b0700b006fe2cbc15c5mr14492275ejc.677.1654376344135;
+        Sat, 04 Jun 2022 13:59:04 -0700 (PDT)
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com. [209.85.221.44])
+        by smtp.gmail.com with ESMTPSA id d7-20020a056402400700b0042e15364d14sm4163757eda.8.2022.06.04.13.59.03
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 04 Jun 2022 13:59:03 -0700 (PDT)
+Received: by mail-wr1-f44.google.com with SMTP id u3so14727133wrg.3
+        for <linux-kernel@vger.kernel.org>; Sat, 04 Jun 2022 13:59:03 -0700 (PDT)
+X-Received: by 2002:a5d:6da6:0:b0:20f:bc8a:9400 with SMTP id
+ u6-20020a5d6da6000000b0020fbc8a9400mr13992817wrs.274.1654376342801; Sat, 04
+ Jun 2022 13:59:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <Ypt1N+GyXEMfAxR6@p100>
+In-Reply-To: <Ypt1N+GyXEMfAxR6@p100>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Sat, 4 Jun 2022 13:58:46 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wihXTsW_gkx=OdZf38MynCrmpe1P1EBnACH9PK7ggrdBg@mail.gmail.com>
+Message-ID: <CAHk-=wihXTsW_gkx=OdZf38MynCrmpe1P1EBnACH9PK7ggrdBg@mail.gmail.com>
+Subject: Re: [GIT PULL] more parisc architecture fixes/updates for v5.19-rc1
+To:     Helge Deller <deller@gmx.de>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-parisc <linux-parisc@vger.kernel.org>,
+        James Bottomley <James.Bottomley@hansenpartnership.com>,
+        John David Anglin <dave.anglin@bell.net>,
+        Mikulas Patocka <mpatocka@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   032dcf09e2bf7c822be25b4abef7a6c913870d98
-commit: ea29b20a828511de3348334e529a3d046a180416 init/Kconfig: make COMPILE_TEST depend on HAS_IOMEM
-date:   1 year, 3 months ago
-config: s390-randconfig-c005-20220605 (https://download.01.org/0day-ci/archive/20220605/202206050416.ksMtkpmV-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0a90b72c432d70aae035727ece4ba80ce820f381)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install s390 cross compiling tool for clang build
-        # apt-get install binutils-s390x-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=ea29b20a828511de3348334e529a3d046a180416
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout ea29b20a828511de3348334e529a3d046a180416
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash drivers/gpu/drm/ drivers/input/touchscreen/
+On Sat, Jun 4, 2022 at 8:07 AM Helge Deller <deller@gmx.de> wrote:
+>
+> Mikulas noticed that his C8000 workstation hangs at bootup with v5.18 if
+> CONFIG_SCHED_MC is enabled.  His fix rearranges the topology setup and thus
+> prevents the problem.
+>
+> The other two patches enhance the info from the STI (text) console driver and
+> add the missing fb_is_primary_device() function which helps the framebuffer
+> driver to detect the primary STIfb framebuffer.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Sorry I messed up - I ended up taking only your abbreviated
+explanation from the tag for the merge commit message, not this
+extended explanation in the pull request email.
 
-All warnings (new ones prefixed by >>):
+Normally I notice and fix this up, but this time I only noticed after
+I had already pushed out the end result.
 
-   In file included from arch/s390/include/asm/io.h:80:
-   include/asm-generic/io.h:490:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
-                                                           ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/big_endian.h:34:59: note: expanded from macro '__le32_to_cpu'
-   #define __le32_to_cpu(x) __swab32((__force __u32)(__le32)(x))
-                                                             ^
-   include/uapi/linux/swab.h:119:21: note: expanded from macro '__swab32'
-           ___constant_swab32(x) :                 \
-                              ^
-   include/uapi/linux/swab.h:19:12: note: expanded from macro '___constant_swab32'
-           (((__u32)(x) & (__u32)0x000000ffUL) << 24) |            \
-                     ^
-   In file included from drivers/input/touchscreen/sun4i-ts.c:36:
-   In file included from include/linux/io.h:13:
-   In file included from arch/s390/include/asm/io.h:80:
-   include/asm-generic/io.h:490:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
-                                                           ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/big_endian.h:34:59: note: expanded from macro '__le32_to_cpu'
-   #define __le32_to_cpu(x) __swab32((__force __u32)(__le32)(x))
-                                                             ^
-   include/uapi/linux/swab.h:119:21: note: expanded from macro '__swab32'
-           ___constant_swab32(x) :                 \
-                              ^
-   include/uapi/linux/swab.h:20:12: note: expanded from macro '___constant_swab32'
-           (((__u32)(x) & (__u32)0x0000ff00UL) <<  8) |            \
-                     ^
-   In file included from drivers/input/touchscreen/sun4i-ts.c:36:
-   In file included from include/linux/io.h:13:
-   In file included from arch/s390/include/asm/io.h:80:
-   include/asm-generic/io.h:490:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
-                                                           ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/big_endian.h:34:59: note: expanded from macro '__le32_to_cpu'
-   #define __le32_to_cpu(x) __swab32((__force __u32)(__le32)(x))
-                                                             ^
-   include/uapi/linux/swab.h:119:21: note: expanded from macro '__swab32'
-           ___constant_swab32(x) :                 \
-                              ^
-   include/uapi/linux/swab.h:21:12: note: expanded from macro '___constant_swab32'
-           (((__u32)(x) & (__u32)0x00ff0000UL) >>  8) |            \
-                     ^
-   In file included from drivers/input/touchscreen/sun4i-ts.c:36:
-   In file included from include/linux/io.h:13:
-   In file included from arch/s390/include/asm/io.h:80:
-   include/asm-generic/io.h:490:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
-                                                           ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/big_endian.h:34:59: note: expanded from macro '__le32_to_cpu'
-   #define __le32_to_cpu(x) __swab32((__force __u32)(__le32)(x))
-                                                             ^
-   include/uapi/linux/swab.h:119:21: note: expanded from macro '__swab32'
-           ___constant_swab32(x) :                 \
-                              ^
-   include/uapi/linux/swab.h:22:12: note: expanded from macro '___constant_swab32'
-           (((__u32)(x) & (__u32)0xff000000UL) >> 24)))
-                     ^
-   In file included from drivers/input/touchscreen/sun4i-ts.c:36:
-   In file included from include/linux/io.h:13:
-   In file included from arch/s390/include/asm/io.h:80:
-   include/asm-generic/io.h:490:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
-                                                           ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/big_endian.h:34:59: note: expanded from macro '__le32_to_cpu'
-   #define __le32_to_cpu(x) __swab32((__force __u32)(__le32)(x))
-                                                             ^
-   include/uapi/linux/swab.h:120:12: note: expanded from macro '__swab32'
-           __fswab32(x))
-                     ^
-   In file included from drivers/input/touchscreen/sun4i-ts.c:36:
-   In file included from include/linux/io.h:13:
-   In file included from arch/s390/include/asm/io.h:80:
-   include/asm-generic/io.h:501:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writeb(value, PCI_IOBASE + addr);
-                               ~~~~~~~~~~ ^
-   include/asm-generic/io.h:511:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
-                                                         ~~~~~~~~~~ ^
-   include/asm-generic/io.h:521:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
-                                                         ~~~~~~~~~~ ^
-   include/asm-generic/io.h:609:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           readsb(PCI_IOBASE + addr, buffer, count);
-                  ~~~~~~~~~~ ^
-   include/asm-generic/io.h:617:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           readsw(PCI_IOBASE + addr, buffer, count);
-                  ~~~~~~~~~~ ^
-   include/asm-generic/io.h:625:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           readsl(PCI_IOBASE + addr, buffer, count);
-                  ~~~~~~~~~~ ^
-   include/asm-generic/io.h:634:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           writesb(PCI_IOBASE + addr, buffer, count);
-                   ~~~~~~~~~~ ^
-   include/asm-generic/io.h:643:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           writesw(PCI_IOBASE + addr, buffer, count);
-                   ~~~~~~~~~~ ^
-   include/asm-generic/io.h:652:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           writesl(PCI_IOBASE + addr, buffer, count);
-                   ~~~~~~~~~~ ^
->> drivers/input/touchscreen/sun4i-ts.c:392:34: warning: unused variable 'sun4i_ts_of_match' [-Wunused-const-variable]
-   static const struct of_device_id sun4i_ts_of_match[] = {
-                                    ^
-   21 warnings generated.
+So now my merge has a correct message, but not as complete as it
+should have been.
 
-
-vim +/sun4i_ts_of_match +392 drivers/input/touchscreen/sun4i-ts.c
-
-f09f98d3240b7e Hans de Goede 2014-05-14  391  
-6decea7c5438e2 Hans de Goede 2014-05-14 @392  static const struct of_device_id sun4i_ts_of_match[] = {
-6decea7c5438e2 Hans de Goede 2014-05-14  393  	{ .compatible = "allwinner,sun4i-a10-ts", },
-91c68a7c1d92b4 Hans de Goede 2015-03-08  394  	{ .compatible = "allwinner,sun5i-a13-ts", },
-43c0e2234021d7 Chen-Yu Tsai  2015-01-26  395  	{ .compatible = "allwinner,sun6i-a31-ts", },
-6decea7c5438e2 Hans de Goede 2014-05-14  396  	{ /* sentinel */ }
-6decea7c5438e2 Hans de Goede 2014-05-14  397  };
-6decea7c5438e2 Hans de Goede 2014-05-14  398  MODULE_DEVICE_TABLE(of, sun4i_ts_of_match);
-6decea7c5438e2 Hans de Goede 2014-05-14  399  
-
-:::::: The code at line 392 was first introduced by commit
-:::::: 6decea7c5438e2955f64e2513ec9a2fac7602a7d Input: add driver for Allwinner sunxi SoC's rtp controller
-
-:::::: TO: Hans de Goede <hdegoede@redhat.com>
-:::::: CC: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+            Linus
