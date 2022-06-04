@@ -2,92 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC898C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 20:59:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A05CC43334
+	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 20:59:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241693AbiFDU7M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 4 Jun 2022 16:59:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53870 "EHLO
+        id S241755AbiFDU7y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 4 Jun 2022 16:59:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241736AbiFDU7H (ORCPT
+        with ESMTP id S241691AbiFDU7w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 4 Jun 2022 16:59:07 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23BDD2DD7D
-        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 13:59:06 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id me5so21516185ejb.2
-        for <linux-kernel@vger.kernel.org>; Sat, 04 Jun 2022 13:59:05 -0700 (PDT)
+        Sat, 4 Jun 2022 16:59:52 -0400
+Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EC0C2EA02;
+        Sat,  4 Jun 2022 13:59:51 -0700 (PDT)
+Received: by mail-oi1-x22d.google.com with SMTP id m82so14718677oif.13;
+        Sat, 04 Jun 2022 13:59:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=cbrEQUB+Zyw7O+8amBfM3+EQ1xFJmvp6idV/N1yDO5Q=;
-        b=DR6JLQBUlW6TeFrHbPNTHjl/bNSSCqd/TvAHeTrBSGSTdjt2PGWP1jVWpZeyjx8cfd
-         AkBcoT49q87tGoi2VkRcbKs4iL+cRMb0cleRuWrgkIJ+RWSaC3CouP74nuwQa9OsPW4P
-         OoLeajQHAxqfI4yromeBb40f78dyRk+QlG4Ak=
+        bh=KI6RGgIhUb5YBMG55dVRTWwDyzqgJYFjmLT32LzTyec=;
+        b=RiacRFTuIoy4aVBfEZrTyG66uLRmj9OfCmEl/WuQwTeFWFmZ4Mxro4WNyWuLyV2EPx
+         S75BJVmJqFX8ukcsTmAoWQt90Z/50rhY3/nlbHq6pGx6qmE0uL71WOpZCV3irLXgwIKN
+         55bq0njQaVnM8q6/Kao0GedXeCqtyHm19X842+J+ExQJpLQZcab2tRB9iNfJ2PeDMB+0
+         fzY4Uzp27QUefOdaGCOscgnKEzFGzj8c/JO+7v9ARQGTtzKd5Ixpccnrn3vbb+f2ODOd
+         KA3VEqwrOg2ZSMHPhLWuKzikO/boV8bJOuZxoAw8lTUgO/zK3C852XwfSVoU01JLjTHH
+         EeVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=cbrEQUB+Zyw7O+8amBfM3+EQ1xFJmvp6idV/N1yDO5Q=;
-        b=3A7uZojVZuA9Buf/lqCexagYD8nWVwp7Y5W90muR1Yink/u80ng9XrJCXwTJlqR25M
-         gbaJIGDQv5dW/6cZB59rGCwNIi13ubUP5KvUqBWZp8dmzFGFP6mqjqt5aZnW1DDQGlSz
-         97gnlkoEb8aLgb1oQALXGHvzy9fUdbFFFWSdOpQpxTuAgrDmQnnazw/iD9nuAgIKNl/t
-         P4BzaGtMuuu7csHdvbq42cnHmRKH9ykZGJ2kiSvOdveZZUlewyzfZzNNjx9VwoDpra2r
-         8bsiIEEtv/WaHat+VxqX6d5WYgJ5SEKoOfB423u3fZqK0mxr/xjpQil1E/lq86BndZBI
-         twoA==
-X-Gm-Message-State: AOAM533+xXNBODtrf9thDZUISwjmK1dslmwK5Ti58gu4il8yWMbrdHAE
-        rs9dfJzkgc5SadRwvNJddBzGlIcSXAMZJpEj
-X-Google-Smtp-Source: ABdhPJxFBq9zGOHbeS0dc7fnfmz68PEQO+rIb0Fy/lgIZWmIPlqrjss7s6nZgk1vGhNbrXWhHOQQUQ==
-X-Received: by 2002:a17:907:1b07:b0:6fe:2cbc:15c5 with SMTP id mp7-20020a1709071b0700b006fe2cbc15c5mr14492275ejc.677.1654376344135;
-        Sat, 04 Jun 2022 13:59:04 -0700 (PDT)
-Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com. [209.85.221.44])
-        by smtp.gmail.com with ESMTPSA id d7-20020a056402400700b0042e15364d14sm4163757eda.8.2022.06.04.13.59.03
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 04 Jun 2022 13:59:03 -0700 (PDT)
-Received: by mail-wr1-f44.google.com with SMTP id u3so14727133wrg.3
-        for <linux-kernel@vger.kernel.org>; Sat, 04 Jun 2022 13:59:03 -0700 (PDT)
-X-Received: by 2002:a5d:6da6:0:b0:20f:bc8a:9400 with SMTP id
- u6-20020a5d6da6000000b0020fbc8a9400mr13992817wrs.274.1654376342801; Sat, 04
- Jun 2022 13:59:02 -0700 (PDT)
+        bh=KI6RGgIhUb5YBMG55dVRTWwDyzqgJYFjmLT32LzTyec=;
+        b=u2MSxJvZRFcWfzXnZgnGcljLRXqCYrlmVZcmPhr73viKAot3BhZa46Yudngl8VQ3Td
+         qjqTqg7sAgzKvVF/uiejniEXjbeeLZzoqQNRSPl33nIiiRaoGJZeo94SQz3tL1DQIG2D
+         jfUNqbDd+ZeQEYjcVlqx2yRscOqNDbUzJsBsCkEiLZm5B2q2mEhPi0m7j5HcUIfnE6mp
+         96HGc2hZGf50rAaPg6Cegj8pPt+hNQyCHFHPhJGasniWP8YaaVzjZBvDFn+5gpFewOVM
+         DKEEndvK4Pg/tR3xy2J6MjMlosSUMacsHaDWGvR0nivSh/Z6o2b6Ps1MCduIl3lKlZ37
+         wLwA==
+X-Gm-Message-State: AOAM530timdxC7TybJ4crnk+oyxK3efJl4XeXv8U2dCoIjgHuz9i78v5
+        Kxplmvi13tkjBGHUtyckdfd3IRa7OMLYgliZ1Iw=
+X-Google-Smtp-Source: ABdhPJyS9SfYWhqaqd9DsHNCl2ttCA2tBW6F6m6Ie8I696MCMDnp3HkpP5GVvz/LETbkY4wRdLJz3WN+i/XBOxt6ywU=
+X-Received: by 2002:a54:4688:0:b0:325:9a36:ecfe with SMTP id
+ k8-20020a544688000000b003259a36ecfemr9982724oic.96.1654376390812; Sat, 04 Jun
+ 2022 13:59:50 -0700 (PDT)
 MIME-Version: 1.0
-References: <Ypt1N+GyXEMfAxR6@p100>
-In-Reply-To: <Ypt1N+GyXEMfAxR6@p100>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Sat, 4 Jun 2022 13:58:46 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wihXTsW_gkx=OdZf38MynCrmpe1P1EBnACH9PK7ggrdBg@mail.gmail.com>
-Message-ID: <CAHk-=wihXTsW_gkx=OdZf38MynCrmpe1P1EBnACH9PK7ggrdBg@mail.gmail.com>
-Subject: Re: [GIT PULL] more parisc architecture fixes/updates for v5.19-rc1
-To:     Helge Deller <deller@gmx.de>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-parisc <linux-parisc@vger.kernel.org>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        John David Anglin <dave.anglin@bell.net>,
-        Mikulas Patocka <mpatocka@redhat.com>
+References: <20220528224423.7017-1-jim2101024@gmail.com> <20220528224423.7017-2-jim2101024@gmail.com>
+ <20220529011526.4lzuvkv5zclwntce@mraw.org> <d7a5a0d8-5d27-548f-bc94-0e7d116cc3f2@i2se.com>
+ <20220602191757.pqictbfarmvlf72f@mraw.org>
+In-Reply-To: <20220602191757.pqictbfarmvlf72f@mraw.org>
+From:   Jim Quinlan <jim2101024@gmail.com>
+Date:   Sat, 4 Jun 2022 16:59:39 -0400
+Message-ID: <CANCKTBvvm-1TOKh1akzAYoiOeu5cTKLXyy6PPRkWbOAOtpjARA@mail.gmail.com>
+Subject: Re: [PATCH v2 1/1] PCI: brcmstb: Fix regression regarding missing
+ PCIe linkup
+To:     Cyril Brulebois <kibi@debian.org>
+Cc:     Stefan Wahren <stefan.wahren@i2se.com>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        James Dutton <james.dutton@gmail.com>,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+        Jim Quinlan <james.quinlan@broadcom.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
+        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
+        <linux-rpi-kernel@lists.infradead.org>,
+        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jun 4, 2022 at 8:07 AM Helge Deller <deller@gmx.de> wrote:
+On Thu, Jun 2, 2022 at 3:18 PM Cyril Brulebois <kibi@debian.org> wrote:
+>stm32mp157c-ev1.dts
+> Hi Stefan,
 >
-> Mikulas noticed that his C8000 workstation hangs at bootup with v5.18 if
-> CONFIG_SCHED_MC is enabled.  His fix rearranges the topology setup and thus
-> prevents the problem.
+> Stefan Wahren <stefan.wahren@i2se.com> (2022-05-30):
+> > i think we should better trust the results based on the v5.18 tag. During
+> > the merge window, regressions from other subsystems are possible.
 >
-> The other two patches enhance the info from the STI (text) console driver and
-> add the missing fb_is_primary_device() function which helps the framebuffer
-> driver to detect the primary STIfb framebuffer.
+> Alright, that looks like a great plan.
+>
+> Before getting your answer, I had tried taking the reboot part out of
+> the equation, but I found out that even cold boots might fail with the
+> mmc storage.
 
-Sorry I messed up - I ended up taking only your abbreviated
-explanation from the tag for the merge commit message, not this
-extended explanation in the pull request email.
+Hi Cyril,
 
-Normally I notice and fix this up, but this time I only noticed after
-I had already pushed out the end result.
+FWIW, I can deliberately reproduce the errors you observed by using an
+incorrect "interrupts" property for
+the sdhci device's DT node.  It can also be triggered by removing its
+"clocks" property.
 
-So now my merge has a correct message, but not as complete as it
-should have been.
+However, if I do one of the above,  the error will occur on every
+boot, but in your case (I think) you are seeing it
+sporadically.  So that is peculiar.  I've looked at the recent
+upstream commits for changes in the  sdhci driver
+and also the relevant DT node and do not see anything obvious that
+might cause this.
 
-            Linus
+BTW,  when you observe this error, can you please do a  "cat
+/proc/interrupts" and post the results?
+
+Thanks & regards,
+Jim Quinlan
+Broadcom STB
+
+
+>
+> I haven't been able to conduct a systematic testing of the patch on top sdhci driver or the relevant
+DT node
+> of the v5.18 tag yet (say, 10 or 20 cold boots, and the same with
+> reboots) due to strong work constraints these past few days, but that's
+> definitely still on my short term todo list (hopefully before the end of
+> the week).
+>
+> Sorry I didn't manage to get that lined up before Bjorn's pull request.
+>
+>
+> Cheers,
+> --
+> Cyril Brulebois (kibi@debian.org)            <https://debamax.com/>
+> D-I release manager -- Release team member -- Freelance Consultant
