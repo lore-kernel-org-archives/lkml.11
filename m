@@ -2,66 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0D6AC43334
-	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 10:30:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD6F6C43334
+	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 10:34:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234819AbiFDK3L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 4 Jun 2022 06:29:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43654 "EHLO
+        id S234950AbiFDKeZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 4 Jun 2022 06:34:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231576AbiFDK3J (ORCPT
+        with ESMTP id S234830AbiFDKeW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 4 Jun 2022 06:29:09 -0400
-Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A701517A94
-        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 03:29:08 -0700 (PDT)
-Received: by mail-io1-f69.google.com with SMTP id c7-20020a6bec07000000b0066942b01338so90683ioh.10
-        for <linux-kernel@vger.kernel.org>; Sat, 04 Jun 2022 03:29:08 -0700 (PDT)
+        Sat, 4 Jun 2022 06:34:22 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B73666419;
+        Sat,  4 Jun 2022 03:34:19 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id s12so13052735ejx.3;
+        Sat, 04 Jun 2022 03:34:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=raYVayQd0HJLSrNtMJvqlNhr7f5muRt3QMZEIQApNYY=;
+        b=ozoNcajim+TFczOzIrgalfY2II/oW4IAUGheF5iuCu1SI8wk82Jr1PpGjJYcJv3t9G
+         zZUKsJ2vgpWpFvWxb3RW0412drJkKFuxbpl/FfA1VEQMPPOFY6+12eh6cy17JDk1a+VJ
+         XrjuS1dTBg2fkVtsXKXCBIXhT23jlvkT1zrppDXCTKqJCU5yd18TVIc3TnnBIzAmHjMK
+         XWmNZH6Lq6NbV/DJyur5S8HCJ38yKl9ZY2Og4dC7O6Trb4ADqzQ1ESP+eGZBakhjYn6x
+         vW0EaWF/wbu4BjNnQLQqIYrrBuqwii8yOAabyZkPyPbn6y+xZWCgs2Cgc74MRECG6Gte
+         bcOw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=wNXC2m/6IoCuykSeYloTIGgg/Di4mRUeB5x9FgRaY1E=;
-        b=xNIpxf5yhI/2nukGBLKbXTEnkcf7qq76vYFu66cjSzTO3u5YgNXTdCM2vYHw7qM6j0
-         Bxup7tiYnthh0bkfnwJTGIODj4lmsfBM8enVMRZnsdrts7Xxc/Gyk5pE7cplgbsZNl+G
-         iKnjkertgSrs6mHuR+1ED9Okt9J9ZJQ3sgmF4M90SMLvggV3fs5cHxMexslJxnohEbDw
-         kN6XkxR4O960jYz40w/d4bUvObUo59PPyUxhO9KEg1VbUVYITiqD6ajkQ2T0bVT0kS8t
-         VrkcQWBJNhUaU6vaB9soaQE97S9LeOhhs/JbDdif51pZ5JOLNUR7NWacZSul1f8RpUSQ
-         P/rg==
-X-Gm-Message-State: AOAM533c7nk+VZbBpMBGHrC8lUpg4i+ldE891AMLPZJbNqeO31UXleJo
-        Kif62MGkg8MM8AKQ+szhsYySUoTMafj2m2ykw0l0n34oDf5e
-X-Google-Smtp-Source: ABdhPJz028rOgk1V8oD10N504F+Au1sdNchit4WLjaBUMrtWitzNPXqDiq+rWxh52w9wKOYRYIKURFmGJe5BYlL9lKEoa8TfmhK0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=raYVayQd0HJLSrNtMJvqlNhr7f5muRt3QMZEIQApNYY=;
+        b=beSYGxv3t5FTcY9MKr+zHuBHYG9hTFafRDgvmDIHCYbgxtt5NNQGK3xFxxzpE+SJyX
+         +5m0tJRupBoRs7IbizfagsE62lDA9G1uYh3q65o37Dt2zynAvv+Yo9vingf6mpyvAJkX
+         5KN0SLIiuhxXZhspuqIzZdWwwn3AsTlBFt9/owAIoCfh7YcGWIh8HxzSV1ecb8bQn3CJ
+         egDSOZ4w27cPiuQBca3e9RT2pkkdcMgxRZo0HC1r6C2C4BHqSj2Wim4PFGQLiGHe3Fqy
+         hvOnILEk40glRjqM6UlNwG2KV6SnItW4EOyK1cnLb8+m4yEfZeJCtxKAgg+ALD77OLCh
+         /GnA==
+X-Gm-Message-State: AOAM532yfjeljf1ayVmixVLPEj2VwGQZlQFbwN1/uNM2dfqSd9u88o0H
+        LCf3tg6d2rD4M5fMkw9YNmFDPCrTUeY=
+X-Google-Smtp-Source: ABdhPJxhzwmcAlPGaWWCy9Oa4pq1peXADhd69oIvIBSesSNzsGDwufay0+BI4op5fDT2vvCVs81Q7A==
+X-Received: by 2002:a17:906:3a92:b0:6fe:9029:b62c with SMTP id y18-20020a1709063a9200b006fe9029b62cmr12406699ejd.569.1654338858124;
+        Sat, 04 Jun 2022 03:34:18 -0700 (PDT)
+Received: from debian (host-2-98-37-191.as13285.net. [2.98.37.191])
+        by smtp.gmail.com with ESMTPSA id 12-20020a170906058c00b006fed787478asm3797577ejn.92.2022.06.04.03.34.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 04 Jun 2022 03:34:17 -0700 (PDT)
+Date:   Sat, 4 Jun 2022 11:34:15 +0100
+From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+To:     Huacai Chen <chenhuacai@loongson.cn>,
+        Marc Zyngier <maz@kernel.org>, WANG Xuerui <git@xen0n.name>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org, torvalds@linux-foundation.org
+Subject: mainline build failure due to fa84f89395e0
+ ("irqchip/loongson-liointc: Fix build error for LoongArch")
+Message-ID: <Yps1Jw6PJdLBya1W@debian>
 MIME-Version: 1.0
-X-Received: by 2002:a02:852f:0:b0:331:8c7e:691 with SMTP id
- g44-20020a02852f000000b003318c7e0691mr1018029jai.169.1654338548070; Sat, 04
- Jun 2022 03:29:08 -0700 (PDT)
-Date:   Sat, 04 Jun 2022 03:29:08 -0700
-In-Reply-To: <20220604072852.5532-1-hdanton@sina.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000007f016405e09cb5ed@google.com>
-Subject: Re: [syzbot] kernel BUG in __skb_gso_segment
-From:   syzbot <syzbot+7160965e6a93d826048a@syzkaller.appspotmail.com>
-To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+Hi All,
 
-syzbot has tested the proposed patch and the reproducer did not trigger any issue:
+The latest mainline kernel branch fails to build for "mips loongson2k_defconfig"
+with the error:
 
-Reported-and-tested-by: syzbot+7160965e6a93d826048a@syzkaller.appspotmail.com
+drivers/irqchip/irq-loongson-liointc.c: In function 'liointc_chained_handle_irq':
+drivers/irqchip/irq-loongson-liointc.c:60:20: error: implicit declaration of function 'cpu_logical_map' [-Werror=implicit-function-declaration]
+   60 |         int core = cpu_logical_map(smp_processor_id()) % LIOINTC_NUM_CORES;
 
-Tested on:
 
-commit:         e9d3f809 net/af_packet: make sure to pull mac header
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-kernel config:  https://syzkaller.appspot.com/x/.config?x=e2c9c27babb4d679
-dashboard link: https://syzkaller.appspot.com/bug?extid=7160965e6a93d826048a
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+git bisect pointed to fa84f89395e0 ("irqchip/loongson-liointc: Fix build error for LoongArch")
 
-Note: no patches were applied.
-Note: testing is done by a robot and is best-effort only.
+And, reverting it on top of mainline branch has fixed the build failure.
+
+--
+Regards
+Sudip
