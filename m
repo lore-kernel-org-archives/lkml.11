@@ -2,111 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0445EC43334
-	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 19:34:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9746C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 19:44:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241080AbiFDTeq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 4 Jun 2022 15:34:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48270 "EHLO
+        id S240064AbiFDTnz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 4 Jun 2022 15:43:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241184AbiFDTeb (ORCPT
+        with ESMTP id S232331AbiFDTny (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 4 Jun 2022 15:34:31 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68473515B2;
-        Sat,  4 Jun 2022 12:33:08 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id v25so14002169eda.6;
-        Sat, 04 Jun 2022 12:33:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=WxKcUIQwb5z9dv1oVEQrVZOBlfuJnhpz8hZ/k9iF5G4=;
-        b=RUkawpieX2giKpETRhUFUtrwfwddVt81cvpKoiD7n0vafRc2vU839f2+qW4eXQkusS
-         BB7Gz5uSBLKcKdIzrlbqcKjGKaldBKbCaBHeIpCJmPTdqrCzPZRSSIdSwRaGCew61YVu
-         e5vDU+JOloXKGci6Hib7fZDpowgDe6z16ymJtWV+iy7l50aAH147DTFlNEbvmxOpnR2k
-         7XOzyqcLgeaOFQ+77kEibkk1q3l0xH+Wgi/EOTiKmZ2OhyORZpPnp2ZUnqQ8N2f1udtA
-         7XFel9R0kYVP8P6D7UHqXX7IO/4SG1pA2Jcqcg5ayHhYmatXjgFv8Zt1V5fDta0+XBlk
-         IoHQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=WxKcUIQwb5z9dv1oVEQrVZOBlfuJnhpz8hZ/k9iF5G4=;
-        b=43KASJ2DXCKLQrxf7Nuz1uOUlsD/O2oOje0uxybxtTi3uYDhtszFCBqV8uKESi1kAB
-         QaMqhWorHxicwt0qhWxgPz5wksvNF7sa8E2v4/t0dNg/kIAGqpWuMX60Zbr6YSYfjA0H
-         ao6Fm6KxYoR9Qss9bcLezRki15a8yFC2nI3uLva1V1QUVuOjMCjhF0kXcdDGwpY2BX66
-         bGs/X5qlidaPzCNFamPpajjtIKW3mbDkYg4JHPkdBSx5zFPyLuOadTQna+Hc53/+AMLT
-         CjU3mHzgiOt0283BnwheD8UWXWuxrLR1mHmrRpwn4FlQpJzkZONyF2d8qRBIqxNPzUZR
-         RU/Q==
-X-Gm-Message-State: AOAM532m8z43bn/BFdeKfV2aHSviJegRra6zw/0bUg5x3t7LJyTMRPdV
-        z/c9e/hlOMHolS0PxTnB0Wea373qUEgBfw==
-X-Google-Smtp-Source: ABdhPJw+cz0ALmzikKXwM7MmQi1zQ+anjfcso0JLAyz5teJkI3dlw2NTkVSJXNHmstsydbZvHcTzwg==
-X-Received: by 2002:a05:6402:13d9:b0:42d:c97e:f9cf with SMTP id a25-20020a05640213d900b0042dc97ef9cfmr17406055edx.271.1654371183842;
-        Sat, 04 Jun 2022 12:33:03 -0700 (PDT)
-Received: from fedora.robimarko.hr (cpe-94-253-165-43.zg.cable.xnet.hr. [94.253.165.43])
-        by smtp.googlemail.com with ESMTPSA id fi26-20020a170906da1a00b00707d11fd421sm4133802ejb.107.2022.06.04.12.33.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 04 Jun 2022 12:33:03 -0700 (PDT)
-From:   Robert Marko <robimarko@gmail.com>
-To:     agross@kernel.org, bjorn.andersson@linaro.org, lgirdwood@gmail.com,
-        broonie@kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Robert Marko <robimarko@gmail.com>
-Subject: [PATCH 2/2] regulator: qcom_smd: correct MP5496 ranges
-Date:   Sat,  4 Jun 2022 21:33:00 +0200
-Message-Id: <20220604193300.125758-2-robimarko@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220604193300.125758-1-robimarko@gmail.com>
-References: <20220604193300.125758-1-robimarko@gmail.com>
+        Sat, 4 Jun 2022 15:43:54 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B54E62CC9C
+        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 12:43:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654371832; x=1685907832;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=5wwe7msksOb8eGwfgGpFMTlpDtxWcUTXNlZi75NphNM=;
+  b=KSWV7gyHZy8sMkeBfMvp+faXOkUI/tsZq9oWC0Oied5D80nF1mJQGifi
+   HEBz8e2VxoXsjWM04U4boq+NjeiJr+Atxst7wZnMrWhZl/26Ut/mWjW6a
+   KNzPp2Zo18Ztfqz4G0Qfmcd66BpCO0UoDyXiucJHZdQEWQtZXXUEPs+On
+   34uXRsUxXZ/YViWMrP5HHusszf0EHyO2T6SS1X9tkC83ansY6d/nsczP+
+   gyBObdCFRZ2KGa13WhXDPJB+vuQZOHdbvvt+7x2NsjbxvAvUKijTs0pXu
+   sYMk1A/qF0SHOZ3J3P2fikwOL42UiEG3plQvDhC858ksCk98s0kpm16fx
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10368"; a="362833940"
+X-IronPort-AV: E=Sophos;i="5.91,278,1647327600"; 
+   d="scan'208";a="362833940"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2022 12:43:52 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,278,1647327600"; 
+   d="scan'208";a="668916486"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 04 Jun 2022 12:43:51 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nxZgc-000BAH-UK;
+        Sat, 04 Jun 2022 19:43:50 +0000
+Date:   Sun, 5 Jun 2022 03:43:00 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Steven Rostedt (VMware)" <rostedt@goodmis.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: WARNING: modpost: vmlinux.o(.text.unlikely+0x4f50): Section mismatch
+ in reference from the function trace_define_generic_fields() to the variable
+ .init.data:initcall_level_names
+Message-ID: <202206050340.YtS1dk5y-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently set MP5496 Buck and LDO ranges dont match its datasheet[1].
-According to the datasheet:
-Buck range is 0.6-2.1875V with a 12.5mV step
-LDO range is 0.8-3.975V with a 25mV step.
+Hi Steven,
 
-So, correct the ranges according to the datasheet[1].
+FYI, the error/warning still remains.
 
-[1] https://www.monolithicpower.com/en/documentview/productdocument/index/version/2/document_type/Datasheet/lang/en/sku/MP5496GR/document_id/6906/
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   032dcf09e2bf7c822be25b4abef7a6c913870d98
+commit: a55f224ff5f238013de8762c4287117e47b86e22 tracing: Fix pid filtering when triggers are attached
+date:   6 months ago
+config: xtensa-randconfig-r021-20220604 (https://download.01.org/0day-ci/archive/20220605/202206050340.YtS1dk5y-lkp@intel.com/config)
+compiler: xtensa-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=a55f224ff5f238013de8762c4287117e47b86e22
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout a55f224ff5f238013de8762c4287117e47b86e22
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=xtensa SHELL=/bin/bash
 
-Signed-off-by: Robert Marko <robimarko@gmail.com>
----
- drivers/regulator/qcom_smd-regulator.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-diff --git a/drivers/regulator/qcom_smd-regulator.c b/drivers/regulator/qcom_smd-regulator.c
-index 5ec68250e79d..6c69359b3ef2 100644
---- a/drivers/regulator/qcom_smd-regulator.c
-+++ b/drivers/regulator/qcom_smd-regulator.c
-@@ -724,19 +724,19 @@ static const struct regulator_desc pms405_pldo600 = {
- 
- static const struct regulator_desc mp5496_smpa2 = {
- 	.linear_ranges = (struct linear_range[]) {
--		REGULATOR_LINEAR_RANGE(725000, 0, 27, 12500),
-+		REGULATOR_LINEAR_RANGE(600000, 0, 127, 12500),
- 	},
- 	.n_linear_ranges = 1,
--	.n_voltages = 28,
-+	.n_voltages = 128,
- 	.ops = &rpm_mp5496_ops,
- };
- 
- static const struct regulator_desc mp5496_ldoa2 = {
- 	.linear_ranges = (struct linear_range[]) {
--		REGULATOR_LINEAR_RANGE(1800000, 0, 60, 25000),
-+		REGULATOR_LINEAR_RANGE(800000, 0, 127, 25000),
- 	},
- 	.n_linear_ranges = 1,
--	.n_voltages = 61,
-+	.n_voltages = 128,
- 	.ops = &rpm_mp5496_ops,
- };
- 
+All warnings (new ones prefixed by >>, old ones prefixed by <<):
+
+<< WARNING: modpost: vmlinux.o(.text.unlikely+0x4c10): Section mismatch in reference from the function __trace_event_discard_commit() to the variable .init.data:initcall_level_names
+>> WARNING: modpost: vmlinux.o(.text.unlikely+0x4f50): Section mismatch in reference from the function trace_define_generic_fields() to the variable .init.data:initcall_level_names
+The function trace_define_generic_fields() references
+the variable __initdata initcall_level_names.
+This is often because trace_define_generic_fields lacks a __initdata
+annotation or the annotation of initcall_level_names is wrong.
+
 -- 
-2.36.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
