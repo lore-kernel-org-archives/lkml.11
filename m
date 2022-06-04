@@ -2,89 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35490C43334
-	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 15:00:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31CB4C43334
+	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 15:07:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237484AbiFDPAX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 4 Jun 2022 11:00:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34364 "EHLO
+        id S237389AbiFDPHo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 4 Jun 2022 11:07:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237612AbiFDPAB (ORCPT
+        with ESMTP id S232805AbiFDPHn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 4 Jun 2022 11:00:01 -0400
-Received: from mail-pg1-f169.google.com (mail-pg1-f169.google.com [209.85.215.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C0392EA13;
-        Sat,  4 Jun 2022 08:00:00 -0700 (PDT)
-Received: by mail-pg1-f169.google.com with SMTP id x12so9430606pgj.7;
-        Sat, 04 Jun 2022 08:00:00 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Z7T9gBedk0FnMdkGXsYeXk14xh6RRT1/9ZpwTpf8w7k=;
-        b=NcHzmcmtlm1wtDaGGqff7ZeWLsl10tm4yZxzjHT8cyZdaBAUWxlTQRRbyIKkZ18mAd
-         a7C9q3R8xTMgg71PvM5KcjxMXEl5TsBljqEfPJLfOHKILeUmZaXS93v9Zwj7ZcwPBzw6
-         bs7jWLIBAySe53iZqBYbjdAWJXv+M92zuhfJvXUIuCHpxbdGmO/7L8VNkjBpsiTBE9+i
-         ulV7vd7WKFNpdcv/AaSHhmCVmefuM/8nlPe/xdGQoOaBxCU8eJstF3LoR/T2a9hZaz6+
-         gW/A4su1Q6JqFUJGFbYO+9tEcGW8EKl6/JeEu7Pp51/OYi9rIFndnMXa/gmPwU+JziQV
-         KY6A==
-X-Gm-Message-State: AOAM5324iK8HH8ylA6VCKL0xOzNqXJxN2RwQ2KnByiNXMlyhdJ3tIDpx
-        T600yI6fz+nHgf9gOUAbaw6Jt+hGksyEyRmtz0s=
-X-Google-Smtp-Source: ABdhPJx7icftLDYBE7O/E6OEhKgfoo+sJumEYaitWywDxy3PqnIXpsTyomq+JXW9Dd2vnD+demIi5HaUJ53/4Po0HK4=
-X-Received: by 2002:a63:8bc7:0:b0:3fc:bd28:c819 with SMTP id
- j190-20020a638bc7000000b003fcbd28c819mr12865767pge.378.1654354799921; Sat, 04
- Jun 2022 07:59:59 -0700 (PDT)
+        Sat, 4 Jun 2022 11:07:43 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 579681107
+        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 08:07:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654355262; x=1685891262;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=j9WLDWxx4/90EaGqKAMOvOAMt9W6psHZsu9rmY1hEj4=;
+  b=iIaQLbLgNS2vbWRKCnyN/U6UoD2OcyaGK7UvNtByBV8vALxFdzzPSyjh
+   slELEoczQ3bXjX9si5rR55amEscQOt6vIMPf+6h3rRx/hOaDGfRGO0wHh
+   ZXtwEopd4FAVfYgTP+wV0qutZoGCj8I6LwPY7Wx5acRtK2wo63xIyjfLy
+   8oqwVeyJLYfDoOB2kGQu22I2jyp0UF4EolqooXzvR42uSPjsUlm3SoxMR
+   nA+ycuGDxovQkY/wOGXBLVMzh2vE72rYISd7tSjVHM96EIi/gE/TzWcT8
+   wwn1r/itfUvxY7yAmpyf2LIjNiW4dO88C6Vz89hlS4AEepiKzkSV0S/CQ
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10368"; a="256308056"
+X-IronPort-AV: E=Sophos;i="5.91,277,1647327600"; 
+   d="scan'208";a="256308056"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2022 08:07:42 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,277,1647327600"; 
+   d="scan'208";a="722158573"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 04 Jun 2022 08:07:40 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nxVNM-000Az4-CL;
+        Sat, 04 Jun 2022 15:07:40 +0000
+Date:   Sat, 4 Jun 2022 23:07:13 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Subject: ERROR: modpost: "__ld_r13_to_r25_ret" [lib/zstd/zstd_decompress.ko]
+ undefined!
+Message-ID: <202206042359.2JvOQulf-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
- <20220603102848.17907-1-mailhol.vincent@wanadoo.fr> <20220604114603.hi4klmu2hwrvf75x@pengutronix.de>
- <CAMZ6RqJpJCAudv89YqFFQH80ei7WiAshyk1RtbEv=aXSyxo3hQ@mail.gmail.com> <20220604135541.2ki2eskyc7gsmrlu@pengutronix.de>
-In-Reply-To: <20220604135541.2ki2eskyc7gsmrlu@pengutronix.de>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Sat, 4 Jun 2022 23:59:48 +0900
-Message-ID: <CAMZ6RqJ7qvXyxNVUK-=oJnK_oq7N94WABOb3pqeYf9Fw3G6J9A@mail.gmail.com>
-Subject: Re: [PATCH v4 0/7] can: refactoring of can-dev module and of Kbuild
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Max Staudt <max@enpas.org>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat. 4 June 2022 at 22:55, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
-> On 04.06.2022 22:05:09, Vincent MAILHOL wrote:
-> > On Sat. 4 juin 2022 at 20:46, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
-> > > Hello Vincent,
-> > >
-> > > wow! This is a great series which addresses a lot of long outstanding
-> > > issues. Great work!
-> >
-> > Thanks.
-> >
-> > > As this cover letter brings so much additional information I'll ask
-> > > Jakub and David if they take pull request from me, which itself have
-> > > merges. This cover letter would be part of my merge. If I get the OK,
-> > > can you provide this series as a tag (ideally GPG signed) that I can
-> > > pull?
-> >
-> > Fine, but I need a bit of guidance here. To provide a tag, I need to
-> > have my own git repository hosted online, right?
->
-> That is one option.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   032dcf09e2bf7c822be25b4abef7a6c913870d98
+commit: a2a9d67a26ec94a99ed29efbd61cf5be0a575678 bootconfig: Support embedding a bootconfig file in kernel
+date:   6 weeks ago
+config: arc-randconfig-r014-20220603 (https://download.01.org/0day-ci/archive/20220604/202206042359.2JvOQulf-lkp@intel.com/config)
+compiler: arc-elf-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=a2a9d67a26ec94a99ed29efbd61cf5be0a575678
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout a2a9d67a26ec94a99ed29efbd61cf5be0a575678
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash
 
-This suggests that there are other options? What would be those other options?
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-> > Is GitHub OK or should I create one on https://git.kernel.org/?
->
-> Some maintainers don't like github, let's wait what Davem and Jakub say.
-> I think for git.kernel.org you need a GPG key with signatures of 3 users
-> of git.kernel.org.
+All errors (new ones prefixed by >>, old ones prefixed by <<):
 
-Personally, I would also prefer getting my own git.kernel.org account.
-It has infinitely more swag than GitHub. But my religion does not
-forbid me from using GitHub :)
+>> ERROR: modpost: "__ld_r13_to_r25_ret" [lib/zstd/zstd_decompress.ko] undefined!
+>> ERROR: modpost: "__st_r13_to_r25" [lib/zstd/zstd_decompress.ko] undefined!
 
-Yours sincerely,
-Vincent Mailhol
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
