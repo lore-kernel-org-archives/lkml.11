@@ -2,57 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D27DC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 22:21:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1B3FC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 22:41:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242289AbiFDWVC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 4 Jun 2022 18:21:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43794 "EHLO
+        id S242240AbiFDWlY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 4 Jun 2022 18:41:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237737AbiFDWU5 (ORCPT
+        with ESMTP id S241336AbiFDWlW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 4 Jun 2022 18:20:57 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C00EF36164
-        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 15:20:56 -0700 (PDT)
+        Sat, 4 Jun 2022 18:41:22 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2562BF79
+        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 15:41:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654381256; x=1685917256;
+  t=1654382478; x=1685918478;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=RabymgCqmi/AtvPh/kFx3QlZbW6c/B7cgP+iUjv4WjY=;
-  b=M++gJ+8N9pkRvh+0HGXc+aQESsAqr8dUoBr+eYb56XTQfGxd7afqPk8I
-   cctzGnodM9tI9p3bap64UV5B9AEAoniB80zjQUrnaVAb5ZJSSElflg6TQ
-   BMZt/jd5Hzm78o8491mgaGHfZWSqw5wcjRJ46ArCD94X9S0RDCvB+cEXW
-   H3xb8MntnqW9esk0Bg6jgzo4HZ3yeEQFBAwdjiLq1/waCkMX+Ba3UirUW
-   Lbe8tWfo7FomTnDsq+t1kqbMSMaRZOyVpNWPTAbU//gcXGlps39PtMLvE
-   +4g5sVkJ5eBPSOnTtJkbVbjs8KS36Ck5Q9DTSIeS4EgDaIi97FjV9h58N
+  bh=Knviwl19JMIauYk8cJGoyLOmq4c2nR30uFsE9VFNTeg=;
+  b=jeExOVO2lQrXRN81+yivNb9+BSD5X1MPVxw/zjWblfiR6xR061TZ/m2H
+   3pZfX2F9zcYQZiCmHnZhDEb8upB0iNHwUkToG8OHKni3GLsEZsV++Zvw0
+   MZAxgm3yzQI46OSeTP4RwwVx8qvFMpeoQKkXZ2rIZQ2pY7twsXAPlkEiS
+   Re+Fr6NEzsNlvjizJegMfPF0K0DA0Jc/FYnWKIGEYazXYw/V7hVjuWWD/
+   +TtPsKy1Ek9NXMuiQfy2J0bRZ5VjISQHzXVg17Ej3geJGI6C1BpnvlKoj
+   cfLVycNykhc3dPa41+fWE20AAxbT3dMtkJx5ILZ3jmt/xjo1U1GZmxAeJ
    g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10368"; a="337166458"
+X-IronPort-AV: E=McAfee;i="6400,9594,10368"; a="274048659"
 X-IronPort-AV: E=Sophos;i="5.91,278,1647327600"; 
-   d="scan'208";a="337166458"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2022 15:20:56 -0700
+   d="scan'208";a="274048659"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2022 15:41:17 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,278,1647327600"; 
-   d="scan'208";a="668948595"
+   d="scan'208";a="708522241"
 Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 04 Jun 2022 15:20:54 -0700
+  by orsmga004.jf.intel.com with ESMTP; 04 Jun 2022 15:41:16 -0700
 Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
         (envelope-from <lkp@intel.com>)
-        id 1nxc8b-000BFb-RM;
-        Sat, 04 Jun 2022 22:20:53 +0000
-Date:   Sun, 5 Jun 2022 06:20:34 +0800
+        id 1nxcSJ-000BFx-PI;
+        Sat, 04 Jun 2022 22:41:15 +0000
+Date:   Sun, 5 Jun 2022 06:40:56 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Deren Wu <deren.wu@mediatek.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Felix Fietkau <nbd@nbd.name>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Quan Zhou <quan.zhou@mediatek.com>,
-        Ming Yen Hsieh <mingyen.hsieh@mediatek.com>
-Subject: [nbd168-wireless:mt76 5/13]
- drivers/net/wireless/mediatek/mt76/mt7921/acpi_sar.c:64:68: sparse: sparse:
- Using plain integer as NULL pointer
-Message-ID: <202206050617.FMBZUzPN-lkp@intel.com>
+To:     Frederic Weisbecker <frederic@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [frederic-dynticks:rcu/context-tracking-v4 10/20]
+ kernel/entry/common.c:452: undefined reference to `ct_nmi_enter'
+Message-ID: <202206050647.OqMhvNtv-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -60,43 +55,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/nbd168/wireless mt76
-head:   bf744ed33b209f6d8de1b2a5b806c5fe38cd1e7c
-commit: ab79a7d7a96f3325a120b6658ea9d8a3eaa2eb09 [5/13] mt76: mt7921: introduce ACPI SAR support
-config: ia64-randconfig-s031-20220605 (https://download.01.org/0day-ci/archive/20220605/202206050617.FMBZUzPN-lkp@intel.com/config)
-compiler: ia64-linux-gcc (GCC) 11.3.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-18-g56afb504-dirty
-        # https://github.com/nbd168/wireless/commit/ab79a7d7a96f3325a120b6658ea9d8a3eaa2eb09
-        git remote add nbd168-wireless https://github.com/nbd168/wireless
-        git fetch --no-tags nbd168-wireless mt76
-        git checkout ab79a7d7a96f3325a120b6658ea9d8a3eaa2eb09
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/frederic/linux-dynticks.git rcu/context-tracking-v4
+head:   77493b1db618c61dec140cbab830832f77203d69
+commit: d3d60b6390751cda15d2295725673f78303e4ea4 [10/20] context_tracking: Take NMI eqs entrypoints over RCU
+config: x86_64-randconfig-a008 (https://download.01.org/0day-ci/archive/20220605/202206050647.OqMhvNtv-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-1) 11.3.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/frederic/linux-dynticks.git/commit/?id=d3d60b6390751cda15d2295725673f78303e4ea4
+        git remote add frederic-dynticks https://git.kernel.org/pub/scm/linux/kernel/git/frederic/linux-dynticks.git
+        git fetch --no-tags frederic-dynticks rcu/context-tracking-v4
+        git checkout d3d60b6390751cda15d2295725673f78303e4ea4
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=ia64 SHELL=/bin/bash drivers/net/wireless/mediatek/mt76/mt7921/
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
 If you fix the issue, kindly add following tag where applicable
 Reported-by: kernel test robot <lkp@intel.com>
 
+All errors (new ones prefixed by >>):
 
-sparse warnings: (new ones prefixed by >>)
->> drivers/net/wireless/mediatek/mt76/mt7921/acpi_sar.c:64:68: sparse: sparse: Using plain integer as NULL pointer
+   vmlinux.o: warning: objtool: pvh_start_xen()+0x0: unreachable instruction
+   ld: vmlinux.o: in function `irq_enter':
+   kernel/softirq.c:610: undefined reference to `ct_irq_enter'
+   ld: vmlinux.o: in function `irq_exit':
+   kernel/softirq.c:662: undefined reference to `ct_irq_exit'
+   ld: vmlinux.o: in function `trace_console_rcuidle':
+   include/trace/events/printk.h:10: undefined reference to `ct_irq_enter_irqson'
+   ld: include/trace/events/printk.h:10: undefined reference to `ct_irq_exit_irqson'
+   ld: vmlinux.o: in function `bc_set_next':
+   kernel/time/tick-broadcast-hrtimer.c:64: undefined reference to `ct_irq_enter_irqson'
+   ld: kernel/time/tick-broadcast-hrtimer.c:64: undefined reference to `ct_irq_exit_irqson'
+   ld: vmlinux.o: in function `trace_irq_disable_rcuidle':
+   include/trace/events/preemptirq.h:36: undefined reference to `ct_irq_enter_irqson'
+   ld: include/trace/events/preemptirq.h:36: undefined reference to `ct_irq_exit_irqson'
+   ld: vmlinux.o: in function `trace_irq_enable_rcuidle':
+   include/trace/events/preemptirq.h:40: undefined reference to `ct_irq_enter_irqson'
+   ld: include/trace/events/preemptirq.h:40: undefined reference to `ct_irq_exit_irqson'
+   ld: vmlinux.o: in function `trace_clk_disable_rcuidle':
+   include/trace/events/clk.h:46: undefined reference to `ct_irq_enter_irqson'
+   ld: include/trace/events/clk.h:46: undefined reference to `ct_irq_exit_irqson'
+   ld: vmlinux.o: in function `trace_clk_disable_complete_rcuidle':
+   include/trace/events/clk.h:53: undefined reference to `ct_irq_enter_irqson'
+   ld: include/trace/events/clk.h:53: undefined reference to `ct_irq_exit_irqson'
+   ld: vmlinux.o: in function `trace_clk_enable_rcuidle':
+   include/trace/events/clk.h:32: undefined reference to `ct_irq_enter_irqson'
+   ld: include/trace/events/clk.h:32: undefined reference to `ct_irq_exit_irqson'
+   ld: vmlinux.o: in function `trace_clk_enable_complete_rcuidle':
+   include/trace/events/clk.h:39: undefined reference to `ct_irq_enter_irqson'
+   ld: include/trace/events/clk.h:39: undefined reference to `ct_irq_exit_irqson'
+   ld: vmlinux.o: in function `irqentry_nmi_enter':
+>> kernel/entry/common.c:452: undefined reference to `ct_nmi_enter'
+   ld: vmlinux.o: in function `irqentry_nmi_exit':
+>> kernel/entry/common.c:472: undefined reference to `ct_nmi_exit'
+   ld: vmlinux.o: in function `irqentry_exit':
+   kernel/entry/common.c:421: undefined reference to `ct_irq_exit'
+   ld: kernel/entry/common.c:439: undefined reference to `ct_irq_exit'
 
-vim +64 drivers/net/wireless/mediatek/mt76/mt7921/acpi_sar.c
 
-    59	
-    60	/* MTCL : Country List Table for 6G band */
-    61	static int
-    62	mt7921_asar_acpi_read_mtcl(struct mt7921_dev *dev, u8 **table, u8 *version)
-    63	{
-  > 64		*version = (mt7921_acpi_read(dev, MT7921_ACPI_MTCL, table, 0) < 0)
-    65			   ? 1 : 2;
-    66		return 0;
-    67	}
-    68	
+vim +452 kernel/entry/common.c
+
+   442	
+   443	irqentry_state_t noinstr irqentry_nmi_enter(struct pt_regs *regs)
+   444	{
+   445		irqentry_state_t irq_state;
+   446	
+   447		irq_state.lockdep = lockdep_hardirqs_enabled();
+   448	
+   449		__nmi_enter();
+   450		lockdep_hardirqs_off(CALLER_ADDR0);
+   451		lockdep_hardirq_enter();
+ > 452		ct_nmi_enter();
+   453	
+   454		instrumentation_begin();
+   455		trace_hardirqs_off_finish();
+   456		ftrace_nmi_enter();
+   457		instrumentation_end();
+   458	
+   459		return irq_state;
+   460	}
+   461	
+   462	void noinstr irqentry_nmi_exit(struct pt_regs *regs, irqentry_state_t irq_state)
+   463	{
+   464		instrumentation_begin();
+   465		ftrace_nmi_exit();
+   466		if (irq_state.lockdep) {
+   467			trace_hardirqs_on_prepare();
+   468			lockdep_hardirqs_on_prepare(CALLER_ADDR0);
+   469		}
+   470		instrumentation_end();
+   471	
+ > 472		ct_nmi_exit();
 
 -- 
 0-DAY CI Kernel Test Service
