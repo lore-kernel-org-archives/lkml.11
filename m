@@ -2,94 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E142CCA47D
-	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 16:29:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF1D1C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 16:32:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238148AbiFDQ3f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 4 Jun 2022 12:29:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46246 "EHLO
+        id S238249AbiFDQcb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 4 Jun 2022 12:32:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232413AbiFDQ3d (ORCPT
+        with ESMTP id S231208AbiFDQc3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 4 Jun 2022 12:29:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8771F38DBD;
-        Sat,  4 Jun 2022 09:29:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3D279B802C7;
-        Sat,  4 Jun 2022 16:29:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB044C385B8;
-        Sat,  4 Jun 2022 16:29:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654360170;
-        bh=7d5aAfbuVsokc3Hx6f2bqfKTB2fqGiox7OK0FoJLvRo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=s71uDuBCowx87YXKE1+4/eD6ZJ7hQ2foZJDi8NsPiasrmanOfxbTO6LVhMyOuxglR
-         RzGz2pUVoVisij4vV0S5KkLNVlJD+xmgQNk4g3fDt0aaYIpQpp2V24Q9f/wgNeOpgL
-         ZIRwp4YjCw4wj1XA6EPzz07ihhVTgPiTOQgcLTVajvjQ9XQOB7s844GzkLTnQCCSUP
-         iHxZAfs+O5hQTIRmKkasMBDQNCRWEIGBcatHvfRzI+2mKQMin7p/8EdzI7lprZNoci
-         /Use13KB1l0gebHp8hwcbSkWaZZrBzKaZZse3DmdqZQzSf75cRh99d1eVDC7FSl7Bg
-         pinF2a5XXMtGA==
-Date:   Sat, 4 Jun 2022 17:38:31 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Stephen Boyd <swboyd@chromium.org>
-Cc:     linux-kernel@vger.kernel.org, patches@lists.linux.dev,
-        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-        Gwendal Grignou <gwendal@chromium.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>
-Subject: Re: [PATCH v2 0/2] iio: sx9324: Support CS idle mode
-Message-ID: <20220604173831.254345c2@jic23-huawei>
-In-Reply-To: <20220503193937.3794477-1-swboyd@chromium.org>
-References: <20220503193937.3794477-1-swboyd@chromium.org>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Sat, 4 Jun 2022 12:32:29 -0400
+Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com [209.85.219.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 937D22CCAB;
+        Sat,  4 Jun 2022 09:32:27 -0700 (PDT)
+Received: by mail-yb1-f171.google.com with SMTP id w2so18731814ybi.7;
+        Sat, 04 Jun 2022 09:32:27 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=u1iTXsUBZY4rOPgodw6cyeMHMVRQnYdLbaVth9Uz2Lo=;
+        b=iOj1PnYlQN2hXYJfmyGMmKvMG8fR82WSZe3IY5ezDeASW4nc5L1hGJNR19RJbD5Xzz
+         qaPDJM707ytD5jLJJT+jK5Ivst9ZRkaX0KRu9u9Q3y7OOGy0AjW30QGUm2xGiRq00vFB
+         5EKVuk7lL8DhEzDD/nkzu6isUi2CYmNKH43IEek78SFEMmgs/4VLhaeY/MUPD2G/cH8U
+         Q2zCFXhShteTroyxgaEvqoRaDmVlqRQvKzWXeAbRiOhnnsOz13bDOs5gilJMMtd+gouq
+         /e7r7ei0DPzZSh5sJ6gUUIkqZkOXdCR8fcYzZjLZ4soYHVuw+duk2eXY2z7irDeyrZPR
+         B1EA==
+X-Gm-Message-State: AOAM533gdlE6XFlHsbx0T/xVG8BsnEiF/kEhRQqFyegHOaPLAEAbbvCA
+        fqxFcny6BuXrK7K4ns+0T2+cytewLVyEhTOtrFI=
+X-Google-Smtp-Source: ABdhPJyNmKTDde0VcHd04GhxlN3kUsWv1n9QPvSxGy7iPiUvCW0/iO6JQhDFpJIAy7Cx7lfgbJ7xwo/EYrHv+XaBmIw=
+X-Received: by 2002:a25:ad58:0:b0:65c:e3e5:e813 with SMTP id
+ l24-20020a25ad58000000b0065ce3e5e813mr16127790ybe.151.1654360346868; Sat, 04
+ Jun 2022 09:32:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
+ <20220603102848.17907-1-mailhol.vincent@wanadoo.fr> <20220604114603.hi4klmu2hwrvf75x@pengutronix.de>
+ <CAMZ6RqJpJCAudv89YqFFQH80ei7WiAshyk1RtbEv=aXSyxo3hQ@mail.gmail.com>
+ <20220604135541.2ki2eskyc7gsmrlu@pengutronix.de> <CAMZ6RqJ7qvXyxNVUK-=oJnK_oq7N94WABOb3pqeYf9Fw3G6J9A@mail.gmail.com>
+ <20220604151859.hyywffrni4vo6gdl@pengutronix.de>
+In-Reply-To: <20220604151859.hyywffrni4vo6gdl@pengutronix.de>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Sun, 5 Jun 2022 01:32:15 +0900
+Message-ID: <CAMZ6RqK45r-cqXvorUzRV-LA_C+mk6hNSA1b+0kLs7C-oTcDCA@mail.gmail.com>
+Subject: Re: [PATCH v4 0/7] can: refactoring of can-dev module and of Kbuild
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Max Staudt <max@enpas.org>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue,  3 May 2022 12:39:35 -0700
-Stephen Boyd <swboyd@chromium.org> wrote:
+On Sun. 5 juin 2022 at 00:18, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+> On 04.06.2022 23:59:48, Vincent MAILHOL wrote:
+> > > > Fine, but I need a bit of guidance here. To provide a tag, I need to
+> > > > have my own git repository hosted online, right?
+> > >
+> > > That is one option.
+> >
+> > This suggests that there are other options? What would be those other
+> > options?
+>
+> 2. git.kernel.org (most preferred)
+> 3. github.com (have to ask Davem/Jakub)
+>
+> > > > Is GitHub OK or should I create one on https://git.kernel.org/?
+> > >
+> > > Some maintainers don't like github, let's wait what Davem and Jakub say.
+> > > I think for git.kernel.org you need a GPG key with signatures of 3 users
+> > > of git.kernel.org.
+> >
+> > Personally, I would also prefer getting my own git.kernel.org account.
+>
+> See https://korg.docs.kernel.org/accounts.html
 
-> I need one more property to set another regsiter field for 
-> how to configure the CS pins during idle and sleep modes. This is based
-> on the latest patch series from Gwendal[1]
-> 
-> Changes from v1 (https://lore.kernel.org/r/20220503004156.3559940-1-swboyd@chromium.org):
->  * Change 'hz' to 'hi-z'
->  * Add property to example
+Thanks for the link. I will have a look at it tomorrow (or the day
+after tomorrow in the worst case).
 
-Series applied to the togreg branch of iio.git and pushed out as testing to
-let 0-day poke at them a bit before I make a mess of linux-next.
+Meanwhile, I will send the v5 which should address all your comments.
 
-Thanks,
 
-Jonathan
-
-> 
-> Stephen Boyd (2):
->   dt-bindings: iio: sx9324: Add CS idle/sleep mode
->   iio: sx9324: Add setting for CS idle mode
-> 
->  .../bindings/iio/proximity/semtech,sx9324.yaml   |  9 +++++++++
->  drivers/iio/proximity/sx9324.c                   | 16 ++++++++++++++++
->  2 files changed, 25 insertions(+)
-> 
-> [1] https://lore.kernel.org/all/20220429220144.1476049-1-gwendal@chromium.org/
-> 
-> 
-> base-commit: d79478a79cfa393cde46bccb05d52fc7d875d2e2
-> prerequisite-patch-id: 05986765e921df4c9725d10a3f51e68b0b5cc211
-> prerequisite-patch-id: 5e47b28af046dce1eb7d7ca492c466df0f30e07c
-> prerequisite-patch-id: adb59d1a14b74ddfe02c442da8bcca04765e7d15
-> prerequisite-patch-id: ec6069ee00463db27826962537ff880e69522f70
-> prerequisite-patch-id: e40f2a3048da2ff28bb426b85e41d277f29f18ef
-> prerequisite-patch-id: 82077662b97c09014c5b291fe5a42938a29ddbcd
-> prerequisite-patch-id: d02f0ec3be1fa9cdbf02a22c700982008d0550bd
-> prerequisite-patch-id: a02a8faefc5b7b68b99c0cc326973948c9356b60
-> prerequisite-patch-id: 522c808e4b8bf99b8404c01d495526a685e5b97a
-
+Yours sincerely,
+Vincent Mailhol
