@@ -2,81 +2,225 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55956C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 07:40:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95EB9C43334
+	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 07:43:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233114AbiFDHkK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 4 Jun 2022 03:40:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54732 "EHLO
+        id S233210AbiFDHnb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 4 Jun 2022 03:43:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230074AbiFDHkG (ORCPT
+        with ESMTP id S230074AbiFDHn3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 4 Jun 2022 03:40:06 -0400
-Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21DE9275E6;
-        Sat,  4 Jun 2022 00:40:05 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 1989B2055E;
-        Sat,  4 Jun 2022 09:40:03 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id jHU0zutdV4mI; Sat,  4 Jun 2022 09:40:02 +0200 (CEST)
-Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 9E1D120322;
-        Sat,  4 Jun 2022 09:40:02 +0200 (CEST)
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout2.secunet.com (Postfix) with ESMTP id 8DF3D80004A;
-        Sat,  4 Jun 2022 09:40:02 +0200 (CEST)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 4 Jun 2022 09:40:02 +0200
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 4 Jun
- 2022 09:40:02 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id D343B3182D6B; Sat,  4 Jun 2022 09:40:01 +0200 (CEST)
-Date:   Sat, 4 Jun 2022 09:40:01 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Hangyu Hua <hbh25y@gmail.com>
-CC:     <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <timo.teras@iki.fi>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] xfrm: xfrm_policy: fix a possible double
- xfrm_pols_put() in xfrm_bundle_lookup()
-Message-ID: <20220604074001.GL680067@gauss3.secunet.de>
-References: <20220601064625.26414-1-hbh25y@gmail.com>
+        Sat, 4 Jun 2022 03:43:29 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 321CB26AD8
+        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 00:43:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654328608; x=1685864608;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=CCgJuoWVNZbJwtiACFMwi6Fh+Qv4Q7B3hZ5u3qVENUM=;
+  b=cXBhZy9/E4Lhz6gSiGIyBHPyZGSDuFqCH5Auk2cxOcuMkvpcANqwNEAf
+   9byixXRUen2Xk1wswhlsST2OA++z/XEz/pPZC6ZOdAdmo4P8Zkhliv5Sm
+   LR65MaKFxOEAGTuxPFuODv1xXOVkSDv0eOzOiXNIZ1wjnO0j2Graqyy6F
+   xLk5fWYzReGgj+dhDWRTDJxe48OeABnMT76mNs69sERyFLluzDXGAA7iq
+   BoH/b7H+KWvhU2pUUdTVIax5wYlogUUZ1Z83mPgaU6+AXsqHgzL6Bi7xe
+   +bp+J3a1FWpngO16RCWEY8KNkPFKisM6PJnYMFfq5Lug5HWGP4IS5o88V
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10367"; a="256884890"
+X-IronPort-AV: E=Sophos;i="5.91,277,1647327600"; 
+   d="scan'208";a="256884890"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2022 00:43:27 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,277,1647327600"; 
+   d="scan'208";a="607792551"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga008.jf.intel.com with ESMTP; 04 Jun 2022 00:43:22 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nxORN-000ARV-S5;
+        Sat, 04 Jun 2022 07:43:21 +0000
+Date:   Sat, 4 Jun 2022 15:43:14 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Robert Hancock <robert.hancock@calian.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: [linux-stable-rc:linux-4.19.y 1539/2640]
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c:283:9: error: 'ret'
+ undeclared; did you mean 'net'?
+Message-ID: <202206041504.QbtKoS72-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220601064625.26414-1-hbh25y@gmail.com>
-X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 01, 2022 at 02:46:25PM +0800, Hangyu Hua wrote:
-> xfrm_policy_lookup() will call xfrm_pol_hold_rcu() to get a refcount of
-> pols[0]. This refcount can be dropped in xfrm_expand_policies() when
-> xfrm_expand_policies() return error. pols[0]'s refcount is balanced in
-> here. But xfrm_bundle_lookup() will also call xfrm_pols_put() with
-> num_pols == 1 to drop this refcount when xfrm_expand_policies() return
-> error.
-> 
-> This patch also fix an illegal address access. pols[0] will save a error
-> point when xfrm_policy_lookup fails. This lead to xfrm_pols_put to resolve
-> an illegal address in xfrm_bundle_lookup's error path.
-> 
-> Fix these by setting num_pols = 0 in xfrm_expand_policies()'s error path.
-> 
-> Fixes: 80c802f3073e ("xfrm: cache bundles instead of policies for outgoing flows")
-> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Hi Robert,
 
-Applied, thanks!
+FYI, the error/warning still remains.
+
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
+head:   8d1c6d3581bb07a2ea5e34376791884a79ff4114
+commit: 8b8ad8a7ac24905937c3975b54c4594b93b66ebb [1539/2640] net: axienet: Wait for PhyRstCmplt after core reset
+config: microblaze-randconfig-r019-20220603 (https://download.01.org/0day-ci/archive/20220604/202206041504.QbtKoS72-lkp@intel.com/config)
+compiler: microblaze-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/commit/?id=8b8ad8a7ac24905937c3975b54c4594b93b66ebb
+        git remote add linux-stable-rc https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+        git fetch --no-tags linux-stable-rc linux-4.19.y
+        git checkout 8b8ad8a7ac24905937c3975b54c4594b93b66ebb
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=microblaze SHELL=/bin/bash drivers/net/ethernet/xilinx/
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   drivers/net/ethernet/xilinx/xilinx_axienet_main.c: In function 'axienet_dma_bd_init':
+>> drivers/net/ethernet/xilinx/xilinx_axienet_main.c:283:9: error: 'ret' undeclared (first use in this function); did you mean 'net'?
+     283 |         ret = read_poll_timeout(axienet_ior, value,
+         |         ^~~
+         |         net
+   drivers/net/ethernet/xilinx/xilinx_axienet_main.c:283:9: note: each undeclared identifier is reported only once for each function it appears in
+   drivers/net/ethernet/xilinx/xilinx_axienet_main.c:283:15: error: implicit declaration of function 'read_poll_timeout' [-Werror=implicit-function-declaration]
+     283 |         ret = read_poll_timeout(axienet_ior, value,
+         |               ^~~~~~~~~~~~~~~~~
+>> drivers/net/ethernet/xilinx/xilinx_axienet_main.c:283:46: error: 'value' undeclared (first use in this function)
+     283 |         ret = read_poll_timeout(axienet_ior, value,
+         |                                              ^~~~~
+   cc1: some warnings being treated as errors
+
+
+vim +283 drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+
+   178	
+   179	/**
+   180	 * axienet_dma_bd_init - Setup buffer descriptor rings for Axi DMA
+   181	 * @ndev:	Pointer to the net_device structure
+   182	 *
+   183	 * Return: 0, on success -ENOMEM, on failure
+   184	 *
+   185	 * This function is called to initialize the Rx and Tx DMA descriptor
+   186	 * rings. This initializes the descriptors with required default values
+   187	 * and is called when Axi Ethernet driver reset is called.
+   188	 */
+   189	static int axienet_dma_bd_init(struct net_device *ndev)
+   190	{
+   191		u32 cr;
+   192		int i;
+   193		struct sk_buff *skb;
+   194		struct axienet_local *lp = netdev_priv(ndev);
+   195	
+   196		/* Reset the indexes which are used for accessing the BDs */
+   197		lp->tx_bd_ci = 0;
+   198		lp->tx_bd_tail = 0;
+   199		lp->rx_bd_ci = 0;
+   200	
+   201		/* Allocate the Tx and Rx buffer descriptors. */
+   202		lp->tx_bd_v = dma_zalloc_coherent(ndev->dev.parent,
+   203						  sizeof(*lp->tx_bd_v) * TX_BD_NUM,
+   204						  &lp->tx_bd_p, GFP_KERNEL);
+   205		if (!lp->tx_bd_v)
+   206			goto out;
+   207	
+   208		lp->rx_bd_v = dma_zalloc_coherent(ndev->dev.parent,
+   209						  sizeof(*lp->rx_bd_v) * RX_BD_NUM,
+   210						  &lp->rx_bd_p, GFP_KERNEL);
+   211		if (!lp->rx_bd_v)
+   212			goto out;
+   213	
+   214		for (i = 0; i < TX_BD_NUM; i++) {
+   215			lp->tx_bd_v[i].next = lp->tx_bd_p +
+   216					      sizeof(*lp->tx_bd_v) *
+   217					      ((i + 1) % TX_BD_NUM);
+   218		}
+   219	
+   220		for (i = 0; i < RX_BD_NUM; i++) {
+   221			lp->rx_bd_v[i].next = lp->rx_bd_p +
+   222					      sizeof(*lp->rx_bd_v) *
+   223					      ((i + 1) % RX_BD_NUM);
+   224	
+   225			skb = netdev_alloc_skb_ip_align(ndev, lp->max_frm_size);
+   226			if (!skb)
+   227				goto out;
+   228	
+   229			lp->rx_bd_v[i].sw_id_offset = (u32) skb;
+   230			lp->rx_bd_v[i].phys = dma_map_single(ndev->dev.parent,
+   231							     skb->data,
+   232							     lp->max_frm_size,
+   233							     DMA_FROM_DEVICE);
+   234			lp->rx_bd_v[i].cntrl = lp->max_frm_size;
+   235		}
+   236	
+   237		/* Start updating the Rx channel control register */
+   238		cr = axienet_dma_in32(lp, XAXIDMA_RX_CR_OFFSET);
+   239		/* Update the interrupt coalesce count */
+   240		cr = ((cr & ~XAXIDMA_COALESCE_MASK) |
+   241		      ((lp->coalesce_count_rx) << XAXIDMA_COALESCE_SHIFT));
+   242		/* Update the delay timer count */
+   243		cr = ((cr & ~XAXIDMA_DELAY_MASK) |
+   244		      (XAXIDMA_DFT_RX_WAITBOUND << XAXIDMA_DELAY_SHIFT));
+   245		/* Enable coalesce, delay timer and error interrupts */
+   246		cr |= XAXIDMA_IRQ_ALL_MASK;
+   247		/* Write to the Rx channel control register */
+   248		axienet_dma_out32(lp, XAXIDMA_RX_CR_OFFSET, cr);
+   249	
+   250		/* Start updating the Tx channel control register */
+   251		cr = axienet_dma_in32(lp, XAXIDMA_TX_CR_OFFSET);
+   252		/* Update the interrupt coalesce count */
+   253		cr = (((cr & ~XAXIDMA_COALESCE_MASK)) |
+   254		      ((lp->coalesce_count_tx) << XAXIDMA_COALESCE_SHIFT));
+   255		/* Update the delay timer count */
+   256		cr = (((cr & ~XAXIDMA_DELAY_MASK)) |
+   257		      (XAXIDMA_DFT_TX_WAITBOUND << XAXIDMA_DELAY_SHIFT));
+   258		/* Enable coalesce, delay timer and error interrupts */
+   259		cr |= XAXIDMA_IRQ_ALL_MASK;
+   260		/* Write to the Tx channel control register */
+   261		axienet_dma_out32(lp, XAXIDMA_TX_CR_OFFSET, cr);
+   262	
+   263		/* Populate the tail pointer and bring the Rx Axi DMA engine out of
+   264		 * halted state. This will make the Rx side ready for reception.
+   265		 */
+   266		axienet_dma_out32(lp, XAXIDMA_RX_CDESC_OFFSET, lp->rx_bd_p);
+   267		cr = axienet_dma_in32(lp, XAXIDMA_RX_CR_OFFSET);
+   268		axienet_dma_out32(lp, XAXIDMA_RX_CR_OFFSET,
+   269				  cr | XAXIDMA_CR_RUNSTOP_MASK);
+   270		axienet_dma_out32(lp, XAXIDMA_RX_TDESC_OFFSET, lp->rx_bd_p +
+   271				  (sizeof(*lp->rx_bd_v) * (RX_BD_NUM - 1)));
+   272	
+   273		/* Write to the RS (Run-stop) bit in the Tx channel control register.
+   274		 * Tx channel is now ready to run. But only after we write to the
+   275		 * tail pointer register that the Tx channel will start transmitting.
+   276		 */
+   277		axienet_dma_out32(lp, XAXIDMA_TX_CDESC_OFFSET, lp->tx_bd_p);
+   278		cr = axienet_dma_in32(lp, XAXIDMA_TX_CR_OFFSET);
+   279		axienet_dma_out32(lp, XAXIDMA_TX_CR_OFFSET,
+   280				  cr | XAXIDMA_CR_RUNSTOP_MASK);
+   281	
+   282		/* Wait for PhyRstCmplt bit to be set, indicating the PHY reset has finished */
+ > 283		ret = read_poll_timeout(axienet_ior, value,
+   284					value & XAE_INT_PHYRSTCMPLT_MASK,
+   285					DELAY_OF_ONE_MILLISEC, 50000, false, lp,
+   286					XAE_IS_OFFSET);
+   287		if (ret) {
+   288			dev_err(lp->dev, "%s: timeout waiting for PhyRstCmplt\n", __func__);
+   289			return ret;
+   290		}
+   291	
+   292		return 0;
+   293	out:
+   294		axienet_dma_bd_release(ndev);
+   295		return -ENOMEM;
+   296	}
+   297	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
