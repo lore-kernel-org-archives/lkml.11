@@ -2,173 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97316C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 16:03:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D576CC43334
+	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 16:20:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238015AbiFDQD5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 4 Jun 2022 12:03:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48518 "EHLO
+        id S238099AbiFDQUL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 4 Jun 2022 12:20:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238002AbiFDQDz (ORCPT
+        with ESMTP id S230027AbiFDQUJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 4 Jun 2022 12:03:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2D2A286DA;
-        Sat,  4 Jun 2022 09:03:54 -0700 (PDT)
+        Sat, 4 Jun 2022 12:20:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5680B3388C;
+        Sat,  4 Jun 2022 09:20:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6428C60E8F;
-        Sat,  4 Jun 2022 16:03:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BED8AC385B8;
-        Sat,  4 Jun 2022 16:03:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1C7E7B802C7;
+        Sat,  4 Jun 2022 16:20:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8529EC385B8;
+        Sat,  4 Jun 2022 16:20:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654358633;
-        bh=ZN+4KgfxWcOwSaMGIOBFEHBu/Dm9p0xts0efbrS4AP4=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=RYFfosEyXRoJm1vLy7b8WUW8aRcf7hAJEd0LK4vwgvPHkZkkj1xvHtoKusB3ncGpz
-         PkhITWvFRktUJ1evDgiYgjGtKHKrMb/0CFcX50C4L0nG4mdDS09cl4pqKgaT0qqPpg
-         SHnIK3qvgRtu7tUfg8XCnWyMexdu0E26lwrUq7lzevc/f2+HXnQYg6pgFtQnPUeAMr
-         bghpL5wA9e0F40Y14P2VkYQoyI1RqYhVnOWjNiDoTTrk60fa9AxRxdW+RAJrAFtw0i
-         uzK1RoYMGEW61S6Zt3NjDwUfxB2czh8tZ5A+fpOlRZaYXqx4GbfEo56wEriVOT64M9
-         Wt9l+antn2iCQ==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 57DB15C04E6; Sat,  4 Jun 2022 09:03:53 -0700 (PDT)
-Date:   Sat, 4 Jun 2022 09:03:53 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Joel Fernandes <joel@joelfernandes.org>
-Cc:     "Uladzislau Rezki (Sony)" <urezki@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>, RCU <rcu@vger.kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Neeraj Upadhyay <neeraj.iitr10@gmail.com>,
-        Oleksiy Avramchenko <oleksiy.avramchenko@sony.com>
-Subject: Re: [PATCH 1/2] rcu/kvfree: Remove useless monitor_todo flag
-Message-ID: <20220604160353.GV1790663@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <20220602080644.432156-1-urezki@gmail.com>
- <YplLK2BcTn2oM0hr@google.com>
+        s=k20201202; t=1654359605;
+        bh=PE3Z/bGGTKYSm3vIXjeLGIwcHQHcqHXv+XN3i6CoFpo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=LSFlZNoQ0Q9isOtG07ipQmLHDJi+mP+HyudDKGy3O4A/xV5UtSNVD+cXwHkZzE8TJ
+         2SUNDv3wck8I9fuNIxZ5S3GcpyvLfVV+iCWeMD7nKjOmYFBIYMtGtdqQpPWEdeHlBz
+         AMLD9UV2Gw1pdgrJqouDy3ADwpFfgV/jKKPWnoZVvveB1hmVXwdQgVfhFoV5D0qWQa
+         3nv28ePH1eGXOKI4kZ1OZuPtyHrO8/qpnlssPaGBcIIcsa52U6yXne624Tu5nEDuJ/
+         M6T1m+tkIrGOEdHFK3I+WqIIWgX3dH6ddKsqQO3WWDnHAbem7StVrJVhDOCq+x1J88
+         NF8zsOrOF6fnA==
+Date:   Sat, 4 Jun 2022 17:29:05 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Caleb Connolly <caleb.connolly@linaro.org>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Stephen Boyd <sboyd@kernel.org>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org,
+        Jami Kettunen <jami.kettunen@somainline.org>,
+        Sumit Semwal <sumit.semwal@linaro.org>
+Subject: Re: [PATCH v14 01/10] spmi: add a helper to look up an SPMI device
+ from a device node
+Message-ID: <20220604172905.36483a52@jic23-huawei>
+In-Reply-To: <20220501182323.7b672d8a@jic23-huawei>
+References: <20220429220904.137297-1-caleb.connolly@linaro.org>
+        <20220429220904.137297-2-caleb.connolly@linaro.org>
+        <20220501182323.7b672d8a@jic23-huawei>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YplLK2BcTn2oM0hr@google.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 02, 2022 at 11:43:39PM +0000, Joel Fernandes wrote:
-> On Thu, Jun 02, 2022 at 10:06:43AM +0200, Uladzislau Rezki (Sony) wrote:
-> > From: "Joel Fernandes (Google)" <joel@joelfernandes.org>
+On Sun, 1 May 2022 18:23:23 +0100
+Jonathan Cameron <jic23@kernel.org> wrote:
+
+> On Fri, 29 Apr 2022 23:08:56 +0100
+> Caleb Connolly <caleb.connolly@linaro.org> wrote:
+> 
+> > The helper function spmi_device_from_of() takes a device node and
+> > returns the SPMI device associated with it.
+> > This is like of_find_device_by_node but for SPMI devices.
 > > 
-> > monitor_todo is not needed as the work struct already tracks
-> > if work is pending. Just use that to know if work is pending
-> > using schedule_delayed_work() helper.
-> > 
-> > Signed-off-by: Uladzislau Rezki (Sony) <urezki@gmail.com>
-> > Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
+> > Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>   
+> 
+> Stephen, are you fine with this addition to spmi?
+
+Stephen.  This is still waiting for an SPMI ack.
+
+Thanks,
+
+Jonathan
+
+> 
+> Given bulk of this series in in IIO I'm planning to pick up once
+> everyone is happy with it.
+> 
+> Thanks,
+> 
+> Jonathan
+> 
+> 
 > > ---
-> >  kernel/rcu/tree.c | 33 ++++++++++++++++-----------------
-> >  1 file changed, 16 insertions(+), 17 deletions(-)
+> >  drivers/spmi/spmi.c  | 17 +++++++++++++++++
+> >  include/linux/spmi.h |  3 +++
+> >  2 files changed, 20 insertions(+)
 > > 
-> > diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
-> > index 222d59299a2a..fd16c0b46d9e 100644
-> > --- a/kernel/rcu/tree.c
-> > +++ b/kernel/rcu/tree.c
-> > @@ -3295,7 +3295,6 @@ struct kfree_rcu_cpu_work {
-> >   * @krw_arr: Array of batches of kfree_rcu() objects waiting for a grace period
-> >   * @lock: Synchronize access to this structure
-> >   * @monitor_work: Promote @head to @head_free after KFREE_DRAIN_JIFFIES
-> > - * @monitor_todo: Tracks whether a @monitor_work delayed work is pending
-> >   * @initialized: The @rcu_work fields have been initialized
-> >   * @count: Number of objects for which GP not started
-> >   * @bkvcache:
-> > @@ -3320,7 +3319,6 @@ struct kfree_rcu_cpu {
-> >  	struct kfree_rcu_cpu_work krw_arr[KFREE_N_BATCHES];
-> >  	raw_spinlock_t lock;
-> >  	struct delayed_work monitor_work;
-> > -	bool monitor_todo;
-> >  	bool initialized;
-> >  	int count;
+> > diff --git a/drivers/spmi/spmi.c b/drivers/spmi/spmi.c
+> > index b37ead9e2fad..a456ce5141e1 100644
+> > --- a/drivers/spmi/spmi.c
+> > +++ b/drivers/spmi/spmi.c
+> > @@ -386,6 +386,23 @@ static struct bus_type spmi_bus_type = {
+> >  	.uevent		= spmi_drv_uevent,
+> >  };
 > >  
-> > @@ -3500,6 +3498,18 @@ static void kfree_rcu_work(struct work_struct *work)
-> >  	}
-> >  }
-> >  
-> > +static bool
-> > +need_offload_krc(struct kfree_rcu_cpu *krcp)
+> > +/**
+> > + * spmi_device_from_of() - get the associated SPMI device from a device node
+> > + *
+> > + * @np:		device node
+> > + *
+> > + * Returns the struct spmi_device associated with a device node or NULL.
+> > + */
+> > +struct spmi_device *spmi_device_from_of(struct device_node *np)
 > > +{
-> > +	int i;
+> > +	struct device *dev = bus_find_device_by_of_node(&spmi_bus_type, np);
 > > +
-> > +	for (i = 0; i < FREE_N_CHANNELS; i++)
-> > +		if (krcp->bkvhead[i])
-> > +			return true;
-> > +
-> > +	return !!krcp->head;
+> > +	if (dev)
+> > +		return to_spmi_device(dev);
+> > +	return NULL;
 > > +}
-> 
-> Thanks for modifying my original patch to do this, and thanks for giving me
-> the attribution for the patch. This function is a nice addition.
-> 
-> For the patch in its entirety:
-> Reviewed-by: Joel Fernandes (Google) <joel@joelfernandes.org>
-
-I pulled this one in for testing and further review, thank you both!
-
-Given the description, I reversed the order of the Signed-off-by
-tags to indicate that the patch came through Uladzislau from Joel.
-
-							Thanx, Paul
-
-> thanks,
-> 
->  - Joel
-> 
-> 
-> 
+> > +EXPORT_SYMBOL_GPL(spmi_device_from_of);
 > > +
-> >  /*
-> >   * This function is invoked after the KFREE_DRAIN_JIFFIES timeout.
-> >   */
-> > @@ -3556,9 +3566,7 @@ static void kfree_rcu_monitor(struct work_struct *work)
-> >  	// of the channels that is still busy we should rearm the
-> >  	// work to repeat an attempt. Because previous batches are
-> >  	// still in progress.
-> > -	if (!krcp->bkvhead[0] && !krcp->bkvhead[1] && !krcp->head)
-> > -		krcp->monitor_todo = false;
-> > -	else
-> > +	if (need_offload_krc(krcp))
-> >  		schedule_delayed_work(&krcp->monitor_work, KFREE_DRAIN_JIFFIES);
+> >  /**
+> >   * spmi_controller_alloc() - Allocate a new SPMI device
+> >   * @ctrl:	associated controller
+> > diff --git a/include/linux/spmi.h b/include/linux/spmi.h
+> > index 729bcbf9f5ad..eac1956a8727 100644
+> > --- a/include/linux/spmi.h
+> > +++ b/include/linux/spmi.h
+> > @@ -164,6 +164,9 @@ static inline void spmi_driver_unregister(struct spmi_driver *sdrv)
+> >  	module_driver(__spmi_driver, spmi_driver_register, \
+> >  			spmi_driver_unregister)
 > >  
-> >  	raw_spin_unlock_irqrestore(&krcp->lock, flags);
-> > @@ -3746,11 +3754,8 @@ void kvfree_call_rcu(struct rcu_head *head, rcu_callback_t func)
-> >  	WRITE_ONCE(krcp->count, krcp->count + 1);
-> >  
-> >  	// Set timer to drain after KFREE_DRAIN_JIFFIES.
-> > -	if (rcu_scheduler_active == RCU_SCHEDULER_RUNNING &&
-> > -	    !krcp->monitor_todo) {
-> > -		krcp->monitor_todo = true;
-> > +	if (rcu_scheduler_active == RCU_SCHEDULER_RUNNING)
-> >  		schedule_delayed_work(&krcp->monitor_work, KFREE_DRAIN_JIFFIES);
-> > -	}
-> >  
-> >  unlock_return:
-> >  	krc_this_cpu_unlock(krcp, flags);
-> > @@ -3825,14 +3830,8 @@ void __init kfree_rcu_scheduler_running(void)
-> >  		struct kfree_rcu_cpu *krcp = per_cpu_ptr(&krc, cpu);
-> >  
-> >  		raw_spin_lock_irqsave(&krcp->lock, flags);
-> > -		if ((!krcp->bkvhead[0] && !krcp->bkvhead[1] && !krcp->head) ||
-> > -				krcp->monitor_todo) {
-> > -			raw_spin_unlock_irqrestore(&krcp->lock, flags);
-> > -			continue;
-> > -		}
-> > -		krcp->monitor_todo = true;
-> > -		schedule_delayed_work_on(cpu, &krcp->monitor_work,
-> > -					 KFREE_DRAIN_JIFFIES);
-> > +		if (need_offload_krc(krcp))
-> > +			schedule_delayed_work_on(cpu, &krcp->monitor_work, KFREE_DRAIN_JIFFIES);
-> >  		raw_spin_unlock_irqrestore(&krcp->lock, flags);
-> >  	}
-> >  }
-> > -- 
-> > 2.30.2
-> > 
+> > +struct device_node;
+> > +
+> > +struct spmi_device *spmi_device_from_of(struct device_node *np);
+> >  int spmi_register_read(struct spmi_device *sdev, u8 addr, u8 *buf);
+> >  int spmi_ext_register_read(struct spmi_device *sdev, u8 addr, u8 *buf,
+> >  			   size_t len);  
+> 
+
