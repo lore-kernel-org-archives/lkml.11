@@ -2,111 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F08E7C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 13:55:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F1DFCCA477
+	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 13:56:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236474AbiFDNzr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 4 Jun 2022 09:55:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45176 "EHLO
+        id S236586AbiFDN42 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 4 Jun 2022 09:56:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235064AbiFDNzq (ORCPT
+        with ESMTP id S235064AbiFDN4X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 4 Jun 2022 09:55:46 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 924AA32EDD
-        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 06:55:45 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1nxUFj-0005mi-Gv; Sat, 04 Jun 2022 15:55:43 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 922688C38A;
-        Sat,  4 Jun 2022 13:55:42 +0000 (UTC)
-Date:   Sat, 4 Jun 2022 15:55:41 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Cc:     linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Max Staudt <max@enpas.org>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v4 0/7] can: refactoring of can-dev module and of Kbuild
-Message-ID: <20220604135541.2ki2eskyc7gsmrlu@pengutronix.de>
-References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
- <20220603102848.17907-1-mailhol.vincent@wanadoo.fr>
- <20220604114603.hi4klmu2hwrvf75x@pengutronix.de>
- <CAMZ6RqJpJCAudv89YqFFQH80ei7WiAshyk1RtbEv=aXSyxo3hQ@mail.gmail.com>
+        Sat, 4 Jun 2022 09:56:23 -0400
+Received: from mail.andi.de1.cc (mail.andi.de1.cc [IPv6:2a01:238:4321:8900:456f:ecd6:43e:202c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F7E732EC3;
+        Sat,  4 Jun 2022 06:56:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=kemnade.info; s=20180802; h=Content-Transfer-Encoding:MIME-Version:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=/ZMGOANmY0CTetjwzmH0pK/i2eudQqDU3CrZKP3hjdc=; b=h4YyS04U4LgwzOtISce0YN79rv
+        rFzIyEIc457L7P+dOA95nn0z95RDTXjmuCe9nM17lSts8/QJJJvrcDd5zSawy30yfFL51q6KFR8VY
+        wEO0zATAUd4UJhWF71VeOpxSADwOyKl6xoqD4hATKtn+CLvDPD1K7GwqKt4s1zAGtJtA=;
+Received: from p200300ccff3313001a3da2fffebfd33a.dip0.t-ipconnect.de ([2003:cc:ff33:1300:1a3d:a2ff:febf:d33a] helo=aktux)
+        by mail.andi.de1.cc with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.89)
+        (envelope-from <andreas@kemnade.info>)
+        id 1nxUG5-0007b5-7t; Sat, 04 Jun 2022 15:56:05 +0200
+Received: from andi by aktux with local (Exim 4.94.2)
+        (envelope-from <andreas@kemnade.info>)
+        id 1nxUG4-002Nz7-I1; Sat, 04 Jun 2022 15:56:04 +0200
+From:   Andreas Kemnade <andreas@kemnade.info>
+To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        arnd@arndb.de, olof@lixom.net, soc@kernel.org, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
+        linux-imx@nxp.com, l.stach@pengutronix.de,
+        marcel.ziswiler@toradex.com, alexander.stein@ew.tq-group.com,
+        tharvey@gateworks.com, linux@rempel-privat.de,
+        matthias.schiffer@ew.tq-group.com, cniedermaier@dh-electronics.com,
+        sebastian.reichel@collabora.com, leoyang.li@nxp.com,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, nicolecrivain@gmail.com
+Cc:     Andreas Kemnade <andreas@kemnade.info>
+Subject: [PATCH v2 0/2] ARM: dts: add Kobo Aura 2
+Date:   Sat,  4 Jun 2022 15:52:58 +0200
+Message-Id: <20220604135300.568754-1-andreas@kemnade.info>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="lkovggqhyysuu6pm"
-Content-Disposition: inline
-In-Reply-To: <CAMZ6RqJpJCAudv89YqFFQH80ei7WiAshyk1RtbEv=aXSyxo3hQ@mail.gmail.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+This adds a basic device tree for the Kobo Aura 2 Ebook reader.
+It is equipped with an i.MX6SL SoC.
 
---lkovggqhyysuu6pm
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Andreas Kemnade (2):
+  dt-bindings: arm: fsl: add compatible string for Kobo Aura 2
+  ARM: dts: imx: Add devicetree for Kobo Aura 2
 
-On 04.06.2022 22:05:09, Vincent MAILHOL wrote:
-> On Sat. 4 juin 2022 at 20:46, Marc Kleine-Budde <mkl@pengutronix.de> wrot=
-e:
-> > Hello Vincent,
-> >
-> > wow! This is a great series which addresses a lot of long outstanding
-> > issues. Great work!
->=20
-> Thanks.
->=20
-> > As this cover letter brings so much additional information I'll ask
-> > Jakub and David if they take pull request from me, which itself have
-> > merges. This cover letter would be part of my merge. If I get the OK,
-> > can you provide this series as a tag (ideally GPG signed) that I can
-> > pull?
->=20
-> Fine, but I need a bit of guidance here. To provide a tag, I need to
-> have my own git repository hosted online, right?
+ .../devicetree/bindings/arm/fsl.yaml          |   1 +
+ arch/arm/boot/dts/Makefile                    |   1 +
+ arch/arm/boot/dts/imx6sl-kobo-aura2.dts       | 596 ++++++++++++++++++
+ 3 files changed, 598 insertions(+)
+ create mode 100644 arch/arm/boot/dts/imx6sl-kobo-aura2.dts
 
-That is one option.
+-- 
+2.30.2
 
-> Is GitHub OK or should I create one on https://git.kernel.org/?
-
-Some maintainers don't like github, let's wait what Davem and Jakub say.
-I think for git.kernel.org you need a GPG key with signatures of 3 users
-of git.kernel.org.
-
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---lkovggqhyysuu6pm
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKbZFsACgkQrX5LkNig
-010Y2wgAgxX8kYnVNKwoELlD65lF2BcHtTg0rpzAub5ezX3z0ZPXIg9i+sPMoU39
-MXFnw/ls0+5D/YJr32LpaQ49sczmlcFhjITON6FqZcIu3D4NXkHQtk14a1GDN4Ca
-/ze876Z3Uw1xSnid0RmsrH/W0ZKoIgRbmy/mFGD5IF7OQ1BtrGa7NrpJXxjuzRR8
-rja6rI7RygDSkseIDDb0iz6LgzzWUqQzeebp/KSn0KUCX5WxqIOey4d03CyNtcSj
-/Qty4+kaJK6iDgJwBG6bdoJcqXNASSyzd8Y/O90qtAoMzY90NLsS5EA3iTJtuD2n
-VTBLKbUQWOr//Xap2JUFSKSK1hXpsg==
-=w8Ar
------END PGP SIGNATURE-----
-
---lkovggqhyysuu6pm--
