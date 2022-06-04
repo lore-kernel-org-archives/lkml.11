@@ -2,164 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA479C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 15:21:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F657C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 15:30:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237688AbiFDPVr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 4 Jun 2022 11:21:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53450 "EHLO
+        id S237765AbiFDPaQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 4 Jun 2022 11:30:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234064AbiFDPVo (ORCPT
+        with ESMTP id S233426AbiFDPaK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 4 Jun 2022 11:21:44 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFD4738BFB
-        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 08:21:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654356103; x=1685892103;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=b1NmwPYbmnZ7oSt7ka23Krkah2ZTY9LKm2fg5a7qsTs=;
-  b=gDyIYxi64FRDgFW3pfpETqisSInHr0o6NhRMT5sRlTU+PGIoicrJEKs+
-   PIIxyl7ZMfRtWz9Uk9i7l2bWxOkMDpbmWhWxeSpWorSk8KoNFsrAwB1od
-   uVRXzx1qs7YlZz8pvTsdoa3a6GXQLTdV8ZrmjJpycNTYWZ/Mambnz8qwf
-   OEszGj9yipByEA72h4AncK4T+jr1BlXOuQHMR+XCu4sEG0bOh128q3GU+
-   FLDyv3q573dR6X7CU5FsDoGFZ9puHswU8Tddht8PC0JqCFsEKDCUUOXKK
-   r2umbbld3CXRjufnoQEjGtPIQSyQoxxOBO8xTUq3rzn+Bk5SLzNYOkWo6
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10368"; a="339519109"
-X-IronPort-AV: E=Sophos;i="5.91,277,1647327600"; 
-   d="scan'208";a="339519109"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2022 08:21:43 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,277,1647327600"; 
-   d="scan'208";a="582986399"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 04 Jun 2022 08:21:41 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nxVau-000Azv-Pn;
-        Sat, 04 Jun 2022 15:21:40 +0000
-Date:   Sat, 4 Jun 2022 23:20:40 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Vinod Koul <vkoul@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: drivers/dma/dw/rzn1-dmamux.c:105:34: warning: unused variable
- 'rzn1_dmac_match'
-Message-ID: <202206042329.O1C6vwtx-lkp@intel.com>
+        Sat, 4 Jun 2022 11:30:10 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9F4650473;
+        Sat,  4 Jun 2022 08:30:07 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id n10so21160004ejk.5;
+        Sat, 04 Jun 2022 08:30:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3bk7baS2SNynPNN4B6G8lp7hpcyD8ZFLbXx8vqds4tM=;
+        b=QVHu+WBPZB67UwBQxVrKxY+BylBP8feaLPaDi0O5fCJuLupUHPjv41RD9TA/ljh/UI
+         3OJHeY6K5MdvviD1q1q+HqWrMDh8WL9k5gy1h5AQth72cWe+2kPQRvA6+XgMilKWTHuQ
+         bI+wRFGvmAaBJKCLFRyeMl3Qoac/Gx1TNDxdn5Dkd9cToXVAXsGlb4dmsNk2MPyMR8lX
+         6JUITLd5W6pQHscw3dxfwKqWNB9WCaDa9dhNjf74vKQv9oRQCxULGSlxJU5OViRiU/UB
+         aJbWHVHQgyLAPC/Oi5zyO3A5R2+bnNeLZD7fIlR2Rt3Uw1GNyq8UJVzhjzfKVWf7YabA
+         klPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3bk7baS2SNynPNN4B6G8lp7hpcyD8ZFLbXx8vqds4tM=;
+        b=jggchCeZCt4sL61X/XIAtR4NHofE2kgoW4PEqN1rJ6Wf/4M6ccaftMMHXb/uK+rxVM
+         +Bf2MjILtOakpTxddn+NBN6pI8g4/52ZIDNzLYuzb8KbzgXDkqZ4iO3ArsBJVEayY57U
+         LiwX+tnhBhKGk1Rz72zW3rlgFNptLOOIrSQcAeyL5oTw/Ey5ywByCqinSyVH03a3W7iX
+         80ZrpxA0UQITRA+AY0Usb9vJ9PaRrpuaF70UNA+uUTzMTq5jl6oKAFMlZZEJoetaPGj0
+         m5mklltpdHLbiwWfwRz5xQzpynFFmXowQ83iatFpmjSR9yHcM480B6qj2IxeUw7h/XZa
+         iEPg==
+X-Gm-Message-State: AOAM533bhJE2j/k4qFDQDO8MhAZ1ZvuT8vXOTOfpBMsb1wiUohOdgejN
+        ErcmlEp62On86/niV9B4Og4=
+X-Google-Smtp-Source: ABdhPJzCyjjZCIsbjsxVOA5l13Qm04uEQWHvW8LtSgGavAFKukbQEvvnWXzh3QUYeNqsht4LsLtF6Q==
+X-Received: by 2002:a17:906:ae57:b0:70b:e847:271b with SMTP id lf23-20020a170906ae5700b0070be847271bmr11034710ejb.700.1654356606421;
+        Sat, 04 Jun 2022 08:30:06 -0700 (PDT)
+Received: from fedora.robimarko.hr (cpe-94-253-165-43.zg.cable.xnet.hr. [94.253.165.43])
+        by smtp.googlemail.com with ESMTPSA id hz10-20020a1709072cea00b0070e01426360sm2069250ejc.91.2022.06.04.08.30.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 04 Jun 2022 08:30:05 -0700 (PDT)
+From:   Robert Marko <robimarko@gmail.com>
+To:     agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Robert Marko <robimarko@gmail.com>
+Subject: [PATCH] arm64: dts: qcom: ipq6018: correct QUP peripheral labels
+Date:   Sat,  4 Jun 2022 17:30:03 +0200
+Message-Id: <20220604153003.55172-1-robimarko@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   032dcf09e2bf7c822be25b4abef7a6c913870d98
-commit: 134d9c52fca26d2d199516e915da00f0cc6adc73 dmaengine: dw: dmamux: Introduce RZN1 DMA router support
-date:   2 weeks ago
-config: s390-randconfig-r007-20220604 (https://download.01.org/0day-ci/archive/20220604/202206042329.O1C6vwtx-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0a90b72c432d70aae035727ece4ba80ce820f381)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install s390 cross compiling tool for clang build
-        # apt-get install binutils-s390x-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=134d9c52fca26d2d199516e915da00f0cc6adc73
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 134d9c52fca26d2d199516e915da00f0cc6adc73
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash drivers/dma/dw/ lib/
+Current QUP peripheral labels like spi_0 and i2c_0 dont really tell what is
+the exact QUP HW being used as there are actually 6 identical QUP HW blocks
+for UART, SPI and I2C.
+For example current i2c_0 label actually points to the QUP2 I2C HW.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+This style of labeling does not follow what the rest of Qualcomm SoC-s use,
+for example IPQ8074 which has the identical QUP blocks.
+It also makes it really hard to add the missing QUP DT nodes as there are
+multiple missing.
 
-All warnings (new ones prefixed by >>):
+So utilize the same style as other Qualcomm SoC-s are using and update the
+CP01 DTS as its the current sole user of them.
 
-   In file included from drivers/dma/dw/rzn1-dmamux.c:9:
-   In file included from include/linux/of_dma.h:14:
-   In file included from include/linux/dmaengine.h:12:
-   In file included from include/linux/scatterlist.h:9:
-   In file included from arch/s390/include/asm/io.h:75:
-   include/asm-generic/io.h:464:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __raw_readb(PCI_IOBASE + addr);
-                             ~~~~~~~~~~ ^
-   include/asm-generic/io.h:477:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
-                                                           ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/big_endian.h:37:59: note: expanded from macro '__le16_to_cpu'
-   #define __le16_to_cpu(x) __swab16((__force __u16)(__le16)(x))
-                                                             ^
-   include/uapi/linux/swab.h:102:54: note: expanded from macro '__swab16'
-   #define __swab16(x) (__u16)__builtin_bswap16((__u16)(x))
-                                                        ^
-   In file included from drivers/dma/dw/rzn1-dmamux.c:9:
-   In file included from include/linux/of_dma.h:14:
-   In file included from include/linux/dmaengine.h:12:
-   In file included from include/linux/scatterlist.h:9:
-   In file included from arch/s390/include/asm/io.h:75:
-   include/asm-generic/io.h:490:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
-                                                           ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/big_endian.h:35:59: note: expanded from macro '__le32_to_cpu'
-   #define __le32_to_cpu(x) __swab32((__force __u32)(__le32)(x))
-                                                             ^
-   include/uapi/linux/swab.h:115:54: note: expanded from macro '__swab32'
-   #define __swab32(x) (__u32)__builtin_bswap32((__u32)(x))
-                                                        ^
-   In file included from drivers/dma/dw/rzn1-dmamux.c:9:
-   In file included from include/linux/of_dma.h:14:
-   In file included from include/linux/dmaengine.h:12:
-   In file included from include/linux/scatterlist.h:9:
-   In file included from arch/s390/include/asm/io.h:75:
-   include/asm-generic/io.h:501:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writeb(value, PCI_IOBASE + addr);
-                               ~~~~~~~~~~ ^
-   include/asm-generic/io.h:511:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
-                                                         ~~~~~~~~~~ ^
-   include/asm-generic/io.h:521:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
-                                                         ~~~~~~~~~~ ^
-   include/asm-generic/io.h:609:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           readsb(PCI_IOBASE + addr, buffer, count);
-                  ~~~~~~~~~~ ^
-   include/asm-generic/io.h:617:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           readsw(PCI_IOBASE + addr, buffer, count);
-                  ~~~~~~~~~~ ^
-   include/asm-generic/io.h:625:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           readsl(PCI_IOBASE + addr, buffer, count);
-                  ~~~~~~~~~~ ^
-   include/asm-generic/io.h:634:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           writesb(PCI_IOBASE + addr, buffer, count);
-                   ~~~~~~~~~~ ^
-   include/asm-generic/io.h:643:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           writesw(PCI_IOBASE + addr, buffer, count);
-                   ~~~~~~~~~~ ^
-   include/asm-generic/io.h:652:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           writesl(PCI_IOBASE + addr, buffer, count);
-                   ~~~~~~~~~~ ^
->> drivers/dma/dw/rzn1-dmamux.c:105:34: warning: unused variable 'rzn1_dmac_match' [-Wunused-const-variable]
-   static const struct of_device_id rzn1_dmac_match[] = {
-                                    ^
-   13 warnings generated.
+Signed-off-by: Robert Marko <robimarko@gmail.com>
+---
+ arch/arm64/boot/dts/qcom/ipq6018-cp01-c1.dts | 4 ++--
+ arch/arm64/boot/dts/qcom/ipq6018.dtsi        | 8 ++++----
+ 2 files changed, 6 insertions(+), 6 deletions(-)
 
-
-vim +/rzn1_dmac_match +105 drivers/dma/dw/rzn1-dmamux.c
-
-   104	
- > 105	static const struct of_device_id rzn1_dmac_match[] = {
-   106		{ .compatible = "renesas,rzn1-dma" },
-   107		{}
-   108	};
-   109	
-
+diff --git a/arch/arm64/boot/dts/qcom/ipq6018-cp01-c1.dts b/arch/arm64/boot/dts/qcom/ipq6018-cp01-c1.dts
+index 5aec18308712..b603961c5831 100644
+--- a/arch/arm64/boot/dts/qcom/ipq6018-cp01-c1.dts
++++ b/arch/arm64/boot/dts/qcom/ipq6018-cp01-c1.dts
+@@ -29,13 +29,13 @@ &blsp1_uart3 {
+ 	status = "okay";
+ };
+ 
+-&i2c_1 {
++&blsp1_i2c3 {
+ 	pinctrl-0 = <&i2c_1_pins>;
+ 	pinctrl-names = "default";
+ 	status = "okay";
+ };
+ 
+-&spi_0 {
++&blsp1_spi1 {
+ 	cs-select = <0>;
+ 	status = "okay";
+ 
+diff --git a/arch/arm64/boot/dts/qcom/ipq6018.dtsi b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
+index aac56575e30d..1c3f3d521715 100644
+--- a/arch/arm64/boot/dts/qcom/ipq6018.dtsi
++++ b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
+@@ -282,7 +282,7 @@ blsp1_uart3: serial@78b1000 {
+ 			status = "disabled";
+ 		};
+ 
+-		spi_0: spi@78b5000 {
++		blsp1_spi1: spi@78b5000 {
+ 			compatible = "qcom,spi-qup-v2.2.1";
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+@@ -297,7 +297,7 @@ spi_0: spi@78b5000 {
+ 			status = "disabled";
+ 		};
+ 
+-		spi_1: spi@78b6000 {
++		blsp1_spi2: spi@78b6000 {
+ 			compatible = "qcom,spi-qup-v2.2.1";
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+@@ -312,7 +312,7 @@ spi_1: spi@78b6000 {
+ 			status = "disabled";
+ 		};
+ 
+-		i2c_0: i2c@78b6000 {
++		blsp1_i2c2: i2c@78b6000 {
+ 			compatible = "qcom,i2c-qup-v2.2.1";
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+@@ -327,7 +327,7 @@ i2c_0: i2c@78b6000 {
+ 			status = "disabled";
+ 		};
+ 
+-		i2c_1: i2c@78b7000 { /* BLSP1 QUP2 */
++		blsp1_i2c3: i2c@78b7000 {
+ 			compatible = "qcom,i2c-qup-v2.2.1";
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.36.1
+
