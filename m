@@ -2,88 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2F28C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 01:31:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FB21CCA47D
+	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 01:32:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349004AbiFDBbU (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 21:31:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45858 "EHLO
+        id S244110AbiFDBcp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 3 Jun 2022 21:32:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231495AbiFDBbS (ORCPT
+        with ESMTP id S229967AbiFDBcn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 21:31:18 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FF03233;
-        Fri,  3 Jun 2022 18:31:16 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id e24so8582088pjt.0;
-        Fri, 03 Jun 2022 18:31:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=6X7znir8QcJzmKE7N3CYLdjwhqcOiRXOJqEg+HuGWpM=;
-        b=MkclXkvo9eQbXpy739HtCfdLk8xYndL4fWUi5dBTTN1bT6z1qgHdaycl4XT06Nm9En
-         /nJoQQHj4/zvauKtmi5ovvd/B781QS39a+DtBAqn6GWx/osKxv5ZCJmlZOI5ga6lxIA7
-         MaYv/kbMc7QXizZTOnGQdGv5e/dq9s0byyMJ760XFX8menCLL+z02QtLr97Pls9idJxV
-         OL2v+DH77hVOMA69Gzn3npilNzmgX87qtWIVdtqKmkqK7mzN5lFMjY+T0YvZ6UNwZta4
-         cKeiRf6/Ek1tIh01zrEaPL9WVL1s4uYczRoqOkmO6mMOIMIa7zF67o4ZYuE00fijnkIS
-         Xo6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=6X7znir8QcJzmKE7N3CYLdjwhqcOiRXOJqEg+HuGWpM=;
-        b=psel1re6MgNtlEB1NOpGWib7mcv6N089OKjrMGR7fifPhaXcsxvwbGllqCHopRh/77
-         rWtQwl5DHTGs0EQ3xzD99bpj9VWdNTTg/VObBjmOc0iFMeApwyIM+5Q8BS+oLLYGn+C3
-         yVfQXBwu4itCrrEM1QohLt7PRZei42OU/45z2jix/+Q66Ync4D6vRG605AwqoBjE1kLh
-         Oqo8MWzE/CEzMkJthBKxnoBSO1+KnVzdEcBSHU6zskJhwLuSnZb2DeEaZZmEA2NVq+tA
-         +M5PyEb26io2s3yw1Jnj+MDv0QXZDJ2jVuOWCAu4ySa52qr91zzjZaEU+6MMIA0/SKG9
-         yLLg==
-X-Gm-Message-State: AOAM532bPk6jr1QJRXkFxYsU+8SKblI1bSsdK72NQrOzpT66Vftj0v8d
-        MjU1BtpWmIimstcnKmgOLzzaIWj2Eq8=
-X-Google-Smtp-Source: ABdhPJzsaAzV7sGTS30rLm6gz4JJLaQGseKHra6TXlnrroYEzM8qUlRRdEgK6fQ9RNGub4U7rDFCdA==
-X-Received: by 2002:a17:903:2d0:b0:14d:8a8d:cb1 with SMTP id s16-20020a17090302d000b0014d8a8d0cb1mr12679506plk.50.1654306275527;
-        Fri, 03 Jun 2022 18:31:15 -0700 (PDT)
-Received: from localhost (subs03-180-214-233-80.three.co.id. [180.214.233.80])
-        by smtp.gmail.com with ESMTPSA id y31-20020a056a001c9f00b0051be585ab1dsm1848709pfw.200.2022.06.03.18.31.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Jun 2022 18:31:14 -0700 (PDT)
-Date:   Sat, 4 Jun 2022 08:31:10 +0700
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-To:     Pavel Machek <pavel@ucw.cz>
-Cc:     Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        linux-leds@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] leds: Add leds-qcom-lpg entry to documentation table of
- contents
-Message-ID: <Ypq13qTDWZSRW0aH@debian.me>
-References: <20220603025735.17953-1-bagasdotme@gmail.com>
- <87bkv9x3qu.fsf@meer.lwn.net>
- <20220603135326.GA14636@duo.ucw.cz>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220603135326.GA14636@duo.ucw.cz>
+        Fri, 3 Jun 2022 21:32:43 -0400
+Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F136B13CD4
+        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 18:32:41 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=alimailimapcm10staff010182156082;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=4;SR=0;TI=SMTPD_---0VFH9Sln_1654306358;
+Received: from localhost(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VFH9Sln_1654306358)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Sat, 04 Jun 2022 09:32:39 +0800
+From:   Baolin Wang <baolin.wang@linux.alibaba.com>
+To:     akpm@linux-foundation.org
+Cc:     baolin.wang@linux.alibaba.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: [RFC PATCH 1/3] mm: Factor out the pagetable pages account into new helper function
+Date:   Sat,  4 Jun 2022 09:32:29 +0800
+Message-Id: <809544e284d35caf72aa66bf7214a1ef006cad40.1654271618.git.baolin.wang@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <cover.1654271618.git.baolin.wang@linux.alibaba.com>
+References: <cover.1654271618.git.baolin.wang@linux.alibaba.com>
+In-Reply-To: <cover.1654271618.git.baolin.wang@linux.alibaba.com>
+References: <cover.1654271618.git.baolin.wang@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 03, 2022 at 03:53:26PM +0200, Pavel Machek wrote:
-> Not sure if that is important, we don't need this in stable, do we?
-> 
-> Anyway
-> 
-> Acked-by: Pavel Machek <pavel@ucw.cz>
-> 
-> ... and I assume it goes through your tree?
+Factor out the pagetable pages account into new helper functions to avoid
+duplicated code. Meanwhile these helper functions also will be used to
+account pagetable pages which do not need split pagetale lock.
 
-Looking at timeline, the -rc1 is imminent (probably tomorrow), so this
-patch misses 5.19. If it lands through jc_docs tree, it will be aimed
-for 5.20. But if the htmldocs warning also appears on mainline after
--rc1, I guess it can land through leds tree as stabilization (bug fixes)
-patch.
+Signed-off-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+---
+ include/linux/mm.h | 24 ++++++++++++++++--------
+ 1 file changed, 16 insertions(+), 8 deletions(-)
 
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 8a96197..1ce3366 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -2358,20 +2358,30 @@ static inline void pgtable_init(void)
+ 	pgtable_cache_init();
+ }
+ 
++static inline void pgtable_set_and_inc(struct page *page)
++{
++	__SetPageTable(page);
++	inc_lruvec_page_state(page, NR_PAGETABLE);
++}
++
++static inline void pgtable_clear_and_dec(struct page *page)
++{
++	__ClearPageTable(page);
++	dec_lruvec_page_state(page, NR_PAGETABLE);
++}
++
+ static inline bool pgtable_pte_page_ctor(struct page *page)
+ {
+ 	if (!ptlock_init(page))
+ 		return false;
+-	__SetPageTable(page);
+-	inc_lruvec_page_state(page, NR_PAGETABLE);
++	pgtable_set_and_inc(page);
+ 	return true;
+ }
+ 
+ static inline void pgtable_pte_page_dtor(struct page *page)
+ {
+ 	ptlock_free(page);
+-	__ClearPageTable(page);
+-	dec_lruvec_page_state(page, NR_PAGETABLE);
++	pgtable_clear_and_dec(page);
+ }
+ 
+ #define pte_offset_map_lock(mm, pmd, address, ptlp)	\
+@@ -2457,16 +2467,14 @@ static inline bool pgtable_pmd_page_ctor(struct page *page)
+ {
+ 	if (!pmd_ptlock_init(page))
+ 		return false;
+-	__SetPageTable(page);
+-	inc_lruvec_page_state(page, NR_PAGETABLE);
++	pgtable_set_and_inc(page);
+ 	return true;
+ }
+ 
+ static inline void pgtable_pmd_page_dtor(struct page *page)
+ {
+ 	pmd_ptlock_free(page);
+-	__ClearPageTable(page);
+-	dec_lruvec_page_state(page, NR_PAGETABLE);
++	pgtable_clear_and_dec(page);
+ }
+ 
+ /*
 -- 
-An old man doll... just what I always wanted! - Clara
+1.8.3.1
+
