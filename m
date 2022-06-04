@@ -2,60 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D591FC43334
-	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 01:24:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6853C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 01:24:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350288AbiFDBYS (ORCPT
+        id S1350264AbiFDBYX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 3 Jun 2022 21:24:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32960 "EHLO
+        Fri, 3 Jun 2022 21:24:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350182AbiFDBXG (ORCPT
+        with ESMTP id S1350146AbiFDBXE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 3 Jun 2022 21:23:06 -0400
-Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAD5627FF3
-        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 18:22:09 -0700 (PDT)
-Received: by mail-pf1-x449.google.com with SMTP id i19-20020aa79093000000b0050d44b83506so4703309pfa.22
-        for <linux-kernel@vger.kernel.org>; Fri, 03 Jun 2022 18:22:09 -0700 (PDT)
+        Fri, 3 Jun 2022 21:23:04 -0400
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4198D25EAC
+        for <linux-kernel@vger.kernel.org>; Fri,  3 Jun 2022 18:22:07 -0700 (PDT)
+Received: by mail-pg1-x549.google.com with SMTP id e18-20020a656492000000b003fa4033f9a7so4564118pgv.17
+        for <linux-kernel@vger.kernel.org>; Fri, 03 Jun 2022 18:22:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=lWV4XxAQvtLDWa2n9sU/+Ng/xr6r4/W2FZ+RD8jHsW8=;
-        b=pr+wWRe4GMnyYbms8mLJXpQ81expnFnSAA0vIhEn39IdHEZVE+uKJmZnzhwEO6d5bg
-         9jx4XGUBFdaxX87ij2BFaHP2PxM6sOE+ujU9rZ2ltljvlqb60kZWEUA1tQYi9RllK/PC
-         9Kd0YcUMZxdxJ54eX/Z30Wb+OXsHo5GDudAq9DObmcybrPce5hKtnUncJ0ohEQ3YOpP/
-         0LscbI9J8m0/FofNyXnaGMabv02ch9FpiVNOSJ3QZ4TYRKD4o2/NyMSgvs7LSfozUmbL
-         PwPXb/NAkdCW9zLemXfaxBk5gHZbsafOSAxt39DZghh3+jOW2pbwJQalRhBnhafaZX8i
-         XcEg==
+        bh=fAl1+AuHRM9inCO8bRlxx9BHvcQGIGb60nHLb6rOfdI=;
+        b=G1C+j7bRUj2zJxrGM0uz9nSZIJwVQUZJ2ZreDG6HFN1c50gYaREsj+ZgmmvuJjZKvO
+         /2AFssTQ8QdzVP10q3z8X/jNeZAqEt/c+zCI61LcB3Hb4FYuur0QD3ZEYXntFBuTH+Wz
+         B6scCPE7L/Q9zl9U8eRrhJubx/wiWaYKs4Sj9IblKZIvhjQxUThCELe1suaCxqAdqWt8
+         5miF88IXno9bvSZwjvz2RfmAP5FraDQ7OFu/lkjXJ5d2QvQvs+KWd7o2XZYFZUM+ocnn
+         xeb8VBDnQCX2vGtoW4GFLAceWSRpBDV4AZ9q7QzSITPBqYpiQhLpMetbAD3eyA6u8rcA
+         Pq0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=lWV4XxAQvtLDWa2n9sU/+Ng/xr6r4/W2FZ+RD8jHsW8=;
-        b=M8J1t4McjG/JMBn5X2eNTjAcDk+K3BxENbMARvygGEEeRRefU72M7vc0Gw4/IJDS/y
-         oy6NwO64y7ZtjaD9v+7v4hpMl2f2zKyPSfjFTkKPZWvbYPbneQ+I62QYk3XZJpxYicDw
-         8nmo4q4TNofTYWntDkkqgAo5A1PZgDdNmxHsSO43G57V/yuT0fuskdpyt3L4tejAa2FP
-         VbfgMcIHozM6d5BDNY4NTDuKNbRE9uWs3/2bKMUks0YGvXDC4Qi/wg+pW5/iQTvsTg6Z
-         TiDu8hOdRrLnhXLqhLvQ8eSxmAyRbOnNQWg1MyGe7Z45ODIzlHy0MdFmWe7NoPbbB+wy
-         mQfQ==
-X-Gm-Message-State: AOAM533xZGBEAKUxxdWyMYo8/kn8iakPBPPO+PXUBKjZnUL5rIUheCoC
-        2nPSSkP1zJAKVSU59BU8eSJYU6APBPY=
-X-Google-Smtp-Source: ABdhPJz33S1yjm2idJ8lnaWSE4xhl4nxGv29a7i4KIV4TrX+Yq5aJj/G2Lur+mmWw7sonU2o73vNWaq8d20=
+        bh=fAl1+AuHRM9inCO8bRlxx9BHvcQGIGb60nHLb6rOfdI=;
+        b=dZ7JNLTRIJuwKpMyOdoQKs+j3R6xdux3SsRSjTH91CrVSctL6DIXo2sZF3w2iR133f
+         f5arxYZGab813cjmXNHJiZj6GTcSoT8tjcZZvj7JtdAYrgISFbYImnM32P+jv2ZKQJ9p
+         Ng76ulBtbKBvAxxPkjlKSwf9hc1IELXHPyugjqTSd1o/nAU8VpY9pum4EeE3mW5jRELx
+         +TgbBArHlJGXiEvws/Ss9keqbjaIq/9cLNSFC++2pwalwaNI86as1wHyZmCiOLC75EFM
+         yt6Aowuin/pNVocfuVOuhrHwEcRU4XPVLW891eelW5b4ow04oOdl8y8k25xpzgXVaVAD
+         TcxA==
+X-Gm-Message-State: AOAM532zPAJCod3p6L8c086ds9r/AstU8WtCgr2ZwfA3NLYAKDOnrsjg
+        ADmNb/mbVOJSAkyMKJYsFHH+zaS1sVM=
+X-Google-Smtp-Source: ABdhPJy0AA4cGpnkOR3s7vtIiLqzfou/9QDn663AHoOR2ivfp3NvHHxbzwhcTkdih4e+DXXcNRXmZJrZACE=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a05:6a00:a8b:b0:4e1:52db:9e5c with SMTP id
- b11-20020a056a000a8b00b004e152db9e5cmr79230988pfl.38.1654305729378; Fri, 03
- Jun 2022 18:22:09 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a05:6a00:114b:b0:4f7:915:3ec3 with SMTP id
+ b11-20020a056a00114b00b004f709153ec3mr12963470pfm.8.1654305711604; Fri, 03
+ Jun 2022 18:21:51 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Sat,  4 Jun 2022 01:20:55 +0000
+Date:   Sat,  4 Jun 2022 01:20:45 +0000
 In-Reply-To: <20220604012058.1972195-1-seanjc@google.com>
-Message-Id: <20220604012058.1972195-40-seanjc@google.com>
+Message-Id: <20220604012058.1972195-30-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220604012058.1972195-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH 39/42] KVM: selftests: Skip AMX test if ARCH_REQ_XCOMP_GUEST_PERM
- isn't supported
+Subject: [PATCH 29/42] KVM: selftests: Use vcpu_clear_cpuid_feature() to clear x2APIC
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     kvm@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
@@ -66,36 +65,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Skip the AMX test instead of silently returning if the host kernel
-doesn't support ARCH_REQ_XCOMP_GUEST_PERM.  KVM didn't support XFD until
-v5.17, so it's extremely unlikely allowing the test to run on a pre-v5.15
-kernel is the right thing to do.
+Add X86_FEATURE_X2APIC and use vcpu_clear_cpuid_feature() to clear x2APIC
+support in the xAPIC state test.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- tools/testing/selftests/kvm/lib/x86_64/processor.c | 9 +--------
- 1 file changed, 1 insertion(+), 8 deletions(-)
+ tools/testing/selftests/kvm/include/x86_64/processor.h |  1 +
+ tools/testing/selftests/kvm/x86_64/xapic_state_test.c  | 10 +---------
+ 2 files changed, 2 insertions(+), 9 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/lib/x86_64/processor.c b/tools/testing/selftests/kvm/lib/x86_64/processor.c
-index f1290540210d..86e610967e79 100644
---- a/tools/testing/selftests/kvm/lib/x86_64/processor.c
-+++ b/tools/testing/selftests/kvm/lib/x86_64/processor.c
-@@ -602,14 +602,7 @@ void vm_xsave_req_perm(int bit)
+diff --git a/tools/testing/selftests/kvm/include/x86_64/processor.h b/tools/testing/selftests/kvm/include/x86_64/processor.h
+index a1cac0b7d8b2..c2e3ea55b697 100644
+--- a/tools/testing/selftests/kvm/include/x86_64/processor.h
++++ b/tools/testing/selftests/kvm/include/x86_64/processor.h
+@@ -81,6 +81,7 @@ struct kvm_x86_cpu_feature {
+ #define	X86_FEATURE_SMX			KVM_X86_CPU_FEATURE(0x1, 0, ECX, 6)
+ #define	X86_FEATURE_PDCM		KVM_X86_CPU_FEATURE(0x1, 0, ECX, 15)
+ #define	X86_FEATURE_PCID		KVM_X86_CPU_FEATURE(0x1, 0, ECX, 17)
++#define X86_FEATURE_X2APIC		KVM_X86_CPU_FEATURE(0x1, 0, ECX, 21)
+ #define	X86_FEATURE_MOVBE		KVM_X86_CPU_FEATURE(0x1, 0, ECX, 22)
+ #define	X86_FEATURE_TSC_DEADLINE_TIMER	KVM_X86_CPU_FEATURE(0x1, 0, ECX, 24)
+ #define	X86_FEATURE_XSAVE		KVM_X86_CPU_FEATURE(0x1, 0, ECX, 26)
+diff --git a/tools/testing/selftests/kvm/x86_64/xapic_state_test.c b/tools/testing/selftests/kvm/x86_64/xapic_state_test.c
+index 7728730c2dda..1bc091f3b58b 100644
+--- a/tools/testing/selftests/kvm/x86_64/xapic_state_test.c
++++ b/tools/testing/selftests/kvm/x86_64/xapic_state_test.c
+@@ -122,9 +122,7 @@ int main(int argc, char *argv[])
+ 		.vcpu = NULL,
+ 		.is_x2apic = true,
+ 	};
+-	struct kvm_cpuid2 *cpuid;
+ 	struct kvm_vm *vm;
+-	int i;
  
- 	TEST_REQUIRE(bitmask & (1ULL << bit));
+ 	vm = vm_create_with_one_vcpu(&x.vcpu, x2apic_guest_code);
+ 	test_icr(&x);
+@@ -138,13 +136,7 @@ int main(int argc, char *argv[])
+ 	vm = vm_create_with_one_vcpu(&x.vcpu, xapic_guest_code);
+ 	x.is_x2apic = false;
  
--	rc = syscall(SYS_arch_prctl, ARCH_REQ_XCOMP_GUEST_PERM, bit);
--
--	/*
--	 * The older kernel version(<5.15) can't support
--	 * ARCH_REQ_XCOMP_GUEST_PERM and directly return.
--	 */
--	if (rc)
--		return;
-+	TEST_REQUIRE(!syscall(SYS_arch_prctl, ARCH_REQ_XCOMP_GUEST_PERM, bit));
+-	cpuid = x.vcpu->cpuid;
+-	for (i = 0; i < cpuid->nent; i++) {
+-		if (cpuid->entries[i].function == 1)
+-			break;
+-	}
+-	cpuid->entries[i].ecx &= ~BIT(21);
+-	vcpu_set_cpuid(x.vcpu);
++	vcpu_clear_cpuid_feature(x.vcpu, X86_FEATURE_X2APIC);
  
- 	rc = syscall(SYS_arch_prctl, ARCH_GET_XCOMP_GUEST_PERM, &bitmask);
- 	TEST_ASSERT(rc == 0, "prctl(ARCH_GET_XCOMP_GUEST_PERM) error: %ld", rc);
+ 	virt_pg_map(vm, APIC_DEFAULT_GPA, APIC_DEFAULT_GPA);
+ 	test_icr(&x);
 -- 
 2.36.1.255.ge46751e96f-goog
 
