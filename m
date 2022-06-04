@@ -2,88 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDE90C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 18:55:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98176C43334
+	for <linux-kernel@archiver.kernel.org>; Sat,  4 Jun 2022 18:56:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239828AbiFDSz5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 4 Jun 2022 14:55:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45774 "EHLO
+        id S239914AbiFDS40 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 4 Jun 2022 14:56:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239717AbiFDSzy (ORCPT
+        with ESMTP id S239717AbiFDS4T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 4 Jun 2022 14:55:54 -0400
-Received: from mail-oa1-x30.google.com (mail-oa1-x30.google.com [IPv6:2001:4860:4864:20::30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9680B4DF75;
-        Sat,  4 Jun 2022 11:55:53 -0700 (PDT)
-Received: by mail-oa1-x30.google.com with SMTP id 586e51a60fabf-f16a3e0529so14552883fac.2;
-        Sat, 04 Jun 2022 11:55:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=7NWYyyweloxEKrOnq4kqHbezc+YyKwo6EjahPQWT03E=;
-        b=IeERvP5OrUAkWbvbb0vNJBw9CAGZXXjVzzOtTy0MahtnZO2h95SFHZL7sU5yFurPEo
-         0hDK0qcRi982yeiQvirGim3bWzKOFXhYljePG+4lGNJGJ7TOgiNzDwuTJn57ShH3IuT9
-         2TFpJBI6nUarmvBuA/rrhdXBT2LcZ4ZEByFjXvtZVggitGHYWL7Ih825+PFcsgUz8x8J
-         9o6oyEMY6cZjO8YVj8XR8i+8xSGTOl2EEfbtfyg0VlW9WpHxT7WxfuDUYOiI6SUOu1Nw
-         DnxbJKwqRf8umlh7I9WHORKsanvwVZsCcbTOzEfKsj8+BgmXdGEdzYEF5Ju/a24yB4aD
-         YHCg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=7NWYyyweloxEKrOnq4kqHbezc+YyKwo6EjahPQWT03E=;
-        b=VSuh1MdenLWZXQuvtD93dWxClTHQ2BbJ1tuT7NbxSMpmDGA9/9sVy+AkZkGs6pqXt8
-         ERouveqIo1wyiURiw3wUc7W9BfrAtoodqb8PzUJW40OCJLUYmN6li6w/R1aGr1epTc+V
-         OeRyQBJSa5vIw7Mnxnmr2BwwhjvoI+AH9wMzp6OgRE6O3HqneyZzmvoetPvvu2fiD1XN
-         qM9Tq7tsqmZMSLAKjhb66pR7BzAVo26lDOUBPFq4qkwbjOJDV9O509D7q7/GDn7LlML/
-         y52RCFznrOuHYrK5d3rDas4uQcwFDsMfUpTj+gu65FpIuEr4wVdgk8vc0a41zeipFtP+
-         I9kg==
-X-Gm-Message-State: AOAM5336LjDC+dqm9VxvjFz+CepaqVNJb9/uk47b0acSKx4GaslA8/GL
-        aF1+2QADpxQr0kAqLxNnVSc=
-X-Google-Smtp-Source: ABdhPJwtDBdShpSAiGFla77BgbIt12MNLybLXnkv3iuhC1gO0ctJkNPREobwyvuuKMEWHBiHI+egOw==
-X-Received: by 2002:a05:6870:8a2c:b0:fb:d45:23d0 with SMTP id p44-20020a0568708a2c00b000fb0d4523d0mr4662804oaq.33.1654368952999;
-        Sat, 04 Jun 2022 11:55:52 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id bf1-20020a056808190100b0032af3cffac7sm6222201oib.2.2022.06.04.11.55.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 04 Jun 2022 11:55:52 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Sat, 4 Jun 2022 11:55:51 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 5.17 00/75] 5.17.13-rc1 review
-Message-ID: <20220604185551.GF3955081@roeck-us.net>
-References: <20220603173821.749019262@linuxfoundation.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220603173821.749019262@linuxfoundation.org>
+        Sat, 4 Jun 2022 14:56:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FAC64F47D
+        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 11:56:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D25BA60F7A
+        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 18:56:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E46BC385B8;
+        Sat,  4 Jun 2022 18:56:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1654368977;
+        bh=cQb6UkaGXt9FYonsLJxY8W4duDAXDhvFNy6evcEDD2Y=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Nrww3VMlwpkgWsmsFblPZpuVD5vJl0OksZpNd+fhu0fCnOG9Wgi2ld00UDPt2pDVm
+         Py/Vb9WCmzLwSpaG8+38Ku0qXFcMbmOXYtbMDp9gMQl0Ru3LgDgZBcPmm0zPDBgf76
+         d2QNDnBZjhYxX0IJ9ip7x5WIb81TNQdpyFMBAlDM=
+Date:   Sat, 4 Jun 2022 11:56:16 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     zhenwei pi <pizhenwei@bytedance.com>
+Cc:     naoya.horiguchi@nec.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] mm/memory-failure: don't allow to unpoison hw corrupted
+ page
+Message-Id: <20220604115616.b7d5912ac5a37db608f67b78@linux-foundation.org>
+In-Reply-To: <20220604103229.3378591-1-pizhenwei@bytedance.com>
+References: <20220604103229.3378591-1-pizhenwei@bytedance.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 03, 2022 at 07:42:44PM +0200, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.17.13 release.
-> There are 75 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On Sat,  4 Jun 2022 18:32:29 +0800 zhenwei pi <pizhenwei@bytedance.com> wrote:
+
+> Currently unpoison_memory(unsigned long pfn) is designed for soft
+> poison(hwpoison-inject) only. Unpoisoning a hardware corrupted page
+> puts page back buddy only, this leads BUG during accessing on the
+> corrupted KPTE.
 > 
-> Responses should be made by Sun, 05 Jun 2022 17:38:05 +0000.
-> Anything received after that time might be too late.
+> Do not allow to unpoison hardware corrupted page in unpoison_memory()
+> to avoid BUG like this:
 > 
+>  Unpoison: Software-unpoisoned page 0x61234
+>  BUG: unable to handle page fault for address: ffff888061234000
 
-Build results:
-	total: 156 pass: 156 fail: 0
-Qemu test results:
-	total: 489 pass: 489 fail: 0
+Thanks.
 
-Tested-by: Guenter Roeck <linux@roeck-us.net>
+> --- a/mm/memory-failure.c
+> +++ b/mm/memory-failure.c
+> @@ -2090,6 +2090,7 @@ int unpoison_memory(unsigned long pfn)
+>  {
+>  	struct page *page;
+>  	struct page *p;
+> +	pte_t *kpte;
+>  	int ret = -EBUSY;
+>  	int freeit = 0;
+>  	static DEFINE_RATELIMIT_STATE(unpoison_rs, DEFAULT_RATELIMIT_INTERVAL,
+> @@ -2101,6 +2102,13 @@ int unpoison_memory(unsigned long pfn)
+>  	p = pfn_to_page(pfn);
+>  	page = compound_head(p);
+>  
+> +	kpte = virt_to_kpte((unsigned long)page_to_virt(p));
+> +	if (kpte && !pte_present(*kpte)) {
+> +		unpoison_pr_info("Unpoison: Page was hardware poisoned %#lx\n",
+> +				 pfn, &unpoison_rs);
+> +		return -EPERM;
+> +	}
+> +
+>  	mutex_lock(&mf_mutex);
+>  
+>  	if (!PageHWPoison(p)) {
 
-Guenter
+I guess we don't want to let fault injection crash the kernel, so a
+cc:stable seems appropriate here.
+
+Can we think up a suitable Fixes: commit?  I'm suspecting this bug has
+been there for a long time?
+
