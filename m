@@ -2,152 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6E76C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D74EBCCA47E
 	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 10:33:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351015AbiFEKdn (ORCPT
+        id S1351022AbiFEKdl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 5 Jun 2022 06:33:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45034 "EHLO
+        Sun, 5 Jun 2022 06:33:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245661AbiFEKd3 (ORCPT
+        with ESMTP id S245617AbiFEKd0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 5 Jun 2022 06:33:29 -0400
+        Sun, 5 Jun 2022 06:33:26 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A7F0205FB
-        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 03:33:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5912C205FB
+        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 03:33:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0D568B80B83
-        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 10:33:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05C96C3411C;
-        Sun,  5 Jun 2022 10:33:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0DA97B80B83
+        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 10:33:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EABB6C385A5;
+        Sun,  5 Jun 2022 10:33:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654425205;
-        bh=E67nVJSgms7lKGXIFX2+nf8+3sJRF3vxUDwXV7sv7uM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SRLJr4zitDLeiTE+UbJWmg2euQfduENkpbjiJ8m82a/Crkva8ewq4sXJF6yFqyjz7
-         NJ7xrDYupgam2ShI/imwP84YnLQLecxilZXxPpMTXKHkXUFncwTZeqZADh/yhkN5aj
-         BEJzGEXkXlWeWjc4cRgILYp3KLqmIIWew3T5pTdUGSeT5SNlKsQA4WCzwxtawYAIlH
-         bEfD+pHTU+b/lf5rp+N+6dnywfz0L7oxxZiIdyIAMK7TqqxBo2oX0Upn4wc0YX5ZO0
-         35eOd0qNgGpAix3RsoV3cf7RsrWJ8ybheUtEZy5nE/cadVjrImnlbi8fhA8Q0AVwLf
-         hn9HzMbTK+Vaw==
+        s=k20201202; t=1654425201;
+        bh=UATuJy/9oNY4ZU95eveoO+ujyt4gg6+HJ332NeCE2mk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=rBID41qNIlFp64ocJql3lcBQ1ZN6Yf8ur4l3tQ9iRCIYolDhD+txKCDHN4BTVk1tN
+         D+/4tcsuiEEVdOxJcfsMS218rl+tWkTYCwkox0NKevDioSSTZ4dEr/rv84gu098Piu
+         5F/kIlw5MtAXU/z3n+xYOsvc/zn8no48mibvjevd7CnaLahfm4R1Del5+9JN72SYsM
+         +2n/PgMADCMS7BkzA/qQTdnHDO0oe23e7Gh+ly87xBLbNCRrLho9g78pGGDE+fxAW4
+         sOTjZphso++LZWn9u0yjDKzOFdJI5beWrhjN+m1uNdMoZRXbvyNeuxP0hi63ue7ypl
+         tDI3wjFCW2eGw==
 From:   Oded Gabbay <ogabbay@kernel.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Tal Cohen <talcohen@habana.ai>
-Subject: [PATCH 4/7] habanalabs: change the write flag name of error info structs
-Date:   Sun,  5 Jun 2022 13:33:13 +0300
-Message-Id: <20220605103316.3414541-4-ogabbay@kernel.org>
+Cc:     Dafna Hirschfeld <dhirschfeld@habana.ai>
+Subject: [PATCH 1/7] habanalabs: add terminating NULL to attrs arrays
+Date:   Sun,  5 Jun 2022 13:33:10 +0300
+Message-Id: <20220605103316.3414541-1-ogabbay@kernel.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220605103316.3414541-1-ogabbay@kernel.org>
-References: <20220605103316.3414541-1-ogabbay@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tal Cohen <talcohen@habana.ai>
+From: Dafna Hirschfeld <dhirschfeld@habana.ai>
 
-positive flags naming will make more clear code while adding
-more 'error info' structures
+Arrays of struct attribute are expected to be NULL terminated.
+This is required by API methods such as device_add_groups.
+This fixes a crash when loading the driver for Goya device.
 
-Signed-off-by: Tal Cohen <talcohen@habana.ai>
+Signed-off-by: Dafna Hirschfeld <dhirschfeld@habana.ai>
 Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
 Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
 ---
- drivers/misc/habanalabs/common/command_submission.c |  4 ++--
- drivers/misc/habanalabs/common/habanalabs.h         | 12 ++++++------
- drivers/misc/habanalabs/common/habanalabs_drv.c     |  4 ++--
- drivers/misc/habanalabs/gaudi/gaudi.c               |  4 ++--
- 4 files changed, 12 insertions(+), 12 deletions(-)
+ drivers/misc/habanalabs/common/sysfs.c    | 2 ++
+ drivers/misc/habanalabs/gaudi/gaudi.c     | 1 +
+ drivers/misc/habanalabs/goya/goya_hwmgr.c | 2 ++
+ 3 files changed, 5 insertions(+)
 
-diff --git a/drivers/misc/habanalabs/common/command_submission.c b/drivers/misc/habanalabs/common/command_submission.c
-index fb30b7de4aab..22109be06139 100644
---- a/drivers/misc/habanalabs/common/command_submission.c
-+++ b/drivers/misc/habanalabs/common/command_submission.c
-@@ -735,8 +735,8 @@ static void cs_timedout(struct work_struct *work)
- 	hdev = cs->ctx->hdev;
- 
- 	/* Save only the first CS timeout parameters */
--	rc = atomic_cmpxchg(&hdev->last_error.cs_timeout.write_disable, 0, 1);
--	if (!rc) {
-+	rc = atomic_cmpxchg(&hdev->last_error.cs_timeout.write_enable, 1, 0);
-+	if (rc) {
- 		hdev->last_error.cs_timeout.timestamp = ktime_get();
- 		hdev->last_error.cs_timeout.seq = cs->sequence;
- 	}
-diff --git a/drivers/misc/habanalabs/common/habanalabs.h b/drivers/misc/habanalabs/common/habanalabs.h
-index b0b0f3f89865..7a46f36518fe 100644
---- a/drivers/misc/habanalabs/common/habanalabs.h
-+++ b/drivers/misc/habanalabs/common/habanalabs.h
-@@ -2570,21 +2570,21 @@ struct hl_clk_throttle {
- /**
-  * struct cs_timeout_info - info of last CS timeout occurred.
-  * @timestamp: CS timeout timestamp.
-- * @write_disable: if set writing to CS parameters in the structure is disabled so,
-- *                 the first (root cause) CS timeout will not be overwritten.
-+ * @write_enable: if set writing to CS parameters in the structure is enabled. otherwise - disabled,
-+ *                so the first (root cause) CS timeout will not be overwritten.
-  * @seq: CS timeout sequence number.
-  */
- struct cs_timeout_info {
- 	ktime_t		timestamp;
--	atomic_t	write_disable;
-+	atomic_t	write_enable;
- 	u64		seq;
+diff --git a/drivers/misc/habanalabs/common/sysfs.c b/drivers/misc/habanalabs/common/sysfs.c
+index 9ebeb18ab85e..da8181068895 100644
+--- a/drivers/misc/habanalabs/common/sysfs.c
++++ b/drivers/misc/habanalabs/common/sysfs.c
+@@ -73,6 +73,7 @@ static DEVICE_ATTR_RO(clk_cur_freq_mhz);
+ static struct attribute *hl_dev_clk_attrs[] = {
+ 	&dev_attr_clk_max_freq_mhz.attr,
+ 	&dev_attr_clk_cur_freq_mhz.attr,
++	NULL,
  };
  
- /**
-  * struct razwi_info - info about last razwi error occurred.
-  * @timestamp: razwi timestamp.
-- * @write_disable: if set writing to razwi parameters in the structure is disabled so the
-- *                 first (root cause) razwi will not be overwritten.
-+ * @write_enable: if set writing to razwi parameters in the structure is enabled.
-+ *                otherwise - disabled, so the first (root cause) razwi will not be overwritten.
-  * @addr: address that caused razwi.
-  * @engine_id_1: engine id of the razwi initiator, if it was initiated by engine that does
-  *               not have engine id it will be set to U16_MAX.
-@@ -2596,7 +2596,7 @@ struct cs_timeout_info {
-  */
- struct razwi_info {
- 	ktime_t		timestamp;
--	atomic_t	write_disable;
-+	atomic_t	write_enable;
- 	u64		addr;
- 	u16		engine_id_1;
- 	u16		engine_id_2;
-diff --git a/drivers/misc/habanalabs/common/habanalabs_drv.c b/drivers/misc/habanalabs/common/habanalabs_drv.c
-index 37edb69a7255..e182637c2d93 100644
---- a/drivers/misc/habanalabs/common/habanalabs_drv.c
-+++ b/drivers/misc/habanalabs/common/habanalabs_drv.c
-@@ -195,8 +195,8 @@ int hl_device_open(struct inode *inode, struct file *filp)
+ static ssize_t vrm_ver_show(struct device *dev, struct device_attribute *attr, char *buf)
+@@ -93,6 +94,7 @@ static DEVICE_ATTR_RO(vrm_ver);
  
- 	hl_debugfs_add_file(hpriv);
+ static struct attribute *hl_dev_vrm_attrs[] = {
+ 	&dev_attr_vrm_ver.attr,
++	NULL,
+ };
  
--	atomic_set(&hdev->last_error.cs_timeout.write_disable, 0);
--	atomic_set(&hdev->last_error.razwi.write_disable, 0);
-+	atomic_set(&hdev->last_error.cs_timeout.write_enable, 1);
-+	atomic_set(&hdev->last_error.razwi.write_enable, 1);
- 
- 	hdev->open_counter++;
- 	hdev->last_successful_open_jif = jiffies;
+ static ssize_t uboot_ver_show(struct device *dev, struct device_attribute *attr,
 diff --git a/drivers/misc/habanalabs/gaudi/gaudi.c b/drivers/misc/habanalabs/gaudi/gaudi.c
-index 4db5f6ef96f1..c16c0f9fe202 100644
+index fba322241096..25d735aee6a3 100644
 --- a/drivers/misc/habanalabs/gaudi/gaudi.c
 +++ b/drivers/misc/habanalabs/gaudi/gaudi.c
-@@ -7410,8 +7410,8 @@ static void gaudi_print_irq_info(struct hl_device *hdev, u16 event_type,
- 		gaudi_print_and_get_mmu_error_info(hdev, &razwi_addr, &razwi_type);
+@@ -9187,6 +9187,7 @@ static DEVICE_ATTR_RO(infineon_ver);
  
- 		/* In case it's the first razwi, save its parameters*/
--		rc = atomic_cmpxchg(&hdev->last_error.razwi.write_disable, 0, 1);
--		if (!rc) {
-+		rc = atomic_cmpxchg(&hdev->last_error.razwi.write_enable, 1, 0);
-+		if (rc) {
- 			hdev->last_error.razwi.timestamp = ktime_get();
- 			hdev->last_error.razwi.addr = razwi_addr;
- 			hdev->last_error.razwi.engine_id_1 = engine_id_1;
+ static struct attribute *gaudi_vrm_dev_attrs[] = {
+ 	&dev_attr_infineon_ver.attr,
++	NULL,
+ };
+ 
+ static void gaudi_add_device_attr(struct hl_device *hdev, struct attribute_group *dev_clk_attr_grp,
+diff --git a/drivers/misc/habanalabs/goya/goya_hwmgr.c b/drivers/misc/habanalabs/goya/goya_hwmgr.c
+index 6580fc6a486a..b595721751c1 100644
+--- a/drivers/misc/habanalabs/goya/goya_hwmgr.c
++++ b/drivers/misc/habanalabs/goya/goya_hwmgr.c
+@@ -359,6 +359,7 @@ static struct attribute *goya_clk_dev_attrs[] = {
+ 	&dev_attr_pm_mng_profile.attr,
+ 	&dev_attr_tpc_clk.attr,
+ 	&dev_attr_tpc_clk_curr.attr,
++	NULL,
+ };
+ 
+ static ssize_t infineon_ver_show(struct device *dev, struct device_attribute *attr, char *buf)
+@@ -375,6 +376,7 @@ static DEVICE_ATTR_RO(infineon_ver);
+ 
+ static struct attribute *goya_vrm_dev_attrs[] = {
+ 	&dev_attr_infineon_ver.attr,
++	NULL,
+ };
+ 
+ void goya_add_device_attr(struct hl_device *hdev, struct attribute_group *dev_clk_attr_grp,
 -- 
 2.25.1
 
