@@ -2,93 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8E54C43334
-	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 12:44:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C11C6C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 12:49:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343662AbiFEMn4 (ORCPT
+        id S1343724AbiFEMtu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 5 Jun 2022 08:43:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54880 "EHLO
+        Sun, 5 Jun 2022 08:49:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231252AbiFEMnz (ORCPT
+        with ESMTP id S231252AbiFEMtt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 5 Jun 2022 08:43:55 -0400
-Received: from m12-16.163.com (m12-16.163.com [220.181.12.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B548B248C2
-        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 05:43:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id; bh=KPfJ09WlgY2YQKDQ1L
-        P6rJs+yK3vnrBlKY9+sJDfkL8=; b=hBFm+bdxMgHn4j3r4/fpQ921uOhFhNhr3i
-        VUlLx0R8mr4KIdRMY0bczv7ioxXyK8ao5g9yL/b88sT2Q5qR00TQlov/fCXXedVo
-        s80b7WSFflCAVe1biqMOVvGnDB5tWnOocwbvIlqidxPIWOeONQ/FXGMNaIeqTn+7
-        6ccGnnGqA=
-Received: from localhost.localdomain (unknown [202.112.113.212])
-        by smtp12 (Coremail) with SMTP id EMCowAAHpmrspJxilcQtAA--.6005S4;
-        Sun, 05 Jun 2022 20:43:35 +0800 (CST)
-From:   Xiaohui Zhang <ruc_zhangxiaohui@163.com>
-To:     Xiaohui Zhang <ruc_zhangxiaohui@163.com>,
-        Ian Abbott <abbotti@mev.co.uk>,
+        Sun, 5 Jun 2022 08:49:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F410720BE9
+        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 05:49:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5389660F5B
+        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 12:49:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28ECAC385A5;
+        Sun,  5 Jun 2022 12:49:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654433386;
+        bh=qyt9JnXemheP08AsHBbA/zU+SP65oO3v9kYatWQpzGU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=XPuc2fKMtPdkuSGH9RKg6oCteiiqqFLXaNTuXRpro4x+Z2FJUBHFOHjLF35+sB7Gl
+         Lm6gfLa/OFNnK6Lpza8NIZjq/QLIlZ7pS1d+LETWA8VtAc1JYgE9+0X95UDQkp2zo1
+         3sOVePmT+dTo2TQ+8S724jp7aw9CK70qr896/hX0=
+Date:   Sun, 5 Jun 2022 14:49:43 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Xiaohui Zhang <ruc_zhangxiaohui@163.com>
+Cc:     Ian Abbott <abbotti@mev.co.uk>,
         H Hartley Sweeten <hsweeten@visionengravers.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Johan Hovold <johan@kernel.org>, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/1] comedi: ni_usb6501: fix transfer-buffer overflows
-Date:   Sun,  5 Jun 2022 20:43:22 +0800
-Message-Id: <20220605124322.33148-1-ruc_zhangxiaohui@163.com>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: EMCowAAHpmrspJxilcQtAA--.6005S4
-X-Coremail-Antispam: 1Uf129KBjvJXoW7WFWDKFy3tFW7uFW7WFW8tFb_yoW8WF4rpF
-        4ruFy0kr45J3yIk3WDJwnrAF15Wa12qFW7KFWUuwnxZF43Awnakr1rtFyrtF95AF1SqF40
-        vwnrZFy5uF15AaUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pRKii-UUUUU=
-X-Originating-IP: [202.112.113.212]
-X-CM-SenderInfo: puxfs6pkdqw5xldrx3rl6rljoofrz/1tbipRcXMFUMkGia3AAAsy
+Subject: Re: [PATCH 1/1] comedi: ni_usb6501: fix transfer-buffer overflows
+Message-ID: <YpymZ674wOEZaYmC@kroah.com>
+References: <20220605124322.33148-1-ruc_zhangxiaohui@163.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220605124322.33148-1-ruc_zhangxiaohui@163.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: xiaohuizhang98 <ruc_zhangxiaohui@163.com>
+On Sun, Jun 05, 2022 at 08:43:22PM +0800, Xiaohui Zhang wrote:
+> From: xiaohuizhang98 <ruc_zhangxiaohui@163.com>
+> 
+> We detected a suspected bug with our code clone detection tool.
 
-We detected a suspected bug with our code clone detection tool.
+What tool exactly?
 
-Similar to the handling of vmk80xx_alloc_usb_buffers in commit
-a23461c47482("comedi: vmk80xx: fix transfer-buffer overflows"),
-we thought a patch might be needed here as well.
+Please read Documentation/process/researcher-guidelines.rst for how to
+write a good changelog when you are using automated tools like this.
 
-The driver uses endpoint-sized USB transfer buffers but up until
-recently had no sanity checks on the sizes.
+> 
+> Similar to the handling of vmk80xx_alloc_usb_buffers in commit
+> a23461c47482("comedi: vmk80xx: fix transfer-buffer overflows"),
+> we thought a patch might be needed here as well.
+> 
+> The driver uses endpoint-sized USB transfer buffers but up until
+> recently had no sanity checks on the sizes.
+> 
+> Signed-off-by: xiaohuizhang98 <ruc_zhangxiaohui@163.com>
 
-Signed-off-by: xiaohuizhang98 <ruc_zhangxiaohui@163.com>
----
- drivers/comedi/drivers/ni_usb6501.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+I strongly doubt you sign legal documents like "xiaohuizhang98", right?
 
-diff --git a/drivers/comedi/drivers/ni_usb6501.c b/drivers/comedi/drivers/ni_usb6501.c
-index 0dd9edf7bced..3e2b9f4d840b 100644
---- a/drivers/comedi/drivers/ni_usb6501.c
-+++ b/drivers/comedi/drivers/ni_usb6501.c
-@@ -90,6 +90,7 @@
- #include <linux/comedi/comedi_usb.h>
- 
- #define	NI6501_TIMEOUT	1000
-+#define MIN_BUF_SIZE	64
- 
- /* Port request packets */
- static const u8 READ_PORT_REQUEST[]	= {0x00, 0x01, 0x00, 0x10,
-@@ -459,12 +460,12 @@ static int ni6501_alloc_usb_buffers(struct comedi_device *dev)
- 	struct ni6501_private *devpriv = dev->private;
- 	size_t size;
- 
--	size = usb_endpoint_maxp(devpriv->ep_rx);
-+	size = max(usb_endpoint_maxp(devpriv->ep_rx), MIN_BUF_SIZE);
- 	devpriv->usb_rx_buf = kzalloc(size, GFP_KERNEL);
- 	if (!devpriv->usb_rx_buf)
- 		return -ENOMEM;
- 
--	size = usb_endpoint_maxp(devpriv->ep_tx);
-+	size = max(usb_endpoint_maxp(devpriv->ep_rx), MIN_BUF_SIZE);
- 	devpriv->usb_tx_buf = kzalloc(size, GFP_KERNEL);
- 	if (!devpriv->usb_tx_buf)
- 		return -ENOMEM;
--- 
-2.17.1
+thanks,
 
+greg k-h
