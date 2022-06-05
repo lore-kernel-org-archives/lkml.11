@@ -2,69 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 384E6C43334
-	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 08:55:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F26B7C43334
+	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 08:59:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350878AbiFEIzu (ORCPT
+        id S1350887AbiFEI7k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 5 Jun 2022 04:55:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36386 "EHLO
+        Sun, 5 Jun 2022 04:59:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231216AbiFEIzs (ORCPT
+        with ESMTP id S231216AbiFEI7g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 5 Jun 2022 04:55:48 -0400
-Received: from smtpbg.qq.com (smtpbg136.qq.com [106.55.201.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81CE84504E;
-        Sun,  5 Jun 2022 01:55:42 -0700 (PDT)
-X-QQ-mid: bizesmtp91t1654419332t708ad00
+        Sun, 5 Jun 2022 04:59:36 -0400
+Received: from smtpbg.qq.com (smtpbg139.qq.com [175.27.65.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43BDE255A3
+        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 01:59:30 -0700 (PDT)
+X-QQ-mid: bizesmtp73t1654419559tv8kcgm9
 Received: from localhost.localdomain ( [111.9.5.115])
         by bizesmtp.qq.com (ESMTP) with 
-        id ; Sun, 05 Jun 2022 16:55:25 +0800 (CST)
+        id ; Sun, 05 Jun 2022 16:59:14 +0800 (CST)
 X-QQ-SSF: 01000000002000C0G000B00A0000000
-X-QQ-FEAT: rCzLTtzQ0gf1BCNkKEop1dn2udIbXTrozZbiYciwJkOn2ym83SM09Qyzh0pIK
-        Mj3fW6Py4jQfXzs+pNT26Rbn3GcaXhIHfutHvpRvPVr/Vn3sY1JUIVabrLwBkkrLyUoYcRP
-        98nP4pyqQs6jqbPqbpwIw0bdZm32t5p3CKX3fQK9NyaljhmNrwXwNnPA5Jy8rkqy4hVddDK
-        mhi89hJAeeVjDEw5o41VdTxku5damVIo0n+2quq8yPLwuO+E2/HPkEmf33zLc5hzBvfbDiW
-        FVcWUaBhp02oTo5CWAYFJ/jYi/RPBqBX0CO4WtmgtanIuTN3JZF6AYREVOj79ll7GtI7tFe
-        gjMFq28XXMj5KSbWKE=
+X-QQ-FEAT: DHpJGCbtM4nx5RtduTeQ1jE8RQDF4LyMBrhXEEUK5EHEg7aO/KdFUpyIc2BSy
+        yrMUqW6RJu/KdMaqHn7JDRxSJhkSf6H0FZDCWN6wYxoXaFUyorcimuMghjbT+fIYMlZ3ceP
+        9+UIYN7uAA1WAyy6HFr1mJfzJHtV6lr3VL54fOqp9ZRrK+vjLHUz9JaOE+dbSl7FZAX8INu
+        lg2OcHdwF6v0xvPt0DBQsyIEbosSgH0tizfuxGl1r+PpzLcxVYzyTWKg92tNpqBk7j8pSN2
+        mL+Y2oIs/J7hyiv7x6KuIDAkQ4EkPF2X2XRcpzuSyCNQ7Q9y0nalf1x6qEAE8j8NhTyXrXq
+        yy4kRcGFg9uwU9D91nCulRkiG+FuQ==
 X-QQ-GoodBg: 0
 From:   Xiang wangx <wangxiang@cdjrlc.com>
-To:     kys@microsoft.com
-Cc:     haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
-        decui@microsoft.com, linux-hyperv@vger.kernel.org,
+To:     deller@gmx.de
+Cc:     linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
         linux-kernel@vger.kernel.org, Xiang wangx <wangxiang@cdjrlc.com>
-Subject: [PATCH] Drivers: hv: Fix syntax errors in comments
-Date:   Sun,  5 Jun 2022 16:55:24 +0800
-Message-Id: <20220605085524.11289-1-wangxiang@cdjrlc.com>
+Subject: [PATCH] fbdev: Fix syntax errors in comments
+Date:   Sun,  5 Jun 2022 16:59:13 +0800
+Message-Id: <20220605085913.11682-1-wangxiang@cdjrlc.com>
 X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam7
+Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Delete the redundant word 'in'.
+Delete the redundant word 'its'.
 
 Signed-off-by: Xiang wangx <wangxiang@cdjrlc.com>
 ---
- drivers/hv/hv_kvp.c | 2 +-
+ drivers/video/fbdev/skeletonfb.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/hv/hv_kvp.c b/drivers/hv/hv_kvp.c
-index c698592b83e4..d35b60c06114 100644
---- a/drivers/hv/hv_kvp.c
-+++ b/drivers/hv/hv_kvp.c
-@@ -394,7 +394,7 @@ kvp_send_key(struct work_struct *dummy)
- 	in_msg = kvp_transaction.kvp_msg;
+diff --git a/drivers/video/fbdev/skeletonfb.c b/drivers/video/fbdev/skeletonfb.c
+index bcacfb6934fa..3d4d78362ede 100644
+--- a/drivers/video/fbdev/skeletonfb.c
++++ b/drivers/video/fbdev/skeletonfb.c
+@@ -96,7 +96,7 @@ static const struct fb_fix_screeninfo xxxfb_fix = {
  
- 	/*
--	 * The key/value strings sent from the host are encoded in
-+	 * The key/value strings sent from the host are encoded
- 	 * in utf16; convert it to utf8 strings.
- 	 * The host assures us that the utf16 strings will not exceed
- 	 * the max lengths specified. We will however, reserve room
+     /*
+      * 	Modern graphical hardware not only supports pipelines but some 
+-     *  also support multiple monitors where each display can have its  
++     *  also support multiple monitors where each display can have
+      *  its own unique data. In this case each display could be  
+      *  represented by a separate framebuffer device thus a separate 
+      *  struct fb_info. Now the struct xxx_par represents the graphics
 -- 
 2.36.1
+
 
