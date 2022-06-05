@@ -2,105 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19F48C43334
-	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 09:58:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9863C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 10:00:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350992AbiFEJ6v (ORCPT
+        id S1350998AbiFEKAR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 5 Jun 2022 05:58:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41030 "EHLO
+        Sun, 5 Jun 2022 06:00:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350975AbiFEJ6q (ORCPT
+        with ESMTP id S1348259AbiFEKAQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 5 Jun 2022 05:58:46 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D41412AE6;
-        Sun,  5 Jun 2022 02:58:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654423124; x=1685959124;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=CHtMVrgGKAU2RSmUy/mOnpfdRd709kBQ96y+3DfCz/o=;
-  b=J+3R3JZPHRDT/W1udugebkjMFRzDRJt0j9oNslm5ceZER5QAbej1SwOF
-   okog7slQ1qJBgMPymiXVSEPSZZLxpteYd4jO8uf0qBfXTB5E1Q4Ef7yQV
-   sFjnt6+l9ss7jVj9lOvbI/bqhV+5QME7D9VZT3lGfXs7yQDsyxOVESM5E
-   +kmvqmUsQ3GZK1sD68E0uhQkk4OyZHM3lIQ/+/hziVPgIZUIrl8ZQcC7c
-   TCOgM0RtJJU6TAg9ZR39NLbzImsak00ZveoR9AHxrUsQHO7cZSS9yxOSb
-   o4dcIedGOpxtQXGJio/2wbfgYqgUAYIwHPiRmQD/dNYct+lm3dosT89T2
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10368"; a="275344913"
-X-IronPort-AV: E=Sophos;i="5.91,279,1647327600"; 
-   d="scan'208";a="275344913"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2022 02:58:44 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,279,1647327600"; 
-   d="scan'208";a="708634502"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 05 Jun 2022 02:58:42 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nxn1t-000BrZ-K1;
-        Sun, 05 Jun 2022 09:58:41 +0000
-Date:   Sun, 5 Jun 2022 17:57:48 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Eugen Hristev <eugen.hristev@microchip.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        linux-media@vger.kernel.org, Hans Verkuil <hverkuil@xs4all.nl>
-Subject: drivers/media/platform/atmel/atmel-sama7g5-isc.c:610:34: warning:
- unused variable 'microchip_xisc_of_match'
-Message-ID: <202206051703.38nNx3IB-lkp@intel.com>
+        Sun, 5 Jun 2022 06:00:16 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77ECD35853;
+        Sun,  5 Jun 2022 03:00:13 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id u12so23781060eja.8;
+        Sun, 05 Jun 2022 03:00:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=0uaKvjKGbSmoQ07fEbmYnQns3tYMzfecUZ60MURH83M=;
+        b=T4n/1EMFUZrSx7UxlniheEPsyK0J/HcMJjg13Hltuxx4q7BvxDJFYs7PqoK540wgYz
+         CwTCD/BT9RZRUkDZMUMDSLLKLnLG7lyP8mqi/NwQHg3VY35R+tUskyAkinKmnXQn0faw
+         FutBJ3V2YYnl8yZjCOzcKgG1OmW1KIILuAWijJO3Sg6iirKKDO2183orcKiVdEBvTnYB
+         5+KyWCT0uVJXW9h77qnAST5l97vbG6UoZ2iX/7g2snKRokoTTn+kqT6ofN+rYlmU2JXh
+         z+pqpnGZR7UDSHqDeyrIX6cKPaAPMIsADLUwDh6sWtj9Yita5EfIO2AQc57dKmVdaXl9
+         kzMQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=0uaKvjKGbSmoQ07fEbmYnQns3tYMzfecUZ60MURH83M=;
+        b=bmwlRu0Ns4na+d1kozahmwCFal1J4077jCXbfcHgPxxKFsE8z6S1ZaAJWhTakEmFK0
+         /pE3M04mzJaEz4R5Cnte9iITRVhgzRY/rA9HBwFuJ1wJTGOG5qEj0/NIRM6hqwdQsuu5
+         09uDBmes0jKa+HakPZHo4cua7H4rMnfBLim7mCtfyQHiLnv4YrJHb5LpeqC5vpIJZgD2
+         ZrEs2m1WM9C1efJs2OcCU9Pm0isziRHRB0OCOsT17qIAFGrFL1PavF9MqxMzPRV4K7FD
+         PFUfOW9du4Jig9S+7EnlN4ELrHLC99DT9fPFelL+3cI+B/sfjLZFj3z6OGulJB1DVoxM
+         2VaA==
+X-Gm-Message-State: AOAM530F7ssqp71+CowEPmZ70BXUKqNiGs/iYzbmF3IVC13RbHQj4K/O
+        Ut2eQdQRp4TSesMeoR3p1E8FCAO1NSI0pA==
+X-Google-Smtp-Source: ABdhPJxPBfpf52tfa2nmI8jF5dDin8Ok7G/xwoQpEd6mGK/fqo93X5hcpnNcPpVc93WogzRON1kApw==
+X-Received: by 2002:a17:907:3f04:b0:6e8:4b0e:438d with SMTP id hq4-20020a1709073f0400b006e84b0e438dmr16534088ejc.391.1654423212035;
+        Sun, 05 Jun 2022 03:00:12 -0700 (PDT)
+Received: from eldamar (c-82-192-242-114.customer.ggaweb.ch. [82.192.242.114])
+        by smtp.gmail.com with ESMTPSA id me3-20020a170906aec300b006ff01fbb7ccsm4989986ejb.40.2022.06.05.03.00.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 05 Jun 2022 03:00:11 -0700 (PDT)
+Sender: Salvatore Bonaccorso <salvatore.bonaccorso@gmail.com>
+Date:   Sun, 5 Jun 2022 12:00:10 +0200
+From:   Salvatore Bonaccorso <carnil@debian.org>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Michael Schaller <misch@google.com>, axboe@kernel.dk,
+        linux-block@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: New partition on loop device doesn't appear in /dev anymore with
+ kernel 5.17.0 and newer (repro script included)
+Message-ID: <Ypx+qusVyLJEEb/r@eldamar.lan>
+References: <CALt099+y4-kJ0OqVeKaAjAbs4inOkR-WE0FmyiJRDc1-Ev9UKw@mail.gmail.com>
+ <20220603124956.GA18365@lst.de>
+ <CALt099JqRXwsGnq_DmHmnwPyB0K9Y+-BZUG_YoGxOg7G7ZZh9w@mail.gmail.com>
+ <20220603132313.GA20886@lst.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220603132313.GA20886@lst.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Eugen,
+Hi,
 
-FYI, the error/warning still remains.
+On Fri, Jun 03, 2022 at 03:23:13PM +0200, Christoph Hellwig wrote:
+> On Fri, Jun 03, 2022 at 03:21:28PM +0200, Michael Schaller wrote:
+> > Thank you, Christoph! <3
+> > 
+> > Patch https://lore.kernel.org/all/20220527055806.1972352-1-hch@lst.de/
+> > does indeed fix the issue.
+> > 
+> > Could this patch also be backported to 5.17 and 5.18?
+> 
+> It should get picked up automatically based on the fixes tag as soon
+> as it hits mainline.
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   952923ddc01120190dcf671e7b354364ce1d1362
-commit: c9aa973884a163ecb6d5d4d3be9137058adcaf8c media: atmel: atmel-isc: add microchip-xisc driver
-date:   12 months ago
-config: hexagon-buildonly-randconfig-r002-20220605 (https://download.01.org/0day-ci/archive/20220605/202206051703.38nNx3IB-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 416a5080d89066029f9889dc23f94de47c2fa895)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=c9aa973884a163ecb6d5d4d3be9137058adcaf8c
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout c9aa973884a163ecb6d5d4d3be9137058adcaf8c
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/media/platform/atmel/
+As it does not apply cleanly to older versions, this probably will
+need a sperate turnaround, but AFAICS it's just because of
+a0e286b6a5b6 ("loop: remove lo_refcount and avoid lo_mutex in ->open /
+->release") changing context of the fourth hunk in
+drivers/block/loop.c .
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/media/platform/atmel/atmel-sama7g5-isc.c:610:34: warning: unused variable 'microchip_xisc_of_match' [-Wunused-const-variable]
-   static const struct of_device_id microchip_xisc_of_match[] = {
-                                    ^
-   1 warning generated.
-
-
-vim +/microchip_xisc_of_match +610 drivers/media/platform/atmel/atmel-sama7g5-isc.c
-
-   609	
- > 610	static const struct of_device_id microchip_xisc_of_match[] = {
-   611		{ .compatible = "microchip,sama7g5-isc" },
-   612		{ }
-   613	};
-   614	MODULE_DEVICE_TABLE(of, microchip_xisc_of_match);
-   615	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Regards,
+Salvatore
