@@ -2,122 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA07DC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 03:45:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EE98C43334
+	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 03:47:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348045AbiFEDpw (ORCPT
+        id S1348103AbiFEDrM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 4 Jun 2022 23:45:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57198 "EHLO
+        Sat, 4 Jun 2022 23:47:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347889AbiFEDpr (ORCPT
+        with ESMTP id S240860AbiFEDrI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 4 Jun 2022 23:45:47 -0400
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14CE24EDD3
-        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 20:45:45 -0700 (PDT)
-Received: by mail-yb1-xb2d.google.com with SMTP id u3so10545323ybi.4
-        for <linux-kernel@vger.kernel.org>; Sat, 04 Jun 2022 20:45:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=u927xqlaG4+M+ycErvXLDv/hJjpEjGMZ02h0/MOu0dE=;
-        b=ehj6NFZQv8BDVJJlJnUvvcDSXp9LpCqfvnmr5AXmU20WA3jQqH6sOl5be/5V6xWW+t
-         i6e5y2mRwk2MV3UEKvTcTRXkOUeJZYrrczsFw+5q64C+0kLefCc4fK+oOEk6SmfB4YBP
-         kkamPTLmuhJB011WNvofNqiRM5wg40Y+7zX0rei48rYtP3kEkpky6NpnOkPYqmuK7nYN
-         oTPwGWjuof4MrzV/WUiIydLaUqeiDYDhhmpboRu0PgShxoo9F1xB2iZ69uUQJ5kfrYWy
-         Jnwt0lMMEEKuEqbAm6O/urhy4l7obV+Pmh17DWGaW5a3DJaZVV3+PbaTSg8l6KGLEMX4
-         v7+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=u927xqlaG4+M+ycErvXLDv/hJjpEjGMZ02h0/MOu0dE=;
-        b=G/kO7OD1YDf1/C8sPBbiRTQCwjstYftvCWj0EvwnPIdeGbj9qbWcRsPv/aGDzb9Mxc
-         lXpZ+ob3faK9O+tiuxmgrl2IECgOfek6gXPqtym9GtHFsC4kSmb59cpSVxMRy3WWUEyl
-         GfV9CjzdhTd8ZmjGqgIaZsvVLx9aRdJRxbYHHR09vWR6+it4Q598c1sXSMoBsis9BXGA
-         m3k7KjMAXuRXkuhuddJ7IWrApkB7O3T9yfL6CBSlKxMHF6OiFRKwG9W+y34Ks2IaGMP+
-         YhYqGO9rZyEEcAI71CoWul4cBQnnEHFbrexdv1oCPdnV23xwhG/9+62Fe7fpamT4X8wu
-         vdgg==
-X-Gm-Message-State: AOAM5324+aaWh6yNALtJ5B4tFWsyWwJOO306Bjt33Ps1uGgxNfxaDghc
-        BXsXHVCr4dYp3v51KiQAaoKifHYnP/ejMiJO5TWSeQ==
-X-Google-Smtp-Source: ABdhPJwXtoaNM32RInd5ZTKb8WwYpukxL2Izf1ybTZRPqnFQCNw5sfzLXMWMQyk9Vor1Gw8PdsE5l0dAUAlKBxb7VNQ=
-X-Received: by 2002:a05:6902:1009:b0:660:3a01:84eb with SMTP id
- w9-20020a056902100900b006603a0184ebmr19585298ybt.80.1654400744733; Sat, 04
- Jun 2022 20:45:44 -0700 (PDT)
+        Sat, 4 Jun 2022 23:47:08 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1DE9B24
+        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 20:46:54 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LG2ZC4t6FzgYYs;
+        Sun,  5 Jun 2022 11:45:07 +0800 (CST)
+Received: from dggpemm500002.china.huawei.com (7.185.36.229) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sun, 5 Jun 2022 11:46:52 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ dggpemm500002.china.huawei.com (7.185.36.229) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sun, 5 Jun 2022 11:46:52 +0800
+From:   Chen Wandun <chenwandun@huawei.com>
+To:     <hughd@google.com>, <akpm@linux-foundation.org>,
+        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
+        <willy@infradead.org>, <david@redhat.com>,
+        <wangkefeng.wang@huawei.com>
+Subject: [PATCH v2 0/3] a few cleanup and bugfixes about shmem
+Date:   Sun, 5 Jun 2022 11:55:54 +0800
+Message-ID: <20220605035557.3957759-1-chenwandun@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220526081550.1089805-1-saravanak@google.com> <YpSFBNfGDpy3rqEV@linutronix.de>
-In-Reply-To: <YpSFBNfGDpy3rqEV@linutronix.de>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Sat, 4 Jun 2022 20:45:09 -0700
-Message-ID: <CAGETcx9wya9L2voMAFBc04LMKcEY97kwVCgdt0MDqU8cjoQKMw@mail.gmail.com>
-Subject: Re: [RFC PATCH v1 0/9] deferred_probe_timeout logic clean up
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Mark Brown <broonie@kernel.org>, Rob Herring <robh@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        John Stultz <jstultz@google.com>,
-        Nathan Chancellor <nathan@kernel.org>, kernel-team@android.com,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-acpi@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500002.china.huawei.com (7.185.36.229)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 30, 2022 at 1:49 AM Sebastian Andrzej Siewior
-<bigeasy@linutronix.de> wrote:
->
-> On 2022-05-26 01:15:39 [-0700], Saravana Kannan wrote:
-> > Yoshihiro/Geert,
-> Hi Saravana,
->
-> > If you can test this patch series and confirm that the NFS root case
-> > works, I'd really appreciate that.
->
-> The two patches you sent earlier, plus this series, plus
->
-> diff --git a/drivers/base/core.c b/drivers/base/core.c
-> index 7ff7fbb006431..829d9b1f7403f 100644
-> --- a/drivers/base/core.c
-> +++ b/drivers/base/core.c
-> @@ -1697,8 +1697,6 @@ static int fw_devlink_may_probe(struct device *dev, void *data)
->   */
->  void __init fw_devlink_unblock_may_probe(void)
->  {
-> -       struct device_link *link, *ln;
-> -
->         if (!fw_devlink_flags || fw_devlink_is_permissive())
->                 return;
->
-> and it compiles + boots without a delay.
+v1 ==> v2:
+combine patch2 and patch3 into a single patch.
 
-Thanks for testing! I missed your reply until now and I ended up
-sending out a v2 a few days back. That's a much better series IMO
-because it only temporarily ignores dependencies and only when NFS
-root mounting might not work. If you can test that too (and it
-shouldn't have the useless variable), I'd appreciate it.
+Chen Wandun (3):
+  mm/shmem: check return value of shmem_init_inodecache
+  mm/shmem: return error code directly for invalid addr
+  mm/shmem: rework calculation of inflated_addr in
+    shmem_get_unmapped_area
 
--Saravana
+ mm/shmem.c | 24 ++++++++++++++++--------
+ 1 file changed, 16 insertions(+), 8 deletions(-)
+
+-- 
+2.25.1
+
