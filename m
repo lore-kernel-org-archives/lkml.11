@@ -2,99 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE6DCC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 07:58:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF940C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 08:15:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350826AbiFEH6x (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 5 Jun 2022 03:58:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44482 "EHLO
+        id S244658AbiFEIPB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 5 Jun 2022 04:15:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349301AbiFEH6u (ORCPT
+        with ESMTP id S244643AbiFEIO7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 5 Jun 2022 03:58:50 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C499B3818A
-        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 00:58:49 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id e66so10541601pgc.8
-        for <linux-kernel@vger.kernel.org>; Sun, 05 Jun 2022 00:58:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SIaW2W3kciWaqF9Rr2LnHumkokFFkDuqQM4YiszKM2Y=;
-        b=nJgso2Q6AIEclla/wuH8+42F+fzYyKTBXqQde2ubdOoLHm4kscNoo4aMedMkX5mMAp
-         bV8/zPpDAQNzvIXL0FmzesKSNBZedxG5c/BPxou8t1KKKxr/xhWy0sLbu9UHnKEL7FjZ
-         MUKY099immUppc2dns9cYFASfhPXvyCWn7vLiL1OAmip00wjVb4rmW84cUfPU5OwrQJx
-         AlgpmfFNK0sDMTzBQ7tACDLKypOEArTECBhFqD1LALG7f4CMz/f9G6kBLzM3dI1kpaB/
-         ltsgNCTez2+uSWf1c2DctfTCNO2u2fITwtR1SfS5aTZHM64kg2+XdZ68LB23/zFWaDgV
-         tO5g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SIaW2W3kciWaqF9Rr2LnHumkokFFkDuqQM4YiszKM2Y=;
-        b=frIYIc+OLeDFf9JlEjJyJQZQ3n7kyZ6r7Q6qHgVjkHSg+K9JmWzLkjhHXWvelPYZUb
-         wASPeNdGRRGIb8/2PGyH2r1MHBUdpgq8wGKuh65+ZY1owlvcf02xi4CV511IyCN53Zqt
-         uzwpOp1BDmeAAUoR4pgRUmnutoPiPoKVySGMxOGui0A8zvtx+s8VC8nDjc48fStILmGF
-         JuSyhgH43BtI8KaUgB+6bKsuzqj5gyQ65Mc0MnGp8BfxxNc0D5FuENs/v4BMZ+BTUjYj
-         VSjDz5RCKQHckGPZY2lNDG2ud1fZgp1F6/GTt97WIuXNqKbd5ix1QrDdr2q0pSC1/rUW
-         GF0Q==
-X-Gm-Message-State: AOAM530GRDYgkds9Ss2SKtq55H6lPh7lON0pJfBMd7LnuV1sZMSD43eE
-        FHlNrdCJ8XGhTl92FYDI7DzBySFF5mxNFH+n
-X-Google-Smtp-Source: ABdhPJzY4AllDjrmX2fBbjfpvyFtvxSZFxKd9yd9eY6Pb7bv/UBqovBwq0AAXYIXMqZN/sK/DYNGfg==
-X-Received: by 2002:a63:7c4e:0:b0:380:8ae9:c975 with SMTP id l14-20020a637c4e000000b003808ae9c975mr16314985pgn.25.1654415929335;
-        Sun, 05 Jun 2022 00:58:49 -0700 (PDT)
-Received: from localhost.localdomain ([202.120.234.246])
-        by smtp.googlemail.com with ESMTPSA id s16-20020aa78bd0000000b0051bbd79fc9csm7182568pfd.57.2022.06.05.00.58.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Jun 2022 00:58:48 -0700 (PDT)
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     Krzysztof Halasa <khalasa@piap.pl>,
-        Russell King <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     linmq006@gmail.com
-Subject: [PATCH] ARM: cns3xxx: Fix refcount leak in cns3xxx_init
-Date:   Sun,  5 Jun 2022 11:58:41 +0400
-Message-Id: <20220605075841.19929-1-linmq006@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Sun, 5 Jun 2022 04:14:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEAC8245AD
+        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 01:14:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8892560E15
+        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 08:14:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DE3CC385A5;
+        Sun,  5 Jun 2022 08:14:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654416897;
+        bh=MVT+s05L0sIcigbzPpxbYbcLSi9Rg2+EkvlahjbY9Ys=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=XyP7lEsB+ml1VJ6Gr22ZBFqZTKjU9+0jat0laXUBKh/ZeoEC+9AbCD4mxN+W3Y+Yn
+         QzmJdLdS2oIShWeNJf4yobF5gqq3hK18NJg3i3gnrCVRq6k3HKYv9QGQynnzi3g6mU
+         IptZnYczrEjpbn1Oyrp6xXxE/Ev1KsELjyif2x5/wWv++EKKlYBokiwu/swURxUWq/
+         N5SbFxINcaNekQXOujAofNTrnyhlPVT3D2ac+YZgNiXxbvEVjtnbuu4r9SmPuaEVBU
+         AnoY0eutuA2w9uDZ4lCfqhIItErIs58RWi213v96Dfkl93Yznh0OOUY+L+vU5r4WOP
+         5TXpoLi4S8YDQ==
+Date:   Sun, 5 Jun 2022 16:14:52 +0800
+From:   Gao Xiang <xiang@kernel.org>
+To:     Yue Hu <huyue2@coolpad.com>
+Cc:     xiang@kernel.org, chao@kernel.org, linux-erofs@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org, zhangwen@coolpad.com,
+        shaojunjun@coolpad.com, Jeffle Xu <jefflexu@linux.alibaba.com>
+Subject: Re: [PATCH] MAINTAINERS: erofs: add myself as reviewer
+Message-ID: <Ypxl/MsOGQ6W4Rlf@debian>
+Mail-Followup-To: Yue Hu <huyue2@coolpad.com>, xiang@kernel.org,
+        chao@kernel.org, linux-erofs@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org, zhangwen@coolpad.com,
+        shaojunjun@coolpad.com, Jeffle Xu <jefflexu@linux.alibaba.com>
+References: <20220605070133.4280-1-huyue2@coolpad.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220605070133.4280-1-huyue2@coolpad.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-of_find_compatible_node() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when done.
-Add missing of_node_put() to avoid refcount leak.
+Hi Yue,
 
-Fixes: 415f59142d9d ("ARM: cns3xxx: initial DT support")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
----
- arch/arm/mach-cns3xxx/core.c | 2 ++
- 1 file changed, 2 insertions(+)
+On Sun, Jun 05, 2022 at 03:02:04PM +0800, Yue Hu wrote:
+> I have been doing some erofs patches. Now I have the time and would like
+> to help with the reviews.
+> 
+> Signed-off-by: Yue Hu <huyue2@coolpad.com>
 
-diff --git a/arch/arm/mach-cns3xxx/core.c b/arch/arm/mach-cns3xxx/core.c
-index e4f4b20b83a2..3fc4ec830e3a 100644
---- a/arch/arm/mach-cns3xxx/core.c
-+++ b/arch/arm/mach-cns3xxx/core.c
-@@ -372,6 +372,7 @@ static void __init cns3xxx_init(void)
- 		/* De-Asscer SATA Reset */
- 		cns3xxx_pwr_soft_rst(CNS3XXX_PWR_SOFTWARE_RST(SATA));
- 	}
-+	of_node_put(dn);
- 
- 	dn = of_find_compatible_node(NULL, NULL, "cavium,cns3420-sdhci");
- 	if (of_device_is_available(dn)) {
-@@ -385,6 +386,7 @@ static void __init cns3xxx_init(void)
- 		cns3xxx_pwr_clk_en(CNS3XXX_PWR_CLK_EN(SDIO));
- 		cns3xxx_pwr_soft_rst(CNS3XXX_PWR_SOFTWARE_RST(SDIO));
- 	}
-+	of_node_put(dn);
- 
- 	pm_power_off = cns3xxx_power_off;
- 
--- 
-2.25.1
+Thanks for working on EROFS these months! Hopefully EROFS could have
+a healthier development then...
 
+Acked-by: Gao Xiang <xiang@kernel.org>
+
+
++ Jeffle Xu
+
+(BTW, I'd like to request Jeffle as a EROFS reviewer too due to
+ the fscache feature. Not sure if he's interested in it...)
+
+Thanks,
+Gao Xiang
+
+> ---
+>  MAINTAINERS | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index d2691d8a219f..2d0e28d7773b 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -7308,6 +7308,7 @@ F:	include/video/s1d13xxxfb.h
+>  EROFS FILE SYSTEM
+>  M:	Gao Xiang <xiang@kernel.org>
+>  M:	Chao Yu <chao@kernel.org>
+> +R:	Yue Hu <huyue2@coolpad.com>
+>  L:	linux-erofs@lists.ozlabs.org
+>  S:	Maintained
+>  T:	git git://git.kernel.org/pub/scm/linux/kernel/git/xiang/erofs.git
+> -- 
+> 2.17.1
