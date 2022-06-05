@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 585E8C43334
-	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 06:44:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4BE8C43334
+	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 06:44:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345920AbiFEGoD (ORCPT
+        id S1350815AbiFEGoP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 5 Jun 2022 02:44:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36756 "EHLO
+        Sun, 5 Jun 2022 02:44:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350798AbiFEGnZ (ORCPT
+        with ESMTP id S1350825AbiFEGn7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 5 Jun 2022 02:43:25 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 837BC48E4C;
-        Sat,  4 Jun 2022 23:43:20 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id l20-20020a17090a409400b001dd2a9d555bso10235285pjg.0;
-        Sat, 04 Jun 2022 23:43:20 -0700 (PDT)
+        Sun, 5 Jun 2022 02:43:59 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 683DE483AF;
+        Sat,  4 Jun 2022 23:43:28 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id n8so9866005plh.1;
+        Sat, 04 Jun 2022 23:43:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=hP6WCCUnsgHR2skvjVke3m5tSl6/Nn31ws8pPHbQIQs=;
-        b=cpWF4hZjd7n8ys3I/RUfjMbUmhxvOtTu7/OVGCgN5jobwWUu5ufojOspj2koShTqsb
-         Ep6BWxnnU99WO2qmh4dSfxxpK84K/3JFXmvomfx2eN15Wo/tWM9TIsk2PcS/xoBITtaK
-         gPLcns0VlBGItpvJAR4uh09q3saYnER8JPYr5oXaP4Rno/eTRDm88TLcy6q1oblFjjaC
-         KbFcbtgOYUJ3mWmjUMV0ffoNhtuJxnZbeZpksDHrPPhQtFyEPVtgGY+i5DYDvEb4SklF
-         qvs5+hwgJFZTbVMApxJ6otLjU+z97d7HlJlsao2PFYmtgmF8/JUbptGQtyiz3GbnOhKL
-         s7SA==
+        bh=9ZPEYVPT8lSmzrFfSReWUpWaXzCkp32kYLA9BRd9poo=;
+        b=ZNn0WASDiHjxRFywP5TR73R8wJiC3ZSdxxKyspy9RLQdrkXYFta3MBrcxf84vmim5j
+         c7nJdyx85YRp8jUZtcteGz6fD50M36c5Ew2w92iQNUcmZYxVQpDEHSJrUQpMaK82xbBh
+         W+hVKL0c6cZlEAk5NNfLEgoGU17jUZpJDgCDvq71EMHFkyGbCPy5LJ6//gTetBajJuqp
+         4QqIqKQVAHPWWcXNgAgx91QaVoI19hKygJCUL5E2j1f1NhNcUzbU/eviuqaPJBEL23i+
+         3h+Fw42rkQcH56WMnHbdDMyh6IK0lSYJmBnsKfNTfj9IPdzRyFA358b7SKt/ZNzoixO0
+         69Og==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=hP6WCCUnsgHR2skvjVke3m5tSl6/Nn31ws8pPHbQIQs=;
-        b=bwsH3W8X/3nLxHSwukMT2Qg6y7OVTebXO8t30m/VFRLC7VNmHqj3rxASaFBTpBMHdv
-         ntd8C0L5rccf3qNoXDogcIriXGTZog/hTBjyeJrVQTXw5PUtl8ZYAucQILnO3sPDJAHc
-         0hPNt63xYeHiNpYvzYatI+PLDCV7JjqMOLQZ/nqBed8LX+3xurgMPLm1/cPLFVzd3q1c
-         P1DUJvdRmZbaRbF0o/YUG5yW3JOIptzLMlXUKfLi0Xi21DWs1nLO/5+a9RVWvcbdrwRu
-         CGzwKKJ+ka/rQ8uSqccAF/LLCYif4yq99nBm775VCubhgmrhKTeW59ZSYRs85rOjaEav
-         YHeQ==
-X-Gm-Message-State: AOAM532K2IV460b6VNgzd9vPhxnwsLoNbCzFzEDOB/iD7G9rZSN/6wRu
-        +w9HxNj+go9mcfBlUvycxcwNdl9wpyI=
-X-Google-Smtp-Source: ABdhPJyQNThK2t3saTIHCPi97vTn17IROQ3IqH6dv7P2ekERSI+4IX6SPUK91sKd9WeaOwDRLc/J5g==
-X-Received: by 2002:a17:902:e94e:b0:158:91e6:501 with SMTP id b14-20020a170902e94e00b0015891e60501mr18155243pll.29.1654411399215;
-        Sat, 04 Jun 2022 23:43:19 -0700 (PDT)
+        bh=9ZPEYVPT8lSmzrFfSReWUpWaXzCkp32kYLA9BRd9poo=;
+        b=16RKKU+NALGwjRymfBld11/H8mHWMg9Uxoz4YGJjq2HEpvzdtjv/RBhr2N7ZBN8YK1
+         nTKLU0DfNJz3pNYwc/8193zzJdUsr6V1T1KtjtXO2caODJ+oeV7LvJ+k4y/blIxzRax6
+         eqF8KfJItlt5KUkdHoX5qcM7GEmIVOINpTse5kllJ5EyCirHXuCfrQnPoq/gMDZWhlCN
+         vQLSz5L3uwUt0KI87RNDRtPPHWAYKqb09KJ2EA/o/tnh4wcjrYpVUcTlT86xACIEDUtf
+         kemeGVa1ncFeZmPUh7yOWNddiBo8udCFh9JZs5Y2qOMNqWiAHV+8k8ArsxLm38K44eSd
+         b6wQ==
+X-Gm-Message-State: AOAM530b39jOa1cNdRlIyxJvN6GZ0Kbp6gbKgD7+sZcV0o+c1/K1Xjba
+        bg+3nshPgPEWm4JcLGcMRVaPX2XqYIE=
+X-Google-Smtp-Source: ABdhPJw1Z0TMC5z7R5ZNgBNj1jdkxTHk0RywS567SkssZrZ/sO+fyc07fWQO7eJOE0kxP0hwV3dChg==
+X-Received: by 2002:a17:90b:4a92:b0:1e8:2ba1:64bf with SMTP id lp18-20020a17090b4a9200b001e82ba164bfmr12833283pjb.41.1654411407330;
+        Sat, 04 Jun 2022 23:43:27 -0700 (PDT)
 Received: from localhost ([198.11.178.15])
-        by smtp.gmail.com with ESMTPSA id ru12-20020a17090b2bcc00b001cb6527ca39sm10350755pjb.0.2022.06.04.23.43.18
+        by smtp.gmail.com with ESMTPSA id js24-20020a17090b149800b001df3a251cc2sm10376609pjb.4.2022.06.04.23.43.26
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 04 Jun 2022 23:43:19 -0700 (PDT)
+        Sat, 04 Jun 2022 23:43:27 -0700 (PDT)
 From:   Lai Jiangshan <jiangshanlai@gmail.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
         Paolo Bonzini <pbonzini@redhat.com>
@@ -56,9 +56,9 @@ Cc:     Sean Christopherson <seanjc@google.com>,
         Vitaly Kuznetsov <vkuznets@redhat.com>,
         Maxim Levitsky <mlevitsk@redhat.com>,
         Lai Jiangshan <jiangshan.ljs@antgroup.com>
-Subject: [PATCH 07/12] KVM: X86/MMU: Remove the useless struct mmu_page_path
-Date:   Sun,  5 Jun 2022 14:43:37 +0800
-Message-Id: <20220605064342.309219-8-jiangshanlai@gmail.com>
+Subject: [PATCH 09/12] KVM: X86/MMU: Unfold struct mmu_page_and_offset in struct kvm_mmu_pages
+Date:   Sun,  5 Jun 2022 14:43:39 +0800
+Message-Id: <20220605064342.309219-10-jiangshanlai@gmail.com>
 X-Mailer: git-send-email 2.19.1.6.gb485710b
 In-Reply-To: <20220605064342.309219-1-jiangshanlai@gmail.com>
 References: <20220605064342.309219-1-jiangshanlai@gmail.com>
@@ -70,123 +70,70 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 
-struct mmu_page_path is set and updated but never used since
-mmu_pages_clear_parents() is removed.
+struct kvm_mmu_page *sp is the only field in struct mmu_page_and_offset.
 
-Remove it.
+Unfold it.
 
 Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 ---
- arch/x86/kvm/mmu/mmu.c | 37 +++++++++----------------------------
- 1 file changed, 9 insertions(+), 28 deletions(-)
+ arch/x86/kvm/mmu/mmu.c | 14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
 
 diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index a56d328365e4..65a2f4a2ce25 100644
+index dc159db46b34..a5563e5ee2e5 100644
 --- a/arch/x86/kvm/mmu/mmu.c
 +++ b/arch/x86/kvm/mmu/mmu.c
-@@ -1897,39 +1897,28 @@ static bool is_obsolete_sp(struct kvm *kvm, struct kvm_mmu_page *sp)
- 	       unlikely(sp->mmu_valid_gen != kvm->arch.mmu_valid_gen);
+@@ -1743,9 +1743,7 @@ static int nonpaging_sync_page(struct kvm_vcpu *vcpu,
+ #define KVM_PAGE_ARRAY_NR 16
+ 
+ struct kvm_mmu_pages {
+-	struct mmu_page_and_offset {
+-		struct kvm_mmu_page *sp;
+-	} page[KVM_PAGE_ARRAY_NR];
++	struct kvm_mmu_page *sp[KVM_PAGE_ARRAY_NR];
+ 	unsigned int nr;
+ };
+ 
+@@ -1755,10 +1753,10 @@ static int mmu_pages_add(struct kvm_mmu_pages *pvec, struct kvm_mmu_page *sp)
+ 
+ 	if (sp->unsync)
+ 		for (i=0; i < pvec->nr; i++)
+-			if (pvec->page[i].sp == sp)
++			if (pvec->sp[i] == sp)
+ 				return 0;
+ 
+-	pvec->page[pvec->nr].sp = sp;
++	pvec->sp[pvec->nr] = sp;
+ 	pvec->nr++;
+ 	return (pvec->nr == KVM_PAGE_ARRAY_NR);
  }
+@@ -1894,7 +1892,7 @@ static bool is_obsolete_sp(struct kvm *kvm, struct kvm_mmu_page *sp)
  
--struct mmu_page_path {
--	struct kvm_mmu_page *parent[PT64_ROOT_MAX_LEVEL];
--	unsigned int idx[PT64_ROOT_MAX_LEVEL];
--};
--
--#define for_each_sp(pvec, sp, parents, i)			\
--		for (i = mmu_pages_first(&pvec, &parents);	\
-+#define for_each_sp(pvec, sp, i)					\
-+		for (i = mmu_pages_first(&pvec);			\
- 			i < pvec.nr && ({ sp = pvec.page[i].sp; 1;});	\
--			i = mmu_pages_next(&pvec, &parents, i))
-+			i = mmu_pages_next(&pvec, i))
+ #define for_each_sp(pvec, sp, i)					\
+ 		for (i = mmu_pages_first(&pvec);			\
+-			i < pvec.nr && ({ sp = pvec.page[i].sp; 1;});	\
++			i < pvec.nr && ({ sp = pvec.sp[i]; 1;});	\
+ 			i = mmu_pages_next(&pvec, i))
  
--static int mmu_pages_next(struct kvm_mmu_pages *pvec,
--			  struct mmu_page_path *parents,
--			  int i)
-+static int mmu_pages_next(struct kvm_mmu_pages *pvec, int i)
- {
+ static int mmu_pages_next(struct kvm_mmu_pages *pvec, int i)
+@@ -1902,7 +1900,7 @@ static int mmu_pages_next(struct kvm_mmu_pages *pvec, int i)
  	int n;
  
  	for (n = i+1; n < pvec->nr; n++) {
- 		struct kvm_mmu_page *sp = pvec->page[n].sp;
--		unsigned idx = pvec->page[n].idx;
+-		struct kvm_mmu_page *sp = pvec->page[n].sp;
++		struct kvm_mmu_page *sp = pvec->sp[n];
  		int level = sp->role.level;
  
--		parents->idx[level-1] = idx;
  		if (level == PG_LEVEL_4K)
- 			break;
+@@ -1921,7 +1919,7 @@ static int mmu_pages_first(struct kvm_mmu_pages *pvec)
+ 	if (pvec->nr == 0)
+ 		return 0;
  
--		parents->parent[level-2] = sp;
- 	}
- 
- 	return n;
- }
- 
--static int mmu_pages_first(struct kvm_mmu_pages *pvec,
--			   struct mmu_page_path *parents)
-+static int mmu_pages_first(struct kvm_mmu_pages *pvec)
- {
- 	struct kvm_mmu_page *sp;
- 	int level;
-@@ -1943,13 +1932,7 @@ static int mmu_pages_first(struct kvm_mmu_pages *pvec,
+-	sp = pvec->page[0].sp;
++	sp = pvec->sp[0];
  	level = sp->role.level;
  	WARN_ON(level == PG_LEVEL_4K);
  
--	parents->parent[level-2] = sp;
--
--	/* Also set up a sentinel.  Further entries in pvec are all
--	 * children of sp, so this element is never overwritten.
--	 */
--	parents->parent[level-1] = NULL;
--	return mmu_pages_next(pvec, parents, 0);
-+	return mmu_pages_next(pvec, 0);
- }
- 
- static int mmu_sync_children(struct kvm_vcpu *vcpu,
-@@ -1957,7 +1940,6 @@ static int mmu_sync_children(struct kvm_vcpu *vcpu,
- {
- 	int i;
- 	struct kvm_mmu_page *sp;
--	struct mmu_page_path parents;
- 	struct kvm_mmu_pages pages;
- 	LIST_HEAD(invalid_list);
- 	bool flush = false;
-@@ -1965,7 +1947,7 @@ static int mmu_sync_children(struct kvm_vcpu *vcpu,
- 	while (mmu_unsync_walk_and_clear(parent, &pages)) {
- 		bool protected = false;
- 
--		for_each_sp(pages, sp, parents, i)
-+		for_each_sp(pages, sp, i)
- 			protected |= kvm_vcpu_write_protect_gfn(vcpu, sp->gfn);
- 
- 		if (protected) {
-@@ -1973,7 +1955,7 @@ static int mmu_sync_children(struct kvm_vcpu *vcpu,
- 			flush = false;
- 		}
- 
--		for_each_sp(pages, sp, parents, i) {
-+		for_each_sp(pages, sp, i) {
- 			kvm_mmu_page_clear_unsync(vcpu->kvm, sp);
- 			flush |= kvm_sync_page(vcpu, sp, &invalid_list) > 0;
- 		}
-@@ -2273,7 +2255,6 @@ static int mmu_zap_unsync_children(struct kvm *kvm,
- 				   struct list_head *invalid_list)
- {
- 	int i, zapped = 0;
--	struct mmu_page_path parents;
- 	struct kvm_mmu_pages pages;
- 
- 	if (parent->role.level == PG_LEVEL_4K)
-@@ -2282,7 +2263,7 @@ static int mmu_zap_unsync_children(struct kvm *kvm,
- 	while (mmu_unsync_walk_and_clear(parent, &pages)) {
- 		struct kvm_mmu_page *sp;
- 
--		for_each_sp(pages, sp, parents, i) {
-+		for_each_sp(pages, sp, i) {
- 			kvm_mmu_prepare_zap_page(kvm, sp, invalid_list);
- 			zapped++;
- 		}
 -- 
 2.19.1.6.gb485710b
 
