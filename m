@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E55EC43334
-	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 13:56:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9C34C43334
+	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 13:56:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349047AbiFEN4L (ORCPT
+        id S1348714AbiFEN4P (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 5 Jun 2022 09:56:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39490 "EHLO
+        Sun, 5 Jun 2022 09:56:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348424AbiFENzU (ORCPT
+        with ESMTP id S1344712AbiFENzZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 5 Jun 2022 09:55:20 -0400
+        Sun, 5 Jun 2022 09:55:25 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17639E083;
-        Sun,  5 Jun 2022 06:54:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E486D6349;
+        Sun,  5 Jun 2022 06:55:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AD76D60F9E;
-        Sun,  5 Jun 2022 13:54:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D7B7C385A5;
-        Sun,  5 Jun 2022 13:54:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1000360FAC;
+        Sun,  5 Jun 2022 13:55:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4AEBC385A5;
+        Sun,  5 Jun 2022 13:55:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654437280;
-        bh=AU8d+kJilhAOhDFwChzPGNMoONnIHkfPe6ac7uyzwz0=;
+        s=k20201202; t=1654437309;
+        bh=H6IuwmJUYnY4Pzfom1jIayZM3c3TnXdFIIFUSwgyIpk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X8FQ7EKcO2idZbjC2gapxzCDySMx2kEpJmVg4JWwlYhgh79EfurKMd5Y+UIpcE9SH
-         3GarZ5RZCQoE29imdVesEclI32pV3FgKiYv0RS+F+OjBS6MiQhAwvJayvUX4SBni8h
-         OP+wU5z+Eo1lzrJMg1bXYmRnvwrXYvryz51Kcy/cf1VDuNW0v0KGVD8XR/Y4UTZYmn
-         EcUeZPkfroO1/PJbbCe7RLpezXZ6AMSuFKLhZqTZncKREnl6AAFve+8lVbHHFRgVQm
-         Pm6AWOeCMdtcLVCVZRTSX+NEbmwmPOfb/rAFOzakZ7YNc79JbUTHjpEu3Ios5T4coq
-         xMhcHkRBt/yOA==
+        b=jLF2JqKctVXjVpPWFJmGgBRBndWj65Y+rZdGNSLsPirUiit0EQOiEkyHe3M/LB2oM
+         Ip2WPiJ5G4dtcH7R4luIEI/7gvzd4hf4s1vuu7DpElrpVWt5Dcif70Vci1c3dv0fmE
+         yNmzNktJNU/BPK67JO7mVlaiaOu7hdilmEimeF2aD5b35FdPk4pz6FOAuRYdcldhkc
+         Hzn4KBmYXEwhmXSZJ2qFn+o526HbCMkcKP6JKhZV3TEnB8FeDVc/obTRqkT76rLEyA
+         fF4nuUlIadXTWinX00F/4uNuF1HxSJU4+JEoUrVmxolUKHwRraPyI8bntwKu7BTNjY
+         +zXDm2c9x4OXg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
         Thomas Gleixner <tglx@linutronix.de>,
         John Stultz <jstultz@google.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH MANUALSEL 5.15 3/5] time/sched_clock: Round the frequency reported to nearest rather than down
-Date:   Sun,  5 Jun 2022 09:54:07 -0400
-Message-Id: <20220605135412.61517-3-sashal@kernel.org>
+Subject: [PATCH MANUALSEL 5.4 2/4] time/sched_clock: Round the frequency reported to nearest rather than down
+Date:   Sun,  5 Jun 2022 09:54:58 -0400
+Message-Id: <20220605135503.61690-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220605135412.61517-1-sashal@kernel.org>
-References: <20220605135412.61517-1-sashal@kernel.org>
+In-Reply-To: <20220605135503.61690-1-sashal@kernel.org>
+References: <20220605135503.61690-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -82,7 +82,7 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/kernel/time/sched_clock.c b/kernel/time/sched_clock.c
-index b1b9b12899f5..ee07f3ac1e5b 100644
+index a5538dd76a81..c586b66da0d3 100644
 --- a/kernel/time/sched_clock.c
 +++ b/kernel/time/sched_clock.c
 @@ -8,6 +8,7 @@
@@ -93,7 +93,7 @@ index b1b9b12899f5..ee07f3ac1e5b 100644
  #include <linux/moduleparam.h>
  #include <linux/sched.h>
  #include <linux/sched/clock.h>
-@@ -199,11 +200,11 @@ sched_clock_register(u64 (*read)(void), int bits, unsigned long rate)
+@@ -213,11 +214,11 @@ sched_clock_register(u64 (*read)(void), int bits, unsigned long rate)
  
  	r = rate;
  	if (r >= 4000000) {
