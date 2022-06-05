@@ -2,70 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAF8FC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 17:16:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0CA8C43334
+	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 17:23:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351490AbiFERQr (ORCPT
+        id S1346315AbiFERXy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 5 Jun 2022 13:16:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47798 "EHLO
+        Sun, 5 Jun 2022 13:23:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351458AbiFERQY (ORCPT
+        with ESMTP id S232266AbiFERXw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 5 Jun 2022 13:16:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 605FC4EA09;
-        Sun,  5 Jun 2022 10:16:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E960EB80B89;
-        Sun,  5 Jun 2022 17:16:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A6C51C34119;
-        Sun,  5 Jun 2022 17:16:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654449380;
-        bh=0BgI3hhFy5lYKXKU4fTE2ttt/eeLyDKlDmxUcoy9RY8=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=Prq65BalKSlz/EMZ+oLrjBkeTVtDgvVIAA9JQfZGu+P1XKMSwGjmTkkspvmR4stWK
-         yKMUXxidEzOg/vQujN5q4TB9omq3Da3WjQANOqisNRJ3ZFGwF0A/hNWUQ8wv11PYPC
-         Zgv2IcsaPoiOanuuLpxhhyLwVdEkYJSiUj4mja4rh+/RxSjvDje3UBTC127ftWEzEh
-         t2bDEAwKVWwfhpiJek+6DKyuINfVM39EKknCsB5hRU2n0kZ0tcRqRKB32x2E8PUVhZ
-         3DUayFCueZUlHG6i+YEWKIpwdDrh+c37K6MrDHsNvbTFeVcUqBIjXmKpZ9FIqQ8B3F
-         xc8R/Mx42WiKw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8729DF03950;
-        Sun,  5 Jun 2022 17:16:20 +0000 (UTC)
-Subject: Re: [GIT PULL v2] More Kbuild updates for v5.19-rc1
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <CAK7LNAQsyk-bGm82PgbHtJmxgoJVhYtM9T6PMm6BD1vuHbwL6g@mail.gmail.com>
-References: <CAK7LNAQsyk-bGm82PgbHtJmxgoJVhYtM9T6PMm6BD1vuHbwL6g@mail.gmail.com>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <CAK7LNAQsyk-bGm82PgbHtJmxgoJVhYtM9T6PMm6BD1vuHbwL6g@mail.gmail.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/masahiroy/linux-kbuild.git tags/kbuild-v5.19-3
-X-PR-Tracked-Commit-Id: 42ce60aa5aa46ae00f71aa806a11510b6db6d1a7
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 71e80720dbf0f08c6979e54f21ddaa5735ce742d
-Message-Id: <165444938054.7539.8330986999651784254.pr-tracker-bot@kernel.org>
-Date:   Sun, 05 Jun 2022 17:16:20 +0000
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+        Sun, 5 Jun 2022 13:23:52 -0400
+Received: from mail.enpas.org (zhong.enpas.org [46.38.239.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 61AE818344;
+        Sun,  5 Jun 2022 10:23:50 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        by mail.enpas.org (Postfix) with ESMTPSA id 6102B10002E;
+        Sun,  5 Jun 2022 17:23:49 +0000 (UTC)
+Date:   Sun, 5 Jun 2022 19:23:47 +0200
+From:   Max Staudt <max@enpas.org>
+To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Cc:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v5 0/7] can: refactoring of can-dev module and of Kbuild
+Message-ID: <20220605192347.518c4b3c.max@enpas.org>
+In-Reply-To: <20220604163000.211077-1-mailhol.vincent@wanadoo.fr>
+References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
+        <20220604163000.211077-1-mailhol.vincent@wanadoo.fr>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Sun, 5 Jun 2022 06:43:49 +0900:
+Thanks Vincent for this cleanup!
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/masahiroy/linux-kbuild.git tags/kbuild-v5.19-3
+Since I am upstreaming a driver that may (?) not fit the proposed
+structure, one question below.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/71e80720dbf0f08c6979e54f21ddaa5735ce742d
 
-Thank you!
+On Sun,  5 Jun 2022 01:29:53 +0900
+Vincent Mailhol <mailhol.vincent@wanadoo.fr> wrote:
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+> * menu after this series *
+> 
+> Network device support
+>   symbol: CONFIG_NETDEVICES
+>   |
+>   +-> CAN Device Drivers
+>       symbol: CONFIG_CAN_DEV
+>       |
+>       +-> software/virtual CAN device drivers
+>       |   (at time of writing: slcan, vcan, vxcan)
+>       |
+>       +-> CAN device drivers with Netlink support
+>           symbol: CONFIG_CAN_NETLINK (matches previous CONFIG_CAN_DEV)
+>           |
+>           +-> CAN bit-timing calculation (optional for all drivers)
+>           |   symbol: CONFIG_CAN_BITTIMING
+>           |
+>           +-> All other CAN devices not relying on RX offload
+>           |
+>           +-> CAN rx offload
+>               symbol: CONFIG_CAN_RX_OFFLOAD
+>               |
+>               +-> CAN devices relying on rx offload
+>                   (at time of writing: flexcan, m_can, mcp251xfd and
+> ti_hecc)
+
+
+This seemingly splits drivers into "things that speak to hardware" and
+"things that don't". Except... slcan really does speak to hardware. It
+just so happens to not use any of BITTIMING or RX_OFFLOAD. However, my
+can327 (formerly elmcan) driver, which is an ldisc just like slcan,
+*does* use RX_OFFLOAD, so where to I put it? Next to flexcan, m_can,
+mcp251xfd and ti_hecc?
+
+Is it really just a split by features used in drivers, and no longer a
+split by virtual/real?
+
+
+Max
