@@ -2,68 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 033A1C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 09:27:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3979C43334
+	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 09:30:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348667AbiFEJ1v (ORCPT
+        id S1350924AbiFEJa4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 5 Jun 2022 05:27:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58688 "EHLO
+        Sun, 5 Jun 2022 05:30:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229816AbiFEJ1s (ORCPT
+        with ESMTP id S229816AbiFEJay (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 5 Jun 2022 05:27:48 -0400
-Received: from smtpbg.qq.com (smtpbg136.qq.com [106.55.201.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 667D7D127
-        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 02:27:42 -0700 (PDT)
-X-QQ-mid: bizesmtp77t1654421256t9h2f1cj
-Received: from localhost.localdomain ( [111.9.5.115])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Sun, 05 Jun 2022 17:27:29 +0800 (CST)
-X-QQ-SSF: 01000000002000C0G000B00A0000000
-X-QQ-FEAT: +f7TOVQEmCMEk1UHGeDPVgfLv285XQabBO4i34w3L3bYAn+ciz2WOqULpcPCj
-        OnFboviJKs1rtxa3NjBbHHUlVudDknDivELaNu+9LhiYnJOfo3Ihll4HXZub5XAGY1BUIBH
-        o4qBAMWdnznkaFpk9mUyTfoEzFbSiNIwQhMOoZW+hqTLMtUXHfnVERCvh/z3FdHgedj4lBW
-        rKEi1LJpRENG2uBN+7CsaAird+04PRNL3DsRj058/oKdklW+3fSjz208YIonmGpdxumF21f
-        w4Z2wMirRgvFXxlAYmEI4srltkleD5fa8oxPI2ykIPJ2u/voVXAhhroI27ZyW4u1fqJsl9m
-        92M/rbA7nIvTjKwdF0=
-X-QQ-GoodBg: 0
-From:   Xiang wangx <wangxiang@cdjrlc.com>
-To:     rostedt@goodmis.org
-Cc:     mingo@redhat.com, linux-kernel@vger.kernel.org,
-        Xiang wangx <wangxiang@cdjrlc.com>
-Subject: [PATCH] tracefs: Fix syntax errors in comments
-Date:   Sun,  5 Jun 2022 17:27:29 +0800
-Message-Id: <20220605092729.13010-1-wangxiang@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Sun, 5 Jun 2022 05:30:54 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C7C123BDE
+        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 02:30:54 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1654421452;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:  references:references;
+        bh=aJ0fAHN0yfhhL1zRJAkcqIWN5QZJxsV5PH13sVjVwSs=;
+        b=RLC9pIWO0RtQND5Y165rJTRxEES2SQWt1fCU4AX9Pdki8VVMtg3TKksEwa+blK9VxfNuX4
+        KGFejW7Kc43aUrSKmCWqQJB4PzHPdkTVvbxgX4KsLlEh4i4QLKiqbKkU/RH1uPAze/gwZ2
+        UdkgFLbYFmwfVvQLf89iLru4otTQBQElbK1IahJu7FSjJOreueIAQXn4kau05XMlsIQqmW
+        ctCzQvmBa68YySdu4Kig7ApBxFFcSGInbBdVf+CAqnMGKsp8NdwcZi+QufR/I3mb32QOEw
+        dKhMuUgSF29pDeHZhb1O2FRLbePnkVeS7wvUGiE/5fElnYDOsR80nFxnTdn3sg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1654421452;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:  references:references;
+        bh=aJ0fAHN0yfhhL1zRJAkcqIWN5QZJxsV5PH13sVjVwSs=;
+        b=wO2JNGgBtbogMN0BXdUNjKx6gDXOcmpJuMLTw16WbnBG1UhgPG07po5TvAijhDyW+WlLcl
+        p8OJKnxyq9gUkADw==
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-kernel@vger.kernel.org, x86@kernel.org
+Subject: [GIT pull] perf/core for v5.19-rc1
+References: <165442136963.152751.14259048792272164569.tglx@xen13>
+Message-ID: <165442137112.152751.11088244246622721652.tglx@xen13>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam7
+Date:   Sun,  5 Jun 2022 11:30:51 +0200 (CEST)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Delete the redundant word 'to'.
+Linus,
 
-Signed-off-by: Xiang wangx <wangxiang@cdjrlc.com>
----
- fs/tracefs/inode.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+please pull the latest perf/core branch from:
 
-diff --git a/fs/tracefs/inode.c b/fs/tracefs/inode.c
-index de7252715b12..81d26abf486f 100644
---- a/fs/tracefs/inode.c
-+++ b/fs/tracefs/inode.c
-@@ -553,7 +553,7 @@ struct dentry *tracefs_create_dir(const char *name, struct dentry *parent)
-  *
-  * Only one instances directory is allowed.
-  *
-- * The instances directory is special as it allows for mkdir and rmdir to
-+ * The instances directory is special as it allows for mkdir and rmdir
-  * to be done by userspace. When a mkdir or rmdir is performed, the inode
-  * locks are released and the methods passed in (@mkdir and @rmdir) are
-  * called without locks and with the name of the directory being created
--- 
-2.36.1
+   git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git perf-core-2022-0=
+6-05
+
+up to:  108ea7eb3e75: perf/x86/Kconfig: Fix indentation in the Kconfig file
+
+
+Trivial indentation fix in Kconfig
+
+Thanks,
+
+	tglx
+
+------------------>
+Juerg Haefliger (1):
+      perf/x86/Kconfig: Fix indentation in the Kconfig file
+
+
+ arch/x86/events/Kconfig | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/arch/x86/events/Kconfig b/arch/x86/events/Kconfig
+index 09c56965750a..dabdf3d7bf84 100644
+--- a/arch/x86/events/Kconfig
++++ b/arch/x86/events/Kconfig
+@@ -6,24 +6,24 @@ config PERF_EVENTS_INTEL_UNCORE
+ 	depends on PERF_EVENTS && CPU_SUP_INTEL && PCI
+ 	default y
+ 	help
+-	Include support for Intel uncore performance events. These are
+-	available on NehalemEX and more modern processors.
++	  Include support for Intel uncore performance events. These are
++	  available on NehalemEX and more modern processors.
+=20
+ config PERF_EVENTS_INTEL_RAPL
+ 	tristate "Intel/AMD rapl performance events"
+ 	depends on PERF_EVENTS && (CPU_SUP_INTEL || CPU_SUP_AMD) && PCI
+ 	default y
+ 	help
+-	Include support for Intel and AMD rapl performance events for power
+-	monitoring on modern processors.
++	  Include support for Intel and AMD rapl performance events for power
++	  monitoring on modern processors.
+=20
+ config PERF_EVENTS_INTEL_CSTATE
+ 	tristate "Intel cstate performance events"
+ 	depends on PERF_EVENTS && CPU_SUP_INTEL && PCI
+ 	default y
+ 	help
+-	Include support for Intel cstate performance events for power
+-	monitoring on modern processors.
++	  Include support for Intel cstate performance events for power
++	  monitoring on modern processors.
+=20
+ config PERF_EVENTS_AMD_POWER
+ 	depends on PERF_EVENTS && CPU_SUP_AMD
 
