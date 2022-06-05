@@ -2,157 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E6D4C43334
-	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 21:47:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6BA3C43334
+	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 21:52:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348049AbiFEVrM (ORCPT
+        id S1348016AbiFEVwy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 5 Jun 2022 17:47:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59222 "EHLO
+        Sun, 5 Jun 2022 17:52:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347933AbiFEVrK (ORCPT
+        with ESMTP id S233452AbiFEVww (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 5 Jun 2022 17:47:10 -0400
-Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com [209.85.222.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CFD110FA;
-        Sun,  5 Jun 2022 14:47:05 -0700 (PDT)
-Received: by mail-qk1-f178.google.com with SMTP id a184so6197908qkg.5;
-        Sun, 05 Jun 2022 14:47:05 -0700 (PDT)
+        Sun, 5 Jun 2022 17:52:52 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9DA72657;
+        Sun,  5 Jun 2022 14:52:51 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id fu3so24124682ejc.7;
+        Sun, 05 Jun 2022 14:52:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jqTk340kUGoNwvIFE+KUlemPpmjVQ4n06NM+Fh67geI=;
+        b=S7PqYSet+vFl8kirvv4A6Qj3FyqLfBo228GfA3RfabMvlQmLo/s3OVoof1ooAGwJ3O
+         unGBnwV4EiXcgJxpynVgRcp4PSZjjn8j13ixj5R9mEka6MDWqepLy8A66iXeuAPsufwX
+         mHoP0ZSAxQv7Ge2g52W057FMKljiqg3+xVVN1IUAqd49D+Owx1ee/15lRWRnoU8r07l/
+         d5nFwzYjK+kq4TI7akEb9KUteEikzmQBEaKkJH0Tdwr6/4MI79G4E1mp9xlNHBMz9q94
+         SU4L30TKJX19OYFXv+UXJT0ADC9gpd/Dos+m6tZk+X778Ca+QMozAZhDGC232x3Z1qQZ
+         pnXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=eEvBqpfDNp1gDkv6Nzdk7QI2mfC3GLl4R5QP+lrMbvA=;
-        b=BK+Dz9K9PX7OOh5HU+9u3ENGR+uIEOx0rSMGqOxtIXtt/wqgjiPJ8K73j3Ga/XoDji
-         feCVVgEAZ3DIXmygMg3AE3j+z6lVL+zq4oSaeImbKCNsK3kh8retiKHglyUxiz9Bu6n9
-         sca42g3DeI5hKXdGAd7hhrbp/VIVJvR1dfdh4A+HTewpKSwr8u+5o2Emw94dZFTke4on
-         lv2RKHUi96TgfEPmbJdRAfQhrtPo6c+fi1aJoolnWKYqXymaRXZ5qlaOkTCce5QXpvpl
-         qDz011Eej1i2MBsr1mdwfXyWntU2e1UWBuH0hR2NIOBjGv3gqE4su1r+chSxNZ7DrLTk
-         mL/A==
-X-Gm-Message-State: AOAM531OsWhlWqkUpPzIcKJVGnDHCq69Ppv14NUz2D3PTEOCfbX9t9mA
-        w5dBI4Xk+dViEeKUd+kqhTqmNCjVDg==
-X-Google-Smtp-Source: ABdhPJyC7nsRGp7r9R2CQWA/Cgx5aIH6CBASg7KC9/6/3ZpnQ/Ef21Dng8wLb0+nHlIU5qgGVTTGBQ==
-X-Received: by 2002:a37:315:0:b0:6a6:a90c:9072 with SMTP id 21-20020a370315000000b006a6a90c9072mr6703509qkd.256.1654465624964;
-        Sun, 05 Jun 2022 14:47:04 -0700 (PDT)
-Received: from robh.at.kernel.org ([2607:fb90:ac97:ac63:b5fd:aa9:8d74:9989])
-        by smtp.gmail.com with ESMTPSA id u16-20020a05620a455000b006a6b1c11235sm3207461qkp.84.2022.06.05.14.47.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Jun 2022 14:47:04 -0700 (PDT)
-Received: (nullmailer pid 3577933 invoked by uid 1000);
-        Sun, 05 Jun 2022 21:47:00 -0000
-Date:   Sun, 5 Jun 2022 16:47:00 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Potin Lai <potin.lai.pt@gmail.com>
-Cc:     Brendan Higgins <brendanhiggins@google.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Rayn Chen <rayn_chen@aspeedtech.com>,
-        Patrick Williams <patrick@stwcx.xyz>,
-        Potin Lai <potin.lai@quantatw.com>, linux-i2c@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] dt-bindings: aspeed-i2c: add properties for
- manual clock setting
-Message-ID: <20220605214700.GA3558088-robh@kernel.org>
-References: <20220601041512.21484-1-potin.lai.pt@gmail.com>
- <20220601041512.21484-3-potin.lai.pt@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jqTk340kUGoNwvIFE+KUlemPpmjVQ4n06NM+Fh67geI=;
+        b=e20e9pYEk+4LpTLL/PdpIJhbwhqCvWcn4/sbsP5hyp8mSbEV6vuV2Ru9eiCQcv2vk1
+         QMB2mtiMzTsaFGI6tPD+uudShMe9H2FGQ208yAnXYAUe7pe0YNLAEBAQbgsBF6hcAToj
+         eDsqlIWpm2kmGXKoqvMM3olLi8w8pE5KVFOV2t39UQ5atR40uoMvMPZ5u3nWMohUTzJd
+         Oe6Kwo71pdSBFV8CpX6CAx1WRs+1dh/ySJ4cpHUihD0ZS6G3MWmUjKUoX1wGngBCqI2w
+         HM+7ApCKyB/WtElJ+tA0TP9G8qFLjvvOcEBrQ59nK6FTaKQOxd00V7sNQ6y5+B/U1qnv
+         WkEQ==
+X-Gm-Message-State: AOAM530/2h1PqZ2h5WfrrFvV6dv/CBSRsMJDGNHZCMTzcF2+H6N8JZnT
+        XHGPlxK08yZZclq6KmFNPBo5qtaZvd0bQaNZSsU=
+X-Google-Smtp-Source: ABdhPJyajjoGEdHfoyCFfJ5xd/VGskW7hkoSyT1FnOhazKlHAmOLujiBhmJOBWa5cnZ57m/vRbQEmQ7U9GhZYiWGRT0=
+X-Received: by 2002:a17:907:7f21:b0:6ff:10b:9cee with SMTP id
+ qf33-20020a1709077f2100b006ff010b9ceemr18748924ejc.302.1654465970323; Sun, 05
+ Jun 2022 14:52:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220601041512.21484-3-potin.lai.pt@gmail.com>
+References: <20220603100004.70336-1-andriy.shevchenko@linux.intel.com> <20220603100004.70336-2-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20220603100004.70336-2-andriy.shevchenko@linux.intel.com>
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date:   Sun, 5 Jun 2022 23:52:39 +0200
+Message-ID: <CAFBinCDJm=hvbE3gy0H-3rQvnxOO6bnQe-5yir9=aMG1BiXVuw@mail.gmail.com>
+Subject: Re: [PATCH v3 2/6] iio: adc: meson_saradc: Align messages to be with
+ physical device prefix
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 01, 2022 at 12:15:12PM +0800, Potin Lai wrote:
-> Add following properties for manual tuning clock divisor and cycle of
-> hign/low pulse witdh.
-> 
-> * aspeed,i2c-manual-clk: Enable aspeed i2c clock manual setting
-> * aspeed,i2c-base-clk-div: Base Clock divisor (tBaseClk)
-> * aspeed,i2c-clk-high-cycle: Cycles of clock-high pulse (tClkHigh)
-> * aspeed,i2c-clk-low-cycle: Cycles of clock-low pulse (tClkLow)
-> 
-> Signed-off-by: Potin Lai <potin.lai.pt@gmail.com>
-> ---
->  .../devicetree/bindings/i2c/aspeed,i2c.yaml   | 44 +++++++++++++++++++
->  1 file changed, 44 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/i2c/aspeed,i2c.yaml b/Documentation/devicetree/bindings/i2c/aspeed,i2c.yaml
-> index ea643e6c3ef5..e2f67fe2aa0c 100644
-> --- a/Documentation/devicetree/bindings/i2c/aspeed,i2c.yaml
-> +++ b/Documentation/devicetree/bindings/i2c/aspeed,i2c.yaml
-> @@ -12,6 +12,28 @@ maintainers:
->  allOf:
->    - $ref: /schemas/i2c/i2c-controller.yaml#
->  
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          const: st,stm32-uart
-
-stm32 uart?
-
-> +
-> +    then:
-> +      properties:
-> +        aspeed,i2c-clk-high-cycle:
-> +          maximum: 8
-> +        aspeed,i2c-clk-low-cycle:
-> +          maximum: 8
-> +
-> +  - if:
-> +      required:
-> +        - aspeed,i2c-manual-clk
-> +
-> +    then:
-> +      required:
-> +        - aspeed,i2c-base-clk-div
-> +        - aspeed,i2c-clk-high-cycle
-> +        - aspeed,i2c-clk-low-cycle
-
-'dependencies' can better express this than an if/then.
-
-However, I think this should all be done in a common way.
-
-> +
->  properties:
->    compatible:
->      enum:
-> @@ -49,6 +71,28 @@ properties:
->      description:
->        states that there is another master active on this bus
->  
-> +  aspeed,i2c-manual-clk:
-> +    type: boolean
-> +    description: enable manual clock setting
-
-No need for this as presence of the other properties can determine this.
-
-> +
-> +  aspeed,i2c-base-clk-div:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    enum: [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192,
-> +           16384, 32768]
-> +    description: base clock divisor
-
-Specify the i2c bus frequency and calculate the divider.
-
-> +
-> +  aspeed,i2c-clk-high-cycle:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    minimum: 1
-> +    maximum: 16
-> +    description: cycles of master clock-high pulse width
-> +
-> +  aspeed,i2c-clk-low-cycle:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    minimum: 1
-> +    maximum: 16
-> +    description: cycles of master clock-low pulse width
-
-These 2 should be common. I think you just need a single property 
-expressing duty cycle.
-
-Rob
+On Fri, Jun 3, 2022 at 12:00 PM Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
+>
+> Align messages to be printed with the physical device prefix as it's done
+> everywhere else in this driver.
+>
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
