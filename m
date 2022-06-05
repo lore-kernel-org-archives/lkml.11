@@ -2,117 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D74EBCCA47E
-	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 10:33:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3F39C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 10:33:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351022AbiFEKdl (ORCPT
+        id S1351046AbiFEKdr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 5 Jun 2022 06:33:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44812 "EHLO
+        Sun, 5 Jun 2022 06:33:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245617AbiFEKd0 (ORCPT
+        with ESMTP id S1347671AbiFEKda (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 5 Jun 2022 06:33:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5912C205FB
-        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 03:33:24 -0700 (PDT)
+        Sun, 5 Jun 2022 06:33:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C00F7205FB
+        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 03:33:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0DA97B80B83
-        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 10:33:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EABB6C385A5;
-        Sun,  5 Jun 2022 10:33:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7EBEEB80CB1
+        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 10:33:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C270C385A5;
+        Sun,  5 Jun 2022 10:33:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654425201;
-        bh=UATuJy/9oNY4ZU95eveoO+ujyt4gg6+HJ332NeCE2mk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=rBID41qNIlFp64ocJql3lcBQ1ZN6Yf8ur4l3tQ9iRCIYolDhD+txKCDHN4BTVk1tN
-         D+/4tcsuiEEVdOxJcfsMS218rl+tWkTYCwkox0NKevDioSSTZ4dEr/rv84gu098Piu
-         5F/kIlw5MtAXU/z3n+xYOsvc/zn8no48mibvjevd7CnaLahfm4R1Del5+9JN72SYsM
-         +2n/PgMADCMS7BkzA/qQTdnHDO0oe23e7Gh+ly87xBLbNCRrLho9g78pGGDE+fxAW4
-         sOTjZphso++LZWn9u0yjDKzOFdJI5beWrhjN+m1uNdMoZRXbvyNeuxP0hi63ue7ypl
-         tDI3wjFCW2eGw==
+        s=k20201202; t=1654425207;
+        bh=nJtlFK4+nEL//62GhVnPMcX7A25SA2AYpOqBXZFPkfU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ccULnXpZmLvEDaX0KNWfzlwMIqWHhjylkkuxXF402u4QeXz+x47UbHvM6dcCse2R0
+         cJqzYixgNGOg9BGx3VzunZdrwsxtzExHhXpHFZVL2TeQnMD7DtRehiaNMTh9pEln42
+         Y9Wk+aRIbOYBmLTEDgLKi+hDMcba0psuQFNBlLlSHwwDe5wBZweD1cmTReL4xKuLCS
+         8FV8meeUH0NoNSG/zmTcugkTUPWsczQ1vvOGIhIFaXVzFYB2w+4oWPiDbV2DOO97Ac
+         l3/oDBSca0f/BIGuBokMh7EZhJCsWXr+eoQsvDrBPxCtvxqf/CGYmBLTOf4Mty6EaH
+         wziIRxj9mU9dQ==
 From:   Oded Gabbay <ogabbay@kernel.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Dafna Hirschfeld <dhirschfeld@habana.ai>
-Subject: [PATCH 1/7] habanalabs: add terminating NULL to attrs arrays
-Date:   Sun,  5 Jun 2022 13:33:10 +0300
-Message-Id: <20220605103316.3414541-1-ogabbay@kernel.org>
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>
+Subject: [PATCH 5/7] habanalabs/gaudi: fix comment to reflect current code
+Date:   Sun,  5 Jun 2022 13:33:14 +0300
+Message-Id: <20220605103316.3414541-5-ogabbay@kernel.org>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220605103316.3414541-1-ogabbay@kernel.org>
+References: <20220605103316.3414541-1-ogabbay@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dafna Hirschfeld <dhirschfeld@habana.ai>
+Due to code changes in the past few years, the original comment of
+how parser->user_cb_size is checked was not correct anymore.
 
-Arrays of struct attribute are expected to be NULL terminated.
-This is required by API methods such as device_add_groups.
-This fixes a crash when loading the driver for Goya device.
+Fix it to reflect current code and add more explanation as the code
+is more complex now.
 
-Signed-off-by: Dafna Hirschfeld <dhirschfeld@habana.ai>
-Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
 Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
 ---
- drivers/misc/habanalabs/common/sysfs.c    | 2 ++
- drivers/misc/habanalabs/gaudi/gaudi.c     | 1 +
- drivers/misc/habanalabs/goya/goya_hwmgr.c | 2 ++
- 3 files changed, 5 insertions(+)
+ drivers/misc/habanalabs/gaudi/gaudi.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/misc/habanalabs/common/sysfs.c b/drivers/misc/habanalabs/common/sysfs.c
-index 9ebeb18ab85e..da8181068895 100644
---- a/drivers/misc/habanalabs/common/sysfs.c
-+++ b/drivers/misc/habanalabs/common/sysfs.c
-@@ -73,6 +73,7 @@ static DEVICE_ATTR_RO(clk_cur_freq_mhz);
- static struct attribute *hl_dev_clk_attrs[] = {
- 	&dev_attr_clk_max_freq_mhz.attr,
- 	&dev_attr_clk_cur_freq_mhz.attr,
-+	NULL,
- };
- 
- static ssize_t vrm_ver_show(struct device *dev, struct device_attribute *attr, char *buf)
-@@ -93,6 +94,7 @@ static DEVICE_ATTR_RO(vrm_ver);
- 
- static struct attribute *hl_dev_vrm_attrs[] = {
- 	&dev_attr_vrm_ver.attr,
-+	NULL,
- };
- 
- static ssize_t uboot_ver_show(struct device *dev, struct device_attribute *attr,
 diff --git a/drivers/misc/habanalabs/gaudi/gaudi.c b/drivers/misc/habanalabs/gaudi/gaudi.c
-index fba322241096..25d735aee6a3 100644
+index c16c0f9fe202..72b0d145e853 100644
 --- a/drivers/misc/habanalabs/gaudi/gaudi.c
 +++ b/drivers/misc/habanalabs/gaudi/gaudi.c
-@@ -9187,6 +9187,7 @@ static DEVICE_ATTR_RO(infineon_ver);
+@@ -5562,8 +5562,14 @@ static int gaudi_parse_cb_mmu(struct hl_device *hdev,
+ 	}
  
- static struct attribute *gaudi_vrm_dev_attrs[] = {
- 	&dev_attr_infineon_ver.attr,
-+	NULL,
- };
- 
- static void gaudi_add_device_attr(struct hl_device *hdev, struct attribute_group *dev_clk_attr_grp,
-diff --git a/drivers/misc/habanalabs/goya/goya_hwmgr.c b/drivers/misc/habanalabs/goya/goya_hwmgr.c
-index 6580fc6a486a..b595721751c1 100644
---- a/drivers/misc/habanalabs/goya/goya_hwmgr.c
-+++ b/drivers/misc/habanalabs/goya/goya_hwmgr.c
-@@ -359,6 +359,7 @@ static struct attribute *goya_clk_dev_attrs[] = {
- 	&dev_attr_pm_mng_profile.attr,
- 	&dev_attr_tpc_clk.attr,
- 	&dev_attr_tpc_clk_curr.attr,
-+	NULL,
- };
- 
- static ssize_t infineon_ver_show(struct device *dev, struct device_attribute *attr, char *buf)
-@@ -375,6 +376,7 @@ static DEVICE_ATTR_RO(infineon_ver);
- 
- static struct attribute *goya_vrm_dev_attrs[] = {
- 	&dev_attr_infineon_ver.attr,
-+	NULL,
- };
- 
- void goya_add_device_attr(struct hl_device *hdev, struct attribute_group *dev_clk_attr_grp,
+ 	/*
+-	 * The check that parser->user_cb_size <= parser->user_cb->size was done
+-	 * in validate_queue_index().
++	 * We are protected from overflow because the check
++	 * "parser->user_cb_size <= parser->user_cb->size" was done in get_cb_from_cs_chunk()
++	 * in the common code. That check is done only if is_kernel_allocated_cb is true.
++	 *
++	 * There is no option to reach here without going through that check because:
++	 * 1. validate_queue_index() assigns true to is_kernel_allocated_cb for any submission to
++	 *    an external queue.
++	 * 2. For Gaudi, we only parse CBs that were submitted to the external queues.
+ 	 */
+ 	memcpy(parser->patched_cb->kernel_address,
+ 		parser->user_cb->kernel_address,
 -- 
 2.25.1
 
