@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E7C9CCA482
-	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 13:57:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56C79C43334
+	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 13:57:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347679AbiFEN53 (ORCPT
+        id S1349503AbiFEN5d (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 5 Jun 2022 09:57:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40282 "EHLO
+        Sun, 5 Jun 2022 09:57:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344336AbiFEN4x (ORCPT
+        with ESMTP id S1351096AbiFEN46 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 5 Jun 2022 09:56:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EA201057E;
-        Sun,  5 Jun 2022 06:55:36 -0700 (PDT)
+        Sun, 5 Jun 2022 09:56:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EF121144E;
+        Sun,  5 Jun 2022 06:55:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 397DEB80735;
-        Sun,  5 Jun 2022 13:55:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3ADDBC385A5;
-        Sun,  5 Jun 2022 13:55:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 56D1460F98;
+        Sun,  5 Jun 2022 13:55:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDF28C385A5;
+        Sun,  5 Jun 2022 13:55:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654437324;
-        bh=qtgmRQbNxV0nqdmTRYUEhZMQC2FrHihA9RNYjajKkPo=;
+        s=k20201202; t=1654437339;
+        bh=onJw5k+AKoF0e4naNu8gXb5kR7N1ZW6vobUu5CY79KM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=shh82fRfbwcXia7W2uYdmWK5GQZc+9RdGJ1H6dpiZ02ejSiU/W1BbEtITRQcf2sWx
-         CLVxJMlZaedQpIJnsNptC8npa/WcOv6KHdV+Iwv6RT/Gwopw1yMafJe8EQ9QT26jir
-         W/wr1nRvWuvotKp0pSwfc1L4HvgW2OhsLvaXzrTn/saWobaQqoS8ofzBRdkso7SquE
-         8gtxydf1zCTI51Xtd9EHHDLSSmkYF43Wja3NQyoxjlk9tXBjt8bWYQ1MAwO12N2j6v
-         lbDJG0z8PwgxuGDEVMqQ9kL7qgNddtu09aJ0ZABBNpn5H9rM5hHnPmJHMM2xQhTLmC
-         QFrm63+4qAVuw==
+        b=Q0u3wvAgyOXI8gw2GqV5GRc07hrFlCtbD4F0X+T5n9lcm4C4kat/FtafF79OkJqgx
+         MXtBiMpVAzN7TOi4TFaG9rZqeJx15GLNwZM20Wei+ZSvZy620LvxZAQJrailoCVhTw
+         IvSWR9gL9CVZyDm2w8xy24XyqaH3qFJz5eC7aCWqr8//vYzKGFIbfY5E4FMwIQq4Q2
+         CKYD8EOB/UlPJNEDYe//yVRf4h5e3q5zgL/tJq890JzDElmGbXmzwEltnxUpN3mK0I
+         VKTSwfRxb10t6SeHburUuNLeiJLILS71rjVpckydcnH1dSOLviCibRM9/wcuneipqM
+         fzduF3VZHLOlA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
         Thomas Gleixner <tglx@linutronix.de>,
         John Stultz <jstultz@google.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH MANUALSEL 4.19 2/4] time/sched_clock: Round the frequency reported to nearest rather than down
-Date:   Sun,  5 Jun 2022 09:55:12 -0400
-Message-Id: <20220605135519.61765-2-sashal@kernel.org>
+Subject: [PATCH MANUALSEL 4.14 2/4] time/sched_clock: Round the frequency reported to nearest rather than down
+Date:   Sun,  5 Jun 2022 09:55:27 -0400
+Message-Id: <20220605135533.61835-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220605135519.61765-1-sashal@kernel.org>
-References: <20220605135519.61765-1-sashal@kernel.org>
+In-Reply-To: <20220605135533.61835-1-sashal@kernel.org>
+References: <20220605135533.61835-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -82,7 +82,7 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/kernel/time/sched_clock.c b/kernel/time/sched_clock.c
-index 78eb05aa8003..dc1fe853a3f4 100644
+index 2d8f05aad442..207852fc7c42 100644
 --- a/kernel/time/sched_clock.c
 +++ b/kernel/time/sched_clock.c
 @@ -11,6 +11,7 @@
