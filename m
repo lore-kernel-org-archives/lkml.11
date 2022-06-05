@@ -2,142 +2,694 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A59DC43334
-	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 03:24:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9AE0CCA47B
+	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 03:36:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245729AbiFEDYs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 4 Jun 2022 23:24:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37670 "EHLO
+        id S1346285AbiFEDge (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 4 Jun 2022 23:36:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239358AbiFEDYn (ORCPT
+        with ESMTP id S243627AbiFEDga (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 4 Jun 2022 23:24:43 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2936186CD;
-        Sat,  4 Jun 2022 20:24:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=+l0GZ7z58a9WOSaF56AZ+Q4QK3euNlwmXxmDuMAYC+0=; b=K+yykGXDLEVF9Ufmqm3D0H4Shj
-        6gO8dpe4F4i8e1Pfucb+cFS4RfoYy6SGYGLVDLsl6Sjc/IDmP4LpaZyB7+jEouIdNL04if+bplwCG
-        fx/lUI/AjdVL+ox1TljEKu1wxbjrmmxFizBfiMcg3ImDC38rXPpVGJrvDOWR+czzTyMk=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nxgsT-005b5j-K9; Sun, 05 Jun 2022 05:24:33 +0200
-Date:   Sun, 5 Jun 2022 05:24:33 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Piyush Malgujar <pmalgujar@marvell.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org,
-        cchavva@marvell.com, deppel@marvell.com,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH v2 3/3] net: mdio: mdio-thunder: support for clock-freq
- attribute
-Message-ID: <Ypwh8e0jdQPVyJVq@lunn.ch>
-References: <20220530125329.30717-1-pmalgujar@marvell.com>
- <20220530125329.30717-4-pmalgujar@marvell.com>
+        Sat, 4 Jun 2022 23:36:30 -0400
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D7A84EDC0
+        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 20:36:28 -0700 (PDT)
+Received: by mail-il1-f198.google.com with SMTP id b11-20020a92340b000000b002d3dbbc7b15so8605245ila.5
+        for <linux-kernel@vger.kernel.org>; Sat, 04 Jun 2022 20:36:28 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=O0hHvpPXjzNSI41xuD+u1RxvgncqxSb0ybRrE+Lv3a8=;
+        b=xqVfiftawVo9FT0EbzGd8oZcz3DBPUWtaddSdWQSNtyHsG05FjKUW031nipgzG93Vc
+         ZgDtckSbBep1O5g37z9wn1CVlrzO/KagS6d+jHGrVgnX4xXRVGyLFR8ErtmwlCsKDvWK
+         dwp+D7HE0Pn7zDvbBpDGQlO6JAGkk5piSgXat2XuMrO1VW5UrnCoP/NhwgTxYmsEsysc
+         5VEGAJMckUHeRLxhv6GrjVIlHHTh2bMa7QCeYyQLSPDmkaVldLokn2mEHeq1b8YM9xVy
+         xl7BtmDn1fN45QOPPbQbv8UlxtuIxtzqa1Y692YGBOG1t4DV4oNvUwhCHMk5/MJ3yh4U
+         LJlQ==
+X-Gm-Message-State: AOAM533xgQUKJ7/ZWM0FDYKmDUhaWgrPvRima1rndWugve/Av4od8cHF
+        Y4Ef3yhc1v2WtBJmbCRibI4h2ypn6eOXAYvXQpfEmxCT45oG
+X-Google-Smtp-Source: ABdhPJwJ8xkWWOr8F38mpMhfhaiQH++ADjaC07uSiLe6bEqGKfqIuXplEQBS3BMQWW9sStKEUpj6mZEAsZb2+kerg9C+VAK091n6
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220530125329.30717-4-pmalgujar@marvell.com>
+X-Received: by 2002:a05:6638:1a07:b0:330:3524:f707 with SMTP id
+ cd7-20020a0566381a0700b003303524f707mr10228392jab.180.1654400187586; Sat, 04
+ Jun 2022 20:36:27 -0700 (PDT)
+Date:   Sat, 04 Jun 2022 20:36:27 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000007f5d7105e0ab0f71@google.com>
+Subject: [syzbot] memory leak in usb_set_configuration (3)
+From:   syzbot <syzbot+77b432d57c4791183ed4@syzkaller.appspotmail.com>
+To:     gregkh@linuxfoundation.org, johan@kernel.org,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        stern@rowland.harvard.edu, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> +static inline u32 clk_freq(u32 phase)
+Hello,
 
-Please keep with the naming scheme in the rest of the driver, 
-thunder_mdiobus_clk_freq()
+syzbot found the following issue on:
 
-> +{
-> +	return (100000000U / (2 * (phase)));
-> +}
-> +
-> +static inline u32 calc_sample(u32 phase)
-> +{
+HEAD commit:    2a5699b0de4e Merge tag 'leds-5.19-rc1' of git://git.kernel..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=1057eb7bf00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=df438bbebec7a6d7
+dashboard link: https://syzkaller.appspot.com/bug?extid=77b432d57c4791183ed4
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=125611a3f00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=168c737bf00000
 
-thunder_mdiobus_calc_sample()
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+77b432d57c4791183ed4@syzkaller.appspotmail.com
 
-> +	return (2 * (phase) - 3);
-> +}
-> +
-> +static u32 _config_clk(u32 req_freq, u32 *phase, u32 *sample)
+BUG: memory leak
+unreferenced object 0xffff88810d7e2800 (size 1024):
+  comm "kworker/0:0", pid 6, jiffies 4294972491 (age 20.640s)
+  hex dump (first 32 bytes):
+    c8 db 01 0d 81 88 ff ff c8 db 01 0d 81 88 ff ff  ................
+    01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff82d6dc08>] kmalloc include/linux/slab.h:600 [inline]
+    [<ffffffff82d6dc08>] kzalloc include/linux/slab.h:733 [inline]
+    [<ffffffff82d6dc08>] usb_set_configuration+0x168/0xb80 drivers/usb/core/message.c:1998
+    [<ffffffff82d7ed8c>] usb_generic_driver_probe+0x8c/0xc0 drivers/usb/core/generic.c:238
+    [<ffffffff82d7062c>] usb_probe_device+0x5c/0x140 drivers/usb/core/driver.c:293
+    [<ffffffff82771687>] call_driver_probe drivers/base/dd.c:542 [inline]
+    [<ffffffff82771687>] really_probe.part.0+0xe7/0x340 drivers/base/dd.c:621
+    [<ffffffff827719ec>] really_probe drivers/base/dd.c:583 [inline]
+    [<ffffffff827719ec>] __driver_probe_device+0x10c/0x1e0 drivers/base/dd.c:754
+    [<ffffffff82771aea>] driver_probe_device+0x2a/0x120 drivers/base/dd.c:784
+    [<ffffffff82772306>] __device_attach_driver+0xf6/0x140 drivers/base/dd.c:901
+    [<ffffffff8276e7d7>] bus_for_each_drv+0xb7/0x100 drivers/base/bus.c:427
+    [<ffffffff82771ed2>] __device_attach+0x122/0x260 drivers/base/dd.c:972
+    [<ffffffff82770446>] bus_probe_device+0xc6/0xe0 drivers/base/bus.c:487
+    [<ffffffff8276c82b>] device_add+0x5fb/0xdf0 drivers/base/core.c:3402
+    [<ffffffff8449f7f3>] usb_new_device.cold+0x10f/0x58e drivers/usb/core/hub.c:2566
+    [<ffffffff82d63118>] hub_port_connect drivers/usb/core/hub.c:5363 [inline]
+    [<ffffffff82d63118>] hub_port_connect_change drivers/usb/core/hub.c:5507 [inline]
+    [<ffffffff82d63118>] port_event drivers/usb/core/hub.c:5665 [inline]
+    [<ffffffff82d63118>] hub_event+0x1668/0x21d0 drivers/usb/core/hub.c:5747
+    [<ffffffff8127112f>] process_one_work+0x2bf/0x600 kernel/workqueue.c:2289
+    [<ffffffff81271a59>] worker_thread+0x59/0x5b0 kernel/workqueue.c:2436
+    [<ffffffff8127b695>] kthread+0x125/0x160 kernel/kthread.c:376
 
-thunder_mdiobus_config_clk().
+BUG: memory leak
+unreferenced object 0xffff888101996800 (size 1024):
+  comm "kworker/0:5", pid 3712, jiffies 4294972493 (age 20.620s)
+  hex dump (first 32 bytes):
+    c8 d3 01 0d 81 88 ff ff c8 d3 01 0d 81 88 ff ff  ................
+    01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff82d6dc08>] kmalloc include/linux/slab.h:600 [inline]
+    [<ffffffff82d6dc08>] kzalloc include/linux/slab.h:733 [inline]
+    [<ffffffff82d6dc08>] usb_set_configuration+0x168/0xb80 drivers/usb/core/message.c:1998
+    [<ffffffff82d7ed8c>] usb_generic_driver_probe+0x8c/0xc0 drivers/usb/core/generic.c:238
+    [<ffffffff82d7062c>] usb_probe_device+0x5c/0x140 drivers/usb/core/driver.c:293
+    [<ffffffff82771687>] call_driver_probe drivers/base/dd.c:542 [inline]
+    [<ffffffff82771687>] really_probe.part.0+0xe7/0x340 drivers/base/dd.c:621
+    [<ffffffff827719ec>] really_probe drivers/base/dd.c:583 [inline]
+    [<ffffffff827719ec>] __driver_probe_device+0x10c/0x1e0 drivers/base/dd.c:754
+    [<ffffffff82771aea>] driver_probe_device+0x2a/0x120 drivers/base/dd.c:784
+    [<ffffffff82772306>] __device_attach_driver+0xf6/0x140 drivers/base/dd.c:901
+    [<ffffffff8276e7d7>] bus_for_each_drv+0xb7/0x100 drivers/base/bus.c:427
+    [<ffffffff82771ed2>] __device_attach+0x122/0x260 drivers/base/dd.c:972
+    [<ffffffff82770446>] bus_probe_device+0xc6/0xe0 drivers/base/bus.c:487
+    [<ffffffff8276c82b>] device_add+0x5fb/0xdf0 drivers/base/core.c:3402
+    [<ffffffff8449f7f3>] usb_new_device.cold+0x10f/0x58e drivers/usb/core/hub.c:2566
+    [<ffffffff82d63118>] hub_port_connect drivers/usb/core/hub.c:5363 [inline]
+    [<ffffffff82d63118>] hub_port_connect_change drivers/usb/core/hub.c:5507 [inline]
+    [<ffffffff82d63118>] port_event drivers/usb/core/hub.c:5665 [inline]
+    [<ffffffff82d63118>] hub_event+0x1668/0x21d0 drivers/usb/core/hub.c:5747
+    [<ffffffff8127112f>] process_one_work+0x2bf/0x600 kernel/workqueue.c:2289
+    [<ffffffff81271a59>] worker_thread+0x59/0x5b0 kernel/workqueue.c:2436
+    [<ffffffff8127b695>] kthread+0x125/0x160 kernel/kthread.c:376
 
-> +{
-> +	unsigned int p;
-> +	u32 freq = 0, freq_prev;
-> +
-> +	for (p = PHASE_MIN; p < PHASE_DFLT; p++) {
-> +		freq_prev = freq;
-> +		freq = clk_freq(p);
-> +
-> +		if (req_freq >= freq)
-> +			break;
-> +	}
-> +
-> +	if (p == PHASE_DFLT)
-> +		freq = clk_freq(PHASE_DFLT);
-> +
-> +	if (p == PHASE_MIN || p == PHASE_DFLT)
-> +		goto out;
-> +
-> +	/* Check which clock value from the identified range
-> +	 * is closer to the requested value
-> +	 */
-> +	if ((freq_prev - req_freq) < (req_freq - freq)) {
-> +		p = p - 1;
-> +		freq = freq_prev;
-> +	}
-> +out:
-> +	*phase = p;
-> +	*sample = calc_sample(p);
-> +	return freq;
-> +}
-> +
->  static int thunder_mdiobus_pci_probe(struct pci_dev *pdev,
->  				     const struct pci_device_id *ent)
->  {
-> @@ -56,6 +101,7 @@ static int thunder_mdiobus_pci_probe(struct pci_dev *pdev,
->  	i = 0;
->  	device_for_each_child_node(&pdev->dev, fwn) {
->  		struct resource r;
-> +		u32 req_clk_freq;
->  		struct mii_bus *mii_bus;
->  		struct cavium_mdiobus *bus;
->  		union cvmx_smix_clk smi_clk;
-> @@ -90,6 +136,23 @@ static int thunder_mdiobus_pci_probe(struct pci_dev *pdev,
->  
->  		smi_clk.u64 = oct_mdio_readq(bus->register_base + SMI_CLK);
->  		smi_clk.s.clk_idle = 1;
-> +
-> +		if (!of_property_read_u32(node, "clock-frequency", &req_clk_freq)) {
-> +			u32 phase, sample;
-> +
-> +			dev_dbg(&pdev->dev, "requested bus clock frequency=%d\n",
-> +				req_clk_freq);
-> +
-> +			bus->clk_freq = _config_clk(req_clk_freq,
-> +						    &phase, &sample);
-> +
-> +			smi_clk.s.phase = phase;
-> +			smi_clk.s.sample_hi = (sample >> 4) & 0x1f;
-> +			smi_clk.s.sample = sample & 0xf;
-> +		} else {
-> +			bus->clk_freq = clk_freq(PHASE_DFLT);
-> +		}
+BUG: memory leak
+unreferenced object 0xffff88810a261ce0 (size 32):
+  comm "kworker/0:5", pid 3712, jiffies 4294972493 (age 20.620s)
+  hex dump (first 32 bytes):
+    33 2d 31 3a 30 2e 30 00 00 00 00 00 00 00 00 00  3-1:0.0.........
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff82396ccc>] kvasprintf+0x6c/0xf0 lib/kasprintf.c:25
+    [<ffffffff82396da8>] kvasprintf_const+0x58/0x110 lib/kasprintf.c:49
+    [<ffffffff8248d99b>] kobject_set_name_vargs+0x3b/0xe0 lib/kobject.c:257
+    [<ffffffff82767123>] dev_set_name+0x63/0x90 drivers/base/core.c:3190
+    [<ffffffff82d6e1e3>] usb_set_configuration+0x743/0xb80 drivers/usb/core/message.c:2105
+    [<ffffffff82d7ed8c>] usb_generic_driver_probe+0x8c/0xc0 drivers/usb/core/generic.c:238
+    [<ffffffff82d7062c>] usb_probe_device+0x5c/0x140 drivers/usb/core/driver.c:293
+    [<ffffffff82771687>] call_driver_probe drivers/base/dd.c:542 [inline]
+    [<ffffffff82771687>] really_probe.part.0+0xe7/0x340 drivers/base/dd.c:621
+    [<ffffffff827719ec>] really_probe drivers/base/dd.c:583 [inline]
+    [<ffffffff827719ec>] __driver_probe_device+0x10c/0x1e0 drivers/base/dd.c:754
+    [<ffffffff82771aea>] driver_probe_device+0x2a/0x120 drivers/base/dd.c:784
+    [<ffffffff82772306>] __device_attach_driver+0xf6/0x140 drivers/base/dd.c:901
+    [<ffffffff8276e7d7>] bus_for_each_drv+0xb7/0x100 drivers/base/bus.c:427
+    [<ffffffff82771ed2>] __device_attach+0x122/0x260 drivers/base/dd.c:972
+    [<ffffffff82770446>] bus_probe_device+0xc6/0xe0 drivers/base/bus.c:487
+    [<ffffffff8276c82b>] device_add+0x5fb/0xdf0 drivers/base/core.c:3402
+    [<ffffffff8449f7f3>] usb_new_device.cold+0x10f/0x58e drivers/usb/core/hub.c:2566
 
-You can make this simpler by setting req_clk_freq to your odd
-default. Then call of_property_read_u32(). If the property is not
-defined, the value of req_clk_freq will not be changed, and the
-calculation should come out with the correct value.
+BUG: memory leak
+unreferenced object 0xffff88810d7e2800 (size 1024):
+  comm "kworker/0:0", pid 6, jiffies 4294972491 (age 21.680s)
+  hex dump (first 32 bytes):
+    c8 db 01 0d 81 88 ff ff c8 db 01 0d 81 88 ff ff  ................
+    01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff82d6dc08>] kmalloc include/linux/slab.h:600 [inline]
+    [<ffffffff82d6dc08>] kzalloc include/linux/slab.h:733 [inline]
+    [<ffffffff82d6dc08>] usb_set_configuration+0x168/0xb80 drivers/usb/core/message.c:1998
+    [<ffffffff82d7ed8c>] usb_generic_driver_probe+0x8c/0xc0 drivers/usb/core/generic.c:238
+    [<ffffffff82d7062c>] usb_probe_device+0x5c/0x140 drivers/usb/core/driver.c:293
+    [<ffffffff82771687>] call_driver_probe drivers/base/dd.c:542 [inline]
+    [<ffffffff82771687>] really_probe.part.0+0xe7/0x340 drivers/base/dd.c:621
+    [<ffffffff827719ec>] really_probe drivers/base/dd.c:583 [inline]
+    [<ffffffff827719ec>] __driver_probe_device+0x10c/0x1e0 drivers/base/dd.c:754
+    [<ffffffff82771aea>] driver_probe_device+0x2a/0x120 drivers/base/dd.c:784
+    [<ffffffff82772306>] __device_attach_driver+0xf6/0x140 drivers/base/dd.c:901
+    [<ffffffff8276e7d7>] bus_for_each_drv+0xb7/0x100 drivers/base/bus.c:427
+    [<ffffffff82771ed2>] __device_attach+0x122/0x260 drivers/base/dd.c:972
+    [<ffffffff82770446>] bus_probe_device+0xc6/0xe0 drivers/base/bus.c:487
+    [<ffffffff8276c82b>] device_add+0x5fb/0xdf0 drivers/base/core.c:3402
+    [<ffffffff8449f7f3>] usb_new_device.cold+0x10f/0x58e drivers/usb/core/hub.c:2566
+    [<ffffffff82d63118>] hub_port_connect drivers/usb/core/hub.c:5363 [inline]
+    [<ffffffff82d63118>] hub_port_connect_change drivers/usb/core/hub.c:5507 [inline]
+    [<ffffffff82d63118>] port_event drivers/usb/core/hub.c:5665 [inline]
+    [<ffffffff82d63118>] hub_event+0x1668/0x21d0 drivers/usb/core/hub.c:5747
+    [<ffffffff8127112f>] process_one_work+0x2bf/0x600 kernel/workqueue.c:2289
+    [<ffffffff81271a59>] worker_thread+0x59/0x5b0 kernel/workqueue.c:2436
+    [<ffffffff8127b695>] kthread+0x125/0x160 kernel/kthread.c:376
 
-	    Andrew
+BUG: memory leak
+unreferenced object 0xffff888101996800 (size 1024):
+  comm "kworker/0:5", pid 3712, jiffies 4294972493 (age 21.660s)
+  hex dump (first 32 bytes):
+    c8 d3 01 0d 81 88 ff ff c8 d3 01 0d 81 88 ff ff  ................
+    01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff82d6dc08>] kmalloc include/linux/slab.h:600 [inline]
+    [<ffffffff82d6dc08>] kzalloc include/linux/slab.h:733 [inline]
+    [<ffffffff82d6dc08>] usb_set_configuration+0x168/0xb80 drivers/usb/core/message.c:1998
+    [<ffffffff82d7ed8c>] usb_generic_driver_probe+0x8c/0xc0 drivers/usb/core/generic.c:238
+    [<ffffffff82d7062c>] usb_probe_device+0x5c/0x140 drivers/usb/core/driver.c:293
+    [<ffffffff82771687>] call_driver_probe drivers/base/dd.c:542 [inline]
+    [<ffffffff82771687>] really_probe.part.0+0xe7/0x340 drivers/base/dd.c:621
+    [<ffffffff827719ec>] really_probe drivers/base/dd.c:583 [inline]
+    [<ffffffff827719ec>] __driver_probe_device+0x10c/0x1e0 drivers/base/dd.c:754
+    [<ffffffff82771aea>] driver_probe_device+0x2a/0x120 drivers/base/dd.c:784
+    [<ffffffff82772306>] __device_attach_driver+0xf6/0x140 drivers/base/dd.c:901
+    [<ffffffff8276e7d7>] bus_for_each_drv+0xb7/0x100 drivers/base/bus.c:427
+    [<ffffffff82771ed2>] __device_attach+0x122/0x260 drivers/base/dd.c:972
+    [<ffffffff82770446>] bus_probe_device+0xc6/0xe0 drivers/base/bus.c:487
+    [<ffffffff8276c82b>] device_add+0x5fb/0xdf0 drivers/base/core.c:3402
+    [<ffffffff8449f7f3>] usb_new_device.cold+0x10f/0x58e drivers/usb/core/hub.c:2566
+    [<ffffffff82d63118>] hub_port_connect drivers/usb/core/hub.c:5363 [inline]
+    [<ffffffff82d63118>] hub_port_connect_change drivers/usb/core/hub.c:5507 [inline]
+    [<ffffffff82d63118>] port_event drivers/usb/core/hub.c:5665 [inline]
+    [<ffffffff82d63118>] hub_event+0x1668/0x21d0 drivers/usb/core/hub.c:5747
+    [<ffffffff8127112f>] process_one_work+0x2bf/0x600 kernel/workqueue.c:2289
+    [<ffffffff81271a59>] worker_thread+0x59/0x5b0 kernel/workqueue.c:2436
+    [<ffffffff8127b695>] kthread+0x125/0x160 kernel/kthread.c:376
+
+BUG: memory leak
+unreferenced object 0xffff88810a261ce0 (size 32):
+  comm "kworker/0:5", pid 3712, jiffies 4294972493 (age 21.660s)
+  hex dump (first 32 bytes):
+    33 2d 31 3a 30 2e 30 00 00 00 00 00 00 00 00 00  3-1:0.0.........
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff82396ccc>] kvasprintf+0x6c/0xf0 lib/kasprintf.c:25
+    [<ffffffff82396da8>] kvasprintf_const+0x58/0x110 lib/kasprintf.c:49
+    [<ffffffff8248d99b>] kobject_set_name_vargs+0x3b/0xe0 lib/kobject.c:257
+    [<ffffffff82767123>] dev_set_name+0x63/0x90 drivers/base/core.c:3190
+    [<ffffffff82d6e1e3>] usb_set_configuration+0x743/0xb80 drivers/usb/core/message.c:2105
+    [<ffffffff82d7ed8c>] usb_generic_driver_probe+0x8c/0xc0 drivers/usb/core/generic.c:238
+    [<ffffffff82d7062c>] usb_probe_device+0x5c/0x140 drivers/usb/core/driver.c:293
+    [<ffffffff82771687>] call_driver_probe drivers/base/dd.c:542 [inline]
+    [<ffffffff82771687>] really_probe.part.0+0xe7/0x340 drivers/base/dd.c:621
+    [<ffffffff827719ec>] really_probe drivers/base/dd.c:583 [inline]
+    [<ffffffff827719ec>] __driver_probe_device+0x10c/0x1e0 drivers/base/dd.c:754
+    [<ffffffff82771aea>] driver_probe_device+0x2a/0x120 drivers/base/dd.c:784
+    [<ffffffff82772306>] __device_attach_driver+0xf6/0x140 drivers/base/dd.c:901
+    [<ffffffff8276e7d7>] bus_for_each_drv+0xb7/0x100 drivers/base/bus.c:427
+    [<ffffffff82771ed2>] __device_attach+0x122/0x260 drivers/base/dd.c:972
+    [<ffffffff82770446>] bus_probe_device+0xc6/0xe0 drivers/base/bus.c:487
+    [<ffffffff8276c82b>] device_add+0x5fb/0xdf0 drivers/base/core.c:3402
+    [<ffffffff8449f7f3>] usb_new_device.cold+0x10f/0x58e drivers/usb/core/hub.c:2566
+
+BUG: memory leak
+unreferenced object 0xffff88810d7e2800 (size 1024):
+  comm "kworker/0:0", pid 6, jiffies 4294972491 (age 23.680s)
+  hex dump (first 32 bytes):
+    c8 db 01 0d 81 88 ff ff c8 db 01 0d 81 88 ff ff  ................
+    01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff82d6dc08>] kmalloc include/linux/slab.h:600 [inline]
+    [<ffffffff82d6dc08>] kzalloc include/linux/slab.h:733 [inline]
+    [<ffffffff82d6dc08>] usb_set_configuration+0x168/0xb80 drivers/usb/core/message.c:1998
+    [<ffffffff82d7ed8c>] usb_generic_driver_probe+0x8c/0xc0 drivers/usb/core/generic.c:238
+    [<ffffffff82d7062c>] usb_probe_device+0x5c/0x140 drivers/usb/core/driver.c:293
+    [<ffffffff82771687>] call_driver_probe drivers/base/dd.c:542 [inline]
+    [<ffffffff82771687>] really_probe.part.0+0xe7/0x340 drivers/base/dd.c:621
+    [<ffffffff827719ec>] really_probe drivers/base/dd.c:583 [inline]
+    [<ffffffff827719ec>] __driver_probe_device+0x10c/0x1e0 drivers/base/dd.c:754
+    [<ffffffff82771aea>] driver_probe_device+0x2a/0x120 drivers/base/dd.c:784
+    [<ffffffff82772306>] __device_attach_driver+0xf6/0x140 drivers/base/dd.c:901
+    [<ffffffff8276e7d7>] bus_for_each_drv+0xb7/0x100 drivers/base/bus.c:427
+    [<ffffffff82771ed2>] __device_attach+0x122/0x260 drivers/base/dd.c:972
+    [<ffffffff82770446>] bus_probe_device+0xc6/0xe0 drivers/base/bus.c:487
+    [<ffffffff8276c82b>] device_add+0x5fb/0xdf0 drivers/base/core.c:3402
+    [<ffffffff8449f7f3>] usb_new_device.cold+0x10f/0x58e drivers/usb/core/hub.c:2566
+    [<ffffffff82d63118>] hub_port_connect drivers/usb/core/hub.c:5363 [inline]
+    [<ffffffff82d63118>] hub_port_connect_change drivers/usb/core/hub.c:5507 [inline]
+    [<ffffffff82d63118>] port_event drivers/usb/core/hub.c:5665 [inline]
+    [<ffffffff82d63118>] hub_event+0x1668/0x21d0 drivers/usb/core/hub.c:5747
+    [<ffffffff8127112f>] process_one_work+0x2bf/0x600 kernel/workqueue.c:2289
+    [<ffffffff81271a59>] worker_thread+0x59/0x5b0 kernel/workqueue.c:2436
+    [<ffffffff8127b695>] kthread+0x125/0x160 kernel/kthread.c:376
+
+BUG: memory leak
+unreferenced object 0xffff888101996800 (size 1024):
+  comm "kworker/0:5", pid 3712, jiffies 4294972493 (age 23.660s)
+  hex dump (first 32 bytes):
+    c8 d3 01 0d 81 88 ff ff c8 d3 01 0d 81 88 ff ff  ................
+    01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff82d6dc08>] kmalloc include/linux/slab.h:600 [inline]
+    [<ffffffff82d6dc08>] kzalloc include/linux/slab.h:733 [inline]
+    [<ffffffff82d6dc08>] usb_set_configuration+0x168/0xb80 drivers/usb/core/message.c:1998
+    [<ffffffff82d7ed8c>] usb_generic_driver_probe+0x8c/0xc0 drivers/usb/core/generic.c:238
+    [<ffffffff82d7062c>] usb_probe_device+0x5c/0x140 drivers/usb/core/driver.c:293
+    [<ffffffff82771687>] call_driver_probe drivers/base/dd.c:542 [inline]
+    [<ffffffff82771687>] really_probe.part.0+0xe7/0x340 drivers/base/dd.c:621
+    [<ffffffff827719ec>] really_probe drivers/base/dd.c:583 [inline]
+    [<ffffffff827719ec>] __driver_probe_device+0x10c/0x1e0 drivers/base/dd.c:754
+    [<ffffffff82771aea>] driver_probe_device+0x2a/0x120 drivers/base/dd.c:784
+    [<ffffffff82772306>] __device_attach_driver+0xf6/0x140 drivers/base/dd.c:901
+    [<ffffffff8276e7d7>] bus_for_each_drv+0xb7/0x100 drivers/base/bus.c:427
+    [<ffffffff82771ed2>] __device_attach+0x122/0x260 drivers/base/dd.c:972
+    [<ffffffff82770446>] bus_probe_device+0xc6/0xe0 drivers/base/bus.c:487
+    [<ffffffff8276c82b>] device_add+0x5fb/0xdf0 drivers/base/core.c:3402
+    [<ffffffff8449f7f3>] usb_new_device.cold+0x10f/0x58e drivers/usb/core/hub.c:2566
+    [<ffffffff82d63118>] hub_port_connect drivers/usb/core/hub.c:5363 [inline]
+    [<ffffffff82d63118>] hub_port_connect_change drivers/usb/core/hub.c:5507 [inline]
+    [<ffffffff82d63118>] port_event drivers/usb/core/hub.c:5665 [inline]
+    [<ffffffff82d63118>] hub_event+0x1668/0x21d0 drivers/usb/core/hub.c:5747
+    [<ffffffff8127112f>] process_one_work+0x2bf/0x600 kernel/workqueue.c:2289
+    [<ffffffff81271a59>] worker_thread+0x59/0x5b0 kernel/workqueue.c:2436
+    [<ffffffff8127b695>] kthread+0x125/0x160 kernel/kthread.c:376
+
+BUG: memory leak
+unreferenced object 0xffff88810a261ce0 (size 32):
+  comm "kworker/0:5", pid 3712, jiffies 4294972493 (age 23.660s)
+  hex dump (first 32 bytes):
+    33 2d 31 3a 30 2e 30 00 00 00 00 00 00 00 00 00  3-1:0.0.........
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff82396ccc>] kvasprintf+0x6c/0xf0 lib/kasprintf.c:25
+    [<ffffffff82396da8>] kvasprintf_const+0x58/0x110 lib/kasprintf.c:49
+    [<ffffffff8248d99b>] kobject_set_name_vargs+0x3b/0xe0 lib/kobject.c:257
+    [<ffffffff82767123>] dev_set_name+0x63/0x90 drivers/base/core.c:3190
+    [<ffffffff82d6e1e3>] usb_set_configuration+0x743/0xb80 drivers/usb/core/message.c:2105
+    [<ffffffff82d7ed8c>] usb_generic_driver_probe+0x8c/0xc0 drivers/usb/core/generic.c:238
+    [<ffffffff82d7062c>] usb_probe_device+0x5c/0x140 drivers/usb/core/driver.c:293
+    [<ffffffff82771687>] call_driver_probe drivers/base/dd.c:542 [inline]
+    [<ffffffff82771687>] really_probe.part.0+0xe7/0x340 drivers/base/dd.c:621
+    [<ffffffff827719ec>] really_probe drivers/base/dd.c:583 [inline]
+    [<ffffffff827719ec>] __driver_probe_device+0x10c/0x1e0 drivers/base/dd.c:754
+    [<ffffffff82771aea>] driver_probe_device+0x2a/0x120 drivers/base/dd.c:784
+    [<ffffffff82772306>] __device_attach_driver+0xf6/0x140 drivers/base/dd.c:901
+    [<ffffffff8276e7d7>] bus_for_each_drv+0xb7/0x100 drivers/base/bus.c:427
+    [<ffffffff82771ed2>] __device_attach+0x122/0x260 drivers/base/dd.c:972
+    [<ffffffff82770446>] bus_probe_device+0xc6/0xe0 drivers/base/bus.c:487
+    [<ffffffff8276c82b>] device_add+0x5fb/0xdf0 drivers/base/core.c:3402
+    [<ffffffff8449f7f3>] usb_new_device.cold+0x10f/0x58e drivers/usb/core/hub.c:2566
+
+BUG: memory leak
+unreferenced object 0xffff88810d7e2800 (size 1024):
+  comm "kworker/0:0", pid 6, jiffies 4294972491 (age 24.710s)
+  hex dump (first 32 bytes):
+    c8 db 01 0d 81 88 ff ff c8 db 01 0d 81 88 ff ff  ................
+    01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff82d6dc08>] kmalloc include/linux/slab.h:600 [inline]
+    [<ffffffff82d6dc08>] kzalloc include/linux/slab.h:733 [inline]
+    [<ffffffff82d6dc08>] usb_set_configuration+0x168/0xb80 drivers/usb/core/message.c:1998
+    [<ffffffff82d7ed8c>] usb_generic_driver_probe+0x8c/0xc0 drivers/usb/core/generic.c:238
+    [<ffffffff82d7062c>] usb_probe_device+0x5c/0x140 drivers/usb/core/driver.c:293
+    [<ffffffff82771687>] call_driver_probe drivers/base/dd.c:542 [inline]
+    [<ffffffff82771687>] really_probe.part.0+0xe7/0x340 drivers/base/dd.c:621
+    [<ffffffff827719ec>] really_probe drivers/base/dd.c:583 [inline]
+    [<ffffffff827719ec>] __driver_probe_device+0x10c/0x1e0 drivers/base/dd.c:754
+    [<ffffffff82771aea>] driver_probe_device+0x2a/0x120 drivers/base/dd.c:784
+    [<ffffffff82772306>] __device_attach_driver+0xf6/0x140 drivers/base/dd.c:901
+    [<ffffffff8276e7d7>] bus_for_each_drv+0xb7/0x100 drivers/base/bus.c:427
+    [<ffffffff82771ed2>] __device_attach+0x122/0x260 drivers/base/dd.c:972
+    [<ffffffff82770446>] bus_probe_device+0xc6/0xe0 drivers/base/bus.c:487
+    [<ffffffff8276c82b>] device_add+0x5fb/0xdf0 drivers/base/core.c:3402
+    [<ffffffff8449f7f3>] usb_new_device.cold+0x10f/0x58e drivers/usb/core/hub.c:2566
+    [<ffffffff82d63118>] hub_port_connect drivers/usb/core/hub.c:5363 [inline]
+    [<ffffffff82d63118>] hub_port_connect_change drivers/usb/core/hub.c:5507 [inline]
+    [<ffffffff82d63118>] port_event drivers/usb/core/hub.c:5665 [inline]
+    [<ffffffff82d63118>] hub_event+0x1668/0x21d0 drivers/usb/core/hub.c:5747
+    [<ffffffff8127112f>] process_one_work+0x2bf/0x600 kernel/workqueue.c:2289
+    [<ffffffff81271a59>] worker_thread+0x59/0x5b0 kernel/workqueue.c:2436
+    [<ffffffff8127b695>] kthread+0x125/0x160 kernel/kthread.c:376
+
+BUG: memory leak
+unreferenced object 0xffff888101996800 (size 1024):
+  comm "kworker/0:5", pid 3712, jiffies 4294972493 (age 24.690s)
+  hex dump (first 32 bytes):
+    c8 d3 01 0d 81 88 ff ff c8 d3 01 0d 81 88 ff ff  ................
+    01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff82d6dc08>] kmalloc include/linux/slab.h:600 [inline]
+    [<ffffffff82d6dc08>] kzalloc include/linux/slab.h:733 [inline]
+    [<ffffffff82d6dc08>] usb_set_configuration+0x168/0xb80 drivers/usb/core/message.c:1998
+    [<ffffffff82d7ed8c>] usb_generic_driver_probe+0x8c/0xc0 drivers/usb/core/generic.c:238
+    [<ffffffff82d7062c>] usb_probe_device+0x5c/0x140 drivers/usb/core/driver.c:293
+    [<ffffffff82771687>] call_driver_probe drivers/base/dd.c:542 [inline]
+    [<ffffffff82771687>] really_probe.part.0+0xe7/0x340 drivers/base/dd.c:621
+    [<ffffffff827719ec>] really_probe drivers/base/dd.c:583 [inline]
+    [<ffffffff827719ec>] __driver_probe_device+0x10c/0x1e0 drivers/base/dd.c:754
+    [<ffffffff82771aea>] driver_probe_device+0x2a/0x120 drivers/base/dd.c:784
+    [<ffffffff82772306>] __device_attach_driver+0xf6/0x140 drivers/base/dd.c:901
+    [<ffffffff8276e7d7>] bus_for_each_drv+0xb7/0x100 drivers/base/bus.c:427
+    [<ffffffff82771ed2>] __device_attach+0x122/0x260 drivers/base/dd.c:972
+    [<ffffffff82770446>] bus_probe_device+0xc6/0xe0 drivers/base/bus.c:487
+    [<ffffffff8276c82b>] device_add+0x5fb/0xdf0 drivers/base/core.c:3402
+    [<ffffffff8449f7f3>] usb_new_device.cold+0x10f/0x58e drivers/usb/core/hub.c:2566
+    [<ffffffff82d63118>] hub_port_connect drivers/usb/core/hub.c:5363 [inline]
+    [<ffffffff82d63118>] hub_port_connect_change drivers/usb/core/hub.c:5507 [inline]
+    [<ffffffff82d63118>] port_event drivers/usb/core/hub.c:5665 [inline]
+    [<ffffffff82d63118>] hub_event+0x1668/0x21d0 drivers/usb/core/hub.c:5747
+    [<ffffffff8127112f>] process_one_work+0x2bf/0x600 kernel/workqueue.c:2289
+    [<ffffffff81271a59>] worker_thread+0x59/0x5b0 kernel/workqueue.c:2436
+    [<ffffffff8127b695>] kthread+0x125/0x160 kernel/kthread.c:376
+
+BUG: memory leak
+unreferenced object 0xffff88810a261ce0 (size 32):
+  comm "kworker/0:5", pid 3712, jiffies 4294972493 (age 24.690s)
+  hex dump (first 32 bytes):
+    33 2d 31 3a 30 2e 30 00 00 00 00 00 00 00 00 00  3-1:0.0.........
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff82396ccc>] kvasprintf+0x6c/0xf0 lib/kasprintf.c:25
+    [<ffffffff82396da8>] kvasprintf_const+0x58/0x110 lib/kasprintf.c:49
+    [<ffffffff8248d99b>] kobject_set_name_vargs+0x3b/0xe0 lib/kobject.c:257
+    [<ffffffff82767123>] dev_set_name+0x63/0x90 drivers/base/core.c:3190
+    [<ffffffff82d6e1e3>] usb_set_configuration+0x743/0xb80 drivers/usb/core/message.c:2105
+    [<ffffffff82d7ed8c>] usb_generic_driver_probe+0x8c/0xc0 drivers/usb/core/generic.c:238
+    [<ffffffff82d7062c>] usb_probe_device+0x5c/0x140 drivers/usb/core/driver.c:293
+    [<ffffffff82771687>] call_driver_probe drivers/base/dd.c:542 [inline]
+    [<ffffffff82771687>] really_probe.part.0+0xe7/0x340 drivers/base/dd.c:621
+    [<ffffffff827719ec>] really_probe drivers/base/dd.c:583 [inline]
+    [<ffffffff827719ec>] __driver_probe_device+0x10c/0x1e0 drivers/base/dd.c:754
+    [<ffffffff82771aea>] driver_probe_device+0x2a/0x120 drivers/base/dd.c:784
+    [<ffffffff82772306>] __device_attach_driver+0xf6/0x140 drivers/base/dd.c:901
+    [<ffffffff8276e7d7>] bus_for_each_drv+0xb7/0x100 drivers/base/bus.c:427
+    [<ffffffff82771ed2>] __device_attach+0x122/0x260 drivers/base/dd.c:972
+    [<ffffffff82770446>] bus_probe_device+0xc6/0xe0 drivers/base/bus.c:487
+    [<ffffffff8276c82b>] device_add+0x5fb/0xdf0 drivers/base/core.c:3402
+    [<ffffffff8449f7f3>] usb_new_device.cold+0x10f/0x58e drivers/usb/core/hub.c:2566
+
+BUG: memory leak
+unreferenced object 0xffff88810d7e2800 (size 1024):
+  comm "kworker/0:0", pid 6, jiffies 4294972491 (age 25.760s)
+  hex dump (first 32 bytes):
+    c8 db 01 0d 81 88 ff ff c8 db 01 0d 81 88 ff ff  ................
+    01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff82d6dc08>] kmalloc include/linux/slab.h:600 [inline]
+    [<ffffffff82d6dc08>] kzalloc include/linux/slab.h:733 [inline]
+    [<ffffffff82d6dc08>] usb_set_configuration+0x168/0xb80 drivers/usb/core/message.c:1998
+    [<ffffffff82d7ed8c>] usb_generic_driver_probe+0x8c/0xc0 drivers/usb/core/generic.c:238
+    [<ffffffff82d7062c>] usb_probe_device+0x5c/0x140 drivers/usb/core/driver.c:293
+    [<ffffffff82771687>] call_driver_probe drivers/base/dd.c:542 [inline]
+    [<ffffffff82771687>] really_probe.part.0+0xe7/0x340 drivers/base/dd.c:621
+    [<ffffffff827719ec>] really_probe drivers/base/dd.c:583 [inline]
+    [<ffffffff827719ec>] __driver_probe_device+0x10c/0x1e0 drivers/base/dd.c:754
+    [<ffffffff82771aea>] driver_probe_device+0x2a/0x120 drivers/base/dd.c:784
+    [<ffffffff82772306>] __device_attach_driver+0xf6/0x140 drivers/base/dd.c:901
+    [<ffffffff8276e7d7>] bus_for_each_drv+0xb7/0x100 drivers/base/bus.c:427
+    [<ffffffff82771ed2>] __device_attach+0x122/0x260 drivers/base/dd.c:972
+    [<ffffffff82770446>] bus_probe_device+0xc6/0xe0 drivers/base/bus.c:487
+    [<ffffffff8276c82b>] device_add+0x5fb/0xdf0 drivers/base/core.c:3402
+    [<ffffffff8449f7f3>] usb_new_device.cold+0x10f/0x58e drivers/usb/core/hub.c:2566
+    [<ffffffff82d63118>] hub_port_connect drivers/usb/core/hub.c:5363 [inline]
+    [<ffffffff82d63118>] hub_port_connect_change drivers/usb/core/hub.c:5507 [inline]
+    [<ffffffff82d63118>] port_event drivers/usb/core/hub.c:5665 [inline]
+    [<ffffffff82d63118>] hub_event+0x1668/0x21d0 drivers/usb/core/hub.c:5747
+    [<ffffffff8127112f>] process_one_work+0x2bf/0x600 kernel/workqueue.c:2289
+    [<ffffffff81271a59>] worker_thread+0x59/0x5b0 kernel/workqueue.c:2436
+    [<ffffffff8127b695>] kthread+0x125/0x160 kernel/kthread.c:376
+
+BUG: memory leak
+unreferenced object 0xffff888101996800 (size 1024):
+  comm "kworker/0:5", pid 3712, jiffies 4294972493 (age 25.740s)
+  hex dump (first 32 bytes):
+    c8 d3 01 0d 81 88 ff ff c8 d3 01 0d 81 88 ff ff  ................
+    01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff82d6dc08>] kmalloc include/linux/slab.h:600 [inline]
+    [<ffffffff82d6dc08>] kzalloc include/linux/slab.h:733 [inline]
+    [<ffffffff82d6dc08>] usb_set_configuration+0x168/0xb80 drivers/usb/core/message.c:1998
+    [<ffffffff82d7ed8c>] usb_generic_driver_probe+0x8c/0xc0 drivers/usb/core/generic.c:238
+    [<ffffffff82d7062c>] usb_probe_device+0x5c/0x140 drivers/usb/core/driver.c:293
+    [<ffffffff82771687>] call_driver_probe drivers/base/dd.c:542 [inline]
+    [<ffffffff82771687>] really_probe.part.0+0xe7/0x340 drivers/base/dd.c:621
+    [<ffffffff827719ec>] really_probe drivers/base/dd.c:583 [inline]
+    [<ffffffff827719ec>] __driver_probe_device+0x10c/0x1e0 drivers/base/dd.c:754
+    [<ffffffff82771aea>] driver_probe_device+0x2a/0x120 drivers/base/dd.c:784
+    [<ffffffff82772306>] __device_attach_driver+0xf6/0x140 drivers/base/dd.c:901
+    [<ffffffff8276e7d7>] bus_for_each_drv+0xb7/0x100 drivers/base/bus.c:427
+    [<ffffffff82771ed2>] __device_attach+0x122/0x260 drivers/base/dd.c:972
+    [<ffffffff82770446>] bus_probe_device+0xc6/0xe0 drivers/base/bus.c:487
+    [<ffffffff8276c82b>] device_add+0x5fb/0xdf0 drivers/base/core.c:3402
+    [<ffffffff8449f7f3>] usb_new_device.cold+0x10f/0x58e drivers/usb/core/hub.c:2566
+    [<ffffffff82d63118>] hub_port_connect drivers/usb/core/hub.c:5363 [inline]
+    [<ffffffff82d63118>] hub_port_connect_change drivers/usb/core/hub.c:5507 [inline]
+    [<ffffffff82d63118>] port_event drivers/usb/core/hub.c:5665 [inline]
+    [<ffffffff82d63118>] hub_event+0x1668/0x21d0 drivers/usb/core/hub.c:5747
+    [<ffffffff8127112f>] process_one_work+0x2bf/0x600 kernel/workqueue.c:2289
+    [<ffffffff81271a59>] worker_thread+0x59/0x5b0 kernel/workqueue.c:2436
+    [<ffffffff8127b695>] kthread+0x125/0x160 kernel/kthread.c:376
+
+BUG: memory leak
+unreferenced object 0xffff88810a261ce0 (size 32):
+  comm "kworker/0:5", pid 3712, jiffies 4294972493 (age 25.740s)
+  hex dump (first 32 bytes):
+    33 2d 31 3a 30 2e 30 00 00 00 00 00 00 00 00 00  3-1:0.0.........
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff82396ccc>] kvasprintf+0x6c/0xf0 lib/kasprintf.c:25
+    [<ffffffff82396da8>] kvasprintf_const+0x58/0x110 lib/kasprintf.c:49
+    [<ffffffff8248d99b>] kobject_set_name_vargs+0x3b/0xe0 lib/kobject.c:257
+    [<ffffffff82767123>] dev_set_name+0x63/0x90 drivers/base/core.c:3190
+    [<ffffffff82d6e1e3>] usb_set_configuration+0x743/0xb80 drivers/usb/core/message.c:2105
+    [<ffffffff82d7ed8c>] usb_generic_driver_probe+0x8c/0xc0 drivers/usb/core/generic.c:238
+    [<ffffffff82d7062c>] usb_probe_device+0x5c/0x140 drivers/usb/core/driver.c:293
+    [<ffffffff82771687>] call_driver_probe drivers/base/dd.c:542 [inline]
+    [<ffffffff82771687>] really_probe.part.0+0xe7/0x340 drivers/base/dd.c:621
+    [<ffffffff827719ec>] really_probe drivers/base/dd.c:583 [inline]
+    [<ffffffff827719ec>] __driver_probe_device+0x10c/0x1e0 drivers/base/dd.c:754
+    [<ffffffff82771aea>] driver_probe_device+0x2a/0x120 drivers/base/dd.c:784
+    [<ffffffff82772306>] __device_attach_driver+0xf6/0x140 drivers/base/dd.c:901
+    [<ffffffff8276e7d7>] bus_for_each_drv+0xb7/0x100 drivers/base/bus.c:427
+    [<ffffffff82771ed2>] __device_attach+0x122/0x260 drivers/base/dd.c:972
+    [<ffffffff82770446>] bus_probe_device+0xc6/0xe0 drivers/base/bus.c:487
+    [<ffffffff8276c82b>] device_add+0x5fb/0xdf0 drivers/base/core.c:3402
+    [<ffffffff8449f7f3>] usb_new_device.cold+0x10f/0x58e drivers/usb/core/hub.c:2566
+
+BUG: memory leak
+unreferenced object 0xffff88810d7e2800 (size 1024):
+  comm "kworker/0:0", pid 6, jiffies 4294972491 (age 25.800s)
+  hex dump (first 32 bytes):
+    c8 db 01 0d 81 88 ff ff c8 db 01 0d 81 88 ff ff  ................
+    01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff82d6dc08>] kmalloc include/linux/slab.h:600 [inline]
+    [<ffffffff82d6dc08>] kzalloc include/linux/slab.h:733 [inline]
+    [<ffffffff82d6dc08>] usb_set_configuration+0x168/0xb80 drivers/usb/core/message.c:1998
+    [<ffffffff82d7ed8c>] usb_generic_driver_probe+0x8c/0xc0 drivers/usb/core/generic.c:238
+    [<ffffffff82d7062c>] usb_probe_device+0x5c/0x140 drivers/usb/core/driver.c:293
+    [<ffffffff82771687>] call_driver_probe drivers/base/dd.c:542 [inline]
+    [<ffffffff82771687>] really_probe.part.0+0xe7/0x340 drivers/base/dd.c:621
+    [<ffffffff827719ec>] really_probe drivers/base/dd.c:583 [inline]
+    [<ffffffff827719ec>] __driver_probe_device+0x10c/0x1e0 drivers/base/dd.c:754
+    [<ffffffff82771aea>] driver_probe_device+0x2a/0x120 drivers/base/dd.c:784
+    [<ffffffff82772306>] __device_attach_driver+0xf6/0x140 drivers/base/dd.c:901
+    [<ffffffff8276e7d7>] bus_for_each_drv+0xb7/0x100 drivers/base/bus.c:427
+    [<ffffffff82771ed2>] __device_attach+0x122/0x260 drivers/base/dd.c:972
+    [<ffffffff82770446>] bus_probe_device+0xc6/0xe0 drivers/base/bus.c:487
+    [<ffffffff8276c82b>] device_add+0x5fb/0xdf0 drivers/base/core.c:3402
+    [<ffffffff8449f7f3>] usb_new_device.cold+0x10f/0x58e drivers/usb/core/hub.c:2566
+    [<ffffffff82d63118>] hub_port_connect drivers/usb/core/hub.c:5363 [inline]
+    [<ffffffff82d63118>] hub_port_connect_change drivers/usb/core/hub.c:5507 [inline]
+    [<ffffffff82d63118>] port_event drivers/usb/core/hub.c:5665 [inline]
+    [<ffffffff82d63118>] hub_event+0x1668/0x21d0 drivers/usb/core/hub.c:5747
+    [<ffffffff8127112f>] process_one_work+0x2bf/0x600 kernel/workqueue.c:2289
+    [<ffffffff81271a59>] worker_thread+0x59/0x5b0 kernel/workqueue.c:2436
+    [<ffffffff8127b695>] kthread+0x125/0x160 kernel/kthread.c:376
+
+BUG: memory leak
+unreferenced object 0xffff888101996800 (size 1024):
+  comm "kworker/0:5", pid 3712, jiffies 4294972493 (age 25.780s)
+  hex dump (first 32 bytes):
+    c8 d3 01 0d 81 88 ff ff c8 d3 01 0d 81 88 ff ff  ................
+    01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff82d6dc08>] kmalloc include/linux/slab.h:600 [inline]
+    [<ffffffff82d6dc08>] kzalloc include/linux/slab.h:733 [inline]
+    [<ffffffff82d6dc08>] usb_set_configuration+0x168/0xb80 drivers/usb/core/message.c:1998
+    [<ffffffff82d7ed8c>] usb_generic_driver_probe+0x8c/0xc0 drivers/usb/core/generic.c:238
+    [<ffffffff82d7062c>] usb_probe_device+0x5c/0x140 drivers/usb/core/driver.c:293
+    [<ffffffff82771687>] call_driver_probe drivers/base/dd.c:542 [inline]
+    [<ffffffff82771687>] really_probe.part.0+0xe7/0x340 drivers/base/dd.c:621
+    [<ffffffff827719ec>] really_probe drivers/base/dd.c:583 [inline]
+    [<ffffffff827719ec>] __driver_probe_device+0x10c/0x1e0 drivers/base/dd.c:754
+    [<ffffffff82771aea>] driver_probe_device+0x2a/0x120 drivers/base/dd.c:784
+    [<ffffffff82772306>] __device_attach_driver+0xf6/0x140 drivers/base/dd.c:901
+    [<ffffffff8276e7d7>] bus_for_each_drv+0xb7/0x100 drivers/base/bus.c:427
+    [<ffffffff82771ed2>] __device_attach+0x122/0x260 drivers/base/dd.c:972
+    [<ffffffff82770446>] bus_probe_device+0xc6/0xe0 drivers/base/bus.c:487
+    [<ffffffff8276c82b>] device_add+0x5fb/0xdf0 drivers/base/core.c:3402
+    [<ffffffff8449f7f3>] usb_new_device.cold+0x10f/0x58e drivers/usb/core/hub.c:2566
+    [<ffffffff82d63118>] hub_port_connect drivers/usb/core/hub.c:5363 [inline]
+    [<ffffffff82d63118>] hub_port_connect_change drivers/usb/core/hub.c:5507 [inline]
+    [<ffffffff82d63118>] port_event drivers/usb/core/hub.c:5665 [inline]
+    [<ffffffff82d63118>] hub_event+0x1668/0x21d0 drivers/usb/core/hub.c:5747
+    [<ffffffff8127112f>] process_one_work+0x2bf/0x600 kernel/workqueue.c:2289
+    [<ffffffff81271a59>] worker_thread+0x59/0x5b0 kernel/workqueue.c:2436
+    [<ffffffff8127b695>] kthread+0x125/0x160 kernel/kthread.c:376
+
+BUG: memory leak
+unreferenced object 0xffff88810a261ce0 (size 32):
+  comm "kworker/0:5", pid 3712, jiffies 4294972493 (age 25.780s)
+  hex dump (first 32 bytes):
+    33 2d 31 3a 30 2e 30 00 00 00 00 00 00 00 00 00  3-1:0.0.........
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff82396ccc>] kvasprintf+0x6c/0xf0 lib/kasprintf.c:25
+    [<ffffffff82396da8>] kvasprintf_const+0x58/0x110 lib/kasprintf.c:49
+    [<ffffffff8248d99b>] kobject_set_name_vargs+0x3b/0xe0 lib/kobject.c:257
+    [<ffffffff82767123>] dev_set_name+0x63/0x90 drivers/base/core.c:3190
+    [<ffffffff82d6e1e3>] usb_set_configuration+0x743/0xb80 drivers/usb/core/message.c:2105
+    [<ffffffff82d7ed8c>] usb_generic_driver_probe+0x8c/0xc0 drivers/usb/core/generic.c:238
+    [<ffffffff82d7062c>] usb_probe_device+0x5c/0x140 drivers/usb/core/driver.c:293
+    [<ffffffff82771687>] call_driver_probe drivers/base/dd.c:542 [inline]
+    [<ffffffff82771687>] really_probe.part.0+0xe7/0x340 drivers/base/dd.c:621
+    [<ffffffff827719ec>] really_probe drivers/base/dd.c:583 [inline]
+    [<ffffffff827719ec>] __driver_probe_device+0x10c/0x1e0 drivers/base/dd.c:754
+    [<ffffffff82771aea>] driver_probe_device+0x2a/0x120 drivers/base/dd.c:784
+    [<ffffffff82772306>] __device_attach_driver+0xf6/0x140 drivers/base/dd.c:901
+    [<ffffffff8276e7d7>] bus_for_each_drv+0xb7/0x100 drivers/base/bus.c:427
+    [<ffffffff82771ed2>] __device_attach+0x122/0x260 drivers/base/dd.c:972
+    [<ffffffff82770446>] bus_probe_device+0xc6/0xe0 drivers/base/bus.c:487
+    [<ffffffff8276c82b>] device_add+0x5fb/0xdf0 drivers/base/core.c:3402
+    [<ffffffff8449f7f3>] usb_new_device.cold+0x10f/0x58e drivers/usb/core/hub.c:2566
+
+BUG: memory leak
+unreferenced object 0xffff88810d7e2800 (size 1024):
+  comm "kworker/0:0", pid 6, jiffies 4294972491 (age 25.840s)
+  hex dump (first 32 bytes):
+    c8 db 01 0d 81 88 ff ff c8 db 01 0d 81 88 ff ff  ................
+    01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff82d6dc08>] kmalloc include/linux/slab.h:600 [inline]
+    [<ffffffff82d6dc08>] kzalloc include/linux/slab.h:733 [inline]
+    [<ffffffff82d6dc08>] usb_set_configuration+0x168/0xb80 drivers/usb/core/message.c:1998
+    [<ffffffff82d7ed8c>] usb_generic_driver_probe+0x8c/0xc0 drivers/usb/core/generic.c:238
+    [<ffffffff82d7062c>] usb_probe_device+0x5c/0x140 drivers/usb/core/driver.c:293
+    [<ffffffff82771687>] call_driver_probe drivers/base/dd.c:542 [inline]
+    [<ffffffff82771687>] really_probe.part.0+0xe7/0x340 drivers/base/dd.c:621
+    [<ffffffff827719ec>] really_probe drivers/base/dd.c:583 [inline]
+    [<ffffffff827719ec>] __driver_probe_device+0x10c/0x1e0 drivers/base/dd.c:754
+    [<ffffffff82771aea>] driver_probe_device+0x2a/0x120 drivers/base/dd.c:784
+    [<ffffffff82772306>] __device_attach_driver+0xf6/0x140 drivers/base/dd.c:901
+    [<ffffffff8276e7d7>] bus_for_each_drv+0xb7/0x100 drivers/base/bus.c:427
+    [<ffffffff82771ed2>] __device_attach+0x122/0x260 drivers/base/dd.c:972
+    [<ffffffff82770446>] bus_probe_device+0xc6/0xe0 drivers/base/bus.c:487
+    [<ffffffff8276c82b>] device_add+0x5fb/0xdf0 drivers/base/core.c:3402
+    [<ffffffff8449f7f3>] usb_new_device.cold+0x10f/0x58e drivers/usb/core/hub.c:2566
+    [<ffffffff82d63118>] hub_port_connect drivers/usb/core/hub.c:5363 [inline]
+    [<ffffffff82d63118>] hub_port_connect_change drivers/usb/core/hub.c:5507 [inline]
+    [<ffffffff82d63118>] port_event drivers/usb/core/hub.c:5665 [inline]
+    [<ffffffff82d63118>] hub_event+0x1668/0x21d0 drivers/usb/core/hub.c:5747
+    [<ffffffff8127112f>] process_one_work+0x2bf/0x600 kernel/workqueue.c:2289
+    [<ffffffff81271a59>] worker_thread+0x59/0x5b0 kernel/workqueue.c:2436
+    [<ffffffff8127b695>] kthread+0x125/0x160 kernel/kthread.c:376
+
+BUG: memory leak
+unreferenced object 0xffff888101996800 (size 1024):
+  comm "kworker/0:5", pid 3712, jiffies 4294972493 (age 25.820s)
+  hex dump (first 32 bytes):
+    c8 d3 01 0d 81 88 ff ff c8 d3 01 0d 81 88 ff ff  ................
+    01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff82d6dc08>] kmalloc include/linux/slab.h:600 [inline]
+    [<ffffffff82d6dc08>] kzalloc include/linux/slab.h:733 [inline]
+    [<ffffffff82d6dc08>] usb_set_configuration+0x168/0xb80 drivers/usb/core/message.c:1998
+    [<ffffffff82d7ed8c>] usb_generic_driver_probe+0x8c/0xc0 drivers/usb/core/generic.c:238
+    [<ffffffff82d7062c>] usb_probe_device+0x5c/0x140 drivers/usb/core/driver.c:293
+    [<ffffffff82771687>] call_driver_probe drivers/base/dd.c:542 [inline]
+    [<ffffffff82771687>] really_probe.part.0+0xe7/0x340 drivers/base/dd.c:621
+    [<ffffffff827719ec>] really_probe drivers/base/dd.c:583 [inline]
+    [<ffffffff827719ec>] __driver_probe_device+0x10c/0x1e0 drivers/base/dd.c:754
+    [<ffffffff82771aea>] driver_probe_device+0x2a/0x120 drivers/base/dd.c:784
+    [<ffffffff82772306>] __device_attach_driver+0xf6/0x140 drivers/base/dd.c:901
+    [<ffffffff8276e7d7>] bus_for_each_drv+0xb7/0x100 drivers/base/bus.c:427
+    [<ffffffff82771ed2>] __device_attach+0x122/0x260 drivers/base/dd.c:972
+    [<ffffffff82770446>] bus_probe_device+0xc6/0xe0 drivers/base/bus.c:487
+    [<ffffffff8276c82b>] device_add+0x5fb/0xdf0 drivers/base/core.c:3402
+    [<ffffffff8449f7f3>] usb_new_device.cold+0x10f/0x58e drivers/usb/core/hub.c:2566
+    [<ffffffff82d63118>] hub_port_connect drivers/usb/core/hub.c:5363 [inline]
+    [<ffffffff82d63118>] hub_port_connect_change drivers/usb/core/hub.c:5507 [inline]
+    [<ffffffff82d63118>] port_event drivers/usb/core/hub.c:5665 [inline]
+    [<ffffffff82d63118>] hub_event+0x1668/0x21d0 drivers/usb/core/hub.c:5747
+    [<ffffffff8127112f>] process_one_work+0x2bf/0x600 kernel/workqueue.c:2289
+    [<ffffffff81271a59>] worker_thread+0x59/0x5b0 kernel/workqueue.c:2436
+    [<ffffffff8127b695>] kthread+0x125/0x160 kernel/kthread.c:376
+
+BUG: memory leak
+unreferenced object 0xffff88810a261ce0 (size 32):
+  comm "kworker/0:5", pid 3712, jiffies 4294972493 (age 25.820s)
+  hex dump (first 32 bytes):
+    33 2d 31 3a 30 2e 30 00 00 00 00 00 00 00 00 00  3-1:0.0.........
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff82396ccc>] kvasprintf+0x6c/0xf0 lib/kasprintf.c:25
+    [<ffffffff82396da8>] kvasprintf_const+0x58/0x110 lib/kasprintf.c:49
+    [<ffffffff8248d99b>] kobject_set_name_vargs+0x3b/0xe0 lib/kobject.c:257
+    [<ffffffff82767123>] dev_set_name+0x63/0x90 drivers/base/core.c:3190
+    [<ffffffff82d6e1e3>] usb_set_configuration+0x743/0xb80 drivers/usb/core/message.c:2105
+    [<ffffffff82d7ed8c>] usb_generic_driver_probe+0x8c/0xc0 drivers/usb/core/generic.c:238
+    [<ffffffff82d7062c>] usb_probe_device+0x5c/0x140 drivers/usb/core/driver.c:293
+    [<ffffffff82771687>] call_driver_probe drivers/base/dd.c:542 [inline]
+    [<ffffffff82771687>] really_probe.part.0+0xe7/0x340 drivers/base/dd.c:621
+    [<ffffffff827719ec>] really_probe drivers/base/dd.c:583 [inline]
+    [<ffffffff827719ec>] __driver_probe_device+0x10c/0x1e0 drivers/base/dd.c:754
+    [<ffffffff82771aea>] driver_probe_device+0x2a/0x120 drivers/base/dd.c:784
+    [<ffffffff82772306>] __device_attach_driver+0xf6/0x140 drivers/base/dd.c:901
+    [<ffffffff8276e7d7>] bus_for_each_drv+0xb7/0x100 drivers/base/bus.c:427
+    [<ffffffff82771ed2>] __device_attach+0x122/0x260 drivers/base/dd.c:972
+    [<ffffffff82770446>] bus_probe_device+0xc6/0xe0 drivers/base/bus.c:487
+    [<ffffffff8276c82b>] device_add+0x5fb/0xdf0 drivers/base/core.c:3402
+    [<ffffffff8449f7f3>] usb_new_device.cold+0x10f/0x58e drivers/usb/core/hub.c:2566
+
+executing program
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
