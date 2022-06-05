@@ -2,69 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30818C43334
-	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 19:14:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AF25CCA47E
+	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 19:39:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345235AbiFETNv (ORCPT
+        id S1347111AbiFETjG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 5 Jun 2022 15:13:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47012 "EHLO
+        Sun, 5 Jun 2022 15:39:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234938AbiFETNt (ORCPT
+        with ESMTP id S230232AbiFETjC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 5 Jun 2022 15:13:49 -0400
-Received: from zeniv-ca.linux.org.uk (zeniv-ca.linux.org.uk [IPv6:2607:5300:60:148a::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94859338A1;
-        Sun,  5 Jun 2022 12:13:47 -0700 (PDT)
+        Sun, 5 Jun 2022 15:39:02 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ACF865F8;
+        Sun,  5 Jun 2022 12:39:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=linux.org.uk; s=zeniv-20220401; h=Sender:Content-Type:MIME-Version:
-        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=WBgWj2o0rQ0VeqJ5O4/YRTbEP3jJViaoLrQNykDYgME=; b=pqgq3feGVSSZNKPyYlgsCuptPZ
-        MysECDtrrFOhWvuwVLpVb9Cblclr3zir/9LzkSA+lFglzrNrUIHq4EjSrMlsQRvmXWpCwab8hl5IA
-        XbjfaqRzda9HaxNR6XffEP5/bsQDWNKUIGEfue5cjn5PtfIVGr75zytCMocjS9RfD6T3UgNHIPQcT
-        j1roe7IezegXnJ+Qj8UYoBpa/SUVFbXyH0BdhNoWOzvO3Hs0rBtdJFD6P22BItcjAmR7hmYFYfpmw
-        SSDT3T1FClzKUkEIBXXxcrwteHomJUtTjPVDH/nqO6pe7gzL11OYQ6RyKpd8hHRSJGOxPqfv2/xqR
-        8skhsOdQ==;
-Received: from viro by zeniv-ca.linux.org.uk with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nxvh4-003qoa-Bh; Sun, 05 Jun 2022 19:13:46 +0000
-Date:   Sun, 5 Jun 2022 19:13:46 +0000
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [git pull] work.fd fix
-Message-ID: <Yp0AamPDLOK6mTIn@zeniv-ca.linux.org.uk>
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
+        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
+        Content-Type:Content-ID:Content-Description;
+        bh=7zHJFf7s+ZSx87nHg6Bs72jjNt/zTHbg4PZc0KhFNBI=; b=EYXV63i9/CEOzD0nHMe1OQHYDc
+        mVCuEz0iq05DzWOTfwUUXon7lLclyJcGJZDFVFf36KaefdWNV0pHzAWE/juTBOh3LmOa6/GHAbwsA
+        j9SKPw7wOEy++DynzZkxdw6cKJT5aOgxtQMtWaAQNIKZNtcW6JUvraw6AebVxfjYl0uWLN4Tnkrf1
+        g5r1qFvxh5lUydZ/EqFXJtmm4X6GU4Pvr6z+zZzlpoy3rKdSu3dVWHKmxHNTzyLs4u7zgx7YRImNZ
+        s12tQFfwrO2lznSTczeoD//K1wj12QguV4NYS7DRw7Y1XFPPUFJTnVvqq+s0OPozePCioZdM8Nwv2
+        JJEs8DoA==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nxw5Q-009wsT-OG; Sun, 05 Jun 2022 19:38:56 +0000
+From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
+To:     linux-fsdevel@vger.kernel.org
+Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        linux-kernel@vger.kernel.org, linux-ext4@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net, linux-mm@kvack.org,
+        linux-nilfs@vger.kernel.org
+Subject: [PATCH 03/10] ext4: Convert mpage_release_unused_pages() to use filemap_get_folios()
+Date:   Sun,  5 Jun 2022 20:38:47 +0100
+Message-Id: <20220605193854.2371230-4-willy@infradead.org>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220605193854.2371230-1-willy@infradead.org>
+References: <20220605193854.2371230-1-willy@infradead.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Sender: Al Viro <viro@ftp.linux.org.uk>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[BTW, what conventions are generally used for pull tag names?]
+If the folio is large, it may overlap the beginning or end of the
+unused range.  If it does, we need to avoid invalidating it.
 
-The following changes since commit 6319194ec57b0452dcda4589d24c4e7db299c5bf:
+Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+---
+ fs/ext4/inode.c | 21 ++++++++++++---------
+ 1 file changed, 12 insertions(+), 9 deletions(-)
 
-  Unify the primitives for file descriptor closing (2022-05-14 18:49:01 -0400)
+diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
+index 3dce7d058985..32a7f5e024d6 100644
+--- a/fs/ext4/inode.c
++++ b/fs/ext4/inode.c
+@@ -1554,9 +1554,9 @@ struct mpage_da_data {
+ static void mpage_release_unused_pages(struct mpage_da_data *mpd,
+ 				       bool invalidate)
+ {
+-	int nr_pages, i;
++	unsigned nr, i;
+ 	pgoff_t index, end;
+-	struct pagevec pvec;
++	struct folio_batch fbatch;
+ 	struct inode *inode = mpd->inode;
+ 	struct address_space *mapping = inode->i_mapping;
+ 
+@@ -1574,15 +1574,18 @@ static void mpage_release_unused_pages(struct mpage_da_data *mpd,
+ 		ext4_es_remove_extent(inode, start, last - start + 1);
+ 	}
+ 
+-	pagevec_init(&pvec);
++	folio_batch_init(&fbatch);
+ 	while (index <= end) {
+-		nr_pages = pagevec_lookup_range(&pvec, mapping, &index, end);
+-		if (nr_pages == 0)
++		nr = filemap_get_folios(mapping, &index, end, &fbatch);
++		if (nr == 0)
+ 			break;
+-		for (i = 0; i < nr_pages; i++) {
+-			struct page *page = pvec.pages[i];
+-			struct folio *folio = page_folio(page);
++		for (i = 0; i < nr; i++) {
++			struct folio *folio = fbatch.folios[i];
+ 
++			if (folio->index < mpd->first_page)
++				continue;
++			if (folio->index + folio_nr_pages(folio) - 1 > end)
++				continue;
+ 			BUG_ON(!folio_test_locked(folio));
+ 			BUG_ON(folio_test_writeback(folio));
+ 			if (invalidate) {
+@@ -1594,7 +1597,7 @@ static void mpage_release_unused_pages(struct mpage_da_data *mpd,
+ 			}
+ 			folio_unlock(folio);
+ 		}
+-		pagevec_release(&pvec);
++		folio_batch_release(&fbatch);
+ 	}
+ }
+ 
+-- 
+2.35.1
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/viro/vfs.git tags/pull-work.fd-fixes
-
-for you to fetch changes up to 40a1926022d128057376d35167128a7c74e3dca4:
-
-  fix the breakage in close_fd_get_file() calling conventions change (2022-06-05 15:03:03 -0400)
-
-----------------------------------------------------------------
-fix for breakage in #work.fd this window
-Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
-
-----------------------------------------------------------------
-Al Viro (1):
-      fix the breakage in close_fd_get_file() calling conventions change
-
- drivers/android/binder.c | 2 ++
- fs/file.c                | 3 +--
- fs/io_uring.c            | 5 +----
- 3 files changed, 4 insertions(+), 6 deletions(-)
