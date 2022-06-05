@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0795DC43334
-	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 13:53:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8002BC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 13:54:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344266AbiFENx5 (ORCPT
+        id S1344568AbiFENyB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 5 Jun 2022 09:53:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35156 "EHLO
+        Sun, 5 Jun 2022 09:54:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344204AbiFENxg (ORCPT
+        with ESMTP id S1344286AbiFENxj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 5 Jun 2022 09:53:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDFCA2BF6;
-        Sun,  5 Jun 2022 06:53:34 -0700 (PDT)
+        Sun, 5 Jun 2022 09:53:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D428C2AF6;
+        Sun,  5 Jun 2022 06:53:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4433460F9C;
-        Sun,  5 Jun 2022 13:53:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F698C385A5;
-        Sun,  5 Jun 2022 13:53:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A2DA60F9C;
+        Sun,  5 Jun 2022 13:53:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9937DC341CC;
+        Sun,  5 Jun 2022 13:53:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654437213;
-        bh=h4il9NEwlDhRClIoY7hNjlMkV92f7fL2oN4YkoUeJsM=;
+        s=k20201202; t=1654437216;
+        bh=WUCCmgo0CJd1Oa1t/rXXnPa6NyR1QOuVmJ5dvv7/r0s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mi6RothSZ188jMLN+4Qearm4mJ7zlaQCHJsbQqcJ5BNGqdSFuQ/v/Zja4Kw2j7vLP
-         KL4AvbCQeGIJB6ZDWnu5zPmqyzgUTkOteUEDcOYx/paWHJ4s+AMnxneWlE1e/nyO9+
-         QmbH+QH0QHPl/Vd8sDAVzC/7LITXuY04ubZH4fXXIm0b7txiTsnBZXLDfh31Yom/xW
-         lVAIPQoBqsL9kGRMidR8FZc4hM7gUVFllVmPGty9E3c8BYHuQZa4LXKavIcwY5bti5
-         q1EP2D10au7BmHcIw4Lb3aamiBnSkesC9is0q/T7kpvFC0Xxc7RbpMWQ0GG6UADsei
-         i0vEMhpLAl2tw==
+        b=PXw0v7P3s+AtLeqAj3rJwOXFL0VhsfD5TKsS41WcocVQ8sx3CkNnOpTuT7Qrlhjmh
+         7B898rUwhHdLPZA8dyR6JwIzGq3tPMN/7qP62MUV3zGQWpVnynsHFJn8UffUFb8BNw
+         ByflQ+tLd8f3SeHU+WbC1diXo2RCMkHvvgtS9WPrT3GLoNApCUfJksGo1V+8qs8K6C
+         bwJdNe8PCF+v/pYDWMWY2im4hMmX/WjQwWY4Jid/ObZ0psybgSzp9MW93PE8ycBh3N
+         miv3bdaL92QeaUdngJtDwSwR9BuAlymD2GwHOI5mBYg0kwDJIWhRuqlSlqIgErwhqn
+         M5G/n6eNogrxA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+Cc:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH MANUALSEL 5.18 5/7] lib/irq_poll: Prevent softirq pending leak in irq_poll_cpu_dead()
-Date:   Sun,  5 Jun 2022 09:53:13 -0400
-Message-Id: <20220605135320.61247-5-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, bhelgaas@google.com,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, linux-pci@vger.kernel.org
+Subject: [PATCH MANUALSEL 5.18 7/7] x86/PCI: Add PIRQ routing table range checks
+Date:   Sun,  5 Jun 2022 09:53:15 -0400
+Message-Id: <20220605135320.61247-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220605135320.61247-1-sashal@kernel.org>
 References: <20220605135320.61247-1-sashal@kernel.org>
@@ -52,57 +54,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+From: "Maciej W. Rozycki" <macro@orcam.me.uk>
 
-[ Upstream commit 75d8cce128c516fe6cf4b8683e8fe1a59e919902 ]
+[ Upstream commit 5d64089aa4a5bd3d7e00e3d6ddf4943dd34627b3 ]
 
-irq_poll_cpu_dead() pulls the blk_cpu_iopoll backlog from the dead CPU and
-raises the POLL softirq with __raise_softirq_irqoff() on the CPU it is
-running on. That just sets the bit in the pending softirq mask.
+Verify that the PCI IRQ Routing Table header as well as individual slot
+entries are all wholly contained within the BIOS memory area.  Do not
+even call the checksum calculator if the header would overrun the area
+and then bail out early if any slot would.
 
-This means the handling of the softirq is delayed until the next interrupt
-or a local_bh_disable/enable() pair. As a consequence the CPU on which this
-code runs can reach idle with the POLL softirq pending, which triggers a
-warning in the NOHZ idle code.
-
-Add a local_bh_disable/enable() pair around the interrupts disabled section
-in irq_poll_cpu_dead(). local_bh_enable will handle the pending softirq.
-
-[tglx: Massaged changelog and comment]
-
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Link: https://lore.kernel.org/r/87k0bxgl27.ffs@tglx
+Link: https://lore.kernel.org/r/alpine.DEB.2.21.2203301735510.22465@angie.orcam.me.uk
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/irq_poll.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ arch/x86/pci/irq.c | 17 ++++++++++++-----
+ 1 file changed, 12 insertions(+), 5 deletions(-)
 
-diff --git a/lib/irq_poll.c b/lib/irq_poll.c
-index 2f17b488d58e..2d5329a42105 100644
---- a/lib/irq_poll.c
-+++ b/lib/irq_poll.c
-@@ -188,14 +188,18 @@ EXPORT_SYMBOL(irq_poll_init);
- static int irq_poll_cpu_dead(unsigned int cpu)
- {
- 	/*
--	 * If a CPU goes away, splice its entries to the current CPU
--	 * and trigger a run of the softirq
-+	 * If a CPU goes away, splice its entries to the current CPU and
-+	 * set the POLL softirq bit. The local_bh_disable()/enable() pair
-+	 * ensures that it is handled. Otherwise the current CPU could
-+	 * reach idle with the POLL softirq pending.
- 	 */
-+	local_bh_disable();
- 	local_irq_disable();
- 	list_splice_init(&per_cpu(blk_cpu_iopoll, cpu),
- 			 this_cpu_ptr(&blk_cpu_iopoll));
- 	__raise_softirq_irqoff(IRQ_POLL_SOFTIRQ);
- 	local_irq_enable();
-+	local_bh_enable();
+diff --git a/arch/x86/pci/irq.c b/arch/x86/pci/irq.c
+index 97b63e35e152..13513003303e 100644
+--- a/arch/x86/pci/irq.c
++++ b/arch/x86/pci/irq.c
+@@ -68,7 +68,8 @@ void (*pcibios_disable_irq)(struct pci_dev *dev) = pirq_disable_irq;
+  *  and perform checksum verification.
+  */
  
- 	return 0;
- }
+-static inline struct irq_routing_table *pirq_check_routing_table(u8 *addr)
++static inline struct irq_routing_table *pirq_check_routing_table(u8 *addr,
++								 u8 *limit)
+ {
+ 	struct irq_routing_table *rt;
+ 	int i;
+@@ -78,7 +79,8 @@ static inline struct irq_routing_table *pirq_check_routing_table(u8 *addr)
+ 	if (rt->signature != PIRQ_SIGNATURE ||
+ 	    rt->version != PIRQ_VERSION ||
+ 	    rt->size % 16 ||
+-	    rt->size < sizeof(struct irq_routing_table))
++	    rt->size < sizeof(struct irq_routing_table) ||
++	    (limit && rt->size > limit - addr))
+ 		return NULL;
+ 	sum = 0;
+ 	for (i = 0; i < rt->size; i++)
+@@ -99,17 +101,22 @@ static inline struct irq_routing_table *pirq_check_routing_table(u8 *addr)
+ 
+ static struct irq_routing_table * __init pirq_find_routing_table(void)
+ {
++	u8 * const bios_start = (u8 *)__va(0xf0000);
++	u8 * const bios_end = (u8 *)__va(0x100000);
+ 	u8 *addr;
+ 	struct irq_routing_table *rt;
+ 
+ 	if (pirq_table_addr) {
+-		rt = pirq_check_routing_table((u8 *) __va(pirq_table_addr));
++		rt = pirq_check_routing_table((u8 *)__va(pirq_table_addr),
++					      NULL);
+ 		if (rt)
+ 			return rt;
+ 		printk(KERN_WARNING "PCI: PIRQ table NOT found at pirqaddr\n");
+ 	}
+-	for (addr = (u8 *) __va(0xf0000); addr < (u8 *) __va(0x100000); addr += 16) {
+-		rt = pirq_check_routing_table(addr);
++	for (addr = bios_start;
++	     addr < bios_end - sizeof(struct irq_routing_table);
++	     addr += 16) {
++		rt = pirq_check_routing_table(addr, bios_end);
+ 		if (rt)
+ 			return rt;
+ 	}
 -- 
 2.35.1
 
