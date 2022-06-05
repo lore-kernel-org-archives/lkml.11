@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3393C43334
-	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 13:57:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80CC4C43334
+	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 13:57:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350724AbiFEN5m (ORCPT
+        id S1348917AbiFEN5u (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 5 Jun 2022 09:57:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40788 "EHLO
+        Sun, 5 Jun 2022 09:57:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350880AbiFEN5A (ORCPT
+        with ESMTP id S1351080AbiFEN4z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 5 Jun 2022 09:57:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82F6A5FDE;
-        Sun,  5 Jun 2022 06:55:45 -0700 (PDT)
+        Sun, 5 Jun 2022 09:56:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4196C11150;
+        Sun,  5 Jun 2022 06:55:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3651BB80D9F;
-        Sun,  5 Jun 2022 13:55:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A103C385A5;
-        Sun,  5 Jun 2022 13:55:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 694C760F9E;
+        Sun,  5 Jun 2022 13:55:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 581BDC385A5;
+        Sun,  5 Jun 2022 13:55:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654437342;
-        bh=QDolIL5efBQ54sGldQf3bFDrYUXBikvxdQW/511dsNE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZT1pwvKgrIfdrBhUA/fun9JJalEL/pemeBqJGNje5ZcgSV9mKo+HS+UG9uW1y48WE
-         lhYT8VLt64WUUgr2/5A333giqfZCSFA/lQp0X/UI2K46jEnuQyF9KA5JtQrWrm4CmE
-         3SDFb/kZ5CIOkttQacszy1UQaKYH4vlE7VRyHNYvJcUQmQES11FFN05MKSBbnzFAxf
-         u5NpirvKMorZ7rxy+cmFx27q7pPckILT2AOHct1L5EEzeIsrHT28rrxdu902pXR4hv
-         Q+uhIWJtHvD52QtZ7VPok+boRgDbU3qCt32mJSAyixNp0T68qQ/DHXDeHbS28jihdR
-         TGiAtRfbgQk8w==
+        s=k20201202; t=1654437336;
+        bh=EKNSJUq7HfgUWkePjAt+SnletWZx7ex+1cUPTi1M550=;
+        h=From:To:Cc:Subject:Date:From;
+        b=MEye5kF++XG/ta+X17Knqe1suZ6F9jSMAkTFPAZSth/WcjDYJ0Zf6+Eov/9KsfTN+
+         /hAH4EAV7aaF/AeQ506pX/nhNeiiaM+f1fSr5ubiKilozA9GArDtHexrRSY4vRT9x2
+         GD+ZaB7jfgKiFLTp1D2CwrWYi5UhP8xLNxggqTO3HMYJOwz1aUCS/tCe66he0nc+vX
+         5mc4hPq0onxIoUV+HnrSkvXz+36rgz0/F+SkotImxHdZV3iVVtW37M4e0Ac31WJwFu
+         n6gA+NByHjtx7XMgHa6Fhy8tPknbmnSQaLut8iH2tOLT9T3SxLo2/crtn3xJ32Z1Pz
+         kP1EvxHfNnG7A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH MANUALSEL 4.14 3/4] lib/irq_poll: Prevent softirq pending leak in irq_poll_cpu_dead()
-Date:   Sun,  5 Jun 2022 09:55:28 -0400
-Message-Id: <20220605135533.61835-3-sashal@kernel.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Sean Christopherson <seanjc@google.com>,
+        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, peterz@infradead.org, jkosina@suse.cz
+Subject: [PATCH MANUALSEL 4.14 1/4] x86/nmi: Make register_nmi_handler() more robust
+Date:   Sun,  5 Jun 2022 09:55:26 -0400
+Message-Id: <20220605135533.61835-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220605135533.61835-1-sashal@kernel.org>
-References: <20220605135533.61835-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,57 +52,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+From: Thomas Gleixner <tglx@linutronix.de>
 
-[ Upstream commit 75d8cce128c516fe6cf4b8683e8fe1a59e919902 ]
+[ Upstream commit a7fed5c0431dbfa707037848830f980e0f93cfb3 ]
 
-irq_poll_cpu_dead() pulls the blk_cpu_iopoll backlog from the dead CPU and
-raises the POLL softirq with __raise_softirq_irqoff() on the CPU it is
-running on. That just sets the bit in the pending softirq mask.
+register_nmi_handler() has no sanity check whether a handler has been
+registered already. Such an unintended double-add leads to list corruption
+and hard to diagnose problems during the next NMI handling.
 
-This means the handling of the softirq is delayed until the next interrupt
-or a local_bh_disable/enable() pair. As a consequence the CPU on which this
-code runs can reach idle with the POLL softirq pending, which triggers a
-warning in the NOHZ idle code.
+Init the list head in the static NMI action struct and check it for being
+empty in register_nmi_handler().
 
-Add a local_bh_disable/enable() pair around the interrupts disabled section
-in irq_poll_cpu_dead(). local_bh_enable will handle the pending softirq.
+  [ bp: Fixups. ]
 
-[tglx: Massaged changelog and comment]
-
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Reported-by: Sean Christopherson <seanjc@google.com>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Link: https://lore.kernel.org/r/87k0bxgl27.ffs@tglx
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/lkml/20220511234332.3654455-1-seanjc@google.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/irq_poll.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ arch/x86/include/asm/nmi.h |  1 +
+ arch/x86/kernel/nmi.c      | 12 ++++++++----
+ 2 files changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/lib/irq_poll.c b/lib/irq_poll.c
-index 86a709954f5a..bb6fcc25fc79 100644
---- a/lib/irq_poll.c
-+++ b/lib/irq_poll.c
-@@ -188,14 +188,18 @@ EXPORT_SYMBOL(irq_poll_init);
- static int irq_poll_cpu_dead(unsigned int cpu)
- {
- 	/*
--	 * If a CPU goes away, splice its entries to the current CPU
--	 * and trigger a run of the softirq
-+	 * If a CPU goes away, splice its entries to the current CPU and
-+	 * set the POLL softirq bit. The local_bh_disable()/enable() pair
-+	 * ensures that it is handled. Otherwise the current CPU could
-+	 * reach idle with the POLL softirq pending.
- 	 */
-+	local_bh_disable();
- 	local_irq_disable();
- 	list_splice_init(&per_cpu(blk_cpu_iopoll, cpu),
- 			 this_cpu_ptr(&blk_cpu_iopoll));
- 	__raise_softirq_irqoff(IRQ_POLL_SOFTIRQ);
- 	local_irq_enable();
-+	local_bh_enable();
+diff --git a/arch/x86/include/asm/nmi.h b/arch/x86/include/asm/nmi.h
+index 75ded1d13d98..121bf8878506 100644
+--- a/arch/x86/include/asm/nmi.h
++++ b/arch/x86/include/asm/nmi.h
+@@ -49,6 +49,7 @@ struct nmiaction {
+ #define register_nmi_handler(t, fn, fg, n, init...)	\
+ ({							\
+ 	static struct nmiaction init fn##_na = {	\
++		.list = LIST_HEAD_INIT(fn##_na.list),	\
+ 		.handler = (fn),			\
+ 		.name = (n),				\
+ 		.flags = (fg),				\
+diff --git a/arch/x86/kernel/nmi.c b/arch/x86/kernel/nmi.c
+index d796a7f6a74a..e8a99f11ab3f 100644
+--- a/arch/x86/kernel/nmi.c
++++ b/arch/x86/kernel/nmi.c
+@@ -159,7 +159,7 @@ int __register_nmi_handler(unsigned int type, struct nmiaction *action)
+ 	struct nmi_desc *desc = nmi_to_desc(type);
+ 	unsigned long flags;
  
+-	if (!action->handler)
++	if (WARN_ON_ONCE(!action->handler || !list_empty(&action->list)))
+ 		return -EINVAL;
+ 
+ 	init_irq_work(&action->irq_work, nmi_max_handler);
+@@ -181,7 +181,7 @@ int __register_nmi_handler(unsigned int type, struct nmiaction *action)
+ 		list_add_rcu(&action->list, &desc->head);
+ 	else
+ 		list_add_tail_rcu(&action->list, &desc->head);
+-	
++
+ 	raw_spin_unlock_irqrestore(&desc->lock, flags);
  	return 0;
  }
+@@ -190,7 +190,7 @@ EXPORT_SYMBOL(__register_nmi_handler);
+ void unregister_nmi_handler(unsigned int type, const char *name)
+ {
+ 	struct nmi_desc *desc = nmi_to_desc(type);
+-	struct nmiaction *n;
++	struct nmiaction *n, *found = NULL;
+ 	unsigned long flags;
+ 
+ 	raw_spin_lock_irqsave(&desc->lock, flags);
+@@ -204,12 +204,16 @@ void unregister_nmi_handler(unsigned int type, const char *name)
+ 			WARN(in_nmi(),
+ 				"Trying to free NMI (%s) from NMI context!\n", n->name);
+ 			list_del_rcu(&n->list);
++			found = n;
+ 			break;
+ 		}
+ 	}
+ 
+ 	raw_spin_unlock_irqrestore(&desc->lock, flags);
+-	synchronize_rcu();
++	if (found) {
++		synchronize_rcu();
++		INIT_LIST_HEAD(&found->list);
++	}
+ }
+ EXPORT_SYMBOL_GPL(unregister_nmi_handler);
+ 
 -- 
 2.35.1
 
