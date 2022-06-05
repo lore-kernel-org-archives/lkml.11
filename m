@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B43C2C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6E76C43334
 	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 10:33:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351005AbiFEKdi (ORCPT
+        id S1351015AbiFEKdn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 5 Jun 2022 06:33:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44816 "EHLO
+        Sun, 5 Jun 2022 06:33:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245542AbiFEKd0 (ORCPT
+        with ESMTP id S245661AbiFEKd3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 5 Jun 2022 06:33:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B90B520F42
-        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 03:33:25 -0700 (PDT)
+        Sun, 5 Jun 2022 06:33:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A7F0205FB
+        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 03:33:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 62E85B80B8A
-        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 10:33:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D413C3411C;
-        Sun,  5 Jun 2022 10:33:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0D568B80B83
+        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 10:33:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05C96C3411C;
+        Sun,  5 Jun 2022 10:33:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654425203;
-        bh=rc2zsORGj01zJ5Lz9EoBugxqUE8xMq+JOutnPoIXF+U=;
+        s=k20201202; t=1654425205;
+        bh=E67nVJSgms7lKGXIFX2+nf8+3sJRF3vxUDwXV7sv7uM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tsUL65MJsA9+ci1WOLgi36ARNWfkehBbrCyocImJ1McQhL9rwx3Iq/Q7/v5mkKZo9
-         oTvkv5cXBQhwnf8D7iadS9o8nnfe9+rn1W2Je0gmVsHPqKcb7f7tRsuRP+xwsVfyD7
-         +FmpsjxALTy8vuwF8Ec5OJ8cIJ9+P/n6AS7X96XR4aNKLB5x1Oa/Yie/Y7GvFMMFKr
-         cCrI0N3kpSVkrpf0EO6QZPBcv/ajBwWwVkOZqC8JhPh13Gdxal223y8G5IW9mAqUPC
-         O2LbapNjeZAi5Sj2Zd1rA4AxuaBPfsX+CT8BFa5fsi08uzNaDTNZ/abjOJHjRpecXm
-         y+rjrLTzibVCA==
+        b=SRLJr4zitDLeiTE+UbJWmg2euQfduENkpbjiJ8m82a/Crkva8ewq4sXJF6yFqyjz7
+         NJ7xrDYupgam2ShI/imwP84YnLQLecxilZXxPpMTXKHkXUFncwTZeqZADh/yhkN5aj
+         BEJzGEXkXlWeWjc4cRgILYp3KLqmIIWew3T5pTdUGSeT5SNlKsQA4WCzwxtawYAIlH
+         bEfD+pHTU+b/lf5rp+N+6dnywfz0L7oxxZiIdyIAMK7TqqxBo2oX0Upn4wc0YX5ZO0
+         35eOd0qNgGpAix3RsoV3cf7RsrWJ8ybheUtEZy5nE/cadVjrImnlbi8fhA8Q0AVwLf
+         hn9HzMbTK+Vaw==
 From:   Oded Gabbay <ogabbay@kernel.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Dan Rapaport <drapaport@habana.ai>
-Subject: [PATCH 2/7] habanalabs: align ioctl uapi structures to 64-bit
-Date:   Sun,  5 Jun 2022 13:33:11 +0300
-Message-Id: <20220605103316.3414541-2-ogabbay@kernel.org>
+Cc:     Tal Cohen <talcohen@habana.ai>
+Subject: [PATCH 4/7] habanalabs: change the write flag name of error info structs
+Date:   Sun,  5 Jun 2022 13:33:13 +0300
+Message-Id: <20220605103316.3414541-4-ogabbay@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220605103316.3414541-1-ogabbay@kernel.org>
 References: <20220605103316.3414541-1-ogabbay@kernel.org>
@@ -48,32 +48,106 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Rapaport <drapaport@habana.ai>
+From: Tal Cohen <talcohen@habana.ai>
 
-The compiler is padding the members of the struct to be aligned to
-64-bit. The content of the padded bytes is and not zeroed explicitly,
-hence might copy undefined data. We add a padding member to the struct
-to get a zeroed 64-bit align struct.
+positive flags naming will make more clear code while adding
+more 'error info' structures
 
-Signed-off-by: Dan Rapaport <drapaport@habana.ai>
+Signed-off-by: Tal Cohen <talcohen@habana.ai>
 Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
 Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
 ---
- include/uapi/misc/habanalabs.h | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/misc/habanalabs/common/command_submission.c |  4 ++--
+ drivers/misc/habanalabs/common/habanalabs.h         | 12 ++++++------
+ drivers/misc/habanalabs/common/habanalabs_drv.c     |  4 ++--
+ drivers/misc/habanalabs/gaudi/gaudi.c               |  4 ++--
+ 4 files changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/include/uapi/misc/habanalabs.h b/include/uapi/misc/habanalabs.h
-index 52540d5b4fc9..6d2ccc09dcf2 100644
---- a/include/uapi/misc/habanalabs.h
-+++ b/include/uapi/misc/habanalabs.h
-@@ -949,6 +949,7 @@ struct hl_cs_in {
+diff --git a/drivers/misc/habanalabs/common/command_submission.c b/drivers/misc/habanalabs/common/command_submission.c
+index fb30b7de4aab..22109be06139 100644
+--- a/drivers/misc/habanalabs/common/command_submission.c
++++ b/drivers/misc/habanalabs/common/command_submission.c
+@@ -735,8 +735,8 @@ static void cs_timedout(struct work_struct *work)
+ 	hdev = cs->ctx->hdev;
  
- 	/* Context ID - Currently not in use */
- 	__u32 ctx_id;
-+	__u8 pad[4];
+ 	/* Save only the first CS timeout parameters */
+-	rc = atomic_cmpxchg(&hdev->last_error.cs_timeout.write_disable, 0, 1);
+-	if (!rc) {
++	rc = atomic_cmpxchg(&hdev->last_error.cs_timeout.write_enable, 1, 0);
++	if (rc) {
+ 		hdev->last_error.cs_timeout.timestamp = ktime_get();
+ 		hdev->last_error.cs_timeout.seq = cs->sequence;
+ 	}
+diff --git a/drivers/misc/habanalabs/common/habanalabs.h b/drivers/misc/habanalabs/common/habanalabs.h
+index b0b0f3f89865..7a46f36518fe 100644
+--- a/drivers/misc/habanalabs/common/habanalabs.h
++++ b/drivers/misc/habanalabs/common/habanalabs.h
+@@ -2570,21 +2570,21 @@ struct hl_clk_throttle {
+ /**
+  * struct cs_timeout_info - info of last CS timeout occurred.
+  * @timestamp: CS timeout timestamp.
+- * @write_disable: if set writing to CS parameters in the structure is disabled so,
+- *                 the first (root cause) CS timeout will not be overwritten.
++ * @write_enable: if set writing to CS parameters in the structure is enabled. otherwise - disabled,
++ *                so the first (root cause) CS timeout will not be overwritten.
+  * @seq: CS timeout sequence number.
+  */
+ struct cs_timeout_info {
+ 	ktime_t		timestamp;
+-	atomic_t	write_disable;
++	atomic_t	write_enable;
+ 	u64		seq;
  };
  
- struct hl_cs_out {
+ /**
+  * struct razwi_info - info about last razwi error occurred.
+  * @timestamp: razwi timestamp.
+- * @write_disable: if set writing to razwi parameters in the structure is disabled so the
+- *                 first (root cause) razwi will not be overwritten.
++ * @write_enable: if set writing to razwi parameters in the structure is enabled.
++ *                otherwise - disabled, so the first (root cause) razwi will not be overwritten.
+  * @addr: address that caused razwi.
+  * @engine_id_1: engine id of the razwi initiator, if it was initiated by engine that does
+  *               not have engine id it will be set to U16_MAX.
+@@ -2596,7 +2596,7 @@ struct cs_timeout_info {
+  */
+ struct razwi_info {
+ 	ktime_t		timestamp;
+-	atomic_t	write_disable;
++	atomic_t	write_enable;
+ 	u64		addr;
+ 	u16		engine_id_1;
+ 	u16		engine_id_2;
+diff --git a/drivers/misc/habanalabs/common/habanalabs_drv.c b/drivers/misc/habanalabs/common/habanalabs_drv.c
+index 37edb69a7255..e182637c2d93 100644
+--- a/drivers/misc/habanalabs/common/habanalabs_drv.c
++++ b/drivers/misc/habanalabs/common/habanalabs_drv.c
+@@ -195,8 +195,8 @@ int hl_device_open(struct inode *inode, struct file *filp)
+ 
+ 	hl_debugfs_add_file(hpriv);
+ 
+-	atomic_set(&hdev->last_error.cs_timeout.write_disable, 0);
+-	atomic_set(&hdev->last_error.razwi.write_disable, 0);
++	atomic_set(&hdev->last_error.cs_timeout.write_enable, 1);
++	atomic_set(&hdev->last_error.razwi.write_enable, 1);
+ 
+ 	hdev->open_counter++;
+ 	hdev->last_successful_open_jif = jiffies;
+diff --git a/drivers/misc/habanalabs/gaudi/gaudi.c b/drivers/misc/habanalabs/gaudi/gaudi.c
+index 4db5f6ef96f1..c16c0f9fe202 100644
+--- a/drivers/misc/habanalabs/gaudi/gaudi.c
++++ b/drivers/misc/habanalabs/gaudi/gaudi.c
+@@ -7410,8 +7410,8 @@ static void gaudi_print_irq_info(struct hl_device *hdev, u16 event_type,
+ 		gaudi_print_and_get_mmu_error_info(hdev, &razwi_addr, &razwi_type);
+ 
+ 		/* In case it's the first razwi, save its parameters*/
+-		rc = atomic_cmpxchg(&hdev->last_error.razwi.write_disable, 0, 1);
+-		if (!rc) {
++		rc = atomic_cmpxchg(&hdev->last_error.razwi.write_enable, 1, 0);
++		if (rc) {
+ 			hdev->last_error.razwi.timestamp = ktime_get();
+ 			hdev->last_error.razwi.addr = razwi_addr;
+ 			hdev->last_error.razwi.engine_id_1 = engine_id_1;
 -- 
 2.25.1
 
