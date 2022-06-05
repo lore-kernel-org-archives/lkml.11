@@ -2,165 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 552A1C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 23:33:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FCA9C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 23:46:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351808AbiFEXdP (ORCPT
+        id S1351810AbiFEXq0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 5 Jun 2022 19:33:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53388 "EHLO
+        Sun, 5 Jun 2022 19:46:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242272AbiFEXdN (ORCPT
+        with ESMTP id S1348623AbiFEXqR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 5 Jun 2022 19:33:13 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A191A26AD9;
-        Sun,  5 Jun 2022 16:33:10 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LGXwv5WLRz4xD8;
-        Mon,  6 Jun 2022 09:33:03 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1654471984;
-        bh=JPHMTeH21eKoR6W4I7iPxQFNUAWKvjAR0yL1d7vOOzE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=BLYut8s6Ay2afK9HjI3jMOJoi8G7H6A/e4GZLwnFwJ10qGpchdtkW2PTUmdld6tv2
-         jpDlZrCvHR5VIUuFiBCMhDi/NERnXPZxdxlOsIrwUFLaqGsy8nwriO3iSMaLMmozCI
-         +uQpZcsUD+1YlC9Sni8S+A9y43OZI+VoRlNG3QF+sgUWb0D/5MvETPml1PHqqha38V
-         NaIPUmqgE5hXtbg4WlGKE10Usy4wwMKv8yDPAAto8yzEwlr/sECt0+AoIINupN7zJC
-         qqVLYn3KZRrn84Kl9CxU347+VlsFjAlt19ZY+MxCCZEtBPhtoJnUeCPfyHBD6WRw/3
-         dHvsW+9Y5DTEg==
-Date:   Mon, 6 Jun 2022 09:33:02 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Joey Gouly <joey.gouly@arm.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build warning after merge of the pinctrl tree
-Message-ID: <20220606093302.21febee3@canb.auug.org.au>
-In-Reply-To: <20220318183101.16b8d056@canb.auug.org.au>
-References: <20211027220118.71a229ab@canb.auug.org.au>
-        <874k92bu4q.wl-maz@kernel.org>
-        <20211028080331.6d199082@sal.lan>
-        <20220120142539.6d1fac12@canb.auug.org.au>
-        <20220318183101.16b8d056@canb.auug.org.au>
+        Sun, 5 Jun 2022 19:46:17 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 651323668E
+        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 16:46:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654472776; x=1686008776;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=GLVAJY2cQcs3ytkeeSsqmfyLuasvjP5Wq6+i2HWoWTo=;
+  b=da7jsf5Om1F3ne47W1f5MXQkkUZrWqGjT/OP35QtOcobNM/3SOj0SyFC
+   7WTOTYllL2D6uepTWd7Vxi5aFWYqbVc5gPJUFK9Hdx0wyKnxx7+kzsCUI
+   0KdKcaHkQYti3I1PtA3FIsiREcAVlS4dpTeWX86fqYJf+VjU2FDNgRfgl
+   99ccIGzcolxCQUwrFsRhIzFLd0s5pZpp+ZygL9NfDphFXKT7Gv9KyqNOt
+   4C7F+HQiPul+hNCJw+vXZcfhQAjwctsu+hV5Zkyi2h5emL7v2QpGfsU6m
+   G8Hh0tgzyOpwb1m9skpMzJTScbLukRvoISg4Hs8XmlJVFxthagvyHmjSK
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="276642300"
+X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
+   d="scan'208";a="276642300"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2022 16:46:02 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
+   d="scan'208";a="708839520"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 05 Jun 2022 16:46:01 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nxzwW-000CKs-J6;
+        Sun, 05 Jun 2022 23:46:00 +0000
+Date:   Mon, 6 Jun 2022 07:45:06 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: drivers/hid/hid-hyperv.c:218:9: sparse: sparse: cast from restricted
+ __le16
+Message-ID: <202206060703.BhX0IBxu-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/j/Z+F3kNQCDQiZbzMTn7/sf";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/j/Z+F3kNQCDQiZbzMTn7/sf
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   d717180e7f9775d468f415c10a4a474640146001
+commit: f68f2ff91512c199ec24883001245912afc17873 fortify: Detect struct member overflows in memcpy() at compile-time
+date:   4 months ago
+config: i386-allmodconfig (https://download.01.org/0day-ci/archive/20220606/202206060703.BhX0IBxu-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-1) 11.3.0
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.4-18-g56afb504-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=f68f2ff91512c199ec24883001245912afc17873
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout f68f2ff91512c199ec24883001245912afc17873
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash drivers/hid/ samples/
 
-Hi all,
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-On Fri, 18 Mar 2022 18:31:01 +1100 Stephen Rothwell <sfr@canb.auug.org.au> =
-wrote:
->
-> On Thu, 20 Jan 2022 14:25:39 +1100 Stephen Rothwell <sfr@canb.auug.org.au=
-> wrote:
-> >
-> > On Thu, 28 Oct 2021 08:03:31 +0100 Mauro Carvalho Chehab <mchehab@kerne=
-l.org> wrote: =20
-> > >
-> > > Em Wed, 27 Oct 2021 12:10:45 +0100
-> > > Marc Zyngier <maz@kernel.org> escreveu:
-> > >    =20
-> > > > On Wed, 27 Oct 2021 12:01:18 +0100, Stephen Rothwell <sfr@canb.auug=
-.org.au> wrote:     =20
-> > > > >=20
-> > > > > After merging the pinctrl tree, today's linux-next build (htmldoc=
-s)
-> > > > > produced this warning:
-> > > > >=20
-> > > > > include/linux/gpio/driver.h:284: warning: Function parameter or m=
-ember 'parent_handler_data_array' not described in 'gpio_irq_chip'
-> > > > >=20
-> > > > > Introduced by commit
-> > > > >=20
-> > > > >   cfe6807d82e9 ("gpio: Allow per-parent interrupt data")
-> > > > >=20
-> > > > > But may actually be a problem with the tool :-(       =20
-> > > >=20
-> > > > I guess the tool doesn't like having two fields that are part of a
-> > > > union documented together... Happy to tweak it if someone tells me =
-how
-> > > > this should be written.     =20
-> > >=20
-> > > Yes, that's the case. See, when you do:
-> > >=20
-> > > 	/**
-> > > 	 * @parent_handler_data:
-> > > 	 * @parent_handler_data_array:
-> > > 	 *
-> > > 	 * Data associated, and passed to, the handler for the parent
-> > > 	 * interrupt. Can either be a single pointer if @per_parent_data
-> > > 	 * is false, or an array of @num_parents pointers otherwise.  If
-> > > 	 * @per_parent_data is true, @parent_handler_data_array cannot be
-> > > 	 * NULL.
-> > > 	 */
-> > > 	union {
-> > > 		void *parent_handler_data;
-> > > 		void **parent_handler_data_array;
-> > > 	};
-> > >=20
-> > > The tool will understand it as an undocumented "parent_handler_data" =
-and
-> > > a documented "parent_handler_data_array".
-> > >=20
-> > > It has to do that, as otherwise it won't get cases where people just =
-adds a
-> > > @foo: as a template but actually forgets to fill it.
-> > >=20
-> > > The solution would be to add a description for both, e. g. something
-> > > similar to:
-> > >=20
-> > > 	/**
-> > > 	 * @parent_handler_data:
-> > > 	 *
-> > > 	 * If @per_parent_data is false, contains a single pointer=20
-> > > 	 * with the data associated, and passed to, the handler for the=20
-> > > 	 * parent interrupt.
-> > > 	 *
-> > > 	 * @parent_handler_data_array:
-> > > 	 *
-> > > 	 * If @per_parent_data is true, it should contain an array of=20
-> > > 	 * @num_parents pointers with the data associated, and passed to,
-> > > 	 * the handler for the parent interrupt. Cannot be NULL.
-> > > 	 */   =20
-> >=20
-> > I am still getting this warning. =20
->=20
-> I am still getting this warning.
 
-I am still getting this warning.
+sparse warnings: (new ones prefixed by >>)
+   drivers/hid/hid-hyperv.c:202:40: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned int [usertype] report_desc_size @@     got restricted __le16 [usertype] wDescriptorLength @@
+   drivers/hid/hid-hyperv.c:202:40: sparse:     expected unsigned int [usertype] report_desc_size
+   drivers/hid/hid-hyperv.c:202:40: sparse:     got restricted __le16 [usertype] wDescriptorLength
+>> drivers/hid/hid-hyperv.c:218:9: sparse: sparse: cast from restricted __le16
 
---=20
-Cheers,
-Stephen Rothwell
+vim +218 drivers/hid/hid-hyperv.c
 
---Sig_/j/Z+F3kNQCDQiZbzMTn7/sf
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  180  
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  181  static void mousevsc_on_receive_device_info(struct mousevsc_dev *input_device,
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  182  				struct synthhid_device_info *device_info)
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  183  {
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  184  	int ret = 0;
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  185  	struct hid_descriptor *desc;
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  186  	struct mousevsc_prt_msg ack;
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  187  
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  188  	input_device->dev_info_status = -ENOMEM;
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  189  
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  190  	input_device->hid_dev_info = device_info->hid_dev_info;
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  191  	desc = &device_info->hid_descriptor;
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  192  	if (desc->bLength == 0)
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  193  		goto cleanup;
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  194  
+af13f9ed6f9aa6 Dexuan Cui       2019-11-19  195  	/* The pointer is not NULL when we resume from hibernation */
+af13f9ed6f9aa6 Dexuan Cui       2019-11-19  196  	kfree(input_device->hid_desc);
+a4a23f6d68ad2c Thomas Meyer     2013-06-01  197  	input_device->hid_desc = kmemdup(desc, desc->bLength, GFP_ATOMIC);
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  198  
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  199  	if (!input_device->hid_desc)
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  200  		goto cleanup;
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  201  
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17 @202  	input_device->report_desc_size = desc->desc[0].wDescriptorLength;
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  203  	if (input_device->report_desc_size == 0) {
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  204  		input_device->dev_info_status = -EINVAL;
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  205  		goto cleanup;
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  206  	}
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  207  
+af13f9ed6f9aa6 Dexuan Cui       2019-11-19  208  	/* The pointer is not NULL when we resume from hibernation */
+af13f9ed6f9aa6 Dexuan Cui       2019-11-19  209  	kfree(input_device->report_desc);
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  210  	input_device->report_desc = kzalloc(input_device->report_desc_size,
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  211  					  GFP_ATOMIC);
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  212  
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  213  	if (!input_device->report_desc) {
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  214  		input_device->dev_info_status = -ENOMEM;
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  215  		goto cleanup;
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  216  	}
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  217  
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17 @218  	memcpy(input_device->report_desc,
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  219  	       ((unsigned char *)desc) + desc->bLength,
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  220  	       desc->desc[0].wDescriptorLength);
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  221  
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  222  	/* Send the ack */
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  223  	memset(&ack, 0, sizeof(struct mousevsc_prt_msg));
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  224  
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  225  	ack.type = PIPE_MESSAGE_DATA;
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  226  	ack.size = sizeof(struct synthhid_device_info_ack);
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  227  
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  228  	ack.ack.header.type = SYNTH_HID_INITIAL_DEVICE_INFO_ACK;
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  229  	ack.ack.header.size = 1;
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  230  	ack.ack.reserved = 0;
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  231  
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  232  	ret = vmbus_sendpacket(input_device->device->channel,
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  233  			&ack,
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  234  			sizeof(struct pipe_prt_msg) - sizeof(unsigned char) +
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  235  			sizeof(struct synthhid_device_info_ack),
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  236  			(unsigned long)&ack,
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  237  			VM_PKT_DATA_INBAND,
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  238  			VMBUS_DATA_PACKET_FLAG_COMPLETION_REQUESTED);
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  239  
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  240  	if (!ret)
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  241  		input_device->dev_info_status = 0;
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  242  
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  243  cleanup:
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  244  	complete(&input_device->wait_event);
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  245  
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  246  	return;
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  247  }
+b95f5bcb811e39 K. Y. Srinivasan 2011-11-17  248  
 
------BEGIN PGP SIGNATURE-----
+:::::: The code at line 218 was first introduced by commit
+:::::: b95f5bcb811e3905b5376f87789da8d097fee682 HID: Move the hid-hyperv driver out of staging
 
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmKdPS4ACgkQAVBC80lX
-0GwGjQf/Wpxw16OGellQTN1Pi7+LZv4dT0ZGhL2c5FwQJxKYcGMyrljxCvU5pWot
-xzunVUcaed1twyrAZw6hEmWPobS1tBuXcSwGUZAKQmH/zS5obZZ9B534qHTXkSDg
-mIvx/xi9EW//ZG51tzbE214iSnD9S01ZJQw5PRm5s621/QAfPGFyHmEskAAx5S0p
-xohvRT3l1Q35PJLeFHovPFIQSmbTCV6SObtUWxAJNpnh+x94uI2nCq1z2CXWtB2p
-2rUmyCB7XLSsr5LI9pLu8dVpeCGfrnaakKploIhymAsQ07ZDSv7ZwoWu/Ig8/NHa
-d6UKuIDmpHzxowhNHlBP+GfOs1xu/g==
-=9smW
------END PGP SIGNATURE-----
+:::::: TO: K. Y. Srinivasan <kys@microsoft.com>
+:::::: CC: Jiri Kosina <jkosina@suse.cz>
 
---Sig_/j/Z+F3kNQCDQiZbzMTn7/sf--
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
