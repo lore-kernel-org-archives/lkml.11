@@ -2,153 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEDC3CCA47B
-	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 04:28:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53715C43334
+	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 04:36:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348805AbiFEE2a (ORCPT
+        id S1348868AbiFEEge (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 5 Jun 2022 00:28:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41112 "EHLO
+        Sun, 5 Jun 2022 00:36:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233427AbiFEE22 (ORCPT
+        with ESMTP id S233427AbiFEEgc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 5 Jun 2022 00:28:28 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9881958B
-        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 21:28:26 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id gc3-20020a17090b310300b001e33092c737so10074075pjb.3
-        for <linux-kernel@vger.kernel.org>; Sat, 04 Jun 2022 21:28:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=cwL2wHcA34X3qXSJRLp9vC/RDXcQCiZVTt+d5U9lstk=;
-        b=2VOwiJZp5DrIJXyOlgpB6VfK40D/XqlM2qapqxtFAZMjZMOMHTJFFkULcMMCP6JArV
-         87gJxVxrXOesZpMAzFjvBoZNfijEo6hJbiWSYNwhTxcfUJF4V3dVGMaKax7nChHJabyX
-         UMUYGw90KXmANZKYS886MNSWBEJPgITEhpSgfiVKJ5NqSzto8yjP0IwUSTYz0OohkL88
-         BMWiGS3MYCEoAKKMAt+edZZJlkOX9PoMuP12bSKAEDeIk6r5TwF4RK/mC4P8jRPThBIm
-         E0TkMyZpGS1/e76IsxNQ1A6tCp7MMhyU/lp6xThIH8z7iv3HJCmmDq0l+G2PwjmWEnqx
-         SnGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=cwL2wHcA34X3qXSJRLp9vC/RDXcQCiZVTt+d5U9lstk=;
-        b=Ab2criPKiATQrPYzx/9H9iYLQAEIBB7OiZek2FCc8VXNCxjdV7kPGn476Q81KHirOD
-         zXdhGbgEx81e0O0kkpiAN2RQyY+2LcKnVJh0m8rvoOyi7D1wvyqeqSXR1tqV9T/SLSFA
-         ejlYKr/irDKesVpxmeTueTt2XUnXmdcBENXCrrBOlARupI0P3A359o8AuLRuLB2Xd/RG
-         MJVORrItRKmXGCtN4jGz1NJ8r/tNWwykg2f3jTWd8S+xom4rbI+p9mqxnafd0pHxlvmQ
-         GBcx8fwUvzqLt0V5Vo1LvYzb7NPTe9xU+KdfT/Fxzr3pRyZGSZKt7VcPQTEZbllYQN6u
-         PjSw==
-X-Gm-Message-State: AOAM533SLN5hbmu9jF14S6hrpDrIXTlGQfiQtqVWTVAP0fOAE5PGAZA4
-        tV6PINGcF6SYwMEGR9FU5wVBVU8wOvsSWQ==
-X-Google-Smtp-Source: ABdhPJwwme7JJVfs5BR6bWdb7PU9V2aWDGFRO/Qd+1CJvHyMOMIPgOQ5SnHjMPt2rjR5Fm2enliMHA==
-X-Received: by 2002:a17:90a:17c9:b0:1e8:5e58:f658 with SMTP id q67-20020a17090a17c900b001e85e58f658mr4940749pja.239.1654403306417;
-        Sat, 04 Jun 2022 21:28:26 -0700 (PDT)
-Received: from [10.255.89.136] ([139.177.225.249])
-        by smtp.gmail.com with ESMTPSA id 13-20020a170902c20d00b0015e8d4eb2adsm7927589pll.247.2022.06.04.21.28.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 04 Jun 2022 21:28:25 -0700 (PDT)
-Message-ID: <584eedd3-9369-9df1-39e2-62e331abdcc0@bytedance.com>
-Date:   Sun, 5 Jun 2022 12:24:24 +0800
+        Sun, 5 Jun 2022 00:36:32 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 012B5186C3
+        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 21:36:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654403790; x=1685939790;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=vKYoFq+zPHon8HqW0p7Tr1Xq3IkjcWeV3Wnfo2YOlKY=;
+  b=gF33cdRMXKLHAY+hL6CfwJSwn0k1+TFoF2tVb4qlIVDYlMMmIyGNZ8k+
+   dp02kbRjKu7l8/xs+J4AtO7qf6/+NIztjajvmTNoif6rFhPaEmYRRKVFv
+   xk5zp/Gpjvj0Xr5BdQDDcU3d+yLG/SJcLKYQRf1dN8DpqQNQoLu8kOnIk
+   u28aDfelYjgCi6pD/Rw8se4JTFi0UPhQHRHEoUI4+HnNAa6Q8wWz9BwKG
+   Wkov0oYGMtFgL6dkSqjhwtJcqV7KgRCvAbvlDTouSekhAVJwDyZVPq1Vw
+   SZ7/kv7xYapoXUf8/JFMRee8Nzl2wA1NLA8Qd4VxmxF3gZG+AsOfLvvzT
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10368"; a="274082507"
+X-IronPort-AV: E=Sophos;i="5.91,278,1647327600"; 
+   d="scan'208";a="274082507"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2022 21:36:29 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,278,1647327600"; 
+   d="scan'208";a="564369293"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 04 Jun 2022 21:36:28 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nxi03-000BUc-Bb;
+        Sun, 05 Jun 2022 04:36:27 +0000
+Date:   Sun, 5 Jun 2022 12:35:26 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Steve Lee <steve.lee.analog@gmail.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Mark Brown <broonie@kernel.org>
+Subject: sound/soc/codecs/max98390.c:1076:22: error: implicit declaration of
+ function 'devm_gpiod_get_optional'; did you mean
+ 'devm_regulator_get_optional'?
+Message-ID: <202206051208.ehHGvHd0-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: Re: [PATCH] mm/memory-failure: don't allow to unpoison hw
- corrupted page
-Content-Language: en-US
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     naoya.horiguchi@nec.com, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        Wu Fengguang <fengguang.wu@intel.com>
-References: <20220604103229.3378591-1-pizhenwei@bytedance.com>
- <20220604115616.b7d5912ac5a37db608f67b78@linux-foundation.org>
-From:   zhenwei pi <pizhenwei@bytedance.com>
-In-Reply-To: <20220604115616.b7d5912ac5a37db608f67b78@linux-foundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Steve,
+
+FYI, the error/warning still remains.
+
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   952923ddc01120190dcf671e7b354364ce1d1362
+commit: 397ff024960634962af93e9e2775fc0e4fe7de92 ASoC: max98390: Add reset gpio control
+date:   6 weeks ago
+config: nios2-randconfig-c003-20220605 (https://download.01.org/0day-ci/archive/20220605/202206051208.ehHGvHd0-lkp@intel.com/config)
+compiler: nios2-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=397ff024960634962af93e9e2775fc0e4fe7de92
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 397ff024960634962af93e9e2775fc0e4fe7de92
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=nios2 SHELL=/bin/bash sound/soc/codecs/
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   sound/soc/codecs/max98390.c: In function 'max98390_i2c_probe':
+>> sound/soc/codecs/max98390.c:1076:22: error: implicit declaration of function 'devm_gpiod_get_optional'; did you mean 'devm_regulator_get_optional'? [-Werror=implicit-function-declaration]
+    1076 |         reset_gpio = devm_gpiod_get_optional(&i2c->dev,
+         |                      ^~~~~~~~~~~~~~~~~~~~~~~
+         |                      devm_regulator_get_optional
+>> sound/soc/codecs/max98390.c:1077:55: error: 'GPIOD_OUT_HIGH' undeclared (first use in this function); did you mean 'GPIOF_INIT_HIGH'?
+    1077 |                                              "reset", GPIOD_OUT_HIGH);
+         |                                                       ^~~~~~~~~~~~~~
+         |                                                       GPIOF_INIT_HIGH
+   sound/soc/codecs/max98390.c:1077:55: note: each undeclared identifier is reported only once for each function it appears in
+>> sound/soc/codecs/max98390.c:1083:17: error: implicit declaration of function 'gpiod_set_value_cansleep'; did you mean 'gpio_set_value_cansleep'? [-Werror=implicit-function-declaration]
+    1083 |                 gpiod_set_value_cansleep(reset_gpio, 0);
+         |                 ^~~~~~~~~~~~~~~~~~~~~~~~
+         |                 gpio_set_value_cansleep
+   cc1: some warnings being treated as errors
 
 
-On 6/5/22 02:56, Andrew Morton wrote:
-> On Sat,  4 Jun 2022 18:32:29 +0800 zhenwei pi <pizhenwei@bytedance.com> wrote:
-> 
->> Currently unpoison_memory(unsigned long pfn) is designed for soft
->> poison(hwpoison-inject) only. Unpoisoning a hardware corrupted page
->> puts page back buddy only, this leads BUG during accessing on the
->> corrupted KPTE.
->>
->> Do not allow to unpoison hardware corrupted page in unpoison_memory()
->> to avoid BUG like this:
->>
->>   Unpoison: Software-unpoisoned page 0x61234
->>   BUG: unable to handle page fault for address: ffff888061234000
-> 
-> Thanks.
-> 
->> --- a/mm/memory-failure.c
->> +++ b/mm/memory-failure.c
->> @@ -2090,6 +2090,7 @@ int unpoison_memory(unsigned long pfn)
->>   {
->>   	struct page *page;
->>   	struct page *p;
->> +	pte_t *kpte;
->>   	int ret = -EBUSY;
->>   	int freeit = 0;
->>   	static DEFINE_RATELIMIT_STATE(unpoison_rs, DEFAULT_RATELIMIT_INTERVAL,
->> @@ -2101,6 +2102,13 @@ int unpoison_memory(unsigned long pfn)
->>   	p = pfn_to_page(pfn);
->>   	page = compound_head(p);
->>   
->> +	kpte = virt_to_kpte((unsigned long)page_to_virt(p));
->> +	if (kpte && !pte_present(*kpte)) {
->> +		unpoison_pr_info("Unpoison: Page was hardware poisoned %#lx\n",
->> +				 pfn, &unpoison_rs);
->> +		return -EPERM;
->> +	}
->> +
->>   	mutex_lock(&mf_mutex);
->>   
->>   	if (!PageHWPoison(p)) {
-> 
-> I guess we don't want to let fault injection crash the kernel, so a
-> cc:stable seems appropriate here.
-> 
-> Can we think up a suitable Fixes: commit?  I'm suspecting this bug has
-> been there for a long time?
-> 
+vim +1076 sound/soc/codecs/max98390.c
 
-Sure!
-
-2009-Dec-16, hwpoison_unpoison() was introduced into linux in commit:
-847ce401df392("HWPOISON: Add unpoisoning support")
-...
-There is no hardware level unpoisioning, so this cannot be used for real 
-memory errors, only for software injected errors.
-...
-
-We can find that this function should be used for software level 
-unpoisoning only in both commit log and comment in source code. 
-unfortunately there is no check in function hwpoison_unpoison().
-
-
-2020-May-20, 17fae1294ad9d("x86/{mce,mm}: Unmap the entire page if the 
-whole page is affected and poisoned")
-
-This clears KPTE, and leads BUG(described in this patch) during 
-unpoisoning the hardware corrupted page.
-
-
-Fixes: 847ce401df392("HWPOISON: Add unpoisoning support")
-Fixes: 17fae1294ad9d("x86/{mce,mm}: Unmap the entire page if the whole 
-page is affected and poisoned")
-
-Cc: Wu Fengguang <fengguang.wu@intel.com>
-Cc: Tony Luck <tony.luck@intel.com>.
+  1016	
+  1017	static int max98390_i2c_probe(struct i2c_client *i2c)
+  1018	{
+  1019		int ret = 0;
+  1020		int reg = 0;
+  1021	
+  1022		struct max98390_priv *max98390 = NULL;
+  1023		struct i2c_adapter *adapter = i2c->adapter;
+  1024		struct gpio_desc *reset_gpio;
+  1025	
+  1026		ret = i2c_check_functionality(adapter,
+  1027			I2C_FUNC_SMBUS_BYTE
+  1028			| I2C_FUNC_SMBUS_BYTE_DATA);
+  1029		if (!ret) {
+  1030			dev_err(&i2c->dev, "I2C check functionality failed\n");
+  1031			return -ENXIO;
+  1032		}
+  1033	
+  1034		max98390 = devm_kzalloc(&i2c->dev, sizeof(*max98390), GFP_KERNEL);
+  1035		if (!max98390) {
+  1036			ret = -ENOMEM;
+  1037			return ret;
+  1038		}
+  1039		i2c_set_clientdata(i2c, max98390);
+  1040	
+  1041		ret = device_property_read_u32(&i2c->dev, "maxim,temperature_calib",
+  1042					       &max98390->ambient_temp_value);
+  1043		if (ret) {
+  1044			dev_info(&i2c->dev,
+  1045				 "no optional property 'temperature_calib' found, default:\n");
+  1046		}
+  1047		ret = device_property_read_u32(&i2c->dev, "maxim,r0_calib",
+  1048					       &max98390->ref_rdc_value);
+  1049		if (ret) {
+  1050			dev_info(&i2c->dev,
+  1051				 "no optional property 'r0_calib' found, default:\n");
+  1052		}
+  1053	
+  1054		dev_info(&i2c->dev,
+  1055			"%s: r0_calib: 0x%x,temperature_calib: 0x%x",
+  1056			__func__, max98390->ref_rdc_value,
+  1057			max98390->ambient_temp_value);
+  1058	
+  1059		ret = device_property_read_string(&i2c->dev, "maxim,dsm_param_name",
+  1060					       &max98390->dsm_param_name);
+  1061		if (ret)
+  1062			max98390->dsm_param_name = "default";
+  1063	
+  1064		/* voltage/current slot configuration */
+  1065		max98390_slot_config(i2c, max98390);
+  1066	
+  1067		/* regmap initialization */
+  1068		max98390->regmap = devm_regmap_init_i2c(i2c, &max98390_regmap);
+  1069		if (IS_ERR(max98390->regmap)) {
+  1070			ret = PTR_ERR(max98390->regmap);
+  1071			dev_err(&i2c->dev,
+  1072				"Failed to allocate regmap: %d\n", ret);
+  1073			return ret;
+  1074		}
+  1075	
+> 1076		reset_gpio = devm_gpiod_get_optional(&i2c->dev,
+> 1077						     "reset", GPIOD_OUT_HIGH);
+  1078	
+  1079		/* Power on device */
+  1080		if (reset_gpio) {
+  1081			usleep_range(1000, 2000);
+  1082			/* bring out of reset */
+> 1083			gpiod_set_value_cansleep(reset_gpio, 0);
+  1084			usleep_range(1000, 2000);
+  1085		}
+  1086	
+  1087		/* Check Revision ID */
+  1088		ret = regmap_read(max98390->regmap,
+  1089			MAX98390_R24FF_REV_ID, &reg);
+  1090		if (ret) {
+  1091			dev_err(&i2c->dev,
+  1092				"ret=%d, Failed to read: 0x%02X\n",
+  1093				ret, MAX98390_R24FF_REV_ID);
+  1094			return ret;
+  1095		}
+  1096		dev_info(&i2c->dev, "MAX98390 revisionID: 0x%02X\n", reg);
+  1097	
+  1098		ret = devm_snd_soc_register_component(&i2c->dev,
+  1099				&soc_codec_dev_max98390,
+  1100				max98390_dai, ARRAY_SIZE(max98390_dai));
+  1101	
+  1102		return ret;
+  1103	}
+  1104	
 
 -- 
-zhenwei pi
+0-DAY CI Kernel Test Service
+https://01.org/lkp
