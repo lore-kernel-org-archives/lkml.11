@@ -2,48 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BBC6C43334
-	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 13:53:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD0A7C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 13:53:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344216AbiFENxg (ORCPT
+        id S1344208AbiFENxl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 5 Jun 2022 09:53:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34720 "EHLO
+        Sun, 5 Jun 2022 09:53:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240021AbiFENx0 (ORCPT
+        with ESMTP id S243995AbiFENx3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 5 Jun 2022 09:53:26 -0400
+        Sun, 5 Jun 2022 09:53:29 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3B23270E;
-        Sun,  5 Jun 2022 06:53:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C23F270E;
+        Sun,  5 Jun 2022 06:53:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E792160F9C;
-        Sun,  5 Jun 2022 13:53:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 012DDC385A5;
-        Sun,  5 Jun 2022 13:53:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ABF4D60F9C;
+        Sun,  5 Jun 2022 13:53:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80EC9C385A5;
+        Sun,  5 Jun 2022 13:53:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654437203;
-        bh=d065B4B8fmBHR6fCIbMdjWQL/kEBny/spn97THCJiJI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=czfnQQAVUWMFM0b8cPW8zsa8xQ6Gu0FVqivM4bvy871WDOCChGWaccXQy82LJaZcv
-         3R9jbORCqrK8EZVy1qYYuyACyJNzMRFEG3Dtw7w/ZB3RXc2L8V+slD8isK0iPWoo2s
-         iowPZT0f44i4zKipelr+hYA0rt0pGMIupH+JR0NgRYv14B0KSG8crAmKDY/du3AZg3
-         3UyJ6GZnwEsSzaC+s/XoJz7C/GuLSilUGVDTI72s2amG1igBtbSOqLtj7Rabx8RS/t
-         SUgPVdsojVugnwbUiwLLgFdpeDP4dn/GQ438Aklm12c+OwB25hPwgkbcySBxthajOa
-         E4ObZzAA5Em2A==
+        s=k20201202; t=1654437207;
+        bh=AU8d+kJilhAOhDFwChzPGNMoONnIHkfPe6ac7uyzwz0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=bQthc7djJ/GZqGWprn++T8ltJBz1Dq08c2wn/OV+UQmHug0MjLI/yS+nqjbg6z+oj
+         T2oXQp9AkdbwgLn0YWQOqmEJUVSAXCmm8n7Js1h17ggFvfesd1CdtWAEkE3w1fD3J4
+         uCESmPeN+dWtP+E9tPPMP/MbVqHPzLtL/AEE7XzgOBIctKYaLKi3itkVKC367LQEGe
+         w5390aWuYcFy/tsnNVLd03eQvFQRHZv/2WUj24JtK+5rt2OmDMZuPyvlS5SDxLQkRw
+         emKdxS8LbCJeQcr9DPHIla9WDtbtHXPI4gRhxzcKzvKEFDpituZDAlFoT5erW2lYMD
+         XWgQzjNFINmWg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Sean Christopherson <seanjc@google.com>,
-        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, jkosina@suse.cz, peterz@infradead.org
-Subject: [PATCH MANUALSEL 5.18 1/7] x86/nmi: Make register_nmi_handler() more robust
-Date:   Sun,  5 Jun 2022 09:53:09 -0400
-Message-Id: <20220605135320.61247-1-sashal@kernel.org>
+Cc:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        John Stultz <jstultz@google.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH MANUALSEL 5.18 3/7] time/sched_clock: Round the frequency reported to nearest rather than down
+Date:   Sun,  5 Jun 2022 09:53:11 -0400
+Message-Id: <20220605135320.61247-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220605135320.61247-1-sashal@kernel.org>
+References: <20220605135320.61247-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,90 +53,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Gleixner <tglx@linutronix.de>
+From: "Maciej W. Rozycki" <macro@orcam.me.uk>
 
-[ Upstream commit a7fed5c0431dbfa707037848830f980e0f93cfb3 ]
+[ Upstream commit 92067440f1311dfa4d77b57a9da6b3706f5da32e ]
 
-register_nmi_handler() has no sanity check whether a handler has been
-registered already. Such an unintended double-add leads to list corruption
-and hard to diagnose problems during the next NMI handling.
+The frequency reported for clock sources are rounded down, which gives
+misleading figures, e.g.:
 
-Init the list head in the static NMI action struct and check it for being
-empty in register_nmi_handler().
+ I/O ASIC clock frequency 24999480Hz
+ sched_clock: 32 bits at 24MHz, resolution 40ns, wraps every 85901132779ns
+ MIPS counter frequency 59998512Hz
+ sched_clock: 32 bits at 59MHz, resolution 16ns, wraps every 35792281591ns
 
-  [ bp: Fixups. ]
+Rounding to nearest is more adequate:
 
-Reported-by: Sean Christopherson <seanjc@google.com>
+ I/O ASIC clock frequency 24999664Hz
+ sched_clock: 32 bits at 25MHz, resolution 40ns, wraps every 85900499947ns
+ MIPS counter frequency 59999728Hz
+ sched_clock: 32 bits at 60MHz, resolution 16ns, wraps every 35791556599ns
+
+Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/lkml/20220511234332.3654455-1-seanjc@google.com
+Acked-by: John Stultz <jstultz@google.com>
+Link: https://lore.kernel.org/r/alpine.DEB.2.21.2204240055590.9383@angie.orcam.me.uk
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/include/asm/nmi.h |  1 +
- arch/x86/kernel/nmi.c      | 12 ++++++++----
- 2 files changed, 9 insertions(+), 4 deletions(-)
+ kernel/time/sched_clock.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/include/asm/nmi.h b/arch/x86/include/asm/nmi.h
-index 1cb9c17a4cb4..5c5f1e56c404 100644
---- a/arch/x86/include/asm/nmi.h
-+++ b/arch/x86/include/asm/nmi.h
-@@ -47,6 +47,7 @@ struct nmiaction {
- #define register_nmi_handler(t, fn, fg, n, init...)	\
- ({							\
- 	static struct nmiaction init fn##_na = {	\
-+		.list = LIST_HEAD_INIT(fn##_na.list),	\
- 		.handler = (fn),			\
- 		.name = (n),				\
- 		.flags = (fg),				\
-diff --git a/arch/x86/kernel/nmi.c b/arch/x86/kernel/nmi.c
-index e73f7df362f5..cec0bfa3bc04 100644
---- a/arch/x86/kernel/nmi.c
-+++ b/arch/x86/kernel/nmi.c
-@@ -157,7 +157,7 @@ int __register_nmi_handler(unsigned int type, struct nmiaction *action)
- 	struct nmi_desc *desc = nmi_to_desc(type);
- 	unsigned long flags;
+diff --git a/kernel/time/sched_clock.c b/kernel/time/sched_clock.c
+index b1b9b12899f5..ee07f3ac1e5b 100644
+--- a/kernel/time/sched_clock.c
++++ b/kernel/time/sched_clock.c
+@@ -8,6 +8,7 @@
+ #include <linux/jiffies.h>
+ #include <linux/ktime.h>
+ #include <linux/kernel.h>
++#include <linux/math.h>
+ #include <linux/moduleparam.h>
+ #include <linux/sched.h>
+ #include <linux/sched/clock.h>
+@@ -199,11 +200,11 @@ sched_clock_register(u64 (*read)(void), int bits, unsigned long rate)
  
--	if (!action->handler)
-+	if (WARN_ON_ONCE(!action->handler || !list_empty(&action->list)))
- 		return -EINVAL;
- 
- 	raw_spin_lock_irqsave(&desc->lock, flags);
-@@ -177,7 +177,7 @@ int __register_nmi_handler(unsigned int type, struct nmiaction *action)
- 		list_add_rcu(&action->list, &desc->head);
- 	else
- 		list_add_tail_rcu(&action->list, &desc->head);
--	
-+
- 	raw_spin_unlock_irqrestore(&desc->lock, flags);
- 	return 0;
- }
-@@ -186,7 +186,7 @@ EXPORT_SYMBOL(__register_nmi_handler);
- void unregister_nmi_handler(unsigned int type, const char *name)
- {
- 	struct nmi_desc *desc = nmi_to_desc(type);
--	struct nmiaction *n;
-+	struct nmiaction *n, *found = NULL;
- 	unsigned long flags;
- 
- 	raw_spin_lock_irqsave(&desc->lock, flags);
-@@ -200,12 +200,16 @@ void unregister_nmi_handler(unsigned int type, const char *name)
- 			WARN(in_nmi(),
- 				"Trying to free NMI (%s) from NMI context!\n", n->name);
- 			list_del_rcu(&n->list);
-+			found = n;
- 			break;
- 		}
- 	}
- 
- 	raw_spin_unlock_irqrestore(&desc->lock, flags);
--	synchronize_rcu();
-+	if (found) {
-+		synchronize_rcu();
-+		INIT_LIST_HEAD(&found->list);
-+	}
- }
- EXPORT_SYMBOL_GPL(unregister_nmi_handler);
- 
+ 	r = rate;
+ 	if (r >= 4000000) {
+-		r /= 1000000;
++		r = DIV_ROUND_CLOSEST(r, 1000000);
+ 		r_unit = 'M';
+ 	} else {
+ 		if (r >= 1000) {
+-			r /= 1000;
++			r = DIV_ROUND_CLOSEST(r, 1000);
+ 			r_unit = 'k';
+ 		} else {
+ 			r_unit = ' ';
 -- 
 2.35.1
 
