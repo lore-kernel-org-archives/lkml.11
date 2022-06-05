@@ -2,69 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 543E0C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 08:41:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC7D2C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 08:42:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350858AbiFEIk7 (ORCPT
+        id S1350856AbiFEImB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 5 Jun 2022 04:40:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55384 "EHLO
+        Sun, 5 Jun 2022 04:42:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240554AbiFEIk5 (ORCPT
+        with ESMTP id S231216AbiFEIl7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 5 Jun 2022 04:40:57 -0400
-Received: from smtpbg.qq.com (smtpbg123.qq.com [175.27.65.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2B5C2FE7D;
-        Sun,  5 Jun 2022 01:40:51 -0700 (PDT)
-X-QQ-mid: bizesmtp80t1654418311tvlory9q
-Received: from localhost.localdomain ( [111.9.5.115])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Sun, 05 Jun 2022 16:38:25 +0800 (CST)
-X-QQ-SSF: 01000000002000C0G000B00A0000000
-X-QQ-FEAT: rn/rQ7Qm5gXHO5VqooM6PnTZt2hjeKHWSrUfcWHx6TGyV+Z5pOcKssdtX7xT8
-        MwX5zRl+Aqky24pOjxH9flN0Mox3fqViYw4s0zFkQ3tlyJ1G+o5PaIH/M88QuHNnb7eVNv3
-        PzhDWR2JzMCfLdZ4Gt1yfo1l1qIwB/EN1GKoBYW0T+2PcqcmXZYu6GJy20WACPdFiyEK770
-        Jb80L9Y3zkS7YCddKF1/YwqCi+kMs+qpoC59GmU8ohLd3fjMcjUqnSKLA9qi2zDMKqhO6if
-        e0EWagQ84jz2VI4sJrIHNIJNf1iwADWqLcoufb6B0TaqAQMyejQw90MyRz3V1qIKpT/ZGfY
-        Vl7oyG2Tw/Ck9hjNqY=
-X-QQ-GoodBg: 0
-From:   Xiang wangx <wangxiang@cdjrlc.com>
-To:     gregkh@linuxfoundation.org
-Cc:     jirislaby@kernel.org, nm@ti.com, tony@atomide.com,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Xiang wangx <wangxiang@cdjrlc.com>
-Subject: [PATCH] serial: 8250: 8250_omap: Fix syntax errors in comments
-Date:   Sun,  5 Jun 2022 16:38:25 +0800
-Message-Id: <20220605083825.9854-1-wangxiang@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Sun, 5 Jun 2022 04:41:59 -0400
+Received: from m12-11.163.com (m12-11.163.com [220.181.12.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7EA8F22F
+        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 01:41:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=dgTai
+        pyhTS3VeOs8/cT4Gxe8QzvPZ0lNBUbKXaDbHyE=; b=hlgcnbMUxsoXXj7mMaeE9
+        5VHFi7IOEdNLeFs5Tc51rmDZLREulvQJ+g7GtHKk53Qikxl6C4+oaZxD1ZBTr88O
+        IgOkG3Z+koj51nb2PRGOu2lX8g9jy7gqz3zw3jUTcvxKH7e5RolDkeTIxOaXuTI/
+        7nLOh71N+EnSX+UI4tFAUI=
+Received: from localhost.localdomain (unknown [1.203.64.79])
+        by smtp7 (Coremail) with SMTP id C8CowABXxZUcbJxirFxWGQ--.2150S4;
+        Sun, 05 Jun 2022 16:41:18 +0800 (CST)
+From:   jingyuwang <jingyuwang_vip@163.com>
+To:     pmladek@suse.com, senozhatsky@chromium.org, rostedt@goodmis.org,
+        john.ogness@linutronix.de
+Cc:     linux-kernel@vger.kernel.org, jingyuwang <jingyuwang_vip@163.com>
+Subject: [PATCH] printk: change type of cpu_possible_bits to __cpu_possible_mask
+Date:   Sun,  5 Jun 2022 16:40:58 +0800
+Message-Id: <20220605084058.17708-1-jingyuwang_vip@163.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam8
+X-CM-TRANSID: C8CowABXxZUcbJxirFxWGQ--.2150S4
+X-Coremail-Antispam: 1Uf129KBjvdXoWrZF43trWUJrWkKw15KrWxJFb_yoWfCFbEvF
+        9avrnrKF17G3s2gr17AF43Jr9xta97JFn7K3sakF9Iyr1DJr13tanrJFnxZrn5GrZagFy8
+        ZFW3uw1qkFsxWjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRZGYl3UUUUU==
+X-Originating-IP: [1.203.64.79]
+X-CM-SenderInfo: 5mlqw5xxzd0whbyl1qqrwthudrp/xtbCbgYXF2BbENzw1wAAs4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Delete the redundant word 'have'.
+1.type of cpu_possible_bits is changed,refer to commit c4c54dd1caf1
+ ("kernel/cpu.c: change type of cpu_possible_bits and friends").
+2.set_cpu_possible() before setup_arch().
 
-Signed-off-by: Xiang wangx <wangxiang@cdjrlc.com>
+Signed-off-by: jingyuwang <jingyuwang_vip@163.com>
 ---
- drivers/tty/serial/8250/8250_omap.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/printk/printk.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index ac8bfa042391..a7a95c013fe6 100644
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -345,7 +345,7 @@ static void omap8250_restore_regs(struct uart_8250_port *up)
- }
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index ea3dd55709e7..25670186d12e 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -1144,8 +1144,8 @@ static void __init log_buf_add_cpu(void)
+ 	unsigned int cpu_extra;
  
- /*
-- * OMAP can use "CLK / (16 or 13) / div" for baud rate. And then we have have
-+ * OMAP can use "CLK / (16 or 13) / div" for baud rate. And then we have
-  * some differences in how we want to handle flow control.
-  */
- static void omap_8250_set_termios(struct uart_port *port,
+ 	/*
+-	 * archs should set up cpu_possible_bits properly with
+-	 * set_cpu_possible() after setup_arch() but just in
++	 * archs should set up __cpu_possible_mask properly with
++	 * set_cpu_possible() before setup_arch() but just in
+ 	 * case lets ensure this is valid.
+ 	 */
+ 	if (num_possible_cpus() == 1)
 -- 
-2.36.1
+2.34.1
 
