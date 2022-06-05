@@ -2,87 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF464C43334
-	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 01:38:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EECAFC43334
+	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 02:01:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242738AbiFEBha (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 4 Jun 2022 21:37:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35144 "EHLO
+        id S243324AbiFECBj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 4 Jun 2022 22:01:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233802AbiFEBh0 (ORCPT
+        with ESMTP id S236737AbiFECBe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 4 Jun 2022 21:37:26 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34A831CB2F
-        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 18:37:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654393045; x=1685929045;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=NcPyKo2zdIckSnoM5N1cfv7Llri3JUoJLOjx4t6iZ44=;
-  b=PPVrYxQ8qYDxGtMYMlm58F0v2l3xtMjCCI4EuG+TxiSKzzi/oy4q7scy
-   j9+ltqbAPInauH5E0bPjr+yy8ZumZTh5boXrXXQGxQVCOESbzg7KY8oqP
-   nNkWoPYUizP/msE7x7N1Nsl97e7ALz9E6yzul4m8DDzT4STi8rk+Jj5le
-   MqiZvhSf2RO5AKEF2uCDKYLPGpHNPbHukFJiw+Kuc1nffZ8pwfME8hvmZ
-   sI44vkLCiuIk5v/muJsfEIB6uGDYBSDZD1A8Wn1RW3p9ydFPjoUVOwN//
-   FJPugt7b1EfhJCS8m/nlBv/Y97VsX7B66dYt0uUHzbubH8XPWfNqr9Z8S
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10368"; a="264178653"
-X-IronPort-AV: E=Sophos;i="5.91,278,1647327600"; 
-   d="scan'208";a="264178653"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2022 18:37:24 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,278,1647327600"; 
-   d="scan'208";a="583112584"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 04 Jun 2022 18:37:23 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nxfCk-000BMB-QJ;
-        Sun, 05 Jun 2022 01:37:22 +0000
-Date:   Sun, 5 Jun 2022 09:37:01 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Darrick J. Wong" <djwong@kernel.org>
-Cc:     kbuild-all@lists.01.org,
-        "Darrick J. Wong" <darrick.wong@oracle.com>,
-        linux-kernel@vger.kernel.org
-Subject: [djwong-xfs:vectorized-scrub 143/401]
- fs/xfs/xfs_trans_dquot.c:125:1: sparse: sparse: symbol
- 'xfs_dqtrx_hooks_switch' was not declared. Should it be static?
-Message-ID: <202206050931.IOQgQ2Bg-lkp@intel.com>
+        Sat, 4 Jun 2022 22:01:34 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A00D04C402
+        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 19:01:32 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LG0GZ74KWz4xD8;
+        Sun,  5 Jun 2022 12:01:26 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
+        s=201909; t=1654394487;
+        bh=ZebXCvVgYyoDD7R+hexZUA6pHVkZP2KZ/lhCRG9v1Nw=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=SKhU/q9WEzDGPnswYIpnFpNztIfIGHL0Vw9SnjJGCGwl4292sdSAj+JPj4A5xkzQb
+         B+y7yf7HOYRhAFgS4FVK1Tub7rZqA/nsXwbNOsJFgdbfvBM7sIZHD4SD7kFL0RzFkh
+         4LAZuDBJ2i+GfAD0qdoBjleSWz7y3T0/nVDNPuVFtorZf3m6oBOfj9s66A2CtkfvCC
+         W1+3qpbYbqxrMo+T6K2Yxddet2CdAE2SRRRfV3eF8sxv1HkTH+reURjf75ivPf0bqu
+         Q0yL9l09vNrOMBoVQI5ppwupEBNnxca/NZZL6J6wgQOW+K2G2tsvoHRJ8kqMmlDtuR
+         Ikh4iERgGVRCA==
+From:   Michael Ellerman <mpe@ellerman.id.au>
+To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Cc:     linux-kernel@vger.kernel.org, <linuxppc-dev@lists.ozlabs.org>
+Subject: Re: [PATCH v1] kernel/reboot: Change registration order of legacy
+ power-off handler
+In-Reply-To: <20220524212118.425702-1-dmitry.osipenko@collabora.com>
+References: <20220524212118.425702-1-dmitry.osipenko@collabora.com>
+Date:   Sun, 05 Jun 2022 12:01:22 +1000
+Message-ID: <8735gjq365.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/djwong/xfs-linux.git vectorized-scrub
-head:   1fcd9cea011a657d62ee332d161966c1ec92ffd5
-commit: 93392176549e8b2278339fa745d91885c96e7947 [143/401] xfs: track quota updates during live quotacheck
-config: x86_64-rhel-8.3-kselftests (https://download.01.org/0day-ci/archive/20220605/202206050931.IOQgQ2Bg-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-1) 11.3.0
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.4-18-g56afb504-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/djwong/xfs-linux.git/commit/?id=93392176549e8b2278339fa745d91885c96e7947
-        git remote add djwong-xfs https://git.kernel.org/pub/scm/linux/kernel/git/djwong/xfs-linux.git
-        git fetch --no-tags djwong-xfs vectorized-scrub
-        git checkout 93392176549e8b2278339fa745d91885c96e7947
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=x86_64 SHELL=/bin/bash fs/xfs/
+Dmitry Osipenko <dmitry.osipenko@collabora.com> writes:
+> We're unconditionally registering sys-off handler for the legacy
+> pm_power_off() callback, this causes problem for platforms that don't
+> use power-off handlers at all and should be halted. Now reboot syscall
+> assumes that there is a power-off handler installed and tries to power
+> off system instead of halting it.
+>
+> To fix the trouble, move the handler's registration to the reboot syscall
+> and check the pm_power_off() presence.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+I'm seeing a qemu virtual machine (ppce500) fail to power off using the
+gpio-poweroff driver. I bisected it to this commit.
+
+I think the problem is that the machine is going via kernel_power_off(),
+not sys_reboot(), and so legacy_pm_power_off() has not been registered.
+
+If I just put the core_initcall back then it works as before. Not sure
+if that's a safe change in general though.
+
+cheers
 
 
-sparse warnings: (new ones prefixed by >>)
->> fs/xfs/xfs_trans_dquot.c:125:1: sparse: sparse: symbol 'xfs_dqtrx_hooks_switch' was not declared. Should it be static?
 
-Please review and possibly fold the followup patch.
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> Fixes: 0e2110d2e910 ("kernel/reboot: Add kernel_can_power_off()")
+> Reported-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+> ---
+>  kernel/reboot.c | 33 +++++++++++++++++----------------
+>  1 file changed, 17 insertions(+), 16 deletions(-)
+>
+> diff --git a/kernel/reboot.c b/kernel/reboot.c
+> index 0bdc64ecf4f6..a091145ee710 100644
+> --- a/kernel/reboot.c
+> +++ b/kernel/reboot.c
+> @@ -569,22 +569,6 @@ static int legacy_pm_power_off(struct sys_off_data *data)
+>  	return NOTIFY_DONE;
+>  }
+>  
+> -/*
+> - * Register sys-off handlers for legacy PM callbacks. This allows legacy
+> - * PM callbacks co-exist with the new sys-off API.
+> - *
+> - * TODO: Remove legacy handlers once all legacy PM users will be switched
+> - *       to the sys-off based APIs.
+> - */
+> -static int __init legacy_pm_init(void)
+> -{
+> -	register_sys_off_handler(SYS_OFF_MODE_POWER_OFF, SYS_OFF_PRIO_DEFAULT,
+> -				 legacy_pm_power_off, NULL);
+> -
+> -	return 0;
+> -}
+> -core_initcall(legacy_pm_init);
+> -
+>  static void do_kernel_power_off_prepare(void)
+>  {
+>  	blocking_notifier_call_chain(&power_off_prep_handler_list, 0, NULL);
+> @@ -646,6 +630,7 @@ SYSCALL_DEFINE4(reboot, int, magic1, int, magic2, unsigned int, cmd,
+>  		void __user *, arg)
+>  {
+>  	struct pid_namespace *pid_ns = task_active_pid_ns(current);
+> +	struct sys_off_handler *sys_off = NULL;
+>  	char buffer[256];
+>  	int ret = 0;
+>  
+> @@ -670,6 +655,21 @@ SYSCALL_DEFINE4(reboot, int, magic1, int, magic2, unsigned int, cmd,
+>  	if (ret)
+>  		return ret;
+>  
+> +	/*
+> +	 * Register sys-off handlers for legacy PM callback. This allows
+> +	 * legacy PM callbacks temporary co-exist with the new sys-off API.
+> +	 *
+> +	 * TODO: Remove legacy handlers once all legacy PM users will be
+> +	 *       switched to the sys-off based APIs.
+> +	 */
+> +	if (pm_power_off) {
+> +		sys_off = register_sys_off_handler(SYS_OFF_MODE_POWER_OFF,
+> +						   SYS_OFF_PRIO_DEFAULT,
+> +						   legacy_pm_power_off, NULL);
+> +		if (IS_ERR(sys_off))
+> +			return PTR_ERR(sys_off);
+> +	}
+> +
+>  	/* Instead of trying to make the power_off code look like
+>  	 * halt when pm_power_off is not set do it the easy way.
+>  	 */
+> @@ -727,6 +727,7 @@ SYSCALL_DEFINE4(reboot, int, magic1, int, magic2, unsigned int, cmd,
+>  		break;
+>  	}
+>  	mutex_unlock(&system_transition_mutex);
+> +	unregister_sys_off_handler(sys_off);
+>  	return ret;
+>  }
+>  
+> -- 
+> 2.35.3
