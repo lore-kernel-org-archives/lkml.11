@@ -2,85 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E0C8C43334
-	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 17:55:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B21BBC43334
+	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 18:03:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351345AbiFERzJ (ORCPT
+        id S1351508AbiFESDT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 5 Jun 2022 13:55:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60524 "EHLO
+        Sun, 5 Jun 2022 14:03:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236252AbiFERzH (ORCPT
+        with ESMTP id S240769AbiFESDR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 5 Jun 2022 13:55:07 -0400
-Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA5F64B1DD
-        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 10:55:06 -0700 (PDT)
-Received: by mail-qk1-x72e.google.com with SMTP id 15so4339687qki.6
-        for <linux-kernel@vger.kernel.org>; Sun, 05 Jun 2022 10:55:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=8tiiUv4eBu5du21eIL4t/D0KywBJvdO3W3xtbfv6aY0=;
-        b=Spx54QQbJ3FvO5ogfJ4LHHNYOWvAsInam2fKcwOy+Lkl84OL8pNIuekva1D0OHiItt
-         NeXqLtyi55jEqBOamyMhLrLnhLgsqlknzxwHHPWeff+eCDDVwbnPx8IsBziaPM3dkUEA
-         +C/zl3Nm/lNAfnRhCC31ALXNXHU5MOCU7cmO9B/2ud1bngrnYUDz1aZOggkMTMfYjawh
-         /PTpbC51nvZlq2LjmymLu9ubQklgpSELjXp+Ddx+GETt5BficSeQJa0MGMSmhiWJqvuA
-         1g40E3W2NVcALCamauZ+RnmuLSgbhlSNpta1923m3tH9TL6s7c+1UKPUKet/3TaR6Vkr
-         Adpw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=8tiiUv4eBu5du21eIL4t/D0KywBJvdO3W3xtbfv6aY0=;
-        b=TV62usqU/elZ0P7rmVicfrT5+BsgEMbr+w4BKY5FpTU8EUAzkXAkKEjQdkheylE4Wy
-         mvc56D67npjhO6MO5r4oiXgMvvPZv5wDnUMBd86RjG7iV4vO/Ohl+3xXKAhYaNkXMJgh
-         K8BJjiIn8fE8I7H65CU8K3XZ/XI2Yfq4/eR0kshM25t9lPmOBMkjreHtJYO0ykUDHp1R
-         I/hJ1o/OaR/AIfLgO8/mo/VBwcjpaYpCpZ4d6tS32twyTPcKH5kDN1NN9ZfMuygse3a3
-         MRJsjFlKQicDcrLu9kCl0qK+FQfP1zLg8suz+uT0XHvduKpxkPjG+ID7epQpW+a/S1/I
-         Yspg==
-X-Gm-Message-State: AOAM533OHlH9FWx6e0izLzCMDOhBsy11vEDw/mqfTkv1K8jAlmQ6CQx2
-        a4pKcrPB54GYKbHKp1xVVtpApnRUTyiL
-X-Google-Smtp-Source: ABdhPJyYRaDiFIB3LGVc4ZE/PLH4eHVidb3WcE9+L9raD+RloeB2RA+R/u+PAKVWLkwD51ewuaDHMg==
-X-Received: by 2002:a37:8701:0:b0:6a5:ff4f:b2bc with SMTP id j1-20020a378701000000b006a5ff4fb2bcmr13483219qkd.584.1654451705953;
-        Sun, 05 Jun 2022 10:55:05 -0700 (PDT)
-Received: from moria.home.lan (c-73-219-103-14.hsd1.vt.comcast.net. [73.219.103.14])
-        by smtp.gmail.com with ESMTPSA id br9-20020a05620a460900b006a6539862f8sm10272057qkb.40.2022.06.05.10.55.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Jun 2022 10:55:05 -0700 (PDT)
-Date:   Sun, 5 Jun 2022 13:55:03 -0400
-From:   Kent Overstreet <kent.overstreet@gmail.com>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     linux-kernel@vger.kernel.org, pmladek@suse.com
-Subject: Re: [PATCH v3 00/33] Printbufs
-Message-ID: <20220605175503.ug3cjtv5tjmmornx@moria.home.lan>
-References: <20220604193042.1674951-1-kent.overstreet@gmail.com>
- <20220605122110.22176bd9@rorschach.local.home>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220605122110.22176bd9@rorschach.local.home>
+        Sun, 5 Jun 2022 14:03:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E40856302
+        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 11:03:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D21A6117C
+        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 18:03:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E0DB8C341C5;
+        Sun,  5 Jun 2022 18:03:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654452195;
+        bh=htN06kohyK38ao+d46NvH/fGrJfp+uKOdymZVE5V8Oc=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=cNJD7JsFJ2qS1hja/5UigKsQW5HsoUdPEazmz/EDi5YapsC4T0+f6TMWN56e+RnNh
+         j+txA9fWFHBj7VVMwGMFYlipe7tnYZmTX5oxBMBbqxtOQG5C/3PEIGFMFhBTQnWR+f
+         fBznlgHukLY48aeUIT2Sa54HXi7b1a5DoMt2kOD/4eY/L8somWsQr8WCke/MwKKdb7
+         mc7pi4P/ixOZlCIIpqCOkuFYwDrupR56InlG+lTpj1y2/1HQ2fegMrZlgQ8faifVhR
+         mMt0Wi4SI2Za6t3IJ1BNcmZbyVgFTQ2777jIg8ozjlUzRrk2DTXlneuSrOHHgzZr1D
+         SrLKqLZWj5PBg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CCE53F03950;
+        Sun,  5 Jun 2022 18:03:15 +0000 (UTC)
+Subject: Re: [GIT pull] timers/core for v5.19-rc1
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <165442137546.152751.10369547750282619841.tglx@xen13>
+References: <165442136963.152751.14259048792272164569.tglx@xen13> <165442137546.152751.10369547750282619841.tglx@xen13>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <165442137546.152751.10369547750282619841.tglx@xen13>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git timers-core-2022-06-05
+X-PR-Tracked-Commit-Id: 57963a92a70b037aa22544fbc34742e5be689c04
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: c049ecc523171481accd2c83f79ffeecbf53a915
+Message-Id: <165445219583.28605.8677092131881159078.pr-tracker-bot@kernel.org>
+Date:   Sun, 05 Jun 2022 18:03:15 +0000
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, x86@kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jun 05, 2022 at 12:21:10PM -0400, Steven Rostedt wrote:
-> On Sat,  4 Jun 2022 15:30:09 -0400
-> Kent Overstreet <kent.overstreet@gmail.com> wrote:
-> 
-> > Printbufs, your new data structure for all your string-building and outputting
-> > needs!
-> > 
-> > git repo: https://evilpiepirate.org/git/bcachefs.git/log/?h=printbuf_v3
-> 
-> Hi Kent,
-> 
-> Just wanted to let you know that I want to review this and I'm not
-> ignoring it. But there's a still quite a bit in my queue that I must
-> review before I get to this, so it may still be a while. :-/
+The pull request you sent on Sun,  5 Jun 2022 11:30:56 +0200 (CEST):
 
-Could you just review the parts that touch your code then? The rest has already
-seen some review and Petr's going to do more, and I'd like to get this patchset
-done and squared away so I can go back to building my OOM debugging improvements
-on top of this stuff :)
+> git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git timers-core-2022-06-05
+
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/c049ecc523171481accd2c83f79ffeecbf53a915
+
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
