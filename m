@@ -2,70 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6616AC43334
-	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 22:11:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62625C43334
+	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 22:14:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348268AbiFEWLh (ORCPT
+        id S1351619AbiFEWOE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 5 Jun 2022 18:11:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51694 "EHLO
+        Sun, 5 Jun 2022 18:14:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238038AbiFEWLf (ORCPT
+        with ESMTP id S235909AbiFEWOB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 5 Jun 2022 18:11:35 -0400
-Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FBAB4DF7F
-        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 15:11:34 -0700 (PDT)
-Received: from in02.mta.xmission.com ([166.70.13.52]:37948)
-        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nxyT6-00C2pP-7e; Sun, 05 Jun 2022 16:11:32 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:41754 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nxyT5-004SZw-BA; Sun, 05 Jun 2022 16:11:31 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Alexey Gladkov <legion@kernel.org>,
-        Linux Containers <containers@lists.linux.dev>
-References: <875ylh8xxx.fsf@email.froward.int.ebiederm.org>
-        <CAHk-=wh0ZYiQuCJmohyYpk99mch=Nb+_m4DWxBX03DQWnsvCZA@mail.gmail.com>
-Date:   Sun, 05 Jun 2022 17:11:07 -0500
-In-Reply-To: <CAHk-=wh0ZYiQuCJmohyYpk99mch=Nb+_m4DWxBX03DQWnsvCZA@mail.gmail.com>
-        (Linus Torvalds's message of "Fri, 3 Jun 2022 15:59:33 -0700")
-Message-ID: <87tu8y69s4.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Sun, 5 Jun 2022 18:14:01 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C14D24A3C9
+        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 15:14:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654467240; x=1686003240;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=CctuFE2R2ZyK67GiYVfDjlk6qASqOTichirYJ8V+u6E=;
+  b=TW1v4lRWifYLMUOVIqrlh3WWRPgvw9/WVADRp3YQqNw0GpCBaYyfYzJu
+   fqyBzZYRkB0AqK0NZRvHKBajGTSnM8DokJLEXST4sojD+BEegiP3G168G
+   2t4Wj2+W3cmHduN1HTdEnyBA3l7SACeFP2nN9CmBudk3SRmWko3Qaipfe
+   aiA0pquem2JMtCDtn69bSM0XyNHlRxk10SueIDXUrpzgUroLkUykCJOYY
+   Fq4YSVCf8IRH195heyESYJFcf5wxmIEeNcTdmqiMCC1Il4LCOWxd7TOKu
+   46o09m1m4I9Hzcp0WjbuECxNrCrcyyLMh0thRDCbYlIXw/zYwSgt2RmBA
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="276408942"
+X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
+   d="scan'208";a="276408942"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2022 15:14:00 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
+   d="scan'208";a="614070982"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 05 Jun 2022 15:13:59 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nxyVS-000CIC-Fi;
+        Sun, 05 Jun 2022 22:13:58 +0000
+Date:   Mon, 6 Jun 2022 06:13:13 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [peterz-queue:sched/idle 15/37] kernel/time/tick-broadcast.c:627:9:
+ error: call to undeclared function 'arch_test_bit'; ISO C99 and later do not
+ support implicit function declarations
+Message-ID: <202206060612.7U4QNOzX-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1nxyT5-004SZw-BA;;;mid=<87tu8y69s4.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX1/IcMM5ic1t771lZP5L72ecB8LyxksRPPU=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [GIT PULL] ipc: per namespace ipc sysctl changes for v5.19
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Linus Torvalds <torvalds@linux-foundation.org> writes:
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git sched/idle
+head:   e11e56428f57b36930eb0f8eed997a462010aa95
+commit: b581e362d475d40edb2d1099d19a8e12721e7734 [15/37] cpuidle: Fix rcu_idle_*() usage
+config: hexagon-randconfig-r024-20220605 (https://download.01.org/0day-ci/archive/20220606/202206060612.7U4QNOzX-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 416a5080d89066029f9889dc23f94de47c2fa895)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git/commit/?id=b581e362d475d40edb2d1099d19a8e12721e7734
+        git remote add peterz-queue https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git
+        git fetch --no-tags peterz-queue sched/idle
+        git checkout b581e362d475d40edb2d1099d19a8e12721e7734
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash kernel/time/
 
-> On Fri, Jun 3, 2022 at 10:21 AM Eric W. Biederman <ebiederm@xmission.com> wrote:
->>
->> These changes were sent for v5.18[1] but were dropped because some
->> additional cleanups were requested.  Linus has given his nod[2] to the
->> cleanups so I hope enough cleanups are present this time.
->
-> Well, I'll be happier still when the next set of cleanups hits:
->
->    https://lore.kernel.org/all/CAHk-=wjJ2CP0ugbOnwAd-=Cw0i-q_xC1PbJ-_1jrvR-aisiAAA@mail.gmail.com/
->
-> but yeah, that further cleanup series clearly wasn't quite ready yet.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Yes.  It came in during the merge window.  I have been keeping a weather
-eye on it but I really haven't had a chance to look yet.
+All errors (new ones prefixed by >>):
 
-Eric
+>> kernel/time/tick-broadcast.c:627:9: error: call to undeclared function 'arch_test_bit'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+           return arch_test_bit(smp_processor_id(), cpumask_bits(tick_broadcast_force_mask));
+                  ^
+   kernel/time/tick-broadcast.c:627:9: note: did you mean '__test_bit'?
+   arch/hexagon/include/asm/bitops.h:161:19: note: '__test_bit' declared here
+   static inline int __test_bit(int nr, const volatile unsigned long *addr)
+                     ^
+   1 error generated.
+
+
+vim +/arch_test_bit +627 kernel/time/tick-broadcast.c
+
+   617	
+   618	/*
+   619	 * Called before going idle with interrupts disabled. Checks whether a
+   620	 * broadcast event from the other core is about to happen. We detected
+   621	 * that in tick_broadcast_oneshot_control(). The callsite can use this
+   622	 * to avoid a deep idle transition as we are about to get the
+   623	 * broadcast IPI right away.
+   624	 */
+   625	noinstr int tick_check_broadcast_expired(void)
+   626	{
+ > 627		return arch_test_bit(smp_processor_id(), cpumask_bits(tick_broadcast_force_mask));
+   628	}
+   629	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
