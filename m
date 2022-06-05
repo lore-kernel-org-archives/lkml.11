@@ -2,67 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD133C43334
-	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 01:22:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0D54C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 01:38:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243242AbiFEBW4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 4 Jun 2022 21:22:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40086 "EHLO
+        id S243263AbiFEBhj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 4 Jun 2022 21:37:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241886AbiFEBWv (ORCPT
+        with ESMTP id S233802AbiFEBhg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 4 Jun 2022 21:22:51 -0400
-Received: from zeniv-ca.linux.org.uk (zeniv-ca.linux.org.uk [IPv6:2607:5300:60:148a::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6135924F24;
-        Sat,  4 Jun 2022 18:22:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=linux.org.uk; s=zeniv-20220401; h=Sender:Content-Type:MIME-Version:
-        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=ZETB36YeZqtq8qxeHpvYEKLfw2qD71PM+UxNYMpBlwk=; b=oFrG6PKFF3ci1VYeqH/D8M2FbK
-        mZu8dcawU9Th2EoinIdaTgU3l3fNJ5+bhDhXL+F5sLlczeGGjYyf9xX9GfZn9JAFMuLyrvDbF6aV8
-        /eXTkBpQgBz4MFVJXAknSiQu3fdLVboGMqh+Iuinkpkz0w4Z1YtGDNgi3y+Kyj+WqsTq34d9WiPkc
-        f38imFBViBoPdWKIcsChn/aFSv6m2htY3Zy8NH61QARyRiofRIiv0xyApA519ijwqCJeFwJIvR3mw
-        V63P+g5bCYyaOaqZrqeddm05zFalAGHlIeMz9R43CKs9/mYVQC2OjCFPXUVSB87eoRmNJb6He+Gvg
-        /yXBgHoA==;
-Received: from viro by zeniv-ca.linux.org.uk with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nxeyf-003dtO-9e; Sun, 05 Jun 2022 01:22:49 +0000
-Date:   Sun, 5 Jun 2022 01:22:49 +0000
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org
-Subject: [git pull] several namei cleanups
-Message-ID: <YpwFac1yAziJu/z0@zeniv-ca.linux.org.uk>
+        Sat, 4 Jun 2022 21:37:36 -0400
+Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DC0E1F61C
+        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 18:37:34 -0700 (PDT)
+Received: by mail-qt1-x835.google.com with SMTP id y15so8291466qtx.4
+        for <linux-kernel@vger.kernel.org>; Sat, 04 Jun 2022 18:37:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:in-reply-to:message-id:references
+         :mime-version;
+        bh=jWDrrOLl2EZyoh/ovhCu5FFdvKuZyrni45da+0YMjWA=;
+        b=rWCNTJELpwwDenzihOmOGfVi9ACnEEF9ujR1JfnBx/7hfrPrEaIEqDvuJ+oi1GOdVG
+         Ie4keEJmW5Ql4Mye9Qfco/EZ/qgcuQxksdn/6IXUuDoPLzis0Erx3lcC3oyrWAE4wjnr
+         dwJ3G3rHos4YeMui9LytI0yASIdQezPpAt2RvgMlFAAvGBuKryKQTfQrLo1Wcx+24Tzv
+         2K6JmULWP+YPeni3Mt8AebSbvQrlk7tSwC0urdMiU9HYv/1g0KkgQE1J7YwL+GHQgEwn
+         qjV6skucZRi2OpKJqiBnqYivlubxW3BBHuVgjKBCYQui9cC8xE/MXUeUXvNw2cRsu3/D
+         wsYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
+         :references:mime-version;
+        bh=jWDrrOLl2EZyoh/ovhCu5FFdvKuZyrni45da+0YMjWA=;
+        b=Zr939EdMve2jrgTVvwuYslwD++QCvF+b64T1vIPdhoOuFc9t4z+bXJ89qRBcH0wx4p
+         JEeo9n5wjY+Xn1qq4yV5F36CGXKxZg2HcvRZ0N1HkBETlXKukPbq28jDgw9FZ3jh/KZy
+         PUlXwalo/J50kTzgia0v/fO/uPrepdPDNyHm1cyKV+hOql0vjYBF2QpVM2nvsT8McfPh
+         Me8hcTLc9CgHi099g3+Y9VBjX+6DE9j1v/4xerwki2ehU8EuUo2g8vXi9C1CFyJ9LpYD
+         1YcLvBWlz5rtAKLEPTCiHl9lrxAPJhH0rTryfLl7dadfcSrC07F91Yahxt6qGYz2PHvF
+         lPHA==
+X-Gm-Message-State: AOAM530cOZA93dFW8EatVeTr3b8Zi+tx8+gqCJNI+88bSz+PuBGYwbqj
+        YIm4auAlm7z3P/bFy4+934JKLg==
+X-Google-Smtp-Source: ABdhPJwPYAhWq2x9goD/zXPaA2zuifl2cNIABizKdgTYleJS43dQnHaWkJv1vxERld71KUWWPY6hVw==
+X-Received: by 2002:ac8:7246:0:b0:304:c6a4:cf59 with SMTP id l6-20020ac87246000000b00304c6a4cf59mr13876659qtp.342.1654393053571;
+        Sat, 04 Jun 2022 18:37:33 -0700 (PDT)
+Received: from ripple.attlocal.net (172-10-233-147.lightspeed.sntcca.sbcglobal.net. [172.10.233.147])
+        by smtp.gmail.com with ESMTPSA id v21-20020a05620a441500b006a6a8ef9f79sm3006777qkp.119.2022.06.04.18.37.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 04 Jun 2022 18:37:32 -0700 (PDT)
+Date:   Sat, 4 Jun 2022 18:37:20 -0700 (PDT)
+From:   Hugh Dickins <hughd@google.com>
+X-X-Sender: hugh@ripple.anvils
+To:     Axel Rasmussen <axelrasmussen@google.com>
+cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Peter Xu <peterx@redhat.com>, Hugh Dickins <hughd@google.com>,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] mm: userfaultfd: fix UFFDIO_CONTINUE on fallocated shmem
+ pages
+In-Reply-To: <20220603205741.12888-1-axelrasmussen@google.com>
+Message-ID: <d9a90df-53e3-6ab7-16ef-7882d9f9f93@google.com>
+References: <20220603205741.12888-1-axelrasmussen@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Sender: Al Viro <viro@ftp.linux.org.uk>
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following changes since commit 3123109284176b1532874591f7c81f3837bbdc17:
+On Fri, 3 Jun 2022, Axel Rasmussen wrote:
 
-  Linux 5.18-rc1 (2022-04-03 14:08:21 -0700)
+> When fallocate() is used on a shmem file, the pages we allocate can end
+> up with !PageUptodate.
+> 
+> Since UFFDIO_CONTINUE tries to find the existing page the user wants to
+> map with SGP_READ, we would fail to find such a page, since
+> shmem_getpage_gfp returns with a "NULL" pagep for SGP_READ if it
+> discovers !PageUptodate. As a result, UFFDIO_CONTINUE returns -EFAULT,
+> as it would do if the page wasn't found in the page cache at all.
+> 
+> This isn't the intended behavior. UFFDIO_CONTINUE is just trying to find
+> if a page exists, and doesn't care whether it still needs to be cleared
+> or not. So, instead of SGP_READ, pass in SGP_NOALLOC. This is the same,
+> except for one critical difference: in the !PageUptodate case,
+> SGP_NOALLOC will clear the page and then return it. With this change,
+> UFFDIO_CONTINUE works properly (succeeds) on a shmem file which has been
+> fallocated, but otherwise not modified.
+> 
+> Fixes: 153132571f02 ("userfaultfd/shmem: support UFFDIO_CONTINUE for shmem")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
 
-are available in the Git repository at:
+Acked-by: Hugh Dickins <hughd@google.com>
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/viro/vfs.git tags/pull-18-rc1-work.namei
+Yes, that looks like a good improvement, and okay to call it a fix for
+stable.  But note that your original choice of SGP_READ was not wrong:
+there was no SGP_NOALLOC in v5.14, which arrived in v5.15 (and this
+is not the first time that it's turned out to be useful since then).
+Since v5.14-stable reached end-of-life some time ago, marking this
+patch for stable should not result in any untoward build errors.
 
-for you to fetch changes up to 30476f7e6dbcb075850c6e33b15460dd4868c985:
-
-  namei: cleanup double word in comment (2022-05-19 23:26:29 -0400)
-
-----------------------------------------------------------------
-Several cleanups in fs/namei.c.
-
-----------------------------------------------------------------
-Al Viro (2):
-      fs/namei.c:reserve_stack(): tidy up the call of try_to_unlazy()
-      get rid of dead code in legitimize_root()
-
-Tom Rix (1):
-      namei: cleanup double word in comment
-
- fs/namei.c | 11 ++---------
- 1 file changed, 2 insertions(+), 9 deletions(-)
+> ---
+>  mm/userfaultfd.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/mm/userfaultfd.c b/mm/userfaultfd.c
+> index 4f4892a5f767..c156f7f5b854 100644
+> --- a/mm/userfaultfd.c
+> +++ b/mm/userfaultfd.c
+> @@ -246,7 +246,7 @@ static int mcontinue_atomic_pte(struct mm_struct *dst_mm,
+>  	struct page *page;
+>  	int ret;
+>  
+> -	ret = shmem_getpage(inode, pgoff, &page, SGP_READ);
+> +	ret = shmem_getpage(inode, pgoff, &page, SGP_NOALLOC);
+>  	if (ret)
+>  		goto out;
+>  	if (!page) {
+> -- 
+> 2.36.1.255.ge46751e96f-goog
