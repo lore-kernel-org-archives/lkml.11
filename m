@@ -2,88 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A33C5C43334
-	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 22:02:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91293CCA47B
+	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 22:05:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351566AbiFEWCy (ORCPT
+        id S1348210AbiFEWFY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 5 Jun 2022 18:02:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60398 "EHLO
+        Sun, 5 Jun 2022 18:05:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233452AbiFEWCw (ORCPT
+        with ESMTP id S233452AbiFEWFW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 5 Jun 2022 18:02:52 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7D0DD95
-        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 15:02:49 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id q1so25646799ejz.9
-        for <linux-kernel@vger.kernel.org>; Sun, 05 Jun 2022 15:02:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Zt9GSJY6oHFpCzwgjAcBrGgFRTLh7TnEuClTteoy+qI=;
-        b=fD8XxZY1UodhyOBn79r1tZ+Q0MT0UQOxYmKuwWu9STl2WERhDyPRlrW76bSrHbR0p8
-         h2jIOQMEfKo943/CfW+W7qD3jgv8tlDwjC38Z1qyfiROdPyldOBURnJyTjq+0wFyEQOv
-         ZOymioOaqVofr8QXjy5bYg0FEnQs8GYNYYIlsIkqVeYAUXLIRFsmX/DXdu41cZy60tvx
-         nqI9VHkEHq1z4KTzZ8pKcWGAa8ctpadE/cjcK3VZSw2YGKVjZAmRhoRlQ4FjZNlRYuq5
-         1WxPCDQd8EDwxH/hZFWu2q0o7VouN3IK6vpONMII7jLb5dcT+6YyJJVv/6F5DKewRHt0
-         GFEA==
+        Sun, 5 Jun 2022 18:05:22 -0400
+Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB7B717043;
+        Sun,  5 Jun 2022 15:05:21 -0700 (PDT)
+Received: by mail-qv1-f41.google.com with SMTP id j2so9213667qvp.9;
+        Sun, 05 Jun 2022 15:05:21 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Zt9GSJY6oHFpCzwgjAcBrGgFRTLh7TnEuClTteoy+qI=;
-        b=aYErGC1OZcMb+rIJPdlDtKNs0kusfb/ehRw8b/IdInsa+ZhbV0IVcP8rz5cMnbFrvt
-         ZQ1dO5iQ5EXdZirK0AzQTn6U9m060CvaBdxOTErwGNlALsuGY3c9kWrWAywbVo3MY8x1
-         SsC4nwsYk9uFKgWlojJhxhLsmQxP1ibaQrmukHCfwvBchJZ01bV2THo8BDGkjT3/YoUX
-         8bPmoM6yOzKAFBDA56aIu/gloLrcdbT6/im3u53gNyo3J+Cs+rqzy+01/7tHhZql5pH8
-         y6xrHXldoTnEUVKeMG9XIY0eztdkgw+Wx2YL7S1qaFI1nQAEL4emKML91wiizqkr5e3+
-         eKPQ==
-X-Gm-Message-State: AOAM533com5b44h8+NtBNAxTE8weaYJqV5MKC137/RqB83D8rad9IjLV
-        Y0po273cK9DIlEGjz4MVf6lpP2V/tnRgtW3ehfE=
-X-Google-Smtp-Source: ABdhPJwPw8jFhUlGOroYyzAMGOrWBCkJypBlZn//O+7ZtQdDWM0D6LpkEi2VMyUEjPbLEZCd+AQhTQeVLI3Q18ByDY0=
-X-Received: by 2002:a17:906:b18e:b0:710:26db:7a53 with SMTP id
- w14-20020a170906b18e00b0071026db7a53mr10185146ejy.290.1654466568353; Sun, 05
- Jun 2022 15:02:48 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=P3bPg0KW9PvQYNVEoLUIocfEIaf0HS8LyiwM6NAwqzg=;
+        b=g7SZNAT5t+uxPQ+9kIFEFN3iI2t4aHm+pcpaGM+h+NDwKVIejfuhGjV/678EVm4vg9
+         RWRciVBZlz/0F8r9y02gAUqRcWPgjArJ+MbeqkLlBD153N99dyvlgA5pGKGPpPhwx7+3
+         abTE2h2pHls/7jGce6qLQ3etHiP7WB7RJJI841dZOQy1Tw8PJk1eK59+FQrEsFSIs1c4
+         E73/TRG6LFpYLY/RTbsUgoKwZHa6T7jivW8EvfjXh2gKDR8z73dYp+o+nuJnBig3MKJP
+         vvwF3KqNvK9f6SRbQeCFfSudSMVlUKDBzxdNXc7L3wKW7az+8jzqKBR8EreSSKuRTs1U
+         WkCg==
+X-Gm-Message-State: AOAM532Dv+mOmCIabDxsYzMACKPaG/+s9sUUC1EQ0JpqgL2btZW+bxX8
+        0dTXRJywiZWwaSgJFYb5L8FB4iIcDUWd
+X-Google-Smtp-Source: ABdhPJz0pF/epzY1hiDNQ1p10GomzFboMavq8/cjl04wD3ozc/XRlD4fWVIt2PhDbFbOiXhaUuRDMA==
+X-Received: by 2002:a05:6214:802:b0:462:4eb0:1ec2 with SMTP id df2-20020a056214080200b004624eb01ec2mr15099625qvb.92.1654466720227;
+        Sun, 05 Jun 2022 15:05:20 -0700 (PDT)
+Received: from robh.at.kernel.org ([2607:fb90:1bd0:10c3:c77a:8738:16cb:8d08])
+        by smtp.gmail.com with ESMTPSA id k11-20020a05620a414b00b0069fc13ce235sm2049656qko.102.2022.06.05.15.05.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 05 Jun 2022 15:05:19 -0700 (PDT)
+Received: (nullmailer pid 3580457 invoked by uid 1000);
+        Sun, 05 Jun 2022 21:48:35 -0000
+Date:   Sun, 5 Jun 2022 16:48:35 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, Sebastian Reichel <sre@kernel.org>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
+        David Heidelberg <david@ixit.cz>, linux-pm@vger.kernel.org
+Subject: Re: [PATCH 2/4] dt-bindings: power: supply: qcom,pm8941: use
+ regulator schema for child node
+Message-ID: <20220605214835.GA3580411-robh@kernel.org>
+References: <20220601071911.6435-1-krzysztof.kozlowski@linaro.org>
+ <20220601071911.6435-2-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-References: <20220601033927.47814-1-linmq006@gmail.com> <20220601033927.47814-2-linmq006@gmail.com>
-In-Reply-To: <20220601033927.47814-2-linmq006@gmail.com>
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Mon, 6 Jun 2022 00:02:37 +0200
-Message-ID: <CAFBinCAkdRrk+EcZvFFiGEU3r9QtKfxYEPgpkn-HtRmBdwRSmA@mail.gmail.com>
-Subject: Re: [PATCH v2 1/2] drm/meson: encoder_cvbs: Fix refcount leak in meson_encoder_cvbs_init
-To:     Miaoqian Lin <linmq006@gmail.com>
-Cc:     Neil Armstrong <narmstrong@baylibre.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        dri-devel@lists.freedesktop.org, linux-amlogic@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220601071911.6435-2-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On Wed, 01 Jun 2022 09:19:09 +0200, Krzysztof Kozlowski wrote:
+> The 'usb-otg-vbus' child node is a regulator so reference the regulator
+> schema for proper evaluation.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+>  .../devicetree/bindings/power/supply/qcom,pm8941-charger.yaml   | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
 
-thank you for your patch!
-
-On Wed, Jun 1, 2022 at 5:39 AM Miaoqian Lin <linmq006@gmail.com> wrote:
->
-> of_graph_get_remote_node() returns remote device nodepointer with
-> refcount incremented, we should use of_node_put() on it when done.
-> Add missing of_node_put() to avoid refcount leak.
->
-> Fixes: 318ba02cd8a8 ("drm/meson: encoder_cvbs: switch to bridge with ATTACH_NO_CONNECTOR")
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-As far as I can tell this patch is identical to the one from v1.
-Please keep my Reviewed-by from the previous version in case nothing
-has changed for this specific patch:
-Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-
-
-Best regards,
-Martin
+Acked-by: Rob Herring <robh@kernel.org>
