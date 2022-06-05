@@ -2,48 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31A3BC43334
-	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 13:56:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B019CCCA481
+	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 13:56:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344640AbiFENz5 (ORCPT
+        id S1348048AbiFEN4B (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 5 Jun 2022 09:55:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39524 "EHLO
+        Sun, 5 Jun 2022 09:56:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348659AbiFENzU (ORCPT
+        with ESMTP id S1348954AbiFENzV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 5 Jun 2022 09:55:20 -0400
+        Sun, 5 Jun 2022 09:55:21 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D11A1B868;
-        Sun,  5 Jun 2022 06:54:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 303F3EE3F;
+        Sun,  5 Jun 2022 06:55:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E1D88B80D6B;
-        Sun,  5 Jun 2022 13:54:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DC23C385A5;
-        Sun,  5 Jun 2022 13:54:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7C1D5B80DA6;
+        Sun,  5 Jun 2022 13:54:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66A4BC385A5;
+        Sun,  5 Jun 2022 13:54:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654437282;
-        bh=h4il9NEwlDhRClIoY7hNjlMkV92f7fL2oN4YkoUeJsM=;
+        s=k20201202; t=1654437295;
+        bh=AU8d+kJilhAOhDFwChzPGNMoONnIHkfPe6ac7uyzwz0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WIZaO8B1CiK5kJW4Bees+3usju7Whhx7e808MOczEBv/uJTf7kXlAtcnHU5Tn6+L/
-         yS+LN9cE9DQVyCq81+Us6LMe2c9f/hj5zNg7JpjDRT+iAtN7HRQYBXOoYIEJ99KICX
-         OIRVRUk+4wceZYTSTiD6pHjVhdqQuW8ojd6koGRTj6ZVlOVSQbUfoiuIt01a/koVQL
-         vGYQhmxBl7rjdJ8gcY2XKQjanVDHFPiAxWmS88P/kK8JddnkCeK/M9G9cFMD02tczc
-         AENzdGb2ruUmN/ZNgcCxJAOIsWCxoTqOqdhr7XcZ9/VkoelgQLu2/UQj+rnyZuzN+n
-         mYVwPpclfF9bQ==
+        b=n/cBv2kBQMpuXXoAZVIrWpJOSNzDUckypBnRgP/5xRACxLcCAlIJGbq5JWqzygMQK
+         1Gn2l/9f1LErOW48hYKb9Lxm9bJFGB4KIFKsJVtuHczrlfzSeiveLV3zQj2AOlkcNk
+         V3HibJiji3NUKo+PoRbqB6y+NRhAN33t9P67E+UsGbLVWaw1qouq8lwPm/NudtAwqe
+         seWDmCqQnO1+sqZK8QNBpi+9hqELkl/ouYxiiNwV1Lxn2bnY6kqQ/GRGk1Ou+rA8oI
+         /ershiIuMPexbbBV6GrU4K8dM/8Tue60ZbYIdyYMpgEeP6ETr9kHtJvTpsAc/zWX3d
+         BAzRuGCrD6TQw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+Cc:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
         Thomas Gleixner <tglx@linutronix.de>,
+        John Stultz <jstultz@google.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH MANUALSEL 5.15 4/5] lib/irq_poll: Prevent softirq pending leak in irq_poll_cpu_dead()
-Date:   Sun,  5 Jun 2022 09:54:08 -0400
-Message-Id: <20220605135412.61517-4-sashal@kernel.org>
+Subject: [PATCH MANUALSEL 5.10 3/5] time/sched_clock: Round the frequency reported to nearest rather than down
+Date:   Sun,  5 Jun 2022 09:54:42 -0400
+Message-Id: <20220605135447.61611-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220605135412.61517-1-sashal@kernel.org>
-References: <20220605135412.61517-1-sashal@kernel.org>
+In-Reply-To: <20220605135447.61611-1-sashal@kernel.org>
+References: <20220605135447.61611-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,57 +53,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+From: "Maciej W. Rozycki" <macro@orcam.me.uk>
 
-[ Upstream commit 75d8cce128c516fe6cf4b8683e8fe1a59e919902 ]
+[ Upstream commit 92067440f1311dfa4d77b57a9da6b3706f5da32e ]
 
-irq_poll_cpu_dead() pulls the blk_cpu_iopoll backlog from the dead CPU and
-raises the POLL softirq with __raise_softirq_irqoff() on the CPU it is
-running on. That just sets the bit in the pending softirq mask.
+The frequency reported for clock sources are rounded down, which gives
+misleading figures, e.g.:
 
-This means the handling of the softirq is delayed until the next interrupt
-or a local_bh_disable/enable() pair. As a consequence the CPU on which this
-code runs can reach idle with the POLL softirq pending, which triggers a
-warning in the NOHZ idle code.
+ I/O ASIC clock frequency 24999480Hz
+ sched_clock: 32 bits at 24MHz, resolution 40ns, wraps every 85901132779ns
+ MIPS counter frequency 59998512Hz
+ sched_clock: 32 bits at 59MHz, resolution 16ns, wraps every 35792281591ns
 
-Add a local_bh_disable/enable() pair around the interrupts disabled section
-in irq_poll_cpu_dead(). local_bh_enable will handle the pending softirq.
+Rounding to nearest is more adequate:
 
-[tglx: Massaged changelog and comment]
+ I/O ASIC clock frequency 24999664Hz
+ sched_clock: 32 bits at 25MHz, resolution 40ns, wraps every 85900499947ns
+ MIPS counter frequency 59999728Hz
+ sched_clock: 32 bits at 60MHz, resolution 16ns, wraps every 35791556599ns
 
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Link: https://lore.kernel.org/r/87k0bxgl27.ffs@tglx
+Acked-by: John Stultz <jstultz@google.com>
+Link: https://lore.kernel.org/r/alpine.DEB.2.21.2204240055590.9383@angie.orcam.me.uk
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/irq_poll.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ kernel/time/sched_clock.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/lib/irq_poll.c b/lib/irq_poll.c
-index 2f17b488d58e..2d5329a42105 100644
---- a/lib/irq_poll.c
-+++ b/lib/irq_poll.c
-@@ -188,14 +188,18 @@ EXPORT_SYMBOL(irq_poll_init);
- static int irq_poll_cpu_dead(unsigned int cpu)
- {
- 	/*
--	 * If a CPU goes away, splice its entries to the current CPU
--	 * and trigger a run of the softirq
-+	 * If a CPU goes away, splice its entries to the current CPU and
-+	 * set the POLL softirq bit. The local_bh_disable()/enable() pair
-+	 * ensures that it is handled. Otherwise the current CPU could
-+	 * reach idle with the POLL softirq pending.
- 	 */
-+	local_bh_disable();
- 	local_irq_disable();
- 	list_splice_init(&per_cpu(blk_cpu_iopoll, cpu),
- 			 this_cpu_ptr(&blk_cpu_iopoll));
- 	__raise_softirq_irqoff(IRQ_POLL_SOFTIRQ);
- 	local_irq_enable();
-+	local_bh_enable();
+diff --git a/kernel/time/sched_clock.c b/kernel/time/sched_clock.c
+index b1b9b12899f5..ee07f3ac1e5b 100644
+--- a/kernel/time/sched_clock.c
++++ b/kernel/time/sched_clock.c
+@@ -8,6 +8,7 @@
+ #include <linux/jiffies.h>
+ #include <linux/ktime.h>
+ #include <linux/kernel.h>
++#include <linux/math.h>
+ #include <linux/moduleparam.h>
+ #include <linux/sched.h>
+ #include <linux/sched/clock.h>
+@@ -199,11 +200,11 @@ sched_clock_register(u64 (*read)(void), int bits, unsigned long rate)
  
- 	return 0;
- }
+ 	r = rate;
+ 	if (r >= 4000000) {
+-		r /= 1000000;
++		r = DIV_ROUND_CLOSEST(r, 1000000);
+ 		r_unit = 'M';
+ 	} else {
+ 		if (r >= 1000) {
+-			r /= 1000;
++			r = DIV_ROUND_CLOSEST(r, 1000);
+ 			r_unit = 'k';
+ 		} else {
+ 			r_unit = ' ';
 -- 
 2.35.1
 
