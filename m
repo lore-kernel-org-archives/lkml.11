@@ -2,88 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CC78C43334
-	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 02:27:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2F41C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 02:29:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243457AbiFEC1B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 4 Jun 2022 22:27:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46650 "EHLO
+        id S243514AbiFEC3O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 4 Jun 2022 22:29:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234978AbiFEC0z (ORCPT
+        with ESMTP id S243467AbiFEC3K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 4 Jun 2022 22:26:55 -0400
-X-Greylist: delayed 2278 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 04 Jun 2022 19:26:53 PDT
-Received: from baldur.buserror.net (baldur.buserror.net [165.227.176.147])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32A96BBC
-        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 19:26:52 -0700 (PDT)
-Received: from [2601:449:8480:af0::de51]
-        by baldur.buserror.net with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <oss@buserror.net>)
-        id 1nxfJ4-00D9V8-IG; Sat, 04 Jun 2022 20:43:54 -0500
-Message-ID: <198e1080c142048ce6c8705a569fe0a0461e3682.camel@buserror.net>
-From:   Scott Wood <oss@buserror.net>
-To:     Masahiro Yamada <masahiroy@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        linuxppc-dev@lists.ozlabs.org
-Cc:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Diana Craciun <diana.craciun@nxp.com>,
-        Frank Rowand <frank.rowand@sony.com>,
-        Jason Yan <yanaijie@huawei.com>, Rob Herring <robh@kernel.org>,
-        linux-kernel@vger.kernel.org
-Date:   Sat, 04 Jun 2022 20:43:53 -0500
-In-Reply-To: <20220604085050.4078927-1-masahiroy@kernel.org>
-References: <20220604085050.4078927-1-masahiroy@kernel.org>
-Organization: Red Hat
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4-1ubuntu2 
+        Sat, 4 Jun 2022 22:29:10 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 485537672
+        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 19:29:08 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id j6so10063056pfe.13
+        for <linux-kernel@vger.kernel.org>; Sat, 04 Jun 2022 19:29:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=heitbaum.com; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=zmwdrkPzXm2zLB3I7uZQ7LfidxYJeRv45MlnmEANwf0=;
+        b=nM+7bl0MGWutSe4tVSUsRTw7YIUHpQZNgWaltNcBVYw3GgpwA5HJxrSpH3VliKHzxD
+         rfdvNh5gWHqdZLrV+Vj+DAvq5/rDUk4050PDiy9JlaMbku9TWTZ6dQwiR0yiRSHjPytq
+         GgZsDyEgsoLMFtsgUVVscWBv41frnttpPm6uI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=zmwdrkPzXm2zLB3I7uZQ7LfidxYJeRv45MlnmEANwf0=;
+        b=zC/qDePLomfQmOsGURo1tiZb6nN4Z4NjK6nMwQPDpmHJ70EfLh8WY2bL8gwesiqzdx
+         HbeYCsKN10T6JdTUTMoZF2jX0keEew2Nqc6TkJQcUvQHm38Djxb+h27FUFxg+QyDz0Nm
+         te8RIkqx6gxO45tr6U/dzPMztMPIuS2HNTQka8RlE7BjZiKN9Z81geT6K7GQVxionO8K
+         TavvVxPWXRiR+AsEESsRLjJeCPY3YOkjDavzx537ueJTc1S9KWkWFJepZF8jlugtzCsf
+         hqfbAF16tQoR441vlQC7WCtrpvHJCFHl3DtuvEPu4UNZJLcQdI0R2pjHYCA9bHCDQVnv
+         CXqQ==
+X-Gm-Message-State: AOAM532ecD6rwNcHLP6xB28AfEIW95lCFAZz3gtddFLvHGGKmWvSguXe
+        kD5vml/NFmjNuosDPDDrOp9JAw==
+X-Google-Smtp-Source: ABdhPJzCabmTySI24zEKZU3PooLkghD1bASDtXXDSHebcJDIFw13F7zEojNDmMRpFd5hFwQTxLAdzQ==
+X-Received: by 2002:a63:874a:0:b0:3fd:3e1e:ca7f with SMTP id i71-20020a63874a000000b003fd3e1eca7fmr6980470pge.229.1654396147648;
+        Sat, 04 Jun 2022 19:29:07 -0700 (PDT)
+Received: from 1144aa5e55ff (194-193-162-175.tpgi.com.au. [194.193.162.175])
+        by smtp.gmail.com with ESMTPSA id q5-20020a17090a178500b001e3937f21absm7566873pja.19.2022.06.04.19.29.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 04 Jun 2022 19:29:06 -0700 (PDT)
+Date:   Sun, 5 Jun 2022 02:28:59 +0000
+From:   Rudi Heitbaum <rudi@heitbaum.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 5.18 00/67] 5.18.2-rc1 review
+Message-ID: <20220605022859.GA7@1144aa5e55ff>
+References: <20220603173820.731531504@linuxfoundation.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2601:449:8480:af0::de51
-X-SA-Exim-Rcpt-To: masahiroy@kernel.org, mpe@ellerman.id.au, linuxppc-dev@lists.ozlabs.org, benh@kernel.crashing.org, paulus@samba.org, christophe.leroy@csgroup.eu, diana.craciun@nxp.com, frank.rowand@sony.com, yanaijie@huawei.com, robh@kernel.org, linux-kernel@vger.kernel.org
-X-SA-Exim-Mail-From: oss@buserror.net
-Subject: Re: [PATCH] powerpc: get rid of #include <generated/compile.h>
-X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
-X-SA-Exim-Scanned: Yes (on baldur.buserror.net)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220603173820.731531504@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 2022-06-04 at 17:50 +0900, Masahiro Yamada wrote:
-> You cannot include <generated/compile.h> here because it is generated
-> in init/Makefile but there is no guarantee that it happens before
-> arch/powerpc/mm/nohash/kaslr_booke.c is compiled for parallel builds.
+On Fri, Jun 03, 2022 at 07:43:01PM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.18.2 release.
+> There are 67 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 > 
-> The places where you can reliably include <generated/compile.h> are:
-> 
->   - init/          (because init/Makefile can specify the dependency)
->   - arch/*/boot/   (because it is compiled after vmlinux)
-> 
-> Commit f231e4333312 ("hexagon: get rid of #include <generated/compile.h>")
-> fixed the last breakage at that time, but powerpc re-added this.
-> 
-> <genearated/compile.h> was unneeded because 'build_str' is almost the
-> same as 'linux_banner' defined in init/version.c
-> 
-> Let's copy the solution from MIPS.
-> (get_random_boot() in arch/mips/kernel/relocate.c)
-> 
-> Fixes: 6a38ea1d7b94 ("powerpc/fsl_booke/32: randomize the kernel image
-> offset")
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> ---
-> 
-> If this gets into the mainline before -rc2 or -rc3,
-> I will base my kbuild work on top of this.
-> 
-> 
->  arch/powerpc/mm/nohash/kaslr_booke.c | 8 ++------
->  1 file changed, 2 insertions(+), 6 deletions(-)
+> Responses should be made by Sun, 05 Jun 2022 17:38:05 +0000.
+> Anything received after that time might be too late.
 
-Acked-by: Scott Wood <oss@buserror.net>
+Hi Greg,
 
--Scott
+5.18.2-rc1 tested.
 
+Run tested on:
+- Allwinner H6 (Tanix TX6)
+- Intel Tiger Lake x86_64 (nuc11 i7-1165G7)
 
+In addition - build tested for:
+- Allwinner A64
+- Allwinner H3
+- Allwinner H5
+- NXP iMX6
+- NXP iMX8
+- Qualcomm Dragonboard
+- Rockchip RK3288
+- Rockchip RK3328
+- Rockchip RK3399pro
+- Samsung Exynos
+
+Tested-by: Rudi Heitbaum <rudi@heitbaum.com>
+--
+Rudi
