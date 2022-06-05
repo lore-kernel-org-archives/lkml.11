@@ -2,98 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84B35C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 06:07:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D788C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 06:21:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244158AbiFEGH1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 5 Jun 2022 02:07:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40314 "EHLO
+        id S244175AbiFEGVm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 5 Jun 2022 02:21:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244060AbiFEGHS (ORCPT
+        with ESMTP id S231444AbiFEGVk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 5 Jun 2022 02:07:18 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06173DFBA;
-        Sat,  4 Jun 2022 23:07:16 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id x4so1733256pfj.10;
-        Sat, 04 Jun 2022 23:07:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ntiAGYWvOui4xB3cbO1kuW43WbW64QLsxlfvqLjsP00=;
-        b=UNdwgXBqNRzek8pEr5Qw32/XwVITDA54mg7Kzlts/3Dok86B2ZXU7Lqr1Wdv51FkOu
-         D+DjiX7VwRrTKbDe9kWrgm/TbkjVysKd4l5D7wVPorYtHyYfdyRppXHf4MZfzJ7QRI0G
-         EC3BWN8KlO2/z7rWQ5i+BIzMbh+leiVDSOc8qAYViWptCWWG4Owq+H4XBnLjjs1xCcOz
-         A8JCjb5m0d0MotydVY6eHW9GrrnezCP2hIrGtTB7iBJQaS8HSmbaubLLvbOEwEFd1AwU
-         Y4nKLkkmEYL9atMXbUbAZFFBIXckKQRQLkBUUHtnrU17dM/sv/B9E0r1k5EpKBBHQfIF
-         cZEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ntiAGYWvOui4xB3cbO1kuW43WbW64QLsxlfvqLjsP00=;
-        b=FPjopPBEwcNXp5tiVLVjPwNNf0ALmrHpzHfc5VoUya5EdFX8AqomJshz+m7f8fMlhC
-         eHb+C5iBTfvd2q1vvnfqsc14Us9lf/zKN5vy/aRgLHyLMkGgD5+2DYb9dOf6l6+jSFD1
-         RJoRwskJOkUOfXVysw+V16Pkqt2caV/a/RBmfRa6YUb36FAnvokDKvJVtoFLr7xp5NYn
-         oQ9OBg/JWx1rQcxc1XSfDY94bnZxjep2HmFsK30ZAD5F3nzfyPTldK5H/m5dRc4P+sx7
-         O9cpANjEHYV6pAymQ+0mmunDKH9JXVRDnyP5wHbAw35lFEWQWBKf64X8ozCZcFapL6jM
-         hGww==
-X-Gm-Message-State: AOAM530GA5DbATD8OuTM3mKdZTGx0cW+Phs0+rmWoLXAVRpSwKungFoj
-        B4dsUCBlJPgUvGbInuWKnhu37MJNI0pLFA==
-X-Google-Smtp-Source: ABdhPJyA1lhiKwlzudDECY/g6A/17Ban2AXmzmlCM0DNLWnaso1OtO7XN2+wdSLdJ6SJvCSQi3abLQ==
-X-Received: by 2002:a05:6a00:1594:b0:51b:f4ec:4c02 with SMTP id u20-20020a056a00159400b0051bf4ec4c02mr5896399pfk.27.1654409235449;
-        Sat, 04 Jun 2022 23:07:15 -0700 (PDT)
-Received: from localhost ([2409:10:24a0:4700:e8ad:216a:2a9d:6d0c])
-        by smtp.gmail.com with ESMTPSA id u1-20020a1709026e0100b0015e8d4eb231sm8153260plk.123.2022.06.04.23.07.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 04 Jun 2022 23:07:14 -0700 (PDT)
-Date:   Sun, 5 Jun 2022 15:07:12 +0900
-From:   Stafford Horne <shorne@gmail.com>
-To:     Anshuman Khandual <anshuman.khandual@arm.com>
-Cc:     linux-mm@kvack.org, Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Paul Mackerras <paulus@samba.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        Sun, 5 Jun 2022 02:21:40 -0400
+Received: from polaris.svanheule.net (polaris.svanheule.net [84.16.241.116])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3124C4E380
+        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 23:21:39 -0700 (PDT)
+Received: from [IPv6:2a02:a03f:eaf9:8401:aa9f:5d01:1b2a:e3cd] (unknown [IPv6:2a02:a03f:eaf9:8401:aa9f:5d01:1b2a:e3cd])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: sander@svanheule.net)
+        by polaris.svanheule.net (Postfix) with ESMTPSA id D17A52E2D9E;
+        Sun,  5 Jun 2022 08:21:36 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svanheule.net;
+        s=mail1707; t=1654410097;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=lgzKAOGGgcNpW6bt0b+KeVm5ykT1IjAT6JsZxBHwQEM=;
+        b=vD/OEj1ts6LzO0FtXZbmXeeXee05Y/hZ2mT2S+1HNYDy1nvu3mohJfOUws93+CgFT6g6sW
+        BFcspXrsBUUidNAkyvYY5sy/CQlxHKc7HT86gEJ5ZNc3/j/dYLfMnUMPwrO1fFbGiBUuHp
+        ZSoS40BM3cpHjXohQGpMf3RNRqFmRs6SVRoSziiwe4jiFUxO55ybZgB1K5V6PYpFR3Azum
+        XEf6UJG99DobS19uI9ixVEnmwijeIAG7BIrl7Wv4aAehZD4jwvq1zzApTNkvQeP23+GL9x
+        4UuMVRJnG/t/Sy5pnqmX0Y3cJ1vqzLBgnBSfolPzOWIOcTjHWF1e3avvYZx6WA==
+Message-ID: <5bfcbc7aeb3963c3672534513c64fbec5c31e83d.camel@svanheule.net>
+Subject: Re: [PATCH v2 1/4] lib/test: Introduce cpumask KUnit test suite
+From:   Sander Vanheule <sander@svanheule.net>
+To:     Yury Norov <yury.norov@gmail.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Valentin Schneider <vschneid@redhat.com>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        Jonas Bonn <jonas@southpole.se>,
-        Andrew Morton <akpm@linux-foundation.org>, x86@kernel.org,
-        openrisc@lists.librecores.org, linux-csky@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 6/6] openrisc/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
-Message-ID: <YpxIENWD3gOkFiG2@antec>
-References: <20220603101411.488970-1-anshuman.khandual@arm.com>
- <20220603101411.488970-7-anshuman.khandual@arm.com>
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Marco Elver <elver@google.com>, linux-kernel@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Date:   Sun, 05 Jun 2022 08:21:35 +0200
+In-Reply-To: <YpuzKLQdToIwBrSm@yury-laptop>
+References: <cover.1654362935.git.sander@svanheule.net>
+         <5a55f41812dc18fccf66f8130682ff8e669e0c80.1654362935.git.sander@svanheule.net>
+         <YpuzKLQdToIwBrSm@yury-laptop>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
+User-Agent: Evolution 3.44.2 (3.44.2-1.fc36) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220603101411.488970-7-anshuman.khandual@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 03, 2022 at 03:44:11PM +0530, Anshuman Khandual wrote:
-> This defines and exports a platform specific custom vm_get_page_prot() via
-> subscribing ARCH_HAS_VM_GET_PAGE_PROT. Subsequently all __SXXX and __PXXX
-> macros can be dropped which are no longer needed.
-> 
-> Cc: Jonas Bonn <jonas@southpole.se>
-> Cc: openrisc@lists.librecores.org
-> Cc: linux-kernel@vger.kernel.org
-> Acked-by: Stafford Horne <shorne@gmail.com>
-> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+SGkgWXVyeSwKCk9uIFNhdCwgMjAyMi0wNi0wNCBhdCAxMjozMSAtMDcwMCwgWXVyeSBOb3JvdiB3
+cm90ZToKPiBPbiBTYXQsIEp1biAwNCwgMjAyMiBhdCAwNzoxNTo1NlBNICswMjAwLCBTYW5kZXIg
+VmFuaGV1bGUgd3JvdGU6Cj4gPiBBZGQgYSBiYXNpYyBzdWl0ZSBvZiB0ZXN0cyBmb3IgY3B1bWFz
+aywgcHJvdmlkaW5nIHNvbWUgdGVzdHMgZm9yIGVtcHR5Cj4gPiBhbmQgY29tcGxldGVseSBmaWxs
+ZWQgY3B1bWFza3MuCj4gPiAKPiA+IFNpZ25lZC1vZmYtYnk6IFNhbmRlciBWYW5oZXVsZSA8c2Fu
+ZGVyQHN2YW5oZXVsZS5uZXQ+Cj4gCj4gVGhlIHRlc3QgbXVzdCBnbyBhZnRlciBmaXgsIHNvIHRo
+YXQgaXQncyBkb2Vzbid0IGNhdXNlIHJlZ3Jlc3Npb25zCj4gd2hpbGUgYmlzZWN0aW5nLgoKT0ss
+IEknbGwgY2hhbmdlIHRoZSBvcmRlciBvZiB0aGUgcGF0Y2hlcy4KCj4gCj4gPiAtLS0KPiA+IMKg
+bGliL0tjb25maWcuZGVidWfCoCB8wqDCoCA5ICsrKysKPiA+IMKgbGliL01ha2VmaWxlwqDCoMKg
+wqDCoMKgIHzCoMKgIDEgKwo+ID4gwqBsaWIvdGVzdF9jcHVtYXNrLmMgfCAxMTUgKysrKysrKysr
+KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrCj4gPiDCoDMgZmlsZXMgY2hhbmdl
+ZCwgMTI1IGluc2VydGlvbnMoKykKPiA+IMKgY3JlYXRlIG1vZGUgMTAwNjQ0IGxpYi90ZXN0X2Nw
+dW1hc2suYwo+IAo+IFsuLl0KPiAKPiA+ICsjZGVmaW5lIEZPUl9FQUNIX0lURVJfRVEoX3Rlc3Qs
+IF9pdGVyLCBfZXhwZWN0LCBfbG9vcCnCoMKgwqDCoMKgwqDCoMKgwqBcCj4gPiArwqDCoMKgwqDC
+oMKgwqBkbyB7wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBc
+Cj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgKF9pdGVyKSA9IDA7wqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgXAo+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoF9sb29wwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqBcCj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoChfaXRlcikrKzvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBcCj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgS1VOSVRfRVhQRUNUX0VRKChfdGVzdCksIChfZXhwZWN0KSwgKF9pdGVyKSk7wqDC
+oMKgXAo+ID4gK8KgwqDCoMKgwqDCoMKgfSB3aGlsZSAoMCkKPiAKPiBUaGlzIG9uZSBpcyBoYXJk
+ZXIgdG8gdXNlIHRoYW4gaXQgc2hvdWxkIGJlLgoKUGVyaGFwcyBJIHRyaWVkIHRvIGhhcmQgdG8g
+bWFrZSBvbmUgbWFjcm8gdG8gY292ZXIgYWxsIHRoZSBjYXNlcy4KCj4gIE1heWJlIGxpa2UgdGhp
+cz8gKG5vdCB0ZXN0ZWQsCj4ganVzdCBhbiBpZGVhKQo+IAo+ICNkZWZpbmUgVEVTVF9GT1JfRUFD
+SF9DUFVfRVEodGVzdCwgbWFzaynCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBcCj4gwqDCoMKgwqDCoMKgwqDCoGRvIHvCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIFwK
+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgY3B1bWFza190ICptID0gKG1hc2spO8Kg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoCBcCj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGludCBpdGVyID0gMCwg
+Y3B1O8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgIFwKPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oGZvcl9lYWNoX2NwdShjcHUsIG0pwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBcCj4gwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgaXRlcisrO8KgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgIFwKPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoEtVTklUX0VYUEVDVF9FUSgo
+dGVzdCksIGNwdW1hc2tfd2VpZ2h0KG0pLCBpdGVyKTvCoMKgwqDCoMKgwqDCoFwKPiDCoMKgwqDC
+oMKgwqDCoMKgfSB3aGlsZSAoMCkKPiAKPiBzdGF0aWMgdm9pZCB0ZXN0X2NwdW1hc2tfaXRlcmF0
+b3JzKHN0cnVjdCBrdW5pdCAqdGVzdCkKPiB7Cj4gwqDCoMKgwqDCoMKgwqAgVEVTVF9GT1JfRUFD
+SF9DUFUodGVzdCwgJm1hc2tfZW1wdHkpOwo+IMKgwqDCoMKgwqDCoMKgIC4uLgo+IH0KPiDCoAo+
+IFNpbWlsYXJseSBmb3IgTk9UIGFuZCBXUkFQLgoKVGhhbmtzIGZvciB0aGUgc3VnZ2VzdGlvbiwg
+SSBmb3Jnb3Qgd2UgZG9uJ3QgaGF2ZSB0byBkZWNsYXJlIGFsbCB2YXJpYWJsZXMgYXQgdGhlIHN0
+YXJ0IG9mIHRoZQpmdW5jdGlvbi4gSSdsbCBzZW5kIGFuIHVwZGF0ZSB3aXRoIGEgZmV3IG1vcmUg
+c3BlY2lmaWMgbWFjcm9zLgoKQmVzdCwKU2FuZGVyCg==
 
-Is it possible to retract my Acked-by?  I was following the discussion of this
-new function actually being sub optimal.  So as far as I am concerned all these
-architecture patches should be nak'ed.
-
--Stafford
