@@ -2,66 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06104C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 18:29:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85BB3C43334
+	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 18:31:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346944AbiFES3T (ORCPT
+        id S1351472AbiFESbb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 5 Jun 2022 14:29:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51658 "EHLO
+        Sun, 5 Jun 2022 14:31:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236164AbiFES3O (ORCPT
+        with ESMTP id S236164AbiFESb2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 5 Jun 2022 14:29:14 -0400
+        Sun, 5 Jun 2022 14:31:28 -0400
 Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21B1E12ADF;
-        Sun,  5 Jun 2022 11:29:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11CF912AAF;
+        Sun,  5 Jun 2022 11:31:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1654453753; x=1685989753;
+  t=1654453887; x=1685989887;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=7CN5CVW4y6vndDpfXtnuBA35CphKx0VJEXmhpRPvYg8=;
-  b=QL9aKmjyQ/28EzV5C0yy0WpF1LZ+tyT0TmwLPX4VjYHDbishEc4hn3rJ
-   +UHMT9uXrxs0qk19Lil/Cd6ABSEE/hZ3E5eWMn9/Jb+tzB8bH/AQiIH5O
-   zaNw6pWzsIbc7AYF84ef5GV5EM5pXkgrnVQVB23pIlX+fJA9ZH+tXwyJC
+  bh=xHQW/DoGQUs+0ZrxEQ1m+x/wIrTBq1nQRjID76ZhMk0=;
+  b=iP16Cec5Ggg8tQj2jV8ZTfhHF8beWLBfHGque7rJlCjdOiQy1vDcmoAK
+   3IfN+x3U7nXqYB1yt57/oQPJf7yKRqG8mHLybokVtsfy6kQlvy0yxEsZd
+   V6nrQ881AfLWpCPoR5E/f8cZYFSI45pupsYgzsqLhbzKVNcM1N4dlgnOC
    U=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 05 Jun 2022 11:29:12 -0700
+Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 05 Jun 2022 11:31:26 -0700
 X-QCInternal: smtphost
 Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2022 11:29:12 -0700
+  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2022 11:31:26 -0700
 Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
  nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Sun, 5 Jun 2022 11:29:12 -0700
+ 15.2.986.22; Sun, 5 Jun 2022 11:31:26 -0700
 Received: from [10.216.59.27] (10.80.80.8) by nalasex01a.na.qualcomm.com
  (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Sun, 5 Jun 2022
- 11:29:07 -0700
-Message-ID: <d756152e-64aa-9519-ae42-5a4bb7727fbf@quicinc.com>
-Date:   Sun, 5 Jun 2022 23:59:04 +0530
+ 11:31:22 -0700
+Message-ID: <62c0b6ac-240c-e581-7bc3-9357dc619d4c@quicinc.com>
+Date:   Mon, 6 Jun 2022 00:01:19 +0530
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.0
-Subject: Re: [PATCH 3/3] usb: dwc3: Refactor PHY logic to support Multiport
- Controller
+Subject: Re: [RFC v2 1/2] dt-bindings: usb: dwc3: Add support for multiport
+ related properties
 Content-Language: en-US
-To:     Pavan Kondeti <quic_pkondeti@quicinc.com>
-CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
+To:     Rob Herring <robh@kernel.org>
+CC:     <quic_pkondeti@quicinc.com>,
         Philipp Zabel <p.zabel@pengutronix.de>,
-        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
-        Felipe Balbi <balbi@kernel.org>,
+        <quic_ppratap@quicinc.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        <linux-kernel@vger.kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
-        <linux-usb@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <quic_ppratap@quicinc.com>,
-        <quic_jackp@quicinc.com>
-References: <1653985217-20953-1-git-send-email-quic_harshq@quicinc.com>
- <1653985217-20953-4-git-send-email-quic_harshq@quicinc.com>
- <20220531122605.GA14607@hu-pkondeti-hyd.qualcomm.com>
+        <devicetree@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+References: <1653560029-6937-1-git-send-email-quic_harshq@quicinc.com>
+ <1653560029-6937-2-git-send-email-quic_harshq@quicinc.com>
+ <1653568833.732260.3797150.nullmailer@robh.at.kernel.org>
+ <33ce11bd-abc4-0e59-4637-e8133818e0f6@quicinc.com>
+ <20220531201050.GD1808817-robh@kernel.org>
 From:   Harsh Agarwal <quic_harshq@quicinc.com>
-In-Reply-To: <20220531122605.GA14607@hu-pkondeti-hyd.qualcomm.com>
+In-Reply-To: <20220531201050.GD1808817-robh@kernel.org>
 Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Originating-IP: [10.80.80.8]
@@ -72,254 +74,63 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
-On 5/31/2022 5:56 PM, Pavan Kondeti wrote:
-> Hi Harsh,
->
-> On Tue, May 31, 2022 at 01:50:17PM +0530, Harsh Agarwal wrote:
->> Currently the DWC3 driver supports only single port controller
->> which requires at most 2 PHYs ie HS and SS PHYs.
+On 6/1/2022 1:40 AM, Rob Herring wrote:
+> On Fri, May 27, 2022 at 04:30:34PM +0530, Harsh Agarwal wrote:
+>> On 5/26/2022 6:10 PM, Rob Herring wrote:
+>>> On Thu, 26 May 2022 15:43:48 +0530, Harsh Agarwal wrote:
+>>>> Added support for multiport, mport, num-ssphy and num-hsphy
+>>>> properties. These properties are used to support devices having
+>>>> a multiport controller.
+>>>>
+>>>> Signed-off-by: Harsh Agarwal <quic_harshq@quicinc.com>
+>>>> ---
+>>>>    .../devicetree/bindings/usb/snps,dwc3.yaml         | 55 ++++++++++++++++++++++
+>>>>    1 file changed, 55 insertions(+)
+>>>>
+>>> My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+>>> on your patch (DT_CHECKER_FLAGS is new in v5.13):
+>>>
+>>> yamllint warnings/errors:
+>>> ./Documentation/devicetree/bindings/usb/snps,dwc3.yaml:366:8: [warning] wrong indentation: expected 6 but found 7 (indentation)
+>>> ./Documentation/devicetree/bindings/usb/snps,dwc3.yaml:367:10: [warning] wrong indentation: expected 11 but found 9 (indentation)
+>>> ./Documentation/devicetree/bindings/usb/snps,dwc3.yaml:369:11: [warning] wrong indentation: expected 11 but found 10 (indentation)
+>>>
+>>> dtschema/dtc warnings/errors:
+>>> Documentation/devicetree/bindings/usb/snps,dwc3.example.dts:86.27-89.15: Warning (unit_address_vs_reg): /example-2/usb@4a000000/multiport/mport@1: node has a unit name, but no reg or ranges property
+>>> Documentation/devicetree/bindings/usb/snps,dwc3.example.dts:91.27-93.15: Warning (unit_address_vs_reg): /example-2/usb@4a000000/multiport/mport@2: node has a unit name, but no reg or ranges property
+>>> Documentation/devicetree/bindings/usb/snps,dwc3.example.dts:95.27-97.15: Warning (unit_address_vs_reg): /example-2/usb@4a000000/multiport/mport@3: node has a unit name, but no reg or ranges property
+>>> Documentation/devicetree/bindings/usb/snps,dwc3.example.dts:99.27-101.15: Warning (unit_address_vs_reg): /example-2/usb@4a000000/multiport/mport@4: node has a unit name, but no reg or ranges property
+>>> /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/usb/snps,dwc3.example.dtb: usb@4a000000: multiport: 'mport' is a required property
+>>> 	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/usb/snps,dwc3.yaml
+>>>
+>>> doc reference errors (make refcheckdocs):
+>>>
+>>> See https://patchwork.ozlabs.org/patch/
+>>>
+>>> This check can fail if there are any dependencies. The base for a patch
+>>> series is generally the most recent rc1.
+>>>
+>>> If you already ran 'make dt_binding_check' and didn't see the above
+>>> error(s), then make sure 'yamllint' is installed and dt-schema is up to
+>>> date:
+>>>
+>>> pip3 install dtschema --upgrade
+>>>
+>>> Please check and re-submit.
+>> Indentation error I have rectified in my RFC v2.
+>> Regarding below warnings
 >>
->> But some SOCs have a "multiport" USB DWC3 controller where a
->> single controller supports multiple ports and each port have
->> their own PHYs. Refactor PHY logic to support the same.
->>
->> Signed-off-by: Harsh Agarwal <quic_harshq@quicinc.com>
->> ---
->>   drivers/usb/dwc3/core.c   | 400 +++++++++++++++++++++++++++++++++-------------
->>   drivers/usb/dwc3/core.h   |  12 +-
->>   drivers/usb/dwc3/drd.c    |  16 +-
->>   drivers/usb/dwc3/gadget.c |   4 +-
->>   4 files changed, 305 insertions(+), 127 deletions(-)
->>
->> diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
->> index 5734219..5cc799e 100644
->> --- a/drivers/usb/dwc3/core.c
->> +++ b/drivers/usb/dwc3/core.c
->> @@ -120,7 +120,7 @@ static void __dwc3_set_mode(struct work_struct *work)
->>   {
->>   	struct dwc3 *dwc = work_to_dwc(work);
->>   	unsigned long flags;
->> -	int ret;
->> +	int i, ret;
->>   	u32 reg;
->>   
-> <snip>
+>> "Documentation/devicetree/bindings/usb/snps,dwc3.example.dts:86.27-89.15: Warning (unit_address_vs_reg): /example-2/usb@4a000000/multiport/mport@1: node has a unit name, but no reg or ranges property"
+>> Here the mport expects no "reg" or ranges" property as of now. Only thing that is mandated is either the USB-PHY phandles using "usb-phy" or the Generic PHY declaration using "phy" and "phy-names"
+>> Can you please suggest to mask these warnings or do I need to add something else ?
+> A unit-address requires 'reg' or 'ranges' and vice-versa. So you need
+> 'reg'.
 >
->> -static int dwc3_core_get_phy(struct dwc3 *dwc)
->> +static struct usb_phy *dwc3_core_get_phy_by_handle_with_node(struct device *dev,
->> +	const char *phandle, u8 index, struct device_node *lookup_node)
->> +{
->> +	struct device_node *node;
->> +	struct usb_phy	*phy;
->> +
->> +	node = of_parse_phandle(lookup_node, phandle, index);
->> +	if (!node) {
->> +		dev_err(dev, "failed to get %s phandle in %pOF node\n", phandle,
->> +			dev->of_node);
->> +		return ERR_PTR(-ENODEV);
->> +	}
->> +	phy = devm_usb_get_phy_by_node(dev, node, NULL);
->> +	of_node_put(node);
->> +	return phy;
->> +}
-> Remove this function definition, since we moved this to PHY library.
-Got it removed in the latest PS v2
+> However, usb-hcd.yaml already defines what child nodes are for USB
+> hosts. Whatever you do here needs to be compatible with that.
+Thanks for the info.
+"@" is not actually a requirement for mport.
+We can name them as "mport1" instead of "mport@1".
+Now I do not see this reg, ranges warnings in latest PS v2
 >
->> +
->> +static int dwc3_count_phys(struct dwc3 *dwc, struct device_node *lookup_node)
->> +{
->> +	int count;
->> +
->> +	count = of_count_phandle_with_args(lookup_node, "phys", NULL);
->> +
->> +	if (count == -ENOENT)
->> +		count = of_count_phandle_with_args(lookup_node, "usb-phy", NULL);
->> +
->> +	if (count == 1) {
->> +		dwc->num_usb2_phy++;
->> +	} else if (count == 2) {
->> +		dwc->num_usb2_phy++;
->> +		dwc->num_usb3_phy++;
->> +	} else {
->> +		return count;
->> +	}
->> +	return 0;
->> +}
->> +
->> +static int dwc3_extract_num_phys(struct dwc3 *dwc)
->> +{
->> +	struct device_node	*ports, *port;
->> +	int			ret;
->> +
->> +	/* Find if any "multiport" child is present inside DWC3*/
->> +	for_each_available_child_of_node(dwc->dev->of_node, ports) {
->> +		if (!strcmp(ports->name, "multiport"))
->> +			break;
->> +	}
->> +	if (!ports) {
->> +		dwc->num_usb2_phy = 1;
->> +		dwc->num_usb3_phy = 1;
->> +	} else {
->> +		for_each_available_child_of_node(ports, port) {
->> +			ret  = dwc3_count_phys(dwc, port);
->> +			if (ret)
->> +				return ret;
-> If you break the loop, you have to call of_node_put() explicitly.
-Done. P;ease check v2
->
->> +		}
->> +	}
->> +	dev_info(dwc->dev, "Num of HS and SS PHY are %u %u\n", dwc->num_usb2_phy,
->> +									dwc->num_usb3_phy);
-> If I declare the multiport node don't specify any phys for any of the ports,
-> we end up coming here with dwc->num_usb2_phy = dwc->num_usb3_phy = 0. That is
-> a problem since we access dwc->usb2_phy[0] directly. Can we bail out in that
-> case?
-We have mandated to use either usb-phy or Generic phy inside the child nodes
-of multiport.
->
->> +
->> +	dwc->usb2_phy = devm_kzalloc(dwc->dev,
->> +		sizeof(*dwc->usb2_phy) * dwc->num_usb2_phy, GFP_KERNEL);
->> +	if (!dwc->usb2_phy)
->> +		return -ENOMEM;
->> +
->> +	dwc->usb3_phy = devm_kzalloc(dwc->dev,
->> +		sizeof(*dwc->usb3_phy) * dwc->num_usb3_phy, GFP_KERNEL);
->> +	if (!dwc->usb3_phy)
->> +		return -ENOMEM;
->> +
->> +	dwc->usb2_generic_phy = devm_kzalloc(dwc->dev,
->> +		sizeof(*dwc->usb2_generic_phy) * dwc->num_usb2_phy, GFP_KERNEL);
->> +	if (!dwc->usb2_generic_phy)
->> +		return -ENOMEM;
->> +
->> +	dwc->usb3_generic_phy = devm_kzalloc(dwc->dev,
->> +		sizeof(*dwc->usb3_generic_phy) * dwc->num_usb3_phy, GFP_KERNEL);
->> +	if (!dwc->usb3_generic_phy)
->> +		return -ENOMEM;
->> +
->> +	return 0;
->> +}
->> +
->> +static int dwc3_core_get_phy_by_node(struct dwc3 *dwc,
->> +		struct device_node *lookup_node, int i)
->>   {
->>   	struct device		*dev = dwc->dev;
->> -	struct device_node	*node = dev->of_node;
->> -	int ret;
->> +	int			ret;
->>   
->> -	if (node) {
->> -		dwc->usb2_phy = devm_usb_get_phy_by_phandle(dev, "usb-phy", 0);
->> -		dwc->usb3_phy = devm_usb_get_phy_by_phandle(dev, "usb-phy", 1);
->> +	if (lookup_node) {
->> +		dwc->usb2_phy[i] = devm_of_usb_get_phy_by_phandle(dev,
->> +								"usb-phy", 0, lookup_node);
->> +		dwc->usb3_phy[i] = devm_of_usb_get_phy_by_phandle(dev,
->> +								"usb-phy", 1, lookup_node);
->>   	} else {
->> -		dwc->usb2_phy = devm_usb_get_phy(dev, USB_PHY_TYPE_USB2);
->> -		dwc->usb3_phy = devm_usb_get_phy(dev, USB_PHY_TYPE_USB3);
->> +		dwc->usb2_phy[i] = devm_usb_get_phy(dev, USB_PHY_TYPE_USB2);
->> +		dwc->usb3_phy[i] = devm_usb_get_phy(dev, USB_PHY_TYPE_USB3);
->>   	}
->>   
->> -	if (IS_ERR(dwc->usb2_phy)) {
->> -		ret = PTR_ERR(dwc->usb2_phy);
->> +	if (IS_ERR(dwc->usb2_phy[i])) {
->> +		ret = PTR_ERR(dwc->usb2_phy[i]);
->>   		if (ret == -ENXIO || ret == -ENODEV)
->> -			dwc->usb2_phy = NULL;
->> +			dwc->usb2_phy[i] = NULL;
->>   		else
->>   			return dev_err_probe(dev, ret, "no usb2 phy configured\n");
->>   	}
->>   
->> -	if (IS_ERR(dwc->usb3_phy)) {
->> -		ret = PTR_ERR(dwc->usb3_phy);
->> +	if (IS_ERR(dwc->usb3_phy[i])) {
->> +		ret = PTR_ERR(dwc->usb3_phy[i]);
->>   		if (ret == -ENXIO || ret == -ENODEV)
->> -			dwc->usb3_phy = NULL;
->> +			dwc->usb3_phy[i] = NULL;
->>   		else
->>   			return dev_err_probe(dev, ret, "no usb3 phy configured\n");
->>   	}
->>   
->> -	dwc->usb2_generic_phy = devm_phy_get(dev, "usb2-phy");
->> -	if (IS_ERR(dwc->usb2_generic_phy)) {
->> -		ret = PTR_ERR(dwc->usb2_generic_phy);
->> -		if (ret == -ENOSYS || ret == -ENODEV)
->> -			dwc->usb2_generic_phy = NULL;
->> +	dwc->usb2_generic_phy[i] = devm_of_phy_get(dev, lookup_node, "usb2-phy");
->> +	if (IS_ERR(dwc->usb2_generic_phy[i])) {
->> +		ret = PTR_ERR(dwc->usb2_generic_phy[i]);
->> +		if (ret == -ENODEV)
->> +			dwc->usb2_generic_phy[i] = NULL;
->>   		else
->>   			return dev_err_probe(dev, ret, "no usb2 phy configured\n");
->>   	}
->>   
->> -	dwc->usb3_generic_phy = devm_phy_get(dev, "usb3-phy");
->> -	if (IS_ERR(dwc->usb3_generic_phy)) {
->> -		ret = PTR_ERR(dwc->usb3_generic_phy);
->> -		if (ret == -ENOSYS || ret == -ENODEV)
->> -			dwc->usb3_generic_phy = NULL;
->> +	dwc->usb3_generic_phy[i] = devm_of_phy_get(dev, lookup_node, "usb3-phy");
->> +	if (IS_ERR(dwc->usb3_generic_phy[i])) {
->> +		ret = PTR_ERR(dwc->usb3_generic_phy[i]);
->> +		if (ret == -ENODEV)
->> +			dwc->usb3_generic_phy[i] = NULL;
->>   		else
->>   			return dev_err_probe(dev, ret, "no usb3 phy configured\n");
->>   	}
->> +	return 0;
->> +}
->> +
->> +static int dwc3_core_get_phy(struct dwc3 *dwc)
->> +{
->> +	struct device		*dev = dwc->dev;
->> +	struct device_node	*node = dev->of_node;
->> +	struct device_node	*ports, *port;
->> +	int ret, i = 0;
->> +
->> +	ret = dwc3_extract_num_phys(dwc);
->> +	if (ret) {
->> +		dev_err(dwc->dev, "Unable to extract number of PHYs\n");
->> +		return ret;
->> +	}
->> +
->> +	/* Find if any "multiport" child is present inside DWC3*/
->> +	for_each_available_child_of_node(node, ports) {
->> +		if (!strcmp(ports->name, "multiport"))
->> +			break;
->> +	}
->> +
->> +	if (!ports) {
->> +		ret = dwc3_core_get_phy_by_node(dwc, node, 0);
->> +		if (ret)
->> +			return ret;
->> +	} else {
->> +		for_each_available_child_of_node(ports, port) {
->> +			ret = dwc3_core_get_phy_by_node(dwc, port, i);
->> +			if (ret)
->> +				return ret;
->> +			i++;
->> +		}
->> +	}
->>   
-> How does this work actually for a case where I have 4 ports with hs_phy=4 and
-> ss_phy=2. Here we end up calling i = {0, 1, 2, 3} and accessing un-allocated
-> ss phy instances in dwc3_core_get_phy_by_node(). you should also handle the
-> case where first two ports are HS only and last two ports are both HS and SS.
-Thanks for this endcase. Got it rectified in the new PS v2.
-Yes lets suppose a Quadport controller having the first two
-ports as HS only and last two ports as SS+HS capable.
-Then proper indexing for SS PHY should also be taken care of.
-Even though SS phy belongs to 3rd port, it's index will start with 0.
-This is because for each SS PHY we have to properly map to
-USBPIPECTL, PORTSC registers.
->
-> Thanks,
-> Pavan
+> Rob
