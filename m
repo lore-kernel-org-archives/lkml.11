@@ -2,84 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4700BCCA482
-	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 02:17:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CE1AC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 02:18:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344650AbiFECR4 (ORCPT
+        id S1345610AbiFECSA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 4 Jun 2022 22:17:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54024 "EHLO
+        Sat, 4 Jun 2022 22:18:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230134AbiFECRx (ORCPT
+        with ESMTP id S239486AbiFECRz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 4 Jun 2022 22:17:53 -0400
-Received: from mail-oa1-f42.google.com (mail-oa1-f42.google.com [209.85.160.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 462C01A811;
-        Sat,  4 Jun 2022 19:17:52 -0700 (PDT)
-Received: by mail-oa1-f42.google.com with SMTP id 586e51a60fabf-e656032735so15322486fac.0;
-        Sat, 04 Jun 2022 19:17:52 -0700 (PDT)
+        Sat, 4 Jun 2022 22:17:55 -0400
+Received: from mail-oa1-f48.google.com (mail-oa1-f48.google.com [209.85.160.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D4891A82F;
+        Sat,  4 Jun 2022 19:17:53 -0700 (PDT)
+Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-e93bbb54f9so15214105fac.12;
+        Sat, 04 Jun 2022 19:17:53 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=vaQRGY53H6wADOsm4kW7eWOUF6mNNCacfi7LA2Rw00I=;
-        b=npL5Td5L74p4eCnbJPCwj0E3shh1ETMT1NfQ/+nyxtm78VDaBU6WRiiS0ckJz97aUv
-         o6ttrmcOf75+z4vbQbNo32E6ljNf97iUJnlSSmETaKd5Zei3JmHGKtgzIW8AEr/ve57q
-         0MSa1LRuxqAKi3HV7w54Gtfsvtza7wtgaRqnt89AQEds7SwrJcN2ghavw3FHyvMQt9UU
-         BEjx8gjUik6Ls8l7s8nXjl3HTebHM4cPNfQy1Yx41k4PVCYRoJLN7OiamH+G7zt73FOE
-         aXP1GHHn8HgljsZzoa0iLeIQnbLm9az1foIZhCzmtj9uOs0wrDiq1cMtL3TReytFD459
-         2KYQ==
-X-Gm-Message-State: AOAM532xHC9o/dobovsbCXt21ySztxTSLNx2F8XYJq5fHu19jVGLnvKg
-        xJK0fhHT427+4PpRx6UzXDysiLVmsg==
-X-Google-Smtp-Source: ABdhPJw3plt6cA7kHbewJlcD/6xi88pJPH3DzFJ7woCXjGhnxxWz7NQWVoOCvGF3d8MrxTK7Dn0cMw==
-X-Received: by 2002:a05:6870:7392:b0:f3:3d30:a44d with SMTP id z18-20020a056870739200b000f33d30a44dmr18009264oam.91.1654395471465;
-        Sat, 04 Jun 2022 19:17:51 -0700 (PDT)
+        bh=lQ4WDAfIbQoDCBB4B+MAW+ijNY272OTmgCMkNTc+Uvc=;
+        b=bh43+VMw6g+mPjOJ60pNM4ZIZQ6mF1d9TZ9gGWo4WVWj3/xdCJneORFY3NCNXDMdfY
+         LKLIRwfdC8u/YwOvSRKONZuLPPaUrwCh4zshKG7lfNEkegy0JL9/kkMcRBP9UuxOZrm2
+         iW8QO3gm5sLfFTO6rqaXdV4kEX4QpqQf4iZ+xgebyCcLZXRFt712u72PAKJkueAkZONc
+         4kZ/UCN6A5rPJBh/z7VRgqXE1b3CuZoNnnyyaHV/Wvaz9cR+wMKMhOI6ymvsqrHxk/oH
+         waRPp00zRrTs4Dk5RAvu1GPlOI1/B/5ZgiNV0uGvTWnAzrmYl90a6EhCtvf9GMDZLFAO
+         dj3g==
+X-Gm-Message-State: AOAM5319N8Qx3MXx5inJldCUxyO7TBcsMS7FbqXxFrsuNxHJCd/fkC8V
+        w0cg3josQSC4pjjUxtSi4A==
+X-Google-Smtp-Source: ABdhPJzU8BDDcCbf/hdWWbHSyuiipZ4q19linmO5W5eMQ60JU5K7XyQVF6AYRByp35JPWgvTN+vLBA==
+X-Received: by 2002:a05:6870:ec90:b0:f3:4c28:5acf with SMTP id eo16-20020a056870ec9000b000f34c285acfmr16846652oab.28.1654395472806;
+        Sat, 04 Jun 2022 19:17:52 -0700 (PDT)
 Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id e25-20020a056808111900b0032e73b538dasm978096oih.52.2022.06.04.19.17.50
+        by smtp.gmail.com with ESMTPSA id k84-20020aca3d57000000b0032e2599df3dsm5731389oia.10.2022.06.04.19.17.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 04 Jun 2022 19:17:51 -0700 (PDT)
-Received: (nullmailer pid 3371064 invoked by uid 1000);
+        Sat, 04 Jun 2022 19:17:52 -0700 (PDT)
+Received: (nullmailer pid 3371067 invoked by uid 1000);
         Sun, 05 Jun 2022 02:17:50 -0000
 From:   Rob Herring <robh@kernel.org>
-To:     Srinivas Neeli <srinivas.neeli@xilinx.com>
-Cc:     michal.simek@xilinx.com, shubhraj@xilinx.com, sgoud@xilinx.com,
-        linux-kernel@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        devicetree@vger.kernel.org, alexandre.belloni@bootlin.com,
-        linux-arm-kernel@lists.infradead.org, robh+dt@kernel.org,
-        linux-rtc@vger.kernel.org, a.zummo@towertech.it, git@xilinx.com
-In-Reply-To: <20220603170432.26605-1-srinivas.neeli@xilinx.com>
-References: <20220603170432.26605-1-srinivas.neeli@xilinx.com>
-Subject: Re: [PATCH V5 1/2] dt-bindings: rtc: zynqmp: Add clock information
+To:     Harsh Agarwal <quic_harshq@quicinc.com>
+Cc:     ahalaney@redhat.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        quic_ppratap@quicinc.com, quic_jackp@quicinc.com,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-usb@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        linux-kernel@vger.kernel.org, quic_pkondeti@quicinc.com,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Felipe Balbi <balbi@kernel.org>
+In-Reply-To: <1654276362-28930-2-git-send-email-quic_harshq@quicinc.com>
+References: <1654276362-28930-1-git-send-email-quic_harshq@quicinc.com> <1654276362-28930-2-git-send-email-quic_harshq@quicinc.com>
+Subject: Re: [PATCH v2 1/3] dt-bindings: usb: dwc3: Add support for multiport related properties
 Date:   Sat, 04 Jun 2022 21:17:50 -0500
-Message-Id: <1654395470.124495.3371063.nullmailer@robh.at.kernel.org>
+Message-Id: <1654395470.146119.3371066.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 03 Jun 2022 22:34:31 +0530, Srinivas Neeli wrote:
-> Added clock information and deprecated calibration support.
+On Fri, 03 Jun 2022 22:42:40 +0530, Harsh Agarwal wrote:
+> Added support for multiport, mport, num_usb2_phy and num_usb3_phy
+> properties. These properties are used to support devices having
+> a multiport controller.
 > 
-> Signed-off-by: Srinivas Neeli <srinivas.neeli@xilinx.com>
+> Signed-off-by: Harsh Agarwal <quic_harshq@quicinc.com>
 > ---
-> Changes in V5:
-> -Removed quotes and _clk suffix from clocknames.
-> Changes in V4:
-> - Deprecated calibrtion support
-> Changes in V3:
-> - New patch
-> ---
->  .../devicetree/bindings/rtc/xlnx,zynqmp-rtc.yaml      | 11 +++++++++++
->  1 file changed, 11 insertions(+)
+>  .../devicetree/bindings/usb/snps,dwc3.yaml         | 55 ++++++++++++++++++++++
+>  1 file changed, 55 insertions(+)
 > 
 
 My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
 on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
 yamllint warnings/errors:
+./Documentation/devicetree/bindings/usb/snps,dwc3.yaml:366:8: [warning] wrong indentation: expected 6 but found 7 (indentation)
+./Documentation/devicetree/bindings/usb/snps,dwc3.yaml:367:10: [warning] wrong indentation: expected 11 but found 9 (indentation)
+./Documentation/devicetree/bindings/usb/snps,dwc3.yaml:369:11: [warning] wrong indentation: expected 11 but found 10 (indentation)
 
 dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/rtc/xlnx,zynqmp-rtc.example.dtb: rtc@ffa60000: clock-names:0: 'rtc' was expected
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/rtc/xlnx,zynqmp-rtc.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/usb/snps,dwc3.example.dtb: usb@4a000000: multiport: 'mport' is a required property
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/usb/snps,dwc3.yaml
 
 doc reference errors (make refcheckdocs):
 
