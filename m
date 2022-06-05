@@ -2,78 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60A0BCCA482
-	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 14:11:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEC1DC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 14:12:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344878AbiFEOLY (ORCPT
+        id S1344905AbiFEOMi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 5 Jun 2022 10:11:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44726 "EHLO
+        Sun, 5 Jun 2022 10:12:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344749AbiFEOLV (ORCPT
+        with ESMTP id S242532AbiFEOMg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 5 Jun 2022 10:11:21 -0400
-Received: from mail-ot1-f41.google.com (mail-ot1-f41.google.com [209.85.210.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAAD013FBF;
-        Sun,  5 Jun 2022 07:11:20 -0700 (PDT)
-Received: by mail-ot1-f41.google.com with SMTP id r14-20020a056830418e00b0060b8da9ff75so9006250otu.11;
-        Sun, 05 Jun 2022 07:11:20 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=lRUkT7BBPd5Yv/h/LdvT5NyszL+3WGewd+yFszXzh9k=;
-        b=PJTxjGkw5y8SWY3kld6eqwJim51JSGXBhN6a5+nclgB8d1BfasspxnzfPGmDLeMmW3
-         Eo2SBXCrQlSIjOmMb0W4jLN5OPwbJ8XpbD1k07alI9PJl05BA2Edzfcai8kjinFKAEzy
-         dxFSn4j3aRkAuwtSKwVdHIj8X5PTpxk8LkeCuIrMlLaxJ6FL+Q04VAfZU5JmEhMMZhXR
-         x5/Uz5Z/shVkafxDfHMMCYeiYqTcX5HrfgJEW4sIq1EOhYuaN2gXs+7tC7Hwn3qdoVfN
-         LAiSVKmsmtUfUU5EGwKiF1sy3VUH9KCIFmMwxuO+KzvQyjWXUiRDv06WKTHxazYcwPPb
-         1D9g==
-X-Gm-Message-State: AOAM532DshgEdhwtTyApzBi09SrfSl9mV2DYBAdx6gBTeX6VOrGTGv2K
-        /J/PN8KymNLqDMoPQE7PRDRHJzB5PA==
-X-Google-Smtp-Source: ABdhPJxDMU8i9Ium0iUSU/vLQ9CqODm5zQ+T3J+ZXKkezF+RKwzIdX+2nPuZ+8fXGd8RvFrrPwupbg==
-X-Received: by 2002:a9d:665a:0:b0:60b:a921:e7f6 with SMTP id q26-20020a9d665a000000b0060ba921e7f6mr7928660otm.42.1654438280216;
-        Sun, 05 Jun 2022 07:11:20 -0700 (PDT)
-Received: from robh.at.kernel.org ([172.58.99.0])
-        by smtp.gmail.com with ESMTPSA id x25-20020a9d4599000000b0060603221258sm6662176ote.40.2022.06.05.07.11.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Jun 2022 07:11:19 -0700 (PDT)
-Received: (nullmailer pid 3425881 invoked by uid 1000);
-        Sun, 05 Jun 2022 14:11:12 -0000
-Date:   Sun, 5 Jun 2022 09:11:12 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Wesley Cheng <quic_wcheng@quicinc.com>
-Cc:     linux-arm-msm@vger.kernel.org, agross@kernel.org, vkoul@kernel.org,
-        kishon@ti.com, devicetree@vger.kernel.org,
-        linux-usb@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        broonie@kernel.org, quic_jackp@quicinc.com,
-        bjorn.andersson@linaro.org, linux-phy@lists.infradead.org,
-        lgirdwood@gmail.com, gregkh@linuxfoundation.org,
-        robh+dt@kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: Update QCOM USB subsystem maintainer
- information
-Message-ID: <20220605141112.GA3425470-robh@kernel.org>
-References: <20220603021432.13365-1-quic_wcheng@quicinc.com>
+        Sun, 5 Jun 2022 10:12:36 -0400
+X-Greylist: delayed 903 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 05 Jun 2022 07:12:32 PDT
+Received: from mailg210.ethz.ch (mailg210.ethz.ch [IPv6:2001:67c:10ec:5606::21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2241920F58
+        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 07:12:31 -0700 (PDT)
+Received: from mailm214.d.ethz.ch (2001:67c:10ec:5603::28) by mailg210.ethz.ch
+ (2001:67c:10ec:5606::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.9; Sun, 5 Jun 2022
+ 15:57:11 +0200
+Received: from student.ethz.ch (92.107.246.40) by mailm214.d.ethz.ch
+ (2001:67c:10ec:5603::28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.9; Sun, 5 Jun 2022
+ 15:57:24 +0200
+Date:   Sun, 5 Jun 2022 15:57:16 +0200
+From:   Andrea Paris <aparis@ethz.ch>
+To:     <Larry.Finger@lwfinger.net>, <phil@philpotter.co.uk>,
+        <gregkh@linuxfoundation.org>, <linux-staging@lists.linux.dev>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] Fixed 3 warnings about missing blank line after declaration
+Message-ID: <20220605135716.GA11092@student.ethz.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20220603021432.13365-1-quic_wcheng@quicinc.com>
+X-Originating-IP: [92.107.246.40]
+X-ClientProxiedBy: mailm211.d.ethz.ch (2001:67c:10ec:5603::25) To
+ mailm214.d.ethz.ch (2001:67c:10ec:5603::28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 02 Jun 2022 19:14:32 -0700, Wesley Cheng wrote:
-> Update devicetree binding files with the proper maintainer, and updated
-> contact email.
-> 
-> Signed-off-by: Wesley Cheng <quic_wcheng@quicinc.com>
-> ---
->  Documentation/devicetree/bindings/phy/qcom,qmp-usb3-dp-phy.yaml | 2 +-
->  Documentation/devicetree/bindings/phy/qcom,qusb2-phy.yaml       | 2 +-
->  .../devicetree/bindings/phy/qcom,usb-snps-femto-v2.yaml         | 2 +-
->  .../devicetree/bindings/regulator/qcom,usb-vbus-regulator.yaml  | 2 +-
->  Documentation/devicetree/bindings/usb/qcom,dwc3.yaml            | 2 +-
->  5 files changed, 5 insertions(+), 5 deletions(-)
-> 
+Fixed three checkpatch.pl warnings about missing blank lines after
+declaration
 
-Applied, thanks!
+Signed-off-by: Andrea Paris <aparis@ethz.ch>
+---
+ drivers/staging/r8188eu/core/rtw_cmd.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/staging/r8188eu/core/rtw_cmd.c b/drivers/staging/r8188eu/core/rtw_cmd.c
+index 06523d91939a..92d5e4534087 100644
+--- a/drivers/staging/r8188eu/core/rtw_cmd.c
++++ b/drivers/staging/r8188eu/core/rtw_cmd.c
+@@ -25,6 +25,7 @@ void rtw_free_evt_priv(struct	evt_priv *pevtpriv)
+
+ 	while (!rtw_cbuf_empty(pevtpriv->c2h_queue)) {
+ 		void *c2h = rtw_cbuf_pop(pevtpriv->c2h_queue);
++
+ 		if (c2h && c2h != (void *)pevtpriv)
+ 			kfree(c2h);
+ 	}
+@@ -323,6 +324,7 @@ u8 rtw_sitesurvey_cmd(struct adapter  *padapter, struct ndis_802_11_ssid *ssid,
+ 	/* prepare ssid list */
+ 	if (ssid) {
+ 		int i;
++
+ 		for (i = 0; i < ssid_num && i < RTW_SSID_SCAN_AMOUNT; i++) {
+ 			if (ssid[i].SsidLength) {
+ 				memcpy(&psurveyPara->ssid[i], &ssid[i], sizeof(struct ndis_802_11_ssid));
+@@ -334,6 +336,7 @@ u8 rtw_sitesurvey_cmd(struct adapter  *padapter, struct ndis_802_11_ssid *ssid,
+ 	/* prepare channel list */
+ 	if (ch) {
+ 		int i;
++
+ 		for (i = 0; i < ch_num && i < RTW_CHANNEL_SCAN_AMOUNT; i++) {
+ 			if (ch[i].hw_value && !(ch[i].flags & RTW_IEEE80211_CHAN_DISABLED)) {
+ 				memcpy(&psurveyPara->ch[i], &ch[i], sizeof(struct rtw_ieee80211_channel));
+--
+2.25.1
+
