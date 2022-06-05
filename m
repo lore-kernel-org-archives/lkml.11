@@ -2,264 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1EB7C43334
-	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 00:52:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 827EECCA47C
+	for <linux-kernel@archiver.kernel.org>; Sun,  5 Jun 2022 01:21:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242991AbiFEAwU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 4 Jun 2022 20:52:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47664 "EHLO
+        id S242810AbiFEBR3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 4 Jun 2022 21:17:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243136AbiFEAvb (ORCPT
+        with ESMTP id S232726AbiFEBR0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 4 Jun 2022 20:51:31 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 319034F465;
-        Sat,  4 Jun 2022 17:51:21 -0700 (PDT)
+        Sat, 4 Jun 2022 21:17:26 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1979EDF4E
+        for <linux-kernel@vger.kernel.org>; Sat,  4 Jun 2022 18:17:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654390281; x=1685926281;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=gWOJOaP6IeDKY3DDX8dKai+gQREln1Q+GDMupv/9Q+E=;
-  b=QUgVEQzN7aCK5Zon3Q2wkc/vER/+dc/uE0WFqvSZhaepDGyIE15si3F5
-   sOmJLqVsAJfPh4twIJE9iMJBgk1po1kK5z2JjyGVfkTPQM675ETcbmyau
-   2WjLjSHqTBod5N0gHkM5jRjSMeP8C0WwhtSpddwEMSLMfopkr8eMvFVRr
-   ugR0Gap4f74R9EbzlZyWrhpCgMi+WP0tQudTCO464KjpjhB1GYaeD5Kf5
-   VKpDiWNCZ3TnhvrEQnX6my7rwSzYxuwSeMSy84EpSuPkMQFCNe60UUzCZ
-   Ax/CMo77M9DteyaJJ8WMQUKl9Iwm6GQz6sENTnrtxP9ctbNm5gxK5g94Z
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10368"; a="258587699"
+  t=1654391845; x=1685927845;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=+9SmauaC50SGMWqDNTH6YEIYCMPjxm85swtliW3l4iY=;
+  b=dYy4lAz9KUFALd8E2MiILBb//NKuUu9Y3tUKraUAxe0r2tGsqiT+/NH6
+   xryyIsI1y9aJOKPBIOmRXEkfQutdWI+hSJC0JysQ1txQxs4ytzUMDLgHL
+   2kFGl29d+rKrXc0Jft/yOi3ABPRqn8XhXJRlsM+9XAkQpiNIJeb5F8TYX
+   YEGf94LyMdR6+y42v9eJ5aUx0H2eX+pMHP/LEbwEe4S5kJs+d+vinwTYs
+   lCJrdX7Q8ohkn59nBNC2OVxQ6ltjdoEZM2sd5xBjDSU/jKQgk1Dg12U8R
+   987ewxYkvGjmANmXEcybr4QOkXcURZLCV4eAXggefHH7yJqI+upI+r0OT
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10368"; a="274061219"
 X-IronPort-AV: E=Sophos;i="5.91,278,1647327600"; 
-   d="scan'208";a="258587699"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2022 17:51:21 -0700
+   d="scan'208";a="274061219"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2022 18:17:24 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,278,1647327600"; 
-   d="scan'208";a="553856277"
-Received: from aftome-mobl2.amr.corp.intel.com (HELO localhost) ([10.209.107.207])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2022 17:51:20 -0700
-From:   ira.weiny@intel.com
-To:     Dan Williams <dan.j.williams@intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc:     Ira Weiny <ira.weiny@intel.com>,
-        Alison Schofield <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Ben Widawsky <ben@bwidawsk.net>, linux-kernel@vger.kernel.org,
-        linux-cxl@vger.kernel.org, linux-pci@vger.kernel.org
-Subject: [PATCH V10 9/9] cxl/port: Parse out DSMAS data from CDAT table
-Date:   Sat,  4 Jun 2022 17:50:49 -0700
-Message-Id: <20220605005049.2155874-10-ira.weiny@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220605005049.2155874-1-ira.weiny@intel.com>
-References: <20220605005049.2155874-1-ira.weiny@intel.com>
+   d="scan'208";a="564331304"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 04 Jun 2022 18:17:22 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nxetO-000BLB-7Y;
+        Sun, 05 Jun 2022 01:17:22 +0000
+Date:   Sun, 5 Jun 2022 09:16:41 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Sven Peter <sven@svenpeter.dev>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Hector Martin <marcan@marcan.st>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: [asahilinux:bits/050-nvme 4/9] drivers/soc/apple/sart.c:248:4:
+ warning: format specifies type 'unsigned long long' but the argument has
+ type 'phys_addr_t' (aka 'unsigned int')
+Message-ID: <202206050943.yFqgZDBn-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ira Weiny <ira.weiny@intel.com>
+tree:   https://github.com/AsahiLinux/linux bits/050-nvme
+head:   54dfe8ce63a23f4a11e9aa0481a09a6ec2267b2f
+commit: 96470149f537ee4410acef69bb8a38d806fc98c1 [4/9] soc: apple: Add SART driver
+config: hexagon-randconfig-r041-20220605 (https://download.01.org/0day-ci/archive/20220605/202206050943.yFqgZDBn-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 416a5080d89066029f9889dc23f94de47c2fa895)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/AsahiLinux/linux/commit/96470149f537ee4410acef69bb8a38d806fc98c1
+        git remote add asahilinux https://github.com/AsahiLinux/linux
+        git fetch --no-tags asahilinux bits/050-nvme
+        git checkout 96470149f537ee4410acef69bb8a38d806fc98c1
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/soc/apple/
 
-CXL Ports with memory devices attached need the information from the
-Device Scoped Memory Affinity Structure (DSMAS).  This information is
-contained within the CDAT table buffer which is previously read and
-cached in the port device.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-If CDAT data is available, parse and cache DSMAS data from the table.
-Store this data in unmarshaled struct dsmas data structures for ease of
-use later.
+All warnings (new ones prefixed by >>):
 
-Signed-off-by: Ira Weiny <ira.weiny@intel.com>
+>> drivers/soc/apple/sart.c:248:4: warning: format specifies type 'unsigned long long' but the argument has type 'phys_addr_t' (aka 'unsigned int') [-Wformat]
+                    paddr, size);
+                    ^~~~~
+   include/linux/dev_printk.h:146:70: note: expanded from macro 'dev_warn'
+           dev_printk_index_wrap(_dev_warn, KERN_WARNING, dev, dev_fmt(fmt), ##__VA_ARGS__)
+                                                                       ~~~     ^~~~~~~~~~~
+   include/linux/dev_printk.h:110:23: note: expanded from macro 'dev_printk_index_wrap'
+                   _p_func(dev, fmt, ##__VA_ARGS__);                       \
+                                ~~~    ^~~~~~~~~~~
+   drivers/soc/apple/sart.c:284:4: warning: format specifies type 'unsigned long long' but the argument has type 'phys_addr_t' (aka 'unsigned int') [-Wformat]
+                    paddr, size);
+                    ^~~~~
+   include/linux/dev_printk.h:146:70: note: expanded from macro 'dev_warn'
+           dev_printk_index_wrap(_dev_warn, KERN_WARNING, dev, dev_fmt(fmt), ##__VA_ARGS__)
+                                                                       ~~~     ^~~~~~~~~~~
+   include/linux/dev_printk.h:110:23: note: expanded from macro 'dev_printk_index_wrap'
+                   _p_func(dev, fmt, ##__VA_ARGS__);                       \
+                                ~~~    ^~~~~~~~~~~
+   2 warnings generated.
 
----
-Changes from V8
-	Adjust to the cdat data being in cxl_port
 
-Changes from V7
-	Rebased on cxl-pending
+vim +248 drivers/soc/apple/sart.c
 
-Changes from V6
-	Move to port.c
-	It is not an error if no DSMAS data is found
+   219	
+   220	int apple_sart_add_allowed_region(struct apple_sart *sart, phys_addr_t paddr,
+   221					  size_t size)
+   222	{
+   223		int i, ret;
+   224	
+   225		for (i = 0; i < APPLE_SART_MAX_ENTRIES; ++i) {
+   226			if (test_bit(i, &sart->protected_entries))
+   227				continue;
+   228			if (test_and_set_bit(i, &sart->used_entries))
+   229				continue;
+   230	
+   231			ret = sart_set_entry(sart, i, APPLE_SART_FLAGS_ALLOW, paddr,
+   232					     size);
+   233			if (ret) {
+   234				dev_dbg(sart->dev,
+   235					"unable to set entry %d to [%pa, 0x%zx]\n",
+   236					i, &paddr, size);
+   237				clear_bit(i, &sart->used_entries);
+   238				return ret;
+   239			}
+   240	
+   241			dev_dbg(sart->dev, "wrote [%pa, 0x%zx] to %d\n", &paddr, size,
+   242				i);
+   243			return 0;
+   244		}
+   245	
+   246		dev_warn(sart->dev,
+   247			 "no free entries left to add [paddr: 0x%llx, size: 0x%zx]\n",
+ > 248			 paddr, size);
+   249	
+   250		return -EBUSY;
+   251	}
+   252	EXPORT_SYMBOL(apple_sart_add_allowed_region);
+   253	
 
-Changes from V5
-	Fix up sparse warnings
-	Split out cdat_hdr_valid()
-	Update cdat_hdr_valid()
-		Remove revision and cs field parsing
-			There is no point in these
-		Add seq check and debug print.
-	From Jonathan
-		Add spaces around '+' and '/'
-		use devm_krealloc() for dmas_ary
----
- drivers/cxl/cdat.h     | 17 +++++++++++
- drivers/cxl/core/pci.c | 65 ++++++++++++++++++++++++++++++++++++++++++
- drivers/cxl/cxl.h      |  2 ++
- drivers/cxl/cxlmem.h   |  4 +++
- drivers/cxl/cxlpci.h   |  1 +
- drivers/cxl/mem.c      |  1 +
- 6 files changed, 90 insertions(+)
-
-diff --git a/drivers/cxl/cdat.h b/drivers/cxl/cdat.h
-index 3d8945612511..0a510f73fe6d 100644
---- a/drivers/cxl/cdat.h
-+++ b/drivers/cxl/cdat.h
-@@ -85,6 +85,23 @@
- 
- #define CXL_DOE_PROTOCOL_TABLE_ACCESS 2
- 
-+/**
-+ * struct cxl_dsmas - host unmarshaled version of DSMAS data
-+ *
-+ * As defined in the Coherent Device Attribute Table (CDAT) specification this
-+ * represents a single DSMAS entry in that table.
-+ *
-+ * @dpa_base: The lowest Device Physical Address associated with this DSMAD
-+ * @length: Length in bytes of this DSMAD
-+ * @non_volatile: If set, the memory region represents Non-Volatile memory
-+ */
-+struct cxl_dsmas {
-+	u64 dpa_base;
-+	u64 length;
-+	/* Flags */
-+	u8 non_volatile:1;
-+};
-+
- /**
-  * struct cxl_cdat - CXL CDAT data
-  *
-diff --git a/drivers/cxl/core/pci.c b/drivers/cxl/core/pci.c
-index e68f13e66fcf..9666cc4a67aa 100644
---- a/drivers/cxl/core/pci.c
-+++ b/drivers/cxl/core/pci.c
-@@ -673,3 +673,68 @@ void read_cdat_data(struct cxl_port *port)
- 		retries);
- }
- EXPORT_SYMBOL_NS_GPL(read_cdat_data, CXL);
-+
-+void parse_dsmas(struct cxl_memdev *cxlmd, struct cxl_port *port)
-+{
-+	struct device *dev = &port->dev;
-+	struct cxl_dsmas *dsmas_ary = NULL;
-+	u32 *data = port->cdat.table;
-+	int bytes_left = port->cdat.length;
-+	int nr_dsmas = 0;
-+
-+	if (!data) {
-+		dev_info(dev, "No CDAT data available for DSMAS\n");
-+		return;
-+	}
-+
-+	/* Skip header */
-+	data += CDAT_HEADER_LENGTH_DW;
-+	bytes_left -= CDAT_HEADER_LENGTH_BYTES;
-+
-+	while (bytes_left > 0) {
-+		u32 *cur_rec = data;
-+		u8 type = FIELD_GET(CDAT_STRUCTURE_DW0_TYPE, cur_rec[0]);
-+		u16 length = FIELD_GET(CDAT_STRUCTURE_DW0_LENGTH, cur_rec[0]);
-+
-+		if (type == CDAT_STRUCTURE_DW0_TYPE_DSMAS) {
-+			struct cxl_dsmas *new_ary;
-+			u8 flags;
-+
-+			new_ary = devm_krealloc(dev, dsmas_ary,
-+					   sizeof(*dsmas_ary) * (nr_dsmas + 1),
-+					   GFP_KERNEL);
-+			if (!new_ary) {
-+				dev_err(dev,
-+					"Failed to allocate memory for DSMAS data (nr_dsmas %d)\n",
-+					nr_dsmas);
-+				return;
-+			}
-+			dsmas_ary = new_ary;
-+
-+			flags = FIELD_GET(CDAT_DSMAS_DW1_FLAGS, cur_rec[1]);
-+
-+			dsmas_ary[nr_dsmas].dpa_base = CDAT_DSMAS_DPA_OFFSET(cur_rec);
-+			dsmas_ary[nr_dsmas].length = CDAT_DSMAS_DPA_LEN(cur_rec);
-+			dsmas_ary[nr_dsmas].non_volatile = CDAT_DSMAS_NON_VOLATILE(flags);
-+
-+			dev_dbg(dev, "DSMAS %d: %llx:%llx %s\n",
-+				nr_dsmas,
-+				dsmas_ary[nr_dsmas].dpa_base,
-+				dsmas_ary[nr_dsmas].dpa_base +
-+					dsmas_ary[nr_dsmas].length,
-+				(dsmas_ary[nr_dsmas].non_volatile ?
-+					"Persistent" : "Volatile")
-+				);
-+
-+			nr_dsmas++;
-+		}
-+
-+		data += (length / sizeof(u32));
-+		bytes_left -= length;
-+	}
-+
-+	dev_dbg(dev, "Found %d DSMAS entries\n", nr_dsmas);
-+	cxlmd->dsmas_ary = dsmas_ary;
-+	cxlmd->nr_dsmas = nr_dsmas;
-+}
-+EXPORT_SYMBOL_NS_GPL(parse_dsmas, CXL);
-diff --git a/drivers/cxl/cxl.h b/drivers/cxl/cxl.h
-index 531b77d296c7..4d779a8fb807 100644
---- a/drivers/cxl/cxl.h
-+++ b/drivers/cxl/cxl.h
-@@ -10,6 +10,8 @@
- #include <linux/io.h>
- #include "cdat.h"
- 
-+#include "cdat.h"
-+
- /**
-  * DOC: cxl objects
-  *
-diff --git a/drivers/cxl/cxlmem.h b/drivers/cxl/cxlmem.h
-index 4d2764b865ab..ce5b00f3ebcb 100644
---- a/drivers/cxl/cxlmem.h
-+++ b/drivers/cxl/cxlmem.h
-@@ -36,6 +36,8 @@
-  * @cxlds: The device state backing this device
-  * @detach_work: active memdev lost a port in its ancestry
-  * @id: id number of this memdev instance.
-+ * @dsmas_ary: Array of DSMAS entries as parsed from the CDAT table
-+ * @nr_dsmas: Number of entries in dsmas_ary
-  */
- struct cxl_memdev {
- 	struct device dev;
-@@ -43,6 +45,8 @@ struct cxl_memdev {
- 	struct cxl_dev_state *cxlds;
- 	struct work_struct detach_work;
- 	int id;
-+	struct cxl_dsmas *dsmas_ary;
-+	int nr_dsmas;
- };
- 
- static inline struct cxl_memdev *to_cxl_memdev(struct device *dev)
-diff --git a/drivers/cxl/cxlpci.h b/drivers/cxl/cxlpci.h
-index 71009a167a92..44d1c2b83aab 100644
---- a/drivers/cxl/cxlpci.h
-+++ b/drivers/cxl/cxlpci.h
-@@ -76,4 +76,5 @@ struct cxl_dev_state;
- int cxl_hdm_decode_init(struct cxl_dev_state *cxlds, struct cxl_hdm *cxlhdm);
- void cxl_cache_cdat_mb(struct cxl_port *port);
- void read_cdat_data(struct cxl_port *port);
-+void parse_dsmas(struct cxl_memdev *cxlmd, struct cxl_port *port);
- #endif /* __CXL_PCI_H__ */
-diff --git a/drivers/cxl/mem.c b/drivers/cxl/mem.c
-index c310f1fd3db0..a8768df4ae38 100644
---- a/drivers/cxl/mem.c
-+++ b/drivers/cxl/mem.c
-@@ -35,6 +35,7 @@ static int create_endpoint(struct cxl_memdev *cxlmd,
- 	if (IS_ERR(endpoint))
- 		return PTR_ERR(endpoint);
- 
-+	parse_dsmas(cxlmd, endpoint);
- 	dev_dbg(&cxlmd->dev, "add: %s\n", dev_name(&endpoint->dev));
- 
- 	if (!endpoint->dev.driver) {
 -- 
-2.35.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
