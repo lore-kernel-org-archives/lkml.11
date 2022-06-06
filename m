@@ -2,161 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 722F5C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 17:37:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E586FC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 17:37:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229781AbiFFRhE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 13:37:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56302 "EHLO
+        id S229458AbiFFRhg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 13:37:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229814AbiFFRfK (ORCPT
+        with ESMTP id S229795AbiFFRhb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 13:35:10 -0400
-Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35F501B1F49
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 10:35:06 -0700 (PDT)
-Received: by mail-qv1-xf31.google.com with SMTP id h18so10651940qvj.11
-        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 10:35:06 -0700 (PDT)
+        Mon, 6 Jun 2022 13:37:31 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02D418E18A
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 10:37:30 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id a15so24423918lfb.9
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 10:37:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ONtgrpUVfgaDiq1zXnbAn6nVrL5RzEEKdEEOpv/ts/w=;
-        b=RPfBncwo3xRZLwPCaB9JoOSmhUbJjQWh9/5exDp/xTLykz+3iQC2crnSEzJTjWyngW
-         IO+Uunz+rAz2cBH+5mqRSxNUA0mo50556+qYwskvrDKYj/86Oh7U1tHDmYc0kL4XFimb
-         28/h/wWggvQUJvn+QDFC8qSqgypcW8OXO5p8MCzEzNPUvxnnLpYDMlj5rkMrpLW2GJpF
-         XTzyw1Tx3zPSOsULoI+qZ6DwI6rqRiepjm29aGw7avud7eFNPacK0xOxx8hAb4XLaw+Y
-         7B8tg2GZowlAXWZzUhqt/D3u3E+cr/E7Y6CMu+HqfRt7RFUgXIsF9idwf8un6kTDs60i
-         IAKw==
+        d=openvz-org.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=JrUCHDV/B4VsIskumMgOVA+zun0SZZfvJ9SUQK9Ped0=;
+        b=hpch6RMMl19NjgUugT4b8eX/vUbvGeMyguIjW1q7ywrR/Nhc6fDnsHDWFxHhMX64Z6
+         OdF4ERrF6B4Sip2D/a2woNKQeucy71ArF21CwisItz4umAXm60/4ZxyfHi0dT5fMj1vH
+         YpcNVAqkKO0D9/Nf99PxbgIl+KHzfZuYdROKocmQFjZvsJlwy953ZFB+SZaDRy12nEp/
+         E2rIXrQoD7AsDpdjLSANTi8R11+9R7VLnlHe2pX/4sI4BypamWK7DkKGK40Tku7WBEkH
+         wmGJhQnYPcITS9wRYIbNMAwK+VCsl8lrCUcCYtCIFlC2PId8EXyc8WiUB56KToN7m58T
+         Gc4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ONtgrpUVfgaDiq1zXnbAn6nVrL5RzEEKdEEOpv/ts/w=;
-        b=EriWVPynR372Z8XlEAYtqSMWeYVp+vqEMt0H+BKHvqoi5LdZ7V6uC0tOY9tQVWWmmO
-         XMXNlu1ZJknMpxEf0t2fBgJ2ut5O0Lbm1kr/f/9kVtPaNpUpwDw+3cZ2gxzSsHnaiwIr
-         /rNJc3xxpwTkRojfs3i4LJ1BrrkT+FgOySgGIXYm+Nrzr6GGVvm59/KXaEYne4hqAHsi
-         +4dtRscWF9MEY3YqdVR9F48dPkQKfLoTENp7P/X4yuEgXLxIIy8sCaQgRAjkyQeaPLyh
-         hAn//EbINts3/lq9gaHUN47neqOenFuBxFmy/kRtDbjxOmcMHVkKpmLWfg/QgoiEkLwp
-         6OWw==
-X-Gm-Message-State: AOAM533nE1KEck0w5OUbcWPDuXcgiYoxZNfCM1R0Z7vMZtYhJR5/AwYf
-        GvWBZ7V4f7fCFkzGa7FK4aWjiw==
-X-Google-Smtp-Source: ABdhPJwHrpLRvcb2wRgm9WoukfE/nzu+lokhq+WkPqXduzdXyYjlDQJX7ghcMowYgUkJL1HDosduPQ==
-X-Received: by 2002:a05:6214:1d2f:b0:464:46fe:ca68 with SMTP id f15-20020a0562141d2f00b0046446feca68mr34363805qvd.4.1654536905279;
-        Mon, 06 Jun 2022 10:35:05 -0700 (PDT)
-Received: from localhost (cpe-67-251-217-1.hvc.res.rr.com. [67.251.217.1])
-        by smtp.gmail.com with ESMTPSA id g4-20020a37b604000000b006a5fb8219bbsm11805833qkf.44.2022.06.06.10.35.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jun 2022 10:35:04 -0700 (PDT)
-Date:   Mon, 6 Jun 2022 13:34:59 -0400
-From:   Johannes Weiner <hannes@cmpxchg.org>
-To:     Qi Zheng <zhengqi.arch@bytedance.com>
-Cc:     roman.gushchin@linux.dev, shakeelb@google.com,
-        songmuchun@bytedance.com, mhocko@kernel.org,
-        akpm@linux-foundation.org, corbet@lwn.net, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-        Michal Hocko <mhocko@suse.com>
-Subject: Re: [PATCH v3] mm: memcontrol: add {pgscan,pgsteal}_{kswapd,direct}
- items in memory.stat of cgroup v2
-Message-ID: <Yp46w4op9JeX9+g9@cmpxchg.org>
-References: <20220606154028.55030-1-zhengqi.arch@bytedance.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=JrUCHDV/B4VsIskumMgOVA+zun0SZZfvJ9SUQK9Ped0=;
+        b=FqN5dQLLEGpRlequR2w42T+zjloYflJ//+KCFh16lCcL56RdTKkog8onSIRZAjeshF
+         VlKQb1F3nQOHAl6Dthnr9V6v1Zm9hwYsvRyIYui99EMFUoI2Y0TtXmjzgAl1Wt0ozRb9
+         /7YmFPbc6C1osMRvupajqBbQUjkJqgiYZpR6Rh3x78UCPs7SrUBUPdxrNkrpfbH1I+5H
+         s+owGi3w8+Ch/92ox6LPj7SnG0MbcmaBc72027gXmry4aYdT5CxSxwGyRPQd3byFvgkv
+         ftjkbTnpnKjnMQRl1JgopakblkbNXWQdufGuLqMHl2NZlTlvXPbOeYqLLIfYLFLkiotC
+         pQqQ==
+X-Gm-Message-State: AOAM533SOc41aJTGwbTN24l03IleclT9QHXQNJ2vKaceKLHMtdvOAl/b
+        DYd4ZiwzV076CPq/0zKWuQPt/Q==
+X-Google-Smtp-Source: ABdhPJw3mNZINYtsHd+u+uA7Z70hbWUIv0yqvCgISRT/07X3iFaOTJtEwziwUg9mdX//ff49pG1mVg==
+X-Received: by 2002:a05:6512:3a8e:b0:479:d8f:1a0c with SMTP id q14-20020a0565123a8e00b004790d8f1a0cmr15215467lfu.227.1654537048352;
+        Mon, 06 Jun 2022 10:37:28 -0700 (PDT)
+Received: from [192.168.1.65] ([46.188.121.129])
+        by smtp.gmail.com with ESMTPSA id d21-20020a05651c089500b0025567827117sm2538623ljq.13.2022.06.06.10.37.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 06 Jun 2022 10:37:27 -0700 (PDT)
+Message-ID: <0e714a5a-d2ed-9b44-fdbe-04b5595165da@openvz.org>
+Date:   Mon, 6 Jun 2022 20:37:26 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220606154028.55030-1-zhengqi.arch@bytedance.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH memcg v6] net: set proper memcg for net_init hooks
+ allocations
+Content-Language: en-US
+To:     Qian Cai <quic_qiancai@quicinc.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, kernel@openvz.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Shakeel Butt <shakeelb@google.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Michal Hocko <mhocko@suse.com>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, cgroups@vger.kernel.org
+References: <6b362c6e-9c80-4344-9430-b831f9871a3c@openvz.org>
+ <f9394752-e272-9bf9-645f-a18c56d1c4ec@openvz.org> <Yp4F6n2Ie32re7Ed@qian>
+From:   Vasily Averin <vvs@openvz.org>
+In-Reply-To: <Yp4F6n2Ie32re7Ed@qian>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 06, 2022 at 11:40:28PM +0800, Qi Zheng wrote:
-> There are already statistics of {pgscan,pgsteal}_kswapd and
-> {pgscan,pgsteal}_direct of memcg event here, but now only the
-> sum of the two is displayed in memory.stat of cgroup v2.
+On 6/6/22 16:49, Qian Cai wrote:
+> This triggers a few boot warnings like those.
 > 
-> In order to obtain more accurate information during monitoring
-> and debugging, and to align with the display in /proc/vmstat,
-> it better to display {pgscan,pgsteal}_kswapd and
-> {pgscan,pgsteal}_direct separately.
-> 
-> Also, for forward compatibility, we still display pgscan and
-> pgsteal items so that it won't break existing applications.
-> 
-> Signed-off-by: Qi Zheng <zhengqi.arch@bytedance.com>
-> Acked-by: Johannes Weiner <hannes@cmpxchg.org>
-> Acked-by: Roman Gushchin <roman.gushchin@linux.dev>
-> Acked-by: Muchun Song <songmuchun@bytedance.com>
-> Acked-by: Shakeel Butt <shakeelb@google.com>
-> Acked-by: Michal Hocko <mhocko@suse.com>
+>  virt_to_phys used for non-linear address: ffffd8efe2d2fe00 (init_net)
+>  WARNING: CPU: 87 PID: 3170 at arch/arm64/mm/physaddr.c:12 __virt_to_phys
 
-No objection to keeping pgscan and pgsteal, but can you please fix the
-doc to present the items in the same order as memory.stat has them?
+Thank you for reporting the problem,
+Could you please provide me your config file via private email?
 
-> @@ -1445,9 +1445,21 @@ PAGE_SIZE multiple when read back.
->  	  pgscan (npn)
->  		Amount of scanned pages (in an inactive LRU list)
->  
-> +	  pgscan_kswapd (npn)
-> +		Amount of scanned pages by kswapd (in an inactive LRU list)
-> +
-> +	  pgscan_direct (npn)
-> +		Amount of scanned pages directly  (in an inactive LRU list)
-> +
->  	  pgsteal (npn)
->  		Amount of reclaimed pages
->  
-> +	  pgsteal_kswapd (npn)
-> +		Amount of reclaimed pages by kswapd
-> +
-> +	  pgsteal_direct (npn)
-> +		Amount of reclaimed pages directly
-> +
->  	  pgactivate (npn)
->  		Amount of pages moved to the active LRU list
-
-vs:
-
-> @@ -1495,41 +1518,17 @@ static char *memory_stat_format(struct mem_cgroup *memcg)
->  	}
->  
->  	/* Accumulated memory events */
-> -
-> -	seq_buf_printf(&s, "%s %lu\n", vm_event_name(PGFAULT),
-> -		       memcg_events(memcg, PGFAULT));
-> -	seq_buf_printf(&s, "%s %lu\n", vm_event_name(PGMAJFAULT),
-> -		       memcg_events(memcg, PGMAJFAULT));
-> -	seq_buf_printf(&s, "%s %lu\n",  vm_event_name(PGREFILL),
-> -		       memcg_events(memcg, PGREFILL));
->  	seq_buf_printf(&s, "pgscan %lu\n",
->  		       memcg_events(memcg, PGSCAN_KSWAPD) +
->  		       memcg_events(memcg, PGSCAN_DIRECT));
->  	seq_buf_printf(&s, "pgsteal %lu\n",
->  		       memcg_events(memcg, PGSTEAL_KSWAPD) +
->  		       memcg_events(memcg, PGSTEAL_DIRECT));
-> -	seq_buf_printf(&s, "%s %lu\n", vm_event_name(PGACTIVATE),
-> -		       memcg_events(memcg, PGACTIVATE));
-> -	seq_buf_printf(&s, "%s %lu\n", vm_event_name(PGDEACTIVATE),
-> -		       memcg_events(memcg, PGDEACTIVATE));
-> -	seq_buf_printf(&s, "%s %lu\n", vm_event_name(PGLAZYFREE),
-> -		       memcg_events(memcg, PGLAZYFREE));
-> -	seq_buf_printf(&s, "%s %lu\n", vm_event_name(PGLAZYFREED),
-> -		       memcg_events(memcg, PGLAZYFREED));
-> -
-> -#if defined(CONFIG_MEMCG_KMEM) && defined(CONFIG_ZSWAP)
-> -	seq_buf_printf(&s, "%s %lu\n", vm_event_name(ZSWPIN),
-> -		       memcg_events(memcg, ZSWPIN));
-> -	seq_buf_printf(&s, "%s %lu\n", vm_event_name(ZSWPOUT),
-> -		       memcg_events(memcg, ZSWPOUT));
-> -#endif
->  
-> -#ifdef CONFIG_TRANSPARENT_HUGEPAGE
-> -	seq_buf_printf(&s, "%s %lu\n", vm_event_name(THP_FAULT_ALLOC),
-> -		       memcg_events(memcg, THP_FAULT_ALLOC));
-> -	seq_buf_printf(&s, "%s %lu\n", vm_event_name(THP_COLLAPSE_ALLOC),
-> -		       memcg_events(memcg, THP_COLLAPSE_ALLOC));
-> -#endif /* CONFIG_TRANSPARENT_HUGEPAGE */
-> +	for (i = 0; i < ARRAY_SIZE(memcg_vm_event_stat); i++)
-> +		seq_buf_printf(&s, "%s %lu\n",
-> +			       vm_event_name(memcg_vm_event_stat[i]),
-> +			       memcg_events(memcg, memcg_vm_event_stat[i]));
-
-Thanks
+Thank you,
+	Vasily Averin
