@@ -2,101 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B106CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 18:23:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95495C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 18:27:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231761AbiFFSXp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 14:23:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55796 "EHLO
+        id S231735AbiFFS1w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 14:27:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231592AbiFFSXY (ORCPT
+        with ESMTP id S230101AbiFFS1q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 14:23:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5D8910655B;
-        Mon,  6 Jun 2022 11:23:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8E35AB81AF1;
-        Mon,  6 Jun 2022 18:23:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C751BC385A9;
-        Mon,  6 Jun 2022 18:23:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654539800;
-        bh=zzYotTKEGLDprg9+poMHiWB57TXnLs8veIXqbVZJakQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cxG50trjbZk11hd8BkFPwMnPsdUMaKaDxA2TDSM1UP6LsoVQ2+0tCUFnSFT9JTdgi
-         /Lfe0F+d4rorgHfn5Dn1QZm0yd2Of6JsN4IBr2lSKmC05oOsOFOKb9RXwNYBUX3sNz
-         jccl9HwJ5MX8yhA+qInAi3jwKf9gVkYG0SB5R4cJOQfzGvXYDNq+kEXV8PuK5rGnre
-         7Ne08FyMzxIoQvddB01DsviJGOfNDDCKiqalHx8+QnvFVUzsqzqilvFWYw0I9e+WGj
-         7YZe6OK5GXKeiLIZqpS5L2VACnDfO3ic+5RciciQeU/GEi2W+xdaXzBT3/cNwJtX2C
-         tbYobf3tbGxGQ==
-From:   SeongJae Park <sj@kernel.org>
-To:     akpm@linux-foundation.org
-Cc:     corbet@lwn.net, damon@lists.linux.dev, linux-mm@kvack.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        SeongJae Park <sj@kernel.org>
-Subject: [PATCH 5/6] mm/damon/reclaim: make 'enabled' checking timer simpler
-Date:   Mon,  6 Jun 2022 18:23:09 +0000
-Message-Id: <20220606182310.48781-6-sj@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220606182310.48781-1-sj@kernel.org>
-References: <20220606182310.48781-1-sj@kernel.org>
+        Mon, 6 Jun 2022 14:27:46 -0400
+Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EEDE53E17
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 11:27:44 -0700 (PDT)
+Received: by mail-qk1-x732.google.com with SMTP id 15so6323133qki.6
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 11:27:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=J380jdF/ieu9cZkkbsOGiWk1KtiScqYXh68+x84xO1U=;
+        b=KRU2FQlR9Ts6sUAIZXfil6mvcY7o6TcZx0MMUWmXKphrz4HGGcNwjzVb2wEdHggTZs
+         qKSSpSoO63RXpp4JZNehk/p1HvO80p7M6qZqZQcRMJfD6fp8symEelduGP8uaYv2aZdE
+         gRK14Rm/jGjoB30hPqe3f0PzVgZDGyYDXP1mY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=J380jdF/ieu9cZkkbsOGiWk1KtiScqYXh68+x84xO1U=;
+        b=CnlbqreA3AnjGybskOyWyU1niyxvyjLvryQQlGO1LdH4lq+zL7HL7agrmwbnDloEBn
+         TmwwB6nvpS8jcJzxWRcauNROt/b+Qq+04jKe8rAQmA39pjnM8jv4t1OjBb686zEr70Io
+         6fyDV9NefauEaGXRTxsQlRNsP2UlN46QtrT9xEtuF3GpxpR4g3/qg62gaVirlGZjJn2F
+         XhDdGXWfTcHrRtvRUACaOegTf6wFCKjKHEOtaZsBMlMIlZ2g2CjJsHUYMtxkoksgILOB
+         vKgyUvluLioLxOMctaPE1t9Sl8NC8sr1lrc8MFy5c15BC4qdExBWdsXeQ1nKBSjjjmXh
+         L3yQ==
+X-Gm-Message-State: AOAM5328Dy9dmJ6/bOFUBlMj/CARvU1uRE4I5pS+bA9LRGoTsV1ozrGR
+        c3mV85amP7taUxtfaVBbseZIaoTTx4YdcrOIEIvQlijJ2m8=
+X-Google-Smtp-Source: ABdhPJwIabZL7mcBY+lmnzLIZ8jcLxsQvEW4br9vFf2+vaEYmF5rcOzefcPkaYgC5t/nuN2aeb+Hlz67pD2Sf30fvJ8=
+X-Received: by 2002:a05:620a:600a:b0:6a6:c6ac:c5e5 with SMTP id
+ dw10-20020a05620a600a00b006a6c6acc5e5mr2695336qkb.286.1654540063651; Mon, 06
+ Jun 2022 11:27:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220606134807.4102807-1-yangyingliang@huawei.com>
+In-Reply-To: <20220606134807.4102807-1-yangyingliang@huawei.com>
+From:   Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+Date:   Mon, 6 Jun 2022 11:27:32 -0700
+Message-ID: <CANFp7mUdv+SGTvvi+FqVESz_CuWdOfbP4dXFXLkCxPW9TPgrpg@mail.gmail.com>
+Subject: Re: [PATCH -next] Bluetooth: hci_core: Fix error return code in hci_register_dev()
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-bluetooth@vger.kernel.org, marcel@holtmann.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DAMON_RECLAIM's 'enabled' parameter store callback ('enabled_store()')
-schedules the parameter check timer ('damon_reclaim_timer') if the
-parameter is set as 'Y'.  Then, the timer schedules itself to check if
-user has set the parameter as 'N'.  It's unnecessarily complex.
+On Mon, Jun 6, 2022 at 6:38 AM Yang Yingliang <yangyingliang@huawei.com> wrote:
+>
+> If hci_register_suspend_notifier() fails, it should return error
+> code in hci_register_dev().
+>
+> Fixes: d6bb2a91f95b ("Bluetooth: Unregister suspend with userchannel")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+> ---
+>  net/bluetooth/hci_core.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+>
+> diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+> index a4b4b3b927f2..dbddf891a4a9 100644
+> --- a/net/bluetooth/hci_core.c
+> +++ b/net/bluetooth/hci_core.c
+> @@ -2646,7 +2646,8 @@ int hci_register_dev(struct hci_dev *hdev)
+>         hci_sock_dev_event(hdev, HCI_DEV_REG);
+>         hci_dev_hold(hdev);
+>
+> -       if (hci_register_suspend_notifier(hdev))
+> +       error = hci_register_suspend_notifier(hdev);
+> +       if (error)
+>                 goto err_wqueue;
+>
+>         queue_work(hdev->req_workqueue, &hdev->power_on);
+> --
+> 2.25.1
+>
 
-This commit makes it simpler by making the parameter store callback to
-schedule the timer regardless of the parameter value and disabling the
-timer's self scheduling.
+Ah, I missed this. Good catch!
 
-Signed-off-by: SeongJae Park <sj@kernel.org>
----
- mm/damon/reclaim.c | 9 +--------
- 1 file changed, 1 insertion(+), 8 deletions(-)
-
-diff --git a/mm/damon/reclaim.c b/mm/damon/reclaim.c
-index c2ed962db23f..38da28803d75 100644
---- a/mm/damon/reclaim.c
-+++ b/mm/damon/reclaim.c
-@@ -353,7 +353,6 @@ static int damon_reclaim_turn(bool on)
- 	return 0;
- }
- 
--#define ENABLE_CHECK_INTERVAL_MS	1000
- static struct delayed_work damon_reclaim_timer;
- static void damon_reclaim_timer_fn(struct work_struct *work)
- {
-@@ -367,10 +366,6 @@ static void damon_reclaim_timer_fn(struct work_struct *work)
- 		else
- 			enabled = last_enabled;
- 	}
--
--	if (enabled)
--		schedule_delayed_work(&damon_reclaim_timer,
--			msecs_to_jiffies(ENABLE_CHECK_INTERVAL_MS));
- }
- static DECLARE_DELAYED_WORK(damon_reclaim_timer, damon_reclaim_timer_fn);
- 
-@@ -388,9 +383,7 @@ static int enabled_store(const char *val,
- 	if (!damon_reclaim_initialized)
- 		return rc;
- 
--	if (enabled)
--		schedule_delayed_work(&damon_reclaim_timer, 0);
--
-+	schedule_delayed_work(&damon_reclaim_timer, 0);
- 	return 0;
- }
- 
--- 
-2.25.1
-
+Acked-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
