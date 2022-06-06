@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CDCEC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 07:05:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0987C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 07:05:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230497AbiFFHFU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 03:05:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57470 "EHLO
+        id S230511AbiFFHF3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 03:05:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230436AbiFFHEi (ORCPT
+        with ESMTP id S230416AbiFFHEx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 03:04:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8605F1A380;
-        Mon,  6 Jun 2022 00:04:34 -0700 (PDT)
+        Mon, 6 Jun 2022 03:04:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF99327FED;
+        Mon,  6 Jun 2022 00:04:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EFBB961138;
-        Mon,  6 Jun 2022 07:04:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1B64C385A9;
-        Mon,  6 Jun 2022 07:04:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5A671B811A9;
+        Mon,  6 Jun 2022 07:04:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82D1CC341CB;
+        Mon,  6 Jun 2022 07:04:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654499073;
-        bh=at7l+rzRcDCdypHVDCNRyVXd9QHP+mBQ1VcvpLRbl74=;
+        s=korg; t=1654499087;
+        bh=n9IVuh/J25ihYzv2tlJCTODv4nR3IDfYTH30Pj0/Tyg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dJHDlfXgTd1VLbck4siHtqcu2g7gtNpcjDO78jbz3XWUH8uPxe2h3wmHWOF+bPvFO
-         yDRaeH1RCjy7nLklb7IOuHUTBcK6naL8TLXpg+/V5PrIc5xBZWM9WGGDs0UWtF8emD
-         k44GVmSr1ywi9NTp1y1W8XvYSBhVDSkc2/3tFmfw=
+        b=QVPLAIY8BjOsyhltTh+pZigeAEI4ePlYAkvspEEIQeQlAU2ZIrqywFHqYTc5EJ01U
+         qOjnEbCWAfK3pyTag2Wm7Sy/EwqDPYceU3dP5fN8LY1PJK9n0zSPUESf7pPjuxZcJd
+         keUzBWUyE2lAIubH5ofeMzq4JirUNXrC27xZcLkg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
         torvalds@linux-foundation.org, stable@vger.kernel.org
 Cc:     lwn@lwn.net, jslaby@suse.cz,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: Linux 4.19.246
-Date:   Mon,  6 Jun 2022 09:04:27 +0200
-Message-Id: <165449906614831@kroah.com>
+Subject: Re: Linux 5.4.197
+Date:   Mon,  6 Jun 2022 09:04:37 +0200
+Message-Id: <16544990764270@kroah.com>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <165449906624716@kroah.com>
-References: <165449906624716@kroah.com>
+In-Reply-To: <1654499076146246@kroah.com>
+References: <1654499076146246@kroah.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -47,7 +47,7 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 diff --git a/Documentation/process/submitting-patches.rst b/Documentation/process/submitting-patches.rst
-index c0917107b90a..3739c1ce686d 100644
+index fb56297f70dc..857be0d44e80 100644
 --- a/Documentation/process/submitting-patches.rst
 +++ b/Documentation/process/submitting-patches.rst
 @@ -133,7 +133,7 @@ as you intend it to.
@@ -60,23 +60,23 @@ index c0917107b90a..3739c1ce686d 100644
  Solve only one problem per patch.  If your description starts to get
  long, that's a sign that you probably need to split up your patch.
 diff --git a/Makefile b/Makefile
-index 64a64f6ba90d..e1cbe6e8bcae 100644
+index c064ed925552..57e27af9fc0c 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -1,7 +1,7 @@
  # SPDX-License-Identifier: GPL-2.0
- VERSION = 4
- PATCHLEVEL = 19
--SUBLEVEL = 245
-+SUBLEVEL = 246
+ VERSION = 5
+ PATCHLEVEL = 4
+-SUBLEVEL = 196
++SUBLEVEL = 197
  EXTRAVERSION =
- NAME = "People's Front"
+ NAME = Kleptomaniac Octopus
  
 diff --git a/arch/x86/pci/xen.c b/arch/x86/pci/xen.c
-index 22da9bfd8a45..bacf8d988f65 100644
+index 5c11ae66b5d8..9cf8f5417e7f 100644
 --- a/arch/x86/pci/xen.c
 +++ b/arch/x86/pci/xen.c
-@@ -441,6 +441,11 @@ void __init xen_msi_init(void)
+@@ -442,6 +442,11 @@ void __init xen_msi_init(void)
  
  	x86_msi.setup_msi_irqs = xen_hvm_setup_msi_irqs;
  	x86_msi.teardown_msi_irq = xen_teardown_msi_irq;
@@ -88,21 +88,40 @@ index 22da9bfd8a45..bacf8d988f65 100644
  }
  #endif
  
-diff --git a/block/bio.c b/block/bio.c
-index fe749404ef93..7858b2d23916 100644
---- a/block/bio.c
-+++ b/block/bio.c
-@@ -1528,7 +1528,7 @@ struct bio *bio_copy_kern(struct request_queue *q, void *data, unsigned int len,
- 		if (bytes > len)
- 			bytes = len;
+diff --git a/crypto/ecrdsa.c b/crypto/ecrdsa.c
+index 887ec21aee49..1ffcea7b0355 100644
+--- a/crypto/ecrdsa.c
++++ b/crypto/ecrdsa.c
+@@ -112,15 +112,15 @@ static int ecrdsa_verify(struct akcipher_request *req)
  
--		page = alloc_page(q->bounce_gfp | gfp_mask);
-+		page = alloc_page(q->bounce_gfp | __GFP_ZERO | gfp_mask);
- 		if (!page)
- 			goto cleanup;
+ 	/* Step 1: verify that 0 < r < q, 0 < s < q */
+ 	if (vli_is_zero(r, ndigits) ||
+-	    vli_cmp(r, ctx->curve->n, ndigits) == 1 ||
++	    vli_cmp(r, ctx->curve->n, ndigits) >= 0 ||
+ 	    vli_is_zero(s, ndigits) ||
+-	    vli_cmp(s, ctx->curve->n, ndigits) == 1)
++	    vli_cmp(s, ctx->curve->n, ndigits) >= 0)
+ 		return -EKEYREJECTED;
  
+ 	/* Step 2: calculate hash (h) of the message (passed as input) */
+ 	/* Step 3: calculate e = h \mod q */
+ 	vli_from_le64(e, digest, ndigits);
+-	if (vli_cmp(e, ctx->curve->n, ndigits) == 1)
++	if (vli_cmp(e, ctx->curve->n, ndigits) >= 0)
+ 		vli_sub(e, e, ctx->curve->n, ndigits);
+ 	if (vli_is_zero(e, ndigits))
+ 		e[0] = 1;
+@@ -136,7 +136,7 @@ static int ecrdsa_verify(struct akcipher_request *req)
+ 	/* Step 6: calculate point C = z_1P + z_2Q, and R = x_c \mod q */
+ 	ecc_point_mult_shamir(&cc, z1, &ctx->curve->g, z2, &ctx->pub_key,
+ 			      ctx->curve);
+-	if (vli_cmp(cc.x, ctx->curve->n, ndigits) == 1)
++	if (vli_cmp(cc.x, ctx->curve->n, ndigits) >= 0)
+ 		vli_sub(cc.x, cc.x, ctx->curve->n, ndigits);
+ 
+ 	/* Step 7: if R == r signature is valid */
 diff --git a/drivers/acpi/sysfs.c b/drivers/acpi/sysfs.c
-index 39ee0ca636aa..0b6489fd5d0d 100644
+index 76c668c05fa0..cc0b98affd64 100644
 --- a/drivers/acpi/sysfs.c
 +++ b/drivers/acpi/sysfs.c
 @@ -439,18 +439,29 @@ static ssize_t acpi_data_show(struct file *filp, struct kobject *kobj,
@@ -142,10 +161,10 @@ index 39ee0ca636aa..0b6489fd5d0d 100644
  
  static int acpi_bert_data_init(void *th, struct acpi_data_attr *data_attr)
 diff --git a/drivers/char/tpm/tpm2-cmd.c b/drivers/char/tpm/tpm2-cmd.c
-index e71c6b24aed1..ce497b0691d7 100644
+index 1385c2c0acbe..89635bb117d2 100644
 --- a/drivers/char/tpm/tpm2-cmd.c
 +++ b/drivers/char/tpm/tpm2-cmd.c
-@@ -717,7 +717,16 @@ ssize_t tpm2_get_tpm_pt(struct tpm_chip *chip, u32 property_id,  u32 *value,
+@@ -706,7 +706,16 @@ ssize_t tpm2_get_tpm_pt(struct tpm_chip *chip, u32 property_id,  u32 *value,
  	if (!rc) {
  		out = (struct tpm2_get_cap_out *)
  			&buf.data[TPM_HEADER_SIZE];
@@ -164,10 +183,10 @@ index e71c6b24aed1..ce497b0691d7 100644
  	tpm_buf_destroy(&buf);
  	return rc;
 diff --git a/drivers/char/tpm/tpm_ibmvtpm.c b/drivers/char/tpm/tpm_ibmvtpm.c
-index 3ba67bc6baba..80647eb071fd 100644
+index 64428dbed992..4236607f69e4 100644
 --- a/drivers/char/tpm/tpm_ibmvtpm.c
 +++ b/drivers/char/tpm/tpm_ibmvtpm.c
-@@ -692,6 +692,7 @@ static int tpm_ibmvtpm_probe(struct vio_dev *vio_dev,
+@@ -685,6 +685,7 @@ static int tpm_ibmvtpm_probe(struct vio_dev *vio_dev,
  	if (!wait_event_timeout(ibmvtpm->crq_queue.wq,
  				ibmvtpm->rtce_buf != NULL,
  				HZ)) {
@@ -176,23 +195,23 @@ index 3ba67bc6baba..80647eb071fd 100644
  		goto init_irq_cleanup;
  	}
 diff --git a/drivers/gpu/drm/i915/intel_pm.c b/drivers/gpu/drm/i915/intel_pm.c
-index 1847faa45d37..af8865281b47 100644
+index e43a76b027a2..d59455b2d401 100644
 --- a/drivers/gpu/drm/i915/intel_pm.c
 +++ b/drivers/gpu/drm/i915/intel_pm.c
-@@ -2814,7 +2814,7 @@ hsw_compute_linetime_wm(const struct intel_crtc_state *cstate)
+@@ -2822,7 +2822,7 @@ hsw_compute_linetime_wm(const struct intel_crtc_state *crtc_state)
  }
  
  static void intel_read_wm_latency(struct drm_i915_private *dev_priv,
--				  uint16_t wm[8])
-+				  uint16_t wm[])
+-				  u16 wm[8])
++				  u16 wm[])
  {
- 	if (INTEL_GEN(dev_priv) >= 9) {
- 		uint32_t val;
+ 	struct intel_uncore *uncore = &dev_priv->uncore;
+ 
 diff --git a/drivers/hid/hid-multitouch.c b/drivers/hid/hid-multitouch.c
-index c20945ed1dc1..e99286258f62 100644
+index 37270b8f4e58..653f436aa459 100644
 --- a/drivers/hid/hid-multitouch.c
 +++ b/drivers/hid/hid-multitouch.c
-@@ -2111,6 +2111,9 @@ static const struct hid_device_id mt_devices[] = {
+@@ -2158,6 +2158,9 @@ static const struct hid_device_id mt_devices[] = {
  	{ .driver_data = MT_CLS_GOOGLE,
  		HID_DEVICE(HID_BUS_ANY, HID_GROUP_ANY, USB_VENDOR_ID_GOOGLE,
  			USB_DEVICE_ID_GOOGLE_TOUCH_ROSE) },
@@ -203,10 +222,10 @@ index c20945ed1dc1..e99286258f62 100644
  	/* Generic MT device */
  	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_MULTITOUCH, HID_ANY_ID, HID_ANY_ID) },
 diff --git a/drivers/i2c/busses/i2c-ismt.c b/drivers/i2c/busses/i2c-ismt.c
-index 0d1c3ec8cb40..80796061102f 100644
+index 2f95e25a10f7..53325419ec13 100644
 --- a/drivers/i2c/busses/i2c-ismt.c
 +++ b/drivers/i2c/busses/i2c-ismt.c
-@@ -80,6 +80,7 @@
+@@ -81,6 +81,7 @@
  
  #define ISMT_DESC_ENTRIES	2	/* number of descriptor entries */
  #define ISMT_MAX_RETRIES	3	/* number of SMBus retries to attempt */
@@ -214,7 +233,7 @@ index 0d1c3ec8cb40..80796061102f 100644
  
  /* Hardware Descriptor Constants - Control Field */
  #define ISMT_DESC_CWRL	0x01	/* Command/Write Length */
-@@ -173,6 +174,8 @@ struct ismt_priv {
+@@ -174,6 +175,8 @@ struct ismt_priv {
  	u8 head;				/* ring buffer head pointer */
  	struct completion cmp;			/* interrupt completion */
  	u8 buffer[I2C_SMBUS_BLOCK_MAX + 16];	/* temp R/W data buffer */
@@ -223,7 +242,7 @@ index 0d1c3ec8cb40..80796061102f 100644
  };
  
  /**
-@@ -406,6 +409,9 @@ static int ismt_access(struct i2c_adapter *adap, u16 addr,
+@@ -408,6 +411,9 @@ static int ismt_access(struct i2c_adapter *adap, u16 addr,
  	memset(desc, 0, sizeof(struct ismt_desc));
  	desc->tgtaddr_rw = ISMT_DESC_ADDR_RW(addr, read_write);
  
@@ -233,7 +252,7 @@ index 0d1c3ec8cb40..80796061102f 100644
  	/* Initialize common control bits */
  	if (likely(pci_dev_msi_enabled(priv->pci_dev)))
  		desc->control = ISMT_DESC_INT | ISMT_DESC_FAIR;
-@@ -695,6 +701,8 @@ static void ismt_hw_init(struct ismt_priv *priv)
+@@ -697,6 +703,8 @@ static void ismt_hw_init(struct ismt_priv *priv)
  	/* initialize the Master Descriptor Base Address (MDBA) */
  	writeq(priv->io_rng_dma, priv->smba + ISMT_MSTR_MDBA);
  
@@ -267,11 +286,24 @@ index 19f8eec38717..107aeb8b54da 100644
  	snprintf(i2c->adap.name, sizeof(i2c->adap.name),
  		 "Cavium ThunderX i2c adapter at %s", dev_name(dev));
  	i2c_set_adapdata(&i2c->adap, i2c);
+diff --git a/drivers/input/touchscreen/goodix.c b/drivers/input/touchscreen/goodix.c
+index bfb945fc33a1..3c9cdb87770f 100644
+--- a/drivers/input/touchscreen/goodix.c
++++ b/drivers/input/touchscreen/goodix.c
+@@ -335,7 +335,7 @@ static int goodix_ts_read_input_report(struct goodix_ts_data *ts, u8 *data)
+ 	 * The Goodix panel will send spurious interrupts after a
+ 	 * 'finger up' event, which will always cause a timeout.
+ 	 */
+-	return 0;
++	return -ENOMSG;
+ }
+ 
+ static void goodix_ts_report_touch_8b(struct goodix_ts_data *ts, u8 *coor_data)
 diff --git a/drivers/md/dm-crypt.c b/drivers/md/dm-crypt.c
-index 3441ad140b58..e38c713e882e 100644
+index 3ed8ca47bc6e..fa674e9b6f23 100644
 --- a/drivers/md/dm-crypt.c
 +++ b/drivers/md/dm-crypt.c
-@@ -2932,6 +2932,11 @@ static int crypt_map(struct dm_target *ti, struct bio *bio)
+@@ -2817,6 +2817,11 @@ static int crypt_map(struct dm_target *ti, struct bio *bio)
  	return DM_MAPIO_SUBMITTED;
  }
  
@@ -283,7 +315,7 @@ index 3441ad140b58..e38c713e882e 100644
  static void crypt_status(struct dm_target *ti, status_type_t type,
  			 unsigned status_flags, char *result, unsigned maxlen)
  {
-@@ -2950,9 +2955,12 @@ static void crypt_status(struct dm_target *ti, status_type_t type,
+@@ -2835,9 +2840,12 @@ static void crypt_status(struct dm_target *ti, status_type_t type,
  		if (cc->key_size > 0) {
  			if (cc->key_string)
  				DMEMIT(":%u:%s", cc->key_size, cc->key_string);
@@ -300,10 +332,10 @@ index 3441ad140b58..e38c713e882e 100644
  			DMEMIT("-");
  
 diff --git a/drivers/md/dm-integrity.c b/drivers/md/dm-integrity.c
-index b0105d53918a..8456e82409e2 100644
+index 28a9eeae83b6..acbda91e7643 100644
 --- a/drivers/md/dm-integrity.c
 +++ b/drivers/md/dm-integrity.c
-@@ -3565,8 +3565,6 @@ static int dm_integrity_ctr(struct dm_target *ti, unsigned argc, char **argv)
+@@ -4149,8 +4149,6 @@ static int dm_integrity_ctr(struct dm_target *ti, unsigned argc, char **argv)
  	}
  
  	if (should_write_sb) {
@@ -313,7 +345,7 @@ index b0105d53918a..8456e82409e2 100644
  		r = dm_integrity_failed(ic);
  		if (unlikely(r)) {
 diff --git a/drivers/md/dm-stats.c b/drivers/md/dm-stats.c
-index 21de30b4e2a1..3d59f3e208c5 100644
+index 71417048256a..ce6d3bce1b7b 100644
 --- a/drivers/md/dm-stats.c
 +++ b/drivers/md/dm-stats.c
 @@ -224,6 +224,7 @@ void dm_stats_cleanup(struct dm_stats *stats)
@@ -374,22 +406,156 @@ index 21de30b4e2a1..3d59f3e208c5 100644
  
  	if (clear)
 diff --git a/drivers/md/dm-verity-target.c b/drivers/md/dm-verity-target.c
-index fa8c201fca77..36945030520a 100644
+index 711f101447e3..9dcdf34b7e32 100644
 --- a/drivers/md/dm-verity-target.c
 +++ b/drivers/md/dm-verity-target.c
-@@ -1176,6 +1176,7 @@ static int verity_ctr(struct dm_target *ti, unsigned argc, char **argv)
+@@ -1217,6 +1217,7 @@ static int verity_ctr(struct dm_target *ti, unsigned argc, char **argv)
  
  static struct target_type verity_target = {
  	.name		= "verity",
 +	.features	= DM_TARGET_IMMUTABLE,
- 	.version	= {1, 4, 0},
+ 	.version	= {1, 5, 0},
  	.module		= THIS_MODULE,
  	.ctr		= verity_ctr,
+diff --git a/drivers/md/raid5.c b/drivers/md/raid5.c
+index 08a7f97750f7..c40327ad6ad5 100644
+--- a/drivers/md/raid5.c
++++ b/drivers/md/raid5.c
+@@ -609,17 +609,17 @@ int raid5_calc_degraded(struct r5conf *conf)
+ 	return degraded;
+ }
+ 
+-static int has_failed(struct r5conf *conf)
++static bool has_failed(struct r5conf *conf)
+ {
+-	int degraded;
++	int degraded = conf->mddev->degraded;
+ 
+-	if (conf->mddev->reshape_position == MaxSector)
+-		return conf->mddev->degraded > conf->max_degraded;
++	if (test_bit(MD_BROKEN, &conf->mddev->flags))
++		return true;
+ 
+-	degraded = raid5_calc_degraded(conf);
+-	if (degraded > conf->max_degraded)
+-		return 1;
+-	return 0;
++	if (conf->mddev->reshape_position != MaxSector)
++		degraded = raid5_calc_degraded(conf);
++
++	return degraded > conf->max_degraded;
+ }
+ 
+ struct stripe_head *
+@@ -2679,34 +2679,31 @@ static void raid5_error(struct mddev *mddev, struct md_rdev *rdev)
+ 	unsigned long flags;
+ 	pr_debug("raid456: error called\n");
+ 
++	pr_crit("md/raid:%s: Disk failure on %s, disabling device.\n",
++		mdname(mddev), bdevname(rdev->bdev, b));
++
+ 	spin_lock_irqsave(&conf->device_lock, flags);
++	set_bit(Faulty, &rdev->flags);
++	clear_bit(In_sync, &rdev->flags);
++	mddev->degraded = raid5_calc_degraded(conf);
+ 
+-	if (test_bit(In_sync, &rdev->flags) &&
+-	    mddev->degraded == conf->max_degraded) {
+-		/*
+-		 * Don't allow to achieve failed state
+-		 * Don't try to recover this device
+-		 */
++	if (has_failed(conf)) {
++		set_bit(MD_BROKEN, &conf->mddev->flags);
+ 		conf->recovery_disabled = mddev->recovery_disabled;
+-		spin_unlock_irqrestore(&conf->device_lock, flags);
+-		return;
++
++		pr_crit("md/raid:%s: Cannot continue operation (%d/%d failed).\n",
++			mdname(mddev), mddev->degraded, conf->raid_disks);
++	} else {
++		pr_crit("md/raid:%s: Operation continuing on %d devices.\n",
++			mdname(mddev), conf->raid_disks - mddev->degraded);
+ 	}
+ 
+-	set_bit(Faulty, &rdev->flags);
+-	clear_bit(In_sync, &rdev->flags);
+-	mddev->degraded = raid5_calc_degraded(conf);
+ 	spin_unlock_irqrestore(&conf->device_lock, flags);
+ 	set_bit(MD_RECOVERY_INTR, &mddev->recovery);
+ 
+ 	set_bit(Blocked, &rdev->flags);
+ 	set_mask_bits(&mddev->sb_flags, 0,
+ 		      BIT(MD_SB_CHANGE_DEVS) | BIT(MD_SB_CHANGE_PENDING));
+-	pr_crit("md/raid:%s: Disk failure on %s, disabling device.\n"
+-		"md/raid:%s: Operation continuing on %d devices.\n",
+-		mdname(mddev),
+-		bdevname(rdev->bdev, b),
+-		mdname(mddev),
+-		conf->raid_disks - mddev->degraded);
+ 	r5c_update_on_rdev_error(mddev, rdev);
+ }
+ 
+diff --git a/drivers/media/platform/vim2m.c b/drivers/media/platform/vim2m.c
+index 8d6b09623d88..6fba00e03c67 100644
+--- a/drivers/media/platform/vim2m.c
++++ b/drivers/media/platform/vim2m.c
+@@ -1333,12 +1333,6 @@ static int vim2m_probe(struct platform_device *pdev)
+ 	vfd->lock = &dev->dev_mutex;
+ 	vfd->v4l2_dev = &dev->v4l2_dev;
+ 
+-	ret = video_register_device(vfd, VFL_TYPE_GRABBER, 0);
+-	if (ret) {
+-		v4l2_err(&dev->v4l2_dev, "Failed to register video device\n");
+-		goto error_v4l2;
+-	}
+-
+ 	video_set_drvdata(vfd, dev);
+ 	v4l2_info(&dev->v4l2_dev,
+ 		  "Device registered as /dev/video%d\n", vfd->num);
+@@ -1361,12 +1355,20 @@ static int vim2m_probe(struct platform_device *pdev)
+ 	media_device_init(&dev->mdev);
+ 	dev->mdev.ops = &m2m_media_ops;
+ 	dev->v4l2_dev.mdev = &dev->mdev;
++#endif
++
++	ret = video_register_device(vfd, VFL_TYPE_GRABBER, 0);
++	if (ret) {
++		v4l2_err(&dev->v4l2_dev, "Failed to register video device\n");
++		goto error_m2m;
++	}
+ 
++#ifdef CONFIG_MEDIA_CONTROLLER
+ 	ret = v4l2_m2m_register_media_controller(dev->m2m_dev, vfd,
+ 						 MEDIA_ENT_F_PROC_VIDEO_SCALER);
+ 	if (ret) {
+ 		v4l2_err(&dev->v4l2_dev, "Failed to init mem2mem media controller\n");
+-		goto error_dev;
++		goto error_v4l2;
+ 	}
+ 
+ 	ret = media_device_register(&dev->mdev);
+@@ -1381,11 +1383,13 @@ static int vim2m_probe(struct platform_device *pdev)
+ error_m2m_mc:
+ 	v4l2_m2m_unregister_media_controller(dev->m2m_dev);
+ #endif
+-error_dev:
++error_v4l2:
+ 	video_unregister_device(&dev->vfd);
+ 	/* vim2m_device_release called by video_unregister_device to release various objects */
+ 	return ret;
+-error_v4l2:
++error_m2m:
++	v4l2_m2m_release(dev->m2m_dev);
++error_dev:
+ 	v4l2_device_unregister(&dev->v4l2_dev);
+ error_free:
+ 	kfree(dev);
 diff --git a/drivers/net/ethernet/faraday/ftgmac100.c b/drivers/net/ethernet/faraday/ftgmac100.c
-index 964407deca35..23c019d1278c 100644
+index 2c06cdcd3e75..d7478d332820 100644
 --- a/drivers/net/ethernet/faraday/ftgmac100.c
 +++ b/drivers/net/ethernet/faraday/ftgmac100.c
-@@ -1869,6 +1869,11 @@ static int ftgmac100_probe(struct platform_device *pdev)
+@@ -1880,6 +1880,11 @@ static int ftgmac100_probe(struct platform_device *pdev)
  	/* AST2400  doesn't have working HW checksum generation */
  	if (np && (of_device_is_compatible(np, "aspeed,ast2400-mac")))
  		netdev->hw_features &= ~NETIF_F_HW_CSUM;
@@ -401,11 +567,24 @@ index 964407deca35..23c019d1278c 100644
  	if (np && of_get_property(np, "no-hw-checksum", NULL))
  		netdev->hw_features &= ~(NETIF_F_HW_CSUM | NETIF_F_RXCSUM);
  	netdev->features |= netdev->hw_features;
+diff --git a/drivers/pinctrl/sunxi/pinctrl-suniv-f1c100s.c b/drivers/pinctrl/sunxi/pinctrl-suniv-f1c100s.c
+index 2801ca706273..68a5b627fb9b 100644
+--- a/drivers/pinctrl/sunxi/pinctrl-suniv-f1c100s.c
++++ b/drivers/pinctrl/sunxi/pinctrl-suniv-f1c100s.c
+@@ -204,7 +204,7 @@ static const struct sunxi_desc_pin suniv_f1c100s_pins[] = {
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+ 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+ 		  SUNXI_FUNCTION(0x2, "lcd"),		/* D20 */
+-		  SUNXI_FUNCTION(0x3, "lvds1"),		/* RX */
++		  SUNXI_FUNCTION(0x3, "uart2"),		/* RX */
+ 		  SUNXI_FUNCTION_IRQ_BANK(0x6, 0, 14)),
+ 	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 15),
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
 diff --git a/drivers/staging/rtl8723bs/os_dep/ioctl_linux.c b/drivers/staging/rtl8723bs/os_dep/ioctl_linux.c
-index 466d25ccc4bb..40d7130a4909 100644
+index d8d44fd9a92f..ea2fd3a73c3a 100644
 --- a/drivers/staging/rtl8723bs/os_dep/ioctl_linux.c
 +++ b/drivers/staging/rtl8723bs/os_dep/ioctl_linux.c
-@@ -1359,9 +1359,11 @@ static int rtw_wx_set_scan(struct net_device *dev, struct iw_request_info *a,
+@@ -1351,9 +1351,11 @@ static int rtw_wx_set_scan(struct net_device *dev, struct iw_request_info *a,
  
  					sec_len = *(pos++); len-= 1;
  
@@ -420,20 +599,36 @@ index 466d25ccc4bb..40d7130a4909 100644
  						/* 	, ssid[ssid_index].Ssid, ssid[ssid_index].SsidLength); */
  						ssid_index++;
 diff --git a/fs/exec.c b/fs/exec.c
-index e87e3c020c61..28e3b5eb2f4a 100644
+index 098de820abcc..a7d78241082a 100644
 --- a/fs/exec.c
 +++ b/fs/exec.c
-@@ -1805,6 +1805,9 @@ static int __do_execve_file(int fd, struct filename *filename,
- 		goto out_unmark;
+@@ -454,6 +454,9 @@ static int prepare_arg_pages(struct linux_binprm *bprm,
+ 	unsigned long limit, ptr_size;
  
  	bprm->argc = count(argv, MAX_ARG_STRINGS);
 +	if (bprm->argc == 0)
 +		pr_warn_once("process '%s' launched '%s' with NULL argv: empty string added\n",
 +			     current->comm, bprm->filename);
- 	if ((retval = bprm->argc) < 0)
- 		goto out;
+ 	if (bprm->argc < 0)
+ 		return bprm->argc;
  
-@@ -1829,6 +1832,20 @@ static int __do_execve_file(int fd, struct filename *filename,
+@@ -482,8 +485,14 @@ static int prepare_arg_pages(struct linux_binprm *bprm,
+ 	 * the stack. They aren't stored until much later when we can't
+ 	 * signal to the parent that the child has run out of stack space.
+ 	 * Instead, calculate it here so it's possible to fail gracefully.
++	 *
++	 * In the case of argc = 0, make sure there is space for adding a
++	 * empty string (which will bump argc to 1), to ensure confused
++	 * userspace programs don't start processing from argv[1], thinking
++	 * argc can never be 0, to keep them from walking envp by accident.
++	 * See do_execveat_common().
+ 	 */
+-	ptr_size = (bprm->argc + bprm->envc) * sizeof(void *);
++	ptr_size = (max(bprm->argc, 1) + bprm->envc) * sizeof(void *);
+ 	if (limit <= ptr_size)
+ 		return -E2BIG;
+ 	limit -= ptr_size;
+@@ -1848,6 +1857,20 @@ static int __do_execve_file(int fd, struct filename *filename,
  	if (retval < 0)
  		goto out;
  
@@ -454,11 +649,23 @@ index e87e3c020c61..28e3b5eb2f4a 100644
  	retval = exec_binprm(bprm);
  	if (retval < 0)
  		goto out;
+diff --git a/fs/nfs/internal.h b/fs/nfs/internal.h
+index 9e717796e57b..a4dc182e8989 100644
+--- a/fs/nfs/internal.h
++++ b/fs/nfs/internal.h
+@@ -775,6 +775,7 @@ static inline bool nfs_error_is_fatal_on_server(int err)
+ 	case 0:
+ 	case -ERESTARTSYS:
+ 	case -EINTR:
++	case -ENOMEM:
+ 		return false;
+ 	}
+ 	return nfs_error_is_fatal(err);
 diff --git a/fs/nfsd/nfs4state.c b/fs/nfsd/nfs4state.c
-index ed5429d18595..78191320f8e2 100644
+index 62eb78ac7437..228c2b0753dc 100644
 --- a/fs/nfsd/nfs4state.c
 +++ b/fs/nfsd/nfs4state.c
-@@ -6401,16 +6401,12 @@ nfsd4_release_lockowner(struct svc_rqst *rqstp,
+@@ -6894,16 +6894,12 @@ nfsd4_release_lockowner(struct svc_rqst *rqstp,
  		if (sop->so_is_open_owner || !same_owner_str(sop, owner))
  			continue;
  
@@ -479,11 +686,28 @@ index ed5429d18595..78191320f8e2 100644
  		nfs4_get_stateowner(sop);
  		break;
  	}
+diff --git a/include/linux/security.h b/include/linux/security.h
+index 3f6b8195ae9e..aa5c7141c8d1 100644
+--- a/include/linux/security.h
++++ b/include/linux/security.h
+@@ -118,10 +118,12 @@ enum lockdown_reason {
+ 	LOCKDOWN_MMIOTRACE,
+ 	LOCKDOWN_DEBUGFS,
+ 	LOCKDOWN_XMON_WR,
++	LOCKDOWN_DBG_WRITE_KERNEL,
+ 	LOCKDOWN_INTEGRITY_MAX,
+ 	LOCKDOWN_KCORE,
+ 	LOCKDOWN_KPROBES,
+ 	LOCKDOWN_BPF_READ,
++	LOCKDOWN_DBG_READ_KERNEL,
+ 	LOCKDOWN_PERF,
+ 	LOCKDOWN_TRACEFS,
+ 	LOCKDOWN_XMON_RW,
 diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
-index fa5fe23ca6aa..2d04f3e06de1 100644
+index a1869a678944..a186c245a6f4 100644
 --- a/include/net/inet_hashtables.h
 +++ b/include/net/inet_hashtables.h
-@@ -407,7 +407,7 @@ static inline void sk_rcv_saddr_set(struct sock *sk, __be32 addr)
+@@ -420,7 +420,7 @@ static inline void sk_rcv_saddr_set(struct sock *sk, __be32 addr)
  }
  
  int __inet_hash_connect(struct inet_timewait_death_row *death_row,
@@ -493,10 +717,10 @@ index fa5fe23ca6aa..2d04f3e06de1 100644
  						 struct sock *, __u16,
  						 struct inet_timewait_sock **));
 diff --git a/include/net/netfilter/nf_conntrack_core.h b/include/net/netfilter/nf_conntrack_core.h
-index 2a3e0974a6af..4e3fff9f929b 100644
+index 09f2efea0b97..5805fe4947f3 100644
 --- a/include/net/netfilter/nf_conntrack_core.h
 +++ b/include/net/netfilter/nf_conntrack_core.h
-@@ -58,8 +58,13 @@ static inline int nf_conntrack_confirm(struct sk_buff *skb)
+@@ -59,8 +59,13 @@ static inline int nf_conntrack_confirm(struct sk_buff *skb)
  	int ret = NF_ACCEPT;
  
  	if (ct) {
@@ -526,11 +750,141 @@ index d7d2495f83c2..dac91aa38c5a 100644
  			       __be16 dport);
  u32 secure_tcp_seq(__be32 saddr, __be32 daddr,
  		   __be16 sport, __be16 dport);
+diff --git a/kernel/debug/debug_core.c b/kernel/debug/debug_core.c
+index 097ab02989f9..565987557ad8 100644
+--- a/kernel/debug/debug_core.c
++++ b/kernel/debug/debug_core.c
+@@ -56,6 +56,7 @@
+ #include <linux/vmacache.h>
+ #include <linux/rcupdate.h>
+ #include <linux/irq.h>
++#include <linux/security.h>
+ 
+ #include <asm/cacheflush.h>
+ #include <asm/byteorder.h>
+@@ -685,6 +686,29 @@ static int kgdb_cpu_enter(struct kgdb_state *ks, struct pt_regs *regs,
+ 				continue;
+ 			kgdb_connected = 0;
+ 		} else {
++			/*
++			 * This is a brutal way to interfere with the debugger
++			 * and prevent gdb being used to poke at kernel memory.
++			 * This could cause trouble if lockdown is applied when
++			 * there is already an active gdb session. For now the
++			 * answer is simply "don't do that". Typically lockdown
++			 * *will* be applied before the debug core gets started
++			 * so only developers using kgdb for fairly advanced
++			 * early kernel debug can be biten by this. Hopefully
++			 * they are sophisticated enough to take care of
++			 * themselves, especially with help from the lockdown
++			 * message printed on the console!
++			 */
++			if (security_locked_down(LOCKDOWN_DBG_WRITE_KERNEL)) {
++				if (IS_ENABLED(CONFIG_KGDB_KDB)) {
++					/* Switch back to kdb if possible... */
++					dbg_kdb_mode = 1;
++					continue;
++				} else {
++					/* ... otherwise just bail */
++					break;
++				}
++			}
+ 			error = gdb_serial_stub(ks);
+ 		}
+ 
+diff --git a/kernel/debug/kdb/kdb_main.c b/kernel/debug/kdb/kdb_main.c
+index 4567fe998c30..7c96bf9a6c2c 100644
+--- a/kernel/debug/kdb/kdb_main.c
++++ b/kernel/debug/kdb/kdb_main.c
+@@ -45,6 +45,7 @@
+ #include <linux/proc_fs.h>
+ #include <linux/uaccess.h>
+ #include <linux/slab.h>
++#include <linux/security.h>
+ #include "kdb_private.h"
+ 
+ #undef	MODULE_PARAM_PREFIX
+@@ -198,10 +199,62 @@ struct task_struct *kdb_curr_task(int cpu)
+ }
+ 
+ /*
+- * Check whether the flags of the current command and the permissions
+- * of the kdb console has allow a command to be run.
++ * Update the permissions flags (kdb_cmd_enabled) to match the
++ * current lockdown state.
++ *
++ * Within this function the calls to security_locked_down() are "lazy". We
++ * avoid calling them if the current value of kdb_cmd_enabled already excludes
++ * flags that might be subject to lockdown. Additionally we deliberately check
++ * the lockdown flags independently (even though read lockdown implies write
++ * lockdown) since that results in both simpler code and clearer messages to
++ * the user on first-time debugger entry.
++ *
++ * The permission masks during a read+write lockdown permits the following
++ * flags: INSPECT, SIGNAL, REBOOT (and ALWAYS_SAFE).
++ *
++ * The INSPECT commands are not blocked during lockdown because they are
++ * not arbitrary memory reads. INSPECT covers the backtrace family (sometimes
++ * forcing them to have no arguments) and lsmod. These commands do expose
++ * some kernel state but do not allow the developer seated at the console to
++ * choose what state is reported. SIGNAL and REBOOT should not be controversial,
++ * given these are allowed for root during lockdown already.
++ */
++static void kdb_check_for_lockdown(void)
++{
++	const int write_flags = KDB_ENABLE_MEM_WRITE |
++				KDB_ENABLE_REG_WRITE |
++				KDB_ENABLE_FLOW_CTRL;
++	const int read_flags = KDB_ENABLE_MEM_READ |
++			       KDB_ENABLE_REG_READ;
++
++	bool need_to_lockdown_write = false;
++	bool need_to_lockdown_read = false;
++
++	if (kdb_cmd_enabled & (KDB_ENABLE_ALL | write_flags))
++		need_to_lockdown_write =
++			security_locked_down(LOCKDOWN_DBG_WRITE_KERNEL);
++
++	if (kdb_cmd_enabled & (KDB_ENABLE_ALL | read_flags))
++		need_to_lockdown_read =
++			security_locked_down(LOCKDOWN_DBG_READ_KERNEL);
++
++	/* De-compose KDB_ENABLE_ALL if required */
++	if (need_to_lockdown_write || need_to_lockdown_read)
++		if (kdb_cmd_enabled & KDB_ENABLE_ALL)
++			kdb_cmd_enabled = KDB_ENABLE_MASK & ~KDB_ENABLE_ALL;
++
++	if (need_to_lockdown_write)
++		kdb_cmd_enabled &= ~write_flags;
++
++	if (need_to_lockdown_read)
++		kdb_cmd_enabled &= ~read_flags;
++}
++
++/*
++ * Check whether the flags of the current command, the permissions of the kdb
++ * console and the lockdown state allow a command to be run.
+  */
+-static inline bool kdb_check_flags(kdb_cmdflags_t flags, int permissions,
++static bool kdb_check_flags(kdb_cmdflags_t flags, int permissions,
+ 				   bool no_args)
+ {
+ 	/* permissions comes from userspace so needs massaging slightly */
+@@ -1188,6 +1241,9 @@ static int kdb_local(kdb_reason_t reason, int error, struct pt_regs *regs,
+ 		kdb_curr_task(raw_smp_processor_id());
+ 
+ 	KDB_DEBUG_STATE("kdb_local 1", reason);
++
++	kdb_check_for_lockdown();
++
+ 	kdb_go_count = 0;
+ 	if (reason == KDB_REASON_DEBUG) {
+ 		/* special case below */
 diff --git a/lib/assoc_array.c b/lib/assoc_array.c
-index 59875eb278ea..3b1ff063ceca 100644
+index 6f4bcf524554..b537a83678e1 100644
 --- a/lib/assoc_array.c
 +++ b/lib/assoc_array.c
-@@ -1465,6 +1465,7 @@ int assoc_array_gc(struct assoc_array *array,
+@@ -1462,6 +1462,7 @@ int assoc_array_gc(struct assoc_array *array,
  	struct assoc_array_ptr *cursor, *ptr;
  	struct assoc_array_ptr *new_root, *new_parent, **new_ptr_pp;
  	unsigned long nr_leaves_on_tree;
@@ -538,7 +892,7 @@ index 59875eb278ea..3b1ff063ceca 100644
  	int keylen, slot, nr_free, next_slot, i;
  
  	pr_devel("-->%s()\n", __func__);
-@@ -1541,6 +1542,7 @@ int assoc_array_gc(struct assoc_array *array,
+@@ -1538,6 +1539,7 @@ int assoc_array_gc(struct assoc_array *array,
  		goto descend;
  	}
  
@@ -546,7 +900,7 @@ index 59875eb278ea..3b1ff063ceca 100644
  	pr_devel("-- compress node %p --\n", new_n);
  
  	/* Count up the number of empty slots in this node and work out the
-@@ -1558,6 +1560,7 @@ int assoc_array_gc(struct assoc_array *array,
+@@ -1555,6 +1557,7 @@ int assoc_array_gc(struct assoc_array *array,
  	pr_devel("free=%d, leaves=%lu\n", nr_free, new_n->nr_leaves_on_branch);
  
  	/* See what we can fold in */
@@ -554,7 +908,7 @@ index 59875eb278ea..3b1ff063ceca 100644
  	next_slot = 0;
  	for (slot = 0; slot < ASSOC_ARRAY_FAN_OUT; slot++) {
  		struct assoc_array_shortcut *s;
-@@ -1607,9 +1610,14 @@ int assoc_array_gc(struct assoc_array *array,
+@@ -1604,9 +1607,14 @@ int assoc_array_gc(struct assoc_array *array,
  			pr_devel("[%d] retain node %lu/%d [nx %d]\n",
  				 slot, child->nr_leaves_on_branch, nr_free + 1,
  				 next_slot);
@@ -570,10 +924,10 @@ index 59875eb278ea..3b1ff063ceca 100644
  
  	nr_leaves_on_tree = new_n->nr_leaves_on_branch;
 diff --git a/mm/zsmalloc.c b/mm/zsmalloc.c
-index 11e81b3ff0cf..4d71356ea66a 100644
+index 490e5f3ae614..6b100f02ee43 100644
 --- a/mm/zsmalloc.c
 +++ b/mm/zsmalloc.c
-@@ -1812,11 +1812,40 @@ static enum fullness_group putback_zspage(struct size_class *class,
+@@ -1748,11 +1748,40 @@ static enum fullness_group putback_zspage(struct size_class *class,
   */
  static void lock_zspage(struct zspage *zspage)
  {
@@ -617,12 +971,12 @@ index 11e81b3ff0cf..4d71356ea66a 100644
 +	migrate_read_unlock(zspage);
  }
  
- static struct dentry *zs_mount(struct file_system_type *fs_type,
+ static int zs_init_fs_context(struct fs_context *fc)
 diff --git a/net/core/filter.c b/net/core/filter.c
-index 7d68c98a00aa..c1310c9d1b90 100644
+index e16b2b5cda98..b0df4ddbe30c 100644
 --- a/net/core/filter.c
 +++ b/net/core/filter.c
-@@ -1666,7 +1666,7 @@ BPF_CALL_5(bpf_skb_store_bytes, struct sk_buff *, skb, u32, offset,
+@@ -1668,7 +1668,7 @@ BPF_CALL_5(bpf_skb_store_bytes, struct sk_buff *, skb, u32, offset,
  
  	if (unlikely(flags & ~(BPF_F_RECOMPUTE_CSUM | BPF_F_INVALIDATE_HASH)))
  		return -EINVAL;
@@ -631,7 +985,7 @@ index 7d68c98a00aa..c1310c9d1b90 100644
  		return -EFAULT;
  	if (unlikely(bpf_try_make_writable(skb, offset + len)))
  		return -EFAULT;
-@@ -1701,7 +1701,7 @@ BPF_CALL_4(bpf_skb_load_bytes, const struct sk_buff *, skb, u32, offset,
+@@ -1703,7 +1703,7 @@ BPF_CALL_4(bpf_skb_load_bytes, const struct sk_buff *, skb, u32, offset,
  {
  	void *ptr;
  
@@ -641,10 +995,10 @@ index 7d68c98a00aa..c1310c9d1b90 100644
  
  	ptr = skb_header_pointer(skb, offset, len, to);
 diff --git a/net/core/secure_seq.c b/net/core/secure_seq.c
-index 3a8128341e6a..6fd25279bee9 100644
+index 2f9796a1a63f..a1867c65ac63 100644
 --- a/net/core/secure_seq.c
 +++ b/net/core/secure_seq.c
-@@ -96,7 +96,7 @@ u32 secure_tcpv6_seq(const __be32 *saddr, const __be32 *daddr,
+@@ -97,7 +97,7 @@ u32 secure_tcpv6_seq(const __be32 *saddr, const __be32 *daddr,
  }
  EXPORT_SYMBOL(secure_tcpv6_seq);
  
@@ -653,7 +1007,7 @@ index 3a8128341e6a..6fd25279bee9 100644
  			       __be16 dport)
  {
  	const struct {
-@@ -146,7 +146,7 @@ u32 secure_tcp_seq(__be32 saddr, __be32 daddr,
+@@ -147,7 +147,7 @@ u32 secure_tcp_seq(__be32 saddr, __be32 daddr,
  }
  EXPORT_SYMBOL_GPL(secure_tcp_seq);
  
@@ -663,10 +1017,10 @@ index 3a8128341e6a..6fd25279bee9 100644
  	net_secret_init();
  	return siphash_4u32((__force u32)saddr, (__force u32)daddr,
 diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-index c96a5871b49d..0a8aec3f37cc 100644
+index cbbeb0eea0c3..959f4f0c8546 100644
 --- a/net/ipv4/inet_hashtables.c
 +++ b/net/ipv4/inet_hashtables.c
-@@ -507,7 +507,7 @@ static int __inet_check_established(struct inet_timewait_death_row *death_row,
+@@ -464,7 +464,7 @@ static int __inet_check_established(struct inet_timewait_death_row *death_row,
  	return -EADDRNOTAVAIL;
  }
  
@@ -675,7 +1029,7 @@ index c96a5871b49d..0a8aec3f37cc 100644
  {
  	const struct inet_sock *inet = inet_sk(sk);
  
-@@ -714,8 +714,19 @@ void inet_unhash(struct sock *sk)
+@@ -671,8 +671,19 @@ void inet_unhash(struct sock *sk)
  }
  EXPORT_SYMBOL_GPL(inet_unhash);
  
@@ -696,16 +1050,17 @@ index c96a5871b49d..0a8aec3f37cc 100644
  		int (*check_established)(struct inet_timewait_death_row *,
  			struct sock *, __u16, struct inet_timewait_sock **))
  {
-@@ -727,7 +738,7 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+@@ -684,8 +695,8 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
  	struct inet_bind_bucket *tb;
  	u32 remaining, offset;
  	int ret, i, low, high;
 -	static u32 hint;
+ 	int l3mdev;
 +	u32 index;
  
  	if (port) {
  		head = &hinfo->bhash[inet_bhashfn(net, port,
-@@ -752,7 +763,12 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+@@ -712,7 +723,12 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
  	if (likely(remaining > 1))
  		remaining &= ~1U;
  
@@ -719,7 +1074,7 @@ index c96a5871b49d..0a8aec3f37cc 100644
  	/* In first pass we try ports of @low parity.
  	 * inet_csk_get_port() does the opposite choice.
  	 */
-@@ -805,7 +821,7 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+@@ -766,7 +782,7 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
  	return -EADDRNOTAVAIL;
  
  ok:
@@ -728,7 +1083,7 @@ index c96a5871b49d..0a8aec3f37cc 100644
  
  	/* Head lock still held and bh's disabled */
  	inet_bind_hash(sk, tb, port);
-@@ -828,7 +844,7 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+@@ -789,7 +805,7 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
  int inet_hash_connect(struct inet_timewait_death_row *death_row,
  		      struct sock *sk)
  {
@@ -738,10 +1093,10 @@ index c96a5871b49d..0a8aec3f37cc 100644
  	if (!inet_sk(sk)->inet_num)
  		port_offset = inet_sk_port_offset(sk);
 diff --git a/net/ipv6/inet6_hashtables.c b/net/ipv6/inet6_hashtables.c
-index d9e2575dad94..d8391921363f 100644
+index ab12e00f6bff..528c78bc920e 100644
 --- a/net/ipv6/inet6_hashtables.c
 +++ b/net/ipv6/inet6_hashtables.c
-@@ -311,7 +311,7 @@ static int __inet6_check_established(struct inet_timewait_death_row *death_row,
+@@ -262,7 +262,7 @@ static int __inet6_check_established(struct inet_timewait_death_row *death_row,
  	return -EADDRNOTAVAIL;
  }
  
@@ -750,7 +1105,7 @@ index d9e2575dad94..d8391921363f 100644
  {
  	const struct inet_sock *inet = inet_sk(sk);
  
-@@ -323,7 +323,7 @@ static u32 inet6_sk_port_offset(const struct sock *sk)
+@@ -274,7 +274,7 @@ static u32 inet6_sk_port_offset(const struct sock *sk)
  int inet6_hash_connect(struct inet_timewait_death_row *death_row,
  		       struct sock *sk)
  {
@@ -760,10 +1115,10 @@ index d9e2575dad94..d8391921363f 100644
  	if (!inet_sk(sk)->inet_num)
  		port_offset = inet6_sk_port_offset(sk);
 diff --git a/net/key/af_key.c b/net/key/af_key.c
-index 170960ef7e36..1bbb6ec89ff3 100644
+index f67d3ba72c49..dd064d5eff6e 100644
 --- a/net/key/af_key.c
 +++ b/net/key/af_key.c
-@@ -2910,7 +2910,7 @@ static int count_ah_combs(const struct xfrm_tmpl *t)
+@@ -2904,7 +2904,7 @@ static int count_ah_combs(const struct xfrm_tmpl *t)
  			break;
  		if (!aalg->pfkey_supported)
  			continue;
@@ -772,7 +1127,7 @@ index 170960ef7e36..1bbb6ec89ff3 100644
  			sz += sizeof(struct sadb_comb);
  	}
  	return sz + sizeof(struct sadb_prop);
-@@ -2928,7 +2928,7 @@ static int count_esp_combs(const struct xfrm_tmpl *t)
+@@ -2922,7 +2922,7 @@ static int count_esp_combs(const struct xfrm_tmpl *t)
  		if (!ealg->pfkey_supported)
  			continue;
  
@@ -781,7 +1136,7 @@ index 170960ef7e36..1bbb6ec89ff3 100644
  			continue;
  
  		for (k = 1; ; k++) {
-@@ -2939,7 +2939,7 @@ static int count_esp_combs(const struct xfrm_tmpl *t)
+@@ -2933,7 +2933,7 @@ static int count_esp_combs(const struct xfrm_tmpl *t)
  			if (!aalg->pfkey_supported)
  				continue;
  
@@ -791,18 +1146,19 @@ index 170960ef7e36..1bbb6ec89ff3 100644
  		}
  	}
 diff --git a/net/wireless/core.c b/net/wireless/core.c
-index 68660781aa51..7c66f99046ac 100644
+index 5d151e8f8932..f7228afd81eb 100644
 --- a/net/wireless/core.c
 +++ b/net/wireless/core.c
-@@ -4,6 +4,7 @@
+@@ -5,7 +5,7 @@
   * Copyright 2006-2010		Johannes Berg <johannes@sipsolutions.net>
   * Copyright 2013-2014  Intel Mobile Communications GmbH
   * Copyright 2015-2017	Intel Deutschland GmbH
+- * Copyright (C) 2018-2019 Intel Corporation
 + * Copyright (C) 2018-2021 Intel Corporation
   */
  
  #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-@@ -835,9 +836,6 @@ int wiphy_register(struct wiphy *wiphy)
+@@ -891,9 +891,6 @@ int wiphy_register(struct wiphy *wiphy)
  		return res;
  	}
  
@@ -812,7 +1168,7 @@ index 68660781aa51..7c66f99046ac 100644
  	list_add_rcu(&rdev->list, &cfg80211_rdev_list);
  	cfg80211_rdev_list_generation++;
  
-@@ -851,6 +849,9 @@ int wiphy_register(struct wiphy *wiphy)
+@@ -904,6 +901,9 @@ int wiphy_register(struct wiphy *wiphy)
  	cfg80211_debugfs_rdev_add(rdev);
  	nl80211_notify_wiphy(rdev, NL80211_CMD_NEW_WIPHY);
  
@@ -823,10 +1179,10 @@ index 68660781aa51..7c66f99046ac 100644
  		struct regulatory_request request;
  
 diff --git a/net/wireless/reg.c b/net/wireless/reg.c
-index c7825b951f72..dd8503a3ef1e 100644
+index 0f3b57a73670..74caece77963 100644
 --- a/net/wireless/reg.c
 +++ b/net/wireless/reg.c
-@@ -3756,6 +3756,7 @@ void wiphy_regulatory_register(struct wiphy *wiphy)
+@@ -3790,6 +3790,7 @@ void wiphy_regulatory_register(struct wiphy *wiphy)
  
  	wiphy_update_regulatory(wiphy, lr->initiator);
  	wiphy_all_share_dfs_chan_state(wiphy);
@@ -834,145 +1190,20 @@ index c7825b951f72..dd8503a3ef1e 100644
  }
  
  void wiphy_regulatory_deregister(struct wiphy *wiphy)
-diff --git a/tools/lib/traceevent/Makefile b/tools/lib/traceevent/Makefile
-index 05f8a0f27121..b7f7e4e541d7 100644
---- a/tools/lib/traceevent/Makefile
-+++ b/tools/lib/traceevent/Makefile
-@@ -263,7 +263,7 @@ define do_generate_dynamic_list_file
- 	xargs echo "U w W" | tr 'w ' 'W\n' | sort -u | xargs echo`;\
- 	if [ "$$symbol_type" = "U W" ];then				\
- 		(echo '{';						\
--		$(NM) -u -D $1 | awk 'NF>1 {print "\t"$$2";"}' | sort -u;\
-+		$(NM) -u -D $1 | awk 'NF>1 {sub("@.*", "", $$2); print "\t"$$2";"}' | sort -u;\
- 		echo '};';						\
- 		) > $2;							\
- 	else								\
-diff --git a/tools/perf/bench/bench.h b/tools/perf/bench/bench.h
-index 6c9fcd757f31..b3e418afc21a 100644
---- a/tools/perf/bench/bench.h
-+++ b/tools/perf/bench/bench.h
-@@ -2,6 +2,10 @@
- #ifndef BENCH_H
- #define BENCH_H
- 
-+#include <sys/time.h>
-+
-+extern struct timeval bench__start, bench__end, bench__runtime;
-+
- /*
-  * The madvise transparent hugepage constants were added in glibc
-  * 2.13. For compatibility with older versions of glibc, define these
-diff --git a/tools/perf/bench/futex-hash.c b/tools/perf/bench/futex-hash.c
-index 9aa3a674829b..ee9b28065109 100644
---- a/tools/perf/bench/futex-hash.c
-+++ b/tools/perf/bench/futex-hash.c
-@@ -35,7 +35,7 @@ static unsigned int nfutexes = 1024;
- static bool fshared = false, done = false, silent = false;
- static int futex_flag = 0;
- 
--struct timeval start, end, runtime;
-+struct timeval bench__start, bench__end, bench__runtime;
- static pthread_mutex_t thread_lock;
- static unsigned int threads_starting;
- static struct stats throughput_stats;
-@@ -101,8 +101,8 @@ static void toggle_done(int sig __maybe_unused,
- {
- 	/* inform all threads that we're done for the day */
- 	done = true;
--	gettimeofday(&end, NULL);
--	timersub(&end, &start, &runtime);
-+	gettimeofday(&bench__end, NULL);
-+	timersub(&bench__end, &bench__start, &bench__runtime);
- }
- 
- static void print_summary(void)
-@@ -112,7 +112,7 @@ static void print_summary(void)
- 
- 	printf("%sAveraged %ld operations/sec (+- %.2f%%), total secs = %d\n",
- 	       !silent ? "\n" : "", avg, rel_stddev_stats(stddev, avg),
--	       (int) runtime.tv_sec);
-+	       (int)bench__runtime.tv_sec);
- }
- 
- int bench_futex_hash(int argc, const char **argv)
-@@ -159,7 +159,7 @@ int bench_futex_hash(int argc, const char **argv)
- 
- 	threads_starting = nthreads;
- 	pthread_attr_init(&thread_attr);
--	gettimeofday(&start, NULL);
-+	gettimeofday(&bench__start, NULL);
- 	for (i = 0; i < nthreads; i++) {
- 		worker[i].tid = i;
- 		worker[i].futex = calloc(nfutexes, sizeof(*worker[i].futex));
-@@ -202,7 +202,7 @@ int bench_futex_hash(int argc, const char **argv)
- 	pthread_mutex_destroy(&thread_lock);
- 
- 	for (i = 0; i < nthreads; i++) {
--		unsigned long t = worker[i].ops/runtime.tv_sec;
-+		unsigned long t = worker[i].ops / bench__runtime.tv_sec;
- 		update_stats(&throughput_stats, t);
- 		if (!silent) {
- 			if (nfutexes == 1)
-diff --git a/tools/perf/bench/futex-lock-pi.c b/tools/perf/bench/futex-lock-pi.c
-index 8e9c4753e304..017609ae3590 100644
---- a/tools/perf/bench/futex-lock-pi.c
-+++ b/tools/perf/bench/futex-lock-pi.c
-@@ -35,7 +35,6 @@ static bool silent = false, multi = false;
- static bool done = false, fshared = false;
- static unsigned int nthreads = 0;
- static int futex_flag = 0;
--struct timeval start, end, runtime;
- static pthread_mutex_t thread_lock;
- static unsigned int threads_starting;
- static struct stats throughput_stats;
-@@ -62,7 +61,7 @@ static void print_summary(void)
- 
- 	printf("%sAveraged %ld operations/sec (+- %.2f%%), total secs = %d\n",
- 	       !silent ? "\n" : "", avg, rel_stddev_stats(stddev, avg),
--	       (int) runtime.tv_sec);
-+	       (int)bench__runtime.tv_sec);
- }
- 
- static void toggle_done(int sig __maybe_unused,
-@@ -71,8 +70,8 @@ static void toggle_done(int sig __maybe_unused,
- {
- 	/* inform all threads that we're done for the day */
- 	done = true;
--	gettimeofday(&end, NULL);
--	timersub(&end, &start, &runtime);
-+	gettimeofday(&bench__end, NULL);
-+	timersub(&bench__end, &bench__start, &bench__runtime);
- }
- 
- static void *workerfn(void *arg)
-@@ -183,7 +182,7 @@ int bench_futex_lock_pi(int argc, const char **argv)
- 
- 	threads_starting = nthreads;
- 	pthread_attr_init(&thread_attr);
--	gettimeofday(&start, NULL);
-+	gettimeofday(&bench__start, NULL);
- 
- 	create_threads(worker, thread_attr, cpu);
- 	pthread_attr_destroy(&thread_attr);
-@@ -209,7 +208,7 @@ int bench_futex_lock_pi(int argc, const char **argv)
- 	pthread_mutex_destroy(&thread_lock);
- 
- 	for (i = 0; i < nthreads; i++) {
--		unsigned long t = worker[i].ops/runtime.tv_sec;
-+		unsigned long t = worker[i].ops / bench__runtime.tv_sec;
- 
- 		update_stats(&throughput_stats, t);
- 		if (!silent)
-diff --git a/tools/perf/tests/bp_account.c b/tools/perf/tests/bp_account.c
-index a20cbc445426..624e4ef73d1c 100644
---- a/tools/perf/tests/bp_account.c
-+++ b/tools/perf/tests/bp_account.c
-@@ -22,7 +22,7 @@
- #include "perf.h"
- #include "cloexec.h"
- 
--volatile long the_var;
-+static volatile long the_var;
- 
- static noinline int test_function(void)
- {
+diff --git a/security/lockdown/lockdown.c b/security/lockdown/lockdown.c
+index 3f38583bed06..655a6edb5d7f 100644
+--- a/security/lockdown/lockdown.c
++++ b/security/lockdown/lockdown.c
+@@ -33,10 +33,12 @@ static const char *const lockdown_reasons[LOCKDOWN_CONFIDENTIALITY_MAX+1] = {
+ 	[LOCKDOWN_MMIOTRACE] = "unsafe mmio",
+ 	[LOCKDOWN_DEBUGFS] = "debugfs access",
+ 	[LOCKDOWN_XMON_WR] = "xmon write access",
++	[LOCKDOWN_DBG_WRITE_KERNEL] = "use of kgdb/kdb to write kernel RAM",
+ 	[LOCKDOWN_INTEGRITY_MAX] = "integrity",
+ 	[LOCKDOWN_KCORE] = "/proc/kcore access",
+ 	[LOCKDOWN_KPROBES] = "use of kprobes",
+ 	[LOCKDOWN_BPF_READ] = "use of bpf to read kernel RAM",
++	[LOCKDOWN_DBG_READ_KERNEL] = "use of kgdb/kdb to read kernel RAM",
+ 	[LOCKDOWN_PERF] = "unsafe use of perf",
+ 	[LOCKDOWN_TRACEFS] = "use of tracefs",
+ 	[LOCKDOWN_XMON_RW] = "xmon read and write access",
