@@ -2,57 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBC83CCA487
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 15:26:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C744C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 15:26:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240572AbiFFP0J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 11:26:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46004 "EHLO
+        id S240703AbiFFP0N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 11:26:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240570AbiFFPZv (ORCPT
+        with ESMTP id S240565AbiFFPZv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 6 Jun 2022 11:25:51 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D684F1CD343;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB4751CD340;
         Mon,  6 Jun 2022 08:25:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 42B7A61522;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1835261519;
         Mon,  6 Jun 2022 15:25:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5F90C341CB;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7BA9C341CA;
         Mon,  6 Jun 2022 15:25:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1654529149;
-        bh=mkHtdDuPA882sz437T9Aas24sScBzzwqd23tLOmUZUM=;
+        bh=HX77o3GbP6StQGsmQNWtxrZSPmAY70fcGW/50iB60UM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iD0RdBcPQOmeIKn8T1RxIq3nexv2+8rPfXggaB/DzObHMdtqVQwB14KGbS8Bgjwym
-         LI4FIOOcuyOqQHhMYT2RHsi3Yx2/tgnDORn+Rw5hdy+Lx8R1rOJAXCbsZcGKCjBNGE
-         KP+b5g9dYCEF3wR9GQbm3kbSLNqiuxyVD0vIdL1Q3y+f9sLP4zu2KHVBRXaM4FEiE7
-         MgoorE998lOfjV2hvHJcRvdgyJRqIubcnSHQep416fm0sd00MZnJceWEkr4CcMiuDk
-         cg/wbyZygNSpwA2XoixSz8yOYVsEWwoZpuqb7JgwKGxw+1xG+KLO0s+iNMwCIY5kpz
-         3Cxvwh0f6JIGQ==
+        b=s9/yhptvDXGC62EWjCN9/23AE9//q71Xm8NvXmnBg+QHhBfORkclu0uFVDhhDrOmv
+         vVRudrbYG0KpPqaKG3pSovGItwyqpIz4gAwxRwS/EMUOHz0+GGt3feFL93pM2MWf0g
+         5aVmu7XR7MpRMn7+pkRO5dnib/Fapm94XG7tEvTcacoJqinocJdlG6T8vL7OoG89YE
+         6TZ12UTAuVqrgjPUWURnPlwWBXA1HADxidBq54xvJhttueY7wQn27dYU+zrNjo+M0o
+         f6MQ/P1oWpXLa1iCW/LbG8+vJN6DQt/sQWY2jZeLKg4L3FnAwfqs1rb0Klx15H1pQx
+         eBmI2stxwjv1A==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1nyEby-0012P5-4x;
+        id 1nyEby-0012Pp-Cy;
         Mon, 06 Jun 2022 16:25:46 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
         Jonathan Corbet <corbet@lwn.net>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
         "Mauro Carvalho Chehab" <mchehab+huawei@kernel.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sam Protsenko <semen.protsenko@linaro.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org
-Subject: [PATCH 06/23] dt-bindings: mmc: exynos-dw-mshc: update samsung,pinctrl.yaml reference
-Date:   Mon,  6 Jun 2022 16:25:28 +0100
-Message-Id: <5c937793dd7aec30da4964b39561072ae184f89b.1654529011.git.mchehab@kernel.org>
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 18/23] MAINTAINERS: update dongwoon,dw9807-vcm.yaml reference
+Date:   Mon,  6 Jun 2022 16:25:40 +0100
+Message-Id: <89f11772dd4afe9700d6cbbb3da8749eb98b396a.1654529011.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1654529011.git.mchehab@kernel.org>
 References: <cover.1654529011.git.mchehab@kernel.org>
@@ -62,36 +56,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Changeset af030d83da1d ("dt-bindings: pinctrl: samsung: convert to dtschema")
-renamed: bindings/pinctrl/samsung-pinctrl.txt
-to: bindings/pinctrl/samsung-pinctrl.yaml, splitting it into multiple
-files.
+Changeset a1f4626b282d ("media: dt-bindings: Convert Dongwoon dw9807-vcm bindings to json-schema")
+renamed: Documentation/devicetree/bindings/media/i2c/dongwoon,dw9807-vcm.txt
+to: Documentation/devicetree/bindings/media/i2c/dongwoon,dw9807-vcm.yaml.
 
-Update exynos-dw-mshc.txt accordingly.
+Update its cross-reference accordingly.
 
-Fixes: af030d83da1d ("dt-bindings: pinctrl: samsung: convert to dtschema")
+Fixes: a1f4626b282d ("media: dt-bindings: Convert Dongwoon dw9807-vcm bindings to json-schema")
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
 
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH 00/23] at: https://lore.kernel.org/all/cover.1654529011.git.mchehab@kernel.org/
 
- Documentation/devicetree/bindings/mmc/exynos-dw-mshc.txt | 2 +-
+ MAINTAINERS | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/mmc/exynos-dw-mshc.txt b/Documentation/devicetree/bindings/mmc/exynos-dw-mshc.txt
-index 753e9d7d8956..985b781f0a48 100644
---- a/Documentation/devicetree/bindings/mmc/exynos-dw-mshc.txt
-+++ b/Documentation/devicetree/bindings/mmc/exynos-dw-mshc.txt
-@@ -64,7 +64,7 @@ Required properties for a slot (Deprecated - Recommend to use one slot per host)
-   rest of the gpios (depending on the bus-width property) are the data lines in
-   no particular order. The format of the gpio specifier depends on the gpio
-   controller.
--(Deprecated - Refer to Documentation/devicetree/bindings/pinctrl/samsung-pinctrl.txt)
-+(Deprecated - Refer to Documentation/devicetree/bindings/pinctrl/samsung,pinctrl.yaml)
+diff --git a/MAINTAINERS b/MAINTAINERS
+index e122b6946063..a11aa7ebb6af 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -6078,7 +6078,7 @@ M:	Sakari Ailus <sakari.ailus@linux.intel.com>
+ L:	linux-media@vger.kernel.org
+ S:	Maintained
+ T:	git git://linuxtv.org/media_tree.git
+-F:	Documentation/devicetree/bindings/media/i2c/dongwoon,dw9807-vcm.txt
++F:	Documentation/devicetree/bindings/media/i2c/dongwoon,dw9807-vcm.yaml
+ F:	drivers/media/i2c/dw9807-vcm.c
  
- Example:
- 
+ DOUBLETALK DRIVER
 -- 
 2.36.1
 
