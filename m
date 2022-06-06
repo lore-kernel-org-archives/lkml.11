@@ -2,93 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73F09C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:43:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4B4AC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:44:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239897AbiFFOn0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 10:43:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44568 "EHLO
+        id S239902AbiFFOoA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 10:44:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239831AbiFFOnT (ORCPT
+        with ESMTP id S239836AbiFFOny (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 10:43:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07485457B0
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 07:43:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B41FEB81A6E
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 14:43:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69F44C385A9;
-        Mon,  6 Jun 2022 14:43:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654526595;
-        bh=8KryTG7Uz5Xg2VPtI9tDJ0yLVfz1AHsMhRF/iWdXK/8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=JE0xHj4NtCjcwb7NokcoDCY6oPe8PvZLwv7gB1jsy7/Jd88JS1cBcPGp4AFiKy9aH
-         6i3VZFHD0shi8cmboUAjdcVkqNXnSstcznANSyOXVBqAu6OMWjnnEwnOhH475AYO3I
-         Zf3aPWGYhscm0/PNTviJZf/sgnPcTSqg/TJl0DFDTsj78w7HOUMqTdeX2t9UV0gtJg
-         28jqL40mXJR/g8HRYVEIluOEmcj7r4W6gcCdExN1nmdymlVUYYN03dUKte8wN+jIjh
-         HO0Ha652yGRwt8W0Q5K0SvRgaTAP6tcA26JAkjFTisk6Jxhbbu2ecSmfER4F9fbjQ4
-         vVQv7XHwCWasg==
-Date:   Mon, 6 Jun 2022 23:43:10 +0900
-From:   Masami Hiramatsu (Google) <mhiramat@kernel.org>
-To:     sunliming <sunliming@kylinos.cn>
-Cc:     rostedt@goodmis.org, ast@kernel.org, jolsa@kernel.org,
-        linux-kernel@vger.kernel.org, kelulanainsley@gmail.com,
-        kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH] fprobe/samples: make sample_probe static
-Message-Id: <20220606234310.b0f893ee35c0106e414bd67f@kernel.org>
-In-Reply-To: <20220606075659.674556-1-sunliming@kylinos.cn>
-References: <20220606075659.674556-1-sunliming@kylinos.cn>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Mon, 6 Jun 2022 10:43:54 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 406F84E3B2
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 07:43:54 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 198711595;
+        Mon,  6 Jun 2022 07:43:54 -0700 (PDT)
+Received: from bogus (unknown [10.57.9.14])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 38C0F3F73B;
+        Mon,  6 Jun 2022 07:43:52 -0700 (PDT)
+Date:   Mon, 6 Jun 2022 15:43:05 +0100
+From:   Sudeep Holla <sudeep.holla@arm.com>
+To:     Cristian Marussi <cristian.marussi@arm.com>
+Cc:     Michael Riesch <michael.riesch@wolfvision.net>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Heiko Stuebner <heiko@sntech.de>,
+        Liang Chen <cl@rock-chips.com>,
+        Kever Yang <kever.yang@rock-chips.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Jeffy Chen <jeffy.chen@rock-chips.com>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
+        Etienne Carriere <etienne.carriere@linaro.org>
+Subject: Re: [PATCH] firmware: arm_scmi: Relax BASE protocol sanity checks on
+ protocol list
+Message-ID: <20220606144305.agzzyf7c4kp2nwlw@bogus>
+References: <20220523171559.472112-1-cristian.marussi@arm.com>
+ <45bf11a8-47eb-e088-ba99-30c8788c7143@wolfvision.net>
+ <Yp4Br5d0jMnlF5yy@e120937-lin>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yp4Br5d0jMnlF5yy@e120937-lin>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon,  6 Jun 2022 15:56:59 +0800
-sunliming <sunliming@kylinos.cn> wrote:
+On Mon, Jun 06, 2022 at 02:31:48PM +0100, Cristian Marussi wrote:
+> On Mon, Jun 06, 2022 at 02:59:10PM +0200, Michael Riesch wrote:
+> > Hi Cristian,
+> >
+> Hi Michael,
+>
+> > On 5/23/22 19:15, Cristian Marussi wrote:
+> > > Even though malformed replies from firmware must be treated carefully to
+> > > avoid memory corruption Kernel side, some out-of-spec SCMI replies can
+> > > be tolerated to avoid breaking existing deployed system, as long as they
+> > > won't cause memory issues.
+> > >
+> > > Reported-by: Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
+> > > Cc: Etienne Carriere <etienne.carriere@linaro.org>
+> > > Cc: Sudeep Holla <sudeep.holla@arm.com>
+> > > Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
+> >
+> > Thanks a lot, without this fix the Mali G52 GPU won't probe on my RK3568
+> > EVB1 in vanilla v5.19-rc1.
+> >
+>
+> Yes, the break was reported on -next and today it appeared in 5.19-rc1.
+> A proper FW fix is also up for review by Etienne but in the meantime
+> this tries to limit damages relaxing a bit the checks.
+>
+> > I guess this patch should have a Fixes: tag, right?
+> >
+>
+> It has not a Fixes tag because the issue was introduced in 5.19-rc1 and the
+> fix will go in with the next round of v5.19 fixes by Sudeep (AFAIU) so it
+> will be solved within the v5.19 cycle and I thought the Fixes tag was
+> not needed in this case (I could be wrong...)
 
-> This symbol is not used outside of fprobe_example.c, so marks it static.
-> 
-> Fixes the following warning:
-> 
-> sparse warnings: (new ones prefixed by >>)
-> >> samples/fprobe/fprobe_example.c:23:15: sparse: sparse: symbol 'sample_probe'
-> was not declared. Should it be static?
-> 
+Correct, if for some reason, we can't push this before v5.19, then fixes
+tag needs to added. I will add that then, but for now let us target getting
+it in before v5.19
 
-Looks good to me. Thanks for the fix!
-
-Acked-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
-
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: sunliming <sunliming@kylinos.cn>
-> ---
->  samples/fprobe/fprobe_example.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/samples/fprobe/fprobe_example.c b/samples/fprobe/fprobe_example.c
-> index 24d3cf109140..123cfd83d4c6 100644
-> --- a/samples/fprobe/fprobe_example.c
-> +++ b/samples/fprobe/fprobe_example.c
-> @@ -20,7 +20,7 @@
->  
->  #define BACKTRACE_DEPTH 16
->  #define MAX_SYMBOL_LEN 4096
-> -struct fprobe sample_probe;
-> +static struct fprobe sample_probe;
->  
->  static char symbol[MAX_SYMBOL_LEN] = "kernel_clone";
->  module_param_string(symbol, symbol, sizeof(symbol), 0644);
-> -- 
-> 2.25.1
-> 
-
-
--- 
-Masami Hiramatsu (Google) <mhiramat@kernel.org>
+--
+Regards,
+Sudeep
