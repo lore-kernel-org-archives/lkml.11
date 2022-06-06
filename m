@@ -2,173 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EB87C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 00:44:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A27C5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 00:48:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351888AbiFFAoN (ORCPT
+        id S1351898AbiFFAsa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 5 Jun 2022 20:44:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48288 "EHLO
+        Sun, 5 Jun 2022 20:48:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351840AbiFFAoM (ORCPT
+        with ESMTP id S1348528AbiFFAs1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 5 Jun 2022 20:44:12 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 777BE25286
-        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 17:44:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654476251; x=1686012251;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=v72JwO4ZEs4E4qmYCJBQG3/w1N1+brvvHURcuUQL7aA=;
-  b=M/i3Dg3lbIX4IkcvfoZP+hOKK5cymsfQ362/QdR7n0jslm1nz1PJDQNx
-   jZAoUk34cWgtDepGoKoSZ8dKqnBt+tRJIMzGynZMWubRAh2NUUlWGECcd
-   c8h/tVSOKLIR/oNvWEWr+bim3gwWG95nny8Q8sc8H4OALhReG1NR7560n
-   LZU7eCGmncmTISvyux1xMYkvTArn22/F1BrF0mGXDBJP0G7jntOBYXndW
-   rDiYpZCwIF2+9fVka6mVXsFjOHvrwZg0cTw2HNi1fmrViqxEcK2aTSYeE
-   j653t06GVI0hnaeF15lpb7MkMH5NfKpUoPmJxdR55Euq0rdewMrMS3WrC
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="339729384"
-X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="339729384"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2022 17:44:11 -0700
-X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="583354699"
-Received: from xingguom-mobl.ccr.corp.intel.com ([10.254.213.116])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2022 17:44:06 -0700
-Message-ID: <9f6e60cc8be3cbde4871458c612c5c31d2a9e056.camel@intel.com>
-Subject: Re: [RFC PATCH v4 7/7] mm/demotion: Demote pages according to
- allocation fallback order
-From:   Ying Huang <ying.huang@intel.com>
-To:     Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>, linux-mm@kvack.org,
-        akpm@linux-foundation.org
-Cc:     Greg Thelen <gthelen@google.com>, Yang Shi <shy828301@gmail.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Tim C Chen <tim.c.chen@intel.com>,
-        Brice Goglin <brice.goglin@gmail.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hesham Almatary <hesham.almatary@huawei.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Jagdish Gediya <jvgediya@linux.ibm.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        David Rientjes <rientjes@google.com>
-Date:   Mon, 06 Jun 2022 08:43:44 +0800
-In-Reply-To: <046c373a-f30b-091d-47a1-e28bfb7e9394@linux.ibm.com>
-References: <CAAPL-u-dFp7PwPH6DfbYdnY8xaGsHz3tRQ0CPGVkiqURvdN8=A@mail.gmail.com>
-         <20220527122528.129445-1-aneesh.kumar@linux.ibm.com>
-         <20220527122528.129445-8-aneesh.kumar@linux.ibm.com>
-         <b102d5773bffd6391283773044f756e810c1f044.camel@intel.com>
-         <046c373a-f30b-091d-47a1-e28bfb7e9394@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3-1 
+        Sun, 5 Jun 2022 20:48:27 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 173632BB1E;
+        Sun,  5 Jun 2022 17:48:23 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LGZZK0bcgzjXKN;
+        Mon,  6 Jun 2022 08:47:05 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
+ (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 6 Jun
+ 2022 08:48:20 +0800
+From:   Zhengchao Shao <shaozhengchao@huawei.com>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <hawk@kernel.org>, <john.fastabend@gmail.com>, <andrii@kernel.org>,
+        <kafai@fb.com>, <songliubraving@fb.com>, <yhs@fb.com>,
+        <kpsingh@kernel.org>, <toke@kernel.org>
+CC:     <weiyongjun1@huawei.com>, <shaozhengchao@huawei.com>,
+        <yuehaibing@huawei.com>
+Subject: [PATCH v6,bpf-next] samples/bpf: check detach prog exist or not in xdp_fwd
+Date:   Mon, 6 Jun 2022 08:54:25 +0800
+Message-ID: <20220606005425.261967-1-shaozhengchao@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpeml500026.china.huawei.com (7.185.36.106)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-06-03 at 20:39 +0530, Aneesh Kumar K V wrote:
-> On 6/2/22 1:05 PM, Ying Huang wrote:
-> > On Fri, 2022-05-27 at 17:55 +0530, Aneesh Kumar K.V wrote:
-> > > From: Jagdish Gediya <jvgediya@linux.ibm.com>
-> > > 
-> > > currently, a higher tier node can only be demoted to selected
-> > > nodes on the next lower tier as defined by the demotion path,
-> > > not any other node from any lower tier.  This strict, hard-coded
-> > > demotion order does not work in all use cases (e.g. some use cases
-> > > may want to allow cross-socket demotion to another node in the same
-> > > demotion tier as a fallback when the preferred demotion node is out
-> > > of space). This demotion order is also inconsistent with the page
-> > > allocation fallback order when all the nodes in a higher tier are
-> > > out of space: The page allocation can fall back to any node from any
-> > > lower tier, whereas the demotion order doesn't allow that currently.
-> > > 
-> > > This patch adds support to get all the allowed demotion targets mask
-> > > for node, also demote_page_list() function is modified to utilize this
-> > > allowed node mask by filling it in migration_target_control structure
-> > > before passing it to migrate_pages().
-> > 
-> 
-> ...
-> 
-> > >    * Take pages on @demote_list and attempt to demote them to
-> > >    * another node.  Pages which are not demoted are left on
-> > > @@ -1481,6 +1464,19 @@ static unsigned int demote_page_list(struct list_head *demote_pages,
-> > >   {
-> > >   	int target_nid = next_demotion_node(pgdat->node_id);
-> > >   	unsigned int nr_succeeded;
-> > > +	nodemask_t allowed_mask;
-> > > +
-> > > +	struct migration_target_control mtc = {
-> > > +		/*
-> > > +		 * Allocate from 'node', or fail quickly and quietly.
-> > > +		 * When this happens, 'page' will likely just be discarded
-> > > +		 * instead of migrated.
-> > > +		 */
-> > > +		.gfp_mask = (GFP_HIGHUSER_MOVABLE & ~__GFP_RECLAIM) | __GFP_NOWARN |
-> > > +			__GFP_NOMEMALLOC | GFP_NOWAIT,
-> > > +		.nid = target_nid,
-> > > +		.nmask = &allowed_mask
-> > > +	};
-> > 
-> > IMHO, we should try to allocate from preferred node firstly (which will
-> > kick kswapd of the preferred node if necessary).  If failed, we will
-> > fallback to all allowed node.
-> > 
-> > As we discussed as follows,
-> > 
-> > https://lore.kernel.org/lkml/69f2d063a15f8c4afb4688af7b7890f32af55391.camel@intel.com/
-> > 
-> > That is, something like below,
-> > 
-> > static struct page *alloc_demote_page(struct page *page, unsigned long node)
-> > {
-> > 	struct page *page;
-> > 	nodemask_t allowed_mask;
-> > 	struct migration_target_control mtc = {
-> > 		/*
-> > 		 * Allocate from 'node', or fail quickly and quietly.
-> > 		 * When this happens, 'page' will likely just be discarded
-> > 		 * instead of migrated.
-> > 		 */
-> > 		.gfp_mask = (GFP_HIGHUSER_MOVABLE & ~__GFP_RECLAIM) |
-> > 			    __GFP_THISNODE  | __GFP_NOWARN |
-> > 			    __GFP_NOMEMALLOC | GFP_NOWAIT,
-> > 		.nid = node
-> > 	};
-> > 
-> > 	page = alloc_migration_target(page, (unsigned long)&mtc);
-> > 	if (page)
-> > 		return page;
-> > 
-> > 	mtc.gfp_mask &= ~__GFP_THISNODE;
-> > 	mtc.nmask = &allowed_mask;
-> > 
-> > 	return alloc_migration_target(page, (unsigned long)&mtc);
-> > }
-> 
-> I skipped doing this in v5 because I was not sure this is really what we 
-> want.
+Before detach the prog, we should check detach prog exist or not.
 
-I think so.  And this is the original behavior.  We should keep the
-original behavior as much as possible, then make changes if necessary.
+Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+---
+ samples/bpf/xdp_fwd_user.c | 55 +++++++++++++++++++++++++++++++++-----
+ 1 file changed, 49 insertions(+), 6 deletions(-)
 
-> I guess we can do this as part of the change that is going to 
-> introduce the usage of memory policy for the allocation?
-
-Like the memory allocation policy, the default policy should be local
-preferred.  We shouldn't force users to use explicit memory policy for
-that.
-
-And the added code isn't complex.
-
-Best Regards,
-Huang, Ying
+diff --git a/samples/bpf/xdp_fwd_user.c b/samples/bpf/xdp_fwd_user.c
+index 1828487bae9a..84f57f1209ce 100644
+--- a/samples/bpf/xdp_fwd_user.c
++++ b/samples/bpf/xdp_fwd_user.c
+@@ -47,17 +47,60 @@ static int do_attach(int idx, int prog_fd, int map_fd, const char *name)
+ 	return err;
+ }
+ 
+-static int do_detach(int idx, const char *name)
++static int do_detach(int ifindex, const char *ifname, const char *app_name)
+ {
+-	int err;
++	LIBBPF_OPTS(bpf_xdp_attach_opts, opts);
++	struct bpf_prog_info prog_info = {};
++	char prog_name[BPF_OBJ_NAME_LEN];
++	__u32 info_len, curr_prog_id;
++	int prog_fd;
++	int err = 1;
++
++	if (bpf_xdp_query_id(ifindex, xdp_flags, &curr_prog_id)) {
++		printf("ERROR: bpf_xdp_query_id failed (%s)\n",
++		       strerror(errno));
++		return err;
++	}
+ 
+-	err = bpf_xdp_detach(idx, xdp_flags, NULL);
+-	if (err < 0)
+-		printf("ERROR: failed to detach program from %s\n", name);
++	if (!curr_prog_id) {
++		printf("ERROR: flags(0x%x) xdp prog is not attached to %s\n",
++		       xdp_flags, ifname);
++		return err;
++	}
+ 
++	info_len = sizeof(prog_info);
++	prog_fd = bpf_prog_get_fd_by_id(curr_prog_id);
++	if (prog_fd < 0) {
++		printf("ERROR: bpf_prog_get_fd_by_id failed (%s)\n",
++		       strerror(errno));
++		return prog_fd;
++	}
++
++	err = bpf_obj_get_info_by_fd(prog_fd, &prog_info, &info_len);
++	if (err) {
++		printf("ERROR: bpf_obj_get_info_by_fd failed (%s)\n",
++		       strerror(errno));
++		goto close_out;
++	}
++	snprintf(prog_name, sizeof(prog_name), "%s_prog", app_name);
++	prog_name[BPF_OBJ_NAME_LEN - 1] = '\0';
++
++	if (strcmp(prog_info.name, prog_name)) {
++		printf("ERROR: %s isn't attached to %s\n", app_name, ifname);
++		err = 1;
++		goto close_out;
++	}
++
++	opts.old_prog_fd = prog_fd;
++	err = bpf_xdp_detach(ifindex, xdp_flags, &opts);
++	if (err < 0)
++		printf("ERROR: failed to detach program from %s (%s)\n",
++		       ifname, strerror(errno));
+ 	/* TODO: Remember to cleanup map, when adding use of shared map
+ 	 *  bpf_map_delete_elem((map_fd, &idx);
+ 	 */
++close_out:
++	close(prog_fd);
+ 	return err;
+ }
+ 
+@@ -169,7 +212,7 @@ int main(int argc, char **argv)
+ 			return 1;
+ 		}
+ 		if (!attach) {
+-			err = do_detach(idx, argv[i]);
++			err = do_detach(idx, argv[i], prog_name);
+ 			if (err)
+ 				ret = err;
+ 		} else {
+-- 
+2.17.1
 
