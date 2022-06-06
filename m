@@ -2,783 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4255DC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 11:51:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95308C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 11:51:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235770AbiFFLvQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 07:51:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55334 "EHLO
+        id S235744AbiFFLv0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 07:51:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235682AbiFFLul (ORCPT
+        with ESMTP id S235459AbiFFLvT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 07:50:41 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A65F244091;
-        Mon,  6 Jun 2022 04:50:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654516226; x=1686052226;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=kbxq7TUNPnMtwai1APjhNA6dIYlSiYmX0bCSBSjmENU=;
-  b=GBEn3ptcYuWGv5wAWQ49ysFD+u13D2T3MgmrmtLbW/Nq8LClp1pV5H0z
-   ukUueliwalE9shc97cjPt566qOTUpZ/ZwZGDt5LiypEu15aIFrmHXBpvI
-   beao8XQHyUkj1BHPMo2jFRa5p1yg3FZ6EYvMQuOZUnavQ18f7r+b904Bw
-   Fs/dtKHjX3FjtoskQmQQpNvlWZeQXPLMr38nfHUwCnVK7uVmwx3gmIIa+
-   eSeu8aL+szjvN3dyhejQaenZ0r3t/Gm9wmMTBKJsiKW9H67l7rLDcSqyS
-   Y4Vd7bmHZUE/nGFugPgi4D/qm5hJ0Yi1zBRuLyMq6eKHuWvWtT3ggImtm
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="337545886"
-X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="337545886"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 04:50:25 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="554421202"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga006.jf.intel.com with ESMTP; 06 Jun 2022 04:50:20 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 256BoDHj010626;
-        Mon, 6 Jun 2022 12:50:18 +0100
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Arnd Bergmann <arnd@arndb.de>, Yury Norov <yury.norov@gmail.com>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Richard Henderson <rth@twiddle.net>,
-        Matt Turner <mattst88@gmail.com>,
-        Brian Cain <bcain@quicinc.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Kees Cook <keescook@chromium.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Marco Elver <elver@google.com>, Borislav Petkov <bp@suse.de>,
-        Tony Luck <tony.luck@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-alpha@vger.kernel.org, linux-hexagon@vger.kernel.org,
-        linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 4/6] bitops: unify non-atomic bitops prototypes across architectures
-Date:   Mon,  6 Jun 2022 13:49:05 +0200
-Message-Id: <20220606114908.962562-5-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220606114908.962562-1-alexandr.lobakin@intel.com>
-References: <20220606114908.962562-1-alexandr.lobakin@intel.com>
+        Mon, 6 Jun 2022 07:51:19 -0400
+Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0CA527D0C2
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 04:51:17 -0700 (PDT)
+Received: from [192.168.88.254] (unknown [36.73.79.120])
+        by gnuweeb.org (Postfix) with ESMTPSA id DEFBE7F7F3;
+        Mon,  6 Jun 2022 11:51:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
+        s=default; t=1654516277;
+        bh=xS066RNFYXBkTn5epxLFYxfXH9r2y85e17PJRqJHmdc=;
+        h=Date:Subject:To:References:From:In-Reply-To:From;
+        b=olPq1n0+74Urgx+BMlpgHn5uyWzfInE13COp2RmOJ/9QiqmUZHzcnNqkFEQjlPTrv
+         t0NyjIjpR5BiW7H2EHmC22hk6nY3ST9FqJ89s+2VkN1OHlx9SFJMY7+MnJy+kmzO4K
+         RJsNc5gb2PPc6MqujDdUeTaJvmw+IvJ4VzCyxgw8n+etN243nv7oAsrk5voTUnmVqb
+         Toz9A1xa5E/RSNThoLJPHGaPI7aKi8n12HrQ+5dewnJ9z4VGrdL7fdso+ZKh0sKR4D
+         MQB11V5PjlDOjoLPCChsrrJy9EOGPBOccSBdDbni55qTnZ/nFuC2V365KeC4JndiU/
+         ywrEpclsPyEGQ==
+Message-ID: <ff7406ea-1fc5-515e-2e14-f1ce2587cd69@gnuweeb.org>
+Date:   Mon, 6 Jun 2022 18:51:02 +0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: Linux 5.19-rc1
+Content-Language: en-US
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <CAHk-=wgZt-YDSKfdyES2p6A_KJoG8DwQ0mb9CeS8jZYp+0Y2Rw@mail.gmail.com>
+From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
+In-Reply-To: <CAHk-=wgZt-YDSKfdyES2p6A_KJoG8DwQ0mb9CeS8jZYp+0Y2Rw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, there is a mess with the prototypes of the non-atomic
-bitops across the different architectures:
+On 6/6/22 7:42 AM, Linus Torvalds wrote:
+> So hey, let's start calming things down and testing this all.
 
-ret	bool, int, unsigned long
-nr	int, long, unsigned int, unsigned long
-addr	volatile unsigned long *, volatile void *
+Doesn't compile with clang 15, the fix is there:
 
-Thankfully, it doesn't provoke any bugs, but can sometimes make
-the compiler angry when it's not handy at all.
-Adjust all the prototypes to the following standard:
+https://lore.kernel.org/lkml/20220523150521.2947108-1-nathan@kernel.org/
 
-ret	bool				retval can be only 0 or 1
-nr	unsigned long			native; signed makes no sense
-addr	volatile unsigned long *	bitmaps are arrays of ulongs
+Error:
+```
+ammarfaizi2@integral2:~/work/linux.work$ git log -n 1
 
-Finally, add some static assertions in order to prevent people from
-making a mess in this room again.
-I also used the %__always_inline attribute consistently they always
-get resolved to the actual operations.
+commit f2906aa863381afb0015a9eb7fefad885d4e5a56 (HEAD -> master, tag: v5.19-rc1, @torvalds/linux/master)
+Author: Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Sun Jun 5 17:18:54 2022 -0700
 
-Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
----
- arch/alpha/include/asm/bitops.h               | 28 +++++------
- arch/hexagon/include/asm/bitops.h             | 23 +++++----
- arch/ia64/include/asm/bitops.h                | 28 +++++------
- arch/m68k/include/asm/bitops.h                | 47 +++++++++++++------
- arch/sh/include/asm/bitops-op32.h             | 24 ++++++----
- .../asm-generic/bitops/generic-non-atomic.h   | 24 +++++-----
- .../bitops/instrumented-non-atomic.h          | 21 ++++++---
- include/linux/bitops.h                        | 13 +++++
- tools/include/asm-generic/bitops/non-atomic.h | 24 ++++++----
- 9 files changed, 146 insertions(+), 86 deletions(-)
+     Linux 5.19-rc1
+ammarfaizi2@integral2:~/work/linux.work$
+ammarfaizi2@integral2:~/work/linux.work$ taskset -c 0-7 make -j8 && taskset -c 0-7 make modules -j8
+   DESCEND objtool
+   CALL    scripts/atomic/check-atomics.sh
+   CALL    scripts/checksyscalls.sh
+   CHK     include/generated/compile.h
+   CC [M]  drivers/misc/cardreader/rts5261.o
+   CC [M]  drivers/misc/altera-stapl/altera-lpt.o
+   CC [M]  drivers/misc/altera-stapl/altera-jtag.o
+   CC [M]  drivers/misc/altera-stapl/altera-comp.o
+drivers/misc/cardreader/rts5261.c:406:13: error: variable 'setting_reg2' is used uninitialized whenever 'if' condition is false [-Werror,-Wsometimes-uninitialized]
+         } else if (efuse_valid == 0) {
+                    ^~~~~~~~~~~~~~~~
+drivers/misc/cardreader/rts5261.c:412:30: note: uninitialized use occurs here
+         pci_read_config_dword(pdev, setting_reg2, &lval2);
+                                     ^~~~~~~~~~~~
+drivers/misc/cardreader/rts5261.c:406:9: note: remove the 'if' if its condition is always true
+         } else if (efuse_valid == 0) {
+                ^~~~~~~~~~~~~~~~~~~~~~
+drivers/misc/cardreader/rts5261.c:364:32: note: initialize the variable 'setting_reg2' to silence this warning
+         u16 setting_reg1, setting_reg2;
+                                       ^
+                                        = 0
+1 error generated.
+make[3]: *** [scripts/Makefile.build:249: drivers/misc/cardreader/rts5261.o] Error 1
+make[2]: *** [scripts/Makefile.build:466: drivers/misc/cardreader] Error 2
+make[2]: *** Waiting for unfinished jobs....
 
-diff --git a/arch/alpha/include/asm/bitops.h b/arch/alpha/include/asm/bitops.h
-index e1d8483a45f2..381ad2eae4b4 100644
---- a/arch/alpha/include/asm/bitops.h
-+++ b/arch/alpha/include/asm/bitops.h
-@@ -46,8 +46,8 @@ set_bit(unsigned long nr, volatile void * addr)
- /*
-  * WARNING: non atomic version.
-  */
--static inline void
--__set_bit(unsigned long nr, volatile void * addr)
-+static __always_inline void
-+__set_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	int *m = ((int *) addr) + (nr >> 5);
- 
-@@ -82,8 +82,8 @@ clear_bit_unlock(unsigned long nr, volatile void * addr)
- /*
-  * WARNING: non atomic version.
-  */
--static __inline__ void
--__clear_bit(unsigned long nr, volatile void * addr)
-+static __always_inline void
-+__clear_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	int *m = ((int *) addr) + (nr >> 5);
- 
-@@ -118,8 +118,8 @@ change_bit(unsigned long nr, volatile void * addr)
- /*
-  * WARNING: non atomic version.
-  */
--static __inline__ void
--__change_bit(unsigned long nr, volatile void * addr)
-+static __always_inline void
-+__change_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	int *m = ((int *) addr) + (nr >> 5);
- 
-@@ -186,8 +186,8 @@ test_and_set_bit_lock(unsigned long nr, volatile void *addr)
- /*
-  * WARNING: non atomic version.
-  */
--static inline int
--__test_and_set_bit(unsigned long nr, volatile void * addr)
-+static __always_inline bool
-+__test_and_set_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	unsigned long mask = 1 << (nr & 0x1f);
- 	int *m = ((int *) addr) + (nr >> 5);
-@@ -230,8 +230,8 @@ test_and_clear_bit(unsigned long nr, volatile void * addr)
- /*
-  * WARNING: non atomic version.
-  */
--static inline int
--__test_and_clear_bit(unsigned long nr, volatile void * addr)
-+static __always_inline bool
-+__test_and_clear_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	unsigned long mask = 1 << (nr & 0x1f);
- 	int *m = ((int *) addr) + (nr >> 5);
-@@ -272,8 +272,8 @@ test_and_change_bit(unsigned long nr, volatile void * addr)
- /*
-  * WARNING: non atomic version.
-  */
--static __inline__ int
--__test_and_change_bit(unsigned long nr, volatile void * addr)
-+static __always_inline bool
-+__test_and_change_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	unsigned long mask = 1 << (nr & 0x1f);
- 	int *m = ((int *) addr) + (nr >> 5);
-@@ -283,8 +283,8 @@ __test_and_change_bit(unsigned long nr, volatile void * addr)
- 	return (old & mask) != 0;
- }
- 
--static inline int
--test_bit(int nr, const volatile void * addr)
-+static __always_inline bool
-+test_bit(unsigned long nr, const volatile unsigned long *addr)
- {
- 	return (1UL & (((const int *) addr)[nr >> 5] >> (nr & 31))) != 0UL;
- }
-diff --git a/arch/hexagon/include/asm/bitops.h b/arch/hexagon/include/asm/bitops.h
-index 75d6ba3643b8..a3bfe3a8d4b7 100644
---- a/arch/hexagon/include/asm/bitops.h
-+++ b/arch/hexagon/include/asm/bitops.h
-@@ -127,38 +127,45 @@ static inline void change_bit(int nr, volatile void *addr)
-  * be atomic, particularly for things like slab_lock and slab_unlock.
-  *
-  */
--static inline void __clear_bit(int nr, volatile unsigned long *addr)
-+static __always_inline void
-+__clear_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	test_and_clear_bit(nr, addr);
- }
- 
--static inline void __set_bit(int nr, volatile unsigned long *addr)
-+static __always_inline void
-+__set_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	test_and_set_bit(nr, addr);
- }
- 
--static inline void __change_bit(int nr, volatile unsigned long *addr)
-+static __always_inline void
-+__change_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	test_and_change_bit(nr, addr);
- }
- 
- /*  Apparently, at least some of these are allowed to be non-atomic  */
--static inline int __test_and_clear_bit(int nr, volatile unsigned long *addr)
-+static __always_inline bool
-+__test_and_clear_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	return test_and_clear_bit(nr, addr);
- }
- 
--static inline int __test_and_set_bit(int nr, volatile unsigned long *addr)
-+static __always_inline bool
-+__test_and_set_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	return test_and_set_bit(nr, addr);
- }
- 
--static inline int __test_and_change_bit(int nr, volatile unsigned long *addr)
-+static __always_inline bool
-+__test_and_change_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	return test_and_change_bit(nr, addr);
- }
- 
--static inline int __test_bit(int nr, const volatile unsigned long *addr)
-+static __always_inline bool
-+test_bit(unsigned long nr, const volatile unsigned long *addr)
- {
- 	int retval;
- 
-@@ -172,7 +179,7 @@ static inline int __test_bit(int nr, const volatile unsigned long *addr)
- 	return retval;
- }
- 
--#define test_bit(nr, addr) __test_bit(nr, addr)
-+#define __test_bit(nr, addr) test_bit(nr, addr)
- 
- /*
-  * ffz - find first zero in word.
-diff --git a/arch/ia64/include/asm/bitops.h b/arch/ia64/include/asm/bitops.h
-index 577be93c0818..4267a217a503 100644
---- a/arch/ia64/include/asm/bitops.h
-+++ b/arch/ia64/include/asm/bitops.h
-@@ -61,8 +61,8 @@ set_bit (int nr, volatile void *addr)
-  * If it's called on the same region of memory simultaneously, the effect
-  * may be that only one operation succeeds.
-  */
--static __inline__ void
--__set_bit (int nr, volatile void *addr)
-+static __always_inline void
-+__set_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	*((__u32 *) addr + (nr >> 5)) |= (1 << (nr & 31));
- }
-@@ -143,8 +143,8 @@ __clear_bit_unlock(int nr, void *addr)
-  * If it's called on the same region of memory simultaneously, the effect
-  * may be that only one operation succeeds.
-  */
--static __inline__ void
--__clear_bit (int nr, volatile void *addr)
-+static __always_inline void
-+__clear_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	*((__u32 *) addr + (nr >> 5)) &= ~(1 << (nr & 31));
- }
-@@ -183,8 +183,8 @@ change_bit (int nr, volatile void *addr)
-  * If it's called on the same region of memory simultaneously, the effect
-  * may be that only one operation succeeds.
-  */
--static __inline__ void
--__change_bit (int nr, volatile void *addr)
-+static __always_inline void
-+__change_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	*((__u32 *) addr + (nr >> 5)) ^= (1 << (nr & 31));
- }
-@@ -232,8 +232,8 @@ test_and_set_bit (int nr, volatile void *addr)
-  * If two examples of this operation race, one can appear to succeed
-  * but actually fail.  You must protect multiple accesses with a lock.
-  */
--static __inline__ int
--__test_and_set_bit (int nr, volatile void *addr)
-+static __always_inline bool
-+__test_and_set_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	__u32 *p = (__u32 *) addr + (nr >> 5);
- 	__u32 m = 1 << (nr & 31);
-@@ -277,8 +277,8 @@ test_and_clear_bit (int nr, volatile void *addr)
-  * If two examples of this operation race, one can appear to succeed
-  * but actually fail.  You must protect multiple accesses with a lock.
-  */
--static __inline__ int
--__test_and_clear_bit(int nr, volatile void * addr)
-+static __always_inline bool
-+__test_and_clear_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	__u32 *p = (__u32 *) addr + (nr >> 5);
- 	__u32 m = 1 << (nr & 31);
-@@ -320,8 +320,8 @@ test_and_change_bit (int nr, volatile void *addr)
-  *
-  * This operation is non-atomic and can be reordered.
-  */
--static __inline__ int
--__test_and_change_bit (int nr, void *addr)
-+static __always_inline bool
-+__test_and_change_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	__u32 old, bit = (1 << (nr & 31));
- 	__u32 *m = (__u32 *) addr + (nr >> 5);
-@@ -331,8 +331,8 @@ __test_and_change_bit (int nr, void *addr)
- 	return (old & bit) != 0;
- }
- 
--static __inline__ int
--test_bit (int nr, const volatile void *addr)
-+static __always_inline bool
-+test_bit(unsigned long nr, const volatile unsigned long *addr)
- {
- 	return 1 & (((const volatile __u32 *) addr)[nr >> 5] >> (nr & 31));
- }
-diff --git a/arch/m68k/include/asm/bitops.h b/arch/m68k/include/asm/bitops.h
-index 51283db53667..9d44bd4713cb 100644
---- a/arch/m68k/include/asm/bitops.h
-+++ b/arch/m68k/include/asm/bitops.h
-@@ -65,8 +65,11 @@ static inline void bfset_mem_set_bit(int nr, volatile unsigned long *vaddr)
- 				bfset_mem_set_bit(nr, vaddr))
- #endif
- 
--#define __set_bit(nr, vaddr)	set_bit(nr, vaddr)
--
-+static __always_inline void
-+__set_bit(unsigned long nr, volatile unsigned long *addr)
-+{
-+	set_bit(nr, addr);
-+}
- 
- static inline void bclr_reg_clear_bit(int nr, volatile unsigned long *vaddr)
- {
-@@ -105,8 +108,11 @@ static inline void bfclr_mem_clear_bit(int nr, volatile unsigned long *vaddr)
- 				bfclr_mem_clear_bit(nr, vaddr))
- #endif
- 
--#define __clear_bit(nr, vaddr)	clear_bit(nr, vaddr)
--
-+static __always_inline void
-+__clear_bit(unsigned long nr, volatile unsigned long *addr)
-+{
-+	clear_bit(nr, addr);
-+}
- 
- static inline void bchg_reg_change_bit(int nr, volatile unsigned long *vaddr)
- {
-@@ -145,12 +151,16 @@ static inline void bfchg_mem_change_bit(int nr, volatile unsigned long *vaddr)
- 				bfchg_mem_change_bit(nr, vaddr))
- #endif
- 
--#define __change_bit(nr, vaddr)	change_bit(nr, vaddr)
--
-+static __always_inline void
-+__change_bit(unsigned long nr, volatile unsigned long *addr)
-+{
-+	change_bit(nr, addr);
-+}
- 
--static inline int test_bit(int nr, const volatile unsigned long *vaddr)
-+static __always_inline bool
-+test_bit(unsigned long nr, const volatile unsigned long *addr)
- {
--	return (vaddr[nr >> 5] & (1UL << (nr & 31))) != 0;
-+	return (addr[nr >> 5] & (1UL << (nr & 31))) != 0;
- }
- 
- 
-@@ -201,8 +211,11 @@ static inline int bfset_mem_test_and_set_bit(int nr,
- 					bfset_mem_test_and_set_bit(nr, vaddr))
- #endif
- 
--#define __test_and_set_bit(nr, vaddr)	test_and_set_bit(nr, vaddr)
--
-+static __always_inline bool
-+__test_and_set_bit(unsigned long nr, volatile unsigned long *addr)
-+{
-+	return test_and_set_bit(nr, addr);
-+}
- 
- static inline int bclr_reg_test_and_clear_bit(int nr,
- 					      volatile unsigned long *vaddr)
-@@ -251,8 +264,11 @@ static inline int bfclr_mem_test_and_clear_bit(int nr,
- 					bfclr_mem_test_and_clear_bit(nr, vaddr))
- #endif
- 
--#define __test_and_clear_bit(nr, vaddr)	test_and_clear_bit(nr, vaddr)
--
-+static __always_inline bool
-+__test_and_clear_bit(unsigned long nr, volatile unsigned long *addr)
-+{
-+	return test_and_clear_bit(nr, addr);
-+}
- 
- static inline int bchg_reg_test_and_change_bit(int nr,
- 					       volatile unsigned long *vaddr)
-@@ -301,8 +317,11 @@ static inline int bfchg_mem_test_and_change_bit(int nr,
- 					bfchg_mem_test_and_change_bit(nr, vaddr))
- #endif
- 
--#define __test_and_change_bit(nr, vaddr) test_and_change_bit(nr, vaddr)
--
-+static __always_inline bool
-+__test_and_change_bit(unsigned long nr, volatile unsigned long *addr)
-+{
-+	return test_and_change_bit(nr, addr);
-+}
- 
- /*
-  *	The true 68020 and more advanced processors support the "bfffo"
-diff --git a/arch/sh/include/asm/bitops-op32.h b/arch/sh/include/asm/bitops-op32.h
-index cfe5465acce7..dcd85866a394 100644
---- a/arch/sh/include/asm/bitops-op32.h
-+++ b/arch/sh/include/asm/bitops-op32.h
-@@ -2,6 +2,8 @@
- #ifndef __ASM_SH_BITOPS_OP32_H
- #define __ASM_SH_BITOPS_OP32_H
- 
-+#include <linux/bits.h>
-+
- /*
-  * The bit modifying instructions on SH-2A are only capable of working
-  * with a 3-bit immediate, which signifies the shift position for the bit
-@@ -16,7 +18,8 @@
- #define BYTE_OFFSET(nr)		((nr) % BITS_PER_BYTE)
- #endif
- 
--static inline void __set_bit(int nr, volatile unsigned long *addr)
-+static __always_inline void
-+__set_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	if (__builtin_constant_p(nr)) {
- 		__asm__ __volatile__ (
-@@ -33,7 +36,8 @@ static inline void __set_bit(int nr, volatile unsigned long *addr)
- 	}
- }
- 
--static inline void __clear_bit(int nr, volatile unsigned long *addr)
-+static __always_inline void
-+__clear_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	if (__builtin_constant_p(nr)) {
- 		__asm__ __volatile__ (
-@@ -60,7 +64,8 @@ static inline void __clear_bit(int nr, volatile unsigned long *addr)
-  * If it's called on the same region of memory simultaneously, the effect
-  * may be that only one operation succeeds.
-  */
--static inline void __change_bit(int nr, volatile unsigned long *addr)
-+static __always_inline void
-+__change_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	if (__builtin_constant_p(nr)) {
- 		__asm__ __volatile__ (
-@@ -87,7 +92,8 @@ static inline void __change_bit(int nr, volatile unsigned long *addr)
-  * If two examples of this operation race, one can appear to succeed
-  * but actually fail.  You must protect multiple accesses with a lock.
-  */
--static inline int __test_and_set_bit(int nr, volatile unsigned long *addr)
-+static __always_inline bool
-+__test_and_set_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	unsigned long mask = BIT_MASK(nr);
- 	unsigned long *p = ((unsigned long *)addr) + BIT_WORD(nr);
-@@ -106,7 +112,8 @@ static inline int __test_and_set_bit(int nr, volatile unsigned long *addr)
-  * If two examples of this operation race, one can appear to succeed
-  * but actually fail.  You must protect multiple accesses with a lock.
-  */
--static inline int __test_and_clear_bit(int nr, volatile unsigned long *addr)
-+static __always_inline bool
-+__test_and_clear_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	unsigned long mask = BIT_MASK(nr);
- 	unsigned long *p = ((unsigned long *)addr) + BIT_WORD(nr);
-@@ -117,8 +124,8 @@ static inline int __test_and_clear_bit(int nr, volatile unsigned long *addr)
- }
- 
- /* WARNING: non atomic and it can be reordered! */
--static inline int __test_and_change_bit(int nr,
--					    volatile unsigned long *addr)
-+static __always_inline bool
-+__test_and_change_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	unsigned long mask = BIT_MASK(nr);
- 	unsigned long *p = ((unsigned long *)addr) + BIT_WORD(nr);
-@@ -133,7 +140,8 @@ static inline int __test_and_change_bit(int nr,
-  * @nr: bit number to test
-  * @addr: Address to start counting from
-  */
--static inline int test_bit(int nr, const volatile unsigned long *addr)
-+static __always_inline bool
-+test_bit(unsigned long nr, const volatile unsigned long *addr)
- {
- 	return 1UL & (addr[BIT_WORD(nr)] >> (nr & (BITS_PER_LONG-1)));
- }
-diff --git a/include/asm-generic/bitops/generic-non-atomic.h b/include/asm-generic/bitops/generic-non-atomic.h
-index 202d8a3b40e1..249b2a91c174 100644
---- a/include/asm-generic/bitops/generic-non-atomic.h
-+++ b/include/asm-generic/bitops/generic-non-atomic.h
-@@ -23,7 +23,7 @@
-  * may be that only one operation succeeds.
-  */
- static __always_inline void
--gen___set_bit(unsigned int nr, volatile unsigned long *addr)
-+gen___set_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	unsigned long mask = BIT_MASK(nr);
- 	unsigned long *p = ((unsigned long *)addr) + BIT_WORD(nr);
-@@ -32,7 +32,7 @@ gen___set_bit(unsigned int nr, volatile unsigned long *addr)
- }
- 
- static __always_inline void
--gen___clear_bit(unsigned int nr, volatile unsigned long *addr)
-+gen___clear_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	unsigned long mask = BIT_MASK(nr);
- 	unsigned long *p = ((unsigned long *)addr) + BIT_WORD(nr);
-@@ -49,8 +49,8 @@ gen___clear_bit(unsigned int nr, volatile unsigned long *addr)
-  * If it's called on the same region of memory simultaneously, the effect
-  * may be that only one operation succeeds.
-  */
--static __always_inline
--void gen___change_bit(unsigned int nr, volatile unsigned long *addr)
-+static __always_inline void
-+gen___change_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	unsigned long mask = BIT_MASK(nr);
- 	unsigned long *p = ((unsigned long *)addr) + BIT_WORD(nr);
-@@ -67,8 +67,8 @@ void gen___change_bit(unsigned int nr, volatile unsigned long *addr)
-  * If two examples of this operation race, one can appear to succeed
-  * but actually fail.  You must protect multiple accesses with a lock.
-  */
--static __always_inline int
--gen___test_and_set_bit(unsigned int nr, volatile unsigned long *addr)
-+static __always_inline bool
-+gen___test_and_set_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	unsigned long mask = BIT_MASK(nr);
- 	unsigned long *p = ((unsigned long *)addr) + BIT_WORD(nr);
-@@ -87,8 +87,8 @@ gen___test_and_set_bit(unsigned int nr, volatile unsigned long *addr)
-  * If two examples of this operation race, one can appear to succeed
-  * but actually fail.  You must protect multiple accesses with a lock.
-  */
--static __always_inline int
--gen___test_and_clear_bit(unsigned int nr, volatile unsigned long *addr)
-+static __always_inline bool
-+gen___test_and_clear_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	unsigned long mask = BIT_MASK(nr);
- 	unsigned long *p = ((unsigned long *)addr) + BIT_WORD(nr);
-@@ -99,8 +99,8 @@ gen___test_and_clear_bit(unsigned int nr, volatile unsigned long *addr)
- }
- 
- /* WARNING: non atomic and it can be reordered! */
--static __always_inline int
--gen___test_and_change_bit(unsigned int nr, volatile unsigned long *addr)
-+static __always_inline bool
-+gen___test_and_change_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	unsigned long mask = BIT_MASK(nr);
- 	unsigned long *p = ((unsigned long *)addr) + BIT_WORD(nr);
-@@ -115,8 +115,8 @@ gen___test_and_change_bit(unsigned int nr, volatile unsigned long *addr)
-  * @nr: bit number to test
-  * @addr: Address to start counting from
-  */
--static __always_inline int
--gen_test_bit(unsigned int nr, const volatile unsigned long *addr)
-+static __always_inline bool
-+gen_test_bit(unsigned long nr, const volatile unsigned long *addr)
- {
- 	const unsigned long *p = (const unsigned long *)addr + BIT_WORD(nr);
- 	unsigned long mask = BIT_MASK(nr);
-diff --git a/include/asm-generic/bitops/instrumented-non-atomic.h b/include/asm-generic/bitops/instrumented-non-atomic.h
-index 7ab1ecc37782..b019f77ef21c 100644
---- a/include/asm-generic/bitops/instrumented-non-atomic.h
-+++ b/include/asm-generic/bitops/instrumented-non-atomic.h
-@@ -22,7 +22,8 @@
-  * region of memory concurrently, the effect may be that only one operation
-  * succeeds.
-  */
--static __always_inline void __set_bit(long nr, volatile unsigned long *addr)
-+static __always_inline void
-+__set_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	instrument_write(addr + BIT_WORD(nr), sizeof(long));
- 	arch___set_bit(nr, addr);
-@@ -37,7 +38,8 @@ static __always_inline void __set_bit(long nr, volatile unsigned long *addr)
-  * region of memory concurrently, the effect may be that only one operation
-  * succeeds.
-  */
--static __always_inline void __clear_bit(long nr, volatile unsigned long *addr)
-+static __always_inline void
-+__clear_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	instrument_write(addr + BIT_WORD(nr), sizeof(long));
- 	arch___clear_bit(nr, addr);
-@@ -52,7 +54,8 @@ static __always_inline void __clear_bit(long nr, volatile unsigned long *addr)
-  * region of memory concurrently, the effect may be that only one operation
-  * succeeds.
-  */
--static __always_inline void __change_bit(long nr, volatile unsigned long *addr)
-+static __always_inline void
-+__change_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	instrument_write(addr + BIT_WORD(nr), sizeof(long));
- 	arch___change_bit(nr, addr);
-@@ -90,7 +93,8 @@ static __always_inline void __instrument_read_write_bitop(long nr, volatile unsi
-  * This operation is non-atomic. If two instances of this operation race, one
-  * can appear to succeed but actually fail.
-  */
--static __always_inline bool __test_and_set_bit(long nr, volatile unsigned long *addr)
-+static __always_inline bool
-+__test_and_set_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	__instrument_read_write_bitop(nr, addr);
- 	return arch___test_and_set_bit(nr, addr);
-@@ -104,7 +108,8 @@ static __always_inline bool __test_and_set_bit(long nr, volatile unsigned long *
-  * This operation is non-atomic. If two instances of this operation race, one
-  * can appear to succeed but actually fail.
-  */
--static __always_inline bool __test_and_clear_bit(long nr, volatile unsigned long *addr)
-+static __always_inline bool
-+__test_and_clear_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	__instrument_read_write_bitop(nr, addr);
- 	return arch___test_and_clear_bit(nr, addr);
-@@ -118,7 +123,8 @@ static __always_inline bool __test_and_clear_bit(long nr, volatile unsigned long
-  * This operation is non-atomic. If two instances of this operation race, one
-  * can appear to succeed but actually fail.
-  */
--static __always_inline bool __test_and_change_bit(long nr, volatile unsigned long *addr)
-+static __always_inline bool
-+__test_and_change_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	__instrument_read_write_bitop(nr, addr);
- 	return arch___test_and_change_bit(nr, addr);
-@@ -129,7 +135,8 @@ static __always_inline bool __test_and_change_bit(long nr, volatile unsigned lon
-  * @nr: bit number to test
-  * @addr: Address to start counting from
-  */
--static __always_inline bool test_bit(long nr, const volatile unsigned long *addr)
-+static __always_inline bool
-+test_bit(unsigned long nr, const volatile unsigned long *addr)
- {
- 	instrument_atomic_read(addr + BIT_WORD(nr), sizeof(long));
- 	return arch_test_bit(nr, addr);
-diff --git a/include/linux/bitops.h b/include/linux/bitops.h
-index 7aaed501f768..5520ac9b1c24 100644
---- a/include/linux/bitops.h
-+++ b/include/linux/bitops.h
-@@ -26,12 +26,25 @@ extern unsigned int __sw_hweight16(unsigned int w);
- extern unsigned int __sw_hweight32(unsigned int w);
- extern unsigned long __sw_hweight64(__u64 w);
- 
-+#include <asm-generic/bitops/generic-non-atomic.h>
-+
- /*
-  * Include this here because some architectures need generic_ffs/fls in
-  * scope
-  */
- #include <asm/bitops.h>
- 
-+/* Check that the bitops prototypes are sane */
-+#define __check_bitop_pr(name)	static_assert(__same_type(name, gen_##name))
-+__check_bitop_pr(__set_bit);
-+__check_bitop_pr(__clear_bit);
-+__check_bitop_pr(__change_bit);
-+__check_bitop_pr(__test_and_set_bit);
-+__check_bitop_pr(__test_and_clear_bit);
-+__check_bitop_pr(__test_and_change_bit);
-+__check_bitop_pr(test_bit);
-+#undef __check_bitop_pr
-+
- static inline int get_bitmask_order(unsigned int count)
- {
- 	int order;
-diff --git a/tools/include/asm-generic/bitops/non-atomic.h b/tools/include/asm-generic/bitops/non-atomic.h
-index 7e10c4b50c5d..e5e78e42e57b 100644
---- a/tools/include/asm-generic/bitops/non-atomic.h
-+++ b/tools/include/asm-generic/bitops/non-atomic.h
-@@ -2,7 +2,7 @@
- #ifndef _ASM_GENERIC_BITOPS_NON_ATOMIC_H_
- #define _ASM_GENERIC_BITOPS_NON_ATOMIC_H_
- 
--#include <asm/types.h>
-+#include <linux/bits.h>
- 
- /**
-  * __set_bit - Set a bit in memory
-@@ -13,7 +13,8 @@
-  * If it's called on the same region of memory simultaneously, the effect
-  * may be that only one operation succeeds.
-  */
--static inline void __set_bit(int nr, volatile unsigned long *addr)
-+static __always_inline void
-+__set_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	unsigned long mask = BIT_MASK(nr);
- 	unsigned long *p = ((unsigned long *)addr) + BIT_WORD(nr);
-@@ -21,7 +22,8 @@ static inline void __set_bit(int nr, volatile unsigned long *addr)
- 	*p  |= mask;
- }
- 
--static inline void __clear_bit(int nr, volatile unsigned long *addr)
-+static __always_inline void
-+__clear_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	unsigned long mask = BIT_MASK(nr);
- 	unsigned long *p = ((unsigned long *)addr) + BIT_WORD(nr);
-@@ -38,7 +40,8 @@ static inline void __clear_bit(int nr, volatile unsigned long *addr)
-  * If it's called on the same region of memory simultaneously, the effect
-  * may be that only one operation succeeds.
-  */
--static inline void __change_bit(int nr, volatile unsigned long *addr)
-+static __always_inline void
-+__change_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	unsigned long mask = BIT_MASK(nr);
- 	unsigned long *p = ((unsigned long *)addr) + BIT_WORD(nr);
-@@ -55,7 +58,8 @@ static inline void __change_bit(int nr, volatile unsigned long *addr)
-  * If two examples of this operation race, one can appear to succeed
-  * but actually fail.  You must protect multiple accesses with a lock.
-  */
--static inline int __test_and_set_bit(int nr, volatile unsigned long *addr)
-+static __always_inline bool
-+__test_and_set_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	unsigned long mask = BIT_MASK(nr);
- 	unsigned long *p = ((unsigned long *)addr) + BIT_WORD(nr);
-@@ -74,7 +78,8 @@ static inline int __test_and_set_bit(int nr, volatile unsigned long *addr)
-  * If two examples of this operation race, one can appear to succeed
-  * but actually fail.  You must protect multiple accesses with a lock.
-  */
--static inline int __test_and_clear_bit(int nr, volatile unsigned long *addr)
-+static __always_inline bool
-+__test_and_clear_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	unsigned long mask = BIT_MASK(nr);
- 	unsigned long *p = ((unsigned long *)addr) + BIT_WORD(nr);
-@@ -85,8 +90,8 @@ static inline int __test_and_clear_bit(int nr, volatile unsigned long *addr)
- }
- 
- /* WARNING: non atomic and it can be reordered! */
--static inline int __test_and_change_bit(int nr,
--					    volatile unsigned long *addr)
-+static __always_inline bool
-+__test_and_change_bit(unsigned long nr, volatile unsigned long *addr)
- {
- 	unsigned long mask = BIT_MASK(nr);
- 	unsigned long *p = ((unsigned long *)addr) + BIT_WORD(nr);
-@@ -101,7 +106,8 @@ static inline int __test_and_change_bit(int nr,
-  * @nr: bit number to test
-  * @addr: Address to start counting from
-  */
--static inline int test_bit(int nr, const volatile unsigned long *addr)
-+static __always_inline bool
-+test_bit(unsigned long nr, const volatile unsigned long *addr)
- {
- 	return 1UL & (addr[BIT_WORD(nr)] >> (nr & (BITS_PER_LONG-1)));
- }
+```
+
 -- 
-2.36.1
-
+Ammar Faizi
