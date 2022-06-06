@@ -2,117 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30AEDCCA473
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 06:46:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8726AC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 06:50:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230092AbiFFGqZ convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 02:46:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51152 "EHLO
+        id S230168AbiFFGu4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 02:50:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229989AbiFFGqX (ORCPT
+        with ESMTP id S230062AbiFFGuq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 02:46:23 -0400
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A6102AE14;
-        Sun,  5 Jun 2022 23:46:21 -0700 (PDT)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 2566jevbF024779, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36504.realtek.com.tw[172.21.6.27])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 2566jevbF024779
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 6 Jun 2022 14:45:41 +0800
-Received: from RTEXMBS05.realtek.com.tw (172.21.6.98) by
- RTEXH36504.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Mon, 6 Jun 2022 14:45:40 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS05.realtek.com.tw (172.21.6.98) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Mon, 6 Jun 2022 14:45:40 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::34e7:ab63:3da4:27c6]) by
- RTEXMBS04.realtek.com.tw ([fe80::34e7:ab63:3da4:27c6%5]) with mapi id
- 15.01.2308.021; Mon, 6 Jun 2022 14:45:40 +0800
-From:   Ping-Ke Shih <pkshih@realtek.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-CC:     Yan-Hsuan Chuang <tony0620emma@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: RE: [PATCH v1 1/1] rtw88: use %*ph to print small buffer
-Thread-Topic: [PATCH v1 1/1] rtw88: use %*ph to print small buffer
-Thread-Index: AQHYd0loB302XcSN/EKwwVKyV1mFxK1B81/w
-Date:   Mon, 6 Jun 2022 06:45:40 +0000
-Message-ID: <62e1b53ebdc844acb504698433ed8baa@realtek.com>
-References: <20220603125648.46873-1-andriy.shevchenko@linux.intel.com>
-In-Reply-To: <20220603125648.46873-1-andriy.shevchenko@linux.intel.com>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.188]
-x-kse-serverinfo: RTEXMBS05.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2022/6/6_=3F=3F_02:55:00?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        Mon, 6 Jun 2022 02:50:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB58A63C4;
+        Sun,  5 Jun 2022 23:50:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 64E0F610F4;
+        Mon,  6 Jun 2022 06:50:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4269EC34119;
+        Mon,  6 Jun 2022 06:50:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654498243;
+        bh=cF0Jahiln0ierEzNlgR2FvgNfh9i11FkD6kpcLiYiZ0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=YuRJA/Z+uJoUaytU5DPV377z8Y+IhZwtcrjNgryn3vW4cDfoTKhKyiodsKSpAvO5H
+         7jYbDZYSO6cpSoPaQYCQXgCPL8rtyVIOC6yK8x3t/e7PZUhwyeTMHGhb/LC4QnL7as
+         x3QFEU/xPxImrRuwKRqYssEQEpgtjClHUHGv++zYzA7D1u5sg/iXL5R1g4qs6zbQ5j
+         G3oE2uR5XcpwcA7QbFVlZ0Mgua71XWPvhKBJhOGmzC7anc8w9suwb2G9tluFexvcoI
+         8M7HnjRJ1smFTiqzqIs5kihQQtMVEhnlb6TMtlv1lUONG0uBhLnkL/HIBABchK6QUK
+         jV1Xuju/BhY3Q==
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     linux-arm-msm@vger.kernel.org, Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3 0/3] arm64: dts: qcom: Get rid of some warnings
+Date:   Mon,  6 Jun 2022 12:20:32 +0530
+Message-Id: <20220606065035.553533-1-vkoul@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36504.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+This attempts to make W=1 free from warnings for all SM* dts files.
 
-> -----Original Message-----
-> From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Sent: Friday, June 3, 2022 8:57 PM
-> To: Ping-Ke Shih <pkshih@realtek.com>; Kalle Valo <kvalo@kernel.org>; linux-wireless@vger.kernel.org;
-> netdev@vger.kernel.org; linux-kernel@vger.kernel.org
-> Cc: Yan-Hsuan Chuang <tony0620emma@gmail.com>; David S. Miller <davem@davemloft.net>; Eric Dumazet
-> <edumazet@google.com>; Jakub Kicinski <kuba@kernel.org>; Paolo Abeni <pabeni@redhat.com>; Andy Shevchenko
-> <andriy.shevchenko@linux.intel.com>
-> Subject: [PATCH v1 1/1] rtw88: use %*ph to print small buffer
-> 
-> Use %*ph format to print small buffer as hex string.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Bunch of these are releated to node not having valid unit address and being
+present under soc node. So moving it out fixed that. Interconnect node was
+simple rename to remove unit address which was not really valid for these
+nodes.
 
-Thanks!
+Changes in v3:
+ - rebase on v5.19-rc1
 
-Acked-by: Ping-Ke Shih <pkshih@realtek.com>
+Changes in v2:
+ - drop the sound and dsi node changes
 
-> ---
->  drivers/net/wireless/realtek/rtw88/debug.c | 6 +-----
->  1 file changed, 1 insertion(+), 5 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/realtek/rtw88/debug.c b/drivers/net/wireless/realtek/rtw88/debug.c
-> index 1a52ff585fbc..7cde6bcf253b 100644
-> --- a/drivers/net/wireless/realtek/rtw88/debug.c
-> +++ b/drivers/net/wireless/realtek/rtw88/debug.c
-> @@ -269,11 +269,7 @@ static int rtw_debugfs_get_rsvd_page(struct seq_file *m, void *v)
->  	for (i = 0 ; i < buf_size ; i += 8) {
->  		if (i % page_size == 0)
->  			seq_printf(m, "PAGE %d\n", (i + offset) / page_size);
-> -		seq_printf(m, "%2.2x %2.2x %2.2x %2.2x %2.2x %2.2x %2.2x %2.2x\n",
-> -			   *(buf + i), *(buf + i + 1),
-> -			   *(buf + i + 2), *(buf + i + 3),
-> -			   *(buf + i + 4), *(buf + i + 5),
-> -			   *(buf + i + 6), *(buf + i + 7));
-> +		seq_printf(m, "%8ph\n", buf + i);
->  	}
->  	vfree(buf);
-> 
-> --
-> 2.35.1
+*** SUBJECT HERE ***
+
+*** BLURB HERE ***
+
+Vinod Koul (3):
+  arm64: dts: qcom: sm8450: rename interconnect nodes
+  arm64: dts: qcom: sm8350: Move qup-opp-tables out of soc node
+  arm64: dts: qcom: sm8250: Move qup-opp-table out of soc node
+
+ arch/arm64/boot/dts/qcom/sm8250.dtsi | 38 +++++++-------
+ arch/arm64/boot/dts/qcom/sm8350.dtsi | 76 ++++++++++++++--------------
+ arch/arm64/boot/dts/qcom/sm8450.dtsi |  4 +-
+ 3 files changed, 59 insertions(+), 59 deletions(-)
+
+-- 
+2.34.1
 
