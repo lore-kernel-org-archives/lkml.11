@@ -2,83 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 361ECC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 18:53:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B7E7C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 18:57:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231484AbiFFSxZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 14:53:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45408 "EHLO
+        id S231652AbiFFS5n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 14:57:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231213AbiFFSxW (ORCPT
+        with ESMTP id S231641AbiFFS5i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 14:53:22 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAAFB23B701;
-        Mon,  6 Jun 2022 11:53:20 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id z9so1343319wmf.3;
-        Mon, 06 Jun 2022 11:53:20 -0700 (PDT)
+        Mon, 6 Jun 2022 14:57:38 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24B49220D8
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 11:57:37 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id w20so3110577lfa.11
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 11:57:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=l14UJVr8JeVd46Rnv0c3uT4zyDvuy4FY/KAjhGmnJ50=;
-        b=Yzg9qn8BVYX07x33D0xN2x3wMGeNiLAKY0KZ81O9Vp9EQ+lLdNC5tENc1i6Mkt2TwD
-         EDyQZotpqPwB2o6EQB3wiJSiSOsKxQ5nPTx6IXQcw6LyqbyriJdGvNC9CtEvnGss99Np
-         ZyHfarMUzLQRQbzQSPIbylJL3QAvnw7ENg1Vahe87NBVMzgi1is8u8ioHwMg1KVmR9B/
-         M6apwX5DSZs7LVzZ60odfiKmgBXC74H7++1/zLeD+/z6YIwxH/cU2wSLgbxvZt/uxpcl
-         WZIHQ7pNDSUJkei7Jl5vMXzxOhLu5mZc6ue/N3tJFH+qY+27pGzeqc3oe9f43PcnP1GD
-         j26g==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=nIz93hX2PQ4fhuhp1jMpyp0wJt0SBYcIreMeL3lWdNY=;
+        b=PRIGkpN6xE0WkLxBRa2NL7ikMvENhq0/W55wukWNbpiU5svpBNZQqC3XEupJcPPfWc
+         8oppZyUKGVgquZiSnv7aXlI71ZyA1ATmq3KM6WsUkuXABCAhWKZgSHOmOsT4/8+npwnV
+         dm1E6BMsMN8PeZlNbmP2wTeSsOYhopNqqKCjafSDXtQgKgvFDV8TnCLqvTVYHJQqCgiw
+         UnfNTnPTzdEFtr9VD2VM3K1a/ylB90PlmfekQovRqINRFzVjmOJVDycsUy0URUX0P+Io
+         MVdDg8BuazsCqpyUpeO3UtMWBfNuLkCaFmWyhwje5onPTPKLjkC67pyPAQYWfiQmYOdD
+         rebw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=l14UJVr8JeVd46Rnv0c3uT4zyDvuy4FY/KAjhGmnJ50=;
-        b=ULgCWF2gxC/A55vGKyMiAkbLsdhlp3UFHz5wPrBExVLn1XrogOKzHzCMkUMwAr7CQ7
-         t72xQOSCXyQHOe9+hUlsXgTmi+vzwobq1mXFMUH+hSstokeCjSOTUFXhnSCEOi+YAN35
-         eucA11X04U3l4MwST+IT/POBHKmMALig5dc37B/sDxGeqqftjATNGEjgE0FbUGzPiTTS
-         5Mb+EFm15PaonrSjWiY61Yspf5djSIWBnsN60ajppJEmn6RpN2MvQs8ZbfptpidO3AYi
-         y4L8z/yFwd8Pn4yEzUR5sNj0x0ol8/YYoaDg8Tojw5wYj0RB6kdhmSqWop5yqb+tdnae
-         aJVw==
-X-Gm-Message-State: AOAM533xNg/+4h12K//Mv+74qv23zEkn1YLX/osi0PlXxRHS263pUx9d
-        /uhDKHiyLxQDdaFntGIj1eQ=
-X-Google-Smtp-Source: ABdhPJywM3ZNrCCkFpfyK/jOUf7GfgVU2XbbjA36GrCrLfe1KwYeezpbsCRyMkYwa1ALsVcO7yjrmw==
-X-Received: by 2002:a7b:c841:0:b0:394:890e:9195 with SMTP id c1-20020a7bc841000000b00394890e9195mr53972744wml.59.1654541598908;
-        Mon, 06 Jun 2022 11:53:18 -0700 (PDT)
-Received: from Red ([2a01:cb1d:3d5:a100:264b:feff:fe03:2806])
-        by smtp.googlemail.com with ESMTPSA id m4-20020a1c2604000000b0039c506de087sm3426516wmm.6.2022.06.06.11.53.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jun 2022 11:53:18 -0700 (PDT)
-Date:   Mon, 6 Jun 2022 20:53:13 +0200
-From:   Corentin Labbe <clabbe.montjoie@gmail.com>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     linux-kernel@vger.kernel.org, linux-sunxi@lists.linux.dev,
-        linux-crypto@vger.kernel.org, herbert@gondor.apana.org.au
-Subject: Re: [PATCH -next] crypto: sun8i-ss - fix error return code in
- allocate_flows()
-Message-ID: <Yp5NGVspV9dz1cxQ@Red>
-References: <20220606134815.4103024-1-yangyingliang@huawei.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=nIz93hX2PQ4fhuhp1jMpyp0wJt0SBYcIreMeL3lWdNY=;
+        b=CrJDyJdMsWcRNDqwQxiwe9N/z4QHclIwB31QiJUb77ATtmBz8DM/USz6wgBqONgeZo
+         rhrbn5UabDdww0Cr2yIXr4kBZ6xmW5Bdst+VSl/UBzpJEfiYaSp0RO9dvEFU87PCxRZL
+         d6tPK2hfhB1CEgPoeCk8eA5i4g4qYKc6ve9VppAEXEtQ9moNM+beiCfTfCM7rQEBknty
+         FG9r0IdyH/7kxmVd6lvb/EY3gorM1WHjfp2buYUKdc7SErMTr0bYVnb6Sr6wA/nrZXKr
+         3rKHfmiZPrhpaiqG8WZNvGTPWguse7+4stW7opDR8zViukATLS8ez99fW01WmDmlJXFB
+         yVxw==
+X-Gm-Message-State: AOAM530iTsZn+mRX7gOAxb9CV2PuUSNtbR5eu30JKyoJBnCo7Bzj2ZYU
+        jedpSER0PSYhxT8cVxHLMhg=
+X-Google-Smtp-Source: ABdhPJzx4OHSkLUGA6dbuYoqvNRaBXgj04jBulDxf8sYwpXbDWn+W3PyS0m2Ljm3XH7+T+DHSX6jhw==
+X-Received: by 2002:a05:6512:e90:b0:477:cc44:9813 with SMTP id bi16-20020a0565120e9000b00477cc449813mr16943484lfb.226.1654541855259;
+        Mon, 06 Jun 2022 11:57:35 -0700 (PDT)
+Received: from [192.168.1.11] ([94.103.229.27])
+        by smtp.gmail.com with ESMTPSA id w10-20020ac2442a000000b0047255d211b2sm2953285lfl.225.2022.06.06.11.57.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 06 Jun 2022 11:57:34 -0700 (PDT)
+Message-ID: <5d57d0f5-06bd-5e3a-2cb9-d8ae531e453e@gmail.com>
+Date:   Mon, 6 Jun 2022 21:57:32 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220606134815.4103024-1-yangyingliang@huawei.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v2 1/4] staging: r8188eu: add error handling of rtw_read8
+Content-Language: en-US
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
+        straube.linux@gmail.com, dan.carpenter@oracle.com,
+        fmdefrancesco@gmail.com, linux-kernel@vger.kernel.org,
+        linux-staging@lists.linux.dev
+References: <cover.1652994483.git.paskripkin@gmail.com>
+ <541ab3341093a8f6bff1cf8e8aa0c7e247ff4833.1652994483.git.paskripkin@gmail.com>
+ <Yp2VMecmrET9Mu3P@kroah.com>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+In-Reply-To: <Yp2VMecmrET9Mu3P@kroah.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Mon, Jun 06, 2022 at 09:48:15PM +0800, Yang Yingliang a écrit :
-> If devm_kmalloc() fails, it should return error code in allocate_flows()
+Hi Greg,
+
+On 6/6/22 08:48, Greg KH wrote:
+>> -	rtw_read8(padapter, REG_FMETHR);
+>> +	/* FIXME: should this read be removed? */
+>> +	res = rtw_read8(padapter, REG_FMETHR, &reg);
+>> +	(void)res;
 > 
-> Fixes: 8eec4563f152 ("crypto: sun8i-ss - do not allocate memory when handling hash requests")
-> Fixes: 359e893e8af4 ("crypto: sun8i-ss - rework handling of IV")
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-> ---
+> What is that?  We don't do "empty" lines like this in the kernel for no
+> good reason.  If the return value must be checked, then that's fine, but
+> don't do it this way.  Shouldn't the function itself return an error?
+> 
+> And reading a value is sometimes required by hardware in order to have
+> the write call go through.  But that's for PCI devices, not normally USB
+> devices, but we could be wrong.  I wouldn't put a FIXME in here unless
+> you have some plan for how to eventually solve it, otherwise someone
+> might just drop it without knowing why the FIXME was ever added.
+> 
+> 
 
-Hello
+Ok, I will just make this function return an error. Thanks
 
-I am sorry, but Dan already send the same fix days ago.
-https://lore.kernel.org/all/YpIc+FtQIOdm9Ub+@Red/T/
+[snip]
 
-Regards
+>>  
+>> diff --git a/drivers/staging/r8188eu/hal/HalPhyRf_8188e.c b/drivers/staging/r8188eu/hal/HalPhyRf_8188e.c
+>> index b944c8071a3b..a5b7980dfcee 100644
+>> --- a/drivers/staging/r8188eu/hal/HalPhyRf_8188e.c
+>> +++ b/drivers/staging/r8188eu/hal/HalPhyRf_8188e.c
+>> @@ -463,6 +463,7 @@ void _PHY_SaveADDARegisters(struct adapter *adapt, u32 *ADDAReg, u32 *ADDABackup
+>>  	}
+>>  }
+>>  
+>> +/* FIXME: return an error to caller */
+> 
+> When are these FIXME going to be resolved?  I don't like adding them for
+> no good reason.
+> 
+
+After this series will go in. I really don't want to make this series 
+huge, since ideally read errors should be passed up to callers. This 
+driver has a lot of very deep call-chains, so fixing them in one series 
+is just unreal
+
+I have a plan to address these FIXMEs, that's why I've planted them.
+
+
+thanks for review,
+
+
+With regards,
+Pavel Skripkin
