@@ -2,75 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03480C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 16:41:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78F90CCA481
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 16:42:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241827AbiFFQlG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 12:41:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38640 "EHLO
+        id S241854AbiFFQl7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 12:41:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241849AbiFFQkx (ORCPT
+        with ESMTP id S230514AbiFFQl4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 12:40:53 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF18414676C
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 09:40:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1654533651; x=1686069651;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Z2laPWzOmp4ntvrrhmxZ3vxavO/V5f+orP61EeiYS9Q=;
-  b=AanMGliDVa5HHRRS6XgAoJbcMLG+mrAglVjVmbhnUgqYVqLNzchoWb6f
-   U+1AsTSPon4jJcQ75KItOk+hxW0aXvISEXC1DvBhu2IHY/hwADyOqoRE9
-   O20vnYZh6XEQR2+ETPvXO7L/Vyvf7mggzhRxOW520/gAqn3S+zNEQKGuh
-   k=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 06 Jun 2022 09:40:50 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 09:40:50 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 6 Jun 2022 09:40:50 -0700
-Received: from qian (10.80.80.8) by nalasex01a.na.qualcomm.com (10.47.209.196)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 6 Jun 2022
- 09:40:49 -0700
-Date:   Mon, 6 Jun 2022 12:40:47 -0400
-From:   Qian Cai <quic_qiancai@quicinc.com>
-To:     Liam Howlett <liam.howlett@oracle.com>
-CC:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH v9 28/69] mm/mmap: reorganize munmap to use maple states
-Message-ID: <Yp4uD8uWB3rit/Ee@qian>
-References: <20220504002554.654642-1-Liam.Howlett@oracle.com>
- <20220504011345.662299-1-Liam.Howlett@oracle.com>
- <20220504011345.662299-13-Liam.Howlett@oracle.com>
- <Yp3udPy0vuDK8khc@qian>
- <20220606161940.fh5edq5nyz4jru2u@revolver>
+        Mon, 6 Jun 2022 12:41:56 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2E76DF8B;
+        Mon,  6 Jun 2022 09:41:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654533714; x=1686069714;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=RI6UqOh9xYxAqMF8vYRnoqK0g1vUqPho6h1TZ3tsMs0=;
+  b=bKyKxpFTr8JCaLEaBiVouN7EWZFr0Us16prKB3fJBifWg8wFJR6IXnDl
+   lIycI/p1K/l5r062zHjleG0TPR+Mi8sQyzpVGM9xvU525ZR8NPhWZyAx9
+   RCiGVubp0nV5JvoY8rv7/iD5B4yppw0Ps+3RUV0Nq15lWjuWeB+Z6LbjW
+   rqKt90BGoUU+9xacVwwCCcOMqL6ozKBAGtqoMytyg6Cw82tQoPc6fBwCl
+   Gridm6KbiseW3mlYt8WEBnK9iRn9ZbsEE6OZYHsugfH4/Yeyrtt6cRDdv
+   +JMvT39SgGJ7rcG48sZct/kkiFxLEeCH72B425UjKuDXVq2X3ch1pfP4S
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="275446378"
+X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
+   d="scan'208";a="275446378"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 09:41:54 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
+   d="scan'208";a="906623914"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga005.fm.intel.com with ESMTP; 06 Jun 2022 09:41:47 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 7CE85A97; Mon,  6 Jun 2022 19:41:50 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Tony Luck <tony.luck@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Wolfram Sang <wsa@kernel.org>, Jean Delvare <jdelvare@suse.de>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Henning Schild <henning.schild@siemens.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Jonathan Yong <jonathan.yong@intel.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        linux-kernel@vger.kernel.org, linux-edac@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-leds@vger.kernel.org,
+        linux-gpio@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-watchdog@vger.kernel.org
+Cc:     Borislav Petkov <bp@alien8.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>,
+        Jean Delvare <jdelvare@suse.com>, Pavel Machek <pavel@ucw.cz>,
+        Peter Tyser <ptyser@xes-inc.com>,
+        Andy Shevchenko <andy@kernel.org>,
+        Mark Gross <markgross@kernel.org>
+Subject: [PATCH v6 03/12] mfd: lpc_ich: Factor out lpc_ich_enable_spi_write()
+Date:   Mon,  6 Jun 2022 19:41:29 +0300
+Message-Id: <20220606164138.66535-4-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220606164138.66535-1-andriy.shevchenko@linux.intel.com>
+References: <20220606164138.66535-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220606161940.fh5edq5nyz4jru2u@revolver>
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 06, 2022 at 04:19:52PM +0000, Liam Howlett wrote:
-> Does your syscall fuzzer create a reproducer?  This looks like arm64
-> and says 5.18.0-next-20220603 again.  Was this bisected to the patch
-> above?
+Factor out duplicate code to lpc_ich_enable_spi_write() helper function.
 
-This was triggered by running the fuzzer over the weekend.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Tested-by: Henning Schild <henning.schild@siemens.com>
+Acked-by: Hans de Goede <hdegoede@redhat.com>
+Acked-by: Linus Walleij <linus.walleij@linaro.org>
+Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
+---
+ drivers/mfd/lpc_ich.c | 31 ++++++++++++++-----------------
+ 1 file changed, 14 insertions(+), 17 deletions(-)
 
-$ trinity -C 160
+diff --git a/drivers/mfd/lpc_ich.c b/drivers/mfd/lpc_ich.c
+index 9ffab9aafd81..d9175cb8a2d5 100644
+--- a/drivers/mfd/lpc_ich.c
++++ b/drivers/mfd/lpc_ich.c
+@@ -1100,35 +1100,32 @@ static bool lpc_ich_byt_set_writeable(void __iomem *base, void *data)
+ 	return val & BYT_BCR_WPD;
+ }
+ 
+-static bool lpc_ich_lpt_set_writeable(void __iomem *base, void *data)
++static bool lpc_ich_set_writeable(struct pci_bus *bus, unsigned int devfn)
+ {
+-	struct pci_dev *pdev = data;
+ 	u32 bcr;
+ 
+-	pci_read_config_dword(pdev, BCR, &bcr);
++	pci_bus_read_config_dword(bus, devfn, BCR, &bcr);
+ 	if (!(bcr & BCR_WPD)) {
+ 		bcr |= BCR_WPD;
+-		pci_write_config_dword(pdev, BCR, bcr);
+-		pci_read_config_dword(pdev, BCR, &bcr);
++		pci_bus_write_config_dword(bus, devfn, BCR, bcr);
++		pci_bus_read_config_dword(bus, devfn, BCR, &bcr);
+ 	}
+ 
+ 	return bcr & BCR_WPD;
+ }
+ 
+-static bool lpc_ich_bxt_set_writeable(void __iomem *base, void *data)
++static bool lpc_ich_lpt_set_writeable(void __iomem *base, void *data)
+ {
+-	unsigned int spi = PCI_DEVFN(13, 2);
+-	struct pci_bus *bus = data;
+-	u32 bcr;
++	struct pci_dev *pdev = data;
+ 
+-	pci_bus_read_config_dword(bus, spi, BCR, &bcr);
+-	if (!(bcr & BCR_WPD)) {
+-		bcr |= BCR_WPD;
+-		pci_bus_write_config_dword(bus, spi, BCR, bcr);
+-		pci_bus_read_config_dword(bus, spi, BCR, &bcr);
+-	}
++	return lpc_ich_set_writeable(pdev->bus, pdev->devfn);
++}
+ 
+-	return bcr & BCR_WPD;
++static bool lpc_ich_bxt_set_writeable(void __iomem *base, void *data)
++{
++	struct pci_dev *pdev = data;
++
++	return lpc_ich_set_writeable(pdev->bus, PCI_DEVFN(13, 2));
+ }
+ 
+ static int lpc_ich_init_spi(struct pci_dev *dev)
+@@ -1185,7 +1182,7 @@ static int lpc_ich_init_spi(struct pci_dev *dev)
+ 			res->end = res->start + SPIBASE_APL_SZ - 1;
+ 
+ 			info->set_writeable = lpc_ich_bxt_set_writeable;
+-			info->data = bus;
++			info->data = dev;
+ 		}
+ 
+ 		pci_bus_write_config_byte(bus, p2sb, 0xe1, 0x1);
+-- 
+2.35.1
 
-No bisection was done. It was only brought up here because the trace
-pointed to do_mas_munmap() which was introduced here.
