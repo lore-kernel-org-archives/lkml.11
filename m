@@ -2,101 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5F77C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:23:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25298C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:23:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239541AbiFFOXD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 10:23:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33822 "EHLO
+        id S239553AbiFFOXO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 10:23:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239414AbiFFOXB (ORCPT
+        with ESMTP id S239548AbiFFOXM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 10:23:01 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A2ED1CF
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 07:23:00 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id x5so13962516edi.2
-        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 07:23:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yGL0Upz9tWnkdyE7J91J4gh0jAtGzDIxVVzukBDULoo=;
-        b=CMRHt1AN30bDkUOr86s0m7NX4v6Nb+f9O1f35JrMFYxJW+BntmP8QkDNPVhjPtLBAY
-         +XZXVhMMoo3pRxxgqF6QmA5eND0Uhc4PnRQFCZGdnwOLTPB4jgL6mvWNPsslH/pJ8IAP
-         3HOTuodUa88+MXtlY2t8w6gtk1sibf3wiJKvA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yGL0Upz9tWnkdyE7J91J4gh0jAtGzDIxVVzukBDULoo=;
-        b=KEYS9IH1V3DQfMp9uw89U6i7jU5LLLWzlNOeo117ttehjbjz/hLTnyPLBwWADdorwM
-         hpw5IKoOjENbv68szHJlN3EOta+UQ9QwF8FCh89fMJmhtAiQZLAn8oIRgTo9SxFXxFca
-         OPS5gEn01N9fcy5CpLkUblNxnNq5YXDxwdzHJt7nhx4MDTv0CHOCmaWmUePtwe6BKl0O
-         E8Tek34OeWljvptE9zCfodikTH6aC90Ry2Mks097iaeHw7Bmq9RXrclax1zhF2lFAEBb
-         aSlk+hsHR013yWj4LQ5Ec83wyLHeTbaAsDJF5Ag/+XVx6mKY6aHNioAECqXdC5Ne8mvs
-         nXCA==
-X-Gm-Message-State: AOAM533S12apm0c/RNtNbtkxh7/GRCorj/R13na4cPy3wRobwV/4MLLb
-        ZmgxzLCYQNC7dlvJSU2sOkYmDIPZmTIYBGZn
-X-Google-Smtp-Source: ABdhPJxxGtxuKBQRnPD6wsxh21rG8qZ9X6DAhbsuPTJSskeSck+n2kkK/SGwbSinmVZERGmxAXzPBw==
-X-Received: by 2002:a50:ec89:0:b0:42d:cc7f:abbe with SMTP id e9-20020a50ec89000000b0042dcc7fabbemr27017749edr.381.1654525378878;
-        Mon, 06 Jun 2022 07:22:58 -0700 (PDT)
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com. [209.85.221.49])
-        by smtp.gmail.com with ESMTPSA id j22-20020a1709066dd600b006fea2705d18sm6339399ejt.210.2022.06.06.07.22.53
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 06 Jun 2022 07:22:55 -0700 (PDT)
-Received: by mail-wr1-f49.google.com with SMTP id h5so20134102wrb.0
-        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 07:22:53 -0700 (PDT)
-X-Received: by 2002:a5d:608d:0:b0:218:3cfa:afe9 with SMTP id
- w13-20020a5d608d000000b002183cfaafe9mr5831997wrt.422.1654525373078; Mon, 06
- Jun 2022 07:22:53 -0700 (PDT)
+        Mon, 6 Jun 2022 10:23:12 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E2D22D5157;
+        Mon,  6 Jun 2022 07:23:10 -0700 (PDT)
+X-UUID: f9478c6507a14847963ee321e94e0dbf-20220606
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:767673dc-3f69-4b80-832d-a496eb0a527a,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:-5
+X-CID-META: VersionHash:2a19b09,CLOUDID:72f3567e-c8dc-403a-96e8-6237210dceee,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+        ,QS:0,BEC:nil
+X-UUID: f9478c6507a14847963ee321e94e0dbf-20220606
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
+        (envelope-from <mengqi.zhang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 100457687; Mon, 06 Jun 2022 22:23:03 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Mon, 6 Jun 2022 22:23:02 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 6 Jun 2022 22:23:01 +0800
+From:   Mengqi Zhang <mengqi.zhang@mediatek.com>
+To:     <chaotian.jing@mediatek.com>, <ulf.hansson@linaro.org>,
+        <matthias.bgg@gmail.com>
+CC:     <linux-mmc@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Mengqi Zhang <mengqi.zhang@mediatek.com>
+Subject: [PATCH] mmc: mediatek: wait dma stop bit reset to 0
+Date:   Mon, 6 Jun 2022 22:22:59 +0800
+Message-ID: <20220606142259.20407-1-mengqi.zhang@mediatek.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220606044720.945964-1-hsinyi@chromium.org> <20220606044720.945964-6-hsinyi@chromium.org>
-In-Reply-To: <20220606044720.945964-6-hsinyi@chromium.org>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Mon, 6 Jun 2022 07:22:41 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=WeF=fM9dVSgdNNP8_mOWZXZyoSwF-tztSXe1=dLb5KzA@mail.gmail.com>
-Message-ID: <CAD=FV=WeF=fM9dVSgdNNP8_mOWZXZyoSwF-tztSXe1=dLb5KzA@mail.gmail.com>
-Subject: Re: [PATCH v3 5/8] drm/panel: panel-simple: Implement
- .get_orientation callback
-To:     Hsin-Yi Wang <hsinyi@chromium.org>
-Cc:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        Rob Clark <robdclark@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+MediaTek IP requires that after dma stop, it need to wait this dma stop
+bit auto-reset to 0. When bus is in high loading state, it will take a
+while for the dma stop complete. If there is no waiting operation here,
+when program runs to clear fifo and reset, bus will hang.
 
-On Sun, Jun 5, 2022 at 9:47 PM Hsin-Yi Wang <hsinyi@chromium.org> wrote:
->
-> To return the orientation property to drm/kms driver.
->
-> Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
-> Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-> ---
-> v2->v3: add comments for notice.
-> ---
->  drivers/gpu/drm/panel/panel-simple.c | 16 +++++++++++++++-
->  1 file changed, 15 insertions(+), 1 deletion(-)
+In addition, there should be no return in msdc_data_xfer_next, because no
+matter what error occurs here, it should continue to excute to the
+following mmc_request_done. Otherwise the core layer may wait complete
+forever.
 
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Signed-off-by: Mengqi Zhang <mengqi.zhang@mediatek.com>
+---
+ drivers/mmc/host/mtk-sd.c | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/mmc/host/mtk-sd.c b/drivers/mmc/host/mtk-sd.c
+index 195dc897188b..c925f45786c2 100644
+--- a/drivers/mmc/host/mtk-sd.c
++++ b/drivers/mmc/host/mtk-sd.c
+@@ -1385,12 +1385,15 @@ static bool msdc_data_xfer_done(struct msdc_host *host, u32 events,
+ 		sdr_set_field(host->base + MSDC_DMA_CTRL, MSDC_DMA_CTRL_STOP,
+ 				1);
+ 
++		ret = readl_poll_timeout_atomic(host->base + MSDC_DMA_CTRL, val,
++						!(val & MSDC_DMA_CTRL_STOP), 1, 20000);
++		if (ret)
++			dev_dbg(host->dev, "DMA stop timed out\n");
++
+ 		ret = readl_poll_timeout_atomic(host->base + MSDC_DMA_CFG, val,
+ 						!(val & MSDC_DMA_CFG_STS), 1, 20000);
+-		if (ret) {
+-			dev_dbg(host->dev, "DMA stop timed out\n");
+-			return false;
+-		}
++		if (ret)
++			dev_dbg(host->dev, "DMA inactive timed out\n");
+ 
+ 		sdr_clr_bits(host->base + MSDC_INTEN, data_ints_mask);
+ 		dev_dbg(host->dev, "DMA stop\n");
+@@ -2416,6 +2419,9 @@ static void msdc_cqe_disable(struct mmc_host *mmc, bool recovery)
+ 	if (recovery) {
+ 		sdr_set_field(host->base + MSDC_DMA_CTRL,
+ 			      MSDC_DMA_CTRL_STOP, 1);
++		if (WARN_ON(readl_poll_timeout(host->base + MSDC_DMA_CTRL, val,
++			!(val & MSDC_DMA_CTRL_STOP), 1, 3000)))
++			return;
+ 		if (WARN_ON(readl_poll_timeout(host->base + MSDC_DMA_CFG, val,
+ 			!(val & MSDC_DMA_CFG_STS), 1, 3000)))
+ 			return;
+-- 
+2.25.1
+
