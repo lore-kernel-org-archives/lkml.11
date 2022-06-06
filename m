@@ -2,423 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABFEDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:37:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F313CCA473
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:39:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239837AbiFFOhG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 10:37:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38334 "EHLO
+        id S239807AbiFFOjO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 10:39:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239841AbiFFOgR (ORCPT
+        with ESMTP id S239791AbiFFOjM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 10:36:17 -0400
-Received: from mail-oa1-x2f.google.com (mail-oa1-x2f.google.com [IPv6:2001:4860:4864:20::2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A297612B01B
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 07:36:10 -0700 (PDT)
-Received: by mail-oa1-x2f.google.com with SMTP id 586e51a60fabf-f2e0a41009so19361467fac.6
-        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 07:36:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=VfTrAEC+8RIPbSv52tbPZfU+fEKDARXIrRMp1LlzURg=;
-        b=PdVn8UAKMCpAesFj5BGFLpNp+aIwTXO4mG6N2TEYZLF5GNt3e2WbJFsJXOJhSpcnuG
-         IZtlFZzIB8VZAICoqaLu59LLLQVlugx3X+ljocTiKocjhKWTzy47LVeM4N4wm4h2jO7T
-         HV9RojTqb2zTHhmEtCv2z9QBcWd175TvygQmWF+hm15mPyDyqXjh6icIvnzK0tHMTajA
-         SI7Rn+L6WSMUgZ5JgPu0wu3wMsZ3x/If1D19+1KuzDbelxufvoPa7t+dU+sXY1/2qSLi
-         f8V+jGUS6rmxLks9JQQpJw7iMLSWjkZ2HdoeronDKf6egUAziKmcA/ARoozmDu1PpHxz
-         XsBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=VfTrAEC+8RIPbSv52tbPZfU+fEKDARXIrRMp1LlzURg=;
-        b=Vkxdd8HaDopPrO9RzI2SoU45hLMcSgEQuMHLNenolSXQ55qrOQGvpb5tN8aGbnaGri
-         /s/Cbr2xI1+tehkQP98h6s5NV28apKD4dIO6fZXWj6OhNFgIWLKbAgh4mlHFbbERwjBj
-         ZV07AkSa777HcBcj6JVw5rp0dNL2dUyju1uNHK1u852oTDrmDGfrb0RNHrSrD9zv7F3+
-         L7BGNBz2O9bUyjWpElYVvVTjuEDKXwRCP7oazuAxEA/gi3zDSGYa2aKUGDdfdTRW637h
-         stcDi4gY3urawZqf3BFaniBiNSpNE7YcHO9C1EQirNA/N7f2O8UBRaug3qjlxdGxgC/o
-         5SwA==
-X-Gm-Message-State: AOAM53099Nj3fDqGw7kSJ1/lN+d6St7c0PImkDe9WeQL8v0vstWEAPXb
-        W3oppn/HPtomi3jYd/OpPRGMlorSPRygTQ==
-X-Google-Smtp-Source: ABdhPJxH6gbXCunuQbHxi/D/1wcisDJtuO5XeNd2Om3ppELl/Dy+KlzcX7HmvliSW/sqzxFIBpFZZA==
-X-Received: by 2002:a05:6870:c690:b0:f2:99d5:343e with SMTP id cv16-20020a056870c69000b000f299d5343emr31198250oab.136.1654526169955;
-        Mon, 06 Jun 2022 07:36:09 -0700 (PDT)
-Received: from fedora.attlocal.net (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
-        by smtp.gmail.com with ESMTPSA id u13-20020a056871008d00b000f5d4e5b9a0sm6942791oaa.2.2022.06.06.07.36.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jun 2022 07:36:09 -0700 (PDT)
-From:   William Breathitt Gray <william.gray@linaro.org>
-To:     linus.walleij@linaro.org, brgl@bgdev.pl
-Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        William Breathitt Gray <william.gray@linaro.org>
-Subject: [PATCH 1/5] gpio: 104-dio-48e: Implement and utilize register structures
-Date:   Mon,  6 Jun 2022 10:33:16 -0400
-Message-Id: <7d28ff3373d49d29b01765958ec322ce5ed0d4ff.1654525394.git.william.gray@linaro.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <cover.1654525394.git.william.gray@linaro.org>
-References: <cover.1654525394.git.william.gray@linaro.org>
+        Mon, 6 Jun 2022 10:39:12 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6A0BEF06B
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 07:39:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 41B1FCE1BA5
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 14:39:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 430AEC385A9;
+        Mon,  6 Jun 2022 14:39:06 +0000 (UTC)
+Date:   Mon, 6 Jun 2022 15:38:57 +0100
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     Patrick Wang <patrick.wang.shcn@gmail.com>
+Cc:     akpm@linux-foundation.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, yee.lee@mediatek.com
+Subject: Re: [PATCH v2 2/4] mm: kmemleak: add rbtree for objects allocated
+ with physical address
+Message-ID: <Yp4RgegLBhvVeaid@arm.com>
+References: <20220603035415.1243913-1-patrick.wang.shcn@gmail.com>
+ <20220603035415.1243913-3-patrick.wang.shcn@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220603035415.1243913-3-patrick.wang.shcn@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Reduce magic numbers and improve code readability by implementing and
-utilizing named register data structures.
+On Fri, Jun 03, 2022 at 11:54:13AM +0800, Patrick Wang wrote:
+> @@ -536,27 +543,32 @@ static struct kmemleak_object *find_and_get_object(unsigned long ptr, int alias)
+>  }
+>  
+>  /*
+> - * Remove an object from the object_tree_root and object_list. Must be called
+> - * with the kmemleak_lock held _if_ kmemleak is still enabled.
+> + * Remove an object from the object_tree_root (or object_phys_tree_root)
+> + * and object_list. Must be called with the kmemleak_lock held _if_ kmemleak
+> + * is still enabled.
+>   */
+>  static void __remove_object(struct kmemleak_object *object)
+>  {
+> -	rb_erase(&object->rb_node, &object_tree_root);
+> +	rb_erase(&object->rb_node, object->flags & OBJECT_PHYS ?
+> +				   &object_phys_tree_root :
+> +				   &object_tree_root);
 
-Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
----
- drivers/gpio/gpio-104-dio-48e.c | 157 +++++++++++++++++++++-----------
- 1 file changed, 106 insertions(+), 51 deletions(-)
+This pattern appears in a few place, I guess it's better with a macro,
+say get_object_tree_root(object). But see how many are left, I have some
+comments below on reducing the diff.
 
-diff --git a/drivers/gpio/gpio-104-dio-48e.c b/drivers/gpio/gpio-104-dio-48e.c
-index f118ad9bcd33..e1c5759e0902 100644
---- a/drivers/gpio/gpio-104-dio-48e.c
-+++ b/drivers/gpio/gpio-104-dio-48e.c
-@@ -20,6 +20,7 @@
- #include <linux/module.h>
- #include <linux/moduleparam.h>
- #include <linux/spinlock.h>
-+#include <linux/types.h>
- 
- #define DIO48E_EXTENT 16
- #define MAX_NUM_DIO48E max_num_isa_dev(DIO48E_EXTENT)
-@@ -33,6 +34,40 @@ static unsigned int irq[MAX_NUM_DIO48E];
- module_param_hw_array(irq, uint, irq, NULL, 0);
- MODULE_PARM_DESC(irq, "ACCES 104-DIO-48E interrupt line numbers");
- 
-+/**
-+ * struct i8255_reg - Intel 8255 register structure
-+ * @port:	Port A, B, and C
-+ * @control:	Control register
-+ */
-+struct i8255_reg {
-+	u8 port[3];
-+	u8 control;
-+};
-+
-+/**
-+ * struct dio48e_reg - device register structure
-+ * @ppi:		Programmable Peripheral Interface groups
-+ * @enable_buffer:	Enable/Disable Buffer groups
-+ * @unused1:		Unused
-+ * @enable_interrupt:	Write: Enable Interrupt
-+ *			Read: Disable Interrupt
-+ * @unused2:		Unused
-+ * @enable_counter:	Write: Enable Counter/Timer Addressing
-+ *			Read: Disable Counter/Timer Addressing
-+ * @unused3:		Unused
-+ * @clear_interrupt:	Clear Interrupt
-+ */
-+struct dio48e_reg {
-+	struct i8255_reg ppi[2];
-+	u8 enable_buffer[2];
-+	u8 unused1;
-+	u8 enable_interrupt;
-+	u8 unused2;
-+	u8 enable_counter;
-+	u8 unused3;
-+	u8 clear_interrupt;
-+};
-+
- /**
-  * struct dio48e_gpio - GPIO device private data structure
-  * @chip:	instance of the gpio_chip
-@@ -40,7 +75,7 @@ MODULE_PARM_DESC(irq, "ACCES 104-DIO-48E interrupt line numbers");
-  * @out_state:	output bits state
-  * @control:	Control registers state
-  * @lock:	synchronization lock to prevent I/O race conditions
-- * @base:	base port address of the GPIO device
-+ * @reg:	I/O address offset for the device registers
-  * @irq_mask:	I/O bits affected by interrupts
-  */
- struct dio48e_gpio {
-@@ -49,7 +84,7 @@ struct dio48e_gpio {
- 	unsigned char out_state[6];
- 	unsigned char control[2];
- 	raw_spinlock_t lock;
--	void __iomem *base;
-+	struct dio48e_reg __iomem *reg;
- 	unsigned char irq_mask;
- };
- 
-@@ -69,32 +104,33 @@ static int dio48e_gpio_direction_input(struct gpio_chip *chip, unsigned int offs
- {
- 	struct dio48e_gpio *const dio48egpio = gpiochip_get_data(chip);
- 	const unsigned int io_port = offset / 8;
--	const unsigned int control_port = io_port / 3;
--	void __iomem *const control_addr = dio48egpio->base + 3 + control_port * 4;
-+	const unsigned long group = io_port / 3;
-+	const unsigned long port = io_port - (group * 3);
-+	u8 __iomem *const control_addr = &dio48egpio->reg->ppi[group].control;
- 	unsigned long flags;
- 	unsigned int control;
- 
- 	raw_spin_lock_irqsave(&dio48egpio->lock, flags);
- 
- 	/* Check if configuring Port C */
--	if (io_port == 2 || io_port == 5) {
-+	if (port == 2) {
- 		/* Port C can be configured by nibble */
- 		if (offset % 8 > 3) {
- 			dio48egpio->io_state[io_port] |= 0xF0;
--			dio48egpio->control[control_port] |= BIT(3);
-+			dio48egpio->control[group] |= BIT(3);
- 		} else {
- 			dio48egpio->io_state[io_port] |= 0x0F;
--			dio48egpio->control[control_port] |= BIT(0);
-+			dio48egpio->control[group] |= BIT(0);
- 		}
- 	} else {
- 		dio48egpio->io_state[io_port] |= 0xFF;
--		if (io_port == 0 || io_port == 3)
--			dio48egpio->control[control_port] |= BIT(4);
-+		if (port == 0)
-+			dio48egpio->control[group] |= BIT(4);
- 		else
--			dio48egpio->control[control_port] |= BIT(1);
-+			dio48egpio->control[group] |= BIT(1);
- 	}
- 
--	control = BIT(7) | dio48egpio->control[control_port];
-+	control = BIT(7) | dio48egpio->control[group];
- 	iowrite8(control, control_addr);
- 	control &= ~BIT(7);
- 	iowrite8(control, control_addr);
-@@ -109,31 +145,33 @@ static int dio48e_gpio_direction_output(struct gpio_chip *chip, unsigned int off
- {
- 	struct dio48e_gpio *const dio48egpio = gpiochip_get_data(chip);
- 	const unsigned int io_port = offset / 8;
--	const unsigned int control_port = io_port / 3;
-+	const unsigned long group = io_port / 3;
-+	const unsigned long port = io_port - (group * 3);
- 	const unsigned int mask = BIT(offset % 8);
--	void __iomem *const control_addr = dio48egpio->base + 3 + control_port * 4;
--	const unsigned int out_port = (io_port > 2) ? io_port + 1 : io_port;
-+	struct i8255_reg __iomem *const ppi = dio48egpio->reg->ppi + group;
-+	u8 __iomem *const control_addr = &ppi->control;
-+	u8 __iomem *const port_addr = ppi->port + port;
- 	unsigned long flags;
- 	unsigned int control;
- 
- 	raw_spin_lock_irqsave(&dio48egpio->lock, flags);
- 
- 	/* Check if configuring Port C */
--	if (io_port == 2 || io_port == 5) {
-+	if (port == 2) {
- 		/* Port C can be configured by nibble */
- 		if (offset % 8 > 3) {
- 			dio48egpio->io_state[io_port] &= 0x0F;
--			dio48egpio->control[control_port] &= ~BIT(3);
-+			dio48egpio->control[group] &= ~BIT(3);
- 		} else {
- 			dio48egpio->io_state[io_port] &= 0xF0;
--			dio48egpio->control[control_port] &= ~BIT(0);
-+			dio48egpio->control[group] &= ~BIT(0);
- 		}
- 	} else {
- 		dio48egpio->io_state[io_port] &= 0x00;
--		if (io_port == 0 || io_port == 3)
--			dio48egpio->control[control_port] &= ~BIT(4);
-+		if (port == 0)
-+			dio48egpio->control[group] &= ~BIT(4);
- 		else
--			dio48egpio->control[control_port] &= ~BIT(1);
-+			dio48egpio->control[group] &= ~BIT(1);
- 	}
- 
- 	if (value)
-@@ -141,10 +179,10 @@ static int dio48e_gpio_direction_output(struct gpio_chip *chip, unsigned int off
- 	else
- 		dio48egpio->out_state[io_port] &= ~mask;
- 
--	control = BIT(7) | dio48egpio->control[control_port];
-+	control = BIT(7) | dio48egpio->control[group];
- 	iowrite8(control, control_addr);
- 
--	iowrite8(dio48egpio->out_state[io_port], dio48egpio->base + out_port);
-+	iowrite8(dio48egpio->out_state[io_port], port_addr);
- 
- 	control &= ~BIT(7);
- 	iowrite8(control, control_addr);
-@@ -159,7 +197,8 @@ static int dio48e_gpio_get(struct gpio_chip *chip, unsigned int offset)
- 	struct dio48e_gpio *const dio48egpio = gpiochip_get_data(chip);
- 	const unsigned int port = offset / 8;
- 	const unsigned int mask = BIT(offset % 8);
--	const unsigned int in_port = (port > 2) ? port + 1 : port;
-+	const unsigned long group = port / 3;
-+	const unsigned long in_port = port - (group * 3);
- 	unsigned long flags;
- 	unsigned int port_state;
- 
-@@ -171,29 +210,33 @@ static int dio48e_gpio_get(struct gpio_chip *chip, unsigned int offset)
- 		return -EINVAL;
- 	}
- 
--	port_state = ioread8(dio48egpio->base + in_port);
-+	port_state = ioread8(dio48egpio->reg->ppi[group].port + in_port);
- 
- 	raw_spin_unlock_irqrestore(&dio48egpio->lock, flags);
- 
- 	return !!(port_state & mask);
- }
- 
--static const size_t ports[] = { 0, 1, 2, 4, 5, 6 };
--
- static int dio48e_gpio_get_multiple(struct gpio_chip *chip, unsigned long *mask,
- 	unsigned long *bits)
- {
- 	struct dio48e_gpio *const dio48egpio = gpiochip_get_data(chip);
- 	unsigned long offset;
- 	unsigned long gpio_mask;
--	void __iomem *port_addr;
-+	unsigned long port;
-+	unsigned long group;
-+	unsigned long in_port;
-+	u8 __iomem *port_addr;
- 	unsigned long port_state;
- 
- 	/* clear bits array to a clean slate */
- 	bitmap_zero(bits, chip->ngpio);
- 
--	for_each_set_clump8(offset, gpio_mask, mask, ARRAY_SIZE(ports) * 8) {
--		port_addr = dio48egpio->base + ports[offset / 8];
-+	for_each_set_clump8(offset, gpio_mask, mask, chip->ngpio) {
-+		port = offset / 8;
-+		group = port / 3;
-+		in_port = port - (group * 3);
-+		port_addr = dio48egpio->reg->ppi[group].port + in_port;
- 		port_state = ioread8(port_addr) & gpio_mask;
- 
- 		bitmap_set_value8(bits, port_state, offset);
-@@ -207,7 +250,8 @@ static void dio48e_gpio_set(struct gpio_chip *chip, unsigned int offset, int val
- 	struct dio48e_gpio *const dio48egpio = gpiochip_get_data(chip);
- 	const unsigned int port = offset / 8;
- 	const unsigned int mask = BIT(offset % 8);
--	const unsigned int out_port = (port > 2) ? port + 1 : port;
-+	const unsigned long group = port / 3;
-+	const unsigned long out_port = port - (group * 3);
- 	unsigned long flags;
- 
- 	raw_spin_lock_irqsave(&dio48egpio->lock, flags);
-@@ -217,7 +261,8 @@ static void dio48e_gpio_set(struct gpio_chip *chip, unsigned int offset, int val
- 	else
- 		dio48egpio->out_state[port] &= ~mask;
- 
--	iowrite8(dio48egpio->out_state[port], dio48egpio->base + out_port);
-+	iowrite8(dio48egpio->out_state[port],
-+		 dio48egpio->reg->ppi[group].port + out_port);
- 
- 	raw_spin_unlock_irqrestore(&dio48egpio->lock, flags);
- }
-@@ -229,13 +274,17 @@ static void dio48e_gpio_set_multiple(struct gpio_chip *chip,
- 	unsigned long offset;
- 	unsigned long gpio_mask;
- 	size_t index;
--	void __iomem *port_addr;
-+	size_t group;
-+	size_t out_port;
-+	u8 __iomem *port_addr;
- 	unsigned long bitmask;
- 	unsigned long flags;
- 
--	for_each_set_clump8(offset, gpio_mask, mask, ARRAY_SIZE(ports) * 8) {
-+	for_each_set_clump8(offset, gpio_mask, mask, chip->ngpio) {
- 		index = offset / 8;
--		port_addr = dio48egpio->base + ports[index];
-+		group = index / 3;
-+		out_port = index - (group * 3);
-+		port_addr = dio48egpio->reg->ppi[group].port + out_port;
- 
- 		bitmask = bitmap_get_value8(bits, offset) & gpio_mask;
- 
-@@ -274,7 +323,7 @@ static void dio48e_irq_mask(struct irq_data *data)
- 
- 	if (!dio48egpio->irq_mask)
- 		/* disable interrupts */
--		ioread8(dio48egpio->base + 0xB);
-+		ioread8(&dio48egpio->reg->enable_interrupt);
- 
- 	raw_spin_unlock_irqrestore(&dio48egpio->lock, flags);
- }
-@@ -294,8 +343,8 @@ static void dio48e_irq_unmask(struct irq_data *data)
- 
- 	if (!dio48egpio->irq_mask) {
- 		/* enable interrupts */
--		iowrite8(0x00, dio48egpio->base + 0xF);
--		iowrite8(0x00, dio48egpio->base + 0xB);
-+		iowrite8(0x00, &dio48egpio->reg->clear_interrupt);
-+		iowrite8(0x00, &dio48egpio->reg->enable_interrupt);
- 	}
- 
- 	if (offset == 19)
-@@ -341,7 +390,7 @@ static irqreturn_t dio48e_irq_handler(int irq, void *dev_id)
- 
- 	raw_spin_lock(&dio48egpio->lock);
- 
--	iowrite8(0x00, dio48egpio->base + 0xF);
-+	iowrite8(0x00, &dio48egpio->reg->clear_interrupt);
- 
- 	raw_spin_unlock(&dio48egpio->lock);
- 
-@@ -373,11 +422,25 @@ static int dio48e_irq_init_hw(struct gpio_chip *gc)
- 	struct dio48e_gpio *const dio48egpio = gpiochip_get_data(gc);
- 
- 	/* Disable IRQ by default */
--	ioread8(dio48egpio->base + 0xB);
-+	ioread8(&dio48egpio->reg->enable_interrupt);
- 
- 	return 0;
- }
- 
-+static void dio48e_init_ppi(struct i8255_reg __iomem *const ppi)
-+{
-+	/* Activate Mode Set; set Mode 0 output mode for Port A, B, and C */
-+	iowrite8(0x80, &ppi->control);
-+
-+	/* Initialize all GPIO to 0 */
-+	iowrite8(0x00, &ppi->port[0]);
-+	iowrite8(0x00, &ppi->port[1]);
-+	iowrite8(0x00, &ppi->port[2]);
-+
-+	/* Deactivate Mode Set */
-+	iowrite8(0x00, &ppi->control);
-+}
-+
- static int dio48e_probe(struct device *dev, unsigned int id)
- {
- 	struct dio48e_gpio *dio48egpio;
-@@ -395,8 +458,8 @@ static int dio48e_probe(struct device *dev, unsigned int id)
- 		return -EBUSY;
- 	}
- 
--	dio48egpio->base = devm_ioport_map(dev, base[id], DIO48E_EXTENT);
--	if (!dio48egpio->base)
-+	dio48egpio->reg = devm_ioport_map(dev, base[id], DIO48E_EXTENT);
-+	if (!dio48egpio->reg)
- 		return -ENOMEM;
- 
- 	dio48egpio->chip.label = name;
-@@ -426,16 +489,8 @@ static int dio48e_probe(struct device *dev, unsigned int id)
- 	raw_spin_lock_init(&dio48egpio->lock);
- 
- 	/* initialize all GPIO as output */
--	iowrite8(0x80, dio48egpio->base + 3);
--	iowrite8(0x00, dio48egpio->base);
--	iowrite8(0x00, dio48egpio->base + 1);
--	iowrite8(0x00, dio48egpio->base + 2);
--	iowrite8(0x00, dio48egpio->base + 3);
--	iowrite8(0x80, dio48egpio->base + 7);
--	iowrite8(0x00, dio48egpio->base + 4);
--	iowrite8(0x00, dio48egpio->base + 5);
--	iowrite8(0x00, dio48egpio->base + 6);
--	iowrite8(0x00, dio48egpio->base + 7);
-+	dio48e_init_ppi(&dio48egpio->reg->ppi[0]);
-+	dio48e_init_ppi(&dio48egpio->reg->ppi[1]);
- 
- 	err = devm_gpiochip_add_data(dev, &dio48egpio->chip, dio48egpio);
- 	if (err) {
+> @@ -709,12 +724,12 @@ static void delete_object_full(unsigned long ptr)
+>   * delete it. If the memory block is partially freed, the function may create
+>   * additional metadata for the remaining parts of the block.
+>   */
+> -static void delete_object_part(unsigned long ptr, size_t size)
+> +static void delete_object_part(unsigned long ptr, size_t size, bool is_phys)
+>  {
+>  	struct kmemleak_object *object;
+>  	unsigned long start, end;
+>  
+> -	object = find_and_remove_object(ptr, 1);
+> +	object = find_and_remove_object(ptr, 1, is_phys);
+>  	if (!object) {
+>  #ifdef DEBUG
+>  		kmemleak_warn("Partially freeing unknown object at 0x%08lx (size %zu)\n",
+
+The previous patch introduced a check on object->flags for
+delete_object_part(). I think you can just use is_phys directly now when
+calling create_object().
+
+> @@ -756,11 +771,11 @@ static void paint_it(struct kmemleak_object *object, int color)
+>  	raw_spin_unlock_irqrestore(&object->lock, flags);
+>  }
+>  
+> -static void paint_ptr(unsigned long ptr, int color)
+> +static void paint_ptr(unsigned long ptr, int color, bool is_phys)
+>  {
+>  	struct kmemleak_object *object;
+>  
+> -	object = find_and_get_object(ptr, 0);
+> +	object = find_and_get_object(ptr, 0, is_phys);
+>  	if (!object) {
+>  		kmemleak_warn("Trying to color unknown object at 0x%08lx as %s\n",
+>  			      ptr,
+> @@ -776,18 +791,18 @@ static void paint_ptr(unsigned long ptr, int color)
+>   * Mark an object permanently as gray-colored so that it can no longer be
+>   * reported as a leak. This is used in general to mark a false positive.
+>   */
+> -static void make_gray_object(unsigned long ptr)
+> +static void make_gray_object(unsigned long ptr, bool is_phys)
+>  {
+> -	paint_ptr(ptr, KMEMLEAK_GREY);
+> +	paint_ptr(ptr, KMEMLEAK_GREY, is_phys);
+>  }
+>  
+>  /*
+>   * Mark the object as black-colored so that it is ignored from scans and
+>   * reporting.
+>   */
+> -static void make_black_object(unsigned long ptr)
+> +static void make_black_object(unsigned long ptr, bool is_phys)
+>  {
+> -	paint_ptr(ptr, KMEMLEAK_BLACK);
+> +	paint_ptr(ptr, KMEMLEAK_BLACK, is_phys);
+>  }
+
+We won't need any of these functions to get an 'is_phys' argument if we
+make kmemleak_alloc_phys() always create gray objects (do this as one of
+the first patches in the series).
+
+>  
+>  /*
+> @@ -802,7 +817,7 @@ static void add_scan_area(unsigned long ptr, size_t size, gfp_t gfp)
+>  	unsigned long untagged_ptr;
+>  	unsigned long untagged_objp;
+>  
+> -	object = find_and_get_object(ptr, 1);
+> +	object = find_and_get_object(ptr, 1, false);
+>  	if (!object) {
+>  		kmemleak_warn("Adding scan area to unknown object at 0x%08lx\n",
+>  			      ptr);
+> @@ -852,7 +867,7 @@ static void object_set_excess_ref(unsigned long ptr, unsigned long excess_ref)
+>  	unsigned long flags;
+>  	struct kmemleak_object *object;
+>  
+> -	object = find_and_get_object(ptr, 0);
+> +	object = find_and_get_object(ptr, 0, false);
+>  	if (!object) {
+>  		kmemleak_warn("Setting excess_ref on unknown object at 0x%08lx\n",
+>  			      ptr);
+> @@ -875,7 +890,7 @@ static void object_no_scan(unsigned long ptr)
+>  	unsigned long flags;
+>  	struct kmemleak_object *object;
+>  
+> -	object = find_and_get_object(ptr, 0);
+> +	object = find_and_get_object(ptr, 0, false);
+>  	if (!object) {
+>  		kmemleak_warn("Not scanning unknown object at 0x%08lx\n", ptr);
+>  		return;
+
+Same for these.
+
+> @@ -993,7 +1008,7 @@ void __ref kmemleak_free_part(const void *ptr, size_t size)
+>  	pr_debug("%s(0x%p)\n", __func__, ptr);
+>  
+>  	if (kmemleak_enabled && ptr && !IS_ERR(ptr))
+> -		delete_object_part((unsigned long)ptr, size);
+> +		delete_object_part((unsigned long)ptr, size, false);
+>  }
+>  EXPORT_SYMBOL_GPL(kmemleak_free_part);
+>  
+> @@ -1034,7 +1049,7 @@ void __ref kmemleak_update_trace(const void *ptr)
+>  	if (!kmemleak_enabled || IS_ERR_OR_NULL(ptr))
+>  		return;
+>  
+> -	object = find_and_get_object((unsigned long)ptr, 1);
+> +	object = find_and_get_object((unsigned long)ptr, 1, false);
+>  	if (!object) {
+>  #ifdef DEBUG
+>  		kmemleak_warn("Updating stack trace for unknown object at %p\n",
+> @@ -1063,7 +1078,7 @@ void __ref kmemleak_not_leak(const void *ptr)
+>  	pr_debug("%s(0x%p)\n", __func__, ptr);
+>  
+>  	if (kmemleak_enabled && ptr && !IS_ERR(ptr))
+> -		make_gray_object((unsigned long)ptr);
+> +		make_gray_object((unsigned long)ptr, false);
+>  }
+>  EXPORT_SYMBOL(kmemleak_not_leak);
+>  
+> @@ -1081,7 +1096,7 @@ void __ref kmemleak_ignore(const void *ptr)
+>  	pr_debug("%s(0x%p)\n", __func__, ptr);
+>  
+>  	if (kmemleak_enabled && ptr && !IS_ERR(ptr))
+> -		make_black_object((unsigned long)ptr);
+> +		make_black_object((unsigned long)ptr, false);
+>  }
+>  EXPORT_SYMBOL(kmemleak_ignore);
+
+If we avoid changing make_*_object(), we won't need these anymore.
+
+> @@ -1275,7 +1290,7 @@ static void scan_block(void *_start, void *_end,
+>  		 * is still present in object_tree_root and object_list
+>  		 * (with updates protected by kmemleak_lock).
+>  		 */
+> -		object = lookup_object(pointer, 1);
+> +		object = lookup_object(pointer, 1, false);
+>  		if (!object)
+>  			continue;
+>  		if (object == scanned)
+> @@ -1299,7 +1314,7 @@ static void scan_block(void *_start, void *_end,
+>  		raw_spin_unlock(&object->lock);
+>  
+>  		if (excess_ref) {
+> -			object = lookup_object(excess_ref, 0);
+> +			object = lookup_object(excess_ref, 0, false);
+>  			if (!object)
+>  				continue;
+>  			if (object == scanned)
+> @@ -1728,7 +1743,7 @@ static int dump_str_object_info(const char *str)
+>  
+>  	if (kstrtoul(str, 0, &addr))
+>  		return -EINVAL;
+> -	object = find_and_get_object(addr, 0);
+> +	object = find_and_get_object(addr, 0, false);
+>  	if (!object) {
+>  		pr_info("Unknown object at 0x%08lx\n", addr);
+>  		return -EINVAL;
+
+I think find_and_get_object() is never called on a phys object, so you
+can probably simplify these a bit. Just add an is_phys argument where
+strictly necessary and maybe even add a separate function like
+lookup_object_phys() to reduce the other changes.
+
 -- 
-2.36.1
-
+Catalin
