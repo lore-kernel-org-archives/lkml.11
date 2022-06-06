@@ -2,98 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE8E3C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 09:28:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34717C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 09:31:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232882AbiFFJ2y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 05:28:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43298 "EHLO
+        id S233061AbiFFJbA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 05:31:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232855AbiFFJ2n (ORCPT
+        with ESMTP id S233039AbiFFJao (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 05:28:43 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84DACBF77
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 02:28:41 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id b8so1286551edj.11
-        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 02:28:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:user-agent:mime-version:to:cc:subject
-         :references:in-reply-to:content-transfer-encoding;
-        bh=CZYagJgYZ1zkpsLL362Hu3OFzejYcv3wUUFkHLhcy4U=;
-        b=MEYM2+ibWfzWS3t1mRebwtFZljOOSal2v84sjKN2Bud6nMJI0rJE+VLSitCngN0asq
-         YAMjPgJztYLJDTUkndEHNR/WbZp+Xd/C2BTRfFaGpolmyT9sUmXa9lMNCR/wGdag8npb
-         4p5tD4UayZO9Ls9zs3Eep6IdKXHqU0CG2IA82q7Cqr/SqJ1ZlcE2ZHWqWztn4RwK2mUc
-         4rIYWxdGPP0BnZAPo46ENvisH15Av5wO8gP+qWZdQmviq7FXOsz65BKcY4R/zJfs0ioE
-         PEgLAi6NBkZTEj+ZgDSg40oqgoc+hZWwEslOLvWef51kWf2bUQF4TqoCrPmqtxhRnuTW
-         Vxug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:user-agent:mime-version:to
-         :cc:subject:references:in-reply-to:content-transfer-encoding;
-        bh=CZYagJgYZ1zkpsLL362Hu3OFzejYcv3wUUFkHLhcy4U=;
-        b=Xbn6Xhn0vgoHBpyuXXvSeL5kFR/sJAP2EQCySgGIuAdN3ay0CkzWF6hSOcImpnsqgf
-         npXv7XDf4Aa8m0nCWUI6NlpvtrVT6t9ibxc8YVKIFM2wLwZjjPwsW1nKYHLgsPJzs3fl
-         9HklR+4+riqpaYEh3TkvqhBFJpL9MmgD7hDzQWEWH1KqKG96LmfUzYbcTh/ld49e2mfM
-         wg0+YPKGhThI4u1WpwUyL/gPU1YIjOkqZFuPhVxM3TnIJanYLEQQAOMQSgYzh/uXY/Vg
-         +xqKTykHX0lz/8ALiF6zsMj8Hu+VUoOSg60Tj9Z0FnVImLyiwAy8SPzG4Ewhb1CvlUMI
-         MkvQ==
-X-Gm-Message-State: AOAM530CJjjEvat1fRImtM/REBruOViSCfkPmWr+JSfZxeMgNwnomad4
-        wRIBuzmKGBrpezKErnEfWmM=
-X-Google-Smtp-Source: ABdhPJyszevYNPuTBTC2iVM31Hh+k7ht19JCXqdzmsVJrINi0gJqlDe5oZPCnRJk/iM/x/4kQzBYZQ==
-X-Received: by 2002:a05:6402:2948:b0:42a:ae0c:2f26 with SMTP id ed8-20020a056402294800b0042aae0c2f26mr25337943edb.425.1654507720027;
-        Mon, 06 Jun 2022 02:28:40 -0700 (PDT)
-Received: from [89.139.32.160] (89-139-32-160.bb.netvision.net.il. [89.139.32.160])
-        by smtp.gmail.com with ESMTPSA id jg36-20020a170907972400b00701eb600df8sm6319059ejc.169.2022.06.06.02.28.38
-        (version=TLS1 cipher=AES128-SHA bits=128/128);
-        Mon, 06 Jun 2022 02:28:39 -0700 (PDT)
-Message-ID: <629DC880.8050708@gmail.com>
-Date:   Mon, 06 Jun 2022 12:27:28 +0300
-From:   Eli Billauer <eli.billauer@gmail.com>
-User-Agent: Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.1.12) Gecko/20100907 Fedora/3.0.7-1.fc12 Thunderbird/3.0.7
+        Mon, 6 Jun 2022 05:30:44 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6BD6CFE04;
+        Mon,  6 Jun 2022 02:30:36 -0700 (PDT)
+X-UUID: 9da0ca4ab9714784bc805696926d2f86-20220606
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:8a3a7e6c-ef0d-4a18-bce8-80824a24180b,OB:0,LO
+        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_Ham,AC
+        TION:release,TS:105
+X-CID-INFO: VERSION:1.1.5,REQID:8a3a7e6c-ef0d-4a18-bce8-80824a24180b,OB:0,LOB:
+        0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3D,AC
+        TION:quarantine,TS:105
+X-CID-META: VersionHash:2a19b09,CLOUDID:a2a64f7e-c8dc-403a-96e8-6237210dceee,C
+        OID:0e4a7272b3e5,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:1,File:nil,QS:0,BEC:nil
+X-UUID: 9da0ca4ab9714784bc805696926d2f86-20220606
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+        (envelope-from <lina.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1911604969; Mon, 06 Jun 2022 14:52:09 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Mon, 6 Jun 2022 14:52:08 +0800
+Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by
+ mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.3 via Frontend Transport; Mon, 6 Jun 2022 14:52:04 +0800
+From:   Lina Wang <lina.wang@mediatek.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Maciej enczykowski <maze@google.com>, <netdev@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        Lina Wang <lina.wang@mediatek.com>
+Subject: [PATCH v3] selftests net: fix bpf build error
+Date:   Mon, 6 Jun 2022 14:45:17 +0800
+Message-ID: <20220606064517.8175-1-lina.wang@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-To:     Zheyu Ma <zheyuma97@gmail.com>
-CC:     arnd@arndb.de, gregkh@linuxfoundation.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4] char: xillybus: Check endpoint type at probe time
-References: <20220531054431.3978424-1-zheyuma97@gmail.com>
-In-Reply-To: <20220531054431.3978424-1-zheyuma97@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 31/05/22 08:44, Zheyu Ma wrote:
->   static int xillyusb_setup_base_eps(struct xillyusb_dev *xdev)
->   {
-> +	if (xillyusb_check_endpoint(xdev, IN_EP_NUM | USB_DIR_IN) ||
-> +		xillyusb_check_endpoint(xdev, MSG_EP_NUM | USB_DIR_OUT))
-> +		return -EINVAL;
-> +
->   	xdev->msg_ep = endpoint_alloc(xdev, MSG_EP_NUM | USB_DIR_OUT,
->   				      bulk_out_work, 1, 2);
->   	if (!xdev->msg_ep)
-> @@ -1962,6 +1986,10 @@ static int setup_channels(struct xillyusb_dev *xdev,
->   			chan->out_log2_element_size = out_desc&  0x0f;
->   			chan->out_log2_fifo_size =
->   				((out_desc>>  8)&  0x1f) + 16;
-> +			if (xillyusb_check_endpoint(xdev, (i+2) | USB_DIR_OUT)) {
-> +				kfree(xdev->channels);
-> +				return -EINVAL;
-> +			}
->   		}
->   	}
->
->    
-I just checked this against hardware, and made it fail deliberately by 
-replacing the (i+2) part with (i+3). I got a kernel memory corruption, 
-because xdev->channels was freed twice: Once in the snippet above, and a 
-second time in cleanup_dev().
+bpf_helpers.h has been moved to tools/lib/bpf since 5.10, so add more
+including path.
 
-So the kfree() call here should go away. xdev->channels is freed when 
-xdev's reference count goes to zero.
+Fixes: edae34a3ed92 ("selftests net: add UDP GRO fraglist + bpf self-tests")
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Signed-off-by: Lina Wang <lina.wang@mediatek.com>
+Acked-by: Song Liu <songliubraving@fb.com>
+---
+ tools/testing/selftests/net/bpf/Makefile | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Thanks,
-    Eli
+diff --git a/tools/testing/selftests/net/bpf/Makefile b/tools/testing/selftests/net/bpf/Makefile
+index f91bf14bbee7..8a69c91fcca0 100644
+--- a/tools/testing/selftests/net/bpf/Makefile
++++ b/tools/testing/selftests/net/bpf/Makefile
+@@ -2,6 +2,7 @@
+ 
+ CLANG ?= clang
+ CCINCLUDE += -I../../bpf
++CCINCLUDE += -I../../../lib
+ CCINCLUDE += -I../../../../../usr/include/
+ 
+ TEST_CUSTOM_PROGS = $(OUTPUT)/bpf/nat6to4.o
+@@ -10,5 +11,4 @@ all: $(TEST_CUSTOM_PROGS)
+ $(OUTPUT)/%.o: %.c
+ 	$(CLANG) -O2 -target bpf -c $< $(CCINCLUDE) -o $@
+ 
+-clean:
+-	rm -f $(TEST_CUSTOM_PROGS)
++EXTRA_CLEAN := $(TEST_CUSTOM_PROGS)
+-- 
+2.18.0
+
