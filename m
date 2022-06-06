@@ -2,85 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B0ABC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 17:17:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09227C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 17:17:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229828AbiFFRRh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 13:17:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47202 "EHLO
+        id S229864AbiFFRRs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 13:17:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229886AbiFFRRI (ORCPT
+        with ESMTP id S229887AbiFFRRI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 6 Jun 2022 13:17:08 -0400
-Received: from mail-io1-f47.google.com (mail-io1-f47.google.com [209.85.166.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D86B742A08;
-        Mon,  6 Jun 2022 10:13:04 -0700 (PDT)
-Received: by mail-io1-f47.google.com with SMTP id a10so12866952ioe.9;
-        Mon, 06 Jun 2022 10:13:04 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=T5YHzXRjPtC200vv9hoqJeGGEkRGnL+7w3QqiAQN+TM=;
-        b=r/PkSlzOFDleKY8iBXGdTPhHXApoXgdg5JBlVIhE9JCZqOA3nVMn5bhQ7AX5FvaMvX
-         w87CcWULq9WixwmB+eJ6v6tDbZPeI5WzQmQqAf/wTK673Gczw9EsxqlSFknErzm3jDx8
-         pYQQkJhAG8kNsWmW4ZO2sHCwplgwzSkMOZpz/6ZLjZyEjxrup9WKKqLSsWXe0PUTmBz4
-         UgrUFNoxUZQO0mxyTK3aMCffvga1/QOHa1BOMyGkdyjpmlCEfLodJmew0VdiuXpVjxOn
-         qVpgDLdjdCEsNadMDKySgHd2uBoiOfvvYy+VGNPVTJquMSO/OFz1Nm9JHqvdw+DrfCM3
-         +AkA==
-X-Gm-Message-State: AOAM5303xqbEP6sE0fa/vJIynT8LSbcr38r+i6qtLiFSY9yezld1Brr6
-        jatDvyjiEjWUDb8hi65qNA==
-X-Google-Smtp-Source: ABdhPJz2y+CCdx3q0SwKpY+tb7SzPRSL0+ZHCKWijihTGCxh7qxVlU0vcmJrL7FUNCRk3ErsgKwXEA==
-X-Received: by 2002:a5d:9a96:0:b0:669:50d6:815 with SMTP id c22-20020a5d9a96000000b0066950d60815mr3580524iom.110.1654535584095;
-        Mon, 06 Jun 2022 10:13:04 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.251])
-        by smtp.gmail.com with ESMTPSA id i41-20020a026029000000b0033155f242f0sm5810134jac.23.2022.06.06.10.13.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jun 2022 10:13:03 -0700 (PDT)
-Received: (nullmailer pid 904364 invoked by uid 1000);
-        Mon, 06 Jun 2022 17:13:01 -0000
-Date:   Mon, 6 Jun 2022 12:13:01 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Andre Przywara <andre.przywara@arm.com>
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: Re: [PATCH 14/23] MAINTAINERS: update arm,hdlcd.yaml reference
-Message-ID: <20220606171301.GA899329-robh@kernel.org>
-References: <cover.1654529011.git.mchehab@kernel.org>
- <714c3b6e10736d51268b9d71b97829a224b3bae1.1654529011.git.mchehab@kernel.org>
- <20220606163401.13e5bea3@donnerap.cambridge.arm.com>
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E5FC213;
+        Mon,  6 Jun 2022 10:13:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654535589; x=1686071589;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=RIIF6gQd50znOWXgHgd/G+ztiqR6/zdKxtaDENKnjZA=;
+  b=eCzjQtr9bw57DQLcUrF5TZ/IHrzC5W6TogZcGdmDtUU3CrenzS4K/KOf
+   AnLdbjwC6jpVlr6Hf6XXEAuk0gFQsdn7UWYhMsKdAFqONOjbJ02ec7ryj
+   sfncFT7KShn1zn70fRmmNY1yAGOns5Pys1rWLwTY5Mx2kd7zVA9NaLeIG
+   JKa68fTB9RlJQHxWesAHBAYeozZeFnK0IwEv5pjR5erlq0NHXFdlaBAwR
+   jDUd0FhLSI5/BwNihI5w1oGB+aVc6MTQYxlnf1sbOwfaYRrQVQ5in1vug
+   /3lz3E/Khl1Xh/t7s/qwS6dVBziFkJRm847XL4OtHiKKlxxpg0JnPXOr+
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="277060677"
+X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
+   d="scan'208";a="277060677"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 09:52:25 -0700
+X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
+   d="scan'208";a="825912993"
+Received: from amkossek-mobl1.ger.corp.intel.com ([10.252.57.11])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 09:52:21 -0700
+Date:   Mon, 6 Jun 2022 19:52:19 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+cc:     Greg KH <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "Matwey V. Kornilov" <matwey@sai.msu.ru>,
+        LKML <linux-kernel@vger.kernel.org>,
+        =?ISO-8859-15?Q?Uwe_Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v2 1/6] serial: 8250: Store to lsr_save_flags after lsr
+ read
+In-Reply-To: <CAHp75Ve4t1aF4wDpXPOcOX3MXbn_DaaNWG4S9Ft1jpZ0dGSXzw@mail.gmail.com>
+Message-ID: <97e83f-8011-37fb-d958-2d881fcdbd3@linux.intel.com>
+References: <20220606131124.53394-1-ilpo.jarvinen@linux.intel.com> <20220606131124.53394-2-ilpo.jarvinen@linux.intel.com> <fb32bda5-ea44-da8d-493a-a043b8619022@linux.intel.com> <CAHp75Ve4t1aF4wDpXPOcOX3MXbn_DaaNWG4S9Ft1jpZ0dGSXzw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220606163401.13e5bea3@donnerap.cambridge.arm.com>
+Content-Type: multipart/mixed; boundary="8323329-455783549-1654534344=:1547"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 06, 2022 at 04:34:01PM +0100, Andre Przywara wrote:
-> On Mon,  6 Jun 2022 16:25:36 +0100
-> Mauro Carvalho Chehab <mchehab@kernel.org> wrote:
-> 
-> Hi Mauro,
-> 
-> > Changeset 36fd2a65bcaf ("dt-bindings: display: convert Arm HDLCD to DT schema")
-> > renamed: Documentation/devicetree/bindings/display/arm,hdlcd.txt
-> > to: Documentation/devicetree/bindings/display/arm,hdlcd.yaml.
-> > 
-> > Update its cross-reference accordingly.
-> 
-> So Lukas sent the same thing already last week:
-> https://lore.kernel.org/linux-kernel/20220601041746.22986-1-lukas.bulwahn@gmail.com/
-> 
-> His patch covered all of the three ARM display updates (14, 15, 16/23
-> in this series) in one go.
-> Not sure where to go from here, or if Lukas' patch already made it
-> somewhere.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-I'll apply that one.
+--8323329-455783549-1654534344=:1547
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
-Rob
+On Mon, 6 Jun 2022, Andy Shevchenko wrote:
+
+> On Mon, Jun 6, 2022 at 3:55 PM Ilpo Järvinen
+> <ilpo.jarvinen@linux.intel.com> wrote:
+> > On Mon, 6 Jun 2022, Ilpo Järvinen wrote:
+> 
+> ...
+> 
+> > > Fixes: e490c9144cfa ("tty: Add software emulated RS485 support for 8250")
+> > > Link: https://lore.kernel.org/all/1d6c31d-d194-9e6a-ddf9-5f29af829f3@linux.intel.com/T/#m1737eef986bd20cf19593e344cebd7b0244945fc
+> > > Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+> > > Acked-by: Uwe Kleine-König <u.kleine-koenig@penugtronix.de>
+> >
+> > It seems that Uwe managed to mistype his email for the A-by which I just
+> > happily copy-pasted.
+> >
+> > Greg, please let me know if you want me to resend the series (or if you
+> > will just change it on the fly while applying).
+> 
+> I believe Greg doesn't handle patches on the fly, hence resend.
+> But more importantly I do not see the reason for the Acked-by tag when
+> SoB of the same person is present.
+
+I just repeated what Uwe gave me. Maybe he didn't notice he was already 
+there as SoB.
+
+This situation is anyway a bit more complex than usual. The line I took 
+was part of Uwe's much larger patch initially (which was fully reverted) 
+so his SoB was carried over to preserve the authorship. As I made a 
+non-trivial modification to his original patch by removing almost all of 
+it, I added my SoB too. Given this situation, I kind of thought he Acked 
+(approved) the post-modification version of it.
+
+-- 
+ i.
+
+--8323329-455783549-1654534344=:1547--
