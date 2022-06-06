@@ -2,128 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62949C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 15:13:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C542FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 15:14:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240247AbiFFPNQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 11:13:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42396 "EHLO
+        id S240341AbiFFPOb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 11:14:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240100AbiFFPNO (ORCPT
+        with ESMTP id S240321AbiFFPO2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 11:13:14 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5B782B25A;
-        Mon,  6 Jun 2022 08:13:12 -0700 (PDT)
-Received: from fraeml702-chm.china.huawei.com (unknown [172.18.147.201])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LGxmK6K06z67PsD;
-        Mon,  6 Jun 2022 23:12:01 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml702-chm.china.huawei.com (10.206.15.51) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.24; Mon, 6 Jun 2022 17:13:10 +0200
-Received: from localhost (10.202.226.42) by lhreml710-chm.china.huawei.com
- (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 6 Jun
- 2022 16:13:09 +0100
-Date:   Mon, 6 Jun 2022 16:13:02 +0100
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     Dmitry Rokosov <DDRokosov@sberdevices.ru>
-CC:     Jonathan Cameron <jic23@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
-        "noname.nuno@gmail.com" <noname.nuno@gmail.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH v1] iio: trigger: move trig->owner init to trigger
- allocate() stage
-Message-ID: <20220606161302.000026ed@Huawei.com>
-In-Reply-To: <20220606113829.kmiudrofm2s6onpc@CAB-WSD-L081021.sigma.sbrf.ru>
-References: <20220601174837.20292-1-ddrokosov@sberdevices.ru>
-        <20220604145955.2a1108ca@jic23-huawei>
-        <20220606113829.kmiudrofm2s6onpc@CAB-WSD-L081021.sigma.sbrf.ru>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
+        Mon, 6 Jun 2022 11:14:28 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5D8DFC17DB
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 08:14:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654528465;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=wk21lmL5uU36CD8lVe7wGCPEFaiqg58cc32bIZsmo3E=;
+        b=FunaO86BuF5wR/EQZ05py0vM0j+fzF9DDskOeRlodkDD7AzWXUSTsQ7XgdLeJfxLr4E6vW
+        jpfhDmyyc+vJDYGEIZSFfo8eyMzykJ54UqlWzdtG1BJGaBweq8KKoCOJV2+8+9jzEqf1f3
+        fyqKHqeSuWh9uoYEYf7bkfQUprM/eq8=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-330-vs9e1VvdNA-DS8MsSeislQ-1; Mon, 06 Jun 2022 11:14:22 -0400
+X-MC-Unique: vs9e1VvdNA-DS8MsSeislQ-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5A1C1100BABB;
+        Mon,  6 Jun 2022 15:14:22 +0000 (UTC)
+Received: from localhost (ovpn-14-4.pek2.redhat.com [10.72.14.4])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 946081410DDB;
+        Mon,  6 Jun 2022 15:14:21 +0000 (UTC)
+Date:   Mon, 6 Jun 2022 23:14:18 +0800
+From:   Baoquan He <bhe@redhat.com>
+To:     Kefeng Wang <wangkefeng.wang@huawei.com>
+Cc:     catalin.marinas@arm.com, will@kernel.org,
+        akpm@linux-foundation.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        hch@infradead.org, arnd@arndb.de, anshuman.khandual@arm.com
+Subject: Re: [PATCH v4 4/6] mm: ioremap: Add ioremap/iounmap_allowed()
+Message-ID: <Yp4Zyt/WJjy3Mj4Y@MiWiFi-R3L-srv>
+References: <20220606074815.139265-1-wangkefeng.wang@huawei.com>
+ <20220606074815.139265-5-wangkefeng.wang@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.202.226.42]
-X-ClientProxiedBy: lhreml728-chm.china.huawei.com (10.201.108.79) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220606074815.139265-5-wangkefeng.wang@huawei.com>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 6 Jun 2022 11:37:42 +0000
-Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
+On 06/06/22 at 03:48pm, Kefeng Wang wrote:
+> Add special hook for architecture to verify addr, size or prot
+> when ioremap() or iounmap(), which will make the generic ioremap
+> more useful.
+> 
+>   ioremap_allowed() return an int,
+>     - NULL means continue to remap
+>     - error code means skip remap and return directly
+>   iounmap_allowed() return an int,
+>     - 0 means continue to vunmap
+>     - error code means skip vunmap and return directly
 
-> Hello Jonathan,
-> 
-> Thank you for comments. I have a several questions about the flow,
-> please find them below.
-> 
-> On Sat, Jun 04, 2022 at 02:59:55PM +0100, Jonathan Cameron wrote:
-> > On Wed, 1 Jun 2022 17:48:32 +0000
-> > Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
-> >   
-> > > To provide a new IIO trigger to the IIO core, usually driver executes the
-> > > following pipeline: allocate()/register()/get(). Before, IIO core assigned
-> > > trig->owner as a pointer to the module which registered this trigger at
-> > > the register() stage. But actually the trigger object is owned by the
-> > > module earlier, on the allocate() stage, when trigger object is
-> > > successfully allocated for the driver.
-> > > 
-> > > This patch moves trig->owner initialization from register()
-> > > stage of trigger initialization pipeline to allocate() stage to
-> > > eliminate all misunderstandings and time gaps between trigger object
-> > > creation and owner acquiring.
-> > > 
-> > > Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>  
-> > 
-> > Hi Dmitry,
-> > 
-> > I 'think' this is fine, but its in the high risk category that I'd like
-> > to keep it on list for a few weeks before applying.
-> >   
-> 
-> Could you please explain what it means? Do you have some testing branch
-> with such dangerous patches or do we need just to wait other developers
-> for more points of view? Thanks in advance.
-
-The second - so far I haven't applied it anywhere.
+Aren't they bool type function and better return bool value?
 
 > 
-> > Note I'm still keen that in general we keep the flow such that
-> > we do allocate()/register()/get() as there is no guarantee that the get()
-> > will never do anything that requires the trigger to be registered, even
-> > though that is true today.  Which is another way of saying I'm still
-> > keen we fix up any cases that sneak in after your fix up set dealt with
-> > the current ones.  
+> Acked-by: Andrew Morton <akpm@linux-foundation.org>
+> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+> ---
+>  include/asm-generic/io.h | 25 +++++++++++++++++++++++++
+>  mm/ioremap.c             | 13 ++++++++++---
+>  2 files changed, 35 insertions(+), 3 deletions(-)
 > 
-> I fully agree with you. I suppose to resolve such a problem we need to
-> have some indicators that the trigger is already registered or not.
-> From my point of view, trig->list entry fits well to answer this question.
-> Trigger is added to the global IIO triggers list during register()
-> execution, so we can just check that entry is not empty to make sure that
-> trigger is registered.
+> diff --git a/include/asm-generic/io.h b/include/asm-generic/io.h
+> index e6ffa2519f08..9429387a3e65 100644
+> --- a/include/asm-generic/io.h
+> +++ b/include/asm-generic/io.h
+> @@ -964,6 +964,31 @@ static inline void iounmap(volatile void __iomem *addr)
+>  #elif defined(CONFIG_GENERIC_IOREMAP)
+>  #include <linux/pgtable.h>
+>  
+> +/*
+> + * Arch code can implement the following two special hooks when using GENERIC_IOREMAP
+> + * ioremap_allowed() return an int,
+> + *   - 0 means continue to remap
+> + *   - error code means skip remap and return directly
+> + * iounmap_allowed() return an int,
+> + *   - 0 means continue to vunmap
+> + *   - error code means skip vunmap and return directly
+> + */
+> +#ifndef ioremap_allowed
+> +#define ioremap_allowed ioremap_allowed
+> +static inline int ioremap_allowed(phys_addr_t phys_addr, size_t size, unsigned long prot)
+> +{
+> +	return 0;
+> +}
+> +#endif
+> +
+> +#ifndef iounmap_allowed
+> +#define iounmap_allowed iounmap_allowed
+> +static inline int iounmap_allowed(void __iomem *addr)
+> +{
+> +	return 0;
+> +}
+> +#endif
+> +
+>  void __iomem *ioremap_prot(phys_addr_t phys_addr, size_t size, unsigned long prot);
+>  void iounmap(volatile void __iomem *addr);
+>  
+> diff --git a/mm/ioremap.c b/mm/ioremap.c
+> index 7cb9996b0c12..196c93c0beb8 100644
+> --- a/mm/ioremap.c
+> +++ b/mm/ioremap.c
+> @@ -27,8 +27,10 @@ void __iomem *ioremap_prot(phys_addr_t phys_addr, size_t size, unsigned long pro
+>  	phys_addr -= offset;
+>  	size = PAGE_ALIGN(size + offset);
+>  
+> -	area = get_vm_area_caller(size, VM_IOREMAP,
+> -			__builtin_return_address(0));
+> +	if (ioremap_allowed(phys_addr, size, prot))
+> +		return NULL;
+> +
+> +	area = get_vm_area_caller(size, VM_IOREMAP, __builtin_return_address(0));
+>  	if (!area)
+>  		return NULL;
+>  	vaddr = (unsigned long)area->addr;
+> @@ -45,6 +47,11 @@ EXPORT_SYMBOL(ioremap_prot);
+>  
+>  void iounmap(volatile void __iomem *addr)
+>  {
+> -	vunmap((void *)((unsigned long)addr & PAGE_MASK));
+> +	void __iomem *vaddr = (void __iomem *)((unsigned long)addr & PAGE_MASK);
+> +
+> +	if (iounmap_allowed(vaddr))
+> +		return;
+> +
+> +	vunmap((void __force *)vaddr);
+>  }
+>  EXPORT_SYMBOL(iounmap);
+> -- 
+> 2.35.3
 > 
-> I've sent a v2 patch version, where I use trig->list entry empty status to
-> warn it:
-> 
-> https://lore.kernel.org/linux-iio/20220606111316.19265-1-ddrokosov@sberdevices.ru/
-
-Great!
-
-Jonathan
-
-> 
-> > 
-> > Thanks for following up on this!
-> > 
-> > Jonathan
-> >   
 > 
 
