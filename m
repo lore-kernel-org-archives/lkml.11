@@ -2,130 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18E92C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 05:30:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A94A0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 05:34:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229739AbiFFFar (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 01:30:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50426 "EHLO
+        id S229605AbiFFFeM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 01:34:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229772AbiFFF3V (ORCPT
+        with ESMTP id S229493AbiFFFeK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 01:29:21 -0400
-Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A54F38CCC8
-        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 22:29:17 -0700 (PDT)
-Received: by mail-qk1-x72a.google.com with SMTP id d128so2341937qkg.8
-        for <linux-kernel@vger.kernel.org>; Sun, 05 Jun 2022 22:29:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:in-reply-to:message-id:references
-         :mime-version;
-        bh=mUDpDjKHlw04ecDTJy1YcGz6mZ4dDlGdFM8mMbI+Q/g=;
-        b=GIj3P35xR57PKTSk4ZTEZCARXsfcbJ3MbXbKAXxDYMggSfPnDFuaDWpqizSQnwAmnB
-         pqOZxSEri0Gge/VZv5cAmqSGRGzX/b1QkIKw87m2Cu/rMzFMUWWsAKks2B7LDnUIbUZP
-         W1ARt3os5tzG5OxRWGRkLJ7R9ofG7p+Z9SsbvVlpfQJqAT4Gb5xB1tu7MUbfPkJ/2CDa
-         8QK/i53zXwnio1XDUgueM7aoFrzCwO4LxzrYWJYgBZXxtccZxJBN4r5s60ZFspQH++1W
-         F+2bcFfSiUYI+HbIDL4kkAGqmE4HXDyWX4eSsqvxYEizacmWDaXP6xTyRlbDtozfdGmF
-         2bZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
-         :references:mime-version;
-        bh=mUDpDjKHlw04ecDTJy1YcGz6mZ4dDlGdFM8mMbI+Q/g=;
-        b=meb6VB+SsQDJuk+DSCn42SYZ6JU40S7QdwVbYOVwDFIH+nSJhmfq4gQHYpJKxsGw9M
-         YEaSX4VuiTHiNqrmocBdf57xiToSbtALxNzzYGcROS4NW/jcmsr7NXl23fEWlpJMtTyl
-         V32fTL4HMKD3xECDKbgx0E1QKWRQJRXWXFjhQJhDK7K5YcFIzZKPMk0zfPhnaRaYjCcR
-         D5ka2OGcz8s5/9B6syZbZkPevYIvKBHJhk8/BEZr3seyY9uOY2nSSKRvEmlyN7T2I6mJ
-         NUGnLAkvc1HIzM1TURAJkUyY7yk0y1hkGQgE6ShvY//BQG7TBV1kCRfHjjEIXZs3tVva
-         YjQA==
-X-Gm-Message-State: AOAM530X0IGtGZhAdpTOJFx8uPh9y1mdrKTzJ3cLWectA1rOdl9E7YuN
-        KkuwUrVtFeyPSOAp3rNYbwjfciZgS+HclQ==
-X-Google-Smtp-Source: ABdhPJwj8+ocTDAD/HiagwWcIXCHTKeeZm1CBi9/WN3i86qmNo6EF7kg9H2C5AJuyU2E4ygONDfaZA==
-X-Received: by 2002:ac8:5fd0:0:b0:304:bd3d:d129 with SMTP id k16-20020ac85fd0000000b00304bd3dd129mr17181074qta.685.1654489202951;
-        Sun, 05 Jun 2022 21:20:02 -0700 (PDT)
-Received: from ripple.attlocal.net (172-10-233-147.lightspeed.sntcca.sbcglobal.net. [172.10.233.147])
-        by smtp.gmail.com with ESMTPSA id bl17-20020a05620a1a9100b006a693056b0dsm7895096qkb.94.2022.06.05.21.20.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Jun 2022 21:20:01 -0700 (PDT)
-Date:   Sun, 5 Jun 2022 21:19:49 -0700 (PDT)
-From:   Hugh Dickins <hughd@google.com>
-X-X-Sender: hugh@ripple.anvils
-To:     Chen Wandun <chenwandun@huawei.com>
-cc:     hughd@google.com, akpm@linux-foundation.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, willy@infradead.org,
-        david@redhat.com, wangkefeng.wang@huawei.com
-Subject: Re: [PATCH v3 1/3] mm/shmem: check return value of
- shmem_init_inodecache
-In-Reply-To: <20220606034530.153505-2-chenwandun@huawei.com>
-Message-ID: <bc6accde-cd1f-8c44-2d94-9e6131b659b3@google.com>
-References: <20220606034530.153505-1-chenwandun@huawei.com> <20220606034530.153505-2-chenwandun@huawei.com>
+        Mon, 6 Jun 2022 01:34:10 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4961A18B25
+        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 22:34:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654493649; x=1686029649;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=/SZSzFZ1dFhPPIgGw9fcoNgrT9yACgit2VivRF4SOag=;
+  b=UfcPeV7O14q16dym74ZeewMoq/m29HcMG69QVZbRUsgWaXN5qiaDpvYz
+   a5fM3jM2C8HeBmCA05rq37nr7pFnRIq8OZCJaW94qQBkN2b/njnn6ST6+
+   OspgFvx+GFpiTKc9u2JgNLDNa4RIvBf1yCnkrHwhObcttDYqlwpNIGeIn
+   aQYN7YVE2A1tLAfzZXtrlialBHRdTW36jM1j02uDKeuexPe2skZ8tFIYU
+   O//HK5OaR7cHf47nlatJmpSq0/o3YLKnvIahGVdoHbqKxwe1KRsmKae5O
+   iZh8ZoKOIa1esMNKY0sQAQjQlH00tDB4I0l6NIolKNg8wGYEZl+OXgYWo
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="301985140"
+X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
+   d="scan'208";a="301985140"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2022 22:34:09 -0700
+X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
+   d="scan'208";a="635417555"
+Received: from xingguom-mobl.ccr.corp.intel.com ([10.254.213.116])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2022 22:34:00 -0700
+Message-ID: <143e40bcf46097d14514504518fdc1870fd8d4a1.camel@intel.com>
+Subject: Re: [RFC PATCH v4 1/7] mm/demotion: Add support for explicit memory
+ tiers
+From:   Ying Huang <ying.huang@intel.com>
+To:     Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>
+Cc:     Greg Thelen <gthelen@google.com>, Yang Shi <shy828301@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Tim C Chen <tim.c.chen@intel.com>,
+        Brice Goglin <brice.goglin@gmail.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hesham Almatary <hesham.almatary@huawei.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Jagdish Gediya <jvgediya@linux.ibm.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        David Rientjes <rientjes@google.com>, linux-mm@kvack.org,
+        akpm@linux-foundation.org
+Date:   Mon, 06 Jun 2022 13:33:55 +0800
+In-Reply-To: <d429a644-ef27-bcd8-52bd-c8cbe5fedc26@linux.ibm.com>
+References: <CAAPL-u-dFp7PwPH6DfbYdnY8xaGsHz3tRQ0CPGVkiqURvdN8=A@mail.gmail.com>
+         <20220527122528.129445-1-aneesh.kumar@linux.ibm.com>
+         <20220527122528.129445-2-aneesh.kumar@linux.ibm.com>
+         <352ae5f408b6d7d4d3d820d68e2f2c6b494e95e1.camel@intel.com>
+         <aeced91ea9d9396e9842f5c0264391aabd291726.camel@intel.com>
+         <d429a644-ef27-bcd8-52bd-c8cbe5fedc26@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 6 Jun 2022, Chen Wandun wrote:
-
-> It will result in null pointer access if shmem_init_inodecache fail,
-> so check return value of shmem_init_inodecache
+On Mon, 2022-06-06 at 09:26 +0530, Aneesh Kumar K V wrote:
+> On 6/6/22 8:19 AM, Ying Huang wrote:
+> > On Thu, 2022-06-02 at 14:07 +0800, Ying Huang wrote:
+> > > On Fri, 2022-05-27 at 17:55 +0530, Aneesh Kumar K.V wrote:
+> > > > From: Jagdish Gediya <jvgediya@linux.ibm.com>
+> > > > 
+> > > > In the current kernel, memory tiers are defined implicitly via a
+> > > > demotion path relationship between NUMA nodes, which is created
+> > > > during the kernel initialization and updated when a NUMA node is
+> > > > hot-added or hot-removed.  The current implementation puts all
+> > > > nodes with CPU into the top tier, and builds the tier hierarchy
+> > > > tier-by-tier by establishing the per-node demotion targets based
+> > > > on the distances between nodes.
+> > > > 
+> > > > This current memory tier kernel interface needs to be improved for
+> > > > several important use cases,
+> > > > 
+> > > > The current tier initialization code always initializes
+> > > > each memory-only NUMA node into a lower tier.  But a memory-only
+> > > > NUMA node may have a high performance memory device (e.g. a DRAM
+> > > > device attached via CXL.mem or a DRAM-backed memory-only node on
+> > > > a virtual machine) and should be put into a higher tier.
+> > > > 
+> > > > The current tier hierarchy always puts CPU nodes into the top
+> > > > tier. But on a system with HBM or GPU devices, the
+> > > > memory-only NUMA nodes mapping these devices should be in the
+> > > > top tier, and DRAM nodes with CPUs are better to be placed into the
+> > > > next lower tier.
+> > > > 
+> > > > With current kernel higher tier node can only be demoted to selected nodes on the
+> > > > next lower tier as defined by the demotion path, not any other
+> > > > node from any lower tier.  This strict, hard-coded demotion order
+> > > > does not work in all use cases (e.g. some use cases may want to
+> > > > allow cross-socket demotion to another node in the same demotion
+> > > > tier as a fallback when the preferred demotion node is out of
+> > > > space), This demotion order is also inconsistent with the page
+> > > > allocation fallback order when all the nodes in a higher tier are
+> > > > out of space: The page allocation can fall back to any node from
+> > > > any lower tier, whereas the demotion order doesn't allow that.
+> > > > 
+> > > > The current kernel also don't provide any interfaces for the
+> > > > userspace to learn about the memory tier hierarchy in order to
+> > > > optimize its memory allocations.
+> > > > 
+> > > > This patch series address the above by defining memory tiers explicitly.
+> > > > 
+> > > > This patch adds below sysfs interface which is read-only and
+> > > > can be used to read nodes available in specific tier.
+> > > > 
+> > > > /sys/devices/system/memtier/memtierN/nodelist
+> > > > 
+> > > > Tier 0 is the highest tier, while tier MAX_MEMORY_TIERS - 1 is the
+> > > > lowest tier. The absolute value of a tier id number has no specific
+> > > > meaning. what matters is the relative order of the tier id numbers.
+> > > > 
+> > > > All the tiered memory code is guarded by CONFIG_TIERED_MEMORY.
+> > > > Default number of memory tiers are MAX_MEMORY_TIERS(3). All the
+> > > > nodes are by default assigned to DEFAULT_MEMORY_TIER(1).
+> > > > 
+> > > > Default memory tier can be read from,
+> > > > /sys/devices/system/memtier/default_tier
+> > > > 
+> > > > Max memory tier can be read from,
+> > > > /sys/devices/system/memtier/max_tiers
+> > > > 
+> > > > This patch implements the RFC spec sent by Wei Xu <weixugc@google.com> at [1].
+> > > > 
+> > > > [1] https://lore.kernel.org/linux-mm/CAAPL-u-DGLcKRVDnChN9ZhxPkfxQvz9Sb93kVoX_4J2oiJSkUw@mail.gmail.com/
+> > > > 
+> > > > Signed-off-by: Jagdish Gediya <jvgediya@linux.ibm.com>
+> > > > Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
+> > > 
+> > > IMHO, we should change the kernel internal implementation firstly, then
+> > > implement the kerne/user space interface.  That is, make memory tier
+> > > explicit inside kernel, then expose it to user space.
+> > 
+> > Why ignore this comment for v5?  If you don't agree, please respond me.
+> > 
 > 
-> Signed-off-by: Chen Wandun <chenwandun@huawei.com>
+> I am not sure what benefit such a rearrange would bring in? Right now I 
+> am writing the series from the point of view of introducing all the 
+> plumbing and them switching the existing demotion logic to use the new 
+> infrastructure. Redoing the code to hide all the userspace sysfs till we 
+> switch the demotion logic to use the new infrastructure doesn't really 
+> bring any additional clarity to patch review and would require me to 
+> redo the series with a lot of conflicts across the patches in the patchset.
 
-Thank you, but NAK.
+IMHO, we shouldn't introduce regression even in the middle of a
+patchset.  Each step should only rely on previous patches in the series
+to work correctly.  In your current way of organization, after patch
+[1/7], on a system with 2 memory tiers, the user space interface will
+output wrong information (only 1 memory tier).  So I think the correct
+way is to make it right inside the kenrel firstly, then expose the right
+information to user space.
 
-It's a pity that you've been put to the trouble of sending a v3, sorry
-about that: but if SLAB_PANIC no longer works, or panic() has taken to
-returning, then that's what needs fixing, not shmem_init_inodecache().
+Best Regards,
+Huang, Ying
 
-Was this one supposed to be the bugfix?  And I'm afraid I don't care
-for your "cleanups" in 2/3 and 3/3 either: a matter of taste, and our
-tastes differ.
-
-I'd rather not spend the time on these: maybe look for somewhere else
-to change around than mm/shmem.c?  Or better, please help us all by
-using your time to review the functional patches being posted.
-
-Thanks,
-Hugh
-
-> ---
->  mm/shmem.c | 11 +++++++++--
->  1 file changed, 9 insertions(+), 2 deletions(-)
-> 
-> diff --git a/mm/shmem.c b/mm/shmem.c
-> index 12d45a03f7fc..7419ab219b97 100644
-> --- a/mm/shmem.c
-> +++ b/mm/shmem.c
-> @@ -3775,11 +3775,16 @@ static void shmem_init_inode(void *foo)
->  	inode_init_once(&info->vfs_inode);
->  }
->  
-> -static void shmem_init_inodecache(void)
-> +static int shmem_init_inodecache(void)
->  {
->  	shmem_inode_cachep = kmem_cache_create("shmem_inode_cache",
->  				sizeof(struct shmem_inode_info),
->  				0, SLAB_PANIC|SLAB_ACCOUNT, shmem_init_inode);
-> +
-> +	if (!shmem_inode_cachep)
-> +		return -ENOMEM;
-> +
-> +	return 0;
->  }
->  
->  static void shmem_destroy_inodecache(void)
-> @@ -3923,7 +3928,9 @@ void __init shmem_init(void)
->  {
->  	int error;
->  
-> -	shmem_init_inodecache();
-> +	error = shmem_init_inodecache();
-> +	if (error)
-> +		goto out2;
->  
->  	error = register_filesystem(&shmem_fs_type);
->  	if (error) {
-> -- 
-> 2.25.1
