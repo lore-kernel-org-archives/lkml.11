@@ -2,100 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADFE4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 10:13:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA694C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 10:14:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233454AbiFFKNx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 06:13:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50736 "EHLO
+        id S233853AbiFFKOV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 06:14:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233619AbiFFKNa (ORCPT
+        with ESMTP id S233648AbiFFKOK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 06:13:30 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C64DE1796CF
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 03:10:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654510151;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=WTpeojEBTrseUaMSVnCmShJgLb05X1O3wixL+XWUD1U=;
-        b=R+3pSEakn3tLHgnX2OGUlBvGJmB/CWNt6iR1uk/oiUEVBT9yjVsuMfd6c4Nhyj5K46PrPo
-        YoZUASmsiJNk4d35LmgTCi+4+OQOzQM+EpibmAW3VBsSfI0j59IAd7/oEMsweCMiOMper3
-        lywArKI8m6nqqRPrU/ctTEI/ImS5BoE=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-335-hb4uWvReOGazLolX28PdyQ-1; Mon, 06 Jun 2022 06:09:10 -0400
-X-MC-Unique: hb4uWvReOGazLolX28PdyQ-1
-Received: by mail-wm1-f69.google.com with SMTP id k5-20020a05600c0b4500b003941ca130f9so4963562wmr.0
-        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 03:09:10 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=WTpeojEBTrseUaMSVnCmShJgLb05X1O3wixL+XWUD1U=;
-        b=n7om7TbaAqXFMZLi264/v2TSbFFcG2DMCCU4Xgn48+u1NhKBD8tZL4IMLrpul9Agmj
-         LicEThmKAdBirDuAzKI6cfMr33QBEjHQ3mY0+wuoj9yGSo8Io6JpOFKR7jDhXEyxADoH
-         4sJPMe6dGo+Wh82wmBppiUOTZoP/AlrW0D+paWneQMreiNLeIZOk8MLpCGoh+3+Lc/3Q
-         0yjSVUdH2ChK0wVIQNM0UPU5j59TizgUvUWtGdMEJcdqv8OPdoaiYJjsN7OmdU0yAAFk
-         fmVLWxOLgsBjZkE+11tDbVwLqfG2a3EXN46GaGprjQBrt2wBzOGZ9Ann1Lbj5/cRIMCb
-         3kkA==
-X-Gm-Message-State: AOAM531/mUI5mgQY8ocB9hclREE984bxr6siRKrmlUtXhMeM2ruWf2BG
-        XnFSn7cMd1elQDfrZnH+a9DMl/ibXBR6SRqC/609nZax/DnLvyTs0vyYjgZ9tFW9xn1AfOb/Avv
-        aMRqC3b5HPpUphUU5HCZ+qZYw
-X-Received: by 2002:a5d:6651:0:b0:210:3e1c:1343 with SMTP id f17-20020a5d6651000000b002103e1c1343mr20795220wrw.137.1654510148490;
-        Mon, 06 Jun 2022 03:09:08 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzfuD0eMUP2v47G3d9f7pYllLF29ZboA6bfNKjPqw3VCslRaoPuPFtSStztMn0yQpS9t0z6uQ==
-X-Received: by 2002:a5d:6651:0:b0:210:3e1c:1343 with SMTP id f17-20020a5d6651000000b002103e1c1343mr20795194wrw.137.1654510148287;
-        Mon, 06 Jun 2022 03:09:08 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-112-184.dyn.eolo.it. [146.241.112.184])
-        by smtp.gmail.com with ESMTPSA id n5-20020a05600c3b8500b0039c4e2ff7cfsm3344360wms.43.2022.06.06.03.09.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jun 2022 03:09:07 -0700 (PDT)
-Message-ID: <c8031ab902a2636d4badfe3fdff65930a1f2ac56.camel@redhat.com>
-Subject: Re: [PATCH v3] selftests net: fix bpf build error
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Lina Wang <lina.wang@mediatek.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, Shuah Khan <shuah@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Maciej enczykowski <maze@google.com>, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Date:   Mon, 06 Jun 2022 12:09:06 +0200
-In-Reply-To: <20220606064517.8175-1-lina.wang@mediatek.com>
-References: <20220606064517.8175-1-lina.wang@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        Mon, 6 Jun 2022 06:14:10 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0393A14916F;
+        Mon,  6 Jun 2022 03:11:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654510268; x=1686046268;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=gZSzdjIX2BvSWabQuJE5Re9N3GWxjm5jrXSz5gYEGxg=;
+  b=Zwfyzh/T/yhXsyFOn6JB9NXLQAywJF5oZTITpCrfr5si3w5SVjoutPAV
+   omgXqm4l90KZw+Xe6lmeVD10up3AbTIe11Md8X12TfFztxVjC3rcW4tkc
+   cF2jaM2JoTf6DaNsZvextQiahkVJZhDQxycpPHr5nOH/m0XM9Si56Z25v
+   9W//CnTf2jhkwxJ2WdjfsU8DOwIPtfkunne8l0tUi1M+HpBlyKM5G//BK
+   EolscztBam/3HOK2RTOy2DozprCku7RQ0w6f1/kfF/a4xRb9L66zhLM8n
+   S3LFiwwrU9YsSCyHG/ZsrnVbKwIyO97dQUAFYs3k49BQxAmRR2O0iQBCH
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="276877483"
+X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
+   d="scan'208";a="276877483"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 03:10:51 -0700
+X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
+   d="scan'208";a="722737822"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 03:10:48 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1ny9h7-000UXR-Gu;
+        Mon, 06 Jun 2022 13:10:45 +0300
+Date:   Mon, 6 Jun 2022 13:10:45 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>
+Subject: Re: [RFC PATCH v3 6/6] iio: adc: meson_saradc: Use
+ regmap_read_poll_timeout() for busy wait
+Message-ID: <Yp3SpRIUFBBbNOQn@smile.fi.intel.com>
+References: <20220603100004.70336-1-andriy.shevchenko@linux.intel.com>
+ <20220603100004.70336-6-andriy.shevchenko@linux.intel.com>
+ <CAFBinCD1cn19uf0pyUF-Af7_thP81Ehih+X4F9+rO8tzeUm+Ow@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAFBinCD1cn19uf0pyUF-Af7_thP81Ehih+X4F9+rO8tzeUm+Ow@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-06-06 at 14:45 +0800, Lina Wang wrote:
-> bpf_helpers.h has been moved to tools/lib/bpf since 5.10, so add more
-> including path.
+On Sun, Jun 05, 2022 at 11:59:53PM +0200, Martin Blumenstingl wrote:
+> On Fri, Jun 3, 2022 at 12:00 PM Andy Shevchenko
+> <andriy.shevchenko@linux.intel.com> wrote:
+> >
+> > Simplify busy wait stages by using regmap_read_poll_timeout().
+> >
+> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 > 
-> Fixes: edae34a3ed92 ("selftests net: add UDP GRO fraglist + bpf self-tests")
-> Reported-by: kernel test robot <oliver.sang@intel.com>
-> Signed-off-by: Lina Wang <lina.wang@mediatek.com>
-> Acked-by: Song Liu <songliubraving@fb.com>
+> > v3: new patch, but RFC, not always the read_poll_timeout() can be used, would
+> >     be nice to have it tested.
+> and also:
+> Tested-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com> # GXM VIM2
 
-LGTM, thanks!
+Thanks for testing!
 
-Acked-by: Paolo Abeni <pabeni@redhat.com>
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
