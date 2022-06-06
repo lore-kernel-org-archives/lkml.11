@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6687CC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:12:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BB48C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:13:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239695AbiFFOM4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 10:12:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40232 "EHLO
+        id S239700AbiFFONB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 10:13:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239615AbiFFOMO (ORCPT
+        with ESMTP id S239636AbiFFOMO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 6 Jun 2022 10:12:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59CAE25C72
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 07:12:12 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAF5B25E8F
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 07:12:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0A39EB819F4
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 14:12:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5B06C385A9;
-        Mon,  6 Jun 2022 14:12:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DAAFE6136A
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 14:12:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65BF5C385A9;
+        Mon,  6 Jun 2022 14:12:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654524729;
-        bh=7TiEgNiICfiuJiznG+dnnnYsuwyExFEvzD8fxQfd54M=;
+        s=k20201202; t=1654524732;
+        bh=k9eV0AnZ2X92k+wBWdLIl2ZtT9hBC/I4zr6ytrdT4zc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aPG5LCC1R+cUJc/eTyPITmVUkmxNiwDBH0vA1QR/WTiSNunGx96KDlsysLsUX2M8v
-         hoihExCPUH9tiILDQBM+H6nA6acEOwJyG1RW02lvd1S5o9G5XUHyCXY07yb1rk2dRE
-         YUvtr5jgaxp6AlGMdYZnmbMAqOXDKJhrNYSrUuXNzDMbkBvf1FTbl5/bIeyeAtkH8J
-         Dx6dNosK/nMWk4sfuYdNT/qukggdJ5el2QsCJdyRTyL0JOB+AJDu+qf9CcPdprkNyh
-         S7x54g0djuMshhyQm7WwOJN00N9nvq7iluykJRWcIm19auBi2CNi4J43LXc7nIpXSI
-         URLjoKMGevdLg==
+        b=t4hZjEOXJ+NuA8XiPXLNzjQEQxggNNC+CMnJqlnw70hbYI7M++7qA7bPCh4TmXIc6
+         6CJ4K6ejPGr1yvAhZpPNhhsCB2DGfU5OXk96TM5p63+troMV0xxY2T5k0ERfomZB9K
+         5UtMSsyo1qy1MZ6T2NrRV4vCjJV5y6PcvJTkefj+aNWypnlcr6RDIAWyAmBiy3v068
+         cndivhxIumK2c5lZute2owjcr+XXqQGCdfrECc/DI3D9VXJSakqY8EocnsDawMfYx6
+         jeJIlSbHFFxsVfbn0X7dLZe1UE2eLzZS/+4MphAVEFSERBEg5PEC5AX41+cAv0n5cZ
+         cWb/8R8pxfPLA==
 From:   Tzung-Bi Shih <tzungbi@kernel.org>
 To:     bleung@chromium.org, groeck@chromium.org
 Cc:     chrome-platform@lists.linux.dev, tzungbi@kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 11/13] platform/chrome: cros_ec_proto: fix get_host_command_version_mask() returns
-Date:   Mon,  6 Jun 2022 14:10:49 +0000
-Message-Id: <20220606141051.285823-12-tzungbi@kernel.org>
+Subject: [PATCH 13/13] platform/chrome: cros_ec_proto: fix get_host_event_wake_mask() returns
+Date:   Mon,  6 Jun 2022 14:10:51 +0000
+Message-Id: <20220606141051.285823-14-tzungbi@kernel.org>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
 In-Reply-To: <20220606141051.285823-1-tzungbi@kernel.org>
 References: <20220606141051.285823-1-tzungbi@kernel.org>
@@ -48,72 +48,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-`mask` of get_host_command_version_mask() is valid only if it returns
-positive number (i.e. sizeof(struct ec_response_get_cmd_versions)).
+get_host_event_wake_mask() only gets valid result if send_command()
+returns sizeof(struct ec_response_host_event_mask).  Simplify the
+code and correct the callers.
 
-- Remove the unneeded `ver_mask` initialization.
-
-- Update callers of get_host_command_version_mask() for checking correct
-  return values.
-
-- Add a Kunit test: `ver_mask` has some garbage bytes from
-  previous EC_CMD_GET_NEXT_EVENT but there is no host sleep.
+Also add a Kunit test for guarding if get_host_event_wake_mask() returns 0.
 
 Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
 ---
- drivers/platform/chrome/cros_ec_proto.c      |   8 +-
- drivers/platform/chrome/cros_ec_proto_test.c | 109 +++++++++++++++++++
- 2 files changed, 113 insertions(+), 4 deletions(-)
+ drivers/platform/chrome/cros_ec_proto.c      |  15 +--
+ drivers/platform/chrome/cros_ec_proto_test.c | 131 +++++++++++++++++++
+ 2 files changed, 137 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
-index 07b57ea105b6..91c945c9911f 100644
+index 1622e24747c9..1d2399473f35 100644
 --- a/drivers/platform/chrome/cros_ec_proto.c
 +++ b/drivers/platform/chrome/cros_ec_proto.c
-@@ -409,7 +409,7 @@ static int fill_protocol_info_legacy(struct cros_ec_device *ec_dev)
-  * @cmd: command to get the version of.
-  * @mask: result when function returns 0.
+@@ -236,7 +236,7 @@ EXPORT_SYMBOL(cros_ec_check_result);
   *
-- * @return 0 on success, error code otherwise
-+ * @return >0 on success, error code otherwise
+  * @ec_dev: EC device to call
+  * @msg: message structure to use
+- * @mask: result when function returns >=0.
++ * @mask: result when function returns >0.
   *
   * LOCKING:
-  * the caller has ec_dev->lock mutex or the caller knows there is
-@@ -454,7 +454,7 @@ static int get_host_command_version_mask(struct cros_ec_device *ec_dev, u16 cmd,
- int cros_ec_query_all(struct cros_ec_device *ec_dev)
- {
- 	struct device *dev = ec_dev->dev;
--	u32 ver_mask = 0;
-+	u32 ver_mask;
- 	int ret;
+  * the caller has ec_dev->lock mutex, or the caller knows there is
+@@ -256,19 +256,16 @@ static int get_host_event_wake_mask(struct cros_ec_device *ec_dev, uint32_t *mas
+ 	msg->insize = sizeof(*r);
  
- 	/* First try sending with proto v3. */
-@@ -486,7 +486,7 @@ int cros_ec_query_all(struct cros_ec_device *ec_dev)
+ 	ret = send_command(ec_dev, msg);
+-	if (ret >= 0) {
++	if (ret > 0) {
+ 		mapped = cros_ec_map_error(msg->result);
+ 		if (mapped) {
+ 			ret = mapped;
+-			goto exit;
++		} else {
++			r = (struct ec_response_host_event_mask *)msg->data;
++			*mask = r->mask;
+ 		}
+ 	}
+-	if (ret > 0) {
+-		r = (struct ec_response_host_event_mask *)msg->data;
+-		*mask = r->mask;
+-	}
  
- 	/* Probe if MKBP event is supported */
- 	ret = get_host_command_version_mask(ec_dev, EC_CMD_GET_NEXT_EVENT, &ver_mask);
--	if (ret < 0 || ver_mask == 0) {
-+	if (ret <= 0 || ver_mask == 0) {
- 		ec_dev->mkbp_event_supported = 0;
- 	} else {
- 		ec_dev->mkbp_event_supported = fls(ver_mask);
-@@ -495,7 +495,7 @@ int cros_ec_query_all(struct cros_ec_device *ec_dev)
- 
- 	/* Probe if host sleep v1 is supported for S0ix failure detection. */
- 	ret = get_host_command_version_mask(ec_dev, EC_CMD_HOST_SLEEP_EVENT, &ver_mask);
--	ec_dev->host_sleep_v1 = (ret >= 0 && (ver_mask & EC_VER_MASK(1)));
-+	ec_dev->host_sleep_v1 = (ret > 0 && (ver_mask & EC_VER_MASK(1)));
+-exit:
+ 	kfree(msg);
+ 	return ret;
+ }
+@@ -499,7 +496,7 @@ int cros_ec_query_all(struct cros_ec_device *ec_dev)
  
  	/* Get host event wake mask. */
- 	ret = cros_ec_get_host_event_wake_mask(ec_dev, &ec_dev->host_event_wake_mask);
+ 	ret = get_host_event_wake_mask(ec_dev, &ec_dev->host_event_wake_mask);
+-	if (ret < 0) {
++	if (ret <= 0) {
+ 		/*
+ 		 * If the EC doesn't support EC_CMD_HOST_EVENT_GET_WAKE_MASK,
+ 		 * use a reasonable default. Note that we ignore various
 diff --git a/drivers/platform/chrome/cros_ec_proto_test.c b/drivers/platform/chrome/cros_ec_proto_test.c
-index e2c369765612..7d73aeb99d1d 100644
+index f63196289f54..1ccc837b30cf 100644
 --- a/drivers/platform/chrome/cros_ec_proto_test.c
 +++ b/drivers/platform/chrome/cros_ec_proto_test.c
-@@ -760,6 +760,114 @@ static void cros_ec_proto_test_query_all_no_host_sleep(struct kunit *test)
+@@ -999,6 +999,136 @@ static void cros_ec_proto_test_query_all_default_wake_mask(struct kunit *test)
  	}
  }
  
-+static void cros_ec_proto_test_query_all_no_host_sleep2(struct kunit *test)
++static void cros_ec_proto_test_query_all_default_wake_mask2(struct kunit *test)
 +{
 +	struct cros_ec_proto_test_priv *priv = test->priv;
 +	struct cros_ec_device *ec_dev = &priv->ec_dev;
@@ -121,7 +122,7 @@ index e2c369765612..7d73aeb99d1d 100644
 +	int ret;
 +
 +	/* Set some garbage bytes. */
-+	ec_dev->host_sleep_v1 = true;
++	ec_dev->host_event_wake_mask = U32_MAX;
 +
 +	/* For fill_protocol_info() without passthru. */
 +	{
@@ -148,17 +149,19 @@ index e2c369765612..7d73aeb99d1d 100644
 +
 +	/* For get_host_command_version_mask() for MKBP. */
 +	{
-+		struct ec_response_get_cmd_versions *data;
-+
-+		mock = cros_kunit_ec_xfer_mock_add(test, sizeof(*data));
++		mock = cros_kunit_ec_xfer_mock_add(test,
++						   sizeof(struct ec_response_get_cmd_versions));
 +		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
-+
-+		/* In order to pollute next get_host_command_version_mask(). */
-+		data = (struct ec_response_get_cmd_versions *)mock->o_data;
-+		data->version_mask = 0xbeef;
 +	}
 +
 +	/* For get_host_command_version_mask() for host sleep v1. */
++	{
++		mock = cros_kunit_ec_xfer_mock_add(test,
++						   sizeof(struct ec_response_get_cmd_versions));
++		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
++	}
++
++	/* For get_host_event_wake_mask(). */
 +	{
 +		mock = cros_kunit_ec_xfer_mock_add(test, 0);
 +		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
@@ -216,22 +219,42 @@ index e2c369765612..7d73aeb99d1d 100644
 +		KUNIT_EXPECT_EQ(test, mock->msg.insize,
 +				sizeof(struct ec_response_get_cmd_versions));
 +		KUNIT_EXPECT_EQ(test, mock->msg.outsize, sizeof(struct ec_params_get_cmd_versions));
++	}
 +
-+		KUNIT_EXPECT_FALSE(test, ec_dev->host_sleep_v1);
++	/* For get_host_event_wake_mask(). */
++	{
++		u32 mask;
++
++		mock = cros_kunit_ec_xfer_mock_next();
++		KUNIT_EXPECT_PTR_NE(test, mock, NULL);
++
++		KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
++		KUNIT_EXPECT_EQ(test, mock->msg.command, EC_CMD_HOST_EVENT_GET_WAKE_MASK);
++		KUNIT_EXPECT_EQ(test, mock->msg.insize, sizeof(struct ec_response_host_event_mask));
++		KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
++
++		mask = ec_dev->host_event_wake_mask;
++		KUNIT_EXPECT_EQ(test, mask & EC_HOST_EVENT_MASK(EC_HOST_EVENT_LID_CLOSED), 0);
++		KUNIT_EXPECT_EQ(test, mask & EC_HOST_EVENT_MASK(EC_HOST_EVENT_AC_DISCONNECTED), 0);
++		KUNIT_EXPECT_EQ(test, mask & EC_HOST_EVENT_MASK(EC_HOST_EVENT_BATTERY_LOW), 0);
++		KUNIT_EXPECT_EQ(test, mask & EC_HOST_EVENT_MASK(EC_HOST_EVENT_BATTERY_CRITICAL), 0);
++		KUNIT_EXPECT_EQ(test, mask & EC_HOST_EVENT_MASK(EC_HOST_EVENT_BATTERY), 0);
++		KUNIT_EXPECT_EQ(test, mask & EC_HOST_EVENT_MASK(EC_HOST_EVENT_PD_MCU), 0);
++		KUNIT_EXPECT_EQ(test, mask & EC_HOST_EVENT_MASK(EC_HOST_EVENT_BATTERY_STATUS), 0);
 +	}
 +}
 +
- static void cros_ec_proto_test_query_all_default_wake_mask(struct kunit *test)
+ static int cros_ec_proto_test_init(struct kunit *test)
  {
- 	struct cros_ec_proto_test_priv *priv = test->priv;
-@@ -941,6 +1049,7 @@ static struct kunit_case cros_ec_proto_test_cases[] = {
- 	KUNIT_CASE(cros_ec_proto_test_query_all_no_mkbp),
- 	KUNIT_CASE(cros_ec_proto_test_query_all_no_mkbp2),
+ 	struct cros_ec_proto_test_priv *priv;
+@@ -1051,6 +1181,7 @@ static struct kunit_case cros_ec_proto_test_cases[] = {
  	KUNIT_CASE(cros_ec_proto_test_query_all_no_host_sleep),
-+	KUNIT_CASE(cros_ec_proto_test_query_all_no_host_sleep2),
+ 	KUNIT_CASE(cros_ec_proto_test_query_all_no_host_sleep2),
  	KUNIT_CASE(cros_ec_proto_test_query_all_default_wake_mask),
++	KUNIT_CASE(cros_ec_proto_test_query_all_default_wake_mask2),
  	{}
  };
+ 
 -- 
 2.36.1.255.ge46751e96f-goog
 
