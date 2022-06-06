@@ -2,84 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8C86C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 09:21:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5958C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 09:21:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232675AbiFFJVK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 05:21:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38392 "EHLO
+        id S232662AbiFFJVS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 05:21:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232759AbiFFJUz (ORCPT
+        with ESMTP id S232453AbiFFJVQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 05:20:55 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4094B37BD8
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 02:20:53 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id q21so27734056ejm.1
-        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 02:20:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=HXs6HQ5wyWOtIKdzW/IYeIhCcS1S7l5ftevZGxUN+go=;
-        b=AVFs69BTF+v2nl8khzB4ASec7iczaV1WEjwifjve4cHCqJVGLV4NVpSYI/wdNlpi/N
-         jBvmyTTlUQLhM7hyjskmtZTjDDNMzrDTPLH242cw7ZIK8xaO+bV7RDdmPqAZcpzREU7K
-         8e1zf5Fnrnx9g5u1J/yH209/EU5jamOgRsDCuDt5vEStjmDYChcGkrqm4J7zs6w8KV2S
-         J1nxpPUW8xDShO6lsLQqutirkjQhgPNoWPh8DggHZNJmFXboWjDefVapqeHBLgLlv/0f
-         dGo31ZddTlFaT2kny8FY6aLcFnTUHS7hdakCOoSTNiWDRr9MqvctZ4StmUcDazB8LoSz
-         zFOw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=HXs6HQ5wyWOtIKdzW/IYeIhCcS1S7l5ftevZGxUN+go=;
-        b=gpbEZyguIve9R4on35jcwsZanw09XJMtAy6LbJ40fbrDi9WeHVV+c0LAOzkp1OPWZo
-         igL6QyLwBSw7SnzF00mYa/zyt5Ef5CT0kX3HrR2+dOLSPinW4hUJYB9G1wtDy/mJvXNk
-         PlzWeahDg392AUOyDQ4i2OLhHpfnHeRkA918SZvV7VgAoa1C1nyCxcS26FAobTaKuOo4
-         /41/hVOsl1eRQy4C9DghuKI3uDmcQVXr74Iaspl4TVmucNZD5Lwfo778e9gcbYnCjhG/
-         FWB+e7VpBH5l2P9pFeS7tcsygaRXsGhGeIERIb/GYYvJ8p3RBMEwIbxGE4hLi3X1eKwx
-         CPOw==
-X-Gm-Message-State: AOAM532YQVbk8wl5OZKI1oFXA+6prTuojZFzfI61400VpR3quACC5m6L
-        vXW8ofygmHagqlx/PKAgy9Q8dA==
-X-Google-Smtp-Source: ABdhPJwUBwoX6D2ZyEBxBT0G5klDaphwJEUpH6FhwVTkIdE4hmlutl09N7ke28WCzNQ8obWtXq+LpA==
-X-Received: by 2002:a17:906:38d3:b0:710:daf0:52f8 with SMTP id r19-20020a17090638d300b00710daf052f8mr9469554ejd.406.1654507252467;
-        Mon, 06 Jun 2022 02:20:52 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id b6-20020a17090636c600b006feb6dee4absm6067412ejc.137.2022.06.06.02.20.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jun 2022 02:20:52 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Yong Wu <yong.wu@mediatek.com>, Miaoqian Lin <linmq006@gmail.com>,
-        linux-mediatek@lists.infradead.org,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Ikjoon Jang <ikjn@chromium.org>, linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: Re: [PATCH v2] memory: mtk-smi: add missing put_device() call in mtk_smi_device_link_common
-Date:   Mon,  6 Jun 2022 11:20:47 +0200
-Message-Id: <165450724182.62574.15544602026083220170.b4-ty@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220601120118.60225-1-linmq006@gmail.com>
-References: <20220601120118.60225-1-linmq006@gmail.com>
+        Mon, 6 Jun 2022 05:21:16 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2942C5DE4A;
+        Mon,  6 Jun 2022 02:21:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654507275; x=1686043275;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=bEVeaOzrfOnpRZjPjSs9cctKDIyELz/CmrZQIO+7XcE=;
+  b=Kt/T/ZKiDLBLT3tKA5u4QzYe5w3pkW+vk9Pg0xO/CoiOo9BHcJhNE8qD
+   BhmmBb5OGc2TY80VJux99dQfrL5Ila6Uc9dm3Qz8xpBnrbPGsn2fC+/MZ
+   LlJad+50I+VcOStEbSeTz9owodZ2ldMhZzNrPGkRClxj2Nhdu8gADFM/b
+   HJiFA/3G/Vy0MJ+TCRSFKHX2eYQMDIEiEJvd80pmt0rmIxQUiKqeM+ul9
+   Vb1fXLBvqaLHwsL7dwugezVZBPItCaYCATHHcGUZmNhAm1vV4WDsePpFm
+   tIZHPZZdzwtj8dNgyfwv8vGwFyyje8pwrRzt9lkZetMqHVL9tEQEIxxZ8
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="362984293"
+X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
+   d="scan'208";a="362984293"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 02:21:14 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
+   d="scan'208";a="669395514"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 06 Jun 2022 02:21:12 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ny8v9-000Cdd-SR;
+        Mon, 06 Jun 2022 09:21:11 +0000
+Date:   Mon, 6 Jun 2022 17:20:39 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jean-Jacques Hiblot <jjhiblot@traphandler.com>, pavel@ucw.cz,
+        krzk+dt@kernel.org
+Cc:     kbuild-all@lists.01.org, robh+dt@kernel.org,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Jean-Jacques Hiblot <jjhiblot@traphandler.com>
+Subject: Re: [PATCH v2 2/3] leds: Add driver for the TLC5925 LED controller
+Message-ID: <202206061749.4bLA99z3-lkp@intel.com>
+References: <20220603155332.112272-3-jjhiblot@traphandler.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220603155332.112272-3-jjhiblot@traphandler.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 1 Jun 2022 16:01:18 +0400, Miaoqian Lin wrote:
-> The reference taken by 'of_find_device_by_node()' must be released when
-> not needed anymore.
-> Add the corresponding 'put_device()' in the error handling paths.
-> 
-> 
+Hi Jean-Jacques,
 
-Applied, thanks!
+Thank you for the patch! Perhaps something to improve:
 
-[1/1] memory: mtk-smi: add missing put_device() call in mtk_smi_device_link_common
-      https://git.kernel.org/krzk/linux-mem-ctrl/c/038ae37c510fd57cbc543ac82db1e7b23b28557a
+[auto build test WARNING on pavel-leds/for-next]
+[also build test WARNING on v5.18 next-20220603]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Best regards,
+url:    https://github.com/intel-lab-lkp/linux/commits/Jean-Jacques-Hiblot/Add-support-for-the-TLC5925/20220605-235250
+base:   git://git.kernel.org/pub/scm/linux/kernel/git/pavel/linux-leds.git for-next
+config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220606/202206061749.4bLA99z3-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-1) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/e8ae916efd705311a0bdeb2a8f9a1649174867be
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Jean-Jacques-Hiblot/Add-support-for-the-TLC5925/20220605-235250
+        git checkout e8ae916efd705311a0bdeb2a8f9a1649174867be
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/leds/
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/leds/leds-tlc5925.c:144:35: warning: 'tlc5925_id' defined but not used [-Wunused-const-variable=]
+     144 | static const struct spi_device_id tlc5925_id[] = {
+         |                                   ^~~~~~~~~~
+
+
+vim +/tlc5925_id +144 drivers/leds/leds-tlc5925.c
+
+   143	
+ > 144	static const struct spi_device_id tlc5925_id[] = {
+   145		{"tlc5925", 0},
+   146		{}
+   147	};
+   148	MODULE_DEVICE_TABLE(spi, tlc5925_id);
+   149	
+
 -- 
-Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+0-DAY CI Kernel Test Service
+https://01.org/lkp
