@@ -2,93 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCB00C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 15:34:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D824CCA481
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 15:36:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240893AbiFFPeQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 11:34:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36254 "EHLO
+        id S240915AbiFFPgO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 11:36:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240834AbiFFPeO (ORCPT
+        with ESMTP id S241232AbiFFPfn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 11:34:14 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 911443135B;
-        Mon,  6 Jun 2022 08:34:05 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5C0B2D6E;
-        Mon,  6 Jun 2022 08:34:05 -0700 (PDT)
-Received: from donnerap.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4B97D3F73B;
-        Mon,  6 Jun 2022 08:34:04 -0700 (PDT)
-Date:   Mon, 6 Jun 2022 16:34:01 +0100
-From:   Andre Przywara <andre.przywara@arm.com>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        "Mauro Carvalho Chehab" <mchehab+huawei@kernel.org>,
-        Rob Herring <robh@kernel.org>, linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: Re: [PATCH 14/23] MAINTAINERS: update arm,hdlcd.yaml reference
-Message-ID: <20220606163401.13e5bea3@donnerap.cambridge.arm.com>
-In-Reply-To: <714c3b6e10736d51268b9d71b97829a224b3bae1.1654529011.git.mchehab@kernel.org>
-References: <cover.1654529011.git.mchehab@kernel.org>
-        <714c3b6e10736d51268b9d71b97829a224b3bae1.1654529011.git.mchehab@kernel.org>
-Organization: ARM
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.32; aarch64-unknown-linux-gnu)
+        Mon, 6 Jun 2022 11:35:43 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA57E4D60C
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 08:35:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654529742; x=1686065742;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=aHejLT/VRnChfDayBY6M2GyE/IJnjWN0cBFMUZHN78I=;
+  b=lYWsdoE9shJD1ZmnO4O6JEp0P/3ATOQ+n/WOmub9G/p5oe+RSEGery7o
+   8gfMyLZfw741f48hhdQ0B2Apno0YcpWDNl3CzRsnJyLT5pBPO2zgawTj6
+   IqqCKI700uLa9S9AWeZUGmEHPpGJQ+6bAgZrnWt6bPpLFJvjrQpz1vkTu
+   4Ih6mGf3DeHZGx8E0ytV1tf51nQL7E7xncz6ZcloBNVOiOzQ9x8xCpkzS
+   6RcPLCg3/v+D0qAicNFvovaYmkOpWlSjR/EwE80neCDvI9RfYOWfD+qpE
+   qrbZE0QxCj6CCw/t3gLM/bI1uJhAoG1AvVac1CgoP9nw/Vt0cyKP6EjQ3
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="259045606"
+X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
+   d="scan'208";a="259045606"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 08:29:50 -0700
+X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
+   d="scan'208";a="825876855"
+Received: from kplovato-mobl1.amr.corp.intel.com (HELO [10.212.186.68]) ([10.212.186.68])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 08:29:50 -0700
+Message-ID: <84dc784b-10c9-9ade-7a20-97fe0c32f2ff@intel.com>
+Date:   Mon, 6 Jun 2022 08:29:49 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] x86/mm/tlb: avoid reading mm_tlb_gen when possible
+Content-Language: en-US
+To:     Nadav Amit <nadav.amit@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Cc:     linux-kernel@vger.kernel.org, Nadav Amit <namit@vmware.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org
+References: <20220322220757.8607-1-namit@vmware.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <20220322220757.8607-1-namit@vmware.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon,  6 Jun 2022 16:25:36 +0100
-Mauro Carvalho Chehab <mchehab@kernel.org> wrote:
+On 3/22/22 15:07, Nadav Amit wrote:
+> +	if (f->new_tlb_gen <= local_tlb_gen) {
+> +		/*
+> +		 * We are already up to date in respect to f->new_tlb_gen.
+> +		 * While the core might be still behind mm_tlb_gen, checking
+> +		 * mm_tlb_gen unnecessarily would have negative caching effects
+> +		 * so avoid it.
+> +		 */
+> +		return;
+> +	}
+> +
 
-Hi Mauro,
-
-> Changeset 36fd2a65bcaf ("dt-bindings: display: convert Arm HDLCD to DT schema")
-> renamed: Documentation/devicetree/bindings/display/arm,hdlcd.txt
-> to: Documentation/devicetree/bindings/display/arm,hdlcd.yaml.
-> 
-> Update its cross-reference accordingly.
-
-So Lukas sent the same thing already last week:
-https://lore.kernel.org/linux-kernel/20220601041746.22986-1-lukas.bulwahn@gmail.com/
-
-His patch covered all of the three ARM display updates (14, 15, 16/23
-in this series) in one go.
-Not sure where to go from here, or if Lukas' patch already made it
-somewhere.
-
-If we go ahead with this series instead, please feel free to copy my ACK
-from the other patch.
-
-Cheers,
-Andre
-
-> Fixes: 36fd2a65bcaf ("dt-bindings: display: convert Arm HDLCD to DT schema")
-> Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-> ---
-> 
-> To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
-> See [PATCH 00/23] at: https://lore.kernel.org/all/cover.1654529011.git.mchehab@kernel.org/
-> 
->  MAINTAINERS | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index a6d3bd9d2a8d..c20bd168d209 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -1507,7 +1507,7 @@ F:	drivers/clocksource/arm_arch_timer.c
->  ARM HDLCD DRM DRIVER
->  M:	Liviu Dudau <liviu.dudau@arm.com>
->  S:	Supported
-> -F:	Documentation/devicetree/bindings/display/arm,hdlcd.txt
-> +F:	Documentation/devicetree/bindings/display/arm,hdlcd.yaml
->  F:	drivers/gpu/drm/arm/hdlcd_*
->  
->  ARM INTEGRATOR, VERSATILE AND REALVIEW SUPPORT
-
+Nit: There's at least one "we" in here that needs to get fixed up.  I'll
+plan to do that when I apply it, but a v2 with that fixed and Peter's
+ack added might save me five minutes.
