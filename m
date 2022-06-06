@@ -2,101 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79F05C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 17:13:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9CEEC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 17:14:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229493AbiFFRNP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 13:13:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34756 "EHLO
+        id S229805AbiFFROU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 13:14:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229505AbiFFRMs (ORCPT
+        with ESMTP id S229831AbiFFRNs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 13:12:48 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D0926543B;
-        Mon,  6 Jun 2022 10:01:53 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id v1so19471906ejg.13;
-        Mon, 06 Jun 2022 10:01:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=4zYRg9QIKLuP0JwfVvjlEFPmuLeyXti8yyirKy91Q1w=;
-        b=lJvGt4cT7Wc3DUsIMaQJsU+RQuEVx65ETRRSCvyxvEvxFajh86RC7k/CefpleSbE7Z
-         CJHl/5Ookhpz2/i3QdX2NFv5FHsSkeZb0+1akLAgL8edxon2E7iL5TcbJbdwKmlabZm8
-         dqdBfLGwCVDfd9si6nR8Pphnta9eMUHMkpsu9+TrvFqdvE/l7URNK6O5r0x4YVOKMGKm
-         m+Mzn3E8wh/U5G4b1elvFdtUayEL8E+3JCbWSF8b6/kTv/38HnitXj3Kmf2YWvwTmlkj
-         qpX41+bJ32sG+yCL/bnUciDsBj0HSsEI5LM0JYHD9uAxMEYFD4Mp/ax86AQ1+YAC3s3B
-         yiUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=4zYRg9QIKLuP0JwfVvjlEFPmuLeyXti8yyirKy91Q1w=;
-        b=jeqnBBjSAgOYozdonhihQAVzeG6gitdwU5t+VHBoz8ZG/hJyNHls/kqHatRZOlh262
-         /YGRf7MMr2lEURW6BBfhQUPkScyPg6bcx0hy/0rUmjTXaGZ3RoD6Pr4bN7pT51JClAQd
-         Sw+Rd+SIR+OBE5s6Eogmo3AvSGBk83ig8veXhZdR+JzyHhtFLiqyHWo/B3xnKcNsKveC
-         phuzg65wsl2RGnE1S369ILVcXz21m4KcuCcL7vJRHBEgbMgqyPIgYXeyqfHLW2lEaDCu
-         7u2Uz3kKbWQMWkWw+/M4WXed7v9Xu5wj2a7Vh3Al9SMdY8uZj+wpaVFsTvPQT3b8V93v
-         9YMQ==
-X-Gm-Message-State: AOAM531GbvcQp88LDvdsCNK1mDRaIcNFGXWzR724IENH2f6cEmkWvzWv
-        hFLakHqTzSJlKGsPRkLa87yoCz09cuUyxUzu79ZzGjuqLww=
-X-Google-Smtp-Source: ABdhPJzovU3c9OvgJvFgFzpioKQzX8EX17ry25J4mXgs9aUqi2Qyk8sPpBoEWgnTBS4jNoJCUffSCB20fcohU9dPV4M=
-X-Received: by 2002:a17:906:c7c1:b0:711:d2e9:99d0 with SMTP id
- dc1-20020a170906c7c100b00711d2e999d0mr4128843ejb.639.1654534911686; Mon, 06
- Jun 2022 10:01:51 -0700 (PDT)
+        Mon, 6 Jun 2022 13:13:48 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67B793878A;
+        Mon,  6 Jun 2022 10:04:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654535076; x=1686071076;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=8B3oBa5J+/nZtfBbVHEcmqTofXo8TT8r9m6GWKF4qqA=;
+  b=VOXLQdbqEmDOjfQLktWJcGsVLYc1dwvVlie7eG5SUvbUDdvn9gyVgaPj
+   NVIJWWV9F6GN8AS54gAf9qZGQdzBEONDo4/LHw125sVOwcugo/sOnV7YD
+   XzwHpbBeKGqMGcVCxRdgN8cED4XCGmPpiiL6OjZKwqgoUqVCGtZmJyF8e
+   n2bE7jOAo3vR9rmJnSsgUqwO+b5tDL9pZjo3wp+BiiZbLwJrYo974aUST
+   0FsnKdTaaVDmmYCtSqFaLd+bpplGAwVxAuJki9f/rK3taaSyfjlLHcEto
+   NAU/lLHBW7DZqQIHply7dTwWsUownZin9C8saFPr/hfOW8LdeBvPEs6ok
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="277055858"
+X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
+   d="scan'208";a="277055858"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 09:42:02 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
+   d="scan'208";a="709122657"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga004.jf.intel.com with ESMTP; 06 Jun 2022 09:41:55 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id E430A11FA; Mon,  6 Jun 2022 19:41:50 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Tony Luck <tony.luck@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Wolfram Sang <wsa@kernel.org>, Jean Delvare <jdelvare@suse.de>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Henning Schild <henning.schild@siemens.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Jonathan Yong <jonathan.yong@intel.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        linux-kernel@vger.kernel.org, linux-edac@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-leds@vger.kernel.org,
+        linux-gpio@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-watchdog@vger.kernel.org
+Cc:     Borislav Petkov <bp@alien8.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>,
+        Jean Delvare <jdelvare@suse.com>, Pavel Machek <pavel@ucw.cz>,
+        Peter Tyser <ptyser@xes-inc.com>,
+        Andy Shevchenko <andy@kernel.org>,
+        Mark Gross <markgross@kernel.org>
+Subject: [PATCH v6 11/12] platform/x86: simatic-ipc: drop custom P2SB bar code
+Date:   Mon,  6 Jun 2022 19:41:37 +0300
+Message-Id: <20220606164138.66535-12-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220606164138.66535-1-andriy.shevchenko@linux.intel.com>
+References: <20220606164138.66535-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-References: <20220606131124.53394-1-ilpo.jarvinen@linux.intel.com>
- <20220606131124.53394-2-ilpo.jarvinen@linux.intel.com> <fb32bda5-ea44-da8d-493a-a043b8619022@linux.intel.com>
- <CAHp75Ve4t1aF4wDpXPOcOX3MXbn_DaaNWG4S9Ft1jpZ0dGSXzw@mail.gmail.com> <97e83f-8011-37fb-d958-2d881fcdbd3@linux.intel.com>
-In-Reply-To: <97e83f-8011-37fb-d958-2d881fcdbd3@linux.intel.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 6 Jun 2022 19:01:15 +0200
-Message-ID: <CAHp75Vek_O9MJHGXkgJQZT1w-QbdiU0Bpc_PqcA+P6yEBJcEpA@mail.gmail.com>
-Subject: Re: [PATCH v2 1/6] serial: 8250: Store to lsr_save_flags after lsr read
-To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "Matwey V. Kornilov" <matwey@sai.msu.ru>,
-        LKML <linux-kernel@vger.kernel.org>,
-        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 6, 2022 at 6:54 PM Ilpo J=C3=A4rvinen
-<ilpo.jarvinen@linux.intel.com> wrote:
-> On Mon, 6 Jun 2022, Andy Shevchenko wrote:
-> > On Mon, Jun 6, 2022 at 3:55 PM Ilpo J=C3=A4rvinen
-> > <ilpo.jarvinen@linux.intel.com> wrote:
+From: Henning Schild <henning.schild@siemens.com>
 
-...
+The two drivers that used to use this have been switched over to the
+common P2SB accessor, so this code is not needed any longer.
 
-> > But more importantly I do not see the reason for the Acked-by tag when
-> > SoB of the same person is present.
->
-> I just repeated what Uwe gave me. Maybe he didn't notice he was already
-> there as SoB.
->
-> This situation is anyway a bit more complex than usual. The line I took
-> was part of Uwe's much larger patch initially (which was fully reverted)
-> so his SoB was carried over to preserve the authorship. As I made a
-> non-trivial modification to his original patch by removing almost all of
-> it, I added my SoB too. Given this situation, I kind of thought he Acked
-> (approved) the post-modification version of it.
+Signed-off-by: Henning Schild <henning.schild@siemens.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/platform/x86/simatic-ipc.c            | 38 -------------------
+ .../platform_data/x86/simatic-ipc-base.h      |  2 -
+ 2 files changed, 40 deletions(-)
 
-I believe you haven't preserved the authorship that way (since From
-line is different), but since you have done non-trivial changes and
-Uwe is okay with them, the straightforward tag chain would be (with
-your authorship implied):
-Co-developed-by: Uwe
-SoB: Uwe
-SoB: yours
+diff --git a/drivers/platform/x86/simatic-ipc.c b/drivers/platform/x86/simatic-ipc.c
+index b599cda5ba3c..26c35e1660cb 100644
+--- a/drivers/platform/x86/simatic-ipc.c
++++ b/drivers/platform/x86/simatic-ipc.c
+@@ -101,44 +101,6 @@ static int register_platform_devices(u32 station_id)
+ 	return 0;
+ }
+ 
+-/* FIXME: this should eventually be done with generic P2SB discovery code
+- * the individual drivers for watchdogs and LEDs access memory that implements
+- * GPIO, but pinctrl will not come up because of missing ACPI entries
+- *
+- * While there is no conflict a cleaner solution would be to somehow bring up
+- * pinctrl even with these ACPI entries missing, and base the drivers on pinctrl.
+- * After which the following function could be dropped, together with the code
+- * poking the memory.
+- */
+-/*
+- * Get membase address from PCI, used in leds and wdt module. Here we read
+- * the bar0. The final address calculation is done in the appropriate modules
+- */
+-u32 simatic_ipc_get_membase0(unsigned int p2sb)
+-{
+-	struct pci_bus *bus;
+-	u32 bar0 = 0;
+-	/*
+-	 * The GPIO memory is in bar0 of the hidden P2SB device.
+-	 * Unhide the device to have a quick look at it, before we hide it
+-	 * again.
+-	 * Also grab the pci rescan lock so that device does not get discovered
+-	 * and remapped while it is visible.
+-	 * This code is inspired by drivers/mfd/lpc_ich.c
+-	 */
+-	bus = pci_find_bus(0, 0);
+-	pci_lock_rescan_remove();
+-	pci_bus_write_config_byte(bus, p2sb, 0xE1, 0x0);
+-	pci_bus_read_config_dword(bus, p2sb, PCI_BASE_ADDRESS_0, &bar0);
+-
+-	bar0 &= ~0xf;
+-	pci_bus_write_config_byte(bus, p2sb, 0xE1, 0x1);
+-	pci_unlock_rescan_remove();
+-
+-	return bar0;
+-}
+-EXPORT_SYMBOL(simatic_ipc_get_membase0);
+-
+ static int __init simatic_ipc_init_module(void)
+ {
+ 	const struct dmi_system_id *match;
+diff --git a/include/linux/platform_data/x86/simatic-ipc-base.h b/include/linux/platform_data/x86/simatic-ipc-base.h
+index 62d2bc774067..39fefd48cf4d 100644
+--- a/include/linux/platform_data/x86/simatic-ipc-base.h
++++ b/include/linux/platform_data/x86/simatic-ipc-base.h
+@@ -24,6 +24,4 @@ struct simatic_ipc_platform {
+ 	u8	devmode;
+ };
+ 
+-u32 simatic_ipc_get_membase0(unsigned int p2sb);
+-
+ #endif /* __PLATFORM_DATA_X86_SIMATIC_IPC_BASE_H */
+-- 
+2.35.1
 
---=20
-With Best Regards,
-Andy Shevchenko
