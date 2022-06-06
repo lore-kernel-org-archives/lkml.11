@@ -2,72 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 586BBC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 12:35:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07865C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 12:38:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237240AbiFFMfz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 08:35:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46900 "EHLO
+        id S237311AbiFFMiA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 08:38:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237220AbiFFMfy (ORCPT
+        with ESMTP id S237300AbiFFMh6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 08:35:54 -0400
-Received: from smtpbg.qq.com (smtpbg139.qq.com [175.27.65.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86DBE2AD996;
-        Mon,  6 Jun 2022 05:35:48 -0700 (PDT)
-X-QQ-mid: bizesmtp77t1654518866tsuslvzx
-Received: from localhost.localdomain ( [111.9.5.115])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Mon, 06 Jun 2022 20:34:21 +0800 (CST)
-X-QQ-SSF: 01000000002000C0H000B00A0000000
-X-QQ-FEAT: gDHn9VCP/rxflbaaDKzGJ/IapudJoJpOUO9NKEeMpAnuW4pnNla36YdLzfRhL
-        KGf/xNh0wOPaBDovpfTQz/r9AsGld1qTGLmCICVSiW2k29qdA3C0FejJt+Ds0DrGk2nMife
-        kiJWAu4ZXwdORrMcdpoaojCEqnI/81e85ZSfDKmbXumw8gP4U6IlR3ffiLh0Vty+g3ECtCf
-        OgQDIHbVSkCoXvNtHAM/F4fJh+1P2VaLxPxycPQ9Pyuk+ODHa3xvRJjtT3Ng96ARuQH0CDN
-        Q6+bYXC/O4QNVxrvl5LHfX2uIUNbT1DhesPMaL4hBI5DDW3wEOoETawPMWS3ZCuMaw80mFu
-        B/VVarTmlsdgVag4zMHWwVgxrdKfQ==
-X-QQ-GoodBg: 0
-From:   Xiang wangx <wangxiang@cdjrlc.com>
-To:     dennis.dalessandro@cornelisnetworks.com, jgg@ziepe.ca,
-        leon@kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Xiang wangx <wangxiang@cdjrlc.com>
-Subject: [PATCH v2] RDMA/hw/hfi1/pio_copy: Fix typo in comment
-Date:   Mon,  6 Jun 2022 20:34:19 +0800
-Message-Id: <20220606123419.29109-1-wangxiang@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam6
+        Mon, 6 Jun 2022 08:37:58 -0400
+Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5DA299687
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 05:37:55 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R211e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=xianting.tian@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0VFYRvQg_1654519072;
+Received: from localhost(mailfrom:xianting.tian@linux.alibaba.com fp:SMTPD_---0VFYRvQg_1654519072)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Mon, 06 Jun 2022 20:37:53 +0800
+From:   Xianting Tian <xianting.tian@linux.alibaba.com>
+To:     paul.walmsley@sifive.com, palmer@dabbelt.com,
+        aou@eecs.berkeley.edu, wangkefeng.wang@huawei.com,
+        philipp.tomsich@vrull.eu, ebiederm@xmission.com, heiko@sntech.de,
+        vitaly.wool@konsulko.com, tongtiangen@huawei.com, guoren@kernel.org
+Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Xianting Tian <xianting.tian@linux.alibaba.com>
+Subject: [PATCH v3] RISC-V: Add fixup to support fast call of crash_kexec()
+Date:   Mon,  6 Jun 2022 20:37:50 +0800
+Message-Id: <20220606123750.2884245-1-xianting.tian@linux.alibaba.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Delete the redundant word 'and'.
+Currently, almost all archs (x86, arm64, mips...) support fast call
+of crash_kexec() when "regs && kexec_should_crash()" is true. But
+RISC-V not, it can only enter crash system via panic(). However panic()
+doesn't pass the regs of the real accident scene to crash_kexec(),
+it caused we can't get accurate backtrace via gdb,
+	$ riscv64-linux-gnu-gdb vmlinux vmcore
+	Reading symbols from vmlinux...
+	[New LWP 95]
+	#0  console_unlock () at kernel/printk/printk.c:2557
+	2557                    if (do_cond_resched)
+	(gdb) bt
+	#0  console_unlock () at kernel/printk/printk.c:2557
+	#1  0x0000000000000000 in ?? ()
 
-Signed-off-by: Xiang wangx <wangxiang@cdjrlc.com>
+With the patch we can get the accurate backtrace,
+	$ riscv64-linux-gnu-gdb vmlinux vmcore
+	Reading symbols from vmlinux...
+	[New LWP 95]
+	#0  0xffffffe00063a4e0 in test_thread (data=<optimized out>) at drivers/test_crash.c:81
+	81             *(int *)p = 0xdead;
+	(gdb)
+	(gdb) bt
+	#0  0xffffffe00064d5c0 in test_thread (data=<optimized out>) at drivers/test_crash.c:81
+	#1  0x0000000000000000 in ?? ()
+
+Test code to produce NULL address dereference in test_crash.c,
+	void *p = NULL;
+	*(int *)p = 0xdead;
+
+Fixes: 76d2a0493a17 ("RISC-V: Init and Halt Code")
+Reviewed-by: Guo Ren <guoren@kernel.org>
+Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
 ---
+Changes from v1:
+- simplify the commit message
+Changes from v2:
+- add fixup in title
+---
+ arch/riscv/kernel/traps.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-Changes since v1
-*Change commit log
-
- drivers/infiniband/hw/hfi1/pio_copy.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/infiniband/hw/hfi1/pio_copy.c b/drivers/infiniband/hw/hfi1/pio_copy.c
-index 136f9a99e1e0..7690f996d5e3 100644
---- a/drivers/infiniband/hw/hfi1/pio_copy.c
-+++ b/drivers/infiniband/hw/hfi1/pio_copy.c
-@@ -172,7 +172,7 @@ static inline void jcopy(u8 *dest, const u8 *src, u32 n)
- }
+diff --git a/arch/riscv/kernel/traps.c b/arch/riscv/kernel/traps.c
+index b40426509244..39d0f8bba4b4 100644
+--- a/arch/riscv/kernel/traps.c
++++ b/arch/riscv/kernel/traps.c
+@@ -16,6 +16,7 @@
+ #include <linux/mm.h>
+ #include <linux/module.h>
+ #include <linux/irq.h>
++#include <linux/kexec.h>
  
- /*
-- * Read nbytes from "from" and and place them in the low bytes
-+ * Read nbytes from "from" and place them in the low bytes
-  * of pbuf->carry.  Other bytes are left as-is.  Any previous
-  * value in pbuf->carry is lost.
-  *
+ #include <asm/asm-prototypes.h>
+ #include <asm/bug.h>
+@@ -44,6 +45,9 @@ void die(struct pt_regs *regs, const char *str)
+ 
+ 	ret = notify_die(DIE_OOPS, str, regs, 0, regs->cause, SIGSEGV);
+ 
++	if (regs && kexec_should_crash(current))
++		crash_kexec(regs);
++
+ 	bust_spinlocks(0);
+ 	add_taint(TAINT_DIE, LOCKDEP_NOW_UNRELIABLE);
+ 	spin_unlock_irq(&die_lock);
 -- 
-2.36.1
+2.17.1
 
