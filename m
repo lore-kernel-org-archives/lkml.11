@@ -2,174 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E3C6C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 17:10:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A771C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 17:11:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229486AbiFFRKt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 13:10:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41060 "EHLO
+        id S229563AbiFFRK4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 13:10:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229490AbiFFRJp (ORCPT
+        with ESMTP id S229445AbiFFRJR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 13:09:45 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1098EE01;
-        Mon,  6 Jun 2022 09:57:40 -0700 (PDT)
-Received: from dimapc.. (109-252-138-163.dynamic.spd-mgts.ru [109.252.138.163])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: dmitry.osipenko)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 60BFF6601C72;
-        Mon,  6 Jun 2022 17:57:38 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1654534658;
-        bh=FIM8GIMepvfnT4TQY6iQ3wpMknXZhv7KK8TRc4lbx5s=;
-        h=From:To:Cc:Subject:Date:From;
-        b=YONWZn/EaULMwx0P2lLlZ6TNlQne7C9taGsOhCqpOvnf/WD5a+7HtSra1qVT8PzO5
-         ojtHkBlPKFJ7IswrQoiHmRsp4hGCVBCGLefXiJ5hX46H848bwPCdDFxkw0hC0II95d
-         mFLlTR17jOKfrUYCPn0q905VuZ2WfEErlUGYqbDAGHPpMXexGYXEFjCR3rGDff7bW5
-         Mmko2QII3kn72nAvQLANVJimNKekHDYoDJUT7AJ+VKfHd/SOAvwHqAC53na/UYrxqg
-         SuRCTnfA0MEreVTueWYbJZaA6NpF6flNj1j+5Tyd5gEfPQc9Kgit/hIBKsUcDJ3S8/
-         BALJPxR8zhZPw==
-From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
-To:     "Rafael J . Wysocki" <rafael@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH v1] kernel/reboot: Fix powering off using a non-syscall code paths
-Date:   Mon,  6 Jun 2022 19:56:40 +0300
-Message-Id: <20220606165640.634811-1-dmitry.osipenko@collabora.com>
-X-Mailer: git-send-email 2.35.3
+        Mon, 6 Jun 2022 13:09:17 -0400
+X-Greylist: delayed 198 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 06 Jun 2022 09:57:11 PDT
+Received: from condef-05.nifty.com (condef-05.nifty.com [202.248.20.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09DE0E64;
+        Mon,  6 Jun 2022 09:57:11 -0700 (PDT)
+Received: from conssluserg-06.nifty.com ([10.126.8.85])by condef-05.nifty.com with ESMTP id 256GoaT7003088;
+        Tue, 7 Jun 2022 01:50:36 +0900
+Received: from mail-pj1-f53.google.com (mail-pj1-f53.google.com [209.85.216.53]) (authenticated)
+        by conssluserg-06.nifty.com with ESMTP id 256Go78p015542;
+        Tue, 7 Jun 2022 01:50:07 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-06.nifty.com 256Go78p015542
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1654534207;
+        bh=JczM4pY/KqVyXbgBAdJHth13hYHYPz2AUgD+NORgP88=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=cAA51L+u6zio7BDf+AdzTL9IFahNNoK+IiMW9NRdKxUe5ulchRLVG+jZitDOo7hCF
+         sdUTF5rd30GYnQMqlnwteZvMnK/XrFclvTkM6QcStqmQK68Y5HUF3OpFB68sWa4BpB
+         ALQSELRdNsP11YD82PkkK7hzoStrvAW73FTUx0zD7fgBvgVmETvRc0CitfBaezA/r8
+         pfWFIMh7qyTRR687u78y9ER6r6FcuIwRbO4uk7DRBrpf5KTvbHJw7HpEdEBjO3HY/V
+         HhsA3iMg3t8XZm5JVkk2IUarrT2h5lIJx/j2M6StoLXlrjfkbRGh2eonb7xGSnIKrY
+         nuOqr164blPnw==
+X-Nifty-SrcIP: [209.85.216.53]
+Received: by mail-pj1-f53.google.com with SMTP id hv24-20020a17090ae41800b001e33eebdb5dso12099561pjb.0;
+        Mon, 06 Jun 2022 09:50:07 -0700 (PDT)
+X-Gm-Message-State: AOAM531dL2bC7wLFd4aneYQtoCWquitJXp10p6Hz45neUApa37+DETRS
+        YledxK2+T2Jf4sWZ3t3PiAmb5ZMk9Qf+gBfYP18=
+X-Google-Smtp-Source: ABdhPJyatm0uoax8ecbzLyDvchHcD4De61uzjEguhfJ0F6MA1SImvv9cNdnotdQnMjAPMkpOUCkaUUJZRyJxjCLVyU0=
+X-Received: by 2002:a17:902:f687:b0:167:58bb:c43f with SMTP id
+ l7-20020a170902f68700b0016758bbc43fmr15048539plg.136.1654534206608; Mon, 06
+ Jun 2022 09:50:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <165451871967.1941436.17828809503267245815.stgit@warthog.procyon.org.uk>
+In-Reply-To: <165451871967.1941436.17828809503267245815.stgit@warthog.procyon.org.uk>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Tue, 7 Jun 2022 01:49:19 +0900
+X-Gmail-Original-Message-ID: <CAK7LNAS-0kQOvt=7TNn0osf9JO5hZhSp9PaFFBsSx++2Pevc9g@mail.gmail.com>
+Message-ID: <CAK7LNAS-0kQOvt=7TNn0osf9JO5hZhSp9PaFFBsSx++2Pevc9g@mail.gmail.com>
+Subject: Re: [PATCH] certs: Convert spaces in certs/Makefile to a tab
+To:     David Howells <dhowells@redhat.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        =?UTF-8?B?TWlja2HDq2wgU2FsYcO8bg==?= <mic@linux.microsoft.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>, keyrings@vger.kernel.org,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are other methods of powering off machine than the reboot syscall.
-Previously we missed to coved those methods and it created power-off
-regression for some machines, like the PowerPC e500. Fix this problem
-by moving the legacy sys-off handler registration to the latest phase
-of power-off process and making the kernel_can_power_off() to check the
-legacy pm_power_off presence.
+On Mon, Jun 6, 2022 at 9:32 PM David Howells <dhowells@redhat.com> wrote:
+>
+> There's a rule in certs/Makefile for which the command begins with eight
+> spaces.  This results in:
+>
+>         ../certs/Makefile:21: FORCE prerequisite is missing
+>         ../certs/Makefile:21: *** missing separator.  Stop.
+>
+> Fix this by turning the spaces into a tab.
+>
+> Fixes: addf466389d9 ("certs: Check that builtin blacklist hashes are vali=
+d")
+> Signed-off-by: David Howells <dhowells@redhat.com>
+> cc: Micka=C3=ABl Sala=C3=BCn <mic@linux.microsoft.com>
+> cc: Jarkko Sakkinen <jarkko@kernel.org>
+> cc: keyrings@vger.kernel.org
 
-Tested-by: Michael Ellerman <mpe@ellerman.id.au> # ppce500
-Reported-by: Michael Ellerman <mpe@ellerman.id.au> # ppce500
-Fixes: da007f171fc9 ("kernel/reboot: Change registration order of legacy power-off handler")
-Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
----
- kernel/reboot.c | 46 ++++++++++++++++++++++++++--------------------
- 1 file changed, 26 insertions(+), 20 deletions(-)
 
-diff --git a/kernel/reboot.c b/kernel/reboot.c
-index 3b19b123efec..b5a71d1ff603 100644
---- a/kernel/reboot.c
-+++ b/kernel/reboot.c
-@@ -320,6 +320,7 @@ static struct sys_off_handler platform_sys_off_handler;
- static struct sys_off_handler *alloc_sys_off_handler(int priority)
- {
- 	struct sys_off_handler *handler;
-+	gfp_t flags;
- 
- 	/*
- 	 * Platforms like m68k can't allocate sys_off handler dynamically
-@@ -330,7 +331,12 @@ static struct sys_off_handler *alloc_sys_off_handler(int priority)
- 		if (handler->cb_data)
- 			return ERR_PTR(-EBUSY);
- 	} else {
--		handler = kzalloc(sizeof(*handler), GFP_KERNEL);
-+		if (system_state > SYSTEM_RUNNING)
-+			flags = GFP_ATOMIC;
-+		else
-+			flags = GFP_KERNEL;
-+
-+		handler = kzalloc(sizeof(*handler), flags);
- 		if (!handler)
- 			return ERR_PTR(-ENOMEM);
- 	}
-@@ -440,7 +446,7 @@ void unregister_sys_off_handler(struct sys_off_handler *handler)
- {
- 	int err;
- 
--	if (!handler)
-+	if (IS_ERR_OR_NULL(handler))
- 		return;
- 
- 	if (handler->blocking)
-@@ -615,7 +621,23 @@ static void do_kernel_power_off_prepare(void)
-  */
- void do_kernel_power_off(void)
- {
-+	struct sys_off_handler *sys_off = NULL;
-+
-+	/*
-+	 * Register sys-off handlers for legacy PM callback. This allows
-+	 * legacy PM callbacks temporary co-exist with the new sys-off API.
-+	 *
-+	 * TODO: Remove legacy handlers once all legacy PM users will be
-+	 *       switched to the sys-off based APIs.
-+	 */
-+	if (pm_power_off)
-+		sys_off = register_sys_off_handler(SYS_OFF_MODE_POWER_OFF,
-+						   SYS_OFF_PRIO_DEFAULT,
-+						   legacy_pm_power_off, NULL);
-+
- 	atomic_notifier_call_chain(&power_off_handler_list, 0, NULL);
-+
-+	unregister_sys_off_handler(sys_off);
- }
- 
- /**
-@@ -626,7 +648,8 @@ void do_kernel_power_off(void)
-  */
- bool kernel_can_power_off(void)
- {
--	return !atomic_notifier_call_chain_is_empty(&power_off_handler_list);
-+	return !atomic_notifier_call_chain_is_empty(&power_off_handler_list) ||
-+		pm_power_off;
- }
- EXPORT_SYMBOL_GPL(kernel_can_power_off);
- 
-@@ -661,7 +684,6 @@ SYSCALL_DEFINE4(reboot, int, magic1, int, magic2, unsigned int, cmd,
- 		void __user *, arg)
- {
- 	struct pid_namespace *pid_ns = task_active_pid_ns(current);
--	struct sys_off_handler *sys_off = NULL;
- 	char buffer[256];
- 	int ret = 0;
- 
-@@ -686,21 +708,6 @@ SYSCALL_DEFINE4(reboot, int, magic1, int, magic2, unsigned int, cmd,
- 	if (ret)
- 		return ret;
- 
--	/*
--	 * Register sys-off handlers for legacy PM callback. This allows
--	 * legacy PM callbacks temporary co-exist with the new sys-off API.
--	 *
--	 * TODO: Remove legacy handlers once all legacy PM users will be
--	 *       switched to the sys-off based APIs.
--	 */
--	if (pm_power_off) {
--		sys_off = register_sys_off_handler(SYS_OFF_MODE_POWER_OFF,
--						   SYS_OFF_PRIO_DEFAULT,
--						   legacy_pm_power_off, NULL);
--		if (IS_ERR(sys_off))
--			return PTR_ERR(sys_off);
--	}
--
- 	/* Instead of trying to make the power_off code look like
- 	 * halt when pm_power_off is not set do it the easy way.
- 	 */
-@@ -758,7 +765,6 @@ SYSCALL_DEFINE4(reboot, int, magic1, int, magic2, unsigned int, cmd,
- 		break;
- 	}
- 	mutex_unlock(&system_transition_mutex);
--	unregister_sys_off_handler(sys_off);
- 	return ret;
- }
- 
--- 
-2.35.3
+Not only 8-space indentation, but also:
 
+  - config_filename does not exist
+  - $(SYSTEM_BLACKLIST_HASH_LIST_SRCPREFIX) is always empty
+  - $(SYSTEM_BLACKLIST_HASH_LIST_FILENAME) is always empty
+
+
+> ---
+>
+>  certs/Makefile |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/certs/Makefile b/certs/Makefile
+> index bb904f90f139..cb1a9da3fc58 100644
+> --- a/certs/Makefile
+> +++ b/certs/Makefile
+> @@ -18,7 +18,7 @@ CFLAGS_blacklist_hashes.o +=3D -I$(srctree)
+>
+>  targets +=3D blacklist_hashes_checked
+>  $(obj)/blacklist_hashes_checked: $(SYSTEM_BLACKLIST_HASH_LIST_SRCPREFIX)=
+$(SYSTEM_BLACKLIST_HASH_LIST_FILENAME) scripts/check-blacklist-hashes.awk F=
+ORCE
+> -       $(call if_changed,check_blacklist_hashes,$(SYSTEM_BLACKLIST_HASH_=
+LIST_SRCPREFIX)$(CONFIG_SYSTEM_BLACKLIST_HASH_LIST))
+> +       $(call if_changed,check_blacklist_hashes,$(SYSTEM_BLACKLIST_HASH_=
+LIST_SRCPREFIX)$(CONFIG_SYSTEM_BLACKLIST_HASH_LIST))
+>  obj-$(CONFIG_SYSTEM_BLACKLIST_KEYRING) +=3D blacklist_hashes.o
+>  else
+>  obj-$(CONFIG_SYSTEM_BLACKLIST_KEYRING) +=3D blacklist_nohashes.o
+>
+>
+
+
+--
+Best Regards
+Masahiro Yamada
