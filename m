@@ -2,100 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73E22C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:35:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1DBFCCA481
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:36:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239825AbiFFOfQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 10:35:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59236 "EHLO
+        id S239924AbiFFOgW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 10:36:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239809AbiFFOe4 (ORCPT
+        with ESMTP id S239809AbiFFOgM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 10:34:56 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE0772E0AA;
-        Mon,  6 Jun 2022 07:34:55 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id 25so18832420edw.8;
-        Mon, 06 Jun 2022 07:34:55 -0700 (PDT)
+        Mon, 6 Jun 2022 10:36:12 -0400
+Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ED981257B8
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 07:36:09 -0700 (PDT)
+Received: by mail-ot1-x333.google.com with SMTP id a21-20020a9d4715000000b0060bfaac6899so2098678otf.12
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 07:36:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UBnTnofx1egjVYMXsVKnzCrT8go4XNCwGGXlPsFzsQA=;
-        b=azV5GzMMa++q0Epo0MDaOVueIR/LwrW+VySLdOxKsvHyTQCveKvSoWdowrxeTsXPis
-         ADZ8YkUbT/PDj2crA7LNxwxdiS4cq4XsPY0uZpGm0x7jEeMaU0G9Bg8dYGf/jdzv+9we
-         s7/qhctFIOJmUnwcJ28H+yT9Z0eiiNnazOu6o9wBPLmMEDOpwJaKVbecD0UQjb+CarAh
-         al2usVJSQfVhO3neOz3ESYjQDU2csK5R1sE9uQDCdq42GlTX8ga3dBlZUTkocXYFkdsw
-         vQBstuts0wA5bVPDtO6XRccnYYhtA1Z2flHrqkLctTskaoeftkCx6/3ymFoBjYvv2JgR
-         fEng==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=414Q+sddG1YR3KgC07ld9bq5c8kfHuuN7fWJhAprjG4=;
+        b=WeZ7FVCxuYf5Lj6RSSLppFKvRuxmy4+3OJKXYynkNkXt4mTGaDJyOWQMjCA6mzyQu8
+         ljaGWAZEC4em8VzNWUsJiy5z/eNy0zMLP39WwPuSBRNksPvlfpEBEm3HbEQubc5dNP1q
+         3fJ2+uEuCsb1MTWs/j5Wxk7ib9rhVUjtyijkIbjIo/fYy9c2A7dF+8q67RALSRFVFH8H
+         pczMR64UgDszNvNRTQzYRGRpMQiAmOyQNzGcAiCWb8fUABvfu17oXkGJL04Cnml1D6Gu
+         5y3OSbzrWMaP6LXUZHDW9z6JwKqZy+Hv1ZiWgMJX0jBljB80AkN5b6mFP+NdNDZqZcPr
+         7naQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UBnTnofx1egjVYMXsVKnzCrT8go4XNCwGGXlPsFzsQA=;
-        b=FVpPCIrF17M2MUwSlUoeSKr9D0U6vHkcGMF0SfqkQwd0XtaoXYSnbDLk8ZTfvLZg2u
-         yVJRBM917aN0Z7uVyuphpWDo5Vpgjvc3q7uOpowcM9y7j08XQPnwAHCm4VZAgpFhK7AS
-         wciabWMPOSCsqixUemh+cyOtEGsRbltJPE+yZfVuYCX4wFsbGQLOGitSBG+x6gMhrUdT
-         fjZW08/hKb88r+uUt/B0p8vw2n8ju1HQ1KohC2uXaWeW9Lb40C+iAfVkuRstvkJKz1R9
-         xcgtek9ZFDgyy84hXZpj8jDlr8foBcrLBjE77CFGL0USr2Bki/f+lOoEx/KmLRrJCcNx
-         /SXw==
-X-Gm-Message-State: AOAM531NGYlEJhnkIdm2+4e6vf9wGItGEpAajUhsVRzOaXIWgP0DIjmt
-        IeSJ3nP7gWGtZQux4/5+52PhhwzLOSIz89X73hE=
-X-Google-Smtp-Source: ABdhPJwfn4g/UnCK2hjftmJUfPtxQcX/+HyTUYgLkCK+SY1VM8dNkEyDTGXdKyzApGi+XESSlUkKXuaI9VnefDP+/SQ=
-X-Received: by 2002:aa7:d481:0:b0:42d:d5fd:f963 with SMTP id
- b1-20020aa7d481000000b0042dd5fdf963mr27412796edr.209.1654526094287; Mon, 06
- Jun 2022 07:34:54 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=414Q+sddG1YR3KgC07ld9bq5c8kfHuuN7fWJhAprjG4=;
+        b=GbndtVaiYbprmdzgQ+WvIDeRUuRzGL06pY2Y+AUmKAjXfJIEuApA8hfq58MlyLjESC
+         DGZoBnCcs5psxFYHUbWpWv57GPT8RuBrZ4klBC2tI/NdM9SDgzbmAGMVWt9uoag95Ou8
+         lpcaUQ1zrTusugYzEIs1Wero9ou8I7qBTthgRRLhthRrDCrXP1j8I8XKsLK3DRUQbaEk
+         RaLCjZwLvC7d81Yp95WgzuU8dGfvI8RYCZmh6jaUtAGvgdRK2MpNrHo0DR03Nm9Pjgg2
+         W0CVEFTzziu9tkLS3xmK2XVTGyObqNOzIIctLQt52mOBygOjkFkz7evrdhEoCcUIl+eF
+         1rfw==
+X-Gm-Message-State: AOAM5306q5WJcyrFE7gLJ6Tp8w/7MwQuG4ngvKa24+CKmAskX03SNz2k
+        wKdbIEILhH4ik3bjWCLg8/kUmQ==
+X-Google-Smtp-Source: ABdhPJyY1pXBGwdS6vY88e/XFCOW/YWfD0n6EgJjbnWbbhelZ7P8O6d2RQHc3ype2mY+oTNeGM8Afg==
+X-Received: by 2002:a9d:648b:0:b0:60b:c4c6:7dfd with SMTP id g11-20020a9d648b000000b0060bc4c67dfdmr8919077otl.105.1654526169079;
+        Mon, 06 Jun 2022 07:36:09 -0700 (PDT)
+Received: from fedora.attlocal.net (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
+        by smtp.gmail.com with ESMTPSA id u13-20020a056871008d00b000f5d4e5b9a0sm6942791oaa.2.2022.06.06.07.36.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Jun 2022 07:36:08 -0700 (PDT)
+From:   William Breathitt Gray <william.gray@linaro.org>
+To:     linus.walleij@linaro.org, brgl@bgdev.pl
+Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        William Breathitt Gray <william.gray@linaro.org>
+Subject: [PATCH 0/5] gpio: Implement and utilize register structures for ISA drivers
+Date:   Mon,  6 Jun 2022 10:33:15 -0400
+Message-Id: <cover.1654525394.git.william.gray@linaro.org>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-References: <20220605083825.9854-1-wangxiang@cdjrlc.com>
-In-Reply-To: <20220605083825.9854-1-wangxiang@cdjrlc.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 6 Jun 2022 16:34:17 +0200
-Message-ID: <CAHp75VcXnKHnEkov0i-=D_qPsVCY_PjasJ9Dni99fj+uKpHjdQ@mail.gmail.com>
-Subject: Re: [PATCH] serial: 8250: 8250_omap: Fix syntax errors in comments
-To:     Xiang wangx <wangxiang@cdjrlc.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, Nishanth Menon <nm@ti.com>,
-        Tony Lindgren <tony@atomide.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 6, 2022 at 5:25 AM Xiang wangx <wangxiang@cdjrlc.com> wrote:
->
-> Delete the redundant word 'have'.
+The PC104/ISA drivers were updated to use I/O memory accessor calls such
+as ioread8()/iowrite8() in a previous patch series [1]. This
+patchset is a continuation of the effort to improve the code readability
+and reduce magic numbers by implementing and utilizing named register
+data structures.
 
-Not critical right now, but you may shorten the subject by dropping
-"8250:" part in the prefix, just leaving "serial: 8250_omap:" is
-enough.
+One of the benefits is that we can now observe more easily similarities
+in devices that share similar interfaces; such as the i8255 interfaces
+used by the 104-DIO-48E, 104-IDI-48, and GPIO-MM drivers -- as well as
+the similar interface used by the 104-IDIO-16 and PCI-IDIO-16 drivers. I
+hope to consolidate some of these code blocks in future patchsets.
 
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+[1] https://lore.kernel.org/all/cover.1652201921.git.william.gray@linaro.org/
 
-> Signed-off-by: Xiang wangx <wangxiang@cdjrlc.com>
-> ---
->  drivers/tty/serial/8250/8250_omap.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-> index ac8bfa042391..a7a95c013fe6 100644
-> --- a/drivers/tty/serial/8250/8250_omap.c
-> +++ b/drivers/tty/serial/8250/8250_omap.c
-> @@ -345,7 +345,7 @@ static void omap8250_restore_regs(struct uart_8250_port *up)
->  }
->
->  /*
-> - * OMAP can use "CLK / (16 or 13) / div" for baud rate. And then we have have
-> + * OMAP can use "CLK / (16 or 13) / div" for baud rate. And then we have
->   * some differences in how we want to handle flow control.
->   */
->  static void omap_8250_set_termios(struct uart_port *port,
-> --
-> 2.36.1
->
+William Breathitt Gray (5):
+  gpio: 104-dio-48e: Implement and utilize register structures
+  gpio: 104-idi-48: Implement and utilize register structures
+  gpio: 104-idio-16: Implement and utilize register structures
+  gpio: gpio-mm: Implement and utilize register structures
+  gpio: ws16c48: Implement and utilize register structures
+
+ drivers/gpio/gpio-104-dio-48e.c | 157 +++++++++++++++++++++-----------
+ drivers/gpio/gpio-104-idi-48.c  | 128 +++++++++++++-------------
+ drivers/gpio/gpio-104-idio-16.c |  58 ++++++++----
+ drivers/gpio/gpio-gpio-mm.c     | 116 ++++++++++++++---------
+ drivers/gpio/gpio-ws16c48.c     | 119 +++++++++++++++++-------
+ 5 files changed, 366 insertions(+), 212 deletions(-)
 
 
+base-commit: f2906aa863381afb0015a9eb7fefad885d4e5a56
 -- 
-With Best Regards,
-Andy Shevchenko
+2.36.1
+
