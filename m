@@ -2,210 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1F13CCA481
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:19:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C1A6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:19:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239515AbiFFOTS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 10:19:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44672 "EHLO
+        id S239755AbiFFOTb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 10:19:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239412AbiFFOTO (ORCPT
+        with ESMTP id S239672AbiFFOTW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 10:19:14 -0400
-Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E1585BD03;
-        Mon,  6 Jun 2022 07:19:10 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id D5982FF80B;
-        Mon,  6 Jun 2022 14:19:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1654525149;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=UVNkQODBqVWRRDx3JRrIjnQHpW+gqO3sjXdNdYZmSAU=;
-        b=BLTSh4W+RL3xkfxy7OYjW+rJz/hgJbdOv68JduJhHKPy3WPRubAktfY96L0P3YajocO5l1
-        M0fO+e6jZ0NhMEwGBMyqYzhZtsnTVpxTcsvpnzeUPSJnXeZeBk+EuQGH4XjOeQNJk616yQ
-        3nOyN9NvCLc+VPOiMpBSXa+6CTHqh4KGEiK/QtU4fSfePFtvlC2QFM9cQxDxpOCSL6rRRP
-        AsSO3y2dPhMBvE8XfJQKbbDauFBrs5blgY9OUnZv6xKjSP6zEMeSgAWJv25y4fO+cHrj2p
-        RbM5KJvgFE1F5bDDcZyBYsjwlmAIRqEEWduUsyhr4lz0vCg/TAuEnWCV2IrOFQ==
-From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
-To:     Alan Stern <stern@rowland.harvard.edu>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>
-Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
-        linux-usb@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] usb: host: ohci-at91: add support to enter suspend using SMC
-Date:   Mon,  6 Jun 2022 16:18:02 +0200
-Message-Id: <20220606141802.165252-1-clement.leger@bootlin.com>
-X-Mailer: git-send-email 2.36.1
+        Mon, 6 Jun 2022 10:19:22 -0400
+Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 934B369CEC;
+        Mon,  6 Jun 2022 07:19:21 -0700 (PDT)
+Received: by mail-oi1-x22d.google.com with SMTP id y69so6050400oia.7;
+        Mon, 06 Jun 2022 07:19:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=yxqyZ8yixmu1+DZ929D04d1QQALsRCYwyUVuVfKay8c=;
+        b=g96pMmdBLJ92I1YvWrCJUUzDj/TLj3jIshQjRbceVvTxzSE4T16TMe7lRXAdqIFPxB
+         dsHy9kXX7CKGsO7wBAaWiORozC/g7oCm1Q5p512vWZQ8sgXxkcBBRq/bo3qbLU8zHl8Z
+         DBXOgLUqNyswY644L94LqxlGXjdrI6q5FYLuQ/k3WdwRhBavpbKy3c1kXSjCyTZSbD8b
+         RVw8D2hy6zzWnByYruW3qUoEfrxYcL8tSTeI3Ya6DcW0xr0wY3meP80UD8b1oOa7sm5A
+         SX/jMibC2DLQbNLJkKHdbp8NolbDh4gLBUZKRKnY/9juZ60d8t6nQ32o1HUBTc3exyv6
+         sgKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :mime-version:content-disposition;
+        bh=yxqyZ8yixmu1+DZ929D04d1QQALsRCYwyUVuVfKay8c=;
+        b=ZSucAk2gE7O/YRBeHK6eIY2tvW5vHCCfkAttgRXUHu9bBc7AB10uueNPyJufOOlk6D
+         9bVPF1oJOPHKuGAB6V61SYcj6ilLSk9lCLSdAtDFrs5ZBL/dJou3xAoalpwKypMlLpWs
+         /SnTKnPR/zem9Iq9DpsjFPa+Ai22VV39THT1hYvo82nCNZ72W7eAOBiDb7IBAyvK+qU8
+         oJrcC1b0xT3yPtzC09nI11J1phkL2XCzxlxZS93QPX8QeBa45YD72hguXMYD69w2cxOW
+         pRpiFMAK5vv/U/BZA3C9rOl9xUKIiIiEsrGr++z5aNnv35gDNWLRPxgpUUCEMZYgJvCr
+         Va6g==
+X-Gm-Message-State: AOAM530eYJ8m+kKOOh0EZlgDPrCYYInvt4i3dinJbt/lMBQLlgmKBXfm
+        lPem1b80BIBBTSkdZy0iljWUh7tzhgc=
+X-Google-Smtp-Source: ABdhPJzZ7NP5aaCxbfTMHn0rWYPbFnDJzmUAaoaw4M2ZgD5NhCtc+5SBzMo6Cyu19yask3Y+I/iNKA==
+X-Received: by 2002:a05:6808:18a5:b0:32e:9741:15b with SMTP id bi37-20020a05680818a500b0032e9741015bmr2655071oib.113.1654525160774;
+        Mon, 06 Jun 2022 07:19:20 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id lx15-20020a0568704b8f00b000f5e89a9c60sm6631471oab.3.2022.06.06.07.19.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Jun 2022 07:19:19 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Mon, 6 Jun 2022 07:19:18 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Ziyang Xuan <william.xuanziyang@huawei.com>
+Cc:     jdelvare@suse.com, eajames@linux.ibm.com, joel@jms.id.au,
+        penberg@kernel.org, akpm@linux-foundation.org,
+        linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] hwmon: (occ) Delete unnecessary NULL check
+Message-ID: <20220606141918.GA3747239@roeck-us.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When Linux is running under OP-TEE, the SFR is set as secured and thus
-the AT91_OHCIICR_USB_SUSPEND register isn't accessible. Add a SMC to
-do the appropriate call to suspend the controller.
-The SMC id is fetched from the device-tree property
-"microchip,suspend-smc-id". if present, then the syscon regmap is not
-used to enter suspend and a SMC is issued.
+On Mon, Jun 06, 2022 at 09:14:01PM +0800, Ziyang Xuan wrote:
+> kvfree(NULL) is safe. NULL check before kvfree() is not needed.
+> Delete them to simplify the code.
+> 
+> Generated by coccinelle script:
+> 	scripts/coccinelle/free/ifnullfree.cocci
+> 
+> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
 
-Signed-off-by: Clément Léger <clement.leger@bootlin.com>
----
- drivers/usb/host/ohci-at91.c | 69 ++++++++++++++++++++++++------------
- 1 file changed, 46 insertions(+), 23 deletions(-)
+Applied to hwmon-next.
 
-diff --git a/drivers/usb/host/ohci-at91.c b/drivers/usb/host/ohci-at91.c
-index a24aea3d2759..e73fda4af278 100644
---- a/drivers/usb/host/ohci-at91.c
-+++ b/drivers/usb/host/ohci-at91.c
-@@ -13,6 +13,7 @@
-  * This file is licenced under the GPL.
-  */
- 
-+#include <linux/arm-smccc.h>
- #include <linux/clk.h>
- #include <linux/dma-mapping.h>
- #include <linux/gpio/consumer.h>
-@@ -55,6 +56,7 @@ struct ohci_at91_priv {
- 	bool clocked;
- 	bool wakeup;		/* Saved wake-up state for resume */
- 	struct regmap *sfr_regmap;
-+	u32 smc_id;
- };
- /* interface and function clocks; sometimes also an AHB clock */
- 
-@@ -135,6 +137,19 @@ static void at91_stop_hc(struct platform_device *pdev)
- 
- static void usb_hcd_at91_remove (struct usb_hcd *, struct platform_device *);
- 
-+static u32 at91_dt_suspend_smc(struct device *dev)
-+{
-+	u32 smc_id;
-+
-+	if (!dev->of_node)
-+		return 0;
-+
-+	if (of_property_read_u32(dev->of_node, "microchip,suspend-smc-id", &smc_id))
-+		return 0;
-+
-+	return smc_id;
-+}
-+
- static struct regmap *at91_dt_syscon_sfr(void)
- {
- 	struct regmap *regmap;
-@@ -215,9 +230,13 @@ static int usb_hcd_at91_probe(const struct hc_driver *driver,
- 		goto err;
- 	}
- 
--	ohci_at91->sfr_regmap = at91_dt_syscon_sfr();
--	if (!ohci_at91->sfr_regmap)
--		dev_dbg(dev, "failed to find sfr node\n");
-+	ohci_at91->smc_id = at91_dt_suspend_smc(dev);
-+	if (!ohci_at91->smc_id)  {
-+		dev_dbg(dev, "failed to find sfr suspend smc id, using regmap\n");
-+		ohci_at91->sfr_regmap = at91_dt_syscon_sfr();
-+		if (!ohci_at91->sfr_regmap)
-+			dev_dbg(dev, "failed to find sfr node\n");
-+	}
- 
- 	board = hcd->self.controller->platform_data;
- 	ohci = hcd_to_ohci(hcd);
-@@ -303,24 +322,30 @@ static int ohci_at91_hub_status_data(struct usb_hcd *hcd, char *buf)
- 	return length;
- }
- 
--static int ohci_at91_port_suspend(struct regmap *regmap, u8 set)
-+static int ohci_at91_port_suspend(struct ohci_at91_priv *ohci_at91, u8 set)
- {
-+	struct regmap *regmap = ohci_at91->sfr_regmap;
- 	u32 regval;
- 	int ret;
- 
--	if (!regmap)
--		return 0;
-+	if (regmap) {
-+		ret = regmap_read(regmap, AT91_SFR_OHCIICR, &regval);
-+		if (ret)
-+			return ret;
- 
--	ret = regmap_read(regmap, AT91_SFR_OHCIICR, &regval);
--	if (ret)
--		return ret;
-+		if (set)
-+			regval |= AT91_OHCIICR_USB_SUSPEND;
-+		else
-+			regval &= ~AT91_OHCIICR_USB_SUSPEND;
- 
--	if (set)
--		regval |= AT91_OHCIICR_USB_SUSPEND;
--	else
--		regval &= ~AT91_OHCIICR_USB_SUSPEND;
-+		regmap_write(regmap, AT91_SFR_OHCIICR, regval);
-+	} else if (ohci_at91->smc_id) {
-+		struct arm_smccc_res res;
- 
--	regmap_write(regmap, AT91_SFR_OHCIICR, regval);
-+		arm_smccc_smc(ohci_at91->smc_id, set, 0, 0, 0, 0, 0, 0, &res);
-+		if (res.a0)
-+			return -EINVAL;
-+	}
- 
- 	return 0;
- }
-@@ -357,9 +382,8 @@ static int ohci_at91_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
- 
- 		case USB_PORT_FEAT_SUSPEND:
- 			dev_dbg(hcd->self.controller, "SetPortFeat: SUSPEND\n");
--			if (valid_port(wIndex) && ohci_at91->sfr_regmap) {
--				ohci_at91_port_suspend(ohci_at91->sfr_regmap,
--						       1);
-+			if (valid_port(wIndex)) {
-+				ohci_at91_port_suspend(ohci_at91, 1);
- 				return 0;
- 			}
- 			break;
-@@ -400,9 +424,8 @@ static int ohci_at91_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
- 
- 		case USB_PORT_FEAT_SUSPEND:
- 			dev_dbg(hcd->self.controller, "ClearPortFeature: SUSPEND\n");
--			if (valid_port(wIndex) && ohci_at91->sfr_regmap) {
--				ohci_at91_port_suspend(ohci_at91->sfr_regmap,
--						       0);
-+			if (valid_port(wIndex)) {
-+				ohci_at91_port_suspend(ohci_at91, 0);
- 				return 0;
- 			}
- 			break;
-@@ -630,10 +653,10 @@ ohci_hcd_at91_drv_suspend(struct device *dev)
- 		/* flush the writes */
- 		(void) ohci_readl (ohci, &ohci->regs->control);
- 		msleep(1);
--		ohci_at91_port_suspend(ohci_at91->sfr_regmap, 1);
-+		ohci_at91_port_suspend(ohci_at91, 1);
- 		at91_stop_clock(ohci_at91);
- 	} else {
--		ohci_at91_port_suspend(ohci_at91->sfr_regmap, 1);
-+		ohci_at91_port_suspend(ohci_at91, 1);
- 	}
- 
- 	return ret;
-@@ -645,7 +668,7 @@ ohci_hcd_at91_drv_resume(struct device *dev)
- 	struct usb_hcd	*hcd = dev_get_drvdata(dev);
- 	struct ohci_at91_priv *ohci_at91 = hcd_to_ohci_at91_priv(hcd);
- 
--	ohci_at91_port_suspend(ohci_at91->sfr_regmap, 0);
-+	ohci_at91_port_suspend(ohci_at91, 0);
- 
- 	if (ohci_at91->wakeup)
- 		disable_irq_wake(hcd->irq);
--- 
-2.36.1
+Thanks,
+Guenter
 
+> ---
+>  drivers/hwmon/occ/p9_sbe.c | 6 ++----
+>  1 file changed, 2 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/hwmon/occ/p9_sbe.c b/drivers/hwmon/occ/p9_sbe.c
+> index 42fc7b97bb34..01405ae2f9bd 100644
+> --- a/drivers/hwmon/occ/p9_sbe.c
+> +++ b/drivers/hwmon/occ/p9_sbe.c
+> @@ -55,8 +55,7 @@ static bool p9_sbe_occ_save_ffdc(struct p9_sbe_occ *ctx, const void *resp,
+>  	mutex_lock(&ctx->sbe_error_lock);
+>  	if (!ctx->sbe_error) {
+>  		if (resp_len > ctx->ffdc_size) {
+> -			if (ctx->ffdc)
+> -				kvfree(ctx->ffdc);
+> +			kvfree(ctx->ffdc);
+>  			ctx->ffdc = kvmalloc(resp_len, GFP_KERNEL);
+>  			if (!ctx->ffdc) {
+>  				ctx->ffdc_len = 0;
+> @@ -171,8 +170,7 @@ static int p9_sbe_occ_remove(struct platform_device *pdev)
+>  	ctx->sbe = NULL;
+>  	occ_shutdown(occ);
+>  
+> -	if (ctx->ffdc)
+> -		kvfree(ctx->ffdc);
+> +	kvfree(ctx->ffdc);
+>  
+>  	return 0;
+>  }
+> -- 
+> 2.25.1
+> 
