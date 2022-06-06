@@ -2,86 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3C29C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 15:04:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1188C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 15:08:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240096AbiFFPEi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 11:04:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33052 "EHLO
+        id S240294AbiFFPI2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 11:08:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240097AbiFFPEg (ORCPT
+        with ESMTP id S240093AbiFFPI0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 11:04:36 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5708E197F48
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 08:04:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
-        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=jP13loBMm9TuZeQCLuO/dhLEWjTmgt4fvmdoZbkBnUg=; b=mNPm8PVf0LJAUO8+dLPyo8Heif
-        BPPekofjKKXrVOj8+hjnImZI2eJSH40/07TXC/osNgbHV7z181Qee0BPXqs5hCLLlpeHfZdEmtxSw
-        /qczAn9exadqE8jsE5sUEjCAZUNu6yGbspOwvxRZxuDWOez5ID5tIeW5Fh+pujbzitxauOCttB7es
-        VC5agdM4yhnnzjsR1qFMwX0ZR5pAooNptP55Ixf2vxNuTZUPnAK7Ueq1EMu0hC+8hVgEmHJWco9xC
-        vJKkK4yytJHrfeDckEKZsbk9eITgD6G5x9IAf8cJzXzL7k2RXalc0O1CvyntgnofthVpjh+vK98Al
-        cr+imy5Q==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nyEHE-005Tee-Mf; Mon, 06 Jun 2022 15:04:21 +0000
-Message-ID: <007d3d1b-8ced-f7f3-7825-d0c67c7961ee@infradead.org>
-Date:   Mon, 6 Jun 2022 08:04:14 -0700
+        Mon, 6 Jun 2022 11:08:26 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D7D82FFE9
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 08:08:25 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id n28so19241089edb.9
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 08:08:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ltHPrw2tHLSsWTo0k+1u7PmQZYz53U2tfsTdR1emhZ0=;
+        b=PYEYK2LGgrS7dGWMjTgfH3vO0P5+3jFY6Mlx/DEzEnHnZ/iuQlEDObwfakoTUpcibu
+         vd6qIuEO/VgUaJvfxY+N8/+tuE13SQ2vM7vUQFC1N3bcF/rqPNCH99NJMe6gMjqEBbmS
+         U/Aps48dyjFzYs+skXBeTztDiogn7gM7CXeEhYKaaABaVYheqZ/k/KGYmtS9W4D4fUP4
+         b+Eo2wVHQhpBOfd5cZaKED+Qgoht8BZ9pC44phjlnS5AYAa7MYtbHxmIJl4xccSJW/34
+         y4Hr+e19KuGjJS0Act9mlY8CCkr7x5BzaZTLIHGIG4JlcLKvFLfFm1ZJqasHg/XJpraq
+         fpVg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ltHPrw2tHLSsWTo0k+1u7PmQZYz53U2tfsTdR1emhZ0=;
+        b=onBEYl2exyXABnO5COAiGEOGoJMU7Fi+3rM6PPpBq7Oc/z//nMLWvOM2kKsXNfZR/e
+         akdHTJ1duAH4MyFlDjtd+CWac3bQzmsg4q9Ks4DlXRQqS4noc3fsgmnSN7Tj8Y2G2JSu
+         Mow3UfV51geGM6ekoe2SkLlQ2AVKG37V9Ew3l7Rv0PWrEDRDxRGJKUxJId/j9XePtHk5
+         DOGfs2kopzYmT4ryjGI8Fja3PCPBiLR3jh6U/8XsykepA6t8x+DAXurF5IabQA0n3rPA
+         BeJjWvXuJyqImY6EgeSAsmyQji55H+v6eqZpNPTkf24qkK16RBWyM9nY4zQxuMtDTPYS
+         211w==
+X-Gm-Message-State: AOAM53255tNyNBgIrpfj56JI54ZwCkoqTZ03tzaQUyz0Foa4v4xf/A4k
+        r7knXFaiVZhrQ00nAQYmC8AJbUIOjKQ1Eh5/rLakBw==
+X-Google-Smtp-Source: ABdhPJzf5OF/qpPmN7iuEmA7zH5tfCW6VdJVV9OhP5EaSKcTkm9P7d8+GPRtwRVd09FJhu/nPZhR9vJPqPpx0pJyBLo=
+X-Received: by 2002:a05:6402:2687:b0:430:328f:e46b with SMTP id
+ w7-20020a056402268700b00430328fe46bmr15075923edd.33.1654528103838; Mon, 06
+ Jun 2022 08:08:23 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v2 5/7] firmware: arm_scmi: Make use of FastChannels
- configurable
-Content-Language: en-US
-To:     Cristian Marussi <cristian.marussi@arm.com>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc:     sudeep.holla@arm.com, james.quinlan@broadcom.com,
-        Jonathan.Cameron@Huawei.com, f.fainelli@gmail.com,
-        etienne.carriere@linaro.org, vincent.guittot@linaro.org,
-        daniel.lezcano@linaro.org, tarek.el-sherbiny@arm.com,
-        adrian.slatineanu@arm.com, souvik.chakravarty@arm.com,
-        wleavitt@marvell.com, wbartczak@marvell.com
-References: <20220606100230.3465828-1-cristian.marussi@arm.com>
- <20220606100230.3465828-6-cristian.marussi@arm.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220606100230.3465828-6-cristian.marussi@arm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220606141051.285823-1-tzungbi@kernel.org> <20220606141051.285823-2-tzungbi@kernel.org>
+In-Reply-To: <20220606141051.285823-2-tzungbi@kernel.org>
+From:   Guenter Roeck <groeck@google.com>
+Date:   Mon, 6 Jun 2022 08:08:12 -0700
+Message-ID: <CABXOdTdiBBf4Q+_Tv_BLSQtZ=1_2E2iHinnvpmeoUeRUU5W-jQ@mail.gmail.com>
+Subject: Re: [PATCH 01/13] platform/chrome: cros_ec_commands: fix compile errors
+To:     Tzung-Bi Shih <tzungbi@kernel.org>
+Cc:     Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        chrome-platform@lists.linux.dev,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Mon, Jun 6, 2022 at 7:12 AM Tzung-Bi Shih <tzungbi@kernel.org> wrote:
+>
+> Fix compile errors when including cros_ec_commands.h solely.
+>
+> 1.
+> cros_ec_commands.h:587:9: error: unknown type name 'uint8_t'
+>   587 |         uint8_t flags;
+>       |         ^~~~~~~
+>
+> 2.
+> cros_ec_commands.h:1105:43: error: implicit declaration of function 'BIT'
+>  1105 |         EC_COMMS_STATUS_PROCESSING      = BIT(0),
+>       |                                           ^~~
+>
+> Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
 
-On 6/6/22 03:02, Cristian Marussi wrote:
-> diff --git a/drivers/firmware/arm_scmi/Kconfig b/drivers/firmware/arm_scmi/Kconfig
-> index 1e7b7fec97d9..624f32b61825 100644
-> --- a/drivers/firmware/arm_scmi/Kconfig
-> +++ b/drivers/firmware/arm_scmi/Kconfig
-> @@ -42,6 +42,19 @@ config ARM_SCMI_HAVE_MSG
->  	  This declares whether a message passing based transport for SCMI is
->  	  available.
->  
-> +config ARM_SCMI_USE_FASTCHANNELS
-> +	bool "Use SCMI FastChannels when available"
-> +	default y
-> +	help
-> +	  Use SCMI FastChannels when advertised as available by the platform.
-> +
-> +	  On systems where the SCMI platform advertises the availability of
-> +	  FastChannels, supported SCMI commands can be issued triggering a
-> +	  one-way FastChannel request, much more quicker than using a
+Reviewed-by: Guenter Roeck <groeck@chromium.org>
 
-Either                                 much more quickly
-or                                     much quicker
-
-> +	  regular SCMI message transfer.
-> +	  When set to N forces the OSPM to use instead regular SCMI message
-> +	  transfers even if FastChannels are available. If unsure say Y.
-
-thanks.
--- 
-~Randy
+> ---
+>  include/linux/platform_data/cros_ec_commands.h | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/include/linux/platform_data/cros_ec_commands.h b/include/linux/platform_data/cros_ec_commands.h
+> index 8cfa8cfca77e..a5b749a85707 100644
+> --- a/include/linux/platform_data/cros_ec_commands.h
+> +++ b/include/linux/platform_data/cros_ec_commands.h
+> @@ -13,8 +13,8 @@
+>  #ifndef __CROS_EC_COMMANDS_H
+>  #define __CROS_EC_COMMANDS_H
+>
+> -
+> -
+> +#include <linux/bits.h>
+> +#include <linux/types.h>
+>
+>  #define BUILD_ASSERT(_cond)
+>
+> --
+> 2.36.1.255.ge46751e96f-goog
+>
