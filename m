@@ -2,400 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A2CEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 10:17:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF0F0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 10:17:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233726AbiFFKRC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 06:17:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51882 "EHLO
+        id S233745AbiFFKRR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 06:17:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233668AbiFFKO5 (ORCPT
+        with ESMTP id S233834AbiFFKQm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 06:14:57 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9929C70938
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 03:12:26 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id u12so27956303eja.8
-        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 03:12:26 -0700 (PDT)
+        Mon, 6 Jun 2022 06:16:42 -0400
+Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACBA317429C
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 03:16:18 -0700 (PDT)
+Received: by mail-qk1-x72d.google.com with SMTP id x75so7097452qkb.12
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 03:16:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=/rP72ndeb3XJeLv7/6nfR2MkmciPGoTOZHeBxkMPBWk=;
-        b=zE1cu8vksSD/kISbvDwjuFoyt4y05QoS7lK1CwWbsaBABs5APNVz0OwXzQsjPuD3NQ
-         RbBc9OLILFKbE4vokDxEHTjfnFqyUJ6tB9ZQh8heIa5/OMQMp3AwfPOHzuxwx40FMxqr
-         d46Hoc/uwMbnQ6ZJhTRg3WkG3enjJjDigkFM/ggGP+/NqJJ25v3YI2VcFBmpb5GAcHou
-         f0vsDQbe8BVBoWu1E8IQkgvyVlpjTZflWFm8n8fAQylFs4pOUAu0Bc69g7RVWqJ4mB9o
-         7F2pOm6hoFjr1VyJ6Sn2raZt74+jKjWY06XxncvXHIsGEA3aTyIfySA4u2fHms6kifGs
-         HS5g==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=fc/OFAn0RvDAWJQtQ9B+1H+QxhmbSSJd9Hi613D0Bsw=;
+        b=KrxENmFO1QgWlWAeJCa+rew4MZ/Z6QR5iukbATFS7s8iFV0QZVhYSMTmzPhd5oC4vh
+         pluEXGxwfa233uFAQC3uo6A93DOqHr7hgYBAbzJUH58UH3mPrCPIVvNDuM7oLTNmQa7l
+         CecyCYcK7uRWxaElpG8gA8i2i8Js7+SHCbLtQkjxJ83RaYMhitJ4mWe0/mI5iItK7/A7
+         Uqk6v4YhCRui45xPLmv5UQgd/pqIvyOay2Bu6Sgwjw3K3vhO3YGilYTE+TBLuTvy8EEI
+         0YdfITyCJtezho5vU/xHQy1xidYG5aeW8gwlcT7H8lKWf8zswK9T3hPvhYvG/NDMjiED
+         Ia8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=/rP72ndeb3XJeLv7/6nfR2MkmciPGoTOZHeBxkMPBWk=;
-        b=mXRyt3XxG+RDmvECyf/4lAgRSFjeFi6GrI1gjeqGWzCt866UabKwFRKgR9UbRadJvr
-         LDWaJcEUuyMuf6icbYiBtFwO1igyeQ61cG96gYVRl4WubdVY9hAoIqzJO12yZLVABF06
-         2wV7rsxPUIDfmAD+3rKSeEb0wf551Pl1chVcPbuLpTSp15swS737S4n1APaU5/VHy+iS
-         Yui0me9aJW5vInLpQYh4eVWn39Ycp2q8tnmJCReSZhXfDAc4GbmQABL4EldNfXCyu8TM
-         1CnHdEo6Qgo1QZmPRcJgfgOmeoDO1q6+B99bZCMAUo3KYhcd55K2Pz1B/RPGcJ8d0a0i
-         j8EA==
-X-Gm-Message-State: AOAM53095KovTJXGkilFlGnPVHnvuRkvbMReKdHlDGW6DTv2e1bCZeqZ
-        633/kRb9dqYfaRnWxLUb/f8xj9JKWpNCJw==
-X-Google-Smtp-Source: ABdhPJxXt/7tuXk3SxarbpGplKqYeyMFywIvToUVUK8DmlFthjRz4FJubCNB3SBK/NTWS9T3IFg+Gg==
-X-Received: by 2002:a17:907:8a11:b0:6ff:d8c:eff with SMTP id sc17-20020a1709078a1100b006ff0d8c0effmr21340067ejc.659.1654510344640;
-        Mon, 06 Jun 2022 03:12:24 -0700 (PDT)
-Received: from [192.168.0.181] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id f24-20020a05640214d800b0042617ba63basm8290577edx.68.2022.06.06.03.12.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 06 Jun 2022 03:12:24 -0700 (PDT)
-Message-ID: <0ad94a8f-eec7-ab76-3b2d-99d4d3fbf21b@linaro.org>
-Date:   Mon, 6 Jun 2022 12:12:22 +0200
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=fc/OFAn0RvDAWJQtQ9B+1H+QxhmbSSJd9Hi613D0Bsw=;
+        b=7GjmWGopX80HtvmEdw/6JZ5zM/homBtvb9ab9Zf/3qg1VDf+tAoNiLa0v9OccqL7j4
+         C4Iay+mLYTnBwpwwsJNCnavcOcGweBTGI1CNcCsKqHKoRe6kRdVaPmQhxH3d2eDPDGSs
+         8gBwVgjvweUDC/PDrd+Xj4yUtd0s2xuzTgsQjJzzmjtJ+rjkonM16lf8n0D65PenFf8V
+         6IREexKbLTdZWD3Es7ft4ksFovhS5zz70Nz9NK4Sktbkayz5IjvaaCw1EPjvgqVqFlSF
+         bR3LkL5znIh5fcMIMTzlJ150HyMNKJdDLPG9cGan5ZCNXqd5NZzjTjPuVxGV8hHSlxsQ
+         UTyg==
+X-Gm-Message-State: AOAM531w505MFtohBhDrWc7yfxasWuaCm4uXnMyoD1Xx68URie5xTiXQ
+        xNL0y8+nc1nLa2Ixo4aB8LJJ5zWVONPZyRZEkRE=
+X-Google-Smtp-Source: ABdhPJzvmmwoAzRBHaAGyreIeKWdCWu7b5koSZ6XfRTIpHHHC8VvO+dYQd2nZJ945oooKEFeorywlbdLzYHZ6TmHgjw=
+X-Received: by 2002:a37:a1c4:0:b0:6a6:ac4f:1d3f with SMTP id
+ k187-20020a37a1c4000000b006a6ac4f1d3fmr6832834qke.666.1654510577365; Mon, 06
+ Jun 2022 03:16:17 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2 1/5] dt-bindings: pci: Add ARTPEC-8 PCIe controller
-Content-Language: en-US
-To:     wangseok.lee@samsung.com,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
-        "kishon@ti.com" <kishon@ti.com>,
-        "vkoul@kernel.org" <vkoul@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "jesper.nilsson@axis.com" <jesper.nilsson@axis.com>,
-        "lars.persson@axis.com" <lars.persson@axis.com>
-Cc:     "bhelgaas@google.com" <bhelgaas@google.com>,
-        "linux-phy@lists.infradead.org" <linux-phy@lists.infradead.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>,
-        "kw@linux.com" <kw@linux.com>,
-        "linux-arm-kernel@axis.com" <linux-arm-kernel@axis.com>,
-        "kernel@axis.com" <kernel@axis.com>,
-        Moon-Ki Jun <moonki.jun@samsung.com>,
-        Sang Min Kim <hypmean.kim@samsung.com>,
-        Dongjin Yang <dj76.yang@samsung.com>
-References: <20220603015431epcms2p6203908cebe6a320854136559a32b54cb@epcms2p6>
- <CGME20220603015431epcms2p6203908cebe6a320854136559a32b54cb@epcms2p5>
- <20220603022353epcms2p5d83a4a7d95584ce6a65a63356cd46e76@epcms2p5>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220603022353epcms2p5d83a4a7d95584ce6a65a63356cd46e76@epcms2p5>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220605094018.9782-1-r.stratiienko@gmail.com> <5826286.lOV4Wx5bFT@jernej-laptop>
+In-Reply-To: <5826286.lOV4Wx5bFT@jernej-laptop>
+From:   Roman Stratiienko <r.stratiienko@gmail.com>
+Date:   Mon, 6 Jun 2022 13:16:06 +0300
+Message-ID: <CAGphcdm=sOyppe8sAYMK6aeRXpxiHvj-h-Es6nigCNKBxdBNZQ@mail.gmail.com>
+Subject: Re: [PATCH v2] drm/sun4i: Enable output signal premultiplication for DE2/DE3
+To:     =?UTF-8?Q?Jernej_=C5=A0krabec?= <jernej.skrabec@gmail.com>
+Cc:     mripard@kernel.org, wens@csie.org, airlied@linux.ie,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Samuel Holland <samuel@sholland.org>,
+        dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org, megi@xff.cz
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 03/06/2022 04:23, Wangseok Lee wrote:
-> Add description to support Axis, ARTPEC-8 SoC.
-> ARTPEC-8 is the SoC platform of Axis Communications
-> and PCIe controller is designed based on Design-Ware PCIe controller.
-> 
-> changes since v1 :
+Hi,
 
-Changelog goes after --- .
+=D0=B2=D1=81, 5 =D0=B8=D1=8E=D0=BD. 2022 =D0=B3. =D0=B2 23:23, Jernej =C5=
+=A0krabec <jernej.skrabec@gmail.com>:
+>
+> Dne nedelja, 05. junij 2022 ob 11:40:18 CEST je Roman Stratiienko napisal=
+(a):
+> > Otherwise alpha value is discarded, resulting incorrect pixel
+> > apperance on the display.
+> >
+> > This also fixes missing transparency for the most bottom layer.
+>
+> Can you explain that a bit more?
 
-> -'make dt_binding_check' result improvement
-> -Add the missing property list
-> -Align the indentation of continued lines/entries
-> 
-> Signed-off-by: Wangseok Lee <wangseok.lee@samsung.com>
-> ---
->  .../bindings/pci/axis,artpec8-pcie-ep.yaml         | 108 ++++++++++++++++++
->  .../devicetree/bindings/pci/axis,artpec8-pcie.yaml | 123 +++++++++++++++++++++
->  2 files changed, 231 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/pci/axis,artpec8-pcie-ep.yaml
->  create mode 100644 Documentation/devicetree/bindings/pci/axis,artpec8-pcie.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/pci/axis,artpec8-pcie-ep.yaml b/Documentation/devicetree/bindings/pci/axis,artpec8-pcie-ep.yaml
-> new file mode 100644
-> index 0000000..3512e38
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/pci/axis,artpec8-pcie-ep.yaml
-> @@ -0,0 +1,108 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/pci/axis,artpec8-pcie-ep.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: ARTPEC-8 SoC PCIe Controller Device Tree Bindings
+Well... I would recommend reading Bartosz Ciechanowski's blog
+https://ciechanow.ski/alpha-compositing/ or the Porter-Duff's 1984
+whitepaper itself.
 
-s/Device Tree Bindings//
+HINT: That magic numbers from sun8i_mixer.h ( 0x03010301 ) corresponds
+to SOURCE OVER mode.
 
-> +
-> +maintainers:
-> +  - Jesper Nilsson <jesper.nilsson@axis.com>
-> +
-> +description: |+
-> +  This PCIe end-point controller is based on the Synopsys DesignWare PCIe IP
-> +  and thus inherits all the common properties defined in snps,dw-pcie-ep.yaml.
-> +
-> +allOf:
-> +  - $ref: /schemas/pci/snps,dw-pcie-ep.yaml#
-> +
-> +properties:
-> +  compatible:
-> +    const: axis,artpec8-pcie-ep
-> +
-> +  reg:
-> +    items:
-> +      - description: Data Bus Interface (DBI) registers.
-> +      - description: Data Bus Interface (DBI2) registers.
-> +      - description: PCIe address space region.
-> +
-> +  reg-names:
-> +    items:
-> +      - const: dbi
-> +      - const: dbi2
-> +      - const: addr_space
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  interrupts-names:
-> +    items:
-> +      - const: intr
+As you can see from the blending equation it outputs both pixel value
+and alpha value (non-premultiplied data mode).
 
-Remove the interrupts-names entirely, no need for single item with
-generic name.
+Also single-layer non-premultiplied buffers may have for example
+(R255,G255,B255,A2) pixel value, which should be sent as {R2, G2, B2}
+through the physical display interface.
 
+When OUTCTL.PREMULTI disabled pixel, the RGB values passes as is, and
+even 100% transparent data {R255, G255, B255, A0} will appear as 100%
+opaque white.
 
-> +
-> +  clocks:
-> +    items:
-> +      - description: PIPE clock, used by the controller to clock the PIPE
-> +      - description: PCIe dbi clock, ungated version
-> +      - description: PCIe master clock, ungated version
-> +      - description: PCIe slave clock, ungated version
-> +
-> +  clock-names:
-> +    items:
-> +      - const: pipe_clk
-> +      - const: dbi_clk
-> +      - const: mstr_clk
-> +      - const: slv_clk
+>Also, BSP driver never enables this bit. What are we doing differently?
 
-Remove "_clk" suffix from all entries.
+Are you sure the BSP does not have an issues with presenting
+transparent buffers?
+Does the sunxi even have a customer-feedback mechanism and publicly
+available stable BSP with all the fixes?
 
-> +
-> +  phys:
-> +    maxItems: 1
-> +
-> +  phy-names:
-> +    items:
-> +      - const: pcie_phy
+Regards,
+Roman
 
-Remove the phy-names entirely, no need for single item with generic name.
-
-> +
-> +  num-lanes:
-> +    const: 2
-> +
-> +required:
-
-My comment was not applied here, so please fix it.
-
-
-> +  - reg
-> +  - reg-names
-> +  - interrupts
-> +  - interrupt-names
-> +  - clocks
-> +  - clock-names
-> +  - phys
-> +  - num-lanes
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +
-> +    artpec8 {
-
-Generic nodes please. Did you see "artpec8" or something like this in
-any DTS?
-
-> +        #address-cells = <2>;
-> +        #size-cells = <2>;
-> +        pcie_ep: pcie-ep@17200000 {
-> +            compatible = "axis,artpec8-pcie-ep";
-> +            reg = <0x0 0x17200000 0x0 0x1000>,
-> +                  <0x0 0x17201000 0x0 0x1000>,
-> +                  <0x2 0x00000000 0x6 0x00000000>;
-> +            reg-names = "dbi", "dbi2", "addr_space";
-> +            #interrupt-cells = <1>;
-> +            interrupts = <GIC_SPI 115 IRQ_TYPE_LEVEL_HIGH>;
-> +            interrupt-names = "intr";
-> +            clocks = <&clock_cmu_fsys 39>,
-> +                     <&clock_cmu_fsys 38>,
-> +                     <&clock_cmu_fsys 37>,
-> +                     <&clock_cmu_fsys 36>;
-> +            clock-names = "pipe_clk", "dbi_clk", "mstr_clk", "slv_clk";
-> +            phys = <&pcie_phy>;
-> +            phy-names = "pcie_phy";
-> +            num-lanes = <2>;
-> +            bus-range = <0x00 0xff>;
-> +            num-ib-windows = <16>;
-> +            num-ob-windows = <16>;
-> +        };
-> +    };
-
-
-> +...
-> diff --git a/Documentation/devicetree/bindings/pci/axis,artpec8-pcie.yaml b/Documentation/devicetree/bindings/pci/axis,artpec8-pcie.yaml
-> new file mode 100644
-> index 0000000..945a061
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/pci/axis,artpec8-pcie.yaml
-> @@ -0,0 +1,123 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/pci/axis,artpec8-pcie.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Artpec-8 SoC PCIe Controller Device Tree Bindings
-
-Ditto
-
-> +
-> +maintainers:
-> +  - Jesper Nilsson <jesper.nilsson@axis.com>
-> +
-> +description: |+
-> +  This PCIe host controller is based on the Synopsys DesignWare PCIe IP
-> +  and thus inherits all the common properties defined in snps,dw-pcie.yaml.
-> +
-> +allOf:
-> +  - $ref: /schemas/pci/snps,dw-pcie.yaml#
-> +
-> +properties:
-> +  compatible:
-> +    const: axis,artpec8-pcie
-> +
-> +  reg:
-> +    items:
-> +      - description: Data Bus Interface (DBI) registers.
-> +      - description: External Local Bus interface (ELBI) registers.
-> +      - description: PCIe configuration space region.
-> +
-> +  reg-names:
-> +    items:
-> +      - const: dbi
-> +      - const: elbi
-> +      - const: config
-> +
-> +  device_type:
-> +    items:
-
-It's not a list, but just a string. No need for items.
-
-> +      - const: pci
-> +
-> +  ranges:
-> +    maxItems: 2
-> +
-> +  num-lanes:
-> +    const: 2
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  interrupts-names:
-> +    items:
-> +      - const: intr
-
-Remove entire property.
-
-> +
-> +  clocks:
-> +    items:
-> +      - description: PIPE clock, used by the controller to clock the PIPE
-> +      - description: PCIe dbi clock, ungated version
-> +      - description: PCIe master clock,  ungated version
-> +      - description: PCIe slave clock, ungated version
-> +
-> +  clock-names:
-> +    items:
-> +      - const: pipe_clk
-> +      - const: dbi_clk
-> +      - const: mstr_clk
-> +      - const: slv_clk
-
-Remove suffix.
-
-> +
-> +  phys:
-> +    maxItems: 1
-> +
-> +  phy-names:
-> +    items:
-> +      - const: pcie_phy
-
-Remove entire property.
-
-> +
-> +required:
-
-Previous comment not applied.
-
-> +  - reg
-> +  - reg-names
-> +  - device_type
-> +  - ranges
-> +  - num-lanes
-> +  - interrupts
-> +  - interrupt-names
-> +  - clocks
-> +  - clock-names
-> +  - phys
-> +  - phy-names
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +
-> +    artpec8 {
-
-Same as previous patch.
-
-> +        #address-cells = <2>;
-> +        #size-cells = <2>;
-> +        pcie: pcie@17200000 {
-> +            compatible = "axis,artpec8-pcie";
-> +            reg = <0x0 0x17200000 0x0 0x1000>,
-> +                  <0x0 0x16ca0000 0x0 0x2000>,
-> +                  <0x7 0x0001e000 0x0 0x2000>;
-> +            reg-names = "dbi", "elbi", "config";
-> +            #address-cells = <3>;
-> +            #size-cells = <2>;
-> +            device_type = "pci";
-> +            ranges = </* non-prefetchable memory */
-> +                      0x83000000 0x0 0x0000000 0x2 0x00000000 0x5 0x00000000
-> +                      /* downstream I/O */
-> +                      0x81000000 0x0 0x0000000 0x7 0x00000000 0x0 0x00010000>;
-> +            num-lanes = <2>;
-> +            bus-range = <0x00 0xff>;
-> +            interrupts = <GIC_SPI 115 IRQ_TYPE_LEVEL_HIGH>;
-> +            interrupt-names = "intr";
-> +            #interrupt-cells = <1>;
-> +            clocks = <&cmu_fsys 39>,
-> +                     <&cmu_fsys 38>,
-> +                     <&cmu_fsys 37>,
-> +                     <&cmu_fsys 36>;
-> +            clock-names = "pipe_clk", "dbi_clk", "mstr_clk", "slv_clk";
-> +            phys = <&pcie_phy>;
-> +            phy-names = "pcie_phy";
-> +        };
-> +    };
-> +...
-
-
-Best regards,
-Krzysztof
+>
+> >
+> > Test applications and videos w/ w/o this patch are available at [1].
+> >
+> > [1]: https://github.com/GloDroid/glodroid_tests/issues/1
+>
+> As stated in other emails, commit messages should not contain external li=
+nks
+> (per patch rules).
+>
+> Best regards,
+> Jernej
+>
+> > Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
+> >
+> > ---
+> > Changelog:
+> >
+> > V2: Added code hunk missing in v1
+> > ---
+> >  drivers/gpu/drm/sun4i/sun8i_mixer.c | 5 +++--
+> >  drivers/gpu/drm/sun4i/sun8i_mixer.h | 1 +
+> >  2 files changed, 4 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.c
+> > b/drivers/gpu/drm/sun4i/sun8i_mixer.c index 6b1711a9a71f..ba2932aaed08
+> > 100644
+> > --- a/drivers/gpu/drm/sun4i/sun8i_mixer.c
+> > +++ b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+> > @@ -320,8 +320,9 @@ static void sun8i_mixer_mode_set(struct sunxi_engin=
+e
+> > *engine, else
+> >               val =3D 0;
+> >
+> > -     regmap_update_bits(engine->regs,
+> SUN8I_MIXER_BLEND_OUTCTL(bld_base),
+> > -                        SUN8I_MIXER_BLEND_OUTCTL_INTERLACED,
+> val);
+> > +     val |=3D SUN8I_MIXER_BLEND_OUTCTL_PREMULTIPLY;
+> > +
+> > +     regmap_write(engine->regs, SUN8I_MIXER_BLEND_OUTCTL(bld_base),
+> val);
+> >
+> >       DRM_DEBUG_DRIVER("Switching display mixer interlaced mode %s\n",
+> >                        interlaced ? "on" : "off");
+> > diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.h
+> > b/drivers/gpu/drm/sun4i/sun8i_mixer.h index ebfc276b2464..bc12c95af6f3
+> > 100644
+> > --- a/drivers/gpu/drm/sun4i/sun8i_mixer.h
+> > +++ b/drivers/gpu/drm/sun4i/sun8i_mixer.h
+> > @@ -65,6 +65,7 @@
+> >  #define SUN8I_MIXER_BLEND_ROUTE_PIPE_MSK(n)  (0xf << ((n) << 2))
+> >  #define SUN8I_MIXER_BLEND_ROUTE_PIPE_SHIFT(n)        ((n) << 2)
+> >
+> > +#define SUN8I_MIXER_BLEND_OUTCTL_PREMULTIPLY BIT(0)
+> >  #define SUN8I_MIXER_BLEND_OUTCTL_INTERLACED  BIT(1)
+> >
+> >  #define SUN50I_MIXER_BLEND_CSC_CTL_EN(ch)    BIT(ch)
+>
+>
+>
+>
