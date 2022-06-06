@@ -2,155 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E06CEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 08:34:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0648DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 08:36:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231783AbiFFIdw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 04:33:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48878 "EHLO
+        id S231817AbiFFIgP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 04:36:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231731AbiFFIdt (ORCPT
+        with ESMTP id S231773AbiFFIgO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 04:33:49 -0400
-X-Greylist: delayed 434 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 06 Jun 2022 01:33:48 PDT
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86512FF5A5;
-        Mon,  6 Jun 2022 01:33:46 -0700 (PDT)
-Received: from beast.luon.net (unknown [IPv6:2a10:3781:2531:0:973d:c368:8ed:ffaa])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: sjoerd)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id D5273660204F;
-        Mon,  6 Jun 2022 09:26:32 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1654503992;
-        bh=0pFWHr8nZPd/x652n6ie2quX6dlxkCbVAMeZopa6ow0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a4X1xRcx8+R0YQxN6+31nvR+V8gHeRJ4dP7pnf6AWEmsdu4OL1qEF997WL7376ywd
-         Acp3Bsv/gWFubmtBSPDyVjPHYjBhB6doASnOiwzMlOmIbR6IKbyEfUUKIH9rLAdflx
-         ibryNiRLita0P4JkJUEegdigX9+ltBjqSVDlMkZtlRR5Te1D1pFf8pLU7pekCWPb19
-         58QFfNeZfOoTBWQ2PePTDiiNSZCZpPQLpfwDzNvjwFHSKC0uOkh3Z7vYtO4VYxJelE
-         i0mlPynGU8VbsgxkJqjbDK2+cJxQxO56O67BziR7RLLG4wbjonI0lmYJ1JUn2ElGD1
-         OfW7zUqk7LsXg==
-Received: by beast.luon.net (Postfix, from userid 1000)
-        id A6DFE404D08F; Mon,  6 Jun 2022 10:26:30 +0200 (CEST)
-From:   Sjoerd Simons <sjoerd@collabora.com>
-To:     linux-rockchip@lists.infradead.org
-Cc:     kernel@collabora.com, Akash Gajjar <akash@openedev.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] arm64: dts: rockchip: rock-pi-s add more peripherals
-Date:   Mon,  6 Jun 2022 10:26:28 +0200
-Message-Id: <20220606082629.79682-3-sjoerd@collabora.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220606082629.79682-1-sjoerd@collabora.com>
-References: <20220606082629.79682-1-sjoerd@collabora.com>
+        Mon, 6 Jun 2022 04:36:14 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56FBE44760
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 01:36:13 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id h5so18901288wrb.0
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 01:36:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=e5pY7Zs2OeyJ/6j9wL70dA8FyT9sORckQyN+RpWUnRE=;
+        b=BRR4m1BEWcRUiBLIqOz4FIWTu2zFCwLDbBxYE3zeOOH29FBHF/1Oo4KdfLmgmcPJqG
+         CLnNc6v9+HgCohOv9rmgrN1MQwHy+UFFIi+8bfR91Im6MlZggPJCg3iXPMehZynHyK4n
+         TXCV+/6vkoMGhSgNMK3ijECsuYnUeTRkXWwTyjLtYJUCvXh0EQ2f7a2bCwvweDmi1JY9
+         gMhhYnoPUUN9tc86RSy90pXQ/DQZUi3Z4ftoDVvjXSq7C41DkWKt3s2ghcEIEM+iV9Jr
+         enWYp7XJ+3jU7oHpAl+kxOuCwhE/ouRF9OFDJrTsW/Qfd89SZZxhQEddEqWOF8pIkRWu
+         ki2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=e5pY7Zs2OeyJ/6j9wL70dA8FyT9sORckQyN+RpWUnRE=;
+        b=Mg4SVTg3+BYFX/WTF/He2ikbHfReKVsNBiLftwicm5dHQ8YCAuWJez+z6gu2g4IMJD
+         WgsDRbbfSc1am4tfVMdxYPYyk/ZrzKKtiTnjTDYpwkeiQeBNa6yU9XbVV+Hpx5gmVOun
+         8ovVyO/zVCTAvaaMSwcnsOp9/N7JwmC8oKqN7pIU0+6BhoYrwFugdb/FeJZgQNeAKgxs
+         yrVgn1ahRR8UcU+lgO2XmcqO6887fOVh1E/HhPzTZYmJlxaxWJCAaapPGZiQ08qNPlbp
+         C25Fosnw7xt+n1lbO5c4PSaJMLbHSqJbHxHimEyP6VvHXWHY01N88/AWopKHJNZ2L4LB
+         6asA==
+X-Gm-Message-State: AOAM532rt2RvBqv7e5Vd6bOeSGfm7G0N41P2tU7XyC/eUB87494Mz8cQ
+        ngGb1eZufQ/l0XM+4xO+obwPw7Gca1Q=
+X-Google-Smtp-Source: ABdhPJynWKJ2McUoRgVRUzekhmf0dx80C6IX53FZQHpFiInhu0fYWi9uD84onZOjZG23egsSNEcUsQ==
+X-Received: by 2002:a05:6000:2a8:b0:213:ba0c:fef8 with SMTP id l8-20020a05600002a800b00213ba0cfef8mr15956377wry.485.1654504571829;
+        Mon, 06 Jun 2022 01:36:11 -0700 (PDT)
+Received: from debian ([167.98.27.226])
+        by smtp.gmail.com with ESMTPSA id h4-20020adffd44000000b002102d4ed579sm14471478wrs.39.2022.06.06.01.36.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Jun 2022 01:36:11 -0700 (PDT)
+Date:   Mon, 6 Jun 2022 09:36:09 +0100
+From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: Linux 5.19-rc1
+Message-ID: <Yp28eYfDnX8Mepn0@debian>
+References: <CAHk-=wgZt-YDSKfdyES2p6A_KJoG8DwQ0mb9CeS8jZYp+0Y2Rw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wgZt-YDSKfdyES2p6A_KJoG8DwQ0mb9CeS8jZYp+0Y2Rw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This enables the following peripherals:
-* Onboard ethernet support
-* Bluetooth
-* USB 2 port
-* OTG port via type-c connector
-* Hardware watchog
 
-Also add aliases for the mmc devices and the ethernet interface
+On Sun, Jun 05, 2022 at 05:42:33PM -0700, Linus Torvalds wrote:
+> So the last two weeks were _fairly_ normal, although I will gripe and
+> moan a bit about how many late pull requests I got. The second week
+> started out very calm, but that was sadly only because a _lot_ of
+> people left their final pull request pretty late. Not very pleasant at
+> all.
+> 
 
-Signed-off-by: Sjoerd Simons <sjoerd@collabora.com>
+<snip>
 
----
+> 
+> So hey, let's start calming things down and testing this all.
 
- .../boot/dts/rockchip/rk3308-rock-pi-s.dts    | 52 +++++++++++++++++++
- 1 file changed, 52 insertions(+)
+Build fails with:
+arm allmodconfig
+mips loongson2k_defconfig
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3308-rock-pi-s.dts b/arch/arm64/boot/dts/rockchip/rk3308-rock-pi-s.dts
-index 9095efe25ccd..46ba48b843c5 100644
---- a/arch/arm64/boot/dts/rockchip/rk3308-rock-pi-s.dts
-+++ b/arch/arm64/boot/dts/rockchip/rk3308-rock-pi-s.dts
-@@ -11,6 +11,12 @@ / {
- 	model = "Radxa ROCK Pi S";
- 	compatible = "radxa,rockpis", "rockchip,rk3308";
- 
-+	aliases {
-+		ethernet0 = &gmac;
-+		mmc0 = &emmc;
-+		mmc1 = &sdmmc;
-+	};
-+
- 	chosen {
- 		stdout-path = "serial0:1500000n8";
- 	};
-@@ -132,6 +138,15 @@ &emmc {
- 	status = "okay";
- };
- 
-+&gmac {
-+	clock_in_out = "output";
-+	phy-supply = <&vcc_io>;
-+	snps,reset-gpio = <&gpio0 RK_PA7 GPIO_ACTIVE_LOW>;
-+	snps,reset-active-low;
-+	snps,reset-delays-us = <0 50000 50000>;
-+	status = "okay";
-+};
-+
- &i2c1 {
- 	status = "okay";
- };
-@@ -195,10 +210,47 @@ &sdmmc {
- 	status = "okay";
- };
- 
-+&u2phy {
-+	status = "okay";
-+
-+	u2phy_host: host-port {
-+		phy-supply = <&vcc5v0_otg>;
-+		status = "okay";
-+	};
-+
-+	u2phy_otg: otg-port {
-+		phy-supply = <&vcc5v0_otg>;
-+		status = "okay";
-+	};
-+};
-+
- &uart0 {
- 	status = "okay";
- };
- 
- &uart4 {
- 	status = "okay";
-+
-+	bluetooth {
-+		compatible = "realtek,rtl8723bs-bt";
-+		device-wake-gpios = <&gpio4 RK_PB3 GPIO_ACTIVE_HIGH>;
-+		host-wake-gpios = <&gpio4 RK_PB4 GPIO_ACTIVE_HIGH>;
-+	};
-+};
-+
-+&usb_host_ehci {
-+	status = "okay";
-+};
-+
-+&usb_host_ohci {
-+	status = "okay";
-+};
-+
-+&usb20_otg {
-+	dr_mode = "peripheral";
-+	status = "okay";
-+};
-+
-+&wdt {
-+	status = "okay";
- };
--- 
-2.36.1
+Both have been reported earlier:
+https://lore.kernel.org/lkml/Yps1Jw6PJdLBya1W@debian/
+https://lore.kernel.org/lkml/YpncSXSTTyKGprLi@debian/
 
+
+--
+Regards
+Sudip
