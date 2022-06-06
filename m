@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0E7EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:12:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18A43C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:12:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239677AbiFFOMd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 10:12:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39442 "EHLO
+        id S239606AbiFFOMh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 10:12:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239618AbiFFOME (ORCPT
+        with ESMTP id S239623AbiFFOMJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 10:12:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAAE5286CB
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 07:12:02 -0700 (PDT)
+        Mon, 6 Jun 2022 10:12:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7EFB1178
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 07:12:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 34962B8198E
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 14:12:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 061B2C3411C;
-        Mon,  6 Jun 2022 14:11:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EAB0961376
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 14:12:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70288C341C4;
+        Mon,  6 Jun 2022 14:12:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654524719;
-        bh=NG9Ahol0D40WIa3TD7DWKeF0kj/lH0XE0BgaOK4ImFo=;
+        s=k20201202; t=1654524727;
+        bh=IDJd2ngMfd4ziS/HQIuZWqAxD2Z0NWrPdYp/crTIQBI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PYLup2pwJC88cmfGkBeIna9UpxYT158lnEQyvXgU+9NheOqcXEf1VVv0wr2vGE2DZ
-         Q9E9eWtOZEkJ6Fl4ddYiwuUkr+FDN499/p6KN391tCkNLFGWdnpWC27ndXzRWwG3Xa
-         UAjBnVQYqI2qF1GKuk4SohESTevDVILHmp4g8SYzhTew4++OeV24et71z3U+7rbq5j
-         zb7J0g2xQaaaDfYsJYpJzy8GV9ZJ3eTqO/BrRTis3qwiXFgYL1T3cU+2rZpaTBs3ww
-         A4dJMnEwVTGFdy+p5NSwew0fcYo5qJA7E7lvhddBf7LpYw85ih5WUhg+G/qFJXYm74
-         KRRMLBXbYCwQw==
+        b=Tnck8GKIA4z72tw7EOxg2TJ9dtdwIWJEU6+HnqP9ucMo1TS8yNF84quIk2hiSNEVy
+         8M7yaBeMySkSmJcn8vEoglnoIXe5SJbbVBp+Vl1iDgG4q/bZO/igKqD+d3TxP7+pXi
+         V9FnMKqlOtQ3l1IAUhQWeXQVsnQ4Dqejvv4p73k6UF6zzY0fA/7CCJNcvnuQxQo1rE
+         LRt8rAhPXietqhyRYLI5j4Tl26RlqJ6D6qk6VUOsXbDV5s0OnVV6IUWoSm4v1RnLhV
+         8ecX8vTQkuTAuOCHsVWI/BR+zCG0pOASJ8HhZ5eo1SlEye4+O6QL1XZJMimx4qw+iL
+         8DA74tJjeM9qw==
 From:   Tzung-Bi Shih <tzungbi@kernel.org>
 To:     bleung@chromium.org, groeck@chromium.org
 Cc:     chrome-platform@lists.linux.dev, tzungbi@kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 03/13] platform/chrome: use macros for passthru indexes
-Date:   Mon,  6 Jun 2022 14:10:41 +0000
-Message-Id: <20220606141051.285823-4-tzungbi@kernel.org>
+Subject: [PATCH 09/13] platform/chrome: cros_ec_proto: use devm_krealloc()
+Date:   Mon,  6 Jun 2022 14:10:47 +0000
+Message-Id: <20220606141051.285823-10-tzungbi@kernel.org>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
 In-Reply-To: <20220606141051.285823-1-tzungbi@kernel.org>
 References: <20220606141051.285823-1-tzungbi@kernel.org>
@@ -48,167 +48,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move passthru indexes for EC and PD devices to common header.  Also use
-them instead of literal constants.
+Use devm_krealloc() to re-allocate `din` and `dout`.
+
+Also remove the unneeded devm_kfree() in error handling path as they are
+device managed memory.
 
 Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
 ---
- drivers/platform/chrome/cros_ec.c            |  3 ---
- drivers/platform/chrome/cros_ec_proto.c      |  6 +++---
- drivers/platform/chrome/cros_ec_proto_test.c | 18 ++++++++++++------
- drivers/platform/chrome/cros_ec_trace.h      |  8 ++++----
- include/linux/platform_data/cros_ec_proto.h  |  3 +++
- 5 files changed, 22 insertions(+), 16 deletions(-)
+ drivers/platform/chrome/cros_ec_proto.c      | 25 ++++++--------------
+ drivers/platform/chrome/cros_ec_proto_test.c |  3 +--
+ 2 files changed, 8 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/platform/chrome/cros_ec.c b/drivers/platform/chrome/cros_ec.c
-index b3e94cdf7d1a..e51a3f2176c7 100644
---- a/drivers/platform/chrome/cros_ec.c
-+++ b/drivers/platform/chrome/cros_ec.c
-@@ -19,9 +19,6 @@
- 
- #include "cros_ec.h"
- 
--#define CROS_EC_DEV_EC_INDEX 0
--#define CROS_EC_DEV_PD_INDEX 1
--
- static struct cros_ec_platform ec_p = {
- 	.ec_name = CROS_EC_DEV_NAME,
- 	.cmd_offset = EC_CMD_PASSTHRU_OFFSET(CROS_EC_DEV_EC_INDEX),
 diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
-index 13ced9d2dd71..65191af5139c 100644
+index abb30a685567..5f4414f05d66 100644
 --- a/drivers/platform/chrome/cros_ec_proto.c
 +++ b/drivers/platform/chrome/cros_ec_proto.c
-@@ -433,7 +433,7 @@ int cros_ec_query_all(struct cros_ec_device *ec_dev)
- 
- 	/* First try sending with proto v3. */
- 	ec_dev->proto_version = 3;
--	ret = cros_ec_host_command_proto_query(ec_dev, 0, proto_msg);
-+	ret = cros_ec_host_command_proto_query(ec_dev, CROS_EC_DEV_EC_INDEX, proto_msg);
- 
- 	if (ret == 0) {
- 		proto_info = (struct ec_response_get_protocol_info *)
-@@ -459,7 +459,7 @@ int cros_ec_query_all(struct cros_ec_device *ec_dev)
- 		/*
- 		 * Check for PD
- 		 */
--		ret = cros_ec_host_command_proto_query(ec_dev, 1, proto_msg);
-+		ret = cros_ec_host_command_proto_query(ec_dev, CROS_EC_DEV_PD_INDEX, proto_msg);
- 
- 		if (ret) {
- 			dev_dbg(ec_dev->dev, "no PD chip found: %d\n", ret);
-@@ -609,7 +609,7 @@ int cros_ec_cmd_xfer(struct cros_ec_device *ec_dev, struct cros_ec_command *msg)
- 		msg->insize = ec_dev->max_response;
+@@ -479,21 +479,13 @@ int cros_ec_query_all(struct cros_ec_device *ec_dev)
+ 		}
  	}
  
--	if (msg->command < EC_CMD_PASSTHRU_OFFSET(1)) {
-+	if (msg->command < EC_CMD_PASSTHRU_OFFSET(CROS_EC_DEV_PD_INDEX)) {
- 		if (msg->outsize > ec_dev->max_request) {
- 			dev_err(ec_dev->dev,
- 				"request of size %u is too big (max: %u)\n",
+-	devm_kfree(dev, ec_dev->din);
+-	devm_kfree(dev, ec_dev->dout);
+-
+-	ec_dev->din = devm_kzalloc(dev, ec_dev->din_size, GFP_KERNEL);
+-	if (!ec_dev->din) {
+-		ret = -ENOMEM;
+-		goto exit;
+-	}
++	ec_dev->din = devm_krealloc(dev, ec_dev->din, ec_dev->din_size, GFP_KERNEL | __GFP_ZERO);
++	if (!ec_dev->din)
++		return -ENOMEM;
+ 
+-	ec_dev->dout = devm_kzalloc(dev, ec_dev->dout_size, GFP_KERNEL);
+-	if (!ec_dev->dout) {
+-		devm_kfree(dev, ec_dev->din);
+-		ret = -ENOMEM;
+-		goto exit;
+-	}
++	ec_dev->dout = devm_krealloc(dev, ec_dev->dout, ec_dev->dout_size, GFP_KERNEL | __GFP_ZERO);
++	if (!ec_dev->dout)
++		return -ENOMEM;
+ 
+ 	/* Probe if MKBP event is supported */
+ 	ret = cros_ec_get_host_command_version_mask(ec_dev,
+@@ -542,10 +534,7 @@ int cros_ec_query_all(struct cros_ec_device *ec_dev)
+ 				"failed to retrieve wake mask: %d\n", ret);
+ 	}
+ 
+-	ret = 0;
+-
+-exit:
+-	return ret;
++	return 0;
+ }
+ EXPORT_SYMBOL(cros_ec_query_all);
+ 
 diff --git a/drivers/platform/chrome/cros_ec_proto_test.c b/drivers/platform/chrome/cros_ec_proto_test.c
-index c5e16566a634..5169bf33360b 100644
+index 79150bf511fb..22f9322787f4 100644
 --- a/drivers/platform/chrome/cros_ec_proto_test.c
 +++ b/drivers/platform/chrome/cros_ec_proto_test.c
-@@ -280,7 +280,8 @@ static void cros_ec_proto_test_query_all_normal(struct kunit *test)
+@@ -180,8 +180,7 @@ static void cros_ec_proto_test_query_all_pretest(struct kunit *test)
  
- 		KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
- 		KUNIT_EXPECT_EQ(test, mock->msg.command,
--				EC_CMD_PASSTHRU_OFFSET(1) | EC_CMD_GET_PROTOCOL_INFO);
-+				EC_CMD_PASSTHRU_OFFSET(CROS_EC_DEV_PD_INDEX) |
-+				EC_CMD_GET_PROTOCOL_INFO);
- 		KUNIT_EXPECT_EQ(test, mock->msg.insize,
- 				sizeof(struct ec_response_get_protocol_info));
- 		KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
-@@ -393,7 +394,8 @@ static void cros_ec_proto_test_query_all_no_pd(struct kunit *test)
- 
- 		KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
- 		KUNIT_EXPECT_EQ(test, mock->msg.command,
--				EC_CMD_PASSTHRU_OFFSET(1) | EC_CMD_GET_PROTOCOL_INFO);
-+				EC_CMD_PASSTHRU_OFFSET(CROS_EC_DEV_PD_INDEX) |
-+				EC_CMD_GET_PROTOCOL_INFO);
- 		KUNIT_EXPECT_EQ(test, mock->msg.insize,
- 				sizeof(struct ec_response_get_protocol_info));
- 		KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
-@@ -535,7 +537,8 @@ static void cros_ec_proto_test_query_all_no_mkbp(struct kunit *test)
- 
- 		KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
- 		KUNIT_EXPECT_EQ(test, mock->msg.command,
--				EC_CMD_PASSTHRU_OFFSET(1) | EC_CMD_GET_PROTOCOL_INFO);
-+				EC_CMD_PASSTHRU_OFFSET(CROS_EC_DEV_PD_INDEX) |
-+				EC_CMD_GET_PROTOCOL_INFO);
- 		KUNIT_EXPECT_EQ(test, mock->msg.insize,
- 				sizeof(struct ec_response_get_protocol_info));
- 		KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
-@@ -623,7 +626,8 @@ static void cros_ec_proto_test_query_all_no_mkbp2(struct kunit *test)
- 
- 		KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
- 		KUNIT_EXPECT_EQ(test, mock->msg.command,
--				EC_CMD_PASSTHRU_OFFSET(1) | EC_CMD_GET_PROTOCOL_INFO);
-+				EC_CMD_PASSTHRU_OFFSET(CROS_EC_DEV_PD_INDEX) |
-+				EC_CMD_GET_PROTOCOL_INFO);
- 		KUNIT_EXPECT_EQ(test, mock->msg.insize,
- 				sizeof(struct ec_response_get_protocol_info));
- 		KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
-@@ -723,7 +727,8 @@ static void cros_ec_proto_test_query_all_no_host_sleep(struct kunit *test)
- 
- 		KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
- 		KUNIT_EXPECT_EQ(test, mock->msg.command,
--				EC_CMD_PASSTHRU_OFFSET(1) | EC_CMD_GET_PROTOCOL_INFO);
-+				EC_CMD_PASSTHRU_OFFSET(CROS_EC_DEV_PD_INDEX) |
-+				EC_CMD_GET_PROTOCOL_INFO);
- 		KUNIT_EXPECT_EQ(test, mock->msg.insize,
- 				sizeof(struct ec_response_get_protocol_info));
- 		KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
-@@ -833,7 +838,8 @@ static void cros_ec_proto_test_query_all_default_wake_mask(struct kunit *test)
- 
- 		KUNIT_EXPECT_EQ(test, mock->msg.version, 0);
- 		KUNIT_EXPECT_EQ(test, mock->msg.command,
--				EC_CMD_PASSTHRU_OFFSET(1) | EC_CMD_GET_PROTOCOL_INFO);
-+				EC_CMD_PASSTHRU_OFFSET(CROS_EC_DEV_PD_INDEX) |
-+				EC_CMD_GET_PROTOCOL_INFO);
- 		KUNIT_EXPECT_EQ(test, mock->msg.insize,
- 				sizeof(struct ec_response_get_protocol_info));
- 		KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
-diff --git a/drivers/platform/chrome/cros_ec_trace.h b/drivers/platform/chrome/cros_ec_trace.h
-index 9bb5cd2c98b8..d7e407de88df 100644
---- a/drivers/platform/chrome/cros_ec_trace.h
-+++ b/drivers/platform/chrome/cros_ec_trace.h
-@@ -30,8 +30,8 @@ TRACE_EVENT(cros_ec_request_start,
- 	),
- 	TP_fast_assign(
- 		__entry->version = cmd->version;
--		__entry->offset = cmd->command / EC_CMD_PASSTHRU_OFFSET(1);
--		__entry->command = cmd->command % EC_CMD_PASSTHRU_OFFSET(1);
-+		__entry->offset = cmd->command / EC_CMD_PASSTHRU_OFFSET(CROS_EC_DEV_PD_INDEX);
-+		__entry->command = cmd->command % EC_CMD_PASSTHRU_OFFSET(CROS_EC_DEV_PD_INDEX);
- 		__entry->outsize = cmd->outsize;
- 		__entry->insize = cmd->insize;
- 	),
-@@ -55,8 +55,8 @@ TRACE_EVENT(cros_ec_request_done,
- 	),
- 	TP_fast_assign(
- 		__entry->version = cmd->version;
--		__entry->offset = cmd->command / EC_CMD_PASSTHRU_OFFSET(1);
--		__entry->command = cmd->command % EC_CMD_PASSTHRU_OFFSET(1);
-+		__entry->offset = cmd->command / EC_CMD_PASSTHRU_OFFSET(CROS_EC_DEV_PD_INDEX);
-+		__entry->command = cmd->command % EC_CMD_PASSTHRU_OFFSET(CROS_EC_DEV_PD_INDEX);
- 		__entry->outsize = cmd->outsize;
- 		__entry->insize = cmd->insize;
- 		__entry->result = cmd->result;
-diff --git a/include/linux/platform_data/cros_ec_proto.h b/include/linux/platform_data/cros_ec_proto.h
-index 138fd912c808..6475a8066f00 100644
---- a/include/linux/platform_data/cros_ec_proto.h
-+++ b/include/linux/platform_data/cros_ec_proto.h
-@@ -21,6 +21,9 @@
- #define CROS_EC_DEV_SCP_NAME	"cros_scp"
- #define CROS_EC_DEV_TP_NAME	"cros_tp"
- 
-+#define CROS_EC_DEV_EC_INDEX 0
-+#define CROS_EC_DEV_PD_INDEX 1
-+
- /*
-  * The EC is unresponsive for a time after a reboot command.  Add a
-  * simple delay to make sure that the bus stays locked.
+ 	/*
+ 	 * cros_ec_query_all() will free din and dout and allocate them again to fit the usage by
+-	 * calling devm_kfree() and devm_kzalloc().  Set them to NULL as they aren't managed by
+-	 * ec_dev->dev.
++	 * calling devm_krealloc().  Set them to NULL as they aren't managed by ec_dev->dev.
+ 	 */
+ 	ec_dev->din = NULL;
+ 	ec_dev->dout = NULL;
 -- 
 2.36.1.255.ge46751e96f-goog
 
