@@ -2,149 +2,299 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA8CAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 17:40:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 339BBCCA473
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 17:42:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229846AbiFFRko (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 13:40:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53242 "EHLO
+        id S229918AbiFFRmd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 13:42:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229720AbiFFRkl (ORCPT
+        with ESMTP id S229891AbiFFRm2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 13:40:41 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF5CA29E4FC;
-        Mon,  6 Jun 2022 10:40:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1654537239; x=1686073239;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=zESBcsC3q66fDUCxK78kqEowxXd5sdCuRRFUeC5plGY=;
-  b=NQt9j21O1AfVYuLvhpPla1cGimW7w7CmyskBG5WRPF9F1Bd7UT4ZR9XP
-   mRQkgc89gX+K93xs5UO3AzjZub6U0Fd18CKsnFS5qrlXqKiucrH7igLnB
-   nZ//hUIkFrmy/9Toty7AkU4rA9U0Ih0mMi1pu/17+/NQUVB6rn+kLXUa5
-   0=;
-Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 06 Jun 2022 10:40:39 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 10:40:39 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 6 Jun 2022 10:40:38 -0700
-Received: from [10.110.88.53] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 6 Jun 2022
- 10:40:37 -0700
-Message-ID: <68c6f375-5b11-98f2-83f5-1b481ea09ebd@quicinc.com>
-Date:   Mon, 6 Jun 2022 10:40:36 -0700
+        Mon, 6 Jun 2022 13:42:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFA8B29CB1;
+        Mon,  6 Jun 2022 10:42:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 479146120E;
+        Mon,  6 Jun 2022 17:42:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B6AAC385A9;
+        Mon,  6 Jun 2022 17:42:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654537342;
+        bh=eyv00kTUr8ZViS74f5zUzu92HwY5qFYV3mKgjv2LgDo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=jIFsOFGIiS1dchMVG/R5GQxyeRqh3ctWpC51jN27MyKcD1zuuvlsvpL9jrNKo+tYM
+         GIX2waF5XWrP/BqX9JZjXxyUjXyUfWbrcQgLSob+IsGMXeHjW646yNXSGREJgiKLR9
+         JIVOatkPoajcgZ4V5pWh5usKV+OMu7gQtRTadu+/oV84r9QjLaanFQZeUIYiFAA1R0
+         u3yzOiz3sLIlG3qCMZE1uUjkfAsZPCzONK+JUzVnc4Hgq2sxVN2mPEigu6xYCfKKYl
+         RyXtaA+G5jRYeLCi2XbYVIJMs5l/1rpYntVHQ/Cw81VGIhfscL4pSvcf4q7XTgUel7
+         T1iN9tKzL86+g==
+Date:   Mon, 6 Jun 2022 10:42:20 -0700
+From:   Ben Widawsky <bwidawsk@kernel.org>
+To:     ira.weiny@intel.com
+Cc:     Dan Williams <dan.j.williams@intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alison Schofield <alison.schofield@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        linux-kernel@vger.kernel.org, linux-cxl@vger.kernel.org,
+        linux-pci@vger.kernel.org
+Subject: Re: [PATCH V10 4/9] cxl/pci: Create PCI DOE mailbox's for memory
+ devices
+Message-ID: <20220606174220.qohs5eaen2mjek5v@bwidawsk-mobl5>
+References: <20220605005049.2155874-1-ira.weiny@intel.com>
+ <20220605005049.2155874-5-ira.weiny@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v1 1/2] drm/msm: enable msm irq after all initializations
- are done successfully at msm_drm_init()
-Content-Language: en-US
-To:     <dri-devel@lists.freedesktop.org>, <robdclark@gmail.com>,
-        <sean@poorly.run>, <swboyd@chromium.org>, <dianders@chromium.org>,
-        <vkoul@kernel.org>, <daniel@ffwll.ch>, <airlied@linux.ie>,
-        <agross@kernel.org>, <dmitry.baryshkov@linaro.org>,
-        <bjorn.andersson@linaro.org>
-CC:     <quic_abhinavk@quicinc.com>, <quic_aravindh@quicinc.com>,
-        <quic_sbillaka@quicinc.com>, <freedreno@lists.freedesktop.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <1654291716-6603-1-git-send-email-quic_khsieh@quicinc.com>
- <1654291716-6603-2-git-send-email-quic_khsieh@quicinc.com>
-From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
-In-Reply-To: <1654291716-6603-2-git-send-email-quic_khsieh@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220605005049.2155874-5-ira.weiny@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I will drop this patch since the problem had been fixed by Dmitry 
-Baryshkov patch.
+On 22-06-04 17:50:44, ira.weiny@intel.com wrote:
+> From: Ira Weiny <ira.weiny@intel.com>
+> 
+> DOE mailbox objects will be needed for various mailbox communications
+> with each memory device.
+> 
+> Iterate each DOE mailbox capability and create PCI DOE mailbox objects
+> as found.
+> 
+> It is not anticipated that this is the final resting place for the
+> iteration of the DOE devices.  The support of ports may drive this code
+> into the pcie side.  In this imagined architecture the CXL port driver
+> would then query into the PCI device for the DOE mailbox array.
+> 
+> For now this is good enough for the endpoints and the split is similar
+> to the envisioned architecture where getting the mailbox array is
+> separated from the various protocol needs.  For example, it is not
+> anticipated that the CDAT code will need to move because it is only
+> needed by the cxl_ports.
+> 
+> Likewise irq's are separated out in a similar design pattern to the
+> PCIe port driver.  But a much simpler irq enabling flag is used and only
+> DOE interrupts are supported.
+> 
+> Cc: Ben Widawsky <ben.widawsky@intel.com>
+Reviewed-by: Ben Widawsky <bwidawsk@kernel.org>
 
-https://gitlab.freedesktop.org/drm/msm/-/commit/577e2a9dfc8fba7938aaf75db63fae7e328cc3cb
-
-
-
-On 6/3/2022 2:28 PM, Kuogee Hsieh wrote:
-> At msm initialize phase, msm_drm_init() is called to initialize modules
-> sequentially. It will call msm_drm_uninit() to clean up initialized phase
-> if any module initialization return failed. This patch move msm_irq_install()
-> to the last step of msm_drm_init() after all modules are initialized successfully
-> so that no msm_irq_unistall() required at msm_drm_uninit() if any module
-> initialization failed happen at msm_drm_init().
->
-> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+> Signed-off-by: Ira Weiny <ira.weiny@intel.com>
+> 
 > ---
->   drivers/gpu/drm/msm/msm_drv.c | 29 ++++++-----------------------
->   1 file changed, 6 insertions(+), 23 deletions(-)
->
-> diff --git a/drivers/gpu/drm/msm/msm_drv.c b/drivers/gpu/drm/msm/msm_drv.c
-> index 6665c5a..ab42e9a 100644
-> --- a/drivers/gpu/drm/msm/msm_drv.c
-> +++ b/drivers/gpu/drm/msm/msm_drv.c
-> @@ -132,15 +132,6 @@ static int msm_irq_install(struct drm_device *dev, unsigned int irq)
->   	return 0;
->   }
->   
-> -static void msm_irq_uninstall(struct drm_device *dev)
-> -{
-> -	struct msm_drm_private *priv = dev->dev_private;
-> -	struct msm_kms *kms = priv->kms;
-> -
-> -	kms->funcs->irq_uninstall(kms);
-> -	free_irq(kms->irq, dev);
-> -}
-> -
->   struct msm_vblank_work {
->   	struct work_struct work;
->   	int crtc_id;
-> @@ -232,10 +223,6 @@ static int msm_drm_uninit(struct device *dev)
->   
->   	drm_mode_config_cleanup(ddev);
->   
-> -	pm_runtime_get_sync(dev);
-> -	msm_irq_uninstall(ddev);
-> -	pm_runtime_put_sync(dev);
-> -
->   	if (kms && kms->funcs)
->   		kms->funcs->destroy(kms);
->   
-> @@ -437,16 +424,6 @@ static int msm_drm_init(struct device *dev, const struct drm_driver *drv)
->   		goto err_msm_uninit;
->   	}
->   
-> -	if (kms) {
-> -		pm_runtime_get_sync(dev);
-> -		ret = msm_irq_install(ddev, kms->irq);
-> -		pm_runtime_put_sync(dev);
-> -		if (ret < 0) {
-> -			DRM_DEV_ERROR(dev, "failed to install IRQ handler\n");
-> -			goto err_msm_uninit;
-> -		}
-> -	}
-> -
->   	ret = drm_dev_register(ddev, 0);
->   	if (ret)
->   		goto err_msm_uninit;
-> @@ -467,6 +444,12 @@ static int msm_drm_init(struct device *dev, const struct drm_driver *drv)
->   	if (ret)
->   		goto err_msm_uninit;
->   
-> +	if (kms) {
-> +		pm_runtime_get_sync(dev);
-> +		msm_irq_install(ddev, kms->irq);
-> +		pm_runtime_put_sync(dev);
+> Changes from V9:
+> 	Bug fix: ensure DOE mailboxes are iterated before memdev add
+> 	Ben Widawsky
+> 		Set use_irq to false and just return on error.
+> 		Don't return a value from devm_cxl_pci_create_doe()
+> 		Skip allocating doe_mb array if there are no mailboxes
+> 		Skip requesting irqs if none found.
+> 	Ben/Jonathan Cameron
+> 		s/num_irqs/max_irqs
+> 
+> Changes from V8:
+> 	Move PCI_DOE selection to CXL_BUS to support future patches
+> 	which move queries into the port code.
+> 	Remove Auxiliary device arch
+> 	Squash the functionality of the auxiliary driver into this
+> 	patch.
+> 	Split out the irq handling a bit.
+> 
+> Changes from V7:
+> 	Minor code clean ups
+> 	Rebased on cxl-pending
+> 
+> Changes from V6:
+> 	Move all the auxiliary device stuff to the CXL layer
+> 
+> Changes from V5:
+> 	Split the CXL specific stuff off from the PCI DOE create
+> 	auxiliary device code.
+> ---
+>  drivers/cxl/Kconfig  |   1 +
+>  drivers/cxl/cxlmem.h |   6 +++
+>  drivers/cxl/pci.c    | 114 +++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 121 insertions(+)
+> 
+> diff --git a/drivers/cxl/Kconfig b/drivers/cxl/Kconfig
+> index f64e3984689f..7adaaf80b302 100644
+> --- a/drivers/cxl/Kconfig
+> +++ b/drivers/cxl/Kconfig
+> @@ -2,6 +2,7 @@
+>  menuconfig CXL_BUS
+>  	tristate "CXL (Compute Express Link) Devices Support"
+>  	depends on PCI
+> +	select PCI_DOE
+>  	help
+>  	  CXL is a bus that is electrically compatible with PCI Express, but
+>  	  layers three protocols on that signalling (CXL.io, CXL.cache, and
+> diff --git a/drivers/cxl/cxlmem.h b/drivers/cxl/cxlmem.h
+> index 60d10ee1e7fc..4d2764b865ab 100644
+> --- a/drivers/cxl/cxlmem.h
+> +++ b/drivers/cxl/cxlmem.h
+> @@ -191,6 +191,8 @@ struct cxl_endpoint_dvsec_info {
+>   * @component_reg_phys: register base of component registers
+>   * @info: Cached DVSEC information about the device.
+>   * @serial: PCIe Device Serial Number
+> + * @doe_mbs: PCI DOE mailbox array
+> + * @num_mbs: Number of DOE mailboxes
+>   * @mbox_send: @dev specific transport for transmitting mailbox commands
+>   *
+>   * See section 8.2.9.5.2 Capacity Configuration and Label Storage for
+> @@ -224,6 +226,10 @@ struct cxl_dev_state {
+>  	resource_size_t component_reg_phys;
+>  	u64 serial;
+>  
+> +	bool doe_use_irq;
+> +	struct pci_doe_mb **doe_mbs;
+> +	int num_mbs;
+> +
+>  	int (*mbox_send)(struct cxl_dev_state *cxlds, struct cxl_mbox_cmd *cmd);
+>  };
+>  
+> diff --git a/drivers/cxl/pci.c b/drivers/cxl/pci.c
+> index 5a0ae46d4989..72c7b535f5df 100644
+> --- a/drivers/cxl/pci.c
+> +++ b/drivers/cxl/pci.c
+> @@ -8,6 +8,7 @@
+>  #include <linux/mutex.h>
+>  #include <linux/list.h>
+>  #include <linux/pci.h>
+> +#include <linux/pci-doe.h>
+>  #include <linux/io.h>
+>  #include "cxlmem.h"
+>  #include "cxlpci.h"
+> @@ -386,6 +387,116 @@ static int cxl_setup_regs(struct pci_dev *pdev, enum cxl_regloc_type type,
+>  	return rc;
+>  }
+>  
+> +static void cxl_pci_free_irq_vectors(void *data)
+> +{
+> +	pci_free_irq_vectors(data);
+> +}
+> +
+> +static void cxl_doe_destroy_mb(void *ds)
+> +{
+> +	struct cxl_dev_state *cxlds = ds;
+> +	int i;
+> +
+> +	for (i = 0; i < cxlds->num_mbs; i++) {
+> +		if (cxlds->doe_mbs[i])
+> +			pci_doe_destroy_mb(cxlds->doe_mbs[i]);
+> +	}
+> +}
+> +
+> +static void cxl_alloc_irq_vectors(struct cxl_dev_state *cxlds)
+> +{
+> +	struct device *dev = cxlds->dev;
+> +	struct pci_dev *pdev = to_pci_dev(dev);
+> +	int max_irqs = 0;
+> +	int off = 0;
+> +	int rc;
+> +
+> +	/* Account for all the DOE vectors needed */
+> +	pci_doe_for_each_off(pdev, off) {
+> +		int irq = pci_doe_get_irq_num(pdev, off);
+> +
+> +		if (irq < 0)
+> +			continue;
+> +		max_irqs = max(max_irqs, irq + 1);
 > +	}
 > +
->   	drm_kms_helper_poll_init(ddev);
->   
->   	return 0;
+> +	if (!max_irqs)
+> +		return;
+> +
+> +	cxlds->doe_use_irq = false;
+> +
+> +	/*
+> +	 * Allocate enough vectors for the DOE's
+> +	 */
+> +	rc = pci_alloc_irq_vectors(pdev, max_irqs, max_irqs, PCI_IRQ_MSI |
+> +							     PCI_IRQ_MSIX);
+> +	if (rc != max_irqs) {
+> +		pci_err(pdev, "Not enough interrupts; use polling\n");
+> +		/* Some got allocated; clean them up */
+> +		if (rc > 0)
+> +			cxl_pci_free_irq_vectors(pdev);
+> +		return;
+> +	}
+> +
+> +	rc = devm_add_action_or_reset(dev, cxl_pci_free_irq_vectors, pdev);
+> +	if (rc)
+> +		return;
+> +
+> +	cxlds->doe_use_irq = true;
+> +}
+> +
+> +/**
+> + * devm_cxl_pci_create_doe - Scan and set up DOE mailboxes
+> + *
+> + * @cxlds: The CXL device state
+> + */
+> +static void devm_cxl_pci_create_doe(struct cxl_dev_state *cxlds)
+> +{
+> +	struct device *dev = cxlds->dev;
+> +	struct pci_dev *pdev = to_pci_dev(dev);
+> +	u16 off = 0;
+> +	int num_mbs = 0;
+> +	int rc;
+> +
+> +	pci_doe_for_each_off(pdev, off)
+> +		num_mbs++;
+> +
+> +	if (!num_mbs) {
+> +		pci_dbg(pdev, "0 DOE mailbox's found\n");
+> +		return;
+> +	}
+> +
+> +	cxlds->doe_mbs = devm_kcalloc(dev, num_mbs, sizeof(*cxlds->doe_mbs),
+> +				      GFP_KERNEL);
+> +	if (!cxlds->doe_mbs)
+> +		return;
+> +
+> +	pci_doe_for_each_off(pdev, off) {
+> +		struct pci_doe_mb *doe_mb;
+> +		int irq = -1;
+> +
+> +		if (cxlds->doe_use_irq)
+> +			irq = pci_doe_get_irq_num(pdev, off);
+> +
+> +		doe_mb = pci_doe_create_mb(pdev, off, irq);
+> +		if (IS_ERR(doe_mb)) {
+> +			pci_err(pdev,
+> +				"Failed to create MB object for MB @ %x\n",
+> +				off);
+> +			doe_mb = NULL;
+> +		}
+> +
+> +		cxlds->doe_mbs[cxlds->num_mbs] = doe_mb;
+> +		cxlds->num_mbs++;
+> +	}
+> +
+> +	rc = devm_add_action_or_reset(dev, cxl_doe_destroy_mb, cxlds);
+> +	if (rc)
+> +		return;
+> +
+> +	pci_info(pdev, "Configured %d DOE mailbox's\n", cxlds->num_mbs);
+> +}
+> +
+>  static int cxl_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+>  {
+>  	struct cxl_register_map map;
+> @@ -434,6 +545,9 @@ static int cxl_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+>  
+>  	cxlds->component_reg_phys = cxl_regmap_to_base(pdev, &map);
+>  
+> +	cxl_alloc_irq_vectors(cxlds);
+> +	devm_cxl_pci_create_doe(cxlds);
+> +
+>  	rc = cxl_pci_setup_mailbox(cxlds);
+>  	if (rc)
+>  		return rc;
+> -- 
+> 2.35.1
+> 
