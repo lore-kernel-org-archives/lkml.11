@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E825BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 08:42:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07F92C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 08:42:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232642AbiFFImD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 04:42:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48048 "EHLO
+        id S232589AbiFFImS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 04:42:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232427AbiFFIjv (ORCPT
+        with ESMTP id S232442AbiFFIjw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 04:39:51 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2C079340DF
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 01:39:41 -0700 (PDT)
+        Mon, 6 Jun 2022 04:39:52 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 927E14FC67
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 01:39:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654504780;
+        s=mimecast20190719; t=1654504785;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=+MgDILZKDJLFM9v8vOajOt74G/rtOqju5l9xz3EQGok=;
-        b=Ou5K0nqednGoAdfyfjzWX7YuGRc7ggCuwa2/g77oQiI80o6DH55+RzK/eEqIpBzz+0bfJY
-        xcmKwdoOgQTdiz/NqfNXtIXd9bgET4loSj7mj2cbdncweBjf2OjRe7uib7ExQcpSk90VWo
-        dZqxBgyOkMqOaQttsbZ7dbCN5Du3Aw8=
+        bh=G6b3MXuQh7jibWh2fry5PjeJCVzizfhoHgFIUHZ3584=;
+        b=FI79vBYWuvOsKx8mfiimDOfvRwgDb4pZCJ4/PrGOYUb+7SoJRP8zOFMJl24IVmS/LRZtjn
+        9rypK2Do54SyCFGAE4N7SqFMCUUAqVrr5O1rph0RosiJBNjlTh174l3jXqR+AS54ML7qIO
+        wKFWgpRO950eBXtBpZlqtHRVTYNq/Bk=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-3-c-oMQXzkOoSCQb1I3mozTw-1; Mon, 06 Jun 2022 04:39:29 -0400
-X-MC-Unique: c-oMQXzkOoSCQb1I3mozTw-1
+ us-mta-620-S9oXEJ7aOYmzlAcPWRBeOg-1; Mon, 06 Jun 2022 04:39:42 -0400
+X-MC-Unique: S9oXEJ7aOYmzlAcPWRBeOg-1
 Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4315085A5BC;
-        Mon,  6 Jun 2022 08:39:29 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 98C8D811E75;
+        Mon,  6 Jun 2022 08:39:41 +0000 (UTC)
 Received: from MiWiFi-R3L-srv.redhat.com (ovpn-14-4.pek2.redhat.com [10.72.14.4])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2B68A1121314;
-        Mon,  6 Jun 2022 08:39:25 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8E20D1121315;
+        Mon,  6 Jun 2022 08:39:38 +0000 (UTC)
 From:   Baoquan He <bhe@redhat.com>
 To:     akpm@linux-foundation.org
 Cc:     npiggin@gmail.com, urezki@gmail.com, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org, Baoquan He <bhe@redhat.com>
-Subject: [PATCH 1/5] mm/vmalloc: remove the unnecessary type check
-Date:   Mon,  6 Jun 2022 16:39:05 +0800
-Message-Id: <20220606083909.363350-2-bhe@redhat.com>
+Subject: [PATCH 4/5] mm/vmalloc: Add code comment for find_vmap_area_exceed_addr()
+Date:   Mon,  6 Jun 2022 16:39:08 +0800
+Message-Id: <20220606083909.363350-5-bhe@redhat.com>
 In-Reply-To: <20220606083909.363350-1-bhe@redhat.com>
 References: <20220606083909.363350-1-bhe@redhat.com>
 MIME-Version: 1.0
@@ -55,29 +55,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In function adjust_va_to_fit_type(), it checks all values of passed
-in fit type, including NOTHING_FIT in the else branch. In fact, it's
-unnecessary to check NOTHING_FIT since the check has been done before
-adjust_va_to_fit_type() is called in all call sites. So clean it up.
+Its behaviour is like find_vma() which finds an area above the specified
+address, add comment to make it easier to understand.
+
+And also fix two places of grammer mistake/typo.
 
 Signed-off-by: Baoquan He <bhe@redhat.com>
 ---
- mm/vmalloc.c | 2 --
- 1 file changed, 2 deletions(-)
+ mm/vmalloc.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/mm/vmalloc.c b/mm/vmalloc.c
-index 07db42455dd4..b7a138ab7b79 100644
+index 11dfc897de40..860ed9986775 100644
 --- a/mm/vmalloc.c
 +++ b/mm/vmalloc.c
-@@ -1418,8 +1418,6 @@ adjust_va_to_fit_type(struct vmap_area *va,
- 		 * Shrink this VA to remaining size.
- 		 */
- 		va->va_start = nva_start_addr + size;
--	} else {
--		return -1;
- 	}
+@@ -790,6 +790,7 @@ unsigned long vmalloc_nr_pages(void)
+ 	return atomic_long_read(&nr_vmalloc_pages);
+ }
  
- 	if (type != FL_FIT_TYPE) {
++/* Look up the first VA which satisfies  addr < va_end,  NULL if none. */
+ static struct vmap_area *find_vmap_area_exceed_addr(unsigned long addr)
+ {
+ 	struct vmap_area *va = NULL;
+@@ -929,7 +930,7 @@ link_va(struct vmap_area *va, struct rb_root *root,
+ 		 * Some explanation here. Just perform simple insertion
+ 		 * to the tree. We do not set va->subtree_max_size to
+ 		 * its current size before calling rb_insert_augmented().
+-		 * It is because of we populate the tree from the bottom
++		 * It is because we populate the tree from the bottom
+ 		 * to parent levels when the node _is_ in the tree.
+ 		 *
+ 		 * Therefore we set subtree_max_size to zero after insertion,
+@@ -1659,7 +1660,7 @@ static atomic_long_t vmap_lazy_nr = ATOMIC_LONG_INIT(0);
+ 
+ /*
+  * Serialize vmap purging.  There is no actual critical section protected
+- * by this look, but we want to avoid concurrent calls for performance
++ * by this lock, but we want to avoid concurrent calls for performance
+  * reasons and to make the pcpu_get_vm_areas more deterministic.
+  */
+ static DEFINE_MUTEX(vmap_purge_lock);
 -- 
 2.34.1
 
