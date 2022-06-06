@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70CB0C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 05:27:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B5B9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 05:27:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229631AbiFFF1Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 01:27:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46238 "EHLO
+        id S229643AbiFFF1s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 01:27:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229596AbiFFF1P (ORCPT
+        with ESMTP id S229660AbiFFF1k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 01:27:15 -0400
-Received: from condef-04.nifty.com (condef-04.nifty.com [202.248.20.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AE7110F35E;
-        Sun,  5 Jun 2022 22:05:24 -0700 (PDT)
-Received: from conuserg-10.nifty.com ([10.126.8.73])by condef-04.nifty.com with ESMTP id 2564uDGo012764;
-        Mon, 6 Jun 2022 13:56:33 +0900
+        Mon, 6 Jun 2022 01:27:40 -0400
+Received: from condef-07.nifty.com (condef-07.nifty.com [202.248.20.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE529119069;
+        Sun,  5 Jun 2022 22:06:05 -0700 (PDT)
+Received: from conuserg-10.nifty.com ([10.126.8.73])by condef-07.nifty.com with ESMTP id 2564ttqF026112;
+        Mon, 6 Jun 2022 13:56:15 +0900
 Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-10.nifty.com with ESMTP id 2564rxU8026256;
-        Mon, 6 Jun 2022 13:54:00 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-10.nifty.com 2564rxU8026256
+        by conuserg-10.nifty.com with ESMTP id 2564rxUA026256;
+        Mon, 6 Jun 2022 13:54:02 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-10.nifty.com 2564rxUA026256
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1654491241;
-        bh=9wnl63tAeNHwFnP9ncmY25Nut3frLpWSI46zwtOP0Gg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=kYYPHvlD0X+P6H+J2qC9NTxd5enM1Nom4JAHumhi1Qj0lLzEl9ifpikstjYm6qFuh
-         D0mOZ8VvKfjngpaYanARXXRGAVIUb0kp/SzICcGQZxHM8AN/QdmHwUWGlld9wcEsCH
-         nvLtGOr5Pb+kn74/O44lzE6s77jscca4tFZbCui8oAbg4+EQB7LdhKUN9oTuQvK/Z4
-         1SXTjlHojbJT7x2/SnTka9WWTJx8V+x8XEE8EhFxmJjILC3/oPS5pEyRKSdIx+hQ/c
-         fYZ4nhvCeqHkYWJe7FhAtNGTbyHrpagQUdDvArNQtieuAW5ElcETuGJrfjpmDSHvnq
-         DqMeJu2Dln0ZQ==
+        s=dec2015msa; t=1654491243;
+        bh=ziQR3Y2YVkVjwU2FN5ZC+RUigUk86AY6lP77BM69cbg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=YK9ljVsieM/Oe6LIGFVOj3act3Y+vtt/qbzrdfidezomn2THxtGDQwGpxvOTi+RZm
+         pF6qs15bi0tyntc8Wl2uv9tH2cyTx1n1tjZBxaA7Qrlo/N+bRY7zTY6r2eMQ3aucBy
+         qKx3ZvjyvPzBa0urhSQlaHECANtaYdh97M9CA1GDGnSa6nuzgE81NbhkbnNqY1mfKs
+         AazrY8ger8oAZ/HhDmhCEIVwD/G2WRymdTVF5iixsIqcsRkckW3FVQ4TLXq5X5SgJk
+         XK0lqGi8TpdbWNPWX/0Y21f68B5Gu3gNa8dTCk/FyDWtGaHASScGNl7Gm9EKZbSIb2
+         US58dmCjmgOsA==
 X-Nifty-SrcIP: [133.32.177.133]
 From:   Masahiro Yamada <masahiroy@kernel.org>
 To:     "David S . Miller" <davem@davemloft.net>,
@@ -38,52 +38,60 @@ To:     "David S . Miller" <davem@davemloft.net>,
 Cc:     Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>,
         Masahiro Yamada <masahiroy@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>, David Ahern <dsahern@kernel.org>,
-        David Lebrun <david.lebrun@uclouvain.be>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        David Ahern <dsahern@kernel.org>,
         Herbert Xu <herbert@gondor.apana.org.au>,
         Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Russell King <linux@armlinux.org.uk>,
         Steffen Klassert <steffen.klassert@secunet.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 0/3] net: unexport some symbols that are annotated __init
-Date:   Mon,  6 Jun 2022 13:53:52 +0900
-Message-Id: <20220606045355.4160711-1-masahiroy@kernel.org>
+Subject: [PATCH 2/3] net: xfrm: unexport __init-annotated xfrm4_protocol_init()
+Date:   Mon,  6 Jun 2022 13:53:54 +0900
+Message-Id: <20220606045355.4160711-3-masahiroy@kernel.org>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220606045355.4160711-1-masahiroy@kernel.org>
+References: <20220606045355.4160711-1-masahiroy@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+EXPORT_SYMBOL and __init is a bad combination because the .init.text
+section is freed up after the initialization. Hence, modules cannot
+use symbols annotated __init. The access to a freed symbol may end up
+with kernel panic.
 
-This patch set fixes odd combinations
-of EXPORT_SYMBOL and __init.
+modpost used to detect it, but it has been broken for a decade.
 
-Checking this in modpost is a good thing and I really wanted to do it,
-but Linus Torvalds imposes a very strict rule, "No new warning".
+Recently, I fixed modpost so it started to warn it again, then this
+showed up in linux-next builds.
 
-I'd like the maintainer to kindly pick this up and send a fixes pull request.
+There are two ways to fix it:
 
-Unless I eliminate all the sites of warnings beforehand,
-Linus refuses to re-enable the modpost check.   [1]
+  - Remove __init
+  - Remove EXPORT_SYMBOL
 
-[1]: https://lore.kernel.org/linux-kbuild/CAK7LNATmd0bigp7HQ4fTzHw5ugZMkSb3UXG7L4fxpGbqkRKESA@mail.gmail.com/T/#m5e50cc2da17491ba210c72b5efdbc0ce76e0217f
+I chose the latter for this case because the only in-tree call-site,
+net/ipv4/xfrm4_policy.c is never compiled as modular.
+(CONFIG_XFRM is boolean)
 
+Fixes: 2f32b51b609f ("xfrm: Introduce xfrm_input_afinfo to access the the callbacks properly")
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+---
 
+ net/ipv4/xfrm4_protocol.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-Masahiro Yamada (3):
-  net: mdio: unexport __init-annotated mdio_bus_init()
-  net: xfrm: unexport __init-annotated xfrm4_protocol_init()
-  net: ipv6: unexport __init-annotated seg6_hmac_init()
-
- drivers/net/phy/mdio_bus.c | 1 -
- net/ipv4/xfrm4_protocol.c  | 1 -
- net/ipv6/seg6_hmac.c       | 1 -
- 3 files changed, 3 deletions(-)
-
+diff --git a/net/ipv4/xfrm4_protocol.c b/net/ipv4/xfrm4_protocol.c
+index 2fe5860c21d6..b146ce88c5d0 100644
+--- a/net/ipv4/xfrm4_protocol.c
++++ b/net/ipv4/xfrm4_protocol.c
+@@ -304,4 +304,3 @@ void __init xfrm4_protocol_init(void)
+ {
+ 	xfrm_input_register_afinfo(&xfrm4_input_afinfo);
+ }
+-EXPORT_SYMBOL(xfrm4_protocol_init);
 -- 
 2.32.0
 
