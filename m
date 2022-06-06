@@ -2,97 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9484C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 13:15:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4332AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 13:16:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238609AbiFFNPi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 09:15:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60488 "EHLO
+        id S238685AbiFFNQ1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 09:16:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238594AbiFFNPW (ORCPT
+        with ESMTP id S238656AbiFFNQY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 09:15:22 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 394B537019;
-        Mon,  6 Jun 2022 06:15:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654521321; x=1686057321;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Y1kaCaz5N1o1+4WtActhJKFA70UAkSgBZb5Wg1uAewU=;
-  b=SmP44Exql6VmNx50T+xK+N/wyc2eB3AANrmvVCI9g2PvrDAjfin+EVJ2
-   4vxY81GooidkXaX9otuzSQ2yNRVNtDa1NxKvz2jZ1gN17XZjuoGvO2YYi
-   s3OlTMYjKUOntWOi4dBV56LLgY2YHjvmAD0huqAjnaAJwo7NRwOgR5lMY
-   n1JD5CSQKYogh/48NaAHAP3x0OoyVgTdsWNW078fuqzoxaLKZcULfphvC
-   S/eC/utF5NcRwDkbpcWBfVZ5P1ek8sVBvamFVhqf5M9iJshYgwB9vMX+U
-   8a7lbo4WUWy9N5SXGT+k3uDbG/U9dBZsOJb6eKWZnfePIkxQkEmPZzAhx
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="339948498"
-X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="339948498"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 06:11:59 -0700
-X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="583631022"
-Received: from amkossek-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.57.11])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 06:11:55 -0700
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Joshua Scott <joshua.scott@alliedtelesis.co.nz>,
-        linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@penugtronix.de>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH v2 6/6] serial: 8250_dw: Store LSR into lsr_saved_flags in dw8250_tx_wait_empty()
-Date:   Mon,  6 Jun 2022 16:11:24 +0300
-Message-Id: <20220606131124.53394-7-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220606131124.53394-1-ilpo.jarvinen@linux.intel.com>
-References: <20220606131124.53394-1-ilpo.jarvinen@linux.intel.com>
+        Mon, 6 Jun 2022 09:16:24 -0400
+Received: from mail-pj1-f52.google.com (mail-pj1-f52.google.com [209.85.216.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3A2337A9E;
+        Mon,  6 Jun 2022 06:16:23 -0700 (PDT)
+Received: by mail-pj1-f52.google.com with SMTP id d12-20020a17090abf8c00b001e2eb431ce4so12559517pjs.1;
+        Mon, 06 Jun 2022 06:16:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=haH1xGwhj/wZTEqY+orLGoeCGd0tL/KLJasnsNbhTtE=;
+        b=jdjkMrbtmFWn6pBFRLcUYvSZ7ufVSrB6PkFz8aJmJXo35hzO/heuTJOebe4JKhlIkX
+         XqGOmuGd82PYYYTiWb/YokVeVp9bMORP2y2WktgvrVdrzNIcOKpY41UxMLMZufsZuBJa
+         lp5u+oDwoqoAgny4Ubs1ej6Bp5r0z1DtT7wIFUpGQb7Xbp22CXhytMCN4hagfQweEjlD
+         pwAGqQniu6vEOESbJgbEEvUAI/Vf+CZOAUExqFkbKLfOUYbGQk8kohZuLGUQ0TSGATbo
+         D5R6a6S/K0EdtHF7JuJFoegI8Ecf9IlNaT6G5TEu/9MyjKLa/IqorwXsZTZbI92+Uu91
+         qE1A==
+X-Gm-Message-State: AOAM532sgX0ZOVKDpyB5OEdlOEedKClChojfqs4ikZxAZwOAsCtuAPX/
+        SWbNcOT5wF5XsIicmxGK30U=
+X-Google-Smtp-Source: ABdhPJzllokqDgNkPKCfrAp7djJclpbLsYrv65dsb7FFR7bMvYPum2ICUju4mffaQ35qoAmnj7c7yQ==
+X-Received: by 2002:a17:90b:4b0f:b0:1e8:53ac:ec51 with SMTP id lx15-20020a17090b4b0f00b001e853acec51mr13717685pjb.78.1654521382753;
+        Mon, 06 Jun 2022 06:16:22 -0700 (PDT)
+Received: from [192.168.51.14] (c-73-241-217-19.hsd1.ca.comcast.net. [73.241.217.19])
+        by smtp.gmail.com with ESMTPSA id bf7-20020a170902b90700b00163c6ac211fsm10478642plb.111.2022.06.06.06.16.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 06 Jun 2022 06:16:21 -0700 (PDT)
+Message-ID: <2677b02e-b2a3-7c79-2e62-acf1acbc8ff0@acm.org>
+Date:   Mon, 6 Jun 2022 06:16:20 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [RESEND PATCH] scsi: ufs: sysfs: support writing boot_lun attr
+Content-Language: en-US
+To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Avri Altman <Avri.Altman@wdc.com>,
+        Caleb Connolly <caleb.connolly@linaro.org>,
+        "a5b6@riseup.net" <a5b6@riseup.net>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        "James E . J . Bottomley" <jejb@linux.ibm.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc:     "~postmarketos/upstreaming@lists.sr.ht" 
+        <~postmarketos/upstreaming@lists.sr.ht>,
+        "phone-devel@vger.kernel.org" <phone-devel@vger.kernel.org>
+References: <20220525164013.93748-1-a5b6@riseup.net>
+ <DM6PR04MB65750969ACD36EEEB48374DFFCD69@DM6PR04MB6575.namprd04.prod.outlook.com>
+ <8d25171a-5d86-9acc-0f94-1a3c6efdb360@riseup.net>
+ <DM6PR04MB65752422396C86EAD4591701FCD89@DM6PR04MB6575.namprd04.prod.outlook.com>
+ <a7f46ad1-6d9e-a38e-31cc-29fddfa2b496@linaro.org>
+ <DM6PR04MB65751A3B1D0BA4467CADDA93FCDF9@DM6PR04MB6575.namprd04.prod.outlook.com>
+ <a4746c67-fa74-8af1-3f2d-7853e9fae8a6@acm.org>
+ <3c400db6-d251-c4bd-b019-b9dc1d807212@opensource.wdc.com>
+From:   Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <3c400db6-d251-c4bd-b019-b9dc1d807212@opensource.wdc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make sure LSR flags are preserved in dw8250_tx_wait_empty(). This
-function is called from a low-level out function and therefore cannot
-call serial_lsr_in() as it would lead to infinite recursion.
+On 6/5/22 19:48, Damien Le Moal wrote:
+> On 6/5/22 12:55, Bart Van Assche wrote:
+>> On 6/1/22 10:05, Avri Altman wrote:
+>>> As a design rule, sysfs attribute files should not be used to make
+>>> persistent modifications to a device configuration. This rule applies
+>>> to all subsystems and ufs is no different.
+>>
+>> Hmm ... where does that rule come from? I can't find it in
+>> Documentation/admin-guide/sysfs-rules.rst. Did I perhaps overlook something?
+> 
+> I am not aware of any writable sysfs attribute file that can be used to
+> make persistent device configuration changes, at least in storage area.
+> I know of plenty that do change a device setting, but without saving this
+> setting to maintain it across power cycles. Do you know of any such
+> attribute ? I was under the impression that sysfs should not be used to
+> persistently reconfigure a device...
 
-It is borderline if the flags need to be saved here at all since this
-code relates to writing LCR register which usually implies no important
-characters should be arriving.
+I don't think the above is sufficient as an argument to reject a new 
+patch that introduces a sysfs attribute that changes the device 
+configuration.
 
-Fixes: 914eaf935ec7 ("serial: 8250_dw: Allow TX FIFO to drain before writing to UART_LCR")
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
----
- drivers/tty/serial/8250/8250_dw.c | 3 +++
- 1 file changed, 3 insertions(+)
+Thanks,
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index 1fae45991812..4cc69bb612ab 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -122,12 +122,15 @@ static void dw8250_check_lcr(struct uart_port *p, int value)
- /* Returns once the transmitter is empty or we run out of retries */
- static void dw8250_tx_wait_empty(struct uart_port *p)
- {
-+	struct uart_8250_port *up = up_to_u8250p(p);
- 	unsigned int tries = 20000;
- 	unsigned int delay_threshold = tries - 1000;
- 	unsigned int lsr;
- 
- 	while (tries--) {
- 		lsr = readb (p->membase + (UART_LSR << p->regshift));
-+		up->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
-+
- 		if (lsr & UART_LSR_TEMT)
- 			break;
- 
--- 
-2.30.2
+Bart.
 
