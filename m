@@ -2,160 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5A3DC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 06:21:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28946C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 06:21:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229944AbiFFGVA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 02:21:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57924 "EHLO
+        id S229879AbiFFGVb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 02:21:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229895AbiFFGUE (ORCPT
+        with ESMTP id S229890AbiFFGUe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 02:20:04 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2049.outbound.protection.outlook.com [40.107.220.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAABA21E12;
-        Sun,  5 Jun 2022 23:20:01 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WGcMjBA4IAx2mEiIDAlCIX67CCFMhUtMYv60zw0osDpL97q0LfsN+hxR4/94p9h+DALvmJNqsqLtpBR4LiIidvqG2iVk32fXvEHfL1uBJL4PcdhNK0TNqUBt/z8hAYqQqh2EvqT+pLi84M7ERQvY4y5PuQdkpeR24tJZPmKNBChidIC1Ye1eWUllPXJpYCCsz3F2NMVKrTMYwBJbGpVsjnwfgH1uJTn/uWt0wJYnun91vuYvh66nojiK49SIl76ljulPeWLyoHNjP2VfH2CBXF16CrSJeftEGj6dyXva7gutP6PwFx/Z6yIyXFIE+G70G49G9OomItZU1Scnp5eLkw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=SeO7Te4yt4I3yBW6/n8sTDab7gbKG7kE6H+bEojxsls=;
- b=ROlR5sVzYZbqKOnILTWxcLGXCLNNdCxqKXYZ8360hsoCWuihyIvjXIDkL4CZf5fJmnNuonDRhp3RngZxeYu5Kdltp+ic7z+4W5a00L0HaVn2ooTo2cQqSEWDjGtbPivDjXw8SG7XVrSgg5ZhO9+F6Sa6hrJkoBFtqOV6xVJRgnTaJTQk34J4CLq9ojXumJCzHJU5ots3wm1WD9KvAiKcuc3oCLwAh79E+OCs3+8zqt4lA5OqqaGAT3E51MAbmLRc7skysXxQJa0ouzCBiUyTh/R4jR/Hvr0YJR9AunKna5o4SVr2Dnl9cR9ByZh/oJLTfkWfDc4PAjbnuoQmqmMrYQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.238) smtp.rcpttodomain=samsung.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SeO7Te4yt4I3yBW6/n8sTDab7gbKG7kE6H+bEojxsls=;
- b=sENtcgjYXlx7gF1Ww8pbiuMwRJ/UhVPfvEiS6SG5dqH2SW9aZTLDbH7YNcpBj0y8rlDMLqi0ymZUbxCTQgvmQqcgLXsp/tQMfps8ZJ0MeNwzeAMlZSc2THfYZ+hJ7da55qfjM+fDWejB9ZXUuQna1t+cCJfPbmhHL/h1uOlx0kZoIG7MUD/yMHZmDkwPnxuyOsyeK9Sirgmnj3EAjy6aQ70yYfcPeVsgftxdTdjY1fspMXRfMy6RmRpMSrsJQZJgMUk6V7Ijy/YRyn0h3ujniXtkUv1b2XN2ttdGJzX8lKlFTSMdS0YaK12UEnMhKgM2oFbBkHYKEtoiu7Fq7ht70g==
-Received: from DM6PR13CA0049.namprd13.prod.outlook.com (2603:10b6:5:134::26)
- by DS7PR12MB6118.namprd12.prod.outlook.com (2603:10b6:8:9a::5) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5314.18; Mon, 6 Jun 2022 06:20:00 +0000
-Received: from DM6NAM11FT057.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:134:cafe::66) by DM6PR13CA0049.outlook.office365.com
- (2603:10b6:5:134::26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.11 via Frontend
- Transport; Mon, 6 Jun 2022 06:20:00 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.238; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.238) by
- DM6NAM11FT057.mail.protection.outlook.com (10.13.172.252) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5314.12 via Frontend Transport; Mon, 6 Jun 2022 06:20:00 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by DRHQMAIL105.nvidia.com
- (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Mon, 6 Jun
- 2022 06:19:59 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Sun, 5 Jun 2022
- 23:19:58 -0700
-Received: from Asurada-Nvidia.nvidia.com (10.127.8.12) by mail.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server id 15.2.986.22 via Frontend
- Transport; Sun, 5 Jun 2022 23:19:56 -0700
-From:   Nicolin Chen <nicolinc@nvidia.com>
-To:     <jgg@nvidia.com>, <joro@8bytes.org>, <will@kernel.org>,
-        <marcan@marcan.st>, <sven@svenpeter.dev>, <robin.murphy@arm.com>,
-        <robdclark@gmail.com>, <m.szyprowski@samsung.com>,
-        <krzysztof.kozlowski@linaro.org>, <baolu.lu@linux.intel.com>,
-        <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <matthias.bgg@gmail.com>, <heiko@sntech.de>, <orsonzhai@gmail.com>,
-        <baolin.wang7@gmail.com>, <zhang.lyra@gmail.com>, <wens@csie.org>,
-        <jernej.skrabec@gmail.com>, <samuel@sholland.org>,
-        <jean-philippe@linaro.org>, <alex.williamson@redhat.com>
-CC:     <suravee.suthikulpanit@amd.com>, <alyssa@rosenzweig.io>,
-        <alim.akhtar@samsung.com>, <dwmw2@infradead.org>,
-        <yong.wu@mediatek.com>, <mjrosato@linux.ibm.com>,
-        <gerald.schaefer@linux.ibm.com>, <thierry.reding@gmail.com>,
-        <vdumpa@nvidia.com>, <jonathanh@nvidia.com>, <cohuck@redhat.com>,
-        <iommu@lists.linux-foundation.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-arm-msm@vger.kernel.org>,
-        <linux-samsung-soc@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-rockchip@lists.infradead.org>, <linux-s390@vger.kernel.org>,
-        <linux-sunxi@lists.linux.dev>, <linux-tegra@vger.kernel.org>,
-        <virtualization@lists.linux-foundation.org>, <kvm@vger.kernel.org>
-Subject: [PATCH 3/5] vfio/iommu_type1: Prefer to reuse domains vs match enforced cache coherency
-Date:   Sun, 5 Jun 2022 23:19:25 -0700
-Message-ID: <20220606061927.26049-4-nicolinc@nvidia.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220606061927.26049-1-nicolinc@nvidia.com>
-References: <20220606061927.26049-1-nicolinc@nvidia.com>
+        Mon, 6 Jun 2022 02:20:34 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E796622B3A
+        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 23:20:25 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id fu3so25444138ejc.7
+        for <linux-kernel@vger.kernel.org>; Sun, 05 Jun 2022 23:20:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=F/BITtmLWc1VtxM65EqQjDPMCYQMAuoqz8dLA7WWjls=;
+        b=S7fiGYjkD4hCmOxEBPhVlPYrksvpFVRkVWt7637cDHckBJf5TCtLnmB9UkOmZKTIKF
+         ZLq2E6ClOr44GI0ySPWu8fcv61ODO7R7TZkolOKRsI5miFRej3Sk0Ez3u9iUUrvcJ5sD
+         cAe8JXXs9pMWUQrp3HLptyxSBK/Dp/Kxb5sEbCn1ddt6aBXwzyPUPn7+QvK0OpZFNJ1S
+         3g3yffxJw5Emt0ODfIJsXbgP0bmEDOP7Bw2xD88HDF2FIF6NYDreWrcOhAPuEekY79bd
+         EbakCJ2/E0EsEoUb9/nLOZLwS+QfCORF4eCHplr5b7slcx0Fg9kERBNrirNO5aeJAadX
+         ZL5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=F/BITtmLWc1VtxM65EqQjDPMCYQMAuoqz8dLA7WWjls=;
+        b=4wvMvPuY3W5jgcnd1PvEUuQpzQ9R0r1f+ocCxENcpxiefnsU246vkiMa/RkKavxg0u
+         lx4ZqusrDxV2+uhatiBefcPr0TbQsRngslkHG2ShDeLTObm5uJEseGMDOrlxFoPMJ7YZ
+         rTHqWzt33fGxWWNk0xj5SGPtIt4FoRDQzZa6T/OrPKeNevt7UPCVDkRXTTAp0phDx8Ep
+         6ZOKD0XAWLaOI8tkdp06+qNEXj5kdOFG5SPNYoJlESlOyQySs5LcBjw+upKic/nrXJ1F
+         52rCp7sc1nYFtlOTqgWZjKWTivYDMn/Yo/kOG4mNUWTBhhq3g6RY25JRFTly1qu6SMAH
+         KmuQ==
+X-Gm-Message-State: AOAM5303q/V6A0talQPCPu9EDkI/YcmatH7gyOmcYHXj7dZgS4YSlUEQ
+        cgbn/vWC1Cpp8qORikUpBh/qeg==
+X-Google-Smtp-Source: ABdhPJzAfxWKgaolZMJ1kBvo3MGRFufwf7UUXNcLCeJtJs0PDGTLYJF6eHuRcJkYjoAgJxuWKltYiw==
+X-Received: by 2002:a17:906:4fce:b0:6f4:f41c:3233 with SMTP id i14-20020a1709064fce00b006f4f41c3233mr19013888ejw.117.1654496423905;
+        Sun, 05 Jun 2022 23:20:23 -0700 (PDT)
+Received: from [192.168.0.181] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id n19-20020a05640205d300b0042de8155fa1sm8150758edx.0.2022.06.05.23.20.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 05 Jun 2022 23:20:23 -0700 (PDT)
+Message-ID: <5af6d6ff-c5e3-f764-fa9c-a2c3d7365082@linaro.org>
+Date:   Mon, 6 Jun 2022 08:20:22 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: bb407244-624f-4b4a-99c6-08da478495e9
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6118:EE_
-X-Microsoft-Antispam-PRVS: <DS7PR12MB6118FD6562C7A810C4BCD6CCABA29@DS7PR12MB6118.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: i8tdHq15yT1WINxiiwZZdMsO9IrJtkA4R9MXKqwKxXQG6mgzUX3kzv9rK+rShRMSWnkD6J8/Yu6KG2q23Fsy/6CG4W3Vo7HrhwugSUVcZEJzK55e2Vge6vsJdmr/OTVkfBq7ifIz2vxnJ+Q2sCWDBM0E+zR/OGLxM5wXspdnewX51zk5kEhankAbfsmXSE777idXG+f4gLjLmQOvEZEvJrzpdp9db1MxcF2YgYlnPxbfrmY2lldC5dJyWkYu01PjIOM2vzQ+CN/XeE8gw8QM9TdKXh7oaP5YjUsOhnaS+synX6yddE/NgHpPhhju9OI556Cg2b0rVxo3DUdl6UOeK2MmlaWnZpBSWRnFPqi/j2XIZpwMUVhTflKx/Z/v0/kir0tWA9yiK0U6RR9TYlJb5sjHX6KJjNJFxBSeIGEMVGVWzXbcpNtHBjbshi5nXZRxQ2+K7SsrnPHA8KgPwRY7eCekAfZlrSYGm0//m7IX9gSH3ci5LqcxUq8U1s8GJ/t4A8Mw92r7Et6WZiBRaEETgpSmNkc81MrjVhf7HH5SeYfLOCqrt95mYq70nP01MUfaDUpPppLCD9r/ybwIfZnCULmxrTdnaZfbAzFGrm1ujrrobmL4WpzRRMnhSC39Xr6XzQ915Ucie2z7KIUkMNZ+rWoHkqgKQOWdzLL/RUZZHODr+Yvpjj6hMIiLqMQMDyHroNlzuY2pk4HxgIvmFtjHzUPsYmYaWKvuENFgOSI0dndstJUI4viewQOj4dupX+Lo/V8EZ3mEG8tJ3An4oGu7yQ==
-X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(7696005)(2616005)(6666004)(1076003)(47076005)(54906003)(26005)(86362001)(40460700003)(426003)(2906002)(7416002)(7406005)(83380400001)(186003)(5660300002)(36756003)(316002)(81166007)(336012)(8936002)(82310400005)(70586007)(921005)(110136005)(356005)(4326008)(70206006)(8676002)(36860700001)(508600001)(2101003)(36900700001)(83996005);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jun 2022 06:20:00.1466
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: bb407244-624f-4b4a-99c6-08da478495e9
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT057.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB6118
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 1/2] dt-bindings: backlight: rt4831: Add the new property
+ for ocp level selection
+Content-Language: en-US
+To:     ChiYuan Huang <u0084500@gmail.com>
+Cc:     Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@ucw.cz>,
+        Helge Deller <deller@gmx.de>, cy_huang <cy_huang@richtek.com>,
+        lucas_tsai@richtek.com,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        "open list:FRAMEBUFFER LAYER" <linux-fbdev@vger.kernel.org>,
+        Linux LED Subsystem <linux-leds@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>
+References: <1653534995-30794-1-git-send-email-u0084500@gmail.com>
+ <1653534995-30794-2-git-send-email-u0084500@gmail.com>
+ <1c7ab94c-a736-c629-bd8c-8a974803e2b9@linaro.org>
+ <CADiBU39jZ6TdYZoH80m4R-X2_fUXZOvDA4yUd_TQdPzBJLE+JA@mail.gmail.com>
+ <076d53d3-6062-686f-8e45-14c5f936bbf6@linaro.org>
+ <20220602135604.GA2194286-robh@kernel.org>
+ <e3aa9c7e-bf2d-dd55-8b3f-ca51f569771d@linaro.org>
+ <CADiBU3-dN0vtQBEqvVLFCUp4-MkhLbQRkOiCet+fO8WfkEW4MQ@mail.gmail.com>
+ <12096a2c-98c3-9e77-785f-808cc3e1a0e4@linaro.org>
+ <CADiBU3_REqNRb4UtT5OrVBKuhYL0NPAALisHTM76SrFCHUYMuA@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CADiBU3_REqNRb4UtT5OrVBKuhYL0NPAALisHTM76SrFCHUYMuA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason Gunthorpe <jgg@nvidia.com>
+On 06/06/2022 03:39, ChiYuan Huang wrote:
+> Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> 於 2022年6月6日 週一 上午12:11寫道：
+>>
+>> On 02/06/2022 17:31, ChiYuan Huang wrote:
+>>> Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> 於 2022年6月2日 週四 下午9:58寫道：
+>>>>
+>>>> On 02/06/2022 15:56, Rob Herring wrote:
+>>>>> On Thu, May 26, 2022 at 12:32:12PM +0200, Krzysztof Kozlowski wrote:
+>>>>>> On 26/05/2022 10:13, ChiYuan Huang wrote:
+>>>>>>> Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> 於 2022年5月26日 週四 下午4:06寫道：
+>>>>>>>>
+>>>>>>>> On 26/05/2022 05:16, cy_huang wrote:
+>>>>>>>>> From: ChiYuan Huang <cy_huang@richtek.com>
+>>>>>>>>>
+>>>>>>>>> Add the new property for ocp level selection.
+>>>>>>>>>
+>>>>>>>>> Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
+>>>>>>>>> ---
+>>>>>>>>>  .../bindings/leds/backlight/richtek,rt4831-backlight.yaml         | 8 ++++++++
+>>>>>>>>>  include/dt-bindings/leds/rt4831-backlight.h                       | 5 +++++
+>>>>>>>>>  2 files changed, 13 insertions(+)
+>>>>>>>>>
+>>>>>>>>> diff --git a/Documentation/devicetree/bindings/leds/backlight/richtek,rt4831-backlight.yaml b/Documentation/devicetree/bindings/leds/backlight/richtek,rt4831-backlight.yaml
+>>>>>>>>> index e0ac686..c1c59de 100644
+>>>>>>>>> --- a/Documentation/devicetree/bindings/leds/backlight/richtek,rt4831-backlight.yaml
+>>>>>>>>> +++ b/Documentation/devicetree/bindings/leds/backlight/richtek,rt4831-backlight.yaml
+>>>>>>>>> @@ -47,6 +47,14 @@ properties:
+>>>>>>>>>      minimum: 0
+>>>>>>>>>      maximum: 3
+>>>>>>>>>
+>>>>>>>>> +  richtek,bled-ocp-sel:
+>>>>>>>>
+>>>>>>>> Skip "sel" as it is a shortcut of selection. Name instead:
+>>>>>>>> "richtek,backlight-ocp"
+>>>>>>>>
+>>>>>>> OK, if so, do I need to rename all properties from 'bled' to 'backlight' ?
+>>>>>>> If  only this property is naming as 'backlight'. it may conflict with
+>>>>>>> the others like as "richtek,bled-ovp-sel".
+>>>>>>
+>>>>>> Ah, no, no need.
+>>>>>>
+>>>>>>>>
+>>>>>>>>> +    description: |
+>>>>>>>>> +      Backlight OCP level selection, currently support 0.9A/1.2A/1.5A/1.8A
+>>>>>>>>
+>>>>>>>> Could you explain here what is OCP (unfold the acronym)?
+>>>>>>> Yes. And the full name is 'over current protection'.
+>>>>>>
+>>>>>> Thanks and this leads to second thing - you encode register value
+>>>>>> instead of logical value. This must be a logical value in mA, so
+>>>>>> "richtek,bled-ocp-microamp".
+>>>>>
+>>>>> We already have common properties for setting current of LEDs. We should
+>>>>> use that here I think.
+>>>>
+>>>> It might not be exactly the same. We have "led-max-microamp" which is
+>>>> the maximum allowed current. I guess over-current protection level  is
+>>>> slightly higher (e.g. led-max-microamp + 1). IOW, led-max-microamp is
+>>>> something which still can be set and used by system/hardware. OCP should
+>>>> not.
+>>>>
+>>> Yap, you're right.
+>>
+>> So I am right or Rob?
+>>
+> As I know, both are incorrect.
+>>> From the modern backlight IC design, it uses the boost converter architecture.
+>>> This OCP level is to limit the inductor current when the internal MOS
+>>> switch turn on.
+>>> Details can refer to the below wiki link
+>>> https://en.wikipedia.org/wiki/Boost_converter
+>>>
+>>> And based on it, OVP is used to limit the inductor output voltage.
+>>> Each channel maximum current is based on the IC affordable limit.
+>>> It is more like as what you said 'led-max-microamp'.
+>>>
+>>> So boost voltage level may depend on the LED VF.
+>>> The different series of LED may cause different boost voltage.
+>>>
+>>> RT4831's OVP/OCP is not just the protection, more like as the limit.
+>>
+>> This suggests Rob is right, so let's use led-max-microamp property?
+>>
+> No, the meaning is different. 'led-max-microamp' always means the
+> channel output current.
+> It already can be adjusted by backlight brightness node.
+> 
+> For example
+> low voltage side (3.3~4.4V) to generate the boost voltage to 16~17V,
+> even 20V for BLED Vout.
+> This OCP is to limit the input current of low voltage side.
+> 
+> After the explanation, do you still think it's the same thing?
 
-The KVM mechanism for controlling wbinvd is only triggered during
-kvm_vfio_group_add(), meaning it is a one-shot test done once the devices
-are setup.
+This sounds differently so I propose to use this dedicated property with
+the changes I asked for.
 
-So, there is no value in trying to push a device that could do enforced
-cache coherency to a dedicated domain vs re-using an existing domain since
-KVM won't be able to take advantage of it. This just wastes domain memory.
 
-Simplify this code and eliminate the test. This removes the only logic
-that needed to have a dummy domain attached prior to searching for a
-matching domain and simplifies the next patches.
-
-If someday we want to try and optimize this further the better approach is
-to update the Intel driver so that enforce_cache_coherency() can work on a
-domain that already has IOPTEs and then call the enforce_cache_coherency()
-after detaching a device from a domain to upgrade the whole domain to
-enforced cache coherency mode.
-
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
----
- drivers/vfio/vfio_iommu_type1.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
-
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index c13b9290e357..f4e3b423a453 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -2285,9 +2285,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 	 * testing if they're on the same bus_type.
- 	 */
- 	list_for_each_entry(d, &iommu->domain_list, next) {
--		if (d->domain->ops == domain->domain->ops &&
--		    d->enforce_cache_coherency ==
--			    domain->enforce_cache_coherency) {
-+		if (d->domain->ops == domain->domain->ops) {
- 			iommu_detach_group(domain->domain, group->iommu_group);
- 			if (!iommu_attach_group(d->domain,
- 						group->iommu_group)) {
--- 
-2.17.1
-
+Best regards,
+Krzysztof
