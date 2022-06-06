@@ -2,52 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F07EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 07:49:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F09DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 07:50:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231419AbiFFHtu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 03:49:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40778 "EHLO
+        id S231446AbiFFHuP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 03:50:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231261AbiFFHts (ORCPT
+        with ESMTP id S231494AbiFFHuL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 03:49:48 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E74792CCA5
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 00:49:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=M7NmYC/Iylm9myghHwqILim55SAUt9QrM+UZYk0eJlw=; b=g5yjwU5qCf2dcQ5FOj0qpbw8jN
-        LOnpcLOZGz8s49Q0MxPUq2WHkAiZRXH+e8GsFF4OIp/Dqk9CBqRPm9Y/fvLHicIcIJJFThSBJoAvJ
-        Inw2vta5WWQlWKwfpLItFJmo91AwEDtBPzAksR22aecHmUstAIReXlAxA4NH0AuS01z734uklNORG
-        2FGSBUQIVCIawF+iB8Wq52T7A6OeapII4DqPpPAYw+tZ23mgbta0A8TPfQIRlONOr64QRDpkmj584
-        8otqac1tg3PiZ/fb0uy/Yw3JrBV8R0VQTRotC0dJ6HIS+UriE+0ZXvO8kZunmCi+hmyWPi0gVOrZ8
-        0DBey2zQ==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1ny7UZ-00HZlM-NY; Mon, 06 Jun 2022 07:49:39 +0000
-Date:   Mon, 6 Jun 2022 00:49:39 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Kefeng Wang <wangkefeng.wang@huawei.com>
-Cc:     catalin.marinas@arm.com, will@kernel.org,
-        akpm@linux-foundation.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        hch@infradead.org, arnd@arndb.de, anshuman.khandual@arm.com,
-        Russell King <linux@armlinux.org.uk>
-Subject: Re: [PATCH v4 1/6] ARM: mm: kill unused runtime hook arch_iounmap()
-Message-ID: <Yp2xk3fu4jvA6R1R@infradead.org>
-References: <20220606074815.139265-1-wangkefeng.wang@huawei.com>
- <20220606074815.139265-2-wangkefeng.wang@huawei.com>
+        Mon, 6 Jun 2022 03:50:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 180A52ED7E;
+        Mon,  6 Jun 2022 00:50:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A7D4B611B8;
+        Mon,  6 Jun 2022 07:50:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F406C3411C;
+        Mon,  6 Jun 2022 07:50:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654501809;
+        bh=+PxN/7lvs+ASkg1d8jxQyQDR3Lobei2q0DKdDD97ktw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=pwhUPAgaA9QhCiYGxDCk9eaj+IbeH14pxMoRfl/UTuwE4GXzoYOBl4rA6IAUn3UFj
+         Lwqs+cP1bZszz57GB4GEvJ0hK3haysGkh1X7amUqlumPRQGwOC8DCOiDVNJa3ll4sy
+         IRy0KfTytHS1YUq5kNx42jRzpmuSgsGn3/1mua3vv2pwYM/6XmbMBc1VOYjMc2EYPw
+         LQhRzq4eChFBoN8NeV37mnWAWY8evcKp2k9uEzD3+AIKugyzMS8gm4KxRxhbQVPnFQ
+         ASj/eKEU1SvqU9NfY6FNot0pOndtpCe2iN7Dz/J/Wv8ojapA5qChLQo92lcvhwP+/G
+         YzmIL0X/RVLOw==
+Date:   Mon, 6 Jun 2022 08:50:02 +0100
+From:   Mauro Carvalho Chehab <mchehab@kernel.org>
+To:     Akira Yokosawa <akiyks@gmail.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        linux-gpio@vger.kernel.org, Joey Gouly <joey.gouly@arm.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Jonathan Corbet <corbet@lwn.net>, linux-kernel@vger.kernel.org,
+        linux-next@vger.kernel.org
+Subject: Re: [PATCH] gpio: Fix kernel-doc comments to nested union
+Message-ID: <20220606085002.714b7e98@sal.lan>
+In-Reply-To: <27612e81-d843-d161-ecd2-c653c7d5bae9@gmail.com>
+References: <27612e81-d843-d161-ecd2-c653c7d5bae9@gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220606074815.139265-2-wangkefeng.wang@huawei.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Looks good:
+Em Mon, 6 Jun 2022 13:44:24 +0900
+Akira Yokosawa <akiyks@gmail.com> escreveu:
 
-Reviewed-by: Christoph Hellwig <hch@lst.de>
+> Commit 48ec13d36d3f ("gpio: Properly document parent data union")
+> is supposed to have fixed a warning from "make htmldocs" regarding
+> kernel-doc comments to union members.  However, the same warning
+> still remains [1].
+> 
+> Fix the issue by following the example found in section "Nested
+> structs/unions" of Documentation/doc-guide/kernel-doc.rst.
+> 
+> Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
+> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> Fixes: 48ec13d36d3f ("gpio: Properly document parent data union")
+> Link: https://lore.kernel.org/r/20220606093302.21febee3@canb.auug.org.au/ [1]
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Cc: Bartosz Golaszewski <brgl@bgdev.pl>
+> Cc: Joey Gouly <joey.gouly@arm.com>
+> Cc: Marc Zyngier <maz@kernel.org>
+> ---
+>  include/linux/gpio/driver.h | 29 ++++++++++++++++-------------
+>  1 file changed, 16 insertions(+), 13 deletions(-)
+> 
+> diff --git a/include/linux/gpio/driver.h b/include/linux/gpio/driver.h
+> index b1e0f1f8ee2e..54c3c6506503 100644
+> --- a/include/linux/gpio/driver.h
+> +++ b/include/linux/gpio/driver.h
+> @@ -167,21 +167,24 @@ struct gpio_irq_chip {
+>  	 */
+>  	irq_flow_handler_t parent_handler;
+>  
+> -	/**
+> -	 * @parent_handler_data:
+> -	 *
+> -	 * If @per_parent_data is false, @parent_handler_data is a single
+> -	 * pointer used as the data associated with every parent interrupt.
+> -	 *
+> -	 * @parent_handler_data_array:
+> -	 *
+> -	 * If @per_parent_data is true, @parent_handler_data_array is
+> -	 * an array of @num_parents pointers, and is used to associate
+> -	 * different data for each parent. This cannot be NULL if
+> -	 * @per_parent_data is true.
+> -	 */
+>  	union {
+> +		/**
+> +		 * @parent_handler_data:
+> +		 *
+> +		 * If @per_parent_data is false, @parent_handler_data is a
+> +		 * single pointer used as the data associated with every
+> +		 * parent interrupt.
+> +		 */
+>  		void *parent_handler_data;
+> +
+> +		/**
+> +		 * @parent_handler_data_array:
+> +		 *
+> +		 * If @per_parent_data is true, @parent_handler_data_array is
+> +		 * an array of @num_parents pointers, and is used to associate
+> +		 * different data for each parent. This cannot be NULL if
+> +		 * @per_parent_data is true.
+> +		 */
+>  		void **parent_handler_data_array;
+>  	};
+
+Yeah, kernel-doc expects inlined comments to be just before each
+declaration like the above.
+
+Reviewed-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+
+Regards,
+Mauro
