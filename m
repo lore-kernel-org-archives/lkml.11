@@ -2,105 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36143C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 00:49:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B942C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 01:08:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351907AbiFFAtN (ORCPT
+        id S1348832AbiFFBIV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 5 Jun 2022 20:49:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60504 "EHLO
+        Sun, 5 Jun 2022 21:08:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348528AbiFFAtH (ORCPT
+        with ESMTP id S231492AbiFFBIS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 5 Jun 2022 20:49:07 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD3394A93E
-        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 17:49:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654476545; x=1686012545;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=m5LILM4W5Jo90plBdmv3m5E4L9wGQpi9t3QELpQxIGA=;
-  b=L+xnnjrnF4aGw0xXPOUS9EZNskMCl6xCtr6v7ojA6lbHavN4EgbLI7he
-   SN3SQ5PIBYLW3IGuPvylsd3nJIC3Nx/0Tsww34+xh9gOvmwMVirMAd5L4
-   zKn0lKXpgBwCni3H2Iw0Gefq16a3GJ4BzyPoQqvN1R+W7ISJVNx2WGz7m
-   wW2DMzVHdniHz9Q8nPbTtzlrx3XzPciBSUBZDqIRpehkUbOsNqxPbP8LL
-   xi5kcULMyk/cAebgtUdeNw4EmCVnx+4H0QNHtvletw7FA1K0ohkCnffKX
-   tEqvA1LeFJj+UgLQ+FGuDFa7yHQDWgZnZnHGp1ek8jTUMqNfKHcWie0MQ
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="258763278"
-X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="258763278"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2022 17:49:05 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="564654466"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 05 Jun 2022 17:49:02 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ny0vV-000CMv-T2;
-        Mon, 06 Jun 2022 00:49:01 +0000
-Date:   Mon, 6 Jun 2022 08:48:05 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Sander Vanheule <sander@svanheule.net>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Yury Norov <yury.norov@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Marco Elver <elver@google.com>
-Cc:     kbuild-all@lists.01.org,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        linux-kernel@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Sander Vanheule <sander@svanheule.net>
-Subject: Re: [PATCH v3 1/4] cpumask: Fix invalid uniprocessor mask assumption
-Message-ID: <202206060858.wA0FOzRy-lkp@intel.com>
-References: <cc1f7d3334348cccbf9fde091015a802f379a9be.1654410109.git.sander@svanheule.net>
+        Sun, 5 Jun 2022 21:08:18 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A46AC1178;
+        Sun,  5 Jun 2022 18:08:17 -0700 (PDT)
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LGb1h3043zjXKl;
+        Mon,  6 Jun 2022 09:07:20 +0800 (CST)
+Received: from kwepemm600013.china.huawei.com (7.193.23.68) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 6 Jun 2022 09:08:15 +0800
+Received: from [10.174.178.208] (10.174.178.208) by
+ kwepemm600013.china.huawei.com (7.193.23.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 6 Jun 2022 09:08:13 +0800
+Subject: Re: [PATCH 5.10 00/53] 5.10.120-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <stable@vger.kernel.org>, <torvalds@linux-foundation.org>,
+        <akpm@linux-foundation.org>, <linux@roeck-us.net>,
+        <shuah@kernel.org>, <patches@kernelci.org>,
+        <lkft-triage@lists.linaro.org>, <pavel@denx.de>,
+        <jonathanh@nvidia.com>, <f.fainelli@gmail.com>,
+        <sudipm.mukherjee@gmail.com>, <slade@sladewatkins.com>
+References: <20220603173818.716010877@linuxfoundation.org>
+From:   Samuel Zou <zou_wei@huawei.com>
+Message-ID: <4ed18765-6a5f-384d-abd3-29df1ccd0bd5@huawei.com>
+Date:   Mon, 6 Jun 2022 09:08:13 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cc1f7d3334348cccbf9fde091015a802f379a9be.1654410109.git.sander@svanheule.net>
+In-Reply-To: <20220603173818.716010877@linuxfoundation.org>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.208]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600013.china.huawei.com (7.193.23.68)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Sander,
 
-I love your patch! Yet something to improve:
 
-[auto build test ERROR on akpm-mm/mm-everything]
-[also build test ERROR on linus/master v5.18 next-20220603]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+On 2022/6/4 1:42, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.10.120 release.
+> There are 53 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Sun, 05 Jun 2022 17:38:05 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.120-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
+> 
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Sander-Vanheule/cpumask-Fix-invalid-uniprocessor-assumptions/20220606-004959
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git mm-everything
-config: i386-randconfig-a009 (https://download.01.org/0day-ci/archive/20220606/202206060858.wA0FOzRy-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-1) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/37b3f10c4604ea299b454f39ac5ba3cad903ae16
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Sander-Vanheule/cpumask-Fix-invalid-uniprocessor-assumptions/20220606-004959
-        git checkout 37b3f10c4604ea299b454f39ac5ba3cad903ae16
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+Tested on arm64 and x86 for 5.10.120-rc1,
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Kernel repo:
+https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+Branch: linux-5.10.y
+Version: 5.10.120-rc1
+Commit: 22be67db7d5387c15529c9ea2b258d9ef440f324
+Compiler: gcc version 7.3.0 (GCC)
 
-All errors (new ones prefixed by >>):
+arm64:
+--------------------------------------------------------------------
+Testcase Result Summary:
+total: 9033
+passed: 9033
+failed: 0
+timeout: 0
+--------------------------------------------------------------------
 
-   ld: arch/x86/kernel/cpu/cacheinfo.o: in function `__cache_amd_cpumap_setup':
-   arch/x86/kernel/cpu/cacheinfo.c:890: undefined reference to `cpu_llc_shared_map'
->> ld: arch/x86/kernel/cpu/cacheinfo.c:895: undefined reference to `cpu_llc_shared_map'
+x86:
+--------------------------------------------------------------------
+Testcase Result Summary:
+total: 9033
+passed: 9033
+failed: 0
+timeout: 0
+--------------------------------------------------------------------
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Tested-by: Hulk Robot <hulkrobot@huawei.com>
