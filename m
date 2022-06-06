@@ -2,129 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D47DFCCA482
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:10:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 138ACC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:12:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239602AbiFFOKz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 10:10:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33046 "EHLO
+        id S239601AbiFFOL7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 10:11:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239450AbiFFOKu (ORCPT
+        with ESMTP id S239525AbiFFOL5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 10:10:50 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80F4B25EAC;
-        Mon,  6 Jun 2022 07:10:47 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id n10so29227534ejk.5;
-        Mon, 06 Jun 2022 07:10:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:content-language:to:from
-         :subject:cc:content-transfer-encoding;
-        bh=zcfwBnYsaM3osnPpLQRxR1JrABrX/zB0kh++woByQVw=;
-        b=gEpMt7Yd2UxBYkCte5IR1tgFlFVQEJ5SylH2/PBFk99wiIMXMkM+sU44fPiSwHBSIa
-         IMN0bB6BoqeG1sEJlrPjvDJwshD0q/AyS0IJHSN0P9Ag849SN82OU8Ve5PJzspiKPaW1
-         ixl/BLksjnyF6+Q+zGJYXDzeZpi/LDj+JclfL1cyrON5hgnvjaUXMyC7nb1ksactUBIH
-         jb2tLQZDR3UZzGNzC9dAr2e1XwZYvkD5WfHeYwhKxD+AUN/NVrWM8f/WdIoZfPQ/vOJo
-         Hy5xj1R8bnKIgXu+lNCl9xqLdJ5CDltw8jt+jMNUJK7Q1MpOo0KjmNKdY80vONgP9gY3
-         g/vA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:from:subject:cc:content-transfer-encoding;
-        bh=zcfwBnYsaM3osnPpLQRxR1JrABrX/zB0kh++woByQVw=;
-        b=ss3fQdadU5gm21exoNWt7o3haLozUczfmXkPubPJabujpQWjlH8XniKWvLOfjBxJPw
-         dhzV0q+V6v++/2qb57tbq8uOscmIZ12L8HhM3tfEQ+Qs9S7StNnw/gO+QKmKYVq1jxYy
-         0Vd2j15ZZieUrvHokggrKElPc1GuyPXHAB/gWZi8hOz7zrQKRH7iuaCfPjX/78wfg9A2
-         PAUaj8OzOv9GCR45D9vUVyk0xxZZ5BXxONJCF3jEod7R+qCJM7AvsI7y6AIDM9WlnacE
-         5pOHPDgtXI1AISGq4OFkEAvwv6OBT8Kxp4HqmJm3cYA+FIGp3/sdt1R+xdclT+FP+cwG
-         H6kA==
-X-Gm-Message-State: AOAM532d8PaRKNM0RkupMzqtzQtcQB0j0dSlYbQw7km3DXWATjhCXi/Y
-        qpHp6FpNWxC7wu3QfRO/8is=
-X-Google-Smtp-Source: ABdhPJzqBAw+J0OHGwBe1PkTWA7yEhL5aB2O9MeJxPiApU6qXMja7NqcmfnC2G25AjnP5JFxsUOEog==
-X-Received: by 2002:a17:907:16a4:b0:711:c9a7:dc75 with SMTP id hc36-20020a17090716a400b00711c9a7dc75mr6290181ejc.542.1654524645895;
-        Mon, 06 Jun 2022 07:10:45 -0700 (PDT)
-Received: from [192.168.0.210] (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.googlemail.com with ESMTPSA id e1-20020a17090618e100b006f3ef214dc3sm6357044ejf.41.2022.06.06.07.10.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 06 Jun 2022 07:10:45 -0700 (PDT)
-Message-ID: <a1aab4df-9e1c-793f-5c3d-d735e4f4fb57@gmail.com>
-Date:   Mon, 6 Jun 2022 15:10:44 +0100
+        Mon, 6 Jun 2022 10:11:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7C333899
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 07:11:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 73FA76136A
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 14:11:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05180C385A9;
+        Mon,  6 Jun 2022 14:11:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654524715;
+        bh=/AjJKSJMQW1agM11b8sXBOr3eb89Qd3sPF68DdJxlkk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=qPoiifOmtGuPDr2CKbvgKSKxA7eCL/+tnh5UO6wHNzvVB4SPbPmfgLIxJIzNJ6AMM
+         LSthrjIPExfn2GQ7za/RyT9MHN7R7k0NWuT+QI7InEP9RK/JOXwEN1ltt3Oom6TL0v
+         A4eb2XJx9ziYdyZmwAWWHKr8Ms3zN9o6rgkqZM+byamYSrbfTCqGo+luRGxIrdO/Sx
+         ala7aYh+uSj/frDhnw0Bh3gGBcG6ecYWp5Q25qT4rIZlaQszM9Zv2XaQt/RkPxxLE6
+         T5U/8+gEEP1Ypde4WOX+3rOUdp6u3Ds1nCd0yB0pshv83LrEPGfQSV3lnTALFJ55vG
+         iWTJ8WKeKUuoQ==
+From:   Tzung-Bi Shih <tzungbi@kernel.org>
+To:     bleung@chromium.org, groeck@chromium.org
+Cc:     chrome-platform@lists.linux.dev, tzungbi@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 00/13] platform/chrome: Kunit tests and refactor for cros_ec_query_all()
+Date:   Mon,  6 Jun 2022 14:10:38 +0000
+Message-Id: <20220606141051.285823-1-tzungbi@kernel.org>
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Content-Language: en-US
-To:     Shiyang Ruan <ruansy.fnst@fujitsu.com>
-From:   "Colin King (gmail)" <colin.i.king@gmail.com>
-Subject: re: fsdax: output address in dax_iomap_pfn() and rename it
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Matthew Wilcox <willy@infradead.org>, Jan Kara <jack@suse.cz>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        nvdimm@lists.linux.dev,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+The 1st patch fixes compile errors when including cros_ec_commands.h.
 
-Static analysis with clang scan-build found a potential issue with the 
-following commit in linux-next today:
+The 2nd patch adds Kunit tests for cros_ec_query_all().  They are baseline
+tests for the following refactor patches.
 
-commit 1447ac26a96463a05ad9f5cfba7eef43d52913ef
-Author: Shiyang Ruan <ruansy.fnst@fujitsu.com>
-Date:   Fri Jun 3 13:37:32 2022 +0800
+The 6th, 11th, and 13th patches change the behavior a bit internally.
 
-     fsdax: output address in dax_iomap_pfn() and rename it
+The rest of patches are refactor.
 
+Tzung-Bi Shih (13):
+  platform/chrome: cros_ec_commands: fix compile errors
+  platform/chrome: cros_ec_proto: add Kunit tests for
+    cros_ec_query_all()
+  platform/chrome: use macros for passthru indexes
+  platform/chrome: cros_ec_proto: assign buffer size from protocol info
+  platform/chrome: cros_ec_proto: remove redundant NULL check
+  platform/chrome: cros_ec_proto: use cros_ec_map_error()
+  platform/chrome: cros_ec_proto: separate fill_protocol_info()
+  platform/chrome: cros_ec_proto: separate fill_protocol_info_legacy()
+  platform/chrome: cros_ec_proto: use devm_krealloc()
+  platform/chrome: cros_ec_proto: arrange
+    get_host_command_version_mask()
+  platform/chrome: cros_ec_proto: fix get_host_command_version_mask()
+    returns
+  platform/chrome: cros_ec_proto: arrange get_host_event_wake_mask()
+  platform/chrome: cros_ec_proto: fix get_host_event_wake_mask() returns
 
-The analysis is as follows:
-
-
-static int dax_iomap_direct_access(const struct iomap *iomap, loff_t pos,
-                 size_t size, void **kaddr, pfn_t *pfnp)
-{
-         pgoff_t pgoff = dax_iomap_pgoff(iomap, pos);
-         int id, rc;
-         long length;
-
-         id = dax_read_lock();
-         length = dax_direct_access(iomap->dax_dev, pgoff, PHYS_PFN(size),
-                                    DAX_ACCESS, kaddr, pfnp);
-         if (length < 0) {
-                 rc = length;
-                 goto out;
-         }
-         if (!pfnp)
-                 goto out_check_addr;
-
-The above check jumps to out_check_addr, if kaddr is null then rc is not 
-set and a garbage uninitialized value for rc is returned on the out path.
-
-
-         rc = -EINVAL;
-         if (PFN_PHYS(length) < size)
-                 goto out;
-         if (pfn_t_to_pfn(*pfnp) & (PHYS_PFN(size)-1))
-                 goto out;
-         /* For larger pages we need devmap */
-         if (length > 1 && !pfn_t_devmap(*pfnp))
-                 goto out;
-         rc = 0;
-
-out_check_addr:
-         if (!kaddr)
-                 goto out;
-         if (!*kaddr)
-                 rc = -EFAULT;
-out:
-         dax_read_unlock(id);
-         return rc;
-}
+ drivers/platform/chrome/Kconfig               |   6 +
+ drivers/platform/chrome/Makefile              |   1 +
+ drivers/platform/chrome/cros_ec.c             |   3 -
+ drivers/platform/chrome/cros_ec_proto.c       | 285 +++--
+ drivers/platform/chrome/cros_ec_proto_test.c  | 983 ++++++++++++++++++
+ drivers/platform/chrome/cros_ec_trace.h       |   8 +-
+ drivers/platform/chrome/cros_kunit_util.c     |  98 ++
+ drivers/platform/chrome/cros_kunit_util.h     |  36 +
+ .../linux/platform_data/cros_ec_commands.h    |   4 +-
+ include/linux/platform_data/cros_ec_proto.h   |   3 +
+ 10 files changed, 1254 insertions(+), 173 deletions(-)
+ create mode 100644 drivers/platform/chrome/cros_kunit_util.c
+ create mode 100644 drivers/platform/chrome/cros_kunit_util.h
 
 
-Colin
+base-commit: 4319cbd4ed99003e0c981728ab1626c25be7af4a
+-- 
+2.36.1.255.ge46751e96f-goog
 
