@@ -2,50 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69454C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 15:26:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B81D1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 15:26:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240774AbiFFP0p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 11:26:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46200 "EHLO
+        id S240690AbiFFP0w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 11:26:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240601AbiFFPZx (ORCPT
+        with ESMTP id S240610AbiFFPZy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 11:25:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 080A91CD361;
+        Mon, 6 Jun 2022 11:25:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BFAB1CD36E;
         Mon,  6 Jun 2022 08:25:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CB7CF6150D;
-        Mon,  6 Jun 2022 15:25:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F27B1C36B03;
-        Mon,  6 Jun 2022 15:25:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1069D6154B;
+        Mon,  6 Jun 2022 15:25:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EFB2C341E8;
+        Mon,  6 Jun 2022 15:25:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1654529149;
-        bh=bv86DwGzWLqhD5P8CP9tPQuLZL3y15Vz58qOWkDLoP4=;
+        bh=P/ZZQJbpLLBjuQh2G6MF/T6nwAhbQfPWvBqgMsptpx4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ty+L57VM4KWcjIrZISVlYpRyN9HEBnpxop3nlhO+wrblXzYVl4wK05aYr+6x7Srks
-         cWQj9Ecu56XfLyQN9vGV1ilinSnqXsTTd9cw4vxpkyBi8SdDxMt4YzBXBKJx7WJeDd
-         8eiYWjWf0vSsb47EDcazZCOb7piXV85uTY0fHgFJUsk69Jwc7zX1NHjNgmov5uYkOp
-         Ycm1l0CAxmA4D+mazHVKdb3Ac4pi6DOxphJP+8pGf6T338Aa4ssh7KMt5zq1P5cCUW
-         xMi3cWeYcxwTplBrDuzF38s3kOoOPAC2g7VdHCLor50VRvg3ZVsjxBGfHC6D6mRHNl
-         n6b3XN75qJmbA==
+        b=Ko5+VusQxc88bi5bLZkz9C30n0GqVEWwi7lPqyCxMEfS/5Lxu+WyJ0VpF6r65BQDX
+         qtn661HpXY3EA4IdaR5thgiryc0rKlBC6axQoiCvV32js/gPV16tk9NxhIc78lRUxk
+         iI50i60mrZNkaNJWyNxg7zWJlZDOgbCdJw5zIVb1wqDd3xnK3smmzpItKxvbqffY5f
+         et/sLiJYChTb4jOOP90CXxzpavDcC31r8kMUxHLEqfMB5kpE0mjSEngFywuK+nHr1t
+         NVdEAjjQdFYcwWGH3ejTLFckd9zf1RuXsXWDbfR28au5aoFCB3Jzj2wMLrA8r//Kvn
+         qm5uA9pEoIQGA==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1nyEby-0012PC-6I;
+        id 1nyEby-0012Q9-GE;
         Mon, 06 Jun 2022 16:25:46 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
         Jonathan Corbet <corbet@lwn.net>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
         "Mauro Carvalho Chehab" <mchehab+huawei@kernel.org>,
-        David Howells <dhowells@redhat.com>, linux-cachefs@redhat.com,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 08/23] docs: filesystems: update netfs-api.rst reference
-Date:   Mon,  6 Jun 2022 16:25:30 +0100
-Message-Id: <e76a5b3977cb566ecd6d1a8fd55f6c7c1cbafb72.1654529011.git.mchehab@kernel.org>
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
+        linux-m68k@lists.linux-m68k.org
+Subject: [PATCH 23/23] arch: m68k: q40: README: drop references to IDE driver
+Date:   Mon,  6 Jun 2022 16:25:45 +0100
+Message-Id: <39b24f99f5b71eb5ac025b438b7eb2a0df2258a1.1654529011.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1654529011.git.mchehab@kernel.org>
 References: <cover.1654529011.git.mchehab@kernel.org>
@@ -55,35 +56,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Changeset efc930fa1d84 ("docs: filesystems: caching/netfs-api.txt: convert it to ReST")
-renamed: Documentation/filesystems/caching/netfs-api.txt
-to: Documentation/filesystems/caching/netfs-api.rst.
+Since IDE support was deleted by Christoph Hellwig <hch@lst.de>,
+Jun 16 2021, drop the left-over from README file.
 
-Update its cross-reference accordingly.
-
-Fixes: efc930fa1d84 ("docs: filesystems: caching/netfs-api.txt: convert it to ReST")
+Fixes: b7fb14d3ac63 ("ide: remove the legacy ide driver")
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
 
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH 00/23] at: https://lore.kernel.org/all/cover.1654529011.git.mchehab@kernel.org/
 
- include/linux/fscache.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/m68k/q40/README | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/include/linux/fscache.h b/include/linux/fscache.h
-index 72585c9729a2..2f82ea31d4c1 100644
---- a/include/linux/fscache.h
-+++ b/include/linux/fscache.h
-@@ -378,7 +378,7 @@ void fscache_update_cookie(struct fscache_cookie *cookie, const void *aux_data,
-  *
-  * Request that the size of an object be changed.
-  *
-- * See Documentation/filesystems/caching/netfs-api.txt for a complete
-+ * See Documentation/filesystems/caching/netfs-api.rst for a complete
-  * description.
-  */
- static inline
+diff --git a/arch/m68k/q40/README b/arch/m68k/q40/README
+index a4991d2d8af6..4db6db54d57a 100644
+--- a/arch/m68k/q40/README
++++ b/arch/m68k/q40/README
+@@ -30,9 +30,7 @@ drivers used by the Q40, apart from the very obvious (console etc.):
+ 		     genrtc.c		# RTC
+ 		char/joystick/*		# most of this should work, not
+ 				        # in default config.in
+-	        block/q40ide.c		# startup for ide
+-		      ide*		# see Documentation/ide/ide.rst
+-		      floppy.c		# normal PC driver, DMA emu in asm/floppy.h
++	        block/floppy.c		# normal PC driver, DMA emu in asm/floppy.h
+ 					# and arch/m68k/kernel/entry.S
+ 					# see drivers/block/README.fd
+ 		net/ne.c
 -- 
 2.36.1
 
