@@ -2,105 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D85CC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 15:30:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DAD5C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 15:32:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240536AbiFFPaq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 11:30:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42868 "EHLO
+        id S240917AbiFFPcN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 11:32:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240527AbiFFPam (ORCPT
+        with ESMTP id S240970AbiFFPcE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 11:30:42 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14D1436146
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 08:30:36 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id q21so29703651ejm.1
-        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 08:30:36 -0700 (PDT)
+        Mon, 6 Jun 2022 11:32:04 -0400
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 501FB38D9F
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 08:31:44 -0700 (PDT)
+Received: by mail-lj1-x22e.google.com with SMTP id q1so16167551ljb.5
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 08:31:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MEyaqWM6nauSyOE/o6cR6HwD4AGRKj1DKlampNeNe54=;
-        b=ebBCl9ALvXs/hDq13HqiEeAtprViCGphd4r907eKS91OqO6wlFsCghYVoFTcBaiLxR
-         +BraHJEoPdruKUUlpI1zrcpfQ+slS0OKAYhZShj4ETcGG/dGncD/kvQaDZcLqKtIRpT3
-         tEro5Seb389aioq7xC4RNTHYmASlM/jXz40R4=
+        d=kvaser.com; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=3IQLw4WbkQa+wAa1iZfTyCfXyto7YbC3Q6qJuX9XAw4=;
+        b=KVkA9gDhvveDE1vPCfgz3edIeZnoMisziwBIyCmOYpWcIFfZ37JxrOU8HXoowc+9PS
+         5pUblh6GZaG9HaZlAoHag7HGh/jzoNjEHW008/7U/wF5dFRC3emk4Irr5vXqCSeJ1Win
+         yslw2RMt43ryN02KpZINsj/U44Hj2TA9esyiW2Uk9Fo+UEjZ6cXdEbryTs3BMtnInDW3
+         ojIhWBFuonM/AlC6B0u/cfU48ax9Vm7QAcX0mUfDQUMba9zrEYfYhhzJlgby5gPl2k1y
+         a1GxqSAxDHbWJAm2Elkz02s6sT/nxkBTc5LNRQ5nv7uKucfs8PN8dFePx/ZHn3f19QAv
+         M75g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MEyaqWM6nauSyOE/o6cR6HwD4AGRKj1DKlampNeNe54=;
-        b=UnskGSk+65MSLUaH/R+7xwFM+rui3pKECRw2CjekfIGzMxWsXmT3VL6L9BSqdiEufi
-         i41Kxs0ayH+nUVob7bWKFhJigP7dBvXMXfTnncL9WOD1pQU6DIrp1YPfyJRkx6cHU7WR
-         8Ysu9qeyBZ6EtJAzLymTIA3L4styFex1hTNaKBdyEgpiihCd0AFdrIEpVE92QXCwUzGk
-         qKxpAANNEDoD7pXerWiBpGnhr5lIgx4knuLEniYjsotoZe+9Wiv2BP1F6WigRensKGww
-         ppi0GdAxIc38Uzr6HvEONiVsO4GCao8yJxzesz6Ce3+OFVePrPwqvGcBFLRbNOQSz23Q
-         35fg==
-X-Gm-Message-State: AOAM532AMfdxWwSOuAhasFA9yoh9baj9kw9mekH+4bzxHeqFxKuGiWhb
-        zgP2SjWsUd1h82/MiASECf98AZkCKKswYQQx0LdhuQ==
-X-Google-Smtp-Source: ABdhPJw3lFG2FHh8YBss/swu6q2uufYMGgGFis+oLM6PD4uIZua7oPEouaSwOJQ0zYOIYT0kfRfPo744IaHyEHggWNk=
-X-Received: by 2002:a17:906:eb54:b0:708:99d6:83e with SMTP id
- mc20-20020a170906eb5400b0070899d6083emr21650908ejb.745.1654529425433; Mon, 06
- Jun 2022 08:30:25 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=3IQLw4WbkQa+wAa1iZfTyCfXyto7YbC3Q6qJuX9XAw4=;
+        b=dWEaq+2uvRebVS7soP/5k4kQufC9BL+YkI93LxuNZg0Kbhnkh/+LcyMqRL6xZksjxl
+         KUF4Sze+KBgJ9OMMMdTt3ew6wneV97naU+Hb+ME4mxNnabTmGD9wrCcwogkhfN0RfuHj
+         TxLuWFj+hJLBBL7OYmP490i1nkt+rpcmnwbHDa34yKXIeSRyEw+W39+dtWQ9Dy3Q/iWh
+         NToBqF5Kspa70/NtIn8sjEJziLfOJ57FHhk9GfzEmLwngkX0f3bdk7l2ujaq0j62vdJJ
+         RyvuQCX7AtipE5wCi4PZ7xAmGxstZHHVY2zcournR0hhaUuiOb668zpDCDqGPsruN7KD
+         SWWQ==
+X-Gm-Message-State: AOAM530vkgDTb6meJXxGaivz9o3Pgnbqj/hgWj+MOrNZFk5w8CoXI4o+
+        6sfvc084wVvp6F8Bxb6qeNsrcg==
+X-Google-Smtp-Source: ABdhPJy81rfaB5ZlTyXicVEikJfpMvAMZJ+wwX6R9AiMRfktS2Ph0EYB94+vQ+qThhu86eTa4tPHxA==
+X-Received: by 2002:a2e:8044:0:b0:255:a587:3f7e with SMTP id p4-20020a2e8044000000b00255a5873f7emr989325ljg.43.1654529499708;
+        Mon, 06 Jun 2022 08:31:39 -0700 (PDT)
+Received: from [192.168.16.142] (h-155-4-68-234.A785.priv.bahnhof.se. [155.4.68.234])
+        by smtp.gmail.com with ESMTPSA id h40-20020a0565123ca800b004785b66a9a4sm2899397lfv.126.2022.06.06.08.31.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 06 Jun 2022 08:31:39 -0700 (PDT)
+Message-ID: <a29d5945-0344-4721-553d-e710a3afc61a@kvaser.com>
+Date:   Mon, 6 Jun 2022 17:31:57 +0200
 MIME-Version: 1.0
-References: <20220530113033.124072-1-hsinyi@chromium.org> <20220530113033.124072-2-hsinyi@chromium.org>
-In-Reply-To: <20220530113033.124072-2-hsinyi@chromium.org>
-From:   Hsin-Yi Wang <hsinyi@chromium.org>
-Date:   Mon, 6 Jun 2022 23:29:59 +0800
-Message-ID: <CAJMQK-jw+sgunEwgEQAw-V8DAbybZ7WVnZJ6vwOdzQ+-SX_bQg@mail.gmail.com>
-Subject: Re: [PATCH 2/2] arm64: dts: mt8183: Add panel rotation
-To:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     Hans de Goede <hdegoede@redhat.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel@lists.freedesktop.org,
-        linux-mediatek@lists.infradead.org,
-        Rob Clark <robdclark@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH 07/12] can: kvaser_usb_leaf: Fix CAN state after restart
+Content-Language: en-US
+To:     Anssi Hannula <anssi.hannula@bitwise.fi>
+Cc:     linux-can@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-kernel@vger.kernel.org
+References: <20220516134748.3724796-1-anssi.hannula@bitwise.fi>
+ <20220516134748.3724796-8-anssi.hannula@bitwise.fi>
+From:   Jimmy Assarsson <extja@kvaser.com>
+In-Reply-To: <20220516134748.3724796-8-anssi.hannula@bitwise.fi>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 30, 2022 at 7:30 PM Hsin-Yi Wang <hsinyi@chromium.org> wrote:
->
-> krane, kakadu, and kodama boards have a default panel rotation.
->
-> Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
-> Reviewed-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-> Tested-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+On 5/16/22 15:47, Anssi Hannula wrote:
+> can_restart() expects CMD_START_CHIP to set the error state to
+> ERROR_ACTIVE as it calls netif_carrier_on() immediately afterwards.
+> 
+> Otherwise the user may immediately trigger restart again and hit a
+> BUG_ON() in can_restart().
+> 
+> Fix kvaser_usb_leaf set_mode(CMD_START_CHIP) to set the expected state.
+> 
+> Fixes: 080f40a6fa28 ("can: kvaser_usb: Add support for Kvaser CAN/USB devices")
+> Signed-off-by: Anssi Hannula <anssi.hannula@bitwise.fi>
+
+
+Looks good to me.
+Tested-by: Jimmy Assarsson <extja@kvaser.com>
+
 > ---
-
-Hi Matthias,
-
-The series ("Add a panel API to return panel orientation") might land
-in drm-misc. With this series applied, we can add this patch to give
-the correct default orientation for mt8183 kukui devices.
-I didn't send this patch again with the series, since they might land
-in different trees.
-
-Thanks.
-
->  arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi b/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi
-> index 8d5bf73a9099..f0dd5a06629d 100644
-> --- a/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi
-> +++ b/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi
-> @@ -276,6 +276,7 @@ panel: panel@0 {
->                 avee-supply = <&ppvarp_lcd>;
->                 pp1800-supply = <&pp1800_lcd>;
->                 backlight = <&backlight_lcd0>;
-> +               rotation = <270>;
->                 port {
->                         panel_in: endpoint {
->                                 remote-endpoint = <&dsi_out>;
-> --
-> 2.36.1.124.g0e6072fb45-goog
->
+>   drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c | 2 ++
+>   1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c b/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c
+> index 2d30a662edb5..5f27c00179c1 100644
+> --- a/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c
+> +++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c
+> @@ -1411,6 +1411,8 @@ static int kvaser_usb_leaf_set_mode(struct net_device *netdev,
+>   		err = kvaser_usb_leaf_simple_cmd_async(priv, CMD_START_CHIP);
+>   		if (err)
+>   			return err;
+> +
+> +		priv->can.state = CAN_STATE_ERROR_ACTIVE;
+>   		break;
+>   	default:
+>   		return -EOPNOTSUPP;
