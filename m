@@ -2,152 +2,214 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8999EC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 15:57:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 585FBC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 16:00:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241185AbiFFP5H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 11:57:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58680 "EHLO
+        id S241376AbiFFQAk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 12:00:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241168AbiFFP5E (ORCPT
+        with ESMTP id S241355AbiFFQAj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 11:57:04 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19D7C1D0DF;
-        Mon,  6 Jun 2022 08:57:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
-        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=hU4R6/iBUp/dtfX8tAmKB9EUg/WAL2XOAVfbzaq0EuI=; b=g/yFzWijqEL9LMtS5EQv5ECnHg
-        hUKbaD3IP81alwyiJ4M+Iouw1RTHClicmOLvYX/p/+fpvEBOGbNYYg80TOcmDW6u7OPFb+8LvLD16
-        b7a3HQFKdn+rNC8Z+wUibs6Gi3cTnSla/iHwicYSBCyAub4EPJOxSaPdQ0mUXU6ZcgHB4T+RRAtZp
-        o/uuWLb3AxKdtSCVKkMDKqVPbj9Og7YVWBcqsKZqsF7WdRd4w0cNSUg63PKYO8UQJjeUiWBdXdCay
-        22mAamJMNE8fsPbp2wFLsmSw6Pwjzwl4Uc4OvoiPYt1flrO/fgC6MHYu4SZJNigTZcBq9HGzpOoB1
-        w8Ckvcbg==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nyF61-005URP-SA; Mon, 06 Jun 2022 15:56:51 +0000
-Message-ID: <d01a18b0-f582-f1de-eab5-78e34f014e7b@infradead.org>
-Date:   Mon, 6 Jun 2022 08:56:38 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 09/23] Documentation: update watch_queue.rst references
-Content-Language: en-US
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>
-Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Aaron Tomlin <atomlin@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Chris Down <chris@chrisdown.name>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        David Howells <dhowells@redhat.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Kees Cook <keescook@chromium.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Peter Xu <peterx@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vlastimil Babka <vbabka@suse.cz>, keyrings@vger.kernel.org,
+        Mon, 6 Jun 2022 12:00:39 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4EA654014;
+        Mon,  6 Jun 2022 09:00:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654531237; x=1686067237;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Whbm76ighjquhn9lHLvT56hgOoikyqGFoVxGhxzwV9k=;
+  b=Me5GEYZH1GwWMfwAn2xZu3+HAGfdQS+FrTrv4fYALdp/Gx728oL+AQ99
+   eDwK3QV1OcWJCXImVKrRRBzjPz1Xumut5dBBGgVg3TR1Fxd4Cmf/5XigL
+   uxqbOItz0W8ksWJGjFkgKrLYUVAmRpoBnhYIRqxL1ycx/B9WYvWBgvC+Q
+   cKL0ZWzGgbkaTpKfZUk0Pryni/DpSP0Z7+zD7RUVjzeeSKP85GnJ9F8DH
+   FuJ6HLTzknQe78+2CU+EuYmQ0OJmDwY9U5yViI7qStxphawqJaqgr7AZ/
+   Zpw85cvgfIVdyBjk7Bjiyn0tC1lG6j3vKsRhrrMEIHzIOA+z+TfizkWJe
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="257110969"
+X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
+   d="scan'208";a="257110969"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 09:00:37 -0700
+X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
+   d="scan'208";a="906607965"
+Received: from rhweight-mobl.amr.corp.intel.com (HELO rhweight-mobl.ra.intel.com) ([10.255.231.138])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 09:00:35 -0700
+From:   Russ Weight <russell.h.weight@intel.com>
+To:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
+        lee.jones@linaro.org, linux-fpga@vger.kernel.org,
         linux-kernel@vger.kernel.org
-References: <cover.1654529011.git.mchehab@kernel.org>
- <6fc832114fac77b56b9e47aa300654bf30cc0fad.1654529011.git.mchehab@kernel.org>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <6fc832114fac77b56b9e47aa300654bf30cc0fad.1654529011.git.mchehab@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Cc:     trix@redhat.com, marpagan@redhat.com, lgoncalv@redhat.com,
+        matthew.gerlach@linux.intel.com,
+        basheer.ahmed.muddebihal@intel.com, tianfei.zhang@intel.com,
+        Russ Weight <russell.h.weight@intel.com>
+Subject: [PATCH v23 3/5] fpga: m10bmc-sec: expose max10 flash update count
+Date:   Mon,  6 Jun 2022 09:00:36 -0700
+Message-Id: <20220606160038.846236-4-russell.h.weight@intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220606160038.846236-1-russell.h.weight@intel.com>
+References: <20220606160038.846236-1-russell.h.weight@intel.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mauro,
+Extend the MAX10 BMC Secure Update driver to provide a sysfs file to
+expose the flash update count.
 
-On 6/6/22 08:25, Mauro Carvalho Chehab wrote:
-> Changeset f5461124d59b ("Documentation: move watch_queue to core-api")
-> renamed: Documentation/watch_queue.rst
-> to: Documentation/core-api/watch_queue.rst.
-> 
-> Update the cross-references accordingly.
-> 
-> Fixes: f5461124d59b ("Documentation: move watch_queue to core-api")
-> Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-> ---
+Reviewed-by: Tom Rix <trix@redhat.com>
+Tested-by: Tianfei Zhang <tianfei.zhang@intel.com>
+Acked-by: Xu Yilun <yilun.xu@intel.com>
+Signed-off-by: Russ Weight <russell.h.weight@intel.com>
+---
+v23:
+  - Rebased for 5.19-rc1
+v22:
+  - Added Tested-by tag from Tianfei and Acked-by tag from Yilun.
+  - Updated KernelVersion and Date in ABI documentation to 5.20 and
+    Sep 2022 respectively.
+v21:
+  - Replace WARN_ON(FLASH_COUNT_SIZE % stride) with a more elaborate test.
+    Return -EINVAL and write a message to the kernel log. Call WARN_ON_ONCE().
+v20:
+  - No change
+v19:
+  - Change "card bmc" naming back to "m10 bmc" naming to be consistent
+    with the parent driver.
+v18:
+  - No change
+v17:
+  - Update the Date and KernelVersion for the ABI documentation to Jul 2022
+    and 5.19 respectively.
+  - Change "m10bmc" in symbol names to "cardbmc" to reflect the fact that the
+    future devices will not necessarily use the MAX10.
+v16:
+  - No Change
+v15:
+  - Updated the Dates and KernelVersions in the ABI documentation
+v14:
+  - No change
+v13:
+  - Updated ABI documentation date and kernel version
+v12:
+  - Updated Date and KernelVersion fields in ABI documentation
+v11:
+  - No change
+v10:
+  - Changed the path expression in the sysfs documentation to
+    replace the n3000 reference with something more generic to
+    accomodate other devices that use the same driver.
+v9:
+  - Rebased to 5.12-rc2 next
+  - Updated Date and KernelVersion in ABI documentation
+v8:
+  - Previously patch 3/6, otherwise no change
+v7:
+  - Updated Date and KernelVersion in ABI documentation
+v6:
+  - Changed flash_count_show() parameter list to achieve
+    reverse-christmas tree format.
+  - Added WARN_ON() call for (FLASH_COUNT_SIZE / stride) to ensure
+    that the proper count is passed to regmap_bulk_read().
+v5:
+  - Renamed sysfs node user_flash_count to flash_count and updated the
+    sysfs documentation accordingly.
+v4:
+  - Moved the sysfs file for displaying the flash count from the
+    FPGA Security Manager class driver to here. The
+    m10bmc_user_flash_count() function is removed and the
+    functionality is moved into a user_flash_count_show()
+    function.
+  - Added ABI documentation for the new sysfs entry
+v3:
+  - Changed: iops -> sops, imgr -> smgr, IFPGA_ -> FPGA_, ifpga_ to fpga_
+  - Changed "MAX10 BMC Secure Engine driver" to "MAX10 BMC Secure Update
+    driver"
+  - Removed wrapper functions (m10bmc_raw_*, m10bmc_sys_*). The
+    underlying functions are now called directly.
+v2:
+  - Renamed get_qspi_flash_count() to m10bmc_user_flash_count()
+  - Minor code cleanup per review comments
+  - Added m10bmc_ prefix to functions in m10bmc_iops structure
+---
+ .../sysfs-driver-intel-m10-bmc-sec-update     |  8 ++++
+ drivers/fpga/intel-m10-bmc-sec-update.c       | 43 +++++++++++++++++++
+ 2 files changed, 51 insertions(+)
 
-Oops. Thanks for the update.
-
-Reviewed-by: Randy Dunlap <rdunlap@infradead.org>
-
-> 
-> To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
-> See [PATCH 00/23] at: https://lore.kernel.org/all/cover.1654529011.git.mchehab@kernel.org/
-> 
->  Documentation/security/keys/core.rst | 2 +-
->  include/linux/watch_queue.h          | 2 +-
->  init/Kconfig                         | 2 +-
->  kernel/watch_queue.c                 | 2 +-
->  4 files changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/Documentation/security/keys/core.rst b/Documentation/security/keys/core.rst
-> index b3ed5c581034..811b905b56bf 100644
-> --- a/Documentation/security/keys/core.rst
-> +++ b/Documentation/security/keys/core.rst
-> @@ -1046,7 +1046,7 @@ The keyctl syscall functions are:
->       "filter" is either NULL to remove a watch or a filter specification to
->       indicate what events are required from the key.
->  
-> -     See Documentation/watch_queue.rst for more information.
-> +     See Documentation/core-api/watch_queue.rst for more information.
->  
->       Note that only one watch may be emplaced for any particular { key,
->       queue_fd } combination.
-> diff --git a/include/linux/watch_queue.h b/include/linux/watch_queue.h
-> index 3b9a40ae8bdb..fc6bba20273b 100644
-> --- a/include/linux/watch_queue.h
-> +++ b/include/linux/watch_queue.h
-> @@ -4,7 +4,7 @@
->   * Copyright (C) 2020 Red Hat, Inc. All Rights Reserved.
->   * Written by David Howells (dhowells@redhat.com)
->   *
-> - * See Documentation/watch_queue.rst
-> + * See Documentation/core-api/watch_queue.rst
->   */
->  
->  #ifndef _LINUX_WATCH_QUEUE_H
-> diff --git a/init/Kconfig b/init/Kconfig
-> index c984afc489de..c84ceb2b2b9f 100644
-> --- a/init/Kconfig
-> +++ b/init/Kconfig
-> @@ -414,7 +414,7 @@ config WATCH_QUEUE
->  	  with watches for key/keyring change notifications and device
->  	  notifications.
->  
-> -	  See Documentation/watch_queue.rst
-> +	  See Documentation/core-api/watch_queue.rst
->  
->  config CROSS_MEMORY_ATTACH
->  	bool "Enable process_vm_readv/writev syscalls"
-> diff --git a/kernel/watch_queue.c b/kernel/watch_queue.c
-> index 230038d4f908..869fea4fe26b 100644
-> --- a/kernel/watch_queue.c
-> +++ b/kernel/watch_queue.c
-> @@ -4,7 +4,7 @@
->   * Copyright (C) 2020 Red Hat, Inc. All Rights Reserved.
->   * Written by David Howells (dhowells@redhat.com)
->   *
-> - * See Documentation/watch_queue.rst
-> + * See Documentation/core-api/watch_queue.rst
->   */
->  
->  #define pr_fmt(fmt) "watchq: " fmt
-
+diff --git a/Documentation/ABI/testing/sysfs-driver-intel-m10-bmc-sec-update b/Documentation/ABI/testing/sysfs-driver-intel-m10-bmc-sec-update
+index a208367e6956..6114e15885e5 100644
+--- a/Documentation/ABI/testing/sysfs-driver-intel-m10-bmc-sec-update
++++ b/Documentation/ABI/testing/sysfs-driver-intel-m10-bmc-sec-update
+@@ -27,3 +27,11 @@ Description:	Read only. Returns the root entry hash for the BMC image
+ 		"hash not programmed".  This file is only visible if the
+ 		underlying device supports it.
+ 		Format: string.
++
++What:		/sys/bus/platform/drivers/intel-m10bmc-sec-update/.../security/flash_count
++Date:		Sep 2022
++KernelVersion:	5.20
++Contact:	Russ Weight <russell.h.weight@intel.com>
++Description:	Read only. Returns number of times the secure update
++		staging area has been flashed.
++		Format: "%u".
+diff --git a/drivers/fpga/intel-m10-bmc-sec-update.c b/drivers/fpga/intel-m10-bmc-sec-update.c
+index f9f39d2cfe5b..25b21f116976 100644
+--- a/drivers/fpga/intel-m10-bmc-sec-update.c
++++ b/drivers/fpga/intel-m10-bmc-sec-update.c
+@@ -78,7 +78,50 @@ DEVICE_ATTR_SEC_REH_RO(bmc, BMC_PROG_MAGIC, BMC_PROG_ADDR, BMC_REH_ADDR);
+ DEVICE_ATTR_SEC_REH_RO(sr, SR_PROG_MAGIC, SR_PROG_ADDR, SR_REH_ADDR);
+ DEVICE_ATTR_SEC_REH_RO(pr, PR_PROG_MAGIC, PR_PROG_ADDR, PR_REH_ADDR);
+ 
++#define FLASH_COUNT_SIZE 4096	/* count stored as inverted bit vector */
++
++static ssize_t flash_count_show(struct device *dev,
++				struct device_attribute *attr, char *buf)
++{
++	struct m10bmc_sec *sec = dev_get_drvdata(dev);
++	unsigned int stride, num_bits;
++	u8 *flash_buf;
++	int cnt, ret;
++
++	stride = regmap_get_reg_stride(sec->m10bmc->regmap);
++	num_bits = FLASH_COUNT_SIZE * 8;
++
++	flash_buf = kmalloc(FLASH_COUNT_SIZE, GFP_KERNEL);
++	if (!flash_buf)
++		return -ENOMEM;
++
++	if (FLASH_COUNT_SIZE % stride) {
++		dev_err(sec->dev,
++			"FLASH_COUNT_SIZE (0x%x) not aligned to stride (0x%x)\n",
++			FLASH_COUNT_SIZE, stride);
++		WARN_ON_ONCE(1);
++		return -EINVAL;
++	}
++
++	ret = regmap_bulk_read(sec->m10bmc->regmap, STAGING_FLASH_COUNT,
++			       flash_buf, FLASH_COUNT_SIZE / stride);
++	if (ret) {
++		dev_err(sec->dev,
++			"failed to read flash count: %x cnt %x: %d\n",
++			STAGING_FLASH_COUNT, FLASH_COUNT_SIZE / stride, ret);
++		goto exit_free;
++	}
++	cnt = num_bits - bitmap_weight((unsigned long *)flash_buf, num_bits);
++
++exit_free:
++	kfree(flash_buf);
++
++	return ret ? : sysfs_emit(buf, "%u\n", cnt);
++}
++static DEVICE_ATTR_RO(flash_count);
++
+ static struct attribute *m10bmc_security_attrs[] = {
++	&dev_attr_flash_count.attr,
+ 	&dev_attr_bmc_root_entry_hash.attr,
+ 	&dev_attr_sr_root_entry_hash.attr,
+ 	&dev_attr_pr_root_entry_hash.attr,
 -- 
-~Randy
+2.25.1
+
