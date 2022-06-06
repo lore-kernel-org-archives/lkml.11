@@ -2,130 +2,221 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2008C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 16:06:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09756C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 16:07:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241360AbiFFQG4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 12:06:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47646 "EHLO
+        id S241361AbiFFQG6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 12:06:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241348AbiFFQGt (ORCPT
+        with ESMTP id S241417AbiFFQGv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 12:06:49 -0400
-Received: from mail.z3ntu.xyz (mail.z3ntu.xyz [128.199.32.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD258E52A7;
-        Mon,  6 Jun 2022 09:06:47 -0700 (PDT)
-Received: from g550jk.arnhem.chello.nl (31-151-115-246.dynamic.upc.nl [31.151.115.246])
-        by mail.z3ntu.xyz (Postfix) with ESMTPSA id 89D28CD361;
-        Mon,  6 Jun 2022 16:06:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=z3ntu.xyz; s=z3ntu;
-        t=1654531576; bh=o9eixXtP/Xx2M72rr+rsSeCZivwh5KMZsFPSUC13lhk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=p2lrpkAjAckkN/gcgXfr6BiCj7ajAkXyu3tfJ2Z0ipTkPVvszYVyHnsVdoVuQaAsH
-         8ewkiYQch+POrrxMXT3j8Mimt59m6Q9GFDe9FMTZo7hCbHu6J/IalpnMJ6RLKROYFU
-         pz+K3O9Gbf/0dDFIZBA+ILvwG/lKw4hXQM2TaRPg=
-From:   Luca Weiss <luca@z3ntu.xyz>
-To:     linux-arm-msm@vger.kernel.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Luca Weiss <luca@z3ntu.xyz>, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] ARM: dts: qcom: msm8974-*: re-add remoteproc supplies
-Date:   Mon,  6 Jun 2022 18:04:23 +0200
-Message-Id: <20220606160421.1641778-2-luca@z3ntu.xyz>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220606160421.1641778-1-luca@z3ntu.xyz>
-References: <20220606160421.1641778-1-luca@z3ntu.xyz>
+        Mon, 6 Jun 2022 12:06:51 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87C73F99F5
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 09:06:49 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id n10so29894275ejk.5
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 09:06:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bAtCfvEl1lyvl2HOQAT6IS3UmkYl3/k1QXwg0oM1JYQ=;
+        b=XXZmNZW3xMi87QDMR8nEBj1CKuCp+BG4Ywz5D7Ad/P1lIZcmbejl1Eo47KvEdOGLXW
+         UbWUrXpiKO25dOeLKAGxUzH4Gkhqqys7KECw6DYJYEuqzlLsleyJqSh6S7eAew673SkA
+         EcWAFCuyb29x3uWUz76WqLhALhymAi522ZDYu/jTqzuCVYqYJI7KTlRBwD484sS5tacl
+         NaIjXdur74sasRFH41seIp2OKGOlS89GCm5qJKogyo3x0/Mnl4BOhwOjPSdn+vK4ADDz
+         oXZsOOGg/nV22dyn1qXHSsRGJp9pllD+35HFTUoZEG4RqvsszywChl1udoYeWkdEDOwQ
+         62xw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bAtCfvEl1lyvl2HOQAT6IS3UmkYl3/k1QXwg0oM1JYQ=;
+        b=TP5n9zP3REJXxWvQHsHgHGf3FqELAU3phLIHloVkhK4Ntn0jZD76boHzRBjKz1hTxc
+         42YMGAFEm/s5bKdQiwxFs0BEwRV1g1TR2IplA5d+zO5OilQ7SDFPvQ0sh3RI1PAEVv4g
+         ZSmsPNdRt8w3siJZ+zlqFw7D1bmil2GcuFBdsdxLKn7AlsTkM8H5X1TNr4Q0OxcoB+8j
+         KGRgb720ZF2ry+b/5LKr84VeDKqBqmKAMUpRirV9gNIH51VZ02lWi0HHmetJDh2l+PVO
+         CDqXslFCdVm0pCRkThkqQ/JwWpCXnbK78yT/eDdo987JlbMvoedDskgwzobh1UUNd0wp
+         AlrQ==
+X-Gm-Message-State: AOAM533wuBDPjVtyx/8VnwIpl8DKczVudOhPnYvjulU6H3nCBmQZf7aZ
+        mzbh5DZxMNu7CcoPAjiAScZJwXRDeL1Tb4W0XHrqDA==
+X-Google-Smtp-Source: ABdhPJwLsxAo6HFC0fU1B+20a98Jl7PbB+opdSJcxqqbXe6miPGwB7qN9YvjJIUX/GtKfZv17X0TUuHIHDlNYYhz5D0=
+X-Received: by 2002:a17:907:6ea4:b0:711:d106:b93a with SMTP id
+ sh36-20020a1709076ea400b00711d106b93amr4782237ejc.189.1654531606488; Mon, 06
+ Jun 2022 09:06:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220606141051.285823-1-tzungbi@kernel.org> <20220606141051.285823-9-tzungbi@kernel.org>
+In-Reply-To: <20220606141051.285823-9-tzungbi@kernel.org>
+From:   Guenter Roeck <groeck@google.com>
+Date:   Mon, 6 Jun 2022 09:06:35 -0700
+Message-ID: <CABXOdTcJiytvKpQhbka5cLySiM+_aUAS-k0COu+xteaAVKqttQ@mail.gmail.com>
+Subject: Re: [PATCH 08/13] platform/chrome: cros_ec_proto: separate fill_protocol_info_legacy()
+To:     Tzung-Bi Shih <tzungbi@kernel.org>
+Cc:     Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        chrome-platform@lists.linux.dev,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As part of a recent cleanup commit, the remoteproc supplies for adsp and
-modem were removed from msm8974.dtsi and now need to be set in the
-device dts. Do so.
+On Mon, Jun 6, 2022 at 7:12 AM Tzung-Bi Shih <tzungbi@kernel.org> wrote:
+>
+> Rename cros_ec_host_command_proto_query_v2() to
+> fill_protocol_info_legacy() and make it responsible for setting `ec_dev`
 
-Fixes: f300826d27be ("ARM: dts: qcom-msm8974: Sort and clean up nodes")
-Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
----
-Bjorn, could you please pick this up for -fixes so it lands in an
-upcoming 5.19-rc?
+cros_ec_get_proto_info_legacy() ?
 
- .../boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts   | 11 +++++++++++
- arch/arm/boot/dts/qcom-msm8974-sony-xperia-rhine.dtsi | 11 +++++++++++
- .../qcom-msm8974pro-sony-xperia-shinano-castor.dts    | 11 +++++++++++
- 3 files changed, 33 insertions(+)
-
-diff --git a/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts b/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts
-index 9493886a5c0d..2d699de713ce 100644
---- a/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts
-+++ b/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts
-@@ -313,6 +313,17 @@ otg {
- 	};
- };
- 
-+&remoteproc_adsp {
-+	cx-supply = <&pm8841_s2>;
-+};
-+
-+&remoteproc_mss {
-+	cx-supply = <&pm8841_s2>;
-+	mss-supply = <&pm8841_s3>;
-+	mx-supply = <&pm8841_s1>;
-+	pll-supply = <&pm8941_l12>;
-+};
-+
- &rpm_requests {
- 	pm8841-regulators {
- 		compatible = "qcom,rpm-pm8841-regulators";
-diff --git a/arch/arm/boot/dts/qcom-msm8974-sony-xperia-rhine.dtsi b/arch/arm/boot/dts/qcom-msm8974-sony-xperia-rhine.dtsi
-index 1d21de46f85c..60bf96304687 100644
---- a/arch/arm/boot/dts/qcom-msm8974-sony-xperia-rhine.dtsi
-+++ b/arch/arm/boot/dts/qcom-msm8974-sony-xperia-rhine.dtsi
-@@ -183,6 +183,17 @@ &pm8941_wled {
- 	qcom,num-strings = <2>;
- };
- 
-+&remoteproc_adsp {
-+	cx-supply = <&pm8841_s2>;
-+};
-+
-+&remoteproc_mss {
-+	cx-supply = <&pm8841_s2>;
-+	mss-supply = <&pm8841_s3>;
-+	mx-supply = <&pm8841_s1>;
-+	pll-supply = <&pm8941_l12>;
-+};
-+
- &rpm_requests {
- 	pm8841-regulators {
- 		compatible = "qcom,rpm-pm8841-regulators";
-diff --git a/arch/arm/boot/dts/qcom-msm8974pro-sony-xperia-shinano-castor.dts b/arch/arm/boot/dts/qcom-msm8974pro-sony-xperia-shinano-castor.dts
-index 9bd8faea61a5..48f0c47a45ef 100644
---- a/arch/arm/boot/dts/qcom-msm8974pro-sony-xperia-shinano-castor.dts
-+++ b/arch/arm/boot/dts/qcom-msm8974pro-sony-xperia-shinano-castor.dts
-@@ -288,6 +288,17 @@ lcd_dcdc_en_pin_a: lcd-dcdc-en-active {
- 
- };
- 
-+&remoteproc_adsp {
-+	cx-supply = <&pm8841_s2>;
-+};
-+
-+&remoteproc_mss {
-+	cx-supply = <&pm8841_s2>;
-+	mss-supply = <&pm8841_s3>;
-+	mx-supply = <&pm8841_s1>;
-+	pll-supply = <&pm8941_l12>;
-+};
-+
- &rpm_requests {
- 	pm8941-regulators {
- 		compatible = "qcom,rpm-pm8941-regulators";
--- 
-2.36.1
-
+> fields for EC protocol v2.
+>
+> Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
+> ---
+>  drivers/platform/chrome/cros_ec_proto.c      | 72 +++++++++-----------
+>  drivers/platform/chrome/cros_ec_proto_test.c |  4 +-
+>  2 files changed, 35 insertions(+), 41 deletions(-)
+>
+> diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
+> index f57b4dba95b7..abb30a685567 100644
+> --- a/drivers/platform/chrome/cros_ec_proto.c
+> +++ b/drivers/platform/chrome/cros_ec_proto.c
+> @@ -344,51 +344,57 @@ static int fill_protocol_info(struct cros_ec_device *ec_dev, int devidx)
+>         return ret;
+>  }
+>
+> -static int cros_ec_host_command_proto_query_v2(struct cros_ec_device *ec_dev)
+> +static int fill_protocol_info_legacy(struct cros_ec_device *ec_dev)
+>  {
+>         struct cros_ec_command *msg;
+> -       struct ec_params_hello *hello_params;
+> -       struct ec_response_hello *hello_response;
+> +       struct ec_params_hello *params;
+> +       struct ec_response_hello *response;
+>         int ret;
+> -       int len = max(sizeof(*hello_params), sizeof(*hello_response));
+>
+> -       msg = kmalloc(sizeof(*msg) + len, GFP_KERNEL);
+> +       ec_dev->proto_version = 2;
+> +
+> +       msg = kzalloc(sizeof(*msg) + max(sizeof(*params), sizeof(*response)), GFP_KERNEL);
+>         if (!msg)
+>                 return -ENOMEM;
+>
+> -       msg->version = 0;
+>         msg->command = EC_CMD_HELLO;
+> -       hello_params = (struct ec_params_hello *)msg->data;
+> -       msg->outsize = sizeof(*hello_params);
+> -       hello_response = (struct ec_response_hello *)msg->data;
+> -       msg->insize = sizeof(*hello_response);
+> +       msg->insize = sizeof(*response);
+> +       msg->outsize = sizeof(*params);
+>
+> -       hello_params->in_data = 0xa0b0c0d0;
+> +       params = (struct ec_params_hello *)msg->data;
+> +       params->in_data = 0xa0b0c0d0;
+>
+>         ret = send_command(ec_dev, msg);
+> -
+>         if (ret < 0) {
+> -               dev_dbg(ec_dev->dev,
+> -                       "EC failed to respond to v2 hello: %d\n",
+> -                       ret);
+> +               dev_dbg(ec_dev->dev, "EC failed to respond to v2 hello: %d\n", ret);
+>                 goto exit;
+> -       } else if (msg->result != EC_RES_SUCCESS) {
+> -               dev_err(ec_dev->dev,
+> -                       "EC responded to v2 hello with error: %d\n",
+> -                       msg->result);
+> -               ret = msg->result;
+> +       }
+> +
+> +       ret = cros_ec_map_error(msg->result);
+> +       if (ret) {
+> +               dev_err(ec_dev->dev, "EC responded to v2 hello with error: %d\n", msg->result);
+>                 goto exit;
+> -       } else if (hello_response->out_data != 0xa1b2c3d4) {
+> +       }
+> +
+> +       response = (struct ec_response_hello *)msg->data;
+> +       if (response->out_data != 0xa1b2c3d4) {
+>                 dev_err(ec_dev->dev,
+>                         "EC responded to v2 hello with bad result: %u\n",
+> -                       hello_response->out_data);
+> +                       response->out_data);
+>                 ret = -EBADMSG;
+>                 goto exit;
+>         }
+>
+> -       ret = 0;
+> +       ec_dev->max_request = EC_PROTO2_MAX_PARAM_SIZE;
+> +       ec_dev->max_response = EC_PROTO2_MAX_PARAM_SIZE;
+> +       ec_dev->max_passthru = 0;
+> +       ec_dev->pkt_xfer = NULL;
+> +       ec_dev->din_size = EC_PROTO2_MSG_BYTES;
+> +       ec_dev->dout_size = EC_PROTO2_MSG_BYTES;
+>
+> - exit:
+> +       dev_dbg(ec_dev->dev, "falling back to proto v2\n");
+> +       ret = 0;
+> +exit:
+>         kfree(msg);
+>         return ret;
+>  }
+> @@ -460,20 +466,8 @@ int cros_ec_query_all(struct cros_ec_device *ec_dev)
+>                 fill_protocol_info(ec_dev, CROS_EC_DEV_PD_INDEX);
+>         } else {
+>                 /* Try querying with a v2 hello message. */
+> -               ec_dev->proto_version = 2;
+> -               ret = cros_ec_host_command_proto_query_v2(ec_dev);
+> -
+> -               if (ret == 0) {
+> -                       /* V2 hello succeeded. */
+> -                       dev_dbg(ec_dev->dev, "falling back to proto v2\n");
+> -
+> -                       ec_dev->max_request = EC_PROTO2_MAX_PARAM_SIZE;
+> -                       ec_dev->max_response = EC_PROTO2_MAX_PARAM_SIZE;
+> -                       ec_dev->max_passthru = 0;
+> -                       ec_dev->pkt_xfer = NULL;
+> -                       ec_dev->din_size = EC_PROTO2_MSG_BYTES;
+> -                       ec_dev->dout_size = EC_PROTO2_MSG_BYTES;
+> -               } else {
+> +               ret = fill_protocol_info_legacy(ec_dev);
+> +               if (ret) {
+>                         /*
+>                          * It's possible for a test to occur too early when
+>                          * the EC isn't listening. If this happens, we'll
+> @@ -481,7 +475,7 @@ int cros_ec_query_all(struct cros_ec_device *ec_dev)
+>                          */
+>                         ec_dev->proto_version = EC_PROTO_VERSION_UNKNOWN;
+>                         dev_dbg(ec_dev->dev, "EC query failed: %d\n", ret);
+> -                       goto exit;
+> +                       return ret;
+>                 }
+>         }
+>
+> diff --git a/drivers/platform/chrome/cros_ec_proto_test.c b/drivers/platform/chrome/cros_ec_proto_test.c
+> index cdedbdfc1885..79150bf511fb 100644
+> --- a/drivers/platform/chrome/cros_ec_proto_test.c
+> +++ b/drivers/platform/chrome/cros_ec_proto_test.c
+> @@ -418,7 +418,7 @@ static void cros_ec_proto_test_query_all_legacy_normal(struct kunit *test)
+>                 KUNIT_ASSERT_PTR_NE(test, mock, NULL);
+>         }
+>
+> -       /* For cros_ec_host_command_proto_query_v2(). */
+> +       /* For fill_protocol_info_legacy(). */
+>         {
+>                 struct ec_response_hello *data;
+>
+> @@ -445,7 +445,7 @@ static void cros_ec_proto_test_query_all_legacy_normal(struct kunit *test)
+>                 KUNIT_EXPECT_EQ(test, mock->msg.outsize, 0);
+>         }
+>
+> -       /* For cros_ec_host_command_proto_query_v2(). */
+> +       /* For fill_protocol_info_legacy(). */
+>         {
+>                 struct ec_params_hello *data;
+>
+> --
+> 2.36.1.255.ge46751e96f-goog
+>
