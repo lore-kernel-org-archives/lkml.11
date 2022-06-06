@@ -2,99 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07F92C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 08:42:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB0D4CCA473
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 08:42:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232589AbiFFImS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 04:42:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45860 "EHLO
+        id S232605AbiFFImV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 04:42:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232442AbiFFIjw (ORCPT
+        with ESMTP id S232031AbiFFIkN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 04:39:52 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 927E14FC67
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 01:39:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654504785;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=G6b3MXuQh7jibWh2fry5PjeJCVzizfhoHgFIUHZ3584=;
-        b=FI79vBYWuvOsKx8mfiimDOfvRwgDb4pZCJ4/PrGOYUb+7SoJRP8zOFMJl24IVmS/LRZtjn
-        9rypK2Do54SyCFGAE4N7SqFMCUUAqVrr5O1rph0RosiJBNjlTh174l3jXqR+AS54ML7qIO
-        wKFWgpRO950eBXtBpZlqtHRVTYNq/Bk=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-620-S9oXEJ7aOYmzlAcPWRBeOg-1; Mon, 06 Jun 2022 04:39:42 -0400
-X-MC-Unique: S9oXEJ7aOYmzlAcPWRBeOg-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 98C8D811E75;
-        Mon,  6 Jun 2022 08:39:41 +0000 (UTC)
-Received: from MiWiFi-R3L-srv.redhat.com (ovpn-14-4.pek2.redhat.com [10.72.14.4])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8E20D1121315;
-        Mon,  6 Jun 2022 08:39:38 +0000 (UTC)
-From:   Baoquan He <bhe@redhat.com>
-To:     akpm@linux-foundation.org
-Cc:     npiggin@gmail.com, urezki@gmail.com, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, Baoquan He <bhe@redhat.com>
-Subject: [PATCH 4/5] mm/vmalloc: Add code comment for find_vmap_area_exceed_addr()
-Date:   Mon,  6 Jun 2022 16:39:08 +0800
-Message-Id: <20220606083909.363350-5-bhe@redhat.com>
-In-Reply-To: <20220606083909.363350-1-bhe@redhat.com>
-References: <20220606083909.363350-1-bhe@redhat.com>
+        Mon, 6 Jun 2022 04:40:13 -0400
+Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A2345044E;
+        Mon,  6 Jun 2022 01:40:09 -0700 (PDT)
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id 8D3801C0B8A; Mon,  6 Jun 2022 10:40:06 +0200 (CEST)
+Date:   Mon, 6 Jun 2022 10:40:05 +0200
+From:   Pavel Machek <pavel@denx.de>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 4.9 00/12] 4.9.317-rc1 review
+Message-ID: <20220606084005.GA15071@duo.ucw.cz>
+References: <20220603173812.524184588@linuxfoundation.org>
 MIME-Version: 1.0
-Content-type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="bp/iNruPH9dso1Pn"
+Content-Disposition: inline
+In-Reply-To: <20220603173812.524184588@linuxfoundation.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Its behaviour is like find_vma() which finds an area above the specified
-address, add comment to make it easier to understand.
 
-And also fix two places of grammer mistake/typo.
+--bp/iNruPH9dso1Pn
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Baoquan He <bhe@redhat.com>
----
- mm/vmalloc.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+Hi!
 
-diff --git a/mm/vmalloc.c b/mm/vmalloc.c
-index 11dfc897de40..860ed9986775 100644
---- a/mm/vmalloc.c
-+++ b/mm/vmalloc.c
-@@ -790,6 +790,7 @@ unsigned long vmalloc_nr_pages(void)
- 	return atomic_long_read(&nr_vmalloc_pages);
- }
- 
-+/* Look up the first VA which satisfies  addr < va_end,  NULL if none. */
- static struct vmap_area *find_vmap_area_exceed_addr(unsigned long addr)
- {
- 	struct vmap_area *va = NULL;
-@@ -929,7 +930,7 @@ link_va(struct vmap_area *va, struct rb_root *root,
- 		 * Some explanation here. Just perform simple insertion
- 		 * to the tree. We do not set va->subtree_max_size to
- 		 * its current size before calling rb_insert_augmented().
--		 * It is because of we populate the tree from the bottom
-+		 * It is because we populate the tree from the bottom
- 		 * to parent levels when the node _is_ in the tree.
- 		 *
- 		 * Therefore we set subtree_max_size to zero after insertion,
-@@ -1659,7 +1660,7 @@ static atomic_long_t vmap_lazy_nr = ATOMIC_LONG_INIT(0);
- 
- /*
-  * Serialize vmap purging.  There is no actual critical section protected
-- * by this look, but we want to avoid concurrent calls for performance
-+ * by this lock, but we want to avoid concurrent calls for performance
-  * reasons and to make the pcpu_get_vm_areas more deterministic.
-  */
- static DEFINE_MUTEX(vmap_purge_lock);
--- 
-2.34.1
+> This is the start of the stable review cycle for the 4.9.317 release.
+> There are 12 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 
+CIP testing did not find any problems here:
+
+https://gitlab.com/cip-project/cip-testing/linux-stable-rc-ci/-/tree/linux-=
+4.9.y
+
+Tested-by: Pavel Machek (CIP) <pavel@denx.de>
+
+Best regards,
+                                                                Pavel
+--=20
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+
+--bp/iNruPH9dso1Pn
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYp29ZQAKCRAw5/Bqldv6
+8hgxAJ46UjsY+qWPoA8xGGi3Q8aWi3jclgCgoMSFJZwj/XyJJZMZSmVMctuyZ0A=
+=cJve
+-----END PGP SIGNATURE-----
+
+--bp/iNruPH9dso1Pn--
