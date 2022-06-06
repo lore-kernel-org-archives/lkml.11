@@ -2,246 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8EC5C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 06:21:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEAFDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 06:25:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229835AbiFFGVn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 02:21:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34564 "EHLO
+        id S229979AbiFFGZi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 02:25:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229890AbiFFGVh (ORCPT
+        with ESMTP id S229890AbiFFGZg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 02:21:37 -0400
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51AE0248DA;
-        Sun,  5 Jun 2022 23:21:32 -0700 (PDT)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2566L4TF023770;
-        Mon, 6 Jun 2022 01:21:04 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1654496464;
-        bh=AnqTbDFVrqwHXrTGY/Z2NcAhGEYdlgEfr1d6CtHEp2k=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=v2fBUMtKP12il550wFLHUC/bzjyQDakjroSiiLhQ5o+cALXTxC9zq1MTrK5QLFNVu
-         Fjk6N9hs4aoOra0bXkRNPBolerMJXB6iVa7CvlDdoMkCGYcNkpJTc1AoLggh40OGLO
-         NMMuTn7+tx0VKorUcQfjfGrqmOpZhJbCbFzWsTSU=
-Received: from DLEE109.ent.ti.com (dlee109.ent.ti.com [157.170.170.41])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2566L4Jg019207
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 6 Jun 2022 01:21:04 -0500
-Received: from DLEE107.ent.ti.com (157.170.170.37) by DLEE109.ent.ti.com
- (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 6
- Jun 2022 01:21:03 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE107.ent.ti.com
- (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Mon, 6 Jun 2022 01:21:03 -0500
-Received: from [172.24.222.108] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2566KvXG003420;
-        Mon, 6 Jun 2022 01:20:58 -0500
-Message-ID: <2c72a658-9427-b7ab-08ef-b78f51cd151b@ti.com>
-Date:   Mon, 6 Jun 2022 11:50:56 +0530
+        Mon, 6 Jun 2022 02:25:36 -0400
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2046.outbound.protection.outlook.com [40.107.102.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65A5527CE0;
+        Sun,  5 Jun 2022 23:25:34 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=L9M+b6mLXFwTuFsHjCBkmdbQgIibQrQcCkwzkYGUcO1JrXJKMGBOGKU/ZTIktBxVTPlKR4DycJ9xDEefN/0KqvCyFx6fM5lI65mTbSCutgKU9pkYuDI47sHbnMP7Q6AHY3RRk6UDJIUqg3zsBRfzyjfCYpiusowOFhjwsoBthgdhpy73Y0UL8J+0pDUU/3j9sBC0Zf5YtZWAs2Avk4TEq2jInQ16AxF3yOxHoE/euyyEaWCplvYn3FWnQM0CeFvCJqPGUBNsZlYnrga/3/o+KXMe6I1IkELMrjo9FhjaLZxrPk1RY4tgnDWPF1Ap4Dgr2wj8uune4lp1ipr1GDJMEg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=L9d+CR7WUEhe4icN5ji3Xa14Ku0gFC459XBB6TTv1Hc=;
+ b=PdE7VFNvqfmlvF3pfnFIjta7GFDDD2xa7P5jn/lE1txJ7LEZJJ6DQ+cM5iVbDFBjEgdueW0XdL7xx+zUjlgiGA+eiIsU6hzUryJeo9SWj05upHx6ls3yc2Xf6YE2dNhwWAQ3BR+DwLYw8aimMnddkoHVX4P+HeM983F3FQbF1xlnhOtvPr5K1OBEB20lPHxTXbBSU/jj9bucjDyOoWHFRDkyFU35TK8PDPngxUyHkfXBMejBHAKItVPj/jP0xDrx+E+J+fHoWVW2JFkXUzMwiIVOFQSBZv4Qm1vFL2U3PBs74rJ5X7w4WXHV0QllHEi5qkJovBEkBvGi/0Y5c3IJIQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=kernel.org smtp.mailfrom=xilinx.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=L9d+CR7WUEhe4icN5ji3Xa14Ku0gFC459XBB6TTv1Hc=;
+ b=EfYzKXYqqK7fNo4xxnS8+3h/f32q4UvCh8v+7RRcXA7snuQtrFjArr6mzVYMyqWpGqNyGYu4AB+QlN2J2wbcs021lRX4+ZESdwK02b3vTgruwCJ/cD0NdrstuU40D6HU4xO1upgoLJTlWwWg9hRGE446NYhwJyXnkrCxpMGL8sg=
+Received: from DS7PR03CA0288.namprd03.prod.outlook.com (2603:10b6:5:3ad::23)
+ by PH0PR02MB8550.namprd02.prod.outlook.com (2603:10b6:510:de::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.12; Mon, 6 Jun
+ 2022 06:25:31 +0000
+Received: from DM3NAM02FT050.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:5:3ad:cafe::23) by DS7PR03CA0288.outlook.office365.com
+ (2603:10b6:5:3ad::23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.12 via Frontend
+ Transport; Mon, 6 Jun 2022 06:25:31 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com; pr=C
+Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
+ DM3NAM02FT050.mail.protection.outlook.com (10.13.5.53) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5314.12 via Frontend Transport; Mon, 6 Jun 2022 06:25:31 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Sun, 5 Jun 2022 23:25:30 -0700
+Received: from smtp.xilinx.com (172.19.127.96) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Sun, 5 Jun 2022 23:25:30 -0700
+Envelope-to: git@xilinx.com,
+ broonie@kernel.org,
+ linux-spi@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Received: from [10.140.6.18] (port=43118 helo=xhdlakshmis40.xilinx.com)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <amit.kumar-mahapatra@xilinx.com>)
+        id 1ny6B8-0007aL-1H; Sun, 05 Jun 2022 23:25:30 -0700
+From:   Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>
+To:     <broonie@kernel.org>
+CC:     <git@xilinx.com>, <linux-spi@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Sai Krishna Potthuri <lakshmi.sai.krishna.potthuri@xilinx.com>,
+        Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>
+Subject: [PATCH] spi: spi-cadence: Fix SPI CS gets toggling sporadically
+Date:   Mon, 6 Jun 2022 11:55:25 +0530
+Message-ID: <20220606062525.18447-1-amit.kumar-mahapatra@xilinx.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v2 1/3] dt-bindings: net: ti: k3-am654-cpsw-nuss: Update
- bindings for J7200 CPSW5G
-Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <krzysztof.kozlowski+dt@linaro.org>,
-        <linux@armlinux.org.uk>, <vladimir.oltean@nxp.com>,
-        <grygorii.strashko@ti.com>, <vigneshr@ti.com>, <nsekhar@ti.com>,
-        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <kishon@ti.com>
-References: <20220602114558.6204-1-s-vadapalli@ti.com>
- <20220602114558.6204-2-s-vadapalli@ti.com>
- <20220605224343.GA3657277-robh@kernel.org>
-From:   Siddharth Vadapalli <s-vadapalli@ti.com>
-In-Reply-To: <20220605224343.GA3657277-robh@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8ef5f96d-bd3d-474d-b299-08da47855b79
+X-MS-TrafficTypeDiagnostic: PH0PR02MB8550:EE_
+X-Microsoft-Antispam-PRVS: <PH0PR02MB8550ABEBC7C195CD5156D6F6BAA29@PH0PR02MB8550.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Sxpsj1eneA0qCPcczWhle8U2qvQd/1wuZ4yzCe3SZEGdhI+swKVKYk7Cbc+QI9t2sdcQerZC6KJzwjS9uVCm4wPvR8O4urol2k5gmclAHfnTg/XGbDFYEpg99Ks4lF9T8l5Si/CgrXTUGR0gyaoxpok+gNsuB9zzHdsvBiHt9kRe21SOPhHB2L60+Sobmy03YQbOBmFGE8O8Pmv6IO6O9SoGlSZYEWGiMQw2HVSfXey3+ky5rhlB01aUG6lTdJUWOnRSEgTxKuI79pLHZKoXfNDs9XKHEkEPLrLsjO/Bz33HcQsx0f6UcVeGrWBSr4VhWkYPNLLX8tb8fzbhDw9tX2Og6GtcbEXCv6yh/o8+z8RE2ewZllLiVJRzH2eAmTD7QQKg3Cs4RLxs10NXCenBcCVnR5P+WESUYkyDb1dlmRZ8T+BQUhh9nzkaF+vjXjauZp1weWOiICm6pwRBrYwu6KfQvfkpTrSlF6nwRVCYgAVXoEw3+7ztJ4DAY+qJGkpJkQSpXo/r1zzXHBhqNEPdKdn8SWqHCzz9xqiq8/TIDlYPj9f5SlAzsBQuBW3VdeXu428ud+a6plkRyaixQ1MZ6HPJc35ujVifhE49i7LrE1QK0+pAXe71jcgkvweHv2emLyCV6aYGUf0cyIeQjag+bltfr5m1qZzeN4L46xeccBwphschNWkrCXds/BjY6Tyu4MRQLjTSOoc+X+k7EtzbLw==
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(36756003)(6916009)(7636003)(54906003)(508600001)(9786002)(356005)(83380400001)(8936002)(316002)(5660300002)(26005)(107886003)(2616005)(2906002)(70586007)(1076003)(186003)(70206006)(36860700001)(8676002)(47076005)(336012)(426003)(4326008)(40460700003)(6666004)(82310400005)(7696005)(102446001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jun 2022 06:25:31.6333
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8ef5f96d-bd3d-474d-b299-08da47855b79
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM3NAM02FT050.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR02MB8550
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Rob,
+From: Sai Krishna Potthuri <lakshmi.sai.krishna.potthuri@xilinx.com>
 
-On 06/06/22 04:13, Rob Herring wrote:
-> On Thu, Jun 02, 2022 at 05:15:56PM +0530, Siddharth Vadapalli wrote:
->> Update bindings for TI K3 J7200 SoC which contains 5 ports (4 external
->> ports) CPSW5G module and add compatible for it.
->>
->> Changes made:
->>     - Add new compatible ti,j7200-cpswxg-nuss for CPSW5G.
->>     - Extend pattern properties for new compatible.
->>     - Change maximum number of CPSW ports to 4 for new compatible.
->>
->> Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
->> ---
->>  .../bindings/net/ti,k3-am654-cpsw-nuss.yaml   | 140 ++++++++++++------
->>  1 file changed, 98 insertions(+), 42 deletions(-)
->>
->> diff --git a/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml b/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
->> index b8281d8be940..ec57bde7ac26 100644
->> --- a/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
->> +++ b/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
->> @@ -57,6 +57,7 @@ properties:
->>        - ti,am654-cpsw-nuss
->>        - ti,j721e-cpsw-nuss
->>        - ti,am642-cpsw-nuss
->> +      - ti,j7200-cpswxg-nuss
->>  
->>    reg:
->>      maxItems: 1
->> @@ -108,48 +109,103 @@ properties:
->>          const: 1
->>        '#size-cells':
->>          const: 0
->> -
->> -    patternProperties:
->> -      port@[1-2]:
->> -        type: object
->> -        description: CPSWxG NUSS external ports
->> -
->> -        $ref: ethernet-controller.yaml#
->> -
->> -        properties:
->> -          reg:
->> -            minimum: 1
->> -            maximum: 2
->> -            description: CPSW port number
->> -
->> -          phys:
->> -            maxItems: 1
->> -            description: phandle on phy-gmii-sel PHY
->> -
->> -          label:
->> -            description: label associated with this port
->> -
->> -          ti,mac-only:
->> -            $ref: /schemas/types.yaml#/definitions/flag
->> -            description:
->> -              Specifies the port works in mac-only mode.
->> -
->> -          ti,syscon-efuse:
->> -            $ref: /schemas/types.yaml#/definitions/phandle-array
->> -            items:
->> -              - items:
->> -                  - description: Phandle to the system control device node which
->> -                      provides access to efuse
->> -                  - description: offset to efuse registers???
->> -            description:
->> -              Phandle to the system control device node which provides access
->> -              to efuse IO range with MAC addresses
->> -
->> -        required:
->> -          - reg
->> -          - phys
->> -
->> -    additionalProperties: false
->> +    allOf:
->> +      - if:
->> +          properties:
->> +            compatible:
->> +              contains:
->> +                enum:
->> +                  - ti,am654-cpsw-nuss
->> +                  - ti,j721e-cpsw-nuss
->> +                  - ti,am642-cpsw-nuss
->> +        then:
->> +          patternProperties:
->> +            port@[1-2]:
->> +              type: object
->> +              description: CPSWxG NUSS external ports
->> +
->> +              $ref: ethernet-controller.yaml#
->> +
->> +              properties:
->> +                reg:
->> +                  minimum: 1
->> +                  maximum: 2
->> +                  description: CPSW port number
->> +
->> +                phys:
->> +                  maxItems: 1
->> +                  description: phandle on phy-gmii-sel PHY
->> +
->> +                label:
->> +                  description: label associated with this port
->> +
->> +                ti,mac-only:
->> +                  $ref: /schemas/types.yaml#/definitions/flag
->> +                  description:
->> +                    Specifies the port works in mac-only mode.
->> +
->> +                ti,syscon-efuse:
->> +                  $ref: /schemas/types.yaml#/definitions/phandle-array
->> +                  items:
->> +                    - items:
->> +                        - description: Phandle to the system control device node which
->> +                            provides access to efuse
->> +                        - description: offset to efuse registers???
->> +                  description:
->> +                    Phandle to the system control device node which provides access
->> +                    to efuse IO range with MAC addresses
->> +
->> +              required:
->> +                - reg
->> +                - phys
->> +      - if:
->> +          properties:
->> +            compatible:
->> +              contains:
->> +                enum:
->> +                  - ti,j7200-cpswxg-nuss
->> +        then:
->> +          patternProperties:
->> +            port@[1-4]:
->> +              type: object
->> +              description: CPSWxG NUSS external ports
->> +
->> +              $ref: ethernet-controller.yaml#
->> +
->> +              properties:
->> +                reg:
->> +                  minimum: 1
->> +                  maximum: 4
->> +                  description: CPSW port number
->> +
->> +                phys:
->> +                  maxItems: 1
->> +                  description: phandle on phy-gmii-sel PHY
->> +
->> +                label:
->> +                  description: label associated with this port
->> +
->> +                ti,mac-only:
->> +                  $ref: /schemas/types.yaml#/definitions/flag
->> +                  description:
->> +                    Specifies the port works in mac-only mode.
->> +
->> +                ti,syscon-efuse:
->> +                  $ref: /schemas/types.yaml#/definitions/phandle-array
->> +                  items:
->> +                    - items:
->> +                        - description: Phandle to the system control device node which
->> +                            provides access to efuse
->> +                        - description: offset to efuse registers???
->> +                  description:
->> +                    Phandle to the system control device node which provides access
->> +                    to efuse IO range with MAC addresses
->> +
->> +              required:
->> +                - reg
->> +                - phys
-> 
-> You are now defining the same properties twice. Don't do that. Just add 
-> an if/then schema restrict port nodes.
+As part of unprepare_transfer_hardware, SPI controller will be disabled
+which will indirectly deassert the CS line. This will create a problem
+in some of the devices where message will be transferred with
+cs_change flag set(CS should not be deasserted).
+As per SPI controller implementation, if SPI controller is disabled then
+all output enables are inactive and all pins are set to input mode which
+means CS will go to default state high(deassert). This leads to an issue
+when core explicitly ask not to deassert the CS (cs_change = 1). This
+patch fix the above issue by checking the Slave select status bits from
+configuration register before disabling the SPI.
 
-Thank you for reviewing the patch. I will fix this and send v3 for this series.
+Signed-off-by: Sai Krishna Potthuri <lakshmi.sai.krishna.potthuri@xilinx.com>
+Signed-off-by: Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>
+---
+BRANCH: mtd/next
+---
+ drivers/spi/spi-cadence.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-Thanks,
-Siddharth.
+diff --git a/drivers/spi/spi-cadence.c b/drivers/spi/spi-cadence.c
+index b509eefe16a8..e832ae09e0cd 100644
+--- a/drivers/spi/spi-cadence.c
++++ b/drivers/spi/spi-cadence.c
+@@ -69,6 +69,7 @@
+ #define CDNS_SPI_BAUD_DIV_SHIFT		3 /* Baud rate divisor shift in CR */
+ #define CDNS_SPI_SS_SHIFT		10 /* Slave Select field shift in CR */
+ #define CDNS_SPI_SS0			0x1 /* Slave Select zero */
++#define CDNS_SPI_NOSS			0x3C /* No Slave select */
+ 
+ /*
+  * SPI Interrupt Registers bit Masks
+@@ -449,15 +450,20 @@ static int cdns_prepare_transfer_hardware(struct spi_master *master)
+  * @master:	Pointer to the spi_master structure which provides
+  *		information about the controller.
+  *
+- * This function disables the SPI master controller.
++ * This function disables the SPI master controller when no slave selected.
+  *
+  * Return:	0 always
+  */
+ static int cdns_unprepare_transfer_hardware(struct spi_master *master)
+ {
+ 	struct cdns_spi *xspi = spi_master_get_devdata(master);
++	u32 ctrl_reg;
+ 
+-	cdns_spi_write(xspi, CDNS_SPI_ER, CDNS_SPI_ER_DISABLE);
++	/* Disable the SPI if slave is deselected */
++	ctrl_reg = cdns_spi_read(xspi, CDNS_SPI_CR);
++	ctrl_reg = (ctrl_reg & CDNS_SPI_CR_SSCTRL) >>  CDNS_SPI_SS_SHIFT;
++	if (ctrl_reg == CDNS_SPI_NOSS)
++		cdns_spi_write(xspi, CDNS_SPI_ER, CDNS_SPI_ER_DISABLE);
+ 
+ 	return 0;
+ }
+-- 
+2.17.1
+
