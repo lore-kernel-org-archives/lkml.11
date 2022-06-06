@@ -2,129 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73ADAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 15:44:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBF2AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 15:45:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241064AbiFFPoS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 11:44:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55982 "EHLO
+        id S240982AbiFFPpR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 11:45:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241059AbiFFPoQ (ORCPT
+        with ESMTP id S240969AbiFFPpM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 11:44:16 -0400
-Received: from mail-oo1-xc2d.google.com (mail-oo1-xc2d.google.com [IPv6:2607:f8b0:4864:20::c2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C6FECC15D;
-        Mon,  6 Jun 2022 08:44:15 -0700 (PDT)
-Received: by mail-oo1-xc2d.google.com with SMTP id ay16-20020a056820151000b0041b71517844so958763oob.4;
-        Mon, 06 Jun 2022 08:44:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=1Dyxrxglk8UzaHWlu8Ip8w2vSs7l7OGlq6jwwOsQ960=;
-        b=BwrNGtzgFqc5GBs+deBOcDtRAxLlmSKd/PBfifxCqtEON0K0Xetx9idzSHIQMwV5SA
-         9f2Lh+l8E89eWdqBoG0wndpJIL4MrXW9B2Z0988Ek2KK4sF5EGuuyAq7HZD0Ne+AbimE
-         TGNYT2BK0SktuwFMDQip7/3ArorHNXsQ8yuWySv1otJ8/qyNvpJFPgCcDTeyh864sVq2
-         pezAVQqrB9W5SXgH36eWHugxjPI8TZTv1DBDpYyrqYQtjH202Y//b+rcc6ABMSaFiOMf
-         ndiybo/ZM8ybLw47HKBm7WsJk1HwxEB1xnxOEWc3TAD7Aao8nS5QOyvldisyxMopaGZ1
-         0IUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=1Dyxrxglk8UzaHWlu8Ip8w2vSs7l7OGlq6jwwOsQ960=;
-        b=YbO5WgRttcIfuy2Bv8noKDYE6981tpEhEjrKjiFhsJMKHfhp5bq+gq/JtbzdRZjiZw
-         HRGxiD/J1MciCb3OqnRNWXFyy04cdKUOTt7H4Br7pEOVkQ730ojiqVkUWYyhlZ7ryqpj
-         jjh2+TgS+5kw6Bje0jP0Tv3afsP4PMJGQuepYkXuqEtOVIkbUqGV5ZL2cNZLrBVdNwUf
-         PcYWgXPhjSRzufdoLfSbp3oBtnMwXXMfcWUQANR4sfrTWdaGcjIw7HR6IWGDr6ES4Xkq
-         jyeIzyrf8XRrC3A2+REaANYf//VZQncdlhtlOWmjXS9FeKdsdFpOWYxDadEBtSz7QrLk
-         4ItQ==
-X-Gm-Message-State: AOAM532u87Q1gIsH0w2ZUHS8uzpWABiAKMQ/vX/uMT9KbWN1GXcPsu5L
-        58kY5pJ/3aAqyJwlsPJNXaE=
-X-Google-Smtp-Source: ABdhPJy1zCj2ZN6ndVK4A6V4NXnjLvRe27BQH9UEBJSslBjosstbd4cuAI508h2hMmqaKojcUerFng==
-X-Received: by 2002:a4a:4f16:0:b0:41b:6f0e:4acc with SMTP id c22-20020a4a4f16000000b0041b6f0e4accmr4734194oob.33.1654530254919;
-        Mon, 06 Jun 2022 08:44:14 -0700 (PDT)
-Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id m4-20020a9d6084000000b0060b1f3924c3sm8318726otj.44.2022.06.06.08.44.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 06 Jun 2022 08:44:14 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Message-ID: <451ad3f1-e365-e136-fa1b-c7bb0b05a15f@roeck-us.net>
-Date:   Mon, 6 Jun 2022 08:44:11 -0700
+        Mon, 6 Jun 2022 11:45:12 -0400
+Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7ACD1F231E
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 08:45:09 -0700 (PDT)
+Received: from localhost.localdomain (85-222-111-42.dynamic.chello.pl [85.222.111.42])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: lukma@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id F062D83C61;
+        Mon,  6 Jun 2022 17:45:06 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1654530307;
+        bh=7pWtef+oRH7wX2wP+LnlDhlscbgmm4pckw9tnmWgA/s=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ztmcKReTk1GHbhPwGROPTnYONvPzyAVj7shSwSG9nizeal+BC8hsEWnrxxQHCST7h
+         btBJzK06PSfYqpta+LNbFKSEpuMpBFmg90OdTjh7kMw6tXa3yuqOxab/HO8tu+6Rom
+         LlHUy9iK7AjlXBD4sRKJuy55AeIhkywDomdIo7zeKufYeQC1WnkNr/UEsT++fGUZoC
+         1srU9FNACafHtiH9afs6YEZf0rA/jYpRFc4Ai+bnP9b4MzaOcWBNbmIwSF6fbcNSSp
+         lKQNCUOhnvasZHi+RQMFxK8YgwMZwMU4vTm0S6kglp0cYFxokmSyo8wezsUBdqYq9V
+         IHJqIcuRHAVFg==
+From:   Lukasz Majewski <lukma@denx.de>
+To:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, patches@opensource.cirrus.com,
+        alsa-devel@alsa-project.org, Takashi Iwai <tiwai@suse.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Lukasz Majewski <lukma@denx.de>
+Subject: [PATCH 2/3] ASoC: wm8940: Rewrite code to set proper clocks
+Date:   Mon,  6 Jun 2022 17:44:40 +0200
+Message-Id: <20220606154441.20848-2-lukma@denx.de>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220606154441.20848-1-lukma@denx.de>
+References: <20220606154441.20848-1-lukma@denx.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 03/23] dt-bindings: arm: update vexpress-config.yaml
- references
-Content-Language: en-US
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>
-Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Andre Przywara <andre.przywara@arm.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <cover.1654529011.git.mchehab@kernel.org>
- <7020edd9e183652249fc95bf61a1055cc342a4dc.1654529011.git.mchehab@kernel.org>
-From:   Guenter Roeck <linux@roeck-us.net>
-In-Reply-To: <7020edd9e183652249fc95bf61a1055cc342a4dc.1654529011.git.mchehab@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: clamav-milter 0.103.5 at phobos.denx.de
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/6/22 08:25, Mauro Carvalho Chehab wrote:
-> Changeset 7e8339b5162f ("dt-bindings: arm: convert vexpress-config to DT schema")
-> renamed: Documentation/devicetree/bindings/arm/vexpress-sysreg.txt
-> to: Documentation/devicetree/bindings/arm/vexpress-config.yaml.
-> 
-> Update the cross-references accordingly.
-> 
-> Fixes: 7e8339b5162f ("dt-bindings: arm: convert vexpress-config to DT schema")
-> Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Without this change, the wm8940 driver is not working when
+set_sysclk callback (wm8940_set_dai_sysclk) is called with
+freqency not listed in the switch clause.
 
-Acked-by: Guenter Roeck <linux@roeck-us.net>
+This change adjusts this driver to allow non-standard frequency
+set (just after the boot) being adjusted afterwards by the sound
+system core code.
 
-> ---
-> 
-> To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
-> See [PATCH 00/23] at: https://lore.kernel.org/all/cover.1654529011.git.mchehab@kernel.org/
-> 
->   Documentation/devicetree/bindings/hwmon/vexpress.txt     | 2 +-
->   Documentation/devicetree/bindings/regulator/vexpress.txt | 2 +-
->   2 files changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/hwmon/vexpress.txt b/Documentation/devicetree/bindings/hwmon/vexpress.txt
-> index 9c27ed694bbb..4a4df4ffc460 100644
-> --- a/Documentation/devicetree/bindings/hwmon/vexpress.txt
-> +++ b/Documentation/devicetree/bindings/hwmon/vexpress.txt
-> @@ -9,7 +9,7 @@ Requires node properties:
->   	"arm,vexpress-power"
->   	"arm,vexpress-energy"
->   - "arm,vexpress-sysreg,func" when controlled via vexpress-sysreg
-> -  (see Documentation/devicetree/bindings/arm/vexpress-sysreg.txt
-> +  (see Documentation/devicetree/bindings/arm/vexpress-config.yaml
->     for more details)
->   
->   Optional node properties:
-> diff --git a/Documentation/devicetree/bindings/regulator/vexpress.txt b/Documentation/devicetree/bindings/regulator/vexpress.txt
-> index d775f72487aa..1c2e92c7831e 100644
-> --- a/Documentation/devicetree/bindings/regulator/vexpress.txt
-> +++ b/Documentation/devicetree/bindings/regulator/vexpress.txt
-> @@ -4,7 +4,7 @@ Versatile Express voltage regulators
->   Requires node properties:
->   - "compatible" value: "arm,vexpress-volt"
->   - "arm,vexpress-sysreg,func" when controlled via vexpress-sysreg
-> -  (see Documentation/devicetree/bindings/arm/vexpress-sysreg.txt
-> +  (see Documentation/devicetree/bindings/arm/vexpress-config.yaml
->     for more details)
->   
->   Required regulator properties:
+Moreover, support for internal wm8940's PLL is provided, so it
+can generate clocks when HOST system is not able to do it.
+
+Code in this commit is based on previous change done for wm8974
+(SHA1: 51b2bb3f2568e6d9d81a001d38b8d70c2ba4af99).
+
+Signed-off-by: Lukasz Majewski <lukma@denx.de>
+---
+ sound/soc/codecs/wm8940.c | 103 ++++++++++++++++++++++++++++++--------
+ 1 file changed, 83 insertions(+), 20 deletions(-)
+
+diff --git a/sound/soc/codecs/wm8940.c b/sound/soc/codecs/wm8940.c
+index 7cea54720436..6fb1c3780439 100644
+--- a/sound/soc/codecs/wm8940.c
++++ b/sound/soc/codecs/wm8940.c
+@@ -37,7 +37,9 @@
+ #include "wm8940.h"
+ 
+ struct wm8940_priv {
+-	unsigned int sysclk;
++	unsigned int mclk;
++	unsigned int fs;
++
+ 	struct regmap *regmap;
+ };
+ 
+@@ -387,17 +389,24 @@ static int wm8940_set_dai_fmt(struct snd_soc_dai *codec_dai,
+ 	return 0;
+ }
+ 
++static int wm8940_update_clocks(struct snd_soc_dai *dai);
+ static int wm8940_i2s_hw_params(struct snd_pcm_substream *substream,
+ 				struct snd_pcm_hw_params *params,
+ 				struct snd_soc_dai *dai)
+ {
+ 	struct snd_soc_component *component = dai->component;
++	struct wm8940_priv *wm8940 = snd_soc_component_get_drvdata(component);
+ 	u16 iface = snd_soc_component_read(component, WM8940_IFACE) & 0xFD9F;
+ 	u16 addcntrl = snd_soc_component_read(component, WM8940_ADDCNTRL) & 0xFFF1;
+ 	u16 companding =  snd_soc_component_read(component,
+ 						WM8940_COMPANDINGCTL) & 0xFFDF;
+ 	int ret;
+ 
++	wm8940->fs = params_rate(params);
++	ret = wm8940_update_clocks(dai);
++	if (ret)
++		return ret;
++
+ 	/* LoutR control */
+ 	if (substream->stream == SNDRV_PCM_STREAM_CAPTURE
+ 	    && params_channels(params) == 2)
+@@ -496,7 +505,6 @@ static int wm8940_set_bias_level(struct snd_soc_component *component,
+ 				return ret;
+ 			}
+ 		}
+-
+ 		/* ensure bufioen and biasen */
+ 		pwr_reg |= (1 << 2) | (1 << 3);
+ 		/* set vmid to 300k for standby */
+@@ -611,24 +619,6 @@ static int wm8940_set_dai_pll(struct snd_soc_dai *codec_dai, int pll_id,
+ 	return 0;
+ }
+ 
+-static int wm8940_set_dai_sysclk(struct snd_soc_dai *codec_dai,
+-				 int clk_id, unsigned int freq, int dir)
+-{
+-	struct snd_soc_component *component = codec_dai->component;
+-	struct wm8940_priv *wm8940 = snd_soc_component_get_drvdata(component);
+-
+-	switch (freq) {
+-	case 11289600:
+-	case 12000000:
+-	case 12288000:
+-	case 16934400:
+-	case 18432000:
+-		wm8940->sysclk = freq;
+-		return 0;
+-	}
+-	return -EINVAL;
+-}
+-
+ static int wm8940_set_dai_clkdiv(struct snd_soc_dai *codec_dai,
+ 				 int div_id, int div)
+ {
+@@ -653,6 +643,79 @@ static int wm8940_set_dai_clkdiv(struct snd_soc_dai *codec_dai,
+ 	return ret;
+ }
+ 
++static unsigned int wm8940_get_mclkdiv(unsigned int f_in, unsigned int f_out,
++				       int *mclkdiv)
++{
++	unsigned int ratio = 2 * f_in / f_out;
++
++	if (ratio <= 2) {
++		*mclkdiv = WM8940_MCLKDIV_1;
++		ratio = 2;
++	} else if (ratio == 3) {
++		*mclkdiv = WM8940_MCLKDIV_1_5;
++	} else if (ratio == 4) {
++		*mclkdiv = WM8940_MCLKDIV_2;
++	} else if (ratio <= 6) {
++		*mclkdiv = WM8940_MCLKDIV_3;
++		ratio = 6;
++	} else if (ratio <= 8) {
++		*mclkdiv = WM8940_MCLKDIV_4;
++		ratio = 8;
++	} else if (ratio <= 12) {
++		*mclkdiv = WM8940_MCLKDIV_6;
++		ratio = 12;
++	} else if (ratio <= 16) {
++		*mclkdiv = WM8940_MCLKDIV_8;
++		ratio = 16;
++	} else {
++		*mclkdiv = WM8940_MCLKDIV_12;
++		ratio = 24;
++	}
++
++	return f_out * ratio / 2;
++}
++
++static int wm8940_update_clocks(struct snd_soc_dai *dai)
++{
++	struct snd_soc_component *component = dai->component;
++	struct wm8940_priv *priv = snd_soc_component_get_drvdata(component);
++	unsigned int fs256;
++	unsigned int fpll = 0;
++	unsigned int f;
++	int mclkdiv;
++
++	if (!priv->mclk || !priv->fs)
++		return 0;
++
++	fs256 = 256 * priv->fs;
++
++	f = wm8940_get_mclkdiv(priv->mclk, fs256, &mclkdiv);
++	if (f != priv->mclk) {
++		/* The PLL performs best around 90MHz */
++		fpll = wm8940_get_mclkdiv(22500000, fs256, &mclkdiv);
++	}
++
++	wm8940_set_dai_pll(dai, 0, 0, priv->mclk, fpll);
++	wm8940_set_dai_clkdiv(dai, WM8940_MCLKDIV, mclkdiv);
++
++	return 0;
++}
++
++static int wm8940_set_dai_sysclk(struct snd_soc_dai *dai, int clk_id,
++				 unsigned int freq, int dir)
++{
++	struct snd_soc_component *component = dai->component;
++	struct wm8940_priv *priv = snd_soc_component_get_drvdata(component);
++
++	if (dir != SND_SOC_CLOCK_IN)
++		return -EINVAL;
++
++	priv->mclk = freq;
++
++	return wm8940_update_clocks(dai);
++}
++
++
+ #define WM8940_RATES SNDRV_PCM_RATE_8000_48000
+ 
+ #define WM8940_FORMATS (SNDRV_PCM_FMTBIT_S8 |				\
+-- 
+2.20.1
 
