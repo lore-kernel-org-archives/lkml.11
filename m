@@ -2,122 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEE5BC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 03:59:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D093FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 04:01:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229727AbiFFD74 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 5 Jun 2022 23:59:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47970 "EHLO
+        id S229742AbiFFEBR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 00:01:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229483AbiFFD7v (ORCPT
+        with ESMTP id S229483AbiFFEBL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 5 Jun 2022 23:59:51 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 358691D303;
-        Sun,  5 Jun 2022 20:59:44 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id o6so6088445plg.2;
-        Sun, 05 Jun 2022 20:59:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=F3dlgaXmkDpDEty0Y4DNCWJHlmIObEDWkeyV88bJ1Pg=;
-        b=BJBW1yOCWpOULW0xyTrerbG4y7zPYfn1I61YNgD7Y70F8Q1r8/DhnX8ELeAIikMmoJ
-         1H06V89YylT/lmz+v7kGZMokx4yYvi7KuCd1pDt5Y40Noi2+c7TUw3BkWmdFzXUQG51A
-         QN4+Vd8DTPCp8UYaqAUVXnQHlgojK8SufP8tdKga6bUuZKJGQg1ylbJIdt+LAvTSx3GR
-         ByuG3q2sjMJLEkYCtghZO2ndpj8NR7n/fR64SQA+FUbygh4oHy4nFvHjeeYYEa68cYJj
-         t5Dxl0vt7EJ01dSGs75qVqBGbcyiz6DOX+DKxCX5fiyQTQ6v9OphrCyKgwD/kiSFJCRU
-         ytJQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=F3dlgaXmkDpDEty0Y4DNCWJHlmIObEDWkeyV88bJ1Pg=;
-        b=NRNnPS7i1A8TxdnNO9h9prBMqXhwVm4k+TRt79GhB2AIBrNwhM+m4JbqVBDp0Naknf
-         hJIrL1eEhR9kvOzRoMhdAkPeX5EX6uBAGsd4vMgt5nGuF1u0WuBdlpE6fwa2k41o6//F
-         dWVrxAyIoR5FN69evIXnPS4iPmJe2lwyuIn7vKsUACDGwlA9Xwq9NrKvUm/FRcKArRMD
-         w1n/pttJCLf+82kc4NBhXvpWEoSeZgPNeDHWar+OHm46w6w1SWw/uvLJR/TN2+aGA6Ow
-         HkmxEBq9djiucL840MJcfYK6HDDNQYBAWIetQhodVV6D/LrW4SywxYALhDqNrrhoXAv1
-         +FjQ==
-X-Gm-Message-State: AOAM530LIONgeuYXR0VWAR/VVrmPofaG7WmNM/V/Oqcblheq/8B3Lb1e
-        7FUAd3GCeT7EBAopiY9LilE=
-X-Google-Smtp-Source: ABdhPJz018j7KIAM1lyTIrFxMTwuSnzEkr87RwbyQbdQnw5vzBA49wIGQTCLtHW+Xps8wJVjcivrFQ==
-X-Received: by 2002:a17:90a:9914:b0:1db:d10f:1fcf with SMTP id b20-20020a17090a991400b001dbd10f1fcfmr59116261pjp.241.1654487984072;
-        Sun, 05 Jun 2022 20:59:44 -0700 (PDT)
-Received: from localhost (subs03-180-214-233-92.three.co.id. [180.214.233.92])
-        by smtp.gmail.com with ESMTPSA id bi16-20020a056a00311000b0050dc762815asm2798215pfb.52.2022.06.05.20.59.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Jun 2022 20:59:43 -0700 (PDT)
-Date:   Mon, 6 Jun 2022 10:59:40 +0700
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-To:     linux-mtd@lists.infradead.org
-Cc:     David Woodhouse <dwmw2@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        David Howells <dhowells@redhat.com>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Baokun Li <libaokun1@huawei.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Kyeong Yoo <kyeong.yoo@alliedtelesis.co.nz>,
-        hongnanli <hongnan.li@linux.alibaba.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: partly outside array bounds warning on fs/jffs2/summary.c, GCC 12.1.0
-Message-ID: <Yp17rHxRb6d5JrHd@debian.me>
+        Mon, 6 Jun 2022 00:01:11 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C83E497292
+        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 21:01:08 -0700 (PDT)
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 255MV8Cx004725;
+        Mon, 6 Jun 2022 03:56:45 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=7Bh3iFZ+V+8zVRaO3+c8K7CCnVBuzEFeBuDju+85n3U=;
+ b=Yhnt+AgcqTVyN0IW5zlKAm0fOgNomh7KtERseZQKp/7otoSQC0rP0Q5FjhUGkFyFpGit
+ FIxbHhBCmWcpdHn0us5KpQXS8emUFopttGRk6w4g/d3PeR6v0CBuTvrS3gz78v70ZJ7G
+ W9Jwjh1XjbhuRBn8bCp6pGnjscqw1CfZWjBEacX4TDLejbmekTxhJiJ0e4bUuSfWnjap
+ g3yuyF6rAivzMpVYxnsrB2k7I18ApajzBIrjDMoj7MM+K0CebRrvGiDHVR2IiHp34d9M
+ 3ATKe1tO0tb+8X2LYoK0WQG5w+CWgMJ63CUIwNXQsu1u/ueZ2AMvxCmuAikIMTh+MxTD 8w== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gggpv7uev-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 06 Jun 2022 03:56:44 +0000
+Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2563sj0m007536;
+        Mon, 6 Jun 2022 03:56:44 GMT
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gggpv7uem-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 06 Jun 2022 03:56:44 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2563qV7k014051;
+        Mon, 6 Jun 2022 03:56:41 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma04ams.nl.ibm.com with ESMTP id 3gfy199sjd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 06 Jun 2022 03:56:41 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2563uRIC23593282
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 6 Jun 2022 03:56:27 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 43A3C5204F;
+        Mon,  6 Jun 2022 03:56:39 +0000 (GMT)
+Received: from [9.43.83.177] (unknown [9.43.83.177])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id DCB235204E;
+        Mon,  6 Jun 2022 03:56:33 +0000 (GMT)
+Message-ID: <d429a644-ef27-bcd8-52bd-c8cbe5fedc26@linux.ibm.com>
+Date:   Mon, 6 Jun 2022 09:26:32 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [RFC PATCH v4 1/7] mm/demotion: Add support for explicit memory
+ tiers
+Content-Language: en-US
+To:     Ying Huang <ying.huang@intel.com>
+Cc:     Greg Thelen <gthelen@google.com>, Yang Shi <shy828301@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Tim C Chen <tim.c.chen@intel.com>,
+        Brice Goglin <brice.goglin@gmail.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hesham Almatary <hesham.almatary@huawei.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Jagdish Gediya <jvgediya@linux.ibm.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        David Rientjes <rientjes@google.com>, linux-mm@kvack.org,
+        akpm@linux-foundation.org
+References: <CAAPL-u-dFp7PwPH6DfbYdnY8xaGsHz3tRQ0CPGVkiqURvdN8=A@mail.gmail.com>
+ <20220527122528.129445-1-aneesh.kumar@linux.ibm.com>
+ <20220527122528.129445-2-aneesh.kumar@linux.ibm.com>
+ <352ae5f408b6d7d4d3d820d68e2f2c6b494e95e1.camel@intel.com>
+ <aeced91ea9d9396e9842f5c0264391aabd291726.camel@intel.com>
+From:   Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>
+In-Reply-To: <aeced91ea9d9396e9842f5c0264391aabd291726.camel@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: I7wbliMR_Zbpe0_Lz-nVGQyjS5AX7_Ig
+X-Proofpoint-GUID: V8NbZSllC7Zryn3z6jg-jhvu-xkuN3lR
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-06_01,2022-06-03_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0
+ priorityscore=1501 lowpriorityscore=0 suspectscore=0 spamscore=0
+ mlxlogscore=999 mlxscore=0 impostorscore=0 bulkscore=0 phishscore=0
+ clxscore=1015 malwarescore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2204290000 definitions=main-2206060018
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi everyone,
+On 6/6/22 8:19 AM, Ying Huang wrote:
+> On Thu, 2022-06-02 at 14:07 +0800, Ying Huang wrote:
+>> On Fri, 2022-05-27 at 17:55 +0530, Aneesh Kumar K.V wrote:
+>>> From: Jagdish Gediya <jvgediya@linux.ibm.com>
+>>>
+>>> In the current kernel, memory tiers are defined implicitly via a
+>>> demotion path relationship between NUMA nodes, which is created
+>>> during the kernel initialization and updated when a NUMA node is
+>>> hot-added or hot-removed.  The current implementation puts all
+>>> nodes with CPU into the top tier, and builds the tier hierarchy
+>>> tier-by-tier by establishing the per-node demotion targets based
+>>> on the distances between nodes.
+>>>
+>>> This current memory tier kernel interface needs to be improved for
+>>> several important use cases,
+>>>
+>>> The current tier initialization code always initializes
+>>> each memory-only NUMA node into a lower tier.  But a memory-only
+>>> NUMA node may have a high performance memory device (e.g. a DRAM
+>>> device attached via CXL.mem or a DRAM-backed memory-only node on
+>>> a virtual machine) and should be put into a higher tier.
+>>>
+>>> The current tier hierarchy always puts CPU nodes into the top
+>>> tier. But on a system with HBM or GPU devices, the
+>>> memory-only NUMA nodes mapping these devices should be in the
+>>> top tier, and DRAM nodes with CPUs are better to be placed into the
+>>> next lower tier.
+>>>
+>>> With current kernel higher tier node can only be demoted to selected nodes on the
+>>> next lower tier as defined by the demotion path, not any other
+>>> node from any lower tier.  This strict, hard-coded demotion order
+>>> does not work in all use cases (e.g. some use cases may want to
+>>> allow cross-socket demotion to another node in the same demotion
+>>> tier as a fallback when the preferred demotion node is out of
+>>> space), This demotion order is also inconsistent with the page
+>>> allocation fallback order when all the nodes in a higher tier are
+>>> out of space: The page allocation can fall back to any node from
+>>> any lower tier, whereas the demotion order doesn't allow that.
+>>>
+>>> The current kernel also don't provide any interfaces for the
+>>> userspace to learn about the memory tier hierarchy in order to
+>>> optimize its memory allocations.
+>>>
+>>> This patch series address the above by defining memory tiers explicitly.
+>>>
+>>> This patch adds below sysfs interface which is read-only and
+>>> can be used to read nodes available in specific tier.
+>>>
+>>> /sys/devices/system/memtier/memtierN/nodelist
+>>>
+>>> Tier 0 is the highest tier, while tier MAX_MEMORY_TIERS - 1 is the
+>>> lowest tier. The absolute value of a tier id number has no specific
+>>> meaning. what matters is the relative order of the tier id numbers.
+>>>
+>>> All the tiered memory code is guarded by CONFIG_TIERED_MEMORY.
+>>> Default number of memory tiers are MAX_MEMORY_TIERS(3). All the
+>>> nodes are by default assigned to DEFAULT_MEMORY_TIER(1).
+>>>
+>>> Default memory tier can be read from,
+>>> /sys/devices/system/memtier/default_tier
+>>>
+>>> Max memory tier can be read from,
+>>> /sys/devices/system/memtier/max_tiers
+>>>
+>>> This patch implements the RFC spec sent by Wei Xu <weixugc@google.com> at [1].
+>>>
+>>> [1] https://lore.kernel.org/linux-mm/CAAPL-u-DGLcKRVDnChN9ZhxPkfxQvz9Sb93kVoX_4J2oiJSkUw@mail.gmail.com/
+>>>
+>>> Signed-off-by: Jagdish Gediya <jvgediya@linux.ibm.com>
+>>> Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
+>>
+>> IMHO, we should change the kernel internal implementation firstly, then
+>> implement the kerne/user space interface.  That is, make memory tier
+>> explicit inside kernel, then expose it to user space.
+> 
+> Why ignore this comment for v5?  If you don't agree, please respond me.
+> 
 
-When I build arm64 kernel with GCC 12.1.0 (bcm2711_defconfig), I get
-partly outside array bounds warning on fs/jffs2/summary.c:
+I am not sure what benefit such a rearrange would bring in? Right now I 
+am writing the series from the point of view of introducing all the 
+plumbing and them switching the existing demotion logic to use the new 
+infrastructure. Redoing the code to hide all the userspace sysfs till we 
+switch the demotion logic to use the new infrastructure doesn't really 
+bring any additional clarity to patch review and would require me to 
+redo the series with a lot of conflicts across the patches in the patchset.
 
-  CC [M]  fs/jffs2/summary.o
-In file included from fs/jffs2/summary.c:23:
-In function 'jffs2_sum_add_mem',
-    inlined from 'jffs2_sum_add_inode_mem' at fs/jffs2/summary.c:130:9:
-fs/jffs2/nodelist.h:43:28: warning: array subscript 'union jffs2_sum_mem[0]' is partly outside array bounds of 'unsigned char[26]' [-Warray-bounds]
-   43 | #define je16_to_cpu(x) ((x).v16)
-      |                        ~~~~^~~~~
-fs/jffs2/summary.c:71:17: note: in expansion of macro 'je16_to_cpu'
-   71 |         switch (je16_to_cpu(item->u.nodetype)) {
-      |                 ^~~~~~~~~~~
-In file included from fs/jffs2/summary.c:17:
-In function 'kmalloc',
-    inlined from 'jffs2_sum_add_inode_mem' at fs/jffs2/summary.c:118:37:
-./include/linux/slab.h:600:24: note: object of size 26 allocated by 'kmem_cache_alloc_trace'
-  600 |                 return kmem_cache_alloc_trace(
-      |                        ^~~~~~~~~~~~~~~~~~~~~~~
-  601 |                                 kmalloc_caches[kmalloc_type(flags)][index],
-      |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  602 |                                 flags, size);
-      |                                 ~~~~~~~~~~~~
-In file included from fs/jffs2/nodelist.h:22:
-In function 'jffs2_sum_add_mem',
-    inlined from 'jffs2_sum_add_inode_mem' at fs/jffs2/summary.c:130:9:
-fs/jffs2/summary.c:79:73: warning: array subscript 'union jffs2_sum_mem[0]' is partly outside array bounds of 'unsigned char[26]' [-Warray-bounds]
-   79 |                         s->sum_size += JFFS2_SUMMARY_DIRENT_SIZE(item->d.nsize);
-fs/jffs2/summary.h:34:80: note: in definition of macro 'JFFS2_SUMMARY_DIRENT_SIZE'
-   34 | #define JFFS2_SUMMARY_DIRENT_SIZE(x) (sizeof(struct jffs2_sum_dirent_flash) + (x))
-      |                                                                                ^
-In function 'kmalloc',
-    inlined from 'jffs2_sum_add_inode_mem' at fs/jffs2/summary.c:118:37:
-./include/linux/slab.h:600:24: note: object of size 26 allocated by 'kmem_cache_alloc_trace'
-  600 |                 return kmem_cache_alloc_trace(
-      |                        ^~~~~~~~~~~~~~~~~~~~~~~
-  601 |                                 kmalloc_caches[kmalloc_type(flags)][index],
-      |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  602 |                                 flags, size);
-      |                                 ~~~~~~~~~~~~
+-aneesh
 
-I first found these warnings when reviewing linux-5.18.y stable rc [1],
-for which Greg recommends me to contact JFFS subsystem developers.
-
-Thanks.
-
-[1]: https://lore.kernel.org/stable/YpxU%2FbVogip64iQF@debian.me/ 
-
--- 
-An old man doll... just what I always wanted! - Clara
