@@ -2,106 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40CA7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 21:43:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A2CEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 21:44:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231727AbiFFVnn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 17:43:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43358 "EHLO
+        id S233018AbiFFVoe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 17:44:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231620AbiFFVnk (ORCPT
+        with ESMTP id S234010AbiFFVo3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 17:43:40 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 592A856237;
-        Mon,  6 Jun 2022 14:43:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1654551810;
-        bh=/rWCIXPO+DIHy5Wbvb0BsPXQuXvrzb8zMl/UnJyKspM=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=IcURhFFFu+vzmB3Fi6OLRgy0a+suJkg6LAU2z5iEc24Nmis5bjtKEihWOJUcDmpKa
-         l6W36nVhATTrmRloAAaKYt/5/WrHH5KdUKOsTUSZMk45hfoPCYx+B80Ez9Zi22OvH6
-         wGEs4ABON1qO/18NyZlG0CdEw20+fYU7ysPTXScc=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from longitude ([5.146.195.3]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MrhUK-1nSVwT3bPg-00neUP; Mon, 06
- Jun 2022 23:43:29 +0200
-From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
-To:     linux-gpio@vger.kernel.org
-Cc:     Marc Zyngier <maz@kernel.org>,
-        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        openbmc@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] pinctrl: nuvoton: wpcm450: Convert irqchip to IRQCHIP_IMMUTABLE
-Date:   Mon,  6 Jun 2022 23:43:00 +0200
-Message-Id: <20220606214301.2061467-1-j.neuschaefer@gmx.net>
-X-Mailer: git-send-email 2.35.1
+        Mon, 6 Jun 2022 17:44:29 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37FF88148A
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 14:44:21 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id l20-20020a17090a409400b001dd2a9d555bso13722272pjg.0
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 14:44:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=SWErXY/21cRT+JuPcizRjGDN5I2BQSMNvqCbtDuuEgI=;
+        b=I5APtot2v61wKkN0XCT4995ZIiul394ZNakXAWx3CnTxQvkSfrURRzUJ0YUHHBDmoN
+         n7WES+tRmlehNiQ+3ho3huUDvxWLUQKDPTnFK3bHGNIBaYMyTK43rUlQCWrS8jBRXYqw
+         asEC1jsCThymiE5h5B8duobPkjqKD79mgUEVqb3+uLy+sG21Xr8hCgblpLAIDX9GBdY+
+         YnoLjc3K3sv/qGe2DmVNbu56MCjX9ZwGKXZc3UA8b6ez1d+JTPISyuuAZIt5r+pAMldH
+         A3XSVAeQxTWsGtKRdSh1OHuMOvFPqiIUvWqLjyZT3XWfA2X2Q+VmkOMkXtoUx/+j9lcl
+         C7dQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=SWErXY/21cRT+JuPcizRjGDN5I2BQSMNvqCbtDuuEgI=;
+        b=f0SRtls/4NDolOUetszSG76QhkOTf4a85+kxMFUGjffxoXL/mzpbWvo70dQYBOoP8r
+         DqFju8Yh6oOJhpn4xYbrvc24S1DPNL00VvbU3unLFLWXvN+qTFWfvVCukG9sYelyAsvH
+         cMGVEsl74uJWA8U6XKmxPXjNdVxZWEy5ZEqJh0VY1f0DviesggN3ooCdqeN/2Euuy7VP
+         yG6cGd9Pj+AcRbRkhTzFf8oOGH2iPKWafUl1aCWKoKjfsVhWNwqFIzEPsvuPPEGUdf6i
+         WcFpUBGzg6gi6t6VNo+RppoeCqPwKpV64CDhKaEfrW8cMse9aHbItDc7lyenAfPGNmR6
+         Dg7g==
+X-Gm-Message-State: AOAM533ExJ3P73a3WV+DCiTjSfBqHXuzg3MAcnB0or6DNyiHFHhSQtbU
+        c4oWHdtvAuxslgaEJJyIvC4=
+X-Google-Smtp-Source: ABdhPJxxmkvlq3kb5ZvctnDvImOgaVYAMOt1gHJ3eNFjJyFulmHv+ybHJWXnTeDs5PmIyxjHCkv45Q==
+X-Received: by 2002:a17:902:b282:b0:163:ffe6:2cf9 with SMTP id u2-20020a170902b28200b00163ffe62cf9mr26504023plr.76.1654551860779;
+        Mon, 06 Jun 2022 14:44:20 -0700 (PDT)
+Received: from localhost.biz ([8.25.197.27])
+        by smtp.gmail.com with ESMTPSA id a4-20020a170903100400b0016397da033csm10881675plb.62.2022.06.06.14.44.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Jun 2022 14:44:20 -0700 (PDT)
+From:   Yang Shi <shy828301@gmail.com>
+To:     vbabka@suse.cz, kirill.shutemov@linux.intel.com,
+        willy@infradead.org, akpm@linux-foundation.org
+Cc:     shy828301@gmail.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: [v3 PATCH 1/7] mm: khugepaged: check THP flag in hugepage_vma_check()
+Date:   Mon,  6 Jun 2022 14:44:08 -0700
+Message-Id: <20220606214414.736109-2-shy828301@gmail.com>
+X-Mailer: git-send-email 2.26.3
+In-Reply-To: <20220606214414.736109-1-shy828301@gmail.com>
+References: <20220606214414.736109-1-shy828301@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:LhGxtsXUq/6ysDnU3oTP8OdWjKQdiLoxcP4ZbK3dGsPVNl4Uu2T
- NjNq/YOJDOmQQSdo+XzAxBoSIHSWq0ODxiOhH3FOjVmYVIwK5VguTuztpW6BwUBlyFNTwA1
- TQbxOC43xmEPYNS3+Y7Dk5Rw4r+aWkZU/iefvza6QSSkDVIkE8HrX/t59JtqoKmcqUGpDyw
- tXhto6Dg+/6k7pZmdwvsQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:6Y5Abz3mh9Y=:upHy6CS9v/bm2UnsNwn07u
- kouAio+9nVrabGQsCEIuoxocJKOW7wvDbeyaY+u1iHomTg+hEy8T+fIXADn3moC5ecVRpKdFh
- jPpFvxSwGq20RpIQ2+eGDp7oJhFNiffTx1LG0+LeQTkYQ505h03vRNSw37Kgf1yr6DMIqjGDU
- IJbhchvbgkXiSxtlWlXgzA0SLy0hQ9y3p4HqKGd9atSBxSwZ3Uy2up6QYHBQm8iA89j7h5+Zw
- +14fiiEqxfEkI3XsYqOfmywPUvDY+UApKBFb0Mywv6jeg5FKnZ1UFiv0FHRyofcNa+Cv/Z5RO
- 3hCaJFazggeVAW1rLWtDb11OvdFzLhnBYU9B/kNTS9Pw2XlDPsdBWIOnzm/S/0O9pFaT7KKBj
- 3OL7XmAqdQZDFi2oJ4C2xwnGnTL8+nafluNPt3/YT/TDeflkktbsY7Ujb5Qc7uhesiA2EdQ67
- koyMzomKdCmv1+rAOTxcbV4Rme74phZNuIqdIlN6j8fya69l2rmvjGSbz7oQTnyUZ1VtHC8uI
- Nvfkme0O7Nvvd8eYH0P43u9THy46vGIO69z0LIhITe9fEcaRo4jNwKGb7x5w0XWmSQjx9bkzt
- qeJ+BcL1jM7urgk+wYugAa0PSDe29ZqWH2qn/q4xTyFBLoAc830O4T8cDPZC14j3V6592BTtn
- z193rw/rDs2ZDOs+Tx5Z90T9/kCuEtvzfC7vQVPai1L7Wqql4sRHN0D+VoPxkqOz7F+wD+FYh
- azRUw1BftpjadONMpBfnb1T/n92dU7AYk/xA/hORIOSzwBmHeqgM5jgYELKCU3JRaMqZcw+gE
- nhV/Z90KCrFeUHFQA0Y1o7kQ3iG9YPmY/pAZoXTdeFWF4mWi3S7/iSoeo19FXmLiijB2Hz5Xo
- lgPzz8/JGxm8uCS8s94aG85RlOm2O0CrDz3S3utegwh0tYfieeJoj4kW42Xx9EaX1C0xd0AEx
- ry6qdqETMAtPS9Q+ysa4eZd8dFDvcMH/KLkq8e4yaDucX2iqc1OwdfyLxnOoT8FlJSTFLVn77
- P3XPl+fcBZ7JmogvxI3tmiwQzJ1YFnmIOkPv78pgSUx/JbvsqQC45TtTQaw3+CIoSziFEXFos
- CX+kiW76VcwBGLFZiugeKbwYIzUiccW9Dq3gFOJkeSyvPya5Bq0HGS7Tw==
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit 6c846d026d490 ("gpio: Don't fiddle with irqchips marked as
-immutable") added a warning for irqchips that are not marked with
-IRQCHIP_IMMUTABLE.
+Currently the THP flag check in hugepage_vma_check() will fallthrough if
+the flag is NEVER and VM_HUGEPAGE is set.  This is not a problem for now
+since all the callers have the flag checked before or can't be invoked if
+the flag is NEVER.
 
-Convert the pinctrl-wpcm450 driver to an immutable irqchip.
+However, the following patch will call hugepage_vma_check() in more
+places, for example, page fault, so this flag must be checked in
+hugepge_vma_check().
 
-Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
-=2D--
- drivers/pinctrl/nuvoton/pinctrl-wpcm450.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+Signed-off-by: Yang Shi <shy828301@gmail.com>
+---
+ mm/khugepaged.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/pinctrl/nuvoton/pinctrl-wpcm450.c b/drivers/pinctrl/n=
-uvoton/pinctrl-wpcm450.c
-index 0dbeb91f0bf27..cff784a7ce4d7 100644
-=2D-- a/drivers/pinctrl/nuvoton/pinctrl-wpcm450.c
-+++ b/drivers/pinctrl/nuvoton/pinctrl-wpcm450.c
-@@ -293,6 +293,8 @@ static const struct irq_chip wpcm450_gpio_irqchip =3D =
-{
- 	.irq_unmask =3D wpcm450_gpio_irq_unmask,
- 	.irq_mask =3D wpcm450_gpio_irq_mask,
- 	.irq_set_type =3D wpcm450_gpio_set_irq_type,
-+	.flags =3D IRQCHIP_IMMUTABLE,
-+	GPIOCHIP_IRQ_RESOURCE_HELPERS,
- };
-
- static void wpcm450_gpio_irqhandler(struct irq_desc *desc)
-@@ -1068,9 +1070,8 @@ static int wpcm450_gpio_register(struct platform_dev=
-ice *pdev,
- 		gpio->gc.fwnode =3D child;
- 		gpio->gc.add_pin_ranges =3D wpcm450_gpio_add_pin_ranges;
-
--		gpio->irqc =3D wpcm450_gpio_irqchip;
- 		girq =3D &gpio->gc.irq;
--		girq->chip =3D &gpio->irqc;
-+		gpio_irq_chip_set_chip(girq, &wpcm450_gpio_irqchip);
- 		girq->parent_handler =3D wpcm450_gpio_irqhandler;
- 		girq->parents =3D devm_kcalloc(dev, WPCM450_NUM_GPIO_IRQS,
- 					     sizeof(*girq->parents), GFP_KERNEL);
-=2D-
-2.35.1
+diff --git a/mm/khugepaged.c b/mm/khugepaged.c
+index 671ac7800e53..84b9cf4b9be9 100644
+--- a/mm/khugepaged.c
++++ b/mm/khugepaged.c
+@@ -458,6 +458,9 @@ bool hugepage_vma_check(struct vm_area_struct *vma,
+ 	if (shmem_file(vma->vm_file))
+ 		return shmem_huge_enabled(vma);
+ 
++	if (!khugepaged_enabled())
++		return false;
++
+ 	/* THP settings require madvise. */
+ 	if (!(vm_flags & VM_HUGEPAGE) && !khugepaged_always())
+ 		return false;
+-- 
+2.26.3
 
