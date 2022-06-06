@@ -2,507 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ED74C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 08:20:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02F81CCA47E
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 08:22:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231698AbiFFIUQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 04:20:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58672 "EHLO
+        id S231690AbiFFIWw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 04:22:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231653AbiFFIUO (ORCPT
+        with ESMTP id S231653AbiFFIWv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 04:20:14 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB6866B676;
-        Mon,  6 Jun 2022 01:20:12 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id q1so27430305ejz.9;
-        Mon, 06 Jun 2022 01:20:12 -0700 (PDT)
+        Mon, 6 Jun 2022 04:22:51 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D26F6CC4;
+        Mon,  6 Jun 2022 01:22:48 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id q26so8431891wra.1;
+        Mon, 06 Jun 2022 01:22:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=pFShBYGXsAyoQtlVGA4STiDz0uWWtw41ZsHDBzBNCvk=;
-        b=LCGxea1fBSoBwas5PW8Vssts/uSyLzOZldT59hpVS7Ob037IV5/E601pBu4xReTEex
-         /iRqYoKdNLbyXGfENCV7LugzmPkWpKcmLXuaYXzTYkG0n0tqNV+YOF+UdYlP4CP63qHl
-         LygK85DArRY4tFpQl96hl8kqv2gCAABjbk7n8KgpwMRpDm/Nk6Osj9Fou13xzzNUqC+2
-         I+EU8tsteb6/+4ttbpbEuvht86x6N1kHgbz5nFOeT4ftH44kAMGTfqd1RNhk1EjhZDfb
-         in9DqLqyHHZ9Jy0dLEi+R9KFBGKemZi8KrQj5ypMmxy4c+Q64s/pX6yYNmHgRUCNKPqa
-         NMrA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=oKiwtYWwJ/ZAYTG8vdYuhRqG3yc8krk/ZBTNC2MOyng=;
+        b=gM8wZ/Jx8lrC6fmxR/XpEfarEEJJz9uExyTwyh9muHTRApq5hOGMFrj88oPbNqF3iC
+         60paYjYKRrLSiyckRcOsuxrsTRE/wNkcWlUsZMqRH3zEvh9i0dxMTSGLoDRTKavBADLH
+         ZXw6OCXI8UmfWx78iS5dFmwHY5CKXWlAT3c4H3aEwasPFnsnspzUqibg/fiKHAbG3HaL
+         /3o2rDM+OjpPOvSYFeU2irp+ETdvmomGGpJHXjbqTU+Fmcr+kM3jemaA8xMuVHho49lw
+         Vupf/aoNKgVD1uzHD+OZXJ7X9kCdzafFKp9oK4Dh1iBSgvpimNCfkYHvt5roDcq6Fqqq
+         6vQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=pFShBYGXsAyoQtlVGA4STiDz0uWWtw41ZsHDBzBNCvk=;
-        b=QYvTiipmTr1uoW6MtUP7ClreDc5jnPcL50JUEfKlE2PZLbHhJMt/yoetXN824Yo8+f
-         dXBsrYuf6M0cgWY7Ura/4PIa7Z6oc8o19MkXpOrP7wWjgYUnniDUCjulqBCMvWc3dhNm
-         8QZIIgdzIzZQ2Vg0modHdEHA0VcKey7SJbXVtDRrnj/ndTMEt9+Cu17HSDIwC8uqUTMl
-         HG/jq8WHKWnoFY8YVV5MJUJRAfuwd1gHsvy6Jgc4ufdwh9eSTUnOBGR9wTGXOjGZnehd
-         bTA0KZgLwn2X/KKpiHJvwBkPZ6C0smriOP/nPWWQDJtHJ1Y6q39Av4+RHhZp7rFy/wXr
-         MoQQ==
-X-Gm-Message-State: AOAM533b7HIz81BOlbkg4MyYf90T8OHE957YmfWdJulQru5T9nblpc19
-        sYd7wk80I1YwB7x4YsR09cY=
-X-Google-Smtp-Source: ABdhPJxH8vANTuoR2UqURnNl3h55+QWanHSk0A7XsQpxVbq1Vvi4D7RoGctZ6+cdvlSsfsyKpTsHYA==
-X-Received: by 2002:a17:907:3f91:b0:6fe:8af0:4b2c with SMTP id hr17-20020a1709073f9100b006fe8af04b2cmr20925560ejc.220.1654503611157;
-        Mon, 06 Jun 2022 01:20:11 -0700 (PDT)
-Received: from krava ([193.85.244.190])
-        by smtp.gmail.com with ESMTPSA id j25-20020a50ed19000000b0042bcf1e0060sm7883367eds.65.2022.06.06.01.20.09
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=oKiwtYWwJ/ZAYTG8vdYuhRqG3yc8krk/ZBTNC2MOyng=;
+        b=Wpu/xj91CEkJHTnT8eMQRi+BopLdzcHlAV7zgVrdhIpQKlQoyADvGOCAjj9HPztS6S
+         NdHvNwF1mt8Kch8goLU4q8FQM8vP3m38tq+a4Ofd0Aq1GKCUFOBA9NXumD0CYLI94d8U
+         J6UY7idqhLhewxlvBg9UQeOjAgvzr0b5o/FJAqDYouVJ2WZJdKEW6lz7GGupky+QUkKn
+         KcTNkrT4nI6OCtAts3nCOlcTHjruGZ5Nbef78YWG6fE4dy/1o3H4zlgB3k9bd5RJAQS1
+         YIgYyKxItCOpNrhhMZJ4sxkBsEaDSSK2omqYQfhY713G60RCree4ulkuiTChQVynIsBY
+         RdIg==
+X-Gm-Message-State: AOAM533ZfJw8txhk3XXxTELXgfJ5GSFMrl1J8Z5DBdHa8uSPoicZn0Bv
+        UPPQtDK7Jpk1bXHO13G79tc=
+X-Google-Smtp-Source: ABdhPJz7JciclJBrOqf8JtfMLxlNu71DjfTpAykx1io2ek9vepBw+TG/Dtn+BMR5meU5xE3utuCgKg==
+X-Received: by 2002:adf:eb11:0:b0:213:19dd:e1aa with SMTP id s17-20020adfeb11000000b0021319dde1aamr19393403wrn.324.1654503767336;
+        Mon, 06 Jun 2022 01:22:47 -0700 (PDT)
+Received: from Red ([2a01:cb1d:3d5:a100:264b:feff:fe03:2806])
+        by smtp.googlemail.com with ESMTPSA id j22-20020a5d4536000000b0021108003596sm14062329wra.10.2022.06.06.01.22.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jun 2022 01:20:10 -0700 (PDT)
-From:   Jiri Olsa <olsajiri@gmail.com>
-X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
-Date:   Mon, 6 Jun 2022 10:20:08 +0200
-To:     Song Liu <song@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kernel-team@fb.com, rostedt@goodmis.org,
-        mhiramat@kernel.org
-Subject: Re: [PATCH v2 bpf-next 3/5] ftrace: introduce
- FTRACE_OPS_FL_SHARE_IPMODIFY
-Message-ID: <Yp24uOldsVIm7Fid@krava>
-References: <20220602193706.2607681-1-song@kernel.org>
- <20220602193706.2607681-4-song@kernel.org>
+        Mon, 06 Jun 2022 01:22:46 -0700 (PDT)
+Date:   Mon, 6 Jun 2022 10:22:41 +0200
+From:   Corentin Labbe <clabbe.montjoie@gmail.com>
+To:     Neal Liu <neal_liu@aspeedtech.com>
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Johnny Huang <johnny_huang@aspeedtech.com>,
+        "linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>,
+        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/5] crypto: aspeed: Add HACE hash driver
+Message-ID: <Yp25UVBCNHzeiQOn@Red>
+References: <20220601054204.1522976-1-neal_liu@aspeedtech.com>
+ <20220601054204.1522976-2-neal_liu@aspeedtech.com>
+ <YpcYLiJfC6tgP2Nj@Red>
+ <HK0PR06MB320263939B2E388481DE2A0A80DF9@HK0PR06MB3202.apcprd06.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20220602193706.2607681-4-song@kernel.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <HK0PR06MB320263939B2E388481DE2A0A80DF9@HK0PR06MB3202.apcprd06.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 02, 2022 at 12:37:04PM -0700, Song Liu wrote:
-> live patch and BPF trampoline (kfunc/kretfunc in bpftrace) are important
-> features for modern systems. Currently, it is not possible to use live
-> patch and BPF trampoline on the same kernel function at the same time.
-> This is because of the resitriction that only one ftrace_ops with flag
-> FTRACE_OPS_FL_IPMODIFY on the same kernel function.
-
-is it hard to make live patch test? would be great to have
-selftest for this, or at least sample module that does that,
-there are already sample modules for direct interface
-
+Le Wed, Jun 01, 2022 at 08:38:51AM +0000, Neal Liu a écrit :
+> > Le Wed, Jun 01, 2022 at 01:42:00PM +0800, Neal Liu a écrit :
+> > > Hash and Crypto Engine (HACE) is designed to accelerate the throughput
+> > > of hash data digest, encryption, and decryption.
+> > >
+> > > Basically, HACE can be divided into two independently engines
+> > > - Hash Engine and Crypto Engine. This patch aims to add HACE hash
+> > > engine driver for hash accelerator.
+> > >
+> > > Signed-off-by: Neal Liu <neal_liu@aspeedtech.com>
+> > > Signed-off-by: Johnny Huang <johnny_huang@aspeedtech.com>
+> > 
+> > Hello
+> > 
+> > Did you test with CONFIG_CRYPTO_MANAGER_EXTRA_TESTS=y (you should
+> > said it in cover letter).
+> > There are several easy style fixes to do (please run checkpatch --strict) Did you
+> > test your driver with both little and big endian mode ?
+> > 
 > 
-> BPF trampoline uses direct ftrace_ops, which assumes IPMODIFY. However,
-> not all direct ftrace_ops would overwrite the actual function. This means
-> it is possible to have a non-IPMODIFY direct ftrace_ops to share the same
-> kernel function with an IPMODIFY ftrace_ops.
+> Yes, I also test it with CONFIG_CRYPTO_MANAGER_EXTRA_TESTS=y. I'll describe it in cover letter as you suggested.
+> And the style problem would be fixed, thanks for your suggestion.
 > 
-> Introduce FTRACE_OPS_FL_SHARE_IPMODIFY, which allows the direct ftrace_ops
-> to share with IPMODIFY ftrace_ops. With FTRACE_OPS_FL_SHARE_IPMODIFY flag
-> set, the direct ftrace_ops would call the target function picked by the
-> IPMODIFY ftrace_ops.
+> How to test it with both little and big endian mode? It would be appreciated if you give me some clue.
 > 
-> Comment "IPMODIFY, DIRECT, and SHARE_IPMODIFY" in include/linux/ftrace.h
-> contains more information about how SHARE_IPMODIFY interacts with IPMODIFY
-> and DIRECT flags.
+
+Hello
+
+Sorry for the delayed answer.
+
+You should try compiling and booting with CONFIG_CPU_BIG_ENDIAN=y
+
+> > Also please see my comment below.
+> > 
+> > [...]
+> > > +/* Initialization Vectors for SHA-family */ static const u32
+> > > +sha1_iv[8] = {
+> > > +	0x01234567UL, 0x89abcdefUL, 0xfedcba98UL, 0x76543210UL,
+> > > +	0xf0e1d2c3UL, 0, 0, 0
+> > > +};
+> > > +
+> > > +static const u32 sha224_iv[8] = {
+> > > +	0xd89e05c1UL, 0x07d57c36UL, 0x17dd7030UL, 0x39590ef7UL,
+> > > +	0x310bc0ffUL, 0x11155868UL, 0xa78ff964UL, 0xa44ffabeUL };
+> > > +
+> > > +static const u32 sha256_iv[8] = {
+> > > +	0x67e6096aUL, 0x85ae67bbUL, 0x72f36e3cUL, 0x3af54fa5UL,
+> > > +	0x7f520e51UL, 0x8c68059bUL, 0xabd9831fUL, 0x19cde05bUL };
+> > > +
+> > > +static const u32 sha384_iv[16] = {
+> > > +	0x5d9dbbcbUL, 0xd89e05c1UL, 0x2a299a62UL, 0x07d57c36UL,
+> > > +	0x5a015991UL, 0x17dd7030UL, 0xd8ec2f15UL, 0x39590ef7UL,
+> > > +	0x67263367UL, 0x310bc0ffUL, 0x874ab48eUL, 0x11155868UL,
+> > > +	0x0d2e0cdbUL, 0xa78ff964UL, 0x1d48b547UL, 0xa44ffabeUL };
+> > > +
+> > > +static const u32 sha512_iv[16] = {
+> > > +	0x67e6096aUL, 0x08c9bcf3UL, 0x85ae67bbUL, 0x3ba7ca84UL,
+> > > +	0x72f36e3cUL, 0x2bf894feUL, 0x3af54fa5UL, 0xf1361d5fUL,
+> > > +	0x7f520e51UL, 0xd182e6adUL, 0x8c68059bUL, 0x1f6c3e2bUL,
+> > > +	0xabd9831fUL, 0x6bbd41fbUL, 0x19cde05bUL, 0x79217e13UL };
+> > > +
+> > > +static const u32 sha512_224_iv[16] = {
+> > > +	0xC8373D8CUL, 0xA24D5419UL, 0x6699E173UL, 0xD6D4DC89UL,
+> > > +	0xAEB7FA1DUL, 0x829CFF32UL, 0x14D59D67UL, 0xCF9F2F58UL,
+> > > +	0x692B6D0FUL, 0xA84DD47BUL, 0x736FE377UL, 0x4289C404UL,
+> > > +	0xA8859D3FUL, 0xC8361D6AUL, 0xADE61211UL, 0xA192D691UL };
+> > > +
+> > > +static const u32 sha512_256_iv[16] = {
+> > > +	0x94213122UL, 0x2CF72BFCUL, 0xA35F559FUL, 0xC2644CC8UL,
+> > > +	0x6BB89323UL, 0x51B1536FUL, 0x19773896UL, 0xBDEA4059UL,
+> > > +	0xE23E2896UL, 0xE3FF8EA8UL, 0x251E5EBEUL, 0x92398653UL,
+> > > +	0xFC99012BUL, 0xAAB8852CUL, 0xDC2DB70EUL, 0xA22CC581UL };
+> > 
+> > Thoses IV already exists as define in linux headers (SHA1_H0 for example) But I
+> > am puzzled on why you invert them.
+> > 
 > 
-> Signed-off-by: Song Liu <song@kernel.org>
-> ---
->  include/linux/ftrace.h |  74 +++++++++++++++++
->  kernel/trace/ftrace.c  | 179 ++++++++++++++++++++++++++++++++++++++---
->  2 files changed, 242 insertions(+), 11 deletions(-)
+> This is Aspeed hardware limitation.
+
+The limitation is that hardware does not know theses IV ?
+Having them inverted seems to proof that you have some endianness issue.
+
+> > 
+> > Why didnt you use the crypto_engine API instead of rewriting it.
 > 
-> diff --git a/include/linux/ftrace.h b/include/linux/ftrace.h
-> index 9023bf69f675..bfacf608de9c 100644
-> --- a/include/linux/ftrace.h
-> +++ b/include/linux/ftrace.h
-> @@ -98,6 +98,18 @@ static inline int ftrace_mod_get_kallsym(unsigned int symnum, unsigned long *val
->  }
->  #endif
->  
-> +/*
-> + * FTRACE_OPS_CMD_* commands allow the ftrace core logic to request changes
-> + * to a ftrace_ops.
-> + *
-> + * ENABLE_SHARE_IPMODIFY - enable FTRACE_OPS_FL_SHARE_IPMODIFY.
-> + * DISABLE_SHARE_IPMODIFY - disable FTRACE_OPS_FL_SHARE_IPMODIFY.
-> + */
-> +enum ftrace_ops_cmd {
-> +	FTRACE_OPS_CMD_ENABLE_SHARE_IPMODIFY,
-> +	FTRACE_OPS_CMD_DISABLE_SHARE_IPMODIFY,
-> +};
-> +
->  #ifdef CONFIG_FUNCTION_TRACER
->  
->  extern int ftrace_enabled;
-> @@ -189,6 +201,9 @@ ftrace_func_t ftrace_ops_get_func(struct ftrace_ops *ops);
->   *             ftrace_enabled.
->   * DIRECT - Used by the direct ftrace_ops helper for direct functions
->   *            (internal ftrace only, should not be used by others)
-> + * SHARE_IPMODIFY - For direct ftrace_ops only. Set when the direct function
-> + *            is ready to share same kernel function with IPMODIFY function
-> + *            (live patch, etc.).
->   */
->  enum {
->  	FTRACE_OPS_FL_ENABLED			= BIT(0),
-> @@ -209,8 +224,66 @@ enum {
->  	FTRACE_OPS_FL_TRACE_ARRAY		= BIT(15),
->  	FTRACE_OPS_FL_PERMANENT                 = BIT(16),
->  	FTRACE_OPS_FL_DIRECT			= BIT(17),
-> +	FTRACE_OPS_FL_SHARE_IPMODIFY		= BIT(18),
->  };
->  
-> +/*
-> + * IPMODIFY, DIRECT, and SHARE_IPMODIFY.
-> + *
-> + * ftrace provides IPMODIFY flag for users to replace existing kernel
-> + * function with a different version. This is achieved by setting regs->ip.
-> + * The top user of IPMODIFY is live patch.
-> + *
-> + * DIRECT allows user to load custom trampoline on top of ftrace. DIRECT
-> + * ftrace does not overwrite regs->ip. Instead, the custom trampoline is
-> + * saved separately (for example, orig_ax on x86). The top user of DIRECT
-> + * is bpf trampoline.
-> + *
-> + * It is not super rare to have both live patch and bpf trampoline on the
-> + * same kernel function. Therefore, it is necessary to allow the two work
-> + * with each other. Given that IPMODIFY and DIRECT target addressese are
-> + * saved separately, this is feasible, but we need to be careful.
-> + *
-> + * The policy between IPMODIFY and DIRECT is:
-> + *
-> + *  1. Each kernel function can only have one IPMODIFY ftrace_ops;
-> + *  2. Each kernel function can only have one DIRECT ftrace_ops;
-> + *  3. DIRECT ftrace_ops may have IPMODIFY or not;
-> + *  4. Each kernel function may have one non-DIRECT IPMODIFY ftrace_ops,
-> + *     and one non-IPMODIFY DIRECT ftrace_ops at the same time. This
-> + *     requires support from the DIRECT ftrace_ops. Specifically, the
-> + *     DIRECT trampoline should call the kernel function at regs->ip.
-> + *     If the DIRECT ftrace_ops supports sharing a function with ftrace_ops
-> + *     with IPMODIFY, it should set flag SHARE_IPMODIFY.
-> + *
-> + * Some DIRECT ftrace_ops has an option to enable SHARE_IPMODIFY or not.
-> + * Usually, the non-SHARE_IPMODIFY option gives better performance. To take
-> + * advantage of this performance benefit, is necessary to only enable
-> + * SHARE_IPMODIFY only when it is on the same function as an IPMODIFY
-> + * ftrace_ops. There are two cases to consider:
-> + *
-> + *  1. IPMODIFY ftrace_ops is registered first. When the (non-IPMODIFY, and
-> + *     non-SHARE_IPMODIFY) DIRECT ftrace_ops is registered later,
-> + *     register_ftrace_direct_multi() returns -EAGAIN. If the user of
-> + *     the DIRECT ftrace_ops can support SHARE_IPMODIFY, it should enable
-> + *     SHARE_IPMODIFY and retry.
-> + *  2. (non-IPMODIFY, and non-SHARE_IPMODIFY) DIRECT ftrace_ops is
-> + *     registered first. When the IPMODIFY ftrace_ops is registered later,
-> + *     it is necessary to ask the direct ftrace_ops to enable
-> + *     SHARE_IPMODIFY support. This is achieved via ftrace_ops->ops_func
-> + *     cmd=FTRACE_OPS_CMD_ENABLE_SHARE_IPMODIFY. For more details on this
-> + *     condition, check out prepare_direct_functions_for_ipmodify().
-> + */
-> +
-> +/*
-> + * For most ftrace_ops_cmd,
-> + * Returns:
-> + *        0 - Success.
-> + *        -EBUSY - The operation cannot process
-> + *        -EAGAIN - The operation cannot process tempoorarily.
-> + */
-> +typedef int (*ftrace_ops_func_t)(struct ftrace_ops *op, enum ftrace_ops_cmd cmd);
-> +
->  #ifdef CONFIG_DYNAMIC_FTRACE
->  /* The hash used to know what functions callbacks trace */
->  struct ftrace_ops_hash {
-> @@ -253,6 +326,7 @@ struct ftrace_ops {
->  	unsigned long			trampoline;
->  	unsigned long			trampoline_size;
->  	struct list_head		list;
-> +	ftrace_ops_func_t		ops_func;
->  #endif
->  };
->  
-> diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-> index 6a419f6bbbf0..868bbc753803 100644
-> --- a/kernel/trace/ftrace.c
-> +++ b/kernel/trace/ftrace.c
-> @@ -1865,7 +1865,8 @@ static void ftrace_hash_rec_enable_modify(struct ftrace_ops *ops,
->  /*
->   * Try to update IPMODIFY flag on each ftrace_rec. Return 0 if it is OK
->   * or no-needed to update, -EBUSY if it detects a conflict of the flag
-> - * on a ftrace_rec, and -EINVAL if the new_hash tries to trace all recs.
-> + * on a ftrace_rec, -EINVAL if the new_hash tries to trace all recs, and
-> + * -EAGAIN if the ftrace_ops need to enable SHARE_IPMODIFY.
->   * Note that old_hash and new_hash has below meanings
->   *  - If the hash is NULL, it hits all recs (if IPMODIFY is set, this is rejected)
->   *  - If the hash is EMPTY_HASH, it hits nothing
-> @@ -1875,6 +1876,7 @@ static int __ftrace_hash_update_ipmodify(struct ftrace_ops *ops,
->  					 struct ftrace_hash *old_hash,
->  					 struct ftrace_hash *new_hash)
->  {
-> +	bool is_ipmodify, is_direct, share_ipmodify;
->  	struct ftrace_page *pg;
->  	struct dyn_ftrace *rec, *end = NULL;
->  	int in_old, in_new;
-> @@ -1883,7 +1885,24 @@ static int __ftrace_hash_update_ipmodify(struct ftrace_ops *ops,
->  	if (!(ops->flags & FTRACE_OPS_FL_ENABLED))
->  		return 0;
->  
-> -	if (!(ops->flags & FTRACE_OPS_FL_IPMODIFY))
-> +	/*
-> +	 * The following are all the valid combinations of is_ipmodify,
-> +	 * is_direct, and share_ipmodify
-> +	 *
-> +	 *             is_ipmodify     is_direct     share_ipmodify
-> +	 *  #1              0               0                0
-> +	 *  #2              1               0                0
-> +	 *  #3              1               1                0
-> +	 *  #4              0               1                0
-> +	 *  #5              0               1                1
-> +	 */
-> +
-> +
-> +	is_ipmodify = ops->flags & FTRACE_OPS_FL_IPMODIFY;
-> +	is_direct = ops->flags & FTRACE_OPS_FL_DIRECT;
-> +
-> +	/* either ipmodify nor direct, skip */
-> +	if (!is_ipmodify && !is_direct)   /* combinations #1 */
->  		return 0;
->  
->  	/*
-> @@ -1893,6 +1912,30 @@ static int __ftrace_hash_update_ipmodify(struct ftrace_ops *ops,
->  	if (!new_hash || !old_hash)
->  		return -EINVAL;
->  
-> +	share_ipmodify = ops->flags & FTRACE_OPS_FL_SHARE_IPMODIFY;
-> +
-> +	/*
-> +	 * This ops itself doesn't do ip_modify and it can share a fentry
-> +	 * with other ops with ipmodify, nothing to do.
-> +	 */
-> +	if (!is_ipmodify && share_ipmodify)   /* combinations #5 */
-> +		return 0;
-> +
-> +	/*
-> +	 * Only three combinations of is_ipmodify, is_direct, and
-> +	 * share_ipmodify for the logic below:
-> +	 * #2 live patch
-> +	 * #3 direct with ipmodify
-> +	 * #4 direct without ipmodify
-> +	 *
-> +	 *             is_ipmodify     is_direct     share_ipmodify
-> +	 *  #2              1               0                0
-> +	 *  #3              1               1                0
-> +	 *  #4              0               1                0
-> +	 *
-> +	 * Only update/rollback rec->flags for is_ipmodify == 1 (#2 and #3)
-> +	 */
-> +
->  	/* Update rec->flags */
->  	do_for_each_ftrace_rec(pg, rec) {
->  
-> @@ -1906,12 +1949,18 @@ static int __ftrace_hash_update_ipmodify(struct ftrace_ops *ops,
->  			continue;
->  
->  		if (in_new) {
-> -			/* New entries must ensure no others are using it */
-> -			if (rec->flags & FTRACE_FL_IPMODIFY)
-> -				goto rollback;
-> -			rec->flags |= FTRACE_FL_IPMODIFY;
-> -		} else /* Removed entry */
-> +			if (rec->flags & FTRACE_FL_IPMODIFY) {
-> +				/* cannot have two ipmodify on same rec */
-> +				if (is_ipmodify)  /* combination #2 and #3 */
-> +					goto rollback;
-> +				/* let user enable share_ipmodify and retry */
-> +				return  -EAGAIN;  /* combination #4 */
-> +			} else if (is_ipmodify) {
-> +				rec->flags |= FTRACE_FL_IPMODIFY;
-> +			}
-> +		} else if (is_ipmodify) {/* Removed entry */
->  			rec->flags &= ~FTRACE_FL_IPMODIFY;
-> +		}
->  	} while_for_each_ftrace_rec();
->  
->  	return 0;
-> @@ -3115,14 +3164,14 @@ static inline int ops_traces_mod(struct ftrace_ops *ops)
->  }
->  
->  /*
-> - * Check if the current ops references the record.
-> + * Check if the current ops references the given ip.
->   *
->   * If the ops traces all functions, then it was already accounted for.
->   * If the ops does not trace the current record function, skip it.
->   * If the ops ignores the function via notrace filter, skip it.
->   */
->  static inline bool
-> -ops_references_rec(struct ftrace_ops *ops, struct dyn_ftrace *rec)
-> +ops_references_ip(struct ftrace_ops *ops, unsigned long ip)
->  {
->  	/* If ops isn't enabled, ignore it */
->  	if (!(ops->flags & FTRACE_OPS_FL_ENABLED))
-> @@ -3134,16 +3183,29 @@ ops_references_rec(struct ftrace_ops *ops, struct dyn_ftrace *rec)
->  
->  	/* The function must be in the filter */
->  	if (!ftrace_hash_empty(ops->func_hash->filter_hash) &&
-> -	    !__ftrace_lookup_ip(ops->func_hash->filter_hash, rec->ip))
-> +	    !__ftrace_lookup_ip(ops->func_hash->filter_hash, ip))
->  		return false;
->  
->  	/* If in notrace hash, we ignore it too */
-> -	if (ftrace_lookup_ip(ops->func_hash->notrace_hash, rec->ip))
-> +	if (ftrace_lookup_ip(ops->func_hash->notrace_hash, ip))
->  		return false;
->  
->  	return true;
->  }
->  
-> +/*
-> + * Check if the current ops references the record.
-> + *
-> + * If the ops traces all functions, then it was already accounted for.
-> + * If the ops does not trace the current record function, skip it.
-> + * If the ops ignores the function via notrace filter, skip it.
-> + */
-> +static inline bool
-> +ops_references_rec(struct ftrace_ops *ops, struct dyn_ftrace *rec)
-> +{
-> +	return ops_references_ip(ops, rec->ip);
-> +}
-> +
->  static int ftrace_update_code(struct module *mod, struct ftrace_page *new_pgs)
->  {
->  	bool init_nop = ftrace_need_init_nop();
-> @@ -5519,6 +5581,14 @@ int register_ftrace_direct_multi(struct ftrace_ops *ops, unsigned long addr)
->  	if (ops->flags & FTRACE_OPS_FL_ENABLED)
->  		return -EINVAL;
->  
-> +	/*
-> +	 * if the ops does ipmodify, it cannot share the same fentry with
-> +	 * other functions with ipmodify.
-> +	 */
-> +	if ((ops->flags & FTRACE_OPS_FL_IPMODIFY) &&
-> +	    (ops->flags & FTRACE_OPS_FL_SHARE_IPMODIFY))
-> +		return -EINVAL;
-> +
->  	hash = ops->func_hash->filter_hash;
->  	if (ftrace_hash_empty(hash))
->  		return -EINVAL;
-> @@ -7901,6 +7971,83 @@ int ftrace_is_dead(void)
->  	return ftrace_disabled;
->  }
->  
-> +/*
-> + * When registering ftrace_ops with IPMODIFY (not direct), it is necessary
-> + * to make sure it doesn't conflict with any direct ftrace_ops. If there is
-> + * existing direct ftrace_ops on a kernel function being patched, call
-> + * FTRACE_OPS_CMD_ENABLE_SHARE_IPMODIFY on it to enable sharing.
-> + *
-> + * @ops:     ftrace_ops being registered.
-> + *
-> + * Returns:
-> + *         0 - @ops does have IPMODIFY or @ops itself is DIRECT, no change
-> + *             needed;
-> + *         1 - @ops has IPMODIFY, hold direct_mutex;
-> + *         -EBUSY - currently registered DIRECT ftrace_ops does not support
-> + *                  SHARE_IPMODIFY, we need to abort the register.
-> + *         -EAGAIN - cannot make changes to currently registered DIRECT
-> + *                   ftrace_ops at the moment, but we can retry later. This
-> + *                   is needed to avoid potential deadlocks.
-> + */
-> +static int prepare_direct_functions_for_ipmodify(struct ftrace_ops *ops)
-> +	__acquires(&direct_mutex)
-> +{
-> +	struct ftrace_func_entry *entry;
-> +	struct ftrace_hash *hash;
-> +	struct ftrace_ops *op;
-> +	int size, i, ret;
-> +
-> +	if (!(ops->flags & FTRACE_OPS_FL_IPMODIFY) ||
-> +	    (ops->flags & FTRACE_OPS_FL_DIRECT))
-> +		return 0;
-> +
-> +	mutex_lock(&direct_mutex);
-> +
-> +	hash = ops->func_hash->filter_hash;
-> +	size = 1 << hash->size_bits;
-> +	for (i = 0; i < size; i++) {
-> +		hlist_for_each_entry(entry, &hash->buckets[i], hlist) {
-> +			unsigned long ip = entry->ip;
-> +			bool found_op = false;
-> +
-> +			mutex_lock(&ftrace_lock);
-> +			do_for_each_ftrace_op(op, ftrace_ops_list) {
-
-would it be better to iterate direct_functions hash instead?
-all the registered direct functions should be there
-
-hm maybe you would not have the 'op' then..
-
-> +				if (!(op->flags & FTRACE_OPS_FL_DIRECT))
-> +					continue;
-> +				if (op->flags & FTRACE_OPS_FL_SHARE_IPMODIFY)
-> +					break;
-> +				if (ops_references_ip(op, ip)) {
-> +					found_op = true;
-> +					break;
-> +				}
-> +			} while_for_each_ftrace_op(op);
-> +			mutex_unlock(&ftrace_lock);
-
-so the 'op' can't go away because it's direct and we hold direct_mutex
-even though we unlocked ftrace_lock, right?
-
-> +
-> +			if (found_op) {
-> +				if (!op->ops_func) {
-> +					ret = -EBUSY;
-> +					goto err_out;
-> +				}
-> +				ret = op->ops_func(op, FTRACE_OPS_CMD_ENABLE_SHARE_IPMODIFY);
-
-I did not find call with FTRACE_OPS_CMD_DISABLE_SHARE_IPMODIFY flag
-
-jirka
-
-> +				if (ret)
-> +					goto err_out;
-> +			}
-> +		}
-> +	}
-> +
-> +	/*
-> +	 * Didn't find any overlap with any direct function, or the direct
-> +	 * function can share with ipmodify. Hold direct_mutex to make sure
-> +	 * this doesn't change until we are done.
-> +	 */
-> +	return 1;
-> +
-> +err_out:
-> +	mutex_unlock(&direct_mutex);
-> +	return ret;
-> +
-> +}
-> +
->  /**
->   * register_ftrace_function - register a function for profiling
->   * @ops:	ops structure that holds the function for profiling.
-> @@ -7913,17 +8060,27 @@ int ftrace_is_dead(void)
->   *       recursive loop.
->   */
->  int register_ftrace_function(struct ftrace_ops *ops)
-> +	__releases(&direct_mutex)
->  {
-> +	bool direct_mutex_locked;
->  	int ret;
->  
->  	ftrace_ops_init(ops);
->  
-> +	ret = prepare_direct_functions_for_ipmodify(ops);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	direct_mutex_locked = ret == 1;
-> +
->  	mutex_lock(&ftrace_lock);
->  
->  	ret = ftrace_startup(ops, 0);
->  
->  	mutex_unlock(&ftrace_lock);
->  
-> +	if (direct_mutex_locked)
-> +		mutex_unlock(&direct_mutex);
->  	return ret;
->  }
->  EXPORT_SYMBOL_GPL(register_ftrace_function);
-> -- 
-> 2.30.2
+> Any common crypto_engine API can be used? I did not find any, Maybe I miss something.
+> It would be appreciated if you give me some clue.
 > 
+
+Please check crypto/crypto_engine.c.
+You could take crypto/omap and allwinner/sun8i-ce as example of usage.
+
+Regards
