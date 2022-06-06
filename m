@@ -2,132 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7626DC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 13:01:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8752C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 13:01:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238181AbiFFNBg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 09:01:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58616 "EHLO
+        id S238192AbiFFNBz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 09:01:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238162AbiFFNB0 (ORCPT
+        with ESMTP id S238171AbiFFNBw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 09:01:26 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17841B41C8;
-        Mon,  6 Jun 2022 06:01:24 -0700 (PDT)
-Received: from canpemm500009.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LGtr42wb5zjXRQ;
-        Mon,  6 Jun 2022 21:00:04 +0800 (CST)
-Received: from localhost.localdomain (10.67.164.66) by
- canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 6 Jun 2022 21:01:21 +0800
-From:   Yicong Yang <yangyicong@hisilicon.com>
-To:     <bhelgaas@google.com>, <linux-pci@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>,
-        Yicong Yang <yangyicong@hisilicon.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH v6] PCI: Make sure the bus bridge powered on when scanning bus
-Date:   Mon, 6 Jun 2022 21:00:03 +0800
-Message-ID: <20220606130003.54603-1-yangyicong@hisilicon.com>
-X-Mailer: git-send-email 2.31.0
+        Mon, 6 Jun 2022 09:01:52 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2B372E21B8
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 06:01:49 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id h19so18765410edj.0
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 06:01:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pqrs.dk; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PHja6eQ6Mv2Fce3sGPE0UzxsdJMvKhiNmaMfYmc4ndA=;
+        b=URrbnH33zLvDajx/0NU5kLo58AbZNjB8rEMPICV3OEKt/mAq2Nk9jrpxpVuUI74Pa8
+         Qg5PSBqML+Zi1e9grmdCRG9zwcGZkgLL5hqRWUMvMVsc1jaBdXscOjleVrsHY3+1L1CN
+         DJieqIyP2shK2Fxwll9P/g0kXuAY9GT6ZYLzA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PHja6eQ6Mv2Fce3sGPE0UzxsdJMvKhiNmaMfYmc4ndA=;
+        b=0KrH+gwGBWJVhrjcs1CWO6mYG1LNvakbJ4dsdvKy/NNM21saB0iNLwWKbl1j36wRnS
+         xp5OO/ibDEILXlIWHM5HOl9zrLy6zXrlbvWBp9gCnMaosl5jVTbEvT/JZDJ0JlI//crz
+         0cFsW2zgJZ8mIEsn3rczM1Ka+irGJckNTiIrW24+K/DlDZNaFowZy/8HseyAxgb/gk1c
+         BsZOmrZ0KwgUM9j5aVpOEAqwjVJVKYlI4HhvtBVCWkIjUEyHenTZJiVyz7T/QYKXkslr
+         V3WOUV1Nq8a+4B2Y5nlD5dtbLD6IaGjJf4fgYKOw0QPQJuxe4wXm3Gy7N2RRK8jouqQH
+         BDBQ==
+X-Gm-Message-State: AOAM533Lqh/47hjrWewRynmIOM2wtsxcFPNZvgv5Vv4Ouiv2pB9dQs2e
+        dcvLGmBO+5mAYlL4/jtuoksKpg==
+X-Google-Smtp-Source: ABdhPJyzKgOqfEIRXyIehEv8SNDfgWNU6dcDZo68dVn7XI3YY9qcBYcpsDLYrBihuvISNzn/a4SAOw==
+X-Received: by 2002:a05:6402:32a6:b0:42d:ed8b:3d8 with SMTP id f38-20020a05640232a600b0042ded8b03d8mr26381739eda.225.1654520508129;
+        Mon, 06 Jun 2022 06:01:48 -0700 (PDT)
+Received: from localhost.localdomain (80.71.142.18.ipv4.parknet.dk. [80.71.142.18])
+        by smtp.gmail.com with ESMTPSA id t26-20020a17090605da00b006fe7d269db8sm6275447ejt.104.2022.06.06.06.01.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Jun 2022 06:01:47 -0700 (PDT)
+From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
+To:     luizluca@gmail.com, Linus Walleij <linus.walleij@linaro.org>,
+        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net] net: dsa: realtek: rtl8365mb: fix GMII caps for ports with internal PHY
+Date:   Mon,  6 Jun 2022 15:01:30 +0200
+Message-Id: <20220606130130.2894410-1-alvin@pqrs.dk>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.164.66]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- canpemm500009.china.huawei.com (7.192.105.203)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A bridge in a non-D0 power state does not forward config accesses to
-its secondary side (PCIe r6.0, sec 5.3.1). Make sure the bridge is
-in D0 while we enumerate devices below it.
+From: Alvin Šipraga <alsi@bang-olufsen.dk>
 
-The case can be produced when the bridge is runtime-suspended (either
-in D3hot or D3cold) like below:
+phylib defaults to GMII when no phy-mode or phy-connection-type property
+is specified in a DSA port node.
 
-$ echo 1 > /sys/bus/pci/devices/0000:80:00.0/0000:81:00.1/remove
-$ echo 1 > /sys/bus/pci/devices/0000:80:00.0/pci_bus/0000:81/rescan
+Commit a5dba0f207e5 ("net: dsa: rtl8365mb: add GMII as user port mode")
+introduced implicit support for GMII mode on ports with internal PHY to
+allow a PHY connection for device trees where the phy-mode is not
+explicitly set to "internal".
 
-0000:80:00.0 is a Root Port and it is runtime-suspended, so the
-configuration space of 0000:81:00.1 is unreachable in rescan
-and the device cannot be enumerated.
+Commit 6ff6064605e9 ("net: dsa: realtek: convert to phylink_generic_validate()")
+then broke this behaviour by discarding the usage of
+rtl8365mb_phy_mode_supported() - where this GMII support was indicated -
+while switching to the new .phylink_get_caps API.
 
-Power up the bridge when scanning the child bus and allow it to
-suspend again by adding pm_runtime_get_sync()/pm_runtime_put()
-in pci_scan_child_bus_extend().
+With the new API, rtl8365mb_phy_mode_supported() is no longer needed.
+Remove it altogether and add back the GMII capability - this time to
+rtl8365mb_phylink_get_caps() - so that the above default behaviour works
+for ports with internal PHY again.
 
-Cc: Rafael J. Wysocki <rafael@kernel.org>
-Cc: Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>
-Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
-Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Fixes: 6ff6064605e9 ("net: dsa: realtek: convert to phylink_generic_validate()")
+Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
 ---
-Change since v5:
-- Tweak the commit message suggested by Bjorn
-Link: https://lore.kernel.org/linux-pci/20220525141930.GA290827@bhelgaas/
 
-Change since v4:
-- rephrase the commit suggested by Rafael
-Link: https://lore.kernel.org/lkml/20220422080404.27724-1-yangyicong@hisilicon.com/
+Luiz, Russel:
 
-Change since v3:
-- retain the pm_runtime_*() calls in pci_scan_bridge_extend() as Rafael points
-  out that it's necessary when the brigde is in D3cold
-Link: https://lore.kernel.org/linux-pci/20220414123736.34150-1-yangyicong@hisilicon.com/
+Commit a5dba0f207e5 ought to have had a Fixes: tag I think, because it
+claims to have been fixing a regression in the net-next tree - is that
+right? I seem to have missed both referenced commits when they were
+posted and never hit this issue personally. I only found things now
+during some other refactoring and the test for GMII looked weird to me
+so I went and investigated.
 
-Change since v2:
-- just rebase it on v5.18-rc2
-Link: https://lore.kernel.org/linux-pci/1601029386-4928-1-git-send-email-yangyicong@hisilicon.com/
+Could you please help me identify that Fixes: tag? Just for my own
+understanding of what caused this added requirement for GMII on ports
+with internal PHY.
 
-Change since v1:
-- use an intermediate variable *bridge as suggested
-- remove the pm_runtime_*() calls in pci_scan_bridge_extend()
-Link: https://lore.kernel.org/linux-pci/1596022223-4765-1-git-send-email-yangyicong@hisilicon.com/
+---
+ drivers/net/dsa/realtek/rtl8365mb.c | 38 +++++++----------------------
+ 1 file changed, 9 insertions(+), 29 deletions(-)
 
- drivers/pci/probe.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
-
-diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index 17a969942d37..b108e72b6586 100644
---- a/drivers/pci/probe.c
-+++ b/drivers/pci/probe.c
-@@ -2859,11 +2859,20 @@ static unsigned int pci_scan_child_bus_extend(struct pci_bus *bus,
- 	unsigned int used_buses, normal_bridges = 0, hotplug_bridges = 0;
- 	unsigned int start = bus->busn_res.start;
- 	unsigned int devfn, fn, cmax, max = start;
-+	struct pci_dev *bridge = bus->self;
- 	struct pci_dev *dev;
- 	int nr_devs;
+diff --git a/drivers/net/dsa/realtek/rtl8365mb.c b/drivers/net/dsa/realtek/rtl8365mb.c
+index 3bb42a9f236d..769f672e9128 100644
+--- a/drivers/net/dsa/realtek/rtl8365mb.c
++++ b/drivers/net/dsa/realtek/rtl8365mb.c
+@@ -955,35 +955,21 @@ static int rtl8365mb_ext_config_forcemode(struct realtek_priv *priv, int port,
+ 	return 0;
+ }
  
- 	dev_dbg(&bus->dev, "scanning bus\n");
- 
-+	/*
-+	 * Make sure the bus bridge is powered on, otherwise we may not be
-+	 * able to scan the devices as we may fail to access the configuration
-+	 * space of subordinates.
-+	 */
-+	if (bridge)
-+		pm_runtime_get_sync(&bridge->dev);
+-static bool rtl8365mb_phy_mode_supported(struct dsa_switch *ds, int port,
+-					 phy_interface_t interface)
+-{
+-	int ext_int;
+-
+-	ext_int = rtl8365mb_extint_port_map[port];
+-
+-	if (ext_int < 0 &&
+-	    (interface == PHY_INTERFACE_MODE_NA ||
+-	     interface == PHY_INTERFACE_MODE_INTERNAL ||
+-	     interface == PHY_INTERFACE_MODE_GMII))
+-		/* Internal PHY */
+-		return true;
+-	else if ((ext_int >= 1) &&
+-		 phy_interface_mode_is_rgmii(interface))
+-		/* Extension MAC */
+-		return true;
+-
+-	return false;
+-}
+-
+ static void rtl8365mb_phylink_get_caps(struct dsa_switch *ds, int port,
+ 				       struct phylink_config *config)
+ {
+-	if (dsa_is_user_port(ds, port))
++	if (dsa_is_user_port(ds, port)) {
+ 		__set_bit(PHY_INTERFACE_MODE_INTERNAL,
+ 			  config->supported_interfaces);
+-	else if (dsa_is_cpu_port(ds, port))
 +
- 	/* Go find them, Rover! */
- 	for (devfn = 0; devfn < 256; devfn += 8) {
- 		nr_devs = pci_scan_slot(bus, devfn);
-@@ -2976,6 +2985,9 @@ static unsigned int pci_scan_child_bus_extend(struct pci_bus *bus,
- 		}
- 	}
++		/* GMII is the default interface mode for phylib, so
++		 * we have to support it for ports with integrated PHY.
++		 */
++		__set_bit(PHY_INTERFACE_MODE_GMII,
++			  config->supported_interfaces);
++	} else if (dsa_is_cpu_port(ds, port)) {
+ 		phy_interface_set_rgmii(config->supported_interfaces);
++	}
  
-+	if (bridge)
-+		pm_runtime_put(&bridge->dev);
-+
- 	/*
- 	 * We've scanned the bus and so we know all about what's on
- 	 * the other side of any bridges that may be on this bus plus
+ 	config->mac_capabilities = MAC_SYM_PAUSE | MAC_ASYM_PAUSE |
+ 				   MAC_10 | MAC_100 | MAC_1000FD;
+@@ -996,12 +982,6 @@ static void rtl8365mb_phylink_mac_config(struct dsa_switch *ds, int port,
+ 	struct realtek_priv *priv = ds->priv;
+ 	int ret;
+ 
+-	if (!rtl8365mb_phy_mode_supported(ds, port, state->interface)) {
+-		dev_err(priv->dev, "phy mode %s is unsupported on port %d\n",
+-			phy_modes(state->interface), port);
+-		return;
+-	}
+-
+ 	if (mode != MLO_AN_PHY && mode != MLO_AN_FIXED) {
+ 		dev_err(priv->dev,
+ 			"port %d supports only conventional PHY or fixed-link\n",
 -- 
-2.24.0
+2.36.0
 
