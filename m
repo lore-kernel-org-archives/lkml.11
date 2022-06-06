@@ -2,94 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F268C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 16:58:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24CEDC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 17:10:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230163AbiFFQ6C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 12:58:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35712 "EHLO
+        id S229454AbiFFRKo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 13:10:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235544AbiFFQ5o (ORCPT
+        with ESMTP id S229492AbiFFRIv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 12:57:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDD0E5DE76
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 09:52:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 11FD7B81A93
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 16:52:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D9D5C385A9;
-        Mon,  6 Jun 2022 16:52:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654534353;
-        bh=MXysSCdlCXdhPysWEuy4446I/A++jIP/2fCry28Y4Q0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=nITYHmySBT4H2ndTozjcWvwwVDaUHkoReUGsb96w+9AhYWuODnEeqBgMUUxpJEJcv
-         i7kbSac7dUwa6EFpbS26Opd5UKckgunkfeyJsC8eLz8p1vlOoBrpQ+CnM1CZxDyIvn
-         K8nDU0Hp7hZptDnVyjeFBVx5KdC5Ps8HHJAlTz1eY9+TBU5I0D6Nj3w3HPGVDv7q8O
-         Gx9Zjf3ImtSKtbe2+xtjXjgGcoEkyiC8lrbsJ2UMtEYBr3NkF20K5iPwZJCis7da1m
-         K6AgiooMZ6mRItSBZl5c8wV4N9J7sh87u5H9Z4UWDquIs+oXElZBehmuxck6za1zg+
-         YTYsN2Q8dHM4Q==
-Date:   Mon, 6 Jun 2022 17:52:29 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Lukasz Majewski <lukma@denx.de>
-Cc:     Liam Girdwood <lgirdwood@gmail.com>, linux-kernel@vger.kernel.org,
-        patches@opensource.cirrus.com, alsa-devel@alsa-project.org,
-        Takashi Iwai <tiwai@suse.com>, Jaroslav Kysela <perex@perex.cz>
-Subject: Re: [PATCH 1/3] ASoC: wm8940: Remove warning when no plat data
-Message-ID: <Yp4wzS0aLEo5werI@sirena.org.uk>
-References: <20220606154441.20848-1-lukma@denx.de>
- <Yp4iGvGFD9jo4WUP@sirena.org.uk>
- <20220606181731.04b6f771@ktm>
+        Mon, 6 Jun 2022 13:08:51 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B494D3561E6
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 09:56:55 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id 129so13393217pgc.2
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 09:56:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=/5dOkIUPK4LW5OYTDk812LAqaFzKUe0vwtcKi0hbnlM=;
+        b=GfFJBUVisv0PqVkrWuDqO6GnJbD1uVivcukZ2+zrLhAY0TYOAzF6hiVnTS/CwdWapc
+         vHuX33w6RmbXVpASnBf2DFOa7iXRJUxB/RnVvyVZ6CVZfGYZrcBW0esQofH9Pfe2Qldq
+         tRTqaMscD14X5BSW1w/68cLagRaTKeX/s1p8FMrm6Bgpkebje8Y+zV72+0lHB1Q7r13P
+         dMy0wgR9NRSuFyCmXn7Be3ir3d/b2+rJN5r9K8qdPVkW3JgpEGyy/uq1wLbjfKfSqVBv
+         +w1zAPlN1+BKXWgm7S0oYoz0uEj27PZq+4e4HWQ6B5TMSQOSg9Bym9Q/DhQQ0M6AqUSC
+         JChg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/5dOkIUPK4LW5OYTDk812LAqaFzKUe0vwtcKi0hbnlM=;
+        b=YYdbJpNwMF4mYm9k+oL2oBsCaPqpHRZDWVeIMIus3lMWLIkMbH0hLt0sJxvlNCjBdR
+         /j87wpFpES+dAhWtHRv3waxZz7+Qur+W4sP1D8wUPbjHauEPlaG5UziMkblwKg8KuYvA
+         xFJqk/YZT+calFo/glJ2mWhdE2cWimMwMtN5ZHUM27PUOCUcdt9IyHizg6+dL2mnjdjr
+         91bnl6kIhOhivLeN1jvje+kqi1cijmbc0xw9miNzRQuCGla7t4syZJ9SxtWcAi1qQB22
+         CLWTx5hi43GKvc8pWEZvfTUZUGdQ0IJtj/0HP6/dH27PLIwApc8TB1xUaAPgSnkKCh0u
+         Ywjw==
+X-Gm-Message-State: AOAM533BehFX7QUZxWORKb/vEfcYbu1QantO1gJa9xF2XJL2CKIGPoz3
+        kQ2K1TFt9VzlvCsWgKEB8uzKcA==
+X-Google-Smtp-Source: ABdhPJzy0DhsW4eKfoBaeYDIxyjKg9hmQ606VqWBBDwKWv0HdUX2/WGwySfqlcnEBs1qM/iBMCCCCw==
+X-Received: by 2002:a05:6a00:2293:b0:51c:155a:1868 with SMTP id f19-20020a056a00229300b0051c155a1868mr7220103pfe.79.1654534614798;
+        Mon, 06 Jun 2022 09:56:54 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id u5-20020a170903108500b00161f9e72233sm10592208pld.261.2022.06.06.09.56.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Jun 2022 09:56:54 -0700 (PDT)
+Date:   Mon, 6 Jun 2022 16:56:50 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     shaoqin.huang@intel.com
+Cc:     pbonzini@redhat.com, Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, Ben Gardon <bgardon@google.com>,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] KVM: x86/mmu: Check every prev_roots in
+ __kvm_mmu_free_obsolete_roots()
+Message-ID: <Yp4x0twziuEr3KRm@google.com>
+References: <20220607005905.2933378-1-shaoqin.huang@intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="DnUb2V3oewQhXa9l"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220606181731.04b6f771@ktm>
-X-Cookie: Bedfellows make strange politicians.
+In-Reply-To: <20220607005905.2933378-1-shaoqin.huang@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, Jun 06, 2022, shaoqin.huang@intel.com wrote:
+> From: Shaoqin Huang <shaoqin.huang@intel.com>
+> 
+> When freeing obsolete previous roots, check prev_roots as intended, not
+> the current root.
+> 
+> Signed-off-by: Shaoqin Huang <shaoqin.huang@intel.com>
+> Fixes: 527d5cd7eece ("KVM: x86/mmu: Zap only obsolete roots if a root shadow page is zapped")
 
---DnUb2V3oewQhXa9l
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Because KVM patches aren't guaranteed to be backported without it (though it's
+"only" v5.18 that's affected), this needs:
 
-On Mon, Jun 06, 2022 at 06:17:31PM +0200, Lukasz Majewski wrote:
-> > On Mon, Jun 06, 2022 at 05:44:39PM +0200, Lukasz Majewski wrote:
+  Cc: stable@vger.kernel.org 
 
-> > > The lack of platform data in the contemporary Linux
-> > > shall not be the reason to display warnings to the
-> > > kernel logs.
-
-> > Given that the device requires configuration and doesn't appear to
-> > have any other firmware interface support that's rather a strong
-> > statement...
-
-> My point is that - similar codec - wm8974 don't display such warnings.
-> (this code was not updated/refactored for a quite long time).
-
-Perhaps those drivers are buggy, or those devices lack this specific
-configuration that's being adjusted?  The changelog should at least
-address why the driver was warning about configuration being required
-but it's safe to ignore that.
-
---DnUb2V3oewQhXa9l
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKeMMwACgkQJNaLcl1U
-h9Dfdwf7BcW0Luwaf8iLkn+kS1NPDO2F0CgLVz9wodRDv4DvL2A3SUWnkJpnXJ9m
-78MEIJoERftkH+Rq91eh7AZdeNGOV4tS7ClPQTT7pBlo5W31In2ze7zIzubVXNB7
-LenThDkhWRLHemUN0uJLBXOPsHhj2FcSHXHlDzzw251gIHLnIPDQXNq6JYhKEDjM
-2NQkcxBknKwDkWvjHfZVtz2ZbDLuj0RulTq/nZIPzqagh8rSNSX0xt6X5xy9y1Ro
-XMaWYO1QXAZgzgB1TQnMfVP3I5MRR0nJUfa+0zSuhcsv44heFMys4zTOIdXbljKH
-B86nzaXNknlgutl3b0GpxPe8N9KPQQ==
-=WRfG
------END PGP SIGNATURE-----
-
---DnUb2V3oewQhXa9l--
+Reviewed-by: Sean Christopherson <seanjc@google.com>
