@@ -2,147 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F1E5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 16:28:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F363AC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 16:29:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241689AbiFFQ2x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 12:28:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40424 "EHLO
+        id S241725AbiFFQ3P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 12:29:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241695AbiFFQ2t (ORCPT
+        with ESMTP id S241701AbiFFQ3N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 12:28:49 -0400
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2060.outbound.protection.outlook.com [40.107.96.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A439231A075
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 09:28:47 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CBOB1HQC45/I1/1WIQ0N5ZLQmTxz0RxuQc7l5JxQ46bQbiqRpXf+8WbgEKAd2bVoEdS2dZiUB+osKvY+KiitZAXZn4l7mLVqTe/seTMqxpAsd6Ssl27mDuVWconKA2/zMV9fJlO0CoQsKVqTtdM3T1omZ4k+JSyT8qjsDqMh7XP4tAmThGjD1NgUvKd6BU5jjJUBjqM5CzTbiIJ6JFGxaWU2grB5+DRMTVTmZS+9MH7/yk212ihzQB3qnrxnkUAzQye3itvxvTp0zD20/SmWonpUUpBFKXWsXT8PuoPsVJQG/kU4fwx01bCuNSy3MR2Rp+KmSXRIKHNZrr6oGzcJjw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7mPVA0qIOWxMogfY+BZZYycGxotXX7K4yWdmOS35gJ4=;
- b=DXanuU5ay/xigaTfPMdxGenZ6OuhZgdqsVjpJ55VawAkbLOU+Jw0kBNUS3fIdgvT76+O1H9k0UygA0gbCazVcPWOZfPDq9PO9XmVQ6A/1XEc87AhNQNAWrxsKiLiqPanpvdfS9eZ3+dcQV7a+HqKt8Z4v3PMSyBORxvtiZTsxe98rIsVjYyTDwuGEwLEYtlYsy+TaQM2MMytfVvpeoNfW2NDsIa8YaUSTDc4jRxIOjmUDnfcSkgnABvyazoshTRadptrhJitxKvFvjRo6wP7PYc/aSwgNmdYe9DjflbPWYpsO3Lmc3Kvpis0/M0v65aRyS9I4TlFRRdOf7R8fEfWiA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vmware.com; dmarc=pass action=none header.from=vmware.com;
- dkim=pass header.d=vmware.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vmware.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7mPVA0qIOWxMogfY+BZZYycGxotXX7K4yWdmOS35gJ4=;
- b=IEMDgFOMHD7kSxKuyA5zozgV4lrhcp5xSJIxfrSsrJ/UWDCP2HUi+t59spCzZ6h6+myIPB0MvAoOvQKoJdHpOMxcMDq+y7OoQmU1I4vry1xzGK7O1R+spDpGwzghIGQvxojUJpCgXnMl9ZkzLQcSjiVmtbDksnbPRlRRovyke4g=
-Received: from BY3PR05MB8531.namprd05.prod.outlook.com (2603:10b6:a03:3ce::6)
- by BN3PR05MB2641.namprd05.prod.outlook.com (2a01:111:e400:7bb9::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.9; Mon, 6 Jun
- 2022 16:28:45 +0000
-Received: from BY3PR05MB8531.namprd05.prod.outlook.com
- ([fe80::a4f8:718a:b2a0:977f]) by BY3PR05MB8531.namprd05.prod.outlook.com
- ([fe80::a4f8:718a:b2a0:977f%7]) with mapi id 15.20.5332.010; Mon, 6 Jun 2022
- 16:28:44 +0000
-From:   Nadav Amit <namit@vmware.com>
-To:     Dave Hansen <dave.hansen@intel.com>
-CC:     Thomas Gleixner <tglx@linutronix.de>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        "x86@kernel.org" <x86@kernel.org>
-Subject: Re: [PATCH] x86/mm/tlb: avoid reading mm_tlb_gen when possible
-Thread-Topic: [PATCH] x86/mm/tlb: avoid reading mm_tlb_gen when possible
-Thread-Index: AQHYPjktgPdnqvShpU6wVxX2Ukms261C+BKAgAAQdgA=
-Date:   Mon, 6 Jun 2022 16:28:44 +0000
-Message-ID: <8ADBA1FC-1CFF-4B4D-907A-4CF004AAD534@vmware.com>
-References: <20220322220757.8607-1-namit@vmware.com>
- <84dc784b-10c9-9ade-7a20-97fe0c32f2ff@intel.com>
-In-Reply-To: <84dc784b-10c9-9ade-7a20-97fe0c32f2ff@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3696.100.31)
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vmware.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: d478c077-62b3-45f0-27da-08da47d9a046
-x-ms-traffictypediagnostic: BN3PR05MB2641:EE_
-x-microsoft-antispam-prvs: <BN3PR05MB264101B53195BACCC6C10018D0A29@BN3PR05MB2641.namprd05.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: sbKXGEEoav5VfelWVESMYpZS+0Mb8JMeqzmsrj/sxNxTcndtNmHKWg/tz37gns+8J1yvDR0vmckMUj0HIbvsE7juN8yVYbz7kwQE329h9hIsDlHcTdK6OfI+5kAm8ZjfWqVQuL6zdibW3aJOxjBEy6VzdcGZJMsW3Bq/40qHphK+KTaIfjsqM/zSKRYvq4MEJXaoRupYzuBZBKxCpBAeUHjetrlou38eMSyzWxtJSnpAiOyIV6B7H5Go3tkoE1Q/ykPqdNyVdlvF5eJz23CGX2JtmqMFNh7qEUsfFmiOrBedv/5S1ESY4KYPS4Ipcn4LviM9aa4Te+2D49xDF53HZbdjNMeR0L19dGZ3Y8U0GR9fuRkpvoppb+7pyBRbjgIoUby0bYEOICwlymHtLhxdUyBfE0TTYtJH5vq6XajEOVrXfAnldkgMNEiOGpiweKII8mfUXSFMAWCMhOi7FsmBVfxoTdp2Wk50Ll6+qppgCIMEzjtUHFNu/dQKGdVeOQgh76CwFE+XwZs7/phs8mOjfbNs0cThupUjMVAUV2bcxb1iJOl7ax7sxSVB7I0EdkIsZTUc6thnnbPmWwGsol4iP+4xznrKoVBvOgtAjN3MdgxqQlBsbUZahacliQjQSYbnQZGs3AnqUYgwqtO67gV8AL3ytvzpbsrmtfmctYZTio22pDmgWCkjk1CQfXrhKWB/QR8ITixU1jhpJFS7WXtWS3wHS/Vf3FsJXLP9Bsl6NqAsKxKkUoR0kQpN6gWNVP+u
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY3PR05MB8531.namprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(86362001)(508600001)(6486002)(2906002)(38100700002)(316002)(33656002)(186003)(6916009)(2616005)(53546011)(54906003)(26005)(6512007)(71200400001)(6506007)(36756003)(122000001)(5660300002)(4744005)(8676002)(8936002)(4326008)(66946007)(64756008)(66446008)(76116006)(66476007)(66556008)(38070700005)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?dXptbjgvajhYZ1BUbDRkNXZmblF1ZDNLRS9lZHl0N3ZBTHpPYkpZQ0pzaFRu?=
- =?utf-8?B?U2x6WDRYSzJoZEp3WlVqcnliQnI4ZVJWQU5Gb1lESUQvMkRNajFEWkJvV2V1?=
- =?utf-8?B?aHkwMUVCODhoZHBGOENjVGY0NDJJSU1nTFRKaEJydllnQmJiTzltRXQxSjFq?=
- =?utf-8?B?TE51Q0x6REkzZGRmdWhIQW11ZE5kZXNheXZGT2lLYW5BeWtoaWV5aGJDQ1l4?=
- =?utf-8?B?Q3pXZmhaVGs5VUF5TExmVnJpWVZ3Njg2OUNUTE9EZUVJN3Byd0phTU92MHhz?=
- =?utf-8?B?aDlwSEYzNXh4TksrRnA3bExBY25MT2dKZTN0RDNTc3dORkVRVTRmYmZUNmla?=
- =?utf-8?B?THlGWWJ6R0N4YkhOYjhmL1d5VTR0NzFXWS9RdnA4b1JYZUU5c0d2WlRKa0tD?=
- =?utf-8?B?UVl0VzdQVmZwTmNhMGs1L0dBcXVmZDRrY1QwbTN4MnFmWlE2RHcwYlBqMGJi?=
- =?utf-8?B?NTVPTGp0N01EQ25kRys0TkVPS3VNNnlmUkRUVm9kcStNbnU5VmdxNEV6eDhq?=
- =?utf-8?B?Rzc2K3UzZ0RTcXhqSUNvOHFxZkhScEg3cmt6REdRY1pRR1N5b3dIdDNvZ2tJ?=
- =?utf-8?B?K2l6VGJpbW9lTi9JNkpBdFVKbzBxa1FnRWFoMmF4YkFtMWJKcS92ZVcvV1ZM?=
- =?utf-8?B?ckxIVzVMYkxVTmNhSGtIaFIwaEZlS3ZaY2xzUnFvQjNib1hJbmlOMXZkNTFI?=
- =?utf-8?B?alNSMk55V3EyRHphWS9LekFFM2JvVS9TT3ZBMGV4Q0NQZzBNUFlySUFRREtm?=
- =?utf-8?B?bG93RXI0QkUvc3BuUVRJWFdmMmpBaFNxNjBKZzZnMTQzcDI4TTVscm5tQWd5?=
- =?utf-8?B?dGJtWG05NkUyMGtaRUwwR2FHQUhHNEdHdkI5R3I5clFiam5jRFYrdnBjR3pT?=
- =?utf-8?B?Nlp1WThJTGFOdHdEeEtXYVFneS9xZ3RaOUF1RlBwblpQeUpsOVprTTZnN3lN?=
- =?utf-8?B?SUN4d1I5bk5DSStycnJ6VFhqL2NVNlRXZzRkc0tOMTlwR0xnYXNHK3crVzVZ?=
- =?utf-8?B?UmRjdllRSDd3Zk9BMVhLK0JZUTdWNGZHNkJON2l1M0ZUbUtYTEw5empuS3BG?=
- =?utf-8?B?VW52SFEyYWF2dVIzTmE1YUFhTFlHTUVCb2tMT3Aza3lteVRoOWpaSmJzNjln?=
- =?utf-8?B?Z2o2TXlzT010OTNWaGwxcVp2K3B2Vkc0dVZmWjVIQW8rRk53aGpNNFJTNHlw?=
- =?utf-8?B?WnB0Vyt2WkFiUHpuR0plSk1MRWRDcEZZTENOSGg4TGJKSnNGV2FuK1J5OFl4?=
- =?utf-8?B?ODBValUxY2gzdXIxUDVTT01jdkRmY0cvbWExdEt5UE4xdVppL0hCK01uMWUz?=
- =?utf-8?B?QlBVL3lYMGdHcVhVNlJsbW9TV3dVUXZ5YzA2RDU2WU90K1ZlalFlMkNkL2tu?=
- =?utf-8?B?UEJIejMvSG5QSGpJbFg3OGxlUUIxMmM0Si9wMHMvMHNFSDFsanorYjNCejZW?=
- =?utf-8?B?NVI3OXFBZkxEemJ4RU90OW9zam1iZUJQblI0aEN6dHJQbEJNKzhIUE1GSGNw?=
- =?utf-8?B?SDJwaENnNEM0TzBoeU84SGpoTzRaZGczc1Z2MkV3WXBMUVVlTjZBV1kyM094?=
- =?utf-8?B?d1BQZjJ3QmNtWGxERXNQcE9GN3V6clYxcWRGeDZlSktmVjlqNG9zemJvRVpX?=
- =?utf-8?B?ZEtkaHh5bVQyS24rZk5CY1BnV3IrWk93NkpoMnpiWXlzYUhzUFdrYlhJSjFO?=
- =?utf-8?B?VjRReGJmNXlheTVKQS9tZXFlUzd2M2JVdmlpczVBeEtKOXNqK2ppbVljeXhr?=
- =?utf-8?B?Y2pLM3FPZWVBOEpZZk5mVTdSQkVxUzJheTZzM0NDbFYvTWN3Nkpqb05Dem52?=
- =?utf-8?B?dU9YY240Vk1wcytCajk5NWtiQWpLbGwyYThSbDJVaWo5N3VlYldxUjNmYUZ5?=
- =?utf-8?B?TFJiU3hEQTg4dnh2U1pZU0RzQ0hSRXJBZi9tU3FxZS9qZzhWVDk0SzFHb0I0?=
- =?utf-8?B?VVh5dG5lVmJ5aHIvbTgyZVJQVlczK1MyR1dQQWxzL0ZIdVZCMkRXcjJodXUx?=
- =?utf-8?B?YUVIY013SlB0K1NzNUhYbDR6RmRmQTN3LzdYc0VpalpXNkZnNXJDMWRmbHNx?=
- =?utf-8?B?K1h1SmozM2VyUlZLZ0tFVTJBYmlYRXdnRFdQR2NHUDZ0b1poYXJCeFJNcWlE?=
- =?utf-8?B?eGV5QWFrYTUyQnM3aUZKN2RHSXRVMVZSQXpIM1M5Zi9zUXNVVDRHdTljbVRh?=
- =?utf-8?B?c2xBemNEdTh4aHpXQjgrMXVTMDc5ck0vc3RKZFA2cSsyYXVTQ2l6dmpLZzdt?=
- =?utf-8?B?aEl0UUk2RXVyRlZzVTBwRVVoWTM3TytRbzc4L0I3RXFPL3lQSW9yK2cwN25S?=
- =?utf-8?B?Ty9ITWNKblFjY0t6a3BKSGhnME80d1h3NHFvVGFnalkxVUdWQWgzdz09?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <6522BAAEA9193B4788B4846EABCEA0F2@namprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        Mon, 6 Jun 2022 12:29:13 -0400
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C21CB3249B0
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 09:29:11 -0700 (PDT)
+Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 256EBjsp026576;
+        Mon, 6 Jun 2022 18:28:41 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=selector1;
+ bh=u4GTu7XnrpEkmuHHC/sb/dHsYc2K+RY0Pot3Mnv7R1U=;
+ b=Nnjkw3FJ77BIpXbi/on1fi6IKKoscSfo2KN57Bp5f9IAbop0VETMN+lwXdvR5YlOsToq
+ uZKRw+ipCSeTuva8JP0HmO4pyVtT6Yf0p1f047/TgZTVk5e2sDWmlb6BCALng78UP3UB
+ hp/psxZkOZr4IdY0NOPlf88C3jtYwH4tzBljfeG9ps7Xp36ycjdETThKmA5DfmclQSPr
+ MU9NIKN2txdN2wrbghBpQetIhiaxGtgdsinhH4liX+I4PEdFteAOM+so9yHXMq/3KAYV
+ GRf8elTmgoxGmC2Brd7vamp9QES3MoBeDVlqu/M8eELg8QTwU6itN09Ib2ecsT+vj5be Jg== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3gfxr23axv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 06 Jun 2022 18:28:41 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 5765A100038;
+        Mon,  6 Jun 2022 18:28:41 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 518D2231DC3;
+        Mon,  6 Jun 2022 18:28:41 +0200 (CEST)
+Received: from localhost (10.75.127.50) by SHFDAG1NODE1.st.com (10.75.129.69)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Mon, 6 Jun
+ 2022 18:28:41 +0200
+From:   Antonio Borneo <antonio.borneo@foss.st.com>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>
+CC:     Ludovic Barre <ludovic.barre@foss.st.com>,
+        Loic Pallardy <loic.pallardy@foss.st.com>,
+        Pascal Paillet <p.paillet@foss.st.com>,
+        Antonio Borneo <antonio.borneo@foss.st.com>
+Subject: [PATCH v2 1/6] irqchip/stm32-exti: Fix irq_set_affinity return value
+Date:   Mon, 6 Jun 2022 18:27:52 +0200
+Message-ID: <20220606162757.415354-2-antonio.borneo@foss.st.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220510164123.557921-1-antonio.borneo@foss.st.com>
+References: <20220510164123.557921-1-antonio.borneo@foss.st.com>
 MIME-Version: 1.0
-X-OriginatorOrg: vmware.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BY3PR05MB8531.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d478c077-62b3-45f0-27da-08da47d9a046
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Jun 2022 16:28:44.8617
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: L/acgpnXMCDMlQkR1RsRqf2wjozK6h5IUBTKVufwcxCHc1OGswPA9SQloi5jTX4Xsi7MmSWphpMkVl5gtSA8EQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN3PR05MB2641
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.50]
+X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-06_04,2022-06-03_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-T24gSnVuIDYsIDIwMjIsIGF0IDg6MjkgQU0sIERhdmUgSGFuc2VuIDxkYXZlLmhhbnNlbkBpbnRl
-bC5jb20+IHdyb3RlOg0KDQo+IOKaoCBFeHRlcm5hbCBFbWFpbA0KPiANCj4gT24gMy8yMi8yMiAx
-NTowNywgTmFkYXYgQW1pdCB3cm90ZToNCj4+ICsgICAgIGlmIChmLT5uZXdfdGxiX2dlbiA8PSBs
-b2NhbF90bGJfZ2VuKSB7DQo+PiArICAgICAgICAgICAgIC8qDQo+PiArICAgICAgICAgICAgICAq
-IFdlIGFyZSBhbHJlYWR5IHVwIHRvIGRhdGUgaW4gcmVzcGVjdCB0byBmLT5uZXdfdGxiX2dlbi4N
-Cj4+ICsgICAgICAgICAgICAgICogV2hpbGUgdGhlIGNvcmUgbWlnaHQgYmUgc3RpbGwgYmVoaW5k
-IG1tX3RsYl9nZW4sIGNoZWNraW5nDQo+PiArICAgICAgICAgICAgICAqIG1tX3RsYl9nZW4gdW5u
-ZWNlc3NhcmlseSB3b3VsZCBoYXZlIG5lZ2F0aXZlIGNhY2hpbmcgZWZmZWN0cw0KPj4gKyAgICAg
-ICAgICAgICAgKiBzbyBhdm9pZCBpdC4NCj4+ICsgICAgICAgICAgICAgICovDQo+PiArICAgICAg
-ICAgICAgIHJldHVybjsNCj4+ICsgICAgIH0NCj4+ICsNCj4gDQo+IE5pdDogVGhlcmUncyBhdCBs
-ZWFzdCBvbmUgIndlIiBpbiBoZXJlIHRoYXQgbmVlZHMgdG8gZ2V0IGZpeGVkIHVwLiAgSSdsbA0K
-PiBwbGFuIHRvIGRvIHRoYXQgd2hlbiBJIGFwcGx5IGl0LCBidXQgYSB2MiB3aXRoIHRoYXQgZml4
-ZWQgYW5kIFBldGVyJ3MNCj4gYWNrIGFkZGVkIG1pZ2h0IHNhdmUgbWUgZml2ZSBtaW51dGVzLg0K
-DQpObyBnb29kIGRlZWQgZ29lcyB1bnB1bmlzaGVkLg0KDQpJ4oCZbGwgc2VuZCB2MiBsYXRlciB0
-b2RheS4=
+From: Ludovic Barre <ludovic.barre@foss.st.com>
+
+When there is no parent, there is no specific action to do in
+stm32-exti irqchip. In such case, it's incorrect returning an
+error.
+
+Let irq_set_affinity to return IRQ_SET_MASK_OK_DONE when there is
+no parent.
+
+Signed-off-by: Ludovic Barre <ludovic.barre@foss.st.com>
+Signed-off-by: Antonio Borneo <antonio.borneo@foss.st.com>
+---
+ drivers/irqchip/irq-stm32-exti.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/irqchip/irq-stm32-exti.c b/drivers/irqchip/irq-stm32-exti.c
+index 9d18f47040eb..10c9c742c216 100644
+--- a/drivers/irqchip/irq-stm32-exti.c
++++ b/drivers/irqchip/irq-stm32-exti.c
+@@ -614,7 +614,7 @@ static int stm32_exti_h_set_affinity(struct irq_data *d,
+ 	if (d->parent_data->chip)
+ 		return irq_chip_set_affinity_parent(d, dest, force);
+ 
+-	return -EINVAL;
++	return IRQ_SET_MASK_OK_DONE;
+ }
+ 
+ static int __maybe_unused stm32_exti_h_suspend(void)
+-- 
+2.36.1
+
