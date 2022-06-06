@@ -2,52 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DBD6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 15:27:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50C89C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 15:27:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240720AbiFFP10 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 11:27:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46200 "EHLO
+        id S240826AbiFFP1i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 11:27:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240507AbiFFPZy (ORCPT
+        with ESMTP id S240619AbiFFPZy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 6 Jun 2022 11:25:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F18B21CD37F;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AE801CD36C;
         Mon,  6 Jun 2022 08:25:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5209AB81AAE;
-        Mon,  6 Jun 2022 15:25:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9590C341CC;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E155961545;
+        Mon,  6 Jun 2022 15:25:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F13A5C341D1;
         Mon,  6 Jun 2022 15:25:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1654529149;
-        bh=dzovniYXMBskAcBUaM9tKTfOZoD4DhDdAz8f7SxlcU0=;
+        bh=QMD8XSxVTt5rMt1QS7PnIMdO/7mrai1uKEVRc/zSrng=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a8PKtPnzjXUG9Pn3kpdfQyNW1r8JQmJ7OKiSEWpuhNAQvJnodpQBUb0KnMmAK+KBB
-         dlr1gw8d60NDz7wYgbvTXCujnBzYQkiCWYQgNiOvYEqQdYvSNcuamI3LeG02a5L1Dl
-         0SgzQCT7ea8qbRPb329/GDnknM0eO5oAl54SU8RYjptRfbL1WXtl2F6UyIZ32TcoBS
-         tRCHcTiYou6xj3REJPygE1FNwt1J5+6gSNqz5zVaoqUfxcDaoU1ar7ijGqbtaaWDlT
-         rac3meqNjQ7XfjtVnEhW73mqOFby8h1wwmIXdOEcnymMkYD8zcY8U87suYWr9hBEQ0
-         ofTF6Nm/2f5Hw==
+        b=Pkhb51qqLs419Rmod7Jvmn+fG8oFjkUt34SQDdy8Lp8zxyEz2PVawgQmePW5czFn6
+         L46wfDpGrSQqegZX+WWdcVTbXXOnik+jXuEEEuJmcGHalj5q2p2IS969zhjBnrcPB1
+         qMrFwiJ7X1IUknEMW2363ri672vyF5fK8ot5DdD0uJ9WZPgrrfOq+IFyJmG/XzJHZS
+         CKwurPxtDZ9WKFqwqV827zh50nGPXFr2I38RZfhGKzAsNBUChqNu7s8zvBjk0NeKZm
+         awaa9WafXrNRUHmG/CL0sPIFIhD9Gb5TrG4UIn7onmV2QYupi1i2TJCMGEbYGFHVPL
+         QbVFhV6u+FIVg==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1nyEby-0012P9-5h;
+        id 1nyEby-0012Oz-3f;
         Mon, 06 Jun 2022 16:25:46 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
         Jonathan Corbet <corbet@lwn.net>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
         "Mauro Carvalho Chehab" <mchehab+huawei@kernel.org>,
-        Federico Vaga <federico.vaga@vaga.pv.it>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH 07/23] docs: netdev: update maintainer-netdev.rst reference
-Date:   Mon,  6 Jun 2022 16:25:29 +0100
-Message-Id: <ee0778cb0ae9c26047277610d52e8e3c70b4cf5e.1654529011.git.mchehab@kernel.org>
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-usb@vger.kernel.org
+Subject: [PATCH 04/23] dt-bindings: reset: update st,stih407-powerdown.yaml references
+Date:   Mon,  6 Jun 2022 16:25:26 +0100
+Message-Id: <debdd5a9a1bfa0cf1c7e9c45da32edbc2ac2d10a.1654529011.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1654529011.git.mchehab@kernel.org>
 References: <cover.1654529011.git.mchehab@kernel.org>
@@ -57,34 +61,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Changeset 8df0136376dc ("docs: netdev: move the netdev-FAQ to the process pages")
-renamed: Documentation/networking/netdev-FAQ.rst
-to: Documentation/process/maintainer-netdev.rst.
+Changeset 2ca065dc9468 ("dt-bindings: reset: st,sti-powerdown: Convert to yaml")
+renamed: Documentation/devicetree/bindings/reset/st,sti-powerdown.txt
+to: Documentation/devicetree/bindings/reset/st,stih407-powerdown.yaml.
 
-Update its cross-reference accordingly.
+Update the cross-references accordingly.
 
-Fixes: 8df0136376dc ("docs: netdev: move the netdev-FAQ to the process pages")
+Fixes: 2ca065dc9468 ("dt-bindings: reset: st,sti-powerdown: Convert to yaml")
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
 
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH 00/23] at: https://lore.kernel.org/all/cover.1654529011.git.mchehab@kernel.org/
 
- Documentation/translations/it_IT/networking/netdev-FAQ.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/devicetree/bindings/phy/phy-stih407-usb.txt | 2 +-
+ Documentation/devicetree/bindings/usb/dwc3-st.txt         | 2 +-
+ Documentation/devicetree/bindings/usb/ehci-st.txt         | 2 +-
+ Documentation/devicetree/bindings/usb/ohci-st.txt         | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/Documentation/translations/it_IT/networking/netdev-FAQ.rst b/Documentation/translations/it_IT/networking/netdev-FAQ.rst
-index 7e2456bb7d92..8a1e049585c0 100644
---- a/Documentation/translations/it_IT/networking/netdev-FAQ.rst
-+++ b/Documentation/translations/it_IT/networking/netdev-FAQ.rst
-@@ -1,6 +1,6 @@
- .. include:: ../disclaimer-ita.rst
+diff --git a/Documentation/devicetree/bindings/phy/phy-stih407-usb.txt b/Documentation/devicetree/bindings/phy/phy-stih407-usb.txt
+index de6a706abcdb..35f03df00130 100644
+--- a/Documentation/devicetree/bindings/phy/phy-stih407-usb.txt
++++ b/Documentation/devicetree/bindings/phy/phy-stih407-usb.txt
+@@ -9,7 +9,7 @@ Required properties:
+ - resets		: list of phandle and reset specifier pairs. There should be two entries, one
+ 			  for the whole phy and one for the port
+ - reset-names		: list of reset signal names. Should be "global" and "port"
+-See: Documentation/devicetree/bindings/reset/st,sti-powerdown.txt
++See: Documentation/devicetree/bindings/reset/st,stih407-powerdown.yaml
+ See: Documentation/devicetree/bindings/reset/reset.txt
  
--:Original: :ref:`Documentation/networking/netdev-FAQ.rst <netdev-FAQ>`
-+:Original: :ref:`Documentation/process/maintainer-netdev.rst <netdev-FAQ>`
+ Example:
+diff --git a/Documentation/devicetree/bindings/usb/dwc3-st.txt b/Documentation/devicetree/bindings/usb/dwc3-st.txt
+index bf73de0d5b4a..4aa368447b1e 100644
+--- a/Documentation/devicetree/bindings/usb/dwc3-st.txt
++++ b/Documentation/devicetree/bindings/usb/dwc3-st.txt
+@@ -13,7 +13,7 @@ Required properties:
+  - resets	: list of phandle and reset specifier pairs. There should be two entries, one
+ 		  for the powerdown and softreset lines of the usb3 IP
+  - reset-names	: list of reset signal names. Names should be "powerdown" and "softreset"
+-See: Documentation/devicetree/bindings/reset/st,sti-powerdown.txt
++See: Documentation/devicetree/bindings/reset/st,stih407-powerdown.yaml
+ See: Documentation/devicetree/bindings/reset/reset.txt
  
- .. _it_netdev-FAQ:
+  - #address-cells, #size-cells : should be '1' if the device has sub-nodes
+diff --git a/Documentation/devicetree/bindings/usb/ehci-st.txt b/Documentation/devicetree/bindings/usb/ehci-st.txt
+index 065c91d955ad..d6f2bdee20fc 100644
+--- a/Documentation/devicetree/bindings/usb/ehci-st.txt
++++ b/Documentation/devicetree/bindings/usb/ehci-st.txt
+@@ -17,7 +17,7 @@ See: Documentation/devicetree/bindings/clock/clock-bindings.txt
+  - resets		: phandle + reset specifier pairs to the powerdown and softreset lines
+ 			  of the USB IP
+  - reset-names		: should be "power" and "softreset"
+-See: Documentation/devicetree/bindings/reset/st,sti-powerdown.txt
++See: Documentation/devicetree/bindings/reset/st,stih407-powerdown.yaml
+ See: Documentation/devicetree/bindings/reset/reset.txt
  
+ Example:
+diff --git a/Documentation/devicetree/bindings/usb/ohci-st.txt b/Documentation/devicetree/bindings/usb/ohci-st.txt
+index 44c998c16f85..1c735573abc0 100644
+--- a/Documentation/devicetree/bindings/usb/ohci-st.txt
++++ b/Documentation/devicetree/bindings/usb/ohci-st.txt
+@@ -15,7 +15,7 @@ See: Documentation/devicetree/bindings/clock/clock-bindings.txt
+ 
+  - resets		: phandle to the powerdown and reset controller for the USB IP
+  - reset-names		: should be "power" and "softreset".
+-See: Documentation/devicetree/bindings/reset/st,sti-powerdown.txt
++See: Documentation/devicetree/bindings/reset/st,stih407-powerdown.yaml
+ See: Documentation/devicetree/bindings/reset/reset.txt
+ 
+ Example:
 -- 
 2.36.1
 
