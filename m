@@ -2,148 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 773AFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 16:04:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC5BFC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 16:05:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241458AbiFFQEZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 12:04:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35156 "EHLO
+        id S241538AbiFFQFd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 12:05:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241451AbiFFQEY (ORCPT
+        with ESMTP id S241446AbiFFQFa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 12:04:24 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 470EC152406
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 09:04:22 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id c2so19449899edf.5
-        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 09:04:22 -0700 (PDT)
+        Mon, 6 Jun 2022 12:05:30 -0400
+Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F672166447
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 09:05:21 -0700 (PDT)
+Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-30fdbe7467cso112520017b3.1
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 09:05:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=KWGXBfl5se4wp7KrN7wL12Xs7rq9qbdgkQhRaY9GU8k=;
-        b=oTOjhh1RJEKaX+Qs3cMsD4RMvyp25Gx8tqm0DGapHv/pgtDvU5md877GgRji8Y8l6j
-         F6Zj1dlr2seLm1abILw7hbEaB5kN0cphmVqElfOi3wfmyAiFqgUD80fXDYpxk05vjylz
-         hUABSZOmoCkEvUFxOaZNLWb/PmwhtdCK+ErdqJCgrq9yaoAbHf+j+NKHYMOQTMAUnUB6
-         Jjkq9uu96Frsn4ou3RMMXgR4KKfa5tTssBFne8+rvY6DJo//Gx8y4XxiL5gtPQYiEEVU
-         VJaW2h2kOKfRl/4G4+aUFVQ0Qo2TBY2qKteqSsa1t2UYN/sMFfj+/vnt5Qv8sLZJNfj9
-         b8dA==
+        bh=hkb/bGVyuMqTZRXVw6tHXbfDJb2Rv/dx6ERatAJ2rC0=;
+        b=sWnen0QbVrpHJrYP5g4e/CpughJv5Xsf8460mMdBKUx4OTmW9Qr3EJjZH24KgWua78
+         7SO6mkI+7tUe89LfbJsvCFDzlzdNeMw/gz1PVyPzlV50tpFc3IhJK1mSOpN9IJnBXgIg
+         e0zSuMMRoHlevEhKJFjxeieKivjrkcWH3fivpf+3ozagiT6DrvjNMAmWx+uWXx/QH3Yb
+         hKQPIrtydMfIlf4AGKk5CQ8cjr3EG1XPrlTBkEkTQbKjS6zhKIElw0kkgYB+uUipIsRQ
+         qrBsNJCuvIfH2Ro5oe7HsiF7IpkIq6163YEEyjL0hHD0J0b/x/cAuqcGxch9bKP3rKD8
+         8n9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=KWGXBfl5se4wp7KrN7wL12Xs7rq9qbdgkQhRaY9GU8k=;
-        b=QbuFY5WTqmL5o2dEY4kNQDmZrS4v0zGYSKTaWjE0BWGvkwy6qy+4MvqT7v7qdqBuFn
-         YXandKNl3f3wMr8c2MqD6FQhnnvuBRYn419WiA4daBes5a4W/XL876Z5vQswTNvOTQba
-         +4wVYo/auuUxz+d83QaSzAVdgmzUPGSTqUsEEXznPDtG3kz9C9hcqLvPQZfwnbccRpPt
-         cTMxgo5O6wnTkZV+TKk02dO/Yu6kdWnfm9N5IguikD24V+u2Qvu+Ej4jQdsNpO2lF2/K
-         SwfDR5fV3dz8wDp7PpfCeR+rDVW6nxcC3a9NOcqmJAxg/c+DoJktu+3yDSxzwEzxCvFx
-         1x0A==
-X-Gm-Message-State: AOAM532ebFg0sBdjnNirDtmbUnXmlTnHdi+PddFtz4dZRLnbK+lerW/j
-        BiItn5u4tXnSPlHM+W5GUgXLB/giFBmqFMF6VJo2RQ==
-X-Google-Smtp-Source: ABdhPJw0AtNFpuEuBurgDLof8QHrKCzrB1fD2ibq74tZyCTRpMqSFYqd9Fuk1ASQ2onL3N7iWvYnRwXQFNm+uEtD/ZY=
-X-Received: by 2002:a05:6402:350e:b0:42f:b2c1:9393 with SMTP id
- b14-20020a056402350e00b0042fb2c19393mr17270359edd.11.1654531460569; Mon, 06
- Jun 2022 09:04:20 -0700 (PDT)
+        bh=hkb/bGVyuMqTZRXVw6tHXbfDJb2Rv/dx6ERatAJ2rC0=;
+        b=JKfg88H1Mtn3EuUpSYRjh3l338vIGgyuSr16RpuJYKplkhQeB/uqsAgnRkuBHnUOx3
+         2U5aODHZ2PETm6q2pzksBXml6MbgzYxrs4Kjlj2CECS9KDW3xa2ZIlTS+aWYMwwzh/3J
+         JM+bnIU2iv8F/9M0ziwZBFoBMHYvJ4+BbMPnaX+UMOvXD+RClrIC+v8EDntv0nNJ3Nxc
+         /y1aeKACAUb8k4f0QJ3tXPhNSaoJklPPebQt7gb1YAgsmHFRqhDDpWm7sxtRUvtFtBLu
+         ltwgUJTe3W4hn70RF9dvM9AqRduH2ed/OcVBp1dqnPKxJIesz54BOSb+NN7+++4QuL3x
+         aXQQ==
+X-Gm-Message-State: AOAM533WtQ0s1qBX1Y/3uy0OO4uTdhosSGiwpZc9WpDduieeDlxBXsCu
+        C/YzQMoxwWKSFmX6iZY6i8C0Xw2fl8VPtQDsKZVnjw==
+X-Google-Smtp-Source: ABdhPJwva2zNMNdY7W28yUe2zvaMfHOUFz8u4sZGR3aghRSe9HFp2eMiDV5XEb1NIf2ZbVxtbmqrDyTidCAc4E0ed5s=
+X-Received: by 2002:a81:4811:0:b0:30c:8021:4690 with SMTP id
+ v17-20020a814811000000b0030c80214690mr26771026ywa.47.1654531520769; Mon, 06
+ Jun 2022 09:05:20 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220606141051.285823-1-tzungbi@kernel.org> <20220606141051.285823-10-tzungbi@kernel.org>
-In-Reply-To: <20220606141051.285823-10-tzungbi@kernel.org>
-From:   Guenter Roeck <groeck@google.com>
-Date:   Mon, 6 Jun 2022 09:04:09 -0700
-Message-ID: <CABXOdTcjHR281zr=yo-Gx0eLZMKX2MvrYwL1SGY4=Kk5376iuw@mail.gmail.com>
-Subject: Re: [PATCH 09/13] platform/chrome: cros_ec_proto: use devm_krealloc()
-To:     Tzung-Bi Shih <tzungbi@kernel.org>
-Cc:     Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        chrome-platform@lists.linux.dev,
-        linux-kernel <linux-kernel@vger.kernel.org>
+References: <20220606070804.40268-1-songmuchun@bytedance.com>
+In-Reply-To: <20220606070804.40268-1-songmuchun@bytedance.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 6 Jun 2022 09:05:09 -0700
+Message-ID: <CANn89iJwuW6PykKE03wB24KATtk88tS4eSHH42i+dBFtaK8zsg@mail.gmail.com>
+Subject: Re: [PATCH] tcp: use kvmalloc_array() to allocate table_perturb
+To:     Muchun Song <songmuchun@bytedance.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 6, 2022 at 7:12 AM Tzung-Bi Shih <tzungbi@kernel.org> wrote:
+On Mon, Jun 6, 2022 at 12:08 AM Muchun Song <songmuchun@bytedance.com> wrote:
 >
-> Use devm_krealloc() to re-allocate `din` and `dout`.
+> In our server, there may be no high order (>= 6) memory since we reserve
+> lots of HugeTLB pages when booting.  Then the system panic.  So use
+> kvmalloc_array() to allocate table_perturb.
 >
-> Also remove the unneeded devm_kfree() in error handling path as they are
-> device managed memory.
->
+> Signed-off-by: Muchun Song <songmuchun@bytedance.com>
 
-Problem with that is that the callers don't always handle error
-returns from calls to cros_ec_query_all(), that the call isn't
-typically from the probe function, and that the release function would
-not be called after partial allocation failures until the driver is
-unloaded. This would result in memory leaks, making the memory
-situation even worse. I am not sure if using devm_ functions to
-allocate the memory really makes sense here.
+Please add a Fixes: tag and CC original author ?
 
-Guenter
-
-> Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
-> ---
->  drivers/platform/chrome/cros_ec_proto.c      | 25 ++++++--------------
->  drivers/platform/chrome/cros_ec_proto_test.c |  3 +--
->  2 files changed, 8 insertions(+), 20 deletions(-)
->
-> diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
-> index abb30a685567..5f4414f05d66 100644
-> --- a/drivers/platform/chrome/cros_ec_proto.c
-> +++ b/drivers/platform/chrome/cros_ec_proto.c
-> @@ -479,21 +479,13 @@ int cros_ec_query_all(struct cros_ec_device *ec_dev)
->                 }
->         }
->
-> -       devm_kfree(dev, ec_dev->din);
-> -       devm_kfree(dev, ec_dev->dout);
-> -
-> -       ec_dev->din = devm_kzalloc(dev, ec_dev->din_size, GFP_KERNEL);
-> -       if (!ec_dev->din) {
-> -               ret = -ENOMEM;
-> -               goto exit;
-> -       }
-> +       ec_dev->din = devm_krealloc(dev, ec_dev->din, ec_dev->din_size, GFP_KERNEL | __GFP_ZERO);
-> +       if (!ec_dev->din)
-> +               return -ENOMEM;
->
-> -       ec_dev->dout = devm_kzalloc(dev, ec_dev->dout_size, GFP_KERNEL);
-> -       if (!ec_dev->dout) {
-> -               devm_kfree(dev, ec_dev->din);
-> -               ret = -ENOMEM;
-> -               goto exit;
-> -       }
-> +       ec_dev->dout = devm_krealloc(dev, ec_dev->dout, ec_dev->dout_size, GFP_KERNEL | __GFP_ZERO);
-> +       if (!ec_dev->dout)
-> +               return -ENOMEM;
->
->         /* Probe if MKBP event is supported */
->         ret = cros_ec_get_host_command_version_mask(ec_dev,
-> @@ -542,10 +534,7 @@ int cros_ec_query_all(struct cros_ec_device *ec_dev)
->                                 "failed to retrieve wake mask: %d\n", ret);
->         }
->
-> -       ret = 0;
-> -
-> -exit:
-> -       return ret;
-> +       return 0;
->  }
->  EXPORT_SYMBOL(cros_ec_query_all);
->
-> diff --git a/drivers/platform/chrome/cros_ec_proto_test.c b/drivers/platform/chrome/cros_ec_proto_test.c
-> index 79150bf511fb..22f9322787f4 100644
-> --- a/drivers/platform/chrome/cros_ec_proto_test.c
-> +++ b/drivers/platform/chrome/cros_ec_proto_test.c
-> @@ -180,8 +180,7 @@ static void cros_ec_proto_test_query_all_pretest(struct kunit *test)
->
->         /*
->          * cros_ec_query_all() will free din and dout and allocate them again to fit the usage by
-> -        * calling devm_kfree() and devm_kzalloc().  Set them to NULL as they aren't managed by
-> -        * ec_dev->dev.
-> +        * calling devm_krealloc().  Set them to NULL as they aren't managed by ec_dev->dev.
->          */
->         ec_dev->din = NULL;
->         ec_dev->dout = NULL;
-> --
-> 2.36.1.255.ge46751e96f-goog
->
+Thanks.
