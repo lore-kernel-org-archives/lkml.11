@@ -2,101 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 324ABC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:49:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62609CCA473
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:50:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239973AbiFFOtU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 10:49:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45488 "EHLO
+        id S240060AbiFFOuA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 10:50:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240114AbiFFOtO (ORCPT
+        with ESMTP id S240032AbiFFOt6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 10:49:14 -0400
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AFB96D866
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 07:49:12 -0700 (PDT)
-Received: by mail-lj1-x22c.google.com with SMTP id a23so16023470ljd.9
-        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 07:49:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=H9gSJdumX788ea5ymBPhF6Qx4oKS3kXqxz2HGbJIL4Q=;
-        b=NDhxYiHFP2DQ/Hg/9TucNlDLLMsU/ntXpeN0g2X8O+A2BUihfdLVBLLH7RWDprBeHQ
-         YwaJrLW49qHLVTYYoKNvynnJ3jb79kiSyxeSMy2uxFQjXwG+gVg48vktfIa85w7hKfQ1
-         g4jx4e8LsxUAl7JSRLIBkVIW6BW0V9jVja/Dk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=H9gSJdumX788ea5ymBPhF6Qx4oKS3kXqxz2HGbJIL4Q=;
-        b=UGzLpemT4v1Gvd9dQDgaerSujJz82DWwNn9ufpbgbjUm6R4hYcDXN1oQp4PDH3055P
-         pw+1MpQDNdszbLqOK3mQ31z3Ue6m1PFQHQygXVLfb7YpJrWhDBOKcrMNduMRuElGkP5L
-         4Wf4lclb5YqxP6oMxctdcBWw7YuttQF6uwtOy0ySsR1ruDrsLBjvXKjy43VHhdKoJ/B2
-         t9KeBFOMVs/raVMgn/HMdS7EhTyXg1zTXFBRlv/0SVZe/eEbo6/5MO/Tcxza4ma7aBwV
-         Hyg193EuOoU7y7PHuBPa7FF0Yb78qpa8LQ453YKfQiY1L4l3ce0jSwyGULNtlCVvP2/5
-         qrJQ==
-X-Gm-Message-State: AOAM533iTdW0Vmw3G5Yiq+QujK71t/Ax0HH5Wiz1Nk6ZN+gyRZAE+v4a
-        AWqebAovNhDSdrTXepWjcBACdj9yh82F19uBIF8=
-X-Google-Smtp-Source: ABdhPJy8yTQ/X3yTlwDvDnZGAnXt39UDSHBJ4Fq4pYy5pdfeK2f9AdIHgteCUSw6AIEOggEAs2cb5g==
-X-Received: by 2002:a2e:890b:0:b0:255:5f1c:8958 with SMTP id d11-20020a2e890b000000b002555f1c8958mr17359984lji.134.1654526950209;
-        Mon, 06 Jun 2022 07:49:10 -0700 (PDT)
-Received: from mail-lj1-f181.google.com (mail-lj1-f181.google.com. [209.85.208.181])
-        by smtp.gmail.com with ESMTPSA id i27-20020ac25b5b000000b00478ebc6be69sm735486lfp.261.2022.06.06.07.49.09
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 06 Jun 2022 07:49:09 -0700 (PDT)
-Received: by mail-lj1-f181.google.com with SMTP id y15so10617418ljc.0
-        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 07:49:09 -0700 (PDT)
-X-Received: by 2002:a05:6000:1685:b0:218:45f0:5be6 with SMTP id
- y5-20020a056000168500b0021845f05be6mr2533347wrd.301.1654525406801; Mon, 06
- Jun 2022 07:23:26 -0700 (PDT)
+        Mon, 6 Jun 2022 10:49:58 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0E8B81499;
+        Mon,  6 Jun 2022 07:49:56 -0700 (PDT)
+Received: from fraeml745-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LGx9R1CJBz67ms2;
+        Mon,  6 Jun 2022 22:45:15 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml745-chm.china.huawei.com (10.206.15.226) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 6 Jun 2022 16:49:55 +0200
+Received: from localhost (10.202.226.42) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 6 Jun
+ 2022 15:49:54 +0100
+Date:   Mon, 6 Jun 2022 15:49:52 +0100
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     Ira Weiny <ira.weiny@intel.com>
+CC:     Dan Williams <dan.j.williams@intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Alison Schofield <alison.schofield@intel.com>,
+        "Vishal Verma" <vishal.l.verma@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        "Ben Widawsky" <ben@bwidawsk.net>, <linux-kernel@vger.kernel.org>,
+        <linux-cxl@vger.kernel.org>, <linux-pci@vger.kernel.org>
+Subject: Re: [PATCH V9 6/9] cxl/port: Read CDAT table
+Message-ID: <20220606154952.000008c7@Huawei.com>
+In-Reply-To: <Ypk+Cc0fWelIcamX@iweiny-desk3>
+References: <20220531152632.1397976-1-ira.weiny@intel.com>
+        <20220531152632.1397976-7-ira.weiny@intel.com>
+        <20220601163540.00006978@Huawei.com>
+        <20220601173113.000005a6@Huawei.com>
+        <YpkCHADvGv6i3jVP@iweiny-desk3>
+        <Ypk+Cc0fWelIcamX@iweiny-desk3>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
 MIME-Version: 1.0
-References: <20220606044720.945964-1-hsinyi@chromium.org> <20220606044720.945964-8-hsinyi@chromium.org>
-In-Reply-To: <20220606044720.945964-8-hsinyi@chromium.org>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Mon, 6 Jun 2022 07:23:15 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=V7EiaYgzr57geyeqEafLJ67G2PJa8ejZwgWNV+icD0RQ@mail.gmail.com>
-Message-ID: <CAD=FV=V7EiaYgzr57geyeqEafLJ67G2PJa8ejZwgWNV+icD0RQ@mail.gmail.com>
-Subject: Re: [PATCH v3 7/8] drm/panel: elida-kd35t133: Implement
- .get_orientation callback
-To:     Hsin-Yi Wang <hsinyi@chromium.org>
-Cc:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        Rob Clark <robdclark@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.202.226.42]
+X-ClientProxiedBy: lhreml728-chm.china.huawei.com (10.201.108.79) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Thu, 2 Jun 2022 15:47:37 -0700
+Ira Weiny <ira.weiny@intel.com> wrote:
 
-On Sun, Jun 5, 2022 at 9:47 PM Hsin-Yi Wang <hsinyi@chromium.org> wrote:
->
-> To return the orientation property to drm/kms driver.
->
-> Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
-> Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-> ---
-> v2->v3: add comments for notice.
-> ---
->  drivers/gpu/drm/panel/panel-elida-kd35t133.c | 14 ++++++++++++++
->  1 file changed, 14 insertions(+)
+> On Thu, Jun 02, 2022 at 11:31:56AM -0700, Ira wrote:
+> > On Wed, Jun 01, 2022 at 05:31:13PM +0100, Jonathan Cameron wrote:  
+> > > On Wed, 1 Jun 2022 16:35:40 +0100
+> > > Jonathan Cameron <Jonathan.Cameron@Huawei.com> wrote:
+> > >   
+> > > > On Tue, 31 May 2022 08:26:29 -0700
+> > > > ira.weiny@intel.com wrote:
+> > > >   
+> > > > > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > > > > 
+> > > > > The OS will need CDAT data from CXL devices to properly set up
+> > > > > interleave sets.  Currently this is supported through a DOE mailbox
+> > > > > which supports CDAT.
+> > > > > 
+> > > > > Cache the CDAT data for later parsing.  Provide a sysfs binary attribute
+> > > > > to allow dumping of the CDAT.
+> > > > > 
+> > > > > Binary dumping is modeled on /sys/firmware/ACPI/tables/
+> > > > > 
+> > > > > The ability to dump this table will be very useful for emulation of real
+> > > > > devices once they become available as QEMU CXL type 3 device emulation will
+> > > > > be able to load this file in.
+> > > > > 
+> > > > > This does not support table updates at runtime. It will always provide
+> > > > > whatever was there when first cached. Handling of table updates can be
+> > > > > implemented later.
+> > > > > 
+> > > > > Finally create a complete list of DOE defines within cdat.h for code
+> > > > > wishing to decode the CDAT table.
+> > > > > 
+> > > > > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > > > > Co-developed-by: Ira Weiny <ira.weiny@intel.com>
+> > > > > Signed-off-by: Ira Weiny <ira.weiny@intel.com>
+> > > > >     
+> > > > 
+> > > > Fun question of ownership inline...  
+> > > 
+> > > And a follow up due to triggering a bug that predated this series...
+> > > 
+> > > I'd send a fix, but I'm off on a long weekend shortly :)  
+> > 
+> > NP I discussed with Dan and the use of dev_groups should allow me to move this
+> > to port probe where it belongs.  I put it here for the sysfs stuff.  
+> 
+> Not to make a habit of replying to my own mails but this works.
+> 
+> So I'm going to go forward with spinning this again.
 
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
+It's the right solution - cleaner than moving the ownership.
+
+Jonathan
+
+> 
+> Ira
+
