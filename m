@@ -2,94 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41A22C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:25:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B1E9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:29:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239691AbiFFOZw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 10:25:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47264 "EHLO
+        id S239843AbiFFO31 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 10:29:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239581AbiFFOZt (ORCPT
+        with ESMTP id S239713AbiFFO3X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 10:25:49 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97F1E2D6AA6;
-        Mon,  6 Jun 2022 07:25:48 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id y19so29294228ejq.6;
-        Mon, 06 Jun 2022 07:25:48 -0700 (PDT)
+        Mon, 6 Jun 2022 10:29:23 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27B9EC7E3A
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 07:29:22 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id i1so12237983plg.7
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 07:29:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=a0c8aCXTnV+YnzgcVK3cYCsnaQ2OrGwT8XZ+B+Q/jUg=;
-        b=GcisAG8Oa7796L9CONDDt6OIIQn0huGp9VfxwdG6OouVCGHztFap6mMZZrhHRGubZm
-         VD9xcpd+/w40aih8Uj1iNf3fS6OHMI7M428hiwgs1qwYgoB6xRXUdr6DXRRE+wJRgH17
-         X4yAfXt9TFiN0Uq9XO6mGXYiYh9CvWMwBB46Ob6gs+X5yZBGTSuFuJhdyu8tZjKKDja9
-         5vQxw+xJdSKO/qUzjCo7Lw8T0N2E1gfSSON+TWD+Yiro/wHufQAbakKOR9o/ALbwWw39
-         Mjk4pA0NCdIy1PD7V9S++yqxdnhdQL7NJn4Bpr+QigZIH/aJOArjyD89A2r0AyQMM3MF
-         +9BQ==
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=TFLEIjRx+aSYvMhZeHjAivjN2q9x2X4PUbVTc44Yjww=;
+        b=KpSIkmnv1ezDYRrt9QuA0WGeAgeyMDBnkOrR5VLDMDybyQH5r/Pc7Xm/1q2PjQPyNR
+         YFO8GcikzzBOVGkI2D8LqeMyDliFqjnxL+I+VRn/LvhnzrOJuGHWX6UBvBsbogKgpzkQ
+         Ey2YW8or0Qnvtuuk3uk+bxROgvwAoJunx5ilC61bKNaZBMdElKVD54xJ4XoReMB8D79K
+         XiRCcMQ7WZNIn8kSizWaHDwjha+d21KmKmzzXPScRzcxyUN+SFHMeT9fMV85Bs2/A6s4
+         a48mwBDtd9c6DvAYlGO5+WQFvqrFjMkc4E+su9RZHlCI33FAJaettKb0w9jQxJzrEjkd
+         pPAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=a0c8aCXTnV+YnzgcVK3cYCsnaQ2OrGwT8XZ+B+Q/jUg=;
-        b=xRUfZLbt7pgkmkndADiD5svasc8yeKo7IFKHDng827fF079+05zFEltgmS+5eTZKAm
-         /8HNggDCMP51NDyJlAne0cAR0oUui3Rutl2Ig8PEsWCQoSMn++8CEm+G0r2rwcgTs2cn
-         YO6MHVOtc7B55qTGJnlr9OFyqSMoagTyiAo+ftq9sr958qG94YC7mvGYX0Fq75NHom/l
-         kcppgoMfkOiOMDqL4mcoswbf2hSV8QrGwTPPseXgaUdK2noeI0kligEfJVoUVOA5t/9q
-         3RpFno1Nq21ztOdhJFatHA2ZOELanMmkfixWJx9KH1K/YtFDqTM1lG+NiA5rbejzwpgL
-         ZTbA==
-X-Gm-Message-State: AOAM531b/4O2RqX6jLFYGJCl2vdEHSBv5KfHL9SG33CdcsuGEJ4IngOc
-        nFzCGhlVMWGMDyOJDFtsiPW6EskmpIZ2RrpBfILXaLwUX4SADg==
-X-Google-Smtp-Source: ABdhPJzD7u77fBcesP17TjFNq0z2fD+tq04dRC4JePcC1QiaGc2nhtbfkRYB0490U7l5eh6dTvULHUrEbwCqVDzeShc=
-X-Received: by 2002:a17:907:2ce3:b0:6ff:1447:d3a4 with SMTP id
- hz3-20020a1709072ce300b006ff1447d3a4mr22624124ejc.497.1654525547146; Mon, 06
- Jun 2022 07:25:47 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220605144659.4169853-1-demonsingur@gmail.com>
-In-Reply-To: <20220605144659.4169853-1-demonsingur@gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 6 Jun 2022 16:25:10 +0200
-Message-ID: <CAHp75VeHAGM=cxGRzWsv7KxUD0rjiudxOJ2HrtgtTFbuG+z8=g@mail.gmail.com>
-Subject: Re: [PATCH v2 0/4] MAX310X I2C support
-To:     Cosmin Tanislav <demonsingur@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=TFLEIjRx+aSYvMhZeHjAivjN2q9x2X4PUbVTc44Yjww=;
+        b=dDiglPpRdut9px4VGdA+C3WGKpawgugnmuzSc6Za2iVwXpA9Y5IqGZ9yZR9msCVVOY
+         hKDToASSCY9h5OxJj2rW6jY/BI6bFOQaIq0Kuy4lTl+YW402YFIwt7BTjT0bUosJ7NN2
+         jNG2Mwe7wu7qQylz0s1EnxKxZHXUMIalYeUzSYp8Dws42K+84HK3KcMg8wjF05urkc4I
+         7dYyPIcr6k3u7BySnIUn1Zz1wj9JxYWadvMV7ohzZDbQdRWYFt1fhrVmBsq41m3h3WJS
+         VV5+BakULjXsLdK5pQnMxnbUu3fbQVO8xgfzycK82got8hQbOrKnywWTVdvsKQ/Ej5j3
+         QXVg==
+X-Gm-Message-State: AOAM531u+w28W4fOvy/Xw7a6G8jXJJ1lPQOh+zASHYojBWWaTm5qyuO9
+        jm7poLZlCdYRNcpCbB48Kfc=
+X-Google-Smtp-Source: ABdhPJw+JhxDzx1oc/r32eWMwHM+WKNYE+9IOZc5mNyQ51ypFIOWJNDZ0mVGpdxwA5h8Zm9NT+01bw==
+X-Received: by 2002:a17:90b:180e:b0:1e8:3023:eeb9 with SMTP id lw14-20020a17090b180e00b001e83023eeb9mr19301337pjb.55.1654525761401;
+        Mon, 06 Jun 2022 07:29:21 -0700 (PDT)
+Received: from smtpclient.apple (c-24-6-216-183.hsd1.ca.comcast.net. [24.6.216.183])
+        by smtp.gmail.com with ESMTPSA id a3-20020a170903100300b0015ea4173bd6sm10497475plb.195.2022.06.06.07.29.19
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 06 Jun 2022 07:29:20 -0700 (PDT)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.100.31\))
+Subject: Re: [PATCH] x86/mm/tlb: avoid reading mm_tlb_gen when possible
+From:   Nadav Amit <nadav.amit@gmail.com>
+In-Reply-To: <20220328103551.GY8939@worktop.programming.kicks-ass.net>
+Date:   Mon, 6 Jun 2022 07:29:17 -0700
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        Andy Lutomirski <luto@kernel.org>, X86 ML <x86@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>
+Content-Transfer-Encoding: 7bit
+Message-Id: <8F17ACF3-D1AC-4330-9E44-B718F598CD6E@gmail.com>
+References: <20220322220757.8607-1-namit@vmware.com>
+ <20220328103551.GY8939@worktop.programming.kicks-ass.net>
+To:     Thomas Gleixner <tglx@linutronix.de>
+X-Mailer: Apple Mail (2.3696.100.31)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 6, 2022 at 8:08 AM Cosmin Tanislav <demonsingur@gmail.com> wrote:
->
-> V1 -> V2:
->  * set_ext_reg_en -> extended_reg_enable
->  * move extended_reg_enable functions under guards
->  * move if_cfg structs under guards
->  * remove __maybe_unused from max310x_i2c_driver
->  * fix order of error labels in module register
->  * guard i2c register error label
+On Mar 28, 2022, at 3:35 AM, Peter Zijlstra <peterz@infradead.org> wrote:
 
-LGTM, thanks!
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+> On Tue, Mar 22, 2022 at 10:07:57PM +0000, Nadav Amit wrote:
+>> From: Nadav Amit <namit@vmware.com>
+>> 
+>> On extreme TLB shootdown storms, the mm's tlb_gen cacheline is highly
+>> contended and reading it should (arguably) be avoided as much as
+>> possible.
+>> 
+>> Currently, flush_tlb_func() reads the mm's tlb_gen unconditionally,
+>> even when it is not necessary (e.g., the mm was already switched).
+>> This is wasteful.
+>> 
+>> Moreover, one of the existing optimizations is to read mm's tlb_gen to
+>> see if there are additional in-flight TLB invalidations and flush the
+>> entire TLB in such a case. However, if the request's tlb_gen was already
+>> flushed, the benefit of checking the mm's tlb_gen is likely to be offset
+>> by the overhead of the check itself.
+>> 
+>> Running will-it-scale with tlb_flush1_threads show a considerable
+>> benefit on 56-core Skylake (up to +24%):
+>> 
+>> threads		Baseline (v5.17+)	+Patch
+>> 1		159960			160202
+>> 5		310808			308378 (-0.7%)
+>> 10		479110			490728
+>> 15		526771			562528
+>> 20		534495			587316
+>> 25		547462			628296
+>> 30		579616			666313
+>> 35		594134			701814
+>> 40		612288			732967
+>> 45		617517			749727
+>> 50		637476			735497
+>> 55		614363			778913 (+24%)
+> 
+> Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 
-> Cosmin Tanislav (4):
->   serial: max310x: use regmap methods for SPI batch operations
->   serial: max310x: use a separate regmap for each port
->   serial: max310x: make accessing revision id interface-agnostic
->   serial: max310x: implement I2C support
->
->  drivers/tty/serial/Kconfig   |   1 +
->  drivers/tty/serial/max310x.c | 261 ++++++++++++++++++++++++++---------
->  2 files changed, 200 insertions(+), 62 deletions(-)
->
-> --
-> 2.36.1
->
+Ping?
 
-
--- 
-With Best Regards,
-Andy Shevchenko
