@@ -2,102 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31DAEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 06:05:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 917F6CCA473
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 06:09:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229839AbiFFGFZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 02:05:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51970 "EHLO
+        id S229779AbiFFGJG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 02:09:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229801AbiFFGFV (ORCPT
+        with ESMTP id S229685AbiFFGJB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 02:05:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 684211CB10
-        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 23:05:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 14EA5B81088
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 06:05:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D351C385A9;
-        Mon,  6 Jun 2022 06:05:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654495516;
-        bh=zwJfnS/wE1sDCszcl+CSabMelPPt/DfmOcBmAm19SNo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=IBfBqXmjcvTVkXHY4YUlGomdCIbCsWjiXKhvfIPP4l0umm3z4dhXYaw9aXEllFyBM
-         gHgkIKo642jP5ZmpGHm1qff5FpLMqEYamCzxmKIEDG+s6ifgK9HMIlxyDl4bhP63VJ
-         sswFJC9/J3HQUiDlsP5t2GD08acfEjgdb9Ii6CgU=
-Date:   Mon, 6 Jun 2022 08:05:14 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Martin Kaiser <martin@kaiser.cx>
-Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Michael Straube <straube.linux@gmail.com>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/3] staging: r8188eu: remove rtw_usleep_os
-Message-ID: <Yp2ZGp1JUSWaSzFI@kroah.com>
-References: <20220602194807.281115-1-martin@kaiser.cx>
- <20220602194807.281115-3-martin@kaiser.cx>
+        Mon, 6 Jun 2022 02:09:01 -0400
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0216713F81
+        for <linux-kernel@vger.kernel.org>; Sun,  5 Jun 2022 23:08:57 -0700 (PDT)
+Received: by mail-pf1-x434.google.com with SMTP id bo5so11931289pfb.4
+        for <linux-kernel@vger.kernel.org>; Sun, 05 Jun 2022 23:08:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=amarulasolutions.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6k+dFc6Nvtrf/Msfd6+QxAADjHPGiS46041UYSZkIZk=;
+        b=dxW5cCP1FrLBb9/TgPfH8DwjCuNLncZFxzqKunOy/zK6kbVHN4A3mkOf8Jck6fIwQk
+         8t8q/V1iaQDYb6KqSKt1cCF8j4ZMBkeuJDkayx5qMQQgZyY6u2GhSuj/7NLjn5aUsGuf
+         V4MA5v6r3orwM03Ru0u7BkMfS3b0InBPeYdxM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6k+dFc6Nvtrf/Msfd6+QxAADjHPGiS46041UYSZkIZk=;
+        b=Vd03zDvKQH1gb5wtCsu9qjazOzTvqa+YNwdNEWDxR7b5BAKMS9y6nnrQPEucgCUOqy
+         fvNubkmO5GkLQfMsjg3/+xew101Z/7+fPqN/HwTsu5qnbbYrVf9b5MRHmsRNKYDHeDK0
+         dhwYTNi4BGkBrJrScgMpOzqB0m9SEXpYvdlDfgnsDhfkZcf1aWh40bnX/G3z8IiQOvyg
+         JPG3F0FMxElvgSbsf6Igqp/c82WVVuQiNfxIP1tGEcensCyDOQJvlnpFBpp/iRqCyes8
+         Z2oc507w1b5iBIQTRCorPo16aS9lu8nmtLOlFwRgdiR4eA/6SKa6W/w3tBsnqmYAm9/4
+         Xyhw==
+X-Gm-Message-State: AOAM53372eJYBAbcYAsZFIvxTzVijFbY+cJDgNHyAhsm8hMCH3i+tmnE
+        8XvczDUvEFL7vbTNvmy3+qfRGllloNhdWGJz5dyX8g==
+X-Google-Smtp-Source: ABdhPJw9xSkNh+h+Vtbm/VSYma4/+gWmuvUVLv/xA+IhtOU0VNhBKtivOv4H2UfyOonUTfJfE/mvTCwzQk8h7UkWgPc=
+X-Received: by 2002:a63:5610:0:b0:3f2:7e19:1697 with SMTP id
+ k16-20020a635610000000b003f27e191697mr19540118pgb.74.1654495736443; Sun, 05
+ Jun 2022 23:08:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220602194807.281115-3-martin@kaiser.cx>
+References: <20220605165703.1565234-1-michael@amarulasolutions.com>
+ <20220605165703.1565234-3-michael@amarulasolutions.com> <5f34b6d6-c2dd-44f9-c1bc-fe1deb336334@gmail.com>
+In-Reply-To: <5f34b6d6-c2dd-44f9-c1bc-fe1deb336334@gmail.com>
+From:   Michael Nazzareno Trimarchi <michael@amarulasolutions.com>
+Date:   Mon, 6 Jun 2022 08:08:45 +0200
+Message-ID: <CAOf5uwn6_Tuh-r+8HpthMRDYYc50OnXp4m5TQi49heknfV5yWQ@mail.gmail.com>
+Subject: Re: [RFC PATCH 2/3] clk: bd718x7: Enable the possibility to mark the
+ clock as critical
+To:     Matti Vaittinen <mazziesaccount@gmail.com>
+Cc:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        "open list:COMMON CLK FRAMEWORK" <linux-clk@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
+        linux-amarula@amarulasolutions.com, Marek Vasut <marex@denx.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 02, 2022 at 09:48:06PM +0200, Martin Kaiser wrote:
-> Remove the rtw_usleep_os helper function. There are only two callers, both
-> of which call rtw_usleep_os(100).
-> 
-> The original code would translate rtw_usleep_os(100) into msleep(1). Using
-> msleep for < 20ms is not recommended. Replace the msleep calls with
-> usleep_range, based on the explanations in
-> Documentation/timers/timers-howto.rst.
-> 
-> Signed-off-by: Martin Kaiser <martin@kaiser.cx>
-> ---
->  drivers/staging/r8188eu/core/rtw_pwrctrl.c      | 2 +-
->  drivers/staging/r8188eu/hal/rtl8188e_hal_init.c | 2 +-
->  drivers/staging/r8188eu/include/osdep_service.h | 2 --
->  drivers/staging/r8188eu/os_dep/osdep_service.c  | 8 --------
->  4 files changed, 2 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/staging/r8188eu/core/rtw_pwrctrl.c b/drivers/staging/r8188eu/core/rtw_pwrctrl.c
-> index 7b816b824947..11fd05633529 100644
-> --- a/drivers/staging/r8188eu/core/rtw_pwrctrl.c
-> +++ b/drivers/staging/r8188eu/core/rtw_pwrctrl.c
-> @@ -266,7 +266,7 @@ static s32 LPS_RF_ON_check(struct adapter *padapter, u32 delay_ms)
->  			err = -1;
->  			break;
->  		}
-> -		rtw_usleep_os(100);
-> +		usleep_range(1000, 1200);
+Hi
 
-How do you know this is the proper range?
+On Mon, Jun 6, 2022 at 7:26 AM Matti Vaittinen <mazziesaccount@gmail.com> wrote:
+>
+> Hi Michael,
+>
+> On 6/5/22 19:57, Michael Trimarchi wrote:
+> > If the clock is used to generate the osc_32k, we need to mark
+> > as critical. clock-critical has no binding description at the moment
+> > but it's defined in linux kernel
+> >
+> > bd71847: pmic@4b {
+> > ...
+> >       rohm,reset-snvs-powered;
+> >
+> >       #clock-cells = <0>;
+> >       clock-critical = <1>;
+> >       clocks = <&osc_32k 0>;
+> >       clock-output-names = "clk-32k-out";
+> > ...
+> > }
+> >
+> > Signed-off-by: Michael Trimarchi <michael@amarulasolutions.com>
+> > ---
+> >   drivers/clk/clk-bd718x7.c | 4 ++++
+>
+> //snip
+>
+> > @@ -100,6 +101,9 @@ static int bd71837_clk_probe(struct platform_device *pdev)
+> >
+> >       parent_clk = of_clk_get_parent_name(parent->of_node, 0);
+> >
+> > +     of_clk_detect_critical(dev->of_node, 0, &flags);
+>
+> Purely judging the kerneldoc for of_clk_detect_critical - you may have
+> hard time getting this accepted.
+>
 
->  	}
->  
->  	return err;
-> diff --git a/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c b/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
-> index e17375a74f17..1aa7d01b67b1 100644
-> --- a/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
-> +++ b/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
-> @@ -208,7 +208,7 @@ static void efuse_read_phymap_from_txpktbuf(
->  		rtw_write8(adapter, REG_TXPKTBUF_DBG, 0);
->  		timeout = jiffies + msecs_to_jiffies(1000);
->  		while (!rtw_read8(adapter, REG_TXPKTBUF_DBG) && time_before(jiffies, timeout))
-> -			rtw_usleep_os(100);
-> +			usleep_range(1000, 1200);
+This is the reason for RFC. I have already seen the usage of this in
 
-Same here, how do you know this is the correct range?
+ainline/master:drivers/clk/st/clk-flexgen.c:
+of_clk_detect_critical(np, i, &flex_flags);
+mainline/master:drivers/clk/st/clkgen-fsyn.c:
+of_clk_detect_critical(np, fschan, &flags);
+mainline/master:drivers/clk/st/clkgen-pll.c:
+of_clk_detect_critical(np, 0, &pll_flags);
+mainline/master:drivers/clk/st/clkgen-pll.c:
+of_clk_detect_critical(np, odf, &odf_flags);
 
-I would just use msleep as needed and later change to a range if you
-have figured out that is allowed.
+> I think you're working on a very valid problem though. Maybe you could
+> see if you could align your effort with Marek?
+>
+> https://lore.kernel.org/all/20220517235919.200375-1-marex@denx.de/T/#m52d6d0831bf43d5f293e35cb27f3021f278d0564
+>
 
-thanks,
+I have seen the Marek patcheset now. I don't know if they works anyway
+for a clock that is a part of MFD controller
 
-greg k-h
+Michael
+
+> Best Regards
+>         -- Matti
+>
+> --
+> Matti Vaittinen
+> Linux kernel developer at ROHM Semiconductors
+> Oulu Finland
+>
+> ~~ When things go utterly wrong vim users can always type :help! ~~
+>
+> Discuss - Estimate - Plan - Report and finally accomplish this:
+> void do_work(int time) __attribute__ ((const));
+
+
+
+-- 
+Michael Nazzareno Trimarchi
+Co-Founder & Chief Executive Officer
+M. +39 347 913 2170
+michael@amarulasolutions.com
+__________________________________
+
+Amarula Solutions BV
+Joop Geesinkweg 125, 1114 AB, Amsterdam, NL
+T. +31 (0)85 111 9172
+info@amarulasolutions.com
+www.amarulasolutions.com
