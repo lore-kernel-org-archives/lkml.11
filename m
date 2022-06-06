@@ -2,95 +2,301 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF462C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 20:23:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABF3BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 20:23:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233702AbiFFUW7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 16:22:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39334 "EHLO
+        id S233142AbiFFUXz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 16:23:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233572AbiFFUWd (ORCPT
+        with ESMTP id S233767AbiFFUXn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 16:22:33 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2DF19FE5
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 13:22:31 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id y19so31131765ejq.6
-        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 13:22:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rasmusvillemoes.dk; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=cmCUkZyYqf+fSr+qmDna92LF/wD5Dj/Ah1fbqp/t9Fc=;
-        b=X1/fjuqL6gfslDXWoRX9h2iUMDP2o8h40GZNbgq4k2cPA/WIpPN/LIgiyPkBen6+T+
-         ik/ftNMZIdrs+WRaYig6cWAECSG9pNA0q6S54xIM+PMpKpS+7Oe7HLk4Y9JHTB8KpdT6
-         TS/RlSX6kawniKhAbMEivgVRmpyGX+Npd9HUc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=cmCUkZyYqf+fSr+qmDna92LF/wD5Dj/Ah1fbqp/t9Fc=;
-        b=yojfqL5GmmVO0itmnXBjcvsmJN+Bz8nAH/sh40d5HHPkwPnADNx52BDfhjxJ4rvl+P
-         n9NdxdouzPo5LQvHsseu4gq8wEogkcEt80yE1xR8jpJELLRasnmDwqPecfqGf0CzCN7j
-         6qhpt/2UVFLHfPW0QAyG702CSnWjWh915y6xsjH+4lWr4WRL7HnfN38abg0T1sKdDH1a
-         leUCSLh108jNyl5H+/3YtM1JRmZiNjXczOivzex8YRsoQCGLkQnEM/G81wXnW9IfftiV
-         hcI8rKaU7ZjEz/LT7Vjt9mCzvbpuayNMCP2/cNN9dPeWVBj0igBtyVFwvIP35oQ6cv2c
-         tcYw==
-X-Gm-Message-State: AOAM533vRyDn5EhJthEIqHUDpEUX2lcLio05Xtz4XoaEcaOO6bGeSwTl
-        iDa8uPCIng5y4N79CImwhbI7HmvgVjMOPw==
-X-Google-Smtp-Source: ABdhPJyB6ulO52fBmOqz/f6uv8gPY4QaiOeSAQEKRaPOA9PwbUcbRDC6JJFKBVnfBl8X5S7F0Tw6xg==
-X-Received: by 2002:a17:906:37c6:b0:70c:f9f:f0c5 with SMTP id o6-20020a17090637c600b0070c0f9ff0c5mr19313158ejc.743.1654546950375;
-        Mon, 06 Jun 2022 13:22:30 -0700 (PDT)
-Received: from prevas-ravi.tritech.se ([80.208.64.233])
-        by smtp.gmail.com with ESMTPSA id d20-20020aa7ce14000000b0042dd4ccccf5sm9043789edv.82.2022.06.06.13.22.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jun 2022 13:22:30 -0700 (PDT)
-From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
-To:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dan Murphy <dmurphy@ti.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 2/3] linux/phy.h: add phydev_err_probe() wrapper for dev_err_probe()
-Date:   Mon,  6 Jun 2022 22:22:19 +0200
-Message-Id: <20220606202220.1670714-3-linux@rasmusvillemoes.dk>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220606202220.1670714-1-linux@rasmusvillemoes.dk>
-References: <20220606202220.1670714-1-linux@rasmusvillemoes.dk>
+        Mon, 6 Jun 2022 16:23:43 -0400
+X-Greylist: delayed 1274 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 06 Jun 2022 13:22:58 PDT
+Received: from neon-v2.ccupm.upm.es (neon-v2.ccupm.upm.es [138.100.198.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40FE34BBA0;
+        Mon,  6 Jun 2022 13:22:57 -0700 (PDT)
+Received: from localhost (82-69-11-11.dsl.in-addr.zen.co.uk [82.69.11.11])
+        (user=adrianml@alumnos.upm.es mech=PLAIN bits=0)
+        by neon-v2.ccupm.upm.es (8.15.2/8.15.2/neon-v2-001) with ESMTPSA id 256JsxWg016779
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 6 Jun 2022 19:55:00 GMT
+Date:   Mon, 6 Jun 2022 20:54:55 +0100
+From:   Adrian Larumbe <adrianml@alumnos.upm.es>
+To:     Vinod Koul <vkoul@kernel.org>
+Cc:     Christoph Hellwig <hch@lst.de>, michal.simek@xilinx.com,
+        dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH] dmaengine: remove DMA_MEMCPY_SG once again
+Message-ID: <20220606195455.qmq3yu6mc6g4rmm2@sobremesa>
+References: <20220606074733.622616-1-hch@lst.de>
+ <Yp4/JW4P12s4siRz@matsya>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <Yp4/JW4P12s4siRz@matsya>
+X-BitDefender-Scanner: Clean, Agent: BitDefender Milter 3.1.7 on neon-v2.ccupm.upm.es, sigver: 7.92076
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The dev_err_probe() function is quite useful to avoid boilerplate
-related to -EPROBE_DEFER handling. Add a phydev_err_probe() helper to
-simplify making use of that from phy drivers which otherwise use the
-phydev_* helpers.
+>On 06.06.2022 23:23, Vinod Koul wrote:
+>On 06-06-22, 09:47, Christoph Hellwig wrote:
+>> This was removed before due to the complete lack of users, but
+>> 3218910fd585 ("dmaengine: Add core function and capability check for
+>> DMA_MEMCPY_SG") and 29cf37fa6dd9 ("dmaengine: Add consumer for the new
+>> DMA_MEMCPY_SG API function.") added it back despite still not having
+>> any users whatsoever.
+>> 
+>> Fixes: 3218910fd585 ("dmaengine: Add core function and capability check for DMA_MEMCPY_SG")
+>> Fixes: 29cf37fa6dd9 ("dmaengine: Add consumer for the new DMA_MEMCPY_SG API function.")
+>
+>This is consumer of the driver API and it was bought back with the
+>premise that user will also come...
 
-Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
----
- include/linux/phy.h | 3 +++
- 1 file changed, 3 insertions(+)
+It's commit 29cf37fa6dd9 ("dmaengine: Add consumer for the new DMA_MEMCPY_SG API function.")
 
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 508f1149665b..bed9a347481b 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -1539,6 +1539,9 @@ static inline void phy_device_reset(struct phy_device *phydev, int value)
- #define phydev_err(_phydev, format, args...)	\
- 	dev_err(&_phydev->mdio.dev, format, ##args)
- 
-+#define phydev_err_probe(_phydev, err, format, args...)	\
-+	dev_err_probe(&_phydev->mdio.dev, err, format, ##args)
-+
- #define phydev_info(_phydev, format, args...)	\
- 	dev_info(&_phydev->mdio.dev, format, ##args)
- 
--- 
-2.31.1
+The two previous commits add the new driver API callback and document it.
 
+>Adrianm, Michal any reason why user is not mainline yet..?
+
+Just double checked the mainline, and all three commits are there.
+
+>> Signed-off-by: Christoph Hellwig <hch@lst.de>
+>> ---
+>>  .../driver-api/dmaengine/provider.rst         |  10 --
+>>  drivers/dma/dmaengine.c                       |   7 -
+>>  drivers/dma/xilinx/xilinx_dma.c               | 122 ------------------
+>>  include/linux/dmaengine.h                     |  20 ---
+>>  4 files changed, 159 deletions(-)
+>> 
+>> diff --git a/Documentation/driver-api/dmaengine/provider.rst b/Documentation/driver-api/dmaengine/provider.rst
+>> index 1e0f1f85d10e5..ceac2a300e328 100644
+>> --- a/Documentation/driver-api/dmaengine/provider.rst
+>> +++ b/Documentation/driver-api/dmaengine/provider.rst
+>> @@ -162,16 +162,6 @@ Currently, the types available are:
+>>  
+>>    - The device is able to do memory to memory copies
+>>  
+>> -- - DMA_MEMCPY_SG
+>> -
+>> -  - The device supports memory to memory scatter-gather transfers.
+>> -
+>> -  - Even though a plain memcpy can look like a particular case of a
+>> -    scatter-gather transfer, with a single chunk to copy, it's a distinct
+>> -    transaction type in the mem2mem transfer case. This is because some very
+>> -    simple devices might be able to do contiguous single-chunk memory copies,
+>> -    but have no support for more complex SG transfers.
+>> -
+>>    - No matter what the overall size of the combined chunks for source and
+>>      destination is, only as many bytes as the smallest of the two will be
+>>      transmitted. That means the number and size of the scatter-gather buffers in
+>> diff --git a/drivers/dma/dmaengine.c b/drivers/dma/dmaengine.c
+>> index e80feeea0e018..c741b6431958c 100644
+>> --- a/drivers/dma/dmaengine.c
+>> +++ b/drivers/dma/dmaengine.c
+>> @@ -1153,13 +1153,6 @@ int dma_async_device_register(struct dma_device *device)
+>>  		return -EIO;
+>>  	}
+>>  
+>> -	if (dma_has_cap(DMA_MEMCPY_SG, device->cap_mask) && !device->device_prep_dma_memcpy_sg) {
+>> -		dev_err(device->dev,
+>> -			"Device claims capability %s, but op is not defined\n",
+>> -			"DMA_MEMCPY_SG");
+>> -		return -EIO;
+>> -	}
+>> -
+>>  	if (dma_has_cap(DMA_XOR, device->cap_mask) && !device->device_prep_dma_xor) {
+>>  		dev_err(device->dev,
+>>  			"Device claims capability %s, but op is not defined\n",
+>> diff --git a/drivers/dma/xilinx/xilinx_dma.c b/drivers/dma/xilinx/xilinx_dma.c
+>> index cd62bbb50e8b4..6276934d4d2be 100644
+>> --- a/drivers/dma/xilinx/xilinx_dma.c
+>> +++ b/drivers/dma/xilinx/xilinx_dma.c
+>> @@ -2127,126 +2127,6 @@ xilinx_cdma_prep_memcpy(struct dma_chan *dchan, dma_addr_t dma_dst,
+>>  	return NULL;
+>>  }
+>>  
+>> -/**
+>> - * xilinx_cdma_prep_memcpy_sg - prepare descriptors for a memcpy_sg transaction
+>> - * @dchan: DMA channel
+>> - * @dst_sg: Destination scatter list
+>> - * @dst_sg_len: Number of entries in destination scatter list
+>> - * @src_sg: Source scatter list
+>> - * @src_sg_len: Number of entries in source scatter list
+>> - * @flags: transfer ack flags
+>> - *
+>> - * Return: Async transaction descriptor on success and NULL on failure
+>> - */
+>> -static struct dma_async_tx_descriptor *xilinx_cdma_prep_memcpy_sg(
+>> -			struct dma_chan *dchan, struct scatterlist *dst_sg,
+>> -			unsigned int dst_sg_len, struct scatterlist *src_sg,
+>> -			unsigned int src_sg_len, unsigned long flags)
+>> -{
+>> -	struct xilinx_dma_chan *chan = to_xilinx_chan(dchan);
+>> -	struct xilinx_dma_tx_descriptor *desc;
+>> -	struct xilinx_cdma_tx_segment *segment, *prev = NULL;
+>> -	struct xilinx_cdma_desc_hw *hw;
+>> -	size_t len, dst_avail, src_avail;
+>> -	dma_addr_t dma_dst, dma_src;
+>> -
+>> -	if (unlikely(dst_sg_len == 0 || src_sg_len == 0))
+>> -		return NULL;
+>> -
+>> -	if (unlikely(!dst_sg  || !src_sg))
+>> -		return NULL;
+>> -
+>> -	desc = xilinx_dma_alloc_tx_descriptor(chan);
+>> -	if (!desc)
+>> -		return NULL;
+>> -
+>> -	dma_async_tx_descriptor_init(&desc->async_tx, &chan->common);
+>> -	desc->async_tx.tx_submit = xilinx_dma_tx_submit;
+>> -
+>> -	dst_avail = sg_dma_len(dst_sg);
+>> -	src_avail = sg_dma_len(src_sg);
+>> -	/*
+>> -	 * loop until there is either no more source or no more destination
+>> -	 * scatterlist entry
+>> -	 */
+>> -	while (true) {
+>> -		len = min_t(size_t, src_avail, dst_avail);
+>> -		len = min_t(size_t, len, chan->xdev->max_buffer_len);
+>> -		if (len == 0)
+>> -			goto fetch;
+>> -
+>> -		/* Allocate the link descriptor from DMA pool */
+>> -		segment = xilinx_cdma_alloc_tx_segment(chan);
+>> -		if (!segment)
+>> -			goto error;
+>> -
+>> -		dma_dst = sg_dma_address(dst_sg) + sg_dma_len(dst_sg) -
+>> -			dst_avail;
+>> -		dma_src = sg_dma_address(src_sg) + sg_dma_len(src_sg) -
+>> -			src_avail;
+>> -		hw = &segment->hw;
+>> -		hw->control = len;
+>> -		hw->src_addr = dma_src;
+>> -		hw->dest_addr = dma_dst;
+>> -		if (chan->ext_addr) {
+>> -			hw->src_addr_msb = upper_32_bits(dma_src);
+>> -			hw->dest_addr_msb = upper_32_bits(dma_dst);
+>> -		}
+>> -
+>> -		if (prev) {
+>> -			prev->hw.next_desc = segment->phys;
+>> -			if (chan->ext_addr)
+>> -				prev->hw.next_desc_msb =
+>> -					upper_32_bits(segment->phys);
+>> -		}
+>> -
+>> -		prev = segment;
+>> -		dst_avail -= len;
+>> -		src_avail -= len;
+>> -		list_add_tail(&segment->node, &desc->segments);
+>> -
+>> -fetch:
+>> -		/* Fetch the next dst scatterlist entry */
+>> -		if (dst_avail == 0) {
+>> -			if (dst_sg_len == 0)
+>> -				break;
+>> -			dst_sg = sg_next(dst_sg);
+>> -			if (dst_sg == NULL)
+>> -				break;
+>> -			dst_sg_len--;
+>> -			dst_avail = sg_dma_len(dst_sg);
+>> -		}
+>> -		/* Fetch the next src scatterlist entry */
+>> -		if (src_avail == 0) {
+>> -			if (src_sg_len == 0)
+>> -				break;
+>> -			src_sg = sg_next(src_sg);
+>> -			if (src_sg == NULL)
+>> -				break;
+>> -			src_sg_len--;
+>> -			src_avail = sg_dma_len(src_sg);
+>> -		}
+>> -	}
+>> -
+>> -	if (list_empty(&desc->segments)) {
+>> -		dev_err(chan->xdev->dev,
+>> -			"%s: Zero-size SG transfer requested\n", __func__);
+>> -		goto error;
+>> -	}
+>> -
+>> -	/* Link the last hardware descriptor with the first. */
+>> -	segment = list_first_entry(&desc->segments,
+>> -				struct xilinx_cdma_tx_segment, node);
+>> -	desc->async_tx.phys = segment->phys;
+>> -	prev->hw.next_desc = segment->phys;
+>> -
+>> -	return &desc->async_tx;
+>> -
+>> -error:
+>> -	xilinx_dma_free_tx_descriptor(chan, desc);
+>> -	return NULL;
+>> -}
+>> -
+>>  /**
+>>   * xilinx_dma_prep_slave_sg - prepare descriptors for a DMA_SLAVE transaction
+>>   * @dchan: DMA channel
+>> @@ -3240,9 +3120,7 @@ static int xilinx_dma_probe(struct platform_device *pdev)
+>>  					  DMA_RESIDUE_GRANULARITY_SEGMENT;
+>>  	} else if (xdev->dma_config->dmatype == XDMA_TYPE_CDMA) {
+>>  		dma_cap_set(DMA_MEMCPY, xdev->common.cap_mask);
+>> -		dma_cap_set(DMA_MEMCPY_SG, xdev->common.cap_mask);
+>>  		xdev->common.device_prep_dma_memcpy = xilinx_cdma_prep_memcpy;
+>> -		xdev->common.device_prep_dma_memcpy_sg = xilinx_cdma_prep_memcpy_sg;
+>>  		/* Residue calculation is supported by only AXI DMA and CDMA */
+>>  		xdev->common.residue_granularity =
+>>  					  DMA_RESIDUE_GRANULARITY_SEGMENT;
+>> diff --git a/include/linux/dmaengine.h b/include/linux/dmaengine.h
+>> index b46b88e6aa0d1..c923f4e60f240 100644
+>> --- a/include/linux/dmaengine.h
+>> +++ b/include/linux/dmaengine.h
+>> @@ -50,7 +50,6 @@ enum dma_status {
+>>   */
+>>  enum dma_transaction_type {
+>>  	DMA_MEMCPY,
+>> -	DMA_MEMCPY_SG,
+>>  	DMA_XOR,
+>>  	DMA_PQ,
+>>  	DMA_XOR_VAL,
+>> @@ -887,11 +886,6 @@ struct dma_device {
+>>  	struct dma_async_tx_descriptor *(*device_prep_dma_memcpy)(
+>>  		struct dma_chan *chan, dma_addr_t dst, dma_addr_t src,
+>>  		size_t len, unsigned long flags);
+>> -	struct dma_async_tx_descriptor *(*device_prep_dma_memcpy_sg)(
+>> -		struct dma_chan *chan,
+>> -		struct scatterlist *dst_sg, unsigned int dst_nents,
+>> -		struct scatterlist *src_sg, unsigned int src_nents,
+>> -		unsigned long flags);
+>>  	struct dma_async_tx_descriptor *(*device_prep_dma_xor)(
+>>  		struct dma_chan *chan, dma_addr_t dst, dma_addr_t *src,
+>>  		unsigned int src_cnt, size_t len, unsigned long flags);
+>> @@ -1060,20 +1054,6 @@ static inline struct dma_async_tx_descriptor *dmaengine_prep_dma_memcpy(
+>>  						    len, flags);
+>>  }
+>>  
+>> -static inline struct dma_async_tx_descriptor *dmaengine_prep_dma_memcpy_sg(
+>> -		struct dma_chan *chan,
+>> -		struct scatterlist *dst_sg, unsigned int dst_nents,
+>> -		struct scatterlist *src_sg, unsigned int src_nents,
+>> -		unsigned long flags)
+>> -{
+>> -	if (!chan || !chan->device || !chan->device->device_prep_dma_memcpy_sg)
+>> -		return NULL;
+>> -
+>> -	return chan->device->device_prep_dma_memcpy_sg(chan, dst_sg, dst_nents,
+>> -						       src_sg, src_nents,
+>> -						       flags);
+>> -}
+>> -
+>>  static inline bool dmaengine_is_metadata_mode_supported(struct dma_chan *chan,
+>>  		enum dma_desc_metadata_mode mode)
+>>  {
+>> -- 
+>> 2.30.2
+>
+>-- 
+>~Vinod
