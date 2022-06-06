@@ -2,148 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59EE7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 13:05:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 131CFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 13:05:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238282AbiFFNFK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 09:05:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40908 "EHLO
+        id S238330AbiFFNFt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 09:05:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238260AbiFFNDt (ORCPT
+        with ESMTP id S238264AbiFFNFp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 09:03:49 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3070E369F6
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 06:03:33 -0700 (PDT)
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LGtt04QCpzfbbk;
-        Mon,  6 Jun 2022 21:01:44 +0800 (CST)
-Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 6 Jun 2022 21:03:30 +0800
-Received: from localhost.localdomain (10.67.164.66) by
- kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 6 Jun 2022 21:03:29 +0800
-From:   Qi Liu <liuqi115@huawei.com>
-To:     <mathieu.poirier@linaro.org>, <suzuki.poulose@arm.com>,
-        <mike.leach@linaro.org>
-CC:     <coresight@lists.linaro.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <linuxarm@huawei.com>
-Subject: [PATCH v6 2/2] Documentation: Add document for UltraSoc SMB drivers
-Date:   Mon, 6 Jun 2022 21:02:23 +0800
-Message-ID: <20220606130223.57354-3-liuqi115@huawei.com>
-X-Mailer: git-send-email 2.24.0
-In-Reply-To: <20220606130223.57354-1-liuqi115@huawei.com>
-References: <20220606130223.57354-1-liuqi115@huawei.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.164.66]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemm600003.china.huawei.com (7.193.23.202)
-X-CFilter-Loop: Reflected
+        Mon, 6 Jun 2022 09:05:45 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C2EE38D90;
+        Mon,  6 Jun 2022 06:05:43 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 7A5F2CE1A8F;
+        Mon,  6 Jun 2022 13:05:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3A26C3411F;
+        Mon,  6 Jun 2022 13:05:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654520739;
+        bh=xtSZpREwcefu3/OKJIzEr4wdqXfHclweHI5c8Rpk0R0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=a+8qy0zJAIbbXlHJQMfbAdDlms89dwtXgyg0bQ0WaLy+yPPTYrknJhqrKo88VMfTR
+         d3I/tYtVVKDAcwZf+cHTgafy0QLm4ofSC1n8KucjFoFf6eWFy2Eu12Pvzx0qlobPfS
+         Euy298/3+/p2pR/NHTkwx9B9M8ihQjsNrIkb6yArJ91uMzST0pPVXpjvGsuRncs99C
+         fSIso33/WkUdJpkLtJ65RITU0EySxz6hvIKPUmvlEWj8go0KJCGypFW4botcKAr4S2
+         D+zwQb2UEjWqs5yZ7UdBDjsoXDypRw2x+tHXpezvKA/3DSWLB4Ev59cwKLkOlOSLQ0
+         4IEZVi2nuZh5w==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nyCQL-00FuCO-Ek; Mon, 06 Jun 2022 14:05:37 +0100
+Date:   Mon, 06 Jun 2022 14:05:37 +0100
+Message-ID: <87v8te3psu.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Dragan Mladjenovic <Dragan.Mladjenovic@syrmia.com>
+Cc:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Chao-ying Fu <cfu@wavecomp.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Greg Ungerer <gerg@kernel.org>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
+        Paul Burton <paulburton@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Tiezhu Yang <yangtiezhu@loongson.cn>,
+        Dragan Mladjenovic <dragan.mladjenovic@syrmia.com>
+Subject: Re: [PATCH v2 03/12] irqchip: mips-gic: Introduce gic_with_each_online_cpu()
+In-Reply-To: <20220525121030.16054-4-Dragan.Mladjenovic@syrmia.com>
+References: <20220525121030.16054-1-Dragan.Mladjenovic@syrmia.com>
+        <20220525121030.16054-4-Dragan.Mladjenovic@syrmia.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: Dragan.Mladjenovic@syrmia.com, tsbogend@alpha.franken.de, cfu@wavecomp.com, daniel.lezcano@linaro.org, geert@linux-m68k.org, gerg@kernel.org, hauke@hauke-m.de, ilya.lipnitskiy@gmail.com, jiaxun.yang@flygoat.com, linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org, paulburton@kernel.org, peterz@infradead.org, fancer.lancer@gmail.com, tglx@linutronix.de, yangtiezhu@loongson.cn, dragan.mladjenovic@syrmia.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch bring in a documentation for UltraSoc SMB drivers.
-It simple descripts the device, sysfs interface and the
-firmware bindings.
+On Wed, 25 May 2022 13:10:21 +0100,
+Dragan Mladjenovic <Dragan.Mladjenovic@syrmia.com> wrote:
+> 
+> From: Paul Burton <paulburton@kernel.org>
+> 
+> A few pieces of code in the MIPS GIC driver operate on the GIC local
+> register block for each online CPU, accessing each via the GIC's
+> other/redirect register block. This patch abstracts the process of
+> iterating over online CPUs & configuring the other/redirect region to
+> access their registers through a new gic_with_each_online_cpu() macro.
+> 
+> This simplifies users of the new macro slightly, and more importantly
+> prepares us for handling multi-cluster systems where the register
+> configuration will be done via the CM's GCR_CL_REDIRECT register. By
+> abstracting all other/redirect block configuration through this macro,
+> and the __gic_with_next_online_cpu() function which backs it, users will
+> trivially gain support for multi-cluster when it is implemented in
+> __gic_with_next_online_cpu().
+> 
+> Signed-off-by: Paul Burton <paulburton@kernel.org>
+> Signed-off-by: Chao-ying Fu <cfu@wavecomp.com>
+> Signed-off-by: Dragan Mladjenovic <dragan.mladjenovic@syrmia.com>
+> 
+> diff --git a/drivers/irqchip/irq-mips-gic.c b/drivers/irqchip/irq-mips-gic.c
+> index ff89b36267dd..4872bebe24cf 100644
+> --- a/drivers/irqchip/irq-mips-gic.c
+> +++ b/drivers/irqchip/irq-mips-gic.c
+> @@ -65,6 +65,45 @@ static struct gic_all_vpes_chip_data {
+>  	bool	mask;
+>  } gic_all_vpes_chip_data[GIC_NUM_LOCAL_INTRS];
+>  
+> +static int __gic_with_next_online_cpu(int prev)
+> +{
+> +	unsigned int cpu;
+> +
+> +	/* Discover the next online CPU */
+> +	cpu = cpumask_next(prev, cpu_online_mask);
+> +
+> +	/* If there isn't one, we're done */
+> +	if (cpu >= nr_cpu_ids)
+> +		return cpu;
+> +
+> +	/*
+> +	 * Lock access to the next CPU's GIC local register block.
+> +	 *
+> +	 * In the single cluster case we simply set GIC_VL_OTHER. The caller
+> +	 * holds gic_lock so nothing can clobber the value we write.
+> +	 */
+> +	write_gic_vl_other(mips_cm_vp_id(cpu));
+> +
+> +	return cpu;
+> +}
+> +
+> +/**
+> + * gic_with_each_online_cpu() - Iterate over online CPUs, access local registers
+> + * @cpu: An integer variable to hold the current CPU number
+> + *
+> + * Iterate over online CPUs & configure the other/redirect register region to
+> + * access each CPUs GIC local register block, which can be accessed from the
+> + * loop body using read_gic_vo_*() or write_gic_vo_*() accessor functions or
+> + * their derivatives.
+> + *
+> + * The caller must hold gic_lock throughout the loop, such that GIC_VL_OTHER
+> + * cannot be clobbered.
+> + */
+> +#define gic_with_each_online_cpu(cpu)			\
 
-Signed-off-by: Qi Liu <liuqi115@huawei.com>
----
- .../trace/coresight/ultrasoc-smb.rst          | 80 +++++++++++++++++++
- 1 file changed, 80 insertions(+)
- create mode 100644 Documentation/trace/coresight/ultrasoc-smb.rst
+nit: please keep the kernel convention of using 'for_each'. This makes
+it far easier to grep for such iterators when doing bulk refactoring.
 
-diff --git a/Documentation/trace/coresight/ultrasoc-smb.rst b/Documentation/trace/coresight/ultrasoc-smb.rst
-new file mode 100644
-index 000000000000..b4cfea82deb8
---- /dev/null
-+++ b/Documentation/trace/coresight/ultrasoc-smb.rst
-@@ -0,0 +1,80 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+======================================
-+UltraSoc - HW Assisted Tracing on SoC
-+======================================
-+   :Author:   Qi Liu <liuqi115@huawei.com>
-+   :Date:     March 2022
-+
-+Introduction
-+------------
-+
-+UltraSoc SMB is a per SCCL(Super CPU Cluster) hardware, and it provides a way to buffer and store
-+CPU trace messages in a region of shared system memory. SMB is plugged as
-+a coresight sink device and the corresponding trace generators (ETM) are
-+plugged in as source devices.
-+
-+Sysfs files and directories
-+---------------------------
-+
-+The SMB devices appear on the existing coresight bus alongside the other
-+coresight devices::
-+
-+	$# ls /sys/bus/coresight/devices/
-+	ultra_smb0   ultra_smb1   ultra_smb2   ultra_smb3
-+
-+The ``ultra_smb<N>`` named SMB associated with SCCL.::
-+
-+	$# ls /sys/bus/coresight/devices/ultra_smb0
-+	enable_sink   mgmt
-+	$# ls /sys/bus/coresight/devices/ultra_smb0/mgmt
-+	buf_size  buf_status  read_pos  write_pos
-+
-+*Key file items are:-*
-+   * ``read_pos``: Shows the value held by UltraSoc SMB Read Pointer register.
-+   * ``write_pos``: Shows the value held by UltraSoc SMB Write Pointer register.
-+   * ``buf_status``: Shows the value held by UltraSoc SMB status register.
-+		     BIT(0) is zero means buffer is empty.
-+   * ``buf_size``: Shows the buffer size of each UltraSoc SMB device.
-+
-+Firmware Bindings
-+---------------------------
-+
-+Firmware binding of SMB device describes SMB device indentifier, resource
-+information and graph structure.
-+
-+SMB is platform device and device id is "HISI03A1", resource of device is
-+declared using the _CRS method. Each SMB must present two base address,
-+the first one is the configuration base address of SMB device, the second
-+one is the base address of shared system memory.
-+
-+examples::
-+
-+    Device(USMB) {                                               \
-+      Name(_HID, "HISI03A1")                                     \
-+      Name(_CRS, ResourceTemplate() {                            \
-+          MEM_RESRC(0x95100000, 0x951FFFFF, 0x100000)            \
-+          MEM_RESRC(0x50000000, 0x53FFFFFF, 0x4000000)           \
-+      })                                                         \
-+      Name(_DSD, Package() {                                     \
-+        ToUUID("ab02a46b-74c7-45a2-bd68-f7d344ef2153"),          \
-+	/* Use CoreSight Graph ACPI bindings to describe connections topology */
-+        Package() {                                              \
-+          0,                                                     \
-+          1,                                                     \
-+          Package() {                                            \
-+            1,                                                   \
-+            ToUUID("3ecbc8b6-1d0e-4fb3-8107-e627f805c6cd"),      \
-+            8,                                                   \
-+            Package() {0x8, 0, \_SB.S00.SL11.CL28.F008, 0},       \
-+            Package() {0x9, 0, \_SB.S00.SL11.CL29.F009, 0},       \
-+            Package() {0xa, 0, \_SB.S00.SL11.CL2A.F010, 0},       \
-+            Package() {0xb, 0, \_SB.S00.SL11.CL2B.F011, 0},       \
-+            Package() {0xc, 0, \_SB.S00.SL11.CL2C.F012, 0},       \
-+            Package() {0xd, 0, \_SB.S00.SL11.CL2D.F013, 0},       \
-+            Package() {0xe, 0, \_SB.S00.SL11.CL2E.F014, 0},       \
-+            Package() {0xf, 0, \_SB.S00.SL11.CL2F.F015, 0},       \
-+          }                                                      \
-+        }                                                        \
-+      })                                                         \
-+    }
+Also, since there is a requirement to hold the gic_lock, please add a
+lockdep_assert_held() in the loop so that it can be checked with a
+lockdep kernel.
+
+> +	for ((cpu) = __gic_with_next_online_cpu(-1);	\
+> +	     (cpu) = __gic_with_next_online_cpu(cpu),	\
+> +	     (cpu) < nr_cpu_ids;)
+> +
+>  static void gic_clear_pcpu_masks(unsigned int intr)
+>  {
+>  	unsigned int i;
+> @@ -357,10 +396,8 @@ static void gic_mask_local_irq_all_vpes(struct irq_data *d)
+>  	cd->mask = false;
+>  
+>  	spin_lock_irqsave(&gic_lock, flags);
+> -	for_each_online_cpu(cpu) {
+> -		write_gic_vl_other(mips_cm_vp_id(cpu));
+> +	gic_with_each_online_cpu(cpu)
+>  		write_gic_vo_rmask(BIT(intr));
+> -	}
+>  	spin_unlock_irqrestore(&gic_lock, flags);
+>  }
+>  
+> @@ -375,10 +412,8 @@ static void gic_unmask_local_irq_all_vpes(struct irq_data *d)
+>  	cd->mask = true;
+>  
+>  	spin_lock_irqsave(&gic_lock, flags);
+> -	for_each_online_cpu(cpu) {
+> -		write_gic_vl_other(mips_cm_vp_id(cpu));
+> +	gic_with_each_online_cpu(cpu)
+>  		write_gic_vo_smask(BIT(intr));
+> -	}
+>  	spin_unlock_irqrestore(&gic_lock, flags);
+>  }
+>  
+> @@ -532,10 +567,8 @@ static int gic_irq_domain_map(struct irq_domain *d, unsigned int virq,
+>  		return -EPERM;
+>  
+>  	spin_lock_irqsave(&gic_lock, flags);
+> -	for_each_online_cpu(cpu) {
+> -		write_gic_vl_other(mips_cm_vp_id(cpu));
+> +	gic_with_each_online_cpu(cpu)
+>  		write_gic_vo_map(mips_gic_vx_map_reg(intr), map);
+> -	}
+>  	spin_unlock_irqrestore(&gic_lock, flags);
+>  
+>  	return 0;
+
+Thanks,
+
+	M.
+
 -- 
-2.24.0
-
+Without deviation from the norm, progress is not possible.
