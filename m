@@ -2,125 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32242C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 06:51:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3C41C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 06:51:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230208AbiFFGvQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 02:51:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35974 "EHLO
+        id S230177AbiFFGvT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 02:51:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230121AbiFFGut (ORCPT
+        with ESMTP id S230128AbiFFGuu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 02:50:49 -0400
-Received: from twspam01.aspeedtech.com (twspam01.aspeedtech.com [211.20.114.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAC6F13DE0;
+        Mon, 6 Jun 2022 02:50:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B73AD808F;
         Sun,  5 Jun 2022 23:50:47 -0700 (PDT)
-Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 2566YucU035313;
-        Mon, 6 Jun 2022 14:34:57 +0800 (GMT-8)
-        (envelope-from neal_liu@aspeedtech.com)
-Received: from localhost.localdomain (192.168.10.10) by TWMBX02.aspeed.com
- (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 6 Jun
- 2022 14:49:41 +0800
-From:   Neal Liu <neal_liu@aspeedtech.com>
-To:     Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S . Miller" <davem@davemloft.net>,
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9101761050;
+        Mon,  6 Jun 2022 06:50:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51C99C341C6;
+        Mon,  6 Jun 2022 06:50:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654498247;
+        bh=xB/x/zfAXUuPdXKkJypu4n35tk9QPMWxLiBL1IFo1S4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=sfVDkvamp9p02ygjX6ogkngzEcct3/9l6jrb//HBuCO7WWYas5uYqUPIHD2h/r5dd
+         7K3+BGsVdvMCsnNXbschBo+TaBLMdSnMvrOgpQptnuC78PFFlTaTyNlDfu60cUPTut
+         f265rJOFh+kCRvelaSyiUpQm8Ie+RVnu5rVTQTKk9hubMZ5BCYnsPpcjKLmQ1oDwFw
+         TPbunUk6d9guleUpZbuOzwS/7q2/hizk2dThlekbpjkPRx4GMXCDitsST8Qm4su8yw
+         NRUYsyz3EbCPirR9IEX0EMUNb2+uKzPfBEurIdHngZT+PvSblGTr0/79BYLYiIirq3
+         OTScqquEzfLpQ==
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     linux-arm-msm@vger.kernel.org, Vinod Koul <vkoul@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Joel Stanley <joel@jms.id.au>,
-        "Andrew Jeffery" <andrew@aj.id.au>,
-        Johnny Huang <johnny_huang@aspeedtech.com>
-CC:     <linux-aspeed@lists.ozlabs.org>, <linux-crypto@vger.kernel.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <BMC-SW@aspeedtech.com>
-Subject: [PATCH v2 4/5] dt-bindings: crypto: add documentation for aspeed hace
-Date:   Mon, 6 Jun 2022 14:49:34 +0800
-Message-ID: <20220606064935.1458903-5-neal_liu@aspeedtech.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220606064935.1458903-1-neal_liu@aspeedtech.com>
-References: <20220606064935.1458903-1-neal_liu@aspeedtech.com>
+        Andy Gross <agross@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v3 1/3] arm64: dts: qcom: sm8450: rename interconnect nodes
+Date:   Mon,  6 Jun 2022 12:20:33 +0530
+Message-Id: <20220606065035.553533-2-vkoul@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220606065035.553533-1-vkoul@kernel.org>
+References: <20220606065035.553533-1-vkoul@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [192.168.10.10]
-X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
- (192.168.0.24)
-X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 2566YucU035313
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add device tree binding documentation for the Aspeed Hash
-and Crypto Engines (HACE) Controller.
+clk-virt and mc-virt interconnect nodes were named interconnect@0 and
+interconnect@1. That is incorrect as we don't have unit addresses 0/1
+for these node.
 
-Signed-off-by: Neal Liu <neal_liu@aspeedtech.com>
-Signed-off-by: Johnny Huang <johnny_huang@aspeedtech.com>
+This causes warning:
+arch/arm64/boot/dts/qcom/sm8450.dtsi:255.27-259.4:
+	Warning (unit_address_vs_reg): /interconnect@0:
+	node has a unit name, but no reg or ranges property
+arch/arm64/boot/dts/qcom/sm8450.dtsi:261.26-265.4:
+	Warning (unit_address_vs_reg): /interconnect@1:
+	node has a unit name, but no reg or ranges property
+arch/arm64/boot/dts/qcom/sm8450.dtsi:255.27-259.4:
+	Warning (unique_unit_address_if_enabled): /interconnect@0:
+	duplicate unit-address (also used in node /soc@0)
+
+Rename the nodes to interconnect-0 and interconnect-1 to fix the
+warning.
+
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- .../bindings/crypto/aspeed,ast2500-hace.yaml  | 53 +++++++++++++++++++
- 1 file changed, 53 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/crypto/aspeed,ast2500-hace.yaml
+ arch/arm64/boot/dts/qcom/sm8450.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/crypto/aspeed,ast2500-hace.yaml b/Documentation/devicetree/bindings/crypto/aspeed,ast2500-hace.yaml
-new file mode 100644
-index 000000000000..a772d232de09
---- /dev/null
-+++ b/Documentation/devicetree/bindings/crypto/aspeed,ast2500-hace.yaml
-@@ -0,0 +1,53 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/crypto/aspeed,ast2500-hace.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: ASPEED HACE hash and crypto Hardware Accelerator Engines
-+
-+maintainers:
-+  - Neal Liu <neal_liu@aspeedtech.com>
-+
-+description: |
-+  The Hash and Crypto Engine (HACE) is designed to accelerate the throughput
-+  of hash data digest, encryption, and decryption. Basically, HACE can be
-+  divided into two independently engines - Hash Engine and Crypto Engine.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - aspeed,ast2500-hace
-+      - aspeed,ast2600-hace
-+
-+  reg:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  resets:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - interrupts
-+  - resets
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/ast2600-clock.h>
-+    hace: crypto@1e6d0000 {
-+        compatible = "aspeed,ast2600-hace";
-+        reg = <0x1e6d0000 0x200>;
-+        interrupts = <4>;
-+        clocks = <&syscon ASPEED_CLK_GATE_YCLK>;
-+        resets = <&syscon ASPEED_RESET_HACE>;
-+    };
+diff --git a/arch/arm64/boot/dts/qcom/sm8450.dtsi b/arch/arm64/boot/dts/qcom/sm8450.dtsi
+index 7d08fad76371..92887eaabe77 100644
+--- a/arch/arm64/boot/dts/qcom/sm8450.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm8450.dtsi
+@@ -262,13 +262,13 @@ scm: scm {
+ 		};
+ 	};
+ 
+-	clk_virt: interconnect@0 {
++	clk_virt: interconnect-0 {
+ 		compatible = "qcom,sm8450-clk-virt";
+ 		#interconnect-cells = <2>;
+ 		qcom,bcm-voters = <&apps_bcm_voter>;
+ 	};
+ 
+-	mc_virt: interconnect@1 {
++	mc_virt: interconnect-1 {
+ 		compatible = "qcom,sm8450-mc-virt";
+ 		#interconnect-cells = <2>;
+ 		qcom,bcm-voters = <&apps_bcm_voter>;
 -- 
-2.25.1
+2.34.1
 
