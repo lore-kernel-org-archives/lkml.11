@@ -2,107 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52AA6C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 08:33:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C890FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 08:34:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231734AbiFFIdk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 04:33:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47938 "EHLO
+        id S231766AbiFFIeE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 04:34:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231731AbiFFIdc (ORCPT
+        with ESMTP id S231741AbiFFIdt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 04:33:32 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 358E02FE66
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 01:33:31 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id EF1B71F461;
-        Mon,  6 Jun 2022 08:33:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1654504409; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=WJjaloV5+HcQZaXHw0f2gF+Srokd4wPErX0W6s9DSTk=;
-        b=mr9DatIXY6/NaJHuzz/M8tzq7pvqO1aylMjVb+LQFp0SlIoyDdjNP1/7i7x1eLDZMlqveD
-        hJQjB4y6xBUBvJ5hX2QDSZALFiamLe5HLZjUBK3zoM6V9aj8AhDSKcIvJetIUGnTGRtEug
-        iUfDMtu0S96uvVi+kFbXG/aA+8WP6uE=
-Received: from suse.cz (unknown [10.100.201.86])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 6 Jun 2022 04:33:49 -0400
+X-Greylist: delayed 431 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 06 Jun 2022 01:33:47 PDT
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0479EFD372;
+        Mon,  6 Jun 2022 01:33:46 -0700 (PDT)
+Received: from beast.luon.net (simons.connected.by.freedominter.net [45.83.240.172])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id AE1082C141;
-        Mon,  6 Jun 2022 08:33:29 +0000 (UTC)
-Date:   Mon, 6 Jun 2022 10:33:29 +0200
-From:   Michal Hocko <mhocko@suse.com>
-To:     Zackary Liu <zackary.liu.pro@gmail.com>
-Cc:     "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] mm/oom_kill: break evaluation when a task has been
- selected
-Message-ID: <Yp272UqXecNsmC1z@dhcp22.suse.cz>
-References: <YpcZFvVZRPTyTQ7s@dhcp22.suse.cz>
- <6BC32F66-2AC4-450D-90D5-B7A09455B617@getmailspring.com>
+        (Authenticated sender: sjoerd)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id E38EC6602048;
+        Mon,  6 Jun 2022 09:26:31 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1654503992;
+        bh=OpqSiLRbiQXWwWFspItgtW+FJ7vOxddMc4NNBEhlLKk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=FReCM5JG/Ym/gkPXMQG7+WKfJBXbkpPRNlSmQst7nZL4vcU/Zo2quJ3SS4It1LIJX
+         ZNk1Ds98Y9carv9X3A/ANw62wYxh/VS6i2m9nyuyyXDaXOICFSHIAtsAJ2pkbIAZ66
+         Swu9VUA100igoLlCcy2Korw3d0znXk/TaInQ8WWfGd6kQqpvyp7CdHy/7QKFGZSK2h
+         Vpi18Ob45re0tapRkdx64jNjB0y8aB1g4aGDWPxEzdy4Lpav0f+RAXeiRq76qp+FQW
+         lROCSx+N2WU6/sczgnNx0MS4tLREBosHnHQev/IT46ZM4kHGAdVUA5RSvi2q730fom
+         DGCQRwM+ob40A==
+Received: by beast.luon.net (Postfix, from userid 1000)
+        id 86303404D08B; Mon,  6 Jun 2022 10:26:29 +0200 (CEST)
+From:   Sjoerd Simons <sjoerd@collabora.com>
+To:     linux-rockchip@lists.infradead.org
+Cc:     kernel@collabora.com, Akash Gajjar <akash@openedev.com>,
+        Alex Bee <knaerzche@gmail.com>,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Levin Du <djw@t-chip.com.cn>, Liang Chen <cl@rock-chips.com>,
+        Michael Riesch <michael.riesch@wolfvision.net>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Samuel Holland <samuel@sholland.org>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 0/2] Add support for Radxa ROCK Pi S
+Date:   Mon,  6 Jun 2022 10:26:26 +0200
+Message-Id: <20220606082629.79682-1-sjoerd@collabora.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6BC32F66-2AC4-450D-90D5-B7A09455B617@getmailspring.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat 04-06-22 18:35:19, Zackary Liu wrote:
-> 
-> On Jun 1 2022, at 3:45 pm, Michal Hocko <mhocko@suse.com> wrote:
-> 
-> > On Sat 14-05-22 15:52:28, Zhaoyu Liu wrote:
-> >> oom points no longer need to be calculated if a task is oom_task_origin(),
-> >> so return 1 to stop the oom_evaluate_task().
-> > 
-> > This doesn't really explain why this is really desired. Is this a fix,
-> > optimization?
-> > 
-> > Please also note that this change has some side effects. For one, the
-> > task marked as oom origin will get killed even if there is still a
-> > pending oom victim which hasn't been fully dismantled. Is this
-> > intentional?
-> 
-> Thank you very much for reminding.
-> 
-> From my point of view, the victim was marked in the last oom, and now it
-> has entered the oom again, which means that the system still has no
-> deprecated memory available.
 
-This is not an unusual situation. OOM victims can take some time to die
-and release their memory. The oom_reaper is there to fast forward that
-process and guarantee a forward progress. But this can still take some
-time. Our general policy is to back off when there is an alive oom
-victim encountered. Have a look at the tsk_is_oom_victim test in
-oom_evaluate_task. For that heuristic to be effective the whole task
-list (wether the global one or memcg) has to be evaluated.
+This adds a device-tree for the Radxa Rock Pi S; The first patch was
+originally submitted a few years back but seems to have stalled. I've
+adjusted it to sort the device nodes and drop duplication of dtsi
+properties. The second patch adds support for a bunch of additional
+peripherals.
 
-> In order to ensure that the system can
-> return to normal as soon as possible, killing the origin task
-> immediately should be A good choice, and the role of this patch is to
-> end oom_evaluate_task and return true as soon as the origin task is found.
 
-Could you be more specific how does this patch guarantees a forward
-progress? What is the actual usecase that benefits from this change?
+Akash Gajjar (1):
+  arm64: dts: rockchip: add ROCK Pi S DTS support
 
-These are all important information for future reference. Please note I
-am not saying the patch is wrong. I just still do not see why it is
-useful.
+Sjoerd Simons (1):
+  arm64: dts: rockchip: rock-pi-s add more peripherals
 
-> Maybe this patch is not the optimal solution, it has a trade-off.
-
-If there are trade-offs, please document them in the changelog.
-
-The way I see it is that oom_task_origin heuristic has been introduced
-to help killing swapoff operation because the swapped out memory doesn't
-fit into memory. This is a very reasonable thing to do in general but it
-also represents an early failure visible to the userspace. If there is a
-pre-existing oom victim then I would argue that we should try to avoid
-the failure.
+ .../devicetree/bindings/arm/rockchip.yaml     |   5 +
+ arch/arm64/boot/dts/rockchip/Makefile         |   1 +
+ .../boot/dts/rockchip/rk3308-rock-pi-s.dts    | 256 ++++++++++++++++++
+ 3 files changed, 262 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/rockchip/rk3308-rock-pi-s.dts
 
 -- 
-Michal Hocko
-SUSE Labs
+2.36.1
+
