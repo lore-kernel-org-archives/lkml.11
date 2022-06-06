@@ -2,101 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17748C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 12:53:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D82A8CCA483
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 12:54:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237799AbiFFMxU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 08:53:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49642 "EHLO
+        id S237839AbiFFMyB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 08:54:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237772AbiFFMxS (ORCPT
+        with ESMTP id S237817AbiFFMx6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 08:53:18 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A04A2497C;
-        Mon,  6 Jun 2022 05:53:17 -0700 (PDT)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LGtf86vTGzfbQw;
-        Mon,  6 Jun 2022 20:51:28 +0800 (CST)
-Received: from container.huawei.com (10.175.104.82) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 6 Jun 2022 20:53:15 +0800
-From:   Ziyang Xuan <william.xuanziyang@huawei.com>
-To:     <ming.qian@nxp.com>, <shijie.qin@nxp.com>, <eagle.zhou@nxp.com>,
-        <mchehab@kernel.org>, <linux-media@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <william.xuanziyang@huawei.com>
-Subject: [PATCH] media: amphion: delete unnecessary NULL check
-Date:   Mon, 6 Jun 2022 21:10:42 +0800
-Message-ID: <20220606131042.4052393-1-william.xuanziyang@huawei.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-CFilter-Loop: Reflected
+        Mon, 6 Jun 2022 08:53:58 -0400
+Received: from mail-io1-f44.google.com (mail-io1-f44.google.com [209.85.166.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAA1024F33;
+        Mon,  6 Jun 2022 05:53:56 -0700 (PDT)
+Received: by mail-io1-f44.google.com with SMTP id q76so6856487iod.8;
+        Mon, 06 Jun 2022 05:53:56 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=17BV3B6L8cFXi6P8k2mlHJRfIyCAzA1j0HpV6C5Sgr4=;
+        b=vIvlJg37tWzFFdtJSLmdsXs8JFoZF0vAF/3CayyMQpRqKEJP9m4yxKH9F2pGibscg8
+         X40GTqSNl6AA3RC2/LmL3ugxzBM++vNg/AJYhmtVWM18QICo5nA7j5noLJC+z5lq7lef
+         FBw8ZbnptIXM9illUiNNR3SyQSL/WEUccvFjHaqrqHrjLMguwIe09c1R4a77AKt8k6JB
+         ePV5gWG2zQQlnCx18E6tHKjt2xSIk8UY7Y5CwRjJU/n3TL8X8WM1zOU9rB5rlfmj25pQ
+         +m+tSFaXZHQwxzFmze2ZeVhAr5ie3QJIc3xKci4s7Bps4ypFM5Xkzt0Lq4fnssEqtFbw
+         vPqA==
+X-Gm-Message-State: AOAM533/BgjQ2hZ7qMwODxt2nlXLqlTAG8T1kXs96xXGFTLxVoqxP0Jf
+        pjW57aZJvuytRzvzJKMeVw==
+X-Google-Smtp-Source: ABdhPJzYHZC19S1AhARuV7jAx+W2Vt0Gp0lgn2/qiWTc/bIBDcXHU3jjuO1kj7hyLyBz9izNeyariw==
+X-Received: by 2002:a5d:9a13:0:b0:668:94ba:46ab with SMTP id s19-20020a5d9a13000000b0066894ba46abmr10727628iol.155.1654520035880;
+        Mon, 06 Jun 2022 05:53:55 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.251])
+        by smtp.gmail.com with ESMTPSA id z5-20020a056e02088500b002d1883dc283sm6234342ils.78.2022.06.06.05.53.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Jun 2022 05:53:55 -0700 (PDT)
+Received: (nullmailer pid 534470 invoked by uid 1000);
+        Mon, 06 Jun 2022 12:53:53 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     mail@conchuod.ie
+Cc:     Steve Twiss <stwiss.opensource@diasemi.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        linux-riscv@lists.infradead.org, Andrew Lunn <andrew@lunn.ch>,
+        linux-i2c@vger.kernel.org,
+        Support Opensource <support.opensource@diasemi.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        linux-mmc@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        linux-kernel@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
+        devicetree@vger.kernel.org,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Atul Khare <atulkhare@rivosinc.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+In-Reply-To: <20220605133300.376161-3-mail@conchuod.ie>
+References: <20220605133300.376161-1-mail@conchuod.ie> <20220605133300.376161-3-mail@conchuod.ie>
+Subject: Re: [PATCH v1 2/6] dt-bindings: i2c: convert ocores binding to yaml
+Date:   Mon, 06 Jun 2022 07:53:53 -0500
+Message-Id: <1654520033.511603.534469.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-vfree(NULL) is safe. NULL check before vfree() is not needed.
-Delete them to simplify the code.
+On Sun, 05 Jun 2022 14:32:57 +0100, mail@conchuod.ie wrote:
+> From: Conor Dooley <conor.dooley@microchip.com>
+> 
+> Convert the open cores i2c controller binding from text to yaml.
+> 
+> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+> ---
+>  .../devicetree/bindings/i2c/i2c-ocores.txt    |  78 -----------
+>  .../devicetree/bindings/i2c/i2c-ocores.yaml   | 132 ++++++++++++++++++
+>  2 files changed, 132 insertions(+), 78 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/i2c/i2c-ocores.txt
+>  create mode 100644 Documentation/devicetree/bindings/i2c/i2c-ocores.yaml
+> 
 
-Generated by coccinelle script:
-	scripts/coccinelle/free/ifnullfree.cocci
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
----
- drivers/media/platform/amphion/vdec.c     | 3 +--
- drivers/media/platform/amphion/venc.c     | 3 +--
- drivers/media/platform/amphion/vpu_cmds.c | 3 +--
- 3 files changed, 3 insertions(+), 6 deletions(-)
+yamllint warnings/errors:
 
-diff --git a/drivers/media/platform/amphion/vdec.c b/drivers/media/platform/amphion/vdec.c
-index 3c02aa2a54aa..09d4f27970ec 100644
---- a/drivers/media/platform/amphion/vdec.c
-+++ b/drivers/media/platform/amphion/vdec.c
-@@ -1369,8 +1369,7 @@ static void vdec_cleanup(struct vpu_inst *inst)
- 		return;
- 
- 	vdec = inst->priv;
--	if (vdec)
--		vfree(vdec);
-+	vfree(vdec);
- 	inst->priv = NULL;
- 	vfree(inst);
- }
-diff --git a/drivers/media/platform/amphion/venc.c b/drivers/media/platform/amphion/venc.c
-index 43d61d82f58c..461524dd1e44 100644
---- a/drivers/media/platform/amphion/venc.c
-+++ b/drivers/media/platform/amphion/venc.c
-@@ -919,8 +919,7 @@ static void venc_cleanup(struct vpu_inst *inst)
- 		return;
- 
- 	venc = inst->priv;
--	if (venc)
--		vfree(venc);
-+	vfree(venc);
- 	inst->priv = NULL;
- 	vfree(inst);
- }
-diff --git a/drivers/media/platform/amphion/vpu_cmds.c b/drivers/media/platform/amphion/vpu_cmds.c
-index 9b39d77a178d..f4d7ca78a621 100644
---- a/drivers/media/platform/amphion/vpu_cmds.c
-+++ b/drivers/media/platform/amphion/vpu_cmds.c
-@@ -117,8 +117,7 @@ static void vpu_free_cmd(struct vpu_cmd_t *cmd)
- {
- 	if (!cmd)
- 		return;
--	if (cmd->pkt)
--		vfree(cmd->pkt);
-+	vfree(cmd->pkt);
- 	vfree(cmd);
- }
- 
--- 
-2.25.1
+dtschema/dtc warnings/errors:
+Documentation/devicetree/bindings/i2c/i2c-ocores.example.dtb:0:0: /example-0/i2c@a0000000/dummy@60: failed to match any schema with compatible: ['dummy']
+Documentation/devicetree/bindings/i2c/i2c-ocores.example.dtb:0:0: /example-0/i2c@b0000000/dummy@60: failed to match any schema with compatible: ['dummy']
+
+doc reference errors (make refcheckdocs):
+Warning: MAINTAINERS references a file that doesn't exist: Documentation/devicetree/bindings/i2c/i2c-ocores.txt
+MAINTAINERS: Documentation/devicetree/bindings/i2c/i2c-ocores.txt
+
+See https://patchwork.ozlabs.org/patch/
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
