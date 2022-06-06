@@ -2,67 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD01ACCA473
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 07:04:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78F81C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 07:04:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230413AbiFFHE0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 03:04:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56328 "EHLO
+        id S230375AbiFFHEc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 03:04:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230313AbiFFHEW (ORCPT
+        with ESMTP id S230409AbiFFHEZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 03:04:22 -0400
+        Mon, 6 Jun 2022 03:04:25 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3401A18394;
-        Mon,  6 Jun 2022 00:04:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEB6B17E19;
+        Mon,  6 Jun 2022 00:04:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B600061138;
-        Mon,  6 Jun 2022 07:04:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1E12C34115;
-        Mon,  6 Jun 2022 07:04:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 565E661140;
+        Mon,  6 Jun 2022 07:04:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34D11C385A9;
+        Mon,  6 Jun 2022 07:04:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654499058;
-        bh=QndOO9++0uGAEgnBo1o5/n2ZRjTuvDWy+Eei1CiHXI8=;
+        s=korg; t=1654499061;
+        bh=NGgDrmewlw8NtH5/GpF0bqU7Zn+j+mZku9mJzAdPAHM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LUdOVuDH1x0mjAgrY2bhDQkdZfhKI+rcXmTzWiO7AReJNWqafpQzFGhNHLaGgyhBF
-         9888ign0Bw0vBuxbTj9m34kcQcAnDXgneXvrk+oM9Ytij/rKGkiGYNS/Ea1F6frEC2
-         Bk1pgqPnEHg2GQoqnzHVsXTcyIBaC1o6scalJGWg=
+        b=j+50+l6soZ5tNuTgVdwfjxT9imLb10weRO3huJmJXg57vf60sGbiaJGS8tg3vJrFB
+         SphdSfp6Eh6uaJhT6po0GpbWGI3eahgrhigDnz3/PbFx/g4r4I6mD/9PjRDvAXGncI
+         kH132LNC+6wPa+SGAOQEXK/P9Nj/yKYx27Hqhcb8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
         torvalds@linux-foundation.org, stable@vger.kernel.org
 Cc:     lwn@lwn.net, jslaby@suse.cz,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: Linux 4.9.317
-Date:   Mon,  6 Jun 2022 09:04:07 +0200
-Message-Id: <165449904615731@kroah.com>
+Subject: Re: Linux 4.14.282
+Date:   Mon,  6 Jun 2022 09:04:18 +0200
+Message-Id: <165449905781239@kroah.com>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <1654499046230243@kroah.com>
-References: <1654499046230243@kroah.com>
+In-Reply-To: <165449905734191@kroah.com>
+References: <165449905734191@kroah.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+diff --git a/Documentation/process/submitting-patches.rst b/Documentation/process/submitting-patches.rst
+index 733478ade91b..db27ab65387e 100644
+--- a/Documentation/process/submitting-patches.rst
++++ b/Documentation/process/submitting-patches.rst
+@@ -133,7 +133,7 @@ as you intend it to.
+ 
+ The maintainer will thank you if you write your patch description in a
+ form which can be easily pulled into Linux's source code management
+-system, ``git``, as a "commit log".  See :ref:`explicit_in_reply_to`.
++system, ``git``, as a "commit log".  See :ref:`the_canonical_patch_format`.
+ 
+ Solve only one problem per patch.  If your description starts to get
+ long, that's a sign that you probably need to split up your patch.
 diff --git a/Makefile b/Makefile
-index 24a0bb5416ff..cc1a47220975 100644
+index 20ad87b8bd56..14820e213362 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -1,6 +1,6 @@
+@@ -1,7 +1,7 @@
+ # SPDX-License-Identifier: GPL-2.0
  VERSION = 4
- PATCHLEVEL = 9
--SUBLEVEL = 316
-+SUBLEVEL = 317
+ PATCHLEVEL = 14
+-SUBLEVEL = 281
++SUBLEVEL = 282
  EXTRAVERSION =
- NAME = Roaring Lionus
+ NAME = Petit Gorille
+ 
+diff --git a/arch/x86/pci/xen.c b/arch/x86/pci/xen.c
+index c4b3646bd04c..7135f35f9de7 100644
+--- a/arch/x86/pci/xen.c
++++ b/arch/x86/pci/xen.c
+@@ -442,6 +442,11 @@ void __init xen_msi_init(void)
+ 
+ 	x86_msi.setup_msi_irqs = xen_hvm_setup_msi_irqs;
+ 	x86_msi.teardown_msi_irq = xen_teardown_msi_irq;
++	/*
++	 * With XEN PIRQ/Eventchannels in use PCI/MSI[-X] masking is solely
++	 * controlled by the hypervisor.
++	 */
++	pci_msi_ignore_mask = 1;
+ }
+ #endif
  
 diff --git a/block/bio.c b/block/bio.c
-index 4c18a68913de..db3723675f5a 100644
+index 30df1b45dde8..1eaf31976702 100644
 --- a/block/bio.c
 +++ b/block/bio.c
-@@ -1538,7 +1538,7 @@ struct bio *bio_copy_kern(struct request_queue *q, void *data, unsigned int len,
+@@ -1657,7 +1657,7 @@ struct bio *bio_copy_kern(struct request_queue *q, void *data, unsigned int len,
  		if (bytes > len)
  			bytes = len;
  
@@ -71,11 +101,51 @@ index 4c18a68913de..db3723675f5a 100644
  		if (!page)
  			goto cleanup;
  
+diff --git a/drivers/acpi/sysfs.c b/drivers/acpi/sysfs.c
+index 3b7e23866b42..63e4aa468ad6 100644
+--- a/drivers/acpi/sysfs.c
++++ b/drivers/acpi/sysfs.c
+@@ -436,18 +436,29 @@ static ssize_t acpi_data_show(struct file *filp, struct kobject *kobj,
+ {
+ 	struct acpi_data_attr *data_attr;
+ 	void __iomem *base;
+-	ssize_t rc;
++	ssize_t size;
+ 
+ 	data_attr = container_of(bin_attr, struct acpi_data_attr, attr);
++	size = data_attr->attr.size;
++
++	if (offset < 0)
++		return -EINVAL;
++
++	if (offset >= size)
++		return 0;
+ 
+-	base = acpi_os_map_memory(data_attr->addr, data_attr->attr.size);
++	if (count > size - offset)
++		count = size - offset;
++
++	base = acpi_os_map_iomem(data_attr->addr, size);
+ 	if (!base)
+ 		return -ENOMEM;
+-	rc = memory_read_from_buffer(buf, count, &offset, base,
+-				     data_attr->attr.size);
+-	acpi_os_unmap_memory(base, data_attr->attr.size);
+ 
+-	return rc;
++	memcpy_fromio(buf, base + offset, count);
++
++	acpi_os_unmap_iomem(base, size);
++
++	return count;
+ }
+ 
+ static int acpi_bert_data_init(void *th, struct acpi_data_attr *data_attr)
 diff --git a/drivers/char/tpm/tpm_ibmvtpm.c b/drivers/char/tpm/tpm_ibmvtpm.c
-index 0fad6cf37bab..b0f546f4b15c 100644
+index 3ba67bc6baba..80647eb071fd 100644
 --- a/drivers/char/tpm/tpm_ibmvtpm.c
 +++ b/drivers/char/tpm/tpm_ibmvtpm.c
-@@ -653,6 +653,7 @@ static int tpm_ibmvtpm_probe(struct vio_dev *vio_dev,
+@@ -692,6 +692,7 @@ static int tpm_ibmvtpm_probe(struct vio_dev *vio_dev,
  	if (!wait_event_timeout(ibmvtpm->crq_queue.wq,
  				ibmvtpm->rtce_buf != NULL,
  				HZ)) {
@@ -84,23 +154,23 @@ index 0fad6cf37bab..b0f546f4b15c 100644
  		goto init_irq_cleanup;
  	}
 diff --git a/drivers/gpu/drm/i915/intel_pm.c b/drivers/gpu/drm/i915/intel_pm.c
-index 202c00b17df2..dcae0ec973a9 100644
+index 087634693346..dfee112d9e89 100644
 --- a/drivers/gpu/drm/i915/intel_pm.c
 +++ b/drivers/gpu/drm/i915/intel_pm.c
-@@ -2083,7 +2083,7 @@ hsw_compute_linetime_wm(const struct intel_crtc_state *cstate)
- 	       PIPE_WM_LINETIME_TIME(linetime);
+@@ -2793,7 +2793,7 @@ hsw_compute_linetime_wm(const struct intel_crtc_state *cstate)
  }
  
--static void intel_read_wm_latency(struct drm_device *dev, uint16_t wm[8])
-+static void intel_read_wm_latency(struct drm_device *dev, uint16_t wm[])
+ static void intel_read_wm_latency(struct drm_i915_private *dev_priv,
+-				  uint16_t wm[8])
++				  uint16_t wm[])
  {
- 	struct drm_i915_private *dev_priv = to_i915(dev);
- 
+ 	if (INTEL_GEN(dev_priv) >= 9) {
+ 		uint32_t val;
 diff --git a/drivers/i2c/busses/i2c-thunderx-pcidrv.c b/drivers/i2c/busses/i2c-thunderx-pcidrv.c
-index bba5b429f69c..3298483bb9b4 100644
+index df0976f4432a..4f0456fe8691 100644
 --- a/drivers/i2c/busses/i2c-thunderx-pcidrv.c
 +++ b/drivers/i2c/busses/i2c-thunderx-pcidrv.c
-@@ -208,6 +208,7 @@ static int thunder_i2c_probe_pci(struct pci_dev *pdev,
+@@ -215,6 +215,7 @@ static int thunder_i2c_probe_pci(struct pci_dev *pdev,
  	i2c->adap.bus_recovery_info = &octeon_i2c_recovery_info;
  	i2c->adap.dev.parent = dev;
  	i2c->adap.dev.of_node = pdev->dev.of_node;
@@ -109,10 +179,10 @@ index bba5b429f69c..3298483bb9b4 100644
  		 "Cavium ThunderX i2c adapter at %s", dev_name(dev));
  	i2c_set_adapdata(&i2c->adap, i2c);
 diff --git a/drivers/md/dm-crypt.c b/drivers/md/dm-crypt.c
-index 0aedd0ebccec..13a5fcca2833 100644
+index 0b6d4337aaab..353536ad46f3 100644
 --- a/drivers/md/dm-crypt.c
 +++ b/drivers/md/dm-crypt.c
-@@ -1943,6 +1943,11 @@ static int crypt_map(struct dm_target *ti, struct bio *bio)
+@@ -2942,6 +2942,11 @@ static int crypt_map(struct dm_target *ti, struct bio *bio)
  	return DM_MAPIO_SUBMITTED;
  }
  
@@ -124,28 +194,40 @@ index 0aedd0ebccec..13a5fcca2833 100644
  static void crypt_status(struct dm_target *ti, status_type_t type,
  			 unsigned status_flags, char *result, unsigned maxlen)
  {
-@@ -1958,10 +1963,12 @@ static void crypt_status(struct dm_target *ti, status_type_t type,
- 	case STATUSTYPE_TABLE:
- 		DMEMIT("%s ", cc->cipher_string);
- 
--		if (cc->key_size > 0)
--			for (i = 0; i < cc->key_size; i++)
--				DMEMIT("%02x", cc->key[i]);
--		else
-+		if (cc->key_size > 0) {
-+			for (i = 0; i < cc->key_size; i++) {
-+				DMEMIT("%c%c", hex2asc(cc->key[i] >> 4),
-+				       hex2asc(cc->key[i] & 0xf));
+@@ -2960,9 +2965,12 @@ static void crypt_status(struct dm_target *ti, status_type_t type,
+ 		if (cc->key_size > 0) {
+ 			if (cc->key_string)
+ 				DMEMIT(":%u:%s", cc->key_size, cc->key_string);
+-			else
+-				for (i = 0; i < cc->key_size; i++)
+-					DMEMIT("%02x", cc->key[i]);
++			else {
++				for (i = 0; i < cc->key_size; i++) {
++					DMEMIT("%c%c", hex2asc(cc->key[i] >> 4),
++					       hex2asc(cc->key[i] & 0xf));
++				}
 +			}
-+		} else
+ 		} else
  			DMEMIT("-");
  
- 		DMEMIT(" %llu %s %llu", (unsigned long long)cc->iv_offset,
+diff --git a/drivers/md/dm-integrity.c b/drivers/md/dm-integrity.c
+index b6ca5b1100db..6579aa46f544 100644
+--- a/drivers/md/dm-integrity.c
++++ b/drivers/md/dm-integrity.c
+@@ -3156,8 +3156,6 @@ static int dm_integrity_ctr(struct dm_target *ti, unsigned argc, char **argv)
+ 	}
+ 
+ 	if (should_write_sb) {
+-		int r;
+-
+ 		init_journal(ic, 0, ic->journal_sections, 0);
+ 		r = dm_integrity_failed(ic);
+ 		if (unlikely(r)) {
 diff --git a/drivers/md/dm-stats.c b/drivers/md/dm-stats.c
-index 0250e7e521ab..fdd4a840b30f 100644
+index a7868503d135..9734f506ecfd 100644
 --- a/drivers/md/dm-stats.c
 +++ b/drivers/md/dm-stats.c
-@@ -228,6 +228,7 @@ void dm_stats_cleanup(struct dm_stats *stats)
+@@ -224,6 +224,7 @@ void dm_stats_cleanup(struct dm_stats *stats)
  				       atomic_read(&shared->in_flight[READ]),
  				       atomic_read(&shared->in_flight[WRITE]));
  			}
@@ -153,7 +235,7 @@ index 0250e7e521ab..fdd4a840b30f 100644
  		}
  		dm_stat_free(&s->rcu_head);
  	}
-@@ -316,6 +317,7 @@ static int dm_stats_create(struct dm_stats *stats, sector_t start, sector_t end,
+@@ -312,6 +313,7 @@ static int dm_stats_create(struct dm_stats *stats, sector_t start, sector_t end,
  	for (ni = 0; ni < n_entries; ni++) {
  		atomic_set(&s->stat_shared[ni].in_flight[READ], 0);
  		atomic_set(&s->stat_shared[ni].in_flight[WRITE], 0);
@@ -161,7 +243,7 @@ index 0250e7e521ab..fdd4a840b30f 100644
  	}
  
  	if (s->n_histogram_entries) {
-@@ -328,6 +330,7 @@ static int dm_stats_create(struct dm_stats *stats, sector_t start, sector_t end,
+@@ -324,6 +326,7 @@ static int dm_stats_create(struct dm_stats *stats, sector_t start, sector_t end,
  		for (ni = 0; ni < n_entries; ni++) {
  			s->stat_shared[ni].tmp.histogram = hi;
  			hi += s->n_histogram_entries + 1;
@@ -169,7 +251,7 @@ index 0250e7e521ab..fdd4a840b30f 100644
  		}
  	}
  
-@@ -348,6 +351,7 @@ static int dm_stats_create(struct dm_stats *stats, sector_t start, sector_t end,
+@@ -344,6 +347,7 @@ static int dm_stats_create(struct dm_stats *stats, sector_t start, sector_t end,
  			for (ni = 0; ni < n_entries; ni++) {
  				p[ni].histogram = hi;
  				hi += s->n_histogram_entries + 1;
@@ -177,7 +259,7 @@ index 0250e7e521ab..fdd4a840b30f 100644
  			}
  		}
  	}
-@@ -477,6 +481,7 @@ static int dm_stats_list(struct dm_stats *stats, const char *program,
+@@ -473,6 +477,7 @@ static int dm_stats_list(struct dm_stats *stats, const char *program,
  			}
  			DMEMIT("\n");
  		}
@@ -185,7 +267,7 @@ index 0250e7e521ab..fdd4a840b30f 100644
  	}
  	mutex_unlock(&stats->mutex);
  
-@@ -753,6 +758,7 @@ static void __dm_stat_clear(struct dm_stat *s, size_t idx_start, size_t idx_end,
+@@ -749,6 +754,7 @@ static void __dm_stat_clear(struct dm_stat *s, size_t idx_start, size_t idx_end,
  				local_irq_enable();
  			}
  		}
@@ -193,7 +275,7 @@ index 0250e7e521ab..fdd4a840b30f 100644
  	}
  }
  
-@@ -868,6 +874,8 @@ static int dm_stats_print(struct dm_stats *stats, int id,
+@@ -864,6 +870,8 @@ static int dm_stats_print(struct dm_stats *stats, int id,
  
  		if (unlikely(sz + 1 >= maxlen))
  			goto buffer_overflow;
@@ -203,10 +285,10 @@ index 0250e7e521ab..fdd4a840b30f 100644
  
  	if (clear)
 diff --git a/drivers/md/dm-verity-target.c b/drivers/md/dm-verity-target.c
-index 727f9e571955..bd9d9f183e4b 100644
+index 2dae30713eb3..77fca0432d25 100644
 --- a/drivers/md/dm-verity-target.c
 +++ b/drivers/md/dm-verity-target.c
-@@ -1056,6 +1056,7 @@ static int verity_ctr(struct dm_target *ti, unsigned argc, char **argv)
+@@ -1163,6 +1163,7 @@ static int verity_ctr(struct dm_target *ti, unsigned argc, char **argv)
  
  static struct target_type verity_target = {
  	.name		= "verity",
@@ -214,11 +296,45 @@ index 727f9e571955..bd9d9f183e4b 100644
  	.version	= {1, 3, 0},
  	.module		= THIS_MODULE,
  	.ctr		= verity_ctr,
+diff --git a/drivers/net/ethernet/faraday/ftgmac100.c b/drivers/net/ethernet/faraday/ftgmac100.c
+index f35c5dbe54ee..a1caca6accf3 100644
+--- a/drivers/net/ethernet/faraday/ftgmac100.c
++++ b/drivers/net/ethernet/faraday/ftgmac100.c
+@@ -1845,6 +1845,11 @@ static int ftgmac100_probe(struct platform_device *pdev)
+ 	/* AST2400  doesn't have working HW checksum generation */
+ 	if (np && (of_device_is_compatible(np, "aspeed,ast2400-mac")))
+ 		netdev->hw_features &= ~NETIF_F_HW_CSUM;
++
++	/* AST2600 tx checksum with NCSI is broken */
++	if (priv->use_ncsi && of_device_is_compatible(np, "aspeed,ast2600-mac"))
++		netdev->hw_features &= ~NETIF_F_HW_CSUM;
++
+ 	if (np && of_get_property(np, "no-hw-checksum", NULL))
+ 		netdev->hw_features &= ~(NETIF_F_HW_CSUM | NETIF_F_RXCSUM);
+ 	netdev->features |= netdev->hw_features;
+diff --git a/drivers/staging/rtl8723bs/os_dep/ioctl_linux.c b/drivers/staging/rtl8723bs/os_dep/ioctl_linux.c
+index d51f6c452972..5afe958a9b4f 100644
+--- a/drivers/staging/rtl8723bs/os_dep/ioctl_linux.c
++++ b/drivers/staging/rtl8723bs/os_dep/ioctl_linux.c
+@@ -1438,9 +1438,11 @@ static int rtw_wx_set_scan(struct net_device *dev, struct iw_request_info *a,
+ 
+ 					sec_len = *(pos++); len-= 1;
+ 
+-					if (sec_len>0 && sec_len<=len) {
++					if (sec_len > 0 &&
++					    sec_len <= len &&
++					    sec_len <= 32) {
+ 						ssid[ssid_index].SsidLength = sec_len;
+-						memcpy(ssid[ssid_index].Ssid, pos, ssid[ssid_index].SsidLength);
++						memcpy(ssid[ssid_index].Ssid, pos, sec_len);
+ 						/* DBG_871X("%s COMBO_SCAN with specific ssid:%s, %d\n", __func__ */
+ 						/* 	, ssid[ssid_index].Ssid, ssid[ssid_index].SsidLength); */
+ 						ssid_index++;
 diff --git a/fs/exec.c b/fs/exec.c
-index 482a8b4f41a5..19f8b075d3b6 100644
+index c72ccfa49f54..2e26ba4ff47e 100644
 --- a/fs/exec.c
 +++ b/fs/exec.c
-@@ -1758,6 +1758,9 @@ static int do_execveat_common(int fd, struct filename *filename,
+@@ -1788,6 +1788,9 @@ static int do_execveat_common(int fd, struct filename *filename,
  		goto out_unmark;
  
  	bprm->argc = count(argv, MAX_ARG_STRINGS);
@@ -228,7 +344,7 @@ index 482a8b4f41a5..19f8b075d3b6 100644
  	if ((retval = bprm->argc) < 0)
  		goto out;
  
-@@ -1782,6 +1785,20 @@ static int do_execveat_common(int fd, struct filename *filename,
+@@ -1812,6 +1815,20 @@ static int do_execveat_common(int fd, struct filename *filename,
  	if (retval < 0)
  		goto out;
  
@@ -250,10 +366,10 @@ index 482a8b4f41a5..19f8b075d3b6 100644
  	if (retval < 0)
  		goto out;
 diff --git a/fs/nfsd/nfs4state.c b/fs/nfsd/nfs4state.c
-index d9381ca0ac47..b13649c63653 100644
+index 6720c82ac351..2adbf471d107 100644
 --- a/fs/nfsd/nfs4state.c
 +++ b/fs/nfsd/nfs4state.c
-@@ -6342,16 +6342,12 @@ nfsd4_release_lockowner(struct svc_rqst *rqstp,
+@@ -6351,16 +6351,12 @@ nfsd4_release_lockowner(struct svc_rqst *rqstp,
  		if (sop->so_is_open_owner || !same_owner_str(sop, owner))
  			continue;
  
@@ -274,8 +390,55 @@ index d9381ca0ac47..b13649c63653 100644
  		nfs4_get_stateowner(sop);
  		break;
  	}
+diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
+index e5f4d2711404..e079478bf5c9 100644
+--- a/include/net/inet_hashtables.h
++++ b/include/net/inet_hashtables.h
+@@ -390,7 +390,7 @@ static inline void sk_rcv_saddr_set(struct sock *sk, __be32 addr)
+ }
+ 
+ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+-			struct sock *sk, u32 port_offset,
++			struct sock *sk, u64 port_offset,
+ 			int (*check_established)(struct inet_timewait_death_row *,
+ 						 struct sock *, __u16,
+ 						 struct inet_timewait_sock **));
+diff --git a/include/net/netfilter/nf_conntrack_core.h b/include/net/netfilter/nf_conntrack_core.h
+index 9b5e7634713e..1bbedb75de71 100644
+--- a/include/net/netfilter/nf_conntrack_core.h
++++ b/include/net/netfilter/nf_conntrack_core.h
+@@ -67,8 +67,13 @@ static inline int nf_conntrack_confirm(struct sk_buff *skb)
+ 	int ret = NF_ACCEPT;
+ 
+ 	if (ct) {
+-		if (!nf_ct_is_confirmed(ct))
++		if (!nf_ct_is_confirmed(ct)) {
+ 			ret = __nf_conntrack_confirm(skb);
++
++			if (ret == NF_ACCEPT)
++				ct = (struct nf_conn *)skb_nfct(skb);
++		}
++
+ 		if (likely(ret == NF_ACCEPT))
+ 			nf_ct_deliver_cached_events(ct);
+ 	}
+diff --git a/include/net/secure_seq.h b/include/net/secure_seq.h
+index d7d2495f83c2..dac91aa38c5a 100644
+--- a/include/net/secure_seq.h
++++ b/include/net/secure_seq.h
+@@ -4,8 +4,8 @@
+ 
+ #include <linux/types.h>
+ 
+-u32 secure_ipv4_port_ephemeral(__be32 saddr, __be32 daddr, __be16 dport);
+-u32 secure_ipv6_port_ephemeral(const __be32 *saddr, const __be32 *daddr,
++u64 secure_ipv4_port_ephemeral(__be32 saddr, __be32 daddr, __be16 dport);
++u64 secure_ipv6_port_ephemeral(const __be32 *saddr, const __be32 *daddr,
+ 			       __be16 dport);
+ u32 secure_tcp_seq(__be32 saddr, __be32 daddr,
+ 		   __be16 sport, __be16 dport);
 diff --git a/lib/assoc_array.c b/lib/assoc_array.c
-index 3b46c5433b7a..70ef5fdd11c7 100644
+index 9463d3445ccd..b40edebd5123 100644
 --- a/lib/assoc_array.c
 +++ b/lib/assoc_array.c
 @@ -1478,6 +1478,7 @@ int assoc_array_gc(struct assoc_array *array,
@@ -317,11 +480,60 @@ index 3b46c5433b7a..70ef5fdd11c7 100644
  	pr_devel("after: %lu\n", new_n->nr_leaves_on_branch);
  
  	nr_leaves_on_tree = new_n->nr_leaves_on_branch;
+diff --git a/mm/zsmalloc.c b/mm/zsmalloc.c
+index 6cdb49ae0001..fd706edd66ff 100644
+--- a/mm/zsmalloc.c
++++ b/mm/zsmalloc.c
+@@ -952,11 +952,40 @@ static void reset_page(struct page *page)
+  */
+ void lock_zspage(struct zspage *zspage)
+ {
+-	struct page *page = get_first_page(zspage);
++	struct page *curr_page, *page;
+ 
+-	do {
+-		lock_page(page);
+-	} while ((page = get_next_page(page)) != NULL);
++	/*
++	 * Pages we haven't locked yet can be migrated off the list while we're
++	 * trying to lock them, so we need to be careful and only attempt to
++	 * lock each page under migrate_read_lock(). Otherwise, the page we lock
++	 * may no longer belong to the zspage. This means that we may wait for
++	 * the wrong page to unlock, so we must take a reference to the page
++	 * prior to waiting for it to unlock outside migrate_read_lock().
++	 */
++	while (1) {
++		migrate_read_lock(zspage);
++		page = get_first_page(zspage);
++		if (trylock_page(page))
++			break;
++		get_page(page);
++		migrate_read_unlock(zspage);
++		wait_on_page_locked(page);
++		put_page(page);
++	}
++
++	curr_page = page;
++	while ((page = get_next_page(curr_page))) {
++		if (trylock_page(page)) {
++			curr_page = page;
++		} else {
++			get_page(page);
++			migrate_read_unlock(zspage);
++			wait_on_page_locked(page);
++			put_page(page);
++			migrate_read_lock(zspage);
++		}
++	}
++	migrate_read_unlock(zspage);
+ }
+ 
+ int trylock_zspage(struct zspage *zspage)
 diff --git a/net/core/filter.c b/net/core/filter.c
-index 94bf897485db..799ac1fb46f2 100644
+index 9b934767a1d8..afe27343051f 100644
 --- a/net/core/filter.c
 +++ b/net/core/filter.c
-@@ -1388,7 +1388,7 @@ BPF_CALL_5(bpf_skb_store_bytes, struct sk_buff *, skb, u32, offset,
+@@ -1443,7 +1443,7 @@ BPF_CALL_5(bpf_skb_store_bytes, struct sk_buff *, skb, u32, offset,
  
  	if (unlikely(flags & ~(BPF_F_RECOMPUTE_CSUM | BPF_F_INVALIDATE_HASH)))
  		return -EINVAL;
@@ -330,7 +542,7 @@ index 94bf897485db..799ac1fb46f2 100644
  		return -EFAULT;
  	if (unlikely(bpf_try_make_writable(skb, offset + len)))
  		return -EFAULT;
-@@ -1423,7 +1423,7 @@ BPF_CALL_4(bpf_skb_load_bytes, const struct sk_buff *, skb, u32, offset,
+@@ -1478,7 +1478,7 @@ BPF_CALL_4(bpf_skb_load_bytes, const struct sk_buff *, skb, u32, offset,
  {
  	void *ptr;
  
@@ -339,11 +551,130 @@ index 94bf897485db..799ac1fb46f2 100644
  		goto err_clear;
  
  	ptr = skb_header_pointer(skb, offset, len, to);
+diff --git a/net/core/secure_seq.c b/net/core/secure_seq.c
+index 17683aea8a35..4aaae9220908 100644
+--- a/net/core/secure_seq.c
++++ b/net/core/secure_seq.c
+@@ -96,7 +96,7 @@ u32 secure_tcpv6_seq(const __be32 *saddr, const __be32 *daddr,
+ }
+ EXPORT_SYMBOL(secure_tcpv6_seq);
+ 
+-u32 secure_ipv6_port_ephemeral(const __be32 *saddr, const __be32 *daddr,
++u64 secure_ipv6_port_ephemeral(const __be32 *saddr, const __be32 *daddr,
+ 			       __be16 dport)
+ {
+ 	const struct {
+@@ -145,7 +145,7 @@ u32 secure_tcp_seq(__be32 saddr, __be32 daddr,
+ 	return seq_scale(hash);
+ }
+ 
+-u32 secure_ipv4_port_ephemeral(__be32 saddr, __be32 daddr, __be16 dport)
++u64 secure_ipv4_port_ephemeral(__be32 saddr, __be32 daddr, __be16 dport)
+ {
+ 	net_secret_init();
+ 	return siphash_4u32((__force u32)saddr, (__force u32)daddr,
+diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+index 1346e45cf8d1..1ebad5a024a7 100644
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -389,7 +389,7 @@ static int __inet_check_established(struct inet_timewait_death_row *death_row,
+ 	return -EADDRNOTAVAIL;
+ }
+ 
+-static u32 inet_sk_port_offset(const struct sock *sk)
++static u64 inet_sk_port_offset(const struct sock *sk)
+ {
+ 	const struct inet_sock *inet = inet_sk(sk);
+ 
+@@ -587,8 +587,19 @@ void inet_unhash(struct sock *sk)
+ }
+ EXPORT_SYMBOL_GPL(inet_unhash);
+ 
++/* RFC 6056 3.3.4.  Algorithm 4: Double-Hash Port Selection Algorithm
++ * Note that we use 32bit integers (vs RFC 'short integers')
++ * because 2^16 is not a multiple of num_ephemeral and this
++ * property might be used by clever attacker.
++ * RFC claims using TABLE_LENGTH=10 buckets gives an improvement,
++ * we use 256 instead to really give more isolation and
++ * privacy, this only consumes 1 KB of kernel memory.
++ */
++#define INET_TABLE_PERTURB_SHIFT 8
++static u32 table_perturb[1 << INET_TABLE_PERTURB_SHIFT];
++
+ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+-		struct sock *sk, u32 port_offset,
++		struct sock *sk, u64 port_offset,
+ 		int (*check_established)(struct inet_timewait_death_row *,
+ 			struct sock *, __u16, struct inet_timewait_sock **))
+ {
+@@ -600,7 +611,7 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+ 	struct inet_bind_bucket *tb;
+ 	u32 remaining, offset;
+ 	int ret, i, low, high;
+-	static u32 hint;
++	u32 index;
+ 
+ 	if (port) {
+ 		head = &hinfo->bhash[inet_bhashfn(net, port,
+@@ -625,7 +636,12 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+ 	if (likely(remaining > 1))
+ 		remaining &= ~1U;
+ 
+-	offset = (hint + port_offset) % remaining;
++	net_get_random_once(table_perturb, sizeof(table_perturb));
++	index = hash_32(port_offset, INET_TABLE_PERTURB_SHIFT);
++
++	offset = READ_ONCE(table_perturb[index]) + port_offset;
++	offset %= remaining;
++
+ 	/* In first pass we try ports of @low parity.
+ 	 * inet_csk_get_port() does the opposite choice.
+ 	 */
+@@ -678,7 +694,7 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+ 	return -EADDRNOTAVAIL;
+ 
+ ok:
+-	hint += i + 2;
++	WRITE_ONCE(table_perturb[index], READ_ONCE(table_perturb[index]) + i + 2);
+ 
+ 	/* Head lock still held and bh's disabled */
+ 	inet_bind_hash(sk, tb, port);
+@@ -701,7 +717,7 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+ int inet_hash_connect(struct inet_timewait_death_row *death_row,
+ 		      struct sock *sk)
+ {
+-	u32 port_offset = 0;
++	u64 port_offset = 0;
+ 
+ 	if (!inet_sk(sk)->inet_num)
+ 		port_offset = inet_sk_port_offset(sk);
+diff --git a/net/ipv6/inet6_hashtables.c b/net/ipv6/inet6_hashtables.c
+index 24a21979d7df..7d83ab627b09 100644
+--- a/net/ipv6/inet6_hashtables.c
++++ b/net/ipv6/inet6_hashtables.c
+@@ -248,7 +248,7 @@ static int __inet6_check_established(struct inet_timewait_death_row *death_row,
+ 	return -EADDRNOTAVAIL;
+ }
+ 
+-static u32 inet6_sk_port_offset(const struct sock *sk)
++static u64 inet6_sk_port_offset(const struct sock *sk)
+ {
+ 	const struct inet_sock *inet = inet_sk(sk);
+ 
+@@ -260,7 +260,7 @@ static u32 inet6_sk_port_offset(const struct sock *sk)
+ int inet6_hash_connect(struct inet_timewait_death_row *death_row,
+ 		       struct sock *sk)
+ {
+-	u32 port_offset = 0;
++	u64 port_offset = 0;
+ 
+ 	if (!inet_sk(sk)->inet_num)
+ 		port_offset = inet6_sk_port_offset(sk);
 diff --git a/net/key/af_key.c b/net/key/af_key.c
-index 776f94ecbfe6..d5dc614af2f9 100644
+index 3d5a46080169..990de0702b79 100644
 --- a/net/key/af_key.c
 +++ b/net/key/af_key.c
-@@ -2935,7 +2935,7 @@ static int count_ah_combs(const struct xfrm_tmpl *t)
+@@ -2908,7 +2908,7 @@ static int count_ah_combs(const struct xfrm_tmpl *t)
  			break;
  		if (!aalg->pfkey_supported)
  			continue;
@@ -352,7 +683,7 @@ index 776f94ecbfe6..d5dc614af2f9 100644
  			sz += sizeof(struct sadb_comb);
  	}
  	return sz + sizeof(struct sadb_prop);
-@@ -2953,7 +2953,7 @@ static int count_esp_combs(const struct xfrm_tmpl *t)
+@@ -2926,7 +2926,7 @@ static int count_esp_combs(const struct xfrm_tmpl *t)
  		if (!ealg->pfkey_supported)
  			continue;
  
@@ -361,7 +692,7 @@ index 776f94ecbfe6..d5dc614af2f9 100644
  			continue;
  
  		for (k = 1; ; k++) {
-@@ -2964,7 +2964,7 @@ static int count_esp_combs(const struct xfrm_tmpl *t)
+@@ -2937,7 +2937,7 @@ static int count_esp_combs(const struct xfrm_tmpl *t)
  			if (!aalg->pfkey_supported)
  				continue;
  
