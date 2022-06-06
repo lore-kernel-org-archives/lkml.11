@@ -2,72 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 551EEC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:45:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89CB5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:45:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239999AbiFFOpP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 10:45:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53170 "EHLO
+        id S240025AbiFFOpS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 10:45:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240040AbiFFOo4 (ORCPT
+        with ESMTP id S240031AbiFFOoz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 10:44:56 -0400
-Received: from smtpbg.qq.com (smtpbg138.qq.com [106.55.201.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9627250E25;
-        Mon,  6 Jun 2022 07:44:48 -0700 (PDT)
-X-QQ-mid: bizesmtp72t1654526492t3xalub6
-Received: from localhost.localdomain ( [111.9.5.115])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Mon, 06 Jun 2022 22:41:27 +0800 (CST)
-X-QQ-SSF: 01000000002000C0H000B00A0000000
-X-QQ-FEAT: Zs8ezjsHqGqVO+NtohCHTvGsn9ZzwXkLosiX3GvNCx8F2jOhjICyYr5Ce91bI
-        YiJWTHycGGX/iGbTpF+CfT3/mL0rGwqQsjJAN5zBDp8QAxmSHGLhjFFyuivmNnHUUkOBRmn
-        sd8CX6QK1tQZ0+KrW4W+epe3vKlUvA1z6Vfk8cfdyuNjybAOkifKLQoHzIjUIKhMjOCBdyv
-        UzZyykP2K1TLMD03XLdyBgOzENzE88q/L9UGs01lyb+2qzO87iAACHCLtCGOK622ywHgVe2
-        E76AtUuf/KX0yfUReev5lwwYyV9CDTuu/OAdLlwpNdXKY7vs0QaCpu7tHHYMLKySn6gIJjT
-        FYaFC10uXjWggl/MmFkzMgfvq39Zz+dwudKSGDU
-X-QQ-GoodBg: 0
-From:   Xiang wangx <wangxiang@cdjrlc.com>
-To:     gregkh@linuxfoundation.org
-Cc:     jirislaby@kernel.org, nm@ti.com, tony@atomide.com,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Xiang wangx <wangxiang@cdjrlc.com>
-Subject: [PATCH v2] serial: 8250_omap: Fix syntax errors in comments
-Date:   Mon,  6 Jun 2022 22:41:24 +0800
-Message-Id: <20220606144124.29691-1-wangxiang@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Mon, 6 Jun 2022 10:44:55 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC2AD26543
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 07:44:51 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id y187so13090525pgd.3
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 07:44:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=gkGEhy3VfxaC6VD1+0Znm8PQRe5Rv1gv7lzNV+9U6sU=;
+        b=XJm7qKD2bOT58RQ97zCn/zWbGHjdyy77P5xi96N2i7a9i8tTiEn3+2Panyl6bkL0K2
+         xda6xnU78lpVlW2JjeD3Vn/7rouIulCAg4Y9duaPAhKbDdqe3FSwZnjuNZ8T5Fu4aGHG
+         0TLfDpYoeKYfB2D9JSICOzPOdue57TP6Dbf0iM8FPbdQ7qGKqhmTPOwBPheewKwpdN8e
+         rJgsLR3GpJuL5WOrsi3uJrQ72lkyiyzlXEOyuFawixOKPgiqVRWHm6UFLbTb0RpHYs/7
+         bshgQln3hBIa2J2CM3dRE1XjwKOLOxgoZSIsuReh0RjdRmDIxYHs2VxcLR12FcQBXEcT
+         KEhA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=gkGEhy3VfxaC6VD1+0Znm8PQRe5Rv1gv7lzNV+9U6sU=;
+        b=Y+AUCXyktJn8jkcs7sIZF7z+jN1njwKr1jZ53MObRpS65elNDlY8PRyWKKpylC8eAP
+         WCmEdSEEP4RozvJfr+Isr1/n/Kgcg8ew1zi25ZfkXo3z/wUws2zOrRxFVYUFbQH9NRta
+         +ULBZ4TKMkrobkfnu6vlGC3NuLid87sURTGFFuhrc2TqX1nIxrqN2Znh+9lSDZXZA4b5
+         +HoUG2DHdKh4k8cTlv3L41fyqn9xwiCNuE/6OhHGps/b7kZVQNJg1IVu3B8LWNs4Hu7j
+         aMOpNxt0HAVMKTlKnGvn4NxfK+5mUmXbWHKFiCf70HQKcBwRBIky4wh6OnMn91ZoFiea
+         zCdg==
+X-Gm-Message-State: AOAM532iKzZOCahq52cGrcjm2UR4rbl7CWqj2reMCct/hX4W2TlaqxcN
+        Ae4oerKekH3YZFNulsp94nNn8PDTcdw=
+X-Google-Smtp-Source: ABdhPJwHtzCg5kFnUiWNadbeSw965fhqP0DNjV0hekDkRGPaONCqQVXORVETWVV98temea8+zvNgdw==
+X-Received: by 2002:a63:5a58:0:b0:3fb:b455:ed15 with SMTP id k24-20020a635a58000000b003fbb455ed15mr21332437pgm.228.1654526691026;
+        Mon, 06 Jun 2022 07:44:51 -0700 (PDT)
+Received: from localhost ([198.11.178.15])
+        by smtp.gmail.com with ESMTPSA id y125-20020a626483000000b0050dc76281d3sm7606451pfb.173.2022.06.06.07.44.50
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 06 Jun 2022 07:44:50 -0700 (PDT)
+From:   Lai Jiangshan <jiangshanlai@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Borislav Petkov <bp@alien8.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org,
+        Lai Jiangshan <jiangshan.ljs@antgroup.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>
+Subject: [PATCH V3 6/7] x86/traps: Add fence_swapgs_{user,kernel}_entry() and user_entry_swapgs_and_fence()
+Date:   Mon,  6 Jun 2022 22:45:08 +0800
+Message-Id: <20220606144509.617611-7-jiangshanlai@gmail.com>
+X-Mailer: git-send-email 2.19.1.6.gb485710b
+In-Reply-To: <20220606144509.617611-1-jiangshanlai@gmail.com>
+References: <20220606144509.617611-1-jiangshanlai@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Delete the redundant word 'have'.
+From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 
-Signed-off-by: Xiang wangx <wangxiang@cdjrlc.com>
+Add the C version fence_swapgs_{user,kernel}_entry() in entry64.c which
+are the same as the ASM macro FENCE_SWAPGS_{USER,KERNEL}_ENTRY.
+
+fence_swapgs_user_entry is used in the user entry swapgs code path,
+to prevent a speculative swapgs when coming from kernel space.
+
+fence_swapgs_kernel_entry is used in the kernel entry code path,
+to prevent the swapgs from getting speculatively skipped when
+coming from user space.
+
+Add the C user_entry_swapgs_and_fence() which implements the ASM code:
+        swapgs
+        FENCE_SWAPGS_USER_ENTRY
+
+It will be used in the user entry swapgs code path,  doing the swapgs and
+lfence to prevent a speculative swapgs when coming from kernel space.
+
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Suggested-by: Peter Zijlstra <peterz@infradead.org>
+Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 ---
+ arch/x86/entry/entry64.c | 30 ++++++++++++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
 
-Changes since v1
-*Change commit log
-
- drivers/tty/serial/8250/8250_omap.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index ac8bfa042391..a7a95c013fe6 100644
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -345,7 +345,7 @@ static void omap8250_restore_regs(struct uart_8250_port *up)
- }
- 
- /*
-- * OMAP can use "CLK / (16 or 13) / div" for baud rate. And then we have have
-+ * OMAP can use "CLK / (16 or 13) / div" for baud rate. And then we have
-  * some differences in how we want to handle flow control.
-  */
- static void omap_8250_set_termios(struct uart_port *port,
+diff --git a/arch/x86/entry/entry64.c b/arch/x86/entry/entry64.c
+index bd77cc8373ce..f7f23800cee4 100644
+--- a/arch/x86/entry/entry64.c
++++ b/arch/x86/entry/entry64.c
+@@ -36,3 +36,33 @@ static __always_inline void switch_to_kernel_cr3(void)
+ #else
+ static __always_inline void switch_to_kernel_cr3(void) {}
+ #endif
++
++/*
++ * Mitigate Spectre v1 for conditional swapgs code paths.
++ *
++ * fence_swapgs_user_entry is used in the user entry swapgs code path, to
++ * prevent a speculative swapgs when coming from kernel space.  It must be
++ * used with switch_to_kernel_cr3() in the same path.
++ *
++ * fence_swapgs_kernel_entry is used in the kernel entry code path without
++ * CR3 write or with conditinal CR3 write only, to prevent the swapgs from
++ * getting speculatively skipped when coming from user space.
++ *
++ * user_entry_swapgs_and_fence is a wrapper of swapgs and fence for user entry
++ * code path.
++ */
++static __always_inline void fence_swapgs_user_entry(void)
++{
++	alternative("", "lfence", X86_FEATURE_FENCE_SWAPGS_USER);
++}
++
++static __always_inline void fence_swapgs_kernel_entry(void)
++{
++	alternative("", "lfence", X86_FEATURE_FENCE_SWAPGS_KERNEL);
++}
++
++static __always_inline void user_entry_swapgs_and_fence(void)
++{
++	native_swapgs();
++	fence_swapgs_user_entry();
++}
 -- 
-2.36.1
+2.19.1.6.gb485710b
 
