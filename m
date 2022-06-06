@@ -2,112 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89F80C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 18:48:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3779CCA47E
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 18:49:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232011AbiFFSs2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 14:48:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50416 "EHLO
+        id S231768AbiFFStz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 14:49:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231971AbiFFSsO (ORCPT
+        with ESMTP id S230014AbiFFStw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 14:48:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 542EA1B4363;
-        Mon,  6 Jun 2022 11:48:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5EE4061423;
-        Mon,  6 Jun 2022 18:48:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B6A9C385A9;
-        Mon,  6 Jun 2022 18:47:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654541280;
-        bh=oenzZKBwu+yYvuKRKzmfDgx5zIbYMMw/HD87fYbkTCM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q8nZoxtGviHxv1D34flnChvIGDNF0DgmOxsB1sxtkcQ1wrnkOuj8sRWqhGs2FC3t1
-         RbOSREKzxDPELadYHijNxeMGkQCQ8hC425AA5usH4LkHxYxZLxCzPfQ8pvimjWOHy5
-         zvojYImseHB4VxQi1JPOvczGIXzkZlklHSG9DPUzkFbs2ckI6K86JXWY81e1M1ywmm
-         4BG0uWjVfs7Yssp0Pghe7vtRYWyj9Ays9kkrge0bAFuYwPPLJ3zFUK9E1ipLah+Bqz
-         fGZZiolhPwZyp2eOIsCsBdxymAxKnX/sj1UZR/ZvhLXLNvb/+07Tjs6pxQlvDjndcG
-         k95nUpfk3RauA==
-From:   Jiri Olsa <jolsa@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     Song Liu <songliubraving@fb.com>,
-        Steven Rostedt <rostedt@goodmis.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>
-Subject: [PATCHv2 bpf 2/3] ftrace: Keep address offset in ftrace_lookup_symbols
-Date:   Mon,  6 Jun 2022 20:47:30 +0200
-Message-Id: <20220606184731.437300-3-jolsa@kernel.org>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220606184731.437300-1-jolsa@kernel.org>
-References: <20220606184731.437300-1-jolsa@kernel.org>
+        Mon, 6 Jun 2022 14:49:52 -0400
+Received: from mail-il1-f182.google.com (mail-il1-f182.google.com [209.85.166.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 226E11B1F7F;
+        Mon,  6 Jun 2022 11:49:52 -0700 (PDT)
+Received: by mail-il1-f182.google.com with SMTP id y16so12566488ili.13;
+        Mon, 06 Jun 2022 11:49:52 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=kgkfRUJV9/BEnmPocysX/S7LexhHarrs/j/DCNaOkdQ=;
+        b=iqoHN8LGnfgRL5Hhc6fMMi4d1oWRpwAnSf8CWju0PEI6Fw1ahqNq/vyAT4jjWdSY0N
+         odIoIeOxpGyMzUJPcK7tt3/tSDmTeHYFymUMTwoGVGAut44psW333oq4i8m/pUvvCZZz
+         f3tOPi69LvGZdyCf388Duzz/cjLYPg8lb6qzLysZU0qoVt/r8yHp5Rd0EjfhzJ+uEiiB
+         AESgYK3+XLWt4QBivttLNFPyz9ssN51mTu/Tf5X3sTMdFLuKzqyFEwuB7/LEj1u/ytwo
+         6voQ4u3DGZeATKk+kUfFWMcWl4RXV+xxtYF0Sl5sffvcMTiVexTWvfTuSHdGL0lwUg8C
+         U+wA==
+X-Gm-Message-State: AOAM532RPo0eV+iXrYaPyTbg0Zjqs7hmUjflhZ7bdMA/1sNAFgU2cAA7
+        bwy0FB9xvtpfq+18HROjEw==
+X-Google-Smtp-Source: ABdhPJyO6ukxCl1+GXv2jPhH0h2yHQcRDq45FddKd9mLHiE3sU0VZ9kd3aqgeQUkM5M+pLLavbqPPg==
+X-Received: by 2002:a05:6e02:18c8:b0:2d3:ded5:9cd7 with SMTP id s8-20020a056e0218c800b002d3ded59cd7mr57368ilu.119.1654541391433;
+        Mon, 06 Jun 2022 11:49:51 -0700 (PDT)
+Received: from xps15.herring.priv ([64.188.179.251])
+        by smtp.googlemail.com with ESMTPSA id m7-20020a026a47000000b0032ea33f23a0sm5861784jaf.95.2022.06.06.11.49.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Jun 2022 11:49:51 -0700 (PDT)
+From:   Rob Herring <robh@kernel.org>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Sean Young <sean@mess.org>
+Cc:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] media: dt-bindings: rc: Allow 'ir-receiver' node names
+Date:   Mon,  6 Jun 2022 13:49:43 -0500
+Message-Id: <20220606184944.1067068-1-robh@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We want to store the resolved address on the same index as
-the symbol string, because that's the user (bpf kprobe link)
-code assumption.
+Most existing 'gpio-ir-receiver' nodes use 'ir-receiver' for their node
+name, so add it as an allowed node name.
 
-Also making sure we don't store duplicates that might be
-present in kallsyms.
-
-Acked-by: Song Liu <songliubraving@fb.com>
-Acked-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Fixes: bed0d9a50dac ("ftrace: Add ftrace_lookup_symbols function")
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+Signed-off-by: Rob Herring <robh@kernel.org>
 ---
- kernel/trace/ftrace.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+ Documentation/devicetree/bindings/media/rc.yaml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-index 674add0aafb3..ee9260ee0b80 100644
---- a/kernel/trace/ftrace.c
-+++ b/kernel/trace/ftrace.c
-@@ -7984,15 +7984,23 @@ static int kallsyms_callback(void *data, const char *name,
- 			     struct module *mod, unsigned long addr)
- {
- 	struct kallsyms_data *args = data;
-+	const char **sym;
-+	int idx;
+diff --git a/Documentation/devicetree/bindings/media/rc.yaml b/Documentation/devicetree/bindings/media/rc.yaml
+index d4c541c4b164..b11d14ab89c4 100644
+--- a/Documentation/devicetree/bindings/media/rc.yaml
++++ b/Documentation/devicetree/bindings/media/rc.yaml
+@@ -12,7 +12,7 @@ maintainers:
  
--	if (!bsearch(&name, args->syms, args->cnt, sizeof(*args->syms), symbols_cmp))
-+	sym = bsearch(&name, args->syms, args->cnt, sizeof(*args->syms), symbols_cmp);
-+	if (!sym)
-+		return 0;
-+
-+	idx = sym - args->syms;
-+	if (args->addrs[idx])
- 		return 0;
+ properties:
+   $nodename:
+-    pattern: "^ir(@[a-f0-9]+)?$"
++    pattern: "^ir(-receiver)?(@[a-f0-9]+)?$"
  
- 	addr = ftrace_location(addr);
- 	if (!addr)
- 		return 0;
- 
--	args->addrs[args->found++] = addr;
-+	args->addrs[idx] = addr;
-+	args->found++;
- 	return args->found == args->cnt ? 1 : 0;
- }
- 
-@@ -8017,6 +8025,7 @@ int ftrace_lookup_symbols(const char **sorted_syms, size_t cnt, unsigned long *a
- 	struct kallsyms_data args;
- 	int err;
- 
-+	memset(addrs, 0, sizeof(*addrs) * cnt);
- 	args.addrs = addrs;
- 	args.syms = sorted_syms;
- 	args.cnt = cnt;
+   linux,rc-map-name:
+     description:
 -- 
-2.35.3
+2.34.1
 
