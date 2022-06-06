@@ -2,81 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2B23C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 22:04:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DB75C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 22:11:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235017AbiFFWEc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 18:04:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44466 "EHLO
+        id S232059AbiFFWLM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 18:11:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231645AbiFFWEb (ORCPT
+        with ESMTP id S231521AbiFFWLI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 18:04:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D54833F;
-        Mon,  6 Jun 2022 15:04:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 07D1960A21;
-        Mon,  6 Jun 2022 22:04:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 571F3C3411D;
-        Mon,  6 Jun 2022 22:04:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654553069;
-        bh=pcU7MMJhbHLVJcZH22KwvHFDITSCSB1DObcIzkin+nk=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=OvB9PWHE70USGE8IlRpY+INQcKWJACJ4tBihs7Zn3Jk22BDHhOjCU8R+JCagxZX3N
-         +O6qxYVa0UCVLk3xUaz2kao0SmTbmHQfYQ2ueH5egUwJ105mO0gEyUPYjYK5QXngIB
-         YoHk0/ngz6yr8EQM/sXJPp+IPalvLBtp6DkLQ3caqY3PubzOMVtE6EQvPV/MBvxYra
-         fYlgPqKgIMHpsDDfNcjW5R0ekhqq9PlovlAY2lwFCFetjfSVN9CpPGszfp2JW5sZ4Y
-         +CuAUAC4ahKzraZ1PkXeSHP5dc5Pf64TH9uLnvTrnUYjBKROJaFx497QljR89jjSqV
-         u5p3LGpxRFmPA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 32DB8E737ED;
-        Mon,  6 Jun 2022 22:04:29 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Mon, 6 Jun 2022 18:11:08 -0400
+Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 326D96129D;
+        Mon,  6 Jun 2022 15:11:05 -0700 (PDT)
+Received: from in01.mta.xmission.com ([166.70.13.51]:48510)
+        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nyKvz-004XaN-Qz; Mon, 06 Jun 2022 16:10:51 -0600
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:53402 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nyKvy-008VN9-IW; Mon, 06 Jun 2022 16:10:51 -0600
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Oleg Nesterov <oleg@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net, mingo@kernel.org,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
+        Will Deacon <will@kernel.org>, tj@kernel.org,
+        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
+        Jann Horn <jannh@google.com>, linux-ia64@vger.kernel.org,
+        Robert OCallahan <roc@pernos.co>, Kyle Huey <khuey@pernos.co>,
+        Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Douglas Miller <dougmill@linux.vnet.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>
+References: <871qwq5ucx.fsf_-_@email.froward.int.ebiederm.org>
+        <20220518225355.784371-7-ebiederm@xmission.com>
+        <20220524132553.GD14347@redhat.com>
+        <20220524162808.GF14347@redhat.com> <20220525142845.GA2687@redhat.com>
+Date:   Mon, 06 Jun 2022 17:10:02 -0500
+In-Reply-To: <20220525142845.GA2687@redhat.com> (Oleg Nesterov's message of
+        "Wed, 25 May 2022 16:28:46 +0200")
+Message-ID: <87a6ap30lh.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2] net: ethernet: bgmac: Fix refcount leak in
- bcma_mdio_mii_register
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165455306920.27266.6098747312199049626.git-patchwork-notify@kernel.org>
-Date:   Mon, 06 Jun 2022 22:04:29 +0000
-References: <20220603133238.44114-1-linmq006@gmail.com>
-In-Reply-To: <20220603133238.44114-1-linmq006@gmail.com>
-To:     Miaoqian Lin <linmq006@gmail.com>
-Cc:     rafal@milecki.pl, bcm-kernel-feedback-list@broadcom.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, f.fainelli@gmail.com, arnd@arndb.de,
-        jon.mason@broadcom.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Content-Type: text/plain
+X-XM-SPF: eid=1nyKvy-008VN9-IW;;;mid=<87a6ap30lh.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
+X-XM-AID: U2FsdGVkX1+3n228nDtWW1iPO1xW1EOl4V38qn2RLFc=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: Re: [PATCH 07/16] signal: Wake up the designated parent
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+Oleg Nesterov <oleg@redhat.com> writes:
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+> On 05/24, Oleg Nesterov wrote:
+>>
+>> On 05/24, Oleg Nesterov wrote:
+>> >
+>> > I fail to understand this patch...
+>> >
+>> > On 05/18, Eric W. Biederman wrote:
+>> > >
+>> > > Today if a process is ptraced only the ptracer will ever be woken up in
+>> > > wait
+>> >
+>> > and why is this wrong?
+>> >
+>> > > Fixes: 75b95953a569 ("job control: Add @for_ptrace to do_notify_parent_cldstop()")
+>> >
+>> > how does this change fix 75b95953a569?
+>>
+>> OK, I guess you mean the 2nd do_notify_parent_cldstop() in ptrace_stop(),
+>> the problematic case is current->ptrace == T. Right?
+>>
+>> I dislike this patch anyway, but let me think more about it.
+>
+> OK, now that I understand the problem, the patch doesn't look bad to me,
+> although I'd ask to make the changelog more clear.
 
-On Fri,  3 Jun 2022 17:32:38 +0400 you wrote:
-> of_get_child_by_name() returns a node pointer with refcount
-> incremented, we should use of_node_put() on it when not need anymore.
-> Add missing of_node_put() to avoid refcount leak.
-> 
-> Fixes: 55954f3bfdac ("net: ethernet: bgmac: move BCMA MDIO Phy code into a separate file")
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-> 
-> [...]
+I will see what I can do.
 
-Here is the summary with links:
-  - [v2] net: ethernet: bgmac: Fix refcount leak in bcma_mdio_mii_register
-    https://git.kernel.org/netdev/net/c/b8d91399775c
+> After this change __wake_up_parent() can't accept any "parent" from
+> p->parent thread group, but all callers look fine except
+> ptrace_detach().
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Having looked at it a little more I think the change was too
+restrictive.  For the !ptrace_reparented case there are possibly
+two threads of the parent process that wait_consider_task will
+allow to wait even with __WNOTHREAD specified.  It is desirable
+to wake them both up.
 
+Which if I have had enough sleep reduces this patch to just:
+
+diff --git a/kernel/exit.c b/kernel/exit.c
+index f072959fcab7..c8156366b722 100644
+--- a/kernel/exit.c
++++ b/kernel/exit.c
+@@ -1431,8 +1431,10 @@ static int child_wait_callback(wait_queue_entry_t *wait, unsigned mode,
+        if (!eligible_pid(wo, p))
+                return 0;
+ 
+-       if ((wo->wo_flags & __WNOTHREAD) && wait->private != p->parent)
+-               return 0;
++       if ((wo->wo_flags & __WNOTHREAD) &&
++           (wait->private != p->parent) &&
++           (wait->private != p->real_parent))
++                       return 0;
+ 
+        return default_wake_function(wait, mode, sync, key);
+ }
+
+
+I think that solves the issue without missing wake-ups without adding
+any more.
+
+For the same set of reasons it looks like the __wake_up_parent in
+__ptrace_detach is just simply dead code.  I don't think there is a case
+where when !ptrace_reparented the thread that is the real_parent can
+sleep in do_wait when the thread that was calling ptrace could not.
+
+That needs a very close look to confirm. 
+
+Eric
 
