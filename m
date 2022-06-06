@@ -2,108 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3FC4C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 13:46:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 347D2C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 13:46:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239212AbiFFNqd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 09:46:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35014 "EHLO
+        id S239217AbiFFNqi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 09:46:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239180AbiFFNqS (ORCPT
+        with ESMTP id S239066AbiFFNqR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 09:46:18 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD61728D69A
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 06:46:17 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id c2so18896075edf.5
-        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 06:46:17 -0700 (PDT)
+        Mon, 6 Jun 2022 09:46:17 -0400
+Received: from mail-oa1-x2e.google.com (mail-oa1-x2e.google.com [IPv6:2001:4860:4864:20::2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EC201C2D60
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 06:46:16 -0700 (PDT)
+Received: by mail-oa1-x2e.google.com with SMTP id 586e51a60fabf-f33f0f5b1dso19154362fac.8
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 06:46:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pqrs.dk; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=BnPeSuEupDbmGQ7GCHy4it+pAl5TcIPr5v39wk3VDWY=;
-        b=STlEAzxRwWbhrR37+QIghU6zligTbGACIocWguIbaXysVb7dqmW3Z161foAucHd9Fq
-         WNIf8NieYkCmdcGQTS1p1cXcFVxm1KlqCanD4uHpbsnV0AbX8PW+G0J8vmPYJSKHPA6m
-         z+Ou3/2aC6js2qQUDtJnp31U0ToUuhybLK5Qg=
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=xTpWPSxN0cL0aVs3iLR/HmIswwTyMjklIN9jCgr7T+Q=;
+        b=FcPDlAGsBBZqIo/U7deOp4+kp/FFXUkJnzTHVfhMBmEPyi9B3VzXHpf9gxN0z9WkZE
+         zMex9FE2JL2CXklp11tM+RvrBj2sYpgTHD7by7BoUHU3pZmfwFqd8lcUpyC1rjyBO1bm
+         YCd03N3WPWfcU+4W6kh7sCBKnMJnjOmWzjjWZWdg4XY4USYk6DjUd77G1FNecYHavaK9
+         aGMnGYduuyWNrQl6bnFZuv9IHGX89Lrc6mq3xecc153xREDsJw++jqd/pn3Abtox+NkW
+         wzKxonhke55kKh88L6qB9H87YfwIf04YwnblGT9+aG1335WeM4zWDlhR7pVeun0+kLQB
+         ViWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=BnPeSuEupDbmGQ7GCHy4it+pAl5TcIPr5v39wk3VDWY=;
-        b=vBKNtzh/ZnEIM+CPEqcbtq4ZLYRduSREVa19P73fyBqPrADcl6yLKXv6ifZ+5IWt30
-         bOzdy+HE17IDzSm2230p0Cgx7a0lHhOZq9QKESxQwqAWLnssf//RB05DQUxgKNkUnmuS
-         6ZcBvBNWEIi6h/zrhBP22rwAGL9ReD3/2059Ws4O13dxl7R+3WchkjBGPs7A5cp+gbVc
-         72mForkd4Dsz/hjeYCetssqXNwPsMtizFCi1OZfoK6CIVoJJsMgLPnr03eb7uc6gyRNY
-         NaVnTQPxeVsDTf+uIy+aqlejy0Cl/5f9ixq8J5qYs/qwc6CrNJDae4f6HLKQh4A93hIN
-         /4LQ==
-X-Gm-Message-State: AOAM532735TqYUaLRVMHa3fxyoHC86iTA7OaqzPt0Hwcy0QGdIYEQSbd
-        Pa2sQmfO3j5TC2TmeRSumHyoTw==
-X-Google-Smtp-Source: ABdhPJzUbpoI88p20ePtUpE/Efbx+rxctOBRmEkVhIGUkdBZ5Jl3JJOTojP18Va0VLSDZe/khPlZFw==
-X-Received: by 2002:a05:6402:1941:b0:413:2822:9c8 with SMTP id f1-20020a056402194100b00413282209c8mr27443321edz.13.1654523176298;
-        Mon, 06 Jun 2022 06:46:16 -0700 (PDT)
-Received: from localhost.localdomain (80.71.142.18.ipv4.parknet.dk. [80.71.142.18])
-        by smtp.gmail.com with ESMTPSA id a26-20020a1709062b1a00b006f3ef214db4sm5496538ejg.26.2022.06.06.06.46.15
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=xTpWPSxN0cL0aVs3iLR/HmIswwTyMjklIN9jCgr7T+Q=;
+        b=hBJSNMYX/cAVwGooToCkuWz+b8oFVQOIfERkGL2gscd9snP/CzUfZN3QS9Vex64REj
+         T2LCwMrdt7D7wQ/innTVqAGHfPg/cTN8qtKvPPqjbvXf+VG31ujkAp4U7iT5vsExvNGj
+         rtJKZx+cnfo5LAKiIasjblX4DD3E7LH3Tssim6DmQwy8tirXAEpLR0aEUNlp6CK1uMPZ
+         gE1A0rp+yL2xKS+E524c0KV6mP+AY2sgSEb5NALt5ATqQ4/76oO4/ZBoIy98YDRQ6g4/
+         SPGtbs96chBMYRTLVkpzZf4QLJlOm91pjoh+lQ2G0A51bVU+V5Y9OWAJTRNNBj2rIGm1
+         spzw==
+X-Gm-Message-State: AOAM533f8QC2+yU+MkFD0uRvET+CQgNT+91yR2bEJj+vDKtvCRHmmgTe
+        v3ysbnVWfY0TksQewZI+mDKWyg==
+X-Google-Smtp-Source: ABdhPJzjWkyxD1qfFKANpxzk990e+EpRbqV/OdMD73IIFh/8xr2wLPUb0uOpjWjw5mrkS+7u1j/ptw==
+X-Received: by 2002:a05:6870:8184:b0:f5:dd95:7ef7 with SMTP id k4-20020a056870818400b000f5dd957ef7mr13883037oae.117.1654523174846;
+        Mon, 06 Jun 2022 06:46:14 -0700 (PDT)
+Received: from ripper (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id pu7-20020a0568709e8700b000f5e33aaa66sm6770625oab.0.2022.06.06.06.46.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jun 2022 06:46:15 -0700 (PDT)
-From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
-To:     luizluca@gmail.com, Linus Walleij <linus.walleij@linaro.org>,
-        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 3/5] net: dsa: realtek: rtl8365mb: correct the max number of ports
-Date:   Mon,  6 Jun 2022 15:45:51 +0200
-Message-Id: <20220606134553.2919693-4-alvin@pqrs.dk>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220606134553.2919693-1-alvin@pqrs.dk>
-References: <20220606134553.2919693-1-alvin@pqrs.dk>
+        Mon, 06 Jun 2022 06:46:14 -0700 (PDT)
+Date:   Mon, 6 Jun 2022 06:48:39 -0700
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Kuogee Hsieh <quic_khsieh@quicinc.com>
+Cc:     dri-devel@lists.freedesktop.org, robdclark@gmail.com,
+        sean@poorly.run, swboyd@chromium.org, dianders@chromium.org,
+        vkoul@kernel.org, daniel@ffwll.ch, airlied@linux.ie,
+        agross@kernel.org, dmitry.baryshkov@linaro.org,
+        quic_abhinavk@quicinc.com, quic_aravindh@quicinc.com,
+        quic_sbillaka@quicinc.com, freedreno@lists.freedesktop.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v13 1/3] phy: qcom-edp: add regulator_set_load to edp phy
+Message-ID: <Yp4FtznlEzNKmRPZ@ripper>
+References: <1653512540-21956-1-git-send-email-quic_khsieh@quicinc.com>
+ <1653512540-21956-2-git-send-email-quic_khsieh@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1653512540-21956-2-git-send-email-quic_khsieh@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alvin Šipraga <alsi@bang-olufsen.dk>
+On Wed 25 May 14:02 PDT 2022, Kuogee Hsieh wrote:
 
-The maximum number of ports is actually 11, according to two
-observations:
+> This patch add regulator_set_load() before enable regulator at
+> eDP phy driver.
+> 
+> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+> Reviewed-by: Douglas Anderson <dianders@chromium.org>
 
-1. The highest port ID used in the vendor driver is 10. Since port IDs
-   are indexed from 0, and since DSA follows the same numbering system,
-   this means up to 11 ports are to be presumed.
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 
-2. The registers with port mask fields always amount to a maximum port
-   mask of 0x7FF, corresponding to a maximum 11 ports.
-
-In view of this, I also deleted the comment.
-
-Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
----
- drivers/net/dsa/realtek/rtl8365mb.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/drivers/net/dsa/realtek/rtl8365mb.c b/drivers/net/dsa/realtek/rtl8365mb.c
-index c64219271a2b..392047558656 100644
---- a/drivers/net/dsa/realtek/rtl8365mb.c
-+++ b/drivers/net/dsa/realtek/rtl8365mb.c
-@@ -115,8 +115,7 @@
- #define RTL8365MB_PHYADDRMAX		7
- #define RTL8365MB_NUM_PHYREGS		32
- #define RTL8365MB_PHYREGMAX		(RTL8365MB_NUM_PHYREGS - 1)
--/* RTL8370MB and RTL8310SR, possibly suportable by this driver, have 10 ports */
--#define RTL8365MB_MAX_NUM_PORTS		10
-+#define RTL8365MB_MAX_NUM_PORTS		11
- #define RTL8365MB_LEARN_LIMIT_MAX	2112
- 
- /* valid for all 6-port or less variants */
--- 
-2.36.0
-
+> ---
+>  drivers/phy/qualcomm/phy-qcom-edp.c | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
+> 
+> diff --git a/drivers/phy/qualcomm/phy-qcom-edp.c b/drivers/phy/qualcomm/phy-qcom-edp.c
+> index cacd32f..7e357078 100644
+> --- a/drivers/phy/qualcomm/phy-qcom-edp.c
+> +++ b/drivers/phy/qualcomm/phy-qcom-edp.c
+> @@ -639,6 +639,18 @@ static int qcom_edp_phy_probe(struct platform_device *pdev)
+>  	if (ret)
+>  		return ret;
+>  
+> +	ret = regulator_set_load(edp->supplies[0].consumer, 21800); /* 1.2 V vdda-phy */
+> +	if (ret) {
+> +		dev_err(dev, "failed to set load at %s\n", edp->supplies[0].supply);
+> +		return ret;
+> +	}
+> +
+> +	ret = regulator_set_load(edp->supplies[1].consumer, 36000); /* 0.9 V vdda-pll */
+> +	if (ret) {
+> +		dev_err(dev, "failed to set load at %s\n", edp->supplies[1].supply);
+> +		return ret;
+> +	}
+> +
+>  	ret = qcom_edp_clks_register(edp, pdev->dev.of_node);
+>  	if (ret)
+>  		return ret;
+> -- 
+> The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+> a Linux Foundation Collaborative Project
+> 
