@@ -2,170 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF0F0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 10:17:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E58D5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 10:19:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233745AbiFFKRR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 06:17:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40344 "EHLO
+        id S233686AbiFFKTa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 06:19:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233834AbiFFKQm (ORCPT
+        with ESMTP id S233569AbiFFKT0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 06:16:42 -0400
-Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACBA317429C
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 03:16:18 -0700 (PDT)
-Received: by mail-qk1-x72d.google.com with SMTP id x75so7097452qkb.12
-        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 03:16:18 -0700 (PDT)
+        Mon, 6 Jun 2022 06:19:26 -0400
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7B7A115CB8
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 03:19:24 -0700 (PDT)
+Received: by mail-pf1-x434.google.com with SMTP id z17so12345961pff.7
+        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 03:19:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=fc/OFAn0RvDAWJQtQ9B+1H+QxhmbSSJd9Hi613D0Bsw=;
-        b=KrxENmFO1QgWlWAeJCa+rew4MZ/Z6QR5iukbATFS7s8iFV0QZVhYSMTmzPhd5oC4vh
-         pluEXGxwfa233uFAQC3uo6A93DOqHr7hgYBAbzJUH58UH3mPrCPIVvNDuM7oLTNmQa7l
-         CecyCYcK7uRWxaElpG8gA8i2i8Js7+SHCbLtQkjxJ83RaYMhitJ4mWe0/mI5iItK7/A7
-         Uqk6v4YhCRui45xPLmv5UQgd/pqIvyOay2Bu6Sgwjw3K3vhO3YGilYTE+TBLuTvy8EEI
-         0YdfITyCJtezho5vU/xHQy1xidYG5aeW8gwlcT7H8lKWf8zswK9T3hPvhYvG/NDMjiED
-         Ia8w==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=4akhw7wybTZyWH6tXqtxZK6m2uwvnVK6i/fg5yqCKis=;
+        b=ODOAFqzeTzA3Pd7iDw4CT/qwXD8MzP35PnNskC0PUbDh98OG6ny7+OtpDOjCXMXoI5
+         mr2wAAIwc3ToD7suonCFspVSoU0Jnl43mhCVLkyqm3vINxbRrk/mabGeGtRzc/u95fdV
+         DC1reKM7dlxreJF23iIyimwtVCaepExf6YfD3ofRwyKCZ1dK25+IfbKmJSRa+bz+hsgI
+         IZJ2UMWy//AgFz5Pvgc4wfIW6eB24XlM86TghFnCF4CTzyO/LUiWKSHU3zQbApwTMwyH
+         FBIpJG1tdvqKiY/uQDhr5KGkn2kKgwp4XDtce6fuAXz12xEE4doHxUXOaC63wuHOTtkn
+         nSBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=fc/OFAn0RvDAWJQtQ9B+1H+QxhmbSSJd9Hi613D0Bsw=;
-        b=7GjmWGopX80HtvmEdw/6JZ5zM/homBtvb9ab9Zf/3qg1VDf+tAoNiLa0v9OccqL7j4
-         C4Iay+mLYTnBwpwwsJNCnavcOcGweBTGI1CNcCsKqHKoRe6kRdVaPmQhxH3d2eDPDGSs
-         8gBwVgjvweUDC/PDrd+Xj4yUtd0s2xuzTgsQjJzzmjtJ+rjkonM16lf8n0D65PenFf8V
-         6IREexKbLTdZWD3Es7ft4ksFovhS5zz70Nz9NK4Sktbkayz5IjvaaCw1EPjvgqVqFlSF
-         bR3LkL5znIh5fcMIMTzlJ150HyMNKJdDLPG9cGan5ZCNXqd5NZzjTjPuVxGV8hHSlxsQ
-         UTyg==
-X-Gm-Message-State: AOAM531w505MFtohBhDrWc7yfxasWuaCm4uXnMyoD1Xx68URie5xTiXQ
-        xNL0y8+nc1nLa2Ixo4aB8LJJ5zWVONPZyRZEkRE=
-X-Google-Smtp-Source: ABdhPJzvmmwoAzRBHaAGyreIeKWdCWu7b5koSZ6XfRTIpHHHC8VvO+dYQd2nZJ945oooKEFeorywlbdLzYHZ6TmHgjw=
-X-Received: by 2002:a37:a1c4:0:b0:6a6:ac4f:1d3f with SMTP id
- k187-20020a37a1c4000000b006a6ac4f1d3fmr6832834qke.666.1654510577365; Mon, 06
- Jun 2022 03:16:17 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=4akhw7wybTZyWH6tXqtxZK6m2uwvnVK6i/fg5yqCKis=;
+        b=nrGfFkc1le9h7Z515FhcWY9C8/kXrMPYYhvg4TkQOBY4O7z3fHIrYCeHdDKuMOg8uJ
+         NGxJHUfAydb8nubD1hduUvZDF9t9kzUmNbarKHmcBuEFAk0aTKYogV2mEhXMxzn2huB9
+         2DjuXUhSKSTzNkVvysKqOkamOn5WBjpwsP9WT/uWklLPUdC1KuukuPXTFXUA4ekDEqyv
+         4asAHDMTtNGBcdLmq7i4QVf6NZKyHl0eEan7tjW2qjY0ioNTeGMokcD/W5yzxZPm1r0n
+         snWEOWz9GXFFArfWoawugp5vP+vcSjG4uF6WlsUNwswsGfw4FrJoI/0NLRdACTP2SrhV
+         5QbQ==
+X-Gm-Message-State: AOAM533aQdjgC+JqtiJCkWOSi2EXwRmU5d0SR+gkIyVPYqVJZLSAEKPK
+        hTnseez/84iTTAjySoGL0LffF1sN6cHi+A==
+X-Google-Smtp-Source: ABdhPJwmlZYDlrAKDbgSY+ucVxuP2JISTMWI6gieyMpwePhsCUAiN0T+VbPMbWYPlSjR/p4E89IrnA==
+X-Received: by 2002:a63:401:0:b0:3fc:8810:f0ae with SMTP id 1-20020a630401000000b003fc8810f0aemr20306681pge.335.1654510764369;
+        Mon, 06 Jun 2022 03:19:24 -0700 (PDT)
+Received: from localhost.localdomain (ec2-13-113-80-70.ap-northeast-1.compute.amazonaws.com. [13.113.80.70])
+        by smtp.gmail.com with ESMTPSA id o13-20020a170902d4cd00b0015e8d4eb2aesm10234887plg.248.2022.06.06.03.19.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Jun 2022 03:19:24 -0700 (PDT)
+From:   Zhang Boyang <zhangboyang.id@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     ferdinand.blomqvist@gmail.com, tglx@linutronix.de,
+        Zhang Boyang <zhangboyang.id@gmail.com>
+Subject: [PATCH 1/2] rslib: Replace hard-coded 1 with alpha_to[0]
+Date:   Mon,  6 Jun 2022 18:19:00 +0800
+Message-Id: <20220606101901.83538-1-zhangboyang.id@gmail.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220605073857.126497-1-zhangboyang.id@gmail.com>
+References: <20220605073857.126497-1-zhangboyang.id@gmail.com>
 MIME-Version: 1.0
-References: <20220605094018.9782-1-r.stratiienko@gmail.com> <5826286.lOV4Wx5bFT@jernej-laptop>
-In-Reply-To: <5826286.lOV4Wx5bFT@jernej-laptop>
-From:   Roman Stratiienko <r.stratiienko@gmail.com>
-Date:   Mon, 6 Jun 2022 13:16:06 +0300
-Message-ID: <CAGphcdm=sOyppe8sAYMK6aeRXpxiHvj-h-Es6nigCNKBxdBNZQ@mail.gmail.com>
-Subject: Re: [PATCH v2] drm/sun4i: Enable output signal premultiplication for DE2/DE3
-To:     =?UTF-8?Q?Jernej_=C5=A0krabec?= <jernej.skrabec@gmail.com>
-Cc:     mripard@kernel.org, wens@csie.org, airlied@linux.ie,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Samuel Holland <samuel@sholland.org>,
-        dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org, megi@xff.cz
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Currently the rslib allows customizing the finite field by the `gffunc'
+parameter of init_rs_non_canonical(). However, there are several places
+in rslib use hard-coded 1 instead of alpha_to[0], leading to errors if
+gffunc(0) != 1. This patch fixes the problem. One of such `gffunc' might
+be gffunc'(x) = swab16(gffunc(swab16(x))), as gffunc'(0) = swab16(1).
+This special gffunc'(x) is useful when implementing RS coder for
+16 bit foreign-endian symbols.
 
-=D0=B2=D1=81, 5 =D0=B8=D1=8E=D0=BD. 2022 =D0=B3. =D0=B2 23:23, Jernej =C5=
-=A0krabec <jernej.skrabec@gmail.com>:
->
-> Dne nedelja, 05. junij 2022 ob 11:40:18 CEST je Roman Stratiienko napisal=
-(a):
-> > Otherwise alpha value is discarded, resulting incorrect pixel
-> > apperance on the display.
-> >
-> > This also fixes missing transparency for the most bottom layer.
->
-> Can you explain that a bit more?
+Signed-off-by: Zhang Boyang <zhangboyang.id@gmail.com>
+---
+ lib/reed_solomon/decode_rs.c    | 4 ++--
+ lib/reed_solomon/reed_solomon.c | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-Well... I would recommend reading Bartosz Ciechanowski's blog
-https://ciechanow.ski/alpha-compositing/ or the Porter-Duff's 1984
-whitepaper itself.
+diff --git a/lib/reed_solomon/decode_rs.c b/lib/reed_solomon/decode_rs.c
+index 805de84ae83d..6c1d53d1b702 100644
+--- a/lib/reed_solomon/decode_rs.c
++++ b/lib/reed_solomon/decode_rs.c
+@@ -104,7 +104,7 @@
+ 
+  decode:
+ 	memset(&lambda[1], 0, nroots * sizeof(lambda[0]));
+-	lambda[0] = 1;
++	lambda[0] = alpha_to[0];
+ 
+ 	if (no_eras > 0) {
+ 		/* Init lambda to be the erasure locator polynomial */
+@@ -198,7 +198,7 @@
+ 	memcpy(&reg[1], &lambda[1], nroots * sizeof(reg[0]));
+ 	count = 0;		/* Number of roots of lambda(x) */
+ 	for (i = 1, k = iprim - 1; i <= nn; i++, k = rs_modnn(rs, k + iprim)) {
+-		q = 1;		/* lambda[0] is always 0 */
++		q = alpha_to[0];	/* lambda[0] is always 0 */
+ 		for (j = deg_lambda; j > 0; j--) {
+ 			if (reg[j] != nn) {
+ 				reg[j] = rs_modnn(rs, reg[j] + j);
+diff --git a/lib/reed_solomon/reed_solomon.c b/lib/reed_solomon/reed_solomon.c
+index bbc01bad3053..bb4f44c8edba 100644
+--- a/lib/reed_solomon/reed_solomon.c
++++ b/lib/reed_solomon/reed_solomon.c
+@@ -131,9 +131,9 @@ static struct rs_codec *codec_init(int symsize, int gfpoly, int (*gffunc)(int),
+ 	rs->iprim = iprim / prim;
+ 
+ 	/* Form RS code generator polynomial from its roots */
+-	rs->genpoly[0] = 1;
++	rs->genpoly[0] = rs->alpha_to[0];
+ 	for (i = 0, root = fcr * prim; i < nroots; i++, root += prim) {
+-		rs->genpoly[i + 1] = 1;
++		rs->genpoly[i + 1] = rs->alpha_to[0];
+ 		/* Multiply rs->genpoly[] by  @**(root + x) */
+ 		for (j = i; j > 0; j--) {
+ 			if (rs->genpoly[j] != 0) {
+-- 
+2.30.2
 
-HINT: That magic numbers from sun8i_mixer.h ( 0x03010301 ) corresponds
-to SOURCE OVER mode.
-
-As you can see from the blending equation it outputs both pixel value
-and alpha value (non-premultiplied data mode).
-
-Also single-layer non-premultiplied buffers may have for example
-(R255,G255,B255,A2) pixel value, which should be sent as {R2, G2, B2}
-through the physical display interface.
-
-When OUTCTL.PREMULTI disabled pixel, the RGB values passes as is, and
-even 100% transparent data {R255, G255, B255, A0} will appear as 100%
-opaque white.
-
->Also, BSP driver never enables this bit. What are we doing differently?
-
-Are you sure the BSP does not have an issues with presenting
-transparent buffers?
-Does the sunxi even have a customer-feedback mechanism and publicly
-available stable BSP with all the fixes?
-
-Regards,
-Roman
-
->
-> >
-> > Test applications and videos w/ w/o this patch are available at [1].
-> >
-> > [1]: https://github.com/GloDroid/glodroid_tests/issues/1
->
-> As stated in other emails, commit messages should not contain external li=
-nks
-> (per patch rules).
->
-> Best regards,
-> Jernej
->
-> > Signed-off-by: Roman Stratiienko <r.stratiienko@gmail.com>
-> >
-> > ---
-> > Changelog:
-> >
-> > V2: Added code hunk missing in v1
-> > ---
-> >  drivers/gpu/drm/sun4i/sun8i_mixer.c | 5 +++--
-> >  drivers/gpu/drm/sun4i/sun8i_mixer.h | 1 +
-> >  2 files changed, 4 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.c
-> > b/drivers/gpu/drm/sun4i/sun8i_mixer.c index 6b1711a9a71f..ba2932aaed08
-> > 100644
-> > --- a/drivers/gpu/drm/sun4i/sun8i_mixer.c
-> > +++ b/drivers/gpu/drm/sun4i/sun8i_mixer.c
-> > @@ -320,8 +320,9 @@ static void sun8i_mixer_mode_set(struct sunxi_engin=
-e
-> > *engine, else
-> >               val =3D 0;
-> >
-> > -     regmap_update_bits(engine->regs,
-> SUN8I_MIXER_BLEND_OUTCTL(bld_base),
-> > -                        SUN8I_MIXER_BLEND_OUTCTL_INTERLACED,
-> val);
-> > +     val |=3D SUN8I_MIXER_BLEND_OUTCTL_PREMULTIPLY;
-> > +
-> > +     regmap_write(engine->regs, SUN8I_MIXER_BLEND_OUTCTL(bld_base),
-> val);
-> >
-> >       DRM_DEBUG_DRIVER("Switching display mixer interlaced mode %s\n",
-> >                        interlaced ? "on" : "off");
-> > diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.h
-> > b/drivers/gpu/drm/sun4i/sun8i_mixer.h index ebfc276b2464..bc12c95af6f3
-> > 100644
-> > --- a/drivers/gpu/drm/sun4i/sun8i_mixer.h
-> > +++ b/drivers/gpu/drm/sun4i/sun8i_mixer.h
-> > @@ -65,6 +65,7 @@
-> >  #define SUN8I_MIXER_BLEND_ROUTE_PIPE_MSK(n)  (0xf << ((n) << 2))
-> >  #define SUN8I_MIXER_BLEND_ROUTE_PIPE_SHIFT(n)        ((n) << 2)
-> >
-> > +#define SUN8I_MIXER_BLEND_OUTCTL_PREMULTIPLY BIT(0)
-> >  #define SUN8I_MIXER_BLEND_OUTCTL_INTERLACED  BIT(1)
-> >
-> >  #define SUN50I_MIXER_BLEND_CSC_CTL_EN(ch)    BIT(ch)
->
->
->
->
