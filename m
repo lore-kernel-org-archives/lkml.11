@@ -2,81 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B012C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 18:47:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8535BC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 18:47:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231968AbiFFSrn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 14:47:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47408 "EHLO
+        id S231975AbiFFSrs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 14:47:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231955AbiFFSrl (ORCPT
+        with ESMTP id S231961AbiFFSrm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 14:47:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D62FEBEAC;
-        Mon,  6 Jun 2022 11:47:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7ED46B81821;
-        Mon,  6 Jun 2022 18:47:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B90D6C385A9;
-        Mon,  6 Jun 2022 18:47:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654541257;
-        bh=IsApZ6zYzRY50Wc6SfBfLjWAnjCwNGx9boMJlq2gXIg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=qJx4AbhjIlATpvcSuVodvw9HfRzsKG6H3bj3UK7bnHTHPmhfIJHDGwk0EfacNOI+Q
-         cK2hxwhi+iz/QOLrYuBHw/9MD6PPbuid4JLEt+46jb5LPJNniDmOo8/8Dkk9e9dh0y
-         zciaNUYYt2Pa4S2wwWfPlYu7oXf/2p/DpVqwuFJMgKdlmpOgtkfhv3tU0QFVwU3MW2
-         HrA9zHnwTq76Cy04KyYl+g+MqPUizQXn6+/sYLKfgHH0BJD0XGy4rrJc8cOjPQqef2
-         rajRXXhTsBvvaekUuWOyxwXpWjG3Zr1YjddUZH1bKCiZ21xspGQgMXu1EB5QAhO19k
-         AEm7JwzgPeE3g==
-From:   Jiri Olsa <jolsa@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>
-Subject: [PATCHv2 bpf 0/3] bpf: Fix cookie values for kprobe multi
-Date:   Mon,  6 Jun 2022 20:47:28 +0200
-Message-Id: <20220606184731.437300-1-jolsa@kernel.org>
-X-Mailer: git-send-email 2.35.3
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Mon, 6 Jun 2022 14:47:42 -0400
+Received: from sibelius.xs4all.nl (80-61-163-207.fixed.kpn.net [80.61.163.207])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFC22F33AC
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 11:47:38 -0700 (PDT)
+Received: from localhost (bloch.sibelius.xs4all.nl [local])
+        by bloch.sibelius.xs4all.nl (OpenSMTPD) with ESMTPA id 68ea6680;
+        Mon, 6 Jun 2022 20:47:35 +0200 (CEST)
+Date:   Mon, 6 Jun 2022 20:47:35 +0200 (CEST)
+From:   Mark Kettenis <mark.kettenis@xs4all.nl>
+To:     <Conor.Dooley@microchip.com>
+Cc:     kettenis@openbsd.org, kernel@esmil.dk, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, paul.walmsley@sifive.com,
+        palmer@dabbelt.com, aou@eecs.berkeley.edu,
+        devicetree@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <6acff7ab-6f97-b17a-ce9a-a526aac81181@microchip.com>
+        (Conor.Dooley@microchip.com)
+Subject: Re: [PATCH] riscv: dts: startfive: currect number of external
+ interrupts
+References: <20220606162924.71418-1-kettenis@openbsd.org> <6acff7ab-6f97-b17a-ce9a-a526aac81181@microchip.com>
+Message-ID: <d3cdaa88f562dcda@bloch.sibelius.xs4all.nl>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-hi,
-there's bug in kprobe_multi link that makes cookies misplaced when
-using symbols to attach. The reason is that we sort symbols by name
-but not adjacent cookie values. Current test did not find it because
-bpf_fentry_test* are already sorted by name.
+> From: <Conor.Dooley@microchip.com>
+> Date: Mon, 6 Jun 2022 16:45:44 +0000
+> 
+> On 06/06/2022 17:29, Mark Kettenis wrote:
+> > [PATCH] riscv: dts: startfive: currect number of external interrupts
+> 
+> Just as a nit: s/startfive/starfive
 
-v2 changes:
-  - rebased on top of bpf/master
-  - checking if cookies are defined later in swap function [Andrii]
-  - added acks
+I keep making that typo...
 
-thanks,
-jirka
+> > The PLIC integrated on the Vic_U7_Core integrated on the StarFive
+> > JH7100 SoC actually supports 133 external interrupts.  127 of these
+> > are exposed to the outside world; the remainder are used by other
+> > devices that are part of the core-complex such as the L2 cache
+> > controller.  But all 133 interrupts are external interrupts as far
+> > as the PLIC is concerned.  Fixing the property that specifies the
+> > number of external interrupts allows the driver to manage these
+> > additional interrupts, whch is important since the interrupts for
+> > the L2 cache controller are enabled by default.
+> 
+> This sentence is a little hard to follow, maybe:
+> Fix the property so that the driver can manage these additional
+> external interrupts, which is important...
 
+Thanks, yes, that is better.
 
----
-Jiri Olsa (3):
-      selftests/bpf: Shuffle cookies symbols in kprobe multi test
-      ftrace: Keep address offset in ftrace_lookup_symbols
-      bpf: Force cookies array to follow symbols sorting
+> Also, I suppose:
+> Fixes: ec85362fb121 ("RISC-V: Add initial StarFive JH7100 device tree")
 
- kernel/trace/bpf_trace.c                            | 60 +++++++++++++++++++++++++++++++++++++++++++++---------------
- kernel/trace/ftrace.c                               | 13 +++++++++++--
- tools/testing/selftests/bpf/prog_tests/bpf_cookie.c | 78 +++++++++++++++++++++++++++++++++++++++---------------------------------------
- tools/testing/selftests/bpf/progs/kprobe_multi.c    | 24 ++++++++++++------------
- 4 files changed, 107 insertions(+), 68 deletions(-)
+Sure.
+
+I'll send out a V2 with a fixed commit message in a week or so.
+
+> > ---
+> >  arch/riscv/boot/dts/starfive/jh7100.dtsi | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/arch/riscv/boot/dts/starfive/jh7100.dtsi b/arch/riscv/boot/dts/starfive/jh7100.dtsi
+> > index 69f22f9aad9d..f48e232a72a7 100644
+> > --- a/arch/riscv/boot/dts/starfive/jh7100.dtsi
+> > +++ b/arch/riscv/boot/dts/starfive/jh7100.dtsi
+> > @@ -118,7 +118,7 @@ plic: interrupt-controller@c000000 {
+> >                         interrupt-controller;
+> >                         #address-cells = <0>;
+> >                         #interrupt-cells = <1>;
+> > -                       riscv,ndev = <127>;
+> > +                       riscv,ndev = <133>;
+> >                 };
+> > 
+> >                 clkgen: clock-controller@11800000 {
+> > --
+> > 2.36.0
+> > 
+> > 
+> > _______________________________________________
+> > linux-riscv mailing list
+> > linux-riscv@lists.infradead.org
+> > http://lists.infradead.org/mailman/listinfo/linux-riscv
+> 
