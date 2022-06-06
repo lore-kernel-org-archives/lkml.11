@@ -2,53 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FDECC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 15:26:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40AD2C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 15:27:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240628AbiFFP04 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 11:26:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46288 "EHLO
+        id S240764AbiFFP1E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 11:27:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240608AbiFFPZy (ORCPT
+        with ESMTP id S240620AbiFFPZy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 6 Jun 2022 11:25:54 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BD021CD36A;
-        Mon,  6 Jun 2022 08:25:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDCE61CD361;
+        Mon,  6 Jun 2022 08:25:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CA4F5B81A8F;
-        Mon,  6 Jun 2022 15:25:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D88EBC341C6;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7038BB81AB4;
+        Mon,  6 Jun 2022 15:25:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF272C341D2;
         Mon,  6 Jun 2022 15:25:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654529148;
-        bh=dKol4sgwd+aRZfbYxUG7kC/mmhFopuLPynC+Zt89S7k=;
+        s=k20201202; t=1654529149;
+        bh=x+zgkHojqbGSLbsNbvd/i9PJZ2MbJ86c+Jjf+G6oGa8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k8MCp4JwlbfSiWbjBb9YOKkjqALcKFsEqiZhw1T2ZdEB/J+WxHcROaoKSgxGzMdgv
-         OXkF0n+QnyHSO5GpZ2+ILjk752Ho0GB7OlVqiOdjYT1d8GbHepbeOY683K/vlxAnbE
-         IrXywtNhv5sLaZmCD1zmnP1/XW17nqzcOAF8jwzOmCIO8p8go7XYd5u7Op0duDC6rJ
-         7prK0s9J/4B464n/XNT+WFEquyotVYMszxsG2CM9NauiD4jcPLA+gM222vcZ2GIUVa
-         U5LTbyDdJglgF4ii7QRvy8Lr+fkdw3+/L+QoZmH+T0D94m0ROZ1D9GW5N3PxaxSfGj
-         F5rEZL3LDijjQ==
+        b=PYNG3nK8AHw5MqCJ5eFl1o5dhvPPLuwapxPjZueKKxTb39N+ffm6rdT747UwRLwPh
+         /ZzZqdqv5iSBOaZDIrnQp1byf/gB9luz7Jy8Rv8ai/DxArgJTnRoudJCt5JkrM9pru
+         zuYWYg08CVwDzOeFn04aqDvKIkoGJel2yoWD/Rcyuovo61dFemQHHxAIKX6Paes9WX
+         iTsVXIyZ16cuDicOPHfWDBrEnuHVnXHof6rwsQ4zpImORGcUyrD2sZpFjo/JSf36OL
+         rpNXPprnr8kCv/wz8gUMvEST5H/64DYkfNBaigUVqm2wFu5/DTyRydq973sBEusI0H
+         bmoHMdN5hR7hQ==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1nyEby-0012PS-9l;
+        id 1nyEby-0012Pb-Aw;
         Mon, 06 Jun 2022 16:25:46 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
         Jonathan Corbet <corbet@lwn.net>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
         "Mauro Carvalho Chehab" <mchehab+huawei@kernel.org>,
-        Ashish Kalra <ashish.kalra@amd.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Steve Rutherford <srutherford@google.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 13/23] Documentation: KVM: update s390-diag.rst reference
-Date:   Mon,  6 Jun 2022 16:25:35 +0100
-Message-Id: <a43ac709fe3130c21dd54d0a43d0c0fc80f5ad2c.1654529011.git.mchehab@kernel.org>
+        Andre Przywara <andre.przywara@arm.com>,
+        Rob Herring <robh@kernel.org>, linux-kernel@vger.kernel.org
+Subject: [PATCH 15/23] MAINTAINERS: update arm,komeda.yaml reference
+Date:   Mon,  6 Jun 2022 16:25:37 +0100
+Message-Id: <64fde761c04edc287d397dae1be95ac1c2886c74.1654529011.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1654529011.git.mchehab@kernel.org>
 References: <cover.1654529011.git.mchehab@kernel.org>
@@ -58,35 +55,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Changeset daec8d408308 ("Documentation: KVM: add separate directories for architecture-specific documentation")
-renamed: Documentation/virt/kvm/s390-diag.rst
-to: Documentation/virt/kvm/s390/s390-diag.rst.
+Changeset 0f6983509ea1 ("dt-bindings: display: convert Arm Komeda to DT schema")
+renamed: Documentation/devicetree/bindings/display/arm,komeda.txt
+to: Documentation/devicetree/bindings/display/arm,komeda.yaml.
 
 Update its cross-reference accordingly.
 
-Fixes: daec8d408308 ("Documentation: KVM: add separate directories for architecture-specific documentation")
+Fixes: 0f6983509ea1 ("dt-bindings: display: convert Arm Komeda to DT schema")
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
 
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH 00/23] at: https://lore.kernel.org/all/cover.1654529011.git.mchehab@kernel.org/
 
- Documentation/virt/kvm/x86/hypercalls.rst | 2 +-
+ MAINTAINERS | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/virt/kvm/x86/hypercalls.rst b/Documentation/virt/kvm/x86/hypercalls.rst
-index e56fa8b9cfca..10db7924720f 100644
---- a/Documentation/virt/kvm/x86/hypercalls.rst
-+++ b/Documentation/virt/kvm/x86/hypercalls.rst
-@@ -22,7 +22,7 @@ S390:
-   number in R1.
- 
-   For further information on the S390 diagnose call as supported by KVM,
--  refer to Documentation/virt/kvm/s390-diag.rst.
-+  refer to Documentation/virt/kvm/s390/s390-diag.rst.
- 
- PowerPC:
-   It uses R3-R10 and hypercall number in R11. R4-R11 are used as output registers.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index c20bd168d209..aba64cae8f68 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1542,7 +1542,7 @@ M:	Mihail Atanassov <mihail.atanassov@arm.com>
+ L:	Mali DP Maintainers <malidp@foss.arm.com>
+ S:	Supported
+ T:	git git://anongit.freedesktop.org/drm/drm-misc
+-F:	Documentation/devicetree/bindings/display/arm,komeda.txt
++F:	Documentation/devicetree/bindings/display/arm,komeda.yaml
+ F:	Documentation/gpu/komeda-kms.rst
+ F:	drivers/gpu/drm/arm/display/include/
+ F:	drivers/gpu/drm/arm/display/komeda/
 -- 
 2.36.1
 
