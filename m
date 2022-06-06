@@ -2,77 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC5BFC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 16:05:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70035C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 16:06:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241538AbiFFQFd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 12:05:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40096 "EHLO
+        id S241600AbiFFQGT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 12:06:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241446AbiFFQFa (ORCPT
+        with ESMTP id S241578AbiFFQGP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 12:05:30 -0400
-Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F672166447
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 09:05:21 -0700 (PDT)
-Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-30fdbe7467cso112520017b3.1
-        for <linux-kernel@vger.kernel.org>; Mon, 06 Jun 2022 09:05:21 -0700 (PDT)
+        Mon, 6 Jun 2022 12:06:15 -0400
+Received: from relayaws-01.paragon-software.com (relayaws-01.paragon-software.com [35.157.23.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 046B819FF6B;
+        Mon,  6 Jun 2022 09:06:13 -0700 (PDT)
+Received: from relayfre-01.paragon-software.com (unknown [172.30.72.12])
+        by relayaws-01.paragon-software.com (Postfix) with ESMTPS id B7D76264C;
+        Mon,  6 Jun 2022 16:05:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hkb/bGVyuMqTZRXVw6tHXbfDJb2Rv/dx6ERatAJ2rC0=;
-        b=sWnen0QbVrpHJrYP5g4e/CpughJv5Xsf8460mMdBKUx4OTmW9Qr3EJjZH24KgWua78
-         7SO6mkI+7tUe89LfbJsvCFDzlzdNeMw/gz1PVyPzlV50tpFc3IhJK1mSOpN9IJnBXgIg
-         e0zSuMMRoHlevEhKJFjxeieKivjrkcWH3fivpf+3ozagiT6DrvjNMAmWx+uWXx/QH3Yb
-         hKQPIrtydMfIlf4AGKk5CQ8cjr3EG1XPrlTBkEkTQbKjS6zhKIElw0kkgYB+uUipIsRQ
-         qrBsNJCuvIfH2Ro5oe7HsiF7IpkIq6163YEEyjL0hHD0J0b/x/cAuqcGxch9bKP3rKD8
-         8n9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hkb/bGVyuMqTZRXVw6tHXbfDJb2Rv/dx6ERatAJ2rC0=;
-        b=JKfg88H1Mtn3EuUpSYRjh3l338vIGgyuSr16RpuJYKplkhQeB/uqsAgnRkuBHnUOx3
-         2U5aODHZ2PETm6q2pzksBXml6MbgzYxrs4Kjlj2CECS9KDW3xa2ZIlTS+aWYMwwzh/3J
-         JM+bnIU2iv8F/9M0ziwZBFoBMHYvJ4+BbMPnaX+UMOvXD+RClrIC+v8EDntv0nNJ3Nxc
-         /y1aeKACAUb8k4f0QJ3tXPhNSaoJklPPebQt7gb1YAgsmHFRqhDDpWm7sxtRUvtFtBLu
-         ltwgUJTe3W4hn70RF9dvM9AqRduH2ed/OcVBp1dqnPKxJIesz54BOSb+NN7+++4QuL3x
-         aXQQ==
-X-Gm-Message-State: AOAM533WtQ0s1qBX1Y/3uy0OO4uTdhosSGiwpZc9WpDduieeDlxBXsCu
-        C/YzQMoxwWKSFmX6iZY6i8C0Xw2fl8VPtQDsKZVnjw==
-X-Google-Smtp-Source: ABdhPJwva2zNMNdY7W28yUe2zvaMfHOUFz8u4sZGR3aghRSe9HFp2eMiDV5XEb1NIf2ZbVxtbmqrDyTidCAc4E0ed5s=
-X-Received: by 2002:a81:4811:0:b0:30c:8021:4690 with SMTP id
- v17-20020a814811000000b0030c80214690mr26771026ywa.47.1654531520769; Mon, 06
- Jun 2022 09:05:20 -0700 (PDT)
+        d=paragon-software.com; s=mail; t=1654531535;
+        bh=YC954AWf4ar090GjDL597H0eq+vVgEaQ+bJ5qpgYd/k=;
+        h=Date:To:CC:From:Subject;
+        b=Bc6ubdrza7z2nTSXbqcXOFvPTnlp87pXcFXdBTVo2gX1BryWPdJY+MkfFCc4VatFN
+         zu1boaKtxXgL/40tEHlajJrvLOJMdc0JjoGCgDVmZjO44ZrzGrAptUVNsG1Cb298fb
+         ER4+T83BdToH0/va+nA7N+WPBoY7Mx3qF/ABuXos=
+Received: from dlg2.mail.paragon-software.com (vdlg-exch-02.paragon-software.com [172.30.1.105])
+        by relayfre-01.paragon-software.com (Postfix) with ESMTPS id EC8C82469;
+        Mon,  6 Jun 2022 16:06:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paragon-software.com; s=mail; t=1654531571;
+        bh=YC954AWf4ar090GjDL597H0eq+vVgEaQ+bJ5qpgYd/k=;
+        h=Date:To:CC:From:Subject;
+        b=LLXnxji9bgLV7PfybHzeFxe7ce+Rz8f21T7TLROgiSSJwX5GXpHY9TNSeA4VhA8y0
+         J/oMpoOCiE7hS/449qobAvw7Z1M/MjWDx7hd9Gvhzn4EhpmAOe/lwoBQI/DGLDxtnj
+         AEGZNP2gJKSM5gllQlF9iD0QJeuIaybzEFtA3KQA=
+Received: from [172.30.8.65] (172.30.8.65) by
+ vdlg-exch-02.paragon-software.com (172.30.1.105) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Mon, 6 Jun 2022 19:06:11 +0300
+Message-ID: <475f1975-7275-de01-f947-677e3f184276@paragon-software.com>
+Date:   Mon, 6 Jun 2022 19:06:11 +0300
 MIME-Version: 1.0
-References: <20220606070804.40268-1-songmuchun@bytedance.com>
-In-Reply-To: <20220606070804.40268-1-songmuchun@bytedance.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 6 Jun 2022 09:05:09 -0700
-Message-ID: <CANn89iJwuW6PykKE03wB24KATtk88tS4eSHH42i+dBFtaK8zsg@mail.gmail.com>
-Subject: Re: [PATCH] tcp: use kvmalloc_array() to allocate table_perturb
-To:     Muchun Song <songmuchun@bytedance.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Content-Language: en-US
+To:     <ntfs3@lists.linux.dev>
+CC:     <linux-kernel@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>
+From:   Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+Subject: [PATCH] fs/ntfs3: Add missing error check
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [172.30.8.65]
+X-ClientProxiedBy: vdlg-exch-02.paragon-software.com (172.30.1.105) To
+ vdlg-exch-02.paragon-software.com (172.30.1.105)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 6, 2022 at 12:08 AM Muchun Song <songmuchun@bytedance.com> wrote:
->
-> In our server, there may be no high order (>= 6) memory since we reserve
-> lots of HugeTLB pages when booting.  Then the system panic.  So use
-> kvmalloc_array() to allocate table_perturb.
->
-> Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+We must check return value of log_read_rst
 
-Please add a Fixes: tag and CC original author ?
+Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+---
+  fs/ntfs3/fslog.c | 2 ++
+  1 file changed, 2 insertions(+)
 
-Thanks.
+diff --git a/fs/ntfs3/fslog.c b/fs/ntfs3/fslog.c
+index 915f42cf07bc..abc8aeffc364 100644
+--- a/fs/ntfs3/fslog.c
++++ b/fs/ntfs3/fslog.c
+@@ -3843,6 +3843,8 @@ int log_replay(struct ntfs_inode *ni, bool *initialized)
+  		goto check_restart_area;
+  
+  	err = log_read_rst(log, l_size, false, &rst_info2);
++	if (err)
++		goto out;
+  
+  	/* Determine which restart area to use. */
+  	if (!rst_info2.restart || rst_info2.last_lsn <= rst_info.last_lsn)
+-- 
+2.36.1
+
