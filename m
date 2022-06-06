@@ -2,99 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D985CC43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 08:42:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B01EC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 08:42:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232614AbiFFIm0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 04:42:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50118 "EHLO
+        id S232404AbiFFImh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 04:42:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232360AbiFFIkS (ORCPT
+        with ESMTP id S232395AbiFFIjg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 04:40:18 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7334E62229
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 01:40:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654504814; x=1686040814;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=oOxeXtBgPlXpW8ROnnhWNqbTJmfs8awWagnML1OrpXo=;
-  b=lDU73r9K/FazVxg37g91tZ2VnjjIQgP4B+Pm1c4fhXgMjT6ifYLu85Sa
-   tPrq2qdHmbe5eRxZBpT8UOY1+k10c+ItxXoY0IXd8cfx+UFdluuQ2vnEI
-   2yWqv6hDpU3KTRcgWRkcmIQIuV/uEO8r84JwkIim90xNKUH0mTArdKmsa
-   8xhcGt+UIl36ZOZoQXPev1OEsCrR4T6MSfURjxWKM783cCQmYGvaa0xjX
-   qMQkrdikdZmk5lyCHPfaqGoVCynsQzrSVf0i7j76c0+bcJcciwfNyMmS2
-   ut/kd+jYv7BG2tBqmfTBT847OsA7PXcAu2GqAI0AnVV9V7La1r6hHRHC/
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="258886197"
-X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="258886197"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 01:40:13 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="608592370"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 06 Jun 2022 01:40:11 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ny8HS-000CcX-VE;
-        Mon, 06 Jun 2022 08:40:10 +0000
-Date:   Mon, 6 Jun 2022 16:40:01 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jungo Lin <jungo.lin@mediatek.com>
-Cc:     Paul Gazzillo <paul@pgazz.com>,
-        Necip Fazil Yildiran <fazilyildiran@gmail.com>,
-        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Bibby Hsieh <bibby.hsieh@mediatek.com>,
-        Tomasz Figa <tfiga@chromium.org>,
-        Nicolas Boichat <drinkcat@chromium.org>
-Subject: [jsarha:topic/chromeos-4.19-s0ix 9034/9999] kismet: WARNING: unmet
- direct dependencies detected for MTK_SCP when selected by
- VIDEO_MEDIATEK_ISP_PASS1
-Message-ID: <202206061624.sd15IDv3-lkp@intel.com>
+        Mon, 6 Jun 2022 04:39:36 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6B25B340E5
+        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 01:39:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654504768;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=ypMuOqTgTs5fR/SVFA8vgdnkIg+2FoxNQIZyHecvz0A=;
+        b=UwWC42Ps8QgY4nZ9/faUqAnN1J4igVH8yehlS7M0zw/HKq8OXnMvVpbr79xdoBIrf3WmMD
+        WrIENIv1QhrJE4Slci/yED1KTzbDJ43baoWTWInt47Yi7wmrXwI8fQBi8lyKTMBPzBunlL
+        S+2Eb9+q36I57Y60fpZYY/QIHXzuzo4=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-35-qbNHrptDO92AJQPUiBeNlw-1; Mon, 06 Jun 2022 04:39:25 -0400
+X-MC-Unique: qbNHrptDO92AJQPUiBeNlw-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5C3D9800882;
+        Mon,  6 Jun 2022 08:39:25 +0000 (UTC)
+Received: from MiWiFi-R3L-srv.redhat.com (ovpn-14-4.pek2.redhat.com [10.72.14.4])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1E2D71121314;
+        Mon,  6 Jun 2022 08:39:21 +0000 (UTC)
+From:   Baoquan He <bhe@redhat.com>
+To:     akpm@linux-foundation.org
+Cc:     npiggin@gmail.com, urezki@gmail.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, Baoquan He <bhe@redhat.com>
+Subject: [PATCH 0/5] Cleanup patches of vmalloc
+Date:   Mon,  6 Jun 2022 16:39:04 +0800
+Message-Id: <20220606083909.363350-1-bhe@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/jsarha/linux topic/chromeos-4.19-s0ix
-head:   430bdaa0a8c38697780f45a148964d71951df11f
-commit: 910bef3a45ed1e7f972f68e83327775901629aa7 [9034/9999] BACKPORT: FROMLIST: media: platform: Add Mediatek ISP P1 V4L2 device driver
-config: (https://download.01.org/0day-ci/archive/20220606/202206061624.sd15IDv3-lkp@intel.com/config)
-reproduce:
-        # https://github.com/jsarha/linux/commit/910bef3a45ed1e7f972f68e83327775901629aa7
-        git remote add jsarha https://github.com/jsarha/linux
-        git fetch --no-tags jsarha topic/chromeos-4.19-s0ix
-        git checkout 910bef3a45ed1e7f972f68e83327775901629aa7
-        # 1. reproduce by kismet
-           # install kmax per https://github.com/paulgazz/kmax/blob/master/README.md
-           kismet --linux-ksrc=linux --selectees CONFIG_MTK_SCP --selectors CONFIG_VIDEO_MEDIATEK_ISP_PASS1 -a=arm64
-        # 2. reproduce by make
-           # save the config file to linux source tree
-           cd linux
-           make ARCH=arm64 olddefconfig
+Some cleanup patches found when reading vmalloc code.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Built kernel and run on x86_64 machine.
 
+Baoquan He (5):
+  mm/vmalloc: remove the unnecessary type check
+  mm/vmalloc: remove the redundant boundary check
+  mm/vmalloc: fix typo in local variable name
+  mm/vmalloc: Add code comment for find_vmap_area_exceed_addr()
+  mm: ioremap: rename ioremap_page_range() to ioremap_range()
 
-kismet warnings: (new ones prefixed by >>)
->> kismet: WARNING: unmet direct dependencies detected for MTK_SCP when selected by VIDEO_MEDIATEK_ISP_PASS1
-   
-   WARNING: unmet direct dependencies detected for MTK_SCP
-     Depends on [n]: REMOTEPROC [=n] && ARCH_MEDIATEK [=n]
-     Selected by [y]:
-     - VIDEO_MEDIATEK_ISP_PASS1 [=y] && MEDIA_SUPPORT [=y] && V4L_PLATFORM_DRIVERS [=y] && VIDEO_V4L2 [=y] && VIDEO_V4L2_SUBDEV_API [=y] && (ARCH_MEDIATEK [=n] || COMPILE_TEST [=y])
-   
-   WARNING: unmet direct dependencies detected for SND_SOC_MAX98373
-     Depends on [n]: SOUND [=y] && !UML && SND [=y] && SND_SOC [=y] && I2C [=n]
-     Selected by [y]:
-     - SND_SOC_INTEL_CNL_MAX98373_MACH [=y] && SOUND [=y] && !UML && SND [=y] && SND_SOC [=y] && SND_SOC_INTEL_MACH [=y] && SND_SOC_INTEL_SKYLAKE [=y]
+ Documentation/ia64/aliasing.rst  |  2 +-
+ arch/alpha/kernel/proto.h        |  2 +-
+ arch/arc/mm/ioremap.c            |  2 +-
+ arch/arm/mm/ioremap.c            |  6 +++---
+ arch/arm64/mm/ioremap.c          |  2 +-
+ arch/hexagon/mm/ioremap.c        |  2 +-
+ arch/ia64/mm/ioremap.c           |  2 +-
+ arch/mips/loongson64/init.c      |  2 +-
+ arch/mips/mm/ioremap.c           |  2 +-
+ arch/openrisc/mm/ioremap.c       |  2 +-
+ arch/parisc/mm/ioremap.c         |  2 +-
+ arch/powerpc/kernel/isa-bridge.c |  2 +-
+ arch/powerpc/kernel/pci_64.c     |  2 +-
+ arch/powerpc/mm/ioremap.c        |  2 +-
+ arch/s390/pci/pci.c              |  2 +-
+ arch/sh/kernel/cpu/sh4/sq.c      |  2 +-
+ arch/sh/mm/ioremap.c             |  2 +-
+ arch/x86/mm/ioremap.c            |  2 +-
+ arch/xtensa/mm/ioremap.c         |  2 +-
+ drivers/pci/pci.c                |  2 +-
+ include/linux/io.h               |  4 ++--
+ mm/ioremap.c                     |  2 +-
+ mm/vmalloc.c                     | 27 ++++++++++++---------------
+ 23 files changed, 37 insertions(+), 40 deletions(-)
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.34.1
+
