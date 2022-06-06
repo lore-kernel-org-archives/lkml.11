@@ -2,48 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F449C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 10:08:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C71D1C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 10:09:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233766AbiFFKHq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 06:07:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40544 "EHLO
+        id S233511AbiFFKJC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 06:09:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233349AbiFFKFl (ORCPT
+        with ESMTP id S233257AbiFFKGH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 06:05:41 -0400
+        Mon, 6 Jun 2022 06:06:07 -0400
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D144F10A62B;
-        Mon,  6 Jun 2022 03:05:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AB9B137C52;
+        Mon,  6 Jun 2022 03:06:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654509937; x=1686045937;
+  t=1654509966; x=1686045966;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=wwmLHiqZboEiZnfiV6e1hu8KZfAipQe3aQ1BtK145s8=;
-  b=Dtd4fF2XKtLCivDKQAnG7tfL1+a+pRMAlyjmq21sLcRPF6Ew8a4TdQUx
-   ZMM5Du9uqnWovlrfnQICXE/o5JT4an8xaPBoe2c2+Yfup9/911Dy7TO54
-   Tqrs7EStMJFHPpFS0qZAFlIP8e9BTzWBx3WojfvtKliTJV44M6QUFsNra
-   qW+yZbdgGMlVi68YM1jDJ9pHq4Ee/S2wKDNPfTqxELlGWGKHcWPyin48M
-   qNODD4wvyFF7lcWwERGbHhKJkcQ++1qHY1hhQM48BYsZhfPbjQpvs3AJr
-   KuGio716yOljfHoHwFpVcwC1tOOJJkA7bejkI6Ct/w/FnN+Wq6+FTlMcj
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="362987057"
+  bh=1ykVVHaG5+z6JMvFP2Lra95WjkVnEbI89bCUkQzfrvg=;
+  b=SyChIlk2zTGpzc9kYp/5fHLX7TZ/hwkxW/cyWyud8yU949+lLrRbyt9B
+   5TGkFzBeOWFNrrkS90kYRCkaG9monXYf2yxJ+q1yHyacyZVvZkUBJURQ4
+   pzAim9ecCJjS3xKqx2beJxswfQGwUluQXr3qk16r7q+4Z5ZJ+ATMQOm48
+   lgrXQ+jmaeK7juybmHtX8lP3SdiqcmCo/iF6uDyMOgQzSV/5TDmWe5XDd
+   ggHWcMlVO2oDH+s1tBXj8Wjp/Px2iV38AQw5QwKUXBSM9jBV1arIcP4Io
+   YQAoO3ypsMiC/91tnjPN29SAI/0qUzg8KupfpNYgEkS4qxrlgO4TnJY+V
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="362987078"
 X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="362987057"
+   d="scan'208";a="362987078"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 03:05:37 -0700
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 03:06:05 -0700
 X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="635523724"
+   d="scan'208";a="635523827"
 Received: from amkossek-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.57.11])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 03:05:35 -0700
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 03:06:04 -0700
 From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org
+        Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-kernel@vger.kernel.org
 Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 15/36] serial: fsl_lpuart: Fill in rs485_supported
-Date:   Mon,  6 Jun 2022 13:04:12 +0300
-Message-Id: <20220606100433.13793-16-ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH 25/36] serial: 8250_dwlib: Remove serial_rs485 sanitization
+Date:   Mon,  6 Jun 2022 13:04:22 +0300
+Message-Id: <20220606100433.13793-26-ilpo.jarvinen@linux.intel.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220606100433.13793-1-ilpo.jarvinen@linux.intel.com>
 References: <20220606100433.13793-1-ilpo.jarvinen@linux.intel.com>
@@ -54,37 +56,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add information on supported serial_rs485 features.
+Serial core handles serial_rs485 sanitization and rs485 struct
+assignment. As serial_rs485 is already clear for the non-RS485 case by
+serial core, there no need to clear flags in the driver.
 
 Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 ---
- drivers/tty/serial/fsl_lpuart.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/tty/serial/8250/8250_dwlib.c | 10 ----------
+ 1 file changed, 10 deletions(-)
 
-diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index 509a7912fa9d..88692dc9eefa 100644
---- a/drivers/tty/serial/fsl_lpuart.c
-+++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -2621,6 +2621,11 @@ static struct uart_driver lpuart_reg = {
- 	.cons		= LPUART_CONSOLE,
- };
+diff --git a/drivers/tty/serial/8250/8250_dwlib.c b/drivers/tty/serial/8250/8250_dwlib.c
+index 120b29519d74..c83e7eaf3877 100644
+--- a/drivers/tty/serial/8250/8250_dwlib.c
++++ b/drivers/tty/serial/8250/8250_dwlib.c
+@@ -93,9 +93,6 @@ static int dw8250_rs485_config(struct uart_port *p, struct serial_rs485 *rs485)
+ 	tcr &= ~DW_UART_TCR_XFER_MODE;
  
-+static const struct serial_rs485 lpuart_rs485_supported = {
-+	.flags = SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND | SER_RS485_RTS_AFTER_SEND,
-+	/* delay_rts_* and RX_DURING_TX are not supported */
-+};
-+
- static int lpuart_probe(struct platform_device *pdev)
- {
- 	const struct lpuart_soc_data *sdata = of_device_get_match_data(&pdev->dev);
-@@ -2660,6 +2665,7 @@ static int lpuart_probe(struct platform_device *pdev)
- 		sport->port.rs485_config = lpuart32_config_rs485;
- 	else
- 		sport->port.rs485_config = lpuart_config_rs485;
-+	sport->port.rs485_supported = &lpuart_rs485_supported;
+ 	if (rs485->flags & SER_RS485_ENABLED) {
+-		/* Clear unsupported flags. */
+-		rs485->flags &= SER_RS485_ENABLED | SER_RS485_RX_DURING_TX |
+-				SER_RS485_RTS_ON_SEND | SER_RS485_RTS_AFTER_SEND;
+ 		tcr |= DW_UART_TCR_RS485_EN;
  
- 	sport->ipg_clk = devm_clk_get(&pdev->dev, "ipg");
- 	if (IS_ERR(sport->ipg_clk)) {
+ 		if (rs485->flags & SER_RS485_RX_DURING_TX) {
+@@ -111,8 +108,6 @@ static int dw8250_rs485_config(struct uart_port *p, struct serial_rs485 *rs485)
+ 		dw8250_writel_ext(p, DW_UART_DE_EN, 1);
+ 		dw8250_writel_ext(p, DW_UART_RE_EN, 1);
+ 	} else {
+-		rs485->flags = 0;
+-
+ 		tcr &= ~DW_UART_TCR_RS485_EN;
+ 	}
+ 
+@@ -127,11 +122,6 @@ static int dw8250_rs485_config(struct uart_port *p, struct serial_rs485 *rs485)
+ 
+ 	dw8250_writel_ext(p, DW_UART_TCR, tcr);
+ 
+-	rs485->delay_rts_before_send = 0;
+-	rs485->delay_rts_after_send = 0;
+-
+-	p->rs485 = *rs485;
+-
+ 	return 0;
+ }
+ 
 -- 
 2.30.2
 
