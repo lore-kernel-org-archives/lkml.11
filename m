@@ -2,128 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 226D9C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:34:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73E22C43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 14:35:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239802AbiFFOeO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 10:34:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55670 "EHLO
+        id S239825AbiFFOfQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 10:35:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239732AbiFFOeM (ORCPT
+        with ESMTP id S239809AbiFFOe4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 6 Jun 2022 10:34:12 -0400
-Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DDC42D1FE
-        for <linux-kernel@vger.kernel.org>; Mon,  6 Jun 2022 07:34:10 -0700 (PDT)
-Received: from in01.mta.xmission.com ([166.70.13.51]:34356)
-        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nyDo0-00D2LX-5K; Mon, 06 Jun 2022 08:34:08 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:60040 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nyDny-007IX0-Uu; Mon, 06 Jun 2022 08:34:07 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Hao Wu <guoyuanchao1202@gmail.com>
-Cc:     brauner@kernel.org, keescook@chromium.org, axboe@kernel.dk,
-        peterz@infradead.org, elver@google.com, tglx@linutronix.de,
-        legion@kernel.org, linux-kernel@vger.kernel.org
-References: <20220223133540.24230-1-guoyuanchao1202@gmail.com>
-Date:   Mon, 06 Jun 2022 09:33:17 -0500
-In-Reply-To: <20220223133540.24230-1-guoyuanchao1202@gmail.com> (Hao Wu's
-        message of "Wed, 23 Feb 2022 21:35:40 +0800")
-Message-ID: <878rq96evm.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Mon, 6 Jun 2022 10:34:56 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE0772E0AA;
+        Mon,  6 Jun 2022 07:34:55 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id 25so18832420edw.8;
+        Mon, 06 Jun 2022 07:34:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=UBnTnofx1egjVYMXsVKnzCrT8go4XNCwGGXlPsFzsQA=;
+        b=azV5GzMMa++q0Epo0MDaOVueIR/LwrW+VySLdOxKsvHyTQCveKvSoWdowrxeTsXPis
+         ADZ8YkUbT/PDj2crA7LNxwxdiS4cq4XsPY0uZpGm0x7jEeMaU0G9Bg8dYGf/jdzv+9we
+         s7/qhctFIOJmUnwcJ28H+yT9Z0eiiNnazOu6o9wBPLmMEDOpwJaKVbecD0UQjb+CarAh
+         al2usVJSQfVhO3neOz3ESYjQDU2csK5R1sE9uQDCdq42GlTX8ga3dBlZUTkocXYFkdsw
+         vQBstuts0wA5bVPDtO6XRccnYYhtA1Z2flHrqkLctTskaoeftkCx6/3ymFoBjYvv2JgR
+         fEng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UBnTnofx1egjVYMXsVKnzCrT8go4XNCwGGXlPsFzsQA=;
+        b=FVpPCIrF17M2MUwSlUoeSKr9D0U6vHkcGMF0SfqkQwd0XtaoXYSnbDLk8ZTfvLZg2u
+         yVJRBM917aN0Z7uVyuphpWDo5Vpgjvc3q7uOpowcM9y7j08XQPnwAHCm4VZAgpFhK7AS
+         wciabWMPOSCsqixUemh+cyOtEGsRbltJPE+yZfVuYCX4wFsbGQLOGitSBG+x6gMhrUdT
+         fjZW08/hKb88r+uUt/B0p8vw2n8ju1HQ1KohC2uXaWeW9Lb40C+iAfVkuRstvkJKz1R9
+         xcgtek9ZFDgyy84hXZpj8jDlr8foBcrLBjE77CFGL0USr2Bki/f+lOoEx/KmLRrJCcNx
+         /SXw==
+X-Gm-Message-State: AOAM531NGYlEJhnkIdm2+4e6vf9wGItGEpAajUhsVRzOaXIWgP0DIjmt
+        IeSJ3nP7gWGtZQux4/5+52PhhwzLOSIz89X73hE=
+X-Google-Smtp-Source: ABdhPJwfn4g/UnCK2hjftmJUfPtxQcX/+HyTUYgLkCK+SY1VM8dNkEyDTGXdKyzApGi+XESSlUkKXuaI9VnefDP+/SQ=
+X-Received: by 2002:aa7:d481:0:b0:42d:d5fd:f963 with SMTP id
+ b1-20020aa7d481000000b0042dd5fdf963mr27412796edr.209.1654526094287; Mon, 06
+ Jun 2022 07:34:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1nyDny-007IX0-Uu;;;mid=<878rq96evm.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX1/tCTIH6sFgbMpYmO8+BYSCq+lVTT7M1/Q=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH v1] signal.c: repeatedly set the TIF_SIGPENDING flag
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+References: <20220605083825.9854-1-wangxiang@cdjrlc.com>
+In-Reply-To: <20220605083825.9854-1-wangxiang@cdjrlc.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 6 Jun 2022 16:34:17 +0200
+Message-ID: <CAHp75VcXnKHnEkov0i-=D_qPsVCY_PjasJ9Dni99fj+uKpHjdQ@mail.gmail.com>
+Subject: Re: [PATCH] serial: 8250: 8250_omap: Fix syntax errors in comments
+To:     Xiang wangx <wangxiang@cdjrlc.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, Nishanth Menon <nm@ti.com>,
+        Tony Lindgren <tony@atomide.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hao Wu <guoyuanchao1202@gmail.com> writes:
-
-> The recalc_sigpending_and_wake() function calls recalc_sigpending_tsk() and signal_wake_up(),
-> both of which set the TIF_SIGPENDING flag, so when recalc_sigpending_tsk() returns true,
-> the TIF_SIGPENDING flag will be set twice.
+On Mon, Jun 6, 2022 at 5:25 AM Xiang wangx <wangxiang@cdjrlc.com> wrote:
 >
-> Maybe we can take away the set TIF_SIGPENDING logic from recalc_sigpending_tsk(),
-> so that recalc_sigpending_tsk() just determines whether the TIF_SIGPENDING flag needs to be set,
-> and the actual set TIF_SIGPENDING flag logic is executed outside.
->
-> kernel/signal.c:175: recalc_sigpending_and_wake()
-> kernel/signal.c:154: recalc_sigpending_tsk()
+> Delete the redundant word 'have'.
 
-I just saw this.
+Not critical right now, but you may shorten the subject by dropping
+"8250:" part in the prefix, just leaving "serial: 8250_omap:" is
+enough.
 
-I agree that it is unfortunate that recalc_sigpending_and_wake sets
-TIF_SIGPENDING twice.
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 
-Looking at the code only force_sig_info_to_task calls
-recalc_sigpending_and_wake.  I have some work underway that removes the
-need to call recalc_sigpending in force_sig_info_to_task so I believe
-that will resolve the matter.
-
-Regardless of changes I have planned force_sig_info_to_task appears to
-be the proper place to resolve this issue.  It looks like
-complete_signal called from __send_signal_locked called from
-send_signal_locked called from force_sig_info_to_task calls
-signal_wake_up if that is needed at all.  So I believe the issue you are
-seeing could be solved be simply replacing recalc_sigpending_and_wake
-with recalc_sigpending_tsk.
-
-Some more analysis might reveal and even nicer clean up.  If
-sending the signal is always going to call signal_wake_up calling
-recalc_sigpending_tsk might not even be necessary.
-
-Good spotting of a rough spot in the code.  I don't think your proposed
-change is the way we should go about fixing it.
-
-Eric
->
-> Signed-off-by: Hao Wu <guoyuanchao1202@gmail.com>
+> Signed-off-by: Xiang wangx <wangxiang@cdjrlc.com>
 > ---
->  kernel/signal.c | 10 +++++++---
->  1 file changed, 7 insertions(+), 3 deletions(-)
+>  drivers/tty/serial/8250/8250_omap.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 >
-> diff --git a/kernel/signal.c b/kernel/signal.c
-> index 9b04631acde8..6c5a00cd7e9a 100644
-> --- a/kernel/signal.c
-> +++ b/kernel/signal.c
-> @@ -157,7 +157,6 @@ static bool recalc_sigpending_tsk(struct task_struct *t)
->  	    PENDING(&t->pending, &t->blocked) ||
->  	    PENDING(&t->signal->shared_pending, &t->blocked) ||
->  	    cgroup_task_frozen(t)) {
-> -		set_tsk_thread_flag(t, TIF_SIGPENDING);
->  		return true;
->  	}
-> @@ -181,8 +180,11 @@ void recalc_sigpending_and_wake(struct task_struct *t)
->  void recalc_sigpending(void)
->  {
-> -	if (!recalc_sigpending_tsk(current) && !freezing(current))
-> +	if (recalc_sigpending_tsk(current)) {
-> +		set_tsk_thread_flag(t, TIF_SIGPENDING);
-> +	} else if (!freezing(current)) {
->  		clear_thread_flag(TIF_SIGPENDING);
-> +	}
+> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+> index ac8bfa042391..a7a95c013fe6 100644
+> --- a/drivers/tty/serial/8250/8250_omap.c
+> +++ b/drivers/tty/serial/8250/8250_omap.c
+> @@ -345,7 +345,7 @@ static void omap8250_restore_regs(struct uart_8250_port *up)
 >  }
->  EXPORT_SYMBOL(recalc_sigpending);
-> @@ -2325,7 +2327,9 @@ static void ptrace_stop(int exit_code, int why, int clear_code, kernel_siginfo_t
->  	 * So check for any that we should take before resuming user mode.
->  	 * This sets TIF_SIGPENDING, but never clears it.
->  	 */
-> -	recalc_sigpending_tsk(current);
-> +	if (recalc_sigpending_tsk(current)) {
-> +		set_tsk_thread_flag(t, TIF_SIGPENDING);
-> +	}
->  }
->  static void ptrace_do_notify(int signr, int exit_code, int why)
-> 2.32.0
+>
+>  /*
+> - * OMAP can use "CLK / (16 or 13) / div" for baud rate. And then we have have
+> + * OMAP can use "CLK / (16 or 13) / div" for baud rate. And then we have
+>   * some differences in how we want to handle flow control.
+>   */
+>  static void omap_8250_set_termios(struct uart_port *port,
+> --
+> 2.36.1
+>
+
+
+-- 
+With Best Regards,
+Andy Shevchenko
