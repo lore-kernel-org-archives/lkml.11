@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01098C43334
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 18:23:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13111C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 18:23:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231675AbiFFSXh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 14:23:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55682 "EHLO
+        id S231650AbiFFSXj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 14:23:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231583AbiFFSXX (ORCPT
+        with ESMTP id S231586AbiFFSXX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 6 Jun 2022 14:23:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 001391059F8;
-        Mon,  6 Jun 2022 11:23:21 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22A95106550;
+        Mon,  6 Jun 2022 11:23:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9BC0161336;
-        Mon,  6 Jun 2022 18:23:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B6CEC341C0;
+        by ams.source.kernel.org (Postfix) with ESMTPS id CC8F9B81AE6;
         Mon,  6 Jun 2022 18:23:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 012F8C3411E;
+        Mon,  6 Jun 2022 18:23:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654539801;
-        bh=FuYn5OaBm/cdGtgDHAKwyk/NB5Y5Xx2dRB0uYwvqtbI=;
+        s=k20201202; t=1654539799;
+        bh=CCWdGSU3kQs8AT6sJOhE8/l+ZEj/ZV94RBpO8N3YyrI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lTHVR2x65cV9HsW/o06kyp604ujtkTQmRbApF/mteXZb9eHjqhKmnuXWcYEHlCnV0
-         uG4U1ETDaKCJWJLDC1+U6ibmwsX41DXZrlz5Ykx1WxkxFxr1mpOO0qglWWJPINaTmO
-         gCO6OF+KZfvll4FZEn4kZX2wve2tNfgC3rNmoTcpeWvPkENWytqks6ck4QbcDdjrbx
-         cB/X8Gk5dJbFUNsfW0eyVU/cF0oT39DRJruw2S1DVjbErlNXgInirmdDaxq0h4reA/
-         NjomkYMDQCaoMCoJLdc8i1TftJA6JO5BQDo+r6z8ODW3TdFJVS6hPeScHtK7dLsQPa
-         NEL/3ariFGPiA==
+        b=Fx5nRHOpwJ+Yxn+7uRfYUixY+ueMJQJi4ydUr0eSNroY/jQ+D+CGEYzSyLqRqqChH
+         3vR4sIj7qlwkRCxzIYPaRH4hizlOcqX7S1vV5vLJkg4C5kUd+0Bb7xvgGrPQbRecZ3
+         zCgWcyMCLfZuDuIQf1i28A1DadRoCq4iSNymr5NHppJxy2dXix/DD4RaHyWUoTQJSc
+         0dppuhiERnt4QdaZBgw+g2i3gLGFiTAxY4DBp5c51G3iTAgLsBcZFLYiXgOU0fGil5
+         nRHzuR/zoa1WM748q6lvlYSeoCIYq86AhYYMbHoTfoYlPXT0YtjS6TnoA2rFLh4be2
+         hbDAUzZA/IPUQ==
 From:   SeongJae Park <sj@kernel.org>
 To:     akpm@linux-foundation.org
 Cc:     corbet@lwn.net, damon@lists.linux.dev, linux-mm@kvack.org,
         linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
         SeongJae Park <sj@kernel.org>
-Subject: [PATCH 6/6] mm/damon/reclaim: add 'damon_reclaim_' prefix to 'enabled_store()'
-Date:   Mon,  6 Jun 2022 18:23:10 +0000
-Message-Id: <20220606182310.48781-7-sj@kernel.org>
+Subject: [PATCH 4/6] mm/damon/sysfs: deduplicate inputs applying
+Date:   Mon,  6 Jun 2022 18:23:08 +0000
+Message-Id: <20220606182310.48781-5-sj@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220606182310.48781-1-sj@kernel.org>
 References: <20220606182310.48781-1-sj@kernel.org>
@@ -49,37 +49,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This commit adds 'damon_reclaim_' prefix to 'enabled_store()', so that
-we can distinguish it easily from the stack trace using 'faddr2line.sh'
-like tools.
+DAMON sysfs interface's DAMON context building and its online parameter
+update have duplicated code.  This commit removes the duplicate.
 
 Signed-off-by: SeongJae Park <sj@kernel.org>
 ---
- mm/damon/reclaim.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ mm/damon/sysfs.c | 59 ++++++++++++++++++++----------------------------
+ 1 file changed, 24 insertions(+), 35 deletions(-)
 
-diff --git a/mm/damon/reclaim.c b/mm/damon/reclaim.c
-index 38da28803d75..e69b807fefe4 100644
---- a/mm/damon/reclaim.c
-+++ b/mm/damon/reclaim.c
-@@ -371,7 +371,7 @@ static DECLARE_DELAYED_WORK(damon_reclaim_timer, damon_reclaim_timer_fn);
- 
- static bool damon_reclaim_initialized;
- 
--static int enabled_store(const char *val,
-+static int damon_reclaim_enabled_store(const char *val,
- 		const struct kernel_param *kp)
- {
- 	int rc = param_set_bool(val, kp);
-@@ -388,7 +388,7 @@ static int enabled_store(const char *val,
+diff --git a/mm/damon/sysfs.c b/mm/damon/sysfs.c
+index 8810e6abdb06..c35809c6087c 100644
+--- a/mm/damon/sysfs.c
++++ b/mm/damon/sysfs.c
+@@ -2357,6 +2357,23 @@ static inline bool damon_sysfs_kdamond_running(
+ 		damon_sysfs_ctx_running(kdamond->damon_ctx);
  }
  
- static const struct kernel_param_ops enabled_param_ops = {
--	.set = enabled_store,
-+	.set = damon_reclaim_enabled_store,
- 	.get = param_get_bool,
- };
++static int damon_sysfs_apply_inputs(struct damon_ctx *ctx,
++		struct damon_sysfs_context *sys_ctx)
++{
++	int err;
++
++	err = damon_select_ops(ctx, sys_ctx->ops_id);
++	if (err)
++		return err;
++	err = damon_sysfs_set_attrs(ctx, sys_ctx->attrs);
++	if (err)
++		return err;
++	err = damon_sysfs_set_targets(ctx, sys_ctx->targets);
++	if (err)
++		return err;
++	return damon_sysfs_set_schemes(ctx, sys_ctx->schemes);
++}
++
+ /*
+  * damon_sysfs_commit_input() - Commit user inputs to a running kdamond.
+  * @kdamond:	The kobject wrapper for the associated kdamond.
+@@ -2365,31 +2382,14 @@ static inline bool damon_sysfs_kdamond_running(
+  */
+ static int damon_sysfs_commit_input(struct damon_sysfs_kdamond *kdamond)
+ {
+-	struct damon_ctx *ctx = kdamond->damon_ctx;
+-	struct damon_sysfs_context *sys_ctx;
+-	int err = 0;
+-
+ 	if (!damon_sysfs_kdamond_running(kdamond))
+ 		return -EINVAL;
+ 	/* TODO: Support multiple contexts per kdamond */
+ 	if (kdamond->contexts->nr != 1)
+ 		return -EINVAL;
  
+-	sys_ctx = kdamond->contexts->contexts_arr[0];
+-
+-	err = damon_select_ops(ctx, sys_ctx->ops_id);
+-	if (err)
+-		return err;
+-	err = damon_sysfs_set_attrs(ctx, sys_ctx->attrs);
+-	if (err)
+-		return err;
+-	err = damon_sysfs_set_targets(ctx, sys_ctx->targets);
+-	if (err)
+-		return err;
+-	err = damon_sysfs_set_schemes(ctx, sys_ctx->schemes);
+-	if (err)
+-		return err;
+-	return err;
++	return damon_sysfs_apply_inputs(kdamond->damon_ctx,
++			kdamond->contexts->contexts_arr[0]);
+ }
+ 
+ /*
+@@ -2436,27 +2436,16 @@ static struct damon_ctx *damon_sysfs_build_ctx(
+ 	if (!ctx)
+ 		return ERR_PTR(-ENOMEM);
+ 
+-	err = damon_select_ops(ctx, sys_ctx->ops_id);
+-	if (err)
+-		goto out;
+-	err = damon_sysfs_set_attrs(ctx, sys_ctx->attrs);
+-	if (err)
+-		goto out;
+-	err = damon_sysfs_set_targets(ctx, sys_ctx->targets);
+-	if (err)
+-		goto out;
+-	err = damon_sysfs_set_schemes(ctx, sys_ctx->schemes);
+-	if (err)
+-		goto out;
++	err = damon_sysfs_apply_inputs(ctx, sys_ctx);
++	if (err) {
++		damon_destroy_ctx(ctx);
++		return ERR_PTR(err);
++	}
+ 
+ 	ctx->callback.after_wmarks_check = damon_sysfs_cmd_request_callback;
+ 	ctx->callback.after_aggregation = damon_sysfs_cmd_request_callback;
+ 	ctx->callback.before_terminate = damon_sysfs_before_terminate;
+ 	return ctx;
+-
+-out:
+-	damon_destroy_ctx(ctx);
+-	return ERR_PTR(err);
+ }
+ 
+ static int damon_sysfs_turn_damon_on(struct damon_sysfs_kdamond *kdamond)
 -- 
 2.25.1
 
