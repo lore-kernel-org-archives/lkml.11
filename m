@@ -2,101 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34717C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 09:31:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FEECC43334
+	for <linux-kernel@archiver.kernel.org>; Mon,  6 Jun 2022 09:31:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233061AbiFFJbA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 6 Jun 2022 05:31:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51496 "EHLO
+        id S233070AbiFFJbE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 6 Jun 2022 05:31:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233039AbiFFJao (ORCPT
+        with ESMTP id S233044AbiFFJao (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 6 Jun 2022 05:30:44 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6BD6CFE04;
-        Mon,  6 Jun 2022 02:30:36 -0700 (PDT)
-X-UUID: 9da0ca4ab9714784bc805696926d2f86-20220606
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:8a3a7e6c-ef0d-4a18-bce8-80824a24180b,OB:0,LO
-        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:105
-X-CID-INFO: VERSION:1.1.5,REQID:8a3a7e6c-ef0d-4a18-bce8-80824a24180b,OB:0,LOB:
-        0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3D,AC
-        TION:quarantine,TS:105
-X-CID-META: VersionHash:2a19b09,CLOUDID:a2a64f7e-c8dc-403a-96e8-6237210dceee,C
-        OID:0e4a7272b3e5,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:1,File:nil,QS:0,BEC:nil
-X-UUID: 9da0ca4ab9714784bc805696926d2f86-20220606
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
-        (envelope-from <lina.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1911604969; Mon, 06 Jun 2022 14:52:09 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Mon, 6 Jun 2022 14:52:08 +0800
-Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by
- mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Mon, 6 Jun 2022 14:52:04 +0800
-From:   Lina Wang <lina.wang@mediatek.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Maciej enczykowski <maze@google.com>, <netdev@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        Lina Wang <lina.wang@mediatek.com>
-Subject: [PATCH v3] selftests net: fix bpf build error
-Date:   Mon, 6 Jun 2022 14:45:17 +0800
-Message-ID: <20220606064517.8175-1-lina.wang@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA5A9D2476;
+        Mon,  6 Jun 2022 02:30:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654507842; x=1686043842;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=uhgD5Y73qU839IGYCYks5iETug9dclDZNvPWP370A6c=;
+  b=afNNbRm1tBkl8iIKGx5vBZI7U7+KFdurHxo4mPu3N0f0T9l3hNWOcfl3
+   0RMk1pKYpKRFRVv0DVpRj5AQ7t4K+tH8bK7ZGI0/Ky6IMultTbRxHRX55
+   IhMvoXi4Q1yqDAUZhE/Pr+8x+qouxgQuIgzpzfbPWwsaNTJyBDVOXBaUz
+   N/CIuAG8b3eFLm0mTc+O8gdA4J9S4tw7vy4kp9o+CZZp7+DuhxtNwgZG1
+   cmJ678q8kC/3kJpDwomG+gly7vVKwcV6e4JBF6qAUm05fikMGizjD1K8G
+   2XV0PAapCbI/ln15EOr6tG8270SIpHtkmqcKQN2/Oy1wmls3DjY9H/3O3
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="264501355"
+X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
+   d="scan'208";a="264501355"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 02:30:21 -0700
+X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
+   d="scan'208";a="825733223"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 02:30:18 -0700
+Received: by lahna (sSMTP sendmail emulation); Mon, 06 Jun 2022 12:30:16 +0300
+Date:   Mon, 6 Jun 2022 12:30:16 +0300
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     Yang Li <yang.lee@linux.alibaba.com>
+Cc:     andreas.noever@gmail.com, michael.jamet@intel.com,
+        YehezkelShB@gmail.com, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
+Subject: Re: [PATCH -next] thunderbolt: Fix some kernel-doc comments
+Message-ID: <Yp3JKN5Bxc4vlKSm@lahna>
+References: <20220526130154.89745-1-yang.lee@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220526130154.89745-1-yang.lee@linux.alibaba.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-bpf_helpers.h has been moved to tools/lib/bpf since 5.10, so add more
-including path.
+On Thu, May 26, 2022 at 09:01:54PM +0800, Yang Li wrote:
+> Remove some warnings found by running scripts/kernel-doc,
+> which is caused by using 'make W=1'.
+> 
+> drivers/thunderbolt/ctl.c:701: warning: expecting prototype for
+> tb_cfg_start(). Prototype was for tb_ctl_start() instead
+> drivers/thunderbolt/ctl.c:722: warning: expecting prototype for
+> tb_ctrl_stop(). Prototype was for tb_ctl_stop() instead
+> drivers/thunderbolt/ctl.c:930: warning: expecting prototype for
+> tb_cfg_write(). Prototype was for tb_cfg_write_raw() instead
+> 
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
 
-Fixes: edae34a3ed92 ("selftests net: add UDP GRO fraglist + bpf self-tests")
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Signed-off-by: Lina Wang <lina.wang@mediatek.com>
-Acked-by: Song Liu <songliubraving@fb.com>
----
- tools/testing/selftests/net/bpf/Makefile | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/tools/testing/selftests/net/bpf/Makefile b/tools/testing/selftests/net/bpf/Makefile
-index f91bf14bbee7..8a69c91fcca0 100644
---- a/tools/testing/selftests/net/bpf/Makefile
-+++ b/tools/testing/selftests/net/bpf/Makefile
-@@ -2,6 +2,7 @@
- 
- CLANG ?= clang
- CCINCLUDE += -I../../bpf
-+CCINCLUDE += -I../../../lib
- CCINCLUDE += -I../../../../../usr/include/
- 
- TEST_CUSTOM_PROGS = $(OUTPUT)/bpf/nat6to4.o
-@@ -10,5 +11,4 @@ all: $(TEST_CUSTOM_PROGS)
- $(OUTPUT)/%.o: %.c
- 	$(CLANG) -O2 -target bpf -c $< $(CCINCLUDE) -o $@
- 
--clean:
--	rm -f $(TEST_CUSTOM_PROGS)
-+EXTRA_CLEAN := $(TEST_CUSTOM_PROGS)
--- 
-2.18.0
-
+Applied to thunderbolt.git/next, thanks!
